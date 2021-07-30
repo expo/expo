@@ -6,10 +6,9 @@ import TrackingOptionsSelector from './TrackingOptionsSelector';
 
 interface State {
   clientAPIKey?: string;
-  error?: boolean;
-  errorMessage?: string;
+  error?: string;
   result?: string;
-  initialized: boolean;
+  initialized?: boolean;
 }
 
 export default class AmplitudeApiScreen extends React.Component<object, State> {
@@ -19,14 +18,11 @@ export default class AmplitudeApiScreen extends React.Component<object, State> {
 
   readonly state: State = {
     clientAPIKey: '',
-    error: undefined,
-    errorMessage: undefined,
-    result: undefined,
     initialized: false,
   };
 
   private testUserId: string = 'testUserId';
-  private testEventName: string = 'test event';
+  private testEventName: string = 'testEventName';
   private testGroupType: string = 'testGroupType';
   private timer?: NodeJS.Timeout;
 
@@ -46,90 +42,79 @@ export default class AmplitudeApiScreen extends React.Component<object, State> {
 
   _deferredResultCleanup = () => this._deferredCleanup(5000, 'result');
 
-  _deferredErrorCleanup = () => this._deferredCleanup(5000, 'error', 'errorMessage');
+  _deferredErrorCleanup = () => this._deferredCleanup(5000, 'error');
+
+  _updateState = async (newState: State) => {
+    this.setState(newState);
+    const newStateKeys = Object.keys(newState);
+    if (newStateKeys.includes('error')) {
+      this._deferredErrorCleanup();
+    } else if (newStateKeys.includes('result')) {
+      this._deferredResultCleanup();
+    } else {
+      console.error('Invalid newState parameter');
+    }
+  };
+
+  _execCallbackWithStatusUpdate = async (
+    callback: () => any,
+    successState: State,
+    errorState: State
+  ) => {
+    try {
+      await callback();
+      this._updateState(successState);
+    } catch {
+      this._updateState(errorState);
+    }
+  };
 
   _initializeAsync = async () => {
     if (this.state.clientAPIKey) {
-      await Amplitude.initializeAsync(this.state.clientAPIKey).then(
-        () => {
-          this.setState({ result: 'Module initialized', initialized: true });
-          this._deferredResultCleanup();
-        },
-        () => {
-          this.setState({ error: true, errorMessage: 'Failed to initialize module' });
-          this._deferredErrorCleanup();
-        }
+      const callback = Amplitude.initializeAsync(this.state.clientAPIKey);
+      await this._execCallbackWithStatusUpdate(
+        () => callback,
+        { result: 'Module initialized', initialized: true },
+        { error: 'Failed to initialize module' }
       );
     } else {
-      this.setState({ error: true, errorMessage: 'Invalid api key' });
-      this._deferredErrorCleanup();
+      this._updateState({ error: 'Invalid api key' });
     }
   };
 
   _setUserIdAsync = async () => {
-    await Amplitude.setUserIdAsync(this.testUserId).then(
-      () => {
-        this.setState({ result: `User ID set to ${this.testUserId}` });
-        this._deferredResultCleanup();
-      },
-      () => {
-        this.setState({
-          error: true,
-          errorMessage: 'Failed to set UserId. Make sure that provided API key is valid.',
-        });
-        this._deferredErrorCleanup();
-      }
+    await this._execCallbackWithStatusUpdate(
+      () => Amplitude.setUserIdAsync(this.testUserId),
+      { result: `User ID set to ${this.testUserId}` },
+      { error: 'Failed to set UserId. Make sure that provided API key is valid.' }
     );
   };
 
   _logEventAsync = async () => {
-    await Amplitude.logEventAsync(this.testEventName).then(
-      () => {
-        this.setState({ result: `"${this.testEventName}" logged` });
-        this._deferredResultCleanup();
-      },
-      () => {
-        this.setState({
-          error: true,
-          errorMessage: 'Failed to log event. Make sure that provided API key is valid.',
-        });
-        this._deferredErrorCleanup();
-      }
+    await this._execCallbackWithStatusUpdate(
+      () => Amplitude.logEventAsync(this.testEventName),
+      { result: `"${this.testEventName}" logged` },
+      { error: 'Failed to log event. Make sure that provided API key is valid.' }
     );
   };
 
   _logEventWithPropertiesAsync = async () => {
-    await Amplitude.logEventWithPropertiesAsync(this.testEventName, {
-      'test property 1': 'value for property 1',
-      'test property 2': 'value for property 2',
-    }).then(
-      () => {
-        this.setState({ result: `${this.testEventName} with mock properties logged` });
-        this._deferredResultCleanup();
-      },
-      () => {
-        this.setState({
-          error: true,
-          errorMessage: 'Failed to log event. Make sure that provided API key is valid.',
-        });
-        this._deferredErrorCleanup();
-      }
+    await this._execCallbackWithStatusUpdate(
+      () =>
+        Amplitude.logEventWithPropertiesAsync(this.testEventName, {
+          'test property 1': 'value for property 1',
+          'test property 2': 'value for property 2',
+        }),
+      { result: `${this.testEventName} with mock properties logged` },
+      { error: 'Failed to log event. Make sure that provided API key is valid.' }
     );
   };
 
   _setGroupAsync = async () => {
-    await Amplitude.setGroupAsync(this.testGroupType, ['groupName1', 'groupName2']).then(
-      () => {
-        this.setState({ result: 'Groups added' });
-        this._deferredResultCleanup();
-      },
-      () => {
-        this.setState({
-          error: true,
-          errorMessage: 'Failed to add groups. Make sure that provided API key is valid.',
-        });
-        this._deferredErrorCleanup();
-      }
+    await this._execCallbackWithStatusUpdate(
+      () => Amplitude.setGroupAsync(this.testGroupType, ['groupName1', 'groupName2']),
+      { result: 'Groups added' },
+      { error: 'Failed to add groups. Make sure that provided API key is valid.' }
     );
   };
 
@@ -177,7 +162,7 @@ export default class AmplitudeApiScreen extends React.Component<object, State> {
         <TrackingOptionsSelector />
         {this.state.error && (
           <View style={[styles.textView, styles.errorView]}>
-            <Text style={styles.errorText}>{this.state.errorMessage}</Text>
+            <Text style={styles.errorText}>{this.state.error}</Text>
           </View>
         )}
         {this.state.result && (

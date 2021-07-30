@@ -10,6 +10,28 @@ interface State {
   error?: string;
 }
 
+interface Toggle {
+  title: string;
+  valueName:
+    | 'disableAdid'
+    | 'disableCarrier'
+    | 'disableCity'
+    | 'disableCountry'
+    | 'disableDMA'
+    | 'disableDeviceBrand'
+    | 'disableDeviceManufacturer'
+    | 'disableDeviceModel'
+    | 'disableIDFV'
+    | 'disableIPAddress'
+    | 'disableLanguage'
+    | 'disableLatLng'
+    | 'disableOSName'
+    | 'disableOSVersion'
+    | 'disablePlatform'
+    | 'disableRegion'
+    | 'disableVersionName';
+}
+
 export default class TrackingOptionsSelector extends React.Component<object, State> {
   readonly state: State = {
     optionsToSet: {
@@ -51,55 +73,36 @@ export default class TrackingOptionsSelector extends React.Component<object, Sta
       disableVersionName: true,
     },
     showList: false,
-    result: undefined,
-    error: undefined,
   };
+  private toggles: Toggle[] = [
+    { title: 'Disable Adid', valueName: 'disableAdid' },
+    { title: 'Disable Carrier', valueName: 'disableCarrier' },
+    { title: 'Disable City', valueName: 'disableCity' },
+    { title: 'Disable Country', valueName: 'disableCountry' },
+    { title: 'Disable DMA', valueName: 'disableDMA' },
+    { title: 'Disable device brand', valueName: 'disableDeviceBrand' },
+    { title: 'Disable device manufacturer', valueName: 'disableDeviceManufacturer' },
+    { title: 'Disable device model', valueName: 'disableDeviceModel' },
+    { title: 'Disable IDFV', valueName: 'disableIDFV' },
+    { title: 'Disable IP Address', valueName: 'disableIPAddress' },
+    { title: 'Disable language', valueName: 'disableLanguage' },
+    { title: 'Disable Geo', valueName: 'disableLatLng' },
+    { title: 'Disable OS name', valueName: 'disableOSName' },
+    { title: 'Disable OS version', valueName: 'disableOSVersion' },
+    { title: 'Disable platform', valueName: 'disablePlatform' },
+    { title: 'Disable region', valueName: 'disableRegion' },
+    { title: 'Disable version name', valueName: 'disableVersionName' },
+  ];
 
   _applyOptions = () => {
     this.setState(state => ({ options: state.optionsToSet }));
   };
 
-  _renderToggle = ({
-    title,
-    disabled,
-    valueName,
-    value,
-  }: {
-    title: string;
-    disabled?: boolean;
-    valueName:
-      | 'disableAdid'
-      | 'disableCarrier'
-      | 'disableCity'
-      | 'disableCountry'
-      | 'disableDMA'
-      | 'disableDeviceBrand'
-      | 'disableDeviceManufacturer'
-      | 'disableDeviceModel'
-      | 'disableIDFV'
-      | 'disableIPAddress'
-      | 'disableLanguage'
-      | 'disableLatLng'
-      | 'disableOSName'
-      | 'disableOSVersion'
-      | 'disablePlatform'
-      | 'disableRegion'
-      | 'disableVersionName';
-    value?: boolean;
-  }) => (
-    <View
-      style={{
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        paddingVertical: 5,
-        borderBottomWidth: 1.0 / PixelRatio.get(),
-        borderBottomColor: '#cccccc',
-      }}>
-      <Text style={{ flex: 1, fontSize: 16 }}>{title}</Text>
+  _renderToggle = ({ title, valueName }: Toggle) => (
+    <View style={styles.toggleContainer}>
+      <Text style={styles.toggleLabel}>{title}</Text>
       <Switch
-        disabled={disabled}
-        value={value !== undefined ? value : Boolean(this.state.optionsToSet[valueName])}
+        value={Boolean(this.state.optionsToSet[valueName])}
         onValueChange={() =>
           this.setState(state => ({
             optionsToSet: { ...state.optionsToSet, [valueName]: !state.optionsToSet[valueName] },
@@ -110,10 +113,7 @@ export default class TrackingOptionsSelector extends React.Component<object, Sta
   );
 
   _toggleListVisibility = () => {
-    this.setState(state => {
-      return { showList: !state.showList };
-    });
-
+    this.setState(state => ({ showList: !state.showList }));
     if (this.state.showList) {
       this._applyOptions();
       this._setTrackingOptionsAsync();
@@ -121,111 +121,21 @@ export default class TrackingOptionsSelector extends React.Component<object, Sta
   };
 
   _setTrackingOptionsAsync = async () => {
-    await setTrackingOptionsAsync(this.state.options).then(
-      () => {
-        this.setState({ result: 'Request for tracking options change has been sent' });
-        setTimeout(() => {
-          this.setState({ result: undefined });
-        }, 5000);
-      },
-      () => {
-        this.setState({ error: 'Failed to send request for tracking options change' });
-        setTimeout(() => {
-          this.setState({ error: undefined });
-        }, 5000);
-      }
-    );
+    try {
+      await setTrackingOptionsAsync(this.state.options);
+      this.setState({ result: 'Request for tracking options change has been sent' });
+      setTimeout(() => this.setState({ result: undefined }), 5000);
+    } catch {
+      this.setState({ error: 'Failed to send request for tracking options change' });
+      setTimeout(() => this.setState({ error: undefined }), 5000);
+    }
   };
 
   render() {
     return (
-      <View style={{ marginTop: 20 }}>
+      <View style={styles.container}>
         <Button title="Toggle tracking options list" onPress={this._toggleListVisibility} />
-        {this.state.showList &&
-          this._renderToggle({
-            title: 'Disable Adid',
-            valueName: 'disableAdid',
-          })}
-        {this.state.showList &&
-          this._renderToggle({
-            title: 'Disable Carrier',
-            valueName: 'disableCarrier',
-          })}
-        {this.state.showList &&
-          this._renderToggle({
-            title: 'Disable City',
-            valueName: 'disableCity',
-          })}
-        {this.state.showList &&
-          this._renderToggle({
-            title: 'Disable Country',
-            valueName: 'disableCountry',
-          })}
-        {this.state.showList &&
-          this._renderToggle({
-            title: 'Disable DMA',
-            valueName: 'disableDMA',
-          })}
-        {this.state.showList &&
-          this._renderToggle({
-            title: 'Disable Device brand',
-            valueName: 'disableDeviceBrand',
-          })}
-        {this.state.showList &&
-          this._renderToggle({
-            title: 'Disable Device manufacturer',
-            valueName: 'disableDeviceManufacturer',
-          })}
-        {this.state.showList &&
-          this._renderToggle({
-            title: 'Disable Device model',
-            valueName: 'disableDeviceModel',
-          })}
-        {this.state.showList &&
-          this._renderToggle({
-            title: 'Disable IDFV',
-            valueName: 'disableIDFV',
-          })}
-        {this.state.showList &&
-          this._renderToggle({
-            title: 'Disable IP Address',
-            valueName: 'disableIPAddress',
-          })}
-        {this.state.showList &&
-          this._renderToggle({
-            title: 'Disable Language',
-            valueName: 'disableLanguage',
-          })}
-        {this.state.showList &&
-          this._renderToggle({
-            title: 'Disable Geo?',
-            valueName: 'disableLatLng',
-          })}
-        {this.state.showList &&
-          this._renderToggle({
-            title: 'Disable OS Name',
-            valueName: 'disableOSName',
-          })}
-        {this.state.showList &&
-          this._renderToggle({
-            title: 'Disable OS version',
-            valueName: 'disableOSVersion',
-          })}
-        {this.state.showList &&
-          this._renderToggle({
-            title: 'Disable Platform',
-            valueName: 'disablePlatform',
-          })}
-        {this.state.showList &&
-          this._renderToggle({
-            title: 'Disable Region',
-            valueName: 'disableRegion',
-          })}
-        {this.state.showList &&
-          this._renderToggle({
-            title: 'Disable version name',
-            valueName: 'disableVersionName',
-          })}
+        {this.state.showList && <>{this.toggles.map(this._renderToggle)}</>}
         {this.state.error && (
           <View style={[styles.textView, styles.errorView]}>
             <Text style={styles.errorText}>{this.state.error}</Text>
@@ -259,5 +169,20 @@ const styles = StyleSheet.create({
   resultView: {
     borderColor: 'green',
     borderWidth: 1,
+  },
+  toggleContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingVertical: 5,
+    borderBottomWidth: 1.0 / PixelRatio.get(),
+    borderBottomColor: '#cccccc',
+  },
+  toggleLabel: {
+    flex: 1,
+    fontSize: 16,
+  },
+  container: {
+    marginTop: 20,
   },
 });
