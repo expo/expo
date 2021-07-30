@@ -99,6 +99,12 @@ EX_EXPORT_METHOD_AS(getDocumentAsync,
   _reject = reject;
     
   NSArray *mimeTypes = options[@"type"] ?: @[@"*/*"];
+  if (mimeTypes.count == 0) {
+    reject(@"E_DOCUMENT_PICKER", @"type must be a list of strings.", nil);
+    _resolve = nil;
+    _reject = nil;
+    return;
+  }
   _shouldCopyToCacheDirectory = options[@"copyToCacheDirectory"] && [options[@"copyToCacheDirectory"] boolValue] == YES;
 
   EX_WEAKIFY(self);
