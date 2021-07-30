@@ -190,7 +190,7 @@ Generally, the schema of this file looks like this:
 
 </details>
 
-## Common options for both paltforms
+## Common options for both platforms
 
 <EasJsonPropertiesTable schema={commonSchema}/>
 
