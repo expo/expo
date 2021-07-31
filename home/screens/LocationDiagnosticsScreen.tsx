@@ -166,7 +166,7 @@ export default class LocationDiagnosticsScreen extends React.Component<Props, St
   onAccuracyChange = () => {
     const next = Location.Accuracy[this.state.accuracy + 1];
     const accuracy = next
-      ? ((Location.Accuracy[next as any] as any) as Location.Accuracy)
+      ? (Location.Accuracy[next as any] as any as Location.Accuracy)
       : Location.Accuracy.Lowest;
 
     this.setState({ accuracy });

@@ -34,16 +34,8 @@ type Props = {
 
 export default class ListItem extends React.PureComponent<Props> {
   render() {
-    const {
-      onPress,
-      onLongPress,
-      renderExtraText,
-      style,
-      last,
-      margins,
-      title,
-      subtitle,
-    } = this.props;
+    const { onPress, onLongPress, renderExtraText, style, last, margins, title, subtitle } =
+      this.props;
     return (
       <View style={last && margins !== false ? styles.marginBottomLast : undefined}>
         <StyledButton
@@ -117,9 +109,7 @@ export default class ListItem extends React.PureComponent<Props> {
           {title}
         </StyledText>
       </View>
-    ) : (
-      undefined
-    );
+    ) : undefined;
   }
 
   private renderSubtitle() {
@@ -137,9 +127,7 @@ export default class ListItem extends React.PureComponent<Props> {
         numberOfLines={title ? 1 : 2}>
         {subtitle}
       </Text>
-    ) : (
-      undefined
-    );
+    ) : undefined;
   }
 
   private renderCheck() {
