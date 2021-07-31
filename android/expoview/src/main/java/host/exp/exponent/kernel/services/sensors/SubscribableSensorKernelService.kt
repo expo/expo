@@ -14,15 +14,15 @@ abstract class SubscribableSensorKernelService internal constructor(reactContext
   private val sensorEventListenerLastUpdateMap: MutableMap<SensorKernelServiceSubscription, Long> = WeakHashMap()
   private val experienceScopeKeySubscriptionsMap: MutableMap<String?, MutableList<WeakReference<SensorKernelServiceSubscription?>>> = mutableMapOf()
 
-  override fun onExperienceForegrounded(experienceKey: ExperienceKey?) {
+  override fun onExperienceForegrounded(experienceKey: ExperienceKey) {
     updateObserving()
   }
 
-  override fun onExperienceBackgrounded(experienceKey: ExperienceKey?) {
+  override fun onExperienceBackgrounded(experienceKey: ExperienceKey) {
     updateObserving()
   }
 
-  override fun onSensorDataChanged(sensorEvent: SensorEvent?) {
+  override fun onSensorDataChanged(sensorEvent: SensorEvent) {
     val currentTime = System.currentTimeMillis()
     val listeners = experienceScopeKeySubscriptionsMap[currentExperienceKey!!.scopeKey]
     if (listeners != null) {

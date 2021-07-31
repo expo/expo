@@ -7,6 +7,5 @@ import android.hardware.Sensor
 class GravitySensorKernelService(reactContext: Context) : SubscribableSensorKernelService(
   reactContext
 ) {
-  override val sensorType: Int
-    get() = Sensor.TYPE_GRAVITY
+  override val sensorType = Sensor.TYPE_GRAVITY
 }

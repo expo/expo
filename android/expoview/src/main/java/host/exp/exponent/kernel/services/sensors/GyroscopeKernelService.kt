@@ -4,9 +4,6 @@ package host.exp.exponent.kernel.services.sensors
 import android.content.Context
 import android.hardware.Sensor
 
-class GyroscopeKernelService(context: Context) : SubscribableSensorKernelService(
-  context
-) {
-  override val sensorType: Int
-    get() = Sensor.TYPE_GYROSCOPE
+class GyroscopeKernelService(context: Context) : SubscribableSensorKernelService(context) {
+  override val sensorType = Sensor.TYPE_GYROSCOPE
 }

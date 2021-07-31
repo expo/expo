@@ -13,7 +13,7 @@ abstract class BaseSensorKernelService internal constructor(reactContext: Contex
   private val sensorManager: SensorManager = context.getSystemService(Context.SENSOR_SERVICE) as SensorManager
 
   abstract val sensorType: Int
-  abstract fun onSensorDataChanged(sensorEvent: SensorEvent?)
+  abstract fun onSensorDataChanged(sensorEvent: SensorEvent)
 
   protected fun startObserving() {
     sensor = sensorManager.getDefaultSensor(sensorType)

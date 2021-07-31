@@ -4,5 +4,5 @@ package host.exp.exponent.kernel.services.sensors
 import android.hardware.SensorEvent
 
 interface SensorEventListener {
-  fun onSensorDataChanged(sensorEvent: SensorEvent?)
+  fun onSensorDataChanged(sensorEvent: SensorEvent)
 }

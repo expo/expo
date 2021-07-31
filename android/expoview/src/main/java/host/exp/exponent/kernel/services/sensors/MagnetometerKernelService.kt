@@ -4,9 +4,6 @@ package host.exp.exponent.kernel.services.sensors
 import android.content.Context
 import android.hardware.Sensor
 
-class MagnetometerKernelService(reactContext: Context) : SubscribableSensorKernelService(
-  reactContext
-) {
-  override val sensorType: Int
-    get() = Sensor.TYPE_MAGNETIC_FIELD
+class MagnetometerKernelService(reactContext: Context) : SubscribableSensorKernelService(reactContext) {
+  override val sensorType = Sensor.TYPE_MAGNETIC_FIELD
 }

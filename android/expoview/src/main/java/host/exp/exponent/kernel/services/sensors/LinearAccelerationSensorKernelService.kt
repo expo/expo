@@ -4,10 +4,6 @@ package host.exp.exponent.kernel.services.sensors
 import android.content.Context
 import android.hardware.Sensor
 
-class LinearAccelerationSensorKernelService(reactContext: Context) :
-  SubscribableSensorKernelService(
-    reactContext
-  ) {
-  override val sensorType: Int
-    get() = Sensor.TYPE_LINEAR_ACCELERATION
+class LinearAccelerationSensorKernelService(reactContext: Context) : SubscribableSensorKernelService(reactContext) {
+  override val sensorType = Sensor.TYPE_LINEAR_ACCELERATION
 }

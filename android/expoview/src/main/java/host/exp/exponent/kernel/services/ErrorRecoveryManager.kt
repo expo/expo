@@ -13,7 +13,7 @@ private const val FIVE_MINUTES_MS = (5 * 60 * 1000).toLong()
 private const val AUTO_RELOAD_BUFFER_BASE_MS = (5 * 1000).toLong()
 
 class ErrorRecoveryManager(private val experienceKey: ExperienceKey?) {
-  private var timeLastLoaded: Long = 0
+  private var timeLastLoaded = 0L
   private var didError = false
 
   @Inject
@@ -29,10 +29,7 @@ class ErrorRecoveryManager(private val experienceKey: ExperienceKey?) {
   fun markErrored(didError: Boolean = true) {
     this.didError = didError
     if (experienceKey != null) {
-      var metadata = exponentSharedPreferences.getExperienceMetadata(experienceKey)
-      if (metadata == null) {
-        metadata = JSONObject()
-      }
+      val metadata = exponentSharedPreferences.getExperienceMetadata(experienceKey) ?: JSONObject()
       try {
         metadata.put(ExponentSharedPreferences.EXPERIENCE_METADATA_LOADING_ERROR, didError)
         exponentSharedPreferences.updateExperienceMetadata(experienceKey, metadata)

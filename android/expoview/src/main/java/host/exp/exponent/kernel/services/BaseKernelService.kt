@@ -11,8 +11,8 @@ abstract class BaseKernelService(protected val context: Context) {
   protected var currentExperienceKey: ExperienceKey? = null
     private set
 
-  abstract fun onExperienceForegrounded(experienceKey: ExperienceKey?)
-  abstract fun onExperienceBackgrounded(experienceKey: ExperienceKey?)
+  abstract fun onExperienceForegrounded(experienceKey: ExperienceKey)
+  abstract fun onExperienceBackgrounded(experienceKey: ExperienceKey)
 
   fun onEvent(event: ExperienceBackgroundedEvent) {
     currentExperienceKey = null

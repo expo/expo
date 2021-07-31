@@ -6,6 +6,5 @@ import android.hardware.Sensor
 
 class AccelerometerKernelService(reactContext: Context) :
   SubscribableSensorKernelService(reactContext) {
-  override val sensorType: Int
-    get() = Sensor.TYPE_ACCELEROMETER
+  override val sensorType = Sensor.TYPE_ACCELEROMETER
 }

@@ -5,6 +5,5 @@ import android.content.Context
 import android.hardware.Sensor
 
 class BarometerKernelService(reactContext: Context) : SubscribableSensorKernelService(reactContext) {
-  override val sensorType: Int
-    get() = Sensor.TYPE_PRESSURE
+  override val sensorType = Sensor.TYPE_PRESSURE
 }

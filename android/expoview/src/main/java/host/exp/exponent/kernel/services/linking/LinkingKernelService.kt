@@ -16,13 +16,13 @@ class LinkingKernelService {
 
   fun canOpenURI(uri: Uri): Boolean {
     val scheme = uri.scheme
-    if ("exp" == scheme || "exps" == scheme) {
+    if (scheme == "exp" || scheme == "exps") {
       return true
     }
     if (Constants.SHELL_APP_SCHEME != null && Constants.SHELL_APP_SCHEME == scheme) {
       return true
     }
     val host = uri.host
-    return host != null && ("exp.host" == host || host.endsWith("exp.direct"))
+    return host != null && (host == "exp.host" || host == "exp.direct" || host.endsWith("exp.direct"))
   }
 }

@@ -106,6 +106,6 @@ class PermissionsKernelService(
     return permissionInfo.protectionLevel and PermissionInfo.PROTECTION_DANGEROUS != 0
   }
 
-  override fun onExperienceForegrounded(experienceKey: ExperienceKey?) {}
-  override fun onExperienceBackgrounded(experienceKey: ExperienceKey?) {}
+  override fun onExperienceForegrounded(experienceKey: ExperienceKey) {}
+  override fun onExperienceBackgrounded(experienceKey: ExperienceKey) {}
 }
