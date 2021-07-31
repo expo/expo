@@ -18,7 +18,7 @@ But since the bundler and development server are running on your computer, if yo
 turn off your laptop or stop Expo CLI, you won’t be able to load your
 project from that URL. "Publish" is the term we use for deploying your
 project. It makes your project available at a persistent URL, for
-example https://expo.io/@community/native-component-list, which can be
+example https://expo.dev/@community/native-component-list, which can be
 opened with the Expo Go app. It also uploads all of your app images,
 fonts, and videos to a CDN ([read more
 here](how-expo-works.md#publishingdeploying-an-expo-app-in-production)).

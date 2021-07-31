@@ -108,7 +108,7 @@ lein prod-build
 expo publish
 ```
 
-This will publish your app to a persistent URL on Expo, for example: <https://expo.io/@community/startr>
+This will publish your app to a persistent URL on Expo, for example: <https://expo.dev/@community/startr>
 
 ## FAQ
 

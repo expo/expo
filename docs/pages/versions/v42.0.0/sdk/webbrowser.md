@@ -31,7 +31,7 @@ export default function App() {
   const [result, setResult] = useState(null);
 
   const _handlePressButtonAsync = async () => {
-    let result = await WebBrowser.openBrowserAsync('https://expo.io');
+    let result = await WebBrowser.openBrowserAsync('https://expo.dev');
     setResult(result);
   };
   return (
@@ -131,8 +131,8 @@ How this works on web:
 🚨 On mobile web, Chrome and Safari will block any call to [`window.open()`][d-windowopen] which takes too long to fire after a user interaction. This method must be invoked immediately after a user interaction. If the event is blocked, an error with code [`ERR_WEB_BROWSER_BLOCKED`](#errwebbrowserblocked) will be thrown.
 
 [d-windowopen]: https://developer.mozilla.org/en-US/docs/Web/API/Window/open
-[d-appstate]: https://docs.expo.io/versions/latest/react-native/appstate/
-[d-linking]: https://docs.expo.io/versions/latest/sdk/linking/
+[d-appstate]: https://docs.expo.dev/versions/latest/react-native/appstate/
+[d-linking]: https://docs.expo.dev/versions/latest/sdk/linking/
 
 #### Arguments
 

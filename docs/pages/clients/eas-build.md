@@ -93,7 +93,7 @@ Register any devices you would like to use your development client on to your ad
 Generate the build signed with your ad hoc provisioning profile.
 <InstallSection packageName="expo-dev-launcher" cmd={["eas build --profile development --platform ios"]} hideBareInstructions />
 
-You will need to generate a new build to install successfully on any new devices added to your provisioning profile.  [You can find more guidance on distributing your app to your team here.](https://docs.expo.io/build/internal-distribution/)
+You will need to generate a new build to install successfully on any new devices added to your provisioning profile.  [You can find more guidance on distributing your app to your team here.](https://docs.expo.dev/build/internal-distribution/)
 
 ### For Android:
 

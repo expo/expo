@@ -39,9 +39,9 @@ You can use Expo for web with any of your favorite frameworks to create whatever
 ## 🏁 Up Next
 
 - Check out how to [Add Web Support to Your Project](../guides/running-in-the-browser.md#adding-web-support-to-expo-projects).
-- Learn about creating [Responsive web apps with Expo](https://blog.expo.io/media-queries-with-react-native-for-ios-android-and-web-e0b73ed5777b).
+- Learn about creating [Responsive web apps with Expo](https://blog.expo.dev/media-queries-with-react-native-for-ios-android-and-web-e0b73ed5777b).
 - Find out how to [Publish your website Anywhere!](../distribution/publishing-websites.md).
 - Look at some [Examples and Recipes for Building Universal Websites!](https://github.com/expo/examples).
 - Learn about building a [Progressive Web App](../guides/progressive-web-apps.md).
 - Found an issue with web support? [Report it here](https://github.com/expo/expo/issues)
-- Have a question? [Ask on our forums web](https://forums.expo.io/c/expo-web)
+- Have a question? [Ask on our forums web](https://forums.expo.dev/c/expo-web)
