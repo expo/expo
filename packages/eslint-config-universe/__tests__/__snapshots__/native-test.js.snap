@@ -290,6 +290,7 @@ Object {
       "endLine": 8,
       "line": 8,
       "message": "Do not use setState in componentDidMount",
+      "messageId": "noSetState",
       "nodeType": "MemberExpression",
       "ruleId": "react/no-did-mount-set-state",
       "severity": 1,

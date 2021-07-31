@@ -7,17 +7,7 @@ module.exports = async function checkPrettierRulesAsync(configFile) {
     PATH: path.resolve(__dirname, '../../node_modules/.bin') + path.delimiter + process.env.PATH,
   });
 
-  const { stdout: configString } = await spawnAsync(
-    'eslint',
-    ['--config', configFile, '--no-eslintrc', '--print-config', configFile],
-    { env }
-  );
-
-  const resultPromise = spawnAsync('eslint-config-prettier-check', [], { env });
-  const { child } = resultPromise;
-  child.stdin.setEncoding('utf8');
-  child.stdin.write(configString);
-  child.stdin.end();
+  const resultPromise = spawnAsync('eslint-config-prettier', [configFile], { env });
 
   let result;
   try {
