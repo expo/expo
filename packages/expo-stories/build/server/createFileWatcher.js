@@ -28,10 +28,12 @@ function createFileWatcher(config, server) {
         ignored: ['node_modules'],
         watchman: true,
     });
-    watcher.on('change', function (relPath) {
-        saveStoryDataAtPath_1.saveStoryDataAtPath(config, relPath);
-        server.refreshClients();
-    });
+    // require filepath shoul pick up on fast refresh changes
+    // any other changes would need to go through websockets
+    // watcher.on('change', relPath => {
+    //   saveStoryDataAtPath(config, relPath);
+    //   server.refreshClients();
+    // });
     watcher.on('add', function (relPath) {
         saveStoryDataAtPath_1.saveStoryDataAtPath(config, relPath);
         server.refreshClients();

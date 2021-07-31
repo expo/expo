@@ -3,7 +3,6 @@ import { IosPlist } from '@expo/xdl';
 import fs from 'fs';
 import inquirer from 'inquirer';
 import path from 'path';
-import { podInstallAsync } from '../CocoaPods';
 
 import { runExpoCliAsync } from '../ExpoCLI';
 import Logger from '../Logger';
@@ -120,19 +119,7 @@ async function action(packageName: string, options: Action) {
   };
 
   // remove dependencies from excluded autolinked packages
-  const defaultPackagesToExclude = mergedPkg.expo.autolinking.exclude;
   const extraNodeModules: any = packagePkg.expoStories?.packages ?? {};
-
-  const packagesRequiredByModule: string[] = [
-    ...Object.keys(extraNodeModules),
-    ...Object.keys(mergedPkg?.dependencies ?? {}),
-  ];
-
-  const packagesToExclude = defaultPackagesToExclude.filter(
-    (pkg: string) => !packagesRequiredByModule.includes(pkg)
-  );
-
-  mergedPkg.expo.autolinking.exclude = packagesToExclude;
 
   mergedPkg.dependencies = {
     ...mergedPkg.dependencies,

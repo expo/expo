@@ -30,10 +30,12 @@ function createFileWatcher(config: IServerConfig, server: IStoryHttpServer) {
     watchman: true,
   });
 
-  watcher.on('change', relPath => {
-    saveStoryDataAtPath(config, relPath);
-    server.refreshClients();
-  });
+  // require filepath shoul pick up on fast refresh changes
+  // any other changes would need to go through websockets
+  // watcher.on('change', relPath => {
+  //   saveStoryDataAtPath(config, relPath);
+  //   server.refreshClients();
+  // });
 
   watcher.on('add', relPath => {
     saveStoryDataAtPath(config, relPath);
