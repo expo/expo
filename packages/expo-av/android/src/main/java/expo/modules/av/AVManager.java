@@ -50,7 +50,7 @@ import static android.media.MediaRecorder.MEDIA_RECORDER_INFO_MAX_FILESIZE_REACH
 
 public class AVManager implements LifecycleEventListener, AudioManager.OnAudioFocusChangeListener, MediaRecorder.OnInfoListener, AVManagerInterface, InternalModule {
   static {
-    System.loadLibrary("EXAV");
+    System.loadLibrary("expo-av");
   }
 
   private static final String AUDIO_MODE_SHOULD_DUCK_KEY = "shouldDuckAndroid";
