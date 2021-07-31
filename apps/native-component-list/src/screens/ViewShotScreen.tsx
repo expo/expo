@@ -46,7 +46,7 @@ export default class ViewShotScreen extends React.Component<{}, State> {
   handleScreenCapturePress = async () => {
     if (Platform.OS === 'web') {
       try {
-        const screenUri = await takeSnapshotAsync((undefined as unknown) as number, {
+        const screenUri = await takeSnapshotAsync(undefined as unknown as number, {
           format: 'jpg',
           quality: 0.8,
           result: 'data-uri',

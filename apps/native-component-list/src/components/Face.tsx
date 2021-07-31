@@ -4,33 +4,31 @@ import { StyleSheet, Text, View } from 'react-native';
 
 const landmarkSize = 2;
 
-export const scaledFace = (scale: number) => ({
-  faceID,
-  bounds,
-  rollAngle,
-  yawAngle,
-}: FaceFeature) => (
-  <View
-    key={faceID}
-    style={[
-      styles.face,
-      {
-        width: bounds.size.width * scale,
-        height: bounds.size.height * scale,
-        left: bounds.origin.x * scale,
-        top: bounds.origin.y * scale,
-        transform: [
-          { perspective: 600 },
-          { rotateZ: `${rollAngle!.toFixed(0)}deg` },
-          { rotateY: `${yawAngle!.toFixed(0)}deg` },
-        ],
-      },
-    ]}>
-    <Text style={styles.faceText}>ID: {faceID}</Text>
-    <Text style={styles.faceText}>rollAngle: {rollAngle!.toFixed(0)}</Text>
-    <Text style={styles.faceText}>yawAngle: {yawAngle!.toFixed(0)}</Text>
-  </View>
-);
+export const scaledFace =
+  (scale: number) =>
+  ({ faceID, bounds, rollAngle, yawAngle }: FaceFeature) =>
+    (
+      <View
+        key={faceID}
+        style={[
+          styles.face,
+          {
+            width: bounds.size.width * scale,
+            height: bounds.size.height * scale,
+            left: bounds.origin.x * scale,
+            top: bounds.origin.y * scale,
+            transform: [
+              { perspective: 600 },
+              { rotateZ: `${rollAngle!.toFixed(0)}deg` },
+              { rotateY: `${yawAngle!.toFixed(0)}deg` },
+            ],
+          },
+        ]}>
+        <Text style={styles.faceText}>ID: {faceID}</Text>
+        <Text style={styles.faceText}>rollAngle: {rollAngle!.toFixed(0)}</Text>
+        <Text style={styles.faceText}>yawAngle: {yawAngle!.toFixed(0)}</Text>
+      </View>
+    );
 
 export const scaledLandmarks = (scale: number) => (face: FaceFeature) => {
   const renderLandmark = (position?: { x: number; y: number }) =>

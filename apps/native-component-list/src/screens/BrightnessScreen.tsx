@@ -39,9 +39,8 @@ function BrightnessView() {
   const [systemBrightness] = useResolvedValue(Brightness.getSystemBrightnessAsync);
   const [sliderBrightness, setBrightness] = React.useState<Record<string, number>>({});
 
-  const [systemBrightnessPermissionGranted, setSystemBrightnessPermissionGranted] = React.useState(
-    false
-  );
+  const [systemBrightnessPermissionGranted, setSystemBrightnessPermissionGranted] =
+    React.useState(false);
 
   React.useEffect(() => {
     async function initialize() {

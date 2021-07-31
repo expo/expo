@@ -45,9 +45,7 @@ function useCameraTypes(): CameraType[] | null {
   return types;
 }
 
-function useToggleCameraType(
-  preferredInitialType: CameraType
-): {
+function useToggleCameraType(preferredInitialType: CameraType): {
   // The current camera type, null when loading types.
   type: CameraType | null;
   // Available camera types, null when loading types.

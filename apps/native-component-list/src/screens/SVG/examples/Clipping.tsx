@@ -4,20 +4,8 @@ import * as Svg from 'react-native-svg';
 
 import Example from './Example';
 
-const {
-  ClipPath,
-  Defs,
-  RadialGradient,
-  Stop,
-  Rect,
-  Text,
-  Ellipse,
-  G,
-  Polygon,
-  Path,
-  Circle,
-  Use,
-} = Svg;
+const { ClipPath, Defs, RadialGradient, Stop, Rect, Text, Ellipse, G, Polygon, Path, Circle, Use } =
+  Svg;
 
 class ClipPathElement extends React.Component {
   static title = 'Clip by set clip-path with a path data';

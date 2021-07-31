@@ -18,7 +18,8 @@ const withExpoAsyncStorage = config => {
         }
 
         // Make the extraModules mutable
-        const modulesRegex = /NSArray<id<RCTBridgeModule>>\s?\*extraModules\s?=\s?\[_moduleRegistryAdapter extraModulesForBridge:bridge\];/;
+        const modulesRegex =
+          /NSArray<id<RCTBridgeModule>>\s?\*extraModules\s?=\s?\[_moduleRegistryAdapter extraModulesForBridge:bridge\];/;
         if (contents.match(modulesRegex)) {
           contents = contents.replace(
             modulesRegex,
