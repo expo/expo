@@ -39,8 +39,8 @@ class ApplicationModule(private val mContext: Context) : ExportedModule(mContext
     mActivity = mActivityProvider?.currentActivity
   }
 
-  override fun getConstants(): Map<String, Any> {
-    val constants = HashMap<String, Any>()
+  override fun getConstants(): Map<String, Any?> {
+    val constants = HashMap<String, Any?>()
     val applicationName = mContext.applicationInfo.loadLabel(mContext.packageManager).toString()
     val packageName = mContext.packageName
 
