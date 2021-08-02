@@ -63,7 +63,7 @@ async function action(packageName: string, options: Action) {
     }
 
     Logger.log();
-    Logger.info(`🛠  Building fresh story loader for ${packageName}`);
+    Logger.info(`🛠  Scaffolding fresh story loader project for ${packageName}`);
 
     // 1. initialize expo project w/ name
     await runExpoCliAsync('init', [projectName, '-t', 'bare-minimum', '--no-install'], {
