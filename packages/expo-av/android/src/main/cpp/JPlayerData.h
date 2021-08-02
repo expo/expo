@@ -32,7 +32,7 @@ private:
     void sampleBufferCallback(jni::alias_ref<jni::JArrayByte> sampleBuffer, jdouble positionSeconds);
     void setEnableSampleBufferCallback(bool enable);
 
-    explicit JPlayerData(jni::alias_ref<JPlayerData::jhybridobject> jThis) :
+    explicit JPlayerData(jni::alias_ref<jhybridobject> jThis) :
             javaPart_(jni::make_global(jThis)),
             sampleBufferCallback_(nullptr)
     {}

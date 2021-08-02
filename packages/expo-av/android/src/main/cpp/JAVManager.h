@@ -32,7 +32,7 @@ private:
     friend HybridBase;
     jni::global_ref<JAVManager::javaobject> javaPart_;
 
-    explicit JAVManager(jni::alias_ref<JAVManager::jhybridobject> jThis) :
+    explicit JAVManager(jni::alias_ref<jhybridobject> jThis) :
             javaPart_(jni::make_global(jThis))
     {}
 

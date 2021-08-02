@@ -13,9 +13,7 @@ namespace av {
 
 namespace jni = facebook::jni;
 
-using TSelf = jni::local_ref<jni::HybridClass<expo::av::JPlayerData>::jhybriddata>;
-
-TSelf JPlayerData::initHybrid(jni::alias_ref<HybridClass::jhybridobject> jThis) {
+jni::local_ref<JPlayerData::jhybriddata> JPlayerData::initHybrid(jni::alias_ref<jhybridobject> jThis) {
     return makeCxxInstance(jThis);
 }
 

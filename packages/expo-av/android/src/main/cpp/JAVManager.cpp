@@ -21,9 +21,7 @@ namespace av {
 namespace jsi = facebook::jsi;
 namespace jni = facebook::jni;
 
-using TSelf = jni::local_ref<jni::HybridClass<expo::av::JAVManager>::jhybriddata>;
-
-TSelf JAVManager::initHybrid(jni::alias_ref<jhybridobject> jThis) {
+jni::local_ref<JAVManager::jhybriddata> JAVManager::initHybrid(jni::alias_ref<jhybridobject> jThis) {
     return makeCxxInstance(jThis);
 }
 
