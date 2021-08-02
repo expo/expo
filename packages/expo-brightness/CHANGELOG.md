@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- Add Brightness.usePermissions hook from modules factory. ([#13853](https://github.com/expo/expo/pull/13853) by [@bycedric](https://github.com/bycedric))
+- Add `Brightness.usePermissions` hook from modules factory. ([#13853](https://github.com/expo/expo/pull/13853) by [@bycedric](https://github.com/bycedric))
 
 ### 🐛 Bug fixes
 
