@@ -21,7 +21,7 @@ export declare function requestMediaLibraryPermissionsAsync(writeOnly?: boolean)
  * const [status, requestPermission] = ImagePicker.useMediaLibraryPermissions();
  * ```
  */
-export declare const useMediaLibraryPermissions: (options?: PermissionHookOptions | undefined) => [CameraPermissionResponse | null, () => Promise<CameraPermissionResponse | null>, () => Promise<CameraPermissionResponse | null>];
+export declare const useMediaLibraryPermissions: (options?: PermissionHookOptions | undefined) => [MediaLibraryPermissionResponse | null, () => Promise<MediaLibraryPermissionResponse | null>, () => Promise<MediaLibraryPermissionResponse | null>];
 /**
  * Check or request permissions to access the camera.
  * This uses both `requestCameraPermissionsAsync` and `getCameraPermissionsAsync` to interact with the permissions.
