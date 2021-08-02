@@ -12,6 +12,8 @@
 
 ### 💡 Others
 
+- Updated Google Play Billing from v2 to v4.
+
 ## 10.2.0 — 2021-06-16
 
 ### 🐛 Bug fixes
