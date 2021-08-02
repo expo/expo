@@ -11,7 +11,7 @@ const withBackgroundFetch = config => {
         config.ios.infoPlist.UIBackgroundModes = [];
     // TODO: Maybe entitlements are needed
     config.ios.infoPlist.UIBackgroundModes = [
-        ...new Set(config.ios.infoPlist.UIBackgroundModes.concat(['location', 'fetch'])),
+        ...new Set(config.ios.infoPlist.UIBackgroundModes.concat(['fetch'])),
     ];
     return config_plugins_1.AndroidConfig.Permissions.withPermissions(config, [
         'android.permission.RECEIVE_BOOT_COMPLETED',

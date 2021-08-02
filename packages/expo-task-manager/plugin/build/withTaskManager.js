@@ -11,7 +11,7 @@ const withTaskManager = config => {
         config.ios.infoPlist.UIBackgroundModes = [];
     // TODO: Maybe entitlements are needed
     config.ios.infoPlist.UIBackgroundModes = [
-        ...new Set(config.ios.infoPlist.UIBackgroundModes.concat(['location', 'fetch'])),
+        ...new Set(config.ios.infoPlist.UIBackgroundModes.concat(['fetch'])),
     ];
     return config;
 };
