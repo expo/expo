@@ -276,7 +276,7 @@ public class BillingManager implements PurchasesUpdatedListener {
               purchases.addAll(inAppPurchases);
             }
 
-            if(areSubscriptionsSupported()) {
+            if (areSubscriptionsSupported()) {
               mBillingClient.queryPurchasesAsync(SkuType.SUBS, new PurchasesResponseListener() {
                 @Override
                 public void onQueryPurchasesResponse(@NonNull BillingResult billingResult, @NonNull List<Purchase> subscriptionPurchases) {
