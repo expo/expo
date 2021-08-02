@@ -10,7 +10,8 @@
 
 ### 💡 Others
 
-- Add basic unit tests ([#13795](https://github.com/expo/expo/pull/13795/) by [@kkafar](https://github.com/kkafar))
+- Rewrite android code to Kotlin ([#13792](https://github.com/expo/expo/pull/13792) by [@kkafar](https://github.com/kkafar))
+- Add basic unit tests to Kotlin. ([#13792](https://github.com/expo/expo/pull/13792) by [@kkafar](https://github.com/kkafar))
 
 ## 3.2.0 — 2021-06-16
 
