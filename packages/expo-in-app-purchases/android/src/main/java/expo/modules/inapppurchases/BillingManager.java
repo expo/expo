@@ -148,8 +148,9 @@ public class BillingManager implements PurchasesUpdatedListener {
         BillingFlowParams.Builder purchaseParams = BillingFlowParams.newBuilder()
           .setSkuDetails(skuDetails);
         if (oldSku != null) {
-          BillingFlowParams.SubscriptionUpdateParams updateParams = BillingFlowParams.SubscriptionUpdateParams.newBuilder().setOldSkuPurchaseToken(oldSku).build();
-          purchaseParams.setSubscriptionUpdateParams(updateParams);
+          purchaseParams.setSubscriptionUpdateParams(
+            BillingFlowParams.SubscriptionUpdateParams.newBuilder().setOldSkuPurchaseToken(oldSku).build()
+          );
         }
         mBillingClient.launchBillingFlow(mActivity, purchaseParams.build());
       }
