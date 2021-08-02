@@ -58,11 +58,11 @@ const testSchema: Record<string, Property> = {
       {
         autoVerify: true,
         data: {
-          host: '*.expo.io',
+          host: '*.example.com',
         },
       },
     ],
-    exampleString: '\n [{ \n "autoVerify": true, \n "data": {"host": "*.expo.io" \n } \n }]',
+    exampleString: '\n [{ \n "autoVerify": true, \n "data": {"host": "*.example.com" \n } \n }]',
     type: 'array',
     uniqueItems: true,
     items: {
@@ -78,7 +78,7 @@ const testSchema: Record<string, Property> = {
           items: {
             type: 'object',
             properties: {
-              host: { description: 'the host, e.g. `myapp.io`', type: 'string' },
+              host: { description: 'the host, e.g. `example.com`', type: 'string' },
             },
             additionalProperties: false,
           },

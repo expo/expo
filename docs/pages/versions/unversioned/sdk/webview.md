@@ -33,7 +33,7 @@ export default function App() {
   return (
     <WebView 
       style={styles.container}
-      source={{ uri: 'https://expo.io' }}
+      source={{ uri: 'https://expo.dev' }}
     />
   );
 }
