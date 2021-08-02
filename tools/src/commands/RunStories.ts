@@ -219,16 +219,12 @@ async function action(packageName: string, { platform, rebuild = false, clearCac
       stdio: 'inherit',
     });
 
-    process.on('SIGINT', () => {
-      packagerProcess.kill('SIGINT');
-      storiesProcess.kill('SIGINT');
-      process.exit(1);
-    });
-
-    process.on('SIGTERM', () => {
-      packagerProcess.kill('SIGTERM');
-      storiesProcess.kill('SIGTERM');
-      process.exit(1);
+    [`exit`, `SIGINT`, `SIGUSR1`, `SIGUSR2`, `uncaughtException`, `SIGTERM`].forEach(eventType => {
+      process.on(eventType, () => {
+        packagerProcess.kill(eventType);
+        storiesProcess.kill(eventType);
+        process.exit(1);
+      });
     });
   }
 }
