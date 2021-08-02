@@ -265,7 +265,6 @@ public class BillingManager implements PurchasesUpdatedListener {
     Runnable queryToExecute = new Runnable() {
       BillingResult inAppBillingResult;
       List<Purchase> purchases = new ArrayList<>();
-      boolean isFinishedQuerying = false;
 
       @Override
       public void run() {
@@ -276,23 +275,20 @@ public class BillingManager implements PurchasesUpdatedListener {
             if (billingResult.getResponseCode() == BillingResponseCode.OK) {
               purchases.addAll(inAppPurchases);
             }
-            if (isFinishedQuerying) {
-              onQueryPurchasesFinished(inAppBillingResult, purchases, promise);
-            }
-            isFinishedQuerying = true;
-          }
-        });
 
-        mBillingClient.queryPurchasesAsync(SkuType.SUBS, new PurchasesResponseListener() {
-          @Override
-          public void onQueryPurchasesResponse(@NonNull BillingResult billingResult, @NonNull List<Purchase> subscriptionPurchases) {
-            if (areSubscriptionsSupported() && billingResult.getResponseCode() == BillingResponseCode.OK) {
-              purchases.addAll(subscriptionPurchases);
-            }
-            if (isFinishedQuerying) {
+            if(areSubscriptionsSupported()) {
+              mBillingClient.queryPurchasesAsync(SkuType.SUBS, new PurchasesResponseListener() {
+                @Override
+                public void onQueryPurchasesResponse(@NonNull BillingResult billingResult, @NonNull List<Purchase> subscriptionPurchases) {
+                  if (billingResult.getResponseCode() == BillingResponseCode.OK) {
+                    purchases.addAll(subscriptionPurchases);
+                  }
+                  onQueryPurchasesFinished(inAppBillingResult, purchases, promise);
+                }
+              });
+            } else {
               onQueryPurchasesFinished(inAppBillingResult, purchases, promise);
             }
-            isFinishedQuerying = true;
           }
         });
       }
