@@ -12,7 +12,6 @@ import host.exp.exponent.branch.BranchManager
 import host.exp.exponent.di.NativeModuleDepsProvider
 import host.exp.exponent.kernel.*
 import host.exp.exponent.kernel.ExponentKernelModuleProvider.ExponentKernelModuleFactory
-import host.exp.exponent.kernel.KernelConstants.MAIN_ACTIVITY_CLASS
 import host.exp.exponent.kernel.KernelProvider.KernelFactory
 import host.exp.exponent.modules.ExponentKernelModule
 import host.exp.exponent.storage.ExponentSharedPreferences
@@ -30,19 +29,24 @@ abstract class ExpoApplication : MultiDexApplication() {
 
   override fun onCreate() {
     super.onCreate()
+
     ExpoViewBuildConfig.DEBUG = isDebug
     ExpoViewBuildConfig.USE_INTERNET_KERNEL = shouldUseInternetKernel()
+
     if (ExpoViewBuildConfig.DEBUG && Constants.WAIT_FOR_DEBUGGER) {
       Debug.waitForDebugger()
     }
+
     if (!Constants.isStandaloneApp()) {
-      MAIN_ACTIVITY_CLASS = LauncherActivity::class.java
+      KernelConstants.MAIN_ACTIVITY_CLASS = LauncherActivity::class.java
     }
+
     KernelProvider.setFactory(object : KernelFactory {
       override fun create(): KernelInterface {
         return Kernel()
       }
     })
+
     ExponentKernelModuleProvider.setFactory(object : ExponentKernelModuleFactory {
       override fun create(reactContext: ReactApplicationContext): ExponentKernelModuleInterface {
         return ExponentKernelModule(
@@ -50,12 +54,16 @@ abstract class ExpoApplication : MultiDexApplication() {
         )
       }
     })
+
     Exponent.initialize(this, this)
+
     NativeModuleDepsProvider.getInstance().add(Kernel::class.java, KernelProvider.instance)
     NativeModuleDepsProvider.getInstance().add(DevMenuManager::class.java, DevMenuManager())
     NativeModuleDepsProvider.getInstance().inject(ExpoApplication::class.java, this)
+
     BranchManager.initialize(this)
     AudienceNetworkAds.initialize(this)
+
     try {
       // Remove the badge count on weird launchers
       // TODO: doesn't work on the Xiaomi phone. bug with the library
@@ -63,9 +71,11 @@ abstract class ExpoApplication : MultiDexApplication() {
     } catch (e: Throwable) {
       EXL.e(TAG, e)
     }
+
     if (Constants.DEBUG_COLD_START_METHOD_TRACING) {
       Debug.startMethodTracing("coldStart")
     }
+
     Analytics.markEvent(Analytics.TimedEvent.LAUNCHER_ACTIVITY_STARTED)
     SoLoader.init(applicationContext, false)
 

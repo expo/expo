@@ -125,10 +125,11 @@ class ExponentManifest @Inject constructor(
       httpManifestUrl,
       manifestUrl == Constants.INITIAL_URL,
       exponentSharedPreferences.sessionSecret
-    )
-    requestBuilder.header("Exponent-Accept-Signature", "true")
-    requestBuilder.header("Expo-JSON-Error", "true")
-    requestBuilder.cacheControl(CacheControl.FORCE_NETWORK)
+    ).apply {
+      header("Exponent-Accept-Signature", "true")
+      header("Expo-JSON-Error", "true")
+      cacheControl(CacheControl.FORCE_NETWORK)
+    }
     Analytics.markEvent(Analytics.TimedEvent.STARTED_MANIFEST_NETWORK_REQUEST)
     if (Constants.DEBUG_MANIFEST_METHOD_TRACING) {
       Debug.startMethodTracing("manifest")
@@ -496,44 +497,41 @@ class ExponentManifest @Inject constructor(
     }
   }
 
-  private val localKernelManifest: RawManifest
-    get() = try {
-      val manifest = JSONObject(ExponentBuildConstants.BUILD_MACHINE_KERNEL_MANIFEST)
-      manifest.put(MANIFEST_IS_VERIFIED_KEY, true)
-      ManifestFactory.getRawManifestFromJson(manifest)
-    } catch (e: JSONException) {
-      throw RuntimeException("Can't get local manifest: $e")
-    }
+  private fun getLocalKernelManifest(): RawManifest = try {
+    val manifest = JSONObject(ExponentBuildConstants.BUILD_MACHINE_KERNEL_MANIFEST)
+    manifest.put(MANIFEST_IS_VERIFIED_KEY, true)
+    ManifestFactory.getRawManifestFromJson(manifest)
+  } catch (e: JSONException) {
+    throw RuntimeException("Can't get local manifest: $e")
+  }
 
-  private val remoteKernelManifest: RawManifest?
-    get() = try {
-      val inputStream = context.assets.open(EMBEDDED_KERNEL_MANIFEST_ASSET)
-      val jsonString = IOUtils.toString(inputStream)
-      val manifest = JSONObject(jsonString)
-      manifest.put(MANIFEST_IS_VERIFIED_KEY, true)
-      ManifestFactory.getRawManifestFromJson(manifest)
-    } catch (e: Exception) {
-      KernelProvider.instance.handleError(e)
-      null
-    }
+  private fun getRemoteKernelManifest(): RawManifest? = try {
+    val inputStream = context.assets.open(EMBEDDED_KERNEL_MANIFEST_ASSET)
+    val jsonString = IOUtils.toString(inputStream)
+    val manifest = JSONObject(jsonString)
+    manifest.put(MANIFEST_IS_VERIFIED_KEY, true)
+    ManifestFactory.getRawManifestFromJson(manifest)
+  } catch (e: Exception) {
+    KernelProvider.instance.handleError(e)
+    null
+  }
 
-  val kernelManifest: RawManifest
-    get() {
-      val manifest: RawManifest?
-      val log: String
-      if (exponentSharedPreferences.shouldUseInternetKernel()) {
-        log = "Using remote Expo kernel manifest"
-        manifest = remoteKernelManifest
-      } else {
-        log = "Using local Expo kernel manifest"
-        manifest = localKernelManifest
-      }
-      if (!hasShownKernelManifestLog) {
-        hasShownKernelManifestLog = true
-        EXL.d(TAG, log + ": " + manifest.toString())
-      }
-      return manifest!!
+  fun getKernelManifest(): RawManifest {
+    val manifest: RawManifest?
+    val log: String
+    if (exponentSharedPreferences.shouldUseInternetKernel()) {
+      log = "Using remote Expo kernel manifest"
+      manifest = getRemoteKernelManifest()
+    } else {
+      log = "Using local Expo kernel manifest"
+      manifest = getLocalKernelManifest()
     }
+    if (!hasShownKernelManifestLog) {
+      hasShownKernelManifestLog = true
+      EXL.d(TAG, log + ": " + manifest.toString())
+    }
+    return manifest!!
+  }
 
   companion object {
     private val TAG = ExponentManifest::class.java.simpleName
