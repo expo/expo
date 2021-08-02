@@ -65,7 +65,7 @@ export type FilePrintOptions = {
   html?: string;
   /**
    * **Available on iOS only.** Alternative to default option that uses [UIMarkupTextPrintFormatter]. (https://developer.apple.com/documentation/uikit/uimarkuptextprintformatter)
-   * instead of WebView, but it doesnt't display images.
+   * instead of WebView, but it doesn't display images.
    */
   markupFormatterIOS?: boolean;
   /**
