@@ -8,11 +8,15 @@
 
 - Use stable manifest ID where applicable. ([#12964](https://github.com/expo/expo/pull/12964) by [@wschurman](https://github.com/wschurman))
 
-- Fix unnecessary `location` capability in UIBackgroundModes leading to App Store rejection for apps not using location by [@martinstoyanov](https://github.com/martinstoyanov)
-
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 9.2.1 — 2021-08-02
+
+### 🐛 Bug fixes
+
+- Fix unnecessary `location` capability in UIBackgroundModes leading to App Store rejection for apps not using location by [@martinstoyanov](https://github.com/martinstoyanov)
 
 ## 9.2.0 — 2021-06-16
 
