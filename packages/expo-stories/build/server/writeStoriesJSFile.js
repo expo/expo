@@ -23,7 +23,11 @@ exports.writeStoriesJSFile = writeStoriesJSFile;
 function writeStoryRequires(stories) {
     return stories
         .map(function (story) {
-        return "\n          function " + story.id + "Setup() {\n            const stories = require(\"" + story.fullPath + "\")\n            const parentConfig = stories.default || {}\n            parentConfig.id = \"" + story.id + "\"\n\n            Object.keys(stories).forEach((key) => {\n              const Component = stories[key]\n              \n              if (typeof Component === \"function\") {\n                const storyId = \"" + story.id + "\" + \"_\" + key\n                \n                Component.storyConfig = {\n                  id: storyId,\n                  name: key,\n                  ...Component.storyConfig,\n                }\n\n                Component.parentConfig = parentConfig\n\n                storiesToExport[storyId] = Component \n              }\n            })\n          }\n\n          " + story.id + "Setup()\n        ";
+        var defaultTitle = story.relativePath
+            .replace('.stories.tsx', '')
+            .split('/')
+            .pop();
+        return "\n          function " + story.id + "Setup() {\n            const stories = require(\"" + story.fullPath + "\")\n            const parentConfig = stories.default || {}\n            parentConfig.id = \"" + story.id + "\"\n            parentConfig.title = parentConfig.title || '" + defaultTitle + "'\n\n            Object.keys(stories).forEach((key) => {\n              const Component = stories[key]\n              \n              if (typeof Component === \"function\") {\n                const storyId = \"" + story.id + "\" + \"_\" + key\n                \n                Component.storyConfig = {\n                  id: storyId,\n                  name: key,\n                  ...Component.storyConfig,\n                }\n\n                Component.parentConfig = parentConfig\n\n                storiesToExport[storyId] = Component \n              }\n            })\n          }\n\n          " + story.id + "Setup()\n        ";
     })
         .join('\n');
 }

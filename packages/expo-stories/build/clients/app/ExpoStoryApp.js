@@ -30,12 +30,10 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Stack = void 0;
 var styleguide_native_1 = require("@expo/styleguide-native");
 var React = __importStar(require("react"));
 var react_native_1 = require("react-native");
 var react_native_async_stack_1 = require("react-native-async-stack");
-Object.defineProperty(exports, "Stack", { enumerable: true, get: function () { return react_native_async_stack_1.Stack; } });
 var ExpoStoryLoader_1 = require("./ExpoStoryLoader");
 // this is resolved via customization (extraNodeModules) in metro-config / webpack-config
 var stories = require('generated-expo-stories');

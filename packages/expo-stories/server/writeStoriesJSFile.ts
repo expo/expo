@@ -27,11 +27,17 @@ function writeStoriesJSFile(serverConfig: IServerConfig) {
 function writeStoryRequires(stories: IStoryManifestItem[]) {
   return stories
     .map(story => {
+      const defaultTitle = story.relativePath
+        .replace('.stories.tsx', '')
+        .split('/')
+        .pop();
+
       return `
           function ${story.id}Setup() {
             const stories = require("${story.fullPath}")
             const parentConfig = stories.default || {}
             parentConfig.id = "${story.id}"
+            parentConfig.title = parentConfig.title || '${defaultTitle}'
 
             Object.keys(stories).forEach((key) => {
               const Component = stories[key]

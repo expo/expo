@@ -34,8 +34,6 @@ export default function App() {
   );
 }
 
-export { Stack };
-
 function ExpoStoryApp() {
   const parentStories: any[] = [];
 

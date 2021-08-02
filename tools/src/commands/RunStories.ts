@@ -64,7 +64,6 @@ async function action(packageName: string, options: Action) {
 
     Logger.log();
     Logger.info(`🛠  Building fresh story loader for ${packageName}`);
-    Logger.log();
 
     // 1. initialize expo project w/ name
     await runExpoCliAsync('init', [projectName, '-t', 'bare-minimum', '--no-install'], {
@@ -154,7 +153,9 @@ async function action(packageName: string, options: Action) {
   podFileStr = podFileStr.replace('{{ targetName }}', targetName);
 
   fs.writeFileSync(path.resolve(projectRoot, 'ios/Podfile'), podFileStr, { encoding: 'utf-8' });
-  fs.unlinkSync(path.resolve(projectRoot, 'react-native.config.js'));
+  if (fs.existsSync(path.resolve(projectRoot, 'react-native.config.js'))) {
+    fs.unlinkSync(path.resolve(projectRoot, 'react-native.config.js'));
+  }
 
   // Info.plist -> add splash screen
   IosPlist.modifyAsync(iosRoot, 'Info', (config) => {
@@ -166,21 +167,16 @@ async function action(packageName: string, options: Action) {
 
   // 4. yarn + install deps
   Logger.log('🧶 Yarning...');
-  Logger.log();
   await spawnAsync('yarn', ['install'], { cwd: projectRoot });
 
   if (clearCache) {
     Logger.log('🧶 Clearing cache...');
-    Logger.log();
 
     const podLockfilePath = path.resolve(projectRoot, 'ios', 'Podfile.lock');
     if (fs.existsSync(podLockfilePath)) {
       fs.unlinkSync(podLockfilePath);
     }
   }
-
-  Logger.log('✅ Done!');
-  Logger.log();
 
   if (!platform) {
     const { selectedPlatform } = await inquirer.prompt({
@@ -197,8 +193,6 @@ async function action(packageName: string, options: Action) {
     platform = selectedPlatform;
   }
 
-  Logger.log();
-
   if (platform === 'web') {
     // TODO
   } else {
@@ -208,12 +202,12 @@ async function action(packageName: string, options: Action) {
     Logger.log(`🛠  Building for ${platform}...this may take a few minutes`);
     Logger.log();
 
-    const { child: bundlerProcess } = spawnAsync('yarn', ['react-native', 'start'], {
+    await spawnAsync('react-native', [command, '--no-packager'], {
       cwd: projectRoot,
       stdio: 'inherit',
     });
 
-    const { child: buildProcess } = spawnAsync('react-native', [command], {
+    const { child: packagerProcess } = spawnAsync('yarn', ['react-native', 'start'], {
       cwd: projectRoot,
       stdio: 'inherit',
     });
@@ -224,15 +218,13 @@ async function action(packageName: string, options: Action) {
     });
 
     process.on('SIGINT', () => {
-      bundlerProcess.kill('SIGINT');
-      buildProcess.kill('SIGINT');
+      packagerProcess.kill('SIGINT');
       storiesProcess.kill('SIGINT');
       process.exit(1);
     });
 
     process.on('SIGTERM', () => {
-      bundlerProcess.kill('SIGTERM');
-      buildProcess.kill('SIGTERM');
+      packagerProcess.kill('SIGTERM');
       storiesProcess.kill('SIGTERM');
       process.exit(1);
     });
