@@ -1,10 +1,10 @@
 import fs from 'fs';
 import path from 'path';
 
-import { IServerConfig, IStoryManifestItem } from '../types';
+import { ServerConfig, StoryManifestItem } from '../types';
 import { getStories, getStoriesCacheDir } from './shared';
 
-function writeStoriesJSFile(serverConfig: IServerConfig) {
+function writeStoriesJSFile(serverConfig: ServerConfig) {
   const stories = getStories(serverConfig);
 
   let template = `
@@ -24,7 +24,7 @@ function writeStoriesJSFile(serverConfig: IServerConfig) {
   fs.writeFileSync(writeRequiresPath, template, { encoding: 'utf-8' });
 }
 
-function writeStoryRequires(stories: IStoryManifestItem[]) {
+function writeStoryRequires(stories: StoryManifestItem[]) {
   return stories
     .map(story => {
       const defaultTitle = story.relativePath

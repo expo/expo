@@ -1,3 +1,3 @@
-import { IServerConfig } from '../types';
-declare function writeStoriesJSFile(serverConfig: IServerConfig): void;
+import { ServerConfig } from '../types';
+declare function writeStoriesJSFile(serverConfig: ServerConfig): void;
 export { writeStoriesJSFile };

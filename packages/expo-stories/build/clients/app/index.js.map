@@ -1,1 +1,0 @@
-{"version":3,"file":"index.js","sourceRoot":"","sources":["../../../clients/app/index.tsx"],"names":[],"mappings":";;;;;;AAAA,+CAAyC;AAAhC,wHAAA,OAAO,OAAA","sourcesContent":["export { default } from './ExpoStoryApp';\n"]}

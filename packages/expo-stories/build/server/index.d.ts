@@ -1,3 +1,3 @@
-import { IServerConfig } from '../types';
-declare function startServer(serverConfig: IServerConfig): void;
+import { ServerConfig } from '../types';
+declare function startServer(serverConfig: ServerConfig): void;
 export { startServer };

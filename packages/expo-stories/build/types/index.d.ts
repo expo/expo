@@ -1,19 +1,19 @@
-export interface IServerConfig {
+export interface ServerConfig {
     projectRoot: string;
     port: number;
     watchRoot: string;
 }
-export interface IStoryManifest {
-    files: Record<string, IStoryManifestItem>;
+export interface StoryManifest {
+    files: Record<string, StoryManifestItem>;
 }
-export interface IStoryManifestItem {
+export interface StoryManifestItem {
     id: string;
     fullPath: string;
     relativePath: string;
     title: string;
     stories: any[];
 }
-export interface IStoryHttpServer {
+export interface StoryHttpServer {
     refreshClients: () => void;
     start: () => void;
     cleanup: () => void;

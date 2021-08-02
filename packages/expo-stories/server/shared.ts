@@ -1,17 +1,17 @@
 import path from 'path';
 
-import { IServerConfig } from '../types';
+import { ServerConfig } from '../types';
 
 export const STORY_CACHE_DIR = '__generated__/stories';
 
-export const defaultConfig: IServerConfig = {
+export const defaultConfig: ServerConfig = {
   projectRoot: process.cwd(),
   watchRoot: process.cwd(),
   // eslint-disable-next-line
   port: parseInt(process.env.PORT ?? '7001'),
 };
 
-export function mergeConfigs(serverConfig: IServerConfig): IServerConfig {
+export function mergeConfigs(serverConfig: ServerConfig): ServerConfig {
   let config = {
     ...defaultConfig,
     ...serverConfig,
@@ -29,18 +29,18 @@ export function mergeConfigs(serverConfig: IServerConfig): IServerConfig {
   return config;
 }
 
-export function getManifestFilePath(config: IServerConfig) {
+export function getManifestFilePath(config: ServerConfig) {
   const manifestFilePath = path.resolve(config.projectRoot, STORY_CACHE_DIR, 'storyManifest.json');
   return manifestFilePath;
 }
 
-export function getStoryManifest(config: IServerConfig) {
+export function getStoryManifest(config: ServerConfig) {
   const manifestFilePath = getManifestFilePath(config);
   const storyManifest = require(manifestFilePath);
   return storyManifest;
 }
 
-export function getStories(config: IServerConfig) {
+export function getStories(config: ServerConfig) {
   const storyManifest = getStoryManifest(config);
   const stories = Object.keys(storyManifest.files).map(key => {
     return storyManifest.files[key];
@@ -49,12 +49,12 @@ export function getStories(config: IServerConfig) {
   return stories;
 }
 
-export function getStoriesCacheDir(config: IServerConfig) {
+export function getStoriesCacheDir(config: ServerConfig) {
   const storiesDir = path.resolve(config.projectRoot, STORY_CACHE_DIR);
   return storiesDir;
 }
 
-export function getStoriesFile(config: IServerConfig) {
+export function getStoriesFile(config: ServerConfig) {
   const storiesDir = getStoriesCacheDir(config);
   const storyFile = path.resolve(storiesDir, 'stories.js');
   return storyFile;

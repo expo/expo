@@ -1,10 +1,10 @@
 import fs from 'fs';
 import path from 'path';
 
-import { IServerConfig } from '../types';
+import { ServerConfig } from '../types';
 import { getStoriesCacheDir } from './shared';
 
-function writeRequiredFiles(config: IServerConfig) {
+function writeRequiredFiles(config: ServerConfig) {
   const { projectRoot, watchRoot, port } = config;
 
   const pathToStories = getStoriesCacheDir(config);

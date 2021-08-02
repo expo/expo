@@ -4,10 +4,10 @@ import express from 'express';
 import http from 'http';
 import ws from 'ws';
 
-import { IServerConfig, IStoryHttpServer } from '../types';
+import { ServerConfig, StoryHttpServer } from '../types';
 import { getStories } from './shared';
 
-function createHttpServer(config: IServerConfig): IStoryHttpServer {
+function createHttpServer(config: ServerConfig): StoryHttpServer {
   const app = express();
 
   app.use(bodyParser.json());

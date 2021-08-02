@@ -3,13 +3,13 @@ import glob from 'glob';
 import path from 'path';
 import sane from 'sane';
 
-import { IServerConfig, IStoryHttpServer } from '../types';
+import { ServerConfig, StoryHttpServer } from '../types';
 import { generateId } from './generateId';
 import { saveStoryDataAtPath } from './saveStoryDataAtPath';
 import { getManifestFilePath, getStories, getStoryManifest } from './shared';
 import { writeStoriesJSFile } from './writeStoriesJSFile';
 
-function createFileWatcher(config: IServerConfig, server: IStoryHttpServer) {
+function createFileWatcher(config: ServerConfig, server: StoryHttpServer) {
   const { watchRoot } = config;
 
   const results = glob.sync('**/*.stories.{tsx,ts,js,jsx}', {

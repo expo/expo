@@ -1,12 +1,12 @@
 import fs from 'fs';
 import path from 'path';
 
-import { IServerConfig, IStoryManifestItem } from '../types';
+import { ServerConfig, StoryManifestItem } from '../types';
 import { generateId } from './generateId';
 import { getManifestFilePath, getStoryManifest } from './shared';
 import { writeStoriesJSFile } from './writeStoriesJSFile';
 
-function saveStoryDataAtPath(config: IServerConfig, relPath: string) {
+function saveStoryDataAtPath(config: ServerConfig, relPath: string) {
   const { watchRoot } = config;
   const fullPath = path.resolve(watchRoot, relPath);
   const fileAsString = fs.readFileSync(fullPath, { encoding: 'utf-8' });
@@ -27,7 +27,7 @@ function saveStoryDataAtPath(config: IServerConfig, relPath: string) {
     .pop()
     ?.replace('.stories.tsx', '');
 
-  const storyData: Pick<IStoryManifestItem, 'title' | 'stories'> = {
+  const storyData: Pick<StoryManifestItem, 'title' | 'stories'> = {
     title: title || '',
     stories: [],
   };

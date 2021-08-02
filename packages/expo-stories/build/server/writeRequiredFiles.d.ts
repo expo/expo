@@ -1,3 +1,3 @@
-import { IServerConfig } from '../types';
-declare function writeRequiredFiles(config: IServerConfig): void;
+import { ServerConfig } from '../types';
+declare function writeRequiredFiles(config: ServerConfig): void;
 export { writeRequiredFiles };

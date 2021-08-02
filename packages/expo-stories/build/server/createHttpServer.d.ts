@@ -1,3 +1,3 @@
-import { IServerConfig, IStoryHttpServer } from '../types';
-declare function createHttpServer(config: IServerConfig): IStoryHttpServer;
+import { ServerConfig, StoryHttpServer } from '../types';
+declare function createHttpServer(config: ServerConfig): StoryHttpServer;
 export { createHttpServer };
