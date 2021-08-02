@@ -7,7 +7,7 @@ When developing an Expo or React Native app, it's not uncommon to run into an er
 ```
 React Native version mismatch.
 
-Javascript version: X.XX.X
+JavaScript version: X.XX.X
 Native version: X.XX.X
 
 Make sure you have rebuilt the native code...

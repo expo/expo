@@ -34,7 +34,7 @@ We talk about permissions we set within `app.json`, but there's also the [Permis
 
 ## How does Expo work?
 
-Since you write your code in Javascript, we bundle it up and serve it from S3. Every time you publish your app, we update those assets and then push them to your app so you've always got an up-to-date version.
+Since you write your code in JavaScript, we bundle it up and serve it from S3. Every time you publish your app, we update those assets and then push them to your app so you've always got an up-to-date version.
 
 ## Developing in Expo
 

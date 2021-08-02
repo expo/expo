@@ -189,4 +189,4 @@ For efficiency reasons the current implementations of the methods don't perform 
 
 ## Remote Debugging & GLView
 
-This API does not function as intended with remote debugging enabled. The React Native debugger runs Javascript on your computer (not the mobile device itself), and GLView requires synchronous native calls (which are not supported in Chrome).
+This API does not function as intended with remote debugging enabled. The React Native debugger runs JavaScript on your computer (not the mobile device itself), and GLView requires synchronous native calls (which are not supported in Chrome).
