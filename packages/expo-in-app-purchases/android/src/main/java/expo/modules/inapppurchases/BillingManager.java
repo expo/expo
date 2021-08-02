@@ -437,7 +437,7 @@ public class BillingManager implements PurchasesUpdatedListener {
 
     bundle.putBoolean("acknowledged", purchase.isAcknowledged());
     bundle.putString("orderId", purchase.getOrderId());
-    bundle.putString("productIds", purchase.getSkus().get(0));
+    bundle.putString("productId", purchase.getSkus().get(0));
     bundle.putInt("purchaseState", purchaseStateNativeToJS(purchase.getPurchaseState()));
     bundle.putLong("purchaseTime", purchase.getPurchaseTime());
     bundle.putString("packageName", purchase.getPackageName());
@@ -450,7 +450,7 @@ public class BillingManager implements PurchasesUpdatedListener {
     Bundle bundle = new Bundle();
 
     // PurchaseHistoryRecord is a subset of Purchase
-    bundle.putString("productIds", purchaseRecord.getSkus().get(0));
+    bundle.putString("productId", purchaseRecord.getSkus().get(0));
     bundle.putLong("purchaseTime", purchaseRecord.getPurchaseTime());
     bundle.putString("purchaseToken", purchaseRecord.getPurchaseToken());
 
