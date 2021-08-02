@@ -4,14 +4,14 @@
 
 ### 🛠 Breaking changes
 
-- Require ESLint 7+ and Prettier 2+
+- Require ESLint 7+ and Prettier 2+. ([#13858](https://github.com/expo/expo/pull/13858) by [@Simek](https://github.com/Simek))
 - Update all the ESLint configs and plugins:
   - `@typescript-eslint/eslint-plugin` and `@typescript-eslint/eslint-parser` updated to 4.28.5,
   - `eslint-config-prettier` updated to 8.3.0,
   - `eslint-plugin-prettier` updated to 3.4.0,
   - `eslint-plugin-react` update to 7.24.0,
   - `eslint-plugin-react-hooks` updated to 4.2.0,
-  - `eslint-plugin-import` update to 2.23.4.
+  - `eslint-plugin-import` update to 2.23.4. ([#13858](https://github.com/expo/expo/pull/13858) by [@Simek](https://github.com/Simek))
 
 ### 🎉 New features
 
