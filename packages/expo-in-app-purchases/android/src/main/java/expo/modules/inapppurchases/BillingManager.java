@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Parcelable;
+import androidx.annotation.NonNull;
 
 import com.android.billingclient.api.AcknowledgePurchaseParams;
 import com.android.billingclient.api.AcknowledgePurchaseResponseListener;
@@ -20,6 +21,7 @@ import com.android.billingclient.api.Purchase;
 import com.android.billingclient.api.Purchase.PurchasesResult;
 import com.android.billingclient.api.PurchaseHistoryResponseListener;
 import com.android.billingclient.api.PurchaseHistoryRecord;
+import com.android.billingclient.api.PurchasesResponseListener;
 import com.android.billingclient.api.PurchasesUpdatedListener;
 import com.android.billingclient.api.SkuDetails;
 import com.android.billingclient.api.SkuDetailsParams;
@@ -143,10 +145,13 @@ public class BillingManager implements PurchasesUpdatedListener {
           return;
         }
 
-        BillingFlowParams.SubscriptionUpdateParams updateParams = BillingFlowParams.SubscriptionUpdateParams.newBuilder().setOldSkuPurchaseToken(oldSku);
-        BillingFlowParams purchaseParams = BillingFlowParams.newBuilder()
-          .setSkuDetails(skuDetails).setSubscriptionUpdateParams(updateParams).build();
-        mBillingClient.launchBillingFlow(mActivity, purchaseParams);
+        BillingFlowParams.Builder purchaseParams = BillingFlowParams.newBuilder()
+          .setSkuDetails(skuDetails);
+        if (oldSku != null) {
+          BillingFlowParams.SubscriptionUpdateParams updateParams = BillingFlowParams.SubscriptionUpdateParams.newBuilder().setOldSkuPurchaseToken(oldSku).build();
+          purchaseParams.setSubscriptionUpdateParams(updateParams);
+        }
+        mBillingClient.launchBillingFlow(mActivity, purchaseParams.build());
       }
     };
 
@@ -253,13 +258,15 @@ public class BillingManager implements PurchasesUpdatedListener {
   }
 
   /**
-   * Query purchases across various use cases and deliver the result in a formalized way through
-   * a listener
+   * Query both in app purchases and subscriptions and deliver the result in a formalized way 
+   * through a listener
    */
   public void queryPurchases(final Promise promise) {
     Runnable queryToExecute = new Runnable() {
       BillingResult inAppBillingResult;
       List<Purchase> purchases = new ArrayList<>();
+      boolean isFinishedQuerying = false;
+
       @Override
       public void run() {
         mBillingClient.queryPurchasesAsync(SkuType.INAPP, new PurchasesResponseListener() {
@@ -269,6 +276,10 @@ public class BillingManager implements PurchasesUpdatedListener {
             if (billingResult.getResponseCode() == BillingResponseCode.OK) {
               purchases.addAll(inAppPurchases);
             }
+            if (isFinishedQuerying) {
+              onQueryPurchasesFinished(inAppBillingResult, purchases, promise);
+            }
+            isFinishedQuerying = true;
           }
         });
 
@@ -278,10 +289,12 @@ public class BillingManager implements PurchasesUpdatedListener {
             if (areSubscriptionsSupported() && billingResult.getResponseCode() == BillingResponseCode.OK) {
               purchases.addAll(subscriptionPurchases);
             }
+            if (isFinishedQuerying) {
+              onQueryPurchasesFinished(inAppBillingResult, purchases, promise);
+            }
+            isFinishedQuerying = true;
           }
         });
-
-        onQueryPurchasesFinished(inAppBillingResult, purchases, promise);
       }
     };
 
@@ -424,7 +437,7 @@ public class BillingManager implements PurchasesUpdatedListener {
 
     bundle.putBoolean("acknowledged", purchase.isAcknowledged());
     bundle.putString("orderId", purchase.getOrderId());
-    bundle.putString("productId", purchase.getSku());
+    bundle.putString("productIds", purchase.getSkus().get(0));
     bundle.putInt("purchaseState", purchaseStateNativeToJS(purchase.getPurchaseState()));
     bundle.putLong("purchaseTime", purchase.getPurchaseTime());
     bundle.putString("packageName", purchase.getPackageName());
@@ -437,7 +450,7 @@ public class BillingManager implements PurchasesUpdatedListener {
     Bundle bundle = new Bundle();
 
     // PurchaseHistoryRecord is a subset of Purchase
-    bundle.putString("productId", purchaseRecord.getSku());
+    bundle.putString("productIds", purchaseRecord.getSkus().get(0));
     bundle.putLong("purchaseTime", purchaseRecord.getPurchaseTime());
     bundle.putString("purchaseToken", purchaseRecord.getPurchaseToken());
 

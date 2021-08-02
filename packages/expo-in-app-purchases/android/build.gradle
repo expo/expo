@@ -80,6 +80,7 @@ allprojects {
 }
 
 dependencies {
+  implementation 'androidx.annotation:annotation:1.1.0'
   unimodule 'unimodules-core'
   api 'com.android.billingclient:billing:4.0.0'
 

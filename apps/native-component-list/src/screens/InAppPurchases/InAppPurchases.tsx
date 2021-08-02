@@ -69,7 +69,7 @@ export default class InAppPurchases extends React.Component<any, any> {
         for (const purchase of results!) {
           console.log(`Successfully purchased ${purchase.productId}`);
           if (!purchase.acknowledged) {
-            finishTransactionAsync(purchase, true);
+            finishTransactionAsync(purchase, purchase.productId === 'gas');
           }
         }
       } else if (responseCode === IAPResponseCode.USER_CANCELED) {
@@ -87,7 +87,7 @@ export default class InAppPurchases extends React.Component<any, any> {
   }
 
   async queryPurchaseHistory() {
-    const { responseCode, results } = await getPurchaseHistoryAsync(true);
+    const { responseCode, results } = await getPurchaseHistoryAsync(false);
     if (responseCode === IAPResponseCode.OK) {
       this.setState({ history: results });
     }
