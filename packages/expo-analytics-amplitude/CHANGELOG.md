@@ -12,6 +12,7 @@
 
 ### 💡 Others
 
+- Added API test in BareExpo app ([#13774](https://github.com/expo/expo/pull/13774/) by [@kkafar](https://github.com/kkafar))
 - Added unit tests ([#13747](https://github.com/expo/expo/pull/13747) by [@kkafar](https://github.com/kkafar))
 - Replace the generic object types with `Record`s. ([#13675](https://github.com/expo/expo/pull/13675) by [@Simek](https://github.com/Simek))
 - Migrated from `@unimodules/core` to `expo-modules-core`. ([#13757](https://github.com/expo/expo/pull/13757) by [@tsapeta](https://github.com/tsapeta))
