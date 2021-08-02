@@ -12,7 +12,7 @@
 
 ### 💡 Others
 
-- Updated Google Play Billing from v2 to v4.
+- Updated Google Play Billing from v2 to v4. ([#13884](https://github.com/expo/expo/pull/13884) by [@cruzach](https://github.com/cruzach))
 
 ## 10.2.0 — 2021-06-16
 
