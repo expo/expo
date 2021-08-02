@@ -70,9 +70,9 @@ EX_EXPORT_METHOD_AS(print,
       // Missing printing data.
       // Let's check if someone wanted to use previous implementation for `html` option
       // which uses print formatter instead of NSData instance.
-      
-      if (options[@"markupFormatterIOS"] && [options[@"markupFormatterIOS"] isKindOfClass:[NSString class]]) {
-        NSString *htmlString = options[@"markupFormatterIOS"];
+
+      if (options[@"markupFormatterIOS"] && [options[@"markupFormatterIOS"] boolValue] == YES) {
+        NSString *htmlString = options[@"html"];
         
         if (htmlString != nil) {
           UIMarkupTextPrintFormatter *formatter = [[UIMarkupTextPrintFormatter alloc] initWithMarkupText:htmlString];
@@ -174,7 +174,7 @@ EX_EXPORT_METHOD_AS(printToFileAsync,
                     reject:(EXPromiseRejectBlock)reject)
 {
   __block EXWKPDFRenderer *renderTask;
-  NSString *htmlString;
+  NSString *htmlString = options[@"html"] ?: @"";
   CGSize paperSize = [self _paperSizeFromOptions:options];
     
   void (^completionHandler)(NSError * _Nullable, NSData * _Nullable, int) =
@@ -194,7 +194,6 @@ EX_EXPORT_METHOD_AS(printToFileAsync,
 
       NSError *writeError;
       BOOL success = [pdfData writeToFile:filePath options:NSDataWritingAtomic error:&writeError];
-        NSLog(@"%@", filePath);
 
       if (!success) {
         reject(@"E_PRINT_SAVING_ERROR", @"Error occurred while saving PDF.", error);
@@ -216,16 +215,13 @@ EX_EXPORT_METHOD_AS(printToFileAsync,
     return;
   }
 
-  if (options[@"markupFormatterIOS"] && [options[@"markupFormatterIOS"] isKindOfClass:[NSString class]]) {
-    htmlString = options[@"markupFormatterIOS"];
-    [self pdfWithHtmlMarkUpFormatter:htmlString pageSize:paperSize completionHandler:completionHandler];
+  if (options[@"markupFormatterIOS"] && [options[@"markupFormatterIOS"] boolValue] == YES) {
+    [self pdfWithHtmlMarkupFormatter:htmlString pageSize:paperSize completionHandler:completionHandler];
   } else {
-    htmlString = options[@"html"] ?: @"";
     renderTask = [EXWKPDFRenderer new];
     [renderTask PDFWithHtml:htmlString pageSize:paperSize completionHandler:completionHandler];
   }
 }
-
 
 #pragma mark - UIPrintInteractionControllerDelegate
 
@@ -303,13 +299,12 @@ EX_EXPORT_METHOD_AS(printToFileAsync,
     }
     return;
   }
-  
-  if (options[@"html"]) {
+
+    if (options[@"html"] && (!options[@"markupFormatterIOS"] || [options[@"markupFormatterIOS"] boolValue] == NO)) {
     __block EXWKPDFRenderer *renderTask = [EXWKPDFRenderer new];
 
     NSString *htmlString = options[@"html"] ?: @"";
     CGSize paperSize = [self _paperSizeFromOptions:options];
-    NSLog(@"%i", paperSize);
     [renderTask PDFWithHtml:htmlString pageSize:paperSize completionHandler:^(NSError * _Nullable error, NSData * _Nullable pdfData, int pagesCount) {
       if (pdfData != nil) {
         callback(pdfData, nil);
@@ -373,7 +368,7 @@ EX_EXPORT_METHOD_AS(printToFileAsync,
   return [directory stringByAppendingPathComponent:fileName];
 }
 
-- (NSData*)pdfWithHtmlMarkUpFormatter:(NSString*)html pageSize:(CGSize)pageSize completionHandler:(void (^)(NSError * _Nullable, NSData * _Nullable, int))onFinished
+- (NSData *)pdfWithHtmlMarkupFormatter:(NSString *)html pageSize:(CGSize)pageSize completionHandler:(void (^)(NSError * _Nullable, NSData * _Nullable, int))onFinished
 {
   UIMarkupTextPrintFormatter *formatter = [[UIMarkupTextPrintFormatter alloc] initWithMarkupText:html];
   UIPrintPageRenderer *renderer = [[UIPrintPageRenderer alloc] init];
