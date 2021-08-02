@@ -8,7 +8,7 @@
 
 ### 🎉 New features
 
-- Add usePermissions hook from modules factory. ([#13857](https://github.com/expo/expo/pull/13857) by [@bycedric](https://github.com/bycedric))
+- Add `usePermissions` hook from modules factory. ([#13857](https://github.com/expo/expo/pull/13857) by [@bycedric](https://github.com/bycedric))
 
 ### 🐛 Bug fixes
 
