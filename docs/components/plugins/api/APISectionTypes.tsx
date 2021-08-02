@@ -19,6 +19,7 @@ import {
   renderParam,
   CommentTextBlock,
   STYLES_OPTIONAL,
+  parseCommentContent,
 } from '~/components/plugins/api/APISectionUtils';
 
 export type APISectionTypesProps = {
@@ -80,8 +81,9 @@ const renderTypePropertyRow = ({
         {initValue ? (
           <>
             <br />
-            <ReactMarkdown
-              renderers={mdInlineRenderers}>{`__Default:__ ${initValue}`}</ReactMarkdown>
+            <ReactMarkdown renderers={mdInlineRenderers}>{`__Default:__ ${parseCommentContent(
+              initValue
+            )}`}</ReactMarkdown>
           </>
         ) : null}
       </td>

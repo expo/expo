@@ -55,6 +55,8 @@ const nonLinkableTypes = [
   'ColorValue',
   'E',
   'EventSubscription',
+  'File',
+  'FileList',
   'Manifest',
   'NativeSyntheticEvent',
   'Omit',
@@ -211,10 +213,12 @@ export const resolveTypeName = ({
   return 'undefined';
 };
 
+export const parseParamName = (name: string) => (name.startsWith('__') ? name.substr(2) : name);
+
 export const renderParam = ({ comment, name, type }: MethodParamData): JSX.Element => (
   <LI key={`param-${name}`}>
     <B>
-      {name} (<InlineCode>{resolveTypeName(type)}</InlineCode>)
+      {parseParamName(name)} (<InlineCode>{resolveTypeName(type)}</InlineCode>)
     </B>
     <CommentTextBlock comment={comment} renderers={mdInlineRenderers} withDash />
   </LI>
@@ -227,6 +231,9 @@ export type CommentTextBlockProps = {
   beforeContent?: JSX.Element;
 };
 
+export const parseCommentContent = (content?: string): string =>
+  content && content.length ? content.replace(/&ast;/g, '*') : '';
+
 export const CommentTextBlock: React.FC<CommentTextBlockProps> = ({
   comment,
   renderers = mdRenderers,
@@ -234,10 +241,10 @@ export const CommentTextBlock: React.FC<CommentTextBlockProps> = ({
   beforeContent,
 }) => {
   const shortText = comment?.shortText?.trim().length ? (
-    <ReactMarkdown renderers={renderers}>{comment.shortText}</ReactMarkdown>
+    <ReactMarkdown renderers={renderers}>{parseCommentContent(comment.shortText)}</ReactMarkdown>
   ) : null;
   const text = comment?.text?.trim().length ? (
-    <ReactMarkdown renderers={renderers}>{comment.text}</ReactMarkdown>
+    <ReactMarkdown renderers={renderers}>{parseCommentContent(comment.text)}</ReactMarkdown>
   ) : null;
 
   const example = comment?.tags?.filter(tag => tag.tag === 'example')[0];

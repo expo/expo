@@ -98,6 +98,7 @@ async function action({packageName, version = 'unversioned'}: ActionOptions) {
     'expo-cellular': ['Cellular.ts'],
     'expo-checkbox': ['Checkbox.ts'],
     'expo-clipboard': ['Clipboard.ts'],
+    'expo-document-picker': ['index.ts'],
     'expo-facebook': [['Facebook.ts', 'Facebook.types.ts']],
     'expo-font': ['index.ts'],
     'expo-haptics': ['Haptics.ts'],
