@@ -1,17 +1,14 @@
 const path = require('path');
 
-const { storiesFileDir } = require('./build/server/constants');
+const { getStoriesFile } = require('./build/server/shared');
 const { writeRequiredFiles } = require('./build/server/writeRequiredFiles');
 
 function withExpoStories(config) {
-  writeRequiredFiles({
-    projectRoot: metroConfig.projectRoot,
-  });
+  writeRequiredFiles(config);
 
-  config.resolve.alias['generated-expo-stories'] = path.resolve(
-    __dirname,
-    `${storiesFileDir}/stories.js`
-  );
+  const storyFile = getStoriesFile(config);
+
+  config.resolve.alias['generated-expo-stories'] = path.resolve(__dirname, storyFile);
 
   return config;
 }

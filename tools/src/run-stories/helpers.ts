@@ -27,13 +27,13 @@ export function getExamplesRoot() {
 
 export function getProjectRoot(packageName: string) {
   const examplesRoot = getExamplesRoot();
-  const projectName = `${packageName}-stories`;
+  const projectName = getProjectName(packageName);
   const projectRoot = path.resolve(examplesRoot, projectName);
   return projectRoot;
 }
 
 export function getTargetName(packageName: string) {
-  const projectName = `${packageName}-stories`;
+  const projectName = getProjectName(packageName);
   const targetName = projectName.split('-').join('');
   return targetName;
 }
