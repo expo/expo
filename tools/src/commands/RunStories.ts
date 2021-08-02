@@ -92,82 +92,82 @@ async function action(packageName: string, options: Action) {
     fs.writeFileSync(appJsonPath, JSON.stringify(appJson, null, '\t'), { encoding: 'utf-8' });
 
     await runExpoCliAsync('prebuild', ['--no-install'], { cwd: projectRoot, stdio: 'ignore' });
+
+    // 3. copy over template files for project
+    // eslint-disable-next-line
+    const templateRoot = path.resolve(__dirname, '../../../template-files/stories-templates');
+
+    // metro config
+    const metroConfigPath = path.resolve(templateRoot, 'metro.config.js');
+    fs.copyFileSync(metroConfigPath, path.resolve(projectRoot, 'metro.config.js'));
+
+    // package.json
+    const defaultPkg = require(path.resolve(templateRoot, 'pkg.json'));
+    const projectPkg = require(path.resolve(projectRoot, 'package.json'));
+    const packagePkg = require(path.resolve(packageRoot, 'package.json'));
+
+    const mergedPkg = {
+      ...projectPkg,
+      ...defaultPkg,
+    };
+
+    // configure story server
+    mergedPkg.expoStories = {
+      projectRoot,
+      watchRoot: packageRoot,
+    };
+
+    // remove dependencies from excluded autolinked packages
+    const extraNodeModules: any = packagePkg.expoStories?.packages ?? {};
+
+    mergedPkg.dependencies = {
+      ...mergedPkg.dependencies,
+      ...extraNodeModules,
+    };
+
+    fs.writeFileSync(
+      path.resolve(projectRoot, 'package.json'),
+      JSON.stringify(mergedPkg, null, '\t')
+    );
+
+    // AppDelegate.{h,m}
+    const iosRoot = path.resolve(projectRoot, 'ios', targetName);
+
+    fs.copyFileSync(
+      path.resolve(templateRoot, 'ios/AppDelegate.h'),
+      path.resolve(iosRoot, 'AppDelegate.h')
+    );
+
+    fs.copyFileSync(
+      path.resolve(templateRoot, 'ios/AppDelegate.m'),
+      path.resolve(iosRoot, 'AppDelegate.m')
+    );
+
+    // Podfile
+    const podfileRoot = path.resolve(projectRoot, 'ios/Podfile');
+    fs.copyFileSync(path.resolve(templateRoot, 'ios/Podfile'), podfileRoot);
+
+    // update target
+    let podFileStr = fs.readFileSync(podfileRoot, { encoding: 'utf-8' });
+    podFileStr = podFileStr.replace('{{ targetName }}', targetName);
+
+    fs.writeFileSync(path.resolve(projectRoot, 'ios/Podfile'), podFileStr, { encoding: 'utf-8' });
+    if (fs.existsSync(path.resolve(projectRoot, 'react-native.config.js'))) {
+      fs.unlinkSync(path.resolve(projectRoot, 'react-native.config.js'));
+    }
+
+    // Info.plist -> add splash screen
+    IosPlist.modifyAsync(iosRoot, 'Info', (config) => {
+      config['UILaunchStoryboardName'] = 'SplashScreen';
+      return config;
+    });
+
+    fs.copyFileSync(path.resolve(templateRoot, 'App.js'), path.resolve(projectRoot, 'App.js'));
+
+    // 4. yarn + install deps
+    Logger.log('🧶 Yarning...');
+    await spawnAsync('yarn', ['install'], { cwd: projectRoot });
   }
-
-  // 3. copy over template files for project
-  // eslint-disable-next-line
-  const templateRoot = path.resolve(__dirname, '../../../template-files/stories-templates');
-
-  // metro config
-  const metroConfigPath = path.resolve(templateRoot, 'metro.config.js');
-  fs.copyFileSync(metroConfigPath, path.resolve(projectRoot, 'metro.config.js'));
-
-  // package.json
-  const defaultPkg = require(path.resolve(templateRoot, 'pkg.json'));
-  const projectPkg = require(path.resolve(projectRoot, 'package.json'));
-  const packagePkg = require(path.resolve(packageRoot, 'package.json'));
-
-  const mergedPkg = {
-    ...projectPkg,
-    ...defaultPkg,
-  };
-
-  // configure story server
-  mergedPkg.expoStories = {
-    projectRoot,
-    watchRoot: packageRoot,
-  };
-
-  // remove dependencies from excluded autolinked packages
-  const extraNodeModules: any = packagePkg.expoStories?.packages ?? {};
-
-  mergedPkg.dependencies = {
-    ...mergedPkg.dependencies,
-    ...extraNodeModules,
-  };
-
-  fs.writeFileSync(
-    path.resolve(projectRoot, 'package.json'),
-    JSON.stringify(mergedPkg, null, '\t')
-  );
-
-  // AppDelegate.{h,m}
-  const iosRoot = path.resolve(projectRoot, 'ios', targetName);
-
-  fs.copyFileSync(
-    path.resolve(templateRoot, 'ios/AppDelegate.h'),
-    path.resolve(iosRoot, 'AppDelegate.h')
-  );
-
-  fs.copyFileSync(
-    path.resolve(templateRoot, 'ios/AppDelegate.m'),
-    path.resolve(iosRoot, 'AppDelegate.m')
-  );
-
-  // Podfile
-  const podfileRoot = path.resolve(projectRoot, 'ios/Podfile');
-  fs.copyFileSync(path.resolve(templateRoot, 'ios/Podfile'), podfileRoot);
-
-  // update target
-  let podFileStr = fs.readFileSync(podfileRoot, { encoding: 'utf-8' });
-  podFileStr = podFileStr.replace('{{ targetName }}', targetName);
-
-  fs.writeFileSync(path.resolve(projectRoot, 'ios/Podfile'), podFileStr, { encoding: 'utf-8' });
-  if (fs.existsSync(path.resolve(projectRoot, 'react-native.config.js'))) {
-    fs.unlinkSync(path.resolve(projectRoot, 'react-native.config.js'));
-  }
-
-  // Info.plist -> add splash screen
-  IosPlist.modifyAsync(iosRoot, 'Info', (config) => {
-    config['UILaunchStoryboardName'] = 'SplashScreen';
-    return config;
-  });
-
-  fs.copyFileSync(path.resolve(templateRoot, 'App.js'), path.resolve(projectRoot, 'App.js'));
-
-  // 4. yarn + install deps
-  Logger.log('🧶 Yarning...');
-  await spawnAsync('yarn', ['install'], { cwd: projectRoot });
 
   if (clearCache) {
     Logger.log('🧶 Clearing cache...');
@@ -196,7 +196,10 @@ async function action(packageName: string, options: Action) {
   if (platform === 'web') {
     // TODO
   } else {
-    await podInstallAsync(path.resolve(projectRoot, 'ios'));
+    if (rebuild) {
+      Logger.log('☕️ Installing native dependencies');
+      await podInstallAsync(path.resolve(projectRoot, 'ios'));
+    }
 
     const command = `run-${platform}`;
     Logger.log(`🛠  Building for ${platform}...this may take a few minutes`);
