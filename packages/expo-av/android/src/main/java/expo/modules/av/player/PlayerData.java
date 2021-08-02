@@ -164,7 +164,9 @@ public abstract class PlayerData implements AudioEventHandler {
         mVisualizer.setDataCaptureListener(new Visualizer.OnDataCaptureListener() {
           @Override
           public void onWaveFormDataCapture(Visualizer visualizer, byte[] bytes, int samplingRate) {
-            sampleBufferCallback(bytes, getCurrentPositionSeconds());
+            if (mShouldPlay) {
+              sampleBufferCallback(bytes, getCurrentPositionSeconds());
+            }
           }
 
           @Override
