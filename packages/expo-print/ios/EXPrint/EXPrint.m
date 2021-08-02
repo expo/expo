@@ -71,8 +71,8 @@ EX_EXPORT_METHOD_AS(print,
       // Let's check if someone wanted to use previous implementation for `html` option
       // which uses print formatter instead of NSData instance.
 
-      if (options[@"markupFormatterIOS"] && [options[@"markupFormatterIOS"] boolValue] == YES) {
-        NSString *htmlString = options[@"html"];
+      if (options[@"markupFormatterIOS"] && [options[@"markupFormatterIOS"] isKindOfClass:[NSString class]]) {
+        NSString *htmlString = options[@"markupFormatterIOS"];
         
         if (htmlString != nil) {
           UIMarkupTextPrintFormatter *formatter = [[UIMarkupTextPrintFormatter alloc] initWithMarkupText:htmlString];
@@ -300,7 +300,7 @@ EX_EXPORT_METHOD_AS(printToFileAsync,
     return;
   }
 
-    if (options[@"html"] && (!options[@"markupFormatterIOS"] || [options[@"markupFormatterIOS"] boolValue] == NO)) {
+  if (options[@"html"]) {
     __block EXWKPDFRenderer *renderTask = [EXWKPDFRenderer new];
 
     NSString *htmlString = options[@"html"] ?: @"";
