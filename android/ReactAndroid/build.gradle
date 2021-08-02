@@ -407,7 +407,7 @@ task extractJNIFiles {
 }
 
 android {
-    compileSdkVersion 29
+    compileSdkVersion 30
 
     resourcePrefix 'reactandroid_'
 

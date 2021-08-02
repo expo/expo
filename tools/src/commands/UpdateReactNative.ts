@@ -68,8 +68,15 @@ async function updateReactAndroidAsync(sdkVersion: string): Promise<void> {
       find: /^(\s*reactNativeRootDir\s*=\s*)file\(.+\)$/m,
       replaceWith: '$1file("$projectDir/../../react-native-lab/react-native")',
     },
+    {
+      find: /api\("androidx.appcompat:appcompat:\d+\.\d+\.\d+"\)/,
+      replaceWith: 'api("androidx.appcompat:appcompat:1.2.0")',
+    },
+    {
+      find: /compileSdkVersion\s+\d+/,
+      replaceWith: 'compileSdkVersion 30',
+    },
   ]);
-
 }
 
 async function action(options: ActionOptions) {
