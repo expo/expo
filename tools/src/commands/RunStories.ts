@@ -14,8 +14,7 @@ type Action = {
   clearCache: boolean;
 };
 
-async function action(packageName: string, options: Action) {
-  let { platform, rebuild = false, clearCache = false } = options;
+async function action(packageName: string, { platform, rebuild = false, clearCache = false }: Action) {
 
   if (!packageName) {
     const cwdPkg = require(path.resolve(process.cwd(), 'package.json'));
