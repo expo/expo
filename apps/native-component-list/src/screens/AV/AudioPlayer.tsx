@@ -4,7 +4,6 @@ import { Audio, AVPlaybackStatus } from 'expo-av';
 import React from 'react';
 import { StyleProp, ViewStyle } from 'react-native';
 
-import { AudioSample } from '../../../../../packages/expo-av/build/Audio';
 import Player from './Player';
 
 type PlaybackSource =
@@ -51,7 +50,7 @@ export default class AudioPlayer extends React.Component<Props, State> {
 
   _sound?: Audio.Sound;
   private prevStatus?: AVPlaybackStatus;
-  private audioSampleBufferCallback: ((sample: AudioSample) => void) | null = null;
+  private audioSampleBufferCallback: ((sample: Audio.AudioSample) => void) | null = null;
 
   componentDidMount() {
     this._loadSoundAsync(this.props.source);
@@ -105,7 +104,7 @@ export default class AudioPlayer extends React.Component<Props, State> {
 
   _setVolumeAsync = async (volume: number) => this._sound!.setVolumeAsync(volume);
 
-  _setAudioSampleBufferCallback = (callback: ((sample: AudioSample) => void) | null) => {
+  _setAudioSampleBufferCallback = (callback: ((sample: Audio.AudioSample) => void) | null) => {
     this.audioSampleBufferCallback = callback;
     if (this._sound != null) {
       this._sound.onAudioSampleReceived = callback;
