@@ -16,6 +16,7 @@ function startServer(serverConfig: IServerConfig) {
     process.on(eventType, () => {
       watcher.cleanup();
       server.cleanup();
+      process.exit(1);
     });
   });
 }

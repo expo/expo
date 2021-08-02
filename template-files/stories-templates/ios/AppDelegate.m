@@ -4,6 +4,8 @@
 #import <React/RCTBundleURLProvider.h>
 #import <React/RCTRootView.h>
 #import <React/RCTLinkingManager.h>
+#import <React/RCTDevMenu.h>
+#import <React/RCTUtils.h>
 
 #import <UMCore/UMModuleRegistry.h>
 #import <UMReactNativeAdapter/UMNativeModulesProxy.h>
@@ -21,6 +23,7 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
+  [self ensureReactMethodSwizzlingSetUp];
   self.moduleRegistryAdapter = [[UMModuleRegistryAdapter alloc] initWithModuleRegistryProvider:[[UMModuleRegistryProvider alloc] init]];
   
   self.launchOptions = launchOptions;
@@ -30,6 +33,30 @@
   [super application:application didFinishLaunchingWithOptions:launchOptions];
 
   return YES;
+}
+
+// Bring back React method swizzling removed from its Pod
+// when integrating with Expo client.
+// https://github.com/expo/react-native/commit/7f2912e8005ea6e81c45935241081153b822b988
+- (void)ensureReactMethodSwizzlingSetUp
+{
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    #pragma clang diagnostic push
+    #pragma clang diagnostic ignored "-Wundeclared-selector"
+    // RCTKeyCommands.m
+    // swizzle UIResponder
+    RCTSwapInstanceMethods([UIResponder class],
+                          @selector(keyCommands),
+                          @selector(RCT_keyCommands));
+
+    // RCTDevMenu.m
+    // We're swizzling here because it's poor form to override methods in a category,
+    // however UIWindow doesn't actually implement motionEnded:withEvent:, so there's
+    // no need to call the original implementation.
+    RCTSwapInstanceMethods([UIWindow class], @selector(motionEnded:withEvent:), @selector(RCT_motionEnded:withEvent:));
+    #pragma clang diagnostic pop
+  });
 }
 
 - (RCTBridge *)initializeReactNativeApp
@@ -52,6 +79,7 @@
 - (NSArray<id<RCTBridgeModule>> *)extraModulesForBridge:(RCTBridge *)bridge
 {
   NSMutableArray<id<RCTBridgeModule>> *extraModules = [[_moduleRegistryAdapter extraModulesForBridge:bridge] mutableCopy];  
+  [extraModules addObject:(id<RCTBridgeModule>)[[RCTDevMenu alloc] init]];
   return extraModules;
 }
 

@@ -3,6 +3,7 @@ import { IosPlist } from '@expo/xdl';
 import fs from 'fs';
 import inquirer from 'inquirer';
 import path from 'path';
+import { podInstallAsync } from '../CocoaPods';
 
 import { runExpoCliAsync } from '../ExpoCLI';
 import Logger from '../Logger';
@@ -153,6 +154,7 @@ async function action(packageName: string, options: Action) {
   podFileStr = podFileStr.replace('{{ targetName }}', targetName);
 
   fs.writeFileSync(path.resolve(projectRoot, 'ios/Podfile'), podFileStr, { encoding: 'utf-8' });
+  fs.unlinkSync(path.resolve(projectRoot, 'react-native.config.js'));
 
   // Info.plist -> add splash screen
   IosPlist.modifyAsync(iosRoot, 'Info', (config) => {
@@ -160,8 +162,6 @@ async function action(packageName: string, options: Action) {
     return config;
   });
 
-  // .watchmanconfig
-  fs.writeFileSync(path.resolve(projectRoot, '.watchmanconfig'), '{}', { encoding: 'utf-8' });
   fs.copyFileSync(path.resolve(templateRoot, 'App.js'), path.resolve(projectRoot, 'App.js'));
 
   // 4. yarn + install deps
@@ -202,11 +202,13 @@ async function action(packageName: string, options: Action) {
   if (platform === 'web') {
     // TODO
   } else {
-    const command = `run:${platform}`;
+    await podInstallAsync(path.resolve(projectRoot, 'ios'));
+
+    const command = `run-${platform}`;
     Logger.log(`🛠  Building for ${platform}...this may take a few minutes`);
     Logger.log();
 
-    const { child: expoProcess } = spawnAsync('expo', [command], {
+    const { child: expoProcess } = spawnAsync('react-native', [command], {
       cwd: projectRoot,
       stdio: 'inherit',
     });
@@ -219,13 +221,13 @@ async function action(packageName: string, options: Action) {
     process.on('SIGINT', () => {
       expoProcess.kill('SIGINT');
       storiesProcess.kill('SIGINT');
-      process.exit();
+      process.exit(1);
     });
 
     process.on('SIGTERM', () => {
       expoProcess.kill('SIGTERM');
       storiesProcess.kill('SIGTERM');
-      process.exit();
+      process.exit(1);
     });
   }
 }
