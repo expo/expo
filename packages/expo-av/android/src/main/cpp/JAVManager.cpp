@@ -68,9 +68,9 @@ void JAVManager::installJSIBindings(jlong jsRuntimePointer,
                 auto size = sampleBuffer->size();
 
                 // TODO: Avoid copy by directly using ArrayBuffer? Or accessing values in the sampleBuffer?
-                // copies the JNI array into a vector and reinterprets it as an unsigned 8 bit int (u_byte)
+                // copies the JNI array (signed 8 bit int (byte)) into a vector and reinterprets it as an unsigned 8 bit int (u_byte)
                 std::vector<uint8_t> buffer(size);
-                sampleBuffer->getRegion(0, size, (int8_t*)buffer.data());
+                sampleBuffer->getRegion(0, size, reinterpret_cast<int8_t*>(buffer.data()));
 
                 // TODO: Run per channel instead of flat array?
                 auto channels = jsi::Array(runtime, channelsCount);
