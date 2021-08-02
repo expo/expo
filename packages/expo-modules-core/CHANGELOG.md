@@ -11,6 +11,8 @@
 
 ### 🐛 Bug fixes
 
+- Add generics to the permission hook factory to inherit right types. ([#13860](https://github.com/expo/expo/pull/13860) by [@bycedric](https://github.com/bycedric))
+
 ### 💡 Others
 
 ## 0.1.1 — 2021-06-16
