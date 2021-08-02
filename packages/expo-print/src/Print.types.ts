@@ -28,7 +28,7 @@ export type PrintOptions = {
    * **Available on iOS only.** Alternative to `html` option that uses [UIMarkupTextPrintFormatter](https://developer.apple.com/documentation/uikit/uimarkuptextprintformatter)
    * instead of WebView, but it doesn't display images. Might be removed in the future releases.
    */
-  markupFormatterIOS?: boolean;
+  markupFormatterIOS?: string;
   /**
    * **Available on iOS only.** The orientation of the printed content, `Print.Orientation.portrait`
    * or `Print.Orientation.landscape`.
