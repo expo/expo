@@ -38,12 +38,23 @@ export declare function requestTrackingPermissionsAsync(): Promise<PermissionRes
  */
 export declare function getTrackingPermissionsAsync(): Promise<PermissionResponse>;
 /**
- * Check or ask the user to authorize the app and access app-related data that can be used
- * for tracking the user or the device. See `requestTrackingPermissionsAsync` for more details.
+ * Check or request the user to authorize or deny access to app-related data that can be used for tracking
+ * the user or the device. Examples of data used for tracking include email address, device ID,
+ * advertising ID, etc. On iOS 14.5 and above, if the user denies this permission, any attempt to
+ * collect the IDFA will return a string of 0s.
  *
+ * The system remembers the user’s choice and doesn’t prompt again unless a user uninstalls and then
+ * reinstalls the app on the device.
+ *
+ * On Android, web, and iOS 13 and below, this method always returns that the permission was
+ * granted.
  * @example
- * ```ts
- * const [status, requestPermission] = useTrackingPermissions();
+ * ```typescript
+ * const { granted } = await requestTrackingPermissionsAsync();
+ *
+ * if (granted) {
+ *   // Your app is authorized to track the user or their device
+ * }
  * ```
  */
 export declare const useTrackingPermissions: (options?: PermissionHookOptions | undefined) => [PermissionResponse | null, () => Promise<PermissionResponse | null>, () => Promise<PermissionResponse | null>];
