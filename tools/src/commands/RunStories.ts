@@ -208,7 +208,12 @@ async function action(packageName: string, options: Action) {
     Logger.log(`🛠  Building for ${platform}...this may take a few minutes`);
     Logger.log();
 
-    const { child: expoProcess } = spawnAsync('react-native', [command], {
+    const { child: bundlerProcess } = spawnAsync('yarn', ['react-native', 'start'], {
+      cwd: projectRoot,
+      stdio: 'inherit',
+    });
+
+    const { child: buildProcess } = spawnAsync('react-native', [command], {
       cwd: projectRoot,
       stdio: 'inherit',
     });
@@ -219,13 +224,15 @@ async function action(packageName: string, options: Action) {
     });
 
     process.on('SIGINT', () => {
-      expoProcess.kill('SIGINT');
+      bundlerProcess.kill('SIGINT');
+      buildProcess.kill('SIGINT');
       storiesProcess.kill('SIGINT');
       process.exit(1);
     });
 
     process.on('SIGTERM', () => {
-      expoProcess.kill('SIGTERM');
+      bundlerProcess.kill('SIGTERM');
+      buildProcess.kill('SIGTERM');
       storiesProcess.kill('SIGTERM');
       process.exit(1);
     });
