@@ -71,7 +71,7 @@ public class AVManager implements LifecycleEventListener, AudioManager.OnAudioFo
   private boolean mShouldRouteThroughEarpiece = false;
 
   @DoNotStrip
-  private HybridData mHybridData = null;
+  private final HybridData mHybridData;
 
   private enum AudioInterruptionMode {
     DO_NOT_MIX,
@@ -134,7 +134,6 @@ public class AVManager implements LifecycleEventListener, AudioManager.OnAudioFo
   protected void finalize() throws Throwable {
     super.finalize();
     mHybridData.resetNative();
-    mHybridData = null;
   }
 
   @SuppressWarnings("JavaJniMissingFunction")

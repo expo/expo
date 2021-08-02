@@ -25,6 +25,10 @@ import expo.modules.interfaces.permissions.PermissionsResponse;
 import expo.modules.interfaces.permissions.PermissionsStatus;
 
 public abstract class PlayerData implements AudioEventHandler {
+  static {
+    System.loadLibrary("expo-av");
+  }
+
   static final String STATUS_ANDROID_IMPLEMENTATION_KEY_PATH = "androidImplementation";
   static final String STATUS_HEADERS_KEY_PATH = "headers";
   static final String STATUS_IS_LOADED_KEY_PATH = "isLoaded";
@@ -44,7 +48,7 @@ public abstract class PlayerData implements AudioEventHandler {
   static final String STATUS_IS_LOOPING_KEY_PATH = "isLooping";
   static final String STATUS_DID_JUST_FINISH_KEY_PATH = "didJustFinish";
   @DoNotStrip
-  private HybridData mHybridData = null;
+  private final HybridData mHybridData;
 
   public static Bundle getUnloadedStatus() {
     final Bundle map = new Bundle();
@@ -117,7 +121,6 @@ public abstract class PlayerData implements AudioEventHandler {
       mVisualizer = null;
     }
     mHybridData.resetNative();
-    mHybridData = null;
   }
 
   @SuppressWarnings("JavaJniMissingFunction")
