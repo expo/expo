@@ -6,7 +6,7 @@
     "web": "expo start --web",
     "eject": "expo eject",
     "postinstall": "expo-yarn-workspaces postinstall",
-    "stories": "node_modules/expo-stories/bin/index.js start"
+    "stories": "expo-stories start"
   },
   "dependencies": {
     "@babel/runtime": "^7.5.5",
