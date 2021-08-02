@@ -522,6 +522,10 @@ public abstract class ReactNativeActivity extends AppCompatActivity implements c
       initialProps(bundle));
 
     // Requesting layout to make sure {@link ReactRootView} attached to {@link ReactInstanceManager}
+    // Otherwise, {@link ReactRootView} will hang in {@link waitForReactRootViewToHaveChildrenAndRunCallback}.
+    // Originally react-native will automatically attach after `startReactApplication`.
+    // After https://github.com/facebook/react-native/commit/2c896d35782cd04c8,
+    // the only remaining path is by `onMeasure`.
     mReactRootView.call("requestLayout");
 
     return mReactInstanceManager;
