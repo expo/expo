@@ -1,8 +1,8 @@
 import { IosPlist, IosPodsTools } from '@expo/xdl';
 import chalk from 'chalk';
-import plist from 'plist';
 import fs from 'fs-extra';
 import path from 'path';
+import plist from 'plist';
 
 import * as Directories from '../Directories';
 import * as ProjectVersions from '../ProjectVersions';
@@ -71,8 +71,8 @@ async function generateBuildConstantsFromMacrosAsync(
 function validateBuildConstants(config, buildConfiguration) {
   config.USE_GENERATED_DEFAULTS = true;
 
-  let IS_DEV_KERNEL,
-    DEV_KERNEL_SOURCE = '';
+  let IS_DEV_KERNEL = false;
+  let DEV_KERNEL_SOURCE = '';
   if (buildConfiguration === 'Debug') {
     IS_DEV_KERNEL = true;
     DEV_KERNEL_SOURCE = config.DEV_KERNEL_SOURCE;
@@ -93,6 +93,13 @@ function validateBuildConstants(config, buildConfiguration) {
 
     if (DEV_KERNEL_SOURCE === 'PUBLISHED' && !config.DEV_PUBLISHED_KERNEL_MANIFEST) {
       throw new Error(`Error downloading DEV published kernel manifest.\n`);
+    }
+
+    if (process.env.USE_DOGFOODING_PUBLISHED_KERNEL_MANIFEST) {
+      if (!config.DOGFOODING_PUBLISHED_KERNEL_MANIFEST) {
+        throw new Error(`Error downloading DOGFOODING published kernel manifest.\n`);
+      }
+      DEV_KERNEL_SOURCE = 'DOGFOODING';
     }
   }
 

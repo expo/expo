@@ -11,8 +11,8 @@ import {
   Workflow,
   getJobsForWorkflowRunAsync,
 } from '../GitHubActions';
-import { deepCloneObject, retryAsync } from '../Utils';
 import logger from '../Logger';
+import { deepCloneObject, retryAsync } from '../Utils';
 
 type CommandOptions = {
   ref?: string;
@@ -63,6 +63,11 @@ const CUSTOM_WORKFLOWS = {
     inputs: {
       checkAll: 'check-all',
     },
+  },
+  'dogfooding-clients': {
+    name: 'Dogfooding Clients',
+    baseWorkflowSlug: 'dogfooding-clients',
+    inputs: {},
   },
 };
 
