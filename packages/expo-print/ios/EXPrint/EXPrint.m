@@ -368,7 +368,7 @@ EX_EXPORT_METHOD_AS(printToFileAsync,
   return [directory stringByAppendingPathComponent:fileName];
 }
 
-- (NSData *)pdfWithHtmlMarkupFormatter:(NSString *)html pageSize:(CGSize)pageSize completionHandler:(void (^)(NSError * _Nullable, NSData * _Nullable, int))onFinished
+- (void)pdfWithHtmlMarkupFormatter:(NSString *)html pageSize:(CGSize)pageSize completionHandler:(void (^)(NSError * _Nullable, NSData * _Nullable, int))onFinished
 {
   UIMarkupTextPrintFormatter *formatter = [[UIMarkupTextPrintFormatter alloc] initWithMarkupText:html];
   UIPrintPageRenderer *renderer = [[UIPrintPageRenderer alloc] init];
