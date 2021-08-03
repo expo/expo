@@ -1,155 +1,142 @@
-package expo.modules.barcodescanner;
+package expo.modules.barcodescanner
 
-import android.content.Context;
-import android.graphics.SurfaceTexture;
-import android.hardware.Camera;
-import android.os.AsyncTask;
-import android.os.Handler;
-import android.os.Looper;
-import android.view.TextureView;
+import android.content.Context
+import android.graphics.SurfaceTexture
+import android.hardware.Camera
+import android.hardware.Camera.PreviewCallback
+import android.os.AsyncTask
+import android.os.Handler
+import android.os.Looper
+import android.view.TextureView
+import android.view.TextureView.SurfaceTextureListener
+import expo.modules.core.ModuleRegistry
+import expo.modules.interfaces.barcodescanner.BarCodeScannerInterface
+import expo.modules.interfaces.barcodescanner.BarCodeScannerProviderInterface
+import expo.modules.interfaces.barcodescanner.BarCodeScannerSettings
 
-import java.util.List;
+internal class BarCodeScannerViewFinder(
+  context: Context,
+  private var cameraType: Int,
+  private var barCodeScannerView: BarCodeScannerView,
+  private val moduleRegistry: ModuleRegistry
+) : TextureView(context), SurfaceTextureListener, PreviewCallback {
+  private var mSurfaceTexture: SurfaceTexture? = null
 
-import expo.modules.core.ModuleRegistry;
+  @Volatile
+  private var mIsStarting = false
 
-import expo.modules.interfaces.barcodescanner.BarCodeScannerInterface;
-import expo.modules.interfaces.barcodescanner.BarCodeScannerProviderInterface;
-import expo.modules.interfaces.barcodescanner.BarCodeScannerResult;
-import expo.modules.interfaces.barcodescanner.BarCodeScannerSettings;
+  @Volatile
+  private var mIsStopping = false
 
-class BarCodeScannerViewFinder extends TextureView implements TextureView.SurfaceTextureListener, Camera.PreviewCallback {
-  private final ModuleRegistry mModuleRegistry;
-  private int mCameraType;
-  private SurfaceTexture mSurfaceTexture;
-  private volatile boolean mIsStarting;
-  private volatile boolean mIsStopping;
-  private volatile boolean mIsChanging;
-  private BarCodeScannerView mBarCodeScannerView;
-  private Camera mCamera;
-
-  // Concurrency lock for barcode scanner to avoid flooding the runtime
-  public static volatile boolean barCodeScannerTaskLock = false;
+  @Volatile
+  private var mIsChanging = false
+  private var mCamera: Camera? = null
 
   // Scanner instance for the barcode scanning
-  private BarCodeScannerInterface mBarCodeScanner;
-
-  public BarCodeScannerViewFinder(Context context, int type, BarCodeScannerView barCodeScannerView, ModuleRegistry moduleRegistry) {
-    super(context);
-    mModuleRegistry = moduleRegistry;
-    mCameraType = type;
-    mBarCodeScannerView = barCodeScannerView;
-    setSurfaceTextureListener(this);
-    initBarCodeScanner();
+  private lateinit var mBarCodeScanner: BarCodeScannerInterface
+  override fun onSurfaceTextureAvailable(surface: SurfaceTexture, width: Int, height: Int) {
+    mSurfaceTexture = surface
+    startCamera()
   }
 
-  @Override
-  public void onSurfaceTextureAvailable(SurfaceTexture surface, int width, int height) {
-    mSurfaceTexture = surface;
-    startCamera();
+  override fun onSurfaceTextureSizeChanged(surface: SurfaceTexture, width: Int, height: Int) {}
+  override fun onSurfaceTextureDestroyed(surface: SurfaceTexture): Boolean {
+    mSurfaceTexture = null
+    stopCamera()
+    return true
   }
 
-  @Override
-  public void onSurfaceTextureSizeChanged(SurfaceTexture surface, int width, int height) {
+  override fun onSurfaceTextureUpdated(surface: SurfaceTexture) {
+    mSurfaceTexture = surface
   }
 
-  @Override
-  public boolean onSurfaceTextureDestroyed(SurfaceTexture surface) {
-    mSurfaceTexture = null;
-    stopCamera();
-    return true;
-  }
-
-  @Override
-  public void onSurfaceTextureUpdated(SurfaceTexture surface) {
-    mSurfaceTexture = surface;
-  }
-
-  public double getRatio() {
-    int width = ExpoBarCodeScanner.getInstance().getPreviewWidth(this.mCameraType);
-    int height = ExpoBarCodeScanner.getInstance().getPreviewHeight(this.mCameraType);
-    return ((float) width) / ((float) height);
-  }
-
-  public void setCameraType(final int type) {
-    if (this.mCameraType == type) {
-      return;
+  val ratio: Double
+    get() {
+      val width = ExpoBarCodeScanner.instance.getPreviewWidth(cameraType)
+      val height = ExpoBarCodeScanner.instance.getPreviewHeight(cameraType)
+      return (width.toFloat() / height.toFloat()).toDouble()
     }
-    new Thread(new Runnable() {
-      @Override
-      public void run() {
-        mIsChanging = true;
-        stopPreview();
-        mCameraType = type;
-        startPreview();
-        mIsChanging = false;
-      }
-    }).start();
+
+  fun setCameraType(type: Int) {
+    if (cameraType == type) {
+      return
+    }
+    Thread {
+      mIsChanging = true
+      stopPreview()
+      cameraType = type
+      startPreview()
+      mIsChanging = false
+    }.start()
   }
 
-  private void startPreview() {
+  private fun startPreview() {
     if (mSurfaceTexture != null) {
-      startCamera();
+      startCamera()
     }
   }
 
-  private void stopPreview() {
+  private fun stopPreview() {
     if (mCamera != null) {
-      stopCamera();
+      stopCamera()
     }
   }
 
-  synchronized private void startCamera() {
+  @Synchronized
+  private fun startCamera() {
     if (!mIsStarting) {
-      mIsStarting = true;
+      mIsStarting = true
       try {
-        mCamera = ExpoBarCodeScanner.getInstance().acquireCameraInstance(mCameraType);
-        Camera.Parameters parameters = mCamera.getParameters();
-        // set autofocus
-        List<String> focusModes = parameters.getSupportedFocusModes();
-        if (focusModes.contains(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE)) {
-          parameters.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE);
+        ExpoBarCodeScanner.instance?.acquireCameraInstance(cameraType)?.run {
+          val parameters = this.parameters
+          // set autofocus
+          val focusModes = parameters.supportedFocusModes
+          if (focusModes != null && focusModes.contains(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE)) {
+            parameters.focusMode = Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE
+          }
+          // set picture size
+          // defaults to max available size
+          val optimalPictureSize =
+            ExpoBarCodeScanner.instance.getBestSize(
+              parameters.supportedPictureSizes,
+              Int.MAX_VALUE,
+              Int.MAX_VALUE
+            )
+          parameters?.setPictureSize(optimalPictureSize.width, optimalPictureSize.height)
+          this.parameters = parameters
+          this.setPreviewTexture(mSurfaceTexture)
+          this.startPreview()
+          // send previews to `onPreviewFrame`
+          this.setPreviewCallback(this@BarCodeScannerViewFinder)
+          barCodeScannerView.layoutViewFinder()
         }
-        // set picture size
-        // defaults to max available size
-        Camera.Size optimalPictureSize = ExpoBarCodeScanner.getInstance().getBestSize(
-            parameters.getSupportedPictureSizes(),
-            Integer.MAX_VALUE,
-            Integer.MAX_VALUE
-        );
-        parameters.setPictureSize(optimalPictureSize.width, optimalPictureSize.height);
-
-        mCamera.setParameters(parameters);
-        mCamera.setPreviewTexture(mSurfaceTexture);
-        mCamera.startPreview();
-        // send previews to `onPreviewFrame`
-        mCamera.setPreviewCallback(this);
-        mBarCodeScannerView.layoutViewFinder();
-      } catch (NullPointerException e) {
-        e.printStackTrace();
-      } catch (Exception e) {
-        e.printStackTrace();
-        stopCamera();
+      } catch (e: NullPointerException) {
+        e.printStackTrace()
+      } catch (e: Exception) {
+        e.printStackTrace()
+        stopCamera()
       } finally {
-        mIsStarting = false;
+        mIsStarting = false
       }
     }
   }
 
-  synchronized private void stopCamera() {
+  @Synchronized
+  private fun stopCamera() {
     if (!mIsStopping) {
-      mIsStopping = true;
+      mIsStopping = true
       try {
-        if (mCamera != null) {
-          mCamera.stopPreview();
+        mCamera?.run {
+          this.stopPreview()
           // stop sending previews to `onPreviewFrame`
-          mCamera.setPreviewCallback(null);
-          ExpoBarCodeScanner.getInstance().releaseCameraInstance();
-          mCamera = null;
+          this.setPreviewCallback(null)
+          ExpoBarCodeScanner.instance.releaseCameraInstance()
         }
-      } catch (Exception e) {
-        e.printStackTrace();
+        mCamera = null
+      } catch (e: Exception) {
+        e.printStackTrace()
       } finally {
-        mIsStopping = false;
+        mIsStopping = false
       }
     }
   }
@@ -159,65 +146,62 @@ class BarCodeScannerViewFinder extends TextureView implements TextureView.Surfac
    * Supports all iOS codes except [code138, code39mod43, interleaved2of5]
    * Additionally supports [codabar, code128, upc_a]
    */
-  private void initBarCodeScanner() {
-    BarCodeScannerProviderInterface barCodeScannerProvider = mModuleRegistry.getModule(BarCodeScannerProviderInterface.class);
+  private fun initBarCodeScanner() {
+    val barCodeScannerProvider = moduleRegistry.getModule(BarCodeScannerProviderInterface::class.java)
     if (barCodeScannerProvider != null) {
-      mBarCodeScanner = barCodeScannerProvider.createBarCodeDetectorWithContext(getContext());
+      mBarCodeScanner = barCodeScannerProvider.createBarCodeDetectorWithContext(context)
     }
   }
 
-  public void onPreviewFrame(byte[] data, Camera camera) {
-    if (!BarCodeScannerViewFinder.barCodeScannerTaskLock) {
-      BarCodeScannerViewFinder.barCodeScannerTaskLock = true;
-      new BarCodeScannerAsyncTask(camera, data, mBarCodeScannerView).execute();
+  override fun onPreviewFrame(data: ByteArray, camera: Camera) {
+    if (!barCodeScannerTaskLock) {
+      barCodeScannerTaskLock = true
+      BarCodeScannerAsyncTask(camera, data, barCodeScannerView).execute()
     }
   }
 
-  public void setBarCodeScannerSettings(BarCodeScannerSettings settings) {
-    mBarCodeScanner.setSettings(settings);
+  fun setBarCodeScannerSettings(settings: BarCodeScannerSettings?) {
+    mBarCodeScanner.setSettings(settings)
   }
 
-  private class BarCodeScannerAsyncTask extends AsyncTask<Void, Void, Void> {
-    private byte[] mImageData;
-    private final Camera mCamera;
-
-    BarCodeScannerAsyncTask(Camera camera, byte[] imageData, BarCodeScannerView barCodeScannerView) {
-      mCamera = camera;
-      mImageData = imageData;
-      mBarCodeScannerView = barCodeScannerView;
+  private inner class BarCodeScannerAsyncTask(private val mCamera: Camera?, private val mImageData: ByteArray, barCodeScannerView: BarCodeScannerView) : AsyncTask<Void?, Void?, Void?>() {
+    init {
+      this@BarCodeScannerViewFinder.barCodeScannerView = barCodeScannerView
     }
 
-    @Override
-    protected Void doInBackground(Void... ignored) {
-      if (isCancelled()) {
-        return null;
+    override fun doInBackground(vararg params: Void?): Void? {
+      if (isCancelled) {
+        return null
       }
 
       // setting PreviewCallback does not really have an effect - this method is called anyway so we
       // need to check if camera changing is in progress or not
       if (!mIsChanging && mCamera != null) {
-        Camera.Size size = mCamera.getParameters().getPreviewSize();
-
-        int width = size.width;
-        int height = size.height;
-
-        int properRotation = ExpoBarCodeScanner.getInstance().getRotation();
-
-        final BarCodeScannerResult result = mBarCodeScanner.scan(mImageData, width,
-            height, properRotation);
-
+        val size = mCamera.parameters.previewSize
+        val width = size.width
+        val height = size.height
+        val properRotation = ExpoBarCodeScanner.instance.rotation
+        val result = mBarCodeScanner.scan(
+          mImageData, width,
+          height, properRotation
+        )
         if (result != null) {
-          new Handler(Looper.getMainLooper()).post(new Runnable() {
-            @Override
-            public void run() {
-              mBarCodeScannerView.onBarCodeScanned(result);
-            }
-          });
+          Handler(Looper.getMainLooper()).post { barCodeScannerView.onBarCodeScanned(result) }
         }
       }
-
-      BarCodeScannerViewFinder.barCodeScannerTaskLock = false;
-      return null;
+      barCodeScannerTaskLock = false
+      return null
     }
+  }
+
+  companion object {
+    // Concurrency lock for barcode scanner to avoid flooding the runtime
+    @Volatile
+    var barCodeScannerTaskLock = false
+  }
+
+  init {
+    surfaceTextureListener = this
+    initBarCodeScanner()
   }
 }

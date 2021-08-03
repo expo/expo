@@ -1,78 +1,52 @@
-package expo.modules.barcodescanner;
+package expo.modules.barcodescanner
 
-import android.content.Context;
+import android.content.Context
+import expo.modules.core.ModuleRegistry
+import expo.modules.core.ViewManager
+import expo.modules.core.interfaces.ExpoProp
+import expo.modules.interfaces.barcodescanner.BarCodeScannerSettings
+import java.util.*
 
-import expo.modules.core.ModuleRegistry;
-import expo.modules.core.ViewManager;
-import expo.modules.core.interfaces.ExpoProp;
+class BarCodeScannerViewManager : ViewManager<BarCodeScannerView?>() {
+  private var mModuleRegistry: ModuleRegistry? = null
 
-import java.util.List;
-import java.util.ArrayList;
-
-import expo.modules.interfaces.barcodescanner.BarCodeScannerSettings;
-
-public class BarCodeScannerViewManager extends ViewManager<BarCodeScannerView> {
-  public enum Events {
+  enum class Events(private val mName: String) {
     EVENT_ON_BAR_CODE_SCANNED("onBarCodeScanned");
-
-    private final String mName;
-
-    Events(final String name) {
-      mName = name;
-    }
-
-    @Override
-    public String toString() {
-      return mName;
-    }
+    override fun toString() = mName
   }
 
-  private static final String TAG = "ExpoBarCodeScannerView";
-  private ModuleRegistry mModuleRegistry;
-
-  @Override
-  public void onCreate(ModuleRegistry moduleRegistry) {
-    mModuleRegistry = moduleRegistry;
+  override fun onCreate(moduleRegistry: ModuleRegistry) {
+    mModuleRegistry = moduleRegistry
   }
 
-  @Override
-  public String getName() {
-    return TAG;
-  }
+  override fun getName() = TAG
 
-  @Override
-  public BarCodeScannerView createViewInstance(Context context) {
-    return new BarCodeScannerView(context, mModuleRegistry);
-  }
+  override fun createViewInstance(context: Context) =
+    BarCodeScannerView(context, mModuleRegistry)
 
-  @Override
-  public ViewManagerType getViewManagerType() {
-    return ViewManagerType.GROUP;
-  }
+  override fun getViewManagerType() = ViewManagerType.GROUP
 
-  @Override
-  public List<String> getExportedEventNames() {
-    List<String> eventNames = new ArrayList<>(Events.values().length);
-    for(Events event : Events.values()) {
-      eventNames.add(event.toString());
-    }
-    return eventNames;
-  }
+  override fun getExportedEventNames() =
+    Events.values().map { it.toString() }
 
   @ExpoProp(name = "type")
-  public void setType(BarCodeScannerView view, int type) {
-    view.setCameraType(type);
+  fun setType(view: BarCodeScannerView, type: Int) {
+    view.setCameraType(type)
   }
 
   @ExpoProp(name = "barCodeTypes")
-  public void setBarCodeTypes(BarCodeScannerView view, final ArrayList<Double> barCodeTypes) {
-    if (barCodeTypes == null) {
-      return;
+  fun setBarCodeTypes(view: BarCodeScannerView, barCodeTypes: ArrayList<Double?>?) {
+    if (barCodeTypes != null) {
+      val settings: BarCodeScannerSettings = object : BarCodeScannerSettings() {
+        init {
+          putTypes(barCodeTypes)
+        }
+      }
+      view.setBarCodeScannerSettings(settings)
     }
+  }
 
-    BarCodeScannerSettings settings = new BarCodeScannerSettings() {{
-      putTypes(barCodeTypes);
-    }};
-    view.setBarCodeScannerSettings(settings);
+  companion object {
+    private const val TAG = "ExpoBarCodeScannerView"
   }
 }

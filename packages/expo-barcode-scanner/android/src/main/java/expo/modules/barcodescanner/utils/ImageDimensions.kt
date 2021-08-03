@@ -1,64 +1,41 @@
-package expo.modules.barcodescanner.utils;
+package expo.modules.barcodescanner.utils
 
-public class ImageDimensions {
-  private int mWidth;
-  private int mHeight;
-  private int mFacing;
-  private int mRotation;
-
-  public ImageDimensions(int width, int height) {
-    this(width, height, 0);
-  }
-
-  public ImageDimensions(int width, int height, int rotation) {
-    this(width, height, rotation, -1);
-  }
-
-  public ImageDimensions(int width, int height, int rotation, int facing) {
-    mWidth = width;
-    mHeight = height;
-    mFacing = facing;
-    mRotation = rotation;
-  }
-
-  public boolean isLandscape() {
-    return mRotation % 180 == 90;
-  }
-
-  public int getWidth() {
-    if (isLandscape()) {
-      return mHeight;
-    }
-
-    return mWidth;
-  }
-
-  public int getHeight() {
-    if (isLandscape()) {
-      return mWidth;
-    }
-
-    return mHeight;
-  }
-
-  public int getRotation() {
-    return mRotation;
-  }
-
-  public int getFacing() {
-    return mFacing;
-  }
-
-  @Override
-  public boolean equals(Object obj) {
-    if (obj instanceof ImageDimensions) {
-      ImageDimensions otherDimensions = (ImageDimensions) obj;
-      return (otherDimensions.getWidth() == getWidth() &&
-        otherDimensions.getHeight() == getHeight() &&
-        otherDimensions.getFacing() == getFacing() &&
-        otherDimensions.getRotation() == getRotation());
+class ImageDimensions(
+  private val mWidth: Int,
+  private val mHeight: Int,
+  val rotation: Int = 0,
+  val facing: Int = -1
+) {
+  private val isLandscape: Boolean
+    get() = rotation % 180 == 90
+  val width: Int
+    get() = if (isLandscape) {
+      mHeight
     } else {
-      return super.equals(obj);
+      mWidth
     }
+  val height: Int
+    get() = if (isLandscape) {
+      mWidth
+    } else {
+      mHeight
+    }
+
+  override fun equals(other: Any?) =
+    if (other is ImageDimensions) {
+      other.mWidth == mWidth &&
+        other.mHeight == mHeight &&
+        other.facing == facing &&
+        other.rotation == rotation
+    } else {
+      super.equals(other)
+    }
+
+  override fun hashCode(): Int {
+    var result = mWidth
+    result = 31 * result + mHeight
+    result = 31 * result + rotation
+    result = 31 * result + facing
+    return result
   }
 }

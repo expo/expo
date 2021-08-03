@@ -1,173 +1,143 @@
-package expo.modules.barcodescanner.scanners;
+package expo.modules.barcodescanner.scanners
 
-import android.content.Context;
-import android.graphics.Bitmap;
+import android.content.Context
+import android.graphics.Bitmap
+import com.google.android.gms.vision.barcode.Barcode
+import com.google.zxing.BarcodeFormat
+import com.google.zxing.BinaryBitmap
+import com.google.zxing.DecodeHintType
+import com.google.zxing.LuminanceSource
+import com.google.zxing.MultiFormatReader
+import com.google.zxing.NotFoundException
+import com.google.zxing.PlanarYUVLuminanceSource
+import com.google.zxing.RGBLuminanceSource
+import com.google.zxing.Result
+import com.google.zxing.common.HybridBinarizer
+import expo.modules.interfaces.barcodescanner.BarCodeScannerResult
+import expo.modules.interfaces.barcodescanner.BarCodeScannerSettings
+import java.util.*
 
-import com.google.android.gms.vision.barcode.Barcode;
-import com.google.zxing.BarcodeFormat;
-import com.google.zxing.BinaryBitmap;
-import com.google.zxing.DecodeHintType;
-import com.google.zxing.LuminanceSource;
-import com.google.zxing.MultiFormatReader;
-import com.google.zxing.NotFoundException;
-import com.google.zxing.PlanarYUVLuminanceSource;
-import com.google.zxing.RGBLuminanceSource;
-import com.google.zxing.common.HybridBinarizer;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.EnumMap;
-import java.util.EnumSet;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import expo.modules.interfaces.barcodescanner.BarCodeScannerResult;
-import expo.modules.interfaces.barcodescanner.BarCodeScannerSettings;
-
-public class ZxingBarCodeScanner extends ExpoBarCodeScanner {
-
-  private final MultiFormatReader mMultiFormatReader;
-
-  public ZxingBarCodeScanner(Context context) {
-    super(context);
-    mMultiFormatReader = new MultiFormatReader();
+class ZxingBarCodeScanner(context: Context) : ExpoBarCodeScanner(context) {
+  private val mMultiFormatReader: MultiFormatReader = MultiFormatReader()
+  override fun scanMultiple(bitmap: Bitmap): List<BarCodeScannerResult> {
+    val intArray = IntArray(bitmap.width * bitmap.height)
+    bitmap.getPixels(
+      intArray, 0, bitmap.width, 0, 0,
+      bitmap.width, bitmap.height
+    )
+    val source: LuminanceSource = RGBLuminanceSource(bitmap.width, bitmap.height, intArray)
+    val result = scan(source)
+    return result?.let { listOf(it) } ?: emptyList()
   }
 
-  @Override
-  public List<BarCodeScannerResult> scanMultiple(Bitmap bitmap) {
-    int[] intArray = new int[bitmap.getWidth()*bitmap.getHeight()];
-    bitmap.getPixels(intArray, 0, bitmap.getWidth(), 0, 0,
-        bitmap.getWidth(), bitmap.getHeight());
-    LuminanceSource source = new RGBLuminanceSource(bitmap.getWidth(), bitmap.getHeight(),intArray);
+  override val isAvailable: Boolean
+    get() = true
 
-    BarCodeScannerResult result = scan(source);
-    return result == null ? Collections.emptyList() : Collections.singletonList(result);
-  }
-
-  public BarCodeScannerResult scan(byte[] data, int width, int height, int rotation) {
+  override fun scan(data: ByteArray, width: Int, height: Int, rotation: Int): BarCodeScannerResult {
     // rotate for zxing if orientation is portrait
+    var innerData = data
+    var innerWidth = width
+    var innerHeight = height
     if (rotation == 0) {
-      byte[] rotated = new byte[data.length];
-      for (int y = 0; y < height; y++) {
-        for (int x = 0; x < width; x++) {
-          int sourceIx = x + y * width;
-          int destIx = x * height + height - y - 1;
-          if (sourceIx >= 0 && sourceIx < data.length && destIx >= 0 && destIx < data.length) {
-            rotated[destIx] = data[sourceIx];
+      val rotated = ByteArray(innerData.size)
+      for (y in 0 until innerHeight) {
+        for (x in 0 until innerWidth) {
+          val sourceIx = x + y * innerWidth
+          val destIx = x * innerHeight + innerHeight - y - 1
+          if (sourceIx >= 0 && sourceIx < innerData.size && destIx >= 0 && destIx < innerData.size) {
+            rotated[destIx] = innerData[sourceIx]
           }
         }
       }
-      width = width + height;
-      height = width - height;
-      width = width - height;
-      data = rotated;
+      innerWidth += innerHeight
+      innerHeight = innerWidth - innerHeight
+      innerWidth -= innerHeight
+      innerData = rotated
     }
-
-    return scan(generateSourceFromImageData(data, width, height));
+    return requireNotNull(
+      scan(generateSourceFromImageData(innerData, innerWidth, innerHeight))
+    ) { "Scan output cannot be null" }
   }
 
-  private BarCodeScannerResult scan(LuminanceSource source) {
-    com.google.zxing.Result barcode = null;
-    BinaryBitmap bitmap = null;
+  private fun scan(source: LuminanceSource): BarCodeScannerResult? {
+    var barcode: Result? = null
+    var bitmap: BinaryBitmap? = null
     try {
-      bitmap = new BinaryBitmap(new HybridBinarizer(source));
-      barcode = mMultiFormatReader.decodeWithState(bitmap);
-    } catch (NotFoundException e) {
+      bitmap = BinaryBitmap(HybridBinarizer(source))
+      barcode = mMultiFormatReader.decodeWithState(bitmap)
+    } catch (e: NotFoundException) {
       // No barcode found, result is already null.
-    } catch (Throwable t) {
-      t.printStackTrace();
+    } catch (t: Throwable) {
+      t.printStackTrace()
     }
-
-    if (bitmap == null || barcode == null){
-      return null;
+    if (bitmap == null || barcode == null) {
+      return null
     }
-    ArrayList<Integer> cornerPoints = new ArrayList<>(); // empty list
-
-    Integer type = GMV_FROM_ZXING.get(barcode.getBarcodeFormat());
-    if (type == null) {
-      return null;
-    }
-
-    return new BarCodeScannerResult(type, barcode.getText(), cornerPoints, bitmap.getHeight(), bitmap.getWidth());
+    val cornerPoints = ArrayList<Int>() // empty list
+    val type = GMV_FROM_ZXING[barcode.barcodeFormat] ?: return null
+    return BarCodeScannerResult(type, barcode.text, cornerPoints, bitmap.height, bitmap.width)
   }
 
-  @Override
-  public void setSettings(BarCodeScannerSettings settings) {
-    List<Integer> newBarCodeTypes = parseBarCodeTypesFromSettings(settings);
+  override fun setSettings(settings: BarCodeScannerSettings) {
+    val newBarCodeTypes = parseBarCodeTypesFromSettings(settings)
     if (areNewAndOldBarCodeTypesEqual(newBarCodeTypes)) {
-      return;
+      return
     }
-
-    EnumMap<DecodeHintType, Object> hints = new EnumMap<>(DecodeHintType.class);
-    EnumSet<BarcodeFormat> decodeFormats = EnumSet.noneOf(BarcodeFormat.class);
-
-    if (mBarCodeTypes != null) {
-      for (int code : mBarCodeTypes) {
-        String formatString = VALID_BARCODE_TYPES.get(code);
-        if (formatString != null) {
-          decodeFormats.add(BarcodeFormat.valueOf(formatString));
-        }
+    val hints = EnumMap<DecodeHintType, Any?>(DecodeHintType::class.java)
+    val decodeFormats = EnumSet.noneOf(BarcodeFormat::class.java)
+    mBarCodeTypes?.forEach {
+      val formatString = VALID_BARCODE_TYPES[it]
+      if (formatString != null) {
+        decodeFormats.add(BarcodeFormat.valueOf(formatString))
       }
     }
-
-    hints.put(DecodeHintType.POSSIBLE_FORMATS, decodeFormats);
-    mMultiFormatReader.setHints(hints);
+    hints[DecodeHintType.POSSIBLE_FORMATS] = decodeFormats
+    mMultiFormatReader.setHints(hints)
   }
 
-  @Override
-  public boolean isAvailable() {
-    return true;
+  private fun generateSourceFromImageData(imageData: ByteArray, width: Int, height: Int): LuminanceSource {
+    return PlanarYUVLuminanceSource(
+      imageData, // byte[] yuvData
+      width, // int dataWidth
+      height, // int dataHeight
+      0, // int left
+      0, // int top
+      width, // int width
+      height, // int height
+      false // boolean reverseHorizontal
+    )
   }
 
-  private LuminanceSource generateSourceFromImageData(byte[] imageData, int width, int height) {
-    return new PlanarYUVLuminanceSource(
-        imageData, // byte[] yuvData
-        width, // int dataWidth
-        height, // int dataHeight
-        0, // int left
-        0, // int top
-        width, // int width
-        height, // int height
-        false // boolean reverseHorizontal
-    );
+  companion object {
+    private val VALID_BARCODE_TYPES = mapOf(
+      Barcode.AZTEC to BarcodeFormat.AZTEC.toString(),
+      Barcode.EAN_13 to BarcodeFormat.EAN_13.toString(),
+      Barcode.EAN_8 to BarcodeFormat.EAN_8.toString(),
+      Barcode.QR_CODE to BarcodeFormat.QR_CODE.toString(),
+      Barcode.PDF417 to BarcodeFormat.PDF_417.toString(),
+      Barcode.UPC_E to BarcodeFormat.UPC_E.toString(),
+      Barcode.DATA_MATRIX to BarcodeFormat.DATA_MATRIX.toString(),
+      Barcode.CODE_39 to BarcodeFormat.CODE_39.toString(),
+      Barcode.CODE_93 to BarcodeFormat.CODE_93.toString(),
+      Barcode.ITF to BarcodeFormat.ITF.toString(),
+      Barcode.CODABAR to BarcodeFormat.CODABAR.toString(),
+      Barcode.CODE_128 to BarcodeFormat.CODE_128.toString(),
+      Barcode.UPC_A to BarcodeFormat.UPC_A.toString(),
+    )
+    private val GMV_FROM_ZXING: Map<BarcodeFormat, Int> = mapOf(
+      BarcodeFormat.AZTEC to Barcode.AZTEC,
+      BarcodeFormat.EAN_13 to Barcode.EAN_13,
+      BarcodeFormat.EAN_8 to Barcode.EAN_8,
+      BarcodeFormat.QR_CODE to Barcode.QR_CODE,
+      BarcodeFormat.PDF_417 to Barcode.PDF417,
+      BarcodeFormat.UPC_E to Barcode.UPC_E,
+      BarcodeFormat.DATA_MATRIX to Barcode.DATA_MATRIX,
+      BarcodeFormat.CODE_39 to Barcode.CODE_39,
+      BarcodeFormat.CODE_93 to Barcode.CODE_93,
+      BarcodeFormat.ITF to Barcode.ITF,
+      BarcodeFormat.CODABAR to Barcode.CODABAR,
+      BarcodeFormat.CODE_128 to Barcode.CODE_128,
+      BarcodeFormat.UPC_A to Barcode.UPC_A,
+    )
   }
-
-  private static final Map<Integer, String> VALID_BARCODE_TYPES =
-      Collections.unmodifiableMap(new HashMap<Integer, String>() {
-        {
-          put(Barcode.AZTEC, BarcodeFormat.AZTEC.toString());
-          put(Barcode.EAN_13, BarcodeFormat.EAN_13.toString());
-          put(Barcode.EAN_8, BarcodeFormat.EAN_8.toString());
-          put(Barcode.QR_CODE, BarcodeFormat.QR_CODE.toString());
-          put(Barcode.PDF417, BarcodeFormat.PDF_417.toString());
-          put(Barcode.UPC_E, BarcodeFormat.UPC_E.toString());
-          put(Barcode.DATA_MATRIX, BarcodeFormat.DATA_MATRIX.toString());
-          put(Barcode.CODE_39, BarcodeFormat.CODE_39.toString());
-          put(Barcode.CODE_93, BarcodeFormat.CODE_93.toString());
-          put(Barcode.ITF, BarcodeFormat.ITF.toString());
-          put(Barcode.CODABAR, BarcodeFormat.CODABAR.toString());
-          put(Barcode.CODE_128, BarcodeFormat.CODE_128.toString());
-          put(Barcode.UPC_A, BarcodeFormat.UPC_A.toString());
-        }
-      });
-
-  private static final Map<BarcodeFormat, Integer> GMV_FROM_ZXING =
-      Collections.unmodifiableMap(new HashMap<BarcodeFormat, Integer>() {
-        {
-          put(BarcodeFormat.AZTEC, Barcode.AZTEC);
-          put(BarcodeFormat.EAN_13, Barcode.EAN_13);
-          put(BarcodeFormat.EAN_8, Barcode.EAN_8);
-          put(BarcodeFormat.QR_CODE, Barcode.QR_CODE);
-          put(BarcodeFormat.PDF_417, Barcode.PDF417);
-          put(BarcodeFormat.UPC_E, Barcode.UPC_E);
-          put(BarcodeFormat.DATA_MATRIX, Barcode.DATA_MATRIX);
-          put(BarcodeFormat.CODE_39, Barcode.CODE_39);
-          put(BarcodeFormat.CODE_93, Barcode.CODE_93);
-          put(BarcodeFormat.ITF, Barcode.ITF);
-          put(BarcodeFormat.CODABAR, Barcode.CODABAR);
-          put(BarcodeFormat.CODE_128, Barcode.CODE_128);
-          put(BarcodeFormat.UPC_A, Barcode.UPC_A);
-        }
-      });
 }

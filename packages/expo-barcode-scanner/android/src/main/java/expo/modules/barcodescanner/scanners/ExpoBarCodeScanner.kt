@@ -1,57 +1,33 @@
-package expo.modules.barcodescanner.scanners;
+package expo.modules.barcodescanner.scanners
 
-import android.content.Context;
+import android.content.Context
+import expo.modules.interfaces.barcodescanner.BarCodeScannerInterface
+import expo.modules.interfaces.barcodescanner.BarCodeScannerSettings
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+abstract class ExpoBarCodeScanner internal constructor(protected var mContext: Context) : BarCodeScannerInterface {
+  protected var mBarCodeTypes: List<Int>? = null
+  fun areNewAndOldBarCodeTypesEqual(newBarCodeTypes: List<Int>?): Boolean {
+    mBarCodeTypes?.run {
+      // create distinct-values sets
+      val prevTypesSet = this.toHashSet()
+      val nextTypesSet = newBarCodeTypes?.toHashSet()
 
-import expo.modules.interfaces.barcodescanner.BarCodeScannerInterface;
-import expo.modules.interfaces.barcodescanner.BarCodeScannerSettings;
-
-public abstract class ExpoBarCodeScanner implements BarCodeScannerInterface {
-
-  protected Context mContext;
-  protected List<Integer> mBarCodeTypes;
-
-  ExpoBarCodeScanner(Context context) {
-    mContext = context;
-  }
-
-  boolean areNewAndOldBarCodeTypesEqual(List<Integer> newBarCodeTypes) {
-    if (mBarCodeTypes == null) {
-      return false;
-    }
-
-    // create distinct-values sets
-    Set<Integer> prevTypesSet = new HashSet<>(mBarCodeTypes);
-    Set<Integer> nextTypesSet = new HashSet<>(newBarCodeTypes);
-
-    // sets sizes are equal -> possible content equality
-    if (prevTypesSet.size() == nextTypesSet.size()) {
-      prevTypesSet.removeAll(nextTypesSet);
-      // every element from new set was in previous one -> sets are equal
-      return prevTypesSet.isEmpty();
-    }
-    return false;
-  }
-
-  @SuppressWarnings("unchecked")
-  List<Integer> parseBarCodeTypesFromSettings(BarCodeScannerSettings settings) {
-    Object newBarCodeTypesObject = settings.getTypes();
-    if (newBarCodeTypesObject == null || !(newBarCodeTypesObject instanceof List)) {
-      return null;
-    }
-    List<Integer> result = new ArrayList<>();
-    List<Object> newBarCodeTypesObjectsList = (List) newBarCodeTypesObject;
-    for (Object element : newBarCodeTypesObjectsList) {
-      if (element instanceof Number) {
-        result.add(((Number) element).intValue());
+      // sets sizes are equal -> possible content equality
+      if (nextTypesSet != null && prevTypesSet.size == nextTypesSet.size) {
+        prevTypesSet.removeAll(nextTypesSet)
+        // every element from new set was in previous one -> sets are equal
+        return prevTypesSet.isEmpty()
       }
     }
-    return result;
+    return false
   }
 
-  public abstract boolean isAvailable();
+  fun parseBarCodeTypesFromSettings(settings: BarCodeScannerSettings): List<Int>? {
+    val newBarCodeTypesObject = settings.types
+    if (newBarCodeTypesObject == null || newBarCodeTypesObject !is List<*>) {
+      return null
+    }
+    return newBarCodeTypesObject.filterIsInstance<Number>().map { it.toInt() }
+  }
+  abstract val isAvailable: Boolean
 }

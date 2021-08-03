@@ -1,111 +1,88 @@
-package expo.modules.barcodescanner.scanners;
+package expo.modules.barcodescanner.scanners
 
-import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.Point;
-import android.util.Log;
-import android.util.SparseArray;
+import android.content.Context
+import android.graphics.Bitmap
+import android.util.Log
+import com.google.android.gms.vision.barcode.BarcodeDetector
+import expo.modules.barcodescanner.utils.Frame
+import expo.modules.barcodescanner.utils.FrameFactory.buildFrame
+import expo.modules.interfaces.barcodescanner.BarCodeScannerResult
+import expo.modules.interfaces.barcodescanner.BarCodeScannerSettings
 
-import com.google.android.gms.vision.barcode.Barcode;
-import com.google.android.gms.vision.barcode.BarcodeDetector;
+class GMVBarCodeScanner(context: Context) : ExpoBarCodeScanner(context) {
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+  private var mBarcodeDetector: BarcodeDetector
+  override val isAvailable: Boolean
+    get() = mBarcodeDetector.isOperational
 
-import expo.modules.barcodescanner.utils.FrameFactory;
-import expo.modules.interfaces.barcodescanner.BarCodeScannerResult;
-import expo.modules.interfaces.barcodescanner.BarCodeScannerSettings;
-
-public class GMVBarCodeScanner extends ExpoBarCodeScanner {
-
-  private String TAG = GMVBarCodeScanner.class.getSimpleName();
-
-  private BarcodeDetector mBarcodeDetector;
-
-  public GMVBarCodeScanner(Context context) {
-    super(context);
-    mBarcodeDetector = new BarcodeDetector.Builder(mContext)
-        .setBarcodeFormats(0)
-        .build();
-  }
-
-  @Override
-  public BarCodeScannerResult scan(byte[] data, int width, int height, int rotation) {
-    try {
-      List<BarCodeScannerResult> results = scan(FrameFactory.buildFrame(data, width, height, rotation));
-      return results.size() > 0 ? results.get(0) : null;
-    } catch (Exception e) {
+  override fun scan(data: ByteArray, width: Int, height: Int, rotation: Int): BarCodeScannerResult? {
+    return try {
+      val results = scan(buildFrame(data, width, height, rotation))
+      if (results.isNotEmpty()) results[0] else null
+    } catch (e: Exception) {
       // Sometimes data has different size than width and height would suggest:
       // ByteBuffer.wrap(data).capacity() < width * height.
       // When given such arguments, Frame cannot be built and IllegalArgumentException is thrown.
       // See https://github.com/expo/expo/issues/2422.
       // In such case we can't do anything about it but ignore the frame.
-      Log.e(TAG, "Failed to detect barcode: " + e.getMessage());
-      return null;
+      Log.e(TAG, "Failed to detect barcode: " + e.message)
+      null
     }
   }
 
-  @Override
-  public List<BarCodeScannerResult> scanMultiple(Bitmap bitmap) {
-    return scan(FrameFactory.buildFrame(bitmap));
+  override fun scanMultiple(bitmap: Bitmap): List<BarCodeScannerResult> {
+    return scan(buildFrame(bitmap))
   }
 
-  private List<BarCodeScannerResult> scan(expo.modules.barcodescanner.utils.Frame frame) {
-    try {
-      SparseArray<Barcode> result = mBarcodeDetector.detect(frame.getFrame());
-      List<BarCodeScannerResult> results = new ArrayList<>();
-
-      int width = frame.getDimensions().getWidth();
-      int height = frame.getDimensions().getHeight();
-
-      for (int i = 0; i < result.size(); i++) {
-
-        Barcode barcode = result.get(result.keyAt(i));
-        List<Integer> cornerPoints = new ArrayList<>();
-        for (Point point : barcode.cornerPoints) {
-          Integer x = Integer.valueOf(point.x);
-          Integer y = Integer.valueOf(point.y);
-          cornerPoints.addAll(Arrays.asList(x, y));
+  private fun scan(frame: Frame): List<BarCodeScannerResult> {
+    return try {
+      val result = mBarcodeDetector.detect(frame.frame)
+      val results: MutableList<BarCodeScannerResult> = ArrayList()
+      val width = frame.dimensions.width
+      val height = frame.dimensions.height
+      for (i in 0 until result.size()) {
+        val barcode = result[result.keyAt(i)]
+        val cornerPoints: MutableList<Int> = ArrayList()
+        for (point in barcode.cornerPoints) {
+          val x = Integer.valueOf(point.x)
+          val y = Integer.valueOf(point.y)
+          cornerPoints.addAll(listOf(x, y))
         }
-        results.add(new BarCodeScannerResult(barcode.format, barcode.rawValue, cornerPoints, height, width));
+        results.add(BarCodeScannerResult(barcode.format, barcode.rawValue, cornerPoints, height, width))
       }
-
-      return results;
-    } catch (Exception e) {
+      results
+    } catch (e: Exception) {
       // for some reason, sometimes the very first preview frame the camera passes back to us
       // doesn't have the correct amount of data (data.length is too small for the height and width)
       // which throws, so we just return an empty list
       // subsequent frames are all the correct length & don't seem to throw
-      Log.e(TAG, "Failed to detect barcode: " + e.getMessage());
-      return Collections.emptyList();
+      Log.e(TAG, "Failed to detect barcode: " + e.message)
+      emptyList()
     }
   }
 
-  @Override
-  public void setSettings(BarCodeScannerSettings settings) {
-    List<Integer> newBarCodeTypes = parseBarCodeTypesFromSettings(settings);
+  override fun setSettings(settings: BarCodeScannerSettings) {
+    val newBarCodeTypes = parseBarCodeTypesFromSettings(settings)
     if (areNewAndOldBarCodeTypesEqual(newBarCodeTypes)) {
-      return;
+      return
     }
-
-    int barcodeFormats = 0;
-    for (Integer code : newBarCodeTypes) {
-      barcodeFormats = barcodeFormats | code;
+    var barcodeFormats = 0
+    newBarCodeTypes?.forEach {
+      barcodeFormats = barcodeFormats or it
     }
-
-    mBarCodeTypes = newBarCodeTypes;
-    if (mBarcodeDetector != null) {
-      mBarcodeDetector.release();
-    }
-    mBarcodeDetector = new BarcodeDetector.Builder(mContext)
-        .setBarcodeFormats(barcodeFormats)
-        .build();
+    mBarCodeTypes = newBarCodeTypes
+    mBarcodeDetector.release()
+    mBarcodeDetector = BarcodeDetector.Builder(mContext)
+      .setBarcodeFormats(barcodeFormats)
+      .build()
   }
 
-  @Override
-  public boolean isAvailable() {
-    return mBarcodeDetector.isOperational();
+  init {
+    mBarcodeDetector = BarcodeDetector.Builder(mContext)
+      .setBarcodeFormats(0)
+      .build()
+  }
+  companion object {
+    private val TAG = GMVBarCodeScanner::class.java.simpleName
   }
 }
