@@ -138,6 +138,12 @@ PODS:
     - expo-dev-menu-interface
     - EXUpdatesInterface
     - React
+  - expo-dev-launcher/Tests (0.6.5):
+    - expo-dev-menu-interface
+    - EXUpdatesInterface
+    - OHHTTPStubs
+    - React
+    - React-CoreModules
   - expo-dev-launcher/Unsafe (0.6.5):
     - expo-dev-menu-interface
     - EXUpdatesInterface
@@ -146,8 +152,7 @@ PODS:
     - expo-dev-menu-interface
     - expo-dev-menu/Main (= 0.7.5)
     - React
-  - expo-dev-menu-interface (0.3.2):
-    - React
+  - expo-dev-menu-interface (0.3.2)
   - expo-dev-menu/Main (0.7.5):
     - expo-dev-menu-interface
     - expo-dev-menu/Vendored
@@ -352,6 +357,19 @@ PODS:
     - nanopb/encode (= 2.30907.0)
   - nanopb/decode (2.30907.0)
   - nanopb/encode (2.30907.0)
+  - OHHTTPStubs (9.1.0):
+    - OHHTTPStubs/Default (= 9.1.0)
+  - OHHTTPStubs/Core (9.1.0)
+  - OHHTTPStubs/Default (9.1.0):
+    - OHHTTPStubs/Core
+    - OHHTTPStubs/JSON
+    - OHHTTPStubs/NSURLSession
+    - OHHTTPStubs/OHPathHelpers
+  - OHHTTPStubs/JSON (9.1.0):
+    - OHHTTPStubs/Core
+  - OHHTTPStubs/NSURLSession (9.1.0):
+    - OHHTTPStubs/Core
+  - OHHTTPStubs/OHPathHelpers (9.1.0)
   - PromisesObjC (1.2.12)
   - Protobuf (3.15.8)
   - RCTRequired (0.63.2)
@@ -714,6 +732,7 @@ DEPENDENCIES:
   - EXPermissions (from `../../../packages/expo-permissions/ios`)
   - expo-dev-client (from `../../../packages/expo-dev-client`)
   - expo-dev-launcher (from `../../../packages/expo-dev-launcher`)
+  - expo-dev-launcher/Tests (from `../../../packages/expo-dev-launcher`)
   - expo-dev-menu (from `../../../packages/expo-dev-menu`)
   - expo-dev-menu-interface (from `../../../packages/expo-dev-menu-interface`)
   - expo-image (from `../../../packages/expo-image`)
@@ -814,6 +833,7 @@ SPEC REPOS:
     - MLKitFaceDetection
     - MLKitVision
     - nanopb
+    - OHHTTPStubs
     - PromisesObjC
     - Protobuf
     - SDWebImage
@@ -1171,9 +1191,9 @@ SPEC CHECKSUMS:
   EXNotifications: 296d9487163c2c08fffec5e79a5f9094bc016d9c
   EXPermissions: c7bead8f093700d5fcfb4f41238430a51702c5c8
   expo-dev-client: 6f833f384c5fcc59e96a91268601dabcd16f70f0
-  expo-dev-launcher: 696f20b99996080a3eebdaa723627a614e526ada
+  expo-dev-launcher: 0b3fe43607f31238f49445e7310e185675061762
   expo-dev-menu: c1d43574828f37cb541a0bb52fe7bb7829586147
-  expo-dev-menu-interface: 848563c91c9f36f963a8456e885129a46f4cdfa1
+  expo-dev-menu-interface: 59fbd00f527c7ae65aa86144e6c8af3761fc037f
   expo-image: ea170930bd8bc42328ee74ff4dc861ca31587dc8
   ExpoModulesCore: 82ee658feb15e6804de9f3530c39c62ff900048b
   EXPrint: 61bbaa43c42c1badfa46de5be015d7d798d33583
@@ -1220,6 +1240,7 @@ SPEC CHECKSUMS:
   MLKitFaceDetection: 5b92261dd6e4205e3dab0df62537ac3f4e90e5db
   MLKitVision: 51385878c9100024478971856510f9271ff555b5
   nanopb: 59221d7f958fb711001e6a449489542d92ae113e
+  OHHTTPStubs: 90eac6d8f2c18317baeca36698523dc67c513831
   PromisesObjC: 3113f7f76903778cf4a0586bd1ab89329a0b7b97
   Protobuf: adb85cd18a15bd1a777c158af9fd6e612a0e6d69
   RCTRequired: f13f25e7b12f925f1f6a6a8c69d929a03c0129fe
@@ -1270,6 +1291,6 @@ SPEC CHECKSUMS:
   Yoga: 7740b94929bbacbddda59bf115b5317e9a161598
   ZXingObjC: fdbb269f25dd2032da343e06f10224d62f537bdb
 
-PODFILE CHECKSUM: 0bc068eb4bf5e58571139cbf292a92e626939289
+PODFILE CHECKSUM: f331210d64cfd0446d6e7c8df31842a096c50f66
 
 COCOAPODS: 1.10.1

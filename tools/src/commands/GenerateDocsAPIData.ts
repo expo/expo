@@ -72,8 +72,7 @@ const executeCommand = async (
 
     if (MINIFY_JSON) {
       const minifiedJson = recursiveOmitBy(output, ({key, node}) =>
-        key === 'id' ||
-        key === 'groups' ||
+        ['id', 'groups', 'target'].includes(key) ||
         (key === 'flags' && !Object.keys(node).length)
       );
       await fs.writeFile(jsonOutputPath, JSON.stringify(minifiedJson, null, 0));
@@ -99,6 +98,7 @@ async function action({packageName, version = 'unversioned'}: ActionOptions) {
     'expo-cellular': ['Cellular.ts'],
     'expo-checkbox': ['Checkbox.ts'],
     'expo-clipboard': ['Clipboard.ts'],
+    'expo-document-picker': ['index.ts'],
     'expo-error-recovery': ['ErrorRecovery.ts'],
     'expo-facebook': [['Facebook.ts', 'Facebook.types.ts']],
     'expo-font': ['index.ts'],
@@ -121,6 +121,7 @@ async function action({packageName, version = 'unversioned'}: ActionOptions) {
     'expo-store-review': ['StoreReview.ts'],
     'expo-task-manager': ['TaskManager.ts'],
     'expo-tracking-transparency': ['TrackingTransparency.ts'],
+    'expo-updates': ['index.ts'],
     'expo-video-thumbnails': ['VideoThumbnails.ts'],
     'expo-web-browser': ['WebBrowser.ts'],
   };

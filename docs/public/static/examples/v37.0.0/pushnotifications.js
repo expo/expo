@@ -56,7 +56,7 @@ export default class AppContainer extends React.Component {
     this.setState({ notification: notification });
   };
 
-  // Can use this function below, OR use Expo's Push Notification Tool-> https://expo.io/dashboard/notifications
+  // Can use this function below, OR use Expo's Push Notification Tool-> https://expo.dev/dashboard/notifications
   sendPushNotification = async () => {
     const message = {
       to: this.state.expoPushToken,

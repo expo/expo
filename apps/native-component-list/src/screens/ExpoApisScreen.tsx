@@ -30,6 +30,7 @@ const screens = [
   'Accelerometer',
   'ActionSheet',
   'Alert',
+  'Amplitude',
   'AppAuth',
   'Appearance',
   'AppleAuthentication',

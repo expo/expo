@@ -82,5 +82,5 @@ registerRootComponent(App);
 - That's all! You don't need to invoke `ReactDOM.render` or `AppRegistry.registerComponent` because `registerRootComponent` will do this for you for each platform automatically.
 
 [rnw]: https://github.com/necolas/react-native-web/
-[forums]: http://forums.expo.io/
+[forums]: https://forums.expo.dev/
 [canny]: https://expo.canny.io/feature-requests

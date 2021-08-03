@@ -95,7 +95,7 @@ Manipulate the image provided via `uri`. Available modifications are rotating, f
 
 #### Arguments
 
-- **uri (_string_)** -- URI of the file to manipulate. Should be on the local file system.
+- **uri (_string_)** -- URI of the file to manipulate. Should be on the local file system or a base64 data URI.
 - **actions (_array_)** --
 
   An array of objects representing manipulation options. Each object should have _only one_ of the following keys that corresponds to specific transformation:

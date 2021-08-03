@@ -121,7 +121,7 @@ Prepare the following unless you're building only for the iOS simulator:
 To learn how to generate those, see the guide
 on [Building Standalone Apps](building-standalone-apps.md) first.
 
-Set the `EXPO_IOS_DIST_P12_PASSWORD` environment variable with the value of
+Set the `expo.devS_DIST_P12_PASSWORD` environment variable with the value of
 the Distribution Certificate password.
 
 Then, start the standalone app build:

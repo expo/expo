@@ -20,7 +20,7 @@ class DevLauncherRecentlyOpenedAppsRegistry(context: Context) {
   fun appWasOpened(url: Uri, name: String?) {
     sharedPreferences
       .edit()
-      .putString(url.toString(), Gson().toJson(DevLauncherAppEntry(System.currentTimeMillis(), name)))
+      .putString(url.toString(), Gson().toJson(DevLauncherAppEntry(TimeHelper.getCurrentTime(), name)))
       .apply()
   }
 
@@ -30,7 +30,7 @@ class DevLauncherRecentlyOpenedAppsRegistry(context: Context) {
     val gson = Gson()
     sharedPreferences.all.forEach { (url, appEntryString) ->
       val appEntry = gson.fromJson(appEntryString as String, DevLauncherAppEntry::class.java)
-      if (System.currentTimeMillis() - appEntry.timestamp > TIME_TO_REMOVE) {
+      if (TimeHelper.getCurrentTime() - appEntry.timestamp > TIME_TO_REMOVE) {
         toRemove.add(url)
         return@forEach
       }
@@ -45,5 +45,9 @@ class DevLauncherRecentlyOpenedAppsRegistry(context: Context) {
     }.apply()
 
     return result
+  }
+
+  object TimeHelper {
+    fun getCurrentTime() = System.currentTimeMillis()
   }
 }

@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Converted Android code to Kotlin ([#13738](https://github.com/expo/expo/pull/13738) by [@ixf](https://github.com/ixf))
+
 ## 10.2.0 — 2021-06-16
 
 ### 🐛 Bug fixes

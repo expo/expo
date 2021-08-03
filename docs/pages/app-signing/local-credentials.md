@@ -154,7 +154,7 @@ For example, maybe you want to use local credentials when deploying to the Amazo
 
 ```json
 {
-  "builds": {
+  "build": {
     "android": {
       "amazon": {
         "credentialsSource": "local"

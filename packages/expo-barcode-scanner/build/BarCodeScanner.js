@@ -1,5 +1,5 @@
 import { UnavailabilityError } from '@unimodules/core';
-import { PermissionStatus } from 'expo-modules-core';
+import { PermissionStatus, createPermissionHook, } from 'expo-modules-core';
 import * as React from 'react';
 import { Platform } from 'react-native';
 import ExpoBarCodeScannerModule from './ExpoBarCodeScannerModule';
@@ -80,5 +80,19 @@ BarCodeScanner.defaultProps = {
     type: Type.back,
     barCodeTypes: Object.values(BarCodeType),
 };
-export const { Constants, getPermissionsAsync, requestPermissionsAsync } = BarCodeScanner;
+// @needsAudit
+/**
+ * Check or request permissions for the barcode scanner.
+ * This uses both `requestPermissionAsync` and `getPermissionsAsync` to interact with the permissions.
+ *
+ * @example
+ * ```ts
+ * const [status, requestPermission] = BarCodeScanner.usePermissions();
+ * ```
+ */
+BarCodeScanner.usePermissions = createPermissionHook({
+    getMethod: BarCodeScanner.getPermissionsAsync,
+    requestMethod: BarCodeScanner.requestPermissionsAsync,
+});
+export const { Constants, getPermissionsAsync, requestPermissionsAsync, usePermissions, } = BarCodeScanner;
 //# sourceMappingURL=BarCodeScanner.js.map

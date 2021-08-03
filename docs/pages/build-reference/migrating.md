@@ -12,7 +12,7 @@ EAS Build only supports SDK 41+ managed projects. You must upgrade your project 
 
 ### Only libraries included in your package.json are included in the resulting standalone app
 
-This often results in massive reductions in app size; managed apps built with EAS Build can be in the order of 10x smaller than the same app built with `expo build` ([learn why](https://blog.expo.io/expo-managed-workflow-in-2021-5b887bbf7dbb)). The tradeoff here is that you need to be careful when publishing over-the-air updates in order to avoid publishing an incompatible JavaScript bundle. Learn more in ["Over-the-air updates"](/build/updates.md).
+This often results in massive reductions in app size; managed apps built with EAS Build can be in the order of 10x smaller than the same app built with `expo build` ([learn why](https://blog.expo.dev/expo-managed-workflow-in-2021-5b887bbf7dbb)). The tradeoff here is that you need to be careful when publishing over-the-air updates in order to avoid publishing an incompatible JavaScript bundle. Learn more in ["Over-the-air updates"](/build/updates.md).
 
 ### The `--config` flag is not supported
 
@@ -59,7 +59,7 @@ Learn more about how to securely store your `NPM_TOKEN` on EAS Build: ["How to u
 
 ### `expo-branch` is not supported on EAS Build
 
-You will need to remove `expo-branch` from your app to build it with EAS Build. The plan is to add support to [react-native-branch](https://www.npmjs.com/package/react-native-branch), the library maintained by engineers at [Branch](https://branch.io/). If Branch support is a blocker for you, you can try to build your own [config plugin](https://docs.expo.io/guides/config-plugins/) to add react-native-branch to your app today.
+You will need to remove `expo-branch` from your app to build it with EAS Build. The plan is to add support to [react-native-branch](https://www.npmjs.com/package/react-native-branch), the library maintained by engineers at [Branch](https://branch.io/). If Branch support is a blocker for you, you can try to build your own [config plugin](https://docs.expo.dev/guides/config-plugins/) to add react-native-branch to your app today.
 
 ### `metro.config.js` must export the entire default config from `@expo/metro-config`
 

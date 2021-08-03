@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add BarCodeScanner.usePermissions hook from modules factory. ([#13852](https://github.com/expo/expo/pull/13852) by [@bycedric](https://github.com/bycedric))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others

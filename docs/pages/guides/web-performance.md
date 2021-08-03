@@ -10,7 +10,7 @@ There are a number of performance tools at your disposal that will not only opti
 
 - **Babel:** [`babel-preset-expo`](https://www.npmjs.com/package/babel-preset-expo) extends the default react-native preset and adds support for all other Expo platforms. In the browser this has massive performance benefits by enabling tree-shaking of the unused `react-native-web` modules.
 - **Webpack Config:** [`@expo/webpack-config`](https://www.npmjs.com/package/@expo/webpack-config) A default Webpack config that's optimized for running `react-native-web` apps and creating [progressive web apps](https://developers.google.com/web/progressive-web-apps/).
-- **Jest:** [`jest-expo`](https://www.npmjs.com/package/jest-expo) A universal solution for testing your code against all of the platforms it runs on. Learn more about [Universal Testing.](https://blog.expo.io/testing-universal-react-native-apps-with-jest-and-expo-113b4bf9cc44)
+- **Jest:** [`jest-expo`](https://www.npmjs.com/package/jest-expo) A universal solution for testing your code against all of the platforms it runs on. Learn more about [Universal Testing.](https://blog.expo.dev/testing-universal-react-native-apps-with-jest-and-expo-113b4bf9cc44)
 
 ## Optimize Your Assets
 

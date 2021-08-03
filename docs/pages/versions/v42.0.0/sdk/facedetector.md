@@ -22,7 +22,7 @@ import PlatformsSection from '~/components/plugins/PlatformsSection';
 
 ### Comprehensive Example
 
-Check out a full example at [expo/camerja](https://github.com/expo/camerja). You can try it with Expo at [@documentation/camerja](https://expo.io/@documentation/camerja).
+Check out a full example at [expo/camerja](https://github.com/expo/camerja). You can try it with Expo at [@documentation/camerja](https://expo.dev/@documentation/camerja).
 
 `FaceDetector` is used in Gallery screen — it should detect faces on saved photos and show the probability that the face is smiling.
 
