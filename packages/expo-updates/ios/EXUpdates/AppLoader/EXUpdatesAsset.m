@@ -28,8 +28,10 @@ NS_ASSUME_NONNULL_BEGIN
     if (!_type){
       _filename = _key
     }
-    
-    _filename = [_type hasPrefix:@"."] ? [NSString stringWithFormat:@"%@%@", _key, _type] : [NSString stringWithFormat:@"%@.%@", _key, _type];
+    if ([_type hasPrefix:@"."]){
+      _filename = [NSString stringWithFormat:@"%@%@", _key, _type]
+    }
+    _filename = [NSString stringWithFormat:@"%@.%@", _key, _type];
   }
   return _filename;
 }
