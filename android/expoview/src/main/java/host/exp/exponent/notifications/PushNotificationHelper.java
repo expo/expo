@@ -33,6 +33,7 @@ import host.exp.exponent.kernel.ExperienceKey;
 import host.exp.exponent.kernel.KernelConstants;
 import host.exp.exponent.storage.ExperienceDBObject;
 import host.exp.exponent.storage.ExponentDB;
+import host.exp.exponent.storage.ExponentDBObject;
 import host.exp.exponent.storage.ExponentSharedPreferences;
 import host.exp.expoview.R;
 
@@ -68,10 +69,9 @@ public class PushNotificationHelper {
   public void onMessageReceived(final Context context, final String experienceScopeKey, final String channelId, final String message, final String body, final String title, final String categoryId) {
     ExponentDB.experienceScopeKeyToExperience(experienceScopeKey, new ExponentDB.ExperienceResultListener() {
       @Override
-      public void onSuccess(ExperienceDBObject experience) {
+      public void onSuccess(ExponentDBObject exponentDBObject) {
         try {
-          RawManifest manifest = ManifestFactory.INSTANCE.getRawManifestFromJson(new JSONObject(experience.manifest));
-          sendNotification(context, message, channelId, experience.manifestUrl, manifest, body, title, categoryId);
+          sendNotification(context, message, channelId, exponentDBObject.manifestUrl, exponentDBObject.manifest, body, title, categoryId);
         } catch (JSONException e) {
           EXL.e(TAG, "Couldn't deserialize JSON for experience scope key " + experienceScopeKey);
         }
@@ -79,7 +79,7 @@ public class PushNotificationHelper {
 
       @Override
       public void onFailure() {
-        EXL.e(TAG, "No experience found for scope key " + experienceScopeKey);
+        EXL.e(TAG, "No experience found or invalid manifest for scope key " + experienceScopeKey);
       }
     });
   }

@@ -31,6 +31,7 @@ import host.exp.exponent.RNObject;
 import host.exp.exponent.experience.DetachedModuleRegistryAdapter;
 import host.exp.exponent.kernel.ExponentUrls;
 import host.exp.exponent.storage.ExponentDB;
+import host.exp.exponent.storage.ExponentDBObject;
 import host.exp.exponent.taskManager.AppLoaderInterface;
 import host.exp.exponent.taskManager.AppRecordInterface;
 import host.exp.exponent.utils.AsyncCondition;
@@ -138,7 +139,7 @@ public class InternalHeadlessAppLoader implements AppLoaderInterface, Exponent.S
     mSdkVersion = manifest.getSDKVersionNullable();
 
     // Notifications logic uses this to determine which experience to route a notification to
-    ExponentDB.saveExperience(mManifestUrl, manifest, bundleUrl);
+    ExponentDB.saveExperience(new ExponentDBObject(mManifestUrl, manifest, bundleUrl));
 
     // Sometime we want to release a new version without adding a new .aar. Use TEMPORARY_ABI_VERSION
     // to point to the unversioned code in ReactAndroid.

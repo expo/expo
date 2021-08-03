@@ -24,6 +24,7 @@ import host.exp.exponent.kernel.ExperienceKey;
 import host.exp.exponent.notifications.model.ScopedNotificationRequest;
 import host.exp.exponent.storage.ExperienceDBObject;
 import host.exp.exponent.storage.ExponentDB;
+import host.exp.exponent.storage.ExponentDBObject;
 import host.exp.expoview.R;
 import versioned.host.exp.exponent.modules.api.notifications.channels.ScopedNotificationsChannelManager;
 import versioned.host.exp.exponent.modules.api.notifications.channels.ScopedNotificationsGroupManager;
@@ -50,9 +51,9 @@ public class ScopedExpoNotificationBuilder extends CategoryAwareNotificationBuil
     NotificationRequest requester = getNotification().getNotificationRequest();
     if (requester instanceof ScopedNotificationRequest) {
       String experienceScopeKey = ((ScopedNotificationRequest) requester).getExperienceScopeKeyString();
-      ExperienceDBObject experience = ExponentDB.experienceScopeKeyToExperienceSync(experienceScopeKey);
       try {
-        manifest = ManifestFactory.INSTANCE.getRawManifestFromJson(new JSONObject(experience.manifest));
+        ExponentDBObject exponentDBObject = ExponentDB.experienceScopeKeyToExperienceSync(experienceScopeKey);
+        manifest = exponentDBObject.manifest;
         mExperienceKey = ExperienceKey.fromRawManifest(manifest);
       } catch (JSONException e) {
         Log.e("notifications", "Couldn't parse manifest.", e);

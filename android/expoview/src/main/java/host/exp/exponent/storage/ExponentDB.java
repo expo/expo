@@ -10,12 +10,14 @@ import com.raizlabs.android.dbflow.sql.language.CursorResult;
 import com.raizlabs.android.dbflow.sql.language.SQLite;
 import com.raizlabs.android.dbflow.structure.database.transaction.QueryTransaction;
 
+import org.jetbrains.annotations.NotNull;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
 
+import expo.modules.updates.manifest.ManifestFactory;
 import expo.modules.updates.manifest.raw.RawManifest;
 import host.exp.exponent.ExponentManifest;
 import host.exp.exponent.analytics.EXL;
@@ -26,20 +28,20 @@ public class ExponentDB {
   private static final String TAG = ExponentDB.class.getSimpleName();
 
   public interface ExperienceResultListener {
-    void onSuccess(ExperienceDBObject experience);
+    void onSuccess(ExponentDBObject exponentDBObject);
     void onFailure();
   }
 
   public static final String NAME = "ExponentKernel";
   public static final int VERSION = 1;
 
-  public static void saveExperience(String manifestUrl, RawManifest manifest, String bundleUrl) {
+  public static void saveExperience(ExponentDBObject exponentDBObject) {
     try {
       ExperienceDBObject experience = new ExperienceDBObject();
-      experience.scopeKey = manifest.getScopeKey();
-      experience.manifestUrl = manifestUrl;
-      experience.bundleUrl = bundleUrl;
-      experience.manifest = manifest.toString();
+      experience.scopeKey = exponentDBObject.manifest.getScopeKey();
+      experience.manifestUrl = exponentDBObject.manifestUrl;
+      experience.bundleUrl = exponentDBObject.bundleUrl;
+      experience.manifest = exponentDBObject.manifest.toString();
       FlowManager.getDatabase(ExponentDB.class).getTransactionManager().getSaveQueue().add(experience);
     } catch (JSONException e) {
       EXL.e(TAG, e.getMessage());
@@ -55,16 +57,35 @@ public class ExponentDB {
           if (experienceDBObject == null) {
             listener.onFailure();
           } else {
-            listener.onSuccess(experienceDBObject);
+            try {
+              listener.onSuccess(
+                new ExponentDBObject(
+                  experienceDBObject.manifestUrl,
+                  ManifestFactory.INSTANCE.getRawManifestFromJson(new JSONObject(experienceDBObject.manifest)),
+                  experienceDBObject.bundleUrl
+                )
+              );
+            } catch (JSONException e) {
+              listener.onFailure();
+            }
           }
         }).execute();
   }
 
   @WorkerThread
-  public static @Nullable ExperienceDBObject experienceScopeKeyToExperienceSync(String experienceScopeKey) {
-    return SQLite.select()
+  public static @Nullable ExponentDBObject experienceScopeKeyToExperienceSync(String experienceScopeKey) throws JSONException {
+    ExperienceDBObject experienceDBObject = SQLite.select()
       .from(ExperienceDBObject.class)
       .where(ExperienceDBObject_Table.id.is(experienceScopeKey))
       .querySingle();
-   }
+    if (experienceDBObject == null) {
+      return null;
+    }
+
+    return new ExponentDBObject(
+      experienceDBObject.manifestUrl,
+      ManifestFactory.INSTANCE.getRawManifestFromJson(new JSONObject(experienceDBObject.manifest)),
+      experienceDBObject.bundleUrl
+    );
+  }
 }
