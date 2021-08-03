@@ -87,12 +87,8 @@ export async function getTrackingPermissionsAsync(): Promise<PermissionResponse>
  * On Android, web, and iOS 13 and below, this method always returns that the permission was
  * granted.
  * @example
- * ```typescript
- * const { granted } = await requestTrackingPermissionsAsync();
- *
- * if (granted) {
- *   // Your app is authorized to track the user or their device
- * }
+ * ```ts
+ * const [status, requestPermission] = useTrackingPermissions();
  * ```
  */
 export const useTrackingPermissions = createPermissionHook({
