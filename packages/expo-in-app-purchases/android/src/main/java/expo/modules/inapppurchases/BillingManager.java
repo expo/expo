@@ -4,38 +4,38 @@ import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Parcelable;
-import androidx.annotation.NonNull;
 
 import com.android.billingclient.api.AcknowledgePurchaseParams;
 import com.android.billingclient.api.AcknowledgePurchaseResponseListener;
 import com.android.billingclient.api.BillingClient;
-import com.android.billingclient.api.BillingFlowParams;
-import com.android.billingclient.api.BillingResult;
 import com.android.billingclient.api.BillingClient.BillingResponseCode;
 import com.android.billingclient.api.BillingClient.FeatureType;
 import com.android.billingclient.api.BillingClient.SkuType;
 import com.android.billingclient.api.BillingClientStateListener;
+import com.android.billingclient.api.BillingFlowParams;
+import com.android.billingclient.api.BillingResult;
 import com.android.billingclient.api.ConsumeParams;
 import com.android.billingclient.api.ConsumeResponseListener;
 import com.android.billingclient.api.Purchase;
-import com.android.billingclient.api.Purchase.PurchasesResult;
-import com.android.billingclient.api.PurchaseHistoryResponseListener;
 import com.android.billingclient.api.PurchaseHistoryRecord;
+import com.android.billingclient.api.PurchaseHistoryResponseListener;
 import com.android.billingclient.api.PurchasesResponseListener;
 import com.android.billingclient.api.PurchasesUpdatedListener;
 import com.android.billingclient.api.SkuDetails;
 import com.android.billingclient.api.SkuDetailsParams;
 import com.android.billingclient.api.SkuDetailsResponseListener;
 
-import androidx.annotation.Nullable;
-import expo.modules.core.interfaces.services.EventEmitter;
-import expo.modules.core.Promise;
-
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.ArrayList;
 import java.util.Set;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import expo.modules.core.Promise;
+import expo.modules.core.interfaces.services.EventEmitter;
 
 /**
  * Handles all the interactions with Play Store (via Billing library), maintains connection to
@@ -280,34 +280,39 @@ public class BillingManager implements PurchasesUpdatedListener {
    */
   public void queryPurchases(final Promise promise) {
     Runnable queryToExecute = new Runnable() {
-      BillingResult inAppBillingResult;
-      List<Purchase> purchases = new ArrayList<>();
-
       @Override
       public void run() {
+        final List<String> ALL_QUERIES = Arrays.asList(SkuType.INAPP, SkuType.SUBS);
+        final List<Purchase> purchases = new ArrayList<>();
+        final List<String> completedQueries = new ArrayList<>();
+
         mBillingClient.queryPurchasesAsync(SkuType.INAPP, new PurchasesResponseListener() {
           @Override
           public void onQueryPurchasesResponse(@NonNull BillingResult billingResult, @NonNull List<Purchase> inAppPurchases) {
-            inAppBillingResult = billingResult;
             if (billingResult.getResponseCode() == BillingResponseCode.OK) {
               purchases.addAll(inAppPurchases);
             }
-
-            if (areSubscriptionsSupported()) {
-              mBillingClient.queryPurchasesAsync(SkuType.SUBS, new PurchasesResponseListener() {
-                @Override
-                public void onQueryPurchasesResponse(@NonNull BillingResult billingResult, @NonNull List<Purchase> subscriptionPurchases) {
-                  if (billingResult.getResponseCode() == BillingResponseCode.OK) {
-                    purchases.addAll(subscriptionPurchases);
-                  }
-                  onQueryPurchasesFinished(inAppBillingResult, purchases, promise);
-                }
-              });
-            } else {
-              onQueryPurchasesFinished(inAppBillingResult, purchases, promise);
+            completedQueries.add(SkuType.INAPP);
+            if (completedQueries.containsAll(ALL_QUERIES) || !areSubscriptionsSupported()) {
+              onQueryPurchasesFinished(billingResult, purchases, promise);
             }
           }
         });
+
+        if (areSubscriptionsSupported()) {
+          mBillingClient.queryPurchasesAsync(SkuType.SUBS, new PurchasesResponseListener() {
+            @Override
+            public void onQueryPurchasesResponse(@NonNull BillingResult billingResult, @NonNull List<Purchase> subscriptionPurchases) {
+              if (billingResult.getResponseCode() == BillingResponseCode.OK) {
+                purchases.addAll(subscriptionPurchases);
+              }
+              completedQueries.add(SkuType.SUBS);
+              if (completedQueries.containsAll(ALL_QUERIES)) {
+                onQueryPurchasesFinished(billingResult, purchases, promise);
+              }
+            }
+          });
+        }
       }
     };
 
