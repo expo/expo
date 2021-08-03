@@ -644,11 +644,11 @@ export default function App() {
           if (url != null) {
             return url;
           }
-                         
+
           // Handle URL from expo push notifications
           const response = await Notifications.getLastNotificationResponseAsync();
           const url = response?.notification.request.content.data.url;
-                         
+
           return url;
         }
         subscribe(listener) {
