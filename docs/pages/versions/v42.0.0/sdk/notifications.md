@@ -636,6 +636,20 @@ export default function App() {
         config: {
           // Configuration for linking
         },
+        async getInitialURL() {
+          // First, you may want to do the default deep link handling
+          // Check if app was opened from a deep link
+          const url = await Linking.getInitialURL();
+
+          if (url != null) {
+            return url;
+          }
+                         
+          const response = await Notifications.getLastNotificationResponseAsync();
+          const url = response.notification.request.content.data.url;
+                         
+          return url;
+        }
         subscribe(listener) {
           const onReceiveURL = ({ url }: { url: string }) => listener(url);
 
