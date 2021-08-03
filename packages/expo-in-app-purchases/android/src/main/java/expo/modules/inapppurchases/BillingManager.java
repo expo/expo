@@ -27,6 +27,7 @@ import com.android.billingclient.api.SkuDetails;
 import com.android.billingclient.api.SkuDetailsParams;
 import com.android.billingclient.api.SkuDetailsResponseListener;
 
+import androidx.annotation.Nullable;
 import expo.modules.core.interfaces.services.EventEmitter;
 import expo.modules.core.Promise;
 
@@ -148,8 +149,13 @@ public class BillingManager implements PurchasesUpdatedListener {
         BillingFlowParams.Builder purchaseParams = BillingFlowParams.newBuilder()
           .setSkuDetails(skuDetails);
         if (oldSku != null) {
+          String purchaseToken = getPurchaseTokenFromSku(oldSku);
+          if (purchaseToken == null) {
+            promise.reject("ITEM_NOT_FOUND", "Purchase for old ID " + oldSku + " not found. Must get purchase history before replacing with new purchase.");
+            return;
+          }
           purchaseParams.setSubscriptionUpdateParams(
-            BillingFlowParams.SubscriptionUpdateParams.newBuilder().setOldSkuPurchaseToken(oldSku).build()
+            BillingFlowParams.SubscriptionUpdateParams.newBuilder().setOldSkuPurchaseToken(purchaseToken).build()
           );
         }
         mBillingClient.launchBillingFlow(mActivity, purchaseParams.build());
@@ -157,6 +163,16 @@ public class BillingManager implements PurchasesUpdatedListener {
     };
 
     executeServiceRequest(purchaseFlowRequest);
+  }
+
+  @Nullable
+  private String getPurchaseTokenFromSku(String sku) {
+    for (Purchase purchase: mPurchases) {
+      if (purchase.getSkus().contains(sku)) {
+        return purchase.getPurchaseToken();
+      }
+    }
+    return null;
   }
 
   public Context getContext() {
