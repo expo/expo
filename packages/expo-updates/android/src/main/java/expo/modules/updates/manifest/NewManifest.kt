@@ -53,7 +53,7 @@ class NewManifest private constructor(
       assetList.add(
         AssetEntity(
           mLaunchAsset.getString("key"),
-          mLaunchAsset.optString("fileExtension")
+          mLaunchAsset.optString("fileExtension",null)
         ).apply {
           url = Uri.parse(mLaunchAsset.getString("url"))
           isLaunchAsset = true
