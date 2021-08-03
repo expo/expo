@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed an issue with building on Xcode 13.
+
 ### 💡 Others
 
 ## 3.2.0 — 2021-06-16
