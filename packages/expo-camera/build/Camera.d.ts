@@ -13,11 +13,11 @@ export default class Camera extends React.Component<CameraProps> {
     };
     static defaultProps: CameraProps;
     /**
-     * @deprecated use `getCameraPermissionsAync` instead.
+     * @deprecated Use `getCameraPermissionsAync` or `getMicrophonePermissionsAsync` instead.
      */
     static getPermissionsAsync(): Promise<PermissionResponse>;
     /**
-     * @deprecated use `requestCameraPermissionsAync` instead.
+     * @deprecated Use `requestCameraPermissionsAsync` or `requestMicrophonePermissionsAsync` instead.
      */
     static requestPermissionsAsync(): Promise<PermissionResponse>;
     static getCameraPermissionsAsync(): Promise<PermissionResponse>;

@@ -118,16 +118,22 @@ export default class Camera extends React.Component<CameraProps> {
   };
 
   /**
-   * @deprecated use `getCameraPermissionsAync` instead.
+   * @deprecated Use `getCameraPermissionsAync` or `getMicrophonePermissionsAsync` instead.
    */
   static async getPermissionsAsync(): Promise<PermissionResponse> {
+    console.warn(
+      `"getPermissionsAsync()" is now deprecated. Please use "getCameraPermissionsAsync()" or "getMicrophonePermissionsAsync()" instead.`
+    );
     return CameraManager.getPermissionsAsync();
   }
 
   /**
-   * @deprecated use `requestCameraPermissionsAync` instead.
+   * @deprecated Use `requestCameraPermissionsAsync` or `requestMicrophonePermissionsAsync` instead.
    */
   static async requestPermissionsAsync(): Promise<PermissionResponse> {
+    console.warn(
+      `"requestPermissionsAsync()" is now deprecated. Please use "requestCameraPermissionsAsync()" or "requestMicrophonePermissionsAsync()" instead.`
+    );
     return CameraManager.requestPermissionsAsync();
   }
 

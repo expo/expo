@@ -80,15 +80,17 @@ export default class Camera extends React.Component {
         whiteBalance: CameraManager.WhiteBalance.auto,
     };
     /**
-     * @deprecated use `getCameraPermissionsAync` instead.
+     * @deprecated Use `getCameraPermissionsAync` or `getMicrophonePermissionsAsync` instead.
      */
     static async getPermissionsAsync() {
+        console.warn(`"getPermissionsAsync()" is now deprecated. Please use "getCameraPermissionsAsync()" or "getMicrophonePermissionsAsync()" instead.`);
         return CameraManager.getPermissionsAsync();
     }
     /**
-     * @deprecated use `requestCameraPermissionsAync` instead.
+     * @deprecated Use `requestCameraPermissionsAsync` or `requestMicrophonePermissionsAsync` instead.
      */
     static async requestPermissionsAsync() {
+        console.warn(`"requestPermissionsAsync()" is now deprecated. Please use "requestCameraPermissionsAsync()" or "requestMicrophonePermissionsAsync()" instead.`);
         return CameraManager.requestPermissionsAsync();
     }
     static async getCameraPermissionsAsync() {
