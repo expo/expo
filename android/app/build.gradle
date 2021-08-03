@@ -130,7 +130,7 @@ configurations.all {
   }
 }
 
-apply from: "../../node_modules/react-native-unimodules/gradle.groovy"
+apply from: new File(["node", "--print", "require.resolve('react-native-unimodules/package.json')"].execute().text.trim(), "../gradle.groovy")
 
 dependencies {
   implementation fileTree(dir: 'libs', include: ['*.jar'])
