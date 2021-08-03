@@ -1191,7 +1191,7 @@ SPEC CHECKSUMS:
   EXNotifications: 296d9487163c2c08fffec5e79a5f9094bc016d9c
   EXPermissions: c7bead8f093700d5fcfb4f41238430a51702c5c8
   expo-dev-client: 6f833f384c5fcc59e96a91268601dabcd16f70f0
-  expo-dev-launcher: 0b3fe43607f31238f49445e7310e185675061762
+  expo-dev-launcher: 4b8bf23c6df5488d64d6eb7eeea15f6e9eb360da
   expo-dev-menu: c1d43574828f37cb541a0bb52fe7bb7829586147
   expo-dev-menu-interface: 59fbd00f527c7ae65aa86144e6c8af3761fc037f
   expo-image: ea170930bd8bc42328ee74ff4dc861ca31587dc8
