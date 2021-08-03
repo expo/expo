@@ -128,7 +128,10 @@ public class UpdatesUtils {
     if (asset.type == null){
       return asset.key;
     }
-    return if (asset.type.startsWith('.')) "${asset.key}${fileExtension}" else "${asset.key}.${fileExtension}";
+    if (asset.type.startsWith(".")) {
+      return asset.key + asset.type;
+    }
+    return asset.key + "." + asset.type;
   }
 
   public static void sendEventToReactNative(@Nullable final WeakReference<ReactNativeHost> reactNativeHost, final String eventName, final WritableMap params) {

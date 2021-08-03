@@ -13,7 +13,19 @@ import static org.mockito.Mockito.*;
 public class UpdatesUtilsTest {
   @Test
   public void testCreateFilenameForAsset() {
+    AssetEntity assetEntity = new AssetEntity("key", ".png");
+    Assert.assertEquals("key.png", UpdatesUtils.createFilenameForAsset(assetEntity));
+  }
+
+  @Test
+  public void testCreateFilenameForAssetWhenMissingDotPrefix() {
     AssetEntity assetEntity = new AssetEntity("key", "png");
+    Assert.assertEquals("key.png", UpdatesUtils.createFilenameForAsset(assetEntity));
+  }
+
+  @Test
+  public void testCreateFilenameForAssetWhenMissingExtension() {
+    AssetEntity assetEntity = new AssetEntity("key", null);
     Assert.assertEquals("key", UpdatesUtils.createFilenameForAsset(assetEntity));
   }
 
