@@ -1,4 +1,4 @@
-import { PermissionResponse, PermissionStatus } from 'expo-modules-core';
+import { PermissionResponse, PermissionStatus, PermissionHookOptions } from 'expo-modules-core';
 export declare enum BrightnessMode {
     /**
      * Means that the current brightness mode cannot be determined.
@@ -14,7 +14,7 @@ export declare enum BrightnessMode {
      */
     MANUAL = 2
 }
-export { PermissionResponse, PermissionStatus };
+export { PermissionResponse, PermissionStatus, PermissionHookOptions };
 /**
  * Returns whether the Brightness API is enabled on the current device. This does not check the app
  * permissions.
@@ -90,3 +90,13 @@ export declare function getPermissionsAsync(): Promise<PermissionResponse>;
  * @return A promise that fulfils with an object of type [PermissionResponse](#permissionrespons).
  */
 export declare function requestPermissionsAsync(): Promise<PermissionResponse>;
+/**
+ * Check or request permissions to modify the system brightness.
+ * This uses both `requestPermissionAsync` and `getPermissionsAsync` to interact with the permissions.
+ *
+ * @example
+ * ```ts
+ * const [status, requestPermission] = Brightness.usePermissions();
+ * ```
+ */
+export declare const usePermissions: (options?: PermissionHookOptions | undefined) => [PermissionResponse | null, () => Promise<PermissionResponse | null>, () => Promise<PermissionResponse | null>];

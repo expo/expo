@@ -11,7 +11,7 @@ One fairly common component that is not offered out of the box by Expo is the mi
 
 A checkbox is basically a button that exists in one of two states — it is checked or it isn't. This makes it a perfect candidate for the `useState()` hook. Our first iteration will render a button that toggles between checked and unchecked states. When the checkbox is checked, we'll render a checkmark icon in the center of the button.
 
-_Note: You can find more information about using icons in your Expo project here: https://docs.expo.io/guides/icons/_
+_Note: You can find more information about using icons in your Expo project here: https://docs.expo.dev/guides/icons/_
 
 <SnackInline>
 

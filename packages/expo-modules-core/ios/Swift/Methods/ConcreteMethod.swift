@@ -41,8 +41,11 @@ public class ConcreteMethod<Args, ReturnType>: AnyMethod {
 
       let tuple = try Conversions.toTuple(finalArgs) as! Args
       returnedValue = closure(tuple)
-    } catch let error {
+    } catch let error as CodedError {
       promise.reject(error)
+      return
+    } catch let error {
+      promise.reject(UnexpectedError(error))
       return
     }
     if !takesPromise {
@@ -60,6 +63,9 @@ public class ConcreteMethod<Args, ReturnType>: AnyMethod {
   }
 
   private func castArguments(_ args: [Any?]) throws -> [AnyMethodArgument?] {
+    if args.count != argumentsCount {
+      throw InvalidArgsNumberError(received: args.count, expected: argumentsCount)
+    }
     return try args.enumerated().map { (index, arg) in
       guard let desiredType = argumentType(atIndex: index) else {
         return nil
@@ -78,11 +84,28 @@ public class ConcreteMethod<Args, ReturnType>: AnyMethod {
 //      }
 
       // TODO: (@tsapeta) Handle convertible arrays
-      throw Errors.IncompatibleArgumentType(
+      throw IncompatibleArgTypeError(
         argument: arg,
         atIndex: index,
         desiredType: type(of: desiredType)
       )
     }
+  }
+}
+
+internal struct InvalidArgsNumberError: CodedError {
+  let received: Int
+  let expected: Int
+  var description: String {
+    "Received \(received) arguments, but \(expected) was expected."
+  }
+}
+
+internal struct IncompatibleArgTypeError<ArgumentType, DesiredType>: CodedError {
+  let argument: ArgumentType
+  let atIndex: Int
+  let desiredType: DesiredType.Type
+  var description: String {
+    "Type `\(type(of: argument))` of argument at index `\(atIndex)` is not compatible with expected type `\(desiredType.self)`."
   }
 }

@@ -23,6 +23,9 @@ object ImagePickerConstants {
   const val MISSING_URL_MESSAGE = "Intent doesn't contain `url`."
   const val ERR_CAN_NOT_OPEN_CROP = "ERR_CAN_NOT_OPEN_CROP"
   const val CAN_NOT_OPEN_CROP_MESSAGE = "Can not open the crop tool."
+  const val COROUTINE_CANCELED = "Coroutine canceled by module destruction."
+  const val PROMISES_CANCELED = "Module destroyed, all promises canceled."
+  const val UNKNOWN_EXCEPTION = "Unknown exception."
 
   const val OPTION_QUALITY = "quality"
   const val OPTION_ALLOWS_EDITING = "allowsEditing"

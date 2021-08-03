@@ -1,17 +1,6 @@
-// @needsAudit
-/**
- * An object returned by [`authenticateAsync`](#localauthenticationauthenticateasyncoptions) method.
- */
-export type LocalAuthenticationResult = {
-  /**
-   * A boolean indicating whether or not the authentication was successful.
-   */
-  success: boolean;
-  /**
-   * The error code in the case when authentication fails.
-   */
-  error?: string;
-};
+export type LocalAuthenticationResult =
+  | { success: true }
+  | { success: false; error: string; warning?: string };
 
 // @needsAudit
 export enum AuthenticationType {

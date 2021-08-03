@@ -13,7 +13,7 @@ There are plenty of cases where its current constraints may not be appropriate f
 
 <details><summary><h4>Not all iOS and Android APIs are available</h4></summary> <p>
 
-Many device APIs are supported (check out the "SDK API Reference" in the sidebar), but **not all iOS and Android APIs are available yet**: need Bluetooth? Sorry, we haven't built support for it yet. WebRTC? Not quite. One of the most frequent requests we get is for In-App Purchases and Apple and Google Pay integration. We haven't built this yet, but it's on the roadmap. We are constantly adding new APIs, so if we don't have something you need now, you can either use the [bare workflow](managed-vs-bare.md#bare-workflow) or follow [our blog](https://blog.expo.io) to see the release notes for our SDK updates. Feature prioritization isn't strictly based off of popular vote, but it certainly helps us to gauge what is important to users.
+Many device APIs are supported (check out the "SDK API Reference" in the sidebar), but **not all iOS and Android APIs are available yet**: need Bluetooth? Sorry, we haven't built support for it yet. WebRTC? Not quite. One of the most frequent requests we get is for In-App Purchases and Apple and Google Pay integration. We haven't built this yet, but it's on the roadmap. We are constantly adding new APIs, so if we don't have something you need now, you can either use the [bare workflow](managed-vs-bare.md#bare-workflow) or follow [our blog](https://blog.expo.dev) to see the release notes for our SDK updates. Feature prioritization isn't strictly based off of popular vote, but it certainly helps us to gauge what is important to users.
 
 </p>
 </details>
@@ -65,7 +65,7 @@ If you need to support older versions, you will not be able to use the managed w
 <details><summary><h4>Free builds can sometimes be queued</h4></summary>
 <p>
 
-You can easily build your app for submission to stores without even installing Xcode or Android Studio by using the free [standalone build service](../distribution/building-standalone-apps.md), but it occasionally has a queue depending on how many other folks are building a binary at that time. You can have access to dedicated build infrastructure with a ["Priority" plan](https://expo.io/developer-services), or you can [run the builds on your own CI](../distribution/turtle-cli.md) if you prefer.
+You can easily build your app for submission to stores without even installing Xcode or Android Studio by using the free [standalone build service](../distribution/building-standalone-apps.md), but it occasionally has a queue depending on how many other folks are building a binary at that time. You can have access to dedicated build infrastructure with a ["Priority" plan](https://expo.dev/developer-services), or you can [run the builds on your own CI](../distribution/turtle-cli.md) if you prefer.
 
 </p>
 </details>
@@ -87,14 +87,14 @@ Both [Apple](https://developer.apple.com/app-store/review/guidelines/#kids) and 
 
 Apps built with `expo build:ios|android` [contain code for the entire Expo SDK](https://expo.fyi/managed-app-size), you cannot customize the native dependencies, including Facebook's Audience Network library, so if you build your app this way you cannot designated it as "designed primarily for children under 13" in the App Store or Play Store, _even though this code is never run unless you explicitly call it_.
 
-Apps built with `eas build -p ios|android` [include only your app's explicit native dependencies](https://blog.expo.io/expo-managed-workflow-in-2021-d1c9b68aa10), and so this limitation does not apply if you use EAS Build. [Learn about how to use it](https://docs.expo.io/build/introduction/).
+Apps built with `eas build -p ios|android` [include only your app's explicit native dependencies](https://blog.expo.dev/expo-managed-workflow-in-2021-d1c9b68aa10), and so this limitation does not apply if you use EAS Build. [Learn about how to use it](https://docs.expo.dev/build/introduction/).
 
 </p>
 </details>
 
 <br />
 
-> 👉 We are either actively working on or planning to build solutions to all of the limitations listed above, and if you think anything is missing, please bring it to our attention by posting to our [feature requests board](https://expo.canny.io/feature-requests) or the [forums](http://forums.expo.io/).
+> 👉 We are either actively working on or planning to build solutions to all of the limitations listed above, and if you think anything is missing, please bring it to our attention by posting to our [feature requests board](https://expo.canny.io/feature-requests) or the [forums](https://forums.expo.dev/).
 
 ## Limitations of the bare workflow
 
@@ -107,7 +107,7 @@ The following list is therefore specifically oriented towards to the limitations
 
 <span className="strike">To build your app binaries for distribution on the Apple App Store and Google Play Store you will need to follow the same steps that you would in any native project, the Expo build service can't handle it for you. We are working on bringing bare workflow support to the build service in the near future.</span>
 
-You can now use [EAS Build](/build/introduction.md) to build and sign your apps just as easily as in the managed workflow! [Read the announcement blog post](https://blog.expo.io/expo-application-services-eas-build-and-submit-fc1d1476aa2e).
+You can now use [EAS Build](/build/introduction.md) to build and sign your apps just as easily as in the managed workflow! [Read the announcement blog post](https://blog.expo.dev/expo-application-services-eas-build-and-submit-fc1d1476aa2e).
 
 </p>
 </details>

@@ -26,8 +26,17 @@ public class ModuleHolder {
         method.call(args: args, promise: promise)
       }
     } else {
-      promise.reject("Method \"\(methodName)\" is not exported by \(name)")
+      promise.reject(MethodNotFoundError(methodName: methodName, moduleName: self.name))
     }
+  }
+
+  func call(method methodName: String, args: [Any?], _ callback: @escaping (Any?, CodedError?) -> Void = { _, _ in }) {
+    let promise = Promise {
+      callback($0, nil)
+    } rejecter: {
+      callback(nil, $0)
+    }
+    call(method: methodName, args: args, promise: promise)
   }
 
   // MARK: Listening to events
@@ -54,5 +63,15 @@ public class ModuleHolder {
 
   deinit {
     post(event: .moduleDestroy)
+  }
+
+  // MARK: Errors
+
+  struct MethodNotFoundError: CodedError {
+    let methodName: String
+    let moduleName: String
+    var description: String {
+      "Cannot find method `\(methodName)` in module `\(moduleName)`"
+    }
   }
 }

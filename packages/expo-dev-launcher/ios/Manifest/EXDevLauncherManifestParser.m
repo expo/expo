@@ -42,6 +42,11 @@ typedef void (^CompletionHandler)(NSData *data, NSURLResponse *response);
       return;
     }
 
+    if ([headers[@"Content-Type"] hasPrefix:@"application/json"]) {
+      completion(YES);
+      return;
+    }
+
     completion(NO);
   }];
 }

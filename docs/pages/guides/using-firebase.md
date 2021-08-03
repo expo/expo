@@ -222,7 +222,7 @@ dbh.collection("characters").doc("mario").set({
 })
 ```
 
-This sample was borrowed from [this forum post](https://forums.expo.io/t/open-when-an-expo-firebase-firestore-platform/4126/29).
+This sample was borrowed from [this forum post](https://forums.expo.dev/t/open-when-an-expo-firebase-firestore-platform/4126/29).
 
 ## Recording events with Analytics
 

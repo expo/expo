@@ -16,40 +16,29 @@ You can specify environment variables for specific build jobs using `eas.json`:
 
 ```json
 {
-  "builds": {
-    "android": {
-      "release": {
-        "env": {
-          "API_URL": "https://api.production.com"
-        }
-      }
-    },
-    "ios": {
-      "release": {
-        "env": {
-          "API_URL": "https://api.production.com"
-        }
+  "build": {
+    "release": {
+      "env": {
+        "API_URL": "https://api.production.com"
       }
     }
   }
 }
 ```
 
-You can access these variables in your application using the techniques described in the ["Environment variables in Expo"](/guides/environment-variables.md) guide. You can also share common configuration between different build profiles using the `"extends"` property:
+You can access these variables in your application using the techniques described in the ["Environment variables in Expo"](/guides/environment-variables.md) guide. You can also share common configurations between different build profiles using the `"extends"` property, if both profiles have an `env` object defined, content will be merged.
 
 ```json
 {
-  "builds": {
-    "ios": {
-      "release": {
-        "env": {
-          "API_URL": "https://api.production.com"
-        }
-      },
-      "test": {
-        "distribution": "internal",
-        "extends": "release"
+  "build": {
+    "release": {
+      "env": {
+        "API_URL": "https://api.production.com"
       }
+    },
+    "test": {
+      "distribution": "internal",
+      "extends": "release"
     }
   }
 }
@@ -69,7 +58,7 @@ You can manage secrets through the Expo website and EAS CLI.
 
 ### Secrets on the Expo website
 
-To create account-wide secrets, navigate to the "Secrets" tab under your account or organization's [settings](https://expo.io/settings/secrets):
+To create account-wide secrets, navigate to the "Secrets" tab under your account or organization's [settings](https://expo.dev/settings/secrets):
 
 <ImageSpotlight alt="account-wide secrets location" src="/static/images/eas-build/environment-secrets/secrets-account-nav.png" />
 

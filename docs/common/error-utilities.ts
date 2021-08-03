@@ -13,7 +13,7 @@ export function getRedirectPath(redirectPath: string): string {
 
   // Unsure why this is happening, but sometimes URLs end up with /null in
   // the last path part
-  // https://docs.expo.io/versions/latest/sdk/overview/null
+  // https://docs.expo.dev/versions/latest/sdk/overview/null
   if (endsInNull(redirectPath)) {
     redirectPath = redirectPath.replace(/null$/, '');
   }

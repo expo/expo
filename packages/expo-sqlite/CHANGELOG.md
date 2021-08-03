@@ -10,6 +10,9 @@
 
 ### 💡 Others
 
+- Converted Android code to Kotlin ([#13724](https://github.com/expo/expo/pull/13724) by [@ixf](https://github.com/ixf))
+- Added missing `_array` typing to `SQLResultSetRowList`/`ResultSet` return object. ([#13826](https://github.com/expo/expo/pull/13826) by [@bbarthec](https://github.com/bbarthec))
+
 ## 9.2.0 — 2021-06-16
 
 ### 🐛 Bug fixes

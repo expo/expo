@@ -42,7 +42,7 @@ export declare type Manifest = {
     launchAsset: ManifestAsset;
     assets: ManifestAsset[];
     metadata: object;
-    extra?: {
+    extra?: ClientScopingConfig & {
         expoClient?: ExpoClientConfig;
         expoGo?: ExpoGoConfig;
         eas?: EASConfig;
@@ -54,6 +54,13 @@ export declare type EASConfig = {
      * between accounts or renamed.
      */
     projectId?: string;
+};
+export declare type ClientScopingConfig = {
+    /**
+     * An opaque unique string for scoping client-side data to this project. This value
+     * will not change when a project is transferred between accounts or renamed.
+     */
+    scopeKey?: string;
 };
 export declare type ExpoGoConfig = {
     mainModuleName?: string;
@@ -100,16 +107,11 @@ export declare type ExpoClientConfig = ExpoConfig & {
      * may change when a project is transferred between accounts or renamed.
      */
     currentFullName?: string;
-    /**
-     * An opaque unique string for scoping client-side data to this project. This value
-     * will not change when a project is transferred between accounts or renamed.
-     */
-    scopeKey?: string;
 };
 /**
  * A classic manifest https://docs.expo.io/guides/how-expo-works/#expo-manifest
  */
-export declare type AppManifest = ExpoClientConfig & ExpoGoConfig & EASConfig & {
+export declare type AppManifest = ExpoClientConfig & ExpoGoConfig & EASConfig & ClientScopingConfig & {
     [key: string]: any;
 };
 export interface PlatformManifest {

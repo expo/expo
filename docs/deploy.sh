@@ -3,7 +3,7 @@
 set -euo pipefail
 
 scriptdir=$(dirname "${BASH_SOURCE[0]}")
-declare -a buckets=("docs.expo.io" "docs.expo.dev")
+declare -a buckets=("docs.expo.dev")
 target="${1-$scriptdir/out}"
 
 if [ ! -d "$target" ]; then
@@ -133,9 +133,9 @@ aws s3 cp \
 echo "::endgroup::"
 
 echo "::group::[7/7] Notify Google of sitemap changes"
-if [ "$bucket" == "docs.expo.io" ]; then
+if [ "$bucket" == "docs.expo.dev" ]; then
   echo "Strings are equal"
-  curl -m 15 "http://www.google.com/ping\?sitemap\=https%3A%2F%2F${bucket}%2Fsitemap.xml"
+  curl -m 15 "https://www.google.com/ping\?sitemap\=https%3A%2F%2F${bucket}%2Fsitemap.xml"
   echo "\n::endgroup::"
 else
   echo "Skipping Gooogle sitemap ping for $bucket"
