@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Made the arguments that were labeled as 'optional' on iOS for `getPurchaseHistoryAsync` and `finishTransactionAsync` actually optional.
+
 ### 💡 Others
 
 ## 10.2.0 — 2021-06-16
