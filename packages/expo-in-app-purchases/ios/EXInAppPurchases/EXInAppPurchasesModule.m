@@ -98,7 +98,6 @@ UM_EXPORT_METHOD_AS(purchaseItemAsync,
 
 UM_EXPORT_METHOD_AS(finishTransactionAsync,
                     finishTransactionAsync:(NSString *)transactionId
-                    consume:(BOOL)consume // ignore on iOS
                     resolve:(UMPromiseResolveBlock)resolve
                     reject:(UMPromiseRejectBlock)reject)
 {
@@ -111,8 +110,7 @@ UM_EXPORT_METHOD_AS(finishTransactionAsync,
 }
 
 UM_EXPORT_METHOD_AS(getPurchaseHistoryAsync,
-                    getPurchaseHistoryAsync:(BOOL)refresh // ignore on iOS
-                    resolve:(UMPromiseResolveBlock)resolve
+                    getPurchaseHistoryAsync:(UMPromiseResolveBlock)resolve
                     reject:(UMPromiseRejectBlock)reject)
 {
   BOOL promiseSet = [self setPromise:kEXQueryHistoryKey resolve:resolve reject:reject];

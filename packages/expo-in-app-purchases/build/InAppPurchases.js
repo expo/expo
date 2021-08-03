@@ -25,11 +25,16 @@ export async function getProductsAsync(itemList) {
     }
     return await ExpoInAppPurchases.getProductsAsync(itemList);
 }
-export async function getPurchaseHistoryAsync(refresh) {
+export async function getPurchaseHistoryAsync(refresh = false) {
     if (!connected) {
         throw new ConnectionError(errors.NOT_CONNECTED);
     }
-    return await ExpoInAppPurchases.getPurchaseHistoryAsync(refresh);
+    if (Platform.OS === 'android') {
+        return await ExpoInAppPurchases.getPurchaseHistoryAsync(refresh);
+    }
+    else {
+        return await ExpoInAppPurchases.getPurchaseHistoryAsync();
+    }
 }
 export async function purchaseItemAsync(itemId, oldItem) {
     if (!connected) {
@@ -51,8 +56,12 @@ export async function finishTransactionAsync(purchase, consumeItem) {
     }
     if (purchase.acknowledged)
         return;
-    const transactionId = Platform.OS === 'android' ? purchase.purchaseToken : purchase.orderId;
-    await ExpoInAppPurchases.finishTransactionAsync(transactionId, consumeItem);
+    if (Platform.OS === 'android') {
+        await ExpoInAppPurchases.finishTransactionAsync(purchase.purchaseToken, consumeItem);
+    }
+    else {
+        await ExpoInAppPurchases.finishTransactionAsync(purchase.orderId);
+    }
 }
 export async function getBillingResponseCodeAsync() {
     if (!connected) {
