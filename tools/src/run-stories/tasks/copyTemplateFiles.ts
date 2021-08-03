@@ -3,12 +3,13 @@ import fs from 'fs';
 import path from 'path';
 
 import { getPackageRoot, getProjectRoot, getTargetName } from '../helpers';
+import { addDevMenu } from './addDevMenu';
 
 export function copyTemplateFiles(packageName: string) {
   const packageRoot = getPackageRoot(packageName);
   const projectRoot = getProjectRoot(packageName);
   // eslint-disable-next-line
-  const templateRoot = path.resolve(__dirname, '../../../template-files/stories-templates');
+  const templateRoot = path.resolve(projectRoot, '../../template-files/stories-templates');
 
   // metro config
   const metroConfigPath = path.resolve(templateRoot, 'metro.config.js');
@@ -47,15 +48,22 @@ export function copyTemplateFiles(packageName: string) {
   const targetName = getTargetName(packageName);
   const iosRoot = path.resolve(projectRoot, 'ios', targetName);
 
-  fs.copyFileSync(
-    path.resolve(templateRoot, 'ios/AppDelegate.h'),
-    path.resolve(iosRoot, 'AppDelegate.h')
+  let appDelegateHeader = fs.readFileSync(path.resolve(iosRoot, 'AppDelegate.h'), {
+    encoding: 'utf-8',
+  });
+
+  appDelegateHeader = appDelegateHeader.replace(
+    '#import <UMCore/UMAppDelegateWrapper.h>\n',
+    '#import <ExpoModulesCore/EXAppDelegateWrapper.h>\n'
   );
 
-  fs.copyFileSync(
-    path.resolve(templateRoot, 'ios/AppDelegate.m'),
-    path.resolve(iosRoot, 'AppDelegate.m')
-  );
+  appDelegateHeader = appDelegateHeader.replace('UMAppDelegateWrapper', 'EXAppDelegateWrapper');
+
+  fs.writeFileSync(path.resolve(iosRoot, 'AppDelegate.h'), appDelegateHeader, {
+    encoding: 'utf-8',
+  });
+
+  addDevMenu(packageName);
 
   // Podfile
   const podfileRoot = path.resolve(projectRoot, 'ios/Podfile');
@@ -64,11 +72,7 @@ export function copyTemplateFiles(packageName: string) {
   // update target
   let podFileStr = fs.readFileSync(podfileRoot, { encoding: 'utf-8' });
   podFileStr = podFileStr.replace('{{ targetName }}', targetName);
-
   fs.writeFileSync(path.resolve(projectRoot, 'ios/Podfile'), podFileStr, { encoding: 'utf-8' });
-  if (fs.existsSync(path.resolve(projectRoot, 'react-native.config.js'))) {
-    fs.unlinkSync(path.resolve(projectRoot, 'react-native.config.js'));
-  }
 
   // Info.plist -> add splash screen
   IosPlist.modifyAsync(iosRoot, 'Info', (config) => {
