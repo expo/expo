@@ -31,9 +31,14 @@ function registerResolveCommand(commandName, fn) {
 }
 module.exports = async function (args) {
     // Searches for available expo modules.
-    registerSearchCommand('search', async (results) => {
-        console.log(require('util').inspect(results, false, null, true));
-    });
+    registerSearchCommand('search', async (results, options) => {
+        if (options.json) {
+            console.log(JSON.stringify(results));
+        }
+        else {
+            console.log(require('util').inspect(results, false, null, true));
+        }
+    }).option('-j, --json', 'Output results in the plain JSON format.', () => true, false);
     // Checks whether there are no resolving issues in the current setup.
     registerSearchCommand('verify', results => {
         const numberOfDuplicates = autolinking_1.verifySearchResults(results);
