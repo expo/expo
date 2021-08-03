@@ -69,6 +69,7 @@ export default class InAppPurchases extends React.Component<any, any> {
         for (const purchase of results!) {
           console.log(`Successfully purchased ${purchase.productId}`);
           if (!purchase.acknowledged) {
+            // `gas` is the only consumable product, the rest are subscriptions.
             finishTransactionAsync(purchase, purchase.productId === 'gas');
           }
         }
