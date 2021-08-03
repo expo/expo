@@ -81,36 +81,20 @@ class ExpoUpdatesAppLoader @JvmOverloads constructor(
     fun onError(e: Exception)
   }
 
-  private var _updatesConfiguration: UpdatesConfiguration? = null
-  private var _updatesDirectory: File? = null
-  private var _fileDownloader: FileDownloader? = null
-  private var _selectionPolicy: SelectionPolicy? = null
-  private var _launcher: Launcher? = null
+  lateinit var updatesConfiguration: UpdatesConfiguration
+    private set
 
-  val updatesConfiguration: UpdatesConfiguration
-    get() {
-      return checkNotNull(_updatesConfiguration) { "Tried to access UpdatesConfiguration before it was set" }
-    }
+  lateinit var updatesDirectory: File
+    private set
 
-  val updatesDirectory: File
-    get() {
-      return checkNotNull(_updatesDirectory) { "Tried to access UpdatesDirectory before it was set" }
-    }
+  lateinit var selectionPolicy: SelectionPolicy
+    private set
 
-  val selectionPolicy: SelectionPolicy
-    get() {
-      return checkNotNull(_selectionPolicy) { "Tried to access SelectionPolicy before it was set" }
-    }
+  lateinit var fileDownloader: FileDownloader
+    private set
 
-  val fileDownloader: FileDownloader
-    get() {
-      return checkNotNull(_fileDownloader) { "Tried to access FileDownloader before it was set" }
-    }
-
-  val launcher: Launcher
-    get() {
-      return checkNotNull(_launcher) { "Tried to access Launcher before it was set" }
-    }
+  lateinit var launcher: Launcher
+    private set
 
   private fun updateStatus(status: AppLoaderStatus) {
     this.status = status
@@ -121,7 +105,7 @@ class ExpoUpdatesAppLoader @JvmOverloads constructor(
     check(!isStarted) { "AppLoader for $manifestUrl was started twice. AppLoader.start() may only be called once per instance." }
     isStarted = true
     status = AppLoaderStatus.CHECKING_FOR_UPDATE
-    _fileDownloader = FileDownloader(context)
+    fileDownloader = FileDownloader(context)
     kernel.addAppLoaderForManifestUrl(manifestUrl, this)
     val httpManifestUrl = exponentManifest.httpManifestUrl(manifestUrl)
     var releaseChannel = Constants.RELEASE_CHANNEL
@@ -182,9 +166,9 @@ class ExpoUpdatesAppLoader @JvmOverloads constructor(
     selectionPolicy: SelectionPolicy,
     context: Context
   ) {
-    _updatesConfiguration = configuration
-    _updatesDirectory = directory
-    _selectionPolicy = selectionPolicy
+    updatesConfiguration = configuration
+    updatesDirectory = directory
+    this.selectionPolicy = selectionPolicy
     if (!configuration.isEnabled) {
       launchWithNoDatabase(context, null)
       return
@@ -193,7 +177,7 @@ class ExpoUpdatesAppLoader @JvmOverloads constructor(
       configuration,
       databaseHolder,
       directory,
-      _fileDownloader,
+      fileDownloader,
       selectionPolicy,
       object : LoaderTaskCallback {
         private var didAbort = false
@@ -256,7 +240,7 @@ class ExpoUpdatesAppLoader @JvmOverloads constructor(
           if (didAbort) {
             return
           }
-          _launcher = launcher
+          this@ExpoUpdatesAppLoader.launcher = launcher
           this@ExpoUpdatesAppLoader.isUpToDate = isUpToDate
           try {
             val manifestJson = processManifestJson(launcher.launchedUpdate!!.manifest)
@@ -311,8 +295,8 @@ class ExpoUpdatesAppLoader @JvmOverloads constructor(
   }
 
   private fun launchWithNoDatabase(context: Context, e: Exception?) {
-    _launcher = NoDatabaseLauncher(context, _updatesConfiguration, e)
-    var manifestJson = EmbeddedLoader.readEmbeddedManifest(context, _updatesConfiguration)!!.rawManifest.getRawJson()
+    this.launcher = NoDatabaseLauncher(context, updatesConfiguration, e)
+    var manifestJson = EmbeddedLoader.readEmbeddedManifest(context, updatesConfiguration)!!.rawManifest.getRawJson()
     try {
       manifestJson = processManifestJson(manifestJson)
     } catch (ex: Exception) {
@@ -323,10 +307,10 @@ class ExpoUpdatesAppLoader @JvmOverloads constructor(
       )
     }
     callback.onManifestCompleted(ManifestFactory.getRawManifestFromJson(manifestJson))
-    var launchAssetFile = _launcher!!.launchAssetFile
+    var launchAssetFile = launcher.launchAssetFile
     if (launchAssetFile == null) {
       // ReactInstanceManagerBuilder accepts embedded assets as strings with "assets://" prefixed
-      launchAssetFile = "assets://" + _launcher!!.bundleAssetName
+      launchAssetFile = "assets://" + launcher.bundleAssetName
     }
     callback.onBundleCompleted(launchAssetFile)
   }
