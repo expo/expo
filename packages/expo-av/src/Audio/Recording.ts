@@ -1,5 +1,10 @@
 import { EventEmitter, Subscription, Platform } from '@unimodules/core';
-import { PermissionResponse, PermissionStatus } from 'expo-modules-core';
+import {
+  PermissionResponse,
+  PermissionStatus,
+  PermissionHookOptions,
+  createPermissionHook,
+} from 'expo-modules-core';
 
 import {
   _DEFAULT_PROGRESS_UPDATE_INTERVAL_MILLIS,
@@ -172,7 +177,7 @@ export type RecordingStatus = {
   uri?: string | null;
 };
 
-export { PermissionResponse, PermissionStatus };
+export { PermissionResponse, PermissionStatus, PermissionHookOptions };
 
 let _recorderExists: boolean = false;
 const eventEmitter = Platform.OS === 'android' ? new EventEmitter(ExponentAV) : null;
@@ -184,6 +189,20 @@ export async function getPermissionsAsync(): Promise<PermissionResponse> {
 export async function requestPermissionsAsync(): Promise<PermissionResponse> {
   return ExponentAV.requestPermissionsAsync();
 }
+
+/**
+ * Check or request permissions to record audio.
+ * This uses both `requestPermissionAsync` and `getPermissionsAsync` to interact with the permissions.
+ *
+ * @example
+ * ```ts
+ * const [status, requestPermission] = Audio.usePermissions();
+ * ```
+ */
+export const usePermissions = createPermissionHook({
+  getMethod: getPermissionsAsync,
+  requestMethod: requestPermissionsAsync,
+});
 
 export class Recording {
   _subscription: Subscription | null = null;
