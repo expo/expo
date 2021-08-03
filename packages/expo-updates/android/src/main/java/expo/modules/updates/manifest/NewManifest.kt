@@ -53,7 +53,7 @@ class NewManifest private constructor(
       assetList.add(
         AssetEntity(
           mLaunchAsset.getString("key"),
-          mLaunchAsset.getString("type")
+          mLaunchAsset.getString("fileExtension")
         ).apply {
           url = Uri.parse(mLaunchAsset.getString("url"))
           isLaunchAsset = true
@@ -70,7 +70,7 @@ class NewManifest private constructor(
           assetList.add(
             AssetEntity(
               assetObject.getString("key"),
-              assetObject.getString("type")
+              assetObject.getString("fileExtension")
             ).apply {
               url = Uri.parse(assetObject.getString("url"))
               embeddedAssetFilename = assetObject.optString("embeddedAssetFilename")
