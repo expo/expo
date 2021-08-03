@@ -126,7 +126,7 @@ EX_EXPORT_METHOD_AS(getDocumentAsync,
 #endif
         NSMutableArray *utiTypes = [mimeTypes mutableCopy];
         for (int i = 0; i < [mimeTypes count]; i++) {
-            utiTypes[i] = (NSString *)EXConvertMimeTypeToUTI(mimeTypes[i]);
+          utiTypes[i] = (NSString *)EXConvertMimeTypeToUTI(mimeTypes[i]);
         }
         documentPickerVC = [[UIDocumentPickerViewController alloc] initWithDocumentTypes:utiTypes
                                                                                   inMode:UIDocumentPickerModeImport];
