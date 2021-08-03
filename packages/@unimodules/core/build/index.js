@@ -1,3 +1,2 @@
-export * from './AdapterProxy';
-export { default as deprecate } from './deprecate';
+export * from 'expo-modules-core';
 //# sourceMappingURL=index.js.map
