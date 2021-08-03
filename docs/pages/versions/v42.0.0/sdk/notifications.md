@@ -645,8 +645,9 @@ export default function App() {
             return url;
           }
                          
+          // Handle URL from expo push notifications
           const response = await Notifications.getLastNotificationResponseAsync();
-          const url = response.notification.request.content.data.url;
+          const url = response?.notification.request.content.data.url;
                          
           return url;
         }
