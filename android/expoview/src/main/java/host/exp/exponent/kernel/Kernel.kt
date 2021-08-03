@@ -174,7 +174,7 @@ class Kernel : KernelInterface() {
       try {
         // Make sure we can get the manifest successfully. This can fail in dev mode
         // if the kernel packager is not running.
-        exponentManifest.kernelManifest
+        exponentManifest.getKernelManifest()
       } catch (e: Throwable) {
         Exponent.getInstance()
           .runOnUiThread { // Hack to make this show up for a while. Can't use an Alert because LauncherActivity has a transparent theme. This should only be seen by internal developers.
@@ -265,14 +265,14 @@ class Kernel : KernelInterface() {
             .addPackage(
               ExponentPackage.kernelExponentPackage(
                 context,
-                exponentManifest.kernelManifest,
+                exponentManifest.getKernelManifest(),
                 HomeActivity.homeExpoPackages(),
                 initialURL
               )
             )
             .addPackage(
               ExpoTurboPackage.kernelExpoTurboPackage(
-                exponentManifest.kernelManifest, initialURL
+                exponentManifest.getKernelManifest(), initialURL
               )
             )
             .setJSIModulesPackage { reactApplicationContext: ReactApplicationContext?, jsContext: JavaScriptContextHolder? ->
@@ -282,7 +282,7 @@ class Kernel : KernelInterface() {
               )
             }
             .setInitialLifecycleState(LifecycleState.RESUMED)
-          if (!KernelConfig.FORCE_NO_KERNEL_DEBUG_MODE && exponentManifest.kernelManifest.isDevelopmentMode()) {
+          if (!KernelConfig.FORCE_NO_KERNEL_DEBUG_MODE && exponentManifest.getKernelManifest().isDevelopmentMode()) {
             Exponent.enableDeveloperSupport(
               "UNVERSIONED", kernelDebuggerHost,
               kernelMainModuleName, RNObject.wrap(builder)
@@ -316,13 +316,13 @@ class Kernel : KernelInterface() {
   }
 
   private val kernelDebuggerHost: String
-    get() = exponentManifest.kernelManifest.getDebuggerHost()
+    get() = exponentManifest.getKernelManifest().getDebuggerHost()
   private val kernelMainModuleName: String
-    get() = exponentManifest.kernelManifest.getMainModuleName()
+    get() = exponentManifest.getKernelManifest().getMainModuleName()
   private val bundleUrl: String?
     get() {
       return try {
-        exponentManifest.kernelManifest.getBundleURL()
+        exponentManifest.getKernelManifest().getBundleURL()
       } catch (e: JSONException) {
         KernelProvider.instance.handleError(e)
         null
@@ -331,7 +331,7 @@ class Kernel : KernelInterface() {
   private val kernelRevisionId: String?
     get() {
       return try {
-        exponentManifest.kernelManifest.getRevisionId()
+        exponentManifest.getKernelManifest().getRevisionId()
       } catch (e: JSONException) {
         KernelProvider.instance.handleError(e)
         null
@@ -689,7 +689,7 @@ class Kernel : KernelInterface() {
             }
           }
 
-          override fun onBundleCompleted(localBundlePath: String) {
+          override fun onBundleCompleted(localBundlePath: String?) {
             Exponent.getInstance().runOnUiThread { sendBundleToExperienceActivity(localBundlePath) }
           }
 
