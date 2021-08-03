@@ -10,7 +10,7 @@ function startServer(serverConfig) {
     writeRequiredFiles_1.writeRequiredFiles(mergedConfigs);
     var server = createHttpServer_1.createHttpServer(mergedConfigs);
     var watcher = createFileWatcher_1.createFileWatcher(mergedConfigs, server);
-    ["exit", "SIGINT", "SIGUSR1", "SIGUSR2", "uncaughtException", "SIGTERM"].forEach(function (eventType) {
+    ["SIGINT", "SIGTERM"].forEach(function (eventType) {
         process.on(eventType, function () {
             watcher.cleanup();
             server.cleanup();

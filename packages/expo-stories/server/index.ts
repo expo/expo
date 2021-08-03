@@ -12,7 +12,7 @@ function startServer(serverConfig: ServerConfig) {
   const server = createHttpServer(mergedConfigs);
   const watcher = createFileWatcher(mergedConfigs, server);
 
-  [`exit`, `SIGINT`, `SIGUSR1`, `SIGUSR2`, `uncaughtException`, `SIGTERM`].forEach(eventType => {
+  [`SIGINT`, `SIGTERM`].forEach(eventType => {
     process.on(eventType, () => {
       watcher.cleanup();
       server.cleanup();
