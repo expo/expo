@@ -125,7 +125,10 @@ public class UpdatesUtils {
       // create a filename that's unlikely to collide with any other asset
       return "asset-" + new Date().getTime() + "-" + new Random().nextInt();
     }
-    return asset.key;
+    if (asset.type == null){
+      return asset.key;
+    }
+    return if (asset.type.startsWith('.')) "${asset.key}${fileExtension}" else "${asset.key}.${fileExtension}";
   }
 
   public static void sendEventToReactNative(@Nullable final WeakReference<ReactNativeHost> reactNativeHost, final String eventName, final WritableMap params) {

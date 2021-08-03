@@ -21,12 +21,15 @@ NS_ASSUME_NONNULL_BEGIN
 - (nullable NSString *)filename
 {
   if (!_filename) {
-    if (_key) {
-      _filename = [NSString stringWithFormat:@"%@.%@", _key, _type];
-    } else {
+    if (!_key) {
       // create a filename that's unlikely to collide with any other asset
       _filename = [NSString stringWithFormat:@"asset-%d-%u", (int)[NSDate date].timeIntervalSince1970, arc4random()];
+    } 
+    if (!_type){
+      _filename = _key
     }
+    
+    _filename = [_type hasPrefix:@"."] ? [NSString stringWithFormat:@"%@%@", _key, _type] : [NSString stringWithFormat:@"%@.%@", _key, _type];
   }
   return _filename;
 }
