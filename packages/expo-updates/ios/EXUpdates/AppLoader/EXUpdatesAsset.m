@@ -24,14 +24,14 @@ NS_ASSUME_NONNULL_BEGIN
     if (!_key) {
       // create a filename that's unlikely to collide with any other asset
       _filename = [NSString stringWithFormat:@"asset-%d-%u", (int)[NSDate date].timeIntervalSince1970, arc4random()];
-    } 
-    if (!_type){
-      _filename = _key
+      return _filename;
     }
+    
     if ([_type hasPrefix:@"."]){
-      _filename = [NSString stringWithFormat:@"%@%@", _key, _type]
+      _filename = [NSString stringWithFormat:@"%@%@", _key, _type];
+    } else {
+      _filename = [NSString stringWithFormat:@"%@.%@", _key, _type];
     }
-    _filename = [NSString stringWithFormat:@"%@.%@", _key, _type];
   }
   return _filename;
 }
