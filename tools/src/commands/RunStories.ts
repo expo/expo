@@ -9,8 +9,8 @@ import { getProjectRoot } from '../run-stories/helpers';
 import { clearNativeCache } from '../run-stories/tasks/clearNativeCache';
 import { copyTemplateFiles } from '../run-stories/tasks/copyTemplateFiles';
 import { getPackageNameAsync } from '../run-stories/tasks/getPackageNameAsync';
-import { initializeExpoAppAsync } from '../run-stories/tasks/initializeExpoAppAsync';
 import { initializeDefaultsAsync } from '../run-stories/tasks/initializeDefaultsAsync';
+import { initializeExpoAppAsync } from '../run-stories/tasks/initializeExpoAppAsync';
 import { runPrebuildAsync } from '../run-stories/tasks/runPrebuildAsync';
 import { runStoryProcessesAsync } from '../run-stories/tasks/runStoryProcessesAsync';
 

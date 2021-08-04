@@ -1,11 +1,15 @@
 import bunyan from '@expo/bunyan';
 import { runMetroDevServerAsync } from '@expo/dev-server';
 import spawnAsync from '@expo/spawn-async';
-import { getProjectName } from '@expo/xdl/node_modules/@expo/config-plugins/build/ios/utils/Xcodeproj';
+import { LogUpdater, PackagerLogsStream, LogRecord, ProjectUtils } from '@expo/xdl';
+import chalk from 'chalk';
 import path from 'path';
+import findLastIndex from 'lodash/findLastIndex';
+import ProgressBar from 'progress';
 
 import Logger from '../../Logger';
-import { getProjectRoot } from '../helpers';
+import { getProjectRoot, getProjectName } from '../helpers';
+import { createMetroLogger } from './createMetroLogger';
 
 type Platform = 'android' | 'ios' | 'web';
 
@@ -31,32 +35,7 @@ export async function runStoryProcessesAsync(packageName: string, platform: Plat
   stdin.resume();
   stdin.setEncoding('utf8');
 
-  const logger = bunyan.createLogger({
-    name: 'expo-stories',
-    streams: [
-      {
-        stream: {
-          write: (chunk: string) => {
-            try {
-              const c = JSON.parse(chunk);
-
-              if (c.tag === 'metro') {
-                if (!c.msg) {
-                  return;
-                }
-
-                const message = JSON.parse(c.msg);
-                if (message.type === 'client_log' && message.data) {
-                  Logger.log(message.data.join('\n'));
-                }
-              }
-            } catch (e) {}
-          },
-          level: 'debug',
-        },
-      },
-    ],
-  });
+  const logger = createMetroLogger(projectRoot);
 
   const { messageSocket } = await runMetroDevServerAsync(projectRoot, {
     port: 8081,
