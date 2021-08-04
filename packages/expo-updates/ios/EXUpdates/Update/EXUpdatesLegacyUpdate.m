@@ -89,7 +89,7 @@ static NSString * const EXUpdatesExpoTestDomain = @"expo.test";
 
     NSURL *url = [bundledAssetBaseUrl URLByAppendingPathComponent:hash];
 
-    NSString *key = [NSString stringWithFormat:@"%@.%@", hash, type];
+    NSString *key = hash;
     EXUpdatesAsset *asset = [[EXUpdatesAsset alloc] initWithKey:key type:(NSString *)type];
     asset.url = url;
     asset.mainBundleFilename = filename;

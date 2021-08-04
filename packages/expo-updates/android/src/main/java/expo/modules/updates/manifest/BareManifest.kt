@@ -46,7 +46,7 @@ class BareManifest private constructor(
           val assetObject = mAssets.getJSONObject(i)
           val type = assetObject.getString("type")
           val assetEntity = AssetEntity(
-            assetObject.getString("packagerHash") + "." + type,
+            assetObject.getString("packagerHash"),
             type
           ).apply {
             resourcesFilename = assetObject.optString("resourcesFilename")

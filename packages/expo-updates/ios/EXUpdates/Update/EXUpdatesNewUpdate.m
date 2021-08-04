@@ -50,16 +50,16 @@ NS_ASSUME_NONNULL_BEGIN
       NSAssert([assetDict isKindOfClass:[NSDictionary class]], @"assets must be objects");
       id key = assetDict[@"key"];
       id urlString = assetDict[@"url"];
-      id type = assetDict[@"contentType"];
+      id fileExtension = assetDict[@"fileExtension"];
       id metadata = assetDict[@"metadata"];
       id mainBundleFilename = assetDict[@"mainBundleFilename"];
       NSAssert(key && [key isKindOfClass:[NSString class]], @"asset key should be a nonnull string");
       NSAssert(urlString && [urlString isKindOfClass:[NSString class]], @"asset url should be a nonnull string");
-      NSAssert(type && [type isKindOfClass:[NSString class]], @"asset contentType should be a nonnull string");
+      NSAssert(fileExtension && [fileExtension isKindOfClass:[NSString class]], @"asset fileExtension should be a nonnull string");
       NSURL *url = [NSURL URLWithString:(NSString *)urlString];
       NSAssert(url, @"asset url should be a valid URL");
       
-      EXUpdatesAsset *asset = [[EXUpdatesAsset alloc] initWithKey:key type:(NSString *)type];
+      EXUpdatesAsset *asset = [[EXUpdatesAsset alloc] initWithKey:key type:(NSString *)fileExtension];
       asset.url = url;
       
       if (metadata) {
