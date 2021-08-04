@@ -282,11 +282,22 @@ public class BillingManager implements PurchasesUpdatedListener {
    */
   public void queryPurchases(final Promise promise) {
     Runnable queryToExecute = new Runnable() {
+      @NonNull
+      private BillingResult aggregateBillingResults(@NonNull Set<BillingResult> billingResults) {
+        for (BillingResult result: billingResults) {
+          if (result.getResponseCode() != BillingResponseCode.OK) {
+            return result;
+          }
+        }
+        return billingResults.iterator().next();
+      }
+
       @Override
       public void run() {
         final Set<String> ALL_QUERIES = new HashSet(Arrays.asList(SkuType.INAPP, SkuType.SUBS));
         List<Purchase> purchases = new ArrayList<>();
         Set<String> completedQueries = new HashSet();
+        Set<BillingResult> billingResults = new HashSet();
 
         mBillingClient.queryPurchasesAsync(SkuType.INAPP, new PurchasesResponseListener() {
           @Override
@@ -294,9 +305,10 @@ public class BillingManager implements PurchasesUpdatedListener {
             if (billingResult.getResponseCode() == BillingResponseCode.OK) {
               purchases.addAll(inAppPurchases);
             }
+            billingResults.add(billingResult);
             completedQueries.add(SkuType.INAPP);
             if (completedQueries.containsAll(ALL_QUERIES) || !areSubscriptionsSupported()) {
-              onQueryPurchasesFinished(billingResult, purchases, promise);
+              onQueryPurchasesFinished(aggregateBillingResults(billingResults), purchases, promise);
             }
           }
         });
@@ -308,9 +320,10 @@ public class BillingManager implements PurchasesUpdatedListener {
               if (billingResult.getResponseCode() == BillingResponseCode.OK) {
                 purchases.addAll(subscriptionPurchases);
               }
+              billingResults.add(billingResult);
               completedQueries.add(SkuType.SUBS);
               if (completedQueries.containsAll(ALL_QUERIES)) {
-                onQueryPurchasesFinished(billingResult, purchases, promise);
+                onQueryPurchasesFinished(aggregateBillingResults(billingResults), purchases, promise);
               }
             }
           });
