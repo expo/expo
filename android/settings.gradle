@@ -24,7 +24,7 @@ project(":expo-random").projectDir = new File("../packages/expo-random/android")
 // WHEN_DISTRIBUTING_REMOVE_TO_HERE
 
 // Import gradle helpers for unimodules.
-apply from: '../node_modules/react-native-unimodules/gradle.groovy'
+apply from: new File(["node", "--print", "require.resolve('react-native-unimodules/package.json')"].execute().text.trim(), "../gradle.groovy")
 
 // Include unimodules.
 includeUnimodulesProjects(

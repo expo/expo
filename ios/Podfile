@@ -1,6 +1,6 @@
 require_relative './podfile_helpers.rb'
-require_relative '../packages/@unimodules/react-native-adapter/scripts/autolinking'
-require_relative '../react-native-lab/react-native/scripts/react_native_pods'
+require File.join(`node --print "require.resolve('react-native/package.json')"`, "../scripts/react_native_pods")
+require File.join(`node --print "require.resolve('@unimodules/react-native-adapter/package.json')"`, "../scripts/autolinking")
 
 install! 'cocoapods',
          :generate_multiple_pod_projects => true,

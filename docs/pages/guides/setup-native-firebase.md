@@ -132,8 +132,8 @@ After following the iOS and Android setup, you can optionally configure your pro
 
 ```rb
   # At the top of the file
-  require_relative '../node_modules/@react-native-community/cli-platform-ios/native_modules'
-  require_relative '../node_modules/react-native-unimodules/cocoapods'
+  require File.join(`node --print "require.resolve('@react-native-community/cli-platform-ios/package.json')"`, "../native_modules")
+  require File.join(`node --print "require.resolve('react-native-unimodules/package.json')"`, "../cocoapods.rb")
 
   # ...
 

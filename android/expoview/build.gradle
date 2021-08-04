@@ -244,7 +244,7 @@ configurations.all {
 }
 
 // Import gradle helpers for unimodules.
-apply from: "../../node_modules/react-native-unimodules/gradle.groovy"
+apply from: new File(["node", "--print", "require.resolve('react-native-unimodules/package.json')"].execute().text.trim(), "../gradle.groovy")
 // WHEN_VERSIONING_REMOVE_TO_HERE
 
 dependencies {
