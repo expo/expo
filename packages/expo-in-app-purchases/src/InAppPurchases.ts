@@ -54,13 +54,17 @@ export async function getProductsAsync(
 }
 
 export async function getPurchaseHistoryAsync(
-  refresh?: boolean
+  refresh: boolean = false
 ): Promise<IAPQueryResponse<InAppPurchase>> {
   if (!connected) {
     throw new ConnectionError(errors.NOT_CONNECTED);
   }
 
-  return await ExpoInAppPurchases.getPurchaseHistoryAsync(refresh);
+  if (Platform.OS === 'android') {
+    return await ExpoInAppPurchases.getPurchaseHistoryAsync(refresh);
+  } else {
+    return await ExpoInAppPurchases.getPurchaseHistoryAsync();
+  }
 }
 
 export async function purchaseItemAsync(itemId: string, oldItem?: string): Promise<void> {
@@ -95,8 +99,11 @@ export async function finishTransactionAsync(
   }
   if (purchase.acknowledged) return;
 
-  const transactionId = Platform.OS === 'android' ? purchase.purchaseToken : purchase.orderId;
-  await ExpoInAppPurchases.finishTransactionAsync(transactionId, consumeItem);
+  if (Platform.OS === 'android') {
+    await ExpoInAppPurchases.finishTransactionAsync(purchase.purchaseToken, consumeItem);
+  } else {
+    await ExpoInAppPurchases.finishTransactionAsync(purchase.orderId);
+  }
 }
 
 export async function getBillingResponseCodeAsync(): Promise<number> {
