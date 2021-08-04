@@ -11,8 +11,8 @@ import {
   Workflow,
   getJobsForWorkflowRunAsync,
 } from '../GitHubActions';
-import { deepCloneObject, retryAsync } from '../Utils';
 import logger from '../Logger';
+import { deepCloneObject, retryAsync } from '../Utils';
 
 type CommandOptions = {
   ref?: string;
