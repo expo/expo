@@ -69,12 +69,11 @@ export async function runStoryProcessesAsync(packageName: string, platform: Plat
   });
 
   Logger.log();
-  Logger.log();
   Logger.log(`Running stories for ${packageName}`);
+  Logger.log();
   Logger.log(`Press 'r' to reload`);
   Logger.log(`Press 'i' to open project in Xcode`);
   Logger.log(`Press 'a' to open project in Android Studio`);
-  Logger.log();
   Logger.log();
 
   stdin.on('data', async (data) => {
