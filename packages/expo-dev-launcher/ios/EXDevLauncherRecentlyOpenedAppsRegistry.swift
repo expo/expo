@@ -47,7 +47,7 @@ public class EXDevLauncherRecentlyOpenedAppsRegistry : NSObject {
     return result
   }
   
-  private func getCurrentTimestamp() -> Int64 {
+  func getCurrentTimestamp() -> Int64 {
     return Int64(Date().timeIntervalSince1970 * 1000);
   }
 }
