@@ -25,7 +25,6 @@ import host.exp.exponent.kernel.ExperienceKey;
 import host.exp.exponent.notifications.NotificationConstants;
 import host.exp.exponent.notifications.PushNotificationHelper;
 import host.exp.exponent.notifications.model.ScopedNotificationRequest;
-import host.exp.exponent.storage.ExperienceDBObject;
 import host.exp.exponent.storage.ExponentDB;
 import host.exp.exponent.storage.ExponentDBObject;
 
@@ -50,44 +49,36 @@ public class ExpoFirebaseMessagingDelegate extends FirebaseMessagingDelegate {
       return;
     }
 
+    String scopeKey = remoteMessage.getData().get(NotificationConstants.NOTIFICATION_EXPERIENCE_SCOPE_KEY_KEY);
+
     @Nullable ExponentDBObject exponentDBObject;
     try {
-      exponentDBObject = ExponentDB.experienceScopeKeyToExperienceSync(remoteMessage.getData().get(NotificationConstants.NOTIFICATION_EXPERIENCE_SCOPE_KEY_KEY));
+      exponentDBObject = ExponentDB.experienceScopeKeyToExperienceSync(scopeKey);
     } catch (JSONException e) {
       e.printStackTrace();
-      EXL.e("expo-notifications", "Couldn't parse the manifest.");
+      EXL.e("expo-notifications", "Error getting experience for scope key " + scopeKey);
       return;
     }
 
     if (exponentDBObject == null) {
-      EXL.e("expo-notifications", "No experience found for scope key " + remoteMessage.getData().get(NotificationConstants.NOTIFICATION_EXPERIENCE_SCOPE_KEY_KEY));
+      EXL.e("expo-notifications", "No experience found for scope key " + scopeKey);
       return;
     }
 
-    int sdkVersion;
-    try {
-      sdkVersion = ABIVersion.toNumber(exponentDBObject.manifest.getSDKVersion()) / 10000;
-    } catch (JSONException e) {
-      e.printStackTrace();
-      EXL.e("expo-notifications", "Couldn't parse the sdk version from the manifest.");
-      return;
-    }
-
-    // If an experience is on SDK 41 or above, use the new notifications API
-    // It is removed beginning with SDK41
-    if (sdkVersion >= 41) {
+    String sdkVersionString = exponentDBObject.getManifest().getSDKVersionNullable();
+    if (sdkVersionString == null) {
       dispatchToNextNotificationModule(remoteMessage);
       return;
-    } else if (sdkVersion <= 40 && sdkVersion >= 38) {
-      // In SDK 38, 39, & 40 we want to let people decide which notifications API to use,
-      // the next or the legacy one.
-      if (exponentDBObject.manifest.shouldUseNextNotificationsApi()) {
-        dispatchToNextNotificationModule(remoteMessage);
-        return;
-      }
     }
-    // If it's an older experience or useNextNotificationsApi is set to false, let's use the legacy notifications API
-    dispatchToLegacyNotificationModule(remoteMessage);
+
+    int sdkVersion = ABIVersion.toNumber(sdkVersionString) / 10000;
+
+    // Remove the entire legacy notifications API after we drop SDK 40
+    if (sdkVersion <= 40 && !exponentDBObject.getManifest().shouldUseNextNotificationsApi()) {
+      dispatchToLegacyNotificationModule(remoteMessage);
+    } else {
+      dispatchToNextNotificationModule(remoteMessage);
+    }
   }
 
   private void dispatchToNextNotificationModule(RemoteMessage remoteMessage) {

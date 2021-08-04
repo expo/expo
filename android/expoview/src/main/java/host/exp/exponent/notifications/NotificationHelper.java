@@ -39,7 +39,6 @@ import host.exp.exponent.kernel.KernelConstants;
 import host.exp.exponent.network.ExpoHttpCallback;
 import host.exp.exponent.network.ExpoResponse;
 import host.exp.exponent.network.ExponentNetwork;
-import host.exp.exponent.storage.ExperienceDBObject;
 import host.exp.exponent.storage.ExponentDB;
 import host.exp.exponent.storage.ExponentDBObject;
 import host.exp.exponent.storage.ExponentSharedPreferences;
@@ -383,7 +382,7 @@ public class NotificationHelper {
         new Thread(new Runnable() {
           @Override
           public void run() {
-            RawManifest manifest = exponentDBObject.manifest;
+            RawManifest manifest = exponentDBObject.getManifest();
             ExperienceKey experienceKey;
             try {
               experienceKey = ExperienceKey.fromRawManifest(manifest);
@@ -499,7 +498,7 @@ public class NotificationHelper {
             } else {
               Class activityClass = KernelConstants.INSTANCE.getMAIN_ACTIVITY_CLASS();
               intent = new Intent(context, activityClass);
-              intent.putExtra(KernelConstants.NOTIFICATION_MANIFEST_URL_KEY, exponentDBObject.manifestUrl);
+              intent.putExtra(KernelConstants.NOTIFICATION_MANIFEST_URL_KEY, exponentDBObject.getManifestUrl());
             }
 
             final String body;
@@ -519,7 +518,7 @@ public class NotificationHelper {
             builder.setContentIntent(contentIntent);
 
             if (data.containsKey("categoryId")) {
-              final String manifestUrl = exponentDBObject.manifestUrl;
+              final String manifestUrl = exponentDBObject.getManifestUrl();
               NotificationActionCenter.setCategory((String) data.get("categoryId"), builder, context, new IntentProvider() {
                 @Override
                 public Intent provide() {

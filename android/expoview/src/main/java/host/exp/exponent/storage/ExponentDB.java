@@ -38,10 +38,10 @@ public class ExponentDB {
   public static void saveExperience(ExponentDBObject exponentDBObject) {
     try {
       ExperienceDBObject experience = new ExperienceDBObject();
-      experience.scopeKey = exponentDBObject.manifest.getScopeKey();
-      experience.manifestUrl = exponentDBObject.manifestUrl;
-      experience.bundleUrl = exponentDBObject.bundleUrl;
-      experience.manifest = exponentDBObject.manifest.toString();
+      experience.scopeKey = exponentDBObject.getManifest().getScopeKey();
+      experience.manifestUrl = exponentDBObject.getManifestUrl();
+      experience.bundleUrl = exponentDBObject.getBundleUrl();
+      experience.manifest = exponentDBObject.getManifest().toString();
       FlowManager.getDatabase(ExponentDB.class).getTransactionManager().getSaveQueue().add(experience);
     } catch (JSONException e) {
       EXL.e(TAG, e.getMessage());

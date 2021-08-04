@@ -31,7 +31,6 @@ import host.exp.exponent.analytics.EXL;
 import host.exp.exponent.di.NativeModuleDepsProvider;
 import host.exp.exponent.kernel.ExperienceKey;
 import host.exp.exponent.kernel.KernelConstants;
-import host.exp.exponent.storage.ExperienceDBObject;
 import host.exp.exponent.storage.ExponentDB;
 import host.exp.exponent.storage.ExponentDBObject;
 import host.exp.exponent.storage.ExponentSharedPreferences;
@@ -71,7 +70,7 @@ public class PushNotificationHelper {
       @Override
       public void onSuccess(ExponentDBObject exponentDBObject) {
         try {
-          sendNotification(context, message, channelId, exponentDBObject.manifestUrl, exponentDBObject.manifest, body, title, categoryId);
+          sendNotification(context, message, channelId, exponentDBObject.getManifestUrl(), exponentDBObject.getManifest(), body, title, categoryId);
         } catch (JSONException e) {
           EXL.e(TAG, "Couldn't deserialize JSON for experience scope key " + experienceScopeKey);
         }
