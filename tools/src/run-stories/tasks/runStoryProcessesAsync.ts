@@ -14,11 +14,11 @@ const CTRL_D = '\u0004';
 
 export async function runStoryProcessesAsync(packageName: string, platform: Platform) {
   const projectRoot = getProjectRoot(packageName);
-  const command = `run-${platform}`;
+  const command = `run:${platform}`;
 
   const { stdin } = process;
 
-  await spawnAsync('react-native', [command, '--no-packager'], {
+  await spawnAsync('expo', [command, '--no-bundler'], {
     cwd: projectRoot,
     stdio: 'inherit',
   });

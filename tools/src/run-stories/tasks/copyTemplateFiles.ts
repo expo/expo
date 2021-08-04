@@ -63,6 +63,7 @@ export function copyTemplateFiles(packageName: string) {
     encoding: 'utf-8',
   });
 
+  // TODO - convert this to config plugin used in template?
   addDevMenu(packageName);
 
   // Podfile
@@ -77,6 +78,13 @@ export function copyTemplateFiles(packageName: string) {
   // Info.plist -> add splash screen
   IosPlist.modifyAsync(iosRoot, 'Info', (config) => {
     config['UILaunchStoryboardName'] = 'SplashScreen';
+
+    // TODO - add support to override `run:ios` to open bare app
+    // currently expo-cli resolves `expo-dev-menu` in the monorepo
+    // if it finds it as a dependency, and the plist has a url scheme then it opens via expo go deep link
+    // but we dont want to use the dev client in this case
+    // solution: fix the resolution of `expo-dev-menu` in expo-cli for monorepos
+    config['CFBundleURLTypes'] = [];
     return config;
   });
 
