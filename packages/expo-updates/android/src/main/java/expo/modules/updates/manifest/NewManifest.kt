@@ -53,6 +53,7 @@ class NewManifest private constructor(
       assetList.add(
         AssetEntity(
           mLaunchAsset.getString("key"),
+          // the fileExtension is not necessary for the launch asset and EAS servers will not include it.
           mLaunchAsset.optString("fileExtension")
         ).apply {
           url = Uri.parse(mLaunchAsset.getString("url"))
