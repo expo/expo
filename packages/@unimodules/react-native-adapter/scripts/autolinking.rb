@@ -15,6 +15,9 @@ def use_expo_modules!(options = {})
   @current_target_definition.autolinking_manager = Expo::AutolinkingManager.new(self, @current_target_definition, options).use_expo_modules!
 end
 
-def use_experimental_swift_modules!(use = true)
-  $ExpoUseExperimentalSwiftModules = use
+# This is enabled by default, but everyone can opt-out if needed.
+$ExpoUseSwiftModules = true
+
+def use_swift_modules!(use = true)
+  $ExpoUseSwiftModules = use
 end

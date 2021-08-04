@@ -9,7 +9,7 @@ platform :ios, '11.0'
 inhibit_all_warnings!
 
 # Enables Swift modules in Expo Go
-use_experimental_swift_modules!
+use_swift_modules!
 
 abstract_target 'Expo Go' do
   # Expo Client dependencies
