@@ -209,6 +209,12 @@ abstract class RawManifest(protected val json: JSONObject) {
     return android.optString("packageName")
   }
 
+  fun shouldUseNextNotificationsApi(): Boolean {
+    val expoClientConfig = getExpoClientConfigRootObject() ?: return false
+    val android: JSONObject = expoClientConfig.optJSONObject("android") ?: return false
+    return android.optBoolean("useNextNotificationsApi", false)
+  }
+
   @Throws(JSONException::class)
   fun getFacebookAppId(): String = getExpoClientConfigRootObject()!!.getString("facebookAppId")
 

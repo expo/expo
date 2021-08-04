@@ -39,8 +39,8 @@ import host.exp.exponent.kernel.KernelConstants;
 import host.exp.exponent.network.ExpoHttpCallback;
 import host.exp.exponent.network.ExpoResponse;
 import host.exp.exponent.network.ExponentNetwork;
-import host.exp.exponent.storage.ExperienceDBObject;
 import host.exp.exponent.storage.ExponentDB;
+import host.exp.exponent.storage.ExponentDBObject;
 import host.exp.exponent.storage.ExponentSharedPreferences;
 import host.exp.exponent.utils.AsyncCondition;
 import host.exp.exponent.utils.ColorParser;
@@ -378,14 +378,13 @@ public class NotificationHelper {
 
     ExponentDB.experienceScopeKeyToExperience(experienceScopeKey, new ExponentDB.ExperienceResultListener() {
       @Override
-      public void onSuccess(ExperienceDBObject experience) {
+      public void onSuccess(ExponentDBObject exponentDBObject) {
         new Thread(new Runnable() {
           @Override
           public void run() {
-            RawManifest manifest;
+            RawManifest manifest = exponentDBObject.getManifest();
             ExperienceKey experienceKey;
             try {
-              manifest = ManifestFactory.INSTANCE.getRawManifestFromJson(new JSONObject(experience.manifest));
               experienceKey = ExperienceKey.fromRawManifest(manifest);
             } catch (JSONException e) {
               listener.onFailure(new Exception("Couldn't deserialize JSON for experience scope key " + experienceScopeKey));
@@ -499,7 +498,7 @@ public class NotificationHelper {
             } else {
               Class activityClass = KernelConstants.INSTANCE.getMAIN_ACTIVITY_CLASS();
               intent = new Intent(context, activityClass);
-              intent.putExtra(KernelConstants.NOTIFICATION_MANIFEST_URL_KEY, experience.manifestUrl);
+              intent.putExtra(KernelConstants.NOTIFICATION_MANIFEST_URL_KEY, exponentDBObject.getManifestUrl());
             }
 
             final String body;
@@ -519,7 +518,7 @@ public class NotificationHelper {
             builder.setContentIntent(contentIntent);
 
             if (data.containsKey("categoryId")) {
-              final String manifestUrl = experience.manifestUrl;
+              final String manifestUrl = exponentDBObject.getManifestUrl();
               NotificationActionCenter.setCategory((String) data.get("categoryId"), builder, context, new IntentProvider() {
                 @Override
                 public Intent provide() {
@@ -563,7 +562,7 @@ public class NotificationHelper {
 
       @Override
       public void onFailure() {
-        listener.onFailure(new Exception("No experience found for scope key " + experienceScopeKey));
+        listener.onFailure(new Exception("No experience found or invalid manifest for scope key " + experienceScopeKey));
       }
     });
   }

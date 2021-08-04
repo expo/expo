@@ -14,6 +14,7 @@
 ### 🐛 Bug fixes
 
 - Fix `PROJECT_ROOT` path resolution in `create-manifest-ios.sh` and in `createManifest.js` ([#13439](https://github.com/expo/expo/pull/13439) by [@ajsmth](https://github.com/ajsmth))
+- Fix erroneous manifest JSON direct access. ([#13906](https://github.com/expo/expo/pull/13906) by [@wschurman](https://github.com/wschurman))
 
 ### 💡 Others
 

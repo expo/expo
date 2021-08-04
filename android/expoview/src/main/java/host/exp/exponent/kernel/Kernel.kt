@@ -528,14 +528,19 @@ class Kernel : KernelInterface() {
 
   private fun openExperienceFromNotificationIntent(intent: Intent): Boolean {
     val response = getNotificationResponseFromIntent(intent)
-    val experienceScopeKey =
-      ScopedNotificationsUtils.getExperienceScopeKey(response) ?: return false
-    val experience = ExponentDB.experienceScopeKeyToExperienceSync(experienceScopeKey)
-    if (experience == null) {
-      Log.w("expo-notifications", "Couldn't find experience from scopeKey: $experienceScopeKey")
-      return false
-    }
-    val manifestUrl = experience.manifestUrl
+    val experienceScopeKey = ScopedNotificationsUtils.getExperienceScopeKey(response) ?: return false
+    val exponentDBObject = try {
+      val exponentDBObjectInner = ExponentDB.experienceScopeKeyToExperienceSync(experienceScopeKey)
+      if (exponentDBObjectInner == null) {
+        Log.w("expo-notifications", "Couldn't find experience from scopeKey: $experienceScopeKey")
+      }
+      exponentDBObjectInner
+    } catch (e: JSONException) {
+      Log.w("expo-notifications", "Couldn't deserialize experience from scopeKey: $experienceScopeKey")
+      null
+    } ?: return false
+
+    val manifestUrl = exponentDBObject.manifestUrl
     openExperience(ExperienceOptions(manifestUrl, manifestUrl, null))
     return true
   }
