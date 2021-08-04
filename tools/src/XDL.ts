@@ -4,6 +4,7 @@ import * as ExpoCLI from './ExpoCLI';
 import * as Log from './Log';
 
 type Options = {
+  accessToken?: string;
   userpass?: {
     username: string;
     password: string;
@@ -19,14 +20,19 @@ export async function publishProjectWithExpoCliAsync(
 ): Promise<void> {
   process.env.EXPO_NO_DOCTOR = '1';
 
-  const username = options.userpass?.username || process.env.EXPO_CI_ACCOUNT_USERNAME;
-  const password = options.userpass?.password || process.env.EXPO_CI_ACCOUNT_PASSWORD;
-
-  if (username && password) {
-    Log.collapsed('Logging in...');
-    await ExpoCLI.runExpoCliAsync('login', ['-u', username, '-p', password]);
+  if (options.accessToken) {
+    Log.collapsed('Using access token...');
+    process.env.EXPO_TOKEN = options.accessToken;
   } else {
-    Log.collapsed('Expo username and password not specified. Using currently logged-in account.');
+    const username = options.userpass?.username || process.env.EXPO_CI_ACCOUNT_USERNAME;
+    const password = options.userpass?.password || process.env.EXPO_CI_ACCOUNT_PASSWORD;
+
+    if (username && password) {
+      Log.collapsed('Logging in...');
+      await ExpoCLI.runExpoCliAsync('login', ['-u', username, '-p', password]);
+    } else {
+      Log.collapsed('Expo username and password not specified. Using currently logged-in account.');
+    }
   }
 
   Log.collapsed('Publishing...');
