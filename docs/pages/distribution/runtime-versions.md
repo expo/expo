@@ -61,4 +61,4 @@ Yes, if you want to be able to control the runtime version on a platform level, 
 
 ### Can I test updates with a custom runtime version on Expo Go?
 
-Expo Go is meant for updates targeting an Expo SDK. If you want to test an update targeting a custom runtime version, you should use a [Custom Development Client](/clients/introduction/)
+Expo Go is meant for updates targeting an Expo SDK. If you want to test an update targeting a custom runtime version, you should use a [Custom Development Client](/clients/introduction.md).
