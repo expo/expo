@@ -125,7 +125,7 @@ public class UpdatesUtils {
       // create a filename that's unlikely to collide with any other asset
       return "asset-" + new Date().getTime() + "-" + new Random().nextInt();
     }
-    if (asset.type == null){
+    if (asset.type == null) {
       return asset.key;
     }
     if (asset.type.startsWith(".")) {
