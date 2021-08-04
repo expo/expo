@@ -53,7 +53,8 @@ class NewManifest private constructor(
       assetList.add(
         AssetEntity(
           mLaunchAsset.getString("key"),
-          mLaunchAsset.getString("contentType")
+          // the fileExtension is not necessary for the launch asset and EAS servers will not include it.
+          mLaunchAsset.optString("fileExtension")
         ).apply {
           url = Uri.parse(mLaunchAsset.getString("url"))
           isLaunchAsset = true
@@ -70,7 +71,7 @@ class NewManifest private constructor(
           assetList.add(
             AssetEntity(
               assetObject.getString("key"),
-              assetObject.getString("contentType")
+              assetObject.getString("fileExtension")
             ).apply {
               url = Uri.parse(assetObject.getString("url"))
               embeddedAssetFilename = assetObject.optString("embeddedAssetFilename")
