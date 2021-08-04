@@ -121,17 +121,16 @@ public class UpdatesUtils {
   }
 
   public static String createFilenameForAsset(AssetEntity asset) {
+    String fileExtension = "";
+    if (asset.type != null) {
+      fileExtension = asset.type.startsWith(".") ? asset.type : "." + asset.type;
+    }
+
     if (asset.key == null) {
       // create a filename that's unlikely to collide with any other asset
-      return "asset-" + new Date().getTime() + "-" + new Random().nextInt();
+      return "asset-" + new Date().getTime() + "-" + new Random().nextInt() + fileExtension;
     }
-    if (asset.type == null) {
-      return asset.key;
-    }
-    if (asset.type.startsWith(".")) {
-      return asset.key + asset.type;
-    }
-    return asset.key + "." + asset.type;
+    return asset.key + fileExtension;
   }
 
   public static void sendEventToReactNative(@Nullable final WeakReference<ReactNativeHost> reactNativeHost, final String eventName, final WritableMap params) {

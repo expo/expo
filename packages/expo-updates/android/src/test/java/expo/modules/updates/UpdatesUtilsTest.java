@@ -35,6 +35,9 @@ public class UpdatesUtilsTest {
     AssetEntity asset1 = new AssetEntity(null, "bundle");
     AssetEntity asset2 = new AssetEntity(null, "bundle");
     Assert.assertNotEquals(UpdatesUtils.createFilenameForAsset(asset1), UpdatesUtils.createFilenameForAsset(asset2));
+
+    String asset1Name = UpdatesUtils.createFilenameForAsset(asset1);
+    Assert.assertEquals(asset1Name.substring(asset1Name.length()-7),".bundle");
   }
 
   @Test
