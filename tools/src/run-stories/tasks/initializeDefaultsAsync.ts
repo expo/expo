@@ -1,34 +1,45 @@
+import spawnAsync from '@expo/spawn-async';
 import fs from 'fs';
 import path from 'path';
 
 import Logger from '../../Logger';
 import { getPackageRoot, getProjectRoot } from '../helpers';
 
-export function initializeDefaults(packageName: string) {
+export async function initializeDefaultsAsync(packageName: string) {
   const packageRoot = getPackageRoot(packageName);
 
   const pkg = require(path.resolve(packageRoot, 'package.json'));
+
+  let shouldWritePkg = false;
 
   if (!pkg.expoStories) {
     Logger.log();
     Logger.log(`Looks like this is the first time anyone has written stories for ${packageName}`);
     Logger.log(`Configuring package with default template files`);
+    Logger.log();
 
     // add expo stories field w/ packages
     pkg.expoStories = {};
     pkg.expoStories.packages = {
       [pkg.name]: `~${pkg.version}`,
     };
+
+    shouldWritePkg = true;
   }
 
   // add et start script
   if (!pkg.scripts['start:examples']) {
+    shouldWritePkg = true;
     pkg.scripts['start:examples'] = 'et run-stories';
   }
 
-  fs.writeFileSync(path.resolve(packageRoot, 'package.json'), JSON.stringify(pkg, null, '\t'), {
-    encoding: 'utf-8',
-  });
+  if (shouldWritePkg) {
+    fs.writeFileSync(path.resolve(packageRoot, 'package.json'), JSON.stringify(pkg, null, '\t'), {
+      encoding: 'utf-8',
+    });
+
+    await spawnAsync('yarn', ['prettier', `${packageRoot}/package.json`], { cwd: packageRoot });
+  }
 
   const tsconfigFile = fs.readFileSync(path.resolve(packageRoot, 'tsconfig.json'), {
     encoding: 'utf-8',
@@ -40,20 +51,22 @@ export function initializeDefaults(packageName: string) {
 
     const tsconfig = JSON.parse(json.join('\n'));
 
-    let needsWrite = false;
+    let shouldWriteTsConfig = false;
 
-    if (!tsconfig.exclude.includes(['"**/__stories__/*"'])) {
-      needsWrite = true;
+    if (!tsconfig.exclude.includes('**/__stories__/*')) {
+      shouldWriteTsConfig = true;
       tsconfig.exclude.push('**/__stories__/*');
     }
 
-    if (needsWrite) {
+    if (shouldWriteTsConfig) {
       const tsconfigAsString = JSON.stringify(tsconfig, null, '\t');
       const updatedFile = generatedComment + '\n' + tsconfigAsString;
 
       fs.writeFileSync(path.resolve(packageRoot, 'tsconfig.json'), updatedFile, {
         encoding: 'utf-8',
       });
+
+      await spawnAsync('yarn', ['prettier', `${packageRoot}/tsconfig.json`], { cwd: packageRoot });
     }
   } catch (e) {
     console.log({ e });

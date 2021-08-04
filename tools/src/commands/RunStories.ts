@@ -10,7 +10,7 @@ import { clearNativeCache } from '../run-stories/tasks/clearNativeCache';
 import { copyTemplateFiles } from '../run-stories/tasks/copyTemplateFiles';
 import { getPackageNameAsync } from '../run-stories/tasks/getPackageNameAsync';
 import { initializeExpoAppAsync } from '../run-stories/tasks/initializeExpoAppAsync';
-import { initializeDefaults } from '../run-stories/tasks/initializeDefaults';
+import { initializeDefaultsAsync } from '../run-stories/tasks/initializeDefaultsAsync';
 import { runPrebuildAsync } from '../run-stories/tasks/runPrebuildAsync';
 import { runStoryProcessesAsync } from '../run-stories/tasks/runStoryProcessesAsync';
 
@@ -42,7 +42,7 @@ async function action(name: string, { platform, rebuild = false, clearCache = fa
 
   const projectRoot = getProjectRoot(packageName);
 
-  initializeDefaults(packageName);
+  await initializeDefaultsAsync(packageName);
 
   const isFirstBuild = !fs.existsSync(projectRoot);
 
