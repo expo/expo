@@ -28,11 +28,14 @@ export function getRandomBytes(byteCount: number): Uint8Array {
   assertByteCount(byteCount, 'getRandomBytes');
   const validByteCount = Math.floor(byteCount);
   if (__DEV__) {
-    const array = new Uint8Array(validByteCount);
-    for (let i = 0; i < validByteCount; i++) {
-      array[i] = Math.floor(Math.random() * 256);
+    if (!(global as any).nativeCallSyncHook || (global as any).__REMOTEDEV__) {
+      // remote javascript debugging is enabled
+      const array = new Uint8Array(validByteCount);
+      for (let i = 0; i < validByteCount; i++) {
+        array[i] = Math.floor(Math.random() * 256);
+      }
+      return array;
     }
-    return array;
   }
   if (ExpoRandom.getRandomBytes) {
     return ExpoRandom.getRandomBytes(validByteCount);
