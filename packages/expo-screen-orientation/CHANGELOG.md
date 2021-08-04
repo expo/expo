@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Fixed an issue with building on Xcode 13.
+- Fixed an issue with building on Xcode 13. ([#13898](https://github.com/expo/expo/pull/13898) by [@cruzach](https://github.com/cruzach))
 
 ### 💡 Others
 
