@@ -61,13 +61,3 @@ export enum ReviewEvent {
   APPROVE = 'APPROVE',
   REQUEST_CHANGES = 'REQUEST_CHANGES',
 }
-
-/**
- * State of someone's review.
- */
-export enum ReviewState {
-  PENDING = 'PENDING',
-  COMMENTED = 'COMMENTED',
-  APPROVED = 'APPROVED',
-  CHANGES_REQUESTED = 'CHANGES_REQUESTED',
-}
