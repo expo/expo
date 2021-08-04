@@ -31,29 +31,29 @@ export async function runStoryProcessesAsync(packageName: string, platform: Plat
 
   const logger = bunyan.createLogger({
     name: 'expo-stories',
-    streams: [],
-  });
+    streams: [
+      {
+        stream: {
+          write: (chunk: string) => {
+            try {
+              const c = JSON.parse(chunk);
 
-  logger.addStream({
-    stream: {
-      write: (chunk: string) => {
-        try {
-          const c = JSON.parse(chunk);
+              if (c.tag === 'metro') {
+                if (!c.msg) {
+                  return;
+                }
 
-          if (c.tag === 'metro') {
-            if (!c.msg) {
-              return;
-            }
-
-            const message = JSON.parse(c.msg);
-            if (message.type === 'client_log' && message.data) {
-              Logger.log(message.data.join('\n'));
-            }
-          }
-        } catch (e) {}
+                const message = JSON.parse(c.msg);
+                if (message.type === 'client_log' && message.data) {
+                  Logger.log(message.data.join('\n'));
+                }
+              }
+            } catch (e) {}
+          },
+          level: 'debug',
+        },
       },
-      level: 'debug',
-    },
+    ],
   });
 
   const { messageSocket } = await runMetroDevServerAsync(projectRoot, {
@@ -67,8 +67,11 @@ export async function runStoryProcessesAsync(packageName: string, platform: Plat
   });
 
   Logger.log();
+  Logger.log();
   Logger.log(`Running stories for ${packageName}`);
   Logger.log(`Press 'r' to reload`);
+  Logger.log();
+  Logger.log();
 
   stdin.on('data', (data) => {
     if (data === 'r') {
@@ -80,7 +83,6 @@ export async function runStoryProcessesAsync(packageName: string, platform: Plat
     }
 
     if (data === CTRL_C || data === CTRL_D) {
-      process.emit('SIGINT');
       storiesProcess.kill('SIGTERM');
       process.exit(1);
     }

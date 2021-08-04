@@ -69,7 +69,7 @@ async function action(name: string, { platform, rebuild = false, clearCache = fa
   if (platform === 'web') {
     // TODO
   } else {
-    if (rebuild) {
+    if (rebuild || isFirstBuild) {
       Logger.log('☕️ Installing native dependencies');
       await podInstallAsync(path.resolve(projectRoot, 'ios'));
     }
