@@ -626,10 +626,35 @@ async function renameHermesEngine(version: string) {
     'hermes',
     'Android.mk'
   );
+  const versionedHermesLibName = `libhermes_${abiName}.so`;
+  const versioningSoNameTask = `\
+    try {
+        exec {
+            commandLine("patchelf", "-h")
+            errorOutput = new ByteArrayOutputStream()
+            standardOutput = new ByteArrayOutputStream()
+        }
+    } catch (Exception e) {
+        throw new GradleException("patchelf not found")
+    }
+
+    exec {
+        commandLine("patchelf", "--set-soname", "${versionedHermesLibName}", "$thirdPartyNdkDir/hermes/jni/arm64-v8a/${versionedHermesLibName}")
+    }
+    exec {
+        commandLine("patchelf", "--set-soname", "${versionedHermesLibName}", "$thirdPartyNdkDir/hermes/jni/armeabi-v7a/${versionedHermesLibName}")
+    }
+    exec {
+        commandLine("patchelf", "--set-soname", "${versionedHermesLibName}", "$thirdPartyNdkDir/hermes/jni/x86/${versionedHermesLibName}")
+    }
+    exec {
+        commandLine("patchelf", "--set-soname", "${versionedHermesLibName}", "$thirdPartyNdkDir/hermes/jni/x86_64/${versionedHermesLibName}")
+    }
+`;
   await transformFileAsync(
     prebuiltHermesMkPath,
     /^(LOCAL_SRC_FILES\s+:=\s+jni\/\$\(TARGET_ARCH_ABI\))\/libhermes.so$/gm,
-    `$1/libhermes_${abiName}.so`
+    `$1/${versionedHermesLibName}`
   );
 
   const buildGradlePath = path.join(versionedReactAndroidPath, 'build.gradle');
@@ -637,7 +662,7 @@ async function renameHermesEngine(version: string) {
   await transformFileAsync(
     buildGradlePath,
     /(into "\$thirdPartyNdkDir\/hermes"\n)(\s*?\})/gm,
-    `$1${renameTask}$2`
+    `$1${renameTask}$2\n${versioningSoNameTask}`
   );
 }
 
