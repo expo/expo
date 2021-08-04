@@ -1,6 +1,8 @@
 import bunyan from '@expo/bunyan';
 import { runMetroDevServerAsync } from '@expo/dev-server';
 import spawnAsync from '@expo/spawn-async';
+import { getProjectName } from '@expo/xdl/node_modules/@expo/config-plugins/build/ios/utils/Xcodeproj';
+import path from 'path';
 
 import Logger from '../../Logger';
 import { getProjectRoot } from '../helpers';
@@ -70,16 +72,37 @@ export async function runStoryProcessesAsync(packageName: string, platform: Plat
   Logger.log();
   Logger.log(`Running stories for ${packageName}`);
   Logger.log(`Press 'r' to reload`);
+  Logger.log(`Press 'i' to open project in Xcode`);
+  Logger.log(`Press 'a' to open project in Android Studio`);
   Logger.log();
   Logger.log();
 
-  stdin.on('data', (data) => {
+  stdin.on('data', async (data) => {
     if (data === 'r') {
       messageSocket.broadcast('reload');
     }
 
     if (data === 'm') {
       messageSocket.broadcast('devMenu');
+    }
+
+    if (data === 'i') {
+      const projectName = getProjectName(projectRoot);
+      const pathToIos = path.resolve(projectRoot, 'ios', `${projectName}.xcworkspace`);
+      // @ts-ignore
+      const xcodeAppName = process.XCODE_EDITOR_NAME || 'Xcode.app';
+
+      Logger.log(`Opening project in ${xcodeAppName}...`);
+      await spawnAsync('open', [pathToIos, '-a', xcodeAppName as string]);
+    }
+
+    if (data === 'a') {
+      const pathToAndroid = path.resolve(projectRoot, 'android');
+      // @ts-ignore
+      const androidStudioName = process.ANDROID_STUDIO_EDITOR_NAME || 'Android Studio.app';
+
+      Logger.log(`Opening project in ${androidStudioName}...`);
+      await spawnAsync('open', [pathToAndroid, '-a', androidStudioName as string]);
     }
 
     if (data === CTRL_C || data === CTRL_D) {
