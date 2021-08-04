@@ -107,17 +107,17 @@ class ExpoBarCodeScanner(
         rotation = (cameraInfo.info.orientation - degrees + 360) % 360
       }
       setDisplayOrientation(rotation)
-      val parameters = this.parameters
-      parameters.setRotation(rotation)
+      val temporaryParameters = parameters
+      temporaryParameters.setRotation(rotation)
 
       // set preview size
       // Limit preview size to 1920x1920 in order to allow scanning codes on low dpi computer screens
-      val optimalPreviewSize = getBestSize(parameters.supportedPreviewSizes, 1920, 1920)
+      val optimalPreviewSize = getBestSize(temporaryParameters.supportedPreviewSizes, 1920, 1920)
       val width = optimalPreviewSize.width
       val height = optimalPreviewSize.height
-      parameters.setPreviewSize(width, height)
+      temporaryParameters.setPreviewSize(width, height)
       try {
-        this.parameters = parameters
+        parameters = temporaryParameters
       } catch (e: Exception) {
         e.printStackTrace()
       }

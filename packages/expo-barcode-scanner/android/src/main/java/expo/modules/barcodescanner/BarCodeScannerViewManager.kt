@@ -8,10 +8,11 @@ import expo.modules.interfaces.barcodescanner.BarCodeScannerSettings
 import java.util.*
 
 class BarCodeScannerViewManager : ViewManager<BarCodeScannerView?>() {
-  private var mModuleRegistry: ModuleRegistry? = null
+  private lateinit var mModuleRegistry: ModuleRegistry
 
   enum class Events(private val mName: String) {
     EVENT_ON_BAR_CODE_SCANNED("onBarCodeScanned");
+
     override fun toString() = mName
   }
 
@@ -37,10 +38,8 @@ class BarCodeScannerViewManager : ViewManager<BarCodeScannerView?>() {
   @ExpoProp(name = "barCodeTypes")
   fun setBarCodeTypes(view: BarCodeScannerView, barCodeTypes: ArrayList<Double?>?) {
     if (barCodeTypes != null) {
-      val settings: BarCodeScannerSettings = object : BarCodeScannerSettings() {
-        init {
-          putTypes(barCodeTypes)
-        }
+      val settings: BarCodeScannerSettings = BarCodeScannerSettings().apply {
+        putTypes(barCodeTypes)
       }
       view.setBarCodeScannerSettings(settings)
     }

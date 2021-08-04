@@ -2,7 +2,6 @@ package expo.modules.barcodescanner
 
 import expo.modules.core.interfaces.services.EventEmitter.BaseEvent
 import expo.modules.interfaces.barcodescanner.BarCodeScannerResult
-import android.os.Bundle
 import androidx.core.util.Pools
 import expo.modules.barcodescanner.utils.BarCodeScannerResultSerializer
 
@@ -24,15 +23,13 @@ class BarCodeScannedEvent(
   override fun getEventName() =
     BarCodeScannerViewManager.Events.EVENT_ON_BAR_CODE_SCANNED.toString()
 
-  override fun getEventBody(): Bundle {
-    val event = BarCodeScannerResultSerializer.toBundle(barCode, density)
-    event.putInt("target", viewTag)
-    return event
-  }
+  override fun getEventBody() =
+    BarCodeScannerResultSerializer.toBundle(barCode, density).apply {
+      putInt("target", viewTag)
+    }
 
   companion object {
     private val EVENTS_POOL = Pools.SynchronizedPool<BarCodeScannedEvent>(3)
-    @JvmStatic
     fun obtain(viewTag: Int, barCode: BarCodeScannerResult, density: Float): BarCodeScannedEvent {
       var event = EVENTS_POOL.acquire()
       if (event == null) {

@@ -39,7 +39,8 @@ internal class BarCodeScannerViewFinder(
     startCamera()
   }
 
-  override fun onSurfaceTextureSizeChanged(surface: SurfaceTexture, width: Int, height: Int) {}
+  override fun onSurfaceTextureSizeChanged(surface: SurfaceTexture, width: Int, height: Int) = Unit
+
   override fun onSurfaceTextureDestroyed(surface: SurfaceTexture): Boolean {
     mSurfaceTexture = null
     stopCamera()
@@ -88,26 +89,26 @@ internal class BarCodeScannerViewFinder(
       mIsStarting = true
       try {
         ExpoBarCodeScanner.instance?.acquireCameraInstance(cameraType)?.run {
-          val parameters = this.parameters
+          val temporaryParameters = parameters
           // set autofocus
-          val focusModes = parameters.supportedFocusModes
+          val focusModes = temporaryParameters.supportedFocusModes
           if (focusModes != null && focusModes.contains(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE)) {
-            parameters.focusMode = Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE
+            temporaryParameters.focusMode = Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE
           }
           // set picture size
           // defaults to max available size
           val optimalPictureSize =
             ExpoBarCodeScanner.instance.getBestSize(
-              parameters.supportedPictureSizes,
+              temporaryParameters.supportedPictureSizes,
               Int.MAX_VALUE,
               Int.MAX_VALUE
             )
-          parameters?.setPictureSize(optimalPictureSize.width, optimalPictureSize.height)
-          this.parameters = parameters
-          this.setPreviewTexture(mSurfaceTexture)
-          this.startPreview()
+          temporaryParameters?.setPictureSize(optimalPictureSize.width, optimalPictureSize.height)
+          parameters = temporaryParameters
+          setPreviewTexture(mSurfaceTexture)
+          startPreview()
           // send previews to `onPreviewFrame`
-          this.setPreviewCallback(this@BarCodeScannerViewFinder)
+          setPreviewCallback(this@BarCodeScannerViewFinder)
           barCodeScannerView.layoutViewFinder()
         }
       } catch (e: NullPointerException) {
@@ -127,9 +128,9 @@ internal class BarCodeScannerViewFinder(
       mIsStopping = true
       try {
         mCamera?.run {
-          this.stopPreview()
+          stopPreview()
           // stop sending previews to `onPreviewFrame`
-          this.setPreviewCallback(null)
+          setPreviewCallback(null)
           ExpoBarCodeScanner.instance.releaseCameraInstance()
         }
         mCamera = null

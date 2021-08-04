@@ -31,16 +31,27 @@ class BarCodeScannerModule(
 
   override fun getName() = TAG
 
-  override fun getConstants(): Map<String, Any> {
-    val typeConstants = mapOf(
+  override fun getConstants() = mapOf(
+    "BarCodeType" to mapOf(
+      "aztec" to Barcode.AZTEC,
+      "ean13" to Barcode.EAN_13,
+      "ean8" to Barcode.EAN_8,
+      "qr" to Barcode.QR_CODE,
+      "pdf417" to Barcode.PDF417,
+      "upc_e" to Barcode.UPC_E,
+      "datamatrix" to Barcode.DATA_MATRIX,
+      "code39" to Barcode.CODE_39,
+      "code93" to Barcode.CODE_93,
+      "itf14" to Barcode.ITF,
+      "codabar" to Barcode.CODABAR,
+      "code128" to Barcode.CODE_128,
+      "upc_a" to Barcode.UPC_A,
+    ),
+    "Type" to mapOf(
       "front" to ExpoBarCodeScanner.CAMERA_TYPE_FRONT,
       "back" to ExpoBarCodeScanner.CAMERA_TYPE_BACK
     )
-    return mapOf(
-      "BarCodeType" to barCodeConstants,
-      "Type" to typeConstants
-    )
-  }
+  )
 
   @ExpoMethod
   fun requestPermissionsAsync(promise: Promise) {
@@ -64,11 +75,12 @@ class BarCodeScannerModule(
       object : ResultListener {
         override fun onSuccess(bitmap: Bitmap) {
           val scanner = mBarCodeScannerProvider.createBarCodeDetectorWithContext(context)
-          scanner.setSettings(object : BarCodeScannerSettings() {
-            init {
+          scanner.setSettings(
+            BarCodeScannerSettings().apply
+            {
               putTypes(types)
             }
-          })
+          )
           val resultList = scanner.scanMultiple(bitmap)
             .filter { types.contains(it.type) }
             .map { BarCodeScannerResultSerializer.toBundle(it, 1.0f) }
@@ -89,20 +101,5 @@ class BarCodeScannerModule(
   companion object {
     private const val TAG = "ExpoBarCodeScannerModule"
     private const val ERROR_TAG = "E_BARCODE_SCANNER"
-    private val barCodeConstants = mapOf(
-      "aztec" to Barcode.AZTEC,
-      "ean13" to Barcode.EAN_13,
-      "ean8" to Barcode.EAN_8,
-      "qr" to Barcode.QR_CODE,
-      "pdf417" to Barcode.PDF417,
-      "upc_e" to Barcode.UPC_E,
-      "datamatrix" to Barcode.DATA_MATRIX,
-      "code39" to Barcode.CODE_39,
-      "code93" to Barcode.CODE_93,
-      "itf14" to Barcode.ITF,
-      "codabar" to Barcode.CODABAR,
-      "code128" to Barcode.CODE_128,
-      "upc_a" to Barcode.UPC_A,
-    )
   }
 }

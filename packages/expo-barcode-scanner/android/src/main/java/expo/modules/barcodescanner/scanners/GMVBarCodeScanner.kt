@@ -10,8 +10,10 @@ import expo.modules.interfaces.barcodescanner.BarCodeScannerResult
 import expo.modules.interfaces.barcodescanner.BarCodeScannerSettings
 
 class GMVBarCodeScanner(context: Context) : ExpoBarCodeScanner(context) {
-
-  private var mBarcodeDetector: BarcodeDetector
+  private var mBarcodeDetector =
+    BarcodeDetector.Builder(mContext)
+      .setBarcodeFormats(0)
+      .build()
   override val isAvailable: Boolean
     get() = mBarcodeDetector.isOperational
 
@@ -37,16 +39,14 @@ class GMVBarCodeScanner(context: Context) : ExpoBarCodeScanner(context) {
   private fun scan(frame: Frame): List<BarCodeScannerResult> {
     return try {
       val result = mBarcodeDetector.detect(frame.frame)
-      val results: MutableList<BarCodeScannerResult> = ArrayList()
+      val results = mutableListOf<BarCodeScannerResult>()
       val width = frame.dimensions.width
       val height = frame.dimensions.height
       for (i in 0 until result.size()) {
         val barcode = result[result.keyAt(i)]
-        val cornerPoints: MutableList<Int> = ArrayList()
+        val cornerPoints = mutableListOf<Int>()
         for (point in barcode.cornerPoints) {
-          val x = Integer.valueOf(point.x)
-          val y = Integer.valueOf(point.y)
-          cornerPoints.addAll(listOf(x, y))
+          cornerPoints.addAll(listOf(point.x, point.y))
         }
         results.add(BarCodeScannerResult(barcode.format, barcode.rawValue, cornerPoints, height, width))
       }
@@ -77,11 +77,6 @@ class GMVBarCodeScanner(context: Context) : ExpoBarCodeScanner(context) {
       .build()
   }
 
-  init {
-    mBarcodeDetector = BarcodeDetector.Builder(mContext)
-      .setBarcodeFormats(0)
-      .build()
-  }
   companion object {
     private val TAG = GMVBarCodeScanner::class.java.simpleName
   }

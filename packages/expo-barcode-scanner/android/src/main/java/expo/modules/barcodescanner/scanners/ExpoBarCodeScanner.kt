@@ -9,7 +9,7 @@ abstract class ExpoBarCodeScanner internal constructor(protected var mContext: C
   fun areNewAndOldBarCodeTypesEqual(newBarCodeTypes: List<Int>?): Boolean {
     mBarCodeTypes?.run {
       // create distinct-values sets
-      val prevTypesSet = this.toHashSet()
+      val prevTypesSet = toHashSet()
       val nextTypesSet = newBarCodeTypes?.toHashSet()
 
       // sets sizes are equal -> possible content equality
