@@ -255,7 +255,7 @@ class GenerateDynamicMacrosPlugin implements Plugin<Project> {
     }
 }
 
-apply from: new File(["node", "--print", "require.resolve('@react-native-community/cli-platform-android/package.json"].execute().text.trim(), "../native_modules.gradle");
+apply from: new File(["node", "--print", "require.resolve('@react-native-community/cli-platform-android/package.json')"].execute().text.trim(), "../native_modules.gradle");
 applyNativeModulesAppBuildGradle(project)
 
 // [Custom]: Add Google Services file
