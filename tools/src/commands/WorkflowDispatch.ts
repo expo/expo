@@ -64,11 +64,6 @@ const CUSTOM_WORKFLOWS = {
       checkAll: 'check-all',
     },
   },
-  'dogfooding-clients': {
-    name: 'Dogfooding Clients',
-    baseWorkflowSlug: 'dogfooding-clients',
-    inputs: {},
-  },
 };
 
 export default (program: Command) => {
