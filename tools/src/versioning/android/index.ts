@@ -300,6 +300,14 @@ async function processJavaCodeAsync(libName: string, abiVersion: string) {
   );
 }
 
+async function ensureToolsInstalledAsync() {
+  try {
+    await spawnAsync('patchelf', ['-h'], { ignoreStdio: true });
+  } catch (e) {
+    throw new Error('patchelf not found.');
+  }
+}
+
 async function renameJniLibsAsync(version: string) {
   const abiVersion = version.replace(/\./g, '_');
   const abiPrefix = `abi${abiVersion}`;
@@ -628,16 +636,6 @@ async function renameHermesEngine(version: string) {
   );
   const versionedHermesLibName = `libhermes_${abiName}.so`;
   const versioningSoNameTask = `\
-    try {
-        exec {
-            commandLine("patchelf", "-h")
-            errorOutput = new ByteArrayOutputStream()
-            standardOutput = new ByteArrayOutputStream()
-        }
-    } catch (Exception e) {
-        throw new GradleException("patchelf not found")
-    }
-
     exec {
         commandLine("patchelf", "--set-soname", "${versionedHermesLibName}", "$thirdPartyNdkDir/hermes/jni/arm64-v8a/${versionedHermesLibName}")
     }
@@ -667,6 +665,8 @@ async function renameHermesEngine(version: string) {
 }
 
 export async function addVersionAsync(version: string) {
+  await ensureToolsInstalledAsync();
+
   console.log(' 🛠   1/11: Updating android/versioned-react-native...');
   await updateVersionedReactNativeAsync(
     Directories.getReactNativeSubmoduleDir(),
