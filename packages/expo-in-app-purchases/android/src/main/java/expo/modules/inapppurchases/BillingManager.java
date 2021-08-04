@@ -151,7 +151,9 @@ public class BillingManager implements PurchasesUpdatedListener {
         if (oldSku != null) {
           String purchaseToken = getPurchaseTokenFromSku(oldSku);
           if (purchaseToken == null) {
-            promise.reject("ITEM_NOT_FOUND", "Purchase for old ID '" + oldSku + "' not found. You must call 'getPurchaseHistoryAsync' before replacing an old purchase with a new one.");
+            promise.reject(
+              "ERR_IN_APP_PURCHASES_ITEM_NOT_FOUND",
+              "Purchase for old ID '" + oldSku + "' not found. You must call 'getPurchaseHistoryAsync' before replacing an old purchase with a new one.");
             return;
           }
           purchaseParams.setSubscriptionUpdateParams(
@@ -282,9 +284,9 @@ public class BillingManager implements PurchasesUpdatedListener {
     Runnable queryToExecute = new Runnable() {
       @Override
       public void run() {
-        final List<String> ALL_QUERIES = Arrays.asList(SkuType.INAPP, SkuType.SUBS);
+        final Set<String> ALL_QUERIES = new HashSet(Arrays.asList(SkuType.INAPP, SkuType.SUBS));
         List<Purchase> purchases = new ArrayList<>();
-        List<String> completedQueries = new ArrayList<>();
+        Set<String> completedQueries = new HashSet();
 
         mBillingClient.queryPurchasesAsync(SkuType.INAPP, new PurchasesResponseListener() {
           @Override
