@@ -77,6 +77,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-yarn-
       - run: yarn install --frozen-lockfile
+      - run: yarn global add expo-cli
       - name: 🦴 Publish dogfood home
         run: bin/expotools publish-dogfood-home
         env:
