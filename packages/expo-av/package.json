@@ -12,7 +12,8 @@
     "test": "expo-module test",
     "prepare": "expo-module prepare",
     "prepublishOnly": "expo-module prepublishOnly",
-    "expo-module": "expo-module"
+    "expo-module": "expo-module",
+    "start:examples": "et run-stories"
   },
   "keywords": [
     "expo",
@@ -37,5 +38,12 @@
   },
   "devDependencies": {
     "expo-module-scripts": "^2.0.0"
+  },
+  "expoStories": {
+    "packages": {
+      "expo-av": "~9.2.0",
+      "expo-file-system": "~11.1.0",
+      "expo-font": "~9.2.0"
+    }
   }
 }
