@@ -69,19 +69,15 @@ async function action(name: string, { platform, rebuild = false, clearCache = fa
     platform = await selectPlatformAsync();
   }
 
-  if (platform === 'web') {
-    // TODO
-  } else {
-    if (rebuild || isFirstBuild) {
-      Logger.log('☕️ Installing native dependencies');
-      await podInstallAsync(path.resolve(projectRoot, 'ios'));
-    }
-
-    Logger.log(`🛠  Building for ${platform}...this may take a few minutes`);
-    Logger.log();
-
-    await runStoryProcessesAsync(packageName, platform);
+  if (rebuild || isFirstBuild) {
+    Logger.log('☕️ Installing native dependencies');
+    await podInstallAsync(path.resolve(projectRoot, 'ios'));
   }
+
+  Logger.log(`🛠  Building for ${platform}...this may take a few minutes`);
+  Logger.log();
+
+  await runStoryProcessesAsync(packageName, platform);
 }
 
 export default (program: any) => {

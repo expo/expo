@@ -15,6 +15,9 @@ export function copyTemplateFiles(packageName: string) {
   const metroConfigPath = path.resolve(templateRoot, 'metro.config.js');
   fs.copyFileSync(metroConfigPath, path.resolve(projectRoot, 'metro.config.js'));
 
+  const webpackConfigPath = path.resolve(templateRoot, 'webpack.config.js');
+  fs.copyFileSync(webpackConfigPath, path.resolve(projectRoot, 'webpack.config.js'));
+
   // package.json
   const defaultPkg = require(path.resolve(templateRoot, 'pkg.json'));
   const projectPkg = require(path.resolve(projectRoot, 'package.json'));

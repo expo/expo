@@ -1,11 +1,6 @@
-import bunyan from '@expo/bunyan';
 import { runMetroDevServerAsync } from '@expo/dev-server';
 import spawnAsync from '@expo/spawn-async';
-import { LogUpdater, PackagerLogsStream, LogRecord, ProjectUtils } from '@expo/xdl';
-import chalk from 'chalk';
 import path from 'path';
-import findLastIndex from 'lodash/findLastIndex';
-import ProgressBar from 'progress';
 
 import Logger from '../../Logger';
 import { getProjectRoot, getProjectName } from '../helpers';
@@ -17,15 +12,19 @@ const CTRL_C = '\u0003';
 const CTRL_D = '\u0004';
 
 export async function runStoryProcessesAsync(packageName: string, platform: Platform) {
+  if (platform === 'web') {
+    runWebProcesses(packageName);
+  } else if (platform === 'ios' || platform === 'android') {
+    runMetroProcesses(packageName, platform);
+  }
+}
+
+async function runMetroProcesses(packageName: string, platform: Platform) {
   const projectRoot = getProjectRoot(packageName);
+
   const command = `run:${platform}`;
 
   const { stdin } = process;
-
-  await spawnAsync('expo', [command, '--no-bundler'], {
-    cwd: projectRoot,
-    stdio: 'inherit',
-  });
 
   if (!stdin.setRawMode) {
     throw new Error(`Must use Node 12 or higher`);
@@ -34,6 +33,11 @@ export async function runStoryProcessesAsync(packageName: string, platform: Plat
   stdin.setRawMode(true);
   stdin.resume();
   stdin.setEncoding('utf8');
+
+  await spawnAsync('expo', [command, '--no-bundler'], {
+    cwd: projectRoot,
+    stdio: 'inherit',
+  });
 
   const logger = createMetroLogger(projectRoot);
 
@@ -87,5 +91,36 @@ export async function runStoryProcessesAsync(packageName: string, platform: Plat
       storiesProcess.kill('SIGTERM');
       process.exit(1);
     }
+  });
+}
+
+async function runWebProcesses(packageName: string) {
+  const projectRoot = getProjectRoot(packageName);
+  console.log({ projectRoot });
+
+  spawnAsync('expo', ['start', '--web'], {
+    cwd: projectRoot,
+    stdio: 'inherit',
+  });
+
+
+  const { child: storiesProcess } = spawnAsync('yarn', ['stories'], {
+    cwd: projectRoot,
+    stdio: 'ignore',
+  });
+  
+  process.on('SIGBREAK', () => {
+    if (storiesProcess) {
+      storiesProcess.kill('SIGINT');
+    }
+
+    process.exit(1);
+  });
+
+  process.on('SIGINT', () => {
+    if (storiesProcess) {
+      storiesProcess.kill('SIGINT');
+    }
+    process.exit(1);
   });
 }

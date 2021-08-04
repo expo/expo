@@ -3,14 +3,14 @@ const path = require('path');
 const { getStoriesFile } = require('./build/server/shared');
 const { writeRequiredFiles } = require('./build/server/writeRequiredFiles');
 
-function withExpoStories(config) {
-  writeRequiredFiles(config);
+function withExpoStories(config, { projectRoot }) {
+  writeRequiredFiles({ projectRoot });
 
-  const storyFile = getStoriesFile(config);
+  const storyFile = getStoriesFile({ projectRoot });
 
-  config.resolve.alias['generated-expo-stories'] = path.resolve(__dirname, storyFile);
+  config.resolve.alias['generated-expo-stories'] = path.resolve(projectRoot, storyFile);
 
   return config;
 }
 
-export default withExpoStories;
+module.exports = withExpoStories;
