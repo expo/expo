@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 0.7.6 — 2021-08-04
+
+_This version does not introduce any user-facing changes._
+
 ## 0.7.5 — 2021-07-08
 
 ### 🐛 Bug fixes
