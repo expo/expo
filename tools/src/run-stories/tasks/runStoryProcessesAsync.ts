@@ -7,41 +7,8 @@ import { getProjectRoot } from '../helpers';
 
 type Platform = 'android' | 'ios' | 'web';
 
-class ConsoleRawStream {
-  write(record: any) {
-    if (record.level < bunyan.INFO) {
-      Logger.log(record);
-    } else if (record.level < bunyan.WARN) {
-      Logger.info(record);
-    } else if (record.level < bunyan.ERROR) {
-      Logger.warn(record);
-    } else {
-      Logger.error(record);
-    }
-  }
-}
-
-const logger = bunyan.createLogger({
-  name: 'expo-stories',
-  serializers: bunyan.stdSerializers,
-  streams:
-    process.env.EXPO_RAW_LOG && process.env.NODE_ENV !== 'production'
-      ? [
-          {
-            type: 'raw',
-            stream: new ConsoleRawStream(),
-            closeOnExit: false,
-            level: 'debug',
-          },
-        ]
-      : [],
-});
-
 const CTRL_C = '\u0003';
 const CTRL_D = '\u0004';
-const CTRL_L = '\u000C';
-
-const BLT = `\u203A`;
 
 export async function runStoryProcessesAsync(packageName: string, platform: Platform) {
   const projectRoot = getProjectRoot(packageName);
@@ -61,6 +28,33 @@ export async function runStoryProcessesAsync(packageName: string, platform: Plat
   stdin.setRawMode(true);
   stdin.resume();
   stdin.setEncoding('utf8');
+
+  const logger = bunyan.createLogger({
+    name: 'expo-stories',
+    streams: [],
+  });
+
+  logger.addStream({
+    stream: {
+      write: (chunk: string) => {
+        try {
+          const c = JSON.parse(chunk);
+
+          if (c.tag === 'metro') {
+            if (!c.msg) {
+              return;
+            }
+
+            const message = JSON.parse(c.msg);
+            if (message.type === 'client_log' && message.data) {
+              Logger.log(message.data.join('\n'));
+            }
+          }
+        } catch (e) {}
+      },
+      level: 'debug',
+    },
+  });
 
   const { messageSocket } = await runMetroDevServerAsync(projectRoot, {
     port: 8081,
