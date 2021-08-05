@@ -16,7 +16,7 @@ For questions on setup, feel free to comment on this post: [**React Native Googl
 2. Open up [the Firebase Console](https://console.firebase.google.com) and setup a new project, or use an existing one.
 3. Create a native iOS, and Android app using the Bundle ID and Android package you defined earlier.
 4. Download the `GoogleService-info.plist` (iOS) & the `google-services.json` (Android). Move them to your Expo project.
-5. In the `app.json`, set your `expo.devs.config.googleSignIn.reservedClientId` to the value of `REVERSE_CLIENT_ID` in the `GoogleService-info.plist`.
+5. In the `app.json`, set your `expo.ios.config.googleSignIn.reservedClientId` to the value of `REVERSE_CLIENT_ID` in the `GoogleService-info.plist`.
 6. Also in `app.json`, set `expo.android.googleServicesFile` to the relative path of your `google-services.json`. Make sure the file is located somewhere in your Expo project.
 
 ```js

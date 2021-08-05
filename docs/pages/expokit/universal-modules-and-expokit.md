@@ -52,7 +52,7 @@ A few Expo modules are not included by default in ExpoKit iOS projects, nor in S
 - ARKit
 - Payments
 
-If you want to use any of these modules in your expo.devS app, you need to eject to ExpoKit rather than using `expo build`. (It's on our roadmap to improve this.)
+If you want to use any of these modules in your Expo iOS app, you need to eject to ExpoKit rather than using `expo build`. (It's on our roadmap to improve this.)
 
 To add FaceDetector:
 
