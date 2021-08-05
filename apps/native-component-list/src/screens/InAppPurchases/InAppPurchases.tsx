@@ -87,7 +87,7 @@ export default class InAppPurchases extends React.Component<any, any> {
   }
 
   async queryPurchaseHistory() {
-    const { responseCode, results } = await getPurchaseHistoryAsync(true);
+    const { responseCode, results } = await getPurchaseHistoryAsync({ useGooglePlayCache: false });
     if (responseCode === IAPResponseCode.OK) {
       this.setState({ history: results });
     }
