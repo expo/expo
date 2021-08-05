@@ -282,16 +282,6 @@ public class BillingManager implements PurchasesUpdatedListener {
    */
   public void queryPurchases(final Promise promise) {
     Runnable queryToExecute = new Runnable() {
-      @NonNull
-      private BillingResult aggregateBillingResults(@NonNull Set<BillingResult> billingResults) {
-        for (BillingResult result: billingResults) {
-          if (result.getResponseCode() != BillingResponseCode.OK) {
-            return result;
-          }
-        }
-        return billingResults.iterator().next();
-      }
-
       @Override
       public void run() {
         final Set<String> ALL_QUERIES = new HashSet(Arrays.asList(SkuType.INAPP, SkuType.SUBS));
@@ -332,6 +322,16 @@ public class BillingManager implements PurchasesUpdatedListener {
     };
 
     executeServiceRequest(queryToExecute);
+  }
+
+  @NonNull
+  private BillingResult aggregateBillingResults(@NonNull Set<BillingResult> billingResults) {
+    for (BillingResult result: billingResults) {
+      if (result.getResponseCode() != BillingResponseCode.OK) {
+        return result;
+      }
+    }
+    return billingResults.iterator().next();
   }
 
   /**
