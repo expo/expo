@@ -1,6 +1,6 @@
 import { Subscription } from '@unimodules/core';
-import { PermissionResponse, PermissionStatus, PermissionExpiration } from 'expo-modules-core';
-export declare type CameraRollPermissionResponse = PermissionResponse & {
+import { PermissionResponse as EXPermissionResponse, PermissionStatus, PermissionExpiration } from 'expo-modules-core';
+export declare type PermissionResponse = EXPermissionResponse & {
     /**
      * Indicates if your app has access to the whole or only part of the photo library. Possible values are:
      * - `'all'` if the user granted your app access to the whole photo library
@@ -232,7 +232,7 @@ export declare type PagedInfo<T> = {
 };
 export declare type AssetRef = Asset | string;
 export declare type AlbumRef = Album | string;
-export { PermissionStatus, PermissionExpiration, PermissionResponse, Subscription };
+export { PermissionStatus, PermissionExpiration, EXPermissionResponse, Subscription };
 /**
  * Possible media types.
  */
@@ -250,15 +250,15 @@ export declare function isAvailableAsync(): Promise<boolean>;
 /**
  * Asks the user to grant permissions for accessing media in user's media library.
  * @param writeOnly
- * @return A promise that fulfils with [`CameraRollPermissionResponse`](#camerarollpermissionresponse) object.
+ * @return A promise that fulfils with [`PermissionResponse`](#permissionresponse) object.
  */
-export declare function requestPermissionsAsync(writeOnly?: boolean): Promise<CameraRollPermissionResponse>;
+export declare function requestPermissionsAsync(writeOnly?: boolean): Promise<PermissionResponse>;
 /**
  * Checks user's permissions for accessing media library.
  * @param writeOnly
- * @return A promise that fulfils with [`CameraRollPermissionResponse`](#camerarollpermissionresponse) object.
+ * @return A promise that fulfils with [`PermissionResponse`](#permissionresponse) object.
  */
-export declare function getPermissionsAsync(writeOnly?: boolean): Promise<CameraRollPermissionResponse>;
+export declare function getPermissionsAsync(writeOnly?: boolean): Promise<PermissionResponse>;
 /**
  * __Available only on iOS >= 14.__ Allows the user to update the assets that your app has access to.
  * The system modal is only displayed if the user originally allowed only `limited` access to their

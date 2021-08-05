@@ -1,5 +1,5 @@
 import { EventEmitter, UnavailabilityError } from '@unimodules/core';
-import { PermissionStatus } from 'expo-modules-core';
+import { PermissionStatus, } from 'expo-modules-core';
 import { Platform } from 'react-native';
 import MediaLibrary from './ExponentMediaLibrary';
 const eventEmitter = new EventEmitter(MediaLibrary);
@@ -73,7 +73,7 @@ export async function isAvailableAsync() {
 /**
  * Asks the user to grant permissions for accessing media in user's media library.
  * @param writeOnly
- * @return A promise that fulfils with [`CameraRollPermissionResponse`](#camerarollpermissionresponse) object.
+ * @return A promise that fulfils with [`PermissionResponse`](#permissionresponse) object.
  */
 export async function requestPermissionsAsync(writeOnly = false) {
     if (!MediaLibrary.requestPermissionsAsync) {
@@ -85,7 +85,7 @@ export async function requestPermissionsAsync(writeOnly = false) {
 /**
  * Checks user's permissions for accessing media library.
  * @param writeOnly
- * @return A promise that fulfils with [`CameraRollPermissionResponse`](#camerarollpermissionresponse) object.
+ * @return A promise that fulfils with [`PermissionResponse`](#permissionresponse) object.
  */
 export async function getPermissionsAsync(writeOnly = false) {
     if (!MediaLibrary.getPermissionsAsync) {

@@ -1,5 +1,9 @@
 import { EventEmitter, Subscription, UnavailabilityError } from '@unimodules/core';
-import { PermissionResponse, PermissionStatus, PermissionExpiration } from 'expo-modules-core';
+import {
+  PermissionResponse as EXPermissionResponse,
+  PermissionStatus,
+  PermissionExpiration,
+} from 'expo-modules-core';
 import { Platform } from 'react-native';
 
 import MediaLibrary from './ExponentMediaLibrary';
@@ -7,7 +11,7 @@ import MediaLibrary from './ExponentMediaLibrary';
 const eventEmitter = new EventEmitter(MediaLibrary);
 
 // @needsAudit
-export type CameraRollPermissionResponse = PermissionResponse & {
+export type PermissionResponse = EXPermissionResponse & {
   /**
    * Indicates if your app has access to the whole or only part of the photo library. Possible values are:
    * - `'all'` if the user granted your app access to the whole photo library
@@ -278,10 +282,13 @@ export type PagedInfo<T> = {
   totalCount: number;
 };
 
+// @docsMissing
 export type AssetRef = Asset | string;
+
+// @docsMissing
 export type AlbumRef = Album | string;
 
-export { PermissionStatus, PermissionExpiration, PermissionResponse, Subscription };
+export { PermissionStatus, PermissionExpiration, EXPermissionResponse, Subscription };
 
 function arrayize(item: any): any[] {
   if (Array.isArray(item)) {
@@ -363,11 +370,11 @@ export async function isAvailableAsync(): Promise<boolean> {
 /**
  * Asks the user to grant permissions for accessing media in user's media library.
  * @param writeOnly
- * @return A promise that fulfils with [`CameraRollPermissionResponse`](#camerarollpermissionresponse) object.
+ * @return A promise that fulfils with [`PermissionResponse`](#permissionresponse) object.
  */
 export async function requestPermissionsAsync(
   writeOnly: boolean = false
-): Promise<CameraRollPermissionResponse> {
+): Promise<PermissionResponse> {
   if (!MediaLibrary.requestPermissionsAsync) {
     throw new UnavailabilityError('MediaLibrary', 'requestPermissionsAsync');
   }
@@ -378,11 +385,9 @@ export async function requestPermissionsAsync(
 /**
  * Checks user's permissions for accessing media library.
  * @param writeOnly
- * @return A promise that fulfils with [`CameraRollPermissionResponse`](#camerarollpermissionresponse) object.
+ * @return A promise that fulfils with [`PermissionResponse`](#permissionresponse) object.
  */
-export async function getPermissionsAsync(
-  writeOnly: boolean = false
-): Promise<CameraRollPermissionResponse> {
+export async function getPermissionsAsync(writeOnly: boolean = false): Promise<PermissionResponse> {
   if (!MediaLibrary.getPermissionsAsync) {
     throw new UnavailabilityError('MediaLibrary', 'getPermissionsAsync');
   }
