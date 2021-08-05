@@ -5,6 +5,7 @@ import { MainText } from '../components/Text';
 import Colors from '../constants/Colors';
 import { useThemeName } from '../hooks/useThemeName';
 import Button from './Button';
+import { clientUrlScheme } from '../DevLauncherInternal';
 
 type Props = {
   onPress: (url: string) => void;
@@ -41,7 +42,7 @@ export default ({ onPress }: Props) => {
       <TextInput
         testID="DevLauncherURLInput"
         style={[styles.urlTextInput, { borderColor, color }]}
-        placeholder="exp://192..."
+        placeholder={`${clientUrlScheme || 'myapp'}://expo-development-client/...`}
         placeholderTextColor="#b0b0ba"
         autoCapitalize="none"
         autoCorrect={false}

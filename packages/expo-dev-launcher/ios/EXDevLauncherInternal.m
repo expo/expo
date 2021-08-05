@@ -37,6 +37,31 @@ NSString *ON_NEW_DEEP_LINK_EVENT = @"expo.modules.devlauncher.onnewdeeplink";
   return NO;
 }
 
+- (NSString *)findClientUrlScheme
+{
+  NSString *clientUrlScheme = nil;
+  if ([[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleURLTypes"]) {
+    NSArray *urlTypes = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleURLTypes"];
+    for (NSDictionary *urlType in urlTypes) {
+      if (urlType[@"CFBundleURLSchemes"]) {
+        NSArray *urlSchemes = urlType[@"CFBundleURLSchemes"];
+        for (NSString *urlScheme in urlSchemes) {
+          // Find a scheme with a prefix or fall back to the first scheme defined.
+          if ([urlScheme hasPrefix:@"exp+"] || !clientUrlScheme) {
+            clientUrlScheme = urlScheme;
+          }
+        }
+      }
+    }
+  }
+  return clientUrlScheme;
+}
+
+- (NSDictionary *)constantsToExport
+{
+  return @{ @"clientUrlScheme": self.findClientUrlScheme };
+}
+
 - (void)onNewPendingDeepLink:(NSURL *)deepLink
 {
   [self sendEventWithName:ON_NEW_DEEP_LINK_EVENT body:deepLink.absoluteString];
