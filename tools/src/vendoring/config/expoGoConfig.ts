@@ -37,29 +37,19 @@ const config: VendoringTargetConfig = {
       source: 'https://github.com/software-mansion/react-native-reanimated.git',
       semverPrefix: '~',
       ios: {
-        // TODO: The podspec checks RN version to choose between Folly and RCT-Folly dependency,
-        // however we don't have RN's package.json in the place where it looks for and the fallback
-        // is set to `0.64.0` that we don't support yet.
-        // You can remove these mutations once we update RN to 0.64 or higher.
         mutatePodspec(podspec: Podspec) {
-          // Depend on Folly instead of RCT-Folly
-          delete podspec.dependencies['RCT-Folly'];
-          podspec.dependencies.Folly = [];
-
-          // Overwrite search paths for Folly
-          [podspec.pod_target_xcconfig, podspec.xcconfig].forEach((xcconfig) => {
-            xcconfig.HEADER_SEARCH_PATHS = xcconfig.HEADER_SEARCH_PATHS.replace(
-              '/RCT-Folly',
-              '/Folly'
-            );
-          });
+          // TODO: The podspec checks RN version from package.json.
+          // however we don't have RN's package.json in the place where it looks for and the fallback
+          // is set to `0.64.0`. we should manually transform to the exact RN version.
+          // currently both expo go and reanimated latest RN version is `0.64` that we don't need to transform.
+          // keep the code here in case reanimated upgrade and fallback default RN version as `0.65.0`.
 
           // Fix compiler flags
-          podspec.compiler_flags = podspec.compiler_flags.replace('RNVERSION=64', 'RNVERSION=63');
-          podspec.xcconfig.OTHER_CFLAGS = podspec.xcconfig.OTHER_CFLAGS.replace(
-            'RNVERSION=64',
-            'RNVERSION=63'
-          );
+          // podspec.compiler_flags = podspec.compiler_flags.replace('RNVERSION=64', 'RNVERSION=63');
+          // podspec.xcconfig.OTHER_CFLAGS = podspec.xcconfig.OTHER_CFLAGS.replace(
+          //   'RNVERSION=64',
+          //   'RNVERSION=63'
+          // );
         },
       },
     },
