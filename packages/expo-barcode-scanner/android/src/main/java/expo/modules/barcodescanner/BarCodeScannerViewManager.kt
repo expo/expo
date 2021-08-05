@@ -8,7 +8,7 @@ import expo.modules.interfaces.barcodescanner.BarCodeScannerSettings
 import java.util.*
 
 class BarCodeScannerViewManager : ViewManager<BarCodeScannerView?>() {
-  private lateinit var mModuleRegistry: ModuleRegistry
+  private lateinit var moduleRegistry: ModuleRegistry
 
   enum class Events(private val mName: String) {
     EVENT_ON_BAR_CODE_SCANNED("onBarCodeScanned");
@@ -16,14 +16,14 @@ class BarCodeScannerViewManager : ViewManager<BarCodeScannerView?>() {
     override fun toString() = mName
   }
 
-  override fun onCreate(moduleRegistry: ModuleRegistry) {
-    mModuleRegistry = moduleRegistry
+  override fun onCreate(innerModuleRegistry: ModuleRegistry) {
+    moduleRegistry = innerModuleRegistry
   }
 
   override fun getName() = TAG
 
   override fun createViewInstance(context: Context) =
-    BarCodeScannerView(context, mModuleRegistry)
+    BarCodeScannerView(context, moduleRegistry)
 
   override fun getViewManagerType() = ViewManagerType.GROUP
 

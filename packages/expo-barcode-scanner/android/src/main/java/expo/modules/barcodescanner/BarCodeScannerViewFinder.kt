@@ -23,14 +23,14 @@ internal class BarCodeScannerViewFinder(
   private var mSurfaceTexture: SurfaceTexture? = null
 
   @Volatile
-  private var mIsStarting = false
+  private var isStarting = false
 
   @Volatile
-  private var mIsStopping = false
+  private var isStopping = false
 
   @Volatile
-  private var mIsChanging = false
-  private var mCamera: Camera? = null
+  private var isChanging = false
+  private var camera: Camera? = null
 
   // Scanner instance for the barcode scanning
   private lateinit var mBarCodeScanner: BarCodeScannerInterface
@@ -63,11 +63,11 @@ internal class BarCodeScannerViewFinder(
       return
     }
     Thread {
-      mIsChanging = true
+      isChanging = true
       stopPreview()
       cameraType = type
       startPreview()
-      mIsChanging = false
+      isChanging = false
     }.start()
   }
 
@@ -78,17 +78,17 @@ internal class BarCodeScannerViewFinder(
   }
 
   private fun stopPreview() {
-    if (mCamera != null) {
+    if (camera != null) {
       stopCamera()
     }
   }
 
   @Synchronized
   private fun startCamera() {
-    if (!mIsStarting) {
-      mIsStarting = true
+    if (!isStarting) {
+      isStarting = true
       try {
-        ExpoBarCodeScanner.instance?.acquireCameraInstance(cameraType)?.run {
+        ExpoBarCodeScanner.instance.acquireCameraInstance(cameraType)?.run {
           val temporaryParameters = parameters
           // set autofocus
           val focusModes = temporaryParameters.supportedFocusModes
@@ -117,27 +117,27 @@ internal class BarCodeScannerViewFinder(
         e.printStackTrace()
         stopCamera()
       } finally {
-        mIsStarting = false
+        isStarting = false
       }
     }
   }
 
   @Synchronized
   private fun stopCamera() {
-    if (!mIsStopping) {
-      mIsStopping = true
+    if (!isStopping) {
+      isStopping = true
       try {
-        mCamera?.run {
+        camera?.run {
           stopPreview()
           // stop sending previews to `onPreviewFrame`
           setPreviewCallback(null)
           ExpoBarCodeScanner.instance.releaseCameraInstance()
         }
-        mCamera = null
+        camera = null
       } catch (e: Exception) {
         e.printStackTrace()
       } finally {
-        mIsStopping = false
+        isStopping = false
       }
     }
   }
@@ -154,10 +154,10 @@ internal class BarCodeScannerViewFinder(
     }
   }
 
-  override fun onPreviewFrame(data: ByteArray, camera: Camera) {
+  override fun onPreviewFrame(data: ByteArray, innerCamera: Camera) {
     if (!barCodeScannerTaskLock) {
       barCodeScannerTaskLock = true
-      BarCodeScannerAsyncTask(camera, data, barCodeScannerView).execute()
+      BarCodeScannerAsyncTask(innerCamera, data, barCodeScannerView).execute()
     }
   }
 
@@ -165,7 +165,7 @@ internal class BarCodeScannerViewFinder(
     mBarCodeScanner.setSettings(settings)
   }
 
-  private inner class BarCodeScannerAsyncTask(private val mCamera: Camera?, private val mImageData: ByteArray, barCodeScannerView: BarCodeScannerView) : AsyncTask<Void?, Void?, Void?>() {
+  private inner class BarCodeScannerAsyncTask(private val camera: Camera?, private val mImageData: ByteArray, barCodeScannerView: BarCodeScannerView) : AsyncTask<Void?, Void?, Void?>() {
     init {
       this@BarCodeScannerViewFinder.barCodeScannerView = barCodeScannerView
     }
@@ -177,8 +177,8 @@ internal class BarCodeScannerViewFinder(
 
       // setting PreviewCallback does not really have an effect - this method is called anyway so we
       // need to check if camera changing is in progress or not
-      if (!mIsChanging && mCamera != null) {
-        val size = mCamera.parameters.previewSize
+      if (!isChanging && camera != null) {
+        val size = camera.parameters.previewSize
         val width = size.width
         val height = size.height
         val properRotation = ExpoBarCodeScanner.instance.rotation

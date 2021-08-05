@@ -19,8 +19,8 @@ class BarCodeScannerModule(
   context: Context,
   private val moduleRegistryDelegate: ModuleRegistryDelegate = ModuleRegistryDelegate()
 ) : ExportedModule(context) {
-  private val mBarCodeScannerProvider = BarCodeScannerProvider()
-  private val mPermissions: Permissions by moduleRegistry()
+  private val barCodeScannerProvider = BarCodeScannerProvider()
+  private val permissions: Permissions by moduleRegistry()
 
   private inline fun <reified T> moduleRegistry() =
     moduleRegistryDelegate.getFromModuleRegistry<T>()
@@ -55,12 +55,12 @@ class BarCodeScannerModule(
 
   @ExpoMethod
   fun requestPermissionsAsync(promise: Promise) {
-    mPermissions.askForPermissionsWithPromise(promise, Manifest.permission.CAMERA)
+    permissions.askForPermissionsWithPromise(promise, Manifest.permission.CAMERA)
   }
 
   @ExpoMethod
   fun getPermissionsAsync(promise: Promise) {
-    mPermissions.getPermissionsWithPromise(promise, Manifest.permission.CAMERA)
+    permissions.getPermissionsWithPromise(promise, Manifest.permission.CAMERA)
   }
 
   @ExpoMethod
@@ -74,7 +74,7 @@ class BarCodeScannerModule(
       url,
       object : ResultListener {
         override fun onSuccess(bitmap: Bitmap) {
-          val scanner = mBarCodeScannerProvider.createBarCodeDetectorWithContext(context)
+          val scanner = barCodeScannerProvider.createBarCodeDetectorWithContext(context)
           scanner.setSettings(
             BarCodeScannerSettings().apply
             {

@@ -70,7 +70,7 @@ class GMVBarCodeScanner(context: Context) : ExpoBarCodeScanner(context) {
     newBarCodeTypes?.forEach {
       barcodeFormats = barcodeFormats or it
     }
-    mBarCodeTypes = newBarCodeTypes
+    barCodeTypes = newBarCodeTypes
     mBarcodeDetector.release()
     mBarcodeDetector = BarcodeDetector.Builder(mContext)
       .setBarcodeFormats(barcodeFormats)

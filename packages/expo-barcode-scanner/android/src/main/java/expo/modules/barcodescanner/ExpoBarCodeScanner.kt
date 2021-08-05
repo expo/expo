@@ -4,28 +4,27 @@ import android.hardware.Camera
 import android.hardware.Camera.CameraInfo
 import android.util.Log
 import android.view.Surface
-import java.util.*
 
 class ExpoBarCodeScanner(
   private var mActualDeviceOrientation: Int
 ) {
-  private val mCameraInfo: HashMap<Int, CameraInfoWrapper?> = HashMap()
-  private val mCameraTypeToIndex: HashMap<Int, Int> = HashMap()
-  private val mCameras: MutableSet<Number> = HashSet()
+  private val cameraInfo: HashMap<Int, CameraInfoWrapper?> = HashMap()
+  private val cameraTypeToIndex: HashMap<Int, Int> = HashMap()
+  private val cameras: MutableSet<Number> = HashSet()
 
   init {
     // map camera types to camera indexes and collect cameras properties
     repeat(Camera.getNumberOfCameras()) {
       val info = CameraInfo()
       Camera.getCameraInfo(it, info)
-      if (info.facing == CameraInfo.CAMERA_FACING_FRONT && mCameraInfo[CAMERA_TYPE_FRONT] == null) {
-        mCameraInfo[CAMERA_TYPE_FRONT] = CameraInfoWrapper(info)
-        mCameraTypeToIndex[CAMERA_TYPE_FRONT] = it
-        mCameras.add(CAMERA_TYPE_FRONT)
-      } else if (info.facing == CameraInfo.CAMERA_FACING_BACK && mCameraInfo[CAMERA_TYPE_BACK] == null) {
-        mCameraInfo[CAMERA_TYPE_BACK] = CameraInfoWrapper(info)
-        mCameraTypeToIndex[CAMERA_TYPE_BACK] = it
-        mCameras.add(CAMERA_TYPE_BACK)
+      if (info.facing == CameraInfo.CAMERA_FACING_FRONT && cameraInfo[CAMERA_TYPE_FRONT] == null) {
+        cameraInfo[CAMERA_TYPE_FRONT] = CameraInfoWrapper(info)
+        cameraTypeToIndex[CAMERA_TYPE_FRONT] = it
+        cameras.add(CAMERA_TYPE_FRONT)
+      } else if (info.facing == CameraInfo.CAMERA_FACING_BACK && cameraInfo[CAMERA_TYPE_BACK] == null) {
+        cameraInfo[CAMERA_TYPE_BACK] = CameraInfoWrapper(info)
+        cameraTypeToIndex[CAMERA_TYPE_BACK] = it
+        cameras.add(CAMERA_TYPE_BACK)
       }
     }
   }
@@ -36,9 +35,9 @@ class ExpoBarCodeScanner(
     private set
 
   fun acquireCameraInstance(type: Int): Camera? {
-    if (mCamera == null && mCameras.contains(type) && null != mCameraTypeToIndex[type]) {
+    if (mCamera == null && cameras.contains(type) && null != cameraTypeToIndex[type]) {
       try {
-        mCameraTypeToIndex[type]?.let {
+        cameraTypeToIndex[type]?.let {
           mCamera = Camera.open(it)
         }
         mCameraType = type
@@ -58,13 +57,13 @@ class ExpoBarCodeScanner(
   }
 
   fun getPreviewWidth(type: Int): Int {
-    val cameraInfo = mCameraInfo[type] ?: return 0
-    return cameraInfo.previewWidth
+    val tmpCameraInfo = cameraInfo[type] ?: return 0
+    return tmpCameraInfo.previewWidth
   }
 
   fun getPreviewHeight(type: Int): Int {
-    val cameraInfo = mCameraInfo[type] ?: return 0
-    return cameraInfo.previewHeight
+    val tmpCameraInfo = cameraInfo[type] ?: return 0
+    return tmpCameraInfo.previewHeight
   }
 
   fun getBestSize(supportedSizes: List<Camera.Size>, maxWidth: Int, maxHeight: Int) =
@@ -89,7 +88,7 @@ class ExpoBarCodeScanner(
 
   fun adjustPreviewLayout(type: Int) {
     mCamera?.run {
-      val cameraInfo = mCameraInfo[type] ?: return
+      val tmpCameraInfo = cameraInfo[type] ?: return
 
       // https://www.captechconsulting.com/blogs/android-camera-orientation-made-simple
       val degrees =
@@ -100,11 +99,11 @@ class ExpoBarCodeScanner(
           Surface.ROTATION_270 -> 270
           else -> 0
         }
-      if (cameraInfo.info.facing == CameraInfo.CAMERA_FACING_FRONT) {
-        rotation = (cameraInfo.info.orientation + degrees) % 360
+      if (tmpCameraInfo.info.facing == CameraInfo.CAMERA_FACING_FRONT) {
+        rotation = (tmpCameraInfo.info.orientation + degrees) % 360
         rotation = (360 - rotation) % 360
       } else {
-        rotation = (cameraInfo.info.orientation - degrees + 360) % 360
+        rotation = (tmpCameraInfo.info.orientation - degrees + 360) % 360
       }
       setDisplayOrientation(rotation)
       val temporaryParameters = parameters
@@ -121,11 +120,11 @@ class ExpoBarCodeScanner(
       } catch (e: Exception) {
         e.printStackTrace()
       }
-      cameraInfo.previewHeight = height
-      cameraInfo.previewWidth = width
+      tmpCameraInfo.previewHeight = height
+      tmpCameraInfo.previewWidth = width
       if (rotation == 90 || rotation == 270) {
-        cameraInfo.previewHeight = width
-        cameraInfo.previewWidth = height
+        tmpCameraInfo.previewHeight = width
+        tmpCameraInfo.previewWidth = height
       }
     }
   }

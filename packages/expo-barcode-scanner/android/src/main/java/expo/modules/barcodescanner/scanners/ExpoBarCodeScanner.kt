@@ -5,9 +5,9 @@ import expo.modules.interfaces.barcodescanner.BarCodeScannerInterface
 import expo.modules.interfaces.barcodescanner.BarCodeScannerSettings
 
 abstract class ExpoBarCodeScanner internal constructor(protected var mContext: Context) : BarCodeScannerInterface {
-  protected var mBarCodeTypes: List<Int>? = null
+  protected var barCodeTypes: List<Int>? = null
   fun areNewAndOldBarCodeTypesEqual(newBarCodeTypes: List<Int>?): Boolean {
-    mBarCodeTypes?.run {
+    barCodeTypes?.run {
       // create distinct-values sets
       val prevTypesSet = toHashSet()
       val nextTypesSet = newBarCodeTypes?.toHashSet()

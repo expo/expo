@@ -85,7 +85,7 @@ class ZxingBarCodeScanner(context: Context) : ExpoBarCodeScanner(context) {
     }
     val hints = EnumMap<DecodeHintType, Any?>(DecodeHintType::class.java)
     val decodeFormats = EnumSet.noneOf(BarcodeFormat::class.java)
-    mBarCodeTypes?.forEach {
+    barCodeTypes?.forEach {
       val formatString = VALID_BARCODE_TYPES[it]
       if (formatString != null) {
         decodeFormats.add(BarcodeFormat.valueOf(formatString))
