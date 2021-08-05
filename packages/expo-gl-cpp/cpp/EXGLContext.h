@@ -1,3 +1,5 @@
+#pragma once
+
 #include "UEXGL.h"
 
 #ifdef __ANDROID__
