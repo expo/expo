@@ -34,7 +34,8 @@ const isHook = ({ name }: GeneratedData) =>
   // note(simek): hardcode this exception until the method will be renamed
   name !== 'useSystemBrightnessAsync';
 
-const isListener = ({ name }: GeneratedData) => name.endsWith('Listener');
+const isListener = ({ name }: GeneratedData) =>
+  name.endsWith('Listener') || name.endsWith('Listeners');
 
 const renderAPI = (
   packageName: string,
