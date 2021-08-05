@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- `purchaseItemAsync` no longer accepts the old SKU as the second (optional) argument. Instead, this method now accepts the `purchaseToken` of the purchase you are replacing as the second argument. You can get this value via `getPurchaseHistoryAsync`. This change only affects Android. ([#13884](https://github.com/expo/expo/pull/13884) by [@cruzach](https://github.com/cruzach))
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
