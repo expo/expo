@@ -42,7 +42,7 @@ export default ({ onPress }: Props) => {
       <TextInput
         testID="DevLauncherURLInput"
         style={[styles.urlTextInput, { borderColor, color }]}
-        placeholder={`${clientUrlScheme || 'exp'}://...`}
+        placeholder={`${clientUrlScheme || 'myapp'}://expo-development-client/...`}
         placeholderTextColor="#b0b0ba"
         autoCapitalize="none"
         autoCorrect={false}
