@@ -151,6 +151,7 @@ const sections = [
       'Deploying to App Stores',
       'Release Channels',
       'Advanced Release Channels',
+      'Runtime Versions',
       'Build Webhooks',
       'Hosting Updates on Your Servers',
       'Building Standalone Apps on Your CI',

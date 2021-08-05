@@ -19,5 +19,8 @@ export async function getDocumentAsync({
   copyToCacheDirectory = true,
   multiple = false,
 }: DocumentPickerOptions = {}): Promise<DocumentResult> {
+  if (typeof type === 'string') {
+    type = [type] as string[];
+  }
   return await ExpoDocumentPicker.getDocumentAsync({ type, copyToCacheDirectory, multiple });
 }

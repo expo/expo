@@ -48,17 +48,18 @@ class DocumentPickerModule(
       promise.reject("E_DOCUMENT_PICKER", "Different document picking in progress. Await other document picking first.")
       return
     }
-
     val pickerOptions = DocumentPickerOptions.optionsFromMap(options, promise) ?: return
-
     mPromise = promise
     mCopyToCacheDirectory = pickerOptions.copyToCacheDirectory
-
     val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
       addCategory(Intent.CATEGORY_OPENABLE)
-      type = pickerOptions.type
+      type = if (pickerOptions.types.size > 1) {
+        putExtra(Intent.EXTRA_MIME_TYPES, pickerOptions.types)
+        "*/*"
+      } else {
+        pickerOptions.types[0]
+      }
     }
-
     mActivityProvider.currentActivity.startActivityForResult(intent, OPEN_DOCUMENT_CODE)
   }
 

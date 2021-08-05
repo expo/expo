@@ -1,49 +1,42 @@
 PODS:
   - boost-for-react-native (1.63.0)
   - DoubleConversion (1.1.6)
-  - EXAppleAuthentication (3.2.0):
-    - UMCore
   - EXApplication (3.2.0):
-    - UMCore
-  - EXBlur (9.0.3):
-    - UMCore
-  - EXClipboard (1.1.0):
     - UMCore
   - EXConstants (11.0.0):
     - ExpoModulesCore
     - UMCore
   - EXKeepAwake (9.2.0):
     - UMCore
-  - expo-dev-client (0.3.0):
+  - expo-dev-client (0.4.5):
     - expo-dev-launcher
     - expo-dev-menu
     - expo-dev-menu-interface
     - EXUpdatesInterface
-  - expo-dev-launcher (0.5.1):
-    - expo-dev-launcher/Main (= 0.5.1)
+  - expo-dev-launcher (0.6.5):
+    - expo-dev-launcher/Main (= 0.6.5)
     - expo-dev-menu-interface
     - EXUpdatesInterface
     - React
-  - expo-dev-launcher/Main (0.5.1):
+  - expo-dev-launcher/Main (0.6.5):
     - expo-dev-launcher/Unsafe
     - expo-dev-menu-interface
     - EXUpdatesInterface
     - React
-  - expo-dev-launcher/Unsafe (0.5.1):
+  - expo-dev-launcher/Unsafe (0.6.5):
     - expo-dev-menu-interface
     - EXUpdatesInterface
     - React
-  - expo-dev-menu (0.7.0):
+  - expo-dev-menu (0.7.5):
     - expo-dev-menu-interface
-    - expo-dev-menu/Main (= 0.7.0)
+    - expo-dev-menu/Main (= 0.7.5)
     - React
-  - expo-dev-menu-interface (0.3.1):
-    - React
-  - expo-dev-menu/Main (0.7.0):
+  - expo-dev-menu-interface (0.3.2)
+  - expo-dev-menu/Main (0.7.5):
     - expo-dev-menu-interface
     - expo-dev-menu/Vendored
     - React
-  - expo-dev-menu/Vendored (0.7.0):
+  - expo-dev-menu/Vendored (0.7.5):
     - expo-dev-menu-interface
     - React
   - ExpoModulesCore (0.1.1):
@@ -51,7 +44,7 @@ PODS:
   - EXSplashScreen (0.11.0):
     - React-Core
     - UMCore
-  - EXUpdatesInterface (0.1.0)
+  - EXUpdatesInterface (0.2.2)
   - FBLazyVector (0.63.2)
   - FBReactNativeSpec (0.63.2):
     - Folly (= 2020.01.13.00)
@@ -333,7 +326,7 @@ PODS:
   - UMAppLoader (2.2.0)
   - UMCore (7.1.1):
     - ExpoModulesCore
-  - UMReactNativeAdapter (6.3.0):
+  - UMReactNativeAdapter (6.4.0):
     - ExpoModulesCore
   - UMTaskManagerInterface (6.2.0):
     - UMCore
@@ -341,10 +334,7 @@ PODS:
 
 DEPENDENCIES:
   - DoubleConversion (from `../node_modules/react-native/third-party-podspecs/DoubleConversion.podspec`)
-  - EXAppleAuthentication (from `../../../packages/expo-apple-authentication/ios`)
   - EXApplication (from `../../../packages/expo-application/ios`)
-  - EXBlur (from `../../../packages/expo-blur/ios`)
-  - EXClipboard (from `../../../packages/expo-clipboard/ios`)
   - EXConstants (from `../../../packages/expo-constants/ios`)
   - EXKeepAwake (from `../../../packages/expo-keep-awake/ios`)
   - expo-dev-client (from `../../../packages/expo-dev-client`)
@@ -396,18 +386,9 @@ SPEC REPOS:
 EXTERNAL SOURCES:
   DoubleConversion:
     :podspec: "../node_modules/react-native/third-party-podspecs/DoubleConversion.podspec"
-  EXAppleAuthentication:
-    inhibit_warnings: false
-    :path: "../../../packages/expo-apple-authentication/ios"
   EXApplication:
     inhibit_warnings: false
     :path: "../../../packages/expo-application/ios"
-  EXBlur:
-    inhibit_warnings: false
-    :path: "../../../packages/expo-blur/ios"
-  EXClipboard:
-    inhibit_warnings: false
-    :path: "../../../packages/expo-clipboard/ios"
   EXConstants:
     inhibit_warnings: false
     :path: "../../../packages/expo-constants/ios"
@@ -503,19 +484,16 @@ EXTERNAL SOURCES:
 SPEC CHECKSUMS:
   boost-for-react-native: 39c7adb57c4e60d6c5479dd8623128eb5b3f0f2c
   DoubleConversion: cde416483dac037923206447da6e1454df403714
-  EXAppleAuthentication: 5994731faf4a3dd32be4a4b3e9feb930c2fa25c1
   EXApplication: 9ff2a206009d6e55bca6c20b3f33d07986b51ef3
-  EXBlur: 50d490040f3b14898ed8198d5125dc699189f4d9
-  EXClipboard: c66f7d22ba754496b0fc6b23a2cb9a3e10fa1581
-  EXConstants: 7025f7965e87340f8e7493edc7062071ff48449f
+  EXConstants: 0c200d22d140d3f1834dc51c4ebe0465ddaa82c5
   EXKeepAwake: f4105ef469be7b283f66ce2d7234bb71ac80cd26
-  expo-dev-client: 785792b8c8228d7adb8e8a0e7960ea28a254d08b
-  expo-dev-launcher: 669533ea784dfeb1cb763a49e436d62db63252c1
-  expo-dev-menu: 1c5a5194cb123e6f90358e815711cfea34524d72
-  expo-dev-menu-interface: 4fda2fa6d974a518e546ca1193340513b0a8b0e8
-  ExpoModulesCore: 085657f53b53e86ab71477ba7f5b75fe174ee9e4
+  expo-dev-client: 6f833f384c5fcc59e96a91268601dabcd16f70f0
+  expo-dev-launcher: 0b3fe43607f31238f49445e7310e185675061762
+  expo-dev-menu: c1d43574828f37cb541a0bb52fe7bb7829586147
+  expo-dev-menu-interface: 59fbd00f527c7ae65aa86144e6c8af3761fc037f
+  ExpoModulesCore: 82ee658feb15e6804de9f3530c39c62ff900048b
   EXSplashScreen: da00ad1d61c395c5c81b252c5987e8f83cba230a
-  EXUpdatesInterface: 8e4f28434a2e6a75803c4ea0ab12cfb07ebb3438
+  EXUpdatesInterface: b68e78b912a03fff7901a5f46ec200c45e3506a5
   FBLazyVector: 3ef4a7f62e7db01092f9d517d2ebc0d0677c4a37
   FBReactNativeSpec: dc7fa9088f0f2a998503a352b0554d69a4391c5a
   Folly: b73c3869541e86821df3c387eb0af5f65addfab4
@@ -545,10 +523,10 @@ SPEC CHECKSUMS:
   RNScreens: 21b73c94c9117e1110a79ee0ee80c93ccefed8ce
   UMAppLoader: 21af63390e55c82e037fb9752d93114a80ecf16e
   UMCore: b531b41645f9250a138583bd0ac52edbc7a0e16c
-  UMReactNativeAdapter: c3ee775a59120220d5c564716ebc22e9f615b4f2
+  UMReactNativeAdapter: 5d34de03540c3a22624919492974df6f187d9c55
   UMTaskManagerInterface: 2be431101b73604e64fbfffcf759336f9d8fccbb
   Yoga: 7740b94929bbacbddda59bf115b5317e9a161598
 
-PODFILE CHECKSUM: a184d50e9f00f43a3562db5398f77274caba3857
+PODFILE CHECKSUM: 8d72685ed2d1dcae2f50964c74af7ea7cd4cc72f
 
 COCOAPODS: 1.10.1

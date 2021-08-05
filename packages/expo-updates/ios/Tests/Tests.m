@@ -64,5 +64,24 @@
   XCTAssertEqualObjects(filenameFromDatabase, assetSetFilename.filename, @"Should be able to override the default asset filename if the database has something different");
 }
 
+- (void)testAssetFilenameWithFileExtension
+{
+  EXUpdatesAsset *assetWithDotPrefix = [[EXUpdatesAsset alloc] initWithKey:@"cat" type:@".jpeg"];
+  XCTAssertEqualObjects(assetWithDotPrefix.filename, @"cat.jpeg");
+  
+  EXUpdatesAsset *assetWithoutDotPrefix = [[EXUpdatesAsset alloc] initWithKey:@"cat" type:@"jpeg"];
+  XCTAssertEqualObjects(assetWithoutDotPrefix.filename, @"cat.jpeg");
+  
+  EXUpdatesAsset *assetWithoutKey = [[EXUpdatesAsset alloc] initWithKey:nil type:@"jpeg"];
+  XCTAssertEqualObjects([assetWithoutKey.filename substringFromIndex:[assetWithoutKey.filename length] - 5], @".jpeg");
+}
+
+- (void)testAssetFilenameWithoutFileExtension
+{
+  EXUpdatesAsset *assetWithDotPrefix = [[EXUpdatesAsset alloc] initWithKey:@"cat" type:nil];
+  XCTAssertEqualObjects(assetWithDotPrefix.filename, @"cat");
+
+}
+
 @end
 

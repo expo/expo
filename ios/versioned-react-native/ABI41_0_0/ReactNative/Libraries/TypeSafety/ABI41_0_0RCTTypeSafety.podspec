@@ -32,7 +32,7 @@ Pod::Spec.new do |s|
                              }
 
   s.dependency "ABI41_0_0FBLazyVector", version
-  s.dependency "Folly", folly_version
+  s.dependency "RCT-Folly", folly_version
   s.dependency "ABI41_0_0RCTRequired", version
   s.dependency "ABI41_0_0React-Core", version
 end

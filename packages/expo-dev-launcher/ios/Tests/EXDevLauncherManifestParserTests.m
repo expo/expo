@@ -1,9 +1,4 @@
-//
-//  EXDevLauncherManifestParserTests.m
-//  expo-dev-launcher-Unit-Tests
-//
-//  Created by Eric Samelson on 7/28/21.
-//
+// Copyright 2021-present 650 Industries. All rights reserved.
 
 #import <XCTest/XCTest.h>
 #import <OHHTTPStubs/HTTPStubs.h>

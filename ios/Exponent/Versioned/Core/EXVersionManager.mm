@@ -31,6 +31,7 @@
 #import <React/RCTGIFImageDecoder.h>
 #import <React/RCTImageLoader.h>
 #import <React/RCTAsyncLocalStorage.h>
+#import <React/RCTJSIExecutorRuntimeInstaller.h>
 
 #import <objc/message.h>
 
@@ -502,10 +503,7 @@ RCT_EXTERN void EXRegisterScopedModule(Class, ...);
 }
 
 - (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:(const std::string &)name
-                                                       instance:(id<RCTTurboModule>)instance
-                                                      jsInvoker:(std::shared_ptr<facebook::react::CallInvoker>)jsInvoker
-                                                  nativeInvoker:(std::shared_ptr<facebook::react::CallInvoker>)nativeInvoker
-                                                     perfLogger:(id<RCTTurboModulePerformanceLogger>)perfLogger
+                                                     initParams:(const facebook::react::ObjCTurboModule::InitParams &)params
 {
   // TODO: ADD
   return nullptr;
@@ -525,22 +523,17 @@ RCT_EXTERN void EXRegisterScopedModule(Class, ...);
   _bridge_reanimated = bridge;
 
   EX_WEAKIFY(self);
-  return new facebook::react::JSCExecutorFactory([EXWeak_self, bridge](facebook::jsi::Runtime &runtime) {
+  const auto executor = [EXWeak_self, bridge](facebook::jsi::Runtime &runtime) {
     if (!bridge) {
       return;
     }
     EX_ENSURE_STRONGIFY(self);
-    self->_turboModuleManager = [[RCTTurboModuleManager alloc] initWithBridge:bridge
-                                                                     delegate:self
-                                                                    jsInvoker:bridge.jsCallInvoker];
-    [self->_turboModuleManager installJSBindingWithRuntime:&runtime];
-
     auto reanimatedModule = reanimated::createReanimatedModule(bridge.jsCallInvoker);
     runtime.global().setProperty(runtime,
                                  jsi::PropNameID::forAscii(runtime, "__reanimatedModuleProxy"),
-                                 jsi::Object::createFromHostObject(runtime, reanimatedModule)
-    );
-  });
+                                 jsi::Object::createFromHostObject(runtime, reanimatedModule));
+  };
+  return new facebook::react::JSCExecutorFactory(RCTJSIExecutorRuntimeInstaller(executor));
 }
 
 @end

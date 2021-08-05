@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Made the arguments that were labeled as 'optional' on iOS for `getPurchaseHistoryAsync` and `finishTransactionAsync` actually optional. ([#13904](https://github.com/expo/expo/pull/13904) by [@cruzach](https://github.com/cruzach))
+
 ### 💡 Others
 
 ## 10.2.0 — 2021-06-16

@@ -66,7 +66,7 @@ Generally, the schema of this file looks like this:
     /* @info any arbitrary name - used as an identifier */"BUILD_PROFILE_NAME_2"/* @end */: {
 
     },
-    ...,
+    ...
   }
 }
 ```
