@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix config plugin to properly set the updates URL based on `getAccountUsername` from `@expo/config`. ([#13909](https://github.com/expo/expo/pull/13909) by [@brentvatne](https://github.com/brentvatne))
+
 ### 💡 Others
 
 ## 0.8.3 — 2021-07-28
