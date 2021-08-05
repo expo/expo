@@ -10,6 +10,7 @@ import expo.modules.barcodescanner.BarCodeScannedEvent.Companion.obtain
 import expo.modules.barcodescanner.utils.mapX
 import expo.modules.barcodescanner.utils.mapY
 import expo.modules.core.ModuleRegistry
+import expo.modules.core.ModuleRegistryDelegate
 import expo.modules.core.interfaces.services.EventEmitter
 import expo.modules.interfaces.barcodescanner.BarCodeScannerResult
 import expo.modules.interfaces.barcodescanner.BarCodeScannerSettings
@@ -17,10 +18,12 @@ import kotlin.math.roundToInt
 
 class BarCodeScannerView(
   private val viewContext: Context,
-  private val moduleRegistry: ModuleRegistry
+  private val moduleRegistryDelegate: ModuleRegistryDelegate = ModuleRegistryDelegate()
 ) : ViewGroup(viewContext) {
-  private val orientationListener = object :
-    OrientationEventListener(viewContext, SensorManager.SENSOR_DELAY_NORMAL) {
+  private val orientationListener = object : OrientationEventListener(
+    viewContext,
+    SensorManager.SENSOR_DELAY_NORMAL
+  ) {
     override fun onOrientationChanged(orientation: Int) {
       if (setActualDeviceOrientation(viewContext)) {
         layoutViewFinder()
@@ -29,6 +32,10 @@ class BarCodeScannerView(
   }.apply {
     if (canDetectOrientation()) enable() else disable()
   }
+
+  private inline fun <reified T> moduleRegistry() =
+    moduleRegistryDelegate.getFromModuleRegistry<T>()
+
 
   private lateinit var viewFinder: BarCodeScannerViewFinder
   private var actualDeviceOrientation = -1
@@ -53,7 +60,7 @@ class BarCodeScannerView(
   }
 
   fun onBarCodeScanned(barCode: BarCodeScannerResult) {
-    val emitter = moduleRegistry.getModule(EventEmitter::class.java)
+    val emitter: EventEmitter by moduleRegistry()
     transformBarCodeScannerResultToViewCoordinates(barCode)
     val event = obtain(id, barCode, displayDensity)
     emitter.emit(id, event)
@@ -94,7 +101,7 @@ class BarCodeScannerView(
       viewFinder.setCameraType(cameraType)
       ExpoBarCodeScanner.instance.adjustPreviewLayout(cameraType)
     } else {
-      viewFinder = BarCodeScannerViewFinder(viewContext, cameraType, this, moduleRegistry)
+      viewFinder = BarCodeScannerViewFinder(viewContext, cameraType, this, moduleRegistryDelegate)
       addView(viewFinder)
     }
   }

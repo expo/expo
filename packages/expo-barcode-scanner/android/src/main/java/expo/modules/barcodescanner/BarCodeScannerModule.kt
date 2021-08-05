@@ -76,8 +76,7 @@ class BarCodeScannerModule(
         override fun onSuccess(bitmap: Bitmap) {
           val scanner = barCodeScannerProvider.createBarCodeDetectorWithContext(context)
           scanner.setSettings(
-            BarCodeScannerSettings().apply
-            {
+            BarCodeScannerSettings().apply {
               putTypes(types)
             }
           )

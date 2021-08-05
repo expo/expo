@@ -2,13 +2,15 @@ package expo.modules.barcodescanner
 
 import android.content.Context
 import expo.modules.core.ModuleRegistry
+import expo.modules.core.ModuleRegistryDelegate
 import expo.modules.core.ViewManager
 import expo.modules.core.interfaces.ExpoProp
 import expo.modules.interfaces.barcodescanner.BarCodeScannerSettings
 import java.util.*
 
-class BarCodeScannerViewManager : ViewManager<BarCodeScannerView?>() {
-  private lateinit var moduleRegistry: ModuleRegistry
+class BarCodeScannerViewManager(
+  private val moduleRegistryDelegate: ModuleRegistryDelegate = ModuleRegistryDelegate()
+) : ViewManager<BarCodeScannerView?>() {
 
   enum class Events(private val mName: String) {
     EVENT_ON_BAR_CODE_SCANNED("onBarCodeScanned");
@@ -16,14 +18,10 @@ class BarCodeScannerViewManager : ViewManager<BarCodeScannerView?>() {
     override fun toString() = mName
   }
 
-  override fun onCreate(innerModuleRegistry: ModuleRegistry) {
-    moduleRegistry = innerModuleRegistry
-  }
-
   override fun getName() = TAG
 
   override fun createViewInstance(context: Context) =
-    BarCodeScannerView(context, moduleRegistry)
+    BarCodeScannerView(context, moduleRegistryDelegate)
 
   override fun getViewManagerType() = ViewManagerType.GROUP
 

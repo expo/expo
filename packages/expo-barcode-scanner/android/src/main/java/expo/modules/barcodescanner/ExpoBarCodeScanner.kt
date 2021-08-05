@@ -57,13 +57,11 @@ class ExpoBarCodeScanner(
   }
 
   fun getPreviewWidth(type: Int): Int {
-    val tmpCameraInfo = cameraInfo[type] ?: return 0
-    return tmpCameraInfo.previewWidth
+    return cameraInfo[type]?.previewWidth ?: 0
   }
 
   fun getPreviewHeight(type: Int): Int {
-    val tmpCameraInfo = cameraInfo[type] ?: return 0
-    return tmpCameraInfo.previewHeight
+    return cameraInfo[type]?.previewHeight ?: 0
   }
 
   fun getBestSize(supportedSizes: List<Camera.Size>, maxWidth: Int, maxHeight: Int) =

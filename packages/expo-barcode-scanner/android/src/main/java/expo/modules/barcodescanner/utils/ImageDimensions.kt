@@ -1,6 +1,6 @@
 package expo.modules.barcodescanner.utils
 
-class ImageDimensions(
+data class ImageDimensions(
   private val innerWidth: Int,
   private val innerHeight: Int,
   val rotation: Int = 0,

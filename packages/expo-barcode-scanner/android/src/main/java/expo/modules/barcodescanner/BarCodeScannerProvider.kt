@@ -13,10 +13,8 @@ class BarCodeScannerProvider : InternalModule, BarCodeScannerProviderInterface {
     listOf(BarCodeScannerProviderInterface::class.java)
 
   override fun createBarCodeDetectorWithContext(context: Context): BarCodeScannerInterface {
-    var detector: ExpoBarCodeScanner = GMVBarCodeScanner(context)
-    if (!detector.isAvailable) {
-      detector = ZxingBarCodeScanner(context)
-    }
-    return detector
+    return GMVBarCodeScanner(context).takeIf {
+      it.isAvailable
+  	} ?: ZxingBarCodeScanner(context)
   }
 }

@@ -9,7 +9,7 @@ import android.os.Handler
 import android.os.Looper
 import android.view.TextureView
 import android.view.TextureView.SurfaceTextureListener
-import expo.modules.core.ModuleRegistry
+import expo.modules.core.ModuleRegistryDelegate
 import expo.modules.interfaces.barcodescanner.BarCodeScannerInterface
 import expo.modules.interfaces.barcodescanner.BarCodeScannerProviderInterface
 import expo.modules.interfaces.barcodescanner.BarCodeScannerSettings
@@ -18,9 +18,13 @@ internal class BarCodeScannerViewFinder(
   context: Context,
   private var cameraType: Int,
   private var barCodeScannerView: BarCodeScannerView,
-  private val moduleRegistry: ModuleRegistry
+  private val moduleRegistryDelegate: ModuleRegistryDelegate = ModuleRegistryDelegate()
 ) : TextureView(context), SurfaceTextureListener, PreviewCallback {
-  private var mSurfaceTexture: SurfaceTexture? = null
+  private var finderSurfaceTexture: SurfaceTexture? = null
+
+  private inline fun <reified T> moduleRegistry() =
+    moduleRegistryDelegate.getFromModuleRegistry<T>()
+
 
   @Volatile
   private var isStarting = false
@@ -33,22 +37,22 @@ internal class BarCodeScannerViewFinder(
   private var camera: Camera? = null
 
   // Scanner instance for the barcode scanning
-  private lateinit var mBarCodeScanner: BarCodeScannerInterface
+  private lateinit var barCodeScanner: BarCodeScannerInterface
   override fun onSurfaceTextureAvailable(surface: SurfaceTexture, width: Int, height: Int) {
-    mSurfaceTexture = surface
+    finderSurfaceTexture = surface
     startCamera()
   }
 
   override fun onSurfaceTextureSizeChanged(surface: SurfaceTexture, width: Int, height: Int) = Unit
 
   override fun onSurfaceTextureDestroyed(surface: SurfaceTexture): Boolean {
-    mSurfaceTexture = null
+    finderSurfaceTexture = null
     stopCamera()
     return true
   }
 
   override fun onSurfaceTextureUpdated(surface: SurfaceTexture) {
-    mSurfaceTexture = surface
+    finderSurfaceTexture = surface
   }
 
   val ratio: Double
@@ -72,7 +76,7 @@ internal class BarCodeScannerViewFinder(
   }
 
   private fun startPreview() {
-    if (mSurfaceTexture != null) {
+    if (finderSurfaceTexture != null) {
       startCamera()
     }
   }
@@ -105,7 +109,7 @@ internal class BarCodeScannerViewFinder(
             )
           temporaryParameters?.setPictureSize(optimalPictureSize.width, optimalPictureSize.height)
           parameters = temporaryParameters
-          setPreviewTexture(mSurfaceTexture)
+          setPreviewTexture(finderSurfaceTexture)
           startPreview()
           // send previews to `onPreviewFrame`
           setPreviewCallback(this@BarCodeScannerViewFinder)
@@ -148,10 +152,8 @@ internal class BarCodeScannerViewFinder(
    * Additionally supports [codabar, code128, upc_a]
    */
   private fun initBarCodeScanner() {
-    val barCodeScannerProvider = moduleRegistry.getModule(BarCodeScannerProviderInterface::class.java)
-    if (barCodeScannerProvider != null) {
-      mBarCodeScanner = barCodeScannerProvider.createBarCodeDetectorWithContext(context)
-    }
+    val barCodeScannerProvider: BarCodeScannerProviderInterface by moduleRegistry()
+    barCodeScanner = barCodeScannerProvider.createBarCodeDetectorWithContext(context)
   }
 
   override fun onPreviewFrame(data: ByteArray, innerCamera: Camera) {
@@ -162,7 +164,7 @@ internal class BarCodeScannerViewFinder(
   }
 
   fun setBarCodeScannerSettings(settings: BarCodeScannerSettings?) {
-    mBarCodeScanner.setSettings(settings)
+    barCodeScanner.setSettings(settings)
   }
 
   private inner class BarCodeScannerAsyncTask(private val camera: Camera?, private val mImageData: ByteArray, barCodeScannerView: BarCodeScannerView) : AsyncTask<Void?, Void?, Void?>() {
@@ -182,7 +184,7 @@ internal class BarCodeScannerViewFinder(
         val width = size.width
         val height = size.height
         val properRotation = ExpoBarCodeScanner.instance.rotation
-        val result = mBarCodeScanner.scan(
+        val result = barCodeScanner.scan(
           mImageData, width,
           height, properRotation
         )

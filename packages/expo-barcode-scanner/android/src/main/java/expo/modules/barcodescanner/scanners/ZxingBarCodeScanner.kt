@@ -30,8 +30,7 @@ class ZxingBarCodeScanner(context: Context) : ExpoBarCodeScanner(context) {
     return result?.let { listOf(it) } ?: emptyList()
   }
 
-  override val isAvailable: Boolean
-    get() = true
+  override val isAvailable = true
 
   override fun scan(data: ByteArray, width: Int, height: Int, rotation: Int): BarCodeScannerResult {
     // rotate for zxing if orientation is portrait
