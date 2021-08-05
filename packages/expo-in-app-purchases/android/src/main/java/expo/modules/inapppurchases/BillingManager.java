@@ -134,9 +134,7 @@ public class BillingManager implements PurchasesUpdatedListener {
   /**
    * Start a purchase or subscription replace flow
    */
-  public void purchaseItemAsync(final String skuId, final String oldSku, final Promise promise) {
-
-    // oldSku is for subscription replacements and may be null.
+  public void purchaseItemAsync(final String skuId, @Nullable final String oldPurchaseToken, final Promise promise) {
     Runnable purchaseFlowRequest = new Runnable() {
       @Override
       public void run() {
@@ -148,16 +146,9 @@ public class BillingManager implements PurchasesUpdatedListener {
 
         BillingFlowParams.Builder purchaseParams = BillingFlowParams.newBuilder()
           .setSkuDetails(skuDetails);
-        if (oldSku != null) {
-          String purchaseToken = getPurchaseTokenFromSku(oldSku);
-          if (purchaseToken == null) {
-            promise.reject(
-              "ERR_IN_APP_PURCHASES_ITEM_NOT_FOUND",
-              "Purchase for old ID '" + oldSku + "' not found. You must call 'getPurchaseHistoryAsync' before replacing an old purchase with a new one.");
-            return;
-          }
+        if (oldPurchaseToken != null) {
           purchaseParams.setSubscriptionUpdateParams(
-            BillingFlowParams.SubscriptionUpdateParams.newBuilder().setOldSkuPurchaseToken(purchaseToken).build()
+            BillingFlowParams.SubscriptionUpdateParams.newBuilder().setOldSkuPurchaseToken(oldPurchaseToken).build()
           );
         }
         mBillingClient.launchBillingFlow(mActivity, purchaseParams.build());
@@ -165,16 +156,6 @@ public class BillingManager implements PurchasesUpdatedListener {
     };
 
     executeServiceRequest(purchaseFlowRequest);
-  }
-
-  @Nullable
-  private String getPurchaseTokenFromSku(String sku) {
-    for (Purchase purchase: mPurchases) {
-      if (purchase.getSkus().contains(sku)) {
-        return purchase.getPurchaseToken();
-      }
-    }
-    return null;
   }
 
   public Context getContext() {
