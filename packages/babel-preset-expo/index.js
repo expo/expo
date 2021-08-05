@@ -22,6 +22,26 @@ module.exports = function(api, options = {}) {
   // `metro-react-native-babel-preset` will handle it.
   const lazyImportsOption = options && options.lazyImports;
 
+  const extraPlugins = [];
+
+  // Set true to disable `@babel/plugin-transform-react-jsx`
+  // we override this logic outside of the metro preset so we can add support for
+  // React 17 automatic JSX transformations.
+  // If the logic for `useTransformReactJsxExperimental` ever changes in `metro-react-native-babel-preset`
+  // then this block should be updated to reflect those changes.
+  if (!platformOptions.useTransformReactJsxExperimental) {
+    extraPlugins.push([
+      require('@babel/plugin-transform-react-jsx'),
+      {
+        // Defaults to `classic`, pass in `automatic` for auto JSX transformations.
+        runtime: options && options.runtime,
+      },
+    ]);
+    // Purposefully not adding the deprecated packages:
+    // `@babel/plugin-transform-react-jsx-self` and `@babel/plugin-transform-react-jsx-source`
+    // back to the preset.
+  }
+
   return {
     presets: [
       [
@@ -39,8 +59,15 @@ module.exports = function(api, options = {}) {
           enableBabelRuntime: platformOptions.enableBabelRuntime,
           // Defaults to `'default'`, can also use `'hermes-canary'`
           unstable_transformProfile: platformOptions.unstable_transformProfile,
-          // Set true to disable `@babel/plugin-transform-react-jsx`
-          useTransformReactJsxExperimental: platformOptions.useTransformReactJsxExperimental,
+          // Set true to disable `@babel/plugin-transform-react-jsx` and
+          // the deprecated packages `@babel/plugin-transform-react-jsx-self`, and `@babel/plugin-transform-react-jsx-source`.
+          //
+          // Otherwise, you'll sometime get errors like the following (starting in Expo SDK 43, React Native 64, React 17):
+          //
+          // TransformError App.js: /path/to/App.js: Duplicate __self prop found. You are most likely using the deprecated transform-react-jsx-self Babel plugin.
+          // Both __source and __self are automatically set when using the automatic runtime. Please remove transform-react-jsx-source and transform-react-jsx-self from your Babel config.
+          useTransformReactJsxExperimental: true,
+
           disableImportExportTransform: platformOptions.disableImportExportTransform,
           lazyImportExportTransform:
             lazyImportsOption === true
@@ -59,6 +86,7 @@ module.exports = function(api, options = {}) {
       ],
     ],
     plugins: [
+      ...extraPlugins,
       getAliasPlugin(),
       [require.resolve('@babel/plugin-proposal-decorators'), { legacy: true }],
       platform === 'web' && [require.resolve('babel-plugin-react-native-web')],
