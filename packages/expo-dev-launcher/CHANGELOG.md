@@ -13,6 +13,7 @@
 ### 💡 Others
 
 - Add basic setup for iOS unit tests. ([#13824](https://github.com/expo/expo/pull/13824) by [@esamelson](https://github.com/esamelson))
+- Display linking scheme used by app in launcher URL field ([#13930](https://github.com/expo/expo/pull/13930) by [@fson](https://github.com/fson))
 
 ## 0.6.5 — 2021-07-16
 
