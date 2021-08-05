@@ -47,7 +47,9 @@ export async function test(
   describe('GLView', () => {
     it('gets a valid context', async () => {
       const context = await getContextAsync();
-      expect(context instanceof WebGLRenderingContext).toBe(true);
+      expect(
+        context instanceof WebGLRenderingContext || context instanceof WebGL2RenderingContext
+      ).toBe(true);
     });
 
     it('takes a snapshot', async () => {
@@ -187,7 +189,9 @@ export async function test(
     describe('static', () => {
       it('creates a static context', async () => {
         const context = await GLView.createContextAsync();
-        expect(context instanceof WebGLRenderingContext).toBe(true);
+        expect(
+          context instanceof WebGLRenderingContext || context instanceof WebGL2RenderingContext
+        ).toBe(true);
       });
 
       it('takes a snapshot', async () => {
