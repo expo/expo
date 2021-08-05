@@ -9345,10 +9345,10 @@ detect-port-alt@1.1.6:
     address "^1.0.1"
     debug "^2.6.0"
 
-detox@^18.13.0:
-  version "18.13.0"
-  resolved "https://registry.yarnpkg.com/detox/-/detox-18.13.0.tgz#c6108bfcc0a5579ea5f1f975222ca62773511b3c"
-  integrity sha512-YQPhi+uUGhVXYQm4W76EyKXdDKXnxq3dO+9ua22gGhNGwiJDbV8TUOavZNMbjBKWLb+OueGKOEBp4uNGOrVANw==
+detox@^18.20.1:
+  version "18.20.1"
+  resolved "https://registry.yarnpkg.com/detox/-/detox-18.20.1.tgz#83be9b06f2bcb6645444de9664094f8dc15770e0"
+  integrity sha512-rXkp7hoCrMXqhx3S3Majz3l2+W4d/F3mBfv4MW6ZjttQtWlC+cVVuXnhEgTYxbC71LGKXRhm114q4oBSq/XFeg==
   dependencies:
     bunyan "^1.8.12"
     bunyan-debug-stream "^1.1.0"
