@@ -28,7 +28,7 @@ if (!Array.isArray(jestPreset.transformIgnorePatterns)) {
   console.warn(`Expected react-native/jest-preset to define a transformIgnorePatterns array`);
 } else if (
   !isEqual(jestPreset.transformIgnorePatterns, [
-    'node_modules/(?!((jest-)?react-native|@react-native(-community)?)/)'
+    'node_modules/(?!((jest-)?react-native|@react-native(-community)?)/)',
   ])
 ) {
   console.warn(
