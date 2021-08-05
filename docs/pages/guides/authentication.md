@@ -557,7 +557,7 @@ Consider using the [`expo-facebook`](/versions/latest/sdk/facebook) module for n
 
 <img alt="Facebook Console for URIs" src="/static/images/sdk/auth-session/guide/facebook-ios-guide.png" />
 
-- Under iOS > Bundle ID: Add your app's bundle identifier, this should match the value in your `app.json` - `expo.devs.bundleIdentifier`. If you don't have one set, run `expo eject` to create one (then rebuild the native app).
+- Under iOS > Bundle ID: Add your app's bundle identifier, this should match the value in your `app.json` - `expo.ioss.bundleIdentifier`. If you don't have one set, run `expo eject` to create one (then rebuild the native app).
 - Press "Save Changes" in the footer.
 - Copy the "App ID" in the header into your `iosClientId: '<YOUR FBID>'` or `clientId`. Ex: `{ iosClientId: '474614477183384' }` (no `fb` prefix).
 - Now you're ready to use the demo component in your native iOS app.
