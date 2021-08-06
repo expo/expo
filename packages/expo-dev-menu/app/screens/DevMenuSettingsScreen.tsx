@@ -71,7 +71,7 @@ export default class DevMenuSettingsScreen extends React.PureComponent<{}, State
       ).length === 1;
 
     return (
-      <View style={styles.container}>
+      <View testID="DevMenuSettingsScreen" style={styles.container}>
         <ListItem content="Open React Native dev menu" onPress={this.openReactNativeDevMenu} />
         <View style={styles.group}>
           <ListItemCheckbox
