@@ -1,5 +1,7 @@
 const lazyImportsBlacklist = require('./lazy-imports-blacklist');
 
+let hasWarnedJsxRename = false;
+
 module.exports = function(api, options = {}) {
   const { web = {}, native = {} } = options;
 
@@ -24,17 +26,25 @@ module.exports = function(api, options = {}) {
 
   const extraPlugins = [];
 
+  if ('useTransformReactJsxExperimental' in platformOptions && !hasWarnedJsxRename) {
+    // https://github.com/expo/expo/pull/13945#pullrequestreview-724327024
+    hasWarnedJsxRename = true;
+    console.warn(
+      'Warning: useTransformReactJsxExperimental has been renamed to useTransformReactJSXExperimental (capitalized JSX) in react-native@0.64.0'
+    );
+  }
+
   // Set true to disable `@babel/plugin-transform-react-jsx`
   // we override this logic outside of the metro preset so we can add support for
   // React 17 automatic JSX transformations.
-  // If the logic for `useTransformReactJsxExperimental` ever changes in `metro-react-native-babel-preset`
+  // If the logic for `useTransformReactJSXExperimental` ever changes in `metro-react-native-babel-preset`
   // then this block should be updated to reflect those changes.
-  if (!platformOptions.useTransformReactJsxExperimental) {
+  if (!platformOptions.useTransformReactJSXExperimental) {
     extraPlugins.push([
       require('@babel/plugin-transform-react-jsx'),
       {
         // Defaults to `classic`, pass in `automatic` for auto JSX transformations.
-        runtime: options && options.runtime,
+        runtime: options && options.jsxRuntime,
       },
     ]);
     // Purposefully not adding the deprecated packages:
@@ -66,7 +76,7 @@ module.exports = function(api, options = {}) {
           //
           // TransformError App.js: /path/to/App.js: Duplicate __self prop found. You are most likely using the deprecated transform-react-jsx-self Babel plugin.
           // Both __source and __self are automatically set when using the automatic runtime. Please remove transform-react-jsx-source and transform-react-jsx-self from your Babel config.
-          useTransformReactJsxExperimental: true,
+          useTransformReactJSXExperimental: true,
 
           disableImportExportTransform: platformOptions.disableImportExportTransform,
           lazyImportExportTransform:
