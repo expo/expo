@@ -265,6 +265,10 @@ if (rootProject instanceof ProjectDescriptor) {
         continue
       }
 
+      if (module.projectName == "expo-modules-core") {
+        continue
+      }
+      
       project.evaluationDependsOn(":${module.projectName}")
     }
   }
