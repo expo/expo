@@ -213,6 +213,8 @@ dependencies {
     }
 
     androidTestImplementation('com.wix:detox:+') {
+        // Fix detox + react-native-screens error
+        // https://github.com/wix/Detox/issues/2848#issuecomment-874803711
         exclude group: 'com.google.android.material'
     }
 
