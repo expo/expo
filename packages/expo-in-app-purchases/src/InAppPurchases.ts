@@ -67,12 +67,12 @@ export async function getPurchaseHistoryAsync(
   }
 }
 
-export async function purchaseItemAsync(itemId: string, oldItem?: string): Promise<void> {
+export async function purchaseItemAsync(itemId: string, oldPurchaseToken?: string): Promise<void> {
   if (!connected) {
     throw new ConnectionError(errors.NOT_CONNECTED);
   }
 
-  await ExpoInAppPurchases.purchaseItemAsync(itemId, oldItem);
+  await ExpoInAppPurchases.purchaseItemAsync(itemId, oldPurchaseToken);
 }
 
 export function setPurchaseListener(
