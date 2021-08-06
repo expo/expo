@@ -3,13 +3,7 @@ apply plugin: 'kotlin-android'
 apply plugin: 'maven'
 
 group = 'host.exp.exponent'
-<<<<<<< HEAD
-version = '0.7.0'
-||||||| parent of b588610e02... Publish expo-dev-client, expo-updates
-version = '0.8.3'
-=======
 version = '0.8.4'
->>>>>>> b588610e02... Publish expo-dev-client, expo-updates
 
 buildscript {
   // Simple helper that allows the root project to override versions declared by this library.
