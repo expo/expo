@@ -65,7 +65,8 @@ async function findAndroidPackagesAsync(modules) {
         for (const file of files) {
             const fileContent = await fs_extra_1.default.readFile(path_1.default.join(module.sourceDir, file), 'utf8');
             // Very naive check to skip non-expo packages
-            if (!/\bimport\s+expo\.modules\.core\.(interfaces\.Package|BasePackage)\b/.test(fileContent)) {
+            if (!/\bimport\s+expo\.modules\.core\.(interfaces\.Package|BasePackage)\b/.test(fileContent) &&
+                !/\bimport\s+org\.unimodules\.core\.(interfaces\.Package|BasePackage)\b/.test(fileContent)) {
                 continue;
             }
             const classPathMatches = fileContent.match(/^package ([\w.]+)\b/m);

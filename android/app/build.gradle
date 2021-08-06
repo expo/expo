@@ -130,8 +130,6 @@ configurations.all {
   }
 }
 
-apply from: new File(["node", "--print", "require.resolve('react-native-unimodules/package.json')"].execute().text.trim(), "../gradle.groovy")
-
 dependencies {
   implementation fileTree(dir: 'libs', include: ['*.jar'])
 
@@ -250,18 +248,7 @@ dependencies {
 
   // WHEN_DETACHING_REMOVE_FROM_HERE
   /* UNCOMMENT WHEN DISTRIBUTING
-  addMavenUnimodulesDependencies([
-      modulesPaths : [
-        '../enabled-modules'
-      ],
-      configuration: 'api',
-      target       : 'react-native',
-      exclude      : [
-        'expo-module-template',
-        'expo-in-app-purchases',
-        'expo-payments-stripe'
-      ]
-  ])
+  implementation project(':expo-modules-linker')
   implementation 'host.exp.exponent:expo-random:+'
   END UNCOMMENT WHEN DISTRIBUTING */
   // WHEN_DETACHING_REMOVE_TO_HERE

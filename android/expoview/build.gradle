@@ -141,7 +141,7 @@ android {
             "-DFBJNI_HEADERS_DIR=${FBJNI_HEADERS_DIR}",
             "-DCMAKE_OUTPUT_DIR=${CMAKE_OUTPUT_DIR}"
         abiFilters = []
-        abiFilters.addAll(ABI_FILTERS.split(',').collect{ (it as String).trim() })
+        abiFilters.addAll(ABI_FILTERS.split(',').collect { (it as String).trim() })
       }
     }
 
@@ -243,8 +243,6 @@ configurations.all {
   }
 }
 
-// Import gradle helpers for unimodules.
-apply from: new File(["node", "--print", "require.resolve('react-native-unimodules/package.json')"].execute().text.trim(), "../gradle.groovy")
 // WHEN_VERSIONING_REMOVE_TO_HERE
 
 dependencies {
@@ -272,15 +270,7 @@ dependencies {
 
   /* UNCOMMENT WHEN DISTRIBUTING
   api 'com.facebook.react:react-native:42.0.0'
-  addUnimodulesDependencies([
-      modulesPaths : ['../../packages'],
-      configuration: 'compileOnly',
-      target       : 'react-native',
-      exclude      : [
-        'expo-module-template',
-        'expo-in-app-purchases'
-      ]
-  ])
+  compileOnly project(':expo-modules-linker')
   compileOnly project(':expo-random')
   END UNCOMMENT WHEN DISTRIBUTING */
 
@@ -293,15 +283,7 @@ dependencies {
 
   // Universal modules
   // In distribution they're "compileOnly" and it's the app/build.gradle who manages them.
-  addUnimodulesDependencies([
-      modulesPaths : ['../../packages'],
-      configuration: 'api',
-      target       : 'react-native',
-      exclude      : [
-          'expo-module-template',
-          'expo-in-app-purchases',
-      ]
-  ])
+  api project(':expo-modules-linker')
 
   // expo-random is no longer a unimodule
   api project(':expo-random')
