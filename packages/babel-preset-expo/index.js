@@ -75,7 +75,7 @@ module.exports = function(api, options = {}) {
           // Otherwise, you'll sometime get errors like the following (starting in Expo SDK 43, React Native 64, React 17):
           //
           // TransformError App.js: /path/to/App.js: Duplicate __self prop found. You are most likely using the deprecated transform-react-jsx-self Babel plugin.
-          // Both __source and __self are automatically set when using the automatic runtime. Please remove transform-react-jsx-source and transform-react-jsx-self from your Babel config.
+          // Both __source and __self are automatically set when using the automatic jsxRuntime. Please remove transform-react-jsx-source and transform-react-jsx-self from your Babel config.
           useTransformReactJSXExperimental: true,
 
           disableImportExportTransform: platformOptions.disableImportExportTransform,
