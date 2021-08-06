@@ -212,7 +212,9 @@ dependencies {
         exclude group:'com.facebook.flipper'
     }
 
-    androidTestImplementation('com.wix:detox:+')
+    androidTestImplementation('com.wix:detox:+') {
+        exclude group: 'com.google.android.material'
+    }
 
     // LeakCanary 2 dependency
     debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.7'
