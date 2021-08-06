@@ -356,7 +356,7 @@ UM_EXPORT_METHOD_AS(disconnectAsync,
 
   return @{
            @"acknowledged": @(acknowledged),
-           @"productId": transaction.payment.productIdentifier,
+           @"productIds": [NSArray arrayWithObjects:transaction.payment.productIdentifier],
            @"orderId": transaction.transactionIdentifier,
            @"purchaseState": @(transaction.transactionState),
            @"purchaseTime": @(transaction.transactionDate.timeIntervalSince1970 * 1000),
