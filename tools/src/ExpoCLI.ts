@@ -1,6 +1,6 @@
+import spawnAsync from '@expo/spawn-async';
 import path from 'path';
 import process from 'process';
-import spawnAsync from '@expo/spawn-async';
 
 import { EXPO_DIR } from './Constants';
 

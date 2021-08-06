@@ -41,7 +41,6 @@ import androidx.core.content.ContextCompat;
 import de.greenrobot.event.EventBus;
 import expo.modules.splashscreen.singletons.SplashScreen;
 import expo.modules.updates.manifest.raw.RawManifest;
-import host.exp.exponent.AppLoader;
 import host.exp.exponent.Constants;
 import host.exp.exponent.ExpoUpdatesAppLoader;
 import host.exp.exponent.ExponentIntentService;
@@ -69,6 +68,7 @@ import host.exp.exponent.notifications.NotificationConstants;
 import host.exp.exponent.notifications.PushNotificationHelper;
 import host.exp.exponent.notifications.ReceivedNotificationEvent;
 import host.exp.exponent.storage.ExponentDB;
+import host.exp.exponent.storage.ExponentDBObject;
 import host.exp.exponent.storage.ExponentSharedPreferences;
 import host.exp.exponent.utils.AsyncCondition;
 import host.exp.exponent.utils.ExperienceActivityUtils;
@@ -369,7 +369,7 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
 
     if (!Constants.isStandaloneApp()) {
       ExpoUpdatesAppLoader appLoader = mKernel.getAppLoaderForManifestUrl(mManifestUrl);
-      if (appLoader != null && !appLoader.isUpToDate() && appLoader.shouldShowAppLoaderStatus()) {
+      if (appLoader != null && !appLoader.isUpToDate() && appLoader.getShouldShowAppLoaderStatus()) {
         new AlertDialog.Builder(ExperienceActivity.this)
           .setTitle("Using a cached project")
           .setMessage("Expo was unable to fetch the latest update to this app. A previously downloaded version has been launched. If you did not intend to use a cached project, check your network connection and reload the app.")
@@ -434,7 +434,7 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
       return;
     }
     ExpoUpdatesAppLoader appLoader = mKernel.getAppLoaderForManifestUrl(mManifestUrl);
-    if (appLoader != null && appLoader.shouldShowAppLoaderStatus()) {
+    if (appLoader != null && appLoader.getShouldShowAppLoaderStatus()) {
       UiThreadUtil.runOnUiThread(() -> mLoadingProgressPopupController.setLoadingProgressStatus(status));
     } else {
       UiThreadUtil.runOnUiThread(() -> mLoadingProgressPopupController.hide());
@@ -481,7 +481,7 @@ public class ExperienceActivity extends BaseExperienceActivity implements Expone
     mExponentSharedPreferences.updateManifest(mManifestUrl, manifest, bundleUrl);
 
     // Notifications logic uses this to determine which experience to route a notification to
-    ExponentDB.saveExperience(mManifestUrl, manifest, bundleUrl);
+    ExponentDB.saveExperience(new ExponentDBObject(mManifestUrl, manifest, bundleUrl));
 
     new ExponentNotificationManager(this).maybeCreateNotificationChannelGroup(mManifest);
 

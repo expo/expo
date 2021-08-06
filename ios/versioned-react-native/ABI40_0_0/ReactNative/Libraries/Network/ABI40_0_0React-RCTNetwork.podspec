@@ -33,7 +33,7 @@ Pod::Spec.new do |s|
                              }
   s.frameworks             = "MobileCoreServices"
 
-  s.dependency "Folly", folly_version
+  s.dependency "RCT-Folly", folly_version
   s.dependency "ABI40_0_0FBReactNativeSpec", version
   s.dependency "ABI40_0_0RCTTypeSafety", version
   s.dependency "ABI40_0_0ReactCommon/turbomodule/core", version

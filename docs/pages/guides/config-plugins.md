@@ -560,7 +560,7 @@ async function setCustomConfigAsync(
 
 ### Modifying the Info.plist
 
-Using the `withInfoPlist` is a bit safer than statically modifying the `expo.devs.infoPlist` object in the `app.json` because it reads the contents of the Info.plist and merges it with the `expo.devs.infoPlist`, this means you can attempt to keep your changes from being overwritten.
+Using the `withInfoPlist` is a bit safer than statically modifying the `expo.ios.infoPlist` object in the `app.json` because it reads the contents of the Info.plist and merges it with the `expo.ios.infoPlist`, this means you can attempt to keep your changes from being overwritten.
 
 Here's an example of adding a `GADApplicationIdentifier` to the `Info.plist`:
 

@@ -8,6 +8,7 @@ export type Podspec = {
   name: string;
   version: string;
   platforms: Record<string, string>;
+  header_dir?: string;
   source_files: string | string[];
   exclude_files: string | string[];
   preserve_paths: string | string[];

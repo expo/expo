@@ -20,7 +20,7 @@
     // UTType#typeWithMIMEType doesn't work with wildcard mimetypes
     // so support common top level types with wildcards here.
     if ([mimeType isEqualToString:@"*/*"]) {
-      return UTTypeData;
+      return UTTypeItem;
     } else if ([mimeType isEqualToString:@"image/*"]) {
       return UTTypeImage;
     } else if ([mimeType isEqualToString:@"video/*"]) {
@@ -43,7 +43,7 @@ static NSString * EXConvertMimeTypeToUTI(NSString *mimeType)
   // UTTypeCreatePreferredIdentifierForTag doesn't work with wildcard mimetypes
   // so support common top level types with wildcards here.
   if ([mimeType isEqualToString:@"*/*"]) {
-    uti = kUTTypeData;
+    uti = kUTTypeItem;
   } else if ([mimeType isEqualToString:@"image/*"]) {
     uti = kUTTypeImage;
   } else if ([mimeType isEqualToString:@"video/*"]) {
@@ -97,9 +97,14 @@ EX_EXPORT_METHOD_AS(getDocumentAsync,
   }
   _resolve = resolve;
   _reject = reject;
-  
-  NSString *mimeType = options[@"type"] ?: @"*/*";
-  
+    
+  NSArray *mimeTypes = options[@"type"] ?: @[@"*/*"];
+  if (mimeTypes.count == 0) {
+    reject(@"E_DOCUMENT_PICKER", @"type must be a list of strings.", nil);
+    _resolve = nil;
+    _reject = nil;
+    return;
+  }
   _shouldCopyToCacheDirectory = options[@"copyToCacheDirectory"] && [options[@"copyToCacheDirectory"] boolValue] == YES;
 
   EX_WEAKIFY(self);
@@ -112,12 +117,18 @@ EX_EXPORT_METHOD_AS(getDocumentAsync,
       // TODO: drop #if macro once Xcode is updated to 12
 #if __IPHONE_OS_VERSION_MAX_ALLOWED >= 140000
       if (@available(iOS 14, *)) {
-        UTType* utType = EXConvertMimeTypeToUTType(mimeType);
-        documentPickerVC = [[UIDocumentPickerViewController alloc] initForOpeningContentTypes:@[utType] asCopy:YES];
+        NSMutableArray *utTypes = [mimeTypes mutableCopy];
+        for (int i = 0; i < [mimeTypes count]; i++) {
+          utTypes[i] = (NSString *)EXConvertMimeTypeToUTType(mimeTypes[i]);
+        }
+        documentPickerVC = [[UIDocumentPickerViewController alloc] initForOpeningContentTypes:utTypes asCopy:true];
       } else {
 #endif
-        NSString* type = EXConvertMimeTypeToUTI(mimeType);
-        documentPickerVC = [[UIDocumentPickerViewController alloc] initWithDocumentTypes:@[type]
+        NSMutableArray *utiTypes = [mimeTypes mutableCopy];
+        for (int i = 0; i < [mimeTypes count]; i++) {
+          utiTypes[i] = (NSString *)EXConvertMimeTypeToUTI(mimeTypes[i]);
+        }
+        documentPickerVC = [[UIDocumentPickerViewController alloc] initWithDocumentTypes:utiTypes
                                                                                   inMode:UIDocumentPickerModeImport];
         // TODO: drop #if macro once Xcode is updated to 12
 #if __IPHONE_OS_VERSION_MAX_ALLOWED >= 140000

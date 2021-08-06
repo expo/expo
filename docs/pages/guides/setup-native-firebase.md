@@ -107,7 +107,7 @@ You are free to use any native Firebase packages such as [react-native-firebase]
 - Open **Project overview** in the Firebase console and click on the iOS icon or + button to **Add Firebase to your iOS app**.
 - **Make sure that the iOS bundle ID is the same as the value of `Bundle Identifier` of your iOS project.**
 - Register the app & download the config file by clicking **"Download GoogleService-Info.plist"**.
-- Open your expo.devS project in Xcode `ios/{projectName}.xcworkspace` and then drag the services file into your project. If you don't see the `.xcworkspace` workspace file, run `npx pod-install` to create it.
+- Open your Expo iOS project in Xcode `ios/{projectName}.xcworkspace` and then drag the services file into your project. If you don't see the `.xcworkspace` workspace file, run `npx pod-install` to create it.
 
   - Be sure to enable **'Copy items if needed'**.
 
@@ -132,8 +132,8 @@ After following the iOS and Android setup, you can optionally configure your pro
 
 ```rb
   # At the top of the file
-  require_relative '../node_modules/@react-native-community/cli-platform-ios/native_modules'
-  require_relative '../node_modules/react-native-unimodules/cocoapods'
+  require File.join(`node --print "require.resolve('@react-native-community/cli-platform-ios/package.json')"`, "../native_modules")
+  require File.join(`node --print "require.resolve('react-native-unimodules/package.json')"`, "../cocoapods.rb")
 
   # ...
 

@@ -30,7 +30,7 @@ Pod::Spec.new do |s|
 
   s.dependency "ABI41_0_0React-cxxreact", version
   s.dependency "ABI41_0_0React-jsi", version
-  s.dependency "Folly", folly_version
+  s.dependency "RCT-Folly", folly_version
   s.dependency "DoubleConversion"
   s.dependency "glog"
 end

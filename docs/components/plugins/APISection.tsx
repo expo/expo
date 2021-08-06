@@ -37,6 +37,8 @@ const isHook = ({ name }: GeneratedData) =>
 const isListener = ({ name }: GeneratedData) =>
   name.endsWith('Listener') || name.endsWith('Listeners');
 
+const isProp = ({ name }: GeneratedData) => name.includes('Props') && name !== 'ErrorRecoveryProps';
+
 const renderAPI = (
   packageName: string,
   version: string = 'unversioned',
@@ -61,7 +63,7 @@ const renderAPI = (
       data,
       TypeDocKind.TypeAlias,
       entry =>
-        !entry.name.includes('Props') &&
+        !isProp(entry) &&
         !!(
           entry.type.declaration ||
           entry.type.types ||
@@ -73,10 +75,7 @@ const renderAPI = (
     const props = filterDataByKind(
       data,
       TypeDocKind.TypeAlias,
-      entry =>
-        entry.name.includes('Props') &&
-        (!!entry.type.types || // inheritance
-          !!entry.type.declaration?.children) // no inheritance
+      entry => isProp(entry) && !!(entry.type.types || entry.type.declaration?.children)
     );
     const defaultProps = filterDataByKind(
       data

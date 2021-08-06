@@ -1,4 +1,16 @@
+pluginManagement {
+    repositories {
+        gradlePluginPortal()
+        mavenLocal()
+        google()
+    }
+}
+
 include ':app'
+
+include ':packages:react-native-codegen:android'
+project(':packages:react-native-codegen:android').projectDir = new File('../react-native-lab/react-native/packages/react-native-codegen/android')
+includeBuild('../react-native-lab/react-native/packages/react-native-codegen/android')
 
 // WHEN_DISTRIBUTING_REMOVE_FROM_HERE
 include ':expoview'
@@ -24,7 +36,7 @@ project(":expo-random").projectDir = new File("../packages/expo-random/android")
 // WHEN_DISTRIBUTING_REMOVE_TO_HERE
 
 // Import gradle helpers for unimodules.
-apply from: '../node_modules/react-native-unimodules/gradle.groovy'
+apply from: new File(["node", "--print", "require.resolve('react-native-unimodules/package.json')"].execute().text.trim(), "../gradle.groovy")
 
 // Include unimodules.
 includeUnimodulesProjects(

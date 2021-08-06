@@ -3,7 +3,8 @@ import chalk from 'chalk';
 import inquirer from 'inquirer';
 import semver from 'semver';
 
-import { Platform, getNextSDKVersionAsync } from '../ProjectVersions';
+import { getListOfPackagesAsync } from '../Packages';
+import { Platform, getNextSDKVersionAsync, resolveSDKVersionAsync } from '../ProjectVersions';
 import * as AndroidVersioning from '../versioning/android';
 import * as IosVersioning from '../versioning/ios';
 
@@ -14,7 +15,7 @@ type ActionOptions = {
   vendored: string[];
   reinstall?: boolean;
   preventReinstall?: boolean;
-  package?: string;
+  packages?: string[];
 };
 
 async function getNextOrAskForSDKVersionAsync(platform: Platform): Promise<string | undefined> {
@@ -49,12 +50,17 @@ async function action(options: ActionOptions) {
     throw new Error('Run with `--platform <ios | android>`.');
   }
 
-  const sdkVersion = options.sdkVersion || (await getNextOrAskForSDKVersionAsync(options.platform));
+  const sdkVersion =
+    (options.sdkVersion && (await resolveSDKVersionAsync(options.sdkVersion, options.platform))) ||
+    (await getNextOrAskForSDKVersionAsync(options.platform));
 
   if (!sdkVersion) {
     throw new Error('Next SDK version not found. Try to run with `--sdkVersion <SDK version>`.');
   }
   const sdkNumber = semver.major(sdkVersion);
+  const packages = (await getListOfPackagesAsync()).filter((pkg) =>
+    pkg.isVersionableOnPlatform(options.platform)
+  );
 
   switch (options.platform) {
     case 'ios':
@@ -62,11 +68,14 @@ async function action(options: ActionOptions) {
         await IosVersioning.versionVendoredModulesAsync(sdkNumber, options.vendored);
       } else if (options.filenames) {
         await IosVersioning.versionReactNativeIOSFilesAsync(options.filenames, sdkVersion);
-      } else if (options.package) {
-        await IosVersioning.regenerateVersionedPackageAsync(sdkVersion, options.package);
+      } else if (options.packages) {
+        await IosVersioning.versionExpoModulesAsync(
+          sdkNumber,
+          packages.filter((pkg) => options.packages?.includes(pkg.packageName))
+        );
       } else {
         await IosVersioning.versionVendoredModulesAsync(sdkNumber, null);
-        await IosVersioning.addVersionAsync(sdkVersion);
+        await IosVersioning.addVersionAsync(sdkVersion, packages);
       }
       await IosVersioning.reinstallPodsAsync(options.reinstall, options.preventReinstall);
       return;
@@ -101,7 +110,7 @@ ${chalk.gray('>')} ${chalk.italic.cyan(
     )
     .option(
       '-s, --sdkVersion [string]',
-      'SDK version to add. Defaults to the newest SDK version increased by a major update.'
+      'SDK version to add. Can be a full version name, major number or `next` tag. Defaults to `next` on the CI.'
     )
     .option(
       '-f, --filenames [string]',
@@ -121,9 +130,6 @@ ${chalk.gray('>')} ${chalk.italic.cyan(
       '--prevent-reinstall',
       'Whether to force not reinstalling pods after generating a new version. iOS only.'
     )
-    .option(
-      '-x, --package [string]',
-      'Only generate a specific package. When provided, option `--sdkVersion` is required.'
-    )
+    .option('-x, --packages <string...>', 'Name of the expo package to version.')
     .asyncAction(action);
 };

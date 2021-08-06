@@ -32,7 +32,7 @@ Pod::Spec.new do |s|
                                "HEADER_SEARCH_PATHS" => "\"$(PODS_ROOT)/Folly\""
                              }
 
-  s.dependency "Folly", folly_version
+  s.dependency "RCT-Folly", folly_version
   s.dependency "ABI40_0_0RCTTypeSafety", version
   s.dependency "ABI40_0_0ReactCommon/turbomodule/core", version
   s.dependency "ABI40_0_0React-jsi", version

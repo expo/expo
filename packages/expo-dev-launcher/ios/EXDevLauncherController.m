@@ -13,6 +13,7 @@
 #import "EXDevLauncherManifestParser.h"
 #import "EXDevLauncherLoadingView.h"
 #import "EXDevLauncherInternal.h"
+#import "EXDevLauncherUpdatesHelper.h"
 #import "RCTPackagerConnection+EXDevLauncherPackagerConnectionInterceptor.h"
 
 #import <EXDevLauncher-Swift.h>
@@ -250,16 +251,7 @@ NSString *fakeLauncherBundleUrl = @"embedded://EXDevLauncher/dummy";
     }
   }
 
-  NSDictionary *updatesConfiguration = @{
-    @"EXUpdatesURL": expoUrl.absoluteString,
-    @"EXUpdatesLaunchWaitMs": @(60000),
-    @"EXUpdatesCheckOnLaunch": @"ALWAYS",
-    @"EXUpdatesHasEmbeddedUpdate": @(NO),
-    @"EXUpdatesEnabled": @(YES),
-    @"EXUpdatesRequestHeaders": @{
-      @"Expo-Updates-Environment": @"DEVELOPMENT"
-    }
-  };
+  NSDictionary *updatesConfiguration = [EXDevLauncherUpdatesHelper createUpdatesConfigurationWithURL:expoUrl];
 
   void (^launchReactNativeApp)(void) = ^{
     self->_shouldPreferUpdatesInterfaceSourceUrl = NO;
