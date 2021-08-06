@@ -2,8 +2,8 @@ require File.join(`node --print "require.resolve('@unimodules/react-native-adapt
 require 'colored2'
 
 def use_unimodules!(custom_options = {})
-  puts '⚠️  Package '.yellow.bold << 'react-native-unimodules'.green.bold << ' is deprecated in favor of '.yellow.bold << 'expo-modules-core'.green.bold
-  puts '⚠️  Please follow this guide to migrate: '.yellow.bold << 'https://expo.fyi/expo-modules-core-migration'.blue.bold
+  puts '⚠️ ' << 'react-native-unimodules'.green.bold << ' is deprecated in favor of '.yellow.bold << 'expo-modules-core'.green.bold
+  puts '⚠️ Follow this guide to migrate: '.yellow.bold << 'https://expo.fyi/expo-modules-core-migration'.blue.bold
   puts
 
   root_package_json = JSON.parse(File.read(find_project_package_json_path))

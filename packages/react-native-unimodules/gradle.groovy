@@ -54,8 +54,8 @@ ext.addMavenUnimodulesDependencies = { Map customOptions = [:] ->
 }
 
 ext.includeUnimodulesProjects = { Map customOptions = [:] ->
-  println Colors.YELLOW + '⚠️  Package ' + Colors.GREEN + 'react-native-unimodules' + Colors.YELLOW + ' is deprecated in favor of ' + Colors.GREEN + 'expo-modules-core' + Colors.NORMAL
-  println Colors.YELLOW + '⚠️  Please follow this guide to migrate: ' + Colors.BLUE + 'https://expo.fyi/expo-modules-core-migration' + Colors.NORMAL
+  println '⚠️ ' + Colors.GREEN + 'react-native-unimodules' + Colors.YELLOW + ' is deprecated in favor of ' + Colors.GREEN + 'expo-modules-core' + Colors.NORMAL
+  println Colors.YELLOW + '⚠️ Follow this guide to migrate: ' + Colors.BLUE + 'https://expo.fyi/expo-modules-core-migration' + Colors.NORMAL
   println()
 
   def options = [
