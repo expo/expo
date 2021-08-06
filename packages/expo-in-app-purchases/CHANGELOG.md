@@ -16,6 +16,7 @@
 ### 💡 Others
 
 - Updated Google Play Billing from v2 to v4. ([#13884](https://github.com/expo/expo/pull/13884) by [@cruzach](https://github.com/cruzach))
+- Cache products on iOS when calling `getProductsAsync`, so that `purchaseItemAsync` no longer needs to make a second request to StoreKit. This matches the Android implementation.
 
 ## 10.2.0 — 2021-06-16
 
