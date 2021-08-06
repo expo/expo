@@ -64,7 +64,7 @@ NSString *kEXHomeManifestResourceName = @"kernel-manifest";
 
 - (void)addHistoryItemWithUrl:(NSURL *)manifestUrl manifest:(EXUpdatesRawManifest *)manifest
 {
-  if (!manifest || !manifestUrl || [manifest.legacyId isEqualToString:@"@exponent/home"]) {
+  if (!manifest || !manifestUrl || [manifest.legacyId isEqualToString:@"@exponent/home"] || [manifest.legacyId isEqualToString:@"@expo-dogfooding/home"]) {
     return;
   }
   NSDictionary *params = @{
@@ -188,8 +188,8 @@ NSString *kEXHomeManifestResourceName = @"kernel-manifest";
   if (manifestJson) {
     id manifest = RCTJSONParse(manifestJson, nil);
     if ([manifest isKindOfClass:[NSDictionary class]]) {
-      if (usesNSBundleManifest && ![manifest[@"id"] isEqualToString:@"@exponent/home"]) {
-        DDLogError(@"Bundled kernel manifest was published with an id other than @exponent/home");
+      if (usesNSBundleManifest && !([manifest[@"id"] isEqualToString:@"@exponent/home"] || [manifest[@"id"] isEqualToString:@"@expo-dogfooding/home"])) {
+        DDLogError(@"Bundled kernel manifest was published with an id other than @exponent/home or @expo-dogfooding/home");
       }
       return [EXUpdatesUpdate rawManifestForJSON:manifest];
     }
