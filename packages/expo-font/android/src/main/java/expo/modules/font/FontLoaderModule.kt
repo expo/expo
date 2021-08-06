@@ -33,7 +33,7 @@ class FontLoaderModule(context: Context) : ExportedModule(context) {
       // TODO: remove Expo references
       // https://github.com/expo/expo/pull/4652#discussion_r296630843
       val prefix = if (isScoped) {
-        prefix = "ExpoFont-"
+        "ExpoFont-"
       } else {
       	""
       }
