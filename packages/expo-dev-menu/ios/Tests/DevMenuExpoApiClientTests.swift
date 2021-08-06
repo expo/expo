@@ -44,8 +44,8 @@ class DevMenuExpoApiClientTests: XCTestCase {
     apiClient.session = mockedSession
 
     apiClient.queryDevSessionsAsync { data, response, error in
-      expect.fulfill()
       XCTAssertIdentical(data as AnyObject, expectedData as AnyObject)
+      expect.fulfill()
     }
     
     waitForExpectations(timeout: 0)
@@ -139,8 +139,6 @@ class DevMenuExpoApiClientTests: XCTestCase {
     
     apiClient.session = mockedSession
     apiClient.queryUpdateBranches(appId: "app_id", completionHandler: { branches, response, error in
-      expect.fulfill()
-      
       XCTAssertNil(error)
       
       let branches = branches!
@@ -149,12 +147,13 @@ class DevMenuExpoApiClientTests: XCTestCase {
       XCTAssertEqual(branch.id, "0455d584-9130-4b7a-a9c0-f20bffe4ffb4")
       XCTAssertEqual(branch.updates.count, 4)
       
-      
       XCTAssertEqual(branch.updates[0].id, "04264159-e4d4-4085-8633-24400e1188dd")
       XCTAssertEqual(branch.updates[0].createdAt, "2021-04-07T09:46:37.803Z")
       XCTAssertEqual(branch.updates[0].updatedAt, "2021-04-07T09:46:37.803Z")
       XCTAssertEqual(branch.updates[0].platform, "android")
       XCTAssertEqual(branch.updates[0].runtimeVersion, "1")
+
+      expect.fulfill()
     })
 
     waitForExpectations(timeout: 0)
@@ -192,8 +191,6 @@ class DevMenuExpoApiClientTests: XCTestCase {
     
     apiClient.session = mockedSession
     apiClient.queryUpdateChannels(appId: "app_id", completionHandler: { updates, response, error in
-      expect.fulfill()
-      
       XCTAssertNil(error)
 
       let updates = updates!
@@ -204,6 +201,8 @@ class DevMenuExpoApiClientTests: XCTestCase {
       XCTAssertEqual(update.name, "main")
       XCTAssertEqual(update.createdAt, "2021-04-01T08:37:05.013Z")
       XCTAssertEqual(update.updatedAt, "2021-04-01T08:37:05.013Z")
+
+      expect.fulfill()
     })
 
     waitForExpectations(timeout: 0)
@@ -241,10 +240,10 @@ class DevMenuExpoApiClientTests: XCTestCase {
     
     apiClient.session = mockedSession
     apiClient.queryUpdateChannels(appId: "app_id", completionHandler: { updates, response, error in
-      expect.fulfill()
-      
       XCTAssertNil(updates)
       XCTAssertNotNil(error)
+
+      expect.fulfill()
     })
 
     waitForExpectations(timeout: 0)

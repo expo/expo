@@ -98,7 +98,6 @@ class DevMenuTests: XCTestCase {
   func test_if_menu_can_be_opened_on_settings_screen() {
     DevMenuManager.configure(withBridge: UIMockedNOOPBridge(delegate: nil, launchOptions: nil))
     DevMenuManager.shared.openMenu("Settings")
-    DevMenuManager.shared.openMenu("Settings")
 
     waitForView(tag: DevMenuViews.settingsScreen)
     waitForView(tag: DevMenuViews.footer)

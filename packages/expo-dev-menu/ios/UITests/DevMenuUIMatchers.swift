@@ -38,7 +38,7 @@ class DevMenuUIMatchers {
   
   static func findView(rootView: UIView, tag: String) -> UIView? {
     return DevMenuUIMatchers.findView(rootView: rootView) {
-      return $0.accessibilityIdentifier == tag && $0.isVisable()
+      return $0.accessibilityIdentifier == tag && $0.isVisible()
     }
   }
   
@@ -72,14 +72,14 @@ class DevMenuUIMatchers {
   
   static func waitForView(tag: String) -> UIView {
     return waitForView {
-      return $0.accessibilityIdentifier == tag && $0.isVisable()
+      return $0.accessibilityIdentifier == tag && $0.isVisible()
     }
   }
   
   static func waitForView(text: String) -> UIView {
     return waitForView {
       if (type(of: $0) == NSClassFromString("RCTTextView")!) {
-        return $0.isVisable() && ($0.value(forKey: "_textStorage") as! NSTextStorage).string == text
+        return $0.isVisible() && ($0.value(forKey: "_textStorage") as! NSTextStorage).string == text
       }
       
       return false
@@ -89,7 +89,7 @@ class DevMenuUIMatchers {
   static func findView(rootView: UIView, text: String) -> UIView? {
     findView(rootView: rootView) {
       if (type(of: $0) == NSClassFromString("RCTTextView")!) {
-        return $0.isVisable() && ($0.value(forKey: "_textStorage") as! NSTextStorage).string == text
+        return $0.isVisible() && ($0.value(forKey: "_textStorage") as! NSTextStorage).string == text
       }
       
       return false
