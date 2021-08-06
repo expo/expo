@@ -5,11 +5,10 @@
 @interface EXInAppPurchasesModule ()
 
 @property (weak, nonatomic) UMModuleRegistry *moduleRegistry;
-@property (nonatomic, assign) BOOL queryingItems;
 @property (nonatomic, weak) id <UMEventEmitterService> eventEmitter;
 @property (strong, nonatomic) NSMutableDictionary *promises;
 @property (strong, nonatomic) NSMutableDictionary *pendingTransactions;
-@property (strong, nonatomic) NSMutableSet *retrievedItems;
+@property (strong, nonatomic) NSMutableSet *cachedProducts;
 @property (strong, nonatomic) SKProductsRequest *request;
 
 @end
@@ -53,9 +52,8 @@ UM_EXPORT_METHOD_AS(connectAsync,
   
   _promises = [NSMutableDictionary dictionary];
   _pendingTransactions = [NSMutableDictionary dictionary];
-  _retrievedItems = [NSMutableSet set];
+  _cachedProducts = [NSMutableSet set];
   
-  _queryingItems = NO;
   resolve(nil);
 }
 
@@ -65,16 +63,11 @@ UM_EXPORT_METHOD_AS(getProductsAsync,
                     reject:(UMPromiseRejectBlock)reject)
 {
   [self setPromise:kEXQueryPurchasableKey resolve:resolve reject:reject];
-  
-  for (NSString *identifier in productIDs) {
-    [_retrievedItems addObject:identifier];
-  }
-  _queryingItems = YES;
   [self requestProducts:productIDs];
 }
 
 UM_EXPORT_METHOD_AS(purchaseItemAsync,
-                    purchaseItemAsync:(NSString *)productIdentifier
+                    purchaseItemAsync:(NSString *)productIdToPurchase
                     replace:(NSString *)oldItem // ignore on iOS
                     resolve:(UMPromiseResolveBlock)resolve
                     reject:(UMPromiseRejectBlock)reject)
@@ -83,17 +76,19 @@ UM_EXPORT_METHOD_AS(purchaseItemAsync,
     reject(@"E_MISSING_PERMISSIONS", @"User cannot make payments", nil);
     return;
   }
-  if (![_retrievedItems containsObject:productIdentifier]) {
-    reject(@"E_ITEM_NOT_QUERIED", @"Must query item from store before calling purchase", nil);
-    return;
+
+  for (SKProduct *product in _cachedProducts) {
+    if ([product.productIdentifier isEqualToString:productIdToPurchase]) {
+      // Make the request
+      BOOL promiseSet = [self setPromise:productIdToPurchase resolve:resolve reject:reject];
+      if (promiseSet) {
+        [self purchase:product];
+      }
+      return;
+    }
   }
   
-  // Make the request
-  BOOL promiseSet = [self setPromise:productIdentifier resolve:resolve reject:reject];
-  if (promiseSet) {
-    _queryingItems = NO;
-    [self requestProducts:@[productIdentifier]];
-  }
+  reject(@"E_ITEM_NOT_QUERIED", @"Must query item from store before calling purchase", nil);
 }
 
 UM_EXPORT_METHOD_AS(finishTransactionAsync,
@@ -145,32 +140,6 @@ UM_EXPORT_METHOD_AS(disconnectAsync,
   [productsRequest start];
 }
 
-- (void)handleQuery:(SKProductsResponse *)response {
-  NSMutableArray *result = [NSMutableArray array];
-  
-  for (SKProduct *validProduct in response.products) {
-    if (!validProduct.localizedDescription) { continue; } // skip product with nil values - this can happen if it is in review "rejected" state
-    NSDictionary *productData = [self getProductData:validProduct];
-    [result addObject:productData];
-  }
-  
-  _queryingItems = NO;
-  NSDictionary *res = [self formatResults:result withResponseCode:OK];
-  [self resolvePromise:kEXQueryPurchasableKey value:res];
-}
-
--(void)handlePurchase:(SKProductsResponse *)response {
-  for (NSString *invalidIdentifier in response.invalidProductIdentifiers) {
-    NSDictionary *results = [self formatResults:SKErrorStoreProductNotAvailable];
-    [self resolvePromise:invalidIdentifier value:results];
-  }
-  
-  for (SKProduct *validProduct in response.products) {
-    if (!validProduct.localizedDescription) { continue; } // skip product with nil values - this can happen if it is in review "rejected" state
-    [self purchase:validProduct];
-  }
-}
-
 - (void)purchase:(SKProduct *)product
 {
   SKPayment *payment = [SKPayment paymentWithProduct:product];
@@ -179,16 +148,20 @@ UM_EXPORT_METHOD_AS(disconnectAsync,
 
 # pragma mark - StoreKit Transaction Observer Methods
 
-/*
- This function is called both when purchasing an item and querying for item data
- */
 - (void)productsRequest:(SKProductsRequest *)request didReceiveResponse:(SKProductsResponse *)response
 {
-  if (_queryingItems) {
-    [self handleQuery:response];
-  } else {
-    [self handlePurchase:response];
+  NSMutableArray *result = [NSMutableArray array];
+  [_cachedProducts removeAllObjects];
+
+  for (SKProduct *validProduct in response.products) {
+    if (!validProduct.localizedDescription) { continue; } // skip product with nil values - this can happen if it is in review "rejected" state
+    [_cachedProducts addObject:validProduct];
+    NSDictionary *productData = [self getProductData:validProduct];
+    [result addObject:productData];
   }
+  
+  NSDictionary *res = [self formatResults:result withResponseCode:OK];
+  [self resolvePromise:kEXQueryPurchasableKey value:res];
 }
 
 - (void)paymentQueueRestoreCompletedTransactionsFinished:(SKPaymentQueue *)queue
