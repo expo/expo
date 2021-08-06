@@ -164,13 +164,13 @@ android {
     // Gradle will add cmake target dependencies into packaging.
     // Theses files are intermediated linking files to build reanimated and should not be in final package.
     excludes = [
-        "**/libc++_shared.so",
-        "**/libreactnativejni.so",
-        "**/libglog.so",
-        "**/libjscexecutor.so",
-        "**/libfbjni.so",
-        "**/libfolly_json.so",
-        "**/libhermes.so",
+      "**/libc++_shared.so",
+      "**/libreactnativejni.so",
+      "**/libglog.so",
+      "**/libjscexecutor.so",
+      "**/libfbjni.so",
+      "**/libfolly_json.so",
+      "**/libhermes.so",
     ]
   }
 
