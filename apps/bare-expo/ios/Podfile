@@ -13,6 +13,8 @@ require_relative '../../../packages/@unimodules/react-native-adapter/scripts/aut
 abstract_target 'BareExpoMain' do
   use_expo_modules!
 
+  pod 'expo-dev-menu', path: '../../../packages/expo-dev-menu', :testspecs => ['Tests', 'UITests']
+
   config = use_native_modules!
 
   use_react_native!(path: config['reactNativePath'])
