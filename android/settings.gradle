@@ -1,9 +1,9 @@
 pluginManagement {
-    repositories {
-        gradlePluginPortal()
-        mavenLocal()
-        google()
-    }
+  repositories {
+    gradlePluginPortal()
+    mavenLocal()
+    google()
+  }
 }
 
 include ':app'
@@ -11,6 +11,24 @@ include ':app'
 include ':packages:react-native-codegen:android'
 project(':packages:react-native-codegen:android').projectDir = new File('../react-native-lab/react-native/packages/react-native-codegen/android')
 includeBuild('../react-native-lab/react-native/packages/react-native-codegen/android')
+
+apply from: new File(["node", "--print", "require.resolve('expo-modules-core/package.json')"].execute().text.trim(), "../scripts/autolinking.gradle")
+
+/* UNCOMMENT WHEN DISTRIBUTING
+useExpoModules([
+    autolink: false,
+    exclude: [
+        'expo-module-template',
+        'expo-in-app-purchases',
+        'expo-payments-stripe'
+    ],
+    searchPaths: [
+      'enabled-modules'
+    ],
+    useAAR: true
+])
+END UNCOMMENT WHEN DISTRIBUTING */
+
 
 // WHEN_DISTRIBUTING_REMOVE_FROM_HERE
 include ':expoview'
@@ -33,20 +51,12 @@ project(":expo-random").projectDir = new File("../packages/expo-random/android")
   include ":expoview-$abiVariant"
   project(":expoview-$abiVariant").projectDir = new File(rootDir, "versioned-abis/expoview-$abiVariant")
 })
-// WHEN_DISTRIBUTING_REMOVE_TO_HERE
 
-// Import gradle helpers for unimodules.
-apply from: new File(["node", "--print", "require.resolve('react-native-unimodules/package.json')"].execute().text.trim(), "../gradle.groovy")
-
-// Include unimodules.
-includeUnimodulesProjects(
-// WHEN_DISTRIBUTING_REMOVE_FROM_HERE
-    [
-        modulesPaths: ['../../packages'],
-        target      : 'react-native',
-        exclude     : [
-            'expo-module-template',
-        ]
+useExpoModules([
+    autolink: false,
+    exclude : [
+        'expo-module-template',
+        'expo-in-app-purchases'
     ]
-// WHEN_DISTRIBUTING_REMOVE_TO_HERE
-)
+])
+// WHEN_DISTRIBUTING_REMOVE_TO_HER
