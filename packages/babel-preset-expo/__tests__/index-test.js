@@ -48,7 +48,7 @@ import { View } from 'react-native';
   it(`supports automatic runtime`, () => {
     const options = {
       babelrc: false,
-      presets: [[preset, { runtime: 'automatic' }]],
+      presets: [[preset, { jsxRuntime: 'automatic' }]],
       filename: 'unknown',
       // Make the snapshot easier to read
       retainLines: true,
