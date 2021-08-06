@@ -32,9 +32,10 @@ class FontLoaderModule(context: Context) : ExportedModule(context) {
     try {
       // TODO: remove Expo references
       // https://github.com/expo/expo/pull/4652#discussion_r296630843
-      var prefix = ""
-      if (isScoped) {
+      val prefix = if (isScoped) {
         prefix = "ExpoFont-"
+      } else {
+      	""
       }
 
       // TODO(nikki): make sure path is in experience's scope
