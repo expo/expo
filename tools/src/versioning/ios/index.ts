@@ -10,6 +10,7 @@ import semver from 'semver';
 import { EXPO_DIR, IOS_DIR, VERSIONED_RN_IOS_DIR } from '../../Constants';
 import logger from '../../Logger';
 import { getListOfPackagesAsync, Package } from '../../Packages';
+import { renderExpoKitPodspecAsync } from '../../dynamic-macros/IosMacrosGenerator';
 import { runTransformPipelineAsync } from './transforms';
 import { injectMacros } from './transforms/injectMacros';
 import { kernelFilesTransforms } from './transforms/kernelFilesTransforms';
@@ -1000,6 +1001,10 @@ export async function removeVersionAsync(versionNumber: string) {
   // modify kernel files
   console.log('Rollbacking SDK modifications from kernel files...');
   await modifyKernelFilesAsync(versionName, true);
+
+  // Update `ios/ExpoKit.podspec` with the newest SDK version
+  logger.info('🎨 Updating ExpoKit podspec');
+  await renderExpoKitPodspecAsync(EXPO_DIR, path.join(EXPO_DIR, 'template-files'));
 
   await reinstallPodsAsync();
 }
