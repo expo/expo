@@ -118,7 +118,7 @@ class DeviceModule(private val mContext: Context) : ExportedModule(mContext), Re
   fun getMaxMemoryAsync(promise: Promise) {
     val maxMemory = Runtime.getRuntime().maxMemory()
     if (maxMemory == Long.MAX_VALUE) {
-      //convert into maximum integer that JS could fit
+      // convert into maximum integer that JS could fit
       promise.resolve(-1)
     } else {
       promise.resolve(maxMemory.toDouble())
@@ -145,9 +145,10 @@ class DeviceModule(private val mContext: Context) : ExportedModule(mContext), Re
       }
     } catch (se: SecurityException) {
       promise.reject(
-          "ERR_DEVICE_ROOT_DETECTION",
-          "Could not access the file system to determine if the device is rooted.",
-          se)
+        "ERR_DEVICE_ROOT_DETECTION",
+        "Could not access the file system to determine if the device is rooted.",
+        se
+      )
       return
     }
 
@@ -158,9 +159,10 @@ class DeviceModule(private val mContext: Context) : ExportedModule(mContext), Re
   fun isSideLoadingEnabledAsync(promise: Promise) {
     val enabled: Boolean = if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
       Settings.Global.getInt(
-          mContext.applicationContext.contentResolver,
-          Settings.Global.INSTALL_NON_MARKET_APPS,
-          0) == 1
+        mContext.applicationContext.contentResolver,
+        Settings.Global.INSTALL_NON_MARKET_APPS,
+        0
+      ) == 1
     } else {
       mContext.applicationContext.packageManager.canRequestPackageInstalls()
     }
