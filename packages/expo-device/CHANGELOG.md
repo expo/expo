@@ -10,6 +10,7 @@
 
 ### 💡 Others
 
+- Rewrite android code to Kotlin
 - Migrated from `@unimodules/core` to `expo-modules-core`. ([#13757](https://github.com/expo/expo/pull/13757) by [@tsapeta](https://github.com/tsapeta))
 
 ## 3.3.0 — 2021-06-16
