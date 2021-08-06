@@ -45,7 +45,7 @@ import { View } from 'react-native';
     expect(code).toMatchSnapshot();
   });
 
-  it(`supports automatic runtime`, () => {
+  it(`supports automatic JSX runtime`, () => {
     const options = {
       babelrc: false,
       presets: [[preset, { jsxRuntime: 'automatic' }]],
