@@ -67,7 +67,7 @@ export async function purchaseItemAsync(itemId: string, purchaseToken?: string):
   await ExpoInAppPurchases.purchaseItemAsync(itemId, purchaseToken);
 }
 
-export async function setPurchaseListener(callback: (result) => void): Promise<void> {
+export function setPurchaseListener(callback: (result) => void): void {
   if (purchaseUpdatedSubscription) {
     purchaseUpdatedSubscription.remove();
   }
