@@ -221,7 +221,7 @@ Please note that on iOS, Storekit actually creates a new transaction object ever
 
 #### Arguments
 
-An optional object of the format:
+An optional object containing the following fields:
 
 - **useGooglePlayCache (_boolean_)** -- (Android only) A boolean that indicates whether or not you want to make a network request to sync expired/consumed purchases and those on other devices. Defaults to `true`.
   - If set to `true`, this method returns purchase details **only** for the user's currently owned items (active subscriptions and non-consumed one-time purchases). If set to `false`, it will make a network request and return the most recent purchase made by the user for each product, even if that purchase is expired, canceled, or consumed.

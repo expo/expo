@@ -9,8 +9,7 @@
 ### 🐛 Bug fixes
 
 - Made the arguments that were labeled as 'optional' on iOS for `getPurchaseHistoryAsync` and `finishTransactionAsync` actually optional. ([#13904](https://github.com/expo/expo/pull/13904) by [@cruzach](https://github.com/cruzach))
-- `getPurchaseHistoryAsync` no longer accepts a boolean parameter. Instead, it accepts an object containing the key `useGooglePlayCache`. ([#13942](https://github.com/expo/expo/pull/13942) by [@cruzach](https://github.com/cruzach))
-  - `useGooglePlayCache` functions similarly to the the previous `refresh` parameter, except it is clearer in naming. If you had `refresh` as false, you should pass `useGooglePlayCache: true`. If `refresh` was true, you should pass `useGooglePlayCache: false`. Please see the [docs](https://github.com/expo/expo/blob/master/docs/pages/versions/unversioned/sdk/in-app-purchases.md#inapppurchasesgetpurchasehistoryasyncrefresh-boolean) for more information.
+- `getPurchaseHistoryAsync` no longer accepts a boolean parameter. Instead, it accepts an object containing the key `useGooglePlayCache`. `useGooglePlayCache` functions similarly to the the previous `refresh` parameter, except it is clearer in naming. If you had `refresh` as false, you should pass `useGooglePlayCache: true`. If `refresh` was true, you should pass `useGooglePlayCache: false`. Please see the [docs](https://github.com/expo/expo/blob/master/docs/pages/versions/unversioned/sdk/in-app-purchases.md#inapppurchasesgetpurchasehistoryasyncrefresh-boolean) for more information. ([#13942](https://github.com/expo/expo/pull/13942) by [@cruzach](https://github.com/cruzach))
 
 ### 💡 Others
 
