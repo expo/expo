@@ -44,7 +44,7 @@ export enum IAPItemType {
 
 export interface InAppPurchase {
   acknowledged: boolean;
-  productId: string;
+  productIds: string[];
   purchaseState: number;
   purchaseTime: number;
   orderId: string;
