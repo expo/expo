@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Rewrite android code to Kotlin
+
 ## 9.2.0 — 2021-06-16
 
 ### 🐛 Bug fixes
