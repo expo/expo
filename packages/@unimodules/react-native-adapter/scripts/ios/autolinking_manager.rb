@@ -118,7 +118,7 @@ module Expo
       ]
 
       if !search_paths.nil? && !search_paths.empty?
-        args.concat(searchPaths)
+        args.concat(search_paths)
       end
 
       if !ignore_paths.nil? && !ignore_paths.empty?
