@@ -16,7 +16,7 @@ apply from: new File(["node", "--print", "require.resolve('expo-modules-core/pac
 
 /* UNCOMMENT WHEN DISTRIBUTING
 useExpoModules([
-    installAutomatically: false,
+    autolink: false,
     exclude: [
         'expo-module-template',
         'expo-in-app-purchases',
@@ -53,8 +53,8 @@ project(":expo-random").projectDir = new File("../packages/expo-random/android")
 })
 
 useExpoModules([
-    installAutomatically: false,
-    exclude             : [
+    autolink: false,
+    exclude : [
         'expo-module-template',
         'expo-in-app-purchases'
     ]
