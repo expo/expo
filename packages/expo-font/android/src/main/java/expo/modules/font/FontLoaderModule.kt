@@ -40,8 +40,9 @@ class FontLoaderModule(context: Context) : ExportedModule(context) {
       // TODO(nikki): make sure path is in experience's scope
       val typeface: Typeface = if (localUri.startsWith(ASSET_SCHEME)) {
         Typeface.createFromAsset(
-            context.assets,  // Also remove the leading slash.
-            localUri.substring(ASSET_SCHEME.length + 1))
+          context.assets, // Also remove the leading slash.
+          localUri.substring(ASSET_SCHEME.length + 1)
+        )
       } else {
         Typeface.createFromFile(File(Uri.parse(localUri).path))
       }
