@@ -32,7 +32,7 @@ Some Expo and React Native modules include permissions by default. If you use `e
 
 To limit the permissions your managed workflow app requires, set the `android.permissions` property in your [`app.json` file](../../workflow/configuration.md#android) to list only the permissions you need, and Expo will also include the minimum permissions it requires to run. See the [`Permission types`](#permission-types) below to learn about which Android permissions are added. You can find a full list of all available permissions in the [Android Manifest.permissions reference](https://developer.android.com/reference/android/Manifest.permission).
 
-- [See the `android.permissions` documentation](https://docs.expo.dev/versions/v38.0.0/sdk/permissions/#android-permissions-equivalents-inside--appjson) to learn about which permissions are always included.
+- [See the `android.permissions` documentation](/versions/latest/config/app.md#permissions) to learn about which permissions are always included.
 - Apps using dangerous or signature permissions without valid reasons _may be rejected by Google_. Make sure you follow the [Android permissions best practices](https://developer.android.com/training/permissions/usage-notes) when submitting your app.
 - By default, the permissions implied by the modules you installed are added to the `AndroidManifest.xml` at build time. To exclude permissions, you have to define the `android.permissions` manifest property.
 
