@@ -103,6 +103,7 @@ async function action({packageName, version = 'unversioned'}: ActionOptions) {
     'expo-facebook': [['Facebook.ts', 'Facebook.types.ts']],
     'expo-font': ['index.ts'],
     'expo-haptics': ['Haptics.ts'],
+    'expo-image-manipulator': ['ImageManipulator.ts'],
     'expo-keep-awake': ['index.ts'],
     'expo-linear-gradient': ['LinearGradient.tsx'],
     'expo-local-authentication': ['LocalAuthentication.ts'],

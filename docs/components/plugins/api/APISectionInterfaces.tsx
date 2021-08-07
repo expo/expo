@@ -36,11 +36,7 @@ const renderInterfacePropertyRow = ({
       <InlineCode>{resolveTypeName(type)}</InlineCode>
     </td>
     <td>
-      {comment?.shortText ? (
-        <ReactMarkdown renderers={mdInlineRenderers}>{comment.shortText}</ReactMarkdown>
-      ) : (
-        '-'
-      )}
+      {comment ? <CommentTextBlock comment={comment} renderers={mdInlineRenderers} /> : '-'}
     </td>
   </tr>
 );
