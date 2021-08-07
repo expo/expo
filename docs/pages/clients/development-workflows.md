@@ -5,21 +5,21 @@ title: Development Workflows
 
 ## Iterating on your product with custom clients
 
-With a custom client, you can provide a stable environment to load any changes to your application that can be defined in JavaScript or other asset files that must only be built and installed once. Other updates to your application, whether defined directly in your ios/ and android/ directories or by modules or SDKs you choose to install, will require a new version of your client to take advantage of your changes.
+When you build a custom client for your project, you get a stable environment to load any changes to your application that can be defined in JavaScript or other asset-related changes to your application. Other changes to your application, whether defined directly in your `ios/` and `android/` directories, or by packages or SDKs you choose to install, will require a new build of your client.
 
-To enforce an API contract between the JavaScript and native portion of your application, you should set the [`runtimeVersion`](../distribution/runtime-versions.md) value in your app.json or app.config.js. This runtime version will be used to ensure your clients only load compatible version of your application in both development and production.
+To enforce an API contract between the JavaScript and native portion of your application, you should set the [`runtimeVersion`](../distribution/runtime-versions.md) value in your app.json or app.config.js. Each build you make will have this value embedded and will only load bundles with the same `runtimeVersion`, in both development and production.
 
 ## Tools
 
 ### Tunnel URLs
 
-`expo start` can expose your development server on a publicly available URL that can be accessed through firewalls from around the globe.
+`expo start` can expose your development server on a publicly available URL that can be accessed through firewalls from around the globe.  This option is useful if you are not able to connect to your development server with the default LAN option or if you want to get feedback on your implementation while you are developing.
 
 To get a tunneled URL, pass the `--tunnel` flag to `expo start` from the command line, or select the "tunnel" option for "CONNECTION" if you are using the developer tools.
 
 ### Published Updates
 
-[`expo publish`](../workflow/publishing.md) packages the current state of your JavaScript and asset files into an optimized "update" stored on a free hosting service provided by Expo.  Published updates can be loaded in Expo clients without needing to check out a particular commit or leave a development machine running.
+[`expo publish`](../workflow/publishing.md) packages the current state of your JavaScript and asset files into an optimized "update" stored on a free hosting service provided by Expo.  Published updates can be loaded in Expo Clients without needing to check out a particular commit or leave a development machine running.
 
 ### QR Codes
 
@@ -30,14 +30,14 @@ Requests to `https://qr.expo.dev/development-client`, when supplied the query pa
 | parameter | value |
 | --------------- | ----------------------- |
 | `appScheme`         | URL-encoded deeplinking scheme of your client (defaults to `exp+{slug}` where slug is the value set in your app.json)       |
-| `url`         | URL of a bundle or manifest to load  (e.g. as provided by `expo publish`)     |
+| `url`         | URL of a update manifest to load  (e.g. as provided by `expo publish`)     |
 
 receive a response with an SVG image containing a QR code that can be easily scanned to load a version of your project in your client.
 
 
 ## Example Workflows
 
-These are a few examples of workflows to help your team get the most out of your custom clients.  If you come up with others that would be useful for other teams, please [submit a PR](https://github.com/expo/expo/blob/master/CONTRIBUTING.md#-updating-documentation) to share the knowledge!
+These are a few examples of workflows to help your team get the most out of your custom clients.  If you come up with others that would be useful for other teams, please [submit a PR](https://github.com/expo/expo/blob/master/CONTRIBUTING.md#-updating-documentation) to share your knowledge!
 
 ### Development Builds
 
