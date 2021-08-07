@@ -123,50 +123,50 @@ PODS:
     - UMCore
   - EXPermissions (12.1.0):
     - ExpoModulesCore
-  - expo-dev-client (0.4.5):
+  - expo-dev-client (0.4.7):
     - expo-dev-launcher
     - expo-dev-menu
     - expo-dev-menu-interface
     - EXUpdatesInterface
-  - expo-dev-launcher (0.6.5):
-    - expo-dev-launcher/Main (= 0.6.5)
+  - expo-dev-launcher (0.6.7):
+    - expo-dev-launcher/Main (= 0.6.7)
     - expo-dev-menu-interface
     - EXUpdatesInterface
     - React-Core
-  - expo-dev-launcher/Main (0.6.5):
+  - expo-dev-launcher/Main (0.6.7):
     - expo-dev-launcher/Unsafe
     - expo-dev-menu-interface
     - EXUpdatesInterface
     - React-Core
-  - expo-dev-launcher/Tests (0.6.5):
+  - expo-dev-launcher/Tests (0.6.7):
     - expo-dev-menu-interface
     - EXUpdatesInterface
     - OHHTTPStubs
     - React-Core
     - React-CoreModules
-  - expo-dev-launcher/Unsafe (0.6.5):
+  - expo-dev-launcher/Unsafe (0.6.7):
     - expo-dev-menu-interface
     - EXUpdatesInterface
     - React-Core
-  - expo-dev-menu (0.7.5):
+  - expo-dev-menu (0.7.7):
     - expo-dev-menu-interface
-    - expo-dev-menu/Main (= 0.7.5)
+    - expo-dev-menu/Main (= 0.7.7)
     - React-Core
-  - expo-dev-menu-interface (0.3.2)
-  - expo-dev-menu/Main (0.7.5):
+  - expo-dev-menu-interface (0.3.4)
+  - expo-dev-menu/Main (0.7.7):
     - expo-dev-menu-interface
     - expo-dev-menu/Vendored
     - React-Core
-  - expo-dev-menu/Tests (0.7.5):
+  - expo-dev-menu/Tests (0.7.7):
     - expo-dev-menu-interface
     - React-Core
     - React-CoreModules
-  - expo-dev-menu/UITests (0.7.5):
+  - expo-dev-menu/UITests (0.7.7):
     - expo-dev-menu-interface
     - React
     - React-Core
     - React-CoreModules
-  - expo-dev-menu/Vendored (0.7.5):
+  - expo-dev-menu/Vendored (0.7.7):
     - expo-dev-menu-interface
     - React-Core
   - expo-image (1.0.0-alpha.1):
@@ -1185,7 +1185,7 @@ SPEC CHECKSUMS:
   AppAuth: 31bcec809a638d7bd2f86ea8a52bd45f6e81e7c7
   boost-for-react-native: 39c7adb57c4e60d6c5479dd8623128eb5b3f0f2c
   CocoaLumberjack: b7e05132ff94f6ae4dfa9d5bce9141893a21d9da
-  DoubleConversion: cf9b38bf0b2d048436d9a82ad2abe1404f11e7de
+  DoubleConversion: cde416483dac037923206447da6e1454df403714
   EXAmplitude: 19866218bc855e6ac7a29e5c8ec1b24eab81b40c
   EXAppAuth: b7ecb4ce7634676985f67d2489054ea7727cd5e3
   EXApplication: 9ff2a206009d6e55bca6c20b3f33d07986b51ef3
@@ -1229,10 +1229,10 @@ SPEC CHECKSUMS:
   EXNetwork: c15bb1026d72d1eb3782710faf373ed35c6eb024
   EXNotifications: 296d9487163c2c08fffec5e79a5f9094bc016d9c
   EXPermissions: c7bead8f093700d5fcfb4f41238430a51702c5c8
-  expo-dev-client: 6f833f384c5fcc59e96a91268601dabcd16f70f0
-  expo-dev-launcher: 22f60ed5486925a72beeb5df35ebc117b56610ee
-  expo-dev-menu: 1c9235e580c9f8c4226367b7c1193c83bb0d0922
-  expo-dev-menu-interface: 59fbd00f527c7ae65aa86144e6c8af3761fc037f
+  expo-dev-client: 18d9a9dace8defeabe16b3793131103b8f939d5c
+  expo-dev-launcher: 6ae81f30b06470413eeca0f9e2a115429f10c1c3
+  expo-dev-menu: 148071b2ca564529a0efb941cc2a72fe7397195a
+  expo-dev-menu-interface: 145d352ba9edff66b0c1fb13773f0f0dd9d50afd
   expo-image: ea170930bd8bc42328ee74ff4dc861ca31587dc8
   ExpoModulesCore: 82ee658feb15e6804de9f3530c39c62ff900048b
   EXPrint: 61bbaa43c42c1badfa46de5be015d7d798d33583
@@ -1256,14 +1256,14 @@ SPEC CHECKSUMS:
   EXWebBrowser: b244cd85281a2b8f90a4ce81d674e3dc4f4ccc5e
   FacebookSDK: 4b9bb8e2824898b47f18c666dc145c09b40609e6
   FBLazyVector: e686045572151edef46010a6f819ade377dfeb4b
-  FBReactNativeSpec: 27c4449de2a5ef1e5a03c60883d82ab211057117
+  FBReactNativeSpec: bd01503e57428d002fd530ca0c66664ca5751b22
   FBSDKCoreKit: dace5abafc2fd9272733e6d027bcf18102712117
   Firebase: cd2ab85eec8170dc260186159f21072ecb679ad5
   FirebaseAnalytics: f3f8f75de34fe04141a69bb1c4bd7e24a80178e1
   FirebaseCore: ac35d680a0bf32319a59966a1478e0741536b97b
   FirebaseCoreDiagnostics: 3d36e05da74cb8b7ce30e6594a8f201b982c725c
   FirebaseInstallations: bf2ec8dbf36ff4c91af6b9a003d15855757680c1
-  glog: 73c2498ac6884b13ede40eda8228cb1eee9d9d62
+  glog: 40a13f7840415b9a77023fbcae0f1e6f43192af3
   GoogleAppMeasurement: 0c3b134b2c0a90c4c24833873894bfe0e42a0384
   GoogleDataTransport: 8b0e733ea77c9218778e5a9e34ba9508b8328939
   GoogleMLKit: 6ca2a10de262ee1017b52ac045e8967884ace992
