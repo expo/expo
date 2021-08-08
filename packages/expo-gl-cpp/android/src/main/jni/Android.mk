@@ -11,7 +11,8 @@ LOCAL_SRC_FILES := \
   ../../../../cpp/EXGLImageUtils.cpp \
   ../../../../cpp/EXGLContext.cpp \
   ../../../../cpp/EXGLContextManager.cpp \
-  ../../../../cpp/EXGLNativeMethods.cpp \
+  ../../../../cpp/EXWebGLMethods.cpp \
+  ../../../../cpp/EXWebGLRenderer.cpp \
   ../../../../cpp/TypedArrayApi.cpp \
   EXGL.cpp
 

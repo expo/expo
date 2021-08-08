@@ -1,5 +1,9 @@
-#include "EXGLContext.h"
+#include "EXWebGLMethods.h"
+#include "EXGLContextManager.h"
 #include "EXGLImageUtils.h"
+#include "EXJsiArgsTransform.h"
+#include "EXWebGLRenderer.h"
+#include "EXWebGLMethodsHelpers.h"
 
 #include <algorithm>
 
@@ -7,14 +11,20 @@
   (argc > index ? unpackArg<type>(runtime, jsArgv + index) \
                 : throw std::runtime_error("EXGL: Too few arguments"))
 
-#define NATIVE_METHOD(name, ...)                 \
-  jsi::Value EXGLContext::glNativeMethod_##name( \
+#define CTX()       \
+  auto result = getContext(runtime, jsThis);            \
+  auto ctx = result.first;                    \
+  if (ctx == nullptr) { return jsi::Value::undefined(); }
+
+#define NATIVE_METHOD(name, ...)                     \
+  jsi::Value glNativeMethod_##name( \
       jsi::Runtime &runtime, const jsi::Value &jsThis, const jsi::Value *jsArgv, size_t argc)
 
-#define SIMPLE_NATIVE_METHOD(name, func)                               \
-  NATIVE_METHOD(name) {                                                \
-    addToNextBatch(generateNativeMethod(runtime, func, jsArgv, argc)); \
-    return nullptr;                                                    \
+#define SIMPLE_NATIVE_METHOD(name, func)                                    \
+  NATIVE_METHOD(name) {                                                     \
+    CTX();                                                                  \
+    ctx->addToNextBatch(generateNativeMethod(runtime, func, jsArgv, argc)); \
+    return nullptr;                                                         \
   }
 
 #define UNIMPL_NATIVE_METHOD(name)   \
@@ -24,6 +34,12 @@
 
 namespace expo {
 namespace gl_cpp {
+namespace method {
+
+EXGLContextWithLock getContext(jsi::Runtime& runtime, const jsi::Value &jsThis) {
+    double exglCtxId = jsThis.asObject(runtime).getProperty(runtime, "exglCtxId").asNumber();
+    return EXGLContextGet(static_cast<UEXGLContextId>(exglCtxId));
+}
 
 // This listing follows the order in
 // https://developer.mozilla.org/en-US/docs/Web/API/WebGLRenderingContext
@@ -91,6 +107,7 @@ SIMPLE_NATIVE_METHOD(enable, glEnable); // cap
 SIMPLE_NATIVE_METHOD(frontFace, glFrontFace); // mode
 
 NATIVE_METHOD(getParameter) {
+  CTX();
   auto pname = ARG(0, GLenum);
 
   switch (pname) {
@@ -103,33 +120,33 @@ NATIVE_METHOD(getParameter) {
     case GL_ALIASED_POINT_SIZE_RANGE:
     case GL_DEPTH_RANGE: {
       std::vector<TypedArrayBase::ContentType<TypedArrayKind::Float32Array>> glResults(2);
-      addBlockingToNextBatch([&] { glGetFloatv(pname, glResults.data()); });
+      ctx->addBlockingToNextBatch([&] { glGetFloatv(pname, glResults.data()); });
       return TypedArray<TypedArrayKind::Float32Array>(runtime, glResults);
     }
       // FLoat32Array[4]
     case GL_BLEND_COLOR:
     case GL_COLOR_CLEAR_VALUE: {
       std::vector<TypedArrayBase::ContentType<TypedArrayKind::Float32Array>> glResults(4);
-      addBlockingToNextBatch([&] { glGetFloatv(pname, glResults.data()); });
+      ctx->addBlockingToNextBatch([&] { glGetFloatv(pname, glResults.data()); });
       return TypedArray<TypedArrayKind::Float32Array>(runtime, glResults);
     }
       // Int32Array[2]
     case GL_MAX_VIEWPORT_DIMS: {
       std::vector<TypedArrayBase::ContentType<TypedArrayKind::Int32Array>> glResults(2);
-      addBlockingToNextBatch([&] { glGetIntegerv(pname, glResults.data()); });
+      ctx->addBlockingToNextBatch([&] { glGetIntegerv(pname, glResults.data()); });
       return TypedArray<TypedArrayKind::Int32Array>(runtime, glResults);
     }
       // Int32Array[4]
     case GL_SCISSOR_BOX:
     case GL_VIEWPORT: {
       std::vector<TypedArrayBase::ContentType<TypedArrayKind::Int32Array>> glResults(4);
-      addBlockingToNextBatch([&] { glGetIntegerv(pname, glResults.data()); });
+      ctx->addBlockingToNextBatch([&] { glGetIntegerv(pname, glResults.data()); });
       return TypedArray<TypedArrayKind::Int32Array>(runtime, glResults);
     }
       // boolean[4]
     case GL_COLOR_WRITEMASK: {
       GLint glResults[4];
-      addBlockingToNextBatch([&] { glGetIntegerv(pname, glResults); });
+      ctx->addBlockingToNextBatch([&] { glGetIntegerv(pname, glResults); });
       return jsi::Array::createWithElements(
           runtime,
           {jsi::Value(glResults[0]),
@@ -140,7 +157,7 @@ NATIVE_METHOD(getParameter) {
 
       // boolean
     case GL_UNPACK_FLIP_Y_WEBGL:
-      return unpackFLipY;
+      return ctx->unpackFLipY;
     case GL_UNPACK_PREMULTIPLY_ALPHA_WEBGL:
     case GL_UNPACK_COLORSPACE_CONVERSION_WEBGL:
       return false;
@@ -150,7 +167,7 @@ NATIVE_METHOD(getParameter) {
     case GL_TRANSFORM_FEEDBACK_ACTIVE:
     case GL_TRANSFORM_FEEDBACK_PAUSED: {
       GLint glResult;
-      addBlockingToNextBatch([&] { glGetIntegerv(pname, &glResult); });
+      ctx->addBlockingToNextBatch([&] { glGetIntegerv(pname, &glResult); });
       return jsi::Value(glResult);
     }
 
@@ -160,7 +177,7 @@ NATIVE_METHOD(getParameter) {
     case GL_VENDOR:
     case GL_VERSION: {
       const GLubyte *glStr;
-      addBlockingToNextBatch([&] { glStr = glGetString(pname); });
+      ctx->addBlockingToNextBatch([&] { glStr = glGetString(pname); });
       return jsi::String::createFromUtf8(
           runtime, std::string(reinterpret_cast<const char *>(glStr)));
     }
@@ -173,7 +190,7 @@ NATIVE_METHOD(getParameter) {
     case GL_SAMPLE_COVERAGE_VALUE:
     case GL_MAX_TEXTURE_LOD_BIAS: {
       GLfloat glFloat;
-      addBlockingToNextBatch([&] { glGetFloatv(pname, &glFloat); });
+      ctx->addBlockingToNextBatch([&] { glGetFloatv(pname, &glFloat); });
       return static_cast<double>(glFloat);
     }
 
@@ -182,8 +199,8 @@ NATIVE_METHOD(getParameter) {
     case GL_ELEMENT_ARRAY_BUFFER_BINDING:
     case GL_CURRENT_PROGRAM: {
       GLint glInt;
-      addBlockingToNextBatch([&] { glGetIntegerv(pname, &glInt); });
-      for (const auto &pair : objects) {
+      ctx->addBlockingToNextBatch([&] { glGetIntegerv(pname, &glInt); });
+      for (const auto &pair : ctx->objects) {
         if (static_cast<int>(pair.second) == glInt) {
           return static_cast<double>(pair.first);
         }
@@ -212,34 +229,37 @@ NATIVE_METHOD(getParameter) {
       // int
     default: {
       GLint glInt;
-      addBlockingToNextBatch([&] { glGetIntegerv(pname, &glInt); });
+      ctx->addBlockingToNextBatch([&] { glGetIntegerv(pname, &glInt); });
       return jsi::Value(glInt);
     }
   }
 }
 
 NATIVE_METHOD(getError) {
+  CTX();
   GLenum glResult;
-  addBlockingToNextBatch([&] { glResult = glGetError(); });
+  ctx->addBlockingToNextBatch([&] { glResult = glGetError(); });
   return static_cast<double>(glResult);
 }
 
 SIMPLE_NATIVE_METHOD(hint, glHint); // target, mode
 
 NATIVE_METHOD(isEnabled) {
+  CTX();
   auto cap = ARG(0, GLenum);
   GLboolean glResult;
-  addBlockingToNextBatch([&] { glResult = glIsEnabled(cap); });
+  ctx->addBlockingToNextBatch([&] { glResult = glIsEnabled(cap); });
   return glResult == GL_TRUE;
 }
 
 SIMPLE_NATIVE_METHOD(lineWidth, glLineWidth); // width
 
 NATIVE_METHOD(pixelStorei) {
+  CTX();
   auto pname = ARG(0, GLenum);
   switch (pname) {
     case GL_UNPACK_FLIP_Y_WEBGL: {
-      unpackFLipY = ARG(1, GLboolean);
+      ctx->unpackFLipY = ARG(1, GLboolean);
       break;
     }
     default:
@@ -268,61 +288,68 @@ SIMPLE_NATIVE_METHOD(stencilOpSeparate, glStencilOpSeparate); // face, fail, zfa
 // -------
 
 NATIVE_METHOD(bindBuffer) {
+  CTX();
   auto target = ARG(0, GLenum);
   auto buffer = ARG(1, UEXGLObjectId);
-  addToNextBatch([=] { glBindBuffer(target, lookupObject(buffer)); });
+  ctx->addToNextBatch([=] { glBindBuffer(target, ctx->lookupObject(buffer)); });
   return nullptr;
 }
 
 NATIVE_METHOD(bufferData) {
+  CTX();
   auto target = ARG(0, GLenum);
   auto &sizeOrData = ARG(1, const jsi::Value &);
   auto usage = ARG(2, GLenum);
 
   if (sizeOrData.isNumber()) {
     GLsizeiptr length = sizeOrData.getNumber();
-    addToNextBatch([=] { glBufferData(target, length, nullptr, usage); });
+    ctx->addToNextBatch([=] { glBufferData(target, length, nullptr, usage); });
   } else if (sizeOrData.isNull() || sizeOrData.isUndefined()) {
-    addToNextBatch([=] { glBufferData(target, 0, nullptr, usage); });
+    ctx->addToNextBatch([=] { glBufferData(target, 0, nullptr, usage); });
   } else if (sizeOrData.isObject()) {
     auto data = rawTypedArray(runtime, sizeOrData.getObject(runtime));
-    addToNextBatch(
+    ctx->addToNextBatch(
         [=, data{std::move(data)}] { glBufferData(target, data.size(), data.data(), usage); });
   }
   return nullptr;
 }
 
 NATIVE_METHOD(bufferSubData) {
+  CTX();
   auto target = ARG(0, GLenum);
   auto offset = ARG(1, GLintptr);
   if (ARG(2, const jsi::Value &).isNull()) {
-    addToNextBatch([=] { glBufferSubData(target, offset, 0, nullptr); });
+    ctx->addToNextBatch([=] { glBufferSubData(target, offset, 0, nullptr); });
   } else {
     auto data = rawTypedArray(runtime, ARG(2, jsi::Object));
-    addToNextBatch(
+    ctx->addToNextBatch(
         [=, data{std::move(data)}] { glBufferSubData(target, offset, data.size(), data.data()); });
   }
   return nullptr;
 }
 
 NATIVE_METHOD(createBuffer) {
-  return exglGenObject(runtime, glGenBuffers);
+  CTX();
+  return exglGenObject(ctx, runtime, glGenBuffers);
 }
 
 NATIVE_METHOD(deleteBuffer) {
-  return exglDeleteObject(ARG(0, UEXGLObjectId), glDeleteBuffers);
+  CTX();
+  return exglDeleteObject(ctx, ARG(0, UEXGLObjectId), glDeleteBuffers);
 }
 
 NATIVE_METHOD(getBufferParameter) {
+  CTX();
   auto target = ARG(0, GLenum);
   auto pname = ARG(1, GLenum);
   GLint glResult;
-  addBlockingToNextBatch([&] { glGetBufferParameteriv(target, pname, &glResult); });
+  ctx->addBlockingToNextBatch([&] { glGetBufferParameteriv(target, pname, &glResult); });
   return jsi::Value(glResult);
 }
 
 NATIVE_METHOD(isBuffer) {
-  return exglIsObject(ARG(0, UEXGLObjectId), glIsBuffer);
+  CTX();
+  return exglIsObject(ctx, ARG(0, UEXGLObjectId), glIsBuffer);
 }
 
 // Buffers (WebGL2)
@@ -338,49 +365,56 @@ UNIMPL_NATIVE_METHOD(getBufferSubData);
 // ------------
 
 NATIVE_METHOD(bindFramebuffer) {
+  CTX();
   auto target = ARG(0, GLenum);
   auto framebuffer = ARG(1, UEXGLObjectId);
-  addToNextBatch([=] {
-    glBindFramebuffer(target, framebuffer == 0 ? defaultFramebuffer : lookupObject(framebuffer));
+  ctx->addToNextBatch([=] {
+    glBindFramebuffer(
+        target, framebuffer == 0 ? ctx->defaultFramebuffer : ctx->lookupObject(framebuffer));
   });
   return nullptr;
 }
 
 NATIVE_METHOD(checkFramebufferStatus) {
+  CTX();
   auto target = ARG(0, GLenum);
   GLenum glResult;
-  addBlockingToNextBatch([&] { glResult = glCheckFramebufferStatus(target); });
+  ctx->addBlockingToNextBatch([&] { glResult = glCheckFramebufferStatus(target); });
   return static_cast<double>(glResult);
 }
 
 NATIVE_METHOD(createFramebuffer) {
-  return exglGenObject(runtime, glGenFramebuffers);
+  CTX();
+  return exglGenObject(ctx, runtime, glGenFramebuffers);
 }
 
 NATIVE_METHOD(deleteFramebuffer) {
-  return exglDeleteObject(ARG(0, UEXGLObjectId), glDeleteFramebuffers);
+  CTX();
+  return exglDeleteObject(ctx, ARG(0, UEXGLObjectId), glDeleteFramebuffers);
 }
 
 NATIVE_METHOD(framebufferRenderbuffer) {
+  CTX();
   auto target = ARG(0, GLenum);
   auto attachment = ARG(1, GLenum);
   auto renderbuffertarget = ARG(2, GLenum);
   auto fRenderbuffer = ARG(3, UEXGLObjectId);
-  addToNextBatch([=] {
-    GLuint renderbuffer = lookupObject(fRenderbuffer);
+  ctx->addToNextBatch([=] {
+    GLuint renderbuffer = ctx->lookupObject(fRenderbuffer);
     glFramebufferRenderbuffer(target, attachment, renderbuffertarget, renderbuffer);
   });
   return nullptr;
 }
 
 NATIVE_METHOD(framebufferTexture2D, 5) {
+  CTX();
   auto target = ARG(0, GLenum);
   auto attachment = ARG(1, GLenum);
   auto textarget = ARG(2, GLenum);
   auto fTexture = ARG(3, UEXGLObjectId);
   auto level = ARG(4, GLint);
-  addToNextBatch([=] {
-    glFramebufferTexture2D(target, attachment, textarget, lookupObject(fTexture), level);
+  ctx->addToNextBatch([=] {
+    glFramebufferTexture2D(target, attachment, textarget, ctx->lookupObject(fTexture), level);
   });
   return nullptr;
 }
@@ -388,10 +422,12 @@ NATIVE_METHOD(framebufferTexture2D, 5) {
 UNIMPL_NATIVE_METHOD(getFramebufferAttachmentParameter)
 
 NATIVE_METHOD(isFramebuffer) {
-  return exglIsObject(ARG(0, UEXGLObjectId), glIsFramebuffer);
+  CTX();
+  return exglIsObject(ctx, ARG(0, UEXGLObjectId), glIsFramebuffer);
 }
 
 NATIVE_METHOD(readPixels) {
+  CTX();
   auto x = ARG(0, GLint);
   auto y = ARG(1, GLint);
   auto width = ARG(2, GLuint); // GLsizei allows negative values
@@ -400,7 +436,8 @@ NATIVE_METHOD(readPixels) {
   auto type = ARG(5, GLenum);
   size_t byteLength = width * height * bytesPerPixel(type, format);
   std::vector<uint8_t> pixels(byteLength);
-  addBlockingToNextBatch([&] { glReadPixels(x, y, width, height, format, type, pixels.data()); });
+  ctx->addBlockingToNextBatch(
+      [&] { glReadPixels(x, y, width, height, format, type, pixels.data()); });
 
   TypedArrayBase arr = ARG(6, TypedArrayBase);
   jsi::ArrayBuffer buffer = arr.getBuffer(runtime);
@@ -415,17 +452,20 @@ SIMPLE_NATIVE_METHOD(blitFramebuffer, glBlitFramebuffer);
 // srcX0, srcY0, srcX1, srcY1, dstX0, dstY0, dstX1, dstY1, mask, filter
 
 NATIVE_METHOD(framebufferTextureLayer) {
+  CTX();
   auto target = ARG(0, GLenum);
   auto attachment = ARG(1, GLenum);
   auto texture = ARG(2, UEXGLObjectId);
   auto level = ARG(3, GLint);
   auto layer = ARG(4, GLint);
-  addToNextBatch(
-      [=] { glFramebufferTextureLayer(target, attachment, lookupObject(texture), level, layer); });
+  ctx->addToNextBatch([=] {
+    glFramebufferTextureLayer(target, attachment, ctx->lookupObject(texture), level, layer);
+  });
   return nullptr;
 }
 
 NATIVE_METHOD(invalidateFramebuffer) {
+  CTX();
   auto target = ARG(0, GLenum);
   auto jsAttachments = ARG(1, jsi::Array);
 
@@ -433,13 +473,14 @@ NATIVE_METHOD(invalidateFramebuffer) {
   for (size_t i = 0; i < attachments.size(); i++) {
     attachments[i] = jsAttachments.getValueAtIndex(runtime, i).asNumber();
   }
-  addToNextBatch([=, attachaments{std::move(attachments)}] {
+  ctx->addToNextBatch([=, attachaments{std::move(attachments)}] {
     glInvalidateFramebuffer(target, static_cast<GLsizei>(attachments.size()), attachments.data());
   });
   return nullptr; // breaking change TypedArray -> Array (bug in previous implementation)
 }
 
 NATIVE_METHOD(invalidateSubFramebuffer) {
+  CTX();
   auto target = ARG(0, GLenum);
   auto jsAttachments = ARG(1, jsi::Array);
   auto x = ARG(2, GLint);
@@ -450,7 +491,7 @@ NATIVE_METHOD(invalidateSubFramebuffer) {
   for (size_t i = 0; i < attachments.size(); i++) {
     attachments[i] = jsAttachments.getValueAtIndex(runtime, i).asNumber();
   }
-  addToNextBatch([=, attachments{std::move(attachments)}] {
+  ctx->addToNextBatch([=, attachments{std::move(attachments)}] {
     glInvalidateSubFramebuffer(
         target, static_cast<GLsizei>(attachments.size()), attachments.data(), x, y, width, height);
   });
@@ -463,27 +504,32 @@ SIMPLE_NATIVE_METHOD(readBuffer, glReadBuffer); // mode
 // -------------
 
 NATIVE_METHOD(bindRenderbuffer) {
+  CTX();
   auto target = ARG(0, GLenum);
   auto fRenderbuffer = ARG(1, UEXGLObjectId);
-  addToNextBatch([=] { glBindRenderbuffer(target, lookupObject(fRenderbuffer)); });
+  ctx->addToNextBatch([=] { glBindRenderbuffer(target, ctx->lookupObject(fRenderbuffer)); });
   return nullptr;
 }
 
 NATIVE_METHOD(createRenderbuffer) {
-  return exglGenObject(runtime, glGenRenderbuffers);
+  CTX();
+  return exglGenObject(ctx, runtime, glGenRenderbuffers);
 }
 
 NATIVE_METHOD(deleteRenderbuffer) {
-  return exglDeleteObject(ARG(0, UEXGLObjectId), glDeleteRenderbuffers);
+  CTX();
+  return exglDeleteObject(ctx, ARG(0, UEXGLObjectId), glDeleteRenderbuffers);
 }
 
 UNIMPL_NATIVE_METHOD(getRenderbufferParameter)
 
 NATIVE_METHOD(isRenderbuffer) {
-  return exglIsObject(ARG(0, UEXGLObjectId), glIsRenderbuffer);
+  CTX();
+  return exglIsObject(ctx, ARG(0, UEXGLObjectId), glIsRenderbuffer);
 }
 
 NATIVE_METHOD(renderbufferStorage) {
+  CTX();
   auto target = ARG(0, GLenum);
   auto internalformat = ARG(1, GLint);
   auto width = ARG(2, GLsizei);
@@ -493,7 +539,7 @@ NATIVE_METHOD(renderbufferStorage) {
   // however OpenGL ES seems to require sized format, so we fall back to `GL_DEPTH24_STENCIL8`.
   internalformat = internalformat == GL_DEPTH_STENCIL ? GL_DEPTH24_STENCIL8 : internalformat;
 
-  addToNextBatch([=] { glRenderbufferStorage(target, internalformat, width, height); });
+  ctx->addToNextBatch([=] { glRenderbufferStorage(target, internalformat, width, height); });
   return nullptr;
 }
 
@@ -501,12 +547,13 @@ NATIVE_METHOD(renderbufferStorage) {
 // ----------------------
 
 NATIVE_METHOD(getInternalformatParameter) {
+  CTX();
   auto target = ARG(0, GLenum);
   auto internalformat = ARG(1, GLenum);
   auto pname = ARG(2, GLenum);
 
   std::vector<TypedArrayBase::ContentType<TypedArrayKind::Int32Array>> glResults;
-  addBlockingToNextBatch([&] {
+  ctx->addBlockingToNextBatch([&] {
     GLint count;
     glGetInternalformativ(target, internalformat, GL_NUM_SAMPLE_COUNTS, 1, &count);
     glResults.resize(count);
@@ -522,9 +569,10 @@ UNIMPL_NATIVE_METHOD(renderbufferStorageMultisample)
 // --------
 
 NATIVE_METHOD(bindTexture) {
+  CTX();
   auto target = ARG(0, GLenum);
   auto texture = ARG(1, UEXGLObjectId);
-  addToNextBatch([=] { glBindTexture(target, lookupObject(texture)); });
+  ctx->addToNextBatch([=] { glBindTexture(target, ctx->lookupObject(texture)); });
   return nullptr;
 }
 
@@ -541,11 +589,13 @@ SIMPLE_NATIVE_METHOD(
     glCopyTexSubImage2D) // target, level, xoffset, yoffset, x, y, width, height
 
 NATIVE_METHOD(createTexture) {
-  return exglGenObject(runtime, glGenTextures);
+  CTX();
+  return exglGenObject(ctx, runtime, glGenTextures);
 }
 
 NATIVE_METHOD(deleteTexture) {
-  return exglDeleteObject(ARG(0, UEXGLObjectId), glDeleteTextures);
+  CTX();
+  return exglDeleteObject(ctx, ARG(0, UEXGLObjectId), glDeleteTextures);
 }
 
 SIMPLE_NATIVE_METHOD(generateMipmap, glGenerateMipmap) // target
@@ -553,10 +603,12 @@ SIMPLE_NATIVE_METHOD(generateMipmap, glGenerateMipmap) // target
 UNIMPL_NATIVE_METHOD(getTexParameter)
 
 NATIVE_METHOD(isTexture) {
-  return exglIsObject(ARG(0, UEXGLObjectId), glIsTexture);
+  CTX();
+  return exglIsObject(ctx, ARG(0, UEXGLObjectId), glIsTexture);
 }
 
 NATIVE_METHOD(texImage2D, 6) {
+  CTX();
   auto target = ARG(0, GLenum);
   auto level = ARG(1, GLint);
   auto internalformat = ARG(2, GLint);
@@ -567,7 +619,7 @@ NATIVE_METHOD(texImage2D, 6) {
     auto format = ARG(6, GLenum);
     auto type = ARG(7, GLenum);
     if (ARG(8, const jsi::Value &).isNull()) {
-      addToNextBatch([=] {
+      ctx->addToNextBatch([=] {
         glTexImage2D(target, level, internalformat, width, height, border, format, type, nullptr);
       });
       return nullptr;
@@ -576,19 +628,19 @@ NATIVE_METHOD(texImage2D, 6) {
 
     if (data.isArrayBuffer(runtime) || isTypedArray(runtime, data)) {
       std::vector<uint8_t> vec = rawTypedArray(runtime, std::move(data));
-      if (unpackFLipY) {
+      if (ctx->unpackFLipY) {
         flipPixels(vec.data(), width * bytesPerPixel(type, format), height);
       }
-      addToNextBatch([=, vec{std::move(vec)}] {
+      ctx->addToNextBatch([=, vec{std::move(vec)}] {
         glTexImage2D(
             target, level, internalformat, width, height, border, format, type, vec.data());
       });
     } else {
       auto image = loadImage(runtime, data, &width, &height, nullptr);
-      if (unpackFLipY) {
+      if (ctx->unpackFLipY) {
         flipPixels(image.get(), width * bytesPerPixel(type, format), height);
       }
-      addToNextBatch([=] {
+      ctx->addToNextBatch([=] {
         glTexImage2D(
             target, level, internalformat, width, height, border, format, type, image.get());
       });
@@ -599,10 +651,10 @@ NATIVE_METHOD(texImage2D, 6) {
     auto data = ARG(5, jsi::Object);
     GLsizei width = 0, height = 0, border = 0;
     auto image = loadImage(runtime, data, &width, &height, nullptr);
-    if (unpackFLipY) {
+    if (ctx->unpackFLipY) {
       flipPixels(image.get(), width * bytesPerPixel(type, format), height);
     }
-    addToNextBatch([=] {
+    ctx->addToNextBatch([=] {
       glTexImage2D(target, level, internalformat, width, height, border, format, type, image.get());
     });
   } else {
@@ -612,6 +664,7 @@ NATIVE_METHOD(texImage2D, 6) {
 }
 
 NATIVE_METHOD(texSubImage2D, 6) {
+  CTX();
   auto target = ARG(0, GLenum);
   auto level = ARG(1, GLint);
   auto xoffset = ARG(2, GLint);
@@ -622,7 +675,7 @@ NATIVE_METHOD(texSubImage2D, 6) {
     auto format = ARG(6, GLenum);
     auto type = ARG(7, GLenum);
     if (ARG(8, const jsi::Value &).isNull()) {
-      addToNextBatch([=] {
+      ctx->addToNextBatch([=] {
         auto empty = std::make_unique<uint8_t>(width * height * bytesPerPixel(type, format));
         std::memset(empty.get(), 0, width * height * bytesPerPixel(type, format));
         glTexImage2D(target, level, xoffset, yoffset, width, height, format, type, empty.get());
@@ -634,18 +687,18 @@ NATIVE_METHOD(texSubImage2D, 6) {
 
     if (data.isArrayBuffer(runtime) || isTypedArray(runtime, data)) {
       std::vector<uint8_t> vec = rawTypedArray(runtime, std::move(data));
-      if (unpackFLipY) {
+      if (ctx->unpackFLipY) {
         flipPixels(vec.data(), width * bytesPerPixel(type, format), height);
       }
-      addToNextBatch([=, vec{std::move(vec)}] {
+      ctx->addToNextBatch([=, vec{std::move(vec)}] {
         glTexSubImage2D(target, level, xoffset, yoffset, width, height, format, type, vec.data());
       });
     } else {
       auto image = loadImage(runtime, data, &width, &height, nullptr);
-      if (unpackFLipY) {
+      if (ctx->unpackFLipY) {
         flipPixels(image.get(), width * bytesPerPixel(type, format), height);
       }
-      addToNextBatch([=] {
+      ctx->addToNextBatch([=] {
         glTexSubImage2D(target, level, xoffset, yoffset, width, height, format, type, image.get());
       });
     }
@@ -655,10 +708,10 @@ NATIVE_METHOD(texSubImage2D, 6) {
     auto data = ARG(6, jsi::Object);
     GLsizei width = 0, height = 0;
     auto image = loadImage(runtime, data, &width, &height, nullptr);
-    if (unpackFLipY) {
+    if (ctx->unpackFLipY) {
       flipPixels(image.get(), width * bytesPerPixel(type, format), height);
     }
-    addToNextBatch([=] {
+    ctx->addToNextBatch([=] {
       glTexSubImage2D(target, level, xoffset, yoffset, width, height, format, type, image.get());
     });
   } else {
@@ -681,6 +734,7 @@ SIMPLE_NATIVE_METHOD(
     glTexStorage3D); // target, levels, internalformat, width, height, depth
 
 NATIVE_METHOD(texImage3D) {
+  CTX();
   auto target = ARG(0, GLenum);
   auto level = ARG(1, GLint);
   auto internalformat = ARG(2, GLint);
@@ -692,7 +746,7 @@ NATIVE_METHOD(texImage3D) {
   auto type = ARG(8, GLenum);
 
   if (ARG(9, const jsi::Value &).isNull()) {
-    addToNextBatch([=] {
+    ctx->addToNextBatch([=] {
       glTexImage3D(
           target, level, internalformat, width, height, depth, border, format, type, nullptr);
     });
@@ -709,19 +763,19 @@ NATIVE_METHOD(texImage3D) {
 
   if (data.isArrayBuffer(runtime) || isTypedArray(runtime, data)) {
     std::vector<uint8_t> vec = rawTypedArray(runtime, std::move(data));
-    if (unpackFLipY) {
+    if (ctx->unpackFLipY) {
       flip(vec.data());
     }
-    addToNextBatch([=, vec{std::move(vec)}] {
+    ctx->addToNextBatch([=, vec{std::move(vec)}] {
       glTexImage3D(
           target, level, internalformat, width, height, depth, border, format, type, vec.data());
     });
   } else {
     auto image = loadImage(runtime, data, &width, &height, nullptr);
-    if (unpackFLipY) {
+    if (ctx->unpackFLipY) {
       flip(image.get());
     }
-    addToNextBatch([=] {
+    ctx->addToNextBatch([=] {
       glTexImage3D(
           target, level, internalformat, width, height, depth, border, format, type, image.get());
     });
@@ -730,6 +784,7 @@ NATIVE_METHOD(texImage3D) {
 }
 
 NATIVE_METHOD(texSubImage3D) {
+  CTX();
   auto target = ARG(0, GLenum);
   auto level = ARG(1, GLint);
   auto xoffset = ARG(2, GLint);
@@ -742,7 +797,7 @@ NATIVE_METHOD(texSubImage3D) {
   auto type = ARG(9, GLenum);
 
   if (ARG(10, const jsi::Value &).isNull()) {
-    addToNextBatch([=] {
+    ctx->addToNextBatch([=] {
       auto empty = std::make_unique<uint8_t>(width * height * depth * bytesPerPixel(type, format));
       std::memset(empty.get(), 0, width * height * depth * bytesPerPixel(type, format));
       auto ptr = empty.get();
@@ -762,19 +817,19 @@ NATIVE_METHOD(texSubImage3D) {
 
   if (data.isArrayBuffer(runtime) || isTypedArray(runtime, data)) {
     std::vector<uint8_t> vec = rawTypedArray(runtime, std::move(data));
-    if (unpackFLipY) {
+    if (ctx->unpackFLipY) {
       flip(vec.data());
     }
-    addToNextBatch([=, vec{std::move(vec)}] {
+    ctx->addToNextBatch([=, vec{std::move(vec)}] {
       glTexSubImage3D(
           target, level, xoffset, yoffset, zoffset, width, height, depth, format, type, vec.data());
     });
   } else {
     auto image = loadImage(runtime, data, &width, &height, nullptr);
-    if (unpackFLipY) {
+    if (ctx->unpackFLipY) {
       flip(image.get());
     }
-    addToNextBatch([=] {
+    ctx->addToNextBatch([=] {
       glTexSubImage3D(
           target,
           level,
@@ -804,63 +859,74 @@ UNIMPL_NATIVE_METHOD(compressedTexSubImage3D)
 // --------------------
 
 NATIVE_METHOD(attachShader) {
+  CTX();
   auto program = ARG(0, UEXGLObjectId);
   auto shader = ARG(1, UEXGLObjectId);
-  addToNextBatch([=] { glAttachShader(lookupObject(program), lookupObject(shader)); });
+  ctx->addToNextBatch(
+      [=] { glAttachShader(ctx->lookupObject(program), ctx->lookupObject(shader)); });
   return nullptr;
 }
 
 NATIVE_METHOD(bindAttribLocation) {
+  CTX();
   auto program = ARG(0, UEXGLObjectId);
   auto index = ARG(1, GLuint);
   auto name = ARG(2, std::string);
-  addToNextBatch([=, name{std::move(name)}] {
-    glBindAttribLocation(lookupObject(program), index, name.c_str());
+  ctx->addToNextBatch([=, name{std::move(name)}] {
+    glBindAttribLocation(ctx->lookupObject(program), index, name.c_str());
   });
   return nullptr;
 }
 
 NATIVE_METHOD(compileShader) {
+  CTX();
   auto shader = ARG(0, UEXGLObjectId);
-  addToNextBatch([=] { glCompileShader(lookupObject(shader)); });
+  ctx->addToNextBatch([=] { glCompileShader(ctx->lookupObject(shader)); });
   return nullptr;
 }
 
 NATIVE_METHOD(createProgram) {
-  return exglCreateObject(runtime, glCreateProgram);
+  CTX();
+  return exglCreateObject(ctx, runtime, glCreateProgram);
 }
 
 NATIVE_METHOD(createShader) {
+  CTX();
   auto type = ARG(0, GLenum);
   if (type == GL_VERTEX_SHADER || type == GL_FRAGMENT_SHADER) {
-    return exglCreateObject(runtime, std::bind(glCreateShader, type));
+    return exglCreateObject(ctx, runtime, std::bind(glCreateShader, type));
   } else {
     throw std::runtime_error("unknown shader type passed to function");
   }
 }
 
 NATIVE_METHOD(deleteProgram) {
-  return exglDeleteObject(ARG(0, UEXGLContextId), glDeleteProgram);
+  CTX();
+  return exglDeleteObject(ctx, ARG(0, UEXGLContextId), glDeleteProgram);
 }
 
 NATIVE_METHOD(deleteShader) {
-  return exglDeleteObject(ARG(0, UEXGLContextId), glDeleteShader);
+  CTX();
+  return exglDeleteObject(ctx, ARG(0, UEXGLContextId), glDeleteShader);
 }
 
 NATIVE_METHOD(detachShader) {
+  CTX();
   auto program = ARG(0, UEXGLObjectId);
   auto shader = ARG(1, UEXGLObjectId);
-  addToNextBatch([=] { glDetachShader(lookupObject(program), lookupObject(shader)); });
+  ctx->addToNextBatch(
+      [=] { glDetachShader(ctx->lookupObject(program), ctx->lookupObject(shader)); });
   return nullptr;
 }
 
 NATIVE_METHOD(getAttachedShaders) {
+  CTX();
   auto fProgram = ARG(0, UEXGLObjectId);
 
   GLint count;
   std::vector<GLuint> glResults;
-  addBlockingToNextBatch([&] {
-    GLuint program = lookupObject(fProgram);
+  ctx->addBlockingToNextBatch([&] {
+    GLuint program = ctx->lookupObject(fProgram);
     glGetProgramiv(program, GL_ATTACHED_SHADERS, &count);
     glResults.resize(count);
     glGetAttachedShaders(program, count, nullptr, glResults.data());
@@ -869,7 +935,7 @@ NATIVE_METHOD(getAttachedShaders) {
   jsi::Array jsResults(runtime, count);
   for (auto i = 0; i < count; ++i) {
     UEXGLObjectId exglObjId = 0;
-    for (const auto &pair : objects) {
+    for (const auto &pair : ctx->objects) {
       if (pair.second == glResults[i]) {
         exglObjId = pair.first;
       }
@@ -885,10 +951,12 @@ NATIVE_METHOD(getAttachedShaders) {
 }
 
 NATIVE_METHOD(getProgramParameter) {
+  CTX();
   auto fProgram = ARG(0, UEXGLObjectId);
   auto pname = ARG(1, GLenum);
   GLint glResult;
-  addBlockingToNextBatch([&] { glGetProgramiv(lookupObject(fProgram), pname, &glResult); });
+  ctx->addBlockingToNextBatch(
+      [&] { glGetProgramiv(ctx->lookupObject(fProgram), pname, &glResult); });
   if (pname == GL_DELETE_STATUS || pname == GL_LINK_STATUS || pname == GL_VALIDATE_STATUS) {
     return glResult == GL_TRUE;
   } else {
@@ -897,10 +965,11 @@ NATIVE_METHOD(getProgramParameter) {
 }
 
 NATIVE_METHOD(getShaderParameter) {
+  CTX();
   auto fShader = ARG(0, UEXGLObjectId);
   auto pname = ARG(1, GLenum);
   GLint glResult;
-  addBlockingToNextBatch([&] { glGetShaderiv(lookupObject(fShader), pname, &glResult); });
+  ctx->addBlockingToNextBatch([&] { glGetShaderiv(ctx->lookupObject(fShader), pname, &glResult); });
   if (pname == GL_DELETE_STATUS || pname == GL_COMPILE_STATUS) {
     return glResult == GL_TRUE;
   } else {
@@ -909,11 +978,12 @@ NATIVE_METHOD(getShaderParameter) {
 }
 
 NATIVE_METHOD(getShaderPrecisionFormat) {
+  CTX();
   auto shaderType = ARG(0, GLenum);
   auto precisionType = ARG(1, GLenum);
 
   GLint range[2], precision;
-  addBlockingToNextBatch(
+  ctx->addBlockingToNextBatch(
       [&] { glGetShaderPrecisionFormat(shaderType, precisionType, range, &precision); });
 
   jsi::Object jsResult(runtime);
@@ -924,10 +994,11 @@ NATIVE_METHOD(getShaderPrecisionFormat) {
 }
 
 NATIVE_METHOD(getProgramInfoLog) {
+  CTX();
   auto fObj = ARG(0, UEXGLObjectId);
   std::string str;
-  addBlockingToNextBatch([&] {
-    GLuint obj = lookupObject(fObj);
+  ctx->addBlockingToNextBatch([&] {
+    GLuint obj = ctx->lookupObject(fObj);
     GLint length;
     glGetProgramiv(obj, GL_INFO_LOG_LENGTH, &length);
     str.resize(length > 0 ? length - 1 : 0);
@@ -937,10 +1008,11 @@ NATIVE_METHOD(getProgramInfoLog) {
 }
 
 NATIVE_METHOD(getShaderInfoLog) {
+  CTX();
   auto fObj = ARG(0, UEXGLObjectId);
   std::string str;
-  addBlockingToNextBatch([&] {
-    GLuint obj = lookupObject(fObj);
+  ctx->addBlockingToNextBatch([&] {
+    GLuint obj = ctx->lookupObject(fObj);
     GLint length;
     glGetShaderiv(obj, GL_INFO_LOG_LENGTH, &length);
     str.resize(length > 0 ? length - 1 : 0);
@@ -950,10 +1022,11 @@ NATIVE_METHOD(getShaderInfoLog) {
 }
 
 NATIVE_METHOD(getShaderSource) {
+  CTX();
   auto fObj = ARG(0, UEXGLObjectId);
   std::string str;
-  addBlockingToNextBatch([&] {
-    GLuint obj = lookupObject(fObj);
+  ctx->addBlockingToNextBatch([&] {
+    GLuint obj = ctx->lookupObject(fObj);
     GLint length;
     glGetShaderiv(obj, GL_SHADER_SOURCE_LENGTH, &length);
     str.resize(length > 0 ? length - 1 : 0);
@@ -963,49 +1036,56 @@ NATIVE_METHOD(getShaderSource) {
 }
 
 NATIVE_METHOD(isShader) {
-  return exglIsObject(ARG(0, UEXGLObjectId), glIsShader);
+  CTX();
+  return exglIsObject(ctx, ARG(0, UEXGLObjectId), glIsShader);
 }
 
 NATIVE_METHOD(isProgram) {
-  return exglIsObject(ARG(0, UEXGLObjectId), glIsProgram);
+  CTX();
+  return exglIsObject(ctx, ARG(0, UEXGLObjectId), glIsProgram);
 }
 
 NATIVE_METHOD(linkProgram) {
+  CTX();
   auto fProgram = ARG(0, UEXGLObjectId);
-  addToNextBatch([=] { glLinkProgram(lookupObject(fProgram)); });
+  ctx->addToNextBatch([=] { glLinkProgram(ctx->lookupObject(fProgram)); });
   return nullptr;
 }
 
 NATIVE_METHOD(shaderSource) {
+  CTX();
   auto fShader = ARG(0, UEXGLObjectId);
   auto str = ARG(1, std::string);
-  addToNextBatch([=, str{std::move(str)}] {
+  ctx->addToNextBatch([=, str{std::move(str)}] {
     const char *cstr = str.c_str();
-    glShaderSource(lookupObject(fShader), 1, &cstr, nullptr);
+    glShaderSource(ctx->lookupObject(fShader), 1, &cstr, nullptr);
   });
   return nullptr;
 }
 
 NATIVE_METHOD(useProgram) {
+  CTX();
   auto program = ARG(0, UEXGLObjectId);
-  addToNextBatch([=] { glUseProgram(lookupObject(program)); });
+  ctx->addToNextBatch([=] { glUseProgram(ctx->lookupObject(program)); });
   return nullptr;
 }
 
 NATIVE_METHOD(validateProgram) {
+  CTX();
   auto program = ARG(0, UEXGLObjectId);
-  addToNextBatch([=] { glValidateProgram(lookupObject(program)); });
+  ctx->addToNextBatch([=] { glValidateProgram(ctx->lookupObject(program)); });
   return nullptr;
 }
 
 // Programs and shaders (WebGL2)
 
 NATIVE_METHOD(getFragDataLocation) {
+  CTX();
   auto program = ARG(0, UEXGLObjectId);
   auto name = ARG(1, std::string);
   GLint location;
-  addBlockingToNextBatch(
-      [&] { location = glGetFragDataLocation(lookupObject(program), name.c_str()); });
+  ctx->addBlockingToNextBatch(
+      [&] { location = glGetFragDataLocation(ctx->lookupObject(program), name.c_str()); });
   return location == -1 ? jsi::Value::null() : jsi::Value(location);
 }
 
@@ -1017,7 +1097,8 @@ SIMPLE_NATIVE_METHOD(disableVertexAttribArray, glDisableVertexAttribArray); // i
 SIMPLE_NATIVE_METHOD(enableVertexAttribArray, glEnableVertexAttribArray); // index
 
 NATIVE_METHOD(getActiveAttrib) {
-  return exglGetActiveInfo(
+  CTX();
+  return exglGetActiveInfo(ctx,
       runtime,
       ARG(0, UEXGLObjectId),
       ARG(1, GLuint),
@@ -1026,7 +1107,8 @@ NATIVE_METHOD(getActiveAttrib) {
 }
 
 NATIVE_METHOD(getActiveUniform) {
-  return exglGetActiveInfo(
+  CTX();
+  return exglGetActiveInfo(ctx,
       runtime,
       ARG(0, UEXGLObjectId),
       ARG(1, GLuint),
@@ -1035,22 +1117,24 @@ NATIVE_METHOD(getActiveUniform) {
 }
 
 NATIVE_METHOD(getAttribLocation) {
+  CTX();
   auto program = ARG(0, UEXGLObjectId);
   auto name = ARG(1, std::string);
   GLint location;
-  addBlockingToNextBatch(
-      [&] { location = glGetAttribLocation(lookupObject(program), name.c_str()); });
+  ctx->addBlockingToNextBatch(
+      [&] { location = glGetAttribLocation(ctx->lookupObject(program), name.c_str()); });
   return jsi::Value(location);
 }
 
 UNIMPL_NATIVE_METHOD(getUniform)
 
 NATIVE_METHOD(getUniformLocation) {
+  CTX();
   auto program = ARG(0, UEXGLObjectId);
   auto name = ARG(1, std::string);
   GLint location;
-  addBlockingToNextBatch(
-      [&] { location = glGetUniformLocation(lookupObject(program), name.c_str()); });
+  ctx->addBlockingToNextBatch(
+      [&] { location = glGetUniformLocation(ctx->lookupObject(program), name.c_str()); });
   return location == -1 ? jsi::Value::null() : location;
 }
 
@@ -1068,66 +1152,81 @@ SIMPLE_NATIVE_METHOD(uniform3i, glUniform3i); // uniform, x, y, z
 SIMPLE_NATIVE_METHOD(uniform4i, glUniform4i); // uniform, x, y, z, w
 
 NATIVE_METHOD(uniform1fv) {
-  return exglUniformv(glUniform1fv, ARG(0, GLuint), 1, ARG(1, std::vector<float>));
+  CTX();
+  return exglUniformv(ctx, glUniform1fv, ARG(0, GLuint), 1, ARG(1, std::vector<float>));
 };
 
 NATIVE_METHOD(uniform2fv) {
-  return exglUniformv(glUniform2fv, ARG(0, GLuint), 2, ARG(1, std::vector<float>));
+  CTX();
+  return exglUniformv(ctx, glUniform2fv, ARG(0, GLuint), 2, ARG(1, std::vector<float>));
 };
 
 NATIVE_METHOD(uniform3fv) {
-  return exglUniformv(glUniform3fv, ARG(0, GLuint), 3, ARG(1, std::vector<float>));
+  CTX();
+  return exglUniformv(ctx, glUniform3fv, ARG(0, GLuint), 3, ARG(1, std::vector<float>));
 };
 
 NATIVE_METHOD(uniform4fv) {
-  return exglUniformv(glUniform4fv, ARG(0, GLuint), 4, ARG(1, std::vector<float>));
+  CTX();
+  return exglUniformv(ctx, glUniform4fv, ARG(0, GLuint), 4, ARG(1, std::vector<float>));
 };
 
 NATIVE_METHOD(uniform1iv) {
-  return exglUniformv(glUniform1iv, ARG(0, GLuint), 1, ARG(1, std::vector<int32_t>));
+  CTX();
+  return exglUniformv(ctx, glUniform1iv, ARG(0, GLuint), 1, ARG(1, std::vector<int32_t>));
 };
 
 NATIVE_METHOD(uniform2iv) {
-  return exglUniformv(glUniform2iv, ARG(0, GLuint), 2, ARG(1, std::vector<int32_t>));
+  CTX();
+  return exglUniformv(ctx, glUniform2iv, ARG(0, GLuint), 2, ARG(1, std::vector<int32_t>));
 };
 
 NATIVE_METHOD(uniform3iv) {
-  return exglUniformv(glUniform3iv, ARG(0, GLuint), 3, ARG(1, std::vector<int32_t>));
+  CTX();
+  return exglUniformv(ctx, glUniform3iv, ARG(0, GLuint), 3, ARG(1, std::vector<int32_t>));
 };
 
 NATIVE_METHOD(uniform4iv) {
-  return exglUniformv(glUniform4iv, ARG(0, GLuint), 4, ARG(1, std::vector<int32_t>));
+  CTX();
+  return exglUniformv(ctx, glUniform4iv, ARG(0, GLuint), 4, ARG(1, std::vector<int32_t>));
 };
 
 NATIVE_METHOD(uniformMatrix2fv) {
-  return exglUniformMatrixv(
+  CTX();
+  return exglUniformMatrixv(ctx,
       glUniformMatrix2fv, ARG(0, GLuint), ARG(1, GLboolean), 4, ARG(2, std::vector<float>));
 }
 
 NATIVE_METHOD(uniformMatrix3fv) {
-  return exglUniformMatrixv(
+  CTX();
+  return exglUniformMatrixv(ctx,
       glUniformMatrix3fv, ARG(0, GLuint), ARG(1, GLboolean), 9, ARG(2, std::vector<float>));
 }
 
 NATIVE_METHOD(uniformMatrix4fv) {
-  return exglUniformMatrixv(
+  CTX();
+  return exglUniformMatrixv(ctx,
       glUniformMatrix4fv, ARG(0, GLuint), ARG(1, GLboolean), 16, ARG(2, std::vector<float>));
 }
 
 NATIVE_METHOD(vertexAttrib1fv) {
-  return exglVertexAttribv(glVertexAttrib1fv, ARG(0, GLuint), ARG(1, std::vector<float>));
+  CTX();
+  return exglVertexAttribv(ctx, glVertexAttrib1fv, ARG(0, GLuint), ARG(1, std::vector<float>));
 }
 
 NATIVE_METHOD(vertexAttrib2fv) {
-  return exglVertexAttribv(glVertexAttrib2fv, ARG(0, GLuint), ARG(1, std::vector<float>));
+  CTX();
+  return exglVertexAttribv(ctx, glVertexAttrib2fv, ARG(0, GLuint), ARG(1, std::vector<float>));
 }
 
 NATIVE_METHOD(vertexAttrib3fv) {
-  return exglVertexAttribv(glVertexAttrib3fv, ARG(0, GLuint), ARG(1, std::vector<float>));
+  CTX();
+  return exglVertexAttribv(ctx, glVertexAttrib3fv, ARG(0, GLuint), ARG(1, std::vector<float>));
 }
 
 NATIVE_METHOD(vertexAttrib4fv) {
-  return exglVertexAttribv(glVertexAttrib4fv, ARG(0, GLuint), ARG(1, std::vector<float>));
+  CTX();
+  return exglVertexAttribv(ctx, glVertexAttrib4fv, ARG(0, GLuint), ARG(1, std::vector<float>));
 }
 
 SIMPLE_NATIVE_METHOD(vertexAttrib1f, glVertexAttrib1f); // index, x
@@ -1148,48 +1247,58 @@ SIMPLE_NATIVE_METHOD(uniform3ui, glUniform3ui); // location, x, y, z
 SIMPLE_NATIVE_METHOD(uniform4ui, glUniform4ui); // location, x, y, z, w
 
 NATIVE_METHOD(uniform1uiv) {
-  return exglUniformv(glUniform1uiv, ARG(0, GLuint), 1, ARG(1, std::vector<uint32_t>));
+  CTX();
+  return exglUniformv(ctx, glUniform1uiv, ARG(0, GLuint), 1, ARG(1, std::vector<uint32_t>));
 };
 
 NATIVE_METHOD(uniform2uiv) {
-  return exglUniformv(glUniform2uiv, ARG(0, GLuint), 2, ARG(1, std::vector<uint32_t>));
+  CTX();
+  return exglUniformv(ctx, glUniform2uiv, ARG(0, GLuint), 2, ARG(1, std::vector<uint32_t>));
 };
 
 NATIVE_METHOD(uniform3uiv) {
-  return exglUniformv(glUniform3uiv, ARG(0, GLuint), 3, ARG(1, std::vector<uint32_t>));
+  CTX();
+  return exglUniformv(ctx, glUniform3uiv, ARG(0, GLuint), 3, ARG(1, std::vector<uint32_t>));
 };
 
 NATIVE_METHOD(uniform4uiv) {
-  return exglUniformv(glUniform4uiv, ARG(0, GLuint), 4, ARG(1, std::vector<uint32_t>));
+  CTX();
+  return exglUniformv(ctx, glUniform4uiv, ARG(0, GLuint), 4, ARG(1, std::vector<uint32_t>));
 };
 
 NATIVE_METHOD(uniformMatrix3x2fv) {
-  return exglUniformMatrixv(
+  CTX();
+  return exglUniformMatrixv(ctx,
       glUniformMatrix3x2fv, ARG(0, GLuint), ARG(1, GLboolean), 6, ARG(2, std::vector<float>));
 }
 
 NATIVE_METHOD(uniformMatrix4x2fv) {
-  return exglUniformMatrixv(
+  CTX();
+  return exglUniformMatrixv(ctx,
       glUniformMatrix4x2fv, ARG(0, GLuint), ARG(1, GLboolean), 8, ARG(2, std::vector<float>));
 }
 
 NATIVE_METHOD(uniformMatrix2x3fv) {
-  return exglUniformMatrixv(
+  CTX();
+  return exglUniformMatrixv(ctx,
       glUniformMatrix2x3fv, ARG(0, GLuint), ARG(1, GLboolean), 6, ARG(2, std::vector<float>));
 }
 
 NATIVE_METHOD(uniformMatrix4x3fv) {
-  return exglUniformMatrixv(
+  CTX();
+  return exglUniformMatrixv(ctx,
       glUniformMatrix4x3fv, ARG(0, GLuint), ARG(1, GLboolean), 12, ARG(2, std::vector<float>));
 }
 
 NATIVE_METHOD(uniformMatrix2x4fv) {
-  return exglUniformMatrixv(
+  CTX();
+  return exglUniformMatrixv(ctx,
       glUniformMatrix2x4fv, ARG(0, GLuint), ARG(1, GLboolean), 8, ARG(2, std::vector<float>));
 }
 
 NATIVE_METHOD(uniformMatrix3x4fv) {
-  return exglUniformMatrixv(
+  CTX();
+  return exglUniformMatrixv(ctx,
       glUniformMatrix3x4fv, ARG(0, GLuint), ARG(1, GLboolean), 12, ARG(2, std::vector<float>));
 }
 
@@ -1197,11 +1306,13 @@ SIMPLE_NATIVE_METHOD(vertexAttribI4i, glVertexAttribI4i); // index, x, y, z, w
 SIMPLE_NATIVE_METHOD(vertexAttribI4ui, glVertexAttribI4ui); // index, x, y, z, w
 
 NATIVE_METHOD(vertexAttribI4iv) {
-  return exglVertexAttribv(glVertexAttribI4iv, ARG(0, GLuint), ARG(1, std::vector<int32_t>));
+  CTX();
+  return exglVertexAttribv(ctx, glVertexAttribI4iv, ARG(0, GLuint), ARG(1, std::vector<int32_t>));
 }
 
 NATIVE_METHOD(vertexAttribI4uiv) {
-  return exglVertexAttribv(glVertexAttribI4uiv, ARG(0, GLuint), ARG(1, std::vector<uint32_t>));
+  CTX();
+  return exglVertexAttribv(ctx, glVertexAttribI4uiv, ARG(0, GLuint), ARG(1, std::vector<uint32_t>));
 }
 
 SIMPLE_NATIVE_METHOD(
@@ -1239,35 +1350,39 @@ SIMPLE_NATIVE_METHOD(
     glDrawRangeElements); // mode, start, end, count, type, offset
 
 NATIVE_METHOD(drawBuffers) {
+  CTX();
   auto data = jsArrayToVector<GLenum>(runtime, ARG(0, jsi::Array));
-  addToNextBatch(
+  ctx->addToNextBatch(
       [data{std::move(data)}] { glDrawBuffers(static_cast<GLsizei>(data.size()), data.data()); });
   return nullptr;
 }
 
 NATIVE_METHOD(clearBufferfv) {
+  CTX();
   auto buffer = ARG(0, GLenum);
   auto drawbuffer = ARG(1, GLint);
   auto values = ARG(2, TypedArrayKind::Float32Array).toVector(runtime);
-  addToNextBatch(
+  ctx->addToNextBatch(
       [=, values{std::move(values)}] { glClearBufferfv(buffer, drawbuffer, values.data()); });
   return nullptr;
 }
 
 NATIVE_METHOD(clearBufferiv) {
+  CTX();
   auto buffer = ARG(0, GLenum);
   auto drawbuffer = ARG(1, GLint);
   auto values = ARG(2, TypedArrayKind::Int32Array).toVector(runtime);
-  addToNextBatch(
+  ctx->addToNextBatch(
       [=, values{std::move(values)}] { glClearBufferiv(buffer, drawbuffer, values.data()); });
   return nullptr;
 }
 
 NATIVE_METHOD(clearBufferuiv) {
+  CTX();
   auto buffer = ARG(0, GLenum);
   auto drawbuffer = ARG(1, GLint);
   auto values = ARG(2, TypedArrayKind::Uint32Array).toVector(runtime);
-  addToNextBatch(
+  ctx->addToNextBatch(
       [=, values{std::move(values)}] { glClearBufferuiv(buffer, drawbuffer, values.data()); });
   return nullptr;
 }
@@ -1278,39 +1393,46 @@ SIMPLE_NATIVE_METHOD(clearBufferfi, glClearBufferfi); // buffer, drawbuffer, dep
 // ----------------------
 
 NATIVE_METHOD(createQuery) {
-  return exglGenObject(runtime, glGenQueries);
+  CTX();
+  return exglGenObject(ctx, runtime, glGenQueries);
 }
 
 NATIVE_METHOD(deleteQuery) {
-  return exglDeleteObject(ARG(0, UEXGLContextId), glDeleteQueries);
+  CTX();
+  return exglDeleteObject(ctx, ARG(0, UEXGLContextId), glDeleteQueries);
 }
 
 NATIVE_METHOD(isQuery) {
-  return exglIsObject(ARG(0, UEXGLObjectId), glIsQuery);
+  CTX();
+  return exglIsObject(ctx, ARG(0, UEXGLObjectId), glIsQuery);
 }
 
 NATIVE_METHOD(beginQuery) {
+  CTX();
   auto target = ARG(0, GLenum);
   auto query = ARG(1, UEXGLObjectId);
-  addToNextBatch([=] { glBeginQuery(target, lookupObject(query)); });
+  ctx->addToNextBatch([=] { glBeginQuery(target, ctx->lookupObject(query)); });
   return nullptr;
 }
 
 SIMPLE_NATIVE_METHOD(endQuery, glEndQuery); // target
 
 NATIVE_METHOD(getQuery) {
+  CTX();
   auto target = ARG(0, GLenum);
   auto pname = ARG(1, GLenum);
   GLint params;
-  addBlockingToNextBatch([&] { glGetQueryiv(target, pname, &params); });
+  ctx->addBlockingToNextBatch([&] { glGetQueryiv(target, pname, &params); });
   return params == 0 ? jsi::Value::null() : static_cast<double>(params);
 }
 
 NATIVE_METHOD(getQueryParameter) {
+  CTX();
   auto query = ARG(0, UEXGLObjectId);
   auto pname = ARG(1, GLenum);
   GLuint params;
-  addBlockingToNextBatch([&] { glGetQueryObjectuiv(lookupObject(query), pname, &params); });
+  ctx->addBlockingToNextBatch(
+      [&] { glGetQueryObjectuiv(ctx->lookupObject(query), pname, &params); });
   return params == 0 ? jsi::Value::null() : static_cast<double>(params);
 }
 
@@ -1318,41 +1440,48 @@ NATIVE_METHOD(getQueryParameter) {
 // -----------------
 
 NATIVE_METHOD(createSampler) {
-  return exglGenObject(runtime, glGenSamplers);
+  CTX();
+  return exglGenObject(ctx, runtime, glGenSamplers);
 }
 
 NATIVE_METHOD(deleteSampler) {
-  return exglDeleteObject(ARG(0, UEXGLContextId), glDeleteSamplers);
+  CTX();
+  return exglDeleteObject(ctx, ARG(0, UEXGLContextId), glDeleteSamplers);
 }
 
 NATIVE_METHOD(bindSampler) {
+  CTX();
   auto unit = ARG(0, GLuint);
   auto sampler = ARG(1, UEXGLObjectId);
-  addToNextBatch([=] { glBindSampler(unit, lookupObject(sampler)); });
+  ctx->addToNextBatch([=] { glBindSampler(unit, ctx->lookupObject(sampler)); });
   return nullptr;
 }
 
 NATIVE_METHOD(isSampler) {
-  return exglIsObject(ARG(0, UEXGLObjectId), glIsSampler);
+  CTX();
+  return exglIsObject(ctx, ARG(0, UEXGLObjectId), glIsSampler);
 }
 
 NATIVE_METHOD(samplerParameteri) {
+  CTX();
   auto sampler = ARG(0, UEXGLObjectId);
   auto pname = ARG(1, GLenum);
   auto param = ARG(2, GLfloat);
-  addToNextBatch([=] { glSamplerParameteri(lookupObject(sampler), pname, param); });
+  ctx->addToNextBatch([=] { glSamplerParameteri(ctx->lookupObject(sampler), pname, param); });
   return nullptr;
 }
 
 NATIVE_METHOD(samplerParameterf) {
+  CTX();
   auto sampler = ARG(0, UEXGLObjectId);
   auto pname = ARG(1, GLenum);
   auto param = ARG(2, GLfloat);
-  addToNextBatch([=] { glSamplerParameterf(lookupObject(sampler), pname, param); });
+  ctx->addToNextBatch([=] { glSamplerParameterf(ctx->lookupObject(sampler), pname, param); });
   return nullptr;
 }
 
 NATIVE_METHOD(getSamplerParameter) {
+  CTX();
   auto sampler = ARG(0, UEXGLObjectId);
   auto pname = ARG(1, GLenum);
   bool isFloatParam = pname == GL_TEXTURE_MAX_LOD || pname == GL_TEXTURE_MIN_LOD;
@@ -1361,11 +1490,11 @@ NATIVE_METHOD(getSamplerParameter) {
     GLint i;
   } param;
 
-  addBlockingToNextBatch([&] {
+  ctx->addBlockingToNextBatch([&] {
     if (isFloatParam) {
-      glGetSamplerParameterfv(lookupObject(sampler), pname, &param.f);
+      glGetSamplerParameterfv(ctx->lookupObject(sampler), pname, &param.f);
     } else {
-      glGetSamplerParameteriv(lookupObject(sampler), pname, &param.i);
+      glGetSamplerParameteriv(ctx->lookupObject(sampler), pname, &param.i);
     }
   });
   return isFloatParam ? static_cast<double>(param.f) : static_cast<double>(param.i);
@@ -1390,21 +1519,26 @@ UNIMPL_NATIVE_METHOD(getSyncParameter)
 // ---------------------------
 
 NATIVE_METHOD(createTransformFeedback) {
-  return exglGenObject(runtime, glGenTransformFeedbacks);
+  CTX();
+  return exglGenObject(ctx, runtime, glGenTransformFeedbacks);
 }
 
 NATIVE_METHOD(deleteTransformFeedback) {
-  return exglDeleteObject(ARG(0, UEXGLContextId), glDeleteTransformFeedbacks);
+  CTX();
+  return exglDeleteObject(ctx, ARG(0, UEXGLContextId), glDeleteTransformFeedbacks);
 }
 
 NATIVE_METHOD(isTransformFeedback) {
-  return exglIsObject(ARG(0, UEXGLObjectId), glIsTransformFeedback);
+  CTX();
+  return exglIsObject(ctx, ARG(0, UEXGLObjectId), glIsTransformFeedback);
 }
 
 NATIVE_METHOD(bindTransformFeedback) {
+  CTX();
   auto target = ARG(0, GLenum);
   auto transformFeedback = ARG(1, UEXGLObjectId);
-  addToNextBatch([=] { glBindTransformFeedback(target, lookupObject(transformFeedback)); });
+  ctx->addToNextBatch(
+      [=] { glBindTransformFeedback(target, ctx->lookupObject(transformFeedback)); });
   return nullptr;
 }
 
@@ -1413,11 +1547,12 @@ SIMPLE_NATIVE_METHOD(beginTransformFeedback, glBeginTransformFeedback); // primi
 SIMPLE_NATIVE_METHOD(endTransformFeedback, glEndTransformFeedback);
 
 NATIVE_METHOD(transformFeedbackVaryings) {
+  CTX();
   auto program = ARG(0, UEXGLObjectId);
   std::vector<std::string> varyings = jsArrayToVector<std::string>(runtime, ARG(1, jsi::Array));
   auto bufferMode = ARG(2, GLenum);
 
-  addToNextBatch([=, varyings{std::move(varyings)}] {
+  ctx->addToNextBatch([=, varyings{std::move(varyings)}] {
     std::vector<const char *> varyingsRaw(varyings.size());
     std::transform(
         varyings.begin(), varyings.end(), varyingsRaw.begin(), [](const std::string &str) {
@@ -1425,7 +1560,7 @@ NATIVE_METHOD(transformFeedbackVaryings) {
         });
 
     glTransformFeedbackVaryings(
-        lookupObject(program),
+        ctx->lookupObject(program),
         static_cast<GLsizei>(varyingsRaw.size()),
         varyingsRaw.data(),
         bufferMode);
@@ -1434,7 +1569,8 @@ NATIVE_METHOD(transformFeedbackVaryings) {
 }
 
 NATIVE_METHOD(getTransformFeedbackVarying) {
-  return exglGetActiveInfo(
+  CTX();
+  return exglGetActiveInfo(ctx,
       runtime,
       ARG(0, UEXGLObjectId),
       ARG(1, GLuint),
@@ -1450,24 +1586,28 @@ SIMPLE_NATIVE_METHOD(resumeTransformFeedback, glResumeTransformFeedback);
 // -------------------------------
 
 NATIVE_METHOD(bindBufferBase) {
+  CTX();
   auto target = ARG(0, GLenum);
   auto index = ARG(1, GLuint);
   auto buffer = ARG(2, UEXGLObjectId);
-  addToNextBatch([=] { glBindBufferBase(target, index, lookupObject(buffer)); });
+  ctx->addToNextBatch([=] { glBindBufferBase(target, index, ctx->lookupObject(buffer)); });
   return nullptr;
 }
 
 NATIVE_METHOD(bindBufferRange) {
+  CTX();
   auto target = ARG(0, GLenum);
   auto index = ARG(1, GLuint);
   auto buffer = ARG(2, UEXGLObjectId);
   auto offset = ARG(3, GLint);
   auto size = ARG(4, GLsizei);
-  addToNextBatch([=] { glBindBufferRange(target, index, lookupObject(buffer), offset, size); });
+  ctx->addToNextBatch(
+      [=] { glBindBufferRange(target, index, ctx->lookupObject(buffer), offset, size); });
   return nullptr;
 }
 
 NATIVE_METHOD(getUniformIndices) {
+  CTX();
   auto program = ARG(0, UEXGLObjectId);
   std::vector<std::string> uniformNames = jsArrayToVector<std::string>(runtime, ARG(1, jsi::Array));
 
@@ -1479,9 +1619,9 @@ NATIVE_METHOD(getUniformIndices) {
       [](const std::string &str) { return str.c_str(); });
 
   std::vector<GLuint> indices(uniformNames.size());
-  addBlockingToNextBatch([&] {
+  ctx->addBlockingToNextBatch([&] {
     glGetUniformIndices(
-        lookupObject(program),
+        ctx->lookupObject(program),
         static_cast<GLsizei>(uniformNames.size()),
         uniformNamesRaw.data(),
         &indices[0]);
@@ -1490,14 +1630,15 @@ NATIVE_METHOD(getUniformIndices) {
 }
 
 NATIVE_METHOD(getActiveUniforms) {
+  CTX();
   auto program = ARG(0, UEXGLObjectId);
   auto uniformIndices = jsArrayToVector<GLuint>(runtime, ARG(1, jsi::Array));
   auto pname = ARG(2, GLenum);
   std::vector<GLint> params(uniformIndices.size());
 
-  addBlockingToNextBatch([&] {
+  ctx->addBlockingToNextBatch([&] {
     glGetActiveUniformsiv(
-        lookupObject(program),
+        ctx->lookupObject(program),
         static_cast<GLsizei>(uniformIndices.size()),
         uniformIndices.data(),
         pname,
@@ -1507,12 +1648,13 @@ NATIVE_METHOD(getActiveUniforms) {
 }
 
 NATIVE_METHOD(getUniformBlockIndex) {
+  CTX();
   auto program = ARG(0, UEXGLObjectId);
   auto uniformBlockName = ARG(1, std::string);
 
   GLuint blockIndex;
-  addBlockingToNextBatch([&] {
-    blockIndex = glGetUniformBlockIndex(lookupObject(program), uniformBlockName.c_str());
+  ctx->addBlockingToNextBatch([&] {
+    blockIndex = glGetUniformBlockIndex(ctx->lookupObject(program), uniformBlockName.c_str());
   });
   return static_cast<double>(blockIndex);
 }
@@ -1520,12 +1662,13 @@ NATIVE_METHOD(getUniformBlockIndex) {
 UNIMPL_NATIVE_METHOD(getActiveUniformBlockParameter)
 
 NATIVE_METHOD(getActiveUniformBlockName) {
+  CTX();
   auto fProgram = ARG(0, UEXGLObjectId);
   auto uniformBlockIndex = ARG(1, GLuint);
 
   std::string blockName;
-  addBlockingToNextBatch([&] {
-    GLuint program = lookupObject(fProgram);
+  ctx->addBlockingToNextBatch([&] {
+    GLuint program = ctx->lookupObject(fProgram);
     GLint bufSize;
     glGetActiveUniformBlockiv(program, uniformBlockIndex, GL_UNIFORM_BLOCK_NAME_LENGTH, &bufSize);
     blockName.resize(bufSize > 0 ? bufSize - 1 : 0);
@@ -1535,11 +1678,12 @@ NATIVE_METHOD(getActiveUniformBlockName) {
 }
 
 NATIVE_METHOD(uniformBlockBinding) {
+  CTX();
   auto program = ARG(0, UEXGLObjectId);
   auto uniformBlockIndex = ARG(1, GLuint);
   auto uniformBlockBinding = ARG(2, GLuint);
-  addToNextBatch([=] {
-    glUniformBlockBinding(lookupObject(program), uniformBlockIndex, uniformBlockBinding);
+  ctx->addToNextBatch([=] {
+    glUniformBlockBinding(ctx->lookupObject(program), uniformBlockIndex, uniformBlockBinding);
   });
   return nullptr;
 }
@@ -1548,20 +1692,24 @@ NATIVE_METHOD(uniformBlockBinding) {
 // ----------------------------
 
 NATIVE_METHOD(createVertexArray) {
-  return exglGenObject(runtime, glGenVertexArrays);
+  CTX();
+  return exglGenObject(ctx, runtime, glGenVertexArrays);
 }
 
 NATIVE_METHOD(deleteVertexArray) {
-  return exglDeleteObject(ARG(0, UEXGLContextId), glDeleteVertexArrays);
+  CTX();
+  return exglDeleteObject(ctx, ARG(0, UEXGLContextId), glDeleteVertexArrays);
 }
 
 NATIVE_METHOD(isVertexArray) {
-  return exglIsObject(ARG(0, UEXGLObjectId), glIsVertexArray);
+  CTX();
+  return exglIsObject(ctx, ARG(0, UEXGLObjectId), glIsVertexArray);
 }
 
 NATIVE_METHOD(bindVertexArray) {
+  CTX();
   auto vertexArray = ARG(0, UEXGLObjectId);
-  addToNextBatch([=] { glBindVertexArray(lookupObject(vertexArray)); });
+  ctx->addToNextBatch([=] { glBindVertexArray(ctx->lookupObject(vertexArray)); });
   return nullptr;
 }
 
@@ -1570,12 +1718,13 @@ NATIVE_METHOD(bindVertexArray) {
 
 // It may return some extensions that are not specified by WebGL specification nor drafts.
 NATIVE_METHOD(getSupportedExtensions) {
+  CTX();
   // Set with supported extensions is cached to make checks in `getExtension` faster.
-  maybeReadAndCacheSupportedExtensions();
+  ctx->maybeReadAndCacheSupportedExtensions();
 
-  jsi::Array extensions(runtime, supportedExtensions.size());
+  jsi::Array extensions(runtime, ctx->supportedExtensions.size());
   int i = 0;
-  for (auto const &extensionName : supportedExtensions) {
+  for (auto const &extensionName : ctx->supportedExtensions) {
     extensions.setValueAtIndex(runtime, i++, jsi::String::createFromUtf8(runtime, extensionName));
   }
   return extensions;
@@ -1585,12 +1734,13 @@ NATIVE_METHOD(getSupportedExtensions) {
 #define GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT 0x84FF
 
 NATIVE_METHOD(getExtension) {
+  CTX();
   auto name = ARG(0, std::string);
 
   // There is no `getExtension` equivalent in OpenGL ES so return `null`
   // if requested extension is not returned by `getSupportedExtensions`.
-  maybeReadAndCacheSupportedExtensions();
-  if (supportedExtensions.find(name) == supportedExtensions.end()) {
+  ctx->maybeReadAndCacheSupportedExtensions();
+  if (ctx->supportedExtensions.find(name) == ctx->supportedExtensions.end()) {
     return nullptr;
   }
 
@@ -1609,16 +1759,20 @@ NATIVE_METHOD(getExtension) {
 // -------------------
 
 NATIVE_METHOD(endFrameEXP) {
-  addToNextBatch([=] { setNeedsRedraw(true); });
-  endNextBatch();
-  flushOnGLThread();
+  CTX();
+  ctx->addToNextBatch([=] { ctx->needsRedraw = true; });
+  ctx->endNextBatch();
+  ctx->flushOnGLThread();
   return nullptr;
 }
 
 NATIVE_METHOD(flushEXP) {
+  CTX();
   // nothing, it's just a helper so that we can measure how much time some operations take
-  addBlockingToNextBatch([&] {});
+  ctx->addBlockingToNextBatch([&] {});
   return nullptr;
+}
+
 }
 } // namespace gl_cpp
 } // namespace expo

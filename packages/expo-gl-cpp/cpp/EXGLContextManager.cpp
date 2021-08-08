@@ -5,70 +5,55 @@ namespace gl_cpp {
 
 struct ContextState {
   EXGLContext *ctx;
-  std::mutex mutex;
+  std::shared_mutex mutex;
 };
 
-class ContextManager {
- public:
-  EXGLContextWithLock getContext(UEXGLContextId exglCtxId);
-  UEXGLContextId createContext(jsi::Runtime &runtime);
-  void destroyContext(UEXGLContextId exglCtxId);
-
- private:
+struct ContextManager {
   std::unordered_map<UEXGLContextId, ContextState> contextMap;
   std::mutex contextLookupMutex;
-  UEXGLContextId EXGLContextNextId = 1;
+  UEXGLContextId nextId = 1;
 };
 
-EXGLContextWithLock ContextManager::getContext(UEXGLContextId id) {
-  std::lock_guard lock(contextLookupMutex);
-  auto iter = contextMap.find(id);
+ContextManager manager;
+
+EXGLContextWithLock EXGLContextGet(UEXGLContextId id) {
+  std::lock_guard lock(manager.contextLookupMutex);
+  auto iter = manager.contextMap.find(id);
   // if ctx is null then destroy is in progress
-  if (iter == contextMap.end() || iter->second.ctx == nullptr) {
-    return {nullptr, std::unique_lock<std::mutex>()};
+  if (iter == manager.contextMap.end() || iter->second.ctx == nullptr) {
+    return {nullptr, std::shared_lock<std::shared_mutex>()};
   }
-  return {iter->second.ctx, std::unique_lock(iter->second.mutex)};
+  return {iter->second.ctx, std::shared_lock(iter->second.mutex)};
 }
 
-UEXGLContextId ContextManager::createContext(jsi::Runtime &runtime) {
+UEXGLContextId EXGLContextCreate(jsi::Runtime &runtime) {
   // Out of ids?
-  if (EXGLContextNextId >= std::numeric_limits<UEXGLContextId>::max()) {
+  if (manager.nextId >= std::numeric_limits<UEXGLContextId>::max()) {
     EXGLSysLog("Ran out of EXGLContext ids!");
     return 0;
   }
 
-  std::lock_guard<std::mutex> lock(contextLookupMutex);
-  UEXGLContextId ctxId = EXGLContextNextId++;
-  if (contextMap.find(ctxId) != contextMap.end()) {
+  std::lock_guard<std::mutex> lock(manager.contextLookupMutex);
+  UEXGLContextId ctxId = manager.nextId++;
+  if (manager.contextMap.find(ctxId) != manager.contextMap.end()) {
     EXGLSysLog("Tried to reuse an EXGLContext id. This shouldn't really happen...");
     return 0;
   }
-  contextMap[ctxId].ctx = new EXGLContext(runtime, ctxId);
+  manager.contextMap[ctxId].ctx = new EXGLContext(runtime, ctxId);
   return ctxId;
 }
 
-void ContextManager::destroyContext(UEXGLContextId id) {
-  std::lock_guard lock(contextLookupMutex);
+void EXGLContextDestroy(UEXGLContextId id) {
+  std::lock_guard lock(manager.contextLookupMutex);
 
-  auto iter = contextMap.find(id);
-  if (iter != contextMap.end()) {
+  auto iter = manager.contextMap.find(id);
+  if (iter != manager.contextMap.end()) {
     {
-      std::lock_guard lock(iter->second.mutex);
+      std::unique_lock lock(iter->second.mutex);
       delete iter->second.ctx;
     }
-    contextMap.erase(iter);
+    manager.contextMap.erase(iter);
   }
-}
-
-ContextManager manager;
-UEXGLContextId EXGLContextCreate(jsi::Runtime &runtime) {
-  return manager.createContext(runtime);
-}
-EXGLContextWithLock EXGLContextGet(UEXGLContextId id) {
-  return manager.getContext(id);
-}
-void EXGLContextDestroy(UEXGLContextId id) {
-  return manager.destroyContext(id);
 }
 
 } // namespace gl_cpp
