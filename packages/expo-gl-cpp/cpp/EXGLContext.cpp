@@ -1,97 +1,141 @@
 #include "EXGLContext.h"
-#include "EXGLContextManager.h"
 
 namespace expo {
 namespace gl_cpp {
 
-std::atomic_uint EXGLContext::nextObjectId{1};
+constexpr const char *OnJSRuntimeDestroyPropertyName = "__EXGLOnJsRuntimeDestroy";
 
-void EXGLContext::installMethods(
+EXGLContext::EXGLContext(jsi::Runtime &runtime, UEXGLContextId ctxId) : ctxId(ctxId) {
+  auto viewport = prepareOpenGLESContext();
+  createWebGLRenderer(runtime, this, viewport);
+  tryRegisterOnJSRuntimeDestroy(runtime);
+
+  jsi::Value workletRuntimeValue = runtime.global().getProperty(runtime, "_WORKLET_RUNTIME");
+  if (workletRuntimeValue.isNumber()) {
+    jsi::Runtime &workletRuntime =
+        *reinterpret_cast<jsi::Runtime *>(static_cast<uintptr_t>(workletRuntimeValue.getNumber()));
+    createWebGLRenderer(workletRuntime, this, viewport);
+    tryRegisterOnJSRuntimeDestroy(workletRuntime);
+  }
+}
+
+void EXGLContext::endNextBatch() noexcept {
+  std::lock_guard<std::mutex> lock(backlogMutex);
+  backlog.push_back(std::move(nextBatch));
+  nextBatch = std::vector<Op>();
+  nextBatch.reserve(16); // default batch size
+}
+
+// [JS thread] Add an Op to the 'next' batch -- the arguments are any form of
+// constructor arguments for Op
+void EXGLContext::addToNextBatch(Op &&op) noexcept {
+  nextBatch.push_back(std::move(op));
+}
+
+// [JS thread] Add a blocking operation to the 'next' batch -- waits for the
+// queued function to run before returning
+void EXGLContext::addBlockingToNextBatch(Op &&op) noexcept {
+  std::packaged_task<void(void)> task(std::move(op));
+  auto future = task.get_future();
+  addToNextBatch([&] { task(); });
+  endNextBatch();
+  flushOnGLThread();
+  future.wait();
+}
+
+// [JS thread] Enqueue a function and return an EXGL object that will get mapped
+// to the function's return value when it is called on the GL thread.
+jsi::Value EXGLContext::addFutureToNextBatch(
     jsi::Runtime &runtime,
-    jsi::Object &jsGl,
-    UEXGLContextId exglCtxId) {
-  using namespace std::placeholders;
-#define INSTALL_METHOD(name, requiredWebgl2)                                       \
-  setFunctionOnObject(                                                             \
-      runtime,                                                                     \
-      jsGl,                                                                        \
-      #name,                                                                       \
-      [this, exglCtxId](                                                           \
-          jsi::Runtime &runtime,                                                   \
-          const jsi::Value &jsThis,                                                \
-          const jsi::Value *jsArgv,                                                \
-          size_t argc) {                                                           \
-        auto [exglCtx, lock ] = EXGLContextGet(exglCtxId);                         \
-        if (!exglCtx) {                                                            \
-          return jsi::Value::null();                                               \
-        }                                                                          \
-        try {                                                                      \
-          if (requiredWebgl2 && !this->supportsWebGL2) {                           \
-            unsupportedWebGL2(#name, runtime, jsThis, jsArgv, argc);               \
-            return jsi::Value::null();                                             \
-          } else {                                                                 \
-            return this->glNativeMethod_##name(runtime, jsThis, jsArgv, argc);     \
-          }                                                                        \
-        } catch (const std::exception &e) {                                        \
-          throw std::runtime_error(std::string("[" #name "] error: ") + e.what()); \
-        }                                                                          \
-      });
-
-#define NATIVE_METHOD(name) INSTALL_METHOD(name, false)
-#define NATIVE_WEBGL2_METHOD(name) INSTALL_METHOD(name, true)
-#include "EXGLNativeMethods.def"
-#undef NATIVE_METHOD
-#undef NATIVE_WEBGL2_METHOD
-}
-
-void EXGLContext::installConstants(jsi::Runtime &runtime, jsi::Object &jsGl) {
-#define GL_CONSTANT(name) \
-  jsGl.setProperty(       \
-      runtime, jsi::PropNameID::forUtf8(runtime, #name), static_cast<double>(GL_##name));
-#include "EXGLConstants.def"
-#undef GL_CONSTANT
-};
-
-jsi::Value EXGLContext::exglIsObject(UEXGLObjectId id, std::function<GLboolean(GLuint)> func) {
-  GLboolean glResult;
-  addBlockingToNextBatch([&] { glResult = func(lookupObject(id)); });
-  return glResult == GL_TRUE;
-}
-
-jsi::Value EXGLContext::exglGenObject(
-    jsi::Runtime &runtime,
-    std::function<void(GLsizei, UEXGLObjectId *)> func) {
-  return addFutureToNextBatch(runtime, [=] {
-    GLuint buffer;
-    func(1, &buffer);
-    return buffer;
-  });
-  return nullptr;
-}
-
-jsi::Value EXGLContext::exglCreateObject(jsi::Runtime &runtime, std::function<GLuint()> func) {
-  return addFutureToNextBatch(runtime, [=] { return func(); });
-  return nullptr;
-}
-
-jsi::Value EXGLContext::exglDeleteObject(
-    UEXGLObjectId id,
-    std::function<void(UEXGLObjectId)> func) {
-  addToNextBatch([=] { func(lookupObject(id)); });
-  return nullptr;
-}
-
-jsi::Value EXGLContext::exglDeleteObject(
-    UEXGLObjectId id,
-    std::function<void(GLsizei, const UEXGLObjectId *)> func) {
+    std::function<unsigned int(void)> &&op) noexcept {
+  auto exglObjId = createObject();
   addToNextBatch([=] {
-    GLuint buffer = lookupObject(id);
-    func(1, &buffer);
+    assert(objects.find(exglObjId) == objects.end());
+    mapObject(exglObjId, op());
   });
-  return nullptr;
+  return static_cast<double>(exglObjId);
 }
-jsi::Value EXGLContext::exglUnimplemented(std::string name) {
-  throw std::runtime_error("EXGL: " + name + "() isn't implemented yet!");
+
+// [GL thread] Do all the remaining work we can do on the GL thread
+void EXGLContext::flush(void) {
+  // Keep a copy and clear backlog to minimize lock time
+  std::vector<Batch> copy;
+  {
+    std::lock_guard<std::mutex> lock(backlogMutex);
+    std::swap(backlog, copy);
+  }
+  for (const auto &batch : copy) {
+    for (const auto &op : batch) {
+      op();
+    }
+  }
+}
+
+UEXGLObjectId EXGLContext::createObject(void) noexcept {
+  return nextObjectId++;
+}
+
+void EXGLContext::destroyObject(UEXGLObjectId exglObjId) noexcept {
+  objects.erase(exglObjId);
+}
+
+void EXGLContext::mapObject(UEXGLObjectId exglObjId, GLuint glObj) noexcept {
+  objects[exglObjId] = glObj;
+}
+
+GLuint EXGLContext::lookupObject(UEXGLObjectId exglObjId) noexcept {
+  auto iter = objects.find(exglObjId);
+  return iter == objects.end() ? 0 : iter->second;
+}
+
+void EXGLContext::tryRegisterOnJSRuntimeDestroy(jsi::Runtime &runtime) {
+  auto global = runtime.global();
+
+  if (global.getProperty(runtime, OnJSRuntimeDestroyPropertyName).isObject()) {
+    return;
+  }
+  // Property `__EXGLOnDestroyHostObject` of the global object will be released when entire
+  // `jsi::Runtime` is being destroyed and that will trigger destructor of
+  // `InvalidateCacheOnDestroy` class which will invalidate JSI PropNameID cache.
+  global.setProperty(
+      runtime,
+      OnJSRuntimeDestroyPropertyName,
+      jsi::Object::createFromHostObject(
+          runtime, std::make_shared<InvalidateCacheOnDestroy>(runtime)));
+}
+
+initGlesContext EXGLContext::prepareOpenGLESContext() {
+  initGlesContext result;
+  // Clear everything to initial values
+  addBlockingToNextBatch([&] {
+    std::string version = reinterpret_cast<const char *>(glGetString(GL_VERSION));
+    double glesVersion = strtod(version.substr(10).c_str(), 0);
+    this->supportsWebGL2 = glesVersion >= 3.0;
+
+    glBindFramebuffer(GL_FRAMEBUFFER, defaultFramebuffer);
+    GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+
+    // This should not be called on headless contexts as they don't have default framebuffer.
+    // On headless context, status is undefined.
+    if (status != GL_FRAMEBUFFER_UNDEFINED) {
+      glClearColor(0, 0, 0, 0);
+      glClearDepthf(1);
+      glClearStencil(0);
+      glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+      int32_t viewport[4];
+      glGetIntegerv(GL_VIEWPORT, viewport);
+      result.viewportWidth = viewport[2];
+      result.viewportHeight = viewport[3];
+    } else {
+      // Set up an initial viewport for headless context.
+      // These values are the same as newly created WebGL context has,
+      // however they should be changed by the user anyway.
+      glViewport(0, 0, 300, 150);
+      result.viewportWidth = 300;
+      result.viewportHeight = 150;
+    }
+  });
+  return result;
 }
 
 void EXGLContext::maybeReadAndCacheSupportedExtensions() {
@@ -126,5 +170,6 @@ void EXGLContext::maybeReadAndCacheSupportedExtensions() {
 #endif
   }
 }
+
 } // namespace gl_cpp
 } // namespace expo

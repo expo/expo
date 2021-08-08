@@ -13,10 +13,9 @@
 #include <jsi/jsi.h>
 #include <type_traits>
 
-#include "EXJSIUtils.h"
+#include "EXJsiUtils.h"
 #include "TypedArrayApi.h"
 
-namespace jsi = facebook::jsi;
 namespace expo {
 namespace gl_cpp {
 

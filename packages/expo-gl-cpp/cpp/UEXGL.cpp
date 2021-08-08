@@ -30,9 +30,9 @@ bool UEXGLContextNeedsRedraw(UEXGLContextId exglCtxId) {
 }
 
 void UEXGLContextDrawEnded(UEXGLContextId exglCtxId) {
-  auto [ exglCtx, lock ] = EXGLContextGet(exglCtxId);
+  auto [exglCtx, lock] = EXGLContextGet(exglCtxId);
   if (exglCtx) {
-    exglCtx->setNeedsRedraw(false);
+    exglCtx->needsRedraw = false;
   }
 }
 
@@ -41,21 +41,21 @@ void UEXGLContextDestroy(UEXGLContextId exglCtxId) {
 }
 
 void UEXGLContextFlush(UEXGLContextId exglCtxId) {
-  auto [ exglCtx, lock ] = EXGLContextGet(exglCtxId);
+  auto [exglCtx, lock] = EXGLContextGet(exglCtxId);
   if (exglCtx) {
     exglCtx->flush();
   }
 }
 
 void UEXGLContextSetDefaultFramebuffer(UEXGLContextId exglCtxId, GLint framebuffer) {
-  auto [ exglCtx, lock ] = EXGLContextGet(exglCtxId);
+  auto [exglCtx, lock] = EXGLContextGet(exglCtxId);
   if (exglCtx) {
-    exglCtx->setDefaultFramebuffer(framebuffer);
+    exglCtx->defaultFramebuffer = framebuffer;
   }
 }
 
 UEXGLObjectId UEXGLContextCreateObject(UEXGLContextId exglCtxId) {
-  auto [ exglCtx, lock ] = EXGLContextGet(exglCtxId);
+  auto [exglCtx, lock] = EXGLContextGet(exglCtxId);
   if (exglCtx) {
     return exglCtx->createObject();
   }
@@ -70,14 +70,14 @@ void UEXGLContextDestroyObject(UEXGLContextId exglCtxId, UEXGLObjectId exglObjId
 }
 
 void UEXGLContextMapObject(UEXGLContextId exglCtxId, UEXGLObjectId exglObjId, GLuint glObj) {
-  auto [ exglCtx, lock ] = EXGLContextGet(exglCtxId);
+  auto [exglCtx, lock] = EXGLContextGet(exglCtxId);
   if (exglCtx) {
     exglCtx->mapObject(exglObjId, glObj);
   }
 }
 
 GLuint UEXGLContextGetObject(UEXGLContextId exglCtxId, UEXGLObjectId exglObjId) {
-  auto [ exglCtx, lock ] = EXGLContextGet(exglCtxId);
+  auto [exglCtx, lock] = EXGLContextGet(exglCtxId);
   if (exglCtx) {
     return exglCtx->lookupObject(exglObjId);
   }

@@ -23,9 +23,9 @@
 
 #include <jsi/jsi.h>
 
-#include "EXGLNativeMethodsUtils.h"
-#include "EXJSIUtils.h"
+#include "EXJsiUtils.h"
 #include "EXPlatformUtils.h"
+#include "EXWebGLRenderer.h"
 #include "TypedArrayApi.h"
 
 // Constants in WebGL that aren't in OpenGL ES
@@ -45,61 +45,31 @@
 namespace expo {
 namespace gl_cpp {
 
-constexpr const char *OnJSRuntimeDestroyPropertyName = "__EXGLOnJsRuntimeDestroy";
-constexpr const char *EXGLContextsMapPropertyName = "__EXGLContexts";
-
-// --- EXGLContext -------------------------------------------------------------
-
-// Class of the C++ object representing an EXGL rendering context.
-
 class EXGLContext {
+  using Op = std::function<void(void)>;
+  using Batch = std::vector<Op>;
+
+ public:
+  EXGLContext(jsi::Runtime &runtime, UEXGLContextId ctxId);
+
   // --- Queue handling --------------------------------------------------------
 
   // There are two threads: the input thread (henceforth "JS thread") feeds new GL
   // work, the output thread (henceforth "GL thread", typically UI thread on iOS,
   // GL thread on Android) reads GL work and performs it
 
-  // By not saving the JS{Global,}Context as a member variable we ensure that no
-  // JS work is done on the GL thread
-
- private:
-  // The smallest unit of work
-  using Op = std::function<void(void)>;
-
   // Ops are combined into batches:
   //   1. A batch is always executed entirely in one go on the GL thread
   //   2. The last add to a batch always precedes the first remove
   // #2 means that it's good to use an std::vector<...> for this
-  using Batch = std::vector<Op>;
-
-  Batch nextBatch;
-  std::vector<Batch> backlog;
-  std::mutex backlogMutex;
 
   // [JS thread] Send the current 'next' batch to GL and make a new 'next' batch
-  void endNextBatch() noexcept {
-    std::lock_guard<std::mutex> lock(backlogMutex);
-    backlog.push_back(std::move(nextBatch));
-    nextBatch = std::vector<Op>();
-    nextBatch.reserve(16); // default batch size
-  }
-
-  // [JS thread] Add an Op to the 'next' batch -- the arguments are any form of
-  // constructor arguments for Op
-  void addToNextBatch(Op &&op) noexcept {
-    nextBatch.push_back(std::move(op));
-  }
-
+  void endNextBatch() noexcept;
+  // [JS thread] Add an Op to the 'next' batch
+  void addToNextBatch(Op &&op) noexcept;
   // [JS thread] Add a blocking operation to the 'next' batch -- waits for the
   // queued function to run before returning
-  void addBlockingToNextBatch(Op &&op) noexcept {
-    std::packaged_task<void(void)> task(std::move(op));
-    auto future = task.get_future();
-    addToNextBatch([&] { task(); });
-    endNextBatch();
-    flushOnGLThread();
-    future.wait();
-  }
+  void addBlockingToNextBatch(Op &&op) noexcept;
 
   // [JS thread] Enqueue a function and return an EXGL object that will get mapped
   // to the function's return value when it is called on the GL thread.
@@ -113,35 +83,13 @@ class EXGLContext {
   //
   // To make it work lookupObject can be called only on GL thread
   //
-  inline jsi::Value addFutureToNextBatch(
+  jsi::Value addFutureToNextBatch(
       jsi::Runtime &runtime,
-      std::function<unsigned int(void)> &&op) noexcept {
-    auto exglObjId = createObject();
-    addToNextBatch([=] {
-      assert(objects.find(exglObjId) == objects.end());
-      mapObject(exglObjId, op());
-    });
-    return static_cast<double>(exglObjId);
-  }
-
- public:
-  // function that calls flush on GL thread - on Android it is passed by JNI
-  std::function<void(void)> flushOnGLThread = [&] {};
+      std::function<unsigned int(void)> &&op) noexcept;
 
   // [GL thread] Do all the remaining work we can do on the GL thread
-  void flush(void) {
-    // Keep a copy and clear backlog to minimize lock time
-    std::vector<Batch> copy;
-    {
-      std::lock_guard<std::mutex> lock(backlogMutex);
-      std::swap(backlog, copy);
-    }
-    for (const auto &batch : copy) {
-      for (const auto &op : batch) {
-        op();
-      }
-    }
-  }
+  // triggered by call to flushOnGLThread
+  void flush(void);
 
   // --- Object mapping --------------------------------------------------------
 
@@ -151,181 +99,39 @@ class EXGLContext {
   // set and read on the GL thread, this prevents us from having to maintain a
   // mutex on the mapping.
 
- private:
-  std::unordered_map<UEXGLObjectId, GLuint> objects;
-  static std::atomic_uint nextObjectId;
+  UEXGLObjectId createObject(void) noexcept;
+  void destroyObject(UEXGLObjectId exglObjId) noexcept;
+  void mapObject(UEXGLObjectId exglObjId, GLuint glObj) noexcept;
+  GLuint lookupObject(UEXGLObjectId exglObjId) noexcept;
 
- public:
-  inline UEXGLObjectId createObject(void) noexcept {
-    return nextObjectId++;
-  }
-
-  inline void destroyObject(UEXGLObjectId exglObjId) noexcept {
-    objects.erase(exglObjId);
-  }
-
-  inline void mapObject(UEXGLObjectId exglObjId, GLuint glObj) noexcept {
-    objects[exglObjId] = glObj;
-  }
-
-  inline GLuint lookupObject(UEXGLObjectId exglObjId) noexcept {
-    auto iter = objects.find(exglObjId);
-    return iter == objects.end() ? 0 : iter->second;
-  }
-
-  // --- Init/destroy and JS object binding ------------------------------------
- private:
-  std::set<const std::string> supportedExtensions;
-  bool supportsWebGL2 = false;
-
- public:
-  EXGLContext(jsi::Runtime &runtime, UEXGLContextId exglCtxId) {
-    auto viewport = prepareOpenGlesContext();
-    attachContextToJsRuntime(runtime, exglCtxId, viewport);
-    registerOnJSRuntimeDestroy(runtime);
-
-    jsi::Value workletRuntimeValue = runtime.global().getProperty(runtime, "_WORKLET_RUNTIME");
-    if (workletRuntimeValue.isNumber()) {
-      jsi::Runtime &workletRuntime = *reinterpret_cast<jsi::Runtime *>(
-          static_cast<uintptr_t>(workletRuntimeValue.getNumber()));
-      attachContextToJsRuntime(workletRuntime, exglCtxId, viewport);
-      registerOnJSRuntimeDestroy(workletRuntime);
-    }
-  }
-
-  void attachContextToJsRuntime(
-      jsi::Runtime &runtime,
-      UEXGLContextId exglCtxId,
-      std::pair<int32_t, int32_t> viewport) {
-    jsi::Object jsGl(runtime);
-    installMethods(runtime, jsGl, exglCtxId);
-    installConstants(runtime, jsGl);
-    jsGl.setProperty(runtime, "drawingBufferWidth", viewport.first);
-    jsGl.setProperty(runtime, "drawingBufferHeight", viewport.second);
-    jsGl.setProperty(runtime, "supportsWebGL2", this->supportsWebGL2);
-    jsGl.setProperty(runtime, "exglCtxId", static_cast<double>(exglCtxId));
-
-    // Save JavaScript object
-    jsi::Value jsContextMap = runtime.global().getProperty(runtime, EXGLContextsMapPropertyName);
-    auto global = runtime.global();
-    if (jsContextMap.isNull() || jsContextMap.isUndefined()) {
-      global.setProperty(runtime, EXGLContextsMapPropertyName, jsi::Object(runtime));
-    }
-    global.getProperty(runtime, EXGLContextsMapPropertyName)
-        .asObject(runtime)
-        .setProperty(runtime, jsi::PropNameID::forUtf8(runtime, std::to_string(exglCtxId)), jsGl);
-  }
-
-  void registerOnJSRuntimeDestroy(jsi::Runtime &runtime) {
-    auto global = runtime.global();
-
-    if (global.getProperty(runtime, OnJSRuntimeDestroyPropertyName).isObject()) {
-      return;
-    }
-    // Property `__EXGLOnDestroyHostObject` of the global object will be released when entire
-    // `jsi::Runtime` is being destroyed and that will trigger destructor of
-    // `InvalidateCacheOnDestroy` class which will invalidate JSI PropNameID cache.
-    global.setProperty(
-        runtime,
-        OnJSRuntimeDestroyPropertyName,
-        jsi::Object::createFromHostObject(
-            runtime, std::make_shared<InvalidateCacheOnDestroy>(runtime)));
-  }
-
-  std::pair<int, int> prepareOpenGlesContext() {
-    std::pair<int, int> result;
-    // Clear everything to initial values
-    addBlockingToNextBatch([&] {
-      std::string version = reinterpret_cast<const char *>(glGetString(GL_VERSION));
-      double glesVersion = strtod(version.substr(10).c_str(), 0);
-      this->supportsWebGL2 = glesVersion >= 3.0;
-
-      glBindFramebuffer(GL_FRAMEBUFFER, defaultFramebuffer);
-      GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
-
-      // This should not be called on headless contexts as they don't have default framebuffer.
-      // On headless context, status is undefined.
-      if (status != GL_FRAMEBUFFER_UNDEFINED) {
-        glClearColor(0, 0, 0, 0);
-        glClearDepthf(1);
-        glClearStencil(0);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-        int32_t viewport[4];
-        glGetIntegerv(GL_VIEWPORT, viewport);
-        result.first = viewport[2];
-        result.second = viewport[1];
-      } else {
-        // Set up an initial viewport for headless context.
-        // These values are the same as newly created WebGL context has,
-        // however they should be changed by the user anyway.
-        glViewport(0, 0, 300, 150);
-        result.first = 300;
-        result.second = 150;
-      }
-    });
-    return result;
-  }
-
-  static EXGLContext *ContextGet(UEXGLContextId exglCtxId);
-  static UEXGLContextId ContextCreate(jsi::Runtime &runtime);
-  static void ContextDestroy(UEXGLContextId exglCtxId);
-
-  // --- GL state --------------------------------------------------------------
- private:
-  GLint defaultFramebuffer = 0;
-  bool unpackFLipY = false;
-
- public:
-  bool needsRedraw = false;
-
-  void setDefaultFramebuffer(GLint framebuffer) {
-    defaultFramebuffer = framebuffer;
-  }
-
-  void setNeedsRedraw(bool needsRedraw) {
-    this->needsRedraw = needsRedraw;
-  }
-
- private:
-  // functions used to setup WebGLRenderer object (attaching methods and constants)
-
-  void installMethods(jsi::Runtime &runtime, jsi::Object &jsGl, UEXGLContextId exglCtxId);
-  void installConstants(jsi::Runtime &runtime, jsi::Object &jsGl);
-
-  //  helpers used in implementation of some of the glNativeMethod_#name
-
-  template <typename Func, typename... T>
-  inline jsi::Value exglCall(Func func, T &&... args);
-
-  template <typename Func>
-  inline jsi::Value exglGetActiveInfo(jsi::Runtime &, UEXGLObjectId, GLuint, GLenum, Func);
-
-  template <typename Func, typename T>
-  inline jsi::Value exglUniformv(Func, GLuint, size_t, std::vector<T> &&);
-  template <typename Func, typename T>
-  inline jsi::Value exglUniformMatrixv(Func, GLuint, GLboolean, size_t, std::vector<T> &&);
-  template <typename Func, typename T>
-  inline jsi::Value exglVertexAttribv(Func func, GLuint, std::vector<T> &&);
-
-  jsi::Value exglIsObject(UEXGLObjectId id, std::function<GLboolean(GLuint)>);
-  jsi::Value exglCreateObject(jsi::Runtime &, std::function<GLuint()>);
-  jsi::Value exglGenObject(jsi::Runtime &, std::function<void(GLsizei, UEXGLObjectId *)>);
-  jsi::Value exglDeleteObject(UEXGLObjectId id, std::function<void(UEXGLObjectId)>);
-  jsi::Value exglDeleteObject(UEXGLObjectId, std::function<void(GLsizei, const UEXGLObjectId *)>);
-
-  jsi::Value exglUnimplemented(std::string name);
-
+  void tryRegisterOnJSRuntimeDestroy(jsi::Runtime &runtime);
+  initGlesContext prepareOpenGLESContext();
   void maybeReadAndCacheSupportedExtensions();
 
-  // implementation of webgl methods (glNativeMethod_#name)
-  // called on JS Thread
-#define NATIVE_METHOD(name) \
-  jsi::Value glNativeMethod_##name(jsi::Runtime &, const jsi::Value &, const jsi::Value *, size_t);
-#define NATIVE_WEBGL2_METHOD(name) NATIVE_METHOD(name)
-#include "EXGLNativeMethods.def"
-#undef NATIVE_METHOD
-#undef NATIVE_WEBGL2_METHOD
+ private:
+  // Queue
+  Batch nextBatch;
+  std::vector<Batch> backlog;
+  std::mutex backlogMutex;
+
+ public:
+  UEXGLContextId ctxId;
+
+  // Object mapping
+  std::unordered_map<UEXGLObjectId, GLuint> objects;
+  std::atomic_uint nextObjectId = 1;
+
+  bool supportsWebGL2 = false;
+  std::set<const std::string> supportedExtensions;
+
+  // function that calls flush on GL thread - on Android it is passed by JNI
+  std::function<void(void)> flushOnGLThread = [&] {};
+
+  // OpenGLES state
+  bool needsRedraw = false;
+  GLint defaultFramebuffer = 0;
+  bool unpackFLipY = false;
 };
+
 } // namespace gl_cpp
 } // namespace expo
-#include "EXGLContext-inl.h"
