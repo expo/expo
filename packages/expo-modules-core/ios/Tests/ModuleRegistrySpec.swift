@@ -7,14 +7,12 @@ class ModuleRegistrySpec: QuickSpec {
   override func spec() {
     let appContext = AppContext()
 
-    describe("ModuleRegistry") {
-      it("registers unnamed module") {
-        testRegister(module: UnnamedModule(appContext: appContext), name: String(describing: UnnamedModule.self))
-      }
+    it("registers unnamed module") {
+      testRegister(module: UnnamedModule(appContext: appContext), name: String(describing: UnnamedModule.self))
+    }
 
-      it("registers named module") {
-        testRegister(module: NamedModule(appContext: appContext), name: NamedModule.namedModuleName)
-      }
+    it("registers named module") {
+      testRegister(module: NamedModule(appContext: appContext), name: NamedModule.namedModuleName)
     }
 
     func testRegister(module: Module, name: String) {
