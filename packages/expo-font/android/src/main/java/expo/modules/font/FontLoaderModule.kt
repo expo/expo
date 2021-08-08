@@ -8,6 +8,7 @@ import android.net.Uri
 
 import expo.modules.core.ExportedModule
 import expo.modules.core.ModuleRegistry
+import expo.modules.core.ModuleRegistryDelegate
 import expo.modules.core.interfaces.ExpoMethod
 import expo.modules.core.Promise
 
@@ -21,7 +22,13 @@ private const val ASSET_SCHEME = "asset://"
 private const val EXPORTED_NAME = "ExpoFontLoader"
 
 class FontLoaderModule(context: Context) : ExportedModule(context) {
-  private var mModuleRegistry: ModuleRegistry? = null
+  private val moduleRegistryDelegate: ModuleRegistryDelegate = ModuleRegistryDelegate()
+
+  private inline fun <reified T> moduleRegistry() = moduleRegistryDelegate.getFromModuleRegistry<T>()
+
+  override fun onCreate(moduleRegistry: ModuleRegistry) {
+    moduleRegistryDelegate.onCreate(moduleRegistry)
+  }
 
   override fun getName(): String {
     return EXPORTED_NAME
@@ -48,27 +55,23 @@ class FontLoaderModule(context: Context) : ExportedModule(context) {
         Typeface.createFromFile(File(Uri.parse(localUri).path))
       }
 
-      val fontManager = mModuleRegistry?.getModule(FontManagerInterface::class.java)
+      val fontManager: FontManagerInterface? by moduleRegistry()
       if (fontManager == null) {
         promise.reject("E_NO_FONT_MANAGER", "There is no FontManager in module registry. Are you sure all the dependencies of expo-font are installed and linked?")
         return
       }
 
-      fontManager.setTypeface(prefix + fontFamilyName, Typeface.NORMAL, typeface)
+      fontManager!!.setTypeface(prefix + fontFamilyName, Typeface.NORMAL, typeface)
       promise.resolve(null)
     } catch (e: Exception) {
       promise.reject("E_UNEXPECTED", "Font.loadAsync unexpected exception: " + e.message, e)
     }
   }
 
-  override fun onCreate(moduleRegistry: ModuleRegistry) {
-    mModuleRegistry = moduleRegistry
-  }
-
   // If there's no constants module, or app ownership isn't "expo", we're not in Expo Client.
   private val isScoped: Boolean
     get() {
-      val constantsModule = mModuleRegistry?.getModule(ConstantsInterface::class.java)
+      val constantsModule: ConstantsInterface by moduleRegistry()
       // If there's no constants module, or app ownership isn't "expo", we're not in Expo Client.
       return constantsModule != null && "expo" == constantsModule.appOwnership
     }
