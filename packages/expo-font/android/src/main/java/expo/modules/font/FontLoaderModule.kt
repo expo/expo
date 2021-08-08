@@ -42,7 +42,7 @@ class FontLoaderModule(context: Context) : ExportedModule(context) {
       val prefix = if (isScoped) {
         "ExpoFont-"
       } else {
-      	""
+        ""
       }
 
       // TODO(nikki): make sure path is in experience's scope
