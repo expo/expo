@@ -71,8 +71,8 @@ class FontLoaderModule(context: Context) : ExportedModule(context) {
   // If there's no constants module, or app ownership isn't "expo", we're not in Expo Client.
   private val isScoped: Boolean
     get() {
-      val constantsModule: ConstantsInterface by moduleRegistry()
+      val constantsModule: ConstantsInterface? by moduleRegistry()
       // If there's no constants module, or app ownership isn't "expo", we're not in Expo Client.
-      return constantsModule != null && "expo" == constantsModule.appOwnership
+      return constantsModule != null && "expo" == constantsModule!!.appOwnership
     }
 }
