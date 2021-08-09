@@ -237,7 +237,6 @@ export const renderParam = ({ comment, name, type, flags }: MethodParamData): JS
   <LI key={`param-${name}`}>
     <B>
       {parseParamName(name)}
-      {console.warn(type)}
       {flags?.isOptional && '?'} (<InlineCode>{resolveTypeName(type)}</InlineCode>)
     </B>
     <CommentTextBlock comment={comment} renderers={mdInlineRenderers} withDash />
