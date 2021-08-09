@@ -29,31 +29,31 @@ class ExpoBarCodeScanner(
     }
   }
 
-  private var mCamera: Camera? = null
-  private var mCameraType = 0
+  private var camera: Camera? = null
+  private var cameraType = 0
   var rotation = 0
     private set
 
   fun acquireCameraInstance(type: Int): Camera? {
-    if (mCamera == null && cameras.contains(type) && null != cameraTypeToIndex[type]) {
+    if (camera == null && cameras.contains(type) && null != cameraTypeToIndex[type]) {
       try {
         cameraTypeToIndex[type]?.let {
-          mCamera = Camera.open(it)
+          camera = Camera.open(it)
         }
-        mCameraType = type
+        cameraType = type
         adjustPreviewLayout(type)
       } catch (e: Exception) {
         Log.e("ExpoBarCodeScanner", "acquireCameraInstance failed", e)
       }
     }
-    return mCamera
+    return camera
   }
 
   fun releaseCameraInstance() {
-    mCamera?.run {
+    camera?.run {
       release()
     }
-    mCamera = null
+    camera = null
   }
 
   fun getPreviewWidth(type: Int): Int {
@@ -81,11 +81,11 @@ class ExpoBarCodeScanner(
     get() = mActualDeviceOrientation
     set(actualDeviceOrientation) {
       mActualDeviceOrientation = actualDeviceOrientation
-      adjustPreviewLayout(mCameraType)
+      adjustPreviewLayout(cameraType)
     }
 
   fun adjustPreviewLayout(type: Int) {
-    mCamera?.run {
+    camera?.run {
       val tmpCameraInfo = cameraInfo[type] ?: return
 
       // https://www.captechconsulting.com/blogs/android-camera-orientation-made-simple

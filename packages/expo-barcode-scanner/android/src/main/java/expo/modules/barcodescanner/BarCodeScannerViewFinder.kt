@@ -18,13 +18,12 @@ internal class BarCodeScannerViewFinder(
   context: Context,
   private var cameraType: Int,
   private var barCodeScannerView: BarCodeScannerView,
-  private val moduleRegistryDelegate: ModuleRegistryDelegate = ModuleRegistryDelegate()
+  private val moduleRegistryDelegate: ModuleRegistryDelegate
 ) : TextureView(context), SurfaceTextureListener, PreviewCallback {
   private var finderSurfaceTexture: SurfaceTexture? = null
 
   private inline fun <reified T> moduleRegistry() =
     moduleRegistryDelegate.getFromModuleRegistry<T>()
-
 
   @Volatile
   private var isStarting = false

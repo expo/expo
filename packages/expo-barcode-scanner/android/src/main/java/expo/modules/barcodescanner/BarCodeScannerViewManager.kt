@@ -20,6 +20,10 @@ class BarCodeScannerViewManager(
 
   override fun getName() = TAG
 
+  override fun onCreate(moduleRegistry: ModuleRegistry) {
+    moduleRegistryDelegate.onCreate(moduleRegistry)
+  }
+
   override fun createViewInstance(context: Context) =
     BarCodeScannerView(context, moduleRegistryDelegate)
 
@@ -36,7 +40,7 @@ class BarCodeScannerViewManager(
   @ExpoProp(name = "barCodeTypes")
   fun setBarCodeTypes(view: BarCodeScannerView, barCodeTypes: ArrayList<Double?>?) {
     if (barCodeTypes != null) {
-      val settings: BarCodeScannerSettings = BarCodeScannerSettings().apply {
+      val settings = BarCodeScannerSettings().apply {
         putTypes(barCodeTypes)
       }
       view.setBarCodeScannerSettings(settings)

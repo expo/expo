@@ -36,12 +36,12 @@ class BarCodeScannerView(
   private inline fun <reified T> moduleRegistry() =
     moduleRegistryDelegate.getFromModuleRegistry<T>()
 
-
   private lateinit var viewFinder: BarCodeScannerViewFinder
   private var actualDeviceOrientation = -1
   private var leftPadding = 0
   private var topPadding = 0
   private var type = 0
+
   override fun onDetachedFromWindow() {
     super.onDetachedFromWindow()
     orientationListener.disable()

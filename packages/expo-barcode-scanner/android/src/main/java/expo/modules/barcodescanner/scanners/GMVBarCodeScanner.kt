@@ -10,12 +10,12 @@ import expo.modules.interfaces.barcodescanner.BarCodeScannerResult
 import expo.modules.interfaces.barcodescanner.BarCodeScannerSettings
 
 class GMVBarCodeScanner(context: Context) : ExpoBarCodeScanner(context) {
-  private var mBarcodeDetector =
+  private var barcodeDetector =
     BarcodeDetector.Builder(mContext)
       .setBarcodeFormats(0)
       .build()
   override val isAvailable: Boolean
-    get() = mBarcodeDetector.isOperational
+    get() = barcodeDetector.isOperational
 
   override fun scan(data: ByteArray, width: Int, height: Int, rotation: Int): BarCodeScannerResult? {
     return try {
@@ -38,7 +38,7 @@ class GMVBarCodeScanner(context: Context) : ExpoBarCodeScanner(context) {
 
   private fun scan(frame: Frame): List<BarCodeScannerResult> {
     return try {
-      val result = mBarcodeDetector.detect(frame.frame)
+      val result = barcodeDetector.detect(frame.frame)
       val results = mutableListOf<BarCodeScannerResult>()
       val width = frame.dimensions.width
       val height = frame.dimensions.height
@@ -66,13 +66,12 @@ class GMVBarCodeScanner(context: Context) : ExpoBarCodeScanner(context) {
     if (areNewAndOldBarCodeTypesEqual(newBarCodeTypes)) {
       return
     }
-    var barcodeFormats = 0
-    newBarCodeTypes?.forEach {
-      barcodeFormats = barcodeFormats or it
-    }
+    val barcodeFormats = newBarCodeTypes?.reduce { acc, it ->
+      acc or it
+    } ?: 0
     barCodeTypes = newBarCodeTypes
-    mBarcodeDetector.release()
-    mBarcodeDetector = BarcodeDetector.Builder(mContext)
+    barcodeDetector.release()
+    barcodeDetector = BarcodeDetector.Builder(mContext)
       .setBarcodeFormats(barcodeFormats)
       .build()
   }
