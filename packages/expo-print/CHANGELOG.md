@@ -7,7 +7,7 @@
 ### 🎉 New features
 
 - Add `markupFormatterIOS` option in `printToFileAsync` on iOS (default option can't handle html page breaks). ([#13799](https://github.com/expo/expo/pull/13799) by [@mstach60161](https://github.com/mstach60161))
-- Rename option `markupFormatterIOS`[string] in `printAsync` and `printToFileAsync` to `useMarkupFormatter`[boolean]. ([#13897](https://github.com/expo/expo/pull/13897) by [@mstach60161](https://github.com/mstach60161))
+- Deprecate `markupFormatterIOS` (string) in favor of `useMarkupFormatter` (boolean). ([#13897](https://github.com/expo/expo/pull/13897) by [@mstach60161](https://github.com/mstach60161))
 
 ### 🐛 Bug fixes
 

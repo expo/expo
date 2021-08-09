@@ -218,7 +218,7 @@ EX_EXPORT_METHOD_AS(printToFileAsync,
     return;
   }
 
-  if (options[@"useMarkupFormatter"] && [options[@"useMarkupFormatter"] boolValue] == YES) {
+  if ([options[@"useMarkupFormatter"] boolValue]) {
     [self pdfWithHtmlMarkupFormatter:htmlString pageSize:paperSize completionHandler:completionHandler];
   } else {
     renderTask = [EXWKPDFRenderer new];
@@ -303,7 +303,7 @@ EX_EXPORT_METHOD_AS(printToFileAsync,
     return;
   }
 
-  if (options[@"html"] && (!options[@"useMarkupFormatter"] || [options[@"useMarkupFormatter"] boolValue] == NO)) {
+  if (options[@"html"] && ![options[@"useMarkupFormatter"] boolValue]) {
     __block EXWKPDFRenderer *renderTask = [EXWKPDFRenderer new];
 
     NSString *htmlString = options[@"html"] ?: @"";
