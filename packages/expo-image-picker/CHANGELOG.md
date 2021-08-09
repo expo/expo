@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix promise resolving bug after putting app to background.
+
 ### 💡 Others
 
 ## 10.2.0 — 2021-06-16
