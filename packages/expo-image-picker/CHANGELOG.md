@@ -10,7 +10,7 @@
 
 ### 🐛 Bug fixes
 
-- Fix promise resolving bug after putting app to background.
+- Fix promise resolving bug after putting app to background. ([#13975](https://github.com/expo/expo/pull/13975) by [@mstach60161](https://github.com/mstach60161))
 
 ### 💡 Others
 
