@@ -380,6 +380,7 @@ open class DevMenuManager: NSObject, DevMenuManagerProtocol {
         return false
       }
       session = DevMenuSession(bridge: bridge, appInfo: delegate?.appInfo?(forDevMenuManager: self), screen: screen)
+      setCurrentScreen(screen)
       DispatchQueue.main.async { self.window?.makeKeyAndVisible() }
     } else {
       session = nil

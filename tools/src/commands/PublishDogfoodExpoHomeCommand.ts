@@ -7,7 +7,7 @@ import process from 'process';
 import { deepCloneObject } from '../Utils';
 import { Directories, XDL } from '../expotools';
 import AppConfig from '../typings/AppConfig';
-import { deleteKernelFields, maybeUpdateHomeSdkVersionAsync } from './PublishDevExpoHomeCommand';
+import { maybeUpdateHomeSdkVersionAsync } from './PublishDevExpoHomeCommand';
 
 const EXPO_HOME_PATH = Directories.getExpoHomeJSDir();
 const { EXPO_DOGFOOD_HOME_ACCESS_TOKEN } = process.env;
@@ -30,7 +30,6 @@ async function action(): Promise<void> {
   console.log(`Modifying home app.json...`);
   await maybeUpdateHomeSdkVersionAsync(appJson);
   appJson.expo.owner = 'expo-dogfooding';
-  deleteKernelFields(appJson);
 
   try {
     await appJsonFile.writeAsync(appJson);

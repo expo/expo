@@ -176,7 +176,7 @@ class Kernel : KernelInterface() {
         // if the kernel packager is not running.
         exponentManifest.getKernelManifest()
       } catch (e: Throwable) {
-        Exponent.getInstance()
+        Exponent.instance
           .runOnUiThread { // Hack to make this show up for a while. Can't use an Alert because LauncherActivity has a transparent theme. This should only be seen by internal developers.
             var i = 0
             while (i < 3) {
@@ -203,7 +203,7 @@ class Kernel : KernelInterface() {
       // Now preload bundle for next run
       Handler().postDelayed(
         {
-          Exponent.getInstance().loadJSBundle(
+          Exponent.instance.loadJSBundle(
             null,
             bundleUrlToLoad,
             KernelConstants.KERNEL_BUNDLE_ID,
@@ -235,7 +235,7 @@ class Kernel : KernelInterface() {
           shouldNotUseKernelCache = true
         }
       }
-      Exponent.getInstance().loadJSBundle(
+      Exponent.instance.loadJSBundle(
         null,
         bundleUrlToLoad,
         KernelConstants.KERNEL_BUNDLE_ID,
@@ -255,7 +255,7 @@ class Kernel : KernelInterface() {
             kernelRevisionId
           )
         }
-        Exponent.getInstance().runOnUiThread {
+        Exponent.instance.runOnUiThread {
           val initialURL = kernelInitialURL
           val builder = ReactInstanceManager.builder()
             .setApplication(applicationContext)
@@ -284,8 +284,8 @@ class Kernel : KernelInterface() {
             .setInitialLifecycleState(LifecycleState.RESUMED)
           if (!KernelConfig.FORCE_NO_KERNEL_DEBUG_MODE && exponentManifest.getKernelManifest().isDevelopmentMode()) {
             Exponent.enableDeveloperSupport(
-              "UNVERSIONED", kernelDebuggerHost,
-              kernelMainModuleName, RNObject.wrap(builder)
+              kernelDebuggerHost, kernelMainModuleName,
+              RNObject.wrap(builder)
             )
           }
           reactInstanceManager = builder.build()
@@ -680,12 +680,12 @@ class Kernel : KernelInterface() {
         manifestUrl,
         object : AppLoaderCallback {
           override fun onOptimisticManifest(optimisticManifest: RawManifest) {
-            Exponent.getInstance()
+            Exponent.instance
               .runOnUiThread { sendOptimisticManifestToExperienceActivity(optimisticManifest) }
           }
 
           override fun onManifestCompleted(manifest: RawManifest) {
-            Exponent.getInstance().runOnUiThread {
+            Exponent.instance.runOnUiThread {
               try {
                 openManifestUrlStep2(manifestUrl, manifest, finalExistingTask)
               } catch (e: JSONException) {
@@ -695,7 +695,7 @@ class Kernel : KernelInterface() {
           }
 
           override fun onBundleCompleted(localBundlePath: String?) {
-            Exponent.getInstance().runOnUiThread { sendBundleToExperienceActivity(localBundlePath) }
+            Exponent.instance.runOnUiThread { sendBundleToExperienceActivity(localBundlePath) }
           }
 
           override fun emitEvent(params: JSONObject) {
@@ -713,7 +713,7 @@ class Kernel : KernelInterface() {
           }
 
           override fun onError(e: Exception) {
-            Exponent.getInstance().runOnUiThread { handleError(e) }
+            Exponent.instance.runOnUiThread { handleError(e) }
           }
         },
         forceCache
@@ -731,9 +731,8 @@ class Kernel : KernelInterface() {
     val task = getExperienceActivityTask(manifestUrl)
     task.bundleUrl = bundleUrl
     ExponentManifest.normalizeRawManifestInPlace(manifest, manifestUrl)
-    val opts = JSONObject()
     if (existingTask == null) {
-      sendManifestToExperienceActivity(manifestUrl, manifest, bundleUrl, opts)
+      sendManifestToExperienceActivity(manifestUrl, manifest, bundleUrl)
     }
     val params = Arguments.createMap().apply {
       putString("manifestUrl", manifestUrl)
@@ -779,7 +778,7 @@ class Kernel : KernelInterface() {
     AsyncCondition.notify(KernelConstants.OPEN_EXPERIENCE_ACTIVITY_KEY)
   }
 
-  fun sendOptimisticManifestToExperienceActivity(optimisticManifest: RawManifest?) {
+  fun sendOptimisticManifestToExperienceActivity(optimisticManifest: RawManifest) {
     AsyncCondition.wait(
       KernelConstants.OPEN_OPTIMISTIC_EXPERIENCE_ACTIVITY_KEY,
       object : AsyncConditionListener {
@@ -795,10 +794,9 @@ class Kernel : KernelInterface() {
   }
 
   private fun sendManifestToExperienceActivity(
-    manifestUrl: String?,
-    manifest: RawManifest?,
-    bundleUrl: String?,
-    kernelOptions: JSONObject?
+    manifestUrl: String,
+    manifest: RawManifest,
+    bundleUrl: String,
   ) {
     AsyncCondition.wait(
       KernelConstants.OPEN_EXPERIENCE_ACTIVITY_KEY,
@@ -808,7 +806,7 @@ class Kernel : KernelInterface() {
         }
 
         override fun execute() {
-          optimisticActivity!!.setManifest(manifestUrl, manifest, bundleUrl, kernelOptions)
+          optimisticActivity!!.setManifest(manifestUrl, manifest, bundleUrl)
           AsyncCondition.notify(KernelConstants.LOAD_BUNDLE_FOR_EXPERIENCE_ACTIVITY_KEY)
         }
       }
@@ -917,7 +915,7 @@ class Kernel : KernelInterface() {
           // No activity, just force a reload
           break
         }
-        Exponent.getInstance().runOnUiThread { weakActivity.startLoading() }
+        Exponent.instance.runOnUiThread { weakActivity.startLoading() }
         break
       }
     }

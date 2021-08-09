@@ -23,6 +23,8 @@ public class UpdatesDevLauncherController implements UpdatesInterface {
 
   private static UpdatesDevLauncherController sInstance;
 
+  private UpdatesConfiguration mTempConfiguration;
+
   public static UpdatesDevLauncherController getInstance() {
     if (sInstance == null) {
       throw new IllegalStateException("UpdatesDevLauncherController.getInstance() was called before the module was initialized");
@@ -70,7 +72,11 @@ public class UpdatesDevLauncherController implements UpdatesInterface {
       return;
     }
 
+    // since controller is a singleton, save its config so we can reset to it if our request fails
+    mTempConfiguration = controller.getUpdatesConfiguration();
+
     setDevelopmentSelectionPolicy();
+    controller.setUpdatesConfiguration(updatesConfiguration);
 
     DatabaseHolder databaseHolder = controller.getDatabaseHolder();
     RemoteLoader loader = new RemoteLoader(context, updatesConfiguration, databaseHolder.getDatabase(), controller.getFileDownloader(), controller.getUpdatesDirectory());
@@ -112,13 +118,14 @@ public class UpdatesDevLauncherController implements UpdatesInterface {
       public void onFailure(Exception e) {
         databaseHolder.releaseDatabase();
         callback.onFailure(e);
+        // reset controller's configuration to what it was before this request
+        controller.setUpdatesConfiguration(mTempConfiguration);
       }
 
       @Override
       public void onSuccess() {
         databaseHolder.releaseDatabase();
         controller.setLauncher(launcher);
-        controller.setUpdatesConfiguration(configuration);
         callback.onSuccess(new Update() {
           @Override
           public JSONObject getManifest() {

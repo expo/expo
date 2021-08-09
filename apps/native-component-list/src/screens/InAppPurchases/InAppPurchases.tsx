@@ -69,7 +69,8 @@ export default class InAppPurchases extends React.Component<any, any> {
         for (const purchase of results!) {
           console.log(`Successfully purchased ${purchase.productId}`);
           if (!purchase.acknowledged) {
-            finishTransactionAsync(purchase, true);
+            // `gas` is the only consumable product, the rest are subscriptions.
+            finishTransactionAsync(purchase, purchase.productId === 'gas');
           }
         }
       } else if (responseCode === IAPResponseCode.USER_CANCELED) {
@@ -125,6 +126,18 @@ export default class InAppPurchases extends React.Component<any, any> {
         {Platform.OS === 'ios' ? <Text>Original Order ID: {record.originalOrderId}</Text> : null}
         {Platform.OS === 'ios' ? (
           <Text>Original Purchase Time: {record.originalPurchaseTime}</Text>
+        ) : null}
+        {record.productId === 'gold_monthly' ? (
+          <Button
+            title="Upgrade to yearly"
+            onPress={() => purchaseItemAsync('gold_yearly', record.purchaseToken)}
+          />
+        ) : null}
+        {record.productId === 'gold_yearly' ? (
+          <Button
+            title="Downgrade to monthly"
+            onPress={() => purchaseItemAsync('gold_monthly', record.purchaseToken)}
+          />
         ) : null}
       </View>
     );
