@@ -8,7 +8,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 require("react-native");
 require("jest-enzyme");
 const enzyme_1 = __importDefault(require("enzyme"));
-const enzyme_adapter_react_16_1 = __importDefault(require("enzyme-adapter-react-16"));
+const enzyme_adapter_react_17_1 = __importDefault(require("@wojtekmaj/enzyme-adapter-react-17"));
 const serializer_1 = __importDefault(require("./serializer"));
 /**
  * Set up DOM in node.js environment for Enzyme to mount to
@@ -28,7 +28,7 @@ Object.defineProperties(global, Object.assign(Object.assign({}, Object.getOwnPro
  * Set up a mock DOM in Node for Enzyme to which to mount
  * and inspect the DOM in tests.
  */
-enzyme_1.default.configure({ adapter: new enzyme_adapter_react_16_1.default() });
+enzyme_1.default.configure({ adapter: new enzyme_adapter_react_17_1.default() });
 // @ts-ignore: test types are not available in src/
 expect.addSnapshotSerializer(serializer_1.default);
 // Mute DOM formatting errors
