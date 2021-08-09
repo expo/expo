@@ -42,6 +42,15 @@ If the `bundler` is not defined, it will default to checking if a `babel-loader`
 
 ## Options
 
+### [`jsxRuntime`](https://babeljs.io/docs/en/babel-plugin-transform-react-jsx#runtime)
+
+`classic | automatic`, defaults to `classic`
+
+- `automatic` automatically convert JSX to JS without the need to `import React from 'react'` in every file. Be sure to follow the rest of the [setup guide](https://reactjs.org/blog/2020/09/22/introducing-the-new-jsx-transform.html#how-to-upgrade-to-the-new-jsx-transform) after enabling this, otherwise ESLint and other tools will throw warnings.
+- `classic` does not automatically import anything, React must imported into every file that uses JSX syntax.
+
+This property is passed down to [`@babel/plugin-transform-react-jsx`](https://babeljs.io/docs/en/babel-plugin-transform-react-jsx). This flag does nothing when `native.useTransformReactJSXExperimental` is set to `true` because `@babel/plugin-transform-react-jsx` is omitted.
+
 ### [`lazyImports`](https://babeljs.io/docs/en/babel-plugin-transform-modules-commonjs#lazy)
 
 Changes Babel's compiled `import` statements to be lazily evaluated when their imported bindings are used for the first time.

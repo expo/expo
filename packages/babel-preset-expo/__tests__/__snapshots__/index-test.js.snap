@@ -259,6 +259,14 @@ require(\\"react-native\\");
 require(\\"@expo/vector-icons\\");"
 `;
 
+exports[`metro supports automatic JSX runtime 1`] = `
+"Object.defineProperty(exports,\\"__esModule\\",{value:true});exports.default=App;var _jsxRuntime=require(\\"react/jsx-runtime\\");
+var _reactNative=require(\\"react-native\\");
+function App(){
+return(0,_jsxRuntime.jsx)(_reactNative.View,{children:(0,_jsxRuntime.jsx)(_reactNative.Text,{children:\\"Hello World\\"})});
+}"
+`;
+
 exports[`metro uses the platform's react-native import 1`] = `
 "
 var _reactNative=require(\\"react-native\\");"
@@ -276,6 +284,14 @@ exports[`webpack composes with babel-plugin-module-resolver 1`] = `
 "
 import\\"react-native\\";
 import\\"@expo/vector-icons\\";"
+`;
+
+exports[`webpack supports automatic JSX runtime 1`] = `
+"import{jsx as _jsx}from\\"react/jsx-runtime\\";import Text from\\"react-native-web/dist/exports/Text\\";import View from\\"react-native-web/dist/exports/View\\";
+
+export default function App(){
+return _jsx(View,{children:_jsx(Text,{children:\\"Hello World\\"})});
+}"
 `;
 
 exports[`webpack uses the platform's react-native import 1`] = `"import View from\\"react-native-web/dist/exports/View\\";"`;
