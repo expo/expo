@@ -59,4 +59,4 @@ useExpoModules([
         'expo-in-app-purchases'
     ]
 ])
-// WHEN_DISTRIBUTING_REMOVE_TO_HER
+// WHEN_DISTRIBUTING_REMOVE_TO_HERE
