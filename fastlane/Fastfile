@@ -325,20 +325,30 @@ platform :android do
     devicefarm_follow_run("arn:aws:devicefarm:us-west-2:274251141632:run:#{result_info[:project_id]}/#{result_info[:run_id]}")
   end
 
-  lane :build do |build_type: "Debug", flavor: "versioned", sign: true|
+  lane :build do |build_type: "Debug", flavor: "versioned", sign: true, get_version_number_from_increment: false|
     ENV['ANDROID_UNSIGNED'] = '1' unless sign
+
+    properties_dict = if get_version_number_from_increment
+      {
+        "versionCode" => Net::HTTP.get(URI('https://increment.build/kx54nve3mh5hygef')).to_i
+      }
+    else
+      {}
+    end
+
     gradle(
       project_dir: "android",
       task: "app:assemble",
       flavor: flavor,
       build_type: build_type,
+      properties: properties_dict,
     )
   end
 
   lane :prod_release do
     build_gradle = File.read("../android/app/build.gradle")
 
-    verify_changelog_exists(version_code: build_gradle.match(/versionCode (\d+)/)[1])
+    verify_changelog_exists(version_code: build_gradle.match(/versionCode.+\s(\d+)$/)[1])
     verify_upload_to_staging(version_name: build_gradle.match(/versionName '([\d\.]+)'/)[1])
 
     supply(

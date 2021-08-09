@@ -396,7 +396,7 @@ Web is comparatively well-tested in CI, so a few manual smoke tests suffice for 
 
 - **Android**:
   - Unlike for iOS, we will not submit the Android app to the store at this point. We just need to bump the version so we can do an APK build for distribution through Expo CLI.
-  - Bump the `versionCode` and `versionName` in android/app/build.gradle. Commit this to master and cherry-pick to the release branch. You might need to check the previous release branch to make sure the new `versionCode` is greater than the previous patch version, in case that commit never made it to master.
+  - Bump the `versionName` in android/app/build.gradle. Commit this to master and cherry-pick to the release branch.
   - The APK will be available as an artifact from the "Android Client" CI job. If no CI jobs are running on the release branch, you just need to open a PR from the release branch to master. (Don't merge it; it only exists to make CI jobs run.)
   - Download the APK and do a quick smoke test: install it in your local emulator or on a device and open a project.
 
@@ -576,6 +576,7 @@ Publish a blog post that includes the following information:
 - **iOS**:
   - Log into [App Store Connect](https://appstoreconnect.apple.com) and release the approved version.
 - **Android**:
+  - Update the fallback `versionCode` (end of ternary expression) in `app/build.gradle` to the output of navigating to https://increment.build/kx54nve3mh5hygef
   - Add a new file under `/fastlane/android/metadata/en-US/changelogs/[versionCode].txt` (it should usually read “Add support for Expo SDK XX”).
   - Open `Android Client` workflow on GitHub Actions and when it completes, download the APK from Artifacts and do a smoke test -- install it on a fresh Android device, turn on airplane mode, and make sure Home loads.
   - Run `et dispatch client-android-release` to trigger appropriate job on GitHub Actions. About 45 minutes later the update should be **downloadable** via Play Store.

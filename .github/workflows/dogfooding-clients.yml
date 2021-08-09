@@ -87,7 +87,7 @@ jobs:
           else
             echo "Internal build detected, APK will be signed"
             echo $ANDROID_KEYSTORE_B64 | base64 -d > android/app/release-key.jks
-            bin/fastlane android build build_type:$BUILD_TYPE flavor:$FLAVOR
+            bin/fastlane android build build_type:$BUILD_TYPE flavor:$FLAVOR get_version_number_from_increment:true
           fi
       - name: 💾 Upload APK artifact
         uses: actions/upload-artifact@v2
