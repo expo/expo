@@ -123,7 +123,7 @@ inline jsi::ArrayBuffer unpackArg<jsi::ArrayBuffer>(
 template <>
 inline UEXGLObjectId unpackArg<EXWebGLClass>(jsi::Runtime &runtime, const jsi::Value *jsArgv) {
   if (!jsArgv->isObject() || !jsArgv->asObject(runtime).hasProperty(runtime, "id")) {
-    throw std::runtime_error("value is not an WebGLObject");
+    return 0;
   }
   return static_cast<UEXGLObjectId>(
       jsArgv->asObject(runtime).getProperty(runtime, "id").asNumber());

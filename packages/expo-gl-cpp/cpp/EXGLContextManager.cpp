@@ -26,7 +26,7 @@ EXGLContextWithLock EXGLContextGet(UEXGLContextId id) {
   return {iter->second.ctx, std::shared_lock(iter->second.mutex)};
 }
 
-UEXGLContextId EXGLContextCreate(jsi::Runtime &runtime) {
+UEXGLContextId EXGLContextCreate() {
   // Out of ids?
   if (manager.nextId >= std::numeric_limits<UEXGLContextId>::max()) {
     EXGLSysLog("Ran out of EXGLContext ids!");
@@ -39,7 +39,7 @@ UEXGLContextId EXGLContextCreate(jsi::Runtime &runtime) {
     EXGLSysLog("Tried to reuse an EXGLContext id. This shouldn't really happen...");
     return 0;
   }
-  manager.contextMap[ctxId].ctx = new EXGLContext(runtime, ctxId);
+  manager.contextMap[ctxId].ctx = new EXGLContext(ctxId);
   return ctxId;
 }
 

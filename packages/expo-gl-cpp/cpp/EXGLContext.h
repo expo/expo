@@ -50,7 +50,8 @@ class EXGLContext {
   using Batch = std::vector<Op>;
 
  public:
-  EXGLContext(jsi::Runtime &runtime, UEXGLContextId ctxId);
+  EXGLContext(UEXGLContextId ctxId): ctxId(ctxId) {}
+  void prepareContext(jsi::Runtime &runtime, std::function<void(void)> flushMethod);
 
   // --- Queue handling --------------------------------------------------------
 
