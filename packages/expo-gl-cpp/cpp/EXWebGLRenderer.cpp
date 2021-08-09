@@ -3,6 +3,7 @@
 #include "EXGLContextManager.h"
 #include "EXJsiUtils.h"
 #include "EXWebGLMethods.h"
+#include "jsi/jsi.h"
 
 namespace expo {
 namespace gl_cpp {
@@ -10,31 +11,23 @@ namespace gl_cpp {
 constexpr const char *EXGLContextsMapPropertyName = "__EXGLContexts";
 
 void installConstants(jsi::Runtime &runtime, jsi::Object &gl);
-void installWebGLMethods(jsi::Runtime &runtime, jsi::Object &&gl);
-void installWebGL2Methods(jsi::Runtime &runtime, jsi::Object &&gl);
-std::string getConstructorName(EXWebGLClass value);
+void installWebGLMethods(jsi::Runtime &runtime, jsi::Object &gl);
+void installWebGL2Methods(jsi::Runtime &runtime, jsi::Object &gl);
 
 void createWebGLRenderer(jsi::Runtime &runtime, EXGLContext *ctx, initGlesContext viewport) {
-  jsi::Value constructor = ctx->supportsWebGL2
-      ? runtime.global().getProperty(
-            runtime,
-            jsi::PropNameID::forUtf8(
-                runtime, getConstructorName(EXWebGLClass::WebGL2RenderingContext)))
-      : runtime.global().getProperty(
-            runtime,
-            jsi::PropNameID::forUtf8(
-                runtime, getConstructorName(EXWebGLClass::WebGLRenderingContext)));
-  jsi::Object gl = std::move(constructor)
-                       .asObject(runtime)
-                       .asFunction(runtime)
-                       .callAsConstructor(runtime, {static_cast<double>(ctx->ctxId)})
-                       .asObject(runtime);
+  ensurePrototypes(runtime);
+  jsi::Object gl = ctx->supportsWebGL2
+    ? createWebGLObject(
+          runtime, EXWebGLClass::WebGL2RenderingContext, {static_cast<double>(ctx->ctxId)})
+          .asObject(runtime)
+    : createWebGLObject(
+          runtime, EXWebGLClass::WebGLRenderingContext, {static_cast<double>(ctx->ctxId)})
+          .asObject(runtime);
 
   gl.setProperty(runtime, "drawingBufferWidth", viewport.viewportWidth);
   gl.setProperty(runtime, "drawingBufferHeight", viewport.viewportHeight);
   gl.setProperty(runtime, "supportsWebGL2", ctx->supportsWebGL2);
   gl.setProperty(runtime, "exglCtxId", static_cast<double>(ctx->ctxId));
-  installConstants(runtime, gl);
 
   jsi::Value jsContextMap = runtime.global().getProperty(runtime, EXGLContextsMapPropertyName);
   auto global = runtime.global();
@@ -44,6 +37,29 @@ void createWebGLRenderer(jsi::Runtime &runtime, EXGLContext *ctx, initGlesContex
   global.getProperty(runtime, EXGLContextsMapPropertyName)
       .asObject(runtime)
       .setProperty(runtime, jsi::PropNameID::forUtf8(runtime, std::to_string(ctx->ctxId)), gl);
+}
+
+// For some reason call to Function::callAsConstructor returns null,
+// so we had to create this object using Object.create(class.prototype).
+// This approach works correctlly with
+//
+// Issue might be caused the fact that constructor is a host function
+// and it behaves like an arrow function.
+jsi::Value createWebGLObject(
+    jsi::Runtime &runtime,
+    EXWebGLClass webglClass,
+    std::initializer_list<jsi::Value> &&args) {
+  jsi::Function constructor =
+      runtime.global()
+          .getProperty(runtime, jsi::PropNameID::forUtf8(runtime, getConstructorName(webglClass)))
+          .asObject(runtime)
+          .asFunction(runtime);
+  jsi::Object objectClass = runtime.global().getPropertyAsObject(runtime, "Object");
+  jsi::Function createMethod = objectClass.getPropertyAsFunction(runtime, "create");
+  jsi::Value webglObject = createMethod.callWithThis(
+      runtime, objectClass, {constructor.getProperty(runtime, "prototype")});
+  constructor.callWithThis(runtime, webglObject.asObject(runtime), std::move(args));
+  return webglObject;
 }
 
 std::string getConstructorName(EXWebGLClass value) {
@@ -85,48 +101,130 @@ std::string getConstructorName(EXWebGLClass value) {
   }
 }
 
-void attachClass(jsi::Runtime &runtime, EXWebGLClass webglClass, std::function<void(jsi::Runtime &runtime, jsi::Object &&gl)> installPrototypes) {
+void attachClass(
+    jsi::Runtime &runtime,
+    EXWebGLClass webglClass,
+    std::function<void(EXWebGLClass webglClass)> installPrototypes) {
   jsi::PropNameID name = jsi::PropNameID::forUtf8(runtime, getConstructorName(webglClass));
   auto constructor = jsi::Function::createFromHostFunction(
       runtime,
       name,
       0,
       [](jsi::Runtime &runtime, const jsi::Value &jsThis, const jsi::Value *jsArgv, size_t argc) {
-        if (argc <= 0) {
-          throw std::runtime_error("missing id");
+        if (argc > 0) {
+          jsThis.asObject(runtime).setProperty(runtime, "id", jsArgv[0]);
         }
-        jsi::Object object(runtime);
-        object.setProperty(runtime, "id", jsArgv[0]);
-        return object;
+        return jsi::Value::undefined();
       });
   runtime.global().setProperty(runtime, name, constructor);
-  installPrototypes(runtime, constructor.getProperty(runtime, "prototype").asObject(runtime));
+  installPrototypes(webglClass);
 }
 
+// https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Objects/Inheritance#setting_teachers_prototype_and_constructor_reference
+//
+// Bellow implementation is equivalent of `class WebGLBuffer extends WebGLObject {}`
+// where baseClass=global.WebGLObject and derivedProp="WebGLBuffer"
+//
+// WebGLBuffer.prototype = Object.create(WebGLObject.prototype);
+// Object.defineProperty(WebGLBuffer.prototype, 'constructor', {
+//   value: WebGLBuffer,
+//   enumerable: false,
+//   writable: true });
+void jsClassExtend(jsi::Runtime &runtime, jsi::Object &baseClass, jsi::PropNameID derivedProp) {
+  jsi::PropNameID prototype = jsi::PropNameID::forUtf8(runtime, "prototype");
+  jsi::Object objectClass = runtime.global().getPropertyAsObject(runtime, "Object");
+  jsi::Function createMethod = objectClass.getPropertyAsFunction(runtime, "create");
+  jsi::Function definePropertyMethod = objectClass.getPropertyAsFunction(runtime, "defineProperty");
+  jsi::Object derivedClass = runtime.global().getProperty(runtime, derivedProp).asObject(runtime);
+
+  // WebGLBuffer.prototype = Object.create(WebGLObject.prototype);
+  derivedClass.setProperty(
+      runtime,
+      prototype,
+      createMethod.callWithThis(runtime, objectClass, {baseClass.getProperty(runtime, prototype)}));
+
+  jsi::Object propertyOptions(runtime);
+  propertyOptions.setProperty(runtime, "value", derivedClass);
+  propertyOptions.setProperty(runtime, "enumerable", true);
+  propertyOptions.setProperty(runtime, "writable", true);
+
+  // Object.defineProperty ...
+  definePropertyMethod.callWithThis(
+      runtime,
+      objectClass,
+      {
+          derivedClass.getProperty(runtime, prototype),
+          jsi::String::createFromUtf8(runtime, "constructor"),
+          std::move(propertyOptions),
+      });
+}
 
 void ensurePrototypes(jsi::Runtime &runtime) {
   if (runtime.global().hasProperty(runtime, "__EXGLConstructorReady")) {
     return;
   }
   runtime.global().setProperty(runtime, "__EXGLConstructorReady", true);
-  auto dummyFunc = [](jsi::Runtime &, jsi::Object &&) {};
-  attachClass(runtime, EXWebGLClass::WebGLRenderingContext, installWebGLMethods);
-  attachClass(runtime, EXWebGLClass::WebGL2RenderingContext, installWebGL2Methods);
-  attachClass(runtime, EXWebGLClass::WebGLObject, dummyFunc);
-  attachClass(runtime, EXWebGLClass::WebGLBuffer, dummyFunc);
-  attachClass(runtime, EXWebGLClass::WebGLFramebuffer, dummyFunc);
-  attachClass(runtime, EXWebGLClass::WebGLProgram, dummyFunc);
-  attachClass(runtime, EXWebGLClass::WebGLRenderbuffer, dummyFunc);
-  attachClass(runtime, EXWebGLClass::WebGLShader, dummyFunc);
-  attachClass(runtime, EXWebGLClass::WebGLTexture, dummyFunc);
-  attachClass(runtime, EXWebGLClass::WebGLUniformLocation, dummyFunc);
-  attachClass(runtime, EXWebGLClass::WebGLActiveInfo, dummyFunc);
-  attachClass(runtime, EXWebGLClass::WebGLShaderPrecisionFormat, dummyFunc);
-  attachClass(runtime, EXWebGLClass::WebGLQuery, dummyFunc);
-  attachClass(runtime, EXWebGLClass::WebGLSampler, dummyFunc);
-  attachClass(runtime, EXWebGLClass::WebGLSync, dummyFunc);
-  attachClass(runtime, EXWebGLClass::WebGLTransformFeedback, dummyFunc);
-  attachClass(runtime, EXWebGLClass::WebGLVertexArrayObject, dummyFunc);
+  attachClass(runtime, EXWebGLClass::WebGLRenderingContext, [&runtime](EXWebGLClass classEnum) {
+    auto objectClass = runtime.global().getPropertyAsObject(runtime, "Object");
+    jsClassExtend(
+        runtime, objectClass, jsi::PropNameID::forUtf8(runtime, getConstructorName(classEnum)));
+
+    auto prototype =
+        runtime.global()
+            .getProperty(runtime, jsi::PropNameID::forUtf8(runtime, getConstructorName(classEnum)))
+            .asObject(runtime)
+            .getPropertyAsObject(runtime, "prototype");
+    installConstants(runtime, prototype);
+    installWebGLMethods(runtime, prototype);
+  });
+
+  attachClass(runtime, EXWebGLClass::WebGL2RenderingContext, [&runtime](EXWebGLClass classEnum) {
+    auto objectClass = runtime.global().getPropertyAsObject(runtime, "Object");
+    jsClassExtend(
+        runtime, objectClass, jsi::PropNameID::forUtf8(runtime, getConstructorName(classEnum)));
+    auto prototype =
+        runtime.global()
+            .getProperty(runtime, jsi::PropNameID::forUtf8(runtime, getConstructorName(classEnum)))
+            .asObject(runtime)
+            .getPropertyAsObject(runtime, "prototype");
+    installConstants(runtime, prototype);
+    installWebGL2Methods(runtime, prototype);
+  });
+
+  auto inheritFromJsObject = [&runtime](EXWebGLClass classEnum) {
+    auto objectClass = runtime.global().getPropertyAsObject(runtime, "Object");
+    jsClassExtend(
+        runtime, objectClass, jsi::PropNameID::forUtf8(runtime, getConstructorName(classEnum)));
+  };
+  attachClass(runtime, EXWebGLClass::WebGLObject, inheritFromJsObject);
+
+  jsi::Object webglObjectClass =
+      runtime.global()
+          .getProperty(
+              runtime,
+              jsi::PropNameID::forUtf8(runtime, getConstructorName(EXWebGLClass::WebGLObject)))
+          .asObject(runtime);
+  auto inheritFromWebGLObject = [&runtime, &webglObjectClass](EXWebGLClass classEnum) {
+    jsClassExtend(
+        runtime,
+        webglObjectClass,
+        jsi::PropNameID::forUtf8(runtime, getConstructorName(classEnum)));
+  };
+
+  attachClass(runtime, EXWebGLClass::WebGLBuffer, inheritFromWebGLObject);
+  attachClass(runtime, EXWebGLClass::WebGLFramebuffer, inheritFromWebGLObject);
+  attachClass(runtime, EXWebGLClass::WebGLProgram, inheritFromWebGLObject);
+  attachClass(runtime, EXWebGLClass::WebGLRenderbuffer, inheritFromWebGLObject);
+  attachClass(runtime, EXWebGLClass::WebGLShader, inheritFromWebGLObject);
+  attachClass(runtime, EXWebGLClass::WebGLTexture, inheritFromWebGLObject);
+  attachClass(runtime, EXWebGLClass::WebGLUniformLocation, inheritFromJsObject);
+  attachClass(runtime, EXWebGLClass::WebGLActiveInfo, inheritFromJsObject);
+  attachClass(runtime, EXWebGLClass::WebGLShaderPrecisionFormat, inheritFromJsObject);
+  attachClass(runtime, EXWebGLClass::WebGLQuery, inheritFromWebGLObject);
+  attachClass(runtime, EXWebGLClass::WebGLSampler, inheritFromWebGLObject);
+  attachClass(runtime, EXWebGLClass::WebGLSync, inheritFromWebGLObject);
+  attachClass(runtime, EXWebGLClass::WebGLTransformFeedback, inheritFromWebGLObject);
+  attachClass(runtime, EXWebGLClass::WebGLVertexArrayObject, inheritFromWebGLObject);
 }
 
 void installConstants(jsi::Runtime &runtime, jsi::Object &gl) {
@@ -135,7 +233,7 @@ void installConstants(jsi::Runtime &runtime, jsi::Object &gl) {
 #undef GL_CONSTANT
 }
 
-void installWebGLMethods(jsi::Runtime &runtime, jsi::Object &&gl) {
+void installWebGLMethods(jsi::Runtime &runtime, jsi::Object &gl) {
 #define NATIVE_METHOD(name) setFunctionOnObject(runtime, gl, #name, method::glNativeMethod_##name);
 
 #define NATIVE_WEBGL2_METHOD(name) ;
@@ -144,7 +242,7 @@ void installWebGLMethods(jsi::Runtime &runtime, jsi::Object &&gl) {
 #undef NATIVE_METHOD
 }
 
-void installWebGL2Methods(jsi::Runtime &runtime, jsi::Object &&gl) {
+void installWebGL2Methods(jsi::Runtime &runtime, jsi::Object &gl) {
 #define CREATE_METHOD(name) setFunctionOnObject(runtime, gl, #name, method::glNativeMethod_##name);
 
 #define NATIVE_METHOD(name) CREATE_METHOD(name)

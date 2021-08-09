@@ -1,4 +1,5 @@
 #include "EXGLContext.h"
+#include "EXPlatformUtils.h"
 
 namespace expo {
 namespace gl_cpp {
@@ -6,16 +7,20 @@ namespace gl_cpp {
 constexpr const char *OnJSRuntimeDestroyPropertyName = "__EXGLOnJsRuntimeDestroy";
 
 EXGLContext::EXGLContext(jsi::Runtime &runtime, UEXGLContextId ctxId) : ctxId(ctxId) {
-  auto viewport = prepareOpenGLESContext();
-  createWebGLRenderer(runtime, this, viewport);
-  tryRegisterOnJSRuntimeDestroy(runtime);
+  try {
+    auto viewport = prepareOpenGLESContext();
+    createWebGLRenderer(runtime, this, viewport);
+    tryRegisterOnJSRuntimeDestroy(runtime);
 
-  jsi::Value workletRuntimeValue = runtime.global().getProperty(runtime, "_WORKLET_RUNTIME");
-  if (workletRuntimeValue.isNumber()) {
-    jsi::Runtime &workletRuntime =
-        *reinterpret_cast<jsi::Runtime *>(static_cast<uintptr_t>(workletRuntimeValue.getNumber()));
-    createWebGLRenderer(workletRuntime, this, viewport);
-    tryRegisterOnJSRuntimeDestroy(workletRuntime);
+    jsi::Value workletRuntimeValue = runtime.global().getProperty(runtime, "_WORKLET_RUNTIME");
+    if (workletRuntimeValue.isNumber()) {
+      jsi::Runtime &workletRuntime = *reinterpret_cast<jsi::Runtime *>(
+          static_cast<uintptr_t>(workletRuntimeValue.getNumber()));
+      createWebGLRenderer(workletRuntime, this, viewport);
+      tryRegisterOnJSRuntimeDestroy(workletRuntime);
+    }
+  } catch (const std::runtime_error &err) {
+    EXGLSysLog("%s", err.what());
   }
 }
 
@@ -34,7 +39,7 @@ void EXGLContext::addToNextBatch(Op &&op) noexcept {
 
 // [JS thread] Add a blocking operation to the 'next' batch -- waits for the
 // queued function to run before returning
-void EXGLContext::addBlockingToNextBatch(Op &&op) noexcept {
+void EXGLContext::addBlockingToNextBatch(Op &&op) {
   std::packaged_task<void(void)> task(std::move(op));
   auto future = task.get_future();
   addToNextBatch([&] { task(); });

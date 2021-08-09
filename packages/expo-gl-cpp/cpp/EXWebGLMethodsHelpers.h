@@ -48,7 +48,8 @@ inline jsi::Value exglGetActiveInfo(
     return nullptr;
   }
 
-  jsi::Object jsResult(runtime);
+  jsi::Object jsResult =
+      createWebGLObject(runtime, EXWebGLClass::WebGLActiveInfo, {}).asObject(runtime);
   jsResult.setProperty(runtime, "name", jsi::String::createFromUtf8(runtime, name));
   jsResult.setProperty(runtime, "size", size);
   jsResult.setProperty(runtime, "type", static_cast<double>(type));
@@ -56,19 +57,15 @@ inline jsi::Value exglGetActiveInfo(
 }
 
 template <typename Func, typename... T>
-inline jsi::Value exglCall(EXGLContext *ctx, Func func, T &&...args) {
+inline jsi::Value exglCall(EXGLContext *ctx, Func func, T &&... args) {
   ctx->addToNextBatch([=, args = std::make_tuple(std::forward<T>(args)...)] {
     return std::apply(func, std::move(args));
   });
 }
 
 template <typename Func, typename T>
-inline jsi::Value exglUniformv(
-    EXGLContext *ctx,
-    Func func,
-    GLuint uniform,
-    size_t dim,
-    std::vector<T> &&data) {
+inline jsi::Value
+exglUniformv(EXGLContext *ctx, Func func, GLuint uniform, size_t dim, std::vector<T> &&data) {
   ctx->addToNextBatch([=, data{std::move(data)}] {
     func(uniform, static_cast<int>(data.size() / dim), data.data());
   });
@@ -90,19 +87,14 @@ inline jsi::Value exglUniformMatrixv(
 }
 
 template <typename Func, typename T>
-inline jsi::Value exglVertexAttribv(
-    EXGLContext *ctx,
-    Func func,
-    GLuint index,
-    std::vector<T> &&data) {
+inline jsi::Value
+exglVertexAttribv(EXGLContext *ctx, Func func, GLuint index, std::vector<T> &&data) {
   ctx->addToNextBatch([=, data{std::move(data)}] { func(index, data.data()); });
   return nullptr;
 }
 
-inline jsi::Value exglIsObject(
-    EXGLContext *ctx,
-    UEXGLObjectId id,
-    std::function<GLboolean(GLuint)> func) {
+inline jsi::Value
+exglIsObject(EXGLContext *ctx, UEXGLObjectId id, std::function<GLboolean(GLuint)> func) {
   GLboolean glResult;
   ctx->addBlockingToNextBatch([&] { glResult = func(ctx->lookupObject(id)); });
   return glResult == GL_TRUE;
@@ -111,27 +103,27 @@ inline jsi::Value exglIsObject(
 inline jsi::Value exglGenObject(
     EXGLContext *ctx,
     jsi::Runtime &runtime,
-    std::function<void(GLsizei, UEXGLObjectId *)> func) {
-  return ctx->addFutureToNextBatch(runtime, [=] {
+    std::function<void(GLsizei, UEXGLObjectId *)> func,
+    EXWebGLClass webglClass) {
+  auto id = ctx->addFutureToNextBatch(runtime, [=] {
     GLuint buffer;
     func(1, &buffer);
     return buffer;
   });
-  return nullptr;
+  return createWebGLObject(runtime, webglClass, {std::move(id)});
 }
 
 inline jsi::Value exglCreateObject(
     EXGLContext *ctx,
     jsi::Runtime &runtime,
-    std::function<GLuint()> func) {
-  return ctx->addFutureToNextBatch(runtime, [=] { return func(); });
-  return nullptr;
+    std::function<GLuint()> func,
+    EXWebGLClass webglClass) {
+  auto id = ctx->addFutureToNextBatch(runtime, [=] { return func(); });
+  return createWebGLObject(runtime, webglClass, {std::move(id)});
 }
 
-inline jsi::Value exglDeleteObject(
-    EXGLContext *ctx,
-    UEXGLObjectId id,
-    std::function<void(UEXGLObjectId)> func) {
+inline jsi::Value
+exglDeleteObject(EXGLContext *ctx, UEXGLObjectId id, std::function<void(UEXGLObjectId)> func) {
   ctx->addToNextBatch([=] { func(ctx->lookupObject(id)); });
   return nullptr;
 }

@@ -6,6 +6,7 @@
 
 #include <jsi/jsi.h>
 #include "UEXGL.h"
+#include "EXPlatformUtils.h"
 
 extern "C" {
 

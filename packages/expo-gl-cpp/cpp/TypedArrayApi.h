@@ -60,8 +60,8 @@ struct typedArrayTypeMap<TypedArrayKind::Float64Array> {
   typedef double type;
 };
 
-// instance of this class will invalidate PropNameIDCache when destructor is called
-// attach this object to global in specific jsi::Runtime to make sure lifecycle of
+// Instance of this class will invalidate PropNameIDCache when destructor is called.
+// Attach this object to global in specific jsi::Runtime to make sure lifecycle of
 // the cache object is connected to the lifecycle of the js runtime
 class InvalidateCacheOnDestroy : public jsi::HostObject {
  public:
