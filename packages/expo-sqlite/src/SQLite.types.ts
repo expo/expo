@@ -77,7 +77,7 @@ export interface SQLTransaction {
    */
   executeSql(
     sqlStatement: string,
-    args?: number[] | string[],
+    args?: (number | string)[],
     callback?: SQLStatementCallback,
     errorCallback?: SQLStatementErrorCallback
   ): void;
@@ -168,5 +168,5 @@ export type ResultSet = {
 // @docsMissing
 export type SQLiteCallback = (
   error?: Error | null,
-  resultSet?: ResultSetError[] | ResultSet[]
+  resultSet?: (ResultSetError | ResultSet)[]
 ) => void;

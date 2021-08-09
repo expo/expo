@@ -91,6 +91,14 @@ const renderWithLink = (name: string, type?: string) =>
     </Link>
   );
 
+const renderUnion = (types: TypeDefinitionData[]) =>
+  types.map(resolveTypeName).map((valueToRender, index) => (
+    <span key={`union-type-${index}`}>
+      {valueToRender}
+      {index + 1 !== types.length && ' | '}
+    </span>
+  ));
+
 export const resolveTypeName = ({
   elements,
   elementType,
@@ -155,12 +163,14 @@ export const resolveTypeName = ({
     }
     return elementType.name + type;
   } else if (type === 'union' && types?.length) {
-    return types.map(resolveTypeName).map((valueToRender, index) => (
-      <span key={`union-type-${index}`}>
-        {valueToRender}
-        {index + 1 !== types.length && ' | '}
-      </span>
-    ));
+    return renderUnion(types);
+  } else if (elementType && elementType.type === 'union' && elementType?.types?.length) {
+    const unionTypes = elementType?.types || [];
+    return (
+      <>
+        ({renderUnion(unionTypes)}){type === 'array' && '[]'}
+      </>
+    );
   } else if (declaration?.signatures) {
     const baseSignature = declaration.signatures[0];
     if (baseSignature?.parameters?.length) {
@@ -227,6 +237,7 @@ export const renderParam = ({ comment, name, type, flags }: MethodParamData): JS
   <LI key={`param-${name}`}>
     <B>
       {parseParamName(name)}
+      {console.warn(type)}
       {flags?.isOptional && '?'} (<InlineCode>{resolveTypeName(type)}</InlineCode>)
     </B>
     <CommentTextBlock comment={comment} renderers={mdInlineRenderers} withDash />

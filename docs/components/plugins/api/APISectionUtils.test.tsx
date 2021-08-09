@@ -190,6 +190,24 @@ describe('APISectionUtils.resolveTypeName', () => {
     expect(container).toMatchSnapshot();
   });
 
+  test('union of array values', () => {
+    const { container } = render(
+      <>
+        {resolveTypeName({
+          type: 'array',
+          elementType: {
+            type: 'union',
+            types: [
+              { type: 'reference', name: 'ResultSetError' },
+              { type: 'reference', name: 'ResultSet' },
+            ],
+          },
+        })}
+      </>
+    );
+    expect(container).toMatchSnapshot();
+  });
+
   test('generic type', () => {
     const { container } = render(
       <>

@@ -32,6 +32,7 @@ export type TypeDefinitionData = {
   elementType?: {
     name?: string;
     type: string;
+    types?: TypeDefinitionData[];
     declaration?: {
       name?: string;
       kind?: TypeDocKind;

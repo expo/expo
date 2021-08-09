@@ -357,6 +357,31 @@ exports[`APISectionUtils.resolveTypeName union 1`] = `
 </div>
 `;
 
+exports[`APISectionUtils.resolveTypeName union of array values 1`] = `
+<div>
+  (
+  <span>
+    <a
+      class="css-12zqqiz-STYLES_EXTERNAL_LINK"
+      href="/#resultseterror"
+    >
+      ResultSetError
+    </a>
+     | 
+  </span>
+  <span>
+    <a
+      class="css-12zqqiz-STYLES_EXTERNAL_LINK"
+      href="/#resultset"
+    >
+      ResultSet
+    </a>
+  </span>
+  )
+  []
+</div>
+`;
+
 exports[`APISectionUtils.resolveTypeName union with array 1`] = `
 <div>
   <span>

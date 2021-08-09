@@ -41,7 +41,7 @@ export interface SQLTransaction {
      * @param errorCallback Called if an error occurred executing this particular query in the
      * transaction. Takes two parameters: the transaction itself, and the error object.
      */
-    executeSql(sqlStatement: string, args?: number[] | string[], callback?: SQLStatementCallback, errorCallback?: SQLStatementErrorCallback): void;
+    executeSql(sqlStatement: string, args?: (number | string)[], callback?: SQLStatementCallback, errorCallback?: SQLStatementErrorCallback): void;
 }
 export declare type SQLStatementCallback = (transaction: SQLTransaction, resultSet: SQLResultSet) => void;
 export declare type SQLStatementErrorCallback = (transaction: SQLTransaction, error: SQLError) => boolean;
@@ -111,4 +111,4 @@ export declare type ResultSet = {
         [column: string]: any;
     }[];
 };
-export declare type SQLiteCallback = (error?: Error | null, resultSet?: ResultSetError[] | ResultSet[]) => void;
+export declare type SQLiteCallback = (error?: Error | null, resultSet?: (ResultSetError | ResultSet)[]) => void;
