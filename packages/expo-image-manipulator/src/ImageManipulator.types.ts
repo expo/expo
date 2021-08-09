@@ -13,7 +13,7 @@ export type ImageResult = {
    */
   height: number;
   /**
-   * it is included if the `base64` save option was truthy, and is a string containing the
+   * It is included if the `base64` save option was truthy, and is a string containing the
    * JPEG/PNG (depending on `format`) data of the image in Base64. Prepend that with `'data:image/xxx;base64,'`
    * to get a data URI, which you can use as the source for an `Image` element for example
    * (where `xxx` is `jpeg` or `png`).
