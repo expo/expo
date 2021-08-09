@@ -13,7 +13,7 @@ export async function runReactNativeCodegenAsync(
     'FBReactNativeSpec',
     'FBReactNativeSpec'
   );
-  await spawnAsync(codegenCommand, null, {
+  await spawnAsync(codegenCommand, [], {
     cwd: reactNativeRoot,
     env: {
       ...process.env,
