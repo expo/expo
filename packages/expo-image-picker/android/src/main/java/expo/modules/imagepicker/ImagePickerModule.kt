@@ -405,7 +405,6 @@ class ImagePickerModule(
 
   override fun onHostDestroy() {
     mWasHostDestroyed = true
-    //mUIManager.unregisterLifecycleEventListener(this)
   }
 
   override fun onHostResume() {
