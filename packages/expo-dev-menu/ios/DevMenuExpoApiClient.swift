@@ -9,6 +9,7 @@ class DevMenuExpoApiClient: NSObject, DevMenuExpoApiClientProtocol {
   private static let graphQLEndpoint = URL(string: "\(DevMenuExpoApiClient.origin)/--/graphql")!
   private static let restEndpoint = URL(string: "\(DevMenuExpoApiClient.origin)/--/api/v2/")!
   
+  var session: URLSession = URLSession.shared
   var sessionSecret: String? = nil
     
   func isLoggedIn() -> Bool {
@@ -82,8 +83,6 @@ class DevMenuExpoApiClient: NSObject, DevMenuExpoApiClientProtocol {
   }
   
   private func fetch(_ url: URL, completionHandler: @escaping HTTPCompletionHandler) {
-    let session = URLSession.shared
-    
     var request = URLRequest(url: url)
     request.httpMethod = "GET"
     if sessionSecret != nil {
@@ -99,8 +98,6 @@ class DevMenuExpoApiClient: NSObject, DevMenuExpoApiClientProtocol {
     dataPath: [String],
     completionHandler: @escaping ([T]?, URLResponse?, Error?) -> Void
   ) {
-    let session = URLSession.shared
-    
     var request = URLRequest(url: url)
     request.httpMethod = "POST"
     if sessionSecret != nil {

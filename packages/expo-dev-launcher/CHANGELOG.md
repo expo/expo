@@ -9,10 +9,12 @@
 ### 🐛 Bug fixes
 
 - Fixed issue where Expo-hosted manifest URLs with `/index.exp?...` suffix could not be opened properly. ([#13825](https://github.com/expo/expo/pull/13825) by [@esamelson](https://github.com/esamelson))
+- Fixed issue with opening multiple different published apps. ([#13926](https://github.com/expo/expo/pull/13926) by [@esamelson](https://github.com/esamelson))
 
 ### 💡 Others
 
 - Add basic setup for iOS unit tests. ([#13824](https://github.com/expo/expo/pull/13824) by [@esamelson](https://github.com/esamelson))
+- Display linking scheme used by app in launcher URL field ([#13930](https://github.com/expo/expo/pull/13930) by [@fson](https://github.com/fson))
 
 ## 0.6.5 — 2021-07-16
 
