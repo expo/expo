@@ -18,7 +18,8 @@
 @interface ABI42_0_0EXGLContext : NSObject
 
 - (nullable instancetype)initWithDelegate:(nullable id<ABI42_0_0EXGLContextDelegate>)delegate andModuleRegistry:(nonnull ABI42_0_0UMModuleRegistry *)moduleRegistry;
-- (void)initialize:(nullable void(^)(BOOL))callback;
+- (void)initialize;
+- (void)prepare:(nullable void(^)(BOOL))callback;
 - (BOOL)isInitialized;
 - (nullable EAGLContext *)createSharedEAGLContext;
 - (void)runAsync:(nonnull void(^)(void))callback;

@@ -4,20 +4,23 @@
 
 using namespace expo::gl_cpp;
 
-UEXGLContextId UEXGLContextCreate(void *jsiPtr) {
-  return EXGLContextCreate(*reinterpret_cast<jsi::Runtime *>(jsiPtr));
-}
-
-void UEXGLContextSetFlushMethod(UEXGLContextId exglCtxId, std::function<void(void)> flushMethod) {
-  auto [exglCtx, lock] = EXGLContextGet(exglCtxId);
-  if (exglCtx) {
-    exglCtx->flushOnGLThread = flushMethod;
-  }
+UEXGLContextId UEXGLContextCreate() {
+  return EXGLContextCreate();
 }
 
 #ifdef __APPLE__
-void UEXGLContextSetFlushMethodObjc(UEXGLContextId exglCtxId, UEXGLFlushMethodBlock flushMethod) {
-  UEXGLContextSetFlushMethod(exglCtxId, [flushMethod] { flushMethod(); });
+void UEXGLContextPrepare(void *jsiPtr, UEXGLContextId exglCtxId, UEXGLFlushMethodBlock flushMethod) {
+  auto [exglCtx, lock] = EXGLContextGet(exglCtxId);
+  if (exglCtx) {
+    exglCtx->prepareContext(*reinterpret_cast<jsi::Runtime *>(jsiPtr), [flushMethod] { flushMethod(); });
+  }
+}
+#else
+void UEXGLContextPrepare(void *jsiPtr, UEXGLContextId exglCtxId, std::function<void(void)> flushMethod) {
+  auto [exglCtx, lock] = EXGLContextGet(exglCtxId);
+  if (exglCtx) {
+    exglCtx->prepareContext(*reinterpret_cast<jsi::Runtime *>(jsiPtr), flushMethod);
+  }
 }
 #endif
 

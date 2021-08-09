@@ -18,6 +18,8 @@
 @property (nonatomic, strong) dispatch_queue_t glQueue;
 @property (nonatomic, weak) ABI40_0_0UMModuleRegistry *moduleRegistry;
 @property (nonatomic, weak) ABI40_0_0EXGLObjectManager *objectManager;
+@property (nonatomic, assign) BOOL isContextReady;
+@property (nonatomic, assign) BOOL wasPrepareCalled;
 
 @end
 
@@ -32,13 +34,15 @@
     _objectManager = (ABI40_0_0EXGLObjectManager *)[_moduleRegistry getExportedModuleOfClass:[ABI40_0_0EXGLObjectManager class]];
     _glQueue = dispatch_queue_create("host.exp.gl", DISPATCH_QUEUE_SERIAL);
     _eaglCtx = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES3] ?: [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES2];
+    _isContextReady = NO;
+    _wasPrepareCalled = NO;
   }
   return self;
 }
 
 - (BOOL)isInitialized
 {
-  return _contextId != 0;
+  return _isContextReady;
 }
 
 - (EAGLContext *)createSharedEAGLContext
@@ -63,8 +67,18 @@
   }
 }
 
-- (void)initialize:(void(^)(BOOL))callback
+- (void)initialize
 {
+  self->_contextId = UEXGLContextCreate();
+  [self->_objectManager saveContext:self];
+}
+
+- (void)prepare:(void(^)(BOOL))callback
+{
+  if (_wasPrepareCalled) {
+    return;
+  }
+  _wasPrepareCalled = YES;
   id<ABI40_0_0UMUIManager> uiManager = [_moduleRegistry getModuleImplementingProtocol:@protocol(ABI40_0_0UMUIManager)];
   id<ABI40_0_0UMJavaScriptContextProvider> jsContextProvider = [_moduleRegistry getModuleImplementingProtocol:@protocol(ABI40_0_0UMJavaScriptContextProvider)];
 
@@ -83,13 +97,12 @@
         return;
       }
 
-      self->_contextId = UEXGLContextCreate(jsRuntimePtr);
-      [self->_objectManager saveContext:self];
-
-      UEXGLContextSetFlushMethodObjc(self->_contextId, ^{
+      UEXGLContextSetDefaultFramebuffer(self->_contextId, [self defaultFramebuffer]);
+      UEXGLContextPrepare(jsRuntimePtr, self->_contextId, ^{
         [self flush];
       });
 
+      _isContextReady = YES;
       if ([self.delegate respondsToSelector:@selector(glContextInitialized:)]) {
         [self.delegate glContextInitialized:self];
       }

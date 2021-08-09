@@ -91,10 +91,11 @@ public class GLContext {
         long jsContextRef = jsContextProvider.getJavaScriptContextRef();
         synchronized (uiManager) {
           if (jsContextRef != 0) {
-            mEXGLCtxId = EXGLContextCreate(jsContextRef);
+            mEXGLCtxId = EXGLContextCreate();
+            EXGLRegisterThread();
+            EXGLContextPrepare(jsContextRef, mEXGLCtxId, glContext);
           }
         }
-        EXGLContextSetFlushMethod(mEXGLCtxId, glContext);
         mManager.saveContext(glContext);
         completionCallback.run();
       }

@@ -54,7 +54,7 @@ EX_REGISTER_MODULE();
 
 - (void)saveContext:(nonnull EXGLContext *)glContext
 {
-  if (glContext.isInitialized) {
+  if (glContext.contextId != 0) {
     [_glContexts setObject:glContext forKey:@(glContext.contextId)];
   }
 }
@@ -81,12 +81,12 @@ EX_EXPORT_METHOD_AS(takeSnapshotAsync,
                     rejecter:(EXPromiseRejectBlock)reject)
 {
   EXGLContext *glContext = [self getContextWithId:exglCtxId];
-  
+
   if (glContext == nil) {
     reject(@"E_GL_BAD_VIEW_TAG", nil, EXErrorWithMessage(@"ExponentGLObjectManager.takeSnapshotAsync: EXGLContext not found for given context id."));
     return;
   }
-  
+
   [glContext takeSnapshotWithOptions:options resolve:resolve reject:reject];
 }
 
@@ -97,8 +97,9 @@ EX_EXPORT_METHOD_AS(createContextAsync,
                     reject:(EXPromiseRejectBlock)reject)
 {
   EXGLContext *glContext = [[EXGLContext alloc] initWithDelegate:nil andModuleRegistry:_moduleRegistry];
-  
-  [glContext initialize:^(BOOL success) {
+
+  [glContext initialize];
+  [glContext prepare:^(BOOL success) {
     if (success) {
       resolve(@{ @"exglCtxId": @(glContext.contextId) });
     } else {
@@ -117,7 +118,7 @@ EX_EXPORT_METHOD_AS(destroyContextAsync,
                     reject:(EXPromiseRejectBlock)reject)
 {
   EXGLContext *glContext = [self getContextWithId:exglCtxId];
-  
+
   if (glContext != nil) {
     [glContext destroy];
     resolve(@(YES));
@@ -146,7 +147,7 @@ EX_EXPORT_METHOD_AS(createCameraTextureAsync,
   [_uiManager executeUIBlock:^(id view) {
     EXGLContext *glContext = [self getContextWithId:exglCtxId];
     id<EXCameraInterface> cameraView = (id<EXCameraInterface>)view;
-    
+
     if (glContext == nil) {
       reject(@"E_GL_BAD_VIEW_TAG", nil, EXErrorWithMessage(@"ExponentGLObjectManager.createCameraTextureAsync: Expected an EXGLView"));
       return;
@@ -155,9 +156,9 @@ EX_EXPORT_METHOD_AS(createCameraTextureAsync,
       reject(@"E_GL_BAD_CAMERA_VIEW_TAG", nil, EXErrorWithMessage(@"ExponentGLObjectManager.createCameraTextureAsync: Expected an EXCamera"));
       return;
     }
-    
+
     EXGLCameraObject *cameraTexture = [[EXGLCameraObject alloc] initWithContext:glContext andCamera:cameraView];
-    
+
     self->_objects[@(cameraTexture.exglObjId)] = cameraTexture;
     resolve(@{ @"exglObjId": @(cameraTexture.exglObjId) });
   } forView:cameraViewTag implementingProtocol:@protocol(EXCameraInterface)];

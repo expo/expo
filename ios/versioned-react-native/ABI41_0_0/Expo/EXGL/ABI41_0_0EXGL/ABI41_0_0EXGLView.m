@@ -46,9 +46,9 @@
     _isLayouted = NO;
     _renderbufferPresented = YES;
     _viewBuffersSize = CGSizeZero;
-    
+
     self.contentScaleFactor = [ABI41_0_0UMUtilities screenScale];
-    
+
     // Initialize properties of our backing CAEAGLLayer
     CAEAGLLayer *eaglLayer = (CAEAGLLayer *) self.layer;
     eaglLayer.opaque = YES;
@@ -60,11 +60,11 @@
     // Initialize GL context
     _glContext = [[ABI41_0_0EXGLContext alloc] initWithDelegate:self andModuleRegistry:moduleRegistry];
     _uiEaglCtx = [_glContext createSharedEAGLContext];
-    [_glContext initialize:nil];
+    [_glContext initialize];
 
     // View buffers will be created on layout event
     _msaaFramebuffer = _msaaRenderbuffer = _viewFramebuffer = _viewColorbuffer = _viewDepthStencilbuffer = 0;
-    
+
     // Set up a draw loop
     _displayLink = [CADisplayLink displayLinkWithTarget:self selector:@selector(draw)];
     //    _displayLink.preferredFramesPerSecond = 60;
@@ -85,7 +85,6 @@
 
   if (_onSurfaceCreate && _glContext.isInitialized && _isLayouted) {
     UEXGLContextId exglCtxId = _glContext.contextId;
-    UEXGLContextSetDefaultFramebuffer(exglCtxId, _msaaFramebuffer);
     _onSurfaceCreate(@{ @"exglCtxId": @(exglCtxId) });
 
     // unset onSurfaceCreate - it will not be needed anymore
@@ -99,6 +98,7 @@
                           height:self.contentScaleFactor * self.frame.size.height];
 
   _isLayouted = YES;
+  [_glContext prepare:nil];
   [self maybeCallSurfaceCreated];
 }
 
@@ -142,12 +142,12 @@
 - (void)resizeViewBuffersToWidth:(short)width height:(short)height
 {
   CGSize newViewBuffersSize = CGSizeMake(width, height);
-  
+
   // Don't resize if size hasn't changed and the current size is not zero
   if (CGSizeEqualToSize(newViewBuffersSize, _viewBuffersSize) && !CGSizeEqualToSize(_viewBuffersSize, CGSizeZero)) {
     return;
   }
-  
+
   // update viewBuffersSize on UI thread (before actual resize takes place)
   // to get rid of redundant resizes if layoutSubviews is called multiple times with the same frame size
   _viewBuffersSize = newViewBuffersSize;
@@ -161,28 +161,28 @@
     if (prevFramebuffer == self->_viewFramebuffer) {
       prevFramebuffer = 0;
     }
-    
+
     // Delete old buffers if they exist
     [self deleteViewBuffers];
-    
+
     // Set up view framebuffer
     glGenFramebuffers(1, &self->_viewFramebuffer);
     glBindFramebuffer(GL_FRAMEBUFFER, self->_viewFramebuffer);
-    
+
     // Set up new color renderbuffer
     glGenRenderbuffers(1, &self->_viewColorbuffer);
     glBindRenderbuffer(GL_RENDERBUFFER, self->_viewColorbuffer);
-    
+
     [self runOnUIThread:^{
       glBindRenderbuffer(GL_RENDERBUFFER, self->_viewColorbuffer);
       [self->_uiEaglCtx renderbufferStorage:GL_RENDERBUFFER fromDrawable:(CAEAGLLayer *)self.layer];
     }];
-    
+
     glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
                               GL_RENDERBUFFER, self->_viewColorbuffer);
     glGetRenderbufferParameteriv(GL_RENDERBUFFER, GL_RENDERBUFFER_WIDTH, &self->_layerWidth);
     glGetRenderbufferParameteriv(GL_RENDERBUFFER, GL_RENDERBUFFER_HEIGHT, &self->_layerHeight);
-    
+
     // Set up MSAA framebuffer/renderbuffer
     glGenFramebuffers(1, &self->_msaaFramebuffer);
     glGenRenderbuffers(1, &self->_msaaRenderbuffer);
@@ -193,10 +193,8 @@
     glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
                               GL_RENDERBUFFER, self->_msaaRenderbuffer);
 
-    if (self->_glContext.isInitialized) {
-      UEXGLContextSetDefaultFramebuffer(self->_glContext.contextId, self->_msaaFramebuffer);
-    }
-    
+    UEXGLContextSetDefaultFramebuffer(self->_glContext.contextId, self->_msaaFramebuffer);
+
     // Set up new depth+stencil renderbuffer
     glGenRenderbuffers(1, &self->_viewDepthStencilbuffer);
     glBindRenderbuffer(GL_RENDERBUFFER, self->_viewDepthStencilbuffer);
@@ -206,16 +204,16 @@
                               GL_RENDERBUFFER, self->_viewDepthStencilbuffer);
     glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT,
                               GL_RENDERBUFFER, self->_viewDepthStencilbuffer);
-    
+
     // Resize viewport
     glViewport(0, 0, width, height);
-    
+
     // Restore surrounding framebuffer/renderbuffer
     if (prevFramebuffer != 0) {
       glBindFramebuffer(GL_FRAMEBUFFER, prevFramebuffer);
     }
     glBindRenderbuffer(GL_RENDERBUFFER, prevRenderbuffer);
-    
+
     // TODO(nikki): Notify JS component of resize
   }];
 }
@@ -229,7 +227,7 @@
   // Stop draw loop
   [_displayLink invalidate];
   _displayLink = nil;
-  
+
   [super removeFromSuperview];
 }
 
@@ -252,7 +250,7 @@
         glBindRenderbuffer(GL_RENDERBUFFER, self->_viewColorbuffer);
         [self->_uiEaglCtx presentRenderbuffer:GL_RENDERBUFFER];
       }];
-      
+
       // mark renderbuffer as presented
       _renderbufferPresented = YES;
     }
@@ -270,23 +268,23 @@
     if (prevFramebuffer == _viewFramebuffer) {
       prevFramebuffer = 0;
     }
-    
+
     // Resolve multisampling and present
     glBindFramebuffer(GL_READ_FRAMEBUFFER, _msaaFramebuffer);
     glBindFramebuffer(GL_DRAW_FRAMEBUFFER, _viewFramebuffer);
-    
+
     // glBlitFramebuffer works only on OpenGL ES 3.0, so we need a fallback to Apple's extension for OpenGL ES 2.0
     if (_glContext.eaglCtx.API == kEAGLRenderingAPIOpenGLES3) {
       glBlitFramebuffer(0, 0, _layerWidth, _layerHeight, 0, 0, _layerWidth, _layerHeight, GL_COLOR_BUFFER_BIT, GL_NEAREST);
     } else {
       glResolveMultisampleFramebufferAPPLE();
     }
-    
+
     // Restore surrounding framebuffer
     if (prevFramebuffer != 0) {
       glBindFramebuffer(GL_FRAMEBUFFER, prevFramebuffer);
     }
-    
+
     // mark renderbuffer as not presented
     _renderbufferPresented = NO;
   }
@@ -317,14 +315,14 @@
 {
   // Stop AR session if running
   [self maybeStopARSession];
-  
+
   // Destroy GL objects owned by us
   [self deleteViewBuffers];
 }
 
 - (UEXGLObjectId)glContextGetDefaultFramebuffer
 {
-  return _viewFramebuffer;
+  return _msaaFramebuffer;
 }
 
 #pragma mark - maybe AR

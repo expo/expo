@@ -29,6 +29,13 @@ void createWebGLRenderer(jsi::Runtime &runtime, EXGLContext *ctx, initGlesContex
   gl.setProperty(runtime, "supportsWebGL2", ctx->supportsWebGL2);
   gl.setProperty(runtime, "exglCtxId", static_cast<double>(ctx->ctxId));
 
+  // Legacy case for older SDKs in Expo Go
+  bool legacyJs = !runtime.global().getProperty(runtime, "__EXGLConstructorReady").isBool();
+  if (legacyJs) {
+    installConstants(runtime, gl);
+    ctx->supportsWebGL2 ? installWebGL2Methods(runtime, gl) : installWebGLMethods(runtime, gl);
+  }
+
   jsi::Value jsContextMap = runtime.global().getProperty(runtime, EXGLContextsMapPropertyName);
   auto global = runtime.global();
   if (jsContextMap.isNull() || jsContextMap.isUndefined()) {
@@ -56,9 +63,16 @@ jsi::Value createWebGLObject(
           .asFunction(runtime);
   jsi::Object objectClass = runtime.global().getPropertyAsObject(runtime, "Object");
   jsi::Function createMethod = objectClass.getPropertyAsFunction(runtime, "create");
-  jsi::Value webglObject = createMethod.callWithThis(
-      runtime, objectClass, {constructor.getProperty(runtime, "prototype")});
-  constructor.callWithThis(runtime, webglObject.asObject(runtime), std::move(args));
+  jsi::Object webglObject =
+      createMethod
+          .callWithThis(runtime, objectClass, {constructor.getProperty(runtime, "prototype")})
+          .asObject(runtime);
+  jsi::Value id = args.size() > 0 ? jsi::Value(runtime, *args.begin()) : jsi::Value::undefined();
+  constructor.callWithThis(runtime, webglObject, { jsi::Value(runtime, id) });
+  // Legacy case for older SDKs in Expo Go
+  if (!webglObject.getProperty(runtime, "id").isNumber()) {
+    webglObject.setProperty(runtime, "id", id);
+  }
   return webglObject;
 }
 
@@ -162,7 +176,7 @@ void jsClassExtend(jsi::Runtime &runtime, jsi::Object &baseClass, jsi::PropNameI
 }
 
 void ensurePrototypes(jsi::Runtime &runtime) {
-  if (runtime.global().hasProperty(runtime, "__EXGLConstructorReady")) {
+  if (runtime.global().hasProperty(runtime, "WebGLRenderingContext")) {
     return;
   }
   runtime.global().setProperty(runtime, "__EXGLConstructorReady", true);

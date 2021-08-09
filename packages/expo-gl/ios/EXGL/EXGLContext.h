@@ -18,7 +18,8 @@
 @interface EXGLContext : NSObject
 
 - (nullable instancetype)initWithDelegate:(nullable id<EXGLContextDelegate>)delegate andModuleRegistry:(nonnull EXModuleRegistry *)moduleRegistry;
-- (void)initialize:(nullable void(^)(BOOL))callback;
+- (void)initialize;
+- (void)prepare:(nullable void(^)(BOOL))callback;
 - (BOOL)isInitialized;
 - (nullable EAGLContext *)createSharedEAGLContext;
 - (void)runAsync:(nonnull void(^)(void))callback;

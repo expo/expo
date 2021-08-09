@@ -54,7 +54,7 @@ ABI40_0_0UM_REGISTER_MODULE();
 
 - (void)saveContext:(nonnull ABI40_0_0EXGLContext *)glContext
 {
-  if (glContext.isInitialized) {
+  if (glContext.contextId != 0) {
     [_glContexts setObject:glContext forKey:@(glContext.contextId)];
   }
 }
@@ -81,12 +81,12 @@ ABI40_0_0UM_EXPORT_METHOD_AS(takeSnapshotAsync,
                     rejecter:(ABI40_0_0UMPromiseRejectBlock)reject)
 {
   ABI40_0_0EXGLContext *glContext = [self getContextWithId:exglCtxId];
-  
+
   if (glContext == nil) {
     reject(@"E_GL_BAD_VIEW_TAG", nil, ABI40_0_0UMErrorWithMessage(@"ExponentGLObjectManager.takeSnapshotAsync: ABI40_0_0EXGLContext not found for given context id."));
     return;
   }
-  
+
   [glContext takeSnapshotWithOptions:options resolve:resolve reject:reject];
 }
 
@@ -97,8 +97,9 @@ ABI40_0_0UM_EXPORT_METHOD_AS(createContextAsync,
                     reject:(ABI40_0_0UMPromiseRejectBlock)reject)
 {
   ABI40_0_0EXGLContext *glContext = [[ABI40_0_0EXGLContext alloc] initWithDelegate:nil andModuleRegistry:_moduleRegistry];
-  
-  [glContext initialize:^(BOOL success) {
+
+  [glContext initialize];
+  [glContext prepare:^(BOOL success) {
     if (success) {
       resolve(@{ @"exglCtxId": @(glContext.contextId) });
     } else {
@@ -117,7 +118,7 @@ ABI40_0_0UM_EXPORT_METHOD_AS(destroyContextAsync,
                     reject:(ABI40_0_0UMPromiseRejectBlock)reject)
 {
   ABI40_0_0EXGLContext *glContext = [self getContextWithId:exglCtxId];
-  
+
   if (glContext != nil) {
     [glContext destroy];
     resolve(@(YES));
@@ -146,7 +147,7 @@ ABI40_0_0UM_EXPORT_METHOD_AS(createCameraTextureAsync,
   [_uiManager executeUIBlock:^(id view) {
     ABI40_0_0EXGLContext *glContext = [self getContextWithId:exglCtxId];
     id<ABI40_0_0UMCameraInterface> cameraView = (id<ABI40_0_0UMCameraInterface>)view;
-    
+
     if (glContext == nil) {
       reject(@"E_GL_BAD_VIEW_TAG", nil, ABI40_0_0UMErrorWithMessage(@"ExponentGLObjectManager.createCameraTextureAsync: Expected an ABI40_0_0EXGLView"));
       return;
@@ -155,9 +156,9 @@ ABI40_0_0UM_EXPORT_METHOD_AS(createCameraTextureAsync,
       reject(@"E_GL_BAD_CAMERA_VIEW_TAG", nil, ABI40_0_0UMErrorWithMessage(@"ExponentGLObjectManager.createCameraTextureAsync: Expected an ABI40_0_0EXCamera"));
       return;
     }
-    
+
     ABI40_0_0EXGLCameraObject *cameraTexture = [[ABI40_0_0EXGLCameraObject alloc] initWithContext:glContext andCamera:cameraView];
-    
+
     self->_objects[@(cameraTexture.exglObjId)] = cameraTexture;
     resolve(@{ @"exglObjId": @(cameraTexture.exglObjId) });
   } forView:cameraViewTag implementingProtocol:@protocol(ABI40_0_0UMCameraInterface)];
