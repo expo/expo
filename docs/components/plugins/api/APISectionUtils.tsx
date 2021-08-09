@@ -146,6 +146,14 @@ export const resolveTypeName = ({
       return elementType.name + '[]';
     }
     return elementType.name + type;
+  } else if (elementType?.declaration) {
+    if (type === 'array') {
+      const { parameters, type: paramType } = elementType.declaration.indexSignature || {};
+      if (parameters && paramType) {
+        return `{ [${listParams(parameters)}]: ${resolveTypeName(paramType)} }`;
+      }
+    }
+    return elementType.name + type;
   } else if (type === 'union' && types?.length) {
     return types.map(resolveTypeName).map((valueToRender, index) => (
       <span key={`union-type-${index}`}>
@@ -215,14 +223,18 @@ export const resolveTypeName = ({
 
 export const parseParamName = (name: string) => (name.startsWith('__') ? name.substr(2) : name);
 
-export const renderParam = ({ comment, name, type }: MethodParamData): JSX.Element => (
+export const renderParam = ({ comment, name, type, flags }: MethodParamData): JSX.Element => (
   <LI key={`param-${name}`}>
     <B>
-      {parseParamName(name)} (<InlineCode>{resolveTypeName(type)}</InlineCode>)
+      {parseParamName(name)}
+      {flags?.isOptional && '?'} (<InlineCode>{resolveTypeName(type)}</InlineCode>)
     </B>
     <CommentTextBlock comment={comment} renderers={mdInlineRenderers} withDash />
   </LI>
 );
+
+export const listParams = (parameters: MethodParamData[]) =>
+  parameters ? parameters?.map(param => parseParamName(param.name)).join(', ') : '';
 
 export type CommentTextBlockProps = {
   comment?: CommentData;

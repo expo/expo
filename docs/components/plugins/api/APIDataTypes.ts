@@ -30,8 +30,13 @@ export type TypeDefinitionData = {
   types?: TypeDefinitionData[];
   elements?: TypeDefinitionData[];
   elementType?: {
-    name: string;
+    name?: string;
     type: string;
+    declaration?: {
+      name?: string;
+      kind?: TypeDocKind;
+      indexSignature?: TypeSignaturesData;
+    };
   };
   queryType?: {
     name: string;
@@ -46,6 +51,7 @@ export type MethodParamData = {
   name: string;
   type: TypeDefinitionData;
   comment?: CommentData;
+  flags?: TypePropertyDataFlags;
 };
 
 export type TypePropertyDataFlags = {
@@ -91,11 +97,10 @@ export type InterfaceDefinitionData = {
 
 export type InterfaceValueData = {
   name: string;
-  type: TypeDefinitionData;
+  type?: TypeDefinitionData;
   flags?: TypePropertyDataFlags;
-  kind: TypeDocKind;
   comment?: CommentData;
-};
+} & MethodDefinitionData;
 
 // Methods section
 
@@ -148,6 +153,8 @@ export type TypeDeclarationContentData = {
 };
 
 export type TypeSignaturesData = {
+  name?: string;
   parameters?: MethodParamData[];
   type: TypeDefinitionData;
+  kind?: TypeDocKind;
 };

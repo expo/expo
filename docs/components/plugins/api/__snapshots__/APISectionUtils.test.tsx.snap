@@ -79,6 +79,12 @@ exports[`APISectionUtils.resolveTypeName Record with union 1`] = `
 </div>
 `;
 
+exports[`APISectionUtils.resolveTypeName alternative generic object notation 1`] = `
+<div>
+  { [column]: any }
+</div>
+`;
+
 exports[`APISectionUtils.resolveTypeName custom type 1`] = `
 <div>
   <a

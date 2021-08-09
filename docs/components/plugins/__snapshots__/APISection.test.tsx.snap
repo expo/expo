@@ -1464,6 +1464,7 @@ value depending on the state of the credential.
           class="css-kkqcgt-paragraph-STYLES_BOLD_PARAGRAPH"
         >
           options
+          ?
            (
           <code
             class="inline css-nuv12a-STYLES_INLINE_CODE"
@@ -6205,6 +6206,7 @@ provided with a single argument that is
               class="css-kkqcgt-paragraph-STYLES_BOLD_PARAGRAPH"
             >
               canAskAgain
+              
             </strong>
           </td>
           <td>
@@ -6224,6 +6226,7 @@ provided with a single argument that is
               class="css-kkqcgt-paragraph-STYLES_BOLD_PARAGRAPH"
             >
               expires
+              
             </strong>
           </td>
           <td>
@@ -6248,6 +6251,7 @@ provided with a single argument that is
               class="css-kkqcgt-paragraph-STYLES_BOLD_PARAGRAPH"
             >
               granted
+              
             </strong>
           </td>
           <td>
@@ -6267,6 +6271,7 @@ provided with a single argument that is
               class="css-kkqcgt-paragraph-STYLES_BOLD_PARAGRAPH"
             >
               status
+              
             </strong>
           </td>
           <td>
