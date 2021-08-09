@@ -155,7 +155,7 @@ class DeviceModule(private val mContext: Context) : ExportedModule(mContext), Re
   @ExpoMethod
   fun getPlatformFeaturesAsync(promise: Promise) {
     val allFeatures = mContext.applicationContext.packageManager.systemAvailableFeatures
-    val featureList = allFeatures.filter { it.name != null }.map { it.name }
+    val featureList = allFeatures.filterNotNull().map { it.name }
     promise.resolve(featureList)
   }
 
