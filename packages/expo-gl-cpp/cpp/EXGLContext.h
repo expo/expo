@@ -69,7 +69,7 @@ class EXGLContext {
   void addToNextBatch(Op &&op) noexcept;
   // [JS thread] Add a blocking operation to the 'next' batch -- waits for the
   // queued function to run before returning
-  void addBlockingToNextBatch(Op &&op) noexcept;
+  void addBlockingToNextBatch(Op &&op);
 
   // [JS thread] Enqueue a function and return an EXGL object that will get mapped
   // to the function's return value when it is called on the GL thread.

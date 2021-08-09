@@ -59,14 +59,14 @@ inline void setFunctionOnObject(
       runtime, jsName, jsi::Function::createFromHostFunction(runtime, jsName, 0, func));
 }
 
-inline void jsConsoleLog(jsi::Runtime &runtime, const std::string &msg) {
+inline void jsConsoleLog(jsi::Runtime &runtime, std::initializer_list<jsi::Value> args) {
   runtime.global()
       .getProperty(runtime, "console")
       .asObject(runtime)
       .getProperty(runtime, "log")
       .asObject(runtime)
       .asFunction(runtime)
-      .call(runtime, {jsi::String::createFromUtf8(runtime, msg)});
+      .call(runtime, args);
 }
 
 inline jsi::Value unsupportedWebGL2(
