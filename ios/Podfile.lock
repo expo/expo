@@ -1941,12 +1941,12 @@ PODS:
     - UMTaskManagerInterface
   - EXTrackingTransparency (1.1.0):
     - ExpoModulesCore
-  - EXUpdates (0.7.0):
+  - EXUpdates (0.8.4):
     - EXStructuredHeaders
     - EXUpdatesInterface
     - React-Core
     - UMCore
-  - EXUpdates/Tests (0.7.0):
+  - EXUpdates/Tests (0.8.4):
     - EXStructuredHeaders
     - EXUpdatesInterface
     - React-Core
@@ -4092,14 +4092,14 @@ SPEC CHECKSUMS:
   EXStructuredHeaders: 384ccdf0c09ed0be8fc73d4b2d70e436cd195975
   EXTaskManager: 91fef764a2ec7690aa8070f862098df064facdc4
   EXTrackingTransparency: 212dcc45e24c0e3ec8ea89e4d93c1d123c5a1fb4
-  EXUpdates: 555bae578b14cfd76cc9e46cbd0a010dc6edddd2
+  EXUpdates: 7b9a2fb2315ad0bd9f6c7680d7c29721587eec5d
   EXUpdatesInterface: b68e78b912a03fff7901a5f46ec200c45e3506a5
   EXVideoThumbnails: 0a74ef339680e1aa52e30c53bc56990e9d8af0e8
   EXWebBrowser: b244cd85281a2b8f90a4ce81d674e3dc4f4ccc5e
   FacebookSDK: 4b9bb8e2824898b47f18c666dc145c09b40609e6
   FBAudienceNetwork: cfe55330dcc4e9a1df083c34a346ca7f8e32951e
   FBLazyVector: e686045572151edef46010a6f819ade377dfeb4b
-  FBReactNativeSpec: bb130217b38b59337ad8a4fe9c5ed9ef2d23e750
+  FBReactNativeSpec: 6baddc2c2b39d192b96965ec745b4d6628e62b2e
   FBSDKCoreKit: dace5abafc2fd9272733e6d027bcf18102712117
   Firebase: cd2ab85eec8170dc260186159f21072ecb679ad5
   FirebaseAnalytics: f3f8f75de34fe04141a69bb1c4bd7e24a80178e1

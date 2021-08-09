@@ -73,4 +73,19 @@ internal class DevLauncherUpdatesHelperTest {
     }
     return updatesInterface
   }
+
+  @Test
+  fun `createUpdatesConfiguration sets the correct value for scopeKey`() {
+    val urlString1 = "https://exp.host/@test/first-app"
+    val configuration1 = createUpdatesConfigurationWithUrl(Uri.parse(urlString1))
+
+    val urlString2 = "https://exp.host/@test/second-app"
+    val configuration2 = createUpdatesConfigurationWithUrl(Uri.parse(urlString2))
+
+    val scopeKey1 = configuration1["scopeKey"]
+    val scopeKey2 = configuration2["scopeKey"]
+    Truth.assertThat(scopeKey1).isNotEqualTo(scopeKey2)
+    Truth.assertThat(scopeKey1).isEqualTo(urlString1)
+    Truth.assertThat(scopeKey2).isEqualTo(urlString2)
+  }
 }

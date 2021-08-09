@@ -557,7 +557,7 @@ Consider using the [`expo-facebook`](/versions/latest/sdk/facebook) module for n
 
 <img alt="Facebook Console for URIs" src="/static/images/sdk/auth-session/guide/facebook-ios-guide.png" />
 
-- Under iOS > Bundle ID: Add your app's bundle identifier, this should match the value in your `app.json` - `expo.devs.bundleIdentifier`. If you don't have one set, run `expo eject` to create one (then rebuild the native app).
+- Under iOS > Bundle ID: Add your app's bundle identifier, this should match the value in your `app.json` - `expo.ios.bundleIdentifier`. If you don't have one set, run `expo eject` to create one (then rebuild the native app).
 - Press "Save Changes" in the footer.
 - Copy the "App ID" in the header into your `iosClientId: '<YOUR FBID>'` or `clientId`. Ex: `{ iosClientId: '474614477183384' }` (no `fb` prefix).
 - Now you're ready to use the demo component in your native iOS app.
@@ -1110,8 +1110,8 @@ This can only be used in Standalone, and bare workflow apps. This method cannot 
   - Run `expo credentials:manager -p android` then select "Update upload Keystore" -> "Generate new keystore" -> "Go back to experience overview"
   - Copy your "Google Certificate Fingerprint", it will output a string that looks like `A1:B2:C3` but longer.
 - To test this you can:
-  1. Eject to bare: `expo eject` and run `yarn ios`
-  2. Build a production IPA: `expo build:android`
+  1. Eject to bare: `expo eject` and run `yarn android`
+  2. Build a production APK: `expo build:android`
 - Whenever you change the values in `app.json` you'll need to rebuild the native app.
 
 #### Web Apps

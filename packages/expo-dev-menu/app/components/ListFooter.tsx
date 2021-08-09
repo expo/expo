@@ -11,7 +11,7 @@ export type ListFooterProps = {
 class ListFooter extends React.PureComponent<ListFooterProps> {
   render() {
     return (
-      <View style={styles.container}>
+      <View testID="DevMenuFooter" style={styles.container}>
         <StyledText
           style={styles.text}
           lightColor={Colors.light.grayText}

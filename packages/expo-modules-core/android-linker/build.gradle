@@ -5,6 +5,8 @@ apply plugin: 'maven'
 // Import autolinking script
 apply from: "../scripts/autolinking.gradle"
 
+ensureDependeciesWereEvaluated(project)
+
 group = 'host.exp.exponent'
 version = '0.1.1'
 
