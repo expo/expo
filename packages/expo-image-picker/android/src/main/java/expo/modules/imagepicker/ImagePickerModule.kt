@@ -54,6 +54,7 @@ class ImagePickerModule(
 
   override fun onDestroy() {
     try {
+      mUIManager.unregisterLifecycleEventListener(this)
       moduleCoroutineScope.cancel(ModuleDestroyedException())
     } catch (e: IllegalStateException) {
       Log.e(ImagePickerConstants.TAG, "The scope does not have a job in it")
