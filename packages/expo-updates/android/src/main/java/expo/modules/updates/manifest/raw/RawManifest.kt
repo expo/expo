@@ -148,8 +148,11 @@ abstract class RawManifest(protected val json: JSONObject) {
 
   fun getAndroidUserInterfaceStyle(): String? {
     val expoClientConfig = getExpoClientConfigRootObject() ?: return null
-    val android = expoClientConfig.optJSONObject("android") ?: return null
-    return android.optString("userInterfaceStyle") ?: expoClientConfig.optString("userInterfaceStyle")
+    return try {
+      expoClientConfig.getJSONObject("android").getString("userInterfaceStyle")
+    } catch (e: JSONException) {
+      expoClientConfig.optString("userInterfaceStyle")
+    }
   }
 
   fun getAndroidStatusBarOptions(): JSONObject? {
