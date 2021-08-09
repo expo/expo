@@ -6,6 +6,7 @@ import expo.modules.core.ModuleRegistry
 import expo.modules.core.Promise
 import expo.modules.core.interfaces.ActivityProvider
 import expo.modules.core.interfaces.ExpoMethod
+import expo.modules.core.ModuleRegistryDelegate
 
 import com.facebook.device.yearclass.YearClass
 
@@ -21,17 +22,17 @@ import android.view.WindowManager
 import android.util.DisplayMetrics
 
 import java.io.File
-import java.util.ArrayList
-import java.util.HashMap
 import kotlin.math.pow
 import kotlin.math.sqrt
 
 private const val NAME = "ExpoDevice"
 
 class DeviceModule(private val mContext: Context) : ExportedModule(mContext), RegistryLifecycleListener {
-  private var mModuleRegistry: ModuleRegistry? = null
-  private var mActivityProvider: ActivityProvider? = null
+  private val moduleRegistryDelegate: ModuleRegistryDelegate = ModuleRegistryDelegate()
+  private val mActivityProvider: ActivityProvider? by moduleRegistry()
   private var mActivity: Activity? = null
+
+  private inline fun <reified T> moduleRegistry() = moduleRegistryDelegate.getFromModuleRegistry<T>()
 
   // Keep this enum in sync with JavaScript
   enum class DeviceType(val JSValue: Int) {
@@ -47,82 +48,65 @@ class DeviceModule(private val mContext: Context) : ExportedModule(mContext), Re
   }
 
   override fun onCreate(moduleRegistry: ModuleRegistry) {
-    mModuleRegistry = moduleRegistry
-    mActivityProvider = moduleRegistry.getModule(ActivityProvider::class.java)
+    moduleRegistryDelegate.onCreate(moduleRegistry)
     mActivity = mActivityProvider?.currentActivity
   }
 
-  override fun getConstants(): Map<String, Any> {
-    val constants = HashMap<String, Any>()
-
-    constants["isDevice"] = !isRunningOnGenymotion && !isRunningOnStockEmulator
-    constants["brand"] = Build.BRAND
-    constants["manufacturer"] = Build.MANUFACTURER
-    constants["modelName"] = Build.MODEL
-    constants["designName"] = Build.DEVICE
-    constants["productName"] = Build.PRODUCT
-    constants["deviceYearClass"] = deviceYearClass
-
-    val activityManager = mContext.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
-    val memoryInfo = ActivityManager.MemoryInfo()
-    activityManager.getMemoryInfo(memoryInfo)
-
-    constants["totalMemory"] = memoryInfo.totalMem
-
-    var supportedAbis = Build.SUPPORTED_ABIS
-    if (supportedAbis != null && supportedAbis.isEmpty()) {
-      supportedAbis = null
-    }
-
-    constants["supportedCpuArchitectures"] = supportedAbis
-    constants["osName"] = systemName
-    constants["osVersion"] = Build.VERSION.RELEASE
-    constants["osBuildId"] = Build.DISPLAY
-    constants["osInternalBuildId"] = Build.ID
-    constants["osBuildFingerprint"] = Build.FINGERPRINT
-    constants["platformApiLevel"] = Build.VERSION.SDK_INT
-    constants["deviceName"] = Settings.Secure.getString(mContext.contentResolver, "bluetooth_name")
-
-    return constants
-  }
+  override fun getConstants(): Map<String, Any> = hashMapOf(
+    "isDevice" to (!isRunningOnGenymotion && !isRunningOnStockEmulator),
+    "brand" to Build.BRAND,
+    "manufacturer" to Build.MANUFACTURER,
+    "modelName" to Build.MODEL,
+    "designName" to Build.DEVICE,
+    "productName" to Build.DEVICE,
+    "deviceYearClass" to deviceYearClass,
+    "totalMemory" to run {
+      val memoryInfo = ActivityManager.MemoryInfo()
+      (mContext.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager).getMemoryInfo(memoryInfo)
+      memoryInfo.totalMem
+    },
+    "supportedCpuArchitectures" to run {
+      var supportedAbis = Build.SUPPORTED_ABIS
+      if (supportedAbis != null && supportedAbis.isEmpty()) {
+        supportedAbis = null
+      }
+      supportedAbis
+    },
+    "osName" to systemName,
+    "osVersion" to Build.VERSION.RELEASE,
+    "osBuildId" to Build.DISPLAY,
+    "osInternalBuildId" to Build.ID,
+    "osBuildFingerprint" to Build.FINGERPRINT,
+    "platformApiLevel" to Build.VERSION.SDK_INT,
+    "deviceName" to Settings.Secure.getString(mContext.contentResolver, "bluetooth_name")
+  )
 
   private val deviceYearClass: Int
     get() = YearClass.get(mContext)
+
   private val systemName: String
     get() {
-      var systemName: String
-      if (Build.VERSION.SDK_INT < 23) {
-        systemName = "Android"
+      return if (Build.VERSION.SDK_INT < 23) {
+        "Android"
       } else {
-        systemName = Build.VERSION.BASE_OS
-        if (systemName.isEmpty()) {
-          systemName = "Android"
-        }
+        Build.VERSION.BASE_OS.takeIf { it.isNotEmpty() } ?: "Android"
       }
-      return systemName
     }
 
   @ExpoMethod
   fun getDeviceTypeAsync(promise: Promise) {
-    val mDeviceType = getDeviceType(mContext)
-    promise.resolve(mDeviceType.JSValue)
+    promise.resolve(getDeviceType(mContext).JSValue)
   }
 
   @ExpoMethod
   fun getUptimeAsync(promise: Promise) {
-    val uptime = SystemClock.uptimeMillis()
-    promise.resolve(uptime.toDouble())
+    promise.resolve(SystemClock.uptimeMillis().toDouble())
   }
 
   @ExpoMethod
   fun getMaxMemoryAsync(promise: Promise) {
     val maxMemory = Runtime.getRuntime().maxMemory()
-    if (maxMemory == Long.MAX_VALUE) {
-      // convert into maximum integer that JS could fit
-      promise.resolve(-1)
-    } else {
-      promise.resolve(maxMemory.toDouble())
-    }
+    promise.resolve(if (maxMemory != Long.MAX_VALUE) maxMemory.toDouble() else -1)
   }
 
   @ExpoMethod
@@ -132,15 +116,13 @@ class DeviceModule(private val mContext: Context) : ExportedModule(mContext), Re
 
     try {
       val buildTags = Build.TAGS
-      if (isDevice && buildTags != null && buildTags.contains("test-keys")) {
-        isRooted = true
+      isRooted = if (isDevice && buildTags != null && buildTags.contains("test-keys")) {
+        true
       } else {
-        var file = File("/system/app/Superuser.apk")
-        if (file.exists()) {
-          isRooted = true
+        if (File("/system/app/Superuser.apk").exists()) {
+          true
         } else {
-          file = File("/system/xbin/su")
-          isRooted = isDevice && file.exists()
+          isDevice && File("/system/xbin/su").exists()
         }
       }
     } catch (se: SecurityException) {
@@ -173,15 +155,7 @@ class DeviceModule(private val mContext: Context) : ExportedModule(mContext), Re
   @ExpoMethod
   fun getPlatformFeaturesAsync(promise: Promise) {
     val allFeatures = mContext.applicationContext.packageManager.systemAvailableFeatures
-    val featureList: MutableList<String> = ArrayList()
-
-    for (i in allFeatures.indices) {
-      if (allFeatures[i].name != null) {
-        featureList.add(allFeatures[i].name)
-      }
-    }
-
-    promise.resolve(featureList)
+    promise.resolve(allFeatures.filter { it.name != null })
   }
 
   @ExpoMethod
