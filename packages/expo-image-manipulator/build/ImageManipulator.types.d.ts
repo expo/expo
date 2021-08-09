@@ -12,19 +12,17 @@ export declare type ImageResult = {
      */
     height: number;
     /**
-     * it is included if the `base64` save option was truthy, and is a string containing the
+     * It is included if the `base64` save option was truthy, and is a string containing the
      * JPEG/PNG (depending on `format`) data of the image in Base64. Prepend that with `'data:image/xxx;base64,'`
      * to get a data URI, which you can use as the source for an `Image` element for example
      * (where `xxx` is `jpeg` or `png`).
      */
     base64?: string;
 };
-/**
- * > If you specify only one value, the other will be calculated automatically to preserve image ratio.
- */
 export declare type ActionResize = {
     /**
      * Values correspond to the result image dimensions.
+     * > If you specify only one value, the other will be calculated automatically to preserve image ratio.
      */
     resize: {
         width?: number;
@@ -42,13 +40,11 @@ export declare enum FlipType {
     Vertical = "vertical",
     Horizontal = "horizontal"
 }
-/**
- * > Only one flip per transformation is available. If you want to flip according to both axes then
- * provide two separate transformations.
- */
 export declare type ActionFlip = {
     /**
      * An axis on which image will be flipped.
+     * > Only one flip per transformation is available. If you want to flip according to both axes then
+     * provide two separate transformations.
      */
     flip: FlipType;
 };

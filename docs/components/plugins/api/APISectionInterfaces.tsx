@@ -1,5 +1,4 @@
 import React from 'react';
-import ReactMarkdown from 'react-markdown';
 
 import { InlineCode } from '~/components/base/code';
 import { B } from '~/components/base/paragraph';
@@ -35,9 +34,7 @@ const renderInterfacePropertyRow = ({
     <td>
       <InlineCode>{resolveTypeName(type)}</InlineCode>
     </td>
-    <td>
-      {comment ? <CommentTextBlock comment={comment} renderers={mdInlineRenderers} /> : '-'}
-    </td>
+    <td>{comment ? <CommentTextBlock comment={comment} renderers={mdInlineRenderers} /> : '-'}</td>
   </tr>
 );
 

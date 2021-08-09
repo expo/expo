@@ -22,12 +22,10 @@ export type ImageResult = {
 };
 
 // @needsAudit
-/**
- * > If you specify only one value, the other will be calculated automatically to preserve image ratio.
- */
 export type ActionResize = {
   /**
    * Values correspond to the result image dimensions.
+   * > If you specify only one value, the other will be calculated automatically to preserve image ratio.
    */
   resize: {
     width?: number;
@@ -51,13 +49,11 @@ export enum FlipType {
 }
 
 // @needsAudit
-/**
- * > Only one flip per transformation is available. If you want to flip according to both axes then
- * provide two separate transformations.
- */
 export type ActionFlip = {
   /**
    * An axis on which image will be flipped.
+   * > Only one flip per transformation is available. If you want to flip according to both axes then
+   * provide two separate transformations.
    */
   flip: FlipType;
 };
