@@ -39,22 +39,14 @@ The **`expo-notifications`** provides an API to fetch push notification tokens a
 If you're using EAS Build or the bare workflow, you can set your Android notification icon and color tint, add custom push notification sounds, and set your iOS notification environment using the `expo-notifications` config plugin ([what's a config plugin?](/guides/config-plugins.md)). To setup, just add the config plugin to the `plugins` array of your `app.json` or `app.config.js`:
 
 ```json
-{
-  "expo": {
-    ...
-    "plugins": [
-      [
-        "expo-notifications",
-        {
-          "icon": "./local/path/to/myNotificationIcon.png",
-          "color": "#ffffff",
-          "sounds": ["./local/path/to/mySound.wav", "./local/path/to/myOtherSound.wav"],
-          "mode": "production"
-        }
-      ]
-    ],
-  }
-}
+"plugins": [
+  ["expo-notifications", {
+    "icon": "./local/path/to/myNotificationIcon.png",
+    "color": "#ffffff",
+    "sounds": ["./local/path/to/mySound.wav", "./local/path/to/myOtherSound.wav"],
+    "mode": "production"
+  }]
+]
 ```
 
 <details><summary><strong>Expand to view property descriptions and default values</strong></summary> <p>

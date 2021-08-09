@@ -44,7 +44,7 @@
     "apiDeprecated": false,
     "framework": "AVFoundation",
     "name": "NSMicrophoneUsageDescription",
-    "description": "A message that tells the user why the app is requesting access to the device’s microphone.",
+    "description": "[Optional] A message that tells the user why the app is requesting access to the device’s microphone.",
     "warning": "This key is required if your app uses APIs that access the device’s microphone."
   },
   "NSContactsUsageDescription": {

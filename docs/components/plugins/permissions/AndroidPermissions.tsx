@@ -51,7 +51,10 @@ function AndroidPermissionRow(permission: AndroidPermissionItem) {
       </td>
       <td>
         {!!description && (
-          <p css={(warning || descriptionLong) && descriptionSpaceStyle}>{description}</p>
+          <p 
+            css={(warning || descriptionLong) && descriptionSpaceStyle}
+            dangerouslySetInnerHTML={{ __html: description }}
+          />
         )}
         {!!warning && (
           <Quote css={quoteStyle}>

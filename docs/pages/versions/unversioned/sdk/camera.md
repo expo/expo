@@ -7,6 +7,8 @@ import InstallSection from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 import SnackInline from '~/components/plugins/SnackInline';
 
+import { AndroidPermissions, IOSPermissions } from '~/components/plugins/permissions';
+
 **`expo-camera`** provides a React component that renders a preview for the device's front or back camera. The camera's parameters like zoom, auto focus, white balance and flash mode are adjustable. With the use of `Camera`, one can also take photos and record videos that are then saved to the app's cache. Morever, the component is also capable of detecting faces and bar codes appearing in the preview. Run the [example](#usage) on your device to see all these features working together!
 
 <PlatformsSection android ios web />
@@ -20,6 +22,19 @@ import SnackInline from '~/components/plugins/SnackInline';
 ## Configuration
 
 In managed apps, `Camera` requires `Permissions.CAMERA`. Video recording requires `Permissions.AUDIO_RECORDING`.
+
+Here is the config plugin _auto-generated_
+
+## Permissions
+
+
+### Android 
+
+<AndroidPermissions keys={['CAMERA', 'RECORD_AUDIO', 'WRITE_EXTERNAL_STORAGE', 'ACCESS_FINE_LOCATION']} />
+
+### iOS
+
+<IOSPermissions keys={['NSCameraUsageDescription', 'NSMicrophoneUsageDescription']} />
 
 ## Usage
 
