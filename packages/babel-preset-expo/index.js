@@ -125,8 +125,8 @@ function getAliasPlugin() {
 }
 
 /**
- * This uses the `{ loose: true }` option in Metro, it breaks all getters and setters.
- * We need to add this plugin ourself without that option.
+ * metro-react-native-babel-preset configures this plugin with `{ loose: true }`, which breaks all
+ * getters and setters in spread objects. We need to add this plugin ourself without that option.
  * @see https://github.com/expo/expo/pull/11960#issuecomment-887796455
  */
 function getObjectRestSpreadPlugin() {
