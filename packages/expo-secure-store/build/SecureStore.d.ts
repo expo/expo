@@ -41,6 +41,16 @@ export declare type SecureStoreOptions = {
      */
     keychainService?: string;
     /**
+     * - iOS: Equivalent to `kSecAccessControlUserPresence`
+     * - Android: Equivalent to `setUserAuthenticationRequired(true)` (requires API 23). Needs to generate
+     * a new encryption key to fully work, it is recommended to use it with separate `keychainService`
+     */
+    requireAuthentication?: boolean;
+    /**
+     * A message to display on the authentication prompt.
+     */
+    authenticationPrompt?: string;
+    /**
      * __(iOS only)__ Specifies when the stored entry is accessible, using iOS's `kSecAttrAccessible`
      * property. See Apple's documentation on [keychain item accessibility](https://developer.apple.com/library/content/documentation/Security/Conceptual/keychainServConcepts/02concepts/concepts.html#//apple_ref/doc/uid/TP30000897-CH204-SW18).
      * Default value: `SecureStore.WHEN_UNLOCKED`.

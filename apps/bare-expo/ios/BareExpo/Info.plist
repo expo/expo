@@ -59,6 +59,8 @@
 	<string>Allow bare-expo to use the camera</string>
 	<key>NSContactsUsageDescription</key>
 	<string>Allow bare-expo experiences to access your contacts</string>
+	<key>NSFaceIDUsageDescription</key>
+	<string>Allow bare-expo to use Face ID</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
 	<string>Allow bare-expo to use your location</string>
 	<key>NSLocationAlwaysUsageDescription</key>
@@ -96,20 +98,5 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
-	<key>UIRequiresFullScreen</key>
-	<false/>
-	<key>LSApplicationQueriesSchemes</key>
-	<array>
-		<string>fbapi</string>
-		<string>fb-messenger-api</string>
-		<string>fbauth2</string>
-		<string>fbshareextension</string>
-	</array>
-	<key>CFBundleDisplayName</key>
-	<string>BareExpo</string>
-	<key>FacebookAppID</key>
-	<string>629712900716487</string>
-	<key>FacebookDisplayName</key>
-	<string>Expo APIs</string>
 </dict>
 </plist>

@@ -2,6 +2,7 @@ package expo.modules.securestore;
 
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
+import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Build;
@@ -16,9 +17,12 @@ import android.util.Log;
 import org.json.JSONException;
 import org.json.JSONObject;
 import expo.modules.core.ExportedModule;
+import expo.modules.core.ModuleRegistry;
 import expo.modules.core.Promise;
 import expo.modules.core.arguments.ReadableArguments;
+import expo.modules.core.interfaces.ActivityProvider;
 import expo.modules.core.interfaces.ExpoMethod;
+import expo.modules.core.interfaces.services.UIManager;
 
 import java.io.IOException;
 import java.math.BigInteger;
@@ -45,6 +49,12 @@ import javax.crypto.spec.GCMParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 import javax.security.auth.x500.X500Principal;
 
+import androidx.annotation.NonNull;
+import androidx.biometric.BiometricManager;
+import androidx.biometric.BiometricPrompt;
+import androidx.core.content.ContextCompat;
+import androidx.fragment.app.FragmentActivity;
+
 public class SecureStoreModule extends ExportedModule {
   private static final String TAG = "ExpoSecureStore";
   private static final String SHARED_PREFERENCES_NAME = "SecureStore";
@@ -53,6 +63,12 @@ public class SecureStoreModule extends ExportedModule {
   private static final String ALIAS_PROPERTY = "keychainService";
 
   private static final String SCHEME_PROPERTY = "scheme";
+  private static final String REQUIRE_AUTHENTICATION_PROPERTY = "requireAuthentication";
+  private static final String AUTHENTICATION_PROMPT_PROPERTY = "authenticationPrompt";
+
+  private boolean mIsAuthenticating = false;
+  private ModuleRegistry mModuleRegistry;
+  private UIManager mUIManager;
 
   private KeyStore mKeyStore;
   private AESEncrypter mAESEncrypter;
@@ -62,6 +78,12 @@ public class SecureStoreModule extends ExportedModule {
     super(context);
     mAESEncrypter = new AESEncrypter();
     mHybridAESEncrypter = new HybridAESEncrypter(context, mAESEncrypter);
+  }
+
+  @Override
+  public void onCreate(ModuleRegistry moduleRegistry) {
+    mModuleRegistry = moduleRegistry;
+    mUIManager = moduleRegistry.getModule(UIManager.class);
   }
 
   @Override
@@ -100,6 +122,18 @@ public class SecureStoreModule extends ExportedModule {
       return;
     }
 
+    AuthenticationCallback callback = new AuthenticationCallback() {
+      @Override
+      public void checkAuthentication(Promise promise, boolean requiresAuthentication, Cipher cipher, GCMParameterSpec gcmParameterSpec,
+                                      EncryptionCallback encryptionCallback, PostEncryptionCallback postEncryptionCallback) {
+        if (requiresAuthentication) {
+          openAuthenticationPrompt(promise, options, encryptionCallback, cipher, gcmParameterSpec, postEncryptionCallback);
+        } else {
+          handleEncryptionCallback(promise, encryptionCallback, cipher, gcmParameterSpec, postEncryptionCallback);
+        }
+      }
+    };
+
     JSONObject encryptedItem;
     try {
       KeyStore keyStore = getKeyStore();
@@ -110,12 +144,24 @@ public class SecureStoreModule extends ExportedModule {
       // back a value.
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
         KeyStore.SecretKeyEntry secretKeyEntry = getKeyEntry(KeyStore.SecretKeyEntry.class, mAESEncrypter, options);
-        encryptedItem = mAESEncrypter.createEncryptedItem(value, keyStore, secretKeyEntry);
-        encryptedItem.put(SCHEME_PROPERTY, AESEncrypter.NAME);
+        mAESEncrypter.createEncryptedItem(promise, value, keyStore, secretKeyEntry, options, callback, new PostEncryptionCallback() {
+          @Override
+          public void run(Promise promise, Object result) throws JSONException {
+            JSONObject obj = (JSONObject) result;
+            obj.put(SCHEME_PROPERTY, AESEncrypter.NAME);
+            saveEncryptedItem(promise, obj, prefs, key);
+          }
+        });
       } else {
         KeyStore.PrivateKeyEntry privateKeyEntry = getKeyEntry(KeyStore.PrivateKeyEntry.class, mHybridAESEncrypter, options);
-        encryptedItem = mHybridAESEncrypter.createEncryptedItem(value, keyStore, privateKeyEntry);
-        encryptedItem.put(SCHEME_PROPERTY, HybridAESEncrypter.NAME);
+        mHybridAESEncrypter.createEncryptedItem(promise, value, keyStore, privateKeyEntry, options, callback, new PostEncryptionCallback() {
+          @Override
+          public void run(Promise promise, Object result) throws JSONException {
+            JSONObject obj = (JSONObject) result;
+            obj.put(SCHEME_PROPERTY, HybridAESEncrypter.NAME);
+            saveEncryptedItem(promise, obj, prefs, key);
+          }
+        });
       }
     } catch (IOException e) {
       Log.w(TAG, e);
@@ -130,7 +176,9 @@ public class SecureStoreModule extends ExportedModule {
       promise.reject("E_SECURESTORE_ENCODE_ERROR", "Could not create an encrypted JSON item for SecureStore", e);
       return;
     }
+  }
 
+  private void saveEncryptedItem(Promise promise, JSONObject encryptedItem, SharedPreferences prefs, String key) {
     String encryptedItemString = encryptedItem.toString();
     if (encryptedItemString == null) { // lint warning suppressed, JSONObject#toString() may return null
       promise.reject("E_SECURESTORE_JSON_ERROR", "Could not JSON-encode the encrypted item for SecureStore");
@@ -185,16 +233,28 @@ public class SecureStoreModule extends ExportedModule {
       return;
     }
 
+    AuthenticationCallback callback = new AuthenticationCallback() {
+      @Override
+      public void checkAuthentication(Promise promise, boolean requiresAuthentication, Cipher cipher, GCMParameterSpec gcmParameterSpec,
+                                      EncryptionCallback encryptionCallback, PostEncryptionCallback postEncryptionCallback) {
+        if (requiresAuthentication) {
+          openAuthenticationPrompt(promise, options, encryptionCallback, cipher, gcmParameterSpec, postEncryptionCallback);
+        } else {
+          handleEncryptionCallback(promise, encryptionCallback, cipher, gcmParameterSpec, postEncryptionCallback);
+        }
+      }
+    };
+
     String value;
     try {
       switch (scheme) {
         case AESEncrypter.NAME:
           KeyStore.SecretKeyEntry secretKeyEntry = getKeyEntry(KeyStore.SecretKeyEntry.class, mAESEncrypter, options);
-          value = mAESEncrypter.decryptItem(encryptedItem, secretKeyEntry);
+          mAESEncrypter.decryptItem(promise, encryptedItem, secretKeyEntry, callback);
           break;
         case HybridAESEncrypter.NAME:
           KeyStore.PrivateKeyEntry privateKeyEntry = getKeyEntry(KeyStore.PrivateKeyEntry.class, mHybridAESEncrypter, options);
-          value = mHybridAESEncrypter.decryptItem(encryptedItem, privateKeyEntry);
+          mHybridAESEncrypter.decryptItem(promise, encryptedItem, privateKeyEntry, callback);
           break;
         default:
           String message = String.format("The item for key \"%s\" in SecureStore has an unknown encoding scheme (%s)", key, scheme);
@@ -215,8 +275,98 @@ public class SecureStoreModule extends ExportedModule {
       promise.reject("E_SECURESTORE_DECODE_ERROR", "Could not decode the encrypted JSON item in SecureStore", e);
       return;
     }
+  }
 
-    promise.resolve(value);
+  private void handleEncryptionCallback(Promise promise, EncryptionCallback encryptionCallback, Cipher cipher,
+                                        GCMParameterSpec gcmParameterSpec, PostEncryptionCallback postEncryptionCallback) {
+    try {
+      encryptionCallback.run(promise, cipher, gcmParameterSpec, postEncryptionCallback);
+    } catch (GeneralSecurityException e) {
+      Log.w(TAG, e);
+      promise.reject("E_SECURESTORE_ENCRYPT_ERROR", "Could not encrypt/decrypt the value for SecureStore", e);
+    } catch (JSONException e) {
+      Log.w(TAG, e);
+      promise.reject("E_SECURESTORE_ENCODE_ERROR", "Could not create an encrypted JSON item for SecureStore", e);
+    }
+  }
+
+  private void openAuthenticationPrompt(Promise promise, ReadableArguments options, EncryptionCallback encryptionCallback,
+                                        Cipher cipher, GCMParameterSpec gcmParameterSpec, PostEncryptionCallback postEncryptionCallback) {
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+      promise.reject("E_SECURESTORE_AUTH_NOT_AVAILABLE_ERROR", "Biometric authentication requires Android API 23");
+      return;
+    }
+
+    if (mIsAuthenticating) {
+      promise.reject("E_SECURESTORE_AUTH_ERROR", "Authentication is already in progress");
+      return;
+    }
+
+    BiometricManager biometricManager = BiometricManager.from(getContext());
+
+    switch (biometricManager.canAuthenticate(BiometricManager.Authenticators.BIOMETRIC_STRONG)) {
+      case BiometricManager.BIOMETRIC_ERROR_HW_UNAVAILABLE: case BiometricManager.BIOMETRIC_ERROR_NO_HARDWARE:
+        promise.reject("E_SECURESTORE_AUTH_NOT_AVAILABLE_ERROR", "No hardware available for biometric authentication. Use expo-local-authentication to check if the device supports it.");
+        return;
+
+      case BiometricManager.BIOMETRIC_ERROR_NONE_ENROLLED:
+        promise.reject("E_SECURESTORE_AUTH_ERROR", "No biometrics are currently enrolled");
+        return;
+    }
+
+    String title = " ";
+    if (options.containsKey(AUTHENTICATION_PROMPT_PROPERTY)) {
+      title = (String) options.get(AUTHENTICATION_PROMPT_PROPERTY);
+    }
+
+    BiometricPrompt.PromptInfo promptInfo = new BiometricPrompt.PromptInfo.Builder()
+      .setTitle(title)
+      .setNegativeButtonText(getContext().getString(android.R.string.cancel))
+      .build();
+
+    final FragmentActivity fragmentActivity = (FragmentActivity) getCurrentActivity();
+    if (fragmentActivity == null) {
+      promise.reject("E_NOT_FOREGROUND", "Cannot display biometric prompt when the app is not in the foreground");
+      return;
+    }
+
+    mUIManager.runOnUiQueueThread(new Runnable() {
+      @Override
+      public void run() {
+        mIsAuthenticating = true;
+
+        new BiometricPrompt(fragmentActivity, ContextCompat.getMainExecutor(getContext()), new BiometricPrompt.AuthenticationCallback() {
+          @Override
+          public void onAuthenticationSucceeded(@NonNull BiometricPrompt.AuthenticationResult result) {
+            super.onAuthenticationSucceeded(result);
+            mIsAuthenticating = false;
+            Cipher cipher = result.getCryptoObject().getCipher();
+
+            handleEncryptionCallback(promise, encryptionCallback, cipher, gcmParameterSpec, new PostEncryptionCallback() {
+              @Override
+              public void run(Promise promise, Object result) throws JSONException, GeneralSecurityException {
+                JSONObject obj = (JSONObject) result;
+                obj.put(REQUIRE_AUTHENTICATION_PROPERTY, true);
+
+                postEncryptionCallback.run(promise, result);
+              }
+            });
+          }
+
+          @Override
+          public void onAuthenticationError(int errorCode, @NonNull CharSequence errString) {
+            super.onAuthenticationError(errorCode, errString);
+            mIsAuthenticating = false;
+
+            if (errorCode == BiometricPrompt.ERROR_USER_CANCELED || errorCode == BiometricPrompt.ERROR_NEGATIVE_BUTTON) {
+              promise.reject("E_SECURESTORE_AUTH_ERROR", "User canceled the authentication");
+            } else {
+              promise.reject("E_SECURESTORE_AUTH_ERROR", "Could not authenticate the user");
+            }
+          }
+        }).authenticate(promptInfo, new BiometricPrompt.CryptoObject(cipher));
+      }
+    });
   }
 
   private void readLegacySDK20Item(String key, ReadableArguments options, Promise promise) {
@@ -309,6 +459,11 @@ public class SecureStoreModule extends ExportedModule {
     return mKeyStore;
   }
 
+  private Activity getCurrentActivity() {
+    ActivityProvider activityProvider = mModuleRegistry.getModule(ActivityProvider.class);
+    return activityProvider != null ? activityProvider.getCurrentActivity() : null;
+  }
+
   private <E extends KeyStore.Entry> E getKeyEntry(Class<E> keyStoreEntryClass,
                                                    KeyBasedEncrypter<E> encrypter,
                                                    ReadableArguments options) throws IOException, GeneralSecurityException {
@@ -332,6 +487,29 @@ public class SecureStoreModule extends ExportedModule {
     return keyStoreEntry;
   }
 
+  // When item needs to be encrypted/decrypted new instance of Authentication callback is created
+  // containing logic required to authenticate user if necessary and is passed to the relevant method
+  // The method prepares the cipher and starts the authentication. When the user is authenticated
+  // the Encryption callback is ran with the unlocked cipher and does encryption/decryption
+  // Finally the PostEncryptionCallback may be ran with the object returned by previous callback
+
+  //Interface used to pass encryption/decryption logic
+  private interface EncryptionCallback {
+    Object run(Promise promise, Cipher cipher, GCMParameterSpec gcmParameterSpec, PostEncryptionCallback postEncryptionCallback) throws
+      GeneralSecurityException, JSONException;
+  }
+
+  //Interface used to pass logic that needs to happen after encryption/decryption
+  private interface PostEncryptionCallback {
+    void run(Promise promise, Object result) throws JSONException, GeneralSecurityException;
+  }
+
+  //Interface used to pass the authentication logic
+  private interface AuthenticationCallback {
+    void checkAuthentication(Promise promise, boolean requiresAuthentication, Cipher cipher, GCMParameterSpec gcmParameterSpec,
+                             EncryptionCallback encryptionCallback, PostEncryptionCallback postEncryptionCallback);
+  }
+
   private interface KeyBasedEncrypter<E extends KeyStore.Entry> {
     String getKeyStoreAlias(ReadableArguments options);
 
@@ -339,11 +517,12 @@ public class SecureStoreModule extends ExportedModule {
         GeneralSecurityException;
 
     @SuppressWarnings("unused")
-    JSONObject createEncryptedItem(String plaintextValue, KeyStore keyStore, E keyStoreEntry) throws
+    void createEncryptedItem(Promise promise, String plaintextValue, KeyStore keyStore, E keyStoreEntry, ReadableArguments options,
+                             AuthenticationCallback authenticationCallback, PostEncryptionCallback postEncryptionCallback) throws
         GeneralSecurityException, JSONException;
 
     @SuppressWarnings("unused")
-    String decryptItem(JSONObject encryptedItem, E keyStoreEntry) throws
+    void decryptItem(Promise promise, JSONObject encryptedItem, E keyStoreEntry, AuthenticationCallback callback) throws
         GeneralSecurityException, JSONException;
   }
 
@@ -382,6 +561,7 @@ public class SecureStoreModule extends ExportedModule {
           .setKeySize(AES_KEY_SIZE_BITS)
           .setBlockModes(KeyProperties.BLOCK_MODE_GCM)
           .setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_NONE)
+          .setUserAuthenticationRequired(options.getBoolean(REQUIRE_AUTHENTICATION_PROPERTY, false))
           .build();
 
       KeyGenerator keyGenerator = KeyGenerator.getInstance(KeyProperties.KEY_ALGORITHM_AES, keyStore.getProvider());
@@ -398,18 +578,26 @@ public class SecureStoreModule extends ExportedModule {
     }
 
     @Override
-    public JSONObject createEncryptedItem(String plaintextValue, KeyStore keyStore, KeyStore.SecretKeyEntry secretKeyEntry) throws
-        GeneralSecurityException, JSONException {
+    public void createEncryptedItem(Promise promise, String plaintextValue, KeyStore keyStore, KeyStore.SecretKeyEntry secretKeyEntry,
+                                    ReadableArguments options, AuthenticationCallback authenticationCallback, PostEncryptionCallback postEncryptionCallback) throws
+        GeneralSecurityException {
 
       SecretKey secretKey = secretKeyEntry.getSecretKey();
       Cipher cipher = Cipher.getInstance(AES_CIPHER);
       cipher.init(Cipher.ENCRYPT_MODE, secretKey);
       GCMParameterSpec gcmSpec = cipher.getParameters().getParameterSpec(GCMParameterSpec.class);
 
-      return createEncryptedItem(plaintextValue, cipher, gcmSpec);
+      authenticationCallback.checkAuthentication(promise, options.getBoolean(REQUIRE_AUTHENTICATION_PROPERTY, false), cipher, gcmSpec, new EncryptionCallback() {
+        @Override
+        public Object run(Promise promise, Cipher cipher, GCMParameterSpec gcmParameterSpec, PostEncryptionCallback postEncryptionCallback) throws
+          GeneralSecurityException, JSONException {
+            return createEncryptedItem(promise, plaintextValue, cipher, gcmSpec, postEncryptionCallback);
+        }
+      }, postEncryptionCallback);
     }
 
-    /* package */ JSONObject createEncryptedItem(String plaintextValue, Cipher cipher, GCMParameterSpec gcmSpec) throws
+    /* package */ JSONObject createEncryptedItem(Promise promise, String plaintextValue, Cipher cipher,
+                                                 GCMParameterSpec gcmSpec, PostEncryptionCallback postEncryptionCallback) throws
         GeneralSecurityException, JSONException {
 
       byte[] plaintextBytes = plaintextValue.getBytes(StandardCharsets.UTF_8);
@@ -419,14 +607,19 @@ public class SecureStoreModule extends ExportedModule {
       String ivString = Base64.encodeToString(gcmSpec.getIV(), Base64.NO_WRAP);
       int authenticationTagLength = gcmSpec.getTLen();
 
-      return new JSONObject()
-          .put(CIPHERTEXT_PROPERTY, ciphertext)
-          .put(IV_PROPERTY, ivString)
-          .put(GCM_AUTHENTICATION_TAG_LENGTH_PROPERTY, authenticationTagLength);
+      JSONObject result = new JSONObject()
+        .put(CIPHERTEXT_PROPERTY, ciphertext)
+        .put(IV_PROPERTY, ivString)
+        .put(GCM_AUTHENTICATION_TAG_LENGTH_PROPERTY, authenticationTagLength);
+
+      postEncryptionCallback.run(promise, result);
+
+      return result;
     }
 
     @Override
-    public String decryptItem(JSONObject encryptedItem, KeyStore.SecretKeyEntry secretKeyEntry) throws
+    public void decryptItem(Promise promise, JSONObject encryptedItem, KeyStore.SecretKeyEntry secretKeyEntry,
+                            AuthenticationCallback callback) throws
         GeneralSecurityException, JSONException {
 
       String ciphertext = encryptedItem.getString(CIPHERTEXT_PROPERTY);
@@ -438,9 +631,16 @@ public class SecureStoreModule extends ExportedModule {
       GCMParameterSpec gcmSpec = new GCMParameterSpec(authenticationTagLength, ivBytes);
       Cipher cipher = Cipher.getInstance(AES_CIPHER);
       cipher.init(Cipher.DECRYPT_MODE, secretKeyEntry.getSecretKey(), gcmSpec);
-      byte[] plaintextBytes = cipher.doFinal(ciphertextBytes);
 
-      return new String(plaintextBytes, StandardCharsets.UTF_8);
+      callback.checkAuthentication(promise, encryptedItem.optBoolean(REQUIRE_AUTHENTICATION_PROPERTY), cipher, gcmSpec, new EncryptionCallback() {
+        @Override
+        public Object run(Promise promise, Cipher cipher, GCMParameterSpec gcmParameterSpec, PostEncryptionCallback postEncryptionCallback) throws GeneralSecurityException {
+          String result = new String(cipher.doFinal(ciphertextBytes), StandardCharsets.UTF_8);
+          promise.resolve(result);
+          return result;
+        }
+      }, null);
+
     }
   }
 
@@ -515,7 +715,8 @@ public class SecureStoreModule extends ExportedModule {
     }
 
     @Override
-    public JSONObject createEncryptedItem(String plaintextValue, KeyStore keyStore, KeyStore.PrivateKeyEntry privateKeyEntry) throws
+    public void createEncryptedItem(Promise promise, String plaintextValue, KeyStore keyStore, KeyStore.PrivateKeyEntry privateKeyEntry,
+                                    ReadableArguments options, AuthenticationCallback authenticationCallback, PostEncryptionCallback postEncryptionCallback) throws
         GeneralSecurityException, JSONException {
 
       // Generate the IV and symmetric key with which we encrypt the value
@@ -547,29 +748,41 @@ public class SecureStoreModule extends ExportedModule {
         chosenSpec = gcmSpec;
       }
 
-      JSONObject encryptedItem = mAESEncrypter.createEncryptedItem(plaintextValue, aesCipher, chosenSpec);
+      authenticationCallback.checkAuthentication(promise, options.getBoolean(REQUIRE_AUTHENTICATION_PROPERTY, false), aesCipher, chosenSpec, new EncryptionCallback() {
+        @Override
+        public Object run(Promise promise, Cipher cipher, GCMParameterSpec gcmParameterSpec, PostEncryptionCallback postEncryptionCallback) throws
+          GeneralSecurityException, JSONException {
+            return mAESEncrypter.createEncryptedItem(promise, plaintextValue, cipher, gcmSpec, postEncryptionCallback);
+        }
+      }, new PostEncryptionCallback() {
+        @Override
+        public void run(Promise promise, Object result) throws JSONException, GeneralSecurityException {
+          JSONObject encryptedItem = (JSONObject) result;
 
-      // Ensure the IV in the encrypted item matches our generated IV
-      String ivString = encryptedItem.getString(AESEncrypter.IV_PROPERTY);
-      String expectedIVString = Base64.encodeToString(ivBytes, Base64.NO_WRAP);
-      if (!ivString.equals(expectedIVString)) {
-        Log.e(TAG, String.format("HybridAESEncrypter generated two different IVs: %s and %s", expectedIVString, ivString));
-        throw new IllegalStateException("HybridAESEncrypter must store the same IV as the one used to parameterize the secret key");
-      }
+          // Ensure the IV in the encrypted item matches our generated IV
+          String ivString = encryptedItem.getString(AESEncrypter.IV_PROPERTY);
+          String expectedIVString = Base64.encodeToString(ivBytes, Base64.NO_WRAP);
+          if (!ivString.equals(expectedIVString)) {
+            Log.e(TAG, String.format("HybridAESEncrypter generated two different IVs: %s and %s", expectedIVString, ivString));
+            throw new IllegalStateException("HybridAESEncrypter must store the same IV as the one used to parameterize the secret key");
+          }
 
-      // Encrypt the symmetric key with the asymmetric public key
-      byte[] secretKeyBytes = secretKey.getEncoded();
-      Cipher cipher = getRSACipher();
-      cipher.init(Cipher.ENCRYPT_MODE, privateKeyEntry.getCertificate());
-      byte[] encryptedSecretKeyBytes = cipher.doFinal(secretKeyBytes);
-      String encryptedSecretKeyString = Base64.encodeToString(encryptedSecretKeyBytes, Base64.NO_WRAP);
+          // Encrypt the symmetric key with the asymmetric public key
+          byte[] secretKeyBytes = secretKey.getEncoded();
+          Cipher cipher = getRSACipher();
+          cipher.init(Cipher.ENCRYPT_MODE, privateKeyEntry.getCertificate());
+          byte[] encryptedSecretKeyBytes = cipher.doFinal(secretKeyBytes);
+          String encryptedSecretKeyString = Base64.encodeToString(encryptedSecretKeyBytes, Base64.NO_WRAP);
 
-      // Store the encrypted symmetric key in the encrypted item
-      return encryptedItem.put(ENCRYPTED_SECRET_KEY_PROPERTY, encryptedSecretKeyString);
+          encryptedItem.put(ENCRYPTED_SECRET_KEY_PROPERTY, encryptedSecretKeyString);
+
+          postEncryptionCallback.run(promise, encryptedItem);
+        }
+      });
     }
 
     @Override
-    public String decryptItem(JSONObject encryptedItem, KeyStore.PrivateKeyEntry privateKeyEntry) throws
+    public void decryptItem(Promise promise, JSONObject encryptedItem, KeyStore.PrivateKeyEntry privateKeyEntry, AuthenticationCallback callback) throws
         GeneralSecurityException, JSONException {
 
       // Decrypt the encrypted symmetric key
@@ -584,7 +797,8 @@ public class SecureStoreModule extends ExportedModule {
 
       // Decrypt the value with the symmetric key
       KeyStore.SecretKeyEntry secretKeyEntry = new KeyStore.SecretKeyEntry(secretKey);
-      return mAESEncrypter.decryptItem(encryptedItem, secretKeyEntry);
+
+      mAESEncrypter.decryptItem(promise, encryptedItem, secretKeyEntry, callback);
     }
 
     private Cipher getRSACipher() throws NoSuchAlgorithmException, NoSuchProviderException, NoSuchPaddingException {
@@ -592,7 +806,6 @@ public class SecureStoreModule extends ExportedModule {
           ? Cipher.getInstance(RSA_CIPHER, RSA_CIPHER_LEGACY_PROVIDER)
           : Cipher.getInstance(RSA_CIPHER);
     }
-
   }
 
   /**
