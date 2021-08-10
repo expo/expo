@@ -1898,6 +1898,8 @@ PODS:
   - ExpoModulesCore (0.1.1):
     - React-Core
   - ExpoModulesCore/Tests (0.1.1):
+    - Nimble
+    - Quick
     - React-Core
   - EXPrint (10.2.0):
     - ExpoModulesCore
@@ -2115,8 +2117,10 @@ PODS:
     - nanopb/encode (= 2.30907.0)
   - nanopb/decode (2.30907.0)
   - nanopb/encode (2.30907.0)
+  - Nimble (9.2.0)
   - PromisesObjC (1.2.12)
   - Protobuf (3.14.0)
+  - Quick (4.0.0)
   - RCT-Folly (2020.01.13.00):
     - boost-for-react-native
     - DoubleConversion
@@ -2823,6 +2827,8 @@ DEPENDENCIES:
   - JKBigInteger2 (= 0.0.5)
   - lottie-react-native (from `./vendored/unversioned/lottie-react-native`)
   - MBProgressHUD (~> 1.2.0)
+  - Nimble (from `./Nimble.podspec`)
+  - Quick (from `./Quick.podspec`)
   - RCT-Folly (from `../react-native-lab/react-native/third-party-podspecs/RCT-Folly.podspec`)
   - RCTRequired (from `../react-native-lab/react-native/Libraries/RCTRequired`)
   - RCTTypeSafety (from `../react-native-lab/react-native/Libraries/TypeSafety`)
@@ -3652,6 +3658,10 @@ EXTERNAL SOURCES:
     :podspec: "../react-native-lab/react-native/third-party-podspecs/glog.podspec"
   lottie-react-native:
     :path: "./vendored/unversioned/lottie-react-native"
+  Nimble:
+    :podspec: "./Nimble.podspec"
+  Quick:
+    :podspec: "./Quick.podspec"
   RCT-Folly:
     :podspec: "../react-native-lab/react-native/third-party-podspecs/RCT-Folly.podspec"
   RCTRequired:
@@ -4075,7 +4085,7 @@ SPEC CHECKSUMS:
   EXNetwork: c15bb1026d72d1eb3782710faf373ed35c6eb024
   EXNotifications: 296d9487163c2c08fffec5e79a5f9094bc016d9c
   EXPermissions: c7bead8f093700d5fcfb4f41238430a51702c5c8
-  ExpoModulesCore: 82ee658feb15e6804de9f3530c39c62ff900048b
+  ExpoModulesCore: cbf340d971211537aec95d99945bd97143c07534
   EXPrint: 61bbaa43c42c1badfa46de5be015d7d798d33583
   EXRandom: ecb71f5d01991f29bb0277f8a2c35d168f85d637
   EXScreenCapture: c51844407fbac8bbca4415467bc43f2b7764d225
@@ -4128,8 +4138,10 @@ SPEC CHECKSUMS:
   MLKitFaceDetection: 5b92261dd6e4205e3dab0df62537ac3f4e90e5db
   MLKitVision: 51385878c9100024478971856510f9271ff555b5
   nanopb: 59221d7f958fb711001e6a449489542d92ae113e
+  Nimble: 9ca39ec3cb156bbb8c27f4943fd4643d28729616
   PromisesObjC: 3113f7f76903778cf4a0586bd1ab89329a0b7b97
   Protobuf: 0cde852566359049847168e51bd1c690e0f70056
+  Quick: 5dc45f9bc11236594a7acc99f7bd85ecdc9a477d
   RCT-Folly: ec7a233ccc97cc556cf7237f0db1ff65b986f27c
   RCTRequired: 6d3e854f0e7260a648badd0d44fc364bc9da9728
   RCTTypeSafety: c1f31d19349c6b53085766359caac425926fafaa
@@ -4165,6 +4177,6 @@ SPEC CHECKSUMS:
   Yoga: 575c581c63e0d35c9a83f4b46d01d63abc1100ac
   ZXingObjC: fdbb269f25dd2032da343e06f10224d62f537bdb
 
-PODFILE CHECKSUM: 6be01af7cbdea2c255b33864804799e5d45c8787
+PODFILE CHECKSUM: 81efbbbb57793e42797bf3883f6a4d7cfcb00b4d
 
 COCOAPODS: 1.10.1

@@ -19,6 +19,8 @@ abstract_target 'Expo Go' do
   pod 'Google-Maps-iOS-Utils', '~> 2.1.0'
   pod 'JKBigInteger2', '0.0.5'
   pod 'MBProgressHUD', '~> 1.2.0'
+  pod 'Quick', :podspec => './Quick.podspec'
+  pod 'Nimble', :podspec => './Nimble.podspec'
 
   # Expo modules
   use_expo_modules!({
