@@ -283,13 +283,13 @@ public class InternalHeadlessAppLoader implements AppLoaderInterface, Exponent.S
     );
 
     Exponent.InstanceManagerBuilderProperties instanceManagerBuilderProperties = new Exponent.InstanceManagerBuilderProperties();
-    instanceManagerBuilderProperties.application = (Application) mContext;
-    instanceManagerBuilderProperties.jsBundlePath = mJSBundlePath;
-    instanceManagerBuilderProperties.experienceProperties = experienceProperties;
-    instanceManagerBuilderProperties.expoPackages = extraExpoPackages;
-    instanceManagerBuilderProperties.exponentPackageDelegate = delegate.getExponentPackageDelegate();
-    instanceManagerBuilderProperties.manifest = mManifest;
-    instanceManagerBuilderProperties.singletonModules = ExponentPackage.getOrCreateSingletonModules(mContext, mManifest, extraExpoPackages);
+    instanceManagerBuilderProperties.setApplication((Application) mContext);
+    instanceManagerBuilderProperties.setJsBundlePath(mJSBundlePath);
+    instanceManagerBuilderProperties.setExperienceProperties(experienceProperties);
+    instanceManagerBuilderProperties.setExpoPackages(extraExpoPackages);
+    instanceManagerBuilderProperties.setExponentPackageDelegate(delegate.getExponentPackageDelegate());
+    instanceManagerBuilderProperties.setManifest(mManifest);
+    instanceManagerBuilderProperties.setSingletonModules(ExponentPackage.getOrCreateSingletonModules(mContext, mManifest, extraExpoPackages));
 
     RNObject versionedUtils = new RNObject("host.exp.exponent.VersionedUtils").loadVersion(mSDKVersion);
     RNObject builder = versionedUtils.callRecursive("getReactInstanceManagerBuilder", instanceManagerBuilderProperties);
@@ -306,7 +306,7 @@ public class InternalHeadlessAppLoader implements AppLoaderInterface, Exponent.S
     if (delegate.isDebugModeEnabled()) {
       String debuggerHost = mManifest.getDebuggerHost();
       String mainModuleName = mManifest.getMainModuleName();
-      Exponent.enableDeveloperSupport(mSDKVersion, debuggerHost, mainModuleName, builder);
+      Exponent.enableDeveloperSupport(debuggerHost, mainModuleName, builder);
     }
 
     RNObject reactInstanceManager = builder.callRecursive("build");

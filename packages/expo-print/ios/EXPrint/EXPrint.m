@@ -71,19 +71,21 @@ EX_EXPORT_METHOD_AS(print,
       // Let's check if someone wanted to use previous implementation for `html` option
       // which uses print formatter instead of NSData instance.
 
-      if (options[@"markupFormatterIOS"] && [options[@"markupFormatterIOS"] isKindOfClass:[NSString class]]) {
-        NSString *htmlString = options[@"markupFormatterIOS"];
-        
-        if (htmlString != nil) {
-          UIMarkupTextPrintFormatter *formatter = [[UIMarkupTextPrintFormatter alloc] initWithMarkupText:htmlString];
-          printInteractionController.printFormatter = formatter;
-        } else {
-          NSString *message = [NSString stringWithFormat:@"The specified html string is not valid for printing."];
-          reject(@"E_HTML_INVALID", message, EXErrorWithMessage(message));
-          return;
-        }
+      NSString *htmlString = nil;
+      if ([options[@"useMarkupFormatter"] boolValue]) {
+        htmlString = options[@"html"];
+      } else if (options[@"markupFormatterIOS"] && [options[@"markupFormatterIOS"] isKindOfClass:[NSString class]]) {
+        htmlString = options[@"markupFormatterIOS"];
       } else {
         reject(@"E_NOTHING_TO_PRINT", @"No data to print. You must specify `uri` or `html` option.", nil);
+        return;
+      }
+      if (htmlString != nil) {
+        UIMarkupTextPrintFormatter *formatter = [[UIMarkupTextPrintFormatter alloc] initWithMarkupText:htmlString];
+        printInteractionController.printFormatter = formatter;
+      } else {
+        NSString *message = [NSString stringWithFormat:@"The specified html string is not valid for printing."];
+        reject(@"E_HTML_INVALID", message, EXErrorWithMessage(message));
         return;
       }
     }
@@ -215,7 +217,7 @@ EX_EXPORT_METHOD_AS(printToFileAsync,
     return;
   }
 
-  if (options[@"markupFormatterIOS"] && [options[@"markupFormatterIOS"] boolValue] == YES) {
+  if ([options[@"useMarkupFormatter"] boolValue]) {
     [self pdfWithHtmlMarkupFormatter:htmlString pageSize:paperSize completionHandler:completionHandler];
   } else {
     renderTask = [EXWKPDFRenderer new];
@@ -300,7 +302,7 @@ EX_EXPORT_METHOD_AS(printToFileAsync,
     return;
   }
 
-  if (options[@"html"]) {
+  if (options[@"html"] && ![options[@"useMarkupFormatter"] boolValue]) {
     __block EXWKPDFRenderer *renderTask = [EXWKPDFRenderer new];
 
     NSString *htmlString = options[@"html"] ?: @"";

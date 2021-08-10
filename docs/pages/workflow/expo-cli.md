@@ -510,7 +510,7 @@ Alias: `expo bi`
 | `--no-publish`                                   | Disable automatic publishing before building.                                                                       |
 | `--no-wait`                                      | Exit immediately after scheduling build.                                                                            |
 | `--team-id [apple-teamId]`                       | Apple Team ID.                                                                                                      |
-| `--dist-p12-path [dist.p12]`                     | Path to your Distribution Certificate P12 (set password as expo.devS_DIST_P12_PASSWORD environment variable).        |
+| `--dist-p12-path [dist.p12]`                     | Path to your Distribution Certificate P12 (set password as expo.EXPO_IOS_DIST_P12_PASSWORD environment variable).        |
 | `--push-id [push-id]`                            | Push Key ID (ex: 123AB4C56D).                                                                                       |
 | `--push-p8-path [push.p8]`                       | Path to your Push Key .p8 file.                                                                                     |
 | `--provisioning-profile-path [.mobileprovision]` | Path to your Provisioning Profile.                                                                                  |

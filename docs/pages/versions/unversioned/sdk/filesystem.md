@@ -201,11 +201,11 @@ These values can be used to define how sessions work on iOS.
 
 - **FileSystem.FileSystemSessionType.FOREGROUND** -- Using this mode means that downloading/uploading session on the native side will be terminated once the application becomes inactive (e.g. when it goes to background). Bringing the application to foreground again would trigger Promise rejection.
 
-### `FileSystem.FileSystemUploadOptions`
+### `FileSystem.FileSystemUploadType`
 
-- **FileSystem.FileSystemUploadOptions.BINARY_CONTENT** -- The file will be sent as a request's body. The request can't contain additional data.
+- **FileSystem.FileSystemUploadType.BINARY_CONTENT** -- The file will be sent as a request's body. The request can't contain additional data.
 
-- **FileSystem.FileSystemUploadOptions.MULTIPART** -- An [RFC 2387-compliant](https://www.ietf.org/rfc/rfc2387.txt) request body. The provided file will be encoded into HTTP request. This request can contain additional data.
+- **FileSystem.FileSystemUploadType.MULTIPART** -- An [RFC 2387-compliant](https://www.ietf.org/rfc/rfc2387.txt) request body. The provided file will be encoded into HTTP request. This request can contain additional data.
 
 #### How to handle such requests?
 
@@ -425,7 +425,7 @@ Upload the contents of the file pointed by `fileUri` to the remote url.
 
   - **sessionType (_FileSystemSessionType_)** -- (iOS only) A session type. Determines if tasks can be handled in the background. On Android, sessions always work in the background and you can't change it. Defaults to `FileSystemSessionType.BACKGROUND`.
 
-  - **uploadType (_FileSystemUploadOptions_)** -- Upload type determines how the file will be sent to the server. Default to `FileSystemUploadType.BINARY_CONTENT`.
+  - **uploadType (_FileSystemUploadType_)** -- Upload type determines how the file will be sent to the server. Default to `FileSystemUploadType.BINARY_CONTENT`.
 
   If `uploadType` is equal `FileSystemUploadType.MULTIPART`, more options are available:
 

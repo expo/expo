@@ -115,7 +115,7 @@ async function writeTemplatesAsync(expoKitPath: string, templateFilesPath: strin
   }
 }
 
-async function renderExpoKitPodspecAsync(
+export async function renderExpoKitPodspecAsync(
   expoKitPath: string,
   templateFilesPath: string
 ): Promise<void> {

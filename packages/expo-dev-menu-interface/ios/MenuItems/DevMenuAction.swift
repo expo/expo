@@ -48,6 +48,11 @@ open class DevMenuAction: DevMenuScreenItem, DevMenuCallableProvider {
     self.callable.action = action
   }
   
+  @objc
+  public convenience init(withId id: String, _ action: @escaping () -> ()) {
+    self.init(withId: id, action: action)
+  }
+  
   public func registerCallable() -> DevMenuExportedCallable? {
     return self.callable
   }
