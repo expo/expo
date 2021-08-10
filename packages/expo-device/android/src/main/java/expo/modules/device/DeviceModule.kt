@@ -1,8 +1,6 @@
 package expo.modules.device
 
 import expo.modules.core.ExportedModule
-import expo.modules.core.interfaces.RegistryLifecycleListener
-import expo.modules.core.ModuleRegistry
 import expo.modules.core.Promise
 import expo.modules.core.interfaces.ExpoMethod
 
@@ -24,7 +22,7 @@ import kotlin.math.sqrt
 
 private const val NAME = "ExpoDevice"
 
-class DeviceModule(private val mContext: Context) : ExportedModule(mContext), RegistryLifecycleListener {
+class DeviceModule(private val mContext: Context) : ExportedModule(mContext) {
   // Keep this enum in sync with JavaScript
   enum class DeviceType(val JSValue: Int) {
     UNKNOWN(0),
@@ -36,9 +34,6 @@ class DeviceModule(private val mContext: Context) : ExportedModule(mContext), Re
 
   override fun getName(): String {
     return NAME
-  }
-
-  override fun onCreate(moduleRegistry: ModuleRegistry) {
   }
 
   override fun getConstants(): Map<String, Any> = mapOf(
