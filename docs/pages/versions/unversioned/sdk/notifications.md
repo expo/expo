@@ -7,12 +7,13 @@ import SnackInline from '~/components/plugins/SnackInline';
 import ImageSpotlight from '~/components/plugins/ImageSpotlight'
 import InstallSection from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
+import { AndroidPermissions, IOSPermissions } from '~/components/plugins/Permissions';
 
 The **`expo-notifications`** provides an API to fetch push notification tokens and to present, schedule, receive and respond to notifications.
 
 > Migrating from Expo's `LegacyNotifications` module? [Here's a guide to help make the transition as easy as possible](https://github.com/expo/fyi/blob/master/LegacyNotifications-to-ExpoNotifications.md).
 
-### Features
+## Features
 
 - 📣 schedule a one-off notification for a specific date, or some time from now,
 - 🔁 schedule a notification repeating in some time interval (or a calendar date match on iOS),
@@ -34,38 +35,74 @@ The **`expo-notifications`** provides an API to fetch push notification tokens a
 
 <InstallSection packageName="expo-notifications" />
 
-### Config plugin setup (optional)
+## Configuration in app.json / app.config.js
 
-If you're using EAS Build or the bare workflow, you can set your Android notification icon and color tint, add custom push notification sounds, and set your iOS notification environment using the `expo-notifications` config plugin ([what's a config plugin?](/guides/config-plugins.md)). To setup, just add the config plugin to the `plugins` array of your `app.json` or `app.config.js`:
+If you are using EAS Build or the bare workflow, you can change some of the native notification behavior using config plugins. Just add the [config plugin](../../../guides/config-plugins.md) to the `plugins` array of your app manifest.
+
+**Example app.json**
 
 ```json
-"plugins": [
-  ["expo-notifications", {
-    "icon": "./local/path/to/myNotificationIcon.png",
-    "color": "#ffffff",
-    "sounds": ["./local/path/to/mySound.wav", "./local/path/to/myOtherSound.wav"],
-    "mode": "production"
-  }]
-]
+{
+  "expo" {
+    "plugins": [
+      ["expo-notifications", {
+        "icon": "./local/assets/notification-icon.png",
+        "color": "#ffffff",
+        "sounds": ["./local/assets/notification-sound.wav", "./local/assets/notification-sound-other.wav"],
+        "mode": "production"
+      }]
+    ]
+  }
+}
 ```
 
-<details><summary><strong>Expand to view property descriptions and default values</strong></summary> <p>
+<details><summary><strong>Using classic Expo builds?</strong></summary> <p>
 
-- **icon**: Android only. Local path to an image to use as the icon for push notifications. 96x96 all-white png with transparency.
-- **color**: Android only. Tint color for the push notification image when it appears in the notification tray. Default: "#ffffff".
-- **sounds**: Array of local paths to sound files (.wav recommended) that can be used as custom notification sounds.
-- **mode**: iOS only. Environment of the app: either 'development' or 'production'. Default: 'development'.
+
+
+Not all properties are available in classic Expo builds. You can configure the following properties directly in your app manifest, [using the `expo.notification` property](https://docs.expo.dev/versions/v42.0.0/config/app/#notification).
+
+```json
+"expo": {
+  "notification": {
+    "icon": "./assets/notification-icon.png",
+    "color": "#ffffff"
+  }
+}
+```
 
 </p>
 </details>
 
-Then rebuild the app. If you're using the bare workflow, make sure to run `expo prebuild` first (this will apply the config plugin using [prebuilding](https://expo.fyi/prebuilding)).
+### Properties
+
+name     | default       | description
+---      | ---           | ---
+`icon`   | -             | **Android only** Local path to an image to use as the icon for push notifications. 96x96 all-white png with transparency.
+`color`  | `#ffffff`     | **Android only** Tint color for the push notification image when it appears in the notification tray.
+`sounds` | -             | Array of local paths to sound files (.wav recommended) that can be used as custom notification sounds.
+`mode`   | `development` | **iOS only** Environment of the app: either 'development' or 'production'.
+
+<details><summary><strong>Only using Expo packages in a plain React Native app?</strong></summary> <p>
+
+See the [installation instructions in our repository](https://github.com/expo/expo/tree/master/packages/expo-notifications#installation-in-bare-react-native-projects).
+
+</p>
+</details>
+
+## Permissions
 
 ### Android
 
 On Android, this module requires permission to subscribe to device boot. It's used to setup the scheduled notifications right after the device (re)starts. The `RECEIVE_BOOT_COMPLETED` permission is added automatically.
 
 Unless you're still running your project in the Expo Go app, Firebase Cloud Messaging is required for all [managed](../../../push-notifications/sending-notifications.md) and [bare workflow](../../../push-notifications/sending-notifications-custom.md) Android apps made with Expo. To set up your Expo Android app to get push notifications using your own FCM credentials, [follow this guide closely](../../../push-notifications/using-fcm.md).
+
+<AndroidPermissions keys={['RECEIVE_BOOT_COMPLETED']} />
+
+### iOS
+
+_No usage description required, see [notification-related permissions](#fetching-information-about-notifications-related-permissions)._
 
 ## Common gotchas / known issues
 
