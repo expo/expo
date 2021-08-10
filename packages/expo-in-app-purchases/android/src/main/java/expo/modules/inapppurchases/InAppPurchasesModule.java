@@ -8,6 +8,7 @@ import android.app.Activity;
 import org.unimodules.core.ExportedModule;
 import org.unimodules.core.ModuleRegistry;
 import org.unimodules.core.Promise;
+import org.unimodules.core.arguments.ReadableArguments;
 import org.unimodules.core.interfaces.ExpoMethod;
 import org.unimodules.core.interfaces.ActivityProvider;
 import org.unimodules.core.interfaces.RegistryLifecycleListener;
@@ -16,6 +17,7 @@ import org.unimodules.core.interfaces.services.EventEmitter;
 public class InAppPurchasesModule extends ExportedModule implements RegistryLifecycleListener {
   private static final String TAG = InAppPurchasesModule.class.getSimpleName();
   private static final String NAME = "ExpoInAppPurchases";
+  private final String USE_GOOGLE_PLAY_CACHE_KEY = "useGooglePlayCache";
 
   private BillingManager mBillingManager;
   private ModuleRegistry mModuleRegistry;
@@ -52,12 +54,11 @@ public class InAppPurchasesModule extends ExportedModule implements RegistryLife
   }
 
   @ExpoMethod
-  public void getPurchaseHistoryAsync(Boolean refresh, final Promise promise) {
-    if (refresh != null && refresh) {
-      // Makes a network request and provides more detailed information
-      mBillingManager.queryPurchaseHistoryAsync(promise);
-    } else {
+  public void getPurchaseHistoryAsync(final ReadableArguments options, final Promise promise) {
+    if (options.getBoolean(USE_GOOGLE_PLAY_CACHE_KEY, true)) {
       mBillingManager.queryPurchases(promise);
+    } else {
+      mBillingManager.queryPurchaseHistoryAsync(promise);
     }
   }
 

@@ -54,14 +54,16 @@ export async function getProductsAsync(
 }
 
 export async function getPurchaseHistoryAsync(
-  refresh: boolean = false
+  options: {
+    useGooglePlayCache: boolean;
+  } = { useGooglePlayCache: true }
 ): Promise<IAPQueryResponse<InAppPurchase>> {
   if (!connected) {
     throw new ConnectionError(errors.NOT_CONNECTED);
   }
 
   if (Platform.OS === 'android') {
-    return await ExpoInAppPurchases.getPurchaseHistoryAsync(refresh);
+    return await ExpoInAppPurchases.getPurchaseHistoryAsync(options);
   } else {
     return await ExpoInAppPurchases.getPurchaseHistoryAsync();
   }
