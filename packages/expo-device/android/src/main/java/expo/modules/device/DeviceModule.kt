@@ -4,13 +4,10 @@ import expo.modules.core.ExportedModule
 import expo.modules.core.interfaces.RegistryLifecycleListener
 import expo.modules.core.ModuleRegistry
 import expo.modules.core.Promise
-import expo.modules.core.interfaces.ActivityProvider
 import expo.modules.core.interfaces.ExpoMethod
-import expo.modules.core.ModuleRegistryDelegate
 
 import com.facebook.device.yearclass.YearClass
 
-import android.app.Activity
 import android.app.ActivityManager
 import android.app.UiModeManager
 import android.content.Context
@@ -28,12 +25,6 @@ import kotlin.math.sqrt
 private const val NAME = "ExpoDevice"
 
 class DeviceModule(private val mContext: Context) : ExportedModule(mContext), RegistryLifecycleListener {
-  private val moduleRegistryDelegate: ModuleRegistryDelegate = ModuleRegistryDelegate()
-  private val mActivityProvider: ActivityProvider? by moduleRegistry()
-  private var mActivity: Activity? = null
-
-  private inline fun <reified T> moduleRegistry() = moduleRegistryDelegate.getFromModuleRegistry<T>()
-
   // Keep this enum in sync with JavaScript
   enum class DeviceType(val JSValue: Int) {
     UNKNOWN(0),
@@ -48,11 +39,9 @@ class DeviceModule(private val mContext: Context) : ExportedModule(mContext), Re
   }
 
   override fun onCreate(moduleRegistry: ModuleRegistry) {
-    moduleRegistryDelegate.onCreate(moduleRegistry)
-    mActivity = mActivityProvider?.currentActivity
   }
 
-  override fun getConstants(): Map<String, Any> = hashMapOf(
+  override fun getConstants(): Map<String, Any> = mapOf(
     "isDevice" to (!isRunningOnGenymotion && !isRunningOnStockEmulator),
     "brand" to Build.BRAND,
     "manufacturer" to Build.MANUFACTURER,
