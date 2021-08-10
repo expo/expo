@@ -37,6 +37,9 @@ export async function printAsync(options: PrintOptions): Promise<void> {
   if (options.uri && options.html) {
     throw new Error('Must provide exactly one of `html` and `uri` but both were specified');
   }
+  if (options.markupFormatterIOS != undefined) {
+    console.warn('The markupFormatterIOS option is deprecated. Use useMarkupFormatter instead.')
+  }
   return await ExponentPrint.print(options);
 }
 

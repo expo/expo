@@ -72,10 +72,9 @@ EX_EXPORT_METHOD_AS(print,
       // which uses print formatter instead of NSData instance.
 
       NSString *htmlString = nil;
-      if (options[@"useMarkupFormatter"] && [options[@"useMarkupFormatter"] boolValue] == YES) {
+      if ([options[@"useMarkupFormatter"] boolValue]) {
         htmlString = options[@"html"];
-      }
-      else if (options[@"markupFormatterIOS"] && [options[@"markupFormatterIOS"] isKindOfClass:[NSString class]]) {
+      } else if (options[@"markupFormatterIOS"] && [options[@"markupFormatterIOS"] isKindOfClass:[NSString class]]) {
         htmlString = options[@"markupFormatterIOS"];
       } else {
         reject(@"E_NOTHING_TO_PRINT", @"No data to print. You must specify `uri` or `html` option.", nil);
