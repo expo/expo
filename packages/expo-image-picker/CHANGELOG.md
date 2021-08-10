@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- Add missing exif parameter `GPSHPositioningError` on android.
+
 ### 💡 Others
 
 ## 10.2.0 — 2021-06-16
