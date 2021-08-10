@@ -9,6 +9,7 @@ import spawnAsync from '@expo/spawn-async';
 import { JniLibNames, getJavaPackagesToRename } from './libraries';
 import * as Directories from '../../Directories';
 import { getListOfPackagesAsync } from '../../Packages';
+import { updateVersionedReactNativeAsync } from './versionReactNative';
 
 const EXPO_DIR = Directories.getExpoRepositoryRootDir();
 const ANDROID_DIR = Directories.getAndroidDir();
@@ -43,8 +44,6 @@ const testSuiteTestsPath = path.join(
   appPath,
   'src/androidTest/java/host/exp/exponent/TestSuiteTests.java'
 );
-const reactAndroidPath = path.join(ANDROID_DIR, 'ReactAndroid');
-const reactCommonPath = path.join(ANDROID_DIR, 'ReactCommon');
 const versionedReactAndroidPath = path.join(ANDROID_DIR, 'versioned-react-native/ReactAndroid');
 const versionedReactAndroidJniPath = path.join(versionedReactAndroidPath, 'src/main');
 const versionedReactAndroidJavaPath = path.join(versionedReactAndroidJniPath, 'java');
@@ -224,6 +223,10 @@ function renameLib(lib: string, abiVersion: string) {
     if (lib.endsWith(JniLibNames[i])) {
       return `${lib}_abi${abiVersion}`;
     }
+    if (lib.endsWith(`${JniLibNames[i]}.so`)) {
+      const { dir, name, ext } = path.parse(lib);
+      return path.join(dir, `${name}_abi${abiVersion}${ext}`);
+    }
   }
 
   return lib;
@@ -233,7 +236,8 @@ function processLine(line: string, abiVersion: string) {
   if (
     line.startsWith('LOCAL_MODULE') ||
     line.startsWith('LOCAL_SHARED_LIBRARIES') ||
-    line.startsWith('LOCAL_STATIC_LIBRARIES')
+    line.startsWith('LOCAL_STATIC_LIBRARIES') ||
+    line.startsWith('LOCAL_SRC_FILES')
   ) {
     let splitLine = line.split('=');
     let libs = splitLine[1].split(' ');
@@ -296,13 +300,6 @@ async function processJavaCodeAsync(libName: string, abiVersion: string) {
   );
 }
 
-async function updateVersionedReactNativeAsync() {
-  await fs.remove(versionedReactAndroidPath);
-  await fs.remove(versionedReactCommonPath);
-  await fs.copy(reactAndroidPath, versionedReactAndroidPath);
-  await fs.copy(reactCommonPath, versionedReactCommonPath);
-}
-
 async function renameJniLibsAsync(version: string) {
   const abiVersion = version.replace(/\./g, '_');
   const abiPrefix = `abi${abiVersion}`;
@@ -314,10 +311,11 @@ async function renameJniLibsAsync(version: string) {
 
   // Update JNI methods
   const packagesToRename = await getJavaPackagesToRename();
+  const codegenOutputRoot = path.join(ANDROID_DIR, 'versioned-react-native', 'codegen');
   for (const javaPackage of packagesToRename) {
     const pathForPackage = javaPackage.replace(/\./g, '\\/');
     await spawnAsync(
-      `find ${versionedReactCommonPath} ${versionedReactAndroidJniPath} -type f ` +
+      `find ${versionedReactCommonPath} ${versionedReactAndroidJniPath} ${codegenOutputRoot} -type f ` +
         `\\( -name \*.java -o -name \*.h -o -name \*.cpp -o -name \*.mk \\) -print0 | ` +
         `xargs -0 sed -i '' 's/${pathForPackage}/abi${abiVersion}\\/${pathForPackage}/g'`,
       [],
@@ -338,12 +336,26 @@ async function renameJniLibsAsync(version: string) {
   }
 
   // Update LOCAL_MODULE, LOCAL_SHARED_LIBRARIES, LOCAL_STATIC_LIBRARIES fields in .mk files
-  let [reactCommonMkFiles, reactAndroidMkFiles, versionedAbiMKFiles] = await Promise.all([
+  let [
+    reactCommonMkFiles,
+    reactAndroidMkFiles,
+    versionedAbiMKFiles,
+    reactAndroidPrebuiltMk,
+    codegenMkFiles,
+  ] = await Promise.all([
     glob(path.join(versionedReactCommonPath, '**/*.mk')),
     glob(path.join(versionedReactAndroidJniPath, '**/*.mk')),
     glob(path.join(versionedAbiPath, '**/*.mk')),
+    path.join(versionedReactAndroidPath, 'Android-prebuilt.mk'),
+    glob(path.join(codegenOutputRoot, '**/*.mk')),
   ]);
-  let filenames = [...reactCommonMkFiles, ...reactAndroidMkFiles, ...versionedAbiMKFiles];
+  let filenames = [
+    ...reactCommonMkFiles,
+    ...reactAndroidMkFiles,
+    ...versionedAbiMKFiles,
+    reactAndroidPrebuiltMk,
+    ...codegenMkFiles,
+  ];
   await Promise.all(filenames.map((filename) => processMkFileAsync(filename, abiVersion)));
 
   // Rename references to JNI libs in CMake
@@ -630,14 +642,17 @@ async function renameHermesEngine(version: string) {
   const renameTask = `        rename '(.+).so', '$$1_abi${abiVersion}.so'\n`;
   await transformFileAsync(
     buildGradlePath,
-    /(into "\$thirdPartyNdkDir\/hermes"\n)(\s+?\})/gm,
+    /(into "\$thirdPartyNdkDir\/hermes"\n)(\s*?\})/gm,
     `$1${renameTask}$2`
   );
 }
 
 export async function addVersionAsync(version: string) {
   console.log(' 🛠   1/11: Updating android/versioned-react-native...');
-  await updateVersionedReactNativeAsync();
+  await updateVersionedReactNativeAsync(
+    Directories.getReactNativeSubmoduleDir(),
+    path.join(ANDROID_DIR, 'versioned-react-native')
+  );
   console.log(' ✅  1/11: Finished\n\n');
 
   console.log(' 🛠   2/11: Creating versioned expoview package...');
