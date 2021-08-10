@@ -53,7 +53,7 @@ class ExpoKeepAwakeManager(private val moduleRegistryDelegate: ModuleRegistryDel
   }
 
   override fun isActivated(): Boolean {
-    return tags.size > 0
+    return tags.isNotEmpty()
   }
 
   override fun getExportedInterfaces(): List<Class<*>?> {
