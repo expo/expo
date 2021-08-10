@@ -17,6 +17,8 @@ If you're looking for a quick example, check out [this Snack](https://snack.expo
 
 ## Installation
 
+Each Expo SDK version requires a specific `@stripe/stripe-react-native` version. See the [Stripe CHANGELOG](https://github.com/stripe/stripe-react-native/blob/master/CHANGELOG.md) for a mapping of versions. To automatically install the correct version for your Expo SDK version, run:
+
 <InstallSection packageName="@stripe/stripe-react-native" href="https://github.com/stripe/stripe-react-native" />
 
 ### Config plugin setup (optional)
