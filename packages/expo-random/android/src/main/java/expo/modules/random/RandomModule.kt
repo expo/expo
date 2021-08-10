@@ -10,7 +10,7 @@ import com.facebook.react.bridge.ReactContextBaseJavaModule
 import com.facebook.react.bridge.ReactMethod
 
 class RandomModule(context: ReactApplicationContext) : ReactContextBaseJavaModule(context) {
-  private val mSecureRandom: SecureRandom by lazy { SecureRandom() }
+  private val secureRandom: SecureRandom by lazy { SecureRandom() }
 
   override fun getName(): String {
     return "ExpoRandom"
@@ -24,7 +24,7 @@ class RandomModule(context: ReactApplicationContext) : ReactContextBaseJavaModul
   @ReactMethod(isBlockingSynchronousMethod = true)
   fun getRandomBase64String(randomByteCount: Int): String {
     val output = ByteArray(randomByteCount)
-    mSecureRandom.nextBytes(output)
+    secureRandom.nextBytes(output)
     return Base64.encodeToString(output, Base64.NO_WRAP)
   }
 }
