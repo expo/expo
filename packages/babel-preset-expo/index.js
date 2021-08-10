@@ -96,6 +96,7 @@ module.exports = function(api, options = {}) {
       ],
     ],
     plugins: [
+      getObjectRestSpreadPlugin(),
       ...extraPlugins,
       getAliasPlugin(),
       [require.resolve('@babel/plugin-proposal-decorators'), { legacy: true }],
@@ -121,6 +122,15 @@ function getAliasPlugin() {
     ];
   }
   return null;
+}
+
+/**
+ * metro-react-native-babel-preset configures this plugin with `{ loose: true }`, which breaks all
+ * getters and setters in spread objects. We need to add this plugin ourself without that option.
+ * @see https://github.com/expo/expo/pull/11960#issuecomment-887796455
+ */
+function getObjectRestSpreadPlugin() {
+  return [require.resolve('@babel/plugin-proposal-object-rest-spread'), { loose: false }];
 }
 
 function hasModule(name) {
