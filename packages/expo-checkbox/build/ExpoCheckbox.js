@@ -6,7 +6,7 @@ const ExpoCheckbox = props => {
     const handleChange = useCallback(() => {
         onValueChange && onValueChange(!value);
     }, [onValueChange, value]);
-    return (React.createElement(Pressable, Object.assign({}, other, { disabled: disabled, 
+    return (React.createElement(Pressable, { ...other, disabled: disabled, 
         // Announces "checked" status and "checkbox" as the focused element
         accessibilityRole: "checkbox", accessibilityState: { disabled, checked: value }, style: [
             styles.root,
@@ -15,7 +15,7 @@ const ExpoCheckbox = props => {
             !!color && { backgroundColor: value ? color : undefined, borderColor: color },
             disabled && styles.disabled,
             value && disabled && styles.checkedAndDisabled,
-        ], onPress: handleChange }), value && (React.createElement(Image, { source: {
+        ], onPress: handleChange }, value && (React.createElement(Image, { source: {
             uri: checkmarkBase64,
         }, style: StyleSheet.absoluteFill }))));
 };

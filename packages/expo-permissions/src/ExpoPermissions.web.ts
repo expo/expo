@@ -92,7 +92,7 @@ async function askForLocationPermissionAsync(): Promise<PermissionInfo> {
           canAskAgain: true,
           granted: true,
         }),
-      ({ code }: PositionError) => {
+      ({ code }: GeolocationPositionError) => {
         // https://developer.mozilla.org/en-US/docs/Web/API/PositionError/code
         if (code === 1) {
           resolve({

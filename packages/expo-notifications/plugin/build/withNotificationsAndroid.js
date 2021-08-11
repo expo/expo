@@ -23,7 +23,7 @@ exports.NOTIFICATION_ICON = 'notification_icon';
 exports.NOTIFICATION_ICON_RESOURCE = `@drawable/${exports.NOTIFICATION_ICON}`;
 exports.NOTIFICATION_ICON_COLOR = 'notification_icon_color';
 exports.NOTIFICATION_ICON_COLOR_RESOURCE = `@color/${exports.NOTIFICATION_ICON_COLOR}`;
-exports.withNotificationIcons = (config, { icon }) => {
+const withNotificationIcons = (config, { icon }) => {
     // If no icon provided in the config plugin props, fallback to value from app.json
     icon = icon || getNotificationIcon(config);
     return config_plugins_1.withDangerousMod(config, [
@@ -34,7 +34,8 @@ exports.withNotificationIcons = (config, { icon }) => {
         },
     ]);
 };
-exports.withNotificationIconColor = (config, { color }) => {
+exports.withNotificationIcons = withNotificationIcons;
+const withNotificationIconColor = (config, { color }) => {
     // If no color provided in the config plugin props, fallback to value from app.json
     return config_plugins_1.withAndroidColors(config, config => {
         color = color || getNotificationColor(config);
@@ -42,7 +43,8 @@ exports.withNotificationIconColor = (config, { color }) => {
         return config;
     });
 };
-exports.withNotificationManifest = (config, { icon, color }) => {
+exports.withNotificationIconColor = withNotificationIconColor;
+const withNotificationManifest = (config, { icon, color }) => {
     // If no icon or color provided in the config plugin props, fallback to value from app.json
     icon = icon || getNotificationIcon(config);
     color = color || getNotificationColor(config);
@@ -51,7 +53,8 @@ exports.withNotificationManifest = (config, { icon, color }) => {
         return config;
     });
 };
-exports.withNotificationSounds = (config, { sounds }) => {
+exports.withNotificationManifest = withNotificationManifest;
+const withNotificationSounds = (config, { sounds }) => {
     return config_plugins_1.withDangerousMod(config, [
         'android',
         config => {
@@ -60,6 +63,7 @@ exports.withNotificationSounds = (config, { sounds }) => {
         },
     ]);
 };
+exports.withNotificationSounds = withNotificationSounds;
 function getNotificationIcon(config) {
     var _a;
     return ((_a = config.notification) === null || _a === void 0 ? void 0 : _a.icon) || null;
@@ -172,10 +176,11 @@ function writeNotificationSoundFile(soundFileRelativePath, projectRoot) {
         }
     }
 }
-exports.withNotificationsAndroid = (config, { icon = null, color = null, sounds = [] }) => {
+const withNotificationsAndroid = (config, { icon = null, color = null, sounds = [] }) => {
     config = exports.withNotificationIconColor(config, { color });
     config = exports.withNotificationIcons(config, { icon });
     config = exports.withNotificationManifest(config, { icon, color });
     config = exports.withNotificationSounds(config, { sounds });
     return config;
 };
+exports.withNotificationsAndroid = withNotificationsAndroid;

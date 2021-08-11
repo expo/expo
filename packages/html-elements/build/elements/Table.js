@@ -5,28 +5,28 @@ import { TableText } from '../primitives/Table';
 import Text from '../primitives/Text';
 import View from '../primitives/View';
 export const Table = forwardRef((props, ref) => {
-    return React.createElement(View, Object.assign({}, props, { ref: ref }));
+    return React.createElement(View, { ...props, ref: ref });
 });
 export const THead = forwardRef((props, ref) => {
-    return React.createElement(View, Object.assign({}, props, { ref: ref }));
+    return React.createElement(View, { ...props, ref: ref });
 });
 export const TBody = forwardRef((props, ref) => {
-    return React.createElement(View, Object.assign({}, props, { ref: ref }));
+    return React.createElement(View, { ...props, ref: ref });
 });
 export const TFoot = forwardRef((props, ref) => {
-    return React.createElement(View, Object.assign({}, props, { ref: ref }));
+    return React.createElement(View, { ...props, ref: ref });
 });
 export const TH = forwardRef((props, ref) => {
-    return React.createElement(TableText, Object.assign({}, props, { style: [styles.th, props.style], ref: ref }));
+    return React.createElement(TableText, { ...props, style: [styles.th, props.style], ref: ref });
 });
 export const TR = forwardRef((props, ref) => {
-    return React.createElement(View, Object.assign({}, props, { style: [styles.tr, props.style], ref: ref }));
+    return React.createElement(View, { ...props, style: [styles.tr, props.style], ref: ref });
 });
 export const TD = forwardRef((props, ref) => {
-    return React.createElement(TableText, Object.assign({}, props, { style: [styles.td, props.style], ref: ref }));
+    return React.createElement(TableText, { ...props, style: [styles.td, props.style], ref: ref });
 });
 export const Caption = forwardRef((props, ref) => {
-    return React.createElement(Text, Object.assign({}, props, { style: [styles.caption, props.style], ref: ref }));
+    return React.createElement(Text, { ...props, style: [styles.caption, props.style], ref: ref });
 });
 const styles = StyleSheet.create({
     caption: {

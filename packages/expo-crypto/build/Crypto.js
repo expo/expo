@@ -3,9 +3,9 @@ import { CryptoDigestAlgorithm, CryptoEncoding } from './Crypto.types';
 import ExpoCrypto from './ExpoCrypto';
 export * from './Crypto.types';
 class CryptoError extends TypeError {
+    code = 'ERR_CRYPTO';
     constructor(message) {
         super(`expo-crypto: ${message}`);
-        this.code = 'ERR_CRYPTO';
     }
 }
 function assertAlgorithm(algorithm) {
