@@ -33,7 +33,7 @@ class InstallReferrerReceiver : CampaignTrackingReceiver() {
     val referrer = intent.getStringExtra("referrer")
     EXL.d(TAG, "Referrer: $referrer")
     if (referrer != null) {
-      exponentSharedPreferences.setString(ExponentSharedPreferences.REFERRER_KEY, referrer)
+      exponentSharedPreferences.setString(ExponentSharedPreferences.ExponentSharedPreferencesKey.REFERRER_KEY, referrer)
     }
 
     // Analytics

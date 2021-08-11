@@ -118,7 +118,7 @@ public class ExponentKernelModule extends ReactContextBaseJavaModule implements 
 
   @ReactMethod
   public void getSessionAsync(Promise promise) {
-    String sessionString = mExponentSharedPreferences.getString(ExponentSharedPreferences.EXPO_AUTH_SESSION);
+    String sessionString = mExponentSharedPreferences.getString(ExponentSharedPreferences.ExponentSharedPreferencesKey.EXPO_AUTH_SESSION);
     try {
       JSONObject sessionJsonObject = new JSONObject(sessionString);
       WritableMap session = Arguments.fromBundle(BundleJSONConverter.convertToBundle(sessionJsonObject));

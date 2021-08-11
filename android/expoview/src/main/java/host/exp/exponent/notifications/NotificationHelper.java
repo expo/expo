@@ -120,13 +120,13 @@ public class NotificationHelper {
     AsyncCondition.wait(ExponentNotificationIntentService.DEVICE_PUSH_TOKEN_KEY, new AsyncCondition.AsyncConditionListener() {
       @Override
       public boolean isReady() {
-        return exponentSharedPreferences.getString(ExponentSharedPreferences.FCM_TOKEN_KEY) != null
+        return exponentSharedPreferences.getString(ExponentSharedPreferences.ExponentSharedPreferencesKey.FCM_TOKEN_KEY) != null
           || ExponentNotificationIntentService.hasTokenError();
       }
 
       @Override
       public void execute() {
-        String sharedPreferencesToken = exponentSharedPreferences.getString(ExponentSharedPreferences.FCM_TOKEN_KEY);
+        String sharedPreferencesToken = exponentSharedPreferences.getString(ExponentSharedPreferences.ExponentSharedPreferencesKey.FCM_TOKEN_KEY);
         if (sharedPreferencesToken == null || sharedPreferencesToken.length() == 0) {
           String message = "No device token found.";
           if (!Constants.FCM_ENABLED) {
