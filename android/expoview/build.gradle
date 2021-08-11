@@ -1,7 +1,6 @@
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply plugin: 'maven'
-apply plugin: 'com.jakewharton.butterknife'
 apply plugin: 'de.undercouch.download'
 
 // WHEN_VERSIONING_REMOVE_FROM_HERE
@@ -93,7 +92,6 @@ buildscript {
     jcenter()
   }
   dependencies {
-    classpath 'com.jakewharton:butterknife-gradle-plugin:10.2.1'
     classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:${safeExtGet('kotlinVersion', '1.4.21')}")
   }
 }
@@ -109,6 +107,10 @@ android {
   compileOptions {
     sourceCompatibility = '1.8'
     targetCompatibility = '1.8'
+  }
+
+  buildFeatures {
+    viewBinding true
   }
 
   defaultConfig {
@@ -359,8 +361,6 @@ dependencies {
   api 'com.google.firebase:firebase-core:17.2.3'
   api 'com.google.firebase:firebase-messaging:20.2.4'
   api 'com.google.maps.android:android-maps-utils:0.5'
-  api 'com.jakewharton:butterknife:10.2.1'
-  annotationProcessor 'com.jakewharton:butterknife-compiler:10.2.1'
   // Remember to update DetachAppTemplate build.gradle if you add any excludes or transitive = false here!
 
   // Used only in Expo Go, see Analytics.java

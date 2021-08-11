@@ -68,7 +68,9 @@ abstract class BaseExperienceActivity : MultipleVersionReactNativeActivity() {
   }
 
   override fun onPause() {
-    EventBus.getDefault().post(ExperienceBackgroundedEvent(experienceKey!!))
+    if (experienceKey != null) {
+      EventBus.getDefault().post(ExperienceBackgroundedEvent(experienceKey!!))
+    }
     super.onPause()
 
     // For some reason onPause sometimes gets called soon after onResume.
@@ -190,7 +192,7 @@ abstract class BaseExperienceActivity : MultipleVersionReactNativeActivity() {
       errorQueue.add(error)
       if (visibleActivity != null) {
         visibleActivity!!.consumeErrorQueue()
-      } else if (ErrorActivity.getVisibleActivity() != null) {
+      } else if (ErrorActivity.visibleActivity != null) {
         // If ErrorActivity is already started and we get another error from RN.
         sendErrorsToErrorActivity()
       }

@@ -97,7 +97,7 @@ PODS:
   - EXImagePicker (10.2.0):
     - ExpoModulesCore
     - UMCore
-  - EXInAppPurchases (10.2.0):
+  - EXInAppPurchases (11.0.0):
     - UMCore
   - EXKeepAwake (9.2.0):
     - UMCore
@@ -1218,7 +1218,7 @@ SPEC CHECKSUMS:
   EXImageLoader: d3531a3fe530b22925c19977cb53bb43e3821fe6
   EXImageManipulator: a5bec1d69308fa1f091378f6461ae348ec83105d
   EXImagePicker: 958720afb9395ee1168dcda28d9915345c4e7cae
-  EXInAppPurchases: e54068db701c8879d975a1f304b2d00e6fc8eece
+  EXInAppPurchases: 0c590b1ddb24e70c934e3a5aeac77651659d24eb
   EXKeepAwake: f4105ef469be7b283f66ce2d7234bb71ac80cd26
   EXLinearGradient: 36053f529a48cc7534d6125b0ddc8dd17e091fdd
   EXLocalAuthentication: e6347880c31bc3b9693933780d3bc84823fe0698
@@ -1234,7 +1234,7 @@ SPEC CHECKSUMS:
   expo-dev-menu: 148071b2ca564529a0efb941cc2a72fe7397195a
   expo-dev-menu-interface: 145d352ba9edff66b0c1fb13773f0f0dd9d50afd
   expo-image: ea170930bd8bc42328ee74ff4dc861ca31587dc8
-  ExpoModulesCore: 82ee658feb15e6804de9f3530c39c62ff900048b
+  ExpoModulesCore: cbf340d971211537aec95d99945bd97143c07534
   EXPrint: 61bbaa43c42c1badfa46de5be015d7d798d33583
   EXRandom: ecb71f5d01991f29bb0277f8a2c35d168f85d637
   EXScreenCapture: c51844407fbac8bbca4415467bc43f2b7764d225
@@ -1334,4 +1334,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: 208c570f997bc1b6f5c6dda765eccb9e0e2720ec
 
-COCOAPODS: 1.10.1
+COCOAPODS: 1.10.2

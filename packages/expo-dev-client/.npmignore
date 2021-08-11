@@ -9,5 +9,3 @@ __tests__
 /babel.config.js
 /android/src/androidTest/
 /android/src/test/
-/tests/
-/metro.config.js

@@ -13,6 +13,7 @@
 ### 💡 Others
 
 - Migrated from `@unimodules/core` to `expo-modules-core`. ([#13755](https://github.com/expo/expo/pull/13755) by [@tsapeta](https://github.com/tsapeta))
+- Added `AlbumType` and `MediaSubtype` types, added missing `orientation` key to the `Asset` type. ([#13936](https://github.com/expo/expo/pull/13936) by [@Simek](https://github.com/Simek))
 
 ## 12.1.0 — 2021-06-16
 

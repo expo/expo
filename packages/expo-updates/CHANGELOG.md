@@ -6,6 +6,7 @@
 
 ### 🎉 New features
 
+- Version expo-updates plugin by importing from @expo/config-plugins@3.0.7. This allows the update url to be defined in app.confg ([#13981](https://github.com/expo/expo/pull/13981) by [@jkhales](https://github.com/jkhales))
 - Store assets with filename = key.fileExtension. ([#13801](https://github.com/expo/expo/pull/13801) by [@jkhales](https://github.com/jkhales))
 - Use stable manifest ID where applicable. ([#12964](https://github.com/expo/expo/pull/12964) by [@wschurman](https://github.com/wschurman))
 - Update NewManifest field paths for new extra field format. ([#13398](https://github.com/expo/expo/pull/13398) by [@wschurman](https://github.com/wschurman))
@@ -16,6 +17,7 @@
 
 - Fix `PROJECT_ROOT` path resolution in `create-manifest-ios.sh` and in `createManifest.js` ([#13439](https://github.com/expo/expo/pull/13439) by [@ajsmth](https://github.com/ajsmth))
 - Fix erroneous manifest JSON direct access. ([#13906](https://github.com/expo/expo/pull/13906) by [@wschurman](https://github.com/wschurman))
+- Fixed `userInterfaceStyle` not being applied when only set in root `expo` options and not in `expo.android` options. ([#13959](https://github.com/expo/expo/pull/13959) by [@mrousavy](https://github.com/mrousavy))
 
 ### 💡 Others
 
