@@ -1,5 +1,5 @@
-package expo.modules.sharing;
+package expo.modules.sharing
 
-import androidx.core.content.FileProvider;
+import androidx.core.content.FileProvider
 
-public class SharingFileProvider extends FileProvider {}
+class SharingFileProvider : FileProvider()
