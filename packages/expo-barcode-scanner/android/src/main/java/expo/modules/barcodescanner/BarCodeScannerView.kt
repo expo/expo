@@ -9,7 +9,6 @@ import android.view.WindowManager
 import expo.modules.barcodescanner.BarCodeScannedEvent.Companion.obtain
 import expo.modules.barcodescanner.utils.mapX
 import expo.modules.barcodescanner.utils.mapY
-import expo.modules.core.ModuleRegistry
 import expo.modules.core.ModuleRegistryDelegate
 import expo.modules.core.interfaces.services.EventEmitter
 import expo.modules.interfaces.barcodescanner.BarCodeScannerResult

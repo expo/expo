@@ -6,9 +6,6 @@ import expo.modules.core.ModuleRegistryDelegate
 import expo.modules.core.ViewManager
 import expo.modules.core.interfaces.ExpoProp
 import expo.modules.interfaces.barcodescanner.BarCodeScannerSettings
-import java.lang.IllegalArgumentException
-import java.lang.RuntimeException
-import java.lang.reflect.InvocationTargetException
 import java.util.*
 
 class BarCodeScannerViewManager(

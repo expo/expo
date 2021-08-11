@@ -1,7 +1,6 @@
 package expo.modules.barcodescanner
 
 import android.content.Context
-import expo.modules.barcodescanner.scanners.ExpoBarCodeScanner
 import expo.modules.core.interfaces.InternalModule
 import expo.modules.interfaces.barcodescanner.BarCodeScannerProviderInterface
 import expo.modules.interfaces.barcodescanner.BarCodeScannerInterface
@@ -15,6 +14,6 @@ class BarCodeScannerProvider : InternalModule, BarCodeScannerProviderInterface {
   override fun createBarCodeDetectorWithContext(context: Context): BarCodeScannerInterface {
     return GMVBarCodeScanner(context).takeIf {
       it.isAvailable
-  	} ?: ZxingBarCodeScanner(context)
+    } ?: ZxingBarCodeScanner(context)
   }
 }
