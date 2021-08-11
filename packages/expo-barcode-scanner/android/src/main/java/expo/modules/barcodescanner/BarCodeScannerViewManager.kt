@@ -6,11 +6,14 @@ import expo.modules.core.ModuleRegistryDelegate
 import expo.modules.core.ViewManager
 import expo.modules.core.interfaces.ExpoProp
 import expo.modules.interfaces.barcodescanner.BarCodeScannerSettings
+import java.lang.IllegalArgumentException
+import java.lang.RuntimeException
+import java.lang.reflect.InvocationTargetException
 import java.util.*
 
 class BarCodeScannerViewManager(
   private val moduleRegistryDelegate: ModuleRegistryDelegate = ModuleRegistryDelegate()
-) : ViewManager<BarCodeScannerView?>() {
+) : ViewManager<BarCodeScannerView>() {
 
   enum class Events(private val mName: String) {
     EVENT_ON_BAR_CODE_SCANNED("onBarCodeScanned");

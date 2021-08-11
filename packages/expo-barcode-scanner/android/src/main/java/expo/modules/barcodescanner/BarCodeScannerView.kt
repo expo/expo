@@ -98,11 +98,11 @@ class BarCodeScannerView(
   fun setCameraType(cameraType: Int) {
     type = cameraType
     if (!::viewFinder.isInitialized) {
-      viewFinder.setCameraType(cameraType)
-      ExpoBarCodeScanner.instance.adjustPreviewLayout(cameraType)
-    } else {
       viewFinder = BarCodeScannerViewFinder(viewContext, cameraType, this, moduleRegistryDelegate)
       addView(viewFinder)
+    } else {
+      viewFinder.setCameraType(cameraType)
+      ExpoBarCodeScanner.instance.adjustPreviewLayout(cameraType)
     }
   }
 
