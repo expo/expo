@@ -471,7 +471,7 @@ class Kernel : KernelInterface() {
         if (exponentNotification != null) {
           // Add action type
           if (bundle.containsKey(KernelConstants.NOTIFICATION_ACTION_TYPE_KEY)) {
-            exponentNotification.setActionType(bundle.getString(KernelConstants.NOTIFICATION_ACTION_TYPE_KEY))
+            exponentNotification.actionType = bundle.getString(KernelConstants.NOTIFICATION_ACTION_TYPE_KEY)
             val manager = ExponentNotificationManager(context)
             val experienceKey = ExperienceKey(exponentNotification.experienceScopeKey)
             manager.cancel(experienceKey, exponentNotification.notificationId)
@@ -479,7 +479,7 @@ class Kernel : KernelInterface() {
           // Add remote input
           val remoteInput = RemoteInput.getResultsFromIntent(intent)
           if (remoteInput != null) {
-            exponentNotification.setInputText(remoteInput.getString(NotificationActionCenter.KEY_TEXT_REPLY))
+            exponentNotification.inputText = remoteInput.getString(NotificationActionCenter.KEY_TEXT_REPLY)
           }
         }
         openExperience(

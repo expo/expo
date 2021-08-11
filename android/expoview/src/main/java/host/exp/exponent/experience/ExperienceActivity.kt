@@ -434,7 +434,7 @@ open class ExperienceActivity : BaseExperienceActivity(), StartReactInstanceDele
     // Notifications logic uses this to determine which experience to route a notification to
     ExponentDB.saveExperience(ExponentDBObject(this.manifestUrl!!, manifest, bundleUrl))
 
-    ExponentNotificationManager(this).maybeCreateNotificationChannelGroup(this.manifest)
+    ExponentNotificationManager(this).maybeCreateNotificationChannelGroup(this.manifest!!)
 
     val task = kernel.getExperienceActivityTask(this.manifestUrl!!)
     task.taskId = taskId
@@ -654,8 +654,7 @@ open class ExperienceActivity : BaseExperienceActivity(), StartReactInstanceDele
   }
 
   override fun handleUnreadNotifications(unreadNotifications: JSONArray) {
-    val pushNotificationHelper = PushNotificationHelper.getInstance()
-    pushNotificationHelper.removeNotifications(this, unreadNotifications)
+    PushNotificationHelper.instance.removeNotifications(this, unreadNotifications)
   }
 
   /*
