@@ -168,10 +168,10 @@ export class Package {
       );
     } else if (platform === 'android') {
       // On Android we need to read expoview's build.gradle file
-      const buildGradle = fs.readFileSync(path.join(ANDROID_DIR, 'expoview/build.gradle'), 'utf8');
+      const buildGradle = fs.readFileSync(path.join(ANDROID_DIR, 'settings.gradle'), 'utf8');
       const match = buildGradle.search(
         new RegExp(
-          `addUnimodulesDependencies\\([^\\)]+configuration\\s*:\\s*'api'[^\\)]+exclude\\s*:\\s*\\[[^\\]]*'${this.packageName}'[^\\]]*\\][^\\)]+\\)`
+          `useExpoModules\\([^\\)]+exclude\\s*:\\s*\\[[^\\]]*'${this.packageName}'[^\\]]*\\][^\\)]+\\)`
         )
       );
       // this is somewhat brittle so we do a quick-and-dirty sanity check:

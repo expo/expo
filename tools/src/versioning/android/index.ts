@@ -532,12 +532,6 @@ async function cleanUpAsync(version: string) {
     'null, null,'
   );
 
-  await transformFileAsync(
-    path.join(versionedAbiSrcPath, 'expo/modules/payments/stripe/PayFlow.java'),
-    new RegExp('// ADD BUILDCONFIG IMPORT HERE'),
-    `import ${abiName}.host.exp.expoview.BuildConfig;`
-  );
-
   // replace abixx_x_x...R with abixx_x_x.host.exp.expoview.R
   await spawnAsync(
     `find ${versionedAbiSrcPath} -iname '*.java' -type f -print0 | ` +
