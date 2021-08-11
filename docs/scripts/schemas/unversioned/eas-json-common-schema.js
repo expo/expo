@@ -34,11 +34,11 @@ export default [
     name: 'developmentClient',
     type: 'boolean',
     description: [
-      'If set to true (defaults to false), this field expresses the intent to produce a development client build.'
+      'If set to true (defaults to false), this field expresses the intent to produce a development client build.',
       'For the build to be successful, the project must have expo-dev-client installed and configured.',
-      'Note: this field is sugar for setting the iOS `buildConfiguration` to `Debug` and Android `gradleCommand` to `:app:assembleDebug`. Those fields, if provided for the same build profile, will take precedence.'
+      'Note: this field is sugar for setting the iOS `buildConfiguration` to `Debug` and Android `gradleCommand` to `:app:assembleDebug`. Those fields, if provided for the same build profile, will take precedence.',
       '[Learn more about custom development clients](../../clients/introduction).',
-    ]
+    ],
   },
   {
     name: 'node',
