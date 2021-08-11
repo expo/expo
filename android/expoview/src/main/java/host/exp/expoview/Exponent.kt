@@ -197,7 +197,8 @@ class Exponent private constructor(val context: Context, val application: Applic
             val sourceFile = File(directory, fileName)
 
             var hasCachedSourceFile = false
-            if (response.networkResponse() == null || response.networkResponse().code() == KernelConstants.HTTP_NOT_MODIFIED) {
+            val networkResponse = response.networkResponse()
+            if (networkResponse == null || networkResponse.code() == KernelConstants.HTTP_NOT_MODIFIED) {
               // If we're getting a cached response don't rewrite the file to disk.
               EXL.d(TAG, "Got cached OkHttp response for $urlString")
               if (sourceFile.exists()) {
