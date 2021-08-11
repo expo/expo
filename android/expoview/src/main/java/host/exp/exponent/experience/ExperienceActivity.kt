@@ -218,7 +218,7 @@ open class ExperienceActivity : BaseExperienceActivity(), StartReactInstanceDele
     soLoaderInit()
 
     addNotification()
-    Analytics.logEventWithManifestUrl(Analytics.EXPERIENCE_APPEARED, manifestUrl)
+    Analytics.logEventWithManifestUrl(Analytics.AnalyticsEvent.EXPERIENCE_APPEARED, manifestUrl)
   }
 
   override fun onWindowFocusChanged(hasFocus: Boolean) {
@@ -483,7 +483,7 @@ open class ExperienceActivity : BaseExperienceActivity(), StartReactInstanceDele
 
     isCrashed = false
 
-    Analytics.logEventWithManifestUrlSdkVersion(Analytics.LOAD_EXPERIENCE, manifestUrl, sdkVersion)
+    Analytics.logEventWithManifestUrlSdkVersion(Analytics.AnalyticsEvent.LOAD_EXPERIENCE, manifestUrl, sdkVersion)
 
     ExperienceActivityUtils.updateOrientation(this.manifest!!, this)
     ExperienceActivityUtils.updateSoftwareKeyboardLayoutMode(this.manifest!!, this)
@@ -746,7 +746,7 @@ open class ExperienceActivity : BaseExperienceActivity(), StartReactInstanceDele
             } catch (e: JSONException) {
               EXL.e(TAG, e.message)
             }
-            Analytics.logEvent("NUX_EXPERIENCE_OVERLAY_DISMISSED", eventProperties)
+            Analytics.logEvent(Analytics.AnalyticsEvent.NUX_EXPERIENCE_OVERLAY_DISMISSED, eventProperties)
           }
 
           override fun onAnimationRepeat(animation: Animation) {}

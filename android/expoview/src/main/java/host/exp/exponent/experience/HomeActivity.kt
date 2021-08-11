@@ -85,7 +85,7 @@ open class HomeActivity : BaseExperienceActivity() {
   override fun onResume() {
     super.onResume()
     SoLoader.init(this, false)
-    Analytics.logEvent("HOME_APPEARED")
+    Analytics.logEvent(Analytics.AnalyticsEvent.HOME_APPEARED)
   }
   //endregion Activity Lifecycle
   /**

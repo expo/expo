@@ -50,7 +50,7 @@ class ErrorActivity() : FragmentActivity() {
   override fun onResume() {
     super.onResume()
     visibleActivity = this
-    Analytics.logEventWithManifestUrl(Analytics.ERROR_APPEARED, manifestUrl)
+    Analytics.logEventWithManifestUrl(Analytics.AnalyticsEvent.ERROR_APPEARED, manifestUrl)
   }
 
   override fun onPause() {

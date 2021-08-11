@@ -381,7 +381,7 @@ class ExponentManifest @Inject constructor(
       if (exponentServerHeader != null) {
         try {
           val eventProperties = JSONObject(exponentServerHeader)
-          Analytics.logEvent(Analytics.LOAD_DEVELOPER_MANIFEST, eventProperties)
+          Analytics.logEvent(Analytics.AnalyticsEvent.LOAD_DEVELOPER_MANIFEST, eventProperties)
         } catch (e: Throwable) {
           EXL.e(TAG, e)
         }
