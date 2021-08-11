@@ -5,14 +5,14 @@ import android.os.Bundle
 import android.speech.tts.TextToSpeech
 import android.speech.tts.UtteranceProgressListener
 import android.speech.tts.Voice
-import org.unimodules.core.ExportedModule
-import org.unimodules.core.ModuleRegistry
-import org.unimodules.core.ModuleRegistryDelegate
-import org.unimodules.core.Promise
-import org.unimodules.core.interfaces.ExpoMethod
-import org.unimodules.core.interfaces.LifecycleEventListener
-import org.unimodules.core.interfaces.services.EventEmitter
-import org.unimodules.core.interfaces.services.UIManager
+import expo.modules.core.ExportedModule
+import expo.modules.core.ModuleRegistry
+import expo.modules.core.ModuleRegistryDelegate
+import expo.modules.core.Promise
+import expo.modules.core.interfaces.ExpoMethod
+import expo.modules.core.interfaces.LifecycleEventListener
+import expo.modules.core.interfaces.services.EventEmitter
+import expo.modules.core.interfaces.services.UIManager
 import java.util.*
 
 class SpeechModule(
@@ -24,12 +24,10 @@ class SpeechModule(
     moduleRegistryDelegate.getFromModuleRegistry<T>()
 
   private val uiManager: UIManager by moduleRegistry()
-  private val delayedUtterances: Queue<Map<String, Any?>> = ArrayDeque()
+  private val delayedUtterances: Queue<Utterance> = ArrayDeque()
 
   // Module basic definitions
-
   override fun getName() = "ExponentSpeech"
-
   override fun getConstants() = mapOf(
     "maxSpeechInputLength" to TextToSpeech.getMaxSpeechInputLength()
   )
@@ -37,22 +35,20 @@ class SpeechModule(
   // Module methods
 
   @ExpoMethod
-  fun isSpeaking(promise: Promise) {
-    promise.resolve(textToSpeech.isSpeaking)
-  }
+  fun isSpeaking(promise: Promise) = promise.resolve(textToSpeech.isSpeaking)
 
   @ExpoMethod
   fun getVoices(promise: Promise) {
-    var nativeVoices: MutableList<Voice> = mutableListOf()
+    var nativeVoices: List<Voice> = emptyList()
     try {
-      nativeVoices = textToSpeech.voices.toMutableList()
-    } catch (e: Exception) {
-    }
+      nativeVoices = textToSpeech.voices.toList()
+    } catch (e: Exception) {}
 
     val voices = nativeVoices.map {
-      var quality = "Default"
-      if (it.quality > Voice.QUALITY_NORMAL) {
-        quality = "Enhanced"
+      val quality = if (it.quality > Voice.QUALITY_NORMAL) {
+        "Enhanced"
+      } else {
+        "Default"
       }
 
       Bundle().apply {
@@ -73,7 +69,9 @@ class SpeechModule(
   }
 
   @ExpoMethod
-  fun speak(id: String?, text: String, options: Map<String, Any>?, promise: Promise) {
+  fun speak(id: String, text: String, options: Map<String, Any>?, promise: Promise) {
+    val speechOptions = SpeechOptions.optionsFromMap(options, promise) ?: return
+
     if (text.length > TextToSpeech.getMaxSpeechInputLength()) {
       promise.reject(
         "ERR_SPEECH_INPUT_LENGTH",
@@ -81,50 +79,42 @@ class SpeechModule(
       )
       return
     }
+
     if (isTextToSpeechReady) {
-      speakOut(id, text, options)
+      speakOut(id, text, speechOptions)
     } else {
-      delayedUtterances.add(
-        mapOf(
-          "id" to id,
-          "text" to text,
-          "options" to options,
-        )
-      )
+      delayedUtterances.add(Utterance(id, text, speechOptions))
+
       // init TTS, speaking will be available only after onInit
       textToSpeech
     }
     promise.resolve(null)
   }
 
-  private fun speakOut(id: String?, text: String?, options: Map<String, Any>?) {
-    if (options?.containsKey("language") == true) {
-      val locale = Locale(options["language"] as String)
+  private fun speakOut(id: String, text: String, options: SpeechOptions) {
+    options.pitch?.let(textToSpeech::setPitch)
+    options.rate?.let(textToSpeech::setSpeechRate)
+
+    textToSpeech.language = options.language?.let {
+      val locale = Locale(it)
       val languageAvailable = textToSpeech.isLanguageAvailable(locale)
-      if (languageAvailable != TextToSpeech.LANG_MISSING_DATA &&
+
+      return@let if (
+        languageAvailable != TextToSpeech.LANG_MISSING_DATA &&
         languageAvailable != TextToSpeech.LANG_NOT_SUPPORTED
       ) {
-        textToSpeech.language = locale
+        locale
       } else {
-        textToSpeech.language = Locale.getDefault()
+        Locale.getDefault()
       }
-    } else {
-      textToSpeech.language = Locale.getDefault()
+    } ?: Locale.getDefault()
+
+    options.voice?.let { voiceName ->
+      textToSpeech.voices
+        .firstOrNull { it.name == voiceName }
+        ?.let(textToSpeech::setVoice)
     }
-    if (options?.containsKey("pitch") == true) {
-      textToSpeech.setPitch((options["pitch"] as Number).toFloat())
-    }
-    if (options?.containsKey("rate") == true) {
-      textToSpeech.setSpeechRate((options["rate"] as Number).toFloat())
-    }
-    if (options?.containsKey("voice") == true) {
-      for (voice in textToSpeech.voices) {
-        if (voice.name == options["voice"]) {
-          textToSpeech.voice = voice
-          break
-        }
-      }
-    }
+
     textToSpeech.speak(
       text,
       TextToSpeech.QUEUE_ADD,
@@ -141,7 +131,7 @@ class SpeechModule(
   private val textToSpeech: TextToSpeech by lazy {
     val newTtsInstance = TextToSpeech(context) { status: Int ->
       if (status == TextToSpeech.SUCCESS) {
-        // synchronize because in some cases this runs on another thread and mTTS is null
+        // synchronize because in some cases this runs on another thread and _textToSpeech is null
         synchronized(this@SpeechModule) {
           _ttsReady = true
           _textToSpeech!!.setOnUtteranceProgressListener(object : UtteranceProgressListener() {
@@ -163,12 +153,10 @@ class SpeechModule(
               emitter.emit("Exponent.speakingError", idToMap(utteranceId))
             }
           })
-          for (arguments in delayedUtterances) {
-            speakOut(
-              arguments["id"] as String?,
-              arguments["text"] as String?,
-              arguments["options"] as Map<String, Any>?
-            )
+          for (utterance in delayedUtterances) {
+            with(utterance) {
+              speakOut(id, text, options)
+            }
           }
         }
       }
@@ -178,25 +166,28 @@ class SpeechModule(
   }
 
   // Lifecycle methods
-
-  override fun onHostResume() {}
-  override fun onHostPause() {}
-  override fun onHostDestroy() {
-    textToSpeech.shutdown()
-  }
-
   override fun onCreate(moduleRegistry: ModuleRegistry) {
     moduleRegistryDelegate.onCreate(moduleRegistry)
     uiManager.registerLifecycleEventListener(this)
   }
+  override fun onHostPause() {}
+  override fun onHostResume() {}
+  override fun onHostDestroy() {
+    textToSpeech.shutdown()
+  }
 
   // Helpers
-
   private fun idToMap(id: String) = Bundle().apply {
     putString("id", id)
   }
 
-  // do not refer to these - they're only needed when initializing `textTooSpeech`
+  private data class Utterance(
+    val id: String,
+    val text: String,
+    val options: SpeechOptions
+  )
+
+  // do not refer to these - they're only needed when initializing `textToSpeech`
   private var _textToSpeech: TextToSpeech? = null
   private var _ttsReady = false
 }

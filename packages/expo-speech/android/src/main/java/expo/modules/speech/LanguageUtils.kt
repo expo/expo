@@ -7,7 +7,7 @@ object LanguageUtils {
   private val countryISOCodes: Map<String, Locale> by lazy {
     Locale.getISOCountries().map { country ->
       val locale = Locale("", country)
-      locale.isO3Country.toUpperCase() to locale
+      locale.isO3Country.toUpperCase(locale) to locale
     }.toMap()
   }
   private val languageISOCodes: Map<String, Locale> by lazy {
