@@ -1,16 +1,16 @@
 import { getAccountUsername } from '@expo/config';
+import { AndroidConfig, IOSConfig } from '@expo/config-plugins';
 import { ExpoConfig } from '@expo/config-types';
 
 import withUpdates from '../withUpdates';
-import { withUpdatesAndroid } from '../withUpdatesAndroid';
-import { withUpdatesIOS } from '../withUpdatesIOS';
 
-jest.mock('../withUpdatesAndroid');
-jest.mock('../withUpdatesIOS');
 jest.mock('@expo/config');
 
 describe('Updates plugin', () => {
   it('passes in expo username, resolved by getAccountUsername', () => {
+    jest.spyOn(AndroidConfig.Updates, 'withUpdates');
+    jest.spyOn(IOSConfig.Updates, 'withUpdates');
+
     const expoUsername = 'some-username';
     // @ts-ignore: return the username so we can validate it is passed to the ios/android plugins
     getAccountUsername.mockReturnValue(expoUsername);
@@ -19,8 +19,8 @@ describe('Updates plugin', () => {
 
     // @ts-ignore: this is an expect extension and is not defined on the type
     const _ = expect.literallyAnything();
-    expect(withUpdatesAndroid).toHaveBeenCalledWith(_, { expoUsername });
-    expect(withUpdatesIOS).toHaveBeenCalledWith(_, { expoUsername });
+    expect(AndroidConfig.Updates.withUpdates).toHaveBeenCalledWith(_, { expoUsername });
+    expect(IOSConfig.Updates.withUpdates).toHaveBeenCalledWith(_, { expoUsername });
   });
 
   it('passes the config object to getAccountUsername', () => {
