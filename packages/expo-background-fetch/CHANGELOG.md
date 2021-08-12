@@ -13,15 +13,11 @@
 ### 🐛 Bug fixes
 
 - Update `minimumInterval` value to accurately reflect Android default. ([#13387](https://github.com/expo/expo/pull/13387) by [@ajsmth](https://github.com/ajsmth))
+- Fix unnecessary `location` capability in UIBackgroundModes leading to App Store rejection for apps not using location by [@martinstoyanov](https://github.com/martinstoyanov)
 
 ### 💡 Others
 
 - Migrated from `@unimodules/core` to `expo-modules-core`. ([#13757](https://github.com/expo/expo/pull/13757) by [@tsapeta](https://github.com/tsapeta))
-
-## 9.2.1 — 2021-08-02
-
-### 🐛 Bug fixes
-- Fix unnecessary `location` capability in UIBackgroundModes leading to App Store rejection for apps not using location by [@martinstoyanov](https://github.com/martinstoyanov)
 
 ## 9.2.0 — 2021-06-16
 
