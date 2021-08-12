@@ -55,7 +55,6 @@ class ImagePickerModule(
 
   override fun onDestroy() {
     try {
-      mUIManager.unregisterLifecycleEventListener(this)
       moduleCoroutineScope.cancel(ModuleDestroyedException())
     } catch (e: IllegalStateException) {
       Log.e(ImagePickerConstants.TAG, "The scope does not have a job in it")
@@ -67,7 +66,7 @@ class ImagePickerModule(
    * Moreover, the react context will be reloaded again in such a case. We need to handle this situation.
    * To do it we track if the current activity was destroyed.
    */
-  private var mWasHostDestroyed = false
+  private var mWasDestroyed = false
 
   private val mImageLoader: ImageLoaderInterface by moduleRegistry()
   private val mUIManager: UIManager by moduleRegistry()
@@ -285,7 +284,7 @@ class ImagePickerModule(
       mUIManager.unregisterActivityEventListener(this)
 
       var pickerOptions = mPickerOptions!!
-      val promise = if (mWasHostDestroyed && mPromise !is PendingPromise) {
+      val promise = if (mWasDestroyed && mPromise !is PendingPromise) {
         if (pickerOptions.isBase64) {
           // we know that the activity was killed and we don't want to store
           // base64 into `SharedPreferences`...
@@ -338,7 +337,7 @@ class ImagePickerModule(
       mPickerOptions != null &&
       // When we launched the crop tool and the android kills current activity, the references can be different.
       // So, we fallback to the requestCode in this case.
-      (activity === experienceActivity || mWasHostDestroyed && requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE)
+      (activity === experienceActivity || mWasDestroyed && requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE)
   }
 
   private fun handleOnActivityResult(promise: Promise, activity: Activity, requestCode: Int, resultCode: Int, intent: Intent?, pickerOptions: ImagePickerOptions) {
@@ -412,15 +411,11 @@ class ImagePickerModule(
   //region LifecycleEventListener
 
   override fun onHostDestroy() {
-    mWasHostDestroyed = true
+    mWasDestroyed = true
+    mUIManager.unregisterLifecycleEventListener(this)
   }
 
-  override fun onHostResume() {
-    if (mWasHostDestroyed) {
-      _experienceActivity = WeakReference(mActivityProvider.currentActivity)
-      mWasHostDestroyed = false
-    }
-  }
+  override fun onHostResume() = Unit
   override fun onHostPause() = Unit
 
   //endregion
