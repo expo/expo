@@ -25,22 +25,22 @@ export async function getProductsAsync(itemList) {
     }
     return await ExpoInAppPurchases.getProductsAsync(itemList);
 }
-export async function getPurchaseHistoryAsync(refresh = false) {
+export async function getPurchaseHistoryAsync(options = { useGooglePlayCache: true }) {
     if (!connected) {
         throw new ConnectionError(errors.NOT_CONNECTED);
     }
     if (Platform.OS === 'android') {
-        return await ExpoInAppPurchases.getPurchaseHistoryAsync(refresh);
+        return await ExpoInAppPurchases.getPurchaseHistoryAsync(options);
     }
     else {
         return await ExpoInAppPurchases.getPurchaseHistoryAsync();
     }
 }
-export async function purchaseItemAsync(itemId, oldItem) {
+export async function purchaseItemAsync(itemId, oldPurchaseToken) {
     if (!connected) {
         throw new ConnectionError(errors.NOT_CONNECTED);
     }
-    await ExpoInAppPurchases.purchaseItemAsync(itemId, oldItem);
+    await ExpoInAppPurchases.purchaseItemAsync(itemId, oldPurchaseToken);
 }
 export function setPurchaseListener(callback) {
     if (purchaseUpdatedSubscription) {

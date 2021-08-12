@@ -11,7 +11,7 @@ export function podspecTransforms(versionName: string): TransformPipeline {
       },
       {
         // Prefixes dependencies listed in the podspecs
-        replace: /(\.dependency\s+["'])(Yoga|React\-|ReactCommon|RCT|FB)([^"']*["'])/g,
+        replace: /(\.dependency\s+["'])(Yoga|React\-|ReactCommon|RCT|FB)(?!-Folly)([^"']*["'])/g,
         with: `$1${versionName}$2$3`,
       },
       {
@@ -57,8 +57,8 @@ export function podspecTransforms(versionName: string): TransformPipeline {
       {
         // Unprefixes inner directory for source_files
         paths: 'Yoga.podspec',
-        replace: /\{(Yoga),(YGEnums),(YGMacros),(YGValue)\}/g,
-        with: `{${versionName}$1,${versionName}$2,${versionName}$3,${versionName}$4}`,
+        replace: /\{(Yoga),(YGEnums),(YGMacros),(YGNode),(YGStyle),(YGValue)\}/g,
+        with: `{${versionName}$1,${versionName}$2,${versionName}$3,${versionName}$4,${versionName}$5,${versionName}$6}`,
       },
 
       // FBReactNativeSpec
@@ -67,6 +67,12 @@ export function podspecTransforms(versionName: string): TransformPipeline {
         paths: 'FBReactNativeSpec.podspec',
         replace: /(\/Libraries\/)(FBReactNativeSpec)/g,
         with: `$1${versionName}$2`,
+      },
+      {
+        // Disable codegen from build phase script
+        paths: 'FBReactNativeSpec.podspec',
+        replace: /(use_react_native_codegen!)/g,
+        with: '# $1',
       },
     ],
   };
