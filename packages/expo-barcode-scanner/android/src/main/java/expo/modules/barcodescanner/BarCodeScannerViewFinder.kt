@@ -4,15 +4,20 @@ import android.content.Context
 import android.graphics.SurfaceTexture
 import android.hardware.Camera
 import android.hardware.Camera.PreviewCallback
-import android.os.AsyncTask
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import android.view.TextureView
 import android.view.TextureView.SurfaceTextureListener
 import expo.modules.core.ModuleRegistryDelegate
 import expo.modules.interfaces.barcodescanner.BarCodeScannerInterface
 import expo.modules.interfaces.barcodescanner.BarCodeScannerProviderInterface
 import expo.modules.interfaces.barcodescanner.BarCodeScannerSettings
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
 
 internal class BarCodeScannerViewFinder(
   context: Context,
@@ -35,6 +40,8 @@ internal class BarCodeScannerViewFinder(
   private var isChanging = false
   private var camera: Camera? = null
 
+  private val coroutineScope = CoroutineScope(Dispatchers.Default)
+
   // Scanner instance for the barcode scanning
   private lateinit var barCodeScanner: BarCodeScannerInterface
   override fun onSurfaceTextureAvailable(surface: SurfaceTexture, width: Int, height: Int) {
@@ -47,6 +54,7 @@ internal class BarCodeScannerViewFinder(
   override fun onSurfaceTextureDestroyed(surface: SurfaceTexture): Boolean {
     finderSurfaceTexture = null
     stopCamera()
+    coroutineScope.cancel(ScopeCancellationException())
     return true
   }
 
@@ -166,33 +174,42 @@ internal class BarCodeScannerViewFinder(
     barCodeScanner.setSettings(settings)
   }
 
-  private inner class BarCodeScannerAsyncTask(private val camera: Camera?, private val mImageData: ByteArray, barCodeScannerView: BarCodeScannerView) : AsyncTask<Void?, Void?, Void?>() {
+  private inner class BarCodeScannerAsyncTask(
+    private val camera: Camera?,
+    private val mImageData: ByteArray,
+    barCodeScannerView: BarCodeScannerView
+  ) {
     init {
       this@BarCodeScannerViewFinder.barCodeScannerView = barCodeScannerView
     }
 
-    override fun doInBackground(vararg params: Void?): Void? {
-      if (isCancelled) {
-        return null
-      }
+    fun execute() {
+      coroutineScope.launch {
+        try {
+          if (!isActive) {
+            return@launch
+          }
 
-      // setting PreviewCallback does not really have an effect - this method is called anyway so we
-      // need to check if camera changing is in progress or not
-      if (!isChanging && camera != null) {
-        val size = camera.parameters.previewSize
-        val width = size.width
-        val height = size.height
-        val properRotation = ExpoBarCodeScanner.instance.rotation
-        val result = barCodeScanner.scan(
-          mImageData, width,
-          height, properRotation
-        )
-        if (result != null) {
-          Handler(Looper.getMainLooper()).post { barCodeScannerView.onBarCodeScanned(result) }
+          // setting PreviewCallback does not really have an effect - this method is called anyway
+          // so we need to check if camera changing is in progress or not
+          if (!isChanging && camera != null) {
+            val size = camera.parameters.previewSize
+            val width = size.width
+            val height = size.height
+            val properRotation = ExpoBarCodeScanner.instance.rotation
+            val result = barCodeScanner.scan(
+              mImageData, width,
+              height, properRotation
+            )
+            if (result != null) {
+              Handler(Looper.getMainLooper()).post { barCodeScannerView.onBarCodeScanned(result) }
+            }
+          }
+          barCodeScannerTaskLock = false
+        } catch (e: ScopeCancellationException) {
+          Log.w("BarCodeScanner", e.message ?: "", e)
         }
       }
-      barCodeScannerTaskLock = false
-      return null
     }
   }
 
