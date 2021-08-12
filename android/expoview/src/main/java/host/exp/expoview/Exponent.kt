@@ -80,17 +80,15 @@ class Exponent private constructor(val context: Context, val application: Applic
 
   private val activityResultListeners = CopyOnWriteArrayList<ActivityResultListener>()
 
-  // TODO(wschurman): make constructor args
-  class InstanceManagerBuilderProperties {
-    var application: Application? = null
-    var jsBundlePath: String? = null
-    var linkingPackage: RNObject? = null
-    var experienceProperties: Map<String, Any?>? = null
-    var expoPackages: List<Package>? = null
-    var exponentPackageDelegate: ExponentPackageDelegate? = null
-    var manifest: RawManifest? = null
-    var singletonModules: List<SingletonModule>? = null
-  }
+  data class InstanceManagerBuilderProperties(
+    var application: Application?,
+    var jsBundlePath: String?,
+    var experienceProperties: Map<String, Any?>,
+    var expoPackages: List<Package>?,
+    var exponentPackageDelegate: ExponentPackageDelegate?,
+    var manifest: RawManifest,
+    var singletonModules: List<SingletonModule>,
+  )
 
   fun addActivityResultListener(listener: ActivityResultListener) {
     activityResultListeners.add(listener)
