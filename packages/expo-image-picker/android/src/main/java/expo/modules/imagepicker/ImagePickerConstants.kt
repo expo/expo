@@ -35,8 +35,6 @@ object ImagePickerConstants {
   const val OPTION_EXIF = "exif"
   const val OPTION_VIDEO_MAX_DURATION = "videoMaxDuration"
 
-  // We need to explicitly get latitude, longitude, altitude with their specific accessor functions
-  // separately so we skip them in this list.
   val exifTags = arrayOf(
     arrayOf("string", ExifInterface.TAG_ARTIST),
     arrayOf("int", ExifInterface.TAG_BITS_PER_SAMPLE),
