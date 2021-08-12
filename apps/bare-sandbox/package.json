@@ -21,7 +21,7 @@
     "react-native-reanimated": "~2.2.0",
     "react-native-screens": "~3.4.0",
     "react-native-unimodules": "~0.14.1",
-    "react-native-web": "~0.13.7",
+    "react-native-web": "~0.17.1",
     "@unimodules/react-native-adapter": "^6.4.0"
   },
   "devDependencies": {

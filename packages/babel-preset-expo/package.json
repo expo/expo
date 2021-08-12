@@ -45,10 +45,10 @@
     ]
   },
   "dependencies": {
-    "@babel/plugin-proposal-decorators": "^7.6.0",
-    "@babel/preset-env": "^7.6.3",
+    "@babel/plugin-proposal-decorators": "^7.12.9",
+    "@babel/preset-env": "^7.12.9",
     "babel-plugin-module-resolver": "^4.1.0",
-    "babel-plugin-react-native-web": "~0.13.6",
+    "babel-plugin-react-native-web": "~0.17.1",
     "metro-react-native-babel-preset": "~0.64.0"
   },
   "devDependencies": {
