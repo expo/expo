@@ -51,9 +51,11 @@ class ImagePickerModule(
   private var mPromise: Promise? = null
   private var mPickerOptions: ImagePickerOptions? = null
   private val moduleCoroutineScope = CoroutineScope(Dispatchers.IO)
+  private var exifDataHandler: ExifDataHandler? = null
 
   override fun onDestroy() {
     try {
+      mUIManager.unregisterLifecycleEventListener(this)
       moduleCoroutineScope.cancel(ModuleDestroyedException())
     } catch (e: IllegalStateException) {
       Log.e(ImagePickerConstants.TAG, "The scope does not have a job in it")
@@ -65,7 +67,7 @@ class ImagePickerModule(
    * Moreover, the react context will be reloaded again in such a case. We need to handle this situation.
    * To do it we track if the current activity was destroyed.
    */
-  private var mWasDestroyed = false
+  private var mWasHostDestroyed = false
 
   private val mImageLoader: ImageLoaderInterface by moduleRegistry()
   private val mUIManager: UIManager by moduleRegistry()
@@ -268,7 +270,7 @@ class ImagePickerModule(
       setOutputCompressFormat(compressFormat)
       setOutputCompressQuality(pickerOptions.quality)
     }
-
+    exifDataHandler = ExifDataHandler(uri)
     startActivityOnResult(cropImageBuilder.getIntent(context), CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE, promise, pickerOptions)
   }
 
@@ -283,7 +285,7 @@ class ImagePickerModule(
       mUIManager.unregisterActivityEventListener(this)
 
       var pickerOptions = mPickerOptions!!
-      val promise = if (mWasDestroyed && mPromise !is PendingPromise) {
+      val promise = if (mWasHostDestroyed && mPromise !is PendingPromise) {
         if (pickerOptions.isBase64) {
           // we know that the activity was killed and we don't want to store
           // base64 into `SharedPreferences`...
@@ -336,7 +338,7 @@ class ImagePickerModule(
       mPickerOptions != null &&
       // When we launched the crop tool and the android kills current activity, the references can be different.
       // So, we fallback to the requestCode in this case.
-      (activity === experienceActivity || mWasDestroyed && requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE)
+      (activity === experienceActivity || mWasHostDestroyed && requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE)
   }
 
   private fun handleOnActivityResult(promise: Promise, activity: Activity, requestCode: Int, resultCode: Int, intent: Intent?, pickerOptions: ImagePickerOptions) {
@@ -354,7 +356,10 @@ class ImagePickerModule(
     if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
       val result = CropImage.getActivityResult(intent)
       val exporter = CropImageExporter(result.rotation, result.cropRect, pickerOptions.isBase64)
-      ImageResultTask(promise, result.uri, contentResolver, CropFileProvider(result.uri), pickerOptions.isExif, exporter, moduleCoroutineScope).execute()
+      ImageResultTask(
+        promise, result.uri, contentResolver, CropFileProvider(result.uri), pickerOptions.isAllowsEditing,
+        pickerOptions.isExif, exporter, exifDataHandler, moduleCoroutineScope
+      ).execute()
       return
     }
 
@@ -383,7 +388,10 @@ class ImagePickerModule(
         CompressionImageExporter(mImageLoader, pickerOptions.quality, pickerOptions.isBase64)
       }
 
-      ImageResultTask(promise, uri, contentResolver, CacheFileProvider(mContext.cacheDir, deduceExtension(type)), pickerOptions.isExif, exporter, moduleCoroutineScope).execute()
+      ImageResultTask(
+        promise, uri, contentResolver, CacheFileProvider(mContext.cacheDir, deduceExtension(type)),
+        pickerOptions.isAllowsEditing, pickerOptions.isExif, exporter, exifDataHandler, moduleCoroutineScope
+      ).execute()
       return
     }
 
@@ -404,11 +412,15 @@ class ImagePickerModule(
   //region LifecycleEventListener
 
   override fun onHostDestroy() {
-    mWasDestroyed = true
-    mUIManager.unregisterLifecycleEventListener(this)
+    mWasHostDestroyed = true
   }
 
-  override fun onHostResume() = Unit
+  override fun onHostResume() {
+    if (mWasHostDestroyed) {
+      _experienceActivity = WeakReference(mActivityProvider.currentActivity)
+      mWasHostDestroyed = false
+    }
+  }
   override fun onHostPause() = Unit
 
   //endregion
