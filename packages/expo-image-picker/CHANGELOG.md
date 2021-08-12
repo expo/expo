@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix promise not resolving when the app is moved to the background on Android. ([#13975](https://github.com/expo/expo/pull/13975) by [@mstach60161](https://github.com/mstach60161))
+
 ### 💡 Others
 
 ## 10.2.0 — 2021-06-16
