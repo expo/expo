@@ -15,9 +15,8 @@ class RandomModule(context: ReactApplicationContext) : ReactContextBaseJavaModul
   override fun getName() = "ExpoRandom"
 
   @ReactMethod
-  fun getRandomBase64StringAsync(randomByteCount: Int, promise: Promise) {
+  fun getRandomBase64StringAsync(randomByteCount: Int, promise: Promise) =
     promise.resolve(getRandomBase64String(randomByteCount))
-  }
 
   @ReactMethod(isBlockingSynchronousMethod = true)
   fun getRandomBase64String(randomByteCount: Int): String {
