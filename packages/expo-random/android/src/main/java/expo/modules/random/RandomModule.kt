@@ -10,7 +10,7 @@ import com.facebook.react.bridge.ReactContextBaseJavaModule
 import com.facebook.react.bridge.ReactMethod
 
 class RandomModule(context: ReactApplicationContext) : ReactContextBaseJavaModule(context) {
-  private val secureRandom: SecureRandom by lazy { SecureRandom() }
+  private val secureRandom by lazy { SecureRandom() }
 
   override fun getName() = "ExpoRandom"
 
