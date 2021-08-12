@@ -12,9 +12,7 @@ import com.facebook.react.bridge.ReactMethod
 class RandomModule(context: ReactApplicationContext) : ReactContextBaseJavaModule(context) {
   private val secureRandom: SecureRandom by lazy { SecureRandom() }
 
-  override fun getName(): String {
-    return "ExpoRandom"
-  }
+  override fun getName() = "ExpoRandom"
 
   @ReactMethod
   fun getRandomBase64StringAsync(randomByteCount: Int, promise: Promise) {
