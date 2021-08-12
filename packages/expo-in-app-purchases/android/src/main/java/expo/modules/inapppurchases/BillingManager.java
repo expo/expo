@@ -37,8 +37,6 @@ import java.util.Set;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import expo.modules.core.Promise;
-import expo.modules.core.interfaces.services.EventEmitter;
 
 /**
  * Handles all the interactions with Play Store (via Billing library), maintains connection to
