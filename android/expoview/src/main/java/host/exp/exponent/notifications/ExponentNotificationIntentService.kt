@@ -40,7 +40,7 @@ abstract class ExponentNotificationIntentService(name: String?) : IntentService(
       return
     }
     try {
-      NativeModuleDepsProvider.getInstance().inject(ExponentNotificationIntentService::class.java, this)
+      NativeModuleDepsProvider.instance.inject(ExponentNotificationIntentService::class.java, this)
       isInitialized = true
     } catch (e: Throwable) {
     }

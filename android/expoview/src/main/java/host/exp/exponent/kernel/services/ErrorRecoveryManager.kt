@@ -79,6 +79,6 @@ class ErrorRecoveryManager(private val experienceKey: ExperienceKey?) {
   }
 
   init {
-    NativeModuleDepsProvider.getInstance().inject(ErrorRecoveryManager::class.java, this)
+    NativeModuleDepsProvider.instance.inject(ErrorRecoveryManager::class.java, this)
   }
 }

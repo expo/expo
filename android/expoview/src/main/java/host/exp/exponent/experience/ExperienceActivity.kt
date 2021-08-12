@@ -132,7 +132,7 @@ open class ExperienceActivity : BaseExperienceActivity(), StartReactInstanceDele
     shouldShowLoadingViewWithOptimisticManifest = true
     loadingProgressPopupController = LoadingProgressPopupController(this)
 
-    NativeModuleDepsProvider.getInstance().inject(ExperienceActivity::class.java, this)
+    NativeModuleDepsProvider.instance.inject(ExperienceActivity::class.java, this)
     EventBus.getDefault().registerSticky(this)
 
     activityId = ExpoActivityIds.getNextAppActivityId()

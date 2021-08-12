@@ -406,7 +406,7 @@ class Exponent private constructor(val context: Context, val application: Applic
       private set
     private var hasBeenInitialized = false
 
-    fun initialize(context: Context, application: Application) {
+    @JvmStatic fun initialize(context: Context, application: Application) {
       if (!hasBeenInitialized) {
         hasBeenInitialized = true
         Exponent(context, application)
@@ -485,7 +485,7 @@ class Exponent private constructor(val context: Context, val application: Applic
   init {
     instance = this
     NativeModuleDepsProvider.initialize(application)
-    NativeModuleDepsProvider.getInstance().inject(Exponent::class.java, this)
+    NativeModuleDepsProvider.instance.inject(Exponent::class.java, this)
 
     // Verifying SSL certs is slow on Android, so send an HTTPS request to our server as early as possible.
     // This speeds up the manifest request in a shell app from ~500ms to ~250ms.

@@ -135,7 +135,7 @@ abstract class ReactNativeActivity :
 
     doubleTapReloadRecognizer = DoubleTapReloadRecognizer()
     Exponent.initialize(this, application)
-    NativeModuleDepsProvider.getInstance().inject(ReactNativeActivity::class.java, this)
+    NativeModuleDepsProvider.instance.inject(ReactNativeActivity::class.java, this)
 
     // Can't call this here because subclasses need to do other initialization
     // before their listener methods are called.

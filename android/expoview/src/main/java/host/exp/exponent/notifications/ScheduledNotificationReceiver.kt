@@ -42,6 +42,6 @@ class ScheduledNotificationReceiver : BroadcastReceiver() {
   }
 
   init {
-    NativeModuleDepsProvider.getInstance().inject(ScheduledNotificationReceiver::class.java, this)
+    NativeModuleDepsProvider.instance.inject(ScheduledNotificationReceiver::class.java, this)
   }
 }

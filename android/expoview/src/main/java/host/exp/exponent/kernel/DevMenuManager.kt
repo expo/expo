@@ -48,7 +48,7 @@ class DevMenuManager {
   internal lateinit var exponentSharedPreferences: ExponentSharedPreferences
 
   init {
-    NativeModuleDepsProvider.getInstance().inject(DevMenuManager::class.java, this)
+    NativeModuleDepsProvider.instance.inject(DevMenuManager::class.java, this)
     EventBus.getDefault().register(this)
   }
 

@@ -16,7 +16,7 @@ object ToastHelper {
   lateinit var applicationContext: Application
 
   init {
-    NativeModuleDepsProvider.getInstance().inject(ToastHelper::class.java, this)
+    NativeModuleDepsProvider.instance.inject(ToastHelper::class.java, this)
   }
 
   fun functionMayNotWorkOnAndroidRWarning(featureName: String, manifestJson: JSONObject?) {

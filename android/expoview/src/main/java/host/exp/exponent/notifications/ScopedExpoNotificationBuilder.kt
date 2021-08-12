@@ -77,6 +77,6 @@ open class ScopedExpoNotificationBuilder(
   }
 
   init {
-    NativeModuleDepsProvider.getInstance().inject(ScopedExpoNotificationBuilder::class.java, this)
+    NativeModuleDepsProvider.instance.inject(ScopedExpoNotificationBuilder::class.java, this)
   }
 }
