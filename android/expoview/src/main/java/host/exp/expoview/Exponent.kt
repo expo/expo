@@ -457,15 +457,15 @@ class Exponent private constructor(val context: Context, val application: Applic
         val debuggerHostHostname = getHostname(debuggerHost)
         val debuggerHostPort = getPort(debuggerHost)
 
-        val deviceField = fieldObject.rnClass().getDeclaredField("DEVICE_LOCALHOST")
+        val deviceField = fieldObject.rnClass()!!.getDeclaredField("DEVICE_LOCALHOST")
         deviceField.isAccessible = true
         deviceField[null] = debuggerHostHostname
 
-        val genymotionField = fieldObject.rnClass().getDeclaredField("GENYMOTION_LOCALHOST")
+        val genymotionField = fieldObject.rnClass()!!.getDeclaredField("GENYMOTION_LOCALHOST")
         genymotionField.isAccessible = true
         genymotionField[null] = debuggerHostHostname
 
-        val emulatorField = fieldObject.rnClass().getDeclaredField("EMULATOR_LOCALHOST")
+        val emulatorField = fieldObject.rnClass()!!.getDeclaredField("EMULATOR_LOCALHOST")
         emulatorField.isAccessible = true
         emulatorField[null] = debuggerHostHostname
 

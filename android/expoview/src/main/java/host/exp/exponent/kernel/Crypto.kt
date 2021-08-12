@@ -120,7 +120,7 @@ class Crypto @Inject constructor(var mExponentNetwork: ExponentNetwork) {
     cipherText: String
   ): Boolean {
     // remove comments
-    val publicKeySplit = publicKey.split("\\r?\\n")
+    val publicKeySplit = publicKey.split(Regex("\\r?\\n"))
     var publicKeyNoComments = ""
     for (line in publicKeySplit) {
       if (!line.contains("PUBLIC KEY-----")) {
