@@ -194,7 +194,7 @@ public class VersionedUtils {
 
     // Build the instance manager
     ReactInstanceManagerBuilder builder = ReactInstanceManager.builder()
-        .setApplication(instanceManagerBuilderProperties.application)
+        .setApplication(instanceManagerBuilderProperties.getApplication())
         .setJSIModulesPackage((reactApplicationContext, jsContext) -> {
           RNObject devSupportManager = getDevSupportManager(reactApplicationContext);
           if (devSupportManager == null) {
@@ -212,19 +212,19 @@ public class VersionedUtils {
         })
         .addPackage(new MainReactPackage())
         .addPackage(new ExponentPackage(
-                instanceManagerBuilderProperties.experienceProperties,
-                instanceManagerBuilderProperties.manifest,
+                instanceManagerBuilderProperties.getExperienceProperties(),
+                instanceManagerBuilderProperties.getManifest(),
                 null, null,
-                instanceManagerBuilderProperties.singletonModules))
+                instanceManagerBuilderProperties.getSingletonModules()))
         .addPackage(new ExpoTurboPackage(
-          instanceManagerBuilderProperties.experienceProperties,
-          instanceManagerBuilderProperties.manifest))
+          instanceManagerBuilderProperties.getExperienceProperties(),
+          instanceManagerBuilderProperties.getManifest()))
         .setInitialLifecycleState(LifecycleState.BEFORE_CREATE)
         .setCustomPackagerCommandHandlers(createPackagerCommandHelpers())
         .setJavaScriptExecutorFactory(createJSExecutorFactory(instanceManagerBuilderProperties));
 
-    if (instanceManagerBuilderProperties.jsBundlePath != null && instanceManagerBuilderProperties.jsBundlePath.length() > 0) {
-      builder = builder.setJSBundleFile(instanceManagerBuilderProperties.jsBundlePath);
+    if (instanceManagerBuilderProperties.getJsBundlePath() != null && instanceManagerBuilderProperties.getJsBundlePath().length() > 0) {
+      builder = builder.setJSBundleFile(instanceManagerBuilderProperties.getJsBundlePath());
     }
 
     return builder;
@@ -254,7 +254,7 @@ public class VersionedUtils {
 
   private static JavaScriptExecutorFactory createJSExecutorFactory(
           @NonNull final Exponent.InstanceManagerBuilderProperties instanceManagerBuilderProperties) {
-    String appName = instanceManagerBuilderProperties.manifest.getName();
+    String appName = instanceManagerBuilderProperties.getManifest().getName();
     if (appName == null) {
       appName = "";
     }
@@ -264,7 +264,7 @@ public class VersionedUtils {
       return new JSCExecutorFactory(appName, deviceName);
     }
 
-    final Pair<Boolean, Integer> hermesBundlePair = parseHermesBundleHeader(instanceManagerBuilderProperties.jsBundlePath);
+    final Pair<Boolean, Integer> hermesBundlePair = parseHermesBundleHeader(instanceManagerBuilderProperties.getJsBundlePath());
     if (hermesBundlePair.first) {
       if (hermesBundlePair.second != HERMES_BYTECODE_VERSION) {
         final String message = String.format(Locale.US,

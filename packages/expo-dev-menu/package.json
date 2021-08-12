@@ -48,7 +48,7 @@
     "@react-navigation/core": "5.15.1",
     "@react-navigation/native": "5.9.2",
     "@react-navigation/stack": "5.14.2",
-    "babel-plugin-module-resolver": "^4.0.0",
+    "babel-plugin-module-resolver": "^4.1.0",
     "expo-module-scripts": "^2.0.0",
     "react": "17.0.1",
     "react-native": "0.64.2",

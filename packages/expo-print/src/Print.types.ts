@@ -25,8 +25,14 @@ export type PrintOptions = {
    */
   printerUrl?: string;
   /**
-   * **Available on iOS only.** Alternative to `html` option that uses [UIMarkupTextPrintFormatter](https://developer.apple.com/documentation/uikit/uimarkuptextprintformatter)
-   * instead of WebView, but it doesn't display images. Might be removed in the future releases.
+   * **Available on iOS only.** Alternative to default option that uses [UIMarkupTextPrintFormatter](https://developer.apple.com/documentation/uikit/uimarkuptextprintformatter)
+   * instead of WebView, but it doesn't display images.
+   */
+  useMarkupFormatter?: boolean;
+  /**
+   * @deprecated
+   * **Available on iOS only.** This argument is deprecated, use `useMarkupFormatter` instead.
+   * Might be removed in the future releases.
    */
   markupFormatterIOS?: string;
   /**
@@ -67,7 +73,7 @@ export type FilePrintOptions = {
    * **Available on iOS only.** Alternative to default option that uses [UIMarkupTextPrintFormatter](https://developer.apple.com/documentation/uikit/uimarkuptextprintformatter)
    * instead of WebView, but it doesn't display images.
    */
-  markupFormatterIOS?: boolean;
+  useMarkupFormatter?: boolean;
   /**
    * Width of the single page in pixels. Defaults to `612` which is a width of US Letter paper
    * format with 72 PPI.

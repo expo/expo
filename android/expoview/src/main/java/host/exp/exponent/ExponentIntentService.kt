@@ -62,14 +62,14 @@ class ExponentIntentService : IntentService("ExponentIntentService") {
   }
 
   companion object {
-    @JvmStatic fun getActionReloadExperience(context: Context?, manifestUrl: String?): Intent {
+    @JvmStatic fun getActionReloadExperience(context: Context, manifestUrl: String): Intent {
       return Intent(context, ExponentIntentService::class.java).apply {
         action = ACTION_RELOAD_EXPERIENCE
         putExtra(KernelConstants.MANIFEST_URL_KEY, manifestUrl)
       }
     }
 
-    @JvmStatic fun getActionStayAwake(context: Context?): Intent {
+    @JvmStatic fun getActionStayAwake(context: Context): Intent {
       return Intent(context, ExponentIntentService::class.java).apply {
         action = ACTION_STAY_AWAKE
       }
