@@ -10,7 +10,7 @@
 
 ### 🐛 Bug fixes
 
-- Add missing exif parameter `GPSHPositioningError` on android. ([#13998](https://github.com/expo/expo/pull/13998) by [@mstach60161](https://github.com/mstach60161))
+- Add missing `GPSHPositioningError` exif parameter on Android. ([#13998](https://github.com/expo/expo/pull/13998) by [@mstach60161](https://github.com/mstach60161))
 
 ### 💡 Others
 
