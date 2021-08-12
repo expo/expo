@@ -26,7 +26,6 @@ const forwardPropsList = {
     ...forwardedProps.mouseProps,
     ...forwardedProps.touchProps,
     ...forwardedProps.styleProps,
-    __element: true,
     lang: true,
     onScroll: true,
     onWheel: true,
