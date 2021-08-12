@@ -159,7 +159,7 @@ if (rootProject instanceof ProjectDescriptor) {
     gradle.ext.expoAutolinkingManager = manager
   }
 } else {
-  def addDependencies = { Project project, Closure<Project> projectNameResolver ->
+  def addDependencies = { DependencyHandler handler, Closure<Project> projectNameResolver ->
     // Return early if `useExpoModules` was not called in `settings.gradle`
     if (!gradle.ext.has('expoAutolinkingManager')) {
       // TODO(@tsapeta): Temporarily muted this error — uncomment it once we start migrating from autolinking v1 to v2
@@ -184,9 +184,9 @@ if (rootProject instanceof ProjectDescriptor) {
       }
 
       if (manager.shouldUseAAR()) {
-        project.dependencies.add('api', "${dependency.group}:${module.projectName}:${dependency.version}")
+        handler.add('api', "${dependency.group}:${module.projectName}:${dependency.version}")
       } else {
-        project.dependencies.add('api', dependency)
+        handler.add('api', dependency)
       }
       
       // Can remove this once we move all the interfaces into the core.
@@ -234,8 +234,8 @@ if (rootProject instanceof ProjectDescriptor) {
   }
 
   // Adding dependencies
-  ext.addExpoModulesDependencies = { Project project ->
-    addDependencies(project) { module -> rootProject.project(":${module.projectName}") }
+  ext.addExpoModulesDependencies = { DependencyHandler handler ->
+    addDependencies(handler) { module -> rootProject.project(":${module.projectName}") }
   }
 
   // Generating the package list
