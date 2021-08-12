@@ -13,7 +13,7 @@
 ### 🐛 Bug fixes
 
 - Update `minimumInterval` value to accurately reflect Android default. ([#13387](https://github.com/expo/expo/pull/13387) by [@ajsmth](https://github.com/ajsmth))
-- Fix unnecessary `location` capability in UIBackgroundModes leading to App Store rejection for apps not using location 
+- Fix unnecessary `location` capability in UIBackgroundModes leading to App Store rejection for apps not using location ([#13888](https://github.com/expo/expo/pull/13888) by [@martinstoyanov-brex](https://github.com/martinstoyanov-brex))
 
 ### 💡 Others
 
