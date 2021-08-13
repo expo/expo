@@ -8,7 +8,7 @@
 @property (nonatomic, weak) id <UMEventEmitterService> eventEmitter;
 @property (strong, nonatomic) NSMutableDictionary *promises;
 @property (strong, nonatomic) NSMutableDictionary *pendingTransactions;
-@property (strong, nonatomic) NSMutableSet *cachedProducts;
+@property (strong, nonatomic) NSMutableSet<SKProduct *> *cachedProducts;
 @property (strong, nonatomic) SKProductsRequest *request;
 
 @end
