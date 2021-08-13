@@ -1,1 +1,1 @@
-export * from '@unimodules/core';
+export * from 'expo-modules-core';
