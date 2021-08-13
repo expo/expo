@@ -1,15 +1,15 @@
+import spawnAsync from '@expo/spawn-async';
 import chalk from 'chalk';
 import fs from 'fs-extra';
 import glob from 'glob-promise';
 import inquirer from 'inquirer';
 import path from 'path';
 import semver from 'semver';
-import spawnAsync from '@expo/spawn-async';
 
-import { JniLibNames, getJavaPackagesToRename } from './libraries';
 import * as Directories from '../../Directories';
 import { getListOfPackagesAsync } from '../../Packages';
-import { updateVersionedReactNativeAsync } from './versionReactNative';
+import { JniLibNames, getJavaPackagesToRename } from './libraries';
+import { renameHermesEngine, updateVersionedReactNativeAsync } from './versionReactNative';
 
 const EXPO_DIR = Directories.getExpoRepositoryRootDir();
 const ANDROID_DIR = Directories.getAndroidDir();
@@ -622,48 +622,6 @@ async function exportReactNdksIfNeeded() {
   }
 }
 
-async function renameHermesEngine(version: string) {
-  const abiVersion = version.replace(/\./g, '_');
-  const abiName = `abi${abiVersion}`;
-  const prebuiltHermesMkPath = path.join(
-    versionedReactAndroidPath,
-    'src',
-    'main',
-    'jni',
-    'first-party',
-    'hermes',
-    'Android.mk'
-  );
-  const versionedHermesLibName = `libhermes_${abiName}.so`;
-  const versioningSoNameTask = `\
-    exec {
-        commandLine("patchelf", "--set-soname", "${versionedHermesLibName}", "$thirdPartyNdkDir/hermes/jni/arm64-v8a/${versionedHermesLibName}")
-    }
-    exec {
-        commandLine("patchelf", "--set-soname", "${versionedHermesLibName}", "$thirdPartyNdkDir/hermes/jni/armeabi-v7a/${versionedHermesLibName}")
-    }
-    exec {
-        commandLine("patchelf", "--set-soname", "${versionedHermesLibName}", "$thirdPartyNdkDir/hermes/jni/x86/${versionedHermesLibName}")
-    }
-    exec {
-        commandLine("patchelf", "--set-soname", "${versionedHermesLibName}", "$thirdPartyNdkDir/hermes/jni/x86_64/${versionedHermesLibName}")
-    }
-`;
-  await transformFileAsync(
-    prebuiltHermesMkPath,
-    /^(LOCAL_SRC_FILES\s+:=\s+jni\/\$\(TARGET_ARCH_ABI\))\/libhermes.so$/gm,
-    `$1/${versionedHermesLibName}`
-  );
-
-  const buildGradlePath = path.join(versionedReactAndroidPath, 'build.gradle');
-  const renameTask = `        rename '(.+).so', '$$1_abi${abiVersion}.so'\n`;
-  await transformFileAsync(
-    buildGradlePath,
-    /(into "\$thirdPartyNdkDir\/hermes"\n)(\s*?\})/gm,
-    `$1${renameTask}$2\n${versioningSoNameTask}`
-  );
-}
-
 export async function addVersionAsync(version: string) {
   await ensureToolsInstalledAsync();
 
@@ -687,7 +645,7 @@ export async function addVersionAsync(version: string) {
   console.log(' ✅  3/11: Finished\n\n');
 
   console.log(' 🛠   4/11: Renaming libhermes.so...');
-  await renameHermesEngine(version);
+  await renameHermesEngine(versionedReactAndroidPath, version);
   console.log(' ✅  4/11: Finished\n\n');
 
   console.log(' 🛠   5/11: Building versioned ReactAndroid AAR...');
