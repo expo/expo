@@ -37,7 +37,7 @@ Many React Native libraries come with platform-specific (native) code. This nati
 
 require File.join(`node --print "require.resolve('react-native/package.json')"`, "../scripts/react_native_pods")
 require File.join(`node --print "require.resolve('react-native-unimodules/package.json')"`, "../cocoapods.rb")
-require File.join(`node --print "require.resolve('@unimodules/react-native-adapter/package.json')"`, "../scripts/autolinking")
+require File.join(`node --print "require.resolve('expo-modules-core/package.json')"`, "../scripts/autolinking")
 
 #  ...
 
