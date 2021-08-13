@@ -3,7 +3,7 @@ import React from 'react';
 import { Clipboard, PixelRatio, StyleSheet } from 'react-native';
 
 import { StyledView } from '../components/Views';
-import DevMenuBottomSheetContext from './DevMenuBottomSheetContext';
+import DevMenuBottomSheetContext, { Context } from './DevMenuBottomSheetContext';
 import DevMenuButton from './DevMenuButton';
 import DevMenuCloseButton from './DevMenuCloseButton';
 import * as DevMenu from './DevMenuModule';
@@ -44,6 +44,9 @@ const MENU_ITEMS_ICON_MAPPINGS: {
 
 class DevMenuView extends React.PureComponent<Props, State> {
   static contextType = DevMenuBottomSheetContext;
+
+  // @ts-expect-error - the provided solution (declare operator) conflicts with metro
+  context!: Context;
 
   constructor(props: Props, context?: unknown) {
     super(props, context);
