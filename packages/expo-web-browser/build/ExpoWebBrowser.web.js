@@ -1,5 +1,5 @@
-import { CodedError, Platform } from '@unimodules/core';
 import compareUrls from 'compare-urls';
+import { CodedError, Platform } from 'expo-modules-core';
 import { AppState, Dimensions } from 'react-native';
 import { WebBrowserResultType, } from './WebBrowser.types';
 const POPUP_WIDTH = 500;

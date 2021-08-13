@@ -1,4 +1,4 @@
-import { UnavailabilityError } from '@unimodules/core';
+import { UnavailabilityError } from 'expo-modules-core';
 import ExpoFirebaseAnalytics from './ExpoFirebaseAnalytics';
 export { default as FirebaseAnalyticsJS } from './FirebaseAnalyticsJS';
 if (!ExpoFirebaseAnalytics) {

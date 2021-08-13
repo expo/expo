@@ -1,4 +1,4 @@
-import { UnavailabilityError } from '@unimodules/core';
+import { UnavailabilityError } from 'expo-modules-core';
 import { PermissionStatus, createPermissionHook, } from 'expo-modules-core';
 import * as React from 'react';
 import { Platform } from 'react-native';

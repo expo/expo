@@ -1,4 +1,4 @@
-import { requireNativeViewManager } from '@unimodules/core';
+import { requireNativeViewManager } from 'expo-modules-core';
 import * as React from 'react';
 import { StyleSheet, View } from 'react-native';
 export default function NativeLinearGradient({ colors, locations, startPoint, endPoint, children, style, ...props }) {

@@ -1,4 +1,4 @@
-import { ProxyNativeModule } from '@unimodules/core';
+import { ProxyNativeModule } from 'expo-modules-core';
 
 export interface ServerRegistrationModule extends ProxyNativeModule {
   getInstallationIdAsync?: () => Promise<string>;

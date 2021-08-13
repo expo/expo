@@ -1,4 +1,4 @@
-import { CodedError, UnavailabilityError } from '@unimodules/core';
+import { CodedError, UnavailabilityError } from 'expo-modules-core';
 import ExpoFontLoader from './ExpoFontLoader';
 import { FontDisplay } from './Font.types';
 import { getAssetForSource, loadSingleFontAsync, fontFamilyNeedsScoping, getNativeFontName, } from './FontLoader';

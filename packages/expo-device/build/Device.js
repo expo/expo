@@ -1,4 +1,4 @@
-import { Platform, UnavailabilityError } from '@unimodules/core';
+import { Platform, UnavailabilityError } from 'expo-modules-core';
 import { DeviceType } from './Device.types';
 import ExpoDevice from './ExpoDevice';
 import { getIosModelName } from './ModelNames';

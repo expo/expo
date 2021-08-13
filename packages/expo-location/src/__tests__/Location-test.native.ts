@@ -1,4 +1,4 @@
-import { NativeModulesProxy, Platform } from '@unimodules/core';
+import { NativeModulesProxy, Platform } from 'expo-modules-core';
 import { mockProperty, unmockAllProperties } from 'jest-expo';
 
 import * as Location from '../Location';

@@ -1,4 +1,4 @@
-import { EventEmitter, UnavailabilityError } from '@unimodules/core';
+import { EventEmitter, UnavailabilityError } from 'expo-modules-core';
 import { Platform } from 'react-native';
 import { v4 as uuidv4 } from 'uuid';
 import ExponentFileSystem from './ExponentFileSystem';

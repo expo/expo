@@ -1,4 +1,4 @@
-import { UnavailabilityError } from '@unimodules/core';
+import { UnavailabilityError } from 'expo-modules-core';
 import BackgroundNotificationTasksModule from './BackgroundNotificationTasksModule.native';
 export default async function registerTaskAsync(taskName) {
     if (!BackgroundNotificationTasksModule.registerTaskAsync) {

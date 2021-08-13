@@ -1,4 +1,4 @@
-import { NativeModulesProxy, Platform } from '@unimodules/core';
+import { NativeModulesProxy, Platform } from 'expo-modules-core';
 
 import * as SMS from '../SMS';
 import { SMSAttachment } from '../SMS.types';
