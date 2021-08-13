@@ -1,5 +1,5 @@
-import { CodedError } from '@unimodules/core';
 import { DEFAULT_WEB_APP_OPTIONS, IFirebaseOptions } from 'expo-firebase-core';
+import { CodedError } from 'expo-modules-core';
 import * as React from 'react';
 
 import { WebView } from './WebView';

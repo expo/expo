@@ -1,4 +1,4 @@
-import { NativeModulesProxy, UnavailabilityError } from '@unimodules/core';
+import { NativeModulesProxy, UnavailabilityError } from 'expo-modules-core';
 import {
   PermissionResponse,
   PermissionStatus,

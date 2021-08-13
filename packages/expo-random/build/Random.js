@@ -1,5 +1,5 @@
-import { UnavailabilityError } from '@unimodules/core';
 import { toByteArray } from 'base64-js';
+import { UnavailabilityError } from 'expo-modules-core';
 import ExpoRandom from './ExpoRandom';
 function assertByteCount(value, methodName) {
     if (typeof value !== 'number' ||

@@ -1,4 +1,4 @@
-import { UnavailabilityError } from '@unimodules/core';
+import { UnavailabilityError } from 'expo-modules-core';
 
 import ExpoImageManipulator from './ExpoImageManipulator';
 import { Action, ImageResult, SaveFormat, SaveOptions } from './ImageManipulator.types';

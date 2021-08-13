@@ -1,5 +1,4 @@
-import { EventEmitter, Platform } from '@unimodules/core';
-import { PermissionStatus } from 'expo-modules-core';
+import { PermissionStatus, EventEmitter, Platform, } from 'expo-modules-core';
 /**
  * A base class for subscribable sensors. The events emitted by this class are measurements
  * specified by the parameter type `M`.

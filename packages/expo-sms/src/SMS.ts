@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-expressions */
-import { UnavailabilityError, Platform } from '@unimodules/core';
+import { UnavailabilityError, Platform } from 'expo-modules-core';
 
 import ExpoSMS from './ExpoSMS';
 import { SMSAttachment, SMSResponse, SMSOptions } from './SMS.types';

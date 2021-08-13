@@ -3,7 +3,7 @@ import {
   CodedError,
   NativeModulesProxy,
   UnavailabilityError,
-} from '@unimodules/core';
+} from 'expo-modules-core';
 import { EventEmitter, EventSubscription } from 'fbemitter';
 
 import ExpoUpdates from './ExpoUpdates';

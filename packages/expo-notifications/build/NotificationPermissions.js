@@ -1,4 +1,4 @@
-import { Platform, UnavailabilityError } from '@unimodules/core';
+import { Platform, UnavailabilityError } from 'expo-modules-core';
 import NotificationPermissionsModule from './NotificationPermissionsModule';
 export async function getPermissionsAsync() {
     if (!NotificationPermissionsModule.getPermissionsAsync) {

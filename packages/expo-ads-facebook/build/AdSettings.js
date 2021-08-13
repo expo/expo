@@ -1,4 +1,4 @@
-import { NativeModulesProxy, UnavailabilityError } from '@unimodules/core';
+import { NativeModulesProxy, UnavailabilityError } from 'expo-modules-core';
 import { PermissionStatus, createPermissionHook, } from 'expo-modules-core';
 import { Platform } from 'react-native';
 const { CTKAdSettingsManager } = NativeModulesProxy;

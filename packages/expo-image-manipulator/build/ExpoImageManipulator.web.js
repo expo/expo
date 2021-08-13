@@ -1,4 +1,4 @@
-import { CodedError } from '@unimodules/core';
+import { CodedError } from 'expo-modules-core';
 import { FlipType, } from './ImageManipulator.types';
 /**
  * Hermite resize - fast image resize/resample using Hermite filter. 1 cpu version!

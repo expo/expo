@@ -1,10 +1,10 @@
-import { UnavailabilityError } from '@unimodules/core';
 import {
   PermissionResponse,
   PermissionStatus,
   PermissionExpiration,
   PermissionHookOptions,
   createPermissionHook,
+  UnavailabilityError,
 } from 'expo-modules-core';
 import { Platform } from 'react-native';
 

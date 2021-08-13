@@ -1,4 +1,4 @@
-import { CodedError, Platform } from '@unimodules/core';
+import { CodedError, Platform } from 'expo-modules-core';
 import FontObserver from 'fontfaceobserver';
 import { FontDisplay } from './Font.types';
 function getFontFaceStyleSheet() {

@@ -1,4 +1,4 @@
-import { Platform } from '@unimodules/core';
+import { Platform } from 'expo-modules-core';
 import ExpoLocation from './ExpoLocation';
 import { LocationAccuracy } from './Location.types';
 import { LocationSubscriber } from './LocationSubscribers';

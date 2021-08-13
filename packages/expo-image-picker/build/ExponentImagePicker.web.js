@@ -1,5 +1,4 @@
-import { Platform } from '@unimodules/core';
-import { PermissionStatus } from 'expo-modules-core';
+import { PermissionStatus, Platform } from 'expo-modules-core';
 import { v4 } from 'uuid';
 import { MediaTypeOptions, } from './ImagePicker.types';
 const MediaTypeInput = {

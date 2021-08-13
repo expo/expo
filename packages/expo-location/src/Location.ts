@@ -1,9 +1,9 @@
-import { Platform } from '@unimodules/core';
 import {
   PermissionStatus,
   PermissionResponse,
   PermissionHookOptions,
   createPermissionHook,
+  Platform,
 } from 'expo-modules-core';
 
 import ExpoLocation from './ExpoLocation';

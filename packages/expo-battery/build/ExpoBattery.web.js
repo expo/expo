@@ -1,4 +1,4 @@
-import { EventEmitter, Platform } from '@unimodules/core';
+import { EventEmitter, Platform } from 'expo-modules-core';
 import { BatteryState } from './Battery.types';
 const emitter = new EventEmitter({});
 export default {

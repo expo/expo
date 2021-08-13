@@ -1,9 +1,11 @@
-import { EventEmitter, Subscription, Platform } from '@unimodules/core';
 import {
   PermissionResponse,
   PermissionStatus,
   PermissionHookOptions,
   createPermissionHook,
+  EventEmitter,
+  Subscription,
+  Platform,
 } from 'expo-modules-core';
 
 import {

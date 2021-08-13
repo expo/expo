@@ -1,4 +1,4 @@
-import { NativeModulesProxy } from '@unimodules/core';
+import { NativeModulesProxy } from 'expo-modules-core';
 
 import { NotificationPresenterModule } from './NotificationPresenterModule.types';
 

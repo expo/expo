@@ -1,4 +1,4 @@
-import { Platform } from '@unimodules/core';
+import { Platform } from 'expo-modules-core';
 
 import { getAssetByID } from './AssetRegistry';
 import * as AssetSources from './AssetSources';

@@ -1,5 +1,4 @@
-import { SyntheticPlatformEmitter } from '@unimodules/core';
-import { PermissionStatus } from 'expo-modules-core';
+import { PermissionStatus, SyntheticPlatformEmitter } from 'expo-modules-core';
 import { RECORDING_OPTIONS_PRESET_HIGH_QUALITY } from './Audio/Recording';
 async function getPermissionWithQueryAsync(name) {
     if (!navigator || !navigator.permissions || !navigator.permissions.query)

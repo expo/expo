@@ -1,4 +1,4 @@
-import { EventEmitter, Subscription } from '@unimodules/core';
+import { EventEmitter, Subscription } from 'expo-modules-core';
 declare type ClipboardEvent = {
     /**
      * The new content of the user's clipboard.

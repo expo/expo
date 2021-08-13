@@ -1,5 +1,5 @@
-import { Platform } from '@unimodules/core';
 import Constants, { ExecutionEnvironment } from 'expo-constants';
+import { Platform } from 'expo-modules-core';
 
 const LINKING_GUIDE_URL = `https://docs.expo.io/guides/linking/`;
 
