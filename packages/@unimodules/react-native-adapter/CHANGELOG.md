@@ -1,17 +1,8 @@
 # Changelog
 
-## Unpublished
+## ⚠️ Deprecated
 
-### 🛠 Breaking changes
-
-### 🎉 New features
-
-### 🐛 Bug fixes
-
-- Changed generateExpoModulesPackageList for preBuild.dependsOn with quotes in build.gradle. ([#13568](https://github.com/expo/expo/pull/13568) by [@wbroek](https://github.com/wbroek))
-- Fix removing event listeners for projects with `react-native@>0.64.0`. ([#13654](https://github.com/expo/expo/pull/13654) by [@dsokal](https://github.com/dsokal))
-
-### 💡 Others
+`@unimodules/core`, `@unimodules/react-native-adapter` and `react-native-unimodules` are now deprecated in favor of `expo-modules-core`. Follow this guide to migrate your apps: https://expo.fyi/expo-modules-core-migration
 
 ## 6.4.0 — 2021-07-05
 
