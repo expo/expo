@@ -45,7 +45,7 @@ const MENU_ITEMS_ICON_MAPPINGS: {
 class DevMenuView extends React.PureComponent<Props, State> {
   static contextType = DevMenuBottomSheetContext;
 
-  context!: Context;
+  declare context: Context;
 
   constructor(props: Props, context?: unknown) {
     super(props, context);

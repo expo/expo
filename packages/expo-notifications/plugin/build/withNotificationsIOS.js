@@ -5,7 +5,7 @@ const config_plugins_1 = require("@expo/config-plugins");
 const fs_1 = require("fs");
 const path_1 = require("path");
 const ERROR_MSG_PREFIX = 'An error occurred while configuring iOS notifications. ';
-exports.withNotificationsIOS = (config, { mode = 'development', sounds = [] }) => {
+const withNotificationsIOS = (config, { mode = 'development', sounds = [] }) => {
     config = config_plugins_1.withEntitlementsPlist(config, config => {
         config.modResults['aps-environment'] = mode;
         return config;
@@ -13,7 +13,8 @@ exports.withNotificationsIOS = (config, { mode = 'development', sounds = [] }) =
     config = exports.withNotificationSounds(config, { sounds });
     return config;
 };
-exports.withNotificationSounds = (config, { sounds }) => {
+exports.withNotificationsIOS = withNotificationsIOS;
+const withNotificationSounds = (config, { sounds }) => {
     return config_plugins_1.withXcodeProject(config, config => {
         setNotificationSounds(config.modRequest.projectRoot, {
             sounds,
@@ -23,6 +24,7 @@ exports.withNotificationSounds = (config, { sounds }) => {
         return config;
     });
 };
+exports.withNotificationSounds = withNotificationSounds;
 /**
  * Save sound files to the Xcode project root and add them to the Xcode project.
  */

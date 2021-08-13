@@ -388,7 +388,7 @@ export const Availability = {
     BUSY: 'busy',
     FREE: 'free',
     TENTATIVE: 'tentative',
-    UNAVAILABLE: 'unavailable',
+    UNAVAILABLE: 'unavailable', // iOS
 };
 export const CalendarType = {
     LOCAL: 'local',
@@ -422,7 +422,7 @@ export const AttendeeRole = {
     ORGANIZER: 'organizer',
     PERFORMER: 'performer',
     SPEAKER: 'speaker',
-    NONE: 'none',
+    NONE: 'none', // Android
 };
 export const AttendeeStatus = {
     UNKNOWN: 'unknown',
@@ -434,7 +434,7 @@ export const AttendeeStatus = {
     COMPLETED: 'completed',
     IN_PROCESS: 'inProcess',
     INVITED: 'invited',
-    NONE: 'none',
+    NONE: 'none', // Android
 };
 export const AttendeeType = {
     UNKNOWN: 'unknown',
@@ -444,7 +444,7 @@ export const AttendeeType = {
     RESOURCE: 'resource',
     OPTIONAL: 'optional',
     REQUIRED: 'required',
-    NONE: 'none',
+    NONE: 'none', // Android
 };
 export const AlarmMethod = {
     ALARM: 'alarm',

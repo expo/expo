@@ -105,7 +105,7 @@ export default {
       );
     }
     // Send the URL back to the opening window.
-    parent.postMessage({ url, expoSender: handle }, parent.location);
+    parent.postMessage({ url, expoSender: handle }, parent.location.toString());
     return { type: 'success', message: `Attempting to complete auth` };
 
     // Maybe set timer to throw an error if the window is still open after attempting to complete.
