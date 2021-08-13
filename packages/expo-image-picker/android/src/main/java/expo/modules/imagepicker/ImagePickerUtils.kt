@@ -76,12 +76,12 @@ class ExifDataHandler(private val uri: Uri) {
         val newExif = ExifInterface(it)
         for ((_, exifTag) in ImagePickerConstants.exifTags) {
           val value = oldExif.getAttribute(exifTag)
-          if (value != null
-            && exifTag != ExifInterface.TAG_IMAGE_LENGTH
-            && exifTag != ExifInterface.TAG_IMAGE_WIDTH
-            && exifTag != ExifInterface.TAG_PIXEL_X_DIMENSION
-            && exifTag != ExifInterface.TAG_PIXEL_Y_DIMENSION
-            && exifTag != ExifInterface.TAG_ORIENTATION
+          if (value != null &&
+            exifTag != ExifInterface.TAG_IMAGE_LENGTH &&
+            exifTag != ExifInterface.TAG_IMAGE_WIDTH &&
+            exifTag != ExifInterface.TAG_PIXEL_X_DIMENSION &&
+            exifTag != ExifInterface.TAG_PIXEL_Y_DIMENSION &&
+            exifTag != ExifInterface.TAG_ORIENTATION
           ) {
             newExif.setAttribute(exifTag, value)
           }
