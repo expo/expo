@@ -100,6 +100,28 @@ describe('APISectionUtils.resolveTypeName', () => {
     expect(container).toMatchSnapshot();
   });
 
+  test('alternative generic object notation', () => {
+    const { container } = render(
+      <>
+        {resolveTypeName({
+          type: 'array',
+          elementType: {
+            type: 'reflection',
+            declaration: {
+              name: '__type',
+              indexSignature: {
+                name: '__index',
+                parameters: [{ name: 'column', type: { type: 'intrinsic', name: 'string' } }],
+                type: { type: 'intrinsic', name: 'any' },
+              },
+            },
+          },
+        })}
+      </>
+    );
+    expect(container).toMatchSnapshot();
+  });
+
   test('Record with union', () => {
     const { container } = render(
       <>
@@ -162,6 +184,24 @@ describe('APISectionUtils.resolveTypeName', () => {
             { type: 'array', elementType: { type: 'reference', name: 'AssetRef' } },
             { type: 'reference', name: 'AssetRef' },
           ],
+        })}
+      </>
+    );
+    expect(container).toMatchSnapshot();
+  });
+
+  test('union of array values', () => {
+    const { container } = render(
+      <>
+        {resolveTypeName({
+          type: 'array',
+          elementType: {
+            type: 'union',
+            types: [
+              { type: 'reference', name: 'ResultSetError' },
+              { type: 'reference', name: 'ResultSet' },
+            ],
+          },
         })}
       </>
     );

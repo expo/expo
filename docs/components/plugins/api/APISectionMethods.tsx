@@ -7,8 +7,8 @@ import { H2, H3Code, H4 } from '~/components/plugins/Headings';
 import { MethodDefinitionData, MethodSignatureData } from '~/components/plugins/api/APIDataTypes';
 import {
   CommentTextBlock,
+  listParams,
   mdRenderers,
-  parseParamName,
   renderParam,
   resolveTypeName,
 } from '~/components/plugins/api/APISectionUtils';
@@ -31,11 +31,7 @@ const renderMethod = (
       <H3Code>
         <InlineCode>
           {apiName ? `${apiName}.` : ''}
-          {header !== 'Hooks'
-            ? `${name}(${
-                parameters ? parameters?.map(param => parseParamName(param.name)).join(', ') : ''
-              })`
-            : name}
+          {header !== 'Hooks' ? `${name}(${listParams(parameters)})` : name}
         </InlineCode>
       </H3Code>
       <CommentTextBlock

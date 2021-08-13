@@ -1,12 +1,21 @@
 import React from 'react';
+import ReactMarkdown from 'react-markdown';
 
 import { InlineCode } from '~/components/base/code';
 import { B } from '~/components/base/paragraph';
 import { H2, H3Code } from '~/components/plugins/Headings';
-import { InterfaceDefinitionData, InterfaceValueData } from '~/components/plugins/api/APIDataTypes';
+import {
+  CommentData,
+  InterfaceDefinitionData,
+  InterfaceValueData,
+  MethodSignatureData,
+  TypeDefinitionData,
+} from '~/components/plugins/api/APIDataTypes';
 import {
   CommentTextBlock,
+  listParams,
   mdInlineRenderers,
+  renderParam,
   resolveTypeName,
   STYLES_OPTIONAL,
 } from '~/components/plugins/api/APISectionUtils';
@@ -15,15 +24,52 @@ export type APISectionInterfacesProps = {
   data: InterfaceDefinitionData[];
 };
 
+const renderInterfaceType = (type?: TypeDefinitionData, signatures?: MethodSignatureData[]) => {
+  if (type) {
+    return <InlineCode>{resolveTypeName(type)}</InlineCode>;
+  } else if (signatures && signatures.length) {
+    const { type, parameters } = signatures[0];
+    return (
+      <InlineCode>
+        ({listParams(parameters)}) =&gt; {resolveTypeName(type)}
+      </InlineCode>
+    );
+  }
+  return undefined;
+};
+
+const renderInterfaceComment = (comment?: CommentData, signatures?: MethodSignatureData[]) => {
+  if (signatures && signatures.length) {
+    const { type, parameters } = signatures[0];
+    return (
+      <>
+        {parameters.map(param => renderParam(param))}
+        <B>Returns: </B>
+        <InlineCode>{resolveTypeName(type)}</InlineCode>
+      </>
+    );
+  } else {
+    return comment?.shortText ? (
+      <ReactMarkdown renderers={mdInlineRenderers}>{comment.shortText}</ReactMarkdown>
+    ) : (
+      '-'
+    );
+  }
+};
+
 const renderInterfacePropertyRow = ({
   name,
   flags,
   type,
   comment,
+  signatures,
 }: InterfaceValueData): JSX.Element => (
   <tr key={name}>
     <td>
-      <B>{name}</B>
+      <B>
+        {name}
+        {signatures && signatures.length ? '()' : ''}
+      </B>
       {flags?.isOptional ? (
         <>
           <br />
@@ -31,10 +77,8 @@ const renderInterfacePropertyRow = ({
         </>
       ) : null}
     </td>
-    <td>
-      <InlineCode>{resolveTypeName(type)}</InlineCode>
-    </td>
-    <td>{comment ? <CommentTextBlock comment={comment} renderers={mdInlineRenderers} /> : '-'}</td>
+    <td>{renderInterfaceType(type, signatures)}</td>
+    <td>{renderInterfaceComment(comment, signatures)}</td>
   </tr>
 );
 
