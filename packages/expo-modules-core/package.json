@@ -34,6 +34,11 @@
   "jest": {
     "preset": "expo-module-scripts/ios"
   },
+  "dependencies": {
+    "compare-versions": "^3.4.0",
+    "expo-modules-autolinking": "^0.0.2",
+    "invariant": "^2.2.4"
+  },
   "devDependencies": {
     "@testing-library/react-hooks": "^7.0.1",
     "expo-module-scripts": "^2.0.0"

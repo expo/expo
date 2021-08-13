@@ -1,5 +1,6 @@
-import { CodedError } from '@unimodules/react-native-adapter';
 import compareVersions from 'compare-versions';
+
+import { CodedError } from './errors/CodedError';
 
 const postedWarnings: { [key: string]: boolean } = {};
 
