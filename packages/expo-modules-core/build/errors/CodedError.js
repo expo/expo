@@ -4,6 +4,8 @@
  * types of errors without further subclassing Error.
  */
 export class CodedError extends Error {
+    code;
+    info;
     constructor(code, message) {
         super(message);
         this.code = code;
