@@ -1,3 +1,4 @@
+import { Platform } from '@unimodules/core';
 import Constants from 'expo-constants';
 import { EventEmitter, EventSubscription } from 'fbemitter';
 import invariant from 'invariant';
@@ -112,6 +113,7 @@ async function _sendNextLogBatchAsync(batch: LogEntry[], logUrl: string): Promis
     Accept: 'application/json',
     'Device-Id': await getInstallationIdAsync(),
     'Session-Id': _sessionId,
+    'Device-Platform': Platform.OS,
   };
   if (Constants.deviceName) {
     headers['Device-Name'] = Constants.deviceName;
