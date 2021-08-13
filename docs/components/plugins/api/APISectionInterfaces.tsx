@@ -1,5 +1,7 @@
 import React from 'react';
 
+import ReactMarkdown from 'react-markdown';
+
 import { InlineCode } from '~/components/base/code';
 import { B } from '~/components/base/paragraph';
 import { H2, H3Code } from '~/components/plugins/Headings';
