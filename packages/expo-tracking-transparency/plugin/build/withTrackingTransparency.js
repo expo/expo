@@ -8,7 +8,7 @@ const withTrackingTransparency = (config, props) => {
     config = exports.withUserTrackingPermission(config, props);
     return config;
 };
-exports.withUserTrackingPermission = (config, { userTrackingPermission } = {}) => {
+const withUserTrackingPermission = (config, { userTrackingPermission } = {}) => {
     if (!config.ios)
         config.ios = {};
     if (!config.ios.infoPlist)
@@ -19,4 +19,5 @@ exports.withUserTrackingPermission = (config, { userTrackingPermission } = {}) =
             exports.DEFAULT_NSUserTrackingUsageDescription;
     return config;
 };
+exports.withUserTrackingPermission = withUserTrackingPermission;
 exports.default = config_plugins_1.createRunOncePlugin(withTrackingTransparency, pkg.name, pkg.version);

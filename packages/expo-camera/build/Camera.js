@@ -40,51 +40,6 @@ function _onPictureSaved({ nativeEvent, }) {
     }
 }
 export default class Camera extends React.Component {
-    constructor() {
-        super(...arguments);
-        this._lastEvents = {};
-        this._lastEventsTimes = {};
-        this._onCameraReady = () => {
-            if (this.props.onCameraReady) {
-                this.props.onCameraReady();
-            }
-        };
-        this._onMountError = ({ nativeEvent }) => {
-            if (this.props.onMountError) {
-                this.props.onMountError(nativeEvent);
-            }
-        };
-        this._onObjectDetected = (callback) => ({ nativeEvent }) => {
-            const { type } = nativeEvent;
-            if (this._lastEvents[type] &&
-                this._lastEventsTimes[type] &&
-                JSON.stringify(nativeEvent) === this._lastEvents[type] &&
-                new Date().getTime() - this._lastEventsTimes[type].getTime() < EventThrottleMs) {
-                return;
-            }
-            if (callback) {
-                callback(nativeEvent);
-                this._lastEventsTimes[type] = new Date();
-                this._lastEvents[type] = JSON.stringify(nativeEvent);
-            }
-        };
-        this._setReference = (ref) => {
-            if (ref) {
-                this._cameraRef = ref;
-                // TODO(Bacon): Unify these - perhaps with hooks?
-                if (Platform.OS === 'web') {
-                    this._cameraHandle = ref;
-                }
-                else {
-                    this._cameraHandle = findNodeHandle(ref);
-                }
-            }
-            else {
-                this._cameraRef = null;
-                this._cameraHandle = null;
-            }
-        };
-    }
     static async isAvailableAsync() {
         if (!CameraManager.isAvailableAsync) {
             throw new UnavailabilityError('expo-camera', 'isAvailableAsync');
@@ -103,6 +58,27 @@ export default class Camera extends React.Component {
         }
         return await CameraManager.getAvailableVideoCodecsAsync();
     }
+    static Constants = {
+        Type: CameraManager.Type,
+        FlashMode: CameraManager.FlashMode,
+        AutoFocus: CameraManager.AutoFocus,
+        WhiteBalance: CameraManager.WhiteBalance,
+        VideoQuality: CameraManager.VideoQuality,
+        VideoStabilization: CameraManager.VideoStabilization || {},
+        VideoCodec: CameraManager.VideoCodec,
+    };
+    // Values under keys from this object will be transformed to native options
+    static ConversionTables = ConversionTables;
+    static defaultProps = {
+        zoom: 0,
+        ratio: '4:3',
+        focusDepth: 0,
+        faceDetectorSettings: {},
+        type: CameraManager.Type.back,
+        autoFocus: CameraManager.AutoFocus.on,
+        flashMode: CameraManager.FlashMode.off,
+        whiteBalance: CameraManager.WhiteBalance.auto,
+    };
     static async getPermissionsAsync() {
         return CameraManager.getPermissionsAsync();
     }
@@ -121,6 +97,10 @@ export default class Camera extends React.Component {
     static async requestMicrophonePermissionsAsync() {
         return CameraManager.requestMicrophonePermissionsAsync();
     }
+    _cameraHandle;
+    _cameraRef;
+    _lastEvents = {};
+    _lastEventsTimes = {};
     async takePictureAsync(options) {
         const pictureOptions = ensurePictureOptions(options);
         return await CameraManager.takePicture(pictureOptions, this._cameraHandle);
@@ -162,36 +142,55 @@ export default class Camera extends React.Component {
         }
         CameraManager.resumePreview(this._cameraHandle);
     }
+    _onCameraReady = () => {
+        if (this.props.onCameraReady) {
+            this.props.onCameraReady();
+        }
+    };
+    _onMountError = ({ nativeEvent }) => {
+        if (this.props.onMountError) {
+            this.props.onMountError(nativeEvent);
+        }
+    };
+    _onObjectDetected = (callback) => ({ nativeEvent }) => {
+        const { type } = nativeEvent;
+        if (this._lastEvents[type] &&
+            this._lastEventsTimes[type] &&
+            JSON.stringify(nativeEvent) === this._lastEvents[type] &&
+            new Date().getTime() - this._lastEventsTimes[type].getTime() < EventThrottleMs) {
+            return;
+        }
+        if (callback) {
+            callback(nativeEvent);
+            this._lastEventsTimes[type] = new Date();
+            this._lastEvents[type] = JSON.stringify(nativeEvent);
+        }
+    };
+    _setReference = (ref) => {
+        if (ref) {
+            this._cameraRef = ref;
+            // TODO(Bacon): Unify these - perhaps with hooks?
+            if (Platform.OS === 'web') {
+                this._cameraHandle = ref;
+            }
+            else {
+                this._cameraHandle = findNodeHandle(ref);
+            }
+        }
+        else {
+            this._cameraRef = null;
+            this._cameraHandle = null;
+        }
+    };
     render() {
         const nativeProps = ensureNativeProps(this.props);
         const onBarCodeScanned = this.props.onBarCodeScanned
             ? this._onObjectDetected(this.props.onBarCodeScanned)
             : undefined;
         const onFacesDetected = this._onObjectDetected(this.props.onFacesDetected);
-        return (React.createElement(ExponentCamera, Object.assign({}, nativeProps, { ref: this._setReference, onCameraReady: this._onCameraReady, onMountError: this._onMountError, onBarCodeScanned: onBarCodeScanned, onFacesDetected: onFacesDetected, onPictureSaved: _onPictureSaved })));
+        return (React.createElement(ExponentCamera, { ...nativeProps, ref: this._setReference, onCameraReady: this._onCameraReady, onMountError: this._onMountError, onBarCodeScanned: onBarCodeScanned, onFacesDetected: onFacesDetected, onPictureSaved: _onPictureSaved }));
     }
 }
-Camera.Constants = {
-    Type: CameraManager.Type,
-    FlashMode: CameraManager.FlashMode,
-    AutoFocus: CameraManager.AutoFocus,
-    WhiteBalance: CameraManager.WhiteBalance,
-    VideoQuality: CameraManager.VideoQuality,
-    VideoStabilization: CameraManager.VideoStabilization || {},
-    VideoCodec: CameraManager.VideoCodec,
-};
-// Values under keys from this object will be transformed to native options
-Camera.ConversionTables = ConversionTables;
-Camera.defaultProps = {
-    zoom: 0,
-    ratio: '4:3',
-    focusDepth: 0,
-    faceDetectorSettings: {},
-    type: CameraManager.Type.back,
-    autoFocus: CameraManager.AutoFocus.on,
-    flashMode: CameraManager.FlashMode.off,
-    whiteBalance: CameraManager.WhiteBalance.auto,
-};
 export const { Constants, getPermissionsAsync, requestPermissionsAsync, getCameraPermissionsAsync, requestCameraPermissionsAsync, getMicrophonePermissionsAsync, requestMicrophonePermissionsAsync, } = Camera;
 export { PermissionStatus, };
 //# sourceMappingURL=Camera.js.map

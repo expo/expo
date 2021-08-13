@@ -20,6 +20,7 @@ export const discovery = {
     userInfoEndpoint: 'https://openidconnect.googleapis.com/v1/userinfo',
 };
 class GoogleAuthRequest extends AuthRequest {
+    nonce;
     constructor({ language, loginHint, selectAccount, extraParams = {}, clientSecret, ...config }) {
         const inputParams = {
             ...extraParams,
@@ -148,6 +149,7 @@ export function useAuthRequest(config = {}, redirectUriOptions = {}) {
             native: `${Application.applicationId}:/oauthredirect`,
             useProxy,
             ...redirectUriOptions,
+            // native: `com.googleusercontent.apps.${guid}:/oauthredirect`,
         });
     }, [useProxy, config.redirectUri, redirectUriOptions]);
     const extraParams = useMemo(() => {

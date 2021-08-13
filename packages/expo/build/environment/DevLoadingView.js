@@ -72,7 +72,7 @@ const styles = StyleSheet.create({
         bottom: 0,
         left: 0,
         right: 0,
-        zIndex: 42,
+        zIndex: 42, // arbitrary
     },
     banner: {
         flex: 1,

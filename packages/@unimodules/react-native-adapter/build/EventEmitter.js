@@ -2,8 +2,10 @@ import invariant from 'invariant';
 import { NativeEventEmitter, Platform } from 'react-native';
 const nativeEmitterSubscriptionKey = '@@nativeEmitterSubscription@@';
 export class EventEmitter {
+    _listenerCount = 0;
+    _nativeModule;
+    _eventEmitter;
     constructor(nativeModule) {
-        this._listenerCount = 0;
         this._nativeModule = nativeModule;
         this._eventEmitter = new NativeEventEmitter(nativeModule);
     }
@@ -40,7 +42,13 @@ export class EventEmitter {
         if (!nativeEmitterSubscription) {
             return;
         }
-        this._eventEmitter.removeSubscription(nativeEmitterSubscription);
+        if ('remove' in nativeEmitterSubscription) {
+            // `react-native-web@0.17.1` doesn't support `removeSubscription`
+            nativeEmitterSubscription.remove();
+        }
+        else if ('removeSubscription' in this._eventEmitter) {
+            this._eventEmitter.removeSubscription(nativeEmitterSubscription);
+        }
         this._listenerCount--;
         // Ensure that the emitter's internal state remains correct even if `removeSubscription` is
         // called again with the same subscription

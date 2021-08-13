@@ -58,7 +58,7 @@ export async function updateDevicePushTokenAsync(signal, token) {
     let retriesCount = 0;
     const initialBackoff = 500; // 0.5 s
     const backoffOptions = {
-        maxBackoff: 2 * 60 * 1000,
+        maxBackoff: 2 * 60 * 1000, // 2 minutes
     };
     let nextBackoffInterval = computeNextBackoffInterval(initialBackoff, retriesCount, backoffOptions);
     while (shouldTry && !signal.aborted) {

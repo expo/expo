@@ -6,7 +6,7 @@ import { DiscoveryDocument, fetchDiscoveryAsync, Issuer, IssuerOrDiscovery, Prov
 import { generateHexStringAsync } from './PKCE';
 export declare function startAsync(options: AuthSessionOptions): Promise<AuthSessionResult>;
 export declare function dismiss(): void;
-export declare const getDefaultReturnUrl: (urlPath?: string | undefined, options?: Pick<Linking.CreateURLOptions, "scheme" | "isTripleSlashed"> | undefined) => string;
+export declare const getDefaultReturnUrl: (urlPath?: string | undefined, options?: Omit<Linking.CreateURLOptions, "queryParams"> | undefined) => string;
 /**
  * @deprecated Use `makeRedirectUri({ path, useProxy })` instead.
  *

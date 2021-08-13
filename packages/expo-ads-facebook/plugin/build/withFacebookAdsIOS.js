@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.withUserTrackingPermission = void 0;
 const USER_TRACKING = 'This identifier will be used to deliver personalized ads to you.';
-exports.withUserTrackingPermission = (config, { userTrackingPermission } = {}) => {
+const withUserTrackingPermission = (config, { userTrackingPermission } = {}) => {
     if (!config.ios)
         config.ios = {};
     if (!config.ios.infoPlist)
@@ -11,3 +11,4 @@ exports.withUserTrackingPermission = (config, { userTrackingPermission } = {}) =
         userTrackingPermission || config.ios.infoPlist.NSUserTrackingUsageDescription || USER_TRACKING;
     return config;
 };
+exports.withUserTrackingPermission = withUserTrackingPermission;

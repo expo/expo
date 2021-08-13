@@ -46,6 +46,6 @@ export default function ExpoImage({ source, style, ...props }) {
             console.warn(`"expo-image" Shadows may not be rendered correctly for the transparent parts of images. Set "backgroundColor" to a non-transparent color when using a shadow.`);
         }
     }
-    return React.createElement(NativeExpoImage, Object.assign({}, props, { source: resolvedSource, style: resolvedStyle }));
+    return React.createElement(NativeExpoImage, { ...props, source: resolvedSource, style: resolvedStyle });
 }
 //# sourceMappingURL=ExpoImage.js.map

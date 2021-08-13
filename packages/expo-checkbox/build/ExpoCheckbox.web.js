@@ -34,7 +34,7 @@ const ExpoCheckbox = props => {
         style: [styles.nativeControl, styles.cursorInherit],
         type: 'checkbox',
     });
-    return (React.createElement(View, Object.assign({}, other, { style: [styles.root, style, disabled && styles.cursorDefault] }),
+    return (React.createElement(View, { ...other, style: [styles.root, style, disabled && styles.cursorDefault] },
         nativeControl,
         fakeControl));
 };
