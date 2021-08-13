@@ -16,7 +16,7 @@ For [managed](../../../introduction/managed-vs-bare.md#managed-workflow) apps, y
 ## Configuration
 
 1. Go to your `app.json` and make sure you define your `ios.bundleIdentifier` and the `android.package` you want to use.
-2. In `app.json`, set `expo.ios.config.googleSignIn.reservedClientId` to your reversed client ID.
+2. For iOS also set `expo.ios.config.googleSignIn.reservedClientId` to your reversed client ID.
 
 ### Usage with Firebase
 
