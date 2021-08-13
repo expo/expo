@@ -45,7 +45,7 @@ const MENU_ITEMS_ICON_MAPPINGS: {
 class DevMenuView extends React.PureComponent<Props, State> {
   static contextType = DevMenuBottomSheetContext;
 
-  // @ts-expect-error - the provided solution (declare operator) conflicts with metro
+  // @ts-expect-error - the provided solution (declare operator) conflicts with @babel/plugin-transform-flow-strip-types
   context!: Context;
 
   constructor(props: Props, context?: unknown) {
