@@ -81,21 +81,23 @@
   });
 }
 
-- (void)onAppContentDidAppear
+- (BOOL)needsHideOnAppContentDidAppear
 {
   if (!_appContentAppeared && _autoHideEnabled) {
     _appContentAppeared = YES;
-    [self hideWithCallback:nil];
+    return YES;
   }
+  return NO;
 }
 
-- (void)onAppContentWillReload
+- (BOOL)needsShowOnAppContentWillReload
 {
   if (!_appContentAppeared) {
     _autoHideEnabled = YES;
     _appContentAppeared = NO;
-    [self showWithCallback:nil];
+    return YES;
   }
+  return NO;
 }
 
 @end
