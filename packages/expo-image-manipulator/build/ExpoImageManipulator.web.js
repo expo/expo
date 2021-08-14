@@ -247,7 +247,7 @@ export default {
                 if (i === actions.length - 1) {
                     _options = options;
                 }
-                output = await manipulateWithActionAsync(uri || output.uri, action, _options);
+                output = await manipulateWithActionAsync(output?.uri ?? uri, action, _options);
             }
             return output;
         }

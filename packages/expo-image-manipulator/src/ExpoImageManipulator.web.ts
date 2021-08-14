@@ -320,14 +320,14 @@ export default {
       ctx.drawImage(imageSource, 0, 0, imageSource.naturalWidth, imageSource.naturalHeight);
       return getResults(canvas, options);
     } else {
-      let output: ImageResult;
+      let output: ImageResult | undefined;
       for (let i = 0; i < actions.length; i++) {
         const action = actions[i];
         let _options;
         if (i === actions.length - 1) {
           _options = options;
         }
-        output = await manipulateWithActionAsync(uri || output!.uri, action, _options);
+        output = await manipulateWithActionAsync(output?.uri ?? uri, action, _options);
       }
       return output!;
     }
