@@ -1,10 +1,11 @@
-import { NativeModulesProxy, UnavailabilityError } from 'expo-modules-core';
 import {
   PermissionResponse,
   PermissionStatus,
   PermissionExpiration,
   PermissionHookOptions,
   createPermissionHook,
+  NativeModulesProxy,
+  UnavailabilityError,
 } from 'expo-modules-core';
 import { Platform } from 'react-native';
 

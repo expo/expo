@@ -25,8 +25,8 @@ export declare type BarCodeEvent = BarCodeScannerResult & {
 export declare type BarCodeEventCallbackArguments = {
     nativeEvent: BarCodeEvent;
 };
-export declare type BarCodeScannedCallback = (params: BarCodeEvent) => void;
 export { PermissionResponse, PermissionStatus, PermissionHookOptions };
+export declare type BarCodeScannedCallback = (params: BarCodeEvent) => void;
 export interface BarCodeScannerProps extends ViewProps {
     type?: 'front' | 'back' | number;
     barCodeTypes?: string[];

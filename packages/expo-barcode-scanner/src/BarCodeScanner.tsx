@@ -1,9 +1,9 @@
-import { UnavailabilityError } from 'expo-modules-core';
 import {
   PermissionResponse,
   PermissionStatus,
   PermissionHookOptions,
   createPermissionHook,
+  UnavailabilityError,
 } from 'expo-modules-core';
 import * as React from 'react';
 import { Platform, ViewProps } from 'react-native';
@@ -45,9 +45,9 @@ export type BarCodeEventCallbackArguments = {
   nativeEvent: BarCodeEvent;
 };
 
-export type BarCodeScannedCallback = (params: BarCodeEvent) => void;
-
 export { PermissionResponse, PermissionStatus, PermissionHookOptions };
+
+export type BarCodeScannedCallback = (params: BarCodeEvent) => void;
 
 export interface BarCodeScannerProps extends ViewProps {
   type?: 'front' | 'back' | number;
