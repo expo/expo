@@ -16,17 +16,19 @@ class SplashScreenReactActivityLifecycleListener(activityContext: Context) : Rea
     // If MainActivity.onCreate has `SplashScreen.show()`, it will override the call here.
     Handler(activity.mainLooper).post {
       SplashScreen.show(
-          activity,
-          getResizeMode(activity),
-          ReactRootView::class.java,
-          getStatusBarTranslucent(activity))
+        activity,
+        getResizeMode(activity),
+        ReactRootView::class.java,
+        getStatusBarTranslucent(activity)
+      )
     }
   }
 
   private fun getResizeMode(context: Context): SplashScreenImageResizeMode =
     SplashScreenImageResizeMode.fromString(
-        context.getString(R.string.expo_splash_screen_resize_mode).toLowerCase())
-    ?: SplashScreenImageResizeMode.CONTAIN
+      context.getString(R.string.expo_splash_screen_resize_mode).toLowerCase()
+    )
+      ?: SplashScreenImageResizeMode.CONTAIN
 
   private fun getStatusBarTranslucent(context: Context): Boolean =
     context.getString(R.string.expo_splash_screen_status_bar_translucent).toBoolean()
