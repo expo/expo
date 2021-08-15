@@ -7,6 +7,7 @@
 ### 🎉 New features
 
 - Add warning for splash screen if visible for too long ([#12882](https://github.com/expo/expo/pull/12882) by [@ajsmth](https://github.com/ajsmth))
+- Show splash screen without additional setup in MainActivity and could customize resizeMode/statusBarTranslucent in resource. ([#14061](https://github.com/expo/expo/pull/14061) by [@kudo](https://github.com/kudo))
 - Re-show splash screen if rootViewController be replaced when splash is showing. ([#14063](https://github.com/expo/expo/pull/14063) by [@kudo](https://github.com/kudo))
 
 ### 🐛 Bug fixes
