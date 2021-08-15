@@ -32,7 +32,6 @@ exports[`Checkbox renders content matching snapshot 1`] = `
       <input
         aria-checked={true}
         checked={true}
-        data-focusable={true}
         onChange={[Function]}
         style={
           Object {
