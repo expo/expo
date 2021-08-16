@@ -2,7 +2,7 @@
 
 #import <EXFont/EXFontScalersManager.h>
 
-#import <UMCore/UMDefines.h>
+#import <ExpoModulesCore/EXDefines.h>
 #import <EXFont/EXFont.h>
 
 #import <objc/runtime.h>
@@ -35,7 +35,7 @@ static NSPointerArray *currentFontScalers;
 
 @implementation EXFontScalersManager
 
-UM_REGISTER_SINGLETON_MODULE(FontScalersManager);
+EX_REGISTER_SINGLETON_MODULE(FontScalersManager);
 
 + (void)initialize
 {

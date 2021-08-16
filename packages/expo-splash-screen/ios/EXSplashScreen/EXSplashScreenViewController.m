@@ -1,8 +1,8 @@
 // Copyright © 2018 650 Industries. All rights reserved.
 
 #import <EXSplashScreen/EXSplashScreenViewController.h>
-#import <UMCore/UMDefines.h>
-#import <UMCore/UMUtilities.h>
+#import <ExpoModulesCore/EXDefines.h>
+#import <ExpoModulesCore/EXUtilities.h>
 
 @interface EXSplashScreenViewController ()
 
@@ -37,7 +37,7 @@
 
 - (void)showWithCallback:(nullable void(^)(void))successCallback
 {
-  [UMUtilities performSynchronouslyOnMainThread:^{
+  [EXUtilities performSynchronouslyOnMainThread:^{
     UIView *rootView = self.rootView;
     self.splashScreenView.frame = rootView.bounds;
     [rootView addSubview:self.splashScreenView];
@@ -69,9 +69,9 @@
 
 - (void)hideWithCallback:(nullable void(^)(BOOL))successCallback
 {
-  UM_WEAKIFY(self);
+  EX_WEAKIFY(self);
   dispatch_async(dispatch_get_main_queue(), ^{
-    UM_ENSURE_STRONGIFY(self);
+    EX_ENSURE_STRONGIFY(self);
     [self.splashScreenView removeFromSuperview];
     self.splashScreenShown = NO;
     self.autoHideEnabled = YES;

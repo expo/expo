@@ -1,6 +1,6 @@
 #import <Firebase/Firebase.h>
 
-@protocol UMFirebaseCoreInterface
+@protocol EXFirebaseCoreInterface
 
 - (nullable FIRApp *)defaultApp;
 

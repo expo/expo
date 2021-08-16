@@ -2,7 +2,7 @@
 
 #import <EXSplashScreen/EXSplashScreenService.h>
 #import <EXSplashScreen/EXSplashScreenViewNativeProvider.h>
-#import <UMCore/UMDefines.h>
+#import <ExpoModulesCore/EXDefines.h>
 
 @interface EXSplashScreenService ()
 
@@ -12,7 +12,7 @@
 
 @implementation EXSplashScreenService
 
-UM_REGISTER_SINGLETON_MODULE(SplashScreen);
+EX_REGISTER_SINGLETON_MODULE(SplashScreen);
 
 - (instancetype)init
 {
@@ -28,7 +28,7 @@ UM_REGISTER_SINGLETON_MODULE(SplashScreen);
   return [self showSplashScreenFor:viewController
           splashScreenViewProvider:splashScreenViewProvider
                    successCallback:^{}
-                   failureCallback:^(NSString *message){ UMLogWarn(@"%@", message); }];
+                   failureCallback:^(NSString *message){ EXLogWarn(@"%@", message); }];
 }
 
 
@@ -93,7 +93,7 @@ UM_REGISTER_SINGLETON_MODULE(SplashScreen);
 - (void)onAppContentDidAppear:(UIViewController *)viewController
 {
   if (![self.splashScreenControllers objectForKey:viewController]) {
-    UMLogWarn(@"No native splash screen registered for given view controller. Call 'SplashScreen.show' for given view controller first.");
+    EXLogWarn(@"No native splash screen registered for given view controller. Call 'SplashScreen.show' for given view controller first.");
   }
   [[self.splashScreenControllers objectForKey:viewController] onAppContentDidAppear];
 }
@@ -101,7 +101,7 @@ UM_REGISTER_SINGLETON_MODULE(SplashScreen);
 - (void)onAppContentWillReload:(UIViewController *)viewController
 {
   if (![self.splashScreenControllers objectForKey:viewController]) {
-    UMLogWarn(@"No native splash screen registered for given view controller. Call 'SplashScreen.show' for given view controller first.");
+    EXLogWarn(@"No native splash screen registered for given view controller. Call 'SplashScreen.show' for given view controller first.");
   }
   [[self.splashScreenControllers objectForKey:viewController] onAppContentWillReload];
 }

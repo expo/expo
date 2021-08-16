@@ -4,7 +4,7 @@
 #import <EXImagePicker/EXImagePickerMediaLibraryWriteOnlyPermissionRequester.h>
 
 #import <ExpoModulesCore/EXFileSystemInterface.h>
-#import <UMCore/UMUtilitiesInterface.h>
+#import <ExpoModulesCore/EXUtilitiesInterface.h>
 #import <ExpoModulesCore/EXPermissionsInterface.h>
 #import <ExpoModulesCore/EXPermissionsMethodsDelegate.h>
 
@@ -18,13 +18,13 @@ const CGFloat EXDefaultImageQuality = 0.2;
 
 @property (nonatomic, strong) UIAlertController *alertController;
 @property (nonatomic, strong) UIImagePickerController *picker;
-@property (nonatomic, strong) UMPromiseResolveBlock resolve;
-@property (nonatomic, strong) UMPromiseRejectBlock reject;
+@property (nonatomic, strong) EXPromiseResolveBlock resolve;
+@property (nonatomic, strong) EXPromiseRejectBlock reject;
 @property (nonatomic, weak) id kernelPermissionsServiceDelegate;
 @property (nonatomic, strong) NSDictionary *defaultOptions;
 @property (nonatomic, retain) NSMutableDictionary *options;
 @property (nonatomic, strong) NSDictionary *customButtons;
-@property (nonatomic, weak) UMModuleRegistry *moduleRegistry;
+@property (nonatomic, weak) EXModuleRegistry *moduleRegistry;
 @property (nonatomic, weak) id<EXPermissionsInterface> permissionsManager;
 @property (nonatomic, assign) BOOL shouldRestoreStatusBarVisibility;
 @property (nonatomic, weak) UIScrollView *imageScrollView;
@@ -33,7 +33,7 @@ const CGFloat EXDefaultImageQuality = 0.2;
 
 @implementation EXImagePicker
 
-UM_EXPORT_MODULE(ExponentImagePicker);
+EX_EXPORT_MODULE(ExponentImagePicker);
 
 - (instancetype)init
 {
@@ -54,7 +54,7 @@ UM_EXPORT_MODULE(ExponentImagePicker);
   return NO;
 }
 
-- (void)setModuleRegistry:(UMModuleRegistry *)moduleRegistry
+- (void)setModuleRegistry:(EXModuleRegistry *)moduleRegistry
 {
   _moduleRegistry = moduleRegistry;
   _permissionsManager = [self.moduleRegistry getModuleImplementingProtocol:@protocol(EXPermissionsInterface)];
@@ -75,9 +75,9 @@ UM_EXPORT_MODULE(ExponentImagePicker);
   }
 }
 
-UM_EXPORT_METHOD_AS(getCameraPermissionsAsync,
-                    getCameraPermissionsAsync:(UMPromiseResolveBlock)resolve
-                    rejecter:(UMPromiseRejectBlock)reject)
+EX_EXPORT_METHOD_AS(getCameraPermissionsAsync,
+                    getCameraPermissionsAsync:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
 {
   [EXPermissionsMethodsDelegate getPermissionWithPermissionsManager:_permissionsManager
                                                       withRequester:[EXImagePickerCameraPermissionRequester class]
@@ -85,10 +85,10 @@ UM_EXPORT_METHOD_AS(getCameraPermissionsAsync,
                                                              reject:reject];
 }
 
-UM_EXPORT_METHOD_AS(getMediaLibraryPermissionsAsync,
+EX_EXPORT_METHOD_AS(getMediaLibraryPermissionsAsync,
                     getPermissionsAsync:(BOOL)writeOnly
-                    resolver:(UMPromiseResolveBlock)resolve
-                    rejecter:(UMPromiseRejectBlock)reject)
+                    resolver:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
 {
   [EXPermissionsMethodsDelegate getPermissionWithPermissionsManager:_permissionsManager
                                                       withRequester:[self requesterClass:writeOnly]
@@ -96,9 +96,9 @@ UM_EXPORT_METHOD_AS(getMediaLibraryPermissionsAsync,
                                                              reject:reject];
 }
 
-UM_EXPORT_METHOD_AS(requestCameraPermissionsAsync,
-                    requestCameraPermissionsAsync:(UMPromiseResolveBlock)resolve
-                    rejecter:(UMPromiseRejectBlock)reject)
+EX_EXPORT_METHOD_AS(requestCameraPermissionsAsync,
+                    requestCameraPermissionsAsync:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
 {
   [EXPermissionsMethodsDelegate askForPermissionWithPermissionsManager:_permissionsManager
                                                          withRequester:[EXImagePickerCameraPermissionRequester class]
@@ -106,10 +106,10 @@ UM_EXPORT_METHOD_AS(requestCameraPermissionsAsync,
                                                                 reject:reject];
 }
 
-UM_EXPORT_METHOD_AS(requestMediaLibraryPermissionsAsync,
+EX_EXPORT_METHOD_AS(requestMediaLibraryPermissionsAsync,
                     requestCameraRollPermissionsAsync:(BOOL)writeOnly
-                    resolver:(UMPromiseResolveBlock)resolve
-                    rejecter:(UMPromiseRejectBlock)reject)
+                    resolver:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
 {
   [EXPermissionsMethodsDelegate askForPermissionWithPermissionsManager:_permissionsManager
                                                          withRequester:[self requesterClass:writeOnly]
@@ -117,9 +117,9 @@ UM_EXPORT_METHOD_AS(requestMediaLibraryPermissionsAsync,
                                                                 reject:reject];
 }
 
-UM_EXPORT_METHOD_AS(launchCameraAsync, launchCameraAsync:(NSDictionary *)options
-                  resolver:(UMPromiseResolveBlock)resolve
-                  rejecter:(UMPromiseRejectBlock)reject)
+EX_EXPORT_METHOD_AS(launchCameraAsync, launchCameraAsync:(NSDictionary *)options
+                  resolver:(EXPromiseResolveBlock)resolve
+                  rejecter:(EXPromiseRejectBlock)reject)
 {
   if (!_permissionsManager) {
     return reject(@"E_NO_PERMISSIONS", @"Permissions module not found. Are you sure that Expo modules are properly linked?", nil);
@@ -136,9 +136,9 @@ UM_EXPORT_METHOD_AS(launchCameraAsync, launchCameraAsync:(NSDictionary *)options
   [self launchImagePicker:EXImagePickerTargetCamera options:options];
 }
 
-UM_EXPORT_METHOD_AS(launchImageLibraryAsync, launchImageLibraryAsync:(NSDictionary *)options
-                  resolver:(UMPromiseResolveBlock)resolve
-                  rejecter:(UMPromiseRejectBlock)reject)
+EX_EXPORT_METHOD_AS(launchImageLibraryAsync, launchImageLibraryAsync:(NSDictionary *)options
+                  resolver:(EXPromiseResolveBlock)resolve
+                  rejecter:(EXPromiseRejectBlock)reject)
 {
   if (!_permissionsManager) {
     return reject(@"E_NO_PERMISSIONS", @"Permissions module not found. Are you sure that Expo modules are properly linked?", nil);
@@ -213,7 +213,7 @@ UM_EXPORT_METHOD_AS(launchImageLibraryAsync, launchImageLibraryAsync:(NSDictiona
     self.picker.delegate = self;
 
     [self maybePreserveVisibilityAndHideStatusBar:[[self.options objectForKey:@"allowsEditing"] boolValue]];
-    id<UMUtilitiesInterface> utils = [self.moduleRegistry getModuleImplementingProtocol:@protocol(UMUtilitiesInterface)];
+    id<EXUtilitiesInterface> utils = [self.moduleRegistry getModuleImplementingProtocol:@protocol(EXUtilitiesInterface)];
     [utils.currentViewController presentViewController:self.picker animated:YES completion:nil];
   });
 }
@@ -351,15 +351,15 @@ UM_EXPORT_METHOD_AS(launchImageLibraryAsync, launchImageLibraryAsync:(NSDictiona
         }
       }
       if (!asset) {
-        UMLogInfo(@"Could not fetch metadata for image %@", [imageURL absoluteString]);
+        EXLogInfo(@"Could not fetch metadata for image %@", [imageURL absoluteString]);
         completionHandler();
       }
       
       PHContentEditingInputRequestOptions *options = [[PHContentEditingInputRequestOptions alloc] init];
       options.networkAccessAllowed = YES; // Download from iCloud if needed
-      UM_WEAKIFY(self)
+      EX_WEAKIFY(self)
       [asset requestContentEditingInputWithOptions:options completionHandler:^(PHContentEditingInput *input, NSDictionary *info) {
-        UM_ENSURE_STRONGIFY(self)
+        EX_ENSURE_STRONGIFY(self)
         NSDictionary *metadata = [CIImage imageWithContentsOfURL:input.fullSizeImageURL].properties;
         [self updateResponse:response withMetadata:metadata];
         completionHandler();

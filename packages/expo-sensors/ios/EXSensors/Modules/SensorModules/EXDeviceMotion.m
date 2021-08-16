@@ -5,7 +5,7 @@
 
 @implementation EXDeviceMotion
 
-UM_EXPORT_MODULE(ExponentDeviceMotion);
+EX_EXPORT_MODULE(ExponentDeviceMotion);
 
 - (NSDictionary *)constantsToExport
 {
@@ -21,7 +21,7 @@ UM_EXPORT_MODULE(ExponentDeviceMotion);
   return @"deviceMotionDidUpdate";
 }
 
-- (id)getSensorServiceFromModuleRegistry:(UMModuleRegistry *)moduleRegistry
+- (id)getSensorServiceFromModuleRegistry:(EXModuleRegistry *)moduleRegistry
 {
   return [moduleRegistry getModuleImplementingProtocol:@protocol(EXDeviceMotionInterface)];
 }

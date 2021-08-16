@@ -4,7 +4,7 @@
 #import <EXNotifications/EXNotificationSerializer.h>
 #import <EXNotifications/EXNotificationCenterDelegate.h>
 
-#import <UMCore/UMEventEmitterService.h>
+#import <ExpoModulesCore/EXEventEmitterService.h>
 
 @interface EXNotificationsEmitter ()
 
@@ -13,7 +13,7 @@
 @property (nonatomic, assign) BOOL isBeingObserved;
 @property (nonatomic, assign) BOOL isListening;
 
-@property (nonatomic, weak) id<UMEventEmitterService> eventEmitter;
+@property (nonatomic, weak) id<EXEventEmitterService> eventEmitter;
 
 @property (nonatomic, strong) UNNotificationResponse *lastNotificationResponse;
 
@@ -21,23 +21,23 @@
 
 @implementation EXNotificationsEmitter
 
-UM_EXPORT_MODULE(ExpoNotificationsEmitter);
+EX_EXPORT_MODULE(ExpoNotificationsEmitter);
 
-UM_EXPORT_METHOD_AS(getLastNotificationResponseAsync,
-                    getLastNotificationResponseAsyncWithResolver:(UMPromiseResolveBlock)resolve reject:(UMPromiseRejectBlock)reject)
+EX_EXPORT_METHOD_AS(getLastNotificationResponseAsync,
+                    getLastNotificationResponseAsyncWithResolver:(EXPromiseResolveBlock)resolve reject:(EXPromiseRejectBlock)reject)
 {
   resolve(_lastNotificationResponse ? [self serializedNotificationResponse:_lastNotificationResponse] : [NSNull null]);
 }
 
-# pragma mark - UMModuleRegistryConsumer
+# pragma mark - EXModuleRegistryConsumer
 
-- (void)setModuleRegistry:(UMModuleRegistry *)moduleRegistry
+- (void)setModuleRegistry:(EXModuleRegistry *)moduleRegistry
 {
-  _eventEmitter = [moduleRegistry getModuleImplementingProtocol:@protocol(UMEventEmitterService)];
+  _eventEmitter = [moduleRegistry getModuleImplementingProtocol:@protocol(EXEventEmitterService)];
   _notificationCenterDelegate = [moduleRegistry getSingletonModuleForName:@"NotificationCenterDelegate"];
 }
 
-# pragma mark - UMEventEmitter
+# pragma mark - EXEventEmitter
 
 - (NSArray<NSString *> *)supportedEvents
 {

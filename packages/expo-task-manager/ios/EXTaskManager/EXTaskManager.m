@@ -1,8 +1,8 @@
 // Copyright 2018-present 650 Industries. All rights reserved.
 
-#import <UMCore/UMDefines.h>
-#import <UMCore/UMUtilities.h>
-#import <UMCore/UMEventEmitterService.h>
+#import <ExpoModulesCore/EXDefines.h>
+#import <ExpoModulesCore/EXUtilities.h>
+#import <ExpoModulesCore/EXEventEmitterService.h>
 
 #import <ExpoModulesCore/EXConstantsInterface.h>
 
@@ -16,7 +16,7 @@ NSString * const EXTaskManagerEventName = @"TaskManager.executeTask";
 
 @property (nonatomic, strong) NSString *appId;
 @property (nonatomic, strong) NSMutableArray<NSDictionary *> *eventsQueue;
-@property (nonatomic, weak) id<UMEventEmitterService> eventEmitter;
+@property (nonatomic, weak) id<EXEventEmitterService> eventEmitter;
 @property (nonatomic, weak) id<EXConstantsInterface> constantsService;
 @property (nonatomic, weak) id<UMTaskServiceInterface> taskService;
 
@@ -24,7 +24,7 @@ NSString * const EXTaskManagerEventName = @"TaskManager.executeTask";
 
 @implementation EXTaskManager
 
-UM_EXPORT_MODULE(ExpoTaskManager);
+EX_EXPORT_MODULE(ExpoTaskManager);
 
 + (const NSArray<Protocol *> *)exportedInterfaces
 {
@@ -46,9 +46,9 @@ UM_EXPORT_MODULE(ExpoTaskManager);
   return self;
 }
 
-- (void)setModuleRegistry:(UMModuleRegistry *)moduleRegistry
+- (void)setModuleRegistry:(EXModuleRegistry *)moduleRegistry
 {
-  _eventEmitter = [moduleRegistry getModuleImplementingProtocol:@protocol(UMEventEmitterService)];
+  _eventEmitter = [moduleRegistry getModuleImplementingProtocol:@protocol(EXEventEmitterService)];
   _constantsService = [moduleRegistry getModuleImplementingProtocol:@protocol(EXConstantsInterface)];
   _taskService = [moduleRegistry getSingletonModuleForName:@"TaskService"];
 
@@ -63,7 +63,7 @@ UM_EXPORT_MODULE(ExpoTaskManager);
            };
 }
 
-# pragma mark - UMEventEmitter
+# pragma mark - EXEventEmitter
 
 - (NSArray<NSString *> *)supportedEvents
 {
@@ -89,50 +89,50 @@ UM_EXPORT_MODULE(ExpoTaskManager);
 
 # pragma mark - Exported methods
 
-UM_EXPORT_METHOD_AS(isAvailableAsync,
-                    isAvailable:(UMPromiseResolveBlock)resolve
-                    rejecter:(UMPromiseRejectBlock)reject)
+EX_EXPORT_METHOD_AS(isAvailableAsync,
+                    isAvailable:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
 {
   resolve(@(_taskService != nil));
 }
 
-UM_EXPORT_METHOD_AS(notifyTaskFinishedAsync,
+EX_EXPORT_METHOD_AS(notifyTaskFinishedAsync,
                     notifyTaskFinished:(nonnull NSString *)taskName
                     withResponse:(nonnull NSDictionary *)response
-                    resolve:(UMPromiseResolveBlock)resolve
-                    reject:(UMPromiseRejectBlock)reject)
+                    resolve:(EXPromiseResolveBlock)resolve
+                    reject:(EXPromiseRejectBlock)reject)
 {
   [_taskService notifyTaskWithName:taskName forAppId:_appId didFinishWithResponse:response];
   resolve(nil);
 }
 
-UM_EXPORT_METHOD_AS(isTaskRegisteredAsync,
+EX_EXPORT_METHOD_AS(isTaskRegisteredAsync,
                     isTaskRegistered:(nonnull NSString *)taskName
-                    resolve:(UMPromiseResolveBlock)resolve
-                    reject:(UMPromiseRejectBlock)reject)
+                    resolve:(EXPromiseResolveBlock)resolve
+                    reject:(EXPromiseRejectBlock)reject)
 {
   resolve(@([self hasRegisteredTaskWithName:taskName]));
 }
 
-UM_EXPORT_METHOD_AS(getRegisteredTasksAsync,
-                    getRegisteredTasks:(UMPromiseResolveBlock)resolve
-                    reject:(UMPromiseRejectBlock)reject)
+EX_EXPORT_METHOD_AS(getRegisteredTasksAsync,
+                    getRegisteredTasks:(EXPromiseResolveBlock)resolve
+                    reject:(EXPromiseRejectBlock)reject)
 {
   resolve([_taskService getRegisteredTasksForAppId:_appId]);
 }
 
-UM_EXPORT_METHOD_AS(getTaskOptionsAsync,
+EX_EXPORT_METHOD_AS(getTaskOptionsAsync,
                     getConfigurationForTaskName:(nonnull NSString *)taskName
-                    resolve:(UMPromiseResolveBlock)resolve
-                    reject:(UMPromiseRejectBlock)reject)
+                    resolve:(EXPromiseResolveBlock)resolve
+                    reject:(EXPromiseRejectBlock)reject)
 {
-  resolve(UMNullIfNil([_taskService getOptionsForTaskName:taskName forAppId:_appId]));
+  resolve(EXNullIfNil([_taskService getOptionsForTaskName:taskName forAppId:_appId]));
 }
 
-UM_EXPORT_METHOD_AS(unregisterTaskAsync,
+EX_EXPORT_METHOD_AS(unregisterTaskAsync,
                     unregisterTaskWithName:(nonnull NSString *)taskName
-                    resolve:(UMPromiseResolveBlock)resolve
-                    reject:(UMPromiseRejectBlock)reject)
+                    resolve:(EXPromiseResolveBlock)resolve
+                    reject:(EXPromiseRejectBlock)reject)
 {
   @try {
     [self unregisterTaskWithName:taskName consumerClass:nil];
@@ -142,9 +142,9 @@ UM_EXPORT_METHOD_AS(unregisterTaskAsync,
   resolve(nil);
 }
 
-UM_EXPORT_METHOD_AS(unregisterAllTasksAsync,
-                    unregisterAllTasks:(UMPromiseResolveBlock)resolve
-                    reject:(UMPromiseRejectBlock)reject)
+EX_EXPORT_METHOD_AS(unregisterAllTasksAsync,
+                    unregisterAllTasks:(EXPromiseResolveBlock)resolve
+                    reject:(EXPromiseRejectBlock)reject)
 {
   [_taskService unregisterAllTasksForAppId:_appId];
   resolve(nil);

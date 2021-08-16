@@ -16,17 +16,17 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation EXTrackingTransparencyModule
 
-UM_EXPORT_MODULE(ExpoTrackingTransparency);
+EX_EXPORT_MODULE(ExpoTrackingTransparency);
 
-- (void)setModuleRegistry:(UMModuleRegistry *)moduleRegistry
+- (void)setModuleRegistry:(EXModuleRegistry *)moduleRegistry
 {
   _permissionsManager = [moduleRegistry getModuleImplementingProtocol:@protocol(EXPermissionsInterface)];
   [EXPermissionsMethodsDelegate registerRequesters:@[[EXTrackingPermissionRequester new]] withPermissionsManager:_permissionsManager];
 }
 
-UM_EXPORT_METHOD_AS(getPermissionsAsync,
-                    getPermissionsAsync:(UMPromiseResolveBlock)resolve
-                    rejecter:(UMPromiseRejectBlock)reject)
+EX_EXPORT_METHOD_AS(getPermissionsAsync,
+                    getPermissionsAsync:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
 {
   [EXPermissionsMethodsDelegate getPermissionWithPermissionsManager:_permissionsManager
                                                       withRequester:[EXTrackingPermissionRequester class]
@@ -34,9 +34,9 @@ UM_EXPORT_METHOD_AS(getPermissionsAsync,
                                                              reject:reject];
 }
 
-UM_EXPORT_METHOD_AS(requestPermissionsAsync,
-                    requestPermissionsAsync:(UMPromiseResolveBlock)resolve
-                    rejecter:(UMPromiseRejectBlock)reject)
+EX_EXPORT_METHOD_AS(requestPermissionsAsync,
+                    requestPermissionsAsync:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
 {
   [EXPermissionsMethodsDelegate askForPermissionWithPermissionsManager:_permissionsManager
                                                          withRequester:[EXTrackingPermissionRequester class]

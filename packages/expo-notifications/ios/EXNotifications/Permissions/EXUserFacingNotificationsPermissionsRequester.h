@@ -7,8 +7,8 @@
 - (instancetype)initWithMethodQueue:(dispatch_queue_t)methodQueue;
 
 - (void)requestPermissions:(NSDictionary *)permissions
-              withResolver:(UMPromiseResolveBlock)resolve
-                  rejecter:(UMPromiseRejectBlock)reject;
+              withResolver:(EXPromiseResolveBlock)resolve
+                  rejecter:(EXPromiseRejectBlock)reject;
 
 + (void)setRequestedPermissions:(NSDictionary *)permissions;
 

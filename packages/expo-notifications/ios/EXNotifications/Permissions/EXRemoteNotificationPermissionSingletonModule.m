@@ -2,7 +2,7 @@
 // Copyright 2018-present 650 Industries. All rights reserved.
 
 #import <EXNotifications/EXRemoteNotificationPermissionSingletonModule.h>
-#import <UMCore/UMDefines.h>
+#import <ExpoModulesCore/EXDefines.h>
 
 @interface EXRemoteNotificationPermissionSingletonModule ()
 
@@ -12,7 +12,7 @@
 
 @implementation EXRemoteNotificationPermissionSingletonModule
 
-UM_REGISTER_SINGLETON_MODULE(RemoteNotificationPermissionPublisher);
+EX_REGISTER_SINGLETON_MODULE(RemoteNotificationPermissionPublisher);
 
 - (instancetype)init
 {

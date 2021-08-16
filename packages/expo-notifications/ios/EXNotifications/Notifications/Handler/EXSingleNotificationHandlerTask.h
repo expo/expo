@@ -1,7 +1,7 @@
 // Copyright 2018-present 650 Industries. All rights reserved.
 
 #import <Foundation/Foundation.h>
-#import <UMCore/UMEventEmitterService.h>
+#import <ExpoModulesCore/EXEventEmitterService.h>
 #import <UserNotifications/UserNotifications.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -18,7 +18,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (NSArray<NSString *> *)eventNames;
 
-- (instancetype)initWithEventEmitter:(id<UMEventEmitterService>)eventEmitter
+- (instancetype)initWithEventEmitter:(id<EXEventEmitterService>)eventEmitter
                         notification:(UNNotification *)notification
                    completionHandler:(void (^)(UNNotificationPresentationOptions))completionHandler
                             delegate:(id<EXSingleNotificationHandlerTaskDelegate>)delegate;

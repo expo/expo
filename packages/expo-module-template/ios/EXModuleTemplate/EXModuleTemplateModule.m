@@ -4,23 +4,23 @@
 
 @interface EXModuleTemplateModule ()
 
-@property (nonatomic, weak) UMModuleRegistry *moduleRegistry;
+@property (nonatomic, weak) EXModuleRegistry *moduleRegistry;
 
 @end
 
 @implementation EXModuleTemplateModule
 
-UM_EXPORT_MODULE(ExpoModuleTemplate);
+EX_EXPORT_MODULE(ExpoModuleTemplate);
 
-- (void)setModuleRegistry:(UMModuleRegistry *)moduleRegistry
+- (void)setModuleRegistry:(EXModuleRegistry *)moduleRegistry
 {
   _moduleRegistry = moduleRegistry;
 }
 
-UM_EXPORT_METHOD_AS(someGreatMethodAsync,
+EX_EXPORT_METHOD_AS(someGreatMethodAsync,
                     options:(NSDictionary *)options
-                    resolve:(UMPromiseResolveBlock)resolve
-                    reject:(UMPromiseRejectBlock)reject)
+                    resolve:(EXPromiseResolveBlock)resolve
+                    reject:(EXPromiseRejectBlock)reject)
 {
 }
 
