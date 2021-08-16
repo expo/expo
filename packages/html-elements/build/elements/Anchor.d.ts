@@ -1,3 +1,5 @@
 import React from 'react';
-import { LinkProps } from './Text.types';
-export declare const A: React.ComponentType<LinkProps>;
+export declare const A: React.ComponentType<React.PropsWithChildren<Pick<import("react-native").TextProps & React.ClassAttributes<typeof import("react-native").Text>, "allowFontScaling" | "ellipsizeMode" | "lineBreakMode" | "numberOfLines" | "onLayout" | "onTextLayout" | "onPress" | "onLongPress" | "testID" | "nativeID" | "maxFontSizeMultiplier" | "adjustsFontSizeToFit" | "minimumFontScale" | "suppressHighlighting" | "selectable" | "selectionColor" | "textBreakStrategy" | "dataDetectorType" | "android_hyphenationFrequency" | "accessible" | "accessibilityActions" | "accessibilityLabel" | "accessibilityState" | "accessibilityHint" | "accessibilityValue" | "onAccessibilityAction" | "accessibilityLiveRegion" | "importantForAccessibility" | "accessibilityElementsHidden" | "accessibilityViewIsModal" | "onAccessibilityEscape" | "onAccessibilityTap" | "onMagicTap" | "accessibilityIgnoresInvertColors" | "ref" | "key"> & import("../primitives/Text").WebTextProps & {
+    href?: string | undefined;
+    target?: string | undefined;
+}>>;

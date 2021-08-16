@@ -136,6 +136,6 @@ export const iosModelNames = {
     'AppleTV3,1': 'Apple TV',
     'AppleTV3,2': 'Apple TV',
     'AppleTV5,3': 'Apple TV',
-    'AppleTV6,2': 'Apple TV 4K', // Apple TV 4K
+    'AppleTV6,2': 'Apple TV 4K',
 };
 //# sourceMappingURL=ModelNames.js.map

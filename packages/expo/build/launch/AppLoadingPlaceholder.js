@@ -12,7 +12,10 @@
  */
 import React from 'react';
 export default class AppLoadingPlaceholder extends React.Component {
-    _isMounted = false;
+    constructor() {
+        super(...arguments);
+        this._isMounted = false;
+    }
     componentDidMount() {
         this._isMounted = true;
         this.startLoadingAppResourcesAsync().catch(error => {

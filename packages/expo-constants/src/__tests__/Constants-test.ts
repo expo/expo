@@ -130,6 +130,8 @@ describe(`manifest`, () => {
     }
   });
 
+  console.log('SINGLE TEST: is overridden by expo-updates if both are defined');
+  console.time('singleTest');
   it(`is overridden by expo-updates if both are defined`, () => {
     mockExponentConstants({ manifest: fakeManifest });
     mockExpoUpdates({ manifest: fakeManifest2 });
@@ -137,6 +139,7 @@ describe(`manifest`, () => {
     expect(ConstantsWithMock.manifest).toEqual(fakeManifest2);
     expect(console.warn).not.toHaveBeenCalled();
   });
+  console.timeEnd('singleTest');
 
   it(`is not overridden if expo-updates exports an empty manifest`, () => {
     mockExponentConstants({ manifest: fakeManifest });

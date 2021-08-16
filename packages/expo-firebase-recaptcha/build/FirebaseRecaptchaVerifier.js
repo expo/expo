@@ -1,5 +1,4 @@
 export default class FirebaseRecaptchaVerifier {
-    token;
     constructor(token) {
         this.token = token;
     }

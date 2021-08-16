@@ -61,7 +61,7 @@ if (__DEV__) {
             function PatchedProviderComponent(props) {
                 const ProviderComponent = provider();
                 return (React.createElement(DevAppContainer, null,
-                    React.createElement(ProviderComponent, { ...props })));
+                    React.createElement(ProviderComponent, Object.assign({}, props))));
             }
             originalSetWrapperComponentProvider(() => PatchedProviderComponent);
         };

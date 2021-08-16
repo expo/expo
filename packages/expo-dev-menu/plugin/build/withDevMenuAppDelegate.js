@@ -34,7 +34,7 @@ function modifyAppDelegate(appDelegate) {
     return appDelegate;
 }
 exports.modifyAppDelegate = modifyAppDelegate;
-const withDevMenuAppDelegate = config => {
+exports.withDevMenuAppDelegate = config => {
     return config_plugins_1.withAppDelegate(config, config => {
         if (config.modResults.language === 'objc') {
             config.modResults.contents = modifyAppDelegate(config.modResults.contents);
@@ -45,4 +45,3 @@ const withDevMenuAppDelegate = config => {
         return config;
     });
 };
-exports.withDevMenuAppDelegate = withDevMenuAppDelegate;

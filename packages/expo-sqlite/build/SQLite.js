@@ -5,9 +5,8 @@ import zipObject from 'lodash/zipObject';
 import { Platform } from 'react-native';
 const { ExponentSQLite } = NativeModulesProxy;
 class SQLiteDatabase {
-    _name;
-    _closed = false;
     constructor(name) {
+        this._closed = false;
         this._name = name;
     }
     exec(queries, readOnly, callback) {

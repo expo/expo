@@ -6,13 +6,12 @@ const { Scheme } = config_plugins_1.IOSConfig;
 const { appendScheme } = Scheme;
 const fbSchemes = ['fbapi', 'fb-messenger-api', 'fbauth2', 'fbshareextension'];
 const USER_TRACKING = 'This identifier will be used to deliver personalized ads to you.';
-const withFacebookIOS = config => {
+exports.withFacebookIOS = config => {
     return config_plugins_1.withInfoPlist(config, config => {
         config.modResults = setFacebookConfig(config, config.modResults);
         return config;
     });
 };
-exports.withFacebookIOS = withFacebookIOS;
 /**
  * Getters
  * TODO: these getters are the same between ios/android, we could reuse them
@@ -164,7 +163,7 @@ function setFacebookApplicationQuerySchemes(config, infoPlist) {
     };
 }
 exports.setFacebookApplicationQuerySchemes = setFacebookApplicationQuerySchemes;
-const withUserTrackingPermission = (config, { userTrackingPermission } = {}) => {
+exports.withUserTrackingPermission = (config, { userTrackingPermission } = {}) => {
     if (userTrackingPermission === false) {
         return config;
     }
@@ -176,4 +175,3 @@ const withUserTrackingPermission = (config, { userTrackingPermission } = {}) => 
         userTrackingPermission || config.ios.infoPlist.NSUserTrackingUsageDescription || USER_TRACKING;
     return config;
 };
-exports.withUserTrackingPermission = withUserTrackingPermission;

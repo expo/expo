@@ -5,6 +5,8 @@ import logger from '../Logger';
 import getPackagesToCheckAsync from '../check-packages/getPackagesToCheckAsync';
 import checkPackageAsync from '../check-packages/checkPackageAsync';
 import { ActionOptions } from '../check-packages/types';
+import { performance } from 'perf_hooks';
+import { type } from 'os';
 
 const { green, magenta, yellow } = chalk;
 
@@ -35,17 +37,35 @@ async function main(packageNames: string[], options: ActionOptions): Promise<voi
   options.packageNames = packageNames;
 
   const packages = await getPackagesToCheckAsync(options);
+  type PP = { packageName: string; timeInMs: number };
+
+  const packagesPerformance: PP[] = [];
   const failedPackages: string[] = [];
   let passCount = 0;
 
   for (const pkg of packages) {
+    let startTime = performance.now();
     if (await checkPackageAsync(pkg, options)) {
       passCount++;
     } else {
       failedPackages.push(pkg.packageName);
     }
+    if (!pkg.hasPlugin) {
+      packagesPerformance.push({
+        packageName: pkg.packageName,
+        timeInMs: performance.now() - startTime,
+      });
+    }
     logger.log();
   }
+
+  packagesPerformance.sort((a: PP, b: PP) => {
+    return a.timeInMs - b.timeInMs;
+  });
+
+  packagesPerformance.forEach((pp) => {
+    console.log(pp.packageName + ': ' + pp.timeInMs);
+  });
 
   const failureCount = failedPackages.length;
 

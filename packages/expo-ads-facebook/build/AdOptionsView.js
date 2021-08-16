@@ -9,11 +9,10 @@ var NativeOrientation;
     NativeOrientation[NativeOrientation["Vertical"] = 1] = "Vertical";
 })(NativeOrientation || (NativeOrientation = {}));
 export default class AdOptionsView extends React.Component {
-    static defaultProps = {
-        iconSize: 23,
-        orientation: 'horizontal',
-    };
-    shouldAlignHorizontal = () => this.props.orientation === 'horizontal';
+    constructor() {
+        super(...arguments);
+        this.shouldAlignHorizontal = () => this.props.orientation === 'horizontal';
+    }
     render() {
         const style = this.shouldAlignHorizontal()
             ? {
@@ -35,10 +34,14 @@ export default class AdOptionsView extends React.Component {
             : null;
         return (React.createElement(AdOptionsViewContext.Consumer, null, (contextValue) => {
             const adViewRef = nullthrows(contextValue && contextValue.nativeAdViewRef);
-            return (React.createElement(NativeAdOptionsView, { ...props, ...platformSpecificProps, style: [this.props.style, style], nativeAdViewTag: findNodeHandle(adViewRef.current) }));
+            return (React.createElement(NativeAdOptionsView, Object.assign({}, props, platformSpecificProps, { style: [this.props.style, style], nativeAdViewTag: findNodeHandle(adViewRef.current) })));
         }));
     }
 }
+AdOptionsView.defaultProps = {
+    iconSize: 23,
+    orientation: 'horizontal',
+};
 // eslint-disable-next-line @typescript-eslint/no-redeclare -- the type and variable share a name
 export const NativeAdOptionsView = requireNativeViewManager('AdOptionsView');
 //# sourceMappingURL=AdOptionsView.js.map

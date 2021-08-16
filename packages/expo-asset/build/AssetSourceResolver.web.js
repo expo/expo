@@ -17,11 +17,6 @@ function getScaledAssetPath(asset) {
     return assetDir + '/' + asset.name + scaleSuffix + '.' + asset.type;
 }
 export default class AssetSourceResolver {
-    serverUrl;
-    // where the jsbundle is being run from
-    jsbundleUrl;
-    // the asset to resolve
-    asset;
     constructor(serverUrl, jsbundleUrl, asset) {
         this.serverUrl = serverUrl;
         this.jsbundleUrl = jsbundleUrl;

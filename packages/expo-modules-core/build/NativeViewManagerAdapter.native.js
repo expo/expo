@@ -43,7 +43,7 @@ export function requireNativeViewManager(viewName) {
     function NativeComponentAdapter(props, ref) {
         const nativeProps = pick(props, reactNativeComponentPropNames);
         const proxiedProps = omit(props, reactNativeComponentPropNames);
-        return React.createElement(ReactNativeComponent, { ...nativeProps, proxiedProperties: proxiedProps, ref: ref });
+        return React.createElement(ReactNativeComponent, Object.assign({}, nativeProps, { proxiedProperties: proxiedProps, ref: ref }));
     }
     NativeComponentAdapter.displayName = `Adapter<${viewName}>`;
     return React.forwardRef(NativeComponentAdapter);

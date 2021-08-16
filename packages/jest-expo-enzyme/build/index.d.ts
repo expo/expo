@@ -1,4 +1,3 @@
-/// <reference types="node" />
 import { Config } from '@jest/types';
 export default function withEnzyme(preset: Config.ProjectConfig): {
     setupFilesAfterEnv: string[];
@@ -18,7 +17,7 @@ export default function withEnzyme(preset: Config.ProjectConfig): {
     detectOpenHandles: boolean;
     displayName?: Config.DisplayName | undefined;
     errorOnDeprecated: boolean;
-    extraGlobals: (keyof NodeJS.Global)[];
+    extraGlobals: ("undefined" | "Array" | "ArrayBuffer" | "Boolean" | "Buffer" | "DataView" | "Date" | "Error" | "EvalError" | "Float32Array" | "Float64Array" | "Function" | "Infinity" | "Int16Array" | "Int32Array" | "Int8Array" | "Intl" | "JSON" | "Map" | "Math" | "NaN" | "Number" | "Object" | "Promise" | "RangeError" | "ReferenceError" | "RegExp" | "Set" | "String" | "Symbol" | "SyntaxError" | "TypeError" | "URIError" | "Uint16Array" | "Uint32Array" | "Uint8Array" | "Uint8ClampedArray" | "WeakMap" | "WeakSet" | "clearImmediate" | "clearInterval" | "clearTimeout" | "decodeURI" | "decodeURIComponent" | "encodeURI" | "encodeURIComponent" | "escape" | "eval" | "global" | "isFinite" | "isNaN" | "parseFloat" | "parseInt" | "setImmediate" | "setInterval" | "setTimeout" | "queueMicrotask" | "unescape" | "gc" | "v8debug" | "console" | "process")[];
     filter?: string | undefined;
     forceCoverageMatch: string[];
     globalSetup?: string | undefined;

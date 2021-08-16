@@ -2,10 +2,8 @@ import invariant from 'invariant';
 import { NativeEventEmitter, Platform } from 'react-native';
 const nativeEmitterSubscriptionKey = '@@nativeEmitterSubscription@@';
 export class EventEmitter {
-    _listenerCount = 0;
-    _nativeModule;
-    _eventEmitter;
     constructor(nativeModule) {
+        this._listenerCount = 0;
         this._nativeModule = nativeModule;
         this._eventEmitter = new NativeEventEmitter(nativeModule);
     }

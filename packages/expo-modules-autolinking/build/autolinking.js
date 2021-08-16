@@ -91,8 +91,7 @@ async function findModulesAsync(providedOptions) {
                     duplicates: [],
                 };
             }
-            else if (results[name].path !== packagePath &&
-                ((_b = results[name].duplicates) === null || _b === void 0 ? void 0 : _b.every(({ path }) => path !== packagePath))) {
+            else if (results[name].path !== packagePath && ((_b = results[name].duplicates) === null || _b === void 0 ? void 0 : _b.every(({ path }) => path !== packagePath))) {
                 (_c = results[name].duplicates) === null || _c === void 0 ? void 0 : _c.push(currentRevision);
             }
         }

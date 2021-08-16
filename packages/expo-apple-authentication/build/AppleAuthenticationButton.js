@@ -33,7 +33,7 @@ const AppleAuthenticationButton = ({ onPress, buttonStyle, buttonType, ...restPr
         return null;
     }
     const AppleAuthenticationButtonComponent = selectButtonComponent(buttonType, buttonStyle);
-    return React.createElement(AppleAuthenticationButtonComponent, { onButtonPress: onPress, ...restProps });
+    return React.createElement(AppleAuthenticationButtonComponent, Object.assign({ onButtonPress: onPress }, restProps));
 };
 const ButtonComponents = {
     [AppleAuthenticationButtonType.SIGN_IN]: {

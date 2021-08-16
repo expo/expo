@@ -1,5 +1,5 @@
 import './ErrorRecovery.fx';
-export declare const recoveredProps: ErrorRecoveryProps | null;
+export declare const recoveredProps: Record<string, any> | null;
 export declare type ErrorRecoveryProps = Record<string, any>;
 /**
  * Set arbitrary error recovery props. If your project crashes in production as a result of a fatal

@@ -4,6 +4,8 @@
 <dict>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
+	<key>CFBundleDisplayName</key>
+	<string>BareExpo</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -38,6 +40,17 @@
 	</array>
 	<key>CFBundleVersion</key>
 	<string>1</string>
+	<key>FacebookAppID</key>
+	<string>629712900716487</string>
+	<key>FacebookDisplayName</key>
+	<string>Expo APIs</string>
+	<key>LSApplicationQueriesSchemes</key>
+	<array>
+		<string>fbapi</string>
+		<string>fb-messenger-api</string>
+		<string>fbauth2</string>
+		<string>fbshareextension</string>
+	</array>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NSAppTransportSecurity</key>
@@ -68,7 +81,7 @@
 	<key>NSMicrophoneUsageDescription</key>
 	<string>Allow bare-expo to access your microphone</string>
 	<key>NSMotionUsageDescription</key>
-	<string>Allow bare-expo to access your device&apos;s accelerometer</string>
+	<string>Allow bare-expo to access your device's accelerometer</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>
 	<string>Give bare-expo periences permission to save photos</string>
 	<key>NSPhotoLibraryUsageDescription</key>
@@ -87,6 +100,8 @@
 	<array>
 		<string>armv7</string>
 	</array>
+	<key>UIRequiresFullScreen</key>
+	<false/>
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
@@ -96,20 +111,5 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
-	<key>UIRequiresFullScreen</key>
-	<false/>
-	<key>LSApplicationQueriesSchemes</key>
-	<array>
-		<string>fbapi</string>
-		<string>fb-messenger-api</string>
-		<string>fbauth2</string>
-		<string>fbshareextension</string>
-	</array>
-	<key>CFBundleDisplayName</key>
-	<string>BareExpo</string>
-	<key>FacebookAppID</key>
-	<string>629712900716487</string>
-	<key>FacebookDisplayName</key>
-	<string>Expo APIs</string>
 </dict>
 </plist>

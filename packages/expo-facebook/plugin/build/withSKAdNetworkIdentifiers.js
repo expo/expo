@@ -8,7 +8,7 @@ exports.withSKAdNetworkIdentifiers = void 0;
  * @param config
  * @param props.identifiers array of lowercase string ids to push to the `SKAdNetworkItems` array in the `Info.plist`.
  */
-const withSKAdNetworkIdentifiers = (config, identifiers) => {
+exports.withSKAdNetworkIdentifiers = (config, identifiers) => {
     if (!config.ios) {
         config.ios = {};
     }
@@ -33,4 +33,3 @@ const withSKAdNetworkIdentifiers = (config, identifiers) => {
     }
     return config;
 };
-exports.withSKAdNetworkIdentifiers = withSKAdNetworkIdentifiers;

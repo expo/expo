@@ -3,14 +3,16 @@ import * as React from 'react';
 import { View } from 'react-native';
 let _hasWarnedAboutTestDeviceID = false;
 export default class PublisherBanner extends React.Component {
-    static defaultProps = { bannerSize: 'smartBannerPortrait' };
-    state = { style: {} };
-    _handleSizeChange = ({ nativeEvent }) => {
-        const { height, width } = nativeEvent;
-        this.setState({ style: { width, height } });
-    };
-    _handleDidFailToReceiveAdWithError = ({ nativeEvent }) => this.props.onDidFailToReceiveAdWithError &&
-        this.props.onDidFailToReceiveAdWithError(nativeEvent.error);
+    constructor() {
+        super(...arguments);
+        this.state = { style: {} };
+        this._handleSizeChange = ({ nativeEvent }) => {
+            const { height, width } = nativeEvent;
+            this.setState({ style: { width, height } });
+        };
+        this._handleDidFailToReceiveAdWithError = ({ nativeEvent }) => this.props.onDidFailToReceiveAdWithError &&
+            this.props.onDidFailToReceiveAdWithError(nativeEvent.error);
+    }
     render() {
         const additionalRequestParams = {
             ...this.props.additionalRequestParams,
@@ -26,5 +28,6 @@ export default class PublisherBanner extends React.Component {
             React.createElement(ExpoBannerView, { style: this.state.style, adUnitID: this.props.adUnitID, bannerSize: this.props.bannerSize, onSizeChange: this._handleSizeChange, additionalRequestParams: additionalRequestParams, onAdViewDidReceiveAd: this.props.onAdViewDidReceiveAd, onDidFailToReceiveAdWithError: this._handleDidFailToReceiveAdWithError, onAdViewWillPresentScreen: this.props.onAdViewWillPresentScreen, onAdViewWillDismissScreen: this.props.onAdViewWillDismissScreen, onAdViewDidDismissScreen: this.props.onAdViewDidDismissScreen, onAdViewWillLeaveApplication: this.props.onAdViewWillLeaveApplication, onAdmobDispatchAppEvent: this.props.onAdMobDispatchAppEvent })));
     }
 }
+PublisherBanner.defaultProps = { bannerSize: 'smartBannerPortrait' };
 const ExpoBannerView = requireNativeViewManager('ExpoAdsPublisherBannerView');
 //# sourceMappingURL=PublisherBanner.js.map

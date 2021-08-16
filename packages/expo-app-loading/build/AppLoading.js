@@ -1,7 +1,10 @@
 import React from 'react';
 import NativeAppLoading from './AppLoadingNativeWrapper';
 export default class AppLoading extends React.Component {
-    _isMounted = false;
+    constructor() {
+        super(...arguments);
+        this._isMounted = false;
+    }
     componentDidMount() {
         this._isMounted = true;
         this.startLoadingAppResourcesAsync().catch(error => {
@@ -39,7 +42,7 @@ export default class AppLoading extends React.Component {
         }
     }
     render() {
-        return React.createElement(NativeAppLoading, { ...this.props });
+        return React.createElement(NativeAppLoading, Object.assign({}, this.props));
     }
 }
 //# sourceMappingURL=AppLoading.js.map
