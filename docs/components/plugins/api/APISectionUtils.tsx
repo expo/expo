@@ -11,8 +11,10 @@ import { B, P, Quote } from '~/components/base/paragraph';
 import {
   CommentData,
   MethodParamData,
+  MethodSignatureData,
   PropData,
   TypeDefinitionData,
+  TypePropertyDataFlags,
 } from '~/components/plugins/api/APIDataTypes';
 
 export enum TypeDocKind {
@@ -245,6 +247,40 @@ export const renderParam = ({ comment, name, type, flags }: MethodParamData): JS
 
 export const listParams = (parameters: MethodParamData[]) =>
   parameters ? parameters?.map(param => parseParamName(param.name)).join(', ') : '';
+
+export const renderTypeOrSignatureType = (
+  type?: TypeDefinitionData,
+  signatures?: MethodSignatureData[],
+  includeParamType: boolean = false
+) => {
+  if (type) {
+    return <InlineCode>{resolveTypeName(type)}</InlineCode>;
+  } else if (signatures && signatures.length) {
+    return signatures.map(({ name, type, parameters }) => (
+      <InlineCode key={`signature-type-${name}`}>
+        (
+        {includeParamType
+          ? parameters.map(param => (
+              <span>
+                {param.name}
+                {param.flags?.isOptional && '?'}: {resolveTypeName(param.type)}
+              </span>
+            ))
+          : listParams(parameters)}
+        ) =&gt; {resolveTypeName(type)}
+      </InlineCode>
+    ));
+  }
+  return undefined;
+};
+
+export const renderFlags = (flags?: TypePropertyDataFlags) =>
+  flags?.isOptional ? (
+    <>
+      <br />
+      <span css={STYLES_OPTIONAL}>(optional)</span>
+    </>
+  ) : undefined;
 
 export type CommentTextBlockProps = {
   comment?: CommentData;
