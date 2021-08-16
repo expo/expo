@@ -14,7 +14,8 @@ import {
   TypeDefinitionData,
 } from '~/components/plugins/api/APIDataTypes';
 import {
-  CommentTextBlock, getCommentOrSignatureComment,
+  CommentTextBlock,
+  getCommentOrSignatureComment,
   renderTypeOrSignatureType,
   resolveTypeName,
   STYLES_SECONDARY,
