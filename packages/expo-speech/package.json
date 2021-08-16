@@ -31,7 +31,7 @@
   },
   "author": "650 Industries, Inc.",
   "license": "MIT",
-  "homepage": "https://docs.expo.io/versions/latest/sdk/speech/",
+  "homepage": "https://docs.expo.dev/versions/latest/sdk/speech/",
   "jest": {
     "preset": "expo-module-scripts/ios"
   },
