@@ -4,7 +4,7 @@
 
 ### 🛠 Breaking changes
 
-- Replace the stand-alone action constant strings with String Enum named `ActivityAction`.
+- Replace the stand-alone action constant strings with String Enum named `ActivityAction`. ([#14070](https://github.com/expo/expo/pull/14070) by [@Simek](https://github.com/Simek))
 
 ```diff
 - IntentLauncher.ACTION_* // ACTION_ACCESSIBILITY_SETTINGS
