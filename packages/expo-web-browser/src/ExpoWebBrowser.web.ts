@@ -1,5 +1,5 @@
-import { CodedError, Platform } from '@unimodules/core';
 import compareUrls from 'compare-urls';
+import { CodedError, Platform } from 'expo-modules-core';
 import { AppState, Dimensions, AppStateStatus } from 'react-native';
 
 import {

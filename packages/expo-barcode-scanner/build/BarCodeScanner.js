@@ -1,5 +1,4 @@
-import { UnavailabilityError } from '@unimodules/core';
-import { PermissionStatus, createPermissionHook, } from 'expo-modules-core';
+import { PermissionStatus, createPermissionHook, UnavailabilityError, } from 'expo-modules-core';
 import * as React from 'react';
 import { Platform } from 'react-native';
 import ExpoBarCodeScannerModule from './ExpoBarCodeScannerModule';

@@ -1,5 +1,5 @@
-import { CodedError, Platform, SyntheticPlatformEmitter } from '@unimodules/core';
 import Constants from 'expo-constants';
+import { CodedError, Platform, SyntheticPlatformEmitter } from 'expo-modules-core';
 
 import { DevicePushToken } from './Tokens.types';
 

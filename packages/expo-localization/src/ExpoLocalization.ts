@@ -1,5 +1,5 @@
 /* eslint-env browser */
-import { Platform } from '@unimodules/core';
+import { Platform } from 'expo-modules-core';
 import * as rtlDetect from 'rtl-detect';
 
 import { Localization } from './Localization.types';

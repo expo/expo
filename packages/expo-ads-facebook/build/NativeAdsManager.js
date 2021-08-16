@@ -1,4 +1,4 @@
-import { EventEmitter as NativeEventEmitter, NativeModulesProxy } from '@unimodules/core';
+import { EventEmitter as NativeEventEmitter, NativeModulesProxy } from 'expo-modules-core';
 import { EventEmitter } from 'fbemitter';
 const { CTKNativeAdManager } = NativeModulesProxy;
 const nativeAdEmitter = new NativeEventEmitter(CTKNativeAdManager);

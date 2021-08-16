@@ -1,4 +1,4 @@
-import { requireNativeViewManager } from '@unimodules/core';
+import { requireNativeViewManager } from 'expo-modules-core';
 import { EventSubscription } from 'fbemitter';
 import nullthrows from 'nullthrows';
 import React from 'react';
@@ -220,11 +220,11 @@ export default function withNativeAd<P>(
 type NativeAdViewProps = {
   adsManager: string;
   onAdLoaded?: (event: { nativeEvent: NativeAd }) => void;
-} & React.ComponentProps<typeof View>;
+} & React.ComponentPropsWithRef<typeof View>;
 
 type NativeAdView = React.Component<NativeAdViewProps>;
 // eslint-disable-next-line @typescript-eslint/no-redeclare -- the type and variable share a name
-const NativeAdView = requireNativeViewManager('CTKNativeAd');
+const NativeAdView: React.ComponentType<any> = requireNativeViewManager('CTKNativeAd');
 
 // React contexts for ad views that need to register with the ad container
 export type AdIconViewContextValue = {

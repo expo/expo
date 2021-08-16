@@ -1,5 +1,4 @@
-import { Platform } from '@unimodules/core';
-import { PermissionStatus } from 'expo-modules-core';
+import { PermissionStatus, Platform } from 'expo-modules-core';
 export async function getPermissionsAsync() {
     // We can infer from the requestor if this is an older browser.
     const status = getRequestPermission()

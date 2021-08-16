@@ -1,4 +1,4 @@
-import { CodedError, EventEmitter, UnavailabilityError } from '@unimodules/core';
+import { CodedError, EventEmitter, UnavailabilityError } from 'expo-modules-core';
 import { AppleAuthenticationOperation, } from './AppleAuthentication.types';
 import ExpoAppleAuthentication from './ExpoAppleAuthentication';
 // @needsAudit

@@ -1,4 +1,4 @@
-import { EventEmitter, CodedError, UnavailabilityError } from '@unimodules/core';
+import { EventEmitter, CodedError, UnavailabilityError } from 'expo-modules-core';
 import NotificationsHandlerModule from './NotificationsHandlerModule';
 export class NotificationTimeoutError extends CodedError {
     info;

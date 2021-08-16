@@ -1,4 +1,4 @@
-import { CodedError, UnavailabilityError } from '@unimodules/core';
+import { CodedError, UnavailabilityError } from 'expo-modules-core';
 import invariant from 'invariant';
 
 import {

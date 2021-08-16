@@ -1,4 +1,4 @@
-import { CodedError, NativeModulesProxy } from '@unimodules/core';
+import { CodedError, NativeModulesProxy } from 'expo-modules-core';
 import { Platform, NativeModules } from 'react-native';
 import { AppOwnership, ExecutionEnvironment, UserInterfaceIdiom, } from './Constants.types';
 import ExponentConstants from './ExponentConstants';

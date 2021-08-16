@@ -1,5 +1,9 @@
-import { UnavailabilityError } from '@unimodules/core';
-import { PermissionResponse, PermissionStatus, PermissionExpiration } from 'expo-modules-core';
+import {
+  PermissionResponse,
+  PermissionStatus,
+  PermissionExpiration,
+  UnavailabilityError,
+} from 'expo-modules-core';
 import { Platform } from 'react-native';
 
 import ExponentFacebook from './ExponentFacebook';

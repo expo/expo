@@ -1,4 +1,4 @@
-import { CodedError } from '@unimodules/core';
+import { CodedError } from 'expo-modules-core';
 
 import { LocationGeocodedAddress, LocationGeocodedLocation } from './Location.types';
 
