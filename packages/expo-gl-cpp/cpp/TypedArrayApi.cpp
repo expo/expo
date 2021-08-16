@@ -44,8 +44,10 @@ class PropNameIDCache {
 
   const jsi::PropNameID &getConstructorNameProp(jsi::Runtime &runtime, TypedArrayKind kind);
 
-  void invalidate() {
-    props.erase(props.begin(), props.end());
+  void invalidate(uintptr_t key) {
+    if (props.find(key) != props.end()) {
+      props[key].clear();
+    }
   }
 
  private:
@@ -60,7 +62,7 @@ InvalidateCacheOnDestroy::InvalidateCacheOnDestroy(jsi::Runtime &runtime) {
   key = reinterpret_cast<uintptr_t>(&runtime);
 }
 InvalidateCacheOnDestroy::~InvalidateCacheOnDestroy() {
-  propNameIDCache.invalidate();
+  propNameIDCache.invalidate(key);
 }
 
 TypedArrayKind getTypedArrayKindForName(const std::string &name);

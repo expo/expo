@@ -20,7 +20,7 @@ EXGLContext::EXGLContext(jsi::Runtime &runtime, UEXGLContextId ctxId) : ctxId(ct
       tryRegisterOnJSRuntimeDestroy(workletRuntime);
     }
   } catch (const std::runtime_error &err) {
-    EXGLSysLog("%s", err.what());
+    EXGLSysLog("Failed to setup EXGLContext [%s]", err.what());
   }
 }
 
@@ -99,7 +99,7 @@ void EXGLContext::tryRegisterOnJSRuntimeDestroy(jsi::Runtime &runtime) {
   if (global.getProperty(runtime, OnJSRuntimeDestroyPropertyName).isObject()) {
     return;
   }
-  // Property `__EXGLOnDestroyHostObject` of the global object will be released when entire
+  // Property `__EXGLOnJsRuntimeDestroy` of the global object will be released when entire
   // `jsi::Runtime` is being destroyed and that will trigger destructor of
   // `InvalidateCacheOnDestroy` class which will invalidate JSI PropNameID cache.
   global.setProperty(
