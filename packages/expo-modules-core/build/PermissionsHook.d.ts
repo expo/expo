@@ -1,21 +1,22 @@
 import { PermissionResponse } from './PermissionsInterface';
-interface PermissionHookFactoryOptions<T extends PermissionResponse> {
+declare type RequestPermissionMethod<Permission extends PermissionResponse> = () => Promise<Permission>;
+declare type GetPermissionMethod<Permission extends PermissionResponse> = () => Promise<Permission>;
+interface PermissionHookMethods<Permission extends PermissionResponse, Options = never> {
     /** The permission method that requests the user to grant permission. */
-    requestMethod?: () => Promise<T>;
+    requestMethod: (options?: Options) => Promise<Permission>;
     /** The permission method that only fetches the current permission status. */
-    getMethod?: () => Promise<T>;
+    getMethod: (options?: Options) => Promise<Permission>;
 }
-export interface PermissionHookOptions {
+interface PermissionHookBehavior {
     /** If the hook should automatically fetch the current permission status, without asking the user. */
     get?: boolean;
     /** If the hook should automatically request the user to grant permission. */
     request?: boolean;
 }
-declare type RequestPermissionMethod<T extends PermissionResponse> = () => Promise<T | null>;
-declare type GetPermissionMethod<T extends PermissionResponse> = () => Promise<T | null>;
+export declare type PermissionHookOptions<Options extends object> = PermissionHookBehavior & Options;
 /**
  * Create a new permission hook with the permission methods built-in.
  * This can be used to quickly create specific permission hooks in every module.
  */
-export declare function createPermissionHook<T extends PermissionResponse>(factoryOptions: PermissionHookFactoryOptions<T>): (options?: PermissionHookOptions) => [T | null, RequestPermissionMethod<T>, GetPermissionMethod<T>];
+export declare function createPermissionHook<Permission extends PermissionResponse, Options extends object>(methods: PermissionHookMethods<Permission, Options>): (options?: PermissionHookOptions<Options> | undefined) => [Permission | null, RequestPermissionMethod<Permission>, GetPermissionMethod<Permission>];
 export {};
