@@ -7,7 +7,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface EXConstantsBinding : EXConstantsService <UMInternalModule, EXConstantsInterface>
+@interface EXConstantsBinding : EXConstantsService <EXInternalModule, EXConstantsInterface>
 
 @property (nonatomic, readonly) NSString *appOwnership;
 

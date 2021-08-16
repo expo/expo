@@ -2,11 +2,11 @@
 
 #if __has_include(<EXLocalAuthentication/EXLocalAuthentication.h>)
 #import <EXLocalAuthentication/EXLocalAuthentication.h>
-#import <UMCore/UMModuleRegistryConsumer.h>
+#import <ExpoModulesCore/EXModuleRegistryConsumer.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface EXScopedLocalAuthentication : EXLocalAuthentication <UMModuleRegistryConsumer>
+@interface EXScopedLocalAuthentication : EXLocalAuthentication <EXModuleRegistryConsumer>
 
 @end
 

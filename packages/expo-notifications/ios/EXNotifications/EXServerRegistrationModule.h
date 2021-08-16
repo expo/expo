@@ -1,18 +1,18 @@
 // Copyright 2018-present 650 Industries. All rights reserved.
 
-#import <UMCore/UMExportedModule.h>
+#import <ExpoModulesCore/EXExportedModule.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface EXServerRegistrationModule : UMExportedModule
+@interface EXServerRegistrationModule : EXExportedModule
 
 - (NSString *)getInstallationId;
 
-- (void)getRegistrationInfoAsyncWithResolver:(UMPromiseResolveBlock)resolve
-                                    rejecter:(UMPromiseRejectBlock)reject;
+- (void)getRegistrationInfoAsyncWithResolver:(EXPromiseResolveBlock)resolve
+                                    rejecter:(EXPromiseRejectBlock)reject;
 - (void)setRegistrationInfoAsync:(NSString *)registrationInfo
-                        resolver:(UMPromiseResolveBlock)resolve
-                        rejecter:(UMPromiseRejectBlock)reject;
+                        resolver:(EXPromiseResolveBlock)resolve
+                        rejecter:(EXPromiseRejectBlock)reject;
 
 @end
 

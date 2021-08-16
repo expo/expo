@@ -63,11 +63,11 @@
   };
 }
 
-- (void)requestPermissionsWithResolver:(UMPromiseResolveBlock)resolve rejecter:(UMPromiseRejectBlock)reject
+- (void)requestPermissionsWithResolver:(EXPromiseResolveBlock)resolve rejecter:(EXPromiseRejectBlock)reject
 {
-  UM_WEAKIFY(self)
+  EX_WEAKIFY(self)
   void(^handler)(PHAuthorizationStatus) = ^(PHAuthorizationStatus status) {
-    UM_STRONGIFY(self)
+    EX_STRONGIFY(self)
     resolve([self getPermissions]);
   };
 #ifdef __IPHONE_14_0

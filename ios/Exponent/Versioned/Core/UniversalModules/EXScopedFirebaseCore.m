@@ -47,7 +47,7 @@
     if (!protectedAppNames[name] && (!options || ![name isEqualToString:appName])) {
       [[FIRApp appNamed:name] deleteApp:^(BOOL success) {
         if (!success) {
-          UMLogWarn(@"Failed to delete Firebase app: %@", name);
+          EXLogWarn(@"Failed to delete Firebase app: %@", name);
         }
       }];
     }
@@ -87,11 +87,11 @@
     NSData *data = [[NSData alloc] initWithBase64EncodedString:googleServicesFile options:0];
     NSError* error;
     NSDictionary* plist = [NSPropertyListSerialization propertyListWithData:data options:NSPropertyListImmutable format:nil error:&error];
-    if (error) UMLogWarn(@"Invalid googleServicesFile: %@", error);
+    if (error) EXLogWarn(@"Invalid googleServicesFile: %@", error);
     return plist;
   }
   @catch(NSException* exception) {
-    UMLogWarn(@"Invalid googleServicesFile: %@", exception);
+    EXLogWarn(@"Invalid googleServicesFile: %@", exception);
     return nil;
   }
 }

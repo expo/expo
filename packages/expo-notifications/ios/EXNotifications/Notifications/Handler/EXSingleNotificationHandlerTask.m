@@ -16,7 +16,7 @@ static NSString * const EXNotificationHandlerErrorDomain = @"expo.notifications.
 
 @interface EXSingleNotificationHandlerTask ()
 
-@property (nonatomic, weak) id<UMEventEmitterService> eventEmitter;
+@property (nonatomic, weak) id<EXEventEmitterService> eventEmitter;
 @property (nonatomic, strong) UNNotification *notification;
 @property (nonatomic, copy) void (^completionHandler)(UNNotificationPresentationOptions);
 
@@ -33,7 +33,7 @@ static NSString * const EXNotificationHandlerErrorDomain = @"expo.notifications.
   return @[onHandleNotification, onHandleNotificationTimeout];
 }
 
-- (instancetype)initWithEventEmitter:(id<UMEventEmitterService>)eventEmitter
+- (instancetype)initWithEventEmitter:(id<EXEventEmitterService>)eventEmitter
                         notification:(UNNotification *)notification
                    completionHandler:(void (^)(UNNotificationPresentationOptions))completionHandler
                             delegate:(nonnull id<EXSingleNotificationHandlerTaskDelegate>)delegate

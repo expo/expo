@@ -9,12 +9,12 @@
 #import <Foundation/Foundation.h>
 #import <PassKit/PassKit.h>
 #import <Stripe/Stripe.h>
-#import <UMCore/UMUtilities.h>
-#import <UMCore/UMModuleRegistry.h>
-#import <UMCore/UMUtilitiesInterface.h>
+#import <ExpoModulesCore/EXUtilities.h>
+#import <ExpoModulesCore/EXModuleRegistry.h>
+#import <ExpoModulesCore/EXUtilitiesInterface.h>
 #import <EXPaymentsStripe/EXTPSConvert.h>
 
-@interface EXTPSStripeManager : UMExportedModule <PKPaymentAuthorizationViewControllerDelegate, STPAddCardViewControllerDelegate, UMModuleRegistryConsumer>
+@interface EXTPSStripeManager : EXExportedModule <PKPaymentAuthorizationViewControllerDelegate, STPAddCardViewControllerDelegate, EXModuleRegistryConsumer>
 
 @property (nonatomic) STPRedirectContext *redirectContext;
 

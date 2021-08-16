@@ -38,7 +38,7 @@
 #import <ExpoModulesCore/EXDefines.h>
 #import <ExpoModulesCore/EXModuleRegistry.h>
 #import <ExpoModulesCore/EXModuleRegistryDelegate.h>
-#import <UMReactNativeAdapter/UMNativeModulesProxy.h>
+#import <ExpoModulesCore/EXNativeModulesProxy.h>
 #import <EXMediaLibrary/EXMediaLibraryImageLoader.h>
 #import <EXFileSystem/EXFileSystem.h>
 #import "EXScopedModuleRegistry.h"

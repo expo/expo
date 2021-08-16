@@ -1,15 +1,14 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
-#import "ExpoKitAppDelegate.h"
+#import <ExpoModulesCore/EXModuleRegistryProvider.h>
 
+#import "ExpoKitAppDelegate.h"
 #import "ExpoKit.h"
 #import "EXViewController.h"
 
-#import <UMCore/UMModuleRegistryProvider.h>
-
 @implementation ExpoKitAppDelegate
 
-UM_REGISTER_SINGLETON_MODULE(ExpoKitAppDelegate)
+EX_REGISTER_SINGLETON_MODULE(ExpoKitAppDelegate)
 
 - (const NSInteger)priority
 {

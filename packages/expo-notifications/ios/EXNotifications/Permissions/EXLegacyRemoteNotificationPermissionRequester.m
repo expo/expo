@@ -1,12 +1,12 @@
 // Copyright 2016-present 650 Industries. All rights reserved.
 
 #import <EXNotifications/EXLegacyRemoteNotificationPermissionRequester.h>
-#import <UMCore/UMUtilities.h>
+#import <ExpoModulesCore/EXUtilities.h>
 
 @interface EXLegacyRemoteNotificationPermissionRequester ()
 
-@property (nonatomic, strong) UMPromiseResolveBlock resolve;
-@property (nonatomic, strong) UMPromiseRejectBlock reject;
+@property (nonatomic, strong) EXPromiseResolveBlock resolve;
+@property (nonatomic, strong) EXPromiseRejectBlock reject;
 @property (nonatomic, assign) BOOL remoteNotificationsRegistrationIsPending;
 @property (nonatomic, weak) id<EXPermissionsRequester> userNotificationPermissionRequester;
 @property (nonatomic, weak) dispatch_queue_t methodQueue;
@@ -37,7 +37,7 @@
 - (NSDictionary *)getPermissions
 {
   __block EXPermissionStatus status;
-  [UMUtilities performSynchronouslyOnMainThread:^{
+  [EXUtilities performSynchronouslyOnMainThread:^{
     status = (UMSharedApplication().isRegisteredForRemoteNotifications) ?
     EXPermissionStatusGranted :
     EXPermissionStatusUndetermined;
@@ -51,7 +51,7 @@
   return permissions;
 }
 
-- (void)requestPermissionsWithResolver:(UMPromiseResolveBlock)resolve rejecter:(UMPromiseRejectBlock)reject
+- (void)requestPermissionsWithResolver:(EXPromiseResolveBlock)resolve rejecter:(EXPromiseRejectBlock)reject
 {
   if (_resolve != nil || _reject != nil) {
     reject(@"E_AWAIT_PROMISE", @"Another request for the same permission is already being handled.", nil);
@@ -62,7 +62,7 @@
   _reject = reject;
 
   BOOL __block isRegisteredForRemoteNotifications = NO;
-  [UMUtilities performSynchronouslyOnMainThread:^{
+  [EXUtilities performSynchronouslyOnMainThread:^{
     isRegisteredForRemoteNotifications = UMSharedApplication().isRegisteredForRemoteNotifications;
   }];
 
@@ -71,9 +71,9 @@
     [self _maybeConsumeResolverWithCurrentPermissions];
   } else {
     [_permissionProgressPublisher addDelegate:self];
-     UM_WEAKIFY(self)
+     EX_WEAKIFY(self)
     [_userNotificationPermissionRequester requestPermissionsWithResolver:^(NSDictionary *permission){
-      UM_STRONGIFY(self)
+      EX_STRONGIFY(self)
       EXPermissionStatus localNotificationsStatus = [[permission objectForKey:@"status"] intValue];
       // We may assume that `EXLocalNotificationRequester`'s permission request will always finish
       // when the user responds to the dialog or has already responded in the past.
@@ -108,9 +108,9 @@
 - (void)handleDidFinishRegisteringForRemoteNotifications
 {
   [self _clearObserver];
-  UM_WEAKIFY(self)
+  EX_WEAKIFY(self)
   dispatch_async(_methodQueue, ^{
-    UM_STRONGIFY(self)
+    EX_STRONGIFY(self)
     [self _maybeConsumeResolverWithCurrentPermissions];
   });
 }

@@ -16,9 +16,9 @@ PODS:
     - ExpoModulesCore
   - EXAppAuth (10.2.0):
     - AppAuth (~> 1.2)
-    - UMCore
+    - ExpoModulesCore
   - EXApplication (3.2.0):
-    - UMCore
+    - ExpoModulesCore
   - EXAV (9.2.0):
     - ExpoModulesCore
   - EXBackgroundFetch (9.2.0):
@@ -44,10 +44,8 @@ PODS:
     - ExpoModulesCore
   - EXConstants (11.0.0):
     - ExpoModulesCore
-    - UMCore
   - EXContacts (9.2.0):
     - ExpoModulesCore
-    - UMCore
   - EXCrypto (9.2.0):
     - ExpoModulesCore
   - EXDevice (3.3.0):
@@ -70,46 +68,42 @@ PODS:
     - ExpoModulesCore
   - EXFirebaseAnalytics (4.1.0):
     - EXFirebaseCore
+    - ExpoModulesCore
     - Firebase/Core (= 7.7.0)
-    - UMCore
   - EXFirebaseCore (3.1.0):
+    - ExpoModulesCore
     - Firebase/Core (= 7.7.0)
-    - UMCore
   - EXFont (9.2.0):
     - ExpoModulesCore
-    - UMCore
   - EXGL (10.4.0):
     - EXGL_CPP
     - ExpoModulesCore
   - EXGL_CPP (10.4.0):
     - React-jsi
   - EXGoogleSignIn (9.2.0):
+    - ExpoModulesCore
     - GoogleSignIn (~> 5.0.2)
-    - UMCore
   - EXHaptics (10.1.0):
     - ExpoModulesCore
   - EXImageLoader (2.2.0):
     - ExpoModulesCore
     - React-Core
-    - UMCore
   - EXImageManipulator (9.2.0):
     - ExpoModulesCore
   - EXImagePicker (10.2.0):
     - ExpoModulesCore
-    - UMCore
   - EXInAppPurchases (11.0.0):
-    - UMCore
+    - ExpoModulesCore
   - EXKeepAwake (9.2.0):
-    - UMCore
+    - ExpoModulesCore
   - EXLinearGradient (9.2.0):
     - ExpoModulesCore
   - EXLocalAuthentication (11.1.0):
-    - UMCore
+    - ExpoModulesCore
   - EXLocalization (10.2.0):
-    - UMCore
+    - ExpoModulesCore
   - EXLocation (12.1.0):
     - ExpoModulesCore
-    - UMCore
     - UMTaskManagerInterface
   - EXMailComposer (10.2.0):
     - ExpoModulesCore
@@ -120,7 +114,6 @@ PODS:
     - ExpoModulesCore
   - EXNotifications (0.12.0):
     - ExpoModulesCore
-    - UMCore
   - EXPermissions (12.1.0):
     - ExpoModulesCore
   - expo-dev-client (0.4.7):
@@ -182,10 +175,10 @@ PODS:
   - EXRandom (11.2.0):
     - React-Core
   - EXScreenCapture (3.2.0):
-    - UMCore
+    - ExpoModulesCore
   - EXScreenOrientation (3.2.0):
+    - ExpoModulesCore
     - React-Core
-    - UMCore
   - EXSecureStore (10.2.0):
     - ExpoModulesCore
   - EXSegment (10.2.0):
@@ -193,7 +186,6 @@ PODS:
     - ExpoModulesCore
   - EXSensors (10.2.0):
     - ExpoModulesCore
-    - UMCore
   - EXSharing (9.2.0):
     - ExpoModulesCore
   - EXSMS (9.2.0):
@@ -201,19 +193,17 @@ PODS:
   - EXSpeech (9.2.0):
     - ExpoModulesCore
   - EXSplashScreen (0.11.0):
+    - ExpoModulesCore
     - React-Core
-    - UMCore
   - EXSQLite (9.2.0):
     - ExpoModulesCore
-    - UMCore
   - EXStoreReview (4.1.0):
     - ExpoModulesCore
   - EXStructuredHeaders (1.1.0):
-    - UMCore
+    - ExpoModulesCore
   - EXTaskManager (9.2.0):
     - ExpoModulesCore
     - UMAppLoader
-    - UMCore
     - UMTaskManagerInterface
   - EXTrackingTransparency (1.1.0):
     - ExpoModulesCore
@@ -703,12 +693,8 @@ PODS:
   - SVGKit (2.1.1):
     - CocoaLumberjack (~> 3.0)
   - UMAppLoader (2.2.0)
-  - UMCore (7.1.1):
-    - ExpoModulesCore
-  - UMReactNativeAdapter (6.4.0):
-    - ExpoModulesCore
   - UMTaskManagerInterface (6.2.0):
-    - UMCore
+    - ExpoModulesCore
   - Yoga (1.14.0)
   - ZXingObjC/Core (3.6.5)
   - ZXingObjC/OneD (3.6.5):
@@ -835,8 +821,6 @@ DEPENDENCIES:
   - RNSharedElement (from `../../../node_modules/react-native-shared-element`)
   - RNSVG (from `../../../node_modules/react-native-svg`)
   - UMAppLoader (from `../../../packages/unimodules-app-loader/ios`)
-  - "UMCore (from `../../../packages/@unimodules/core/ios`)"
-  - "UMReactNativeAdapter (from `../../../packages/@unimodules/react-native-adapter/ios`)"
   - UMTaskManagerInterface (from `../../../packages/unimodules-task-manager-interface/ios`)
   - Yoga (from `../../../react-native-lab/react-native/ReactCommon/yoga`)
 
@@ -1167,12 +1151,6 @@ EXTERNAL SOURCES:
   UMAppLoader:
     inhibit_warnings: false
     :path: "../../../packages/unimodules-app-loader/ios"
-  UMCore:
-    inhibit_warnings: false
-    :path: "../../../packages/@unimodules/core/ios"
-  UMReactNativeAdapter:
-    inhibit_warnings: false
-    :path: "../../../packages/@unimodules/react-native-adapter/ios"
   UMTaskManagerInterface:
     inhibit_warnings: false
     :path: "../../../packages/unimodules-task-manager-interface/ios"
@@ -1185,10 +1163,10 @@ SPEC CHECKSUMS:
   AppAuth: 31bcec809a638d7bd2f86ea8a52bd45f6e81e7c7
   boost-for-react-native: 39c7adb57c4e60d6c5479dd8623128eb5b3f0f2c
   CocoaLumberjack: b7e05132ff94f6ae4dfa9d5bce9141893a21d9da
-  DoubleConversion: cf9b38bf0b2d048436d9a82ad2abe1404f11e7de
+  DoubleConversion: 5805e889d232975c086db112ece9ed034df7a0b2
   EXAmplitude: 19866218bc855e6ac7a29e5c8ec1b24eab81b40c
-  EXAppAuth: b7ecb4ce7634676985f67d2489054ea7727cd5e3
-  EXApplication: 9ff2a206009d6e55bca6c20b3f33d07986b51ef3
+  EXAppAuth: de629b9d6e323cbeff925e096dd3eb6ac610b40e
+  EXApplication: 2b70d694eadddaa43ab1f4e4bb3b2685df8c3ae7
   EXAV: 7f27c872fb45479d66e762a88484f58d52174131
   EXBackgroundFetch: aeaddb8ff64e13b1c2766f1e4a09bb727a6330aa
   EXBarCodeScanner: afd5eb520bb133688dc680453465842ffbcef47c
@@ -1199,8 +1177,8 @@ SPEC CHECKSUMS:
   EXCamera: d39ee631cecae1722c12a0b5fe4651a09b262863
   EXCellular: c023099c6d53230d69c03a0ed0b515fbf2ffc5eb
   EXClipboard: 247c22246c4843351f2f89cc29b654ecd936eaa8
-  EXConstants: 0c200d22d140d3f1834dc51c4ebe0465ddaa82c5
-  EXContacts: bc06f42aa1bc7fb5ed0f5b29287f772faa33ad55
+  EXConstants: fddae632832e7b72daeffd26539f43ee658c82b4
+  EXContacts: 22c168e2509762a95569af683e691d2fa88cbc62
   EXCrypto: e64a6d6d3f785801384004a4197b0f95a23a2761
   EXDevice: 74b193bafc7fc162eb435b8810b72143ab7743af
   EXDocumentPicker: 52183e4bdffbbd50e61726066f529455227c5daa
@@ -1208,26 +1186,26 @@ SPEC CHECKSUMS:
   EXFacebook: 052783a39c092ad47015e2e2af8e6d33e9d92089
   EXFaceDetector: 47c8c4a10c5b86c5ea9c77ca7b517102833a6d9b
   EXFileSystem: 9a77e33ba77e8b1ffbbe0625a211e3abee6f69ab
-  EXFirebaseAnalytics: ca01838167729b67f838a673e4b3e0637faec118
-  EXFirebaseCore: 9b5380fd62fce3c790fa1d6727a8d7cbbef4f0fb
-  EXFont: 6e7d5a7a09fbd0ee801de76601b2e620c4d2f575
+  EXFirebaseAnalytics: fde0aa76ec6e95c6b7e044f07bd0f53b645e38b0
+  EXFirebaseCore: 873b28be20a6b7a8002375d8ab739688da3cb919
+  EXFont: 166bf179fc1d22de523f454919b8189acc1a9853
   EXGL: 468113f7d19c139873e8e2b809ddef064ba847c0
   EXGL_CPP: dcca866c4f6af6694a12217fb2db3325acd19b57
-  EXGoogleSignIn: d61beec381962b350f6ed60c9b65ae46ca26ef12
+  EXGoogleSignIn: 982da23c60cae0f98f0e9d2851dcba708eda5b60
   EXHaptics: 718e4b457673bd88384a7fbb6f357c2138c771b0
-  EXImageLoader: d3531a3fe530b22925c19977cb53bb43e3821fe6
+  EXImageLoader: 7be4318cdcd2e5cf2b634cc55c56a11f31159665
   EXImageManipulator: a5bec1d69308fa1f091378f6461ae348ec83105d
-  EXImagePicker: 958720afb9395ee1168dcda28d9915345c4e7cae
-  EXInAppPurchases: 0c590b1ddb24e70c934e3a5aeac77651659d24eb
-  EXKeepAwake: f4105ef469be7b283f66ce2d7234bb71ac80cd26
+  EXImagePicker: c2546a6b66c2776816a395efb5afe4508b982db3
+  EXInAppPurchases: ef41c7a05794b9aab2ce2ca15e1efa7f7854c5b1
+  EXKeepAwake: bedc4354ce01da857b25a7162ea357b23a0001fa
   EXLinearGradient: 36053f529a48cc7534d6125b0ddc8dd17e091fdd
-  EXLocalAuthentication: e6347880c31bc3b9693933780d3bc84823fe0698
-  EXLocalization: 356f4e16a606cec21a77d6250528fde526152b45
-  EXLocation: bdf1af6aa8fc4f4dc1fd21aa39760484026f8a5d
+  EXLocalAuthentication: 158399e880350ea3c045884ff5cab5da65c2653a
+  EXLocalization: 8efbcaf134e6296de93bf8e6e8c1d9db6e3ad26e
+  EXLocation: cfdad77d3ad5023c92ecfef7795f001ddf4cf3cb
   EXMailComposer: d1976c864ee1d74907b15c98ec68ddf5ca2331b1
   EXMediaLibrary: 3243417362d85fb5881c27bf0c944b502324f7b2
   EXNetwork: c15bb1026d72d1eb3782710faf373ed35c6eb024
-  EXNotifications: 296d9487163c2c08fffec5e79a5f9094bc016d9c
+  EXNotifications: 7710d2920e9f8c5bb9607d1b254b7d61fc072352
   EXPermissions: c7bead8f093700d5fcfb4f41238430a51702c5c8
   expo-dev-client: 18d9a9dace8defeabe16b3793131103b8f939d5c
   expo-dev-launcher: 6ae81f30b06470413eeca0f9e2a115429f10c1c3
@@ -1237,19 +1215,19 @@ SPEC CHECKSUMS:
   ExpoModulesCore: cbf340d971211537aec95d99945bd97143c07534
   EXPrint: 61bbaa43c42c1badfa46de5be015d7d798d33583
   EXRandom: ecb71f5d01991f29bb0277f8a2c35d168f85d637
-  EXScreenCapture: c51844407fbac8bbca4415467bc43f2b7764d225
-  EXScreenOrientation: e95cb77bbbbfee0d9cfa419fc713e1ab8a06eaba
+  EXScreenCapture: eac23ccb975b2309a365748f0ad082b3f89ff282
+  EXScreenOrientation: 4e7ac52362dd518efb0397e27aa9af93c6a48873
   EXSecureStore: 351de40f612b4d6e44a69dc8f12d55403b45ec5d
   EXSegment: e82309549eb4a0281c24940100f3dedc774ef75b
-  EXSensors: 67423141a4aefbce82f04e61260570615b25b761
+  EXSensors: a0a7c2df4dbaf46fe60476bb118ba729e5a3063a
   EXSharing: 6a3a3f675fc44d9442f761b1ec8351aba1e813f3
   EXSMS: 4cd1d71d88a9c980bc215d33afeabb49a5a8d720
   EXSpeech: 35e7d593b8a369ca7e219957bd61ac74aa7b23bd
-  EXSplashScreen: da00ad1d61c395c5c81b252c5987e8f83cba230a
-  EXSQLite: faed80cf1f7ec5a116c44aae3ca9abff7315553b
+  EXSplashScreen: e5ac7a94f572eadc3dd4fd5e3f97a8e0fb78ce9e
+  EXSQLite: 851b8371002f12719c5332f750904b12e8a57604
   EXStoreReview: c7148fdc794a7e32a454eedda801360226fa8b4e
-  EXStructuredHeaders: 384ccdf0c09ed0be8fc73d4b2d70e436cd195975
-  EXTaskManager: 91fef764a2ec7690aa8070f862098df064facdc4
+  EXStructuredHeaders: ce164ef0ffc9a85fc6e39d8a9151db6a8668e20d
+  EXTaskManager: 5f52f9458d6bfa5dc2eac2fa95059e99e33adf78
   EXTrackingTransparency: 212dcc45e24c0e3ec8ea89e4d93c1d123c5a1fb4
   EXUpdatesInterface: b68e78b912a03fff7901a5f46ec200c45e3506a5
   EXVideoThumbnails: 0a74ef339680e1aa52e30c53bc56990e9d8af0e8
@@ -1263,7 +1241,7 @@ SPEC CHECKSUMS:
   FirebaseCore: ac35d680a0bf32319a59966a1478e0741536b97b
   FirebaseCoreDiagnostics: 3d36e05da74cb8b7ce30e6594a8f201b982c725c
   FirebaseInstallations: bf2ec8dbf36ff4c91af6b9a003d15855757680c1
-  glog: 73c2498ac6884b13ede40eda8228cb1eee9d9d62
+  glog: 1f3da668190260b06b429bb211bfbee5cd790c28
   GoogleAppMeasurement: 0c3b134b2c0a90c4c24833873894bfe0e42a0384
   GoogleDataTransport: 8b0e733ea77c9218778e5a9e34ba9508b8328939
   GoogleMLKit: 6ca2a10de262ee1017b52ac045e8967884ace992
@@ -1326,12 +1304,10 @@ SPEC CHECKSUMS:
   SDWebImageWebPCoder: f93010f3f6c031e2f8fb3081ca4ee6966c539815
   SVGKit: 652cdf7bef8bec8564d04a8511d3ab50c7595fac
   UMAppLoader: 21af63390e55c82e037fb9752d93114a80ecf16e
-  UMCore: b531b41645f9250a138583bd0ac52edbc7a0e16c
-  UMReactNativeAdapter: 5d34de03540c3a22624919492974df6f187d9c55
-  UMTaskManagerInterface: 2be431101b73604e64fbfffcf759336f9d8fccbb
+  UMTaskManagerInterface: 0c18014dc1213468ae454836e95a2190b3f413ac
   Yoga: 575c581c63e0d35c9a83f4b46d01d63abc1100ac
   ZXingObjC: fdbb269f25dd2032da343e06f10224d62f537bdb
 
-PODFILE CHECKSUM: 208c570f997bc1b6f5c6dda765eccb9e0e2720ec
+PODFILE CHECKSUM: 9a463dbb1d4139a1508a147de4e7d3a5c3177692
 
 COCOAPODS: 1.10.2

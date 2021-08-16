@@ -29,7 +29,7 @@ NSString * const EXShellManifestResourceName = @"shell-app-manifest";
     __block NSError *error;
     id manifest = [NSJSONSerialization JSONObjectWithData:data options:0 error:&error];
     if (error) {
-      UMLogError(@"Error parsing bundled manifest: %@", error);
+      EXLogError(@"Error parsing bundled manifest: %@", error);
       return;
     }
     bundledAssets = manifest[@"bundledAssets"];
