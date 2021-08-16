@@ -35,10 +35,9 @@
   },
   "dependencies": {
     "expo-modules-autolinking": "^0.0.2",
-    "expo-modules-core": "0.1.1"
+    "expo-modules-core": "~0.1.1"
   },
   "devDependencies": {
-    "@unimodules/core": "~7.1.1",
     "expo-module-scripts": "^2.0.0"
   }
 }
