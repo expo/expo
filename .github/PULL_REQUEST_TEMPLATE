@@ -22,6 +22,6 @@ Please describe how you tested this change and how a reviewer could reproduce yo
 Please check the appropriate items below if they apply to your diff. This is required for changes to Expo modules.
 -->
 
-- [ ] Documentation is up to date to reflect these changes (eg: https://docs.expo.io and README.md).
+- [ ] Documentation is up to date to reflect these changes (eg: https://docs.expo.dev and README.md).
 - [ ] This diff will work correctly for `expo build` (eg: updated `@expo/xdl`).
 - [ ] This diff will work correctly for `expo prebuild` & EAS Build (eg: updated a module plugin).

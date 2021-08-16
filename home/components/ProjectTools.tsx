@@ -33,7 +33,7 @@ export default function ProjectTools(props: Props) {
 
 function DisabledProjectTools() {
   const onPress = React.useCallback(() => {
-    Linking.openURL('https://docs.expo.io/get-started/installation/');
+    Linking.openURL('https://docs.expo.dev/get-started/installation/');
   }, []);
 
   return (

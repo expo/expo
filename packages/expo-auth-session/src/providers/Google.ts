@@ -178,7 +178,7 @@ class GoogleAuthRequest extends AuthRequest {
  *
  * The id token can be retrieved with `response.params.id_token`.
  *
- * - [Get Started](https://docs.expo.io/guides/authentication/#google)
+ * - [Get Started](https://docs.expo.dev/guides/authentication/#google)
  *
  * @param config
  * @param redirectUriOptions
@@ -215,7 +215,7 @@ export function useIdTokenAuthRequest(
  * Returns a loaded request, a response, and a prompt method.
  * When the prompt method completes, then the response will be fulfilled.
  *
- * - [Get Started](https://docs.expo.io/guides/authentication/#google)
+ * - [Get Started](https://docs.expo.dev/guides/authentication/#google)
  *
  * @param config
  * @param redirectUriOptions

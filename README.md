@@ -28,7 +28,7 @@
 <p align="center">
   <a aria-label="try expo with snack" href="https://snack.expo.io"><b>Try Expo in the Browser</b></a>
  |
-  <a aria-label="expo documentation" href="https://docs.expo.io">Read the Documentation 📚</a>
+  <a aria-label="expo documentation" href="https://docs.expo.dev">Read the Documentation 📚</a>
 </p>
 
 <p>
@@ -56,17 +56,17 @@ Expo is an open-source platform for making universal native apps that run on And
 
 ## 📚 Documentation
 
-<p>Learn about building and deploying universal apps <a aria-label="expo documentation" href="https://docs.expo.io">in our official docs!</a></p>
+<p>Learn about building and deploying universal apps <a aria-label="expo documentation" href="https://docs.expo.dev">in our official docs!</a></p>
 
-- [Getting Started](https://docs.expo.io/)
-- [API Reference](https://docs.expo.io/versions/latest/)
-- [Using Custom Native Modules](https://docs.expo.io/bare/exploring-bare-workflow/)
+- [Getting Started](https://docs.expo.dev/)
+- [API Reference](https://docs.expo.dev/versions/latest/)
+- [Using Custom Native Modules](https://docs.expo.dev/bare/exploring-bare-workflow/)
 
 ## 🗺 Project Layout
 
 - [`packages`](/packages) All the source code for the Unimodules, if you want to edit a library or just see how it works this is where you'll find it.
 - [`apps`](/apps) This is where you can find Expo projects which are linked to the development Unimodules. You'll do most of your testing in here.
-- [`docs`](/docs) The source code for **https://docs.expo.io**
+- [`docs`](/docs) The source code for **https://docs.expo.dev**
 - [`templates`](/templates) The template projects you get when you run `expo start`
 - [`react-native-lab`](/react-native-lab) This is our fork of `react-native`. We keep this very close to the upstream but sometimes need to add quick fixes locally before they can land.
 - [`guides`](/guides) In-depth tutorials for advanced topics like contributing to the client.
@@ -99,7 +99,7 @@ If you like Expo and want to help make it better then check out our [contributin
 
 ## ❓ FAQ
 
-If you have questions about Expo and want answers, then check out our [Frequently Asked Questions](https://docs.expo.io/versions/latest/introduction/faq/)!
+If you have questions about Expo and want answers, then check out our [Frequently Asked Questions](https://docs.expo.dev/versions/latest/introduction/faq/)!
 
 If you still have questions you can ask them on our [forums](https://forums.expo.io) or on Twitter [@Expo](https://twitter.com/expo).
 

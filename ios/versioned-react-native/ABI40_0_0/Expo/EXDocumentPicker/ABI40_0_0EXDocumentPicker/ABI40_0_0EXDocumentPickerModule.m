@@ -125,7 +125,7 @@ ABI40_0_0UM_EXPORT_METHOD_AS(getDocumentAsync,
 #endif
     }
     @catch (NSException *exception) {
-      reject(@"E_PICKER_ICLOUD", @"DocumentPicker requires the iCloud entitlement. If you are using ExpoKit, you need to add this capability to your App Id. See `https://docs.expo.io/versions/latest/expokit/advanced-expokit-topics#using-documentpicker` for more info.", nil);
+      reject(@"E_PICKER_ICLOUD", @"DocumentPicker requires the iCloud entitlement. If you are using ExpoKit, you need to add this capability to your App Id. See `https://docs.expo.dev/versions/latest/expokit/advanced-expokit-topics#using-documentpicker` for more info.", nil);
       self->_resolve = nil;
       self->_reject = nil;
       return;

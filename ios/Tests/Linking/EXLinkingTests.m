@@ -106,7 +106,7 @@
 
 - (void)testAreExpoSubdomainsNotDeepLinks
 {
-  NSURL *docsUrl = [NSURL URLWithString:@"https://docs.expo.io"];
+  NSURL *docsUrl = [NSURL URLWithString:@"https://docs.expo.dev"];
   XCTAssert([[EXKernel sharedInstance].serviceRegistry.linkingManager linkingModule:nil shouldOpenExpoUrl:docsUrl] == NO,
             @"URL %@ should not be routed internally as a deep link", docsUrl);
 }

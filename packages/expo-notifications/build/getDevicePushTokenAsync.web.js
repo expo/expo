@@ -23,7 +23,7 @@ async function _subscribeDeviceToPushNotificationsAsync() {
         // @ts-expect-error: TODO: not on the schema
         Constants.manifest2?.extra?.expoClient?.notification?.vapidPublicKey;
     if (!vapidPublicKey) {
-        throw new CodedError('ERR_NOTIFICATIONS_PUSH_WEB_MISSING_CONFIG', 'You must provide `notification.vapidPublicKey` in `app.json` to use push notifications on web. Learn more: https://docs.expo.io/versions/latest/guides/using-vapid/.');
+        throw new CodedError('ERR_NOTIFICATIONS_PUSH_WEB_MISSING_CONFIG', 'You must provide `notification.vapidPublicKey` in `app.json` to use push notifications on web. Learn more: https://docs.expo.dev/versions/latest/guides/using-vapid/.');
     }
     const serviceWorkerPath = 
     // @ts-expect-error: TODO: not on the schema

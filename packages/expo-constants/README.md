@@ -5,11 +5,11 @@ Provides system information that remains constant throughout the lifetime of you
 # API documentation
 
 - [Documentation for the master branch](https://github.com/expo/expo/blob/master/docs/pages/versions/unversioned/sdk/constants.md)
-- [Documentation for the latest stable release](https://docs.expo.io/versions/latest/sdk/constants/)
+- [Documentation for the latest stable release](https://docs.expo.dev/versions/latest/sdk/constants/)
 
 # Installation in managed Expo projects
 
-For managed [managed](https://docs.expo.io/versions/latest/introduction/managed-vs-bare/) Expo projects, please follow the installation instructions in the [API documentation for the latest stable release](https://docs.expo.io/versions/latest/sdk/constants/).
+For managed [managed](https://docs.expo.dev/versions/latest/introduction/managed-vs-bare/) Expo projects, please follow the installation instructions in the [API documentation for the latest stable release](https://docs.expo.dev/versions/latest/sdk/constants/).
 
 # Installation in bare React Native projects
 

@@ -5,7 +5,7 @@ import checkArgs from './utils/checkArgs';
 import processTheme from './utils/processTheme';
 import * as validators from './utils/validators';
 const { StripeModule } = NativeModulesProxy;
-console.warn('`expo-payments-stripe` has been deprecated in favor of `@stripe/stripe-react-native`. For more information on the new library, and how to migrate away from `expo-payments-stripe`, please refer to https://docs.expo.io/versions/latest/sdk/stripe/. This package will no longer be available in SDK 43.');
+console.warn('`expo-payments-stripe` has been deprecated in favor of `@stripe/stripe-react-native`. For more information on the new library, and how to migrate away from `expo-payments-stripe`, please refer to https://docs.expo.dev/versions/latest/sdk/stripe/. This package will no longer be available in SDK 43.');
 function checkInit(instance) {
     if (!instance.stripeInitialized) {
         throw new Error(`You should call init first.\nRead more https://github.com/tipsi/tipsi-stripe#usage`);

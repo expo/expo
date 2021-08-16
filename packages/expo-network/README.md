@@ -2,16 +2,16 @@
 
 Gets device's network information such as ip address, mac address and check for airplane mode.
 
-See [<ModuleName> docs](https://docs.expo.io/versions/latest/sdk/<module-docs-name>) for documentation of this universal module's API.
+See [<ModuleName> docs](https://docs.expo.dev/versions/latest/sdk/<module-docs-name>) for documentation of this universal module's API.
 
 # API documentation
 
 - [Documentation for the master branch](https://github.com/expo/expo/blob/master/docs/pages/versions/unversioned/sdk/network.md)
-- [Documentation for the latest stable release](https://docs.expo.io/versions/latest/sdk/network/)
+- [Documentation for the latest stable release](https://docs.expo.dev/versions/latest/sdk/network/)
 
 # Installation in managed Expo projects
 
-For managed [managed](https://docs.expo.io/versions/latest/introduction/managed-vs-bare/) Expo projects, please follow the installation instructions in the [API documentation for the latest stable release](https://docs.expo.io/versions/latest/sdk/network/).
+For managed [managed](https://docs.expo.dev/versions/latest/introduction/managed-vs-bare/) Expo projects, please follow the installation instructions in the [API documentation for the latest stable release](https://docs.expo.dev/versions/latest/sdk/network/).
 
 # Installation in bare React Native projects
 

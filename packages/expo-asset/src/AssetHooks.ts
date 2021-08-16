@@ -9,7 +9,7 @@ import { Asset } from './Asset';
  *
  * Note, the assets are not "reloaded" when you dynamically change the asset list.
  *
- * @see https://docs.expo.io/versions/latest/sdk/asset/
+ * @see https://docs.expo.dev/versions/latest/sdk/asset/
  * @example
  * ```tsx
  * const [assets, error] = useAssets(require('path/to/asset.jpg'));

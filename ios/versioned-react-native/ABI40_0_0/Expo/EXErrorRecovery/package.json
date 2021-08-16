@@ -30,7 +30,7 @@
   },
   "author": "650 Industries, Inc.",
   "license": "MIT",
-  "homepage": "https://docs.expo.io/versions/latest/sdk/error-recovery/",
+  "homepage": "https://docs.expo.dev/versions/latest/sdk/error-recovery/",
   "unimodulePeerDependencies": {
     "@unimodules/core": "*"
   },

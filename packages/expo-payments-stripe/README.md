@@ -1,4 +1,4 @@
-# This library has been deprecated in favor of [`@stripe/stripe-react-native`](https://docs.expo.io/versions/latest/sdk/stripe/).
+# This library has been deprecated in favor of [`@stripe/stripe-react-native`](https://docs.expo.dev/versions/latest/sdk/stripe/).
 
 # expo-payments-stripe
 
@@ -7,11 +7,11 @@ Provides support for payments through Stripe and Apple Pay on iOS (in bare apps)
 # API documentation
 
 - [Documentation for the master branch](https://github.com/expo/expo/blob/master/docs/pages/versions/unversioned/sdk/payments.md)
-- [Documentation for the latest stable release](https://docs.expo.io/versions/latest/sdk/payments/)
+- [Documentation for the latest stable release](https://docs.expo.dev/versions/latest/sdk/payments/)
 
 # Installation in managed Expo projects
 
-For managed [managed](https://docs.expo.io/versions/latest/introduction/managed-vs-bare/) Expo projects, please follow the installation instructions in the [API documentation for the latest stable release](https://docs.expo.io/versions/latest/sdk/payments/).
+For managed [managed](https://docs.expo.dev/versions/latest/introduction/managed-vs-bare/) Expo projects, please follow the installation instructions in the [API documentation for the latest stable release](https://docs.expo.dev/versions/latest/sdk/payments/).
 
 # Installation in bare React Native projects
 

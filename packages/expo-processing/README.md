@@ -31,7 +31,7 @@ OpenProcessing.org.
 
 In
 a
-[new blank Expo project](https://docs.expo.io/versions/v18.0.0/guides/up-and-running.html),
+[new blank Expo project](https://docs.expo.dev/versions/v18.0.0/guides/up-and-running.html),
 run `npm i -S processing-js expo-processing` to install Processing.js and ExpoProcessing. Then replace
 `App.js` with the following:
 

@@ -31,7 +31,7 @@
   },
   "author": "650 Industries, Inc.",
   "license": "MIT",
-  "homepage": "https://docs.expo.io/versions/latest/sdk/firebase-analytics/",
+  "homepage": "https://docs.expo.dev/versions/latest/sdk/firebase-analytics/",
   "jest": {
     "preset": "expo-module-scripts"
   },
