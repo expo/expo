@@ -10,7 +10,7 @@ declare const _default: {
     readonly currentDeviceHash: string;
     requestPermissionsAsync: typeof requestPermissionsAsync;
     getPermissionsAsync: typeof getPermissionsAsync;
-    usePermissions: (options?: PermissionHookOptions | undefined) => [PermissionResponse | null, () => Promise<PermissionResponse | null>, () => Promise<PermissionResponse | null>];
+    usePermissions: (options?: PermissionHookOptions<object> | undefined) => [PermissionResponse | null, () => Promise<PermissionResponse>, () => Promise<PermissionResponse>];
     /**
      * Sets whether Facebook SDK should enable advertising tracking.
      */

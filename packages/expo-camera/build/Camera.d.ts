@@ -31,7 +31,7 @@ export default class Camera extends React.Component<CameraProps> {
      * const [status, requestPermission] = Camera.useCameraPermissions();
      * ```
      */
-    static useCameraPermissions: (options?: import("expo-modules-core").PermissionHookOptions | undefined) => [PermissionResponse | null, () => Promise<PermissionResponse | null>, () => Promise<PermissionResponse | null>];
+    static useCameraPermissions: (options?: import("expo-modules-core").PermissionHookOptions<object> | undefined) => [PermissionResponse | null, () => Promise<PermissionResponse>, () => Promise<PermissionResponse>];
     static getMicrophonePermissionsAsync(): Promise<PermissionResponse>;
     static requestMicrophonePermissionsAsync(): Promise<PermissionResponse>;
     /**
@@ -43,7 +43,7 @@ export default class Camera extends React.Component<CameraProps> {
      * const [status, requestPermission] = Camera.useMicrophonePermissions();
      * ```
      */
-    static useMicrophonePermissions: (options?: import("expo-modules-core").PermissionHookOptions | undefined) => [PermissionResponse | null, () => Promise<PermissionResponse | null>, () => Promise<PermissionResponse | null>];
+    static useMicrophonePermissions: (options?: import("expo-modules-core").PermissionHookOptions<object> | undefined) => [PermissionResponse | null, () => Promise<PermissionResponse>, () => Promise<PermissionResponse>];
     _cameraHandle?: number | null;
     _cameraRef?: React.Component | null;
     _lastEvents: {
