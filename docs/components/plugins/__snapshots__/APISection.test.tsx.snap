@@ -550,6 +550,28 @@ properties.
               void
             </code>
           </p>
+          <p
+            class="css-1xnkoxs-paragraph-STYLES_PARAGRAPH"
+            data-text="true"
+          >
+            <span>
+              The method to call when the user presses the button. You should call 
+            </span>
+            <a
+              class="css-12zqqiz-STYLES_EXTERNAL_LINK"
+              href="/#isavailableasync"
+            >
+              <code
+                class="inline css-nuv12a-STYLES_INLINE_CODE"
+              >
+                AppleAuthentication.signInAsync
+              </code>
+            </a>
+            <span>
+              
+in here.
+            </span>
+          </p>
         </li>
       </ul>
       <h4
@@ -3541,7 +3563,11 @@ OAuth 2.0 protocol
             </code>
           </td>
           <td>
-            -
+            <span>
+              <span>
+                A method to unsubscribe the listener.
+              </span>
+            </span>
           </td>
         </tr>
       </tbody>
