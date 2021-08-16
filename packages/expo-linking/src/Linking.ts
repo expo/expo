@@ -53,7 +53,7 @@ function removeTrailingSlashAndQueryString(url: string): string {
   return url.replace(/\/?\?.*$/, '');
 }
 
-function ensureLeadingSlash(input: string, shouldAppend: boolean): string {
+function ensureTrailingSlash(input: string, shouldAppend: boolean): string {
   const hasSlash = input.endsWith('/');
   if (hasSlash && !shouldAppend) {
     return input.substring(0, input.length - 1);
@@ -63,7 +63,7 @@ function ensureLeadingSlash(input: string, shouldAppend: boolean): string {
   return input;
 }
 
-function ensureTrailingSlash(input: string, shouldAppend: boolean): string {
+function ensureLeadingSlash(input: string, shouldAppend: boolean): string {
   const hasSlash = input.startsWith('/');
   if (hasSlash && !shouldAppend) {
     return input.substring(1);
