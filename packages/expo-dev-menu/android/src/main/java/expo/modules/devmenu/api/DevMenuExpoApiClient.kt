@@ -79,7 +79,7 @@ class DevMenuExpoApiClient : DevMenuExpoApiClientInterface {
     ).await(httpClient)
 
     return Response(
-      status = okHttpResponse.code(),
+      status = @Suppress("DEPRECATION_ERROR") okHttpResponse.code(),
       data = parseGraphQLResponse(okHttpResponse, "data", "app", "byId", "updateChannels")
     )
   }
@@ -112,7 +112,7 @@ class DevMenuExpoApiClient : DevMenuExpoApiClientInterface {
     ).await(httpClient)
 
     return Response(
-      status = okHttpResponse.code(),
+      status = @Suppress("DEPRECATION_ERROR") okHttpResponse.code(),
       data = parseGraphQLResponse(okHttpResponse, "data", "app", "byId", "updateBranches")
     )
   }
@@ -125,7 +125,7 @@ class DevMenuExpoApiClient : DevMenuExpoApiClientInterface {
     if (!okHttpResponse.isSuccessful) {
       return null
     }
-
+    @Suppress("DEPRECATION_ERROR")
     val bodyReader = okHttpResponse.body()?.charStream()?.readText() ?: return null
     val gson = Gson()
     var json: JsonElement = gson.fromJson(bodyReader, JsonObject::class.java)
