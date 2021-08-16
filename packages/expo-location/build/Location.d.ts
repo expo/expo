@@ -70,7 +70,7 @@ export declare function requestForegroundPermissionsAsync(): Promise<LocationPer
  * const [status, requestPermission] = Location.useForegroundPermissions();
  * ```
  */
-export declare const useForegroundPermissions: (options?: PermissionHookOptions | undefined) => [LocationPermissionResponse | null, () => Promise<LocationPermissionResponse | null>, () => Promise<LocationPermissionResponse | null>];
+export declare const useForegroundPermissions: (options?: PermissionHookOptions<object> | undefined) => [LocationPermissionResponse | null, () => Promise<LocationPermissionResponse>, () => Promise<LocationPermissionResponse>];
 /**
  * Gets the current state of background location permissions.
  */
@@ -88,7 +88,7 @@ export declare function requestBackgroundPermissionsAsync(): Promise<PermissionR
  * const [status, requestPermission] = Location.useBackgroundPermissions();
  * ```
  */
-export declare const useBackgroundPermissions: (options?: PermissionHookOptions | undefined) => [PermissionResponse | null, () => Promise<PermissionResponse | null>, () => Promise<PermissionResponse | null>];
+export declare const useBackgroundPermissions: (options?: PermissionHookOptions<object> | undefined) => [PermissionResponse | null, () => Promise<PermissionResponse>, () => Promise<PermissionResponse>];
 /**
  * Returns `true` if the device has location services enabled or `false` otherwise.
  */

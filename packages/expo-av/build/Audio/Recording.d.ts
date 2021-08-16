@@ -112,7 +112,7 @@ export declare function requestPermissionsAsync(): Promise<PermissionResponse>;
  * const [status, requestPermission] = Audio.usePermissions();
  * ```
  */
-export declare const usePermissions: (options?: PermissionHookOptions | undefined) => [PermissionResponse | null, () => Promise<PermissionResponse | null>, () => Promise<PermissionResponse | null>];
+export declare const usePermissions: (options?: PermissionHookOptions<object> | undefined) => [PermissionResponse | null, () => Promise<PermissionResponse>, () => Promise<PermissionResponse>];
 export declare class Recording {
     _subscription: Subscription | null;
     _canRecord: boolean;

@@ -53,7 +53,7 @@ export declare function getTrackingPermissionsAsync(): Promise<PermissionRespons
  * const [status, requestPermission] = useTrackingPermissions();
  * ```
  */
-export declare const useTrackingPermissions: (options?: PermissionHookOptions | undefined) => [PermissionResponse | null, () => Promise<PermissionResponse | null>, () => Promise<PermissionResponse | null>];
+export declare const useTrackingPermissions: (options?: PermissionHookOptions<object> | undefined) => [PermissionResponse | null, () => Promise<PermissionResponse>, () => Promise<PermissionResponse>];
 /**
  * Returns whether the TrackingTransparency API is available on the current device.
  *

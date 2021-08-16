@@ -64,8 +64,8 @@ export async function requestMediaLibraryPermissionsAsync(writeOnly = false) {
  * ```
  */
 export const useMediaLibraryPermissions = createPermissionHook({
-    getMethod: getMediaLibraryPermissionsAsync,
-    requestMethod: requestMediaLibraryPermissionsAsync,
+    getMethod: options => getMediaLibraryPermissionsAsync(options?.writeOnly),
+    requestMethod: options => requestMediaLibraryPermissionsAsync(options?.writeOnly),
 });
 // @needsAudit
 /**
