@@ -4,6 +4,13 @@
 
 ### 🛠 Breaking changes
 
+- Replace the stand-alone action constant strings with String Enum named `ActivityAction`.
+
+```diff
+- IntentLauncher.ACTION_* // ACTION_ACCESSIBILITY_SETTINGS
++ IntentLauncher.ActivityAction.* // ActivityAction.ACCESSIBILITY_SETTINGS
+```
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
