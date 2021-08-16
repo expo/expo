@@ -104,14 +104,14 @@ export function createURL(path, { scheme, queryParams = {}, isTripleSlashed = fa
     if (Platform.OS === 'web') {
         if (!Platform.isDOMAvailable)
             return '';
-        const origin = ensureLeadingSlash(window.location.origin, false);
+        const origin = ensureTrailingSlash(window.location.origin, false);
         let queryString = qs.stringify(queryParams);
         if (queryString) {
             queryString = `?${queryString}`;
         }
         let outputPath = path;
         if (outputPath)
-            outputPath = ensureTrailingSlash(path, true);
+            outputPath = ensureLeadingSlash(path, true);
         return encodeURI(`${origin}${outputPath}${queryString}`);
     }
     const resolvedScheme = resolveScheme({ scheme });
@@ -154,7 +154,7 @@ export function createURL(path, { scheme, queryParams = {}, isTripleSlashed = fa
     if (queryString) {
         queryString = `?${queryString}`;
     }
-    hostUri = ensureTrailingSlash(hostUri, !isTripleSlashed);
+    hostUri = ensureLeadingSlash(hostUri, !isTripleSlashed);
     return encodeURI(`${resolvedScheme}:${isTripleSlashed ? '/' : ''}/${hostUri}${path}${queryString}`);
 }
 /**
