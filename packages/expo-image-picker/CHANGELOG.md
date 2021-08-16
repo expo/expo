@@ -7,6 +7,7 @@
 ### 🎉 New features
 
 - Add useCameraPermissions and useMediaLibraryPermissions hooks from modules factory. ([#13859](https://github.com/expo/expo/pull/13859) by [@bycedric](https://github.com/bycedric))
+- Add possibility to change presentation style on IOS.
 
 ### 🐛 Bug fixes
 
