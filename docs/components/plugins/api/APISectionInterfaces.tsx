@@ -24,12 +24,15 @@ export type APISectionInterfacesProps = {
 
 const renderInterfaceComment = (comment?: CommentData, signatures?: MethodSignatureData[]) => {
   if (signatures && signatures.length) {
-    const { type, parameters } = signatures[0];
+    const { type, parameters, comment: signatureComment } = signatures[0];
     return (
       <>
         {parameters.map(param => renderParam(param))}
         <B>Returns: </B>
         <InlineCode>{resolveTypeName(type)}</InlineCode>
+        {signatureComment && (
+          <CommentTextBlock comment={signatureComment} renderers={mdInlineRenderers} />
+        )}
       </>
     );
   } else {

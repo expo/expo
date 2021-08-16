@@ -21,6 +21,7 @@ import {
   CommentTextBlock,
   parseCommentContent,
   renderTypeOrSignatureType,
+  getCommentOrSignatureComment,
 } from '~/components/plugins/api/APISectionUtils';
 
 export type APISectionTypesProps = {
@@ -64,6 +65,7 @@ const renderTypePropertyRow = ({
   signatures,
 }: PropData): JSX.Element => {
   const initValue = defaultValue || comment?.tags?.filter(tag => tag.tag === 'default')[0]?.text;
+  const commentData = getCommentOrSignatureComment(comment, signatures);
   return (
     <tr key={name}>
       <td>
@@ -72,7 +74,11 @@ const renderTypePropertyRow = ({
       </td>
       <td>{renderTypeOrSignatureType(type, signatures)}</td>
       <td>
-        {comment ? <CommentTextBlock comment={comment} renderers={mdInlineRenderers} /> : '-'}
+        {commentData ? (
+          <CommentTextBlock comment={commentData} renderers={mdInlineRenderers} />
+        ) : (
+          '-'
+        )}
         {initValue ? (
           <>
             <br />

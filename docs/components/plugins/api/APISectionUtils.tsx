@@ -292,6 +292,11 @@ export type CommentTextBlockProps = {
 export const parseCommentContent = (content?: string): string =>
   content && content.length ? content.replace(/&ast;/g, '*') : '';
 
+export const getCommentOrSignatureComment = (
+  comment?: CommentData,
+  signatures?: MethodSignatureData[]
+) => comment || (signatures && signatures[0]?.comment);
+
 export const CommentTextBlock: React.FC<CommentTextBlockProps> = ({
   comment,
   renderers = mdRenderers,

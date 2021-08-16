@@ -14,7 +14,7 @@ import {
   TypeDefinitionData,
 } from '~/components/plugins/api/APIDataTypes';
 import {
-  CommentTextBlock,
+  CommentTextBlock, getCommentOrSignatureComment,
   renderTypeOrSignatureType,
   resolveTypeName,
   STYLES_SECONDARY,
@@ -113,7 +113,7 @@ const renderProp = (
         </span>
       ) : null}
     </P>
-    <CommentTextBlock comment={comment} />
+    <CommentTextBlock comment={getCommentOrSignatureComment(comment, signatures)} />
   </LI>
 );
 
