@@ -259,12 +259,12 @@ export const renderTypeOrSignatureType = (
     return signatures.map(({ name, type, parameters }) => (
       <InlineCode key={`signature-type-${name}`}>
         (
-        {includeParamType
+        {parameters && includeParamType
           ? parameters.map(param => (
-              <span>
+              <>
                 {param.name}
                 {param.flags?.isOptional && '?'}: {resolveTypeName(param.type)}
-              </span>
+              </>
             ))
           : listParams(parameters)}
         ) =&gt; {resolveTypeName(type)}
