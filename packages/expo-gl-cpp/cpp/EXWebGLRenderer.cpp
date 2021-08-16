@@ -41,7 +41,7 @@ void createWebGLRenderer(jsi::Runtime &runtime, EXGLContext *ctx, initGlesContex
 
 // For some reason call to Function::callAsConstructor returns null,
 // so we had to create this object using Object.create(class.prototype).
-// This approach works correctlly with
+// This approach works correctlly with instnceof in Hermes, but not in JSC.
 //
 // Issue might be caused the fact that constructor is a host function
 // and it behaves like an arrow function.
@@ -122,13 +122,14 @@ void attachClass(
 
 // https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Objects/Inheritance#setting_teachers_prototype_and_constructor_reference
 //
-// Bellow implementation is equivalent of `class WebGLBuffer extends WebGLObject {}`
+// Below implementation is equivalent of `class WebGLBuffer extends WebGLObject {}`
 // where baseClass=global.WebGLObject and derivedProp="WebGLBuffer"
 //
 // WebGLBuffer.prototype = Object.create(WebGLObject.prototype);
 // Object.defineProperty(WebGLBuffer.prototype, 'constructor', {
 //   value: WebGLBuffer,
 //   enumerable: false,
+//   configurable: true,
 //   writable: true });
 void jsClassExtend(jsi::Runtime &runtime, jsi::Object &baseClass, jsi::PropNameID derivedProp) {
   jsi::PropNameID prototype = jsi::PropNameID::forUtf8(runtime, "prototype");
@@ -145,7 +146,8 @@ void jsClassExtend(jsi::Runtime &runtime, jsi::Object &baseClass, jsi::PropNameI
 
   jsi::Object propertyOptions(runtime);
   propertyOptions.setProperty(runtime, "value", derivedClass);
-  propertyOptions.setProperty(runtime, "enumerable", true);
+  propertyOptions.setProperty(runtime, "enumerable", false);
+  propertyOptions.setProperty(runtime, "configurable", true);
   propertyOptions.setProperty(runtime, "writable", true);
 
   // Object.defineProperty ...
