@@ -42,7 +42,7 @@ export default async function checkPackageAsync(
       }
       if (process.env.CI) {
         // Limit to one worker on CIs
-        args.push('--maxWorkers', '1');
+        // args.push('--maxWorkers', '1');
       }
       console.time(`test: ${pkg.packageName} ${options.isPlugin ? ['plugin'] : []}`);
       await runPackageScriptAsync(pkg, 'test', args);
