@@ -93,8 +93,16 @@ UM_REGISTER_SINGLETON_MODULE(SplashScreen);
 
   UM_WEAKIFY(self);
   return [splashScreenViewController
-          hideWithCallback:^(BOOL hasEffect) { UM_ENSURE_STRONGIFY(self); [self.splashScreenControllers removeObjectForKey:viewController]; }
-          failureCallback:^(NSString *message) { UM_ENSURE_STRONGIFY(self); [self.splashScreenControllers removeObjectForKey:viewController]; }];
+      hideWithCallback:^(BOOL hasEffect) {
+        UM_ENSURE_STRONGIFY(self);
+        [self.splashScreenControllers removeObjectForKey:viewController];
+        successCallback(hasEffect);
+      }
+      failureCallback:^(NSString *message) {
+        UM_ENSURE_STRONGIFY(self);
+        [self.splashScreenControllers removeObjectForKey:viewController];
+        failureCallback(message);
+      }];
 }
 
 - (void)onAppContentDidAppear:(UIViewController *)viewController
