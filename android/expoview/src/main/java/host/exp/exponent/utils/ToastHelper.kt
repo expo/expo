@@ -13,7 +13,7 @@ import javax.inject.Inject
 
 object ToastHelper {
   @Inject
-  var applicationContext: Application? = null
+  lateinit var applicationContext: Application
 
   init {
     NativeModuleDepsProvider.getInstance().inject(ToastHelper::class.java, this)
@@ -31,7 +31,7 @@ object ToastHelper {
           return
         }
 
-        applicationContext?.let {
+        applicationContext.let {
           val message = "$featureName may not work in Expo Go when you're using Android R.\nSee https://expo.fyi/android-r"
           Toast
             .makeText(it, message, Toast.LENGTH_LONG)

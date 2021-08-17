@@ -214,7 +214,7 @@ abstract class ReactNativeActivity :
     waitForReactRootViewToHaveChildrenAndRunCallback {
       onDoneLoading()
       try {
-        ExperienceActivityUtils.setRootViewBackgroundColor(manifest, rootView)
+        ExperienceActivityUtils.setRootViewBackgroundColor(manifest!!, rootView!!)
       } catch (e: Exception) {
         EXL.e(TAG, e)
       }
@@ -565,7 +565,7 @@ abstract class ReactNativeActivity :
   ) {
     if (requestCode == ScopedPermissionsRequester.EXPONENT_PERMISSIONS_REQUEST) {
       val name = manifest!!.getName()
-      scopedPermissionsRequester = ScopedPermissionsRequester(experienceKey)
+      scopedPermissionsRequester = ScopedPermissionsRequester(experienceKey!!)
       scopedPermissionsRequester!!.requestPermissions(this, name ?: "", permissions, listener)
     } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
       super.requestPermissions(permissions, requestCode)

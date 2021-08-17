@@ -225,7 +225,7 @@ open class ExperienceActivity : BaseExperienceActivity(), StartReactInstanceDele
     super.onWindowFocusChanged(hasFocus)
     // Check for manifest to avoid calling this when first loading an experience
     if (hasFocus && manifest != null) {
-      runOnUiThread { ExperienceActivityUtils.setNavigationBar(manifest, this@ExperienceActivity) }
+      runOnUiThread { ExperienceActivityUtils.setNavigationBar(manifest!!, this@ExperienceActivity) }
     }
   }
 
@@ -485,9 +485,9 @@ open class ExperienceActivity : BaseExperienceActivity(), StartReactInstanceDele
 
     Analytics.logEventWithManifestUrlSdkVersion(Analytics.LOAD_EXPERIENCE, manifestUrl, sdkVersion)
 
-    ExperienceActivityUtils.updateOrientation(this.manifest, this)
-    ExperienceActivityUtils.updateSoftwareKeyboardLayoutMode(this.manifest, this)
-    ExperienceActivityUtils.overrideUiMode(this.manifest, this)
+    ExperienceActivityUtils.updateOrientation(this.manifest!!, this)
+    ExperienceActivityUtils.updateSoftwareKeyboardLayoutMode(this.manifest!!, this)
+    ExperienceActivityUtils.overrideUiMode(this.manifest!!, this)
 
     addNotification()
 
