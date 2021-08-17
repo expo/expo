@@ -39,5 +39,4 @@ export var UIImagePickerPresentationStyle;
     UIImagePickerPresentationStyle[UIImagePickerPresentationStyle["BlurOverFullScreen"] = 8] = "BlurOverFullScreen";
     UIImagePickerPresentationStyle[UIImagePickerPresentationStyle["Automatic"] = -2] = "Automatic";
 })(UIImagePickerPresentationStyle || (UIImagePickerPresentationStyle = {}));
-;
 //# sourceMappingURL=ImagePicker.types.js.map

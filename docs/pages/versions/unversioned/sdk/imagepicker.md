@@ -275,7 +275,7 @@ Android system sometimes kills the `MainActivity` after the `ImagePicker` finish
 | `UIImagePickerPresentationStyle.Popover`           | 7     |
 | `UIImagePickerPresentationStyle.Automatic`         | -2    |
 
-### `ImagePicker.UIImagePicker`
+### `ImagePicker.UIImagePickerControllerType`
 
 | Preset                                       | Value | Resolution            |
 | -------------------------------------------- | ----- | --------------------- |

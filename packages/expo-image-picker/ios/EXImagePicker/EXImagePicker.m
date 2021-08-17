@@ -209,11 +209,11 @@ UM_EXPORT_METHOD_AS(launchImageLibraryAsync, launchImageLibraryAsync:(NSDictiona
     
     self.picker.videoMaximumDuration = videoMaxDuration;
 
-		if (self.options[@"presentationStyle"]) {
-		  self.picker.modalPresentationStyle = (UIModalPresentationStyle) [self.options[@"presentationStyle"] intValue];
-		} else {
-			self.picker.modalPresentationStyle = UIModalPresentationAutomatic;
-		}
+    if (self.options[@"presentationStyle"]) {
+      self.picker.modalPresentationStyle = (UIModalPresentationStyle) [self.options[@"presentationStyle"] intValue];
+    } else {
+        self.picker.modalPresentationStyle = UIModalPresentationAutomatic;
+    }
     self.picker.delegate = self;
 
     [self maybePreserveVisibilityAndHideStatusBar:[[self.options objectForKey:@"allowsEditing"] boolValue]];

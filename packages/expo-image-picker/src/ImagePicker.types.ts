@@ -50,8 +50,8 @@ export enum UIImagePickerPresentationStyle {
   OverCurrentContext = 6,
   Popover = 7,
   BlurOverFullScreen = 8,
-  Automatic = -2
-};
+  Automatic = -2,
+}
 
 export type ImageInfo = {
   uri: string;
