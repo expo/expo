@@ -3,8 +3,10 @@ import React from 'react';
 
 import { androidPermissions, AndroidPermission, PermissionReference } from './data';
 
+import Permalink from '~/components/Permalink';
 import { InlineCode } from '~/components/base/code';
 import { Quote } from '~/components/base/paragraph';
+
 // import { QuestionIcon } from '~/components/icons/QuestionIcon';
 
 type AndroidPermissionsProps = {
@@ -44,7 +46,11 @@ function AndroidPermissionRow(permission: AndroidPermission) {
   return (
     <tr css={apiDeprecated && deprecatedStyle}>
       <td>
-        <InlineCode>{name}</InlineCode>
+        <Permalink id={`permission-${name.toLowerCase()}`}>
+          <span>
+            <InlineCode>{name}</InlineCode>
+          </span>
+        </Permalink>
       </td>
       {/* <td>
         <i>{getPermissionGranter(permission)}</i>

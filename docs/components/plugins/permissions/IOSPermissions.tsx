@@ -2,6 +2,7 @@ import React from 'react';
 
 import { IOSPermission, iosPermissions, PermissionReference } from './data';
 
+import Permalink from '~/components/Permalink';
 import { InlineCode } from '~/components/base/code';
 
 type IOSPermissionsProps = {
@@ -23,7 +24,11 @@ export function IOSPermissions(props: IOSPermissionsProps) {
         {list.map(permission => (
           <tr key={permission.name}>
             <td>
-              <InlineCode>{permission.name}</InlineCode>
+              <Permalink id={`permission-${permission.name.toLowerCase()}`}>
+                <span>
+                  <InlineCode>{permission.name}</InlineCode>
+                </span>
+              </Permalink>
             </td>
             <td>
               <p>{permission.description}</p>
