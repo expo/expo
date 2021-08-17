@@ -9,7 +9,7 @@ import com.raizlabs.android.dbflow.annotation.Unique;
 import com.raizlabs.android.dbflow.structure.BaseModel;
 
 @Table(database = ExponentDB.class)
-public class ExperienceDBObject extends BaseModel {
+class ExperienceDBObject extends BaseModel {
 
   @Column(name = "id")
   @PrimaryKey

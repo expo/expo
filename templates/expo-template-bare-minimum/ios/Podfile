@@ -1,6 +1,6 @@
-require_relative '../node_modules/react-native/scripts/react_native_pods'
-require_relative '../node_modules/react-native-unimodules/cocoapods.rb'
-require_relative '../node_modules/@react-native-community/cli-platform-ios/native_modules'
+require File.join(`node --print "require.resolve('react-native/package.json')"`, "../scripts/react_native_pods")
+require File.join(`node --print "require.resolve('react-native-unimodules/package.json')"`, "../cocoapods.rb")
+require File.join(`node --print "require.resolve('expo-modules-core/package.json')"`, "../scripts/autolinking")
 
 platform :ios, '11.0'
 

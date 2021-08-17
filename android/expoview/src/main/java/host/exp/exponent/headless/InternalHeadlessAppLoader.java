@@ -31,6 +31,7 @@ import host.exp.exponent.RNObject;
 import host.exp.exponent.experience.DetachedModuleRegistryAdapter;
 import host.exp.exponent.kernel.ExponentUrls;
 import host.exp.exponent.storage.ExponentDB;
+import host.exp.exponent.storage.ExponentDBObject;
 import host.exp.exponent.taskManager.AppLoaderInterface;
 import host.exp.exponent.taskManager.AppRecordInterface;
 import host.exp.exponent.utils.AsyncCondition;
@@ -138,7 +139,7 @@ public class InternalHeadlessAppLoader implements AppLoaderInterface, Exponent.S
     mSdkVersion = manifest.getSDKVersionNullable();
 
     // Notifications logic uses this to determine which experience to route a notification to
-    ExponentDB.saveExperience(mManifestUrl, manifest, bundleUrl);
+    ExponentDB.saveExperience(new ExponentDBObject(mManifestUrl, manifest, bundleUrl));
 
     // Sometime we want to release a new version without adding a new .aar. Use TEMPORARY_ABI_VERSION
     // to point to the unversioned code in ReactAndroid.
@@ -282,13 +283,13 @@ public class InternalHeadlessAppLoader implements AppLoaderInterface, Exponent.S
     );
 
     Exponent.InstanceManagerBuilderProperties instanceManagerBuilderProperties = new Exponent.InstanceManagerBuilderProperties();
-    instanceManagerBuilderProperties.application = (Application) mContext;
-    instanceManagerBuilderProperties.jsBundlePath = mJSBundlePath;
-    instanceManagerBuilderProperties.experienceProperties = experienceProperties;
-    instanceManagerBuilderProperties.expoPackages = extraExpoPackages;
-    instanceManagerBuilderProperties.exponentPackageDelegate = delegate.getExponentPackageDelegate();
-    instanceManagerBuilderProperties.manifest = mManifest;
-    instanceManagerBuilderProperties.singletonModules = ExponentPackage.getOrCreateSingletonModules(mContext, mManifest, extraExpoPackages);
+    instanceManagerBuilderProperties.setApplication((Application) mContext);
+    instanceManagerBuilderProperties.setJsBundlePath(mJSBundlePath);
+    instanceManagerBuilderProperties.setExperienceProperties(experienceProperties);
+    instanceManagerBuilderProperties.setExpoPackages(extraExpoPackages);
+    instanceManagerBuilderProperties.setExponentPackageDelegate(delegate.getExponentPackageDelegate());
+    instanceManagerBuilderProperties.setManifest(mManifest);
+    instanceManagerBuilderProperties.setSingletonModules(ExponentPackage.getOrCreateSingletonModules(mContext, mManifest, extraExpoPackages));
 
     RNObject versionedUtils = new RNObject("host.exp.exponent.VersionedUtils").loadVersion(mSDKVersion);
     RNObject builder = versionedUtils.callRecursive("getReactInstanceManagerBuilder", instanceManagerBuilderProperties);
@@ -305,7 +306,7 @@ public class InternalHeadlessAppLoader implements AppLoaderInterface, Exponent.S
     if (delegate.isDebugModeEnabled()) {
       String debuggerHost = mManifest.getDebuggerHost();
       String mainModuleName = mManifest.getMainModuleName();
-      Exponent.enableDeveloperSupport(mSDKVersion, debuggerHost, mainModuleName, builder);
+      Exponent.enableDeveloperSupport(debuggerHost, mainModuleName, builder);
     }
 
     RNObject reactInstanceManager = builder.callRecursive("build");

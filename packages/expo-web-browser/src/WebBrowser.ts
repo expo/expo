@@ -1,4 +1,4 @@
-import { UnavailabilityError } from '@unimodules/core';
+import { UnavailabilityError } from 'expo-modules-core';
 import { AppState, AppStateStatus, Linking, Platform } from 'react-native';
 
 import ExponentWebBrowser from './ExpoWebBrowser';
@@ -349,7 +349,7 @@ async function _openBrowserAndWaitAndroidAsync(
   startUrl: string,
   browserParams: WebBrowserOpenOptions = {}
 ): Promise<WebBrowserResult> {
-  const appStateChangedToActive = new Promise(resolve => {
+  const appStateChangedToActive = new Promise<void>(resolve => {
     _onWebBrowserCloseAndroid = resolve;
     AppState.addEventListener('change', _onAppStateChangeAndroid);
   });

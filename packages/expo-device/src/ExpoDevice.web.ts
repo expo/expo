@@ -1,7 +1,9 @@
-import { Platform } from '@unimodules/core';
+import { Platform } from 'expo-modules-core';
 import UAParser from 'ua-parser-js';
 
 import { DeviceType } from './Device.types';
+
+type NavigatorWithDeviceMemory = Navigator & { deviceMemory: number };
 
 let result: any = null;
 if (Platform.isDOMAvailable) {
@@ -31,7 +33,7 @@ export default {
   },
   get totalMemory(): number | null {
     if (Platform.isDOMAvailable && 'deviceMemory' in navigator) {
-      const { deviceMemory } = navigator;
+      const { deviceMemory } = navigator as NavigatorWithDeviceMemory;
       return convertGiBtoBytes(deviceMemory);
     }
     return null;

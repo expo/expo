@@ -1,5 +1,5 @@
-import { CodedError } from '@unimodules/core';
 import { DEFAULT_WEB_APP_OPTIONS } from 'expo-firebase-core';
+import { CodedError } from 'expo-modules-core';
 import * as React from 'react';
 import { WebView } from './WebView';
 function getWebviewSource(firebaseConfig, firebaseVersion, appVerificationDisabledForTesting = false, languageCode, invisible) {
@@ -128,7 +128,7 @@ export default function FirebaseRecaptcha(props) {
         console.error(`FirebaseRecaptcha: Missing firebase web configuration. Please set the "expo.web.config.firebase" field in "app.json" or use the "firebaseConfig" prop.`);
         return null;
     }
-    return (React.createElement(WebView, Object.assign({ ref: webview, javaScriptEnabled: true, automaticallyAdjustContentInsets: true, scalesPageToFit: true, mixedContentMode: "always", source: getWebviewSource(firebaseConfig, firebaseVersion, appVerificationDisabledForTesting, languageCode, invisible), onError: onError, onMessage: event => {
+    return (React.createElement(WebView, { ref: webview, javaScriptEnabled: true, automaticallyAdjustContentInsets: true, scalesPageToFit: true, mixedContentMode: "always", source: getWebviewSource(firebaseConfig, firebaseVersion, appVerificationDisabledForTesting, languageCode, invisible), onError: onError, onMessage: event => {
             const data = JSON.parse(event.nativeEvent.data);
             switch (data.type) {
                 case 'load':
@@ -151,7 +151,7 @@ export default function FirebaseRecaptcha(props) {
                     }
                     break;
             }
-        } }, otherProps)));
+        }, ...otherProps }));
 }
 FirebaseRecaptcha.defaultProps = {
     firebaseConfig: DEFAULT_WEB_APP_OPTIONS,

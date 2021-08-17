@@ -1,5 +1,4 @@
-import { UnavailabilityError } from '@unimodules/core';
-import { PermissionStatus } from 'expo-modules-core';
+import { PermissionStatus, createPermissionHook, UnavailabilityError, } from 'expo-modules-core';
 import { Platform } from 'react-native';
 import ExpoBrightness from './ExpoBrightness';
 // @needsAudit
@@ -160,4 +159,18 @@ export async function getPermissionsAsync() {
 export async function requestPermissionsAsync() {
     return ExpoBrightness.requestPermissionsAsync();
 }
+// @needsAudit
+/**
+ * Check or request permissions to modify the system brightness.
+ * This uses both `requestPermissionAsync` and `getPermissionsAsync` to interact with the permissions.
+ *
+ * @example
+ * ```ts
+ * const [status, requestPermission] = Brightness.usePermissions();
+ * ```
+ */
+export const usePermissions = createPermissionHook({
+    getMethod: getPermissionsAsync,
+    requestMethod: requestPermissionsAsync,
+});
 //# sourceMappingURL=Brightness.js.map

@@ -86,7 +86,7 @@ Pod::Spec.new do |s|
     end
   end
 
-  s.dependency "Folly", folly_version
+  s.dependency "RCT-Folly", folly_version
   s.dependency "ABI41_0_0React-cxxreact", version
   s.dependency "ABI41_0_0React-jsi", version
   s.dependency "ABI41_0_0React-jsiexecutor", version

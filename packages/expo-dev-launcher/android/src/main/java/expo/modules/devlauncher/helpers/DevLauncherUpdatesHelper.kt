@@ -43,6 +43,7 @@ suspend fun UpdatesInterface.loadUpdate(
 fun createUpdatesConfigurationWithUrl(url: Uri): HashMap<String, Any> {
   return hashMapOf(
     "updateUrl" to url,
+    "scopeKey" to url.toString(),
     "hasEmbeddedUpdate" to false,
     "launchWaitMs" to 60000,
     "checkOnLaunch" to "ALWAYS",

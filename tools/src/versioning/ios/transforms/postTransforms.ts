@@ -91,6 +91,17 @@ export function postTransforms(versionName: string): TransformPipeline {
         ),
         with: `${versionName}NSDictionary+$1.h`,
       },
+      {
+        paths: [`${versionName}EXNotifications`, `${versionName}EXAppState`],
+        replace: new RegExp(`EXModuleRegistryHolder${versionName}React`, 'g'),
+        with: 'EXModuleRegistryHolderReact',
+      },
+      {
+        // Versioned ExpoKit has to use versioned modules provider
+        paths: 'EXVersionManager.mm',
+        replace: /@"(ExpoModulesProvider)"/,
+        with: `@"${versionName}$1"`,
+      },
 
       // react-native-maps
       {

@@ -55,6 +55,8 @@ const nonLinkableTypes = [
   'ColorValue',
   'E',
   'EventSubscription',
+  'File',
+  'FileList',
   'Manifest',
   'NativeSyntheticEvent',
   'Omit',
@@ -88,6 +90,14 @@ const renderWithLink = (name: string, type?: string) =>
       {type === 'array' && '[]'}
     </Link>
   );
+
+const renderUnion = (types: TypeDefinitionData[]) =>
+  types.map(resolveTypeName).map((valueToRender, index) => (
+    <span key={`union-type-${index}`}>
+      {valueToRender}
+      {index + 1 !== types.length && ' | '}
+    </span>
+  ));
 
 export const resolveTypeName = ({
   elements,
@@ -144,13 +154,23 @@ export const resolveTypeName = ({
       return elementType.name + '[]';
     }
     return elementType.name + type;
+  } else if (elementType?.declaration) {
+    if (type === 'array') {
+      const { parameters, type: paramType } = elementType.declaration.indexSignature || {};
+      if (parameters && paramType) {
+        return `{ [${listParams(parameters)}]: ${resolveTypeName(paramType)} }`;
+      }
+    }
+    return elementType.name + type;
   } else if (type === 'union' && types?.length) {
-    return types.map(resolveTypeName).map((valueToRender, index) => (
-      <span key={`union-type-${index}`}>
-        {valueToRender}
-        {index + 1 !== types.length && ' | '}
-      </span>
-    ));
+    return renderUnion(types);
+  } else if (elementType && elementType.type === 'union' && elementType?.types?.length) {
+    const unionTypes = elementType?.types || [];
+    return (
+      <>
+        ({renderUnion(unionTypes)}){type === 'array' && '[]'}
+      </>
+    );
   } else if (declaration?.signatures) {
     const baseSignature = declaration.signatures[0];
     if (baseSignature?.parameters?.length) {
@@ -211,14 +231,20 @@ export const resolveTypeName = ({
   return 'undefined';
 };
 
-export const renderParam = ({ comment, name, type }: MethodParamData): JSX.Element => (
+export const parseParamName = (name: string) => (name.startsWith('__') ? name.substr(2) : name);
+
+export const renderParam = ({ comment, name, type, flags }: MethodParamData): JSX.Element => (
   <LI key={`param-${name}`}>
     <B>
-      {name} (<InlineCode>{resolveTypeName(type)}</InlineCode>)
+      {parseParamName(name)}
+      {flags?.isOptional && '?'} (<InlineCode>{resolveTypeName(type)}</InlineCode>)
     </B>
     <CommentTextBlock comment={comment} renderers={mdInlineRenderers} withDash />
   </LI>
 );
+
+export const listParams = (parameters: MethodParamData[]) =>
+  parameters ? parameters?.map(param => parseParamName(param.name)).join(', ') : '';
 
 export type CommentTextBlockProps = {
   comment?: CommentData;
@@ -227,6 +253,9 @@ export type CommentTextBlockProps = {
   beforeContent?: JSX.Element;
 };
 
+export const parseCommentContent = (content?: string): string =>
+  content && content.length ? content.replace(/&ast;/g, '*') : '';
+
 export const CommentTextBlock: React.FC<CommentTextBlockProps> = ({
   comment,
   renderers = mdRenderers,
@@ -234,10 +263,10 @@ export const CommentTextBlock: React.FC<CommentTextBlockProps> = ({
   beforeContent,
 }) => {
   const shortText = comment?.shortText?.trim().length ? (
-    <ReactMarkdown renderers={renderers}>{comment.shortText}</ReactMarkdown>
+    <ReactMarkdown renderers={renderers}>{parseCommentContent(comment.shortText)}</ReactMarkdown>
   ) : null;
   const text = comment?.text?.trim().length ? (
-    <ReactMarkdown renderers={renderers}>{comment.text}</ReactMarkdown>
+    <ReactMarkdown renderers={renderers}>{parseCommentContent(comment.text)}</ReactMarkdown>
   ) : null;
 
   const example = comment?.tags?.filter(tag => tag.tag === 'example')[0];

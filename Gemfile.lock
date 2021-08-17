@@ -2,7 +2,7 @@ GEM
   remote: https://rubygems.org/
   specs:
     CFPropertyList (3.0.2)
-    activesupport (5.2.4.4)
+    activesupport (5.2.6)
       concurrent-ruby (~> 1.0, >= 1.0.2)
       i18n (>= 0.7, < 2)
       minitest (~> 5.1)
@@ -31,10 +31,10 @@ GEM
       aws-eventstream (~> 1, >= 1.0.2)
     babosa (1.0.4)
     claide (1.0.3)
-    cocoapods (1.10.1)
+    cocoapods (1.10.2)
       addressable (~> 2.6)
       claide (>= 1.0.2, < 2.0)
-      cocoapods-core (= 1.10.1)
+      cocoapods-core (= 1.10.2)
       cocoapods-deintegrate (>= 1.0.3, < 2.0)
       cocoapods-downloader (>= 1.4.0, < 2.0)
       cocoapods-plugins (>= 1.0.0, < 2.0)
@@ -49,7 +49,7 @@ GEM
       nap (~> 1.0)
       ruby-macho (~> 1.4)
       xcodeproj (>= 1.19.0, < 2.0)
-    cocoapods-core (1.10.1)
+    cocoapods-core (1.10.2)
       activesupport (> 5.0, < 6)
       addressable (~> 2.6)
       algoliasearch (~> 1.0)
@@ -72,7 +72,7 @@ GEM
     colored2 (3.1.2)
     commander-fastlane (4.4.6)
       highline (~> 1.7.2)
-    concurrent-ruby (1.1.8)
+    concurrent-ruby (1.1.9)
     declarative (0.0.20)
     declarative-option (0.1.0)
     digest-crc (0.6.1)
@@ -166,7 +166,7 @@ GEM
     http-cookie (1.0.3)
       domain_name (~> 0.5)
     httpclient (2.8.3)
-    i18n (1.8.8)
+    i18n (1.8.10)
       concurrent-ruby (~> 1.0)
     jmespath (1.4.0)
     json (2.5.1)
@@ -174,7 +174,7 @@ GEM
     memoist (0.16.2)
     mini_magick (4.11.0)
     mini_mime (1.0.2)
-    minitest (5.14.3)
+    minitest (5.14.4)
     molinillo (0.6.6)
     multi_json (1.15.0)
     multipart-post (2.0.0)
@@ -238,10 +238,10 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  cocoapods (~> 1.10.1)
+  cocoapods (~> 1.10.2)
   ethon (>= 0.13.0)
   fastlane (~> 2.167.0)
   xcpretty (~> 0.3.0)
 
 BUNDLED WITH
-   2.2.15
+   2.2.16

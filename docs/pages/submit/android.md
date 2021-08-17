@@ -40,7 +40,7 @@ The command will perform the following steps:
 - Ask for which binary to submit. You can select one of the following:
 
    - The latest finished Android build for the project on EAS servers
-   - Specific build ID. The ID can be found on the [builds dashboard](https://expo.io/builds?type=eas)
+   - Specific build ID. The ID can be found on the [builds dashboard](https://expo.dev/builds?type=eas)
    - Path to an APK or AAB archive on your local filesystem
    - URL to the app archive
 

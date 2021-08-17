@@ -1,4 +1,4 @@
-import { UnavailabilityError } from '@unimodules/core';
+import { UnavailabilityError } from 'expo-modules-core';
 import ExpoNetwork from './ExpoNetwork';
 import { NetworkStateType } from './Network.types';
 export { NetworkStateType };

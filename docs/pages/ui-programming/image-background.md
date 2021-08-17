@@ -22,7 +22,7 @@ The `ImageBackground` component accepts mostly the same props as the `Image` com
 import React from 'react';
 import { /* @info Import ImageBackground from react-native */ ImageBackground/* @end */, StyleSheet, Text, View } from 'react-native';
 
-const image = { uri: "https://docs.expo.io/static/images/tutorial/splash.png" };
+const image = { uri: "https://docs.expo.dev/static/images/tutorial/splash.png" };
 
 const App = () => (
   <View style={styles.container}>

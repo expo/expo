@@ -35,8 +35,8 @@ Don't have a project yet? No problem: it's quick and easy to create a "Hello wor
 <details><summary><h4>💡 An Expo account with an EAS Priority Plan subscription.</h4></summary>
 <p>
 
-- You can sign up for an Expo account at [https://expo.io/signup](https://expo.io/signup).
-- Learn more about the EAS Priority Plan and sign up for a free month at [https://expo.io/pricing](https://expo.io/pricing).
+- You can sign up for an Expo account at [https://expo.dev/signup](https://expo.dev/signup).
+- Learn more about the EAS Priority Plan and sign up for a free month at [https://expo.dev/pricing](https://expo.dev/pricing).
 
 </p>
 </details>
@@ -124,7 +124,7 @@ Before the build can start, we'll need to generate or provide app signing creden
 
 ## 5. Wait for the build to complete
 
-By default, the `eas build` command will wait for your build to complete. However, if you interrupt this command and monitor the progress of your builds by either visiting [the EAS Build dashboard](https://expo.io/builds?type=eas) or running the `eas build:list` command.
+By default, the `eas build` command will wait for your build to complete. However, if you interrupt this command and monitor the progress of your builds by either visiting [the EAS Build dashboard](https://expo.dev/builds?type=eas) or running the `eas build:list` command.
 
 ## 6. Next steps
 

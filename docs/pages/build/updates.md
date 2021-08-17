@@ -14,24 +14,13 @@ The following example demonstrates how you might use the `"production"` release 
 
 ```json
 {
-  "builds": {
-    "android": {
-      "release": {
-        "releaseChannel": "production"
-      },
-      "team": {
-        "releaseChannel": "staging",
-        "distribution": "internal"
-      }
+  "build": {
+    "release": {
+      "releaseChannel": "production"
     },
-    "ios": {
-      "release": {
-        "releaseChannel": "production"
-      },
-      "team": {
-        "releaseChannel": "staging",
-        "distribution": "internal"
-      }
+    "team": {
+      "releaseChannel": "staging",
+      "distribution": "internal"
     }
   }
 }

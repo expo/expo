@@ -1,6 +1,6 @@
 require_relative './podfile_helpers.rb'
-require_relative '../packages/@unimodules/react-native-adapter/scripts/autolinking'
-require_relative '../react-native-lab/react-native/scripts/react_native_pods'
+require File.join(`node --print "require.resolve('react-native/package.json')"`, "../scripts/react_native_pods")
+require File.join(`node --print "require.resolve('expo-modules-core/package.json')"`, "../scripts/autolinking")
 
 install! 'cocoapods',
          :generate_multiple_pod_projects => true,
@@ -9,7 +9,7 @@ platform :ios, '11.0'
 inhibit_all_warnings!
 
 # Enables Swift modules in Expo Go
-use_experimental_swift_modules!
+use_swift_modules!
 
 abstract_target 'Expo Go' do
   # Expo Client dependencies
@@ -105,5 +105,8 @@ abstract_target 'Expo Go' do
 
   target 'Tests' do
     inherit! :search_paths
+
+    pod 'Quick', :podspec => './Quick.podspec'
+    pod 'Nimble', :podspec => './Nimble.podspec'
   end
 end

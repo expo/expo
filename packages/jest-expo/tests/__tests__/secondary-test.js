@@ -1,4 +1,4 @@
 it(`secondary file testing`, () => {
-  const { Platform } = require('@unimodules/core');
+  const { Platform } = require('expo-modules-core');
   expect(Platform.OS).toMatchSnapshot();
 });

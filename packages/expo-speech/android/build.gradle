@@ -62,6 +62,9 @@ android {
   lintOptions {
     abortOnError false
   }
+  kotlinOptions {
+    jvmTarget = JavaVersion.VERSION_1_8
+  }
 }
 
 if (new File(rootProject.projectDir.parentFile, 'package.json').exists()) {

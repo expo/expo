@@ -23,7 +23,7 @@ android {
     minSdkVersion safeExtGet('minSdkVersion', 21)
     targetSdkVersion safeExtGet('targetSdkVersion', 30)
     versionCode 9
-    versionName "0.6.5"
+    versionName "0.6.7"
   }
 
   lintOptions {
@@ -101,10 +101,14 @@ dependencies {
 
   api "io.insert-koin:koin-core:3.1.2"
 
+  testImplementation 'androidx.test:core:1.4.0'
+  testImplementation 'androidx.test:core-ktx:1.4.0'
   testImplementation "com.google.truth:truth:1.1.2"
-  testImplementation "org.robolectric:robolectric:4.3.1"
-  testImplementation 'io.mockk:mockk:1.9.3'
   testImplementation 'com.squareup.okhttp3:mockwebserver:4.3.1'
+  testImplementation "io.insert-koin:koin-test:3.1.2"
+  testImplementation "io.insert-koin:koin-test-junit4:3.1.2"
+  testImplementation 'io.mockk:mockk:1.9.3'
+  testImplementation "org.robolectric:robolectric:4.3.1"
 }
 
 // Koin uses a different version of Kotlin under the hood.

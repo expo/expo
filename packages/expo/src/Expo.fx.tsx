@@ -5,9 +5,9 @@ import './environment/react-native-logs.fx';
 // load expo-asset immediately to set a custom `source` transformer in React Native
 import 'expo-asset';
 
-import { NativeModulesProxy, Platform } from '@unimodules/core';
 import Constants, { ExecutionEnvironment } from 'expo-constants';
 import * as Font from 'expo-font';
+import { NativeModulesProxy, Platform } from 'expo-modules-core';
 import React from 'react';
 import { AppRegistry, StyleSheet } from 'react-native';
 

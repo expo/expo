@@ -18,7 +18,7 @@ export default class App extends Component {
   }
 
   _handlePressButtonAsync = async () => {
-    let result = await WebBrowser.openBrowserAsync('https://expo.io');
+    let result = await WebBrowser.openBrowserAsync('https://expo.dev');
     this.setState({ result });
   };
 }

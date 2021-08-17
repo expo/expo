@@ -1,4 +1,4 @@
-import { EventEmitter, Subscription, Platform } from '@unimodules/core';
+import { EventEmitter, Subscription, Platform } from 'expo-modules-core';
 
 import PushTokenManager from './PushTokenManager';
 import { DevicePushToken } from './Tokens.types';

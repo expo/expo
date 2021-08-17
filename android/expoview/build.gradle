@@ -1,7 +1,6 @@
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply plugin: 'maven'
-apply plugin: 'com.jakewharton.butterknife'
 apply plugin: 'de.undercouch.download'
 
 // WHEN_VERSIONING_REMOVE_FROM_HERE
@@ -93,7 +92,6 @@ buildscript {
     jcenter()
   }
   dependencies {
-    classpath 'com.jakewharton:butterknife-gradle-plugin:10.2.1'
     classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:${safeExtGet('kotlinVersion', '1.4.21')}")
   }
 }
@@ -109,6 +107,10 @@ android {
   compileOptions {
     sourceCompatibility = '1.8'
     targetCompatibility = '1.8'
+  }
+
+  buildFeatures {
+    viewBinding true
   }
 
   defaultConfig {
@@ -141,7 +143,7 @@ android {
             "-DFBJNI_HEADERS_DIR=${FBJNI_HEADERS_DIR}",
             "-DCMAKE_OUTPUT_DIR=${CMAKE_OUTPUT_DIR}"
         abiFilters = []
-        abiFilters.addAll(ABI_FILTERS.split(',').collect{ (it as String).trim() })
+        abiFilters.addAll(ABI_FILTERS.split(',').collect { (it as String).trim() })
       }
     }
 
@@ -243,8 +245,6 @@ configurations.all {
   }
 }
 
-// Import gradle helpers for unimodules.
-apply from: "../../node_modules/react-native-unimodules/gradle.groovy"
 // WHEN_VERSIONING_REMOVE_TO_HERE
 
 dependencies {
@@ -272,15 +272,7 @@ dependencies {
 
   /* UNCOMMENT WHEN DISTRIBUTING
   api 'com.facebook.react:react-native:42.0.0'
-  addUnimodulesDependencies([
-      modulesPaths : ['../../packages'],
-      configuration: 'compileOnly',
-      target       : 'react-native',
-      exclude      : [
-        'expo-module-template',
-        'expo-in-app-purchases'
-      ]
-  ])
+  compileOnly project(':expo-modules-linker')
   compileOnly project(':expo-random')
   END UNCOMMENT WHEN DISTRIBUTING */
 
@@ -293,15 +285,7 @@ dependencies {
 
   // Universal modules
   // In distribution they're "compileOnly" and it's the app/build.gradle who manages them.
-  addUnimodulesDependencies([
-      modulesPaths : ['../../packages'],
-      configuration: 'api',
-      target       : 'react-native',
-      exclude      : [
-          'expo-module-template',
-          'expo-in-app-purchases',
-      ]
-  ])
+  api project(':expo-modules-linker')
 
   // expo-random is no longer a unimodule
   api project(':expo-random')
@@ -377,8 +361,6 @@ dependencies {
   api 'com.google.firebase:firebase-core:17.2.3'
   api 'com.google.firebase:firebase-messaging:20.2.4'
   api 'com.google.maps.android:android-maps-utils:0.5'
-  api 'com.jakewharton:butterknife:10.2.1'
-  annotationProcessor 'com.jakewharton:butterknife-compiler:10.2.1'
   // Remember to update DetachAppTemplate build.gradle if you add any excludes or transitive = false here!
 
   // Used only in Expo Go, see Analytics.java

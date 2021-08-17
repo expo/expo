@@ -10,7 +10,7 @@ This library provides full Google authentication for **standalone** Expo apps. I
 
 ## Setup
 
-For questions on setup, feel free to comment on this post: [**React Native Google Sign-Up**](https://blog.expo.io/react-native-google-sign-in-with-expo-d1707579a7ce)
+For questions on setup, feel free to comment on this post: [**React Native Google Sign-Up**](https://blog.expo.dev/react-native-google-sign-in-with-expo-d1707579a7ce)
 
 1. Go to your `app.json` and make sure you define your `ios.bundleIdentifier` and the `android.package` you want to use.
 2. Open up [the Firebase Console](https://console.firebase.google.com) and setup a new project, or use an existing one.

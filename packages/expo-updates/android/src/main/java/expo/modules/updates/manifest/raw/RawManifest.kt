@@ -148,8 +148,11 @@ abstract class RawManifest(protected val json: JSONObject) {
 
   fun getAndroidUserInterfaceStyle(): String? {
     val expoClientConfig = getExpoClientConfigRootObject() ?: return null
-    val android = expoClientConfig.optJSONObject("android") ?: return null
-    return android.optString("userInterfaceStyle")
+    return try {
+      expoClientConfig.getJSONObject("android").getString("userInterfaceStyle")
+    } catch (e: JSONException) {
+      expoClientConfig.optString("userInterfaceStyle")
+    }
   }
 
   fun getAndroidStatusBarOptions(): JSONObject? {
@@ -207,6 +210,12 @@ abstract class RawManifest(protected val json: JSONObject) {
     val expoClientConfig = getExpoClientConfigRootObject() ?: return null
     val android = expoClientConfig.optJSONObject("android") ?: return null
     return android.optString("packageName")
+  }
+
+  fun shouldUseNextNotificationsApi(): Boolean {
+    val expoClientConfig = getExpoClientConfigRootObject() ?: return false
+    val android: JSONObject = expoClientConfig.optJSONObject("android") ?: return false
+    return android.optBoolean("useNextNotificationsApi", false)
   }
 
   @Throws(JSONException::class)

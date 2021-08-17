@@ -35,7 +35,7 @@ Pod::Spec.new do |s|
   # Swift/Objective-C compatibility
   s.pod_target_xcconfig = { "DEFINES_MODULE" => "YES" }
   
-  s.dependency "React"
+  s.dependency "React-Core"
   s.dependency "expo-dev-menu-interface"
   s.dependency "EXUpdatesInterface"
   
@@ -49,6 +49,7 @@ Pod::Spec.new do |s|
   end
 
   s.test_spec 'Tests' do |test_spec|
+    test_spec.platform     = :ios, '12.0'
     test_spec.source_files = 'ios/Tests/**/*.{h,m,swift}'
     test_spec.dependency "React-CoreModules"
     test_spec.dependency "OHHTTPStubs"

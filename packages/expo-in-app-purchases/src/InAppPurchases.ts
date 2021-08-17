@@ -1,4 +1,4 @@
-import { CodedError, EventEmitter, Subscription } from '@unimodules/core';
+import { CodedError, EventEmitter, Subscription } from 'expo-modules-core';
 import { Platform } from 'react-native';
 
 import ExpoInAppPurchases from './ExpoInAppPurchases';
@@ -54,21 +54,27 @@ export async function getProductsAsync(
 }
 
 export async function getPurchaseHistoryAsync(
-  refresh?: boolean
+  options: {
+    useGooglePlayCache: boolean;
+  } = { useGooglePlayCache: true }
 ): Promise<IAPQueryResponse<InAppPurchase>> {
   if (!connected) {
     throw new ConnectionError(errors.NOT_CONNECTED);
   }
 
-  return await ExpoInAppPurchases.getPurchaseHistoryAsync(refresh);
+  if (Platform.OS === 'android') {
+    return await ExpoInAppPurchases.getPurchaseHistoryAsync(options);
+  } else {
+    return await ExpoInAppPurchases.getPurchaseHistoryAsync();
+  }
 }
 
-export async function purchaseItemAsync(itemId: string, oldItem?: string): Promise<void> {
+export async function purchaseItemAsync(itemId: string, oldPurchaseToken?: string): Promise<void> {
   if (!connected) {
     throw new ConnectionError(errors.NOT_CONNECTED);
   }
 
-  await ExpoInAppPurchases.purchaseItemAsync(itemId, oldItem);
+  await ExpoInAppPurchases.purchaseItemAsync(itemId, oldPurchaseToken);
 }
 
 export function setPurchaseListener(
@@ -95,8 +101,11 @@ export async function finishTransactionAsync(
   }
   if (purchase.acknowledged) return;
 
-  const transactionId = Platform.OS === 'android' ? purchase.purchaseToken : purchase.orderId;
-  await ExpoInAppPurchases.finishTransactionAsync(transactionId, consumeItem);
+  if (Platform.OS === 'android') {
+    await ExpoInAppPurchases.finishTransactionAsync(purchase.purchaseToken, consumeItem);
+  } else {
+    await ExpoInAppPurchases.finishTransactionAsync(purchase.orderId);
+  }
 }
 
 export async function getBillingResponseCodeAsync(): Promise<number> {

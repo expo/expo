@@ -1,16 +1,14 @@
-import { ConfigPlugin, createRunOncePlugin } from '@expo/config-plugins';
-
-import { withUpdatesAndroid } from './withUpdatesAndroid';
-import { withUpdatesIOS } from './withUpdatesIOS';
+import { getAccountUsername } from '@expo/config';
+import { ConfigPlugin, createRunOncePlugin, AndroidConfig, IOSConfig } from '@expo/config-plugins';
 
 const pkg = require('expo-updates/package.json');
 
 const withUpdates: ConfigPlugin<{ expoUsername?: string } | void> = (config, props = {}) => {
-  // The username should be passed from the CLI when the plugin is automatically used.
-  const expoUsername = (props || {}).expoUsername ?? process.env.EXPO_CLI_USERNAME ?? null;
+  // The username will be passed from the CLI when the plugin is automatically used.
+  const expoUsername = (props || {}).expoUsername ?? getAccountUsername(config);
 
-  config = withUpdatesAndroid(config, { expoUsername });
-  config = withUpdatesIOS(config, { expoUsername });
+  config = AndroidConfig.Updates.withUpdates(config, { expoUsername });
+  config = IOSConfig.Updates.withUpdates(config, { expoUsername });
   return config;
 };
 

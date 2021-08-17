@@ -38,5 +38,5 @@ Pod::Spec.new do |s|
   s.dependency "ABI40_0_0React-Core", version
   s.dependency "ABI40_0_0React-Fabric", version
   s.dependency "ABI40_0_0React-RCTImage", version
-  s.dependency "Folly/Fabric", folly_version
+  s.dependency "RCT-Folly/Fabric", folly_version
 end

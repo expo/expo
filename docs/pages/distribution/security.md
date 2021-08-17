@@ -53,7 +53,7 @@ Disable Keychain support with the environment variable `EXPO_NO_KEYCHAIN=1`. You
 
 ### Changing Apple ID Password in Keychain
 
-To delete the locally stored password, open the "Keychain Access" app, switch to "All Items", and search for "deliver.[Your Apple ID]" (ex. `deliver.bacon@expo.io`). Select the item you wish to modify and delete it. Next time running an Expo command you'll be prompted for a new password.
+To delete the locally stored password, open the "Keychain Access" app, switch to "All Items", and search for "deliver.[Your Apple ID]" (ex. `deliver.bacon@expo.dev`). Select the item you wish to modify and delete it. Next time running an Expo command you'll be prompted for a new password.
 
 ### Consequences if compromised
 

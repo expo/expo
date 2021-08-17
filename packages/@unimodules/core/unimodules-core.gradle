@@ -1,8 +1,10 @@
 class UnimodulesPlugin implements Plugin<Project> {
     void apply(Project project) {
-        project.configurations.configureEach {
-            if (it.getName().startsWith('test') && project.file('./src/test').exists()) {
-                project.dependencies.add(it.getName(), project.project(':unimodules-test-core'))
+        if (project.findProject(':unimodules-test-core')) {
+            project.configurations.configureEach {
+                if (it.getName().startsWith('test') && project.file('./src/test').exists()) {       
+                    project.dependencies.add(it.getName(), project.project(':unimodules-test-core'))
+                }
             }
         }
 

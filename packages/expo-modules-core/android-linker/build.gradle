@@ -5,6 +5,8 @@ apply plugin: 'maven'
 // Import autolinking script
 apply from: "../scripts/autolinking.gradle"
 
+ensureDependeciesWereEvaluated(project)
+
 group = 'host.exp.exponent'
 version = '0.1.1'
 
@@ -78,6 +80,12 @@ android {
   }
 }
 
+dependencies { dependencyHandler ->
+  // Link expo modules as dependencies of the adapter. It uses `api` configuration so they all will be visible for the app as well.
+  // A collection of the dependencies depends on the options passed to `useExpoModules` in your project's `settings.gradle`.
+  addExpoModulesDependencies(dependencyHandler)
+}
+
 // A task generating a package list of expo modules.
 task generateExpoModulesPackageList {
   doLast {
@@ -87,7 +95,3 @@ task generateExpoModulesPackageList {
 
 // Run that task during prebuilding phase.
 preBuild.dependsOn "generateExpoModulesPackageList"
-
-// Link expo modules as dependencies of the adapter. It uses `api` configuration so they all will be visible for the app as well.
-// A collection of the dependencies depends on the options passed to `useExpoModules` in your project's `settings.gradle`.
-addExpoModulesDependencies(project)

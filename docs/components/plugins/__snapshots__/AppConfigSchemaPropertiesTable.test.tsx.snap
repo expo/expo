@@ -602,7 +602,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
                  
                 [{
 "autoVerify": true,
-"data": {"host": "*.expo.io"
+"data": {"host": "*.example.com"
 }
 }]
               </div>

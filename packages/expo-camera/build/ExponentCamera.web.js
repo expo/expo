@@ -1,4 +1,4 @@
-import { CodedError } from '@unimodules/core';
+import { CodedError } from 'expo-modules-core';
 import * as React from 'react';
 import { StyleSheet, View } from 'react-native';
 import createElement from 'react-native-web/dist/exports/createElement';
@@ -30,6 +30,7 @@ const ExponentCamera = React.forwardRef(({ type, pictureSize, poster, ...props }
                 props.onBarCodeScanned(event);
             }
         },
+        // onError: props.onMountError,
     });
     // const [pause, setPaused]
     React.useImperativeHandle(ref, () => ({

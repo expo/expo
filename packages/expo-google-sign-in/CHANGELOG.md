@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- [plugin] Created expo config plugin to disable arm64 for simulator builds. ([#13989](https://github.com/expo/expo/pull/13989) by [@EvanBacon](https://github.com/EvanBacon))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others

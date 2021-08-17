@@ -13,7 +13,7 @@ public class TrackingTransparencyModule: Module {
         self.appContext?.permissions,
         withRequester: EXTrackingPermissionRequester.self,
         resolve: promise.resolver,
-        reject: promise.rejecter
+        reject: promise.legacyRejecter
       )
     }
 
@@ -22,7 +22,7 @@ public class TrackingTransparencyModule: Module {
         withPermissionsManager: self.appContext?.permissions,
         withRequester: EXTrackingPermissionRequester.self,
         resolve: promise.resolver,
-        reject: promise.rejecter
+        reject: promise.legacyRejecter
       )
     }
   }

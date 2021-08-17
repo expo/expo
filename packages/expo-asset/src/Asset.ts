@@ -1,4 +1,4 @@
-import { Platform } from '@unimodules/core';
+import { Platform } from 'expo-modules-core';
 
 import { getAssetByID } from './AssetRegistry';
 import * as AssetSources from './AssetSources';
@@ -165,7 +165,7 @@ export class Asset {
       return this;
     }
     if (this.downloading) {
-      await new Promise((resolve, reject) => {
+      await new Promise<void>((resolve, reject) => {
         this._downloadCallbacks.push({ resolve, reject });
       });
       return this;

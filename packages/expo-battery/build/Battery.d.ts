@@ -1,4 +1,4 @@
-import { Subscription } from '@unimodules/core';
+import { Subscription } from 'expo-modules-core';
 import { BatteryLevelEvent, BatteryState, BatteryStateEvent, PowerModeEvent, PowerState } from './Battery.types';
 /**
  * Resolves with whether the battery API is available on the current device. The value of this

@@ -1,5 +1,10 @@
-import { UnavailabilityError } from '@unimodules/core';
-import { PermissionResponse, PermissionStatus } from 'expo-modules-core';
+import {
+  PermissionResponse,
+  PermissionStatus,
+  PermissionHookOptions,
+  createPermissionHook,
+  UnavailabilityError,
+} from 'expo-modules-core';
 import { Platform } from 'react-native';
 
 import ExpoBrightness from './ExpoBrightness';
@@ -21,7 +26,7 @@ export enum BrightnessMode {
   MANUAL = 2,
 }
 
-export { PermissionResponse, PermissionStatus };
+export { PermissionResponse, PermissionStatus, PermissionHookOptions };
 
 /**
  * Returns whether the Brightness API is enabled on the current device. This does not check the app
@@ -173,3 +178,18 @@ export async function getPermissionsAsync(): Promise<PermissionResponse> {
 export async function requestPermissionsAsync(): Promise<PermissionResponse> {
   return ExpoBrightness.requestPermissionsAsync();
 }
+
+// @needsAudit
+/**
+ * Check or request permissions to modify the system brightness.
+ * This uses both `requestPermissionAsync` and `getPermissionsAsync` to interact with the permissions.
+ *
+ * @example
+ * ```ts
+ * const [status, requestPermission] = Brightness.usePermissions();
+ * ```
+ */
+export const usePermissions = createPermissionHook({
+  getMethod: getPermissionsAsync,
+  requestMethod: requestPermissionsAsync,
+});

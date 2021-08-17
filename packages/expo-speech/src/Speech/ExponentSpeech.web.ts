@@ -1,4 +1,4 @@
-import { SyntheticPlatformEmitter, CodedError } from '@unimodules/core';
+import { SyntheticPlatformEmitter, CodedError } from 'expo-modules-core';
 
 import { SpeechOptions, WebVoice, VoiceQuality } from './Speech.types';
 

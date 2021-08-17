@@ -1,4 +1,4 @@
-import { UnavailabilityError } from '@unimodules/core';
+import { UnavailabilityError } from 'expo-modules-core';
 import NotificationCategoriesModule from './NotificationCategoriesModule.native';
 export default async function getNotificationCategoriesAsync() {
     if (!NotificationCategoriesModule.getNotificationCategoriesAsync) {

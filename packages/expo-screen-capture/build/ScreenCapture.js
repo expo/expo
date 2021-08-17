@@ -1,4 +1,4 @@
-import { EventEmitter, UnavailabilityError } from '@unimodules/core';
+import { EventEmitter, UnavailabilityError } from 'expo-modules-core';
 import { useEffect } from 'react';
 import ExpoScreenCapture from './ExpoScreenCapture';
 const activeTags = new Set();

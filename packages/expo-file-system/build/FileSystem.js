@@ -1,4 +1,4 @@
-import { EventEmitter, UnavailabilityError } from '@unimodules/core';
+import { EventEmitter, UnavailabilityError } from 'expo-modules-core';
 import { Platform } from 'react-native';
 import { v4 as uuidv4 } from 'uuid';
 import ExponentFileSystem from './ExponentFileSystem';
@@ -122,6 +122,14 @@ export function createDownloadResumable(uri, fileUri, options, callback, resumeD
     return new DownloadResumable(uri, fileUri, options, callback, resumeData);
 }
 export class DownloadResumable {
+    _uuid;
+    _url;
+    _fileUri;
+    _options;
+    _resumeData;
+    _callback;
+    _subscription;
+    _emitter;
     constructor(url, fileUri, options = {}, callback, resumeData) {
         this._uuid = uuidv4();
         this._url = url;

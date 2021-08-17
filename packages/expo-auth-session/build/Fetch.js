@@ -1,4 +1,4 @@
-import { Platform } from '@unimodules/core';
+import { Platform } from 'expo-modules-core';
 import qs from 'qs';
 // TODO(Bacon): pending react-native-adapter publish after sdk 38
 const isDOMAvailable = Platform.OS === 'web' &&

@@ -18,7 +18,7 @@ export default function withExpoRoot(AppRootComponent) {
             ...props,
             exp: { ...props.exp, errorRecovery: ErrorRecovery.recoveredProps },
         };
-        return React.createElement(AppRootComponent, Object.assign({}, combinedProps));
+        return React.createElement(AppRootComponent, { ...combinedProps });
     };
 }
 //# sourceMappingURL=withExpoRoot.js.map

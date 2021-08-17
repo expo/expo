@@ -74,6 +74,7 @@
 /packages/expo-sqlite                           @bbarthec
 /packages/expo-store-review                     @EvanBacon
 /packages/expo-task-manager                     @tsapeta @bycedric
+/packages/expo-tracking-transparency            @cruzan
 /packages/expo-updates                          @esamelson
 /packages/expo-video-thumbnails                 @tsapeta
 /packages/expo-web-browser                      @bbarthec

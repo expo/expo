@@ -24,7 +24,7 @@ declare type NativeAdViewProps = {
     onAdLoaded?: (event: {
         nativeEvent: NativeAd;
     }) => void;
-} & React.ComponentProps<typeof View>;
+} & React.ComponentPropsWithRef<typeof View>;
 declare type NativeAdView = React.Component<NativeAdViewProps>;
 declare const NativeAdView: React.ComponentType<any>;
 export declare type AdIconViewContextValue = {

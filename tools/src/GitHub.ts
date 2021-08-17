@@ -133,6 +133,77 @@ export async function requestPullRequestReviewersAsync(pull_number: number, revi
 }
 
 /**
+ * Returns an issue object with given issue number.
+ */
+export async function getIssueAsync(issue_number: number) {
+  const { data } = await octokit.issues.get({
+    owner,
+    repo,
+    issue_number,
+  });
+  return data;
+}
+
+/**
+ * Creates an issue comment with given body.
+ */
+export async function createCommentAsync(issue_number: number, body: string) {
+  const { data } = await octokit.issues.createComment({
+    owner,
+    repo,
+    issue_number,
+    body,
+  });
+  return data;
+}
+
+/**
+ * Lists commits in given issue.
+ */
+export async function listCommentsAsync(
+  issue_number: number,
+  options: Partial<ListCommentsOptions>
+) {
+  const { data } = await octokit.issues.listComments({
+    owner,
+    repo,
+    issue_number,
+    ...options,
+  });
+  return data;
+}
+
+/**
+ * Returns a list of issue comments gathered from all pages.
+ */
+export async function listAllCommentsAsync(issue_number: number) {
+  const issue = await getIssueAsync(issue_number);
+  const comments = [] as ListCommentsResponse['data'];
+  const pageSize = 100;
+
+  for (let page = 1, maxPage = Math.ceil(issue.comments / pageSize); page <= maxPage; page++) {
+    const commentsPage = await listCommentsAsync(issue_number, {
+      page,
+      per_page: pageSize,
+    });
+    comments.push(...commentsPage);
+  }
+  return comments;
+}
+
+/**
+ * Deletes an issue comment with given identifier.
+ */
+export async function deleteCommentAsync(comment_id: number) {
+  const { data } = await octokit.issues.deleteComment({
+    owner,
+    repo,
+    comment_id,
+  });
+  return data;
+}
+
+/**
  * Adds labels to the issue. Throws an error when any of given labels doesn't exist.
  */
 export async function addIssueLabelsAsync(issue_number: number, labels: string[]) {
@@ -164,3 +235,6 @@ export async function removeIssueLabelAsync(issue_number: number, name: string) 
 export type PullRequestReviewEvent = 'COMMENT' | 'APPROVE' | 'REQUEST_CHANGES';
 export type PullRequest = RestEndpointMethodTypes['pulls']['get']['response']['data'];
 export type PullRequestReview = RestEndpointMethodTypes['pulls']['getReview']['response']['data'];
+export type IssueComment = RestEndpointMethodTypes['issues']['getComment']['response']['data'];
+export type ListCommentsOptions = RestEndpointMethodTypes['issues']['listComments']['parameters'];
+export type ListCommentsResponse = RestEndpointMethodTypes['issues']['listComments']['response'];
