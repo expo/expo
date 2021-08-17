@@ -1,4 +1,4 @@
-import { NativeModulesProxy } from '@unimodules/core';
+import { NativeModulesProxy } from 'expo-modules-core';
 import ExponentFileSystemShim from './ExponentFileSystemShim';
 let platformModule;
 if (NativeModulesProxy.ExponentFileSystem) {

@@ -1,5 +1,4 @@
-import { Platform } from '@unimodules/core';
-import { PermissionStatus, createPermissionHook, } from 'expo-modules-core';
+import { PermissionStatus, createPermissionHook, Platform, } from 'expo-modules-core';
 import ExpoLocation from './ExpoLocation';
 import { LocationAccuracy, LocationActivityType, LocationGeofencingEventType, LocationGeofencingRegionState, } from './Location.types';
 import { LocationEventEmitter } from './LocationEventEmitter';

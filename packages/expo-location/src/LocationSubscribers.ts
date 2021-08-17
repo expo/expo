@@ -1,4 +1,4 @@
-import { Subscription } from '@unimodules/core';
+import { Subscription } from 'expo-modules-core';
 
 import ExpoLocation from './ExpoLocation';
 import { LocationCallback, LocationHeadingCallback } from './Location.types';

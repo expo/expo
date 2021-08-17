@@ -32,7 +32,7 @@
   },
   "author": "650 Industries, Inc.",
   "license": "MIT",
-  "homepage": "https://docs.expo.io/versions/latest/sdk/auth-session",
+  "homepage": "https://docs.expo.dev/versions/latest/sdk/auth-session",
   "dependencies": {
     "expo-constants": "~11.0.0",
     "expo-crypto": "~9.2.0",

@@ -1,4 +1,4 @@
-import { NativeModulesProxy, UnavailabilityError, requireNativeViewManager, CodedError, } from '@unimodules/core';
+import { NativeModulesProxy, UnavailabilityError, requireNativeViewManager, CodedError, } from 'expo-modules-core';
 import * as React from 'react';
 import { Platform, View, findNodeHandle } from 'react-native';
 import { configureLogging } from './GLUtils';

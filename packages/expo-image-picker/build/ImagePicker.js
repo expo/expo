@@ -1,5 +1,4 @@
-import { UnavailabilityError, CodedError } from '@unimodules/core';
-import { PermissionStatus, createPermissionHook, } from 'expo-modules-core';
+import { PermissionStatus, createPermissionHook, UnavailabilityError, CodedError, } from 'expo-modules-core';
 import ExponentImagePicker from './ExponentImagePicker';
 import { MediaTypeOptions, VideoExportPreset, } from './ImagePicker.types';
 function validateOptions(options) {
@@ -65,8 +64,9 @@ export async function requestMediaLibraryPermissionsAsync(writeOnly = false) {
  * ```
  */
 export const useMediaLibraryPermissions = createPermissionHook({
-    getMethod: getMediaLibraryPermissionsAsync,
-    requestMethod: requestMediaLibraryPermissionsAsync,
+    // TODO(cedric): permission requesters should have an options param or a different requester
+    getMethod: options => getMediaLibraryPermissionsAsync(options?.writeOnly),
+    requestMethod: options => requestMediaLibraryPermissionsAsync(options?.writeOnly),
 });
 // @needsAudit
 /**

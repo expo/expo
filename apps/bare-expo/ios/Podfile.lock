@@ -1185,75 +1185,75 @@ SPEC CHECKSUMS:
   AppAuth: 31bcec809a638d7bd2f86ea8a52bd45f6e81e7c7
   boost-for-react-native: 39c7adb57c4e60d6c5479dd8623128eb5b3f0f2c
   CocoaLumberjack: b7e05132ff94f6ae4dfa9d5bce9141893a21d9da
-  DoubleConversion: cf9b38bf0b2d048436d9a82ad2abe1404f11e7de
-  EXAmplitude: 19866218bc855e6ac7a29e5c8ec1b24eab81b40c
-  EXAppAuth: b7ecb4ce7634676985f67d2489054ea7727cd5e3
-  EXApplication: 9ff2a206009d6e55bca6c20b3f33d07986b51ef3
-  EXAV: 7f27c872fb45479d66e762a88484f58d52174131
-  EXBackgroundFetch: aeaddb8ff64e13b1c2766f1e4a09bb727a6330aa
-  EXBarCodeScanner: afd5eb520bb133688dc680453465842ffbcef47c
-  EXBattery: 65a5d98f83be408ed29b4e00f4c1a607dd585654
-  EXBlur: eb7277c806220f1bed59547b4b5240e2de462aff
-  EXBrightness: 4532d07a5c34ddc887e1b85eeaff42eef6882bb1
-  EXCalendar: 69cfd91805f2070e0b2dc0f48d39f08d915a2de1
-  EXCamera: d39ee631cecae1722c12a0b5fe4651a09b262863
-  EXCellular: c023099c6d53230d69c03a0ed0b515fbf2ffc5eb
-  EXClipboard: 247c22246c4843351f2f89cc29b654ecd936eaa8
-  EXConstants: 0c200d22d140d3f1834dc51c4ebe0465ddaa82c5
-  EXContacts: bc06f42aa1bc7fb5ed0f5b29287f772faa33ad55
-  EXCrypto: e64a6d6d3f785801384004a4197b0f95a23a2761
-  EXDevice: 74b193bafc7fc162eb435b8810b72143ab7743af
-  EXDocumentPicker: 52183e4bdffbbd50e61726066f529455227c5daa
-  EXErrorRecovery: 500f15bfbced54161641cf82c45d39103d33462a
-  EXFacebook: 052783a39c092ad47015e2e2af8e6d33e9d92089
-  EXFaceDetector: 47c8c4a10c5b86c5ea9c77ca7b517102833a6d9b
-  EXFileSystem: 9a77e33ba77e8b1ffbbe0625a211e3abee6f69ab
-  EXFirebaseAnalytics: ca01838167729b67f838a673e4b3e0637faec118
-  EXFirebaseCore: 9b5380fd62fce3c790fa1d6727a8d7cbbef4f0fb
-  EXFont: 6e7d5a7a09fbd0ee801de76601b2e620c4d2f575
-  EXGL: 468113f7d19c139873e8e2b809ddef064ba847c0
-  EXGL_CPP: dcca866c4f6af6694a12217fb2db3325acd19b57
-  EXGoogleSignIn: d61beec381962b350f6ed60c9b65ae46ca26ef12
-  EXHaptics: 718e4b457673bd88384a7fbb6f357c2138c771b0
+  DoubleConversion: 5805e889d232975c086db112ece9ed034df7a0b2
+  EXAmplitude: f0c3dd959d629181c0c2b4bc52717580a539a600
+  EXAppAuth: 50d7cb52892403af44953efedf94dd71fa77d32a
+  EXApplication: acfb8806a8ec62519d19f623411886d560ebd21c
+  EXAV: d92c151ecee1466cf8b5f6b51b8e01c9c161261e
+  EXBackgroundFetch: 9d0e1b3e5b59639884758de88c251d9d476f6a11
+  EXBarCodeScanner: 295ec5b7dd14f3eda97bcee30ca191f320edf7a4
+  EXBattery: 6fb23bff3bef7b932649afd90e243ff519c7e31d
+  EXBlur: cb1e0029324cc1aae4ad93ac8f709b388e396b15
+  EXBrightness: d62b5d03a73789a997d40a00916d0a61f641aa22
+  EXCalendar: bb0502238b70c85aff56c3ced9fd4c47618f130b
+  EXCamera: ae8d2ffc917f3f6c726fadbdcf2190e6d724c6d6
+  EXCellular: b416818c34a08e9ed2827885dcabd815adf89128
+  EXClipboard: 0286db41a88d13d5a8b12faaa1bc3ac74a1ee680
+  EXConstants: 0b95be3865919bd50c35470b9689a73ad7af41c0
+  EXContacts: 7edcde8be2eed9602cdebcbc26efe1fa87637e75
+  EXCrypto: 1c33beef27cfe7bd3a9625652647233ff56943b7
+  EXDevice: 2519a0b4a54da12218da20f768f64eb5a2000e6a
+  EXDocumentPicker: d410f3158bf3893ce80c042c946066bb1942329b
+  EXErrorRecovery: 9cb7806aaa8318ee07663a3c517774c886a3b19a
+  EXFacebook: d0f98bce00489c07f966ae11d1334423ef53cf59
+  EXFaceDetector: 0a4cc20bf5fe0e5bbf82656c7c4355d0042c4263
+  EXFileSystem: 84376b30d7124634a2c78e98dd01bc4db1eb57f6
+  EXFirebaseAnalytics: 5556e3791f7a6f3bad165fe0d67720bfd43d101f
+  EXFirebaseCore: ba92c9985234d50c29a91845eaac86c639382947
+  EXFont: 72076d101a59b30c61ff3048cf35267c746e7a16
+  EXGL: fa9238e146f0ce530ea2d883328c114d07ee2d62
+  EXGL_CPP: 93d2668e22b8fde8ac76f067ffbafefed3540dab
+  EXGoogleSignIn: 33838d77991c35efd66e9bb1b1250ff27bf681e9
+  EXHaptics: 91f0f7fe4e59602e788ecaaa8bfcb9d2da793ee1
   EXImageLoader: d3531a3fe530b22925c19977cb53bb43e3821fe6
-  EXImageManipulator: a5bec1d69308fa1f091378f6461ae348ec83105d
-  EXImagePicker: 958720afb9395ee1168dcda28d9915345c4e7cae
-  EXInAppPurchases: 0c590b1ddb24e70c934e3a5aeac77651659d24eb
-  EXKeepAwake: f4105ef469be7b283f66ce2d7234bb71ac80cd26
-  EXLinearGradient: 36053f529a48cc7534d6125b0ddc8dd17e091fdd
-  EXLocalAuthentication: e6347880c31bc3b9693933780d3bc84823fe0698
-  EXLocalization: 356f4e16a606cec21a77d6250528fde526152b45
-  EXLocation: bdf1af6aa8fc4f4dc1fd21aa39760484026f8a5d
-  EXMailComposer: d1976c864ee1d74907b15c98ec68ddf5ca2331b1
-  EXMediaLibrary: 3243417362d85fb5881c27bf0c944b502324f7b2
-  EXNetwork: c15bb1026d72d1eb3782710faf373ed35c6eb024
-  EXNotifications: 296d9487163c2c08fffec5e79a5f9094bc016d9c
-  EXPermissions: c7bead8f093700d5fcfb4f41238430a51702c5c8
-  expo-dev-client: 18d9a9dace8defeabe16b3793131103b8f939d5c
+  EXImageManipulator: 609ec11891dff0b0ef303c43ef0be1a4eb0b0af3
+  EXImagePicker: d4e99779c51a883986876785f92ed3c3cbca9afd
+  EXInAppPurchases: b3f9032b166ffa972229a1eff687879c1d4c14c6
+  EXKeepAwake: 511382bd2c6e84a1e97cf3a3fcb135a5232bf37a
+  EXLinearGradient: 98725b9f7128e9171cd6f8dc8df1d08c9c597636
+  EXLocalAuthentication: 61474393126263b15a00eb17e7a521bbe0fd0dbc
+  EXLocalization: e5266aed446db81d5bd111c958d1732434878002
+  EXLocation: c33f2e945c5c47acf5db3fd1ae68edda687da54c
+  EXMailComposer: e5d206471deef0d515bf6ec93697df4d3e5a15ae
+  EXMediaLibrary: 2256df25d4371037570a1ed01e605a50759caaa5
+  EXNetwork: b420f5e99b4291f2ba0f632a6eb099b1f126a7d8
+  EXNotifications: 027e78f953e67822aa5014c42335ace12450e6ad
+  EXPermissions: 0760a7139b84dc8335ed297566892ddc856e89bb
+  expo-dev-client: 02710ef3b3e779ee62c4e4c442601b26786eeb68
   expo-dev-launcher: 6ae81f30b06470413eeca0f9e2a115429f10c1c3
   expo-dev-menu: 148071b2ca564529a0efb941cc2a72fe7397195a
   expo-dev-menu-interface: 145d352ba9edff66b0c1fb13773f0f0dd9d50afd
-  expo-image: ea170930bd8bc42328ee74ff4dc861ca31587dc8
+  expo-image: 8c08b81eab730b5cc0ef56c1fc80d7ae0d5f2b97
   ExpoModulesCore: cbf340d971211537aec95d99945bd97143c07534
-  EXPrint: 61bbaa43c42c1badfa46de5be015d7d798d33583
-  EXRandom: ecb71f5d01991f29bb0277f8a2c35d168f85d637
-  EXScreenCapture: c51844407fbac8bbca4415467bc43f2b7764d225
-  EXScreenOrientation: e95cb77bbbbfee0d9cfa419fc713e1ab8a06eaba
-  EXSecureStore: 351de40f612b4d6e44a69dc8f12d55403b45ec5d
-  EXSegment: e82309549eb4a0281c24940100f3dedc774ef75b
-  EXSensors: 67423141a4aefbce82f04e61260570615b25b761
-  EXSharing: 6a3a3f675fc44d9442f761b1ec8351aba1e813f3
-  EXSMS: 4cd1d71d88a9c980bc215d33afeabb49a5a8d720
-  EXSpeech: 35e7d593b8a369ca7e219957bd61ac74aa7b23bd
-  EXSplashScreen: da00ad1d61c395c5c81b252c5987e8f83cba230a
-  EXSQLite: faed80cf1f7ec5a116c44aae3ca9abff7315553b
-  EXStoreReview: c7148fdc794a7e32a454eedda801360226fa8b4e
+  EXPrint: 1b63871bd0f286f9dc5441412b3b9049b7c9fe32
+  EXRandom: 4d6fe53e19a91df3f66665371962284677d741c9
+  EXScreenCapture: 190143b21725ca78321df5abf014a5c01738bfb7
+  EXScreenOrientation: b0c5cbb8f2af190ba269afaba0a080c1361b39f9
+  EXSecureStore: fb1816fd0ebcb5d04bcdc1d623a6916da2798cb6
+  EXSegment: 7aa0cfa604879c76eca8a7b25bcdb9cef1feb84e
+  EXSensors: f8f9bfcacb90d397595f865cb1689e0e2666784b
+  EXSharing: 7d30213ec67fbf73fff13710c9cd96894c53b9b3
+  EXSMS: cf81d1899ba17785890f7e27ad0271d60bdcccba
+  EXSpeech: ee6fd54013b0b3dacbb156c5832a6848056235f7
+  EXSplashScreen: ad2a0513f5b63aaf7ceb4d55b46d268101c41158
+  EXSQLite: 3c4707d0c602b3c6ce9b261f7db525e4e9958357
+  EXStoreReview: 93a464b2085d841ffb6bc959f16645149ee5690e
   EXStructuredHeaders: 384ccdf0c09ed0be8fc73d4b2d70e436cd195975
-  EXTaskManager: 91fef764a2ec7690aa8070f862098df064facdc4
-  EXTrackingTransparency: 212dcc45e24c0e3ec8ea89e4d93c1d123c5a1fb4
-  EXUpdatesInterface: b68e78b912a03fff7901a5f46ec200c45e3506a5
-  EXVideoThumbnails: 0a74ef339680e1aa52e30c53bc56990e9d8af0e8
-  EXWebBrowser: b244cd85281a2b8f90a4ce81d674e3dc4f4ccc5e
+  EXTaskManager: 25d73caa179dc669de405c938891f649b876c304
+  EXTrackingTransparency: 3331861717c233fc079f5bf7831dd627ac085cd5
+  EXUpdatesInterface: 31a0826d3036c570f8d09a38504865332915269f
+  EXVideoThumbnails: da38473f6d86ce08c5a4a9e6e839816e1aac01c3
+  EXWebBrowser: 144b3209de7feec39104531ce205912d8ade93c9
   FacebookSDK: 4b9bb8e2824898b47f18c666dc145c09b40609e6
   FBLazyVector: e686045572151edef46010a6f819ade377dfeb4b
   FBReactNativeSpec: 6baddc2c2b39d192b96965ec745b4d6628e62b2e
@@ -1263,7 +1263,7 @@ SPEC CHECKSUMS:
   FirebaseCore: ac35d680a0bf32319a59966a1478e0741536b97b
   FirebaseCoreDiagnostics: 3d36e05da74cb8b7ce30e6594a8f201b982c725c
   FirebaseInstallations: bf2ec8dbf36ff4c91af6b9a003d15855757680c1
-  glog: 73c2498ac6884b13ede40eda8228cb1eee9d9d62
+  glog: 1f3da668190260b06b429bb211bfbee5cd790c28
   GoogleAppMeasurement: 0c3b134b2c0a90c4c24833873894bfe0e42a0384
   GoogleDataTransport: 8b0e733ea77c9218778e5a9e34ba9508b8328939
   GoogleMLKit: 6ca2a10de262ee1017b52ac045e8967884ace992
@@ -1332,6 +1332,6 @@ SPEC CHECKSUMS:
   Yoga: 575c581c63e0d35c9a83f4b46d01d63abc1100ac
   ZXingObjC: fdbb269f25dd2032da343e06f10224d62f537bdb
 
-PODFILE CHECKSUM: 208c570f997bc1b6f5c6dda765eccb9e0e2720ec
+PODFILE CHECKSUM: 9a463dbb1d4139a1508a147de4e7d3a5c3177692
 
 COCOAPODS: 1.10.2

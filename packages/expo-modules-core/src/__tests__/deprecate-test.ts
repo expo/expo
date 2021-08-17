@@ -1,7 +1,7 @@
 import deprecate from '../deprecate';
 import { CodedError } from '../errors/CodedError';
 
-const packageName = '@unimodules/core';
+const packageName = 'expo-modules-core';
 
 describe('deprecate', () => {
   describe('warnings', () => {

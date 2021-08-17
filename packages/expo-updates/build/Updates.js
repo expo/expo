@@ -1,4 +1,4 @@
-import { RCTDeviceEventEmitter, CodedError, NativeModulesProxy, UnavailabilityError, } from '@unimodules/core';
+import { RCTDeviceEventEmitter, CodedError, NativeModulesProxy, UnavailabilityError, } from 'expo-modules-core';
 import { EventEmitter } from 'fbemitter';
 import ExpoUpdates from './ExpoUpdates';
 export * from './Updates.types';

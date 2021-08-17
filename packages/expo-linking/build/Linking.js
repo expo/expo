@@ -1,5 +1,5 @@
-import { Platform, UnavailabilityError } from '@unimodules/core';
 import Constants from 'expo-constants';
+import { Platform, UnavailabilityError } from 'expo-modules-core';
 import invariant from 'invariant';
 import qs from 'qs';
 import { useEffect, useState } from 'react';

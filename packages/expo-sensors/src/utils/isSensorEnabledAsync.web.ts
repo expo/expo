@@ -1,5 +1,4 @@
-import { Platform } from '@unimodules/core';
-import { PermissionResponse, PermissionStatus } from 'expo-modules-core';
+import { PermissionResponse, PermissionStatus, Platform } from 'expo-modules-core';
 
 type SensorEventName = 'deviceorientation' | 'devicemotion';
 

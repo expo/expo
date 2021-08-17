@@ -1,4 +1,9 @@
-import { PermissionResponse, PermissionStatus, PermissionExpiration } from 'expo-modules-core';
+import {
+  PermissionResponse,
+  PermissionStatus,
+  PermissionExpiration,
+  PermissionHookOptions,
+} from 'expo-modules-core';
 import { ViewProps } from 'react-native';
 
 export enum CameraType {
@@ -301,4 +306,4 @@ export type BarCodeSettings = {
   interval?: number;
 };
 
-export { PermissionResponse, PermissionStatus, PermissionExpiration };
+export { PermissionResponse, PermissionStatus, PermissionExpiration, PermissionHookOptions };

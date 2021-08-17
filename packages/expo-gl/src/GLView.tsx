@@ -3,7 +3,7 @@ import {
   UnavailabilityError,
   requireNativeViewManager,
   CodedError,
-} from '@unimodules/core';
+} from 'expo-modules-core';
 import * as React from 'react';
 import { Platform, View, findNodeHandle } from 'react-native';
 

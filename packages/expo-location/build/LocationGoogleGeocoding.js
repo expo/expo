@@ -1,4 +1,4 @@
-import { CodedError } from '@unimodules/core';
+import { CodedError } from 'expo-modules-core';
 const GOOGLE_API_URL = 'https://maps.googleapis.com/maps/api/geocode/json';
 let googleApiKey;
 export function setGoogleApiKey(apiKey) {

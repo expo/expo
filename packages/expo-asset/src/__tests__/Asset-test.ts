@@ -177,7 +177,7 @@ it(`coalesces downloads`, async () => {
   expect(FileSystem.downloadAsync).toHaveBeenCalledTimes(1);
 });
 
-const { Platform } = require('@unimodules/core');
+const { Platform } = require('expo-modules-core');
 if (Platform.OS === 'web') {
   describe('web', () => {
     it(`fetches images to determine the dimensions`, async () => {

@@ -1,4 +1,4 @@
-import { CodedError, EventEmitter, Subscription } from '@unimodules/core';
+import { CodedError, EventEmitter, Subscription } from 'expo-modules-core';
 import { Platform } from 'react-native';
 
 import ExpoInAppPurchases from './ExpoInAppPurchases';

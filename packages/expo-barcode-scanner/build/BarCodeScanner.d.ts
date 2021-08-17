@@ -25,8 +25,8 @@ export declare type BarCodeEvent = BarCodeScannerResult & {
 export declare type BarCodeEventCallbackArguments = {
     nativeEvent: BarCodeEvent;
 };
-export declare type BarCodeScannedCallback = (params: BarCodeEvent) => void;
 export { PermissionResponse, PermissionStatus, PermissionHookOptions };
+export declare type BarCodeScannedCallback = (params: BarCodeEvent) => void;
 export interface BarCodeScannerProps extends ViewProps {
     type?: 'front' | 'back' | number;
     barCodeTypes?: string[];
@@ -61,7 +61,7 @@ export declare class BarCodeScanner extends React.Component<BarCodeScannerProps>
      * const [status, requestPermission] = BarCodeScanner.usePermissions();
      * ```
      */
-    static usePermissions: (options?: PermissionHookOptions | undefined) => [PermissionResponse | null, () => Promise<PermissionResponse | null>, () => Promise<PermissionResponse | null>];
+    static usePermissions: (options?: PermissionHookOptions<object> | undefined) => [PermissionResponse | null, () => Promise<PermissionResponse>, () => Promise<PermissionResponse>];
     static scanFromURLAsync(url: string, barCodeTypes?: string[]): Promise<BarCodeScannerResult[]>;
     render(): JSX.Element;
     onObjectDetected: (callback?: BarCodeScannedCallback | undefined) => ({ nativeEvent, }: BarCodeEventCallbackArguments) => void;
@@ -70,4 +70,4 @@ export declare class BarCodeScanner extends React.Component<BarCodeScannerProps>
 export declare const Constants: {
     BarCodeType: any;
     Type: any;
-}, getPermissionsAsync: typeof BarCodeScanner.getPermissionsAsync, requestPermissionsAsync: typeof BarCodeScanner.requestPermissionsAsync, usePermissions: (options?: PermissionHookOptions | undefined) => [PermissionResponse | null, () => Promise<PermissionResponse | null>, () => Promise<PermissionResponse | null>];
+}, getPermissionsAsync: typeof BarCodeScanner.getPermissionsAsync, requestPermissionsAsync: typeof BarCodeScanner.requestPermissionsAsync, usePermissions: (options?: PermissionHookOptions<object> | undefined) => [PermissionResponse | null, () => Promise<PermissionResponse>, () => Promise<PermissionResponse>];

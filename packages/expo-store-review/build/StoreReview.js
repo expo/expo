@@ -1,6 +1,6 @@
-import { Platform } from '@unimodules/core';
 import Constants from 'expo-constants';
 import * as Linking from 'expo-linking';
+import { Platform } from 'expo-modules-core';
 import StoreReview from './ExpoStoreReview';
 // @needsAudit
 /**

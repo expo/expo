@@ -1,4 +1,4 @@
-import { EventEmitter, Platform, UnavailabilityError } from '@unimodules/core';
+import { EventEmitter, Platform, UnavailabilityError } from 'expo-modules-core';
 import ExpoScreenOrientation from './ExpoScreenOrientation';
 import { Orientation, OrientationLock, WebOrientationLock, WebOrientation, SizeClassIOS, } from './ScreenOrientation.types';
 export { Orientation, OrientationLock, WebOrientationLock, WebOrientation, SizeClassIOS, };

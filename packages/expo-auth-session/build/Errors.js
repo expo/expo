@@ -1,4 +1,4 @@
-import { CodedError } from '@unimodules/core';
+import { CodedError } from 'expo-modules-core';
 const errorCodeMessages = {
     // https://tools.ietf.org/html/rfc6749#section-4.1.2.1
     // https://openid.net/specs/openid-connect-core-1_0.html#AuthError

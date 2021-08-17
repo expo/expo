@@ -1,6 +1,6 @@
 import './polyfillNextTick';
 import customOpenDatabase from '@expo/websql/custom';
-import { NativeModulesProxy } from '@unimodules/core';
+import { NativeModulesProxy } from 'expo-modules-core';
 import zipObject from 'lodash/zipObject';
 import { Platform } from 'react-native';
 const { ExponentSQLite } = NativeModulesProxy;
