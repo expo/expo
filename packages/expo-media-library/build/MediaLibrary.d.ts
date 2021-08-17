@@ -1,4 +1,4 @@
-import { PermissionResponse as EXPermissionResponse, PermissionStatus, PermissionExpiration, Subscription } from 'expo-modules-core';
+import { PermissionResponse as EXPermissionResponse, PermissionStatus, PermissionExpiration, PermissionHookOptions, Subscription } from 'expo-modules-core';
 export declare type PermissionResponse = EXPermissionResponse & {
     /**
      * Indicates if your app has access to the whole or only part of the photo library. Possible values are:
@@ -231,7 +231,7 @@ export declare type PagedInfo<T> = {
 };
 export declare type AssetRef = Asset | string;
 export declare type AlbumRef = Album | string;
-export { PermissionStatus, PermissionExpiration, EXPermissionResponse, Subscription };
+export { PermissionStatus, PermissionExpiration, EXPermissionResponse, PermissionHookOptions, Subscription, };
 /**
  * Possible media types.
  */
@@ -258,6 +258,18 @@ export declare function requestPermissionsAsync(writeOnly?: boolean): Promise<Pe
  * @return A promise that fulfils with [`PermissionResponse`](#permissionresponse) object.
  */
 export declare function getPermissionsAsync(writeOnly?: boolean): Promise<PermissionResponse>;
+/**
+ * Check or request permissions to access the media library.
+ * This uses both `requestPermissionsAsync` and `getPermissionsAsync` to interact with the permissions.
+ *
+ * @example
+ * ```ts
+ * const [status, requestPermission] = MediaLibrary.usePermissions();
+ * ```
+ */
+export declare const usePermissions: (options?: PermissionHookOptions<{
+    writeOnly?: boolean | undefined;
+}> | undefined) => [PermissionResponse | null, () => Promise<PermissionResponse>, () => Promise<PermissionResponse>];
 /**
  * __Available only on iOS >= 14.__ Allows the user to update the assets that your app has access to.
  * The system modal is only displayed if the user originally allowed only `limited` access to their
