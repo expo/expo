@@ -44,6 +44,10 @@ export type ProjectDataProject = {
     primaryColor?: string;
     colorPalette?: object;
   } | null;
+  latestReleaseForReleaseChannel?: {
+    sdkVersion: string;
+    runtimeVersion?: string | null;
+  } | null;
   updateBranches: ProjectUpdateBranch[];
 };
 
