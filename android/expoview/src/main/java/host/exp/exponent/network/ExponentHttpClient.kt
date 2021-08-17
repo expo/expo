@@ -8,7 +8,6 @@ import host.exp.exponent.analytics.EXL
 import okhttp3.*
 import okio.BufferedSource
 import okio.Okio
-import org.apache.commons.io.IOUtils
 import org.json.JSONException
 import org.json.JSONObject
 import java.io.FileNotFoundException
@@ -121,25 +120,6 @@ class ExponentHttpClient(
         }
       }
     })
-  }
-
-  fun getHardCodedResponse(uri: String): String? {
-    try {
-      val normalizedUri = normalizeUri(uri)
-      for (embeddedResponse in Constants.EMBEDDED_RESPONSES) {
-        if (normalizedUri == normalizeUri(embeddedResponse.url)) {
-          var strippedAssetsPath = embeddedResponse.responseFilePath
-          if (strippedAssetsPath.startsWith("assets://")) {
-            strippedAssetsPath = strippedAssetsPath.substring("assets://".length)
-          }
-          val stream = context.assets.open(strippedAssetsPath)
-          return IOUtils.toString(stream, "UTF-8")
-        }
-      }
-    } catch (e: Throwable) {
-      EXL.e(TAG, e)
-    }
-    return null
   }
 
   private fun tryHardCodedResponse(

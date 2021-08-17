@@ -11,7 +11,6 @@ import expo.modules.updates.db.UpdatesDatabase
 import host.exp.exponent.ExpoHandler
 import host.exp.exponent.ExponentManifest
 import host.exp.exponent.analytics.EXL
-import host.exp.exponent.kernel.Crypto
 import host.exp.exponent.kernel.services.ExpoKernelServiceRegistry
 import host.exp.exponent.network.ExponentNetwork
 import host.exp.exponent.storage.ExponentSharedPreferences
@@ -41,11 +40,7 @@ class NativeModuleDepsProvider(application: Application) {
 
   @Inject
   @DoNotStrip
-  val mCrypto: Crypto = Crypto(mExponentNetwork)
-
-  @Inject
-  @DoNotStrip
-  var mExponentManifest: ExponentManifest = ExponentManifest(mContext, mExponentNetwork, mCrypto, mExponentSharedPreferences)
+  var mExponentManifest: ExponentManifest = ExponentManifest(mContext, mExponentSharedPreferences)
 
   @Inject
   @DoNotStrip
