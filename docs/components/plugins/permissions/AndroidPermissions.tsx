@@ -5,13 +5,13 @@ import { androidPermissions, AndroidPermissionItem } from './data';
 
 import { InlineCode } from '~/components/base/code';
 import { Quote } from '~/components/base/paragraph';
-import { QuestionIcon } from '~/components/icons/QuestionIcon';
+// import { QuestionIcon } from '~/components/icons/QuestionIcon';
 
 type AndroidPermissionsProps = {
   keys: string[];
 };
 
-const grantedByInfo = 'Some permissions are granted by the system without user approval';
+// const grantedByInfo = 'Some permissions are granted by the system without user approval';
 
 export function AndroidPermissions(props: AndroidPermissionsProps) {
   const list = props.keys.map(key => androidPermissions[key]);
@@ -21,11 +21,11 @@ export function AndroidPermissions(props: AndroidPermissionsProps) {
       <thead>
         <tr>
           <th>Android Permission</th>
-          <th>
+          {/* <th>
             <span css={grantedByInfoStyle} title={grantedByInfo}>
               Granted by <QuestionIcon size={12} title={grantedByInfo} />
             </span>
-          </th>
+          </th> */}
           <th>Description</th>
         </tr>
       </thead>
@@ -46,9 +46,9 @@ function AndroidPermissionRow(permission: AndroidPermissionItem) {
       <td>
         <InlineCode>{name}</InlineCode>
       </td>
-      <td>
+      {/* <td>
         <i>{getPermissionGranter(permission)}</i>
-      </td>
+      </td> */}
       <td>
         {!!description && (
           <p css={(warning || descriptionLong) && descriptionSpaceStyle}>{description}</p>
@@ -68,9 +68,9 @@ function AndroidPermissionRow(permission: AndroidPermissionItem) {
   );
 }
 
-const grantedByInfoStyle = css`
-  white-space: nowrap;
-`;
+// const grantedByInfoStyle = css`
+//   white-space: nowrap;
+// `;
 
 const deprecatedStyle = css`
   opacity: 0.5;
@@ -84,8 +84,8 @@ const quoteStyle = css`
   margin-bottom: 0;
 `;
 
-function getPermissionGranter(permission: AndroidPermissionItem): 'user' | 'system' | 'none' {
-  if (!permission.protection) return 'none';
-  if (permission.protection.includes('dangerous')) return 'user';
-  return 'system';
-}
+// function getPermissionGranter(permission: AndroidPermissionItem): 'user' | 'system' | 'none' {
+//   if (!permission.protection) return 'none';
+//   if (permission.protection.includes('dangerous')) return 'user';
+//   return 'system';
+// }
