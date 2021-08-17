@@ -8,6 +8,7 @@ import ImageSpotlight from '~/components/plugins/ImageSpotlight'
 import InstallSection from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 import { AndroidPermissions, IOSPermissions } from '~/components/plugins/Permissions';
+import { InlineCode } from '~/components/base/code';
 
 The **`expo-notifications`** provides an API to fetch push notification tokens and to present, schedule, receive and respond to notifications.
 
@@ -37,9 +38,24 @@ The **`expo-notifications`** provides an API to fetch push notification tokens a
 
 ## Configuration in app.json / app.config.js
 
-If you are using EAS Build or the bare workflow, you can change some of the native notification behavior using config plugins. Just add the [config plugin](../../../guides/config-plugins.md) to the `plugins` array of your app manifest.
+You can configure `expo-notifications` using its built-in [config plugin](../../../guides/config-plugins.md) if you use config plugins in your project ([EAS Build](/build/introduction.md) or `expo run:[android|ios]`). The plugin allows you to configure various properties that cannot be set at runtime and require building a new app binary to take effect.
 
-**Example app.json**
+<details><summary><strong>Are you using the classic build system?</strong> (<InlineCode>expo build:[android|ios]</InlineCode>)</summary> <p>
+
+Learn how to configure the native projects in the [installation instructions in the `expo-notifications` repository](https://github.com/expo/expo/tree/master/packages/expo-notifications#installation-in-bare-react-native-projects).
+
+</p>
+</details>
+
+
+<details><summary><strong>Are you using this library in a bare React Native app?</strong></summary> <p>
+
+Learn how to configure the native projects in the [installation instructions in the `expo-notifications` repository](https://github.com/expo/expo/tree/master/packages/expo-notifications#installation-in-bare-react-native-projects).
+
+</p>
+</details>
+
+### Example app.json with config plugin
 
 ```json
 {
@@ -56,25 +72,7 @@ If you are using EAS Build or the bare workflow, you can change some of the nati
 }
 ```
 
-<details><summary><strong>Using classic Expo builds?</strong></summary> <p>
-
-
-
-Not all properties are available in classic Expo builds. You can configure the following properties directly in your app manifest, [using the `expo.notification` property](https://docs.expo.dev/versions/v42.0.0/config/app/#notification).
-
-```json
-"expo": {
-  "notification": {
-    "icon": "./assets/notification-icon.png",
-    "color": "#ffffff"
-  }
-}
-```
-
-</p>
-</details>
-
-### Properties
+### Configurable properties
 
 name     | default       | description
 ---      | ---           | ---
@@ -83,20 +81,21 @@ name     | default       | description
 `sounds` | -             | Array of local paths to sound files (.wav recommended) that can be used as custom notification sounds.
 `mode`   | `development` | **iOS only** Environment of the app: either 'development' or 'production'.
 
-<details><summary><strong>Only using Expo packages in a plain React Native app?</strong></summary> <p>
+## Credentials configuration
 
-See the [installation instructions in our repository](https://github.com/expo/expo/tree/master/packages/expo-notifications#installation-in-bare-react-native-projects).
+### Android
 
-</p>
-</details>
+Firebase Cloud Messaging credentials are required for all Android apps, except in Expo Go. To set up your Android app to receive push notifications using your own FCM credentials, [carefully follow this guide](../../../push-notifications/using-fcm.md).
+
+### iOS
+
+Learn how push notification credentials can be automatically generated or uploaded [in the push notifications setup guide](../../../push-notifications/push-notifications-setup.md#credentials).
 
 ## Permissions
 
 ### Android
 
-On Android, this module requires permission to subscribe to device boot. It's used to setup the scheduled notifications right after the device (re)starts. The `RECEIVE_BOOT_COMPLETED` permission is added automatically.
-
-Unless you're still running your project in the Expo Go app, Firebase Cloud Messaging is required for all [managed](../../../push-notifications/sending-notifications.md) and [bare workflow](../../../push-notifications/sending-notifications-custom.md) Android apps made with Expo. To set up your Expo Android app to get push notifications using your own FCM credentials, [follow this guide closely](../../../push-notifications/using-fcm.md).
+On Android, this module requires permission to subscribe to device boot. It's used to setup scheduled notifications when the device (re)starts. The `RECEIVE_BOOT_COMPLETED` permission is added automatically through the library `AndroidManifest.xml`.
 
 <AndroidPermissions keys={['RECEIVE_BOOT_COMPLETED']} />
 
