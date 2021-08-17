@@ -1,7 +1,7 @@
 'use strict';
 
-import { Platform } from '@unimodules/core';
 import Constants from 'expo-constants';
+import { Platform } from 'expo-modules-core';
 
 import ExponentTest from './ExponentTest';
 import { isDeviceFarm } from './utils/Environment';
