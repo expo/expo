@@ -100,24 +100,6 @@
 }
 
 /**
- *  Duplicates Linking.openURL but does not validate that this is an exponent URL;
- *  in other words, we just take your word for it and never hand it off to iOS.
- *  Used by the home screen URL bar.
- */
-RCT_EXPORT_METHOD(openURL:(NSURL *)URL
-                  resolve:(RCTPromiseResolveBlock)resolve
-                  reject:(__unused RCTPromiseRejectBlock)reject)
-{
-  if (URL) {
-    [_delegate homeModule:self didOpenUrl:URL.absoluteString];
-    resolve(@YES);
-  } else {
-    NSError *err = [NSError errorWithDomain:EX_UNVERSIONED(@"EXKernelErrorDomain") code:-1 userInfo:@{ NSLocalizedDescriptionKey: @"Cannot open a nil url" }];
-    reject(@"E_INVALID_URL", err.localizedDescription, err);
-  }
-}
-
-/**
  * Returns boolean value determining whether the current app supports developer tools.
  */
 RCT_REMAP_METHOD(doesCurrentTaskEnableDevtoolsAsync,
