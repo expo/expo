@@ -71,11 +71,8 @@ repositories {
   }
 }
 
-apply from: project(":unimodules-core").file("../unimodules-core.gradle")
-
 dependencies {
-  unimodule 'unimodules-core'
-  unimodule 'expo-modules-core'
+  implementation project(':expo-modules-core')
 
   api "androidx.exifinterface:exifinterface:1.0.0"
   api 'com.google.android:cameraview:1.0.0'
