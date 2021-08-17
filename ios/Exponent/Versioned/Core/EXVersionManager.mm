@@ -32,6 +32,7 @@
 #import <React/RCTImageLoader.h>
 #import <React/RCTAsyncLocalStorage.h>
 #import <React/RCTJSIExecutorRuntimeInstaller.h>
+#import <React/RCTInspectorDevServerHelper.h>
 
 #import <objc/message.h>
 
@@ -138,6 +139,7 @@ RCT_EXTERN void EXRegisterScopedModule(Class, ...);
   if ([self _isDevModeEnabledForBridge:bridge]) {
     // Set the bundle url for the packager connection manually
     [[RCTPackagerConnection sharedPackagerConnection] setBundleURL:[bridge bundleURL]];
+    [RCTInspectorDevServerHelper connectWithBundleURL:[bridge bundleURL]];
   }
 #endif
 
