@@ -63,14 +63,17 @@ jobs:
       - name: 🧐 Check packages
         run: |
           echo "Checking packages according to the event name: ${{ github.event_name }}"
-          if [[ "${{ github.event_name }}" == "schedule" || "${{ github.event.inputs.checkAll }}" == "check-all" ]]; then
-            # Check all packages on scheduled events or if requested by workflow_dispatch event.
-            bin/expotools check-packages --all
-          else
-            # On push event check packages changed since previous remote head.
-            # In pull requests and workflow_dispatch events check all packages changed in the entire PR.
-            bin/expotools check-packages --since ${{ github.event.before || github.base_ref || 'master' }}
-          fi
+          # if [[ "${{ github.event_name }}" == "schedule" || "${{ github.event.inputs.checkAll }}" == "check-all" ]]; then
+          # if [[ true ]]; then
+          #   # Check all packages on scheduled events or if requested by workflow_dispatch event.
+          #   bin/expotools check-packages --all
+          # else
+          #   # On push event check packages changed since previous remote head.
+          #   # In pull requests and workflow_dispatch events check all packages changed in the entire PR.
+          #   # bin/expotools check-packages --since ${{ github.event.before || github.base_ref || 'master' }}
+          #   bin/expotools check-packages --all
+          # fi
+          bin/expotools check-packages --all
       - name: 🔔 Notify on Slack
         uses: 8398a7/action-slack@v3
         if: failure() && (github.event.ref == 'refs/heads/master' || startsWith(github.event.ref, 'refs/heads/sdk-'))
