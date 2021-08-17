@@ -15,6 +15,8 @@ import {
 } from '~/components/plugins/api/APIDataTypes';
 import {
   CommentTextBlock,
+  getCommentOrSignatureComment,
+  renderTypeOrSignatureType,
   resolveTypeName,
   STYLES_SECONDARY,
 } from '~/components/plugins/api/APISectionUtils';
@@ -96,7 +98,7 @@ const renderProps = (
 };
 
 const renderProp = (
-  { comment, name, type, flags }: PropData,
+  { comment, name, type, flags, signatures }: PropData,
   defaultValue?: string,
   exposeInSidebar?: boolean
 ) => (
@@ -104,7 +106,7 @@ const renderProp = (
     {exposeInSidebar ? <H3>{name}</H3> : <H4>{name}</H4>}
     <P>
       {flags?.isOptional && <span css={STYLES_SECONDARY}>Optional&emsp;&bull;&emsp;</span>}
-      <span css={STYLES_SECONDARY}>Type:</span> <InlineCode>{resolveTypeName(type)}</InlineCode>
+      <span css={STYLES_SECONDARY}>Type:</span> {renderTypeOrSignatureType(type, signatures, true)}
       {defaultValue && defaultValue !== UNKNOWN_VALUE ? (
         <span>
           <span css={STYLES_SECONDARY}>&emsp;&bull;&emsp;Default:</span>{' '}
@@ -112,7 +114,7 @@ const renderProp = (
         </span>
       ) : null}
     </P>
-    <CommentTextBlock comment={comment} />
+    <CommentTextBlock comment={getCommentOrSignatureComment(comment, signatures)} />
   </LI>
 );
 

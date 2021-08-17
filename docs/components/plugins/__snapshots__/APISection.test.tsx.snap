@@ -448,56 +448,6 @@ not appear on the screen.
             class="css-1j2s5xo-h4-h4-STYLES_H4"
             data-heading="true"
           >
-            onPress
-          </h4>
-          <p
-            class="css-1xnkoxs-paragraph-STYLES_PARAGRAPH"
-            data-text="true"
-          >
-            <span
-              class="css-t865as-STYLES_SECONDARY"
-            >
-              Type:
-            </span>
-             
-            <code
-              class="inline css-nuv12a-STYLES_INLINE_CODE"
-            >
-              () =&gt;
-               
-              void
-            </code>
-          </p>
-          <p
-            class="css-1xnkoxs-paragraph-STYLES_PARAGRAPH"
-            data-text="true"
-          >
-            <span>
-              The method to call when the user presses the button. You should call 
-            </span>
-            <a
-              class="css-12zqqiz-STYLES_EXTERNAL_LINK"
-              href="/#isavailableasync"
-            >
-              <code
-                class="inline css-nuv12a-STYLES_INLINE_CODE"
-              >
-                AppleAuthentication.signInAsync
-              </code>
-            </a>
-            <span>
-              
-in here.
-            </span>
-          </p>
-        </li>
-        <li
-          class="docs-list-item css-aulog8-STYLES_LIST_ITEM-LI"
-        >
-          <h4
-            class="css-1j2s5xo-h4-h4-STYLES_H4"
-            data-heading="true"
-          >
             style
           </h4>
           <p
@@ -569,6 +519,57 @@ in here.
             <span>
               
 properties.
+            </span>
+          </p>
+        </li>
+        <li
+          class="docs-list-item css-aulog8-STYLES_LIST_ITEM-LI"
+        >
+          <h4
+            class="css-1j2s5xo-h4-h4-STYLES_H4"
+            data-heading="true"
+          >
+            onPress
+          </h4>
+          <p
+            class="css-1xnkoxs-paragraph-STYLES_PARAGRAPH"
+            data-text="true"
+          >
+            <span
+              class="css-t865as-STYLES_SECONDARY"
+            >
+              Type:
+            </span>
+             
+            <code
+              class="inline css-nuv12a-STYLES_INLINE_CODE"
+            >
+              (
+              
+              ) =&gt; 
+              void
+            </code>
+          </p>
+          <p
+            class="css-1xnkoxs-paragraph-STYLES_PARAGRAPH"
+            data-text="true"
+          >
+            <span>
+              The method to call when the user presses the button. You should call 
+            </span>
+            <a
+              class="css-12zqqiz-STYLES_EXTERNAL_LINK"
+              href="/#isavailableasync"
+            >
+              <code
+                class="inline css-nuv12a-STYLES_INLINE_CODE"
+              >
+                AppleAuthentication.signInAsync
+              </code>
+            </a>
+            <span>
+              
+in here.
             </span>
           </p>
         </li>
@@ -3555,8 +3556,9 @@ OAuth 2.0 protocol
             <code
               class="inline css-nuv12a-STYLES_INLINE_CODE"
             >
-              () =&gt;
-               
+              (
+              
+              ) =&gt; 
               void
             </code>
           </td>
