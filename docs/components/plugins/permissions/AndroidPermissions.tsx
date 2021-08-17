@@ -1,20 +1,20 @@
 import { css } from '@emotion/react';
 import React from 'react';
 
-import { androidPermissions, AndroidPermissionItem } from './data';
+import { androidPermissions, AndroidPermission, PermissionReference } from './data';
 
 import { InlineCode } from '~/components/base/code';
 import { Quote } from '~/components/base/paragraph';
 // import { QuestionIcon } from '~/components/icons/QuestionIcon';
 
 type AndroidPermissionsProps = {
-  keys: string[];
+  permissions: PermissionReference<AndroidPermission>[];
 };
 
 // const grantedByInfo = 'Some permissions are granted by the system without user approval';
 
 export function AndroidPermissions(props: AndroidPermissionsProps) {
-  const list = props.keys.map(key => androidPermissions[key]);
+  const list = React.useMemo(() => getPermissions(props.permissions), [props.permissions]);
 
   return (
     <table>
@@ -38,7 +38,7 @@ export function AndroidPermissions(props: AndroidPermissionsProps) {
   );
 }
 
-function AndroidPermissionRow(permission: AndroidPermissionItem) {
+function AndroidPermissionRow(permission: AndroidPermission) {
   const { name, description, descriptionLong, warning, apiDeprecated } = permission;
 
   return (
@@ -68,6 +68,16 @@ function AndroidPermissionRow(permission: AndroidPermissionItem) {
   );
 }
 
+function getPermissions(permissions: AndroidPermissionsProps['permissions']) {
+  return permissions
+    .map(permission =>
+      typeof permission === 'string'
+        ? androidPermissions[permission]
+        : { ...androidPermissions[permission.name], ...permission }
+    )
+    .filter(Boolean);
+}
+
 // const grantedByInfoStyle = css`
 //   white-space: nowrap;
 // `;
@@ -84,7 +94,7 @@ const quoteStyle = css`
   margin-bottom: 0;
 `;
 
-// function getPermissionGranter(permission: AndroidPermissionItem): 'user' | 'system' | 'none' {
+// function getPermissionGranter(permission: AndroidPermission): 'user' | 'system' | 'none' {
 //   if (!permission.protection) return 'none';
 //   if (permission.protection.includes('dangerous')) return 'user';
 //   return 'system';

@@ -1,15 +1,15 @@
 import React from 'react';
 
-import { iosPermissions } from './data';
+import { IOSPermission, iosPermissions, PermissionReference } from './data';
 
 import { InlineCode } from '~/components/base/code';
 
 type IOSPermissionsProps = {
-  keys: string[];
+  permissions: PermissionReference<IOSPermission>[];
 };
 
 export function IOSPermissions(props: IOSPermissionsProps) {
-  const list = props.keys.map(key => iosPermissions[key]);
+  const list = React.useMemo(() => getPermissions(props.permissions), [props.permissions]);
 
   return (
     <table>
@@ -33,4 +33,14 @@ export function IOSPermissions(props: IOSPermissionsProps) {
       </tbody>
     </table>
   );
+}
+
+function getPermissions(permissions: IOSPermissionsProps['permissions']) {
+  return permissions
+    .map(permission =>
+      typeof permission === 'string'
+        ? iosPermissions[permission]
+        : { ...iosPermissions[permission.name], ...permission }
+    )
+    .filter(Boolean);
 }
