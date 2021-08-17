@@ -53,6 +53,7 @@
 #import <React/CoreModulesPlugins.h>
 #import <ReactCommon/RCTTurboModuleManager.h>
 #import <React/JSCExecutorFactory.h>
+#import <React/HermesExecutorFactory.h>
 #import <strings.h>
 
 // Import 3rd party modules that need to be scoped.
@@ -533,6 +534,10 @@ RCT_EXTERN void EXRegisterScopedModule(Class, ...);
                                  jsi::PropNameID::forAscii(runtime, "__reanimatedModuleProxy"),
                                  jsi::Object::createFromHostObject(runtime, reanimatedModule));
   };
+
+  if ([self.manifest.iosConfig[@"jsEngine"] isEqualToString:@"hermes"]) {
+    return new facebook::react::HermesExecutorFactory(RCTJSIExecutorRuntimeInstaller(executor));
+  }
   return new facebook::react::JSCExecutorFactory(RCTJSIExecutorRuntimeInstaller(executor));
 }
 
