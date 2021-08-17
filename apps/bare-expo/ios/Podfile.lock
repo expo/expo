@@ -83,9 +83,9 @@ PODS:
   - EXGoogleSignIn (9.2.0):
     - ExpoModulesCore
     - GoogleSignIn (~> 5.0.2)
-  - EXHaptics (10.1.0):
+  - EXHaptics (10.2.0-alpha.0):
     - ExpoModulesCore
-  - EXImageLoader (2.2.0):
+  - EXImageLoader (2.3.0-alpha.0):
     - ExpoModulesCore
     - React-Core
   - EXImageManipulator (9.2.0):
@@ -96,7 +96,7 @@ PODS:
     - ExpoModulesCore
   - EXKeepAwake (9.2.0):
     - ExpoModulesCore
-  - EXLinearGradient (9.2.0):
+  - EXLinearGradient (9.3.0-alpha.0):
     - ExpoModulesCore
   - EXLocalAuthentication (11.1.0):
     - ExpoModulesCore
@@ -168,7 +168,7 @@ PODS:
     - SDWebImageSVGKitPlugin (~> 1.3)
     - SDWebImageWebPCoder (~> 0.8.4)
     - SVGKit (~> 2.1)
-  - ExpoModulesCore (0.1.1):
+  - ExpoModulesCore (0.3.0-alpha.0):
     - React-Core
   - EXPrint (10.2.0):
     - ExpoModulesCore
@@ -692,12 +692,8 @@ PODS:
     - SDWebImage/Core (~> 5.10)
   - SVGKit (2.1.1):
     - CocoaLumberjack (~> 3.0)
-  - UMAppLoader (2.2.0)
-  - UMCore (7.1.1):
-    - ExpoModulesCore
-  - UMReactNativeAdapter (6.4.0):
-    - ExpoModulesCore
-  - UMTaskManagerInterface (6.2.0):
+  - UMAppLoader (2.3.0-alpha.0)
+  - UMTaskManagerInterface (6.3.0-alpha.0):
     - ExpoModulesCore
   - Yoga (1.14.0)
   - ZXingObjC/Core (3.6.5)
@@ -825,8 +821,6 @@ DEPENDENCIES:
   - RNSharedElement (from `../../../node_modules/react-native-shared-element`)
   - RNSVG (from `../../../node_modules/react-native-svg`)
   - UMAppLoader (from `../../../packages/unimodules-app-loader/ios`)
-  - "UMCore (from `../../../packages/@unimodules/core/ios`)"
-  - "UMReactNativeAdapter (from `../../../packages/@unimodules/react-native-adapter/ios`)"
   - UMTaskManagerInterface (from `../../../packages/unimodules-task-manager-interface/ios`)
   - Yoga (from `../../../react-native-lab/react-native/ReactCommon/yoga`)
 
@@ -1157,12 +1151,6 @@ EXTERNAL SOURCES:
   UMAppLoader:
     inhibit_warnings: false
     :path: "../../../packages/unimodules-app-loader/ios"
-  UMCore:
-    inhibit_warnings: false
-    :path: "../../../packages/@unimodules/core/ios"
-  UMReactNativeAdapter:
-    inhibit_warnings: false
-    :path: "../../../packages/@unimodules/react-native-adapter/ios"
   UMTaskManagerInterface:
     inhibit_warnings: false
     :path: "../../../packages/unimodules-task-manager-interface/ios"
@@ -1204,13 +1192,13 @@ SPEC CHECKSUMS:
   EXGL: fa9238e146f0ce530ea2d883328c114d07ee2d62
   EXGL_CPP: 93d2668e22b8fde8ac76f067ffbafefed3540dab
   EXGoogleSignIn: 145c08cf9ccfc11c2376f239f76a56f56f5cbc24
-  EXHaptics: 91f0f7fe4e59602e788ecaaa8bfcb9d2da793ee1
-  EXImageLoader: 7be4318cdcd2e5cf2b634cc55c56a11f31159665
+  EXHaptics: e98cfb62e091fe2c36210b9a82d3b439b87b6f7c
+  EXImageLoader: 7beb6d3235b9e70a7fbd3738ecc14ce403276685
   EXImageManipulator: 609ec11891dff0b0ef303c43ef0be1a4eb0b0af3
   EXImagePicker: 624295ff8decc995e1a005c9ea72ff4b772f5216
   EXInAppPurchases: 68c5adea26e9fca756a71a008bfe4b8e50fc5490
   EXKeepAwake: 7ef7a081f90fa7e81b57257bd772efe7a4403966
-  EXLinearGradient: 98725b9f7128e9171cd6f8dc8df1d08c9c597636
+  EXLinearGradient: 6549f5881005464c6ebc66a9af9049b71a3f2fda
   EXLocalAuthentication: 2b438d36b152406011c3c24803e1df226ddc0a41
   EXLocalization: 18c4461eb66125734dc2c73866572f3450f7c9b8
   EXLocation: 2ab9fcb91e381aada094f7312bfc9684ced76d3e
@@ -1224,7 +1212,7 @@ SPEC CHECKSUMS:
   expo-dev-menu: 148071b2ca564529a0efb941cc2a72fe7397195a
   expo-dev-menu-interface: 145d352ba9edff66b0c1fb13773f0f0dd9d50afd
   expo-image: 8c08b81eab730b5cc0ef56c1fc80d7ae0d5f2b97
-  ExpoModulesCore: cbf340d971211537aec95d99945bd97143c07534
+  ExpoModulesCore: 9c9b14263d0172fda222033fc992250abc4dfec6
   EXPrint: 1b63871bd0f286f9dc5441412b3b9049b7c9fe32
   EXRandom: 4d6fe53e19a91df3f66665371962284677d741c9
   EXScreenCapture: 27e03154defba1f0e28cda34777f49c34ead3497
@@ -1315,10 +1303,8 @@ SPEC CHECKSUMS:
   SDWebImageSVGKitPlugin: 8797e1c9b9baf80bd50d28e673e16a12359af1c9
   SDWebImageWebPCoder: f93010f3f6c031e2f8fb3081ca4ee6966c539815
   SVGKit: 652cdf7bef8bec8564d04a8511d3ab50c7595fac
-  UMAppLoader: 21af63390e55c82e037fb9752d93114a80ecf16e
-  UMCore: b531b41645f9250a138583bd0ac52edbc7a0e16c
-  UMReactNativeAdapter: 5d34de03540c3a22624919492974df6f187d9c55
-  UMTaskManagerInterface: 0c18014dc1213468ae454836e95a2190b3f413ac
+  UMAppLoader: 357a51ebbf261dbdbbb89bf1bad187daaaf0ee92
+  UMTaskManagerInterface: d4db61759baf77973cee8ee62bc2b8665179645c
   Yoga: 575c581c63e0d35c9a83f4b46d01d63abc1100ac
   ZXingObjC: fdbb269f25dd2032da343e06f10224d62f537bdb
 
