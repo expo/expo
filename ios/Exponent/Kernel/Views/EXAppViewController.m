@@ -391,18 +391,18 @@ NS_ASSUME_NONNULL_BEGIN
       [splashScreenService hideSplashScreenFor:rootViewController
                                successCallback:^(BOOL hasEffect){}
                                failureCallback:^(NSString * _Nonnull message) {
-        UMLogWarn(@"Hiding splash screen from root view controller did not succeed: %@", message);
+        EXLogWarn(@"Hiding splash screen from root view controller did not succeed: %@", message);
       }];
     });
   };
 
-  UM_WEAKIFY(self);
+  EX_WEAKIFY(self);
   dispatch_async(dispatch_get_main_queue(), ^{
-    UM_ENSURE_STRONGIFY(self);
+    EX_ENSURE_STRONGIFY(self);
     [splashScreenService showSplashScreenFor:self
                     splashScreenViewProvider:provider
                              successCallback:hideRootViewControllerSplashScreen
-                             failureCallback:^(NSString *message){ UMLogWarn(@"%@", message); }];
+                             failureCallback:^(NSString *message){ EXLogWarn(@"%@", message); }];
   });
 }
 
@@ -411,9 +411,9 @@ NS_ASSUME_NONNULL_BEGIN
  
   EXSplashScreenService *splashScreenService = (EXSplashScreenService *)[EXModuleRegistryProvider getSingletonModuleForClass:[EXSplashScreenService class]];
 
-  UM_WEAKIFY(self);
+  EX_WEAKIFY(self);
   dispatch_async(dispatch_get_main_queue(), ^{
-    UM_ENSURE_STRONGIFY(self);
+    EX_ENSURE_STRONGIFY(self);
     
     UIView *rootView = self.view;
     UIView *splashScreenView = [provider createSplashScreenView];
@@ -422,7 +422,7 @@ NS_ASSUME_NONNULL_BEGIN
     [splashScreenService showSplashScreenFor:self
                       splashScreenController:controller
                              successCallback:^{}
-                             failureCallback:^(NSString *message){ UMLogWarn(@"%@", message); }];
+                             failureCallback:^(NSString *message){ EXLogWarn(@"%@", message); }];
   });
   
 }
@@ -437,9 +437,9 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)appLoader:(EXAppLoader *)appLoader didLoadOptimisticManifest:(EXUpdatesRawManifest *)manifest
 {
   if (_appLoadingCancelView) {
-    UM_WEAKIFY(self);
+    EX_WEAKIFY(self);
     dispatch_async(dispatch_get_main_queue(), ^{
-      UM_ENSURE_STRONGIFY(self);
+      EX_ENSURE_STRONGIFY(self);
       [self.appLoadingCancelView removeFromSuperview];
       self.appLoadingCancelView = nil;
     });
@@ -774,9 +774,9 @@ NS_ASSUME_NONNULL_BEGIN
     }
   }
   _isLoading = isLoading;
-  UM_WEAKIFY(self);
+  EX_WEAKIFY(self);
   dispatch_async(dispatch_get_main_queue(), ^{
-    UM_ENSURE_STRONGIFY(self);
+    EX_ENSURE_STRONGIFY(self);
     if (!isLoading) {
       [self.appLoadingProgressWindowController hide];
     }

@@ -152,6 +152,7 @@ Display the system UI for choosing an image or a video from the phone's library.
   - **mediaTypes (_[ImagePicker.MediaTypeOptions](#imagepickermediatypeoptions)_)** -- Choose what type of media to pick. Defaults to `ImagePicker.MediaTypeOptions.Images`.
   - **allowsEditing (_boolean_)** -- Whether to show a UI to edit the image/video after it is picked. Images: On Android the user can crop and rotate the image and on iOS simply crop it. Videos: On iOS user can trim the video. Defaults to `false`.
   - **allowsMultipleSelection (_boolean_)** -- (Web only) Whether or not to allow selecting multiple media files at once.
+  - **presentationStyle (_[ImagePicker.UIImagePickerPresentationStyle](#imagePickeruiimagepickerpresentationstyle)_)** -- (iOS only) Choose [presentation style](https://developer.apple.com/documentation/uikit/uiviewcontroller/1621355-modalpresentationstyle?language=objc) to customize view during picking photo/video. Defaults to `ImagePicker.UIImagePickerPresentationStyle.Automatic`.
 
   A map of options for images:
 
@@ -194,6 +195,7 @@ Display the system UI for taking a photo with the camera. Requires `Permissions.
 
   - **mediaTypes (_[ImagePicker.MediaTypeOptions](#imagepickermediatypeoptions)_)** -- Choose what type of media to pick. Defaults to `ImagePicker.MediaTypeOptions.Images`.
   - **allowsEditing (_boolean_)** -- Whether to show a UI to edit the image after it is picked. On Android the user can crop and rotate the image and on iOS simply crop it. Defaults to `false`.
+  - **presentationStyle (_[ImagePicker.UIImagePickerPresentationStyle](#imagePickeruiimagepickerpresentationstyle)_)** -- (iOS only) Choose [presentation style](https://developer.apple.com/documentation/uikit/uiviewcontroller/1621355-modalpresentationstyle?language=objc) to customize view during taking photo/video. Defaults to `ImagePicker.UIImagePickerPresentationStyle.Automatic`.
 
   A map of options for images:
 
@@ -259,6 +261,19 @@ Android system sometimes kills the `MainActivity` after the `ImagePicker` finish
 | `VideoExportPreset.H264_3840x2160` | 8     | 3840 x 2160           | H.264                       | AAC                         |
 | `VideoExportPreset.HEVC_1920x1080` | 9     | 1920 x 1080           | HEVC                        | AAC                         |
 | `VideoExportPreset.HEVC_3840x2160` | 10    | 3840 x 2160           | HEVC                        | AAC                         |
+
+### `ImagePicker.UIImagePickerPresentationStyle`
+
+| Preset                                             | Value | 
+| --------------------------------------------       | ----- | 
+| `UIImagePickerPresentationStyle.FullScreen`        | 0     |
+| `UIImagePickerPresentationStyle.PageSheet`         | 1     |
+| `UIImagePickerPresentationStyle.FormSheet`         | 2     |
+| `UIImagePickerPresentationStyle.CurrentContext`    | 3     |
+| `UIImagePickerPresentationStyle.OverFullScreen`    | 5     |
+| `UIImagePickerPresentationStyle.OverCurrentContext`| 6     |
+| `UIImagePickerPresentationStyle.Popover`           | 7     |
+| `UIImagePickerPresentationStyle.Automatic`         | -2    |
 
 ### `ImagePicker.UIImagePickerControllerType`
 

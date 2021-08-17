@@ -186,7 +186,7 @@ export declare function requestRemindersPermissionsAsync(): Promise<PermissionRe
  * const [status, requestPermission] = Calendar.useCalendarPermissions();
  * ```
  */
-export declare const useCalendarPermissions: (options?: PermissionHookOptions | undefined) => [PermissionResponse | null, () => Promise<PermissionResponse | null>, () => Promise<PermissionResponse | null>];
+export declare const useCalendarPermissions: (options?: PermissionHookOptions<object> | undefined) => [PermissionResponse | null, () => Promise<PermissionResponse>, () => Promise<PermissionResponse>];
 /**
  * Check or request permissions to access reminders.
  * This uses both `getRemindersPermissionsAsync` and `requestRemindersPermissionsAsync` to interact with the permissions.
@@ -196,7 +196,7 @@ export declare const useCalendarPermissions: (options?: PermissionHookOptions | 
  * const [status, requestPermission] = Calendar.useRemindersPermissions();
  * ```
  */
-export declare const useRemindersPermissions: (options?: PermissionHookOptions | undefined) => [PermissionResponse | null, () => Promise<PermissionResponse | null>, () => Promise<PermissionResponse | null>];
+export declare const useRemindersPermissions: (options?: PermissionHookOptions<object> | undefined) => [PermissionResponse | null, () => Promise<PermissionResponse>, () => Promise<PermissionResponse>];
 export declare const EntityTypes: {
     EVENT: string;
     REMINDER: string;

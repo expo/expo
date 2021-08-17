@@ -7,8 +7,8 @@
 @interface EXBaseLocationRequester : NSObject<EXPermissionsRequester>
 
 @property (nonatomic, strong) CLLocationManager *locationManager;
-@property (nonatomic, strong) UMPromiseResolveBlock resolve;
-@property (nonatomic, strong) UMPromiseRejectBlock reject;
+@property (nonatomic, strong) EXPromiseResolveBlock resolve;
+@property (nonatomic, strong) EXPromiseRejectBlock reject;
 
 + (BOOL)isConfiguredForWhenInUseAuthorization;
 + (BOOL)isConfiguredForAlwaysAuthorization;

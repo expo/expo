@@ -2,7 +2,9 @@ import {
   PermissionResponse,
   PermissionStatus,
   PermissionExpiration,
+  PermissionHookOptions,
   UnavailabilityError,
+  createPermissionHook,
 } from 'expo-modules-core';
 import { Platform } from 'react-native';
 
@@ -22,6 +24,7 @@ export {
   PermissionResponse,
   PermissionStatus,
   PermissionExpiration,
+  PermissionHookOptions,
 };
 
 type Params = { [key: string]: string | number };
@@ -86,6 +89,21 @@ export async function getPermissionsAsync(): Promise<PermissionResponse> {
   }
   return await ExponentFacebook.getPermissionsAsync();
 }
+
+// @needsAudit
+/**
+ * Check or request permissions to use data tracking.
+ * This uses both `requestPermissionsAsync` and `getPermissionsAsync` to interact with the permissions.
+ *
+ * @example
+ * ```ts
+ * const [status, requestPermission] = Facebook.usePermissions();
+ * ```
+ */
+export const usePermissions = createPermissionHook({
+  getMethod: getPermissionsAsync,
+  requestMethod: requestPermissionsAsync,
+});
 
 /**
  * Prompts the user to log into Facebook and grants your app permission to access their Facebook data. On iOS and Android, if the Facebook app isn't installed then a web view will be used to authenticate.

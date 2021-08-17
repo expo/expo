@@ -39,12 +39,12 @@ NS_ASSUME_NONNULL_BEGIN
   };
 }
 
-- (void)requestPermissionsWithResolver:(UMPromiseResolveBlock)resolve rejecter:(UMPromiseRejectBlock)reject
+- (void)requestPermissionsWithResolver:(EXPromiseResolveBlock)resolve rejecter:(EXPromiseRejectBlock)reject
 {
   if (@available(iOS 14, *)) {
-    UM_WEAKIFY(self)
+    EX_WEAKIFY(self)
     [ATTrackingManager requestTrackingAuthorizationWithCompletionHandler:^(ATTrackingManagerAuthorizationStatus status) {
-      UM_STRONGIFY(self)
+      EX_STRONGIFY(self)
       resolve([self getPermissions]);
     }];
   } else {

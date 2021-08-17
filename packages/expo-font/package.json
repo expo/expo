@@ -29,12 +29,12 @@
   },
   "author": "650 Industries, Inc.",
   "license": "MIT",
-  "homepage": "https://docs.expo.io/versions/latest/sdk/font/",
+  "homepage": "https://docs.expo.dev/versions/latest/sdk/font/",
   "jest": {
     "preset": "expo-module-scripts"
   },
   "dependencies": {
-    "expo-modules-core": "~0.1.1",
+    "expo-modules-core": "~0.3.0-alpha.0",
     "fontfaceobserver": "^2.1.0"
   },
   "devDependencies": {

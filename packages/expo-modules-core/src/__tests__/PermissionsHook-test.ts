@@ -15,15 +15,14 @@ const permissionGranted: PermissionResponse = {
   canAskAgain: true,
 };
 
+const permissionDenied: PermissionResponse = {
+  status: PermissionStatus.DENIED,
+  expires: 'never',
+  granted: false,
+  canAskAgain: false,
+};
+
 describe('factory', () => {
-  it('creates hook with only requester', () => {
-    const hook = createPermissionHook({ requestMethod: async () => permissionGranted });
-    expect(hook).toBeInstanceOf(Function);
-  });
-  it('creates hook with only getter', () => {
-    const hook = createPermissionHook({ getMethod: async () => permissionGranted });
-    expect(hook).toBeInstanceOf(Function);
-  });
   it('creates hook with both requester and getter', () => {
     const hook = createPermissionHook({
       requestMethod: async () => permissionGranted,
@@ -35,7 +34,12 @@ describe('factory', () => {
 
 describe('product', () => {
   it('returns status, requester and getter when mounted', () => {
-    const { result } = renderHook(createPermissionHook({}));
+    const { result } = renderHook(
+      createPermissionHook({
+        requestMethod: async () => permissionGranted,
+        getMethod: async () => permissionGranted,
+      })
+    );
 
     expect(result.current[STATUS]).toBeNull();
     expect(result.current[REQUESTER]).toBeInstanceOf(Function);
@@ -43,7 +47,13 @@ describe('product', () => {
   });
 
   it('returns same callbacks when rerendered', async () => {
-    const { result, rerender } = renderHook(createPermissionHook({}));
+    const { result, rerender } = renderHook(
+      createPermissionHook({
+        requestMethod: async () => permissionGranted,
+        getMethod: async () => permissionGranted,
+      }),
+      { initialProps: { get: false } }
+    );
     const requester = result.current[REQUESTER];
     const getter = result.current[GETTER];
 
@@ -59,12 +69,17 @@ describe('product', () => {
       resolve = resolvePromise;
       return permissionGranted;
     });
-    const { unmount } = renderHook(createPermissionHook({ getMethod: () => promise }));
+
+    const { unmount } = renderHook(
+      createPermissionHook({
+        requestMethod: async () => permissionDenied,
+        getMethod: () => promise,
+      })
+    );
 
     unmount();
     resolve();
     await promise;
-
     expect(logError).not.toHaveBeenCalled();
     logError.mockRestore();
   });
@@ -84,7 +99,10 @@ describe('product', () => {
   describe('getter', () => {
     it('returns status with getter by default', async () => {
       const { result, waitForNextUpdate } = renderHook(
-        createPermissionHook({ getMethod: async () => permissionGranted })
+        createPermissionHook({
+          requestMethod: async () => permissionDenied,
+          getMethod: async () => permissionGranted,
+        })
       );
 
       await waitForNextUpdate();
@@ -93,7 +111,10 @@ describe('product', () => {
 
     it('returns status with getter method', async () => {
       const { result, waitForNextUpdate } = renderHook(
-        createPermissionHook({ getMethod: async () => permissionGranted }),
+        createPermissionHook({
+          requestMethod: async () => permissionDenied,
+          getMethod: async () => permissionGranted,
+        }),
         { initialProps: { get: false } }
       );
 
@@ -106,7 +127,10 @@ describe('product', () => {
 
     it('returns status with getter option', async () => {
       const { result, waitForNextUpdate } = renderHook(
-        createPermissionHook({ getMethod: async () => permissionGranted }),
+        createPermissionHook({
+          requestMethod: async () => permissionDenied,
+          getMethod: async () => permissionGranted,
+        }),
         { initialProps: { get: true } }
       );
 
@@ -116,7 +140,10 @@ describe('product', () => {
 
     it('returns status with getter option after rerender', async () => {
       const { result, rerender, waitForNextUpdate } = renderHook(
-        createPermissionHook({ getMethod: async () => permissionGranted }),
+        createPermissionHook({
+          requestMethod: async () => permissionDenied,
+          getMethod: async () => permissionGranted,
+        }),
         { initialProps: { get: false } }
       );
 
@@ -125,12 +152,43 @@ describe('product', () => {
 
       expect(result.current[STATUS]).toBe(permissionGranted);
     });
+
+    it('omits options when not provided', async () => {
+      const getMethod = jest.fn(async () => permissionGranted);
+      const { waitForNextUpdate } = renderHook(
+        createPermissionHook({
+          getMethod,
+          requestMethod: async () => permissionDenied,
+        }),
+        { initialProps: { get: true } }
+      );
+
+      await waitForNextUpdate();
+      expect(getMethod).toHaveBeenCalledWith(undefined);
+    });
+
+    it('passes options when provided', async () => {
+      const getMethod = jest.fn(async () => permissionGranted);
+      const { waitForNextUpdate } = renderHook(
+        createPermissionHook({
+          getMethod,
+          requestMethod: async () => permissionDenied,
+        }),
+        { initialProps: { get: true, setting: 'something' } }
+      );
+
+      await waitForNextUpdate();
+      expect(getMethod).toHaveBeenCalledWith(expect.objectContaining({ setting: 'something' }));
+    });
   });
 
   describe('requester', () => {
     it('returns status with requester method', async () => {
       const { result, waitForNextUpdate } = renderHook(
-        createPermissionHook({ requestMethod: async () => permissionGranted }),
+        createPermissionHook({
+          requestMethod: async () => permissionGranted,
+          getMethod: async () => permissionDenied,
+        }),
         { initialProps: { request: false } }
       );
 
@@ -143,7 +201,10 @@ describe('product', () => {
 
     it('returns status with requester option', async () => {
       const { result, waitForNextUpdate } = renderHook(
-        createPermissionHook({ requestMethod: async () => permissionGranted }),
+        createPermissionHook({
+          requestMethod: async () => permissionGranted,
+          getMethod: async () => permissionDenied,
+        }),
         { initialProps: { request: true } }
       );
 
@@ -153,14 +214,44 @@ describe('product', () => {
 
     it('returns status with requester option after rerender', async () => {
       const { result, rerender, waitForNextUpdate } = renderHook(
-        createPermissionHook({ requestMethod: async () => permissionGranted }),
+        createPermissionHook({
+          requestMethod: async () => permissionGranted,
+          getMethod: async () => permissionDenied,
+        }),
         { initialProps: { request: false } }
       );
 
       rerender({ request: true });
       await waitForNextUpdate();
-
       expect(result.current[STATUS]).toBe(permissionGranted);
+    });
+
+    it('omits options when not provided', async () => {
+      const requestMethod = jest.fn(async () => permissionGranted);
+      const { waitForNextUpdate } = renderHook(
+        createPermissionHook({
+          requestMethod,
+          getMethod: async () => permissionDenied,
+        }),
+        { initialProps: { request: true } }
+      );
+
+      await waitForNextUpdate();
+      expect(requestMethod).toHaveBeenCalledWith(undefined);
+    });
+
+    it('passes options when provided', async () => {
+      const requestMethod = jest.fn(async () => permissionGranted);
+      const { waitForNextUpdate } = renderHook(
+        createPermissionHook({
+          requestMethod,
+          getMethod: async () => permissionDenied,
+        }),
+        { initialProps: { request: true, setting: 'something' } }
+      );
+
+      await waitForNextUpdate();
+      expect(requestMethod).toHaveBeenCalledWith(expect.objectContaining({ setting: 'something' }));
     });
   });
 });

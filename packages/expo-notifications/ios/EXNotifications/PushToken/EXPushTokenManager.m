@@ -1,7 +1,7 @@
 // Copyright 2018-present 650 Industries. All rights reserved.
 
 #import <EXNotifications/EXPushTokenManager.h>
-#import <UMCore/UMDefines.h>
+#import <ExpoModulesCore/EXDefines.h>
 
 @interface EXPushTokenManager ()
 
@@ -11,7 +11,7 @@
 
 @implementation EXPushTokenManager
 
-UM_REGISTER_SINGLETON_MODULE(PushTokenManager);
+EX_REGISTER_SINGLETON_MODULE(PushTokenManager);
 
 - (instancetype)init
 {

@@ -1,8 +1,8 @@
 // Copyright 2019-present 650 Industries. All rights reserved.
 
-#if __has_include(<UMReactNativeAdapter/EXPermissionsService.h>)
+#if __has_include(<ExpoModulesCore/EXPermissionsService.h>)
 #import <UIKit/UIKit.h>
-#import <UMReactNativeAdapter/EXPermissionsService.h>
+#import <ExpoModulesCore/EXPermissionsService.h>
 #import "EXConstantsBinding.h"
 
 NS_ASSUME_NONNULL_BEGIN

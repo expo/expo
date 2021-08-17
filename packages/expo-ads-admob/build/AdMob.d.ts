@@ -11,7 +11,7 @@ export declare function getPermissionsAsync(): Promise<PermissionResponse>;
  * const [status, requestPermission] = AdsAdMob.usePermission();
  * ```
  */
-export declare const usePermissions: (options?: PermissionHookOptions | undefined) => [PermissionResponse | null, () => Promise<PermissionResponse | null>, () => Promise<PermissionResponse | null>];
+export declare const usePermissions: (options?: PermissionHookOptions<object> | undefined) => [PermissionResponse | null, () => Promise<PermissionResponse>, () => Promise<PermissionResponse>];
 /**
  * Returns whether the AdMob API is enabled on the current device. This does not check the native configuration.
  *

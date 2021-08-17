@@ -18,7 +18,7 @@
 
 @implementation EXNotificationPresentationModule
 
-UM_EXPORT_MODULE(ExpoNotificationPresenter);
+EX_EXPORT_MODULE(ExpoNotificationPresenter);
 
 // Remove once presentNotificationAsync is removed
 - (instancetype)init
@@ -32,11 +32,11 @@ UM_EXPORT_MODULE(ExpoNotificationPresenter);
 # pragma mark - Exported methods
 
 // Remove once presentNotificationAsync is removed
-UM_EXPORT_METHOD_AS(presentNotificationAsync,
+EX_EXPORT_METHOD_AS(presentNotificationAsync,
                     presentNotificationWithIdentifier:(NSString *)identifier
                     notification:(NSDictionary *)notificationSpec
-                    resolve:(UMPromiseResolveBlock)resolve
-                    reject:(UMPromiseRejectBlock)reject)
+                    resolve:(EXPromiseResolveBlock)resolve
+                    reject:(EXPromiseRejectBlock)reject)
 {
   UNNotificationContent *content = [_notificationBuilder notificationContentFromRequest:notificationSpec];
   UNNotificationTrigger *trigger = nil;
@@ -55,9 +55,9 @@ UM_EXPORT_METHOD_AS(presentNotificationAsync,
   }];
 }
 
-UM_EXPORT_METHOD_AS(getPresentedNotificationsAsync,
-                    getPresentedNotificationsAsyncWithResolve:(UMPromiseResolveBlock)resolve
-                    reject:(UMPromiseRejectBlock)reject)
+EX_EXPORT_METHOD_AS(getPresentedNotificationsAsync,
+                    getPresentedNotificationsAsyncWithResolve:(EXPromiseResolveBlock)resolve
+                    reject:(EXPromiseRejectBlock)reject)
 {
   [[UNUserNotificationCenter currentNotificationCenter] getDeliveredNotificationsWithCompletionHandler:^(NSArray<UNNotification *> * _Nonnull notifications) {
     resolve([self serializeNotifications:notifications]);
@@ -65,26 +65,26 @@ UM_EXPORT_METHOD_AS(getPresentedNotificationsAsync,
 }
 
 
-UM_EXPORT_METHOD_AS(dismissNotificationAsync,
+EX_EXPORT_METHOD_AS(dismissNotificationAsync,
                     dismissNotificationWithIdentifier:(NSString *)identifier
-                    resolve:(UMPromiseResolveBlock)resolve
-                    reject:(UMPromiseRejectBlock)reject)
+                    resolve:(EXPromiseResolveBlock)resolve
+                    reject:(EXPromiseRejectBlock)reject)
 {
   [[UNUserNotificationCenter currentNotificationCenter] removeDeliveredNotificationsWithIdentifiers:@[identifier]];
   resolve(nil);
 }
 
-UM_EXPORT_METHOD_AS(dismissAllNotificationsAsync,
-                    dismissAllNotificationsWithResolver:(UMPromiseResolveBlock)resolve
-                    reject:(UMPromiseRejectBlock)reject)
+EX_EXPORT_METHOD_AS(dismissAllNotificationsAsync,
+                    dismissAllNotificationsWithResolver:(EXPromiseResolveBlock)resolve
+                    reject:(EXPromiseRejectBlock)reject)
 {
   [[UNUserNotificationCenter currentNotificationCenter] removeAllDeliveredNotifications];
   resolve(nil);
 }
 
-# pragma mark - UMModuleRegistryConsumer
+# pragma mark - EXModuleRegistryConsumer
 
-- (void)setModuleRegistry:(UMModuleRegistry *)moduleRegistry
+- (void)setModuleRegistry:(EXModuleRegistry *)moduleRegistry
 {
   _notificationBuilder = [moduleRegistry getModuleImplementingProtocol:@protocol(EXNotificationBuilder)];
 

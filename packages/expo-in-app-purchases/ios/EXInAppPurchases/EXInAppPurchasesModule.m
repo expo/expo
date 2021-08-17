@@ -4,8 +4,8 @@
 
 @interface EXInAppPurchasesModule ()
 
-@property (weak, nonatomic) UMModuleRegistry *moduleRegistry;
-@property (nonatomic, weak) id <UMEventEmitterService> eventEmitter;
+@property (weak, nonatomic) EXModuleRegistry *moduleRegistry;
+@property (nonatomic, weak) id <EXEventEmitterService> eventEmitter;
 @property (strong, nonatomic) NSMutableDictionary *promises;
 @property (strong, nonatomic) NSMutableDictionary *pendingTransactions;
 @property (strong, nonatomic) NSMutableSet<SKProduct *> *cachedProducts;
@@ -25,12 +25,12 @@ static const int DEFERRED = 3;
 
 @implementation EXInAppPurchasesModule
 
-UM_EXPORT_MODULE(ExpoInAppPurchases);
+EX_EXPORT_MODULE(ExpoInAppPurchases);
 
-- (void)setModuleRegistry:(UMModuleRegistry *)moduleRegistry
+- (void)setModuleRegistry:(EXModuleRegistry *)moduleRegistry
 {
   _moduleRegistry = moduleRegistry;
-  _eventEmitter = [moduleRegistry getModuleImplementingProtocol:@protocol(UMEventEmitterService)];
+  _eventEmitter = [moduleRegistry getModuleImplementingProtocol:@protocol(EXEventEmitterService)];
 }
 
 - (NSArray<NSString *> *)supportedEvents
@@ -43,9 +43,9 @@ UM_EXPORT_MODULE(ExpoInAppPurchases);
 
 # pragma mark - Exported Methods
 
-UM_EXPORT_METHOD_AS(connectAsync,
-                    connectAsync:(UMPromiseResolveBlock)resolve
-                    reject:(UMPromiseRejectBlock)reject)
+EX_EXPORT_METHOD_AS(connectAsync,
+                    connectAsync:(EXPromiseResolveBlock)resolve
+                    reject:(EXPromiseRejectBlock)reject)
 {
   // Initialize listener and object properties
   [[SKPaymentQueue defaultQueue] addTransactionObserver:self];
@@ -57,20 +57,20 @@ UM_EXPORT_METHOD_AS(connectAsync,
   resolve(nil);
 }
 
-UM_EXPORT_METHOD_AS(getProductsAsync,
+EX_EXPORT_METHOD_AS(getProductsAsync,
                     getProductsAsync:(NSArray *)productIDs
-                    resolve:(UMPromiseResolveBlock)resolve
-                    reject:(UMPromiseRejectBlock)reject)
+                    resolve:(EXPromiseResolveBlock)resolve
+                    reject:(EXPromiseRejectBlock)reject)
 {
   [self setPromise:kEXQueryPurchasableKey resolve:resolve reject:reject];
   [self requestProducts:productIDs];
 }
 
-UM_EXPORT_METHOD_AS(purchaseItemAsync,
+EX_EXPORT_METHOD_AS(purchaseItemAsync,
                     purchaseItemAsync:(NSString *)productIdToPurchase
                     replace:(NSString *)oldItem // ignore on iOS
-                    resolve:(UMPromiseResolveBlock)resolve
-                    reject:(UMPromiseRejectBlock)reject)
+                    resolve:(EXPromiseResolveBlock)resolve
+                    reject:(EXPromiseRejectBlock)reject)
 {
   if (![SKPaymentQueue canMakePayments]) {
     reject(@"E_MISSING_PERMISSIONS", @"User cannot make payments", nil);
@@ -91,10 +91,10 @@ UM_EXPORT_METHOD_AS(purchaseItemAsync,
   reject(@"E_ITEM_NOT_QUERIED", @"Must query item from store before calling purchase", nil);
 }
 
-UM_EXPORT_METHOD_AS(finishTransactionAsync,
+EX_EXPORT_METHOD_AS(finishTransactionAsync,
                     finishTransactionAsync:(NSString *)transactionId
-                    resolve:(UMPromiseResolveBlock)resolve
-                    reject:(UMPromiseRejectBlock)reject)
+                    resolve:(EXPromiseResolveBlock)resolve
+                    reject:(EXPromiseRejectBlock)reject)
 {
   SKPaymentTransaction *transaction = _pendingTransactions[transactionId];
   _pendingTransactions[transactionId] = nil;
@@ -104,9 +104,9 @@ UM_EXPORT_METHOD_AS(finishTransactionAsync,
   resolve(nil);
 }
 
-UM_EXPORT_METHOD_AS(getPurchaseHistoryAsync,
-                    getPurchaseHistoryAsync:(UMPromiseResolveBlock)resolve
-                    reject:(UMPromiseRejectBlock)reject)
+EX_EXPORT_METHOD_AS(getPurchaseHistoryAsync,
+                    getPurchaseHistoryAsync:(EXPromiseResolveBlock)resolve
+                    reject:(EXPromiseRejectBlock)reject)
 {
   BOOL promiseSet = [self setPromise:kEXQueryHistoryKey resolve:resolve reject:reject];
   
@@ -116,9 +116,9 @@ UM_EXPORT_METHOD_AS(getPurchaseHistoryAsync,
   }
 }
 
-UM_EXPORT_METHOD_AS(disconnectAsync,
-                    disconnectAsync:(UMPromiseResolveBlock)resolve
-                    reject:(UMPromiseRejectBlock)reject)
+EX_EXPORT_METHOD_AS(disconnectAsync,
+                    disconnectAsync:(EXPromiseResolveBlock)resolve
+                    reject:(EXPromiseRejectBlock)reject)
 {
   [[SKPaymentQueue defaultQueue] removeTransactionObserver:self];
   resolve(nil);
@@ -248,7 +248,7 @@ UM_EXPORT_METHOD_AS(disconnectAsync,
 # pragma mark - Handling Promises
 
 // Returns a boolean indicating the promise was successfully set. Otherwise, we should return immediately
-- (BOOL)setPromise:(NSString*)key resolve:(UMPromiseResolveBlock)resolve reject:(UMPromiseRejectBlock)reject
+- (BOOL)setPromise:(NSString*)key resolve:(EXPromiseResolveBlock)resolve reject:(EXPromiseRejectBlock)reject
 {
   NSArray *promise = _promises[key];
   
@@ -266,7 +266,7 @@ UM_EXPORT_METHOD_AS(disconnectAsync,
   NSArray *currentPromise = _promises[key];
   
   if (currentPromise != nil) {
-    UMPromiseResolveBlock resolve = currentPromise[0];
+    EXPromiseResolveBlock resolve = currentPromise[0];
     _promises[key] = nil;
     
     resolve(value);
@@ -278,7 +278,7 @@ UM_EXPORT_METHOD_AS(disconnectAsync,
   NSArray* currentPromise = _promises[key];
   
   if (currentPromise != nil) {
-    UMPromiseRejectBlock reject = currentPromise[1];
+    EXPromiseRejectBlock reject = currentPromise[1];
     _promises[key] = nil;
     
     reject(code, message, error);

@@ -115,9 +115,13 @@ export async function requestMediaLibraryPermissionsAsync(
  * const [status, requestPermission] = ImagePicker.useMediaLibraryPermissions();
  * ```
  */
-export const useMediaLibraryPermissions = createPermissionHook({
-  getMethod: getMediaLibraryPermissionsAsync,
-  requestMethod: requestMediaLibraryPermissionsAsync,
+export const useMediaLibraryPermissions = createPermissionHook<
+  MediaLibraryPermissionResponse,
+  { writeOnly?: boolean }
+>({
+  // TODO(cedric): permission requesters should have an options param or a different requester
+  getMethod: options => getMediaLibraryPermissionsAsync(options?.writeOnly),
+  requestMethod: options => requestMediaLibraryPermissionsAsync(options?.writeOnly),
 });
 
 // @needsAudit

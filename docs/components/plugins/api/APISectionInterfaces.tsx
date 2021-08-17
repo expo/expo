@@ -1,5 +1,4 @@
 import React from 'react';
-import ReactMarkdown from 'react-markdown';
 
 import { InlineCode } from '~/components/base/code';
 import { B } from '~/components/base/paragraph';
@@ -9,51 +8,35 @@ import {
   InterfaceDefinitionData,
   InterfaceValueData,
   MethodSignatureData,
-  TypeDefinitionData,
 } from '~/components/plugins/api/APIDataTypes';
 import {
   CommentTextBlock,
-  listParams,
   mdInlineRenderers,
+  renderFlags,
   renderParam,
+  renderTypeOrSignatureType,
   resolveTypeName,
-  STYLES_OPTIONAL,
 } from '~/components/plugins/api/APISectionUtils';
 
 export type APISectionInterfacesProps = {
   data: InterfaceDefinitionData[];
 };
 
-const renderInterfaceType = (type?: TypeDefinitionData, signatures?: MethodSignatureData[]) => {
-  if (type) {
-    return <InlineCode>{resolveTypeName(type)}</InlineCode>;
-  } else if (signatures && signatures.length) {
-    const { type, parameters } = signatures[0];
-    return (
-      <InlineCode>
-        ({listParams(parameters)}) =&gt; {resolveTypeName(type)}
-      </InlineCode>
-    );
-  }
-  return undefined;
-};
-
 const renderInterfaceComment = (comment?: CommentData, signatures?: MethodSignatureData[]) => {
   if (signatures && signatures.length) {
-    const { type, parameters } = signatures[0];
+    const { type, parameters, comment: signatureComment } = signatures[0];
     return (
       <>
         {parameters.map(param => renderParam(param))}
         <B>Returns: </B>
         <InlineCode>{resolveTypeName(type)}</InlineCode>
+        {signatureComment && (
+          <CommentTextBlock comment={signatureComment} renderers={mdInlineRenderers} />
+        )}
       </>
     );
   } else {
-    return comment?.shortText ? (
-      <ReactMarkdown renderers={mdInlineRenderers}>{comment.shortText}</ReactMarkdown>
-    ) : (
-      '-'
-    );
+    return comment ? <CommentTextBlock comment={comment} renderers={mdInlineRenderers} /> : '-';
   }
 };
 
@@ -70,14 +53,9 @@ const renderInterfacePropertyRow = ({
         {name}
         {signatures && signatures.length ? '()' : ''}
       </B>
-      {flags?.isOptional ? (
-        <>
-          <br />
-          <span css={STYLES_OPTIONAL}>(optional)</span>
-        </>
-      ) : null}
+      {renderFlags(flags)}
     </td>
-    <td>{renderInterfaceType(type, signatures)}</td>
+    <td>{renderTypeOrSignatureType(type, signatures)}</td>
     <td>{renderInterfaceComment(comment, signatures)}</td>
   </tr>
 );

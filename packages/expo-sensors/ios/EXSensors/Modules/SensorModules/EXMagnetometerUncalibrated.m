@@ -5,14 +5,14 @@
 
 @implementation EXMagnetometerUncalibrated
 
-UM_EXPORT_MODULE(ExponentMagnetometerUncalibrated);
+EX_EXPORT_MODULE(ExponentMagnetometerUncalibrated);
 
 - (const NSString *)updateEventName
 {
   return @"magnetometerUncalibratedDidUpdate";
 }
 
-- (id)getSensorServiceFromModuleRegistry:(UMModuleRegistry *)moduleRegistry
+- (id)getSensorServiceFromModuleRegistry:(EXModuleRegistry *)moduleRegistry
 {
   return [moduleRegistry getModuleImplementingProtocol:@protocol(EXMagnetometerUncalibratedInterface)];
 }

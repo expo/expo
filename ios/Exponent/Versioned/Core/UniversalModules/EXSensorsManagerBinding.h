@@ -1,7 +1,7 @@
 // Copyright © 2018 650 Industries. All rights reserved.
 
 #import <Foundation/Foundation.h>
-#import <UMCore/UMInternalModule.h>
+#import <ExpoModulesCore/EXInternalModule.h>
 #import <ExpoModulesCore/EXAccelerometerInterface.h>
 #import <ExpoModulesCore/EXBarometerInterface.h>
 #import <ExpoModulesCore/EXDeviceMotionInterface.h>
@@ -46,7 +46,7 @@
 
 @end
 
-@interface EXSensorsManagerBinding : NSObject <UMInternalModule, EXAccelerometerInterface, EXBarometerInterface, EXDeviceMotionInterface, EXGyroscopeInterface, EXMagnetometerInterface, EXMagnetometerUncalibratedInterface>
+@interface EXSensorsManagerBinding : NSObject <EXInternalModule, EXAccelerometerInterface, EXBarometerInterface, EXDeviceMotionInterface, EXGyroscopeInterface, EXMagnetometerInterface, EXMagnetometerUncalibratedInterface>
 
 - (instancetype)initWithScopeKey:(NSString *)scopeKey andKernelService:(id<EXSensorsManagerBindingDelegate>)kernelService;
 
