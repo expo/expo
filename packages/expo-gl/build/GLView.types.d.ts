@@ -25,7 +25,7 @@ export declare type GLSnapshot = {
     height: number;
 };
 export interface ExpoWebGLRenderingContext extends WebGL2RenderingContext {
-    __exglCtxId: number;
+    exglCtxId: number;
     endFrameEXP(): void;
     __expoSetLogging(option: GLLoggingOption): void;
 }
