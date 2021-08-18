@@ -1,4 +1,4 @@
-require File.join(`node --print "require.resolve('expo-modules-core/package.json')"`, "../scripts/autolinking")
+require File.join(File.dirname(`node --print "require.resolve('expo-modules-core/package.json')"`), "scripts/autolinking")
 require 'colored2'
 
 def use_unimodules!(custom_options = {})
