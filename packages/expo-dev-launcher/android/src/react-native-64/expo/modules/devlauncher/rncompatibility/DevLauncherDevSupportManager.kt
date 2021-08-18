@@ -1,4 +1,4 @@
-package expo.modules.devlauncher.react
+package expo.modules.devlauncher.rncompatibility
 
 import android.content.Context
 import android.util.Log
@@ -48,5 +48,9 @@ class DevLauncherDevSupportManager(
 
     controller.onAppLoadedWithError()
     DevLauncherErrorActivity.showError(activity, DevLauncherAppError(message, e))
+  }
+
+  companion object {
+    fun getDevHelperInternalFieldName() = "mReactInstanceManagerHelper"
   }
 }
