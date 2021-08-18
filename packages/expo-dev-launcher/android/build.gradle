@@ -53,7 +53,7 @@ android {
   }
 
   sourceSets {
-    debug {
+    main {
       java {
         def rnVersion = getRNVersion()
 
