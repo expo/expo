@@ -273,7 +273,7 @@ object VersionedUtils {
       return null
     }
     val jsEngineFromManifest = instanceManagerBuilderProperties.manifest.getAndroidJsEngine()
-    return if (jsEngineFromManifest != null && jsEngineFromManifest == "hermes") HermesExecutorFactory() else JSCExecutorFactory(
+    return if (jsEngineFromManifest == "hermes") HermesExecutorFactory() else JSCExecutorFactory(
       appName,
       deviceName
     )
@@ -314,13 +314,11 @@ object VersionedUtils {
     return Pair(false, 0)
   }
 
-  /* package */
-  fun isHermesBundle(jsBundlePath: String?): Boolean {
+  internal fun isHermesBundle(jsBundlePath: String?): Boolean {
     return parseHermesBundleHeader(jsBundlePath).first
   }
 
-  /* package */
-  fun getHermesBundleBytecodeVersion(jsBundlePath: String?): Int {
+  internal fun getHermesBundleBytecodeVersion(jsBundlePath: String?): Int {
     return parseHermesBundleHeader(jsBundlePath).second
   }
 }
