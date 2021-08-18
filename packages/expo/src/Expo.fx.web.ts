@@ -17,7 +17,7 @@ if (__DEV__) {
       get() {
         // Provide a more
         throw new Error(
-          "Your web project is importing a file in 'react-native' instead of 'react-native-web'. Learn more: https://expo.fyi/fb-batched-bridge-config-web"
+          "Your web project is importing a module from 'react-native' instead of 'react-native-web'. Learn more: https://expo.fyi/fb-batched-bridge-config-web"
         );
       },
     });
