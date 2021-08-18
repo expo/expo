@@ -32,3 +32,4 @@
 // Dev Client
 
 #import <EXDevLauncher/EXDevLauncherController.h>
+#import <EXScreenOrientation/EXScreenOrientationViewController.h>
