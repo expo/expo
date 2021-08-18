@@ -14,11 +14,7 @@ import java.lang.Exception
 import java.lang.RuntimeException
 
 class TestNativeModuleServer private constructor() {
-  private var uiDevice: UiDevice? = null
-
-  fun setUiDevice(uiDevice: UiDevice?) {
-    this.uiDevice = uiDevice
-  }
+  var uiDevice: UiDevice? = null
 
   fun onEvent(event: TestActionEvent) {
     if (event.delay <= 0) {

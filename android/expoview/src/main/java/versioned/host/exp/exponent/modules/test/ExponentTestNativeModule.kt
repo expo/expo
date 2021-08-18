@@ -51,25 +51,29 @@ class ExponentTestNativeModule(reactContext: ReactApplicationContext?) :
     }
 
     val selectorType = options.getString("selectorType")
-    var selectorValue: String? = null
-    if (options.hasKey("selectorValue")) {
-      selectorValue = options.getString("selectorValue")
+    val selectorValue = if (options.hasKey("selectorValue")) {
+      options.getString("selectorValue")
+    } else {
+      null
     }
 
     val actionType = options.getString("actionType")
-    var actionValue: String? = null
-    if (options.hasKey("actionValue")) {
-      actionValue = options.getString("actionValue")
+    val actionValue = if (options.hasKey("actionValue")) {
+      options.getString("actionValue")
+    } else {
+      null
     }
 
-    var timeout = 0
-    if (options.hasKey("timeout")) {
-      timeout = options.getInt("timeout")
+    val timeout = if (options.hasKey("timeout")) {
+      options.getInt("timeout")
+    } else {
+      0
     }
 
-    var delay = 0
-    if (options.hasKey("delay")) {
-      delay = options.getInt("delay")
+    val delay = if (options.hasKey("delay")) {
+      options.getInt("delay")
+    } else {
+      0
     }
 
     EventBus.getDefault().post(
