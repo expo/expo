@@ -24,29 +24,11 @@ export type RootStackScreenProps<Screen extends keyof RootStackParamList> = Nati
 >;
 
 export type RootTabParamList = {
-  TabOne: NavigatorScreenParams<TabOneParamList> | undefined;
-  TabTwo: NavigatorScreenParams<TabTwoParamList> | undefined;
+  TabOne: undefined;
+  TabTwo: undefined;
 };
 
 export type RootTabScreenProps<Screen extends keyof RootTabParamList> = CompositeScreenProps<
   BottomTabScreenProps<RootTabParamList, Screen>,
   NativeStackScreenProps<RootStackParamList>
->;
-
-export type TabOneParamList = {
-  TabOneScreen: undefined;
-};
-
-export type TabOneScreenProps<Screen extends keyof TabOneParamList> = CompositeScreenProps<
-  NativeStackScreenProps<TabOneParamList, Screen>,
-  BottomTabScreenProps<RootTabParamList>
->;
-
-export type TabTwoParamList = {
-  TabTwoScreen: undefined;
-};
-
-export type TabTwoScreenProps<Screen extends keyof TabTwoParamList> = CompositeScreenProps<
-  NativeStackScreenProps<TabTwoParamList, Screen>,
-  BottomTabScreenProps<RootTabParamList>
 >;
