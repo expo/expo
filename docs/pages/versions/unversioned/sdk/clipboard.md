@@ -29,7 +29,7 @@ export default function App() {
   const [copiedText, setCopiedText] = React.useState('');
 
   const copyToClipboard = () => {
-    /* @info */ Clipboard.setString('hello world');
+    /* @info */ ExpoClipboard.setString('hello world');
     /* @end */
   };
 
