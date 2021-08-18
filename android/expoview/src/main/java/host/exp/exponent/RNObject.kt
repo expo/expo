@@ -43,7 +43,7 @@ class RNObject {
           Class.forName(className)
         }
       } else {
-        Class.forName("abi" + version.replace('.', '_') + '.' + className)
+        Class.forName("abi${version.replace('.', '_')}.$className")
       }
     } catch (e: ClassNotFoundException) {
       EXL.e(TAG, e)
@@ -67,13 +67,7 @@ class RNObject {
   }
 
   fun version(): String {
-    val versionedClassName = clazz!!.name
-    return if (versionedClassName.startsWith("abi")) {
-      val abiVersion = versionedClassName.split(".").toTypedArray()[0]
-      abiVersion.substring(3)
-    } else {
-      UNVERSIONED
-    }
+    return versionForClassname(clazz!!.name)
   }
 
   fun construct(vararg args: Any?): RNObject {
