@@ -3,6 +3,9 @@
 #import <objc/runtime.h>
 
 #import <React/RCTLog.h>
+#import <React/RCTUIManager.h>
+#import <React/RCTComponentData.h>
+#import <React/RCTModuleData.h>
 
 #import <ExpoModulesCore/EXNativeModulesProxy.h>
 #import <ExpoModulesCore/EXEventEmitter.h>
@@ -19,39 +22,50 @@ static const NSString *methodInfoKeyKey = @"key";
 static const NSString *methodInfoNameKey = @"name";
 static const NSString *methodInfoArgumentsCountKey = @"argumentsCount";
 
+@interface RCTBridge (RegisterAdditionalModuleClasses)
+
+- (void)registerAdditionalModuleClasses:(NSArray<Class> *)modules;
+
+@end
+
 @interface EXNativeModulesProxy ()
 
 @property (nonatomic, strong) NSRegularExpression *regexp;
 @property (nonatomic, strong) EXModuleRegistry *exModuleRegistry;
 @property (nonatomic, strong) NSMutableDictionary<const NSString *, NSMutableDictionary<NSString *, NSNumber *> *> *exportedMethodsKeys;
 @property (nonatomic, strong) NSMutableDictionary<const NSString *, NSMutableDictionary<NSNumber *, NSString *> *> *exportedMethodsReverseKeys;
-@property (nonatomic, strong) SwiftInteropBridge *swiftInteropBridge;
+@property (nonatomic) BOOL ownsModuleRegistry;
 
 @end
 
 @implementation EXNativeModulesProxy
 
-- (instancetype)initWithModuleRegistry:(EXModuleRegistry *)moduleRegistry
+@synthesize bridge = _bridge;
+
+RCT_EXPORT_MODULE(NativeUnimoduleProxy)
+
+/**
+ The designated initializer. It's used in the old setup where the native modules proxy
+ is registered in `extraModulesForBridge:` by the bridge delegate.
+ */
+- (instancetype)initWithModuleRegistry:(nullable EXModuleRegistry *)moduleRegistry
 {
   if (self = [super init]) {
-    _exModuleRegistry = moduleRegistry;
+    _exModuleRegistry = moduleRegistry != nil ? moduleRegistry : [[EXModuleRegistryProvider new] moduleRegistry];
+    _swiftInteropBridge = [[SwiftInteropBridge alloc] initWithModulesProvider:[NSClassFromString(@"ExpoModulesProvider") new] legacyModuleRegistry:_exModuleRegistry];
     _exportedMethodsKeys = [NSMutableDictionary dictionary];
     _exportedMethodsReverseKeys = [NSMutableDictionary dictionary];
+    _ownsModuleRegistry = moduleRegistry == nil;
   }
   return self;
 }
 
-- (instancetype)initWithModuleRegistry:(EXModuleRegistry *)moduleRegistry swiftInteropBridge:(SwiftInteropBridge *)swiftInteropBridge
+/**
+ Convenience initializer used by React Native in the new setup, where the modules are registered automatically.
+ */
+- (instancetype)init
 {
-  if (self = [self initWithModuleRegistry:moduleRegistry]) {
-    _swiftInteropBridge = swiftInteropBridge;
-  }
-  return self;
-}
-
-+ (const NSString *)moduleName
-{
-  return @"NativeUnimoduleProxy";
+  return [self initWithModuleRegistry:nil];
 }
 
 # pragma mark - React API
@@ -110,6 +124,14 @@ static const NSString *methodInfoArgumentsCountKey = @"argumentsCount";
   return constantsAccumulator;
 }
 
+- (void)setBridge:(RCTBridge *)bridge
+{
+  if (!_bridge) {
+    [self registerExpoModulesInBridge:bridge];
+  }
+  _bridge = bridge;
+}
+
 RCT_EXPORT_METHOD(callMethod:(NSString *)moduleName methodNameOrKey:(id)methodNameOrKey arguments:(NSArray *)arguments resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject)
 {
   if ([_swiftInteropBridge hasModule:moduleName]) {
@@ -146,6 +168,84 @@ RCT_EXPORT_METHOD(callMethod:(NSString *)moduleName methodNameOrKey:(id)methodNa
       reject(@"E_EXC", message, nil);
     }
   });
+}
+
+#pragma mark - Privates
+
+- (void)registerExpoModulesInBridge:(RCTBridge *)bridge
+{
+  // Registering expo modules in bridge is needed only when the proxy module owns the registry
+  // (was autoinitialized by React Native). Otherwise they're registered by the registry adapter.
+  if (!_ownsModuleRegistry || [bridge moduleForClass:[EXReactNativeEventEmitter class]] != nil) {
+    return;
+  }
+
+  // An array of `RCTBridgeModule` classes to register.
+  NSMutableArray<Class<RCTBridgeModule>> *additionalModuleClasses = [NSMutableArray new];
+  NSMutableSet *visitedSweetModules = [NSMutableSet new];
+
+  // Event emitter is a bridge module, however it's also needed by expo modules,
+  // so later we'll register an instance created by React Native as expo module.
+  [additionalModuleClasses addObject:[EXReactNativeEventEmitter class]];
+
+  // Add dynamic wrappers for view modules written in Sweet API.
+  for (ViewModuleWrapper *swiftViewModule in [_swiftInteropBridge getViewManagers]) {
+    Class wrappedViewModuleClass = [ViewModuleWrapper createViewModuleWrapperClassWithModule:swiftViewModule];
+    [additionalModuleClasses addObject:wrappedViewModuleClass];
+    [visitedSweetModules addObject:swiftViewModule.name];
+  }
+
+  // Add dynamic wrappers for the classic view managers.
+  for (EXViewManager *viewManager in [_exModuleRegistry getAllViewManagers]) {
+    if (![visitedSweetModules containsObject:viewManager.viewName]) {
+      Class viewManagerWrapperClass = [EXViewManagerAdapterClassesRegistry createViewManagerAdapterClassForViewManager:viewManager];
+      [additionalModuleClasses addObject:viewManagerWrapperClass];
+    }
+  }
+
+  // View manager wrappers don't have their own prop configs, so we must register
+  // theirs base view manager that provides common props such as `proxiedProperties`.
+  // Otherwise, React Native may treat these props as not valid in subclassing views.
+  [additionalModuleClasses addObject:[EXViewManagerAdapter class]];
+  [additionalModuleClasses addObject:[ViewModuleWrapper class]];
+
+  // Some modules might need access to the bridge.
+  for (id module in [_exModuleRegistry getAllInternalModules]) {
+    if ([module conformsToProtocol:@protocol(RCTBridgeModule)]) {
+      [module setValue:bridge forKey:@"bridge"];
+    }
+  }
+
+  // Let the modules consume the registry :)
+  // It calls `setModuleRegistry:` on all `EXModuleRegistryConsumer`s.
+  [_exModuleRegistry initialize];
+
+  // Register the view managers as additional modules.
+  [bridge registerAdditionalModuleClasses:additionalModuleClasses];
+
+  // Bridge's `registerAdditionalModuleClasses:` method doesn't register
+  // components in UIManager — we need to register them on our own.
+  [self registerComponentDataForModuleClasses:additionalModuleClasses inBridge:bridge];
+
+  // Get the newly created instance of `EXReactEventEmitter` bridge module and register it in expo modules registry.
+  EXReactNativeEventEmitter *eventEmitter = [bridge moduleForClass:[EXReactNativeEventEmitter class]];
+  [_exModuleRegistry registerInternalModule:eventEmitter];
+  [eventEmitter setModuleRegistry:_exModuleRegistry];
+}
+
+- (void)registerComponentDataForModuleClasses:(NSArray<Class> *)moduleClasses inBridge:(RCTBridge *)bridge
+{
+  // Hacky way to get a dictionary with `RCTComponentData` from UIManager.
+  NSMutableDictionary<NSString *, RCTComponentData *> *componentDataByName = [bridge.uiManager valueForKey:@"_componentDataByName"];
+
+  // Register missing components data for all view managers.
+  for (Class moduleClass in moduleClasses) {
+    NSString *className = NSStringFromClass(moduleClass);
+
+    if ([moduleClass isSubclassOfClass:[RCTViewManager class]] && !componentDataByName[className]) {
+      componentDataByName[className] = [[RCTComponentData alloc] initWithManagerClass:moduleClass bridge:bridge];
+    }
+  }
 }
 
 - (void)assignExportedMethodsKeys:(NSMutableArray<NSMutableDictionary<const NSString *, id> *> *)exportedMethods forModuleName:(const NSString *)moduleName

@@ -4,6 +4,7 @@
 #import <ExpoModulesCore/EXEventEmitter.h>
 #import <ExpoModulesCore/EXExportedModule.h>
 #import <ExpoModulesCore/EXModuleRegistry.h>
+#import <ExpoModulesCore/EXBridgeModule.h>
 
 @interface EXReactNativeEventEmitter ()
 
@@ -15,6 +16,8 @@
 
 @implementation EXReactNativeEventEmitter
 
+@synthesize bridge = _bridge;
+
 - (instancetype)init
 {
   if (self = [super init]) {
@@ -24,16 +27,24 @@
   return self;
 }
 
-EX_REGISTER_MODULE();
-
 + (NSString *)moduleName
 {
   return @"UMReactNativeEventEmitter";
 }
 
++ (BOOL)requiresMainQueueSetup
+{
+  return NO;
+}
+
 + (const NSArray<Protocol *> *)exportedInterfaces
 {
   return @[@protocol(EXEventEmitterService)];
+}
+
+- (void)setBridge:(RCTBridge *)bridge
+{
+  _bridge = bridge;
 }
 
 - (NSArray<NSString *> *)supportedEvents

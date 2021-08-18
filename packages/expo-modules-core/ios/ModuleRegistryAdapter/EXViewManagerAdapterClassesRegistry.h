@@ -12,5 +12,6 @@
 @interface EXViewManagerAdapterClassesRegistry : NSObject
 
 - (Class)viewManagerAdapterClassForViewManager:(EXViewManager *)viewManager;
++ (Class)createViewManagerAdapterClassForViewManager:(EXViewManager *)viewManager;
 
 @end
