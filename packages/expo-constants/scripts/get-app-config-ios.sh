@@ -2,6 +2,17 @@
 
 set -eo pipefail
 
+if [[ "$SKIP_BUNDLING" ]]; then
+  echo "SKIP_BUNDLING enabled; skipping get-app-config-ios.sh."
+  exit 0;
+elif [[ "$CONFIGURATION" == *Debug* ]] && [[ "$PLATFORM_NAME" == *simulator ]]; then
+  if [[ "$FORCE_BUNDLING" ]]; then
+    echo "FORCE_BUNDLING enabled; continuing get-app-config-ios.sh."
+  else
+    exit 0;
+  fi
+fi
+
 DEST="$CONFIGURATION_BUILD_DIR/$UNLOCALIZED_RESOURCES_FOLDER_PATH"
 NODE_BINARY=${NODE_BINARY:-node}
 
@@ -14,7 +25,7 @@ PROJECT_ROOT=${PROJECT_ROOT:-"$EXPO_CONSTANTS_PACKAGE_DIR/../.."}
 
 cd "$PROJECT_ROOT" || exit
 
-if ! [ -x "$(command -v $NODE_BINARY)" ]; then
+if ! [ -x "$(command -v "$NODE_BINARY")" ]; then
   echo 'Error: cannot find the node binary. Try setting the NODE_BINARY variable in the ' \
   '"Bundle React Native code and images" Build Phase to the absolute path to your node binary. ' \
   'You can find it by executing "which node" in a terminal window.' >&2
@@ -22,7 +33,7 @@ if ! [ -x "$(command -v $NODE_BINARY)" ]; then
 fi
 
 # For traditional main project build phases integration, will be no-op to prevent duplicated app.config creation.
-DIR_BASENAME=$(basename $PROJECT_ROOT)
+DIR_BASENAME=$(basename "$PROJECT_ROOT")
 if [ "x$DIR_BASENAME" != "xPods" ]; then
   exit 0
 fi
