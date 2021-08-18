@@ -1,5 +1,5 @@
 import chalk from 'chalk';
-import { TaskQueue } from 'cwait';
+import { PromisyClass, TaskQueue } from 'cwait';
 import fs from 'fs-extra';
 import os from 'os';
 import path from 'path';
@@ -30,7 +30,7 @@ export async function versionExpoModulesAsync(
   const prefix = getVersionPrefix(sdkNumber);
   const transforms = expoModulesTransforms(prefix);
   const versionedDirectory = getVersionedDirectory(sdkNumber);
-  const taskQueue = new TaskQueue(Promise, os.cpus().length);
+  const taskQueue = new TaskQueue(Promise as PromisyClass, os.cpus().length);
 
   // Prepare versioning task (for single package).
   const versionPackageTask = taskQueue.wrap(async (pkg) => {
