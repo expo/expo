@@ -241,8 +241,8 @@ public abstract class ReactPickerManager extends BaseViewManager<ReactPicker, Re
 
       if (convertView == null) {
         int layoutResId = isDropdown
-              ? android.R.layout.simple_spinner_dropdown_item
-              : android.R.layout.simple_spinner_item;
+              ? R.layout.simple_spinner_dropdown_item
+              : R.layout.simple_spinner_item;
         convertView = mInflater.inflate(layoutResId, parent, false);
       }
 
