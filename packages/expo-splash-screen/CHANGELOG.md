@@ -7,6 +7,8 @@
 ### 🎉 New features
 
 - Add warning for splash screen if visible for too long ([#12882](https://github.com/expo/expo/pull/12882) by [@ajsmth](https://github.com/ajsmth))
+- Re-show splash screen if rootViewController be replaced when splash is showing. ([#14063](https://github.com/expo/expo/pull/14063) by [@kudo](https://github.com/kudo))
+
 ### 🐛 Bug fixes
 
 - On iOS, search for a view controller with a RCTRootView rather than always using the keyWindow's rootViewController. ([#13429](https://github.com/expo/expo/pull/13429) by [@esamelson](https://github.com/esamelson))
