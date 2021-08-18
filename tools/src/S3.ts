@@ -195,7 +195,7 @@ export async function uploadDirectoriesAsync(
         }
       );
       let gitCommandOutput = gitCommand.stdout.toString();
-      fse.writeFileSync(excludeFile, gitCommandOutput);
+      await fse.writeFile(excludeFile, gitCommandOutput);
       await spawnAsync(
         'rsync',
         [
