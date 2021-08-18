@@ -17,7 +17,7 @@ if (Platform.OS === 'web') {
   it('provides a helpful error message on web', () => {
     // @ts-ignore
     expect(() => global.__fbBatchedBridgeConfig).toThrow(
-      /Your web project is importing a file in 'react-native' instead of 'react-native-web'/
+      /Your web project is importing a module from 'react-native' instead of 'react-native-web'/
     );
   });
 } else {
