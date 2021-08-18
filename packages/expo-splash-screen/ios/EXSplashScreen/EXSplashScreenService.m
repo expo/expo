@@ -91,15 +91,15 @@ EX_REGISTER_SINGLETON_MODULE(SplashScreen);
   [UIApplication.sharedApplication.keyWindow removeObserver:self forKeyPath:kRootViewController context:nil];
   EXSplashScreenViewController *splashScreenViewController = [self.splashScreenControllers objectForKey:viewController];
 
-  UM_WEAKIFY(self);
+  EX_WEAKIFY(self);
   return [splashScreenViewController
       hideWithCallback:^(BOOL hasEffect) {
-        UM_ENSURE_STRONGIFY(self);
+        EX_ENSURE_STRONGIFY(self);
         [self.splashScreenControllers removeObjectForKey:viewController];
         successCallback(hasEffect);
       }
       failureCallback:^(NSString *message) {
-        UM_ENSURE_STRONGIFY(self);
+        EX_ENSURE_STRONGIFY(self);
         [self.splashScreenControllers removeObjectForKey:viewController];
         failureCallback(message);
       }];
