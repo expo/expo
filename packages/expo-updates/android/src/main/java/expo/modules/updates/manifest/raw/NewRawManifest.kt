@@ -1,9 +1,5 @@
 package expo.modules.updates.manifest.raw
 
-import android.net.Uri
-import android.util.Log
-import expo.modules.updates.db.entity.AssetEntity
-import expo.modules.updates.manifest.NewManifest
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
@@ -23,17 +19,18 @@ class NewRawManifest(json: JSONObject) : RawManifest(json) {
   @Throws(JSONException::class)
   override fun getStableLegacyID(): String = getID()
 
-  /**
-   * Incorrect for now until we figure out how to get this in the new manifest format.
-   */
   @Throws(JSONException::class)
-  override fun getScopeKey(): String = getID()
+  override fun getScopeKey(): String {
+    return json.getJSONObject("extra").getString("scopeKey")
+  }
 
-  /**
-   * Incorrect for now until we figure out how to get this in the new manifest format.
-   */
   override fun getProjectID(): String? {
-    return null
+    val easConfig = getExtra()?.optJSONObject("eas") ?: return null
+    return if (easConfig.has("projectId")) {
+      easConfig.getString("projectId")
+    } else {
+      null
+    }
   }
 
   @Throws(JSONException::class)

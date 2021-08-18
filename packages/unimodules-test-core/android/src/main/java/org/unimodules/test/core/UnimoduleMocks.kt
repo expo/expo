@@ -4,9 +4,9 @@ import io.mockk.MockKGateway
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.spyk
-import org.unimodules.core.ExportedModule
-import org.unimodules.core.ModuleRegistry
-import org.unimodules.core.interfaces.InternalModule
+import expo.modules.core.ExportedModule
+import expo.modules.core.ModuleRegistry
+import expo.modules.core.interfaces.InternalModule
 import java.util.*
 
 @JvmOverloads
@@ -20,9 +20,9 @@ fun moduleRegistryMock(
   }
 }
 
-inline fun <reified T : InternalModule> mockkInternalModule(relaxed: Boolean = false): T {
+inline fun <reified T : InternalModule> mockkInternalModule(relaxed: Boolean = false, asInterface: Class<*> = T::class.java): T {
   val mock: T = mockk(relaxed = relaxed)
-  every { mock.exportedInterfaces } returns listOf(T::class.java)
+  every { mock.exportedInterfaces } returns listOf(asInterface)
   return mock
 }
 

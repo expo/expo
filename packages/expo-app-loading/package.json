@@ -29,10 +29,7 @@
   },
   "author": "650 Industries, Inc.",
   "license": "MIT",
-  "homepage": "https://docs.expo.io/versions/latest/sdk/app-loading",
-  "unimodulePeerDependencies": {
-    "@unimodules/core": "*"
-  },
+  "homepage": "https://docs.expo.dev/versions/latest/sdk/app-loading",
   "dependencies": {
     "expo-splash-screen": "~0.11.0"
   },

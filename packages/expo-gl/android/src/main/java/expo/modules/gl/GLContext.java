@@ -27,11 +27,11 @@ import javax.microedition.khronos.egl.EGLContext;
 import javax.microedition.khronos.egl.EGLDisplay;
 import javax.microedition.khronos.egl.EGLSurface;
 
-import org.unimodules.core.ModuleRegistry;
-import org.unimodules.core.Promise;
-import org.unimodules.core.interfaces.JavaScriptContextProvider;
-import org.unimodules.core.interfaces.RuntimeEnvironmentInterface;
-import org.unimodules.core.interfaces.services.UIManager;
+import expo.modules.core.ModuleRegistry;
+import expo.modules.core.Promise;
+import expo.modules.core.interfaces.JavaScriptContextProvider;
+import expo.modules.core.interfaces.RuntimeEnvironmentInterface;
+import expo.modules.core.interfaces.services.UIManager;
 import expo.modules.gl.utils.FileSystemUtils;
 
 import static android.opengl.GLES30.*;

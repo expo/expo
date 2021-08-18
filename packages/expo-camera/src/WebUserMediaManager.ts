@@ -2,7 +2,7 @@
 /**
  * A web-only module for ponyfilling the UserMedia API.
  */
-import { Platform } from '@unimodules/core';
+import { Platform } from 'expo-modules-core';
 
 export const userMediaRequested: boolean = false;
 

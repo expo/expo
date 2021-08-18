@@ -2,7 +2,9 @@
 
 #import <EXSplashScreen/EXSplashScreenService.h>
 #import <EXSplashScreen/EXSplashScreenViewNativeProvider.h>
-#import <UMCore/UMDefines.h>
+#import <ExpoModulesCore/EXDefines.h>
+
+NSString * const kRootViewController = @"rootViewController";
 
 @interface EXSplashScreenService ()
 
@@ -12,7 +14,7 @@
 
 @implementation EXSplashScreenService
 
-UM_REGISTER_SINGLETON_MODULE(SplashScreen);
+EX_REGISTER_SINGLETON_MODULE(SplashScreen);
 
 - (instancetype)init
 {
@@ -28,7 +30,7 @@ UM_REGISTER_SINGLETON_MODULE(SplashScreen);
   return [self showSplashScreenFor:viewController
           splashScreenViewProvider:splashScreenViewProvider
                    successCallback:^{}
-                   failureCallback:^(NSString *message){ UMLogWarn(@"%@", message); }];
+                   failureCallback:^(NSString *message){ EXLogWarn(@"%@", message); }];
 }
 
 
@@ -86,24 +88,48 @@ UM_REGISTER_SINGLETON_MODULE(SplashScreen);
   if (![self.splashScreenControllers objectForKey:viewController]) {
     return failureCallback(@"No native splash screen registered for given view controller. Call 'SplashScreen.show' for given view controller first.");
   }
-  return [[self.splashScreenControllers objectForKey:viewController] hideWithCallback:successCallback
-                                                                      failureCallback:failureCallback];
+  [UIApplication.sharedApplication.keyWindow removeObserver:self forKeyPath:kRootViewController context:nil];
+  EXSplashScreenViewController *splashScreenViewController = [self.splashScreenControllers objectForKey:viewController];
+
+  EX_WEAKIFY(self);
+  return [splashScreenViewController
+      hideWithCallback:^(BOOL hasEffect) {
+        EX_ENSURE_STRONGIFY(self);
+        [self.splashScreenControllers removeObjectForKey:viewController];
+        successCallback(hasEffect);
+      }
+      failureCallback:^(NSString *message) {
+        EX_ENSURE_STRONGIFY(self);
+        [self.splashScreenControllers removeObjectForKey:viewController];
+        failureCallback(message);
+      }];
 }
 
 - (void)onAppContentDidAppear:(UIViewController *)viewController
 {
   if (![self.splashScreenControllers objectForKey:viewController]) {
-    UMLogWarn(@"No native splash screen registered for given view controller. Call 'SplashScreen.show' for given view controller first.");
+    EXLogWarn(@"No native splash screen registered for given view controller. Call 'SplashScreen.show' for given view controller first.");
   }
-  [[self.splashScreenControllers objectForKey:viewController] onAppContentDidAppear];
+  BOOL needsHide = [[self.splashScreenControllers objectForKey:viewController] needsHideOnAppContentDidAppear];
+  if (needsHide) {
+    [self hideSplashScreenFor:viewController
+              successCallback:^(BOOL hasEffect){}
+              failureCallback:^(NSString *message){}];
+  }
 }
 
 - (void)onAppContentWillReload:(UIViewController *)viewController
 {
   if (![self.splashScreenControllers objectForKey:viewController]) {
-    UMLogWarn(@"No native splash screen registered for given view controller. Call 'SplashScreen.show' for given view controller first.");
+    EXLogWarn(@"No native splash screen registered for given view controller. Call 'SplashScreen.show' for given view controller first.");
   }
-  [[self.splashScreenControllers objectForKey:viewController] onAppContentWillReload];
+  BOOL needsShow = [[self.splashScreenControllers objectForKey:viewController] needsShowOnAppContentWillReload];
+  if (needsShow) {
+    [self showSplashScreenFor:viewController
+       splashScreenController:[self.splashScreenControllers objectForKey:viewController]
+              successCallback:^{}
+              failureCallback:^(NSString *message){}];
+  }
 }
 
 # pragma mark - UIApplicationDelegate
@@ -114,7 +140,21 @@ UM_REGISTER_SINGLETON_MODULE(SplashScreen);
   if (rootViewController) {
     [self showSplashScreenFor:rootViewController];
   }
+
+  [UIApplication.sharedApplication.keyWindow addObserver:self forKeyPath:kRootViewController options:NSKeyValueObservingOptionNew context:nil];
   return YES;
+}
+
+# pragma mark - RootViewController KVO
+
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSKeyValueChangeKey,id> *)change context:(void *)context
+{
+  if (object == UIApplication.sharedApplication.keyWindow && [keyPath isEqualToString:kRootViewController]) {
+    UIViewController *newRootViewController = change[@"new"];
+    if (newRootViewController != nil) {
+      [self showSplashScreenFor:newRootViewController];
+    }
+  }
 }
 
 @end

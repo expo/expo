@@ -10,6 +10,23 @@
 
 ### 💡 Others
 
+- Cache products on iOS when calling `getProductsAsync`, so that `purchaseItemAsync` no longer needs to make a second request to StoreKit. This matches the Android implementation. ([#13961](https://github.com/expo/expo/pull/13961) by [@cruzach](https://github.com/cruzach))
+
+## 11.0.0 — 2021-08-10
+
+### 🛠 Breaking changes
+
+- `purchaseItemAsync` no longer accepts the old SKU as the second (optional) argument. Instead, this method now accepts the `purchaseToken` of the purchase you are replacing as the second argument. You can get this value via `getPurchaseHistoryAsync`. This change only affects Android. ([#13884](https://github.com/expo/expo/pull/13884) by [@cruzach](https://github.com/cruzach))
+- `getPurchaseHistoryAsync` no longer accepts a boolean parameter. Instead, it accepts an object containing the key `useGooglePlayCache`. `useGooglePlayCache` functions similarly to the the previous `refresh` parameter, except it is clearer in naming. If you had `refresh` as false, you should pass `useGooglePlayCache: true`. If `refresh` was true, you should pass `useGooglePlayCache: false`. Please see the [docs](https://github.com/expo/expo/blob/master/docs/pages/versions/unversioned/sdk/in-app-purchases.md#inapppurchasesgetpurchasehistoryasyncrefresh-boolean) for more information. ([#13942](https://github.com/expo/expo/pull/13942) by [@cruzach](https://github.com/cruzach))
+
+### 🐛 Bug fixes
+
+- Made the arguments that were labeled as 'optional' on iOS for `getPurchaseHistoryAsync` and `finishTransactionAsync` actually optional. ([#13904](https://github.com/expo/expo/pull/13904) by [@cruzach](https://github.com/cruzach))
+
+### 💡 Others
+
+- Updated Google Play Billing from v2 to v4. ([#13884](https://github.com/expo/expo/pull/13884) by [@cruzach](https://github.com/cruzach))
+
 ## 10.2.0 — 2021-06-16
 
 ### 🐛 Bug fixes

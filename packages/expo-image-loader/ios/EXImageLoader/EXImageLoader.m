@@ -11,7 +11,7 @@
 
 @implementation EXImageLoader
 
-UM_REGISTER_MODULE();
+EX_REGISTER_MODULE();
 
 + (NSString *)moduleName
 {

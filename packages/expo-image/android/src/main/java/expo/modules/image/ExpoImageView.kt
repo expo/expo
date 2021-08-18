@@ -10,7 +10,6 @@ import com.bumptech.glide.RequestManager
 import com.bumptech.glide.integration.webp.decoder.WebpDrawable
 import com.bumptech.glide.integration.webp.decoder.WebpDrawableTransformation
 import com.bumptech.glide.load.model.GlideUrl
-import com.bumptech.glide.load.resource.bitmap.DownsampleStrategy
 import com.bumptech.glide.load.resource.bitmap.FitCenter
 import com.bumptech.glide.request.RequestOptions
 import com.facebook.react.bridge.ReactContext
@@ -87,7 +86,6 @@ class ExpoImageView(context: ReactContext, private val requestManager: RequestMa
     }
   }
 
-
   internal fun setBorderWidth(position: Int, width: Float) {
     borderDrawable.value.setBorderWidth(position, width)
   }
@@ -123,7 +121,7 @@ class ExpoImageView(context: ReactContext, private val requestManager: RequestMa
       requestManager
         .load(sourceToLoad)
         .apply(options)
-        .listener(eventsManager)
+        .addListener(eventsManager)
         .run {
           val fitCenter = FitCenter()
           this
@@ -133,6 +131,11 @@ class ExpoImageView(context: ReactContext, private val requestManager: RequestMa
         .into(this)
       requestManager
         .`as`(BitmapFactory.Options::class.java)
+        // Remove any default listeners from this request
+        // (an example would be an SVGSoftwareLayerSetter
+        // added in ExpoImageViewManager).
+        // This request won't load the image, only the size.
+        .listener(null)
         .load(sourceToLoad)
         .into(eventsManager)
     }
@@ -152,10 +155,10 @@ class ExpoImageView(context: ReactContext, private val requestManager: RequestMa
       .apply {
         // Override the size for local assets. This ensures that
         // resizeMode "center" displays the image in the correct size.
-        if (sourceMap != null
-          && sourceMap.hasKey(SOURCE_WIDTH_KEY)
-          && sourceMap.hasKey(SOURCE_HEIGHT_KEY)
-          && sourceMap.hasKey(SOURCE_SCALE_KEY)) {
+        if (sourceMap != null &&
+          sourceMap.hasKey(SOURCE_WIDTH_KEY) &&
+          sourceMap.hasKey(SOURCE_HEIGHT_KEY) &&
+          sourceMap.hasKey(SOURCE_SCALE_KEY)) {
 
           val scale = sourceMap.getDouble(SOURCE_SCALE_KEY)
           val width = sourceMap.getInt(SOURCE_WIDTH_KEY)

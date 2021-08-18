@@ -2,7 +2,7 @@ import React, { forwardRef } from 'react';
 import { StyleSheet } from 'react-native';
 import View from '../primitives/View';
 export const HR = forwardRef((props, ref) => {
-    return React.createElement(View, Object.assign({}, props, { style: [styles.hr, props.style], ref: ref }));
+    return React.createElement(View, { ...props, style: [styles.hr, props.style], ref: ref });
 });
 const styles = StyleSheet.create({
     hr: {

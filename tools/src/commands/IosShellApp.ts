@@ -80,5 +80,9 @@ export default (program: any) => {
       '--workspacePath [string]',
       'Path for the unbuilt xcode workspace to create/use (optional)'
     )
+    .option(
+      '--packagesToInstallWhenEjecting [string]',
+      'Overridden packages to install when ejecting, in JSON object as string, e.g. \'{"react-native":"^0.64.2"}\''
+    )
     .asyncAction(action);
 };

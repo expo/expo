@@ -1,7 +1,7 @@
 // Copyright 2021-present 650 Industries. All rights reserved.
 
-#import <UMCore/UMExportedModule.h>
-#import <UMCore/UMModuleRegistryConsumer.h>
+#import <ExpoModulesCore/EXExportedModule.h>
+#import <ExpoModulesCore/EXModuleRegistryConsumer.h>
 #import <EXNotifications/EXNotificationsDelegate.h>
 
 typedef NS_ENUM(NSUInteger, EXBackgroundNotificationResult) {
@@ -10,7 +10,7 @@ typedef NS_ENUM(NSUInteger, EXBackgroundNotificationResult) {
   EXBackgroundNotificationResultFailed = 3,
 };
 
-@interface EXBackgroundNotificationTasksModule : UMExportedModule <UMModuleRegistryConsumer>
+@interface EXBackgroundNotificationTasksModule : EXExportedModule <EXModuleRegistryConsumer>
 
 
 @end

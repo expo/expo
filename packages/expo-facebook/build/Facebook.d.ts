@@ -1,6 +1,6 @@
-import { PermissionResponse, PermissionStatus, PermissionExpiration } from 'expo-modules-core';
+import { PermissionResponse, PermissionStatus, PermissionExpiration, PermissionHookOptions } from 'expo-modules-core';
 import { FacebookAuthenticationCredential, FacebookLoginResult, FacebookOptions, FacebookInitializationOptions } from './Facebook.types';
-export { FacebookLoginResult, FacebookOptions, FacebookAuthenticationCredential, PermissionResponse, PermissionStatus, PermissionExpiration, };
+export { FacebookLoginResult, FacebookOptions, FacebookAuthenticationCredential, FacebookInitializationOptions, PermissionResponse, PermissionStatus, PermissionExpiration, PermissionHookOptions, };
 declare type Params = {
     [key: string]: string | number;
 };
@@ -21,8 +21,39 @@ export declare type UserData = {
     zip?: string;
     country?: string;
 };
+/**
+ * Asks for permissions to use data for tracking the user or the device.
+ *
+ * > iOS: it requires the NSUserTrackingUsageDescription message added to the info.plist.
+ *
+ * @returns A promise that resolves to an object of type [PermissionResponse](#permissionresponse).
+ */
 export declare function requestPermissionsAsync(): Promise<PermissionResponse>;
+/**
+ * Checks application's permissions for using data for tracking the user or the device.
+ *
+ * >iOS: it requires the NSUserTrackingUsageDescription message added to the info.plist.
+ *
+ * @returns A promise that resolves to an object of type [PermissionResponse](#permissionresponse).
+ */
 export declare function getPermissionsAsync(): Promise<PermissionResponse>;
+/**
+ * Check or request permissions to use data tracking.
+ * This uses both `requestPermissionsAsync` and `getPermissionsAsync` to interact with the permissions.
+ *
+ * @example
+ * ```ts
+ * const [status, requestPermission] = Facebook.usePermissions();
+ * ```
+ */
+export declare const usePermissions: (options?: PermissionHookOptions<object> | undefined) => [PermissionResponse | null, () => Promise<PermissionResponse>, () => Promise<PermissionResponse>];
+/**
+ * Prompts the user to log into Facebook and grants your app permission to access their Facebook data. On iOS and Android, if the Facebook app isn't installed then a web view will be used to authenticate.
+ *
+ * @param options A map of options:
+ *  - **permissions (array)** -- An array specifying the permissions to ask for from Facebook for this login. The permissions are strings as specified in the [Facebook API documentation](https://developers.facebook.com/docs/permissions/reference). The default permissions are ['public_profile', 'email'].
+ * @returns If the user or Facebook cancelled the login, returns { type: 'cancel' }. Otherwise, returns { type: 'success' } & [FacebookAuthenticationCredential](#facebookauthenticationcredential).
+ */
 export declare function logInWithReadPermissionsAsync(options?: FacebookOptions): Promise<FacebookLoginResult>;
 /**
  * Returns the `FacebookAuthenticationCredential` object if a user is authenticated, and `null` if no valid authentication exists.
@@ -124,19 +155,26 @@ export declare function flushAsync(): Promise<void>;
  */
 export declare function setUserIDAsync(userID: string | null): Promise<void>;
 /**
+ * Gets the user ID.
+ *
  * @return A promise fulfilled with the user id or null if not set.
  */
 export declare function getUserIDAsync(): Promise<string | null>;
 /**
+ * Get an anonymous ID from Facebook.
+ *
  * @return A promise fulfilled with an anonymous id or null if not set.
  */
 export declare function getAnonymousIDAsync(): Promise<string | null>;
 /**
+ * Get the advertiser ID from Facebook.
+ *
  * @return A promise fulfilled with the advertiser id or null if not set.
  */
 export declare function getAdvertiserIDAsync(): Promise<string | null>;
 /**
- * **Android only.**
+ * **Android only.** Gets the attribution ID from Facebook.
+ *
  * @return A promise fulfilled with the attribution id or null if not set.
  */
 export declare function getAttributionIDAsync(): Promise<string | null>;

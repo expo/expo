@@ -1,7 +1,6 @@
 package abi42_0_0.expo.modules.clipboard
 
 import android.content.Context
-import android.content.ClipData
 import android.content.ClipboardManager
 import android.os.Bundle
 
@@ -9,8 +8,6 @@ import abi42_0_0.org.unimodules.core.ModuleRegistry
 import abi42_0_0.org.unimodules.core.interfaces.LifecycleEventListener
 import abi42_0_0.org.unimodules.core.interfaces.services.EventEmitter
 import abi42_0_0.org.unimodules.core.interfaces.services.UIManager
-
-import java.lang.Exception
 
 class ClipboardEventEmitter(context: Context, moduleRegistry: ModuleRegistry) : LifecycleEventListener {
   private val onClipboardEventName: String = "onClipboardChanged"

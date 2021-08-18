@@ -19,6 +19,7 @@ const REACT_NATIVE_SUBMODULE_PATH = getReactNativeSubmoduleDir();
 const REACT_ANDROID_PATH = path.join(ANDROID_DIR, 'ReactAndroid');
 const REACT_COMMON_PATH = path.join(ANDROID_DIR, 'ReactCommon');
 const REACT_APPLICATION_MK_PATH = path.join(REACT_ANDROID_PATH, 'src/main/jni/Application.mk');
+const REACT_ANDROID_GRADLE_PATH = path.join(REACT_ANDROID_PATH, 'build.gradle');
 
 async function checkoutReactNativeSubmoduleAsync(checkoutRef: string): Promise<void> {
   await spawnAsync('git', ['fetch'], {
@@ -56,6 +57,24 @@ async function updateReactAndroidAsync(sdkVersion: string): Promise<void> {
     {
       find: /^APP_ABI := (.*)$/m,
       replaceWith: 'APP_ABI := $(if $(NDK_ABI_FILTERS),$(NDK_ABI_FILTERS),$($1))',
+    },
+  ]);
+  await transformFileAsync(REACT_ANDROID_GRADLE_PATH, [
+    {
+      find: /^(\s*jsRootDir\s*=\s*)file\(.+\)$/m,
+      replaceWith: '$1file("$projectDir/../../react-native-lab/react-native/Libraries")',
+    },
+    {
+      find: /^(\s*reactNativeRootDir\s*=\s*)file\(.+\)$/m,
+      replaceWith: '$1file("$projectDir/../../react-native-lab/react-native")',
+    },
+    {
+      find: /api\("androidx.appcompat:appcompat:\d+\.\d+\.\d+"\)/,
+      replaceWith: 'api("androidx.appcompat:appcompat:1.2.0")',
+    },
+    {
+      find: /compileSdkVersion\s+\d+/,
+      replaceWith: 'compileSdkVersion 30',
     },
   ]);
 }

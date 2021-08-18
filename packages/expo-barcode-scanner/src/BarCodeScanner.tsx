@@ -1,5 +1,10 @@
-import { UnavailabilityError } from '@unimodules/core';
-import { PermissionResponse, PermissionStatus } from 'expo-modules-core';
+import {
+  PermissionResponse,
+  PermissionStatus,
+  PermissionHookOptions,
+  createPermissionHook,
+  UnavailabilityError,
+} from 'expo-modules-core';
 import * as React from 'react';
 import { Platform, ViewProps } from 'react-native';
 
@@ -40,9 +45,9 @@ export type BarCodeEventCallbackArguments = {
   nativeEvent: BarCodeEvent;
 };
 
-export type BarCodeScannedCallback = (params: BarCodeEvent) => void;
+export { PermissionResponse, PermissionStatus, PermissionHookOptions };
 
-export { PermissionResponse, PermissionStatus };
+export type BarCodeScannedCallback = (params: BarCodeEvent) => void;
 
 export interface BarCodeScannerProps extends ViewProps {
   type?: 'front' | 'back' | number;
@@ -75,6 +80,21 @@ export class BarCodeScanner extends React.Component<BarCodeScannerProps> {
   static async requestPermissionsAsync(): Promise<PermissionResponse> {
     return ExpoBarCodeScannerModule.requestPermissionsAsync();
   }
+
+  // @needsAudit
+  /**
+   * Check or request permissions for the barcode scanner.
+   * This uses both `requestPermissionAsync` and `getPermissionsAsync` to interact with the permissions.
+   *
+   * @example
+   * ```ts
+   * const [status, requestPermission] = BarCodeScanner.usePermissions();
+   * ```
+   */
+  static usePermissions = createPermissionHook({
+    getMethod: BarCodeScanner.getPermissionsAsync,
+    requestMethod: BarCodeScanner.requestPermissionsAsync,
+  });
 
   static async scanFromURLAsync(
     url: string,
@@ -146,4 +166,9 @@ export class BarCodeScanner extends React.Component<BarCodeScannerProps> {
   }
 }
 
-export const { Constants, getPermissionsAsync, requestPermissionsAsync } = BarCodeScanner;
+export const {
+  Constants,
+  getPermissionsAsync,
+  requestPermissionsAsync,
+  usePermissions,
+} = BarCodeScanner;

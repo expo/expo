@@ -3,6 +3,7 @@ title: Checkbox
 sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-checkbox'
 ---
 
+import APISection from '~/components/plugins/APISection';
 import InstallSection from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 import SnackInline from '~/components/plugins/SnackInline';
@@ -77,26 +78,4 @@ const styles = StyleSheet.create({
 import Checkbox from 'expo-checkbox';
 ```
 
-## Props
-
-The checkbox component inherits all [view props](../react-native/view.md#props).
-
-### `value`
-
-**(_boolean_)** Value indicating if the checkbox should be rendered as checked or not.
-
-### `disabled`
-
-**(_boolean_)** If the checkbox is disabled, making it opaque and uncheckable.
-
-### `color`
-
-**(_string_)** The tint or color of the checkbox. This overrides the disabled opaque style.
-
-### `onChange`
-
-**(_function_)** Callback that is invoked when the user presses the checkbox. The callback is provided with event containing the checkbox change, `{ nativeEvent: { target, value } }`.
-
-### `onValueChange`
-
-**(_function_)** Callback that is invoked when the user presses the checkbox. The callback is provided with a `boolean` indicating the new checked state of the checkbox.
+<APISection packageName="expo-checkbox" apiName="Checkbox" />

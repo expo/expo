@@ -4,7 +4,7 @@ import Text from '../primitives/Text';
 import View from '../primitives/View';
 function createView(nativeProps = {}) {
     return forwardRef((props, ref) => {
-        return React.createElement(View, Object.assign({}, nativeProps, props, { ref: ref }));
+        return React.createElement(View, { ...nativeProps, ...props, ref: ref });
     });
 }
 export const UL = createView(Platform.select({
@@ -22,12 +22,12 @@ export const LI = forwardRef((props, ref) => {
             web: 'listitem',
             default: props.accessibilityRole,
         });
-        return React.createElement(Text, Object.assign({}, props, { accessibilityRole: accessibilityRole, ref: ref }));
+        return React.createElement(Text, { ...props, accessibilityRole: accessibilityRole, ref: ref });
     }
     const accessibilityRole = Platform.select({
         web: 'listitem',
         default: props.accessibilityRole,
     });
-    return React.createElement(View, Object.assign({}, props, { accessibilityRole: accessibilityRole, ref: ref }));
+    return React.createElement(View, { ...props, accessibilityRole: accessibilityRole, ref: ref });
 });
 //# sourceMappingURL=Lists.js.map

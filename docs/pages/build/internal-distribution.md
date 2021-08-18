@@ -23,22 +23,17 @@ Open up `eas.json` and add a new build profile for iOS and/or Android.
 
 ```json
 {
-  "builds": {
-    "android": {
-      "preview": {
-        "distribution": "internal",
-      }
+  "build": {
+    "preview": {
+      "distribution": "internal"
     },
-    "ios": {
-      "preview": {
-        "distribution": "internal",
-      },
-      /* @info add this profile only if have an account with Apple Developer Enterprise Program membership */
-      "preview-enterprise" /* @end */: {
+    /* @info add this profile only if you have an account with Apple Developer Enterprise Program membership */
+    "preview-enterprise" /* @end */: {
+      "distribution": "internal",
+      "ios": {
         /* @info valid values: universal, adhoc */
-        "enterpriseProvisioning": "universal",
-        /* @end */
-        "distribution": "internal",
+        "enterpriseProvisioning": "universal"/* @end */
+
       }
     }
   }

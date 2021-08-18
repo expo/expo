@@ -6,7 +6,7 @@ import android.os.AsyncTask
 import android.os.Bundle
 import android.provider.MediaStore
 import android.provider.MediaStore.Images.Media
-import org.unimodules.core.Promise
+import expo.modules.core.Promise
 
 internal open class GetAlbums(private val mContext: Context, private val mPromise: Promise) :
   AsyncTask<Void?, Void?, Void?>() {
@@ -24,11 +24,14 @@ internal open class GetAlbums(private val mContext: Context, private val mPromis
           projection,
           selection,
           null,
-          Media.BUCKET_DISPLAY_NAME)
+          Media.BUCKET_DISPLAY_NAME
+        )
         .use { asset ->
           if (asset == null) {
-            mPromise.reject(MediaLibraryConstants.ERROR_UNABLE_TO_LOAD,
-              "Could not get albums. Query returns null.")
+            mPromise.reject(
+              MediaLibraryConstants.ERROR_UNABLE_TO_LOAD,
+              "Could not get albums. Query returns null."
+            )
             return@use
           }
           val bucketIdIndex = asset.getColumnIndex(Media.BUCKET_ID)
@@ -42,11 +45,11 @@ internal open class GetAlbums(private val mContext: Context, private val mPromis
             }
 
             val album = albums[id] ?: Album(
-                id = id,
-                title = asset.getString(bucketDisplayNameIndex)
-              ).also {
-                albums[id] = it
-              }
+              id = id,
+              title = asset.getString(bucketDisplayNameIndex)
+            ).also {
+              albums[id] = it
+            }
 
             album.count++
           }
@@ -54,8 +57,10 @@ internal open class GetAlbums(private val mContext: Context, private val mPromis
           mPromise.resolve(albums.values.map { it.toBundle() })
         }
     } catch (e: SecurityException) {
-      mPromise.reject(MediaLibraryConstants.ERROR_UNABLE_TO_LOAD_PERMISSION,
-        "Could not get albums: need READ_EXTERNAL_STORAGE permission.", e)
+      mPromise.reject(
+        MediaLibraryConstants.ERROR_UNABLE_TO_LOAD_PERMISSION,
+        "Could not get albums: need READ_EXTERNAL_STORAGE permission.", e
+      )
     } catch (e: RuntimeException) {
       mPromise.reject(MediaLibraryConstants.ERROR_UNABLE_TO_LOAD, "Could not get albums.", e)
     }

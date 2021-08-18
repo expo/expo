@@ -10,7 +10,7 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
-import org.unimodules.core.Promise
+import expo.modules.core.Promise
 import org.unimodules.test.core.PromiseMock
 import org.unimodules.test.core.assertRejectedWithCode
 import org.unimodules.test.core.promiseResolvedWithType
@@ -32,10 +32,12 @@ class GetAlbumsTests {
     // arrange
     val bucketDisplayName = "Some Album Name"
 
-    val cursor = mockCursor(arrayOf(
-      arrayOf(*MockData.mockImage.toColumnArray(), bucketDisplayName),
-      arrayOf(*MockData.mockVideo.toColumnArray(), bucketDisplayName)
-    ))
+    val cursor = mockCursor(
+      arrayOf(
+        arrayOf(*MockData.mockImage.toColumnArray(), bucketDisplayName),
+        arrayOf(*MockData.mockVideo.toColumnArray(), bucketDisplayName)
+      )
+    )
     cursor.setColumnNames(arrayListOf(*cursor.columnNames, Media.BUCKET_DISPLAY_NAME))
 
     val context = mockContext with mockContentResolver(cursor)
@@ -60,9 +62,11 @@ class GetAlbumsTests {
     val bucketId = 123456
     val bucketDisplayName = null
 
-    val cursor = mockCursor(arrayOf(
-      arrayOf(bucketId, bucketDisplayName)
-    ))
+    val cursor = mockCursor(
+      arrayOf(
+        arrayOf(bucketId, bucketDisplayName)
+      )
+    )
     cursor.setColumnNames(arrayListOf(Media.BUCKET_ID, Media.BUCKET_DISPLAY_NAME))
 
     val context = mockContext with mockContentResolver(cursor)

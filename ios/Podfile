@@ -1,6 +1,6 @@
 require_relative './podfile_helpers.rb'
-require_relative '../packages/@unimodules/react-native-adapter/scripts/autolinking'
-require_relative '../react-native-lab/react-native/scripts/react_native_pods'
+require File.join(File.dirname(`node --print "require.resolve('react-native/package.json')"`), "scripts/react_native_pods")
+require File.join(File.dirname(`node --print "require.resolve('expo-modules-core/package.json')"`), "scripts/autolinking")
 
 install! 'cocoapods',
          :generate_multiple_pod_projects => true,
@@ -9,7 +9,7 @@ platform :ios, '11.0'
 inhibit_all_warnings!
 
 # Enables Swift modules in Expo Go
-use_experimental_swift_modules!
+use_swift_modules!
 
 abstract_target 'Expo Go' do
   # Expo Client dependencies
@@ -29,6 +29,7 @@ abstract_target 'Expo Go' do
     ],
     # Modules for which to include Tests subspec
     tests: [
+      'expo-modules-core',
       'expo-updates',
       'expo-structured-headers',
     ],
@@ -62,6 +63,9 @@ abstract_target 'Expo Go' do
 
       target_installation_result.native_target.build_configurations.each do |config|
         config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '11.0'
+
+        # Fix building failures on M1
+        config.build_settings['EXCLUDED_ARCHS[sdk=iphonesimulator*]'] = 'arm64'
       end
 
       if pod_name == 'Branch'
@@ -101,5 +105,8 @@ abstract_target 'Expo Go' do
 
   target 'Tests' do
     inherit! :search_paths
+
+    pod 'Quick', :podspec => './Quick.podspec'
+    pod 'Nimble', :podspec => './Nimble.podspec'
   end
 end

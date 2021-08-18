@@ -1,4 +1,5 @@
 // TODO: copy-paste from https://github.com/DefinitelyTyped/DefinitelyTyped/blob/5344bfc80508c53a23dae37b860fb0c905ff7b24/types/webgl2/index.d.ts
+import { WebGLObject } from './types';
 export default interface WebGL2RenderingCOntext extends WebGLRenderingContext {
   readonly READ_BUFFER: number; // 0x0C02
   readonly UNPACK_ROW_LENGTH: number; // 0x0CF2

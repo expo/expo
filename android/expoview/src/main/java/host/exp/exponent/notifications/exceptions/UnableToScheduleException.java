@@ -1,6 +1,6 @@
 package host.exp.exponent.notifications.exceptions;
 
-import org.unimodules.core.errors.CodedException;
+import expo.modules.core.errors.CodedException;
 
 public class UnableToScheduleException extends CodedException {
 

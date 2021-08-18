@@ -16,9 +16,12 @@ import {
   mdInlineRenderers,
   mdRenderers,
   resolveTypeName,
+  renderFlags,
   renderParam,
   CommentTextBlock,
-  STYLES_OPTIONAL,
+  parseCommentContent,
+  renderTypeOrSignatureType,
+  getCommentOrSignatureComment,
 } from '~/components/plugins/api/APISectionUtils';
 
 export type APISectionTypesProps = {
@@ -59,33 +62,29 @@ const renderTypePropertyRow = ({
   type,
   comment,
   defaultValue,
+  signatures,
 }: PropData): JSX.Element => {
   const initValue = defaultValue || comment?.tags?.filter(tag => tag.tag === 'default')[0]?.text;
+  const commentData = getCommentOrSignatureComment(comment, signatures);
   return (
     <tr key={name}>
       <td>
         <B>{name}</B>
-        {flags?.isOptional ? (
-          <>
-            <br />
-            <span css={STYLES_OPTIONAL}>(optional)</span>
-          </>
-        ) : null}
+        {renderFlags(flags)}
       </td>
+      <td>{renderTypeOrSignatureType(type, signatures)}</td>
       <td>
-        <InlineCode>{resolveTypeName(type)}</InlineCode>
-      </td>
-      <td>
-        {comment?.shortText ? (
-          <ReactMarkdown renderers={mdInlineRenderers}>{comment.shortText}</ReactMarkdown>
+        {commentData ? (
+          <CommentTextBlock comment={commentData} renderers={mdInlineRenderers} />
         ) : (
           '-'
         )}
         {initValue ? (
           <>
             <br />
-            <ReactMarkdown
-              renderers={mdInlineRenderers}>{`__Default:__ ${initValue}`}</ReactMarkdown>
+            <ReactMarkdown renderers={mdInlineRenderers}>{`__Default:__ ${parseCommentContent(
+              initValue
+            )}`}</ReactMarkdown>
           </>
         ) : null}
       </td>
@@ -148,6 +147,7 @@ const renderType = ({ name, comment, type }: TypeGeneralData): JSX.Element | und
           <H3Code>
             <InlineCode>{name}</InlineCode>
           </H3Code>
+          <CommentTextBlock comment={comment} />
           <P>
             {defineLiteralType(literalTypes)}
             Acceptable values are:{' '}
@@ -161,7 +161,7 @@ const renderType = ({ name, comment, type }: TypeGeneralData): JSX.Element | und
         </div>
       );
     }
-  } else if (type.name === 'Record' && type.typeArguments) {
+  } else if ((type.name === 'Record' && type.typeArguments) || type.type === 'reference') {
     return (
       <div key={`record-definition-${name}`}>
         <H3Code>

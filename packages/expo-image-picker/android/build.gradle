@@ -64,23 +64,16 @@ android {
     abortOnError false
   }
   kotlinOptions {
-    jvmTarget = '1.8'
+    jvmTarget = JavaVersion.VERSION_1_8
   }
 }
 
-if (new File(rootProject.projectDir.parentFile, 'package.json').exists()) {
-  apply from: project(":unimodules-core").file("../unimodules-core.gradle")
-} else {
-  throw new GradleException(
-      "'unimodules-core.gradle' was not found in the usual React Native dependency location. " +
-          "This package can only be used in such projects. Are you sure you've installed the dependencies properly?")
-}
-
 dependencies {
-  unimodule "unimodules-core"
-  unimodule 'expo-modules-core'
+  implementation project(':expo-modules-core')
 
   implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${safeExtGet('kotlinVersion', '1.4.21')}"
+  implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.3")
+  implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.4.1")
   api 'com.theartofdev.edmodo:android-image-cropper:2.8.0'
   api "androidx.legacy:legacy-support-v4:1.0.0"
   api 'commons-codec:commons-codec:1.10'

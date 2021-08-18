@@ -1,5 +1,10 @@
-import { UnavailabilityError } from '@unimodules/core';
-import { PermissionResponse, PermissionStatus } from 'expo-modules-core';
+import {
+  PermissionResponse,
+  PermissionStatus,
+  PermissionHookOptions,
+  createPermissionHook,
+  UnavailabilityError,
+} from 'expo-modules-core';
 import { Platform, processColor } from 'react-native';
 
 import ExpoCalendar from './ExpoCalendar';
@@ -151,7 +156,7 @@ export type RecurrenceRule = {
   setPositions?: number[];
 };
 
-export { PermissionResponse, PermissionStatus };
+export { PermissionResponse, PermissionStatus, PermissionHookOptions };
 
 type OptionalKeys<T> = {
   [P in keyof T]?: T[P] | null;
@@ -589,6 +594,36 @@ export async function requestRemindersPermissionsAsync(): Promise<PermissionResp
   }
   return await ExpoCalendar.requestRemindersPermissionsAsync();
 }
+
+// @needsAudit
+/**
+ * Check or request permissions to access the calendar.
+ * This uses both `getCalendarPermissionsAsync` and `requestCalendarPermissionsAsync` to interact with the permissions.
+ *
+ * @example
+ * ```ts
+ * const [status, requestPermission] = Calendar.useCalendarPermissions();
+ * ```
+ */
+export const useCalendarPermissions = createPermissionHook({
+  getMethod: getCalendarPermissionsAsync,
+  requestMethod: requestCalendarPermissionsAsync,
+});
+
+// @needsAudit
+/**
+ * Check or request permissions to access reminders.
+ * This uses both `getRemindersPermissionsAsync` and `requestRemindersPermissionsAsync` to interact with the permissions.
+ *
+ * @example
+ * ```ts
+ * const [status, requestPermission] = Calendar.useRemindersPermissions();
+ * ```
+ */
+export const useRemindersPermissions = createPermissionHook({
+  getMethod: getRemindersPermissionsAsync,
+  requestMethod: requestRemindersPermissionsAsync,
+});
 
 export const EntityTypes = {
   EVENT: 'event',

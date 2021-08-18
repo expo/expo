@@ -11,7 +11,10 @@ import { B, P, Quote } from '~/components/base/paragraph';
 import {
   CommentData,
   MethodParamData,
+  MethodSignatureData,
+  PropData,
   TypeDefinitionData,
+  TypePropertyDataFlags,
 } from '~/components/plugins/api/APIDataTypes';
 
 export enum TypeDocKind {
@@ -50,7 +53,53 @@ export const mdInlineRenderers: MDRenderers = {
   paragraph: ({ children }) => (children ? <span>{children}</span> : null),
 };
 
-const nonLinkableTypes = ['Date', 'Error', 'Promise', 'T', 'TaskOptions', 'Uint8Array'];
+const nonLinkableTypes = [
+  'ColorValue',
+  'E',
+  'EventSubscription',
+  'File',
+  'FileList',
+  'Manifest',
+  'NativeSyntheticEvent',
+  'Omit',
+  'Pick',
+  'React.FC',
+  'ServiceActionResult',
+  'StyleProp',
+  'T',
+  'TaskOptions',
+  'Uint8Array',
+  'RequestPermissionMethod',
+  'GetPermissionMethod',
+];
+
+const hardcodedTypeLinks: Record<string, string> = {
+  Date: 'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date',
+  Error: 'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error',
+  Promise:
+    'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise',
+  View: '../../react-native/view',
+  ViewProps: '../../react-native/view#props',
+  ViewStyle: '../../react-native/view-style-props/',
+};
+
+const renderWithLink = (name: string, type?: string) =>
+  nonLinkableTypes.includes(name) ? (
+    name + (type === 'array' ? '[]' : '')
+  ) : (
+    <Link href={hardcodedTypeLinks[name] || `#${name.toLowerCase()}`} key={`type-link-${name}`}>
+      {name}
+      {type === 'array' && '[]'}
+    </Link>
+  );
+
+const renderUnion = (types: TypeDefinitionData[]) =>
+  types.map(resolveTypeName).map((valueToRender, index) => (
+    <span key={`union-type-${index}`}>
+      {valueToRender}
+      {index + 1 !== types.length && ' | '}
+    </span>
+  ));
 
 export const resolveTypeName = ({
   elements,
@@ -73,7 +122,7 @@ export const resolveTypeName = ({
               {typeArguments.map((type, index) => (
                 <span key={`record-type-${index}`}>
                   {resolveTypeName(type)}
-                  {index !== typeArguments.length - 1 ? ', ' : ''}
+                  {index !== typeArguments.length - 1 ? ', ' : null}
                 </span>
               ))}
               &gt;
@@ -82,58 +131,48 @@ export const resolveTypeName = ({
         } else {
           return (
             <>
-              {nonLinkableTypes.includes(name) ? (
-                name
-              ) : (
-                <Link href={`#${name.toLowerCase()}`} key={`type-link-${name}`}>
-                  {name}
-                </Link>
-              )}
+              {renderWithLink(name)}
               &lt;
               {typeArguments.map((type, index) => (
-                <span key={`${name}-nested-type-${index}`}>{resolveTypeName(type)}</span>
+                <span key={`${name}-nested-type-${index}`}>
+                  {resolveTypeName(type)}
+                  {index !== typeArguments.length - 1 ? ', ' : null}
+                </span>
               ))}
               &gt;
             </>
           );
         }
       } else {
-        if (nonLinkableTypes.includes(name)) {
-          return name;
-        } else {
-          return (
-            <Link href={`#${name.toLowerCase()}`} key={`type-link-${name}`}>
-              {name}
-            </Link>
-          );
-        }
+        return renderWithLink(name);
       }
     } else {
       return name;
     }
   } else if (elementType?.name) {
     if (elementType.type === 'reference') {
-      if (nonLinkableTypes.includes(elementType.name)) {
-        return elementType.name + (type === 'array' && '[]');
-      }
-      return (
-        <Link href={`#${elementType.name?.toLowerCase()}`} key={`type-link-${elementType.name}`}>
-          {elementType.name}
-          {type === 'array' && '[]'}
-        </Link>
-      );
-    }
-    if (type === 'array') {
+      return renderWithLink(elementType.name, type);
+    } else if (type === 'array') {
       return elementType.name + '[]';
     }
     return elementType.name + type;
+  } else if (elementType?.declaration) {
+    if (type === 'array') {
+      const { parameters, type: paramType } = elementType.declaration.indexSignature || {};
+      if (parameters && paramType) {
+        return `{ [${listParams(parameters)}]: ${resolveTypeName(paramType)} }`;
+      }
+    }
+    return elementType.name + type;
   } else if (type === 'union' && types?.length) {
-    return types.map(resolveTypeName).map((valueToRender, index) => (
-      <span key={`union-type-${index}`}>
-        {valueToRender}
-        {index + 1 !== types.length && ' | '}
-      </span>
-    ));
+    return renderUnion(types);
+  } else if (elementType && elementType.type === 'union' && elementType?.types?.length) {
+    const unionTypes = elementType?.types || [];
+    return (
+      <>
+        ({renderUnion(unionTypes)}){type === 'array' && '[]'}
+      </>
+    );
   } else if (declaration?.signatures) {
     const baseSignature = declaration.signatures[0];
     if (baseSignature?.parameters?.length) {
@@ -156,6 +195,19 @@ export const resolveTypeName = ({
         </>
       );
     }
+  } else if (type === 'reflection' && declaration?.children) {
+    return (
+      <>
+        {'{ '}
+        {declaration?.children.map((child: PropData, i) => (
+          <span key={`reflection-${name}-${i}`}>
+            {child.name + ': ' + resolveTypeName(child.type)}
+            {i + 1 !== declaration?.children?.length ? ', ' : null}
+          </span>
+        ))}
+        {' }'}
+      </>
+    );
   } else if (type === 'tuple' && elements) {
     return (
       <>
@@ -163,7 +215,7 @@ export const resolveTypeName = ({
         {elements.map((elem, i) => (
           <span key={`tuple-${name}-${i}`}>
             {resolveTypeName(elem)}
-            {i + 1 !== elements.length ? ', ' : ''}
+            {i + 1 !== elements.length ? ', ' : null}
           </span>
         ))}
         ]
@@ -171,6 +223,8 @@ export const resolveTypeName = ({
     );
   } else if (type === 'query' && queryType) {
     return queryType.name;
+  } else if (type === 'literal' && typeof value === 'boolean') {
+    return `${value}`;
   } else if (type === 'literal' && value) {
     return `'${value}'`;
   } else if (value === null) {
@@ -179,14 +233,54 @@ export const resolveTypeName = ({
   return 'undefined';
 };
 
-export const renderParam = ({ comment, name, type }: MethodParamData): JSX.Element => (
+export const parseParamName = (name: string) => (name.startsWith('__') ? name.substr(2) : name);
+
+export const renderParam = ({ comment, name, type, flags }: MethodParamData): JSX.Element => (
   <LI key={`param-${name}`}>
     <B>
-      {name} (<InlineCode>{resolveTypeName(type)}</InlineCode>)
+      {parseParamName(name)}
+      {flags?.isOptional && '?'} (<InlineCode>{resolveTypeName(type)}</InlineCode>)
     </B>
     <CommentTextBlock comment={comment} renderers={mdInlineRenderers} withDash />
   </LI>
 );
+
+export const listParams = (parameters: MethodParamData[]) =>
+  parameters ? parameters?.map(param => parseParamName(param.name)).join(', ') : '';
+
+export const renderTypeOrSignatureType = (
+  type?: TypeDefinitionData,
+  signatures?: MethodSignatureData[],
+  includeParamType: boolean = false
+) => {
+  if (type) {
+    return <InlineCode>{resolveTypeName(type)}</InlineCode>;
+  } else if (signatures && signatures.length) {
+    return signatures.map(({ name, type, parameters }) => (
+      <InlineCode key={`signature-type-${name}`}>
+        (
+        {parameters && includeParamType
+          ? parameters.map(param => (
+              <>
+                {param.name}
+                {param.flags?.isOptional && '?'}: {resolveTypeName(param.type)}
+              </>
+            ))
+          : listParams(parameters)}
+        ) =&gt; {resolveTypeName(type)}
+      </InlineCode>
+    ));
+  }
+  return undefined;
+};
+
+export const renderFlags = (flags?: TypePropertyDataFlags) =>
+  flags?.isOptional ? (
+    <>
+      <br />
+      <span css={STYLES_OPTIONAL}>(optional)</span>
+    </>
+  ) : undefined;
 
 export type CommentTextBlockProps = {
   comment?: CommentData;
@@ -195,6 +289,14 @@ export type CommentTextBlockProps = {
   beforeContent?: JSX.Element;
 };
 
+export const parseCommentContent = (content?: string): string =>
+  content && content.length ? content.replace(/&ast;/g, '*') : '';
+
+export const getCommentOrSignatureComment = (
+  comment?: CommentData,
+  signatures?: MethodSignatureData[]
+) => comment || (signatures && signatures[0]?.comment);
+
 export const CommentTextBlock: React.FC<CommentTextBlockProps> = ({
   comment,
   renderers = mdRenderers,
@@ -202,10 +304,10 @@ export const CommentTextBlock: React.FC<CommentTextBlockProps> = ({
   beforeContent,
 }) => {
   const shortText = comment?.shortText?.trim().length ? (
-    <ReactMarkdown renderers={renderers}>{comment.shortText}</ReactMarkdown>
+    <ReactMarkdown renderers={renderers}>{parseCommentContent(comment.shortText)}</ReactMarkdown>
   ) : null;
   const text = comment?.text?.trim().length ? (
-    <ReactMarkdown renderers={renderers}>{comment.text}</ReactMarkdown>
+    <ReactMarkdown renderers={renderers}>{parseCommentContent(comment.text)}</ReactMarkdown>
   ) : null;
 
   const example = comment?.tags?.filter(tag => tag.tag === 'example')[0];
@@ -216,7 +318,11 @@ export const CommentTextBlock: React.FC<CommentTextBlockProps> = ({
   const deprecation = comment?.tags?.filter(tag => tag.tag === 'deprecated')[0];
   const deprecationNote = deprecation ? (
     <Quote key="deprecation-note">
-      <B>{deprecation.text.trim().length ? deprecation.text : 'Deprecated'}</B>
+      {deprecation.text.trim().length ? (
+        <ReactMarkdown renderers={mdInlineRenderers}>{deprecation.text}</ReactMarkdown>
+      ) : (
+        <B>Deprecated</B>
+      )}
     </Quote>
   ) : null;
 

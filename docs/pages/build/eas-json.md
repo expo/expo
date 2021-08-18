@@ -4,6 +4,7 @@ title: Configuration with eas.json
 
 import EasJsonPropertiesTable from '~/components/plugins/EasJsonPropertiesTable';
 
+import commonSchema from '~/scripts/schemas/unversioned/eas-json-common-schema.js';
 import androidSchema from '~/scripts/schemas/unversioned/eas-json-android-schema.js';
 import iosSchema from '~/scripts/schemas/unversioned/eas-json-ios-schema.js';
 
@@ -13,50 +14,62 @@ import iosSchema from '~/scripts/schemas/unversioned/eas-json-ios-schema.js';
 
 ```json
 {
-  "builds": {
-    "android": {
-      "release": {
-        "buildType": "app-bundle"
+  "build": {
+    "release": {},
+    "development": {
+      "developmentClient": true,
+      "distribution": "internal"
+    }
+  }
+}
+```
+
+or
+
+```json
+{
+  "build": {
+    "release": {},
+    "development": {
+      "distribution": "internal",
+      "android": {
+        "gradleCommand": ":app:assembleDebug"
       },
-      "development": {
-        "buildType": "development-client",
-        "distribution": "internal",
-      }
-    },
-    "ios": {
-      "release": {
-        "buildType": "release"
-      },
-      "development": {
-        "buildType": "development-client",
-        "distribution": "internal"
+      "ios": {
+        "buildConfiguration": "Debug"
       }
     }
   }
 }
 ```
 
-The JSON object under the `builds` key contains the platforms that you want to build for. The example above declares that you want to build app binaries for both Android and iOS platforms.
-
-Each object under the platform key can contain multiple build profiles. Every build profile can have an arbitrary name. The default profile that is expected by EAS CLI to exist is `release` (if you'd like to build your app using another build profile you need to specify it with a parameter - `eas build --platform android --profile foobar`). In the example, there are two build profiles (one for Android and one for iOS) and they are both named `release`. However, they could be named `foo` or `bar` or whatever you'd like.
+The JSON object under the `build` key can contain multiple build profiles. Every build profile can have an arbitrary name. The default profile that is expected by EAS CLI to exist is `release` (if you'd like to build your app using another build profile you need to specify it with a parameter - `eas build --platform android --profile foobar`). In the example, there are two build profiles (`release` and `development`), however they could be named `foo` or `bar` or whatever you'd like. Inside build profile you can specify `android` and `ios` fields that contain platform specific configuration for the build, any common options can be also stored there or in the root of the build profile.
 
 Generally, the schema of this file looks like this:
 
 <!-- prettier-ignore -->
 ```json
 {
-  "builds": {
-    /* @info valid values: android, ios */"PLATFORM_NAME"/* @end */: {
-      /* @info any arbitrary name - used as an identifier */"BUILD_PROFILE_NAME_1"/* @end */: { ... },
-      /* @info any arbitrary name - used as an identifier */"BUILD_PROFILE_NAME_2"/* @end */: { ... },
-      ...,
+  "build": {
+    /* @info any arbitrary name - used as an identifier */"BUILD_PROFILE_NAME_1"/* @end */: {
+      /* @info options common for both platforms*/...COMMON_OPTIONS/* @end */
+
+      android: {
+        /* @info options specific for Android and common for both platforms*/...ANDROID_OPTIONS/* @end */
+
+      }
+      ios: {
+        /* @info options specific for iOS and common for both platforms*/...IOS_OPTIONS/* @end */
+
+      }
+    },
+    /* @info any arbitrary name - used as an identifier */"BUILD_PROFILE_NAME_2"/* @end */: {
+
     },
     ...
   }
 }
 ```
-
-where `PLATFORM_NAME` is one of `android` or `ios`.
 
 ## Examples
 
@@ -65,70 +78,54 @@ where `PLATFORM_NAME` is one of `android` or `ios`.
 
 ```json
 {
-  "builds": {
-    "android": {
-      "base": {
+  "build": {
+    "base": {
+      "node": "12.13.0",
+      "yarn": "1.22.5",
+      "env": {
+        "EXAMPLE_ENV": "example value"
+      },
+      "android": {
         "image": "default",
         "env": {
-          "EXAMPLE_ENV": "example value"
+          "PLATFORM": "android"
         }
       },
-      "release": {
-        "extends": "base",
+      "ios": {
+        "image": "latest",
         "env": {
-          "ENVIRONMENT": "production"
-        },
-        "buildType": "app-bundle"
-      },
-      "staging": {
-        "extends": "base",
-        "env": {
-          "ENVIRONMENT": "staging"
-        },
-        "distribution": "internal",
-        "buildType": "apk"
-      },
-      "debug": {
-        "extends": "base",
-        "withoutCredentials": true,
-        "env": {
-          "ENVIRONMENT": "staging"
-        },
-        "distribution": "internal",
-        "buildType": "development-client"
+          "PLATFORM": "ios"
+        }
       }
     },
-    "ios": {
-      "base": {
-        "image": "latest",
-        "node": "12.13.0",
-        "yarn": "1.22.5"
+    "release": {
+      "extends": "base",
+      "env": {
+        "ENVIRONMENT": "production"
+      }
+    },
+    "staging": {
+      "extends": "base",
+      "env": {
+        "ENVIRONMENT": "staging"
       },
-      "release": {
-        "extends": "base",
-        "buildType": "release",
-        "env": {
-          "ENVIRONMENT": "production"
-        },
+      "distribution": "internal",
+      "android": {
+        "buildType": "apk"
+      }
+    },
+    "development": {
+      "extends": "base",
+      "developmentClient": true,
+      "env": {
+        "ENVIRONMENT": "development"
       },
-      "inhouse": {
-        "extends": "base",
+      "android": {
         "distribution": "internal",
-        "enterpriseProvisioning": "universal",
-        "env": {
-          "ENVIRONMENT": "staging"
-        }
+        "withoutCredentials": true
       },
-      "adhoc": {
-        "extends": "base",
-        "distribution": "internal",
-        "env": {
-          "ENVIRONMENT": "staging"
-        }
-      },
-      "client": {
-        "extends": "adhoc",
-        "buildType": "development-client"
+      "ios": {
+        "simulator": true
       }
     }
   }
@@ -141,70 +138,50 @@ where `PLATFORM_NAME` is one of `android` or `ios`.
 
 ```json
 {
-  "builds": {
-    "android": {
-      "base": {
+  "build": {
+    "base": {
+      "env": {
+        "EXAMPLE_ENV": "example value"
+      },
+      "android": {
         "image": "ubuntu-18.04-android-30-ndk-r19c",
-        "ndk": "21.4.7075529",
-        "env": {
-          "EXAMPLE_ENV": "example value"
-        }
+        "ndk": "21.4.7075529"
       },
-      "release": {
-        "extends": "base",
-        "env": {
-          "ENVIRONMENT": "production"
-        },
-        "gradleCommand": ":app:bundleRelease"
-      },
-      "staging": {
-        "extends": "base",
-        "env": {
-          "ENVIRONMENT": "staging"
-        },
-        "distribution": "internal",
-        "gradleCommand": ":app:assembleRelease"
-      },
-      "debug": {
-        "extends": "base",
-        "withoutCredentials": true,
-        "env": {
-          "ENVIRONMENT": "staging"
-        },
-        "distribution": "internal",
-        "gradleCommand": ":app:assembleDebug"
-      }
-    },
-    "ios": {
-      "base": {
+      "ios": {
         "image": "latest",
         "node": "12.13.0",
-        "yarn": "1.22.5",
+        "yarn": "1.22.5"
+      }
+    },
+    "release": {
+      "extends": "base",
+      "env": {
+        "ENVIRONMENT": "production"
+      }
+    },
+    "staging": {
+      "extends": "base",
+      "env": {
+        "ENVIRONMENT": "staging"
       },
-      "release": {
-        "extends": "base",
-        "schemeBuildConfiguration": "Release",
-        "scheme": "testapp",
-        "env": {
-          "ENVIRONMENT": "production"
-        }
+      "distribution": "internal",
+      "android": {
+        "gradleCommand": ":app:assembleRelease"
+      }
+    },
+    "development": {
+      "extends": "base",
+      "env": {
+        "ENVIRONMENT": "staging"
       },
-      "inhouse": {
-        "extends": "base",
+      "android": {
         "distribution": "internal",
-        "enterpriseProvisioning": "universal",
-        "scheme": "testapp-enterprise",
-        "env": {
-          "ENVIRONMENT": "staging"
-        }
+        "withoutCredentials": true,
+        "gradleCommand": ":app:assembleDebug"
       },
-      "adhoc": {
-        "extends": "base",
-        "distribution": "internal",
-        "scheme": "testapp",
-        "env": {
-          "ENVIRONMENT": "staging"
-        }
+      "ios": {
+        "simulator": true,
+        "buildConfiguration": "Debug"
       }
     }
   }
@@ -213,12 +190,14 @@ where `PLATFORM_NAME` is one of `android` or `ios`.
 
 </details>
 
+## Common options for both platforms
 
+<EasJsonPropertiesTable schema={commonSchema}/>
 
-## Android
+## Android specific options
 
 <EasJsonPropertiesTable schema={androidSchema}/>
 
-## iOS
+## iOS specific options
 
 <EasJsonPropertiesTable schema={iosSchema}/>

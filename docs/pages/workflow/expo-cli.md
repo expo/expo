@@ -510,7 +510,7 @@ Alias: `expo bi`
 | `--no-publish`                                   | Disable automatic publishing before building.                                                                       |
 | `--no-wait`                                      | Exit immediately after scheduling build.                                                                            |
 | `--team-id [apple-teamId]`                       | Apple Team ID.                                                                                                      |
-| `--dist-p12-path [dist.p12]`                     | Path to your Distribution Certificate P12 (set password as EXPO_IOS_DIST_P12_PASSWORD environment variable).        |
+| `--dist-p12-path [dist.p12]`                     | Path to your Distribution Certificate P12 (set password as expo.EXPO_IOS_DIST_P12_PASSWORD environment variable).        |
 | `--push-id [push-id]`                            | Push Key ID (ex: 123AB4C56D).                                                                                       |
 | `--push-p8-path [push.p8]`                       | Path to your Push Key .p8 file.                                                                                     |
 | `--provisioning-profile-path [.mobileprovision]` | Path to your Provisioning Profile.                                                                                  |
@@ -914,7 +914,7 @@ Alias: `expo ui`
 <details>
 <summary>
 <h4>expo eject</h4>
-<p>Create native iOS and Android project files. Learn more: https://docs.expo.io/workflow/customizing/</p>
+<p>Create native iOS and Android project files. Learn more: https://docs.expo.dev/workflow/customizing/</p>
 </summary>
 <p>
 
@@ -931,7 +931,7 @@ Alias: `expo ui`
 <details>
 <summary>
 <h4>expo prebuild</h4>
-<p>Experimental: Create native iOS and Android project files before building natively. Learn more: https://docs.expo.io/workflow/customizing/</p>
+<p>Experimental: Create native iOS and Android project files before building natively. Learn more: https://docs.expo.dev/workflow/customizing/</p>
 </summary>
 <p>
 

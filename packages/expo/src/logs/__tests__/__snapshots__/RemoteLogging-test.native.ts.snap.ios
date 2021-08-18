@@ -7,6 +7,7 @@ Object {
   "Content-Type": "application/json",
   "Device-Id": "37dc8be5-9e14-5031-bcb8-c6fd04a55069",
   "Device-Name": "Test Phone",
+  "Expo-Platform": "ios",
   "Proxy-Connection": "keep-alive",
   "Session-Id": "c0d50576-7ddc-4196-8b1d-01c2d1786631",
 }

@@ -6,7 +6,13 @@
 
 ### 🎉 New features
 
+- Add useCameraPermissions and useMediaLibraryPermissions hooks from modules factory. ([#13859](https://github.com/expo/expo/pull/13859) by [@bycedric](https://github.com/bycedric))
+- Add possibility to change presentation style on iOS. ([#14068](https://github.com/expo/expo/pull/14068) by [@mstach60161](https://github.com/mstach60161))
+
 ### 🐛 Bug fixes
+
+- Add missing `GPSHPositioningError` exif parameter on Android. ([#13998](https://github.com/expo/expo/pull/13998) by [@mstach60161](https://github.com/mstach60161))
+- Fix promise not resolving when the app is moved to the background on Android. ([#13975](https://github.com/expo/expo/pull/13975) by [@mstach60161](https://github.com/mstach60161))
 
 ### 💡 Others
 
@@ -21,6 +27,7 @@
 ### 💡 Others
 
 - Migrated from `unimodules-file-system-interface` and `unimodules-permissions-interface` to `expo-modules-core`. ([#12961](https://github.com/expo/expo/pull/12961) by [@tsapeta](https://github.com/tsapeta))
+- Migrated from `AsyncTask` to Kotlin concurrency utilities. ([#13800](https://github.com/expo/expo/pull/13800) by [@m1st4ke](https://github.com/m1st4ke))
 
 ## 10.1.3 — 2021-04-13
 

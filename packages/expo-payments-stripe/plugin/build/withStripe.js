@@ -68,7 +68,7 @@ function ensureStripeActivity({ mainApplication, scheme, }) {
     return mainApplication;
 }
 exports.ensureStripeActivity = ensureStripeActivity;
-exports.withStripeIos = (config, { scheme, merchantId }) => {
+const withStripeIos = (config, { scheme, merchantId }) => {
     // Add the scheme on iOS
     if (!config.ios) {
         config.ios = {};
@@ -91,6 +91,7 @@ exports.withStripeIos = (config, { scheme, merchantId }) => {
     config = withInAppPurchases(config, { merchantId });
     return config;
 };
+exports.withStripeIos = withStripeIos;
 const withStripeAndroid = (config, { scheme }) => {
     return config_plugins_1.withAndroidManifest(config, config => {
         let mainApplication = getMainApplicationOrThrow(config.modResults);

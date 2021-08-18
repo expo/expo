@@ -6,10 +6,11 @@ index e5b1a7d..d06dfd0 100644
  project.ext.react = [
      enableHermes: false,  // clean and rebuild if changing
  ]
- 
- apply from: "../../node_modules/react-native/react.gradle"
-+apply from: "../../node_modules/expo-updates/scripts/create-manifest-android.gradle"
- 
+
+-apply from: "../../node_modules/react-native/react.gradle"
++apply from: new File(["node", "--print", "require.resolve('react-native/package.json')"].execute().text.trim(), "../react.gradle")
++apply from: new File(["node", "--print", "require.resolve('expo-updates/package.json')"].execute().text.trim(), "../scripts/create-manifest-android.gradle")
+
  /**
   * Set this to true to create two separate APKs instead of one:
   *   - An APK that only works on ARM devices
@@ -39,22 +40,22 @@ index 0151e90..48cc96c 100644
 --- a/android/app/src/main/java/com/myapp/MainApplication.java
 +++ b/android/app/src/main/java/com/myapp/MainApplication.java
 @@ -17,10 +17,14 @@ import java.util.Arrays;
- 
+
  import org.unimodules.adapters.react.ModuleRegistryAdapter;
  import org.unimodules.adapters.react.ReactModuleRegistryProvider;
  import org.unimodules.core.interfaces.SingletonModule;
- 
+
 +import android.net.Uri;
 +import expo.modules.updates.UpdatesController;
 +import javax.annotation.Nullable;
 +
  public class MainApplication extends Application implements ReactApplication {
    private final ReactModuleRegistryProvider mModuleRegistryProvider = new ReactModuleRegistryProvider(new BasePackageList().getPackageList(), null);
- 
+
    private final ReactNativeHost mReactNativeHost =
        new ReactNativeHost(this) {
 @@ -46,10 +50,28 @@ public class MainApplication extends Application implements ReactApplication {
- 
+
          @Override
          protected String getJSMainModuleName() {
            return "index";
@@ -78,12 +79,12 @@ index 0151e90..48cc96c 100644
 +          }
 +        }
        };
- 
+
    @Override
    public ReactNativeHost getReactNativeHost() {
      return mReactNativeHost;
 @@ -57,10 +79,15 @@ public class MainApplication extends Application implements ReactApplication {
- 
+
    @Override
    public void onCreate() {
      super.onCreate();
@@ -95,6 +96,6 @@ index 0151e90..48cc96c 100644
 +
      initializeFlipper(this, getReactNativeHost().getReactInstanceManager());
    }
- 
+
    /**
     * Loads Flipper in React Native templates. Call this in the onCreate method with something like

@@ -4,7 +4,6 @@ exports[`renders B 1`] = `
 <div
   className="css-text-901oao"
   dir="auto"
-  onClick={[Function]}
   style={
     Object {
       "fontWeight": "bold",
@@ -19,7 +18,6 @@ exports[`renders BR 1`] = `
 <div
   className="css-text-901oao"
   dir="auto"
-  onClick={[Function]}
   style={
     Object {
       "height": "0.5em",
@@ -45,7 +43,6 @@ exports[`renders Code 1`] = `
 <div
   className="css-text-901oao"
   dir="auto"
-  onClick={[Function]}
   style={
     Object {
       "fontFamily": "Courier",
@@ -59,7 +56,6 @@ exports[`renders Del 1`] = `
 <div
   className="css-text-901oao"
   dir="auto"
-  onClick={[Function]}
   style={
     Object {
       "WebkitTextDecorationStyle": "solid",
@@ -76,7 +72,6 @@ exports[`renders EM 1`] = `
 <div
   className="css-text-901oao"
   dir="auto"
-  onClick={[Function]}
   style={
     Object {
       "fontStyle": "italic",
@@ -91,7 +86,6 @@ exports[`renders I 1`] = `
 <div
   className="css-text-901oao"
   dir="auto"
-  onClick={[Function]}
   style={
     Object {
       "fontStyle": "italic",
@@ -106,7 +100,6 @@ exports[`renders Mark 1`] = `
 <div
   className="css-text-901oao"
   dir="auto"
-  onClick={[Function]}
   style={
     Object {
       "backgroundColor": "rgba(255,255,0,1.00)",
@@ -120,7 +113,6 @@ exports[`renders P 1`] = `
 <div
   className="css-text-901oao"
   dir="auto"
-  onClick={[Function]}
   style={
     Object {
       "marginBottom": "1em",
@@ -136,7 +128,6 @@ exports[`renders Pre 1`] = `
 <div
   className="css-text-901oao"
   dir="auto"
-  onClick={[Function]}
   style={
     Object {
       "fontFamily": "Courier",
@@ -158,7 +149,6 @@ exports[`renders Q 1`] = `
 <div
   className="css-text-901oao"
   dir="auto"
-  onClick={[Function]}
   style={
     Object {
       "fontStyle": "italic",
@@ -175,7 +165,6 @@ exports[`renders S 1`] = `
 <div
   className="css-text-901oao"
   dir="auto"
-  onClick={[Function]}
   style={
     Object {
       "WebkitTextDecorationStyle": "solid",
@@ -192,7 +181,6 @@ exports[`renders Strong 1`] = `
 <div
   className="css-text-901oao"
   dir="auto"
-  onClick={[Function]}
   style={
     Object {
       "fontWeight": "bold",
@@ -207,7 +195,6 @@ exports[`renders Time 1`] = `
 <div
   className="css-text-901oao"
   dir="auto"
-  onClick={[Function]}
 >
   May 15
 </div>

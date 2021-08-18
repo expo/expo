@@ -1,4 +1,4 @@
-import { requireNativeViewManager } from '@unimodules/core';
+import { requireNativeViewManager } from 'expo-modules-core';
 import * as React from 'react';
 import { StyleSheet, View } from 'react-native';
 export default function NativeLinearGradient({ colors, locations, startPoint, endPoint, children, style, ...props }) {
@@ -18,7 +18,7 @@ export default function NativeLinearGradient({ colors, locations, startPoint, en
         flatStyle.borderBottomLeftRadius ?? borderRadius,
         flatStyle.borderBottomLeftRadius ?? borderRadius,
     ];
-    return (React.createElement(View, Object.assign({}, props, { style: style }),
+    return (React.createElement(View, { ...props, style: style },
         React.createElement(BaseNativeLinearGradient, { style: StyleSheet.absoluteFill, colors: colors, startPoint: startPoint, endPoint: endPoint, locations: locations, borderRadii: borderRadiiPerCorner }),
         children));
 }

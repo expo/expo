@@ -6,9 +6,13 @@
 
 ### 🎉 New features
 
+- Add permissions hook from modules factory. ([#13849](https://github.com/expo/expo/pull/13849) by [@bycedric](https://github.com/bycedric))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+- Migrated from `@unimodules/core` to `expo-modules-core`. ([#13757](https://github.com/expo/expo/pull/13757) by [@tsapeta](https://github.com/tsapeta))
 
 ## 10.1.0 — 2021-06-16
 

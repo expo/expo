@@ -27,4 +27,16 @@ export var UIImagePickerControllerQualityType;
     UIImagePickerControllerQualityType[UIImagePickerControllerQualityType["IFrame1280x720"] = 4] = "IFrame1280x720";
     UIImagePickerControllerQualityType[UIImagePickerControllerQualityType["IFrame960x540"] = 5] = "IFrame960x540";
 })(UIImagePickerControllerQualityType || (UIImagePickerControllerQualityType = {}));
+export var UIImagePickerPresentationStyle;
+(function (UIImagePickerPresentationStyle) {
+    UIImagePickerPresentationStyle[UIImagePickerPresentationStyle["FullScreen"] = 0] = "FullScreen";
+    UIImagePickerPresentationStyle[UIImagePickerPresentationStyle["PageSheet"] = 1] = "PageSheet";
+    UIImagePickerPresentationStyle[UIImagePickerPresentationStyle["FormSheet"] = 2] = "FormSheet";
+    UIImagePickerPresentationStyle[UIImagePickerPresentationStyle["CurrentContext"] = 3] = "CurrentContext";
+    UIImagePickerPresentationStyle[UIImagePickerPresentationStyle["OverFullScreen"] = 5] = "OverFullScreen";
+    UIImagePickerPresentationStyle[UIImagePickerPresentationStyle["OverCurrentContext"] = 6] = "OverCurrentContext";
+    UIImagePickerPresentationStyle[UIImagePickerPresentationStyle["Popover"] = 7] = "Popover";
+    UIImagePickerPresentationStyle[UIImagePickerPresentationStyle["BlurOverFullScreen"] = 8] = "BlurOverFullScreen";
+    UIImagePickerPresentationStyle[UIImagePickerPresentationStyle["Automatic"] = -2] = "Automatic";
+})(UIImagePickerPresentationStyle || (UIImagePickerPresentationStyle = {}));
 //# sourceMappingURL=ImagePicker.types.js.map

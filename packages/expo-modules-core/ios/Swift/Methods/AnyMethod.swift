@@ -22,4 +22,9 @@ public protocol AnyMethod: AnyDefinition {
    Calls the method with given arguments and a promise.
    */
   func call(args: [Any?], promise: Promise) -> Void
+
+  /**
+   Specifies on which queue the method should run.
+   */
+  func runOnQueue(_ queue: DispatchQueue?) -> Self
 }

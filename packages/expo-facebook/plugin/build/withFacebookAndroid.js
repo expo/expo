@@ -12,18 +12,20 @@ const META_APP_NAME = 'com.facebook.sdk.ApplicationName';
 const META_AUTO_INIT = 'com.facebook.sdk.AutoInitEnabled';
 const META_AUTO_LOG_APP_EVENTS = 'com.facebook.sdk.AutoLogAppEventsEnabled';
 const META_AD_ID_COLLECTION = 'com.facebook.sdk.AdvertiserIDCollectionEnabled';
-exports.withFacebookAppIdString = config => {
+const withFacebookAppIdString = config => {
     return config_plugins_1.withStringsXml(config, config => {
         config.modResults = applyFacebookAppIdString(config, config.modResults);
         return config;
     });
 };
-exports.withFacebookManifest = config => {
+exports.withFacebookAppIdString = withFacebookAppIdString;
+const withFacebookManifest = config => {
     return config_plugins_1.withAndroidManifest(config, config => {
         config.modResults = setFacebookConfig(config, config.modResults);
         return config;
     });
 };
+exports.withFacebookManifest = withFacebookManifest;
 function buildXMLItem({ head, children, }) {
     return { ...(children !== null && children !== void 0 ? children : {}), $: head };
 }

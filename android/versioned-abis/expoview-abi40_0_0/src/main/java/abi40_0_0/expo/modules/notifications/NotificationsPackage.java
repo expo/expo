@@ -5,7 +5,7 @@ import android.content.Context;
 import abi40_0_0.org.unimodules.core.BasePackage;
 import abi40_0_0.org.unimodules.core.ExportedModule;
 import abi40_0_0.org.unimodules.core.interfaces.InternalModule;
-import org.unimodules.core.interfaces.SingletonModule;
+import expo.modules.core.interfaces.SingletonModule;
 
 import java.util.Arrays;
 import java.util.List;

@@ -1,4 +1,4 @@
-import { Subscription } from '@unimodules/core';
+import { Subscription } from 'expo-modules-core';
 import { AppleAuthenticationCredential, AppleAuthenticationCredentialState, AppleAuthenticationRefreshOptions, AppleAuthenticationSignInOptions, AppleAuthenticationSignOutOptions } from './AppleAuthentication.types';
 /**
  * Determine if the current device's operating system supports Apple authentication.

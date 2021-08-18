@@ -7,7 +7,7 @@
 
 @interface EXImageManipulatorModule ()
 
-@property (nonatomic, weak) UMModuleRegistry *moduleRegistry;
+@property (nonatomic, weak) EXModuleRegistry *moduleRegistry;
 @property (nonatomic, weak) id<EXFileSystemInterface> fileSystem;
 @property (nonatomic, weak) id<EXImageLoaderInterface> imageLoader;
 
@@ -24,21 +24,21 @@ static NSString* const SAVE_OPTIONS_KEY_BASE64 = @"base64";
 
 @implementation EXImageManipulatorModule
 
-UM_EXPORT_MODULE(ExpoImageManipulator);
+EX_EXPORT_MODULE(ExpoImageManipulator);
 
-- (void)setModuleRegistry:(UMModuleRegistry *)moduleRegistry
+- (void)setModuleRegistry:(EXModuleRegistry *)moduleRegistry
 {
   _moduleRegistry = moduleRegistry;
   _fileSystem = [moduleRegistry getModuleImplementingProtocol:@protocol(EXFileSystemInterface)];
   _imageLoader = [moduleRegistry getModuleImplementingProtocol:@protocol(EXImageLoaderInterface)];
 }
 
-UM_EXPORT_METHOD_AS(manipulateAsync,
+EX_EXPORT_METHOD_AS(manipulateAsync,
                     uri:(NSString *)uri
                     actions:(NSArray *)actions
                     saveOptions:(NSDictionary *)saveOptions
-                    resolve:(UMPromiseResolveBlock)resolve
-                    reject:(UMPromiseRejectBlock)reject)
+                    resolve:(EXPromiseResolveBlock)resolve
+                    reject:(EXPromiseRejectBlock)reject)
 {
   NSURL *url = [NSURL URLWithString:uri];
   // no scheme provided in uri, handle as a local path and add 'file://' scheme
@@ -46,6 +46,16 @@ UM_EXPORT_METHOD_AS(manipulateAsync,
     url = [NSURL fileURLWithPath:uri isDirectory:false];
   }
   NSString *path = [url.path stringByStandardizingPath];
+
+  if ([[url scheme] isEqualToString:@"data"]) {
+    NSData *data = [[NSData alloc] initWithContentsOfURL:url];
+    if (data != nil) {
+      UIImage *image = [UIImage imageWithData:data];
+      image = [self fixOrientation:image];
+      [self manipulateImage:image actions:actions saveOptions:saveOptions resolver:resolve rejecter:reject];
+      return;
+    }
+  }
 
   if (!_fileSystem) {
     return reject(@"E_MISSING_MODULE", @"No FileSystem module.", nil);
@@ -218,8 +228,8 @@ UM_EXPORT_METHOD_AS(manipulateAsync,
 -(void)manipulateImage:(UIImage *)image
                actions:(NSArray *)actions
            saveOptions:(NSDictionary *)saveOptions
-              resolver:(UMPromiseResolveBlock)resolve
-              rejecter:(UMPromiseRejectBlock)reject
+              resolver:(EXPromiseResolveBlock)resolve
+              rejecter:(EXPromiseRejectBlock)reject
 {
   for (NSDictionary *action in actions) {
     if (action[ACTION_KEY_RESIZE]) {

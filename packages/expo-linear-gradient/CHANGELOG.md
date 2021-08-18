@@ -10,6 +10,13 @@
 
 ### 💡 Others
 
+## 9.3.0-alpha.0 — 2021-08-17
+
+### 💡 Others
+
+- Migrated from `@unimodules/core` to `expo-modules-core`. (by [@tsapeta](https://github.com/tsapeta))
+- Experimental Swift implementation using Sweet API. (by [@tsapeta](https://github.com/tsapeta))
+
 ## 9.2.0 — 2021-06-16
 
 ### 🐛 Bug fixes

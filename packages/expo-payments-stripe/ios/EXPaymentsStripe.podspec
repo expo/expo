@@ -25,7 +25,6 @@ Pod::Spec.new do |s|
   s.preserve_paths = 'EXPaymentsStripe/**/*.{h,m,mm}'
   s.requires_arc   = true
 
-  s.dependency 'UMCore'
+  s.dependency 'ExpoModulesCore'
   s.dependency 'Stripe', stripe_version
-
 end

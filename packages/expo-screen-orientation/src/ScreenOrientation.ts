@@ -1,4 +1,4 @@
-import { EventEmitter, Platform, Subscription, UnavailabilityError } from '@unimodules/core';
+import { EventEmitter, Platform, Subscription, UnavailabilityError } from 'expo-modules-core';
 
 import ExpoScreenOrientation from './ExpoScreenOrientation';
 import {

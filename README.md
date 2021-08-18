@@ -2,7 +2,7 @@
 
 <p align="center">
   <a href="https://expo.io/">
-    <img alt="expo sdk" height="128" src="./style/banner.png">
+    <img alt="expo sdk" height="128" src="./.github/resources/banner.png">
     <h1 align="center">Expo</h1>
   </a>
 </p>
@@ -59,8 +59,8 @@ Expo is an open-source platform for making universal native apps that run on And
 <p>Learn about building and deploying universal apps <a aria-label="expo documentation" href="https://docs.expo.io">in our official docs!</a></p>
 
 - [Getting Started](https://docs.expo.io/)
-- [API Reference](https://docs.expo.io/versions/latest/sdk/overview/)
-- [Using Custom Native Modules](https://docs.expo.io/versions/latest/bare/exploring-bare-workflow/)
+- [API Reference](https://docs.expo.io/versions/latest/)
+- [Using Custom Native Modules](https://docs.expo.io/bare/exploring-bare-workflow/)
 
 ## 🗺 Project Layout
 

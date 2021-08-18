@@ -12,7 +12,7 @@ import abi40_0_0.org.unimodules.core.ViewManager;
 import abi40_0_0.org.unimodules.core.interfaces.Function;
 import abi40_0_0.org.unimodules.core.interfaces.InternalModule;
 import abi40_0_0.org.unimodules.core.interfaces.Package;
-import org.unimodules.core.interfaces.SingletonModule;
+import expo.modules.core.interfaces.SingletonModule;
 
 import java.util.ArrayList;
 import java.util.Collection;

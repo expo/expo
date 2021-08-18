@@ -13,11 +13,18 @@
 }
 
 - (NSString *)scopeKey {
-  return self.rawId;
+  return [[self.rawManifestJSON dictionaryForKey:@"extra"] stringForKey:@"scopeKey"];
 }
 
 - (NSString *)projectId {
-  return self.rawId;
+  if (!self.extra) {
+    return nil;
+  }
+  NSDictionary *easConfig = [self.extra nullableDictionaryForKey:@"eas"];
+  if (!easConfig) {
+    return nil;
+  }
+  return [easConfig nullableStringForKey:@"projectId"];
 }
 
 - (NSString *)createdAt {

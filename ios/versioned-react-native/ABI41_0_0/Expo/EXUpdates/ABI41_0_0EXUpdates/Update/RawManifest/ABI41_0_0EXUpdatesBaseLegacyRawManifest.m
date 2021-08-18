@@ -43,4 +43,8 @@
   return [self.rawManifestJSON nullableStringForKey:@"sdkVersion"];
 }
 
+- (nullable NSArray *)assets {
+  return [self.rawManifestJSON nullableArrayForKey:@"assets"];
+}
+
 @end

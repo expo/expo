@@ -1,4 +1,4 @@
-import { UnavailabilityError } from '@unimodules/core';
+import { UnavailabilityError } from 'expo-modules-core';
 import NotificationScheduler from './NotificationScheduler';
 export default async function getAllScheduledNotificationsAsync() {
     if (!NotificationScheduler.getAllScheduledNotificationsAsync) {

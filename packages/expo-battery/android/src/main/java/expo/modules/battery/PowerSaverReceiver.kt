@@ -5,15 +5,18 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.os.PowerManager
-import org.unimodules.core.interfaces.services.EventEmitter
+import expo.modules.core.interfaces.services.EventEmitter
 
 private val POWERMODE_EVENT_NAME = "Expo.powerModeDidChange"
 
 class PowerSaverReceiver(private val eventEmitter: EventEmitter?) : BroadcastReceiver() {
   private fun onLowPowerModeChange(lowPowerMode: Boolean) {
-    eventEmitter?.emit(POWERMODE_EVENT_NAME, Bundle().apply {
-      putBoolean("lowPowerMode", lowPowerMode)
-    })
+    eventEmitter?.emit(
+      POWERMODE_EVENT_NAME,
+      Bundle().apply {
+        putBoolean("lowPowerMode", lowPowerMode)
+      }
+    )
   }
 
   override fun onReceive(context: Context, intent: Intent) {

@@ -18,7 +18,7 @@
 
 @implementation EXNotificationPermissionsModule
 
-UM_EXPORT_MODULE(ExpoNotificationPermissionsModule);
+EX_EXPORT_MODULE(ExpoNotificationPermissionsModule);
 
 - (instancetype)init
 {
@@ -30,9 +30,9 @@ UM_EXPORT_MODULE(ExpoNotificationPermissionsModule);
 
 # pragma mark - Exported methods
 
-UM_EXPORT_METHOD_AS(getPermissionsAsync,
-                    getPermissionsAsync:(UMPromiseResolveBlock)resolve
-                    rejecter:(UMPromiseRejectBlock)reject)
+EX_EXPORT_METHOD_AS(getPermissionsAsync,
+                    getPermissionsAsync:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
 {
   [EXPermissionsMethodsDelegate getPermissionWithPermissionsManager:_permissionsManager
                                                       withRequester:[EXUserFacingNotificationsPermissionsRequester class]
@@ -40,10 +40,10 @@ UM_EXPORT_METHOD_AS(getPermissionsAsync,
                                                              reject:reject];
 }
 
-UM_EXPORT_METHOD_AS(requestPermissionsAsync,
+EX_EXPORT_METHOD_AS(requestPermissionsAsync,
                     requestPermissionsAsync:(NSDictionary *)requestedPermissions
-                    requester:(UMPromiseResolveBlock)resolve
-                    rejecter:(UMPromiseRejectBlock)reject)
+                    requester:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
 {
   [EXUserFacingNotificationsPermissionsRequester setRequestedPermissions:requestedPermissions];
   [EXPermissionsMethodsDelegate askForPermissionWithPermissionsManager:_permissionsManager
@@ -52,9 +52,9 @@ UM_EXPORT_METHOD_AS(requestPermissionsAsync,
                                                                 reject:reject];
 }
 
-# pragma mark - UMModuleRegistryConsumer
+# pragma mark - EXModuleRegistryConsumer
 
-- (void)setModuleRegistry:(UMModuleRegistry *)moduleRegistry {
+- (void)setModuleRegistry:(EXModuleRegistry *)moduleRegistry {
   _permissionsManager = [moduleRegistry getModuleImplementingProtocol:@protocol(EXPermissionsInterface)];
   if (!_legacyRemoteNotificationsRequester) {
     // TODO: Remove once we deprecate and remove "notifications" permission type

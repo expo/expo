@@ -6,9 +6,14 @@
 
 ### 🎉 New features
 
+- Add `Brightness.usePermissions` hook from modules factory. ([#13853](https://github.com/expo/expo/pull/13853) by [@bycedric](https://github.com/bycedric))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+- Rewrite android code to Kotlin. ([#13993](https://github.com/expo/expo/pull/13993) by [@kkafar](https://github.com/kkafar))
+- Migrated from `@unimodules/core` to `expo-modules-core`. ([#13757](https://github.com/expo/expo/pull/13757) by [@tsapeta](https://github.com/tsapeta))
 
 ## 9.2.0 — 2021-06-16
 

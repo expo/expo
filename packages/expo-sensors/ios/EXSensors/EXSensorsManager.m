@@ -18,7 +18,7 @@
 
 @implementation EXSensorsManager
 
-UM_REGISTER_MODULE();
+EX_REGISTER_MODULE();
 
 + (const NSArray<Protocol *> *)exportedInterfaces
 {

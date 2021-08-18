@@ -1,4 +1,4 @@
-import { CodedError, NativeModulesProxy } from '@unimodules/core';
+import { CodedError, NativeModulesProxy } from 'expo-modules-core';
 import { Platform, NativeModules } from 'react-native';
 
 import {
@@ -129,7 +129,18 @@ const constants = {
    * `expo-asset` uses it to prevent users from seeing mentioned warning.
    */
   get __unsafeNoWarnManifest(): AppManifest | Manifest | null {
-    return getManifest(true);
+    const maybeManifest = getManifest(true);
+    if (!maybeManifest || !isAppManifest(maybeManifest)) {
+      return null;
+    }
+    return maybeManifest;
+  },
+  get __unsafeNoWarnManifest2(): Manifest | Manifest | null {
+    const maybeManifest = getManifest(true);
+    if (!maybeManifest || !isManifest(maybeManifest)) {
+      return null;
+    }
+    return maybeManifest;
   },
   get __rawManifest_TEST(): AppManifest | Manifest | null {
     return rawManifest;

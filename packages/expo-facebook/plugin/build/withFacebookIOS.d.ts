@@ -18,7 +18,7 @@ export declare function getFacebookAdvertiserIDCollection(config: ExpoConfigFace
 export declare function setFacebookConfig(config: ExpoConfigFacebook, infoPlist: InfoPlist): InfoPlist;
 export declare function setFacebookScheme(config: ExpoConfigFacebook, infoPlist: InfoPlist): InfoPlist;
 export declare function setFacebookAutoInitEnabled(config: ExpoConfigFacebook, { FacebookAutoInitEnabled, ...infoPlist }: InfoPlist): {
-    [x: string]: string | number | boolean | import("@expo/json-file").JSONArray | import("@expo/json-file").JSONObject | null | undefined;
+    [x: string]: import("@expo/json-file").JSONValue | undefined;
     UIStatusBarHidden?: boolean | undefined;
     UIStatusBarStyle?: string | undefined;
     UILaunchStoryboardName?: string | undefined;
@@ -39,7 +39,7 @@ export declare function setFacebookAutoInitEnabled(config: ExpoConfigFacebook, {
     UISupportedInterfaceOrientations?: import("@expo/config-plugins/build/ios/IosConfig.types").InterfaceOrientation[] | undefined;
     GMSApiKey?: string | undefined;
     GADApplicationIdentifier?: string | undefined;
-    UIUserInterfaceStyle?: "Light" | "Dark" | "Automatic" | undefined;
+    UIUserInterfaceStyle?: import("@expo/config-plugins/build/ios/IosConfig.types").InterfaceStyle | undefined;
     UIRequiresFullScreen?: boolean | undefined;
     SKAdNetworkItems?: {
         SKAdNetworkIdentifier: string;
@@ -49,7 +49,7 @@ export declare function setFacebookAutoInitEnabled(config: ExpoConfigFacebook, {
     } | undefined;
 };
 export declare function setFacebookAutoLogAppEventsEnabled(config: ExpoConfigFacebook, { FacebookAutoLogAppEventsEnabled, ...infoPlist }: InfoPlist): {
-    [x: string]: string | number | boolean | import("@expo/json-file").JSONArray | import("@expo/json-file").JSONObject | null | undefined;
+    [x: string]: import("@expo/json-file").JSONValue | undefined;
     UIStatusBarHidden?: boolean | undefined;
     UIStatusBarStyle?: string | undefined;
     UILaunchStoryboardName?: string | undefined;
@@ -70,7 +70,7 @@ export declare function setFacebookAutoLogAppEventsEnabled(config: ExpoConfigFac
     UISupportedInterfaceOrientations?: import("@expo/config-plugins/build/ios/IosConfig.types").InterfaceOrientation[] | undefined;
     GMSApiKey?: string | undefined;
     GADApplicationIdentifier?: string | undefined;
-    UIUserInterfaceStyle?: "Light" | "Dark" | "Automatic" | undefined;
+    UIUserInterfaceStyle?: import("@expo/config-plugins/build/ios/IosConfig.types").InterfaceStyle | undefined;
     UIRequiresFullScreen?: boolean | undefined;
     SKAdNetworkItems?: {
         SKAdNetworkIdentifier: string;
@@ -80,7 +80,7 @@ export declare function setFacebookAutoLogAppEventsEnabled(config: ExpoConfigFac
     } | undefined;
 };
 export declare function setFacebookAdvertiserIDCollectionEnabled(config: ExpoConfigFacebook, { FacebookAdvertiserIDCollectionEnabled, ...infoPlist }: InfoPlist): {
-    [x: string]: string | number | boolean | import("@expo/json-file").JSONArray | import("@expo/json-file").JSONObject | null | undefined;
+    [x: string]: import("@expo/json-file").JSONValue | undefined;
     UIStatusBarHidden?: boolean | undefined;
     UIStatusBarStyle?: string | undefined;
     UILaunchStoryboardName?: string | undefined;
@@ -101,7 +101,7 @@ export declare function setFacebookAdvertiserIDCollectionEnabled(config: ExpoCon
     UISupportedInterfaceOrientations?: import("@expo/config-plugins/build/ios/IosConfig.types").InterfaceOrientation[] | undefined;
     GMSApiKey?: string | undefined;
     GADApplicationIdentifier?: string | undefined;
-    UIUserInterfaceStyle?: "Light" | "Dark" | "Automatic" | undefined;
+    UIUserInterfaceStyle?: import("@expo/config-plugins/build/ios/IosConfig.types").InterfaceStyle | undefined;
     UIRequiresFullScreen?: boolean | undefined;
     SKAdNetworkItems?: {
         SKAdNetworkIdentifier: string;
@@ -111,7 +111,7 @@ export declare function setFacebookAdvertiserIDCollectionEnabled(config: ExpoCon
     } | undefined;
 };
 export declare function setFacebookAppId(config: Pick<ExpoConfigFacebook, 'facebookAppId'>, { FacebookAppID, ...infoPlist }: InfoPlist): {
-    [x: string]: string | number | boolean | import("@expo/json-file").JSONArray | import("@expo/json-file").JSONObject | null | undefined;
+    [x: string]: import("@expo/json-file").JSONValue | undefined;
     UIStatusBarHidden?: boolean | undefined;
     UIStatusBarStyle?: string | undefined;
     UILaunchStoryboardName?: string | undefined;
@@ -132,7 +132,7 @@ export declare function setFacebookAppId(config: Pick<ExpoConfigFacebook, 'faceb
     UISupportedInterfaceOrientations?: import("@expo/config-plugins/build/ios/IosConfig.types").InterfaceOrientation[] | undefined;
     GMSApiKey?: string | undefined;
     GADApplicationIdentifier?: string | undefined;
-    UIUserInterfaceStyle?: "Light" | "Dark" | "Automatic" | undefined;
+    UIUserInterfaceStyle?: import("@expo/config-plugins/build/ios/IosConfig.types").InterfaceStyle | undefined;
     UIRequiresFullScreen?: boolean | undefined;
     SKAdNetworkItems?: {
         SKAdNetworkIdentifier: string;
@@ -142,7 +142,7 @@ export declare function setFacebookAppId(config: Pick<ExpoConfigFacebook, 'faceb
     } | undefined;
 };
 export declare function setFacebookDisplayName(config: ExpoConfigFacebook, { FacebookDisplayName, ...infoPlist }: InfoPlist): {
-    [x: string]: string | number | boolean | import("@expo/json-file").JSONArray | import("@expo/json-file").JSONObject | null | undefined;
+    [x: string]: import("@expo/json-file").JSONValue | undefined;
     UIStatusBarHidden?: boolean | undefined;
     UIStatusBarStyle?: string | undefined;
     UILaunchStoryboardName?: string | undefined;
@@ -163,7 +163,7 @@ export declare function setFacebookDisplayName(config: ExpoConfigFacebook, { Fac
     UISupportedInterfaceOrientations?: import("@expo/config-plugins/build/ios/IosConfig.types").InterfaceOrientation[] | undefined;
     GMSApiKey?: string | undefined;
     GADApplicationIdentifier?: string | undefined;
-    UIUserInterfaceStyle?: "Light" | "Dark" | "Automatic" | undefined;
+    UIUserInterfaceStyle?: import("@expo/config-plugins/build/ios/IosConfig.types").InterfaceStyle | undefined;
     UIRequiresFullScreen?: boolean | undefined;
     SKAdNetworkItems?: {
         SKAdNetworkIdentifier: string;

@@ -9,17 +9,20 @@ const config_plugins_1 = require("@expo/config-plugins");
  * @param config
  * @returns
  */
-exports.withIOSMixedLocales = config => {
+const withIOSMixedLocales = config => {
     return config_plugins_1.withInfoPlist(config, config => {
         var _a;
-        config.modResults.CFBundleAllowMixedLocalizations = (_a = config.modResults.CFBundleAllowMixedLocalizations) !== null && _a !== void 0 ? _a : true;
+        config.modResults.CFBundleAllowMixedLocalizations =
+            (_a = config.modResults.CFBundleAllowMixedLocalizations) !== null && _a !== void 0 ? _a : true;
         return config;
     });
 };
-exports.withAppleAuthIOS = config => {
+exports.withIOSMixedLocales = withIOSMixedLocales;
+const withAppleAuthIOS = config => {
     config = exports.withIOSMixedLocales(config);
     return config_plugins_1.withEntitlementsPlist(config, config => {
         config.modResults['com.apple.developer.applesignin'] = ['Default'];
         return config;
     });
 };
+exports.withAppleAuthIOS = withAppleAuthIOS;

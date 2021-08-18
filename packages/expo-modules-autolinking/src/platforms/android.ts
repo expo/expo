@@ -52,13 +52,17 @@ async function generatePackageListFileContentAsync(
 
 import java.util.Arrays;
 import java.util.List;
-import org.unimodules.core.interfaces.Package;
+import expo.modules.core.interfaces.Package;
 
 public class ExpoModulesPackageList {
-  public List<Package> getPackageList() {
-    return Arrays.<Package>asList(
+  private static class LazyHolder {
+    static final List<Package> packagesList = Arrays.<Package>asList(
 ${packagesClasses.map(packageClass => `      new ${packageClass}()`).join(',\n')}
     );
+  }
+
+  public static List<Package> getPackageList() {
+    return LazyHolder.packagesList;
   }
 }
 `;
@@ -78,6 +82,9 @@ async function findAndroidPackagesAsync(modules: ModuleDescriptor[]): Promise<st
 
         // Very naive check to skip non-expo packages
         if (
+          !/\bimport\s+expo\.modules\.core\.(interfaces\.Package|BasePackage)\b/.test(
+            fileContent
+          ) &&
           !/\bimport\s+org\.unimodules\.core\.(interfaces\.Package|BasePackage)\b/.test(fileContent)
         ) {
           continue;

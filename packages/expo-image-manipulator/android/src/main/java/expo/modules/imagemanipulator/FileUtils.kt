@@ -9,9 +9,9 @@ import java.util.*
 internal object FileUtils {
   @Throws(IOException::class)
   fun generateRandomOutputPath(context: Context, compressFormat: CompressFormat): String {
-    val directory = File("${context.cacheDir.toString()}${File.separator}ImageManipulator")
+    val directory = File("${context.cacheDir}${File.separator}ImageManipulator")
     ensureDirExists(directory)
-    return "${directory.toString()}${File.separator}${UUID.randomUUID().toString()}${toExtension(compressFormat)}"
+    return "${directory}${File.separator}${UUID.randomUUID()}${toExtension(compressFormat)}"
   }
 
   @Throws(IOException::class)
@@ -24,9 +24,9 @@ internal object FileUtils {
 
   private fun toExtension(compressFormat: CompressFormat): String {
     return when (compressFormat) {
-      CompressFormat.JPEG -> ".jpeg"
+      CompressFormat.JPEG -> ".jpg"
       CompressFormat.PNG -> ".png"
-      else -> ".jpeg"
+      else -> ".jpg"
     }
   }
 }

@@ -4,6 +4,65 @@
 
 ### 🛠 Breaking changes
 
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+- Display linking scheme used by app in launcher URL field ([#13930](https://github.com/expo/expo/pull/13930) by [@fson](https://github.com/fson))
+
+## 0.6.7 — 2021-08-06
+
+### 🐛 Bug fixes
+
+- Fixed issue with opening multiple different published apps. ([#13926](https://github.com/expo/expo/pull/13926) by [@esamelson](https://github.com/esamelson))
+- Fixed crashes when the app doesn't have custom deep link scheme on iOS. ([#14026](https://github.com/expo/expo/pull/14026) by [@lukmccall](https://github.com/lukmccall))
+
+## 0.6.6 — 2021-08-04
+
+### 🐛 Bug fixes
+
+- Fixed issue where Expo-hosted manifest URLs with `/index.exp?...` suffix could not be opened properly. ([#13825](https://github.com/expo/expo/pull/13825) by [@esamelson](https://github.com/esamelson))
+
+### 💡 Others
+
+- Add basic setup for iOS unit tests. ([#13824](https://github.com/expo/expo/pull/13824) by [@esamelson](https://github.com/esamelson))
+
+## 0.6.5 — 2021-07-16
+
+### 🐛 Bug fixes
+
+- Fixed compatibility with React Native 0.64.X. ([#13632](https://github.com/expo/expo/pull/13632) by [@lukmccall](https://github.com/lukmccall))
+- Updated plugin to only initialize UpdatesDevLauncherController in debug builds. ([#13597](https://github.com/expo/expo/pull/13597) by [@esamelson](https://github.com/esamelson))
+
+## 0.6.4 — 2021-07-08
+
+### 🐛 Bug fixes
+
+- Fixed Android release builds. ([#13544](https://github.com/expo/expo/pull/13544) by [@esamelson](https://github.com/esamelson))
+- Fixed web compatibility. ([#13535](https://github.com/expo/expo/pull/13535) by [@lukmccall](https://github.com/lukmccall))
+
+## 0.6.3 — 2021-06-30
+
+### 🐛 Bug fixes
+
+- [plugin] Fixed error handlers weren't initialize after running `expo run:ios`. ([#13438](https://github.com/expo/expo/pull/13438) by [@lukmccall](https://github.com/lukmccall))
+- Order dev menu items consistently across platforms. ([#13449](https://github.com/expo/expo/pull/13449) by [@lukmccall](https://github.com/lukmccall))
+- Fixed error message when trying to load a production app without expo-updates. ([#13458](https://github.com/expo/expo/pull/13458) by [@esamelson](https://github.com/esamelson))
+
+## 0.6.2 — 2021-06-28
+
+### 🐛 Bug fixes
+
+- Fixed can't reload app from the blue screen. ([#13422](https://github.com/expo/expo/pull/13422) by [@lukmccall](https://github.com/lukmccall))
+- Fixed `JSPackagerClient` wasn't close on React Native 0.63.4 what may lead to various bugs on Android. ([#13423](https://github.com/expo/expo/pull/13423) by [@lukmccall](https://github.com/lukmccall))
+- Fixed the blue screen was shown instead of the LogBox on iOS. ([#13421](https://github.com/expo/expo/pull/13421) by [@lukmccall](https://github.com/lukmccall))
+
+## 0.6.1 — 2021-06-24
+
+### 🛠 Breaking changes
+
 - Reset Updates module state on each dev client load. ([#13346](https://github.com/expo/expo/pull/13346) by [@esamelson](https://github.com/esamelson))
 - Ensure error handler is initialized. ([#13384](https://github.com/expo/expo/pull/13384) by [@lukmccall](https://github.com/lukmccall))
 
@@ -16,16 +75,6 @@
 - Fixed switching from published to local bundle loading on Android. ([#13363](https://github.com/expo/expo/pull/13363) by [@esamelson](https://github.com/esamelson))
 - [plugin] Use Node module resolution to find package paths for Podfile ([#13382](https://github.com/expo/expo/pull/13382) by [@fson](https://github.com/fson))
 - Send expo-updates-environment: DEVELOPMENT header in manifest requests. ([#13375](https://github.com/expo/expo/pull/13375) by [@esamelson](https://github.com/esamelson))
-- Fixed can't reload app from the blue screen. ([#13422](https://github.com/expo/expo/pull/13422) by [@lukmccall](https://github.com/lukmccall))
-- Fixed `JSPackagerClient` wasn't close on React Native 0.63.4 what may lead to various bugs on Android. ([#13423](https://github.com/expo/expo/pull/13423) by [@lukmccall](https://github.com/lukmccall))
-- Fixed the blue screen was shown instead of the LogBox on iOS. ([#13421](https://github.com/expo/expo/pull/13421) by [@lukmccall](https://github.com/lukmccall))
-- [plugin] Fixed error handlers weren't initialize after running `expo run:ios`. ([#13438](https://github.com/expo/expo/pull/13438) by [@lukmccall](https://github.com/lukmccall))
-- Order dev menu items consistently across platforms. ([#13449](https://github.com/expo/expo/pull/13449) by [@lukmccall](https://github.com/lukmccall))
-- Fixed error message when trying to load a production app without expo-updates. ([#13458](https://github.com/expo/expo/pull/13458) by [@esamelson](https://github.com/esamelson))
-- Fixed Android release builds. ([#13544](https://github.com/expo/expo/pull/13544) by [@esamelson](https://github.com/esamelson))
-- Fixed web compatibility. ([#13535](https://github.com/expo/expo/pull/13535) by [@lukmccall](https://github.com/lukmccall))
-
-### 💡 Others
 
 ## 0.5.1 — 2021-06-16
 

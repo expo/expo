@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-expressions */
-import { UnavailabilityError, Platform } from '@unimodules/core';
+import { UnavailabilityError, Platform } from 'expo-modules-core';
 
 import ExpoSMS from './ExpoSMS';
 import { SMSAttachment, SMSResponse, SMSOptions } from './SMS.types';
@@ -66,6 +66,11 @@ export async function sendSMSAsync(
     throw new UnavailabilityError('expo-sms', 'sendSMSAsync');
   }
   const finalAddresses = Array.isArray(addresses) ? addresses : [addresses];
+  finalAddresses.forEach(address => {
+    if (address === null || address === undefined) {
+      throw new TypeError('undefined or null address');
+    }
+  });
   const finalOptions = {
     ...options,
   } as SMSOptions;

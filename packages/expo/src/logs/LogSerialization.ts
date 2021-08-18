@@ -102,7 +102,8 @@ async function _serializeErrorAsync(error: Error, message?: string): Promise<Log
 }
 
 async function _symbolicateErrorAsync(error: Error): Promise<StackFrame[]> {
-  const parsedStack = parseErrorStack(error);
+  // @ts-ignore: parseErrorStack accepts nullable string after RN 0.64 but @types/react-native does not updated yet.
+  const parsedStack = parseErrorStack(error?.stack);
   let symbolicatedStack: StackFrame[] | null;
   try {
     // @ts-ignore: symbolicateStackTrace has different real/Flow declaration
@@ -194,7 +195,11 @@ function _captureConsoleStackTrace(): Error {
 }
 
 function _getProjectRoot(): string | null {
-  return Constants.manifest?.developer?.projectRoot ?? null;
+  return (
+    Constants.manifest?.developer?.projectRoot ??
+    Constants.manifest2?.extra?.expoGo?.developer?.projectRoot ??
+    null
+  );
 }
 
 export default {

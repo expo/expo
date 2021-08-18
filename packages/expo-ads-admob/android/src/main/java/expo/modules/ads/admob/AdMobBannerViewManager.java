@@ -2,11 +2,11 @@ package expo.modules.ads.admob;
 
 import android.content.Context;
 
-import org.unimodules.core.ModuleRegistry;
-import org.unimodules.core.ViewManager;
-import org.unimodules.core.arguments.ReadableArguments;
-import org.unimodules.core.interfaces.ExpoProp;
-import org.unimodules.core.interfaces.services.EventEmitter;
+import expo.modules.core.ModuleRegistry;
+import expo.modules.core.ViewManager;
+import expo.modules.core.arguments.ReadableArguments;
+import expo.modules.core.interfaces.ExpoProp;
+import expo.modules.core.interfaces.services.EventEmitter;
 
 import java.util.ArrayList;
 import java.util.List;

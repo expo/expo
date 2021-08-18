@@ -5,7 +5,7 @@ class BlurView extends React.Component {
     render() {
         const { tint = 'default', intensity = 50, style, ...props } = this.props;
         const blurStyle = getBlurStyle({ tint, intensity });
-        return React.createElement(View, Object.assign({}, props, { style: [style, blurStyle] }));
+        return React.createElement(View, { ...props, style: [style, blurStyle] });
     }
 }
 function isBlurSupported() {

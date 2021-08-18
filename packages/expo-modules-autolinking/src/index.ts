@@ -28,6 +28,11 @@ function registerSearchCommand<OptionsType extends SearchOptions>(
       'Package names to exclude when looking up for modules.',
       (value, previous) => (previous ?? []).concat(value)
     )
+    .option(
+      '-p, --platform [platform]',
+      'The platform that the resulting modules must support. Available options: "ios", "android"',
+      'ios'
+    )
     .action(async (searchPaths, providedOptions) => {
       const options = await mergeLinkingOptionsAsync<OptionsType>({
         ...providedOptions,
@@ -45,18 +50,18 @@ function registerResolveCommand<OptionsType extends ResolveOptions>(
   commandName: string,
   fn: (search: SearchResults, options: OptionsType) => any
 ) {
-  return registerSearchCommand<OptionsType>(commandName, fn).option(
-    '-p, --platform [platform]',
-    'The platform that the resulted modules must support. Available options: "ios", "android"',
-    'ios'
-  );
+  return registerSearchCommand<OptionsType>(commandName, fn);
 }
 
 module.exports = async function(args: string[]) {
   // Searches for available expo modules.
-  registerSearchCommand('search', async results => {
-    console.log(require('util').inspect(results, false, null, true));
-  });
+  registerSearchCommand<SearchOptions & { json?: boolean }>('search', async (results, options) => {
+    if (options.json) {
+      console.log(JSON.stringify(results));
+    } else {
+      console.log(require('util').inspect(results, false, null, true));
+    }
+  }).option<boolean>('-j, --json', 'Output results in the plain JSON format.', () => true, false);
 
   // Checks whether there are no resolving issues in the current setup.
   registerSearchCommand('verify', results => {

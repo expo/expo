@@ -16,6 +16,7 @@ const excludedInTests = [
   'expo-in-app-purchases',
   'expo-splash-screen',
   'unimodules-test-core',
+  'expo-dev-client',
 ];
 
 const packagesNeedToBeTestedUsingBareExpo = [

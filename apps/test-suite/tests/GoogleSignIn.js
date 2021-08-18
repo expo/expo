@@ -1,6 +1,6 @@
-import { Platform } from '@unimodules/core';
 import * as GoogleSignIn from 'expo-google-sign-in';
 import * as Localization from 'expo-localization';
+import { Platform } from 'expo-modules-core';
 import { Image } from 'react-native';
 
 import { alertAndWaitForResponse } from './helpers';

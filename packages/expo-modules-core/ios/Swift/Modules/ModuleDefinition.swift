@@ -13,6 +13,8 @@ public struct ModuleDefinition: AnyDefinition {
   let name: String?
   let methods: [String : AnyMethod]
   let constants: [String : Any?]
+  let eventListeners: [EventListener]
+  let viewManager: ViewManagerDefinition?
 
   init(definitions: [AnyDefinition]) {
     self.name = definitions
@@ -31,6 +33,12 @@ public struct ModuleDefinition: AnyDefinition {
       .reduce(into: [String : Any?]()) { dict, definition in
         dict.merge(definition.constants) { $1 }
       }
+
+    self.eventListeners = definitions.compactMap { $0 as? EventListener }
+
+    self.viewManager = definitions
+      .compactMap { $0 as? ViewManagerDefinition }
+      .last
   }
 }
 

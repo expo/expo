@@ -31,8 +31,8 @@ import host.exp.exponent.analytics.EXL;
 import host.exp.exponent.di.NativeModuleDepsProvider;
 import host.exp.exponent.kernel.ExperienceKey;
 import host.exp.exponent.kernel.KernelConstants;
-import host.exp.exponent.storage.ExperienceDBObject;
 import host.exp.exponent.storage.ExponentDB;
+import host.exp.exponent.storage.ExponentDBObject;
 import host.exp.exponent.storage.ExponentSharedPreferences;
 import host.exp.expoview.R;
 
@@ -68,10 +68,9 @@ public class PushNotificationHelper {
   public void onMessageReceived(final Context context, final String experienceScopeKey, final String channelId, final String message, final String body, final String title, final String categoryId) {
     ExponentDB.experienceScopeKeyToExperience(experienceScopeKey, new ExponentDB.ExperienceResultListener() {
       @Override
-      public void onSuccess(ExperienceDBObject experience) {
+      public void onSuccess(ExponentDBObject exponentDBObject) {
         try {
-          RawManifest manifest = ManifestFactory.INSTANCE.getRawManifestFromJson(new JSONObject(experience.manifest));
-          sendNotification(context, message, channelId, experience.manifestUrl, manifest, body, title, categoryId);
+          sendNotification(context, message, channelId, exponentDBObject.getManifestUrl(), exponentDBObject.getManifest(), body, title, categoryId);
         } catch (JSONException e) {
           EXL.e(TAG, "Couldn't deserialize JSON for experience scope key " + experienceScopeKey);
         }
@@ -79,7 +78,7 @@ public class PushNotificationHelper {
 
       @Override
       public void onFailure() {
-        EXL.e(TAG, "No experience found for scope key " + experienceScopeKey);
+        EXL.e(TAG, "No experience found or invalid manifest for scope key " + experienceScopeKey);
       }
     });
   }
@@ -170,7 +169,7 @@ public class PushNotificationHelper {
         final ReceivedNotificationEvent notificationEvent = new ReceivedNotificationEvent(experienceKey.getScopeKey(), body, notificationId, isMultiple, true);
 
         // Create pending intent
-        Intent intent = new Intent(context, KernelConstants.MAIN_ACTIVITY_CLASS);
+        Intent intent = new Intent(context, KernelConstants.INSTANCE.getMAIN_ACTIVITY_CLASS());
         intent.putExtra(KernelConstants.NOTIFICATION_MANIFEST_URL_KEY, manifestUrl);
         intent.putExtra(KernelConstants.NOTIFICATION_KEY, body); // deprecated
         intent.putExtra(KernelConstants.NOTIFICATION_OBJECT_KEY, notificationEvent.toJSONObject(null).toString());
@@ -236,7 +235,7 @@ public class PushNotificationHelper {
               NotificationActionCenter.setCategory(categoryId, notificationBuilder, context, new IntentProvider() {
                 @Override
                 public Intent provide() {
-                  Intent intent = new Intent(context, KernelConstants.MAIN_ACTIVITY_CLASS);
+                  Intent intent = new Intent(context, KernelConstants.INSTANCE.getMAIN_ACTIVITY_CLASS());
                   intent.putExtra(KernelConstants.NOTIFICATION_MANIFEST_URL_KEY, manifestUrl);
                   intent.putExtra(KernelConstants.NOTIFICATION_KEY, body); // deprecated
                   intent.putExtra(KernelConstants.NOTIFICATION_OBJECT_KEY, notificationEvent.toJSONObject(null).toString());

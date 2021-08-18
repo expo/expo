@@ -2,8 +2,8 @@
 
 #import <EXScreenOrientation/EXScreenOrientationRegistry.h>
 #import <EXScreenOrientation/EXScreenOrientationUtilities.h>
-#import <UMCore/UMDefines.h>
-#import <UMCore/UMUtilities.h>
+#import <ExpoModulesCore/EXDefines.h>
+#import <ExpoModulesCore/EXUtilities.h>
 
 @interface EXScreenOrientationRegistry ()
 
@@ -18,7 +18,7 @@
 
 @implementation EXScreenOrientationRegistry
 
-UM_REGISTER_SINGLETON_MODULE(ScreenOrientationRegistry)
+EX_REGISTER_SINGLETON_MODULE(ScreenOrientationRegistry)
 
 - (instancetype)init
 {
@@ -46,9 +46,9 @@ UM_REGISTER_SINGLETON_MODULE(ScreenOrientationRegistry)
 {
   // application:didFinishLaunchingWithOptions should be executed on the main thread.
   // However, it's safer to ensure that we are on a good thread.
-  UM_WEAKIFY(self);
-  [UMUtilities performSynchronouslyOnMainThread:^{
-    UM_ENSURE_STRONGIFY(self);
+  EX_WEAKIFY(self);
+  [EXUtilities performSynchronouslyOnMainThread:^{
+    EX_ENSURE_STRONGIFY(self);
     if (@available(iOS 13, *)) {
       NSArray<UIWindow *> *windows = UIApplication.sharedApplication.windows;
       if (windows.count > 0) {
@@ -78,9 +78,9 @@ UM_REGISTER_SINGLETON_MODULE(ScreenOrientationRegistry)
   if (![EXScreenOrientationUtilities doesOrientationMask:orientationMask containOrientation:_currentScreenOrientation]) {
     __block UIInterfaceOrientation newOrientation = [EXScreenOrientationUtilities defaultOrientationForOrientationMask:orientationMask];
     if (newOrientation != UIInterfaceOrientationUnknown) {
-      UM_WEAKIFY(self)
+      EX_WEAKIFY(self)
       dispatch_async(dispatch_get_main_queue(), ^{
-        UM_STRONGIFY(self)
+        EX_STRONGIFY(self)
         [[UIDevice currentDevice] setValue:@(newOrientation) forKey:@"orientation"];
         [UIViewController attemptRotationToDeviceOrientation];
         if (self->_currentScreenOrientation == UIInterfaceOrientationUnknown) {
@@ -118,7 +118,7 @@ UM_REGISTER_SINGLETON_MODULE(ScreenOrientationRegistry)
 - (UIInterfaceOrientationMask)currentOrientationMask
 {
   __block UIInterfaceOrientationMask currentOrientationMask = [self requiredOrientationMask];
-  [UMUtilities performSynchronouslyOnMainThread:^{
+  [EXUtilities performSynchronouslyOnMainThread:^{
     currentOrientationMask = [[[[UIApplication sharedApplication] keyWindow] rootViewController] supportedInterfaceOrientations];
   }];
   return currentOrientationMask;
@@ -138,7 +138,7 @@ UM_REGISTER_SINGLETON_MODULE(ScreenOrientationRegistry)
 
 - (void)handleDeviceOrientationChange:(NSNotification *)notification
 {
-  UIInterfaceOrientation newScreenOrientation = [EXScreenOrientationUtilities interfaceOrientationFromDeviceOrientation:[notification.object orientation]];
+  UIInterfaceOrientation newScreenOrientation = [EXScreenOrientationUtilities interfaceOrientationFromDeviceOrientation:[[UIDevice currentDevice] orientation]];
   [self interfaceOrientationDidChange:newScreenOrientation];
 }
 

@@ -12,12 +12,38 @@ export default class Camera extends React.Component<CameraProps> {
         whiteBalance: Record<"auto" | "sunny" | "cloudy" | "shadow" | "incandescent" | "fluorescent" | "continuous" | "manual", string | number | undefined>;
     };
     static defaultProps: CameraProps;
+    /**
+     * @deprecated Use `getCameraPermissionsAync` or `getMicrophonePermissionsAsync` instead.
+     */
     static getPermissionsAsync(): Promise<PermissionResponse>;
+    /**
+     * @deprecated Use `requestCameraPermissionsAsync` or `requestMicrophonePermissionsAsync` instead.
+     */
     static requestPermissionsAsync(): Promise<PermissionResponse>;
     static getCameraPermissionsAsync(): Promise<PermissionResponse>;
     static requestCameraPermissionsAsync(): Promise<PermissionResponse>;
+    /**
+     * Check or request permissions to access the camera.
+     * This uses both `requestCameraPermissionsAsync` and `getCameraPermissionsAsync` to interact with the permissions.
+     *
+     * @example
+     * ```ts
+     * const [status, requestPermission] = Camera.useCameraPermissions();
+     * ```
+     */
+    static useCameraPermissions: (options?: import("expo-modules-core").PermissionHookOptions<object> | undefined) => [PermissionResponse | null, () => Promise<PermissionResponse>, () => Promise<PermissionResponse>];
     static getMicrophonePermissionsAsync(): Promise<PermissionResponse>;
     static requestMicrophonePermissionsAsync(): Promise<PermissionResponse>;
+    /**
+     * Check or request permissions to access the microphone.
+     * This uses both `requestMicrophonePermissionsAsync` and `getMicrophonePermissionsAsync` to interact with the permissions.
+     *
+     * @example
+     * ```ts
+     * const [status, requestPermission] = Camera.useMicrophonePermissions();
+     * ```
+     */
+    static useMicrophonePermissions: (options?: import("expo-modules-core").PermissionHookOptions<object> | undefined) => [PermissionResponse | null, () => Promise<PermissionResponse>, () => Promise<PermissionResponse>];
     _cameraHandle?: number | null;
     _cameraRef?: React.Component | null;
     _lastEvents: {
@@ -48,5 +74,5 @@ export default class Camera extends React.Component<CameraProps> {
     _setReference: (ref?: React.Component<{}, {}, any> | undefined) => void;
     render(): JSX.Element;
 }
-export declare const Constants: ConstantsType, getPermissionsAsync: typeof Camera.getPermissionsAsync, requestPermissionsAsync: typeof Camera.requestPermissionsAsync;
+export declare const Constants: ConstantsType, getPermissionsAsync: typeof Camera.getPermissionsAsync, requestPermissionsAsync: typeof Camera.requestPermissionsAsync, getCameraPermissionsAsync: typeof Camera.getCameraPermissionsAsync, requestCameraPermissionsAsync: typeof Camera.requestCameraPermissionsAsync, getMicrophonePermissionsAsync: typeof Camera.getMicrophonePermissionsAsync, requestMicrophonePermissionsAsync: typeof Camera.requestMicrophonePermissionsAsync;
 export { CameraCapturedPicture, CameraNativeProps, CameraPictureOptions, CameraProps, CameraRecordingOptions, PermissionResponse, PermissionStatus, PermissionExpiration, BarCodeScanningResult, FaceDetectionResult, CameraMountError, };

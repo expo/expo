@@ -13,4 +13,4 @@ Refer to the bare workflow ["Up and Running"](hello-world.md) page to learn abou
 
 ## Only available in the bare workflow currently
 
-[InAppPurchases](../versions/latest/sdk/in-app-purchases.md) is the only library in the Expo SDK that works exclusively in bare workflow projects. We're working on eliminating this restriction, [learn more](https://blog.expo.io/expo-managed-workflow-in-2021-d1c9b68aa10).
+[InAppPurchases](../versions/latest/sdk/in-app-purchases.md) is the only library in the Expo SDK that works exclusively in bare workflow projects. We're working on eliminating this restriction, [learn more](https://blog.expo.dev/expo-managed-workflow-in-2021-d1c9b68aa10).

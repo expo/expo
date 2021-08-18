@@ -4,10 +4,10 @@ import android.content.Context
 import android.content.ClipData
 import android.content.ClipboardManager
 
-import org.unimodules.core.ExportedModule
-import org.unimodules.core.ModuleRegistry
-import org.unimodules.core.Promise
-import org.unimodules.core.interfaces.ExpoMethod
+import expo.modules.core.ExportedModule
+import expo.modules.core.ModuleRegistry
+import expo.modules.core.Promise
+import expo.modules.core.interfaces.ExpoMethod
 
 class ClipboardModule(context: Context) : ExportedModule(context) {
   private val NAME = "ExpoClipboard"
@@ -25,9 +25,9 @@ class ClipboardModule(context: Context) : ExportedModule(context) {
     val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
     val clip = clipboard.primaryClip
     if (clip != null && clip.itemCount >= 1) {
-      promise.resolve(clip.getItemAt(0).text);
+      promise.resolve(clip.getItemAt(0).text)
     } else {
-      promise.resolve("");
+      promise.resolve("")
     }
   }
 

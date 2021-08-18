@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.setICloudEntitlments = exports.withDocumentPickerIOS = void 0;
 const config_plugins_1 = require("@expo/config-plugins");
-exports.withDocumentPickerIOS = (config, { appleTeamId }) => {
+const withDocumentPickerIOS = (config, { appleTeamId }) => {
     return config_plugins_1.withEntitlementsPlist(config, config => {
         if (appleTeamId) {
             config.modResults = setICloudEntitlments(config, appleTeamId, config.modResults);
@@ -13,6 +13,7 @@ exports.withDocumentPickerIOS = (config, { appleTeamId }) => {
         return config;
     });
 };
+exports.withDocumentPickerIOS = withDocumentPickerIOS;
 function setICloudEntitlments(config, appleTeamId, entitlements) {
     var _a;
     if ((_a = config.ios) === null || _a === void 0 ? void 0 : _a.usesIcloudStorage) {

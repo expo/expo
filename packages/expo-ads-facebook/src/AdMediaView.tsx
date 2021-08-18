@@ -1,11 +1,11 @@
-import { requireNativeViewManager } from '@unimodules/core';
+import { requireNativeViewManager } from 'expo-modules-core';
 import nullthrows from 'nullthrows';
 import React from 'react';
 import { View } from 'react-native';
 
 import { AdMediaViewContext, AdMediaViewContextValue } from './withNativeAd';
 
-type Props = React.ComponentProps<typeof View>;
+type Props = React.ComponentPropsWithRef<typeof View>;
 
 export default class AdMediaView extends React.Component<Props> {
   render() {
@@ -23,4 +23,4 @@ export default class AdMediaView extends React.Component<Props> {
 // The native AdMediaView has the same props as regular View
 export type NativeAdMediaView = React.Component<Props>;
 // eslint-disable-next-line @typescript-eslint/no-redeclare -- the type and variable share a name
-export const NativeAdMediaView = requireNativeViewManager('MediaView');
+export const NativeAdMediaView: React.ComponentType<Props> = requireNativeViewManager('MediaView');

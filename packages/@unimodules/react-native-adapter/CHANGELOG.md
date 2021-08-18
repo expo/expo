@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Changed generateExpoModulesPackageList for preBuild.dependsOn with quotes in build.gradle. ([#13568](https://github.com/expo/expo/pull/13568) by [@wbroek](https://github.com/wbroek))
-
 ### 💡 Others
+
+## 6.5.0-alpha.0 — 2021-08-17
+
+### ⚠️ Deprecated
+
+`@unimodules/core`, `@unimodules/react-native-adapter` and `react-native-unimodules` are now deprecated in favor of `expo-modules-core`. Follow this guide to migrate your apps: https://expo.fyi/expo-modules-core-migration
 
 ## 6.4.0 — 2021-07-05
 

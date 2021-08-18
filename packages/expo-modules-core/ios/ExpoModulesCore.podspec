@@ -28,4 +28,13 @@ Pod::Spec.new do |s|
   else
     s.source_files = '**/*.{h,m,swift}'
   end
+
+  s.exclude_files = 'Tests/'
+
+  s.test_spec 'Tests' do |test_spec|
+    test_spec.dependency 'Quick'
+    test_spec.dependency 'Nimble'
+
+    test_spec.source_files = 'Tests/**/*.swift'
+  end
 end

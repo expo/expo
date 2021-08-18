@@ -1,7 +1,7 @@
 'use strict';
 
-import { Platform } from '@unimodules/core';
 import Constants from 'expo-constants';
+import { Platform } from 'expo-modules-core';
 
 import ExponentTest from './ExponentTest';
 import { isDeviceFarm } from './utils/Environment';
@@ -71,6 +71,7 @@ export function getTestModules() {
     require('./tests/FirebaseAnalytics'),
     require('./tests/FirebaseRecaptcha'),
     require('./tests/FirebaseJSSDK'),
+    require('./tests/ImageManipulator'),
     optionalRequire(() => require('./tests/SQLite'))
   );
 

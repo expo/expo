@@ -26,10 +26,17 @@ public class SwiftInteropBridge: NSObject {
                          withArgs args: [Any],
                          resolve: @escaping EXPromiseResolveBlock,
                          reject: @escaping EXPromiseRejectBlock) {
-    let promise = Promise(resolver: resolve, rejecter: reject)
     registry
       .get(moduleHolderForName: moduleName)?
-      .call(method: methodName, args: args, promise: promise)
+      .call(method: methodName, args: args) { value, error in
+        if let error = error as? CodedError {
+          reject(error.code, error.description, error)
+        } else if let error = error {
+          reject("ERR_UNKNOWN_ERROR", error.localizedDescription, error)
+        } else {
+          resolve(value)
+        }
+      }
   }
 
   @objc
@@ -55,6 +62,27 @@ public class SwiftInteropBridge: NSObject {
   public func exportedModulesConstants() -> [String: Any] {
     return registry.reduce(into: [String: Any]()) { acc, holder in
       acc[holder.name] = holder.definition.constants
+    }
+  }
+
+  @objc
+  public func exportedViewManagersNames() -> [String] {
+    return registry.compactMap { holder in
+      return holder.definition.viewManager != nil ? holder.name : nil
+    }
+  }
+
+  /**
+   Returns view modules wrapped by the base `ViewModuleWrapper` class.
+   */
+  @objc
+  public func getViewManagers() -> [ViewModuleWrapper] {
+    return registry.compactMap { holder in
+      if holder.definition.viewManager != nil {
+        return ViewModuleWrapper(holder)
+      } else {
+        return nil
+      }
     }
   }
 }

@@ -99,7 +99,7 @@ function modifyAppDelegate(appDelegate, expoUpdatesVersion = null) {
     return appDelegate;
 }
 exports.modifyAppDelegate = modifyAppDelegate;
-exports.withDevLauncherAppDelegate = config => {
+const withDevLauncherAppDelegate = config => {
     return config_plugins_1.withAppDelegate(config, config => {
         if (config.modResults.language === 'objc') {
             let expoUpdatesVersion;
@@ -117,3 +117,4 @@ exports.withDevLauncherAppDelegate = config => {
         return config;
     });
 };
+exports.withDevLauncherAppDelegate = withDevLauncherAppDelegate;

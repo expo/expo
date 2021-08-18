@@ -1,5 +1,5 @@
 
-public struct ConcreteMethod<Args, ReturnType>: AnyMethod {
+public class ConcreteMethod<Args, ReturnType>: AnyMethod {
   public typealias ClosureType = (Args) -> ReturnType
 
   public let name: String
@@ -21,12 +21,10 @@ public struct ConcreteMethod<Args, ReturnType>: AnyMethod {
   init(
     _ name: String,
     argTypes: [AnyArgumentType],
-    queue: DispatchQueue? = nil,
     _ closure: @escaping ClosureType
   ) {
     self.name = name
     self.argTypes = argTypes
-    self.queue = queue
     self.closure = closure
   }
 
@@ -43,8 +41,11 @@ public struct ConcreteMethod<Args, ReturnType>: AnyMethod {
 
       let tuple = try Conversions.toTuple(finalArgs) as! Args
       returnedValue = closure(tuple)
-    } catch let error {
+    } catch let error as CodedError {
       promise.reject(error)
+      return
+    } catch let error {
+      promise.reject(UnexpectedError(error))
       return
     }
     if !takesPromise {
@@ -52,11 +53,19 @@ public struct ConcreteMethod<Args, ReturnType>: AnyMethod {
     }
   }
 
+  public func runOnQueue(_ queue: DispatchQueue?) -> Self {
+    self.queue = queue
+    return self
+  }
+
   private func argumentType(atIndex index: Int) -> AnyArgumentType? {
     return (0..<argTypes.count).contains(index) ? argTypes[index] : nil
   }
 
   private func castArguments(_ args: [Any?]) throws -> [AnyMethodArgument?] {
+    if args.count != argumentsCount {
+      throw InvalidArgsNumberError(received: args.count, expected: argumentsCount)
+    }
     return try args.enumerated().map { (index, arg) in
       guard let desiredType = argumentType(atIndex: index) else {
         return nil
@@ -75,11 +84,28 @@ public struct ConcreteMethod<Args, ReturnType>: AnyMethod {
 //      }
 
       // TODO: (@tsapeta) Handle convertible arrays
-      throw Errors.IncompatibleArgumentType(
+      throw IncompatibleArgTypeError(
         argument: arg,
         atIndex: index,
         desiredType: type(of: desiredType)
       )
     }
+  }
+}
+
+internal struct InvalidArgsNumberError: CodedError {
+  let received: Int
+  let expected: Int
+  var description: String {
+    "Received \(received) arguments, but \(expected) was expected."
+  }
+}
+
+internal struct IncompatibleArgTypeError<ArgumentType, DesiredType>: CodedError {
+  let argument: ArgumentType
+  let atIndex: Int
+  let desiredType: DesiredType.Type
+  var description: String {
+    "Type `\(type(of: argument))` of argument at index `\(atIndex)` is not compatible with expected type `\(desiredType.self)`."
   }
 }

@@ -31,13 +31,13 @@ const STYLES_FOOTER_ICON = css`
 `;
 
 // Remove trailing slash and append .md
-function githubUrl(path: string) {
+export function githubUrl(path: string) {
+  if (path === '/versions/latest' || path === '/versions/unversioned') {
+    path = '/versions/unversioned/index';
+  }
+
   if (path.includes('/versions/latest/')) {
-    if (path === '/versions/latest') {
-      path = '/versions/unversioned/index';
-    } else {
-      path = path.replace('/versions/latest/', '/versions/unversioned/');
-    }
+    path = path.replace('/versions/latest/', '/versions/unversioned/');
   } else if (path.match(/v\d+\.\d+\.\d+\/?$/) || path === '/') {
     if (path[path.length - 1] === '/') {
       path = `${path}index`;
@@ -82,7 +82,11 @@ export default class DocumentationFooter extends React.PureComponent<Props> {
     if (!this.props.asPath.includes('/sdk/') || SDK_BLACKLIST.includes(this.props.title)) {
       return (
         <LI>
-          <a css={STYLES_FOOTER_LINK} target="_blank" rel="noopener" href="https://forums.expo.io/">
+          <a
+            css={STYLES_FOOTER_LINK}
+            target="_blank"
+            rel="noopener"
+            href="https://forums.expo.dev/">
             <span css={STYLES_FOOTER_ICON}>
               <ChatBoxes fillColor="currentColor" />
             </span>
@@ -98,7 +102,7 @@ export default class DocumentationFooter extends React.PureComponent<Props> {
           css={STYLES_FOOTER_LINK}
           target="_blank"
           rel="noopener"
-          href={'https://forums.expo.io/tag/' + this.props.title}>
+          href={'https://forums.expo.dev/tag/' + this.props.title}>
           <span css={STYLES_FOOTER_ICON}>
             <ChatBoxes fillColor="currentColor" />
           </span>

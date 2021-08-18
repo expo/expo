@@ -10,6 +10,14 @@
 
 ### 💡 Others
 
+## 10.2.0-alpha.0 — 2021-08-17
+
+### 💡 Others
+
+- Migrated from `@unimodules/core` to `expo-modules-core`. (by [@tsapeta](https://github.com/tsapeta))
+- Experimental Swift implementation using Sweet API. (by [@tsapeta](https://github.com/tsapeta))
+- Rewrote from Java to Kotlin. ([#13611](https://github.com/expo/expo/pull/13611) by [@M1ST4KE](https://github.com/m1st4ke))
+
 ## 10.1.0 — 2021-06-16
 
 ### 🐛 Bug fixes

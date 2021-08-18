@@ -7,6 +7,7 @@ import { H2, H3Code, H4 } from '~/components/plugins/Headings';
 import { MethodDefinitionData, MethodSignatureData } from '~/components/plugins/api/APIDataTypes';
 import {
   CommentTextBlock,
+  listParams,
   mdRenderers,
   renderParam,
   resolveTypeName,
@@ -22,14 +23,15 @@ const renderMethod = (
   { signatures }: MethodDefinitionData,
   index: number,
   dataLength?: number,
-  apiName?: string
+  apiName?: string,
+  header?: string
 ): JSX.Element[] =>
   signatures.map(({ name, parameters, comment, type }: MethodSignatureData) => (
     <div key={`method-signature-${name}-${parameters?.length || 0}`}>
       <H3Code>
         <InlineCode>
           {apiName ? `${apiName}.` : ''}
-          {name}({parameters?.map(param => param.name).join(', ')})
+          {header !== 'Hooks' ? `${name}(${listParams(parameters)})` : name}
         </InlineCode>
       </H3Code>
       <CommentTextBlock
@@ -68,7 +70,7 @@ const APISectionMethods: React.FC<APISectionMethodsProps> = ({
   data?.length ? (
     <>
       <H2 key="methods-header">{header}</H2>
-      {data.map((method, index) => renderMethod(method, index, data.length, apiName))}
+      {data.map((method, index) => renderMethod(method, index, data.length, apiName, header))}
     </>
   ) : null;
 

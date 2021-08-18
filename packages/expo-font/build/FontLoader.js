@@ -1,6 +1,6 @@
-import { CodedError } from '@unimodules/core';
 import { Asset } from 'expo-asset';
 import Constants from 'expo-constants';
+import { CodedError } from 'expo-modules-core';
 import { Platform } from 'react-native';
 import ExpoFontLoader from './ExpoFontLoader';
 const isInClient = Constants.appOwnership === 'expo';

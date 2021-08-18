@@ -1,6 +1,6 @@
 // Copyright 2019-present 650 Industries. All rights reserved.
 
-#import <UMCore/UMExportedModule.h>
+#import <ExpoModulesCore/EXExportedModule.h>
 #import <Foundation/Foundation.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -14,7 +14,7 @@ typedef NS_ENUM(NSInteger, EXDeviceType) {
     EXDeviceTypeTV,
 };
 
-@interface EXDevice : UMExportedModule
+@interface EXDevice : EXExportedModule
 
 @end
 

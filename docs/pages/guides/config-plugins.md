@@ -119,7 +119,7 @@ You may want to create a plugin in a different file, here's how:
 - The root file can be any JS file or a file named `app.plugin.js` in the [root of a Node module](#root-app.plugin.js).
 - The file should export a function that satisfies the [`ConfigPlugin`][configplugin] type.
 - Plugins should be transpiled for Node environments ahead of time!
-  - They should support the versions of Node that [Expo supports](https://docs.expo.io/get-started/installation/#requirements) (LTS).
+  - They should support the versions of Node that [Expo supports](https://docs.expo.dev/get-started/installation/#requirements) (LTS).
   - No `import/export` keywords, use `module.exports` in the shipped plugin file.
   - Expo only transpiles the user's initial `app.config` file, anything more would require a bundler which would add too many "opinions" for a config file.
 
@@ -133,9 +133,9 @@ Consider the following example that changes the config name:
 `my-plugin.js`
 
 ```js
-module.exports = function withCustomName(config, name) {
+module.exports = function withPrefixedName(config, prefix) {
   // Modify the config
-  config.name = 'custom-' + name;
+  config.name = prefix + '-' + config.name;
   // Return the results
   return config;
 };
@@ -146,7 +146,9 @@ module.exports = function withCustomName(config, name) {
 ```json
 {
   "name": "my-app",
-  "plugins": ["./my-plugin", "app"]
+  "plugins": [
+    ["./my-plugin", "custom"]
+  ]
 }
 ```
 
@@ -157,7 +159,9 @@ module.exports = function withCustomName(config, name) {
 ```json
 {
   "name": "custom-my-app",
-  "plugins": ["./my-plugin", "app"]
+  "plugins": [
+    ["./my-plugin", "custom"]
+  ]
 }
 ```
 
@@ -607,6 +611,7 @@ export default createRunOncePlugin(
 - **Unit test your plugin**: Write Jest tests for complex modifications. If your plugin requires access to the filesystem, use a mock system (we strongly recommend [`memfs`][memfs]), you can see examples of this in the [`expo-notifications`](https://github.com/expo/expo/blob/fc3fb2e81ad3a62332fa1ba6956c1df1c3186464/packages/expo-notifications/plugin/src/__tests__/withNotificationsAndroid-test.ts#L34) plugin tests.
   - Notice the root [`/__mocks__`](https://github.com/expo/expo/tree/master/packages/expo-notifications/plugin/__mocks__) folder and [`plugin/jest.config.js`](https://github.com/expo/expo/blob/master/packages/expo-notifications/plugin/jest.config.js).
 - A TypeScript plugin is always better than a JavaScript plugin. Check out the [`expo-module-script` plugin][ems-plugin] tooling for more info.
+- Do not modify the `sdkVersion` via a config plugin, this can break commands like `expo install` and cause other unexpected issues.
 
 ### Versioning
 
@@ -809,8 +814,8 @@ Please add the following to your Expo config
 }
 ```
 
-[config-docs]: https://docs.expo.io/versions/latest/config/app/
-[cli-prebuild]: https://docs.expo.io/workflow/expo-cli/#eject
+[config-docs]: https://docs.expo.dev/versions/latest/config/app/
+[cli-prebuild]: https://docs.expo.dev/workflow/expo-cli/#eject
 [configplugin]: https://github.com/expo/expo-cli/blob/3a0ef962a27525a0fe4b7e5567fb7b3fb18ec786/packages/config-plugins/src/Plugin.types.ts#L76
 [source-template]: https://github.com/expo/expo/tree/master/templates/expo-template-bare-minimum
 [expo-beta-docs]: https://github.com/expo/expo/blob/master/guides/releasing/Release%20Workflow.md#stage-5---beta-release
@@ -821,4 +826,4 @@ Please add the following to your Expo config
 
 <!-- TODO: Better link for Expo autolinking docs -->
 
-[autolinking]: https://docs.expo.io/bare/installing-unimodules/
+[autolinking]: https://docs.expo.dev/bare/installing-unimodules/

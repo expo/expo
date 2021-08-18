@@ -8,11 +8,10 @@ import android.print.PrintAttributes
 import android.print.PrintDocumentAdapter
 import android.print.PrintDocumentAdapterLayoutCallback
 import android.print.PrintDocumentAdapterWriteCallback
-import android.util.Log
 import android.webkit.WebView
 import android.webkit.WebViewClient
-import org.unimodules.core.ModuleRegistry
-import org.unimodules.core.interfaces.services.UIManager
+import expo.modules.core.ModuleRegistry
+import expo.modules.core.interfaces.services.UIManager
 import java.io.File
 import java.io.IOException
 import kotlin.math.roundToInt
@@ -81,7 +80,6 @@ class PrintPDFRenderTask(private val context: Context, private val options: Map<
           .setMediaSize(mediaSize)
           .setMinMargins(PrintAttributes.Margins.NO_MARGINS)
           .setResolution(PrintAttributes.Resolution("id", "label", PIXELS_PER_INCH, PIXELS_PER_INCH))
-
       }
       return builder.build()
     }

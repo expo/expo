@@ -2,7 +2,7 @@
 
 #import <Foundation/Foundation.h>
 
-#import <UMCore/UMInternalModule.h>
+#import <ExpoModulesCore/EXInternalModule.h>
 #import <ExpoModulesCore/EXConstantsInterface.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -11,7 +11,7 @@ FOUNDATION_EXPORT NSString * const EXConstantsExecutionEnvironmentBare;
 FOUNDATION_EXPORT NSString * const EXConstantsExecutionEnvironmentStandalone;
 FOUNDATION_EXPORT NSString * const EXConstantsExecutionEnvironmentStoreClient;
 
-@interface EXConstantsService : NSObject <UMInternalModule, EXConstantsInterface>
+@interface EXConstantsService : NSObject <EXInternalModule, EXConstantsInterface>
 
 - (NSString *)buildVersion;
 - (CGFloat)statusBarHeight;

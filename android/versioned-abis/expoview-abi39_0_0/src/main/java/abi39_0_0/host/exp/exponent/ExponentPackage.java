@@ -14,7 +14,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import abi39_0_0.org.unimodules.adapters.react.ReactModuleRegistryProvider;
 import abi39_0_0.org.unimodules.core.interfaces.Package;
-import org.unimodules.core.interfaces.SingletonModule;
+import expo.modules.core.interfaces.SingletonModule;
 
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;

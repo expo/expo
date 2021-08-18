@@ -46,6 +46,13 @@ typedef NS_ENUM(NSInteger, ABI42_0_0EXUpdatesDevLauncherErrorCode) {
   }
 }
 
+- (void)reset
+{
+  ABI42_0_0EXUpdatesAppController *controller = ABI42_0_0EXUpdatesAppController.sharedInstance;
+  [controller setLauncher:nil];
+  [controller setIsStarted:NO];
+}
+
 - (NSURL *)launchAssetURL
 {
   return ABI42_0_0EXUpdatesAppController.sharedInstance.launchAssetUrl;
@@ -60,7 +67,7 @@ typedef NS_ENUM(NSInteger, ABI42_0_0EXUpdatesDevLauncherErrorCode) {
   ABI42_0_0EXUpdatesAppController *controller = ABI42_0_0EXUpdatesAppController.sharedInstance;
   ABI42_0_0EXUpdatesConfig *updatesConfiguration = [ABI42_0_0EXUpdatesConfig configWithExpoPlist];
   [updatesConfiguration loadConfigFromDictionary:configuration];
-  if (!updatesConfiguration.updateUrl) {
+  if (!updatesConfiguration.updateUrl || !updatesConfiguration.scopeKey) {
     errorBlock([NSError errorWithDomain:ABI42_0_0EXUpdatesDevLauncherControllerErrorDomain code:ABI42_0_0EXUpdatesDevLauncherErrorCodeInvalidUpdateURL userInfo:@{NSLocalizedDescriptionKey: @"Failed to load update: configuration object must include a valid update URL"}]);
     return;
   }
@@ -75,7 +82,6 @@ typedef NS_ENUM(NSInteger, ABI42_0_0EXUpdatesDevLauncherErrorCode) {
     return;
   }
 
-  [controller setIsStarted:YES];
   [self _setDevelopmentSelectionPolicy];
 
   ABI42_0_0EXUpdatesRemoteAppLoader *loader = [[ABI42_0_0EXUpdatesRemoteAppLoader alloc] initWithConfig:updatesConfiguration database:controller.database directory:controller.updatesDirectory completionQueue:controller.controllerQueue];
@@ -116,6 +122,7 @@ typedef NS_ENUM(NSInteger, ABI42_0_0EXUpdatesDevLauncherErrorCode) {
       return;
     }
 
+    [controller setIsStarted:YES];
     [controller setConfigurationInternal:configuration];
     [controller setLauncher:launcher];
     successBlock(launcher.launchedUpdate.rawManifest.rawManifestJSON);

@@ -6,7 +6,7 @@ import abi41_0_0.com.facebook.react.uimanager.events.RCTEventEmitter
 
 /**
  * Event emitted when the WebView's process has crashed or
-   was killed by the OS.
+ was killed by the OS.
  */
 class TopRenderProcessGoneEvent(viewId: Int, private val mEventData: WritableMap) :
   Event<TopRenderProcessGoneEvent>(viewId) {

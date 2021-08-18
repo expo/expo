@@ -6,7 +6,7 @@ import ImageSpotlight from '~/components/plugins/ImageSpotlight'
 
 The ["Environment variables in Expo"](/guides/environment-variables.md) guide presents several options for how you can access system environment variables to your app JavaScript code. This can be a useful way to inject values in your code, but [these values should not be secrets](/guides/environment-variables.md#security-considerations), and so the value it provides can be summarized as a convenience for accommodating certain development workflows.
 
-Using the techniques described in the environment variables document above, environment variables are inlined (the `process.env.X` text is replaced with it's evaluated result) in your app's JavaScript code _at the the time that the app is built_, and included in the app bundle. This means that the substitution would occur on EAS Build servers and not on your development machine, so if you tried to run a build on EAS Build without explicitly providing values or fallbacks for the environment variables, then you are likely encounter either a build-time or runtime error.
+Using the techniques described in the environment variables document above, environment variables are inlined (the `process.env.X` text is replaced with its evaluated result) in your app's JavaScript code _at the the time that the app is built_, and included in the app bundle. This means that the substitution would occur on EAS Build servers and not on your development machine, so if you tried to run a build on EAS Build without explicitly providing values or fallbacks for the environment variables, then you are likely to encounter either a build-time or runtime error.
 
 ## Using plaintext environment variables
 
@@ -16,40 +16,29 @@ You can specify environment variables for specific build jobs using `eas.json`:
 
 ```json
 {
-  "builds": {
-    "android": {
-      "release": {
-        "env": {
-          "API_URL": "https://api.production.com"
-        }
-      }
-    },
-    "ios": {
-      "release": {
-        "env": {
-          "API_URL": "https://api.production.com"
-        }
+  "build": {
+    "release": {
+      "env": {
+        "API_URL": "https://api.production.com"
       }
     }
   }
 }
 ```
 
-You can access these variables in your application using the techniques described in the ["Environment variables in Expo"](/guides/environment-variables.md) guide. You can also share common configuration between different build profiles using the `"extends"` property:
+You can access these variables in your application using the techniques described in the ["Environment variables in Expo"](/guides/environment-variables.md) guide. You can also share common configurations between different build profiles using the `"extends"` property, if both profiles have an `env` object defined, content will be merged.
 
 ```json
 {
-  "builds": {
-    "ios": {
-      "release": {
-        "env": {
-          "API_URL": "https://api.production.com"
-        }
-      },
-      "test": {
-        "distribution": "internal",
-        "extends": "release"
+  "build": {
+    "release": {
+      "env": {
+        "API_URL": "https://api.production.com"
       }
+    },
+    "test": {
+      "distribution": "internal",
+      "extends": "release"
     }
   }
 }
@@ -69,7 +58,7 @@ You can manage secrets through the Expo website and EAS CLI.
 
 ### Secrets on the Expo website
 
-To create account-wide secrets, navigate to the "Secrets" tab under your account or organization's [settings](https://expo.io/settings/secrets):
+To create account-wide secrets, navigate to the "Secrets" tab under your account or organization's [settings](https://expo.dev/settings/secrets):
 
 <ImageSpotlight alt="account-wide secrets location" src="/static/images/eas-build/environment-secrets/secrets-account-nav.png" />
 

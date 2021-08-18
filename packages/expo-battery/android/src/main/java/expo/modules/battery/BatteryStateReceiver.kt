@@ -5,15 +5,18 @@ import android.content.Context
 import android.content.Intent
 import android.os.BatteryManager
 import android.os.Bundle
-import org.unimodules.core.interfaces.services.EventEmitter
+import expo.modules.core.interfaces.services.EventEmitter
 
 private val BATTERY_CHARGED_EVENT_NAME = "Expo.batteryStateDidChange"
 
 class BatteryStateReceiver(private val eventEmitter: EventEmitter?) : BroadcastReceiver() {
   private fun onBatteryStateChange(batteryState: BatteryModule.BatteryState) {
-    eventEmitter?.emit(BATTERY_CHARGED_EVENT_NAME, Bundle().apply {
-      putInt("batteryState", batteryState.value)
-    })
+    eventEmitter?.emit(
+      BATTERY_CHARGED_EVENT_NAME,
+      Bundle().apply {
+        putInt("batteryState", batteryState.value)
+      }
+    )
   }
 
   override fun onReceive(context: Context, intent: Intent) {

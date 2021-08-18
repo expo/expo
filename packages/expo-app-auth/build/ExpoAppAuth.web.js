@@ -1,4 +1,4 @@
-import { Platform } from '@unimodules/core';
+import { Platform } from 'expo-modules-core';
 export default {
     get name() {
         return 'ExpoAppAuth';

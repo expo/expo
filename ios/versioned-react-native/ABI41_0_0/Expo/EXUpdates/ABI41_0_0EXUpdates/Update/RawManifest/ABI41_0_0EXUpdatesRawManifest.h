@@ -1,5 +1,7 @@
 //  Copyright © 2021 650 Industries. All rights reserved.
 
+#import <Foundation/Foundation.h>
+
 NS_ASSUME_NONNULL_BEGIN
 
 @protocol ABI41_0_0EXUpdatesRawManifestBehavior <NSObject>
@@ -11,19 +13,19 @@ NS_ASSUME_NONNULL_BEGIN
 # pragma mark - Field getters
 
 /**
- * A best-effort immutable legacy ID for this experience. Formatted the same as legacyId.
- * Stable through project transfers.
+ * A best-effort immutable legacy ID for this experience. Stable through project transfers.
+ * Should be used for calling Expo and EAS APIs during their transition to projectId.
  */
-- (NSString *)stableLegacyId;
+- (NSString *)stableLegacyId DEPRECATED_MSG_ATTRIBUTE("Prefer scopeKey or projectId depending on use case.");
 
 /**
- * A stable immutable scoping key for this experience. Should be used for scoping data that
- * does not need to make calls externally with the legacy ID.
+ * A stable immutable scoping key for this experience. Should be used for scoping data on the
+ * client for this project when running in Expo Go.
  */
 - (NSString *)scopeKey;
 
 /**
- * A stable UUID for this EAS project. Should be used to call EAS APIs where possible.
+ * A stable UUID for this EAS project. Should be used to call EAS APIs.
  */
 - (nullable NSString *)projectId;
 

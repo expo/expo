@@ -86,7 +86,8 @@ async function _serializeErrorAsync(error, message) {
     return { message, stack: formattedStack };
 }
 async function _symbolicateErrorAsync(error) {
-    const parsedStack = parseErrorStack(error);
+    // @ts-ignore: parseErrorStack accepts nullable string after RN 0.64 but @types/react-native does not updated yet.
+    const parsedStack = parseErrorStack(error?.stack);
     let symbolicatedStack;
     try {
         // @ts-ignore: symbolicateStackTrace has different real/Flow declaration
@@ -165,7 +166,9 @@ function _captureConsoleStackTrace() {
     }
 }
 function _getProjectRoot() {
-    return Constants.manifest?.developer?.projectRoot ?? null;
+    return (Constants.manifest?.developer?.projectRoot ??
+        Constants.manifest2?.extra?.expoGo?.developer?.projectRoot ??
+        null);
 }
 export default {
     serializeLogDataAsync,

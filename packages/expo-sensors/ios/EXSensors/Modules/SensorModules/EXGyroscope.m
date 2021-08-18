@@ -5,14 +5,14 @@
 
 @implementation EXGyroscope
 
-UM_EXPORT_MODULE(ExponentGyroscope);
+EX_EXPORT_MODULE(ExponentGyroscope);
 
 - (const NSString *)updateEventName
 {
   return @"gyroscopeDidUpdate";
 }
 
-- (id)getSensorServiceFromModuleRegistry:(UMModuleRegistry *)moduleRegistry
+- (id)getSensorServiceFromModuleRegistry:(EXModuleRegistry *)moduleRegistry
 {
   return [moduleRegistry getModuleImplementingProtocol:@protocol(EXGyroscopeInterface)];
 }

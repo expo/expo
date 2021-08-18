@@ -3,7 +3,7 @@
 #import <EXNotifications/EXPushTokenModule.h>
 #import <EXNotifications/EXPushTokenManager.h>
 
-#import <UMCore/UMEventEmitterService.h>
+#import <ExpoModulesCore/EXEventEmitterService.h>
 
 static NSString * const onDevicePushTokenEventName = @"onDevicePushToken";
 
@@ -15,21 +15,21 @@ static NSString * const onDevicePushTokenEventName = @"onDevicePushToken";
 @property (nonatomic, assign) BOOL isBeingObserved;
 @property (nonatomic, assign) BOOL isSettlingPromise;
 
-@property (nonatomic, weak) id<UMEventEmitterService> eventEmitter;
+@property (nonatomic, weak) id<EXEventEmitterService> eventEmitter;
 
-@property (nonatomic, strong) UMPromiseResolveBlock getDevicePushTokenResolver;
-@property (nonatomic, strong) UMPromiseRejectBlock getDevicePushTokenRejecter;
+@property (nonatomic, strong) EXPromiseResolveBlock getDevicePushTokenResolver;
+@property (nonatomic, strong) EXPromiseRejectBlock getDevicePushTokenRejecter;
 
 @end
 
 @implementation EXPushTokenModule
 
-UM_EXPORT_MODULE(ExpoPushTokenManager);
+EX_EXPORT_MODULE(ExpoPushTokenManager);
 
 # pragma mark - Exported methods
 
-UM_EXPORT_METHOD_AS(getDevicePushTokenAsync,
-                    getDevicePushTokenResolving:(UMPromiseResolveBlock)resolve rejecting:(UMPromiseRejectBlock)reject)
+EX_EXPORT_METHOD_AS(getDevicePushTokenAsync,
+                    getDevicePushTokenResolving:(EXPromiseResolveBlock)resolve rejecting:(EXPromiseRejectBlock)reject)
 {
   if (_getDevicePushTokenRejecter) {
     reject(@"E_AWAIT_PROMISE", @"Another async call to this method is in progress. Await the first Promise.", nil);
@@ -45,15 +45,15 @@ UM_EXPORT_METHOD_AS(getDevicePushTokenAsync,
   });
 }
 
-# pragma mark - UMModuleRegistryConsumer
+# pragma mark - EXModuleRegistryConsumer
 
-- (void)setModuleRegistry:(UMModuleRegistry *)moduleRegistry
+- (void)setModuleRegistry:(EXModuleRegistry *)moduleRegistry
 {
-  _eventEmitter = [moduleRegistry getModuleImplementingProtocol:@protocol(UMEventEmitterService)];
+  _eventEmitter = [moduleRegistry getModuleImplementingProtocol:@protocol(EXEventEmitterService)];
   _pushTokenManager = [moduleRegistry getSingletonModuleForName:@"PushTokenManager"];
 }
 
-# pragma mark - UMEventEmitter
+# pragma mark - EXEventEmitter
 
 - (NSArray<NSString *> *)supportedEvents
 {
