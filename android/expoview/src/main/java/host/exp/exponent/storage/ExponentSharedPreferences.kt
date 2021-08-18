@@ -99,10 +99,11 @@ class ExponentSharedPreferences constructor(val context: Context) {
 
   fun updateManifest(manifestUrl: String, manifest: RawManifest, bundleUrl: String) {
     try {
-      val parentObject = JSONObject()
-      parentObject.put(KernelConstants.MANIFEST_KEY, manifest)
-      parentObject.put(KernelConstants.BUNDLE_URL_KEY, bundleUrl)
-      parentObject.put(SAFE_MANIFEST_KEY, manifest.getRawJson())
+      val parentObject = JSONObject().apply {
+        put(KernelConstants.MANIFEST_KEY, manifest)
+        put(KernelConstants.BUNDLE_URL_KEY, bundleUrl)
+        put(SAFE_MANIFEST_KEY, manifest.getRawJson())
+      }
       sharedPreferences.edit().putString(manifestUrl, parentObject.toString()).apply()
     } catch (e: JSONException) {
       EXL.e(TAG, e)
