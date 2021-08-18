@@ -1,9 +1,9 @@
 'use strict';
 
 import { Asset } from 'expo-asset';
-import * as FS from 'expo-file-system';
 import Constants from 'expo-constants';
-import { Platform } from '@unimodules/core';
+import * as FS from 'expo-file-system';
+import { Platform } from 'expo-modules-core';
 
 export const name = 'FileSystem';
 
@@ -53,7 +53,7 @@ export async function test({ describe, expect, it, ...t }) {
         const localUri = FS.documentDirectory + 'download1.png';
 
         const assertExists = async expectedToExist => {
-          let { exists } = await FS.getInfoAsync(localUri);
+          const { exists } = await FS.getInfoAsync(localUri);
           if (expectedToExist) {
             expect(exists).toBeTruthy();
           } else {
@@ -420,7 +420,7 @@ export async function test({ describe, expect, it, ...t }) {
       const localUri = FS.documentDirectory + 'download1.png';
 
       const assertExists = async expectedToExist => {
-        let { exists } = await FS.getInfoAsync(localUri);
+        const { exists } = await FS.getInfoAsync(localUri);
         if (expectedToExist) {
           expect(exists).toBeTruthy();
         } else {
@@ -449,7 +449,7 @@ export async function test({ describe, expect, it, ...t }) {
       const localUri = FS.documentDirectory + 'download1.png';
 
       const assertExists = async expectedToExist => {
-        let { exists } = await FS.getInfoAsync(localUri);
+        const { exists } = await FS.getInfoAsync(localUri);
         if (expectedToExist) {
           expect(exists).toBeTruthy();
         } else {
