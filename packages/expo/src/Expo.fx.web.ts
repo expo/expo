@@ -15,7 +15,6 @@ if (__DEV__) {
   ) {
     Object.defineProperty(global, '__fbBatchedBridgeConfig', {
       get() {
-        // Provide a more
         throw new Error(
           "Your web project is importing a module from 'react-native' instead of 'react-native-web'. Learn more: https://expo.fyi/fb-batched-bridge-config-web"
         );
