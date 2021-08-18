@@ -38,7 +38,7 @@ export default async function checkPackageAsync(
       }
       if (process.env.CI) {
         // Limit to one worker on CIs
-        args.push('--maxWorkers', '4');
+        args.push('--maxWorkers', '2');
       }
       await runPackageScriptAsync(pkg, 'test', args);
     }
