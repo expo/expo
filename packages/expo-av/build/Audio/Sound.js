@@ -1,4 +1,4 @@
-import { EventEmitter, Platform } from '@unimodules/core';
+import { EventEmitter, Platform } from 'expo-modules-core';
 import { PlaybackMixin, assertStatusValuesInBounds, getNativeSourceAndFullInitialStatusForLoadAsync, getUnloadedStatus, } from '../AV';
 import ExponentAV from '../ExponentAV';
 import { throwIfAudioIsDisabled } from './AudioAvailability';
