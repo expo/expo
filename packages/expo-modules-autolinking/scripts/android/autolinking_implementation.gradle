@@ -234,7 +234,11 @@ if (rootProject instanceof ProjectDescriptor) {
   }
 
   // Adding dependencies
-  ext.addExpoModulesDependencies = { DependencyHandler handler ->
+  ext.addExpoModulesDependencies = { DependencyHandler handler, Project project ->
+    if (project.path == ":expo-modules-core" || project.path.startsWith("host.exp.exponent:expo-modules-core")) {
+      logger.warn("`addExpoModulesDependencies` was called with the `expo-modules-core` project.")
+      return
+    }
     addDependencies(handler) { module -> rootProject.project(":${module.projectName}") }
   }
 
