@@ -196,7 +196,7 @@ class Kernel : KernelInterface() {
     val bundleUrlToLoad =
       bundleUrl + (if (ExpoViewBuildConfig.DEBUG) "" else "?versionName=" + ExpoViewKernel.instance.versionName)
     if (exponentSharedPreferences.shouldUseInternetKernel() &&
-      exponentSharedPreferences.getBoolean(ExponentSharedPreferences.IS_FIRST_KERNEL_RUN_KEY)
+      exponentSharedPreferences.getBoolean(ExponentSharedPreferences.ExponentSharedPreferencesKey.IS_FIRST_KERNEL_RUN_KEY)
     ) {
       kernelBundleListener().onBundleLoaded(Constants.EMBEDDED_KERNEL_PATH)
 
@@ -211,7 +211,7 @@ class Kernel : KernelInterface() {
             object : BundleListener {
               override fun onBundleLoaded(localBundlePath: String) {
                 exponentSharedPreferences.setBoolean(
-                  ExponentSharedPreferences.IS_FIRST_KERNEL_RUN_KEY,
+                  ExponentSharedPreferences.ExponentSharedPreferencesKey.IS_FIRST_KERNEL_RUN_KEY,
                   false
                 )
                 EXL.d(TAG, "Successfully preloaded kernel bundle")
@@ -227,10 +227,10 @@ class Kernel : KernelInterface() {
       )
     } else {
       var shouldNotUseKernelCache =
-        exponentSharedPreferences.getBoolean(ExponentSharedPreferences.SHOULD_NOT_USE_KERNEL_CACHE)
+        exponentSharedPreferences.getBoolean(ExponentSharedPreferences.ExponentSharedPreferencesKey.SHOULD_NOT_USE_KERNEL_CACHE)
       if (!ExpoViewBuildConfig.DEBUG) {
         val oldKernelRevisionId =
-          exponentSharedPreferences.getString(ExponentSharedPreferences.KERNEL_REVISION_ID, "")
+          exponentSharedPreferences.getString(ExponentSharedPreferences.ExponentSharedPreferencesKey.KERNEL_REVISION_ID, "")
         if (oldKernelRevisionId != kernelRevisionId) {
           shouldNotUseKernelCache = true
         }
@@ -251,7 +251,7 @@ class Kernel : KernelInterface() {
       override fun onBundleLoaded(localBundlePath: String) {
         if (!ExpoViewBuildConfig.DEBUG) {
           exponentSharedPreferences.setString(
-            ExponentSharedPreferences.KERNEL_REVISION_ID,
+            ExponentSharedPreferences.ExponentSharedPreferencesKey.KERNEL_REVISION_ID,
             kernelRevisionId
           )
         }
@@ -297,7 +297,7 @@ class Kernel : KernelInterface() {
 
           // Reset this flag if we crashed
           exponentSharedPreferences.setBoolean(
-            ExponentSharedPreferences.SHOULD_NOT_USE_KERNEL_CACHE,
+            ExponentSharedPreferences.ExponentSharedPreferencesKey.SHOULD_NOT_USE_KERNEL_CACHE,
             false
           )
         }
@@ -354,7 +354,7 @@ class Kernel : KernelInterface() {
   private val kernelLaunchOptions: Bundle
     get() {
       val exponentProps = JSONObject()
-      val referrer = exponentSharedPreferences.getString(ExponentSharedPreferences.REFERRER_KEY)
+      val referrer = exponentSharedPreferences.getString(ExponentSharedPreferences.ExponentSharedPreferencesKey.REFERRER_KEY)
       if (referrer != null) {
         try {
           exponentProps.put("referrer", referrer)

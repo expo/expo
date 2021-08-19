@@ -33,7 +33,7 @@ public abstract class ExponentNotificationIntentService extends IntentService {
   private static boolean sTokenError = false;
 
   abstract public String getToken() throws IOException;
-  abstract public String getSharedPrefsKey();
+  abstract public ExponentSharedPreferences.ExponentSharedPreferencesKey getSharedPrefsKey();
   abstract public String getServerType();
 
   @Inject

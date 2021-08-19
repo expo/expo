@@ -35,8 +35,8 @@ public class FcmRegistrationIntentService extends ExponentNotificationIntentServ
   }
 
   @Override
-  public String getSharedPrefsKey() {
-    return ExponentSharedPreferences.FCM_TOKEN_KEY;
+  public ExponentSharedPreferences.ExponentSharedPreferencesKey getSharedPrefsKey() {
+    return ExponentSharedPreferences.ExponentSharedPreferencesKey.FCM_TOKEN_KEY;
   }
 
   @Override

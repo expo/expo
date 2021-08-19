@@ -425,7 +425,7 @@ abstract class ReactNativeActivity :
       EXL.e(TAG, e)
     }
 
-    val metadata = exponentSharedPreferences.getExperienceMetadata(experienceKey)
+    val metadata = exponentSharedPreferences.getExperienceMetadata(experienceKey!!)
     if (metadata != null) {
       // TODO: fix this. this is the only place that EXPERIENCE_METADATA_UNREAD_REMOTE_NOTIFICATIONS is sent to the experience,
       // we need to send them with the standard notification events so that you can get all the unread notification through an event
@@ -440,7 +440,7 @@ abstract class ReactNativeActivity :
         }
         metadata.remove(ExponentSharedPreferences.EXPERIENCE_METADATA_UNREAD_REMOTE_NOTIFICATIONS)
       }
-      exponentSharedPreferences.updateExperienceMetadata(experienceKey, metadata)
+      exponentSharedPreferences.updateExperienceMetadata(experienceKey!!, metadata)
     }
 
     try {

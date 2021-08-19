@@ -60,7 +60,7 @@ class ExponentNetwork constructor(
 
   // TODO: can remove this after most apps have upgraded to SDK 41 or later
   private fun clearLegacyCache() {
-    if (exponentSharedPreferences.getInteger(ExponentSharedPreferences.OKHTTP_CACHE_VERSION_KEY) == 1) {
+    if (exponentSharedPreferences.getInteger(ExponentSharedPreferences.ExponentSharedPreferencesKey.OKHTTP_CACHE_VERSION_KEY) == 1) {
       return
     }
     try {
@@ -70,7 +70,7 @@ class ExponentNetwork constructor(
       if (directory.exists()) {
         directory.delete()
       }
-      exponentSharedPreferences.setInteger(ExponentSharedPreferences.OKHTTP_CACHE_VERSION_KEY, 1)
+      exponentSharedPreferences.setInteger(ExponentSharedPreferences.ExponentSharedPreferencesKey.OKHTTP_CACHE_VERSION_KEY, 1)
     } catch (e: Exception) {
       Log.e(TAG, "Failed to clear legacy OkHttp cache", e)
     }
