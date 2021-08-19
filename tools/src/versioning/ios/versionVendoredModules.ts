@@ -106,6 +106,9 @@ function baseTransformsFactory(prefix: string): Required<FileTransforms> {
         },
       },
       {
+        // for react-native-reanimated, setup hermes as non-existent versioned header.
+        // it will use jsc as fallback.
+        paths: 'NativeProxy.mm',
         find: /<hermes\/hermes\.h>/g,
         replaceWith: `<${prefix}hermes/${prefix}hermes.h>`,
       },
