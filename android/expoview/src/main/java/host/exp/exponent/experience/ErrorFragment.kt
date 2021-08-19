@@ -78,7 +78,7 @@ class ErrorFragment : Fragment() {
         put(Analytics.DEVELOPER_ERROR_MESSAGE, developerErrorMessage)
         put(Analytics.MANIFEST_URL, manifestUrl)
       }
-      Analytics.logEvent(Analytics.ERROR_SCREEN, eventProperties)
+      Analytics.logEvent(Analytics.AnalyticsEvent.ERROR_SCREEN, eventProperties)
     } catch (e: Exception) {
       EXL.e(TAG, e.message)
     }

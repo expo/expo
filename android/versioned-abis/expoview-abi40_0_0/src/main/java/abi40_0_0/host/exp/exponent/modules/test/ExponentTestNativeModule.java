@@ -47,9 +47,9 @@ public class ExponentTestNativeModule extends ReactContextBaseJavaModule {
   }
 
   public void onEvent(final TestResolvePromiseEvent event) {
-    if (mIdToPromise.containsKey(event.id)) {
-      mIdToPromise.get(event.id).resolve(true);
-      mIdToPromise.remove(event.id);
+    if (mIdToPromise.containsKey(event.getId())) {
+      mIdToPromise.get(event.getId()).resolve(true);
+      mIdToPromise.remove(event.getId());
     }
   }
 

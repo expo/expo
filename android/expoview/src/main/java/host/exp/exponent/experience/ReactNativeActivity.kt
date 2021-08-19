@@ -508,7 +508,7 @@ abstract class ReactNativeActivity :
         put(Analytics.DEVELOPER_ERROR_MESSAGE, errorMessage.developerErrorMessage())
         put(Analytics.MANIFEST_URL, manifestUrl)
       }
-      Analytics.logEvent(Analytics.ERROR_RELOADED, eventProperties)
+      Analytics.logEvent(Analytics.AnalyticsEvent.ERROR_RELOADED, eventProperties)
     } catch (e: Exception) {
       EXL.e(TAG, e.message)
     }

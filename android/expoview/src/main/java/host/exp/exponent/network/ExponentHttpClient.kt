@@ -115,7 +115,7 @@ class ExponentHttpClient(
       override fun onResponse(call: Call, response: Response) {
         if (response.isSuccessful) {
           callback.onCachedResponse(OkHttpV1ExpoResponse(response), false)
-          logEventWithUri(Analytics.HTTP_USED_CACHE_RESPONSE, uri)
+          logEventWithUri(Analytics.AnalyticsEvent.HTTP_USED_CACHE_RESPONSE, uri)
         } else {
           tryHardCodedResponse(uri, call, callback, initialResponse, initialException)
         }
@@ -171,7 +171,7 @@ class ExponentHttpClient(
             )
             .build()
           callback.onCachedResponse(OkHttpV1ExpoResponse(response), true)
-          logEventWithUri(Analytics.HTTP_USED_EMBEDDED_RESPONSE, uri)
+          logEventWithUri(Analytics.AnalyticsEvent.HTTP_USED_EMBEDDED_RESPONSE, uri)
           return
         }
       }
@@ -219,7 +219,7 @@ class ExponentHttpClient(
     }
   }
 
-  private fun logEventWithUri(event: String, uri: String) {
+  private fun logEventWithUri(event: Analytics.AnalyticsEvent, uri: String) {
     try {
       val eventProperties = JSONObject().apply {
         put("URI", uri)

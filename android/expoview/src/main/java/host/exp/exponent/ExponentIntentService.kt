@@ -53,7 +53,7 @@ class ExponentIntentService : IntentService("ExponentIntentService") {
     kernel.reloadVisibleExperience(manifestUrl)
     val intent = Intent(Intent.ACTION_CLOSE_SYSTEM_DIALOGS)
     sendBroadcast(intent)
-    Analytics.logEventWithManifestUrl(Analytics.RELOAD_EXPERIENCE, manifestUrl)
+    Analytics.logEventWithManifestUrl(Analytics.AnalyticsEvent.RELOAD_EXPERIENCE, manifestUrl)
     stopSelf()
   }
 
