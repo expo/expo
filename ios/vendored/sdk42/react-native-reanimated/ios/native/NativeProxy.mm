@@ -8,8 +8,8 @@
 #import <ABI42_0_0React/ABI42_0_0RCTFollyConvert.h>
 #import <ABI42_0_0React/ABI42_0_0RCTUIManager.h>
 
-#if __has_include(<hermes/hermes.h>)
-#import <hermes/hermes.h>
+#if __has_include(<ABI42_0_0hermes/ABI42_0_0hermes.h>)
+#import <ABI42_0_0hermes/ABI42_0_0hermes.h>
 #else
 #import <ABI42_0_0jsi/ABI42_0_0JSCRuntime.h>
 #endif
@@ -111,7 +111,7 @@ std::shared_ptr<NativeReanimatedModule> createReanimatedModule(std::shared_ptr<C
   };
 
 
-#if __has_include(<hermes/hermes.h>)
+#if __has_include(<ABI42_0_0hermes/ABI42_0_0hermes.h>)
   std::unique_ptr<jsi::Runtime> animatedRuntime = ABI42_0_0facebook::hermes::makeHermesRuntime();
 #else
   std::unique_ptr<jsi::Runtime> animatedRuntime = ABI42_0_0facebook::jsc::makeJSCRuntime();

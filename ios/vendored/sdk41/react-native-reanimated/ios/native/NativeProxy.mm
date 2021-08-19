@@ -9,8 +9,8 @@
 #import <ABI41_0_0React/ABI41_0_0RCTFollyConvert.h>
 #import <ABI41_0_0React/ABI41_0_0RCTUIManager.h>
 
-#if __has_include(<hermes/hermes.h>)
-#import <hermes/hermes.h>
+#if __has_include(<ABI41_0_0hermes/ABI41_0_0hermes.h>)
+#import <ABI41_0_0hermes/ABI41_0_0hermes.h>
 #else
 #import <ABI41_0_0jsi/ABI41_0_0JSCRuntime.h>
 #endif
@@ -113,7 +113,7 @@ std::shared_ptr<NativeReanimatedModule> createReanimatedModule(std::shared_ptr<C
 
   std::shared_ptr<Scheduler> scheduler(new ABI41_0_0REAIOSScheduler(jsInvoker));
 
-#if __has_include(<hermes/hermes.h>)
+#if __has_include(<ABI41_0_0hermes/ABI41_0_0hermes.h>)
   std::unique_ptr<jsi::Runtime> animatedRuntime = ABI41_0_0facebook::hermes::makeHermesRuntime();
 #else
   std::unique_ptr<jsi::Runtime> animatedRuntime = ABI41_0_0facebook::jsc::makeJSCRuntime();

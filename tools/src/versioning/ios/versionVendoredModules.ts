@@ -106,6 +106,10 @@ function baseTransformsFactory(prefix: string): Required<FileTransforms> {
         },
       },
       {
+        find: /<hermes\/hermes\.h>/g,
+        replaceWith: `<${prefix}hermes/${prefix}hermes.h>`,
+      },
+      {
         // Objective-C only, see the comment in the rule below.
         paths: '*.{h,m,mm}',
         find: /r(eactTag|eactSubviews|eactSuperview|eactViewController|eactSetFrame|eactAddControllerToClosestParent|eactZIndex)/gi,
