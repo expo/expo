@@ -118,7 +118,6 @@ jobs:
         working-directory: apps/bare-expo/ios
       - name: 🥥 Install pods in apps/bare-expo/ios
         run: pod install
-        if: steps.pods-cache.outputs.cache-hit != 'true' || hashFiles('apps/bare-expo/ios/Podfile.lock') != hashFiles('apps/bare-expo/ios/Pods/Manifest.lock')
         working-directory: apps/bare-expo/ios
       - name: Clean Detox
         run: yarn detox:clean
