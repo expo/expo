@@ -9,6 +9,7 @@ NSString * const kRootViewController = @"rootViewController";
 @interface EXSplashScreenService ()
 
 @property (nonatomic, strong) NSMapTable<UIViewController *, EXSplashScreenViewController *> *splashScreenControllers;
+@property (nonatomic, assign) BOOL isObservingRootViewController;
 
 @end
 
@@ -20,6 +21,7 @@ EX_REGISTER_SINGLETON_MODULE(SplashScreen);
 {
   if (self = [super init]) {
     _splashScreenControllers = [NSMapTable weakToStrongObjectsMapTable];
+    _isObservingRootViewController = NO;
   }
   return self;
 }
@@ -88,9 +90,9 @@ EX_REGISTER_SINGLETON_MODULE(SplashScreen);
   if (![self.splashScreenControllers objectForKey:viewController]) {
     return failureCallback(@"No native splash screen registered for given view controller. Call 'SplashScreen.show' for given view controller first.");
   }
-  [UIApplication.sharedApplication.keyWindow removeObserver:self forKeyPath:kRootViewController context:nil];
-  EXSplashScreenViewController *splashScreenViewController = [self.splashScreenControllers objectForKey:viewController];
+  [self removeRootViewControllerListener];
 
+  EXSplashScreenViewController *splashScreenViewController = [self.splashScreenControllers objectForKey:viewController];
   EX_WEAKIFY(self);
   return [splashScreenViewController
       hideWithCallback:^(BOOL hasEffect) {
@@ -141,11 +143,29 @@ EX_REGISTER_SINGLETON_MODULE(SplashScreen);
     [self showSplashScreenFor:rootViewController];
   }
 
-  [UIApplication.sharedApplication.keyWindow addObserver:self forKeyPath:kRootViewController options:NSKeyValueObservingOptionNew context:nil];
+  [self addRootViewControllerListener];
   return YES;
 }
 
 # pragma mark - RootViewController KVO
+
+- (void)addRootViewControllerListener
+{
+  NSAssert([NSThread isMainThread], @"Method must be called on main thread");
+  if (!_isObservingRootViewController) {
+    [UIApplication.sharedApplication.keyWindow addObserver:self forKeyPath:kRootViewController options:NSKeyValueObservingOptionNew context:nil];
+    _isObservingRootViewController = YES;
+  }
+}
+
+- (void)removeRootViewControllerListener
+{
+  NSAssert([NSThread isMainThread], @"Method must be called on main thread");
+  if (_isObservingRootViewController) {
+    [UIApplication.sharedApplication.keyWindow removeObserver:self forKeyPath:kRootViewController context:nil];
+    _isObservingRootViewController = NO;
+  }
+}
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSKeyValueChangeKey,id> *)change context:(void *)context
 {
