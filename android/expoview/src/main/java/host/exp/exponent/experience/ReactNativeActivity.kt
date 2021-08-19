@@ -354,19 +354,15 @@ abstract class ReactNativeActivity :
       KernelConstants.IS_HEADLESS_KEY to false
     )
 
-    val instanceManagerBuilderProperties = InstanceManagerBuilderProperties().apply {
-      this.application = this@ReactNativeActivity.application
-      this.jsBundlePath = this@ReactNativeActivity.jsBundlePath
-      this.experienceProperties = experienceProperties
-      this.expoPackages = extraExpoPackages
-      this.exponentPackageDelegate = delegate.exponentPackageDelegate
-      this.manifest = this@ReactNativeActivity.manifest
-      this.singletonModules = ExponentPackage.getOrCreateSingletonModules(
-        this@ReactNativeActivity.applicationContext,
-        this@ReactNativeActivity.manifest,
-        extraExpoPackages
-      )
-    }
+    val instanceManagerBuilderProperties = InstanceManagerBuilderProperties(
+      application = application,
+      jsBundlePath = jsBundlePath,
+      experienceProperties = experienceProperties,
+      expoPackages = extraExpoPackages,
+      exponentPackageDelegate = delegate.exponentPackageDelegate,
+      manifest = manifest!!,
+      singletonModules = ExponentPackage.getOrCreateSingletonModules(applicationContext, manifest, extraExpoPackages)
+    )
 
     val versionedUtils = RNObject("host.exp.exponent.VersionedUtils").loadVersion(sdkVersion!!)
     val builder = versionedUtils.callRecursive(
