@@ -238,7 +238,7 @@ const withErrorHandling: ConfigPlugin = config => {
         !index.includes(DEV_LAUNCHER_JS_REGISTER_ERROR_HANDLERS) &&
         !index.includes(DEV_LAUNCHER_JS_REGISTER_ERROR_HANDLERS_VIA_LAUNCHER)
       ) {
-        index = DEV_LAUNCHER_JS_REGISTER_ERROR_HANDLERS + '\n\n' + index;
+        index = DEV_LAUNCHER_JS_REGISTER_ERROR_HANDLERS + ';\n\n' + index;
       }
       return index;
     });
