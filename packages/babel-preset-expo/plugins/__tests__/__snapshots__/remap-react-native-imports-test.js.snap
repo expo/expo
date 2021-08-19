@@ -1,0 +1,102 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Rewrite react-native to internal imports export from "react-native": export from "react-native" 1`] = `
+
+export { View, findNodeHandle } from 'react-native';
+export { StyleSheet, Text } from 'react-native';
+
+      ↓ ↓ ↓ ↓ ↓ ↓
+
+export { default as View } from 'react-native/Libraries/Components/View/View';
+export { findNodeHandle } from 'react-native/Libraries/Renderer/shims/ReactNative';
+export { default as StyleSheet } from 'react-native/Libraries/StyleSheet/StyleSheet';
+export { default as Text } from 'react-native/Libraries/Text/Text';
+
+
+`;
+
+exports[`Rewrite react-native to internal imports import from "native-native": import from "native-native" 1`] = `
+
+import ReactNative from 'react-native';
+import { View, Pressable, findNodeHandle } from 'react-native';
+import { Invalid, View as MyView } from 'react-native';
+import * as ReactNativeModules from 'react-native';
+
+      ↓ ↓ ↓ ↓ ↓ ↓
+
+import ReactNative from 'react-native/index';
+import View from 'react-native/Libraries/Components/View/View';
+import Pressable from 'react-native/Libraries/Components/Pressable/Pressable';
+import { findNodeHandle } from 'react-native/Libraries/Renderer/shims/ReactNative';
+import { Invalid } from 'react-native/index';
+import MyView from 'react-native/Libraries/Components/View/View';
+import * as ReactNativeModules from 'react-native/index';
+
+
+`;
+
+exports[`Rewrite react-native to internal imports import from "native-native": import from "native-native" 2`] = `
+
+import ReactNative from 'react-native';
+import { View, Pressable, findNodeHandle } from 'react-native';
+import { Invalid, View as MyView } from 'react-native';
+import * as ReactNativeModules from 'react-native';
+
+      ↓ ↓ ↓ ↓ ↓ ↓
+
+import ReactNative from 'react-native/index';
+import View from 'react-native/Libraries/Components/View/View';
+import Pressable from 'react-native/Libraries/Components/Pressable/Pressable';
+import { findNodeHandle } from 'react-native/Libraries/Renderer/shims/ReactNative';
+import { Invalid } from 'react-native/index';
+import MyView from 'react-native/Libraries/Components/View/View';
+import * as ReactNativeModules from 'react-native/index';
+
+
+`;
+
+exports[`Rewrite react-native to internal imports require "react-native": require "react-native" 1`] = `
+
+const ReactNative = require('react-native');
+const { View, Pressable, findNodeHandle } = require('react-native');
+const { StyleSheet, TouchableOpacity } = require('react-native');
+
+      ↓ ↓ ↓ ↓ ↓ ↓
+
+const ReactNative = require('react-native/index');
+
+const View = require('react-native/Libraries/Components/View/View');
+
+const Pressable = require('react-native/Libraries/Components/Pressable/Pressable').default;
+
+const findNodeHandle = require('react-native/Libraries/Renderer/shims/ReactNative').findNodeHandle;
+
+const StyleSheet = require('react-native/Libraries/StyleSheet/StyleSheet');
+
+const TouchableOpacity = require('react-native/Libraries/Components/Touchable/TouchableOpacity');
+
+
+`;
+
+exports[`Rewrite react-native to internal imports require "react-native": require "react-native" 2`] = `
+
+const ReactNative = require('react-native');
+const { View, Pressable, findNodeHandle } = require('react-native');
+const { StyleSheet, TouchableOpacity } = require('react-native');
+
+      ↓ ↓ ↓ ↓ ↓ ↓
+
+const ReactNative = require('react-native/index');
+
+const View = require('react-native/Libraries/Components/View/View');
+
+const Pressable = require('react-native/Libraries/Components/Pressable/Pressable').default;
+
+const findNodeHandle = require('react-native/Libraries/Renderer/shims/ReactNative').findNodeHandle;
+
+const StyleSheet = require('react-native/Libraries/StyleSheet/StyleSheet');
+
+const TouchableOpacity = require('react-native/Libraries/Components/Touchable/TouchableOpacity');
+
+
+`;

@@ -100,3 +100,29 @@ Enabling this option will allow your project to run with older JavaScript syntax
     }
 ],
 ```
+
+### `native.useRemap`
+
+> This setting provides native parity with `react-native-web`, which also remaps imports to their exact locations.
+
+Enabling this option will remap all React Native imports to internal imports. This plugin lets you skip over the main entry file of `react-native` and effectively bundle less code, faster.
+The drawback is that you won't see any deprecations warnings provided by the `react-native` re-export file.
+
+Importing everything (`import * as RN from 'react-native'`), or anything invalid module (`import { foobar } from 'react-native'`) will effectively break the plugin and cause everything in React Native to be bundled (default behavior without this plugin).
+
+The only legitimate reason to do this, is to access the flow type `HostComponent` which is only implemented in the `react-native` entry file, and cannot be remapped.
+
+Importing any of the already deprecated packages will also cause everything to be bundled, but they'll throw a useful error message so you can remove the import, this includes:
+
+ART, ListView, SwipeableListView, WebView, NetInfo, CameraRoll, ImageStore, ImageEditor, TimePickerAndroid, ToolbarAndroid, ViewPagerAndroid.
+
+**default:** `false`
+
+```js
+[
+    'babel-preset-expo',
+    {
+        native: { useRemap: true }
+    }
+],
+```
