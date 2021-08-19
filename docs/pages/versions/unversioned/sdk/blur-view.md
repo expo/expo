@@ -32,7 +32,7 @@ export default function App() {
   return (
     <View style={styles.container}>
       <Image style={[StyleSheet.absoluteFill, styles.image]} source={{ uri }} />
-      <BlurView intensity={80} style={styles.blurContainer}>
+      <BlurView intensity={90} style={styles.blurContainer}>
         <Text style={styles.text}>{text}</Text>
       </BlurView>
       <BlurView intensity={100} tint="light" style={styles.blurContainer}>
@@ -58,7 +58,6 @@ const styles = StyleSheet.create({
   blurContainer: {
     flex: 1,
     padding: 20,
-    alignItems: 'stretch',
     justifyContent: 'center',
   },
   text: {
