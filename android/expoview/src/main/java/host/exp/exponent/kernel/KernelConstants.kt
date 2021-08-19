@@ -64,7 +64,7 @@ object KernelConstants {
       manifestUri: String,
       uri: String?,
       notification: String?,
-      notificationObject: ExponentNotification
+      notificationObject: ExponentNotification?
     ) {
       this.manifestUri = manifestUri
       this.uri = uri

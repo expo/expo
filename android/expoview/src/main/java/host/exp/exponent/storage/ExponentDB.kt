@@ -74,7 +74,7 @@ object ExponentDB {
   }
 
   interface ExperienceResultListener {
-    fun onSuccess(exponentDBObject: ExponentDBObject?)
+    fun onSuccess(exponentDBObject: ExponentDBObject)
     fun onFailure()
   }
 }
