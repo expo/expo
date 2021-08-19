@@ -216,7 +216,7 @@ export class MarkdownRenderer implements Renderer {
       default:
         // `marked` provides much more tokens, however we don't need to go so deep.
         // So far we needed only tokens with above types.
-        throw new Error(`Cannot parse token with type: ${token!.type}`);
+        throw new Error(`Cannot parse token: ${token}`);
     }
   }
 
