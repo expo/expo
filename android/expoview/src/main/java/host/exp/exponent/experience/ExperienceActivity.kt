@@ -516,7 +516,7 @@ open class ExperienceActivity : BaseExperienceActivity(), StartReactInstanceDele
       }
 
       reactRootView = RNObject("host.exp.exponent.ReactUnthemedRootView")
-      reactRootView.loadVersion(detachSdkVersion).construct(this@ExperienceActivity)
+      reactRootView.loadVersion(detachSdkVersion!!).construct(this@ExperienceActivity)
       setReactRootView((reactRootView.get() as View))
 
       if (isDebugModeEnabled) {
@@ -572,9 +572,9 @@ open class ExperienceActivity : BaseExperienceActivity(), StartReactInstanceDele
       try {
         val rctDeviceEventEmitter =
           RNObject("com.facebook.react.modules.core.DeviceEventManagerModule\$RCTDeviceEventEmitter")
-        rctDeviceEventEmitter.loadVersion(detachSdkVersion)
-        reactInstanceManager.callRecursive("getCurrentReactContext")
-          .callRecursive("getJSModule", rctDeviceEventEmitter.rnClass())
+        rctDeviceEventEmitter.loadVersion(detachSdkVersion!!)
+        reactInstanceManager.callRecursive("getCurrentReactContext")!!
+          .callRecursive("getJSModule", rctDeviceEventEmitter.rnClass())!!
           .call("emit", "Exponent.notification", event.toWriteableMap(detachSdkVersion, "received"))
       } catch (e: Throwable) {
         EXL.e(TAG, e)
@@ -589,18 +589,18 @@ open class ExperienceActivity : BaseExperienceActivity(), StartReactInstanceDele
         handleUri(uri)
         val rctDeviceEventEmitter =
           RNObject("com.facebook.react.modules.core.DeviceEventManagerModule\$RCTDeviceEventEmitter")
-        rctDeviceEventEmitter.loadVersion(detachSdkVersion)
-        reactInstanceManager.callRecursive("getCurrentReactContext")
-          .callRecursive("getJSModule", rctDeviceEventEmitter.rnClass())
+        rctDeviceEventEmitter.loadVersion(detachSdkVersion!!)
+        reactInstanceManager.callRecursive("getCurrentReactContext")!!
+          .callRecursive("getJSModule", rctDeviceEventEmitter.rnClass())!!
           .call("emit", "Exponent.openUri", uri)
         BranchManager.handleLink(this, uri, detachSdkVersion)
       }
       if ((options.notification != null || options.notificationObject != null) && detachSdkVersion != null) {
         val rctDeviceEventEmitter =
           RNObject("com.facebook.react.modules.core.DeviceEventManagerModule\$RCTDeviceEventEmitter")
-        rctDeviceEventEmitter.loadVersion(detachSdkVersion)
-        reactInstanceManager.callRecursive("getCurrentReactContext")
-          .callRecursive("getJSModule", rctDeviceEventEmitter.rnClass())
+        rctDeviceEventEmitter.loadVersion(detachSdkVersion!!)
+        reactInstanceManager.callRecursive("getCurrentReactContext")!!
+          .callRecursive("getJSModule", rctDeviceEventEmitter.rnClass())!!
           .call(
             "emit",
             "Exponent.notification",

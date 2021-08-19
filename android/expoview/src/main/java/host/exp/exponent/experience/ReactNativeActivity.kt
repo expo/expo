@@ -239,7 +239,7 @@ abstract class ReactNativeActivity :
       sdkVersion = RNObject.UNVERSIONED
     }
     sdkVersion = if (Constants.isStandaloneApp()) RNObject.UNVERSIONED else sdkVersion
-    return RNObject("com.facebook.react.ReactRootView").loadVersion(sdkVersion).rnClass() as Class<out ViewGroup>
+    return RNObject("com.facebook.react.ReactRootView").loadVersion(sdkVersion!!).rnClass() as Class<out ViewGroup>
   }
 
   // endregion
@@ -368,11 +368,11 @@ abstract class ReactNativeActivity :
       )
     }
 
-    val versionedUtils = RNObject("host.exp.exponent.VersionedUtils").loadVersion(sdkVersion)
+    val versionedUtils = RNObject("host.exp.exponent.VersionedUtils").loadVersion(sdkVersion!!)
     val builder = versionedUtils.callRecursive(
       "getReactInstanceManagerBuilder",
       instanceManagerBuilderProperties
-    )
+    )!!
 
     builder.call("setCurrentActivity", this)
 
@@ -454,9 +454,9 @@ abstract class ReactNativeActivity :
     }
 
     Analytics.markEvent(Analytics.TimedEvent.STARTED_LOADING_REACT_NATIVE)
-    val mReactInstanceManager = builder.callRecursive("build")
+    val mReactInstanceManager = builder.callRecursive("build")!!
     val devSettings =
-      mReactInstanceManager.callRecursive("getDevSupportManager").callRecursive("getDevSettings")
+      mReactInstanceManager.callRecursive("getDevSupportManager")!!.callRecursive("getDevSettings")
     if (devSettings != null) {
       devSettings.setField("exponentActivityId", activityId)
       if (devSettings.call("isRemoteJSDebugEnabled") as Boolean) {
@@ -532,8 +532,8 @@ abstract class ReactNativeActivity :
     try {
       val rctDeviceEventEmitter =
         RNObject("com.facebook.react.modules.core.DeviceEventManagerModule\$RCTDeviceEventEmitter")
-      rctDeviceEventEmitter.loadVersion(detachSdkVersion)
-      val existingEmitter = reactInstanceManager.callRecursive("getCurrentReactContext")
+      rctDeviceEventEmitter.loadVersion(detachSdkVersion!!)
+      val existingEmitter = reactInstanceManager.callRecursive("getCurrentReactContext")!!
         .callRecursive("getJSModule", rctDeviceEventEmitter.rnClass())
       if (existingEmitter != null) {
         val events = KernelProvider.instance.consumeExperienceEvents(manifestUrl!!)
@@ -600,7 +600,7 @@ abstract class ReactNativeActivity :
   }
 
   val devSupportManager: RNObject
-    get() = reactInstanceManager.callRecursive("getDevSupportManager")
+    get() = reactInstanceManager.callRecursive("getDevSupportManager")!!
 
   // deprecated in favor of Expo.Linking.makeUrl
   // TODO: remove this
