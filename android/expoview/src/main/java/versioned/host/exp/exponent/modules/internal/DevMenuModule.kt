@@ -29,7 +29,7 @@ class DevMenuModule(reactContext: ReactApplicationContext, val experiencePropert
   internal var devMenuManager: DevMenuManager? = null
 
   init {
-    NativeModuleDepsProvider.getInstance().inject(DevMenuModule::class.java, this)
+    NativeModuleDepsProvider.instance.inject(DevMenuModule::class.java, this)
     reactContext.addLifecycleEventListener(this)
   }
 

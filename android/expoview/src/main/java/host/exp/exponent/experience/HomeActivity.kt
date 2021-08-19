@@ -50,7 +50,7 @@ open class HomeActivity : BaseExperienceActivity() {
   //region Activity Lifecycle
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
-    NativeModuleDepsProvider.getInstance().inject(HomeActivity::class.java, this)
+    NativeModuleDepsProvider.instance.inject(HomeActivity::class.java, this)
 
     sdkVersion = RNObject.UNVERSIONED
     manifest = exponentManifest.getKernelManifest()

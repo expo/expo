@@ -19,7 +19,7 @@ class ScopedPermissionsService(context: Context, val experienceKey: ExperienceKe
 
   override fun onCreate(moduleRegistry: ModuleRegistry) {
     super.onCreate(moduleRegistry)
-    NativeModuleDepsProvider.getInstance().inject(ScopedPermissionsService::class.java, this)
+    NativeModuleDepsProvider.instance.inject(ScopedPermissionsService::class.java, this)
   }
 
   // We override this to inject scoped permissions even if the device doesn't support the runtime permissions.

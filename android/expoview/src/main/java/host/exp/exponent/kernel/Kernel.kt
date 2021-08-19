@@ -1130,7 +1130,7 @@ class Kernel : KernelInterface() {
   }
 
   init {
-    NativeModuleDepsProvider.getInstance().inject(Kernel::class.java, this)
+    NativeModuleDepsProvider.instance.inject(Kernel::class.java, this)
     instance = this
     updateKernelRNOkHttp()
   }

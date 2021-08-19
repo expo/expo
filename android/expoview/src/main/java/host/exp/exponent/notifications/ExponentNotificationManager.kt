@@ -292,6 +292,6 @@ class ExponentNotificationManager(private val context: Context) {
   }
 
   init {
-    NativeModuleDepsProvider.getInstance().inject(ExponentNotificationManager::class.java, this)
+    NativeModuleDepsProvider.instance.inject(ExponentNotificationManager::class.java, this)
   }
 }

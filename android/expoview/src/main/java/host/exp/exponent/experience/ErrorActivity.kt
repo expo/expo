@@ -39,7 +39,7 @@ class ErrorActivity() : FragmentActivity() {
     setContentView(view)
     pager = binding.errorViewPager
 
-    NativeModuleDepsProvider.getInstance().inject(ErrorActivity::class.java, this)
+    NativeModuleDepsProvider.instance.inject(ErrorActivity::class.java, this)
 
     ExperienceActivity.removeNotification(this)
 

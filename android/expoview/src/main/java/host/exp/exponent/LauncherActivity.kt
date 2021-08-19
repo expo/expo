@@ -37,7 +37,7 @@ class LauncherActivity : Activity() {
         }
       }
     }
-    NativeModuleDepsProvider.getInstance().inject(LauncherActivity::class.java, this)
+    NativeModuleDepsProvider.instance.inject(LauncherActivity::class.java, this)
 
     // Kernel's JS needs to be started for the dev menu to work when the app is launched through the deep link.
     kernel.startJSKernel(this)

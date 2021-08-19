@@ -28,7 +28,7 @@ class InstallReferrerReceiver : CampaignTrackingReceiver() {
       )
       return
     }
-    NativeModuleDepsProvider.getInstance().inject(InstallReferrerReceiver::class.java, this)
+    NativeModuleDepsProvider.instance.inject(InstallReferrerReceiver::class.java, this)
 
     val referrer = intent.getStringExtra("referrer")
     EXL.d(TAG, "Referrer: $referrer")

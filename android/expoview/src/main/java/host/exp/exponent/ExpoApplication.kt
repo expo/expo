@@ -57,9 +57,9 @@ abstract class ExpoApplication : MultiDexApplication() {
 
     Exponent.initialize(this, this)
 
-    NativeModuleDepsProvider.getInstance().add(Kernel::class.java, KernelProvider.instance)
-    NativeModuleDepsProvider.getInstance().add(DevMenuManager::class.java, DevMenuManager())
-    NativeModuleDepsProvider.getInstance().inject(ExpoApplication::class.java, this)
+    NativeModuleDepsProvider.instance.add(Kernel::class.java, KernelProvider.instance)
+    NativeModuleDepsProvider.instance.add(DevMenuManager::class.java, DevMenuManager())
+    NativeModuleDepsProvider.instance.inject(ExpoApplication::class.java, this)
 
     BranchManager.initialize(this)
     AudienceNetworkAds.initialize(this)

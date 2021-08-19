@@ -447,6 +447,6 @@ class ExpoUpdatesAppLoader @JvmOverloads constructor(
   }
 
   init {
-    NativeModuleDepsProvider.getInstance().inject(ExpoUpdatesAppLoader::class.java, this)
+    NativeModuleDepsProvider.instance.inject(ExpoUpdatesAppLoader::class.java, this)
   }
 }
