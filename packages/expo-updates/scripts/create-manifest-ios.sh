@@ -5,7 +5,7 @@ set -eo pipefail
 if [[ "$SKIP_BUNDLING" ]]; then
   echo "SKIP_BUNDLING enabled; skipping create-manifest-ios.sh."
   exit 0;
-elif [[ "$CONFIGURATION" == *Debug* ]] && [[ "$PLATFORM_NAME" == *simulator ]]; then
+elif [[ "$CONFIGURATION" == *Debug* ]]; then
   if [[ "$FORCE_BUNDLING" ]]; then
     echo "FORCE_BUNDLING enabled; continuing create-manifest-ios.sh."
   else
