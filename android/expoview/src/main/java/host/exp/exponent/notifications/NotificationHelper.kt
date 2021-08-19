@@ -391,13 +391,13 @@ object NotificationHelper {
                 setAutoCancel(true)
               }
 
-              val data = details["data"] as HashMap<*, *>?
-              if (data!!.containsKey("channelId")) {
-                val channelId = data["channelId"] as String?
+              val data = details["data"] as HashMap<*, *>
+              if (data.containsKey("channelId")) {
+                val channelId = data["channelId"] as String
                 builder.setChannelId(
                   ExponentNotificationManager.getScopedChannelId(
                     experienceKey,
-                    channelId!!
+                    channelId
                   )
                 )
 
@@ -462,30 +462,27 @@ object NotificationHelper {
               }
 
               if (data.containsKey("title")) {
-                val title = data["title"] as String?
+                val title = data["title"] as String
                 builder.setContentTitle(title)
                 builder.setTicker(title)
               }
 
               if (data.containsKey("body")) {
-                builder.setContentText(data["body"] as String?)
-                builder.setStyle(
-                  NotificationCompat.BigTextStyle().bigText(
-                    data["body"] as String?
-                  )
-                )
+                val body = data["body"] as String
+                builder.setContentText(body)
+                builder.setStyle(NotificationCompat.BigTextStyle().bigText(body))
               }
 
               if (data.containsKey("count")) {
-                builder.setNumber((data["count"] as Double?)!!.toInt())
+                builder.setNumber((data["count"] as Double).toInt())
               }
 
               if (data.containsKey("sticky")) {
-                builder.setOngoing((data["sticky"] as Boolean?)!!)
+                builder.setOngoing((data["sticky"] as Boolean))
               }
 
               val intent = if (data.containsKey("link")) {
-                Intent(Intent.ACTION_VIEW, Uri.parse(data["link"] as String?))
+                Intent(Intent.ACTION_VIEW, Uri.parse(data["link"] as String))
               } else {
                 val activityClass = KernelConstants.MAIN_ACTIVITY_CLASS
                 Intent(context, activityClass).apply {
@@ -512,7 +509,7 @@ object NotificationHelper {
                 val manifestUrl = exponentDBObject.manifestUrl
 
                 NotificationActionCenter.setCategory(
-                  data["categoryId"] as String?,
+                  data["categoryId"] as String,
                   builder,
                   context,
                   object : IntentProvider {

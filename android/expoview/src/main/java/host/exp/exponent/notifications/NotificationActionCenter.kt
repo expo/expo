@@ -39,7 +39,7 @@ object NotificationActionCenter {
 
   @Synchronized
   fun setCategory(
-    categoryId: String?,
+    categoryId: String,
     builder: NotificationCompat.Builder,
     context: Context,
     intentProvider: IntentProvider
@@ -80,7 +80,7 @@ object NotificationActionCenter {
       pendingIntent
     )
 
-    if (actionObject.isShouldShowTextInput !== null && actionObject.isShouldShowTextInput!!) {
+    if (actionObject.isShouldShowTextInput) {
       actionBuilder.addRemoteInput(
         RemoteInput.Builder(KEY_TEXT_REPLY)
           .setLabel(actionObject.placeholder)

@@ -23,15 +23,6 @@ class IntervalSchedulerModel : BaseModel(), SchedulerModel {
   @Column var scheduledTime: Long = 0
   @Column var interval: Long = 0
 
-  override fun getDetailsMap(): HashMap<String, Any>? {
-    return try {
-      HashMapSerializer.deserialize(serializedDetails)
-    } catch (e: JSONException) {
-      e.printStackTrace()
-      null
-    }
-  }
-
   override fun canBeRescheduled(): Boolean {
     return isRepeat || DateTime.now().toDate().time < scheduledTime
   }
@@ -75,6 +66,15 @@ class IntervalSchedulerModel : BaseModel(), SchedulerModel {
 
   override fun shouldBeTriggeredByAction(action: String?): Boolean {
     return triggeringActions.contains(action)
+  }
+
+  override fun getDetailsMap(): HashMap<String, Any>? {
+    return try {
+      HashMapSerializer.deserialize(serializedDetails)
+    } catch (e: JSONException) {
+      e.printStackTrace()
+      null
+    }
   }
 
   override fun setDetailsFromMap(detailsMap: HashMap<String, Any>) {

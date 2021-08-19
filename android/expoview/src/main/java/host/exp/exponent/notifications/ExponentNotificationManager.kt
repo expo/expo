@@ -233,7 +233,7 @@ class ExponentNotificationManager(private val context: Context) {
     if (interval != null) {
       alarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, time, interval, pendingIntent)
     } else {
-      alarmManager[AlarmManager.ELAPSED_REALTIME_WAKEUP, time] = pendingIntent
+      alarmManager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, time, pendingIntent)
     }
     try {
       val metadata = exponentSharedPreferences.getExperienceMetadata(experienceKey) ?: JSONObject()

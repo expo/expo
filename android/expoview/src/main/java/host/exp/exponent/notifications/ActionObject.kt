@@ -14,7 +14,7 @@ class ActionObject : BaseModel {
   @Column var isAuthenticationRequired: Boolean? = null
   @Column var submitButtonTitle: String? = null
   @Column var placeholder: String? = null
-  @Column var isShouldShowTextInput: Boolean? = null
+  @Column var isShouldShowTextInput: Boolean = false
   @Column var position: Int
 
   constructor() {
@@ -28,7 +28,7 @@ class ActionObject : BaseModel {
     isDestructive = map["isDestructive"] as Boolean?
     isAuthenticationRequired = map["isAuthenticationRequired"] as Boolean?
     isShouldShowTextInput = map["textInput"] != null
-    if (isShouldShowTextInput!! && map["textInput"] is Map<*, *>) {
+    if (isShouldShowTextInput && map["textInput"] is Map<*, *>) {
       val subMap = map["textInput"] as Map<String, Any>?
       placeholder = subMap!!["placeholder"] as String?
       submitButtonTitle = subMap["submitButtonTitle"] as String?

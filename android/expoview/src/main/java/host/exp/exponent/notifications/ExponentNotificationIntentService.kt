@@ -67,7 +67,7 @@ abstract class ExponentNotificationIntentService(name: String?) : IntentService(
       }
 
       val sharedPreferencesToken = exponentSharedPreferences.getString(getSharedPrefsKey())
-      if (sharedPreferencesToken != null && sharedPreferencesToken == token) {
+      if (sharedPreferencesToken == token) {
         // Server already has this token, don't need to send it again.
         AsyncCondition.notify(DEVICE_PUSH_TOKEN_KEY)
         return

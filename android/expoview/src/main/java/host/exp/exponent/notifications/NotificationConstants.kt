@@ -4,7 +4,7 @@ package host.exp.exponent.notifications
 object NotificationConstants {
   const val MAX_COLLAPSED_NOTIFICATIONS = 5
 
-  const val NOTIFICATION_MESSAGE_KEY = "message" // deprecated
+  @Deprecated(message = "") const val NOTIFICATION_MESSAGE_KEY = "message"
   const val NOTIFICATION_EXPERIENCE_ID_KEY = "experienceId"
   const val NOTIFICATION_EXPERIENCE_SCOPE_KEY_KEY = "scopeKey"
   const val NOTIFICATION_DATA_KEY = "data"

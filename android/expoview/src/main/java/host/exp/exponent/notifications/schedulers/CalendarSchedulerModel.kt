@@ -25,15 +25,6 @@ class CalendarSchedulerModel : BaseModel(), SchedulerModel {
   @Column var serializedDetails: String? = null
   @Column var calendarData: String? = null
 
-  override fun getDetailsMap(): HashMap<String, Any>? {
-    return try {
-      HashMapSerializer.deserialize(serializedDetails)
-    } catch (e: JSONException) {
-      e.printStackTrace()
-      null
-    }
-  }
-
   override val idAsString: String
     get() = Integer.valueOf(id).toString() + this.javaClass.simpleName
   override val ownerExperienceKey: ExperienceKey
@@ -72,6 +63,15 @@ class CalendarSchedulerModel : BaseModel(), SchedulerModel {
 
   override fun shouldBeTriggeredByAction(action: String?): Boolean {
     return triggeringActions.contains(action)
+  }
+
+  override fun getDetailsMap(): HashMap<String, Any>? {
+    return try {
+      HashMapSerializer.deserialize(serializedDetails)
+    } catch (e: JSONException) {
+      e.printStackTrace()
+      null
+    }
   }
 
   override fun setDetailsFromMap(detailsMap: HashMap<String, Any>) {

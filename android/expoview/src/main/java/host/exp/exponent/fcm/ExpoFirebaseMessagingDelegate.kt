@@ -13,7 +13,6 @@ import host.exp.exponent.notifications.NotificationConstants
 import host.exp.exponent.notifications.PushNotificationHelper
 import host.exp.exponent.notifications.model.ScopedNotificationRequest
 import host.exp.exponent.storage.ExponentDB
-import host.exp.exponent.storage.ExponentDBObject
 import org.json.JSONException
 
 class ExpoFirebaseMessagingDelegate(context: Context) : FirebaseMessagingDelegate(context) {
@@ -36,7 +35,7 @@ class ExpoFirebaseMessagingDelegate(context: Context) : FirebaseMessagingDelegat
       return
     }
 
-    val exponentDBObject: ExponentDBObject? = try {
+    val exponentDBObject = try {
       ExponentDB.experienceScopeKeyToExperienceSync(scopeKey)
     } catch (e: JSONException) {
       e.printStackTrace()
