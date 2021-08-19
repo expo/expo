@@ -7,6 +7,7 @@ interface ImageStyle extends RNImageStyle {
 export interface ImageProps extends AccessibilityProps {
     source?: ImageSourcePropType | null;
     style?: StyleProp<ImageStyle>;
+    defaultSource?: ImageSourcePropType | null;
     resizeMode?: ImageResizeMode;
     onLoadStart?: () => void;
     onProgress?: (event: NativeSyntheticEvent<ImageLoadProgressEventData>) => void;

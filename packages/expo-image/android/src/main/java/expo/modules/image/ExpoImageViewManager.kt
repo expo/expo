@@ -110,6 +110,11 @@ class ExpoImageViewManager(applicationContext: ReactApplicationContext) : Simple
     view.setTintColor(color)
   }
 
+  @ReactProp(name = "defaultSource")
+  fun setDefaultSource(view: ExpoImageView, defaultSourceMap: ReadableMap?) {
+    view.defaultSourceMap = defaultSourceMap
+  }
+
   // View lifecycle
   public override fun createViewInstance(context: ThemedReactContext): ExpoImageView {
     return ExpoImageView(context, mRequestManager, mProgressInterceptor)

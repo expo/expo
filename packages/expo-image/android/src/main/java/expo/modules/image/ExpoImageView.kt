@@ -5,6 +5,7 @@ import android.graphics.BitmapFactory
 import android.graphics.Canvas
 import android.graphics.PorterDuff
 import android.graphics.drawable.Drawable
+import android.net.Uri
 import androidx.appcompat.widget.AppCompatImageView
 import com.bumptech.glide.RequestManager
 import com.bumptech.glide.integration.webp.decoder.WebpDrawable
@@ -50,6 +51,7 @@ class ExpoImageView(context: ReactContext, private val requestManager: RequestMa
   }
   private var loadedSource: GlideUrl? = null
   internal var sourceMap: ReadableMap? = null
+  internal var defaultSourceMap: ReadableMap? = null
 
   init {
     clipToOutline = true
@@ -108,6 +110,9 @@ class ExpoImageView(context: ReactContext, private val requestManager: RequestMa
 
   internal fun onAfterUpdateTransaction() {
     val sourceToLoad = createUrlFromSourceMap(sourceMap)
+    val defaultSourceToLoad = createUrlFromSourceMap(defaultSourceMap)
+    val placeholderPath: String? = Uri.parse(defaultSourceToLoad?.toStringUrl()).path
+    val placeholder: Drawable? = Drawable.createFromPath(placeholderPath)
     if (sourceToLoad == null) {
       requestManager.clear(this)
       setImageDrawable(null)
@@ -120,6 +125,7 @@ class ExpoImageView(context: ReactContext, private val requestManager: RequestMa
       eventsManager.onLoadStarted()
       requestManager
         .load(sourceToLoad)
+        .placeholder(placeholder)
         .apply(options)
         .addListener(eventsManager)
         .run {

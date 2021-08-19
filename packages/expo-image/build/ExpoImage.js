@@ -1,8 +1,9 @@
 import React from 'react';
 import { Image, requireNativeComponent, StyleSheet, Platform, processColor } from 'react-native';
 const NativeExpoImage = requireNativeComponent('ExpoImage');
-export default function ExpoImage({ source, style, ...props }) {
+export default function ExpoImage({ source, style, defaultSource, ...props }) {
     const resolvedSource = Image.resolveAssetSource(source ?? {});
+    const resolvedDefaultSource = Image.resolveAssetSource(defaultSource ?? {});
     const resolvedStyle = StyleSheet.flatten([style]);
     // When possible, pass through the intrinsic size of the asset to the Yoga layout
     // system. While this is also possible in native code, doing it here is more efficient
@@ -46,6 +47,6 @@ export default function ExpoImage({ source, style, ...props }) {
             console.warn(`"expo-image" Shadows may not be rendered correctly for the transparent parts of images. Set "backgroundColor" to a non-transparent color when using a shadow.`);
         }
     }
-    return React.createElement(NativeExpoImage, { ...props, source: resolvedSource, style: resolvedStyle });
+    return (React.createElement(NativeExpoImage, { ...props, source: resolvedSource, style: resolvedStyle, defaultSource: resolvedDefaultSource }));
 }
 //# sourceMappingURL=ExpoImage.js.map

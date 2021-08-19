@@ -7,8 +7,9 @@ type NativeExpoImageProps = ImageProps;
 
 const NativeExpoImage = requireNativeComponent<NativeExpoImageProps>('ExpoImage');
 
-export default function ExpoImage({ source, style, ...props }: ImageProps) {
+export default function ExpoImage({ source, style, defaultSource, ...props }: ImageProps) {
   const resolvedSource = Image.resolveAssetSource(source ?? {});
+  const resolvedDefaultSource = Image.resolveAssetSource(defaultSource ?? {});
   const resolvedStyle = StyleSheet.flatten([style]);
 
   // When possible, pass through the intrinsic size of the asset to the Yoga layout
@@ -57,5 +58,12 @@ export default function ExpoImage({ source, style, ...props }: ImageProps) {
     }
   }
 
-  return <NativeExpoImage {...props} source={resolvedSource} style={resolvedStyle} />;
+  return (
+    <NativeExpoImage
+      {...props}
+      source={resolvedSource}
+      style={resolvedStyle}
+      defaultSource={resolvedDefaultSource}
+    />
+  );
 }
