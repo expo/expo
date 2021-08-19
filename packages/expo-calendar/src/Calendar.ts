@@ -47,6 +47,7 @@ export type Event = {
   calendarId: string;
   title: string;
   location: string;
+  externalId?: string; // iOS
   creationDate?: string | Date; // iOS
   lastModifiedDate?: string | Date; // iOS
   timeZone: string;
@@ -249,6 +250,18 @@ export async function deleteCalendarAsync(id: string): Promise<void> {
     );
   }
   return ExpoCalendar.deleteCalendarAsync(id);
+}
+
+export async function getEventsByExternalIdAsync(externalId: string): Promise<Event[]> {
+  if (!ExpoCalendar.getEventsByExternalIdAsync) {
+    throw new UnavailabilityError('Calendar', 'getEventsByExternalIdAsync');
+  }
+  if (!externalId) {
+    throw new Error(
+      'getEventsByExternalIdAsync must be called with an externalId to search for events'
+    );
+  }
+  return ExpoCalendar.getEventsByExternalIdAsync(externalId);
 }
 
 export async function getEventsAsync(

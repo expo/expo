@@ -139,6 +139,18 @@ class CalendarModule(
   }
 
   @ExpoMethod
+  fun getEventsByExternalIdAsync(externalId: String, promise: Promise) = withPermissions(promise) {
+    launchAsyncWithModuleScope(promise) {
+      val results = findEventsByExternalIdentifier(externalId)
+      if (results != null) {
+        promise.resolve(results)
+      } else {
+        promise.reject("E_EVENT_NOT_FOUND", "Event with external id $externalId could not be found")
+      }
+    }
+  }
+
+  @ExpoMethod
   fun saveEventAsync(details: ReadableArguments, options: ReadableArguments?, promise: Promise) = withPermissions(promise) {
     launchAsyncWithModuleScope(promise) {
       try {
@@ -293,6 +305,22 @@ class CalendarModule(
         null
       }
     }
+  }
+
+  private fun findEventsByExternalIdentifier(externalId: String): List<Bundle> {
+    val uriBuilder = CalendarContract.Instances.CONTENT_URI.buildUpon()
+    val uri = uriBuilder.build()
+    var selection = "(${CalendarContract.Instances.UID_2445} = ${externalId})"
+    val cursor = contentResolver.query(
+      uri,
+      findEventsQueryParameters,
+      selection,
+      null,
+      null
+    )
+
+    requireNotNull(cursor) { "Cursor shouldn't be null" }
+    return cursor.use(::serializeEvents)
   }
 
   private fun findCalendarById(calendarID: String): Bundle? {
@@ -490,6 +518,7 @@ class CalendarModule(
       .putEventString(CalendarContract.Events.DESCRIPTION, "notes")
       .putEventString(CalendarContract.Events.EVENT_LOCATION, "location")
       .putEventString(CalendarContract.Events.ORGANIZER, "organizerEmail")
+      .putEventString(CalendarContract.Events.UID_2445, "externalId")
       .putEventBoolean(CalendarContract.Events.ALL_DAY, "allDay")
       .putEventBoolean(CalendarContract.Events.GUESTS_CAN_MODIFY, "guestsCanModify")
       .putEventBoolean(CalendarContract.Events.GUESTS_CAN_INVITE_OTHERS, "guestsCanInviteOthers")
@@ -730,6 +759,7 @@ class CalendarModule(
       putBoolean("guestsCanInviteOthers", optIntFromCursor(cursor, CalendarContract.Events.GUESTS_CAN_INVITE_OTHERS) != 0)
       putBoolean("guestsCanSeeGuests", optIntFromCursor(cursor, CalendarContract.Events.GUESTS_CAN_SEE_GUESTS) != 0)
       putString("originalId", optStringFromCursor(cursor, CalendarContract.Events.ORIGINAL_ID))
+      putString("externalId", optStringFromCursor(cursor, CalendarContract.Events.UID_2445))
     }
 
     // unfortunately the string values of CalendarContract.Events._ID and CalendarContract.Instances._ID are equal

@@ -2,6 +2,8 @@
 
 ## Unpublished
 
+Added externalId for Calendar Events. It maps to [calendarItemExternalIdentifier](https://developer.apple.com/documentation/eventkit/ekcalendaritem/1507283-calendaritemexternalidentifier) on iOS and [UID_2445](https://developer.android.com/reference/android/provider/CalendarContract.EventsColumns#UID_2445) on Android.
+
 ### 🛠 Breaking changes
 
 ### 🎉 New features

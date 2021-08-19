@@ -162,6 +162,10 @@
   if (item.calendarItemIdentifier) {
     serializedItem[@"id"] = item.calendarItemIdentifier;
   }
+    
+  if (item.calendarItemExternalIdentifier) {
+    serializedItem[@"externalId"] = item.calendarItemExternalIdentifier;
+  }
 
   if (item.calendar) {
     serializedItem[@"calendarId"] = item.calendar.calendarIdentifier;

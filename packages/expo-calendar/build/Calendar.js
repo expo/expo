@@ -95,6 +95,15 @@ export async function deleteCalendarAsync(id) {
     }
     return ExpoCalendar.deleteCalendarAsync(id);
 }
+export async function getEventsByExternalIdAsync(externalId) {
+    if (!ExpoCalendar.getEventsByExternalIdAsync) {
+        throw new UnavailabilityError('Calendar', 'getEventsByExternalIdAsync');
+    }
+    if (!externalId) {
+        throw new Error('getEventsByExternalIdAsync must be called with an externalId to search for events');
+    }
+    return ExpoCalendar.getEventsByExternalIdAsync(externalId);
+}
 export async function getEventsAsync(calendarIds, startDate, endDate) {
     if (!ExpoCalendar.getEventsAsync) {
         throw new UnavailabilityError('Calendar', 'getEventsAsync');

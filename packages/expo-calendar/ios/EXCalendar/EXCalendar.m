@@ -249,6 +249,26 @@ EX_EXPORT_METHOD_AS(getEventsAsync,
   }
 }
 
+EX_EXPORT_METHOD_AS(getEventsByExternalIdAsync,
+                    getEventsByExternalIdAsync:(NSString *)externalIdentifier
+                    resolver:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
+{
+  if (![self _checkCalendarPermissions:reject]) {
+    return;
+  }
+
+  NSArray *calendarEvents = [[self.eventStore calendarItemsWithExternalIdentifier:externalIdentifier] sortedArrayUsingSelector:@selector(compareStartDateWithEvent:)];
+
+  if (calendarEvents) {
+    resolve([EXCalendarConverter serializeCalendarEvents:calendarEvents]);
+  } else if (calendarEvents == nil) {
+    resolve(@[]);
+  } else {
+    reject(@"E_EVENTS_NOT_FOUND", @"Events could not be found", nil);
+  }
+}
+
 EX_EXPORT_METHOD_AS(getEventByIdAsync,
                     getEventByIdAsync:(NSString *)eventId
                     startDate:(NSString *)startDateStr
@@ -577,6 +597,7 @@ EX_EXPORT_METHOD_AS(saveReminderAsync,
   NSString *title = details[@"title"];
   NSString *location = details[@"location"];
   NSString *notes = details[@"notes"];
+  NSString *calendarItemExternalIdentifier = details[@"calendarItemExternalIdentifier"];
   NSString *timeZone = details[@"timeZone"];
   NSArray *alarms = details[@"alarms"];
   NSDictionary *recurrenceRule = details[@"recurrenceRule"];

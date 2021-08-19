@@ -387,6 +387,17 @@ export async function test(t) {
         testEventShape(event);
       });
 
+      t.it('returns with given externalId', async () => {
+        const event = await Calendar.getEventAsync(eventId);
+
+        const [eventByExternalId] = await Calendar.getEventsByExternalIdAsync(event.externalId);
+
+        t.expect(eventByExternalId).toBeDefined();
+        t.expect(eventByExternalId.id).toBe(eventId);
+        t.expect(eventByExternalId.externalId).toBe(event.externalId);
+        testEventShape(event);
+      });
+
       t.afterAll(async () => {
         await Calendar.deleteCalendarAsync(calendarId);
       });

@@ -34,6 +34,7 @@ export declare type Event = {
     calendarId: string;
     title: string;
     location: string;
+    externalId?: string;
     creationDate?: string | Date;
     lastModifiedDate?: string | Date;
     timeZone: string;
@@ -151,6 +152,7 @@ export declare function getCalendarsAsync(entityType?: string): Promise<Calendar
 export declare function createCalendarAsync(details?: OptionalKeys<Calendar>): Promise<string>;
 export declare function updateCalendarAsync(id: string, details?: OptionalKeys<Calendar>): Promise<string>;
 export declare function deleteCalendarAsync(id: string): Promise<void>;
+export declare function getEventsByExternalIdAsync(externalId: string): Promise<Event[]>;
 export declare function getEventsAsync(calendarIds: string[], startDate: Date, endDate: Date): Promise<Event[]>;
 export declare function getEventAsync(id: string, { futureEvents, instanceStartDate }?: RecurringEventOptions): Promise<Event>;
 export declare function createEventAsync(calendarId: string, { id, ...details }?: OptionalKeys<Event>): Promise<string>;

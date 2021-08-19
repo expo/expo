@@ -11,15 +11,25 @@ import MonoText from '../components/MonoText';
 const EventRow: React.FunctionComponent<{
   event: Calendar.Event;
   getEvent: (event: Calendar.Event) => void;
+  getEventByExternalId: (event: Calendar.Event) => void;
   getAttendees: (event: Calendar.Event) => void;
   updateEvent: (event: Calendar.Event) => void;
   deleteEvent: (event: Calendar.Event) => void;
   openEventInCalendar: (event: Calendar.Event) => void;
-}> = ({ event, getEvent, getAttendees, updateEvent, deleteEvent, openEventInCalendar }) => (
+}> = ({
+  event,
+  getEvent,
+  getAttendees,
+  updateEvent,
+  deleteEvent,
+  openEventInCalendar,
+  getEventByExternalId,
+}) => (
   <View style={styles.eventRow}>
     <HeadingText>{event.title}</HeadingText>
     <MonoText>{JSON.stringify(event, null, 2)}</MonoText>
     <ListButton onPress={() => getEvent(event)} title="Get Event Using ID" />
+    <ListButton onPress={() => getEventByExternalId(event)} title="Get Event Using External ID" />
     <ListButton onPress={() => getAttendees(event)} title="Get Attendees for Event" />
     <ListButton onPress={() => updateEvent(event)} title="Update Event" />
     <ListButton onPress={() => deleteEvent(event)} title="Delete Event" />
@@ -109,6 +119,15 @@ export default class EventsScreen extends React.Component<Props, State> {
     }
   };
 
+  _getEventByExternalId = async (event: Calendar.Event) => {
+    try {
+      const newEvent = await Calendar.getEventsByExternalIdAsync(event.externalId!);
+      Alert.alert('Event found using getEventAsync', JSON.stringify(newEvent));
+    } catch (e) {
+      Alert.alert('Error finding event', e.message);
+    }
+  };
+
   _getEvent = async (event: Calendar.Event) => {
     try {
       const newEvent = await Calendar.getEventAsync(event.id!, {
@@ -193,6 +212,7 @@ export default class EventsScreen extends React.Component<Props, State> {
             event={event}
             key={`${event.id}${event.startDate}`}
             getEvent={this._getEvent}
+            getEventByExternalId={this._getEventByExternalId}
             getAttendees={this._getAttendees}
             updateEvent={this._updateEvent}
             deleteEvent={this._deleteEvent}
