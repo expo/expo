@@ -35,7 +35,8 @@ const DEV_LAUNCHER_UPDATES_ANDROID_INIT = `if (BuildConfig.DEBUG) {
 const DEV_LAUNCHER_UPDATES_DEVELOPER_SUPPORT =
   'return DevLauncherController.getInstance().getUseDeveloperSupport();';
 
-const DEV_LAUNCHER_JS_REGISTER_ERROR_HANDLERS = `import 'expo-dev-client';`;
+const DEV_LAUNCHER_JS_REGISTER_ERROR_HANDLERS = `import 'expo-dev-client'`;
+const DEV_LAUNCHER_JS_REGISTER_ERROR_HANDLERS_VIA_LAUNCHER = `import 'expo-dev-launcher'`;
 
 async function readFileAsync(path: string): Promise<string> {
   return fs.promises.readFile(path, 'utf8');
@@ -233,8 +234,11 @@ const withDevLauncherPodfile: ConfigPlugin = config => {
 const withErrorHandling: ConfigPlugin = config => {
   const injectErrorHandlers = async (config: ExportedConfigWithProps) => {
     await editIndex(config, index => {
-      if (!index.includes(DEV_LAUNCHER_JS_REGISTER_ERROR_HANDLERS)) {
-        index = DEV_LAUNCHER_JS_REGISTER_ERROR_HANDLERS + '\n\n' + index;
+      if (
+        !index.includes(DEV_LAUNCHER_JS_REGISTER_ERROR_HANDLERS) &&
+        !index.includes(DEV_LAUNCHER_JS_REGISTER_ERROR_HANDLERS_VIA_LAUNCHER)
+      ) {
+        index = DEV_LAUNCHER_JS_REGISTER_ERROR_HANDLERS + ';\n\n' + index;
       }
       return index;
     });
