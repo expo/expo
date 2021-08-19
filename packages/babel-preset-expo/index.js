@@ -102,6 +102,7 @@ module.exports = function(api, options = {}) {
       [require.resolve('@babel/plugin-proposal-decorators'), { legacy: true }],
       platform === 'web' && [require.resolve('babel-plugin-react-native-web')],
       isWebpack && platform !== 'web' && [require.resolve('./plugins/disable-ambiguous-requires')],
+      platform !== 'web' && [require.resolve('./plugins/remap-react-native-imports')],
     ].filter(Boolean),
   };
 };
