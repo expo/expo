@@ -234,7 +234,14 @@ if (rootProject instanceof ProjectDescriptor) {
   }
 
   // Adding dependencies
-  ext.addExpoModulesDependencies = { DependencyHandler handler ->
+  ext.addExpoModulesDependencies = { DependencyHandler handler, Project project ->
+    // `addExpoModulesDependencies` can't be called in `expo-modules-core`, because it would lead to the circular dependency.
+    // For some reason Gradle sometimes tries to call this function in `expo-modules-core` - maybe because `expo-modules-core` adds `expo-modules-linker`
+    // and Gradle tries to parse linker project with the wrong context. So for now, we're just ignoring that and waiting for the correct invocation. 
+    if (project.path == ":expo-modules-core" || project.path.startsWith("host.exp.exponent:expo-modules-core")) {
+      logger.warn("`addExpoModulesDependencies` was called with the `expo-modules-core` project.")
+      return
+    }
     addDependencies(handler) { module -> rootProject.project(":${module.projectName}") }
   }
 
