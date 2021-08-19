@@ -20,6 +20,8 @@
 
 ### 💡 Others
 
+- Skip running build scripts during iOS debug builds and add support for `SKIP_BUNDLING`/`FORCE_BUNDLING` environment variables.
+
 ### ⚠️ Notices
 
 - Modularized expo-constants without further app setup. ([#13424](https://github.com/expo/expo/pull/13424) by [@kudo](https://github.com/kudo))
