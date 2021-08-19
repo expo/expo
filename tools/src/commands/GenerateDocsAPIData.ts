@@ -104,6 +104,7 @@ async function action({packageName, version = 'unversioned'}: ActionOptions) {
     'expo-font': ['index.ts'],
     'expo-haptics': ['Haptics.ts'],
     'expo-image-manipulator': ['ImageManipulator.ts'],
+    'expo-intent-launcher': ['IntentLauncher.ts'],
     'expo-keep-awake': ['index.ts'],
     'expo-linear-gradient': ['LinearGradient.tsx'],
     'expo-local-authentication': ['LocalAuthentication.ts'],
