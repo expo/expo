@@ -33,6 +33,7 @@ import com.facebook.react.uimanager.events.EventDispatcher;
 import java.util.Map;
 
 import javax.annotation.Nullable;
+import host.exp.expoview.R;
 
 /**
  * {@link ViewManager} for the {@link ReactPicker} view. This is abstract because the

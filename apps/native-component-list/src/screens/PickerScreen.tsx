@@ -1,4 +1,4 @@
-import { Picker } from '@react-native-picker/picker';
+import { Picker, PickerProps } from '@react-native-picker/picker';
 import { Platform } from 'expo-modules-core';
 import * as React from 'react';
 import { Text, Button } from 'react-native';
@@ -72,9 +72,7 @@ PickerScreen.navigationOptions = {
   title: 'Picker',
 };
 
-function GenericPicker(
-  props: Partial<React.ComponentProps<typeof Picker>> & { children?: React.ReactNode }
-) {
+function GenericPicker(props: React.PropsWithChildren<PickerProps>) {
   const [value, setValue] = React.useState<any>('java');
 
   return (
