@@ -32,6 +32,10 @@ export type AVPlaybackNativeSource = {
   headers?: { [fieldName: string]: string };
 };
 
+export type AVPlaybackMetadata = {
+  title?: string;
+};
+
 export type AVPlaybackStatus =
   | {
       isLoaded: false;

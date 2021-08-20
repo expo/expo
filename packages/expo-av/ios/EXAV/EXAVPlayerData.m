@@ -28,6 +28,7 @@ NSString *const EXAVPlayerDataObserverRateKeyPath = @"rate";
 NSString *const EXAVPlayerDataObserverCurrentItemKeyPath = @"currentItem";
 NSString *const EXAVPlayerDataObserverTimeControlStatusPath = @"timeControlStatus";
 NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBufferEmpty";
+NSString *const EXAVPlayerDataObserverMetadataKeyPath = @"timedMetadata";
 
 @interface EXAVPlayerData ()
 
@@ -133,6 +134,7 @@ NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBuf
     if (self.player) {
       [self _addObserver:self.player forKeyPath:EXAVPlayerDataObserverStatusKeyPath];
       [self _addObserver:self.player.currentItem forKeyPath:EXAVPlayerDataObserverStatusKeyPath];
+      [self _addObserver:self.player.currentItem forKeyPath:EXAVPlayerDataObserverMetadataKeyPath];
     } else {
       NSString *errorMessage = @"Load encountered an error: [AVPlayer playerWithPlayerItem:] returned nil.";
       if (self.loadFinishBlock) {
@@ -574,6 +576,7 @@ NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBuf
   }
   
   [self _tryRemoveObserver:playerItem forKeyPath:EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath];
+  [self _tryRemoveObserver:playerItem forKeyPath:EXAVPlayerDataObserverMetadataKeyPath];
 }
 
 - (void)_addObserversForPlayerItem:(AVPlayerItem *)playerItem
@@ -617,6 +620,7 @@ NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBuf
                                              usingBlock:playbackStalledObserverBlock];
   [self _addObserver:playerItem forKeyPath:EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath];
   [self _addObserver:playerItem forKeyPath:EXAVPlayerDataObserverStatusKeyPath];
+  [self _addObserver:playerItem forKeyPath:EXAVPlayerDataObserverMetadataKeyPath];
 }
 
 - (void)_updateTimeObserver
@@ -798,6 +802,17 @@ NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBuf
           [strongSelf _callStatusUpdateCallback];
         } else if ([keyPath isEqualToString:EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath]) {
           [strongSelf _callStatusUpdateCallback];
+        } else if ([keyPath isEqualToString:EXAVPlayerDataObserverMetadataKeyPath] && strongSelf.metadataUpdateCallback) {
+            NSArray<AVMetadataItem *> *timedMetadata = strongSelf.player.currentItem.timedMetadata;
+            NSMutableDictionary *metadata = [@{} mutableCopy];
+            for (AVMetadataItem *item in timedMetadata) {
+                if ([item.commonKey isEqual:AVMetadataCommonKeyTitle]) {
+                    NSString *title = item.stringValue;
+                    [metadata setObject:title forKey:@"title"];
+                    break;
+                }
+            }
+            strongSelf.metadataUpdateCallback(metadata);
         }
       }
     }

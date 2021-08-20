@@ -51,6 +51,7 @@ interface Props {
   shouldCorrectPitch: boolean;
   isPlaying: boolean;
   isMuted: boolean;
+  metadata: { title?: string };
 
   // Error
   errorMessage?: string;
@@ -174,6 +175,8 @@ export default function Player(props: Props) {
         </Text>
         {_renderReplayButton()}
       </View>
+
+      <Text>{props.metadata.title || ''}</Text>
 
       <View style={styles.container}>
         <VolumeSlider

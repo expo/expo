@@ -22,6 +22,9 @@ interface Props {
   source: PlaybackSource;
 }
 
+// TODO: Grab the type from expo-av.
+type PlaybackMetadata = { title?: string };
+
 interface State {
   isLoaded: boolean;
   isLooping: boolean;
@@ -33,6 +36,7 @@ interface State {
   volume: number;
   isMuted: boolean;
   shouldCorrectPitch: boolean;
+  metadata: PlaybackMetadata;
 }
 
 export default class AudioPlayer extends React.Component<Props, State> {
@@ -46,6 +50,7 @@ export default class AudioPlayer extends React.Component<Props, State> {
     rate: 1,
     volume: 1,
     shouldCorrectPitch: false,
+    metadata: {},
   };
 
   _sound?: Audio.Sound;
@@ -72,6 +77,7 @@ export default class AudioPlayer extends React.Component<Props, State> {
     try {
       await soundObject.loadAsync(source, { progressUpdateIntervalMillis: 150 });
       soundObject.setOnPlaybackStatusUpdate(this._updateStateToStatus);
+      soundObject.setOnMetadataUpdate(this._updateMetadata);
       const status = await soundObject.getStatusAsync();
       this._updateStateToStatus(status);
       this._sound = soundObject;
@@ -84,6 +90,10 @@ export default class AudioPlayer extends React.Component<Props, State> {
     console.log('onPlaybackStatusUpdate: ', diff(this.prevStatus || {}, status));
     this.prevStatus = status;
     this.setState(status);
+  };
+
+  _updateMetadata = (metadata: PlaybackMetadata) => {
+    this.setState({ metadata });
   };
 
   _playAsync = async () => this._sound!.playAsync();

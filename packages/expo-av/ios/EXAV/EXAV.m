@@ -31,6 +31,8 @@ NSString *const EXAudioRecordingOptionLinearPCMIsFloatKey = @"linearPCMIsFloat";
 
 NSString *const EXDidUpdatePlaybackStatusEventName = @"didUpdatePlaybackStatus";
 
+NSString *const EXDidUpdateMetadataEventName = @"didUpdateMetadata";
+
 @interface EXAV ()
 
 @property (nonatomic, weak) id kernelAudioSessionManagerDelegate;
@@ -578,7 +580,7 @@ withEXVideoViewForTag:(nonnull NSNumber *)reactTag
 
 - (NSArray<NSString *> *)supportedEvents
 {
-  return @[EXDidUpdatePlaybackStatusEventName, @"ExponentAV.onError"];
+  return @[EXDidUpdatePlaybackStatusEventName, EXDidUpdateMetadataEventName, @"ExponentAV.onError"];
 }
 
 #pragma mark - Audio API: Global settings
@@ -650,6 +652,14 @@ EX_EXPORT_METHOD_AS(loadForSound,
     }
   };
   
+    data.metadataUpdateCallback = ^(NSDictionary *metadata) {
+      EX_ENSURE_STRONGIFY(self);
+        if (self.isBeingObserved) {
+          NSDictionary<NSString *, id> *response = @{@"key": key, @"metadata": metadata};
+          [self sendEventWithName:EXDidUpdateMetadataEventName body:response];
+        }
+    };
+    
   _soundDictionary[key] = data;
 }
 
