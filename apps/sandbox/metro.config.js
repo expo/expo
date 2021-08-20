@@ -1,3 +1,4 @@
+const withExpoStories = require('expo-stories/metro-config')
 const { createMetroConfiguration } = require('expo-yarn-workspaces');
 
-module.exports = createMetroConfiguration(__dirname);
+module.exports = withExpoStories(createMetroConfiguration(__dirname));
