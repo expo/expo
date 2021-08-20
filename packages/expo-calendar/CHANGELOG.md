@@ -2,7 +2,7 @@
 
 ## Unpublished
 
-Added externalId for Calendar Events. It maps to [calendarItemExternalIdentifier](https://developer.apple.com/documentation/eventkit/ekcalendaritem/1507283-calendaritemexternalidentifier) on iOS and [UID_2445](https://developer.android.com/reference/android/provider/CalendarContract.EventsColumns#UID_2445) on Android. Added getEventsByExternalIdAsync to query on the externalId.
+- Added `externalId` for Calendar Events. It maps to [calendarItemExternalIdentifier](https://developer.apple.com/documentation/eventkit/ekcalendaritem/1507283-calendaritemexternalidentifier) on iOS and [UID_2445](https://developer.android.com/reference/android/provider/CalendarContract.EventsColumns#UID_2445) on Android. Added `getEventsByExternalIdAsync` to query on the `externalId`. ([#14117](https://github.com/expo/expo/pull/14117) by [@robertherber](https://github.com/robertherber))
 
 ### 🛠 Breaking changes
 
