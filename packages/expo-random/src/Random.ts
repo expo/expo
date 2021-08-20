@@ -28,7 +28,7 @@ export function getRandomBytes(byteCount: number): Uint8Array {
   assertByteCount(byteCount, 'getRandomBytes');
   const validByteCount = Math.floor(byteCount);
   if (__DEV__) {
-    if (!(global as any).nativeCallSyncHook || (global as any).__REMOTEDEV__) {
+    if (!global.nativeCallSyncHook || global.__REMOTEDEV__) {
       // remote javascript debugging is enabled
       const array = new Uint8Array(validByteCount);
       for (let i = 0; i < validByteCount; i++) {
