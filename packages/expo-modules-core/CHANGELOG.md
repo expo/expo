@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix `'-[RCTModuleRegistry getAllExportedModules]: unrecognized selector sent` was thrown while adding the event listener.
+
 ### 💡 Others
 
 ## 0.3.0-alpha.0 — 2021-08-17
