@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Support React Native 0.64 while also maintaining backwards compatibility with 0.63 and earlier. ([#14136](https://github.com/expo/expo/pull/14136) by [@brentvatne](https://github.com/brentvatne))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
