@@ -152,7 +152,9 @@ export async function resetAnalyticsData(): Promise<void> {
  *
  * @param properties key/value set of user properties
  */
-export async function setUserProperties(properties: { [key: string]: string | null }): Promise<void> {
+export async function setUserProperties(properties: {
+  [key: string]: string | null;
+}): Promise<void> {
   if (!ExpoFirebaseAnalytics.setUserProperties) {
     throw new UnavailabilityError('expo-firebase-analytics', 'setUserProperties');
   }
