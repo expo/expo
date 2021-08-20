@@ -12,6 +12,7 @@ import com.bumptech.glide.integration.webp.decoder.WebpDrawableTransformation
 import com.bumptech.glide.load.model.GlideUrl
 import com.bumptech.glide.load.resource.bitmap.FitCenter
 import com.bumptech.glide.request.RequestOptions
+import com.bumptech.glide.request.RequestOptions.bitmapTransform
 import com.facebook.react.bridge.ReactContext
 import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.modules.i18nmanager.I18nUtil
@@ -22,6 +23,7 @@ import expo.modules.image.drawing.OutlineProvider
 import expo.modules.image.enums.ImageResizeMode
 import expo.modules.image.events.ImageLoadEventsManager
 import expo.modules.image.okhttp.OkHttpClientProgressInterceptor
+import jp.wasabeef.glide.transformations.BlurTransformation
 
 private const val SOURCE_URI_KEY = "uri"
 private const val SOURCE_WIDTH_KEY = "width"
@@ -50,6 +52,7 @@ class ExpoImageView(context: ReactContext, private val requestManager: RequestMa
   }
   private var loadedSource: GlideUrl? = null
   internal var sourceMap: ReadableMap? = null
+  private var blurRadius: Int? = null
 
   init {
     clipToOutline = true
@@ -60,6 +63,10 @@ class ExpoImageView(context: ReactContext, private val requestManager: RequestMa
   internal fun setResizeMode(resizeMode: ImageResizeMode) {
     scaleType = resizeMode.scaleType
     // TODO: repeat mode handling
+  }
+
+  internal fun setBlurRadius(blurRadius: Int) {
+    this.blurRadius = blurRadius
   }
 
   internal fun setBorderRadius(position: Int, borderRadius: Float) {
@@ -115,6 +122,7 @@ class ExpoImageView(context: ReactContext, private val requestManager: RequestMa
     } else if (sourceToLoad != loadedSource) {
       loadedSource = sourceToLoad
       val options = createOptionsFromSourceMap(sourceMap)
+      val propOptions = createPropOptions()
       val eventsManager = ImageLoadEventsManager(id, eventEmitter)
       progressInterceptor.registerProgressListener(sourceToLoad.toStringUrl(), eventsManager)
       eventsManager.onLoadStarted()
@@ -128,6 +136,7 @@ class ExpoImageView(context: ReactContext, private val requestManager: RequestMa
             .optionalTransform(fitCenter)
             .optionalTransform(WebpDrawable::class.java, WebpDrawableTransformation(fitCenter))
         }
+        .apply(propOptions)
         .into(this)
       requestManager
         .`as`(BitmapFactory.Options::class.java)
@@ -164,6 +173,15 @@ class ExpoImageView(context: ReactContext, private val requestManager: RequestMa
           val width = sourceMap.getInt(SOURCE_WIDTH_KEY)
           val height = sourceMap.getInt(SOURCE_HEIGHT_KEY)
           override((width * scale).toInt(), (height * scale).toInt())
+        }
+      }
+  }
+
+  private fun createPropOptions(): RequestOptions {
+    return RequestOptions()
+      .apply {
+        blurRadius?.let {
+          transform(BlurTransformation(it+1, 4))
         }
       }
   }

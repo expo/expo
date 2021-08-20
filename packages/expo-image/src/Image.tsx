@@ -27,6 +27,7 @@ export interface ImageProps extends AccessibilityProps {
   source?: ImageSourcePropType | null;
   style?: StyleProp<ImageStyle>;
   resizeMode?: ImageResizeMode;
+  blurRadius?: number;
 
   onLoadStart?: () => void;
   onProgress?: (event: NativeSyntheticEvent<ImageLoadProgressEventData>) => void;

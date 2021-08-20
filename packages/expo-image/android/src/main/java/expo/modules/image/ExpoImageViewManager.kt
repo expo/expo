@@ -55,6 +55,11 @@ class ExpoImageViewManager(applicationContext: ReactApplicationContext) : Simple
     view.setResizeMode(resizeMode)
   }
 
+  @ReactProp(name = "blurRadius")
+  fun setBlurRadius(view: ExpoImageView, blurRadius: Int) {
+    view.setBlurRadius(blurRadius)
+  }
+
   @ReactPropGroup(names = [
     ViewProps.BORDER_RADIUS,
     ViewProps.BORDER_TOP_LEFT_RADIUS,
