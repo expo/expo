@@ -1,4 +1,4 @@
-import { PermissionResponse, PermissionStatus, PermissionHookOptions } from 'expo-modules-core';
+import { PermissionExpiration, PermissionHookOptions, PermissionResponse, PermissionStatus } from 'expo-modules-core';
 export declare enum BrightnessMode {
     /**
      * Means that the current brightness mode cannot be determined.
@@ -14,7 +14,7 @@ export declare enum BrightnessMode {
      */
     MANUAL = 2
 }
-export { PermissionResponse, PermissionStatus, PermissionHookOptions };
+export { PermissionExpiration, PermissionHookOptions, PermissionResponse, PermissionStatus };
 /**
  * Returns whether the Brightness API is enabled on the current device. This does not check the app
  * permissions.
