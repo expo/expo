@@ -12,7 +12,10 @@ export async function autolinkingRunAsync(
   args: string[],
   options?: SpawnOptions
 ): Promise<SpawnResult> {
-  const promise = spawnAsync(AUTOLINKINNG_CLI, args, options);
+  const promise = spawnAsync(AUTOLINKINNG_CLI, args, {
+    ...options,
+    env: { ...process.env, EXPO_SHOULD_USE_LEGACY_PACKAGE_INTERFACE: '1' },
+  });
 
   try {
     return await promise;
