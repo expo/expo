@@ -356,8 +356,15 @@ class ImagePickerModule(
       val result = CropImage.getActivityResult(intent)
       val exporter = CropImageExporter(result.rotation, result.cropRect, pickerOptions.isBase64)
       ImageResultTask(
-        promise, result.uri, contentResolver, CropFileProvider(result.uri), pickerOptions.isAllowsEditing,
-        pickerOptions.isExif, exporter, exifDataHandler, moduleCoroutineScope
+        promise,
+        result.uri,
+        contentResolver,
+        CropFileProvider(result.uri),
+        pickerOptions.isAllowsEditing,
+        pickerOptions.isExif,
+        exporter,
+        exifDataHandler,
+        moduleCoroutineScope
       ).execute()
       return
     }
@@ -388,8 +395,15 @@ class ImagePickerModule(
       }
 
       ImageResultTask(
-        promise, uri, contentResolver, CacheFileProvider(mContext.cacheDir, deduceExtension(type)),
-        pickerOptions.isAllowsEditing, pickerOptions.isExif, exporter, exifDataHandler, moduleCoroutineScope
+        promise,
+        uri,
+        contentResolver,
+        CacheFileProvider(mContext.cacheDir, deduceExtension(type)),
+        pickerOptions.isAllowsEditing,
+        pickerOptions.isExif,
+        exporter,
+        exifDataHandler,
+        moduleCoroutineScope
       ).execute()
       return
     }
