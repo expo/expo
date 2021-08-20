@@ -1,5 +1,9 @@
 import { element, expect, waitFor, by, device } from 'detox';
 
+const MenuTimeout = 20000;
+const LauncherMainScreenTimeout = 10000;
+const LocalAppTimeout = 30000;
+
 function getInvocationManager() {
   // @ts-ignore
   return global.detox[Object.getOwnPropertySymbols(global.detox)[0]]._invocationManager;
@@ -41,7 +45,7 @@ describe('DevLauncher', () => {
 
     await waitFor(element(by.id('DevMenuMainScreen')))
       .toBeVisible()
-      .withTimeout(2000);
+      .withTimeout(MenuTimeout);
   });
 
   it('should be able to load app from URL', async () => {
@@ -56,7 +60,7 @@ describe('DevLauncher', () => {
 
     await waitFor(element(by.id('LocalAppMainScreen')))
       .toBeVisible()
-      .withTimeout(10000);
+      .withTimeout(LocalAppTimeout);
   });
 
   it('should be able to come back to the dev launcher screen', async () => {
@@ -71,7 +75,7 @@ describe('DevLauncher', () => {
 
     await waitFor(element(by.id('LocalAppMainScreen')))
       .toBeVisible()
-      .withTimeout(5000);
+      .withTimeout(LocalAppTimeout);
 
     await openMenu();
 
@@ -79,11 +83,11 @@ describe('DevLauncher', () => {
 
     await waitFor(backToLauncher)
       .toBeVisible()
-      .withTimeout(8000);
+      .withTimeout(MenuTimeout);
     await backToLauncher.tap();
 
     await waitFor(element(by.id('DevLauncherMainScreen')))
       .toBeVisible()
-      .withTimeout(500);
+      .withTimeout(LauncherMainScreenTimeout);
   });
 });
