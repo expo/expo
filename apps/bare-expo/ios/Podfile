@@ -11,7 +11,7 @@ require File.join(File.dirname(`node --print "require.resolve('@react-native-com
 require File.join(File.dirname(`node --print "require.resolve('expo-modules-core/package.json')"`), "scripts/autolinking")
 
 require 'json'
-expo_config = JSON.parse(File.read('./expo_config.json')) rescue {}
+podfile_properties = JSON.parse(File.read('./podfile.properties.json')) rescue {}
 
 abstract_target 'BareExpoMain' do
   use_expo_modules!
@@ -23,7 +23,7 @@ abstract_target 'BareExpoMain' do
   use_react_native!(
     :path => config[:reactNativePath],
     # to enable hermes on iOS, change `false` to `true` and then install pods
-    :hermes_enabled => expo_config['jsEngine'] == 'hermes'
+    :hermes_enabled => podfile_properties['jsEngine'] == 'hermes'
   )
 
   pod 'expo-dev-launcher', path: '../../../packages/expo-dev-launcher', :testspecs => ['Tests']
