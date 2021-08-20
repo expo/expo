@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Expo modules are now being automatically registered on iOS which means less installation steps. Using `EXModuleRegistryProvider` and `EXModuleRegistryAdapter` becomes deprecated.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
