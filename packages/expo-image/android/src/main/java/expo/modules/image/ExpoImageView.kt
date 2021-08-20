@@ -12,7 +12,6 @@ import com.bumptech.glide.integration.webp.decoder.WebpDrawableTransformation
 import com.bumptech.glide.load.model.GlideUrl
 import com.bumptech.glide.load.resource.bitmap.FitCenter
 import com.bumptech.glide.request.RequestOptions
-import com.bumptech.glide.request.RequestOptions.bitmapTransform
 import com.facebook.react.bridge.ReactContext
 import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.modules.i18nmanager.I18nUtil
