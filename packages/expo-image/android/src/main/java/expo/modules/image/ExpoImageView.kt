@@ -50,6 +50,7 @@ class ExpoImageView(context: ReactContext, private val requestManager: RequestMa
   }
   private var loadedSource: GlideUrl? = null
   internal var sourceMap: ReadableMap? = null
+  private var fadeDuration: Int? = null
 
   init {
     clipToOutline = true
@@ -60,6 +61,11 @@ class ExpoImageView(context: ReactContext, private val requestManager: RequestMa
   internal fun setResizeMode(resizeMode: ImageResizeMode) {
     scaleType = resizeMode.scaleType
     // TODO: repeat mode handling
+  }
+
+
+  internal fun setFadeDuration(fadeDuration: Int) {
+    this.fadeDuration = fadeDuration
   }
 
   internal fun setBorderRadius(position: Int, borderRadius: Float) {
@@ -116,6 +122,7 @@ class ExpoImageView(context: ReactContext, private val requestManager: RequestMa
       loadedSource = sourceToLoad
       val options = createOptionsFromSourceMap(sourceMap)
       val eventsManager = ImageLoadEventsManager(id, eventEmitter)
+      val propOptions = createPropOptions()
       progressInterceptor.registerProgressListener(sourceToLoad.toStringUrl(), eventsManager)
       eventsManager.onLoadStarted()
       requestManager
@@ -128,6 +135,7 @@ class ExpoImageView(context: ReactContext, private val requestManager: RequestMa
             .optionalTransform(fitCenter)
             .optionalTransform(WebpDrawable::class.java, WebpDrawableTransformation(fitCenter))
         }
+        .apply(propOptions)
         .into(this)
       requestManager
         .`as`(BitmapFactory.Options::class.java)
@@ -164,6 +172,16 @@ class ExpoImageView(context: ReactContext, private val requestManager: RequestMa
           val width = sourceMap.getInt(SOURCE_WIDTH_KEY)
           val height = sourceMap.getInt(SOURCE_HEIGHT_KEY)
           override((width * scale).toInt(), (height * scale).toInt())
+        }
+      }
+  }
+
+  private fun createPropOptions(): RequestOptions {
+    return RequestOptions()
+      .apply {
+        fadeDuration?.let {
+          alpha = 0f
+          animate().alpha(1f).duration = it.toLong();
         }
       }
   }
