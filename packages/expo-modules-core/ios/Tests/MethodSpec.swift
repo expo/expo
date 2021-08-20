@@ -154,7 +154,7 @@ class MethodSpec: QuickSpec {
         // Method expects a string, let's give it a number.
         ModuleHolder(module: module).call(method: methodName, args: [1]) { value, error in
           expect(error).notTo(beNil())
-          expect(error).to(beAKindOf(IncompatibleArgTypeError<Any?, AnyArgumentType>.self))
+          expect(error).to(beAKindOf(IncompatibleArgTypeError<Any?>.self))
           expect(error?.code).to(equal("ERR_INCOMPATIBLE_ARG_TYPE"))
           // TODO: (@tsapeta) The descriptions may not equal yet, due to internal type-erasing. Fix it and uncomment this test.
           // expect(error?.description).to(equal(IncompatibleArgTypeError(argument: 1, atIndex: 0, desiredType: String.self).description))
