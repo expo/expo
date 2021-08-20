@@ -46,9 +46,12 @@
   NSMutableArray<id<RCTBridgeModule>> *extraModules = [NSMutableArray array];
 
   EXNativeModulesProxy *nativeModulesProxy = [[EXNativeModulesProxy alloc] initWithModuleRegistry:moduleRegistry];
-
   [extraModules addObject:nativeModulesProxy];
-  [extraModules addObject:[EXReactNativeEventEmitter new]];
+
+  // Event emitter is not automatically registered — we add it to the module registry here.
+  // It will be added to the bridge later in this method, as it conforms to `RCTBridgeModule`.
+  EXReactNativeEventEmitter *eventEmitter = [EXReactNativeEventEmitter new];
+  [moduleRegistry registerInternalModule:eventEmitter];
 
   NSMutableSet *exportedSwiftViewModuleNames = [NSMutableSet new];
 
@@ -59,7 +62,7 @@
   }
   for (EXViewManager *viewManager in [moduleRegistry getAllViewManagers]) {
     if (![exportedSwiftViewModuleNames containsObject:viewManager.viewName]) {
-      Class viewManagerAdapterClass = [_viewManagersClassesRegistry viewManagerAdapterClassForViewManager:viewManager];
+      Class viewManagerAdapterClass = [EXViewManagerAdapterClassesRegistry createViewManagerAdapterClassForViewManager:viewManager];
       [extraModules addObject:[[viewManagerAdapterClass alloc] init]];
     }
   }

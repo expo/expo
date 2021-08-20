@@ -4,7 +4,6 @@
 #import <ExpoModulesCore/EXEventEmitter.h>
 #import <ExpoModulesCore/EXExportedModule.h>
 #import <ExpoModulesCore/EXModuleRegistry.h>
-#import <ExpoModulesCore/EXBridgeModule.h>
 
 @interface EXReactNativeEventEmitter ()
 
@@ -15,8 +14,6 @@
 @end
 
 @implementation EXReactNativeEventEmitter
-
-@synthesize bridge = _bridge;
 
 - (instancetype)init
 {
@@ -40,11 +37,6 @@
 + (const NSArray<Protocol *> *)exportedInterfaces
 {
   return @[@protocol(EXEventEmitterService)];
-}
-
-- (void)setBridge:(RCTBridge *)bridge
-{
-  _bridge = bridge;
 }
 
 - (NSArray<NSString *> *)supportedEvents
@@ -150,7 +142,11 @@ RCT_EXPORT_METHOD(removeProxiedListeners:(NSString *)moduleName count:(double)co
 
 - (void)setModuleRegistry:(EXModuleRegistry *)moduleRegistry
 {
-  _exModuleRegistry = moduleRegistry;
+  // We need to check if we get an object of the correct class because RN 65 tries to call this method with RTCModuleRegistry.
+  // See https://github.com/facebook/react-native/blob/2c2b83171603b47e5eec61eea55139f760dba090/React/Base/RCTModuleData.mm#L274-L289.
+  if ([moduleRegistry isKindOfClass:[EXModuleRegistry class]]) {
+    _exModuleRegistry = moduleRegistry;
+  }
 }
 
 @end

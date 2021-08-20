@@ -44,7 +44,7 @@ public class ViewModuleWrapper: RCTViewManager, DynamicModuleWrapperProtocol {
    Dummy initializer, for use only in `EXModuleRegistryAdapter.extraModulesForModuleRegistry:`.
    */
   @objc
-  public init(dummy: Any) {
+  public init(dummy: Any?) {
     super.init()
   }
 
