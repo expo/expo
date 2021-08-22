@@ -59,6 +59,10 @@ describe('DevLauncher', () => {
     await expect(loadButton).toBeVisible();
 
     await urlInput.typeText(`http://${getLocalIPAddress()}:8081`);
+    if (device.getPlatform() === 'android') {
+      // close keyboard
+      await device.pressBack();
+    }
     await loadButton.multiTap(2);
 
     await waitFor(element(by.id('LocalAppMainScreen')))
@@ -74,6 +78,10 @@ describe('DevLauncher', () => {
     await expect(loadButton).toBeVisible();
 
     await urlInput.typeText(`http://${getLocalIPAddress()}:8081`);
+    if (device.getPlatform() === 'android') {
+      // close keyboard
+      await device.pressBack();
+    }
     await loadButton.multiTap(2);
 
     await waitFor(element(by.id('LocalAppMainScreen')))
