@@ -1,8 +1,8 @@
 import { element, expect, waitFor, by, device } from 'detox';
 
-const MenuTimeout = 20000;
-const LauncherMainScreenTimeout = 10000;
-const LocalAppTimeout = 30000;
+const MenuTimeout = 50000;
+const LauncherMainScreenTimeout = 30000;
+const LocalAppTimeout = 60000;
 
 function getInvocationManager() {
   // @ts-ignore
