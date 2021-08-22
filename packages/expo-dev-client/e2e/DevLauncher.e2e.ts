@@ -11,7 +11,7 @@ function getInvocationManager() {
 
 function getLocalIPAddress(): string {
   if (device.getPlatform() === 'ios') {
-    return 'http://localhost:8081';
+    return 'localhost';
   }
   return require('os')
     .networkInterfaces()
