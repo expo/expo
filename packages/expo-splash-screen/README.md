@@ -12,7 +12,7 @@
   - [🤖 Configure Android](#-configure-android)
 - [👏 Contributing](#-contributing)
 - [❓ Known issues](#-known-issues)
-- [⬆️ Migrate from old versions](#TODO)
+- [⬆️ Migrate from old versions](#%EF%B8%8F-migrate-from-old-versions)
 - [🏅 Hall of fame](#-hall-of-fame)
 
 ## 🚀 Features
@@ -481,7 +481,7 @@ The easiest way to configure the splash screen in bare React Native projects is 
 3. [Configure `res/drawable/splashscreen.xml`](#-configure-resdrawablesplashscreenxml)
 4. [Configure `res/values/styles.xml`](#-configure-resvaluesstylesxml)
 5. [Configure `AndroidManifest.xml`](#-configure-androidmanifestxml)
-6. [(<em>optional</em>) Customzine `resizeMode`](#TODO)
+6. [(<em>optional</em>) Customzine `resizeMode`](#-optional-customize-resizemode)
 7. [(<em>optional</em>) Enable dark mode](#-optional-enable-dark-mode-1)
 8. [(<em>optional</em>) Customize StatusBar](#-customize-statusbar-1)
 
@@ -492,7 +492,7 @@ This image will be loaded as soon as Android mounts your application's native vi
 
 ##### `NATIVE` mode adjustments
 
-If you've overridden `<string name="expo_splash_screen_resize_mode">native</string>` mode in [`res/values/strings.xml`](#TODO), you need to do a few additional steps.
+If you've overridden `<string name="expo_splash_screen_resize_mode">native</string>` mode in [`res/values/strings.xml`](#-optional-customize-resizemode), you need to do a few additional steps.
 
 In your application's `res` directory you might want to have a number of `drawable-X` sub-directories (where `X` is the different DPI for different devices). They store different versions of images that are picked based on the device's DPI (for more information please see [this official Android docs](https://developer.android.com/training/multiscreen/screendensities#TaskProvideAltBmp)).
 
@@ -531,7 +531,7 @@ Create the file with the following content:
 
 #### `NATIVE` mode adjustments
 
-If you've overridden `<string name="expo_splash_screen_resize_mode">native</string>` mode in [`res/values/strings.xml`](#TODO), you shoulw add:
+If you've overridden `<string name="expo_splash_screen_resize_mode">native</string>` mode in [`res/values/strings.xml`](#-optional-customize-resizemode), you shoulw add:
 
 ```diff
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
