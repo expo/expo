@@ -652,13 +652,13 @@ EX_EXPORT_METHOD_AS(loadForSound,
     }
   };
   
-    data.metadataUpdateCallback = ^(NSDictionary *metadata) {
-      EX_ENSURE_STRONGIFY(self);
-        if (self.isBeingObserved) {
-          NSDictionary<NSString *, id> *response = @{@"key": key, @"metadata": metadata};
-          [self sendEventWithName:EXDidUpdateMetadataEventName body:response];
-        }
-    };
+  data.metadataUpdateCallback = ^(NSDictionary *metadata) {
+    EX_ENSURE_STRONGIFY(self);
+      if (self.isBeingObserved) {
+        NSDictionary<NSString *, id> *response = @{@"key": key, @"metadata": metadata};
+        [self sendEventWithName:EXDidUpdateMetadataEventName body:response];
+      }
+  };
     
   _soundDictionary[key] = data;
 }

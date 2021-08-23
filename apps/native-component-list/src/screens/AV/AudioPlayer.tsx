@@ -1,6 +1,6 @@
 import { diff } from 'deep-object-diff';
 import { Asset } from 'expo-asset';
-import { Audio, AVPlaybackStatus } from 'expo-av';
+import { Audio, AVPlaybackMetadata, AVPlaybackStatus } from 'expo-av';
 import React from 'react';
 import { StyleProp, ViewStyle } from 'react-native';
 
@@ -22,9 +22,6 @@ interface Props {
   source: PlaybackSource;
 }
 
-// TODO: Grab the type from expo-av.
-type PlaybackMetadata = { title?: string };
-
 interface State {
   isLoaded: boolean;
   isLooping: boolean;
@@ -36,7 +33,7 @@ interface State {
   volume: number;
   isMuted: boolean;
   shouldCorrectPitch: boolean;
-  metadata: PlaybackMetadata;
+  metadata: AVPlaybackMetadata;
 }
 
 export default class AudioPlayer extends React.Component<Props, State> {
@@ -92,7 +89,7 @@ export default class AudioPlayer extends React.Component<Props, State> {
     this.setState(status);
   };
 
-  _updateMetadata = (metadata: PlaybackMetadata) => {
+  _updateMetadata = (metadata: AVPlaybackMetadata) => {
     this.setState({ metadata });
   };
 

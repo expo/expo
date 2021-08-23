@@ -1,6 +1,7 @@
 import Ionicons from '@expo/vector-icons/build/Ionicons';
 import Slider from '@react-native-community/slider';
 import SegmentedControl from '@react-native-segmented-control/segmented-control';
+import { AVPlaybackMetadata } from 'expo-av';
 import React from 'react';
 import {
   GestureResponderEvent,
@@ -51,7 +52,7 @@ interface Props {
   shouldCorrectPitch: boolean;
   isPlaying: boolean;
   isMuted: boolean;
-  metadata: { title?: string };
+  metadata: AVPlaybackMetadata;
 
   // Error
   errorMessage?: string;
@@ -176,7 +177,7 @@ export default function Player(props: Props) {
         {_renderReplayButton()}
       </View>
 
-      <Text>{props.metadata.title || ''}</Text>
+      <Text>{props.metadata.title ?? ''}</Text>
 
       <View style={styles.container}>
         <VolumeSlider

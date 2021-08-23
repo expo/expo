@@ -52,8 +52,8 @@ export class Sound {
         }
     };
     _internalMetadataUpdateCallback = ({ key, metadata, }) => {
-        if (this._key === key && this._onMetadataUpdate) {
-            this._onMetadataUpdate(metadata);
+        if (this._key === key) {
+            this._onMetadataUpdate?.(metadata);
         }
     };
     _internalErrorCallback = ({ key, error }) => {

@@ -100,8 +100,8 @@ export class Sound implements Playback {
     key: AudioInstance;
     metadata: AVPlaybackMetadata;
   }) => {
-    if (this._key === key && this._onMetadataUpdate) {
-      this._onMetadataUpdate(metadata);
+    if (this._key === key) {
+      this._onMetadataUpdate?.(metadata);
     }
   };
 

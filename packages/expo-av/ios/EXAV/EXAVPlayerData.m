@@ -803,16 +803,16 @@ NSString *const EXAVPlayerDataObserverMetadataKeyPath = @"timedMetadata";
         } else if ([keyPath isEqualToString:EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath]) {
           [strongSelf _callStatusUpdateCallback];
         } else if ([keyPath isEqualToString:EXAVPlayerDataObserverMetadataKeyPath] && strongSelf.metadataUpdateCallback) {
-            NSArray<AVMetadataItem *> *timedMetadata = strongSelf.player.currentItem.timedMetadata;
-            NSMutableDictionary *metadata = [@{} mutableCopy];
-            for (AVMetadataItem *item in timedMetadata) {
-                if ([item.commonKey isEqual:AVMetadataCommonKeyTitle]) {
-                    NSString *title = item.stringValue;
-                    [metadata setObject:title forKey:@"title"];
-                    break;
-                }
+          NSArray<AVMetadataItem *> *timedMetadata = strongSelf.player.currentItem.timedMetadata;
+          NSMutableDictionary *metadata = [@{} mutableCopy];
+          for (AVMetadataItem *item in timedMetadata) {
+            if ([item.commonKey isEqual:AVMetadataCommonKeyTitle]) {
+              NSString *title = item.stringValue;
+              [metadata setObject:title forKey:@"title"];
+              break;
             }
-            strongSelf.metadataUpdateCallback(metadata);
+          }
+          strongSelf.metadataUpdateCallback(metadata);
         }
       }
     }
