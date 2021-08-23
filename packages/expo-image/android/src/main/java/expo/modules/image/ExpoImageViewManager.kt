@@ -57,7 +57,7 @@ class ExpoImageViewManager(applicationContext: ReactApplicationContext) : Simple
 
   @ReactProp(name = "fadeDuration")
   fun setFadeDuration(view: ExpoImageView, fadeDuration: Int) {
-    view.setFadeDuration(fadeDuration)
+    view.fadeDuration = fadeDuration
   }
 
   @ReactPropGroup(names = [

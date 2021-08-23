@@ -50,7 +50,8 @@ class ExpoImageView(context: ReactContext, private val requestManager: RequestMa
   }
   private var loadedSource: GlideUrl? = null
   internal var sourceMap: ReadableMap? = null
-  private var fadeDuration: Int? = null
+  var fadeDuration: Int? = null
+    private get
 
   init {
     clipToOutline = true
@@ -61,11 +62,6 @@ class ExpoImageView(context: ReactContext, private val requestManager: RequestMa
   internal fun setResizeMode(resizeMode: ImageResizeMode) {
     scaleType = resizeMode.scaleType
     // TODO: repeat mode handling
-  }
-
-
-  internal fun setFadeDuration(fadeDuration: Int) {
-    this.fadeDuration = fadeDuration
   }
 
   internal fun setBorderRadius(position: Int, borderRadius: Float) {
