@@ -30,6 +30,7 @@ export interface ImageProps extends AccessibilityProps {
   /**
    * @Android only
    */
+  blurRadius?: number;
   fadeDuration?: number;
 
   onLoadStart?: () => void;

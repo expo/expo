@@ -22,6 +22,7 @@ import expo.modules.image.drawing.OutlineProvider
 import expo.modules.image.enums.ImageResizeMode
 import expo.modules.image.events.ImageLoadEventsManager
 import expo.modules.image.okhttp.OkHttpClientProgressInterceptor
+import jp.wasabeef.glide.transformations.BlurTransformation
 
 private const val SOURCE_URI_KEY = "uri"
 private const val SOURCE_WIDTH_KEY = "width"
@@ -50,6 +51,7 @@ class ExpoImageView(context: ReactContext, private val requestManager: RequestMa
   }
   private var loadedSource: GlideUrl? = null
   internal var sourceMap: ReadableMap? = null
+  var blurRadius: Int? = null
   var fadeDuration: Int? = null
     private get
 
@@ -117,6 +119,7 @@ class ExpoImageView(context: ReactContext, private val requestManager: RequestMa
     } else if (sourceToLoad != loadedSource) {
       loadedSource = sourceToLoad
       val options = createOptionsFromSourceMap(sourceMap)
+      val propOptions = createPropOptions()
       val eventsManager = ImageLoadEventsManager(id, eventEmitter)
       val propOptions = createPropOptions()
       progressInterceptor.registerProgressListener(sourceToLoad.toStringUrl(), eventsManager)
@@ -175,6 +178,8 @@ class ExpoImageView(context: ReactContext, private val requestManager: RequestMa
   private fun createPropOptions(): RequestOptions {
     return RequestOptions()
       .apply {
+        blurRadius?.let {
+          transform(BlurTransformation(it+1, 4))
         fadeDuration?.let {
           alpha = 0f
           animate().alpha(1f).duration = it.toLong();
