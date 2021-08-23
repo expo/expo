@@ -15,7 +15,7 @@ NS_SWIFT_NAME(ModuleRegistryProvider)
 + (NSSet *)singletonModules;
 + (nullable EXSingletonModule *)getSingletonModuleForClass:(Class)singletonClass;
 
-- (instancetype)init __deprecated_msg("Expo modules are now being automatically registered. You can delete it altogether.");
+- (instancetype)init __deprecated_msg("Expo modules are now being automatically registered. You can remove this method call.");
 - (instancetype)initWithSingletonModules:(NSSet *)modules;
 - (EXModuleRegistry *)moduleRegistry;
 

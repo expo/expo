@@ -1,5 +1,5 @@
 /**
- A protocol that helps in identifying whether the instance of `ViewModuleWrapper` is of dynamically created class.
+ A protocol that helps in identifying whether the instance of `ViewModuleWrapper` is of a dynamically created class.
  */
 @objc
 protocol DynamicModuleWrapperProtocol {
@@ -28,7 +28,7 @@ public class ViewModuleWrapper: RCTViewManager, DynamicModuleWrapperProtocol {
   }
 
   /**
-   The designated initializer that is used by React Native to create modules' instances.
+   The designated initializer that is used by React Native to create module instances.
    Must be called on a dynamic class to get access to underlying wrapped module. Throws fatal exception otherwise.
    */
   @objc

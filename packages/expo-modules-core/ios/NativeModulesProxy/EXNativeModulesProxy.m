@@ -204,8 +204,8 @@ RCT_EXPORT_METHOD(callMethod:(NSString *)moduleName methodNameOrKey:(id)methodNa
   }
 
   // View manager wrappers don't have their own prop configs, so we must register
-  // theirs base view manager that provides common props such as `proxiedProperties`.
-  // Otherwise, React Native may treat these props as not valid in subclassing views.
+  // their base view managers that provides common props such as `proxiedProperties`.
+  // Otherwise, React Native may treat these props as invalid in subclassing views.
   [additionalModuleClasses addObject:[EXViewManagerAdapter class]];
   [additionalModuleClasses addObject:[ViewModuleWrapper class]];
 
