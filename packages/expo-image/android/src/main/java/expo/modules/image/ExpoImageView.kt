@@ -51,7 +51,8 @@ class ExpoImageView(context: ReactContext, private val requestManager: RequestMa
   }
   private var loadedSource: GlideUrl? = null
   internal var sourceMap: ReadableMap? = null
-  private var blurRadius: Int? = null
+  var blurRadius: Int? = null
+    private get
 
   init {
     clipToOutline = true
@@ -62,10 +63,6 @@ class ExpoImageView(context: ReactContext, private val requestManager: RequestMa
   internal fun setResizeMode(resizeMode: ImageResizeMode) {
     scaleType = resizeMode.scaleType
     // TODO: repeat mode handling
-  }
-
-  internal fun setBlurRadius(blurRadius: Int) {
-    this.blurRadius = blurRadius
   }
 
   internal fun setBorderRadius(position: Int, borderRadius: Float) {

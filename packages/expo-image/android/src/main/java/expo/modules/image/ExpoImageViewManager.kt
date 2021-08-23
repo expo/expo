@@ -57,7 +57,7 @@ class ExpoImageViewManager(applicationContext: ReactApplicationContext) : Simple
 
   @ReactProp(name = "blurRadius")
   fun setBlurRadius(view: ExpoImageView, blurRadius: Int) {
-    view.setBlurRadius(blurRadius)
+    view.blurRadius = blurRadius
   }
 
   @ReactPropGroup(names = [
