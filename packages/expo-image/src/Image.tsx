@@ -27,6 +27,10 @@ export interface ImageProps extends AccessibilityProps {
   source?: ImageSourcePropType | null;
   style?: StyleProp<ImageStyle>;
   resizeMode?: ImageResizeMode;
+  /**
+   * @Android only
+   */
+  fadeDuration?: number;
 
   onLoadStart?: () => void;
   onProgress?: (event: NativeSyntheticEvent<ImageLoadProgressEventData>) => void;
