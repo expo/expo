@@ -82,7 +82,7 @@
     "@types/semver": "^7.3.6",
     "@types/sha1": "^1.1.2",
     "jest-expo": "~42.0.0",
-    "react-native-bundle-visualizer": "^2.2.1",
+    "react-native-bundle-visualizer": "^3.0.0",
     "uuid": "^3.3.2"
   }
 }
