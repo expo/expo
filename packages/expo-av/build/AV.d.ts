@@ -18,7 +18,7 @@ export declare type AVPlaybackNativeSource = {
         [fieldName: string]: string;
     };
 };
-export declare type AVPlaybackMetadata = {
+export declare type AVMetadata = {
     title?: string;
 };
 export declare type AVPlaybackStatus = {

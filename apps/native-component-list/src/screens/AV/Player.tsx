@@ -1,7 +1,7 @@
 import Ionicons from '@expo/vector-icons/build/Ionicons';
 import Slider from '@react-native-community/slider';
 import SegmentedControl from '@react-native-segmented-control/segmented-control';
-import { AVPlaybackMetadata } from 'expo-av';
+import { AVMetadata } from 'expo-av';
 import React from 'react';
 import {
   GestureResponderEvent,
@@ -52,7 +52,7 @@ interface Props {
   shouldCorrectPitch: boolean;
   isPlaying: boolean;
   isMuted: boolean;
-  metadata: AVPlaybackMetadata;
+  metadata: AVMetadata;
 
   // Error
   errorMessage?: string;

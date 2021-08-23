@@ -4,7 +4,7 @@ import {
   Playback,
   PlaybackMixin,
   AVPlaybackSource,
-  AVPlaybackMetadata,
+  AVMetadata,
   AVPlaybackStatus,
   AVPlaybackStatusToSet,
   assertStatusValuesInBounds,
@@ -26,7 +26,7 @@ export class Sound implements Playback {
   _eventEmitter: EventEmitter = new EventEmitter(ExponentAV);
   _coalesceStatusUpdatesInMillis: number = 100;
   _onPlaybackStatusUpdate: ((status: AVPlaybackStatus) => void) | null = null;
-  _onMetadataUpdate: ((metadata: AVPlaybackMetadata) => void) | null = null;
+  _onMetadataUpdate: ((metadata: AVMetadata) => void) | null = null;
 
   /** @deprecated Use `Sound.createAsync()` instead */
   static create = async (
@@ -98,7 +98,7 @@ export class Sound implements Playback {
     metadata,
   }: {
     key: AudioInstance;
-    metadata: AVPlaybackMetadata;
+    metadata: AVMetadata;
   }) => {
     if (this._key === key) {
       this._onMetadataUpdate?.(metadata);
@@ -161,7 +161,7 @@ export class Sound implements Playback {
     this.getStatusAsync();
   }
 
-  setOnMetadataUpdate(onMetadataUpdate: (AVPlaybackMetadata) => void) {
+  setOnMetadataUpdate(onMetadataUpdate: (AVMetadata) => void) {
     this._onMetadataUpdate = onMetadataUpdate;
   }
 

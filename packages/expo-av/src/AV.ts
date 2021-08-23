@@ -32,7 +32,7 @@ export type AVPlaybackNativeSource = {
   headers?: { [fieldName: string]: string };
 };
 
-export type AVPlaybackMetadata = {
+export type AVMetadata = {
   title?: string;
 };
 
