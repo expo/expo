@@ -31,7 +31,7 @@ EX_REGISTER_MODULE();
 
 + (NSString *)moduleName
 {
-  return nil;
+  return @"EXReactNativeAdapter";
 }
 
 + (const NSArray<Protocol *> *)exportedInterfaces

@@ -364,7 +364,11 @@ RCT_EXTERN void EXRegisterScopedModule(Class, ...);
   id<EXModuleRegistryDelegate> moduleRegistryDelegate = [[resolverClass alloc] initWithParams:params];
   [moduleRegistryProvider setModuleRegistryDelegate:moduleRegistryDelegate];
 
-  EXScopedModuleRegistryAdapter *moduleRegistryAdapter = [[EXScopedModuleRegistryAdapter alloc] initWithModuleRegistryProvider:moduleRegistryProvider swiftModulesProviderClass:NSClassFromString(@"ExpoModulesProvider")];
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+  EXScopedModuleRegistryAdapter *moduleRegistryAdapter = [[EXScopedModuleRegistryAdapter alloc] initWithModuleRegistryProvider:moduleRegistryProvider];
+#pragma clang diagnostic pop
+
   EXModuleRegistry *moduleRegistry = [moduleRegistryAdapter moduleRegistryForParams:params
                                                         forExperienceStableLegacyId:self.manifest.stableLegacyId
                                                                            scopeKey:self.manifest.scopeKey
