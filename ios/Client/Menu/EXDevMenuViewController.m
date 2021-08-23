@@ -1,7 +1,7 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 #import <React/RCTRootView.h>
-#import <UMCore/UMDefines.h>
+#import <ExpoModulesCore/EXDefines.h>
 
 #import "EXDevMenuViewController.h"
 #import "EXDevMenuManager.h"
@@ -102,7 +102,7 @@
     if (jsonData) {
       manifestString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
     } else {
-      UMLogWarn(@"Failed to serialize JSON manifest: %@", error);
+      EXLogWarn(@"Failed to serialize JSON manifest: %@", error);
     }
   }
   NSDictionary *task = @{

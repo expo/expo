@@ -1,4 +1,4 @@
-import { Subscription } from '@unimodules/core';
+import { Subscription } from 'expo-modules-core';
 import * as Notifications from 'expo-notifications';
 import * as TaskManager from 'expo-task-manager';
 import React from 'react';

@@ -30,10 +30,4 @@ The following example demonstrates how you might use the `"production"` release 
 
 Your native runtime may change on each build, depending on whether you modify the code in a way that changes the API contract with JavaScript. If you publish a JavaScript bundle to a binary with an incompatible native runtime (for example, a function that the JavaScript bundle expects to exist does not exist) then your app may not work as expected or it may crash.
 
-Please refer to the ["Updating your app over-the-air"](/bare/updating-your-app.md) guide to learn more about update compatibility and more.
-
-## Updating managed apps built with EAS Build
-
-> Although we don't recommend using EAS Build for managed apps on SDK 40 or lower, if do this, you need to use the `--target bare` flag when publishing updates: `expo publish --release-channel your-channel --target bare`. If you do not, your app may crash.
-
-We recommend using a different release channel for each binary version of your app. Any time you change the native runtime (add a native library or remove one), you should create a new unique release channel name and only publish compatible updates to that channel.
+We recommend using a different [runtime version](/distribution/runtime-versions.md) for each binary version of your app. Any time you change the native runtime (in managed apps, this happens if when you add or remove a native library, or modify app.json), you should increment the runtime version.

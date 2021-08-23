@@ -48,7 +48,7 @@ class DevMenuManager {
   internal lateinit var exponentSharedPreferences: ExponentSharedPreferences
 
   init {
-    NativeModuleDepsProvider.getInstance().inject(DevMenuManager::class.java, this)
+    NativeModuleDepsProvider.instance.inject(DevMenuManager::class.java, this)
     EventBus.getDefault().register(this)
   }
 
@@ -232,14 +232,14 @@ class DevMenuManager {
    * Onboarding is a screen that shows the dev menu to the user that opens any experience for the first time.
    */
   fun isOnboardingFinished(): Boolean {
-    return exponentSharedPreferences.getBoolean(ExponentSharedPreferences.IS_ONBOARDING_FINISHED_KEY) ?: false
+    return exponentSharedPreferences.getBoolean(ExponentSharedPreferences.ExponentSharedPreferencesKey.IS_ONBOARDING_FINISHED_KEY) ?: false
   }
 
   /**
    * Sets appropriate setting in shared preferences that user's onboarding has finished.
    */
   fun setIsOnboardingFinished(isOnboardingFinished: Boolean = true) {
-    exponentSharedPreferences.setBoolean(ExponentSharedPreferences.IS_ONBOARDING_FINISHED_KEY, isOnboardingFinished)
+    exponentSharedPreferences.setBoolean(ExponentSharedPreferences.ExponentSharedPreferencesKey.IS_ONBOARDING_FINISHED_KEY, isOnboardingFinished)
   }
 
   /**

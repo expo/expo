@@ -16,10 +16,12 @@ import {
   mdInlineRenderers,
   mdRenderers,
   resolveTypeName,
+  renderFlags,
   renderParam,
   CommentTextBlock,
-  STYLES_OPTIONAL,
   parseCommentContent,
+  renderTypeOrSignatureType,
+  getCommentOrSignatureComment,
 } from '~/components/plugins/api/APISectionUtils';
 
 export type APISectionTypesProps = {
@@ -60,24 +62,23 @@ const renderTypePropertyRow = ({
   type,
   comment,
   defaultValue,
+  signatures,
 }: PropData): JSX.Element => {
   const initValue = defaultValue || comment?.tags?.filter(tag => tag.tag === 'default')[0]?.text;
+  const commentData = getCommentOrSignatureComment(comment, signatures);
   return (
     <tr key={name}>
       <td>
         <B>{name}</B>
-        {flags?.isOptional ? (
-          <>
-            <br />
-            <span css={STYLES_OPTIONAL}>(optional)</span>
-          </>
-        ) : null}
+        {renderFlags(flags)}
       </td>
+      <td>{renderTypeOrSignatureType(type, signatures)}</td>
       <td>
-        <InlineCode>{resolveTypeName(type)}</InlineCode>
-      </td>
-      <td>
-        {comment ? <CommentTextBlock comment={comment} renderers={mdInlineRenderers} /> : '-'}
+        {commentData ? (
+          <CommentTextBlock comment={commentData} renderers={mdInlineRenderers} />
+        ) : (
+          '-'
+        )}
         {initValue ? (
           <>
             <br />

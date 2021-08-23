@@ -31,7 +31,7 @@
     "expo-file-system": "~11.1.0",
     "expo-gl": "~10.4.0",
     "expo-google-sign-in": "~9.2.0",
-    "expo-haptics": "~10.1.0",
+    "expo-haptics": "~10.2.0-alpha.0",
     "expo-image-manipulator": "~9.2.0",
     "expo-keep-awake": "~9.2.0",
     "expo-localization": "~10.2.0",

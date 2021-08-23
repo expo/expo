@@ -1,7 +1,7 @@
 // Copyright 2016-present 650 Industries. All rights reserved.
 
 #import <EXLocation/EXForegroundPermissionRequester.h>
-#import <UMCore/UMUtilities.h>
+#import <ExpoModulesCore/EXUtilities.h>
 
 #import <objc/message.h>
 #import <CoreLocation/CLLocationManagerDelegate.h>

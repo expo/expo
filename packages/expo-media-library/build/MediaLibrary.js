@@ -1,8 +1,8 @@
-import { PermissionStatus, EventEmitter, UnavailabilityError, } from 'expo-modules-core';
+import { PermissionStatus, createPermissionHook, EventEmitter, UnavailabilityError, } from 'expo-modules-core';
 import { Platform } from 'react-native';
 import MediaLibrary from './ExponentMediaLibrary';
 const eventEmitter = new EventEmitter(MediaLibrary);
-export { PermissionStatus };
+export { PermissionStatus, };
 function arrayize(item) {
     if (Array.isArray(item)) {
         return item;
@@ -92,6 +92,21 @@ export async function getPermissionsAsync(writeOnly = false) {
     }
     return await MediaLibrary.getPermissionsAsync(writeOnly);
 }
+// @needsAudit
+/**
+ * Check or request permissions to access the media library.
+ * This uses both `requestPermissionsAsync` and `getPermissionsAsync` to interact with the permissions.
+ *
+ * @example
+ * ```ts
+ * const [status, requestPermission] = MediaLibrary.usePermissions();
+ * ```
+ */
+export const usePermissions = createPermissionHook({
+    // TODO(cedric): permission requesters should have an options param or a different requester
+    getMethod: options => getPermissionsAsync(options?.writeOnly),
+    requestMethod: options => requestPermissionsAsync(options?.writeOnly),
+});
 // @needsAudit
 /**
  * __Available only on iOS >= 14.__ Allows the user to update the assets that your app has access to.

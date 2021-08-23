@@ -51,6 +51,7 @@ class ImagePickerModule(
   private var mPromise: Promise? = null
   private var mPickerOptions: ImagePickerOptions? = null
   private val moduleCoroutineScope = CoroutineScope(Dispatchers.IO)
+  private var exifDataHandler: ExifDataHandler? = null
 
   override fun onDestroy() {
     try {
@@ -269,7 +270,7 @@ class ImagePickerModule(
       setOutputCompressFormat(compressFormat)
       setOutputCompressQuality(pickerOptions.quality)
     }
-
+    exifDataHandler = ExifDataHandler(uri)
     startActivityOnResult(cropImageBuilder.getIntent(context), CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE, promise, pickerOptions)
   }
 
@@ -355,7 +356,17 @@ class ImagePickerModule(
     if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
       val result = CropImage.getActivityResult(intent)
       val exporter = CropImageExporter(result.rotation, result.cropRect, pickerOptions.isBase64)
-      ImageResultTask(promise, result.uri, contentResolver, CropFileProvider(result.uri), pickerOptions.isExif, exporter, moduleCoroutineScope).execute()
+      ImageResultTask(
+        promise,
+        result.uri,
+        contentResolver,
+        CropFileProvider(result.uri),
+        pickerOptions.isAllowsEditing,
+        pickerOptions.isExif,
+        exporter,
+        exifDataHandler,
+        moduleCoroutineScope
+      ).execute()
       return
     }
 
@@ -384,7 +395,17 @@ class ImagePickerModule(
         CompressionImageExporter(mImageLoader, pickerOptions.quality, pickerOptions.isBase64)
       }
 
-      ImageResultTask(promise, uri, contentResolver, CacheFileProvider(mContext.cacheDir, deduceExtension(type)), pickerOptions.isExif, exporter, moduleCoroutineScope).execute()
+      ImageResultTask(
+        promise,
+        uri,
+        contentResolver,
+        CacheFileProvider(mContext.cacheDir, deduceExtension(type)),
+        pickerOptions.isAllowsEditing,
+        pickerOptions.isExif,
+        exporter,
+        exifDataHandler,
+        moduleCoroutineScope
+      ).execute()
       return
     }
 

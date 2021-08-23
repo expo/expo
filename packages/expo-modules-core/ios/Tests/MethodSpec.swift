@@ -57,6 +57,73 @@ class MethodSpec: QuickSpec {
       testMethodReturning(value: ["expo", "modules", "core"])
     }
 
+    describe("converting dicts to records") {
+      struct TestRecord: Record {
+        @Field var property: String = "expo"
+        @Field var optionalProperty: Int? = nil
+        @Field("propertyWithCustomKey") var customKeyProperty: String = "expo"
+      }
+      let dict = [
+        "property": "Hello",
+        "propertyWithCustomKey": "Expo!"
+      ]
+
+      it("converts to simple record when passed as an argument") {
+        let module = CustomModule(appContext: appContext) {
+          $0.method(methodName) { (a: TestRecord) in
+            return a.property
+          }
+        }
+
+        waitUntil { done in
+          ModuleHolder(module: module).call(method: methodName, args: [dict]) { value, error in
+            expect(value).notTo(beNil())
+            expect(value).to(beAKindOf(String.self))
+            expect(value).to(be(dict["property"]))
+            done()
+          }
+        }
+      }
+
+      it("converts to record with custom key") {
+        let module = CustomModule(appContext: appContext) {
+          $0.method(methodName) { (a: TestRecord) in
+            return a.customKeyProperty
+          }
+        }
+
+        waitUntil { done in
+          ModuleHolder(module: module).call(method: methodName, args: [dict]) { value, error in
+            expect(value).notTo(beNil())
+            expect(value).to(beAKindOf(String.self))
+            expect(value).to(be(dict["propertyWithCustomKey"]))
+            done()
+          }
+        }
+      }
+
+      it("returns the record back") {
+        let module = CustomModule(appContext: appContext) {
+          $0.method(methodName) { (a: TestRecord) in
+            return a.toDictionary()
+          }
+        }
+
+        waitUntil { done in
+          ModuleHolder(module: module).call(method: methodName, args: [dict]) { value, error in
+            expect(value).notTo(beNil())
+            expect(value).to(beAKindOf(Record.Dict.self))
+
+            let valueAsDict = value as! Record.Dict
+
+            expect(valueAsDict["property"] as? String).to(equal(dict["property"]))
+            expect(valueAsDict["propertyWithCustomKey"] as? String).to(equal(dict["propertyWithCustomKey"]))
+            done()
+          }
+        }
+      }
+    }
+
     it("throws when called with more arguments than expected") {
       waitUntil { done in
         let module = CustomModule(appContext: appContext) {
@@ -87,7 +154,7 @@ class MethodSpec: QuickSpec {
         // Method expects a string, let's give it a number.
         ModuleHolder(module: module).call(method: methodName, args: [1]) { value, error in
           expect(error).notTo(beNil())
-          expect(error).to(beAKindOf(IncompatibleArgTypeError<Any?, AnyArgumentType>.self))
+          expect(error).to(beAKindOf(IncompatibleArgTypeError<Any?>.self))
           expect(error?.code).to(equal("ERR_INCOMPATIBLE_ARG_TYPE"))
           // TODO: (@tsapeta) The descriptions may not equal yet, due to internal type-erasing. Fix it and uncomment this test.
           // expect(error?.description).to(equal(IncompatibleArgTypeError(argument: 1, atIndex: 0, desiredType: String.self).description))

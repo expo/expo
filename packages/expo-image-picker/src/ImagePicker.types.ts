@@ -41,6 +41,18 @@ export enum UIImagePickerControllerQualityType {
   IFrame960x540 = 5,
 }
 
+export enum UIImagePickerPresentationStyle {
+  FullScreen = 0,
+  PageSheet = 1,
+  FormSheet = 2,
+  CurrentContext = 3,
+  OverFullScreen = 5,
+  OverCurrentContext = 6,
+  Popover = 7,
+  BlurOverFullScreen = 8,
+  Automatic = -2,
+}
+
 export type ImageInfo = {
   uri: string;
   width: number;
@@ -76,6 +88,7 @@ export type ImagePickerOptions = {
   videoQuality?: UIImagePickerControllerQualityType;
   allowsMultipleSelection?: boolean;
   videoMaxDuration?: number;
+  presentationStyle?: UIImagePickerPresentationStyle;
 };
 
 export type OpenFileBrowserOptions = {

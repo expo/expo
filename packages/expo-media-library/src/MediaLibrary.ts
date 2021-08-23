@@ -2,6 +2,8 @@ import {
   PermissionResponse as EXPermissionResponse,
   PermissionStatus,
   PermissionExpiration,
+  PermissionHookOptions,
+  createPermissionHook,
   EventEmitter,
   Subscription,
   UnavailabilityError,
@@ -290,7 +292,13 @@ export type AssetRef = Asset | string;
 // @docsMissing
 export type AlbumRef = Album | string;
 
-export { PermissionStatus, PermissionExpiration, EXPermissionResponse, Subscription };
+export {
+  PermissionStatus,
+  PermissionExpiration,
+  EXPermissionResponse,
+  PermissionHookOptions,
+  Subscription,
+};
 
 function arrayize(item: any): any[] {
   if (Array.isArray(item)) {
@@ -395,6 +403,22 @@ export async function getPermissionsAsync(writeOnly: boolean = false): Promise<P
   }
   return await MediaLibrary.getPermissionsAsync(writeOnly);
 }
+
+// @needsAudit
+/**
+ * Check or request permissions to access the media library.
+ * This uses both `requestPermissionsAsync` and `getPermissionsAsync` to interact with the permissions.
+ *
+ * @example
+ * ```ts
+ * const [status, requestPermission] = MediaLibrary.usePermissions();
+ * ```
+ */
+export const usePermissions = createPermissionHook<PermissionResponse, { writeOnly?: boolean }>({
+  // TODO(cedric): permission requesters should have an options param or a different requester
+  getMethod: options => getPermissionsAsync(options?.writeOnly),
+  requestMethod: options => requestPermissionsAsync(options?.writeOnly),
+});
 
 // @needsAudit
 /**

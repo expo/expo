@@ -38,7 +38,7 @@
     "expo-constants": "~11.0.0",
     "expo-device": "~3.3.0",
     "expo-font": "~9.2.0",
-    "expo-linear-gradient": "~9.2.0",
+    "expo-linear-gradient": "~9.3.0-alpha.0",
     "expo-location": "~12.1.0",
     "expo-permissions": "~12.1.0",
     "expo-splash-screen": "~0.11.0",

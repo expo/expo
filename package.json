@@ -26,7 +26,7 @@
   },
   "dependencies": {
     "jsc-android": "^245459.0.0",
-    "react-native-unimodules": "~0.14.0"
+    "react-native-unimodules": "~0.15.0-alpha.0"
   },
   "devDependencies": {
     "@expo/config-types": "^42.0.0",

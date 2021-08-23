@@ -16,5 +16,5 @@ Pod::Spec.new do |s|
   s.preserve_paths = 'UMTestCore/**/*.{h,m}'
   s.requires_arc   = true
 
-  s.dependency 'UMCore'
+  s.dependency 'ExpoModulesCore'
 end

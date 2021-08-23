@@ -5,14 +5,14 @@
 
 @implementation EXAccelerometer
 
-UM_EXPORT_MODULE(ExponentAccelerometer);
+EX_EXPORT_MODULE(ExponentAccelerometer);
 
 - (const NSString *)updateEventName
 {
   return @"accelerometerDidUpdate";
 }
 
-- (id)getSensorServiceFromModuleRegistry:(UMModuleRegistry *)moduleRegistry
+- (id)getSensorServiceFromModuleRegistry:(EXModuleRegistry *)moduleRegistry
 {
   return [moduleRegistry getModuleImplementingProtocol:@protocol(EXAccelerometerInterface)];
 }

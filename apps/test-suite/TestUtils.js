@@ -1,6 +1,6 @@
 'use strict';
 
-import { UnavailabilityError } from '@unimodules/core';
+import { UnavailabilityError } from 'expo-modules-core';
 
 import ExponentTest from './ExponentTest';
 

@@ -1,7 +1,7 @@
 // Copyright 2016-present 650 Industries. All rights reserved.
 
 #import <EXLocation/EXBaseLocationRequester.h>
-#import <UMCore/UMUtilities.h>
+#import <ExpoModulesCore/EXUtilities.h>
 
 #import <objc/message.h>
 #import <CoreLocation/CLLocationManagerDelegate.h>
@@ -37,7 +37,7 @@
   
   CLAuthorizationStatus systemStatus;
   if (![EXBaseLocationRequester isConfiguredForAlwaysAuthorization] && ![EXBaseLocationRequester isConfiguredForWhenInUseAuthorization]) {
-    UMFatal(UMErrorWithMessage(@"This app is missing usage descriptions, so location services will fail. Add one of the `NSLocation*UsageDescription` keys to your bundle's Info.plist. See https://bit.ly/2P5fEbG (https://docs.expo.io/versions/latest/guides/app-stores.html#system-permissions-dialogs-on-ios) for more information."));
+    EXFatal(EXErrorWithMessage(@"This app is missing usage descriptions, so location services will fail. Add one of the `NSLocation*UsageDescription` keys to your bundle's Info.plist. See https://bit.ly/2P5fEbG (https://docs.expo.io/versions/latest/guides/app-stores.html#system-permissions-dialogs-on-ios) for more information."));
     systemStatus = kCLAuthorizationStatusDenied;
   } else {
     systemStatus = [CLLocationManager authorizationStatus];
@@ -46,7 +46,7 @@
   return [self parsePermissions:systemStatus];
 }
 
-- (void)requestPermissionsWithResolver:(UMPromiseResolveBlock)resolve rejecter:(UMPromiseRejectBlock)reject {
+- (void)requestPermissionsWithResolver:(EXPromiseResolveBlock)resolve rejecter:(EXPromiseRejectBlock)reject {
   NSDictionary *existingPermissions = [self getPermissions];
   if (existingPermissions && [existingPermissions[@"status"] intValue] != EXPermissionStatusUndetermined) {
     // since permissions are already determined, the iOS request methods will be no-ops.
@@ -56,9 +56,9 @@
     _resolve = resolve;
     _reject = reject;
 
-    UM_WEAKIFY(self)
-    [UMUtilities performSynchronouslyOnMainThread:^{
-      UM_ENSURE_STRONGIFY(self)
+    EX_WEAKIFY(self)
+    [EXUtilities performSynchronouslyOnMainThread:^{
+      EX_ENSURE_STRONGIFY(self)
       self.locationManagerWasCalled = false;
       self.locationManager = [[CLLocationManager alloc] init];
       self.locationManager.delegate = self;

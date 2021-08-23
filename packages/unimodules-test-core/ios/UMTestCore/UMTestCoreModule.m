@@ -4,23 +4,23 @@
 
 @interface UMTestCoreModule ()
 
-@property (nonatomic, weak) UMModuleRegistry *moduleRegistry;
+@property (nonatomic, weak) EXModuleRegistry *moduleRegistry;
 
 @end
 
 @implementation UMTestCoreModule
 
-UM_EXPORT_MODULE(UnimodulesTestCore);
+EX_EXPORT_MODULE(UnimodulesTestCore);
 
-- (void)setModuleRegistry:(UMModuleRegistry *)moduleRegistry
+- (void)setModuleRegistry:(EXModuleRegistry *)moduleRegistry
 {
   _moduleRegistry = moduleRegistry;
 }
 
-UM_EXPORT_METHOD_AS(someGreatMethodAsync,
+EX_EXPORT_METHOD_AS(someGreatMethodAsync,
                     options:(NSDictionary *)options
-                    resolve:(UMPromiseResolveBlock)resolve
-                    reject:(UMPromiseRejectBlock)reject)
+                    resolve:(EXPromiseResolveBlock)resolve
+                    reject:(EXPromiseRejectBlock)reject)
 {
 }
 

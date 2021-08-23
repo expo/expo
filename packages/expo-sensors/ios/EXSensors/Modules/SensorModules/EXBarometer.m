@@ -5,14 +5,14 @@
 
 @implementation EXBarometer
 
-UM_EXPORT_MODULE(ExpoBarometer);
+EX_EXPORT_MODULE(ExpoBarometer);
 
 - (const NSString *)updateEventName
 {
   return @"barometerDidUpdate";
 }
 
-- (id)getSensorServiceFromModuleRegistry:(UMModuleRegistry *)moduleRegistry
+- (id)getSensorServiceFromModuleRegistry:(EXModuleRegistry *)moduleRegistry
 {
   return [moduleRegistry getModuleImplementingProtocol:@protocol(EXBarometerInterface)];
 }

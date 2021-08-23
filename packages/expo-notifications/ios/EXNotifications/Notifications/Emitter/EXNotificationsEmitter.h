@@ -1,17 +1,17 @@
 // Copyright 2018-present 650 Industries. All rights reserved.
 
-#import <UMCore/UMExportedModule.h>
-#import <UMCore/UMEventEmitter.h>
-#import <UMCore/UMModuleRegistryConsumer.h>
-#import <UMCore/UMEventEmitterService.h>
+#import <ExpoModulesCore/EXExportedModule.h>
+#import <ExpoModulesCore/EXEventEmitter.h>
+#import <ExpoModulesCore/EXModuleRegistryConsumer.h>
+#import <ExpoModulesCore/EXEventEmitterService.h>
 
 #import <EXNotifications/EXNotificationsDelegate.h>
 
 static NSString * const onDidReceiveNotification = @"onDidReceiveNotification";
 static NSString * const onDidReceiveNotificationResponse = @"onDidReceiveNotificationResponse";
 
-@interface EXNotificationsEmitter : UMExportedModule <UMEventEmitter, UMModuleRegistryConsumer, EXNotificationsDelegate>
+@interface EXNotificationsEmitter : EXExportedModule <EXEventEmitter, EXModuleRegistryConsumer, EXNotificationsDelegate>
 
-@property (nonatomic, weak, readonly) id<UMEventEmitterService> eventEmitter;
+@property (nonatomic, weak, readonly) id<EXEventEmitterService> eventEmitter;
 
 @end

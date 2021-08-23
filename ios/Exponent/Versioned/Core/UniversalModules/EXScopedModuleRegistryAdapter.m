@@ -37,13 +37,13 @@
 
 @implementation EXScopedModuleRegistryAdapter
 
-- (UMModuleRegistry *)moduleRegistryForParams:(NSDictionary *)params
+- (EXModuleRegistry *)moduleRegistryForParams:(NSDictionary *)params
                   forExperienceStableLegacyId:(NSString *)experienceStableLegacyId
                                      scopeKey:(NSString *)scopeKey
                                      manifest:(EXUpdatesRawManifest *)manifest
                            withKernelServices:(NSDictionary *)kernelServices
 {
-  UMModuleRegistry *moduleRegistry = [self.moduleRegistryProvider moduleRegistry];
+  EXModuleRegistry *moduleRegistry = [self.moduleRegistryProvider moduleRegistry];
 
 #if __has_include(<EXUpdates/EXUpdatesService.h>)
   EXUpdatesBinding *updatesBinding = [[EXUpdatesBinding alloc] initWithScopeKey:scopeKey
@@ -111,7 +111,7 @@
   [moduleRegistry registerExportedModule:amplitudeModule];
 #endif
 
-#if __has_include(<UMReactNativeAdapter/EXPermissionsService.h>)
+#if __has_include(<ExpoModulesCore/EXPermissionsService.h>)
   EXScopedPermissions *permissionsModule = [[EXScopedPermissions alloc] initWithScopeKey:scopeKey andConstantsBinding:constantsBinding];
   [moduleRegistry registerExportedModule:permissionsModule];
   [moduleRegistry registerInternalModule:permissionsModule];

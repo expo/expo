@@ -1,6 +1,6 @@
 'use strict';
 
-import { Platform } from '@unimodules/core';
+import { Platform } from 'expo-modules-core';
 import { Asset } from 'expo-asset';
 import * as FS from 'expo-file-system';
 import * as SQLite from 'expo-sqlite';

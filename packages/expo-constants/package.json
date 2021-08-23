@@ -33,12 +33,9 @@
   "jest": {
     "preset": "expo-module-scripts"
   },
-  "unimodulePeerDependencies": {
-    "@unimodules/core": "*"
-  },
   "dependencies": {
     "@expo/config": "^4.0.0",
-    "expo-modules-core": "~0.1.1",
+    "expo-modules-core": "~0.3.0-alpha.0",
     "uuid": "^3.3.2"
   },
   "devDependencies": {

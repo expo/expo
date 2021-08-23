@@ -1,9 +1,10 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
+#import <ExpoModulesCore/EXModuleRegistryProvider.h>
+
 #import "ExpoKit.h"
 #import "EXViewController.h"
 #import "EXStandaloneAppDelegate.h"
-#import <UMCore/UMModuleRegistryProvider.h>
 
 @interface EXStandaloneAppDelegate ()
 

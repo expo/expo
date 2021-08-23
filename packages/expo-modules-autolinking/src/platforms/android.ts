@@ -80,13 +80,16 @@ async function findAndroidPackagesAsync(modules: ModuleDescriptor[]): Promise<st
       for (const file of files) {
         const fileContent = await fs.readFile(path.join(module.sourceDir, file), 'utf8');
 
+        const packageRegex = (() => {
+          if (process.env.EXPO_SHOULD_USE_LEGACY_PACKAGE_INTERFACE) {
+            return /\bimport\s+org\.unimodules\.core\.(interfaces\.Package|BasePackage)\b/;
+          } else {
+            return /\bimport\s+expo\.modules\.core\.(interfaces\.Package|BasePackage)\b/;
+          }
+        })();
+
         // Very naive check to skip non-expo packages
-        if (
-          !/\bimport\s+expo\.modules\.core\.(interfaces\.Package|BasePackage)\b/.test(
-            fileContent
-          ) &&
-          !/\bimport\s+org\.unimodules\.core\.(interfaces\.Package|BasePackage)\b/.test(fileContent)
-        ) {
+        if (!packageRegex.test(fileContent)) {
           continue;
         }
 

@@ -15,7 +15,7 @@
 #import "EXVersionManager.h"
 #import "EXVersions.h"
 #import "EXAppViewController.h"
-#import <UMCore/UMModuleRegistryProvider.h>
+#import <ExpoModulesCore/EXModuleRegistryProvider.h>
 #import <EXConstants/EXConstantsService.h>
 #import <EXSplashScreen/EXSplashScreenService.h>
 
@@ -166,7 +166,7 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
     @"isStandardDevMenuAllowed": @(isStandardDevMenuAllowed),
     @"testEnvironment": @([EXEnvironment sharedEnvironment].testEnvironment),
     @"services": [EXKernel sharedInstance].serviceRegistry.allServices,
-    @"singletonModules": [UMModuleRegistryProvider singletonModules],
+    @"singletonModules": [EXModuleRegistryProvider singletonModules],
     @"moduleRegistryDelegateClass": RCTNullIfNil([self moduleRegistryDelegateClass]),
   }];
   if ([@"expo" isEqualToString:[self _appOwnership]]) {
@@ -436,9 +436,9 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
       [[EXKernel sharedInstance].serviceRegistry.errorRecoveryManager setError:error forScopeKey:_appRecord.scopeKey];
     }
 
-    UM_WEAKIFY(self);
+    EX_WEAKIFY(self);
     dispatch_async(dispatch_get_main_queue(), ^{
-      UM_ENSURE_STRONGIFY(self);
+      EX_ENSURE_STRONGIFY(self);
       [self.delegate reactAppManager:self failedToLoadJavaScriptWithError:error];
     });
   }
@@ -450,9 +450,9 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
 {
   if ([notification.name isEqualToString:[self versionedString:RCTContentDidAppearNotification]]
       && notification.object == self.reactRootView) {
-    UM_WEAKIFY(self);
+    EX_WEAKIFY(self);
     dispatch_async(dispatch_get_main_queue(), ^{
-      UM_ENSURE_STRONGIFY(self);
+      EX_ENSURE_STRONGIFY(self);
       [self.delegate reactAppManagerAppContentDidAppear:self];
 
       if ([self _compareVersionTo:38] == NSOrderedDescending) {
@@ -467,9 +467,9 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
 - (void)_handleBridgeEvent:(NSNotification *)notification
 {
   if ([notification.name isEqualToString:[self versionedString:RCTBridgeWillReloadNotification]]) {
-    UM_WEAKIFY(self);
+    EX_WEAKIFY(self);
     dispatch_async(dispatch_get_main_queue(), ^{
-      UM_ENSURE_STRONGIFY(self);
+      EX_ENSURE_STRONGIFY(self);
       [self.delegate reactAppManagerAppContentWillReload:self];
     });
   }
@@ -487,7 +487,7 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
 
   // SplashScreen.preventAutoHide is called despite actual JS method call.
   // Prior SDK 39, SplashScreen was basing on started & finished flags that are set via legacy Expo.SplashScreen JS methods calls.
-  EXSplashScreenService *splashScreenService = (EXSplashScreenService *)[UMModuleRegistryProvider getSingletonModuleForClass:[EXSplashScreenService class]];
+  EXSplashScreenService *splashScreenService = (EXSplashScreenService *)[EXModuleRegistryProvider getSingletonModuleForClass:[EXSplashScreenService class]];
   [splashScreenService preventSplashScreenAutoHideFor:(UIViewController *) _appRecord.viewController
                                       successCallback:^(BOOL hasEffect) {}
                                       failureCallback:^(NSString * _Nonnull message) { RCTLogWarn(@"%@", message); }];
@@ -533,7 +533,7 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
       [_viewTestTimer invalidate];
       _viewTestTimer = nil;
 
-      EXSplashScreenService *splashScreenService = (EXSplashScreenService *)[UMModuleRegistryProvider getSingletonModuleForClass:[EXSplashScreenService class]];
+      EXSplashScreenService *splashScreenService = (EXSplashScreenService *)[EXModuleRegistryProvider getSingletonModuleForClass:[EXSplashScreenService class]];
       [splashScreenService hideSplashScreenFor:(UIViewController *) _appRecord.viewController
                                successCallback:^(BOOL hasEffect) {}
                                failureCallback:^(NSString * _Nonnull message) { RCTLogWarn(@"%@", message); }];
@@ -544,9 +544,9 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
 
 - (void)_appLoadingFinished
 {
-  UM_WEAKIFY(self);
+  EX_WEAKIFY(self);
   dispatch_async(dispatch_get_main_queue(), ^{
-    UM_ENSURE_STRONGIFY(self);
+    EX_ENSURE_STRONGIFY(self);
     if (self.appRecord.scopeKey) {
       [[EXKernel sharedInstance].serviceRegistry.errorRecoveryManager experienceFinishedLoadingWithScopeKey:self.appRecord.scopeKey];
     }

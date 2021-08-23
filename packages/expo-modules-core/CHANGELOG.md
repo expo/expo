@@ -6,14 +6,23 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+- Fix `'-[RCTModuleRegistry getAllExportedModules]: unrecognized selector` crash while adding the event listener. ([#14130](https://github.com/expo/expo/pull/14130) by [@lukmccall](https://github.com/lukmccall))
+
+### 💡 Others
+
+## 0.3.0-alpha.0 — 2021-08-17
+
+### 🎉 New features
+
 - Use stable manifest ID where applicable. ([#12964](https://github.com/expo/expo/pull/12964) by [@wschurman](https://github.com/wschurman))
 - Add permission hook factory. ([#13782](https://github.com/expo/expo/pull/13782) by [@byCedric](https://github.com/byCedric))
+- Experimental API for creating native modules in Swift (by [@tsapeta](https://github.com/tsapeta))
 
 ### 🐛 Bug fixes
 
 - Add generics to the permission hook factory to inherit right types. ([#13860](https://github.com/expo/expo/pull/13860) by [@bycedric](https://github.com/bycedric))
-
-### 💡 Others
 
 ## 0.1.1 — 2021-06-16
 

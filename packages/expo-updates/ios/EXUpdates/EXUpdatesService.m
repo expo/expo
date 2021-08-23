@@ -2,13 +2,13 @@
 
 #import <EXUpdates/EXUpdatesAppController.h>
 #import <EXUpdates/EXUpdatesService.h>
-#import <UMCore/UMUtilities.h>
+#import <ExpoModulesCore/EXUtilities.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
 @implementation EXUpdatesService
 
-UM_REGISTER_MODULE();
+EX_REGISTER_MODULE();
 
 + (const NSArray<Protocol *> *)exportedInterfaces
 {

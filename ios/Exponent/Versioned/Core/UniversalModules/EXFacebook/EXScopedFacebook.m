@@ -132,7 +132,7 @@ static NSString *AUTO_INIT_KEY = @"autoInitEnabled";
   [super logOutAsync:resolve rejecter:reject];
 }
 
-# pragma mark - UMModuleRegistryConsumer
+# pragma mark - EXModuleRegistryConsumer
 
 - (void)setModuleRegistry:(EXModuleRegistry *)moduleRegistry
 {
@@ -142,7 +142,7 @@ static NSString *AUTO_INIT_KEY = @"autoInitEnabled";
   [appLifecycleService registerAppLifecycleListener:self];
 }
 
-# pragma mark - UMAppLifecycleListener
+# pragma mark - EXAppLifecycleListener
 
 - (void)onAppBackgrounded {
   // Save SDK settings state

@@ -64,18 +64,9 @@ android {
   }
 }
 
-if (new File(rootProject.projectDir.parentFile, 'package.json').exists()) {
-  apply from: project(":unimodules-core").file("../unimodules-core.gradle")
-} else {
-  throw new GradleException(
-      "'unimodules-core.gradle' was not found in the usual React Native dependency location. " +
-          "This package can only be used in such projects. Are you sure you've installed the dependencies properly?")
-}
-
 dependencies {
-  unimodule "unimodules-core"
-  unimodule 'expo-modules-core'
-  unimodule "unimodules-task-manager-interface"
+  implementation project(':expo-modules-core')
+  implementation project(':unimodules-task-manager-interface')
 
   api 'com.google.android.gms:play-services-location:16.0.0'
 

@@ -58,7 +58,7 @@ class ExpoViewKernel private constructor() : KernelInterface() {
   }
 
   init {
-    NativeModuleDepsProvider.getInstance().inject(ExpoViewKernel::class.java, this)
+    NativeModuleDepsProvider.instance.inject(ExpoViewKernel::class.java, this)
 
     versionName = try {
       applicationContext.packageManager.getPackageInfo(

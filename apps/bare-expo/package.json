@@ -99,8 +99,7 @@
     "@react-native-masked-view/masked-view": "0.2.4",
     "@react-native-picker/picker": "1.16.1",
     "@react-native-segmented-control/segmented-control": "2.3.0",
-    "@unimodules/react-native-adapter": "^6.4.0",
-    "expo-modules-core": "^0.1.1",
+    "expo-modules-core": "~0.3.0-alpha.0",
     "expo": "~42.0.0-alpha.0",
     "expo-camera": "~11.1.1",
     "expo-dev-client": "~0.4.7",
@@ -120,7 +119,7 @@
     "react-native-screens": "~3.4.0",
     "react-native-shared-element": "0.7.0",
     "react-native-svg": "12.1.1",
-    "react-native-unimodules": "~0.14.1",
+    "react-native-unimodules": "~0.15.0-alpha.0",
     "react-native-view-shot": "3.1.2",
     "react-native-webview": "11.6.2",
     "test-suite": "*"

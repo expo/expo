@@ -1,10 +1,10 @@
 //  Copyright © 2018 650 Industries. All rights reserved.
 
-#import <UMCore/UMExportedModule.h>
-#import <UMCore/UMModuleRegistryConsumer.h>
-#import <UMCore/UMEventEmitterService.h>
-#import <UMCore/UMEventEmitter.h>
+#import <ExpoModulesCore/EXExportedModule.h>
+#import <ExpoModulesCore/EXModuleRegistryConsumer.h>
+#import <ExpoModulesCore/EXEventEmitterService.h>
+#import <ExpoModulesCore/EXEventEmitter.h>
 #import <StoreKit/StoreKit.h>
 
-@interface EXInAppPurchasesModule : UMExportedModule <UMEventEmitter, UMModuleRegistryConsumer, SKProductsRequestDelegate, SKPaymentTransactionObserver>
+@interface EXInAppPurchasesModule : EXExportedModule <EXEventEmitter, EXModuleRegistryConsumer, SKProductsRequestDelegate, SKPaymentTransactionObserver>
 @end

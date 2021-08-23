@@ -2,11 +2,11 @@ export default function getBackgroundColor(intensity, tint) {
     const opacity = intensity / 100;
     switch (tint) {
         case 'dark':
-            // From apple.com
-            return `rgba(28,28,28,${opacity * 0.65})`;
+            // From Apple iOS 14 Sketch Kit - https://developer.apple.com/design/resources/
+            return `rgba(25,25,25,${opacity * 0.78})`;
         case 'light':
-            // From https://www.apple.com/newsroom
-            return `rgba(255,255,255,${opacity * 0.7})`;
+            // From Apple iOS 14 Sketch Kit - https://developer.apple.com/design/resources/
+            return `rgba(249,249,249,${opacity * 0.78})`;
         case 'default':
             // From xcode composition
             return `rgba(255,255,255,${opacity * 0.3})`;

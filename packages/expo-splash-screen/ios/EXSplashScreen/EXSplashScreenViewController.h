@@ -17,8 +17,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)showWithCallback:(void (^)(void))successCallback failureCallback:(void (^)(NSString *message))failureCallback;
 - (void)preventAutoHideWithCallback:(void (^)(BOOL hasEffect))successCallback failureCallback:(void (^)(NSString *message))failureCallback;
 - (void)hideWithCallback:(void (^)(BOOL hasEffect))successCallback failureCallback:(void (^)(NSString *message))failureCallback;
-- (void)onAppContentDidAppear;
-- (void)onAppContentWillReload;
+- (BOOL)needsHideOnAppContentDidAppear;
+- (BOOL)needsShowOnAppContentWillReload;
 @end
 
 NS_ASSUME_NONNULL_END

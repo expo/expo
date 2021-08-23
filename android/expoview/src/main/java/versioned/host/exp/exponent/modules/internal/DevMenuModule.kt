@@ -23,13 +23,13 @@ import host.exp.expoview.R
 import java.util.*
 import javax.inject.Inject
 
-class DevMenuModule(reactContext: ReactApplicationContext, val experienceProperties: Map<String, Any>, val manifest: RawManifest?) : ReactContextBaseJavaModule(reactContext), LifecycleEventListener, DevMenuModuleInterface {
+class DevMenuModule(reactContext: ReactApplicationContext, val experienceProperties: Map<String, Any?>, val manifest: RawManifest?) : ReactContextBaseJavaModule(reactContext), LifecycleEventListener, DevMenuModuleInterface {
 
   @Inject
   internal var devMenuManager: DevMenuManager? = null
 
   init {
-    NativeModuleDepsProvider.getInstance().inject(DevMenuModule::class.java, this)
+    NativeModuleDepsProvider.instance.inject(DevMenuModule::class.java, this)
     reactContext.addLifecycleEventListener(this)
   }
 

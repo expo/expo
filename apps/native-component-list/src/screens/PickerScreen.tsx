@@ -1,5 +1,5 @@
 import { Picker } from '@react-native-picker/picker';
-import { Platform } from '@unimodules/core';
+import { Platform } from 'expo-modules-core';
 import * as React from 'react';
 import { Text, Button } from 'react-native';
 

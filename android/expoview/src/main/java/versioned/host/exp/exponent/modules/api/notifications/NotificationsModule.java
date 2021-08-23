@@ -360,7 +360,7 @@ public class NotificationsModule extends ReactContextBaseJavaModule {
     IntervalSchedulerModel intervalSchedulerModel = new IntervalSchedulerModel();
     intervalSchedulerModel.setExperienceScopeKey(experienceScopeKey);
     intervalSchedulerModel.setNotificationId(notificationId);
-    intervalSchedulerModel.setDetails(details);
+    intervalSchedulerModel.setDetailsFromMap(details);
     intervalSchedulerModel.setRepeat(options.containsKey("repeat") && (Boolean) options.get("repeat"));
     intervalSchedulerModel.setScheduledTime(System.currentTimeMillis() + ((Double) options.get("interval")).longValue());
     intervalSchedulerModel.setInterval(((Double) options.get("interval")).longValue()); // on iOS we cannot change interval
@@ -400,7 +400,7 @@ public class NotificationsModule extends ReactContextBaseJavaModule {
     CalendarSchedulerModel calendarSchedulerModel = new CalendarSchedulerModel();
     calendarSchedulerModel.setExperienceScopeKey(experienceScopeKey);
     calendarSchedulerModel.setNotificationId(notificationId);
-    calendarSchedulerModel.setDetails(details);
+    calendarSchedulerModel.setDetailsFromMap(details);
     calendarSchedulerModel.setRepeat(options.containsKey("repeat") && (Boolean) options.get("repeat"));
     calendarSchedulerModel.setCalendarData(cron.asString());
 

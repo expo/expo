@@ -102,7 +102,7 @@
     [self _deleteValueWithKey:scopedKey
                   withOptions:options];
   } else {
-    UMLogWarn(@"Encountered an error while saving SecureStore data: %@.", [[super class] _messageForError:error]);
+    EXLogWarn(@"Encountered an error while saving SecureStore data: %@.", [[super class] _messageForError:error]);
   }
 }
 

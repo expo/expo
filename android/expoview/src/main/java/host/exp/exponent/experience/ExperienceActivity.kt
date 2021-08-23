@@ -132,7 +132,7 @@ open class ExperienceActivity : BaseExperienceActivity(), StartReactInstanceDele
     shouldShowLoadingViewWithOptimisticManifest = true
     loadingProgressPopupController = LoadingProgressPopupController(this)
 
-    NativeModuleDepsProvider.getInstance().inject(ExperienceActivity::class.java, this)
+    NativeModuleDepsProvider.instance.inject(ExperienceActivity::class.java, this)
     EventBus.getDefault().registerSticky(this)
 
     activityId = ExpoActivityIds.getNextAppActivityId()
@@ -218,14 +218,14 @@ open class ExperienceActivity : BaseExperienceActivity(), StartReactInstanceDele
     soLoaderInit()
 
     addNotification()
-    Analytics.logEventWithManifestUrl(Analytics.EXPERIENCE_APPEARED, manifestUrl)
+    Analytics.logEventWithManifestUrl(Analytics.AnalyticsEvent.EXPERIENCE_APPEARED, manifestUrl)
   }
 
   override fun onWindowFocusChanged(hasFocus: Boolean) {
     super.onWindowFocusChanged(hasFocus)
     // Check for manifest to avoid calling this when first loading an experience
     if (hasFocus && manifest != null) {
-      runOnUiThread { ExperienceActivityUtils.setNavigationBar(manifest, this@ExperienceActivity) }
+      runOnUiThread { ExperienceActivityUtils.setNavigationBar(manifest!!, this@ExperienceActivity) }
     }
   }
 
@@ -429,12 +429,12 @@ open class ExperienceActivity : BaseExperienceActivity(), StartReactInstanceDele
     this.manifest = manifest
 
     // TODO(eric): remove when deleting old AppLoader class/logic
-    exponentSharedPreferences.updateManifest(this.manifestUrl, manifest, bundleUrl)
+    exponentSharedPreferences.updateManifest(this.manifestUrl!!, manifest, bundleUrl)
 
     // Notifications logic uses this to determine which experience to route a notification to
     ExponentDB.saveExperience(ExponentDBObject(this.manifestUrl!!, manifest, bundleUrl))
 
-    ExponentNotificationManager(this).maybeCreateNotificationChannelGroup(this.manifest)
+    ExponentNotificationManager(this).maybeCreateNotificationChannelGroup(this.manifest!!)
 
     val task = kernel.getExperienceActivityTask(this.manifestUrl!!)
     task.taskId = taskId
@@ -483,11 +483,11 @@ open class ExperienceActivity : BaseExperienceActivity(), StartReactInstanceDele
 
     isCrashed = false
 
-    Analytics.logEventWithManifestUrlSdkVersion(Analytics.LOAD_EXPERIENCE, manifestUrl, sdkVersion)
+    Analytics.logEventWithManifestUrlSdkVersion(Analytics.AnalyticsEvent.LOAD_EXPERIENCE, manifestUrl, sdkVersion)
 
-    ExperienceActivityUtils.updateOrientation(this.manifest, this)
-    ExperienceActivityUtils.updateSoftwareKeyboardLayoutMode(this.manifest, this)
-    ExperienceActivityUtils.overrideUiMode(this.manifest, this)
+    ExperienceActivityUtils.updateOrientation(this.manifest!!, this)
+    ExperienceActivityUtils.updateSoftwareKeyboardLayoutMode(this.manifest!!, this)
+    ExperienceActivityUtils.overrideUiMode(this.manifest!!, this)
 
     addNotification()
 
@@ -516,7 +516,7 @@ open class ExperienceActivity : BaseExperienceActivity(), StartReactInstanceDele
       }
 
       reactRootView = RNObject("host.exp.exponent.ReactUnthemedRootView")
-      reactRootView.loadVersion(detachSdkVersion).construct(this@ExperienceActivity)
+      reactRootView.loadVersion(detachSdkVersion!!).construct(this@ExperienceActivity)
       setReactRootView((reactRootView.get() as View))
 
       if (isDebugModeEnabled) {
@@ -572,9 +572,9 @@ open class ExperienceActivity : BaseExperienceActivity(), StartReactInstanceDele
       try {
         val rctDeviceEventEmitter =
           RNObject("com.facebook.react.modules.core.DeviceEventManagerModule\$RCTDeviceEventEmitter")
-        rctDeviceEventEmitter.loadVersion(detachSdkVersion)
-        reactInstanceManager.callRecursive("getCurrentReactContext")
-          .callRecursive("getJSModule", rctDeviceEventEmitter.rnClass())
+        rctDeviceEventEmitter.loadVersion(detachSdkVersion!!)
+        reactInstanceManager.callRecursive("getCurrentReactContext")!!
+          .callRecursive("getJSModule", rctDeviceEventEmitter.rnClass())!!
           .call("emit", "Exponent.notification", event.toWriteableMap(detachSdkVersion, "received"))
       } catch (e: Throwable) {
         EXL.e(TAG, e)
@@ -589,18 +589,18 @@ open class ExperienceActivity : BaseExperienceActivity(), StartReactInstanceDele
         handleUri(uri)
         val rctDeviceEventEmitter =
           RNObject("com.facebook.react.modules.core.DeviceEventManagerModule\$RCTDeviceEventEmitter")
-        rctDeviceEventEmitter.loadVersion(detachSdkVersion)
-        reactInstanceManager.callRecursive("getCurrentReactContext")
-          .callRecursive("getJSModule", rctDeviceEventEmitter.rnClass())
+        rctDeviceEventEmitter.loadVersion(detachSdkVersion!!)
+        reactInstanceManager.callRecursive("getCurrentReactContext")!!
+          .callRecursive("getJSModule", rctDeviceEventEmitter.rnClass())!!
           .call("emit", "Exponent.openUri", uri)
         BranchManager.handleLink(this, uri, detachSdkVersion)
       }
       if ((options.notification != null || options.notificationObject != null) && detachSdkVersion != null) {
         val rctDeviceEventEmitter =
           RNObject("com.facebook.react.modules.core.DeviceEventManagerModule\$RCTDeviceEventEmitter")
-        rctDeviceEventEmitter.loadVersion(detachSdkVersion)
-        reactInstanceManager.callRecursive("getCurrentReactContext")
-          .callRecursive("getJSModule", rctDeviceEventEmitter.rnClass())
+        rctDeviceEventEmitter.loadVersion(detachSdkVersion!!)
+        reactInstanceManager.callRecursive("getCurrentReactContext")!!
+          .callRecursive("getJSModule", rctDeviceEventEmitter.rnClass())!!
           .call(
             "emit",
             "Exponent.notification",
@@ -654,8 +654,7 @@ open class ExperienceActivity : BaseExperienceActivity(), StartReactInstanceDele
   }
 
   override fun handleUnreadNotifications(unreadNotifications: JSONArray) {
-    val pushNotificationHelper = PushNotificationHelper.getInstance()
-    pushNotificationHelper.removeNotifications(this, unreadNotifications)
+    PushNotificationHelper.instance.removeNotifications(this, unreadNotifications)
   }
 
   /*
@@ -746,7 +745,7 @@ open class ExperienceActivity : BaseExperienceActivity(), StartReactInstanceDele
             } catch (e: JSONException) {
               EXL.e(TAG, e.message)
             }
-            Analytics.logEvent("NUX_EXPERIENCE_OVERLAY_DISMISSED", eventProperties)
+            Analytics.logEvent(Analytics.AnalyticsEvent.NUX_EXPERIENCE_OVERLAY_DISMISSED, eventProperties)
           }
 
           override fun onAnimationRepeat(animation: Animation) {}

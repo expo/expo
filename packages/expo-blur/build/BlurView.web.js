@@ -4,7 +4,7 @@ import getBackgroundColor from './getBackgroundColor';
 class BlurView extends React.Component {
     render() {
         const { tint = 'default', intensity = 50, style, ...props } = this.props;
-        const blurStyle = getBlurStyle({ tint, intensity });
+        const blurStyle = getBlurStyle({ tint, intensity: Math.min(intensity, 100) });
         return React.createElement(View, { ...props, style: [style, blurStyle] });
     }
 }

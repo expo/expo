@@ -1,6 +1,6 @@
 import spawnAsync from '@expo/spawn-async';
 import chalk from 'chalk';
-import { TaskQueue } from 'cwait';
+import { PromisyClass, TaskQueue } from 'cwait';
 import fs from 'fs-extra';
 import glob from 'glob-promise';
 import inquirer from 'inquirer';
@@ -60,7 +60,7 @@ const EXTERNAL_REACT_ABI_DEPENDENCIES = [
 async function namespaceReactNativeFilesAsync(filenames, versionPrefix, versionedPodNames) {
   const reactPodName = versionedPodNames.React;
   const transformRules = _getReactNativeTransformRules(versionPrefix, reactPodName);
-  const taskQueue = new TaskQueue(Promise, 4); // Transform up to 4 files simultaneously.
+  const taskQueue = new TaskQueue(Promise as PromisyClass, 4); // Transform up to 4 files simultaneously.
   const transformRulesCache = {};
 
   const transformSingleFile = taskQueue.wrap(async (filename) => {

@@ -1,4 +1,4 @@
-import { Platform, Subscription } from '@unimodules/core';
+import { Platform, Subscription } from 'expo-modules-core';
 import * as ScreenOrientation from 'expo-screen-orientation';
 import React from 'react';
 import { ScrollView, Text } from 'react-native';

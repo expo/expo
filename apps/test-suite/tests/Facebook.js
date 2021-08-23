@@ -1,6 +1,6 @@
-import { Platform } from '@unimodules/core';
 import * as Device from 'expo-device';
 import * as Facebook from 'expo-facebook';
+import { Platform } from 'expo-modules-core';
 
 import { isInteractive } from '../utils/Environment';
 

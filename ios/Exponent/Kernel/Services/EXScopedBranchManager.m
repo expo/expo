@@ -27,7 +27,7 @@ NSString * const EXBranchLinkOpenedNotification = @"RNBranchLinkOpenedNotificati
   NSURL *_url;
 }
 
-UM_REGISTER_SINGLETON_MODULE(BranchManager);
+EX_REGISTER_SINGLETON_MODULE(BranchManager);
 
 - (void)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {

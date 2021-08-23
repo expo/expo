@@ -112,7 +112,7 @@ const ReanimatedModifier: ModuleModifier = async function (
     for (let dir of dirs) {
       await fs.remove(path.join(androidMainPathExpoview, dir)); // clean
       // copy
-      await new Promise((res, rej) => {
+      await new Promise<void>((res, rej) => {
         ncp(
           path.join(androidMainPathReanimated, dir),
           path.join(androidMainPathExpoview, dir),

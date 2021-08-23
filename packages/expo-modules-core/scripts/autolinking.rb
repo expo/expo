@@ -2,7 +2,7 @@ require 'json'
 require 'pathname'
 require 'colored2' # dependency of CocoaPods
 
-require File.join(`node --print "require.resolve('expo-modules-autolinking/package.json')"`, "../scripts/ios/autolinking_manager")
+require File.join(File.dirname(`node --print "require.resolve('expo-modules-autolinking/package.json')"`), "scripts/ios/autolinking_manager")
 
 def use_expo_modules!(options = {})
   # When run from the Podfile, `self` points to Pod::Podfile object

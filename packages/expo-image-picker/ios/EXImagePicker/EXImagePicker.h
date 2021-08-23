@@ -1,5 +1,5 @@
-#import <UMCore/UMExportedModule.h>
-#import <UMCore/UMModuleRegistryConsumer.h>
+#import <ExpoModulesCore/EXExportedModule.h>
+#import <ExpoModulesCore/EXModuleRegistryConsumer.h>
 #import <UIKit/UIKit.h>
 
 typedef NS_ENUM(NSInteger, EXImagePickerTarget) {
@@ -7,6 +7,6 @@ typedef NS_ENUM(NSInteger, EXImagePickerTarget) {
   EXImagePickerTargetLibrarySingleImage,
 };
 
-@interface EXImagePicker : UMExportedModule <UINavigationControllerDelegate, UIImagePickerControllerDelegate, UMModuleRegistryConsumer>
+@interface EXImagePicker : EXExportedModule <UINavigationControllerDelegate, UIImagePickerControllerDelegate, EXModuleRegistryConsumer>
 
 @end

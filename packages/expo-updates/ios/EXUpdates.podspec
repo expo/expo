@@ -13,7 +13,7 @@ Pod::Spec.new do |s|
   s.platform       = :ios, '11.0'
   s.source         = { git: 'https://github.com/expo/expo.git' }
 
-  s.dependency 'UMCore'
+  s.dependency 'ExpoModulesCore'
   s.dependency 'React-Core'
   s.dependency 'EXStructuredHeaders'
   s.dependency 'EXUpdatesInterface'

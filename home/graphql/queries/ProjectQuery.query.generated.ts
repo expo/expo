@@ -10,7 +10,7 @@ export type WebContainerProjectPage_QueryVariables = Types.Exact<{
 }>;
 
 
-export type WebContainerProjectPage_Query = { __typename?: 'RootQuery', app?: Types.Maybe<{ __typename?: 'AppQuery', byId: { __typename?: 'App', id: string, name: string, slug: string, fullName: string, username: string, published: boolean, description: string, githubUrl?: Types.Maybe<string>, playStoreUrl?: Types.Maybe<string>, appStoreUrl?: Types.Maybe<string>, sdkVersion: string, iconUrl?: Types.Maybe<string>, privacy: string, icon?: Types.Maybe<{ __typename?: 'AppIcon', url: string }>, updateBranches: Array<{ __typename?: 'UpdateBranch', id: string, name: string, updates: Array<{ __typename?: 'Update', id: string, group: string, message?: Types.Maybe<string>, createdAt: any, runtimeVersion: string, platform: string, manifestPermalink: string }> }> } }> };
+export type WebContainerProjectPage_Query = { __typename?: 'RootQuery', app?: Types.Maybe<{ __typename?: 'AppQuery', byId: { __typename?: 'App', id: string, name: string, slug: string, fullName: string, username: string, published: boolean, description: string, githubUrl?: Types.Maybe<string>, playStoreUrl?: Types.Maybe<string>, appStoreUrl?: Types.Maybe<string>, sdkVersion: string, iconUrl?: Types.Maybe<string>, privacy: string, icon?: Types.Maybe<{ __typename?: 'AppIcon', url: string }>, latestReleaseForReleaseChannel?: Types.Maybe<{ __typename?: 'AppRelease', sdkVersion: string, runtimeVersion?: Types.Maybe<string> }>, updateBranches: Array<{ __typename?: 'UpdateBranch', id: string, name: string, updates: Array<{ __typename?: 'Update', id: string, group: string, message?: Types.Maybe<string>, createdAt: any, runtimeVersion: string, platform: string, manifestPermalink: string }> }> } }> };
 
 
 export const WebContainerProjectPage_QueryDocument = gql`
@@ -32,6 +32,10 @@ export const WebContainerProjectPage_QueryDocument = gql`
       privacy
       icon {
         url
+      }
+      latestReleaseForReleaseChannel(platform: $platform, releaseChannel: "default") {
+        sdkVersion
+        runtimeVersion
       }
       updateBranches(limit: 100, offset: 0) {
         id

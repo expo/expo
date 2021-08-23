@@ -56,7 +56,6 @@ useExpoModules([
     autolink: false,
     exclude : [
         'expo-module-template',
-        'expo-in-app-purchases'
     ]
 ])
 // WHEN_DISTRIBUTING_REMOVE_TO_HERE

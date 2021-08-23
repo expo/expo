@@ -1,6 +1,6 @@
-import { Platform } from '@unimodules/core';
 import { LinearGradient } from 'expo-linear-gradient';
 import * as MediaLibrary from 'expo-media-library';
+import { Platform } from 'expo-modules-core';
 import * as Permissions from 'expo-permissions';
 import React from 'react';
 import { Dimensions, Image, ScrollView, StyleSheet, Text, View } from 'react-native';
