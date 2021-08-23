@@ -12,6 +12,7 @@ export interface ImageProps extends AccessibilityProps {
      * @Android only
      */
     blurRadius?: number;
+    fadeDuration?: number;
     onLoadStart?: () => void;
     onProgress?: (event: NativeSyntheticEvent<ImageLoadProgressEventData>) => void;
     onLoad?: (event: NativeSyntheticEvent<ImageLoadEventData>) => void;

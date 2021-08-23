@@ -5,7 +5,7 @@ public class ConcreteMethod<Args, ReturnType>: AnyMethod {
   public let name: String
 
   public var takesPromise: Bool {
-    return argTypes.last?.canCast(Promise.self) ?? false
+    return argTypes.last?.canCastToType(Promise.self) ?? false
   }
 
   public var argumentsCount: Int {
@@ -87,7 +87,7 @@ public class ConcreteMethod<Args, ReturnType>: AnyMethod {
       throw IncompatibleArgTypeError(
         argument: arg,
         atIndex: index,
-        desiredType: type(of: desiredType)
+        desiredType: desiredType
       )
     }
   }
@@ -101,11 +101,11 @@ internal struct InvalidArgsNumberError: CodedError {
   }
 }
 
-internal struct IncompatibleArgTypeError<ArgumentType, DesiredType>: CodedError {
+internal struct IncompatibleArgTypeError<ArgumentType>: CodedError {
   let argument: ArgumentType
   let atIndex: Int
-  let desiredType: DesiredType.Type
+  let desiredType: AnyArgumentType
   var description: String {
-    "Type `\(type(of: argument))` of argument at index `\(atIndex)` is not compatible with expected type `\(desiredType.self)`."
+    "Type `\(type(of: argument))` of argument at index `\(atIndex)` is not compatible with expected type `\(desiredType.typeName)`."
   }
 }
