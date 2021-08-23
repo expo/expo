@@ -62,11 +62,10 @@ export default {
     if (!Platform.isDOMAvailable) return;
     dismissPopup();
   },
-  maybeCompleteAuthSession({
-    skipRedirectCheck,
-  }: {
-    skipRedirectCheck?: boolean;
-  }): { type: 'success' | 'failed'; message: string } {
+  maybeCompleteAuthSession({ skipRedirectCheck }: { skipRedirectCheck?: boolean }): {
+    type: 'success' | 'failed';
+    message: string;
+  } {
     if (!Platform.isDOMAvailable) {
       return {
         type: 'failed',

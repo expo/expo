@@ -2,7 +2,7 @@ const lazyImportsBlacklist = require('./lazy-imports-blacklist');
 
 let hasWarnedJsxRename = false;
 
-module.exports = function(api, options = {}) {
+module.exports = function (api, options = {}) {
   const { web = {}, native = {} } = options;
 
   const bundler = api.caller(getBundler);

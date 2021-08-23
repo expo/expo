@@ -53,7 +53,7 @@ function registerResolveCommand<OptionsType extends ResolveOptions>(
   return registerSearchCommand<OptionsType>(commandName, fn);
 }
 
-module.exports = async function(args: string[]) {
+module.exports = async function (args: string[]) {
   // Searches for available expo modules.
   registerSearchCommand<SearchOptions & { json?: boolean }>('search', async (results, options) => {
     if (options.json) {

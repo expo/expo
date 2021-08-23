@@ -36,7 +36,7 @@ function getUserMedia(constraints: MediaStreamConstraints): Promise<MediaStream>
     navigator.getUserMedia ||
     (navigator as any).webkitGetUserMedia ||
     (navigator as any).mozGetUserMedia ||
-    function() {
+    function () {
       const error: any = new Error('Permission unimplemented');
       error.code = 0;
       error.name = 'NotAllowedError';
@@ -232,9 +232,7 @@ export default {
       uri: null,
     };
   },
-  async prepareAudioRecorder(
-    options
-  ): Promise<{
+  async prepareAudioRecorder(options): Promise<{
     uri: string | null;
     // status is of type RecordingStatus, but without the canRecord field populated
     status: Pick<RecordingStatus, Exclude<keyof RecordingStatus, 'canRecord'>>;

@@ -6,13 +6,8 @@ import styleToBarStyle from './styleToBarStyle';
 import useColorScheme from './useColorScheme';
 
 export default function ExpoStatusBar(props: StatusBarProps) {
-  const {
-    style,
-    animated,
-    hidden,
-    hideTransitionAnimation,
-    networkActivityIndicatorVisible,
-  } = props;
+  const { style, animated, hidden, hideTransitionAnimation, networkActivityIndicatorVisible } =
+    props;
 
   const showHideTransition =
     hideTransitionAnimation === 'none' ? undefined : hideTransitionAnimation;
