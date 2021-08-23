@@ -72,7 +72,7 @@ class RNObject {
 
   fun construct(vararg args: Any?): RNObject {
     try {
-      instance = getConstructorWithTypes(clazz, *objectsToClasses(*args)).newInstance(*args)
+      instance = getConstructorWithArgumentClassTypes(clazz, *objectsToJavaClassTypes(*args)).newInstance(*args)
     } catch (e: NoSuchMethodException) {
       EXL.e(TAG, e)
     } catch (e: InvocationTargetException) {
@@ -112,7 +112,7 @@ class RNObject {
 
   private fun callWithReceiver(receiver: Any?, name: String, vararg args: Any?): Any? {
     try {
-      return getMethodWithTypes(clazz, name, *objectsToClasses(*args)).invoke(receiver, *args)
+      return getMethodWithArgumentClassTypes(clazz, name, *objectsToJavaClassTypes(*args)).invoke(receiver, *args)
     } catch (e: IllegalAccessException) {
       EXL.e(TAG, e)
       e.printStackTrace()
@@ -197,11 +197,11 @@ class RNObject {
       } else name
     }
 
-    private fun objectsToClasses(vararg objects: Any?): Array<Class<*>?> {
+    private fun objectsToJavaClassTypes(vararg objects: Any?): Array<Class<*>?> {
       val classes: Array<Class<*>?> = arrayOfNulls(objects.size)
       for (i in objects.indices) {
         if (objects[i] != null) {
-          classes[i] = objects[i]!!.javaClass
+          classes[i] = objects[i]!!::class.java
         }
       }
       return classes
@@ -209,20 +209,20 @@ class RNObject {
 
     // Allow types that are too specific so that we don't have to specify exact classes
     @Throws(NoSuchMethodException::class)
-    private fun getMethodWithTypes(clazz: Class<*>?, name: String, vararg types: Class<*>?): Method {
+    private fun getMethodWithArgumentClassTypes(clazz: Class<*>?, name: String, vararg argumentClassTypes: Class<*>?): Method {
       val methods = clazz!!.methods
       for (i in methods.indices) {
         val method = methods[i]
         if (method.name != name) {
           continue
         }
-        val currentMethodTypes = method.parameterTypes
-        if (currentMethodTypes.size != types.size) {
+        val currentMethodParameterTypes = method.parameterTypes
+        if (currentMethodParameterTypes.size != argumentClassTypes.size) {
           continue
         }
         var isValid = true
-        for (j in currentMethodTypes.indices) {
-          if (!isAssignableFrom(currentMethodTypes[j], types[j])) {
+        for (j in currentMethodParameterTypes.indices) {
+          if (!isAssignableFrom(currentMethodParameterTypes[j], argumentClassTypes[j])) {
             isValid = false
             break
           }
@@ -236,29 +236,29 @@ class RNObject {
     }
 
     // Allow boxed -> unboxed assignments
-    private fun isAssignableFrom(c1: Class<*>, c2: Class<*>?): Boolean {
-      if (c2 == null) {
+    private fun isAssignableFrom(methodParameterClassType: Class<*>, argumentClassType: Class<*>?): Boolean {
+      if (argumentClassType == null) {
         // There's not really a good way to handle this.
         return true
       }
-      if (c1.isAssignableFrom(c2)) {
+      if (methodParameterClassType.isAssignableFrom(argumentClassType)) {
         return true
       }
-      if (c1 == Boolean::class.javaPrimitiveType && c2 == Boolean::class.java) {
+      if (methodParameterClassType == Boolean::class.javaPrimitiveType && (argumentClassType == java.lang.Boolean::class.java || argumentClassType == Boolean::class.java)) {
         return true
-      } else if (c1 == Byte::class.javaPrimitiveType && c2 == Byte::class.java) {
+      } else if (methodParameterClassType == Byte::class.javaPrimitiveType && (argumentClassType == java.lang.Byte::class.java || argumentClassType == Byte::class.java)) {
         return true
-      } else if (c1 == Char::class.javaPrimitiveType && c2 == Char::class.java) {
+      } else if (methodParameterClassType == Char::class.javaPrimitiveType && (argumentClassType == java.lang.Character::class.java || argumentClassType == Char::class.java)) {
         return true
-      } else if (c1 == Float::class.javaPrimitiveType && c2 == Float::class.java) {
+      } else if (methodParameterClassType == Float::class.javaPrimitiveType && (argumentClassType == java.lang.Float::class.java || argumentClassType == Float::class.java)) {
         return true
-      } else if (c1 == Int::class.javaPrimitiveType && c2 == Int::class.java) {
+      } else if (methodParameterClassType == Int::class.javaPrimitiveType && (argumentClassType == java.lang.Integer::class.java || argumentClassType == Int::class.java)) {
         return true
-      } else if (c1 == Long::class.javaPrimitiveType && c2 == Long::class.java) {
+      } else if (methodParameterClassType == Long::class.javaPrimitiveType && (argumentClassType == java.lang.Long::class.java || argumentClassType == Long::class.java)) {
         return true
-      } else if (c1 == Short::class.javaPrimitiveType && c2 == Short::class.java) {
+      } else if (methodParameterClassType == Short::class.javaPrimitiveType && (argumentClassType == java.lang.Short::class.java || argumentClassType == Short::class.java)) {
         return true
-      } else if (c1 == Double::class.javaPrimitiveType && c2 == Double::class.java) {
+      } else if (methodParameterClassType == Double::class.javaPrimitiveType && (argumentClassType == java.lang.Double::class.java || argumentClassType == Double::class.java)) {
         return true
       }
       return false
@@ -266,17 +266,17 @@ class RNObject {
 
     // Allow types that are too specific so that we don't have to specify exact classes
     @Throws(NoSuchMethodException::class)
-    private fun getConstructorWithTypes(clazz: Class<*>?, vararg types: Class<*>?): Constructor<*> {
+    private fun getConstructorWithArgumentClassTypes(clazz: Class<*>?, vararg argumentClassTypes: Class<*>?): Constructor<*> {
       val constructors = clazz!!.constructors
       for (i in constructors.indices) {
         val constructor = constructors[i]
-        val currentConstructorTypes = constructor.parameterTypes
-        if (currentConstructorTypes.size != types.size) {
+        val currentConstructorParameterTypes = constructor.parameterTypes
+        if (currentConstructorParameterTypes.size != argumentClassTypes.size) {
           continue
         }
         var isValid = true
-        for (j in currentConstructorTypes.indices) {
-          if (!isAssignableFrom(currentConstructorTypes[j], types[j])) {
+        for (j in currentConstructorParameterTypes.indices) {
+          if (!isAssignableFrom(currentConstructorParameterTypes[j], argumentClassTypes[j])) {
             isValid = false
             break
           }
