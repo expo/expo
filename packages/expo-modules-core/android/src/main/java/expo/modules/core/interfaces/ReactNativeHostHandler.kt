@@ -8,9 +8,10 @@ interface ReactNativeHostHandler {
   /**
    * Given chance for modules to customize {@link ReactInstanceManager}
    *
+   * @param useDeveloperSupport true if {@link ReactNativeHost} enabled developer support
    * @return instance of {@link ReactInstanceManager}, or null if not to override
    */
-  fun createReactInstanceManager(): ReactInstanceManager? {
+  fun createReactInstanceManager(useDeveloperSupport: Boolean): ReactInstanceManager? {
     return null
   }
 
@@ -18,9 +19,10 @@ interface ReactNativeHostHandler {
    * Given chance for modules to override react bundle file.
    * e.g. for expo-updates
    *
+   * @param useDeveloperSupport true if {@link ReactNativeHost} enabled developer support
    * @return custom path to bundle file, or null if not to override
    */
-  fun getJSBundleFile(): String? {
+  fun getJSBundleFile(useDeveloperSupport: Boolean): String? {
     return null
   }
 
@@ -28,15 +30,20 @@ interface ReactNativeHostHandler {
    * Given chance for modules to override react bundle asset name.
    * e.g. for expo-updates
    *
+   * @param useDeveloperSupport true if {@link ReactNativeHost} enabled developer support
    * @return custom bundle asset name, or null if not to override
    */
-  fun getBundleAssetName(): String? {
+  fun getBundleAssetName(useDeveloperSupport: Boolean): String? {
     return null
   }
 
   /**
    * Given chance for JSI modules to register, e.g. for react-native-reanimated
+   *
+   * @param useDeveloperSupport true if {@link ReactNativeHost} enabled developer support
    */
-  fun onRegisterJSIModules(reactApplicationContext: ReactApplicationContext, jsContext: JavaScriptContextHolder) {
+  fun onRegisterJSIModules(reactApplicationContext: ReactApplicationContext,
+                           jsContext: JavaScriptContextHolder,
+                           useDeveloperSupport: Boolean) {
   }
 }
