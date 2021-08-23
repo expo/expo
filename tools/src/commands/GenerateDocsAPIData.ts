@@ -116,6 +116,7 @@ async function action({packageName, version = 'unversioned'}: ActionOptions) {
     'expo-print': ['Print.ts'],
     'expo-random': ['Random.ts'],
     'expo-screen-capture': ['ScreenCapture.ts'],
+    'expo-screen-orientation': ['ScreenOrientation.ts'],
     'expo-secure-store': ['SecureStore.ts'],
     'expo-sharing': ['Sharing.ts'],
     'expo-sms': ['SMS.ts'],

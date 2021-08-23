@@ -12,6 +12,8 @@
 
 ### 💡 Others
 
+- Export missing `Subscription` type.
+
 ## 3.2.0 — 2021-06-16
 
 ### 🐛 Bug fixes
