@@ -260,8 +260,8 @@ require(\\"@expo/vector-icons\\");"
 `;
 
 exports[`metro supports automatic JSX runtime 1`] = `
-"Object.defineProperty(exports,\\"__esModule\\",{value:true});exports.default=App;var _jsxRuntime=require(\\"react/jsx-runtime\\");
-var _reactNative=require(\\"react-native\\");
+"Object.defineProperty(exports,\\"__esModule\\",{value:true});exports.default=App;
+var _reactNative=require(\\"react-native\\");var _jsxRuntime=require(\\"react/jsx-runtime\\");
 function App(){
 return(0,_jsxRuntime.jsx)(_reactNative.View,{children:(0,_jsxRuntime.jsx)(_reactNative.Text,{children:\\"Hello World\\"})});
 }"
@@ -287,7 +287,7 @@ import\\"@expo/vector-icons\\";"
 `;
 
 exports[`webpack supports automatic JSX runtime 1`] = `
-"import{jsx as _jsx}from\\"react/jsx-runtime\\";import Text from\\"react-native-web/dist/exports/Text\\";import View from\\"react-native-web/dist/exports/View\\";
+"import Text from\\"react-native-web/dist/exports/Text\\";import View from\\"react-native-web/dist/exports/View\\";import{jsx as _jsx}from\\"react/jsx-runtime\\";
 
 export default function App(){
 return _jsx(View,{children:_jsx(Text,{children:\\"Hello World\\"})});
