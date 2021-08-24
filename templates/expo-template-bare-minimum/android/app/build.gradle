@@ -189,22 +189,27 @@ dependencies {
 
     def isGifEnabled = (findProperty('expo.gif.enabled') ?: "") == "true";
     def isWebpEnabled = (findProperty('expo.webp.enabled') ?: "") == "true";
+    def isWebpAnimatedEnabled = (findProperty('expo.webp.animated') ?: "") == "true";
 
-     // If your app supports Android versions before Ice Cream Sandwich (API level 14)
+    // If your app supports Android versions before Ice Cream Sandwich (API level 14)
+    // All fresco packages should use the same version
     if (isGifEnabled || isWebpEnabled) {
         implementation 'com.facebook.fresco:fresco:2.0.0'
         implementation 'com.facebook.fresco:imagepipeline-okhttp3:2.0.0'
     }
 
-    // For animated GIF support
     if (isGifEnabled) {
+        // For animated gif support
         implementation 'com.facebook.fresco:animated-gif:2.0.0'
     }
 
-    // For WebP support, including animated WebP
     if (isWebpEnabled) {
+        // For webp support
         implementation 'com.facebook.fresco:webpsupport:2.0.0'
-        implementation 'com.facebook.fresco:animated-webp:2.0.0'
+        if (isWebpAnimatedEnabled) {
+            // Animated webp support
+            implementation 'com.facebook.fresco:animated-webp:2.0.0'
+        }
     }
     
     implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.0.0"
