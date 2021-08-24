@@ -46,7 +46,6 @@ import versioned.host.exp.exponent.modules.api.notifications.NotificationsModule
 import versioned.host.exp.exponent.modules.api.reanimated.ReanimatedModule
 import versioned.host.exp.exponent.modules.api.safeareacontext.SafeAreaContextPackage
 import versioned.host.exp.exponent.modules.api.screens.RNScreensPackage
-import versioned.host.exp.exponent.modules.api.viewshot.RNViewShotModule
 import versioned.host.exp.exponent.modules.internal.DevMenuModule
 import versioned.host.exp.exponent.modules.test.ExponentTestNativeModule
 import versioned.host.exp.exponent.modules.universal.ExpoModuleRegistryAdapter
@@ -106,11 +105,7 @@ class ExponentPackage : ReactPackage {
 
   override fun createNativeModules(reactContext: ReactApplicationContext): List<NativeModule> {
     val isVerified = manifest.isVerified() ?: false
-    val nativeModules: MutableList<NativeModule> = mutableListOf(
-      URLHandlerModule(reactContext),
-      ShakeModule(reactContext),
-      KeyboardModule(reactContext)
-    )
+    val nativeModules: MutableList<NativeModule> = mutableListOf()
 
     if (isKernel) {
       // WHEN_VERSIONING_REMOVE_FROM_HERE
@@ -127,7 +122,6 @@ class ExponentPackage : ReactPackage {
         val experienceKey = ExperienceKey.fromRawManifest(manifest)
         val scopedContext = ScopedContext(reactContext, experienceKey)
         nativeModules.add(NotificationsModule(reactContext, experienceKey, manifest.getStableLegacyID(), experienceProperties))
-        nativeModules.add(RNViewShotModule(reactContext, scopedContext))
         nativeModules.add(RandomModule(reactContext))
         nativeModules.add(ExponentTestNativeModule(reactContext))
         nativeModules.add(PedometerModule(reactContext))
