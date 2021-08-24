@@ -22,8 +22,7 @@ abstract_target 'BareExpoMain' do
 
   use_react_native!(
     :path => config[:reactNativePath],
-    # to enable hermes on iOS, change `false` to `true` and then install pods
-    :hermes_enabled => podfile_properties['jsEngine'] == 'hermes'
+    :hermes_enabled => podfile_properties['expo.jsEngine'] == 'hermes'
   )
 
   pod 'expo-dev-launcher', path: '../../../packages/expo-dev-launcher', :testspecs => ['Tests']
