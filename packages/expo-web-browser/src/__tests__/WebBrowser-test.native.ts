@@ -20,7 +20,7 @@ afterEach(() => {
 });
 
 it(`openBrowserAsync returns correctly`, async () => {
-  const pageUrl = 'http://expo.io';
+  const pageUrl = 'http://expo.dev';
   const openResult = await WebBrowser.openBrowserAsync(pageUrl);
   expect(openResult).toEqual(fakeReturnValue);
   expect(ExpoWebBrowser.openBrowserAsync).toHaveBeenCalledWith(pageUrl, {});

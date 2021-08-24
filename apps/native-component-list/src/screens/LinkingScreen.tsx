@@ -77,7 +77,7 @@ export default function LinkingScreen() {
       <TextInputButton text="https://github.com/search?q=Expo" />
       <TextInputButton text="https://www.expo.io" />
       <TextInputButton text="http://www.expo.io" />
-      <TextInputButton text="http://expo.io" />
+      <TextInputButton text="http://expo.dev" />
       <TextInputButton text="fb://notifications" />
       <TextInputButton text="geo:37.484847,-122.148386" />
       <TextInputButton text="tel:9876543210" />

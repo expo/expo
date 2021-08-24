@@ -7,9 +7,9 @@ import { alertAndWaitForResponse } from './helpers';
 
 export const name = 'GoogleSignIn';
 /*
- If you define the name of your email address, this will automatically sign you in (after the first successful sign-in) ex: bacon@expo.io
+ If you define the name of your email address, this will automatically sign you in (after the first successful sign-in) ex: bacon@expo.dev
 */
-const accountName = 'bacon@expo.io'; // undefined;
+const accountName = 'bacon@expo.dev'; // undefined;
 
 const config = {
   language: Localization.locale,

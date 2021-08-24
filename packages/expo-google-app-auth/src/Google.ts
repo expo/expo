@@ -23,16 +23,16 @@ export type GoogleLogInConfig = {
   iosClientId?: string;
   /**
    * Used in your custom Android app (production).
-   * Visit the docs page [Deploying to a standalone app on Android](https://docs.expo.io/versions/latest/sdk/google/#deploying-to-a-standalone-app-on-android) for more info.
+   * Visit the docs page [Deploying to a standalone app on Android](https://docs.expo.dev/versions/latest/sdk/google/#deploying-to-a-standalone-app-on-android) for more info.
    */
   androidStandaloneAppClientId?: string;
   /**
    * Used in your custom iOS app (production).
-   * Visit the docs page [Deploying to a standalone app on iOS](https://docs.expo.io/versions/latest/sdk/google/#deploying-to-a-standalone-app-on-ios) for more info.
+   * Visit the docs page [Deploying to a standalone app on iOS](https://docs.expo.dev/versions/latest/sdk/google/#deploying-to-a-standalone-app-on-ios) for more info.
    */
   iosStandaloneAppClientId?: string;
   /**
-   * @deprecated [learn more here](https://docs.expo.io/versions/latest/sdk/google/#server-side-apis).
+   * @deprecated [learn more here](https://docs.expo.dev/versions/latest/sdk/google/#server-side-apis).
    */
   webClientId?: string;
   /**
@@ -111,7 +111,7 @@ export function getPlatformGUID(config: GoogleLogInConfig) {
   if (!platformClientId) {
     throw new CodedError(
       'ERR_GOOGLE_CONFIG',
-      'Please provide the appropriate client ID. See the documentation for more details https://docs.expo.io/versions/latest/sdk/google/#loginasync'
+      'Please provide the appropriate client ID. See the documentation for more details https://docs.expo.dev/versions/latest/sdk/google/#loginasync'
     );
   }
 
@@ -168,8 +168,8 @@ function guidFromClientId(clientId: string): string {
  * Prompts the user to log into Google and grants your app permission to access some of their Google data, as specified by the scopes.
  *
  * Get started in:
- * - [**Expo Client**](https://docs.expo.io/versions/latest/sdk/google/#using-it-inside-of-the-expo-app)
- * - [**Standalone**](https://docs.expo.io/versions/latest/sdk/google/#deploying-to-a-standalone-app-on-ios)
+ * - [**Expo Client**](https://docs.expo.dev/versions/latest/sdk/google/#using-it-inside-of-the-expo-app)
+ * - [**Standalone**](https://docs.expo.dev/versions/latest/sdk/google/#deploying-to-a-standalone-app-on-ios)
  *
  * @param config
  */

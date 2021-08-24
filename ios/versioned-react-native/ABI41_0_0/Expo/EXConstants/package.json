@@ -29,7 +29,7 @@
   },
   "author": "650 Industries, Inc.",
   "license": "MIT",
-  "homepage": "https://docs.expo.io/versions/latest/sdk/constants/",
+  "homepage": "https://docs.expo.dev/versions/latest/sdk/constants/",
   "jest": {
     "preset": "expo-module-scripts"
   },

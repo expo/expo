@@ -31,7 +31,7 @@ function WebViewRemoteSource() {
     <View style={styles.container}>
       <H2 style={styles.header}>Remote Source</H2>
       <WebView
-        source={{ uri: 'https://expo.io/' }}
+        source={{ uri: 'https://expo.dev/' }}
         onLoadEnd={() => setLoading(false)}
         onMessage={({ nativeEvent: { data } }: MessageEvent) => {
           console.log('Got a message from WebView: ', JSON.parse(data));
@@ -58,7 +58,7 @@ function WebViewInlineSource() {
       <input type="submit">
     </p>
     <p>
-      <a href="https://expo.io">expo.io</a>
+      <a href="https://expo.dev">expo.io</a>
     </p>
   `,
         }}

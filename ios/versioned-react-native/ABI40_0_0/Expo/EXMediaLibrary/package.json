@@ -33,7 +33,7 @@
   },
   "author": "650 Industries, Inc.",
   "license": "MIT",
-  "homepage": "https://docs.expo.io/versions/latest/sdk/media-library/",
+  "homepage": "https://docs.expo.dev/versions/latest/sdk/media-library/",
   "jest": {
     "preset": "expo-module-scripts/ios"
   },

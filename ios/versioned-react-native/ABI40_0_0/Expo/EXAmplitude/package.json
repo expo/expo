@@ -32,7 +32,7 @@
   "jest": {
     "preset": "expo-module-scripts"
   },
-  "homepage": "https://docs.expo.io/versions/latest/sdk/amplitude/",
+  "homepage": "https://docs.expo.dev/versions/latest/sdk/amplitude/",
   "unimodulePeerDependencies": {
     "@unimodules/core": "*"
   },

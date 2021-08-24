@@ -18,21 +18,21 @@
 
 ## Introduction
 
-This is the source code for the Expo Go app used to view projects published to the Expo service. If you want to build and install Expo Go directly onto a device, you're in the right place. Note that if you just want to install Expo Go on a simulator, you do not need to build it from source. Instead, you should [follow the instructions here](https://docs.expo.io/versions/latest/introduction/installation.html).
+This is the source code for the Expo Go app used to view projects published to the Expo service. If you want to build and install Expo Go directly onto a device, you're in the right place. Note that if you just want to install Expo Go on a simulator, you do not need to build it from source. Instead, you should [follow the instructions here](https://docs.expo.dev/versions/latest/introduction/installation.html).
 
-To build Expo Go, follow the instructions in the [Setup](#setup) section below. Use the [Expo CLI](https://docs.expo.io/versions/latest/workflow/expo-cli) to use Expo's infrastructure to build your app.
+To build Expo Go, follow the instructions in the [Setup](#setup) section below. Use the [Expo CLI](https://docs.expo.dev/versions/latest/workflow/expo-cli) to use Expo's infrastructure to build your app.
 
-Please ask us on the [forums](https://forums.expo.io/) if you get stuck.
+Please ask us on the [forums](https://forums.expo.dev/) if you get stuck.
 
 ## External Contributions
 
-Please check with us before putting work into a Pull Request! We don't yet have a good guide available that covers the nuances of how to work with Expo Go and the types of PRs that we accept so you will want a direct line of communication with someone on the team to ask us questions. The best place to talk to us is either on Slack at https://slack.expo.io or the forums at https://forums.expo.io.
+Please check with us before putting work into a Pull Request! We don't yet have a good guide available that covers the nuances of how to work with Expo Go and the types of PRs that we accept so you will want a direct line of communication with someone on the team to ask us questions. The best place to talk to us is either on Discord at https://chat.expo.dev or the forums at https://forums.expo.dev.
 
 **Disclaimers:**
 
-If you want to build a standalone app that has a custom icon and name, see [our documentation here](https://docs.expo.io/versions/latest/distribution/building-standalone-apps/). You're in the wrong place and you shouldn't need to build Expo Go from source.
+If you want to build a standalone app that has a custom icon and name, see [our documentation here](https://docs.expo.dev/versions/latest/distribution/building-standalone-apps/). You're in the wrong place and you shouldn't need to build Expo Go from source.
 
-If you need to make native code changes to your Expo project, such as adding custom native modules, we can [generate a native project for you](https://docs.expo.io/versions/latest/expokit/eject). You're in the wrong place and you shouldn't need to build Expo Go from source.
+If you need to make native code changes to your Expo project, such as adding custom native modules, we can [generate a native project for you](https://docs.expo.dev/versions/latest/expokit/eject). You're in the wrong place and you shouldn't need to build Expo Go from source.
 
 ## Configuring your environment
 
@@ -78,11 +78,11 @@ Note: We support building Expo Go only on macOS.
 
 ## Standalone Apps
 
-If you don't need custom native code outside of the Expo SDK, head over to [our documentation on building standalone apps without needing Android Studio and Xcode](https://docs.expo.io/versions/latest/distribution/building-standalone-apps/).
+If you don't need custom native code outside of the Expo SDK, head over to [our documentation on building standalone apps without needing Android Studio and Xcode](https://docs.expo.dev/versions/latest/distribution/building-standalone-apps/).
 
-If you need standalone apps as built by running `expo build:ios` or `expo build:android` for a supported SDK version, check out our docs on [using turtle-cli to build apps locally or on CI](https://docs.expo.io/versions/latest/distribution/turtle-cli/).
+If you need standalone apps as built by running `expo build:ios` or `expo build:android` for a supported SDK version, check out our docs on [using turtle-cli to build apps locally or on CI](https://docs.expo.dev/versions/latest/distribution/turtle-cli/).
 
-If you're still here, you need to build a standalone app with code currently on `master` or another unreleased branch. Make sure to follow the [Configure app.json](https://docs.expo.io/versions/latest/distribution/building-standalone-apps/#2-configure-appjson) section of the docs before continuing. You'll need to add the appropriate fields to your `app.json` before the standalone app scripts can run. Once that's done, continue on to the platform-specific instructions.
+If you're still here, you need to build a standalone app with code currently on `master` or another unreleased branch. Make sure to follow the [Configure app.json](https://docs.expo.dev/versions/latest/distribution/building-standalone-apps/#2-configure-appjson) section of the docs before continuing. You'll need to add the appropriate fields to your `app.json` before the standalone app scripts can run. Once that's done, continue on to the platform-specific instructions.
 
 ### Android
 
@@ -105,7 +105,7 @@ Here are the steps to build a standalone iOS app:
 - `et ios-shell-app --action build --type [simulator or archive] --configuration [Debug or Release]`
 - The resulting archive will be created at `../shellAppBase-[type]`.
 - `et ios-shell-app --url [the published experience url] --action configure --type [simulator or archive] --archivePath [path to ExpoKitApp.app] --sdkVersion [sdk version of your experience] --output your-app.tar.gz`
-- This bundle is not signed and cannot be submitted to iTunes Connect as-is; you'll need to manually sign it if you'd like to submit it to Apple. [Fastlane](https://fastlane.tools/) is a good option for this. Also, [Expo will do this for you](https://docs.expo.io/versions/latest/distribution/building-standalone-apps/) if you don't need to build this project from source.
+- This bundle is not signed and cannot be submitted to iTunes Connect as-is; you'll need to manually sign it if you'd like to submit it to Apple. [Fastlane](https://fastlane.tools/) is a good option for this. Also, [Expo will do this for you](https://docs.expo.dev/versions/latest/distribution/building-standalone-apps/) if you don't need to build this project from source.
 - If you created a simulator build in the first step, unpack the tar.gz using `tar -xvzf your-app.tar.gz`. Then you can run this on iPhone Simulator using `xcrun simctl install booted <app path>` and `xcrun simctl launch booted <app identifier>`. Another alternative which some people prefer is to install the [ios-sim](https://github.com/phonegap/ios-sim) tool and then use `ios-sim launch <app path>`.
 - There are a few more optional flags you can pass to this script. They are all documented in the block comments inside `xdl/src/detach/IosShellApp.js`.
 

@@ -27,7 +27,7 @@ class LegacyManifestTest {
     )
     Assert.assertEquals(
       expected,
-      LegacyManifest.getAssetsUrlBase(Uri.parse("https://expo.io/@test/test"), mockManifest)
+      LegacyManifest.getAssetsUrlBase(Uri.parse("https://expo.dev/@test/test"), mockManifest)
     )
     Assert.assertEquals(
       expected,

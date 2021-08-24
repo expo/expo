@@ -12,7 +12,7 @@ internal class DevLauncherURLHelperTest {
   fun `tests changeUrlScheme`() {
     val expoUri = Uri.parse("exp://localhost:1999")
     val httpsUri = Uri.parse("https://google.com")
-    val uriWithPath = Uri.parse("https://expo.io/path")
+    val uriWithPath = Uri.parse("https://expo.dev/path")
 
     val expoParsedUri = changeUrlScheme(expoUri, "http")
     val httpsParsedUri = changeUrlScheme(httpsUri, "http")

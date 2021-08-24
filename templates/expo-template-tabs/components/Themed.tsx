@@ -1,6 +1,6 @@
 /**
  * Learn more about Light and Dark modes:
- * https://docs.expo.io/guides/color-schemes/
+ * https://docs.expo.dev/guides/color-schemes/
  */
 
 import * as React from 'react';

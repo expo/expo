@@ -5,8 +5,8 @@ import { Platform } from 'react-native';
 
 import { waitFor } from './helpers';
 
-const validHttpUrl = 'http://expo.io/';
-const validHttpsUrl = 'https://expo.io/';
+const validHttpUrl = 'http://expo.dev/';
+const validHttpsUrl = 'https://expo.dev/';
 const validExpUrl = 'exp://expo.io/@community/native-component-list';
 const redirectingBackendUrl = 'https://backend-xxswjknyfi.now.sh/?linkingUri=';
 

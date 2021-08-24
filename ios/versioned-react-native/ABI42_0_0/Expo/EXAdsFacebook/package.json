@@ -29,7 +29,7 @@
   },
   "author": "650 Industries, Inc.",
   "license": "MIT",
-  "homepage": "https://docs.expo.io/versions/latest/sdk/facebook-ads/",
+  "homepage": "https://docs.expo.dev/versions/latest/sdk/facebook-ads/",
   "dependencies": {
     "@expo/config-plugins": "^2.0.0",
     "expo-modules-core": "~0.1.1",

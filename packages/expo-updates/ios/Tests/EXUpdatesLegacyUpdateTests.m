@@ -42,7 +42,7 @@
   EXUpdatesLegacyRawManifest *manifest = [[EXUpdatesLegacyRawManifest alloc] initWithRawManifestJSON:@{}];
   NSURL *expected = [NSURL URLWithString:@"https://d1wp6m56sqw74a.cloudfront.net/~assets/"];
   XCTAssert([expected isEqual:[EXUpdatesLegacyUpdate bundledAssetBaseUrlWithManifest:manifest config:[EXUpdatesConfig configWithDictionary:@{@"EXUpdatesURL": @"https://exp.host/@test/test"}]]]);
-  XCTAssert([expected isEqual:[EXUpdatesLegacyUpdate bundledAssetBaseUrlWithManifest:manifest config:[EXUpdatesConfig configWithDictionary:@{@"EXUpdatesURL": @"https://expo.io/@test/test"}]]]);
+  XCTAssert([expected isEqual:[EXUpdatesLegacyUpdate bundledAssetBaseUrlWithManifest:manifest config:[EXUpdatesConfig configWithDictionary:@{@"EXUpdatesURL": @"https://expo.dev/@test/test"}]]]);
   XCTAssert([expected isEqual:[EXUpdatesLegacyUpdate bundledAssetBaseUrlWithManifest:manifest config:[EXUpdatesConfig configWithDictionary:@{@"EXUpdatesURL": @"https://expo.test/@test/test"}]]]);
 }
 

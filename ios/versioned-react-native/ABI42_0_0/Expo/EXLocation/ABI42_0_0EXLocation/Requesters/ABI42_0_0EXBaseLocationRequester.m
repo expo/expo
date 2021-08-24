@@ -37,7 +37,7 @@
   
   CLAuthorizationStatus systemStatus;
   if (![ABI42_0_0EXBaseLocationRequester isConfiguredForAlwaysAuthorization] && ![ABI42_0_0EXBaseLocationRequester isConfiguredForWhenInUseAuthorization]) {
-    ABI42_0_0UMFatal(ABI42_0_0UMErrorWithMessage(@"This app is missing usage descriptions, so location services will fail. Add one of the `NSLocation*UsageDescription` keys to your bundle's Info.plist. See https://bit.ly/2P5fEbG (https://docs.expo.io/versions/latest/guides/app-stores.html#system-permissions-dialogs-on-ios) for more information."));
+    ABI42_0_0UMFatal(ABI42_0_0UMErrorWithMessage(@"This app is missing usage descriptions, so location services will fail. Add one of the `NSLocation*UsageDescription` keys to your bundle's Info.plist. See https://bit.ly/2P5fEbG (https://docs.expo.dev/versions/latest/guides/app-stores.html#system-permissions-dialogs-on-ios) for more information."));
     systemStatus = kCLAuthorizationStatusDenied;
   } else {
     systemStatus = [CLLocationManager authorizationStatus];

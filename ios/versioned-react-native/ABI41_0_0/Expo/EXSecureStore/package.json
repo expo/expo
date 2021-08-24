@@ -31,7 +31,7 @@
   },
   "author": "650 Industries, Inc.",
   "license": "MIT",
-  "homepage": "https://docs.expo.io/versions/latest/sdk/securestore/",
+  "homepage": "https://docs.expo.dev/versions/latest/sdk/securestore/",
   "jest": {
     "preset": "expo-module-scripts"
   },

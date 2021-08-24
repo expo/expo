@@ -41,7 +41,7 @@
 {
   NSURL *expected = [NSURL URLWithString:@"https://d1wp6m56sqw74a.cloudfront.net/~assets/"];
   XCTAssert([expected isEqual:[ABI41_0_0EXUpdatesLegacyUpdate bundledAssetBaseUrlWithManifest:@{} config:[ABI41_0_0EXUpdatesConfig configWithDictionary:@{@"ABI41_0_0EXUpdatesURL": @"https://exp.host/@test/test"}]]]);
-  XCTAssert([expected isEqual:[ABI41_0_0EXUpdatesLegacyUpdate bundledAssetBaseUrlWithManifest:@{} config:[ABI41_0_0EXUpdatesConfig configWithDictionary:@{@"ABI41_0_0EXUpdatesURL": @"https://expo.io/@test/test"}]]]);
+  XCTAssert([expected isEqual:[ABI41_0_0EXUpdatesLegacyUpdate bundledAssetBaseUrlWithManifest:@{} config:[ABI41_0_0EXUpdatesConfig configWithDictionary:@{@"ABI41_0_0EXUpdatesURL": @"https://expo.dev/@test/test"}]]]);
   XCTAssert([expected isEqual:[ABI41_0_0EXUpdatesLegacyUpdate bundledAssetBaseUrlWithManifest:@{} config:[ABI41_0_0EXUpdatesConfig configWithDictionary:@{@"ABI41_0_0EXUpdatesURL": @"https://expo.test/@test/test"}]]]);
 }
 

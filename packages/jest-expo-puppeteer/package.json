@@ -20,9 +20,9 @@
     "prepublishOnly": "expo-module prepublishOnly",
     "expo-module": "expo-module"
   },
-  "author": "Expo <support@expo.io>",
+  "author": "Expo <support@expo.dev>",
   "contributors": [
-    "Evan Bacon <bacon@expo.io> (https://github.com/evanbacon)"
+    "Evan Bacon <bacon@expo.dev> (https://github.com/evanbacon)"
   ],
   "dependencies": {
     "@expo/config": "^4.0.0",

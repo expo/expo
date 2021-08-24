@@ -146,7 +146,7 @@ function TrackingItem() {
 }
 
 function handleLearnMorePress() {
-  WebBrowser.openBrowserAsync('https://expo.io/privacy-explained');
+  WebBrowser.openBrowserAsync('https://expo.dev/privacy-explained');
 }
 
 function SignOutItem() {

@@ -48,7 +48,7 @@ internal class WebBrowserModuleTest {
     initialize(mock)
 
     // when
-    module.openBrowserAsync("http://expo.io", browserArguments(), promise)
+    module.openBrowserAsync("http://expo.dev", browserArguments(), promise)
 
     // then
     promiseResolved(promise) {
@@ -65,7 +65,7 @@ internal class WebBrowserModuleTest {
     initialize(mock)
 
     // when
-    module.openBrowserAsync("http://expo.io", browserArguments(), promise)
+    module.openBrowserAsync("http://expo.dev", browserArguments(), promise)
 
     // then
     promiseRejected(promise) {
@@ -84,7 +84,7 @@ internal class WebBrowserModuleTest {
     initialize(mock)
 
     // when
-    module.openBrowserAsync("http://expo.io", browserArguments(), promise)
+    module.openBrowserAsync("http://expo.dev", browserArguments(), promise)
 
     // then
     promiseRejected(promise) {
@@ -104,7 +104,7 @@ internal class WebBrowserModuleTest {
 
     // when
     module.openBrowserAsync(
-      "http://expo.io",
+      "http://expo.dev",
       browserArguments(
         toolbarColor = "#000000",
         browserPackage = "com.browser.package",
@@ -131,7 +131,7 @@ internal class WebBrowserModuleTest {
 
     // when
     module.openBrowserAsync(
-      "http://expo.io",
+      "http://expo.dev",
       browserArguments(
         toolbarColor = "#000000",
         browserPackage = "com.browser.package",
@@ -161,7 +161,7 @@ internal class WebBrowserModuleTest {
 
     // when
     module.openBrowserAsync(
-      "http://expo.io",
+      "http://expo.dev",
       browserArguments(
         toolbarColor = "#000000",
         browserPackage = "com.browser.package",
@@ -190,7 +190,7 @@ internal class WebBrowserModuleTest {
 
     // when
     module.openBrowserAsync(
-      "http://expo.io",
+      "http://expo.dev",
       browserArguments(
         toolbarColor = "#000000",
         browserPackage = "com.browser.package",

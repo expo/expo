@@ -81,7 +81,7 @@ export async function test(t, { setPortalChild, cleanupPortal }) {
         t.expect(result.length).toEqual(1);
         t.expect(result[0]).toBeDefined();
         t.expect(result[0].type).toEqual(BarCodeScanner.Constants.BarCodeType.qr);
-        t.expect(result[0].data).toEqual('https://expo.io/');
+        t.expect(result[0].data).toEqual('https://expo.dev/');
         testBarCodeBounds(
           result[0].bounds,
           {
@@ -154,7 +154,7 @@ export async function test(t, { setPortalChild, cleanupPortal }) {
           t.expect(result.length).toEqual(1);
           t.expect(result[0]).toBeDefined();
           t.expect(result[0].type).toEqual(BarCodeScanner.Constants.BarCodeType.datamatrix);
-          t.expect(result[0].data).toEqual('https://expo.io/');
+          t.expect(result[0].data).toEqual('https://expo.dev/');
           testBarCodeBounds(
             result[0].bounds,
             {

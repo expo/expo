@@ -37,7 +37,7 @@ function removeOptionals(content) {
   return content.replace(regexp, '');
 }
 
-const DEFAULT_HOMEPAGE = 'https://docs.expo.io/versions/latest/';
+const DEFAULT_HOMEPAGE = 'https://docs.expo.dev/versions/latest/';
 
 function generateREADME() {
   const template = path.join(__dirname, '..', 'templates', 'README.md');

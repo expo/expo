@@ -17,16 +17,16 @@ export declare type GoogleLogInConfig = {
     iosClientId?: string;
     /**
      * Used in your custom Android app (production).
-     * Visit the docs page [Deploying to a standalone app on Android](https://docs.expo.io/versions/latest/sdk/google/#deploying-to-a-standalone-app-on-android) for more info.
+     * Visit the docs page [Deploying to a standalone app on Android](https://docs.expo.dev/versions/latest/sdk/google/#deploying-to-a-standalone-app-on-android) for more info.
      */
     androidStandaloneAppClientId?: string;
     /**
      * Used in your custom iOS app (production).
-     * Visit the docs page [Deploying to a standalone app on iOS](https://docs.expo.io/versions/latest/sdk/google/#deploying-to-a-standalone-app-on-ios) for more info.
+     * Visit the docs page [Deploying to a standalone app on iOS](https://docs.expo.dev/versions/latest/sdk/google/#deploying-to-a-standalone-app-on-ios) for more info.
      */
     iosStandaloneAppClientId?: string;
     /**
-     * @deprecated [learn more here](https://docs.expo.io/versions/latest/sdk/google/#server-side-apis).
+     * @deprecated [learn more here](https://docs.expo.dev/versions/latest/sdk/google/#server-side-apis).
      */
     webClientId?: string;
     /**
@@ -78,8 +78,8 @@ export declare function getPlatformGUID(config: GoogleLogInConfig): string;
  * Prompts the user to log into Google and grants your app permission to access some of their Google data, as specified by the scopes.
  *
  * Get started in:
- * - [**Expo Client**](https://docs.expo.io/versions/latest/sdk/google/#using-it-inside-of-the-expo-app)
- * - [**Standalone**](https://docs.expo.io/versions/latest/sdk/google/#deploying-to-a-standalone-app-on-ios)
+ * - [**Expo Client**](https://docs.expo.dev/versions/latest/sdk/google/#using-it-inside-of-the-expo-app)
+ * - [**Standalone**](https://docs.expo.dev/versions/latest/sdk/google/#deploying-to-a-standalone-app-on-ios)
  *
  * @param config
  */

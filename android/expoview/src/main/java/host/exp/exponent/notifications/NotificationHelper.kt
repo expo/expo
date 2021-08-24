@@ -107,7 +107,7 @@ object NotificationHelper {
           if (sharedPreferencesToken == null || sharedPreferencesToken.isEmpty()) {
             var message = "No device token found."
             if (!Constants.FCM_ENABLED) {
-              message += " You need to enable FCM in order to get a push token. Follow this guide to set up FCM for your standalone app: https://docs.expo.io/versions/latest/guides/using-fcm"
+              message += " You need to enable FCM in order to get a push token. Follow this guide to set up FCM for your standalone app: https://docs.expo.dev/versions/latest/guides/using-fcm"
             }
             listener.onFailure(Exception(message))
             return

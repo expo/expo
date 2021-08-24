@@ -1,6 +1,6 @@
 # Updating the Versions endpoint
 
-The [versions endpoint](https://expo.io/--/api/v2/versions) ([staging](https://staging.expo.io/--/api/v2/versions)) returns a JSON object containing information that is useful primarily in expo-cli for installing simulator builds, validating package versions, ejecting, and upgrading packages. It can also be used for any other purposes where similar information is required, for example linking to release notes from the website.
+The [versions endpoint](https://exp.host/--/api/v2/versions) ([staging](https://staging.exp.host/--/api/v2/versions)) returns a JSON object containing information that is useful primarily in expo-cli for installing simulator builds, validating package versions, ejecting, and upgrading packages. It can also be used for any other purposes where similar information is required, for example linking to release notes from the website.
 
 ## Using the CLI to update keys
 

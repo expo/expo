@@ -32,11 +32,11 @@
     "url": "https://github.com/expo/expo/issues"
   },
   "contributors": [
-    "Evan Bacon <bacon@expo.io> (https://github.com/evanbacon)"
+    "Evan Bacon <bacon@expo.dev> (https://github.com/evanbacon)"
   ],
   "author": "650 Industries, Inc.",
   "license": "MIT",
-  "homepage": "https://docs.expo.io/versions/latest/sdk/google-sign-in/",
+  "homepage": "https://docs.expo.dev/versions/latest/sdk/google-sign-in/",
   "jest": {
     "preset": "expo-module-scripts/ios"
   },

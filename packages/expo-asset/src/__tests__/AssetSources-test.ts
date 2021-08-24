@@ -142,11 +142,11 @@ describe('resolveUri', () => {
   });
 
   it(`resolves URLs relative to the manifest's base URL`, () => {
-    _mockConstants({ experienceUrl: 'https://expo.io/@user/app/index.exp' });
+    _mockConstants({ experienceUrl: 'https://expo.dev/@user/app/index.exp' });
     const AssetSources = require('../AssetSources');
 
     const url = AssetSources.resolveUri('./icon.png');
-    expect(url).toBe('https://expo.io/@user/app/icon.png');
+    expect(url).toBe('https://expo.dev/@user/app/icon.png');
   });
 
   it(`resolves . and .. in URLs`, () => {

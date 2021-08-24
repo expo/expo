@@ -30,7 +30,7 @@
   },
   "author": "650 Industries, Inc.",
   "license": "MIT",
-  "homepage": "https://docs.expo.io/versions/latest/sdk/apple-authentication/",
+  "homepage": "https://docs.expo.dev/versions/latest/sdk/apple-authentication/",
   "unimodulePeerDependencies": {
     "@unimodules/core": "*",
     "@unimodules/react-native-adapter": "*"

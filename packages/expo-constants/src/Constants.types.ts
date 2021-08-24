@@ -125,7 +125,7 @@ export type ExpoClientConfig = ExpoConfig & {
 };
 
 /**
- * A classic manifest https://docs.expo.io/guides/how-expo-works/#expo-manifest
+ * A classic manifest https://docs.expo.dev/guides/how-expo-works/#expo-manifest
  */
 export type AppManifest = ExpoClientConfig &
   ExpoGoConfig &

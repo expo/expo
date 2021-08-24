@@ -14,8 +14,8 @@ export function getFileExtension(url) {
  * https://example.com/app/manifest.json, the base URL would be https://example.com/app/. Query
  * parameters and fragments also are removed.
  *
- * For an Expo-hosted project with a manifest hosted at https://expo.io/@user/project/index.exp, the
- * base URL would be https://expo.io/@user/project.
+ * For an Expo-hosted project with a manifest hosted at https://expo.dev/@user/project/index.exp, the
+ * base URL would be https://expo.dev/@user/project.
  *
  * We also normalize the "exp" protocol to "http" to handle internal URLs with the Expo schemes used
  * to tell the OS to open the URLs in the the Expo client.

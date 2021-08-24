@@ -47,7 +47,7 @@
 {
   XCTestExpectation *expectToDownload = [[XCTestExpectation alloc] initWithDescription:@"Default EXFileDownloader should download a json file"];
   EXFileDownloader *fileDownloader = [[EXFileDownloader alloc] init];
-  NSURL *jsonFileUrl = [NSURL URLWithString:@"https://expo.io/@exponent/home/index.exp"];
+  NSURL *jsonFileUrl = [NSURL URLWithString:@"https://expo.dev/@exponent/home/index.exp"];
   [fileDownloader downloadFileFromURL:jsonFileUrl successBlock:^(NSData * _Nonnull data, NSURLResponse * _Nonnull response) {
     [expectToDownload fulfill];
   } errorBlock:^(NSError * _Nonnull error, NSURLResponse * _Nonnull response) {}];

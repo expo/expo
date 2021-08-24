@@ -1,7 +1,7 @@
 import Constants, { ExecutionEnvironment } from 'expo-constants';
 import { Platform } from 'expo-modules-core';
 
-const LINKING_GUIDE_URL = `https://docs.expo.io/guides/linking/`;
+const LINKING_GUIDE_URL = `https://docs.expo.dev/guides/linking/`;
 
 export function hasCustomScheme(): boolean {
   if (Constants.executionEnvironment === ExecutionEnvironment.Bare) {

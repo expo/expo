@@ -9,7 +9,7 @@ import { StyledText } from './Text';
 import { StyledView } from './Views';
 
 function handleLearnMorePress() {
-  WebBrowser.openBrowserAsync('https://docs.expo.io/workflow/publishing/');
+  WebBrowser.openBrowserAsync('https://docs.expo.dev/workflow/publishing/');
 }
 
 export default function EmptyAccountProjectsNotice() {

@@ -30,7 +30,7 @@
   "bugs": {
     "url": "https://github.com/expo/expo/issues"
   },
-  "homepage": "https://docs.expo.io/versions/latest/sdk/gl-view/",
+  "homepage": "https://docs.expo.dev/versions/latest/sdk/gl-view/",
   "author": "650 Industries, Inc.",
   "license": "MIT",
   "jest": {

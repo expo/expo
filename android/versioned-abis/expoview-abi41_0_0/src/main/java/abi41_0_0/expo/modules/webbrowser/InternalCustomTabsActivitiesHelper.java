@@ -29,7 +29,7 @@ import static androidx.browser.customtabs.CustomTabsService.ACTION_CUSTOM_TABS_C
 class InternalCustomTabsActivitiesHelper implements CustomTabsActivitiesHelper {
 
 
-  private final static String DUMMY_URL = "https://expo.io";
+  private final static String DUMMY_URL = "https://expo.dev";
 
   private ModuleRegistry mModuleRegistry;
 

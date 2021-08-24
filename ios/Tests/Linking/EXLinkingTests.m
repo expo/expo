@@ -70,10 +70,10 @@
 
 - (void)testDoesDeepLinkingDifferentiateDomains
 {
-  [self _assertDeepLink:@"https://expo.io/@ben/foodwheel" doesNotRouteToManifest:@"https://exp.host/@ben/foodwheel"];
+  [self _assertDeepLink:@"https://expo.dev/@ben/foodwheel" doesNotRouteToManifest:@"https://exp.host/@ben/foodwheel"];
   [self _assertDeepLink:@"https://google.com/@ben/foodwheel" doesNotRouteToManifest:@"https://exp.host/@ben/foodwheel"];
   [self _assertDeepLink:@"https://@ben/foodwheel" doesNotRouteToManifest:@"https://exp.host/@ben/foodwheel"];
-  [self _assertDeepLink:@"https://expo.io/@ben/foodwheel" doesNotRouteToManifest:@"https://@ben/foodwheel"];
+  [self _assertDeepLink:@"https://expo.dev/@ben/foodwheel" doesNotRouteToManifest:@"https://@ben/foodwheel"];
 }
 
 - (void)testIsDeepLinkingInvariantToQueryString
@@ -106,7 +106,7 @@
 
 - (void)testAreExpoSubdomainsNotDeepLinks
 {
-  NSURL *docsUrl = [NSURL URLWithString:@"https://docs.expo.io"];
+  NSURL *docsUrl = [NSURL URLWithString:@"https://docs.expo.dev"];
   XCTAssert([[EXKernel sharedInstance].serviceRegistry.linkingManager linkingModule:nil shouldOpenExpoUrl:docsUrl] == NO,
             @"URL %@ should not be routed internally as a deep link", docsUrl);
 }

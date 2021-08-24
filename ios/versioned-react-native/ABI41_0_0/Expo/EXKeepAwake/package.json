@@ -30,7 +30,7 @@
   },
   "author": "650 Industries, Inc.",
   "license": "MIT",
-  "homepage": "https://docs.expo.io/versions/latest/sdk/keep-awake/",
+  "homepage": "https://docs.expo.dev/versions/latest/sdk/keep-awake/",
   "devDependencies": {
     "expo-module-scripts": "^2.0.0"
   }

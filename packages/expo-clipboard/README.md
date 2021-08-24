@@ -4,7 +4,7 @@
 
 ## API documentation
 
-Please refer to the [API documentation for the latest stable release](https://docs.expo.io/versions/latest/sdk/clipboard/).
+Please refer to the [API documentation for the latest stable release](https://docs.expo.dev/versions/latest/sdk/clipboard/).
 
 ## Installation in managed Expo projects
 

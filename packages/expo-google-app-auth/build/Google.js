@@ -18,7 +18,7 @@ export function getPlatformGUID(config) {
         throw new CodedError('ERR_GOOGLE_CONFIG', 'Keys for Android and iOS cannot be the same value. Ensure you are linking the client IDs matching the given platforms in the Google APIs console: https://console.developers.google.com/apis/credentials');
     }
     if (!platformClientId) {
-        throw new CodedError('ERR_GOOGLE_CONFIG', 'Please provide the appropriate client ID. See the documentation for more details https://docs.expo.io/versions/latest/sdk/google/#loginasync');
+        throw new CodedError('ERR_GOOGLE_CONFIG', 'Please provide the appropriate client ID. See the documentation for more details https://docs.expo.dev/versions/latest/sdk/google/#loginasync');
     }
     const guid = guidFromClientId(platformClientId);
     return guid;
@@ -63,8 +63,8 @@ function guidFromClientId(clientId) {
  * Prompts the user to log into Google and grants your app permission to access some of their Google data, as specified by the scopes.
  *
  * Get started in:
- * - [**Expo Client**](https://docs.expo.io/versions/latest/sdk/google/#using-it-inside-of-the-expo-app)
- * - [**Standalone**](https://docs.expo.io/versions/latest/sdk/google/#deploying-to-a-standalone-app-on-ios)
+ * - [**Expo Client**](https://docs.expo.dev/versions/latest/sdk/google/#using-it-inside-of-the-expo-app)
+ * - [**Standalone**](https://docs.expo.dev/versions/latest/sdk/google/#deploying-to-a-standalone-app-on-ios)
  *
  * @param config
  */

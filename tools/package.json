@@ -20,7 +20,7 @@
     "et": "bin/expotools.js",
     "expotools": "bin/expotools.js"
   },
-  "author": "support@expo.io",
+  "author": "support@expo.dev",
   "license": "MIT",
   "dependencies": {
     "@expo/commander": "2.21.1",
