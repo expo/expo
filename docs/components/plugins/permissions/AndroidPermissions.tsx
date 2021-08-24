@@ -45,7 +45,7 @@ export function AndroidPermissions(props: AndroidPermissionsProps) {
 }
 
 function AndroidPermissionRow(permission: AndroidPermission) {
-  const { name, description, descriptionLong, warning, apiDeprecated } = permission;
+  const { name, description, explanation, warning, apiDeprecated } = permission;
 
   return (
     <tr css={apiDeprecated && deprecatedStyle}>
@@ -61,16 +61,16 @@ function AndroidPermissionRow(permission: AndroidPermission) {
       </td> */}
       <td>
         {!!description && (
-          <p css={(warning || descriptionLong) && descriptionSpaceStyle}>{description}</p>
+          <p css={(warning || explanation) && descriptionSpaceStyle}>{description}</p>
         )}
         {!!warning && (
           <Quote css={quoteStyle}>
             <span>⚠️ {warning}</span>
           </Quote>
         )}
-        {descriptionLong && !warning && (
+        {explanation && !warning && (
           <Quote css={quoteStyle}>
-            <span dangerouslySetInnerHTML={{ __html: descriptionLong }} />
+            <span dangerouslySetInnerHTML={{ __html: explanation }} />
           </Quote>
         )}
       </td>
