@@ -7,6 +7,10 @@ import Permalink from '~/components/Permalink';
 import { InlineCode } from '~/components/base/code';
 import { Quote } from '~/components/base/paragraph';
 
+// TODO(cedric): all commented code is related to the "granter" column.
+// This column defines if the permission is granted by the system or user (requires notification).
+// We have to clearly communicate what it means before showing it to the user.
+
 // import { QuestionIcon } from '~/components/icons/QuestionIcon';
 
 type AndroidPermissionsProps = {
