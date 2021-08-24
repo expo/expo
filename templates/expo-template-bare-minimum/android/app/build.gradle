@@ -186,6 +186,27 @@ dependencies {
     implementation fileTree(dir: "libs", include: ["*.jar"])
     //noinspection GradleDynamicVersion
     implementation "com.facebook.react:react-native:+"  // From node_modules
+
+    def isGifEnabled = (findProperty('expo.gif.enabled') ?: "") == "true";
+    def isWebpEnabled = (findProperty('expo.webp.enabled') ?: "") == "true";
+
+     // If your app supports Android versions before Ice Cream Sandwich (API level 14)
+    if (isGifEnabled || isWebpEnabled) {
+        implementation 'com.facebook.fresco:fresco:2.0.0'
+        implementation 'com.facebook.fresco:imagepipeline-okhttp3:2.0.0'
+    }
+
+    // For animated GIF support
+    if (isGifEnabled) {
+        implementation 'com.facebook.fresco:animated-gif:2.0.0'
+    }
+
+    // For WebP support, including animated WebP
+    if (isWebpEnabled) {
+        implementation 'com.facebook.fresco:webpsupport:2.0.0'
+        implementation 'com.facebook.fresco:animated-webp:2.1.0'
+    }
+    
     implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.0.0"
     debugImplementation("com.facebook.flipper:flipper:${FLIPPER_VERSION}") {
       exclude group:'com.facebook.fbjni'
