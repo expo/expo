@@ -121,7 +121,6 @@ class ExpoImageView(context: ReactContext, private val requestManager: RequestMa
       val options = createOptionsFromSourceMap(sourceMap)
       val propOptions = createPropOptions()
       val eventsManager = ImageLoadEventsManager(id, eventEmitter)
-      val propOptions = createPropOptions()
       progressInterceptor.registerProgressListener(sourceToLoad.toStringUrl(), eventsManager)
       eventsManager.onLoadStarted()
       requestManager
