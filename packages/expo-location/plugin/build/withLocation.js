@@ -3,23 +3,36 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const config_plugins_1 = require("@expo/config-plugins");
 const pkg = require('expo-location/package.json');
 const LOCATION_USAGE = 'Allow $(PRODUCT_NAME) to access your location';
-const withLocation = (config, { locationAlwaysAndWhenInUsePermission, locationAlwaysPermission, locationWhenInUsePermission, isAndroidBackgroundLocationEnabled, } = {}) => {
-    if (!config.ios)
-        config.ios = {};
-    if (!config.ios.infoPlist)
-        config.ios.infoPlist = {};
-    config.ios.infoPlist.NSLocationAlwaysAndWhenInUseUsageDescription =
-        locationAlwaysAndWhenInUsePermission ||
-            config.ios.infoPlist.NSLocationAlwaysAndWhenInUseUsageDescription ||
-            LOCATION_USAGE;
-    config.ios.infoPlist.NSLocationAlwaysUsageDescription =
-        locationAlwaysPermission ||
-            config.ios.infoPlist.NSLocationAlwaysUsageDescription ||
-            LOCATION_USAGE;
-    config.ios.infoPlist.NSLocationWhenInUseUsageDescription =
-        locationWhenInUsePermission ||
-            config.ios.infoPlist.NSLocationWhenInUseUsageDescription ||
-            LOCATION_USAGE;
+const withBackgroundLocation = config => {
+    return config_plugins_1.withInfoPlist(config, config => {
+        if (!Array.isArray(config.modResults.UIBackgroundModes)) {
+            config.modResults.UIBackgroundModes = [];
+        }
+        if (!config.modResults.UIBackgroundModes.includes('location')) {
+            config.modResults.UIBackgroundModes.push('location');
+        }
+        return config;
+    });
+};
+const withLocation = (config, { locationAlwaysAndWhenInUsePermission, locationAlwaysPermission, locationWhenInUsePermission, isIosBackgroundLocationEnabled, isAndroidBackgroundLocationEnabled, } = {}) => {
+    if (isIosBackgroundLocationEnabled) {
+        config = withBackgroundLocation(config);
+    }
+    config = config_plugins_1.withInfoPlist(config, config => {
+        config.modResults.NSLocationAlwaysAndWhenInUseUsageDescription =
+            locationAlwaysAndWhenInUsePermission ||
+                config.modResults.NSLocationAlwaysAndWhenInUseUsageDescription ||
+                LOCATION_USAGE;
+        config.modResults.NSLocationAlwaysUsageDescription =
+            locationAlwaysPermission ||
+                config.modResults.NSLocationAlwaysUsageDescription ||
+                LOCATION_USAGE;
+        config.modResults.NSLocationWhenInUseUsageDescription =
+            locationWhenInUsePermission ||
+                config.modResults.NSLocationWhenInUseUsageDescription ||
+                LOCATION_USAGE;
+        return config;
+    });
     return config_plugins_1.AndroidConfig.Permissions.withPermissions(config, [
         'android.permission.ACCESS_COARSE_LOCATION',
         'android.permission.ACCESS_FINE_LOCATION',
