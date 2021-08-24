@@ -1,7 +1,4 @@
-import crop from './actions/CropAction.web';
-import flip from './actions/FlipAction.web';
-import resize from './actions/ResizeAction.web';
-import rotate from './actions/RotateAction.web';
+import { crop, flip, resize, rotate } from './actions/index.web';
 import { getContext } from './utils/getContext.web';
 function getResults(canvas, options) {
     let base64;
