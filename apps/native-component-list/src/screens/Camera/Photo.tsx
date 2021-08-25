@@ -38,8 +38,8 @@ export default class Photo extends React.Component<
 
   detectFace = () =>
     FaceDetector.detectFacesAsync(this.props.uri, {
-      detectLandmarks: FaceDetector.Constants.Landmarks.none,
-      runClassifications: FaceDetector.Constants.Classifications.all,
+      detectLandmarks: FaceDetector.FaceDetectorLandmarks.none,
+      runClassifications: FaceDetector.FaceDetectorClassifications.all,
     })
       .then(this.facesDetected)
       .catch(this.handleFaceDetectionError);
