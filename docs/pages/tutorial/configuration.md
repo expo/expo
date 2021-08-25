@@ -10,7 +10,7 @@ Before we can consider our app truly complete we need to add a splash screen and
 
 ## Splash screen
 
-After telling our designer that we need a 1242px width by 2436px height splash screen image (more about this in [the splash screen guide](../guides/splash-screens.md)), she gave us the following file:
+After telling our designers that we need a 1242px width by 2436px height splash screen image (more about this in [the splash screen guide](../guides/splash-screens.md)), they gave us the following file:
 
 <ImageSpotlight src="/static/images/tutorial/splash.png" style={{ maxWidth: 150 }} containerStyle={{ marginBottom: 0 }} />
 
