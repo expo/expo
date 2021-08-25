@@ -39,8 +39,9 @@ object TestServerUtils {
 
     // Launch the app
     val context = InstrumentationRegistry.getContext()
-    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(fixtureServer!!.manifestServerUrl))
-    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(fixtureServer!!.manifestServerUrl)).apply {
+      addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+    }
     context.startActivity(intent)
 
     // Wait for the app to appear
@@ -114,13 +115,13 @@ object TestServerUtils {
 
   class TestEvent(private val type: String, private val data: String, private val testEventId: Int) {
     @Throws(Exception::class)
-    fun waitForCompleted(device: UiDevice, manifestUrl: String?) {
+    fun waitForCompleted(device: UiDevice, manifestUrl: String) {
       if (type == "findTextOnScreen") {
         ExpoConditionWatcher.waitForText(device, data)
       }
       try {
         val request = Request.Builder()
-          .url(ExponentUrls.toHttp(manifestUrl!!) + "/finished-test-event")
+          .url(ExponentUrls.toHttp(manifestUrl) + "/finished-test-event")
           .addHeader("test-event-id", testEventId.toString())
           .build()
         httpRequest(request)

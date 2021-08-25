@@ -9,12 +9,8 @@ import host.exp.exponent.experience.BaseExperienceActivity
 class LoadingScreenIdlingResource : IdlingResource {
   private var resourceCallback: IdlingResource.ResourceCallback? = null
 
-  var startTime: Long = System.currentTimeMillis()
-
   fun onEvent(event: ExperienceDoneLoadingEvent?) {
-    if (resourceCallback != null) {
-      resourceCallback!!.onTransitionToIdle()
-    }
+    resourceCallback?.onTransitionToIdle()
   }
 
   override fun getName(): String {
@@ -25,9 +21,9 @@ class LoadingScreenIdlingResource : IdlingResource {
     if (BaseExperienceActivity.visibleActivity == null) {
       return false
     }
-    val isIdle: Boolean = !BaseExperienceActivity.visibleActivity!!.isLoading
-    if (isIdle && resourceCallback != null) {
-      resourceCallback!!.onTransitionToIdle()
+    val isIdle = !BaseExperienceActivity.visibleActivity!!.isLoading
+    if (isIdle) {
+      resourceCallback?.onTransitionToIdle()
     }
     return isIdle
   }

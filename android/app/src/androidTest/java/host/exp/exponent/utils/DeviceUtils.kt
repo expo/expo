@@ -8,8 +8,9 @@ import android.widget.Switch
 import androidx.test.InstrumentationRegistry
 import androidx.test.uiautomator.*
 
+private const val LAUNCH_TIMEOUT = 5000
+
 object DeviceUtils {
-  private const val LAUNCH_TIMEOUT = 5000
   fun allowDrawingOverOtherApps(uiDevice: UiDevice) {
     // Start from the home screen
     uiDevice.pressHome()
@@ -17,6 +18,7 @@ object DeviceUtils {
     // Wait for launcher
     val launcherPackage = uiDevice.launcherPackageName
     uiDevice.wait(Until.hasObject(By.pkg(launcherPackage).depth(0)), LAUNCH_TIMEOUT.toLong())
+
     val context = InstrumentationRegistry.getContext()
     // Enable draw over other apps if necessary
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.canDrawOverlays(context)) {

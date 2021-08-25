@@ -82,9 +82,9 @@ object TestContacts {
   private fun removeAllContacts(context: Context) {
     val cr = context.contentResolver
     val cursor = cr.query(ContactsContract.Contacts.CONTENT_URI, null, null, null, null) ?: return
-    cursor.use { cur ->
-      while (cur.moveToNext()) {
-        val id = cur.getString(cur.getColumnIndex(ContactsContract.Contacts._ID))
+    cursor.use {
+      while (it.moveToNext()) {
+        val id = it.getString(it.getColumnIndex(ContactsContract.Contacts._ID))
         val cur1 = cr.query(
           ContactsContract.CommonDataKinds.Email.CONTENT_URI, null,
           ContactsContract.CommonDataKinds.Email.CONTACT_ID + " = ?", arrayOf(id), null
@@ -100,7 +100,7 @@ object TestContacts {
         }
         cur1.close()
         if (shouldDelete) {
-          val lookupKey = cur.getString(cur.getColumnIndex(ContactsContract.Contacts.LOOKUP_KEY))
+          val lookupKey = it.getString(it.getColumnIndex(ContactsContract.Contacts.LOOKUP_KEY))
           val uri = Uri.withAppendedPath(ContactsContract.Contacts.CONTENT_LOOKUP_URI, lookupKey)
           cr.delete(uri, null, null)
         }
