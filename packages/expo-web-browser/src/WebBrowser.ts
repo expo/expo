@@ -355,7 +355,17 @@ async function _openBrowserAndWaitAndroidAsync(
   });
 
   let result: WebBrowserResult = { type: WebBrowserResultType.CANCEL };
-  const { type } = await openBrowserAsync(startUrl, browserParams);
+  let type: string | null = null;
+
+  try {
+    ({ type } = await openBrowserAsync(startUrl, browserParams));
+  } catch (e) {
+    if (e.message === 'No matching activity!') {
+      AppState.removeEventListener('change', _onAppStateChangeAndroid);
+      _onWebBrowserCloseAndroid = null;
+      throw e;
+    }
+  }
 
   if (type === 'opened') {
     await appStateChangedToActive;

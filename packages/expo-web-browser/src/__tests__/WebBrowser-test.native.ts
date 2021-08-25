@@ -31,3 +31,20 @@ it(`dismissBrowser returns nothing`, () => {
   expect(closeResult).toBeUndefined();
   expect(ExpoWebBrowser.dismissBrowser).toHaveBeenCalledTimes(1);
 });
+
+it(`openAuthSessionAsync allows subsequent attempts if the browser never opens`, async () => {
+  ExpoWebBrowser.openBrowserAsync.mockRejectedValue(new Error('No matching activity!'));
+  const pageUrl = 'http://expo.io';
+  const redirectUrl = 'exp://expo.io';
+  try {
+    await WebBrowser.openAuthSessionAsync(pageUrl, redirectUrl);
+  } catch (e) {
+    expect(e.message).toBe('No matching activity!');
+  }
+  try {
+    await WebBrowser.openAuthSessionAsync(pageUrl, redirectUrl);
+  } catch (e) {
+    expect(e.message).toBe('No matching activity!');
+  }
+  expect.assertions(2);
+});
