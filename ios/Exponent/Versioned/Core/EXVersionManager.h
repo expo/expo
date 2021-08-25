@@ -2,7 +2,7 @@
 
 #import <Foundation/Foundation.h>
 #import <React/RCTLog.h>
-#import <EXUpdates/EXUpdatesRawManifest.h>
+#import <EXRawManifests/EXUpdatesRawManifest.h>
 
 @interface EXVersionManager : NSObject
 

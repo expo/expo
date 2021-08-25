@@ -1,5 +1,5 @@
 #import "EXReactAppManager.h"
-#import <EXUpdates/EXUpdatesRawManifest.h>
+#import <EXRawManifests/EXUpdatesRawManifest.h>
 
 FOUNDATION_EXPORT NSString *kEXHomeBundleResourceName;
 FOUNDATION_EXPORT NSString *kEXHomeManifestResourceName;

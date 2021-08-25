@@ -14,7 +14,6 @@ Pod::Spec.new do |s|
   s.source         = { git: 'https://github.com/expo/expo.git' }
 
   s.dependency 'ExpoModulesCore'
-  s.dependency 'EXRawManifestsInterface'
 
   s.pod_target_xcconfig = {
     'GCC_TREAT_INCOMPATIBLE_POINTER_TYPE_WARNINGS_AS_ERRORS' => 'YES',

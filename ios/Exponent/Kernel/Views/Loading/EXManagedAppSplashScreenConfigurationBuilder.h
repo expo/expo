@@ -1,6 +1,6 @@
 #import <Foundation/Foundation.h>
 #import "EXManagedAppSplashScreenConfiguration.h"
-#import <EXUpdates/EXUpdatesRawManifest.h>
+#import <EXRawManifests/EXUpdatesRawManifest.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

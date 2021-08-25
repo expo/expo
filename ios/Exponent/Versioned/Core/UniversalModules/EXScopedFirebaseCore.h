@@ -3,7 +3,7 @@
 #if __has_include(<EXFirebaseCore/EXFirebaseCore.h>)
 #import <UIKit/UIKit.h>
 #import <EXFirebaseCore/EXFirebaseCore.h>
-#import <EXUpdates/EXUpdatesRawManifest.h>
+#import <EXRawManifests/EXUpdatesRawManifest.h>
 #import "EXConstantsBinding.h"
 
 NS_ASSUME_NONNULL_BEGIN

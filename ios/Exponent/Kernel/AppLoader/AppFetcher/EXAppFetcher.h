@@ -2,7 +2,7 @@
 
 #import <Foundation/Foundation.h>
 #import "EXResourceLoader.h"
-#import <EXUpdates/EXUpdatesRawManifest.h>
+#import <EXRawManifests/EXUpdatesRawManifest.h>
 
 @class EXAppLoader;
 @class EXAppFetcher;
