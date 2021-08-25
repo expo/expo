@@ -4,6 +4,18 @@ const imageTests: ImageTestGroup = {
   name: 'Android',
   tests: [
     {
+      name: 'accessible',
+      props: {
+        accessible: true,
+      },
+    },
+    {
+      name: 'accessibilityLabel',
+      props: {
+        accessibilityLabel: 'Test passed',
+      },
+    },
+    {
       name: 'Resize method: auto',
       props: {
         resizeMethod: 'auto',
