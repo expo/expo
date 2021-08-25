@@ -13,12 +13,23 @@ function assertByteCount(value, methodName) {
 /**
  * Generates completely random bytes using native implementations. The `byteCount` property
  * is a `number` indicating the number of bytes to generate in the form of a `Uint8Array`.
+ * Falls back to `Math.random` during development to prevent issues with React Native Debugger.
  * @param byteCount - A number within the range from `0` to `1024`. Anything else will throw a `TypeError`.
  * @return An array of random bytes with the same length as the `byteCount`.
  */
 export function getRandomBytes(byteCount) {
     assertByteCount(byteCount, 'getRandomBytes');
     const validByteCount = Math.floor(byteCount);
+    if (__DEV__) {
+        if (!global.nativeCallSyncHook || global.__REMOTEDEV__) {
+            // remote javascript debugging is enabled
+            const array = new Uint8Array(validByteCount);
+            for (let i = 0; i < validByteCount; i++) {
+                array[i] = Math.floor(Math.random() * 256);
+            }
+            return array;
+        }
+    }
     if (ExpoRandom.getRandomBytes) {
         return ExpoRandom.getRandomBytes(validByteCount);
     }

@@ -1,4 +1,4 @@
-import { PermissionStatus, createPermissionHook, UnavailabilityError, } from 'expo-modules-core';
+import { createPermissionHook, PermissionStatus, UnavailabilityError, } from 'expo-modules-core';
 import { Platform } from 'react-native';
 import ExpoBrightness from './ExpoBrightness';
 // @needsAudit

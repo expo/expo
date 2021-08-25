@@ -111,7 +111,7 @@ function removeEmoji(emoji: string, children: string[]) {
   }
 }
 
-export const Quote = ({ children }: { children: JSX.Element | JSX.Element[] }) => {
+export const Quote = ({ children, ...rest }: { children: JSX.Element | JSX.Element[] }) => {
   let icon: React.ReactNode = (
     <div style={{ marginTop: 2 }}>
       <Info size={16} />
@@ -137,7 +137,7 @@ export const Quote = ({ children }: { children: JSX.Element | JSX.Element[] }) =
   });
 
   return (
-    <blockquote {...attributes} css={STYLES_BLOCKQUOTE}>
+    <blockquote {...attributes} css={STYLES_BLOCKQUOTE} {...rest}>
       <div>{icon}</div>
       <div>{newChildren}</div>
     </blockquote>

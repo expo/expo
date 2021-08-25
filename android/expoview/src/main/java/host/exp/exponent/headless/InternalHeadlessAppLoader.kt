@@ -245,20 +245,21 @@ class InternalHeadlessAppLoader(private val context: Context) :
       KernelConstants.LINKING_URI_KEY to linkingUri,
       KernelConstants.INTENT_URI_KEY to mIntentUri
     )
-    val instanceManagerBuilderProperties = InstanceManagerBuilderProperties()
-    instanceManagerBuilderProperties.application = context as Application
-    instanceManagerBuilderProperties.jsBundlePath = jsBundlePath
-    instanceManagerBuilderProperties.experienceProperties = experienceProperties
-    instanceManagerBuilderProperties.expoPackages = extraExpoPackages
-    instanceManagerBuilderProperties.exponentPackageDelegate = delegate.exponentPackageDelegate
-    instanceManagerBuilderProperties.manifest = manifest
-    instanceManagerBuilderProperties.singletonModules = ExponentPackage.getOrCreateSingletonModules(context, manifest, extraExpoPackages)
+    val instanceManagerBuilderProperties = InstanceManagerBuilderProperties(
+      application = context as Application,
+      jsBundlePath = jsBundlePath,
+      experienceProperties = experienceProperties,
+      expoPackages = extraExpoPackages,
+      exponentPackageDelegate = delegate.exponentPackageDelegate,
+      manifest = manifest!!,
+      singletonModules = ExponentPackage.getOrCreateSingletonModules(context, manifest, extraExpoPackages),
+    )
 
-    val versionedUtils = RNObject("host.exp.exponent.VersionedUtils").loadVersion(mSDKVersion)
+    val versionedUtils = RNObject("host.exp.exponent.VersionedUtils").loadVersion(mSDKVersion!!)
     val builder = versionedUtils.callRecursive(
       "getReactInstanceManagerBuilder",
       instanceManagerBuilderProperties
-    )
+    )!!
 
     // Since there is no activity to be attached, we cannot set ReactInstanceManager state to RESUMED, so we opt to BEFORE_RESUME
     builder.call(

@@ -1,13 +1,14 @@
 
 struct AnyArgumentType: CustomDebugStringConvertible {
   let baseType: Any.Type
+  let typeName: String
 
   private let castHelper: (Any) -> AnyMethodArgument?
   private let canCastHelper: (Any) -> Bool
 
   init<T: AnyMethodArgument>(_ baseType: T.Type) {
     self.baseType = baseType
-
+    self.typeName = String(describing: baseType)
     self.castHelper = { $0 as? T }
 
     // handle class metatypes separately in order to allow T.self != base.
@@ -19,7 +20,7 @@ struct AnyArgumentType: CustomDebugStringConvertible {
         .contains { $0.subjectType == baseType }
       }
     } else {
-      self.canCastHelper = { $0 is T.Type }
+      self.canCastHelper = { $0 is T }
     }
   }
 
@@ -29,6 +30,10 @@ struct AnyArgumentType: CustomDebugStringConvertible {
 
   func canCast<T>(_ object: T) -> Bool {
     return canCastHelper(object)
+  }
+
+  func canCastToType<T>(_ type: T.Type) -> Bool {
+    return baseType is T.Type
   }
 
   func castWrappedType<T>(_ type: T.Type) -> T? {

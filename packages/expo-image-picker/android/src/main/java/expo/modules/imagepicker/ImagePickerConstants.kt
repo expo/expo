@@ -35,8 +35,6 @@ object ImagePickerConstants {
   const val OPTION_EXIF = "exif"
   const val OPTION_VIDEO_MAX_DURATION = "videoMaxDuration"
 
-  // We need to explicitly get latitude, longitude, altitude with their specific accessor functions
-  // separately so we skip them in this list.
   val exifTags = arrayOf(
     arrayOf("string", ExifInterface.TAG_ARTIST),
     arrayOf("int", ExifInterface.TAG_BITS_PER_SAMPLE),
@@ -126,6 +124,7 @@ object ImagePickerConstants {
     arrayOf("int", ExifInterface.TAG_SUBJECT_LOCATION),
     arrayOf("string", ExifInterface.TAG_USER_COMMENT),
     arrayOf("int", ExifInterface.TAG_WHITE_BALANCE),
+    arrayOf("double", ExifInterface.TAG_GPS_ALTITUDE),
     arrayOf("int", ExifInterface.TAG_GPS_ALTITUDE_REF),
     arrayOf("string", ExifInterface.TAG_GPS_AREA_INFORMATION),
     arrayOf("double", ExifInterface.TAG_GPS_DOP),
@@ -142,7 +141,9 @@ object ImagePickerConstants {
     arrayOf("string", ExifInterface.TAG_GPS_H_POSITIONING_ERROR),
     arrayOf("double", ExifInterface.TAG_GPS_IMG_DIRECTION),
     arrayOf("string", ExifInterface.TAG_GPS_IMG_DIRECTION_REF),
+    arrayOf("double", ExifInterface.TAG_GPS_LATITUDE),
     arrayOf("string", ExifInterface.TAG_GPS_LATITUDE_REF),
+    arrayOf("double", ExifInterface.TAG_GPS_LONGITUDE),
     arrayOf("string", ExifInterface.TAG_GPS_LONGITUDE_REF),
     arrayOf("string", ExifInterface.TAG_GPS_MAP_DATUM),
     arrayOf("string", ExifInterface.TAG_GPS_MEASURE_MODE),

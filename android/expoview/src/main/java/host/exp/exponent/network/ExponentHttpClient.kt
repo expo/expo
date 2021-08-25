@@ -8,7 +8,6 @@ import host.exp.exponent.analytics.EXL
 import okhttp3.*
 import okio.BufferedSource
 import okio.Okio
-import org.apache.commons.io.IOUtils
 import org.json.JSONException
 import org.json.JSONObject
 import java.io.FileNotFoundException
@@ -115,31 +114,12 @@ class ExponentHttpClient(
       override fun onResponse(call: Call, response: Response) {
         if (response.isSuccessful) {
           callback.onCachedResponse(OkHttpV1ExpoResponse(response), false)
-          logEventWithUri(Analytics.HTTP_USED_CACHE_RESPONSE, uri)
+          logEventWithUri(Analytics.AnalyticsEvent.HTTP_USED_CACHE_RESPONSE, uri)
         } else {
           tryHardCodedResponse(uri, call, callback, initialResponse, initialException)
         }
       }
     })
-  }
-
-  fun getHardCodedResponse(uri: String): String? {
-    try {
-      val normalizedUri = normalizeUri(uri)
-      for (embeddedResponse in Constants.EMBEDDED_RESPONSES) {
-        if (normalizedUri == normalizeUri(embeddedResponse.url)) {
-          var strippedAssetsPath = embeddedResponse.responseFilePath
-          if (strippedAssetsPath.startsWith("assets://")) {
-            strippedAssetsPath = strippedAssetsPath.substring("assets://".length)
-          }
-          val stream = context.assets.open(strippedAssetsPath)
-          return IOUtils.toString(stream, "UTF-8")
-        }
-      }
-    } catch (e: Throwable) {
-      EXL.e(TAG, e)
-    }
-    return null
   }
 
   private fun tryHardCodedResponse(
@@ -171,7 +151,7 @@ class ExponentHttpClient(
             )
             .build()
           callback.onCachedResponse(OkHttpV1ExpoResponse(response), true)
-          logEventWithUri(Analytics.HTTP_USED_EMBEDDED_RESPONSE, uri)
+          logEventWithUri(Analytics.AnalyticsEvent.HTTP_USED_EMBEDDED_RESPONSE, uri)
           return
         }
       }
@@ -219,7 +199,7 @@ class ExponentHttpClient(
     }
   }
 
-  private fun logEventWithUri(event: String, uri: String) {
+  private fun logEventWithUri(event: Analytics.AnalyticsEvent, uri: String) {
     try {
       val eventProperties = JSONObject().apply {
         put("URI", uri)

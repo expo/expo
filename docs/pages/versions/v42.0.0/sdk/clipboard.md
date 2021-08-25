@@ -29,8 +29,8 @@ export default function App() {
   const [copiedText, setCopiedText] = React.useState('');
 
   const copyToClipboard = () => {
-    /* @info */ Clipboard.setString('hello world');
-    /* @end */
+    /* @info */ Clipboard.setString('hello world');/* @end */
+
   };
 
   const fetchCopiedText = async () => {

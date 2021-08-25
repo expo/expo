@@ -116,6 +116,7 @@
         resolvedModule = [_delegate pickInternalModuleImplementingInterface:exportedInterface fromAmongModules:@[oldModule, internalModule]];
       }
       [_internalModules setObject:resolvedModule forKey:exportedInterface];
+      [self maybeAddRegistryConsumer:resolvedModule];
       [_internalModulesSet addObject:resolvedModule];
     } else {
       if (![_internalModulesPreResolution objectForKey:exportedInterface]) {
@@ -171,7 +172,14 @@
 
 - (void)addRegistryConsumer:(id<EXModuleRegistryConsumer>)registryConsumer
 {
-  [_registryConsumers addPointer:(__bridge void * _Nullable)(registryConsumer)];
+  void *ptr = (__bridge void * _Nullable)registryConsumer;
+
+  for (id consumerPtr in _registryConsumers) {
+    if (consumerPtr == ptr) {
+      return;
+    }
+  }
+  [_registryConsumers addPointer:ptr];
 }
 
 # pragma mark - Registry API

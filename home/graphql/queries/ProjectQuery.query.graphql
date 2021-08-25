@@ -21,6 +21,10 @@ query WebContainerProjectPage_Query(
       icon {
         url
       }
+      latestReleaseForReleaseChannel(platform: $platform, releaseChannel: "default") {
+        sdkVersion
+        runtimeVersion
+      }
       updateBranches(limit: 100, offset: 0) {
         id
         name

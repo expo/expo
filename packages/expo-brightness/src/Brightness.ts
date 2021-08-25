@@ -1,8 +1,9 @@
 import {
+  createPermissionHook,
+  PermissionExpiration,
+  PermissionHookOptions,
   PermissionResponse,
   PermissionStatus,
-  PermissionHookOptions,
-  createPermissionHook,
   UnavailabilityError,
 } from 'expo-modules-core';
 import { Platform } from 'react-native';
@@ -26,7 +27,7 @@ export enum BrightnessMode {
   MANUAL = 2,
 }
 
-export { PermissionResponse, PermissionStatus, PermissionHookOptions };
+export { PermissionExpiration, PermissionHookOptions, PermissionResponse, PermissionStatus };
 
 /**
  * Returns whether the Brightness API is enabled on the current device. This does not check the app

@@ -182,6 +182,6 @@ class ScopedPermissionsRequester(private val experienceKey: ExperienceKey) {
   }
 
   init {
-    NativeModuleDepsProvider.getInstance().inject(ScopedPermissionsRequester::class.java, this)
+    NativeModuleDepsProvider.instance.inject(ScopedPermissionsRequester::class.java, this)
   }
 }

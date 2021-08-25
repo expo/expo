@@ -6,6 +6,7 @@
 
 ### 🎉 New features
 
+- [plugin] Added `isIosBackgroundLocationEnabled` to enable the background location UIMode ([#14142](https://github.com/expo/expo/pull/14142) by [@EvanBacon](https://github.com/EvanBacon))
 - Use stable manifest ID where applicable. ([#12964](https://github.com/expo/expo/pull/12964) by [@wschurman](https://github.com/wschurman))
 - Add useForegroundPermissions and useBackgroundPermissions hooks from modules factory. ([#13860](https://github.com/expo/expo/pull/13860) by [@bycedric](https://github.com/bycedric))
 

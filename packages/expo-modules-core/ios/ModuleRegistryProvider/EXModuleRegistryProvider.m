@@ -83,7 +83,7 @@ void (^EXinitializeGlobalSingletonModulesSet)(void) = ^{
   return self;
 }
 
-- (NSSet<Class> *)getModulesClasses
++ (NSSet<Class> *)getModulesClasses
 {
   return EXModuleClasses;
 }
@@ -112,7 +112,7 @@ void (^EXinitializeGlobalSingletonModulesSet)(void) = ^{
   NSMutableSet<EXExportedModule *> *exportedModules = [NSMutableSet set];
   NSMutableSet<EXViewManager *> *viewManagerModules = [NSMutableSet set];
 
-  for (Class klass in [self getModulesClasses]) {
+  for (Class klass in [self.class getModulesClasses]) {
     if (![klass conformsToProtocol:@protocol(EXInternalModule)]) {
       EXLogWarn(@"Registered class `%@` does not conform to the `EXInternalModule` protocol.", [klass description]);
       continue;

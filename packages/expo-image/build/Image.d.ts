@@ -9,6 +9,11 @@ export interface ImageProps extends AccessibilityProps {
     style?: StyleProp<ImageStyle>;
     defaultSource?: ImageSourcePropType | null;
     resizeMode?: ImageResizeMode;
+    /**
+     * @Android only
+     */
+    blurRadius?: number;
+    fadeDuration?: number;
     onLoadStart?: () => void;
     onProgress?: (event: NativeSyntheticEvent<ImageLoadProgressEventData>) => void;
     onLoad?: (event: NativeSyntheticEvent<ImageLoadEventData>) => void;

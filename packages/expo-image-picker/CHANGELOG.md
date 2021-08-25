@@ -23,6 +23,7 @@
 - Fixed `base64` return on web. ([#12529](https://github.com/expo/expo/pull/12529) by [@simonezuccala](https://github.com/simonezuccala) and [@misterdev](https://github.com/misterdev))
 - Enable kotlin in all modules. ([#12716](https://github.com/expo/expo/pull/12716) by [@wschurman](https://github.com/wschurman))
 - Fixed cases where Picker & Camera would be transparent on iOS 14.5. ([#12897](https://github.com/expo/expo/pull/12897) by [@cruzach](https://github.com/cruzach))
+- Add missing exif data to cropped image on Android. ([#14038](https://github.com/expo/expo/pull/14038) by [@mstach60161](https://github.com/mstach60161))
 
 ### 💡 Others
 
