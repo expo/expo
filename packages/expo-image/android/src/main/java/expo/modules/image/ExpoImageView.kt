@@ -111,8 +111,6 @@ class ExpoImageView(context: ReactContext, private val requestManager: RequestMa
   internal fun onAfterUpdateTransaction() {
     val sourceToLoad = createUrlFromSourceMap(sourceMap)
     val defaultSourceToLoad = createUrlFromSourceMap(defaultSourceMap)
-    val placeholderPath: String? = Uri.parse(defaultSourceToLoad?.toStringUrl()).path
-    val placeholder: Drawable? = Drawable.createFromPath(placeholderPath)
     if (sourceToLoad == null) {
       requestManager.clear(this)
       setImageDrawable(null)
@@ -125,7 +123,7 @@ class ExpoImageView(context: ReactContext, private val requestManager: RequestMa
       eventsManager.onLoadStarted()
       requestManager
         .load(sourceToLoad)
-        .placeholder(placeholder)
+        .thumbnail(requestManager.load(defaultSourceToLoad))
         .apply(options)
         .addListener(eventsManager)
         .run {
