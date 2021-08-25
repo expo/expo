@@ -4,7 +4,7 @@
 
 ### 🛠 Breaking changes
 
-- Replace exported `Constants` with String Enums (`FaceDetectorMode`, `FaceDetectorLandmarks` and `FaceDetectorClassifications`).
+- Replace exported `Constants` with String Enums (`FaceDetectorMode`, `FaceDetectorLandmarks` and `FaceDetectorClassifications`). ([#14179](https://github.com/expo/expo/pull/14179) by [@Simek](https://github.com/Simek))
 
 ```diff
 - FaceDetector.Constants.Mode.*
@@ -18,8 +18,8 @@
 ### 💡 Others
 
 - Migrated from `@unimodules/core` to `expo-modules-core`. ([#13757](https://github.com/expo/expo/pull/13757) by [@tsapeta](https://github.com/tsapeta))
-- Extract `detectFacesAsync` options as separate type named `DetectionOptions`.
-- Add missing `minDetectionInterval` and `tracking` parameters to the `DetectionOptions` type.
+- Extract `detectFacesAsync` options as separate type named `DetectionOptions`.  ([#14179](https://github.com/expo/expo/pull/14179) by [@Simek](https://github.com/Simek))
+- Add missing `minDetectionInterval` and `tracking` parameters to the `DetectionOptions` type. ([#14179](https://github.com/expo/expo/pull/14179) by [@Simek](https://github.com/Simek))
 
 ## 10.1.0 — 2021-06-16
 
