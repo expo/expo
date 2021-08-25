@@ -64,7 +64,7 @@ export default {
       return process.env.TEST_SUITE_URI;
     } else {
       try {
-        let testSuitePath = path.join(__dirname, '..', 'apps', 'test-suite');
+        let testSuitePath = path.join(__dirname, '..', '..', '..', 'apps', 'test-suite');
         let status = await Project.currentStatus(testSuitePath);
         if (status === 'running') {
           return await UrlUtils.constructManifestUrlAsync(testSuitePath);
