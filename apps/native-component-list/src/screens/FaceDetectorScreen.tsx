@@ -36,9 +36,9 @@ export default class FeceDetectorScreen extends React.Component<{}, State> {
       },
     });
     FaceDetector.detectFacesAsync(picture, {
-      mode: FaceDetector.Constants.Mode.accurate,
-      detectLandmarks: FaceDetector.Constants.Landmarks.all,
-      runClassifications: FaceDetector.Constants.Classifications.none,
+      mode: FaceDetector.FaceDetectorMode.accurate,
+      detectLandmarks: FaceDetector.FaceDetectorLandmarks.all,
+      runClassifications: FaceDetector.FaceDetectorClassifications.none,
     })
       .then(result => {
         this.setState({
@@ -157,7 +157,7 @@ export default class FeceDetectorScreen extends React.Component<{}, State> {
       return (
         <View
           style={{
-            ...imageOvefrlowSizeAndPosition(selection as ImageInfo),
+            ...imageOverflowSizeAndPosition(selection as ImageInfo),
             position: 'absolute',
           }}>
           {this.state.faceDetection &&
@@ -171,15 +171,14 @@ export default class FeceDetectorScreen extends React.Component<{}, State> {
   };
 }
 
-const imageOvefrlowSizeAndPosition = (image: ImageInfo) => {
+const imageOverflowSizeAndPosition = (image: ImageInfo) => {
   const { scaledImageWidth, scaledImageHeight } = calculateImageScale(image);
-  const style = {
+  return {
     top: (imageViewSize - scaledImageHeight) / 2,
     left: (imageViewSize - scaledImageWidth) / 2,
     width: scaledImageWidth,
     height: scaledImageHeight,
   };
-  return style;
 };
 
 const calculateImageScale = (image: ImageInfo) => {

@@ -90,7 +90,7 @@
     "tar": "^4.4.15",
     "terminal-link": "^2.1.1",
     "transformer-proxy": "^0.3.4",
-    "typedoc": "^0.21.5",
+    "typedoc": "^0.21.6",
     "uuid": "^3.1.0",
     "ws": "^7.4.6",
     "xcode": "^2.0.0"

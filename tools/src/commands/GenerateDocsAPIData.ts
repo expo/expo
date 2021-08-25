@@ -100,6 +100,7 @@ async function action({packageName, version = 'unversioned'}: ActionOptions) {
     'expo-clipboard': ['Clipboard.ts'],
     'expo-document-picker': ['index.ts'],
     'expo-error-recovery': ['ErrorRecovery.ts'],
+    'expo-face-detector': ['FaceDetector.ts'],
     'expo-facebook': [['Facebook.ts', 'Facebook.types.ts']],
     'expo-font': ['index.ts'],
     'expo-haptics': ['Haptics.ts'],
