@@ -1,6 +1,6 @@
 //  Copyright © 2021 650 Industries. All rights reserved.
 
-#import <EXUpdates/EXUpdatesNewRawManifest.h>
+#import <EXRawManifests/EXUpdatesNewRawManifest.h>
 
 @implementation EXUpdatesNewRawManifest
 
@@ -44,7 +44,7 @@
       return [runtimeVersion substringWithRange:matchRange];
     }
   }
-  
+
   return nil;
 }
 

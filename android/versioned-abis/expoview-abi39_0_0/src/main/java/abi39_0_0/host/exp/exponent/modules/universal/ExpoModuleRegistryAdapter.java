@@ -12,7 +12,7 @@ import abi39_0_0.org.unimodules.core.interfaces.RegistryLifecycleListener;
 import java.util.List;
 import java.util.Map;
 
-import expo.modules.updates.manifest.raw.RawManifest;
+import expo.modules.rawmanifests.RawManifest;
 import abi39_0_0.host.exp.exponent.modules.api.notifications.channels.ScopedNotificationsChannelsProvider;
 import host.exp.exponent.kernel.ExperienceKey;
 import host.exp.exponent.utils.ScopedContext;

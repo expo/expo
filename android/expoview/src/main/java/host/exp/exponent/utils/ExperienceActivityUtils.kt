@@ -1,7 +1,7 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 package host.exp.exponent.utils
 
-import expo.modules.updates.manifest.raw.RawManifest
+import expo.modules.rawmanifests.RawManifest
 import android.app.Activity
 import android.content.pm.ActivityInfo
 import android.view.WindowManager

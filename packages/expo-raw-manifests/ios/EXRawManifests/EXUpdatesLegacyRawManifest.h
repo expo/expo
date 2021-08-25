@@ -1,7 +1,7 @@
 //  Copyright © 2021 650 Industries. All rights reserved.
 
-#import <EXUpdates/EXUpdatesRawManifest.h>
-#import <EXUpdates/EXUpdatesBaseLegacyRawManifest.h>
+#import <EXRawManifests/EXUpdatesRawManifest.h>
+#import <EXRawManifests/EXUpdatesBaseLegacyRawManifest.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

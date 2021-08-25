@@ -10,7 +10,7 @@ import com.facebook.react.module.model.ReactModuleInfo
 import com.facebook.react.module.model.ReactModuleInfoProvider
 import com.facebook.react.turbomodule.core.interfaces.TurboModule
 import com.facebook.react.uimanager.ViewManager
-import expo.modules.updates.manifest.raw.RawManifest
+import expo.modules.rawmanifests.RawManifest
 import host.exp.exponent.kernel.KernelConstants
 import versioned.host.exp.exponent.modules.internal.ExponentAsyncStorageModule
 import versioned.host.exp.exponent.modules.internal.ExponentIntentModule

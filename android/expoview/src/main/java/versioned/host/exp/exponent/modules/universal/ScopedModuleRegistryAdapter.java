@@ -7,7 +7,7 @@ import com.facebook.react.uimanager.ViewManager;
 import java.util.List;
 import java.util.Map;
 
-import expo.modules.updates.manifest.raw.RawManifest;
+import expo.modules.rawmanifests.RawManifest;
 import host.exp.exponent.kernel.ExperienceKey;
 import host.exp.exponent.utils.ScopedContext;
 

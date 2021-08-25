@@ -1,4 +1,4 @@
-package expo.modules.updates.manifest.raw
+package expo.modules.rawmanifests
 
 import org.json.JSONException
 import org.json.JSONObject

@@ -31,7 +31,7 @@ import com.facebook.soloader.SoLoader
 import de.greenrobot.event.EventBus
 import expo.modules.notifications.service.NotificationsService.Companion.getNotificationResponseFromIntent
 import expo.modules.notifications.service.delegates.ExpoHandlingDelegate
-import expo.modules.updates.manifest.raw.RawManifest
+import expo.modules.rawmanifests.RawManifest
 import host.exp.exponent.*
 import host.exp.exponent.ExpoUpdatesAppLoader.AppLoaderCallback
 import host.exp.exponent.ExpoUpdatesAppLoader.AppLoaderStatus

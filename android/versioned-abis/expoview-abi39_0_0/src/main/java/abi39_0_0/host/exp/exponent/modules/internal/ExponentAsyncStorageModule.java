@@ -12,7 +12,7 @@ import abi39_0_0.com.facebook.react.bridge.ReactApplicationContext;
 import abi39_0_0.com.facebook.react.module.annotations.ReactModule;
 import abi39_0_0.com.facebook.react.modules.storage.AsyncStorageModule;
 import abi39_0_0.com.facebook.react.modules.storage.ReactDatabaseSupplier;
-import expo.modules.updates.manifest.raw.RawManifest;
+import expo.modules.rawmanifests.RawManifest;
 import host.exp.exponent.ExponentManifest;
 import host.exp.exponent.kernel.ExperienceKey;
 import host.exp.exponent.kernel.KernelProvider;

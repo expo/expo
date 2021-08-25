@@ -4,7 +4,7 @@ import android.content.Context
 import android.content.SharedPreferences
 import expo.modules.errorrecovery.ErrorRecoveryModule
 import expo.modules.errorrecovery.RECOVERY_STORE
-import expo.modules.updates.manifest.raw.RawManifest
+import expo.modules.rawmanifests.RawManifest
 import host.exp.exponent.kernel.ExperienceKey
 
 class ScopedErrorRecoveryModule(

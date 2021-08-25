@@ -1,6 +1,6 @@
 //  Copyright © 2021 650 Industries. All rights reserved.
 
-#import <EXUpdates/EXUpdatesBaseRawManifest.h>
+#import <EXRawManifests/EXUpdatesBaseRawManifest.h>
 
 #import <UIKit/UIKit.h>
 
