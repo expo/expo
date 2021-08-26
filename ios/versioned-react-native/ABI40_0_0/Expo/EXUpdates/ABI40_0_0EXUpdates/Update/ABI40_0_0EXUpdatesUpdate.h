@@ -2,7 +2,7 @@
 
 #import <ABI40_0_0EXUpdates/ABI40_0_0EXUpdatesAsset.h>
 #import <ABI40_0_0EXUpdates/ABI40_0_0EXUpdatesConfig.h>
-#import <ABI40_0_0EXUpdates/ABI40_0_0EXUpdatesRawManifest.h>
+#import <ABI40_0_0EXRawManifests/ABI40_0_0EXUpdatesRawManifest.h>
 
 @class ABI40_0_0EXUpdatesDatabase;
 

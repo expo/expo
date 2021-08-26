@@ -1,7 +1,7 @@
 //  Copyright © 2019 650 Industries. All rights reserved.
 
 #import <ABI41_0_0EXUpdates/ABI41_0_0EXUpdatesUpdate.h>
-#import <ABI41_0_0EXUpdates/ABI41_0_0EXUpdatesNewRawManifest.h>
+#import <ABI41_0_0EXRawManifests/ABI41_0_0EXUpdatesNewRawManifest.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

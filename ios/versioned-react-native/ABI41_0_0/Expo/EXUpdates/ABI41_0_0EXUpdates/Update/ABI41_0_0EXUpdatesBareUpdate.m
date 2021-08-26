@@ -4,7 +4,7 @@
 #import <ABI41_0_0EXUpdates/ABI41_0_0EXUpdatesEmbeddedAppLoader.h>
 #import <ABI41_0_0EXUpdates/ABI41_0_0EXUpdatesUpdate+Private.h>
 #import <ABI41_0_0EXUpdates/ABI41_0_0EXUpdatesUtils.h>
-#import <ABI41_0_0EXUpdates/ABI41_0_0EXUpdatesBareRawManifest.h>
+#import <ABI41_0_0EXRawManifests/ABI41_0_0EXUpdatesBareRawManifest.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

@@ -2,7 +2,7 @@
 
 #import <Foundation/Foundation.h>
 #import <ABI40_0_0React/ABI40_0_0RCTLog.h>
-#import <ABI40_0_0EXUpdates/ABI40_0_0EXUpdatesRawManifest.h>
+#import <ABI40_0_0EXRawManifests/ABI40_0_0EXUpdatesRawManifest.h>
 
 @interface ABI40_0_0EXVersionManager : NSObject
 

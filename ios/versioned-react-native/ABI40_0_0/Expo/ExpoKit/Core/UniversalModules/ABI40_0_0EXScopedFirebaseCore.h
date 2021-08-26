@@ -3,7 +3,7 @@
 #if __has_include(<ABI40_0_0EXFirebaseCore/ABI40_0_0EXFirebaseCore.h>)
 #import <UIKit/UIKit.h>
 #import <ABI40_0_0EXFirebaseCore/ABI40_0_0EXFirebaseCore.h>
-#import <ABI40_0_0EXUpdates/ABI40_0_0EXUpdatesRawManifest.h>
+#import <ABI40_0_0EXRawManifests/ABI40_0_0EXUpdatesRawManifest.h>
 #import "ABI40_0_0EXConstantsBinding.h"
 
 NS_ASSUME_NONNULL_BEGIN
