@@ -64,6 +64,26 @@ export async function test({ describe, beforeAll, afterAll, it, xit, expect }) {
         expect(error).not.toBeNull();
       });
     });
+    describe('logEvent() - with arrays', async () => {
+      itWhenConfigured(`runs`, async () => {
+        let error = null;
+        try {
+          await Analytics.logEvent('event_name', { items: [{ item_id: 'foo', item_name: 'bar' }] });
+        } catch (e) {
+          error = e;
+        }
+        expect(error).toBeNull();
+      });
+      itWhenNotConfigured('fails when not configured', async () => {
+        let error = null;
+        try {
+          await Analytics.logEvent('event_name', { items: [{ item_id: 'foo', item_name: 'bar' }] });
+        } catch (e) {
+          error = e;
+        }
+        expect(error).not.toBeNull();
+      });
+    });
     describe('setCurrentScreen()', async () => {
       itWhenConfigured(`runs`, async () => {
         let error = null;
