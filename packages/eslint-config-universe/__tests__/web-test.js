@@ -38,7 +38,7 @@ it(`lints with the web config`, async () => {
 }, 20000);
 
 it(`doesn't conflict with Prettier`, async () => {
-  const { success, message } = await checkPrettierRulesAsync(configFile);
+  const { success, message } = await checkPrettierRulesAsync(configFile, 'web');
   expect(success).toMatchSnapshot('success');
   expect(message).toMatchSnapshot('message');
 }, 10000);

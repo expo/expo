@@ -1,17 +1,30 @@
 const spawnAsync = require('@expo/spawn-async');
+const fs = require('fs');
 const path = require('path');
-const process = require('process');
 
-module.exports = async function checkPrettierRulesAsync(configFile) {
-  const env = Object.assign(process.env, {
-    PATH: path.resolve(__dirname, '../../node_modules/.bin') + path.delimiter + process.env.PATH,
-  });
+module.exports = async function checkPrettierRulesAsync(configFile, testName) {
+  const testProjectsPath = path.resolve(__dirname, '..', 'projects');
+  const testProjectPath = path.resolve(testProjectsPath, testName);
 
-  const resultPromise = spawnAsync('eslint-config-prettier', [configFile], { env });
+  if (!fs.existsSync(testProjectsPath)) fs.mkdirSync(testProjectsPath);
+  if (!fs.existsSync(testProjectPath)) fs.mkdirSync(testProjectPath);
+
+  const { stdout: configString } = await spawnAsync('eslint', [
+    '--config',
+    configFile,
+    '--no-eslintrc',
+    '--print-config',
+    path.resolve(testProjectPath, '.eslintrc'),
+  ]);
+
+  fs.writeFileSync(path.resolve(testProjectPath, '.eslintrc'), configString);
+  fs.writeFileSync(path.resolve(testProjectPath, 'index.ts'), '');
 
   let result;
   try {
-    result = await resultPromise;
+    result = await spawnAsync('eslint-config-prettier', ['index.ts'], {
+      cwd: testProjectPath,
+    });
   } catch (e) {
     if (e.status === 2) {
       result = e;
