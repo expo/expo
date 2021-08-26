@@ -16,7 +16,7 @@ import java.net.URI
 import java.text.ParseException
 import java.util.*
 
-class LegacyManifest private constructor(
+class LegacyUpdateManifest private constructor(
   override val rawManifest: LegacyRawManifest,
   private val mManifestUrl: Uri,
   private val mId: UUID,
@@ -25,14 +25,14 @@ class LegacyManifest private constructor(
   private val mRuntimeVersion: String?,
   private val mBundleUrl: Uri,
   private val mAssets: JSONArray?
-) : Manifest {
+) : UpdateManifest {
   override val serverDefinedHeaders: JSONObject? = null
 
   override val manifestFilters: JSONObject? = null
 
   override val updateEntity: UpdateEntity by lazy {
     UpdateEntity(mId, mCommitTime, mRuntimeVersion, mScopeKey).apply {
-      manifest = this@LegacyManifest.rawManifest.getRawJson()
+      manifest = this@LegacyUpdateManifest.rawManifest.getRawJson()
       if (isDevelopmentMode) {
         status = UpdateStatus.DEVELOPMENT
       }
@@ -84,7 +84,7 @@ class LegacyManifest private constructor(
   }
 
   companion object {
-    private val TAG = Manifest::class.java.simpleName
+    private val TAG = UpdateManifest::class.java.simpleName
 
     private const val EXPO_ASSETS_URL_BASE = "https://d1wp6m56sqw74a.cloudfront.net/~assets/"
     private val EXPO_DOMAINS = arrayOf("expo.io", "exp.host", "expo.test")
@@ -93,7 +93,7 @@ class LegacyManifest private constructor(
     fun fromLegacyRawManifest(
       rawManifest: LegacyRawManifest,
       configuration: UpdatesConfiguration
-    ): LegacyManifest {
+    ): LegacyUpdateManifest {
       val id: UUID
       val commitTime: Date
       if (rawManifest.isUsingDeveloperTool()) {
@@ -114,7 +114,7 @@ class LegacyManifest private constructor(
       val runtimeVersion = rawManifest.getRuntimeVersion() ?: rawManifest.getSDKVersion()
       val bundleUrl = Uri.parse(rawManifest.getBundleURL())
       val bundledAssets = rawManifest.getBundledAssets()
-      return LegacyManifest(
+      return LegacyUpdateManifest(
         rawManifest,
         configuration.updateUrl,
         id,

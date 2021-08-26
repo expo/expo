@@ -18,7 +18,7 @@ import org.json.JSONObject
 import java.text.ParseException
 import java.util.*
 
-class NewManifest private constructor(
+class NewUpdateManifest private constructor(
   override val rawManifest: NewRawManifest,
   private val mId: UUID,
   private val mScopeKey: String,
@@ -28,7 +28,7 @@ class NewManifest private constructor(
   private val mAssets: JSONArray?,
   private val mServerDefinedHeaders: String?,
   private val mManifestFilters: String?
-) : Manifest {
+) : UpdateManifest {
   override val serverDefinedHeaders: JSONObject? by lazy {
     if (mServerDefinedHeaders == null) {
       null
@@ -43,7 +43,7 @@ class NewManifest private constructor(
 
   override val updateEntity: UpdateEntity by lazy {
     UpdateEntity(mId, mCommitTime, mRuntimeVersion, mScopeKey).apply {
-      manifest = this@NewManifest.rawManifest.getRawJson()
+      manifest = this@NewUpdateManifest.rawManifest.getRawJson()
     }
   }
 
@@ -88,14 +88,14 @@ class NewManifest private constructor(
   override val isDevelopmentMode: Boolean = false
 
   companion object {
-    private val TAG = Manifest::class.java.simpleName
+    private val TAG = UpdateManifest::class.java.simpleName
 
     @Throws(JSONException::class)
     fun fromRawManifest(
       rawManifest: NewRawManifest,
       httpResponse: ManifestResponse?,
       configuration: UpdatesConfiguration
-    ): NewManifest {
+    ): NewUpdateManifest {
       val id = UUID.fromString(rawManifest.getID())
       val runtimeVersion = rawManifest.getRuntimeVersion()
       val launchAsset = rawManifest.getLaunchAsset()
@@ -108,7 +108,7 @@ class NewManifest private constructor(
       }
       val serverDefinedHeaders = httpResponse?.header("expo-server-defined-headers")
       val manifestFilters = httpResponse?.header("expo-manifest-filters")
-      return NewManifest(
+      return NewUpdateManifest(
         rawManifest,
         id,
         configuration.scopeKey,

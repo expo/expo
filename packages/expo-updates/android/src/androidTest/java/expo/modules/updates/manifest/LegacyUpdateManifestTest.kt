@@ -14,7 +14,7 @@ import org.junit.runner.RunWith
 import java.util.*
 
 @RunWith(AndroidJUnit4ClassRunner::class)
-class LegacyManifestTest {
+class LegacyUpdateManifestTest {
   @Test
   fun testGetAssetsUrlBase_ExpoDomain() {
     val mockManifest = mockk<LegacyRawManifest>()
@@ -23,15 +23,15 @@ class LegacyManifestTest {
     val expected = Uri.parse("https://d1wp6m56sqw74a.cloudfront.net/~assets/")
     Assert.assertEquals(
       expected,
-      LegacyManifest.getAssetsUrlBase(Uri.parse("https://exp.host/@test/test"), mockManifest)
+      LegacyUpdateManifest.getAssetsUrlBase(Uri.parse("https://exp.host/@test/test"), mockManifest)
     )
     Assert.assertEquals(
       expected,
-      LegacyManifest.getAssetsUrlBase(Uri.parse("https://expo.io/@test/test"), mockManifest)
+      LegacyUpdateManifest.getAssetsUrlBase(Uri.parse("https://expo.io/@test/test"), mockManifest)
     )
     Assert.assertEquals(
       expected,
-      LegacyManifest.getAssetsUrlBase(Uri.parse("https://expo.test/@test/test"), mockManifest)
+      LegacyUpdateManifest.getAssetsUrlBase(Uri.parse("https://expo.test/@test/test"), mockManifest)
     )
   }
 
@@ -43,18 +43,18 @@ class LegacyManifestTest {
     val expected = Uri.parse("https://d1wp6m56sqw74a.cloudfront.net/~assets/")
     Assert.assertEquals(
       expected,
-      LegacyManifest.getAssetsUrlBase(
+      LegacyUpdateManifest.getAssetsUrlBase(
         Uri.parse("https://staging.exp.host/@test/test"),
         mockManifest
       )
     )
     Assert.assertEquals(
       expected,
-      LegacyManifest.getAssetsUrlBase(Uri.parse("https://staging.expo.io/@test/test"), mockManifest)
+      LegacyUpdateManifest.getAssetsUrlBase(Uri.parse("https://staging.expo.io/@test/test"), mockManifest)
     )
     Assert.assertEquals(
       expected,
-      LegacyManifest.getAssetsUrlBase(
+      LegacyUpdateManifest.getAssetsUrlBase(
         Uri.parse("https://staging.expo.test/@test/test"),
         mockManifest
       )
@@ -71,7 +71,7 @@ class LegacyManifestTest {
     every { mockManifest.getAssetUrlOverride() } returns assetUrlBase
 
     val expected = Uri.parse(assetUrlBase)
-    val actual = LegacyManifest.getAssetsUrlBase(manifestUrl, mockManifest)
+    val actual = LegacyUpdateManifest.getAssetsUrlBase(manifestUrl, mockManifest)
     Assert.assertEquals(expected, actual)
   }
 
@@ -83,7 +83,7 @@ class LegacyManifestTest {
     every { mockManifest.getAssetUrlOverride() } returns "my_assets"
 
     val expected = Uri.parse("https://esamelson.github.io/self-hosting-test/my_assets")
-    val actual = LegacyManifest.getAssetsUrlBase(manifestUrl, mockManifest)
+    val actual = LegacyUpdateManifest.getAssetsUrlBase(manifestUrl, mockManifest)
     Assert.assertEquals(expected, actual)
   }
 
@@ -95,7 +95,7 @@ class LegacyManifestTest {
     every { mockManifest.getAssetUrlOverride() } returns "/my_assets"
 
     val expected = Uri.parse("https://esamelson.github.io/my_assets")
-    val actual = LegacyManifest.getAssetsUrlBase(manifestUrl, mockManifest)
+    val actual = LegacyUpdateManifest.getAssetsUrlBase(manifestUrl, mockManifest)
     Assert.assertEquals(expected, actual)
   }
 
@@ -107,7 +107,7 @@ class LegacyManifestTest {
     every { mockManifest.getAssetUrlOverride() } returns "./my_assets"
 
     val expected = Uri.parse("https://esamelson.github.io/self-hosting-test/my_assets")
-    val actual = LegacyManifest.getAssetsUrlBase(manifestUrl, mockManifest)
+    val actual = LegacyUpdateManifest.getAssetsUrlBase(manifestUrl, mockManifest)
     Assert.assertEquals(expected, actual)
   }
 
@@ -119,7 +119,7 @@ class LegacyManifestTest {
     every { mockManifest.getAssetUrlOverride() } returns "./a/../b"
 
     val expected = Uri.parse("https://esamelson.github.io/self-hosting-test/b")
-    val actual = LegacyManifest.getAssetsUrlBase(manifestUrl, mockManifest)
+    val actual = LegacyUpdateManifest.getAssetsUrlBase(manifestUrl, mockManifest)
     Assert.assertEquals(expected, actual)
   }
 
@@ -131,7 +131,7 @@ class LegacyManifestTest {
     every { mockManifest.getAssetUrlOverride() } returns "../b"
 
     val expected = Uri.parse("https://esamelson.github.io/b")
-    val actual = LegacyManifest.getAssetsUrlBase(manifestUrl, mockManifest)
+    val actual = LegacyUpdateManifest.getAssetsUrlBase(manifestUrl, mockManifest)
     Assert.assertEquals(expected, actual)
   }
 
@@ -143,7 +143,7 @@ class LegacyManifestTest {
     every { mockManifest.getAssetUrlOverride() } returns "../../b"
 
     val expected = Uri.parse("https://esamelson.github.io/b")
-    val actual = LegacyManifest.getAssetsUrlBase(manifestUrl, mockManifest)
+    val actual = LegacyUpdateManifest.getAssetsUrlBase(manifestUrl, mockManifest)
     Assert.assertEquals(expected, actual)
   }
 
@@ -154,7 +154,7 @@ class LegacyManifestTest {
     every { mockManifest.getAssetUrlOverride() } returns null
 
     val expected = Uri.parse("https://esamelson.github.io/self-hosting-test/assets")
-    val actual = LegacyManifest.getAssetsUrlBase(manifestUrl, mockManifest)
+    val actual = LegacyUpdateManifest.getAssetsUrlBase(manifestUrl, mockManifest)
     Assert.assertEquals(expected, actual)
   }
 
@@ -165,7 +165,7 @@ class LegacyManifestTest {
     val legacyManifestJson =
       "{\"developer\":{\"tool\":\"expo-cli\"},\"sdkVersion\":\"39.0.0\",\"bundleUrl\":\"https://url.to/bundle.js\"}"
     val manifest = LegacyRawManifest(JSONObject(legacyManifestJson))
-    Assert.assertNotNull(LegacyManifest.fromLegacyRawManifest(manifest, createConfig()))
+    Assert.assertNotNull(LegacyUpdateManifest.fromLegacyRawManifest(manifest, createConfig()))
   }
 
   @Test
@@ -175,7 +175,7 @@ class LegacyManifestTest {
     val legacyManifestJson =
       "{\"sdkVersion\":\"39.0.0\",\"releaseId\":\"0eef8214-4833-4089-9dff-b4138a14f196\",\"commitTime\":\"2020-11-11T00:17:54.797Z\",\"bundleUrl\":\"https://url.to/bundle.js\"}"
     val manifest = LegacyRawManifest(JSONObject(legacyManifestJson))
-    Assert.assertNotNull(LegacyManifest.fromLegacyRawManifest(manifest, createConfig()))
+    Assert.assertNotNull(LegacyUpdateManifest.fromLegacyRawManifest(manifest, createConfig()))
   }
 
   @Test(expected = Exception::class)
@@ -184,7 +184,7 @@ class LegacyManifestTest {
     val legacyManifestJson =
       "{\"releaseId\":\"0eef8214-4833-4089-9dff-b4138a14f196\",\"commitTime\":\"2020-11-11T00:17:54.797Z\",\"bundleUrl\":\"https://url.to/bundle.js\"}"
     val manifest = LegacyRawManifest(JSONObject(legacyManifestJson))
-    LegacyManifest.fromLegacyRawManifest(manifest, createConfig())
+    LegacyUpdateManifest.fromLegacyRawManifest(manifest, createConfig())
   }
 
   @Test(expected = Exception::class)
@@ -193,7 +193,7 @@ class LegacyManifestTest {
     val legacyManifestJson =
       "{\"sdkVersion\":\"39.0.0\",\"commitTime\":\"2020-11-11T00:17:54.797Z\",\"bundleUrl\":\"https://url.to/bundle.js\"}"
     val manifest = LegacyRawManifest(JSONObject(legacyManifestJson))
-    LegacyManifest.fromLegacyRawManifest(manifest, createConfig())
+    LegacyUpdateManifest.fromLegacyRawManifest(manifest, createConfig())
   }
 
   @Test(expected = Exception::class)
@@ -202,7 +202,7 @@ class LegacyManifestTest {
     val legacyManifestJson =
       "{\"sdkVersion\":\"39.0.0\",\"releaseId\":\"0eef8214-4833-4089-9dff-b4138a14f196\",\"bundleUrl\":\"https://url.to/bundle.js\"}"
     val manifest = LegacyRawManifest(JSONObject(legacyManifestJson))
-    LegacyManifest.fromLegacyRawManifest(manifest, createConfig())
+    LegacyUpdateManifest.fromLegacyRawManifest(manifest, createConfig())
   }
 
   @Test(expected = Exception::class)
@@ -211,7 +211,7 @@ class LegacyManifestTest {
     val legacyManifestJson =
       "{\"sdkVersion\":\"39.0.0\",\"releaseId\":\"0eef8214-4833-4089-9dff-b4138a14f196\",\"commitTime\":\"2020-11-11T00:17:54.797Z\"}"
     val manifest = LegacyRawManifest(JSONObject(legacyManifestJson))
-    LegacyManifest.fromLegacyRawManifest(manifest, createConfig())
+    LegacyUpdateManifest.fromLegacyRawManifest(manifest, createConfig())
   }
 
   @Test
@@ -220,7 +220,7 @@ class LegacyManifestTest {
     val legacyManifestJsonWithoutRuntimeVersion =
       "{\"sdkVersion\":\"39.0.0\",\"releaseId\":\"0eef8214-4833-4089-9dff-b4138a14f196\",\"commitTime\":\"2020-11-11T00:17:54.797Z\",\"bundleUrl\":\"https://url.to/bundle.js\"}"
     val rawManifest = LegacyRawManifest(JSONObject(legacyManifestJsonWithoutRuntimeVersion))
-    val newLegacyManifest = LegacyManifest.fromLegacyRawManifest(rawManifest, createConfig())
+    val newLegacyManifest = LegacyUpdateManifest.fromLegacyRawManifest(rawManifest, createConfig())
     Assert.assertEquals("39.0.0", newLegacyManifest.updateEntity.runtimeVersion)
   }
 
@@ -231,7 +231,7 @@ class LegacyManifestTest {
     val legacyManifestJsonWithRuntimeVersion =
       String.format("{\"runtimeVersion\":\"%s\",\"sdkVersion\":\"39.0.0\",\"releaseId\":\"0eef8214-4833-4089-9dff-b4138a14f196\",\"commitTime\":\"2020-11-11T00:17:54.797Z\",\"bundleUrl\":\"https://url.to/bundle.js\"}", runtimeVersion)
     val rawManifest = LegacyRawManifest(JSONObject(legacyManifestJsonWithRuntimeVersion))
-    val newLegacyManifest = LegacyManifest.fromLegacyRawManifest(rawManifest, createConfig())
+    val newLegacyManifest = LegacyUpdateManifest.fromLegacyRawManifest(rawManifest, createConfig())
     Assert.assertEquals(runtimeVersion, newLegacyManifest.updateEntity.runtimeVersion)
   }
 

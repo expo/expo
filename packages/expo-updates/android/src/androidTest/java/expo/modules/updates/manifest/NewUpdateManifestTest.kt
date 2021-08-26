@@ -12,7 +12,7 @@ import org.junit.runner.RunWith
 import java.util.*
 
 @RunWith(AndroidJUnit4ClassRunner::class)
-class NewManifestTest {
+class NewUpdateManifestTest {
   @Test
   @Throws(JSONException::class)
   fun testFromManifestJson_AllFields() {
@@ -20,7 +20,7 @@ class NewManifestTest {
     val manifestJson =
       "{\"runtimeVersion\":\"1\",\"id\":\"0eef8214-4833-4089-9dff-b4138a14f196\",\"createdAt\":\"2020-11-11T00:17:54.797Z\",\"launchAsset\":{\"url\":\"https://url.to/bundle.js\",\"contentType\":\"application/javascript\"}}"
     val manifest = NewRawManifest(JSONObject(manifestJson))
-    Assert.assertNotNull(NewManifest.fromRawManifest(manifest, null, createConfig()))
+    Assert.assertNotNull(NewUpdateManifest.fromRawManifest(manifest, null, createConfig()))
   }
 
   @Test(expected = JSONException::class)
@@ -29,7 +29,7 @@ class NewManifestTest {
     val manifestJson =
       "{\"runtimeVersion\":\"1\",\"createdAt\":\"2020-11-11T00:17:54.797Z\",\"launchAsset\":{\"url\":\"https://url.to/bundle.js\",\"contentType\":\"application/javascript\"}}"
     val manifest = NewRawManifest(JSONObject(manifestJson))
-    NewManifest.fromRawManifest(manifest, null, createConfig())
+    NewUpdateManifest.fromRawManifest(manifest, null, createConfig())
   }
 
   @Test(expected = JSONException::class)
@@ -38,7 +38,7 @@ class NewManifestTest {
     val manifestJson =
       "{\"runtimeVersion\":\"1\",\"id\":\"0eef8214-4833-4089-9dff-b4138a14f196\",\"launchAsset\":{\"url\":\"https://url.to/bundle.js\",\"contentType\":\"application/javascript\"}}"
     val manifest = NewRawManifest(JSONObject(manifestJson))
-    NewManifest.fromRawManifest(manifest, null, createConfig())
+    NewUpdateManifest.fromRawManifest(manifest, null, createConfig())
   }
 
   @Test(expected = JSONException::class)
@@ -47,7 +47,7 @@ class NewManifestTest {
     val manifestJson =
       "{\"id\":\"0eef8214-4833-4089-9dff-b4138a14f196\",\"createdAt\":\"2020-11-11T00:17:54.797Z\",\"launchAsset\":{\"url\":\"https://url.to/bundle.js\",\"contentType\":\"application/javascript\"}}"
     val manifest = NewRawManifest(JSONObject(manifestJson))
-    NewManifest.fromRawManifest(manifest, null, createConfig())
+    NewUpdateManifest.fromRawManifest(manifest, null, createConfig())
   }
 
   @Test(expected = JSONException::class)
@@ -56,7 +56,7 @@ class NewManifestTest {
     val manifestJson =
       "{\"runtimeVersion\":\"1\",\"id\":\"0eef8214-4833-4089-9dff-b4138a14f196\",\"createdAt\":\"2020-11-11T00:17:54.797Z\",}"
     val manifest = NewRawManifest(JSONObject(manifestJson))
-    NewManifest.fromRawManifest(manifest, null, createConfig())
+    NewUpdateManifest.fromRawManifest(manifest, null, createConfig())
   }
 
   private fun createConfig(): UpdatesConfiguration {
@@ -69,7 +69,7 @@ class NewManifestTest {
   @Throws(JSONException::class)
   fun testHeaderDictionaryToJSONObject_SupportedTypes() {
     val actual =
-      NewManifest.headerDictionaryToJSONObject("string=\"string-0000\", true=?1, false=?0, integer=47, decimal=47.5")
+      NewUpdateManifest.headerDictionaryToJSONObject("string=\"string-0000\", true=?1, false=?0, integer=47, decimal=47.5")
     Assert.assertNotNull(actual)
     Assert.assertEquals(5, actual!!.length().toLong())
     Assert.assertEquals("string-0000", actual.getString("string"))
@@ -83,7 +83,7 @@ class NewManifestTest {
   @Throws(JSONException::class)
   fun testHeaderDictionaryToJSONObject_IgnoresOtherTypes() {
     val actual =
-      NewManifest.headerDictionaryToJSONObject("branch-name=\"rollout-1\", data=:w4ZibGV0w6ZydGUK:, list=(1 2)")
+      NewUpdateManifest.headerDictionaryToJSONObject("branch-name=\"rollout-1\", data=:w4ZibGV0w6ZydGUK:, list=(1 2)")
     Assert.assertNotNull(actual)
     Assert.assertEquals(1, actual!!.length().toLong())
     Assert.assertEquals("rollout-1", actual.getString("branch-name"))
@@ -92,7 +92,7 @@ class NewManifestTest {
   @Test
   @Throws(JSONException::class)
   fun testHeaderDictionaryToJSONObject_IgnoresParameters() {
-    val actual = NewManifest.headerDictionaryToJSONObject("abc=123;a=1;b=2")
+    val actual = NewUpdateManifest.headerDictionaryToJSONObject("abc=123;a=1;b=2")
     Assert.assertNotNull(actual)
     Assert.assertEquals(1, actual!!.length().toLong())
     Assert.assertEquals(123, actual.getInt("abc").toLong())
@@ -100,14 +100,14 @@ class NewManifestTest {
 
   @Test
   fun testHeaderDictionaryToJSONObject_Empty() {
-    val actual = NewManifest.headerDictionaryToJSONObject("")
+    val actual = NewUpdateManifest.headerDictionaryToJSONObject("")
     Assert.assertNotNull(actual)
     Assert.assertEquals(0, actual!!.length().toLong())
   }
 
   @Test
   fun testHeaderDictionaryToJSONObject_ParsingError() {
-    val actual = NewManifest.headerDictionaryToJSONObject("bad dictionary")
+    val actual = NewUpdateManifest.headerDictionaryToJSONObject("bad dictionary")
     Assert.assertNull(actual)
   }
 }

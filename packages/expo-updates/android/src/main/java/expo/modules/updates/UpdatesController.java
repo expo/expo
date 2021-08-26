@@ -27,7 +27,7 @@ import expo.modules.updates.launcher.Launcher;
 import expo.modules.updates.selectionpolicy.SelectionPolicy;
 import expo.modules.updates.loader.FileDownloader;
 import expo.modules.updates.loader.LoaderTask;
-import expo.modules.updates.manifest.Manifest;
+import expo.modules.updates.manifest.UpdateManifest;
 import expo.modules.updates.selectionpolicy.SelectionPolicyFactory;
 
 import java.io.File;
@@ -301,7 +301,7 @@ public class UpdatesController {
       }
 
       @Override
-      public void onRemoteManifestLoaded(Manifest manifest) { }
+      public void onRemoteUpdateManifestLoaded(UpdateManifest updateManifest) { }
 
       @Override
       public void onSuccess(Launcher launcher, boolean isUpToDate) {

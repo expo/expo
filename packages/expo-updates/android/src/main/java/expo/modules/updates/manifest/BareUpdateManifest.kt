@@ -13,14 +13,14 @@ import org.json.JSONException
 import org.json.JSONObject
 import java.util.*
 
-class BareManifest private constructor(
+class BareUpdateManifest private constructor(
   override val rawManifest: BareRawManifest,
   private val mId: UUID,
   private val mScopeKey: String,
   private val mCommitTime: Date,
   private val mRuntimeVersion: String,
   private val mAssets: JSONArray?
-) : Manifest {
+) : UpdateManifest {
   override val serverDefinedHeaders: JSONObject? = null
 
   override val manifestFilters: JSONObject? = null
@@ -74,13 +74,13 @@ class BareManifest private constructor(
   override val isDevelopmentMode: Boolean = false
 
   companion object {
-    private val TAG = BareManifest::class.java.simpleName
+    private val TAG = BareUpdateManifest::class.java.simpleName
 
     @Throws(JSONException::class)
     fun fromManifestJson(
       rawManifest: BareRawManifest,
       configuration: UpdatesConfiguration
-    ): BareManifest {
+    ): BareUpdateManifest {
       val id = UUID.fromString(rawManifest.getID())
       val commitTime = Date(rawManifest.getCommitTimeLong())
       val runtimeVersion = UpdatesUtils.getRuntimeVersion(configuration)
@@ -88,7 +88,7 @@ class BareManifest private constructor(
       if (runtimeVersion.contains(",")) {
         throw AssertionError("Should not be initializing a BareManifest in an environment with multiple runtime versions.")
       }
-      return BareManifest(
+      return BareUpdateManifest(
         rawManifest,
         id,
         configuration.scopeKey,
