@@ -10,7 +10,7 @@
 
 @property (nonatomic, strong) EXUpdatesDatabase *db;
 @property (nonatomic, strong) NSURL *testDatabaseDir;
-@property (nonatomic, strong) EXManifestsNewRawManifest *manifest;
+@property (nonatomic, strong) EXManifestsNewManifest *manifest;
 @property (nonatomic, strong) EXUpdatesConfig *config;
 
 @end
@@ -34,7 +34,7 @@
     XCTAssertNil(dbOpenError);
   });
 
-  _manifest = [[EXManifestsNewRawManifest alloc] initWithRawManifestJSON:@{
+  _manifest = [[EXManifestsNewManifest alloc] initWithRawManifestJSON:@{
     @"runtimeVersion": @"1",
     @"id": @"0eef8214-4833-4089-9dff-b4138a14f196",
     @"createdAt": @"2020-11-11T00:17:54.797Z",

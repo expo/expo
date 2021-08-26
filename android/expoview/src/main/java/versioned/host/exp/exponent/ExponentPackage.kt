@@ -11,7 +11,7 @@ import expo.modules.adapters.react.ReactModuleRegistryProvider
 import expo.modules.core.interfaces.Package
 import expo.modules.core.interfaces.SingletonModule
 import expo.modules.random.RandomModule
-import expo.modules.manifests.RawManifest
+import expo.modules.manifests.core.Manifest
 import host.exp.exponent.Constants
 import host.exp.exponent.analytics.EXL
 import host.exp.exponent.kernel.ExperienceKey
@@ -52,19 +52,18 @@ import versioned.host.exp.exponent.modules.test.ExponentTestNativeModule
 import versioned.host.exp.exponent.modules.universal.ExpoModuleRegistryAdapter
 import versioned.host.exp.exponent.modules.universal.ScopedModuleRegistryAdapter
 import java.io.UnsupportedEncodingException
-import java.util.*
 
 // This is an Expo module but not a unimodule
 class ExponentPackage : ReactPackage {
   private val isKernel: Boolean
   private val experienceProperties: Map<String, Any?>
-  private val manifest: RawManifest
+  private val manifest: Manifest
   private val moduleRegistryAdapter: ScopedModuleRegistryAdapter
 
   private constructor(
     isKernel: Boolean,
     experienceProperties: Map<String, Any?>,
-    manifest: RawManifest,
+    manifest: Manifest,
     expoPackages: List<Package>,
     singletonModules: List<SingletonModule>?
   ) {
@@ -76,7 +75,7 @@ class ExponentPackage : ReactPackage {
 
   constructor(
     experienceProperties: Map<String, Any?>,
-    manifest: RawManifest,
+    manifest: Manifest,
     expoPackages: List<Package>?,
     delegate: ExponentPackageDelegate?,
     singletonModules: List<SingletonModule>
@@ -124,7 +123,7 @@ class ExponentPackage : ReactPackage {
 
     if (isVerified) {
       try {
-        val experienceKey = ExperienceKey.fromRawManifest(manifest)
+        val experienceKey = ExperienceKey.fromManifest(manifest)
         val scopedContext = ScopedContext(reactContext, experienceKey)
         nativeModules.add(NotificationsModule(reactContext, experienceKey, manifest.getStableLegacyID(), experienceProperties))
         nativeModules.add(RNViewShotModule(reactContext, scopedContext))
@@ -232,7 +231,7 @@ class ExponentPackage : ReactPackage {
 
     fun kernelExponentPackage(
       context: Context,
-      manifest: RawManifest,
+      manifest: Manifest,
       expoPackages: List<Package>,
       initialURL: String?
     ): ExponentPackage {
@@ -256,7 +255,7 @@ class ExponentPackage : ReactPackage {
 
     fun getOrCreateSingletonModules(
       context: Context?,
-      manifest: RawManifest?,
+      manifest: Manifest?,
       providedExpoPackages: List<Package>?
     ): List<SingletonModule> {
       if (Looper.getMainLooper() != Looper.myLooper()) {

@@ -274,7 +274,7 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
 
 #pragma mark - EXAppFetcherDataSource
 
-- (NSString *)bundleResourceNameForAppFetcher:(EXAppFetcher *)appFetcher withManifest:(nonnull EXManifestsRawManifest *)manifest
+- (NSString *)bundleResourceNameForAppFetcher:(EXAppFetcher *)appFetcher withManifest:(nonnull EXManifestsManifest *)manifest
 {
   if ([EXEnvironment sharedEnvironment].isDetached) {
     NSLog(@"Standalone bundle remote url is %@", [EXEnvironment sharedEnvironment].standaloneManifestUrl);
@@ -568,7 +568,7 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
 
 - (BOOL)enablesDeveloperTools
 {
-  EXManifestsRawManifest *manifest = _appRecord.appLoader.manifest;
+  EXManifestsManifest *manifest = _appRecord.appLoader.manifest;
   if (manifest) {
     return manifest.isUsingDeveloperTool;
   }
@@ -733,7 +733,7 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
 
 - (NSString *)applicationKeyForRootView
 {
-  EXManifestsRawManifest *manifest = _appRecord.appLoader.manifest;
+  EXManifestsManifest *manifest = _appRecord.appLoader.manifest;
   if (manifest && manifest.appKey) {
     return manifest.appKey;
   }
@@ -778,7 +778,7 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
   }
 
   NSString *manifestString = nil;
-  EXManifestsRawManifest *manifest = _appRecord.appLoader.manifest;
+  EXManifestsManifest *manifest = _appRecord.appLoader.manifest;
   if (manifest && [NSJSONSerialization isValidJSONObject:manifest.rawManifestJSON]) {
     NSError *error;
     NSData *jsonData = [NSJSONSerialization dataWithJSONObject:manifest.rawManifestJSON options:0 error:&error];

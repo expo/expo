@@ -7,14 +7,14 @@ import expo.modules.updates.db.entity.AssetEntity
 import expo.modules.updates.db.entity.UpdateEntity
 import expo.modules.updates.db.enums.UpdateStatus
 import expo.modules.updates.loader.EmbeddedLoader
-import expo.modules.manifests.BareRawManifest
+import expo.modules.manifests.core.BareManifest
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
 import java.util.*
 
 class BareUpdateManifest private constructor(
-  override val rawManifest: BareRawManifest,
+  override val manifest: BareManifest,
   private val mId: UUID,
   private val mScopeKey: String,
   private val mCommitTime: Date,
@@ -77,19 +77,19 @@ class BareUpdateManifest private constructor(
     private val TAG = BareUpdateManifest::class.java.simpleName
 
     @Throws(JSONException::class)
-    fun fromManifestJson(
-      rawManifest: BareRawManifest,
+    fun fromBareManifest(
+      manifest: BareManifest,
       configuration: UpdatesConfiguration
     ): BareUpdateManifest {
-      val id = UUID.fromString(rawManifest.getID())
-      val commitTime = Date(rawManifest.getCommitTimeLong())
+      val id = UUID.fromString(manifest.getID())
+      val commitTime = Date(manifest.getCommitTimeLong())
       val runtimeVersion = UpdatesUtils.getRuntimeVersion(configuration)
-      val assets = rawManifest.getAssets()
+      val assets = manifest.getAssets()
       if (runtimeVersion.contains(",")) {
         throw AssertionError("Should not be initializing a BareManifest in an environment with multiple runtime versions.")
       }
       return BareUpdateManifest(
-        rawManifest,
+        manifest,
         id,
         configuration.scopeKey,
         commitTime,

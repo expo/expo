@@ -40,7 +40,7 @@
 - (EXModuleRegistry *)moduleRegistryForParams:(NSDictionary *)params
                   forExperienceStableLegacyId:(NSString *)experienceStableLegacyId
                                      scopeKey:(NSString *)scopeKey
-                                     manifest:(EXManifestsRawManifest *)manifest
+                                     manifest:(EXManifestsManifest *)manifest
                            withKernelServices:(NSDictionary *)kernelServices
 {
   EXModuleRegistry *moduleRegistry = [self.moduleRegistryProvider moduleRegistry];

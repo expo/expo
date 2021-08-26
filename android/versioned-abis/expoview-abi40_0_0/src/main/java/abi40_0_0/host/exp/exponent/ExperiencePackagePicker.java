@@ -1,7 +1,5 @@
 package abi40_0_0.host.exp.exponent;
 
-import org.json.JSONObject;
-
 import java.util.Arrays;
 import java.util.List;
 
@@ -66,7 +64,7 @@ import abi40_0_0.expo.modules.updates.UpdatesPackage;
 import abi40_0_0.expo.modules.videothumbnails.VideoThumbnailsPackage;
 import abi40_0_0.expo.modules.webbrowser.WebBrowserPackage;
 import abi40_0_0.expo.modules.device.DevicePackage;
-import expo.modules.manifests.RawManifest;
+import expo.modules.manifests.core.Manifest;
 
 public class ExperiencePackagePicker {
   private static final List<Package> EXPO_MODULES_PACKAGES = Arrays.<Package>asList(
@@ -142,7 +140,7 @@ public class ExperiencePackagePicker {
    * Returns packages filtered based on the app's manifest.
    * For now, filtering is not applied but it is on the todo list.
    */
-  static List<Package> packages(RawManifest manifest) {
+  static List<Package> packages(Manifest manifest) {
     return EXPO_MODULES_PACKAGES;
   }
 }

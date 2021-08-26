@@ -18,7 +18,7 @@
 
 @implementation EXManagedAppSplashScreenViewProvider
 
-- (instancetype)initWithManifest:(EXManifestsRawManifest *)manifest
+- (instancetype)initWithManifest:(EXManifestsManifest *)manifest
 {
   if (self = [super init]) {
     _configuration = [EXManagedAppSplashScreenConfigurationBuilder parseManifest:manifest];
@@ -26,7 +26,7 @@
   return self;
 }
 
-- (void)updateSplashScreenViewWithManifest:(EXManifestsRawManifest *)manifest
+- (void)updateSplashScreenViewWithManifest:(EXManifestsManifest *)manifest
 {
   EXManagedAppSplashScreenConfiguration *previousConfiguration = _configuration;
   _configuration = [EXManagedAppSplashScreenConfigurationBuilder parseManifest:manifest];

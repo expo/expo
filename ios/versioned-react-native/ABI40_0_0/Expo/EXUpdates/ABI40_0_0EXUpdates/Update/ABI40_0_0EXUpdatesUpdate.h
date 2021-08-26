@@ -2,7 +2,7 @@
 
 #import <ABI40_0_0EXUpdates/ABI40_0_0EXUpdatesAsset.h>
 #import <ABI40_0_0EXUpdates/ABI40_0_0EXUpdatesConfig.h>
-#import <ABI40_0_0EXManifests/ABI40_0_0EXManifestsRawManifest.h>
+#import <ABI40_0_0EXManifests/ABI40_0_0EXManifestsManifest.h>
 
 @class ABI40_0_0EXUpdatesDatabase;
 
@@ -24,7 +24,7 @@ typedef NS_ENUM(NSInteger, ABI40_0_0EXUpdatesUpdateStatus) {
 @property (nonatomic, strong, readonly) NSString *scopeKey;
 @property (nonatomic, strong, readonly) NSDate *commitTime;
 @property (nonatomic, strong, readonly) NSString *runtimeVersion;
-@property (nonatomic, strong, readonly, nullable) NSDictionary *manifest;
+@property (nonatomic, strong, readonly, nullable) NSDictionary *manifestJSON;
 @property (nonatomic, assign, readonly) BOOL keep;
 @property (nonatomic, strong, readonly) NSArray<ABI40_0_0EXUpdatesAsset *> *assets;
 @property (nonatomic, assign, readonly) BOOL isDevelopmentMode;
@@ -32,7 +32,7 @@ typedef NS_ENUM(NSInteger, ABI40_0_0EXUpdatesUpdateStatus) {
 @property (nonatomic, strong, readonly, nullable) NSDictionary *serverDefinedHeaders;
 @property (nonatomic, strong, readonly, nullable) NSDictionary *manifestFilters;
 
-@property (nonatomic, strong, readonly) ABI40_0_0EXManifestsRawManifest *rawManifest;
+@property (nonatomic, strong, readonly) ABI40_0_0EXManifestsManifest *manifest;
 
 @property (nonatomic, assign) ABI40_0_0EXUpdatesUpdateStatus status;
 @property (nonatomic, strong) NSDate *lastAccessed;
@@ -57,7 +57,7 @@ typedef NS_ENUM(NSInteger, ABI40_0_0EXUpdatesUpdateStatus) {
                                     config:(ABI40_0_0EXUpdatesConfig *)config
                                   database:(nullable ABI40_0_0EXUpdatesDatabase *)database;
 
-+ (ABI40_0_0EXManifestsRawManifest *)rawManifestForJSON:(NSDictionary *)manifestJSON;
++ (ABI40_0_0EXManifestsManifest *)manifestForManifestJSON:(NSDictionary *)manifestJSON;
 
 @end
 

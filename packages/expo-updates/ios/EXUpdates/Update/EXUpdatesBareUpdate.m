@@ -4,17 +4,17 @@
 #import <EXUpdates/EXUpdatesEmbeddedAppLoader.h>
 #import <EXUpdates/EXUpdatesUpdate+Private.h>
 #import <EXUpdates/EXUpdatesUtils.h>
-#import <EXManifests/EXManifestsBareRawManifest.h>
+#import <EXManifests/EXManifestsBareManifest.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
 @implementation EXUpdatesBareUpdate
 
-+ (EXUpdatesUpdate *)updateWithBareRawManifest:(EXManifestsBareRawManifest *)manifest
++ (EXUpdatesUpdate *)updateWithBareManifest:(EXManifestsBareManifest *)manifest
                                         config:(EXUpdatesConfig *)config
                                       database:(EXUpdatesDatabase *)database
 {
-  EXUpdatesUpdate *update = [[EXUpdatesUpdate alloc] initWithRawManifest:manifest
+  EXUpdatesUpdate *update = [[EXUpdatesUpdate alloc] initWithManifest:manifest
                                                                   config:config
                                                                 database:database];
 

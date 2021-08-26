@@ -7,14 +7,13 @@ import android.util.Log;
 import com.facebook.FacebookSdk;
 
 import org.json.JSONException;
-import org.json.JSONObject;
+
 import abi40_0_0.org.unimodules.core.Promise;
 import abi40_0_0.org.unimodules.core.arguments.ReadableArguments;
 import abi40_0_0.org.unimodules.core.interfaces.LifecycleEventListener;
 
 import abi40_0_0.expo.modules.facebook.FacebookModule;
-import expo.modules.manifests.RawManifest;
-import host.exp.exponent.kernel.ExperienceKey;
+import expo.modules.manifests.core.Manifest;
 
 public class ScopedFacebookModule extends FacebookModule implements LifecycleEventListener {
   private final static String ERR_FACEBOOK_UNINITIALIZED = "ERR_FACEBOOK_UNINITIALIZED";
@@ -23,7 +22,7 @@ public class ScopedFacebookModule extends FacebookModule implements LifecycleEve
   private boolean mIsInitialized = false;
   private SharedPreferences mSharedPreferences;
 
-  public ScopedFacebookModule(Context context, RawManifest manifest) {
+  public ScopedFacebookModule(Context context, Manifest manifest) {
     super(context);
 
     mSharedPreferences = context.getSharedPreferences(getClass().getCanonicalName(), Context.MODE_PRIVATE);

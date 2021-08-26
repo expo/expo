@@ -83,7 +83,7 @@ ABI40_0_0RCT_EXTERN NSDictionary<NSString *, NSDictionary *> *ABI40_0_0EXGetScop
 // is this the first time this ABI has been touched at runtime?
 @property (nonatomic, assign) BOOL isFirstLoad;
 @property (nonatomic, strong) NSDictionary *params;
-@property (nonatomic, strong) ABI40_0_0EXManifestsRawManifest *manifest;
+@property (nonatomic, strong) ABI40_0_0EXManifestsManifest *manifest;
 @property (nonatomic, strong) ABI40_0_0RCTTurboModuleManager *turboModuleManager;
 
 @end
@@ -105,7 +105,7 @@ ABI40_0_0RCT_EXTERN NSDictionary<NSString *, NSDictionary *> *ABI40_0_0EXGetScop
  *    id exceptionsManagerDelegate
  */
 - (instancetype)initWithParams:(NSDictionary *)params
-                      manifest:(ABI40_0_0EXManifestsRawManifest *)manifest
+                      manifest:(ABI40_0_0EXManifestsManifest *)manifest
                   fatalHandler:(void (^)(NSError *))fatalHandler
                    logFunction:(ABI40_0_0RCTLogFunction)logFunction
                   logThreshold:(NSInteger)threshold

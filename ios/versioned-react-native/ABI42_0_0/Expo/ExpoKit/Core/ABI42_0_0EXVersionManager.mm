@@ -86,7 +86,7 @@ ABI42_0_0RCT_EXTERN void ABI42_0_0EXRegisterScopedModule(Class, ...);
 // is this the first time this ABI has been touched at runtime?
 @property (nonatomic, assign) BOOL isFirstLoad;
 @property (nonatomic, strong) NSDictionary *params;
-@property (nonatomic, strong) ABI42_0_0EXManifestsRawManifest *manifest;
+@property (nonatomic, strong) ABI42_0_0EXManifestsManifest *manifest;
 @property (nonatomic, strong) ABI42_0_0RCTTurboModuleManager *turboModuleManager;
 
 @end
@@ -108,7 +108,7 @@ ABI42_0_0RCT_EXTERN void ABI42_0_0EXRegisterScopedModule(Class, ...);
  *    id exceptionsManagerDelegate
  */
 - (instancetype)initWithParams:(NSDictionary *)params
-                      manifest:(ABI42_0_0EXManifestsRawManifest *)manifest
+                      manifest:(ABI42_0_0EXManifestsManifest *)manifest
                   fatalHandler:(void (^)(NSError *))fatalHandler
                    logFunction:(ABI42_0_0RCTLogFunction)logFunction
                   logThreshold:(NSInteger)threshold

@@ -10,7 +10,7 @@ import com.facebook.react.module.model.ReactModuleInfo
 import com.facebook.react.module.model.ReactModuleInfoProvider
 import com.facebook.react.turbomodule.core.interfaces.TurboModule
 import com.facebook.react.uimanager.ViewManager
-import expo.modules.manifests.RawManifest
+import expo.modules.manifests.core.Manifest
 import host.exp.exponent.kernel.KernelConstants
 import versioned.host.exp.exponent.modules.internal.ExponentAsyncStorageModule
 import versioned.host.exp.exponent.modules.internal.ExponentIntentModule
@@ -26,7 +26,7 @@ import versioned.host.exp.exponent.modules.internal.ExponentUnsignedAsyncStorage
 )
 class ExpoTurboPackage(
   private val experienceProperties: Map<String, Any?>,
-  private val manifest: RawManifest
+  private val manifest: Manifest
 ) : TurboReactPackage() {
   override fun createViewManagers(reactContext: ReactApplicationContext): List<ViewManager<*, *>> {
     return listOf()
@@ -89,7 +89,7 @@ class ExpoTurboPackage(
   companion object {
     private val TAG = ExpoTurboPackage::class.java.simpleName
 
-    fun kernelExpoTurboPackage(manifest: RawManifest, initialURL: String?): ExpoTurboPackage {
+    fun kernelExpoTurboPackage(manifest: Manifest, initialURL: String?): ExpoTurboPackage {
       val kernelExperienceProperties = mutableMapOf(
         KernelConstants.LINKING_URI_KEY to "exp://",
         KernelConstants.IS_HEADLESS_KEY to false,

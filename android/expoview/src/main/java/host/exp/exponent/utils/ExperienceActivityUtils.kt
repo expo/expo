@@ -1,7 +1,7 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 package host.exp.exponent.utils
 
-import expo.modules.manifests.RawManifest
+import expo.modules.manifests.core.Manifest
 import android.app.Activity
 import android.content.pm.ActivityInfo
 import android.view.WindowManager
@@ -25,7 +25,7 @@ object ExperienceActivityUtils {
   private const val STATUS_BAR_STYLE_DARK_CONTENT = "dark-content"
   private const val STATUS_BAR_STYLE_LIGHT_CONTENT = "light-content"
 
-  fun updateOrientation(manifest: RawManifest, activity: Activity) {
+  fun updateOrientation(manifest: Manifest, activity: Activity) {
     val orientation = manifest.getOrientation()
     if (orientation == null) {
       activity.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
@@ -38,7 +38,7 @@ object ExperienceActivityUtils {
     }
   }
 
-  fun updateSoftwareKeyboardLayoutMode(manifest: RawManifest, activity: Activity) {
+  fun updateSoftwareKeyboardLayoutMode(manifest: Manifest, activity: Activity) {
     val keyboardLayoutMode = manifest.getAndroidKeyboardLayoutMode() ?: "resize"
 
     // It's only necessary to set this manually for pan, resize is the default for the activity.
@@ -51,7 +51,7 @@ object ExperienceActivityUtils {
   /**
    * Sets uiMode to according to what is being set in manifest.
    */
-  fun overrideUiMode(manifest: RawManifest, activity: AppCompatActivity) {
+  fun overrideUiMode(manifest: Manifest, activity: AppCompatActivity) {
     val userInterfaceStyle = manifest.getAndroidUserInterfaceStyle() ?: "light"
     activity.delegate.localNightMode = nightModeFromString(userInterfaceStyle)
   }
@@ -90,7 +90,7 @@ object ExperienceActivityUtils {
    * https://chris.banes.dev/talks/2017/becoming-a-master-window-fitter-lon/
    * https://www.youtube.com/watch?v=_mGDMVRO3iE
    */
-  fun configureStatusBar(manifest: RawManifest, activity: Activity) {
+  fun configureStatusBar(manifest: Manifest, activity: Activity) {
     val statusBarOptions = manifest.getAndroidStatusBarOptions()
     val statusBarStyle = statusBarOptions?.optString(ExponentManifest.MANIFEST_STATUS_BAR_APPEARANCE)
     val statusBarBackgroundColor = statusBarOptions?.optString(ExponentManifest.MANIFEST_STATUS_BAR_BACKGROUND_COLOR, null)
@@ -219,7 +219,7 @@ object ExperienceActivityUtils {
 
   fun setTaskDescription(
     exponentManifest: ExponentManifest,
-    manifest: RawManifest,
+    manifest: Manifest,
     activity: Activity
   ) {
     val iconUrl = manifest.getIconUrl()
@@ -245,7 +245,7 @@ object ExperienceActivityUtils {
     )
   }
 
-  fun setNavigationBar(manifest: RawManifest, activity: Activity) {
+  fun setNavigationBar(manifest: Manifest, activity: Activity) {
     val navBarOptions = manifest.getAndroidNavigationBarOptions() ?: return
 
     // Set background color of navigation bar
@@ -304,7 +304,7 @@ object ExperienceActivityUtils {
     }
   }
 
-  fun setRootViewBackgroundColor(manifest: RawManifest, rootView: View) {
+  fun setRootViewBackgroundColor(manifest: Manifest, rootView: View) {
     var colorString = manifest.getAndroidBackgroundColor()
     if (colorString == null || !ColorParser.isValid(colorString)) {
       colorString = "#ffffff"

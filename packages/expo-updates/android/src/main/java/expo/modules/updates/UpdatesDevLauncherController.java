@@ -8,12 +8,14 @@ import org.json.JSONObject;
 
 import java.util.HashMap;
 
+import expo.modules.manifests.core.Manifest;
 import expo.modules.updates.db.DatabaseHolder;
 import expo.modules.updates.db.entity.AssetEntity;
 import expo.modules.updates.db.entity.UpdateEntity;
 import expo.modules.updates.launcher.DatabaseLauncher;
 import expo.modules.updates.launcher.Launcher;
 import expo.modules.updates.loader.RemoteLoader;
+import expo.modules.updates.manifest.ManifestFactory;
 import expo.modules.updates.manifest.UpdateManifest;
 import expo.modules.updates.selectionpolicy.ReaperSelectionPolicyDevelopmentClient;
 import expo.modules.updates.selectionpolicy.SelectionPolicy;
@@ -104,7 +106,7 @@ public class UpdatesDevLauncherController implements UpdatesInterface {
 
       @Override
       public boolean onUpdateManifestLoaded(UpdateManifest updateManifest) {
-        return callback.onManifestLoaded(updateManifest.getRawManifest().getRawJson());
+        return callback.onManifestLoaded(updateManifest.getManifest().getRawJson());
       }
     });
   }
@@ -129,7 +131,8 @@ public class UpdatesDevLauncherController implements UpdatesInterface {
         callback.onSuccess(new Update() {
           @Override
           public JSONObject getManifest() {
-            return launcher.getLaunchedUpdate().getRawManifest().getRawJson();
+            Manifest manifest = ManifestFactory.INSTANCE.getManifestFromManifestJson(launcher.getLaunchedUpdate().manifest);
+            return manifest.getRawJson();
           }
 
           @Override

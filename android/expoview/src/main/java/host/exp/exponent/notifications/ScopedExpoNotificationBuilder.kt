@@ -7,7 +7,7 @@ import expo.modules.notifications.notifications.interfaces.NotificationBuilder
 import expo.modules.notifications.notifications.model.Notification
 import expo.modules.notifications.notifications.presentation.builders.CategoryAwareNotificationBuilder
 import expo.modules.notifications.service.delegates.SharedPreferencesNotificationCategoriesStore
-import expo.modules.manifests.RawManifest
+import expo.modules.manifests.core.Manifest
 import host.exp.exponent.Constants
 import host.exp.exponent.ExponentManifest
 import host.exp.exponent.di.NativeModuleDepsProvider
@@ -27,7 +27,7 @@ open class ScopedExpoNotificationBuilder(
   @Inject
   lateinit var exponentManifest: ExponentManifest
 
-  var manifest: RawManifest? = null
+  var manifest: Manifest? = null
   var experienceKey: ExperienceKey? = null
 
   override fun setNotification(notification: Notification): NotificationBuilder {
@@ -40,7 +40,7 @@ open class ScopedExpoNotificationBuilder(
       try {
         val exponentDBObject = ExponentDB.experienceScopeKeyToExperienceSync(experienceScopeKey!!)
         manifest = exponentDBObject!!.manifest
-        experienceKey = ExperienceKey.fromRawManifest(manifest!!)
+        experienceKey = ExperienceKey.fromManifest(manifest!!)
       } catch (e: JSONException) {
         Log.e("notifications", "Couldn't parse manifest.", e)
         e.printStackTrace()

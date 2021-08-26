@@ -55,7 +55,7 @@ open class HomeActivity : BaseExperienceActivity() {
     sdkVersion = RNObject.UNVERSIONED
     manifest = exponentManifest.getKernelManifest()
     experienceKey = try {
-      ExperienceKey.fromRawManifest(manifest!!)
+      ExperienceKey.fromManifest(manifest!!)
     } catch (e: JSONException) {
       ExperienceKey("")
     }

@@ -14,7 +14,7 @@ import android.text.format.DateUtils
 import androidx.core.app.NotificationCompat
 import de.greenrobot.event.EventBus
 import expo.modules.core.errors.InvalidArgumentException
-import expo.modules.manifests.RawManifest
+import expo.modules.manifests.core.Manifest
 import host.exp.exponent.Constants
 import host.exp.exponent.ExponentManifest
 import host.exp.exponent.ExponentManifest.BitmapListener
@@ -49,7 +49,7 @@ object NotificationHelper {
 
   fun getColor(
     colorString: String?,
-    manifest: RawManifest,
+    manifest: Manifest,
     exponentManifest: ExponentManifest
   ): Int {
     val colorStringLocal = colorString ?: manifest.getNotificationPreferences()?.optString(ExponentManifest.MANIFEST_NOTIFICATION_COLOR_KEY)
@@ -62,7 +62,7 @@ object NotificationHelper {
 
   fun loadIcon(
     url: String?,
-    manifest: RawManifest,
+    manifest: Manifest,
     exponentManifest: ExponentManifest,
     bitmapListener: BitmapListener?
   ) {
@@ -374,7 +374,7 @@ object NotificationHelper {
             Runnable {
               val manifest = exponentDBObject.manifest
               val experienceKey = try {
-                ExperienceKey.fromRawManifest(manifest)
+                ExperienceKey.fromManifest(manifest)
               } catch (e: JSONException) {
                 listener.onFailure(Exception("Couldn't deserialize JSON for experience scope key $experienceScopeKey"))
                 return@Runnable

@@ -11,12 +11,12 @@ NS_ASSUME_NONNULL_BEGIN
 @interface EXManagedAppSplashScreenViewProvider : NSObject<EXSplashScreenViewProvider>
 
 - (instancetype)init NS_UNAVAILABLE;
-- (instancetype)initWithManifest:(EXManifestsRawManifest *)manifest;
+- (instancetype)initWithManifest:(EXManifestsManifest *)manifest;
 
 /**
  * Triggers the view reconfiguration.
  */
-- (void)updateSplashScreenViewWithManifest:(EXManifestsRawManifest *)manifest;
+- (void)updateSplashScreenViewWithManifest:(EXManifestsManifest *)manifest;
 
 @end
 

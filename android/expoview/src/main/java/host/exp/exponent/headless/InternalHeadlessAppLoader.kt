@@ -12,7 +12,7 @@ import expo.modules.apploader.AppLoaderPackagesProviderInterface
 import expo.modules.apploader.AppLoaderProvider
 import expo.modules.core.interfaces.Package
 import expo.modules.core.interfaces.SingletonModule
-import expo.modules.manifests.RawManifest
+import expo.modules.manifests.core.Manifest
 import host.exp.exponent.Constants
 import host.exp.exponent.ExpoUpdatesAppLoader
 import host.exp.exponent.ExpoUpdatesAppLoader.AppLoaderCallback
@@ -49,7 +49,7 @@ class InternalHeadlessAppLoader(private val context: Context) :
   StartReactInstanceDelegate,
   ExponentPackageDelegate {
 
-  private var manifest: RawManifest? = null
+  private var manifest: Manifest? = null
   private var manifestUrl: String? = null
   private var sdkVersion: String? = null
   private var detachSdkVersion: String? = null
@@ -74,8 +74,8 @@ class InternalHeadlessAppLoader(private val context: Context) :
     ExpoUpdatesAppLoader(
       manifestUrl!!,
       object : AppLoaderCallback {
-        override fun onOptimisticManifest(optimisticManifest: RawManifest) {}
-        override fun onManifestCompleted(manifest: RawManifest) {
+        override fun onOptimisticManifest(optimisticManifest: Manifest) {}
+        override fun onManifestCompleted(manifest: Manifest) {
           Exponent.instance.runOnUiThread {
             try {
               val bundleUrl = ExponentUrls.toHttp(manifest.getBundleURL())
@@ -103,7 +103,7 @@ class InternalHeadlessAppLoader(private val context: Context) :
     return appRecord!!
   }
 
-  private fun setManifest(manifestUrl: String, manifest: RawManifest, bundleUrl: String?) {
+  private fun setManifest(manifestUrl: String, manifest: Manifest, bundleUrl: String?) {
     this.manifestUrl = manifestUrl
     this.manifest = manifest
     sdkVersion = manifest.getSDKVersionNullable()

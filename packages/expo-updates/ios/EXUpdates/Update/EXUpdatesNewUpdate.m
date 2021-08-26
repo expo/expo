@@ -11,12 +11,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation EXUpdatesNewUpdate
 
-+ (EXUpdatesUpdate *)updateWithNewManifest:(EXManifestsNewRawManifest *)manifest
++ (EXUpdatesUpdate *)updateWithNewManifest:(EXManifestsNewManifest *)manifest
                                   response:(nullable NSURLResponse *)response
                                     config:(EXUpdatesConfig *)config
                                   database:(EXUpdatesDatabase *)database
 {
-  EXUpdatesUpdate *update = [[EXUpdatesUpdate alloc] initWithRawManifest:manifest
+  EXUpdatesUpdate *update = [[EXUpdatesUpdate alloc] initWithManifest:manifest
                                                                   config:config
                                                                 database:database];
 
@@ -83,7 +83,7 @@ NS_ASSUME_NONNULL_BEGIN
   update.keep = YES;
   update.bundleUrl = bundleUrl;
   update.assets = processedAssets;
-  update.manifest = manifest.rawManifestJSON;
+  update.manifestJSON = manifest.rawManifestJSON;
 
   if ([response isKindOfClass:[NSHTTPURLResponse class]]) {
     NSDictionary *headersDictionary = ((NSHTTPURLResponse *)response).allHeaderFields;

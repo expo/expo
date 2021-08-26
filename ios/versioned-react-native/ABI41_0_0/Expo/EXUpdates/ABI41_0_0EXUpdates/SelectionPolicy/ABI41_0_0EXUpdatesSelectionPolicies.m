@@ -8,11 +8,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (BOOL)doesUpdate:(ABI41_0_0EXUpdatesUpdate *)update matchFilters:(nullable NSDictionary *)filters
 {
-  if (!filters || !update.manifest) {
+  if (!filters || !update.manifestJSON) {
     return YES;
   }
   
-  NSDictionary *metadata = update.manifest[@"metadata"];
+  NSDictionary *metadata = update.manifestJSON[@"metadata"];
   if (!metadata || ![metadata isKindOfClass:[NSDictionary class]]) {
     return YES;
   }

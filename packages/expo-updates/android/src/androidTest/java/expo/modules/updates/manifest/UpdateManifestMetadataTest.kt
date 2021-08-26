@@ -6,7 +6,7 @@ import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner
 import androidx.test.platform.app.InstrumentationRegistry
 import expo.modules.updates.UpdatesConfiguration
 import expo.modules.updates.db.UpdatesDatabase
-import expo.modules.manifests.NewRawManifest
+import expo.modules.manifests.core.NewManifest
 import org.json.JSONException
 import org.json.JSONObject
 import org.junit.After
@@ -21,14 +21,14 @@ import java.util.*
 class UpdateManifestMetadataTest {
   private var db: UpdatesDatabase? = null
   private var config: UpdatesConfiguration? = null
-  private var rawManifest: NewRawManifest? = null
+  private var manifest: NewManifest? = null
 
   @Before
   @Throws(JSONException::class)
   fun setupManifest() {
     val manifestString =
       "{\"runtimeVersion\":\"1\",\"id\":\"0eef8214-4833-4089-9dff-b4138a14f196\",\"createdAt\":\"2020-11-11T00:17:54.797Z\",\"launchAsset\":{\"url\":\"https://url.to/bundle.js\",\"contentType\":\"application/javascript\"}}"
-    rawManifest = NewRawManifest(JSONObject(manifestString))
+    manifest = NewManifest(JSONObject(manifestString))
     config = createConfig()
   }
 
@@ -49,12 +49,12 @@ class UpdateManifestMetadataTest {
     val response1 = Mockito.mock(ManifestResponse::class.java)
     Mockito.`when`(response1.header("expo-manifest-filters"))
       .thenReturn("branch-name=\"rollout-1\",test=\"value\"")
-    val updateManifest1: UpdateManifest = NewUpdateManifest.fromRawManifest(rawManifest!!, response1, config!!)
+    val updateManifest1: UpdateManifest = NewUpdateManifest.fromNewManifest(manifest!!, response1, config!!)
     ManifestMetadata.saveMetadata(updateManifest1, db, config)
     val response2 = Mockito.mock(ManifestResponse::class.java)
     Mockito.`when`(response2.header("expo-manifest-filters"))
       .thenReturn("branch-name=\"rollout-2\"")
-    val updateManifest2: UpdateManifest = NewUpdateManifest.fromRawManifest(rawManifest!!, response2, config!!)
+    val updateManifest2: UpdateManifest = NewUpdateManifest.fromNewManifest(manifest!!, response2, config!!)
     ManifestMetadata.saveMetadata(updateManifest2, db, config)
     val actual = ManifestMetadata.getManifestFilters(db, config)
     Assert.assertNotNull(actual)
@@ -68,11 +68,11 @@ class UpdateManifestMetadataTest {
     val response1 = Mockito.mock(ManifestResponse::class.java)
     Mockito.`when`(response1.header("expo-manifest-filters"))
       .thenReturn("branch-name=\"rollout-1\"")
-    val updateManifest1: UpdateManifest = NewUpdateManifest.fromRawManifest(rawManifest!!, response1, config!!)
+    val updateManifest1: UpdateManifest = NewUpdateManifest.fromNewManifest(manifest!!, response1, config!!)
     ManifestMetadata.saveMetadata(updateManifest1, db, config)
     val response2 = Mockito.mock(ManifestResponse::class.java)
     Mockito.`when`(response2.header("expo-manifest-filters")).thenReturn("")
-    val updateManifest2: UpdateManifest = NewUpdateManifest.fromRawManifest(rawManifest!!, response2, config!!)
+    val updateManifest2: UpdateManifest = NewUpdateManifest.fromNewManifest(manifest!!, response2, config!!)
     ManifestMetadata.saveMetadata(updateManifest2, db, config)
     val actual = ManifestMetadata.getManifestFilters(db, config)
     Assert.assertNotNull(actual)
@@ -85,11 +85,11 @@ class UpdateManifestMetadataTest {
     val response1 = Mockito.mock(ManifestResponse::class.java)
     Mockito.`when`(response1.header("expo-manifest-filters"))
       .thenReturn("branch-name=\"rollout-1\"")
-    val updateManifest1: UpdateManifest = NewUpdateManifest.fromRawManifest(rawManifest!!, response1, config!!)
+    val updateManifest1: UpdateManifest = NewUpdateManifest.fromNewManifest(manifest!!, response1, config!!)
     ManifestMetadata.saveMetadata(updateManifest1, db, config)
     val response2 = Mockito.mock(ManifestResponse::class.java)
     Mockito.`when`(response2.header("expo-manifest-filters")).thenReturn(null)
-    val updateManifest2: UpdateManifest = NewUpdateManifest.fromRawManifest(rawManifest!!, response2, config!!)
+    val updateManifest2: UpdateManifest = NewUpdateManifest.fromNewManifest(manifest!!, response2, config!!)
     ManifestMetadata.saveMetadata(updateManifest2, db, config)
     val actual = ManifestMetadata.getManifestFilters(db, config)
     Assert.assertNotNull(actual)

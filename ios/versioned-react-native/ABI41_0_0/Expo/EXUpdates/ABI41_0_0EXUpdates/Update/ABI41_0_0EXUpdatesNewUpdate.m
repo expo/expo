@@ -11,12 +11,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation ABI41_0_0EXUpdatesNewUpdate
 
-+ (ABI41_0_0EXUpdatesUpdate *)updateWithNewManifest:(ABI41_0_0EXManifestsNewRawManifest *)manifest
++ (ABI41_0_0EXUpdatesUpdate *)updateWithNewManifest:(ABI41_0_0EXManifestsNewManifest *)manifest
                                   response:(nullable NSURLResponse *)response
                                     config:(ABI41_0_0EXUpdatesConfig *)config
                                   database:(ABI41_0_0EXUpdatesDatabase *)database
 {
-  ABI41_0_0EXUpdatesUpdate *update = [[ABI41_0_0EXUpdatesUpdate alloc] initWithRawManifest:manifest
+  ABI41_0_0EXUpdatesUpdate *update = [[ABI41_0_0EXUpdatesUpdate alloc] initWithManifest:manifest
                                                                   config:config
                                                                 database:database];
 
@@ -83,7 +83,7 @@ NS_ASSUME_NONNULL_BEGIN
   update.keep = YES;
   update.bundleUrl = bundleUrl;
   update.assets = processedAssets;
-  update.manifest = manifest.rawManifestJSON;
+  update.manifestJSON = manifest.rawManifestJSON;
 
   if ([response isKindOfClass:[NSHTTPURLResponse class]]) {
     NSDictionary *headersDictionary = ((NSHTTPURLResponse *)response).allHeaderFields;
