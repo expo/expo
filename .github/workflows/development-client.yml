@@ -68,6 +68,7 @@ jobs:
               'expo-dev-launcher': 'file:../expo/packages/expo-dev-launcher', \
               'expo-updates-interface': 'file:../expo/packages/expo-updates-interface', \
               'expo-updates': 'file:../expo/packages/expo-updates', \
+              'expo-manifests': 'file:../expo/packages/expo-manifests', \
             }; \
             fs.writeFileSync('./package.json', JSON.stringify(pkg, null, 2) + '\n');"
       - name: Add dependencies
@@ -125,6 +126,7 @@ jobs:
               'expo-dev-launcher': 'file:../expo/packages/expo-dev-launcher', \
               'expo-updates-interface': 'file:../expo/packages/expo-updates-interface', \
               'expo-updates': 'file:../expo/packages/expo-updates', \
+              'expo-manifests': 'file:../expo/packages/expo-manifests', \
             }; \
             fs.writeFileSync('./package.json', JSON.stringify(pkg, null, 2) + '\n');"
       - name: Add dependencies
