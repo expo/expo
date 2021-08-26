@@ -105,7 +105,7 @@ class BorderDrawable(private val mContext: Context) : Drawable() {
     }
     if (mBorderCornerRadii != null) {
       for (borderRadii in mBorderCornerRadii!!) {
-        if (isYogaPositive(mBorderRadius)) {
+        if (isYogaPositive(borderRadii)) {
           return true
         }
       }
