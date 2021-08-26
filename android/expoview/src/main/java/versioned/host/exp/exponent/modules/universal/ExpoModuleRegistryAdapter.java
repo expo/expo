@@ -12,7 +12,7 @@ import expo.modules.core.interfaces.RegistryLifecycleListener;
 import java.util.List;
 import java.util.Map;
 
-import expo.modules.updates.manifest.raw.RawManifest;
+import expo.modules.manifests.RawManifest;
 import host.exp.exponent.kernel.ExperienceKey;
 import versioned.host.exp.exponent.modules.api.notifications.channels.ScopedNotificationsChannelsProvider;
 import host.exp.exponent.utils.ScopedContext;

@@ -99,7 +99,7 @@ NS_ASSUME_NONNULL_BEGIN
   [[EXKernel sharedInstance] createNewAppWithUrl:urlToRefresh initialProps:nil];
 }
 
-- (void)addHistoryItemWithUrl:(NSURL *)manifestUrl manifest:(EXUpdatesRawManifest *)manifest
+- (void)addHistoryItemWithUrl:(NSURL *)manifestUrl manifest:(EXManifestsRawManifest *)manifest
 {
   [[self _getHomeAppManager] addHistoryItemWithUrl:manifestUrl manifest:manifest];
 }
@@ -173,7 +173,7 @@ NS_ASSUME_NONNULL_BEGIN
         }
       }
     };
-    
+
     BOOL animated = (viewControllerToHide && viewControllerToShow);
     if (animated) {
       if (viewControllerToHide.contentView) {

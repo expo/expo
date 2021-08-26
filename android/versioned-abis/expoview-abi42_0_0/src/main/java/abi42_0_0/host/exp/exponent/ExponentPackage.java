@@ -26,7 +26,7 @@ import java.util.Set;
 
 import javax.annotation.Nullable;
 
-import expo.modules.updates.manifest.raw.RawManifest;
+import expo.modules.manifests.RawManifest;
 import host.exp.exponent.Constants;
 import host.exp.exponent.analytics.EXL;
 import host.exp.exponent.kernel.ExperienceKey;

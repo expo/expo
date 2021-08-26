@@ -329,7 +329,7 @@ NS_ASSUME_NONNULL_BEGIN
  * therefore for any consecutive SplashScreen.show call we just reconfigure what's already visible.
  * In HomeApp or standalone apps this function is no-op as SplashScreen is managed differently.
  */
-- (void)_showOrReconfigureManagedAppSplashScreen:(EXUpdatesRawManifest *)manifest
+- (void)_showOrReconfigureManagedAppSplashScreen:(EXManifestsRawManifest *)manifest
 {
   if (_isStandalone || _isHomeApp) {
     return;
@@ -408,13 +408,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)_showManagedSplashScreenWithProvider:(id<EXSplashScreenViewProvider>)provider
 {
- 
+
   EXSplashScreenService *splashScreenService = (EXSplashScreenService *)[EXModuleRegistryProvider getSingletonModuleForClass:[EXSplashScreenService class]];
 
   EX_WEAKIFY(self);
   dispatch_async(dispatch_get_main_queue(), ^{
     EX_ENSURE_STRONGIFY(self);
-    
+
     UIView *rootView = self.view;
     UIView *splashScreenView = [provider createSplashScreenView];
     EXManagedAppSplashScreenViewController *controller = [[EXManagedAppSplashScreenViewController alloc] initWithRootView:rootView
@@ -424,7 +424,7 @@ NS_ASSUME_NONNULL_BEGIN
                              successCallback:^{}
                              failureCallback:^(NSString *message){ EXLogWarn(@"%@", message); }];
   });
-  
+
 }
 
 - (void)hideLoadingProgressWindow
@@ -434,7 +434,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - EXAppLoaderDelegate
 
-- (void)appLoader:(EXAppLoader *)appLoader didLoadOptimisticManifest:(EXUpdatesRawManifest *)manifest
+- (void)appLoader:(EXAppLoader *)appLoader didLoadOptimisticManifest:(EXManifestsRawManifest *)manifest
 {
   if (_appLoadingCancelView) {
     EX_WEAKIFY(self);
@@ -459,7 +459,7 @@ NS_ASSUME_NONNULL_BEGIN
   }
 }
 
-- (void)appLoader:(EXAppLoader *)appLoader didFinishLoadingManifest:(EXUpdatesRawManifest *)manifest bundle:(NSData *)data
+- (void)appLoader:(EXAppLoader *)appLoader didFinishLoadingManifest:(EXManifestsRawManifest *)manifest bundle:(NSData *)data
 {
   [self _showOrReconfigureManagedAppSplashScreen:manifest];
   [self _rebuildBridge];
@@ -480,7 +480,7 @@ NS_ASSUME_NONNULL_BEGIN
   [self maybeShowError:error];
 }
 
-- (void)appLoader:(EXAppLoader *)appLoader didResolveUpdatedBundleWithManifest:(EXUpdatesRawManifest * _Nullable)manifest isFromCache:(BOOL)isFromCache error:(NSError * _Nullable)error
+- (void)appLoader:(EXAppLoader *)appLoader didResolveUpdatedBundleWithManifest:(EXManifestsRawManifest * _Nullable)manifest isFromCache:(BOOL)isFromCache error:(NSError * _Nullable)error
 {
   [[EXKernel sharedInstance].serviceRegistry.updatesManager notifyApp:_appRecord ofDownloadWithManifest:manifest isNew:!isFromCache error:error];
 }
@@ -686,7 +686,7 @@ NS_ASSUME_NONNULL_BEGIN
   }
 }
 
-- (NSString * _Nullable)_readUserInterfaceStyleFromManifest:(EXUpdatesRawManifest *)manifest
+- (NSString * _Nullable)_readUserInterfaceStyleFromManifest:(EXManifestsRawManifest *)manifest
 {
   return manifest.userInterfaceStyle;
 }
@@ -732,7 +732,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
-- (NSString * _Nullable)_readBackgroundColorFromManifest:(EXUpdatesRawManifest *)manifest
+- (NSString * _Nullable)_readBackgroundColorFromManifest:(EXManifestsRawManifest *)manifest
 {
   return manifest.iosOrRootBackgroundColor;
 }

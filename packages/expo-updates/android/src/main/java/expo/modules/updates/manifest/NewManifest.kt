@@ -11,7 +11,7 @@ import expo.modules.updates.UpdatesUtils
 import expo.modules.updates.db.entity.AssetEntity
 import expo.modules.updates.db.entity.UpdateEntity
 import expo.modules.updates.loader.EmbeddedLoader
-import expo.modules.updates.manifest.raw.NewRawManifest
+import expo.modules.manifests.NewRawManifest
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject

@@ -14,7 +14,7 @@ import android.text.format.DateUtils
 import androidx.core.app.NotificationCompat
 import de.greenrobot.event.EventBus
 import expo.modules.core.errors.InvalidArgumentException
-import expo.modules.updates.manifest.raw.RawManifest
+import expo.modules.manifests.RawManifest
 import host.exp.exponent.Constants
 import host.exp.exponent.ExponentManifest
 import host.exp.exponent.ExponentManifest.BitmapListener

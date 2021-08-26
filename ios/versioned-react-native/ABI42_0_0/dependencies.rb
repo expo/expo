@@ -221,3 +221,6 @@ pod 'ABI42_0_0UMAppLoader',
 pod 'ABI42_0_0UMTaskManagerInterface',
   :path => './versioned-react-native/ABI42_0_0/Expo/UMTaskManagerInterface',
   :project_name => 'ABI42_0_0'
+pod 'ABI42_0_0EXManifests',
+  :path => './versioned-react-native/ABI42_0_0/Expo/EXManifests',
+  :project_name => 'ABI42_0_0'

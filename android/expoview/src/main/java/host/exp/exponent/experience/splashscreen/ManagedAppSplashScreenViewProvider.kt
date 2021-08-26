@@ -8,7 +8,7 @@ import com.squareup.picasso.Callback
 import com.squareup.picasso.Picasso
 import expo.modules.splashscreen.SplashScreenView
 import expo.modules.splashscreen.SplashScreenViewProvider
-import expo.modules.updates.manifest.raw.RawManifest
+import expo.modules.manifests.RawManifest
 import host.exp.exponent.analytics.EXL
 
 /**

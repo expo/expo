@@ -23,7 +23,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong) ABI40_0_0EXUpdatesConfig *config;
 @property (nonatomic, strong, nullable) ABI40_0_0EXUpdatesDatabase *database;
 
-- (instancetype)initWithRawManifest:(ABI40_0_0EXUpdatesRawManifest *)manifest
+- (instancetype)initWithRawManifest:(ABI40_0_0EXManifestsRawManifest *)manifest
                              config:(ABI40_0_0EXUpdatesConfig *)config
                            database:(nullable ABI40_0_0EXUpdatesDatabase *)database;
 

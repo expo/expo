@@ -127,6 +127,8 @@ PODS:
   - ABI40_0_0EXMailComposer (9.0.0):
     - ABI40_0_0UMCore
     - ABI40_0_0UMFileSystemInterface
+  - ABI40_0_0EXManifests (0.1.0):
+    - ABI40_0_0UMCore
   - ABI40_0_0EXMediaLibrary (10.0.0):
     - ABI40_0_0React-Core
     - ABI40_0_0UMCore
@@ -693,6 +695,8 @@ PODS:
   - ABI41_0_0EXMailComposer (10.1.0):
     - ABI41_0_0UMCore
     - ABI41_0_0UMFileSystemInterface
+  - ABI41_0_0EXManifests (0.1.0):
+    - ABI41_0_0UMCore
   - ABI41_0_0EXMediaLibrary (12.0.0):
     - ABI41_0_0React-Core
     - ABI41_0_0UMCore
@@ -1290,6 +1294,8 @@ PODS:
   - ABI42_0_0EXMailComposer (10.2.0):
     - ABI42_0_0ExpoModulesCore
     - ABI42_0_0UMCore
+  - ABI42_0_0EXManifests (0.1.0):
+    - ABI42_0_0ExpoModulesCore
   - ABI42_0_0EXMediaLibrary (12.1.0):
     - ABI42_0_0ExpoModulesCore
     - ABI42_0_0React-Core
@@ -1879,6 +1885,10 @@ PODS:
     - UMTaskManagerInterface
   - EXMailComposer (10.2.0):
     - ExpoModulesCore
+  - EXManifests (0.1.0):
+    - ExpoModulesCore
+  - EXManifests/Tests (0.1.0):
+    - ExpoModulesCore
   - EXMediaLibrary (12.1.0):
     - ExpoModulesCore
     - React-Core
@@ -1934,11 +1944,13 @@ PODS:
   - EXTrackingTransparency (1.1.0):
     - ExpoModulesCore
   - EXUpdates (0.8.4):
+    - EXManifests
     - ExpoModulesCore
     - EXStructuredHeaders
     - EXUpdatesInterface
     - React-Core
   - EXUpdates/Tests (0.8.4):
+    - EXManifests
     - ExpoModulesCore
     - EXStructuredHeaders
     - EXUpdatesInterface
@@ -2463,6 +2475,7 @@ DEPENDENCIES:
   - ABI40_0_0EXLocalization (from `./versioned-react-native/ABI40_0_0/Expo/EXLocalization`)
   - ABI40_0_0EXLocation (from `./versioned-react-native/ABI40_0_0/Expo/EXLocation`)
   - ABI40_0_0EXMailComposer (from `./versioned-react-native/ABI40_0_0/Expo/EXMailComposer`)
+  - ABI40_0_0EXManifests (from `./versioned-react-native/ABI40_0_0/Expo/EXManifests`)
   - ABI40_0_0EXMediaLibrary (from `./versioned-react-native/ABI40_0_0/Expo/EXMediaLibrary`)
   - ABI40_0_0EXModuleTemplate (from `./versioned-react-native/ABI40_0_0/Expo/EXModuleTemplate`)
   - ABI40_0_0EXNetwork (from `./versioned-react-native/ABI40_0_0/Expo/EXNetwork`)
@@ -2566,6 +2579,7 @@ DEPENDENCIES:
   - ABI41_0_0EXLocalization (from `./versioned-react-native/ABI41_0_0/Expo/EXLocalization`)
   - ABI41_0_0EXLocation (from `./versioned-react-native/ABI41_0_0/Expo/EXLocation`)
   - ABI41_0_0EXMailComposer (from `./versioned-react-native/ABI41_0_0/Expo/EXMailComposer`)
+  - ABI41_0_0EXManifests (from `./versioned-react-native/ABI41_0_0/Expo/EXManifests`)
   - ABI41_0_0EXMediaLibrary (from `./versioned-react-native/ABI41_0_0/Expo/EXMediaLibrary`)
   - ABI41_0_0EXModuleTemplate (from `./versioned-react-native/ABI41_0_0/Expo/EXModuleTemplate`)
   - ABI41_0_0EXNetwork (from `./versioned-react-native/ABI41_0_0/Expo/EXNetwork`)
@@ -2674,6 +2688,7 @@ DEPENDENCIES:
   - ABI42_0_0EXLocalization (from `./versioned-react-native/ABI42_0_0/Expo/EXLocalization`)
   - ABI42_0_0EXLocation (from `./versioned-react-native/ABI42_0_0/Expo/EXLocation`)
   - ABI42_0_0EXMailComposer (from `./versioned-react-native/ABI42_0_0/Expo/EXMailComposer`)
+  - ABI42_0_0EXManifests (from `./versioned-react-native/ABI42_0_0/Expo/EXManifests`)
   - ABI42_0_0EXMediaLibrary (from `./versioned-react-native/ABI42_0_0/Expo/EXMediaLibrary`)
   - ABI42_0_0EXModuleTemplate (from `./versioned-react-native/ABI42_0_0/Expo/EXModuleTemplate`)
   - ABI42_0_0EXNetwork (from `./versioned-react-native/ABI42_0_0/Expo/EXNetwork`)
@@ -2781,6 +2796,8 @@ DEPENDENCIES:
   - EXLocalization (from `../packages/expo-localization/ios`)
   - EXLocation (from `../packages/expo-location/ios`)
   - EXMailComposer (from `../packages/expo-mail-composer/ios`)
+  - EXManifests (from `../packages/expo-manifests/ios`)
+  - EXManifests/Tests (from `../packages/expo-manifests/ios`)
   - EXMediaLibrary (from `../packages/expo-media-library/ios`)
   - EXNetwork (from `../packages/expo-network/ios`)
   - EXNotifications (from `../packages/expo-notifications/ios`)
@@ -2976,6 +2993,8 @@ EXTERNAL SOURCES:
     :path: "./versioned-react-native/ABI40_0_0/Expo/EXLocation"
   ABI40_0_0EXMailComposer:
     :path: "./versioned-react-native/ABI40_0_0/Expo/EXMailComposer"
+  ABI40_0_0EXManifests:
+    :path: "./versioned-react-native/ABI40_0_0/Expo/EXManifests"
   ABI40_0_0EXMediaLibrary:
     :path: "./versioned-react-native/ABI40_0_0/Expo/EXMediaLibrary"
   ABI40_0_0EXModuleTemplate:
@@ -3176,6 +3195,8 @@ EXTERNAL SOURCES:
     :path: "./versioned-react-native/ABI41_0_0/Expo/EXLocation"
   ABI41_0_0EXMailComposer:
     :path: "./versioned-react-native/ABI41_0_0/Expo/EXMailComposer"
+  ABI41_0_0EXManifests:
+    :path: "./versioned-react-native/ABI41_0_0/Expo/EXManifests"
   ABI41_0_0EXMediaLibrary:
     :path: "./versioned-react-native/ABI41_0_0/Expo/EXMediaLibrary"
   ABI41_0_0EXModuleTemplate:
@@ -3386,6 +3407,8 @@ EXTERNAL SOURCES:
     :path: "./versioned-react-native/ABI42_0_0/Expo/EXLocation"
   ABI42_0_0EXMailComposer:
     :path: "./versioned-react-native/ABI42_0_0/Expo/EXMailComposer"
+  ABI42_0_0EXManifests:
+    :path: "./versioned-react-native/ABI42_0_0/Expo/EXManifests"
   ABI42_0_0EXMediaLibrary:
     :path: "./versioned-react-native/ABI42_0_0/Expo/EXMediaLibrary"
   ABI42_0_0EXModuleTemplate:
@@ -3590,6 +3613,8 @@ EXTERNAL SOURCES:
     :path: "../packages/expo-location/ios"
   EXMailComposer:
     :path: "../packages/expo-mail-composer/ios"
+  EXManifests:
+    :path: "../packages/expo-manifests/ios"
   EXMediaLibrary:
     :path: "../packages/expo-media-library/ios"
   EXNetwork:
@@ -3758,6 +3783,7 @@ SPEC CHECKSUMS:
   ABI40_0_0EXLocalization: 3a0b63cfe901595d8141aae590ff3ff132def78c
   ABI40_0_0EXLocation: 31b14185e8093c23188a53197439132c5a1c1aba
   ABI40_0_0EXMailComposer: b3e1a564bf14a0e05ab645d5e4a98880965f31b5
+  ABI40_0_0EXManifests: 980709f415b77f88ffb4f7f2503116a6655594b0
   ABI40_0_0EXMediaLibrary: 48b436fbee6e09277a4754d501d34f8e65805fc9
   ABI40_0_0EXModuleTemplate: 833873982d780721350e9c5b1a186451706bc3fc
   ABI40_0_0EXNetwork: 3fde803c18582fb40eb74a6b7457bd2d873d71de
@@ -3858,6 +3884,7 @@ SPEC CHECKSUMS:
   ABI41_0_0EXLocalization: 5e30801fc812d95199d80b7d7023ebf657374eb0
   ABI41_0_0EXLocation: 4645282f0b2669ef67415fb97390800119bfff33
   ABI41_0_0EXMailComposer: 725f13d2b7109880484d785936846b30806fd9ff
+  ABI41_0_0EXManifests: d07d916e553176558e21eb4374f799751bb3a34a
   ABI41_0_0EXMediaLibrary: 492685550f3724b2e026d2df9cf96b4d008305cc
   ABI41_0_0EXModuleTemplate: f0c6e5eb1ae44d2d45bf1f0e03e22e50d5f96e47
   ABI41_0_0EXNetwork: 7063020fbd68cbe249290a3ed20929874f59e3d6
@@ -3963,6 +3990,7 @@ SPEC CHECKSUMS:
   ABI42_0_0EXLocalization: e45cda9179ef4bbc04c3e3ae784d062d715d131d
   ABI42_0_0EXLocation: bd2e9179bdd805ac0604883df22cf9b71a7d02db
   ABI42_0_0EXMailComposer: 1b1c9b95cfeb6b0424cfe7dff23873f23493a559
+  ABI42_0_0EXManifests: 3faae88bc63d2ff683c649dd87184a435e306cf9
   ABI42_0_0EXMediaLibrary: 04ef376f83f15b4af801d5b999396abaf5c7bdde
   ABI42_0_0EXModuleTemplate: 6a4320e17d1a7132606f262b5157e52114d1b238
   ABI42_0_0EXNetwork: 0176a370ca963ed0c9c7bec2d6938cff05e94a1e
@@ -4028,7 +4056,7 @@ SPEC CHECKSUMS:
   boost-for-react-native: 39c7adb57c4e60d6c5479dd8623128eb5b3f0f2c
   Branch: 9a37f707974a128c37829033c49018b79c7e7a2d
   CocoaLumberjack: 2f44e60eb91c176d471fdba43b9e3eae6a721947
-  DoubleConversion: cf9b38bf0b2d048436d9a82ad2abe1404f11e7de
+  DoubleConversion: cde416483dac037923206447da6e1454df403714
   EXAdsAdMob: 86e90081f156eb60a2d7b6da07408d3ec8c4a0d8
   EXAdsFacebook: 43c0cf0ec4e6a4fe07adaa25cf45570018653856
   EXAmplitude: f0c3dd959d629181c0c2b4bc52717580a539a600
@@ -4071,6 +4099,7 @@ SPEC CHECKSUMS:
   EXLocalization: 18c4461eb66125734dc2c73866572f3450f7c9b8
   EXLocation: 2ab9fcb91e381aada094f7312bfc9684ced76d3e
   EXMailComposer: e5d206471deef0d515bf6ec93697df4d3e5a15ae
+  EXManifests: 146d9998d6304ae9b6081cae7ff7816fdd33354c
   EXMediaLibrary: 2256df25d4371037570a1ed01e605a50759caaa5
   EXNetwork: b420f5e99b4291f2ba0f632a6eb099b1f126a7d8
   EXNotifications: 11ddca2668114114ffd7c36627ff3ffa259d64d2
@@ -4092,7 +4121,7 @@ SPEC CHECKSUMS:
   EXStructuredHeaders: ce164ef0ffc9a85fc6e39d8a9151db6a8668e20d
   EXTaskManager: e416167eb16046979026555b493a1317788efc97
   EXTrackingTransparency: 3331861717c233fc079f5bf7831dd627ac085cd5
-  EXUpdates: 2c73938cecffba80534f962204884ae6f2b46e61
+  EXUpdates: a871496b468dd7584187223376b9d8e88851a7b7
   EXUpdatesInterface: 31a0826d3036c570f8d09a38504865332915269f
   EXVideoThumbnails: da38473f6d86ce08c5a4a9e6e839816e1aac01c3
   EXWebBrowser: 144b3209de7feec39104531ce205912d8ade93c9
@@ -4106,7 +4135,7 @@ SPEC CHECKSUMS:
   FirebaseCore: ac35d680a0bf32319a59966a1478e0741536b97b
   FirebaseCoreDiagnostics: 3d36e05da74cb8b7ce30e6594a8f201b982c725c
   FirebaseInstallations: a58d4f72ec5861840b84df489f2668d970df558a
-  glog: 73c2498ac6884b13ede40eda8228cb1eee9d9d62
+  glog: 40a13f7840415b9a77023fbcae0f1e6f43192af3
   Google-Maps-iOS-Utils: c32891ff472eaaa1fca032beedafa1a013af7875
   Google-Mobile-Ads-SDK: 2f288748a42920d1c744946a460896a95b0e9110
   GoogleAppMeasurement: 0c3b134b2c0a90c4c24833873894bfe0e42a0384
@@ -4167,6 +4196,6 @@ SPEC CHECKSUMS:
   Yoga: 575c581c63e0d35c9a83f4b46d01d63abc1100ac
   ZXingObjC: fdbb269f25dd2032da343e06f10224d62f537bdb
 
-PODFILE CHECKSUM: 87c05f8218d0dca71299101a58080f0d0a6ea88e
+PODFILE CHECKSUM: ab9fee1c152387b4f85cdf5720cfdf1c3852d434
 
 COCOAPODS: 1.10.2

@@ -16,7 +16,7 @@ import javax.inject.Inject;
 import androidx.annotation.Nullable;
 import expo.modules.constants.ConstantsService;
 import expo.modules.interfaces.constants.ConstantsInterface;
-import expo.modules.updates.manifest.raw.RawManifest;
+import expo.modules.manifests.RawManifest;
 import host.exp.exponent.Constants;
 import host.exp.exponent.di.NativeModuleDepsProvider;
 import host.exp.exponent.kernel.ExpoViewKernel;

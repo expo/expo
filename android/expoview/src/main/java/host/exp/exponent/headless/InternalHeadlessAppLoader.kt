@@ -12,7 +12,7 @@ import expo.modules.apploader.AppLoaderPackagesProviderInterface
 import expo.modules.apploader.AppLoaderProvider
 import expo.modules.core.interfaces.Package
 import expo.modules.core.interfaces.SingletonModule
-import expo.modules.updates.manifest.raw.RawManifest
+import expo.modules.manifests.RawManifest
 import host.exp.exponent.Constants
 import host.exp.exponent.ExpoUpdatesAppLoader
 import host.exp.exponent.ExpoUpdatesAppLoader.AppLoaderCallback

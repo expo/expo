@@ -11,7 +11,7 @@ import expo.modules.adapters.react.ReactModuleRegistryProvider
 import expo.modules.core.interfaces.Package
 import expo.modules.core.interfaces.SingletonModule
 import expo.modules.random.RandomModule
-import expo.modules.updates.manifest.raw.RawManifest
+import expo.modules.manifests.RawManifest
 import host.exp.exponent.Constants
 import host.exp.exponent.analytics.EXL
 import host.exp.exponent.kernel.ExperienceKey

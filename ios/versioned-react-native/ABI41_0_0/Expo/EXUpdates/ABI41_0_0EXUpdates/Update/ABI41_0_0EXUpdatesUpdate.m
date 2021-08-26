@@ -5,7 +5,7 @@
 #import <ABI41_0_0EXUpdates/ABI41_0_0EXUpdatesLegacyUpdate.h>
 #import <ABI41_0_0EXUpdates/ABI41_0_0EXUpdatesNewUpdate.h>
 #import <ABI41_0_0EXUpdates/ABI41_0_0EXUpdatesUpdate+Private.h>
-#import <ABI41_0_0EXUpdates/ABI41_0_0EXUpdatesBareRawManifest.h>
+#import <ABI41_0_0EXManifests/ABI41_0_0EXManifestsBareRawManifest.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -14,13 +14,13 @@ NSString * const ABI41_0_0EXUpdatesUpdateErrorDomain = @"ABI41_0_0EXUpdatesUpdat
 
 @interface ABI41_0_0EXUpdatesUpdate ()
 
-@property (nonatomic, strong, readwrite) ABI41_0_0EXUpdatesRawManifest* rawManifest;
+@property (nonatomic, strong, readwrite) ABI41_0_0EXManifestsRawManifest* rawManifest;
 
 @end
 
 @implementation ABI41_0_0EXUpdatesUpdate
 
-- (instancetype)initWithRawManifest:(ABI41_0_0EXUpdatesRawManifest *)manifest
+- (instancetype)initWithRawManifest:(ABI41_0_0EXManifestsRawManifest *)manifest
                              config:(ABI41_0_0EXUpdatesConfig *)config
                            database:(nullable ABI41_0_0EXUpdatesDatabase *)database
 {
@@ -73,17 +73,17 @@ NSString * const ABI41_0_0EXUpdatesUpdateErrorDomain = @"ABI41_0_0EXUpdatesUpdat
     }
     return nil;
   }
-  
+
   NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)response;
   NSDictionary *headerDictionary = [httpResponse allHeaderFields];
   NSString *expoProtocolVersion = headerDictionary[@"expo-protocol-version"];
-  
+
   if (expoProtocolVersion == nil) {
-    return [ABI41_0_0EXUpdatesLegacyUpdate updateWithLegacyManifest:[[ABI41_0_0EXUpdatesLegacyRawManifest alloc] initWithRawManifestJSON:manifest]
+    return [ABI41_0_0EXUpdatesLegacyUpdate updateWithLegacyManifest:[[ABI41_0_0EXManifestsLegacyRawManifest alloc] initWithRawManifestJSON:manifest]
                                                     config:config
                                                   database:database];
   } else if (expoProtocolVersion.integerValue == 0) {
-    return [ABI41_0_0EXUpdatesNewUpdate updateWithNewManifest:[[ABI41_0_0EXUpdatesNewRawManifest alloc] initWithRawManifestJSON:manifest]
+    return [ABI41_0_0EXUpdatesNewUpdate updateWithNewManifest:[[ABI41_0_0EXManifestsNewRawManifest alloc] initWithRawManifestJSON:manifest]
                                             response:response
                                               config:config
                                             database:database];
@@ -102,11 +102,11 @@ NSString * const ABI41_0_0EXUpdatesUpdateErrorDomain = @"ABI41_0_0EXUpdatesUpdat
                                   database:(nullable ABI41_0_0EXUpdatesDatabase *)database
 {
   if (manifest[@"releaseId"]) {
-    return [ABI41_0_0EXUpdatesLegacyUpdate updateWithLegacyManifest:[[ABI41_0_0EXUpdatesLegacyRawManifest alloc] initWithRawManifestJSON:manifest]
+    return [ABI41_0_0EXUpdatesLegacyUpdate updateWithLegacyManifest:[[ABI41_0_0EXManifestsLegacyRawManifest alloc] initWithRawManifestJSON:manifest]
                                                     config:config
                                                   database:database];
   } else {
-    return [ABI41_0_0EXUpdatesBareUpdate updateWithBareRawManifest:[[ABI41_0_0EXUpdatesBareRawManifest alloc] initWithRawManifestJSON:manifest]
+    return [ABI41_0_0EXUpdatesBareUpdate updateWithBareRawManifest:[[ABI41_0_0EXManifestsBareRawManifest alloc] initWithRawManifestJSON:manifest]
                                                    config:config
                                                  database:database];
   }
@@ -124,14 +124,14 @@ NSString * const ABI41_0_0EXUpdatesUpdateErrorDomain = @"ABI41_0_0EXUpdatesUpdat
   return _assets;
 }
 
-+ (nonnull ABI41_0_0EXUpdatesRawManifest *)rawManifestForJSON:(nonnull NSDictionary *)manifestJSON { 
-  ABI41_0_0EXUpdatesRawManifest *rawManifest;
++ (nonnull ABI41_0_0EXManifestsRawManifest *)rawManifestForJSON:(nonnull NSDictionary *)manifestJSON {
+  ABI41_0_0EXManifestsRawManifest *rawManifest;
   if (manifestJSON[@"releaseId"]) {
-    rawManifest = [[ABI41_0_0EXUpdatesLegacyRawManifest alloc] initWithRawManifestJSON:manifestJSON];
+    rawManifest = [[ABI41_0_0EXManifestsLegacyRawManifest alloc] initWithRawManifestJSON:manifestJSON];
   } else if (manifestJSON[@"metadata"]) {
-    rawManifest = [[ABI41_0_0EXUpdatesNewRawManifest alloc] initWithRawManifestJSON:manifestJSON];
+    rawManifest = [[ABI41_0_0EXManifestsNewRawManifest alloc] initWithRawManifestJSON:manifestJSON];
   } else {
-    rawManifest = [[ABI41_0_0EXUpdatesBareRawManifest alloc] initWithRawManifestJSON:manifestJSON];
+    rawManifest = [[ABI41_0_0EXManifestsBareRawManifest alloc] initWithRawManifestJSON:manifestJSON];
   }
   return rawManifest;
 }

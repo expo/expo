@@ -64,7 +64,7 @@ import abi42_0_0.expo.modules.sqlite.SQLitePackage;
 import abi42_0_0.expo.modules.storereview.StoreReviewPackage;
 import abi42_0_0.expo.modules.taskManager.TaskManagerPackage;
 import abi42_0_0.expo.modules.updates.UpdatesPackage;
-import expo.modules.updates.manifest.raw.RawManifest;
+import expo.modules.manifests.RawManifest;
 import abi42_0_0.expo.modules.videothumbnails.VideoThumbnailsPackage;
 import abi42_0_0.expo.modules.webbrowser.WebBrowserPackage;
 import abi42_0_0.expo.modules.device.DevicePackage;
