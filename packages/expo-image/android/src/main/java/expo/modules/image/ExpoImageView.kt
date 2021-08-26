@@ -55,7 +55,6 @@ class ExpoImageView(context: ReactContext, private val requestManager: RequestMa
   internal var defaultSourceMap: ReadableMap? = null
   var blurRadius: Int? = null
   var fadeDuration: Int? = null
-    private get
 
   init {
     clipToOutline = true
@@ -124,12 +123,11 @@ class ExpoImageView(context: ReactContext, private val requestManager: RequestMa
       val options = createOptionsFromSourceMap(sourceMap)
       val propOptions = createPropOptions()
       val eventsManager = ImageLoadEventsManager(id, eventEmitter)
-      val propOptions = createPropOptions()
       progressInterceptor.registerProgressListener(sourceToLoad.toStringUrl(), eventsManager)
       eventsManager.onLoadStarted()
       requestManager
         .load(sourceToLoad)
-        .thumbnail(requestManager.load(defaultSourceToLoad))
+        .apply { if (defaultSourceToLoad != null) thumbnail(requestManager.load(defaultSourceToLoad)) }
         .apply(options)
         .addListener(eventsManager)
         .run {
@@ -183,7 +181,8 @@ class ExpoImageView(context: ReactContext, private val requestManager: RequestMa
     return RequestOptions()
       .apply {
         blurRadius?.let {
-          transform(BlurTransformation(it+1, 4))
+          transform(BlurTransformation(it + 1, 4))
+        }
         fadeDuration?.let {
           alpha = 0f
           animate().alpha(1f).duration = it.toLong();

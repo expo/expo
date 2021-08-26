@@ -58,6 +58,8 @@ class ExpoImageViewManager(applicationContext: ReactApplicationContext) : Simple
   @ReactProp(name = "blurRadius")
   fun setBlurRadius(view: ExpoImageView, blurRadius: Int) {
     view.blurRadius = blurRadius
+  }
+
   @ReactProp(name = "fadeDuration")
   fun setFadeDuration(view: ExpoImageView, fadeDuration: Int) {
     view.fadeDuration = fadeDuration
