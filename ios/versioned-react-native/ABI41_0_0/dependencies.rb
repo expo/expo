@@ -242,3 +242,6 @@ pod 'ABI41_0_0UMSensorsInterface',
 pod 'ABI41_0_0UMTaskManagerInterface',
   :path => './versioned-react-native/ABI41_0_0/Expo/UMTaskManagerInterface',
   :project_name => 'ABI41_0_0'
+pod 'ABI41_0_0EXRawManifests',
+  :path => './versioned-react-native/ABI41_0_0/Expo/EXRawManifests',
+  :project_name => 'ABI41_0_0'

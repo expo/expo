@@ -240,6 +240,8 @@ PODS:
     - ABI40_0_0UMFileSystemInterface
   - ABI40_0_0EXRandom (10.0.0):
     - ABI40_0_0React-Core
+  - ABI40_0_0EXRawManifests (0.1.0):
+    - ABI40_0_0UMCore
   - ABI40_0_0EXScreenCapture (2.0.0):
     - ABI40_0_0UMCore
   - ABI40_0_0EXScreenOrientation (2.1.0):
@@ -808,6 +810,8 @@ PODS:
     - ABI41_0_0UMFileSystemInterface
   - ABI41_0_0EXRandom (11.1.0):
     - ABI41_0_0React-Core
+  - ABI41_0_0EXRawManifests (0.1.0):
+    - ABI41_0_0UMCore
   - ABI41_0_0EXScreenCapture (3.1.0):
     - ABI41_0_0UMCore
   - ABI41_0_0EXScreenOrientation (3.1.0):
@@ -1408,6 +1412,8 @@ PODS:
     - ABI42_0_0UMCore
   - ABI42_0_0EXRandom (11.2.0):
     - ABI42_0_0React-Core
+  - ABI42_0_0EXRawManifests (0.1.0):
+    - ABI42_0_0ExpoModulesCore
   - ABI42_0_0EXScreenCapture (3.2.0):
     - ABI42_0_0UMCore
   - ABI42_0_0EXScreenOrientation (3.2.0):
@@ -2476,6 +2482,7 @@ DEPENDENCIES:
   - ABI40_0_0ExpoKit/ExpoOptional (from `./versioned-react-native/ABI40_0_0/Expo/ExpoKit`)
   - ABI40_0_0EXPrint (from `./versioned-react-native/ABI40_0_0/Expo/EXPrint`)
   - ABI40_0_0EXRandom (from `./versioned-react-native/ABI40_0_0/Expo/EXRandom`)
+  - ABI40_0_0EXRawManifests (from `./versioned-react-native/ABI40_0_0/Expo/EXRawManifests`)
   - ABI40_0_0EXScreenCapture (from `./versioned-react-native/ABI40_0_0/Expo/EXScreenCapture`)
   - ABI40_0_0EXScreenOrientation (from `./versioned-react-native/ABI40_0_0/Expo/EXScreenOrientation`)
   - ABI40_0_0EXSecureStore (from `./versioned-react-native/ABI40_0_0/Expo/EXSecureStore`)
@@ -2579,6 +2586,7 @@ DEPENDENCIES:
   - ABI41_0_0ExpoKit/ExpoOptional (from `./versioned-react-native/ABI41_0_0/Expo/ExpoKit`)
   - ABI41_0_0EXPrint (from `./versioned-react-native/ABI41_0_0/Expo/EXPrint`)
   - ABI41_0_0EXRandom (from `./versioned-react-native/ABI41_0_0/Expo/EXRandom`)
+  - ABI41_0_0EXRawManifests (from `./versioned-react-native/ABI41_0_0/Expo/EXRawManifests`)
   - ABI41_0_0EXScreenCapture (from `./versioned-react-native/ABI41_0_0/Expo/EXScreenCapture`)
   - ABI41_0_0EXScreenOrientation (from `./versioned-react-native/ABI41_0_0/Expo/EXScreenOrientation`)
   - ABI41_0_0EXSecureStore (from `./versioned-react-native/ABI41_0_0/Expo/EXSecureStore`)
@@ -2688,6 +2696,7 @@ DEPENDENCIES:
   - ABI42_0_0ExpoModulesCore (from `./versioned-react-native/ABI42_0_0/Expo/ExpoModulesCore`)
   - ABI42_0_0EXPrint (from `./versioned-react-native/ABI42_0_0/Expo/EXPrint`)
   - ABI42_0_0EXRandom (from `./versioned-react-native/ABI42_0_0/Expo/EXRandom`)
+  - ABI42_0_0EXRawManifests (from `./versioned-react-native/ABI42_0_0/Expo/EXRawManifests`)
   - ABI42_0_0EXScreenCapture (from `./versioned-react-native/ABI42_0_0/Expo/EXScreenCapture`)
   - ABI42_0_0EXScreenOrientation (from `./versioned-react-native/ABI42_0_0/Expo/EXScreenOrientation`)
   - ABI42_0_0EXSecureStore (from `./versioned-react-native/ABI42_0_0/Expo/EXSecureStore`)
@@ -2997,6 +3006,8 @@ EXTERNAL SOURCES:
     :path: "./versioned-react-native/ABI40_0_0/Expo/EXPrint"
   ABI40_0_0EXRandom:
     :path: "./versioned-react-native/ABI40_0_0/Expo/EXRandom"
+  ABI40_0_0EXRawManifests:
+    :path: "./versioned-react-native/ABI40_0_0/Expo/EXRawManifests"
   ABI40_0_0EXScreenCapture:
     :path: "./versioned-react-native/ABI40_0_0/Expo/EXScreenCapture"
   ABI40_0_0EXScreenOrientation:
@@ -3197,6 +3208,8 @@ EXTERNAL SOURCES:
     :path: "./versioned-react-native/ABI41_0_0/Expo/EXPrint"
   ABI41_0_0EXRandom:
     :path: "./versioned-react-native/ABI41_0_0/Expo/EXRandom"
+  ABI41_0_0EXRawManifests:
+    :path: "./versioned-react-native/ABI41_0_0/Expo/EXRawManifests"
   ABI41_0_0EXScreenCapture:
     :path: "./versioned-react-native/ABI41_0_0/Expo/EXScreenCapture"
   ABI41_0_0EXScreenOrientation:
@@ -3409,6 +3422,8 @@ EXTERNAL SOURCES:
     :path: "./versioned-react-native/ABI42_0_0/Expo/EXPrint"
   ABI42_0_0EXRandom:
     :path: "./versioned-react-native/ABI42_0_0/Expo/EXRandom"
+  ABI42_0_0EXRawManifests:
+    :path: "./versioned-react-native/ABI42_0_0/Expo/EXRawManifests"
   ABI42_0_0EXScreenCapture:
     :path: "./versioned-react-native/ABI42_0_0/Expo/EXScreenCapture"
   ABI42_0_0EXScreenOrientation:
@@ -3773,6 +3788,7 @@ SPEC CHECKSUMS:
   ABI40_0_0ExpoKit: c0e43ba3c45c0865e4de4ce8444155158dd15fd8
   ABI40_0_0EXPrint: 28c0b0b1c7a5fcf7bb162402effd18bfc2609580
   ABI40_0_0EXRandom: 0a65d0035142a3f4546ec9a370f33689fea55960
+  ABI40_0_0EXRawManifests: 123a90293a69654b05d2490fa9132fd42d7086b6
   ABI40_0_0EXScreenCapture: 64f2e26f8f63d550eee5bed11a88e541a3874036
   ABI40_0_0EXScreenOrientation: c8dc016debb6f094b10a172c7befb87ae51db426
   ABI40_0_0EXSecureStore: c95111df8d238c13ad685f4b2d5380b05fb7f07b
@@ -3873,6 +3889,7 @@ SPEC CHECKSUMS:
   ABI41_0_0ExpoKit: 5be6c62fb301b7e3bac49460b1b91c250bce9605
   ABI41_0_0EXPrint: 7401d385395553865479f30cfbaf371340d776f4
   ABI41_0_0EXRandom: 457ad8c71b497fc4fda20d70152fbce8f7dc0919
+  ABI41_0_0EXRawManifests: e57133c70083becf23e26f89c798ec38a915e5c0
   ABI41_0_0EXScreenCapture: 96a7760db8e34a62ad5bdeaf65e265defdb7dc79
   ABI41_0_0EXScreenOrientation: 7c5a096275875c996ae44e0b4ff093dacf86880e
   ABI41_0_0EXSecureStore: 2fabd2fff74abf297ed6c2409ccbf09e752f2981
@@ -3979,6 +3996,7 @@ SPEC CHECKSUMS:
   ABI42_0_0ExpoModulesCore: 85d79294f8c6c297f1b1c1af7a5ef292dd21a643
   ABI42_0_0EXPrint: 104311da09fe260e5d21d83d235c0c557d826282
   ABI42_0_0EXRandom: e692f2004e285512b969c9a0ce488283b6149370
+  ABI42_0_0EXRawManifests: 19b347a0ae7775d0b8356e628aed8c19433caed6
   ABI42_0_0EXScreenCapture: f4d88b590af5aed9f7a941d1f11259e839817a8c
   ABI42_0_0EXScreenOrientation: 77096827206be2927008806a2a44c1abd035ea54
   ABI42_0_0EXSecureStore: 9a7dae1e816e6b1eb1976c64afb6d3eda922ca65
