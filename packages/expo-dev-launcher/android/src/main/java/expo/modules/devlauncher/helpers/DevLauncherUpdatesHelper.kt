@@ -24,7 +24,7 @@ suspend fun UpdatesInterface.loadUpdate(
         cont.resumeWithException(e ?: Exception("There was an unexpected error loading the update."))
       }
       override fun onProgress(successfulAssetCount: Int, failedAssetCount: Int, totalAssetCount: Int) = Unit
-      override fun onManifestJSONLoaded(manifest: JSONObject): Boolean {
+      override fun onManifestLoaded(manifest: JSONObject): Boolean {
         return if (shouldContinue(manifest)) {
           true
         } else {
