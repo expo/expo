@@ -6,7 +6,7 @@ import android.util.Base64;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import expo.modules.rawmanifests.RawManifest;
+import expo.modules.manifests.RawManifest;
 import host.exp.exponent.kernel.ExperienceKey;
 
 import com.google.firebase.FirebaseApp;

@@ -39,7 +39,7 @@
     "@expo/config": "^5.0.6",
     "expo-structured-headers": "~1.1.0",
     "expo-updates-interface": "~0.2.2",
-    "expo-raw-manifests": "~0.1.0",
+    "expo-manifests": "~0.1.0",
     "fbemitter": "^2.1.1",
     "uuid": "^3.4.0",
     "resolve-from": "^5.0.0"

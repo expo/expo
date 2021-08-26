@@ -3,7 +3,7 @@ package expo.modules.updates.manifest
 import android.net.Uri
 import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner
 import expo.modules.updates.UpdatesConfiguration
-import expo.modules.rawmanifests.NewRawManifest
+import expo.modules.manifests.NewRawManifest
 import org.json.JSONException
 import org.json.JSONObject
 import org.junit.Assert

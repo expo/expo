@@ -21,7 +21,7 @@ import java.util.Map;
 
 import javax.annotation.Nullable;
 
-import expo.modules.rawmanifests.RawManifest;
+import expo.modules.manifests.RawManifest;
 import host.exp.exponent.ExponentManifest;
 import abi42_0_0.host.exp.exponent.modules.internal.ExponentAsyncStorageModule;
 import abi42_0_0.host.exp.exponent.modules.internal.ExponentIntentModule;

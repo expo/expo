@@ -7,7 +7,7 @@ import expo.modules.updates.db.entity.AssetEntity
 import expo.modules.updates.db.entity.UpdateEntity
 import expo.modules.updates.db.enums.UpdateStatus
 import expo.modules.updates.loader.EmbeddedLoader
-import expo.modules.rawmanifests.BareRawManifest
+import expo.modules.manifests.BareRawManifest
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject

@@ -7,7 +7,7 @@ import expo.modules.notifications.notifications.interfaces.NotificationBuilder
 import expo.modules.notifications.notifications.model.Notification
 import expo.modules.notifications.notifications.presentation.builders.CategoryAwareNotificationBuilder
 import expo.modules.notifications.service.delegates.SharedPreferencesNotificationCategoriesStore
-import expo.modules.rawmanifests.RawManifest
+import expo.modules.manifests.RawManifest
 import host.exp.exponent.Constants
 import host.exp.exponent.ExponentManifest
 import host.exp.exponent.di.NativeModuleDepsProvider

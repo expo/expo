@@ -1,13 +1,13 @@
 //  Copyright © 2019 650 Industries. All rights reserved.
 
 #import <ABI41_0_0EXUpdates/ABI41_0_0EXUpdatesUpdate.h>
-#import <ABI41_0_0EXRawManifests/ABI41_0_0EXRawManifestsBareRawManifest.h>
+#import <ABI41_0_0EXManifests/ABI41_0_0EXManifestsBareRawManifest.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
 @interface ABI41_0_0EXUpdatesBareUpdate : NSObject
 
-+ (ABI41_0_0EXUpdatesUpdate *)updateWithBareRawManifest:(ABI41_0_0EXRawManifestsBareRawManifest *)manifest
++ (ABI41_0_0EXUpdatesUpdate *)updateWithBareRawManifest:(ABI41_0_0EXManifestsBareRawManifest *)manifest
                                         config:(ABI41_0_0EXUpdatesConfig *)config
                                       database:(ABI41_0_0EXUpdatesDatabase *)database;
 

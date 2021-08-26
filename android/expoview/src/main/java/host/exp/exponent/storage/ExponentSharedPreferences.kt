@@ -3,7 +3,7 @@ package host.exp.exponent.storage
 
 import android.content.Context
 import expo.modules.updates.manifest.ManifestFactory
-import expo.modules.rawmanifests.RawManifest
+import expo.modules.manifests.RawManifest
 import host.exp.exponent.analytics.EXL
 import host.exp.exponent.kernel.ExperienceKey
 import host.exp.exponent.kernel.KernelConstants

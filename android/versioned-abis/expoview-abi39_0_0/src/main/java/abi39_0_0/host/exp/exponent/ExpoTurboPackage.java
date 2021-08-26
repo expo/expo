@@ -19,7 +19,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import expo.modules.rawmanifests.RawManifest;
+import expo.modules.manifests.RawManifest;
 import host.exp.exponent.ExponentManifest;
 import abi39_0_0.host.exp.exponent.modules.internal.ExponentAsyncStorageModule;
 import abi39_0_0.host.exp.exponent.modules.internal.ExponentIntentModule;

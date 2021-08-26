@@ -34,8 +34,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong, nullable) NSURL *manifestUrl;
 @property (nonatomic, strong, nullable) NSURL *httpManifestUrl;
 
-@property (nonatomic, strong, nullable) EXRawManifestsRawManifest *confirmedManifest;
-@property (nonatomic, strong, nullable) EXRawManifestsRawManifest *optimisticManifest;
+@property (nonatomic, strong, nullable) EXManifestsRawManifest *confirmedManifest;
+@property (nonatomic, strong, nullable) EXManifestsRawManifest *optimisticManifest;
 @property (nonatomic, strong, nullable) NSData *bundle;
 @property (nonatomic, assign) EXAppLoaderRemoteUpdateStatus remoteUpdateStatus;
 @property (nonatomic, assign) BOOL shouldShowRemoteUpdateStatus;
@@ -114,7 +114,7 @@ NS_ASSUME_NONNULL_BEGIN
   return kEXAppLoaderStatusNew;
 }
 
-- (nullable EXRawManifestsRawManifest *)manifest
+- (nullable EXManifestsRawManifest *)manifest
 {
   if (_confirmedManifest) {
     return _confirmedManifest;
@@ -400,7 +400,7 @@ NS_ASSUME_NONNULL_BEGIN
   }
 }
 
-- (void)_setOptimisticManifest:(EXRawManifestsRawManifest *)manifest
+- (void)_setOptimisticManifest:(EXManifestsRawManifest *)manifest
 {
   _optimisticManifest = manifest;
   if (self.delegate) {
@@ -408,7 +408,7 @@ NS_ASSUME_NONNULL_BEGIN
   }
 }
 
-- (void)_setShouldShowRemoteUpdateStatus:(EXRawManifestsRawManifest *)manifest
+- (void)_setShouldShowRemoteUpdateStatus:(EXManifestsRawManifest *)manifest
 {
   // we don't want to show the cached experience alert when Updates.reloadAsync() is called
   if (_shouldUseCacheOnly) {
@@ -464,7 +464,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 # pragma mark - manifest processing
 
-- (EXRawManifestsRawManifest *)_processManifest:(EXRawManifestsRawManifest *)manifest
+- (EXManifestsRawManifest *)_processManifest:(EXManifestsRawManifest *)manifest
 {
   NSMutableDictionary *mutableManifest = [manifest.rawManifestJSON mutableCopy];
   if (!mutableManifest[@"isVerified"] && ![EXKernelLinkingManager isExpoHostedUrl:_httpManifestUrl] && !EXEnvironment.sharedEnvironment.isDetached){
@@ -488,7 +488,7 @@ NS_ASSUME_NONNULL_BEGIN
   return [EXUpdatesUpdate rawManifestForJSON:[mutableManifest copy]];
 }
 
-+ (BOOL)_isAnonymousExperience:(EXRawManifestsRawManifest *)manifest
++ (BOOL)_isAnonymousExperience:(EXManifestsRawManifest *)manifest
 {
   return manifest.legacyId != nil && [manifest.legacyId hasPrefix:@"@anonymous/"];
 }

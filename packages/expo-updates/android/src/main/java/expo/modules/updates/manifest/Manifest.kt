@@ -2,7 +2,7 @@ package expo.modules.updates.manifest
 
 import expo.modules.updates.db.entity.AssetEntity
 import expo.modules.updates.db.entity.UpdateEntity
-import expo.modules.rawmanifests.RawManifest
+import expo.modules.manifests.RawManifest
 import org.json.JSONObject
 
 interface Manifest {

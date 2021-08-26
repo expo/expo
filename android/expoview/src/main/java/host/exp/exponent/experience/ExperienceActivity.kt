@@ -25,7 +25,7 @@ import com.facebook.soloader.SoLoader
 import de.greenrobot.event.EventBus
 import expo.modules.core.interfaces.Package
 import expo.modules.splashscreen.singletons.SplashScreen
-import expo.modules.rawmanifests.RawManifest
+import expo.modules.manifests.RawManifest
 import host.exp.exponent.*
 import host.exp.exponent.ExpoUpdatesAppLoader.AppLoaderCallback
 import host.exp.exponent.ExpoUpdatesAppLoader.AppLoaderStatus

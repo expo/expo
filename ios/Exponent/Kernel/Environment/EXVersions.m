@@ -80,14 +80,14 @@
   return @"";
 }
 
-- (NSString *)availableSdkVersionForManifest:(EXRawManifestsRawManifest * _Nullable)manifest
+- (NSString *)availableSdkVersionForManifest:(EXManifestsRawManifest * _Nullable)manifest
 {
   return [self _versionForManifest:manifest];
 }
 
 #pragma mark - Internal
 
-- (NSString *)_versionForManifest:(EXRawManifestsRawManifest * _Nullable)manifest
+- (NSString *)_versionForManifest:(EXManifestsRawManifest * _Nullable)manifest
 {
   if (manifest && manifest.sdkVersion) {
     NSString *sdkVersion = manifest.sdkVersion;

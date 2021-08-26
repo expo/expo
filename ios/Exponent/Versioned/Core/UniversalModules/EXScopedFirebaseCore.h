@@ -3,14 +3,14 @@
 #if __has_include(<EXFirebaseCore/EXFirebaseCore.h>)
 #import <UIKit/UIKit.h>
 #import <EXFirebaseCore/EXFirebaseCore.h>
-#import <EXRawManifests/EXRawManifestsRawManifest.h>
+#import <EXManifests/EXManifestsRawManifest.h>
 #import "EXConstantsBinding.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
 @interface EXScopedFirebaseCore : EXFirebaseCore
 
-- (instancetype)initWithScopeKey:(NSString *)scopeKey manifest:(EXRawManifestsRawManifest *)manifest constantsBinding:(EXConstantsBinding *)constantsBinding;
+- (instancetype)initWithScopeKey:(NSString *)scopeKey manifest:(EXManifestsRawManifest *)manifest constantsBinding:(EXConstantsBinding *)constantsBinding;
 
 @end
 

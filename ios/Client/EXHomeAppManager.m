@@ -52,7 +52,7 @@ NSString *kEXHomeManifestResourceName = @"kernel-manifest";
         @"cachesDirectory": [self scopedCachesDirectory]
     }
   } mutableCopy];
-  
+
   NSURL *initialHomeUrl = [self _initialHomeUrl];
   if (initialHomeUrl) {
     params[@"initialUri"] = initialHomeUrl;
@@ -62,7 +62,7 @@ NSString *kEXHomeManifestResourceName = @"kernel-manifest";
 
 #pragma mark - interfacing with home JS
 
-- (void)addHistoryItemWithUrl:(NSURL *)manifestUrl manifest:(EXRawManifestsRawManifest *)manifest
+- (void)addHistoryItemWithUrl:(NSURL *)manifestUrl manifest:(EXManifestsRawManifest *)manifest
 {
   if (!manifest || !manifestUrl || [manifest.legacyId isEqualToString:@"@exponent/home"] || [manifest.legacyId isEqualToString:@"@expo-dogfooding/home"]) {
     return;
@@ -90,7 +90,7 @@ NSString *kEXHomeManifestResourceName = @"kernel-manifest";
 {
   [self _dispatchHomeJSEvent:@"showQRReader" body:@{} onSuccess:nil onFailure:nil];
 }
-  
+
 #pragma mark - EXReactAppManager
 
 - (NSArray *)extraModulesForBridge:(RCTBridge *)bridge
@@ -98,7 +98,7 @@ NSString *kEXHomeManifestResourceName = @"kernel-manifest";
   NSMutableArray *modules = [NSMutableArray array];
 
   [modules addObjectsFromArray:[self.versionManager extraModulesForBridge:bridge]];
-  
+
   return modules;
 }
 
@@ -117,7 +117,7 @@ NSString *kEXHomeManifestResourceName = @"kernel-manifest";
 {
   return RCTLogLevelWarning;
 }
-                        
+
 - (NSDictionary *)launchOptionsForBridge
 {
   if (!self.hasBridgeEverLoaded) {
@@ -128,7 +128,7 @@ NSString *kEXHomeManifestResourceName = @"kernel-manifest";
   }
 }
 
-- (NSString *)bundleResourceNameForAppFetcher:(__unused EXAppFetcher *)appFetcher withManifest:(nonnull __unused EXRawManifestsRawManifest *)manifest
+- (NSString *)bundleResourceNameForAppFetcher:(__unused EXAppFetcher *)appFetcher withManifest:(nonnull __unused EXManifestsRawManifest *)manifest
 {
   return kEXHomeBundleResourceName;
 }
@@ -162,16 +162,16 @@ NSString *kEXHomeManifestResourceName = @"kernel-manifest";
   return initialHomeUrl;
 }
 
-+ (EXRawManifestsRawManifest * _Nullable)bundledHomeManifest
++ (EXManifestsRawManifest * _Nullable)bundledHomeManifest
 {
   NSString *manifestJson = nil;
   BOOL usesNSBundleManifest = NO;
-  
+
   // if developing, use development manifest from EXBuildConstants
   if ([EXBuildConstants sharedInstance].isDevKernel) {
     manifestJson = [EXBuildConstants sharedInstance].kernelManifestJsonString;
   }
-  
+
   // otherwise use published manifest
   if (!manifestJson) {
     NSString *manifestPath = [[NSBundle mainBundle] pathForResource:kEXHomeManifestResourceName ofType:@"json"];
@@ -184,7 +184,7 @@ NSString *kEXHomeManifestResourceName = @"kernel-manifest";
       }
     }
   }
-  
+
   if (manifestJson) {
     id manifest = RCTJSONParse(manifestJson, nil);
     if ([manifest isKindOfClass:[NSDictionary class]]) {

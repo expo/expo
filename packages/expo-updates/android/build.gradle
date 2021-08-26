@@ -82,7 +82,7 @@ dependencies {
   implementation project(':expo-modules-core')
   implementation project(':expo-structured-headers')
   implementation project(':expo-updates-interface')
-  implementation project(':expo-raw-manifests')
+  implementation project(':expo-manifests')
   //noinspection GradleDynamicVersion
   implementation "com.facebook.react:react-native:+"
 

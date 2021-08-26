@@ -13,7 +13,7 @@ import abi40_0_0.org.unimodules.core.arguments.ReadableArguments;
 import abi40_0_0.org.unimodules.core.interfaces.LifecycleEventListener;
 
 import abi40_0_0.expo.modules.facebook.FacebookModule;
-import expo.modules.rawmanifests.RawManifest;
+import expo.modules.manifests.RawManifest;
 import host.exp.exponent.kernel.ExperienceKey;
 
 public class ScopedFacebookModule extends FacebookModule implements LifecycleEventListener {

@@ -10,8 +10,8 @@ import android.os.AsyncTask
 import android.text.TextUtils
 import android.util.LruCache
 import expo.modules.updates.manifest.ManifestFactory
-import expo.modules.rawmanifests.InternalJSONMutator
-import expo.modules.rawmanifests.RawManifest
+import expo.modules.manifests.InternalJSONMutator
+import expo.modules.manifests.RawManifest
 import host.exp.exponent.analytics.EXL
 import host.exp.exponent.generated.ExponentBuildConstants
 import host.exp.exponent.kernel.ExponentUrls
