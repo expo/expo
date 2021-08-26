@@ -133,7 +133,7 @@ export async function setUserId(userId: string | null): Promise<void> {
  * @param value The value of the user property. Values can be up to 36 characters long. Setting the
  *     value to null removes the user property.
  */
-export async function setUserProperty(name: string, value: string): Promise<void> {
+export async function setUserProperty(name: string, value: string | null): Promise<void> {
   return await setUserProperties({ [name]: value });
 }
 
@@ -152,7 +152,9 @@ export async function resetAnalyticsData(): Promise<void> {
  *
  * @param properties key/value set of user properties
  */
-export async function setUserProperties(properties: { [key: string]: string }): Promise<void> {
+export async function setUserProperties(properties: {
+  [key: string]: string | null;
+}): Promise<void> {
   if (!ExpoFirebaseAnalytics.setUserProperties) {
     throw new UnavailabilityError('expo-firebase-analytics', 'setUserProperties');
   }

@@ -92,7 +92,7 @@ export declare function setUserId(userId: string | null): Promise<void>;
  * @param value The value of the user property. Values can be up to 36 characters long. Setting the
  *     value to null removes the user property.
  */
-export declare function setUserProperty(name: string, value: string): Promise<void>;
+export declare function setUserProperty(name: string, value: string | null): Promise<void>;
 /**
  * Clears all analytics data for this instance from the device and resets the app instance ID.
  */
@@ -103,7 +103,7 @@ export declare function resetAnalyticsData(): Promise<void>;
  * @param properties key/value set of user properties
  */
 export declare function setUserProperties(properties: {
-    [key: string]: string;
+    [key: string]: string | null;
 }): Promise<void>;
 /**
  * Enables or disables the warning and log messages when using

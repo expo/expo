@@ -24,11 +24,14 @@
   return self;
 }
 
-EX_REGISTER_MODULE();
-
 + (NSString *)moduleName
 {
   return @"UMReactNativeEventEmitter";
+}
+
++ (BOOL)requiresMainQueueSetup
+{
+  return NO;
 }
 
 + (const NSArray<Protocol *> *)exportedInterfaces

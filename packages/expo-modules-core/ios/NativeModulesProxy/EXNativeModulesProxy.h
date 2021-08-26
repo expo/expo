@@ -16,7 +16,9 @@
 NS_SWIFT_NAME(NativeModulesProxy)
 @interface EXNativeModulesProxy : NSObject <RCTBridgeModule>
 
+@property (nonatomic, strong) SwiftInteropBridge *swiftInteropBridge;
+
+- (nonnull instancetype)init;
 - (nonnull instancetype)initWithModuleRegistry:(nullable EXModuleRegistry *)moduleRegistry;
-- (nonnull instancetype)initWithModuleRegistry:(nullable EXModuleRegistry *)moduleRegistry swiftInteropBridge:(nullable SwiftInteropBridge *)swiftInteropBridge;
 
 @end
