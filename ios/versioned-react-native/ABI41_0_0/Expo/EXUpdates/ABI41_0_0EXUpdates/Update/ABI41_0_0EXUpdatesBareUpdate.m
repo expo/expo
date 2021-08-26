@@ -4,13 +4,13 @@
 #import <ABI41_0_0EXUpdates/ABI41_0_0EXUpdatesEmbeddedAppLoader.h>
 #import <ABI41_0_0EXUpdates/ABI41_0_0EXUpdatesUpdate+Private.h>
 #import <ABI41_0_0EXUpdates/ABI41_0_0EXUpdatesUtils.h>
-#import <ABI41_0_0EXRawManifests/ABI41_0_0EXUpdatesBareRawManifest.h>
+#import <ABI41_0_0EXRawManifests/ABI41_0_0EXRawManifestsBareRawManifest.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
 @implementation ABI41_0_0EXUpdatesBareUpdate
 
-+ (ABI41_0_0EXUpdatesUpdate *)updateWithBareRawManifest:(ABI41_0_0EXUpdatesBareRawManifest *)manifest
++ (ABI41_0_0EXUpdatesUpdate *)updateWithBareRawManifest:(ABI41_0_0EXRawManifestsBareRawManifest *)manifest
                                         config:(ABI41_0_0EXUpdatesConfig *)config
                                       database:(ABI41_0_0EXUpdatesDatabase *)database
 {

@@ -5,7 +5,7 @@
 #import <EXUpdates/EXUpdatesLegacyUpdate.h>
 #import <EXUpdates/EXUpdatesNewUpdate.h>
 #import <EXUpdates/EXUpdatesUpdate+Private.h>
-#import <EXRawManifests/EXUpdatesBareRawManifest.h>
+#import <EXRawManifests/EXRawManifestsBareRawManifest.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -14,13 +14,13 @@ NSString * const EXUpdatesUpdateErrorDomain = @"EXUpdatesUpdate";
 
 @interface EXUpdatesUpdate ()
 
-@property (nonatomic, strong, readwrite) EXUpdatesRawManifest* rawManifest;
+@property (nonatomic, strong, readwrite) EXRawManifestsRawManifest* rawManifest;
 
 @end
 
 @implementation EXUpdatesUpdate
 
-- (instancetype)initWithRawManifest:(EXUpdatesRawManifest *)manifest
+- (instancetype)initWithRawManifest:(EXRawManifestsRawManifest *)manifest
                              config:(EXUpdatesConfig *)config
                            database:(nullable EXUpdatesDatabase *)database
 {
@@ -79,11 +79,11 @@ NSString * const EXUpdatesUpdateErrorDomain = @"EXUpdatesUpdate";
   NSString *expoProtocolVersion = headerDictionary[@"expo-protocol-version"];
   
   if (expoProtocolVersion == nil) {
-    return [EXUpdatesLegacyUpdate updateWithLegacyManifest:[[EXUpdatesLegacyRawManifest alloc] initWithRawManifestJSON:manifest]
+    return [EXUpdatesLegacyUpdate updateWithLegacyManifest:[[EXRawManifestsLegacyRawManifest alloc] initWithRawManifestJSON:manifest]
                                                     config:config
                                                   database:database];
   } else if (expoProtocolVersion.integerValue == 0) {
-    return [EXUpdatesNewUpdate updateWithNewManifest:[[EXUpdatesNewRawManifest alloc] initWithRawManifestJSON:manifest]
+    return [EXUpdatesNewUpdate updateWithNewManifest:[[EXRawManifestsNewRawManifest alloc] initWithRawManifestJSON:manifest]
                                             response:response
                                               config:config
                                             database:database];
@@ -102,11 +102,11 @@ NSString * const EXUpdatesUpdateErrorDomain = @"EXUpdatesUpdate";
                                   database:(nullable EXUpdatesDatabase *)database
 {
   if (manifest[@"releaseId"]) {
-    return [EXUpdatesLegacyUpdate updateWithLegacyManifest:[[EXUpdatesLegacyRawManifest alloc] initWithRawManifestJSON:manifest]
+    return [EXUpdatesLegacyUpdate updateWithLegacyManifest:[[EXRawManifestsLegacyRawManifest alloc] initWithRawManifestJSON:manifest]
                                                     config:config
                                                   database:database];
   } else {
-    return [EXUpdatesBareUpdate updateWithBareRawManifest:[[EXUpdatesBareRawManifest alloc] initWithRawManifestJSON:manifest]
+    return [EXUpdatesBareUpdate updateWithBareRawManifest:[[EXRawManifestsBareRawManifest alloc] initWithRawManifestJSON:manifest]
                                                    config:config
                                                  database:database];
   }
@@ -124,14 +124,14 @@ NSString * const EXUpdatesUpdateErrorDomain = @"EXUpdatesUpdate";
   return _assets;
 }
 
-+ (nonnull EXUpdatesRawManifest *)rawManifestForJSON:(nonnull NSDictionary *)manifestJSON { 
-  EXUpdatesRawManifest *rawManifest;
++ (nonnull EXRawManifestsRawManifest *)rawManifestForJSON:(nonnull NSDictionary *)manifestJSON { 
+  EXRawManifestsRawManifest *rawManifest;
   if (manifestJSON[@"releaseId"]) {
-    rawManifest = [[EXUpdatesLegacyRawManifest alloc] initWithRawManifestJSON:manifestJSON];
+    rawManifest = [[EXRawManifestsLegacyRawManifest alloc] initWithRawManifestJSON:manifestJSON];
   } else if (manifestJSON[@"metadata"]) {
-    rawManifest = [[EXUpdatesNewRawManifest alloc] initWithRawManifestJSON:manifestJSON];
+    rawManifest = [[EXRawManifestsNewRawManifest alloc] initWithRawManifestJSON:manifestJSON];
   } else {
-    rawManifest = [[EXUpdatesBareRawManifest alloc] initWithRawManifestJSON:manifestJSON];
+    rawManifest = [[EXRawManifestsBareRawManifest alloc] initWithRawManifestJSON:manifestJSON];
   }
   return rawManifest;
 }

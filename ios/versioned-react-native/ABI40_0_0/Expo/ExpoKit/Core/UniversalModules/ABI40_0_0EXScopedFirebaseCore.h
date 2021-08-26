@@ -3,14 +3,14 @@
 #if __has_include(<ABI40_0_0EXFirebaseCore/ABI40_0_0EXFirebaseCore.h>)
 #import <UIKit/UIKit.h>
 #import <ABI40_0_0EXFirebaseCore/ABI40_0_0EXFirebaseCore.h>
-#import <ABI40_0_0EXRawManifests/ABI40_0_0EXUpdatesRawManifest.h>
+#import <ABI40_0_0EXRawManifests/ABI40_0_0EXRawManifestsRawManifest.h>
 #import "ABI40_0_0EXConstantsBinding.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
 @interface ABI40_0_0EXScopedFirebaseCore : ABI40_0_0EXFirebaseCore
 
-- (instancetype)initWithScopeKey:(NSString *)scopeKey manifest:(ABI40_0_0EXUpdatesRawManifest *)manifest constantsBinding:(ABI40_0_0EXConstantsBinding *)constantsBinding;
+- (instancetype)initWithScopeKey:(NSString *)scopeKey manifest:(ABI40_0_0EXRawManifestsRawManifest *)manifest constantsBinding:(ABI40_0_0EXConstantsBinding *)constantsBinding;
 
 @end
 

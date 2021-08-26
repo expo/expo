@@ -11,7 +11,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation EXUpdatesNewUpdate
 
-+ (EXUpdatesUpdate *)updateWithNewManifest:(EXUpdatesNewRawManifest *)manifest
++ (EXUpdatesUpdate *)updateWithNewManifest:(EXRawManifestsNewRawManifest *)manifest
                                   response:(nullable NSURLResponse *)response
                                     config:(EXUpdatesConfig *)config
                                   database:(EXUpdatesDatabase *)database

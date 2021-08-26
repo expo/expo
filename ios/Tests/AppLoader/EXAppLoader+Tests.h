@@ -1,5 +1,5 @@
 #import "EXAppLoader.h"
-#import <EXRawManifests/EXUpdatesRawManifest.h>
+#import <EXRawManifests/EXRawManifestsRawManifest.h>
 
 #pragma mark - private/internal methods in App Loader & App Fetchers
 
@@ -7,6 +7,6 @@
 
 @property (nonatomic, readonly) EXAppFetcher * _Nullable appFetcher;
 
-- (BOOL)_fetchBundleWithManifest:(EXUpdatesRawManifest *)manifest;
+- (BOOL)_fetchBundleWithManifest:(EXRawManifestsRawManifest *)manifest;
 
 @end

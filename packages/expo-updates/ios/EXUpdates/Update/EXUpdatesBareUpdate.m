@@ -4,13 +4,13 @@
 #import <EXUpdates/EXUpdatesEmbeddedAppLoader.h>
 #import <EXUpdates/EXUpdatesUpdate+Private.h>
 #import <EXUpdates/EXUpdatesUtils.h>
-#import <EXRawManifests/EXUpdatesBareRawManifest.h>
+#import <EXRawManifests/EXRawManifestsBareRawManifest.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
 @implementation EXUpdatesBareUpdate
 
-+ (EXUpdatesUpdate *)updateWithBareRawManifest:(EXUpdatesBareRawManifest *)manifest
++ (EXUpdatesUpdate *)updateWithBareRawManifest:(EXRawManifestsBareRawManifest *)manifest
                                         config:(EXUpdatesConfig *)config
                                       database:(EXUpdatesDatabase *)database
 {

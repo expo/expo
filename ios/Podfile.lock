@@ -1906,6 +1906,8 @@ PODS:
     - React-Core
   - EXRawManifests (0.1.0):
     - ExpoModulesCore
+  - EXRawManifests/Tests (0.1.0):
+    - ExpoModulesCore
   - EXScreenCapture (3.2.0):
     - ExpoModulesCore
   - EXScreenOrientation (3.2.0):
@@ -2803,6 +2805,7 @@ DEPENDENCIES:
   - EXPrint (from `../packages/expo-print/ios`)
   - EXRandom (from `../packages/expo-random/ios`)
   - EXRawManifests (from `../packages/expo-raw-manifests/ios`)
+  - EXRawManifests/Tests (from `../packages/expo-raw-manifests/ios`)
   - EXScreenCapture (from `../packages/expo-screen-capture/ios`)
   - EXScreenOrientation (from `../packages/expo-screen-orientation/ios`)
   - EXSecureStore (from `../packages/expo-secure-store/ios`)
@@ -4193,6 +4196,6 @@ SPEC CHECKSUMS:
   Yoga: 575c581c63e0d35c9a83f4b46d01d63abc1100ac
   ZXingObjC: fdbb269f25dd2032da343e06f10224d62f537bdb
 
-PODFILE CHECKSUM: 94991146ad25d8f687382c938e3b6d6b852319ca
+PODFILE CHECKSUM: 0fefbd77af11fcd0e413eab838354a40271e73e7
 
 COCOAPODS: 1.10.2

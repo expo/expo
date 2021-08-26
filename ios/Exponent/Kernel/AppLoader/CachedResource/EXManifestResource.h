@@ -1,7 +1,7 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 #import "EXCachedResource.h"
-#import <EXRawManifests/EXUpdatesRawManifest.h>
+#import <EXRawManifests/EXRawManifestsRawManifest.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -25,7 +25,7 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (void)writeToCache;
 
-- (NSError *)verifyManifestSdkVersion:(EXUpdatesRawManifest *)maybeManifest;
+- (NSError *)verifyManifestSdkVersion:(EXRawManifestsRawManifest *)maybeManifest;
 - (NSError *)formatError:(NSError *)error;
 
 @end

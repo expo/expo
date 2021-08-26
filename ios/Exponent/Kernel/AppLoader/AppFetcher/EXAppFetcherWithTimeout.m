@@ -42,7 +42,7 @@ NS_ASSUME_NONNULL_BEGIN
     [self _finishWithError:nil];
   }
 
-  [self.appLoader fetchManifestWithCacheBehavior:EXManifestPrepareToCache success:^(EXUpdatesRawManifest * _Nonnull manifest) {
+  [self.appLoader fetchManifestWithCacheBehavior:EXManifestPrepareToCache success:^(EXRawManifestsRawManifest * _Nonnull manifest) {
     self.manifest = manifest;
     if (manifest.isUsingDeveloperTool && self.timer) {
       // make sure we never time out in dev mode

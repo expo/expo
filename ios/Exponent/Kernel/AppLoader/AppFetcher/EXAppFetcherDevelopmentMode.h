@@ -1,7 +1,7 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 #import "EXAppFetcher+Private.h"
-#import <EXRawManifests/EXUpdatesRawManifest.h>
+#import <EXRawManifests/EXRawManifestsRawManifest.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -15,7 +15,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, weak) id<EXAppFetcherDevelopmentModeDelegate> developmentModeDelegate;
 
-- (instancetype)initWithAppLoader:(EXAppLoader *)appLoader manifest:(EXUpdatesRawManifest *)manifest;
+- (instancetype)initWithAppLoader:(EXAppLoader *)appLoader manifest:(EXRawManifestsRawManifest *)manifest;
 
 - (void)forceBundleReload;
 

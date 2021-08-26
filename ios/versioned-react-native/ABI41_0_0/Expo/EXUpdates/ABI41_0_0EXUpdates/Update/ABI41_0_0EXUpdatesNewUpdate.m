@@ -11,7 +11,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation ABI41_0_0EXUpdatesNewUpdate
 
-+ (ABI41_0_0EXUpdatesUpdate *)updateWithNewManifest:(ABI41_0_0EXUpdatesNewRawManifest *)manifest
++ (ABI41_0_0EXUpdatesUpdate *)updateWithNewManifest:(ABI41_0_0EXRawManifestsNewRawManifest *)manifest
                                   response:(nullable NSURLResponse *)response
                                     config:(ABI41_0_0EXUpdatesConfig *)config
                                   database:(ABI41_0_0EXUpdatesDatabase *)database
