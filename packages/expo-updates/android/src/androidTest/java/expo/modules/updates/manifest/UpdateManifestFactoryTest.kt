@@ -14,7 +14,7 @@ import org.mockito.Mockito
 import java.util.*
 
 @RunWith(AndroidJUnit4ClassRunner::class)
-class ManifestFactoryTest {
+class UpdateManifestFactoryTest {
   private val legacyManifestJson =
     "{\"sdkVersion\":\"39.0.0\",\"id\":\"@esamelson/native-component-list\",\"releaseId\":\"0eef8214-4833-4089-9dff-b4138a14f196\",\"commitTime\":\"2020-11-11T00:17:54.797Z\",\"bundleUrl\":\"https://d1wp6m56sqw74a.cloudfront.net/%40esamelson%2Fnative-component-list%2F39.0.0%2F01c86fd863cfee878068eebd40f165df-39.0.0-ios.js\"}"
   private val newManifestJson =
@@ -38,7 +38,7 @@ class ManifestFactoryTest {
       response,
       createConfig()
     )
-    Assert.assertTrue(actual is LegacyManifest)
+    Assert.assertTrue(actual is LegacyUpdateManifest)
   }
 
   @Test
@@ -51,7 +51,7 @@ class ManifestFactoryTest {
       response,
       createConfig()
     )
-    Assert.assertTrue(actual is NewManifest)
+    Assert.assertTrue(actual is NewUpdateManifest)
   }
 
   @Test(expected = Exception::class)
@@ -73,7 +73,7 @@ class ManifestFactoryTest {
       JSONObject(legacyManifestJson),
       createConfig()
     )
-    Assert.assertTrue(actual is LegacyManifest)
+    Assert.assertTrue(actual is LegacyUpdateManifest)
   }
 
   @Test
@@ -83,6 +83,6 @@ class ManifestFactoryTest {
       JSONObject(bareManifestJson),
       createConfig()
     )
-    Assert.assertTrue(actual is BareManifest)
+    Assert.assertTrue(actual is BareUpdateManifest)
   }
 }

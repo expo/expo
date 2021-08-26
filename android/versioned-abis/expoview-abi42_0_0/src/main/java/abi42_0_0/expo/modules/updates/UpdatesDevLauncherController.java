@@ -14,7 +14,7 @@ import expo.modules.updates.db.entity.UpdateEntity;
 import expo.modules.updates.launcher.DatabaseLauncher;
 import expo.modules.updates.launcher.Launcher;
 import expo.modules.updates.loader.RemoteLoader;
-import expo.modules.updates.manifest.Manifest;
+import expo.modules.updates.manifest.UpdateManifest;
 import expo.modules.updates.selectionpolicy.ReaperSelectionPolicyDevelopmentClient;
 import expo.modules.updates.selectionpolicy.SelectionPolicy;
 import abi42_0_0.expo.modules.updatesinterface.UpdatesInterface;
@@ -93,8 +93,8 @@ public class UpdatesDevLauncherController implements UpdatesInterface {
       }
 
       @Override
-      public boolean onManifestLoaded(Manifest manifest) {
-        return callback.onManifestLoaded(manifest.getRawManifest().getRawJson());
+      public boolean onUpdateManifestLoaded(UpdateManifest updateManifest) {
+        return callback.onManifestLoaded(updateManifest.getRawManifest().getRawJson());
       }
     });
   }

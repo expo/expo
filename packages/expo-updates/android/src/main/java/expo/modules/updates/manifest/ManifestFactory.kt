@@ -12,14 +12,14 @@ object ManifestFactory {
   private val TAG = ManifestFactory::class.java.simpleName
 
   @Throws(Exception::class)
-  fun getManifest(manifestJson: JSONObject, httpResponse: ManifestResponse, configuration: UpdatesConfiguration?): Manifest {
+  fun getManifest(manifestJson: JSONObject, httpResponse: ManifestResponse, configuration: UpdatesConfiguration?): UpdateManifest {
     val expoProtocolVersion = httpResponse.header("expo-protocol-version", null)
     return when {
       expoProtocolVersion == null -> {
-        LegacyManifest.fromLegacyRawManifest(LegacyRawManifest(manifestJson), configuration!!)
+        LegacyUpdateManifest.fromLegacyRawManifest(LegacyRawManifest(manifestJson), configuration!!)
       }
       Integer.valueOf(expoProtocolVersion) == 0 -> {
-        NewManifest.fromRawManifest(NewRawManifest(manifestJson), httpResponse, configuration!!)
+        NewUpdateManifest.fromRawManifest(NewRawManifest(manifestJson), httpResponse, configuration!!)
       }
       else -> {
         throw Exception("Unsupported expo-protocol-version: $expoProtocolVersion")
@@ -28,11 +28,11 @@ object ManifestFactory {
   }
 
   @Throws(JSONException::class)
-  fun getEmbeddedManifest(manifestJson: JSONObject, configuration: UpdatesConfiguration?): Manifest {
+  fun getEmbeddedManifest(manifestJson: JSONObject, configuration: UpdatesConfiguration?): UpdateManifest {
     return if (manifestJson.has("releaseId")) {
-      LegacyManifest.fromLegacyRawManifest(LegacyRawManifest(manifestJson), configuration!!)
+      LegacyUpdateManifest.fromLegacyRawManifest(LegacyRawManifest(manifestJson), configuration!!)
     } else {
-      BareManifest.fromManifestJson(BareRawManifest(manifestJson), configuration!!)
+      BareUpdateManifest.fromManifestJson(BareRawManifest(manifestJson), configuration!!)
     }
   }
 

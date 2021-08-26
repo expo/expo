@@ -35,13 +35,13 @@ public class ManifestMetadata {
     return getJSONObject(MANIFEST_FILTERS_KEY, database, configuration);
   }
 
-  public static void saveMetadata(Manifest manifest, UpdatesDatabase database, UpdatesConfiguration configuration) {
+  public static void saveMetadata(UpdateManifest updateManifest, UpdatesDatabase database, UpdatesConfiguration configuration) {
     HashMap<String, String> fieldsToSet = new HashMap<>();
-    if (manifest.getServerDefinedHeaders() != null) {
-      fieldsToSet.put(MANIFEST_SERVER_DEFINED_HEADERS_KEY, manifest.getServerDefinedHeaders().toString());
+    if (updateManifest.getServerDefinedHeaders() != null) {
+      fieldsToSet.put(MANIFEST_SERVER_DEFINED_HEADERS_KEY, updateManifest.getServerDefinedHeaders().toString());
     }
-    if (manifest.getManifestFilters() != null) {
-      fieldsToSet.put(MANIFEST_FILTERS_KEY, manifest.getManifestFilters().toString());
+    if (updateManifest.getManifestFilters() != null) {
+      fieldsToSet.put(MANIFEST_FILTERS_KEY, updateManifest.getManifestFilters().toString());
     }
 
     if (fieldsToSet.size() > 0) {

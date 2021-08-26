@@ -22,7 +22,7 @@ public interface UpdatesInterface {
      * continue downloading the update described by this manifest. Returning `false` will abort the
      * load, and the `onSuccess` callback will be immediately called with a null `update`.
      */
-    boolean onManifestLoaded(JSONObject manifest);
+    boolean onManifestJSONLoaded(JSONObject manifest);
   }
 
   interface Update {

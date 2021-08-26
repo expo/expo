@@ -16,7 +16,7 @@ import expo.modules.updates.loader.FileDownloader
 import expo.modules.updates.loader.LoaderTask
 import expo.modules.updates.loader.LoaderTask.BackgroundUpdateStatus
 import expo.modules.updates.loader.LoaderTask.LoaderTaskCallback
-import expo.modules.updates.manifest.Manifest
+import expo.modules.updates.manifest.UpdateManifest
 import expo.modules.updates.manifest.ManifestFactory
 import expo.modules.manifests.RawManifest
 import expo.modules.updates.selectionpolicy.LauncherSelectionPolicyFilterAware
@@ -222,17 +222,17 @@ class ExpoUpdatesAppLoader @JvmOverloads constructor(
           return true
         }
 
-        override fun onRemoteManifestLoaded(manifest: Manifest) {
+        override fun onRemoteUpdateManifestLoaded(updateManifest: UpdateManifest) {
           // expo-cli does not always respect our SDK version headers and respond with a compatible update or an error
           // so we need to check the compatibility here
-          val sdkVersion = manifest.rawManifest.getSDKVersionNullable()
+          val sdkVersion = updateManifest.rawManifest.getSDKVersionNullable()
           if (!isValidSdkVersion(sdkVersion)) {
             callback.onError(formatExceptionForIncompatibleSdk(sdkVersion ?: "null"))
             didAbort = true
             return
           }
-          setShouldShowAppLoaderStatus(manifest.rawManifest)
-          callback.onOptimisticManifest(manifest.rawManifest)
+          setShouldShowAppLoaderStatus(updateManifest.rawManifest)
+          callback.onOptimisticManifest(updateManifest.rawManifest)
           updateStatus(AppLoaderStatus.DOWNLOADING_NEW_UPDATE)
         }
 

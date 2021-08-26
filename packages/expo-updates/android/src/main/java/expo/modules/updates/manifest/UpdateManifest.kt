@@ -5,7 +5,7 @@ import expo.modules.updates.db.entity.UpdateEntity
 import expo.modules.manifests.RawManifest
 import org.json.JSONObject
 
-interface Manifest {
+interface UpdateManifest {
   val updateEntity: UpdateEntity?
   val assetEntityList: List<AssetEntity?>?
   val rawManifest: RawManifest
