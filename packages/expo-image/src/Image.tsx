@@ -9,7 +9,7 @@ import {
   StyleSheet,
 } from 'react-native';
 
-import ExpoImage from './ExpoImage';
+import ExpoImage, { ExpoImageModule } from './ExpoImage';
 import { ImageErrorEventData, ImageLoadEventData, ImageLoadProgressEventData } from './Image.types';
 
 const DEFAULT_RESIZE_MODE = 'cover';
@@ -65,6 +65,10 @@ export default class Image extends React.Component<ImageProps, ImageState> {
           }
         : props.onError,
     };
+  }
+
+  static async prefetch(url: string) {
+    return await ExpoImageModule.prefetch(url);
   }
 
   state = {

@@ -28,6 +28,7 @@ export default class Image extends React.Component<ImageProps, ImageState> {
         onLoad: ((event: NativeSyntheticEvent<ImageLoadEventData>) => void) | undefined;
         onError: ((error: NativeSyntheticEvent<ImageErrorEventData>) => void) | undefined;
     };
+    static prefetch(url: string): Promise<any>;
     state: {
         onLoad: undefined;
         onError: undefined;
