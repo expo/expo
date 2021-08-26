@@ -101,7 +101,11 @@ public class FirebaseAnalyticsModule extends ExportedModule implements RegistryL
       } else if (value instanceof Boolean) {
         bundle.putBoolean(key, (Boolean) value);
       } else if (value instanceof ArrayList) {
-        bundle.putParcelableArrayList(key, ((ArrayList) value).values().stream().map(item => convertToBundle(new MapArguments(item))));
+        ArrayList array = new ArrayList();
+        for(Object item : ((ArrayList) value)) {
+          array.add(convertToBundle(new MapArguments((Map<String, Object>)item)));
+        }
+        bundle.putParcelableArrayList(key, array);
       } else if (value instanceof Map) {
         bundle.putBundle(key, convertToBundle(new MapArguments((Map) value)));
       } else if (value instanceof Bundle) {
