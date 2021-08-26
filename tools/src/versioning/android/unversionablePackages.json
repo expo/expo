@@ -6,6 +6,7 @@
   "expo-gl-cpp",
   "expo-image",
   "expo-in-app-purchases",
+  "expo-manifests",
   "expo-module-scripts",
   "jest-expo",
   "unimodules-task-manager-interface",
