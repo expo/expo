@@ -8,7 +8,7 @@ module.exports = async function checkPrettierRulesAsync(configFile, testName) {
 
   fs.mkdirSync(testProjectPath, { recursive: true });
 
-  const relativeConfigFilePath = path.relative(path.resolve(__dirname, '../..'), configFile);
+  const relativeConfigFilePath = path.relative(path.resolve(__dirname, '../../..'), configFile);
   const configString = JSON.stringify({ root: true, extends: relativeConfigFilePath }, null, 2);
 
   fs.writeFileSync(path.resolve(testProjectPath, '.eslintrc.json'), configString);
