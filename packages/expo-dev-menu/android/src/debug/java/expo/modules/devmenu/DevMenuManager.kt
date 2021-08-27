@@ -10,7 +10,6 @@ import android.util.Log
 import android.view.KeyEvent
 import android.view.MotionEvent
 import android.view.inputmethod.InputMethodManager
-import androidx.core.content.ContextCompat.getSystemService
 import com.facebook.react.ReactInstanceManager
 import com.facebook.react.ReactNativeHost
 import com.facebook.react.bridge.LifecycleEventListener
@@ -213,12 +212,12 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
         ?: reactContext.applicationContext as Application)
     maybeStartDetectors(devMenuHost.getContext())
 
-    settings = testInterceptor.overrideSettings()
+    settings = (testInterceptor.overrideSettings()
         ?: if (reactContext.hasNativeModule(DevMenuSettings::class.java)) {
           reactContext.getNativeModule(DevMenuSettings::class.java)!!
         } else {
           DevMenuDefaultSettings()
-        }.also {
+        }).also {
           shouldLaunchDevMenuOnStart = shouldAutoLaunch && (it.showsAtLaunch || !it.isOnboardingFinished)
           if (shouldLaunchDevMenuOnStart) {
             reactContext.addLifecycleEventListener(this)

@@ -170,6 +170,7 @@ class DevLauncherController private constructor()
         // used by appetize for snack
         if (intent.getBooleanExtra("EXKernelDisableNuxDefaultsKey", false)) {
           autoLaunchDevMenu = false
+          this.devMenuManager?.setShouldAutoLaunch(autoLaunchDevMenu)
         }
 
         if (!isDevLauncherUrl(uri)) {
@@ -228,8 +229,8 @@ class DevLauncherController private constructor()
       } as? DevMenuManagerProviderInterface
 
     val devMenuManager = devMenuManagerProvider?.getDevMenuManager() ?: return
-    devMenuManager.setDelegate(DevLauncherMenuDelegate(instance))
     devMenuManager.setShouldAutoLaunch(autoLaunchDevMenu)
+    devMenuManager.setDelegate(DevLauncherMenuDelegate(instance))
     this.devMenuManager = devMenuManager
   }
 
