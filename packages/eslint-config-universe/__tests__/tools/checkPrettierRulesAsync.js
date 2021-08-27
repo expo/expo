@@ -6,8 +6,7 @@ module.exports = async function checkPrettierRulesAsync(configFile, testName) {
   const testProjectsPath = path.resolve(__dirname, '..', 'projects');
   const testProjectPath = path.resolve(testProjectsPath, testName);
 
-  if (!fs.existsSync(testProjectsPath)) fs.mkdirSync(testProjectsPath);
-  if (!fs.existsSync(testProjectPath)) fs.mkdirSync(testProjectPath);
+  fs.mkdirSync(testProjectPath, { recursive: true });
 
   const { stdout: configString } = await spawnAsync('eslint', [
     '--config',
