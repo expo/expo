@@ -62,7 +62,7 @@ class DevLauncherController private constructor()
   private val lifecycle: DevLauncherLifecycle by inject()
   private val pendingIntentRegistry: DevLauncherIntentRegistryInterface by inject()
   val internalUpdatesInterface: UpdatesInterface? by optInject()
-  private var devMenuManager: DevMenuManagerInterface? = null
+  var devMenuManager: DevMenuManagerInterface? = null
   override var updatesInterface: UpdatesInterface?
     get() = internalUpdatesInterface
     set(value) = DevLauncherKoinContext.app.koin.loadModules(listOf(module {
@@ -78,6 +78,7 @@ class DevLauncherController private constructor()
     private set
   override var latestLoadedApp: Uri? = null
   override var useDeveloperSupport = true
+  var autoLaunchDevMenu = true
 
   enum class Mode {
     LAUNCHER, APP
@@ -166,6 +167,12 @@ class DevLauncherController private constructor()
     intent
       ?.data
       ?.let { uri ->
+        // used by appetize for snack
+        if (intent.getBooleanExtra("EXDevMenuDisableAutoLaunch", false)) {
+          autoLaunchDevMenu = false
+          this.devMenuManager?.setShouldAutoLaunch(autoLaunchDevMenu)
+        }
+
         if (!isDevLauncherUrl(uri)) {
           return handleExternalIntent(intent)
         }
@@ -222,6 +229,7 @@ class DevLauncherController private constructor()
       } as? DevMenuManagerProviderInterface
 
     val devMenuManager = devMenuManagerProvider?.getDevMenuManager() ?: return
+    devMenuManager.setShouldAutoLaunch(autoLaunchDevMenu)
     devMenuManager.setDelegate(DevLauncherMenuDelegate(instance))
     this.devMenuManager = devMenuManager
   }

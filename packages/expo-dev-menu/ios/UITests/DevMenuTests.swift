@@ -26,10 +26,21 @@ class MockedExtension: DevMenuExtensionProtocol {
   }
 }
 
+class MockedDelegate: DevMenuDelegateProtocol {}
+
+class TestInterceptor: DevMenuTestInterceptor {
+  @objc
+  var shouldShowAtLaunch: Bool { get { return true } }
+
+  @objc
+  var isOnboardingFinishedKey: Bool { get { return false } }
+}
+
 class DevMenuTests: XCTestCase {
   
   override func setUp() {
     XCTAssertFalse(DevMenuManager.shared.isVisible)
+    DevMenuTestInterceptorManager.setTestInterceptor(TestInterceptor())
   }
   
   override func tearDown() {
@@ -52,6 +63,36 @@ class DevMenuTests: XCTestCase {
     assertViewExists(text: "localhost:1234")
     assertViewExists(text: "JS Engine:")
     assertViewExists(text: "JavaScriptCore")
+  }
+
+  func test_dev_menu_auto_launch() {
+    DevMenuManager.configure(withBridge: UIMockedNOOPBridge(delegate: nil, launchOptions: nil))
+    waitForDevMenu()
+  }
+
+  func test_dev_menu_auto_launch_bypass() {
+    UserDefaults.standard.set(true, forKey: "EXDevMenuDisableAutoLaunch")
+    DevMenuManager.shared.readAutoLaunchState()
+
+    let label = UILabel()
+    label.text = "Test App"
+    label.bounds = CGRect(x: 0, y: 0, width: 100, height: 100)
+    label.accessibilityIdentifier = "TestApp"
+    UIApplication.shared.keyWindow!.rootViewController!.view.addSubview(label)
+    waitForView(tag: "TestApp")
+
+    DevMenuManager.configure(withBridge: UIMockedNOOPBridge(delegate: nil, launchOptions: nil))
+    runMainLoop(for: 1)
+
+    XCTAssertNil(DevMenuUIMatchers.findView(tag: DevMenuViews.mainScreen))
+    XCTAssertNil(DevMenuUIMatchers.findView(tag: DevMenuViews.footer))
+    XCTAssertFalse(DevMenuManager.shared.isVisible)
+
+    // clean up
+    DevMenuManager.shared.toggleMenu()
+    waitForDevMenu()
+    UserDefaults.standard.set(false, forKey: "EXDevMenuDisableAutoLaunch")
+    DevMenuManager.shared.readAutoLaunchState()
   }
   
   func test_if_dev_menu_can_be_toggled() {
