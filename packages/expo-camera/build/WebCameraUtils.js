@@ -290,7 +290,7 @@ function convertRange(value, r2, r1 = [0, 1]) {
     return ((value - r1[0]) * (r2[1] - r2[0])) / (r1[1] - r1[0]) + r2[0];
 }
 function validatedConstrainedValue(props) {
-    const { constraintKey, settingsKey, convertedSetting, capabilities, settings, cameraType, } = props;
+    const { constraintKey, settingsKey, convertedSetting, capabilities, settings, cameraType } = props;
     const setting = settings[settingsKey];
     if (Array.isArray(capabilities[constraintKey]) &&
         convertedSetting &&

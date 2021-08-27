@@ -24,9 +24,7 @@ export function useAutoDiscovery(issuerOrDiscovery) {
 export function useLoadedAuthRequest(config, discovery, AuthRequestInstance) {
     const [request, setRequest] = useState(null);
     const scopeString = useMemo(() => config.scopes?.join(','), [config.scopes]);
-    const extraParamsString = useMemo(() => JSON.stringify(config.extraParams || {}), [
-        config.extraParams,
-    ]);
+    const extraParamsString = useMemo(() => JSON.stringify(config.extraParams || {}), [config.extraParams]);
     useEffect(() => {
         let isMounted = true;
         if (discovery) {

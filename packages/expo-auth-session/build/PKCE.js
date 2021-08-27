@@ -21,10 +21,7 @@ function convertBufferToString(buffer) {
     return state.join('');
 }
 function convertToUrlSafeString(b64) {
-    return b64
-        .replace(/\+/g, '-')
-        .replace(/\//g, '_')
-        .replace(/=/g, '');
+    return b64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
 }
 export function generateRandom(size) {
     const buffer = new Uint8Array(size);
