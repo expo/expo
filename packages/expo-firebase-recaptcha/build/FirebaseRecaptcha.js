@@ -93,8 +93,7 @@ function getWebviewSource(firebaseConfig, firebaseVersion, appVerificationDisabl
       }
     });
   </script>
-  <script src="https://www.google.com/recaptcha/api.js?onload=onLoad&render=explicit&hl=${languageCode ??
-            ''}" onerror="onError()"></script>
+  <script src="https://www.google.com/recaptcha/api.js?onload=onLoad&render=explicit&hl=${languageCode ?? ''}" onerror="onError()"></script>
 </body></html>`,
     };
 }
