@@ -73,7 +73,7 @@ export default class Image extends React.Component<ImageProps, ImageState> {
    * @return an empty promise.
    */
   static async prefetch(url: string): Promise<void> {
-    if (Platform.OS === 'ios') {
+    if (Platform.OS !== 'android') {
       throw new UnavailabilityError('Image', 'prefetch');
     }
     return await ExpoImageModule.prefetch(url);
