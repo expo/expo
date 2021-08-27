@@ -25,7 +25,10 @@ static NSString * const EXUpdatesEmbeddedAppLoaderErrorDomain = @"EXUpdatesEmbed
     if (!config.hasEmbeddedUpdate) {
       embeddedManifest = nil;
     } else if (!embeddedManifest) {
-      NSString *path = [[NSBundle mainBundle] pathForResource:EXUpdatesEmbeddedManifestName ofType:EXUpdatesEmbeddedManifestType];
+      NSBundle *frameworkBundle = [NSBundle bundleForClass:[self class]];
+      NSURL *bundleUrl = [frameworkBundle.resourceURL URLByAppendingPathComponent:@"EXUpdates.bundle"];
+      NSBundle *bundle = [NSBundle bundleWithURL:bundleUrl];
+      NSString *path = [bundle pathForResource:EXUpdatesEmbeddedManifestName ofType:EXUpdatesEmbeddedManifestType];
       NSData *manifestData = [NSData dataWithContentsOfFile:path];
       if (!manifestData) {
         @throw [NSException exceptionWithName:NSInternalInconsistencyException

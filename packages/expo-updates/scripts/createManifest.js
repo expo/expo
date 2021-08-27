@@ -20,6 +20,8 @@ const filterPlatformAssetScales = require('./filterPlatformAssetScales');
     projectRoot = path.resolve(possibleProjectRoot, '..');
   }
 
+  process.chdir(projectRoot);
+
   let metroConfig;
   try {
     metroConfig = await loadAsync(projectRoot);
