@@ -5,6 +5,8 @@ apply plugin: 'maven'
 group = 'host.exp.exponent'
 version = '0.8.4'
 
+apply from: "../scripts/create-manifest-android.gradle"
+
 buildscript {
   // Simple helper that allows the root project to override versions declared by this library.
   ext.safeExtGet = { prop, fallback ->

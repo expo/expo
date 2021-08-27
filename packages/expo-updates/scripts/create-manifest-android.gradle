@@ -12,20 +12,28 @@ void runBefore(String dependentTaskName, Task task) {
 
 def expoUpdatesDir = ["node", "-e", "console.log(require('path').dirname(require.resolve('expo-updates/package.json')));"].execute([], projectDir).text.trim()
 
-def config = project.hasProperty("react") ? project.react : [];
-def nodeExecutableAndArgs = config.nodeExecutableAndArgs ?: ["node"]
-def entryFile = config.entryFile ?: "index.js"
-def assetsFile = entryFile.take(entryFile.lastIndexOf('.')) + ".assets"
-
 afterEvaluate {
-  def projectRoot = file("../../")
+  if (!android.hasProperty('libraryVariants')) {
+    // For traditional application level integration, will be no-op to prevent duplicated app.config creation.
+    return;
+  }
+
+  // From a library project role to reference app project settings such as `targetName.toLowerCase().contains("release")`,
+  // we extract the `appProject` from all projects here.
+  // things like `config`, `buildDir`, and `applicationVariants`, we will reference from appProject.
+  def appProject = rootProject.allprojects.find { it.plugins.hasPlugin('com.android.application') }
+  def config = appProject.hasProperty("react") ? appProject.react : [];
+  def nodeExecutableAndArgs = config.nodeExecutableAndArgs ?: ["node"]
+  def entryFile = config.entryFile ?: "index.js"
+  def assetsFile = entryFile.take(entryFile.lastIndexOf('.')) + ".assets"
+
+  def projectRoot = file("${rootProject.projectDir}")
   def inputExcludes = ["android/**", "ios/**"]
 
-  android.applicationVariants.each { variant ->
+  appProject.android.applicationVariants.each { variant ->
     def targetName = variant.name.capitalize()
     def targetPath = variant.dirName
-
-    def assetsDir = file("$buildDir/generated/assets/expo-updates/${targetPath}")
+    def assetsDir = file("${appProject.buildDir}/generated/assets/expo-updates/${targetPath}")
 
     def currentBundleTask = tasks.create(
         name: "create${targetName}ExpoManifest",
@@ -60,7 +68,7 @@ afterEvaluate {
         type: Copy) {
       description = "expo-updates: Copy manifest into ${targetName}."
 
-      into ("$buildDir/intermediates")
+      into ("${appProject.buildDir}/intermediates")
       into ("assets/${targetPath}") {
         from(assetsDir)
       }
@@ -82,6 +90,9 @@ afterEvaluate {
       enabled(currentBundleTask.enabled)
     }
 
-    runBefore("process${targetName}Resources", currentAssetsCopyTask)
+    Task dependentTask = appProject.tasks.findByPath("process${targetName}Resources");
+    if (dependentTask != null) {
+      dependentTask.dependsOn currentAssetsCopyTask
+    }
   }
 }
