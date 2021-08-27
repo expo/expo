@@ -1,3 +1,4 @@
+import { Platform, UnavailabilityError } from 'expo-modules-core';
 import React from 'react';
 import {
   AccessibilityProps,
@@ -67,7 +68,14 @@ export default class Image extends React.Component<ImageProps, ImageState> {
     };
   }
 
-  static async prefetch(url: string) {
+  /**
+   * **Available on @Android only.** Caching the image that can be later used in ImageView
+   * @return an empty promise.
+   */
+  static async prefetch(url: string): Promise<void> {
+    if (Platform.OS === 'ios') {
+      throw new UnavailabilityError('Image', 'prefetch');
+    }
     return await ExpoImageModule.prefetch(url);
   }
 

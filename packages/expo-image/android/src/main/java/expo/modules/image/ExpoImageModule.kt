@@ -11,9 +11,7 @@ import com.facebook.react.bridge.ReactMethod
 import java.lang.Exception
 
 class ExpoImageModule(val context: ReactApplicationContext) : ReactContextBaseJavaModule(context) {
-  override fun getName(): String {
-    return "ExpoImageModule"
-  }
+  override fun getName() = "ExpoImageModule"
 
   @ReactMethod
   fun prefetch(url: String, promise: Promise) {
@@ -26,11 +24,11 @@ class ExpoImageModule(val context: ReactApplicationContext) : ReactContextBaseJa
         .submit()
         .get()
     } catch (e: Exception) {
-      promise.reject("E_PREFETCH_FAILURE", e.message)
+      promise.reject("E_PREFETCH_FAILURE", "Could not prefetch image: ${e.message}", e)
     }
     if (result == null) {
-      promise.reject("E_PREFETCH_FAILURE", "cannot load image")
+      promise.reject("E_PREFETCH_FAILURE", "Could not prefetch image.")
     }
-    promise.resolve(true)
+    promise.resolve(null)
   }
 }
