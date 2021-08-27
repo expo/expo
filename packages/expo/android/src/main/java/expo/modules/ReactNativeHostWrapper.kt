@@ -13,7 +13,6 @@ import com.facebook.react.bridge.JavaScriptExecutorFactory
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.devsupport.RedBoxHandler
 import com.facebook.react.uimanager.UIImplementationProvider
-import expo.modules.core.interfaces.ReactNativeHostHandler
 import java.lang.reflect.Method
 
 class ReactNativeHostWrapper(

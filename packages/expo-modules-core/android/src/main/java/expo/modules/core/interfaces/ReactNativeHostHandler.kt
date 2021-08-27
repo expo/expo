@@ -42,8 +42,10 @@ interface ReactNativeHostHandler {
    *
    * @param useDeveloperSupport true if {@link ReactNativeHost} enabled developer support
    */
-  fun onRegisterJSIModules(reactApplicationContext: ReactApplicationContext,
-                           jsContext: JavaScriptContextHolder,
-                           useDeveloperSupport: Boolean) {
+  fun onRegisterJSIModules(
+    reactApplicationContext: ReactApplicationContext,
+    jsContext: JavaScriptContextHolder,
+    useDeveloperSupport: Boolean
+  ) {
   }
 }
