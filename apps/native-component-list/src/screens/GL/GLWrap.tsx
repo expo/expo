@@ -8,9 +8,7 @@ import { Colors } from '../../constants';
 // eslint-disable-next-line @typescript-eslint/ban-types
 export default <P extends { style?: StyleProp<ViewStyle> } = {}>(
   title: string,
-  onContextCreate: (
-    gl: GL.ExpoWebGLRenderingContext
-  ) => Promise<{
+  onContextCreate: (gl: GL.ExpoWebGLRenderingContext) => Promise<{
     onLayout?: (event: LayoutChangeEvent) => void;
     onTick?: (gl: GL.ExpoWebGLRenderingContext) => void;
   } | void>

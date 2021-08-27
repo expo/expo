@@ -97,10 +97,10 @@ export default class CalendarsScreen extends React.Component<
     const calendarGranted = await this._askForCalendarPermissions();
     const reminderGranted = await this._askForReminderPermissions();
     if (calendarGranted && reminderGranted) {
-      const eventCalendars = ((await Calendar.getCalendarsAsync('event')) as unknown) as any[];
-      const reminderCalendars = (Platform.OS === 'ios'
-        ? await Calendar.getCalendarsAsync('reminder')
-        : []) as any[];
+      const eventCalendars = (await Calendar.getCalendarsAsync('event')) as unknown as any[];
+      const reminderCalendars = (
+        Platform.OS === 'ios' ? await Calendar.getCalendarsAsync('reminder') : []
+      ) as any[];
       this.setState({ calendars: [...eventCalendars, ...reminderCalendars] });
     }
   };

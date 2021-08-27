@@ -256,23 +256,25 @@ export default class Camera extends React.Component<CameraProps> {
     }
   };
 
-  _onObjectDetected = (callback?: Function) => ({ nativeEvent }: { nativeEvent: any }) => {
-    const { type } = nativeEvent;
-    if (
-      this._lastEvents[type] &&
-      this._lastEventsTimes[type] &&
-      JSON.stringify(nativeEvent) === this._lastEvents[type] &&
-      new Date().getTime() - this._lastEventsTimes[type].getTime() < EventThrottleMs
-    ) {
-      return;
-    }
+  _onObjectDetected =
+    (callback?: Function) =>
+    ({ nativeEvent }: { nativeEvent: any }) => {
+      const { type } = nativeEvent;
+      if (
+        this._lastEvents[type] &&
+        this._lastEventsTimes[type] &&
+        JSON.stringify(nativeEvent) === this._lastEvents[type] &&
+        new Date().getTime() - this._lastEventsTimes[type].getTime() < EventThrottleMs
+      ) {
+        return;
+      }
 
-    if (callback) {
-      callback(nativeEvent);
-      this._lastEventsTimes[type] = new Date();
-      this._lastEvents[type] = JSON.stringify(nativeEvent);
-    }
-  };
+      if (callback) {
+        callback(nativeEvent);
+        this._lastEventsTimes[type] = new Date();
+        this._lastEvents[type] = JSON.stringify(nativeEvent);
+      }
+    };
 
   _setReference = (ref?: React.Component) => {
     if (ref) {

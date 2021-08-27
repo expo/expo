@@ -10,6 +10,7 @@ exports[`doesn't conflict with Prettier: success 1`] = `true`;
 exports[`lints with the default config: fixtures/all-00.js 1`] = `
 Object {
   "errorCount": 0,
+  "fatalErrorCount": 0,
   "fixableErrorCount": 0,
   "fixableWarningCount": 0,
   "messages": Array [],
@@ -74,6 +75,7 @@ function* gen() {}
 exports[`lints with the default config: fixtures/all-01.ts 1`] = `
 Object {
   "errorCount": 0,
+  "fatalErrorCount": 0,
   "fixableErrorCount": 0,
   "fixableWarningCount": 0,
   "messages": Array [],
@@ -84,6 +86,7 @@ Object {
 exports[`lints with the default config: fixtures/all-02.js 1`] = `
 Object {
   "errorCount": 0,
+  "fatalErrorCount": 0,
   "fixableErrorCount": 0,
   "fixableWarningCount": 0,
   "messages": Array [
@@ -134,6 +137,7 @@ function unused2() {
 exports[`lints with the default config: fixtures/all-03.ts 1`] = `
 Object {
   "errorCount": 0,
+  "fatalErrorCount": 0,
   "fixableErrorCount": 0,
   "fixableWarningCount": 0,
   "messages": Array [
@@ -208,6 +212,7 @@ function tsUnused2() {
 exports[`lints with the default config: fixtures/all-04.ts 1`] = `
 Object {
   "errorCount": 0,
+  "fatalErrorCount": 0,
   "fixableErrorCount": 0,
   "fixableWarningCount": 0,
   "messages": Array [],
@@ -222,6 +227,7 @@ Object {
 exports[`lints with the default config: fixtures/all-05.ts 1`] = `
 Object {
   "errorCount": 0,
+  "fatalErrorCount": 0,
   "fixableErrorCount": 0,
   "fixableWarningCount": 0,
   "messages": Array [],
@@ -234,6 +240,7 @@ Object {
 exports[`lints with the default config: fixtures/all-06.ts 1`] = `
 Object {
   "errorCount": 0,
+  "fatalErrorCount": 0,
   "fixableErrorCount": 0,
   "fixableWarningCount": 0,
   "messages": Array [],
@@ -251,6 +258,7 @@ export const objectShorthandTest: object | null = null;
 exports[`lints with the default config: fixtures/all-07.js 1`] = `
 Object {
   "errorCount": 0,
+  "fatalErrorCount": 0,
   "fixableErrorCount": 0,
   "fixableWarningCount": 0,
   "messages": Array [],

@@ -13,19 +13,14 @@ export default function BatteryScreen() {
 
   React.useEffect(() => {
     (async () => {
-      const [
-        isAvailable,
-        batteryLevel,
-        batteryState,
-        lowPowerMode,
-        batteryOptimizationState,
-      ] = await Promise.all([
-        Battery.isAvailableAsync(),
-        Battery.getBatteryLevelAsync(),
-        Battery.getBatteryStateAsync(),
-        Battery.isLowPowerModeEnabledAsync(),
-        Battery.isBatteryOptimizationEnabledAsync(),
-      ]);
+      const [isAvailable, batteryLevel, batteryState, lowPowerMode, batteryOptimizationState] =
+        await Promise.all([
+          Battery.isAvailableAsync(),
+          Battery.getBatteryLevelAsync(),
+          Battery.getBatteryStateAsync(),
+          Battery.isLowPowerModeEnabledAsync(),
+          Battery.isBatteryOptimizationEnabledAsync(),
+        ]);
 
       setIsAvailable(isAvailable || false);
       setBatteryLevel(batteryLevel);

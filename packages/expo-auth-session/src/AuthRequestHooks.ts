@@ -36,9 +36,10 @@ export function useLoadedAuthRequest(
 ): AuthRequest | null {
   const [request, setRequest] = useState<AuthRequest | null>(null);
   const scopeString = useMemo(() => config.scopes?.join(','), [config.scopes]);
-  const extraParamsString = useMemo(() => JSON.stringify(config.extraParams || {}), [
-    config.extraParams,
-  ]);
+  const extraParamsString = useMemo(
+    () => JSON.stringify(config.extraParams || {}),
+    [config.extraParams]
+  );
   useEffect(
     () => {
       let isMounted = true;

@@ -212,10 +212,7 @@ export function parse(url: string): ParsedURL {
     let expoPrefix: string | null = null;
     if (hostUriStripped) {
       const parts = hostUriStripped.split('/');
-      expoPrefix = parts
-        .slice(1)
-        .concat(['--/'])
-        .join('/');
+      expoPrefix = parts.slice(1).concat(['--/']).join('/');
     }
 
     if (isExpoHosted() && !hasCustomScheme() && expoPrefix && path.startsWith(expoPrefix)) {
