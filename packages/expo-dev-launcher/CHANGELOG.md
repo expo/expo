@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed Cmd+D opening two dev menus.
+
 ### 💡 Others
 
 - Display linking scheme used by app in launcher URL field ([#13930](https://github.com/expo/expo/pull/13930) by [@fson](https://github.com/fson))
