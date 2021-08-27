@@ -13,11 +13,6 @@ void runBefore(String dependentTaskName, Task task) {
 def expoUpdatesDir = ["node", "-e", "console.log(require('path').dirname(require.resolve('expo-updates/package.json')));"].execute([], projectDir).text.trim()
 
 afterEvaluate {
-  if (!android.hasProperty('libraryVariants')) {
-    // For traditional application level integration, will be no-op to prevent duplicated app.config creation.
-    return;
-  }
-
   // From a library project role to reference app project settings such as `targetName.toLowerCase().contains("release")`,
   // we extract the `appProject` from all projects here.
   // things like `config`, `buildDir`, and `applicationVariants`, we will reference from appProject.
@@ -29,6 +24,15 @@ afterEvaluate {
 
   def projectRoot = file("${rootProject.projectDir}")
   def inputExcludes = ["android/**", "ios/**"]
+
+  if (!android.hasProperty('libraryVariants')) {
+    // For traditional application level integration, will be no-op to prevent duplicated app.config creation.
+    return;
+  }
+  if (!appProject) {
+    // For instrumented test, the appProject will be null.
+    return;
+  }
 
   appProject.android.applicationVariants.each { variant ->
     def targetName = variant.name.capitalize()
