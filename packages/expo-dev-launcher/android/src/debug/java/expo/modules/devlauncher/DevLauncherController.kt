@@ -74,6 +74,8 @@ class DevLauncherController private constructor()
   private val recentlyOpedAppsRegistry = DevLauncherRecentlyOpenedAppsRegistry(context)
   override var manifest: DevLauncherManifest? = null
     private set
+  override var manifestURL: Uri? = null
+    private set
   override var latestLoadedApp: Uri? = null
   override var useDeveloperSupport = true
 
@@ -105,6 +107,7 @@ class DevLauncherController private constructor()
       val appLoader = appLoaderFactory.createAppLoader(url, manifestParser)
       useDeveloperSupport = appLoaderFactory.shouldUseDeveloperSupport()
       manifest = appLoaderFactory.getManifest()
+      manifestURL = url
 
       val appLoaderListener = appLoader.createOnDelegateWillBeCreatedListener()
       lifecycle.addListener(appLoaderListener)
@@ -120,6 +123,7 @@ class DevLauncherController private constructor()
         // The app couldn't be loaded. For now, we just return to the launcher.
         mode = Mode.LAUNCHER
         manifest = null
+        manifestURL = null
       }
     } catch (e: Exception) {
       synchronized(this) {
@@ -154,6 +158,7 @@ class DevLauncherController private constructor()
 
     mode = Mode.LAUNCHER
     manifest = null
+    manifestURL = null
     context.applicationContext.startActivity(createLauncherIntent())
   }
 
