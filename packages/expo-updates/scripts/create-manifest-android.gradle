@@ -33,6 +33,9 @@ afterEvaluate {
     // For instrumented test, the appProject will be null.
     return;
   }
+  if (findProperty('expo.updates.createManifest') == 'false') {
+    return;
+  }
 
   appProject.android.applicationVariants.each { variant ->
     def targetName = variant.name.capitalize()
