@@ -3,14 +3,10 @@ const fs = require('fs');
 const path = require('path');
 
 module.exports = async function checkPrettierRulesAsync(configFile, testName) {
-  const testProjectsPath = path.resolve(__dirname, '..', 'projects');
-  const testProjectPath = path.resolve(testProjectsPath, testName);
-
-  fs.mkdirSync(testProjectPath, { recursive: true });
-
+  const testProjectPath = path.resolve(__dirname, '..', 'projects', testName);
   const relativeConfigFilePath = path.relative(path.resolve(__dirname, '../../..'), configFile);
-  const configString = JSON.stringify({ root: true, extends: relativeConfigFilePath }, null, 2);
 
+  const configString = JSON.stringify({ root: true, extends: relativeConfigFilePath }, null, 2);
   fs.writeFileSync(path.resolve(testProjectPath, '.eslintrc.json'), configString);
   fs.writeFileSync(path.resolve(testProjectPath, 'index.ts'), '');
 
