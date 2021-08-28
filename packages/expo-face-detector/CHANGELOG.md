@@ -4,7 +4,7 @@
 
 ### 🛠 Breaking changes
 
-- Replace exported `Constants` with String Enums (`FaceDetectorMode`, `FaceDetectorLandmarks` and `FaceDetectorClassifications`). ([#14179](https://github.com/expo/expo/pull/14179) by [@Simek](https://github.com/Simek))
+- Replace exported `FaceDetector.Constants.*` with String Enums (`FaceDetector.FaceDetectorMode`, `FaceDetector.FaceDetectorLandmarks` and `FaceDetector.FaceDetectorClassifications`). ([#14179](https://github.com/expo/expo/pull/14179) by [@Simek](https://github.com/Simek))
 
 ```diff
 - FaceDetector.Constants.Mode.*
