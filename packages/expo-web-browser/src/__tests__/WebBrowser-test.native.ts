@@ -34,7 +34,8 @@ it(`dismissBrowser returns nothing`, () => {
 
 it(`openAuthSessionAsync allows subsequent attempts if the browser never opens`, async () => {
   ExpoWebBrowser.openBrowserAsync.mockRejectedValueOnce(new Error('No matching activity!'));
-  ExpoWebBrowser.openBrowserAsync.mockRejectedValueOnce(new Error('Too many matching activities!'));
+  ExpoWebBrowser.openBrowserAsync.mockRejectedValueOnce(new Error('Current activity not found!'));
+  ExpoWebBrowser.openBrowserAsync.mockRejectedValueOnce(new Error('No package manager!'));
   const pageUrl = 'http://expo.io';
   const redirectUrl = 'exp://expo.io';
   try {
@@ -45,7 +46,12 @@ it(`openAuthSessionAsync allows subsequent attempts if the browser never opens`,
   try {
     await WebBrowser.openAuthSessionAsync(pageUrl, redirectUrl);
   } catch (e) {
-    expect(e.message).toBe('Too many matching activities!');
+    expect(e.message).toBe('Current activity not found!');
   }
-  expect.assertions(2);
+  try {
+    await WebBrowser.openAuthSessionAsync(pageUrl, redirectUrl);
+  } catch (e) {
+    expect(e.message).toBe('No package manager!');
+  }
+  expect.assertions(3);
 });
