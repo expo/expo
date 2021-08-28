@@ -12,6 +12,7 @@
 ### 🐛 Bug fixes
 
 - On iOS, search for a view controller with a RCTRootView rather than always using the keyWindow's rootViewController. ([#13429](https://github.com/expo/expo/pull/13429) by [@esamelson](https://github.com/esamelson))
+- Fix splash screen not dismissed if there is alert view appearing. ([#14208](https://github.com/expo/expo/pull/14208) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others
 
