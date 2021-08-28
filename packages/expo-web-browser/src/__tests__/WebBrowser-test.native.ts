@@ -33,7 +33,8 @@ it(`dismissBrowser returns nothing`, () => {
 });
 
 it(`openAuthSessionAsync allows subsequent attempts if the browser never opens`, async () => {
-  ExpoWebBrowser.openBrowserAsync.mockRejectedValue(new Error('No matching activity!'));
+  ExpoWebBrowser.openBrowserAsync.mockRejectedValueOnce(new Error('No matching activity!'));
+  ExpoWebBrowser.openBrowserAsync.mockRejectedValueOnce(new Error('Too many matching activities!'));
   const pageUrl = 'http://expo.io';
   const redirectUrl = 'exp://expo.io';
   try {
@@ -44,7 +45,7 @@ it(`openAuthSessionAsync allows subsequent attempts if the browser never opens`,
   try {
     await WebBrowser.openAuthSessionAsync(pageUrl, redirectUrl);
   } catch (e) {
-    expect(e.message).toBe('No matching activity!');
+    expect(e.message).toBe('Too many matching activities!');
   }
   expect.assertions(2);
 });
