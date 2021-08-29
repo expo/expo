@@ -149,7 +149,7 @@ The Jest preset extends [`jest-expo`](https://github.com/expo/expo/tree/master/p
 ```json
 {
   "jest": {
-    "preset": "expo-module-scripts/universal"
+    "preset": "expo-module-scripts"
   }
 }
 ```
