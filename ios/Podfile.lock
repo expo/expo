@@ -1872,6 +1872,10 @@ PODS:
     - ExpoModulesCore
   - EXImagePicker (10.2.0):
     - ExpoModulesCore
+  - EXJSONUtils (0.1.0):
+    - ExpoModulesCore
+  - EXJSONUtils/Tests (0.1.0):
+    - ExpoModulesCore
   - EXKeepAwake (9.2.0):
     - ExpoModulesCore
   - EXLinearGradient (9.3.0-alpha.0):
@@ -1886,8 +1890,10 @@ PODS:
   - EXMailComposer (10.2.0):
     - ExpoModulesCore
   - EXManifests (0.1.0):
+    - EXJSONUtils
     - ExpoModulesCore
   - EXManifests/Tests (0.1.0):
+    - EXJSONUtils
     - ExpoModulesCore
   - EXMediaLibrary (12.1.0):
     - ExpoModulesCore
@@ -2790,6 +2796,8 @@ DEPENDENCIES:
   - EXImageLoader (from `../packages/expo-image-loader/ios`)
   - EXImageManipulator (from `../packages/expo-image-manipulator/ios`)
   - EXImagePicker (from `../packages/expo-image-picker/ios`)
+  - EXJSONUtils (from `../packages/expo-json-utils/ios`)
+  - EXJSONUtils/Tests (from `../packages/expo-json-utils/ios`)
   - EXKeepAwake (from `../packages/expo-keep-awake/ios`)
   - EXLinearGradient (from `../packages/expo-linear-gradient/ios`)
   - EXLocalAuthentication (from `../packages/expo-local-authentication/ios`)
@@ -3601,6 +3609,8 @@ EXTERNAL SOURCES:
     :path: "../packages/expo-image-manipulator/ios"
   EXImagePicker:
     :path: "../packages/expo-image-picker/ios"
+  EXJSONUtils:
+    :path: "../packages/expo-json-utils/ios"
   EXKeepAwake:
     :path: "../packages/expo-keep-awake/ios"
   EXLinearGradient:
@@ -4093,13 +4103,14 @@ SPEC CHECKSUMS:
   EXImageLoader: 7beb6d3235b9e70a7fbd3738ecc14ce403276685
   EXImageManipulator: 609ec11891dff0b0ef303c43ef0be1a4eb0b0af3
   EXImagePicker: 624295ff8decc995e1a005c9ea72ff4b772f5216
+  EXJSONUtils: 219837572921f8dc21ee6e60a6503efec4ce1c59
   EXKeepAwake: 7ef7a081f90fa7e81b57257bd772efe7a4403966
   EXLinearGradient: 6549f5881005464c6ebc66a9af9049b71a3f2fda
   EXLocalAuthentication: 2b438d36b152406011c3c24803e1df226ddc0a41
   EXLocalization: 18c4461eb66125734dc2c73866572f3450f7c9b8
   EXLocation: 2ab9fcb91e381aada094f7312bfc9684ced76d3e
   EXMailComposer: e5d206471deef0d515bf6ec93697df4d3e5a15ae
-  EXManifests: 146d9998d6304ae9b6081cae7ff7816fdd33354c
+  EXManifests: 93083f5ab6259ce8719c86740458e8813b882b4b
   EXMediaLibrary: 2256df25d4371037570a1ed01e605a50759caaa5
   EXNetwork: b420f5e99b4291f2ba0f632a6eb099b1f126a7d8
   EXNotifications: 11ddca2668114114ffd7c36627ff3ffa259d64d2
@@ -4196,6 +4207,6 @@ SPEC CHECKSUMS:
   Yoga: 575c581c63e0d35c9a83f4b46d01d63abc1100ac
   ZXingObjC: fdbb269f25dd2032da343e06f10224d62f537bdb
 
-PODFILE CHECKSUM: ab9fee1c152387b4f85cdf5720cfdf1c3852d434
+PODFILE CHECKSUM: e7f66f914d778455cb8e99513b730839f01a3b95
 
 COCOAPODS: 1.10.2

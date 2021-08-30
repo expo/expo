@@ -2,7 +2,7 @@
 
 #import <XCTest/XCTest.h>
 
-#import <EXManifests/NSDictionary+EXManifestsManifest.h>
+#import <EXJSONUtils/NSDictionary+EXManifestsManifest.h>
 
 @interface NSDictionaryEXManifestsManifestTest : XCTestCase
 

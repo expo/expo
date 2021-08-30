@@ -1,25 +1,22 @@
 {
-  "name": "expo-manifests",
+  "name": "expo-json-utils",
   "version": "0.1.0",
-  "description": "Code to parse and use Expo and Expo Updates manifests.",
+  "description": "Utilities for reading NSDictionaries (iOS) and JSONObjects (Android).",
   "main": "index.js",
   "keywords": [
     "react-native",
     "expo",
-    "expo-manifests"
+    "expo-json-utils"
   ],
   "repository": {
     "type": "git",
     "url": "https://github.com/expo/expo.git",
-    "directory": "packages/expo-manifests"
+    "directory": "packages/expo-json-utils"
   },
   "bugs": {
     "url": "https://github.com/expo/expo/issues"
   },
   "author": "650 Industries, Inc.",
   "license": "MIT",
-  "homepage": "https://docs.expo.dev/versions/latest/sdk/module-template",
-  "dependencies": {
-    "expo-json-utils": "~0.1.0"
-  }
+  "homepage": "https://docs.expo.dev/versions/latest/sdk/module-template"
 }

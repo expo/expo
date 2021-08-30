@@ -3,7 +3,7 @@ require 'json'
 package = JSON.parse(File.read(File.join(__dir__, '..', 'package.json')))
 
 Pod::Spec.new do |s|
-  s.name           = 'EXManifests'
+  s.name           = 'EXJSONUtils'
   s.version        = package['version']
   s.summary        = package['description']
   s.description    = package['description']
@@ -14,7 +14,6 @@ Pod::Spec.new do |s|
   s.source         = { git: 'https://github.com/expo/expo.git' }
 
   s.dependency 'ExpoModulesCore'
-  s.dependency 'EXJSONUtils'
 
   s.pod_target_xcconfig = {
     'GCC_TREAT_INCOMPATIBLE_POINTER_TYPE_WARNINGS_AS_ERRORS' => 'YES',

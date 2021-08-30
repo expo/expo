@@ -1,6 +1,6 @@
 // Copyright © 2021 650 Industries. All rights reserved.
 
-#import <EXManifests/NSDictionary+EXManifestsManifest.h>
+#import <EXJSONUtils/NSDictionary+EXJSONUtils.h>
 
 #define EXGetNonNullManifestValue(Type, key) \
 ({ \
@@ -17,7 +17,7 @@
   value; \
 })
 
-@implementation NSDictionary (EXManifestsManifest)
+@implementation NSDictionary (EXJSONUtils)
 
 - (NSString *)stringForKey:(NSString *)key {
   return EXGetNonNullManifestValue(NSString, key);
