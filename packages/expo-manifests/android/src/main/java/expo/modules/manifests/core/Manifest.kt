@@ -44,7 +44,7 @@ abstract class Manifest(protected val json: JSONObject) {
   /**
    * A stable UUID for this EAS project. Should be used to call EAS APIs.
    */
-  abstract fun getProjectID(): String?
+  abstract fun getEASProjectID(): String?
 
   /**
    * The legacy ID of this experience.
@@ -54,7 +54,7 @@ abstract class Manifest(protected val json: JSONObject) {
    *
    * Use this in cases where an identifier of the current manifest is needed (experience loading for example).
    * Use getScopeKey for cases where a stable key is needed to scope data to this experience.
-   * Use getProjectID for cases where a stable UUID identifier of the experience is needed to identify over APIs.
+   * Use getEASProjectID for cases where a stable UUID identifier of the experience is needed to identify over EAS APIs.
    * Use getStableLegacyID for cases where a stable legacy format identifier of the experience is needed (experience scoping for example).
    */
   @Throws(JSONException::class)

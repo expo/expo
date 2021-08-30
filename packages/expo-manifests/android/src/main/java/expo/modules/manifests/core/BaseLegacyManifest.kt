@@ -17,7 +17,7 @@ abstract class BaseLegacyManifest(json: JSONObject) : Manifest(json) {
     getStableLegacyID()
   }
 
-  override fun getProjectID(): String? = if (json.has("projectId")) {
+  override fun getEASProjectID(): String? = if (json.has("projectId")) {
     json.optString("projectId")
   } else {
     null
