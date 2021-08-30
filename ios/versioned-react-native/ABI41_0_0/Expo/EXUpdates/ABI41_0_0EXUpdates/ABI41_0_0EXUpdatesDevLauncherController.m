@@ -86,7 +86,7 @@ typedef NS_ENUM(NSInteger, ABI41_0_0EXUpdatesDevLauncherErrorCode) {
 
   ABI41_0_0EXUpdatesRemoteAppLoader *loader = [[ABI41_0_0EXUpdatesRemoteAppLoader alloc] initWithConfig:updatesConfiguration database:controller.database directory:controller.updatesDirectory completionQueue:controller.controllerQueue];
   [loader loadUpdateFromUrl:updatesConfiguration.updateUrl onManifest:^BOOL(ABI41_0_0EXUpdatesUpdate * _Nonnull update) {
-    return manifestBlock(update.rawManifest.rawManifestJSON);
+    return manifestBlock(update.manifest.rawManifestJSON);
   } asset:^(ABI41_0_0EXUpdatesAsset * _Nonnull asset, NSUInteger successfulAssetCount, NSUInteger failedAssetCount, NSUInteger totalAssetCount) {
     progressBlock(successfulAssetCount, failedAssetCount, totalAssetCount);
   } success:^(ABI41_0_0EXUpdatesUpdate * _Nullable update) {
@@ -125,7 +125,7 @@ typedef NS_ENUM(NSInteger, ABI41_0_0EXUpdatesDevLauncherErrorCode) {
     [controller setIsStarted:YES];
     [controller setConfigurationInternal:configuration];
     [controller setLauncher:launcher];
-    successBlock(launcher.launchedUpdate.rawManifest.rawManifestJSON);
+    successBlock(launcher.launchedUpdate.manifest.rawManifestJSON);
     [controller runReaper];
   }];
 }

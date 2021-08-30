@@ -10,7 +10,7 @@ import android.os.Build
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import de.greenrobot.event.EventBus
-import expo.modules.manifests.RawManifest
+import expo.modules.manifests.core.Manifest
 import host.exp.exponent.Constants
 import host.exp.exponent.ExponentManifest
 import host.exp.exponent.ExponentManifest.BitmapListener
@@ -83,12 +83,12 @@ class PushNotificationHelper {
     message: String?,
     channelId: String?,
     manifestUrl: String,
-    manifest: RawManifest,
+    manifest: Manifest,
     body: String?,
     title: String?,
     categoryId: String?
   ) {
-    val experienceKey = ExperienceKey.fromRawManifest(manifest)
+    val experienceKey = ExperienceKey.fromManifest(manifest)
     val name = manifest.getName()
     if (name == null) {
       EXL.e(TAG, "No name found for experience scope key " + experienceKey.scopeKey)

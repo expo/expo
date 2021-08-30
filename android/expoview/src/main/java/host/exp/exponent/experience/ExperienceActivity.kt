@@ -25,7 +25,7 @@ import com.facebook.soloader.SoLoader
 import de.greenrobot.event.EventBus
 import expo.modules.core.interfaces.Package
 import expo.modules.splashscreen.singletons.SplashScreen
-import expo.modules.manifests.RawManifest
+import expo.modules.manifests.core.Manifest
 import host.exp.exponent.*
 import host.exp.exponent.ExpoUpdatesAppLoader.AppLoaderCallback
 import host.exp.exponent.ExpoUpdatesAppLoader.AppLoaderStatus
@@ -171,11 +171,11 @@ open class ExperienceActivity : BaseExperienceActivity(), StartReactInstanceDele
       ExpoUpdatesAppLoader(
         this.manifestUrl!!,
         object : AppLoaderCallback {
-          override fun onOptimisticManifest(optimisticManifest: RawManifest) {
+          override fun onOptimisticManifest(optimisticManifest: Manifest) {
             Exponent.instance.runOnUiThread { setOptimisticManifest(optimisticManifest) }
           }
 
-          override fun onManifestCompleted(manifest: RawManifest) {
+          override fun onManifestCompleted(manifest: Manifest) {
             Exponent.instance.runOnUiThread {
               try {
                 val bundleUrl = ExponentUrls.toHttp(manifest.getBundleURL())
@@ -340,7 +340,7 @@ open class ExperienceActivity : BaseExperienceActivity(), StartReactInstanceDele
    * - first time for optimistic manifest
    * - seconds time for real manifest
    */
-  protected fun showOrReconfigureManagedAppSplashScreen(manifest: RawManifest?) {
+  protected fun showOrReconfigureManagedAppSplashScreen(manifest: Manifest?) {
     if (!shouldCreateLoadingView()) {
       return
     }
@@ -387,7 +387,7 @@ open class ExperienceActivity : BaseExperienceActivity(), StartReactInstanceDele
     }
   }
 
-  fun setOptimisticManifest(optimisticManifest: RawManifest) {
+  fun setOptimisticManifest(optimisticManifest: Manifest) {
     runOnUiThread {
       if (!isInForeground) {
         return@runOnUiThread
@@ -409,7 +409,7 @@ open class ExperienceActivity : BaseExperienceActivity(), StartReactInstanceDele
 
   fun setManifest(
     manifestUrl: String,
-    manifest: RawManifest,
+    manifest: Manifest,
     bundleUrl: String
   ) {
     if (!isInForeground) {
@@ -474,7 +474,7 @@ open class ExperienceActivity : BaseExperienceActivity(), StartReactInstanceDele
     soLoaderInit()
 
     try {
-      experienceKey = ExperienceKey.fromRawManifest(manifest)
+      experienceKey = ExperienceKey.fromManifest(manifest)
       AsyncCondition.notify(KernelConstants.EXPERIENCE_ID_SET_FOR_ACTIVITY_KEY)
     } catch (e: JSONException) {
       KernelProvider.instance.handleError("No ID found in manifest.")

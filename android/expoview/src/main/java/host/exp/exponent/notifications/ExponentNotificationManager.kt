@@ -5,7 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Build
 import androidx.core.app.NotificationManagerCompat
-import expo.modules.manifests.RawManifest
+import expo.modules.manifests.core.Manifest
 import host.exp.exponent.Constants
 import host.exp.exponent.analytics.EXL
 import host.exp.exponent.di.NativeModuleDepsProvider
@@ -23,7 +23,7 @@ class ExponentNotificationManager(private val context: Context) {
   @Inject
   lateinit var exponentSharedPreferences: ExponentSharedPreferences
 
-  fun maybeCreateNotificationChannelGroup(manifest: RawManifest) {
+  fun maybeCreateNotificationChannelGroup(manifest: Manifest) {
     if (Constants.isStandaloneApp()) {
       // currently we only support groups in the client, with one group per experience
       return

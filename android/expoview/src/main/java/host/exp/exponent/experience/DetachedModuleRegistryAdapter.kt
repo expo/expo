@@ -10,7 +10,7 @@ import expo.modules.notifications.notifications.handling.NotificationsHandler
 import expo.modules.notifications.notifications.scheduling.NotificationScheduler
 import host.exp.exponent.utils.ScopedContext
 import host.exp.exponent.kernel.ExperienceKey
-import expo.modules.manifests.RawManifest
+import expo.modules.manifests.core.Manifest
 import versioned.host.exp.exponent.modules.universal.*
 import versioned.host.exp.exponent.modules.universal.notifications.ScopedServerRegistrationModule
 
@@ -21,7 +21,7 @@ open class DetachedModuleRegistryAdapter(moduleRegistryProvider: ReactModuleRegi
     scopedContext: ScopedContext,
     experienceKey: ExperienceKey,
     experienceProperties: Map<String, Any>,
-    manifest: RawManifest,
+    manifest: Manifest,
     experienceStableLegacyId: String,
     otherModules: List<NativeModule>
   ): List<NativeModule> {

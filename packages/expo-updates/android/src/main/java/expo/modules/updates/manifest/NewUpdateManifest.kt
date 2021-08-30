@@ -11,7 +11,7 @@ import expo.modules.updates.UpdatesUtils
 import expo.modules.updates.db.entity.AssetEntity
 import expo.modules.updates.db.entity.UpdateEntity
 import expo.modules.updates.loader.EmbeddedLoader
-import expo.modules.manifests.NewRawManifest
+import expo.modules.manifests.core.NewManifest
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
@@ -19,7 +19,7 @@ import java.text.ParseException
 import java.util.*
 
 class NewUpdateManifest private constructor(
-  override val rawManifest: NewRawManifest,
+  override val manifest: NewManifest,
   private val mId: UUID,
   private val mScopeKey: String,
   private val mCommitTime: Date,
@@ -43,7 +43,7 @@ class NewUpdateManifest private constructor(
 
   override val updateEntity: UpdateEntity by lazy {
     UpdateEntity(mId, mCommitTime, mRuntimeVersion, mScopeKey).apply {
-      manifest = this@NewUpdateManifest.rawManifest.getRawJson()
+      manifest = this@NewUpdateManifest.manifest.getRawJson()
     }
   }
 
@@ -91,17 +91,17 @@ class NewUpdateManifest private constructor(
     private val TAG = UpdateManifest::class.java.simpleName
 
     @Throws(JSONException::class)
-    fun fromRawManifest(
-      rawManifest: NewRawManifest,
+    fun fromNewManifest(
+      manifest: NewManifest,
       httpResponse: ManifestResponse?,
       configuration: UpdatesConfiguration
     ): NewUpdateManifest {
-      val id = UUID.fromString(rawManifest.getID())
-      val runtimeVersion = rawManifest.getRuntimeVersion()
-      val launchAsset = rawManifest.getLaunchAsset()
-      val assets = rawManifest.getAssets()
+      val id = UUID.fromString(manifest.getID())
+      val runtimeVersion = manifest.getRuntimeVersion()
+      val launchAsset = manifest.getLaunchAsset()
+      val assets = manifest.getAssets()
       val commitTime: Date = try {
-        UpdatesUtils.parseDateString(rawManifest.getCreatedAt())
+        UpdatesUtils.parseDateString(manifest.getCreatedAt())
       } catch (e: ParseException) {
         Log.e(TAG, "Could not parse manifest createdAt string; falling back to current time", e)
         Date()
@@ -109,7 +109,7 @@ class NewUpdateManifest private constructor(
       val serverDefinedHeaders = httpResponse?.header("expo-server-defined-headers")
       val manifestFilters = httpResponse?.header("expo-manifest-filters")
       return NewUpdateManifest(
-        rawManifest,
+        manifest,
         id,
         configuration.scopeKey,
         commitTime,

@@ -3,7 +3,7 @@ package host.exp.exponent.storage
 
 import android.content.Context
 import expo.modules.updates.manifest.ManifestFactory
-import expo.modules.manifests.RawManifest
+import expo.modules.manifests.core.Manifest
 import host.exp.exponent.analytics.EXL
 import host.exp.exponent.kernel.ExperienceKey
 import host.exp.exponent.kernel.KernelConstants
@@ -15,7 +15,7 @@ import javax.inject.Singleton
 
 @Singleton
 class ExponentSharedPreferences constructor(val context: Context) {
-  class ManifestAndBundleUrl internal constructor(val manifest: RawManifest, val bundleUrl: String)
+  class ManifestAndBundleUrl internal constructor(val manifest: Manifest, val bundleUrl: String)
 
   private val sharedPreferences = context.getSharedPreferences(
     context.getString(R.string.preference_file_key),
@@ -97,7 +97,7 @@ class ExponentSharedPreferences constructor(val context: Context) {
       }
     }
 
-  fun updateManifest(manifestUrl: String, manifest: RawManifest, bundleUrl: String) {
+  fun updateManifest(manifestUrl: String, manifest: Manifest, bundleUrl: String) {
     try {
       val parentObject = JSONObject().apply {
         put(KernelConstants.MANIFEST_KEY, manifest)
@@ -117,7 +117,7 @@ class ExponentSharedPreferences constructor(val context: Context) {
       val json = JSONObject(jsonString)
       val manifestJson = json.getJSONObject(KernelConstants.MANIFEST_KEY)
       val bundleUrl = json.getString(KernelConstants.BUNDLE_URL_KEY)
-      ManifestAndBundleUrl(ManifestFactory.getRawManifestFromJson(manifestJson), bundleUrl)
+      ManifestAndBundleUrl(ManifestFactory.getManifestFromManifestJson(manifestJson), bundleUrl)
     } catch (e: JSONException) {
       EXL.e(TAG, e)
       null

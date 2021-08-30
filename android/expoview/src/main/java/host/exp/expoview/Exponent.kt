@@ -19,7 +19,7 @@ import com.raizlabs.android.dbflow.config.FlowConfig
 import com.raizlabs.android.dbflow.config.FlowManager
 import expo.modules.core.interfaces.Package
 import expo.modules.core.interfaces.SingletonModule
-import expo.modules.manifests.RawManifest
+import expo.modules.manifests.core.Manifest
 import host.exp.exponent.*
 import host.exp.exponent.analytics.Analytics
 import host.exp.exponent.analytics.EXL
@@ -84,7 +84,7 @@ class Exponent private constructor(val context: Context, val application: Applic
     var experienceProperties: Map<String, Any?>,
     var expoPackages: List<Package>?,
     var exponentPackageDelegate: ExponentPackageDelegate?,
-    var manifest: RawManifest,
+    var manifest: Manifest,
     var singletonModules: List<SingletonModule>,
   )
 
@@ -113,7 +113,7 @@ class Exponent private constructor(val context: Context, val application: Applic
   // `id` must be URL encoded. Returns true if found cached bundle.
   @JvmOverloads
   fun loadJSBundle(
-    manifest: RawManifest?,
+    manifest: Manifest?,
     urlString: String,
     id: String,
     abiVersion: String,
@@ -291,7 +291,7 @@ class Exponent private constructor(val context: Context, val application: Applic
 
   fun testPackagerStatus(
     isDebug: Boolean,
-    mManifest: RawManifest,
+    mManifest: Manifest,
     callback: PackagerStatusCallback
   ) {
     if (!isDebug) {

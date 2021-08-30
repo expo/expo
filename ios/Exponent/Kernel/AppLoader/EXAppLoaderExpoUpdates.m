@@ -34,8 +34,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong, nullable) NSURL *manifestUrl;
 @property (nonatomic, strong, nullable) NSURL *httpManifestUrl;
 
-@property (nonatomic, strong, nullable) EXManifestsRawManifest *confirmedManifest;
-@property (nonatomic, strong, nullable) EXManifestsRawManifest *optimisticManifest;
+@property (nonatomic, strong, nullable) EXManifestsManifest *confirmedManifest;
+@property (nonatomic, strong, nullable) EXManifestsManifest *optimisticManifest;
 @property (nonatomic, strong, nullable) NSData *bundle;
 @property (nonatomic, assign) EXAppLoaderRemoteUpdateStatus remoteUpdateStatus;
 @property (nonatomic, assign) BOOL shouldShowRemoteUpdateStatus;
@@ -114,7 +114,7 @@ NS_ASSUME_NONNULL_BEGIN
   return kEXAppLoaderStatusNew;
 }
 
-- (nullable EXManifestsRawManifest *)manifest
+- (nullable EXManifestsManifest *)manifest
 {
   if (_confirmedManifest) {
     return _confirmedManifest;
@@ -182,9 +182,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (BOOL)appLoaderTask:(EXUpdatesAppLoaderTask *)appLoaderTask didLoadCachedUpdate:(EXUpdatesUpdate *)update
 {
-  [self _setShouldShowRemoteUpdateStatus:update.rawManifest];
+  [self _setShouldShowRemoteUpdateStatus:update.manifest];
   // if cached manifest was dev mode, or a previous run of this app failed due to a loading error, we want to make sure to check for remote updates
-  if (update.rawManifest.isUsingDeveloperTool || [[EXKernel sharedInstance].serviceRegistry.errorRecoveryManager scopeKeyIsRecoveringFromError:update.rawManifest.scopeKey]) {
+  if (update.manifest.isUsingDeveloperTool || [[EXKernel sharedInstance].serviceRegistry.errorRecoveryManager scopeKeyIsRecoveringFromError:update.manifest.scopeKey]) {
     return NO;
   }
   return YES;
@@ -195,7 +195,7 @@ NS_ASSUME_NONNULL_BEGIN
   // expo-cli does not always respect our SDK version headers and respond with a compatible update or an error
   // so we need to check the compatibility here
   EXManifestResource *manifestResource = [[EXManifestResource alloc] initWithManifestUrl:_httpManifestUrl originalUrl:_manifestUrl];
-  NSError *manifestCompatibilityError = [manifestResource verifyManifestSdkVersion:update.rawManifest];
+  NSError *manifestCompatibilityError = [manifestResource verifyManifestSdkVersion:update.manifest];
   if (manifestCompatibilityError) {
     _error = manifestCompatibilityError;
     if (self.delegate) {
@@ -205,8 +205,8 @@ NS_ASSUME_NONNULL_BEGIN
   }
 
   _remoteUpdateStatus = kEXAppLoaderRemoteUpdateStatusDownloading;
-  [self _setShouldShowRemoteUpdateStatus:update.rawManifest];
-  [self _setOptimisticManifest:[self _processManifest:update.rawManifest]];
+  [self _setShouldShowRemoteUpdateStatus:update.manifest];
+  [self _setOptimisticManifest:[self _processManifest:update.manifest]];
 }
 
 - (void)appLoaderTask:(EXUpdatesAppLoaderTask *)appLoaderTask didFinishWithLauncher:(id<EXUpdatesAppLauncher>)launcher isUpToDate:(BOOL)isUpToDate
@@ -216,14 +216,14 @@ NS_ASSUME_NONNULL_BEGIN
   }
 
   if (!_optimisticManifest) {
-    [self _setOptimisticManifest:[self _processManifest:launcher.launchedUpdate.rawManifest]];
+    [self _setOptimisticManifest:[self _processManifest:launcher.launchedUpdate.manifest]];
   }
   _isUpToDate = isUpToDate;
-  if (launcher.launchedUpdate.rawManifest.isUsingDeveloperTool) {
+  if (launcher.launchedUpdate.manifest.isUsingDeveloperTool) {
     // in dev mode, we need to set an optimistic manifest but nothing else
     return;
   }
-  _confirmedManifest = [self _processManifest:launcher.launchedUpdate.rawManifest];
+  _confirmedManifest = [self _processManifest:launcher.launchedUpdate.manifest];
   _bundle = [NSData dataWithContentsOfURL:launcher.launchAssetUrl];
   _appLauncher = launcher;
   if (self.delegate) {
@@ -256,7 +256,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)appLoaderTask:(EXUpdatesAppLoaderTask *)appLoaderTask didFinishBackgroundUpdateWithStatus:(EXUpdatesBackgroundUpdateStatus)status update:(nullable EXUpdatesUpdate *)update error:(nullable NSError *)error
 {
   if (self.delegate) {
-    [self.delegate appLoader:self didResolveUpdatedBundleWithManifest:update.rawManifest isFromCache:(status == EXUpdatesBackgroundUpdateStatusNoUpdateAvailable) error:error];
+    [self.delegate appLoader:self didResolveUpdatedBundleWithManifest:update.manifest isFromCache:(status == EXUpdatesBackgroundUpdateStatusNoUpdateAvailable) error:error];
   }
 }
 
@@ -378,7 +378,7 @@ NS_ASSUME_NONNULL_BEGIN
   EXUpdatesAppLauncherNoDatabase *appLauncher = [[EXUpdatesAppLauncherNoDatabase alloc] init];
   [appLauncher launchUpdateWithConfig:_config fatalError:error];
 
-  _confirmedManifest = [self _processManifest:appLauncher.launchedUpdate.rawManifest];
+  _confirmedManifest = [self _processManifest:appLauncher.launchedUpdate.manifest];
   _optimisticManifest = _confirmedManifest;
   _bundle = [NSData dataWithContentsOfURL:appLauncher.launchAssetUrl];
   _appLauncher = appLauncher;
@@ -400,7 +400,7 @@ NS_ASSUME_NONNULL_BEGIN
   }
 }
 
-- (void)_setOptimisticManifest:(EXManifestsRawManifest *)manifest
+- (void)_setOptimisticManifest:(EXManifestsManifest *)manifest
 {
   _optimisticManifest = manifest;
   if (self.delegate) {
@@ -408,7 +408,7 @@ NS_ASSUME_NONNULL_BEGIN
   }
 }
 
-- (void)_setShouldShowRemoteUpdateStatus:(EXManifestsRawManifest *)manifest
+- (void)_setShouldShowRemoteUpdateStatus:(EXManifestsManifest *)manifest
 {
   // we don't want to show the cached experience alert when Updates.reloadAsync() is called
   if (_shouldUseCacheOnly) {
@@ -464,7 +464,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 # pragma mark - manifest processing
 
-- (EXManifestsRawManifest *)_processManifest:(EXManifestsRawManifest *)manifest
+- (EXManifestsManifest *)_processManifest:(EXManifestsManifest *)manifest
 {
   NSMutableDictionary *mutableManifest = [manifest.rawManifestJSON mutableCopy];
   if (!mutableManifest[@"isVerified"] && ![EXKernelLinkingManager isExpoHostedUrl:_httpManifestUrl] && !EXEnvironment.sharedEnvironment.isDetached){
@@ -485,10 +485,10 @@ NS_ASSUME_NONNULL_BEGIN
     mutableManifest[@"isVerified"] = @(YES);
   }
 
-  return [EXUpdatesUpdate rawManifestForJSON:[mutableManifest copy]];
+  return [EXUpdatesUpdate manifestForManifestJSON:[mutableManifest copy]];
 }
 
-+ (BOOL)_isAnonymousExperience:(EXManifestsRawManifest *)manifest
++ (BOOL)_isAnonymousExperience:(EXManifestsManifest *)manifest
 {
   return manifest.legacyId != nil && [manifest.legacyId hasPrefix:@"@anonymous/"];
 }

@@ -99,7 +99,7 @@ NS_ASSUME_NONNULL_BEGIN
   [[EXKernel sharedInstance] createNewAppWithUrl:urlToRefresh initialProps:nil];
 }
 
-- (void)addHistoryItemWithUrl:(NSURL *)manifestUrl manifest:(EXManifestsRawManifest *)manifest
+- (void)addHistoryItemWithUrl:(NSURL *)manifestUrl manifest:(EXManifestsManifest *)manifest
 {
   [[self _getHomeAppManager] addHistoryItemWithUrl:manifestUrl manifest:manifest];
 }

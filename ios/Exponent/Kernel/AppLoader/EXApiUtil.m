@@ -13,7 +13,7 @@ static NSString* kPublicKeyTag = @"exp.host.publickey";
 
 @implementation EXApiUtil
 
-+ (NSURL *)bundleUrlFromManifest:(EXManifestsRawManifest *)manifest
++ (NSURL *)bundleUrlFromManifest:(EXManifestsManifest *)manifest
 {
   return [[self class] encodedUrlFromString:manifest.bundleUrl];
 }

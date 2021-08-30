@@ -1,5 +1,5 @@
 #import "EXKernelAppRegistry.h"
-#import <EXManifests/EXManifestsRawManifest.h>
+#import <EXManifests/EXManifestsManifest.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -9,7 +9,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)moveHomeToVisible;
 - (void)reloadVisibleApp;
 - (void)showQRReader;
-- (void)addHistoryItemWithUrl:(NSURL *)manifestUrl manifest:(EXManifestsRawManifest *)manifest;
+- (void)addHistoryItemWithUrl:(NSURL *)manifestUrl manifest:(EXManifestsManifest *)manifest;
 - (void)getHistoryUrlForScopeKey:(NSString *)scopeKey completion:(void (^)(NSString * _Nullable))completion;
 - (BOOL)isNuxFinished;
 - (void)setIsNuxFinished:(BOOL)isFinished;
