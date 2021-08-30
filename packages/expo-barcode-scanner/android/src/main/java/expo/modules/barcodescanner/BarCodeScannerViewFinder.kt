@@ -168,7 +168,7 @@ internal class BarCodeScannerViewFinder(
   override fun onPreviewFrame(data: ByteArray, innerCamera: Camera) {
     if (!barCodeScannerTaskLock) {
       barCodeScannerTaskLock = true
-      barCodeScannerAsyncTask(innerCamera, data)
+      scanForBarcodes(innerCamera, data)
     }
   }
 
