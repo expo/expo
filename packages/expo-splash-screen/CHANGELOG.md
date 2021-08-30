@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 0.11.3 — 2021-08-30
+
+_This version does not introduce any user-facing changes._
+
 ## 0.11.2 — 2021-07-01
 
 ### 🐛 Bug fixes
