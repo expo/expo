@@ -45,53 +45,61 @@ Some build-time configuration options are available to allow your app to update 
 
 On Android, you may also define these properties at runtime by passing a `Map` as the second parameter of `UpdatesController.initialize()`. If provided, the values in this Map will override any values specified in `AndroidManifest.xml`. On iOS, you may set these properties at runtime by calling `[UpdatesController.sharedInstance setConfiguration:]` at any point _before_ calling `start` or `startAndShowLaunchScreen`, and the values in this dictionary will override Expo.plist.
 
-| iOS plist/dictionary key | Android Map key | Android meta-data name | Default | Required? |
-| --- | --- | --- | --- | --- |
-| `EXUpdatesEnabled` | `enabled` | `expo.modules.updates.ENABLED` | `true` | ❌ |
+| iOS plist/dictionary key | Android Map key | Android meta-data name         | Default | Required? |
+| ------------------------ | --------------- | ------------------------------ | ------- | --------- |
+| `EXUpdatesEnabled`       | `enabled`       | `expo.modules.updates.ENABLED` | `true`  | ❌        |
 
 Whether updates are enabled. Setting this to `false` disables all update functionality, all module methods, and forces the app to load with the manifest and assets bundled into the app binary.
 
-| iOS plist/dictionary key | Android Map key | Android meta-data name | Default | Required? |
-| --- | --- | --- | --- | --- |
-| `EXUpdatesURL` | `updateUrl` | `expo.modules.updates.EXPO_UPDATE_URL` | (none) | ✅ |
+| iOS plist/dictionary key | Android Map key | Android meta-data name                 | Default | Required? |
+| ------------------------ | --------------- | -------------------------------------- | ------- | --------- |
+| `EXUpdatesURL`           | `updateUrl`     | `expo.modules.updates.EXPO_UPDATE_URL` | (none)  | ✅        |
 
 The URL to the remote server where the app should check for updates. A request to this URL should return a valid manifest object for the latest available update and tells expo-updates how to fetch the JS bundle and other assets that comprise the update. (Example: for apps published with `expo publish`, this URL would be `https://exp.host/@username/slug`.)
 
-| iOS plist/dictionary key | Android Map key | Android meta-data name | Default | Required? |
-| --- | --- | --- | --- | --- |
-| `EXUpdatesSDKVersion` | `sdkVersion` | `expo.modules.updates.EXPO_SDK_VERSION` | (none) | (exactly one of `sdkVersion` or `runtimeVersion` is required) |
+| iOS plist/dictionary key | Android Map key | Android meta-data name                  | Default | Required?                                                     |
+| ------------------------ | --------------- | --------------------------------------- | ------- | ------------------------------------------------------------- |
+| `EXUpdatesSDKVersion`    | `sdkVersion`    | `expo.modules.updates.EXPO_SDK_VERSION` | (none)  | (exactly one of `sdkVersion` or `runtimeVersion` is required) |
 
 The SDK version string to send under the `Expo-SDK-Version` header in the manifest request. Required for apps hosted on Expo's server.
 
-| iOS plist/dictionary key | Android Map key | Android meta-data name | Default | Required? |
-| --- | --- | --- | --- | --- |
-| `EXUpdatesRuntimeVersion` | `runtimeVersion` | `expo.modules.updates.EXPO_RUNTIME_VERSION` | (none) | (exactly one of `sdkVersion` or `runtimeVersion` is required) |
+| iOS plist/dictionary key  | Android Map key  | Android meta-data name                      | Default | Required?                                                     |
+| ------------------------- | ---------------- | ------------------------------------------- | ------- | ------------------------------------------------------------- |
+| `EXUpdatesRuntimeVersion` | `runtimeVersion` | `expo.modules.updates.EXPO_RUNTIME_VERSION` | (none)  | (exactly one of `sdkVersion` or `runtimeVersion` is required) |
 
 The Runtime Version string to send under the `Expo-Runtime-Version` header in the manifest request.
 
-| iOS plist/dictionary key | Android Map key | Android meta-data name | Default | Required? |
-| --- | --- | --- | --- | --- |
-| `EXUpdatesReleaseChannel` | `releaseChannel` | `expo.modules.updates.EXPO_RELEASE_CHANNEL` | `default` | ❌ |
+| iOS plist/dictionary key  | Android Map key  | Android meta-data name                      | Default   | Required? |
+| ------------------------- | ---------------- | ------------------------------------------- | --------- | --------- |
+| `EXUpdatesReleaseChannel` | `releaseChannel` | `expo.modules.updates.EXPO_RELEASE_CHANNEL` | `default` | ❌        |
 
 The release channel string to send under the `Expo-Release-Channel` header in the manifest request.
 
-| iOS plist/dictionary key | Android Map key | Android meta-data name | Default | Required? |
-| --- | --- | --- | --- | --- |
-| `EXUpdatesCheckOnLaunch` | `checkOnLaunch` | `expo.modules.updates.EXPO_UPDATES_CHECK_ON_LAUNCH` | `ALWAYS` | ❌ |
+| iOS plist/dictionary key | Android Map key | Android meta-data name                              | Default  | Required? |
+| ------------------------ | --------------- | --------------------------------------------------- | -------- | --------- |
+| `EXUpdatesCheckOnLaunch` | `checkOnLaunch` | `expo.modules.updates.EXPO_UPDATES_CHECK_ON_LAUNCH` | `ALWAYS` | ❌        |
 
 The condition under which `expo-updates` should automatically check for (and download, if one exists) an update upon app launch. Possible values are `ALWAYS`, `NEVER` (if you want to exclusively control updates via this module's JS API), or `WIFI_ONLY` (if you want the app to automatically download updates only if the device is on an unmetered Wi-Fi connection when it launches).
 
-| iOS plist/dictionary key | Android Map key | Android meta-data name | Default | Required? |
-| --- | --- | --- | --- | --- |
-| `EXUpdatesLaunchWaitMs` | `launchWaitMs` | `expo.modules.updates.EXPO_UPDATES_LAUNCH_WAIT_MS` | `0` | ❌ |
+| iOS plist/dictionary key | Android Map key | Android meta-data name                             | Default | Required? |
+| ------------------------ | --------------- | -------------------------------------------------- | ------- | --------- |
+| `EXUpdatesLaunchWaitMs`  | `launchWaitMs`  | `expo.modules.updates.EXPO_UPDATES_LAUNCH_WAIT_MS` | `0`     | ❌        |
 
 The number of milliseconds `expo-updates` should delay the app launch and stay on the splash screen while trying to download an update, before falling back to a previously downloaded version. Setting this to `0` will cause the app to always launch with a previously downloaded update and will result in the fastest app launch possible.
+
+## Customizing automatically setup
+
+From `expo-updates@>=0.9.0`, we support the setup to iOS AppDelegate and Android MainApplication automatically. If you want to do some customizations, for instance, to enable updates only on some build variants. You could disable the auto setup and add custom logic in AppDelegate/MainApplication.
+
+| iOS Expo.plist key   | Android meta-data name            | Default | Required? |
+| -------------------- | --------------------------------- | ------- | --------- |
+| `EXUpdatesAutoSetup` | `expo.modules.updates.AUTO_SETUP` | `true`  | ❌        |
 
 # Removing pre-installed expo-updates
 
 Projects created by `expo init` and `expo eject` come with expo-updates pre-installed, because we anticipate most users will want this functionality. However, if you do not intend to use OTA updates, you can disable or uninstall the module.
 
-### Disabling expo-updates
+## Disabling expo-updates
 
 If you disable updates, the module will stay installed in case you ever want to use it in the future, but none of the OTA-updating code paths will ever be executed in your builds. To disable OTA updates, add the `EXUpdatesEnabled` key to Expo.plist with a boolean value of `NO`, and add the following line to AndroidManifest.xml:
 
@@ -99,7 +107,15 @@ If you disable updates, the module will stay installed in case you ever want to 
 <meta-data android:name="expo.modules.updates.ENABLED" android:value="false"/>
 ```
 
-### Uninstalling expo-updates
+## Uninstalling expo-updates (for expo-updates >= 0.9.0)
+
+Uninstalling the module will entirely remove all expo-updates related code from your codebase. To do so, complete the following steps:
+
+- Remove `expo-updates` from your package.json and reinstall your node modules.
+- Delete Expo.plist from your Xcode project and file system.
+- Remove all `meta-data` tags with `expo.modules.updates` in the `android:name` field from AndroidManifest.xml.
+
+## Uninstalling expo-updates (for expo-updates < 0.9.0)
 
 Uninstalling the module will entirely remove all expo-updates related code from your codebase. To do so, complete the following steps:
 
@@ -124,7 +140,7 @@ Remove`EXUpdatesAppControllerDelegate` as a protocol of your `AppDelegate`.
 
  @property (nonatomic, strong) UMModuleRegistryAdapter *moduleRegistryAdapter;
  @property (nonatomic, strong) UIWindow *window;
- ```
+```
 
 #### `AppDelegate.m`
 
@@ -247,7 +263,7 @@ Remove`EXUpdatesAppControllerDelegate` as a protocol of your `AppDelegate`.
      initializeFlipper(this, getReactNativeHost().getReactInstanceManager());
    }
  }
- ```
+```
 
 #### Remove Pods Target EXUpdates (Optional)
 
