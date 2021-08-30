@@ -1,6 +1,6 @@
 // Copyright © 2021 650 Industries. All rights reserved.
 
-#import <ABI42_0_0EXManifests/NSDictionary+ABI42_0_0EXManifestsManifest.h>
+#import <ABI42_0_0EXJSONUtils/NSDictionary+ABI42_0_0EXJSONUtils.h>
 
 #define ABI42_0_0EXGetNonNullManifestValue(Type, key) \
 ({ \
@@ -17,7 +17,7 @@
   value; \
 })
 
-@implementation NSDictionary (ABI42_0_0EXManifestsManifest)
+@implementation NSDictionary (ABI42_0_0EXJSONUtils)
 
 - (NSString *)stringForKey:(NSString *)key {
   return ABI42_0_0EXGetNonNullManifestValue(NSString, key);

@@ -1,7 +1,7 @@
 //  Copyright © 2021 650 Industries. All rights reserved.
 
 #import <ABI41_0_0EXManifests/ABI41_0_0EXManifestsBaseLegacyManifest.h>
-#import <ABI41_0_0EXManifests/NSDictionary+ABI41_0_0EXManifestsManifest.h>
+#import <ABI41_0_0EXJSONUtils/NSDictionary+ABI41_0_0EXJSONUtils.h>
 
 @implementation ABI41_0_0EXManifestsBaseLegacyManifest
 

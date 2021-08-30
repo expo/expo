@@ -2,15 +2,15 @@
 
 #import <XCTest/XCTest.h>
 
-#import <ABI41_0_0EXManifests/NSDictionary+ABI41_0_0EXManifestsRawManifest.h>
+#import <ABI42_0_0EXJSONUtils/NSDictionary+ABI42_0_0EXManifestsManifest.h>
 
-@interface NSDictionaryEXManifestsRawManifestTest : XCTestCase
+@interface NSDictionaryEXManifestsManifestTest : XCTestCase
 
 @property (nonatomic, strong) NSDictionary *testData;
 
 @end
 
-@implementation NSDictionaryEXManifestsRawManifestTest
+@implementation NSDictionaryEXManifestsManifestTest
 
 - (void)setUp {
   _testData = @{
