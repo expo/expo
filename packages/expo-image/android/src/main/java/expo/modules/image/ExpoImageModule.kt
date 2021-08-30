@@ -24,10 +24,10 @@ class ExpoImageModule(val context: ReactApplicationContext) : ReactContextBaseJa
         .submit()
         .get()
     } catch (e: Exception) {
-      promise.reject("E_PREFETCH_FAILURE", "Could not prefetch image: ${e.message}", e)
+      promise.reject("ERR_IMAGE_PREFETCH_FAILURE", "Failed to prefetch the image: ${e.message}", e)
     }
     if (result == null) {
-      promise.reject("E_PREFETCH_FAILURE", "Could not prefetch image.")
+      promise.reject("ERR_IMAGE_PREFETCH_FAILURE", "Failed to prefetch the image: ${url}.")
     }
     promise.resolve(null)
   }
