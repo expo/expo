@@ -1,6 +1,6 @@
 import { StackScreenProps } from '@react-navigation/stack';
 import * as React from 'react';
-import { Animated, StyleSheet, View } from 'react-native';
+import { Animated, StyleSheet, View, Text } from 'react-native';
 
 import HeaderIconButton, { HeaderContainerRight } from '../../components/HeaderIconButton';
 import AnimationBar from './AnimationBar';
@@ -112,6 +112,7 @@ export default function ImageTestScreen({ navigation, route }: Props) {
   return (
     <View style={styles.container} key={viewKey}>
       {isAnimatable && <AnimationBar onAnimationValue={onAnimationValue} />}
+      {test.testInformation && <Text>{test.testInformation}</Text>}
       <View style={styles.content}>
         <ImageTestView imageProps={imageProps} ImageComponent={getImageComponent()} />
         {!compareEnabled && (
