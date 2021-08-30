@@ -14,9 +14,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 /**
  * A best-effort immutable legacy ID for this experience. Stable through project transfers.
- * Should be used for calling Expo and EAS APIs during their transition to projectId.
+ * Should be used for calling Expo and EAS APIs during their transition to easProjectId.
  */
-- (NSString *)stableLegacyId DEPRECATED_MSG_ATTRIBUTE("Prefer scopeKey or projectId depending on use case.");
+- (NSString *)stableLegacyId DEPRECATED_MSG_ATTRIBUTE("Prefer scopeKey or easProjectId depending on use case.");
 
 /**
  * A stable immutable scoping key for this experience. Should be used for scoping data on the
@@ -27,7 +27,7 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  * A stable UUID for this EAS project. Should be used to call EAS APIs.
  */
-- (nullable NSString *)projectId;
+- (nullable NSString *)easProjectId;
 
 /**
  * The legacy ID of this experience.
@@ -37,7 +37,7 @@ NS_ASSUME_NONNULL_BEGIN
  *
  * Use this in cases where an identifier of the current manifest is needed (experience loading for example).
  * Use scopeKey for cases where a stable key is needed to scope data to this experience.
- * Use projectId for cases where a stable UUID identifier of the experience is needed to identify over APIs.
+ * Use easProjectId for cases where a stable UUID identifier of the experience is needed to identify over EAS APIs.
  * Use stableLegacyId for cases where a stable legacy format identifier of the experience is needed (experience scoping for example).
  */
 - (NSString *)legacyId;

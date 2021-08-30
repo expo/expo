@@ -16,7 +16,7 @@
   return [[self.rawManifestJSON dictionaryForKey:@"extra"] stringForKey:@"scopeKey"];
 }
 
-- (NSString *)projectId {
+- (nullable NSString *)easProjectId {
   if (!self.extra) {
     return nil;
   }
