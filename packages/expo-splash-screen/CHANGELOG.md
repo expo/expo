@@ -12,14 +12,15 @@
 
 ## 0.11.3 — 2021-08-30
 
-_This version does not introduce any user-facing changes._
+### 🐛 Bug fixes
+
+- Fix splash screen not dismissed if there is alert view appearing. ([#14208](https://github.com/expo/expo/pull/14208) by [@kudo](https://github.com/kudo))
 
 ## 0.11.2 — 2021-07-01
 
 ### 🐛 Bug fixes
 
 - On iOS, search for a view controller with a RCTRootView rather than always using the keyWindow's rootViewController. ([#13429](https://github.com/expo/expo/pull/13429) by [@esamelson](https://github.com/esamelson))
-- Fix splash screen not dismissed if there is alert view appearing. ([#14208](https://github.com/expo/expo/pull/14208) by [@kudo](https://github.com/kudo))
 
 ## 0.11.1 — 2021-06-23
 
