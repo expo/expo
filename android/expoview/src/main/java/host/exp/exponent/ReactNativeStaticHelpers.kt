@@ -14,12 +14,6 @@ import java.util.concurrent.TimeUnit
 object ReactNativeStaticHelpers {
   private val TAG = ReactNativeStaticHelpers::class.java.simpleName
 
-  private var bundleUrl: String? = null
-  @DoNotStrip
-  @JvmStatic fun setBundleUrl(bundleUrl: String?) {
-    this.bundleUrl = bundleUrl
-  }
-
   @DoNotStrip
   @JvmStatic fun reloadFromManifest(activityId: Int) {
     try {
@@ -54,7 +48,7 @@ object ReactNativeStaticHelpers {
         )
         .invoke(null, activityId, mainModuleId, bundleTypeId, host, devMode, jsMinify) as String
     } catch (e: Exception) {
-      bundleUrl
+      null
     }
   }
 
@@ -79,7 +73,7 @@ object ReactNativeStaticHelpers {
         )
         .invoke(null, activityId, host, jsModulePath, devMode, jsMinify) as String
     } catch (e: Exception) {
-      bundleUrl
+      null
     }
   }
 
@@ -106,7 +100,7 @@ object ReactNativeStaticHelpers {
         )
         .invoke(null, activityId, host, jsModulePath, devMode, hmr, jsMinify) as String
     } catch (e: Exception) {
-      bundleUrl
+      null
     }
   }
 
