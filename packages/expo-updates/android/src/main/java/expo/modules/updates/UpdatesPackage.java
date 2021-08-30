@@ -50,17 +50,17 @@ public class UpdatesPackage extends BasePackage {
       @Nullable
       @Override
       public String getJSBundleFile(boolean useDeveloperSupport) {
-        return shouldAutoSetup(context) && useDeveloperSupport
-          ? null
-          : UpdatesController.getInstance().getLaunchAssetFile();
+        return shouldAutoSetup(context) && !useDeveloperSupport
+          ? UpdatesController.getInstance().getLaunchAssetFile()
+          : null;
       }
 
       @Nullable
       @Override
       public String getBundleAssetName(boolean useDeveloperSupport) {
-        return shouldAutoSetup(context) && useDeveloperSupport
-          ? null
-          : UpdatesController.getInstance().getBundleAssetName();
+        return shouldAutoSetup(context) && !useDeveloperSupport
+          ? UpdatesController.getInstance().getBundleAssetName()
+          : null;
       }
 
       @Override
@@ -76,7 +76,7 @@ public class UpdatesPackage extends BasePackage {
           try {
             final PackageManager pm = context.getPackageManager();
             final ApplicationInfo ai = pm.getApplicationInfo(context.getPackageName(), PackageManager.GET_META_DATA);
-            mShouldAutoSetup = Boolean.valueOf(ai.metaData.getString("expo.modules.updates.AUTO_SETUP", "true"));
+            mShouldAutoSetup = ai.metaData.getBoolean("expo.modules.updates.AUTO_SETUP", true);
           } catch (Exception e) {
             Log.e(TAG, "Could not read expo-updates configuration data in AndroidManifest", e);
           }
