@@ -8,12 +8,16 @@ const imageTests: ImageTestGroup = {
       props: {
         accessible: true,
       },
+      testInformation:
+        'To properly conduct test:\n1. Turn on TalkBack.\n2. Click on image.\nExpected behaviour: the component should be bordered and default sound should be played',
     },
     {
       name: 'accessibilityLabel',
       props: {
         accessibilityLabel: 'Test passed',
       },
+      testInformation:
+        'To properly conduct test:\n1. Turn on TalkBack.\n2. Click on image.\nExpected behaviour: the component should be bordered and you should hear text specified as a value of `accessibleLabel` property: "text passed"',
     },
     {
       name: 'Resize method: auto',
