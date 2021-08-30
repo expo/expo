@@ -38,20 +38,13 @@ it(`openAuthSessionAsync allows subsequent attempts if the browser never opens`,
   ExpoWebBrowser.openBrowserAsync.mockRejectedValueOnce(new Error('No package manager!'));
   const pageUrl = 'http://expo.io';
   const redirectUrl = 'exp://expo.io';
-  try {
-    await WebBrowser.openAuthSessionAsync(pageUrl, redirectUrl);
-  } catch (e) {
-    expect(e.message).toBe('No matching activity!');
-  }
-  try {
-    await WebBrowser.openAuthSessionAsync(pageUrl, redirectUrl);
-  } catch (e) {
-    expect(e.message).toBe('Current activity not found!');
-  }
-  try {
-    await WebBrowser.openAuthSessionAsync(pageUrl, redirectUrl);
-  } catch (e) {
-    expect(e.message).toBe('No package manager!');
-  }
-  expect.assertions(3);
+  await expect(WebBrowser.openAuthSessionAsync(pageUrl, redirectUrl)).rejects.toThrowError(
+    'No matching activity!'
+  );
+  await expect(WebBrowser.openAuthSessionAsync(pageUrl, redirectUrl)).rejects.toThrowError(
+    'Current activity not found!'
+  );
+  await expect(WebBrowser.openAuthSessionAsync(pageUrl, redirectUrl)).rejects.toThrowError(
+    'No package manager!'
+  );
 });

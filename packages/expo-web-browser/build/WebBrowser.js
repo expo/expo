@@ -297,11 +297,9 @@ async function _openBrowserAndWaitAndroidAsync(startUrl, browserParams = {}) {
         ({ type } = await openBrowserAsync(startUrl, browserParams));
     }
     catch (e) {
-        if (e.message === 'No matching activity!') {
-            AppState.removeEventListener('change', _onAppStateChangeAndroid);
-            _onWebBrowserCloseAndroid = null;
-            throw e;
-        }
+        AppState.removeEventListener('change', _onAppStateChangeAndroid);
+        _onWebBrowserCloseAndroid = null;
+        throw e;
     }
     if (type === 'opened') {
         await appStateChangedToActive;
