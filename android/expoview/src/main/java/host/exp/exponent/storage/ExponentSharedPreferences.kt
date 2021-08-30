@@ -15,8 +15,6 @@ import javax.inject.Singleton
 
 @Singleton
 class ExponentSharedPreferences constructor(val context: Context) {
-  class ManifestAndBundleUrl internal constructor(val manifest: Manifest, val bundleUrl: String)
-
   private val sharedPreferences = context.getSharedPreferences(
     context.getString(R.string.preference_file_key),
     Context.MODE_PRIVATE
@@ -96,33 +94,6 @@ class ExponentSharedPreferences constructor(val context: Context) {
         null
       }
     }
-
-  fun updateManifest(manifestUrl: String, manifest: Manifest, bundleUrl: String) {
-    try {
-      val parentObject = JSONObject().apply {
-        put(KernelConstants.MANIFEST_KEY, manifest)
-        put(KernelConstants.BUNDLE_URL_KEY, bundleUrl)
-        put(SAFE_MANIFEST_KEY, manifest.getRawJson())
-      }
-      sharedPreferences.edit().putString(manifestUrl, parentObject.toString()).apply()
-    } catch (e: JSONException) {
-      EXL.e(TAG, e)
-    }
-  }
-
-  // TODO(wschurman): this is unused?
-  fun getManifest(manifestUrl: String?): ManifestAndBundleUrl? {
-    val jsonString = sharedPreferences.getString(manifestUrl, null) ?: return null
-    return try {
-      val json = JSONObject(jsonString)
-      val manifestJson = json.getJSONObject(KernelConstants.MANIFEST_KEY)
-      val bundleUrl = json.getString(KernelConstants.BUNDLE_URL_KEY)
-      ManifestAndBundleUrl(ManifestFactory.getManifestFromManifestJson(manifestJson), bundleUrl)
-    } catch (e: JSONException) {
-      EXL.e(TAG, e)
-      null
-    }
-  }
 
   fun updateExperienceMetadata(experienceKey: ExperienceKey, metadata: JSONObject) {
     sharedPreferences.edit()
