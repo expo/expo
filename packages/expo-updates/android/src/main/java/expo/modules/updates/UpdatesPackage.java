@@ -1,6 +1,9 @@
 package expo.modules.updates;
 
 import android.content.Context;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
+import android.util.Log;
 
 import com.facebook.react.ReactInstanceManager;
 import com.facebook.react.bridge.JavaScriptContextHolder;
@@ -11,12 +14,15 @@ import java.util.List;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.UiThread;
 import expo.modules.core.BasePackage;
 import expo.modules.core.ExportedModule;
 import expo.modules.core.interfaces.InternalModule;
 import expo.modules.core.interfaces.ReactNativeHostHandler;
 
 public class UpdatesPackage extends BasePackage {
+  private static final String TAG = UpdatesPackage.class.getSimpleName();
+
   @Override
   public List<InternalModule> createInternalModules(Context context) {
     return Collections.singletonList((InternalModule) new UpdatesService(context));
@@ -30,10 +36,12 @@ public class UpdatesPackage extends BasePackage {
   @Override
   public List<? extends ReactNativeHostHandler> createReactNativeHostHandlers(Context context) {
     final ReactNativeHostHandler handler = new ReactNativeHostHandler() {
+      Boolean mShouldAutoSetup = null;
+
       @Nullable
       @Override
       public ReactInstanceManager createReactInstanceManager(boolean useDeveloperSupport) {
-        if (!useDeveloperSupport) {
+        if (shouldAutoSetup(context) && !useDeveloperSupport) {
           UpdatesController.initialize(context);
         }
         return null;
@@ -42,7 +50,7 @@ public class UpdatesPackage extends BasePackage {
       @Nullable
       @Override
       public String getJSBundleFile(boolean useDeveloperSupport) {
-        return useDeveloperSupport
+        return shouldAutoSetup(context) && useDeveloperSupport
           ? null
           : UpdatesController.getInstance().getLaunchAssetFile();
       }
@@ -50,7 +58,7 @@ public class UpdatesPackage extends BasePackage {
       @Nullable
       @Override
       public String getBundleAssetName(boolean useDeveloperSupport) {
-        return useDeveloperSupport
+        return shouldAutoSetup(context) && useDeveloperSupport
           ? null
           : UpdatesController.getInstance().getBundleAssetName();
       }
@@ -60,7 +68,23 @@ public class UpdatesPackage extends BasePackage {
                                        @NonNull JavaScriptContextHolder jsContext,
                                        boolean useDeveloperSupport) {
       }
+
+      @UiThread
+      private boolean shouldAutoSetup(final Context context) {
+        if (mShouldAutoSetup == null) {
+          mShouldAutoSetup = true;
+          try {
+            final PackageManager pm = context.getPackageManager();
+            final ApplicationInfo ai = pm.getApplicationInfo(context.getPackageName(), PackageManager.GET_META_DATA);
+            mShouldAutoSetup = Boolean.valueOf(ai.metaData.getString("expo.modules.updates.AUTO_SETUP", "true"));
+          } catch (Exception e) {
+            Log.e(TAG, "Could not read expo-updates configuration data in AndroidManifest", e);
+          }
+        }
+        return mShouldAutoSetup;
+      }
     };
+
     return Collections.singletonList(handler);
   }
 }
