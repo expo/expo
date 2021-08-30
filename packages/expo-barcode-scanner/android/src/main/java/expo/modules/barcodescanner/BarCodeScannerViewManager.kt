@@ -1,15 +1,11 @@
 package expo.modules.barcodescanner
 
 import android.content.Context
-import android.util.Log
 import expo.modules.core.ModuleRegistry
 import expo.modules.core.ModuleRegistryDelegate
 import expo.modules.core.ViewManager
 import expo.modules.core.interfaces.ExpoProp
 import expo.modules.interfaces.barcodescanner.BarCodeScannerSettings
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.cancel
 import java.util.*
 
 class BarCodeScannerViewManager(

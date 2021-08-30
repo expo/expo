@@ -19,10 +19,10 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 internal class BarCodeScannerViewFinder(
-    context: Context,
-    private var cameraType: Int,
-    private var barCodeScannerView: BarCodeScannerView,
-    private val moduleRegistryDelegate: ModuleRegistryDelegate
+  context: Context,
+  private var cameraType: Int,
+  private var barCodeScannerView: BarCodeScannerView,
+  private val moduleRegistryDelegate: ModuleRegistryDelegate
 ) : TextureView(context), SurfaceTextureListener, PreviewCallback {
   private var finderSurfaceTexture: SurfaceTexture? = null
   private val coroutineScope = CoroutineScope(Dispatchers.Default)
@@ -39,7 +39,6 @@ internal class BarCodeScannerViewFinder(
   @Volatile
   private var isChanging = false
   private var camera: Camera? = null
-
 
   // Scanner instance for the barcode scanning
   private lateinit var barCodeScanner: BarCodeScannerInterface
@@ -112,11 +111,11 @@ internal class BarCodeScannerViewFinder(
           // set picture size
           // defaults to max available size
           val optimalPictureSize =
-              ExpoBarCodeScanner.instance.getBestSize(
-                  temporaryParameters.supportedPictureSizes,
-                  Int.MAX_VALUE,
-                  Int.MAX_VALUE
-              )
+            ExpoBarCodeScanner.instance.getBestSize(
+              temporaryParameters.supportedPictureSizes,
+              Int.MAX_VALUE,
+              Int.MAX_VALUE
+            )
           temporaryParameters?.setPictureSize(optimalPictureSize.width, optimalPictureSize.height)
           parameters = temporaryParameters
           setPreviewTexture(finderSurfaceTexture)
@@ -201,9 +200,6 @@ internal class BarCodeScannerViewFinder(
                 barCodeScannerView.onBarCodeScanned(result)
               }
             }
-//              Handler(Looper.getMainLooper()).post {
-//                barCodeScannerView.onBarCodeScanned(result)
-//              }
           }
         }
         barCodeScannerTaskLock = false
