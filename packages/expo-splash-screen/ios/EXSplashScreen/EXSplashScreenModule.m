@@ -118,7 +118,9 @@ EX_EXPORT_METHOD_AS(preventAutoHideAsync,
   }
 
   UIViewController *presentedController = controller.presentedViewController;
-  while (presentedController && ![presentedController isBeingDismissed]) {
+  while (presentedController &&
+         ![presentedController isBeingDismissed] &&
+         ![presentedController isKindOfClass:[UIAlertController class]]) {
     controller = presentedController;
     presentedController = controller.presentedViewController;
   }
