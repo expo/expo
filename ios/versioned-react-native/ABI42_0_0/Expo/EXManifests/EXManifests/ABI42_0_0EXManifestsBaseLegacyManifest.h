@@ -11,7 +11,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSString *)stableLegacyId;
 - (NSString *)scopeKey;
-- (nullable NSString *)projectId;
+- (nullable NSString *)easProjectId;
 
 - (NSString *)bundleUrl;
 - (nullable NSString *)sdkVersion;

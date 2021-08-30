@@ -24,7 +24,7 @@ class NewManifest(json: JSONObject) : Manifest(json) {
     return json.getJSONObject("extra").getString("scopeKey")
   }
 
-  override fun getProjectID(): String? {
+  override fun getEASProjectID(): String? {
     val easConfig = getExtra()?.optJSONObject("eas") ?: return null
     return if (easConfig.has("projectId")) {
       easConfig.getString("projectId")

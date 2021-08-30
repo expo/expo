@@ -31,7 +31,7 @@
   }
 }
 
-- (nullable NSString *)projectId {
+- (nullable NSString *)easProjectId {
   return [self.rawManifestJSON nullableStringForKey:@"projectId"];
 }
 

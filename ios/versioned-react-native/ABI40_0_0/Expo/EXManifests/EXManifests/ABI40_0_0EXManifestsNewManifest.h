@@ -18,7 +18,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSString *)stableLegacyId DEPRECATED_MSG_ATTRIBUTE("Modern manifests don't support stable legacy IDs");
 
 - (NSString *)scopeKey;
-- (nullable NSString *)projectId;
+- (nullable NSString *)easProjectId;
 
 - (NSString *)createdAt;
 - (NSString *)runtimeVersion;
