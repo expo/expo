@@ -2,6 +2,7 @@
 .expo
 __generated__
 web-build
+stories
 
 # macOS
 .DS_Store
