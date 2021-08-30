@@ -245,7 +245,7 @@ object VersionedUtils {
       val devSettingsModule = reactApplicationContext.catalystInstance.getNativeModule("DevSettings")
       val devSupportManagerField = devSettingsModule!!.javaClass.getDeclaredField("mDevSupportManager")
       devSupportManagerField.isAccessible = true
-      RNObject.wrap(devSupportManagerField[devSettingsModule])
+      RNObject.wrap(devSupportManagerField[devSettingsModule]!!)
     } catch (e: Throwable) {
       e.printStackTrace()
       null

@@ -40,7 +40,7 @@ open class ExponentNotification(
 
   fun toWriteableMap(sdkVersion: String?, origin: String?): Any {
     return RNObject("com.facebook.react.bridge.Arguments").loadVersion(sdkVersion!!)
-      .callStaticRecursive("createMap").apply {
+      .callStaticRecursive("createMap")!!.apply {
         if (origin != null) {
           call("putString", NotificationConstants.NOTIFICATION_ORIGIN_KEY, origin)
         }
