@@ -54,20 +54,12 @@ class ExpoImageView(context: ReactContext, private val requestManager: RequestMa
   internal var sourceMap: ReadableMap? = null
   internal var blurRadius: Int? = null
     set(value) {
-      field = if (value != null && value > 0) {
-        value
-      } else {
-        null
-      }
+      field = value?.takeIf { it > 0 }
       propsChanged = true
     }
   internal var fadeDuration: Int? = null
     set(value) {
-      field = if (value != null && value > 0) {
-        value
-      } else {
-        null
-      }
+      field = value?.takeIf { it > 0 }
       propsChanged = true
     }
 
