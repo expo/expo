@@ -64,7 +64,9 @@ const renderTypePropertyRow = ({
   defaultValue,
   signatures,
 }: PropData): JSX.Element => {
-  const initValue = defaultValue || comment?.tags?.filter(tag => tag.tag === 'default')[0]?.text;
+  const initValue = parseCommentContent(
+    defaultValue || comment?.tags?.filter(tag => tag.tag === 'default')[0]?.text
+  );
   const commentData = getCommentOrSignatureComment(comment, signatures);
   return (
     <tr key={name}>
@@ -82,9 +84,8 @@ const renderTypePropertyRow = ({
         {initValue ? (
           <>
             <br />
-            <ReactMarkdown components={mdInlineComponents}>{`__Default:__ ${parseCommentContent(
-              initValue
-            )}`}</ReactMarkdown>
+            <br />
+            <ReactMarkdown components={mdInlineComponents}>{`__Default:__ ${initValue}`}</ReactMarkdown>
           </>
         ) : null}
       </td>
