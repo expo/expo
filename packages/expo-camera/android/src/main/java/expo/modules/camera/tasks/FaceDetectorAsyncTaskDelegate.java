@@ -4,10 +4,10 @@ import android.os.Bundle;
 
 import java.util.List;
 
-import org.unimodules.interfaces.facedetector.FaceDetector;
+import expo.modules.interfaces.facedetector.FaceDetectorInterface;
 
 public interface FaceDetectorAsyncTaskDelegate {
   void onFacesDetected(List<Bundle> faces);
-  void onFaceDetectionError(FaceDetector faceDetector);
+  void onFaceDetectionError(FaceDetectorInterface faceDetector);
   void onFaceDetectingTaskCompleted();
 }

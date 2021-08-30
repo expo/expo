@@ -2,6 +2,7 @@
 
 #import <Foundation/Foundation.h>
 #import "EXAppFetcher.h"
+#import <EXManifests/EXManifestsRawManifest.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -9,7 +10,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, weak) EXAppLoader *appLoader;
 
-@property (nonatomic, strong) NSDictionary * _Nullable manifest;
+@property (nonatomic, strong) EXManifestsRawManifest * _Nullable manifest;
 @property (nonatomic, strong) NSData * _Nullable bundle;
 @property (nonatomic, strong) NSError * _Nullable error;
 

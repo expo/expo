@@ -4,11 +4,11 @@ import android.net.Uri;
 import android.os.Bundle;
 import androidx.exifinterface.media.ExifInterface;
 
-import org.unimodules.interfaces.facedetector.FaceDetector;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+
+import expo.modules.interfaces.facedetector.FaceDetectorInterface;
 
 public class FileFaceDetectionTask {
   private static final String ERROR_TAG = "E_FACE_DETECTION_FAILED";
@@ -17,10 +17,10 @@ public class FileFaceDetectionTask {
   private int mWidth = 0;
   private int mHeight = 0;
   private int mOrientation = ExifInterface.ORIENTATION_UNDEFINED;
-  private FaceDetector mExpoFaceDetector;
+  private FaceDetectorInterface mExpoFaceDetector;
   private Uri mFilePath;
 
-  public FileFaceDetectionTask(FaceDetector faceDetector, HashMap<String, Object> options, FileFaceDetectionCompletionListener promise) {
+  public FileFaceDetectionTask(FaceDetectorInterface faceDetector, HashMap<String, Object> options, FileFaceDetectionCompletionListener promise) {
     mFilePath = Uri.parse((String) options.get("uri"));
     mListener = promise;
     mExpoFaceDetector = faceDetector;

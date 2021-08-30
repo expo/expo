@@ -85,6 +85,30 @@ it(`verifies weekly trigger handling`, async () => {
   );
 });
 
+it(`verifies yearly trigger handling`, async () => {
+  const trigger = {
+    day: 1,
+    month: 6,
+    hour: 12,
+    minute: 30,
+    repeats: true as boolean | undefined,
+  };
+  const input = {
+    ...notificationTriggerInputTest,
+    trigger,
+  };
+  await scheduleNotificationAsync(input);
+  delete trigger.repeats;
+  expect(NotificationScheduler.scheduleNotificationAsync).toHaveBeenLastCalledWith(
+    input.identifier,
+    input.content,
+    {
+      type: 'yearly',
+      ...input.trigger,
+    }
+  );
+});
+
 it(`verifies daily trigger handling with channelId`, async () => {
   const trigger = {
     hour: 12,
@@ -103,6 +127,55 @@ it(`verifies daily trigger handling with channelId`, async () => {
     input.content,
     {
       type: 'daily',
+      ...input.trigger,
+    }
+  );
+});
+
+it(`verifies weekly trigger handling with channelId`, async () => {
+  const trigger = {
+    weekday: 1,
+    hour: 12,
+    minute: 30,
+    channelId: 'test-channel-id',
+    repeats: true as boolean | undefined,
+  };
+  const input = {
+    ...notificationTriggerInputTest,
+    trigger,
+  };
+  await scheduleNotificationAsync(input);
+  delete trigger.repeats;
+  expect(NotificationScheduler.scheduleNotificationAsync).toHaveBeenLastCalledWith(
+    input.identifier,
+    input.content,
+    {
+      type: 'weekly',
+      ...input.trigger,
+    }
+  );
+});
+
+it(`verifies yearly trigger handling with channelId`, async () => {
+  const trigger = {
+    day: 1,
+    month: 6,
+    hour: 12,
+    minute: 30,
+    channelId: 'test-channel-id',
+    repeats: true as boolean | undefined,
+  };
+  const input = {
+    ...notificationTriggerInputTest,
+    trigger,
+  };
+  await scheduleNotificationAsync(input);
+  delete trigger.repeats;
+  expect(NotificationScheduler.scheduleNotificationAsync).toHaveBeenLastCalledWith(
+    input.identifier,
+    input.content,
+    {
+      type: 'yearly',
       ...input.trigger,
     }
   );

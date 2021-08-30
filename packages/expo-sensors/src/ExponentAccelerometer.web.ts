@@ -1,8 +1,10 @@
-import { SyntheticPlatformEmitter } from '@unimodules/core';
+import { SyntheticPlatformEmitter } from 'expo-modules-core';
 
 import {
-  isSensorEnabledAsync,
   assertSensorEventEnabledAsync,
+  getPermissionsAsync,
+  isSensorEnabledAsync,
+  requestPermissionsAsync,
 } from './utils/isSensorEnabledAsync.web';
 
 const scalar = Math.PI / 180;
@@ -25,6 +27,8 @@ export default {
       z: alpha * scalar,
     });
   },
+  getPermissionsAsync,
+  requestPermissionsAsync,
   startObserving() {
     assertSensorEventEnabledAsync(eventName);
     window.addEventListener(eventName, this._handleMotion);

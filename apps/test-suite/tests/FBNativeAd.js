@@ -22,7 +22,7 @@ try {
 export const name = 'NativeAd';
 
 // if tests didn't pass check placementId
-const placementId = '629712900716487_629713604049750';
+const placementId = 'VID_HD_16_9_15S_APP_INSTALL#YOUR_PLACEMENT_ID';
 
 const variables = [
   'advertiserName',

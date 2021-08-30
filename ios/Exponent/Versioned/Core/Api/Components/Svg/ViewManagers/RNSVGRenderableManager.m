@@ -40,7 +40,7 @@ RCT_EXPORT_VIEW_PROPERTY(propList, NSArray<NSString *>)
 
 RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(isPointInFill:(nonnull NSNumber *)reactTag options:(NSDictionary *)options)
 {
-    __block UIView *view;
+    __block RNSVGPlatformView *view;
     dispatch_sync(dispatch_get_main_queue(), ^{
         view = [self.bridge.uiManager viewForReactTag:reactTag];
     });
@@ -63,14 +63,14 @@ RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(isPointInFill:(nonnull NSNumber *)reactTa
     CGFloat x = (CGFloat)[xo doubleValue];
     CGFloat y = (CGFloat)[yo doubleValue];
     CGPoint point = CGPointMake(x, y);
-    UIView *target = [svg hitTest:point withEvent:nil];
+    RNSVGPlatformView *target = [svg hitTest:point withEvent:nil];
     BOOL hit = target != nil;
     return [NSNumber numberWithBool:hit];
 }
 
 RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(isPointInStroke:(nonnull NSNumber *)reactTag options:(NSDictionary *)options)
 {
-    __block UIView *view;
+    __block RNSVGPlatformView *view;
     dispatch_sync(dispatch_get_main_queue(), ^{
         view = [self.bridge.uiManager viewForReactTag:reactTag];
     });
@@ -100,7 +100,7 @@ RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(isPointInStroke:(nonnull NSNumber *)react
 
 RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(getTotalLength:(nonnull NSNumber *)reactTag)
 {
-    __block UIView *view;
+    __block RNSVGPlatformView *view;
     dispatch_sync(dispatch_get_main_queue(), ^{
         view = [self.bridge.uiManager viewForReactTag:reactTag];
     });
@@ -119,7 +119,7 @@ RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(getTotalLength:(nonnull NSNumber *)reactT
 
 RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(getPointAtLength:(nonnull NSNumber *)reactTag options:(NSDictionary *)options)
 {
-    __block UIView *view;
+    __block RNSVGPlatformView *view;
     dispatch_sync(dispatch_get_main_queue(), ^{
         view = [self.bridge.uiManager viewForReactTag:reactTag];
     });
@@ -149,7 +149,7 @@ RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(getPointAtLength:(nonnull NSNumber *)reac
 
 RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(getBBox:(nonnull NSNumber *)reactTag options:(NSDictionary *)options)
 {
-    __block UIView *view;
+    __block RNSVGPlatformView *view;
     dispatch_sync(dispatch_get_main_queue(), ^{
         view = [self.bridge.uiManager viewForReactTag:reactTag];
     });
@@ -195,7 +195,7 @@ RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(getBBox:(nonnull NSNumber *)reactTag opti
 
 RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(getCTM:(nonnull NSNumber *)reactTag)
 {
-    __block UIView *view;
+    __block RNSVGPlatformView *view;
     dispatch_sync(dispatch_get_main_queue(), ^{
         view = [self.bridge.uiManager viewForReactTag:reactTag];
     });
@@ -218,7 +218,7 @@ RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(getCTM:(nonnull NSNumber *)reactTag)
 
 RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(getScreenCTM:(nonnull NSNumber *)reactTag)
 {
-    __block UIView *view;
+    __block RNSVGPlatformView *view;
     dispatch_sync(dispatch_get_main_queue(), ^{
         view = [self.bridge.uiManager viewForReactTag:reactTag];
     });

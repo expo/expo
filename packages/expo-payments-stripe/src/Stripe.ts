@@ -1,4 +1,4 @@
-import { NativeModulesProxy, UnavailabilityError } from '@unimodules/core';
+import { NativeModulesProxy, UnavailabilityError } from 'expo-modules-core';
 import { Platform } from 'react-native';
 
 import errorCodes from './errorCodes';
@@ -8,6 +8,10 @@ import * as types from './utils/types';
 import * as validators from './utils/validators';
 
 const { StripeModule } = NativeModulesProxy;
+
+console.warn(
+  '`expo-payments-stripe` has been deprecated in favor of `@stripe/stripe-react-native`. For more information on the new library, and how to migrate away from `expo-payments-stripe`, please refer to https://docs.expo.io/versions/latest/sdk/stripe/. This package will no longer be available in SDK 43.'
+);
 
 function checkInit(instance: Stripe) {
   if (!instance.stripeInitialized) {

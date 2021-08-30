@@ -2,7 +2,7 @@ package versioned.host.exp.exponent.modules.universal.notifications;
 
 import android.content.Context;
 
-import org.unimodules.core.Promise;
+import expo.modules.core.Promise;
 
 import javax.inject.Inject;
 

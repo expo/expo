@@ -1,15 +1,14 @@
-import { EventEmitter, UnavailabilityError } from '@unimodules/core';
+import { EventEmitter, UnavailabilityError } from 'expo-modules-core';
 import { setTestDeviceIDAsync } from './AdMob';
 import AdMobNativeModule from './ExpoAdsAdMobRewardedVideoAdManager';
 const moduleName = 'AdMobRewarded';
 const eventNames = [
-    'rewardedVideoDidRewardUser',
+    'rewardedVideoUserDidEarnReward',
     'rewardedVideoDidLoad',
     'rewardedVideoDidFailToLoad',
-    'rewardedVideoDidOpen',
-    'rewardedVideoDidStart',
-    'rewardedVideoDidClose',
-    'rewardedVideoWillLeaveApplication',
+    'rewardedVideoDidPresent',
+    'rewardedVideoDidFailToPresent',
+    'rewardedVideoDidDismiss',
 ];
 const eventEmitter = new EventEmitter(AdMobNativeModule);
 const eventHandlers = {};

@@ -12,8 +12,8 @@ import abi40_0_0.org.unimodules.core.Promise
 import abi40_0_0.org.unimodules.core.interfaces.ActivityProvider
 import abi40_0_0.org.unimodules.core.interfaces.ExpoMethod
 
-class StoreReviewModule(private val mContext: Context)
-  : ExportedModule(mContext) {
+class StoreReviewModule(private val mContext: Context) :
+  ExportedModule(mContext) {
   companion object {
     private const val NAME = "ExpoStoreReview"
   }
@@ -61,7 +61,7 @@ class StoreReviewModule(private val mContext: Context)
   private fun isPlayStoreInstalled(): Boolean {
     return try {
       mContext.packageManager
-              .getPackageInfo(GooglePlayServicesUtil.GOOGLE_PLAY_STORE_PACKAGE, 0)
+        .getPackageInfo(GooglePlayServicesUtil.GOOGLE_PLAY_STORE_PACKAGE, 0)
       true
     } catch (e: PackageManager.NameNotFoundException) {
       false

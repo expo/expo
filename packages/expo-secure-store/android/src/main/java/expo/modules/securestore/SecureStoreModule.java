@@ -15,10 +15,10 @@ import android.util.Log;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.unimodules.core.ExportedModule;
-import org.unimodules.core.Promise;
-import org.unimodules.core.arguments.ReadableArguments;
-import org.unimodules.core.interfaces.ExpoMethod;
+import expo.modules.core.ExportedModule;
+import expo.modules.core.Promise;
+import expo.modules.core.arguments.ReadableArguments;
+import expo.modules.core.interfaces.ExpoMethod;
 
 import java.io.IOException;
 import java.math.BigInteger;
@@ -296,7 +296,7 @@ public class SecureStoreModule extends ExportedModule {
    * We use a shared preferences file that's scoped to both the experience and SecureStore. This
    * lets us easily list or remove all the entries for an experience.
    */
-  private SharedPreferences getSharedPreferences() {
+  protected SharedPreferences getSharedPreferences() {
     return getContext().getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
   }
 

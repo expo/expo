@@ -6,6 +6,8 @@ import android.os.Handler;
 import android.os.HandlerThread;
 import android.util.Log;
 
+import org.json.JSONObject;
+
 import java.io.File;
 
 import androidx.annotation.Nullable;
@@ -14,11 +16,13 @@ import expo.modules.updates.UpdatesUtils;
 import expo.modules.updates.db.DatabaseHolder;
 import expo.modules.updates.db.Reaper;
 import expo.modules.updates.db.UpdatesDatabase;
+import expo.modules.updates.db.entity.AssetEntity;
 import expo.modules.updates.db.entity.UpdateEntity;
 import expo.modules.updates.launcher.DatabaseLauncher;
 import expo.modules.updates.launcher.Launcher;
-import expo.modules.updates.launcher.SelectionPolicy;
-import expo.modules.updates.manifest.Manifest;
+import expo.modules.updates.selectionpolicy.SelectionPolicy;
+import expo.modules.updates.manifest.UpdateManifest;
+import expo.modules.updates.manifest.ManifestMetadata;
 
 public class LoaderTask {
 
@@ -38,7 +42,7 @@ public class LoaderTask {
      * LoaderTask proceed as usual.
      */
     boolean onCachedUpdateLoaded(UpdateEntity update);
-    void onRemoteManifestLoaded(Manifest manifest);
+    void onRemoteUpdateManifestLoaded(UpdateManifest updateManifest);
     void onSuccess(Launcher launcher, boolean isUpToDate);
     void onBackgroundUpdateFinished(BackgroundUpdateStatus status, @Nullable UpdateEntity update, @Nullable Exception exception);
   }
@@ -51,6 +55,7 @@ public class LoaderTask {
   private UpdatesConfiguration mConfiguration;
   private DatabaseHolder mDatabaseHolder;
   private File mDirectory;
+  private FileDownloader mFileDownloader;
   private SelectionPolicy mSelectionPolicy;
   private LoaderTaskCallback mCallback;
 
@@ -66,11 +71,13 @@ public class LoaderTask {
   public LoaderTask(UpdatesConfiguration configuration,
                     DatabaseHolder databaseHolder,
                     File directory,
+                    FileDownloader fileDownloader,
                     SelectionPolicy selectionPolicy,
                     LoaderTaskCallback callback) {
     mConfiguration = configuration;
     mDatabaseHolder = databaseHolder;
     mDirectory = directory;
+    mFileDownloader = fileDownloader;
     mSelectionPolicy = selectionPolicy;
     mCallback = callback;
 
@@ -215,7 +222,7 @@ public class LoaderTask {
 
   private void launchFallbackUpdateFromDisk(Context context, Callback diskUpdateCallback) {
     UpdatesDatabase database = mDatabaseHolder.getDatabase();
-    DatabaseLauncher launcher = new DatabaseLauncher(mConfiguration, mDirectory, mSelectionPolicy);
+    DatabaseLauncher launcher = new DatabaseLauncher(mConfiguration, mDirectory, mFileDownloader, mSelectionPolicy);
     mCandidateLauncher = launcher;
 
     if (mConfiguration.hasEmbeddedUpdate()) {
@@ -224,7 +231,8 @@ public class LoaderTask {
       // so we can launch it
       UpdateEntity embeddedUpdate = EmbeddedLoader.readEmbeddedManifest(context, mConfiguration).getUpdateEntity();
       UpdateEntity launchableUpdate = launcher.getLaunchableUpdate(database, context);
-      if (mSelectionPolicy.shouldLoadNewUpdate(embeddedUpdate, launchableUpdate)) {
+      JSONObject manifestFilters = ManifestMetadata.getManifestFilters(database, mConfiguration);
+      if (mSelectionPolicy.shouldLoadNewUpdate(embeddedUpdate, launchableUpdate, manifestFilters)) {
         new EmbeddedLoader(context, mConfiguration, database, mDirectory).loadEmbeddedUpdate();
       }
     }
@@ -247,8 +255,8 @@ public class LoaderTask {
   private void launchRemoteUpdateInBackground(Context context, Callback remoteUpdateCallback) {
     AsyncTask.execute(() -> {
       UpdatesDatabase database = mDatabaseHolder.getDatabase();
-      new RemoteLoader(context, mConfiguration, database, mDirectory)
-        .start(mConfiguration.getUpdateUrl(), new RemoteLoader.LoaderCallback() {
+      new RemoteLoader(context, mConfiguration, database, mFileDownloader, mDirectory)
+        .start(new RemoteLoader.LoaderCallback() {
           @Override
           public void onFailure(Exception e) {
             mDatabaseHolder.releaseDatabase();
@@ -258,12 +266,17 @@ public class LoaderTask {
           }
 
           @Override
-          public boolean onManifestLoaded(Manifest manifest) {
+          public void onAssetLoaded(AssetEntity asset, int successfulAssetCount, int failedAssetCount, int totalAssetCount) {
+          }
+
+          @Override
+          public boolean onUpdateManifestLoaded(UpdateManifest updateManifest) {
             if (mSelectionPolicy.shouldLoadNewUpdate(
-                  manifest.getUpdateEntity(),
-                  mCandidateLauncher == null ? null : mCandidateLauncher.getLaunchedUpdate())) {
+                  updateManifest.getUpdateEntity(),
+                  mCandidateLauncher == null ? null : mCandidateLauncher.getLaunchedUpdate(),
+                  updateManifest.getManifestFilters())) {
               mIsUpToDate = false;
-              mCallback.onRemoteManifestLoaded(manifest);
+              mCallback.onRemoteUpdateManifestLoaded(updateManifest);
               return true;
             } else {
               mIsUpToDate = true;
@@ -275,7 +288,7 @@ public class LoaderTask {
           public void onSuccess(@Nullable UpdateEntity update) {
             // a new update has loaded successfully; we need to launch it with a new Launcher and
             // replace the old Launcher so that the callback fires with the new one
-            final DatabaseLauncher newLauncher = new DatabaseLauncher(mConfiguration, mDirectory, mSelectionPolicy);
+            final DatabaseLauncher newLauncher = new DatabaseLauncher(mConfiguration, mDirectory, mFileDownloader, mSelectionPolicy);
             newLauncher.launch(database, context, new Launcher.LauncherCallback() {
               @Override
               public void onFailure(Exception e) {

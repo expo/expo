@@ -1,6 +1,6 @@
 {
   "name": "expo-face-detector",
-  "version": "9.0.1",
+  "version": "10.1.0",
   "description": "Lets you use the power of Google Mobile Vision (https://developers.google.com/vision/face-detection-concepts) framework to detect faces on images.",
   "main": "build/FaceDetector.js",
   "types": "build/FaceDetector.d.ts",
@@ -31,16 +31,14 @@
   },
   "author": "650 Industries, Inc.",
   "license": "MIT",
-  "homepage": "https://docs.expo.io/versions/latest/sdk/facedetector/",
+  "homepage": "https://docs.expo.dev/versions/latest/sdk/facedetector/",
   "jest": {
     "preset": "expo-module-scripts/ios"
   },
-  "unimodulePeerDependencies": {
-    "@unimodules/core": "*",
-    "unimodules-face-detector-interface": "*",
-    "unimodules-permissions-interface": "*"
+  "dependencies": {
+    "expo-modules-core": "~0.3.0-alpha.0"
   },
   "devDependencies": {
-    "expo-module-scripts": "~1.2.0"
+    "expo-module-scripts": "^2.0.0"
   }
 }

@@ -6,24 +6,24 @@ import javax.inject.Inject;
 
 import abi39_0_0.org.unimodules.interfaces.sensors.SensorServiceSubscription;
 import host.exp.exponent.di.NativeModuleDepsProvider;
-import host.exp.exponent.kernel.ExperienceId;
+import host.exp.exponent.kernel.ExperienceKey;
 import host.exp.exponent.kernel.services.ExpoKernelServiceRegistry;
 import host.exp.exponent.kernel.services.sensors.SensorKernelServiceSubscription;
 import host.exp.exponent.kernel.services.sensors.SubscribableSensorKernelService;
 
 public abstract class BaseSensorService {
-  private ExperienceId mExperienceId;
+  private ExperienceKey mExperienceKey;
 
   @Inject
   protected ExpoKernelServiceRegistry mKernelServiceRegistry;
 
-  public BaseSensorService(ExperienceId experienceId) {
-    mExperienceId = experienceId;
+  public BaseSensorService(ExperienceKey experienceKey) {
+    mExperienceKey = experienceKey;
     NativeModuleDepsProvider.getInstance().inject(BaseSensorService.class, this);
   }
 
-  protected ExperienceId getExperienceId() {
-    return mExperienceId;
+  protected ExperienceKey getExperienceKey() {
+    return mExperienceKey;
   }
 
   protected ExpoKernelServiceRegistry getKernelServiceRegistry() {
@@ -34,7 +34,7 @@ public abstract class BaseSensorService {
 
   public SensorServiceSubscription createSubscriptionForListener(SensorEventListener2 sensorEventListener) {
     ScopedSensorEventListener scopedSensorEventListener = new ScopedSensorEventListener(sensorEventListener);
-    SensorKernelServiceSubscription sensorKernelServiceSubscription = getSensorKernelService().createSubscriptionForListener(getExperienceId(), scopedSensorEventListener);
+    SensorKernelServiceSubscription sensorKernelServiceSubscription = getSensorKernelService().createSubscriptionForListener(getExperienceKey(), scopedSensorEventListener);
     return new SensorSubscription(sensorKernelServiceSubscription);
   }
 }

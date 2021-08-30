@@ -22,7 +22,7 @@ export default class SnackEmbed extends React.Component<Props> {
     // inject script if it hasn't been loaded by a previous page
     if (!script) {
       script = document.createElement('script');
-      script.src = `${this.props.snackId ? 'https://snack.expo.io' : SNACK_URL}/embed.js`;
+      script.src = `${this.props.snackId ? 'https://snack.expo.dev' : SNACK_URL}/embed.js`;
       script.async = true;
       script.id = 'snack';
 
@@ -47,9 +47,7 @@ export default class SnackEmbed extends React.Component<Props> {
     if (this.props.snackId) {
       embedProps = { 'data-snack-id': this.props.snackId };
     } else {
-      const code = React.Children.toArray(this.props.children)
-        .join('')
-        .trim();
+      const code = React.Children.toArray(this.props.children).join('').trim();
       embedProps = {
         'data-snack-code': code,
       };
@@ -80,10 +78,7 @@ export default class SnackEmbed extends React.Component<Props> {
       embedProps['data-snack-theme'] = 'light';
     }
 
-    var embedStyle = {};
-    if (this.props.hasOwnProperty('style')) {
-      embedStyle = this.props.style!;
-    }
+    const embedStyle = this.props.hasOwnProperty('style') ? this.props.style! : {};
 
     return (
       <div

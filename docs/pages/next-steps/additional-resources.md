@@ -6,7 +6,7 @@ The following resources are useful for learning Expo and some of the projects th
 
 ## Expo Blog
 
-- [Exposition](https://blog.expo.io/) - our official blog, where we post release notes every month and other Expo related content at random intervals.
+- [Exposition](https://blog.expo.dev/) - our official blog, where we post release notes every month and other Expo related content at random intervals.
 
 ## Courses using Expo
 

@@ -1,6 +1,0 @@
-module ABI38_0_0yoga {
-  umbrella header "ABI38_0_0Yoga-umbrella.h"
-
-  export *
-  module * { export * }
-}

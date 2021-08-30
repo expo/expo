@@ -10,7 +10,8 @@ import expo.modules.updates.db.DatabaseHolder;
 import expo.modules.updates.db.entity.AssetEntity;
 import expo.modules.updates.db.entity.UpdateEntity;
 import expo.modules.updates.launcher.Launcher;
-import expo.modules.updates.launcher.SelectionPolicy;
+import expo.modules.updates.selectionpolicy.SelectionPolicy;
+import expo.modules.updates.loader.FileDownloader;
 
 public interface UpdatesInterface {
 
@@ -18,6 +19,7 @@ public interface UpdatesInterface {
   SelectionPolicy getSelectionPolicy();
   File getDirectory();
   DatabaseHolder getDatabaseHolder();
+  FileDownloader getFileDownloader();
 
   boolean isEmergencyLaunch();
   boolean isUsingEmbeddedAssets();
@@ -26,4 +28,5 @@ public interface UpdatesInterface {
   Map<AssetEntity, String> getLocalAssetFiles();
 
   void relaunchReactApplication(Launcher.LauncherCallback callback);
+  void resetSelectionPolicy();
 }

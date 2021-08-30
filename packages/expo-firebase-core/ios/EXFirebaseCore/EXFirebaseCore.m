@@ -1,6 +1,6 @@
 // Copyright 2020-present 650 Industries. All rights reserved.
 
-#import <UMCore/UMUtilities.h>
+#import <ExpoModulesCore/EXUtilities.h>
 #import <EXFirebaseCore/EXFirebaseCore.h>
 #import <EXFirebaseCore/EXFirebaseCore+FIROptions.h>
 
@@ -14,11 +14,11 @@ static NSString * const DEFAULT_APP_NAME_UNIVERSAL = @"[DEFAULT]";
 
 @implementation EXFirebaseCore
 
-UM_EXPORT_MODULE(ExpoFirebaseCore);
+EX_EXPORT_MODULE(ExpoFirebaseCore);
 
 + (const NSArray<Protocol *> *)exportedInterfaces
 {
-  return @[@protocol(UMFirebaseCoreInterface)];
+  return @[@protocol(EXFirebaseCoreInterface)];
 }
 
 + (NSString *)toUniversalAppName:(NSString *)name
@@ -66,7 +66,7 @@ UM_EXPORT_MODULE(ExpoFirebaseCore);
     // is the same.
     [self.class updateAppWithOptions:options name:name completion:^(BOOL success) {
       if (!success) {
-        UMLogWarn(@"Failed to initialize Firebase app: %@", name);
+        EXLogWarn(@"Failed to initialize Firebase app: %@", name);
       }
     }];
   }

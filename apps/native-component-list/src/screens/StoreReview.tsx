@@ -1,7 +1,7 @@
 import { StackNavigationProp } from '@react-navigation/stack';
 import * as StoreReview from 'expo-store-review';
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { Platform, StyleSheet, Text, View } from 'react-native';
 
 import Button from '../components/Button';
 import Colors from '../constants/Colors';
@@ -37,7 +37,7 @@ function StoreReviewScreen({ navigation }: Props) {
     <View style={styles.container}>
       <View style={styles.textContainer}>
         <Text style={styles.isSupportedText}>Native Store Review {isSupportedText}</Text>
-        <Text style={styles.storeUrlText}>{getStoreUrlInfo()}</Text>
+        <Text style={styles.description}>{getStoreUrlInfo()}</Text>
       </View>
 
       <Button
@@ -46,6 +46,12 @@ function StoreReviewScreen({ navigation }: Props) {
         buttonStyle={!StoreReview.hasAction() ? styles.disabled : undefined}
         title="Request a Review!"
       />
+
+      <View style={[styles.textContainer, { marginTop: 5 }]}>
+        <Text style={styles.description}>
+          {Platform.OS === 'android' && 'Warning: this will not work in unsigned APKs'}
+        </Text>
+      </View>
     </View>
   );
 }
@@ -66,7 +72,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
   },
-  storeUrlText: {
+  description: {
     color: Colors.secondaryText,
     fontSize: 14,
   },

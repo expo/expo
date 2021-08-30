@@ -213,6 +213,8 @@ async function getPermissionAsync(permission, shouldAsk) {
             };
         }
         case 'location':
+        case 'locationForeground':
+        case 'locationBackground':
             {
                 const maybeStatus = await getPermissionWithQueryAsync('geolocation');
                 if (maybeStatus) {

@@ -1,14 +1,20 @@
 package versioned.host.exp.exponent.modules.api.components.lottie;
 
-import android.util.JsonReader;
+import android.graphics.Color;
+import android.graphics.ColorFilter;
 import android.widget.ImageView;
 
 import com.airbnb.lottie.LottieAnimationView;
 import com.airbnb.lottie.LottieDrawable;
-
-import java.io.StringReader;
+import com.airbnb.lottie.LottieProperty;
+import com.airbnb.lottie.RenderMode;
+import com.airbnb.lottie.SimpleColorFilter;
+import com.airbnb.lottie.model.KeyPath;
+import com.airbnb.lottie.value.LottieValueCallback;
+import com.facebook.react.bridge.ReadableArray;
+import com.facebook.react.bridge.ReadableMap;
 import java.lang.ref.WeakReference;
-
+import java.util.regex.Pattern;
 /**
  * Class responsible for applying the properties to the LottieView.
  * The way react-native works makes it impossible to predict in which order properties will be set,
@@ -33,11 +39,11 @@ public class LottieAnimationViewPropertyManager {
   private boolean animationNameDirty;
 
   private String animationName;
-  private LottieAnimationView.CacheStrategy cacheStrategy;
-  private Boolean useHardwareAcceleration;
   private ImageView.ScaleType scaleType;
   private String imageAssetsFolder;
   private Boolean enableMergePaths;
+  private ReadableArray colorFilters;
+  private RenderMode renderMode;
 
   public LottieAnimationViewPropertyManager(LottieAnimationView view) {
     this.viewWeakReference = new WeakReference<>(view);
@@ -52,11 +58,6 @@ public class LottieAnimationViewPropertyManager {
     this.animationJson = json;
   }
 
-  public void setCacheStrategy(LottieAnimationView.CacheStrategy strategy) {
-    this.cacheStrategy = strategy;
-    this.animationNameDirty = true;
-  }
-
   public void setProgress(Float progress) {
     this.progress = progress;
   }
@@ -69,12 +70,12 @@ public class LottieAnimationViewPropertyManager {
     this.loop = loop;
   }
 
-  public void setUseHardwareAcceleration(boolean useHardwareAcceleration) {
-    this.useHardwareAcceleration = useHardwareAcceleration;
-  }
-
   public void setScaleType(ImageView.ScaleType scaleType) {
     this.scaleType = scaleType;
+  }
+
+  public void setRenderMode(RenderMode renderMode) {
+    this.renderMode = renderMode;
   }
 
   public void setImageAssetsFolder(String imageAssetsFolder) {
@@ -83,6 +84,10 @@ public class LottieAnimationViewPropertyManager {
 
   public void setEnableMergePaths(boolean enableMergePaths) {
     this.enableMergePaths = enableMergePaths;
+  }
+
+  public void setColorFilters(ReadableArray colorFilters) {
+    this.colorFilters = colorFilters;
   }
 
   /**
@@ -101,12 +106,12 @@ public class LottieAnimationViewPropertyManager {
     }
 
     if (animationJson != null) {
-      view.setAnimation(new JsonReader(new StringReader(animationJson)));
+      view.setAnimationFromJson(animationJson, Integer.toString(animationJson.hashCode()));
       animationJson = null;
     }
 
     if (animationNameDirty) {
-      view.setAnimation(animationName, cacheStrategy);
+      view.setAnimation(animationName);
       animationNameDirty = false;
     }
 
@@ -125,14 +130,14 @@ public class LottieAnimationViewPropertyManager {
       speed = null;
     }
 
-    if (useHardwareAcceleration != null) {
-      view.useHardwareAcceleration(useHardwareAcceleration);
-      useHardwareAcceleration = null;
-    }
-
     if (scaleType != null) {
       view.setScaleType(scaleType);
       scaleType = null;
+    }
+
+    if (renderMode != null) {
+      view.setRenderMode(renderMode);
+      renderMode = null;
     }
 
     if (imageAssetsFolder != null) {
@@ -141,8 +146,22 @@ public class LottieAnimationViewPropertyManager {
     }
 
     if (enableMergePaths != null) {
-        view.enableMergePathsForKitKatAndAbove(enableMergePaths);
-        enableMergePaths = null;
+      view.enableMergePathsForKitKatAndAbove(enableMergePaths);
+      enableMergePaths = null;
+    }
+
+    if (colorFilters != null && colorFilters.size() > 0) {
+      for (int i = 0 ; i < colorFilters.size() ; i++) {
+        ReadableMap current = colorFilters.getMap(i);
+        String color = current.getString("color");
+        String path = current.getString("keypath");
+        SimpleColorFilter colorFilter = new SimpleColorFilter(Color.parseColor(color));
+        String pathWithGlobstar = path +".**";
+        String[] keys = pathWithGlobstar.split(Pattern.quote("."));
+        KeyPath keyPath = new  KeyPath(keys);
+        LottieValueCallback<ColorFilter> callback = new LottieValueCallback<>(colorFilter);
+        view.addValueCallback(keyPath, LottieProperty.COLOR_FILTER, callback);
+      }
     }
   }
 }

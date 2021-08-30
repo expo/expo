@@ -16,7 +16,7 @@ Android: Values are stored in [`SharedPreferences`](https://developer.android.co
 
 <PlatformsSection android emulator ios simulator />
 
-- This API is not compatible on devices running Android 5 or older.
+- This API is not compatible on devices running Android 5 or lower.
 
 ## Installation
 

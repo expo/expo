@@ -4,10 +4,9 @@ import android.content.Context;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.os.Environment;
 import android.provider.MediaStore;
 
-import org.unimodules.core.Promise;
+import expo.modules.core.Promise;
 
 import java.io.File;
 import java.io.IOException;
@@ -16,6 +15,7 @@ import static expo.modules.medialibrary.MediaLibraryConstants.ERROR_IO_EXCEPTION
 import static expo.modules.medialibrary.MediaLibraryConstants.ERROR_NO_FILE_EXTENSION;
 import static expo.modules.medialibrary.MediaLibraryConstants.ERROR_UNABLE_TO_LOAD_PERMISSION;
 import static expo.modules.medialibrary.MediaLibraryConstants.ERROR_UNABLE_TO_SAVE;
+import static expo.modules.medialibrary.MediaLibraryUtils.getEnvDirectoryForAssetType;
 import static expo.modules.medialibrary.MediaLibraryUtils.queryAssetInfo;
 import static expo.modules.medialibrary.MediaLibraryUtils.safeCopyFile;
 
@@ -50,7 +50,14 @@ class CreateAsset extends AsyncTask<Void, Void, Void> {
 
   private File createAssetFile() throws IOException {
     File localFile = new File(mUri.getPath());
-    File destDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM);
+    File destDir = getEnvDirectoryForAssetType(
+      MediaLibraryUtils.getType(mContext.getContentResolver(), mUri),
+      true
+    );
+    if (destDir == null) {
+      mPromise.reject(ERROR_UNABLE_TO_SAVE, "Could not guess file type.");
+      return null;
+    }
     File destFile = safeCopyFile(localFile, destDir);
 
     if (!destDir.exists() || !destFile.isFile()) {
@@ -76,21 +83,17 @@ class CreateAsset extends AsyncTask<Void, Void, Void> {
       MediaScannerConnection.scanFile(mContext,
         new String[]{asset.getPath()},
         null,
-
-        new MediaScannerConnection.OnScanCompletedListener() {
-          @Override
-          public void onScanCompleted(String path, Uri uri) {
-            if (uri == null) {
-              mPromise.reject(ERROR_UNABLE_TO_SAVE, "Could not add image to gallery.");
-              return;
-            }
-            if (resolveWithAdditionalData) {
-              final String selection = MediaStore.Images.Media.DATA + "=?";
-              final String[] args = {path};
-              queryAssetInfo(mContext, selection, args, false, mPromise);
-            } else {
-              mPromise.resolve(null);
-            }
+        (path, uri) -> {
+          if (uri == null) {
+            mPromise.reject(ERROR_UNABLE_TO_SAVE, "Could not add image to gallery.");
+            return;
+          }
+          if (resolveWithAdditionalData) {
+            final String selection = MediaStore.Images.Media.DATA + "=?";
+            final String[] args = {path};
+            queryAssetInfo(mContext, selection, args, false, mPromise);
+          } else {
+            mPromise.resolve(null);
           }
         });
     } catch (IOException e) {
@@ -101,5 +104,4 @@ class CreateAsset extends AsyncTask<Void, Void, Void> {
     }
     return null;
   }
-
 }

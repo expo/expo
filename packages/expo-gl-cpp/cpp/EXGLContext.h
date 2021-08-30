@@ -17,6 +17,7 @@
 #include <sstream>
 #include <unordered_map>
 #include <vector>
+#include <set>
 
 #include <jsi/jsi.h>
 
@@ -183,6 +184,7 @@ class EXGLContext {
 
   // --- Init/destroy and JS object binding ------------------------------------
  private:
+  std::set<const std::string> supportedExtensions;
   bool supportsWebGL2 = false;
 
  public:
@@ -284,6 +286,8 @@ class EXGLContext {
   jsi::Value exglDeleteObject(UEXGLObjectId, std::function<void(GLsizei, const UEXGLObjectId *)>);
 
   jsi::Value exglUnimplemented(std::string name);
+
+  void maybeReadAndCacheSupportedExtensions();
 
   // implementation of webgl methods (glNativeMethod_#name)
   // called on JS Thread

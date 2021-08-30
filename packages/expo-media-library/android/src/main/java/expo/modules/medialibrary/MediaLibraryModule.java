@@ -1,34 +1,50 @@
 package expo.modules.medialibrary;
 
+import android.app.Activity;
+import android.app.PendingIntent;
 import android.content.ContentResolver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentSender;
+import android.content.pm.PackageManager;
 import android.database.ContentObserver;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Binder;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.MediaStore;
 import android.provider.MediaStore.Files;
-import android.provider.MediaStore.Images.Media;
 
-import org.unimodules.core.ExportedModule;
-import org.unimodules.core.ModuleRegistry;
-import org.unimodules.core.Promise;
-import org.unimodules.core.interfaces.ExpoMethod;
-import org.unimodules.core.interfaces.services.EventEmitter;
-import org.unimodules.interfaces.permissions.Permissions;
+import expo.modules.core.ExportedModule;
+import expo.modules.core.ModuleRegistry;
+import expo.modules.core.Promise;
+import expo.modules.core.interfaces.ActivityEventListener;
+import expo.modules.core.interfaces.ActivityProvider;
+import expo.modules.core.interfaces.ExpoMethod;
+import expo.modules.core.interfaces.services.EventEmitter;
+import expo.modules.core.interfaces.services.UIManager;
 
+import java.io.File;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+
+import expo.modules.interfaces.permissions.Permissions;
 
 import static android.Manifest.permission.READ_EXTERNAL_STORAGE;
 import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
+import static expo.modules.medialibrary.MediaLibraryConstants.ERROR_NO_ALBUM;
 import static expo.modules.medialibrary.MediaLibraryConstants.ERROR_NO_PERMISSIONS;
 import static expo.modules.medialibrary.MediaLibraryConstants.ERROR_NO_PERMISSIONS_MESSAGE;
 import static expo.modules.medialibrary.MediaLibraryConstants.ERROR_NO_WRITE_PERMISSION_MESSAGE;
+import static expo.modules.medialibrary.MediaLibraryConstants.ERROR_UNABLE_TO_ASK_FOR_PERMISSIONS;
+import static expo.modules.medialibrary.MediaLibraryConstants.ERROR_UNABLE_TO_ASK_FOR_PERMISSIONS_MESSAGE;
+import static expo.modules.medialibrary.MediaLibraryConstants.ERROR_USER_DID_NOT_GRANT_WRITE_PERMISSIONS_MESSAGE;
 import static expo.modules.medialibrary.MediaLibraryConstants.EXTERNAL_CONTENT;
 import static expo.modules.medialibrary.MediaLibraryConstants.LIBRARY_DID_CHANGE_EVENT;
 import static expo.modules.medialibrary.MediaLibraryConstants.MEDIA_TYPE_ALL;
@@ -43,14 +59,20 @@ import static expo.modules.medialibrary.MediaLibraryConstants.SORT_BY_HEIGHT;
 import static expo.modules.medialibrary.MediaLibraryConstants.SORT_BY_MEDIA_TYPE;
 import static expo.modules.medialibrary.MediaLibraryConstants.SORT_BY_MODIFICATION_TIME;
 import static expo.modules.medialibrary.MediaLibraryConstants.SORT_BY_WIDTH;
+import static expo.modules.medialibrary.MediaLibraryUtils.getAssetsById;
+import static expo.modules.medialibrary.MediaLibraryUtils.getAssetsInAlbums;
+import static expo.modules.medialibrary.MediaLibraryUtils.getAssetsUris;
 
 
-public class MediaLibraryModule extends ExportedModule {
+public class MediaLibraryModule extends ExportedModule implements ActivityEventListener {
+
+  private static final int WRITE_REQUEST_CODE = 7463;
 
   private MediaStoreContentObserver mImagesObserver = null;
   private MediaStoreContentObserver mVideosObserver = null;
-  private Context mContext;
+  private final Context mContext;
   private ModuleRegistry mModuleRegistry;
+  private Action mAction;
 
   public MediaLibraryModule(Context context) {
     super(context);
@@ -135,10 +157,18 @@ public class MediaLibraryModule extends ExportedModule {
       return;
     }
 
-    new AddAssetsToAlbum(mContext,
-      assetsId.toArray(new String[0]), albumId, copyToAlbum, promise).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-  }
+    Action action = permissionsWereGranted -> {
+      if (!permissionsWereGranted) {
+        promise.reject(ERROR_NO_PERMISSIONS, ERROR_USER_DID_NOT_GRANT_WRITE_PERMISSIONS_MESSAGE);
+        return;
+      }
 
+      new AddAssetsToAlbum(mContext,
+        assetsId.toArray(new String[0]), albumId, copyToAlbum, promise).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+    };
+
+    runActionWithPermissions(copyToAlbum ? Collections.emptyList() : assetsId, action, promise);
+  }
 
   @ExpoMethod
   public void removeAssetsFromAlbumAsync(List<String> assetsId, String albumId, Promise promise) {
@@ -147,8 +177,17 @@ public class MediaLibraryModule extends ExportedModule {
       return;
     }
 
-    new RemoveAssetsFromAlbum(mContext,
-      assetsId.toArray(new String[0]), albumId, promise).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+    Action action = permissionsWereGranted -> {
+      if (!permissionsWereGranted) {
+        promise.reject(ERROR_NO_PERMISSIONS, ERROR_USER_DID_NOT_GRANT_WRITE_PERMISSIONS_MESSAGE);
+        return;
+      }
+
+      new RemoveAssetsFromAlbum(mContext,
+        assetsId.toArray(new String[0]), albumId, promise).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+    };
+
+    runActionWithPermissions(assetsId, action, promise);
   }
 
   @ExpoMethod
@@ -158,8 +197,17 @@ public class MediaLibraryModule extends ExportedModule {
       return;
     }
 
-    new DeleteAssets(mContext, assetsId.toArray(new String[0]), promise)
-      .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+    Action action = permissionsWereGranted -> {
+      if (!permissionsWereGranted) {
+        promise.reject(ERROR_NO_PERMISSIONS, ERROR_USER_DID_NOT_GRANT_WRITE_PERMISSIONS_MESSAGE);
+        return;
+      }
+
+      new DeleteAssets(mContext, assetsId.toArray(new String[0]), promise)
+        .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+    };
+
+    runActionWithPermissions(assetsId, action, promise);
   }
 
   @ExpoMethod
@@ -203,8 +251,17 @@ public class MediaLibraryModule extends ExportedModule {
       return;
     }
 
-    new CreateAlbum(mContext, albumName, assetId, copyAsset, promise)
-      .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+    Action action = permissionsWereGranted -> {
+      if (!permissionsWereGranted) {
+        promise.reject(ERROR_NO_PERMISSIONS, ERROR_USER_DID_NOT_GRANT_WRITE_PERMISSIONS_MESSAGE);
+        return;
+      }
+
+      new CreateAlbum(mContext, albumName, assetId, copyAsset, promise)
+        .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+    };
+
+    runActionWithPermissions(copyAsset ? Collections.emptyList() : Collections.singletonList(assetId), action, promise);
   }
 
   @ExpoMethod
@@ -214,9 +271,17 @@ public class MediaLibraryModule extends ExportedModule {
       return;
     }
 
-    new DeleteAlbums(mContext, albumIds, promise)
-      .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+    Action action = permissionsWereGranted -> {
+      if (!permissionsWereGranted) {
+        promise.reject(ERROR_NO_PERMISSIONS, ERROR_USER_DID_NOT_GRANT_WRITE_PERMISSIONS_MESSAGE);
+        return;
+      }
 
+      new DeleteAlbums(mContext, albumIds, promise)
+        .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+    };
+
+    runActionWithPermissions(getAssetsInAlbums(mContext, albumIds.toArray(new String[0])), action, promise);
   }
 
   @ExpoMethod
@@ -228,6 +293,83 @@ public class MediaLibraryModule extends ExportedModule {
 
     new GetAssets(mContext, assetOptions, promise)
       .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+  }
+
+  @ExpoMethod
+  public void migrateAlbumIfNeededAsync(String albumId, Promise promise) {
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
+      promise.resolve(null);
+      return;
+    }
+
+    List<MediaLibraryUtils.AssetFile> assets = getAssetsById(
+      mContext,
+      null,
+      getAssetsInAlbums(mContext, albumId).toArray(new String[0])
+    );
+
+    if (assets == null) {
+      promise.reject(ERROR_NO_ALBUM, "Couldn't find album.");
+      return;
+    }
+
+    Map<File, List<MediaLibraryUtils.AssetFile>> albumsMap = assets
+      .stream()
+      // All files should have mime type, but if not, we can safely assume that
+      // those without mime type shouldn't be move
+      .filter(asset -> asset.getMimeType() != null)
+      .collect(Collectors.groupingBy(File::getParentFile));
+
+    if (albumsMap.size() != 1) {
+      // Empty albums shouldn't be visible to users. That's why this is an error.
+      promise.reject(ERROR_NO_ALBUM, "Found album is empty.");
+      return;
+    }
+
+    File albumDir = assets.get(0).getParentFile();
+    if (albumDir == null) {
+      promise.reject(ERROR_NO_ALBUM, "Couldn't get album path.");
+      return;
+    }
+
+    if (albumDir.canWrite()) {
+      // Nothing to migrate
+      promise.resolve(null);
+      return;
+    }
+
+    List<String> needsToCheckPermissions = assets
+      .stream()
+      .map(MediaLibraryUtils.AssetFile::getAssetId)
+      .collect(Collectors.toList());
+
+    Action action = permissionsWereGranted -> {
+      if (!permissionsWereGranted) {
+        promise.reject(ERROR_NO_PERMISSIONS, ERROR_USER_DID_NOT_GRANT_WRITE_PERMISSIONS_MESSAGE);
+        return;
+      }
+
+      new MigrateAlbum(mContext, assets, albumDir.getName(), promise)
+        .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+    };
+
+    runActionWithPermissions(needsToCheckPermissions, action, promise);
+  }
+
+  @ExpoMethod
+  public void albumNeedsMigrationAsync(String albumId, Promise promise) {
+    if (isMissingPermissions()) {
+      promise.reject(ERROR_NO_PERMISSIONS, ERROR_NO_PERMISSIONS_MESSAGE);
+      return;
+    }
+
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+      new CheckIfAlbumShouldBeMigrated(mContext, albumId, promise)
+        .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+      return;
+    }
+
+    promise.resolve(false);
   }
 
   // Library change observer
@@ -250,7 +392,7 @@ public class MediaLibraryModule extends ExportedModule {
     ContentResolver contentResolver = mContext.getContentResolver();
 
     contentResolver.registerContentObserver(
-      Media.EXTERNAL_CONTENT_URI,
+      MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
       true,
       mImagesObserver
     );
@@ -274,6 +416,19 @@ public class MediaLibraryModule extends ExportedModule {
       mVideosObserver = null;
     }
     promise.resolve(null);
+  }
+
+  @Override
+  public void onActivityResult(Activity activity, int requestCode, int resultCode, Intent data) {
+    if (requestCode == WRITE_REQUEST_CODE && mAction != null) {
+      mAction.runWithPermissions(resultCode == Activity.RESULT_OK);
+      mAction = null;
+      mModuleRegistry.getModule(UIManager.class).unregisterActivityEventListener(this);
+    }
+  }
+
+  @Override
+  public void onNewIntent(Intent intent) {
   }
 
   private boolean isMissingPermissions() {
@@ -306,9 +461,54 @@ public class MediaLibraryModule extends ExportedModule {
     };
   }
 
+  private void runActionWithPermissions(List<String> assetsId, Action action, Promise promise) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+      List<Uri> pathsWithoutPermissions = getAssetsUris(mContext, assetsId)
+        .stream()
+        .filter(
+          uri -> mContext.checkUriPermission(
+            uri,
+            Binder.getCallingPid(),
+            Binder.getCallingUid(), Intent.FLAG_GRANT_WRITE_URI_PERMISSION
+          ) != PackageManager.PERMISSION_GRANTED
+        )
+        .collect(Collectors.toList());
+
+      if (!pathsWithoutPermissions.isEmpty()) {
+        PendingIntent deleteRequest = MediaStore.createWriteRequest(mContext.getContentResolver(), pathsWithoutPermissions);
+        Activity activity = mModuleRegistry.getModule(ActivityProvider.class).getCurrentActivity();
+        try {
+          mModuleRegistry.getModule(UIManager.class).registerActivityEventListener(this);
+          mAction = action;
+
+          activity.startIntentSenderForResult(
+            deleteRequest.getIntentSender(),
+            WRITE_REQUEST_CODE,
+            null,
+            0,
+            0,
+            0
+          );
+        } catch (IntentSender.SendIntentException e) {
+          promise.reject(ERROR_UNABLE_TO_ASK_FOR_PERMISSIONS, ERROR_UNABLE_TO_ASK_FOR_PERMISSIONS_MESSAGE);
+          mAction = null;
+        }
+
+        return;
+      }
+    }
+
+    action.runWithPermissions(true);
+  }
+
+  @FunctionalInterface
+  interface Action {
+    void runWithPermissions(boolean permissionsWereGranted);
+  }
+
   private class MediaStoreContentObserver extends ContentObserver {
     private int mAssetsTotalCount;
-    private int mMediaType;
+    private final int mMediaType;
 
     public MediaStoreContentObserver(Handler handler, int mediaType) {
       super(handler);
@@ -334,15 +534,15 @@ public class MediaLibraryModule extends ExportedModule {
     }
 
     private int getAssetsTotalCount(int mediaType) {
-      Cursor countCursor = mContext.getContentResolver().query(
+      try (Cursor countCursor = mContext.getContentResolver().query(
         EXTERNAL_CONTENT,
         null,
         Files.FileColumns.MEDIA_TYPE + " == " + mediaType,
         null,
         null
-      );
-
-      return countCursor != null ? countCursor.getCount() : 0;
+      )) {
+        return countCursor != null ? countCursor.getCount() : 0;
+      }
     }
   }
 }

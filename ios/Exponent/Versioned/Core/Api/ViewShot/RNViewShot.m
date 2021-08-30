@@ -79,7 +79,7 @@ RCT_EXPORT_METHOD(captureRef:(nonnull NSNumber *)target
         reject(RCTErrorUnspecified, [NSString stringWithFormat:@"snapshotContentContainer can only be used on a RCTScrollView. instead got: %@", view], nil);
         return;
       }
-      RCTScrollView* rctScrollView = view;
+      RCTScrollView* rctScrollView = (RCTScrollView *)view;
       scrollView = rctScrollView.scrollView;
       rendered = scrollView;
     }

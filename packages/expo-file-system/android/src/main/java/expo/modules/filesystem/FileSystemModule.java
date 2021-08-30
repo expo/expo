@@ -1,7 +1,9 @@
 package expo.modules.filesystem;
 
+import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.Resources;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -9,6 +11,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.StatFs;
+import android.provider.DocumentsContract;
 import android.util.Base64;
 import android.util.Log;
 
@@ -16,14 +19,14 @@ import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
-import org.unimodules.core.ExportedModule;
-import org.unimodules.core.ModuleRegistry;
-import org.unimodules.core.Promise;
-import org.unimodules.core.interfaces.ActivityProvider;
-import org.unimodules.core.interfaces.ExpoMethod;
-import org.unimodules.core.interfaces.services.EventEmitter;
-import org.unimodules.interfaces.filesystem.FilePermissionModuleInterface;
-import org.unimodules.interfaces.filesystem.Permission;
+import expo.modules.core.ExportedModule;
+import expo.modules.core.ModuleRegistry;
+import expo.modules.core.Promise;
+import expo.modules.core.interfaces.ActivityEventListener;
+import expo.modules.core.interfaces.ActivityProvider;
+import expo.modules.core.interfaces.ExpoMethod;
+import expo.modules.core.interfaces.services.EventEmitter;
+import expo.modules.core.interfaces.services.UIManager;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
@@ -46,6 +49,9 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import androidx.annotation.Nullable;
+import androidx.documentfile.provider.DocumentFile;
+import expo.modules.interfaces.filesystem.FilePermissionModuleInterface;
+import expo.modules.interfaces.filesystem.Permission;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Headers;
@@ -65,17 +71,20 @@ import okio.ForwardingSource;
 import okio.Okio;
 import okio.Source;
 
-public class FileSystemModule extends ExportedModule {
+public class FileSystemModule extends ExportedModule implements ActivityEventListener {
   private static final String NAME = "ExponentFileSystem";
   private static final String TAG = FileSystemModule.class.getSimpleName();
   private static final String EXDownloadProgressEventName = "expo-file-system.downloadProgress";
+  private static final String EXUploadProgressEventName = "expo-file-system.uploadProgress";
   private static final long MIN_EVENT_DT_MS = 100;
   private static final String HEADER_KEY = "headers";
+  private static final int DIR_PERMISSIONS_REQUEST_CODE = 5394;
 
   private ModuleRegistry mModuleRegistry;
   private OkHttpClient mClient;
+  private Promise mDirPermissionsRequest;
 
-  private final Map<String, DownloadResumable> mDownloadResumableMap = new HashMap<>();
+  private final Map<String, TaskHandler> mTaskHandlers = new HashMap<>();
 
   private enum UploadType {
     INVALID(-1),
@@ -153,6 +162,9 @@ public class FileSystemModule extends ExportedModule {
   }
 
   private EnumSet<Permission> permissionsForUri(Uri uri) {
+    if (isSAFUri(uri)) {
+      return permissionsForSAFUri(uri);
+    }
     if ("content".equals(uri.getScheme())) {
       return EnumSet.of(Permission.READ);
     }
@@ -167,6 +179,20 @@ public class FileSystemModule extends ExportedModule {
       return EnumSet.of(Permission.READ);
     }
     return EnumSet.noneOf(Permission.class);
+  }
+
+  private EnumSet<Permission> permissionsForSAFUri(Uri uri) {
+    DocumentFile documentFile = getNearestSAFFile(uri);
+    EnumSet<Permission> permissions = EnumSet.noneOf(Permission.class);
+    if (documentFile.canRead()) {
+      permissions.add(Permission.READ);
+    }
+
+    if (documentFile.canWrite()) {
+      permissions.add(Permission.WRITE);
+    }
+
+    return permissions;
   }
 
   // For now we only need to ensure one permission at a time, this allows easier error message strings,
@@ -210,9 +236,14 @@ public class FileSystemModule extends ExportedModule {
   public void getInfoAsync(String uriStr, Map<String, Object> options, Promise promise) {
     try {
       Uri uri = Uri.parse(uriStr);
-      ensurePermission(uri, Permission.READ);
+      Uri absoluteUri = uri;
       if ("file".equals(uri.getScheme())) {
-        File file = uriToFile(uri);
+        uriStr = uriStr.substring(uriStr.indexOf(':') + 3);
+        absoluteUri = Uri.parse(uriStr);
+      }
+      ensurePermission(absoluteUri, Permission.READ);
+      if ("file".equals(uri.getScheme())) {
+        File file = uriToFile(absoluteUri);
         Bundle result = new Bundle();
         if (file.exists()) {
           result.putBoolean("exists", true);
@@ -281,25 +312,18 @@ public class FileSystemModule extends ExportedModule {
       }
       String contents;
       if (encoding.equalsIgnoreCase("base64")) {
-        InputStream inputStream;
-        if ("file".equals(uri.getScheme())) {
-          inputStream = new FileInputStream(uriToFile(uri));
-        } else if ("asset".equals(uri.getScheme())) {
-          inputStream = openAssetInputStream(uri);
-        } else {
-          throw new IOException("Unsupported scheme for location '" + uri + "'.");
-        }
-
-        if (options.containsKey("length") && options.containsKey("position")) {
-          int length = ((Number) options.get("length")).intValue();
-          int position = ((Number) options.get("position")).intValue();
-          byte[] buffer = new byte[length];
-          inputStream.skip(position);
-          int bytesRead = inputStream.read(buffer, 0, length);
-          contents = Base64.encodeToString(buffer, 0, bytesRead, Base64.NO_WRAP);
-        } else {
-          byte[] inputData = getInputStreamBytes(inputStream);
-          contents = Base64.encodeToString(inputData, Base64.NO_WRAP);
+        try (InputStream inputStream = getInputStream(uri)) {
+          if (options.containsKey("length") && options.containsKey("position")) {
+            int length = ((Number) options.get("length")).intValue();
+            int position = ((Number) options.get("position")).intValue();
+            byte[] buffer = new byte[length];
+            inputStream.skip(position);
+            int bytesRead = inputStream.read(buffer, 0, length);
+            contents = Base64.encodeToString(buffer, 0, bytesRead, Base64.NO_WRAP);
+          } else {
+            byte[] inputData = getInputStreamBytes(inputStream);
+            contents = Base64.encodeToString(inputData, Base64.NO_WRAP);
+          }
         }
       } else {
         if ("file".equals(uri.getScheme())) {
@@ -309,6 +333,8 @@ public class FileSystemModule extends ExportedModule {
         } else if (uri.getScheme() == null) {
           // this is probably an asset embedded by the packager in resources
           contents = IOUtils.toString(openResourceInputStream(uriStr));
+        } else if (isSAFUri(uri)) {
+          contents = IOUtils.toString(getContext().getContentResolver().openInputStream(uri));
         } else {
           throw new IOException("Unsupported scheme for location '" + uri + "'.");
         }
@@ -325,27 +351,23 @@ public class FileSystemModule extends ExportedModule {
     try {
       Uri uri = Uri.parse(uriStr);
       ensurePermission(uri, Permission.WRITE);
-      if ("file".equals(uri.getScheme())) {
 
-        String encoding = "utf8";
-        if (options.containsKey("encoding") && options.get("encoding") instanceof String) {
-          encoding = ((String) options.get("encoding")).toLowerCase();
-        }
+      String encoding = "utf8";
+      if (options.containsKey("encoding") && options.get("encoding") instanceof String) {
+        encoding = ((String) options.get("encoding")).toLowerCase();
+      }
 
-        FileOutputStream out = new FileOutputStream(uriToFile(uri));
+      try (OutputStream out = getOutputStream(uri)) {
         if (encoding.equals("base64")) {
           byte[] bytes = Base64.decode(string, Base64.DEFAULT);
           out.write(bytes);
         } else {
-          OutputStreamWriter writer = new OutputStreamWriter(out);
-          writer.write(string);
-          writer.close();
+          try (OutputStreamWriter writer = new OutputStreamWriter(out)) {
+            writer.write(string);
+          }
         }
-        out.close();
-        promise.resolve(null);
-      } else {
-        throw new IOException("Unsupported scheme for location '" + uri + "'.");
       }
+      promise.resolve(null);
     } catch (Exception e) {
       Log.e(TAG, e.getMessage());
       promise.reject(e);
@@ -367,6 +389,19 @@ public class FileSystemModule extends ExportedModule {
             // to be removed once Android SDK 25 support is dropped
             forceDelete(file);
           }
+          promise.resolve(null);
+        } else {
+          if (options.containsKey("idempotent") && (Boolean) options.get("idempotent")) {
+            promise.resolve(null);
+          } else {
+            promise.reject("ERR_FILESYSTEM_CANNOT_FIND_FILE",
+              "File '" + uri + "' could not be deleted because it could not be found");
+          }
+        }
+      } else if (isSAFUri(uri)) {
+        DocumentFile file = getNearestSAFFile(uri);
+        if (file.exists()) {
+          file.delete();
           promise.resolve(null);
         } else {
           if (options.containsKey("idempotent") && (Boolean) options.get("idempotent")) {
@@ -410,6 +445,15 @@ public class FileSystemModule extends ExportedModule {
           promise.reject("ERR_FILESYSTEM_CANNOT_MOVE_FILE",
             "File '" + fromUri + "' could not be moved to '" + toUri + "'");
         }
+      } else if (isSAFUri(fromUri)) {
+        DocumentFile documentFile = getNearestSAFFile(fromUri);
+        if (!documentFile.exists()) {
+          promise.reject("ERR_FILESYSTEM_CANNOT_MOVE_FILE", "File '" + fromUri + "' could not be moved to '" + toUri + "'");
+          return;
+        }
+        File output = new File(toUri.getPath());
+        transformFilesFromSAF(documentFile, output, false);
+        promise.resolve(null);
       } else {
         throw new IOException("Unsupported scheme for location '" + fromUri + "'.");
       }
@@ -440,11 +484,19 @@ public class FileSystemModule extends ExportedModule {
         File to = uriToFile(toUri);
         if (from.isDirectory()) {
           FileUtils.copyDirectory(from, to);
-          promise.resolve(null);
         } else {
           FileUtils.copyFile(from, to);
-          promise.resolve(null);
         }
+        promise.resolve(null);
+      } else if (isSAFUri(fromUri)) {
+        DocumentFile documentFile = getNearestSAFFile(fromUri);
+        if (!documentFile.exists()) {
+          promise.reject("ERR_FILESYSTEM_CANNOT_FIND_FILE", "File '" + fromUri + "' could not be copied because it could not be found");
+          return;
+        }
+        File output = new File(toUri.getPath());
+        transformFilesFromSAF(documentFile, output, true);
+        promise.resolve(null);
       } else if ("content".equals(fromUri.getScheme())) {
         InputStream in = getContext().getContentResolver().openInputStream(fromUri);
         OutputStream out = new FileOutputStream(uriToFile(toUri));
@@ -467,6 +519,45 @@ public class FileSystemModule extends ExportedModule {
     } catch (Exception e) {
       Log.e(TAG, e.getMessage());
       promise.reject(e);
+    }
+  }
+
+  private void transformFilesFromSAF(DocumentFile documentFile, File outputDir, boolean copy) throws IOException {
+    if (!documentFile.exists()) {
+      return;
+    }
+
+    if (!outputDir.exists() && !outputDir.mkdirs()) {
+      throw new IOException("Couldn't create folder in output dir.");
+    }
+
+    if (documentFile.isDirectory()) {
+      for (DocumentFile file : documentFile.listFiles()) {
+        if (documentFile.getName() == null) {
+          continue;
+        }
+        transformFilesFromSAF(file, new File(outputDir, documentFile.getName()), copy);
+      }
+
+      if (!copy) {
+        documentFile.delete();
+      }
+
+      return;
+    }
+
+    if (documentFile.getName() == null) {
+      return;
+    }
+
+    File newFile = new File(outputDir.getPath(), documentFile.getName());
+    try (InputStream in = getContext().getContentResolver().openInputStream(documentFile.getUri());
+         OutputStream out = new FileOutputStream(newFile)) {
+      IOUtils.copy(in, out);
+    }
+
+    if (!copy) {
+      documentFile.delete();
     }
   }
 
@@ -513,6 +604,9 @@ public class FileSystemModule extends ExportedModule {
           promise.reject("ERR_FILESYSTEM_CANNOT_READ_DIRECTORY",
             "Directory '" + uri + "' could not be read.");
         }
+      } else if (isSAFUri(uri)) {
+        promise.reject("ERR_FILESYSTEM_UNSUPPORTED_SCHEME",
+          "Can't read Storage Access Framework directory, use StorageAccessFramework.readDirectoryAsync() instead.");
       } else {
         throw new IOException("Unsupported scheme for location '" + uri + "'.");
       }
@@ -523,7 +617,181 @@ public class FileSystemModule extends ExportedModule {
   }
 
   @ExpoMethod
-  public void uploadAsync(final String url, final String fileUriString, final Map<String, Object> options, final Promise promise) {
+  public void getTotalDiskCapacityAsync(Promise promise) {
+    try {
+      StatFs root = new StatFs(Environment.getDataDirectory().getAbsolutePath());
+      long blockCount = root.getBlockCountLong();
+      long blockSize = root.getBlockSizeLong();
+      BigInteger capacity = BigInteger.valueOf(blockCount).multiply(BigInteger.valueOf(blockSize));
+      //cast down to avoid overflow
+      Double capacityDouble = Math.min(capacity.doubleValue(), Math.pow(2, 53) - 1);
+      promise.resolve(capacityDouble);
+    } catch (Exception e) {
+      Log.e(TAG, e.getMessage());
+      promise.reject("ERR_FILESYSTEM_CANNOT_DETERMINE_DISK_CAPACITY", "Unable to access total disk capacity", e);
+    }
+  }
+
+  @ExpoMethod
+  public void getFreeDiskStorageAsync(Promise promise) {
+    try {
+      StatFs external = new StatFs(Environment.getDataDirectory().getAbsolutePath());
+      long availableBlocks = external.getAvailableBlocksLong();
+      long blockSize = external.getBlockSizeLong();
+
+      BigInteger storage = BigInteger.valueOf(availableBlocks).multiply(BigInteger.valueOf(blockSize));
+      //cast down to avoid overflow
+      Double storageDouble = Math.min(storage.doubleValue(), Math.pow(2, 53) - 1);
+      promise.resolve(storageDouble);
+    } catch (Exception e) {
+      Log.e(TAG, e.getMessage());
+      promise.reject("ERR_FILESYSTEM_CANNOT_DETERMINE_DISK_CAPACITY", "Unable to determine free disk storage capacity", e);
+    }
+  }
+
+  @ExpoMethod
+  public void getContentUriAsync(String uri, Promise promise) {
+    try {
+      final Uri fileUri = Uri.parse(uri);
+      ensurePermission(fileUri, Permission.WRITE);
+      ensurePermission(fileUri, Permission.READ);
+      checkIfFileDirExists(fileUri);
+      if ("file".equals(fileUri.getScheme())) {
+        File file = uriToFile(fileUri);
+        promise.resolve(contentUriFromFile(file).toString());
+      } else {
+        promise.reject("ERR_FILESYSTEM_CANNOT_READ_DIRECTORY", "No readable files with the uri: " + uri + ". Please use other uri.");
+      }
+    } catch (Exception e) {
+      Log.e(TAG, e.getMessage());
+      promise.reject(e);
+    }
+  }
+
+  private Uri contentUriFromFile(File file) {
+    try {
+      Application application = mModuleRegistry.getModule(ActivityProvider.class).getCurrentActivity().getApplication();
+      return FileSystemFileProvider.getUriForFile(application, application.getPackageName() + ".FileSystemFileProvider", file);
+    } catch (Exception e) {
+      throw e;
+    }
+  }
+
+  @ExpoMethod
+  public void readSAFDirectoryAsync(String uriStr, Map<String, Object> options, Promise promise) {
+    try {
+      Uri uri = Uri.parse(uriStr);
+      ensurePermission(uri, Permission.READ);
+      if (isSAFUri(uri)) {
+        DocumentFile file = DocumentFile.fromTreeUri(getContext(), uri);
+        if (file == null || !file.exists() || !file.isDirectory()) {
+          promise.reject("ERR_FILESYSTEM_CANNOT_READ_DIRECTORY",
+            "Uri '" + uri + "' doesn't exist or isn't a directory.");
+          return;
+        }
+        DocumentFile[] children = file.listFiles();
+        List<String> result = new ArrayList<>();
+        for (DocumentFile child : children) {
+          result.add(child.getUri().toString());
+        }
+        promise.resolve(result);
+      } else {
+        throw new IOException("The URI '" + uri + "' is not a Storage Access Framework URI. Try using FileSystem.readDirectoryAsync instead.");
+      }
+    } catch (Exception e) {
+      Log.e(TAG, e.getMessage());
+      promise.reject(e);
+    }
+  }
+
+  @ExpoMethod
+  public void makeSAFDirectoryAsync(String uriStr, String dirName, Promise promise) {
+    try {
+      Uri uri = Uri.parse(uriStr);
+      ensurePermission(uri, Permission.WRITE);
+      if (isSAFUri(uri)) {
+        DocumentFile dir = getNearestSAFFile(uri);
+        if (!dir.isDirectory()) {
+          promise.reject("ERR_FILESYSTEM_CANNOT_CREATE_DIRECTORY", "Provided uri '" + uri + "' is not pointing to a directory.");
+          return;
+        }
+
+        DocumentFile newDir = dir.createDirectory(dirName);
+        if (newDir == null) {
+          promise.reject("ERR_FILESYSTEM_CANNOT_CREATE_DIRECTORY", "Unknown error.");
+          return;
+        }
+
+        promise.resolve(newDir.getUri().toString());
+      } else {
+        throw new IOException("The URI '" + uri + "' is not a Storage Access Framework URI. Try using FileSystem.makeDirectoryAsync instead.");
+      }
+    } catch (Exception e) {
+      promise.reject(e);
+    }
+  }
+
+  @ExpoMethod
+  public void createSAFFileAsync(String uriStr, String fileName, String mimeType, Promise promise) {
+    try {
+      Uri uri = Uri.parse(uriStr);
+      ensurePermission(uri, Permission.WRITE);
+      if (isSAFUri(uri)) {
+        DocumentFile dir = getNearestSAFFile(uri);
+        if (!dir.isDirectory()) {
+          promise.reject("ERR_FILESYSTEM_CANNOT_CREATE_FILE", "Provided uri '" + uri + "' is not pointing to a directory.");
+          return;
+        }
+
+        DocumentFile newFile = dir.createFile(mimeType, fileName);
+        if (newFile == null) {
+          promise.reject("ERR_FILESYSTEM_CANNOT_CREATE_FILE", "Unknown error.");
+          return;
+        }
+
+        promise.resolve(newFile.getUri().toString());
+      } else {
+        throw new IOException("The URI '" + uri + "' is not a Storage Access Framework URI.");
+      }
+    } catch (Exception e) {
+      promise.reject(e);
+    }
+  }
+
+  @ExpoMethod
+  public void requestDirectoryPermissionsAsync(final String initialFileUrl, Promise promise) {
+    if (mDirPermissionsRequest != null) {
+      promise.reject("ERR_FILESYSTEM_CANNOT_ASK_FOR_PERMISSIONS", "You have an unfinished permission request.");
+      return;
+    }
+
+    try {
+      Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        Uri fileUri = initialFileUrl == null ? null : Uri.parse(initialFileUrl);
+        if (fileUri != null) {
+          intent.putExtra(DocumentsContract.EXTRA_INITIAL_URI, fileUri);
+        }
+      }
+
+      Activity activity = mModuleRegistry.getModule(ActivityProvider.class).getCurrentActivity();
+      if (activity == null) {
+        promise.reject("ERR_FILESYSTEM_CANNOT_ASK_FOR_PERMISSIONS", "Can't find activity.");
+        return;
+      }
+
+      mModuleRegistry.getModule(UIManager.class).registerActivityEventListener(this);
+
+      mDirPermissionsRequest = promise;
+      activity.startActivityForResult(intent, DIR_PERMISSIONS_REQUEST_CODE);
+    } catch (Exception e) {
+      Log.e(TAG, e.getMessage());
+      promise.reject("ERR_FILESYSTEM_CANNOT_ASK_FOR_PERMISSIONS", "Can't ask for permissions.", e);
+    }
+  }
+
+  @Nullable
+  private Request createUploadRequest(final String url, final String fileUriString, final Map<String, Object> options, final Promise promise, final RequestBodyDecorator decorator) {
     try {
       final Uri fileUri = Uri.parse(fileUriString);
       ensurePermission(fileUri, Permission.READ);
@@ -531,13 +799,13 @@ public class FileSystemModule extends ExportedModule {
 
       if (!options.containsKey("httpMethod")) {
         promise.reject("ERR_FILESYSTEM_MISSING_HTTP_METHOD", "Missing HTTP method.", null);
-        return;
+        return null;
       }
       String method = (String) options.get("httpMethod");
 
       if (!options.containsKey("uploadType")) {
         promise.reject("ERR_FILESYSTEM_MISSING_UPLOAD_TYPE", "Missing upload type.", null);
-        return;
+        return null;
       }
       UploadType uploadType = UploadType.fromInt(((Double) options.get("uploadType")).intValue());
 
@@ -551,7 +819,7 @@ public class FileSystemModule extends ExportedModule {
 
       File file = uriToFile(fileUri);
       if (uploadType == UploadType.BINARY_CONTENT) {
-        RequestBody body = RequestBody.create(null, file);
+        RequestBody body = decorator.decorate(RequestBody.create(null, file));
         requestBuilder.method(method, body);
       } else if (uploadType == UploadType.MULTIPART) {
         MultipartBody.Builder bodyBuilder = new MultipartBody.Builder().setType(MultipartBody.FORM);
@@ -575,43 +843,127 @@ public class FileSystemModule extends ExportedModule {
           fieldName = (String) options.get("fieldName");
         }
 
-        bodyBuilder.addFormDataPart(fieldName, file.getName(), RequestBody.create(mimeType != null ? MediaType.parse(mimeType) : null, file));
+        bodyBuilder.addFormDataPart(fieldName, file.getName(), decorator.decorate(RequestBody.create(mimeType != null ? MediaType.parse(mimeType) : null, file)));
         requestBuilder.method(method, bodyBuilder.build());
+        return requestBuilder.build();
       } else {
         promise.reject("ERR_FILESYSTEM_INVALID_UPLOAD_TYPE", String.format("Invalid upload type: %s.", options.get("uploadType")), null);
-        return;
+        return null;
       }
-
-      getOkHttpClient().newCall(requestBuilder.build()).enqueue(new Callback() {
-        @Override
-        public void onFailure(Call call, IOException e) {
-          Log.e(TAG, String.valueOf(e.getMessage()));
-          promise.reject(e);
-        }
-
-        @Override
-        public void onResponse(Call call, Response response) {
-          Bundle result = new Bundle();
-          try {
-            if (response.body() != null) {
-              result.putString("body", response.body().string());
-            } else {
-              result.putString("body", null);
-            }
-          } catch (IOException exception) {
-            promise.reject(exception);
-            return;
-          }
-          result.putInt("status", response.code());
-          result.putBundle("headers", translateHeaders(response.headers()));
-          response.close();
-          promise.resolve(result);
-        }
-      });
     } catch (Exception e) {
       Log.e(TAG, e.getMessage());
       promise.reject(e);
     }
+
+    return null;
+  }
+
+  @ExpoMethod
+  public void uploadAsync(final String url, final String fileUriString, final Map<String, Object> options, final Promise promise) {
+    Request request = createUploadRequest(url, fileUriString, options, promise, requestBody -> requestBody);
+    if (request == null) {
+      return;
+    }
+
+    getOkHttpClient().newCall(request).enqueue(new Callback() {
+      @Override
+      public void onFailure(Call call, IOException e) {
+        Log.e(TAG, String.valueOf(e.getMessage()));
+        promise.reject(e);
+      }
+
+      @Override
+      public void onResponse(Call call, Response response) {
+        Bundle result = new Bundle();
+        try {
+          if (response.body() != null) {
+            result.putString("body", response.body().string());
+          } else {
+            result.putString("body", null);
+          }
+        } catch (IOException exception) {
+          promise.reject(exception);
+          return;
+        }
+        result.putInt("status", response.code());
+        result.putBundle("headers", translateHeaders(response.headers()));
+        response.close();
+        promise.resolve(result);
+      }
+    });
+  }
+
+  @ExpoMethod
+  public void uploadTaskStartAsync(final String url, final String fileUriString, final String uuid, final Map<String, Object> options, final Promise promise) {
+    CountingRequestListener progressListener = new CountingRequestListener() {
+      private long mLastUpdate = -1;
+
+      @Override
+      public void onProgress(long bytesWritten, long contentLength) {
+        EventEmitter eventEmitter = mModuleRegistry.getModule(EventEmitter.class);
+        if (eventEmitter != null) {
+          Bundle uploadProgress = new Bundle();
+          Bundle uploadProgressData = new Bundle();
+          long currentTime = System.currentTimeMillis();
+
+          // Throttle events. Sending too many events will block the JS event loop.
+          // Make sure to send the last event when we're at 100%.
+          if (currentTime > mLastUpdate + MIN_EVENT_DT_MS || bytesWritten == contentLength) {
+            mLastUpdate = currentTime;
+            uploadProgressData.putDouble("totalByteSent", bytesWritten);
+            uploadProgressData.putDouble("totalBytesExpectedToSend", contentLength);
+            uploadProgress.putString("uuid", uuid);
+            uploadProgress.putBundle("data", uploadProgressData);
+
+            eventEmitter.emit(EXUploadProgressEventName, uploadProgress);
+          }
+        }
+      }
+    };
+
+    Request request = createUploadRequest(
+      url,
+      fileUriString,
+      options,
+      promise,
+      requestBody -> new CountingRequestBody(requestBody, progressListener)
+    );
+    if (request == null) {
+      return;
+    }
+
+    Call call = getOkHttpClient().newCall(request);
+    mTaskHandlers.put(uuid, new TaskHandler(call));
+    call.enqueue(new Callback() {
+      @Override
+      public void onFailure(Call call, IOException e) {
+        if (call.isCanceled()) {
+          promise.resolve(null);
+          return;
+        }
+        Log.e(TAG, String.valueOf(e.getMessage()));
+        promise.reject(e);
+      }
+
+      @Override
+      public void onResponse(Call call, Response response) {
+        Bundle result = new Bundle();
+        try {
+          if (response.body() != null) {
+            result.putString("body", response.body().string());
+          } else {
+            result.putString("body", null);
+          }
+        } catch (IOException exception) {
+          promise.reject(exception);
+          return;
+        }
+        result.putInt("status", response.code());
+        result.putBundle("headers", translateHeaders(response.headers()));
+        response.close();
+        promise.resolve(result);
+      }
+    });
   }
 
   @ExpoMethod
@@ -689,64 +1041,13 @@ public class FileSystemModule extends ExportedModule {
   }
 
   @ExpoMethod
-  public void getTotalDiskCapacityAsync(Promise promise) {
-    try {
-      StatFs root = new StatFs(Environment.getDataDirectory().getAbsolutePath());
-      long blockCount = root.getBlockCountLong();
-      long blockSize = root.getBlockSizeLong();
-      BigInteger capacity = BigInteger.valueOf(blockCount).multiply(BigInteger.valueOf(blockSize));
-      //cast down to avoid overflow
-      Double capacityDouble = Math.min(capacity.doubleValue(), Math.pow(2, 53) - 1);
-      promise.resolve(capacityDouble);
-    } catch (Exception e) {
-      Log.e(TAG, e.getMessage());
-      promise.reject("ERR_FILESYSTEM_CANNOT_DETERMINE_DISK_CAPACITY", "Unable to access total disk capacity", e);
+  public void networkTaskCancelAsync(final String uuid, final Promise promise) {
+    TaskHandler taskHandler = this.mTaskHandlers.get(uuid);
+    if (taskHandler != null) {
+      taskHandler.call.cancel();
     }
-  }
 
-  @ExpoMethod
-  public void getFreeDiskStorageAsync(Promise promise) {
-    try {
-      StatFs external = new StatFs(Environment.getDataDirectory().getAbsolutePath());
-      long availableBlocks = external.getAvailableBlocksLong();
-      long blockSize = external.getBlockSizeLong();
-
-      BigInteger storage = BigInteger.valueOf(availableBlocks).multiply(BigInteger.valueOf(blockSize));
-      //cast down to avoid overflow
-      Double storageDouble = Math.min(storage.doubleValue(), Math.pow(2, 53) - 1);
-      promise.resolve(storageDouble);
-    } catch (Exception e) {
-      Log.e(TAG, e.getMessage());
-      promise.reject("ERR_FILESYSTEM_CANNOT_DETERMINE_DISK_CAPACITY", "Unable to determine free disk storage capacity", e);
-    }
-  }
-
-  @ExpoMethod
-  public void getContentUriAsync(String uri, Promise promise) {
-    try {
-      final Uri fileUri = Uri.parse(uri);
-      ensurePermission(fileUri, Permission.WRITE);
-      ensurePermission(fileUri, Permission.READ);
-      checkIfFileDirExists(fileUri);
-      if ("file".equals(fileUri.getScheme())) {
-        File file = uriToFile(fileUri);
-        promise.resolve(contentUriFromFile(file).toString());
-      } else {
-        promise.reject("ERR_FILESYSTEM_CANNOT_READ_DIRECTORY", "No readable files with the uri: " + uri + ". Please use other uri.");
-      }
-    } catch (Exception e) {
-      Log.e(TAG, e.getMessage());
-      promise.reject(e);
-    }
-  }
-
-  private Uri contentUriFromFile(File file) {
-    try {
-      Application application = mModuleRegistry.getModule(ActivityProvider.class).getCurrentActivity().getApplication();
-      return FileSystemFileProvider.getUriForFile(application, application.getPackageName() + ".FileSystemFileProvider", file);
-    } catch (Exception e) {
-      throw e;
-    }
+    promise.resolve(null);
   }
 
   @ExpoMethod
@@ -815,8 +1116,8 @@ public class FileSystemModule extends ExportedModule {
 
       Request request = requestBuilder.url(url).build();
       Call call = client.newCall(request);
-      DownloadResumable downloadResumable = new DownloadResumable(uuid, url, fileUri, call);
-      this.mDownloadResumableMap.put(uuid, downloadResumable);
+      TaskHandler taskHandler = new DownloadTaskHandler(fileUri, call);
+      this.mTaskHandlers.put(uuid, taskHandler);
 
       File file = uriToFile(fileUri);
       DownloadResumableTaskParams params = new DownloadResumableTaskParams(options, call, file, isResume, promise);
@@ -830,24 +1131,70 @@ public class FileSystemModule extends ExportedModule {
 
   @ExpoMethod
   public void downloadResumablePauseAsync(final String uuid, final Promise promise) {
-    DownloadResumable downloadResumable = this.mDownloadResumableMap.get(uuid);
-    if (downloadResumable != null) {
-      downloadResumable.call.cancel();
-      this.mDownloadResumableMap.remove(downloadResumable.uuid);
-      try {
-        File file = uriToFile(downloadResumable.fileUri);
-        Bundle result = new Bundle();
-        result.putString("resumeData", String.valueOf(file.length()));
-        promise.resolve(result);
-      } catch (Exception e) {
-        Log.e(TAG, e.getMessage());
-        promise.reject(e);
-      }
-    } else {
+    TaskHandler taskHandler = this.mTaskHandlers.get(uuid);
+    if (taskHandler == null) {
       Exception e = new IOException("No download object available");
       Log.e(TAG, e.getMessage());
       promise.reject(e);
+      return;
     }
+
+    if (!(taskHandler instanceof DownloadTaskHandler)) {
+      promise.reject("ERR_FILESYSTEM_CANNOT_FIND_TASK", "Cannot find task.");
+      return;
+    }
+
+    taskHandler.call.cancel();
+    this.mTaskHandlers.remove(uuid);
+    try {
+      File file = uriToFile(((DownloadTaskHandler) taskHandler).fileUri);
+      Bundle result = new Bundle();
+      result.putString("resumeData", String.valueOf(file.length()));
+      promise.resolve(result);
+    } catch (Exception e) {
+      Log.e(TAG, e.getMessage());
+      promise.reject(e);
+    }
+  }
+
+
+  @Override
+  public void onActivityResult(Activity activity, int requestCode, int resultCode, Intent data) {
+    if (requestCode == DIR_PERMISSIONS_REQUEST_CODE && mDirPermissionsRequest != null) {
+      Bundle result = new Bundle();
+
+      if (resultCode == Activity.RESULT_OK) {
+        Uri treeUri = data.getData();
+
+        final int takeFlags = data.getFlags()
+          & (Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+        activity.getContentResolver().takePersistableUriPermission(treeUri, takeFlags);
+
+        result.putBoolean("granted", true);
+        result.putString("directoryUri", treeUri.toString());
+      } else {
+        result.putBoolean("granted", false);
+      }
+
+      mDirPermissionsRequest.resolve(result);
+      mModuleRegistry.getModule(UIManager.class).unregisterActivityEventListener(this);
+      mDirPermissionsRequest = null;
+    }
+  }
+
+  @Override
+  public void onNewIntent(Intent intent) {
+  }
+
+  /**
+   * Checks if the provided URI is compatible with the Storage Access Framework.
+   * For more information check out https://developer.android.com/guide/topics/providers/document-provider.
+   *
+   * @param uri
+   * @return whatever the provided URI is SAF URI
+   */
+  private static boolean isSAFUri(Uri uri) {
+    return ("content".equals(uri.getScheme()) && uri.getHost().startsWith("com.android.externalstorage"));
   }
 
   private static byte[] getInputStreamBytes(InputStream inputStream) throws IOException {
@@ -925,6 +1272,11 @@ public class FileSystemModule extends ExportedModule {
         promise.resolve(result);
         return null;
       } catch (Exception e) {
+        if (call.isCanceled()) {
+          promise.resolve(null);
+          return null;
+        }
+
         Log.e(TAG, e.getMessage());
         promise.reject(e);
         return null;
@@ -949,17 +1301,20 @@ public class FileSystemModule extends ExportedModule {
     return responseHeaders;
   }
 
-  private static class DownloadResumable {
-    public final String uuid;
-    public final String url;
-    public final Uri fileUri;
+  private static class TaskHandler {
     public final Call call;
 
-    public DownloadResumable(String uuid, String url, Uri fileUri, Call call) {
-      this.uuid = uuid;
-      this.url = url;
-      this.fileUri = fileUri;
+    public TaskHandler(Call call) {
       this.call = call;
+    }
+  }
+
+  private static class DownloadTaskHandler extends TaskHandler {
+    public final Uri fileUri;
+
+    public DownloadTaskHandler(Uri fileUri, Call call) {
+      super(call);
+      this.fileUri = fileUri;
     }
   }
 
@@ -1095,5 +1450,38 @@ public class FileSystemModule extends ExportedModule {
     }
 
     return size;
+  }
+
+  private InputStream getInputStream(Uri uri) throws IOException {
+    if ("file".equals(uri.getScheme())) {
+      return new FileInputStream(uriToFile(uri));
+    } else if ("asset".equals(uri.getScheme())) {
+      return openAssetInputStream(uri);
+    } else if (isSAFUri(uri)) {
+      return getContext().getContentResolver().openInputStream(uri);
+    }
+
+    throw new IOException("Unsupported scheme for location '" + uri + "'.");
+  }
+
+  private OutputStream getOutputStream(Uri uri) throws IOException {
+    if ("file".equals(uri.getScheme())) {
+      return new FileOutputStream(uriToFile(uri));
+    }
+
+    if (isSAFUri(uri)) {
+      return getContext().getContentResolver().openOutputStream(uri);
+    }
+
+    throw new IOException("Unsupported scheme for location '" + uri + "'.");
+  }
+
+  private DocumentFile getNearestSAFFile(Uri uri) {
+    DocumentFile file = DocumentFile.fromSingleUri(getContext(), uri);
+    if (file != null && file.isFile()) {
+      return file;
+    }
+
+    return DocumentFile.fromTreeUri(getContext(), uri);
   }
 }

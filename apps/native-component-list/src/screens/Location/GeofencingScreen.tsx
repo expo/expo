@@ -82,7 +82,7 @@ export default function GeofencingScreen() {
     let isActive = true;
 
     (async () => {
-      await Location.requestPermissionsAsync();
+      await Location.requestForegroundPermissionsAsync();
 
       const { coords } = await Location.getCurrentPositionAsync();
       const isGeofencing = await Location.hasStartedGeofencingAsync(GEOFENCING_TASK);

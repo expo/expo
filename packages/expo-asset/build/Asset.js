@@ -1,20 +1,25 @@
-import { Platform } from '@unimodules/core';
+import { Platform } from 'expo-modules-core';
 import { getAssetByID } from './AssetRegistry';
 import * as AssetSources from './AssetSources';
 import * as AssetUris from './AssetUris';
-import { getEmbeddedAssetUri } from './EmbeddedAssets';
 import * as ImageAssets from './ImageAssets';
+import { getLocalAssetUri } from './LocalAssets';
 import { downloadAsync, IS_ENV_WITH_UPDATES_ENABLED } from './PlatformUtils';
 import resolveAssetSource from './resolveAssetSource';
 export class Asset {
+    static byHash = {};
+    static byUri = {};
+    name;
+    type;
+    hash = null;
+    uri;
+    localUri = null;
+    width = null;
+    height = null;
+    downloading = false;
+    downloaded = false;
+    _downloadCallbacks = [];
     constructor({ name, type, hash = null, uri, width, height }) {
-        this.hash = null;
-        this.localUri = null;
-        this.width = null;
-        this.height = null;
-        this.downloading = false;
-        this.downloaded = false;
-        this._downloadCallbacks = [];
         this.name = name;
         this.type = type;
         this.hash = hash;
@@ -26,7 +31,7 @@ export class Asset {
             this.height = height;
         }
         if (hash) {
-            this.localUri = getEmbeddedAssetUri(hash, type);
+            this.localUri = getLocalAssetUri(hash, type);
             if (this.localUri) {
                 this.downloaded = true;
             }
@@ -156,6 +161,4 @@ export class Asset {
         return this;
     }
 }
-Asset.byHash = {};
-Asset.byUri = {};
 //# sourceMappingURL=Asset.js.map

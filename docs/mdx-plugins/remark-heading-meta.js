@@ -6,7 +6,7 @@ const EXPORT_CONST_META = 'export const meta = ';
  * This MDX remark plugin extracts all `heading` node titles and levels from MDAST
  * and injects it to `export` node exporting page metadata:
  * It looks for `export const meta = {...}` and injects a `headings` property to that object
- * 
+ *
  * Usage (Webpack):
 ```js
 use: [
@@ -20,7 +20,7 @@ use: [
 ```
  * This plugin depends on `~/common/md-loader.js`, which adds `export const meta = ...` statement.
  */
-module.exports = function() {
+module.exports = function () {
   return tree => {
     const headings = [];
     visit(tree, 'heading', node => {

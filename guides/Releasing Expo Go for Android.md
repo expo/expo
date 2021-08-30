@@ -18,7 +18,7 @@ This document will guide you through the process of releasing a new version of E
 
     **Why:** For our convenience it's the CI who builds the APK. Before submitting it anywhere we want to test it properly.
 
-    **How:** On the release branch (`sdk-XX`) from which any updates are published, open the `client_android` job for commit after step 2., download build artifact from under `/root/expo/android/app/build/outputs/apk/release/app-release.apk`.
+    **How:** On the release branch (`sdk-XX`) from which any updates are published, open the `client_android` job for commit after step 2., download build artifact from under `/root/expo/android/app/build/outputs/apk/release/app-versioned-release.apk`.
       - Run `adb shell pm clear host.exp.exponent`
       - Enable airplane mode on the device you'll be testing it on
       - `adb install {downloaded-apk}`

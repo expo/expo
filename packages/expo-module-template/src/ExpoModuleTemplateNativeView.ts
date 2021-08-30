@@ -1,5 +1,9 @@
-import { requireNativeViewManager } from '@unimodules/core';
+import { requireNativeViewManager } from 'expo-modules-core';
 
-const NativeView = requireNativeViewManager('ExpoModuleTemplateView');
+type NativeViewProps = object;
+
+const NativeView: React.ComponentType<NativeViewProps> = requireNativeViewManager(
+  'ExpoModuleTemplateView'
+);
 
 export default NativeView;

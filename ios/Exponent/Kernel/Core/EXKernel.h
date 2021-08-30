@@ -28,8 +28,8 @@ typedef NS_ENUM(NSInteger, EXKernelErrorCode) {
 
 - (EXKernelAppRecord *)createNewAppWithUrl:(NSURL *)url initialProps:(nullable NSDictionary *)initialProps;
 - (void)switchTasks;
-- (void)reloadAppWithExperienceId:(NSString *)experienceId; // called by Updates.reload
-- (void)reloadAppFromCacheWithExperienceId:(NSString *)experienceId; // called by Updates.reloadFromCache
+- (void)reloadAppWithScopeKey:(NSString *)scopeKey; // called by Updates.reload
+- (void)reloadAppFromCacheWithScopeKey:(NSString *)scopeKey; // called by Updates.reloadFromCache
 - (void)reloadVisibleApp; // called in development whenever the app is reloaded
 
 /**

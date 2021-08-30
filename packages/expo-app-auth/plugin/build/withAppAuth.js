@@ -17,7 +17,7 @@ function setGradlePlaceholders(buildGradle, placeholder) {
         manifestPlaceholders = [${replacement}]`);
 }
 exports.setGradlePlaceholders = setGradlePlaceholders;
-const withAppAuth = (config, { placeholder = config_plugins_1.AndroidConfig.Scheme.getScheme(config)[0] || 'dev.expo.app' } = {}) => {
+const withAppAuthGradleManifestPlaceholder = (config, { placeholder = config_plugins_1.AndroidConfig.Scheme.getScheme(config)[0] || 'dev.expo.app' } = {}) => {
     return config_plugins_1.withAppBuildGradle(config, config => {
         if (config.modResults.language === 'groovy') {
             config.modResults.contents = setGradlePlaceholders(config.modResults.contents, placeholder);
@@ -27,5 +27,29 @@ const withAppAuth = (config, { placeholder = config_plugins_1.AndroidConfig.Sche
         }
         return config;
     });
+};
+const withAppAuthInfoPlist = (config, OAuthRedirect) => {
+    return config_plugins_1.withInfoPlist(config, config => {
+        var _a;
+        if (!Array.isArray(config.modResults.CFBundleURLTypes)) {
+            config.modResults.CFBundleURLTypes = [];
+        }
+        if (!((_a = config.ios) === null || _a === void 0 ? void 0 : _a.bundleIdentifier)) {
+            config_plugins_1.WarningAggregator.addWarningIOS('expo-app-auth', 'ios.bundleIdentifier must be defined in app.json or app.config.js');
+            return config;
+        }
+        config.modResults.CFBundleURLTypes.push({
+            // @ts-ignore: not on type
+            CFBundleTypeRole: 'Editor',
+            CFBundleURLName: 'OAuthRedirect',
+            CFBundleURLSchemes: [OAuthRedirect ? OAuthRedirect : config.ios.bundleIdentifier],
+        });
+        return config;
+    });
+};
+const withAppAuth = (config, props) => {
+    config = withAppAuthGradleManifestPlaceholder(config, props);
+    config = withAppAuthInfoPlist(config);
+    return config;
 };
 exports.default = config_plugins_1.createRunOncePlugin(withAppAuth, pkg.name, pkg.version);

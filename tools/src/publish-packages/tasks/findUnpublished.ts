@@ -35,7 +35,7 @@ export const findUnpublished = new Task<TaskArgs>(
       state.minReleaseType = await getMinReleaseTypeAsync(parcel);
 
       // Return whether the package has any unpublished changes or git logs couldn't be obtained.
-      return !logs || logs.files.length > 0 || changelogChanges.totalCount > 0;
+      return !logs || logs.files.length > 0 || changelogChanges.totalCount > 0 || options.force;
     });
 
     if (newParcels.length === 0) {

@@ -3,7 +3,7 @@ import { CodeChallengeMethod, Prompt } from '../AuthRequest.types';
 import { buildQueryString, getQueryParams } from '../QueryParams';
 
 jest.mock('expo-random', () => ({
-  getRandomBytesAsync: jest.fn(async () => ''),
+  getRandomBytes: jest.fn(() => ''),
   getRandomBase64StringAsync: jest.fn(async () => ''),
 }));
 jest.mock('expo-crypto', () => ({

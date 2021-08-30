@@ -1,4 +1,5 @@
-import { css } from '@emotion/core';
+import { css } from '@emotion/react';
+import { theme, palette } from '@expo/styleguide';
 import * as React from 'react';
 
 import { BASE_HEADING_LEVEL, Heading, HeadingType } from '../common/headingManager';
@@ -8,19 +9,16 @@ import * as Constants from '~/constants/theme';
 
 const STYLES_LINK = css`
   ${paragraph}
-  color: ${Constants.expoColors.gray[600]};
-  transition: 200ms ease color;
+  color: ${theme.text.secondary};
+  transition: 50ms ease color;
   font-size: 14px;
   display: block;
   text-decoration: none;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
   margin-bottom: 6px;
   cursor: pointer;
 
   :hover {
-    color: ${Constants.expoColors.primary[500]};
+    color: ${theme.link.default};
   }
 `;
 
@@ -31,16 +29,19 @@ const STYLES_LINK_HEADER = css`
 const STYLES_LINK_CODE = css`
   font-family: ${Constants.fontFamilies.mono};
   font-size: 13px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 `;
 
 const STYLES_LINK_ACTIVE = css`
-  color: ${Constants.expoColors.primary[500]};
+  color: ${theme.link.default};
 `;
 
 const STYLES_TOOLTIP = css`
   border-radius: 3px;
   position: absolute;
-  background-color: ${Constants.expoColors.white};
+  background-color: ${palette.dark.white};
   font-family: ${Constants.fontFamilies.demi};
   max-width: 400px;
   border: 1px solid black;

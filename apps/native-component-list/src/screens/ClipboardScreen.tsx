@@ -1,4 +1,4 @@
-import Clipboard from 'expo-clipboard';
+import * as Clipboard from 'expo-clipboard';
 import * as React from 'react';
 import { Button, Text, TextInput } from 'react-native';
 
@@ -12,6 +12,9 @@ export default function ClipboardScreen() {
       </Section>
       <Section title="Get String">
         <GetStringExample />
+      </Section>
+      <Section title="Clipboard listener">
+        <ListenerExample />
       </Section>
     </Page>
   );
@@ -47,9 +50,7 @@ function SetStringExample() {
     <>
       <Button
         onPress={() => {
-          console.log('copy to clipboard:', value);
-          const success = Clipboard.setString(value);
-          console.log({ success });
+          Clipboard.setString(value);
         }}
         title="Copy to clipboard"
       />
@@ -59,6 +60,33 @@ function SetStringExample() {
         value={value}
         style={{ padding: 8, height: 48, margin: 8, borderBottomWidth: 1 }}
       />
+    </>
+  );
+}
+
+function ListenerExample() {
+  const clipboardListener = React.useRef<Clipboard.Subscription | null>(null);
+  const [value, setValue] = React.useState('');
+
+  React.useEffect(() => {
+    clipboardListener.current = Clipboard.addClipboardListener(
+      ({ content }: { content: string }) => {
+        setValue(content);
+      }
+    );
+
+    return () => {
+      if (clipboardListener.current) {
+        Clipboard.removeClipboardListener(clipboardListener.current);
+      }
+    };
+  }, []);
+
+  return (
+    <>
+      <Text style={{ padding: 8, height: 48, margin: 8, borderBottomWidth: 1 }}>
+        Clipboard value changed to: {value}
+      </Text>
     </>
   );
 }

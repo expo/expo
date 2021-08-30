@@ -5,12 +5,11 @@ import * as path from 'path';
 import {
   getNotificationColor,
   getNotificationIcon,
-  NOTIFICATION_ICON_COLOR,
   setNotificationIconAsync,
-  setNotificationIconColorAsync,
+  setNotificationSounds,
 } from '../withNotificationsAndroid';
 
-function getDirFromFS(fsJSON: Record<string, string | null>, rootDir: string) {
+export function getDirFromFS(fsJSON: Record<string, string | null>, rootDir: string) {
   return Object.entries(fsJSON)
     .filter(([path, value]) => value !== null && path.startsWith(rootDir))
     .reduce<Record<string, string>>(
@@ -43,13 +42,19 @@ const LIST_OF_GENERATED_NOTIFICATION_FILES = [
   'android/app/src/main/res/drawable-xxxhdpi/notification_icon.png',
   'android/app/src/main/res/values/colors.xml',
   'assets/notificationIcon.png',
+  'assets/notificationSound.wav',
+  'android/app/src/main/res/raw/notificationSound.wav',
 ];
+
 const iconPath = path.resolve(__dirname, './fixtures/icon.png');
+const soundPath = path.resolve(__dirname, './fixtures/cat.wav');
+
 const projectRoot = '/app';
 
 describe('Android notifications configuration', () => {
-  beforeAll(async () => {
+  beforeEach(async () => {
     const icon = fsReal.readFileSync(iconPath);
+    const sound = fsReal.readFileSync(soundPath);
     vol.fromJSON(
       { './android/app/src/main/res/values/colors.xml': SAMPLE_COLORS_XML },
       projectRoot
@@ -57,25 +62,16 @@ describe('Android notifications configuration', () => {
     setUpDrawableDirectories();
     vol.mkdirpSync('/app/assets');
     vol.writeFileSync('/app/assets/notificationIcon.png', icon);
+    vol.writeFileSync('/app/assets/notificationSound.wav', sound);
+  });
 
-    const expoConfig: ExpoConfig = {
-      slug: 'testproject',
-      version: '1',
-      name: 'testproject',
-      platforms: ['ios', 'android'],
-      notification: {
-        icon: '/app/assets/notificationIcon.png',
-        color: '#00ff00',
-      },
-    };
-    await setNotificationIconAsync(expoConfig, projectRoot);
-    await setNotificationIconColorAsync(expoConfig, projectRoot);
+  afterEach(() => {
+    vol.reset();
   });
 
   afterAll(() => {
     jest.unmock('@expo/image-utils');
     jest.unmock('fs');
-    vol.reset();
   });
 
   it(`returns null if no config provided`, () => {
@@ -91,17 +87,31 @@ describe('Android notifications configuration', () => {
       '#123456'
     );
   });
-  it('writes to colors.xml correctly', () => {
+
+  it('writes all the asset files (sounds and images) as expected', async () => {
+    await setNotificationIconAsync(projectRoot, '/app/assets/notificationIcon.png');
+    setNotificationSounds(projectRoot, ['/app/assets/notificationSound.wav']);
+
     const after = getDirFromFS(vol.toJSON(), projectRoot);
-    expect(after['android/app/src/main/res/values/colors.xml']).toContain(
-      `<color name="${NOTIFICATION_ICON_COLOR}">#00ff00</color>`
-    );
+    expect(Object.keys(after).sort()).toEqual(LIST_OF_GENERATED_NOTIFICATION_FILES.sort());
   });
-  it('writes all the image files expected', async () => {
+
+  it('Safely remove icon if it exists, and ignore if it doesnt', async () => {
+    const before = getDirFromFS(vol.toJSON(), projectRoot);
+    // first set the icon
+    await setNotificationIconAsync(projectRoot, '/app/assets/notificationIcon.png');
+
+    // now remove
+    await setNotificationIconAsync(projectRoot, null);
+
     const after = getDirFromFS(vol.toJSON(), projectRoot);
-    Object.keys(after).forEach(path => {
-      expect(LIST_OF_GENERATED_NOTIFICATION_FILES).toContain(path);
-    });
+    expect(before).toMatchObject(after);
+
+    // now remove again to make sure we don't throw in that case
+    await setNotificationIconAsync(projectRoot, null);
+
+    const final = getDirFromFS(vol.toJSON(), projectRoot);
+    expect(before).toMatchObject(final);
   });
 });
 

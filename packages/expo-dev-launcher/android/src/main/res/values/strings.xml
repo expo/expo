@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <string name="splash_screen_text">DEVELOPMENT CLIENT</string>
+  <string name="view_error_log">View error log</string>
+  <string name="error_default_client">Sorry about that. You can go back to the launcher screen or try to reload your app.</string>
+  <string name="error_header">Something went wrong.</string>
+</resources>

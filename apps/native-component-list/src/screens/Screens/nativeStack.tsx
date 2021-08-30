@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { StyleSheet, Button, View, TextInput } from 'react-native';
-import { enableScreens, Screen, ScreenStack } from 'react-native-screens';
+import { Screen, ScreenStack } from 'react-native-screens';
 
 type StackProps = {
   renderScreen: (key: string) => JSX.Element;
@@ -10,8 +10,6 @@ type StackState = {
   stack: string[];
   transitioning: number;
 };
-
-enableScreens();
 
 const COLORS = ['azure', 'pink', 'cyan'];
 

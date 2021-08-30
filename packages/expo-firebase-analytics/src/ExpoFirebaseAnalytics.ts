@@ -1,6 +1,6 @@
-import { NativeModulesProxy, UnavailabilityError, CodedError } from '@unimodules/core';
 import Constants from 'expo-constants';
 import { DEFAULT_APP_NAME, DEFAULT_APP_OPTIONS, DEFAULT_WEB_APP_OPTIONS } from 'expo-firebase-core';
+import { NativeModulesProxy, UnavailabilityError, CodedError } from 'expo-modules-core';
 import { Platform } from 'react-native';
 
 import FirebaseAnalyticsJS from './FirebaseAnalyticsJS';
@@ -15,6 +15,7 @@ if (!ExpoFirebaseAnalytics) {
 let pureJSAnalyticsTracker: FirebaseAnalyticsJS | void;
 let isUnavailabilityLoggingEnabled = true;
 let isUnavailabilityWarningLogged = false;
+let clientIdForJS: string;
 
 function callAnalyticsModule(funcName: string, ...args) {
   if (!ExpoFirebaseAnalytics[funcName]) {
@@ -49,10 +50,13 @@ function callAnalyticsModule(funcName: string, ...args) {
   if (DEFAULT_APP_NAME !== '[DEFAULT]') {
     if (DEFAULT_WEB_APP_OPTIONS && !pureJSAnalyticsTracker) {
       pureJSAnalyticsTracker = new FirebaseAnalyticsJS(DEFAULT_WEB_APP_OPTIONS, {
-        clientId: Constants.installationId,
+        clientId: clientIdForJS ?? Constants.installationId,
         sessionId: Constants.sessionId,
         strictNativeEmulation: true,
-        appName: Constants.manifest?.name || 'Unnamed Expo project',
+        appName:
+          Constants.manifest?.name ||
+          Constants.manifest2?.extra?.expoClient?.name ||
+          'Unnamed Expo project',
         appVersion: Constants.nativeAppVersion || undefined,
         headers: {
           // Google Analaytics seems to ignore certain user-agents. (e.g. "okhttp/3.12.1")
@@ -110,5 +114,11 @@ export default {
   },
   async setDebugModeEnabled(isEnabled: boolean): Promise<void> {
     return callAnalyticsModule('setDebugModeEnabled', isEnabled);
+  },
+  setClientId(clientId: string): void {
+    clientIdForJS = clientId;
+    if (pureJSAnalyticsTracker) {
+      pureJSAnalyticsTracker.setClientId(clientId);
+    }
   },
 };

@@ -1,12 +1,16 @@
+import { StackNavigationProp, StackScreenProps } from '@react-navigation/stack';
 import * as React from 'react';
 import { StyleSheet } from 'react-native';
 
 import BouncingShadowButton from '../components/BouncingShadowButton';
 import ScrollView from '../components/NavigationScrollView';
 import { StyledText } from '../components/Text';
+import { AllStackRoutes } from '../navigation/Navigation.types';
 import Environment from '../utils/Environment';
 
-export default function DiagnosticsScreen({ navigation }) {
+export default function DiagnosticsScreen({
+  navigation,
+}: StackScreenProps<AllStackRoutes, 'Diagnostics'>) {
   return (
     <ScrollView style={{ flex: 1 }} contentContainerStyle={{ paddingTop: 15 }}>
       <AudioDiagnostic navigation={navigation} />
@@ -20,9 +24,13 @@ export default function DiagnosticsScreen({ navigation }) {
   );
 }
 
-function AudioDiagnostic({ navigation }) {
+function AudioDiagnostic({
+  navigation,
+}: {
+  navigation: StackNavigationProp<AllStackRoutes, 'Diagnostics'>;
+}) {
   return (
-    <BouncingShadowButton onPress={() => navigation.navigate('Audio')}>
+    <BouncingShadowButton onPress={() => navigation.navigate('Audio', {})}>
       <StyledText style={styles.titleText}>Audio</StyledText>
       <StyledText style={styles.bodyText}>
         On iOS you can play audio
@@ -34,9 +42,13 @@ function AudioDiagnostic({ navigation }) {
   );
 }
 
-function BackgroundLocationDiagnostic({ navigation }) {
+function BackgroundLocationDiagnostic({
+  navigation,
+}: {
+  navigation: StackNavigationProp<AllStackRoutes, 'Diagnostics'>;
+}) {
   return (
-    <BouncingShadowButton onPress={() => navigation.navigate('Location')}>
+    <BouncingShadowButton onPress={() => navigation.navigate('Location', {})}>
       <StyledText style={styles.titleText}>Background location</StyledText>
       <StyledText style={styles.bodyText}>
         On iOS it's possible to track your location when an app is foregrounded, backgrounded, or
@@ -47,9 +59,13 @@ function BackgroundLocationDiagnostic({ navigation }) {
   );
 }
 
-function ForegroundLocationDiagnostic({ navigation }) {
+function ForegroundLocationDiagnostic({
+  navigation,
+}: {
+  navigation: StackNavigationProp<AllStackRoutes, 'Diagnostics'>;
+}) {
   return (
-    <BouncingShadowButton onPress={() => navigation.navigate('Location')}>
+    <BouncingShadowButton onPress={() => navigation.navigate('Location', {})}>
       <StyledText style={styles.titleText}>Location (when app in use)</StyledText>
       <StyledText style={styles.bodyText}>
         On iOS, there are different permissions for tracking your location. This diagnostic allows
@@ -61,9 +77,13 @@ function ForegroundLocationDiagnostic({ navigation }) {
   );
 }
 
-function GeofencingDiagnostic({ navigation }) {
+function GeofencingDiagnostic({
+  navigation,
+}: {
+  navigation: StackNavigationProp<AllStackRoutes, 'Diagnostics'>;
+}) {
   return (
-    <BouncingShadowButton onPress={() => navigation.navigate('Geofencing')}>
+    <BouncingShadowButton onPress={() => navigation.navigate('Geofencing', {})}>
       <StyledText style={styles.titleText}>Geofencing</StyledText>
       <StyledText style={styles.bodyText}>
         You can fire actions when your device enters specific geographical regions represented by a

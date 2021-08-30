@@ -1,6 +1,6 @@
 {
   "name": "expo-error-recovery",
-  "version": "2.0.1",
+  "version": "2.2.0",
   "description": "Utilities for helping you gracefully handle crashes due to fatal JavaScript errors.",
   "main": "build/ErrorRecovery.js",
   "types": "build/ErrorRecovery.d.ts",
@@ -30,16 +30,11 @@
   },
   "author": "650 Industries, Inc.",
   "license": "MIT",
-  "homepage": "https://docs.expo.io/versions/latest/sdk/error-recovery/",
-  "unimodulePeerDependencies": {
-    "@unimodules/core": "*"
-  },
-  "peerDependencies": {
-    "react": "*",
-    "react-native": "*"
+  "homepage": "https://docs.expo.dev/versions/latest/sdk/error-recovery/",
+  "dependencies": {
+    "expo-modules-core": "~0.3.0-alpha.0"
   },
   "devDependencies": {
-    "expo-module-scripts": "^1.0.0"
-  },
-  "dependencies": {}
+    "expo-module-scripts": "^2.0.0"
+  }
 }

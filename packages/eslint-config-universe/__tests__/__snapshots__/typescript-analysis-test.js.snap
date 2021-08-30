@@ -3,6 +3,7 @@
 exports[`lints: fixtures/typescript-analysis-00.ts 1`] = `
 Object {
   "errorCount": 0,
+  "fatalErrorCount": 0,
   "fixableErrorCount": 0,
   "fixableWarningCount": 0,
   "messages": Array [
@@ -50,6 +51,7 @@ export function myFunc(foo: T | null) {
 exports[`lints: fixtures/typescript-analysis-01.ts 1`] = `
 Object {
   "errorCount": 1,
+  "fatalErrorCount": 0,
   "fixableErrorCount": 0,
   "fixableWarningCount": 0,
   "messages": Array [
@@ -79,6 +81,7 @@ export { sum };",
 exports[`lints: fixtures/typescript-analysis-02.ts 1`] = `
 Object {
   "errorCount": 0,
+  "fatalErrorCount": 0,
   "fixableErrorCount": 0,
   "fixableWarningCount": 0,
   "messages": Array [
@@ -120,6 +123,7 @@ Object {
 exports[`lints: fixtures/typescript-analysis-03.ts 1`] = `
 Object {
   "errorCount": 0,
+  "fatalErrorCount": 0,
   "fixableErrorCount": 0,
   "fixableWarningCount": 0,
   "messages": Array [

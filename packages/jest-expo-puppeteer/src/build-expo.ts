@@ -1,5 +1,5 @@
-import { Webpack } from '@expo/xdl';
 import path from 'path';
+import { Webpack } from 'xdl';
 
 async function main(args: any[]) {
   const projectRoot = path.resolve(args[0]);

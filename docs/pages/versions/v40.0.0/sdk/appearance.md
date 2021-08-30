@@ -6,7 +6,7 @@ sourceCodeUrl: 'https://github.com/expo/react-native-appearance'
 import InstallSection from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 
-**`expo-appearance`** allows you to detect the user's preferred color scheme (`light`, `dark` or `no-preference`) on iOS 13+ and Android 10+.
+**`react-native-appearance`** allows you to detect the user's preferred color scheme (`light`, `dark` or `no-preference`) on iOS 13+ and Android 10+.
 
 <PlatformsSection android emulator ios simulator web />
 

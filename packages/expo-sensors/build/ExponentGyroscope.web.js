@@ -1,5 +1,5 @@
-import { SyntheticPlatformEmitter } from '@unimodules/core';
-import { isSensorEnabledAsync, assertSensorEventEnabledAsync, } from './utils/isSensorEnabledAsync.web';
+import { SyntheticPlatformEmitter } from 'expo-modules-core';
+import { assertSensorEventEnabledAsync, getPermissionsAsync, isSensorEnabledAsync, requestPermissionsAsync, } from './utils/isSensorEnabledAsync.web';
 const eventName = 'devicemotion';
 export default {
     get name() {
@@ -18,6 +18,8 @@ export default {
             z: accelerationIncludingGravity.z,
         });
     },
+    getPermissionsAsync,
+    requestPermissionsAsync,
     startObserving() {
         assertSensorEventEnabledAsync(eventName);
         window.addEventListener(eventName, this._handleMotion);

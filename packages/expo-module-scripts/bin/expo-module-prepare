@@ -22,7 +22,6 @@ if (fs.existsSync(path.join(process.cwd(), 'plugin'))) {
 
 set -eo pipefail
 
-
 script_dir="$(dirname "$0")"
 
 export EXPO_NONINTERACTIVE=1
@@ -34,7 +33,7 @@ echo "Configuring module"
 
 if [[ -d "$(pwd)/plugin" ]]; then
   echo "Configuring plugin"
-  "$script_dir/expo-module-clean" "plugin"
-  "$script_dir/expo-module-build" "plugin"
+  "$script_dir/expo-module-clean" plugin
+  "$script_dir/expo-module-build" plugin
 fi
 */

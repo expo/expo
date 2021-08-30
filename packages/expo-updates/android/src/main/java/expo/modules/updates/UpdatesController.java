@@ -15,6 +15,7 @@ import com.facebook.react.bridge.JSBundleLoader;
 import com.facebook.react.bridge.WritableMap;
 
 import androidx.annotation.Nullable;
+
 import expo.modules.updates.db.DatabaseHolder;
 import expo.modules.updates.db.Reaper;
 import expo.modules.updates.db.UpdatesDatabase;
@@ -23,10 +24,11 @@ import expo.modules.updates.db.entity.UpdateEntity;
 import expo.modules.updates.launcher.DatabaseLauncher;
 import expo.modules.updates.launcher.NoDatabaseLauncher;
 import expo.modules.updates.launcher.Launcher;
-import expo.modules.updates.launcher.SelectionPolicy;
-import expo.modules.updates.launcher.SelectionPolicyNewest;
+import expo.modules.updates.selectionpolicy.SelectionPolicy;
+import expo.modules.updates.loader.FileDownloader;
 import expo.modules.updates.loader.LoaderTask;
-import expo.modules.updates.manifest.Manifest;
+import expo.modules.updates.manifest.UpdateManifest;
+import expo.modules.updates.selectionpolicy.SelectionPolicyFactory;
 
 import java.io.File;
 import java.lang.ref.WeakReference;
@@ -50,7 +52,10 @@ public class UpdatesController {
   private Exception mUpdatesDirectoryException;
   private Launcher mLauncher;
   private DatabaseHolder mDatabaseHolder;
-  private SelectionPolicy mSelectionPolicy;
+  private SelectionPolicy mSelectionPolicy = null;
+  private FileDownloader mFileDownloader;
+
+  private SelectionPolicy mDefaultSelectionPolicy;
 
   // launch conditions
   private boolean mIsLoaderTaskFinished = false;
@@ -59,7 +64,8 @@ public class UpdatesController {
   private UpdatesController(Context context, UpdatesConfiguration updatesConfiguration) {
     mUpdatesConfiguration = updatesConfiguration;
     mDatabaseHolder = new DatabaseHolder(UpdatesDatabase.getInstance(context));
-    mSelectionPolicy = new SelectionPolicyNewest(UpdatesUtils.getRuntimeVersion(updatesConfiguration));
+    mDefaultSelectionPolicy = SelectionPolicyFactory.createFilterAwarePolicy(UpdatesUtils.getRuntimeVersion(mUpdatesConfiguration));
+    mFileDownloader = new FileDownloader(context);
     if (context instanceof ReactApplication) {
       mReactNativeHost = new WeakReference<>(((ReactApplication) context).getReactNativeHost());
     }
@@ -79,17 +85,21 @@ public class UpdatesController {
     return sInstance;
   }
 
+  public static void initializeWithoutStarting(Context context) {
+    if (sInstance == null) {
+      UpdatesConfiguration updatesConfiguration = new UpdatesConfiguration().loadValuesFromMetadata(context);
+      sInstance = new UpdatesController(context, updatesConfiguration);
+    }
+  }
+
   /**
    * Initializes the UpdatesController singleton. This should be called as early as possible in the
    * application's lifecycle.
    * @param context the base context of the application, ideally a {@link ReactApplication}
    */
   public static void initialize(Context context) {
-    if (sInstance == null) {
-      UpdatesConfiguration updatesConfiguration = new UpdatesConfiguration().loadValuesFromMetadata(context);
-      sInstance = new UpdatesController(context, updatesConfiguration);
-      sInstance.start(context);
-    }
+    initializeWithoutStarting(context);
+    sInstance.start(context);
   }
 
   /**
@@ -201,16 +211,62 @@ public class UpdatesController {
     return mUpdatesDirectory;
   }
 
+  public Exception getUpdatesDirectoryException() {
+    return mUpdatesDirectoryException;
+  }
+
   public UpdateEntity getLaunchedUpdate() {
+    if (mLauncher == null) {
+      return null;
+    }
     return mLauncher.getLaunchedUpdate();
   }
 
   public SelectionPolicy getSelectionPolicy() {
+    if (mSelectionPolicy == null) {
+      mSelectionPolicy = mDefaultSelectionPolicy;
+    }
     return mSelectionPolicy;
+  }
+
+  public FileDownloader getFileDownloader() {
+    return mFileDownloader;
   }
 
   public boolean isEmergencyLaunch() {
     return mIsEmergencyLaunch;
+  }
+
+  // internal setters
+
+  /**
+   * For external modules that want to modify the selection policy used at runtime.
+   *
+   * This method does not provide any guarantees about how long the provided selection policy will
+   * persist; sometimes expo-updates will reset the selection policy in situations where it makes
+   * sense to have explicit control (e.g. if the developer/user has programmatically fetched an
+   * update, expo-updates will reset the selection policy so the new update is launched on th
+   * next reload).
+   * @param selectionPolicy The SelectionPolicy to use next, until overridden by expo-updates
+   */
+  public void setNextSelectionPolicy(SelectionPolicy selectionPolicy) {
+    mSelectionPolicy = selectionPolicy;
+  }
+
+  public void resetSelectionPolicyToDefault() {
+    mSelectionPolicy = null;
+  }
+
+  public void setDefaultSelectionPolicy(SelectionPolicy selectionPolicy) {
+    mDefaultSelectionPolicy = selectionPolicy;
+  }
+
+  public void setLauncher(Launcher launcher) {
+    mLauncher = launcher;
+  }
+
+  public void setUpdatesConfiguration(UpdatesConfiguration updatesConfiguration) {
+    mUpdatesConfiguration = updatesConfiguration;
   }
 
   /**
@@ -223,12 +279,15 @@ public class UpdatesController {
     if (!mUpdatesConfiguration.isEnabled()) {
       mLauncher = new NoDatabaseLauncher(context, mUpdatesConfiguration);
     }
+    if (mUpdatesConfiguration.getUpdateUrl() == null || mUpdatesConfiguration.getScopeKey() == null) {
+      throw new AssertionError("expo-updates is enabled, but no valid URL is configured in AndroidManifest.xml. If you are making a release build for the first time, make sure you have run `expo publish` at least once.");
+    }
     if (mUpdatesDirectory == null) {
       mLauncher = new NoDatabaseLauncher(context, mUpdatesConfiguration, mUpdatesDirectoryException);
       mIsEmergencyLaunch = true;
     }
 
-    new LoaderTask(mUpdatesConfiguration, mDatabaseHolder, mUpdatesDirectory, mSelectionPolicy, new LoaderTask.LoaderTaskCallback() {
+    new LoaderTask(mUpdatesConfiguration, mDatabaseHolder, mUpdatesDirectory, mFileDownloader, getSelectionPolicy(), new LoaderTask.LoaderTaskCallback() {
       @Override
       public void onFailure(Exception e) {
         mLauncher = new NoDatabaseLauncher(context, mUpdatesConfiguration, e);
@@ -242,7 +301,7 @@ public class UpdatesController {
       }
 
       @Override
-      public void onRemoteManifestLoaded(Manifest manifest) { }
+      public void onRemoteUpdateManifestLoaded(UpdateManifest updateManifest) { }
 
       @Override
       public void onSuccess(Launcher launcher, boolean isUpToDate) {
@@ -264,7 +323,7 @@ public class UpdatesController {
             throw new AssertionError("Background update with error status must have a nonnull update object");
           }
           WritableMap params = Arguments.createMap();
-          params.putString("manifestString", update.metadata.toString());
+          params.putString("manifestString", update.manifest.toString());
           UpdatesUtils.sendEventToReactNative(mReactNativeHost, UPDATE_AVAILABLE_EVENT, params);
         } else if (status == LoaderTask.BackgroundUpdateStatus.NO_UPDATE_AVAILABLE) {
           UpdatesUtils.sendEventToReactNative(mReactNativeHost, UPDATE_NO_UPDATE_AVAILABLE_EVENT, null);
@@ -278,10 +337,10 @@ public class UpdatesController {
     notify();
   }
 
-  private void runReaper() {
+  public void runReaper() {
     AsyncTask.execute(() -> {
       UpdatesDatabase database = getDatabase();
-      Reaper.reapUnusedUpdates(mUpdatesConfiguration, database, mUpdatesDirectory, getLaunchedUpdate(), mSelectionPolicy);
+      Reaper.reapUnusedUpdates(mUpdatesConfiguration, database, mUpdatesDirectory, getLaunchedUpdate(), getSelectionPolicy());
       releaseDatabase();
     });
   }
@@ -296,7 +355,7 @@ public class UpdatesController {
     final String oldLaunchAssetFile = mLauncher.getLaunchAssetFile();
 
     UpdatesDatabase database = getDatabase();
-    final DatabaseLauncher newLauncher = new DatabaseLauncher(mUpdatesConfiguration, mUpdatesDirectory, mSelectionPolicy);
+    final DatabaseLauncher newLauncher = new DatabaseLauncher(mUpdatesConfiguration, mUpdatesDirectory, mFileDownloader, getSelectionPolicy());
     newLauncher.launch(database, context, new Launcher.LauncherCallback() {
       @Override
       public void onFailure(Exception e) {

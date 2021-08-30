@@ -6,11 +6,11 @@ import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.net.Uri;
 
-import org.unimodules.core.ModuleRegistry;
-import org.unimodules.core.errors.CurrentActivityNotFoundException;
-import org.unimodules.core.interfaces.ActivityProvider;
-import org.unimodules.core.interfaces.Function;
-import org.unimodules.core.interfaces.InternalModule;
+import expo.modules.core.ModuleRegistry;
+import expo.modules.core.errors.CurrentActivityNotFoundException;
+import expo.modules.core.interfaces.ActivityProvider;
+import expo.modules.core.interfaces.Function;
+import expo.modules.core.interfaces.InternalModule;
 
 import java.util.ArrayList;
 import java.util.Collection;

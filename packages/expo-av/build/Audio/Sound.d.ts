@@ -1,4 +1,4 @@
-import { EventEmitter } from '@unimodules/core';
+import { EventEmitter } from 'expo-modules-core';
 import { Playback, AVPlaybackSource, AVPlaybackStatus, AVPlaybackStatusToSet } from '../AV';
 import { PitchCorrectionQuality } from '../Audio';
 declare type AudioInstance = number | HTMLMediaElement | null;

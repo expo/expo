@@ -4,7 +4,7 @@ title: Optimizing Updates
 
 ## What's in an update?
 
-An update for an Expo app comprises the JavaScript, manifest, images, and other assets that a compatible Expo client app can download and run.
+An update for an Expo app comprises the JavaScript, manifest, images, and other assets that a compatible Expo client app, such as Expo Go and production apps, can download and run.
 
 On Android and iOS, the standalone apps you submit to the app stores are examples of client apps that run your updates. On the web, the web browser is the client app that runs updates. In fact, on the web, Expo updates are just web applications.
 
@@ -58,7 +58,7 @@ With `expo-updates` you can also host updates on your own servers, which may sup
 
 ## Self-hosting your updates
 
-In addition to building your app on your own computer, you can host your updates on your own servers. Read more about [Hosting Updates on Your Servers](https://docs.expo.io/distribution/hosting-your-app/).
+In addition to building your app on your own computer, you can host your updates on your own servers. Read more about [Hosting Updates on Your Servers](https://docs.expo.dev/distribution/hosting-your-app/).
 
 ## A glimpse at the future
 

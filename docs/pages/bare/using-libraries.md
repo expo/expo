@@ -1,5 +1,5 @@
 ---
-title: Using Libraries
+title: Using libraries
 ---
 
 import PlatformsSection from '~/components/plugins/PlatformsSection';
@@ -34,7 +34,7 @@ export default function App() {
 
 The Expo SDK picks up where the React Native core libraries end - it provides access to a lot of useful device and system functionality like audio, barcode scanning, camera, calendar, contacts, video, and so on. It also adds other powerful libraries like over-the-air updates, maps, OAuth authentication tools, and more.
 
-To use a library from the Expo SDK, find the one you are looking for in the [API Reference](https://docs.expo.io/versions/latest/) or through the documentation Search bar.
+To use a library from the Expo SDK, find the one you are looking for in the [API Reference](https://docs.expo.dev/versions/latest/) or through the documentation Search bar.
 
 At the top of the page you will see a description of the library and a platform compatibility table. It tells you which platforms and environments the library is compatible with. It looks like this:
 
@@ -82,7 +82,7 @@ export default function App() {
 
 After React Native Directory, the [npm registry](https://www.npmjs.com/) is the next best place. The npm registry is the definitive source for JavaScript libraries, but the libraries that it lists may not all be compatible with React Native. React Native is one of many JavaScript programming environments, including Node.js, web browsers, Electron, and more, and npm includes libraries that work for all of these environments.
 
-Usually libraries built specifically for other platforms will not work with React Native. Examples include `react-select` which is built for the web and specifically targets `react-dom`, and `rimraf` which is built for Node.js and interacts with your computer file system. Other libraries like `lodash` use only JavaScript langauge features and work in any environment.
+Usually libraries built specifically for other platforms will not work with React Native. Examples include `react-select` which is built for the web and specifically targets `react-dom`, and `rimraf` which is built for Node.js and interacts with your computer file system. Other libraries like `lodash` use only JavaScript language features and work in any environment.
 
 ### Determining Third-Party Library Compatibility
 

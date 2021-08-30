@@ -1,4 +1,4 @@
-import { css } from '@emotion/core';
+import { css } from '@emotion/react';
 import * as React from 'react';
 
 import { BASE_HEADING_LEVEL, Heading, HeadingManager } from '../common/headingManager';
@@ -86,7 +86,9 @@ class DocumentationSidebarRight extends React.Component<PropsWithHM, State> {
 
     //filter out headings nested too much
     const displayedHeadings = headings.filter(
-      head => head.level <= BASE_HEADING_LEVEL + this.props.maxNestingDepth!
+      head =>
+        head.level <= BASE_HEADING_LEVEL + this.props.maxNestingDepth! &&
+        head.title.toLowerCase() !== 'see also'
     );
 
     return (

@@ -17,18 +17,18 @@ import expo.modules.notifications.notifications.model.NotificationContent;
 import expo.modules.notifications.notifications.model.NotificationRequest;
 import abi39_0_0.expo.modules.notifications.notifications.scheduling.NotificationScheduler;
 import expo.modules.notifications.service.NotificationsService;
-import host.exp.exponent.kernel.ExperienceId;
+import host.exp.exponent.kernel.ExperienceKey;
 import host.exp.exponent.notifications.ScopedNotificationsUtils;
 import host.exp.exponent.notifications.model.ScopedNotificationRequest;
 import host.exp.exponent.utils.ScopedContext;
 
 public class ScopedNotificationScheduler extends NotificationScheduler {
-  private final ExperienceId mExperienceId;
+  private final ExperienceKey mExperienceKey;
   private final ScopedNotificationsUtils mScopedNotificationsUtils;
 
-  public ScopedNotificationScheduler(Context context, ExperienceId experienceId) {
+  public ScopedNotificationScheduler(Context context, ExperienceKey experienceKey) {
     super(context);
-    mExperienceId = experienceId;
+    mExperienceKey = experienceKey;
     mScopedNotificationsUtils = new ScopedNotificationsUtils(context);
   }
 
@@ -42,15 +42,15 @@ public class ScopedNotificationScheduler extends NotificationScheduler {
 
   @Override
   protected NotificationRequest createNotificationRequest(String identifier, NotificationContent content, NotificationTrigger notificationTrigger) {
-    String experienceIdString = mExperienceId == null ? null : mExperienceId.get();
-    return new ScopedNotificationRequest(identifier, content, notificationTrigger, experienceIdString);
+    String experienceScopeKey = mExperienceKey == null ? null : mExperienceKey.getScopeKey();
+    return new ScopedNotificationRequest(identifier, content, notificationTrigger, experienceScopeKey);
   }
 
   @Override
   protected Collection<Bundle> serializeScheduledNotificationRequests(Collection<NotificationRequest> requests) {
     Collection<Bundle> serializedRequests = new ArrayList<>(requests.size());
     for (NotificationRequest request : requests) {
-      if (mScopedNotificationsUtils.shouldHandleNotification(request, mExperienceId)) {
+      if (mScopedNotificationsUtils.shouldHandleNotification(request, mExperienceKey)) {
         serializedRequests.add(NotificationSerializer.toBundle(request));
       }
     }
@@ -65,7 +65,7 @@ public class ScopedNotificationScheduler extends NotificationScheduler {
         super.onReceiveResult(resultCode, resultData);
         if (resultCode == NotificationsService.SUCCESS_CODE) {
           NotificationRequest request = resultData.getParcelable(NotificationsService.NOTIFICATION_REQUESTS_KEY);
-          if (request == null || !mScopedNotificationsUtils.shouldHandleNotification(request, mExperienceId)) {
+          if (request == null || !mScopedNotificationsUtils.shouldHandleNotification(request, mExperienceKey)) {
             promise.resolve(null);
           }
 
@@ -92,7 +92,7 @@ public class ScopedNotificationScheduler extends NotificationScheduler {
           }
           List<String> toRemove = new ArrayList<>();
           for (NotificationRequest request : requests) {
-            if (mScopedNotificationsUtils.shouldHandleNotification(request, mExperienceId)) {
+            if (mScopedNotificationsUtils.shouldHandleNotification(request, mExperienceKey)) {
               toRemove.add(request.getIdentifier());
             }
           }

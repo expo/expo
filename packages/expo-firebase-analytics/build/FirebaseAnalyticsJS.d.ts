@@ -90,5 +90,9 @@ declare class FirebaseAnalyticsJS {
      * Enables or disabled debug mode.
      */
     setDebugModeEnabled(isEnabled: boolean): Promise<void>;
+    /**
+     * Sets a new value for the client ID.
+     */
+    setClientId(clientId: string): void;
 }
 export default FirebaseAnalyticsJS;

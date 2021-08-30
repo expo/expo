@@ -1,6 +1,6 @@
-import { CodedError } from '@unimodules/core';
 import * as AppAuth from 'expo-app-auth';
 import Constants from 'expo-constants';
+import { CodedError } from 'expo-modules-core';
 import { Platform } from 'react-native';
 
 const isInExpo = Constants.appOwnership === 'expo';

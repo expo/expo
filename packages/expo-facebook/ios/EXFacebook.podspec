@@ -13,10 +13,12 @@ Pod::Spec.new do |s|
   s.platform       = :ios, '11.0'
   s.source         = { git: 'https://github.com/expo/expo.git' }
 
-  s.dependency 'UMCore'
-  s.dependency 'UMConstantsInterface'
-  s.dependency 'FBSDKCoreKit', '~> 5.8.0'
-  s.dependency 'FBSDKLoginKit', '~> 5.8.0'
+  s.dependency 'ExpoModulesCore'
+  s.dependency 'FacebookSDK/CoreKit', $FacebookSDKVersion || '9.2.0'
+  s.dependency 'FacebookSDK/LoginKit', $FacebookSDKVersion || '9.2.0'
+
+  # FacebookSDK is written in Swift, so must use this flag to import from it.
+  s.pod_target_xcconfig = { 'CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES' => 'YES' }
 
   if !$ExpoUseSources&.include?(package['name']) && ENV['EXPO_USE_SOURCE'].to_i == 0 && File.exist?("#{s.name}.xcframework") && Gem::Version.new(Pod::VERSION) >= Gem::Version.new('1.10.0')
     s.source_files = "#{s.name}/**/*.h"

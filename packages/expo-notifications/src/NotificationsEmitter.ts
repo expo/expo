@@ -1,4 +1,4 @@
-import { EventEmitter, Subscription } from '@unimodules/core';
+import { EventEmitter, Subscription, UnavailabilityError } from 'expo-modules-core';
 
 import { Notification, NotificationResponse } from './Notifications.types';
 import NotificationsEmitterModule from './NotificationsEmitterModule';
@@ -33,4 +33,11 @@ export function addNotificationResponseReceivedListener(
 
 export function removeNotificationSubscription(subscription: Subscription) {
   emitter.removeSubscription(subscription);
+}
+
+export async function getLastNotificationResponseAsync(): Promise<NotificationResponse | null> {
+  if (!NotificationsEmitterModule.getLastNotificationResponseAsync) {
+    throw new UnavailabilityError('ExpoNotifications', 'getLastNotificationResponseAsync');
+  }
+  return await NotificationsEmitterModule.getLastNotificationResponseAsync();
 }

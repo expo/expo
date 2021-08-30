@@ -3,9 +3,11 @@ package expo.modules.medialibrary;
 import android.content.Context;
 import android.database.Cursor;
 import android.media.MediaScannerConnection;
-import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.provider.MediaStore;
+
+import expo.modules.core.Promise;
 
 import java.io.File;
 import java.io.IOException;
@@ -13,11 +15,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.unimodules.core.Promise;
-
 import static expo.modules.medialibrary.MediaLibraryConstants.ERROR_IO_EXCEPTION;
 import static expo.modules.medialibrary.MediaLibraryConstants.ERROR_MEDIA_LIBRARY_CORRUPTED;
 import static expo.modules.medialibrary.MediaLibraryConstants.ERROR_NO_ALBUM;
+import static expo.modules.medialibrary.MediaLibraryConstants.ERROR_NO_PERMISSIONS;
 import static expo.modules.medialibrary.MediaLibraryConstants.ERROR_UNABLE_TO_LOAD;
 import static expo.modules.medialibrary.MediaLibraryConstants.ERROR_UNABLE_TO_SAVE_PERMISSION;
 import static expo.modules.medialibrary.MediaLibraryConstants.EXTERNAL_CONTENT;
@@ -37,23 +38,21 @@ class AddAssetsToAlbum extends AsyncTask<Void, Void, Void> {
     mContext = context;
     mAssetsId = assetsId;
     mAlbumId = albumId;
-    mStrategy = copyToAlbum ? copyStrategy : moveStrategy;
     mPromise = promise;
+    mStrategy = copyToAlbum ? copyStrategy : moveStrategy;
   }
 
-
   private File getAlbum() {
-    final String[] path = {MediaStore.Images.Media.DATA};
-    final String selection = MediaStore.Images.Media.BUCKET_ID + "=?";
+    final String[] path = {MediaStore.MediaColumns.DATA};
+    final String selection = MediaStore.MediaColumns.BUCKET_ID + "=?";
     final String[] id = {mAlbumId};
-    final String limit = "1 LIMIT 1";
 
     try (Cursor album = mContext.getContentResolver().query(
-        EXTERNAL_CONTENT,
-        path,
-        selection,
-        id,
-        limit)) {
+      EXTERNAL_CONTENT,
+      path,
+      selection,
+      id,
+      null)) {
 
       if (album == null) {
         mPromise.reject(ERROR_UNABLE_TO_LOAD, "Could not get album. Query returns null.");
@@ -78,27 +77,31 @@ class AddAssetsToAlbum extends AsyncTask<Void, Void, Void> {
   @Override
   protected Void doInBackground(Void... params) {
     try {
+      List<MediaLibraryUtils.AssetFile> assets = getAssetsById(mContext, mPromise, mAssetsId);
+      if (assets == null) {
+        return null;
+      }
+
       File album = getAlbum();
       if (album == null) {
         return null;
       }
-      List<File> assets = getAssetsById(mContext, mPromise, mAssetsId);
-      if (assets == null) {
+
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R && !album.canWrite()) {
+        mPromise.reject(ERROR_NO_PERMISSIONS, "The application doesn't have permission to write to the album's directory. For more information, check out https://expo.fyi/android-r.");
         return null;
       }
+
       List<String> paths = new ArrayList<>();
-      for (File asset : assets) {
+      for (MediaLibraryUtils.AssetFile asset : assets) {
         File newAsset = mStrategy.apply(asset, album, mContext);
         paths.add(newAsset.getPath());
       }
 
       final AtomicInteger atomicInteger = new AtomicInteger(paths.size());
-      MediaScannerConnection.scanFile(mContext, paths.toArray(new String[0]), null, new MediaScannerConnection.OnScanCompletedListener() {
-        @Override
-        public void onScanCompleted(String path, Uri uri) {
-          if (atomicInteger.decrementAndGet() == 0) {
-            mPromise.resolve(true);
-          }
+      MediaScannerConnection.scanFile(mContext, paths.toArray(new String[0]), null, (path, uri) -> {
+        if (atomicInteger.decrementAndGet() == 0) {
+          mPromise.resolve(true);
         }
       });
     } catch (SecurityException e) {

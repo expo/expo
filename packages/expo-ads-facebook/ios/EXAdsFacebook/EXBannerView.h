@@ -1,15 +1,15 @@
 #import <UIKit/UIKit.h>
-#import <UMCore/UMDefines.h>
-#import <UMCore/UMModuleRegistry.h>
+#import <ExpoModulesCore/EXDefines.h>
+#import <ExpoModulesCore/EXModuleRegistry.h>
 
 @interface EXBannerView : UIView
 
-@property (nonatomic, copy) UMDirectEventBlock onAdPress;
-@property (nonatomic, copy) UMDirectEventBlock onAdError;
+@property (nonatomic, copy) EXDirectEventBlock onAdPress;
+@property (nonatomic, copy) EXDirectEventBlock onAdError;
 
 @property (nonatomic, strong) NSNumber *size;
 @property (nonatomic, strong) NSString *placementId;
 
-- (instancetype)initWithModuleRegistry:(UMModuleRegistry *)moduleRegistry;
+- (instancetype)initWithModuleRegistry:(EXModuleRegistry *)moduleRegistry;
 
 @end

@@ -2,7 +2,7 @@
 
 #import <AVFoundation/AVFoundation.h>
 
-#import <UMCore/UMDefines.h>
+#import <ExpoModulesCore/EXDefines.h>
 
 #import <EXAV/EXAudioSessionManager.h>
 
@@ -23,7 +23,7 @@
 
 @implementation EXAudioSessionManager
 
-UM_REGISTER_SINGLETON_MODULE(AudioSessionManager);
+EX_REGISTER_SINGLETON_MODULE(AudioSessionManager);
 
 - (instancetype)init
 {

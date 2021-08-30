@@ -1,4 +1,4 @@
-import { Platform } from '@unimodules/core';
+import { Platform } from 'expo-modules-core';
 
 const mockFontMetadata = {
   hash: 'cafecafecafecafecafecafecafecafe',
@@ -12,7 +12,7 @@ describe('selectAssetSource', () => {
   beforeEach(() => {
     _mockConstants({
       experienceUrl: 'https://example.com/app/expo-manifest.json',
-      manifest: {
+      __unsafeNoWarnManifest: {
         assetMapOverride: {
           d00dd00dd00dd00dd00dd00dd00dd00d: { name: 'overridden', type: 'mp4' },
         },
@@ -36,7 +36,7 @@ describe('selectAssetSource', () => {
 
   it(`returns a URI based on the bundle's URL in development`, () => {
     _mockConstants({
-      manifest: {
+      __unsafeNoWarnManifest: {
         developer: {},
         bundleUrl: 'https://exp.direct:19001/src/App.js',
       },

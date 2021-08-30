@@ -2,8 +2,8 @@ package expo.modules.network;
 
 import android.content.Context;
 
-import org.unimodules.core.BasePackage;
-import org.unimodules.core.ExportedModule;
+import expo.modules.core.BasePackage;
+import expo.modules.core.ExportedModule;
 
 import java.util.Collections;
 import java.util.List;

@@ -3,6 +3,7 @@ title: Walkthrough
 sidebar_title: Walkthrough
 ---
 
+import ImageSpotlight from '~/components/plugins/ImageSpotlight'
 import Video from '~/components/plugins/Video'
 
 There's no need to install anything or even understand everything here, this page is meant to give you an overview of some of the big pieces of building a managed app. In the same way that getting a quick tour of Paris won't make you an expert on Paris, this walkthrough serves to help you identify a few landmarks and the most important areas in the managed workflow. You can do a walkthrough of the [bare workflow](../bare/exploring-bare-workflow.md) later on.
@@ -21,13 +22,13 @@ Now we just run `yarn start` (or `npm start` if you prefer that package manager)
 
 <Video file="exploring-managed/start.mp4" spaceAfter />
 
-## Open the project with the Expo client app on iOS or Android, or in your web browser
+## Open the project with the Expo Go app on iOS or Android, or in your web browser
 
-To run the app we don’t need to build any native code because it runs in the [Expo client](https://expo.io/tools#client), and the CLI will automatically install it for us in the [iOS simulator](../workflow/ios-simulator.md) or on any connected [Android emulator](../workflow/android-studio-emulator.md) or device. You can also download it from the App Store and Play Store.
+To run the app we don’t need to build any native code because it runs in the [Expo Go](https://expo.dev/tools#client), and the CLI will automatically install it for us in the [iOS simulator](../workflow/ios-simulator.md) or on any connected [Android emulator](../workflow/android-studio-emulator.md) or device. You can also download it from the App Store and Play Store.
 
 <Video file="exploring-managed/open.mp4" />
 
-<!-- The Expo client asks the server you started with `expo start` for a copy of your project (via localhost, LAN, or a tunnel), downloads it, and runs it. You can take advantage of various development tools such as [debugging](../../workflow/debugging/), [streaming device logs](../../workflow/logging/), and inspecting elements. -->
+<!-- the Expo Go app asks the server you started with `expo start` for a copy of your project (via localhost, LAN, or a tunnel), downloads it, and runs it. You can take advantage of various development tools such as [debugging](../../workflow/debugging/), [streaming device logs](../../workflow/logging/), and inspecting elements. -->
 
 If you close the `expo-cli` or turn off your computer, you won't be able to access the app from your device anymore. We'll see how you can make it always available later on.
 
@@ -37,9 +38,8 @@ Let's scroll through the [API Reference](/versions/latest/) to find packages tha
 
 Let's say we had mockups for our app that look like the following:
 
-<div style={{flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 10}}>
-<img src="/static/images/exploring-managed/mockups.png" alt="Mockups of app screens" />
-</div>
+
+<ImageSpotlight alt="Mockups of app screens" src="/static/images/exploring-managed/mockups.png" />
 
 > _Note: These are actually screenshots from [Sindre Sorhus'](https://github.com/sindresorhus) open source app [Blear](https://sindresorhus.com/blear), but let's pretend they are mockups for the sake of demonstration._
 
@@ -77,9 +77,9 @@ You may have noticed that when we ran `expo publish` the CLI warned us about opt
 
 <Video file="exploring-managed/optimize.mp4" />
 
-Upon publishing you are given a persistent URL that you can share with colleagues, in this case it was [https://expo.io/@notbrent/blearexp](https://expo.io/@notbrent/blearexp). This is determined by your Expo account username and the `slug` field in your project `app.json`.
+Upon publishing you are given a persistent URL that you can share with colleagues, in this case it was [https://expo.dev/@notbrent/blearexp](https://expo.dev/@notbrent/blearexp). This is determined by your Expo account username and the `slug` field in your project `app.json`.
 
-On iOS, only you can open projects that you have built unless you have a [priority plan](https://expo.io/developer-services), in which case your teammates can open your projects as well. Another option to open any published managed app from within the Expo client is to do a custom build of the Expo iOS client. [Read more about that here](../guides/adhoc-builds.md).
+On iOS, only you can open projects that you have built unless you have a [priority plan](https://expo.dev/developer-services), in which case your teammates can open your projects as well. Another option to open any published managed app is to do a custom build of an Expo iOS client. [Read more about that here](../guides/adhoc-builds.md).
 
 ## Building and deploying
 
@@ -95,7 +95,7 @@ Now when we run `expo build:ios` it will kick off a build with the Expo build se
 
 > _Note: Running `expo build:[ios/android]` uses the Expo build service &mdash; if you would rather run builds on your own infrastructure, read about how to do this in [Building Standalone Apps on Your CI](../distribution/turtle-cli.md)_
 
-Now you can use [Application Loader](https://help.apple.com/itc/apploader/) to upload the app to App Store Connect, but we find that it’s a bit easier to run `expo upload:ios` instead. Once it's up on App Store Connect, you'll have to do some manual work within their web interface. [Read more about deploying to app stores](../distribution/app-stores.md).
+Now you can use [Transporter](https://apps.apple.com/app/transporter/id1450874784) to upload the app to App Store Connect, but we find that it’s a bit easier to run `expo upload:ios` instead. Once it's up on App Store Connect, you'll have to do some manual work within their web interface. [Read more about deploying to app stores](../distribution/app-stores.md).
 
 <Video file="exploring-managed/uploadios.mp4" spaceAfter />
 
@@ -133,7 +133,7 @@ We frequently release updates to the [Expo SDK](/versions/latest/). If you decid
 
 ## Sending notifications
 
-An [in-depth guide](../push-notifications/overview.md) to setting up push notifications end-to-end from your app to server is a good place to look for more information here. To quickly demonstrate how easy it is to get something simple wired up, without introducing any complexity of a server, take a look at how we can test out notifications using the [Push notifications tool](https://expo.io/notifications).
+An [in-depth guide](../push-notifications/overview.md) to setting up push notifications end-to-end from your app to server is a good place to look for more information here. To quickly demonstrate how easy it is to get something simple wired up, without introducing any complexity of a server, take a look at how we can test out notifications using the [Push notifications tool](https://expo.dev/notifications).
 
 <Video file="exploring-managed/notify.mp4" />
 

@@ -31,26 +31,28 @@ internal class GetAlbumInfoTests {
 
   @Test
   fun `GetAlbum should call queryAlbum`() {
-    //arrange
+    // arrange
     val context = mockContext.get()
     val selectionSlot = slot<String>()
     val selectionArgsSlot = slot<Array<String>>()
 
     mockkStatic(MediaLibraryUtils::class)
-    every { MediaLibraryUtils.queryAlbum(
-      context,
-      capture(selectionSlot),
-      capture(selectionArgsSlot),
-      promise
-    ) } just runs
+    every {
+      MediaLibraryUtils.queryAlbum(
+        context,
+        capture(selectionSlot),
+        capture(selectionArgsSlot),
+        promise
+      )
+    } just runs
 
     val expectedSelection = "${MediaStore.Images.Media.BUCKET_DISPLAY_NAME}=?"
     val albumName = "testAlbumName"
 
-    //act
+    // act
     GetAlbum(context, albumName, promise).doInBackground()
 
-    //assert
+    // assert
     assertTrue(selectionSlot.captured.contains(expectedSelection, ignoreCase = true))
     assertEquals(1, selectionArgsSlot.captured.size)
     assertEquals(albumName, selectionArgsSlot.captured[0])
@@ -58,23 +60,25 @@ internal class GetAlbumInfoTests {
 
   @Test
   fun `queryAlbum returns correct values`() {
-    //arrange
+    // arrange
     val bucketDisplayName = "Some Album Name"
     val selection = MediaStore.Images.Media.BUCKET_DISPLAY_NAME + "=?"
     val selectionArgs = arrayOf(bucketDisplayName)
 
-    val cursor = mockCursor(arrayOf(
-      arrayOf(*MockData.mockImage.toColumnArray(), bucketDisplayName),
-      arrayOf(*MockData.mockVideo.toColumnArray(), bucketDisplayName)
-    ))
+    val cursor = mockCursor(
+      arrayOf(
+        arrayOf(*MockData.mockImage.toColumnArray(), bucketDisplayName),
+        arrayOf(*MockData.mockVideo.toColumnArray(), bucketDisplayName)
+      )
+    )
     cursor.setColumnNames(arrayListOf(*cursor.columnNames, MediaStore.Images.Media.BUCKET_DISPLAY_NAME))
 
     val context = mockContext with mockContentResolver(cursor)
 
-    //act
+    // act
     MediaLibraryUtils.queryAlbum(context, selection, selectionArgs, promise)
 
-    //assert
+    // assert
     promiseResolved(promise) {
       assertEquals(bucketDisplayName, it.getString("title"))
       assertEquals(2, it.getInt("assetCount"))
@@ -84,37 +88,37 @@ internal class GetAlbumInfoTests {
 
   @Test
   fun `queryAlbum should reject on null cursor`() {
-    //arrange
+    // arrange
     val context = mockContext with mockContentResolver(null)
 
-    //act
+    // act
     MediaLibraryUtils.queryAlbum(context, "", emptyArray(), promise)
 
-    //assert
+    // assert
     assertRejected(promise)
   }
 
   @Test
   fun `queryAlbum should reject on SecurityException`() {
-    //arrange
+    // arrange
     val context = mockContext with throwableContentResolver(SecurityException())
 
-    //act
+    // act
     MediaLibraryUtils.queryAlbum(context, "", emptyArray(), promise)
 
-    //assert
+    // assert
     assertRejectedWithCode(promise, MediaLibraryConstants.ERROR_UNABLE_TO_LOAD_PERMISSION)
   }
 
   @Test
   fun `queryAlbum should reject on IllegalArgumentException`() {
-    //arrange
+    // arrange
     val context = mockContext with throwableContentResolver(IllegalArgumentException())
 
-    //act
+    // act
     MediaLibraryUtils.queryAlbum(context, "", emptyArray(), promise)
 
-    //assert
+    // assert
     assertRejectedWithCode(promise, MediaLibraryConstants.ERROR_UNABLE_TO_LOAD)
   }
 }

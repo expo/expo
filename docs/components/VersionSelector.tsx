@@ -1,4 +1,5 @@
-import { css } from '@emotion/core';
+import { css } from '@emotion/react';
+import { theme } from '@expo/styleguide';
 import * as React from 'react';
 
 import * as Utilities from '~/common/utilities';
@@ -11,16 +12,15 @@ const STYLES_SELECT = css`
   position: relative;
   margin: 0;
   padding: 8px 16px;
-  background-color: rgba(0, 0, 0, 0.05);
   border-radius: 5px;
   margin-bottom: 15px;
   width: 100%;
-  background-color: ${Constants.expoColors.white};
-  border: 1px solid ${Constants.expoColors.semantic.border};
-  box-shadow: 0 2px 2px 0 rgba(0, 0, 20, 0.015), 0 0 0 1px rgba(0, 0, 20, 0.0075);
+  background-color: ${theme.background.default};
+  border: 1px solid ${theme.border.default};
+  box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.015), 0 0 0 1px rgba(0, 0, 0, 0.0075);
 
   :hover {
-    background-color: ${Constants.expoColors.gray[100]};
+    background-color: ${theme.background.secondary};
   }
 `;
 
@@ -31,7 +31,7 @@ const STYLES_SELECT_TEXT = css`
   flex: 1;
   justify-content: space-between;
   font-family: ${Constants.fontFamilies.demi};
-  color: ${Constants.colors.black};
+  color: ${theme.text.default};
   font-size: 14px;
 `;
 
@@ -60,10 +60,12 @@ const VersionSelector: React.FC<Props> = ({ version, style, onSetVersion }) => (
       <div>{Utilities.getUserFacingVersionString(version, LATEST_VERSION, BETA_VERSION)}</div>
       <ChevronDownIcon style={{ height: '16px', width: '16px' }} />
     </label>
-    {// hidden links to help test-links spidering
-    VERSIONS.map(v => (
-      <a key={v} style={{ display: 'none' }} href={`/versions/${v}/`} />
-    ))}
+    {
+      // hidden links to help test-links spidering
+      VERSIONS.map(v => (
+        <a key={v} style={{ display: 'none' }} href={`/versions/${v}/`} />
+      ))
+    }
     <select
       id="version-menu"
       css={STYLES_SELECT_ELEMENT}

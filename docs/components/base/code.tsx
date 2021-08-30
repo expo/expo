@@ -1,6 +1,8 @@
-import { css } from '@emotion/core';
+import { css } from '@emotion/react';
+import { theme } from '@expo/styleguide';
 import { Language, Prism } from 'prism-react-renderer';
 import * as React from 'react';
+import tippy, { roundArrow } from 'tippy.js';
 
 import { installLanguages } from './languages';
 
@@ -13,7 +15,7 @@ const attributes = {
 };
 
 const STYLES_CODE_BLOCK = css`
-  color: ${Constants.colors.black90};
+  color: ${theme.text.default};
   font-family: ${Constants.fontFamilies.mono};
   font-size: 13px;
   line-height: 20px;
@@ -24,8 +26,8 @@ const STYLES_CODE_BLOCK = css`
   .code-annotation {
     transition: 200ms ease all;
     transition-property: text-shadow, opacity;
-    text-shadow: rgba(255, 255, 0, 1) 0px 0px 10px, rgba(255, 255, 0, 1) 0px 0px 10px,
-      rgba(255, 255, 0, 1) 0px 0px 10px, rgba(255, 255, 0, 1) 0px 0px 10px;
+    text-shadow: ${theme.highlight.emphasis} 0px 0px 10px, ${theme.highlight.emphasis} 0px 0px 10px,
+      ${theme.highlight.emphasis} 0px 0px 10px, ${theme.highlight.emphasis} 0px 0px 10px;
   }
 
   .code-annotation:hover {
@@ -44,7 +46,7 @@ const STYLES_CODE_BLOCK = css`
 `;
 
 const STYLES_INLINE_CODE = css`
-  color: ${Constants.expoColors.gray[900]};
+  color: ${theme.text.default};
   font-family: ${Constants.fontFamilies.mono};
   font-size: 0.825em;
   white-space: pre-wrap;
@@ -54,26 +56,26 @@ const STYLES_INLINE_CODE = css`
   max-width: 100%;
 
   word-wrap: break-word;
-  background-color: ${Constants.expoColors.gray[100]};
-  border: 1px solid ${Constants.expoColors.semantic.border};
+  background-color: ${theme.background.secondary};
+  border: 1px solid ${theme.border.default};
   border-radius: 4px;
   vertical-align: middle;
-  overflow-x: scroll;
+  overflow-x: auto;
 
   /* Disable Safari from adding border when used within a (perma)link */
   a & {
-    border-color: ${Constants.expoColors.semantic.border};
+    border-color: ${theme.border.default};
   }
 `;
 
 const STYLES_CODE_CONTAINER = css`
-  border: 1px solid ${Constants.expoColors.semantic.border};
+  border: 1px solid ${theme.border.default};
   padding: 16px;
   margin: 16px 0;
   white-space: pre;
   overflow: auto;
   -webkit-overflow-scrolling: touch;
-  background-color: ${Constants.expoColors.gray[100]};
+  background-color: ${theme.background.secondary};
   line-height: 120%;
   border-radius: 4px;
 `;
@@ -92,26 +94,57 @@ export class Code extends React.Component<Props> {
   }
 
   private runTippy() {
-    if (process.browser) {
-      global.tippy('.code-annotation', {
-        theme: 'expo',
-        placement: 'top',
-        arrow: true,
-        arrowType: 'round',
-        interactive: true,
-        distance: 20,
-      });
-    }
+    tippy('.code-annotation', {
+      allowHTML: true,
+      theme: 'expo',
+      placement: 'top',
+      arrow: roundArrow,
+      interactive: true,
+      offset: [0, 20],
+      appendTo: document.body,
+    });
   }
 
   private escapeHtml(text: string) {
     return text.replace(/"/g, '&quot;');
   }
 
-  private replaceCommentsWithAnnotations(value: string) {
+  private replaceXmlCommentsWithAnnotations(value: string) {
+    return value
+      .replace(
+        /<span class="token comment">&lt;!-- @info (.*?)--><\/span>\s*/g,
+        (match, content) => {
+          return `<span class="code-annotation" data-tippy-content="${this.escapeHtml(content)}">`;
+        }
+      )
+      .replace(
+        /<span class="token comment">&lt;!-- @hide (.*?)--><\/span>\s*/g,
+        (match, content) => {
+          return `<span><span class="code-hidden">%%placeholder-start%%</span><span class="code-placeholder">${this.escapeHtml(
+            content
+          )}</span><span class="code-hidden">%%placeholder-end%%</span><span class="code-hidden">`;
+        }
+      )
+      .replace(/<span class="token comment">&lt;!-- @end --><\/span>(\n *)?/g, '</span></span>');
+  }
+
+  private replaceHashCommentsWithAnnotations(value: string) {
+    return value
+      .replace(/<span class="token comment"># @info (.*?)#<\/span>\s*/g, (match, content) => {
+        return `<span class="code-annotation" data-tippy-content="${this.escapeHtml(content)}">`;
+      })
+      .replace(/<span class="token comment"># @hide (.*?)#<\/span>\s*/g, (match, content) => {
+        return `<span><span class="code-hidden">%%placeholder-start%%</span><span class="code-placeholder">${this.escapeHtml(
+          content
+        )}</span><span class="code-hidden">%%placeholder-end%%</span><span class="code-hidden">`;
+      })
+      .replace(/<span class="token comment"># @end #<\/span>(\n *)?/g, '</span></span>');
+  }
+
+  private replaceSlashCommentsWithAnnotations(value: string) {
     return value
       .replace(/<span class="token comment">\/\* @info (.*?)\*\/<\/span>\s*/g, (match, content) => {
-        return `<span class="code-annotation" title="${this.escapeHtml(content)}">`;
+        return `<span class="code-annotation" data-tippy-content="${this.escapeHtml(content)}">`;
       })
       .replace(/<span class="token comment">\/\* @hide (.*?)\*\/<\/span>\s*/g, (match, content) => {
         return `<span><span class="code-hidden">%%placeholder-start%%</span><span class="code-placeholder">${this.escapeHtml(
@@ -140,7 +173,13 @@ export class Code extends React.Component<Props> {
       }
 
       html = Prism.highlight(html, grammar, lang as Language);
-      html = this.replaceCommentsWithAnnotations(html);
+      if (['properties', 'ruby'].includes(lang)) {
+        html = this.replaceHashCommentsWithAnnotations(html);
+      } else if (['xml', 'html'].includes(lang)) {
+        html = this.replaceXmlCommentsWithAnnotations(html);
+      } else {
+        html = this.replaceSlashCommentsWithAnnotations(html);
+      }
     }
 
     // Remove leading newline if it exists (because inside <pre> all whitespace is dislayed as is by the browser, and

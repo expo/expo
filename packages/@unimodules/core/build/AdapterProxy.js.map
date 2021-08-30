@@ -1,1 +1,0 @@
-{"version":3,"file":"AdapterProxy.js","sourceRoot":"","sources":["../src/AdapterProxy.ts"],"names":[],"mappings":"AAAA,cAAc,kCAAkC,CAAC","sourcesContent":["export * from '@unimodules/react-native-adapter';\n"]}

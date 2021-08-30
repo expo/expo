@@ -1,7 +1,12 @@
 module.exports = {
-  extends: ['prettier', 'prettier/@typescript-eslint', 'prettier/babel', 'prettier/react'],
+  extends: ['prettier'],
   plugins: ['prettier'],
   rules: {
-    'prettier/prettier': ['warn'],
+    'prettier/prettier': [
+      'warn',
+      {
+        arrowParens: 'avoid',
+      },
+    ],
   },
 };

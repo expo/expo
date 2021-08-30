@@ -2,6 +2,7 @@
 
 #import <Foundation/Foundation.h>
 #import "EXResourceLoader.h"
+#import <EXManifests/EXManifestsRawManifest.h>
 
 @class EXAppLoader;
 @class EXAppFetcher;
@@ -19,15 +20,15 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (void)appFetcher:(EXAppFetcher *)appFetcher didSwitchToAppFetcher:(EXAppFetcher *)newAppFetcher retainingCurrent:(BOOL)shouldRetain;
 
-- (void)appFetcher:(EXAppFetcher *)appFetcher didLoadOptimisticManifest:(NSDictionary *)manifest;
-- (void)appFetcher:(EXAppFetcher *)appFetcher didFinishLoadingManifest:(NSDictionary *)manifest bundle:(NSData *)bundle;
+- (void)appFetcher:(EXAppFetcher *)appFetcher didLoadOptimisticManifest:(EXManifestsRawManifest *)manifest;
+- (void)appFetcher:(EXAppFetcher *)appFetcher didFinishLoadingManifest:(EXManifestsRawManifest *)manifest bundle:(NSData *)bundle;
 - (void)appFetcher:(EXAppFetcher *)appFetcher didFailWithError:(NSError *)error;
 
 @end
 
 @protocol EXAppFetcherDataSource <NSObject>
 
-- (NSString *)bundleResourceNameForAppFetcher:(EXAppFetcher *)appFetcher withManifest:(NSDictionary *)manifest;
+- (NSString *)bundleResourceNameForAppFetcher:(EXAppFetcher *)appFetcher withManifest:(EXManifestsRawManifest *)manifest;
 - (BOOL)appFetcherShouldInvalidateBundleCache:(EXAppFetcher *)appFetcher;
 
 @end
@@ -40,7 +41,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface EXAppFetcher : NSObject
 
-@property (nonatomic, readonly) NSDictionary * _Nullable manifest;
+@property (nonatomic, readonly) EXManifestsRawManifest * _Nullable manifest;
 @property (nonatomic, readonly) NSData * _Nullable bundle;
 @property (nonatomic, readonly) NSError * _Nullable error;
 
@@ -51,16 +52,14 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithAppLoader:(EXAppLoader *)appLoader;
 - (void)start;
 
-- (void)fetchJSBundleWithManifest:(NSDictionary *)manifest
+- (void)fetchJSBundleWithManifest:(EXManifestsRawManifest *)manifest
                     cacheBehavior:(EXCachedResourceBehavior)cacheBehavior
                   timeoutInterval:(NSTimeInterval)timeoutInterval
                          progress:(void (^ _Nullable )(EXLoadingProgress *))progressBlock
                           success:(void (^)(NSData *))successBlock
                             error:(void (^)(NSError *))errorBlock;
 
-+ (NSString *)experienceIdWithManifest:(NSDictionary *)manifest;
-+ (BOOL)areDevToolsEnabledWithManifest:(NSDictionary *)manifest;
-+ (EXCachedResourceBehavior)cacheBehaviorForJSWithManifest:(NSDictionary *)manifest;
++ (EXCachedResourceBehavior)cacheBehaviorForJSWithManifest:(EXManifestsRawManifest *)manifest;
 
 @end
 

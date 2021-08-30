@@ -136,8 +136,8 @@ public class ScreenContainer<T extends ScreenFragment> extends ViewGroup {
   }
 
   protected void removeAllScreens() {
-    for (int i = 0, size = mScreenFragments.size(); i < size; i++) {
-      mScreenFragments.get(i).getScreen().setContainer(null);
+    for (ScreenFragment screenFragment: mScreenFragments) {
+      screenFragment.getScreen().setContainer(null);
     }
     mScreenFragments.clear();
     markUpdated();
@@ -149,6 +149,15 @@ public class ScreenContainer<T extends ScreenFragment> extends ViewGroup {
 
   protected Screen getScreenAt(int index) {
     return mScreenFragments.get(index).getScreen();
+  }
+
+  public @Nullable Screen getTopScreen() {
+    for (ScreenFragment screenFragment: mScreenFragments) {
+      if (getActivityState(screenFragment) == Screen.ActivityState.ON_TOP) {
+        return screenFragment.getScreen();
+      }
+    }
+    return null;
   }
 
   private void setFragmentManager(FragmentManager fm) {
@@ -166,9 +175,9 @@ public class ScreenContainer<T extends ScreenFragment> extends ViewGroup {
     // Otherwise we expect to connect directly with root view and get root fragment manager
     if (parent instanceof Screen) {
       ScreenFragment screenFragment = ((Screen) parent).getFragment();
-      setFragmentManager(screenFragment.getChildFragmentManager());
       mParentScreenFragment = screenFragment;
       mParentScreenFragment.registerChildScreenContainer(this);
+      setFragmentManager(screenFragment.getChildFragmentManager());
       return;
     }
 
@@ -294,10 +303,15 @@ public class ScreenContainer<T extends ScreenFragment> extends ViewGroup {
     // may choose not to remove the view despite the parent container being completely detached
     // from the view hierarchy until the transition is over. In such a case when the container gets
     // re-attached while tre transition is ongoing, the child view would still be there and we'd
-    // attept to re-attach it to with a misconfigured fragment. This would result in a crash. To
+    // attempt to re-attach it to with a misconfigured fragment. This would result in a crash. To
     // avoid it we clear all the children here as we attach all the child fragments when the container
-    // is reattached anyways.
-    removeAllViews();
+    // is reattached anyways. We don't use `removeAllViews` since it does not check if the children are
+    // not already detached, which may lead to calling `onDetachedFromWindow` on them twice. We also
+    // get the size earlier, because we will be removing child views in `for` loop.
+    int size = getChildCount();
+    for (int i = size - 1; i >= 0; i--) {
+      removeViewAt(i);
+    }
   }
 
   @Override
@@ -328,13 +342,13 @@ public class ScreenContainer<T extends ScreenFragment> extends ViewGroup {
     mFragmentManager.executePendingTransactions();
 
     performUpdate();
+    notifyContainerUpdate();
   }
 
   protected void performUpdate() {
     // detach screens that are no longer active
     Set<Fragment> orphaned = new HashSet<>(mFragmentManager.getFragments());
-    for (int i = 0, size = mScreenFragments.size(); i < size; i++) {
-      ScreenFragment screenFragment = mScreenFragments.get(i);
+    for (ScreenFragment screenFragment: mScreenFragments) {
       if (getActivityState(screenFragment) == Screen.ActivityState.INACTIVE && screenFragment.isAdded()) {
         detachScreen(screenFragment);
       }
@@ -353,18 +367,16 @@ public class ScreenContainer<T extends ScreenFragment> extends ViewGroup {
 
     boolean transitioning = true;
 
-    for (int i = 0, size = mScreenFragments.size(); i < size; i++) {
-      ScreenFragment screenFragment = mScreenFragments.get(i);
-      if (getActivityState(screenFragment) == Screen.ActivityState.ON_TOP) {
-        // if there is an "onTop" screen it means the transition has ended
-        transitioning = false;
-      }
+
+    Screen topScreen = getTopScreen();
+    if (topScreen != null) {
+      // if there is an "onTop" screen it means the transition has ended
+      transitioning = false;
     }
 
     // attach newly activated screens
     boolean addedBefore = false;
-    for (int i = 0, size = mScreenFragments.size(); i < size; i++) {
-      ScreenFragment screenFragment = mScreenFragments.get(i);
+    for (ScreenFragment screenFragment: mScreenFragments) {
       Screen.ActivityState activityState = getActivityState(screenFragment);
       if (activityState != Screen.ActivityState.INACTIVE && !screenFragment.isAdded()) {
         addedBefore = true;
@@ -376,5 +388,12 @@ public class ScreenContainer<T extends ScreenFragment> extends ViewGroup {
     }
 
     tryCommitTransaction();
+  }
+
+  protected void notifyContainerUpdate() {
+    Screen topScreen = getTopScreen();
+    if (topScreen != null) {
+      topScreen.getFragment().onContainerUpdate();
+    }
   }
 }

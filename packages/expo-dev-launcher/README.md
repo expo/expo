@@ -1,6 +1,6 @@
 # expo-dev-launcher
 
-This is a pre-release version of the Expo dev launcher package for testing.
+`expo-dev-launcher` is an npm package installable in any Expo or React Native project. Once installed, any Debug builds of your application will gain the ability to load projects from Expo CLI. Release builds of your application will not change other than the addition of a few header files. This package is intended to be included in your project through [`expo-dev-client`](https://docs.expo.io/clients/introduction/).
 
 # ⚙️ Installation
 
@@ -32,7 +32,7 @@ Then you can start to configure the native projects using steps below.
 
 1.  Initialize the `DevLauncherController`.
 
-    Open your `MainApplication.{java|kt}` and add fallowing lines:
+    Open your `MainApplication.{java|kt}` and add the following lines:
 
     <details>
     <summary>Java</summary>
@@ -77,7 +77,7 @@ Then you can start to configure the native projects using steps below.
 
 2.  Wrap the default `ReactActivityDelegate` with the one from `DevLauncher`.
 
-    Open your `MainActivity.{java|kt}` and add fallowing lines:
+    Open your `MainActivity.{java|kt}` and add the following lines:
 
     <details>
     <summary>Java</summary>
@@ -126,7 +126,7 @@ Then you can start to configure the native projects using steps below.
 
     > **Note:** This step is not required but without it, **deep-link** handling **won't work**.
 
-    Open your `MainActivity.{java|kt}` and add fallowing method:
+    Open your `MainActivity.{java|kt}` and add the following method:
 
     <details>
     <summary>Java</summary>
@@ -186,7 +186,7 @@ Then you can start to configure the native projects using steps below.
 
    ```
 
-   Open your `AppDelegate.m` and add fallowing method:
+   Open your `AppDelegate.m` and add the following method:
 
    ```objc
    ...
@@ -226,7 +226,7 @@ Then you can start to configure the native projects using steps below.
 
 3. Start the `EXDevLauncherController`.
 
-   Open your `AppDelegate.{m|swift}` and add fallowing lines:
+   Open your `AppDelegate.{m|swift}` and add the following lines:
 
    <details>
    <summary>Objective-C</summary>
@@ -271,7 +271,7 @@ Then you can start to configure the native projects using steps below.
 
 4. Change the source URL.
 
-   Open your `AppDelegate.{m|swift}` and add fallowing lines:
+   Open your `AppDelegate.{m|swift}` and add the following lines:
 
    <details>
    <summary>Objective-C</summary>
@@ -316,7 +316,7 @@ Then you can start to configure the native projects using steps below.
 
 5. Handle deep links.
 
-   Open your `AppDelegate.{m|swift}` and add fallowing lines:
+   Open your `AppDelegate.{m|swift}` and add the following lines:
 
    <details>
    <summary>Objective-C</summary>

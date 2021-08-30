@@ -1,9 +1,9 @@
-import { css } from '@emotion/core';
+import { css } from '@emotion/react';
+import { theme } from '@expo/styleguide';
 import MDX from '@mdx-js/runtime';
 import * as React from 'react';
 
 import * as components from '~/common/translate-markdown';
-import { expoColors } from '~/constants/theme';
 
 const STYLES_TABLE = css`
   font-size: 1rem;
@@ -11,7 +11,7 @@ const STYLES_TABLE = css`
 `;
 
 const STYLES_HEAD = css`
-  background-color: ${expoColors.gray[100]};
+  background-color: ${theme.background.tertiary};
 `;
 
 const STYLES_DESCRIPTION_CELL = css`

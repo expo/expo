@@ -58,11 +58,11 @@
   [self.altimeter stopRelativeAltitudeUpdates];
 }
 
-- (void)sensorModuleDidSubscribeForAccelerometerUpdatesOfExperience:experienceId
+- (void)sensorModuleDidSubscribeForAccelerometerUpdatesOfExperience:scopeKey
                                             withHandler:(void (^)(NSDictionary *event))handlerBlock
 {
   if ([self.manager isAccelerometerAvailable]) {
-    self.accelerometerHandlers[experienceId] = handlerBlock;
+    self.accelerometerHandlers[scopeKey] = handlerBlock;
   }
   if (![self.manager isAccelerometerActive]) {
     [self.manager setAccelerometerUpdateInterval:0.1f];
@@ -78,9 +78,9 @@
   }
 }
 
-- (void)sensorModuleDidUnsubscribeForAccelerometerUpdatesOfExperience:experienceId
+- (void)sensorModuleDidUnsubscribeForAccelerometerUpdatesOfExperience:scopeKey
 {
-  [self.accelerometerHandlers removeObjectForKey:experienceId];
+  [self.accelerometerHandlers removeObjectForKey:scopeKey];
   if (self.accelerometerHandlers.count == 0) {
     [self.manager stopAccelerometerUpdates];
   }
@@ -91,20 +91,20 @@
   [self.manager setAccelerometerUpdateInterval:intervalMs];
 }
 
-- (void)sensorModuleDidSubscribeForDeviceMotionUpdatesOfExperience:(NSString *)experienceId
+- (void)sensorModuleDidSubscribeForDeviceMotionUpdatesOfExperience:(NSString *)scopeKey
                                            withHandler:(void (^)(NSDictionary *event))handlerBlock
 {
   if ([self.manager isDeviceMotionAvailable]) {
-    self.deviceMotionHandlers[experienceId] = handlerBlock;
+    self.deviceMotionHandlers[scopeKey] = handlerBlock;
   }
   if (![self.manager isDeviceMotionActive]) {
     [self activateDeviceMotionUpdates];
   }
 }
 
-- (void)sensorModuleDidUnsubscribeForDeviceMotionUpdatesOfExperience:(NSString *)experienceId
+- (void)sensorModuleDidUnsubscribeForDeviceMotionUpdatesOfExperience:(NSString *)scopeKey
 {
-  [self.deviceMotionHandlers removeObjectForKey:experienceId];
+  [self.deviceMotionHandlers removeObjectForKey:scopeKey];
   if (self.deviceMotionHandlers.count == 0 && self.magnetometerHandlers.count == 0) {
     [self.manager stopDeviceMotionUpdates];
   }
@@ -115,11 +115,11 @@
   [self.manager setDeviceMotionUpdateInterval:intervalMs];
 }
 
-- (void)sensorModuleDidSubscribeForGyroscopeUpdatesOfExperience:(NSString *)experienceId
+- (void)sensorModuleDidSubscribeForGyroscopeUpdatesOfExperience:(NSString *)scopeKey
                                         withHandler:(void (^)(NSDictionary *event))handlerBlock
 {
   if ([self.manager isGyroAvailable]) {
-    self.gyroscopeHandlers[experienceId] = handlerBlock;
+    self.gyroscopeHandlers[scopeKey] = handlerBlock;
   }
   if (![self.manager isGyroActive]) {
     [self.manager setGyroUpdateInterval:0.1f];
@@ -135,9 +135,9 @@
   }
 }
 
-- (void)sensorModuleDidUnsubscribeForGyroscopeUpdatesOfExperience:(NSString *)experienceId
+- (void)sensorModuleDidUnsubscribeForGyroscopeUpdatesOfExperience:(NSString *)scopeKey
 {
-  [self.gyroscopeHandlers removeObjectForKey:experienceId];
+  [self.gyroscopeHandlers removeObjectForKey:scopeKey];
   if (self.gyroscopeHandlers.count == 0) {
     [self.manager stopGyroUpdates];
   }
@@ -148,20 +148,20 @@
   [self.manager setGyroUpdateInterval:intervalMs];
 }
 
-- (void)sensorModuleDidSubscribeForMagnetometerUpdatesOfExperience:(NSString *)experienceId
+- (void)sensorModuleDidSubscribeForMagnetometerUpdatesOfExperience:(NSString *)scopeKey
                                            withHandler:(void (^)(NSDictionary *event))handlerBlock
 {
   if ([self.manager isDeviceMotionAvailable]) {
-    self.magnetometerHandlers[experienceId] = handlerBlock;
+    self.magnetometerHandlers[scopeKey] = handlerBlock;
   }
   if (![self.manager isDeviceMotionActive]) {
     [self activateDeviceMotionUpdates];
   }
 }
 
-- (void)sensorModuleDidUnsubscribeForMagnetometerUpdatesOfExperience:(NSString *)experienceId
+- (void)sensorModuleDidUnsubscribeForMagnetometerUpdatesOfExperience:(NSString *)scopeKey
 {
-  [self.magnetometerHandlers removeObjectForKey:experienceId];
+  [self.magnetometerHandlers removeObjectForKey:scopeKey];
   if (self.deviceMotionHandlers.count == 0 && self.magnetometerHandlers.count == 0) {
     [self.manager stopDeviceMotionUpdates];
   }
@@ -172,11 +172,11 @@
   [self.manager setDeviceMotionUpdateInterval:intervalMs];
 }
 
-- (void)sensorModuleDidSubscribeForMagnetometerUncalibratedUpdatesOfExperience:(NSString *)experienceId
+- (void)sensorModuleDidSubscribeForMagnetometerUncalibratedUpdatesOfExperience:(NSString *)scopeKey
                                                        withHandler:(void (^)(NSDictionary *event))handlerBlock
 {
   if ([self.manager isMagnetometerAvailable]) {
-    self.magnetometerUncalibratedHandlers[experienceId] = handlerBlock;
+    self.magnetometerUncalibratedHandlers[scopeKey] = handlerBlock;
   }
   if (![self.manager isMagnetometerActive]) {
     [self.manager setMagnetometerUpdateInterval:0.1f];
@@ -192,9 +192,9 @@
   }
 }
 
-- (void)sensorModuleDidUnsubscribeForMagnetometerUncalibratedUpdatesOfExperience:(NSString *)experienceId
+- (void)sensorModuleDidUnsubscribeForMagnetometerUncalibratedUpdatesOfExperience:(NSString *)scopeKey
 {
-  [self.magnetometerUncalibratedHandlers removeObjectForKey:experienceId];
+  [self.magnetometerUncalibratedHandlers removeObjectForKey:scopeKey];
   if (self.magnetometerUncalibratedHandlers.count == 0) {
     [self.manager stopMagnetometerUpdates];
   }
@@ -276,10 +276,10 @@
    }];
 }
 
-- (void)sensorModuleDidSubscribeForBarometerUpdatesOfExperience:(NSString *)experienceId withHandler:(void (^)(NSDictionary *event))handlerBlock
+- (void)sensorModuleDidSubscribeForBarometerUpdatesOfExperience:(NSString *)scopeKey withHandler:(void (^)(NSDictionary *event))handlerBlock
 {
   if ([self isBarometerAvailable]) {
-    _barometerHandlers[experienceId] = handlerBlock;
+    _barometerHandlers[scopeKey] = handlerBlock;
   }
   
   __weak EXSensorManager *weakSelf = self;
@@ -296,9 +296,9 @@
   }];
 }
 
-- (void)sensorModuleDidUnsubscribeForBarometerUpdatesOfExperience:(NSString *)experienceId
+- (void)sensorModuleDidUnsubscribeForBarometerUpdatesOfExperience:(NSString *)scopeKey
 {
-  [_barometerHandlers removeObjectForKey:experienceId];
+  [_barometerHandlers removeObjectForKey:scopeKey];
   if (_barometerHandlers.count == 0) {
     [_altimeter stopRelativeAltitudeUpdates];
   }

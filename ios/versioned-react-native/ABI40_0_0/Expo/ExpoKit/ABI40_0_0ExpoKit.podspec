@@ -78,7 +78,6 @@ Pod::Spec.new do |s|
     ss.dependency         "ABI40_0_0EXFirebaseAnalytics"
     ss.dependency         "ABI40_0_0EXFirebaseCore"
     ss.dependency         "ABI40_0_0EXFont"
-    ss.dependency         "EXGL_CPP_LEGACY"
     ss.dependency         "EXGL_CPP"
     ss.dependency         "ABI40_0_0EXGL"
     ss.dependency         "ABI40_0_0EXGoogleSignIn"
@@ -127,8 +126,6 @@ Pod::Spec.new do |s|
     ss.dependency         "Analytics"
     ss.dependency         "AppAuth"
     ss.dependency         "FBAudienceNetwork"
-    ss.dependency         "FBSDKCoreKit"
-    ss.dependency         "FBSDKLoginKit"
     ss.dependency         "GoogleSignIn"
     ss.dependency         "GoogleMaps"
     ss.dependency         "Google-Maps-iOS-Utils"
@@ -136,7 +133,7 @@ Pod::Spec.new do |s|
     ss.dependency         "JKBigInteger2"
     ss.dependency         "Branch"
     ss.dependency         "Google-Mobile-Ads-SDK"
-    ss.dependency         "Folly"
+    ss.dependency         "RCT-Folly"
   end
 
   s.subspec "ExpoOptional" do |ss|

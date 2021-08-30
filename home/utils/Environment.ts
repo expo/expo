@@ -5,7 +5,10 @@ import semver from 'semver';
 import * as Kernel from '../kernel/Kernel';
 
 const isProduction = !!(
-  Constants.manifest.id === '@exponent/home' && Constants.manifest.publishedTime
+  (Constants.manifest?.originalFullName === '@exponent/home' ||
+    Constants.manifest?.id === '@exponent/home' ||
+    Constants.manifest2?.extra?.expoClient?.originalFullName === '@exponent/home') &&
+  (Constants.manifest?.publishedTime || Constants.manifest2?.extra?.expoClient?.publishedTime)
 );
 
 const IOSClientReleaseType = Kernel.iosClientReleaseType;

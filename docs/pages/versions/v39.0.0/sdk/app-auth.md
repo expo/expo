@@ -18,7 +18,7 @@ Many services that let you authenticate with them or login with them, like GitHu
 
 If you are trying to implement sign in with [Google](google-sign-in.md) or [Facebook](facebook.md), there are special modules in the Expo SDK for those (though this module will work).
 
-<PlatformsSection android emulator ios simulator web={{ pending: 'https://github.com/expo/expo/issues/6883' }} />
+<PlatformsSection android emulator ios simulator />
 
 ## Installation
 
@@ -52,7 +52,7 @@ const prefix = Linking.makeUrl('/');
 // Standalone: `myapp://`
 ```
 
-For more info on [Linking in Expo](../../../workflow/linking.md).
+For more info on [Linking in Expo](../../../guides/linking.md).
 
 ## Bare Workflow
 

@@ -5,6 +5,18 @@ const imageTests: ImageTestGroup = {
   name: 'Sources',
   tests: [
     {
+      name: `uri:.webp`,
+      props: {
+        source: images.require_webp,
+      },
+    },
+    {
+      name: `uri:.webp (animated)`,
+      props: {
+        source: images.require_webp_anim,
+      },
+    },
+    {
       name: `uri:.jpg (redirecting)`,
       props: {
         source: images.uri_random_unsplash,
@@ -26,6 +38,13 @@ const imageTests: ImageTestGroup = {
       name: `require(.png)`,
       props: {
         source: images.require_png,
+      },
+    },
+    {
+      name: `require(expo.svg)`,
+      props: {
+        source: images.require_svg,
+        resizeMode: 'contain',
       },
     },
     {
@@ -57,6 +76,13 @@ const imageTests: ImageTestGroup = {
       props: {
         defaultStyle: {},
         source: images.uri_ico,
+      },
+    },
+    {
+      name: `uri:.svg`,
+      props: {
+        source: images.uri_youtube_svg,
+        resizeMode: 'contain',
       },
     },
   ],

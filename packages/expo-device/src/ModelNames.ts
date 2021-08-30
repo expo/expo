@@ -51,9 +51,9 @@ export const iosModelNames = {
   'iPad3,4': 'iPad', // (4th Generation)
   'iPad3,5': 'iPad', // (4th Generation)
   'iPad3,6': 'iPad', // (4th Generation)
-  'iPad2,5': 'iPad Mini', // (Original)
-  'iPad2,6': 'iPad Mini', // (Original)
-  'iPad2,7': 'iPad Mini', // (Original)
+  'iPad2,5': 'iPad mini', // (Original)
+  'iPad2,6': 'iPad mini', // (Original)
+  'iPad2,7': 'iPad mini', // (Original)
   'iPhone5,3': 'iPhone 5c', // (model A1456, A1532 | GSM)
   'iPhone5,4': 'iPhone 5c', // (model A1507, A1516, A1526 (China), A1529 | Global)
   'iPhone6,1': 'iPhone 5s', // (model A1433, A1533 | GSM)
@@ -80,17 +80,22 @@ export const iosModelNames = {
   'iPhone12,1': 'iPhone 11',
   'iPhone12,3': 'iPhone 11 Pro',
   'iPhone12,5': 'iPhone 11 Pro Max',
+  'iPhone12,8': 'iPhone SE (2nd generation)',
+  'iPhone13,1': 'iPhone 12 mini',
+  'iPhone13,2': 'iPhone 12',
+  'iPhone13,3': 'iPhone 12 Pro',
+  'iPhone13,4': 'iPhone 12 Pro Max',
   'iPad4,1': 'iPad Air', // 5th Generation iPad (iPad Air) - Wifi
   'iPad4,2': 'iPad Air', // 5th Generation iPad (iPad Air) - Cellular
   'iPad4,3': 'iPad Air', // 5th Generation iPad (iPad Air)
-  'iPad4,4': 'iPad Mini 2', // (2nd Generation iPad Mini - Wifi)
-  'iPad4,5': 'iPad Mini 2', // (2nd Generation iPad Mini - Cellular)
-  'iPad4,6': 'iPad Mini 2', // (2nd Generation iPad Mini)
-  'iPad4,7': 'iPad Mini 3', // (3rd Generation iPad Mini)
-  'iPad4,8': 'iPad Mini 3', // (3rd Generation iPad Mini)
-  'iPad4,9': 'iPad Mini 3', // (3rd Generation iPad Mini)
-  'iPad5,1': 'iPad Mini 4', // (4th Generation iPad Mini)
-  'iPad5,2': 'iPad Mini 4', // (4th Generation iPad Mini)
+  'iPad4,4': 'iPad mini (2nd generation)', // (2nd Generation iPad mini - Wifi)
+  'iPad4,5': 'iPad mini (2nd generation)', // (2nd Generation iPad mini - Cellular)
+  'iPad4,6': 'iPad mini (2nd generation)', // (2nd Generation iPad mini - China)
+  'iPad4,7': 'iPad mini 3', // (3rd Generation iPad mini)
+  'iPad4,8': 'iPad mini 3', // (3rd Generation iPad mini)
+  'iPad4,9': 'iPad mini 3', // (3rd Generation iPad mini - China)
+  'iPad5,1': 'iPad mini 4', // (4th Generation iPad mini)
+  'iPad5,2': 'iPad mini 4', // (4th Generation iPad mini)
   'iPad5,3': 'iPad Air 2', // 6th Generation iPad (iPad Air 2)
   'iPad5,4': 'iPad Air 2', // 6th Generation iPad (iPad Air 2)
   'iPad6,3': 'iPad Pro 9.7-inch', // iPad Pro 9.7-inch
@@ -103,6 +108,8 @@ export const iosModelNames = {
   'iPad7,4': 'iPad Pro 10.5-inch', // iPad Pro 10.5-inch - Cellular
   'iPad7,5': 'iPad (6th generation)', // iPad (6th generation) - Wifi
   'iPad7,6': 'iPad (6th generation)', // iPad (6th generation) - Cellular
+  'iPad7,11': 'iPad (7th generation)', // iPad (7th generation) - WiFi
+  'iPad7,12': 'iPad (7th generation)', // iPad (7th generation) - WiFi + cellular
   'iPad8,1': 'iPad Pro 11-inch (3rd generation)', // iPad Pro 11 inch (3rd generation) - Wifi
   'iPad8,2': 'iPad Pro 11-inch (3rd generation)', // iPad Pro 11 inch (3rd generation) - 1TB - Wifi
   'iPad8,3': 'iPad Pro 11-inch (3rd generation)', // iPad Pro 11 inch (3rd generation) - Wifi + cellular
@@ -111,6 +118,26 @@ export const iosModelNames = {
   'iPad8,6': 'iPad Pro 12.9-inch (3rd generation)', // iPad Pro 12.9 inch (3rd generation) - 1TB - Wifi
   'iPad8,7': 'iPad Pro 12.9-inch (3rd generation)', // iPad Pro 12.9 inch (3rd generation) - Wifi + cellular
   'iPad8,8': 'iPad Pro 12.9-inch (3rd generation)', // iPad Pro 12.9 inch (3rd generation) - 1TB - Wifi + cellular
+  'iPad8,9': 'iPad Pro 11-inch (4th generation)', // iPad Pro 11 inch (4th generation) - Wifi
+  'iPad8,10': 'iPad Pro 11-inch (4th generation)', // iPad Pro 11 inch (4th generation) - Wifi + cellular
+  'iPad8,11': 'iPad Pro 12.9-inch (4th generation)', // iPad Pro 12.9 inch (4th generation) - Wifi
+  'iPad8,12': 'iPad Pro 12.9-inch (4th generation)', // iPad Pro 12.9 inch (4th generation) - Wifi + cellular
+  'iPad11,1': 'iPad mini (5th generation)', // iPad mini (5th generation) - WiFi
+  'iPad11,2': 'iPad mini (5th generation)', // iPad mini (5th generation) - WiFi + cellular
+  'iPad11,3': 'iPad Air (3rd generation)', // iPad Air (3rd generation) - WiFi
+  'iPad11,4': 'iPad Air (3rd generation)', // iPad Air (3rd generation) - WiFi + cellular
+  'iPad11,6': 'iPad (8th generation)', // iPad (8th generation) - WiFi
+  'iPad11,7': 'iPad (8th generation)', // iPad (8th generation) - WiFi + cellular
+  'iPad13,1': 'iPad Air (4th generation)', // iPad Air (4th generation) - WiFi
+  'iPad13,2': 'iPad Air (4th generation)', // iPad Air (4th generation) - WiFi + cellular
+  'iPad13,4': 'iPad Pro 11-inch (3rd generation)', // WiFi
+  'iPad13,5': 'iPad Pro 11-inch (3rd generation)', // WiFi
+  'iPad13,6': 'iPad Pro 11-inch (3rd generation)', // WiFi + cellular
+  'iPad13,7': 'iPad Pro 11-inch (3rd generation)', // WiFi + cellular
+  'iPad13,8': 'iPad Pro 12.9-inch (5th generation)', // WiFi
+  'iPad13,9': 'iPad Pro 12.9-inch (5th generation)', // WiFi
+  'iPad13,10': 'iPad Pro 12.9-inch (5th generation)', // WiFi + cellular
+  'iPad13,11': 'iPad Pro 12.9-inch (5th generation)', // WiFi + cellular
   'AppleTV2,1': 'Apple TV', // Apple TV (2nd Generation)
   'AppleTV3,1': 'Apple TV', // Apple TV (3rd Generation)
   'AppleTV3,2': 'Apple TV', // Apple TV (3rd Generation - Rev A)

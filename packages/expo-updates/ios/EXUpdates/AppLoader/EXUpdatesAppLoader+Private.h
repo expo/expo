@@ -14,6 +14,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong) NSURL *directory;
 @property (nonatomic, strong) EXUpdatesUpdate *updateManifest;
 @property (nonatomic, copy) EXUpdatesAppLoaderManifestBlock manifestBlock;
+@property (nonatomic, copy) EXUpdatesAppLoaderAssetBlock assetBlock;
 @property (nonatomic, copy) EXUpdatesAppLoaderSuccessBlock successBlock;
 @property (nonatomic, copy) EXUpdatesAppLoaderErrorBlock errorBlock;
 

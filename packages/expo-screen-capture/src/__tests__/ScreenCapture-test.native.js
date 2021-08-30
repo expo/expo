@@ -2,6 +2,10 @@ import ExpoScreenCapture from '../ExpoScreenCapture';
 import * as ScreenCapture from '../ScreenCapture';
 
 describe('ScreenCapture methods are defined', () => {
+  it('isAvailableAsync is defined', async () => {
+    expect(ScreenCapture.isAvailableAsync).toBeDefined();
+  });
+
   it('preventScreenCapture is defined', async () => {
     expect(ScreenCapture.preventScreenCaptureAsync).toBeDefined();
   });
@@ -26,6 +30,10 @@ describe('ScreenCapture methods are defined', () => {
 describe('Test key functionality', () => {
   afterEach(async () => {
     await cleanUpTags();
+  });
+
+  it('resolves true for isAvailableAsync on native platforms', async () => {
+    await expect(ScreenCapture.isAvailableAsync()).resolves.toBeTruthy();
   });
 
   it('Will not call the native method if default key already active', async () => {

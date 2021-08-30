@@ -24,13 +24,12 @@ In managed apps, the permissions to pick images, from camera ([`Permissions.CAME
 
 ## Usage
 
-<SnackInline label='Image Picker' dependencies={['expo-constants', 'expo-permissions', 'expo-image-picker']}>
+<SnackInline label='Image Picker' dependencies={['expo-image-picker']}>
 
 ```js
 import React, { useState, useEffect } from 'react';
 import { Button, Image, View, Platform } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
-import Constants from 'expo-constants';
 
 export default function ImagePickerExample() {
   const [image, setImage] = useState(null);
@@ -83,6 +82,15 @@ When you run this example and pick an image, you will see the image that you pic
 }
 ```
 
+## Using ImagePicker with AWS S3
+
+Please refer to the [with-aws-storage-upload example](https://github.com/expo/examples/tree/master/with-aws-storage-upload). Follow [Amplify docs](https://docs.amplify.aws/) to set your project up correctly.
+
+
+## Using ImagePicker with Firebase
+
+Please refer to the [with-firebase-storage-upload example](https://github.com/expo/examples/tree/master/with-firebase-storage-upload). Make sure you follow the ["Using Firebase"](/guides/using-firebase/) docs to set your project up correctly.
+
 ## API
 
 ```js
@@ -91,7 +99,7 @@ import * as ImagePicker from 'expo-image-picker';
 
 ### `ImagePicker.requestCameraPermissionsAsync()`
 
-Asks the user to grant permissions for accessing camera. Alias for `Permissions.askAsync(Permissions.CAMERA)`. This does nothing on web because the browser camera is not used.
+Asks the user to grant permissions for accessing camera. This does nothing on web because the browser camera is not used.
 
 #### Returns
 
@@ -99,7 +107,7 @@ A promise that resolves to an object of type [CameraPermissionResponse](#imagepi
 
 ### `ImagePicker.requestMediaLibraryPermissionsAsync(writeOnly)`
 
-Asks the user to grant permissions for accessing user's photo. Alias for `Permissions.askAsync(Permissions.MEDIA_LIBRARY)`. This does nothing on web.
+Asks the user to grant permissions for accessing user's photo. This does nothing on web.
 
 #### Arguments
 
@@ -111,7 +119,7 @@ A promise that resolves to an object of type [MediaLibraryPermissionResponse](#i
 
 ### `ImagePicker.getCameraPermissionsAsync()`
 
-Checks user's permissions for accessing camera. Alias for `Permissions.getAsync(Permissions.CAMERA)`.
+Checks user's permissions for accessing camera.
 
 #### Returns
 
@@ -119,7 +127,7 @@ A promise that resolves to an object of type [CameraPermissionResponse](#imagepi
 
 ### `ImagePicker.getMediaLibraryPermissionsAsync()`
 
-Checks user's permissions for accessing photos. Alias for `Permissions.getAsync(Permissions.MEDIA_LIBRARY)`.
+Checks user's permissions for accessing photos.
 
 #### Arguments
 
@@ -133,6 +141,8 @@ A promise that resolves to an object of type [MediaLibraryPermissionResponse](#i
 
 Display the system UI for choosing an image or a video from the phone's library. Requires `Permissions.MEDIA_LIBRARY` on iOS 10 only. On mobile web, this must be called immediately in a user interaction like a button press, otherwise the browser will block the request without a warning.
 
+> **Notes for Web:** The system UI can only be shown after user activation (e.g. a `Button` press). Therefore, calling `launchImageLibraryAsync` in `componentDidMount`, for example, will **not** work as intended. The `cancelled` event will not be returned in the browser due to platform restrictions and inconsistencies across browsers.
+
 #### Arguments
 
 - **options (_object_)** --
@@ -142,6 +152,7 @@ Display the system UI for choosing an image or a video from the phone's library.
   - **mediaTypes (_[ImagePicker.MediaTypeOptions](#imagepickermediatypeoptions)_)** -- Choose what type of media to pick. Defaults to `ImagePicker.MediaTypeOptions.Images`.
   - **allowsEditing (_boolean_)** -- Whether to show a UI to edit the image/video after it is picked. Images: On Android the user can crop and rotate the image and on iOS simply crop it. Videos: On iOS user can trim the video. Defaults to `false`.
   - **allowsMultipleSelection (_boolean_)** -- (Web only) Whether or not to allow selecting multiple media files at once.
+  - **presentationStyle (_[ImagePicker.UIImagePickerPresentationStyle](#imagePickeruiimagepickerpresentationstyle)_)** -- (iOS only) Choose [presentation style](https://developer.apple.com/documentation/uikit/uiviewcontroller/1621355-modalpresentationstyle?language=objc) to customize view during picking photo/video. Defaults to `ImagePicker.UIImagePickerPresentationStyle.Automatic`.
 
   A map of options for images:
 
@@ -174,6 +185,8 @@ Otherwise, this method returns information about the selected media item. When t
 
 Display the system UI for taking a photo with the camera. Requires `Permissions.CAMERA`. On Android and iOS 10 `Permissions.CAMERA_ROLL` is also required. On mobile web, this must be called immediately in a user interaction like a button press, otherwise the browser will block the request without a warning.
 
+> **Notes for Web:** The system UI can only be shown after user activation (e.g. a `Button` press). Therefore, calling `launchCameraAsync` in `componentDidMount`, for example, will **not** work as intended. The `cancelled` event will not be returned in the browser due to platform restrictions and inconsistencies across browsers.
+
 #### Arguments
 
 - **options (_object_)** --
@@ -182,6 +195,7 @@ Display the system UI for taking a photo with the camera. Requires `Permissions.
 
   - **mediaTypes (_[ImagePicker.MediaTypeOptions](#imagepickermediatypeoptions)_)** -- Choose what type of media to pick. Defaults to `ImagePicker.MediaTypeOptions.Images`.
   - **allowsEditing (_boolean_)** -- Whether to show a UI to edit the image after it is picked. On Android the user can crop and rotate the image and on iOS simply crop it. Defaults to `false`.
+  - **presentationStyle (_[ImagePicker.UIImagePickerPresentationStyle](#imagePickeruiimagepickerpresentationstyle)_)** -- (iOS only) Choose [presentation style](https://developer.apple.com/documentation/uikit/uiviewcontroller/1621355-modalpresentationstyle?language=objc) to customize view during taking photo/video. Defaults to `ImagePicker.UIImagePickerPresentationStyle.Automatic`.
 
   A map of options for images:
 
@@ -247,6 +261,19 @@ Android system sometimes kills the `MainActivity` after the `ImagePicker` finish
 | `VideoExportPreset.H264_3840x2160` | 8     | 3840 x 2160           | H.264                       | AAC                         |
 | `VideoExportPreset.HEVC_1920x1080` | 9     | 1920 x 1080           | HEVC                        | AAC                         |
 | `VideoExportPreset.HEVC_3840x2160` | 10    | 3840 x 2160           | HEVC                        | AAC                         |
+
+### `ImagePicker.UIImagePickerPresentationStyle`
+
+| Preset                                             | Value | 
+| --------------------------------------------       | ----- | 
+| `UIImagePickerPresentationStyle.FullScreen`        | 0     |
+| `UIImagePickerPresentationStyle.PageSheet`         | 1     |
+| `UIImagePickerPresentationStyle.FormSheet`         | 2     |
+| `UIImagePickerPresentationStyle.CurrentContext`    | 3     |
+| `UIImagePickerPresentationStyle.OverFullScreen`    | 5     |
+| `UIImagePickerPresentationStyle.OverCurrentContext`| 6     |
+| `UIImagePickerPresentationStyle.Popover`           | 7     |
+| `UIImagePickerPresentationStyle.Automatic`         | -2    |
 
 ### `ImagePicker.UIImagePickerControllerType`
 

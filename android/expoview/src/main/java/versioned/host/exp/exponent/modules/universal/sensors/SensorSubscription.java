@@ -1,9 +1,9 @@
 package versioned.host.exp.exponent.modules.universal.sensors;
 
-import org.unimodules.interfaces.sensors.SensorServiceSubscription;
+import expo.modules.interfaces.sensors.SensorServiceSubscriptionInterface;
 import host.exp.exponent.kernel.services.sensors.SensorKernelServiceSubscription;
 
-public class SensorSubscription implements SensorServiceSubscription {
+public class SensorSubscription implements SensorServiceSubscriptionInterface {
   private SensorKernelServiceSubscription mSensorKernelServiceSubscription;
 
   public SensorSubscription(SensorKernelServiceSubscription subscription) {

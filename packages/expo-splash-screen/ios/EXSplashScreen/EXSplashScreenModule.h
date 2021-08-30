@@ -1,9 +1,9 @@
 //  Copyright © 2018 650 Industries. All rights reserved.
 
-#import <UMCore/UMExportedModule.h>
-#import <UMCore/UMAppLifecycleListener.h>
-#import <UMCore/UMModuleRegistryConsumer.h>
+#import <ExpoModulesCore/EXExportedModule.h>
+#import <ExpoModulesCore/EXAppLifecycleListener.h>
+#import <ExpoModulesCore/EXModuleRegistryConsumer.h>
 
-@interface EXSplashScreenModule : UMExportedModule <UMModuleRegistryConsumer, UMAppLifecycleListener>
+@interface EXSplashScreenModule : EXExportedModule <EXModuleRegistryConsumer, EXAppLifecycleListener>
 
 @end

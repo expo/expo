@@ -3,8 +3,9 @@
 #import "EXAppState.h"
 #import "EXScopedModuleRegistry.h"
 
-#import <UMCore/UMAppLifecycleService.h>
-#import <UMReactNativeAdapter/UMModuleRegistryHolderReactModule.h>
+#import <ExpoModulesCore/EXAppLifecycleService.h>
+#import <ExpoModulesCore/EXModuleRegistryHolderReactModule.h>
+
 #import <React/RCTAssert.h>
 #import <React/RCTBridge.h>
 #import <React/RCTEventDispatcher.h>
@@ -82,8 +83,8 @@
     }
    
     // change state on universal modules
-    // TODO: just make EXAppState a universal module implementing UMAppLifecycleService
-    id<UMAppLifecycleService> lifeCycleManager = [[[self.bridge moduleForClass:[UMModuleRegistryHolderReactModule class]] moduleRegistry] getModuleImplementingProtocol:@protocol(UMAppLifecycleService)];
+    // TODO: just make EXAppState an expo module implementing EXAppLifecycleService
+    id<EXAppLifecycleService> lifeCycleManager = [[[self.bridge moduleForClass:[EXModuleRegistryHolderReactModule class]] exModuleRegistry] getModuleImplementingProtocol:@protocol(EXAppLifecycleService)];
     if ([state isEqualToString:@"background"]) {
       [lifeCycleManager setAppStateToBackground];
     } else if ([state isEqualToString:@"active"]) {

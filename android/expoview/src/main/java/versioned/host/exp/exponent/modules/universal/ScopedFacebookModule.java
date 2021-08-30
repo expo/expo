@@ -8,49 +8,20 @@ import com.facebook.FacebookSdk;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.unimodules.core.Promise;
-import org.unimodules.core.arguments.ReadableArguments;
-import org.unimodules.core.interfaces.LifecycleEventListener;
+import expo.modules.core.Promise;
+import expo.modules.core.arguments.ReadableArguments;
+import expo.modules.core.interfaces.LifecycleEventListener;
 
 import expo.modules.facebook.FacebookModule;
-import host.exp.exponent.kernel.ExperienceId;
+import host.exp.exponent.kernel.ExperienceKey;
 
 public class ScopedFacebookModule extends FacebookModule implements LifecycleEventListener {
   private final static String ERR_FACEBOOK_UNINITIALIZED = "ERR_FACEBOOK_UNINITIALIZED";
 
-
   private boolean mIsInitialized = false;
-  private SharedPreferences mSharedPreferences;
 
-  public ScopedFacebookModule(Context context, JSONObject manifest) {
+  public ScopedFacebookModule(Context context) {
     super(context);
-
-    mSharedPreferences = context.getSharedPreferences(getClass().getCanonicalName(), Context.MODE_PRIVATE);
-    boolean hasPreviouslySetAutoInitEnabled = mSharedPreferences.getBoolean(FacebookSdk.AUTO_INIT_ENABLED_PROPERTY, false);
-    boolean manifestDefinesAutoInitEnabled = false;
-    String facebookAppId = null;
-    String facebookApplicationName = null;
-    try {
-      facebookAppId = manifest.getString("facebookAppId");
-      facebookApplicationName = manifest.getString("facebookDisplayName");
-      manifestDefinesAutoInitEnabled = manifest.getBoolean("facebookAutoInitEnabled");
-    } catch (JSONException e) {
-      // do nothing
-    }
-
-    if (hasPreviouslySetAutoInitEnabled || manifestDefinesAutoInitEnabled) {
-      if (facebookAppId != null) {
-        FacebookSdk.setApplicationId(facebookAppId);
-        FacebookSdk.setApplicationName(facebookApplicationName);
-        FacebookSdk.sdkInitialize(context, () -> {
-          mIsInitialized = true;
-          FacebookSdk.fullyInitialize();
-        });
-      } else {
-        Log.w("E_FACEBOOK", "FacebookAutoInit is enabled, but no FacebookAppId has been provided." +
-            "Facebook SDK initialization aborted.");
-      }
-    }
   }
 
   @Override
@@ -61,12 +32,6 @@ public class ScopedFacebookModule extends FacebookModule implements LifecycleEve
     if (mAppName != null) {
       FacebookSdk.setApplicationName(mAppName);
     }
-  }
-
-  @Override
-  public void setAutoInitEnabledAsync(Boolean enabled, Promise promise) {
-    mSharedPreferences.edit().putBoolean(FacebookSdk.AUTO_INIT_ENABLED_PROPERTY, enabled).apply();
-    super.setAutoInitEnabledAsync(enabled, promise);
   }
 
   @Override

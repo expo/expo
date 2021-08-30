@@ -1,9 +1,9 @@
 import { StackNavigationOptions, HeaderStyleInterpolators } from '@react-navigation/stack';
 import { Platform, StyleSheet } from 'react-native';
 
-import Colors from '../constants/Colors';
+import Colors, { ColorTheme } from '../constants/Colors';
 
-export default (theme: string): StackNavigationOptions => {
+export default (theme: ColorTheme): StackNavigationOptions => {
   return {
     headerStyle: {
       borderBottomColor: Colors[theme].cardSeparator,

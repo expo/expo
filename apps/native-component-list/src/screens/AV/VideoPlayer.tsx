@@ -1,9 +1,9 @@
-import SegmentedControl from '@react-native-community/segmented-control';
+import SegmentedControl from '@react-native-segmented-control/segmented-control';
 import { diff } from 'deep-object-diff';
 import { Asset } from 'expo-asset';
 import { AVPlaybackStatus, ResizeMode, Video, VideoFullscreenUpdateEvent } from 'expo-av';
 import React from 'react';
-import { StyleProp, Text, View, ViewStyle } from 'react-native';
+import { Platform, StyleProp, Text, View, ViewStyle } from 'react-native';
 
 import { Colors } from '../../constants';
 import Player from './Player';
@@ -91,13 +91,13 @@ export default function VideoPlayer(props: {
       setRateAsync={setRateAsync}
       setVolume={volume => video.current?.setVolumeAsync(volume)}
       extraButtons={[
+        () => <ResizeModeSegmentedControl key="resizeModeControl" onValueChange={setResizeMode} />,
         {
           iconName: 'options',
           title: 'Native controls',
           onPress: toggleNativeControls,
           active: useNativeControls,
         },
-        () => <ResizeModeSegmentedControl onValueChange={setResizeMode} />,
         {
           iconName: 'resize',
           title: 'Open full screen',
@@ -133,15 +133,9 @@ function ResizeModeSegmentedControl({
     cover: ResizeMode.COVER,
   };
   const [index, setIndex] = React.useState(1);
-  return (
-    <View
-      style={{
-        alignItems: 'stretch',
-        paddingBottom: 6,
-        margin: 10,
-        justifyContent: 'flex-end',
-        flex: 1,
-      }}>
+  let control;
+  if (Platform.OS === 'ios') {
+    control = (
       <SegmentedControl
         values={Object.keys(resizeMap)}
         fontStyle={{ color: Colors.tintColor }}
@@ -157,16 +151,50 @@ function ResizeModeSegmentedControl({
           }
         }}
       />
+    );
+  } else {
+    // Segmented control looks broken in this situation outside of iOS, so use text instead
+    control = Object.keys(resizeMap).map((mode, i) => (
       <Text
+        onPress={() => {
+          setIndex(i);
+          onValueChange(resizeMap[mode]!);
+        }}
+        key={mode}
         style={{
           textAlign: 'center',
-          fontWeight: 'bold',
           color: Colors.tintColor,
-          marginTop: 8,
+          fontWeight: index === i ? 'bold' : 'normal',
+          marginTop: i === 0 ? 0 : 8,
           fontSize: 12,
         }}>
-        Resize Mode
+        {mode}
       </Text>
+    ));
+    control = <View style={{ marginTop: -5 }}>{control}</View>;
+  }
+  return (
+    <View
+      style={{
+        alignItems: 'stretch',
+        paddingBottom: 6,
+        margin: 10,
+        justifyContent: 'flex-end',
+        flex: 1,
+      }}>
+      {control}
+      {Platform.OS === 'ios' ? (
+        <Text
+          style={{
+            textAlign: 'center',
+            fontWeight: 'bold',
+            color: Colors.tintColor,
+            marginTop: 8,
+            fontSize: 12,
+          }}>
+          Resize Mode
+        </Text>
+      ) : null}
     </View>
   );
 }

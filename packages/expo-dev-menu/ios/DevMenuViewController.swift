@@ -77,8 +77,10 @@ class DevMenuViewController: UIViewController {
       "enableDevelopmentTools": true,
       "showOnboardingView": manager.shouldShowOnboarding(),
       "devMenuItems": manager.serializedDevMenuItems(),
+      "devMenuScreens": manager.serializedDevMenuScreens(),
       "appInfo": manager.session?.appInfo ?? [:],
-      "uuid": UUID.init().uuidString
+      "uuid": UUID.init().uuidString,
+      "openScreen": manager.session?.openScreen ?? NSNull()
     ]
   }
 

@@ -2,6 +2,7 @@
 
 #import <EXUpdates/EXUpdatesAsset.h>
 #import <EXUpdates/EXUpdatesConfig.h>
+#import <EXManifests/EXManifestsRawManifest.h>
 
 @class EXUpdatesDatabase;
 
@@ -23,32 +24,40 @@ typedef NS_ENUM(NSInteger, EXUpdatesUpdateStatus) {
 @property (nonatomic, strong, readonly) NSString *scopeKey;
 @property (nonatomic, strong, readonly) NSDate *commitTime;
 @property (nonatomic, strong, readonly) NSString *runtimeVersion;
-@property (nonatomic, strong, readonly, nullable) NSDictionary * metadata;
+@property (nonatomic, strong, readonly, nullable) NSDictionary *manifest;
 @property (nonatomic, assign, readonly) BOOL keep;
 @property (nonatomic, strong, readonly) NSArray<EXUpdatesAsset *> *assets;
 @property (nonatomic, assign, readonly) BOOL isDevelopmentMode;
 
-@property (nonatomic, strong, readonly) NSDictionary *rawManifest;
+@property (nonatomic, strong, readonly, nullable) NSDictionary *serverDefinedHeaders;
+@property (nonatomic, strong, readonly, nullable) NSDictionary *manifestFilters;
+
+@property (nonatomic, strong, readonly) EXManifestsRawManifest *rawManifest;
 
 @property (nonatomic, assign) EXUpdatesUpdateStatus status;
+@property (nonatomic, strong) NSDate *lastAccessed;
 
 + (instancetype)updateWithId:(NSUUID *)updateId
                     scopeKey:(NSString *)scopeKey
                   commitTime:(NSDate *)commitTime
               runtimeVersion:(NSString *)runtimeVersion
-                    metadata:(nullable NSDictionary *)metadata
+                    manifest:(nullable NSDictionary *)manifest
                       status:(EXUpdatesUpdateStatus)status
                         keep:(BOOL)keep
                       config:(EXUpdatesConfig *)config
                     database:(EXUpdatesDatabase *)database;
 
 + (instancetype)updateWithManifest:(NSDictionary *)manifest
+                          response:(nullable NSURLResponse *)response
                             config:(EXUpdatesConfig *)config
-                          database:(EXUpdatesDatabase *)database;
+                          database:(EXUpdatesDatabase *)database
+                             error:(NSError **)error;
 
 + (instancetype)updateWithEmbeddedManifest:(NSDictionary *)manifest
                                     config:(EXUpdatesConfig *)config
                                   database:(nullable EXUpdatesDatabase *)database;
+
++ (EXManifestsRawManifest *)rawManifestForJSON:(NSDictionary *)manifestJSON;
 
 @end
 

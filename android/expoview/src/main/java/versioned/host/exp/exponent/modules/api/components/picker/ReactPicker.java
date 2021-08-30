@@ -8,13 +8,20 @@
 package versioned.host.exp.exponent.modules.api.components.picker;
 
 import android.content.Context;
-import androidx.appcompat.widget.AppCompatSpinner;
+import android.content.ContextWrapper;
+import android.content.res.Resources;
+import android.os.Build;
 import android.util.AttributeSet;
+import android.util.TypedValue;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Spinner;
 
+import androidx.appcompat.widget.AppCompatSpinner;
+import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.common.annotations.VisibleForTesting;
+import com.facebook.react.modules.i18nmanager.I18nUtil;
+import com.facebook.react.uimanager.UIManagerModule;
 
 import javax.annotation.Nullable;
 
@@ -23,7 +30,10 @@ public class ReactPicker extends AppCompatSpinner {
   private int mMode = Spinner.MODE_DIALOG;
   private @Nullable Integer mPrimaryColor;
   private @Nullable OnSelectListener mOnSelectListener;
+  private @Nullable OnFocusListener mOnFocusListener;
   private @Nullable Integer mStagedSelection;
+  private int mOldElementSize = Integer.MIN_VALUE;
+  private boolean mIsOpen = false;
 
   private final OnItemSelectedListener mItemSelectedListener = new OnItemSelectedListener() {
     @Override
@@ -48,26 +58,49 @@ public class ReactPicker extends AppCompatSpinner {
     void onItemSelected(int position);
   }
 
+  public interface OnFocusListener {
+    void onPickerBlur();
+    void onPickerFocus();
+  }
+
   public ReactPicker(Context context) {
     super(context);
+    handleRTL(context);
   }
 
   public ReactPicker(Context context, int mode) {
     super(context, mode);
     mMode = mode;
+    handleRTL(context);
   }
 
   public ReactPicker(Context context, AttributeSet attrs) {
     super(context, attrs);
+    handleRTL(context);
   }
 
   public ReactPicker(Context context, AttributeSet attrs, int defStyle) {
     super(context, attrs, defStyle);
+    handleRTL(context);
   }
 
   public ReactPicker(Context context, AttributeSet attrs, int defStyle, int mode) {
     super(context, attrs, defStyle, mode);
     mMode = mode;
+    handleRTL(context);
+  }
+
+  private void handleRTL(Context context) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+      boolean isRTL = I18nUtil.getInstance().isRTL(context);
+      if (isRTL) {
+        this.setLayoutDirection(View.LAYOUT_DIRECTION_RTL);
+        this.setTextDirection(View.TEXT_DIRECTION_RTL);
+      } else {
+        this.setLayoutDirection(View.LAYOUT_DIRECTION_LTR);
+        this.setTextDirection(View.TEXT_DIRECTION_LTR);
+      }
+    }
   }
 
   private final Runnable measureAndLayout = new Runnable() {
@@ -92,6 +125,28 @@ public class ReactPicker extends AppCompatSpinner {
   }
 
   @Override
+  public boolean performClick() {
+    // When picker is opened, emit focus event.
+    mIsOpen = true;
+    if (mOnFocusListener != null) {
+      mOnFocusListener.onPickerFocus();
+    }
+    return super.performClick();
+  }
+
+  @Override
+  public void onWindowFocusChanged(boolean hasWindowFocus) {
+    // When view that holds picker gains focus and picker was opened,
+    // then picker lost focus, so emit blur event.
+    if (mIsOpen && hasWindowFocus) {
+      mIsOpen = false;
+      if (mOnFocusListener != null) {
+        mOnFocusListener.onPickerBlur();
+      }
+    }
+  }
+
+  @Override
   protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
     super.onLayout(changed, left, top, right, bottom);
 
@@ -103,13 +158,50 @@ public class ReactPicker extends AppCompatSpinner {
       setOnItemSelectedListener(mItemSelectedListener);
   }
 
+  @Override
+  protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+    super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+
+    int selectedPosition = getSelectedItemPosition();
+    int elementSize;
+    if (selectedPosition < 0 || getAdapter() == null || selectedPosition >= getAdapter().getCount()) {
+      elementSize = (int) TypedValue.applyDimension(
+              TypedValue.COMPLEX_UNIT_DIP,
+              50,
+              Resources.getSystem().getDisplayMetrics()
+      );
+    } else {
+      View view = getAdapter().getView(selectedPosition, null, this);
+      measureChild(
+              view,
+              View.MeasureSpec.makeMeasureSpec(getMeasuredWidth(), View.MeasureSpec.EXACTLY),
+              View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED)
+      );
+      elementSize = view.getMeasuredHeight();
+    }
+
+    if (elementSize != mOldElementSize) {
+      UIManagerModule uiManager = getReactContext().getNativeModule(UIManagerModule.class);
+      if (uiManager != null) {
+        uiManager.setViewLocalData(getId(), new ReactPickerLocalData(elementSize));
+      }
+      mOldElementSize = elementSize;
+    }
+  }
+
   public void setOnSelectListener(@Nullable OnSelectListener onSelectListener) {
     mOnSelectListener = onSelectListener;
+  }
+
+  public void setOnFocusListener(@Nullable OnFocusListener onFocusListener) {
+    mOnFocusListener = onFocusListener;
   }
 
   @Nullable public OnSelectListener getOnSelectListener() {
     return mOnSelectListener;
   }
+
+  @Nullable public OnFocusListener getOnFocusListener() { return mOnFocusListener; }
 
   /**
    * Will cache "selection" value locally and set it only once {@link #updateStagedSelection} is
@@ -151,5 +243,13 @@ public class ReactPicker extends AppCompatSpinner {
   @VisibleForTesting
   public int getMode() {
     return mMode;
+  }
+
+  private ReactContext getReactContext() {
+    Context context = getContext();
+    if (!(context instanceof ReactContext) && context instanceof ContextWrapper) {
+      context = ((ContextWrapper) context).getBaseContext();
+    }
+    return (ReactContext) context;
   }
 }

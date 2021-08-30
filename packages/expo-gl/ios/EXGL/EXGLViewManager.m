@@ -2,17 +2,17 @@
 
 #import <EXGL/EXGLView.h>
 #import <EXGL/EXGLViewManager.h>
-#import <UMCore/UMUIManager.h>
+#import <ExpoModulesCore/EXUIManager.h>
 
 @interface EXGLViewManager ()
 
-@property (nonatomic, weak) UMModuleRegistry *moduleRegistry;
+@property (nonatomic, weak) EXModuleRegistry *moduleRegistry;
 
 @end
 
 @implementation EXGLViewManager
 
-UM_EXPORT_MODULE(ExponentGLViewManager);
+EX_EXPORT_MODULE(ExponentGLViewManager);
 
 - (UIView *)view
 {
@@ -29,12 +29,12 @@ UM_EXPORT_MODULE(ExponentGLViewManager);
   return @[@"onSurfaceCreate"];
 }
 
-UM_VIEW_PROPERTY(msaaSamples, NSNumber *, EXGLView)
+EX_VIEW_PROPERTY(msaaSamples, NSNumber *, EXGLView)
 {
   [view setMsaaSamples:value];
 }
 
-- (void)setModuleRegistry:(UMModuleRegistry *)moduleRegistry
+- (void)setModuleRegistry:(EXModuleRegistry *)moduleRegistry
 {
   _moduleRegistry = moduleRegistry;
 }

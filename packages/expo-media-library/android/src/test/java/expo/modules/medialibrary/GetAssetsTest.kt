@@ -44,16 +44,18 @@ internal class GetAssetsTest {
 
   @Test
   fun `getAssets should resolve with correct response`() {
-    //arrange
-    val context = mockContext with mockContentResolverForResult(arrayOf(
-      MockData.mockImage.toColumnArray(),
-      MockData.mockVideo.toColumnArray()
-    ))
+    // arrange
+    val context = mockContext with mockContentResolverForResult(
+      arrayOf(
+        MockData.mockImage.toColumnArray(),
+        MockData.mockVideo.toColumnArray()
+      )
+    )
 
-    //act
+    // act
     GetAssets(context, mutableMapOf(), promise).doInBackground()
 
-    //assert
+    // assert
     promiseResolved(promise) {
       assertEquals(2, it.getInt("totalCount"))
     }
@@ -61,37 +63,37 @@ internal class GetAssetsTest {
 
   @Test
   fun `GetAssets should reject on null cursor`() {
-    //arrange
+    // arrange
     val context = mockContext with mockContentResolver(null)
 
-    //act
+    // act
     GetAssets(context, mutableMapOf(), promise).doInBackground()
 
-    //assert
+    // assert
     assertRejectedWithCode(promise, ERROR_UNABLE_TO_LOAD)
   }
 
   @Test
   fun `GetAssets should reject on SecurityException`() {
-    //arrange
+    // arrange
     val context = mockContext with throwableContentResolver(SecurityException())
 
-    //act
+    // act
     GetAssets(context, mutableMapOf(), promise).doInBackground()
 
-    //assert
+    // assert
     assertRejectedWithCode(promise, ERROR_UNABLE_TO_LOAD_PERMISSION)
   }
 
   @Test
   fun `GetAssets should reject on IOException`() {
-    //arrange
+    // arrange
     val context = mockContext with throwableContentResolver(IOException())
 
-    //act
+    // act
     GetAssets(context, mutableMapOf(), promise).doInBackground()
 
-    //assert
+    // assert
     assertRejectedWithCode(promise, ERROR_UNABLE_TO_LOAD)
   }
 

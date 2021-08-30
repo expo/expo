@@ -1,7 +1,7 @@
 //  Copyright © 2018 650 Industries. All rights reserved.
 
-#import <UMCore/UMExportedModule.h>
-#import <UMCore/UMModuleRegistryConsumer.h>
+#import <ExpoModulesCore/EXExportedModule.h>
+#import <ExpoModulesCore/EXModuleRegistryConsumer.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -13,9 +13,10 @@ typedef NS_ENUM(NSInteger, EXCellularGeneration) {
   EXCellularGeneration2G,
   EXCellularGeneration3G,
   EXCellularGeneration4G,
+  EXCellularGeneration5G,
 };
 
-@interface EXCellularModule : UMExportedModule <UMModuleRegistryConsumer>
+@interface EXCellularModule : EXExportedModule <EXModuleRegistryConsumer>
 
 @end
 

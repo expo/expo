@@ -1,7 +1,7 @@
 // @ts-nocheck
 import SegmentedControl, {
   NativeSegmentedControlIOSChangeEvent,
-} from '@react-native-community/segmented-control';
+} from '@react-native-segmented-control/segmented-control';
 import React, { useState } from 'react';
 import { ScrollView, StyleSheet, Text, View, NativeSyntheticEvent } from 'react-native';
 

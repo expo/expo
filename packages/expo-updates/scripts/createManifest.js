@@ -2,7 +2,7 @@ const { loadAsync } = require('@expo/metro-config');
 const fs = require('fs');
 const Server = require('metro/src/Server');
 const path = require('path');
-const uuid = require('uuid/v4');
+const { v4: uuidv4 } = require('uuid');
 
 const filterPlatformAssetScales = require('./filterPlatformAssetScales');
 
@@ -15,14 +15,26 @@ const filterPlatformAssetScales = require('./filterPlatformAssetScales');
   // Remove projectRoot validation when we no longer support React Native <= 62
   let projectRoot;
   if (fs.existsSync(path.join(possibleProjectRoot, entryFile))) {
-    projectRoot = possibleProjectRoot;
+    projectRoot = path.resolve(possibleProjectRoot);
   } else if (fs.existsSync(path.join(possibleProjectRoot, '..', entryFile))) {
     projectRoot = path.resolve(possibleProjectRoot, '..');
   }
 
+  let metroConfig;
+  try {
+    metroConfig = await loadAsync(projectRoot);
+  } catch (e) {
+    let message = `Error loading Metro config and Expo app config: ${e.message}\n\nMake sure your project is configured properly and your app.json / app.config.js is valid.`;
+    if (process.env.EAS_BUILD) {
+      message +=
+        '\nIf you are using environment variables in app.config.js, verify that you have set them in your EAS Build profile configuration or secrets.';
+    }
+    throw new Error(message);
+  }
+
   let assets;
   try {
-    assets = await fetchAssetManifestAsync(platform, projectRoot, entryFile);
+    assets = await fetchAssetManifestAsync(platform, projectRoot, entryFile, metroConfig);
   } catch (e) {
     throw new Error(
       "Error loading assets JSON from Metro. Ensure you've followed all expo-updates installation steps correctly. " +
@@ -31,7 +43,7 @@ const filterPlatformAssetScales = require('./filterPlatformAssetScales');
   }
 
   const manifest = {
-    id: uuid(),
+    id: uuidv4(),
     commitTime: new Date().getTime(),
     assets: [],
   };
@@ -65,6 +77,8 @@ const filterPlatformAssetScales = require('./filterPlatformAssetScales');
 
   fs.writeFileSync(path.join(destinationDir, 'app.manifest'), JSON.stringify(manifest));
 })().catch(e => {
+  // Wrap in regex to make it easier for log parsers (like `@expo/xcpretty`) to find this error.
+  e.message = `@build-script-error-begin\n${e.message}\n@build-script-error-end\n`;
   console.error(e);
   process.exit(1);
 });
@@ -77,7 +91,7 @@ function getAndroidResourceFolderName(asset) {
 
 // copied from react-native/Libraries/Image/assetPathUtils.js
 function getAndroidResourceIdentifier(asset) {
-  var folderPath = getBasePath(asset);
+  const folderPath = getBasePath(asset);
   return (folderPath + '/' + asset.name)
     .toLowerCase()
     .replace(/\//g, '_') // Encode folder structure in file name
@@ -93,7 +107,7 @@ function getIosDestinationDir(asset) {
 
 // copied from react-native/Libraries/Image/assetPathUtils.js
 function getBasePath(asset) {
-  var basePath = asset.httpServerLocation;
+  let basePath = asset.httpServerLocation;
   if (basePath[0] === '/') {
     basePath = basePath.substr(1);
   }
@@ -101,13 +115,12 @@ function getBasePath(asset) {
 }
 
 // Spawn a Metro server to get the asset manifest
-async function fetchAssetManifestAsync(platform, projectRoot, entryFile) {
+async function fetchAssetManifestAsync(platform, projectRoot, entryFile, metroConfig) {
   // Project-level babel config does not load unless we change to the
   // projectRoot before instantiating the server
   process.chdir(projectRoot);
 
-  const config = await loadAsync(projectRoot);
-  const server = new Server(config);
+  const server = new Server(metroConfig);
 
   const requestOpts = {
     entryFile,

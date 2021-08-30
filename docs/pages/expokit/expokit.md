@@ -2,7 +2,7 @@
 title: Developing With ExpoKit
 ---
 
-> **ExpoKit is deprecated and will no longer be supported after SDK 38. If you need to make customizations to your Expo project, we recommend using the [bare workflow](../bare/customizing.md) instead.**
+> **ExpoKit is deprecated and will no longer be supported after SDK 38. If you need to make customizations to your Expo project, we recommend using the [bare workflow](../workflow/customizing.md) instead.**
 
 ExpoKit is an Objective-C and Java library that allows you to use the Expo platform with a
 native iOS/Android project.
@@ -29,7 +29,7 @@ By this point you should have a JS app which additionally contains `ios` and `an
 
 Run `expo start` from the project directory.
 
-This step ensures that the React Native packager is running and serving your app's JS bundle for development. Leave this running and continue with the following steps.
+This step ensures that the Metro bundler is running and serving your app's JS bundle for development. Leave this running and continue with the following steps.
 
 > Note: Before building for release, you **must** run `expo publish` to serve your app's JS bundle in TestFlight and production.
 
@@ -192,12 +192,12 @@ If upgrading from SDK 30 or below, you'll also need to change `platform :ios, '9
 
 ### Android
 
-- Go to https://expo.io/--/api/v2/versions and find the `expokitNpmPackage` key under `sdkVersions.[NEW SDK VERSION]`.
+- Go to https://expo.dev/--/api/v2/versions and find the `expokitNpmPackage` key under `sdkVersions.[NEW SDK VERSION]`.
 - Update your version of expokit in `package.json` to the version in `expokitNpmPackage` and yarn/npm install.
 - If upgrading to SDK 31 or below, go to `MainActivity.java` and replace `Arrays.asList("[OLD SDK VERSION]")` with `Arrays.asList("[NEW SDK VERSION]")`. If upgrading to SDK 32 or above, simply remove the entire `public List<String> sdkVersions()` method from `MainActivity.java`.
 - Go to `android/app/build.gradle` and replace `compile('host.exp.exponent:expoview:[OLD SDK VERSION]@aar') {` with `compile('host.exp.exponent:expoview:[NEW SDK VERSION]@aar') {`.
 - Go to `android/app/build.gradle` (same file) and replace `api 'com.facebook.react:react-native:[OLD SDK VERSION]'` with `api 'com.facebook.react:react-native:[NEW SDK VERSION]'`.
-- Go to `android/app/build.gradle` (same file) and upgrade JSC version by replcaing `api 'org.webkit:android-jsc:[OLD JSC VERSION]'` with `api 'org.webkit:android-jsc:r245459'` and `force 'org.webkit:android-jsc:[OLD JSC VERSION]'` with `force 'org.webkit:android-jsc:r245459'`.
+- Go to `android/app/build.gradle` (same file) and upgrade JSC version by replacing `api 'org.webkit:android-jsc:[OLD JSC VERSION]'` with `api 'org.webkit:android-jsc:r245459'` and `force 'org.webkit:android-jsc:[OLD JSC VERSION]'` with `force 'org.webkit:android-jsc:r245459'`.
 
 If upgrading from SDK34:
 

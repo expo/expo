@@ -1,34 +1,35 @@
 // Copyright 2016-present 650 Industries. All rights reserved.
 
-#if __has_include(<EXPermissions/EXPermissions.h>)
+#if __has_include(<ExpoModulesCore/EXPermissionsService.h>)
+#import <ExpoModulesCore/EXUtilities.h>
+#import <ExpoModulesCore/EXDefines.h>
+
 #import "EXScopedPermissions.h"
-#import <UMCore/UMUtilities.h>
-#import <UMCore/UMDefines.h>
 
 @interface EXScopedPermissions ()
 
-@property (nonatomic, strong) NSString *experienceId;
+@property (nonatomic, strong) NSString *scopeKey;
 @property (nonatomic, weak) id<EXPermissionsScopedModuleDelegate> permissionsService;
-@property (nonatomic, weak) id<UMUtilitiesInterface> utils;
+@property (nonatomic, weak) id<EXUtilitiesInterface> utils;
 @property (nonatomic, weak) EXConstantsBinding *constantsBinding;
 
 @end
 
 @implementation EXScopedPermissions
 
-- (instancetype)initWithExperienceId:(NSString *)experienceId andConstantsBinding:(EXConstantsBinding *)constantsBinding
+- (instancetype)initWithScopeKey:(NSString *)scopeKey andConstantsBinding:(EXConstantsBinding *)constantsBinding
 {
   if (self = [super init]) {
-    _experienceId = experienceId;
+    _scopeKey = scopeKey;
     _constantsBinding = constantsBinding;
   }
   return self;
 }
 
-- (void)setModuleRegistry:(UMModuleRegistry *)moduleRegistry
+- (void)setModuleRegistry:(EXModuleRegistry *)moduleRegistry
 {
   [super setModuleRegistry:moduleRegistry];
-  _utils = [moduleRegistry getModuleImplementingProtocol:@protocol(UMUtilitiesInterface)];
+  _utils = [moduleRegistry getModuleImplementingProtocol:@protocol(EXUtilitiesInterface)];
   _permissionsService = [moduleRegistry getSingletonModuleForName:@"Permissions"];
 }
 
@@ -43,10 +44,10 @@
 
 - (NSString *)getScopedPermissionStatus:(NSString *)permissionType {
   if (!_permissionsService) {
-    return [[self class] permissionStringForStatus:UMPermissionStatusGranted];
+    return [[self class] permissionStringForStatus:EXPermissionStatusGranted];
   }
   
-  return [[self class] permissionStringForStatus:[_permissionsService getPermission:permissionType forExperience:_experienceId]];
+  return [[self class] permissionStringForStatus:[_permissionsService getPermission:permissionType forExperience:_scopeKey]];
 }
 
 - (BOOL)hasGrantedScopedPermission:(NSString *)permissionType
@@ -55,24 +56,24 @@
     return YES;
   }
   
-  return [_permissionsService getPermission:permissionType forExperience:_experienceId] == UMPermissionStatusGranted;
+  return [_permissionsService getPermission:permissionType forExperience:_scopeKey] == EXPermissionStatusGranted;
 }
 
 - (void)askForPermissionUsingRequesterClass:(Class)requesterClass
-                                    resolve:(UMPromiseResolveBlock)resolve
-                                     reject:(UMPromiseRejectBlock)reject
+                                    resolve:(EXPromiseResolveBlock)resolve
+                                     reject:(EXPromiseRejectBlock)reject
 {
   NSDictionary *globalPermissions = [super getPermissionUsingRequesterClass:requesterClass];
   NSString *permissionType = [requesterClass permissionType];
-  UM_WEAKIFY(self)
+  EX_WEAKIFY(self)
   if (![globalPermissions[@"status"] isEqualToString:@"granted"]) {
     // first group
     // ask for permission. If granted then save it as scope permission
     void (^customOnResults)(NSDictionary *) = ^(NSDictionary *permission){
-      UM_ENSURE_STRONGIFY(self)
+      EX_ENSURE_STRONGIFY(self)
       // if permission should be scoped save it
       if ([self shouldVerifyScopedPermission:permissionType]) {
-        [self.permissionsService savePermission:permission ofType:permissionType forExperience:self.experienceId];
+        [self.permissionsService savePermission:permission ofType:permissionType forExperience:self.scopeKey];
       }
       resolve(permission);
     };
@@ -83,20 +84,20 @@
     // second group
     // had to reinitilize UIAlertActions between alertShow invocations
     UIAlertAction *allowAction = [UIAlertAction actionWithTitle:@"Allow" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
-      UM_ENSURE_STRONGIFY(self);
+      EX_ENSURE_STRONGIFY(self);
       NSMutableDictionary *permission = [globalPermissions mutableCopy];
       // try to save scoped permissions - if fails than permission is denied
-      if (![self.permissionsService savePermission:permission ofType:permissionType forExperience:self.experienceId]) {
-        permission[@"status"] = [[self class] permissionStringForStatus:UMPermissionStatusDenied];
+      if (![self.permissionsService savePermission:permission ofType:permissionType forExperience:self.scopeKey]) {
+        permission[@"status"] = [[self class] permissionStringForStatus:EXPermissionStatusDenied];
         permission[@"granted"] = @(NO);
       }
       resolve(permission);
     }];
     
     UIAlertAction *denyAction = [UIAlertAction actionWithTitle:@"Deny" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
-      UM_ENSURE_STRONGIFY(self);
+      EX_ENSURE_STRONGIFY(self);
       NSMutableDictionary *permission = [globalPermissions mutableCopy];
-      permission[@"status"] = [[self class] permissionStringForStatus:UMPermissionStatusDenied];
+      permission[@"status"] = [[self class] permissionStringForStatus:EXPermissionStatusDenied];
       permission[@"granted"] = @(NO);
       resolve([NSDictionary dictionaryWithDictionary:permission]);
     }];
@@ -118,7 +119,7 @@
   
   if ([_constantsBinding.appOwnership isEqualToString:@"expo"]
       && [self shouldVerifyScopedPermission:permissionType]
-      && [EXPermissions statusForPermission:permission] == UMPermissionStatusGranted) {
+      && [EXPermissionsService statusForPermission:permission] == EXPermissionStatusGranted) {
     permission[@"status"] = [self getScopedPermissionStatus:permissionType];
     permission[@"granted"] = [permission[@"status"] isEqual:@"granted"] ? @YES : @NO;
   }
@@ -129,7 +130,7 @@
                    withAllowAction:(UIAlertAction *)allow
                     withDenyAction:(UIAlertAction *)deny
 {
-  NSString *experienceName = self.experienceId; // TODO: we might want to use name from the manifest?
+  NSString *experienceName = self.scopeKey; // TODO: we might want to use name from the manifest?
   NSString *messageTemplate = @"%1$@ needs permissions for %2$@. You\'ve already granted permission to another Expo experience. Allow %1$@ to also use it?";
   NSString *permissionString = [[self class] textForPermissionType:permissionType];
 
@@ -140,9 +141,9 @@
   [alert addAction:deny];
   [alert addAction:allow];
 
-  UM_WEAKIFY(self);
-  [UMUtilities performSynchronouslyOnMainThread:^{
-    UM_ENSURE_STRONGIFY(self);
+  EX_WEAKIFY(self);
+  [EXUtilities performSynchronouslyOnMainThread:^{
+    EX_ENSURE_STRONGIFY(self);
     // TODO: below line is sometimes failing with: "Presenting view controllers on detached view controllers is discourage"
     [self->_utils.currentViewController presentViewController:alert animated:YES completion:nil];
   }];

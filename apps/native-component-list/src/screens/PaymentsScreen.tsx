@@ -111,6 +111,60 @@ export default function PaymentsScreen() {
 
   return (
     <View style={styles.container}>
+      <Text style={styles.header}>Miscellaneous methods</Text>
+      <Text style={styles.instruction}>
+        Click button to show create a token based on example card params.
+      </Text>
+      <Button
+        title="Create token"
+        onPress={async () => {
+          const params = {
+            // mandatory
+            number: '4242424242424242',
+            expMonth: 11,
+            expYear: 22,
+            cvc: '223',
+            // optional
+            name: 'Test User',
+            currency: 'usd',
+            addressLine1: '123 Test Street',
+            addressLine2: 'Apt. 5',
+            addressCity: 'Test City',
+            addressState: 'Test State',
+            addressCountry: 'Test Country',
+            addressZip: '55555',
+          };
+
+          const token = await Payments.createTokenWithCardAsync(params);
+          console.log({ token });
+        }}
+      />
+      <Text style={styles.instruction}>
+        Click button to launch Add Card view to accept payment.
+      </Text>
+      <Button
+        title="Add card"
+        onPress={async () => {
+          const token = await Payments.paymentRequestWithCardFormAsync({
+            requiredBillingAddressFields: 'full',
+            prefilledInformation: {
+              billingAddress: {
+                name: 'Gunilla Haugeh',
+                line1: 'Canary Place',
+                line2: '3',
+                city: 'Macon',
+                state: 'Georgia',
+                country: 'US',
+                postalCode: '31217',
+                phone: '123-4567',
+                email: 'myemail@email.com',
+              },
+            },
+          });
+          console.log({ token });
+        }}
+      />
+
       <Text style={styles.header}>Apple Pay Example with Expo</Text>
       <Text style={styles.instruction}>Click button to show Apple Pay dialog.</Text>
       <Button

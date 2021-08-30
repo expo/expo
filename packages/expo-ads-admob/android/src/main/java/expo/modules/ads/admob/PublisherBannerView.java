@@ -13,7 +13,7 @@ import com.google.android.gms.ads.doubleclick.AppEventListener;
 import com.google.android.gms.ads.doubleclick.PublisherAdRequest;
 import com.google.android.gms.ads.doubleclick.PublisherAdView;
 
-import org.unimodules.core.interfaces.services.EventEmitter;
+import expo.modules.core.interfaces.services.EventEmitter;
 
 public class PublisherBannerView extends FrameLayout implements AppEventListener {
   private Bundle mAdditionalRequestParams;
@@ -59,7 +59,9 @@ public class PublisherBannerView extends FrameLayout implements AppEventListener
         int top = adView.getTop();
         adView.measure(width, height);
         adView.layout(left, top, left + width, top + height);
-
+        sendEvent(
+          PublisherBannerViewManager.Events.EVENT_SIZE_CHANGE,
+          AdMobUtils.createEventForSizeChange(getContext(), adView.getAdSize()));
         sendEvent(PublisherBannerViewManager.Events.EVENT_RECEIVE_AD);
       }
 

@@ -1,1 +1,0 @@
-../../../../../../../packages/unimodules-face-detector-interface/ios/UMFaceDetectorInterface/UMFaceDetectorManager.h

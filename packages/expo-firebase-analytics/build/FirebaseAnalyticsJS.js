@@ -12,11 +12,19 @@
  * that follows the Firebase Analytics JS SDK.
  */
 class FirebaseAnalyticsJS {
+    url;
+    enabled;
+    config;
+    userId;
+    userProperties;
+    screenName;
+    eventQueue = new Set();
+    options;
+    flushEventsPromise = Promise.resolve();
+    flushEventsTimer;
+    lastTime = -1;
+    sequenceNr = 1;
     constructor(config, options) {
-        this.eventQueue = new Set();
-        this.flushEventsPromise = Promise.resolve();
-        this.lastTime = -1;
-        this.sequenceNr = 1;
         // Verify the measurement- & client Ids
         if (!config.measurementId)
             throw new Error('No valid measurementId. Make sure to provide a valid measurementId with a G-XXXXXXXXXX format.');
@@ -282,6 +290,12 @@ class FirebaseAnalyticsJS {
      */
     async setDebugModeEnabled(isEnabled) {
         this.options.debug = isEnabled;
+    }
+    /**
+     * Sets a new value for the client ID.
+     */
+    setClientId(clientId) {
+        this.options.clientId = clientId;
     }
 }
 function encodeQueryArgs(queryArgs, lastTime) {

@@ -1,10 +1,10 @@
 {
   "name": "expo-dev-launcher",
   "title": "Expo Development Launcher",
-  "version": "0.1.3",
+  "version": "0.6.7",
   "description": "Pre-release version of the Expo development launcher package for testing.",
-  "main": "build/DevelopementClient.js",
-  "types": "build/DevelopementClient.d.ts",
+  "main": "build/DevLauncher.js",
+  "types": "build/DevLauncher.d.ts",
   "scripts": {
     "build": "expo-module build",
     "clean": "expo-module clean",
@@ -13,7 +13,7 @@
     "prepare": "expo-module prepare",
     "prepublishOnly": "expo-module prepublishOnly",
     "expo-module": "expo-module",
-    "start": "npx react-native start",
+    "start": "react-native start --port 8090",
     "bundle": "./write_embedded_bundle.sh"
   },
   "repository": {
@@ -27,15 +27,15 @@
   "author": "650 Industries, Inc.",
   "license": "MIT",
   "homepage": "https://docs.expo.io",
-  "peerDependencies": {
-    "react": "^16.8.1",
-    "react-native": ">=0.60.0-rc.0 <1.0.x"
+  "dependencies": {
+    "@expo/config-plugins": "^3.0.0",
+    "resolve-from": "^5.0.0",
+    "semver": "^7.3.5"
   },
   "devDependencies": {
-    "babel-preset-expo": "~8.3.0",
-    "expo-module-scripts": "~1.2.0",
-    "react": "16.13.1",
-    "react-native": "0.63.2",
-    "react-native-url-polyfill": "^1.2.0"
+    "babel-preset-expo": "~8.4.0",
+    "expo-module-scripts": "^2.0.0",
+    "react": "17.0.1",
+    "react-native": "0.64.2"
   }
 }

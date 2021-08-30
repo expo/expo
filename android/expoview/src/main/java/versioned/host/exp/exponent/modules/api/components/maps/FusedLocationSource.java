@@ -12,6 +12,8 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.LocationSource;
 import com.google.android.gms.tasks.OnSuccessListener;
 
+import java.lang.SecurityException;
+
 public class FusedLocationSource implements LocationSource {
 
     private final FusedLocationProviderClient fusedLocationClientProviderClient;
@@ -40,23 +42,27 @@ public class FusedLocationSource implements LocationSource {
 
     @Override
     public void activate(final OnLocationChangedListener onLocationChangedListener) {
-        fusedLocationClientProviderClient.getLastLocation().addOnSuccessListener(new OnSuccessListener<Location>() {
-            @Override
-            public void onSuccess(Location location) {
-                if (location != null) {
-                    onLocationChangedListener.onLocationChanged(location);
+        try {
+            fusedLocationClientProviderClient.getLastLocation().addOnSuccessListener(new OnSuccessListener<Location>() {
+                @Override
+                public void onSuccess(Location location) {
+                    if (location != null) {
+                        onLocationChangedListener.onLocationChanged(location);
+                    }
                 }
-            }
-        });
-        locationCallback = new LocationCallback() {
-            @Override
-            public void onLocationResult(LocationResult locationResult) {
-                for (Location location : locationResult.getLocations()) {
-                    onLocationChangedListener.onLocationChanged(location);
+            });
+            locationCallback = new LocationCallback() {
+                @Override
+                public void onLocationResult(LocationResult locationResult) {
+                    for (Location location : locationResult.getLocations()) {
+                        onLocationChangedListener.onLocationChanged(location);
+                    }
                 }
-            }
-        };
-        fusedLocationClientProviderClient.requestLocationUpdates(locationRequest, locationCallback, Looper.myLooper());
+            };
+            fusedLocationClientProviderClient.requestLocationUpdates(locationRequest, locationCallback, Looper.myLooper());
+        } catch (SecurityException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override

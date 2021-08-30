@@ -3,14 +3,14 @@
 buildscript {
   ext {
     minSdkVersion = 21
-    targetSdkVersion = 29
-    compileSdkVersion = 29
+    targetSdkVersion = 30
+    compileSdkVersion = 30
 
     dbFlowVersion = '4.2.4'
-    buildToolsVersion = '29.0.2'
+    buildToolsVersion = '30.0.5'
     supportLibVersion = '29.0.0'
-    kotlinVersion = '1.3.50'
-    gradlePluginVersion = '4.0.0'
+    kotlinVersion = '1.4.21'
+    gradlePluginVersion = '4.1.2'
     gradleDownloadTaskVersion = '3.4.3'
     repositoryUrl = "file:${System.env.HOME}/.m2/repository/"
   }
@@ -21,7 +21,7 @@ buildscript {
   }
   dependencies {
     classpath "com.android.tools.build:gradle:${gradlePluginVersion}"
-    classpath 'com.google.gms:google-services:3.2.1'
+    classpath 'com.google.gms:google-services:4.3.5'
     classpath "de.undercouch:gradle-download-task:$gradleDownloadTaskVersion"
 
     // https://github.com/awslabs/aws-device-farm-gradle-plugin/releases
@@ -29,6 +29,10 @@ buildscript {
 
     classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
   }
+}
+
+plugins {
+  id "com.diffplug.spotless" version "5.14.1"
 }
 
 allprojects {
@@ -39,13 +43,16 @@ allprojects {
     }
     // For old expoviews to work
     maven {
+      url "$rootDir/versioned-abis/expoview-abi42_0_0/maven"
+    }
+    maven {
+      url "$rootDir/versioned-abis/expoview-abi41_0_0/maven"
+    }
+    maven {
       url "$rootDir/versioned-abis/expoview-abi40_0_0/maven"
     }
     maven {
       url "$rootDir/versioned-abis/expoview-abi39_0_0/maven"
-    }
-    maven {
-      url "$rootDir/versioned-abis/expoview-abi38_0_0/maven"
     }
     maven {
       url "$rootDir/versioned-abis/maven"
@@ -99,6 +106,30 @@ allprojects {
   }
 }
 
-task clean(type: Delete) {
-  delete rootProject.buildDir
+subprojects {
+  plugins.apply("com.diffplug.spotless")
+  spotless {
+    format 'gradle', {
+      target '*.gradle'
+      trimTrailingWhitespace()
+      indentWithSpaces()
+      endWithNewline()
+    }
+    kotlin {
+      target '**/*.kt'
+      ktlint("0.41.0").userData([
+        "disabled_rules"           : "no-wildcard-imports,import-ordering",
+        "charset"                  : "utf-8",
+        "end_of_line"              : "lf",
+        "indent_size"              : "2",
+        "indent_style"             : "space",
+        "insert_final_newline"     : "true",
+        "tab_width"                : "2",
+        "trim_trailing_whitespace" : "true"
+      ])
+      trimTrailingWhitespace()
+      indentWithSpaces()
+      endWithNewline()
+    }
+  }
 }

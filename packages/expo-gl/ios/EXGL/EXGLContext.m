@@ -3,10 +3,10 @@
 #import <EXGL/EXGLContext.h>
 #import <EXGL/EXGLObjectManager.h>
 
-#import <UMCore/UMUtilities.h>
-#import <UMCore/UMUIManager.h>
-#import <UMCore/UMJavaScriptContextProvider.h>
-#import <UMFileSystemInterface/UMFileSystemInterface.h>
+#import <ExpoModulesCore/EXUtilities.h>
+#import <ExpoModulesCore/EXUIManager.h>
+#import <ExpoModulesCore/EXJavaScriptContextProvider.h>
+#import <ExpoModulesCore/EXFileSystemInterface.h>
 
 #include <OpenGLES/ES3/gl.h>
 #include <OpenGLES/ES3/glext.h>
@@ -16,14 +16,14 @@
 @interface EXGLContext ()
 
 @property (nonatomic, strong) dispatch_queue_t glQueue;
-@property (nonatomic, weak) UMModuleRegistry *moduleRegistry;
+@property (nonatomic, weak) EXModuleRegistry *moduleRegistry;
 @property (nonatomic, weak) EXGLObjectManager *objectManager;
 
 @end
 
 @implementation EXGLContext
 
-- (instancetype)initWithDelegate:(id<EXGLContextDelegate>)delegate andModuleRegistry:(nonnull UMModuleRegistry *)moduleRegistry
+- (instancetype)initWithDelegate:(id<EXGLContextDelegate>)delegate andModuleRegistry:(nonnull EXModuleRegistry *)moduleRegistry
 {
   if (self = [super init]) {
     self.delegate = delegate;
@@ -65,8 +65,8 @@
 
 - (void)initialize:(void(^)(BOOL))callback
 {
-  id<UMUIManager> uiManager = [_moduleRegistry getModuleImplementingProtocol:@protocol(UMUIManager)];
-  id<UMJavaScriptContextProvider> jsContextProvider = [_moduleRegistry getModuleImplementingProtocol:@protocol(UMJavaScriptContextProvider)];
+  id<EXUIManager> uiManager = [_moduleRegistry getModuleImplementingProtocol:@protocol(EXUIManager)];
+  id<EXJavaScriptContextProvider> jsContextProvider = [_moduleRegistry getModuleImplementingProtocol:@protocol(EXJavaScriptContextProvider)];
 
   void *jsRuntimePtr = [jsContextProvider javaScriptRuntimePointer];
 
@@ -76,7 +76,7 @@
 
     [uiManager dispatchOnClientThread:^{
       EXGLContext *self = weakSelf;
-      id<UMUIManager> uiManager = weakUIManager;
+      id<EXUIManager> uiManager = weakUIManager;
 
       if (!self || !uiManager) {
         BLOCK_SAFE_RUN(callback, NO);
@@ -97,7 +97,7 @@
     }];
   } else {
     BLOCK_SAFE_RUN(callback, NO);
-    UMLogWarn(@"EXGL: Can only run on JavaScriptCore! Do you have 'Remote Debugging' enabled in your app's Developer Menu (https://reactnative.dev/docs/debugging)? EXGL is not supported while using Remote Debugging, you will need to disable it to use EXGL.");
+    EXLogWarn(@"EXGL: Can only run on JavaScriptCore! Do you have 'Remote Debugging' enabled in your app's Developer Menu (https://reactnative.dev/docs/debugging)? EXGL is not supported while using Remote Debugging, you will need to disable it to use EXGL.");
   }
 }
 
@@ -140,8 +140,8 @@
 // - `format`: "jpeg" or "png" - specifies what type of compression and file extension should be used.
 // - `compress`: A value in 0 - 1 range specyfing compression level. JPEG format only.
 - (void)takeSnapshotWithOptions:(nonnull NSDictionary *)options
-                        resolve:(UMPromiseResolveBlock)resolve
-                         reject:(UMPromiseRejectBlock)reject
+                        resolve:(EXPromiseResolveBlock)resolve
+                         reject:(EXPromiseRejectBlock)reject
 {
   [self flush];
 
@@ -174,7 +174,7 @@
       reject(
              @"E_GL_NO_FRAMEBUFFER",
              nil,
-             UMErrorWithMessage(@"No framebuffer bound. Create and bind one to take a snapshot from it.")
+             EXErrorWithMessage(@"No framebuffer bound. Create and bind one to take a snapshot from it.")
              );
       return;
     }
@@ -182,7 +182,7 @@
       reject(
              @"E_GL_INVALID_VIEWPORT",
              nil,
-             UMErrorWithMessage(@"Rect's width and height must be greater than 0. If you didn't set `rect` option, check if the viewport is set correctly.")
+             EXErrorWithMessage(@"Rect's width and height must be greater than 0. If you didn't set `rect` option, check if the viewport is set correctly.")
              );
       return;
     }
@@ -203,7 +203,7 @@
                                         providerRef, NULL, true, kCGRenderingIntentDefault);
 
     // Begin image context
-    CGFloat scale = [UMUtilities screenScale];
+    CGFloat scale = [EXUtilities screenScale];
     NSInteger widthInPoints = width / scale;
     NSInteger heightInPoints = height / scale;
     UIGraphicsBeginImageContextWithOptions(CGSizeMake(widthInPoints, heightInPoints), NO, scale);
@@ -231,7 +231,7 @@
     NSString *extension;
 
     if ([format isEqualToString:@"webp"]) {
-      UMLogWarn(@"iOS doesn't support 'webp' representation, so 'takeSnapshot' won't work with that format. The image is going to be exported as 'png', but consider using a different code for iOS. Check this docs to learn how to do platform specific code (https://reactnative.dev/docs/platform-specific-code)");
+      EXLogWarn(@"iOS doesn't support 'webp' representation, so 'takeSnapshot' won't work with that format. The image is going to be exported as 'png', but consider using a different code for iOS. Check this docs to learn how to do platform specific code (https://reactnative.dev/docs/platform-specific-code)");
       imageData = UIImagePNGRepresentation(image);
       extension = @".png";
     }
@@ -284,7 +284,7 @@
 
 - (NSString *)generateSnapshotPathWithExtension:(NSString *)extension
 {
-  id<UMFileSystemInterface> fileSystem = [_moduleRegistry getModuleImplementingProtocol:@protocol(UMFileSystemInterface)];
+  id<EXFileSystemInterface> fileSystem = [_moduleRegistry getModuleImplementingProtocol:@protocol(EXFileSystemInterface)];
   NSString *directory = [fileSystem.cachesDirectory stringByAppendingPathComponent:@"GLView"];
   NSString *fileName = [[[NSUUID UUID] UUIDString] stringByAppendingString:extension];
 

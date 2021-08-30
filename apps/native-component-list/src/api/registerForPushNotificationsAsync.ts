@@ -1,4 +1,3 @@
-import Constants from 'expo-constants';
 import * as Notifications from 'expo-notifications';
 
 // In this test app we contact the Expo push service directly. You *never*
@@ -29,7 +28,7 @@ export default async function registerForPushNotificationsAsync() {
         title: 'Welcome to Expo!',
         body: 'Native Component List is registered for push notifications.',
         data: { example: 'sample data' },
-        _category: `${Constants.manifest.id}:welcome`,
+        categoryId: 'welcome',
       },
     ]),
   });

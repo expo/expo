@@ -1,12 +1,12 @@
-import { Platform, UnavailabilityError } from '@unimodules/core';
 import Constants from 'expo-constants';
+import { Platform, UnavailabilityError } from 'expo-modules-core';
 import invariant from 'invariant';
 import qs from 'qs';
 import { useEffect, useState } from 'react';
 import URL from 'url-parse';
 
 import NativeLinking from './ExpoLinking';
-import { ParsedURL, QueryParams, URLListener } from './Linking.types';
+import { CreateURLOptions, ParsedURL, QueryParams, URLListener } from './Linking.types';
 import { hasCustomScheme, resolveScheme } from './Schemes';
 
 function validateURL(url: string): void {
@@ -17,7 +17,9 @@ function validateURL(url: string): void {
 function getHostUri(): string | null {
   if (Constants.manifest?.hostUri) {
     return Constants.manifest.hostUri;
-  } else if (!Constants.manifest?.hostUri && !hasCustomScheme()) {
+  } else if (Constants.manifest2?.extra?.expoClient?.hostUri) {
+    return Constants.manifest2.extra.expoClient.hostUri;
+  } else if (!hasCustomScheme()) {
     // we're probably not using up-to-date xdl, so just fake it for now
     // we have to remove the /--/ on the end since this will be inserted again later
     return removeScheme(Constants.linkingUri).replace(/\/--($|\/.*$)/, '');
@@ -110,15 +112,7 @@ export function makeUrl(path: string = '', queryParams?: QueryParams, scheme?: s
  */
 export function createURL(
   path: string,
-  {
-    scheme,
-    queryParams = {},
-    isTripleSlashed = false,
-  }: {
-    scheme?: string;
-    queryParams?: QueryParams;
-    isTripleSlashed?: boolean;
-  } = {}
+  { scheme, queryParams = {}, isTripleSlashed = false }: CreateURLOptions = {}
 ): string {
   if (Platform.OS === 'web') {
     if (!Platform.isDOMAvailable) return '';
@@ -218,10 +212,7 @@ export function parse(url: string): ParsedURL {
     let expoPrefix: string | null = null;
     if (hostUriStripped) {
       const parts = hostUriStripped.split('/');
-      expoPrefix = parts
-        .slice(1)
-        .concat(['--/'])
-        .join('/');
+      expoPrefix = parts.slice(1).concat(['--/']).join('/');
     }
 
     if (isExpoHosted() && !hasCustomScheme() && expoPrefix && path.startsWith(expoPrefix)) {
@@ -335,7 +326,7 @@ export async function canOpenURL(url: string): Promise<boolean> {
 /**
  * Returns the initial URL followed by any subsequent changes to the URL.
  */
-export function useUrl(): string | null {
+export function useURL(): string | null {
   const [url, setLink] = useState<string | null>(null);
 
   function onChange(event: { url: string }) {
@@ -349,6 +340,17 @@ export function useUrl(): string | null {
   }, []);
 
   return url;
+}
+
+/**
+ * Returns the initial URL followed by any subsequent changes to the URL.
+ * @deprecated Use `useURL` instead.
+ */
+export function useUrl(): string | null {
+  console.warn(
+    `Linking.useUrl has been deprecated in favor of Linking.useURL. This API will be removed in SDK 44.`
+  );
+  return useURL();
 }
 
 export * from './Linking.types';

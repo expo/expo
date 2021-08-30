@@ -1,1 +1,0 @@
-../../../../../packages/expo-screen-capture/ios/EXScreenCapture/EXScreenCaptureModule.h

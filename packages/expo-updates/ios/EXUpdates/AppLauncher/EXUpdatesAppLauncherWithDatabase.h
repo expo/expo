@@ -15,12 +15,12 @@ typedef void (^EXUpdatesAppLauncherUpdateCompletionBlock)(NSError * _Nullable er
                      directory:(NSURL *)directory
                completionQueue:(dispatch_queue_t)completionQueue;
 
-- (void)launchUpdateWithSelectionPolicy:(id<EXUpdatesSelectionPolicy>)selectionPolicy
+- (void)launchUpdateWithSelectionPolicy:(EXUpdatesSelectionPolicy *)selectionPolicy
                              completion:(EXUpdatesAppLauncherCompletionBlock)completion;
 
 + (void)launchableUpdateWithConfig:(EXUpdatesConfig *)config
                           database:(EXUpdatesDatabase *)database
-                   selectionPolicy:(id<EXUpdatesSelectionPolicy>)selectionPolicy
+                   selectionPolicy:(EXUpdatesSelectionPolicy *)selectionPolicy
                         completion:(EXUpdatesAppLauncherUpdateCompletionBlock)completion
                    completionQueue:(dispatch_queue_t)completionQueue;
 

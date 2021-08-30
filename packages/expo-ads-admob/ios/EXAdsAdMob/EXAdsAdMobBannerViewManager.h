@@ -1,6 +1,6 @@
 #import <AVFoundation/AVFoundation.h>
-#import <UMCore/UMViewManager.h>
+#import <ExpoModulesCore/EXViewManager.h>
 
-@interface EXAdsAdMobBannerViewManager : UMViewManager
+@interface EXAdsAdMobBannerViewManager : EXViewManager
 
 @end

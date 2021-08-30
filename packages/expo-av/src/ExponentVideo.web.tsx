@@ -4,6 +4,7 @@ import createElement from 'react-native-web/dist/exports/createElement';
 
 import { AVPlaybackNativeSource, AVPlaybackStatus, AVPlaybackStatusToSet } from './AV';
 import ExponentAV from './ExponentAV';
+import { addFullscreenListener } from './FullscreenUtils.web';
 
 type ExponentVideoProps = {
   source: AVPlaybackNativeSource | null;
@@ -44,36 +45,22 @@ const Video: any = React.forwardRef((props, ref) => createElement('video', { ...
 
 export default class ExponentVideo extends React.Component<ExponentVideoProps> {
   _video?: HTMLVideoElement;
-
-  componentDidMount() {
-    const isIE11 = !!window['MSStream'];
-    document.addEventListener(
-      isIE11 ? 'MSFullscreenChange' : 'fullscreenchange',
-      this.onFullscreenChange
-    );
-  }
+  _removeFullscreenListener?: () => any;
 
   componentWillUnmount() {
-    const isIE11 = !!window['MSStream'];
-    document.addEventListener(
-      isIE11 ? 'MSFullscreenChange' : 'fullscreenchange',
-      this.onFullscreenChange
-    );
+    this._removeFullscreenListener?.();
   }
 
-  onFullscreenChange = event => {
+  onFullscreenChange = (isFullscreen: boolean) => {
     if (!this.props.onFullscreenUpdate) return;
-
-    if (event.target === this._video) {
-      if (document.fullscreenElement) {
-        this.props.onFullscreenUpdate({
-          nativeEvent: { fullscreenUpdate: FULLSCREEN_UPDATE_PLAYER_DID_PRESENT },
-        });
-      } else {
-        this.props.onFullscreenUpdate({
-          nativeEvent: { fullscreenUpdate: FULLSCREEN_UPDATE_PLAYER_DID_DISMISS },
-        });
-      }
+    if (isFullscreen) {
+      this.props.onFullscreenUpdate({
+        nativeEvent: { fullscreenUpdate: FULLSCREEN_UPDATE_PLAYER_DID_PRESENT },
+      });
+    } else {
+      this.props.onFullscreenUpdate({
+        nativeEvent: { fullscreenUpdate: FULLSCREEN_UPDATE_PLAYER_DID_DISMISS },
+      });
     }
   };
 
@@ -139,6 +126,8 @@ export default class ExponentVideo extends React.Component<ExponentVideoProps> {
 
   onRef = (ref: HTMLVideoElement) => {
     this._video = ref;
+    this._removeFullscreenListener?.();
+    this._removeFullscreenListener = addFullscreenListener(this._video, this.onFullscreenChange);
     this.onStatusUpdate();
   };
 
@@ -168,6 +157,7 @@ export default class ExponentVideo extends React.Component<ExponentVideoProps> {
         autoPlay={status.shouldPlay}
         controls={useNativeControls}
         style={[style, customStyle]}
+        playsInline
       />
     );
   }

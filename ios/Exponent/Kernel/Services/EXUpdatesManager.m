@@ -36,7 +36,7 @@ NSString * const EXUpdatesDownloadFinishedEventType = @"downloadFinished";
 @implementation EXUpdatesManager
 
 - (void)notifyApp:(EXKernelAppRecord *)appRecord
-ofDownloadWithManifest:(NSDictionary * _Nullable)manifest
+ofDownloadWithManifest:(EXManifestsRawManifest * _Nullable)manifest
             isNew:(BOOL)isBundleNew
             error:(NSError * _Nullable)error;
 {
@@ -48,17 +48,15 @@ ofDownloadWithManifest:(NSDictionary * _Nullable)manifest
              @"message": error.localizedDescription
              };
   } else if (isBundleNew) {
-    if (!manifest) {
-      // prevent a crash, but this shouldn't ever happen
-      manifest = @{};
-    }
+    // prevent a crash, but this shouldn't ever happen
+    NSDictionary *rawManifestJSON = manifest ? manifest.rawManifestJSON : @{};
     bodyLegacy = @{
                    @"type": EXUpdatesDownloadFinishedEventType,
-                   @"manifest": manifest
+                   @"manifest": rawManifestJSON
                    };
     body = @{
              @"type": EXUpdatesUpdateAvailableEventType,
-             @"manifest": manifest
+             @"manifest": rawManifestJSON
              };
   } else {
     body = @{
@@ -78,56 +76,56 @@ ofDownloadWithManifest:(NSDictionary * _Nullable)manifest
 
 - (EXAppLoader *)_appLoaderWithScopedModule:(id)scopedModule
 {
-  NSString *experienceId = ((EXScopedBridgeModule *)scopedModule).experienceId;
-  return [self _appLoaderWithExperienceId:experienceId];
+  NSString *scopeKey = ((EXScopedBridgeModule *)scopedModule).scopeKey;
+  return [self _appLoaderWithScopeKey:scopeKey];
 }
 
-- (EXAppLoader *)_appLoaderWithExperienceId:(NSString *)experienceId
+- (EXAppLoader *)_appLoaderWithScopeKey:(NSString *)scopeKey
 {
-  EXKernelAppRecord *appRecord = [[EXKernel sharedInstance].appRegistry newestRecordWithExperienceId:experienceId];
+  EXKernelAppRecord *appRecord = [[EXKernel sharedInstance].appRegistry newestRecordWithScopeKey:scopeKey];
   return appRecord.appLoader;
 }
 
 # pragma mark - EXUpdatesBindingDelegate
 
-- (EXUpdatesConfig *)configForExperienceId:(NSString *)experienceId
+- (EXUpdatesConfig *)configForScopeKey:(NSString *)scopeKey
 {
-  return [self _appLoaderWithExperienceId:experienceId].config;
+  return [self _appLoaderWithScopeKey:scopeKey].config;
 }
 
-- (id<EXUpdatesSelectionPolicy>)selectionPolicyForExperienceId:(NSString *)experienceId
+- (EXUpdatesSelectionPolicy *)selectionPolicyForScopeKey:(NSString *)scopeKey
 {
-  return [self _appLoaderWithExperienceId:experienceId].selectionPolicy;
+  return [self _appLoaderWithScopeKey:scopeKey].selectionPolicy;
 }
 
-- (nullable EXUpdatesUpdate *)launchedUpdateForExperienceId:(NSString *)experienceId
+- (nullable EXUpdatesUpdate *)launchedUpdateForScopeKey:(NSString *)scopeKey
 {
-  return [self _appLoaderWithExperienceId:experienceId].appLauncher.launchedUpdate;
+  return [self _appLoaderWithScopeKey:scopeKey].appLauncher.launchedUpdate;
 }
 
-- (nullable NSDictionary *)assetFilesMapForExperienceId:(NSString *)experienceId
+- (nullable NSDictionary *)assetFilesMapForScopeKey:(NSString *)scopeKey
 {
-  return [self _appLoaderWithExperienceId:experienceId].appLauncher.assetFilesMap;
+  return [self _appLoaderWithScopeKey:scopeKey].appLauncher.assetFilesMap;
 }
 
-- (BOOL)isUsingEmbeddedAssetsForExperienceId:(NSString *)experienceId
+- (BOOL)isUsingEmbeddedAssetsForScopeKey:(NSString *)scopeKey
 {
   return NO;
 }
 
-- (BOOL)isStartedForExperienceId:(NSString *)experienceId
+- (BOOL)isStartedForScopeKey:(NSString *)scopeKey
 {
-  return [self _appLoaderWithExperienceId:experienceId].appLauncher != nil;
+  return [self _appLoaderWithScopeKey:scopeKey].appLauncher != nil;
 }
 
-- (BOOL)isEmergencyLaunchForExperienceId:(NSString *)experienceId
+- (BOOL)isEmergencyLaunchForScopeKey:(NSString *)scopeKey
 {
-  return [self _appLoaderWithExperienceId:experienceId].isEmergencyLaunch;
+  return [self _appLoaderWithScopeKey:scopeKey].isEmergencyLaunch;
 }
 
-- (void)requestRelaunchForExperienceId:(NSString *)experienceId withCompletion:(EXUpdatesAppRelaunchCompletionBlock)completion
+- (void)requestRelaunchForScopeKey:(NSString *)scopeKey withCompletion:(EXUpdatesAppRelaunchCompletionBlock)completion
 {
-  [[EXKernel sharedInstance] reloadAppFromCacheWithExperienceId:experienceId];
+  [[EXKernel sharedInstance] reloadAppFromCacheWithScopeKey:scopeKey];
   completion(YES);
 }
 
@@ -135,19 +133,19 @@ ofDownloadWithManifest:(NSDictionary * _Nullable)manifest
 
 - (void)updatesModuleDidSelectReload:(id)scopedModule
 {
-  NSString *experienceId = ((EXScopedBridgeModule *)scopedModule).experienceId;
-  [[EXKernel sharedInstance] reloadAppWithExperienceId:experienceId];
+  NSString *scopeKey = ((EXScopedBridgeModule *)scopedModule).scopeKey;
+  [[EXKernel sharedInstance] reloadAppWithScopeKey:scopeKey];
 }
 
 - (void)updatesModuleDidSelectReloadFromCache:(id)scopedModule
 {
-  NSString *experienceId = ((EXScopedBridgeModule *)scopedModule).experienceId;
-  [[EXKernel sharedInstance] reloadAppFromCacheWithExperienceId:experienceId];
+  NSString *scopeKey = ((EXScopedBridgeModule *)scopedModule).scopeKey;
+  [[EXKernel sharedInstance] reloadAppFromCacheWithScopeKey:scopeKey];
 }
 
 - (void)updatesModule:(id)scopedModule
 didRequestManifestWithCacheBehavior:(EXManifestCacheBehavior)cacheBehavior
-              success:(void (^)(NSDictionary * _Nonnull))success
+              success:(void (^)(EXManifestsRawManifest * _Nonnull))success
               failure:(void (^)(NSError * _Nonnull))failure
 {
   if ([EXEnvironment sharedEnvironment].isDetached && ![EXEnvironment sharedEnvironment].areRemoteUpdatesEnabled) {
@@ -161,6 +159,7 @@ didRequestManifestWithCacheBehavior:(EXManifestCacheBehavior)cacheBehavior
   EXUpdatesFileDownloader *fileDownloader = [[EXUpdatesFileDownloader alloc] initWithUpdatesConfig:appLoader.config];
   [fileDownloader downloadManifestFromURL:appLoader.config.updateUrl
                              withDatabase:databaseKernelService.database
+                             extraHeaders:nil
                              successBlock:^(EXUpdatesUpdate *update) {
     success(update.rawManifest);
   } errorBlock:^(NSError *error, NSURLResponse *response) {
@@ -172,7 +171,7 @@ didRequestManifestWithCacheBehavior:(EXManifestCacheBehavior)cacheBehavior
 - (void)updatesModule:(id)scopedModule
 didRequestBundleWithCompletionQueue:(dispatch_queue_t)completionQueue
                 start:(void (^)(void))startBlock
-              success:(void (^)(NSDictionary * _Nullable))success
+              success:(void (^)(EXManifestsRawManifest * _Nullable))success
               failure:(void (^)(NSError * _Nonnull))failure
 {
   if ([EXEnvironment sharedEnvironment].isDetached && ![EXEnvironment sharedEnvironment].areRemoteUpdatesEnabled) {
@@ -185,11 +184,13 @@ didRequestBundleWithCompletionQueue:(dispatch_queue_t)completionQueue
 
   EXUpdatesRemoteAppLoader *remoteAppLoader = [[EXUpdatesRemoteAppLoader alloc] initWithConfig:appLoader.config database:databaseKernelService.database directory:databaseKernelService.updatesDirectory completionQueue:completionQueue];
   [remoteAppLoader loadUpdateFromUrl:appLoader.config.updateUrl onManifest:^BOOL(EXUpdatesUpdate * _Nonnull update) {
-    BOOL shouldLoad = [appLoader.selectionPolicy shouldLoadNewUpdate:update withLaunchedUpdate:appLoader.appLauncher.launchedUpdate];
+    BOOL shouldLoad = [appLoader.selectionPolicy shouldLoadNewUpdate:update withLaunchedUpdate:appLoader.appLauncher.launchedUpdate filters:update.manifestFilters];
     if (shouldLoad) {
       startBlock();
     }
     return shouldLoad;
+  } asset:^(EXUpdatesAsset *asset, NSUInteger successfulAssetCount, NSUInteger failedAssetCount, NSUInteger totalAssetCount) {
+    // do nothing for now
   } success:^(EXUpdatesUpdate * _Nullable update) {
     if (update) {
       success(update.rawManifest);

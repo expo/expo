@@ -8,13 +8,13 @@ import InstallSection from '~/components/plugins/InstallSection';
 
 **`expo-facebook`** provides Facebook integration, such as logging in through Facebook, for React Native apps. Expo exposes a minimal native API since you can access Facebook's [Graph API](https://developers.facebook.com/docs/graph-api) directly through HTTP (using [fetch](https://reactnative.dev/docs/network.html#fetch), for example).
 
-<PlatformsSection android emulator ios simulator web={{ pending: 'https://github.com/expo/expo/pull/6862' }} />
+<PlatformsSection android emulator ios simulator />
 
 ## Installation
 
 <InstallSection packageName="expo-facebook" />
 
-For bare apps, here are links to the [iOS Installation Walkthrough](https://developers.facebook.com/docs/ios/getting-started/) and the [Android Installation Walkthrough](https://developers.facebook.com/docs/android/getting-started).
+For bare apps, here are links to the [iOS Installation Walkthrough](https://developers.facebook.com/docs/ios/getting-started/#step-3---configure-your-project) and the [Android Installation Walkthrough](https://developers.facebook.com/docs/android/getting-started#app_id).
 
 ## Configuration
 
@@ -26,9 +26,9 @@ Follow [Facebook's developer documentation](https://developers.facebook.com/docs
 
 Then follow these steps based on the platforms you're targetting. This will need to be done from the [Facebook developer site](https://developers.facebook.com/).
 
-The Android Play Store Expo client will use the Facebook App ID that you provide, however, all Facebook API calls in the **iOS App Store Expo client will use Expo's own Facebook App ID**. This is due to underlying configuration limitations, but the good news is it means less setup for you! The slight downside to this is that you can't customize which permissions your app requests from Facebook (like `user_photos` or `user_friends`), or integrate Facebook login with other services like Firebase auth. If you need that functionality on iOS, you have two options:
+The Android Play Store Expo Go will use the Facebook App ID that you provide, however, all Facebook API calls in the **iOS App Store Expo Go will use Expo's own Facebook App ID**. This is due to underlying configuration limitations, but the good news is it means less setup for you! The slight downside to this is that you can't customize which permissions your app requests from Facebook (like `user_photos` or `user_friends`), or integrate Facebook login with other services like Firebase auth. If you need that functionality on iOS, you have two options:
 
-- Build a [custom Expo client app](../../../guides/adhoc-builds.md)
+- Build a [custom Expo Go app](../../../guides/adhoc-builds.md)
 - Build a [standalone app](../../../distribution/building-standalone-apps.md)
 
 #### Configure `app.json`
@@ -42,7 +42,7 @@ The Android Play Store Expo client will use the Facebook App ID that you provide
   - `facebookAutoLogAppEventsEnabled`, defaults to Facebook's default policy (Only applies to standalone apps)
   - `facebookAdvertiserIDCollectionEnabled`, defaults to Facebook's default policy (Only applies to standalone apps)
 
-#### iOS Custom Expo client
+#### iOS Custom Expo Go
 
 - Add your custom client's Bundle ID (shown in the output after running `expo client:ios`) in the app settings page pictured below. It should look something like: `dev.expo.client.xxxxx`
 

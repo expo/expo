@@ -54,7 +54,10 @@ public abstract class AssetDao {
   /**
    * for public use
    */
-  @Query("SELECT assets.id, url, `key`, headers, type, assets.metadata, download_time, relative_path, hash, hash_type, marked_for_deletion" +
+  @Query("SELECT * FROM assets;")
+  public abstract List<AssetEntity> loadAllAssets();
+
+  @Query("SELECT assets.*" +
           " FROM assets" +
           " INNER JOIN updates_assets ON updates_assets.asset_id = assets.id" +
           " INNER JOIN updates ON updates_assets.update_id = updates.id" +
@@ -76,6 +79,9 @@ public abstract class AssetDao {
   }
 
   public @Nullable AssetEntity loadAssetWithKey(String key) {
+    if (key == null) {
+      return null;
+    }
     List<AssetEntity> assets = _loadAssetWithKey(key);
     if (assets.size() > 0) {
       return assets.get(0);

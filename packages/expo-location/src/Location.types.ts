@@ -1,4 +1,4 @@
-import { PermissionResponse as UMPermissionResponse } from 'unimodules-permissions-interface';
+import { PermissionResponse as UMPermissionResponse } from 'expo-modules-core';
 
 /**
  * Enum with available location accuracies.
@@ -212,7 +212,12 @@ export type PermissionDetailsLocationIOS = {
 };
 
 export type PermissionDetailsLocationAndroid = {
+  /**
+   * @deprecated use `accuracy` instead
+   */
   scope: 'fine' | 'coarse' | 'none';
+
+  accuracy: 'fine' | 'coarse' | 'none';
 };
 
 export interface LocationPermissionResponse extends UMPermissionResponse {

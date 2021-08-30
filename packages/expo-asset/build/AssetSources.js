@@ -1,4 +1,4 @@
-import { Platform } from '@unimodules/core';
+import { Platform } from 'expo-modules-core';
 import path from 'path-browserify';
 import { PixelRatio } from 'react-native';
 import URL from 'url-parse';

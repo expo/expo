@@ -9,12 +9,11 @@ import com.google.android.cameraview.AspectRatio;
 import com.google.android.cameraview.Constants;
 import com.google.android.cameraview.Size;
 
-import org.unimodules.core.ExportedModule;
-import org.unimodules.core.ModuleRegistry;
-import org.unimodules.core.Promise;
-import org.unimodules.core.interfaces.ExpoMethod;
-import org.unimodules.core.interfaces.services.UIManager;
-import org.unimodules.interfaces.permissions.Permissions;
+import expo.modules.core.ExportedModule;
+import expo.modules.core.ModuleRegistry;
+import expo.modules.core.Promise;
+import expo.modules.core.interfaces.ExpoMethod;
+import expo.modules.core.interfaces.services.UIManager;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -26,6 +25,7 @@ import java.util.Set;
 import java.util.SortedSet;
 
 import expo.modules.camera.tasks.ResolveTakenPictureAsyncTask;
+import expo.modules.interfaces.permissions.Permissions;
 
 public class CameraModule extends ExportedModule {
   private static final String TAG = "ExponentCameraModule";
@@ -308,6 +308,26 @@ public class CameraModule extends ExportedModule {
   }
 
   @ExpoMethod
+  public void requestCameraPermissionsAsync(final Promise promise) {
+    Permissions permissionsManager = mModuleRegistry.getModule(Permissions.class);
+    if (permissionsManager == null) {
+      promise.reject("E_NO_PERMISSIONS", "Permissions module is null. Are you sure all the installed Expo modules are properly linked?");
+      return;
+    }
+    permissionsManager.askForPermissionsWithPromise(promise, Manifest.permission.CAMERA);
+  }
+
+  @ExpoMethod
+  public void requestMicrophonePermissionsAsync(final Promise promise) {
+    Permissions permissionsManager = mModuleRegistry.getModule(Permissions.class);
+    if (permissionsManager == null) {
+      promise.reject("E_NO_PERMISSIONS", "Permissions module is null. Are you sure all the installed Expo modules are properly linked?");
+      return;
+    }
+    permissionsManager.askForPermissionsWithPromise(promise, Manifest.permission.RECORD_AUDIO);
+  }
+
+  @ExpoMethod
   public void getPermissionsAsync(final Promise promise) {
     Permissions permissionsManager = mModuleRegistry.getModule(Permissions.class);
     if (permissionsManager == null) {
@@ -315,5 +335,25 @@ public class CameraModule extends ExportedModule {
       return;
     }
     permissionsManager.getPermissionsWithPromise(promise, Manifest.permission.CAMERA);
+  }
+
+  @ExpoMethod
+  public void getCameraPermissionsAsync(final Promise promise) {
+    Permissions permissionsManager = mModuleRegistry.getModule(Permissions.class);
+    if (permissionsManager == null) {
+      promise.reject("E_NO_PERMISSIONS", "Permissions module is null. Are you sure all the installed Expo modules are properly linked?");
+      return;
+    }
+    permissionsManager.getPermissionsWithPromise(promise, Manifest.permission.CAMERA);
+  }
+
+  @ExpoMethod
+  public void getMicrophonePermissionsAsync(final Promise promise) {
+    Permissions permissionsManager = mModuleRegistry.getModule(Permissions.class);
+    if (permissionsManager == null) {
+      promise.reject("E_NO_PERMISSIONS", "Permissions module is null. Are you sure all the installed Expo modules are properly linked?");
+      return;
+    }
+    permissionsManager.getPermissionsWithPromise(promise, Manifest.permission.RECORD_AUDIO);
   }
 }

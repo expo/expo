@@ -1,1 +1,0 @@
-../../../ZXingObjC/ZXingObjC/core/ZXResultPoint.h

@@ -1,6 +1,6 @@
 {
   "name": "expo-network",
-  "version": "3.0.0",
+  "version": "3.2.0",
   "description": "Provides useful information about the device's network such as its IP address, MAC address, and airplane mode status",
   "main": "build/Network.js",
   "types": "build/Network.d.ts",
@@ -28,11 +28,11 @@
   },
   "author": "650 Industries, Inc.",
   "license": "MIT",
-  "homepage": "https://docs.expo.io/versions/latest/sdk/network/",
-  "devDependencies": {
-    "expo-module-scripts": "~1.2.0"
+  "homepage": "https://docs.expo.dev/versions/latest/sdk/network/",
+  "dependencies": {
+    "expo-modules-core": "~0.3.0-alpha.0"
   },
-  "peerDependencies": {
-    "@unimodules/core": "*"
+  "devDependencies": {
+    "expo-module-scripts": "^2.0.0"
   }
 }

@@ -45,7 +45,6 @@ static NSString * const EXNotificationResponseDefaultActionIdentifier = @"expo.m
 + (NSDictionary *)serializedNotificationContent:(UNNotificationRequest *)request
 {
   UNNotificationContent *content = request.content;
-  BOOL isRemote = [request.trigger isKindOfClass:[UNPushNotificationTrigger class]];
   NSMutableDictionary *serializedContent = [NSMutableDictionary dictionary];
   serializedContent[@"title"] = content.title ?: [NSNull null];
   serializedContent[@"subtitle"] = content.subtitle ?: [NSNull null];

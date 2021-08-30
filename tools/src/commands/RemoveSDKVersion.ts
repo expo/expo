@@ -3,9 +3,14 @@ import semver from 'semver';
 import inquirer from 'inquirer';
 import { Command } from '@expo/commander';
 
-import * as IosVersioning from '../versioning/ios';
+import {
+  Platform,
+  getSDKVersionsAsync,
+  getOldestSDKVersionAsync,
+  resolveSDKVersionAsync,
+} from '../ProjectVersions';
 import * as AndroidVersioning from '../versioning/android';
-import { Platform, getSDKVersionsAsync, getOldestSDKVersionAsync } from '../ProjectVersions';
+import * as IosVersioning from '../versioning/ios';
 
 type ActionOptions = {
   platform: Platform;
@@ -64,7 +69,8 @@ async function askForPlatformAsync(): Promise<Platform> {
 async function action(options: ActionOptions) {
   const platform = options.platform || (await askForPlatformAsync());
   const sdkVersion =
-    options.sdkVersion || (await getOldestOrAskForSDKVersionAsync(options.platform));
+    (options.sdkVersion && (await resolveSDKVersionAsync(options.sdkVersion, options.platform))) ||
+    (await getOldestOrAskForSDKVersionAsync(options.platform));
 
   if (!sdkVersion) {
     throw new Error('Oldest SDK version not found. Try to run with `--sdkVersion <SDK version>`.');
@@ -99,7 +105,7 @@ ${chalk.gray('>')} ${chalk.italic.cyan('et remove-sdk-version --platform ios')}`
     )
     .option(
       '-s, --sdkVersion [string]',
-      'SDK version to remove. Defaults to the oldest supported SDK version.'
+      'SDK version to remove. Can be a full version name, major number, `latest` or `oldest` tag. Defaults to `oldest` on the CI.'
     )
     .asyncAction(action);
 };

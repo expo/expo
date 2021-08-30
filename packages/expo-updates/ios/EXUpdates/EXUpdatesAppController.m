@@ -1,18 +1,17 @@
 //  Copyright © 2019 650 Industries. All rights reserved.
 
-#import <EXUpdates/EXUpdatesAppController.h>
+#import <EXUpdates/EXUpdatesAppController+Internal.h>
 #import <EXUpdates/EXUpdatesAppLauncher.h>
 #import <EXUpdates/EXUpdatesAppLauncherNoDatabase.h>
 #import <EXUpdates/EXUpdatesAppLauncherWithDatabase.h>
 #import <EXUpdates/EXUpdatesReaper.h>
-#import <EXUpdates/EXUpdatesSelectionPolicyNewest.h>
+#import <EXUpdates/EXUpdatesSelectionPolicyFactory.h>
 #import <EXUpdates/EXUpdatesUtils.h>
+#import <React/RCTReloadCommand.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
 static NSString * const EXUpdatesAppControllerErrorDomain = @"EXUpdatesAppController";
-
-static NSString * const EXUpdatesConfigPlistName = @"Expo";
 
 static NSString * const EXUpdatesUpdateAvailableEventName = @"updateAvailable";
 static NSString * const EXUpdatesNoUpdateAvailableEventName = @"noUpdateAvailable";
@@ -21,16 +20,17 @@ static NSString * const EXUpdatesErrorEventName = @"error";
 @interface EXUpdatesAppController ()
 
 @property (nonatomic, readwrite, strong) EXUpdatesConfig *config;
-@property (nonatomic, readwrite, strong) id<EXUpdatesAppLauncher> launcher;
+@property (nonatomic, readwrite, strong, nullable) id<EXUpdatesAppLauncher> launcher;
 @property (nonatomic, readwrite, strong) EXUpdatesDatabase *database;
-@property (nonatomic, readwrite, strong) id<EXUpdatesSelectionPolicy> selectionPolicy;
+@property (nonatomic, readwrite, strong) EXUpdatesSelectionPolicy *selectionPolicy;
+@property (nonatomic, readwrite, strong) EXUpdatesSelectionPolicy *defaultSelectionPolicy;
+@property (nonatomic, readwrite, strong) dispatch_queue_t controllerQueue;
 @property (nonatomic, readwrite, strong) dispatch_queue_t assetFilesQueue;
 
 @property (nonatomic, readwrite, strong) NSURL *updatesDirectory;
 
 @property (nonatomic, strong) id<EXUpdatesAppLauncher> candidateLauncher;
 @property (nonatomic, assign) BOOL hasLaunched;
-@property (nonatomic, strong) dispatch_queue_t controllerQueue;
 
 @property (nonatomic, assign) BOOL isStarted;
 @property (nonatomic, assign) BOOL isEmergencyLaunch;
@@ -54,9 +54,9 @@ static NSString * const EXUpdatesErrorEventName = @"error";
 - (instancetype)init
 {
   if (self = [super init]) {
-    _config = [self _loadConfigFromExpoPlist];
+    _config = [EXUpdatesConfig configWithExpoPlist];
     _database = [[EXUpdatesDatabase alloc] init];
-    _selectionPolicy = [[EXUpdatesSelectionPolicyNewest alloc] initWithRuntimeVersion:[EXUpdatesUtils getRuntimeVersionWithConfig:_config]];
+    _defaultSelectionPolicy = [EXUpdatesSelectionPolicyFactory filterAwarePolicyWithRuntimeVersion:[EXUpdatesUtils getRuntimeVersionWithConfig:_config]];
     _assetFilesQueue = dispatch_queue_create("expo.controller.AssetFilesQueue", DISPATCH_QUEUE_SERIAL);
     _controllerQueue = dispatch_queue_create("expo.controller.ControllerQueue", DISPATCH_QUEUE_SERIAL);
     _isStarted = NO;
@@ -66,18 +66,36 @@ static NSString * const EXUpdatesErrorEventName = @"error";
 
 - (void)setConfiguration:(NSDictionary *)configuration
 {
-  if (_updatesDirectory) {
+  if (_isStarted) {
     @throw [NSException exceptionWithName:NSInternalInconsistencyException
                                    reason:@"EXUpdatesAppController:setConfiguration should not be called after start"
                                  userInfo:@{}];
   }
   [_config loadConfigFromDictionary:configuration];
-  _selectionPolicy = [[EXUpdatesSelectionPolicyNewest alloc] initWithRuntimeVersion:[EXUpdatesUtils getRuntimeVersionWithConfig:_config]];
+  [self resetSelectionPolicyToDefault];
+}
+
+- (EXUpdatesSelectionPolicy *)selectionPolicy
+{
+  if (!_selectionPolicy) {
+    _selectionPolicy = _defaultSelectionPolicy;
+  }
+  return _selectionPolicy;
+}
+
+- (void)setNextSelectionPolicy:(EXUpdatesSelectionPolicy *)nextSelectionPolicy
+{
+  _selectionPolicy = nextSelectionPolicy;
+}
+
+- (void)resetSelectionPolicyToDefault
+{
+  _selectionPolicy = nil;
 }
 
 - (void)start
 {
-  NSAssert(!_updatesDirectory, @"EXUpdatesAppController:start should only be called once per instance");
+  NSAssert(!_isStarted, @"EXUpdatesAppController:start should only be called once per instance");
 
   if (!_config.isEnabled) {
     EXUpdatesAppLauncherNoDatabase *launcher = [[EXUpdatesAppLauncherNoDatabase alloc] init];
@@ -96,26 +114,23 @@ static NSString * const EXUpdatesErrorEventName = @"error";
                                    reason:@"expo-updates is enabled, but no valid URL is configured under EXUpdatesURL. If you are making a release build for the first time, make sure you have run `expo publish` at least once."
                                  userInfo:@{}];
   }
+  if (!_config.scopeKey) {
+    @throw [NSException exceptionWithName:NSInternalInconsistencyException
+                                   reason:@"expo-updates was configured with no scope key. Make sure a valid URL is configured under EXUpdatesURL."
+                                 userInfo:@{}];
+  }
 
   _isStarted = YES;
 
   NSError *fsError;
-  _updatesDirectory = [EXUpdatesUtils initializeUpdatesDirectoryWithError:&fsError];
+  [self initializeUpdatesDirectoryWithError:&fsError];
   if (fsError) {
     [self _emergencyLaunchWithFatalError:fsError];
     return;
   }
 
-  __block BOOL dbSuccess;
-  __block NSError *dbError;
-  dispatch_semaphore_t dbSemaphore = dispatch_semaphore_create(0);
-  dispatch_async(_database.databaseQueue, ^{
-    dbSuccess = [self->_database openDatabaseInDirectory:self->_updatesDirectory withError:&dbError];
-    dispatch_semaphore_signal(dbSemaphore);
-  });
-
-  dispatch_semaphore_wait(dbSemaphore, DISPATCH_TIME_FOREVER);
-  if (!dbSuccess) {
+  NSError *dbError;
+  if (![self initializeUpdatesDatabaseWithError:&dbError]) {
     [self _emergencyLaunchWithFatalError:dbError];
     return;
   }
@@ -123,7 +138,7 @@ static NSString * const EXUpdatesErrorEventName = @"error";
   EXUpdatesAppLoaderTask *loaderTask = [[EXUpdatesAppLoaderTask alloc] initWithConfig:_config
                                                                              database:_database
                                                                             directory:_updatesDirectory
-                                                                      selectionPolicy:_selectionPolicy
+                                                                      selectionPolicy:self.selectionPolicy
                                                                         delegateQueue:_controllerQueue];
   loaderTask.delegate = self;
   [loaderTask start];
@@ -158,24 +173,20 @@ static NSString * const EXUpdatesErrorEventName = @"error";
 
 - (void)requestRelaunchWithCompletion:(EXUpdatesAppRelaunchCompletionBlock)completion
 {
-  if (_bridge) {
-    EXUpdatesAppLauncherWithDatabase *launcher = [[EXUpdatesAppLauncherWithDatabase alloc] initWithConfig:_config database:_database directory:_updatesDirectory completionQueue:_controllerQueue];
-    _candidateLauncher = launcher;
-    [launcher launchUpdateWithSelectionPolicy:self->_selectionPolicy completion:^(NSError * _Nullable error, BOOL success) {
-      if (success) {
-        self->_launcher = self->_candidateLauncher;
-        completion(YES);
-        [self->_bridge reload];
-        [self _runReaper];
-      } else {
-        NSLog(@"Failed to relaunch: %@", error.localizedDescription);
-        completion(NO);
-      }
-    }];
-  } else {
-    NSLog(@"EXUpdatesAppController: Failed to reload because bridge was nil. Did you set the bridge property on the controller singleton?");
-    completion(NO);
-  }
+  EXUpdatesAppLauncherWithDatabase *launcher = [[EXUpdatesAppLauncherWithDatabase alloc] initWithConfig:_config database:_database directory:_updatesDirectory completionQueue:_controllerQueue];
+  _candidateLauncher = launcher;
+  [launcher launchUpdateWithSelectionPolicy:self.selectionPolicy completion:^(NSError * _Nullable error, BOOL success) {
+    if (success) {
+      self->_launcher = self->_candidateLauncher;
+      completion(YES);
+      RCTReloadCommandSetBundleURL(launcher.launchAssetUrl);
+      RCTTriggerReloadCommandListeners(@"Requested by JavaScript - Updates.reloadAsync()");
+      [self runReaper];
+    } else {
+      NSLog(@"Failed to relaunch: %@", error.localizedDescription);
+      completion(NO);
+    }
+  }];
 }
 
 - (nullable EXUpdatesUpdate *)launchedUpdate
@@ -235,36 +246,68 @@ static NSString * const EXUpdatesErrorEventName = @"error";
     [EXUpdatesUtils sendEventToBridge:_bridge withType:EXUpdatesErrorEventName body:@{@"message": error.localizedDescription}];
   } else if (status == EXUpdatesBackgroundUpdateStatusUpdateAvailable) {
     NSAssert(update != nil, @"Background update with error status must have a nonnull update object");
-    [EXUpdatesUtils sendEventToBridge:_bridge withType:EXUpdatesUpdateAvailableEventName body:@{@"manifest": update.rawManifest}];
+    [EXUpdatesUtils sendEventToBridge:_bridge withType:EXUpdatesUpdateAvailableEventName body:@{@"manifest": update.rawManifest.rawManifestJSON}];
   } else if (status == EXUpdatesBackgroundUpdateStatusNoUpdateAvailable) {
     [EXUpdatesUtils sendEventToBridge:_bridge withType:EXUpdatesNoUpdateAvailableEventName body:@{}];
   }
 }
 
-# pragma mark - internal
+# pragma mark - EXUpdatesAppController+Internal
 
-- (EXUpdatesConfig *)_loadConfigFromExpoPlist
+- (BOOL)initializeUpdatesDirectoryWithError:(NSError ** _Nullable)error
 {
-  NSString *configPath = [[NSBundle mainBundle] pathForResource:EXUpdatesConfigPlistName ofType:@"plist"];
-  if (!configPath) {
-    @throw [NSException exceptionWithName:NSInternalInconsistencyException
-                                   reason:@"Cannot load configuration from Expo.plist. Please ensure you've followed the setup and installation instructions for expo-updates to create Expo.plist and add it to your Xcode project."
-                                 userInfo:@{}];
-  }
-
-  return [EXUpdatesConfig configWithDictionary:[NSDictionary dictionaryWithContentsOfFile:configPath]];
+  _updatesDirectory = [EXUpdatesUtils initializeUpdatesDirectoryWithError:error];
+  return _updatesDirectory != nil;
 }
 
-- (void)_runReaper
+- (BOOL)initializeUpdatesDatabaseWithError:(NSError ** _Nullable)error
+{
+  __block NSError *dbError;
+  dispatch_semaphore_t dbSemaphore = dispatch_semaphore_create(0);
+  dispatch_async(_database.databaseQueue, ^{
+    [self->_database openDatabaseInDirectory:self->_updatesDirectory withError:&dbError];
+    dispatch_semaphore_signal(dbSemaphore);
+  });
+
+  dispatch_semaphore_wait(dbSemaphore, DISPATCH_TIME_FOREVER);
+  if (dbError && error) {
+    *error = dbError;
+  }
+  return dbError == nil;
+}
+
+- (void)setDefaultSelectionPolicy:(EXUpdatesSelectionPolicy *)selectionPolicy
+{
+  _defaultSelectionPolicy = selectionPolicy;
+}
+
+- (void)setLauncher:(nullable id<EXUpdatesAppLauncher>)launcher
+{
+  _launcher = launcher;
+}
+
+- (void)setConfigurationInternal:(EXUpdatesConfig *)configuration
+{
+  _config = configuration;
+}
+
+- (void)setIsStarted:(BOOL)isStarted
+{
+  _isStarted = isStarted;
+}
+
+- (void)runReaper
 {
   if (_launcher.launchedUpdate) {
     [EXUpdatesReaper reapUnusedUpdatesWithConfig:_config
                                         database:_database
                                        directory:_updatesDirectory
-                                 selectionPolicy:_selectionPolicy
+                                 selectionPolicy:self.selectionPolicy
                                   launchedUpdate:_launcher.launchedUpdate];
   }
 }
+
+# pragma mark - internal
 
 - (void)_emergencyLaunchWithFatalError:(NSError *)error
 {

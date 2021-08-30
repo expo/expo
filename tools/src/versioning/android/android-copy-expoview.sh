@@ -20,6 +20,8 @@ awk '
   // { if (removing == 0) stopRemoving = 0 }
 ' expoview/build.gradle > $VERSIONED_ABI_PATH/build.gradle
 sed -i '' "s/\/\/ WHEN_VERSIONING_REPLACE_WITH_DEPENDENCIES/implementation project(\":expoview\")/g" $VERSIONED_ABI_PATH/build.gradle
+sed -i '' "/\/\* WHEN_VERSIONING_UNCOMMENT_FROM_HERE/d" $VERSIONED_ABI_PATH/build.gradle
+sed -i '' "/WHEN_VERSIONING_UNCOMMENT_TO_HERE \*\//d" $VERSIONED_ABI_PATH/build.gradle
 
 # Prepare an empty AndroidManifest.xml of the new project
 awk '
@@ -44,6 +46,10 @@ cp -r expoview/src/main/JNI $VERSIONED_ABI_PATH/src/main/JNI
 cp -r expoview/src/main/Common $VERSIONED_ABI_PATH/src/main/Common
 cp -r expoview/src/main/java/versioned/ $VERSIONED_ABI_PATH/src/main/java/$ABI_VERSION
 cp -r expoview/src/main/java/com/ $VERSIONED_ABI_PATH/src/main/java/$ABI_VERSION/com
+
+# Copy cmake files 
+cp expoview/CMakeLists.txt $VERSIONED_ABI_PATH
+cp expoview/empty.cpp $VERSIONED_ABI_PATH
 
 while read PACKAGE
 do

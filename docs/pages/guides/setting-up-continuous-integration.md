@@ -51,9 +51,7 @@ script:
 
 > Put this into `.travis.yml` in the root of your repository.
 
-<center>
-	<a href="https://travis-ci.com/byCedric/expo-guide-ci/builds/79027881" target="_blank">See it in action</a>
-</center>
+<a href="https://travis-ci.com/byCedric/expo-guide-ci/builds/79027881" target="_blank">See it in action</a>
 
 </p>
 </details>
@@ -80,9 +78,7 @@ jest-tests:
 
 > Put this into `.gitlab-ci.yml` in the root of your repository.
 
-<center>
-	<a href="https://gitlab.com/byCedric/expo-guide-ci/pipelines/25800111" target="_blank">See it in action</a>
-</center>
+<a href="https://gitlab.com/byCedric/expo-guide-ci/pipelines/25800111" target="_blank">See it in action</a>
 
 </p>
 </details>
@@ -109,9 +105,7 @@ pipelines:
 
 > Put this into `bitbucket-pipelines.yml` in the root of your repository.
 
-<center>
-	<a href="https://bitbucket.org/byCedric/expo-guide-ci/addon/pipelines/home#!/results/2" target="_blank">See it in action</a>
-</center>
+<a href="https://bitbucket.org/byCedric/expo-guide-ci/addon/pipelines/home#!/results/2" target="_blank">See it in action</a>
 
 </p>
 </details>
@@ -149,9 +143,7 @@ script:
 
 > Put this into `.travis.yml` in the root of your repository.
 
-<center>
-	<a href="https://travis-ci.com/byCedric/expo-guide-ci/builds/79027970" target="_blank">See it in action</a>
-</center>
+<a href="https://travis-ci.com/byCedric/expo-guide-ci/builds/79027970" target="_blank">See it in action</a>
 
 </p>
 </details>
@@ -179,9 +171,7 @@ jest-tests:
 
 > Put this into `.gitlab-ci.yml` in the root of your repository.
 
-<center>
-	<a href="https://gitlab.com/byCedric/expo-guide-ci/pipelines/25800165" target="_blank">See it in action</a>
-</center>
+<a href="https://gitlab.com/byCedric/expo-guide-ci/pipelines/25800165" target="_blank">See it in action</a>
 
 </p>
 </details>
@@ -210,9 +200,7 @@ pipelines:
 
 > Put this into `bitbucket-pipelines.yml` in the root of your repository.
 
-<center>
-	<a href="https://bitbucket.org/byCedric/expo-guide-ci/addon/pipelines/home#!/results/3" target="_blank">See it in action</a>
-</center>
+<a href="https://bitbucket.org/byCedric/expo-guide-ci/addon/pipelines/home#!/results/3" target="_blank">See it in action</a>
 
 </p>
 </details>
@@ -258,6 +246,8 @@ If you don't want to expose the password in the login script, set the `EXPO_CLI_
 $ npx expo login --non-interactive -u <EXPO USERNAME>
 ```
 
+Alternatively, you can [generate an access token under your Expo account settings](/accounts/programmatic-access.md) and configure it as an environment variable named `EXPO_TOKEN`. 
+
 ### Publish new builds
 
 After having the CLI library and authentication in place, we can finally create the build step.
@@ -300,9 +290,7 @@ jobs:
 
 > Put this into `.travis.yml` in the root of your repository.
 
-<center>
-	<a href="https://travis-ci.com/byCedric/expo-guide-ci/builds/79032797" target="_blank">See it in action</a>
-</center>
+<a href="https://travis-ci.com/byCedric/expo-guide-ci/builds/79032797" target="_blank">See it in action</a>
 
 </p>
 </details>
@@ -337,9 +325,7 @@ expo-deployments:
 
 > Put this into `.gitlab-ci.yml` in the root of your repository.
 
-<center>
-	<a href="https://gitlab.com/byCedric/expo-guide-ci/pipelines/25806602" target="_blank">See it in action</a>
-</center>
+<a href="https://gitlab.com/byCedric/expo-guide-ci/pipelines/25806602" target="_blank">See it in action</a>
 
 </p>
 </details>
@@ -378,9 +364,7 @@ pipelines:
 
 > Put this into `bitbucket-pipelines.yml` in the root of your repository.
 
-<center>
-	<a href="https://bitbucket.org/byCedric/expo-guide-ci/addon/pipelines/home#!/results/11" target="_blank">See it in action</a>
-</center>
+<a href="https://bitbucket.org/byCedric/expo-guide-ci/addon/pipelines/home#!/results/11" target="_blank">See it in action</a>
 
 </p>
 </details>
@@ -460,7 +444,7 @@ Here are some extra links that might help you further.
 
 ### Extra tutorials
 
-- [Setting up Expo and Bitbucket Pipelines](https://blog.expo.io/setting-up-expo-and-bitbucket-pipelines-8995ef036a18)
+- [Setting up Expo and Bitbucket Pipelines](https://blog.expo.dev/setting-up-expo-and-bitbucket-pipelines-8995ef036a18)
 
 ### Example repositories from this guide
 

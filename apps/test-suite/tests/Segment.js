@@ -93,7 +93,7 @@ export function test(t) {
           error = e;
         }
         t.expect(error).not.toBeNull();
-        t.expect(error).toMatch('not supported in Expo Client');
+        t.expect(error).toMatch('not supported in Expo Go');
       });
     }
   });

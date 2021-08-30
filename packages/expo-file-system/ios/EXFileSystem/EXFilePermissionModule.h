@@ -1,16 +1,15 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 #import <Foundation/Foundation.h>
-#import <UMFileSystemInterface/UMFileSystemInterface.h>
-#import <UMFileSystemInterface/UMFilePermissionModuleInterface.h>
-#import <UMCore/UMInternalModule.h>
-#import <UMCore/UMModuleRegistryConsumer.h>
+#import <ExpoModulesCore/EXFilePermissionModuleInterface.h>
+#import <ExpoModulesCore/EXInternalModule.h>
+#import <ExpoModulesCore/EXModuleRegistryConsumer.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface EXFilePermissionModule : NSObject <UMInternalModule, UMFilePermissionModuleInterface, UMModuleRegistryConsumer>
+@interface EXFilePermissionModule : NSObject <EXInternalModule, EXFilePermissionModuleInterface, EXModuleRegistryConsumer>
 
-- (UMFileSystemPermissionFlags)getPathPermissions:(NSString *)path;
+- (EXFileSystemPermissionFlags)getPathPermissions:(NSString *)path;
 
 @end
 

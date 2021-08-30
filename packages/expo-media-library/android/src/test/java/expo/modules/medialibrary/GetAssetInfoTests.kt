@@ -33,27 +33,29 @@ internal class GetAssetInfoTests {
 
   @Test
   fun `GetAssetInfo should call queryAssetInfo`() {
-    //arrange
+    // arrange
     val context = mockContext.get()
     val selectionSlot = slot<String>()
     val selectionArgsSlot = slot<Array<String>>()
 
     mockkStatic(MediaLibraryUtils::class)
-    every { MediaLibraryUtils.queryAssetInfo(
-      context,
-      capture(selectionSlot),
-      capture(selectionArgsSlot),
-      true,
-      promise
-    ) } just runs
+    every {
+      MediaLibraryUtils.queryAssetInfo(
+        context,
+        capture(selectionSlot),
+        capture(selectionArgsSlot),
+        true,
+        promise
+      )
+    } just runs
 
     val expectedSelection = "${MediaStore.Images.Media._ID}=?"
     val assetId = "testAssetId"
 
-    //act
+    // act
     GetAssetInfo(context, assetId, promise).doInBackground()
 
-    //assert
+    // assert
     assertEquals(expectedSelection, selectionSlot.captured)
     assertEquals(1, selectionArgsSlot.captured.size)
     assertEquals(assetId, selectionArgsSlot.captured[0])
@@ -61,10 +63,12 @@ internal class GetAssetInfoTests {
 
   @Test
   fun `queryAssetInfo should resolve asset`() {
-    //arrange
-    val context = mockContext with mockContentResolverForResult(arrayOf(
-      MockData.mockImage.toColumnArray()
-    ))
+    // arrange
+    val context = mockContext with mockContentResolverForResult(
+      arrayOf(
+        MockData.mockImage.toColumnArray()
+      )
+    )
 
     mockkStatic(MediaLibraryUtils::class)
     every {
@@ -74,10 +78,10 @@ internal class GetAssetInfoTests {
     val selection = "${MediaStore.Images.Media._ID}=?"
     val selectionArgs = arrayOf(MockData.mockImage.id.toString())
 
-    //act
+    // act
     MediaLibraryUtils.queryAssetInfo(context, selection, selectionArgs, false, promise)
 
-    //assert
+    // assert
     promiseResolvedWithType<ArrayList<Bundle>>(promise) {
       assertListsEqual(emptyList<Bundle>(), it)
     }
@@ -85,37 +89,37 @@ internal class GetAssetInfoTests {
 
   @Test
   fun `queryAssetInfo should reject on null cursor`() {
-    //arrange
+    // arrange
     val context = mockContext with mockContentResolver(null)
 
-    //act
+    // act
     MediaLibraryUtils.queryAssetInfo(context, "", emptyArray(), false, promise)
 
-    //assert
+    // assert
     assertRejected(promise)
   }
 
   @Test
   fun `queryAssetInfo should reject on SecurityException`() {
-    //arrange
+    // arrange
     val context = mockContext with throwableContentResolver(SecurityException())
 
-    //act
+    // act
     MediaLibraryUtils.queryAssetInfo(context, "", emptyArray(), false, promise)
 
-    //assert
+    // assert
     assertRejectedWithCode(promise, MediaLibraryConstants.ERROR_UNABLE_TO_LOAD_PERMISSION)
   }
 
   @Test
   fun `queryAssetInfo should reject on IOException`() {
-    //arrange
+    // arrange
     val context = mockContext with throwableContentResolver(IOException())
 
-    //act
+    // act
     MediaLibraryUtils.queryAssetInfo(context, "", emptyArray(), false, promise)
 
-    //assert
+    // assert
     assertRejectedWithCode(promise, MediaLibraryConstants.ERROR_IO_EXCEPTION)
   }
 }

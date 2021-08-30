@@ -29,6 +29,31 @@ Run `npx pod-install` after installing the npm package.
 
 No additional set up necessary.
 
+### Plugin
+
+In order to enable Apple iCloud storage in managed EAS builds, you'll need to define the `appleTeamId` property in the config plugin:
+
+`app.json`
+
+```json
+{
+  "ios": {
+    "usesIcloudStorage": true,
+    "bundleIdentifier": "com.yourname.yourapp"
+  },
+  "plugins": [
+    [
+      "expo-document-picker",
+      {
+        "appleTeamId": "YOUR_TEAM_ID"
+      }
+    ]
+  ]
+}
+```
+
+> Running `expo eject` will generate a the native project locally with the applied changes in your iOS Entitlements file.
+
 # Contributing
 
 Contributions are very welcome! Please refer to guidelines described in the [contributing guide](https://github.com/expo/expo#contributing).

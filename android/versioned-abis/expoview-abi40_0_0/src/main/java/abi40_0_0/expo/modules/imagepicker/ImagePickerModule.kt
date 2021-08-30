@@ -122,8 +122,9 @@ class ImagePickerModule(
     }
 
     val permissionsResponseHandler = PermissionsResponseListener { permissionsResponse: Map<String, PermissionsResponse> ->
-      if (permissionsResponse[Manifest.permission.WRITE_EXTERNAL_STORAGE]?.status == PermissionsStatus.GRANTED
-        && permissionsResponse[Manifest.permission.CAMERA]?.status == PermissionsStatus.GRANTED) {
+      if (permissionsResponse[Manifest.permission.WRITE_EXTERNAL_STORAGE]?.status == PermissionsStatus.GRANTED &&
+        permissionsResponse[Manifest.permission.CAMERA]?.status == PermissionsStatus.GRANTED
+      ) {
         launchCameraWithPermissionsGranted(promise, cameraIntent, pickerOptions)
       } else {
         promise.reject(SecurityException("User rejected permissions"))
@@ -280,7 +281,7 @@ class ImagePickerModule(
             pickerOptions.isExif,
             pickerOptions.videoMaxDuration
           )
-          //...but we need to remember to add it later.
+          // ...but we need to remember to add it later.
           PendingPromise(pickerResultStore, isBase64 = true)
         } else {
           PendingPromise(pickerResultStore)
@@ -315,19 +316,21 @@ class ImagePickerModule(
   }
 
   private fun shouldHandleOnActivityResult(activity: Activity, requestCode: Int): Boolean {
-    return experienceActivity != null
-      && mPromise != null
-      && mPickerOptions != null
+    return experienceActivity != null &&
+      mPromise != null &&
+      mPickerOptions != null &&
       // When we launched the crop tool and the android kills current activity, the references can be different.
       // So, we fallback to the requestCode in this case.
-      && (activity === experienceActivity || mWasDestroyed && requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE)
+      (activity === experienceActivity || mWasDestroyed && requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE)
   }
 
   private fun handleOnActivityResult(promise: Promise, activity: Activity, requestCode: Int, resultCode: Int, intent: Intent?, pickerOptions: ImagePickerOptions) {
     if (resultCode != Activity.RESULT_OK) {
-      promise.resolve(Bundle().apply {
-        putBoolean("cancelled", true)
-      })
+      promise.resolve(
+        Bundle().apply {
+          putBoolean("cancelled", true)
+        }
+      )
       return
     }
 

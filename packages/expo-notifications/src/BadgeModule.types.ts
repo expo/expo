@@ -1,5 +1,5 @@
-import { ProxyNativeModule } from '@unimodules/core';
 import { Options as BadginOptions } from 'badgin';
+import { ProxyNativeModule } from 'expo-modules-core';
 
 export type WebSetBadgeCountOptions = BadginOptions;
 type SetBadgeCountOptions = WebSetBadgeCountOptions | undefined;

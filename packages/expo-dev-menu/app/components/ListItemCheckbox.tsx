@@ -1,11 +1,11 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
-import { Ionicon } from '../components/Icon';
 
+import { Ionicon } from '../components/Icon';
 import ListItem from './ListItem';
 
 type Props = {
-  title: string;
+  content: string | React.ReactNode;
   initialChecked?: boolean;
   onChange?: (checked: boolean) => void;
   disabled?: boolean;
@@ -54,7 +54,10 @@ class ListItemCheckbox extends React.PureComponent<Props, State> {
 }
 
 const styles = StyleSheet.create({
-  checkContainer: {},
+  checkContainer: {
+    alignSelf: 'flex-start',
+    marginTop: 5,
+  },
 });
 
 export default ListItemCheckbox;

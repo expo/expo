@@ -1,9 +1,9 @@
-import { H2 } from '@expo/html-elements';
+import { H2, H4 } from '@expo/html-elements';
 import * as AuthSession from 'expo-auth-session';
 import { useAuthRequest } from 'expo-auth-session';
 import * as FacebookAuthSession from 'expo-auth-session/providers/facebook';
 import * as GoogleAuthSession from 'expo-auth-session/providers/google';
-import Constants from 'expo-constants';
+import Constants, { ExecutionEnvironment } from 'expo-constants';
 import { maybeCompleteAuthSession } from 'expo-web-browser';
 import React from 'react';
 import { Platform, ScrollView, View } from 'react-native';
@@ -16,7 +16,7 @@ import LegacyAuthSession from './LegacyAuthSession';
 
 maybeCompleteAuthSession();
 
-const isInClient = Platform.OS !== 'web' && Constants.appOwnership === 'expo';
+const isInClient = Constants.executionEnvironment === ExecutionEnvironment.StoreClient;
 
 const languages = [
   { key: 'en', value: 'English' },
@@ -34,14 +34,21 @@ export default function AuthSessionScreen() {
     <View style={{ flex: 1, alignItems: 'center' }}>
       <ScrollView
         contentContainerStyle={{
-          maxWidth: 640,
           paddingHorizontal: 12,
+          ...Platform.select({
+            default: {
+              maxWidth: '100%',
+            },
+            web: {
+              maxWidth: 640,
+            },
+          }),
         }}>
         <View style={{ marginBottom: 8 }}>
           <H2>Settings</H2>
           <TitledSwitch
-            disabled={!isInClient}
             title="Use Proxy"
+            disabled={Platform.OS === 'web'}
             value={useProxy}
             setValue={setProxy}
           />
@@ -57,6 +64,13 @@ export default function AuthSessionScreen() {
             value={language}
             setValue={setLanguage}
           />
+          <H4>
+            ID:{' '}
+            {Constants.manifest?.originalFullName ||
+              Constants.manifest2?.extra?.expoClient?.originalFullName ||
+              Constants.manifest?.id ||
+              'unset'}
+          </H4>
         </View>
         <H2>Services</H2>
         <AuthSessionProviders
@@ -85,11 +99,11 @@ function AuthSessionProviders(props: {
   const { useProxy, usePKCE, prompt, language } = props;
 
   const redirectUri = AuthSession.makeRedirectUri({
-    native: 'bareexpo://redirect',
     path: 'redirect',
-    preferLocalhost: true,
+    preferLocalhost: Platform.select({ android: false, default: true }),
     useProxy,
   });
+
   const options = {
     useProxy,
     usePKCE,
@@ -613,7 +627,7 @@ function Strava({ redirectUri, prompt, usePKCE, useProxy }: any) {
           code: result.params.code,
           extraParams: {
             // You must use the extraParams variation of clientSecret.
-            client_secret: '...',
+            client_secret: `...`,
           },
         },
         discovery

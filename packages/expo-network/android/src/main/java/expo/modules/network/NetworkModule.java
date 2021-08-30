@@ -14,12 +14,12 @@ import android.os.Bundle;
 import android.provider.Settings;
 import android.util.Log;
 
-import org.unimodules.core.ExportedModule;
-import org.unimodules.core.ModuleRegistry;
-import org.unimodules.core.Promise;
-import org.unimodules.core.interfaces.ActivityProvider;
-import org.unimodules.core.interfaces.ExpoMethod;
-import org.unimodules.core.interfaces.RegistryLifecycleListener;
+import expo.modules.core.ExportedModule;
+import expo.modules.core.ModuleRegistry;
+import expo.modules.core.Promise;
+import expo.modules.core.interfaces.ActivityProvider;
+import expo.modules.core.interfaces.ExpoMethod;
+import expo.modules.core.interfaces.RegistryLifecycleListener;
 
 import java.math.BigInteger;
 import java.net.InetAddress;
@@ -188,51 +188,6 @@ public class NetworkModule extends ExportedModule implements RegistryLifecycleLi
     } catch (Exception e) {
       Log.e(TAG, e.getMessage());
       promise.reject("ERR_NETWORK_IP_ADDRESS", "Unknown Host Exception", e);
-    }
-  }
-
-  @ExpoMethod
-  public void getMacAddressAsync(String interfaceName, Promise promise) {
-    String permission = "android.permission.INTERNET";
-    int res = mContext.checkCallingOrSelfPermission(permission);
-
-    String macAddress = "";
-    if (res == PackageManager.PERMISSION_GRANTED) {
-      try {
-        List<NetworkInterface> interfaces = Collections.list(NetworkInterface.getNetworkInterfaces());
-        for (NetworkInterface intf : interfaces) {
-          if (interfaceName != null) {
-            if (!intf.getName().equalsIgnoreCase(interfaceName)) continue;
-          }
-          byte[] mac = intf.getHardwareAddress();
-          if (mac == null) {
-            macAddress = "";
-          }
-          StringBuilder buf = new StringBuilder();
-          if (mac != null) {
-            for (byte aMac : mac) {
-              buf.append(String.format("%02X:", aMac));
-            }
-          }
-          if (buf.length() > 0) {
-            buf.deleteCharAt(buf.length() - 1);
-          }
-          macAddress = buf.toString();
-          if (!macAddress.isEmpty()) {
-            promise.resolve(macAddress);
-            break;
-          }
-        }
-        if (macAddress.isEmpty()) {
-          //catch undefined network interface name
-          promise.reject("ERR_NETWORK_UNDEFINED_INTERFACE", "Undefined interface name");
-        }
-      } catch (Exception e) {
-        Log.e(TAG, e.getMessage());
-        promise.reject("ERR_NETWORK_SOCKET_EXCEPTION", "Error in creating or accessing the socket", e);
-      }
-    } else {
-      promise.reject("ERR_NETWORK_INVALID_PERMISSION_INTERNET", "No permission granted to access the Internet");
     }
   }
 

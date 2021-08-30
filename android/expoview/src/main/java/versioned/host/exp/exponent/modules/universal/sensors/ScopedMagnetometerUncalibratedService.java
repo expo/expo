@@ -3,14 +3,15 @@ package versioned.host.exp.exponent.modules.universal.sensors;
 import java.util.Collections;
 import java.util.List;
 
-import org.unimodules.core.interfaces.InternalModule;
-import org.unimodules.interfaces.sensors.services.MagnetometerUncalibratedService;
-import host.exp.exponent.kernel.ExperienceId;
+import expo.modules.core.interfaces.InternalModule;
+
+import expo.modules.interfaces.sensors.services.MagnetometerUncalibratedServiceInterface;
+import host.exp.exponent.kernel.ExperienceKey;
 import host.exp.exponent.kernel.services.sensors.SubscribableSensorKernelService;
 
-public class ScopedMagnetometerUncalibratedService extends BaseSensorService implements InternalModule, MagnetometerUncalibratedService {
-  public ScopedMagnetometerUncalibratedService(ExperienceId experienceId) {
-    super(experienceId);
+public class ScopedMagnetometerUncalibratedService extends BaseSensorService implements InternalModule, MagnetometerUncalibratedServiceInterface {
+  public ScopedMagnetometerUncalibratedService(ExperienceKey experienceKey) {
+    super(experienceKey);
   }
 
   @Override
@@ -20,7 +21,7 @@ public class ScopedMagnetometerUncalibratedService extends BaseSensorService imp
 
   @Override
   public List<Class> getExportedInterfaces() {
-    return Collections.<Class>singletonList(MagnetometerUncalibratedService.class);
+    return Collections.<Class>singletonList(MagnetometerUncalibratedServiceInterface.class);
   }
 }
 

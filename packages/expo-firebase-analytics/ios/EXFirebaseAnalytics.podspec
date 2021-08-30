@@ -2,7 +2,7 @@ require 'json'
 
 package = JSON.parse(File.read(File.join(__dir__, '..', 'package.json')))
 
-firebase_sdk_version = '6.14.0'
+firebase_sdk_version = '7.7.0'
 if defined? $FirebaseSDKVersion
   firebase_sdk_version = $FirebaseSDKVersion
 end
@@ -18,7 +18,7 @@ Pod::Spec.new do |s|
   s.platform       = :ios, '11.0'
   s.source         = { git: 'https://github.com/expo/expo.git' }
 
-  s.dependency 'UMCore'
+  s.dependency 'ExpoModulesCore'
   s.dependency 'Firebase/Core', firebase_sdk_version
   s.dependency 'EXFirebaseCore'
 

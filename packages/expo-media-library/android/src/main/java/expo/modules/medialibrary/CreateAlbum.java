@@ -2,16 +2,14 @@ package expo.modules.medialibrary;
 
 import android.content.Context;
 import android.media.MediaScannerConnection;
-import android.net.Uri;
 import android.os.AsyncTask;
-import android.os.Environment;
 import android.provider.MediaStore;
+
+import expo.modules.core.Promise;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
-
-import org.unimodules.core.Promise;
 
 import static expo.modules.medialibrary.MediaLibraryConstants.ERROR_NO_ALBUM;
 import static expo.modules.medialibrary.MediaLibraryConstants.ERROR_UNABLE_TO_LOAD;
@@ -20,6 +18,7 @@ import static expo.modules.medialibrary.MediaLibraryConstants.ERROR_UNABLE_TO_SA
 import static expo.modules.medialibrary.MediaLibraryUtils.FileStrategy;
 import static expo.modules.medialibrary.MediaLibraryUtils.copyStrategy;
 import static expo.modules.medialibrary.MediaLibraryUtils.getAssetsById;
+import static expo.modules.medialibrary.MediaLibraryUtils.getEnvDirectoryForAssetType;
 import static expo.modules.medialibrary.MediaLibraryUtils.moveStrategy;
 import static expo.modules.medialibrary.MediaLibraryUtils.queryAlbum;
 
@@ -38,9 +37,14 @@ class CreateAlbum extends AsyncTask<Void, Void, Void> {
     mStrategy = copyAsset ? copyStrategy : moveStrategy;
   }
 
-  private File createAlbum() {
-    File album = new File(Environment.getExternalStorageDirectory().getPath(), mAlbumName);
+  private File createAlbum(String mimeType) {
+    File albumDir = getEnvDirectoryForAssetType(mimeType, false);
+    if (albumDir == null) {
+      mPromise.reject(ERROR_NO_ALBUM, "Could not guess asset type.");
+      return null;
+    }
 
+    File album = new File(albumDir.getPath(), mAlbumName);
     if (!album.exists() && !album.mkdirs()) {
       mPromise.reject(ERROR_NO_ALBUM, "Could not create album directory.");
       return null;
@@ -51,37 +55,35 @@ class CreateAlbum extends AsyncTask<Void, Void, Void> {
   @Override
   protected Void doInBackground(Void... params) {
     try {
-      File album = createAlbum();
-      if (album == null) {
-        return null;
-      }
-      List<File> files = getAssetsById(mContext, mPromise, mAssetId);
+      List<MediaLibraryUtils.AssetFile> files = getAssetsById(mContext, mPromise, mAssetId);
       if (files == null) {
         return null;
       }
-      File albumCreator = getAssetsById(mContext, mPromise, mAssetId).get(0);
+
+      MediaLibraryUtils.AssetFile albumCreator = files.get(0);
+      File album = createAlbum(albumCreator.getMimeType());
+      if (album == null) {
+        return null;
+      }
+
       File newFile = mStrategy.apply(albumCreator, album, mContext);
 
       MediaScannerConnection.scanFile(
-          mContext,
-          new String[]{newFile.getPath()},
-          null,
-
-          new MediaScannerConnection.OnScanCompletedListener() {
-            @Override
-            public void onScanCompleted(String path, Uri uri) {
-              if (uri == null) {
-                mPromise.reject(ERROR_UNABLE_TO_SAVE, "Could not add image to album.");
-                return;
-              }
-              final String selection = MediaStore.Images.Media.DATA + "=?";
-              final String[] args = {path};
-              queryAlbum(mContext, selection, args, mPromise);
-            }
-          });
+        mContext,
+        new String[]{newFile.getPath()},
+        null,
+        (path, uri) -> {
+          if (uri == null) {
+            mPromise.reject(ERROR_UNABLE_TO_SAVE, "Could not add image to album.");
+            return;
+          }
+          final String selection = MediaStore.Images.Media.DATA + "=?";
+          final String[] args = {path};
+          queryAlbum(mContext, selection, args, mPromise);
+        });
     } catch (SecurityException e) {
       mPromise.reject(ERROR_UNABLE_TO_LOAD_PERMISSION,
-          "Could not create album: need WRITE_EXTERNAL_STORAGE permission.", e);
+        "Could not create album: need WRITE_EXTERNAL_STORAGE permission.", e);
     } catch (IOException e) {
       mPromise.reject(ERROR_UNABLE_TO_LOAD, "Could not read file or parse EXIF tags", e);
     }

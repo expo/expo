@@ -1,9 +1,11 @@
-import { css } from '@emotion/core';
+import { css } from '@emotion/react';
+import { theme } from '@expo/styleguide';
 import * as React from 'react';
 
 import stripVersionFromPath from '~/common/stripVersionFromPath';
 import { paragraph } from '~/components/base/typography';
 import ChevronDown from '~/components/icons/ChevronDown';
+import { collapsedSections } from '~/constants/navigation';
 import * as Constants from '~/constants/theme';
 import { NavigationRoute, Url } from '~/types/common';
 
@@ -18,10 +20,10 @@ const STYLES_TITLE = css`
   text-decoration: none;
   font-family: ${Constants.fontFamilies.demi};
   user-select: none;
-  background: ${Constants.expoColors.gray[200]};
+  background: ${theme.background.tertiary};
   padding: 8px 16px;
   border-radius: 4px;
-  color: ${Constants.expoColors.black};
+  color: ${theme.text.default};
 
   :hover {
     cursor: pointer;
@@ -57,7 +59,7 @@ export default class DocumentationSidebarGroup extends React.Component<Props, { 
 
     // default to always open
     this.state = {
-      isOpen: props.info.name === 'Deprecated' ? isOpen : true,
+      isOpen: collapsedSections.includes(props.info.name) ? isOpen : true,
     };
   }
 

@@ -54,7 +54,7 @@ public class BackgroundFetchTaskConsumer extends TaskConsumer implements TaskCon
     stopAlarm();
 
     // Cancel pending intent.
-    getTaskManagerUtils().cancelTaskIntent(getContext(), mTask.getAppId(), mTask.getName());
+    getTaskManagerUtils().cancelTaskIntent(getContext(), mTask.getAppScopeKey(), mTask.getName());
 
     mTask = null;
     mPendingIntent = null;

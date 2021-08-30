@@ -93,7 +93,7 @@ import Constants from 'expo-constants';
 const testID = 'google-test-id';
 const productionID = 'my-id';
 // Is a real device and running in production.
-const adUnitID = Constants.isDevice && !__DEV__ ? productionId : testID;
+const adUnitID = Constants.isDevice && !__DEV__ ? productionID : testID;
 ```
 
 ## Methods

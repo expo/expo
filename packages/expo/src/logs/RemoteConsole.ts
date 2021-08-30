@@ -4,7 +4,7 @@ import RemoteLogging, { LogEntryFields, LogLevel } from './RemoteLogging';
  * Creates a console object that delegates calls to the specified underlying console and also sends
  * the messages to the development environment over a remote connection.
  */
-function createRemoteConsole(originalConsole: Console): Console {
+export function createRemoteConsole(originalConsole: Console): Console {
   let groupDepth = 0;
 
   const enhancedConsole: typeof originalConsole = Object.create(originalConsole);
@@ -124,7 +124,3 @@ function createRemoteConsole(originalConsole: Console): Console {
 
   return enhancedConsole;
 }
-
-export default {
-  createRemoteConsole,
-};

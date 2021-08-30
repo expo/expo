@@ -1,1 +1,0 @@
-../../../Amplitude/Sources/Amplitude/ISPCertificatePinning.h

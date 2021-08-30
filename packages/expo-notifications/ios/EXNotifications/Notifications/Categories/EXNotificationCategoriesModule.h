@@ -1,19 +1,23 @@
 // Copyright 2018-present 650 Industries. All rights reserved.
 
-#import <UMCore/UMExportedModule.h>
+#import <ExpoModulesCore/EXExportedModule.h>
 #import <EXNotifications/EXNotificationsDelegate.h>
 
-@interface EXNotificationCategoriesModule : UMExportedModule <EXNotificationsDelegate>
+@interface EXNotificationCategoriesModule : EXExportedModule <EXNotificationsDelegate>
 
-- (void)getNotificationCategoriesAsyncWithResolver:(UMPromiseResolveBlock)resolve reject:(UMPromiseRejectBlock)reject;
+- (void)getNotificationCategoriesAsyncWithResolver:(EXPromiseResolveBlock)resolve reject:(EXPromiseRejectBlock)reject;
 - (void)setNotificationCategoryWithCategoryId:(NSString *)categoryId
                                       actions:(NSArray *)actions
                                       options:(NSDictionary *)options
-                                      resolve:(UMPromiseResolveBlock)resolve 
-                                       reject:(UMPromiseRejectBlock)reject;
+                                      resolve:(EXPromiseResolveBlock)resolve 
+                                       reject:(EXPromiseRejectBlock)reject;
 - (void)deleteNotificationCategoryWithCategoryId:(NSString *)categoryId
-                                         resolve:(UMPromiseResolveBlock)resolve 
-                                          reject:(UMPromiseRejectBlock)reject;
+                                         resolve:(EXPromiseResolveBlock)resolve 
+                                          reject:(EXPromiseRejectBlock)reject;
+- (NSMutableDictionary *)serializeCategory:(UNNotificationCategory *)category;
+- (UNNotificationCategory *)createCategoryWithId:(NSString*)categoryId
+                                         actions:(NSArray *)actions
+                                         options:(NSDictionary *)options;
 - (NSMutableDictionary *)serializeCategoryOptions:(UNNotificationCategory *)category;
 - (NSMutableArray *)serializeActions:(NSArray<UNNotificationAction *>*)actions;
 - (NSMutableDictionary *)serializeActionOptions:(NSUInteger)options;

@@ -1,6 +1,6 @@
 import { connectActionSheet } from '@expo/react-native-action-sheet';
 import React from 'react';
-import { TouchableOpacity, ActionSheetIOSOptions } from 'react-native';
+import { ActionSheetIOSOptions } from 'react-native';
 
 import PrimaryButton from '../components/PrimaryButton';
 
@@ -66,7 +66,7 @@ function AdditionalTwoFactorOptionsButton({
   };
 
   return (
-    <PrimaryButton plain onPress={handlePress} fallback={TouchableOpacity}>
+    <PrimaryButton plain onPress={handlePress}>
       More one-time password options
     </PrimaryButton>
   );

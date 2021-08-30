@@ -9,18 +9,22 @@ import { resolveDiscoveryAsync } from './Discovery';
 export function useAutoDiscovery(issuerOrDiscovery) {
     const [discovery, setDiscovery] = useState(null);
     useEffect(() => {
+        let isAllowed = true;
         resolveDiscoveryAsync(issuerOrDiscovery).then(discovery => {
-            setDiscovery(discovery);
+            if (isAllowed) {
+                setDiscovery(discovery);
+            }
         });
+        return () => {
+            isAllowed = false;
+        };
     }, [issuerOrDiscovery]);
     return discovery;
 }
 export function useLoadedAuthRequest(config, discovery, AuthRequestInstance) {
     const [request, setRequest] = useState(null);
     const scopeString = useMemo(() => config.scopes?.join(','), [config.scopes]);
-    const extraParamsString = useMemo(() => JSON.stringify(config.extraParams || {}), [
-        config.extraParams,
-    ]);
+    const extraParamsString = useMemo(() => JSON.stringify(config.extraParams || {}), [config.extraParams]);
     useEffect(() => {
         let isMounted = true;
         if (discovery) {

@@ -35,12 +35,8 @@ ${IOS_EXPOKIT_DEPS}
 
     # Universal modules required by ExpoKit so the code compiles
     ss.dependency 'UMCore'
+    ss.dependency 'ExpoModulesCore'
     ss.dependency 'UMReactNativeAdapter'
-    ss.dependency 'UMSensorsInterface'
-    ss.dependency 'UMFileSystemInterface'
-    ss.dependency 'UMPermissionsInterface'
-    ss.dependency 'UMCameraInterface'
-    ss.dependency 'UMConstantsInterface'
   end
 
   s.subspec "Payments" do |ss|

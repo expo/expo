@@ -8,20 +8,24 @@ import android.util.Log;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.unimodules.core.ExportedModule;
-import org.unimodules.core.ModuleRegistry;
-import org.unimodules.core.Promise;
-import org.unimodules.core.interfaces.ExpoMethod;
+import org.json.JSONObject;
+import expo.modules.core.ExportedModule;
+import expo.modules.core.ModuleRegistry;
+import expo.modules.core.Promise;
+import expo.modules.core.interfaces.ExpoMethod;
 
 import androidx.annotation.Nullable;
 import expo.modules.updates.db.DatabaseHolder;
-import expo.modules.updates.db.UpdatesDatabase;
 import expo.modules.updates.db.entity.AssetEntity;
 import expo.modules.updates.db.entity.UpdateEntity;
 import expo.modules.updates.launcher.Launcher;
 import expo.modules.updates.loader.FileDownloader;
-import expo.modules.updates.manifest.Manifest;
+import expo.modules.updates.manifest.UpdateManifest;
 import expo.modules.updates.loader.RemoteLoader;
+import expo.modules.updates.manifest.ManifestMetadata;
+
+// this unused import must stay because of versioning
+
 
 public class UpdatesModule extends ExportedModule {
   private static final String NAME = "ExpoUpdates";
@@ -60,14 +64,16 @@ public class UpdatesModule extends ExportedModule {
         UpdateEntity launchedUpdate = updatesService.getLaunchedUpdate();
         if (launchedUpdate != null) {
           constants.put("updateId", launchedUpdate.id.toString());
-          constants.put("manifestString", launchedUpdate.metadata != null ? launchedUpdate.metadata.toString() : "{}");
+          constants.put("manifestString", launchedUpdate.manifest != null ? launchedUpdate.manifest.toString() : "{}");
         }
 
         Map<AssetEntity, String> localAssetFiles = updatesService.getLocalAssetFiles();
         if (localAssetFiles != null) {
           Map<String, String> localAssets = new HashMap<>();
           for (AssetEntity asset : localAssetFiles.keySet()) {
-            localAssets.put(asset.key, localAssetFiles.get(asset));
+            if (asset.key != null) {
+              localAssets.put(asset.key, localAssetFiles.get(asset));
+            }
           }
           constants.put("localAssets", localAssets);
         }
@@ -130,7 +136,11 @@ public class UpdatesModule extends ExportedModule {
         return;
       }
 
-      FileDownloader.downloadManifest(updatesService.getConfiguration(), getContext(), new FileDownloader.ManifestDownloadCallback() {
+      DatabaseHolder databaseHolder = updatesService.getDatabaseHolder();
+      JSONObject extraHeaders = ManifestMetadata.getServerDefinedHeaders(databaseHolder.getDatabase(), updatesService.getConfiguration());
+      databaseHolder.releaseDatabase();
+
+      updatesService.getFileDownloader().downloadManifest(updatesService.getConfiguration(), extraHeaders, getContext(), new FileDownloader.ManifestDownloadCallback() {
         @Override
         public void onFailure(String message, Exception e) {
           promise.reject("ERR_UPDATES_CHECK", message, e);
@@ -138,21 +148,21 @@ public class UpdatesModule extends ExportedModule {
         }
 
         @Override
-        public void onSuccess(Manifest manifest) {
+        public void onSuccess(UpdateManifest updateManifest) {
           UpdateEntity launchedUpdate = updatesService.getLaunchedUpdate();
           Bundle updateInfo = new Bundle();
           if (launchedUpdate == null) {
             // this shouldn't ever happen, but if we don't have anything to compare
             // the new manifest to, let the user know an update is available
             updateInfo.putBoolean("isAvailable", true);
-            updateInfo.putString("manifestString", manifest.getRawManifestJson().toString());
+            updateInfo.putString("manifestString", updateManifest.getRawManifest().toString());
             promise.resolve(updateInfo);
             return;
           }
 
-          if (updatesService.getSelectionPolicy().shouldLoadNewUpdate(manifest.getUpdateEntity(), launchedUpdate)) {
+          if (updatesService.getSelectionPolicy().shouldLoadNewUpdate(updateManifest.getUpdateEntity(), launchedUpdate, updateManifest.getManifestFilters())) {
             updateInfo.putBoolean("isAvailable", true);
-            updateInfo.putString("manifestString", manifest.getRawManifestJson().toString());
+            updateInfo.putString("manifestString", updateManifest.getRawManifest().toString());
             promise.resolve(updateInfo);
           } else {
             updateInfo.putBoolean("isAvailable", false);
@@ -179,9 +189,8 @@ public class UpdatesModule extends ExportedModule {
 
       AsyncTask.execute(() -> {
         final DatabaseHolder databaseHolder = updatesService.getDatabaseHolder();
-        new RemoteLoader(getContext(), updatesService.getConfiguration(), databaseHolder.getDatabase(), updatesService.getDirectory())
+        new RemoteLoader(getContext(), updatesService.getConfiguration(), databaseHolder.getDatabase(), updatesService.getFileDownloader(), updatesService.getDirectory())
           .start(
-            updatesService.getConfiguration().getUpdateUrl(),
             new RemoteLoader.LoaderCallback() {
               @Override
               public void onFailure(Exception e) {
@@ -190,11 +199,15 @@ public class UpdatesModule extends ExportedModule {
               }
 
               @Override
-              public boolean onManifestLoaded(Manifest manifest) {
+              public void onAssetLoaded(AssetEntity asset, int successfulAssetCount, int failedAssetCount, int totalAssetCount) {
+              }
+
+              @Override
+              public boolean onUpdateManifestLoaded(UpdateManifest updateManifest) {
                 return updatesService.getSelectionPolicy().shouldLoadNewUpdate(
-                  manifest.getUpdateEntity(),
-                  updatesService.getLaunchedUpdate()
-                );
+                  updateManifest.getUpdateEntity(),
+                  updatesService.getLaunchedUpdate(),
+                  updateManifest.getManifestFilters());
               }
 
               @Override
@@ -204,8 +217,9 @@ public class UpdatesModule extends ExportedModule {
                 if (update == null) {
                   updateInfo.putBoolean("isNew", false);
                 } else {
+                  updatesService.resetSelectionPolicy();
                   updateInfo.putBoolean("isNew", true);
-                  updateInfo.putString("manifestString", update.metadata.toString());
+                  updateInfo.putString("manifestString", update.manifest.toString());
                 }
                 promise.resolve(updateInfo);
               }

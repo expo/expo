@@ -1,0 +1,11 @@
+diff --git a/react-native.config.js b/react-native.config.js
+new file mode 100644
+index 0000000..651d3b9
+--- /dev/null
++++ b/react-native.config.js
+@@ -0,0 +1,5 @@
++module.exports = {
++  dependencies: {
++    ...require('expo-dev-client/dependencies'),
++  },
++};

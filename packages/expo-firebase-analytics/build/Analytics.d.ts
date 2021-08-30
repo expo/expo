@@ -92,7 +92,7 @@ export declare function setUserId(userId: string | null): Promise<void>;
  * @param value The value of the user property. Values can be up to 36 characters long. Setting the
  *     value to null removes the user property.
  */
-export declare function setUserProperty(name: string, value: string): Promise<void>;
+export declare function setUserProperty(name: string, value: string | null): Promise<void>;
 /**
  * Clears all analytics data for this instance from the device and resets the app instance ID.
  */
@@ -103,7 +103,7 @@ export declare function resetAnalyticsData(): Promise<void>;
  * @param properties key/value set of user properties
  */
 export declare function setUserProperties(properties: {
-    [key: string]: string;
+    [key: string]: string | null;
 }): Promise<void>;
 /**
  * Enables or disables the warning and log messages when using
@@ -117,6 +117,16 @@ export declare function setUserProperties(properties: {
  * @param isEnabled A flag that enables or disables unavailability logging.
  */
 export declare function setUnavailabilityLogging(isEnabled: boolean): void;
+/**
+ * In Expo Go, sets the clientId to the given value for the current session.
+ *
+ * By default, the clientId is set to `Constants.installationId` in Expo Go,
+ * which is deprecated and will be removed in SDK 44. At that time, this method
+ * will need to be used to set the `clientId` when using Expo Go.
+ *
+ * @param clientId UUIDv4 string value to set for the current session in Expo Go
+ */
+export declare function setClientId(clientId: string): void;
 /**
  * Enables or disabled debug mode on the Expo client, so events can
  * be tracked using the [DebugView in the Analytics dashboard](https://firebase.google.com/docs/analytics/debugview#reporting).

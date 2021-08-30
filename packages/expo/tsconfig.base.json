@@ -3,16 +3,15 @@
   "display": "Expo",
 
   "compilerOptions": {
-    "target": "esnext",
-    "lib": ["dom", "es6", "es2016.array.include", "es2017.object"],
     "allowJs": true,
-    "skipLibCheck": true,
-    "noEmit": true,
-    "allowSyntheticDefaultImports": true,
-    "resolveJsonModule": true,
     "esModuleInterop": true,
+    "jsx": "react-native",
+    "lib": ["DOM", "ESNext"],
     "moduleResolution": "node",
-    "jsx": "react-native"
+    "noEmit": true,
+    "resolveJsonModule": true,
+    "skipLibCheck": true,
+    "target": "ESNext"
   },
 
   "exclude": ["node_modules", "babel.config.js", "metro.config.js", "jest.config.js"]

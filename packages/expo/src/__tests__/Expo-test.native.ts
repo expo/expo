@@ -116,6 +116,13 @@ describe(`Expo APIs`, () => {
   }
 });
 
+jest.mock('react-native/Libraries/Core/Devtools/getDevServer', () => ({
+  __esModule: true,
+  default() {
+    return { bundleLoadedFromServer: true, url: 'http://localhost:8081/' };
+  },
+}));
+
 describe(`importing Expo`, () => {
   beforeAll(() => {
     jest.resetModules();
@@ -141,7 +148,7 @@ describe(`importing Expo`, () => {
     };
     // Clear all the native modules as a way to simulate running outside of Expo
     const { NativeModules } = require('react-native');
-    const { NativeModulesProxy } = require('@unimodules/react-native-adapter');
+    const { NativeModulesProxy } = require('expo-modules-core');
     clearPropertiesInPlace(NativeModules);
     clearPropertiesInPlace(NativeModulesProxy);
 

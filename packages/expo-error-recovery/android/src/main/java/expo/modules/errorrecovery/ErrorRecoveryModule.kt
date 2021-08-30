@@ -3,9 +3,9 @@ package expo.modules.errorrecovery
 import android.content.Context
 import android.content.SharedPreferences
 
-import org.unimodules.core.ExportedModule
-import org.unimodules.core.Promise
-import org.unimodules.core.interfaces.ExpoMethod
+import expo.modules.core.ExportedModule
+import expo.modules.core.Promise
+import expo.modules.core.interfaces.ExpoMethod
 
 const val RECOVERY_STORE = "expo.modules.errorrecovery.store"
 private const val RECOVERY_STORE_KEY = "recoveredProps"
@@ -24,7 +24,7 @@ open class ErrorRecoveryModule(context: Context) : ExportedModule(context) {
   }
 
   override fun getConstants(): Map<String, Any?> {
-    return mapOf("recoveredProps" to consumeRecoveryProps())
+    return mapOf(RECOVERY_STORE_KEY to consumeRecoveryProps())
   }
 
   protected open fun setRecoveryProps(props: String) {

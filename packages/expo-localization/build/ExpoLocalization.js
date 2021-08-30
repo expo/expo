@@ -1,9 +1,30 @@
 /* eslint-env browser */
-import { Platform } from '@unimodules/core';
+import { Platform } from 'expo-modules-core';
 import * as rtlDetect from 'rtl-detect';
 export default {
+    get currency() {
+        // TODO: Add support
+        return null;
+    },
+    get decimalSeparator() {
+        return (1.1).toLocaleString().substring(1, 2);
+    },
+    get digitGroupingSeparator() {
+        const value = (1000).toLocaleString();
+        return value.length === 5 ? value.substring(1, 2) : '';
+    },
     get isRTL() {
         return rtlDetect.isRtlLang(this.locale) ?? false;
+    },
+    get isMetric() {
+        const { region } = this;
+        switch (region) {
+            case 'US': // USA
+            case 'LR': // Liberia
+            case 'MM': // Myanmar
+                return false;
+        }
+        return true;
     },
     get locale() {
         if (!Platform.isDOMAvailable) {
@@ -35,22 +56,30 @@ export default {
         return [];
     },
     get region() {
+        // There is no way to obtain the current region, as is possible on native.
+        // Instead, use the country-code from the locale when possible (e.g. "en-US").
         const { locale } = this;
-        if (typeof locale === 'string') {
-            const [, iso] = locale.split('-');
-            return iso ? iso.toUpperCase() : null;
+        const [, ...suffixes] = typeof locale === 'string' ? locale.split('-') : [];
+        for (const suffix of suffixes) {
+            if (suffix.length === 2) {
+                return suffix.toUpperCase();
+            }
         }
         return null;
     },
     async getLocalizationAsync() {
-        const { region, isoCurrencyCodes, timezone, locales, locale, isRTL } = this;
+        const { currency, decimalSeparator, digitGroupingSeparator, isoCurrencyCodes, isMetric, isRTL, locale, locales, region, timezone, } = this;
         return {
-            region,
+            currency,
+            decimalSeparator,
+            digitGroupingSeparator,
             isoCurrencyCodes,
-            timezone,
-            locales,
-            locale,
+            isMetric,
             isRTL,
+            locale,
+            locales,
+            region,
+            timezone,
         };
     },
 };

@@ -1,4 +1,5 @@
-import { css } from '@emotion/core';
+import { css } from '@emotion/react';
+import { theme } from '@expo/styleguide';
 import * as React from 'react';
 
 import TerminalBlock from './TerminalBlock';
@@ -9,18 +10,21 @@ const STYLES_P = css`
   line-height: 1.8rem;
   margin-top: 1.4rem;
   margin-bottom: 1.4rem;
+  color: ${theme.text.default};
 `;
 
 const STYLES_BOLD = css`
   font-family: ${Constants.fonts.demi};
   font-weight: 400;
   text-decoration: none;
+  color: ${theme.link.default};
   :hover {
     text-decoration: underline;
   }
 `;
 const STYLES_LINK = css`
   text-decoration: none;
+  color: ${theme.link.default};
   :hover {
     text-decoration: underline;
   }
@@ -33,11 +37,14 @@ type Props = {
   href?: string;
 };
 
+const getPackageLink = (packageNames: string) =>
+  `https://github.com/expo/expo/tree/master/packages/${packageNames.split(' ')[0]}`;
+
 const InstallSection: React.FC<Props> = ({
   packageName,
   hideBareInstructions = false,
   cmd = [`expo install ${packageName}`],
-  href = `https://github.com/expo/expo/tree/master/packages/${packageName}`,
+  href = getPackageLink(packageName),
 }) => (
   <div>
     <TerminalBlock cmd={cmd} />

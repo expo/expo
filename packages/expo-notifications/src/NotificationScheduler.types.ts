@@ -1,4 +1,4 @@
-import { ProxyNativeModule } from '@unimodules/core';
+import { ProxyNativeModule } from 'expo-modules-core';
 
 import { NotificationRequest, NotificationContentInput } from './Notifications.types';
 
@@ -63,6 +63,15 @@ export interface WeeklyTriggerInput {
   minute: number;
 }
 
+export interface YearlyTriggerInput {
+  type: 'yearly';
+  channelId?: string;
+  day: number;
+  month: number;
+  hour: number;
+  minute: number;
+}
+
 export interface DateTriggerInput {
   type: 'date';
   channelId?: string;
@@ -76,4 +85,5 @@ export type NotificationTriggerInput =
   | CalendarTriggerInput
   | TimeIntervalTriggerInput
   | DailyTriggerInput
-  | WeeklyTriggerInput;
+  | WeeklyTriggerInput
+  | YearlyTriggerInput;

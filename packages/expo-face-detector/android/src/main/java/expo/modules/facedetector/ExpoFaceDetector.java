@@ -14,23 +14,25 @@ import com.google.firebase.ml.vision.face.FirebaseVisionFace;
 import com.google.firebase.ml.vision.face.FirebaseVisionFaceDetector;
 import com.google.firebase.ml.vision.face.FirebaseVisionFaceDetectorOptions;
 
-import org.unimodules.core.interfaces.Function;
-import org.unimodules.interfaces.facedetector.FaceDetectionError;
-import org.unimodules.interfaces.facedetector.FaceDetectionSkipped;
-import org.unimodules.interfaces.facedetector.FaceDetectionUnspecifiedError;
-import org.unimodules.interfaces.facedetector.FacesDetectionCompleted;
+import expo.modules.core.interfaces.Function;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import expo.modules.interfaces.facedetector.FaceDetectionError;
+import expo.modules.interfaces.facedetector.FaceDetectionSkipped;
+import expo.modules.interfaces.facedetector.FaceDetectionUnspecifiedError;
+import expo.modules.interfaces.facedetector.FaceDetectorInterface;
+import expo.modules.interfaces.facedetector.FacesDetectionCompleted;
+
 import static com.google.firebase.ml.vision.common.FirebaseVisionImageMetadata.ROTATION_0;
 import static com.google.firebase.ml.vision.common.FirebaseVisionImageMetadata.ROTATION_180;
 import static com.google.firebase.ml.vision.common.FirebaseVisionImageMetadata.ROTATION_270;
 import static com.google.firebase.ml.vision.common.FirebaseVisionImageMetadata.ROTATION_90;
 
-public class ExpoFaceDetector implements org.unimodules.interfaces.facedetector.FaceDetector {
+public class ExpoFaceDetector implements FaceDetectorInterface {
   private static final String RUN_CLASSIFICATIONS_KEY = "runClassifications";
   private static final String DETECT_LANDMARKS_KEY = "detectLandmarks";
   private static final String TRACKING_KEY = "tracking";

@@ -1,5 +1,5 @@
-import { Platform, UnavailabilityError } from '@unimodules/core';
 import Constants from 'expo-constants';
+import { Platform, UnavailabilityError } from 'expo-modules-core';
 import invariant from 'invariant';
 import qs from 'qs';
 import { useEffect, useState } from 'react';
@@ -14,7 +14,10 @@ function getHostUri() {
     if (Constants.manifest?.hostUri) {
         return Constants.manifest.hostUri;
     }
-    else if (!Constants.manifest?.hostUri && !hasCustomScheme()) {
+    else if (Constants.manifest2?.extra?.expoClient?.hostUri) {
+        return Constants.manifest2.extra.expoClient.hostUri;
+    }
+    else if (!hasCustomScheme()) {
         // we're probably not using up-to-date xdl, so just fake it for now
         // we have to remove the /--/ on the end since this will be inserted again later
         return removeScheme(Constants.linkingUri).replace(/\/--($|\/.*$)/, '');
@@ -97,7 +100,7 @@ export function makeUrl(path = '', queryParams, scheme) {
  * @param scheme URI protocol `<scheme>://` that must be built into your native app.
  * @param queryParams An object of parameters that will be converted into a query string.
  */
-export function createURL(path, { scheme, queryParams = {}, isTripleSlashed = false, } = {}) {
+export function createURL(path, { scheme, queryParams = {}, isTripleSlashed = false } = {}) {
     if (Platform.OS === 'web') {
         if (!Platform.isDOMAvailable)
             return '';
@@ -180,10 +183,7 @@ export function parse(url) {
         let expoPrefix = null;
         if (hostUriStripped) {
             const parts = hostUriStripped.split('/');
-            expoPrefix = parts
-                .slice(1)
-                .concat(['--/'])
-                .join('/');
+            expoPrefix = parts.slice(1).concat(['--/']).join('/');
         }
         if (isExpoHosted() && !hasCustomScheme() && expoPrefix && path.startsWith(expoPrefix)) {
             path = path.substring(expoPrefix.length);
@@ -283,7 +283,7 @@ export async function canOpenURL(url) {
 /**
  * Returns the initial URL followed by any subsequent changes to the URL.
  */
-export function useUrl() {
+export function useURL() {
     const [url, setLink] = useState(null);
     function onChange(event) {
         setLink(event.url);
@@ -294,6 +294,14 @@ export function useUrl() {
         return () => removeEventListener('url', onChange);
     }, []);
     return url;
+}
+/**
+ * Returns the initial URL followed by any subsequent changes to the URL.
+ * @deprecated Use `useURL` instead.
+ */
+export function useUrl() {
+    console.warn(`Linking.useUrl has been deprecated in favor of Linking.useURL. This API will be removed in SDK 44.`);
+    return useURL();
 }
 export * from './Linking.types';
 //# sourceMappingURL=Linking.js.map

@@ -3,12 +3,10 @@ package expo.modules.facedetector;
 import android.content.Context;
 import android.os.Bundle;
 
-import org.unimodules.core.ExportedModule;
-import org.unimodules.core.ModuleRegistry;
-import org.unimodules.core.Promise;
-import org.unimodules.core.interfaces.ExpoMethod;
-import org.unimodules.interfaces.facedetector.FaceDetector;
-import org.unimodules.interfaces.facedetector.FaceDetectorProvider;
+import expo.modules.core.ExportedModule;
+import expo.modules.core.ModuleRegistry;
+import expo.modules.core.Promise;
+import expo.modules.core.interfaces.ExpoMethod;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -16,6 +14,8 @@ import java.util.Map;
 
 import expo.modules.facedetector.tasks.FileFaceDetectionCompletionListener;
 import expo.modules.facedetector.tasks.FileFaceDetectionTask;
+import expo.modules.interfaces.facedetector.FaceDetectorInterface;
+import expo.modules.interfaces.facedetector.FaceDetectorProviderInterface;
 
 public class FaceDetectorModule extends ExportedModule {
   private static final String TAG = "ExpoFaceDetector";
@@ -94,10 +94,10 @@ public class FaceDetectorModule extends ExportedModule {
     mModuleRegistry = moduleRegistry;
   }
 
-  private FaceDetector detectorForOptions(HashMap<String, Object> options, Context context) {
-    FaceDetectorProvider faceDetectorProvider = mModuleRegistry.getModule(FaceDetectorProvider.class);
+  private FaceDetectorInterface detectorForOptions(HashMap<String, Object> options, Context context) {
+    FaceDetectorProviderInterface faceDetectorProvider = mModuleRegistry.getModule(FaceDetectorProviderInterface.class);
 
-    FaceDetector faceDetector = faceDetectorProvider.createFaceDetectorWithContext(context);
+    FaceDetectorInterface faceDetector = faceDetectorProvider.createFaceDetectorWithContext(context);
     faceDetector.setSettings(options);
 
     return faceDetector;

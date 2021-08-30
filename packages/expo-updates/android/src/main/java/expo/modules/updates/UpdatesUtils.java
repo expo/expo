@@ -13,6 +13,7 @@ import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 
 import org.apache.commons.io.FileUtils;
+import org.json.JSONObject;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -27,7 +28,11 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Locale;
+import java.util.Map;
+import java.util.Random;
 import java.util.TimeZone;
 
 import androidx.annotation.Nullable;
@@ -38,6 +43,24 @@ public class UpdatesUtils {
   private static final String TAG = UpdatesUtils.class.getSimpleName();
   private static final String UPDATES_DIRECTORY_NAME = ".expo-internal";
   private static final String UPDATES_EVENT_NAME = "Expo.nativeUpdatesEvent";
+
+  public static Map<String,String> getHeadersMapFromJSONString(String stringifiedJSON) throws Exception {
+    JSONObject jsonObject = new JSONObject(stringifiedJSON);
+    Iterator<String> keys = jsonObject.keys();
+    Map<String, String> newMap = new HashMap<>();
+    while (keys.hasNext()) {
+      String key = keys.next();
+      String val;
+      try {
+        val = (String) jsonObject.get(key);
+      } catch (ClassCastException e) {
+        throw new Exception("The values in the JSON object must be strings");
+      }
+      newMap.put(key, val);
+
+    }
+    return newMap;
+  }
 
   public static File getOrCreateUpdatesDirectory(Context context) throws Exception {
     File updatesDirectory = new File(context.getFilesDir(), UPDATES_DIRECTORY_NAME);
@@ -98,7 +121,16 @@ public class UpdatesUtils {
   }
 
   public static String createFilenameForAsset(AssetEntity asset) {
-    return asset.key;
+    String fileExtension = "";
+    if (asset.type != null) {
+      fileExtension = asset.type.startsWith(".") ? asset.type : "." + asset.type;
+    }
+
+    if (asset.key == null) {
+      // create a filename that's unlikely to collide with any other asset
+      return "asset-" + new Date().getTime() + "-" + new Random().nextInt() + fileExtension;
+    }
+    return asset.key + fileExtension;
   }
 
   public static void sendEventToReactNative(@Nullable final WeakReference<ReactNativeHost> reactNativeHost, final String eventName, final WritableMap params) {
@@ -194,7 +226,7 @@ public class UpdatesUtils {
     try {
       DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSX", Locale.US);
       return formatter.parse(dateString);
-    } catch (ParseException e) {
+    } catch (ParseException | IllegalArgumentException e) {
       Log.e(TAG, "Failed to parse date string on first try: " + dateString, e);
       // some old Android versions don't support the 'X' character in SimpleDateFormat, so try without this
       DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.US);

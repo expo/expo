@@ -3,7 +3,7 @@
 #import <CoreLocation/CLLocationManager.h>
 #import <CoreLocation/CLErrorDomain.h>
 
-#import <UMCore/UMUtilities.h>
+#import <ExpoModulesCore/EXUtilities.h>
 #import <EXLocation/EXLocation.h>
 #import <EXLocation/EXLocationTaskConsumer.h>
 #import <UMTaskManagerInterface/UMTaskInterface.h>
@@ -42,7 +42,7 @@
 
 - (void)didRegisterTask:(id<UMTaskInterface>)task
 {
-  [UMUtilities performSynchronouslyOnMainThread:^{
+  [EXUtilities performSynchronouslyOnMainThread:^{
     CLLocationManager *locationManager = [CLLocationManager new];
 
     self->_task = task;
@@ -63,7 +63,7 @@
 
 - (void)setOptions:(NSDictionary *)options
 {
-  [UMUtilities performSynchronouslyOnMainThread:^{
+  [EXUtilities performSynchronouslyOnMainThread:^{
     CLLocationManager *locationManager = self->_locationManager;
     EXLocationAccuracy accuracy = [options[@"accuracy"] unsignedIntegerValue] ?: EXLocationAccuracyBalanced;
 
@@ -108,7 +108,7 @@
 
 - (void)reset
 {
-  [UMUtilities performSynchronouslyOnMainThread:^{
+  [EXUtilities performSynchronouslyOnMainThread:^{
     [self->_locationManager stopUpdatingLocation];
     [self->_locationManager stopMonitoringSignificantLocationChanges];
     [self->_deferredLocations removeAllObjects];

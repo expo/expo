@@ -1,12 +1,18 @@
-import { Platform } from '@unimodules/core';
+import { Platform } from 'expo-modules-core';
 import UAParser from 'ua-parser-js';
 
 import { DeviceType } from './Device.types';
+
+type NavigatorWithDeviceMemory = Navigator & { deviceMemory: number };
 
 let result: any = null;
 if (Platform.isDOMAvailable) {
   const parser = new UAParser(window.navigator.userAgent);
   result = parser.getResult();
+}
+
+function convertGiBtoBytes(gib: number): number {
+  return Math.round(gib * 1024 ** 3);
 }
 
 export default {
@@ -25,7 +31,11 @@ export default {
   get deviceYearClass(): null {
     return null;
   },
-  get totalMemory(): null {
+  get totalMemory(): number | null {
+    if (Platform.isDOMAvailable && 'deviceMemory' in navigator) {
+      const { deviceMemory } = navigator as NavigatorWithDeviceMemory;
+      return convertGiBtoBytes(deviceMemory);
+    }
     return null;
   },
   get supportedCpuArchitectures(): string[] | null {

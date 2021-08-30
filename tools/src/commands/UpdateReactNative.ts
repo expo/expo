@@ -1,12 +1,14 @@
-import path from 'path';
-import fs from 'fs-extra';
-import chalk from 'chalk';
 import { Command } from '@expo/commander';
 import spawnAsync from '@expo/spawn-async';
+import chalk from 'chalk';
+import fs from 'fs-extra';
+import path from 'path';
 
 import { EXPO_DIR, ANDROID_DIR } from '../Constants';
-import { getNextSDKVersionAsync } from '../ProjectVersions';
 import { getReactNativeSubmoduleDir } from '../Directories';
+import logger from '../Logger';
+import { getNextSDKVersionAsync } from '../ProjectVersions';
+import { transformFileAsync } from '../Transforms';
 
 type ActionOptions = {
   checkout?: string;
@@ -16,6 +18,8 @@ type ActionOptions = {
 const REACT_NATIVE_SUBMODULE_PATH = getReactNativeSubmoduleDir();
 const REACT_ANDROID_PATH = path.join(ANDROID_DIR, 'ReactAndroid');
 const REACT_COMMON_PATH = path.join(ANDROID_DIR, 'ReactCommon');
+const REACT_APPLICATION_MK_PATH = path.join(REACT_ANDROID_PATH, 'src/main/jni/Application.mk');
+const REACT_ANDROID_GRADLE_PATH = path.join(REACT_ANDROID_PATH, 'build.gradle');
 
 async function checkoutReactNativeSubmoduleAsync(checkoutRef: string): Promise<void> {
   await spawnAsync('git', ['fetch'], {
@@ -42,6 +46,37 @@ async function updateReactAndroidAsync(sdkVersion: string): Promise<void> {
     cwd: ANDROID_DIR,
     stdio: 'inherit',
   });
+
+  logger.info(
+    '📇 Transforming',
+    chalk.magenta('Application.mk'),
+    'to make use of',
+    chalk.yellow('NDK_ABI_FILTERS')
+  );
+  await transformFileAsync(REACT_APPLICATION_MK_PATH, [
+    {
+      find: /^APP_ABI := (.*)$/m,
+      replaceWith: 'APP_ABI := $(if $(NDK_ABI_FILTERS),$(NDK_ABI_FILTERS),$($1))',
+    },
+  ]);
+  await transformFileAsync(REACT_ANDROID_GRADLE_PATH, [
+    {
+      find: /^(\s*jsRootDir\s*=\s*)file\(.+\)$/m,
+      replaceWith: '$1file("$projectDir/../../react-native-lab/react-native/Libraries")',
+    },
+    {
+      find: /^(\s*reactNativeRootDir\s*=\s*)file\(.+\)$/m,
+      replaceWith: '$1file("$projectDir/../../react-native-lab/react-native")',
+    },
+    {
+      find: /api\("androidx.appcompat:appcompat:\d+\.\d+\.\d+"\)/,
+      replaceWith: 'api("androidx.appcompat:appcompat:1.2.0")',
+    },
+    {
+      find: /compileSdkVersion\s+\d+/,
+      replaceWith: 'compileSdkVersion 30',
+    },
+  ]);
 }
 
 async function action(options: ActionOptions) {

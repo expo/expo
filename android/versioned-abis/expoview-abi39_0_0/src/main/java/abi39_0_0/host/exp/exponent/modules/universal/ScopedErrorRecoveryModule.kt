@@ -4,27 +4,29 @@ import android.content.Context
 import android.content.SharedPreferences
 import abi39_0_0.expo.modules.errorrecovery.ErrorRecoveryModule
 import abi39_0_0.expo.modules.errorrecovery.RECOVERY_STORE
-import host.exp.exponent.ExponentManifest
-import host.exp.exponent.kernel.ExperienceId
-import org.json.JSONObject
+import expo.modules.manifests.RawManifest
+import host.exp.exponent.kernel.ExperienceKey
 
-class ScopedErrorRecoveryModule(context: Context, manifest: JSONObject,
-                                val experienceId: ExperienceId) : ErrorRecoveryModule(context) {
+class ScopedErrorRecoveryModule(
+  context: Context,
+  manifest: RawManifest,
+  val experienceKey: ExperienceKey
+) : ErrorRecoveryModule(context) {
   override val mSharedPreferences: SharedPreferences = run {
-    val currentSDKVersion = manifest.optString(ExponentManifest.MANIFEST_SDK_VERSION_KEY)
+    val currentSDKVersion = manifest.getSDKVersionNullable()
     context.applicationContext.getSharedPreferences(
-        "$RECOVERY_STORE.$currentSDKVersion",
-        Context.MODE_PRIVATE
+      "$RECOVERY_STORE.$currentSDKVersion",
+      Context.MODE_PRIVATE
     )
   }
 
   override fun setRecoveryProps(props: String) {
-    mSharedPreferences.edit().putString(experienceId.get(), props).commit()
+    mSharedPreferences.edit().putString(experienceKey.scopeKey, props).commit()
   }
 
   override fun consumeRecoveryProps(): String? {
-    return mSharedPreferences.getString(experienceId.get(), null)?.let {
-      mSharedPreferences.edit().remove(experienceId.get()).commit()
+    return mSharedPreferences.getString(experienceKey.scopeKey, null)?.let {
+      mSharedPreferences.edit().remove(experienceKey.scopeKey).commit()
       it
     }
   }

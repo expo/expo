@@ -1,11 +1,10 @@
-import { css } from '@emotion/core';
+import { css } from '@emotion/react';
+import { theme } from '@expo/styleguide';
 import { Tab as ReachTab, TabList, TabPanel, TabPanels, Tabs as ReachTabs } from '@reach/tabs';
 import * as React from 'react';
 
-import * as Constants from '~/constants/theme';
-
 const STYLES_TAB_BUTTON = css`
-  transition: all 0.15s ease 0s;
+  transition: all 0.05s ease 0s;
 
   padding: 1rem;
   font-size: 1rem;
@@ -15,12 +14,9 @@ const STYLES_TAB_BUTTON = css`
   background-color: transparent;
 
   :hover {
-    background-color: rgba(0, 0, 0, 0.05);
+    background-color: ${theme.background.tertiary};
+    cursor: pointer;
   }
-`;
-
-const STYLES_TAB_PANELS = css`
-  padding-top: 6;
 `;
 
 function TabButton({ selected, ...props }) {
@@ -29,8 +25,8 @@ function TabButton({ selected, ...props }) {
       {...props}
       css={STYLES_TAB_BUTTON}
       style={{
-        borderColor: selected ? Constants.colors.expo : 'transparent',
-        color: selected ? Constants.colors.expo : Constants.colors.darkGrey,
+        borderColor: selected ? theme.link.default : 'transparent',
+        color: selected ? theme.link.default : theme.text.secondary,
       }}
     />
   );
@@ -52,7 +48,7 @@ export function Tabs({ children, tabs }) {
           </TabButton>
         ))}
       </TabList>
-      <TabPanels className={STYLES_TAB_PANELS}>{children}</TabPanels>
+      <TabPanels style={{ paddingTop: 6 }}>{children}</TabPanels>
     </ReachTabs>
   );
 }

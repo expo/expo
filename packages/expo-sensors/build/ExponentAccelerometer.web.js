@@ -1,5 +1,5 @@
-import { SyntheticPlatformEmitter } from '@unimodules/core';
-import { isSensorEnabledAsync, assertSensorEventEnabledAsync, } from './utils/isSensorEnabledAsync.web';
+import { SyntheticPlatformEmitter } from 'expo-modules-core';
+import { assertSensorEventEnabledAsync, getPermissionsAsync, isSensorEnabledAsync, requestPermissionsAsync, } from './utils/isSensorEnabledAsync.web';
 const scalar = Math.PI / 180;
 const eventName = 'deviceorientation';
 export default {
@@ -19,6 +19,8 @@ export default {
             z: alpha * scalar,
         });
     },
+    getPermissionsAsync,
+    requestPermissionsAsync,
     startObserving() {
         assertSensorEventEnabledAsync(eventName);
         window.addEventListener(eventName, this._handleMotion);

@@ -1,12 +1,18 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.setFacebookApplicationQuerySchemes = exports.setFacebookDisplayName = exports.setFacebookAppId = exports.setFacebookAdvertiserIDCollectionEnabled = exports.setFacebookAutoLogAppEventsEnabled = exports.setFacebookAutoInitEnabled = exports.setFacebookScheme = exports.setFacebookConfig = exports.getFacebookAdvertiserIDCollection = exports.getFacebookAutoLogAppEvents = exports.getFacebookAutoInitEnabled = exports.getFacebookDisplayName = exports.getFacebookAppId = exports.getFacebookScheme = exports.withFacebookIOS = void 0;
+exports.withUserTrackingPermission = exports.setFacebookApplicationQuerySchemes = exports.setFacebookDisplayName = exports.setFacebookAppId = exports.setFacebookAdvertiserIDCollectionEnabled = exports.setFacebookAutoLogAppEventsEnabled = exports.setFacebookAutoInitEnabled = exports.setFacebookScheme = exports.setFacebookConfig = exports.getFacebookAdvertiserIDCollection = exports.getFacebookAutoLogAppEvents = exports.getFacebookAutoInitEnabled = exports.getFacebookDisplayName = exports.getFacebookAppId = exports.getFacebookScheme = exports.withFacebookIOS = void 0;
 const config_plugins_1 = require("@expo/config-plugins");
-const ios_plugins_1 = require("@expo/config-plugins/build/plugins/ios-plugins");
 const { Scheme } = config_plugins_1.IOSConfig;
 const { appendScheme } = Scheme;
 const fbSchemes = ['fbapi', 'fb-messenger-api', 'fbauth2', 'fbshareextension'];
-exports.withFacebookIOS = ios_plugins_1.createInfoPlistPlugin(setFacebookConfig, 'withFacebookIOS');
+const USER_TRACKING = 'This identifier will be used to deliver personalized ads to you.';
+const withFacebookIOS = config => {
+    return config_plugins_1.withInfoPlist(config, config => {
+        config.modResults = setFacebookConfig(config, config.modResults);
+        return config;
+    });
+};
+exports.withFacebookIOS = withFacebookIOS;
 /**
  * Getters
  * TODO: these getters are the same between ios/android, we could reuse them
@@ -158,3 +164,16 @@ function setFacebookApplicationQuerySchemes(config, infoPlist) {
     };
 }
 exports.setFacebookApplicationQuerySchemes = setFacebookApplicationQuerySchemes;
+const withUserTrackingPermission = (config, { userTrackingPermission } = {}) => {
+    if (userTrackingPermission === false) {
+        return config;
+    }
+    if (!config.ios)
+        config.ios = {};
+    if (!config.ios.infoPlist)
+        config.ios.infoPlist = {};
+    config.ios.infoPlist.NSUserTrackingUsageDescription =
+        userTrackingPermission || config.ios.infoPlist.NSUserTrackingUsageDescription || USER_TRACKING;
+    return config;
+};
+exports.withUserTrackingPermission = withUserTrackingPermission;

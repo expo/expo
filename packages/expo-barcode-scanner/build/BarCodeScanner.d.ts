@@ -1,6 +1,6 @@
+import { PermissionResponse, PermissionStatus, PermissionHookOptions } from 'expo-modules-core';
 import * as React from 'react';
 import { ViewProps } from 'react-native';
-import { PermissionResponse, PermissionStatus } from 'unimodules-permissions-interface';
 export declare type BarCodePoint = {
     x: number;
     y: number;
@@ -25,8 +25,8 @@ export declare type BarCodeEvent = BarCodeScannerResult & {
 export declare type BarCodeEventCallbackArguments = {
     nativeEvent: BarCodeEvent;
 };
+export { PermissionResponse, PermissionStatus, PermissionHookOptions };
 export declare type BarCodeScannedCallback = (params: BarCodeEvent) => void;
-export { PermissionResponse, PermissionStatus };
 export interface BarCodeScannerProps extends ViewProps {
     type?: 'front' | 'back' | number;
     barCodeTypes?: string[];
@@ -52,71 +52,22 @@ export declare class BarCodeScanner extends React.Component<BarCodeScannerProps>
     };
     static getPermissionsAsync(): Promise<PermissionResponse>;
     static requestPermissionsAsync(): Promise<PermissionResponse>;
+    /**
+     * Check or request permissions for the barcode scanner.
+     * This uses both `requestPermissionAsync` and `getPermissionsAsync` to interact with the permissions.
+     *
+     * @example
+     * ```ts
+     * const [status, requestPermission] = BarCodeScanner.usePermissions();
+     * ```
+     */
+    static usePermissions: (options?: PermissionHookOptions<object> | undefined) => [PermissionResponse | null, () => Promise<PermissionResponse>, () => Promise<PermissionResponse>];
     static scanFromURLAsync(url: string, barCodeTypes?: string[]): Promise<BarCodeScannerResult[]>;
     render(): JSX.Element;
-    onObjectDetected: (callback?: BarCodeScannedCallback | undefined) => ({ nativeEvent, }: BarCodeEventCallbackArguments) => void;
-    convertNativeProps(props: BarCodeScannerProps): {
-        type?: any;
-        barCodeTypes?: any;
-        onBarCodeScanned?: any;
-        hitSlop?: any;
-        onLayout?: any;
-        pointerEvents?: any;
-        removeClippedSubviews?: any;
-        style?: any;
-        testID?: any;
-        nativeID?: any;
-        collapsable?: any;
-        needsOffscreenAlphaCompositing?: any;
-        renderToHardwareTextureAndroid?: any;
-        focusable?: any;
-        shouldRasterizeIOS?: any;
-        isTVSelectable?: any;
-        hasTVPreferredFocus?: any;
-        tvParallaxProperties?: any;
-        tvParallaxShiftDistanceX?: any;
-        tvParallaxShiftDistanceY?: any;
-        tvParallaxTiltAngle?: any;
-        tvParallaxMagnification?: any;
-        onStartShouldSetResponder?: any;
-        onMoveShouldSetResponder?: any;
-        onResponderEnd?: any;
-        onResponderGrant?: any;
-        onResponderReject?: any;
-        onResponderMove?: any;
-        onResponderRelease?: any;
-        onResponderStart?: any;
-        onResponderTerminationRequest?: any;
-        onResponderTerminate?: any;
-        onStartShouldSetResponderCapture?: any;
-        onMoveShouldSetResponderCapture?: any;
-        onTouchStart?: any;
-        onTouchMove?: any;
-        onTouchEnd?: any;
-        onTouchCancel?: any;
-        onTouchEndCapture?: any;
-        accessible?: any;
-        accessibilityActions?: any;
-        accessibilityLabel?: any;
-        accessibilityRole?: any;
-        accessibilityState?: any;
-        accessibilityHint?: any;
-        accessibilityValue?: any;
-        onAccessibilityAction?: any;
-        accessibilityComponentType?: any;
-        accessibilityLiveRegion?: any;
-        importantForAccessibility?: any;
-        accessibilityElementsHidden?: any;
-        accessibilityTraits?: any;
-        accessibilityViewIsModal?: any;
-        onAccessibilityEscape?: any;
-        onAccessibilityTap?: any;
-        onMagicTap?: any;
-        accessibilityIgnoresInvertColors?: any;
-    };
-    convertProp(value: any, key: string): any;
+    onObjectDetected: (callback?: BarCodeScannedCallback | undefined) => ({ nativeEvent }: BarCodeEventCallbackArguments) => void;
+    convertNativeProps(props: BarCodeScannerProps): BarCodeScannerProps;
 }
 export declare const Constants: {
     BarCodeType: any;
     Type: any;
-}, getPermissionsAsync: typeof BarCodeScanner.getPermissionsAsync, requestPermissionsAsync: typeof BarCodeScanner.requestPermissionsAsync;
+}, getPermissionsAsync: typeof BarCodeScanner.getPermissionsAsync, requestPermissionsAsync: typeof BarCodeScanner.requestPermissionsAsync, usePermissions: (options?: PermissionHookOptions<object> | undefined) => [PermissionResponse | null, () => Promise<PermissionResponse>, () => Promise<PermissionResponse>];

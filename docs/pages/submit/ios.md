@@ -11,7 +11,7 @@ A paid developer account is required to submit an app &mdash; you can create an 
 
 ## 1. Build a standalone app
 
-You'll need a built native app binary. You can either use the [EAS Build](introduction.md) service or do it on your own.
+You'll need a native app binary signed for store submission. You can either use the [EAS Build](introduction.md) service or do it on your own. You will also need to have EAS CLI installed and authenticated with your Expo account: `npm install -g eas-cli & eas login`.
 
 ## 2. Start the submission
 
@@ -28,23 +28,23 @@ The command will perform the following steps:
 - Log in to Expo account and ensure that your app project exists on EAS servers
 - Ensure that your app exists on App Store Connect and its [Bundle Identifier](https://expo.fyi/bundle-identifier) is registered on Apple Developer Portal:
 
-   - You will be asked to log in your Apple Developer account and select your team. You can also provide this information by using the `--apple-id`, `--apple-team-id` params and the `EXPO_APPLE_PASSWORD` environment variable.
-   - The command will look for `ios.bundleIdentifier` in your app configuration, or you can provide it directly using the `--bundle-identifier` flag.
-   - If you are submitting your app for the first time, it will be automatically created.
-     Unless `expo.name` in your app configuration is found or an `--app-name` param is provided, you will be prompted for app name.
-     You can also specify your app's language and SKU using `--language` and `--sku` params respectively. If you have never submitted any app before, you may also have to specify your company name using `--company-name` parameter.
+  - You will be asked to log in your Apple Developer account and select your team. You can also provide this information by using the `--apple-id`, `--apple-team-id` params and the `EXPO_APPLE_PASSWORD` environment variable.
+  - The command will look for `ios.bundleIdentifier` in your app configuration, or you can provide it directly using the `--bundle-identifier` flag.
+  - If you are submitting your app for the first time, it will be automatically created.
+    Unless `expo.name` in your app configuration is found or an `--app-name` param is provided, you will be prompted for app name.
+    You can also specify your app's language and SKU using `--language` and `--sku` params respectively. If you have never submitted any app before, you may also have to specify your company name using `--company-name` parameter.
 
-   > If you already have an App Store Connect app, this step can be skipped by providing the `--app-asc-id` param. The [ASC App Id](https://expo.fyi/asc-app-id) param can be found either on App Store Connect, or later during this command in the _Submission Summary_ table.
+  > If you already have an App Store Connect app, this step can be skipped by providing the `--asc-app-id` param. The [ASC App Id](https://expo.fyi/asc-app-id) param can be found either on App Store Connect, or later during this command in the _Submission Summary_ table.
 
 - Ask for your Apple ID (if not provided earlier) and for your Apple app-specific password. They can be also provided using `--apple-id` param and `EXPO_APPLE_APP_SPECIFIC_PASSWORD` environment variable, respectively.
 - Ask for which binary to submit. You can select one of the following:
 
-   - The latest successful iOS build for the project on EAS servers
-   - Specific build ID. The ID can be found on the [builds dashboard](https://expo.io/builds?type=eas)
-   - Path to an `.ipa` archive on your local filesystem
-   - URL to the app archive
+  - The latest successful iOS build for the project on EAS servers
+  - Specific build ID. The ID can be found on the [builds dashboard](https://expo.dev/builds?type=eas)
+  - Path to an `.ipa` archive on your local filesystem
+  - URL to the app archive
 
-   > This step can be skipped, if one of the following parameters is provided: `--latest`, `--id`, `--path` or `--url`.
+  > This step can be skipped, if one of the following parameters is provided: `--latest`, `--id`, `--path` or `--url`.
 
 - A summary of the provided configuration is displayed and the submission process begins. The submission progress is displayed on the screen.
 - Your build should now be visible on [App Store Connect](https://appstoreconnect.apple.com). If something goes wrong, an appropriate message is displayed on the screen.

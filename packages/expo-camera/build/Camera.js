@@ -1,10 +1,10 @@
-import { Platform, UnavailabilityError } from '@unimodules/core';
-import mapValues from 'lodash/mapValues';
+import { createPermissionHook, Platform, UnavailabilityError } from 'expo-modules-core';
 import * as React from 'react';
 import { findNodeHandle } from 'react-native';
 import { PermissionStatus, } from './Camera.types';
 import ExponentCamera from './ExponentCamera';
 import CameraManager from './ExponentCameraManager';
+import { ConversionTables, ensureNativeProps } from './utils/props';
 const EventThrottleMs = 500;
 const _PICTURE_SAVED_CALLBACKS = {};
 let _GLOBAL_PICTURE_ID = 1;
@@ -31,44 +31,6 @@ function ensureRecordingOptions(options) {
     }
     return recordingOptions;
 }
-function ensureNativeProps(options) {
-    let props = options || {};
-    if (!props || typeof props !== 'object') {
-        props = {};
-    }
-    const newProps = mapValues(props, convertProp);
-    const propsKeys = Object.keys(newProps);
-    // barCodeTypes is deprecated
-    if (!propsKeys.includes('barCodeScannerSettings') && propsKeys.includes('barCodeTypes')) {
-        if (__DEV__) {
-            console.warn(`The "barCodeTypes" prop for Camera is deprecated and will be removed in SDK 34. Use "barCodeScannerSettings" instead.`);
-        }
-        newProps.barCodeScannerSettings = {
-            // @ts-ignore
-            barCodeTypes: newProps.barCodeTypes,
-        };
-    }
-    if (props.onBarCodeScanned) {
-        newProps.barCodeScannerEnabled = true;
-    }
-    if (props.onFacesDetected) {
-        newProps.faceDetectorEnabled = true;
-    }
-    if (Platform.OS !== 'android') {
-        delete newProps.ratio;
-        delete newProps.useCamera2Api;
-    }
-    if (Platform.OS !== 'web') {
-        delete newProps.poster;
-    }
-    return newProps;
-}
-function convertProp(value, key) {
-    if (typeof value === 'string' && Camera.ConversionTables[key]) {
-        return Camera.ConversionTables[key][value];
-    }
-    return value;
-}
 function _onPictureSaved({ nativeEvent, }) {
     const { id, data } = nativeEvent;
     const callback = _PICTURE_SAVED_CALLBACKS[id];
@@ -78,51 +40,6 @@ function _onPictureSaved({ nativeEvent, }) {
     }
 }
 export default class Camera extends React.Component {
-    constructor() {
-        super(...arguments);
-        this._lastEvents = {};
-        this._lastEventsTimes = {};
-        this._onCameraReady = () => {
-            if (this.props.onCameraReady) {
-                this.props.onCameraReady();
-            }
-        };
-        this._onMountError = ({ nativeEvent }) => {
-            if (this.props.onMountError) {
-                this.props.onMountError(nativeEvent);
-            }
-        };
-        this._onObjectDetected = (callback) => ({ nativeEvent }) => {
-            const { type } = nativeEvent;
-            if (this._lastEvents[type] &&
-                this._lastEventsTimes[type] &&
-                JSON.stringify(nativeEvent) === this._lastEvents[type] &&
-                new Date().getTime() - this._lastEventsTimes[type].getTime() < EventThrottleMs) {
-                return;
-            }
-            if (callback) {
-                callback(nativeEvent);
-                this._lastEventsTimes[type] = new Date();
-                this._lastEvents[type] = JSON.stringify(nativeEvent);
-            }
-        };
-        this._setReference = (ref) => {
-            if (ref) {
-                this._cameraRef = ref;
-                // TODO(Bacon): Unify these - perhaps with hooks?
-                if (Platform.OS === 'web') {
-                    this._cameraHandle = ref;
-                }
-                else {
-                    this._cameraHandle = findNodeHandle(ref);
-                }
-            }
-            else {
-                this._cameraRef = null;
-                this._cameraHandle = null;
-            }
-        };
-    }
     static async isAvailableAsync() {
         if (!CameraManager.isAvailableAsync) {
             throw new UnavailabilityError('expo-camera', 'isAvailableAsync');
@@ -135,12 +52,91 @@ export default class Camera extends React.Component {
         }
         return await CameraManager.getAvailableCameraTypesAsync();
     }
+    static async getAvailableVideoCodecsAsync() {
+        if (!CameraManager.getAvailableVideoCodecsAsync) {
+            throw new UnavailabilityError('Camera', 'getAvailableVideoCodecsAsync');
+        }
+        return await CameraManager.getAvailableVideoCodecsAsync();
+    }
+    static Constants = {
+        Type: CameraManager.Type,
+        FlashMode: CameraManager.FlashMode,
+        AutoFocus: CameraManager.AutoFocus,
+        WhiteBalance: CameraManager.WhiteBalance,
+        VideoQuality: CameraManager.VideoQuality,
+        VideoStabilization: CameraManager.VideoStabilization || {},
+        VideoCodec: CameraManager.VideoCodec,
+    };
+    // Values under keys from this object will be transformed to native options
+    static ConversionTables = ConversionTables;
+    static defaultProps = {
+        zoom: 0,
+        ratio: '4:3',
+        focusDepth: 0,
+        faceDetectorSettings: {},
+        type: CameraManager.Type.back,
+        autoFocus: CameraManager.AutoFocus.on,
+        flashMode: CameraManager.FlashMode.off,
+        whiteBalance: CameraManager.WhiteBalance.auto,
+    };
+    /**
+     * @deprecated Use `getCameraPermissionsAync` or `getMicrophonePermissionsAsync` instead.
+     */
     static async getPermissionsAsync() {
+        console.warn(`"getPermissionsAsync()" is now deprecated. Please use "getCameraPermissionsAsync()" or "getMicrophonePermissionsAsync()" instead.`);
         return CameraManager.getPermissionsAsync();
     }
+    /**
+     * @deprecated Use `requestCameraPermissionsAsync` or `requestMicrophonePermissionsAsync` instead.
+     */
     static async requestPermissionsAsync() {
+        console.warn(`"requestPermissionsAsync()" is now deprecated. Please use "requestCameraPermissionsAsync()" or "requestMicrophonePermissionsAsync()" instead.`);
         return CameraManager.requestPermissionsAsync();
     }
+    static async getCameraPermissionsAsync() {
+        return CameraManager.getCameraPermissionsAsync();
+    }
+    static async requestCameraPermissionsAsync() {
+        return CameraManager.requestCameraPermissionsAsync();
+    }
+    // @needsAudit
+    /**
+     * Check or request permissions to access the camera.
+     * This uses both `requestCameraPermissionsAsync` and `getCameraPermissionsAsync` to interact with the permissions.
+     *
+     * @example
+     * ```ts
+     * const [status, requestPermission] = Camera.useCameraPermissions();
+     * ```
+     */
+    static useCameraPermissions = createPermissionHook({
+        getMethod: Camera.getCameraPermissionsAsync,
+        requestMethod: Camera.requestCameraPermissionsAsync,
+    });
+    static async getMicrophonePermissionsAsync() {
+        return CameraManager.getMicrophonePermissionsAsync();
+    }
+    static async requestMicrophonePermissionsAsync() {
+        return CameraManager.requestMicrophonePermissionsAsync();
+    }
+    // @needsAudit
+    /**
+     * Check or request permissions to access the microphone.
+     * This uses both `requestMicrophonePermissionsAsync` and `getMicrophonePermissionsAsync` to interact with the permissions.
+     *
+     * @example
+     * ```ts
+     * const [status, requestPermission] = Camera.useMicrophonePermissions();
+     * ```
+     */
+    static useMicrophonePermissions = createPermissionHook({
+        getMethod: Camera.getMicrophonePermissionsAsync,
+        requestMethod: Camera.requestMicrophonePermissionsAsync,
+    });
+    _cameraHandle;
+    _cameraRef;
+    _lastEvents = {};
+    _lastEventsTimes = {};
     async takePictureAsync(options) {
         const pictureOptions = ensurePictureOptions(options);
         return await CameraManager.takePicture(pictureOptions, this._cameraHandle);
@@ -182,40 +178,55 @@ export default class Camera extends React.Component {
         }
         CameraManager.resumePreview(this._cameraHandle);
     }
+    _onCameraReady = () => {
+        if (this.props.onCameraReady) {
+            this.props.onCameraReady();
+        }
+    };
+    _onMountError = ({ nativeEvent }) => {
+        if (this.props.onMountError) {
+            this.props.onMountError(nativeEvent);
+        }
+    };
+    _onObjectDetected = (callback) => ({ nativeEvent }) => {
+        const { type } = nativeEvent;
+        if (this._lastEvents[type] &&
+            this._lastEventsTimes[type] &&
+            JSON.stringify(nativeEvent) === this._lastEvents[type] &&
+            new Date().getTime() - this._lastEventsTimes[type].getTime() < EventThrottleMs) {
+            return;
+        }
+        if (callback) {
+            callback(nativeEvent);
+            this._lastEventsTimes[type] = new Date();
+            this._lastEvents[type] = JSON.stringify(nativeEvent);
+        }
+    };
+    _setReference = (ref) => {
+        if (ref) {
+            this._cameraRef = ref;
+            // TODO(Bacon): Unify these - perhaps with hooks?
+            if (Platform.OS === 'web') {
+                this._cameraHandle = ref;
+            }
+            else {
+                this._cameraHandle = findNodeHandle(ref);
+            }
+        }
+        else {
+            this._cameraRef = null;
+            this._cameraHandle = null;
+        }
+    };
     render() {
         const nativeProps = ensureNativeProps(this.props);
         const onBarCodeScanned = this.props.onBarCodeScanned
             ? this._onObjectDetected(this.props.onBarCodeScanned)
             : undefined;
         const onFacesDetected = this._onObjectDetected(this.props.onFacesDetected);
-        return (React.createElement(ExponentCamera, Object.assign({}, nativeProps, { ref: this._setReference, onCameraReady: this._onCameraReady, onMountError: this._onMountError, onBarCodeScanned: onBarCodeScanned, onFacesDetected: onFacesDetected, onPictureSaved: _onPictureSaved })));
+        return (React.createElement(ExponentCamera, { ...nativeProps, ref: this._setReference, onCameraReady: this._onCameraReady, onMountError: this._onMountError, onBarCodeScanned: onBarCodeScanned, onFacesDetected: onFacesDetected, onPictureSaved: _onPictureSaved }));
     }
 }
-Camera.Constants = {
-    Type: CameraManager.Type,
-    FlashMode: CameraManager.FlashMode,
-    AutoFocus: CameraManager.AutoFocus,
-    WhiteBalance: CameraManager.WhiteBalance,
-    VideoQuality: CameraManager.VideoQuality,
-    VideoStabilization: CameraManager.VideoStabilization || {},
-};
-// Values under keys from this object will be transformed to native options
-Camera.ConversionTables = {
-    type: CameraManager.Type,
-    flashMode: CameraManager.FlashMode,
-    autoFocus: CameraManager.AutoFocus,
-    whiteBalance: CameraManager.WhiteBalance,
-};
-Camera.defaultProps = {
-    zoom: 0,
-    ratio: '4:3',
-    focusDepth: 0,
-    faceDetectorSettings: {},
-    type: CameraManager.Type.back,
-    autoFocus: CameraManager.AutoFocus.on,
-    flashMode: CameraManager.FlashMode.off,
-    whiteBalance: CameraManager.WhiteBalance.auto,
-};
-export const { Constants, getPermissionsAsync, requestPermissionsAsync } = Camera;
+export const { Constants, getPermissionsAsync, requestPermissionsAsync, getCameraPermissionsAsync, requestCameraPermissionsAsync, getMicrophonePermissionsAsync, requestMicrophonePermissionsAsync, } = Camera;
 export { PermissionStatus, };
 //# sourceMappingURL=Camera.js.map

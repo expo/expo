@@ -84,7 +84,8 @@ export function KVText({ k, v, href, ...props }: any) {
   }
   return (
     <Text {...props} style={{ color: '#999' }} numberOfLines={2}>
-      <B>{k}</B> {v}
+      <Text>{k}: </Text>
+      {JSON.stringify(v, null, '\t')}
     </Text>
   );
 }

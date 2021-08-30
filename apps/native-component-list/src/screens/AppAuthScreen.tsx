@@ -1,4 +1,4 @@
-import AsyncStorage from '@react-native-community/async-storage';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as AppAuth from 'expo-app-auth';
 import React from 'react';
 import { Button, StyleSheet, Text, View } from 'react-native';

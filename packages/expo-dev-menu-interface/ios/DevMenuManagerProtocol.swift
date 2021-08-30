@@ -1,5 +1,7 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
+import Foundation
+
 @objc
 public protocol DevMenuManagerProtocol {
   /**
@@ -8,9 +10,16 @@ public protocol DevMenuManagerProtocol {
   @objc
   var isVisible: Bool { get }
   
+  @objc
+  var delegate: DevMenuDelegateProtocol? { get set }
+  
   /**
    Opens up the dev menu.
    */
+  @objc
+  @discardableResult
+  func openMenu(_ screen: String?) -> Bool
+  
   @objc
   @discardableResult
   func openMenu() -> Bool
@@ -35,4 +44,7 @@ public protocol DevMenuManagerProtocol {
   @objc
   @discardableResult
   func toggleMenu() -> Bool
+  
+  @objc
+  var expoApiClient: DevMenuExpoApiClientProtocol { get }
 }

@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.facebook.ads.AdIconView;
 import com.facebook.ads.MediaView;
 import com.facebook.ads.NativeAd;
 
@@ -79,7 +78,7 @@ public class NativeAdView extends ViewGroup {
     return mNativeAd;
   }
 
-  public void registerViewsForInteraction(MediaView mediaView, AdIconView adIconView, List<View> clickableViews) {
+  public void registerViewsForInteraction(MediaView mediaView, MediaView adIconView, List<View> clickableViews) {
     mMediaView = new WeakReference<>(mediaView);
 
     clickableViews.add(mediaView);

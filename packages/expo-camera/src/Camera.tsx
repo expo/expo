@@ -1,5 +1,4 @@
-import { Platform, UnavailabilityError } from '@unimodules/core';
-import mapValues from 'lodash/mapValues';
+import { createPermissionHook, Platform, UnavailabilityError } from 'expo-modules-core';
 import * as React from 'react';
 import { findNodeHandle } from 'react-native';
 
@@ -11,13 +10,16 @@ import {
   CameraPictureOptions,
   CameraProps,
   CameraRecordingOptions,
+  ConstantsType,
   FaceDetectionResult,
   PermissionExpiration,
   PermissionResponse,
   PermissionStatus,
+  VideoCodec,
 } from './Camera.types';
 import ExponentCamera from './ExponentCamera';
 import CameraManager from './ExponentCameraManager';
+import { ConversionTables, ensureNativeProps } from './utils/props';
 
 const EventThrottleMs = 500;
 
@@ -53,57 +55,6 @@ function ensureRecordingOptions(options?: CameraRecordingOptions): CameraRecordi
   return recordingOptions;
 }
 
-function ensureNativeProps(options?: CameraProps): CameraNativeProps {
-  let props = options || {};
-
-  if (!props || typeof props !== 'object') {
-    props = {};
-  }
-
-  const newProps: CameraNativeProps = mapValues(props, convertProp);
-
-  const propsKeys = Object.keys(newProps);
-  // barCodeTypes is deprecated
-  if (!propsKeys.includes('barCodeScannerSettings') && propsKeys.includes('barCodeTypes')) {
-    if (__DEV__) {
-      console.warn(
-        `The "barCodeTypes" prop for Camera is deprecated and will be removed in SDK 34. Use "barCodeScannerSettings" instead.`
-      );
-    }
-    newProps.barCodeScannerSettings = {
-      // @ts-ignore
-      barCodeTypes: newProps.barCodeTypes,
-    };
-  }
-
-  if (props.onBarCodeScanned) {
-    newProps.barCodeScannerEnabled = true;
-  }
-
-  if (props.onFacesDetected) {
-    newProps.faceDetectorEnabled = true;
-  }
-
-  if (Platform.OS !== 'android') {
-    delete newProps.ratio;
-    delete newProps.useCamera2Api;
-  }
-
-  if (Platform.OS !== 'web') {
-    delete newProps.poster;
-  }
-
-  return newProps;
-}
-
-function convertProp(value: any, key: string): any {
-  if (typeof value === 'string' && Camera.ConversionTables[key]) {
-    return Camera.ConversionTables[key][value];
-  }
-
-  return value;
-}
-
 function _onPictureSaved({
   nativeEvent,
 }: {
@@ -134,22 +85,26 @@ export default class Camera extends React.Component<CameraProps> {
     return await CameraManager.getAvailableCameraTypesAsync();
   }
 
-  static Constants = {
+  static async getAvailableVideoCodecsAsync(): Promise<string[]> {
+    if (!CameraManager.getAvailableVideoCodecsAsync) {
+      throw new UnavailabilityError('Camera', 'getAvailableVideoCodecsAsync');
+    }
+
+    return await CameraManager.getAvailableVideoCodecsAsync();
+  }
+
+  static Constants: ConstantsType = {
     Type: CameraManager.Type,
     FlashMode: CameraManager.FlashMode,
     AutoFocus: CameraManager.AutoFocus,
     WhiteBalance: CameraManager.WhiteBalance,
     VideoQuality: CameraManager.VideoQuality,
     VideoStabilization: CameraManager.VideoStabilization || {},
+    VideoCodec: CameraManager.VideoCodec,
   };
 
   // Values under keys from this object will be transformed to native options
-  static ConversionTables = {
-    type: CameraManager.Type,
-    flashMode: CameraManager.FlashMode,
-    autoFocus: CameraManager.AutoFocus,
-    whiteBalance: CameraManager.WhiteBalance,
-  };
+  static ConversionTables = ConversionTables;
 
   static defaultProps: CameraProps = {
     zoom: 0,
@@ -162,13 +117,71 @@ export default class Camera extends React.Component<CameraProps> {
     whiteBalance: CameraManager.WhiteBalance.auto,
   };
 
+  /**
+   * @deprecated Use `getCameraPermissionsAync` or `getMicrophonePermissionsAsync` instead.
+   */
   static async getPermissionsAsync(): Promise<PermissionResponse> {
+    console.warn(
+      `"getPermissionsAsync()" is now deprecated. Please use "getCameraPermissionsAsync()" or "getMicrophonePermissionsAsync()" instead.`
+    );
     return CameraManager.getPermissionsAsync();
   }
 
+  /**
+   * @deprecated Use `requestCameraPermissionsAsync` or `requestMicrophonePermissionsAsync` instead.
+   */
   static async requestPermissionsAsync(): Promise<PermissionResponse> {
+    console.warn(
+      `"requestPermissionsAsync()" is now deprecated. Please use "requestCameraPermissionsAsync()" or "requestMicrophonePermissionsAsync()" instead.`
+    );
     return CameraManager.requestPermissionsAsync();
   }
+
+  static async getCameraPermissionsAsync(): Promise<PermissionResponse> {
+    return CameraManager.getCameraPermissionsAsync();
+  }
+
+  static async requestCameraPermissionsAsync(): Promise<PermissionResponse> {
+    return CameraManager.requestCameraPermissionsAsync();
+  }
+
+  // @needsAudit
+  /**
+   * Check or request permissions to access the camera.
+   * This uses both `requestCameraPermissionsAsync` and `getCameraPermissionsAsync` to interact with the permissions.
+   *
+   * @example
+   * ```ts
+   * const [status, requestPermission] = Camera.useCameraPermissions();
+   * ```
+   */
+  static useCameraPermissions = createPermissionHook({
+    getMethod: Camera.getCameraPermissionsAsync,
+    requestMethod: Camera.requestCameraPermissionsAsync,
+  });
+
+  static async getMicrophonePermissionsAsync(): Promise<PermissionResponse> {
+    return CameraManager.getMicrophonePermissionsAsync();
+  }
+
+  static async requestMicrophonePermissionsAsync(): Promise<PermissionResponse> {
+    return CameraManager.requestMicrophonePermissionsAsync();
+  }
+
+  // @needsAudit
+  /**
+   * Check or request permissions to access the microphone.
+   * This uses both `requestMicrophonePermissionsAsync` and `getMicrophonePermissionsAsync` to interact with the permissions.
+   *
+   * @example
+   * ```ts
+   * const [status, requestPermission] = Camera.useMicrophonePermissions();
+   * ```
+   */
+  static useMicrophonePermissions = createPermissionHook({
+    getMethod: Camera.getMicrophonePermissionsAsync,
+    requestMethod: Camera.requestMicrophonePermissionsAsync,
+  });
 
   _cameraHandle?: number | null;
   _cameraRef?: React.Component | null;
@@ -196,13 +209,14 @@ export default class Camera extends React.Component<CameraProps> {
     return await CameraManager.getAvailablePictureSizes(ratio, this._cameraHandle);
   }
 
-  async recordAsync(options?: CameraRecordingOptions): Promise<{ uri: string }> {
+  async recordAsync(
+    options?: CameraRecordingOptions
+  ): Promise<{ uri: string; codec?: VideoCodec }> {
     if (!CameraManager.record) {
       throw new UnavailabilityError('Camera', 'recordAsync');
     }
 
     const recordingOptions = ensureRecordingOptions(options);
-
     return await CameraManager.record(recordingOptions, this._cameraHandle);
   }
 
@@ -242,23 +256,25 @@ export default class Camera extends React.Component<CameraProps> {
     }
   };
 
-  _onObjectDetected = (callback?: Function) => ({ nativeEvent }: { nativeEvent: any }) => {
-    const { type } = nativeEvent;
-    if (
-      this._lastEvents[type] &&
-      this._lastEventsTimes[type] &&
-      JSON.stringify(nativeEvent) === this._lastEvents[type] &&
-      new Date().getTime() - this._lastEventsTimes[type].getTime() < EventThrottleMs
-    ) {
-      return;
-    }
+  _onObjectDetected =
+    (callback?: Function) =>
+    ({ nativeEvent }: { nativeEvent: any }) => {
+      const { type } = nativeEvent;
+      if (
+        this._lastEvents[type] &&
+        this._lastEventsTimes[type] &&
+        JSON.stringify(nativeEvent) === this._lastEvents[type] &&
+        new Date().getTime() - this._lastEventsTimes[type].getTime() < EventThrottleMs
+      ) {
+        return;
+      }
 
-    if (callback) {
-      callback(nativeEvent);
-      this._lastEventsTimes[type] = new Date();
-      this._lastEvents[type] = JSON.stringify(nativeEvent);
-    }
-  };
+      if (callback) {
+        callback(nativeEvent);
+        this._lastEventsTimes[type] = new Date();
+        this._lastEvents[type] = JSON.stringify(nativeEvent);
+      }
+    };
 
   _setReference = (ref?: React.Component) => {
     if (ref) {
@@ -297,7 +313,15 @@ export default class Camera extends React.Component<CameraProps> {
   }
 }
 
-export const { Constants, getPermissionsAsync, requestPermissionsAsync } = Camera;
+export const {
+  Constants,
+  getPermissionsAsync,
+  requestPermissionsAsync,
+  getCameraPermissionsAsync,
+  requestCameraPermissionsAsync,
+  getMicrophonePermissionsAsync,
+  requestMicrophonePermissionsAsync,
+} = Camera;
 
 export {
   CameraCapturedPicture,

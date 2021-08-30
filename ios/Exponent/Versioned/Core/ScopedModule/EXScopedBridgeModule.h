@@ -7,14 +7,17 @@
 
 - (instancetype)init NS_UNAVAILABLE;
 
-- (instancetype)initWithExperienceId:(NSString *)experienceId
-               kernelServiceDelegate:(id)kernelServiceInstance
-                              params:(NSDictionary *)params NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithExperienceStableLegacyId:(NSString *)experienceStableLegacyId
+                              scopeKey:(NSString *)scopeKey
+                           kernelServiceDelegate:(id)kernelServiceInstance
+                                          params:(NSDictionary *)params NS_DESIGNATED_INITIALIZER;
 
-- (instancetype)initWithExperienceId:(NSString *)experienceId
-               kernelServiceDelegates:(NSDictionary *)kernelServiceInstances
-                              params:(NSDictionary *)params NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithExperienceStableLegacyId:(NSString *)experienceStableLegacyId
+                              scopeKey:(NSString *)scopeKey
+                          kernelServiceDelegates:(NSDictionary *)kernelServiceInstances
+                                          params:(NSDictionary *)params NS_DESIGNATED_INITIALIZER;
 
-@property (nonatomic, readonly) NSString *experienceId;
+@property (nonatomic, readonly) NSString *scopeKey;
+@property (nonatomic, readonly) NSString *experienceStableLegacyId;
 
 @end

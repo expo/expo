@@ -1,20 +1,20 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 #import <EXSensors/EXGyroscope.h>
-#import <UMSensorsInterface/UMGyroscopeInterface.h>
+#import <ExpoModulesCore/EXGyroscopeInterface.h>
 
 @implementation EXGyroscope
 
-UM_EXPORT_MODULE(ExponentGyroscope);
+EX_EXPORT_MODULE(ExponentGyroscope);
 
 - (const NSString *)updateEventName
 {
   return @"gyroscopeDidUpdate";
 }
 
-- (id)getSensorServiceFromModuleRegistry:(UMModuleRegistry *)moduleRegistry
+- (id)getSensorServiceFromModuleRegistry:(EXModuleRegistry *)moduleRegistry
 {
-  return [moduleRegistry getModuleImplementingProtocol:@protocol(UMGyroscopeInterface)];
+  return [moduleRegistry getModuleImplementingProtocol:@protocol(EXGyroscopeInterface)];
 }
 
 - (void)setUpdateInterval:(double)updateInterval onSensorService:(id)sensorService

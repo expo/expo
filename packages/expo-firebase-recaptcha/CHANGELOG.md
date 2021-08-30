@@ -8,6 +8,25 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 1.4.2 — 2021-06-16
+
+_This version does not introduce any user-facing changes._
+
+## 1.4.1 — 2021-03-10
+
+### 🐛 Bug fixes
+
+- Remove peerDependencies and unimodulePeerDependencies from Expo modules. ([#11980](https://github.com/expo/expo/pull/11980) by [@brentvatne](https://github.com/brentvatne))
+
+## 1.4.0 — 2021-01-26
+
+### 🎉 New features
+
+- Add web-support for FirebaseRecaptchaVerifierModal. ([#11695](https://github.com/expo/expo/pull/11695) by [@IjzerenHein](https://github.com/IjzerenHein))
+- Add `languageCode` prop for setting the language. ([#11737](https://github.com/expo/expo/pull/11737) by [@IjzerenHein](https://github.com/IjzerenHein))
+
 ## 1.3.0 — 2020-11-23
 
 ### 🎉 New features

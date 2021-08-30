@@ -1,6 +1,5 @@
 import Constants from 'expo-constants';
 import * as ImagePicker from 'expo-image-picker';
-import * as Permissions from 'expo-permissions';
 import { Platform } from 'react-native';
 
 import * as TestUtils from '../TestUtils';
@@ -43,11 +42,11 @@ export async function test({ it, beforeAll, expect, jasmine, describe, afterAll 
     let originalTimeout;
 
     beforeAll(async () => {
-      await Permissions.askAsync(Permissions.MEDIA_LIBRARY);
-      await Permissions.askAsync(Permissions.CAMERA);
-
       await TestUtils.acceptPermissionsAndRunCommandAsync(() => {
-        return Permissions.askAsync(Permissions.MEDIA_LIBRARY);
+        return ImagePicker.requestMediaLibraryPermissionsAsync();
+      });
+      await TestUtils.acceptPermissionsAndRunCommandAsync(() => {
+        return ImagePicker.requestCameraPermissionsAsync();
       });
       originalTimeout = jasmine.DEFAULT_TIMEOUT_INTERVAL;
       jasmine.DEFAULT_TIMEOUT_INTERVAL = originalTimeout * 10;

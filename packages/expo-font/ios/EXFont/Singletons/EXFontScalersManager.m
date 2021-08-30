@@ -2,7 +2,7 @@
 
 #import <EXFont/EXFontScalersManager.h>
 
-#import <UMCore/UMDefines.h>
+#import <ExpoModulesCore/EXDefines.h>
 #import <EXFont/EXFont.h>
 
 #import <objc/runtime.h>
@@ -13,7 +13,7 @@ static NSPointerArray *currentFontScalers;
 
 - (UIFont *)EXFontWithSize:(CGFloat)fontSize
 {
-  for (id<UMFontScalerInterface> fontScaler in currentFontScalers) {
+  for (id<EXFontScalerInterface> fontScaler in currentFontScalers) {
     UIFont *scaledFont = [fontScaler scaledFont:self toSize:fontSize];
     if (scaledFont) {
       return scaledFont;
@@ -35,7 +35,7 @@ static NSPointerArray *currentFontScalers;
 
 @implementation EXFontScalersManager
 
-UM_REGISTER_SINGLETON_MODULE(FontScalersManager);
+EX_REGISTER_SINGLETON_MODULE(FontScalersManager);
 
 + (void)initialize
 {
@@ -52,7 +52,7 @@ UM_REGISTER_SINGLETON_MODULE(FontScalersManager);
   });
 }
 
-- (void)registerFontScaler:(id<UMFontScalerInterface>)fontScaler
+- (void)registerFontScaler:(id<EXFontScalerInterface>)fontScaler
 {
   [currentFontScalers compact];
   [currentFontScalers addPointer:(__bridge void * _Nullable)(fontScaler)];

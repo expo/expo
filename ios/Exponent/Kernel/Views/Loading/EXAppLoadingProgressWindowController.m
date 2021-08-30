@@ -1,4 +1,4 @@
-#import <UMCore/UMDefines.h>
+#import <ExpoModulesCore/EXDefines.h>
 
 #import "EXAppLoadingProgressWindowController.h"
 #import "EXUtil.h"
@@ -27,15 +27,15 @@
     return;
   }
   
-  UM_WEAKIFY(self);
+  EX_WEAKIFY(self);
   dispatch_async(dispatch_get_main_queue(), ^{
-    UM_ENSURE_STRONGIFY(self);
+    EX_ENSURE_STRONGIFY(self);
     if (!self.window) {
       CGSize screenSize = [UIScreen mainScreen].bounds.size;
       
       int bottomInsets = 0;
       if (@available(iOS 11.0, *)) {
-        bottomInsets = UMSharedApplication().keyWindow.safeAreaInsets.bottom;
+        bottomInsets = EXSharedApplication().keyWindow.safeAreaInsets.bottom;
       }
       self.window = [[UIWindow alloc] initWithFrame:CGRectMake(0,
                                                                screenSize.height - 36 - bottomInsets,
@@ -72,9 +72,9 @@
     return;
   }
 
-  UM_WEAKIFY(self);
+  EX_WEAKIFY(self);
   dispatch_async(dispatch_get_main_queue(), ^{
-    UM_ENSURE_STRONGIFY(self);
+    EX_ENSURE_STRONGIFY(self);
     if (self.window) {
       self.window.hidden = YES;
     }
@@ -89,9 +89,9 @@
   
   [self show];
   
-  UM_WEAKIFY(self);
+  EX_WEAKIFY(self);
   dispatch_async(dispatch_get_main_queue(), ^{
-    UM_ENSURE_STRONGIFY(self);
+    EX_ENSURE_STRONGIFY(self);
     float progressPercent = ([progress.done floatValue] / [progress.total floatValue]);
     self.textLabel.text = [NSString stringWithFormat:@"%@ %.2f%%", progress.status, progressPercent * 100];
     [self.textLabel setNeedsDisplay];
@@ -114,9 +114,9 @@
 
   [self show];
 
-  UM_WEAKIFY(self);
+  EX_WEAKIFY(self);
   dispatch_async(dispatch_get_main_queue(), ^{
-    UM_ENSURE_STRONGIFY(self);
+    EX_ENSURE_STRONGIFY(self);
     self.textLabel.text = statusText;
     [self.textLabel setNeedsDisplay];
   });

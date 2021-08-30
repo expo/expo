@@ -3,8 +3,7 @@ title: Publishing updates
 ---
 
 While you’re developing your project, you’re writing code on your
-computer, and when you use Expo CLI, a server and the React Native
-packager run on your machine and bundle up all your source code and make
+computer, and when you use Expo CLI, a server and the Metro bundler run on your machine and bundle up all your source code and make
 it available from a URL. Your URL for a project you’re working on
 probably looks something like this:
 `exp://i3-kvb.ccheever.an-example.exp.direct:80`
@@ -15,12 +14,12 @@ should be able to access your project. This makes it much easier to open
 your project on your phone or send it someone else you’re collaborating
 with who isn’t on the same LAN.
 
-But since the packager and server are running on your computer, if you
+But since the bundler and development server are running on your computer, if you
 turn off your laptop or stop Expo CLI, you won’t be able to load your
 project from that URL. "Publish" is the term we use for deploying your
 project. It makes your project available at a persistent URL, for
-example https://expo.io/@community/native-component-list, which can be
-opened with the Expo client app. It also uploads all of your app images,
+example https://expo.dev/@community/native-component-list, which can be
+opened with the Expo Go app. It also uploads all of your app images,
 fonts, and videos to a CDN ([read more
 here](how-expo-works.md#publishingdeploying-an-expo-app-in-production)).
 
@@ -30,9 +29,9 @@ To publish a project, click the Publish button in Expo Dev Tools. (It’s in the
 `expo publish`. No setup is required, go ahead and create a new project
 and publish it without any changes and you will see that it works.
 
-When you do this, the packager will minify all your code and generate
+When you do this, the bundler will create minify all your code and generate
 two versions of your code (one for iOS, one for Android) and then upload
-those to a CDN. You’ll get a link like [https://exp.host/@ccheever/an-example](https://exp.host/@ccheever/an-example)
+those to a free hosting service provided by Expo. You’ll get a link like [https://exp.host/@ccheever/an-example](https://exp.host/@ccheever/an-example)
 that anyone can load your project from.
 
 If you haven't optimized your assets yet you will be prompted and asked
@@ -72,7 +71,7 @@ To configure the way your app handles JS updates, see [Offline Support](../guide
 
 ## Uploading Assets to the CDN
 
-In order for assets to be uploaded to the CDN, they must be explicitly required somewhere in your application's code. Conditionally requiring assets will result in the packager being unable to detect them and therefore they will not be uploaded when you publish your project. A great way to ensure your assets will be uploaded is to make use of [pre-loading and caching assets](../guides/preloading-and-caching-assets.md).
+In order for assets to be uploaded to the CDN, they must be explicitly required somewhere in your application's code. Conditionally requiring assets will result in the Metro bundler being unable to detect them and therefore they will not be uploaded when you publish your project. A great way to ensure your assets will be uploaded is to make use of [pre-loading and caching assets](../guides/preloading-and-caching-assets.md).
 
 ## Limitations
 
@@ -95,7 +94,7 @@ Additionally, changes to keys in Firebase configuration files (google-services.j
 
 ### On iOS, you can't share your published link
 
-When you publish, any Android user can open your app inside Expo client immediately.
+When you publish, any Android user can open your app inside Expo Go immediately.
 
 Due to restrictions imposed by Apple, the best way to share your published app is
 to build a native binary with Expo's build service. You can use Apple TestFlight to

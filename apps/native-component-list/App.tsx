@@ -2,14 +2,9 @@ import * as SplashScreen from 'expo-splash-screen';
 import * as React from 'react';
 import { Platform, StatusBar } from 'react-native';
 import { AppearanceProvider } from 'react-native-appearance';
-import { enableScreens } from 'react-native-screens';
 
 import RootNavigation from './src/navigation/RootNavigation';
 import loadAssetsAsync from './src/utilities/loadAssetsAsync';
-
-if (Platform.OS === 'android') {
-  enableScreens(true);
-}
 
 function useSplashScreen(loadingFunction: () => void | Promise<void>) {
   const [isLoadingCompleted, setLoadingComplete] = React.useState(false);

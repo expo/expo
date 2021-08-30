@@ -1,7 +1,7 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 #import <EXConstants/EXConstants.h>
-#import <UMConstantsInterface/UMConstantsInterface.h>
+#import <ExpoModulesCore/EXConstantsInterface.h>
 
 #import <WebKit/WKWebView.h>
 
@@ -10,22 +10,22 @@
 }
 
 @property (nonatomic, strong) NSString *webViewUserAgent;
-@property (nonatomic, weak) id<UMConstantsInterface> constantsService;
+@property (nonatomic, weak) id<EXConstantsInterface> constantsService;
 
 @end
 
 @implementation EXConstants
 
-UM_REGISTER_MODULE();
+EX_REGISTER_MODULE();
 
 + (const NSString *)exportedModuleName
 {
   return @"ExponentConstants";
 }
 
-- (void)setModuleRegistry:(UMModuleRegistry *)moduleRegistry
+- (void)setModuleRegistry:(EXModuleRegistry *)moduleRegistry
 {
-  _constantsService = [moduleRegistry getModuleImplementingProtocol:@protocol(UMConstantsInterface)];
+  _constantsService = [moduleRegistry getModuleImplementingProtocol:@protocol(EXConstantsInterface)];
 }
 
 - (NSDictionary *)constantsToExport
@@ -33,9 +33,9 @@ UM_REGISTER_MODULE();
   return [_constantsService constants];
 }
 
-UM_EXPORT_METHOD_AS(getWebViewUserAgentAsync,
-                    getWebViewUserAgentWithResolver:(UMPromiseResolveBlock)resolve
-                    rejecter:(UMPromiseRejectBlock)reject)
+EX_EXPORT_METHOD_AS(getWebViewUserAgentAsync,
+                    getWebViewUserAgentWithResolver:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
 {
   __weak EXConstants *weakSelf = self;
   dispatch_async(dispatch_get_main_queue(), ^{
@@ -52,12 +52,12 @@ UM_EXPORT_METHOD_AS(getWebViewUserAgentAsync,
           }
           
           strongSelf.webViewUserAgent = [NSString stringWithFormat:@"%@", result];
-          resolve(UMNullIfNil(strongSelf.webViewUserAgent));
+          resolve(EXNullIfNil(strongSelf.webViewUserAgent));
           // Destroy the webview now that it's task is complete.
           strongSelf->webView = nil;
         }];
       } else {
-        resolve(UMNullIfNil(strongSelf.webViewUserAgent));
+        resolve(EXNullIfNil(strongSelf.webViewUserAgent));
       }
     }
   });

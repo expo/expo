@@ -1,7 +1,8 @@
-import { PermissionStatus } from 'unimodules-permissions-interface';
+import { PermissionStatus } from 'expo-modules-core';
 import { LocationAccuracy, } from './Location.types';
 import { LocationEventEmitter } from './LocationEventEmitter';
 class GeocoderError extends Error {
+    code;
     constructor() {
         super('Geocoder service is not available for this device.');
         this.code = 'E_NO_GEOCODER';
@@ -117,6 +118,18 @@ export default {
     },
     getPermissionsAsync,
     async requestPermissionsAsync() {
+        return getPermissionsAsync();
+    },
+    async requestForegroundPermissionsAsync() {
+        return getPermissionsAsync();
+    },
+    async requestBackgroundPermissionsAsync() {
+        return getPermissionsAsync();
+    },
+    async getForegroundPermissionsAsync() {
+        return getPermissionsAsync();
+    },
+    async getBackgroundPermissionsAsync() {
         return getPermissionsAsync();
     },
     // no-op

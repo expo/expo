@@ -1,9 +1,10 @@
-import { CodedError } from '@unimodules/core';
 import { DEFAULT_APP_OPTIONS } from 'expo-firebase-core';
+import { CodedError } from 'expo-modules-core';
 
 function getFirebaseModule() {
   try {
-    const firebase = require('firebase/app');
+    const firebaseModule = require('firebase/app');
+    const firebase = firebaseModule.initializeApp ? firebaseModule : firebaseModule.default;
     if (DEFAULT_APP_OPTIONS && !firebase.apps.length) {
       firebase.initializeApp(DEFAULT_APP_OPTIONS);
     }

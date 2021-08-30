@@ -2,7 +2,7 @@
 
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
-#import <UMCore/UMSingletonModule.h>
+#import <ExpoModulesCore/EXSingletonModule.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -19,7 +19,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
-@interface EXRemoteNotificationPermissionSingletonModule : UMSingletonModule <UIApplicationDelegate, EXRemoteNotificationPermissionProgressPublisher>
+@interface EXRemoteNotificationPermissionSingletonModule : EXSingletonModule <UIApplicationDelegate, EXRemoteNotificationPermissionProgressPublisher>
 
 - (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)token;
 - (void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error;

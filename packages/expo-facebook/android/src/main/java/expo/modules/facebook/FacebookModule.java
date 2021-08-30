@@ -4,40 +4,52 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import androidx.annotation.Nullable;
 
 import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
 import com.facebook.FacebookSdk;
+import com.facebook.appevents.AppEventsConstants;
+import com.facebook.appevents.AppEventsLogger;
+import com.facebook.internal.AttributionIdentifiers;
 import com.facebook.login.LoginBehavior;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 
-import org.unimodules.core.ExportedModule;
-import org.unimodules.core.ModuleRegistry;
-import org.unimodules.core.Promise;
-import org.unimodules.core.arguments.ReadableArguments;
-import org.unimodules.core.interfaces.ActivityEventListener;
-import org.unimodules.core.interfaces.ActivityProvider;
-import org.unimodules.core.interfaces.ExpoMethod;
-import org.unimodules.core.interfaces.services.UIManager;
+import expo.modules.core.ExportedModule;
+import expo.modules.core.ModuleRegistry;
+import expo.modules.core.Promise;
+import expo.modules.core.arguments.ReadableArguments;
+import expo.modules.core.interfaces.ActivityEventListener;
+import expo.modules.core.interfaces.ActivityProvider;
+import expo.modules.core.interfaces.ExpoMethod;
+import expo.modules.core.interfaces.services.UIManager;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Currency;
 import java.util.List;
 
 public class FacebookModule extends ExportedModule implements ActivityEventListener {
   private final static String ERR_FACEBOOK_MISCONFIGURED = "ERR_FACEBOOK_MISCONFIGURED";
   private final static String ERR_FACEBOOK_LOGIN = "ERR_FACEBOOK_LOGIN";
+  private static final String PUSH_PAYLOAD_KEY = "fb_push_payload";
+  private static final String PUSH_PAYLOAD_CAMPAIGN_KEY = "campaign";
 
+  private Context mContext;
   private CallbackManager mCallbackManager;
   private ModuleRegistry mModuleRegistry;
+  private AppEventsLogger mAppEventLogger;
+  private AttributionIdentifiers mAttributionIdentifiers;
   protected String mAppId;
   protected String mAppName;
 
   public FacebookModule(Context context) {
     super(context);
+    mContext = context;
     mCallbackManager = CallbackManager.Factory.create();
   }
 
@@ -49,15 +61,6 @@ public class FacebookModule extends ExportedModule implements ActivityEventListe
   @ExpoMethod
   public void setAutoLogAppEventsEnabledAsync(final Boolean enabled, Promise promise) {
     FacebookSdk.setAutoLogAppEventsEnabled(enabled);
-    promise.resolve(null);
-  }
-
-  @ExpoMethod
-  public void setAutoInitEnabledAsync(final Boolean enabled, final Promise promise) {
-    FacebookSdk.setAutoInitEnabled(enabled);
-    if (enabled) {
-      FacebookSdk.fullyInitialize();
-    }
     promise.resolve(null);
   }
 
@@ -129,6 +132,8 @@ public class FacebookModule extends ExportedModule implements ActivityEventListe
           FacebookSdk.fullyInitialize();
           mAppId = FacebookSdk.getApplicationId();
           mAppName = FacebookSdk.getApplicationName();
+          mAppEventLogger = AppEventsLogger.newLogger(mContext);
+          mAttributionIdentifiers = AttributionIdentifiers.getAttributionIdentifiers(mContext);
           promise.resolve(null);
         }
       });
@@ -211,6 +216,103 @@ public class FacebookModule extends ExportedModule implements ActivityEventListe
     }
   }
 
+  @ExpoMethod
+  public void setFlushBehaviorAsync(String flushBehavior, Promise promise) {
+    AppEventsLogger.setFlushBehavior(AppEventsLogger.FlushBehavior.valueOf(flushBehavior.toUpperCase()));
+    promise.resolve(null);
+  }
+
+  @ExpoMethod
+  public void logEventAsync(String eventName, double valueToSum, ReadableArguments parameters, Promise promise) {
+    mAppEventLogger.logEvent(eventName, valueToSum, bundleWithNullValuesAsStrings(parameters));
+    promise.resolve(null);
+  }
+
+  @ExpoMethod
+  public void logPurchaseAsync(
+    double purchaseAmount,
+    String currencyCode,
+    @Nullable ReadableArguments parameters,
+    Promise promise
+  ) {
+      mAppEventLogger.logPurchase(
+              BigDecimal.valueOf(purchaseAmount),
+              Currency.getInstance(currencyCode),
+              bundleWithNullValuesAsStrings(parameters));
+      promise.resolve(null);
+  }
+
+  @ExpoMethod
+  public void logPushNotificationOpenAsync(String campaign, Promise promise) {
+    // the Android FBSDK expects the fb_push_payload to be a JSON string
+    Bundle payload = new Bundle();
+    payload.putString(PUSH_PAYLOAD_KEY, String.format("{\"%s\" : \"%s\"}", PUSH_PAYLOAD_CAMPAIGN_KEY, campaign));
+    mAppEventLogger.logPushNotificationOpen(payload);
+    promise.resolve(null);
+  }
+
+  @ExpoMethod
+  public void setUserIDAsync(final String userID, Promise promise) {
+    mAppEventLogger.setUserID(userID);
+    promise.resolve(null);
+  }
+
+  @ExpoMethod
+  @Nullable
+  public void getUserIDAsync(Promise promise) {
+    promise.resolve(mAppEventLogger.getUserID());
+  }
+
+  @ExpoMethod
+  public void getAnonymousIDAsync(Promise promise) {
+    try {
+      promise.resolve(mAppEventLogger.getAnonymousAppDeviceGUID(mContext));
+    } catch (Exception e) {
+      promise.reject("ERR_FACEBOOK_ANONYMOUS_ID", "Can not get anonymousID", e);
+    }
+  }
+
+  @ExpoMethod
+  public void getAdvertiserIDAsync(Promise promise) {
+    try {
+      promise.resolve(mAttributionIdentifiers.getAndroidAdvertiserId());
+    } catch (Exception e) {
+      promise.reject("ERR_FACEBOOK_ADVERTISER_ID", "Can not get advertiserID", e);
+    }
+  }
+
+  @ExpoMethod
+  public void getAttributionIDAsync(Promise promise) {
+    try {
+      promise.resolve(mAttributionIdentifiers.getAttributionId());
+    } catch (Exception e) {
+      promise.reject("ERR_FACEBOOK_ADVERTISER_ID", "Can not get attributionID", e);
+    }
+  }
+
+  @ExpoMethod
+  public void setUserDataAsync(ReadableArguments userData, Promise promise) {
+    AppEventsLogger.setUserData(
+      userData.getString("email"),
+      userData.getString("firstName"),
+      userData.getString("lastName"),
+      userData.getString("phone"),
+      userData.getString("dateOfBirth"),
+      userData.getString("gender"),
+      userData.getString("city"),
+      userData.getString("state"),
+      userData.getString("zip"),
+      userData.getString("country")
+    );
+    promise.resolve(null);
+  }
+
+  @ExpoMethod
+  public void flushAsync(Promise promise) {
+    mAppEventLogger.flush();
+    promise.resolve(null);
+  }
+
   @Override
   public void onCreate(ModuleRegistry moduleRegistry) {
     mModuleRegistry = moduleRegistry;
@@ -227,5 +329,24 @@ public class FacebookModule extends ExportedModule implements ActivityEventListe
   @Override
   public void onNewIntent(Intent intent) {
     // do nothing
+  }
+
+  private Bundle bundleWithNullValuesAsStrings(ReadableArguments parameters) {
+    Bundle result = new Bundle();
+    for (String key : parameters.keys()) {
+      Object value = parameters.get(key);
+      if (value == null) {
+        result.putString(key, "null");
+      } else if (value instanceof String) {
+        result.putString(key, (String) value);
+      } else if (value instanceof Integer) {
+        result.putInt(key, (Integer) value);
+      } else if (value instanceof Double) {
+        result.putDouble(key, (Double) value);
+      } else if (value instanceof Long) {
+        result.putLong(key, (Long) value);
+      }
+    }
+    return result;
   }
 }

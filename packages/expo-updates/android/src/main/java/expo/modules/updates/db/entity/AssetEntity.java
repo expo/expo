@@ -25,7 +25,6 @@ public class AssetEntity {
   public Uri url = null;
 
   @ColumnInfo(name = "key")
-  @NonNull
   public String key;
 
   public JSONObject headers = null;

@@ -21,11 +21,13 @@ class LocationRequester : PermissionRequester {
       listOf(
         Manifest.permission.ACCESS_BACKGROUND_LOCATION,
         Manifest.permission.ACCESS_FINE_LOCATION,
-        Manifest.permission.ACCESS_COARSE_LOCATION)
+        Manifest.permission.ACCESS_COARSE_LOCATION
+      )
     } else {
       listOf(
         Manifest.permission.ACCESS_FINE_LOCATION,
-        Manifest.permission.ACCESS_COARSE_LOCATION)
+        Manifest.permission.ACCESS_COARSE_LOCATION
+      )
     }
 
   override fun parseAndroidPermissions(permissionsResponse: Map<String, PermissionsResponse>): Bundle {
@@ -35,24 +37,27 @@ class LocationRequester : PermissionRequester {
       val accessFineLocation = permissionsResponse.getValue(Manifest.permission.ACCESS_FINE_LOCATION)
       val accessCoarseLocation = permissionsResponse.getValue(Manifest.permission.ACCESS_COARSE_LOCATION)
       val canAskAgain = accessCoarseLocation.canAskAgain && accessCoarseLocation.canAskAgain
-      val isGranted = accessCoarseLocation.status == PermissionsStatus.GRANTED || accessFineLocation.status == PermissionsStatus.GRANTED;
+      val isGranted = accessCoarseLocation.status == PermissionsStatus.GRANTED || accessFineLocation.status == PermissionsStatus.GRANTED
 
-      putString(STATUS_KEY, when {
-        accessFineLocation.status == PermissionsStatus.GRANTED -> {
-          accuracy = "fine"
-          PermissionsStatus.GRANTED.status
+      putString(
+        STATUS_KEY,
+        when {
+          accessFineLocation.status == PermissionsStatus.GRANTED -> {
+            accuracy = "fine"
+            PermissionsStatus.GRANTED.status
+          }
+          accessCoarseLocation.status == PermissionsStatus.GRANTED -> {
+            accuracy = "coarse"
+            PermissionsStatus.GRANTED.status
+          }
+          accessFineLocation.status == PermissionsStatus.DENIED && accessCoarseLocation.status == PermissionsStatus.DENIED -> {
+            PermissionsStatus.DENIED.status
+          }
+          else -> {
+            PermissionsStatus.UNDETERMINED.status
+          }
         }
-        accessCoarseLocation.status == PermissionsStatus.GRANTED -> {
-          accuracy = "coarse"
-          PermissionsStatus.GRANTED.status
-        }
-        accessFineLocation.status == PermissionsStatus.DENIED && accessCoarseLocation.status == PermissionsStatus.DENIED -> {
-          PermissionsStatus.DENIED.status
-        }
-        else -> {
-          PermissionsStatus.UNDETERMINED.status
-        }
-      })
+      )
       scope =
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
           val accessBackgroundLocation = permissionsResponse.getValue(Manifest.permission.ACCESS_BACKGROUND_LOCATION)
@@ -70,9 +75,12 @@ class LocationRequester : PermissionRequester {
       putBoolean(CAN_ASK_AGAIN_KEY, canAskAgain)
       putBoolean(GRANTED_KEY, isGranted)
       putString(SCOPE_KEY, scope)
-      putBundle("android", Bundle().apply {
-        putString("accuracy", accuracy)
-      })
+      putBundle(
+        "android",
+        Bundle().apply {
+          putString("accuracy", accuracy)
+        }
+      )
     }
   }
 }

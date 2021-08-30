@@ -1,7 +1,5 @@
 package expo.modules.updates;
 
-import android.net.Uri;
-
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -15,8 +13,31 @@ import static org.mockito.Mockito.*;
 public class UpdatesUtilsTest {
   @Test
   public void testCreateFilenameForAsset() {
+    AssetEntity assetEntity = new AssetEntity("key", ".png");
+    Assert.assertEquals("key.png", UpdatesUtils.createFilenameForAsset(assetEntity));
+  }
+
+  @Test
+  public void testCreateFilenameForAssetWhenMissingDotPrefix() {
     AssetEntity assetEntity = new AssetEntity("key", "png");
+    Assert.assertEquals("key.png", UpdatesUtils.createFilenameForAsset(assetEntity));
+  }
+
+  @Test
+  public void testCreateFilenameForAssetWhenMissingExtension() {
+    AssetEntity assetEntity = new AssetEntity("key", null);
     Assert.assertEquals("key", UpdatesUtils.createFilenameForAsset(assetEntity));
+  }
+
+  @Test
+  public void testCreateFilenameForAsset_NullKey() {
+    // asset filenames with null keys should be unique
+    AssetEntity asset1 = new AssetEntity(null, "bundle");
+    AssetEntity asset2 = new AssetEntity(null, "bundle");
+    Assert.assertNotEquals(UpdatesUtils.createFilenameForAsset(asset1), UpdatesUtils.createFilenameForAsset(asset2));
+
+    String asset1Name = UpdatesUtils.createFilenameForAsset(asset1);
+    Assert.assertEquals(asset1Name.substring(asset1Name.length()-7),".bundle");
   }
 
   @Test

@@ -177,7 +177,7 @@ async function askForConfigurations(): Promise<string[]> {
     {
       type: 'checkbox',
       name: 'configurationNames',
-      message: 'Which configuration would you like to run?',
+      message: 'Which configuration would you like to run?\n  ● selected ○ unselected\n',
       choices: Object.keys(CONFIGURATIONS),
       default: Object.keys(CONFIGURATIONS),
     },

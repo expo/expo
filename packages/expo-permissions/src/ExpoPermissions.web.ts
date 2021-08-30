@@ -26,7 +26,7 @@ function _getUserMedia(constraints: MediaStreamConstraints): Promise<MediaStream
     navigator.getUserMedia ||
     (navigator as any).webkitGetUserMedia ||
     (navigator as any).mozGetUserMedia ||
-    function() {
+    function () {
       const error: any = new Error('Permission unimplemented');
       error.code = 0;
       error.name = 'NotAllowedError';
@@ -92,7 +92,7 @@ async function askForLocationPermissionAsync(): Promise<PermissionInfo> {
           canAskAgain: true,
           granted: true,
         }),
-      ({ code }: PositionError) => {
+      ({ code }: GeolocationPositionError) => {
         // https://developer.mozilla.org/en-US/docs/Web/API/PositionError/code
         if (code === 1) {
           resolve({
@@ -240,6 +240,8 @@ async function getPermissionAsync(
       };
     }
     case 'location':
+    case 'locationForeground':
+    case 'locationBackground':
       {
         const maybeStatus = await getPermissionWithQueryAsync('geolocation');
         if (maybeStatus) {

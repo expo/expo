@@ -1,4 +1,4 @@
-import { EventEmitter } from '@unimodules/core';
+import { EventEmitter, UnavailabilityError } from 'expo-modules-core';
 import NotificationsEmitterModule from './NotificationsEmitterModule';
 // Web uses SyntheticEventEmitter
 const emitter = new EventEmitter(NotificationsEmitterModule);
@@ -17,5 +17,11 @@ export function addNotificationResponseReceivedListener(listener) {
 }
 export function removeNotificationSubscription(subscription) {
     emitter.removeSubscription(subscription);
+}
+export async function getLastNotificationResponseAsync() {
+    if (!NotificationsEmitterModule.getLastNotificationResponseAsync) {
+        throw new UnavailabilityError('ExpoNotifications', 'getLastNotificationResponseAsync');
+    }
+    return await NotificationsEmitterModule.getLastNotificationResponseAsync();
 }
 //# sourceMappingURL=NotificationsEmitter.js.map

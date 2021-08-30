@@ -23,8 +23,8 @@ index 9cb91ea..a25372c 100644
    #ifdef DEBUG
 -    [self initializeReactNativeApp];
 +    #if defined(EX_DEV_LAUNCHER_ENABLED)
-+      EXDevLauncherController *contoller = [EXDevLauncherController sharedInstance];
-+      [contoller startWithWindow:self.window delegate:self launchOptions:launchOptions];
++      EXDevLauncherController *controller = [EXDevLauncherController sharedInstance];
++      [controller startWithWindow:self.window delegate:(id<EXDevLauncherControllerDelegate>)self launchOptions:launchOptions];
 +    #else
 +      [self initializeReactNativeApp];
 +    #endif
@@ -46,10 +46,6 @@ index 9cb91ea..a25372c 100644
    RCTRootView *rootView = [[RCTRootView alloc] initWithBridge:bridge moduleName:@"main" initialProperties:nil];
    rootView.backgroundColor = [[UIColor alloc] initWithRed:1.0f green:1.0f blue:1.0f alpha:1];
  
-+#if defined(EX_DEV_MENU_ENABLED)
-+  [DevMenuManager configureWithBridge:bridge];
-+#endif
-+
    UIViewController *rootViewController = [UIViewController new];
    rootViewController.view = rootView;
    self.window.rootViewController = rootViewController;

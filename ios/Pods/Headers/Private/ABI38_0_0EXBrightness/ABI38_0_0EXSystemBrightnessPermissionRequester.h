@@ -1,1 +1,0 @@
-../../../../versioned-react-native/ABI38_0_0/Expo/EXBrightness/ABI38_0_0EXBrightness/ABI38_0_0EXSystemBrightnessPermissionRequester.h

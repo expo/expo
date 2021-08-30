@@ -2,12 +2,12 @@ import * as Crypto from 'expo-crypto';
 import * as Random from 'expo-random';
 import invariant from 'invariant';
 const CHARSET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-async function getRandomValuesAsync(input) {
+function getRandomValues(input) {
     const output = input;
     // Get access to the underlying raw bytes
     if (input.byteLength !== input.length)
         input = new Uint8Array(input.buffer);
-    const bytes = await Random.getRandomBytesAsync(input.length);
+    const bytes = Random.getRandomBytes(input.length);
     for (let i = 0; i < bytes.length; i++)
         input[i] = bytes[i];
     return output;
@@ -21,15 +21,11 @@ function convertBufferToString(buffer) {
     return state.join('');
 }
 function convertToUrlSafeString(b64) {
-    return b64
-        .replace(/\+/g, '-')
-        .replace(/\//g, '_')
-        .replace(/=/g, '');
+    return b64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
 }
-export async function generateRandomAsync(size) {
+export function generateRandom(size) {
     const buffer = new Uint8Array(size);
-    // TODO(Bacon): Change this to be sync in the future when Expo unimodules support sync methods
-    await getRandomValuesAsync(buffer);
+    getRandomValues(buffer);
     return convertBufferToString(buffer);
 }
 /**
@@ -46,7 +42,7 @@ export async function deriveChallengeAsync(code) {
 }
 export async function buildCodeAsync(size = 128) {
     // This method needs to be resolved like all other native methods.
-    const codeVerifier = await generateRandomAsync(size);
+    const codeVerifier = generateRandom(size);
     const codeChallenge = await deriveChallengeAsync(codeVerifier);
     return { codeVerifier, codeChallenge };
 }
@@ -54,7 +50,7 @@ export async function buildCodeAsync(size = 128) {
  * Digest a random string with hex encoding, useful for creating `nonce`s.
  */
 export async function generateHexStringAsync(size) {
-    const value = await generateRandomAsync(size);
+    const value = generateRandom(size);
     const buffer = await Crypto.digestStringAsync(Crypto.CryptoDigestAlgorithm.SHA256, value, {
         encoding: Crypto.CryptoEncoding.HEX,
     });

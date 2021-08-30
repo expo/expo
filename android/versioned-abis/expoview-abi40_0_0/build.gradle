@@ -4,12 +4,12 @@ apply plugin: 'maven'
 apply plugin: 'com.jakewharton.butterknife'
 apply plugin: 'de.undercouch.download'
 
-
-def safeExtGet(prop, fallback) {
-  rootProject.ext.has(prop) ? rootProject.ext.get(prop) : fallback
-}
-
 buildscript {
+  // Simple helper that allows the root project to override versions declared by this library.
+  ext.safeExtGet = { prop, fallback ->
+    rootProject.ext.has(prop) ? rootProject.ext.get(prop) : fallback
+  }
+
   repositories {
     // If you have maven { url "https://jitpack.io" } as your resolving url,
     // then Jitpack will only return the POM for the Android dependency causing the Gradle sync to fail.
@@ -23,6 +23,7 @@ buildscript {
   }
   dependencies {
     classpath 'com.jakewharton:butterknife-gradle-plugin:10.2.1'
+    classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:${safeExtGet('kotlinVersion', '1.4.21')}")
   }
 }
 
@@ -32,7 +33,7 @@ repositories {
 }
 
 android {
-  compileSdkVersion safeExtGet("compileSdkVersion", 29)
+  compileSdkVersion safeExtGet("compileSdkVersion", 30)
 
   compileOptions {
     sourceCompatibility = '1.8'
@@ -41,9 +42,11 @@ android {
 
   defaultConfig {
     minSdkVersion safeExtGet("minSdkVersion", 21)
-    targetSdkVersion safeExtGet("targetSdkVersion", 29)
+    targetSdkVersion safeExtGet("targetSdkVersion", 30)
     versionCode 1
     versionName "1.0"
+
+    missingDimensionStrategy('versioning', 'versioned')
 
     ndk {
       moduleName("reanimated")
@@ -123,7 +126,7 @@ dependencies {
   api 'com.theartofdev.edmodo:android-image-cropper:2.7.0'
   api 'commons-codec:commons-codec:1.10'
   api 'net.openid:appauth:0.7.1'
-  api 'com.airbnb.android:lottie:2.5.6'
+  api 'com.airbnb.android:lottie:3.4.0'
   compileOnly 'io.branch.sdk.android:library:4.1.0'
   api "androidx.exifinterface:exifinterface:1.0.0"
   api "androidx.legacy:legacy-support-v4:1.0.0"
@@ -157,13 +160,14 @@ dependencies {
 
   //dbflow
   annotationProcessor "com.github.Raizlabs.DBFlow:dbflow-processor:${safeExtGet('dbFlowVersion', '4.2.4')}"
-  api "com.github.Raizlabs.DBFlow:dbflow-core:${safeExtGet('dbFlowVersion', '4.2.4')}"
-  api "com.github.Raizlabs.DBFlow:dbflow:${safeExtGet('dbFlowVersion', '4.2.4')}"
+  implementation "com.github.Raizlabs.DBFlow:dbflow-core:${safeExtGet('dbFlowVersion', '4.2.4')}"
+  implementation "com.github.Raizlabs.DBFlow:dbflow:${safeExtGet('dbFlowVersion', '4.2.4')}"
 
   implementation 'com.cronutils:cron-utils:4.1.3'
 
   // @react-native-community/viewpager
   api 'com.github.troZee:ViewPager2:v1.0.6'
+
+  // expo-payments-stripe
+  implementation 'com.stripe:stripe-android:16.10.0'
 }
-
-

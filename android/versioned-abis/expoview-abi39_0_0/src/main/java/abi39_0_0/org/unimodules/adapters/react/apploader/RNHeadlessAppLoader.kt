@@ -3,8 +3,8 @@ package abi39_0_0.org.unimodules.adapters.react.apploader
 import android.content.Context
 import abi39_0_0.com.facebook.react.ReactApplication
 import abi39_0_0.com.facebook.react.ReactInstanceManager
-import org.unimodules.apploader.HeadlessAppLoader
-import org.unimodules.core.interfaces.Consumer
+import expo.modules.apploader.HeadlessAppLoader
+import expo.modules.core.interfaces.Consumer
 import abi39_0_0.org.unimodules.core.interfaces.DoNotStrip
 
 private val appRecords: MutableMap<String, ReactInstanceManager> = mutableMapOf()
@@ -14,18 +14,18 @@ class RNHeadlessAppLoader @DoNotStrip constructor(private val context: Context) 
   //region HeadlessAppLoader
 
   override fun loadApp(context: Context, params: HeadlessAppLoader.Params?, alreadyRunning: Runnable?, callback: Consumer<Boolean>?) {
-    if (params == null || params.appId == null) {
-      throw IllegalArgumentException("Params must be set with appId!")
+    if (params == null || params.appScopeKey == null) {
+      throw IllegalArgumentException("Params must be set with appScopeKey!")
     }
 
     if (context.applicationContext is ReactApplication) {
       val reactInstanceManager = (context.applicationContext as ReactApplication).reactNativeHost.reactInstanceManager
-      if (!appRecords.containsKey(params.appId)) {
+      if (!appRecords.containsKey(params.appScopeKey)) {
         reactInstanceManager.addReactInstanceEventListener {
-          HeadlessAppLoaderNotifier.notifyAppLoaded(params.appId)
+          HeadlessAppLoaderNotifier.notifyAppLoaded(params.appScopeKey)
           callback?.apply(true)
         }
-        appRecords[params.appId] = reactInstanceManager
+        appRecords[params.appScopeKey] = reactInstanceManager
         if (reactInstanceManager.hasStartedCreatingInitialContext()) {
           reactInstanceManager.recreateReactContextInBackground()
         } else {
@@ -39,13 +39,13 @@ class RNHeadlessAppLoader @DoNotStrip constructor(private val context: Context) 
     }
   }
 
-  override fun invalidateApp(appId: String?): Boolean {
-    return if (appRecords.containsKey(appId) && appRecords[appId] != null) {
-      val appRecord: ReactInstanceManager = appRecords[appId]!!
+  override fun invalidateApp(appScopeKey: String?): Boolean {
+    return if (appRecords.containsKey(appScopeKey) && appRecords[appScopeKey] != null) {
+      val appRecord: ReactInstanceManager = appRecords[appScopeKey]!!
       android.os.Handler(context.mainLooper).post {
         appRecord.destroy()
-        HeadlessAppLoaderNotifier.notifyAppDestroyed(appId)
-        appRecords.remove(appId)
+        HeadlessAppLoaderNotifier.notifyAppDestroyed(appScopeKey)
+        appRecords.remove(appScopeKey)
       }
       true
     } else {
@@ -53,8 +53,8 @@ class RNHeadlessAppLoader @DoNotStrip constructor(private val context: Context) 
     }
   }
 
-  override fun isRunning(appId: String?): Boolean =
-    appRecords.contains(appId) && appRecords[appId]!!.hasStartedCreatingInitialContext()
+  override fun isRunning(appScopeKey: String?): Boolean =
+    appRecords.contains(appScopeKey) && appRecords[appScopeKey]!!.hasStartedCreatingInitialContext()
 
   //endregion HeadlessAppLoader
 }

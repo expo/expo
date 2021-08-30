@@ -1,9 +1,8 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 #import <EXPrint/EXWKPDFRenderer.h>
-#import <UMCore/UMDefines.h>
+#import <ExpoModulesCore/EXDefines.h>
 #import <EXPrint/EXWKSnapshotPDFRenderer.h>
-#import <EXPrint/EXWKViewPDFRenderer.h>
 
 @interface EXWKPDFRenderer () <WKNavigationDelegate>
 
@@ -22,11 +21,7 @@
   _pageSize = pageSize;
   _onRenderingFinished = handler;
   _webView = [self createWebView];
-  if (@available(iOS 11.0, *)) {
-    _renderer = [[EXWKSnapshotPDFRenderer alloc] init];
-  } else {
-    _renderer = [[EXWKViewPDFRenderer alloc] init];
-  }
+  _renderer = [[EXWKSnapshotPDFRenderer alloc] init];
   _htmlNavigation = [_webView loadHTMLString:htmlString baseURL:nil];
 }
 
@@ -38,9 +33,9 @@
     return;
   }
 
-  UM_WEAKIFY(self);
+  EX_WEAKIFY(self);
   [_renderer PDFFromWebView:webView completionHandler:^(NSError * _Nullable error, NSData * _Nullable data, int pagesCount) {
-    UM_ENSURE_STRONGIFY(self);
+    EX_ENSURE_STRONGIFY(self);
     self.onRenderingFinished(error, data, pagesCount);
   }];
 }

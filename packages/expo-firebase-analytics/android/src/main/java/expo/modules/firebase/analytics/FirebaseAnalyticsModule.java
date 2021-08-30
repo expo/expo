@@ -8,14 +8,14 @@ import com.google.firebase.analytics.FirebaseAnalytics;
 
 import expo.modules.firebase.core.FirebaseCoreInterface;
 
-import org.unimodules.core.ExportedModule;
-import org.unimodules.core.ModuleRegistry;
-import org.unimodules.core.Promise;
-import org.unimodules.core.arguments.MapArguments;
-import org.unimodules.core.errors.CurrentActivityNotFoundException;
-import org.unimodules.core.interfaces.ActivityProvider;
-import org.unimodules.core.interfaces.ExpoMethod;
-import org.unimodules.core.interfaces.RegistryLifecycleListener;
+import expo.modules.core.ExportedModule;
+import expo.modules.core.ModuleRegistry;
+import expo.modules.core.Promise;
+import expo.modules.core.arguments.MapArguments;
+import expo.modules.core.errors.CurrentActivityNotFoundException;
+import expo.modules.core.interfaces.ActivityProvider;
+import expo.modules.core.interfaces.ExpoMethod;
+import expo.modules.core.interfaces.RegistryLifecycleListener;
 
 import java.util.Map;
 import java.util.Set;

@@ -1,20 +1,16 @@
-import { Platform } from '@unimodules/core';
 import Constants, { ExecutionEnvironment } from 'expo-constants';
 import * as Linking from 'expo-linking';
+import { Platform } from 'expo-modules-core';
 import { dismissAuthSession, openAuthSessionAsync } from 'expo-web-browser';
 import { AuthRequest } from './AuthRequest';
 import { CodeChallengeMethod, Prompt, ResponseType, } from './AuthRequest.types';
 import { fetchDiscoveryAsync, resolveDiscoveryAsync, } from './Discovery';
 import { generateHexStringAsync } from './PKCE';
 import { getQueryParams } from './QueryParams';
-import { getSessionUrlProvider } from './SessionUrlProvider';
+import sessionUrlProvider from './SessionUrlProvider';
 let _authLock = false;
-const sessionUrlProvider = getSessionUrlProvider();
 export async function startAsync(options) {
-    const returnUrl = options.returnUrl || sessionUrlProvider.getDefaultReturnUrl();
     const authUrl = options.authUrl;
-    const startUrl = sessionUrlProvider.getStartUrl(authUrl, returnUrl);
-    const showInRecents = options.showInRecents || false;
     // Prevent accidentally starting to an empty url
     if (!authUrl) {
         throw new Error('No authUrl provided to AuthSession.startAsync. An authUrl is required -- it points to the page where the user will be able to sign in.');
@@ -27,6 +23,9 @@ export async function startAsync(options) {
         }
         return { type: 'locked' };
     }
+    const returnUrl = options.returnUrl || sessionUrlProvider.getDefaultReturnUrl();
+    const startUrl = sessionUrlProvider.getStartUrl(authUrl, returnUrl);
+    const showInRecents = options.showInRecents || false;
     // About to start session, set lock
     _authLock = true;
     let result;
@@ -61,9 +60,7 @@ export async function startAsync(options) {
 export function dismiss() {
     dismissAuthSession();
 }
-export function getDefaultReturnUrl() {
-    return sessionUrlProvider.getDefaultReturnUrl();
-}
+export const getDefaultReturnUrl = sessionUrlProvider.getDefaultReturnUrl;
 /**
  * @deprecated Use `makeRedirectUri({ path, useProxy })` instead.
  *
@@ -74,32 +71,58 @@ export function getRedirectUrl(path) {
 }
 /**
  * Create a redirect url for the current platform.
+ *
  * - **Web:** Generates a path based on the current \`window.location\`. For production web apps you should hard code the URL.
- * - **Managed, and Custom workflow:** Uses the `scheme` property of your `app.config.js` or `app.json`.
+ * - **Managed:** Uses the `scheme` property of your `app.config.js` or `app.json`.
  *   - **Proxy:** Uses auth.expo.io as the base URL for the path. This only works in Expo client and standalone environments.
- * - **Bare workflow:** Will fallback to using the `native` option for bare workflow React Native apps.
+ * - **Bare workflow:** Provide either the `scheme` or a manual `native` property to use.
  *
  * @param options Additional options for configuring the path.
+ *
+ * @example
+ * ```ts
+ * const redirectUri = makeRedirectUri({
+ *   scheme: 'my-scheme',
+ *   path: 'redirect'
+ * });
+ * // Custom app: my-scheme://redirect
+ * // Expo Go: exp://127.0.0.1:19000/--/redirect
+ * // Web dev: https://localhost:19006/redirect
+ * // Web prod: https://yourwebsite.com/redirect
+ *
+ * const redirectUri2 = makeRedirectUri({
+ *   scheme: 'scheme2',
+ *   preferLocalhost: true,
+ *   isTripleSlashed: true,
+ * });
+ * // Custom app: scheme2:///
+ * // Expo Go: exp://localhost:19000
+ * // Web dev: https://localhost:19006
+ * // Web prod: https://yourwebsite.com
+ * ```
+ *
+ * const redirectUri3 = makeRedirectUri({
+ *   useProxy: true,
+ * });
+ * // Custom app: https://auth.expo.io/@username/slug
+ * // Expo Go: https://auth.expo.io/@username/slug
+ * // Web dev: https://localhost:19006
+ * // Web prod: https://yourwebsite.com
+ * ```
  */
-export function makeRedirectUri({ native, path, preferLocalhost, useProxy, } = {}) {
-    if (Platform.OS !== 'web') {
-        // Bare workflow
-        if (Constants.executionEnvironment === ExecutionEnvironment.Bare) {
-            if (!native) {
-                // TODO(Bacon): Link to docs or fyi
-                console.warn("makeRedirectUri requires you define a `native` scheme for bare workflow, and standalone native apps, you'll need to manually define it based on your app's URI schemes.");
-            }
-            // Returning an empty string makes types easier to work with.
-            // Server will throw an error about the invalid URI scheme.
-            return native || '';
-        }
+export function makeRedirectUri({ native, scheme, isTripleSlashed, queryParams, path, preferLocalhost, useProxy, } = {}) {
+    if (Platform.OS !== 'web' &&
+        native &&
+        [ExecutionEnvironment.Standalone, ExecutionEnvironment.Bare].includes(Constants.executionEnvironment)) {
         // Should use the user-defined native scheme in standalone builds
-        if (Constants.executionEnvironment === ExecutionEnvironment.Standalone && native) {
-            return native;
-        }
+        return native;
     }
     if (!useProxy || Platform.OS === 'web') {
-        const url = Linking.makeUrl(path);
+        const url = Linking.createURL(path || '', {
+            isTripleSlashed,
+            scheme,
+            queryParams,
+        });
         if (preferLocalhost) {
             const ipAddress = url.match(/\b(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b/);
             // Only replace if an IP address exists

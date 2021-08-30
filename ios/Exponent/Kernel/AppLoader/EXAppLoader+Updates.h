@@ -15,7 +15,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface EXAppLoader ()
 
 @property (nonatomic, readonly, nullable) EXUpdatesConfig *config;
-@property (nonatomic, readonly, nullable) id<EXUpdatesSelectionPolicy> selectionPolicy;
+@property (nonatomic, readonly, nullable) EXUpdatesSelectionPolicy *selectionPolicy;
 @property (nonatomic, readonly, nullable) id<EXUpdatesAppLauncher> appLauncher;
 @property (nonatomic, readonly, assign) BOOL isEmergencyLaunch;
 

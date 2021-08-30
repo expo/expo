@@ -39,6 +39,6 @@ Create an app icon and splash image with the [Figma template](https://www.figma.
 - You may still want to follow some of the [Apple best practices](https://developer.apple.com/ios/human-interface-guidelines/icons-and-images/app-icon/) to ensure your icon looks professional, such as testing your icon on different wallpapers, and avoiding text besides your product's wordmark.
 - Provide something that's at least 512x512 pixels. Since you already need 1024x1024 for iOS, it won't hurt to just provide that here as well.
 
-### Expo client and Web
+### Expo Go and Web
 
-- If your app contains `privacy: public` in [app.json](../workflow/configuration.md), it will show up on your expo.io profile. We will mask your icon to have rounded corners in that circumstance, so if it already looks reasonable on iOS, it will probably look good here as well.
+- If your app contains `privacy: public` in [app.json](../workflow/configuration.md), it will show up on your expo.dev profile. We will mask your icon to have rounded corners in that circumstance, so if it already looks reasonable on iOS, it will probably look good here as well.

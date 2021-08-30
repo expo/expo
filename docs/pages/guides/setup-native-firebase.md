@@ -65,6 +65,7 @@ which is otherwise unavailable in react-native using the Firebase JavaScript SDK
         "firebase": {
           "appId": "xxxxxxxxxxxxx:web:xxxxxxxxxxxxxxxx",
           "apiKey": "AIzaXXXXXXXX-xxxxxxxxxxxxxxxxxxx",
+          "projectId": "my-awesome-project-id",
           ...
           "measurementId": "G-XXXXXXXXXXXX"
         }
@@ -80,7 +81,7 @@ In the bare workflow, the firebase configuration needs to be added according to 
 for [iOS](https://firebase.google.com/docs/ios/setup) and [Android](https://firebase.google.com/docs/android/setup).
 Below you will find a tailored instruction for use with react-native and the Expo Bare Workflow.
 
-You are free to use any native Firebase packages such as [react-native-firebase](https://invertase.io/oss/react-native-firebase/) in the bare workflow.
+You are free to use any native Firebase packages such as [react-native-firebase](https://rnfirebase.io/) in the bare workflow.
 
 ### Android
 
@@ -91,7 +92,7 @@ You are free to use any native Firebase packages such as [react-native-firebase]
   ```groovy
   buildscript {
       dependencies {
-          classpath 'com.google.gms:google-services:4.2.0'
+          classpath 'com.google.gms:google-services:4.3.5'
       }
   }
   ```
@@ -99,7 +100,7 @@ You are free to use any native Firebase packages such as [react-native-firebase]
   ```groovy
   apply plugin: 'com.google.gms.google-services'
   ```
-- Finally rebuild your native Android app: `yarn react-native run-android`
+- Finally rebuild your native Android app: `expo run:android`
 
 ### iOS
 
@@ -120,7 +121,7 @@ You are free to use any native Firebase packages such as [react-native-firebase]
   - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
       [FIRApp configure];
   ```
-- Rebuild your iOS project to see the changes: `yarn react-native run-ios`
+- Rebuild your iOS project to see the changes: `expo run:ios`
 
 ### Usage with react-native-firebase
 
@@ -131,8 +132,8 @@ After following the iOS and Android setup, you can optionally configure your pro
 
 ```rb
   # At the top of the file
-  require_relative '../node_modules/@react-native-community/cli-platform-ios/native_modules'
-  require_relative '../node_modules/react-native-unimodules/cocoapods'
+  require File.join(File.dirname(`node --print "require.resolve('@react-native-community/cli-platform-ios/package.json')"`), "native_modules")
+  require File.join(File.dirname(`node --print "require.resolve('react-native-unimodules/package.json')"`), "cocoapods.rb")
 
   # ...
 
@@ -145,4 +146,4 @@ After following the iOS and Android setup, you can optionally configure your pro
 
 - Install the pods on iOS
 
-Continue further on the [react-native-firebase](https://invertase.io/oss/react-native-firebase/) website.
+Continue further on the [react-native-firebase](https://rnfirebase.io/) website.

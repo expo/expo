@@ -1,6 +1,6 @@
 {
   "name": "expo-analytics-segment",
-  "version": "10.0.0",
+  "version": "10.2.0",
   "description": "Expo module that provides access to Segment mobile analytics",
   "main": "build/Segment.js",
   "types": "build/Segment.d.ts",
@@ -30,19 +30,14 @@
   },
   "author": "650 Industries, Inc.",
   "license": "MIT",
-  "homepage": "https://docs.expo.io/versions/latest/sdk/segment/",
+  "homepage": "https://docs.expo.dev/versions/latest/sdk/segment/",
   "jest": {
     "preset": "expo-module-scripts"
   },
-  "unimodulePeerDependencies": {
-    "@unimodules/core": "*",
-    "unimodules-constants-interface": "*"
-  },
-  "peerDependencies": {
-    "react": "*",
-    "react-native": "*"
+  "dependencies": {
+    "expo-modules-core": "~0.3.0-alpha.0"
   },
   "devDependencies": {
-    "expo-module-scripts": "~1.2.0"
+    "expo-module-scripts": "^2.0.0"
   }
 }

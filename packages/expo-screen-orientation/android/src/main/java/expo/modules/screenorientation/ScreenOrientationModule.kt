@@ -5,14 +5,14 @@ import android.content.Context
 import android.content.pm.ActivityInfo
 import android.util.DisplayMetrics
 import android.view.Surface
-import org.unimodules.core.ExportedModule
-import org.unimodules.core.ModuleRegistry
-import org.unimodules.core.Promise
-import org.unimodules.core.errors.InvalidArgumentException
-import org.unimodules.core.interfaces.ActivityProvider
-import org.unimodules.core.interfaces.ExpoMethod
-import org.unimodules.core.interfaces.LifecycleEventListener
-import org.unimodules.core.interfaces.services.UIManager
+import expo.modules.core.ExportedModule
+import expo.modules.core.ModuleRegistry
+import expo.modules.core.Promise
+import expo.modules.core.errors.InvalidArgumentException
+import expo.modules.core.interfaces.ActivityProvider
+import expo.modules.core.interfaces.ExpoMethod
+import expo.modules.core.interfaces.LifecycleEventListener
+import expo.modules.core.interfaces.services.UIManager
 
 private const val ERR_SCREEN_ORIENTATION_UNSUPPORTED_ORIENTATION_LOCK = "ERR_SCREEN_ORIENTATION_UNSUPPORTED_ORIENTATION_LOCK"
 private const val ERR_SCREEN_ORIENTATION_INVALID_ORIENTATION_LOCK = "ERR_SCREEN_ORIENTATION_INVALID_ORIENTATION_LOCK"
@@ -28,11 +28,13 @@ class ScreenOrientationModule(context: Context) : ExportedModule(context), Lifec
 
   override fun onCreate(moduleRegistry: ModuleRegistry) {
     mActivityProvider = moduleRegistry.getModule(ActivityProvider::class.java)
-        ?: throw IllegalStateException("Could not find implementation for ActivityProvider.")
+      ?: throw IllegalStateException("Could not find implementation for ActivityProvider.")
 
-    (moduleRegistry.getModule(UIManager::class.java)
-        ?: throw IllegalStateException("Could not find implementation for UIManager."))
-        .registerLifecycleEventListener(this)
+    (
+      moduleRegistry.getModule(UIManager::class.java)
+        ?: throw IllegalStateException("Could not find implementation for UIManager.")
+      )
+      .registerLifecycleEventListener(this)
   }
 
   override fun onHostResume() {
@@ -166,9 +168,9 @@ class ScreenOrientationModule(context: Context) : ExportedModule(context), Lifec
    * Check if the device's natural orientation is portrait.
    */
   private fun isPortraitNaturalOrientation(rotation: Int, width: Int, height: Int): Boolean {
-    return (rotation == Surface.ROTATION_0 || rotation == Surface.ROTATION_180)
-        && height > width || (rotation == Surface.ROTATION_90 || rotation == Surface.ROTATION_270)
-        && width > height
+    return (rotation == Surface.ROTATION_0 || rotation == Surface.ROTATION_180) &&
+      height > width || (rotation == Surface.ROTATION_90 || rotation == Surface.ROTATION_270) &&
+      width > height
   }
 
   private fun exportOrientationLock(nativeOrientationLock: Int): Int {

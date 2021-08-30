@@ -1,34 +1,24 @@
-import { forwardRef } from 'react';
-import { StyleSheet } from 'react-native';
-import createElement from 'react-native-web/dist/exports/createElement';
-export const Table = forwardRef((props, ref) => {
-    return createElement('table', { ...props, style: [styles.reset, props.style], ref });
-});
-export const THead = forwardRef((props, ref) => {
-    return createElement('thead', { ...props, style: [styles.reset, props.style], ref });
-});
-export const TBody = forwardRef((props, ref) => {
-    return createElement('tbody', { ...props, style: [styles.reset, props.style], ref });
-});
-export const TFoot = forwardRef((props, ref) => {
-    return createElement('tfoot', { ...props, style: [styles.reset, props.style], ref });
-});
-export const TH = forwardRef((props, ref) => {
-    return createElement('th', { ...props, style: [styles.reset, props.style], ref });
-});
-export const TR = forwardRef((props, ref) => {
-    return createElement('tr', { ...props, style: [styles.reset, props.style], ref });
-});
-export const TD = forwardRef((props, ref) => {
-    return createElement('td', { ...props, style: [styles.reset, props.style], ref });
-});
-export const Caption = forwardRef((props, ref) => {
-    return createElement('caption', { ...props, style: [styles.reset, props.style], ref });
-});
-const styles = StyleSheet.create({
-    reset: {
-        fontFamily: 'System',
-        padding: 0,
-    },
-});
+import React, { forwardRef } from 'react';
+import View from '../primitives/RNWView';
+function createView(nativeProps) {
+    return forwardRef((props, ref) => {
+        return React.createElement(View, { ...nativeProps, ...props, ref: ref });
+    });
+}
+export const Table = createView({ __element: 'table' });
+Table.displayName = 'Table';
+export const THead = createView({ __element: 'thead' });
+THead.displayName = 'THead';
+export const TBody = createView({ __element: 'tbody' });
+TBody.displayName = 'TBody';
+export const TFoot = createView({ __element: 'tfoot' });
+TFoot.displayName = 'TFoot';
+export const TH = createView({ __element: 'th' });
+TH.displayName = 'TH';
+export const TR = createView({ __element: 'tr' });
+TR.displayName = 'TR';
+export const TD = createView({ __element: 'td' });
+TD.displayName = 'TD';
+export const Caption = createView({ __element: 'caption' });
+Caption.displayName = 'Caption';
 //# sourceMappingURL=Table.web.js.map

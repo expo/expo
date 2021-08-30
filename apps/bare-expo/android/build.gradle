@@ -4,17 +4,19 @@ import groovy.json.JsonSlurper
 
 buildscript {
     ext {
-        buildToolsVersion = "29.0.2"
-        gradlePluginVersion = '4.0.0'
+        buildToolsVersion = "30.0.5"
+        gradlePluginVersion = '4.1.2'
         minSdkVersion = 21
-        compileSdkVersion = 29
-        targetSdkVersion = 29
+        compileSdkVersion = 30
+        targetSdkVersion = 30
+        ndkVersion = "21.4.7075529"
         // Some dependencies still expect supportLibVersion to be defined
         supportLibVersion = "29.0.0"
-        kotlinVersion = '1.3.50'
+        kotlinVersion = '1.4.21'
     }
     repositories {
         google()
+        mavenCentral()
         jcenter()
     }
     dependencies {
@@ -24,12 +26,16 @@ buildscript {
         // Newer versions suffer either from "play-services-basement was supposed to be 15.0.1,
         // but has been resolved to 17.0.0"
         // or https://github.com/segment-integrations/analytics-android-integration-firebase/issues/23
-        classpath 'com.google.gms:google-services:3.2.1'  // Google Services plugin
+        classpath 'com.google.gms:google-services:4.3.5'  // Google Services plugin
 
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
     }
+}
+
+plugins {
+  id "com.diffplug.spotless" version "5.14.1"
 }
 
 def packageJsonFile = new File(rootProject.projectDir, '../package.json')
@@ -61,8 +67,36 @@ allprojects {
             url "$rootDir/../node_modules/expo-camera/android/maven"
         }
 
+       maven {
+           // Detox is installed from npm
+           url "$rootDir/../node_modules/detox/Detox-android"
+       }
+
         google()
+        mavenCentral()
         jcenter()
         maven { url 'https://jitpack.io' }
     }
+}
+
+subprojects {
+  plugins.apply("com.diffplug.spotless")
+  spotless {
+    kotlin {
+      target '**/*.kt'
+      ktlint("0.41.0").userData([
+        "disabled_rules"           : "no-wildcard-imports,import-ordering",
+        "charset"                  : "utf-8",
+        "end_of_line"              : "lf",
+        "indent_size"              : "2",
+        "indent_style"             : "space",
+        "insert_final_newline"     : "true",
+        "tab_width"                : "2",
+        "trim_trailing_whitespace" : "true"
+      ])
+      trimTrailingWhitespace()
+      indentWithSpaces()
+      endWithNewline()
+    }
+  }
 }

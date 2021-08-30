@@ -1,11 +1,11 @@
 //  Copyright © 2018 650 Industries. All rights reserved.
-#import <UMCore/UMExportedModule.h>
-#import <UMCore/UMModuleRegistryConsumer.h>
-#import <UMFileSystemInterface/UMFileSystemInterface.h>
+#import <ExpoModulesCore/EXExportedModule.h>
+#import <ExpoModulesCore/EXModuleRegistryConsumer.h>
+#import <ExpoModulesCore/EXFileSystemInterface.h>
 
-@interface EXVideoThumbnailsModule : UMExportedModule <UMModuleRegistryConsumer>
+@interface EXVideoThumbnailsModule : EXExportedModule <EXModuleRegistryConsumer>
 
-@property (nonatomic, weak) UMModuleRegistry *moduleRegistry;
-@property (nonatomic, weak) id<UMFileSystemInterface> fileSystem;
+@property (nonatomic, weak) EXModuleRegistry *moduleRegistry;
+@property (nonatomic, weak) id<EXFileSystemInterface> fileSystem;
 
 @end

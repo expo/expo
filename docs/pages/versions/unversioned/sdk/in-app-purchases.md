@@ -139,10 +139,7 @@ setPurchaseListener(({ responseCode, results, errorCode }) => {
         finishTransactionAsync(purchase, true);
       }
     });
-  }
-
-  // Else find out what went wrong
-  if (responseCode === IAPResponseCode.USER_CANCELED) {
+  } else if (responseCode === IAPResponseCode.USER_CANCELED) {
     console.log('User canceled the transaction');
   } else if (responseCode === IAPResponseCode.DEFERRED) {
     console.log('User does not have permissions to buy but requested parental approval (iOS only)');
@@ -152,7 +149,7 @@ setPurchaseListener(({ responseCode, results, errorCode }) => {
 });
 ```
 
-### `InAppPurchases.purchaseItemAsync(productId: string, oldItem?: string)`
+### `InAppPurchases.purchaseItemAsync(productId: string, oldPurchaseToken?: string)`
 
 Initiates the purchase flow to buy the item associated with this `productId`. This will display a prompt to the user that will allow them to either buy the item or cancel the purchase. When the purchase completes, the result must be handled in the callback that you passed in to `setPurchaseListener`.
 
@@ -164,7 +161,7 @@ Remember, you have to query an item's details via `getProductsAsync` and set the
 
 - **productId (_string_)** -- The product ID of the item you want to buy.
 
-- **oldItem (_string_)** -- The product ID of the item that the user is upgrading or downgrading from. This is mandatory for replacing an old subscription such as when a user upgrades from a monthly subscription to a yearly one that provides the same content (Android only).
+- **oldPurchaseToken (_string_)** -- (Android only) The `purchaseToken` of the purchase that the user is upgrading or downgrading from. This is mandatory for replacing an old subscription such as when a user upgrades from a monthly subscription to a yearly one that provides the same content. You can get the purchase token from [`getPurchaseHistoryAsync`](#inapppurchasesgetpurchasehistoryasyncrefresh-boolean).
 
 #### Returns
 
@@ -216,17 +213,20 @@ if (!purchase.acknowledged) {
 }
 ```
 
-### `InAppPurchases.getPurchaseHistoryAsync(refresh?: boolean)`
+### `InAppPurchases.getPurchaseHistoryAsync(options)`
 
-Retrieves the user's previous purchase history.
+Retrieves the user's purchase history.
 
-On Android, if refresh is set to `true` it will make a network request and return up to one entry per item even if that purchase is expired, canceled, or consumed. Use this if you want to sync purchases across devices or see purchases that are expired or consumed. If refresh is `false` it relies on the Play Store cache. An important caveat is that the return type when refresh is `true` is actually a subset of when it's `false`. This is because Android returns a `PurchaseHistoryRecord` which only contains the purchase time, purchase token, and product ID, rather than all of the attributes found in the `InAppPurchase` type.
+Please note that on iOS, StoreKit actually creates a new transaction object every time you restore completed transactions, therefore the `purchaseTime` and `orderId` may be inaccurate if it's a restored purchase. If you need the original transaction's information you can use `originalPurchaseTime` and `originalOrderId`, but those will be 0 and an empty string respectively if it is the original transaction.
 
-On iOS, the refresh boolean is ignored. An important thing to note is that on iOS, Storekit actually creates a new transaction object every time you restore completed transactions, therefore the `purchaseTime` and `orderId` may be inaccurate if it's a restored purchase. If you need the original transaction's information you can use `originalPurchaseTime` and `originalOrderId`, but those will be 0 and an empty string respectively if it is the original transaction.
-
+You should not call this method on launch because restoring purchases on iOS prompts for the user’s App Store credentials, which could interrupt the flow of your app.
 #### Arguments
 
-- **refresh (_boolean_)** -- A boolean that indicates whether or not you want to make a network request to sync expired/consumed purchases and those on other devices (Android only)
+An optional object containing the following fields:
+
+- **useGooglePlayCache (_boolean_)** -- (Android only) A boolean that indicates whether or not you want to make a network request to sync expired/consumed purchases and those on other devices. Defaults to `true`.
+  - If set to `true`, this method returns purchase details **only** for the user's currently owned items (active subscriptions and non-consumed one-time purchases). If set to `false`, it will make a network request and return the most recent purchase made by the user for each product, even if that purchase is expired, canceled, or consumed.
+  - The return type if this is `false` is actually a subset of when it's `true`. This is because Android returns a [`PurchaseHistoryRecord`](https://developer.android.com/reference/com/android/billingclient/api/PurchaseHistoryRecord) which only contains the purchase time, purchase token, and product ID, rather than all of the attributes found in the [`InAppPurchase` type](#inapppurchase).
 
 #### Returns
 

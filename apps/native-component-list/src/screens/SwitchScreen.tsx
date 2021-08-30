@@ -1,4 +1,4 @@
-import { Platform } from '@unimodules/core';
+import { Platform } from 'expo-modules-core';
 import * as React from 'react';
 import { Switch } from 'react-native';
 
@@ -10,7 +10,7 @@ export default function SwitchScreen() {
 
   return (
     <Page>
-      <Section title="Custom Color">
+      <Section title="Custom Color" row>
         <Switch
           value={value}
           onValueChange={setValue}
@@ -18,11 +18,11 @@ export default function SwitchScreen() {
           trackColor={{ true: Colors.tintColor, false: 'red' }}
         />
       </Section>
-      <Section title="Disabled">
+      <Section title="Disabled" row>
         <Switch disabled value={value} />
       </Section>
       {Platform.OS === 'web' && (
-        <Section title="Larger">
+        <Section title="Larger" row>
           <Switch value={value} onValueChange={setValue} style={{ height: 32, width: 128 }} />
         </Section>
       )}

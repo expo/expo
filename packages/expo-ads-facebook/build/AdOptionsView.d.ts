@@ -1,6 +1,6 @@
 import React from 'react';
 import { View } from 'react-native';
-declare type Props = React.ComponentProps<typeof View> & {
+declare type Props = React.ComponentPropsWithRef<typeof View> & {
     iconSize: number;
     iconColor?: string;
     orientation: 'horizontal' | 'vertical';

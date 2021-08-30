@@ -14,4 +14,3 @@ enum class MediaTypes {
     }
   }
 }
-

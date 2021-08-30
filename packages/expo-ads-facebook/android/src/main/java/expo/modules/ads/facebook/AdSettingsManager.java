@@ -10,12 +10,12 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 
-import org.unimodules.core.ExportedModule;
-import org.unimodules.core.ModuleRegistry;
-import org.unimodules.core.Promise;
-import org.unimodules.core.interfaces.ExpoMethod;
-import org.unimodules.core.interfaces.LifecycleEventListener;
-import org.unimodules.core.interfaces.services.UIManager;
+import expo.modules.core.ExportedModule;
+import expo.modules.core.ModuleRegistry;
+import expo.modules.core.Promise;
+import expo.modules.core.interfaces.ExpoMethod;
+import expo.modules.core.interfaces.LifecycleEventListener;
+import expo.modules.core.interfaces.services.UIManager;
 
 public class AdSettingsManager extends ExportedModule implements LifecycleEventListener {
 
@@ -77,7 +77,7 @@ public class AdSettingsManager extends ExportedModule implements LifecycleEventL
 
   @ExpoMethod
   public void setIsChildDirected(boolean isChildDirected, Promise promise) {
-    AdSettings.setIsChildDirected(isChildDirected);
+    AdSettings.setMixedAudience(isChildDirected);
     mIsChildDirected = isChildDirected;
     promise.resolve(null);
   }
@@ -101,14 +101,14 @@ public class AdSettingsManager extends ExportedModule implements LifecycleEventL
       AdSettings.addTestDevice(hash);
     }
 
-    AdSettings.setIsChildDirected(mIsChildDirected);
+    AdSettings.setMixedAudience(mIsChildDirected);
     AdSettings.setMediationService(mMediationService);
     AdSettings.setUrlPrefix(mUrlPrefix);
   }
 
   private void clearSettings() {
     AdSettings.clearTestDevices();
-    AdSettings.setIsChildDirected(false);
+    AdSettings.setMixedAudience(false);
     AdSettings.setMediationService(null);
     AdSettings.setUrlPrefix(null);
   }

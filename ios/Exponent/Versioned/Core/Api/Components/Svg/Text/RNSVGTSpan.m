@@ -6,35 +6,16 @@
  * LICENSE file in the root directory of this source tree.
  */
 #import "RNSVGTSpan.h"
+#import "RNSVGUIKit.h"
 #import "RNSVGText.h"
 #import "RNSVGTextPath.h"
 #import "RNSVGTextProperties.h"
+#import "RNSVGTopAlignedLabel.h"
 #import "RNSVGPathMeasure.h"
 #import "RNSVGFontData.h"
 
 static NSCharacterSet *RNSVGTSpan_separators = nil;
 static CGFloat RNSVGTSpan_radToDeg = 180 / (CGFloat)M_PI;
-
-@interface TopAlignedLabel : UILabel
-
-@end
-
-
-@implementation TopAlignedLabel
-
-- (void)drawTextInRect:(CGRect) rect
-{
-    NSAttributedString *attributedText = [[NSAttributedString alloc]     initWithString:self.text attributes:@{NSFontAttributeName:self.font}];
-    rect.size.height = [attributedText boundingRectWithSize:rect.size
-                                                    options:NSStringDrawingUsesLineFragmentOrigin
-                                                    context:nil].size.height;
-    if (self.numberOfLines != 0) {
-        rect.size.height = MIN(rect.size.height, self.numberOfLines * self.font.lineHeight);
-    }
-    [super drawTextInRect:rect];
-}
-
-@end
 
 @implementation RNSVGTSpan
 {
@@ -116,7 +97,7 @@ static CGFloat RNSVGTSpan_radToDeg = 180 / (CGFloat)M_PI;
                 NSUInteger count = [emoji count];
                 CGFloat fontSize = [gc getFontSize];
                 for (NSUInteger i = 0; i < count; i++) {
-                    UILabel *label = [emoji objectAtIndex:i];
+                    RNSVGPlatformView *label = [emoji objectAtIndex:i];
                     NSValue *transformValue = [emojiTransform objectAtIndex:i];
                     CGAffineTransform transform = [transformValue CGAffineTransformValue];
                     CGContextConcatCTM(context, transform);
@@ -163,7 +144,7 @@ static CGFloat RNSVGTSpan_radToDeg = 180 / (CGFloat)M_PI;
     return attrs;
 }
 
-TopAlignedLabel *label;
+RNSVGTopAlignedLabel *label;
 - (void)drawWrappedText:(CGContextRef)context gc:(RNSVGGlyphContext *)gc rect:(CGRect)rect color:(CGColorRef)color {
     [self pushGlyphContext];
     if (fontRef != nil) {
@@ -198,17 +179,18 @@ TopAlignedLabel *label;
 
     UIFont *font = (__bridge UIFont *)(fontRef);
     if (!label) {
-        label = [[TopAlignedLabel alloc] init];
+        label = [[RNSVGTopAlignedLabel alloc] init];
     }
     label.attributedText = (__bridge NSAttributedString * _Nullable)(attrString);
-    label.baselineAdjustment = UIBaselineAdjustmentNone;
     label.lineBreakMode = NSLineBreakByWordWrapping;
-    label.backgroundColor = UIColor.clearColor;
+    label.backgroundColor = RNSVGColor.clearColor;
     label.textAlignment = align;
     label.numberOfLines = 0;
+#if !TARGET_OS_OSX // On macOS, views are transparent by default
     label.opaque = NO;
+#endif
     label.font = font;
-    label.textColor = [UIColor colorWithCGColor:color];
+    label.textColor = [RNSVGColor colorWithCGColor:color];
 
     CGFloat fontSize = [gc getFontSize];
     CGFloat height = CGRectGetHeight(rect);
@@ -279,7 +261,7 @@ TopAlignedLabel *label;
 
     NSString *str = self.content;
     if (!str) {
-        for (UIView *node in self.subviews) {
+        for (RNSVGView *node in self.subviews) {
             if ([node isKindOfClass:[RNSVGText class]]) {
                 RNSVGText *text = (RNSVGText*)node;
                 advance += [text getSubtreeTextChunksTotalAdvance];
@@ -1008,14 +990,18 @@ TopAlignedLabel *label;
             CGFloat width = box.size.width;
 
             if (width == 0) { // Render unicode emoji
-                UILabel *label = [[UILabel alloc] init];
+                RNSVGTextView *label = [[RNSVGTextView alloc] init];
                 CFIndex startIndex = indices[g];
                 long len = MAX(1, endIndex - startIndex);
                 NSRange range = NSMakeRange(startIndex, len);
                 NSString* currChars = [str substringWithRange:range];
+#if TARGET_OS_OSX
+                label.string = currChars;
+#else
                 label.text = currChars;
                 label.opaque = NO;
-                label.backgroundColor = UIColor.clearColor;
+#endif
+                label.backgroundColor = RNSVGColor.clearColor;
                 UIFont * customFont = [UIFont systemFontOfSize:fontSize];
 
                 CGSize measuredSize = [currChars sizeWithAttributes:

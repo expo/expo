@@ -10,8 +10,10 @@ import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
 
-class RawImageExporter(private val contentResolver: ContentResolver,
-                       private val mBase64: Boolean) : ImageExporter {
+class RawImageExporter(
+  private val contentResolver: ContentResolver,
+  private val mBase64: Boolean
+) : ImageExporter {
 
   override fun export(source: Uri, output: File, exporterListener: Listener) {
     val base64Stream = if (mBase64) ByteArrayOutputStream() else null
@@ -34,8 +36,8 @@ class RawImageExporter(private val contentResolver: ContentResolver,
    * `out` if base64 is requested.
    *
    * @param originalUri uri to the file to copy the data from
-   * @param file        file to save the image to
-   * @param out         if not null, the stream to save the image to
+   * @param file file to save the image to
+   * @param out if not null, the stream to save the image to
    */
   @Throws(IOException::class)
   private fun copyImage(originalUri: Uri, file: File, out: ByteArrayOutputStream?) {
@@ -54,5 +56,4 @@ class RawImageExporter(private val contentResolver: ContentResolver,
       }
     }
   }
-
 }

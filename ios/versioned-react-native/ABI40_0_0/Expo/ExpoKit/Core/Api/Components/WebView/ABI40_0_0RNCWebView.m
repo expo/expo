@@ -223,7 +223,7 @@ static NSDictionary* customCertificatesForHost;
     wkWebViewConfig.websiteDataStore = [WKWebsiteDataStore defaultDataStore];
   }
   if(self.useSharedProcessPool) {
-    wkWebViewConfig.processPool = [[ABI40_0_0RNCWKProcessPoolManager sharedManager] sharedProcessPoolForExperienceId:self.experienceId];
+    wkWebViewConfig.processPool = [[ABI40_0_0RNCWKProcessPoolManager sharedManager] sharedProcessPoolForScopeKey:self.scopeKey];
   }
 
   wkWebViewConfig.userContentController = [WKUserContentController new];
@@ -283,7 +283,7 @@ static NSDictionary* customCertificatesForHost;
     _webView.scrollView.scrollEnabled = _scrollEnabled;
     _webView.scrollView.pagingEnabled = _pagingEnabled;
       //For UIRefreshControl to work correctly, the bounces should always be true
-    _webView.scrollView.bounces = _pullToRefreshEnabled || _bounces; 
+    _webView.scrollView.bounces = _pullToRefreshEnabled || _bounces;
     _webView.scrollView.showsHorizontalScrollIndicator = _showsHorizontalScrollIndicator;
     _webView.scrollView.showsVerticalScrollIndicator = _showsVerticalScrollIndicator;
     _webView.scrollView.directionalLockEnabled = _directionalLockEnabled;
@@ -1156,7 +1156,7 @@ static NSDictionary* customCertificatesForHost;
 - (void)setPullToRefreshEnabled:(BOOL)pullToRefreshEnabled
 {
     _pullToRefreshEnabled = pullToRefreshEnabled;
-    
+
     if (pullToRefreshEnabled) {
         [self addPullToRefreshControl];
     } else {

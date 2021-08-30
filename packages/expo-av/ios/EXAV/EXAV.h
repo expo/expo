@@ -2,10 +2,10 @@
 
 #import <AVFoundation/AVFoundation.h>
 
-#import <UMCore/UMModuleRegistryConsumer.h>
-#import <UMCore/UMAppLifecycleListener.h>
-#import <UMCore/UMExportedModule.h>
-#import <UMCore/UMEventEmitter.h>
+#import <ExpoModulesCore/EXModuleRegistryConsumer.h>
+#import <ExpoModulesCore/EXAppLifecycleListener.h>
+#import <ExpoModulesCore/EXExportedModule.h>
+#import <ExpoModulesCore/EXEventEmitter.h>
 #import <EXAV/EXAVObject.h>
 
 typedef NS_OPTIONS(NSUInteger, EXAudioInterruptionMode)
@@ -53,7 +53,7 @@ typedef NS_OPTIONS(NSUInteger, EXAudioRecordingOptionBitRateStrategy)
 
 @end
 
-@interface EXAV : UMExportedModule <UMEventEmitter, UMAppLifecycleListener, UMModuleRegistryConsumer, EXAVInterface>
+@interface EXAV : EXExportedModule <EXEventEmitter, EXAppLifecycleListener, EXModuleRegistryConsumer, EXAVInterface>
 
 - (void)handleMediaServicesReset:(NSNotification *)notification;
 - (void)handleAudioSessionInterruption:(NSNotification *)notification;

@@ -55,7 +55,7 @@ async function promptForPackagesToPromoteAsync(parcels: Parcel[]): Promise<strin
     {
       type: 'checkbox',
       name: 'selectedPackageNames',
-      message: 'Which packages do you want to promote?\n',
+      message: 'Which packages do you want to promote?\n  ● selected ○ unselected\n',
       choices: [
         // Choices unchecked by default (these being demoted) should be on top.
         // We could sort them, but JS sorting algorithm is unstable :/

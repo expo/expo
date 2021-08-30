@@ -12,12 +12,14 @@ import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
 
-class VideoResultTask(private val promise: Promise,
-                      private val uri: Uri,
-                      private val contentResolver: ContentResolver,
-                      private val fileProvider: FileProvider,
-                      private val mediaMetadataRetriever: MediaMetadataRetriever)
-  :  AsyncTask<Void?, Void?, Void?>() {
+class VideoResultTask(
+  private val promise: Promise,
+  private val uri: Uri,
+  private val contentResolver: ContentResolver,
+  private val fileProvider: FileProvider,
+  private val mediaMetadataRetriever: MediaMetadataRetriever
+) :
+  AsyncTask<Void?, Void?, Void?>() {
 
   override fun doInBackground(vararg params: Void?): Void? {
     try {
@@ -27,10 +29,10 @@ class VideoResultTask(private val promise: Promise,
         putString("uri", outputFile.toURI().toString())
         putBoolean("cancelled", false)
         putString("type", "video")
-        putInt("width", mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH).toInt())
-        putInt("height", mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT).toInt())
-        putInt("rotation", mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_ROTATION).toInt())
-        putInt("duration", mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION).toInt())
+        putInt("width", mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH)?.toInt() ?: 0)
+        putInt("height", mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT)?.toInt() ?: 0)
+        putInt("rotation", mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_ROTATION)?.toInt() ?: 0)
+        putInt("duration", mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)?.toInt() ?: 0)
       }
       promise.resolve(response)
     } catch (e: IllegalArgumentException) {
@@ -55,5 +57,4 @@ class VideoResultTask(private val promise: Promise,
       }
     }
   }
-
 }

@@ -6,7 +6,7 @@ sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-40/packages/expo/src/Notif
 import SnackInline from '~/components/plugins/SnackInline';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 
-> ⚠️ **This API is deprecated and will be removed in SDK 41. Please use [the new notification module](notifications.md).**
+> ⚠️ **This API is deprecated and will be removed in SDK 41. Please use [the new notification module](notifications.md). [Here's a guide to help make the transition as easy as possible](https://github.com/expo/fyi/blob/master/LegacyNotifications-to-ExpoNotifications.md).**
 
 The `Notifications` API from **`expo`** provides access to remote notifications (also known as push notifications) and local notifications (scheduling and immediate) related functions.
 
@@ -20,7 +20,7 @@ The `Notifications` API from **`expo`** provides access to remote notifications 
 
 This API is pre-installed in [managed](../../../introduction/managed-vs-bare.md#managed-workflow) apps. See the [expo-notifications README](https://github.com/expo/expo/tree/master/packages/expo-notifications) for information on how to integrate notifications into bare React Native apps.
 
-> 💡 Please note that the [expo-notifications library for bare workflow](https://github.com/expo/expo/tree/master/packages/expo-notifications) has a different API from the Notifications API explained on this page, which is for the managed workflow. These APIs will be unified in an upcoming SDK release.
+> 💡 Please note that the [new `expo-notifications` library](https://github.com/expo/expo/tree/master/packages/expo-notifications) has a different API from the legacy Notifications API explained on this page. This API is deprecated and will be removed in SDK 41. [Here's a guide to help make the transition to the new library as easy as possible](https://github.com/expo/fyi/blob/master/LegacyNotifications-to-ExpoNotifications.md).
 
 ## API
 

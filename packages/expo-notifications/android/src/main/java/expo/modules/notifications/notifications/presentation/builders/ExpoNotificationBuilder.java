@@ -71,12 +71,8 @@ public class ExpoNotificationBuilder extends ChannelAwareNotificationBuilder {
     } else if (shouldPlayDefaultSound) {
       builder.setDefaults(NotificationCompat.DEFAULT_SOUND);
     } else {
-      // Remove any sound or vibration attached by notification options.
-      builder.setDefaults(0);
-      // Remove any vibration pattern attached to the builder by overriding
-      // it with a no-vibrate pattern. It also doubles as a cue for the OS
-      // that given high priority it should be displayed as a heads-up notification.
-      builder.setVibrate(NO_VIBRATE_PATTERN);
+      // Notification will not vibrate or play sound, regardless of channel
+      builder.setSilent(true);
     }
 
     if (shouldPlaySound() && content.getSound() != null) {

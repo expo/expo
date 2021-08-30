@@ -2,11 +2,11 @@ import React from 'react';
 import { StyleSheet, PixelRatio, View } from 'react-native';
 
 import DevMenuContext, { Context } from '../DevMenuContext';
-import { StyledText } from '../components/Text';
-import Colors from '../constants/Colors';
-import DevMenuItemsList from './DevMenuItemsList';
-import DevMenuAppInfo from './DevMenuAppInfo';
 import { DevMenuAppInfoType, DevMenuItemAnyType } from '../DevMenuInternal';
+import ListFooter from '../components/ListFooter';
+import MainOptions from '../components/MainOptions';
+import DevMenuGroup from '../components/items/DevMenuGroup';
+import DevMenuAppInfo from './DevMenuAppInfo';
 
 type Props = {
   appInfo: DevMenuAppInfoType;
@@ -26,7 +26,13 @@ class DevMenuView extends React.PureComponent<Props, undefined> {
   };
 
   renderItems() {
-    return <DevMenuItemsList items={this.context.devMenuItems} />;
+    return (
+      <View testID="DevMenuMainScreen">
+        <DevMenuGroup items={this.context.devMenuItems} />
+        <MainOptions />
+        <ListFooter label="This development menu will not be present in any release builds of this project." />
+      </View>
+    );
   }
 
   renderContent() {
@@ -35,7 +41,7 @@ class DevMenuView extends React.PureComponent<Props, undefined> {
     return (
       <>
         <DevMenuAppInfo appInfo={appInfo} />
-        <View style={styles.itemsContainer}>{this.renderItems()}</View>
+        {this.renderItems()}
       </>
     );
   }
@@ -73,15 +79,6 @@ const styles = StyleSheet.create({
   },
   appInfo: {
     borderBottomWidth: 2 / PixelRatio.get(),
-  },
-  itemsContainer: {
-    marginTop: 7,
-  },
-  closeButton: {
-    position: 'absolute',
-    right: 12,
-    top: 12,
-    zIndex: 3, // should be higher than zIndex of onboarding container
   },
 });
 

@@ -1,6 +1,6 @@
 package expo.modules.webbrowser;
 
-import org.unimodules.core.interfaces.Consumer;
+import expo.modules.core.interfaces.Consumer;
 
 import java.util.LinkedList;
 import java.util.Queue;

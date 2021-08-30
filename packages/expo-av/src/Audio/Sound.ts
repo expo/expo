@@ -1,4 +1,4 @@
-import { EventEmitter } from '@unimodules/core';
+import { EventEmitter } from 'expo-modules-core';
 
 import {
   Playback,
@@ -160,14 +160,8 @@ export class Sound implements Playback {
     if (!this._loaded) {
       this._loading = true;
 
-      const {
-        nativeSource,
-        fullInitialStatus,
-      } = await getNativeSourceAndFullInitialStatusForLoadAsync(
-        source,
-        initialStatus,
-        downloadFirst
-      );
+      const { nativeSource, fullInitialStatus } =
+        await getNativeSourceAndFullInitialStatusForLoadAsync(source, initialStatus, downloadFirst);
 
       // This is a workaround, since using load with resolve / reject seems to not work.
       return new Promise<AVPlaybackStatus>((resolve, reject) => {
@@ -186,9 +180,7 @@ export class Sound implements Playback {
           reject(error);
         };
 
-        ExponentAV.loadForSound(nativeSource, fullInitialStatus)
-          .then(loadSuccess)
-          .catch(loadError);
+        ExponentAV.loadForSound(nativeSource, fullInitialStatus).then(loadSuccess).catch(loadError);
       });
     } else {
       throw new Error('The Sound is already loaded.');

@@ -1,5 +1,8 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
+import Foundation
+import UIKit
+
 @objc
 public protocol DevMenuDelegateProtocol {
   /**
@@ -39,4 +42,7 @@ public protocol DevMenuDelegateProtocol {
   @available(iOS 12.0, *)
   @objc
   optional func userInterfaceStyle(forDevMenuManager manager: DevMenuManagerProtocol) -> UIUserInterfaceStyle
+  
+  @objc
+  optional func supportsDevelopment() -> Bool
 }

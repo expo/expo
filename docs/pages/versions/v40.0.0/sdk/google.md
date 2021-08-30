@@ -6,9 +6,11 @@ sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-40/packages/expo-google-ap
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 import { InlineCode } from '~/components/base/code';
 
+> ⚠️ This package is deprecated in favor of the Google [**AuthSession**](auth-session.md) provider. Check out the [Google authentication guides](../../../guides/authentication.md#google) to learn how to migrate your app today.
+
 **`expo-google-app-auth`** provides Google authentication integration for Expo apps using a secure system web browser with native [**`expo-app-auth`**][expo-app-auth]. This is better than a WebView because you can reuse credentials saved on the device. This module uses [PKCE](https://tools.ietf.org/html/rfc7636) for secure native authentication. You won't need to define a provider config because this package utilizes Open ID Connect [auto discovery](https://openid.net/specs/openid-connect-discovery-1_0.html).
 
-<PlatformsSection android emulator ios simulator web={{ pending: 'https://github.com/expo/expo/issues/6884' }} />
+<PlatformsSection android emulator ios simulator />
 
 ### How it works
 
@@ -59,8 +61,8 @@ The difference between this method and native authentication are very sparce. Go
 
 | Name                                    | Type                                         | Description                                                                                                                                                         |
 | --------------------------------------- | -------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [iosClientId][g-creds]                  | <InlineCode>string \| undefined</InlineCode> | The iOS client id registered with Google for use in the Expo client app.                                                                                            |
-| [androidClientId][g-creds]              | <InlineCode>string \| undefined</InlineCode> | The Android client id registered with Google for use in the Expo client app.                                                                                        |
+| [iosClientId][g-creds]                  | <InlineCode>string \| undefined</InlineCode> | The iOS client id registered with Google for use in the Expo Go app.                                                                                                |
+| [androidClientId][g-creds]              | <InlineCode>string \| undefined</InlineCode> | The Android client id registered with Google for use in the Expo Go app.                                                                                            |
 | [iosStandaloneAppClientId][g-creds]     | <InlineCode>string \| undefined</InlineCode> | The iOS client id registered with Google for use in a standalone app.                                                                                               |
 | [androidStandaloneAppClientId][g-creds] | <InlineCode>string \| undefined</InlineCode> | The Android client id registered with Google for use in a standalone app.                                                                                           |
 | [clientId][g-creds]                     | <InlineCode>string \| undefined</InlineCode> | If the platform-appropriate client ID is not provided, this will be used instead.                                                                                   |
@@ -70,7 +72,7 @@ The difference between this method and native authentication are very sparce. Go
 | redirectUrl                             | <InlineCode>string \| undefined</InlineCode> | Defaults to `${AppAuth.OAuthRedirect}:/oauth2redirect/google`. Optionally you can define your own redirect URL, just make sure to see the note below.               |
 
 **Note on `redirectUrl`**:
-If you choose to provide your own `redirectUrl`, it should start with the value returned by [`AppAuth.OAuthRedirect`](app-auth.md#appauthoauthredirect). This way, the method will function correctly and consistently whether you are testing in the Expo client or as a standalone app.
+If you choose to provide your own `redirectUrl`, it should start with the value returned by [`AppAuth.OAuthRedirect`](app-auth.md#appauthoauthredirect). This way, the method will function correctly and consistently whether you are testing in the Expo Go app or as a standalone app.
 
 **Returns**
 
@@ -136,8 +138,8 @@ Invalidates the provided `accessToken`, given the client ID used to sign-in is p
 | Name                                    | Type                                         | Description                                                                              |
 | --------------------------------------- | -------------------------------------------- | ---------------------------------------------------------------------------------------- |
 | accessToken                             | `string`                                     | Provided when the user authenticates with your Google application.                       |
-| [iosClientId][g-creds]                  | <InlineCode>string \| undefined</InlineCode> | The iOS client id registered with Google for use in the Expo client app.                 |
-| [androidClientId][g-creds]              | <InlineCode>string \| undefined</InlineCode> | The Android client id registered with Google for use in the Expo client app.             |
+| [iosClientId][g-creds]                  | <InlineCode>string \| undefined</InlineCode> | The iOS client id registered with Google for use in the Expo Go app.                     |
+| [androidClientId][g-creds]              | <InlineCode>string \| undefined</InlineCode> | The Android client id registered with Google for use in the Expo Go app.                 |
 | [iosStandaloneAppClientId][g-creds]     | <InlineCode>string \| undefined</InlineCode> | The iOS client id registered with Google for use in a standalone app.                    |
 | [androidStandaloneAppClientId][g-creds] | <InlineCode>string \| undefined</InlineCode> | The Android client id registered with Google for use in a standalone app.                |
 | scopes                                  | `string[] = ['profile', 'email']`            | The scopes to ask for from Google for this login ([more information here][g-using-apis]) |
@@ -165,7 +167,7 @@ if (type === 'success') {
 
 ## Using it inside of the Expo app
 
-In the Expo client app, you can only use browser-based login (this works very well actually because it re-uses credentials saved in your system browser).
+In the Expo Go app, you can only use browser-based login (this works very well actually because it re-uses credentials saved in your system browser).
 
 To use Google Sign In, you will need to create a project on the Google Developer Console and create an OAuth 2.0 client ID. This is, unfortunately, super annoying to do and we wish there was a way we could automate this for you, but at the moment the Google Developer Console does not expose an API. _You also need to register a separate set of Client IDs for a standalone app, the process for this is described later in this document_.
 
@@ -219,7 +221,7 @@ To use Google Sign In, you will need to create a project on the Google Developer
 
 ## Deploying to a standalone app on Android
 
-If you want to use Google Sign In for a standalone app, you can follow these steps. These steps assume that you already have it working on the Expo client app. If you have already created an API key for Google Maps, you skip steps 3 through 8, inclusive.
+If you want to use Google Sign In for a standalone app, you can follow these steps. These steps assume that you already have it working on the Expo Go app. If you have already created an API key for Google Maps, you skip steps 3 through 8, inclusive.
 
 - **Get a Google API Key for your app** : `skip this if you already have one, eg: for Google Maps`
   1.  Build a standalone app and download the apk, or find one that you have already built.
@@ -251,7 +253,7 @@ Note that if you've enabled Google Play's app signing service, you will need to 
 
 ## Deploying to a standalone app on iOS
 
-If you want to use native sign in for a standalone app, you can follow these steps. These steps assume that you already have it working on the Expo client app.
+If you want to use native sign in for a standalone app, you can follow these steps. These steps assume that you already have it working on the Expo Go app.
 
 1.  Add a `bundleIdentifier` to your `app.json` if you don't already have one.
 2.  Open your browser to [Google Developer Credentials][g-creds]

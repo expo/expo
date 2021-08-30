@@ -20,13 +20,13 @@
          withLoadFinishBlock:(void (^)(BOOL success, NSDictionary *successStatus, NSString *error))loadFinishBlock;
 
 - (void)setStatus:(NSDictionary *)parameters
-         resolver:(UMPromiseResolveBlock)resolve
-         rejecter:(UMPromiseRejectBlock)reject;
+         resolver:(EXPromiseResolveBlock)resolve
+         rejecter:(EXPromiseRejectBlock)reject;
 
 - (NSDictionary *)getStatus;
 
 - (void)replayWithStatus:(NSDictionary *)status
-                resolver:(UMPromiseResolveBlock)resolve
-                rejecter:(UMPromiseRejectBlock)reject;
+                resolver:(EXPromiseResolveBlock)resolve
+                rejecter:(EXPromiseRejectBlock)reject;
 
 @end

@@ -1,4 +1,4 @@
-import { useSelector } from 'react-redux';
+import { useSelector } from '../redux/Hooks';
 
 export default function isUserAuthenticated(session: { sessionSecret: string | null }): boolean {
   return !!session.sessionSecret;

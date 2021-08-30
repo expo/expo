@@ -1,12 +1,13 @@
 import './polyfillNextTick';
 import customOpenDatabase from '@expo/websql/custom';
-import { NativeModulesProxy } from '@unimodules/core';
+import { NativeModulesProxy } from 'expo-modules-core';
 import zipObject from 'lodash/zipObject';
 import { Platform } from 'react-native';
 const { ExponentSQLite } = NativeModulesProxy;
 class SQLiteDatabase {
+    _name;
+    _closed = false;
     constructor(name) {
-        this._closed = false;
         this._name = name;
     }
     exec(queries, readOnly, callback) {
@@ -61,6 +62,20 @@ function addExecMethod(db) {
     };
     return db;
 }
+// @needsAudit @docsMissing
+/**
+ * Open a database, creating it if it doesn't exist, and return a `Database` object. On disk,
+ * the database will be created under the app's [documents directory](../filesystem), i.e.
+ * `${FileSystem.documentDirectory}/SQLite/${name}`.
+ * > The `version`, `description` and `size` arguments are ignored, but are accepted by the function
+ * for compatibility with the WebSQL specification.
+ * @param name Name of the database file to open.
+ * @param version
+ * @param description
+ * @param size
+ * @param callback
+ * @return
+ */
 export function openDatabase(name, version = '1.0', description = name, size = 1, callback) {
     if (name === undefined) {
         throw new TypeError(`The database name must not be undefined`);

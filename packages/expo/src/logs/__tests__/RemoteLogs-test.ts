@@ -1,4 +1,4 @@
-import RemoteConsole from '../RemoteConsole';
+import * as RemoteConsole from '../RemoteConsole';
 import { __waitForEmptyLogQueueAsync } from '../RemoteLogging';
 
 jest.mock('react-native/Libraries/Core/Devtools/symbolicateStackTrace', () =>
@@ -14,12 +14,13 @@ jest.mock('expo-application', () => ({
 
 let originalFetch;
 
-const mockOriginalConsole = ({
+const mockOriginalConsole = {
   error: jest.fn(),
-} as any) as Console;
+} as any as Console;
 
 beforeAll(() => {
   originalFetch = global.fetch;
+  // @ts-ignore
   global.fetch = jest.fn(async () => ({ status: 200 }));
 });
 
@@ -31,7 +32,7 @@ describe(`remote console logging`, () => {
   it(`removes internal console stack frames from the reported stack trace`, async () => {
     const fetchBarrier = new Promise(resolve => {
       (global.fetch as jest.Mock).mockImplementationOnce(async () => {
-        resolve();
+        resolve(null);
         return { status: 200 };
       });
     });

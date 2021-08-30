@@ -29,7 +29,35 @@ exports[`Checkbox renders content matching snapshot 1`] = `
         }
       }
     >
+      <input
+        aria-checked={true}
+        checked={true}
+        onChange={[Function]}
+        style={
+          Object {
+            "WebkitAppearance": "none",
+            "bottom": "0px",
+            "cursor": "inherit",
+            "height": "100%",
+            "left": "0px",
+            "marginBottom": "0px",
+            "marginLeft": "0px",
+            "marginRight": "0px",
+            "marginTop": "0px",
+            "paddingBottom": "0px",
+            "paddingLeft": "0px",
+            "paddingRight": "0px",
+            "paddingTop": "0px",
+            "position": "absolute",
+            "right": "0px",
+            "top": "0px",
+            "width": "100%",
+          }
+        }
+        type="checkbox"
+      />
       <View
+        pointerEvents="none"
         style={
           Object {
             "alignItems": "center",
@@ -40,14 +68,19 @@ exports[`Checkbox renders content matching snapshot 1`] = `
             "borderRadius": 2,
             "borderStyle": "solid",
             "borderWidth": 2,
+            "bottom": 0,
             "height": "100%",
             "justifyContent": "center",
+            "left": 0,
+            "position": "absolute",
+            "right": 0,
+            "top": 0,
             "width": "100%",
           }
         }
       >
         <div
-          className="css-view-1dbjc4n"
+          className="css-view-1dbjc4n r-pointerEvents-633pao"
           style={
             Object {
               "WebkitAlignItems": "center",
@@ -74,42 +107,20 @@ exports[`Checkbox renders content matching snapshot 1`] = `
               "borderTopRightRadius": "2px",
               "borderTopStyle": "solid",
               "borderTopWidth": "2px",
+              "bottom": "0px",
               "height": "100%",
               "justifyContent": "center",
+              "left": "0px",
               "msFlexAlign": "center",
               "msFlexPack": "center",
+              "position": "absolute",
+              "right": "0px",
+              "top": "0px",
               "width": "100%",
             }
           }
         />
       </View>
-      <input
-        checked={true}
-        data-focusable={true}
-        onChange={[Function]}
-        style={
-          Object {
-            "bottom": "0px",
-            "cursor": "inherit",
-            "height": "100%",
-            "left": "0px",
-            "marginBottom": "0px",
-            "marginLeft": "0px",
-            "marginRight": "0px",
-            "marginTop": "0px",
-            "opacity": 0,
-            "paddingBottom": "0px",
-            "paddingLeft": "0px",
-            "paddingRight": "0px",
-            "paddingTop": "0px",
-            "position": "absolute",
-            "right": "0px",
-            "top": "0px",
-            "width": "100%",
-          }
-        }
-        type="checkbox"
-      />
     </div>
   </View>
 </Checkbox>

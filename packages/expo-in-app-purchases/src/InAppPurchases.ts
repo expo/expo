@@ -1,4 +1,4 @@
-import { CodedError, EventEmitter, Subscription } from '@unimodules/core';
+import { CodedError, EventEmitter, Subscription } from 'expo-modules-core';
 import { Platform } from 'react-native';
 
 import ExpoInAppPurchases from './ExpoInAppPurchases';
@@ -43,7 +43,9 @@ export async function connectAsync(): Promise<void> {
   connected = true;
 }
 
-export async function getProductsAsync(itemList: string[]): Promise<IAPQueryResponse> {
+export async function getProductsAsync(
+  itemList: string[]
+): Promise<IAPQueryResponse<IAPItemDetails>> {
   if (!connected) {
     throw new ConnectionError(errors.NOT_CONNECTED);
   }
@@ -51,28 +53,38 @@ export async function getProductsAsync(itemList: string[]): Promise<IAPQueryResp
   return await ExpoInAppPurchases.getProductsAsync(itemList);
 }
 
-export async function getPurchaseHistoryAsync(refresh?: boolean): Promise<IAPQueryResponse> {
+export async function getPurchaseHistoryAsync(
+  options: {
+    useGooglePlayCache: boolean;
+  } = { useGooglePlayCache: true }
+): Promise<IAPQueryResponse<InAppPurchase>> {
   if (!connected) {
     throw new ConnectionError(errors.NOT_CONNECTED);
   }
 
-  return await ExpoInAppPurchases.getPurchaseHistoryAsync(refresh);
+  if (Platform.OS === 'android') {
+    return await ExpoInAppPurchases.getPurchaseHistoryAsync(options);
+  } else {
+    return await ExpoInAppPurchases.getPurchaseHistoryAsync();
+  }
 }
 
-export async function purchaseItemAsync(itemId: string, oldItem?: string): Promise<void> {
+export async function purchaseItemAsync(itemId: string, oldPurchaseToken?: string): Promise<void> {
   if (!connected) {
     throw new ConnectionError(errors.NOT_CONNECTED);
   }
 
-  await ExpoInAppPurchases.purchaseItemAsync(itemId, oldItem);
+  await ExpoInAppPurchases.purchaseItemAsync(itemId, oldPurchaseToken);
 }
 
-export async function setPurchaseListener(callback: (result) => void): Promise<void> {
+export function setPurchaseListener(
+  callback: (result: IAPQueryResponse<InAppPurchase>) => void
+): void {
   if (purchaseUpdatedSubscription) {
     purchaseUpdatedSubscription.remove();
   }
 
-  purchaseUpdatedSubscription = eventEmitter.addListener<IAPQueryResponse>(
+  purchaseUpdatedSubscription = eventEmitter.addListener<IAPQueryResponse<InAppPurchase>>(
     PURCHASES_UPDATED_EVENT,
     result => {
       callback(result);
@@ -89,8 +101,11 @@ export async function finishTransactionAsync(
   }
   if (purchase.acknowledged) return;
 
-  const transactionId = Platform.OS === 'android' ? purchase.purchaseToken : purchase.orderId;
-  await ExpoInAppPurchases.finishTransactionAsync(transactionId, consumeItem);
+  if (Platform.OS === 'android') {
+    await ExpoInAppPurchases.finishTransactionAsync(purchase.purchaseToken, consumeItem);
+  } else {
+    await ExpoInAppPurchases.finishTransactionAsync(purchase.orderId);
+  }
 }
 
 export async function getBillingResponseCodeAsync(): Promise<number> {

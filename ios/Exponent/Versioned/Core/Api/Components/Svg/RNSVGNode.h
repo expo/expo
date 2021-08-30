@@ -13,11 +13,11 @@
 @class RNSVGGroup;
 
 /**
- * RNSVG nodes are implemented as base UIViews. They should be implementation for all basic
+ * RNSVG nodes are implemented as base NSViews/UIViews. They should be implementation for all basic
  ＊interfaces for all non-definition nodes.
  */
 
-@interface RNSVGNode : UIView
+@interface RNSVGNode : RNSVGView
 
 /*
  N[1/Sqrt[2], 36]
@@ -132,7 +132,7 @@ extern CGFloat const RNSVG_DEFAULT_FONT_SIZE;
 
 - (void)endTransparencyLayer:(CGContextRef)context;
 
-- (void)traverseSubviews:(BOOL (^)(__kindof UIView *node))block;
+- (void)traverseSubviews:(BOOL (^)(__kindof RNSVGView *node))block;
 
 - (void)clearChildCache;
 

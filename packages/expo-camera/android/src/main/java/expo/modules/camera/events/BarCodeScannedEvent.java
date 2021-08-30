@@ -3,9 +3,9 @@ package expo.modules.camera.events;
 import android.os.Bundle;
 import androidx.core.util.Pools;
 
-import org.unimodules.core.interfaces.services.EventEmitter;
-import org.unimodules.interfaces.barcodescanner.BarCodeScannerResult;
+import expo.modules.core.interfaces.services.EventEmitter;
 import expo.modules.camera.CameraViewManager;
+import expo.modules.interfaces.barcodescanner.BarCodeScannerResult;
 
 public class BarCodeScannedEvent extends EventEmitter.BaseEvent {
   private static final Pools.SynchronizedPool<BarCodeScannedEvent> EVENTS_POOL =

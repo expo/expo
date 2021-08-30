@@ -1,18 +1,124 @@
-import { ViewProps } from 'react-native';
 import {
   PermissionResponse,
   PermissionStatus,
   PermissionExpiration,
-} from 'unimodules-permissions-interface';
+  PermissionHookOptions,
+} from 'expo-modules-core';
+import { ViewProps } from 'react-native';
 
 export enum CameraType {
+  /**
+   * @platforms ios, android, web
+   */
   front = 'front',
+  /**
+   * @platforms ios, android, web
+   */
   back = 'back',
+}
+
+export enum FlashMode {
+  /**
+   * @platforms ios, android, web
+   */
+  on = 'on',
+  /**
+   * @platforms ios, android, web
+   */
+  off = 'off',
+  /**
+   * @platforms ios, android, web
+   */
+  auto = 'auto',
+  /**
+   * @platforms ios, android, web
+   */
+  torch = 'torch',
+}
+
+export enum AutoFocus {
+  /**
+   * @platforms ios, android, web
+   */
+  on = 'on',
+  /**
+   * @platforms ios, android, web
+   */
+  off = 'off',
+  /**
+   * @platforms web
+   */
+  auto = 'auto',
+  /**
+   * @platforms web
+   */
+  singleShot = 'singleShot',
+}
+
+export enum WhiteBalance {
+  /**
+   * @platforms ios, android, web
+   */
+  auto = 'auto',
+  /**
+   * @platforms ios, android
+   */
+  sunny = 'sunny',
+  /**
+   * @platforms ios, android
+   */
+  cloudy = 'cloudy',
+  /**
+   * @platforms ios, android
+   */
+  shadow = 'shadow',
+  /**
+   * @platforms ios, android
+   */
+  incandescent = 'incandescent',
+  /**
+   * @platforms ios, android
+   */
+  fluorescent = 'fluorescent',
+  /**
+   * @platforms web
+   */
+  continuous = 'continuous',
+  /**
+   * @platforms web
+   */
+  manual = 'manual',
 }
 
 export enum ImageType {
   png = 'png',
   jpg = 'jpg',
+}
+
+/**
+ * This option specifies what codec to use when recording a video.
+ */
+export enum VideoCodec {
+  /**
+   * @platforms ios
+   */
+  H264 = 'avc1',
+  /**
+   * @platforms ios
+   */
+  HEVC = 'hvc1',
+  /**
+   * @platforms ios
+   */
+  JPEG = 'jpeg',
+  /**
+   * @platforms ios
+   */
+  AppleProRes422 = 'apcn',
+  /**
+   * @platforms ios
+   */
+  AppleProRes4444 = 'ap4h',
 }
 
 export type ImageParameters = {
@@ -71,6 +177,10 @@ export type CameraRecordingOptions = {
   quality?: number | string;
   mute?: boolean;
   mirror?: boolean;
+  // Android
+  videoBitrate?: number;
+  // iOS
+  codec?: VideoCodec;
 };
 
 export type CameraCapturedPicture = {
@@ -91,10 +201,12 @@ export type MountErrorListener = (event: { nativeEvent: CameraMountError }) => v
 
 export type CameraMountError = { message: string };
 
-export type BarCodePoint = {
+type Point = {
   x: number;
   y: number;
 };
+
+export type BarCodePoint = Point;
 
 export type BarCodeScanningResult = {
   type: string;
@@ -103,18 +215,54 @@ export type BarCodeScanningResult = {
   cornerPoints?: BarCodePoint[];
 };
 
-export type FaceDetectionResult = { faces: any[] };
+export type Face = {
+  faceID: number;
+  bounds: {
+    origin: Point;
+    size: {
+      height: number;
+      width: number;
+    };
+  };
+  rollAngle: number;
+  yawAngle: number;
+  smilingProbability: number;
+  leftEarPosition: Point;
+  rightEarPosition: Point;
+  leftEyePosition: Point;
+  leftEyeOpenProbability: number;
+  rightEyePosition: Point;
+  rightEyeOpenProbability: number;
+  leftCheekPosition: Point;
+  rightCheekPosition: Point;
+  mouthPosition: Point;
+  leftMouthPosition: Point;
+  rightMouthPosition: Point;
+  noseBasePosition: Point;
+};
+
+export type FaceDetectionResult = { faces: Face[] };
+
+export type ConstantsType = {
+  Type: typeof CameraType;
+  FlashMode: typeof FlashMode;
+  AutoFocus: typeof AutoFocus;
+  WhiteBalance: typeof WhiteBalance;
+  VideoQuality: any;
+  VideoStabilization: any;
+  VideoCodec: typeof VideoCodec;
+};
 
 export type CameraProps = ViewProps & {
+  type?: number | keyof typeof CameraType;
+  flashMode?: number | keyof typeof FlashMode;
+  whiteBalance?: number | keyof typeof WhiteBalance;
+  autoFocus?: boolean | number | keyof typeof AutoFocus;
   zoom?: number;
   ratio?: string;
   focusDepth?: number;
-  type?: number | string;
   onCameraReady?: Function;
   useCamera2Api?: boolean;
-  flashMode?: number | string;
-  whiteBalance?: number | string;
-  autoFocus?: string | boolean | number;
   pictureSize?: string;
   videoStabilizationMode?: number;
   onMountError?: (event: CameraMountError) => void;
@@ -158,4 +306,4 @@ export type BarCodeSettings = {
   interval?: number;
 };
 
-export { PermissionResponse, PermissionStatus, PermissionExpiration };
+export { PermissionResponse, PermissionStatus, PermissionExpiration, PermissionHookOptions };

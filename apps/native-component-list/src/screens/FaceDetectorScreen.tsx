@@ -1,22 +1,12 @@
 import * as FaceDetector from 'expo-face-detector';
 import * as ImagePicker from 'expo-image-picker';
 import { ImageInfo } from 'expo-image-picker/build/ImagePicker.types';
-import * as Permissions from 'expo-permissions';
 import React from 'react';
 import { Alert, Image, PixelRatio, Platform, ScrollView, StyleSheet, View } from 'react-native';
 
 import { scaledFace, scaledLandmarks } from '../components/Face';
 import ListButton from '../components/ListButton';
 import MonoText from '../components/MonoText';
-
-async function requestPermissionAsync(permission: Permissions.PermissionType) {
-  // Image Picker doesn't need permissions in the web
-  if (Platform.OS === 'web') {
-    return true;
-  }
-  const { status } = await Permissions.askAsync(permission);
-  return status === 'granted';
-}
 
 interface State {
   selection?: ImagePicker.ImagePickerResult;
@@ -46,9 +36,9 @@ export default class FeceDetectorScreen extends React.Component<{}, State> {
       },
     });
     FaceDetector.detectFacesAsync(picture, {
-      mode: FaceDetector.Constants.Mode.accurate,
-      detectLandmarks: FaceDetector.Constants.Landmarks.all,
-      runClassifications: FaceDetector.Constants.Classifications.none,
+      mode: FaceDetector.FaceDetectorMode.accurate,
+      detectLandmarks: FaceDetector.FaceDetectorLandmarks.all,
+      runClassifications: FaceDetector.FaceDetectorClassifications.none,
     })
       .then(result => {
         this.setState({
@@ -71,8 +61,8 @@ export default class FeceDetectorScreen extends React.Component<{}, State> {
   };
 
   showPicker = async (mediaTypes: ImagePicker.MediaTypeOptions, allowsEditing = false) => {
-    const permission = await requestPermissionAsync(Permissions.MEDIA_LIBRARY);
-    if (permission) {
+    const { granted } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (granted || Platform.OS === 'web') {
       const result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes,
         allowsEditing,
@@ -167,7 +157,7 @@ export default class FeceDetectorScreen extends React.Component<{}, State> {
       return (
         <View
           style={{
-            ...imageOvefrlowSizeAndPosition(selection as ImageInfo),
+            ...imageOverflowSizeAndPosition(selection as ImageInfo),
             position: 'absolute',
           }}>
           {this.state.faceDetection &&
@@ -181,15 +171,14 @@ export default class FeceDetectorScreen extends React.Component<{}, State> {
   };
 }
 
-const imageOvefrlowSizeAndPosition = (image: ImageInfo) => {
+const imageOverflowSizeAndPosition = (image: ImageInfo) => {
   const { scaledImageWidth, scaledImageHeight } = calculateImageScale(image);
-  const style = {
+  return {
     top: (imageViewSize - scaledImageHeight) / 2,
     left: (imageViewSize - scaledImageWidth) / 2,
     width: scaledImageWidth,
     height: scaledImageHeight,
   };
-  return style;
 };
 
 const calculateImageScale = (image: ImageInfo) => {

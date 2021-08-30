@@ -1,1 +1,0 @@
-../../../../versioned-react-native/ABI38_0_0/Expo/ExpoKit/Core/Api/Components/Svg/Elements/ABI38_0_0RNSVGMask.h

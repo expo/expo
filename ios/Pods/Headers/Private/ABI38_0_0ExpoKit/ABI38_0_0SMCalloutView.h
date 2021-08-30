@@ -1,1 +1,0 @@
-../../../../versioned-react-native/ABI38_0_0/Expo/ExpoKit/Core/Api/Components/Maps/Callout/ABI38_0_0SMCalloutView.h

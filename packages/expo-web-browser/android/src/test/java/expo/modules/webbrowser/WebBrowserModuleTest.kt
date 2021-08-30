@@ -1,7 +1,6 @@
 package expo.modules.webbrowser
 
 import android.content.Intent
-import android.os.Build
 import androidx.browser.customtabs.CustomTabsIntent
 import expo.modules.webbrowser.error.PackageManagerNotFoundException
 import io.mockk.every
@@ -16,7 +15,6 @@ import org.junit.Test
 import org.junit.runner.RunWith
 
 import org.robolectric.RobolectricTestRunner
-import org.robolectric.annotation.Config
 import org.unimodules.test.core.PromiseMock
 import org.unimodules.test.core.assertListsEqual
 import org.unimodules.test.core.assertSetsEqual
@@ -105,14 +103,19 @@ internal class WebBrowserModuleTest {
     initialize(mock)
 
     // when
-    module.openBrowserAsync("http://expo.io", browserArguments(
-      toolbarColor = "#000000",
-      browserPackage = "com.browser.package",
-      enableBarCollapsing = true,
-      enableDefaultShareMenuItem = true,
-      showInRecents = true,
-      showTitle = true
-    ), promise)
+    module.openBrowserAsync(
+      "http://expo.io",
+      browserArguments(
+        toolbarColor = "#000000",
+        browserPackage = "com.browser.package",
+        enableBarCollapsing = true,
+        enableDefaultShareMenuItem = true,
+        showInRecents = true,
+        createTask = true,
+        showTitle = true
+      ),
+      promise
+    )
 
     intentSlot.captured.let {
       assertEquals("com.browser.package", it.`package`)
@@ -127,14 +130,18 @@ internal class WebBrowserModuleTest {
     initialize(mock)
 
     // when
-    module.openBrowserAsync("http://expo.io", browserArguments(
-      toolbarColor = "#000000",
-      browserPackage = "com.browser.package",
-      enableBarCollapsing = true,
-      enableDefaultShareMenuItem = true,
-      showInRecents = true,
-      showTitle = true
-    ), promise)
+    module.openBrowserAsync(
+      "http://expo.io",
+      browserArguments(
+        toolbarColor = "#000000",
+        browserPackage = "com.browser.package",
+        enableBarCollapsing = true,
+        enableDefaultShareMenuItem = true,
+        showInRecents = true,
+        showTitle = true
+      ),
+      promise
+    )
 
     intentSlot.captured.let {
       assertTrue(it.hasExtra(CustomTabsIntent.EXTRA_ENABLE_URLBAR_HIDING))
@@ -153,20 +160,49 @@ internal class WebBrowserModuleTest {
     initialize(mock)
 
     // when
-    module.openBrowserAsync("http://expo.io", browserArguments(
-      toolbarColor = "#000000",
-      browserPackage = "com.browser.package",
-      enableBarCollapsing = false,
-      enableDefaultShareMenuItem = false,
-      showInRecents = false,
-      showTitle = false
-    ), promise)
+    module.openBrowserAsync(
+      "http://expo.io",
+      browserArguments(
+        toolbarColor = "#000000",
+        browserPackage = "com.browser.package",
+        enableBarCollapsing = false,
+        enableDefaultShareMenuItem = false,
+        showInRecents = false,
+        showTitle = false
+      ),
+      promise
+    )
 
     intentSlot.captured.let {
       assertFalse(it.getBooleanExtra(CustomTabsIntent.EXTRA_ENABLE_URLBAR_HIDING, true))
       assertTrue((it.flags and Intent.FLAG_ACTIVITY_NEW_TASK) > 0)
       assertTrue((it.flags and Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS) > 0)
       assertTrue((it.flags and Intent.FLAG_ACTIVITY_NO_HISTORY) > 0)
+    }
+  }
+
+  @Test
+  fun testCreateTaskFalseCorrectlyPassedToIntent() {
+    // given
+    val intentSlot = slot<Intent>()
+    val mock = mockkCustomTabsActivitiesHelper(defaultCanResolveIntent = true, startIntentSlot = intentSlot)
+    initialize(mock)
+
+    // when
+    module.openBrowserAsync(
+      "http://expo.io",
+      browserArguments(
+        toolbarColor = "#000000",
+        browserPackage = "com.browser.package",
+        createTask = false
+      ),
+      promise
+    )
+
+    intentSlot.captured.let {
+      assertFalse((it.flags and Intent.FLAG_ACTIVITY_NEW_TASK) > 0)
+      assertFalse((it.flags and Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS) > 0)
+      assertFalse((it.flags and Intent.FLAG_ACTIVITY_NO_HISTORY) > 0)
     }
   }
 
@@ -282,13 +318,11 @@ internal class WebBrowserModuleTest {
     }
   }
 
-
-
   private fun initialize(
     customTabsActivitiesHelper: CustomTabsActivitiesHelper = mockkCustomTabsActivitiesHelper(),
     customTabsConnectionHelper: CustomTabsConnectionHelper? = null
   ) {
-    if(customTabsConnectionHelper != null) {
+    if (customTabsConnectionHelper != null) {
       moduleRegistry.mockInternalModule(customTabsConnectionHelper)
     }
     moduleRegistry.mockInternalModule(customTabsActivitiesHelper)

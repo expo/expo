@@ -13,19 +13,22 @@ on:
       - 'docs/**'
       - '.github/workflows/docs.yml'
   pull_request:
-    branches: [master]
     paths:
       - 'docs/**'
       - '.github/workflows/docs.yml'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   docs:
     runs-on: ubuntu-18.04
     steps:
       - name: Install Node 14
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v2
         with:
-          node-version: 14.x
+          node-version: '14.17'
       - name: Check out repository
         uses: actions/checkout@v2
         with:
@@ -45,16 +48,23 @@ jobs:
       - run: yarn danger ci
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Check if `docs/yarn.lock` has been changed
+        uses: dorny/paths-filter@v2
+        id: changes
+        with:
+          filters: |
+            lock:
+              - 'docs/yarn.lock'
       - name: Cache Next folder
+        if: steps.changes.outputs.lock == 'false'
         uses: actions/cache@v2
         with:
           path: docs/.next/cache
-          key: docs-next-${{ hashFiles('docs/yarn.lock') }}
-          restore-keys: |
-            docs-next-${{ hashFiles('docs/yarn.lock') }}-
-            docs-next-
+          key: docs-next-${{ hashFiles('docs/yarn.lock') }}-next-${{ hashFiles('docs/next.config.js') }}
       - run: yarn export
-        timeout-minutes: 15
+        timeout-minutes: 20
+        env:
+          USE_ESBUILD: 1
       - name: lint links
         run: yarn lint-links --quiet
       - name: test links (legacy)
@@ -70,21 +80,14 @@ jobs:
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      - uses: 8398a7/action-slack@v3
+      - name: 🔔 Notify on Slack
+        uses: 8398a7/action-slack@v3
         if: failure() && github.event.ref == 'refs/heads/master'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SLACK_WEBHOOK_URL: ${{ secrets.slack_webhook_docs }}
         with:
           channel: '#docs'
-          status: custom
-          fields: author,commit
-          custom_payload: |
-            {
-              username: 'github-actions',
-              icon_emoji: ':octocat:',
-              attachments: [{
-                color: 'danger',
-                text: `docs build failed: ${process.env.AS_COMMIT} by ${process.env.AS_AUTHOR}`,
-              }]
-            }
+          status: ${{ job.status }}
+          fields: job,message,ref,eventName,author,took
+          author_name: Docs

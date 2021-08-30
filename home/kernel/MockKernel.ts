@@ -1,4 +1,4 @@
-import AsyncStorage from '@react-native-community/async-storage';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const STORAGE_PREFIX = '@@expo@@';
 
@@ -10,13 +10,13 @@ const STORAGE_PREFIX = '@@expo@@';
  * kernel module and use this implementation only on web.
  */
 export default {
-  sdkVersions: [] as string[],
+  sdkVersions: '',
 
   async getDevMenuSettingsAsync(): Promise<null> {
     return null;
   },
 
-  async setDevMenuSettingAsync(key: string, value: any): Promise<void> {},
+  async setDevMenuSettingAsync(_key: string, _value: any): Promise<void> {},
 
   async doesCurrentTaskEnableDevtoolsAsync(): Promise<boolean> {
     return false;

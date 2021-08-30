@@ -8,6 +8,7 @@
 #import "EXKernelLinkingManager.h"
 #import "EXKernelService.h"
 #import "EXRemoteNotificationManager.h"
+#import "EXScreenOrientationManager.h"
 #import "EXSensorManager.h"
 #import "EXUpdatesDatabaseManager.h"
 #import "EXUpdatesManager.h"
@@ -15,7 +16,7 @@
 #import "EXUserNotificationCenter.h"
 #import "EXDeviceInstallationUUIDService.h"
 
-#import <UMCore/UMModuleRegistryProvider.h>
+#import <ExpoModulesCore/EXModuleRegistryProvider.h>
 
 @interface EXKernelServiceRegistry ()
 
@@ -24,6 +25,7 @@
 @property (nonatomic, strong) EXHomeModuleManager *homeModuleManager;
 @property (nonatomic, strong) EXKernelLinkingManager *linkingManager;
 @property (nonatomic, strong) EXRemoteNotificationManager *remoteNotificationManager;
+@property (nonatomic, strong) EXScreenOrientationManager *screenOrientationManager;
 @property (nonatomic, strong) EXSensorManager *sensorManager;
 @property (nonatomic, strong) EXUpdatesDatabaseManager *updatesDatabaseManager;
 @property (nonatomic, strong) EXUpdatesManager *updatesManager;
@@ -45,6 +47,7 @@
     [self remoteNotificationManager];
     [self linkingManager];
     [self homeModuleManager];
+    [self screenOrientationManager];
     [self sensorManager];
     [self updatesDatabaseManager];
     [self updatesManager];
@@ -103,6 +106,14 @@
   return _homeModuleManager;
 }
 
+- (EXScreenOrientationManager *)screenOrientationManager
+{
+  if (!_screenOrientationManager) {
+    _screenOrientationManager = [[EXScreenOrientationManager alloc] init];
+  }
+  return _screenOrientationManager;
+}
+
 - (EXSensorManager *)sensorManager
 {
   if (!_sensorManager) {
@@ -151,7 +162,7 @@
     // EXVersionManagers pass these modules to scoped modules as an initializer argument
     //
     // New modules should access singleton modules via the module registry.
-    // New singleton modules should register themselves in UMModuleRegistryProvider's set
+    // New singleton modules should register themselves in EXModuleRegistryProvider's set
     // using EX_REGISTER_SINGLETON_MODULE macro.
     NSArray *registryServices = @[
                                   self.cachedResourceManager,
@@ -159,6 +170,7 @@
                                   self.homeModuleManager,
                                   self.linkingManager,
                                   self.remoteNotificationManager,
+                                  self.screenOrientationManager,
                                   self.sensorManager,
                                   self.updatesDatabaseManager,
                                   self.updatesManager,
@@ -166,7 +178,7 @@
                                   self.notificationCenter,
                                   self.deviceInstallationUUIDService
                                   ];
-    NSArray *allServices = [registryServices arrayByAddingObjectsFromArray:[[UMModuleRegistryProvider singletonModules] allObjects]];
+    NSArray *allServices = [registryServices arrayByAddingObjectsFromArray:[[EXModuleRegistryProvider singletonModules] allObjects]];
     for (id service in allServices) {
       NSString *className = NSStringFromClass([service class]);
       result[className] = service;

@@ -14,28 +14,13 @@ The following example demonstrates how you might use the `"production"` release 
 
 ```json
 {
-  "builds": {
-    "android": {
-      "release": {
-        "workflow": "generic",
-        "releaseChannel": "production"
-      },
-      "team": {
-        "workflow": "generic",
-        "releaseChannel": "staging",
-        "distribution": "internal"
-      }
+  "build": {
+    "release": {
+      "releaseChannel": "production"
     },
-    "ios": {
-      "release": {
-        "workflow": "generic",
-        "releaseChannel": "production"
-      },
-      "team": {
-        "workflow": "generic",
-        "releaseChannel": "staging",
-        "distribution": "internal"
-      }
+    "team": {
+      "releaseChannel": "staging",
+      "distribution": "internal"
     }
   }
 }
@@ -45,8 +30,4 @@ The following example demonstrates how you might use the `"production"` release 
 
 Your native runtime may change on each build, depending on whether you modify the code in a way that changes the API contract with JavaScript. If you publish a JavaScript bundle to a binary with an incompatible native runtime (for example, a function that the JavaScript bundle expects to exist does not exist) then your app may not work as expected or it may crash.
 
-Please refer to the ["Updating your app over-the-air"](/bare/updating-your-app.md) guide to learn more about update compatibility and more.
-
-## Updating managed apps built with EAS Build
-
-Support for managed apps on EAS Build is still very early, and you may encounter unexpected issues. Please note that if you are publishing an update to a managed app built with EAS Build, you currently need to use the `--target bare` flag: `expo publish --release-channel your-channel --target bare`. If you do not, your app may crash.
+We recommend using a different [runtime version](/distribution/runtime-versions.md) for each binary version of your app. Any time you change the native runtime (in managed apps, this happens if when you add or remove a native library, or modify app.json), you should increment the runtime version.

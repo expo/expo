@@ -1,4 +1,4 @@
-import { PermissionResponse } from 'unimodules-permissions-interface';
+import { PermissionResponse } from 'expo-modules-core';
 export { PermissionResponse as CameraPermissionResponse };
 export declare type MediaLibraryPermissionResponse = PermissionResponse & {
     accessPrivileges?: 'all' | 'limited' | 'none';
@@ -32,6 +32,17 @@ export declare enum UIImagePickerControllerQualityType {
     VGA640x480 = 3,
     IFrame1280x720 = 4,
     IFrame960x540 = 5
+}
+export declare enum UIImagePickerPresentationStyle {
+    FullScreen = 0,
+    PageSheet = 1,
+    FormSheet = 2,
+    CurrentContext = 3,
+    OverFullScreen = 5,
+    OverCurrentContext = 6,
+    Popover = 7,
+    BlurOverFullScreen = 8,
+    Automatic = -2
 }
 export declare type ImageInfo = {
     uri: string;
@@ -73,11 +84,13 @@ export declare type ImagePickerOptions = {
     videoQuality?: UIImagePickerControllerQualityType;
     allowsMultipleSelection?: boolean;
     videoMaxDuration?: number;
+    presentationStyle?: UIImagePickerPresentationStyle;
 };
 export declare type OpenFileBrowserOptions = {
     mediaTypes: MediaTypeOptions;
     capture?: boolean;
     allowsMultipleSelection: boolean;
+    base64: boolean;
 };
 export declare type ExpandImagePickerResult<T extends ImagePickerOptions | OpenFileBrowserOptions> = T extends {
     allowsMultipleSelection: true;

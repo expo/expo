@@ -6,7 +6,40 @@
 
 ### 🎉 New features
 
+- Update JS code to read manifest2 when manifest is not available. ([#13602](https://github.com/expo/expo/pull/13602) by [@wschurman](https://github.com/wschurman))
+
 ### 🐛 Bug fixes
+
+### 💡 Others
+
+## 2.3.0 — 2021-06-16
+
+### 🐛 Bug fixes
+
+- Fix accidental condition that caused AuthSession Google Provider to error when no scheme in Expo Go. ([#12846](https://github.com/expo/expo/pull/12846) by [@brentvatne](https://github.com/brentvatne))
+- Add new manifest2 field and make existing field optional. ([#12817](https://github.com/expo/expo/pull/12817) by [@wschurman](https://github.com/wschurman))
+
+## 2.2.3 — 2021-04-13
+
+_This version does not introduce any user-facing changes._
+
+## 2.2.2 — 2021-04-09
+
+### 🎉 New features
+
+- Add internal ability to skip warnings for scheme resolution. ([#12464](https://github.com/expo/expo/pull/12464) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 2.2.1 — 2021-03-30
+
+### 🐛 Bug fixes
+
+- Replace useUrl with useURL and update documentation. ([#12310](https://github.com/expo/expo/pull/12310) by [@brentvatne](https://github.com/brentvatne))
+
+## 2.2.0 — 2021-03-10
+
+### 🐛 Bug fixes
+
+- Remove peerDependencies and unimodulePeerDependencies from Expo modules. ([#11980](https://github.com/expo/expo/pull/11980) by [@brentvatne](https://github.com/brentvatne))
 
 ## 2.1.1 — 2021-01-21
 

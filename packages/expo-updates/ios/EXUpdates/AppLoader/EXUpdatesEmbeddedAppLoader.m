@@ -59,6 +59,7 @@ static NSString * const EXUpdatesEmbeddedAppLoaderErrorDomain = @"EXUpdatesEmbed
 }
 
 - (void)loadUpdateFromEmbeddedManifestWithCallback:(EXUpdatesAppLoaderManifestBlock)manifestBlock
+                                           onAsset:(EXUpdatesAppLoaderAssetBlock)assetBlock
                                            success:(EXUpdatesAppLoaderSuccessBlock)success
                                              error:(EXUpdatesAppLoaderErrorBlock)error
 {
@@ -66,6 +67,7 @@ static NSString * const EXUpdatesEmbeddedAppLoaderErrorDomain = @"EXUpdatesEmbed
                                                                       database:self.database];
   if (embeddedManifest) {
     self.manifestBlock = manifestBlock;
+    self.assetBlock = assetBlock;
     self.successBlock = success;
     self.errorBlock = error;
     [self startLoadingFromManifest:embeddedManifest];
@@ -113,6 +115,8 @@ static NSString * const EXUpdatesEmbeddedAppLoaderErrorDomain = @"EXUpdatesEmbed
 }
 
 - (void)loadUpdateFromUrl:(NSURL *)url
+               onManifest:(EXUpdatesAppLoaderManifestBlock)manifestBlock
+                    asset:(EXUpdatesAppLoaderAssetBlock)assetBlock
                   success:(EXUpdatesAppLoaderSuccessBlock)success
                     error:(EXUpdatesAppLoaderErrorBlock)error
 {

@@ -10,6 +10,7 @@
 #import "EXVersions.h"
 
 #import <React/RCTConvert.h>
+#import <EXUpdates/EXUpdatesUpdate.h>
 
 NSString * const kEXPublicKeyUrl = @"https://exp.host/--/manifest-public-key";
 
@@ -30,7 +31,7 @@ NSString * const kEXPublicKeyUrl = @"https://exp.host/--/manifest-public-key";
 {
   _originalUrl = originalUrl;
   _canBeWrittenToCache = NO;
-  
+
   NSString *resourceName;
   if ([EXEnvironment sharedEnvironment].isDetached && [originalUrl.absoluteString isEqual:[EXEnvironment sharedEnvironment].standaloneManifestUrl]) {
     resourceName = kEXEmbeddedManifestResourceName;
@@ -48,19 +49,20 @@ NSString * const kEXPublicKeyUrl = @"https://exp.host/--/manifest-public-key";
   return self;
 }
 
-- (NSMutableDictionary * _Nullable) _chooseManifest:(NSArray *)manifestArray error:(NSError **)error {
+- (NSMutableDictionary * _Nullable) _chooseJSONManifest:(NSArray *)jsonManifestObjArray error:(NSError **)error {
   // Find supported sdk versions
-  if (manifestArray) {
-    for (id providedManifest in manifestArray) {
-      if ([providedManifest isKindOfClass:[NSDictionary class]] && providedManifest[@"sdkVersion"]){
-        NSString *sdkVersion = providedManifest[@"sdkVersion"];
-        if ([[EXVersions sharedInstance] supportsVersion:sdkVersion]){
+  if (jsonManifestObjArray) {
+    for (id providedManifest in jsonManifestObjArray) {
+      if ([providedManifest isKindOfClass:[NSDictionary class]]) {
+        EXManifestsRawManifest *providedRawManifest = [EXUpdatesUpdate rawManifestForJSON:providedManifest];
+        NSString *sdkVersion = providedRawManifest.sdkVersion;
+        if (sdkVersion && [[EXVersions sharedInstance] supportsVersion:sdkVersion]) {
           return providedManifest;
         }
       }
     }
   }
-  
+
   if (error) {
     * error = [self formatError:[NSError errorWithDomain:EXNetworkErrorDomain code:0 userInfo:@{
                                                                                        @"errorCode": @"NO_COMPATIBLE_EXPERIENCE_FOUND",
@@ -82,28 +84,29 @@ NSString * const kEXPublicKeyUrl = @"https://exp.host/--/manifest-public-key";
     }
 
     __block NSError *jsonError;
-    id manifestObjOrArray = [NSJSONSerialization JSONObjectWithData:data options:0 error:&jsonError];
+    id manifestJSONObjOrJSONObjArray = [NSJSONSerialization JSONObjectWithData:data options:0 error:&jsonError];
     if (jsonError) {
       errorBlock(jsonError);
       return;
     }
-    
+
     id manifestObj;
     // Check if server sent an array of manifests (multi-manifests)
-    if ([manifestObjOrArray isKindOfClass:[NSArray class]]) {
-      NSArray *manifestArray = (NSArray *)manifestObjOrArray;
+    if ([manifestJSONObjOrJSONObjArray isKindOfClass:[NSArray class]]) {
+      NSArray *manifestArray = (NSArray *)manifestJSONObjOrJSONObjArray;
       __block NSError *manifestError;
-      manifestObj = [self _chooseManifest:(NSArray *)manifestArray error:&manifestError];
+      manifestObj = [self _chooseJSONManifest:(NSArray *)manifestArray error:&manifestError];
       if (!manifestObj) {
         errorBlock(manifestError);
         return;
       }
     } else {
-      manifestObj = manifestObjOrArray;
+      manifestObj = manifestJSONObjOrJSONObjArray;
     }
+
     NSString *innerManifestString = (NSString *)manifestObj[@"manifestString"];
     NSString *manifestSignature = (NSString *)manifestObj[@"signature"];
-    
+
     NSMutableDictionary *innerManifestObj;
     if (!innerManifestString) {
       // this manifest is not signed
@@ -121,18 +124,20 @@ NSString * const kEXPublicKeyUrl = @"https://exp.host/--/manifest-public-key";
         return;
       }
     }
-    
-    NSError *sdkVersionError = [self verifyManifestSdkVersion:innerManifestObj];
+
+    EXManifestsRawManifest *manifest = [EXUpdatesUpdate rawManifestForJSON:innerManifestObj];
+
+    NSError *sdkVersionError = [self verifyManifestSdkVersion:manifest];
     if (sdkVersionError) {
       errorBlock(sdkVersionError);
       return;
     }
-    
+
     EXVerifySignatureSuccessBlock signatureSuccess = ^(BOOL isValid) {
       [innerManifestObj setObject:@(isValid) forKey:@"isVerified"];
       successBlock([NSJSONSerialization dataWithJSONObject:innerManifestObj options:0 error:&jsonError]);
     };
-    
+
     if ([self _isManifestVerificationBypassed:manifestObj]) {
       if ([self _isThirdPartyHosted] && ![EXEnvironment sharedEnvironment].isDetached){
         // the manifest id determines the namespace/experience id an app is sandboxed with
@@ -286,17 +291,17 @@ NSString * const kEXPublicKeyUrl = @"https://exp.host/--/manifest-public-key";
   bool shouldBypassVerification =(
                                   // HACK: because `SecItemCopyMatching` doesn't work in older iOS (see EXApiUtil.m)
                                   ([UIDevice currentDevice].systemVersion.floatValue < 10) ||
-                                  
+
                                   // the developer disabled manifest verification
                                   [EXEnvironment sharedEnvironment].isManifestVerificationBypassed ||
-                                  
+
                                   // we're using a copy that came with the NSBundle and was therefore already codesigned
                                   [self isUsingEmbeddedResource] ||
-                                  
+
                                   // we sandbox third party hosted apps instead of verifying signature
                                   [self _isThirdPartyHosted]
                                   );
-  
+
   return
   // only consider bypassing if there is no signature provided
   !((NSString *)manifestObj[@"signature"]) && shouldBypassVerification;
@@ -323,13 +328,13 @@ NSString * const kEXPublicKeyUrl = @"https://exp.host/--/manifest-public-key";
   return nil;
 }
 
-- (NSError *)verifyManifestSdkVersion:(NSDictionary *)maybeManifest
+- (NSError *)verifyManifestSdkVersion:(EXManifestsRawManifest *)maybeManifest
 {
   NSString *errorCode;
   NSDictionary *metadata;
-  if (maybeManifest && maybeManifest[@"sdkVersion"]) {
-    if (![maybeManifest[@"sdkVersion"] isEqualToString:@"UNVERSIONED"]) {
-      NSInteger manifestSdkVersion = [maybeManifest[@"sdkVersion"] integerValue];
+  if (maybeManifest && maybeManifest.sdkVersion) {
+    if (![maybeManifest.sdkVersion isEqualToString:@"UNVERSIONED"]) {
+      NSInteger manifestSdkVersion = [maybeManifest.sdkVersion integerValue];
       if (manifestSdkVersion) {
         NSInteger oldestSdkVersion = [[self _earliestSdkVersionSupported] integerValue];
         NSInteger newestSdkVersion = [[self _latestSdkVersionSupported] integerValue];
@@ -337,7 +342,7 @@ NSString * const kEXPublicKeyUrl = @"https://exp.host/--/manifest-public-key";
           errorCode = @"EXPERIENCE_SDK_VERSION_OUTDATED";
           // since we are spoofing this error, we put the SDK version of the project as the
           // "available" SDK version -- it's the only one available from the server
-          metadata = @{@"availableSDKVersions": @[maybeManifest[@"sdkVersion"]]};
+          metadata = @{@"availableSDKVersions": @[maybeManifest.sdkVersion]};
         }
         if (manifestSdkVersion > newestSdkVersion) {
           errorCode = @"EXPERIENCE_SDK_VERSION_TOO_NEW";
@@ -372,7 +377,7 @@ NSString * const kEXPublicKeyUrl = @"https://exp.host/--/manifest-public-key";
   if ([response isKindOfClass:[NSHTTPURLResponse class]]) {
     // we got back a response from the server, and we can use the info we got back to make a nice
     // error message for the user
-    
+
     formattedError = [self formatError:error];
   } else {
     // was a network error
@@ -380,7 +385,7 @@ NSString * const kEXPublicKeyUrl = @"https://exp.host/--/manifest-public-key";
     userInfo[@"errorCode"] = @"NETWORK_ERROR";
     formattedError = [NSError errorWithDomain:EXNetworkErrorDomain code:error.code userInfo:userInfo];
   }
-  
+
   return [super _validateErrorData:formattedError response:response];
 }
 
@@ -401,7 +406,7 @@ NSString * const kEXPublicKeyUrl = @"https://exp.host/--/manifest-public-key";
   NSMutableDictionary *userInfo = [NSMutableDictionary dictionaryWithDictionary:error.userInfo];
   NSString *errorCode = userInfo[@"errorCode"];
   NSString *rawMessage = [error localizedDescription];
-  
+
   NSString *formattedMessage = [NSString stringWithFormat:@"Could not load %@.", self.originalUrl];
   if ([errorCode isEqualToString:@"EXPERIENCE_NOT_FOUND"]
       || [errorCode isEqualToString:@"EXPERIENCE_NOT_PUBLISHED_ERROR"]
@@ -411,7 +416,7 @@ NSString * const kEXPublicKeyUrl = @"https://exp.host/--/manifest-public-key";
     NSDictionary *metadata = userInfo[@"metadata"];
     NSArray *availableSDKVersions = metadata[@"availableSDKVersions"];
     NSString *sdkVersionRequired = [availableSDKVersions firstObject];
-    
+
     NSString *earliestSDKVersion = [self _earliestSdkVersionSupported];
     formattedMessage = [NSString stringWithFormat:@"The project you requested uses Expo SDK v%@, but this copy of Expo Go "
                         "requires at least v%@. The author should update their experience to a newer Expo SDK version.", sdkVersionRequired, earliestSDKVersion];
@@ -429,7 +434,7 @@ NSString * const kEXPublicKeyUrl = @"https://exp.host/--/manifest-public-key";
     formattedMessage = rawMessage; // From server: `The snack "${fullName}" was found, but wasn't released for platform "${platform}" and sdk version "${sdkVersions[0]}".`
   }
   userInfo[NSLocalizedDescriptionKey] = formattedMessage;
-  
+
   return [NSError errorWithDomain:EXNetworkErrorDomain code:error.code userInfo:userInfo];
 }
 

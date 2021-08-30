@@ -69,7 +69,7 @@ before_script:
 
 jobs:
   include:
-    - stage: deploy
+    - stage: build
       node_js: lts/*
       script:
         - npm ci

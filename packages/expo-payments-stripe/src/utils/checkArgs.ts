@@ -1,5 +1,11 @@
 import ReactPropTypesSecret from 'prop-types/lib/ReactPropTypesSecret';
 
+declare const process: {
+  env: {
+    NODE_ENV: string;
+  };
+};
+
 interface TypeSpecs {
   [key: string]: (
     values: any,

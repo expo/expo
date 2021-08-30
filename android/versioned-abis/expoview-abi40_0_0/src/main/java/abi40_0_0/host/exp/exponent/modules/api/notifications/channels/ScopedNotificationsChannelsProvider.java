@@ -7,24 +7,24 @@ import abi40_0_0.expo.modules.notifications.notifications.channels.managers.Noti
 import abi40_0_0.expo.modules.notifications.notifications.channels.managers.NotificationsChannelManager;
 import abi40_0_0.expo.modules.notifications.notifications.channels.serializers.NotificationsChannelGroupSerializer;
 import abi40_0_0.expo.modules.notifications.notifications.channels.serializers.NotificationsChannelSerializer;
-import host.exp.exponent.kernel.ExperienceId;
+import host.exp.exponent.kernel.ExperienceKey;
 
 public class ScopedNotificationsChannelsProvider extends AbstractNotificationsChannelsProvider {
-  private ExperienceId mExperienceId;
+  private ExperienceKey mExperienceKey;
 
-  public ScopedNotificationsChannelsProvider(Context context, ExperienceId experienceId) {
+  public ScopedNotificationsChannelsProvider(Context context, ExperienceKey experienceKey) {
     super(context);
-    mExperienceId = experienceId;
+    mExperienceKey = experienceKey;
   }
 
   @Override
   protected NotificationsChannelManager createChannelManager() {
-    return new ScopedNotificationsChannelManager(mContext, mExperienceId, getGroupManager());
+    return new ScopedNotificationsChannelManager(mContext, mExperienceKey, getGroupManager());
   }
 
   @Override
   protected NotificationsChannelGroupManager createChannelGroupManager() {
-    return new ScopedNotificationsGroupManager(mContext, mExperienceId);
+    return new ScopedNotificationsGroupManager(mContext, mExperienceKey);
   }
 
   @Override

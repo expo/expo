@@ -2,8 +2,8 @@
 
 #import <UIKit/UIKit.h>
 #import <Foundation/Foundation.h>
-#import <UMCore/UMSingletonModule.h>
-#import <EXSplashScreen/EXSplashScreenController.h>
+#import <ExpoModulesCore/EXSingletonModule.h>
+#import <EXSplashScreen/EXSplashScreenViewController.h>
 #import <EXSplashScreen/EXSplashScreenViewProvider.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -28,6 +28,15 @@ NS_ASSUME_NONNULL_BEGIN
    splashScreenViewProvider:(id<EXSplashScreenViewProvider>)splashScreenViewProvider
             successCallback:(void (^)(void))successCallback
             failureCallback:(void (^)(NSString *message))failureCallback;
+
+/**
+ * Entry point for SplashScreen unimodule.
+ * Registers SplashScreen for given viewController and EXSplashController and presents it in that viewController.
+ */
+-(void)showSplashScreenFor:(UIViewController *)viewController
+    splashScreenController:(EXSplashScreenViewController *)splashScreenController
+           successCallback:(void (^)(void))successCallback
+           failureCallback:(void (^)(NSString *message))failureCallback;
 
 /**
  * Hides SplashScreen for given viewController.
@@ -56,7 +65,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
-@interface EXSplashScreenService : UMSingletonModule <EXSplashScreenService, UIApplicationDelegate>
+@interface EXSplashScreenService : EXSingletonModule <EXSplashScreenService, UIApplicationDelegate>
 @end
 
 NS_ASSUME_NONNULL_END

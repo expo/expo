@@ -19,7 +19,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Map;
 
-import org.unimodules.core.Promise;
+import expo.modules.core.Promise;
 
 import expo.modules.camera.CameraViewHelper;
 import expo.modules.camera.utils.FileSystemUtils;

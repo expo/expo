@@ -1,8 +1,10 @@
 // Copyright 2019-present 650 Industries. All rights reserved.
 
-#import <UMCore/UMModuleRegistry.h>
+#import <ExpoModulesCore/EXModuleRegistry.h>
+#import <ExpoModulesCore/EXModuleRegistryConsumer.h>
+
 #import <UIKit/UIKit.h>
 
-@interface EXAdsAdMob : UMExportedModule
+@interface EXAdsAdMob : EXExportedModule <EXModuleRegistryConsumer>
 
 @end

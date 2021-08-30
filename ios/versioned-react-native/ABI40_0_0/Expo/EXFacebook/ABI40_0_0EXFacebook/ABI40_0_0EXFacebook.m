@@ -28,13 +28,7 @@ ABI40_0_0UM_EXPORT_METHOD_AS(setAutoInitEnabledAsync,
                     resolver:(ABI40_0_0UMPromiseResolveBlock)resolve
                     rejecter:(ABI40_0_0UMPromiseRejectBlock)reject)
 {
-  // If enabled is true, the line below will initialize the SDK.
-  // This behavior is different than on Android where one needs
-  // to initialize the SDK explicitly. We have no power over this,
-  // and to mitigate this difference we will NOT add initializing
-  // to the respective method on Android, but we will instruct users
-  // to initialize the SDK manually on both platforms instead.
-  [FBSDKSettings setAutoInitEnabled:enabled];
+  ABI40_0_0UMLogWarn(@"The `autoInitEnabled` option has been removed from Facebook SDK — we recommend to explicitly use `initializeAsync` instead.");
   resolve(nil);
 }
 

@@ -1,7 +1,15 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
+import SafariServices
 
 @objc(DevMenuInternalModule)
 public class DevMenuInternalModule: NSObject, RCTBridgeModule {
+  @objc
+  var redirectResolve: RCTPromiseResolveBlock?
+  @objc
+  var redirectReject: RCTPromiseRejectBlock?
+  @objc
+  var authSession: SFAuthenticationSession?
+  
   public static func moduleName() -> String! {
     return "ExpoDevMenuInternal"
   }
@@ -12,6 +20,10 @@ public class DevMenuInternalModule: NSObject, RCTBridgeModule {
   }
   
   private static var fontsWereLoaded = false;
+  private static let sessionKey = "expo-dev-menu.session"
+  private static let userLoginEvent = "expo.dev-menu.user-login"
+  private static let userLogoutEvent = "expo.dev-menu.user-logout"
+  private static let defaultScheme = "expo-dev-menu"
 
   let manager: DevMenuManager
 
@@ -22,7 +34,7 @@ public class DevMenuInternalModule: NSObject, RCTBridgeModule {
   // MARK: JavaScript API
 
   @objc
-  func constantsToExport() -> [String : Any] {
+  public func constantsToExport() -> [AnyHashable : Any] {
 #if targetEnvironment(simulator)
     let doesDeviceSupportKeyCommands = true
 #else
@@ -68,13 +80,31 @@ public class DevMenuInternalModule: NSObject, RCTBridgeModule {
     DevMenuInternalModule.fontsWereLoaded = true
     resolve(nil)
   }
+
+  @objc
+  func fetchDataSourceAsync(_ dataSourceId: String?, resolve: @escaping RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) {
+    guard let dataSourceId = dataSourceId else {
+      return reject("ERR_DEVMENU_DATA_SOURCE_FAILED", "DataSource ID not provided.", nil)
+    }
+    
+    for dataSource in manager.devMenuDataSources {
+      if (dataSource.id == dataSourceId) {
+        dataSource.fetchData { data in
+          resolve(data.map { $0.serialize() })
+        }
+        return;
+      }
+    }
+
+    return reject("ERR_DEVMENU_DATA_SOURCE_FAILED", "DataSource \(dataSourceId) not founded.", nil)
+  }
   
   @objc
-  func dispatchActionAsync(_ actionId: String, resolve: RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) {
-    if actionId == nil {
-      return reject("ERR_DEVMENU_ACTION_FAILED", "Action ID not provided.", nil)
+  func dispatchCallableAsync(_ callableId: String?, args: [String : Any]?, resolve: RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) {
+    guard let callableId = callableId else {
+      return reject("ERR_DEVMENU_ACTION_FAILED", "Callable ID not provided.", nil)
     }
-    manager.dispatchAction(withId: actionId)
+    manager.dispatchCallable(withId: callableId, args: args)
     resolve(nil)
   }
 
@@ -118,5 +148,54 @@ public class DevMenuInternalModule: NSObject, RCTBridgeModule {
     DispatchQueue.main.async {
       rctDevMenu.show()
     }
+  }
+  
+  @objc
+  func onScreenChangeAsync(_ currentScreen: String?, resolve: RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) {
+    manager.setCurrentScreen(currentScreen)
+    resolve(nil)
+  }
+  
+  @objc
+  func setSessionAsync(_ session: Dictionary<String, Any>?, resolve: RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) {
+    do {
+      try manager.expoSessionDelegate.setSessionAsync(session)
+      resolve(nil)
+    } catch let error {
+      reject("ERR_DEVMENU_CANNOT_SAVE_SESSION", error.localizedDescription, error);
+    }
+  }
+  
+  @objc
+  func restoreSessionAsync(_ resolve: RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) {
+    resolve(manager.expoSessionDelegate.restoreSession())
+  }
+  
+  @objc
+  func getAuthSchemeAsync(_ resolve: RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) {
+    guard let urlTypesArray = Bundle.main.infoDictionary?["CFBundleURLTypes"] as? [NSDictionary] else {
+      resolve(DevMenuInternalModule.defaultScheme)
+      return
+    }
+        
+    if (urlTypesArray
+          .contains(where: { ($0["CFBundleURLSchemes"] as? [String] ?? [])
+                      .contains(DevMenuInternalModule.defaultScheme) })) {
+      resolve(DevMenuInternalModule.defaultScheme)
+      return
+    }
+    
+    for urlType in urlTypesArray {
+      guard let schemes = urlType["CFBundleURLSchemes"] as? [String] else {
+        continue
+      }
+      
+      if schemes.first != nil {
+        resolve(schemes.first)
+        return
+      }
+    }
+    
+    resolve(DevMenuInternalModule.defaultScheme)
   }
 }

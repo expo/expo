@@ -1,4 +1,4 @@
-import { CodedError, EventEmitter } from '@unimodules/core';
+import { CodedError, EventEmitter } from 'expo-modules-core';
 import { Platform } from 'react-native';
 import ExpoInAppPurchases from './ExpoInAppPurchases';
 import { IAPErrorCode, IAPItemType, IAPResponseCode, InAppPurchaseState, } from './InAppPurchases.types';
@@ -25,19 +25,24 @@ export async function getProductsAsync(itemList) {
     }
     return await ExpoInAppPurchases.getProductsAsync(itemList);
 }
-export async function getPurchaseHistoryAsync(refresh) {
+export async function getPurchaseHistoryAsync(options = { useGooglePlayCache: true }) {
     if (!connected) {
         throw new ConnectionError(errors.NOT_CONNECTED);
     }
-    return await ExpoInAppPurchases.getPurchaseHistoryAsync(refresh);
+    if (Platform.OS === 'android') {
+        return await ExpoInAppPurchases.getPurchaseHistoryAsync(options);
+    }
+    else {
+        return await ExpoInAppPurchases.getPurchaseHistoryAsync();
+    }
 }
-export async function purchaseItemAsync(itemId, oldItem) {
+export async function purchaseItemAsync(itemId, oldPurchaseToken) {
     if (!connected) {
         throw new ConnectionError(errors.NOT_CONNECTED);
     }
-    await ExpoInAppPurchases.purchaseItemAsync(itemId, oldItem);
+    await ExpoInAppPurchases.purchaseItemAsync(itemId, oldPurchaseToken);
 }
-export async function setPurchaseListener(callback) {
+export function setPurchaseListener(callback) {
     if (purchaseUpdatedSubscription) {
         purchaseUpdatedSubscription.remove();
     }
@@ -51,8 +56,12 @@ export async function finishTransactionAsync(purchase, consumeItem) {
     }
     if (purchase.acknowledged)
         return;
-    const transactionId = Platform.OS === 'android' ? purchase.purchaseToken : purchase.orderId;
-    await ExpoInAppPurchases.finishTransactionAsync(transactionId, consumeItem);
+    if (Platform.OS === 'android') {
+        await ExpoInAppPurchases.finishTransactionAsync(purchase.purchaseToken, consumeItem);
+    }
+    else {
+        await ExpoInAppPurchases.finishTransactionAsync(purchase.orderId);
+    }
 }
 export async function getBillingResponseCodeAsync() {
     if (!connected) {

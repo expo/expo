@@ -1,11 +1,11 @@
 //  Copyright © 2019-present 650 Industries. All rights reserved.
 
-#import <UMCore/UMEventEmitter.h>
-#import <UMCore/UMExportedModule.h>
-#import <UMCore/UMModuleRegistryConsumer.h>
-#import <UMCore/UMAppLifecycleListener.h>
+#import <ExpoModulesCore/EXEventEmitter.h>
+#import <ExpoModulesCore/EXExportedModule.h>
+#import <ExpoModulesCore/EXModuleRegistryConsumer.h>
+#import <ExpoModulesCore/EXAppLifecycleListener.h>
 #import <EXScreenOrientation/EXScreenOrientationRegistry.h>
 
-@interface EXScreenOrientationModule : UMExportedModule <UMModuleRegistryConsumer, UMEventEmitter, UMAppLifecycleListener, EXOrientationListener>
+@interface EXScreenOrientationModule : EXExportedModule <EXModuleRegistryConsumer, EXEventEmitter, EXAppLifecycleListener, EXOrientationListener>
 
 @end

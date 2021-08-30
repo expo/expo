@@ -1,4 +1,4 @@
-export declare function generateRandomAsync(size: number): Promise<string>;
+export declare function generateRandom(size: number): string;
 /**
  * Proof key for Code Exchange by OAuth Public Clients (RFC 7636), Section 4.1
  * [Section 4.1](https://tools.ietf.org/html/rfc7636#section-4.1)

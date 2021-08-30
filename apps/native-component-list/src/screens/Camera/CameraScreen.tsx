@@ -1,15 +1,13 @@
-import {
-  Foundation,
-  Ionicons,
-  MaterialCommunityIcons,
-  MaterialIcons,
-  Octicons,
-} from '@expo/vector-icons';
+import Foundation from '@expo/vector-icons/build/Foundation';
+import Ionicons from '@expo/vector-icons/build/Ionicons';
+import MaterialCommunityIcons from '@expo/vector-icons/build/MaterialCommunityIcons';
+import MaterialIcons from '@expo/vector-icons/build/MaterialIcons';
+import Octicons from '@expo/vector-icons/build/Octicons';
 import { BarCodeScanner } from 'expo-barcode-scanner';
-import { Camera, BarCodeScanningResult } from 'expo-camera';
+import { BarCodeScanningResult, Camera, PermissionStatus } from 'expo-camera';
+import { AutoFocus, CameraType, FlashMode, WhiteBalance } from 'expo-camera/build/Camera.types';
 import Constants from 'expo-constants';
 import * as FileSystem from 'expo-file-system';
-import * as Permissions from 'expo-permissions';
 import React from 'react';
 import { Alert, Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { isIphoneX } from 'react-native-iphone-x-helper';
@@ -25,7 +23,11 @@ interface Picture {
   exif?: any;
 }
 
-const flashModeOrder: { [key: string]: string } = {
+type FlashModeString = keyof typeof FlashMode;
+type AutoFocusString = keyof typeof AutoFocus;
+type WhiteBalanceString = keyof typeof WhiteBalance;
+
+const flashModeOrder: { [key: string]: FlashModeString } = {
   off: 'on',
   on: 'auto',
   auto: 'torch',
@@ -34,12 +36,12 @@ const flashModeOrder: { [key: string]: string } = {
 
 const flashIcons: { [key: string]: string } = {
   off: 'flash-off',
-  on: 'flash-on',
-  auto: 'flash-auto',
-  torch: 'highlight',
+  on: 'flash',
+  auto: 'flash-outline',
+  torch: 'flashlight',
 };
 
-const wbOrder: { [key: string]: string } = {
+const wbOrder: { [key: string]: WhiteBalanceString } = {
   auto: 'sunny',
   sunny: 'cloudy',
   cloudy: 'shadow',
@@ -60,12 +62,12 @@ const wbIcons: { [key: string]: string } = {
 const photos: Picture[] = [];
 
 interface State {
-  flash: string;
+  flash: FlashModeString;
   zoom: number;
-  autoFocus: string;
-  type: string;
+  autoFocus: AutoFocusString;
+  type: CameraType;
   depth: number;
-  whiteBalance: string;
+  whiteBalance: WhiteBalanceString;
   ratio: string;
   ratios: any[];
   barcodeScanning: boolean;
@@ -73,7 +75,7 @@ interface State {
   faces: any[];
   newPhotos: boolean;
   permissionsGranted: boolean;
-  permission?: Permissions.PermissionStatus;
+  permission?: PermissionStatus;
   pictureSize?: any;
   pictureSizes: any[];
   pictureSizeId: number;
@@ -88,7 +90,7 @@ export default class CameraScreen extends React.Component<{}, State> {
     flash: 'off',
     zoom: 0,
     autoFocus: 'on',
-    type: 'back',
+    type: CameraType.back,
     depth: 0,
     whiteBalance: 'auto',
     ratio: '16:9',
@@ -110,7 +112,7 @@ export default class CameraScreen extends React.Component<{}, State> {
     if (Platform.OS !== 'web') {
       this.ensureDirectoryExistsAsync();
     }
-    Permissions.askAsync(Permissions.CAMERA).then(({ status }) => {
+    Camera.requestPermissionsAsync().then(({ status }) => {
       this.setState({ permission: status, permissionsGranted: status === 'granted' });
     });
   }
@@ -131,7 +133,10 @@ export default class CameraScreen extends React.Component<{}, State> {
 
   toggleMoreOptions = () => this.setState(state => ({ showMoreOptions: !state.showMoreOptions }));
 
-  toggleFacing = () => this.setState(state => ({ type: state.type === 'back' ? 'front' : 'back' }));
+  toggleFacing = () =>
+    this.setState(state => ({
+      type: state.type === CameraType.back ? CameraType.front : CameraType.back,
+    }));
 
   toggleFlash = () => this.setState(state => ({ flash: flashModeOrder[state.flash] }));
 
@@ -256,10 +261,10 @@ export default class CameraScreen extends React.Component<{}, State> {
         <Ionicons name="camera-reverse" size={32} color="white" />
       </TouchableOpacity>
       <TouchableOpacity style={styles.toggleButton} onPress={this.toggleFlash}>
-        <MaterialIcons name={flashIcons[this.state.flash]} size={32} color="white" />
+        <Ionicons name={flashIcons[this.state.flash] as any} size={28} color="white" />
       </TouchableOpacity>
       <TouchableOpacity style={styles.toggleButton} onPress={this.toggleWB}>
-        <MaterialIcons name={wbIcons[this.state.whiteBalance]} size={32} color="white" />
+        <MaterialIcons name={wbIcons[this.state.whiteBalance] as any} size={32} color="white" />
       </TouchableOpacity>
       <TouchableOpacity style={styles.toggleButton} onPress={this.toggleFocus}>
         <Text
@@ -315,13 +320,13 @@ export default class CameraScreen extends React.Component<{}, State> {
         <Text style={styles.pictureQualityLabel}>Picture quality</Text>
         <View style={styles.pictureSizeChooser}>
           <TouchableOpacity onPress={this.previousPictureSize} style={{ padding: 6 }}>
-            <Ionicons name="md-arrow-dropleft" size={14} color="white" />
+            <Ionicons name="arrow-back" size={14} color="white" />
           </TouchableOpacity>
           <View style={styles.pictureSizeLabel}>
             <Text style={{ color: 'white' }}>{this.state.pictureSize}</Text>
           </View>
           <TouchableOpacity onPress={this.nextPictureSize} style={{ padding: 6 }}>
-            <Ionicons name="md-arrow-dropright" size={14} color="white" />
+            <Ionicons name="arrow-forward" size={14} color="white" />
           </TouchableOpacity>
         </View>
       </View>

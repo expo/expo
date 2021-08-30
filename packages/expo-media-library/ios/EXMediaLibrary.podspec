@@ -14,9 +14,7 @@ Pod::Spec.new do |s|
   s.source         = { git: 'https://github.com/expo/expo.git' }
   s.frameworks     = 'Photos','PhotosUI'
 
-  s.dependency 'UMCore'
-  s.dependency 'UMPermissionsInterface'
-  s.dependency 'UMFileSystemInterface'
+  s.dependency 'ExpoModulesCore'
   s.dependency 'React-Core'
 
   if !$ExpoUseSources&.include?(package['name']) && ENV['EXPO_USE_SOURCE'].to_i == 0 && File.exist?("#{s.name}.xcframework") && Gem::Version.new(Pod::VERSION) >= Gem::Version.new('1.10.0')

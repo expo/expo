@@ -9,6 +9,8 @@ import PlatformsSection from '~/components/plugins/PlatformsSection';
 
 The **`expo-notifications`** provides an API to fetch push notification tokens and to present, schedule, receive and respond to notifications.
 
+> Migrating from Expo's `LegacyNotifications` module? [Here's a guide to help make the transition as easy as possible](https://github.com/expo/fyi/blob/master/LegacyNotifications-to-ExpoNotifications.md).
+
 ### Features
 
 - 📣 schedule a one-off notification for a specific date, or some time from now,
@@ -17,7 +19,7 @@ The **`expo-notifications`** provides an API to fetch push notification tokens a
 - 📲 fetch a native device push token so you can send push notifications with FCM and APNS,
 - 😎 fetch an Expo push token so you can send push notifications with Expo,
 - 📬 listen to incoming notifications,
-- 👆 listen to interactions with notifications (tapping or dismissing),
+- 👆 listen to interactions with notifications,
 - 🎛 handle notifications when the app is in foreground,
 - 🔕 imperatively dismiss notifications from Notification Center/tray,
 - 🗂 create, update, delete Android notification channels,
@@ -333,10 +335,10 @@ Returns an Expo token that can be used to send a push notification to this devic
 
 This function accepts an optional object allowing you to pass in configuration, consisting of fields (all are optional, but some may have to be defined if configuration cannot be inferred):
 
-- **experienceId (_string_)** -- The ID of the experience to which the token should be attributed. Defaults to [`Constants.manifest.id`](https://docs.expo.io/versions/latest/sdk/constants/#constantsmanifest) exposed by `expo-constants`. In the bare workflow, you must provide a value which takes the shape `@username/projectSlug`, where `username` is the Expo account that the project is associated with, and `projectSlug` is your [`slug` from `app.json`](../config/app.md#slug).
+- **experienceId (_string_)** -- The ID of the experience to which the token should be attributed. Defaults to [`Constants.manifest.id`](https://docs.expo.dev/versions/latest/sdk/constants/#constantsmanifest) exposed by `expo-constants`. In the bare workflow, you must provide a value which takes the shape `@username/projectSlug`, where `username` is the Expo account that the project is associated with, and `projectSlug` is your [`slug` from `app.json`](../config/app.md#slug).
 - **devicePushToken ([_DevicePushToken_](#devicepushtoken))** -- The device push token with which to register at the backend. Defaults to a token fetched with [`getDevicePushTokenAsync()`](#getdevicepushtokenasync-devicepushtoken).
-- **applicationId (_string_)** -- The ID of the application to which the token should be attributed. Defaults to [`Application.applicationId`](https://docs.expo.io/versions/latest/sdk/application/#applicationapplicationid) exposed by `expo-application`.
-- **development (_boolean_)** -- Makes sense only on iOS, where there are two push notification services: sandbox and production. This defines whether the push token is supposed to be used with the sandbox platform notification service. Defaults to [`Application.getIosPushNotificationServiceEnvironmentAsync()`](https://docs.expo.io/versions/latest/sdk/application/#applicationgetiospushnotificationserviceenvironmentasync) exposed by `expo-application` or `false`. Most probably you won't need to customize that. You may want to customize that if you don't want to install `expo-application` and still use the sandbox APNS.
+- **applicationId (_string_)** -- The ID of the application to which the token should be attributed. Defaults to [`Application.applicationId`](https://docs.expo.dev/versions/latest/sdk/application/#applicationapplicationid) exposed by `expo-application`.
+- **development (_boolean_)** -- Makes sense only on iOS, where there are two push notification services: sandbox and production. This defines whether the push token is supposed to be used with the sandbox platform notification service. Defaults to [`Application.getIosPushNotificationServiceEnvironmentAsync()`](https://docs.expo.dev/versions/latest/sdk/application/#applicationgetiospushnotificationserviceenvironmentasync) exposed by `expo-application` or `false`. Most probably you won't need to customize that. You may want to customize that if you don't want to install `expo-application` and still use the sandbox APNS.
 
 #### Returns
 
@@ -442,6 +444,19 @@ A single and required argument is a subscription returned by `addPushTokenListen
 Removes all push token subscriptions that may have been registered with `addPushTokenListener`.
 
 ## Listening to notification events
+
+Notification events include incoming notifications, interactions your users perform with notifications (this can be tapping on a notification, or interacting with it via [notification categories](#managing-notification-categories-interactive-notifications)), and rare occasions when your notifications may be dropped.
+
+A few different listeners are exposed, so we've provided a chart below which will hopefully help you understand when you can expect each one to be triggered:
+
+| User interacted with notification? | App state  | Listener(s) triggered                                                   |
+| :--------------------------------- | :--------: | ----------------------------------------------------------------------- |
+| false                              | Foreground | `NotificationReceivedListener`                                          |
+| false                              | Background | none                                                                    |
+| false                              |   Killed   | none                                                                    |
+| true                               | Foreground | `NotificationReceivedListener` & `NotificationResponseReceivedListener` |
+| true                               | Background | `NotificationResponseReceivedListener`                                  |
+| true                               |   Killed   | `NotificationResponseReceivedListener`                                  |
 
 ### `addNotificationReceivedListener(listener: (event: Notification) => void): void`
 
@@ -1092,7 +1107,7 @@ A `Promise` resolving to `true` if the category was successfully deleted, or `fa
 
 ## Types
 
-### `DevicePushToken`
+#### `DevicePushToken`
 
 In simple terms, an object of `type: Platform.OS` and `data: any`. The `data` type depends on the environment -- on a native device it will be a string, which you can then use to send notifications via Firebase Cloud Messaging (Android) or APNS (iOS); on web it will be a registration object (VAPID).
 
@@ -1116,13 +1131,13 @@ export interface WebDevicePushToken {
 export type DevicePushToken = NativeDevicePushToken | WebDevicePushToken;
 ```
 
-### `PushTokenListener`
+#### `PushTokenListener`
 
 A function accepting a device push token ([`DevicePushToken`](#devicepushtoken)) as an argument.
 
 > **Note:** You should not call `getDevicePushTokenAsync` inside this function, as it triggers the listener and may lead to an infinite loop.
 
-### `ExpoPushToken`
+#### `ExpoPushToken`
 
 Borrowing from `DevicePushToken` a little bit, it's an object of `type: 'expo'` and `data: string`. You can use the `data` value to send notifications via Expo Notifications service.
 
@@ -1133,7 +1148,7 @@ export interface ExpoPushToken {
 }
 ```
 
-### `Subscription`
+#### `Subscription`
 
 A common-in-React-Native type to abstract an active subscription. Call `.remove()` to remove the subscription. You can then discard the object.
 
@@ -1143,7 +1158,7 @@ export type Subscription = {
 };
 ```
 
-### `Notification`
+#### `Notification`
 
 An object representing a single notification that has been triggered by some request ([`NotificationRequest`](#notificationrequest)) at some point in time.
 
@@ -1154,7 +1169,7 @@ export interface Notification {
 }
 ```
 
-### `NotificationRequest`
+#### `NotificationRequest`
 
 An object representing a request to present a notification. It has content — how it's being represented — and a trigger — what triggers the notification. Many notifications ([`Notification`](#notification)) may be triggered with the same request (eg. a repeating notification).
 
@@ -1166,7 +1181,7 @@ export interface NotificationRequest {
 }
 ```
 
-### `NotificationContent`
+#### `NotificationContent`
 
 An object representing notification's content.
 
@@ -1213,7 +1228,7 @@ export type NotificationContent = {
 );
 ```
 
-### `NotificationContentInput`
+#### `NotificationContentInput`
 
 An object representing notification content that you pass in to `presentNotificationAsync` or as a part of `NotificationRequestInput`.
 
@@ -1264,7 +1279,7 @@ export interface NotificationContentInput {
 }
 ```
 
-### `NotificationRequestInput`
+#### `NotificationRequestInput`
 
 An object representing a notification request you can pass into `scheduleNotificationAsync`.
 
@@ -1276,7 +1291,7 @@ export interface NotificationRequestInput {
 }
 ```
 
-### `AndroidNotificationPriority`
+#### `AndroidNotificationPriority`
 
 An enum corresponding to values appropriate for Android's [`Notification#priority`](https://developer.android.com/reference/android/app/Notification#priority) field.
 
@@ -1290,7 +1305,7 @@ export enum AndroidNotificationPriority {
 }
 ```
 
-### `NotificationTrigger`
+#### `NotificationTrigger`
 
 A union type containing different triggers which may cause the notification to be delivered to the application.
 
@@ -1304,7 +1319,7 @@ export type NotificationTrigger =
   | UnknownNotificationTrigger;
 ```
 
-### `PushNotificationTrigger`
+#### `PushNotificationTrigger`
 
 An object representing a notification delivered by a push notification system.
 
@@ -1317,7 +1332,7 @@ export interface PushNotificationTrigger {
 }
 ```
 
-### `FirebaseRemoteMessage`
+#### `FirebaseRemoteMessage`
 
 A Firebase `RemoteMessage` that caused the notification to be delivered to the app.
 
@@ -1364,7 +1379,7 @@ export interface FirebaseRemoteMessage {
 }
 ```
 
-### `TimeIntervalNotificationTrigger`
+#### `TimeIntervalNotificationTrigger`
 
 A trigger related to an elapsed time interval. May be repeating (see `repeats` field).
 
@@ -1376,7 +1391,7 @@ export interface TimeIntervalNotificationTrigger {
 }
 ```
 
-### `DailyNotificationTrigger`
+#### `DailyNotificationTrigger`
 
 A trigger related to a daily notification. This is an Android-only type, the same functionality will be achieved on iOS with a `CalendarNotificationTrigger`.
 
@@ -1388,7 +1403,7 @@ export interface DailyNotificationTrigger {
 }
 ```
 
-### `CalendarNotificationTrigger`
+#### `CalendarNotificationTrigger`
 
 A trigger related to a [`UNCalendarNotificationTrigger`](https://developer.apple.com/documentation/usernotifications/uncalendarnotificationtrigger?language=objc), available only on iOS.
 
@@ -1418,7 +1433,7 @@ export interface CalendarNotificationTrigger {
 }
 ```
 
-### `LocationNotificationTrigger`
+#### `LocationNotificationTrigger`
 
 A trigger related to a [`UNLocationNotificationTrigger`](https://developer.apple.com/documentation/usernotifications/unlocationnotificationtrigger?language=objc), available only on iOS.
 
@@ -1459,7 +1474,7 @@ export interface BeaconRegion extends Region {
 }
 ```
 
-### `UnknownNotificationTrigger`
+#### `UnknownNotificationTrigger`
 
 Represents a notification trigger that is unknown to `expo-notifications` and that it didn't know how to serialize for JS.
 
@@ -1469,7 +1484,7 @@ export interface UnknownNotificationTrigger {
 }
 ```
 
-### `NotificationTriggerInput`
+#### `NotificationTriggerInput`
 
 A type representing possible triggers with which you can schedule notifications. A `null` trigger means that the notification should be scheduled for delivery immediately.
 
@@ -1483,7 +1498,7 @@ export type NotificationTriggerInput =
   | CalendarTriggerInput;
 ```
 
-### `ChannelAwareTriggerInput`
+#### `ChannelAwareTriggerInput`
 
 A trigger that will cause the notification to be delivered immediately.
 
@@ -1493,7 +1508,7 @@ export type ChannelAwareTriggerInput = {
 };
 ```
 
-### `DateTriggerInput`
+#### `DateTriggerInput`
 
 A trigger that will cause the notification to be delivered once at the specified `Date`. If you pass in a `number` it will be interpreted as a UNIX timestamp.
 
@@ -1501,7 +1516,7 @@ A trigger that will cause the notification to be delivered once at the specified
 export type DateTriggerInput = Date | number | { channelId?: string; date: Date | number };
 ```
 
-### `TimeIntervalTriggerInput`
+#### `TimeIntervalTriggerInput`
 
 A trigger that will cause the notification to be delivered once or many times (depends on the `repeats` field) after `seconds` time elapse.
 
@@ -1513,7 +1528,7 @@ export interface TimeIntervalTriggerInput {
 }
 ```
 
-### `DailyTriggerInput`
+#### `DailyTriggerInput`
 
 A trigger that will cause the notification to be delivered once per day.
 
@@ -1526,7 +1541,7 @@ export interface DailyTriggerInput {
 }
 ```
 
-### `CalendarTriggerInput`
+#### `CalendarTriggerInput`
 
 A trigger that will cause the notification to be delivered once or many times when the date components match the specified values. Corresponds to native [`UNCalendarNotificationTrigger`](https://developer.apple.com/documentation/usernotifications/uncalendarnotificationtrigger?language=objc).
 
@@ -1552,7 +1567,7 @@ export interface CalendarTriggerInput {
 }
 ```
 
-### `NotificationResponse`
+#### `NotificationResponse`
 
 An object representing user's interaction with the notification.
 
@@ -1566,7 +1581,7 @@ export interface NotificationResponse {
 }
 ```
 
-### `NotificationBehavior`
+#### `NotificationBehavior`
 
 An object representing behavior that should be applied to the incoming notification.
 
@@ -1579,7 +1594,7 @@ export interface NotificationBehavior {
 }
 ```
 
-### `NotificationChannel`
+#### `NotificationChannel`
 
 An object representing a notification channel (feature available only on Android).
 
@@ -1655,7 +1670,7 @@ export interface NotificationChannel {
 }
 ```
 
-### `NotificationChannelInput`
+#### `NotificationChannelInput`
 
 An object representing a notification channel to be set.
 
@@ -1678,7 +1693,7 @@ export interface NotificationChannelInput {
 }
 ```
 
-### `NotificationChannelGroup`
+#### `NotificationChannelGroup`
 
 An object representing a notification channel group (feature available only on Android).
 
@@ -1692,7 +1707,7 @@ export interface NotificationChannelGroup {
 }
 ```
 
-### `NotificationChannelGroupInput`
+#### `NotificationChannelGroupInput`
 
 An object representing a notification channel group to be set.
 
@@ -1703,7 +1718,7 @@ export interface NotificationChannelGroupInput {
 }
 ```
 
-### `NotificationCategory`
+#### `NotificationCategory`
 
 ```ts
 export interface NotificationCategory {
@@ -1723,7 +1738,7 @@ export interface NotificationCategory {
 }
 ```
 
-### `NotificationAction`
+#### `NotificationAction`
 
 ```ts
 export interface NotificationAction {

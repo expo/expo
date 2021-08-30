@@ -11,7 +11,10 @@ export const MEDIA_LIBRARY_WRITE_ONLY = 'mediaLibraryWriteOnly';
  */
 export const CAMERA_ROLL = MEDIA_LIBRARY;
 export const AUDIO_RECORDING = 'audioRecording';
+/** @deprecated Use `LOCATION_FOREGROUND` or `LOCATION_BACKGROUND` instead */
 export const LOCATION = 'location';
+export const LOCATION_FOREGROUND = 'locationForeground';
+export const LOCATION_BACKGROUND = 'locationBackground';
 export const USER_FACING_NOTIFICATIONS = 'userFacingNotifications';
 export const NOTIFICATIONS = 'notifications';
 export const CONTACTS = 'contacts';
@@ -36,12 +39,14 @@ const PERMISSION_MODULE_MAPPING = {
     [MOTION]: 'expo-sensors',
 };
 export async function getAsync(...types) {
+    console.warn(`expo-permissions is now deprecated — the functionality has been moved to other expo packages that directly use these permissions (e.g. expo-location, expo-camera). The package will be removed in the upcoming releases.`);
     if (Platform.OS === 'ios') {
         return await _handleMultiPermissionsRequestIOSAsync(types, Permissions.getAsync);
     }
     return await _handlePermissionsRequestAsync(types, Permissions.getAsync);
 }
 export async function askAsync(...types) {
+    console.warn(`expo-permissions is now deprecated — the functionality has been moved to other expo packages that directly use these permissions (e.g. expo-location, expo-camera). The package will be removed in the upcoming releases.`);
     if (Platform.OS === 'ios') {
         return await _handleMultiPermissionsRequestIOSAsync(types, Permissions.askAsync);
     }

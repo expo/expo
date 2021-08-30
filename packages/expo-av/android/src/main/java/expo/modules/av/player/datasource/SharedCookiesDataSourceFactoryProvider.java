@@ -9,8 +9,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import org.unimodules.core.ModuleRegistry;
-import org.unimodules.core.interfaces.InternalModule;
+import expo.modules.core.ModuleRegistry;
+import expo.modules.core.interfaces.InternalModule;
 
 public class SharedCookiesDataSourceFactoryProvider implements InternalModule, DataSourceFactoryProvider {
   @Override

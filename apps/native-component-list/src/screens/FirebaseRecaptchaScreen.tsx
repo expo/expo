@@ -29,6 +29,7 @@ interface State {
   textStyle?: StyleProp<TextStyle>;
   linkStyle?: StyleProp<TextStyle>;
   appVerificationDisabledForTesting: boolean;
+  languageCode: string;
 }
 
 // See: https://github.com/expo/expo/pull/10229#discussion_r490961694
@@ -45,6 +46,7 @@ export default class FirebaseRecaptchaScreen extends React.Component<{}, State> 
     textStyle: undefined,
     linkStyle: undefined,
     appVerificationDisabledForTesting: false,
+    languageCode: 'en',
   };
 
   recaptchaVerifier: FirebaseAuthApplicationVerifier | null = null;
@@ -57,6 +59,7 @@ export default class FirebaseRecaptchaScreen extends React.Component<{}, State> 
       firebaseConfig,
       inProgress,
       appVerificationDisabledForTesting,
+      languageCode,
       textStyle,
       linkStyle,
     } = this.state;
@@ -93,6 +96,14 @@ export default class FirebaseRecaptchaScreen extends React.Component<{}, State> 
         />
         <ListButton
           onPress={() =>
+            this.setState(state => ({
+              languageCode: state.languageCode === 'en' ? 'zh-CN' : 'en',
+            }))
+          }
+          title={`Toggle languageCode (${languageCode})`}
+        />
+        <ListButton
+          onPress={() =>
             this.setState(state => ({ title: state.title ? undefined : 'Prove you are human!' }))
           }
           title={`Toggle custom title (${title ? 'On' : 'Off'})`}
@@ -107,6 +118,7 @@ export default class FirebaseRecaptchaScreen extends React.Component<{}, State> 
           ref={ref => (this.recaptchaVerifier = ref)}
           appVerificationDisabledForTesting={appVerificationDisabledForTesting}
           attemptInvisibleVerification={attemptInvisibleVerification}
+          languageCode={languageCode}
           {...modalProps}
         />
 

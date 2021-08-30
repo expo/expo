@@ -1,8 +1,8 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 
-import { StyledText } from './Text';
 import Colors from '../constants/Colors';
+import { StyledText } from './Text';
 
 export type ListFooterProps = {
   label: string;
@@ -11,7 +11,7 @@ export type ListFooterProps = {
 class ListFooter extends React.PureComponent<ListFooterProps> {
   render() {
     return (
-      <View style={styles.container}>
+      <View testID="DevMenuFooter" style={styles.container}>
         <StyledText
           style={styles.text}
           lightColor={Colors.light.grayText}

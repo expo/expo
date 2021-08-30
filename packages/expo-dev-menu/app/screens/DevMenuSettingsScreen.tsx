@@ -71,23 +71,23 @@ export default class DevMenuSettingsScreen extends React.PureComponent<{}, State
       ).length === 1;
 
     return (
-      <View style={styles.container}>
-        <ListItem title="Open React Native dev menu" onPress={this.openReactNativeDevMenu} />
+      <View testID="DevMenuSettingsScreen" style={styles.container}>
+        <ListItem content="Open React Native dev menu" onPress={this.openReactNativeDevMenu} />
         <View style={styles.group}>
           <ListItemCheckbox
-            title="Shake device"
+            content="Shake device"
             initialChecked={settings.motionGestureEnabled}
             onChange={this.toggleMotionGesture}
             disabled={shouldLockOneOption && settings.motionGestureEnabled}
           />
           <ListItemCheckbox
-            title="Three-finger long press"
+            content="Three-finger long press"
             initialChecked={settings.touchGestureEnabled}
             onChange={this.toggleTouchGesture}
             disabled={shouldLockOneOption && settings.touchGestureEnabled}
           />
           <ListItemCheckbox
-            title="Show menu at launch"
+            content="Show menu at launch"
             initialChecked={settings.showsAtLaunch}
             onChange={this.toggleAutoLaunch}
             disabled={shouldLockOneOption && settings.showsAtLaunch}

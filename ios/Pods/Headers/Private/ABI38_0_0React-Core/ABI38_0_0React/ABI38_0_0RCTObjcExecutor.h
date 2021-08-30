@@ -1,1 +1,0 @@
-../../../../../versioned-react-native/ABI38_0_0/ReactNative/React/CxxBridge/ABI38_0_0RCTObjcExecutor.h

@@ -8,6 +8,34 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+- Rewrite android code to Kotlin. ([#13996](https://github.com/expo/expo/pull/13996) by [@kkafar](https://github.com/kkafar))
+
+## 9.2.0 — 2021-06-16
+
+### 🐛 Bug fixes
+
+- Enable kotlin in all modules. ([#12716](https://github.com/expo/expo/pull/12716) by [@wschurman](https://github.com/wschurman))
+
+## 9.1.2 — 2021-04-13
+
+_This version does not introduce any user-facing changes._
+
+## 9.1.1 — 2021-04-01
+
+_This version does not introduce any user-facing changes._
+
+## 9.1.0 — 2021-03-10
+
+### 🎉 New features
+
+- Updated Android build configuration to target Android 11 (added support for Android SDK 30). ([#11647](https://github.com/expo/expo/pull/11647) by [@bbarthec](https://github.com/bbarthec))
+
+### 🐛 Bug fixes
+
+- Remove peerDependencies and unimodulePeerDependencies from Expo modules. ([#11980](https://github.com/expo/expo/pull/11980) by [@brentvatne](https://github.com/brentvatne))
+
 ## 9.0.0 — 2021-01-15
 
 ### 🛠 Breaking changes

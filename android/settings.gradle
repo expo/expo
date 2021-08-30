@@ -1,4 +1,34 @@
+pluginManagement {
+  repositories {
+    gradlePluginPortal()
+    mavenLocal()
+    google()
+  }
+}
+
 include ':app'
+
+include ':packages:react-native-codegen:android'
+project(':packages:react-native-codegen:android').projectDir = new File('../react-native-lab/react-native/packages/react-native-codegen/android')
+includeBuild('../react-native-lab/react-native/packages/react-native-codegen/android')
+
+apply from: new File(["node", "--print", "require.resolve('expo-modules-core/package.json')"].execute().text.trim(), "../scripts/autolinking.gradle")
+
+/* UNCOMMENT WHEN DISTRIBUTING
+useExpoModules([
+    autolink: false,
+    exclude: [
+        'expo-module-template',
+        'expo-in-app-purchases',
+        'expo-payments-stripe'
+    ],
+    searchPaths: [
+      'enabled-modules'
+    ],
+    useAAR: true
+])
+END UNCOMMENT WHEN DISTRIBUTING */
+
 
 // WHEN_DISTRIBUTING_REMOVE_FROM_HERE
 include ':expoview'
@@ -13,27 +43,19 @@ project(":expo-random").projectDir = new File("../packages/expo-random/android")
 
 [
     // ADD_NEW_SUPPORTED_ABIS_HERE
+    "abi42_0_0",
+    "abi41_0_0",
     "abi40_0_0",
     "abi39_0_0",
-    "abi38_0_0",
 ].forEach({ abiVariant ->
   include ":expoview-$abiVariant"
   project(":expoview-$abiVariant").projectDir = new File(rootDir, "versioned-abis/expoview-$abiVariant")
 })
-// WHEN_DISTRIBUTING_REMOVE_TO_HERE
 
-// Import gradle helpers for unimodules.
-apply from: '../node_modules/react-native-unimodules/gradle.groovy'
-
-// Include unimodules.
-includeUnimodulesProjects(
-// WHEN_DISTRIBUTING_REMOVE_FROM_HERE
-    [
-        modulesPaths: ['../../packages'],
-        target      : 'react-native',
-        exclude     : [
-            'expo-module-template',
-        ]
+useExpoModules([
+    autolink: false,
+    exclude : [
+        'expo-module-template',
     ]
+])
 // WHEN_DISTRIBUTING_REMOVE_TO_HERE
-)

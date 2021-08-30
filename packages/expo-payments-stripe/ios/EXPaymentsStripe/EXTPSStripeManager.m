@@ -26,7 +26,7 @@ NSString * const kErrorKeyNoAmount = @"noAmount";
 
 @interface EXTPSStripeManager ()
 
-@property (nonatomic, weak) UMModuleRegistry *moduleRegistry;
+@property (nonatomic, weak) EXModuleRegistry *moduleRegistry;
 
 @end
 
@@ -41,8 +41,8 @@ NSString * const TPSPaymentNetworkVisa = @"visa";
     NSString *merchantId;
     NSDictionary *errorCodes;
 
-    UMPromiseResolveBlock promiseResolver;
-    UMPromiseRejectBlock promiseRejector;
+    EXPromiseResolveBlock promiseResolver;
+    EXPromiseRejectBlock promiseRejector;
 
     BOOL requestIsCompleted;
 
@@ -71,17 +71,17 @@ NSString * const TPSPaymentNetworkVisa = @"visa";
              };
 }
 
-UM_REGISTER_MODULE();
+EX_REGISTER_MODULE();
 
 + (const NSString *)exportedModuleName
 {
   return @"StripeModule";
 }
 
-UM_EXPORT_METHOD_AS(init, init:(NSDictionary *)options
+EX_EXPORT_METHOD_AS(init, init:(NSDictionary *)options
                     errorCodes:(NSDictionary *)errors
-                    resolver:(UMPromiseResolveBlock)resolve
-                    rejecter:(UMPromiseRejectBlock)reject) {
+                    resolver:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject) {
     publishableKey = options[@"publishableKey"];
     merchantId = options[@"merchantId"];
     errorCodes = errors;
@@ -89,14 +89,14 @@ UM_EXPORT_METHOD_AS(init, init:(NSDictionary *)options
     resolve(@(YES));
 }
 
-UM_EXPORT_METHOD_AS(deviceSupportsApplePay, deviceSupportsApplePay:(UMPromiseResolveBlock)resolve
-                  rejecter:(UMPromiseRejectBlock)reject) {
+EX_EXPORT_METHOD_AS(deviceSupportsApplePay, deviceSupportsApplePay:(EXPromiseResolveBlock)resolve
+                  rejecter:(EXPromiseRejectBlock)reject) {
     resolve(@([PKPaymentAuthorizationViewController canMakePayments]));
 }
 
-UM_EXPORT_METHOD_AS(canMakeApplePayPayments, canMakeApplePayPayments:(NSDictionary *)options
-                  resolver:(UMPromiseResolveBlock)resolve
-                  rejecter:(UMPromiseRejectBlock)reject) {
+EX_EXPORT_METHOD_AS(canMakeApplePayPayments, canMakeApplePayPayments:(NSDictionary *)options
+                  resolver:(EXPromiseResolveBlock)resolve
+                  rejecter:(EXPromiseRejectBlock)reject) {
     NSArray <NSString *> *paymentNetworksStrings =
     options[@"networks"] ?: [EXTPSStripeManager supportedPaymentNetworksStrings];
 
@@ -104,8 +104,8 @@ UM_EXPORT_METHOD_AS(canMakeApplePayPayments, canMakeApplePayPayments:(NSDictiona
     resolve(@([PKPaymentAuthorizationViewController canMakePaymentsUsingNetworks:networks]));
 }
 
-UM_EXPORT_METHOD_AS(completeApplePayRequest, completeApplePayRequest:(UMPromiseResolveBlock)resolve
-                                 rejecter:(UMPromiseRejectBlock)reject) {
+EX_EXPORT_METHOD_AS(completeApplePayRequest, completeApplePayRequest:(EXPromiseResolveBlock)resolve
+                                 rejecter:(EXPromiseRejectBlock)reject) {
     if (applePayCompletion) {
         promiseResolver = resolve;
         [self resolveApplePayCompletion:PKPaymentAuthorizationStatusSuccess];
@@ -114,8 +114,8 @@ UM_EXPORT_METHOD_AS(completeApplePayRequest, completeApplePayRequest:(UMPromiseR
     }
 }
 
-UM_EXPORT_METHOD_AS(cancelApplePayRequest, cancelApplePayRequest:(UMPromiseResolveBlock)resolve
-                               rejecter:(UMPromiseRejectBlock)reject) {
+EX_EXPORT_METHOD_AS(cancelApplePayRequest, cancelApplePayRequest:(EXPromiseResolveBlock)resolve
+                               rejecter:(EXPromiseRejectBlock)reject) {
     if (applePayCompletion) {
         promiseResolver = resolve;
         [self resolveApplePayCompletion:PKPaymentAuthorizationStatusFailure];
@@ -124,9 +124,9 @@ UM_EXPORT_METHOD_AS(cancelApplePayRequest, cancelApplePayRequest:(UMPromiseResol
     }
 }
 
-UM_EXPORT_METHOD_AS(createTokenWithCard, createTokenWithCard:(NSDictionary *)params
-                             resolver:(UMPromiseResolveBlock)resolve
-                             rejecter:(UMPromiseRejectBlock)reject) {
+EX_EXPORT_METHOD_AS(createTokenWithCard, createTokenWithCard:(NSDictionary *)params
+                             resolver:(EXPromiseResolveBlock)resolve
+                             rejecter:(EXPromiseRejectBlock)reject) {
     if(!requestIsCompleted) {
         NSDictionary *error = [errorCodes valueForKey:kErrorKeyBusy];
         reject(error[kErrorKeyCode], error[kErrorKeyDescription], nil);
@@ -165,9 +165,9 @@ UM_EXPORT_METHOD_AS(createTokenWithCard, createTokenWithCard:(NSDictionary *)par
     }];
 }
 
-UM_EXPORT_METHOD_AS(createTokenWithBankAccount, createTokenWithBankAccount:(NSDictionary *)params
-                  resolver:(UMPromiseResolveBlock)resolve
-                  rejecter:(UMPromiseRejectBlock)reject) {
+EX_EXPORT_METHOD_AS(createTokenWithBankAccount, createTokenWithBankAccount:(NSDictionary *)params
+                  resolver:(EXPromiseResolveBlock)resolve
+                  rejecter:(EXPromiseRejectBlock)reject) {
     if(!requestIsCompleted) {
         NSDictionary *error = [errorCodes valueForKey:kErrorKeyBusy];
         reject(error[kErrorKeyCode], error[kErrorKeyDescription], nil);
@@ -201,9 +201,9 @@ UM_EXPORT_METHOD_AS(createTokenWithBankAccount, createTokenWithBankAccount:(NSDi
     }];
 }
 
-UM_EXPORT_METHOD_AS(createSourceWithParams, createSourceWithParams:(NSDictionary *)params
-                  resolver:(UMPromiseResolveBlock)resolve
-                  rejecter:(UMPromiseRejectBlock)reject) {
+EX_EXPORT_METHOD_AS(createSourceWithParams, createSourceWithParams:(NSDictionary *)params
+                  resolver:(EXPromiseResolveBlock)resolve
+                  rejecter:(EXPromiseRejectBlock)reject) {
     if(!requestIsCompleted) {
         NSDictionary *error = [errorCodes valueForKey:kErrorKeyBusy];
         reject(error[kErrorKeyCode], error[kErrorKeyDescription], nil);
@@ -291,9 +291,9 @@ UM_EXPORT_METHOD_AS(createSourceWithParams, createSourceWithParams:(NSDictionary
   }];
 }
 
-UM_EXPORT_METHOD_AS(paymentRequestWithCardForm, paymentRequestWithCardForm:(NSDictionary *)options
-                                    resolver:(UMPromiseResolveBlock)resolve
-                                    rejecter:(UMPromiseRejectBlock)reject) {
+EX_EXPORT_METHOD_AS(paymentRequestWithCardForm, paymentRequestWithCardForm:(NSDictionary *)options
+                                    resolver:(EXPromiseResolveBlock)resolve
+                                    rejecter:(EXPromiseRejectBlock)reject) {
     if(!requestIsCompleted) {
         NSDictionary *error = [errorCodes valueForKey:kErrorKeyBusy];
         reject(error[kErrorKeyCode], error[kErrorKeyDescription], nil);
@@ -332,10 +332,10 @@ UM_EXPORT_METHOD_AS(paymentRequestWithCardForm, paymentRequestWithCardForm:(NSDi
     [[self getViewController] presentViewController:navigationController animated:YES completion:nil];
 }
 
-UM_EXPORT_METHOD_AS(paymentRequestWithApplePay, paymentRequestWithApplePay:(NSArray *)items
+EX_EXPORT_METHOD_AS(paymentRequestWithApplePay, paymentRequestWithApplePay:(NSArray *)items
                                  withOptions:(NSDictionary *)options
-                                    resolver:(UMPromiseResolveBlock)resolve
-                                    rejecter:(UMPromiseRejectBlock)reject) {
+                                    resolver:(EXPromiseResolveBlock)resolve
+                                    rejecter:(EXPromiseRejectBlock)reject) {
     if(!requestIsCompleted) {
         NSDictionary *error = [errorCodes valueForKey:kErrorKeyBusy];
         reject(error[kErrorKeyCode], error[kErrorKeyDescription], nil);
@@ -394,8 +394,8 @@ UM_EXPORT_METHOD_AS(paymentRequestWithApplePay, paymentRequestWithApplePay:(NSAr
     }
 }
 
-UM_EXPORT_METHOD_AS(openApplePaySetup, openApplePaySetup:(UMPromiseResolveBlock)resolve
-                    rejecter:(UMPromiseRejectBlock)reject) {
+EX_EXPORT_METHOD_AS(openApplePaySetup, openApplePaySetup:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject) {
     PKPassLibrary *library = [[PKPassLibrary alloc] init];
 
     // Here we should check, if openPaymentSetup selector exist
@@ -407,7 +407,7 @@ UM_EXPORT_METHOD_AS(openApplePaySetup, openApplePaySetup:(UMPromiseResolveBlock)
 #pragma mark - Private
 
 -(UIViewController*) getViewController {
-  return [[_moduleRegistry getModuleImplementingProtocol:@protocol(UMUtilitiesInterface)] currentViewController];
+  return [[_moduleRegistry getModuleImplementingProtocol:@protocol(EXUtilitiesInterface)] currentViewController];
 }
 
 - (void)resolvePromise:(id)result {
@@ -440,7 +440,7 @@ UM_EXPORT_METHOD_AS(openApplePaySetup, openApplePaySetup:(UMPromiseResolveBlock)
     applePayCompletion = nil;
 }
 
-- (BOOL)canSubmitPaymentRequest:(PKPaymentRequest *)paymentRequest rejecter:(UMPromiseRejectBlock)reject {
+- (BOOL)canSubmitPaymentRequest:(PKPaymentRequest *)paymentRequest rejecter:(EXPromiseRejectBlock)reject {
     if (![Stripe deviceSupportsApplePay]) {
         NSDictionary *error = [errorCodes valueForKey:kErrorKeyDeviceNotSupportsNativePay];
         reject(error[kErrorKeyCode], error[kErrorKeyDescription], nil);
@@ -1096,7 +1096,7 @@ UM_EXPORT_METHOD_AS(openApplePaySetup, openApplePaySetup:(UMPromiseResolveBlock)
     return YES;
 }
 
-- (void)setModuleRegistry:(UMModuleRegistry *)moduleRegistry
+- (void)setModuleRegistry:(EXModuleRegistry *)moduleRegistry
 {
   _moduleRegistry = moduleRegistry;
 }

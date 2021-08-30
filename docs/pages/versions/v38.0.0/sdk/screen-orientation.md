@@ -3,12 +3,14 @@ title: ScreenOrientation
 sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-38/packages/expo-screen-orientation'
 ---
 
+import { palette } from '@expo/styleguide';
+import ImageSpotlight from '~/components/plugins/ImageSpotlight'
 import InstallSection from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 
 Screen Orientation is defined as the orientation in which graphics are painted on the device. For example, the figure below has a device in a vertical and horizontal physical orientation, but a portrait screen orientation. For physical device orientation, see the orientation section of [Device Motion](devicemotion.md).
 
-![Portrait orientation in different physical orientations](/static/images/screen-orientation-portrait.png)
+<ImageSpotlight alt="Portrait orientation in different physical orientations" src="/static/images/screen-orientation-portrait.png" containerStyle={{ backgroundColor: palette.light.gray['300'] }}  />
 
 `ScreenOrientation` from **`expo`** allows changing supported screen orientations at runtime, and subscribing to orientation changes. This will take priority over the `orientation` key in `app.json`.
 

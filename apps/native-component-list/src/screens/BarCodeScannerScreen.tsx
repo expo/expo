@@ -1,10 +1,10 @@
-import { usePermissions } from '@use-expo/permissions';
 import { BarCodeScanner, BarCodePoint, BarCodeBounds } from 'expo-barcode-scanner';
-import * as Permissions from 'expo-permissions';
 import * as ScreenOrientation from 'expo-screen-orientation';
 import React from 'react';
 import { Button, Platform, StyleSheet, Text, View } from 'react-native';
 import * as Svg from 'react-native-svg';
+
+import usePermissions from '../utilities/usePermissions';
 
 const BUTTON_COLOR = Platform.OS === 'ios' ? '#fff' : '#666';
 
@@ -39,7 +39,7 @@ function reducer(state: State, action: Partial<State>): State {
 }
 
 export default function BarcodeScannerScreen() {
-  const [isPermissionsGranted] = usePermissions(Permissions.CAMERA, { ask: true });
+  const [isPermissionsGranted] = usePermissions(BarCodeScanner.requestPermissionsAsync);
 
   if (!isPermissionsGranted) {
     return (

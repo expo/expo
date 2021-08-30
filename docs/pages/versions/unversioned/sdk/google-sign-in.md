@@ -5,9 +5,9 @@ sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-google-si
 
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 
-**`expo-google-sign-in`** provides native Google authentication for **standalone** Expo apps or bare React Native apps. It cannot be used in the Expo client as the native `GoogleSignIn` library expects your `REVERSED_CLIENT_ID` in the `info.plist` at build-time. To use Google authentication in the Expo client, check out [`expo-google-app-auth`](google.md) or [expo-app-auth](app-auth.md).
+**`expo-google-sign-in`** provides native Google authentication for **standalone** Expo apps or bare React Native apps. It cannot be used in Expo Go as the native `GoogleSignIn` library expects your `REVERSED_CLIENT_ID` in the `info.plist` at build-time. To use Google authentication in the Expo Go, check out [`expo-google-app-auth`](google.md) or [expo-app-auth](app-auth.md).
 
-<PlatformsSection android emulator ios simulator web={{ pending: 'https://github.com/expo/expo/issues/6884' }} />
+<PlatformsSection android emulator ios simulator />
 
 ## Installation
 
@@ -379,7 +379,7 @@ All of the available authentication error codes.
 - `GoogleSignIn.ERRORS.SIGN_IN_REQUIRED` Attempting to access user data before any user has been authenticated
 - `GoogleSignIn.ERRORS.TASK_IN_PROGRESS` An existing auth task is already running.
 - `GoogleSignIn.ERRORS.SIGN_IN_EXCEPTION` A general error has occurred
-- `GoogleSignIn.ERRORS.SIGN_IN_FAILED` A Play Services error has occured (Android only)
+- `GoogleSignIn.ERRORS.SIGN_IN_FAILED` A Play Services error has occurred (Android only)
 - `GoogleSignIn.ERRORS.INVALID_ACCOUNT` An invalid account has been provided with `accountName` (Android only)
 - `GoogleSignIn.ERRORS.SIGN_IN_NETWORK_ERROR` An issue with the internet connection has caused the auth task to fail (Android only)
 

@@ -3,6 +3,7 @@ title: Using Sentry
 ---
 
 import PlatformsSection from '~/components/plugins/PlatformsSection';
+import TerminalBlock from '~/components/plugins/TerminalBlock';
 
 [Sentry](http://getsentry.com/) is a crash reporting platform that provides you with "real-time insight into production deployments with info to reproduce and fix crashes".
 
@@ -33,14 +34,23 @@ Before getting real-time updates on errors and making your app generally incredi
    - **project name** is available in your project's `Settings` > `General Settings` tab
    - **`DSN`** is avalable in your project's `Settings` > `Client Keys` tab
 
-2. Go to the [Sentry API section](https://sentry.io/settings/account/api/auth-tokens/), and create an **auth token** (Ensure you have `project:write` selected under scopes). Save this, too.
+2. Go to the [Sentry API section](https://sentry.io/settings/account/api/auth-tokens/), and create an **auth token**. The token requires the scopes: `org:read`, `project:releases`, and `project:write`. Save this, too.
 
 Once you have each of these: organization name, project name, DSN, and auth token, you're all set!
 
 ### Install and configure Sentry
 
-- In your project, install the Expo integration: `yarn add sentry-expo` or `npm i sentry-expo`
-- Add the following in your app's main file (usually `App.js`):
+In your project directory, run:
+
+<TerminalBlock cmd={['expo install sentry-expo']} />
+
+> If you're using SDK 39 or lower, run `yarn add sentry-expo@~3.0.0`
+
+`sentry-expo` also requires some additional dependencies, otherwise it won't work properly. To install them, run:
+
+<TerminalBlock cmd={['expo install expo-application expo-constants expo-device expo-updates']} />
+
+Then, add the following in your app's main file (usually `App.js`):
 
 ```javascript
 import * as Sentry from 'sentry-expo';
@@ -176,7 +186,13 @@ Sentry.init({
 
 ### Testing Sentry
 
-If you're using `Jest`, make sure to add `@sentry/.*` and `sentry-expo` to your `transformIgnorePatterns`.
+When building tests for your application, you want to assert that the right flow-tracking or error is being sent to Sentry, but without really sending it to Sentry servers. This way you won't swamp Sentry with false reports during test running and other CI operations.
+
+[`sentry-testkit`](https://wix.github.io/sentry-testkit) enables Sentry to work natively in your application, and by overriding the default Sentry transport mechanism, the report is not really sent but rather logged locally into memory. In this way, the logged reports can be fetched later for your own usage, verification, or any other use you may have in your local developing/testing environment.
+
+See how to get started with `sentry-testkit` in their [documentation site here](https://wix.github.io/sentry-testkit/)
+
+> If you're using `Jest`, make sure to add `@sentry/.*` and `sentry-expo` to your `transformIgnorePatterns`.
 
 ## Error reporting semantics
 

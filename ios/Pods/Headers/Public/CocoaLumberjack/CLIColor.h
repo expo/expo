@@ -1,1 +1,0 @@
-../../../CocoaLumberjack/Classes/CLI/CLIColor.h

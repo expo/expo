@@ -1,4 +1,4 @@
-import { PermissionStatus } from 'unimodules-permissions-interface';
+import { PermissionStatus, Platform } from 'expo-modules-core';
 import { v4 } from 'uuid';
 import { MediaTypeOptions, } from './ImagePicker.types';
 const MediaTypeInput = {
@@ -10,17 +10,27 @@ export default {
     get name() {
         return 'ExponentImagePicker';
     },
-    async launchImageLibraryAsync({ mediaTypes = MediaTypeOptions.Images, allowsMultipleSelection = false, }) {
+    async launchImageLibraryAsync({ mediaTypes = MediaTypeOptions.Images, allowsMultipleSelection = false, base64 = false, }) {
+        // SSR guard
+        if (!Platform.isDOMAvailable) {
+            return { cancelled: true };
+        }
         return await openFileBrowserAsync({
             mediaTypes,
             allowsMultipleSelection,
+            base64,
         });
     },
-    async launchCameraAsync({ mediaTypes = MediaTypeOptions.Images, allowsMultipleSelection = false, }) {
+    async launchCameraAsync({ mediaTypes = MediaTypeOptions.Images, allowsMultipleSelection = false, base64 = false, }) {
+        // SSR guard
+        if (!Platform.isDOMAvailable) {
+            return { cancelled: true };
+        }
         return await openFileBrowserAsync({
             mediaTypes,
             allowsMultipleSelection,
             capture: true,
+            base64,
         });
     },
     /*
@@ -51,7 +61,7 @@ function permissionGrantedResponse() {
         canAskAgain: true,
     };
 }
-function openFileBrowserAsync({ mediaTypes, capture = false, allowsMultipleSelection = false, }) {
+function openFileBrowserAsync({ mediaTypes, capture = false, allowsMultipleSelection = false, base64, }) {
     const mediaTypeFormat = MediaTypeInput[mediaTypes];
     const input = document.createElement('input');
     input.style.display = 'none';
@@ -69,22 +79,19 @@ function openFileBrowserAsync({ mediaTypes, capture = false, allowsMultipleSelec
         input.addEventListener('change', async () => {
             if (input.files) {
                 if (!allowsMultipleSelection) {
-                    const img = await readFile(input.files[0]);
+                    const img = await readFile(input.files[0], { base64 });
                     resolve({
                         cancelled: false,
                         ...img,
                     });
                 }
                 else {
-                    const imgs = await Promise.all(Array.from(input.files).map(readFile));
+                    const imgs = await Promise.all(Array.from(input.files).map(file => readFile(file, { base64 })));
                     resolve({
                         cancelled: false,
                         selected: imgs,
                     });
                 }
-            }
-            else {
-                resolve({ cancelled: true });
             }
             document.body.removeChild(input);
         });
@@ -92,7 +99,7 @@ function openFileBrowserAsync({ mediaTypes, capture = false, allowsMultipleSelec
         input.dispatchEvent(event);
     });
 }
-function readFile(targetFile) {
+function readFile(targetFile, options) {
     return new Promise((resolve, reject) => {
         const reader = new FileReader();
         reader.onerror = () => {
@@ -112,6 +119,12 @@ function readFile(targetFile) {
                     uri,
                     width: image.naturalWidth ?? image.width,
                     height: image.naturalHeight ?? image.height,
+                    // The blob's result cannot be directly decoded as Base64 without
+                    // first removing the Data-URL declaration preceding the
+                    // Base64-encoded data. To retrieve only the Base64 encoded string,
+                    // first remove data:*/*;base64, from the result.
+                    // https://developer.mozilla.org/en-US/docs/Web/API/FileReader/readAsDataURL
+                    ...(options.base64 && { base64: uri.substr(uri.indexOf(',') + 1) }),
                 });
                 image.onerror = () => returnRaw();
             }

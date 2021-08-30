@@ -4,48 +4,41 @@
 
 @implementation EXLocalization
 
-UM_EXPORT_MODULE(ExpoLocalization)
+EX_EXPORT_MODULE(ExpoLocalization)
 
 /* 
- * Thanks to RNLocalize 
- * https://github.com/react-native-community/react-native-localize/blame/e9e01ce65e3891241c88adf162679ab8e37759e3/ios/RNLanguages.m#L13
+ * Thanks to RNLocalize
+ * https://github.com/react-native-community/react-native-localize
  */
- 
-UM_EXPORT_METHOD_AS(getLocalizationAsync,
-                    getLocalizationAsync:(UMPromiseResolveBlock)resolve
-                    rejecter:(UMPromiseRejectBlock)reject)
+
+EX_EXPORT_METHOD_AS(getLocalizationAsync,
+                    getLocalizationAsync:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
 {
   resolve([self constantsToExport]);
 }
 
 - (NSDictionary *)constantsToExport
 {
-  NSArray<NSString *> *preferredLocales = [NSLocale preferredLanguages];
-  if (![preferredLocales count]) {
-    NSString *currentLocale = [[NSLocale currentLocale] localeIdentifier];
-    if (currentLocale == nil) {
-      currentLocale = @"en_US";
-    }
-    preferredLocales = @[currentLocale];
+  NSLocale *locale = [NSLocale currentLocale];
+  NSString *languageCode = locale.languageCode;
+  NSArray<NSString *> *languageIds = [NSLocale preferredLanguages];
+  if (![languageIds count]) {
+    languageIds = @[@"en-US"];
   }
   
-  NSTimeZone *currentTimeZone = [NSTimeZone localTimeZone];
-  NSString *region = [[NSLocale currentLocale] objectForKey:NSLocaleCountryCode];
-  
   return @{
-           @"isRTL": @([self isRTL]),
-           @"locale": [preferredLocales objectAtIndex:0],
-           @"locales": preferredLocales,
-           @"timezone": [currentTimeZone name],
-           @"isoCurrencyCodes": [NSLocale ISOCurrencyCodes],
-           @"region": UMNullIfNil(region)
-           };
-}
-
-- (BOOL)isRTL
-{
-  // https://stackoverflow.com/a/14183124/1123156
-  return [NSLocale characterDirectionForLanguage:[NSLocale preferredLanguages][0]] == NSLocaleLanguageDirectionRightToLeft;
+    @"currency": locale.currencyCode ?: @"USD",
+    @"decimalSeparator": locale.decimalSeparator ?: @".",
+    @"digitGroupingSeparator": locale.groupingSeparator ?: @",",
+    @"isoCurrencyCodes": [NSLocale ISOCurrencyCodes],
+    @"isMetric": @(locale.usesMetricSystem),
+    @"isRTL": @((BOOL)([NSLocale characterDirectionForLanguage:languageCode] == NSLocaleLanguageDirectionRightToLeft)),
+    @"locale": languageIds[0],
+    @"locales": languageIds,
+    @"region": locale.countryCode ?: @"US",
+    @"timezone": [NSTimeZone localTimeZone].name,
+  };
 }
 
 @end

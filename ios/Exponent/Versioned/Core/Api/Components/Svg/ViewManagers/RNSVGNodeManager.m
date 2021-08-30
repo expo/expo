@@ -146,7 +146,7 @@ RCT_EXPORT_MODULE()
     return [RNSVGNode new];
 }
 
-- (UIView *)view
+- (RNSVGView *)view
 {
     return [self node];
 }

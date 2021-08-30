@@ -1,4 +1,4 @@
-import { CodedError } from '@unimodules/core';
+import { CodedError } from 'expo-modules-core';
 import { Notification, NotificationBehavior } from './Notifications.types';
 export declare class NotificationTimeoutError extends CodedError {
     info: {

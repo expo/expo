@@ -1,4 +1,4 @@
-import { UnavailabilityError } from '@unimodules/core';
+import { UnavailabilityError } from 'expo-modules-core';
 import ExpoFirebaseAnalytics from './ExpoFirebaseAnalytics';
 export { default as FirebaseAnalyticsJS } from './FirebaseAnalyticsJS';
 if (!ExpoFirebaseAnalytics) {
@@ -159,6 +159,21 @@ export function setUnavailabilityLogging(isEnabled) {
         throw new UnavailabilityError('expo-firebase-analytics', 'setUnavailabilityLogging');
     }
     ExpoFirebaseAnalytics.setUnavailabilityLogging(isEnabled);
+}
+/**
+ * In Expo Go, sets the clientId to the given value for the current session.
+ *
+ * By default, the clientId is set to `Constants.installationId` in Expo Go,
+ * which is deprecated and will be removed in SDK 44. At that time, this method
+ * will need to be used to set the `clientId` when using Expo Go.
+ *
+ * @param clientId UUIDv4 string value to set for the current session in Expo Go
+ */
+export function setClientId(clientId) {
+    if (!ExpoFirebaseAnalytics.setClientId) {
+        throw new UnavailabilityError('expo-firebase-analytics', 'setClientId');
+    }
+    ExpoFirebaseAnalytics.setClientId(clientId);
 }
 /**
  * Enables or disabled debug mode on the Expo client, so events can

@@ -1,4 +1,4 @@
-import { UnavailabilityError, Platform } from '@unimodules/core';
+import { UnavailabilityError, Platform } from 'expo-modules-core';
 
 import BadgeModule from './BadgeModule';
 import { WebSetBadgeCountOptions } from './BadgeModule.types';

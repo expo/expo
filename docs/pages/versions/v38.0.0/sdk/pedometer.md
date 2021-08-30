@@ -118,7 +118,7 @@ Returns whether the pedometer is enabled on the device.
 
 ### `Pedometer.getStepCountAsync(start, end)`
 
-Get the step count between two dates.
+**iOS only.** Get the step count between two dates.
 
 #### Arguments
 

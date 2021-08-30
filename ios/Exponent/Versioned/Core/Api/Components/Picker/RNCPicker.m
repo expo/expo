@@ -95,6 +95,7 @@ numberOfRowsInComponent:(__unused NSInteger)component
 
   label.textAlignment = _textAlign;
   label.text = [self pickerView:pickerView titleForRow:row forComponent:component];
+  label.accessibilityIdentifier = _items[row][@"testID"];
   return label;
 }
 

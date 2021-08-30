@@ -1,6 +1,5 @@
 import Slider from '@react-native-community/slider';
 import * as Brightness from 'expo-brightness';
-import * as Permissions from 'expo-permissions';
 import React from 'react';
 import { ScrollView, Text, View } from 'react-native';
 
@@ -39,9 +38,18 @@ function BrightnessView() {
   const [brightness] = useResolvedValue(Brightness.getBrightnessAsync);
   const [systemBrightness] = useResolvedValue(Brightness.getSystemBrightnessAsync);
   const [sliderBrightness, setBrightness] = React.useState<Record<string, number>>({});
-  const [systemBrightnessPermissionGranted, askAsync] = Permissions.usePermissions(
-    Permissions.SYSTEM_BRIGHTNESS
-  );
+
+  const [systemBrightnessPermissionGranted, setSystemBrightnessPermissionGranted] =
+    React.useState(false);
+
+  React.useEffect(() => {
+    async function initialize() {
+      const { granted } = await Brightness.getPermissionsAsync();
+      setSystemBrightnessPermissionGranted(granted);
+    }
+
+    initialize();
+  }, []);
 
   function alertBrightnessAsync(type: string) {
     (type === 'Brightness'
@@ -71,10 +79,16 @@ function BrightnessView() {
     return (
       <View key={type} style={{ padding: 20 }}>
         <HeadingText>{type}</HeadingText>
+        {/* you can attempt to request permission even if already granted, but it will noop */}
         {type === 'SystemBrightness' && (
           <Button
-            title="Permissions.SYSTEM_BRIGHTNESS"
-            onPress={() => askAsync()}
+            title={`Request permissions ${
+              systemBrightnessPermissionGranted ? ' (already granted)' : ''
+            }`}
+            onPress={async () => {
+              const { granted } = await Brightness.requestPermissionsAsync();
+              setSystemBrightnessPermissionGranted(granted);
+            }}
             style={{ marginTop: 15 }}
           />
         )}
@@ -95,17 +109,7 @@ function BrightnessView() {
       </View>
     );
   });
-  return (
-    <ScrollView style={{ flex: 1 }}>
-      {views}
-      <View style={{ padding: 20 }}>
-        <HeadingText>Permission</HeadingText>
-        {systemBrightnessPermissionGranted && (
-          <Text>{JSON.stringify(systemBrightnessPermissionGranted, null, 2)}</Text>
-        )}
-      </View>
-    </ScrollView>
-  );
+  return <ScrollView style={{ flex: 1 }}>{views}</ScrollView>;
 }
 
 BrightnessScreen.navigationOptions = {

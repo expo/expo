@@ -1,10 +1,10 @@
-import { Platform } from '@unimodules/core';
+import { Platform } from 'expo-modules-core';
 
 import { getAssetByID } from './AssetRegistry';
 import * as AssetSources from './AssetSources';
 import * as AssetUris from './AssetUris';
-import { getEmbeddedAssetUri } from './EmbeddedAssets';
 import * as ImageAssets from './ImageAssets';
+import { getLocalAssetUri } from './LocalAssets';
 import { downloadAsync, IS_ENV_WITH_UPDATES_ENABLED } from './PlatformUtils';
 import resolveAssetSource from './resolveAssetSource';
 
@@ -53,7 +53,7 @@ export class Asset {
     }
 
     if (hash) {
-      this.localUri = getEmbeddedAssetUri(hash, type);
+      this.localUri = getLocalAssetUri(hash, type);
       if (this.localUri) {
         this.downloaded = true;
       }
@@ -165,7 +165,7 @@ export class Asset {
       return this;
     }
     if (this.downloading) {
-      await new Promise((resolve, reject) => {
+      await new Promise<void>((resolve, reject) => {
         this._downloadCallbacks.push({ resolve, reject });
       });
       return this;

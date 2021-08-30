@@ -1,1 +1,0 @@
-../../../ZXingObjC/ZXingObjC/client/result/ZXAddressBookDoCoMoResultParser.h

@@ -1,1 +1,0 @@
-../../../../../versioned-react-native/ABI40_0_0/ReactNative/Libraries/Text/BaseText/ABI40_0_0RCTBaseTextShadowView.h

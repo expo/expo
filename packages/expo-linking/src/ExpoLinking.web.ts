@@ -1,4 +1,4 @@
-import { Platform } from '@unimodules/core';
+import { Platform } from 'expo-modules-core';
 import invariant from 'invariant';
 
 import { NativeURLListener, URLListener } from './Linking.types';

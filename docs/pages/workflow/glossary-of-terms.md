@@ -33,9 +33,13 @@ A synonym for app that usually implies something more single-use and smaller in 
 
 The command-line tool for working with Expo. [Read more](expo-cli.md).
 
+### Expo Go
+
+The iOS and Android app that runs Expo apps. When you want to run your app outside of the Expo Go app and deploy it to the App and/or Play stores, you can build a [Standalone App](#standalone-app).
+
 ### Expo client
 
-The iOS and Android app that runs Expo apps. When you want to run your app outside of the Expo client and deploy it to the App and/or Play stores, you can build a [Standalone App](#standalone-app).
+The former name for the [Expo Go](#expo-go) app.
 
 ### Expo Dev Tools
 
@@ -81,7 +85,7 @@ Automates the process of installing, upgrading, configuring, and removing librar
 
 ### Publish
 
-We use the word "publish" as a synonym for "deploy". When you publish an app, it becomes available at a persistent URL from the Expo client, or in the case of [Standalone apps](#standalone-app), it updates the app [over the air](#over-the-air-updates).
+We use the word "publish" as a synonym for "deploy". When you publish an app, it becomes available at a persistent URL from Expo Go, or in the case of [Standalone apps](#standalone-app), it updates the app [over the air](#over-the-air-updates).
 
 ### React Native
 
@@ -97,11 +101,11 @@ An emulator for iOS devices that you can run on macOS (or in [Snack](#snack)) to
 
 ### Slug
 
-We use the word "slug" in [app.json](#appjson) to refer to the name to use for your app in its url. For example, the [Native Component List](https://expo.io/@community/native-component-list) app lives at https://expo.io/@community/native-component-list and the slug is native-component-list.
+We use the word "slug" in [app.json](#appjson) to refer to the name to use for your app in its url. For example, the [Native Component List](https://expo.dev/@community/native-component-list) app lives at https://expo.dev/@community/native-component-list and the slug is native-component-list.
 
 ### Snack
 
-[Snack](https://snack.expo.io/) is an in-browser development environment where you can build Expo [experiences](#experience) without installing any tools on your phone or computer.
+[Snack](https://snack.expo.dev/) is an in-browser development environment where you can build Expo [experiences](#experience) without installing any tools on your phone or computer.
 
 ### Standalone app
 

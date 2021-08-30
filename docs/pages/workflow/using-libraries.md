@@ -1,5 +1,5 @@
 ---
-title: Using Libraries
+title: Using libraries
 ---
 
 import PlatformsSection from '~/components/plugins/PlatformsSection';
@@ -11,7 +11,7 @@ If you are using the bare workflow, read the [guide for using libraries in the b
 
 ## Using React Native Core Libraries
 
-React Native provides a set of built-in primitives that most developers will need in their app. These include components such as ActivityIndicator, TextInput, Text, ScrollView, and View. These are listed in the [Core Components and APIs](https://reactnative.dev/docs/components-and-apis) page of the React Native documentation. We also list the React Native Core Components and APIs in the [API Reference](https://docs.expo.io/versions/latest/) section of the Expo documentation, so you can quickly see the documentation relevant to the SDK version that your app uses in the same place as you would find it for Expo SDK libraries. You can see the React Native version that corresponds to your Expo SDK version in the table on the [API Reference index](https://docs.expo.io/versions/latest/).
+React Native provides a set of built-in primitives that most developers will need in their app. These include components such as ActivityIndicator, TextInput, Text, ScrollView, and View. These are listed in the [Core Components and APIs](https://reactnative.dev/docs/components-and-apis) page of the React Native documentation. We also list the React Native Core Components and APIs in the [API Reference](https://docs.expo.dev/versions/latest/) section of the Expo documentation, so you can quickly see the documentation relevant to the SDK version that your app uses in the same place as you would find it for Expo SDK libraries. You can see the React Native version that corresponds to your Expo SDK version in the table on the [API Reference index](https://docs.expo.dev/versions/latest/).
 
 The `react-native` core library is installed automatically in every Expo app. To use a React Native library in your project, import it from the `react-native` package in your code:
 
@@ -32,7 +32,7 @@ export default function App() {
 
 The Expo SDK picks up where the React Native core libraries end - it provides access to a lot of useful device and system functionality like audio, barcode scanning, camera, calendar, contacts, video, and so on. It also adds other powerful libraries like over-the-air updates, maps, OAuth authentication tools, and more. For details on how we decide what goes into the Expo SDK, [read here](https://expo.fyi/whats-in-the-sdk).
 
-To use a library from the Expo SDK, find the one you are looking for in the [API Reference](https://docs.expo.io/versions/latest/) or through the documentation Search bar.
+To use a library from the Expo SDK, find the one you are looking for in the [API Reference](https://docs.expo.dev/versions/latest/) or through the documentation Search bar.
 
 At the top of the page you will see a description of the library and a platform compatibility table. It tells you which platforms and environments the library is compatible with. It looks like this:
 
@@ -82,7 +82,7 @@ After React Native Directory, the [npm registry](https://www.npmjs.com/) is the 
 
 ### Determining Third-Party Library Compatibility
 
-**Check React Native Directory**: find the library on the website (if it's there) and verify that it has a "✔️ Expo client" tag. You can also enable the [filter by Expo client](https://reactnative.directory/?expo=true) option to only show libraries that are compatible with the Expo managed workflow.
+**Check React Native Directory**: find the library on the website (if it's there) and verify that it has a "✔️ Expo Go" tag. You can also enable the [filter by Expo Go](https://reactnative.directory/?expo=true) option to only show libraries that are compatible with the Expo managed workflow.
 
 **Not listed on the directory?** find the project on GitHub, an easy way to do this is with `npx npm-home --github <package-name>`. For example, to open the GitHub page for react-native-localize you would run:
 

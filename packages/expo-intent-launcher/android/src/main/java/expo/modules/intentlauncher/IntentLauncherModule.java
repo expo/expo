@@ -1,6 +1,7 @@
 package expo.modules.intentlauncher;
 
 import android.app.Activity;
+import android.content.ActivityNotFoundException;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -8,16 +9,16 @@ import android.os.Bundle;
 import android.net.Uri;
 import androidx.annotation.NonNull;
 
-import org.unimodules.core.ExportedModule;
-import org.unimodules.core.ModuleRegistry;
-import org.unimodules.core.Promise;
-import org.unimodules.core.arguments.ReadableArguments;
-import org.unimodules.core.interfaces.ActivityEventListener;
-import org.unimodules.core.interfaces.ActivityProvider;
-import org.unimodules.core.interfaces.ExpoMethod;
-import org.unimodules.core.interfaces.services.UIManager;
-import org.unimodules.core.errors.CurrentActivityNotFoundException;
-import org.unimodules.core.errors.ModuleNotFoundException;
+import expo.modules.core.ExportedModule;
+import expo.modules.core.ModuleRegistry;
+import expo.modules.core.Promise;
+import expo.modules.core.arguments.ReadableArguments;
+import expo.modules.core.interfaces.ActivityEventListener;
+import expo.modules.core.interfaces.ActivityProvider;
+import expo.modules.core.interfaces.ExpoMethod;
+import expo.modules.core.interfaces.services.UIManager;
+import expo.modules.core.errors.CurrentActivityNotFoundException;
+import expo.modules.core.errors.ModuleNotFoundException;
 import expo.modules.intentlauncher.exceptions.ActivityAlreadyStartedException;
 
 public class IntentLauncherModule extends ExportedModule implements ActivityEventListener {
@@ -102,7 +103,14 @@ public class IntentLauncherModule extends ExportedModule implements ActivityEven
 
     mUIManager.registerActivityEventListener(this);
     mPendingPromise = promise;
-    activity.startActivityForResult(intent, REQUEST_CODE);
+
+    try {
+      activity.startActivityForResult(intent, REQUEST_CODE);
+    }
+    catch (ActivityNotFoundException e) {
+      mPendingPromise.reject(e);
+      mPendingPromise = null;
+    }
   }
 
   //region ActivityEventListener

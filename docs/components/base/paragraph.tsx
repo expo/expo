@@ -1,4 +1,5 @@
-import { css } from '@emotion/core';
+import { css } from '@emotion/react';
+import { theme } from '@expo/styleguide';
 import emojiRegex from 'emoji-regex';
 import * as React from 'react';
 
@@ -66,8 +67,8 @@ const STYLES_BLOCKQUOTE = css`
   grid-gap: 12px;
   padding: 12px;
   margin-bottom: 1rem;
-  border-left: 4px solid ${Constants.expoColors.semantic.border};
-  background: ${Constants.expoColors.gray[100]};
+  border-left: 4px solid ${theme.border.default};
+  background: ${theme.background.secondary};
   border-radius: 4px;
 
   div {
@@ -75,7 +76,7 @@ const STYLES_BLOCKQUOTE = css`
   }
 
   code {
-    background-color: ${Constants.expoColors.gray[200]};
+    background-color: ${theme.background.tertiary};
   }
 `;
 
@@ -110,7 +111,7 @@ function removeEmoji(emoji: string, children: string[]) {
   }
 }
 
-export const Quote = ({ children }: { children: JSX.Element[] }) => {
+export const Quote = ({ children, ...rest }: { children: JSX.Element | JSX.Element[] }) => {
   let icon: React.ReactNode = (
     <div style={{ marginTop: 2 }}>
       <Info size={16} />
@@ -136,7 +137,7 @@ export const Quote = ({ children }: { children: JSX.Element[] }) => {
   });
 
   return (
-    <blockquote {...attributes} css={STYLES_BLOCKQUOTE}>
+    <blockquote {...attributes} css={STYLES_BLOCKQUOTE} {...rest}>
       <div>{icon}</div>
       <div>{newChildren}</div>
     </blockquote>

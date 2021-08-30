@@ -6,7 +6,46 @@
 
 ### 🎉 New features
 
+- Update JS code to read manifest2 when manifest is not available. ([#13602](https://github.com/expo/expo/pull/13602) by [@wschurman](https://github.com/wschurman))
+- Update TS typings to allow null user property values. ([#14105](https://github.com/expo/expo/pull/14105) by [@kylerjensen](https://github.com/kylerjensen))
+
 ### 🐛 Bug fixes
+
+### 💡 Others
+
+## 4.1.0 — 2021-06-16
+
+### 🎉 New features
+
+- Add `setClientId` method to allow managing the clientId value in Expo Go. ([#12520](https://github.com/expo/expo/pull/12520) by [@esamelson](https://github.com/esamelson))
+
+### 🐛 Bug fixes
+
+- Enable kotlin in all modules. ([#12716](https://github.com/expo/expo/pull/12716) by [@wschurman](https://github.com/wschurman))
+
+### 💡 Others
+
+- Build Android code using Java 8 to fix Android instrumented test build error. ([#12939](https://github.com/expo/expo/pull/12939) by [@kudo](https://github.com/kudo))
+
+## 4.0.1 — 2021-03-30
+
+### 🐛 Bug fixes
+
+- Make expo-firebase-analytics work with firebase 8.x.x. ([#12297](https://github.com/expo/expo/pull/12297) by [@fson](https://github.com/fson))
+
+## 4.0.0 — 2021-03-10
+
+### 📚 native library updates
+
+- Updated native `firebase sdk version` from `6.14.0` to `7.7.0` on iOS. ([#12125](https://github.com/expo/expo/pull/12125) by [@bbarthec](https://github.com/bbarthec))
+
+### 🎉 New features
+
+- Updated Android build configuration to target Android 11 (added support for Android SDK 30). ([#11647](https://github.com/expo/expo/pull/11647) by [@bbarthec](https://github.com/bbarthec))
+
+### 🐛 Bug fixes
+
+- Remove peerDependencies and unimodulePeerDependencies from Expo modules. ([#11980](https://github.com/expo/expo/pull/11980) by [@brentvatne](https://github.com/brentvatne))
 
 ## 3.0.0 — 2021-01-15
 

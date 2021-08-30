@@ -16,7 +16,7 @@ class SplashScreenController(
 ) {
   private val weakActivity = WeakReference(activity)
   private val contentView: ViewGroup = activity.findViewById(android.R.id.content)
-      ?: throw NoContentViewException()
+    ?: throw NoContentViewException()
   private var splashScreenView: View = splashScreenViewProvider.createSplashScreenView(activity)
   private val handler = Handler()
 
@@ -38,8 +38,8 @@ class SplashScreenController(
   }
 
   fun preventAutoHide(
-      successCallback: (hasEffect: Boolean) -> Unit,
-      failureCallback: (reason: String) -> Unit
+    successCallback: (hasEffect: Boolean) -> Unit,
+    failureCallback: (reason: String) -> Unit
   ) {
     if (!autoHideEnabled || !splashScreenShown) {
       return successCallback(false)
@@ -50,8 +50,8 @@ class SplashScreenController(
   }
 
   fun hideSplashScreen(
-      successCallback: (hasEffect: Boolean) -> Unit = {},
-      failureCallback: (reason: String) -> Unit = {}
+    successCallback: (hasEffect: Boolean) -> Unit = {},
+    failureCallback: (reason: String) -> Unit = {}
   ) {
     if (!splashScreenShown) {
       return successCallback(false)

@@ -2,17 +2,17 @@
 title: Configuring a splash screen and app icon
 ---
 
+import { theme } from '@expo/styleguide'
 import Video from '~/components/plugins/Video'
+import ImageSpotlight from '~/components/plugins/ImageSpotlight'
 
 Before we can consider our app truly complete we need to add a splash screen and app icon. A splash screen is what users see when the app is launched, before it has loaded. The icon will be visible on the users' home screen when the app is installed, or inside of the Expo app when in development.
 
 ## Splash screen
 
-After telling our designer that we need a 1242px width by 2436px height splash screen image (more about this in [the splash screen guide](../guides/splash-screens.md)), she gave us the following file:
+After telling our designers that we need a 1242px width by 2436px height splash screen image (more about this in [the splash screen guide](../guides/splash-screens.md)), they gave us the following file:
 
-<div style={{textAlign: 'center', backgroundColor: '#f5f5f5', paddingTop: 10, paddingBottom: 10}}>
-<img src="/static/images/tutorial/splash.png" style={{maxWidth: 150}} />
-</div>
+<ImageSpotlight src="/static/images/tutorial/splash.png" style={{ maxWidth: 150 }} containerStyle={{ marginBottom: 0 }} />
 
 <br />
 
@@ -73,14 +73,9 @@ This solves our problem!
 
 Our designer provided us with this 1024px width x 1024px height app icon:
 
-<div style={{textAlign: 'center', backgroundColor: '#f5f5f5', paddingTop: 10, paddingBottom: 10}}>
-<img src="/static/images/tutorial/icon.png" style={{maxWidth: 150}} />
-</div>
+<ImageSpotlight src="/static/images/tutorial/icon.png" style={{ maxWidth: 150 }} />
 
-<br />
-<br />
-
-Save this image to the `assets` directory inside of your project and call it `icon.png` &mdash; replace the existing file. Reload the app. That's all you need to do! You will see the icon in various places in the Expo client, and when you do a standalone app build for submission to the stores it will be used as the icon on the users' home screens.
+Save this image to the `assets` directory inside of your project and call it `icon.png` &mdash; replace the existing file. Reload the app. That's all you need to do! You will see the icon in various places in Expo Go, and when you do a standalone app build for submission to the stores it will be used as the icon on the users' home screens.
 
 ## We have completed our app!
 

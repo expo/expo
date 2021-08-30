@@ -6,7 +6,7 @@ sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-40/packages/expo-payments-
 import InstallSection from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 
-> 🚨 On iOS, the Payments module is currently only supported in the [bare workflow](https://docs.expo.io/bare/customizing/).
+> 🚨 On iOS, the Payments module is currently only supported in the [bare workflow](https://docs.expo.dev/workflow/customizing/).
 
 Payments uses [Stripe](https://stripe.com/) and [Apple Pay](https://www.apple.com/apple-pay/) on iOS, but the module is only available in bare workflow apps.
 
@@ -32,7 +32,7 @@ For iOS, follow [Stripe instructions](https://stripe.com/docs/mobile/ios/sources
 
 For Android, add the following code to your `AndroidManifest.xml`, replacing `your_scheme` with the URI scheme you're going to use when specifying return URL for payment process.
 
-> 💡 If you are using Expo client then the setup has already been done for you.
+> 💡 If you are using Expo Go then the setup has already been done for you.
 
 ```xml
       ...
@@ -207,7 +207,7 @@ Creates source object based on params. Sources are used to create payments for a
 
 _NOTE_: For sources that require redirecting your customer to authorize the payment, you need to specify a return URL when you create the source. This allows your customer to be redirected back to your app after they authorize the payment. The prefix before ':' in your return URL should be the same as the scheme in your `info.plist` and `AndroidManifest.xml`. If You are not sure about this step look at above sections "Register hook in order to Stripe could process source authorization".
 
-_NOTE_: If you are using Expo client or an ejected Expo application, do not specify `returnURL`.
+_NOTE_: If you are using Expo Go or an ejected Expo application, do not specify `returnURL`.
 
 `params` — An object with the following keys:
 

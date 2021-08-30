@@ -1,4 +1,4 @@
-import { PermissionResponse, PermissionStatus } from 'unimodules-permissions-interface';
+import { PermissionResponse, PermissionStatus, PermissionHookOptions } from 'expo-modules-core';
 export declare type RecurringEventOptions = {
     futureEvents?: boolean;
     instanceStartDate?: string | Date;
@@ -137,7 +137,7 @@ export declare type RecurrenceRule = {
     daysOfTheYear?: number[];
     setPositions?: number[];
 };
-export { PermissionResponse, PermissionStatus };
+export { PermissionResponse, PermissionStatus, PermissionHookOptions };
 declare type OptionalKeys<T> = {
     [P in keyof T]?: T[P] | null;
 };
@@ -177,6 +177,26 @@ export declare function getCalendarPermissionsAsync(): Promise<PermissionRespons
 export declare function getRemindersPermissionsAsync(): Promise<PermissionResponse>;
 export declare function requestCalendarPermissionsAsync(): Promise<PermissionResponse>;
 export declare function requestRemindersPermissionsAsync(): Promise<PermissionResponse>;
+/**
+ * Check or request permissions to access the calendar.
+ * This uses both `getCalendarPermissionsAsync` and `requestCalendarPermissionsAsync` to interact with the permissions.
+ *
+ * @example
+ * ```ts
+ * const [status, requestPermission] = Calendar.useCalendarPermissions();
+ * ```
+ */
+export declare const useCalendarPermissions: (options?: PermissionHookOptions<object> | undefined) => [PermissionResponse | null, () => Promise<PermissionResponse>, () => Promise<PermissionResponse>];
+/**
+ * Check or request permissions to access reminders.
+ * This uses both `getRemindersPermissionsAsync` and `requestRemindersPermissionsAsync` to interact with the permissions.
+ *
+ * @example
+ * ```ts
+ * const [status, requestPermission] = Calendar.useRemindersPermissions();
+ * ```
+ */
+export declare const useRemindersPermissions: (options?: PermissionHookOptions<object> | undefined) => [PermissionResponse | null, () => Promise<PermissionResponse>, () => Promise<PermissionResponse>];
 export declare const EntityTypes: {
     EVENT: string;
     REMINDER: string;

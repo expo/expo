@@ -52,7 +52,7 @@ internal class GetQueryInfoTests {
   @Test
   fun `test if no input gives default values`() {
     // arrange
-    val expectedSelection = "${MediaStore.Files.FileColumns.MEDIA_TYPE} != ${MediaStore.Files.FileColumns.MEDIA_TYPE_NONE}";
+    val expectedSelection = "${MediaStore.Files.FileColumns.MEDIA_TYPE} != ${MediaStore.Files.FileColumns.MEDIA_TYPE_NONE}"
 
     // act
     val queryInfo = GetQueryInfo(emptyMap()).invoke()

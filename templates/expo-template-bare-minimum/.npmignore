@@ -18,3 +18,5 @@ HelloWorld.xcworkspace
 Podfile.lock
 ios/Pods
 android/.build
+android/app/build
+android/.gradle

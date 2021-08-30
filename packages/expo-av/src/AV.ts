@@ -1,5 +1,5 @@
-import { Platform } from '@unimodules/core';
 import { Asset } from 'expo-asset';
+import { Platform } from 'expo-modules-core';
 
 import ExponentAV from './ExponentAV';
 // TODO add:
@@ -258,14 +258,14 @@ export interface Playback extends AV {
  */
 export const PlaybackMixin = {
   async playAsync(): Promise<AVPlaybackStatus> {
-    return ((this as any) as Playback).setStatusAsync({ shouldPlay: true });
+    return (this as any as Playback).setStatusAsync({ shouldPlay: true });
   },
 
   async playFromPositionAsync(
     positionMillis: number,
     tolerances: { toleranceMillisBefore?: number; toleranceMillisAfter?: number } = {}
   ): Promise<AVPlaybackStatus> {
-    return ((this as any) as Playback).setStatusAsync({
+    return (this as any as Playback).setStatusAsync({
       positionMillis,
       shouldPlay: true,
       seekMillisToleranceAfter: tolerances.toleranceMillisAfter,
@@ -274,18 +274,18 @@ export const PlaybackMixin = {
   },
 
   async pauseAsync(): Promise<AVPlaybackStatus> {
-    return ((this as any) as Playback).setStatusAsync({ shouldPlay: false });
+    return (this as any as Playback).setStatusAsync({ shouldPlay: false });
   },
 
   async stopAsync(): Promise<AVPlaybackStatus> {
-    return ((this as any) as Playback).setStatusAsync({ positionMillis: 0, shouldPlay: false });
+    return (this as any as Playback).setStatusAsync({ positionMillis: 0, shouldPlay: false });
   },
 
   async setPositionAsync(
     positionMillis: number,
     tolerances: { toleranceMillisBefore?: number; toleranceMillisAfter?: number } = {}
   ): Promise<AVPlaybackStatus> {
-    return ((this as any) as Playback).setStatusAsync({
+    return (this as any as Playback).setStatusAsync({
       positionMillis,
       seekMillisToleranceAfter: tolerances.toleranceMillisAfter,
       seekMillisToleranceBefore: tolerances.toleranceMillisBefore,
@@ -297,7 +297,7 @@ export const PlaybackMixin = {
     shouldCorrectPitch: boolean = false,
     pitchCorrectionQuality: PitchCorrectionQuality = PitchCorrectionQuality.Low
   ): Promise<AVPlaybackStatus> {
-    return ((this as any) as Playback).setStatusAsync({
+    return (this as any as Playback).setStatusAsync({
       rate,
       shouldCorrectPitch,
       pitchCorrectionQuality,
@@ -305,20 +305,20 @@ export const PlaybackMixin = {
   },
 
   async setVolumeAsync(volume: number): Promise<AVPlaybackStatus> {
-    return ((this as any) as Playback).setStatusAsync({ volume });
+    return (this as any as Playback).setStatusAsync({ volume });
   },
 
   async setIsMutedAsync(isMuted: boolean): Promise<AVPlaybackStatus> {
-    return ((this as any) as Playback).setStatusAsync({ isMuted });
+    return (this as any as Playback).setStatusAsync({ isMuted });
   },
 
   async setIsLoopingAsync(isLooping: boolean): Promise<AVPlaybackStatus> {
-    return ((this as any) as Playback).setStatusAsync({ isLooping });
+    return (this as any as Playback).setStatusAsync({ isLooping });
   },
 
   async setProgressUpdateIntervalAsync(
     progressUpdateIntervalMillis: number
   ): Promise<AVPlaybackStatus> {
-    return ((this as any) as Playback).setStatusAsync({ progressUpdateIntervalMillis });
+    return (this as any as Playback).setStatusAsync({ progressUpdateIntervalMillis });
   },
 };

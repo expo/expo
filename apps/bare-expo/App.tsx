@@ -1,12 +1,34 @@
 import React from 'react';
 
-import MainNavigator from './MainNavigator';
+import MainNavigator, { optionalRequire } from './MainNavigator';
 import { createProxy, startAsync, addListener } from './relapse/client';
 let Notifications;
 try {
   Notifications = require('expo-notifications');
 } catch (e) {
   // do nothing
+}
+
+const loadAssetsAsync = optionalRequire(() => require('native-component-list/src/utilities/loadAssetsAsync')) ?? (async () => null);
+
+function useLoaded() {
+  const [isLoaded, setLoaded] = React.useState(false);
+  React.useEffect(() => {
+    let isMounted = true;
+    // @ts-ignore
+    loadAssetsAsync().then(() => {
+      if (isMounted)
+        setLoaded(true);
+    }).catch((e) => {
+      console.warn('Error loading assets: ' + e.message);
+      if (isMounted)
+        setLoaded(true);
+    });
+    return () => {
+      isMounted = false;
+    }
+  }, [])
+  return isLoaded;
 }
 
 export default function Main() {
@@ -48,5 +70,12 @@ export default function Main() {
     }
   }, []);
 
-  return <MainNavigator uriPrefix="bareexpo://" />;
+  const isLoaded = useLoaded();
+
+  if (!isLoaded) {
+    return null;
+  }
+
+
+  return <MainNavigator />;
 }

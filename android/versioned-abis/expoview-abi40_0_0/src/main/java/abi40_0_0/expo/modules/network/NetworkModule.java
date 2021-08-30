@@ -14,12 +14,17 @@ import android.os.Bundle;
 import android.provider.Settings;
 import android.util.Log;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import abi40_0_0.org.unimodules.core.ExportedModule;
 import abi40_0_0.org.unimodules.core.ModuleRegistry;
 import abi40_0_0.org.unimodules.core.Promise;
 import abi40_0_0.org.unimodules.core.interfaces.ActivityProvider;
 import abi40_0_0.org.unimodules.core.interfaces.ExpoMethod;
 import abi40_0_0.org.unimodules.core.interfaces.RegistryLifecycleListener;
+import abi40_0_0.org.unimodules.interfaces.constants.ConstantsInterface;
+import host.exp.exponent.utils.ToastHelper;
 
 import java.math.BigInteger;
 import java.net.InetAddress;
@@ -35,6 +40,7 @@ public class NetworkModule extends ExportedModule implements RegistryLifecycleLi
   private ModuleRegistry mModuleRegistry;
   private ActivityProvider mActivityProvider;
   private Activity mActivity;
+  private JSONObject mManifest;
 
   public static enum NetworkStateType {
     NONE("NONE"),
@@ -77,6 +83,15 @@ public class NetworkModule extends ExportedModule implements RegistryLifecycleLi
     mModuleRegistry = moduleRegistry;
     mActivityProvider = moduleRegistry.getModule(ActivityProvider.class);
     mActivity = mActivityProvider.getCurrentActivity();
+
+    ConstantsInterface constants = moduleRegistry.getModule(ConstantsInterface.class);
+    if (constants != null && constants.getConstants().containsKey("manifest")) {
+      try {
+        mManifest = new JSONObject((String) constants.getConstants().get("manifest"));
+      } catch (ClassCastException | JSONException exception) {
+        exception.printStackTrace();
+      }
+    }
   }
 
   private WifiInfo getWifiInfo() {
@@ -176,47 +191,8 @@ public class NetworkModule extends ExportedModule implements RegistryLifecycleLi
 
   @ExpoMethod
   public void getMacAddressAsync(String interfaceName, Promise promise) {
-    String permission = "android.permission.INTERNET";
-    int res = mContext.checkCallingOrSelfPermission(permission);
-
-    String macAddress = "";
-    if (res == PackageManager.PERMISSION_GRANTED) {
-      try {
-        List<NetworkInterface> interfaces = Collections.list(NetworkInterface.getNetworkInterfaces());
-        for (NetworkInterface intf : interfaces) {
-          if (interfaceName != null) {
-            if (!intf.getName().equalsIgnoreCase(interfaceName)) continue;
-          }
-          byte[] mac = intf.getHardwareAddress();
-          if (mac == null) {
-            macAddress = "";
-          }
-          StringBuilder buf = new StringBuilder();
-          if (mac != null) {
-            for (byte aMac : mac) {
-              buf.append(String.format("%02X:", aMac));
-            }
-          }
-          if (buf.length() > 0) {
-            buf.deleteCharAt(buf.length() - 1);
-          }
-          macAddress = buf.toString();
-          if (!macAddress.isEmpty()) {
-            promise.resolve(macAddress);
-            break;
-          }
-        }
-        if (macAddress.isEmpty()) {
-          //catch undefined network interface name
-          promise.reject("ERR_NETWORK_UNDEFINED_INTERFACE", "Undefined interface name");
-        }
-      } catch (Exception e) {
-        Log.e(TAG, e.getMessage());
-        promise.reject("ERR_NETWORK_SOCKET_EXCEPTION", "Error in creating or accessing the socket", e);
-      }
-    } else {
-      promise.reject("ERR_NETWORK_INVALID_PERMISSION_INTERNET", "No permission granted to access the Internet");
-    }
+    ToastHelper.INSTANCE.functionMayNotWorkOnAndroidRWarning("Network.getMacAddressAsync", mManifest);
+    promise.resolve("02:00:00:00:00:00");
   }
 
   @ExpoMethod

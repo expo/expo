@@ -1,4 +1,4 @@
-import { UnavailabilityError, Platform } from '@unimodules/core';
+import { UnavailabilityError, Platform } from 'expo-modules-core';
 import PushTokenManager from './PushTokenManager';
 let nativeTokenPromise = null;
 export default async function getDevicePushTokenAsync() {

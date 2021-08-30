@@ -1,1 +1,0 @@
-../../../../versioned-react-native/ABI38_0_0/Expo/EXApplication/ABI38_0_0EXApplication/ABI38_0_0EXApplication.h

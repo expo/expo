@@ -1,4 +1,4 @@
-import { UnavailabilityError } from '@unimodules/core';
+import { UnavailabilityError } from 'expo-modules-core';
 
 import ExpoFirebaseAnalytics from './ExpoFirebaseAnalytics';
 export { default as FirebaseAnalyticsJS } from './FirebaseAnalyticsJS';
@@ -133,7 +133,7 @@ export async function setUserId(userId: string | null): Promise<void> {
  * @param value The value of the user property. Values can be up to 36 characters long. Setting the
  *     value to null removes the user property.
  */
-export async function setUserProperty(name: string, value: string): Promise<void> {
+export async function setUserProperty(name: string, value: string | null): Promise<void> {
   return await setUserProperties({ [name]: value });
 }
 
@@ -152,7 +152,9 @@ export async function resetAnalyticsData(): Promise<void> {
  *
  * @param properties key/value set of user properties
  */
-export async function setUserProperties(properties: { [key: string]: string }): Promise<void> {
+export async function setUserProperties(properties: {
+  [key: string]: string | null;
+}): Promise<void> {
   if (!ExpoFirebaseAnalytics.setUserProperties) {
     throw new UnavailabilityError('expo-firebase-analytics', 'setUserProperties');
   }
@@ -175,6 +177,22 @@ export function setUnavailabilityLogging(isEnabled: boolean): void {
     throw new UnavailabilityError('expo-firebase-analytics', 'setUnavailabilityLogging');
   }
   ExpoFirebaseAnalytics.setUnavailabilityLogging(isEnabled);
+}
+
+/**
+ * In Expo Go, sets the clientId to the given value for the current session.
+ *
+ * By default, the clientId is set to `Constants.installationId` in Expo Go,
+ * which is deprecated and will be removed in SDK 44. At that time, this method
+ * will need to be used to set the `clientId` when using Expo Go.
+ *
+ * @param clientId UUIDv4 string value to set for the current session in Expo Go
+ */
+export function setClientId(clientId: string): void {
+  if (!ExpoFirebaseAnalytics.setClientId) {
+    throw new UnavailabilityError('expo-firebase-analytics', 'setClientId');
+  }
+  ExpoFirebaseAnalytics.setClientId(clientId);
 }
 
 /**

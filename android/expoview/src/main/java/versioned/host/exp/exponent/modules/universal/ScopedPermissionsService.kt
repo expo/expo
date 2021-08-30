@@ -3,15 +3,15 @@ package versioned.host.exp.exponent.modules.universal
 import android.content.Context
 import android.content.pm.PackageManager
 import androidx.core.content.ContextCompat
-import expo.modules.permissions.PermissionsService
+import expo.modules.interfaces.permissions.PermissionsResponseListener
 import host.exp.exponent.di.NativeModuleDepsProvider
-import host.exp.exponent.kernel.ExperienceId
+import host.exp.exponent.kernel.ExperienceKey
 import host.exp.exponent.kernel.services.ExpoKernelServiceRegistry
-import org.unimodules.core.ModuleRegistry
-import org.unimodules.interfaces.permissions.PermissionsResponseListener
+import expo.modules.adapters.react.permissions.PermissionsService
+import expo.modules.core.ModuleRegistry
 import javax.inject.Inject
 
-class ScopedPermissionsService(context: Context, val experienceId: ExperienceId) : PermissionsService(context) {
+class ScopedPermissionsService(context: Context, val experienceKey: ExperienceKey) : PermissionsService(context) {
 
   // This variable cannot be lateinit, cause the Location module gets permissions before this module is initialized.
   @Inject
@@ -19,7 +19,7 @@ class ScopedPermissionsService(context: Context, val experienceId: ExperienceId)
 
   override fun onCreate(moduleRegistry: ModuleRegistry) {
     super.onCreate(moduleRegistry)
-    NativeModuleDepsProvider.getInstance().inject(ScopedPermissionsService::class.java, this)
+    NativeModuleDepsProvider.instance.inject(ScopedPermissionsService::class.java, this)
   }
 
   // We override this to inject scoped permissions even if the device doesn't support the runtime permissions.
@@ -30,8 +30,7 @@ class ScopedPermissionsService(context: Context, val experienceId: ExperienceId)
   // We override this to scoped permissions in the headless mode.
   override fun getManifestPermissionFromContext(permission: String): Int {
     val globalPermissions = ContextCompat.checkSelfPermission(context, permission)
-    return mExpoKernelServiceRegistry?.permissionsKernelService?.getPermissions(globalPermissions, context.packageManager, permission, experienceId)
+    return mExpoKernelServiceRegistry?.permissionsKernelService?.getPermissions(globalPermissions, context.packageManager, permission, experienceKey)
       ?: PackageManager.PERMISSION_DENIED
   }
-
 }

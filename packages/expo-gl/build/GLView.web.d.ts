@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { WebGLObject } from './GLView';
 import { BaseGLViewProps, ComponentOrHandle, GLSnapshot, SnapshotOptions } from './GLView.types';
 export interface GLViewProps extends BaseGLViewProps {
     onContextCreate: (gl: WebGLRenderingContext) => void;

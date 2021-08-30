@@ -1,38 +1,44 @@
-import { Platform } from '@unimodules/core';
+import { Platform } from 'expo-modules-core';
 
 import * as Localization from '../Localization';
+
+function validateString(result) {
+  expect(typeof result).toBe('string');
+  expect(result.length).toBeGreaterThan(0);
+}
+
+function validateStringArray(result) {
+  expect(result).toBeDefined();
+  expect(Array.isArray(result)).toBe(true);
+}
 
 if (Platform.isDOMAvailable) {
   describe(`Localization methods`, () => {
     it(`expect async to return locale`, async () => {
-      function validateString(result) {
-        expect(result).toBeDefined();
-        expect(typeof result).toBe('string');
-        if (result) expect(result.length > 0).toBe(true);
-      }
-
-      function validateStringArray(result) {
-        expect(result).toBeDefined();
-        expect(Array.isArray(result)).toBe(true);
-      }
-
       const {
+        currency,
+        decimalSeparator,
+        digitGroupingSeparator,
+        isoCurrencyCodes,
+        isMetric,
+        isRTL,
         locale,
         locales,
         timezone,
-        isoCurrencyCodes,
         region,
-        isRTL,
       } = await Localization.getLocalizationAsync();
 
       validateString(locale);
       validateString(timezone);
       validateString(region);
-
       validateStringArray(isoCurrencyCodes);
       validateStringArray(locales);
       expect(locales[0]).toBe(Localization.locale);
       expect(typeof isRTL).toBe('boolean');
+      expect(typeof isMetric).toBe('boolean');
+      validateString(decimalSeparator);
+      validateString(digitGroupingSeparator);
+      expect(currency).toBe(null);
     });
   });
 }
@@ -57,20 +63,16 @@ if (Platform.isDOMAvailable) {
 }
 
 describe(`Localization defines constants`, () => {
-  it(`Gets the current device region`, async () => {
+  it('Gets the region', async () => {
     const result = Localization.region;
-
     if (Platform.isDOMAvailable) {
-      expect(typeof result).toBe('string');
-      if (result) expect(result.length > 0).toBe(true);
+      validateString(result);
     } else {
       expect(result).toBe(null);
     }
   });
-
-  it(`Gets the current locale`, async () => {
+  it('Gets the locale', async () => {
     const result = Localization.locale;
-
     if (Platform.isDOMAvailable) {
       expect(typeof result).toBe('string');
       expect(result.length > 0).toBe(true);
@@ -79,11 +81,9 @@ describe(`Localization defines constants`, () => {
       expect(result).toBe('');
     }
   });
-
-  it(`Gets the preferred locales`, async () => {
+  it('Gets the preferred locales', async () => {
     const result = Localization.locales;
-
-    expect(Array.isArray(result)).toBe(true);
+    validateStringArray(result);
     if (Platform.isDOMAvailable) {
       expect(result.length).toBeGreaterThan(0);
       expect(result[0]).toBe(Localization.locale);
@@ -91,18 +91,32 @@ describe(`Localization defines constants`, () => {
       expect(result.length).toBe(0);
     }
   });
-
-  it(`Gets ISO currency codes`, async () => {
+  it('Gets ISO currency codes', async () => {
     const result = Localization.isoCurrencyCodes;
-    expect(Array.isArray(result)).toBe(true);
-    for (const iso of result) {
-      expect(typeof iso).toBe('string');
-      expect(iso.length > 0).toBe(true);
-    }
+    validateStringArray(result);
+    result.forEach(validateString);
   });
-
-  it(`Gets the current layout direction (LTR only)`, async () => {
+  it('Gets the timezone', async () => {
+    validateString(Localization.timezone);
+  });
+  it('Gets the layout direction (ltr only)', async () => {
     const result = Localization.isRTL;
+    expect(typeof result).toBe('boolean');
     expect(result).toBe(false);
+  });
+  it('Gets the measurement system (metric)', async () => {
+    const result = Localization.isMetric;
+    expect(typeof result).toBe('boolean');
+  });
+  it('Gets the decimal separator', async () => {
+    validateString(Localization.decimalSeparator);
+  });
+  it('Gets the digit grouping separator', async () => {
+    const result = Localization.digitGroupingSeparator;
+    expect(result).toBeDefined();
+    expect(typeof result).toBe('string');
+  });
+  it.skip('Gets the currency', async () => {
+    validateString(Localization.currency);
   });
 });

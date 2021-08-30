@@ -1,13 +1,19 @@
 #import <EXAdsFacebook/EXAdSettingsManager.h>
+#import <EXAdsFacebook/EXFacebookAdsAppTrackingPermissionRequester.h>
+
 #import <FBAudienceNetwork/FBAudienceNetwork.h>
-#import <UMCore/UMAppLifecycleService.h>
+
+#import <ExpoModulesCore/EXAppLifecycleService.h>
+#import <ExpoModulesCore/EXPermissionsInterface.h>
+#import <ExpoModulesCore/EXPermissionsMethodsDelegate.h>
 
 @interface EXAdSettingsManager ()
 
 @property (nonatomic) BOOL isChildDirected;
 @property (nonatomic, strong) NSString *mediationService;
 @property (nonatomic, strong, nullable) NSString *urlPrefix;
-@property (nonatomic, weak) UMModuleRegistry *moduleRegistry;
+@property (nonatomic, weak) EXModuleRegistry *moduleRegistry;
+@property (nonatomic, weak) id<EXPermissionsInterface> permissionsManager;
 @property (nonatomic) FBAdLogLevel logLevel;
 @property (nonatomic, strong) NSMutableArray<NSString*> *testDevices;
 
@@ -15,7 +21,7 @@
 
 @implementation EXAdSettingsManager
 
-UM_EXPORT_MODULE(CTKAdSettingsManager)
+EX_EXPORT_MODULE(CTKAdSettingsManager)
 
 - (instancetype)init {
   if (self = [super init]) {
@@ -25,34 +31,66 @@ UM_EXPORT_MODULE(CTKAdSettingsManager)
   return self;
 }
 
-- (void)setModuleRegistry:(UMModuleRegistry *)moduleRegistry
+- (void)setModuleRegistry:(EXModuleRegistry *)moduleRegistry
 {
   _moduleRegistry = moduleRegistry;
-  [[_moduleRegistry getModuleImplementingProtocol:@protocol(UMAppLifecycleService)] registerAppLifecycleListener:self];
+  [[_moduleRegistry getModuleImplementingProtocol:@protocol(EXAppLifecycleService)] registerAppLifecycleListener:self];
+  
+  _permissionsManager = [_moduleRegistry getModuleImplementingProtocol:@protocol(EXPermissionsInterface)];
+  [EXPermissionsMethodsDelegate registerRequesters:@[[EXFacebookAdsAppTrackingPermissionRequester new]] withPermissionsManager:_permissionsManager];
 }
 
-UM_EXPORT_METHOD_AS(addTestDevice,
+EX_EXPORT_METHOD_AS(getPermissionsAsync,
+                    getPermissionsAsync:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
+{
+  [EXPermissionsMethodsDelegate getPermissionWithPermissionsManager:_permissionsManager
+                                                      withRequester:[EXFacebookAdsAppTrackingPermissionRequester class]
+                                                            resolve:resolve
+                                                             reject:reject];
+}
+
+EX_EXPORT_METHOD_AS(requestPermissionsAsync,
+                    requestPermissionsAsync:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
+{
+  [EXPermissionsMethodsDelegate askForPermissionWithPermissionsManager:_permissionsManager
+                                                         withRequester:[EXFacebookAdsAppTrackingPermissionRequester class]
+                                                               resolve:resolve
+                                                                reject:reject];
+}
+
+EX_EXPORT_METHOD_AS(setAdvertiserTrackingEnabled,
+                    setAdvertiserTrackingEnabled:(BOOL)enabled
+                    resolve:(EXPromiseResolveBlock)resolve
+                    reject:(EXPromiseRejectBlock)reject)
+{
+  [FBAdSettings setAdvertiserTrackingEnabled:enabled];
+  resolve(nil);
+}
+
+EX_EXPORT_METHOD_AS(addTestDevice,
                     addTestDevice:(NSString *)deviceHash
-                    resolve:(UMPromiseResolveBlock)resolver
-                    reject:(UMPromiseRejectBlock)rejecter)
+                    resolve:(EXPromiseResolveBlock)resolver
+                    reject:(EXPromiseRejectBlock)rejecter)
 {
   [FBAdSettings addTestDevice:deviceHash];
   [_testDevices addObject:deviceHash];
   resolver(nil);
 }
 
-UM_EXPORT_METHOD_AS(clearTestDevices,
-                    clearTestDevicesWithResolver:(UMPromiseResolveBlock)resolver
-                    reject:(UMPromiseRejectBlock)rejecter)
+EX_EXPORT_METHOD_AS(clearTestDevices,
+                    clearTestDevicesWithResolver:(EXPromiseResolveBlock)resolver
+                    reject:(EXPromiseRejectBlock)rejecter)
 {
   [FBAdSettings clearTestDevices];
   [_testDevices removeAllObjects];
 }
 
-UM_EXPORT_METHOD_AS(setLogLevel,
+EX_EXPORT_METHOD_AS(setLogLevel,
                     setLogLevel:(NSString *)logLevelKey
-                    resolve:(UMPromiseResolveBlock)resolver
-                    reject:(UMPromiseRejectBlock)rejecter)
+                    resolve:(EXPromiseResolveBlock)resolver
+                    reject:(EXPromiseRejectBlock)rejecter)
 {
   FBAdLogLevel logLevel = [@{
                            @"none": @(FBAdLogLevelNone),
@@ -67,30 +105,30 @@ UM_EXPORT_METHOD_AS(setLogLevel,
   resolver(nil);
 }
 
-UM_EXPORT_METHOD_AS(setIsChildDirected,
+EX_EXPORT_METHOD_AS(setIsChildDirected,
                     setIsChildDirected:(BOOL)isDirected
-                    resolve:(UMPromiseResolveBlock)resolver
-                    reject:(UMPromiseRejectBlock)rejecter)
+                    resolve:(EXPromiseResolveBlock)resolver
+                    reject:(EXPromiseRejectBlock)rejecter)
 {
   [FBAdSettings setIsChildDirected:isDirected];
   _isChildDirected = isDirected;
   resolver(nil);
 }
 
-UM_EXPORT_METHOD_AS(setMeditationService,
+EX_EXPORT_METHOD_AS(setMeditationService,
                     setMediationService:(NSString *)mediationService
-                    resolve:(UMPromiseResolveBlock)resolver
-                    reject:(UMPromiseRejectBlock)rejecter)
+                    resolve:(EXPromiseResolveBlock)resolver
+                    reject:(EXPromiseRejectBlock)rejecter)
 {
   [FBAdSettings setMediationService:mediationService];
   _mediationService = mediationService;
   resolver(nil);
 }
 
-UM_EXPORT_METHOD_AS(setUrlPrefix,
+EX_EXPORT_METHOD_AS(setUrlPrefix,
                     setUrlPrefix:(NSString *)urlPrefix
-                    resolve:(UMPromiseResolveBlock)resolver
-                    reject:(UMPromiseRejectBlock)rejecter)
+                    resolve:(EXPromiseResolveBlock)resolver
+                    reject:(EXPromiseRejectBlock)rejecter)
 {
   [FBAdSettings setUrlPrefix:urlPrefix];
   resolver(nil);

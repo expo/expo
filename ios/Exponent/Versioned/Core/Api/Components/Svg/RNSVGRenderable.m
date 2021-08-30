@@ -513,7 +513,7 @@ UInt32 saturate(CGFloat value) {
 }
 
 // hitTest delegate
-- (UIView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event
+- (RNSVGPlatformView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event
 {
     if (!_hitArea) {
         return nil;

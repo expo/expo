@@ -85,6 +85,28 @@ export async function getNextSDKVersionAsync(platform: Platform): Promise<string
 }
 
 /**
+ * Resolves given SDK number or tag to appropriate version.
+ */
+export async function resolveSDKVersionAsync(
+  sdkVersion: string,
+  platform: Platform
+): Promise<string | undefined> {
+  if (sdkVersion === 'latest') {
+    return await getNewestSDKVersionAsync(platform);
+  }
+  if (sdkVersion === 'oldest') {
+    return await getOldestSDKVersionAsync(platform);
+  }
+  if (sdkVersion === 'next') {
+    return await getNextSDKVersionAsync(platform);
+  }
+  if (/^\d+$/.test(sdkVersion)) {
+    return `${sdkVersion}.0.0`;
+  }
+  return sdkVersion;
+}
+
+/**
  * Returns an object with versions of bundled native modules.
  */
 export async function getBundledVersionsAsync(): Promise<Record<string, string>> {

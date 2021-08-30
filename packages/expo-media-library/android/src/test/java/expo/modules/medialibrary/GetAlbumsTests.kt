@@ -10,7 +10,7 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
-import org.unimodules.core.Promise
+import expo.modules.core.Promise
 import org.unimodules.test.core.PromiseMock
 import org.unimodules.test.core.assertRejectedWithCode
 import org.unimodules.test.core.promiseResolvedWithType
@@ -29,21 +29,23 @@ class GetAlbumsTests {
 
   @Test
   fun `GetAlbums should resolve with correct response`() {
-    //arrange
+    // arrange
     val bucketDisplayName = "Some Album Name"
 
-    val cursor = mockCursor(arrayOf(
-      arrayOf(*MockData.mockImage.toColumnArray(), bucketDisplayName),
-      arrayOf(*MockData.mockVideo.toColumnArray(), bucketDisplayName)
-    ))
+    val cursor = mockCursor(
+      arrayOf(
+        arrayOf(*MockData.mockImage.toColumnArray(), bucketDisplayName),
+        arrayOf(*MockData.mockVideo.toColumnArray(), bucketDisplayName)
+      )
+    )
     cursor.setColumnNames(arrayListOf(*cursor.columnNames, Media.BUCKET_DISPLAY_NAME))
 
     val context = mockContext with mockContentResolver(cursor)
 
-    //act
+    // act
     TestGetAlbums(context, promise).execute()
 
-    //assert
+    // assert
     promiseResolvedWithType<List<Bundle>>(promise) {
       assertEquals(1, it.size)
 
@@ -56,21 +58,23 @@ class GetAlbumsTests {
 
   @Test
   fun `GetAlbums should not list albums with null name`() {
-    //arrange
+    // arrange
     val bucketId = 123456
     val bucketDisplayName = null
 
-    val cursor = mockCursor(arrayOf(
-      arrayOf(bucketId, bucketDisplayName)
-    ))
+    val cursor = mockCursor(
+      arrayOf(
+        arrayOf(bucketId, bucketDisplayName)
+      )
+    )
     cursor.setColumnNames(arrayListOf(Media.BUCKET_ID, Media.BUCKET_DISPLAY_NAME))
 
     val context = mockContext with mockContentResolver(cursor)
 
-    //act
+    // act
     TestGetAlbums(context, promise).execute()
 
-    //assert
+    // assert
     promiseResolvedWithType<List<Bundle>>(promise) {
       assertEquals(0, it.size)
     }
@@ -78,37 +82,37 @@ class GetAlbumsTests {
 
   @Test
   fun `GetAlbums should reject on null cursor`() {
-    //arrange
+    // arrange
     val context = mockContext with mockContentResolver(null)
 
-    //act
+    // act
     TestGetAlbums(context, promise).execute()
 
-    //assert
+    // assert
     assertRejectedWithCode(promise, ERROR_UNABLE_TO_LOAD)
   }
 
   @Test
   fun `GetAlbums should reject on SecurityException`() {
-    //arrange
+    // arrange
     val context = mockContext with throwableContentResolver(SecurityException())
 
-    //act
+    // act
     TestGetAlbums(context, promise).execute()
 
-    //assert
+    // assert
     assertRejectedWithCode(promise, ERROR_UNABLE_TO_LOAD_PERMISSION)
   }
 
   @Test
   fun `GetAlbums should reject on IllegalArgumentException`() {
-    //arrange
+    // arrange
     val context = mockContext with throwableContentResolver(IllegalArgumentException())
 
-    //act
+    // act
     TestGetAlbums(context, promise).execute()
 
-    //assert
+    // assert
     assertRejectedWithCode(promise, ERROR_UNABLE_TO_LOAD)
   }
 

@@ -1,1 +1,0 @@
-../../../../versioned-react-native/ABI40_0_0/Expo/EXFacebook/ABI40_0_0EXFacebook/ABI40_0_0EXFacebook.h
