@@ -7,7 +7,7 @@ import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
 import com.google.android.exoplayer2.upstream.TransferListener
 
 class SharedCookiesDataSourceFactory(
-  reactApplicationContext: ReactContext?,
+  reactApplicationContext: ReactContext,
   userAgent: String,
   requestHeaders: Map<String, Any>?,
   transferListener: TransferListener?
@@ -16,7 +16,7 @@ class SharedCookiesDataSourceFactory(
     reactApplicationContext,
     transferListener,
     CustomHeadersOkHttpDataSourceFactory(
-      (reactApplicationContext!!.catalystInstance.getNativeModule("Networking") as NetworkingModule?)!!.mClient,
+      (reactApplicationContext.catalystInstance.getNativeModule("Networking") as NetworkingModule?)!!.mClient,
       userAgent,
       requestHeaders
     )

@@ -16,12 +16,10 @@ class SharedCookiesDataSourceFactoryProvider : SharedCookiesDataSourceFactoryPro
     requestHeaders: Map<String, Any>?,
     transferListener: TransferListener
   ): DataSource.Factory {
-    val reactContext: ReactContext? = if (context is ReactContext) {
-      context
-    } else if (context is ScopedContext) {
-      context.context as ReactContext
-    } else {
-      null
+    val reactContext: ReactContext = when (context) {
+      is ReactContext -> context
+      is ScopedContext -> context.context as ReactContext
+      else -> throw Exception("Invalid context supplied to SharedCookiesDataSourceFactoryProvider")
     }
     return SharedCookiesDataSourceFactory(reactContext, userAgent, requestHeaders, transferListener)
   }
