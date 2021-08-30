@@ -98,10 +98,10 @@ class BarCodeScannerView(
     type = cameraType
     if (!::viewFinder.isInitialized) {
       viewFinder = BarCodeScannerViewFinder(
-          viewContext,
-          cameraType,
-          this,
-          moduleRegistryDelegate
+        viewContext,
+        cameraType,
+        this,
+        moduleRegistryDelegate
       )
       addView(viewFinder)
     } else {

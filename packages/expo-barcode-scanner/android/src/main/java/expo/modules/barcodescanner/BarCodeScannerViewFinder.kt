@@ -191,8 +191,8 @@ internal class BarCodeScannerViewFinder(
           val height = size.height
           val properRotation = ExpoBarCodeScanner.instance.rotation
           val result = barCodeScanner.scan(
-              mImageData, width,
-              height, properRotation
+            mImageData, width,
+            height, properRotation
           )
           if (result != null) {
             withContext(Dispatchers.Main) {
