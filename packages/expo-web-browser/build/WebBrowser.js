@@ -292,7 +292,15 @@ async function _openBrowserAndWaitAndroidAsync(startUrl, browserParams = {}) {
         AppState.addEventListener('change', _onAppStateChangeAndroid);
     });
     let result = { type: WebBrowserResultType.CANCEL };
-    const { type } = await openBrowserAsync(startUrl, browserParams);
+    let type = null;
+    try {
+        ({ type } = await openBrowserAsync(startUrl, browserParams));
+    }
+    catch (e) {
+        AppState.removeEventListener('change', _onAppStateChangeAndroid);
+        _onWebBrowserCloseAndroid = null;
+        throw e;
+    }
     if (type === 'opened') {
         await appStateChangedToActive;
         result = { type: WebBrowserResultType.DISMISS };
