@@ -1,0 +1,10 @@
+{
+  "expo": {
+    "plugins": [
+      "./plugins/withDevMenu",
+      "./plugins/withExpoModulesCore",
+      "./plugins/withSplashScreen",
+      "./plugins/withEmptyUriScheme"
+    ]
+  }
+}

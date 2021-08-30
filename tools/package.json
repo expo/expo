@@ -24,7 +24,10 @@
   "license": "MIT",
   "dependencies": {
     "@expo/commander": "2.21.1",
+    "@expo/config-plugins": "^3.0.7",
+    "@expo/dev-server": "^0.1.81",
     "@expo/json-file": "^8.2.6",
+    "@expo/prebuild-config": "^2.0.7",
     "@expo/spawn-async": "^1.5.0",
     "@expo/xcodegen": "2.18.0-patch.1",
     "@expo/xdl": "^59.1.7",

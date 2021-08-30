@@ -1,0 +1,58 @@
+{
+  "version": "1.0.0",
+  "scripts": {
+    "start": "expo start",
+    "android": "expo run:android",
+    "ios": "expo run:ios",
+    "web": "expo start --web",
+    "eject": "expo eject",
+    "postinstall": "expo-yarn-workspaces postinstall",
+    "stories": "expo-stories start"
+  },
+  "dependencies": {
+    "@babel/runtime": "^7.5.5",
+    "expo": "~42.0.0-alpha.0",
+    "expo-cellular": "~3.2.0",
+    "expo-modules-core": "~0.3.0-alpha.0",
+    "expo-modules-autolinking": "~0.3.0-alpha.0",
+    "expo-updates": "~0.8.4",
+    "expo-stories": "*",
+    "expo-splash-screen": "~0.11.0",
+    "react": "17.0.1",
+    "react-dom": "17.0.1",
+    "react-native": "0.64.2",
+    "react-native-gesture-handler": "~1.10.2",
+    "react-native-reanimated": "~2.2.0",
+    "react-native-screens": "~3.4.0",
+    "react-native-svg": "~12.1.1",
+    "react-native-web": "~0.13.7",
+    "@expo/react-native-action-sheet": "^3.8.0",
+    "@react-native-async-storage/async-storage": "~1.15.0",
+    "@react-native-community/datetimepicker": "3.5.2",
+    "@react-native-community/netinfo": "6.0.0",
+    "@react-native-community/slider": "3.0.3",
+    "@react-native-community/viewpager": "5.0.11",
+    "@react-native-masked-view/masked-view": "0.2.4",
+    "@react-native-picker/picker": "1.16.1",
+    "@react-native-segmented-control/segmented-control": "2.3.0",
+    "react-native-safe-area-context": "3.2.0"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.0.0",
+    "expo-module-scripts": "^2.0.0",
+    "expo-yarn-workspaces": "^1.5.2",
+    "babel-plugin-module-resolver": "^4.0.0",
+    "babel-preset-expo": "~8.4.0"
+  },
+  "expo-yarn-workspaces": {
+    "symlinks": [
+      "expo-cellular",
+      "expo-constants",
+      "expo-updates",
+      "expo-stories",
+      "expo-modules-core",
+      "expo-modules-autolinking",
+      "@unimodules/react-native-adapter"
+    ]
+  }
+}

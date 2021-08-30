@@ -5,6 +5,7 @@
 
 __mocks__
 __tests__
+__stories__
 
 /babel.config.js
 /android/src/androidTest/
