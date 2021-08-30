@@ -21,6 +21,8 @@
 
 ### 💡 Others
 
+- Skip running build scripts during iOS debug builds and add support for `SKIP_BUNDLING`/`FORCE_BUNDLING` environment variables. ([#14116](https://github.com/expo/expo/pull/14116) by [@fson](https://github.com/fson))
+
 ## 0.8.4 — 2021-08-06
 
 ### 🐛 Bug fixes
@@ -125,7 +127,7 @@ _This version does not introduce any user-facing changes._
 
 ### 🛠 Breaking changes
 
-- (android) remove UPDATES_CONFIGURATION_USES_LEGACY_MANIFEST_KEY constant and start respecting cache-control headers for all manifest responses. Please ensure your server defined cache-control headers are configured correctly if you are self-hosted to avoid issues such as [#13872](https://github.com/expo/expo/issues/13872)  ([#12181](https://github.com/expo/expo/pull/12181) by [@jkhales](https://github.com/jkhales))
+- (android) remove UPDATES_CONFIGURATION_USES_LEGACY_MANIFEST_KEY constant and start respecting cache-control headers for all manifest responses. Please ensure your server defined cache-control headers are configured correctly if you are self-hosted to avoid issues such as [#13872](https://github.com/expo/expo/issues/13872) ([#12181](https://github.com/expo/expo/pull/12181) by [@jkhales](https://github.com/jkhales))
 - (ios) remove EXUpdatesUsesLegacyManifest Plist constant and start respecting cache-control headers for all manifest responses Please ensure your server defined cache-control headers are configured correctly if you are self-hosted to avoid issues such as [#13872](https://github.com/expo/expo/issues/13872) ([#12249](https://github.com/expo/expo/pull/12249) by [@jkhales](https://github.com/jkhales))
 - crash if EXUpdatesRequestHeaders is not a dictionary (ios). ([#12457](https://github.com/expo/expo/pull/12457) by [@jkhales](https://github.com/jkhales))
 
