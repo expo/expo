@@ -176,7 +176,7 @@ internal class BarCodeScannerViewFinder(
     barCodeScanner.setSettings(settings)
   }
 
-  private fun barCodeScannerAsyncTask(camera: Camera?, mImageData: ByteArray) {
+  private fun scanForBarcodes(camera: Camera?, mImageData: ByteArray) {
     coroutineScope.launch {
       try {
         if (!coroutineScope.isActive) {

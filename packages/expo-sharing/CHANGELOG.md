@@ -12,7 +12,7 @@
 
 - Migrated from `@unimodules/core` to `expo-modules-core`. ([#13757](https://github.com/expo/expo/pull/13757) by [@tsapeta](https://github.com/tsapeta))
 - Rewrote Android part from Java to Kotlin ([#14010](https://github.com/expo/expo/pull/14010) by [@m1st4ke](https://github.com/m1st4ke))
-- Migrated from `AsyncTask` to Kotlin concurrency utilities. ([#14029](https://github.com/expo/expo/pull/14029) by [@m1st4ke](https://github.com/m1st4ke))
+- Migrated from `AsyncTask` to Kotlin coroutines. ([#14029](https://github.com/expo/expo/pull/14029) by [@m1st4ke](https://github.com/m1st4ke))
 
 ## 9.2.0 — 2021-06-16
 
