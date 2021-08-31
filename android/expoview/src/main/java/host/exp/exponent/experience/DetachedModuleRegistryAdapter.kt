@@ -20,7 +20,7 @@ open class DetachedModuleRegistryAdapter(moduleRegistryProvider: ReactModuleRegi
   override fun createNativeModules(
     scopedContext: ScopedContext,
     experienceKey: ExperienceKey,
-    experienceProperties: Map<String, Any>,
+    experienceProperties: Map<String, Any?>,
     manifest: Manifest,
     experienceStableLegacyId: String,
     otherModules: List<NativeModule>
