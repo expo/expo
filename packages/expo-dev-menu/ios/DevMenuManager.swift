@@ -63,7 +63,7 @@ open class DevMenuManager: NSObject, DevMenuManagerProtocol {
   var packagerConnectionHandler: DevMenuPackagerConnectionHandler?
   lazy var expoSessionDelegate: DevMenuExpoSessionDelegate = DevMenuExpoSessionDelegate(manager: self)
   lazy var extensionSettings: DevMenuExtensionSettingsProtocol = DevMenuExtensionDefaultSettings(manager: self)
-  var shouldAutoLaunch = true
+  var canLaunchDevMenuOnStart = true
   
   public var expoApiClient: DevMenuExpoApiClientProtocol = DevMenuExpoApiClient()
   
@@ -96,7 +96,7 @@ open class DevMenuManager: NSObject, DevMenuManagerProtocol {
   @objc
   public var delegate: DevMenuDelegateProtocol? {
     didSet {
-      guard self.shouldAutoLaunch && (DevMenuSettings.showsAtLaunch || !DevMenuSettings.isOnboardingFinished), let bridge = delegate?.appBridge?(forDevMenuManager: self) as? RCTBridge else {
+      guard self.canLaunchDevMenuOnStart && (DevMenuSettings.showsAtLaunch || !DevMenuSettings.isOnboardingFinished), let bridge = delegate?.appBridge?(forDevMenuManager: self) as? RCTBridge else {
         return
       }
       if bridge.isLoading {
@@ -131,7 +131,7 @@ open class DevMenuManager: NSObject, DevMenuManagerProtocol {
     self.packagerConnectionHandler = DevMenuPackagerConnectionHandler(manager: self)
     self.packagerConnectionHandler?.setup()
     DevMenuSettings.setup()
-    self.readAutoLaunchState()
+    self.readAutoLaunchDisabledState()
     self.expoSessionDelegate.restoreSession()
   }
 
@@ -324,11 +324,13 @@ open class DevMenuManager: NSObject, DevMenuManagerProtocol {
     return delegate?.shouldShowOnboarding?(manager: self) ?? !DevMenuSettings.isOnboardingFinished
   }
 
-  func readAutoLaunchState() {
+  func readAutoLaunchDisabledState() {
     let userDefaultsValue = UserDefaults.standard.bool(forKey: "EXDevMenuDisableAutoLaunch")
     if (userDefaultsValue) {
-      self.shouldAutoLaunch = false
+      self.canLaunchDevMenuOnStart = false
       UserDefaults.standard.removeObject(forKey: "EXDevMenuDisableAutoLaunch")
+    } else {
+      self.canLaunchDevMenuOnStart = true
     }
   }
 

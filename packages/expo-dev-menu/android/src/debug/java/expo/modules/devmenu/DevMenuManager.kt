@@ -59,7 +59,7 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
   private var currentReactInstanceManager: WeakReference<ReactInstanceManager?> = WeakReference(null)
   private var currentScreenName: String? = null
   private val expoApiClient = DevMenuExpoApiClient()
-  private var shouldAutoLaunch = true
+  private var canLaunchDevMenuOnStart = true
   var testInterceptor: DevMenuTestInterceptor = DevMenuDisabledTestInterceptor()
 
   //region helpers
@@ -218,7 +218,7 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
         } else {
           DevMenuDefaultSettings()
         }).also {
-          shouldLaunchDevMenuOnStart = shouldAutoLaunch && (it.showsAtLaunch || !it.isOnboardingFinished)
+          shouldLaunchDevMenuOnStart = canLaunchDevMenuOnStart && (it.showsAtLaunch || !it.isOnboardingFinished)
           if (shouldLaunchDevMenuOnStart) {
             reactContext.addLifecycleEventListener(this)
           }
@@ -422,8 +422,8 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
 
   override fun getExpoApiClient(): DevMenuExpoApiClientInterface = expoApiClient
 
-  override fun setShouldAutoLaunch(shouldAutoLaunch: Boolean) {
-    this.shouldAutoLaunch = shouldAutoLaunch
+  override fun setCanLaunchDevMenuOnStart(canLaunchDevMenuOnStart: Boolean) {
+    this.canLaunchDevMenuOnStart = canLaunchDevMenuOnStart
   }
 
   override fun synchronizeDelegate() {

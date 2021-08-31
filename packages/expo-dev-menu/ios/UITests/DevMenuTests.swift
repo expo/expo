@@ -28,7 +28,7 @@ class MockedExtension: DevMenuExtensionProtocol {
 
 class MockedDelegate: DevMenuDelegateProtocol {}
 
-class TestInterceptor: DevMenuTestInterceptor {
+class TestInterceptorFirstLaunch: DevMenuTestInterceptor {
   @objc
   var shouldShowAtLaunch: Bool { get { return true } }
 
@@ -36,11 +36,18 @@ class TestInterceptor: DevMenuTestInterceptor {
   var isOnboardingFinishedKey: Bool { get { return false } }
 }
 
+class TestInterceptorOnboardingFinished: DevMenuTestInterceptor {
+  @objc
+  var shouldShowAtLaunch: Bool { get { return false } }
+
+  @objc
+  var isOnboardingFinishedKey: Bool { get { return true } }
+}
+
 class DevMenuTests: XCTestCase {
   
   override func setUp() {
     XCTAssertFalse(DevMenuManager.shared.isVisible)
-    DevMenuTestInterceptorManager.setTestInterceptor(TestInterceptor())
   }
   
   override func tearDown() {
@@ -66,13 +73,16 @@ class DevMenuTests: XCTestCase {
   }
 
   func test_dev_menu_auto_launch() {
+    DevMenuTestInterceptorManager.setTestInterceptor(TestInterceptorFirstLaunch())
     DevMenuManager.configure(withBridge: UIMockedNOOPBridge(delegate: nil, launchOptions: nil))
     waitForDevMenu()
+    DevMenuTestInterceptorManager.setTestInterceptor(nil);
   }
 
   func test_dev_menu_auto_launch_bypass() {
+    DevMenuTestInterceptorManager.setTestInterceptor(TestInterceptorFirstLaunch())
     UserDefaults.standard.set(true, forKey: "EXDevMenuDisableAutoLaunch")
-    DevMenuManager.shared.readAutoLaunchState()
+    DevMenuManager.shared.readAutoLaunchDisabledState()
 
     let label = UILabel()
     label.text = "Test App"
@@ -92,7 +102,8 @@ class DevMenuTests: XCTestCase {
     DevMenuManager.shared.toggleMenu()
     waitForDevMenu()
     UserDefaults.standard.set(false, forKey: "EXDevMenuDisableAutoLaunch")
-    DevMenuManager.shared.readAutoLaunchState()
+    DevMenuManager.shared.readAutoLaunchDisabledState()
+    DevMenuTestInterceptorManager.setTestInterceptor(nil);
   }
   
   func test_if_dev_menu_can_be_toggled() {
@@ -137,11 +148,13 @@ class DevMenuTests: XCTestCase {
   }
   
   func test_if_menu_can_be_opened_on_settings_screen() {
+    DevMenuTestInterceptorManager.setTestInterceptor(TestInterceptorOnboardingFinished())
     DevMenuManager.configure(withBridge: UIMockedNOOPBridge(delegate: nil, launchOptions: nil))
     DevMenuManager.shared.openMenu("Settings")
 
     waitForView(tag: DevMenuViews.settingsScreen)
     waitForView(tag: DevMenuViews.footer)
     XCTAssertTrue(DevMenuManager.shared.isVisible)
+    DevMenuTestInterceptorManager.setTestInterceptor(nil);
   }
 }

@@ -113,7 +113,7 @@ interface DevMenuManagerInterface {
   /**
    * Whether to automatically show the dev menu on app load. Defaults to true if not set.
    */
-  fun setShouldAutoLaunch(shouldAutoLaunch: Boolean)
+  fun setCanLaunchDevMenuOnStart(shouldAutoLaunch: Boolean)
 
   suspend fun fetchDataSource(id: String): List<DevMenuDataSourceItem>
 }

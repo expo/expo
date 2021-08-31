@@ -78,7 +78,7 @@ class DevLauncherController private constructor()
     private set
   override var latestLoadedApp: Uri? = null
   override var useDeveloperSupport = true
-  var autoLaunchDevMenu = true
+  var canLaunchDevMenuOnStart = true
 
   enum class Mode {
     LAUNCHER, APP
@@ -169,8 +169,8 @@ class DevLauncherController private constructor()
       ?.let { uri ->
         // used by appetize for snack
         if (intent.getBooleanExtra("EXDevMenuDisableAutoLaunch", false)) {
-          autoLaunchDevMenu = false
-          this.devMenuManager?.setShouldAutoLaunch(autoLaunchDevMenu)
+          canLaunchDevMenuOnStart = false
+          this.devMenuManager?.setCanLaunchDevMenuOnStart(canLaunchDevMenuOnStart)
         }
 
         if (!isDevLauncherUrl(uri)) {
@@ -229,7 +229,7 @@ class DevLauncherController private constructor()
       } as? DevMenuManagerProviderInterface
 
     val devMenuManager = devMenuManagerProvider?.getDevMenuManager() ?: return
-    devMenuManager.setShouldAutoLaunch(autoLaunchDevMenu)
+    devMenuManager.setCanLaunchDevMenuOnStart(canLaunchDevMenuOnStart)
     devMenuManager.setDelegate(DevLauncherMenuDelegate(instance))
     this.devMenuManager = devMenuManager
   }
