@@ -119,7 +119,7 @@ export async function getProductsAsync(
  * user’s App Store credentials, which could interrupt the flow of your app.
  *
  * @param options An optional `PurchaseHistoryOptions` object.
- * @return Returns a `Promise` that fulfils with an `IAPQueryResponse` that contains an array of
+ * @return Returns a `Promise` that fulfills with an `IAPQueryResponse` that contains an array of
  * `InAppPurchase` objects.
  */
 export async function getPurchaseHistoryAsync(
