@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix splash screen not dismissed while alert view appearing before RCTRootView did load. ([#14213](https://github.com/expo/expo/pull/14213) by [@kudo](https://github.com/kudo))
+
 ### 💡 Others
 
 ## 0.11.3 — 2021-08-30
