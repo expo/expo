@@ -97,6 +97,6 @@ open class ExpoModuleRegistryAdapter(moduleRegistryProvider: ReactModuleRegistry
   }
 
   override fun createNativeModules(reactContext: ReactApplicationContext): List<NativeModule> {
-    throw RuntimeException("Use createNativeModules(ReactApplicationContext, ExperienceId, JSONObject, List<NativeModule>) to get a list of native modules.")
+    throw RuntimeException("Use other implementation of createNativeModules to get a list of native modules.")
   }
 }

@@ -22,7 +22,7 @@ class UpdatesBinding(context: Context, experienceProperties: Map<String, Any?>) 
   UpdatesService(context), UpdatesInterface {
 
   @Inject
-  lateinit var mDatabaseHolder: DatabaseHolder
+  lateinit var databaseHolderInternal: DatabaseHolder
 
   private var manifestUrl: String?
   private var appLoader: ExpoUpdatesAppLoader?
@@ -48,7 +48,7 @@ class UpdatesBinding(context: Context, experienceProperties: Map<String, Any?>) 
   }
 
   override fun getDatabaseHolder(): DatabaseHolder {
-    return mDatabaseHolder
+    return databaseHolderInternal
   }
 
   override fun isEmergencyLaunch(): Boolean {

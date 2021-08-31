@@ -7,6 +7,8 @@ import expo.modules.core.arguments.ReadableArguments
 import expo.modules.core.interfaces.LifecycleEventListener
 import expo.modules.facebook.FacebookModule
 
+private const val ERR_FACEBOOK_UNINITIALIZED = "ERR_FACEBOOK_UNINITIALIZED"
+
 class ScopedFacebookModule(context: Context) : FacebookModule(context), LifecycleEventListener {
   private var isInitialized = false
 
@@ -52,9 +54,5 @@ class ScopedFacebookModule(context: Context) : FacebookModule(context), Lifecycl
 
   override fun onHostDestroy() {
     // do nothing
-  }
-
-  companion object {
-    private const val ERR_FACEBOOK_UNINITIALIZED = "ERR_FACEBOOK_UNINITIALIZED"
   }
 }

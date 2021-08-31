@@ -11,10 +11,8 @@ import expo.modules.firebase.core.FirebaseCoreService
 import expo.modules.manifests.core.Manifest
 import host.exp.exponent.kernel.ExperienceKey
 import org.json.JSONObject
-import versioned.host.exp.exponent.modules.universal.ScopedFirebaseCoreService.Companion.addJSONStringToMap
 import java.io.UnsupportedEncodingException
 import java.lang.Exception
-import java.util.*
 
 class ScopedFirebaseCoreService(
   context: Context,
@@ -94,13 +92,13 @@ class ScopedFirebaseCoreService(
       }
     }
 
-    private fun MutableMap<String, String>.addJSONStringToMap(
+    private fun MutableMap<String, String>.putJSONString(
+      key: String,
       json: JSONObject?,
-      path: String,
-      name: String
+      path: String
     ) {
       val value = getJSONStringByPath(json, path)
-      if (value != null) this[name] = value
+      if (value != null) this[key] = value
     }
 
     private fun getClientFromGoogleServices(
@@ -136,10 +134,10 @@ class ScopedFirebaseCoreService(
         // Read project-info settings
         // https://developers.google.com/android/guides/google-services-plugin
         val json = mutableMapOf<String, String>().apply {
-          addJSONStringToMap(googleServicesFile, "project_info.project_id", "projectId")
-          addJSONStringToMap(googleServicesFile, "project_info.project_number", "messagingSenderId")
-          addJSONStringToMap(googleServicesFile, "project_info.firebase_url", "databaseURL")
-          addJSONStringToMap(googleServicesFile, "project_info.storage_bucket", "storageBucket")
+          putJSONString("projectId", googleServicesFile, "project_info.project_id")
+          putJSONString("messagingSenderId", googleServicesFile, "project_info.project_number")
+          putJSONString("databaseURL", googleServicesFile, "project_info.firebase_url")
+          putJSONString("storageBucket", googleServicesFile, "project_info.storage_bucket")
         }
 
         // Get the client that matches this app. When the Expo Go package was explicitly
@@ -155,11 +153,15 @@ class ScopedFirebaseCoreService(
         )
 
         // Read properties from client
-        json.addJSONStringToMap(client, "client_info.mobilesdk_app_id", "appId")
-        json.addJSONStringToMap(client, "services.analytics_service.analytics_property.tracking_id", "trackingId")
+        json.putJSONString("appId", client, "client_info.mobilesdk_app_id")
+        json.putJSONString(
+          "trackingId",
+          client,
+          "services.analytics_service.analytics_property.tracking_id"
+        )
         val apiKey = client?.optJSONArray("api_key")
         if (apiKey != null && apiKey.length() > 0) {
-          json.addJSONStringToMap(apiKey.getJSONObject(0), "current_key", "apiKey")
+          json.putJSONString("apiKey", apiKey.getJSONObject(0), "current_key")
         }
 
         // The appId is the best indicator on whether all required info was available
@@ -183,7 +185,7 @@ class ScopedFirebaseCoreService(
     // Add the app to the list of protected app names
     synchronized(protectedAppNames) {
       protectedAppNames[defaultAppName] = false
-      protectedAppNames.put(appName, false)
+      protectedAppNames[appName] = false
     }
 
     // Delete any previously created apps for which the project was unloaded

@@ -7,6 +7,8 @@ import android.util.Log
 import expo.modules.securestore.SecureStoreModule
 import host.exp.exponent.Constants
 
+private const val SHARED_PREFERENCES_NAME = "SecureStore"
+
 class ScopedSecureStoreModule(private val scopedContext: ScopedContext) :
   SecureStoreModule(if (Constants.isStandaloneApp()) scopedContext.baseContext else scopedContext) {
 
@@ -34,10 +36,6 @@ class ScopedSecureStoreModule(private val scopedContext: ScopedContext) :
       SHARED_PREFERENCES_NAME,
       Context.MODE_PRIVATE
     )
-
-  companion object {
-    private const val SHARED_PREFERENCES_NAME = "SecureStore"
-  }
 
   init {
     maybeMigrateSharedPreferences()
