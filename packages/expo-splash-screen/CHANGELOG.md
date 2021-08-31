@@ -13,7 +13,7 @@
 
 - On iOS, search for a view controller with a RCTRootView rather than always using the keyWindow's rootViewController. ([#13429](https://github.com/expo/expo/pull/13429) by [@esamelson](https://github.com/esamelson))
 - Fix splash screen not dismissed if there is alert view appearing. ([#14208](https://github.com/expo/expo/pull/14208) by [@kudo](https://github.com/kudo))
-- Fix yet another splash not dismissed issue while alert view appearing. ([#14213](https://github.com/expo/expo/pull/14213) by [@kudo](https://github.com/kudo))
+- Fix splash screen not dismissed while alert view appearing before RCTRootView did load. ([#14213](https://github.com/expo/expo/pull/14213) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others
 
