@@ -245,3 +245,6 @@ pod 'ABI41_0_0UMTaskManagerInterface',
 pod 'ABI41_0_0EXManifests',
   :path => './versioned-react-native/ABI41_0_0/Expo/EXManifests',
   :project_name => 'ABI41_0_0'
+pod 'ABI41_0_0EXJSONUtils',
+  :path => './versioned-react-native/ABI41_0_0/Expo/EXJSONUtils',
+  :project_name => 'ABI41_0_0'
