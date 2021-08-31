@@ -15,7 +15,7 @@ class NewManifestTest {
     val manifestJson =
       "{\"runtimeVersion\":\"$runtimeVersion\"}"
     val manifest = NewManifest(JSONObject(manifestJson))
-    Assert.assertEquals(manifest.getSDKVersionNullable(), "39.0.0")
+    Assert.assertEquals(manifest.getSDKVersion(), "39.0.0")
   }
 
   @Test
@@ -33,7 +33,7 @@ class NewManifestTest {
       val manifestJson =
         "{\"runtimeVersion\":\"$runtimeVersion\"}"
       val manifest = NewManifest(JSONObject(manifestJson))
-      Assert.assertNull(manifest.getSDKVersionNullable())
+      Assert.assertNull(manifest.getSDKVersion())
     }
   }
 }

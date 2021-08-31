@@ -69,10 +69,7 @@ abstract class Manifest(protected val json: JSONObject) {
   @Throws(JSONException::class)
   fun getRevisionId(): String = getExpoClientConfigRootObject()!!.require("revisionId")
 
-  abstract fun getSDKVersionNullable(): String?
-
-  @Throws(JSONException::class)
-  abstract fun getSDKVersion(): String
+  abstract fun getSDKVersion(): String?
 
   abstract fun getAssets(): JSONArray?
 
