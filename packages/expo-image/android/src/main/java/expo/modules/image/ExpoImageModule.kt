@@ -17,7 +17,6 @@ import java.lang.Exception
  * We need to convert blocking java.util.concurrent.Future result
  * into non-blocking suspend function. We use extension function for that
  */
-
 suspend fun <T> FutureTarget<T>.awaitGet() = runInterruptible(Dispatchers.IO) { get() }
 
 class ExpoImageModule(val context: ReactApplicationContext) : ReactContextBaseJavaModule(context) {
