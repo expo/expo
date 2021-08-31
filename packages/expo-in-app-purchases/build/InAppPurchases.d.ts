@@ -4,7 +4,7 @@ export { InAppPurchase, InAppPurchaseState, IAPResponseCode, IAPErrorCode, IAPIt
  * Connects to the app store and performs all of the necessary initialization to prepare the module
  * to accept payments.
  * This method must be called before anything else, otherwise an error will be thrown.
- * @return Returns a Promise that fulfils when connection is established.
+ * @return Returns a Promise that fulfills when connection is established.
  */
 export declare function connectAsync(): Promise<void>;
 /**
@@ -61,7 +61,7 @@ export declare function getProductsAsync(itemList: string[]): Promise<IAPQueryRe
  * user’s App Store credentials, which could interrupt the flow of your app.
  *
  * @param options An optional `PurchaseHistoryOptions` object.
- * @return Returns a `Promise` that fulfils with an `IAPQueryResponse` that contains an array of
+ * @return Returns a `Promise` that fulfills with an `IAPQueryResponse` that contains an array of
  * `InAppPurchase` objects.
  */
 export declare function getPurchaseHistoryAsync(options?: IAPPurchaseHistoryOptions): Promise<IAPQueryResponse<InAppPurchase>>;
