@@ -1,8 +1,17 @@
 import { ImageTestGroup, ImageTestPropsFnInput } from '../types';
+import { images } from '../images';
 
 const imageTests: ImageTestGroup = {
   name: 'Android',
   tests: [
+    {
+      name: 'Default source',
+      props: {
+        source: images.require_gif,
+        defaultSource: images.require_png,
+      },
+      loadOnDemand: true,
+    },
     {
       name: 'Resize method: auto',
       props: {

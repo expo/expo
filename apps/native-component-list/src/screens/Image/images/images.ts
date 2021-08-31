@@ -6,6 +6,7 @@ const images = {
   require_webp: require('../../../../assets/images/example3.webp'),
   require_webp_anim: require('../../../../assets/videos/ace.webp'),
   require_svg: require('../../../../assets/images/expo.svg'),
+  require_gif: require('../../../../assets/images/catjam.gif'),
   uri_random_unsplash: {
     uri: `https://source.unsplash.com/random?${Math.floor(Math.random() * 1000)}`,
   },
