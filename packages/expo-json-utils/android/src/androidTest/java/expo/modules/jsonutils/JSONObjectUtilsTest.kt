@@ -34,18 +34,18 @@ class JSONObjectUtilsTest {
       )
     )
 
-    jsonObject.getOrNull<Any>("non-existent-key") shouldBe null
+    jsonObject.getNullable<Any>("non-existent-key") shouldBe null
 
     val func = { jsonObject.require<Any>("non-existent-key") }
     func shouldThrow JSONException::class withMessage "No value for non-existent-key"
 
-    jsonObject.getOrNull<String>("string") shouldBeEqualTo "test"
-    jsonObject.getOrNull<Double>("double") shouldBeEqualTo 1.0
-    jsonObject.getOrNull<Int>("int") shouldBeEqualTo 1
-    jsonObject.getOrNull<Long>("long") shouldBeEqualTo 1L
-    jsonObject.getOrNull<Boolean>("boolean") shouldBeEqualTo false
-    jsonObject.getOrNull<Any>("object") shouldBeEqualTo randomObject
-    jsonObject.getOrNull<JSONArray>("jsonarray") shouldBeEqualTo innerJSONArray
-    jsonObject.getOrNull<JSONObject>("jsonobject") shouldBeEqualTo innerJSONObject
+    jsonObject.getNullable<String>("string") shouldBeEqualTo "test"
+    jsonObject.getNullable<Double>("double") shouldBeEqualTo 1.0
+    jsonObject.getNullable<Int>("int") shouldBeEqualTo 1
+    jsonObject.getNullable<Long>("long") shouldBeEqualTo 1L
+    jsonObject.getNullable<Boolean>("boolean") shouldBeEqualTo false
+    jsonObject.getNullable<Any>("object") shouldBeEqualTo randomObject
+    jsonObject.getNullable<JSONArray>("jsonarray") shouldBeEqualTo innerJSONArray
+    jsonObject.getNullable<JSONObject>("jsonobject") shouldBeEqualTo innerJSONObject
   }
 }

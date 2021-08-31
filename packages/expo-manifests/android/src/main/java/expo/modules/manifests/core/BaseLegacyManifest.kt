@@ -1,26 +1,26 @@
 package expo.modules.manifests.core
 
-import expo.modules.jsonutils.getOrNull
+import expo.modules.jsonutils.getNullable
 import expo.modules.jsonutils.require
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
 
 abstract class BaseLegacyManifest(json: JSONObject) : Manifest(json) {
-  override fun getStableLegacyID(): String = json.getOrNull("originalFullName") ?: getLegacyID()
+  override fun getStableLegacyID(): String = json.getNullable("originalFullName") ?: getLegacyID()
 
-  override fun getScopeKey(): String = json.getOrNull("scopeKey") ?: getStableLegacyID()
+  override fun getScopeKey(): String = json.getNullable("scopeKey") ?: getStableLegacyID()
 
-  override fun getEASProjectID(): String? = json.getOrNull("projectId")
+  override fun getEASProjectID(): String? = json.getNullable("projectId")
 
-  fun getMetadata(): JSONObject? = json.getOrNull("metadata")
+  fun getMetadata(): JSONObject? = json.getNullable("metadata")
 
-  override fun getAssets(): JSONArray? = json.getOrNull("assets")
+  override fun getAssets(): JSONArray? = json.getNullable("assets")
 
   @Throws(JSONException::class)
   override fun getBundleURL(): String = json.require("bundleUrl")
 
-  override fun getSDKVersionNullable(): String? = json.getOrNull("sdkVersion")
+  override fun getSDKVersionNullable(): String? = json.getNullable("sdkVersion")
 
   @Throws(JSONException::class)
   override fun getSDKVersion(): String = json.require("sdkVersion")
@@ -33,11 +33,11 @@ abstract class BaseLegacyManifest(json: JSONObject) : Manifest(json) {
     return json
   }
 
-  override fun getSlug(): String? = json.getOrNull("slug")
+  override fun getSlug(): String? = json.getNullable("slug")
 
-  override fun getAppKey(): String? = json.getOrNull("appKey")
+  override fun getAppKey(): String? = json.getNullable("appKey")
 
-  fun getCommitTime(): String? = json.getOrNull("commitTime")
+  fun getCommitTime(): String? = json.getNullable("commitTime")
 
   @Throws(JSONException::class)
   private fun getPublishedTime(): String = json.require("publishedTime")

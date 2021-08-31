@@ -1,6 +1,6 @@
 package expo.modules.manifests.core
 
-import expo.modules.jsonutils.getOrNull
+import expo.modules.jsonutils.getNullable
 import expo.modules.jsonutils.require
 import org.json.JSONArray
 import org.json.JSONException
@@ -27,8 +27,8 @@ class NewManifest(json: JSONObject) : Manifest(json) {
   }
 
   override fun getEASProjectID(): String? {
-    val easConfig = getExtra()?.getOrNull<JSONObject>("eas") ?: return null
-    return easConfig.getOrNull("projectId")
+    val easConfig = getExtra()?.getNullable<JSONObject>("eas") ?: return null
+    return easConfig.getNullable("projectId")
   }
 
   @Throws(JSONException::class)
@@ -56,17 +56,17 @@ class NewManifest(json: JSONObject) : Manifest(json) {
   @Throws(JSONException::class)
   fun getLaunchAsset(): JSONObject = json.require("launchAsset")
 
-  override fun getAssets(): JSONArray? = json.getOrNull("assets")
+  override fun getAssets(): JSONArray? = json.getNullable("assets")
 
   @Throws(JSONException::class)
   fun getCreatedAt(): String = json.require("createdAt")
 
   override fun getExpoGoConfigRootObject(): JSONObject? {
-    return getExtra()?.getOrNull("expoGo")
+    return getExtra()?.getNullable("expoGo")
   }
 
   override fun getExpoClientConfigRootObject(): JSONObject? {
-    return getExtra()?.getOrNull("expoClient")
+    return getExtra()?.getNullable("expoClient")
   }
 
   override fun getSlug(): String? = null
@@ -78,6 +78,6 @@ class NewManifest(json: JSONObject) : Manifest(json) {
   }
 
   private fun getExtra(): JSONObject? {
-    return json.getOrNull("extra")
+    return json.getNullable("extra")
   }
 }
