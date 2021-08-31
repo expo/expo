@@ -1,5 +1,5 @@
-import { ImageTestGroup, ImageTestPropsFnInput } from '../types';
 import { images } from '../images';
+import { ImageTestGroup, ImageTestPropsFnInput } from '../types';
 
 const imageTests: ImageTestGroup = {
   name: 'Android',

@@ -114,7 +114,6 @@ export default function ImageTestScreen({ navigation, route }: Props) {
   const isAnimatable = typeof test.props === 'function';
   const hasEvents = isAnimatable && test.name.startsWith('on');
   const loadOnDemand = test.loadOnDemand;
-  // const loadOnDemand = true;
 
   const imageProps = resolveProps(test.props, animValue, false, onEventMessage);
 
