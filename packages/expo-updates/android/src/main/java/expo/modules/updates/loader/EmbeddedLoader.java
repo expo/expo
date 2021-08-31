@@ -41,6 +41,8 @@ public class EmbeddedLoader {
   private File mUpdatesDirectory;
   private float mPixelDensity;
 
+  private EmbeddedFiles mEmbeddedFiles;
+
   private UpdateEntity mUpdateEntity;
   private ArrayList<AssetEntity> mErroredAssetList = new ArrayList<>();
   private ArrayList<AssetEntity> mSkippedAssetList = new ArrayList<>();
@@ -48,11 +50,16 @@ public class EmbeddedLoader {
   private ArrayList<AssetEntity> mFinishedAssetList = new ArrayList<>();
 
   public EmbeddedLoader(Context context, UpdatesConfiguration configuration, UpdatesDatabase database, File updatesDirectory) {
+    this(context, configuration, database, updatesDirectory, new EmbeddedFiles());
+  }
+
+  public EmbeddedLoader(Context context, UpdatesConfiguration configuration, UpdatesDatabase database, File updatesDirectory, EmbeddedFiles embeddedFiles) {
     mContext = context;
     mConfiguration = configuration;
     mDatabase = database;
     mUpdatesDirectory = updatesDirectory;
     mPixelDensity = context.getResources().getDisplayMetrics().density;
+    mEmbeddedFiles = embeddedFiles;
   }
 
   public boolean loadEmbeddedUpdate() {
@@ -95,42 +102,9 @@ public class EmbeddedLoader {
     return sEmbeddedUpdateManifest;
   }
 
-  public static byte[] copyAssetAndGetHash(AssetEntity asset, File destination, Context context) throws NoSuchAlgorithmException, IOException {
-    if (asset.embeddedAssetFilename != null) {
-      return copyContextAssetAndGetHash(asset, destination, context);
-    } else if (asset.resourcesFilename != null && asset.resourcesFolder != null) {
-      return copyResourceAndGetHash(asset, destination, context);
-    } else {
-      throw new AssertionError("Failed to copy embedded asset " + asset.key + " from APK assets or resources because not enough information was provided.");
-    }
-  }
-
-  public static byte[] copyContextAssetAndGetHash(AssetEntity asset, File destination, Context context) throws NoSuchAlgorithmException, IOException {
-    try (
-        InputStream inputStream = context.getAssets().open(asset.embeddedAssetFilename)
-    ) {
-      return UpdatesUtils.sha256AndWriteToFile(inputStream, destination);
-    } catch (Exception e) {
-      Log.e(TAG, "Failed to copy asset " + asset.embeddedAssetFilename, e);
-      throw e;
-    }
-  }
-
-  public static byte[] copyResourceAndGetHash(AssetEntity asset, File destination, Context context) throws NoSuchAlgorithmException, IOException {
-    int id = context.getResources().getIdentifier(asset.resourcesFilename, asset.resourcesFolder, context.getPackageName());
-    try (
-      InputStream inputStream = context.getResources().openRawResource(id)
-    ) {
-      return UpdatesUtils.sha256AndWriteToFile(inputStream, destination);
-    } catch (Exception e) {
-      Log.e(TAG, "Failed to copy asset " + asset.embeddedAssetFilename, e);
-      throw e;
-    }
-  }
-
   // private helper methods
 
-  private boolean processUpdateManifest(UpdateManifest updateManifest) {
+  boolean processUpdateManifest(UpdateManifest updateManifest) {
     UpdateEntity newUpdateEntity = updateManifest.getUpdateEntity();
     UpdateEntity existingUpdateEntity = mDatabase.updateDao().loadUpdateWithId(newUpdateEntity.id);
     if (existingUpdateEntity != null && existingUpdateEntity.status == UpdateStatus.READY) {
@@ -166,7 +140,7 @@ public class EmbeddedLoader {
       }
 
       // if we already have a local copy of this asset, don't try to download it again!
-      if (asset.relativePath != null && new File(mUpdatesDirectory, asset.relativePath).exists()) {
+      if (asset.relativePath != null && mEmbeddedFiles.fileExists(new File(mUpdatesDirectory, asset.relativePath))) {
         mExistingAssetList.add(asset);
         continue;
       }
@@ -174,12 +148,12 @@ public class EmbeddedLoader {
       String filename = UpdatesUtils.createFilenameForAsset(asset);
       File destination = new File(mUpdatesDirectory, filename);
 
-      if (destination.exists()) {
+      if (mEmbeddedFiles.fileExists(destination)) {
         asset.relativePath = filename;
         mExistingAssetList.add(asset);
       } else {
         try {
-          asset.hash = copyAssetAndGetHash(asset, destination, mContext);
+          asset.hash = mEmbeddedFiles.copyAssetAndGetHash(asset, destination, mContext);
           asset.downloadTime = new Date();
           asset.relativePath = filename;
           mFinishedAssetList.add(asset);
