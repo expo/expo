@@ -119,13 +119,13 @@ function ImagePickerScreen() {
       <TitleSwitch
         style={{ marginVertical: 8, marginTop: 20 }}
         title="With base64"
-        setValue={value => setB64Enabled(value)}
+        setValue={(value) => setB64Enabled(value)}
         value={base64Enabled}
       />
       <TitleSwitch
         style={{ marginVertical: 8 }}
         title="Compression"
-        setValue={value => setCompressionEnabled(value)}
+        setValue={(value) => setCompressionEnabled(value)}
         value={compressionEnabled}
       />
 

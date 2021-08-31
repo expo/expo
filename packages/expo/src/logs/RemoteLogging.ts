@@ -68,7 +68,7 @@ async function enqueueRemoteLogAsync(
   });
 
   // Send the logs asynchronously (system errors are emitted with transport error events) and throw an uncaught error
-  _sendRemoteLogsAsync().catch(error => {
+  _sendRemoteLogsAsync().catch((error) => {
     setImmediate(() => {
       throw error;
     });
@@ -166,7 +166,7 @@ export function __waitForEmptyLogQueueAsync(): Promise<void> {
     return Promise.resolve();
   }
 
-  _completionPromise = new Promise(resolve => {
+  _completionPromise = new Promise((resolve) => {
     _resolveCompletion = () => {
       invariant(!_isSendingLogs, `Must not be sending logs at completion`);
       invariant(!_logQueue.length, `Log queue must be empty at completion`);

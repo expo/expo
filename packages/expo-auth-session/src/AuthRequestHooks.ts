@@ -15,7 +15,7 @@ export function useAutoDiscovery(issuerOrDiscovery: IssuerOrDiscovery): Discover
 
   useEffect(() => {
     let isAllowed = true;
-    resolveDiscoveryAsync(issuerOrDiscovery).then(discovery => {
+    resolveDiscoveryAsync(issuerOrDiscovery).then((discovery) => {
       if (isAllowed) {
         setDiscovery(discovery);
       }

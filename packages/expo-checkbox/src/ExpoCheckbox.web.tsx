@@ -14,7 +14,7 @@ import { StyleSheet, View, unstable_createElement as createElement } from 'react
 
 import { CheckboxComponent, CheckboxEvent } from './Checkbox.types';
 
-const ExpoCheckbox: CheckboxComponent = props => {
+const ExpoCheckbox: CheckboxComponent = (props) => {
   const { color, disabled, onChange, onValueChange, style, value, ...other } = props;
 
   const handleChange = useCallback(

@@ -334,7 +334,7 @@ export function useURL(): string | null {
   }
 
   useEffect(() => {
-    getInitialURL().then(url => setLink(url));
+    getInitialURL().then((url) => setLink(url));
     addEventListener('url', onChange);
     return () => removeEventListener('url', onChange);
   }, []);

@@ -57,7 +57,7 @@ if (__DEV__) {
         // @ts-ignore
         const originalSetWrapperComponentProvider = AppRegistry.setWrapperComponentProvider;
         // @ts-ignore
-        AppRegistry.setWrapperComponentProvider = provider => {
+        AppRegistry.setWrapperComponentProvider = (provider) => {
             function PatchedProviderComponent(props) {
                 const ProviderComponent = provider();
                 return (React.createElement(DevAppContainer, null,

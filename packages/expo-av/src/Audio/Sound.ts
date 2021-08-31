@@ -114,7 +114,7 @@ export class Sound implements Playback {
   }
 
   _clearSubscriptions() {
-    this._subscriptions.forEach(e => e.remove());
+    this._subscriptions.forEach((e) => e.remove());
     this._subscriptions = [];
   }
 

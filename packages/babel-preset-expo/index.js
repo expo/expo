@@ -81,7 +81,7 @@ module.exports = function (api, options = {}) {
           disableImportExportTransform: platformOptions.disableImportExportTransform,
           lazyImportExportTransform:
             lazyImportsOption === true
-              ? importModuleSpecifier => {
+              ? (importModuleSpecifier) => {
                   // Do not lazy-initialize packages that are local imports (similar to `lazy: true`
                   // behavior) or are in the blacklist.
                   return !(

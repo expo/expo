@@ -132,8 +132,8 @@ export function modifyAppDelegate(appDelegate: string, expoUpdatesVersion: strin
   return appDelegate;
 }
 
-export const withDevLauncherAppDelegate: ConfigPlugin = config => {
-  return withAppDelegate(config, config => {
+export const withDevLauncherAppDelegate: ConfigPlugin = (config) => {
+  return withAppDelegate(config, (config) => {
     if (config.modResults.language === 'objc') {
       let expoUpdatesVersion;
       try {

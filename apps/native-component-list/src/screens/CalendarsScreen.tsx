@@ -109,12 +109,12 @@ export default class CalendarsScreen extends React.Component<
     const sourceDetails = Platform.select({
       default: () => ({}),
       ios: () => ({
-        sourceId: this.state.calendars.find(cal => cal.source && cal.source.name === 'Default')
+        sourceId: this.state.calendars.find((cal) => cal.source && cal.source.name === 'Default')
           ?.source.id,
       }),
       android: () => {
         const calendar = this.state.calendars.find(
-          cal => cal.accessLevel === Calendar.CalendarAccessLevel.OWNER
+          (cal) => cal.accessLevel === Calendar.CalendarAccessLevel.OWNER
         );
         return calendar ? { source: calendar.source, ownerAccount: calendar.ownerAccount } : {};
       },
@@ -175,7 +175,7 @@ export default class CalendarsScreen extends React.Component<
       return (
         <ScrollView style={styles.container}>
           <Button onPress={this._addCalendar} title="Add New Calendar" />
-          {this.state.calendars.map(calendar => (
+          {this.state.calendars.map((calendar) => (
             <CalendarRow
               calendar={calendar}
               key={calendar.id}

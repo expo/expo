@@ -92,7 +92,7 @@ export function ensureStripeActivity({
 }): AndroidConfig.Manifest.ManifestApplication {
   if (Array.isArray(mainApplication.activity)) {
     // Remove all Facebook CustomTabActivities first
-    mainApplication.activity = mainApplication.activity.filter(activity => {
+    mainApplication.activity = mainApplication.activity.filter((activity) => {
       return activity.$?.['android:name'] !== CUSTOM_TAB_ACTIVITY;
     });
   } else {
@@ -134,7 +134,7 @@ export const withStripeIos: ConfigPlugin<StripePluginProps> = (config, { scheme,
 };
 
 const withStripeAndroid: ConfigPlugin<Pick<StripePluginProps, 'scheme'>> = (config, { scheme }) => {
-  return withAndroidManifest(config, config => {
+  return withAndroidManifest(config, (config) => {
     let mainApplication = getMainApplicationOrThrow(config.modResults);
     mainApplication = ensureStripeActivity({ mainApplication, scheme });
 
@@ -155,8 +155,8 @@ const withStripe: ConfigPlugin<StripePluginProps> = (config, props) => {
   return config;
 };
 
-const withStoreKit: ConfigPlugin = config => {
-  return withXcodeProject(config, config => {
+const withStoreKit: ConfigPlugin = (config) => {
+  return withXcodeProject(config, (config) => {
     // TODO: Ensure framework doesn't already exist
     IOSConfig.XcodeUtils.addFramework({
       project: config.modResults,
@@ -177,7 +177,7 @@ const withInAppPurchases: ConfigPlugin<Pick<StripePluginProps, 'merchantId'>> = 
    *	 <string>[MERCHANT_ID]</string>
    * </array>
    */
-  return withEntitlementsPlist(config, config => {
+  return withEntitlementsPlist(config, (config) => {
     const key = 'com.apple.developer.in-app-payments';
 
     // @ts-ignore

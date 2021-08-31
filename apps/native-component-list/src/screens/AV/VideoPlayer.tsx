@@ -60,12 +60,13 @@ export default function VideoPlayer(props: {
   const setRateAsync = async (rate: number, shouldCorrectPitch: boolean) =>
     video.current?.setRateAsync(rate, shouldCorrectPitch);
 
-  const toggleNativeControls = () => setUseNativeControls(useNativeControls => !useNativeControls);
+  const toggleNativeControls = () =>
+    setUseNativeControls((useNativeControls) => !useNativeControls);
 
   const openFullscreen = () => video.current?.presentFullscreenPlayer();
 
   const changeSource = () => {
-    setIndex(index => (index + 1) % props.sources.length);
+    setIndex((index) => (index + 1) % props.sources.length);
   };
 
   return (
@@ -89,7 +90,7 @@ export default function VideoPlayer(props: {
       setIsLoopingAsync={setIsLoopingAsync}
       setIsMutedAsync={setIsMutedAsync}
       setRateAsync={setRateAsync}
-      setVolume={volume => video.current?.setVolumeAsync(volume)}
+      setVolume={(volume) => video.current?.setVolumeAsync(volume)}
       extraButtons={[
         () => <ResizeModeSegmentedControl key="resizeModeControl" onValueChange={setResizeMode} />,
         {
@@ -141,10 +142,10 @@ function ResizeModeSegmentedControl({
         fontStyle={{ color: Colors.tintColor }}
         selectedIndex={index}
         tintColor="white"
-        onChange={event => {
+        onChange={(event) => {
           setIndex(event.nativeEvent.selectedSegmentIndex);
         }}
-        onValueChange={value => {
+        onValueChange={(value) => {
           const mappedValue = resizeMap[value];
           if (mappedValue) {
             onValueChange(mappedValue);

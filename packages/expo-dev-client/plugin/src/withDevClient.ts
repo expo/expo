@@ -27,7 +27,7 @@ function withReactNativeConfigJs(config: ExpoConfig): ExpoConfig {
   return config;
 }
 
-const addReactNativeConfigAsync: Mod = async config => {
+const addReactNativeConfigAsync: Mod = async (config) => {
   const filename = path.join(config.modRequest.projectRoot, 'react-native.config.js');
   try {
     const config = fs.readFileSync(filename, 'utf8');

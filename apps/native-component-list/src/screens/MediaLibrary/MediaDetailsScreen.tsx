@@ -27,10 +27,10 @@ export default class MediaDetailsScreen extends React.Component<Props> {
 
   componentDidMount() {
     const { asset } = this.props.route.params;
-    MediaLibrary.getAssetInfoAsync(asset, { shouldDownloadFromNetwork: false }).then(details => {
+    MediaLibrary.getAssetInfoAsync(asset, { shouldDownloadFromNetwork: false }).then((details) => {
       this.setState({ detailsWithoutDownloadingFromNetwork: details });
     });
-    MediaLibrary.getAssetInfoAsync(asset).then(details => {
+    MediaLibrary.getAssetInfoAsync(asset).then((details) => {
       this.setState({ details });
     });
   }

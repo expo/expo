@@ -95,7 +95,7 @@ export default class TrackingOptionsSelector extends React.Component<object, Sta
   ];
 
   _applyOptions = () => {
-    this.setState(state => ({ options: state.optionsToSet }));
+    this.setState((state) => ({ options: state.optionsToSet }));
   };
 
   _renderToggle = ({ title, valueName }: Toggle) => (
@@ -104,7 +104,7 @@ export default class TrackingOptionsSelector extends React.Component<object, Sta
       <Switch
         value={Boolean(this.state.optionsToSet[valueName])}
         onValueChange={() =>
-          this.setState(state => ({
+          this.setState((state) => ({
             optionsToSet: { ...state.optionsToSet, [valueName]: !state.optionsToSet[valueName] },
           }))
         }
@@ -113,7 +113,7 @@ export default class TrackingOptionsSelector extends React.Component<object, Sta
   );
 
   _toggleListVisibility = () => {
-    this.setState(state => ({ showList: !state.showList }));
+    this.setState((state) => ({ showList: !state.showList }));
     if (this.state.showList) {
       this._applyOptions();
       this._setTrackingOptionsAsync();

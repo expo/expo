@@ -180,7 +180,7 @@ export function capture(video, settings, config) {
 }
 export async function syncTrackCapabilities(cameraType, stream, settings = {}) {
     if (stream?.getVideoTracks) {
-        await Promise.all(stream.getVideoTracks().map(track => onCapabilitiesReady(cameraType, track, settings)));
+        await Promise.all(stream.getVideoTracks().map((track) => onCapabilitiesReady(cameraType, track, settings)));
     }
 }
 // https://developer.mozilla.org/en-US/docs/Web/API/MediaTrackConstraints
@@ -238,10 +238,10 @@ export function stopMediaStream(stream) {
         return;
     }
     if (stream.getAudioTracks) {
-        stream.getAudioTracks().forEach(track => track.stop());
+        stream.getAudioTracks().forEach((track) => track.stop());
     }
     if (stream.getVideoTracks) {
-        stream.getVideoTracks().forEach(track => track.stop());
+        stream.getVideoTracks().forEach((track) => track.stop());
     }
     if (isMediaStreamTrack(stream)) {
         stream.stop();

@@ -9,9 +9,9 @@ const exportedMethodsKey = 'exportedMethods';
 const NativeModulesProxy: { [moduleName: string]: ProxyNativeModule } = {};
 
 if (NativeProxy) {
-  Object.keys(NativeProxy[exportedMethodsKey]).forEach(moduleName => {
+  Object.keys(NativeProxy[exportedMethodsKey]).forEach((moduleName) => {
     NativeModulesProxy[moduleName] = NativeProxy[modulesConstantsKey][moduleName] || {};
-    NativeProxy[exportedMethodsKey][moduleName].forEach(methodInfo => {
+    NativeProxy[exportedMethodsKey][moduleName].forEach((methodInfo) => {
       NativeModulesProxy[moduleName][methodInfo.name] = (...args: unknown[]): Promise<any> => {
         const { key, argumentsCount } = methodInfo;
         if (argumentsCount !== args.length) {

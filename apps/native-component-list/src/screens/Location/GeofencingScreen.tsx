@@ -148,7 +148,7 @@ export default function GeofencingScreen() {
   };
 
   const renderRegions = React.useCallback(() => {
-    return state.geofencingRegions.map(region => {
+    return state.geofencingRegions.map((region) => {
       return (
         // @ts-ignore
         <MapView.Circle
