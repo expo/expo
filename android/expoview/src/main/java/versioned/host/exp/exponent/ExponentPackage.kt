@@ -125,7 +125,7 @@ class ExponentPackage : ReactPackage {
       try {
         val experienceKey = ExperienceKey.fromManifest(manifest)
         val scopedContext = ScopedContext(reactContext, experienceKey)
-        nativeModules.add(NotificationsModule(reactContext, experienceKey, manifest.getStableLegacyID(), experienceProperties))
+        nativeModules.add(NotificationsModule(reactContext, experienceKey, manifest.getStableLegacyID()))
         nativeModules.add(RNViewShotModule(reactContext, scopedContext))
         nativeModules.add(RandomModule(reactContext))
         nativeModules.add(ExponentTestNativeModule(reactContext))

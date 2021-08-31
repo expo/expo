@@ -54,10 +54,10 @@ open class ScopedExpoNotificationBuilder(
       super.getNotificationsChannelManager()
     } else ScopedNotificationsChannelManager(
       context,
-      experienceKey,
+      experienceKey!!,
       ScopedNotificationsGroupManager(
         context,
-        experienceKey
+        experienceKey!!
       )
     )
   }

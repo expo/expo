@@ -85,8 +85,8 @@ object NotificationHelper {
   }
 
   @JvmStatic fun getPushNotificationToken(
-    deviceId: String?,
-    experienceId: String?,
+    deviceId: String,
+    experienceId: String,
     exponentNetwork: ExponentNetwork,
     exponentSharedPreferences: ExponentSharedPreferences,
     listener: TokenListener
@@ -347,9 +347,9 @@ object NotificationHelper {
     }
   }
 
-  @JvmStatic fun deleteChannel(context: Context?, experienceKey: ExperienceKey?, channelId: String?) {
+  @JvmStatic fun deleteChannel(context: Context, experienceKey: ExperienceKey, channelId: String) {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-      ExponentNotificationManager(context!!).deleteNotificationChannel(experienceKey!!, channelId!!)
+      ExponentNotificationManager(context).deleteNotificationChannel(experienceKey, channelId)
     } else {
       // deleting a channel on O+ still retains all its settings, so doing nothing here emulates that
     }
@@ -559,7 +559,7 @@ object NotificationHelper {
   }
 
   @JvmStatic fun scheduleLocalNotification(
-    context: Context?,
+    context: Context,
     id: Int,
     data: HashMap<String?, Any?>,
     options: HashMap<*, *>,
@@ -593,7 +593,7 @@ object NotificationHelper {
 
     time += SystemClock.elapsedRealtime()
 
-    val manager = ExponentNotificationManager(context!!)
+    val manager = ExponentNotificationManager(context)
 
     val interval = when {
       options.containsKey("repeat") -> {

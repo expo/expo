@@ -30,7 +30,7 @@ class SchedulersManagerProxy private constructor(private val schedulersManager: 
     singleThreadExecutor.execute { schedulersManager.removeScheduler(id) }
   }
 
-  override fun addScheduler(scheduler: Scheduler, handler: Function<String, Boolean>) {
+  override fun addScheduler(scheduler: Scheduler, handler: Function<String?, Boolean>) {
     singleThreadExecutor.execute { schedulersManager.addScheduler(scheduler, handler) }
   }
 

@@ -82,7 +82,7 @@ internal class SchedulerManagerImpl(private val applicationContext: Context) : S
     }
   }
 
-  override fun addScheduler(scheduler: Scheduler, handler: Function<String, Boolean>) {
+  override fun addScheduler(scheduler: Scheduler, handler: Function<String?, Boolean>) {
     fetchSchedulersMap()
 
     scheduler.setApplicationContext(applicationContext)

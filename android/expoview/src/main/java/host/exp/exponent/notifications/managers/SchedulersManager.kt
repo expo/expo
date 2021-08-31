@@ -10,5 +10,5 @@ interface SchedulersManager {
   fun cancelAlreadyScheduled(experienceKey: ExperienceKey?)
   fun rescheduleOrDelete(id: String?)
   fun removeScheduler(id: String?)
-  fun addScheduler(scheduler: Scheduler, handler: Function<String, Boolean>)
+  fun addScheduler(scheduler: Scheduler, handler: Function<String?, Boolean>)
 }
