@@ -31,9 +31,9 @@ class ExponentAsyncStorageModule(reactContext: ReactApplicationContext, manifest
       val databaseName = experienceKeyToDatabaseName(experienceKey)
       mReactDatabaseSupplier = ReactDatabaseSupplier(reactContext, databaseName)
     } catch (e: JSONException) {
-      KernelProvider.instance.handleError("Requires Experience Id")
+      KernelProvider.instance.handleError("Requires ExperienceKey")
     } catch (e: UnsupportedEncodingException) {
-      KernelProvider.instance.handleError("Couldn't URL encode Experience Id")
+      KernelProvider.instance.handleError("Couldn't URL encode ExperienceKey")
     }
   }
 }
