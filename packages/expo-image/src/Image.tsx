@@ -46,6 +46,11 @@ interface ImageState {
   onError: ImageProps['onError'];
 }
 
+let _requestId = 1;
+function generateRequestId() {
+  return _requestId++;
+}
+
 export default class Image extends React.Component<ImageProps, ImageState> {
   static getDerivedStateFromProps(props: ImageProps) {
     return {
@@ -72,11 +77,17 @@ export default class Image extends React.Component<ImageProps, ImageState> {
    * **Available on @Android only.** Caching the image that can be later used in ImageView
    * @return an empty promise.
    */
-  static async prefetch(url: string): Promise<void> {
+  static async prefetch(url: string, callback?: Function): Promise<void> {
     if (Platform.OS !== 'android') {
       throw new UnavailabilityError('Image', 'prefetch');
     }
-    return await ExpoImageModule.prefetch(url);
+    const requestId = generateRequestId();
+    callback && callback(requestId);
+    return await ExpoImageModule.prefetch(url, requestId);
+  }
+
+  static abortPrefetch(requestId: number): void {
+    ExpoImageModule.abortPrefetch(requestId);
   }
 
   state = {

@@ -3,6 +3,10 @@ import React from 'react';
 import { StyleSheet, } from 'react-native';
 import ExpoImage, { ExpoImageModule } from './ExpoImage';
 const DEFAULT_RESIZE_MODE = 'cover';
+let _requestId = 1;
+function generateRequestId() {
+    return _requestId++;
+}
 export default class Image extends React.Component {
     static getDerivedStateFromProps(props) {
         return {
@@ -28,11 +32,16 @@ export default class Image extends React.Component {
      * **Available on @Android only.** Caching the image that can be later used in ImageView
      * @return an empty promise.
      */
-    static async prefetch(url) {
+    static async prefetch(url, callback) {
         if (Platform.OS !== 'android') {
             throw new UnavailabilityError('Image', 'prefetch');
         }
-        return await ExpoImageModule.prefetch(url);
+        const requestId = generateRequestId();
+        callback && callback(requestId);
+        return await ExpoImageModule.prefetch(url, requestId);
+    }
+    static abortPrefetch(requestId) {
+        ExpoImageModule.abortPrefetch(requestId);
     }
     state = {
         onLoad: undefined,

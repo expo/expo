@@ -11,7 +11,9 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runInterruptible
+import java.io.File
 import java.lang.Exception
+import java.util.concurrent.ConcurrentHashMap
 
 /**
  * We need to convert blocking java.util.concurrent.Future result
@@ -22,16 +24,19 @@ suspend fun <T> FutureTarget<T>.awaitGet() = runInterruptible(Dispatchers.IO) { 
 class ExpoImageModule(val context: ReactApplicationContext) : ReactContextBaseJavaModule(context) {
   private val moduleCoroutineScope = CoroutineScope(Dispatchers.IO)
   override fun getName() = "ExpoImageModule"
+  var prefetchRequests = ConcurrentHashMap<Int, FutureTarget<File>>()
 
   @ReactMethod
-  fun prefetch(url: String, promise: Promise) {
+  fun prefetch(url: String, requestId: Int, promise: Promise) {
     moduleCoroutineScope.launch {
       try {
         val glideUrl = GlideUrl(url)
-        val result = Glide.with(context)
+        val future = Glide.with(context)
             .download(glideUrl)
             .submit()
-            .awaitGet()
+        prefetchRequests[requestId] = future
+        val result = future.awaitGet()
+        prefetchRequests.remove(requestId)
         if (result != null) {
           promise.resolve(null)
         } else {
@@ -41,5 +46,11 @@ class ExpoImageModule(val context: ReactApplicationContext) : ReactContextBaseJa
         promise.reject("ERR_IMAGE_PREFETCH_FAILURE", "Failed to prefetch the image: ${e.message}", e)
       }
     }
+  }
+
+  @ReactMethod
+  fun abortPrefetch(requestId: Int) {
+    val future = prefetchRequests.remove(requestId)
+    future?.cancel(true)
   }
 }
