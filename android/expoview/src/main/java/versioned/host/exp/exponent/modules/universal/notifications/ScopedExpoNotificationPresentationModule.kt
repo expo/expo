@@ -80,7 +80,7 @@ class ScopedExpoNotificationPresentationModule(
             NotificationsService.NOTIFICATIONS_KEY
           )
           if (resultCode == NotificationsService.SUCCESS_CODE && notifications != null) {
-            val toDismiss = ArrayList<String>()
+            val toDismiss = mutableListOf<String>()
             for (notification in notifications) {
               if (scopedNotificationsUtils.shouldHandleNotification(notification, experienceKey)) {
                 toDismiss.add(notification.notificationRequest.identifier)
