@@ -8,6 +8,8 @@ import com.facebook.react.module.annotations.ReactModule
 import com.facebook.react.module.annotations.ReactModuleList
 import com.facebook.react.module.model.ReactModuleInfo
 import com.facebook.react.module.model.ReactModuleInfoProvider
+import com.facebook.react.modules.intent.IntentModule
+import com.facebook.react.modules.storage.AsyncStorageModule
 import com.facebook.react.turbomodule.core.interfaces.TurboModule
 import com.facebook.react.uimanager.ViewManager
 import expo.modules.manifests.core.Manifest
@@ -35,12 +37,12 @@ class ExpoTurboPackage(
   override fun getModule(name: String, context: ReactApplicationContext): NativeModule? {
     val isVerified = manifest.isVerified()
     return when (name) {
-      ExponentAsyncStorageModule.NAME -> if (isVerified) {
+      AsyncStorageModule.NAME -> if (isVerified) {
         ExponentAsyncStorageModule(context, manifest)
       } else {
         ExponentUnsignedAsyncStorageModule(context)
       }
-      ExponentIntentModule.NAME -> ExponentIntentModule(
+      IntentModule.NAME -> ExponentIntentModule(
         context,
         experienceProperties
       )

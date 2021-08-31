@@ -26,7 +26,7 @@ import javax.inject.Inject
 class DevMenuModule(reactContext: ReactApplicationContext, val experienceProperties: Map<String, Any?>, val manifest: Manifest?) : ReactContextBaseJavaModule(reactContext), LifecycleEventListener, DevMenuModuleInterface {
 
   @Inject
-  internal var devMenuManager: DevMenuManager? = null
+  internal lateinit var devMenuManager: DevMenuManager
 
   init {
     NativeModuleDepsProvider.instance.inject(DevMenuModule::class.java, this)
@@ -174,7 +174,7 @@ class DevMenuModule(reactContext: ReactApplicationContext, val experiencePropert
     val activity = currentActivity
 
     if (activity is ExperienceActivity) {
-      devMenuManager?.registerDevMenuModuleForActivity(this, activity)
+      devMenuManager.registerDevMenuModuleForActivity(this, activity)
     }
   }
 
