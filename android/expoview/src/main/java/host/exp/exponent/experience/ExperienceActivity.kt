@@ -428,6 +428,8 @@ open class ExperienceActivity : BaseExperienceActivity(), StartReactInstanceDele
     this.manifestUrl = manifestUrl
     this.manifest = manifest
 
+    exponentSharedPreferences.removeLegacyManifest(this.manifestUrl!!)
+
     // Notifications logic uses this to determine which experience to route a notification to
     ExponentDB.saveExperience(ExponentDBObject(this.manifestUrl!!, manifest, bundleUrl))
 

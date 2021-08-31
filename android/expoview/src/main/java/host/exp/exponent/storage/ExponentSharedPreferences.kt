@@ -2,11 +2,8 @@
 package host.exp.exponent.storage
 
 import android.content.Context
-import expo.modules.updates.manifest.ManifestFactory
-import expo.modules.manifests.core.Manifest
 import host.exp.exponent.analytics.EXL
 import host.exp.exponent.kernel.ExperienceKey
-import host.exp.exponent.kernel.KernelConstants
 import host.exp.expoview.ExpoViewBuildConfig
 import host.exp.expoview.R
 import org.json.JSONException
@@ -95,6 +92,10 @@ class ExponentSharedPreferences constructor(val context: Context) {
       }
     }
 
+  fun removeLegacyManifest(manifestUrl: String) {
+    sharedPreferences.edit().remove(manifestUrl).apply()
+  }
+
   fun updateExperienceMetadata(experienceKey: ExperienceKey, metadata: JSONObject) {
     sharedPreferences.edit()
       .putString(EXPERIENCE_METADATA_PREFIX + experienceKey.scopeKey, metadata.toString()).apply()
@@ -116,8 +117,6 @@ class ExponentSharedPreferences constructor(val context: Context) {
     private val TAG = ExponentSharedPreferences::class.java.simpleName
 
     const val EXPO_AUTH_SESSION_SECRET_KEY = "sessionSecret"
-
-    const val SAFE_MANIFEST_KEY = "safe_manifest"
 
     // Metadata
     const val EXPERIENCE_METADATA_PREFIX = "experience_metadata_"
