@@ -43,7 +43,7 @@ let purchaseUpdatedSubscription: Subscription;
  * Connects to the app store and performs all of the necessary initialization to prepare the module
  * to accept payments.
  * This method must be called before anything else, otherwise an error will be thrown.
- * @return Returns a Promise that fulfils when connection is established.
+ * @return Returns a Promise that fulfills when connection is established.
  */
 export async function connectAsync(): Promise<void> {
   if (connected) {
