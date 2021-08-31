@@ -36,7 +36,7 @@ public class UpdatesPackage extends BasePackage {
   @Override
   public List<? extends ReactNativeHostHandler> createReactNativeHostHandlers(Context context) {
     final ReactNativeHostHandler handler = new ReactNativeHostHandler() {
-      Boolean mShouldAutoSetup = null;
+      private Boolean mShouldAutoSetup = null;
 
       @Nullable
       @Override
@@ -72,13 +72,13 @@ public class UpdatesPackage extends BasePackage {
       @UiThread
       private boolean shouldAutoSetup(final Context context) {
         if (mShouldAutoSetup == null) {
-          mShouldAutoSetup = true;
           try {
             final PackageManager pm = context.getPackageManager();
             final ApplicationInfo ai = pm.getApplicationInfo(context.getPackageName(), PackageManager.GET_META_DATA);
             mShouldAutoSetup = ai.metaData.getBoolean("expo.modules.updates.AUTO_SETUP", true);
           } catch (Exception e) {
             Log.e(TAG, "Could not read expo-updates configuration data in AndroidManifest", e);
+            mShouldAutoSetup = true;
           }
         }
         return mShouldAutoSetup;

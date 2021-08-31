@@ -3,13 +3,6 @@
 import org.apache.tools.ant.taskdefs.condition.Os
 import org.gradle.util.GradleVersion
 
-void runBefore(String dependentTaskName, Task task) {
-  Task dependentTask = tasks.findByPath(dependentTaskName);
-  if (dependentTask != null) {
-    dependentTask.dependsOn task
-  }
-}
-
 def expoUpdatesDir = ["node", "-e", "console.log(require('path').dirname(require.resolve('expo-updates/package.json')));"].execute([], projectDir).text.trim()
 
 afterEvaluate {
