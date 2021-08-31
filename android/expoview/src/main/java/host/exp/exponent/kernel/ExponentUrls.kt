@@ -8,7 +8,9 @@ import okhttp3.Request
 object ExponentUrls {
   private val HTTPS_HOSTS = setOf(
     "exp.host",
-    "exponentjs.com"
+    "exponentjs.com",
+    "u.expo.dev",
+    "staging-u.expo.dev"
   )
 
   private fun isHttpsHost(host: String?): Boolean {
