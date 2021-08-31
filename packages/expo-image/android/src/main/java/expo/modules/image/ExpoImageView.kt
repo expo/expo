@@ -30,10 +30,18 @@ private const val SOURCE_HEIGHT_KEY = "height"
 private const val SOURCE_SCALE_KEY = "scale"
 
 @SuppressLint("ViewConstructor")
-class ExpoImageView(context: ReactContext, private val requestManager: RequestManager, private val progressInterceptor: OkHttpClientProgressInterceptor) : AppCompatImageView(context) {
+class ExpoImageView(
+  context: ReactContext,
+  private val requestManager: RequestManager,
+  private val progressInterceptor: OkHttpClientProgressInterceptor
+) : AppCompatImageView(context) {
   private val eventEmitter = context.getJSModule(RCTEventEmitter::class.java)
   private val outlineProvider = OutlineProvider(context)
-  private var borderDrawable: Lazy<BorderDrawable> = lazy {
+
+  private var propsChanged = false
+  private var loadedSource: GlideUrl? = null
+
+  private val borderDrawable = lazy {
     BorderDrawable(context).apply {
       callback = this@ExpoImageView
 
@@ -49,8 +57,14 @@ class ExpoImageView(context: ReactContext, private val requestManager: RequestMa
         }
     }
   }
-  private var propsChanged = false
-  private var loadedSource: GlideUrl? = null
+
+  init {
+    clipToOutline = true
+    scaleType = ImageResizeMode.COVER.scaleType
+    super.setOutlineProvider(outlineProvider)
+  }
+
+  // region Component Props
   internal var sourceMap: ReadableMap? = null
   internal var blurRadius: Int? = null
     set(value) {
@@ -62,12 +76,6 @@ class ExpoImageView(context: ReactContext, private val requestManager: RequestMa
       field = value?.takeIf { it > 0 }
       propsChanged = true
     }
-
-  init {
-    clipToOutline = true
-    scaleType = ImageResizeMode.COVER.scaleType
-    super.setOutlineProvider(outlineProvider)
-  }
 
   internal fun setResizeMode(resizeMode: ImageResizeMode) {
     scaleType = resizeMode.scaleType
@@ -111,13 +119,11 @@ class ExpoImageView(context: ReactContext, private val requestManager: RequestMa
   }
 
   internal fun setTintColor(color: Int?) {
-    if (color == null) {
-      clearColorFilter()
-    } else {
-      setColorFilter(color, PorterDuff.Mode.SRC_IN)
-    }
+    color?.let { setColorFilter(it, PorterDuff.Mode.SRC_IN) } ?: clearColorFilter()
   }
+  // endregion
 
+  // region ViewManager Lifecycle methods
   internal fun onAfterUpdateTransaction() {
     val sourceToLoad = createUrlFromSourceMap(sourceMap)
     if (sourceToLoad == null) {
@@ -144,6 +150,7 @@ class ExpoImageView(context: ReactContext, private val requestManager: RequestMa
         }
         .apply(propOptions)
         .into(this)
+
       requestManager
         .`as`(BitmapFactory.Options::class.java)
         // Remove any default listeners from this request
@@ -159,7 +166,9 @@ class ExpoImageView(context: ReactContext, private val requestManager: RequestMa
   internal fun onDrop() {
     requestManager.clear(this)
   }
+  // endregion
 
+  // region Helper methods
   private fun createUrlFromSourceMap(sourceMap: ReadableMap?): GlideUrl? {
     val uriKey = sourceMap?.getString(SOURCE_URI_KEY)
     return uriKey?.let { GlideUrl(uriKey) }
@@ -173,8 +182,8 @@ class ExpoImageView(context: ReactContext, private val requestManager: RequestMa
         if (sourceMap != null &&
           sourceMap.hasKey(SOURCE_WIDTH_KEY) &&
           sourceMap.hasKey(SOURCE_HEIGHT_KEY) &&
-          sourceMap.hasKey(SOURCE_SCALE_KEY)) {
-
+          sourceMap.hasKey(SOURCE_SCALE_KEY)
+        ) {
           val scale = sourceMap.getDouble(SOURCE_SCALE_KEY)
           val width = sourceMap.getInt(SOURCE_WIDTH_KEY)
           val height = sourceMap.getInt(SOURCE_HEIGHT_KEY)
@@ -191,12 +200,13 @@ class ExpoImageView(context: ReactContext, private val requestManager: RequestMa
         }
         fadeDuration?.let {
           alpha = 0f
-          animate().alpha(1f).duration = it.toLong();
+          animate().alpha(1f).duration = it.toLong()
         }
       }
   }
+  // endregion
 
-  // Drawing overrides
+  // region Drawing overrides
   override fun invalidateDrawable(drawable: Drawable) {
     super.invalidateDrawable(drawable)
     if (borderDrawable.isInitialized() && drawable === borderDrawable.value) {
@@ -224,4 +234,5 @@ class ExpoImageView(context: ReactContext, private val requestManager: RequestMa
       }
     }
   }
+  // endregion
 }
