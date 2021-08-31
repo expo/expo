@@ -2,13 +2,13 @@
 
 #import <Foundation/Foundation.h>
 #import <ABI42_0_0React/ABI42_0_0RCTLog.h>
-#import <ABI42_0_0EXUpdates/ABI42_0_0EXUpdatesRawManifest.h>
+#import <ABI42_0_0EXManifests/ABI42_0_0EXManifestsManifest.h>
 
 @interface ABI42_0_0EXVersionManager : NSObject
 
 // Uses a params dict since the internal workings may change over time, but we want to keep the interface the same.
 - (instancetype)initWithParams:(NSDictionary *)params
-                      manifest:(ABI42_0_0EXUpdatesRawManifest *)manifest
+                      manifest:(ABI42_0_0EXManifestsManifest *)manifest
                   fatalHandler:(void (^)(NSError *))fatalHandler
                    logFunction:(ABI42_0_0RCTLogFunction)logFunction
                   logThreshold:(NSInteger)threshold;

@@ -46,7 +46,7 @@ export default {
             return;
         dismissPopup();
     },
-    maybeCompleteAuthSession({ skipRedirectCheck, }) {
+    maybeCompleteAuthSession({ skipRedirectCheck }) {
         if (!Platform.isDOMAvailable) {
             return {
                 type: 'failed',

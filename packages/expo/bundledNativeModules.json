@@ -8,6 +8,7 @@
   "@react-native-community/viewpager": "5.0.11",
   "@react-native-picker/picker": "1.16.1",
   "@react-native-segmented-control/segmented-control": "2.3.0",
+  "@stripe/stripe-react-native": "0.1.4",
   "@unimodules/core": "~7.2.0-alpha.0",
   "@unimodules/react-native-adapter": "~6.5.0-alpha.0",
   "expo-ads-admob": "~10.1.0",
@@ -103,6 +104,5 @@
   "sentry-expo": "^4.0.0",
   "unimodules-app-loader": "~2.3.0-alpha.0",
   "unimodules-image-loader-interface": "~6.1.0",
-  "unimodules-task-manager-interface": "~6.3.0-alpha.0",
-  "stripe-react-native": "0.1.4"
+  "unimodules-task-manager-interface": "~6.3.0-alpha.0"
 }

@@ -19,7 +19,7 @@ const ExpoCheckbox: CheckboxComponent = props => {
 
   const handleChange = useCallback(
     (event: CheckboxEvent) => {
-      const value = ((event.nativeEvent.target as unknown) as HTMLInputElement).checked;
+      const value = (event.nativeEvent.target as unknown as HTMLInputElement).checked;
       event.nativeEvent.value = value;
       onChange && onChange(event);
       onValueChange && onValueChange(value);

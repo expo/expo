@@ -433,14 +433,8 @@ function validatedConstrainedValue<T>(props: {
   settings: WebCameraSettings;
   cameraType: string;
 }): T | undefined {
-  const {
-    constraintKey,
-    settingsKey,
-    convertedSetting,
-    capabilities,
-    settings,
-    cameraType,
-  } = props;
+  const { constraintKey, settingsKey, convertedSetting, capabilities, settings, cameraType } =
+    props;
   const setting = settings[settingsKey];
   if (
     Array.isArray(capabilities[constraintKey]) &&

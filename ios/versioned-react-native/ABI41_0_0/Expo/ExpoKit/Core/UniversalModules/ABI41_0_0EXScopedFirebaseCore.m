@@ -12,7 +12,7 @@
   NSDictionary* _protectedAppNames;
 }
 
-- (instancetype)initWithScopeKey:(NSString *)scopeKey manifest:(ABI41_0_0EXUpdatesRawManifest *)manifest constantsBinding:(ABI41_0_0EXConstantsBinding *)constantsBinding;
+- (instancetype)initWithScopeKey:(NSString *)scopeKey manifest:(ABI41_0_0EXManifestsManifest *)manifest constantsBinding:(ABI41_0_0EXConstantsBinding *)constantsBinding;
 {
   if (![@"expo" isEqualToString:constantsBinding.appOwnership]) {
     return [super init];
@@ -77,7 +77,7 @@
   return [base64 stringByTrimmingCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"="]];
 }
 
-+ (nullable NSDictionary *)googleServicesFileFromManifest:(ABI41_0_0EXUpdatesRawManifest *)manifest
++ (nullable NSDictionary *)googleServicesFileFromManifest:(ABI41_0_0EXManifestsManifest *)manifest
 {
   // load GoogleService-Info.plist from manifest
   @try {

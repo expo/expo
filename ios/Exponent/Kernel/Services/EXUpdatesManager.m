@@ -36,7 +36,7 @@ NSString * const EXUpdatesDownloadFinishedEventType = @"downloadFinished";
 @implementation EXUpdatesManager
 
 - (void)notifyApp:(EXKernelAppRecord *)appRecord
-ofDownloadWithManifest:(EXUpdatesRawManifest * _Nullable)manifest
+ofDownloadWithManifest:(EXManifestsManifest * _Nullable)manifest
             isNew:(BOOL)isBundleNew
             error:(NSError * _Nullable)error;
 {
@@ -145,7 +145,7 @@ ofDownloadWithManifest:(EXUpdatesRawManifest * _Nullable)manifest
 
 - (void)updatesModule:(id)scopedModule
 didRequestManifestWithCacheBehavior:(EXManifestCacheBehavior)cacheBehavior
-              success:(void (^)(EXUpdatesRawManifest * _Nonnull))success
+              success:(void (^)(EXManifestsManifest * _Nonnull))success
               failure:(void (^)(NSError * _Nonnull))failure
 {
   if ([EXEnvironment sharedEnvironment].isDetached && ![EXEnvironment sharedEnvironment].areRemoteUpdatesEnabled) {
@@ -161,7 +161,7 @@ didRequestManifestWithCacheBehavior:(EXManifestCacheBehavior)cacheBehavior
                              withDatabase:databaseKernelService.database
                              extraHeaders:nil
                              successBlock:^(EXUpdatesUpdate *update) {
-    success(update.rawManifest);
+    success(update.manifest);
   } errorBlock:^(NSError *error, NSURLResponse *response) {
     failure(error);
   }];
@@ -171,7 +171,7 @@ didRequestManifestWithCacheBehavior:(EXManifestCacheBehavior)cacheBehavior
 - (void)updatesModule:(id)scopedModule
 didRequestBundleWithCompletionQueue:(dispatch_queue_t)completionQueue
                 start:(void (^)(void))startBlock
-              success:(void (^)(EXUpdatesRawManifest * _Nullable))success
+              success:(void (^)(EXManifestsManifest * _Nullable))success
               failure:(void (^)(NSError * _Nonnull))failure
 {
   if ([EXEnvironment sharedEnvironment].isDetached && ![EXEnvironment sharedEnvironment].areRemoteUpdatesEnabled) {
@@ -193,7 +193,7 @@ didRequestBundleWithCompletionQueue:(dispatch_queue_t)completionQueue
     // do nothing for now
   } success:^(EXUpdatesUpdate * _Nullable update) {
     if (update) {
-      success(update.rawManifest);
+      success(update.manifest);
     } else {
       success(nil);
     }

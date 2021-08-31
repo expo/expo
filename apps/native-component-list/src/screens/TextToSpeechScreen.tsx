@@ -21,9 +21,11 @@ const EXAMPLES = [
   { language: 'en', text: 'Adam Perry ate a pear in pairs in Paris' },
 ];
 
-const AmountControlButton: React.FunctionComponent<React.ComponentProps<typeof TouchableOpacity> & {
-  title: string;
-}> = props => (
+const AmountControlButton: React.FunctionComponent<
+  React.ComponentProps<typeof TouchableOpacity> & {
+    title: string;
+  }
+> = props => (
   <TouchableOpacity
     disabled={props.disabled}
     onPress={props.onPress}

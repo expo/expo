@@ -44,7 +44,7 @@ static NSString *AUTO_INIT_KEY = @"autoInitEnabled";
 
 @implementation EXScopedFacebook : EXFacebook
 
-- (instancetype)initWithScopeKey:(NSString *)scopeKey manifest:(EXUpdatesRawManifest *)manifest
+- (instancetype)initWithScopeKey:(NSString *)scopeKey manifest:(EXManifestsManifest *)manifest
 {
   if (self = [super init]) {
     NSString *suiteName = [NSString stringWithFormat:@"%@#%@", NSStringFromClass(self.class), scopeKey];
@@ -52,7 +52,7 @@ static NSString *AUTO_INIT_KEY = @"autoInitEnabled";
 
     BOOL hasPreviouslySetAutoInitEnabled = [_settings boolForKey:AUTO_INIT_KEY];
     BOOL manifestDefinesAutoInitEnabled = manifest.facebookAutoInitEnabled;
-    
+
     NSString *scopedFacebookAppId = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"FacebookAppID"];
     NSString *manifestFacebookAppId = manifest.facebookAppId;
 
@@ -84,11 +84,11 @@ static NSString *AUTO_INIT_KEY = @"autoInitEnabled";
   }
 
   NSString *scopedFacebookAppId = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"FacebookAppID"];
-  
+
   NSMutableDictionary *nativeOptions = [NSMutableDictionary dictionaryWithDictionary:options];
   // Overwrite the incoming app id with the Expo Facebook SDK app id.
   nativeOptions[@"appId"] = scopedFacebookAppId;
-  
+
   [super initializeAsync:nativeOptions resolver:resolve rejecter:reject];
 }
 
@@ -137,7 +137,7 @@ static NSString *AUTO_INIT_KEY = @"autoInitEnabled";
 - (void)setModuleRegistry:(EXModuleRegistry *)moduleRegistry
 {
   [super setModuleRegistry:moduleRegistry];
-  
+
   id<EXAppLifecycleService> appLifecycleService = [moduleRegistry getModuleImplementingProtocol:@protocol(EXAppLifecycleService)];
   [appLifecycleService registerAppLifecycleListener:self];
 }

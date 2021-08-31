@@ -40,7 +40,7 @@
 - (ABI40_0_0UMModuleRegistry *)moduleRegistryForParams:(NSDictionary *)params
                            forExperienceStableLegacyId:(NSString *)experienceStableLegacyId
                                               scopeKey:(NSString *)scopeKey
-                                              manifest:(ABI40_0_0EXUpdatesRawManifest *)manifest
+                                              manifest:(ABI40_0_0EXManifestsManifest *)manifest
                                     withKernelServices:(NSDictionary *)kernelServices
 {
   ABI40_0_0UMModuleRegistry *moduleRegistry = [self.moduleRegistryProvider moduleRegistry];

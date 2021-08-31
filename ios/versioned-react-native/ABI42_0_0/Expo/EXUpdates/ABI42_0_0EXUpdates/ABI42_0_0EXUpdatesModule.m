@@ -42,7 +42,7 @@ ABI42_0_0UM_EXPORT_MODULE(ExpoUpdates);
       @"isEnabled": @(YES),
       @"isUsingEmbeddedAssets": @(_updatesService.isUsingEmbeddedAssets),
       @"updateId": launchedUpdate.updateId.UUIDString ?: @"",
-      @"manifest": launchedUpdate.rawManifest.rawManifestJSON ?: @{},
+      @"manifest": launchedUpdate.manifest.rawManifestJSON ?: @{},
       @"releaseChannel": _updatesService.config.releaseChannel,
       @"localAssets": _updatesService.assetFilesMap ?: @{},
       @"isEmergencyLaunch": @(_updatesService.isEmergencyLaunch),
@@ -106,7 +106,7 @@ ABI42_0_0UM_EXPORT_METHOD_AS(checkForUpdateAsync,
     if ([selectionPolicy shouldLoadNewUpdate:update withLaunchedUpdate:launchedUpdate filters:update.manifestFilters]) {
       resolve(@{
         @"isAvailable": @(YES),
-        @"manifest": update.rawManifest.rawManifestJSON
+        @"manifest": update.manifest.rawManifestJSON
       });
     } else {
       resolve(@{
@@ -141,7 +141,7 @@ ABI42_0_0UM_EXPORT_METHOD_AS(fetchUpdateAsync,
       [self->_updatesService resetSelectionPolicy];
       resolve(@{
         @"isNew": @(YES),
-        @"manifest": update.rawManifest.rawManifestJSON
+        @"manifest": update.manifest.rawManifestJSON
       });
     } else {
       resolve(@{

@@ -125,9 +125,7 @@ export default class ListItem extends React.PureComponent<Props> {
           {title}
         </StyledText>
       </View>
-    ) : (
-      undefined
-    );
+    ) : undefined;
   }
 
   private renderSubtitle() {
@@ -145,9 +143,7 @@ export default class ListItem extends React.PureComponent<Props> {
         numberOfLines={title ? 1 : 2}>
         {subtitle}
       </Text>
-    ) : (
-      undefined
-    );
+    ) : undefined;
   }
 
   private renderCheck() {

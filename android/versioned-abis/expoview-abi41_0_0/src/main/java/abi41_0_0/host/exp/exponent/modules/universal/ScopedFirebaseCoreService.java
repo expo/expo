@@ -6,7 +6,7 @@ import android.util.Base64;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import expo.modules.updates.manifest.raw.RawManifest;
+import expo.modules.manifests.core.Manifest;
 import host.exp.exponent.kernel.ExperienceKey;
 
 import com.google.firebase.FirebaseApp;
@@ -34,7 +34,7 @@ public class ScopedFirebaseCoreService extends FirebaseCoreService implements Re
   private String mAppName;
   private FirebaseOptions mAppOptions;
 
-  public ScopedFirebaseCoreService(Context context, RawManifest manifest, ExperienceKey experienceKey) {
+  public ScopedFirebaseCoreService(Context context, Manifest manifest, ExperienceKey experienceKey) {
     super(context);
 
     // Get the default firebase app name
@@ -171,7 +171,7 @@ public class ScopedFirebaseCoreService extends FirebaseCoreService implements Re
     return client;
   }
 
-  private static FirebaseOptions getOptionsFromManifest(RawManifest manifest) {
+  private static FirebaseOptions getOptionsFromManifest(Manifest manifest) {
     try {
       String googleServicesFileString = manifest.getAndroidGoogleServicesFile();
       JSONObject googleServicesFile = (googleServicesFileString != null) ? new JSONObject(googleServicesFileString)

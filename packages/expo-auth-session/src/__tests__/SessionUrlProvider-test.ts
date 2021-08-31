@@ -71,9 +71,12 @@ describe(`getRedirectUrl`, () => {
           mockProperty(Constants.manifest, 'id', undefined);
 
           const errorName = {
-            [ExecutionEnvironment.StoreClient]: /Cannot use AuthSession proxy because the project ID is not defined. Please report this as a bug/,
-            [ExecutionEnvironment.Bare]: /Cannot use AuthSession proxy because the project ID is not defined. Please ensure you have the latest/,
-            [ExecutionEnvironment.Standalone]: /Cannot use AuthSession proxy because the project ID is not defined./,
+            [ExecutionEnvironment.StoreClient]:
+              /Cannot use AuthSession proxy because the project ID is not defined. Please report this as a bug/,
+            [ExecutionEnvironment.Bare]:
+              /Cannot use AuthSession proxy because the project ID is not defined. Please ensure you have the latest/,
+            [ExecutionEnvironment.Standalone]:
+              /Cannot use AuthSession proxy because the project ID is not defined./,
           };
           expect(() => managedSessionUrlProvider.getRedirectUrl()).toThrowError(
             errorName[execution]

@@ -14,8 +14,7 @@ const images = {
   uri_gif: { uri: 'https://docs.expo.io/static/images/flappy_03.gif' },
   uri_ico: { uri: 'https://docs.expo.io/static/images/favicon.ico' },
   uri_youtube_svg: {
-    uri:
-      'https://www.youtube.com/about/static/svgs/icons/brand-resources/YouTube-logo-full_color_light.svg?cache=72a5d9c',
+    uri: 'https://www.youtube.com/about/static/svgs/icons/brand-resources/YouTube-logo-full_color_light.svg?cache=72a5d9c',
   },
 };
 

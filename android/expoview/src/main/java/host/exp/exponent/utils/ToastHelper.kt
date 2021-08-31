@@ -26,7 +26,7 @@ object ToastHelper {
           return
         }
 
-        val manifest = ManifestFactory.getRawManifestFromJson(manifestJson)
+        val manifest = ManifestFactory.getManifestFromManifestJson(manifestJson)
         if (!manifest.isDevelopmentMode()) {
           return
         }

@@ -48,7 +48,7 @@ object ExponentDB {
             listener.onSuccess(
               ExponentDBObject(
                 experienceDBObject.manifestUrl!!,
-                ManifestFactory.getRawManifestFromJson(JSONObject(experienceDBObject.manifest!!)),
+                ManifestFactory.getManifestFromManifestJson(JSONObject(experienceDBObject.manifest!!)),
                 experienceDBObject.bundleUrl!!
               )
             )
@@ -68,7 +68,7 @@ object ExponentDB {
       .querySingle() ?: return null
     return ExponentDBObject(
       experienceDBObject.manifestUrl!!,
-      ManifestFactory.getRawManifestFromJson(JSONObject(experienceDBObject.manifest!!)),
+      ManifestFactory.getManifestFromManifestJson(JSONObject(experienceDBObject.manifest!!)),
       experienceDBObject.bundleUrl!!
     )
   }

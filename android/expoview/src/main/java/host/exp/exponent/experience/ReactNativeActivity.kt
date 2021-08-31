@@ -24,7 +24,7 @@ import com.facebook.react.modules.core.PermissionAwareActivity
 import com.facebook.react.modules.core.PermissionListener
 import de.greenrobot.event.EventBus
 import expo.modules.core.interfaces.Package
-import expo.modules.updates.manifest.raw.RawManifest
+import expo.modules.manifests.core.Manifest
 import host.exp.exponent.Constants
 import host.exp.exponent.ExponentManifest
 import host.exp.exponent.RNObject
@@ -85,7 +85,7 @@ abstract class ReactNativeActivity :
   var isLoading = true
     protected set
   protected var jsBundlePath: String? = null
-  protected var manifest: RawManifest? = null
+  protected var manifest: Manifest? = null
   var isInForeground = false
     protected set
   private var scopedPermissionsRequester: ScopedPermissionsRequester? = null
@@ -229,7 +229,7 @@ abstract class ReactNativeActivity :
   /**
    * Get what version (among versioned classes) of ReactRootView.class SplashScreen module should be looking for.
    */
-  protected fun getRootViewClass(manifest: RawManifest): Class<out ViewGroup> {
+  protected fun getRootViewClass(manifest: Manifest): Class<out ViewGroup> {
     val reactRootViewRNClass = reactRootView.rnClass()
     if (reactRootViewRNClass != null) {
       return reactRootViewRNClass as Class<out ViewGroup>

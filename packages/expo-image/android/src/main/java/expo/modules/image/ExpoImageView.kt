@@ -49,10 +49,19 @@ class ExpoImageView(context: ReactContext, private val requestManager: RequestMa
         }
     }
   }
+  private var propsChanged = false
   private var loadedSource: GlideUrl? = null
   internal var sourceMap: ReadableMap? = null
-  var blurRadius: Int? = null
-  var fadeDuration: Int? = null
+  internal var blurRadius: Int? = null
+    set(value) {
+      field = value?.takeIf { it > 0 }
+      propsChanged = true
+    }
+  internal var fadeDuration: Int? = null
+    set(value) {
+      field = value?.takeIf { it > 0 }
+      propsChanged = true
+    }
 
   init {
     clipToOutline = true
@@ -115,7 +124,8 @@ class ExpoImageView(context: ReactContext, private val requestManager: RequestMa
       requestManager.clear(this)
       setImageDrawable(null)
       loadedSource = null
-    } else if (sourceToLoad != loadedSource) {
+    } else if (sourceToLoad != loadedSource || propsChanged) {
+      propsChanged = false
       loadedSource = sourceToLoad
       val options = createOptionsFromSourceMap(sourceMap)
       val propOptions = createPropOptions()

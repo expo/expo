@@ -31,6 +31,7 @@ abstract_target 'Expo Go' do
     tests: [
       'expo-modules-core',
       'expo-updates',
+      'expo-manifests',
       'expo-structured-headers',
     ],
     flags: {

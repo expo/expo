@@ -90,11 +90,8 @@ export async function lockPlatformAsync(options: PlatformOrientationInfo): Promi
     throw new UnavailabilityError('ScreenOrientation', 'lockPlatformAsync');
   }
 
-  const {
-    screenOrientationConstantAndroid,
-    screenOrientationArrayIOS,
-    screenOrientationLockWeb,
-  } = options;
+  const { screenOrientationConstantAndroid, screenOrientationArrayIOS, screenOrientationLockWeb } =
+    options;
   let platformOrientationParam: any;
   if (Platform.OS === 'android' && screenOrientationConstantAndroid) {
     if (isNaN(screenOrientationConstantAndroid)) {

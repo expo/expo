@@ -11,7 +11,7 @@ import { validateUri, validateActions, validateSaveOptions } from '../validators
 describe(validateUri, () => {
   test('invalid', () => {
     expect(() => {
-      validateUri((123 as unknown) as string);
+      validateUri(123 as unknown as string);
     }).toThrow(/must be a string/);
   });
 
@@ -27,10 +27,10 @@ describe(validateUri, () => {
 describe(validateActions, () => {
   test('multiple transformations in single action', () => {
     expect(() => {
-      const action = ({
+      const action = {
         flip: FlipType.Horizontal,
         rotate: 90,
-      } as unknown) as ActionFlip;
+      } as unknown as ActionFlip;
       validateActions([action]);
     }).toThrow();
   });
@@ -38,13 +38,13 @@ describe(validateActions, () => {
   describe('crop', () => {
     test('invalid', () => {
       expect(() => {
-        const action = ({
+        const action = {
           crop: {
             originY: 10,
             width: true,
             height: 'blah',
           },
-        } as unknown) as ActionCrop;
+        } as unknown as ActionCrop;
         validateActions([action]);
       }).toThrow(/Crop action must be an object of shape/);
     });
@@ -68,9 +68,9 @@ describe(validateActions, () => {
   describe('flip', () => {
     test('invalid', () => {
       expect(() => {
-        const action = ({
-          flip: ('diagonal' as unknown) as FlipType,
-        } as unknown) as ActionFlip;
+        const action = {
+          flip: 'diagonal' as unknown as FlipType,
+        } as unknown as ActionFlip;
         validateActions([action]);
       }).toThrow(/Unsupported flip type/);
     });
@@ -89,9 +89,9 @@ describe(validateActions, () => {
   describe('rotate', () => {
     test('invalid', () => {
       expect(() => {
-        const action = ({
+        const action = {
           rotate: true,
-        } as unknown) as ActionRotate;
+        } as unknown as ActionRotate;
         validateActions([action]);
       }).toThrow(/Rotation must be a number/);
     });
@@ -110,12 +110,12 @@ describe(validateActions, () => {
   describe('resize', () => {
     test('invalid', () => {
       expect(() => {
-        const action = ({
+        const action = {
           resize: {
             width: '321',
             height: 123,
           },
-        } as unknown) as ActionResize;
+        } as unknown as ActionResize;
         validateActions([action]);
       }).toThrow(/Resize action must be an object of shape/);
     });
@@ -157,7 +157,7 @@ describe(validateActions, () => {
 describe(validateSaveOptions, () => {
   test('invalid "base64"', () => {
     expect(() => {
-      const base64 = (123 as unknown) as boolean;
+      const base64 = 123 as unknown as boolean;
       validateSaveOptions({ base64 });
     }).toThrow(/must be a boolean/);
   });

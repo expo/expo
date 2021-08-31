@@ -183,10 +183,7 @@ export function parse(url) {
         let expoPrefix = null;
         if (hostUriStripped) {
             const parts = hostUriStripped.split('/');
-            expoPrefix = parts
-                .slice(1)
-                .concat(['--/'])
-                .join('/');
+            expoPrefix = parts.slice(1).concat(['--/']).join('/');
         }
         if (isExpoHosted() && !hasCustomScheme() && expoPrefix && path.startsWith(expoPrefix)) {
             path = path.substring(expoPrefix.length);

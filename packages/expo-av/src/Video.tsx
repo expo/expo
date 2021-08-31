@@ -195,10 +195,8 @@ export default class Video extends React.Component<VideoProps, VideoState> imple
     initialStatus: AVPlaybackStatusToSet = {},
     downloadFirst: boolean = true
   ): Promise<AVPlaybackStatus> => {
-    const {
-      nativeSource,
-      fullInitialStatus,
-    } = await getNativeSourceAndFullInitialStatusForLoadAsync(source, initialStatus, downloadFirst);
+    const { nativeSource, fullInitialStatus } =
+      await getNativeSourceAndFullInitialStatusForLoadAsync(source, initialStatus, downloadFirst);
     return this._performOperationAndHandleStatusAsync((tag: number) =>
       ExponentAV.loadForVideo(tag, nativeSource, fullInitialStatus)
     );

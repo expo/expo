@@ -3,7 +3,7 @@ declare const _default: {
     readonly name: string;
     openBrowserAsync(url: string, browserParams?: WebBrowserOpenOptions): Promise<WebBrowserResult>;
     dismissAuthSession(): void;
-    maybeCompleteAuthSession({ skipRedirectCheck, }: {
+    maybeCompleteAuthSession({ skipRedirectCheck }: {
         skipRedirectCheck?: boolean | undefined;
     }): {
         type: 'success' | 'failed';

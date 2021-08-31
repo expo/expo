@@ -65,7 +65,7 @@ static NSString * const ABI41_0_0EXUpdatesDatabaseServerDefinedHeadersKey = @"se
                       update.scopeKey,
                       update.commitTime,
                       update.runtimeVersion,
-                      update.manifest ?: [NSNull null],
+                      update.manifestJSON ?: [NSNull null],
                       @(update.status),
                       update.lastAccessed
                       ]

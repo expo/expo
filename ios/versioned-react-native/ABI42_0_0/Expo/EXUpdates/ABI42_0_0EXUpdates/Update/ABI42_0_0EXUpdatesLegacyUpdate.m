@@ -15,11 +15,11 @@ static NSString * const ABI42_0_0EXUpdatesExpoTestDomain = @"expo.test";
 
 @implementation ABI42_0_0EXUpdatesLegacyUpdate
 
-+ (ABI42_0_0EXUpdatesUpdate *)updateWithLegacyManifest:(ABI42_0_0EXUpdatesLegacyRawManifest *)manifest
++ (ABI42_0_0EXUpdatesUpdate *)updateWithLegacyManifest:(ABI42_0_0EXManifestsLegacyManifest *)manifest
                                        config:(ABI42_0_0EXUpdatesConfig *)config
                                      database:(ABI42_0_0EXUpdatesDatabase *)database
 {
-  ABI42_0_0EXUpdatesUpdate *update = [[ABI42_0_0EXUpdatesUpdate alloc] initWithRawManifest:manifest
+  ABI42_0_0EXUpdatesUpdate *update = [[ABI42_0_0EXUpdatesUpdate alloc] initWithManifest:manifest
                                                                   config:config
                                                                 database:database];
 
@@ -46,7 +46,7 @@ static NSString * const ABI42_0_0EXUpdatesExpoTestDomain = @"expo.test";
 
   NSString *bundleUrlString = manifest.bundleUrl;
   NSArray *assets = manifest.bundledAssets ?: @[];
-  
+
   if (manifest.runtimeVersion != nil) {
     update.runtimeVersion = manifest.runtimeVersion;
   } else {
@@ -65,7 +65,7 @@ static NSString * const ABI42_0_0EXUpdatesExpoTestDomain = @"expo.test";
   jsBundleAsset.isLaunchAsset = YES;
   jsBundleAsset.mainBundleFilename = ABI42_0_0EXUpdatesEmbeddedBundleFilename;
   [processedAssets addObject:jsBundleAsset];
-  
+
   NSURL *bundledAssetBaseUrl = [[self class] bundledAssetBaseUrlWithManifest:manifest config:config];
 
   for (NSString *bundledAsset in assets) {
@@ -97,7 +97,7 @@ static NSString * const ABI42_0_0EXUpdatesExpoTestDomain = @"expo.test";
     [processedAssets addObject:asset];
   }
 
-  update.manifest = manifest.rawManifestJSON;
+  update.manifestJSON = manifest.rawManifestJSON;
   update.keep = YES;
   update.bundleUrl = bundleUrl;
   update.assets = processedAssets;
@@ -105,7 +105,7 @@ static NSString * const ABI42_0_0EXUpdatesExpoTestDomain = @"expo.test";
   return update;
 }
 
-+ (NSURL *)bundledAssetBaseUrlWithManifest:(ABI42_0_0EXUpdatesLegacyRawManifest *)manifest config:(ABI42_0_0EXUpdatesConfig *)config
++ (NSURL *)bundledAssetBaseUrlWithManifest:(ABI42_0_0EXManifestsLegacyManifest *)manifest config:(ABI42_0_0EXUpdatesConfig *)config
 {
   NSURL *manifestUrl = config.updateUrl;
   NSString *host = manifestUrl.host;

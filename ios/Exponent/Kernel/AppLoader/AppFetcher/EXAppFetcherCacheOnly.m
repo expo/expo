@@ -8,7 +8,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation EXAppFetcherCacheOnly
 
-- (instancetype)initWithAppLoader:(EXAppLoader *)appLoader manifest:(EXUpdatesRawManifest *)manifest;
+- (instancetype)initWithAppLoader:(EXAppLoader *)appLoader manifest:(EXManifestsManifest *)manifest;
 {
   if (self = [super initWithAppLoader:appLoader]) {
     self.manifest = manifest;
@@ -21,7 +21,7 @@ NS_ASSUME_NONNULL_BEGIN
   if (self.manifest) {
     [self startWithManifest];
   } else {
-    [self.appLoader fetchManifestWithCacheBehavior:EXManifestOnlyCache success:^(EXUpdatesRawManifest * _Nonnull manifest) {
+    [self.appLoader fetchManifestWithCacheBehavior:EXManifestOnlyCache success:^(EXManifestsManifest * _Nonnull manifest) {
       self.manifest = manifest;
       [self startWithManifest];
     } failure:^(NSError * _Nonnull error) {

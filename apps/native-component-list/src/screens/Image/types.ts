@@ -19,6 +19,7 @@ export type ImageTestProps = ImageProps | ImageTestPropsFn;
 export interface ImageTest {
   name: string;
   props: ImageTestProps;
+  testInformation?: string;
 }
 
 export interface ImageTestGroup {

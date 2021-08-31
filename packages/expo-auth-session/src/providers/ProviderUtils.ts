@@ -30,7 +30,8 @@ export function invariantClientId(idName: string, value: any, providerName: stri
 export function useProxyEnabled(
   redirectUriOptions: Pick<AuthSessionRedirectUriOptions, 'useProxy'>
 ): boolean {
-  return useMemo(() => redirectUriOptions.useProxy ?? shouldUseProxy(), [
-    redirectUriOptions.useProxy,
-  ]);
+  return useMemo(
+    () => redirectUriOptions.useProxy ?? shouldUseProxy(),
+    [redirectUriOptions.useProxy]
+  );
 }

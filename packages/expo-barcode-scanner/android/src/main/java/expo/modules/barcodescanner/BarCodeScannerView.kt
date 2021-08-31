@@ -17,7 +17,7 @@ import kotlin.math.roundToInt
 
 class BarCodeScannerView(
   private val viewContext: Context,
-  private val moduleRegistryDelegate: ModuleRegistryDelegate = ModuleRegistryDelegate()
+  private val moduleRegistryDelegate: ModuleRegistryDelegate
 ) : ViewGroup(viewContext) {
   private val orientationListener = object : OrientationEventListener(
     viewContext,
@@ -97,7 +97,12 @@ class BarCodeScannerView(
   fun setCameraType(cameraType: Int) {
     type = cameraType
     if (!::viewFinder.isInitialized) {
-      viewFinder = BarCodeScannerViewFinder(viewContext, cameraType, this, moduleRegistryDelegate)
+      viewFinder = BarCodeScannerViewFinder(
+        viewContext,
+        cameraType,
+        this,
+        moduleRegistryDelegate
+      )
       addView(viewFinder)
     } else {
       viewFinder.setCameraType(cameraType)

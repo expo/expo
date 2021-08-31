@@ -13,7 +13,7 @@
   NSDictionary* _protectedAppNames;
 }
 
-- (instancetype)initWithScopeKey:(NSString *)scopeKey manifest:(EXUpdatesRawManifest *)manifest constantsBinding:(EXConstantsBinding *)constantsBinding
+- (instancetype)initWithScopeKey:(NSString *)scopeKey manifest:(EXManifestsManifest *)manifest constantsBinding:(EXConstantsBinding *)constantsBinding
 {
   if (![@"expo" isEqualToString:constantsBinding.appOwnership]) {
     return [super init];
@@ -25,20 +25,20 @@
     @"[DEFAULT]": @YES
   }];
   _protectedAppNames = protectedAppNames;
-  
+
   // Make sure the [DEFAULT] app is initialized
   NSString *path = [[NSBundle mainBundle] pathForResource:@"GoogleService-Info" ofType:@"plist"];
   if (path && ![FIRApp defaultApp]) {
     [FIRApp configure];
   }
   if ([FIRApp defaultApp]) [protectedAppNames setValue:@YES forKey:[FIRApp defaultApp].name];
-  
+
   // Determine project app name & options
   NSString *encodedScopeKey = [self.class encodedResourceName:scopeKey];
   NSString* appName = [NSString stringWithFormat:@"__sandbox_%@", encodedScopeKey];
   NSDictionary* googleServicesFile = [self.class googleServicesFileFromManifest:manifest];
   FIROptions* options = [self.class optionsWithGoogleServicesFile:googleServicesFile];
-  
+
   // Delete all previously created (project) apps, except for the currently
   // loaded project and the "protected" ones
   NSDictionary<NSString *,FIRApp *>* apps = [FIRApp allApps];
@@ -78,7 +78,7 @@
   return [base64 stringByTrimmingCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"="]];
 }
 
-+ (nullable NSDictionary *)googleServicesFileFromManifest:(EXUpdatesRawManifest *)manifest
++ (nullable NSDictionary *)googleServicesFileFromManifest:(EXManifestsManifest *)manifest
 {
   // load GoogleService-Info.plist from manifest
   @try {
@@ -99,9 +99,9 @@
 + (nullable FIROptions *)optionsWithGoogleServicesFile:(nullable NSDictionary *)plist
 {
   if (!plist) return nil;
-  
+
   FIROptions *firOptions = [[FIROptions alloc] initWithGoogleAppID:plist[@"GOOGLE_APP_ID"] GCMSenderID:plist[@"GCM_SENDER_ID"]];
-         
+
   firOptions.APIKey = plist[@"API_KEY"];
   firOptions.bundleID = plist[@"BUNDLE_ID"];
   firOptions.clientID = plist[@"CLIENT_ID"];
@@ -110,7 +110,7 @@
   firOptions.androidClientID = plist[@"ANDROID_CLIENT_ID"];
   firOptions.databaseURL = plist[@"DATABASE_URL"];
   firOptions.storageBucket = plist[@"STORAGE_BUCKET"];
-  
+
   return firOptions;
 }
 

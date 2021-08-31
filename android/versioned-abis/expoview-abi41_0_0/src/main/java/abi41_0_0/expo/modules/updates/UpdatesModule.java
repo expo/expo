@@ -20,7 +20,7 @@ import expo.modules.updates.db.entity.AssetEntity;
 import expo.modules.updates.db.entity.UpdateEntity;
 import expo.modules.updates.launcher.Launcher;
 import expo.modules.updates.loader.FileDownloader;
-import expo.modules.updates.manifest.Manifest;
+import expo.modules.updates.manifest.UpdateManifest;
 import expo.modules.updates.loader.RemoteLoader;
 import expo.modules.updates.manifest.ManifestMetadata;
 
@@ -148,21 +148,21 @@ public class UpdatesModule extends ExportedModule {
         }
 
         @Override
-        public void onSuccess(Manifest manifest) {
+        public void onSuccess(UpdateManifest updateManifest) {
           UpdateEntity launchedUpdate = updatesService.getLaunchedUpdate();
           Bundle updateInfo = new Bundle();
           if (launchedUpdate == null) {
             // this shouldn't ever happen, but if we don't have anything to compare
             // the new manifest to, let the user know an update is available
             updateInfo.putBoolean("isAvailable", true);
-            updateInfo.putString("manifestString", manifest.getRawManifest().toString());
+            updateInfo.putString("manifestString", updateManifest.getManifest().toString());
             promise.resolve(updateInfo);
             return;
           }
 
-          if (updatesService.getSelectionPolicy().shouldLoadNewUpdate(manifest.getUpdateEntity(), launchedUpdate, manifest.getManifestFilters())) {
+          if (updatesService.getSelectionPolicy().shouldLoadNewUpdate(updateManifest.getUpdateEntity(), launchedUpdate, updateManifest.getManifestFilters())) {
             updateInfo.putBoolean("isAvailable", true);
-            updateInfo.putString("manifestString", manifest.getRawManifest().toString());
+            updateInfo.putString("manifestString", updateManifest.getManifest().toString());
             promise.resolve(updateInfo);
           } else {
             updateInfo.putBoolean("isAvailable", false);
@@ -203,11 +203,11 @@ public class UpdatesModule extends ExportedModule {
               }
 
               @Override
-              public boolean onManifestLoaded(Manifest manifest) {
+              public boolean onUpdateManifestLoaded(UpdateManifest updateManifest) {
                 return updatesService.getSelectionPolicy().shouldLoadNewUpdate(
-                  manifest.getUpdateEntity(),
+                  updateManifest.getUpdateEntity(),
                   updatesService.getLaunchedUpdate(),
-                  manifest.getManifestFilters());
+                  updateManifest.getManifestFilters());
               }
 
               @Override

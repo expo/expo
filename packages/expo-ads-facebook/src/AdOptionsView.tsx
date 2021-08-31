@@ -67,6 +67,5 @@ export default class AdOptionsView extends React.Component<Props> {
 // The native AdOptionsView has the same props as regular View
 export type NativeAdOptionsView = React.Component<Props>;
 // eslint-disable-next-line @typescript-eslint/no-redeclare -- the type and variable share a name
-export const NativeAdOptionsView: React.ComponentType<any> = requireNativeViewManager(
-  'AdOptionsView'
-);
+export const NativeAdOptionsView: React.ComponentType<any> =
+  requireNativeViewManager('AdOptionsView');

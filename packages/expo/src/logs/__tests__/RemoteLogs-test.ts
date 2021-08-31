@@ -14,9 +14,9 @@ jest.mock('expo-application', () => ({
 
 let originalFetch;
 
-const mockOriginalConsole = ({
+const mockOriginalConsole = {
   error: jest.fn(),
-} as any) as Console;
+} as any as Console;
 
 beforeAll(() => {
   originalFetch = global.fetch;

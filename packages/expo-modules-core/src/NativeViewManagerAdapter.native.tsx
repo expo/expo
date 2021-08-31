@@ -36,9 +36,8 @@ export function requireNativeViewManager<P = any>(viewName: string): React.Compo
   // Set up the React Native native component, which is an adapter to the universal module's view
   // manager
   const reactNativeViewName = `ViewManagerAdapter_${viewName}`;
-  const ReactNativeComponent = requireNativeComponent<NativeExpoComponentProps>(
-    reactNativeViewName
-  );
+  const ReactNativeComponent =
+    requireNativeComponent<NativeExpoComponentProps>(reactNativeViewName);
   const reactNativeUIConfiguration = (UIManager.getViewManagerConfig
     ? UIManager.getViewManagerConfig(reactNativeViewName)
     : UIManager[reactNativeViewName]) || {
