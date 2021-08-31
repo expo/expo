@@ -2485,7 +2485,7 @@ PODS:
     - UMCore
   - EXSpeech (9.2.1):
     - UMCore
-  - EXSplashScreen (0.11.3):
+  - EXSplashScreen (0.11.4):
     - React-Core
     - UMCore
   - EXSQLite (9.2.1):
@@ -4972,7 +4972,7 @@ SPEC CHECKSUMS:
   boost-for-react-native: 39c7adb57c4e60d6c5479dd8623128eb5b3f0f2c
   Branch: 9a37f707974a128c37829033c49018b79c7e7a2d
   CocoaLumberjack: 2f44e60eb91c176d471fdba43b9e3eae6a721947
-  DoubleConversion: cde416483dac037923206447da6e1454df403714
+  DoubleConversion: cf9b38bf0b2d048436d9a82ad2abe1404f11e7de
   EXAdsAdMob: 64a38ef8ad547ad29d8613d4307e0ff26622ca61
   EXAdsFacebook: 7c0709eb935f12863fb246765c7b945d09f59516
   EXAmplitude: b3ef1ed2ae853bccd08a685d2f0352c603b215fe
@@ -5030,7 +5030,7 @@ SPEC CHECKSUMS:
   EXSharing: 567f4b9f38a5266ec2f51973e2efe3b4aaf0bf69
   EXSMS: 9571a38e371461ca0eca0bccf59db7ad92e813ee
   EXSpeech: 383ebe43433a44990b0fd3534f0abc658b990f42
-  EXSplashScreen: ac2fa3d41097984b7c4b58bd95ab0ecd8124bda9
+  EXSplashScreen: f149e7ae7c5b412c03af491a10cca5bc760a75ec
   EXSQLite: cddb3b3f4c6999761c157b88dc8b55c7af2cd86b
   EXStoreReview: 40674cc897a6d7fd249969b86d1833f67b99170a
   EXStructuredHeaders: dc4b99d20ce14a5ec4d57a53743f0f95d7e82c65
@@ -5051,7 +5051,7 @@ SPEC CHECKSUMS:
   FirebaseCoreDiagnostics: 3d36e05da74cb8b7ce30e6594a8f201b982c725c
   FirebaseInstallations: bf2ec8dbf36ff4c91af6b9a003d15855757680c1
   Folly: b73c3869541e86821df3c387eb0af5f65addfab4
-  glog: 40a13f7840415b9a77023fbcae0f1e6f43192af3
+  glog: 73c2498ac6884b13ede40eda8228cb1eee9d9d62
   Google-Maps-iOS-Utils: c32891ff472eaaa1fca032beedafa1a013af7875
   Google-Mobile-Ads-SDK: 2f288748a42920d1c744946a460896a95b0e9110
   GoogleAppMeasurement: 0c3b134b2c0a90c4c24833873894bfe0e42a0384
