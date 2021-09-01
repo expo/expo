@@ -9,6 +9,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSURLSessionTask *)updateDeviceToken:(NSData *)deviceToken
                       completionHandler:(void (^)(NSError * _Nullable postError))handler;
 - (NSURLSessionTask *)getExpoPushTokenForExperience:(NSString *)experienceStableLegacyId
+                                       easProjectId:(NSString *)easProjectId
                                         deviceToken:(NSData *)deviceToken
                                   completionHandler:(void (^)(NSString * _Nullable expoPushToken, NSError * _Nullable error))handler;
 @end

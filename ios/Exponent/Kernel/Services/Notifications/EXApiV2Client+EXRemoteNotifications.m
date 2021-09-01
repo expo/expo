@@ -40,16 +40,23 @@
 
 
 - (NSURLSessionTask *)getExpoPushTokenForExperience:(NSString *)experienceStableLegacyId
+                                       easProjectId:(NSString *)easProjectId
                                         deviceToken:(NSData *)deviceToken
                                   completionHandler:(void (^)(NSString * _Nullable, NSError * _Nullable))handler
 {
   NSMutableDictionary *arguments = [NSMutableDictionary dictionaryWithDictionary:@{
     @"deviceId": [EXKernel deviceInstallationUUID],
-    @"experienceId": experienceStableLegacyId,
     @"appId": NSBundle.mainBundle.bundleIdentifier,
     @"deviceToken": deviceToken.apnsTokenString,
     @"type": @"apns",
   }];
+  
+  if (easProjectId != nil) {
+    arguments[@"projectId"] = easProjectId;
+  } else if (experienceStableLegacyId != nil) {
+    arguments[@"experienceId"] = experienceStableLegacyId;
+  }
+  
   // Presence of this file is assured in Expo Go
   // and in ejected projects Expo Push Notifications don't work anyway
   // so this codepath shouldn't be executed at all.
