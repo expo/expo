@@ -77,7 +77,7 @@ class LocationTaskConsumer(context: Context?, taskManagerUtils: TaskManagerUtils
     if (mTask == null) {
       return
     }
-    val result = LocationResult.extractResult(intent)
+    val result = LocationResult.extractResult(intent) ?: return
     val locations = result.locations
     deferLocations(locations)
     maybeReportDeferredLocations()
