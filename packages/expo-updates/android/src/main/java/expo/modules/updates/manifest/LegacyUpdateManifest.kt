@@ -111,7 +111,7 @@ class LegacyUpdateManifest private constructor(
         }
       }
 
-      val runtimeVersion = manifest.getRuntimeVersion() ?: manifest.getSDKVersion()
+      val runtimeVersion = manifest.getRuntimeVersion() ?: manifest.getSDKVersion() ?: throw Exception("sdkVersion should not be null")
       val bundleUrl = Uri.parse(manifest.getBundleURL())
       val bundledAssets = manifest.getBundledAssets()
       return LegacyUpdateManifest(

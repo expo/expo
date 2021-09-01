@@ -37,7 +37,7 @@ class NewManifest(json: JSONObject) : Manifest(json) {
   @Throws(JSONException::class)
   override fun getBundleURL(): String = getLaunchAsset().require("url")
 
-  override fun getSDKVersionNullable(): String? {
+  override fun getSDKVersion(): String? {
     val runtimeVersion = getRuntimeVersion()
     val expoSDKRuntimeVersionRegex: Pattern = Pattern.compile("^exposdk:(\\d+\\.\\d+\\.\\d+)$")
     val expoSDKRuntimeVersionMatch: Matcher = expoSDKRuntimeVersionRegex.matcher(runtimeVersion)
@@ -45,12 +45,6 @@ class NewManifest(json: JSONObject) : Manifest(json) {
       return expoSDKRuntimeVersionMatch.group(1)!!
     }
     return null
-  }
-
-  @Throws(JSONException::class)
-  override fun getSDKVersion(): String {
-    return getSDKVersionNullable()
-      ?: throw JSONException("SDKVersion not found for runtimeVersion ${getRuntimeVersion()}")
   }
 
   @Throws(JSONException::class)
