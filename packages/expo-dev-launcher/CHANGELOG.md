@@ -10,7 +10,7 @@
 
 ### 🐛 Bug fixes
 
-- Fix React Native version checker in build.gradle.
+- Fix React Native version checker in build.gradle. ([#14251](https://github.com/expo/expo/pull/14251) by [@esamelson](https://github.com/esamelson))
 
 ### 💡 Others
 
