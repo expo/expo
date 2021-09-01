@@ -2,8 +2,8 @@ import { ConfigPlugin, createRunOncePlugin, withInfoPlist } from '@expo/config-p
 
 const pkg = require('expo-task-manager/package.json');
 
-const withTaskManager: ConfigPlugin = config => {
-  config = withInfoPlist(config, config => {
+const withTaskManager: ConfigPlugin = (config) => {
+  config = withInfoPlist(config, (config) => {
     if (!Array.isArray(config.modResults.UIBackgroundModes)) {
       config.modResults.UIBackgroundModes = [];
     }

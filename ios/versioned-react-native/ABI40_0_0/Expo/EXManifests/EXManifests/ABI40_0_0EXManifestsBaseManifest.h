@@ -1,6 +1,6 @@
 //  Copyright © 2021 650 Industries. All rights reserved.
 
-#import <ABI40_0_0EXManifests/NSDictionary+ABI40_0_0EXManifestsManifest.h>
+#import <ABI40_0_0EXJSONUtils/NSDictionary+ABI40_0_0EXJSONUtils.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

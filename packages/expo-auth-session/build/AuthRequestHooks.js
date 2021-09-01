@@ -10,7 +10,7 @@ export function useAutoDiscovery(issuerOrDiscovery) {
     const [discovery, setDiscovery] = useState(null);
     useEffect(() => {
         let isAllowed = true;
-        resolveDiscoveryAsync(issuerOrDiscovery).then(discovery => {
+        resolveDiscoveryAsync(issuerOrDiscovery).then((discovery) => {
             if (isAllowed) {
                 setDiscovery(discovery);
             }

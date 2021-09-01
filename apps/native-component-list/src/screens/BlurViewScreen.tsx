@@ -34,7 +34,7 @@ export default function BlurViewScreen() {
 
   return (
     <View style={styles.container}>
-      {(['default', 'light', 'dark'] as BlurTint[]).map(tint => (
+      {(['default', 'light', 'dark'] as BlurTint[]).map((tint) => (
         <View key={tint} style={styles.wrapper}>
           <Image style={styles.image} source={{ uri }} />
           <AnimatedBlurView tint={tint} intensity={intensity} style={StyleSheet.absoluteFill} />

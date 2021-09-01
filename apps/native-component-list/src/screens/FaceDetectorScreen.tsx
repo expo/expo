@@ -40,7 +40,7 @@ export default class FeceDetectorScreen extends React.Component<{}, State> {
       detectLandmarks: FaceDetector.FaceDetectorLandmarks.all,
       runClassifications: FaceDetector.FaceDetectorClassifications.none,
     })
-      .then(result => {
+      .then((result) => {
         this.setState({
           faceDetection: {
             detecting: false,
@@ -49,7 +49,7 @@ export default class FeceDetectorScreen extends React.Component<{}, State> {
           },
         });
       })
-      .catch(error => {
+      .catch((error) => {
         this.setState({
           faceDetection: {
             detecting: false,

@@ -49,7 +49,7 @@ async function saveFileAsync(path: string, content: string): Promise<void> {
 function addLines(content: string, find: string | RegExp, offset: number, toAdd: string[]) {
   const lines = content.split('\n');
 
-  let lineIndex = lines.findIndex(line => line.match(find));
+  let lineIndex = lines.findIndex((line) => line.match(find));
 
   for (const newLine of toAdd) {
     if (!content.includes(newLine)) {
@@ -65,7 +65,7 @@ function replaceLine(content: string, find: string | RegExp, replace: string) {
   const lines = content.split('\n');
 
   if (!content.includes(replace)) {
-    const lineIndex = lines.findIndex(line => line.match(find));
+    const lineIndex = lines.findIndex((line) => line.match(find));
     lines.splice(lineIndex, 1, replace);
   }
 
@@ -74,7 +74,7 @@ function replaceLine(content: string, find: string | RegExp, replace: string) {
 
 function addJavaImports(javaSource: string, javaImports: string[]): string {
   const lines = javaSource.split('\n');
-  const lineIndexWithPackageDeclaration = lines.findIndex(line => line.match(/^package .*;$/));
+  const lineIndexWithPackageDeclaration = lines.findIndex((line) => line.match(/^package .*;$/));
   for (const javaImport of javaImports) {
     if (!javaSource.includes(javaImport)) {
       const importStatement = `import ${javaImport};`;
@@ -129,11 +129,11 @@ async function editIndex(config: ExportedConfigWithProps, action: (index: string
   }
 }
 
-const withDevLauncherApplication: ConfigPlugin = config => {
+const withDevLauncherApplication: ConfigPlugin = (config) => {
   return withDangerousMod(config, [
     'android',
-    async config => {
-      await editMainApplication(config, mainApplication => {
+    async (config) => {
+      await editMainApplication(config, (mainApplication) => {
         mainApplication = addJavaImports(mainApplication, [DEV_LAUNCHER_ANDROID_IMPORT]);
 
         mainApplication = addLines(mainApplication, 'initializeFlipper\\(this', 0, [
@@ -168,8 +168,8 @@ const withDevLauncherApplication: ConfigPlugin = config => {
   ]);
 };
 
-const withDevLauncherActivity: ConfigPlugin = config => {
-  return withMainActivity(config, config => {
+const withDevLauncherActivity: ConfigPlugin = (config) => {
+  return withMainActivity(config, (config) => {
     if (config.modResults.language === 'java') {
       let content = addJavaImports(config.modResults.contents, [
         DEV_LAUNCHER_ANDROID_IMPORT,
@@ -178,7 +178,7 @@ const withDevLauncherActivity: ConfigPlugin = config => {
 
       if (!content.includes(DEV_LAUNCHER_ON_NEW_INTENT)) {
         const lines = content.split('\n');
-        const onCreateIndex = lines.findIndex(line => line.includes('public class MainActivity'));
+        const onCreateIndex = lines.findIndex((line) => line.includes('public class MainActivity'));
 
         lines.splice(onCreateIndex + 1, 0, DEV_LAUNCHER_ON_NEW_INTENT);
 
@@ -204,11 +204,11 @@ const withDevLauncherActivity: ConfigPlugin = config => {
   });
 };
 
-const withDevLauncherPodfile: ConfigPlugin = config => {
+const withDevLauncherPodfile: ConfigPlugin = (config) => {
   return withDangerousMod(config, [
     'ios',
-    async config => {
-      await editPodfile(config, podfile => {
+    async (config) => {
+      await editPodfile(config, (podfile) => {
         podfile = podfile.replace("platform :ios, '10.0'", "platform :ios, '11.0'");
         // Match both variations of Ruby config:
         // unknown: pod 'expo-dev-launcher', path: '../node_modules/expo-dev-launcher', :configurations => :debug
@@ -231,9 +231,9 @@ const withDevLauncherPodfile: ConfigPlugin = config => {
   ]);
 };
 
-const withErrorHandling: ConfigPlugin = config => {
+const withErrorHandling: ConfigPlugin = (config) => {
   const injectErrorHandlers = async (config: ExportedConfigWithProps) => {
-    await editIndex(config, index => {
+    await editIndex(config, (index) => {
       if (
         !index.includes(DEV_LAUNCHER_JS_REGISTER_ERROR_HANDLERS) &&
         !index.includes(DEV_LAUNCHER_JS_REGISTER_ERROR_HANDLERS_VIA_LAUNCHER)

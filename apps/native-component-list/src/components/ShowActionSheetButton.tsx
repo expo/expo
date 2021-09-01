@@ -80,7 +80,7 @@ export default class ShowActionSheetButton extends React.PureComponent<Props> {
         titleTextStyle, // Android only
         messageTextStyle, // Android only
       },
-      buttonIndex => {
+      (buttonIndex) => {
         // Do something here depending on the button index selected
         onSelection(buttonIndex);
       }

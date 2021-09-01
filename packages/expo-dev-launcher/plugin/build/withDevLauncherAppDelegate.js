@@ -99,8 +99,8 @@ function modifyAppDelegate(appDelegate, expoUpdatesVersion = null) {
     return appDelegate;
 }
 exports.modifyAppDelegate = modifyAppDelegate;
-const withDevLauncherAppDelegate = config => {
-    return config_plugins_1.withAppDelegate(config, config => {
+const withDevLauncherAppDelegate = (config) => {
+    return config_plugins_1.withAppDelegate(config, (config) => {
         if (config.modResults.language === 'objc') {
             let expoUpdatesVersion;
             try {

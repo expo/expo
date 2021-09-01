@@ -101,7 +101,7 @@ export function useWebCameraStream(
 
     // Save a history of all active streams (usually 2+) so we can close them later.
     // Keeping them open makes swapping camera types much faster.
-    if (!activeStreams.current.some(value => value.id === nextStream?.id)) {
+    if (!activeStreams.current.some((value) => value.id === nextStream?.id)) {
       activeStreams.current.push(nextStream!);
     }
 
@@ -121,7 +121,7 @@ export function useWebCameraStream(
     isStartingCamera.current = true;
 
     resumeAsync()
-      .then(isStarting => {
+      .then((isStarting) => {
         isStartingCamera.current = isStarting;
       })
       .catch(() => {

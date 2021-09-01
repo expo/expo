@@ -226,7 +226,7 @@ class ExpoUpdatesAppLoader @JvmOverloads constructor(
         override fun onRemoteUpdateManifestLoaded(updateManifest: UpdateManifest) {
           // expo-cli does not always respect our SDK version headers and respond with a compatible update or an error
           // so we need to check the compatibility here
-          val sdkVersion = updateManifest.manifest.getSDKVersionNullable()
+          val sdkVersion = updateManifest.manifest.getSDKVersion()
           if (!isValidSdkVersion(sdkVersion)) {
             callback.onError(formatExceptionForIncompatibleSdk(sdkVersion ?: "null"))
             didAbort = true

@@ -29,7 +29,7 @@ function create(StyleSheet: { flatten: (style: any) => any }): any {
       const children = node.children || node.props.children;
       if (children) {
         if (Array.isArray(children)) {
-          children.forEach(child => {
+          children.forEach((child) => {
             args.push(flattenNodeStyles(child));
           });
         } else {

@@ -1,5 +1,7 @@
 package expo.modules.manifests.core
 
+import expo.modules.jsonutils.getNullable
+import expo.modules.jsonutils.require
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
@@ -11,7 +13,7 @@ class NewManifest(json: JSONObject) : Manifest(json) {
    * An ID representing this manifest, not the ID for the experience.
    */
   @Throws(JSONException::class)
-  fun getID(): String = json.getString("id")
+  fun getID(): String = json.require("id")
 
   /**
    * Incorrect for now until we figure out how to get this in the new manifest format.
@@ -21,25 +23,21 @@ class NewManifest(json: JSONObject) : Manifest(json) {
 
   @Throws(JSONException::class)
   override fun getScopeKey(): String {
-    return json.getJSONObject("extra").getString("scopeKey")
+    return json.require<JSONObject>("extra").require("scopeKey")
   }
 
   override fun getEASProjectID(): String? {
-    val easConfig = getExtra()?.optJSONObject("eas") ?: return null
-    return if (easConfig.has("projectId")) {
-      easConfig.getString("projectId")
-    } else {
-      null
-    }
+    val easConfig = getExtra()?.getNullable<JSONObject>("eas") ?: return null
+    return easConfig.getNullable("projectId")
   }
 
   @Throws(JSONException::class)
-  fun getRuntimeVersion(): String = json.getString("runtimeVersion")
+  fun getRuntimeVersion(): String = json.require("runtimeVersion")
 
   @Throws(JSONException::class)
-  override fun getBundleURL(): String = getLaunchAsset().getString("url")
+  override fun getBundleURL(): String = getLaunchAsset().require("url")
 
-  override fun getSDKVersionNullable(): String? {
+  override fun getSDKVersion(): String? {
     val runtimeVersion = getRuntimeVersion()
     val expoSDKRuntimeVersionRegex: Pattern = Pattern.compile("^exposdk:(\\d+\\.\\d+\\.\\d+)$")
     val expoSDKRuntimeVersionMatch: Matcher = expoSDKRuntimeVersionRegex.matcher(runtimeVersion)
@@ -50,28 +48,23 @@ class NewManifest(json: JSONObject) : Manifest(json) {
   }
 
   @Throws(JSONException::class)
-  override fun getSDKVersion(): String {
-    return getSDKVersionNullable()
-      ?: throw JSONException("SDKVersion not found for runtimeVersion ${getRuntimeVersion()}")
-  }
+  fun getLaunchAsset(): JSONObject = json.require("launchAsset")
+
+  override fun getAssets(): JSONArray? = json.getNullable("assets")
 
   @Throws(JSONException::class)
-  fun getLaunchAsset(): JSONObject = json.getJSONObject("launchAsset")
-
-  override fun getAssets(): JSONArray? = json.optJSONArray("assets")
-
-  @Throws(JSONException::class)
-  fun getCreatedAt(): String = json.getString("createdAt")
+  fun getCreatedAt(): String = json.require("createdAt")
 
   override fun getExpoGoConfigRootObject(): JSONObject? {
-    return getExtra()?.optJSONObject("expoGo")
+    return getExtra()?.getNullable("expoGo")
   }
 
   override fun getExpoClientConfigRootObject(): JSONObject? {
-    return getExtra()?.optJSONObject("expoClient")
+    return getExtra()?.getNullable("expoClient")
   }
 
   override fun getSlug(): String? = null
+
   override fun getAppKey(): String? = null
 
   override fun getSortTime(): String {
@@ -79,6 +72,6 @@ class NewManifest(json: JSONObject) : Manifest(json) {
   }
 
   private fun getExtra(): JSONObject? {
-    return json.optJSONObject("extra")
+    return json.getNullable("extra")
   }
 }

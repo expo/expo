@@ -1,42 +1,26 @@
 package expo.modules.manifests.core
 
+import expo.modules.jsonutils.getNullable
+import expo.modules.jsonutils.require
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
 
 abstract class BaseLegacyManifest(json: JSONObject) : Manifest(json) {
-  override fun getStableLegacyID(): String = if (json.has("originalFullName")) {
-    json.getString("originalFullName")
-  } else {
-    getLegacyID()
-  }
+  override fun getStableLegacyID(): String = json.getNullable("originalFullName") ?: getLegacyID()
 
-  override fun getScopeKey(): String = if (json.has("scopeKey")) {
-    json.getString("scopeKey")
-  } else {
-    getStableLegacyID()
-  }
+  override fun getScopeKey(): String = json.getNullable("scopeKey") ?: getStableLegacyID()
 
-  override fun getEASProjectID(): String? = if (json.has("projectId")) {
-    json.optString("projectId")
-  } else {
-    null
-  }
+  override fun getEASProjectID(): String? = json.getNullable("projectId")
 
-  fun getMetadata(): JSONObject? = json.optJSONObject("metadata")
-  override fun getAssets(): JSONArray? = json.optJSONArray("assets")
+  fun getMetadata(): JSONObject? = json.getNullable("metadata")
+
+  override fun getAssets(): JSONArray? = json.getNullable("assets")
 
   @Throws(JSONException::class)
-  override fun getBundleURL(): String = json.getString("bundleUrl")
+  override fun getBundleURL(): String = json.require("bundleUrl")
 
-  override fun getSDKVersionNullable(): String? = if (json.has("sdkVersion")) {
-    json.optString("sdkVersion")
-  } else {
-    null
-  }
-
-  @Throws(JSONException::class)
-  override fun getSDKVersion(): String = json.getString("sdkVersion")
+  override fun getSDKVersion(): String? = json.getNullable("sdkVersion")
 
   override fun getExpoGoConfigRootObject(): JSONObject? {
     return json
@@ -46,26 +30,14 @@ abstract class BaseLegacyManifest(json: JSONObject) : Manifest(json) {
     return json
   }
 
-  override fun getSlug(): String? = if (json.has("slug")) {
-    json.optString("slug")
-  } else {
-    null
-  }
+  override fun getSlug(): String? = json.getNullable("slug")
 
-  override fun getAppKey(): String? = if (json.has("appKey")) {
-    json.optString("appKey")
-  } else {
-    null
-  }
+  override fun getAppKey(): String? = json.getNullable("appKey")
 
-  fun getCommitTime(): String? = if (json.has("commitTime")) {
-    json.optString("commitTime")
-  } else {
-    null
-  }
+  fun getCommitTime(): String? = json.getNullable("commitTime")
 
   @Throws(JSONException::class)
-  private fun getPublishedTime(): String = json.getString("publishedTime")
+  private fun getPublishedTime(): String = json.require("publishedTime")
 
   override fun getSortTime(): String? {
     // use commitTime instead of publishedTime as it is more accurate;

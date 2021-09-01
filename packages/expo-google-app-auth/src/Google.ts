@@ -150,7 +150,7 @@ function isValidGUID(guid: string) {
 }
 
 function guidFromClientId(clientId: string): string {
-  const clientIdComponents = clientId.split('.').filter(component => component.includes('-'));
+  const clientIdComponents = clientId.split('.').filter((component) => component.includes('-'));
 
   const guid = clientIdComponents[0];
   const { isValid, reason } = isValidGUID(guid);

@@ -83,7 +83,7 @@ async function askForCameraPermissionAsync(): Promise<PermissionInfo> {
 }
 
 async function askForLocationPermissionAsync(): Promise<PermissionInfo> {
-  return new Promise(resolve => {
+  return new Promise((resolve) => {
     navigator.geolocation.getCurrentPosition(
       () =>
         resolve({

@@ -1,5 +1,7 @@
 package expo.modules.manifests.core
 
+import expo.modules.jsonutils.getNullable
+import expo.modules.jsonutils.require
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
@@ -59,18 +61,15 @@ abstract class Manifest(protected val json: JSONObject) {
    */
   @Throws(JSONException::class)
   @Deprecated(message = "Prefer scopeKey or projectId depending on use case")
-  fun getLegacyID(): String = json.getString("id")
+  fun getLegacyID(): String = json.require("id")
 
   @Throws(JSONException::class)
   abstract fun getBundleURL(): String
 
   @Throws(JSONException::class)
-  fun getRevisionId(): String = getExpoClientConfigRootObject()!!.getString("revisionId")
+  fun getRevisionId(): String = getExpoClientConfigRootObject()!!.require("revisionId")
 
-  abstract fun getSDKVersionNullable(): String?
-
-  @Throws(JSONException::class)
-  abstract fun getSDKVersion(): String
+  abstract fun getSDKVersion(): String?
 
   abstract fun getAssets(): JSONArray?
 
@@ -81,8 +80,7 @@ abstract class Manifest(protected val json: JSONObject) {
     val expoGoRootObject = getExpoGoConfigRootObject() ?: return false
     return try {
       expoGoRootObject.has("developer") &&
-        expoGoRootObject.has("packagerOpts") &&
-        expoGoRootObject.getJSONObject("packagerOpts").optBoolean("dev", false)
+        expoGoRootObject.getNullable<JSONObject>("packagerOpts")?.getNullable("dev") ?: false
     } catch (e: JSONException) {
       false
     }
@@ -90,140 +88,129 @@ abstract class Manifest(protected val json: JSONObject) {
 
   fun isDevelopmentSilentLaunch(): Boolean {
     val expoGoRootObject = getExpoGoConfigRootObject() ?: return false
-    return try {
-      expoGoRootObject.has("developmentClient") &&
-        expoGoRootObject.getJSONObject("developmentClient").optBoolean("silentLaunch", false)
-    } catch (e: JSONException) {
-      false
-    }
+    return expoGoRootObject.getNullable<JSONObject>("developmentClient")?.getNullable("silentLaunch") ?: false
   }
 
   fun isUsingDeveloperTool(): Boolean {
     val expoGoRootObject = getExpoGoConfigRootObject() ?: return false
-    return try {
-      expoGoRootObject.has("developer") && expoGoRootObject.getJSONObject(
-        "developer"
-      ).has("tool")
-    } catch (e: JSONException) {
-      false
-    }
+    return expoGoRootObject.getNullable<JSONObject>("developer")?.has("tool") ?: false
   }
 
   abstract fun getSlug(): String?
 
-  fun getDebuggerHost(): String = getExpoGoConfigRootObject()!!.getString("debuggerHost")
-  fun getMainModuleName(): String = getExpoGoConfigRootObject()!!.getString("mainModuleName")
+  fun getDebuggerHost(): String = getExpoGoConfigRootObject()!!.require("debuggerHost")
+  fun getMainModuleName(): String = getExpoGoConfigRootObject()!!.require("mainModuleName")
 
-  fun isVerified(): Boolean = json.optBoolean("isVerified")
+  fun isVerified(): Boolean = json.require("isVerified")
 
   abstract fun getAppKey(): String?
 
   fun getName(): String? {
     val expoClientConfig = getExpoClientConfigRootObject() ?: return null
-    return expoClientConfig.optString("name")
+    return expoClientConfig.getNullable("name")
   }
 
   fun getUpdatesInfo(): JSONObject? {
     val expoClientConfig = getExpoClientConfigRootObject() ?: return null
-    return expoClientConfig.optJSONObject("updates")
+    return expoClientConfig.getNullable("updates")
   }
 
   abstract fun getSortTime(): String?
 
   fun getPrimaryColor(): String? {
     val expoClientConfig = getExpoClientConfigRootObject() ?: return null
-    return expoClientConfig.optString("primaryColor")
+    return expoClientConfig.getNullable("primaryColor")
   }
 
   fun getOrientation(): String? {
     val expoClientConfig = getExpoClientConfigRootObject() ?: return null
-    return expoClientConfig.optString("orientation")
+    return expoClientConfig.getNullable("orientation")
   }
 
   fun getAndroidKeyboardLayoutMode(): String? {
     val expoClientConfig = getExpoClientConfigRootObject() ?: return null
-    val android = expoClientConfig.optJSONObject("android") ?: return null
-    return android.optString("softwareKeyboardLayoutMode")
+    val android = expoClientConfig.getNullable<JSONObject>("android") ?: return null
+    return android.getNullable("softwareKeyboardLayoutMode")
   }
 
   fun getAndroidUserInterfaceStyle(): String? {
     val expoClientConfig = getExpoClientConfigRootObject() ?: return null
     return try {
-      expoClientConfig.getJSONObject("android").getString("userInterfaceStyle")
+      expoClientConfig.require<JSONObject>("android").require("userInterfaceStyle")
     } catch (e: JSONException) {
-      expoClientConfig.optString("userInterfaceStyle")
+      expoClientConfig.getNullable("userInterfaceStyle")
     }
   }
 
   fun getAndroidStatusBarOptions(): JSONObject? {
     val expoClientConfig = getExpoClientConfigRootObject() ?: return null
-    return expoClientConfig.optJSONObject("androidStatusBar")
+    return expoClientConfig.getNullable("androidStatusBar")
   }
 
   fun getAndroidBackgroundColor(): String? {
     val expoClientConfig = getExpoClientConfigRootObject() ?: return null
     return try {
-      expoClientConfig.getJSONObject("android").getString("backgroundColor")
+      expoClientConfig.require<JSONObject>("android").require("backgroundColor")
     } catch (e: JSONException) {
-      expoClientConfig.optString("backgroundColor")
+      expoClientConfig.getNullable("backgroundColor")
     }
   }
 
   fun getAndroidNavigationBarOptions(): JSONObject? {
     val expoClientConfig = getExpoClientConfigRootObject() ?: return null
-    return expoClientConfig.optJSONObject("androidNavigationBar")
+    return expoClientConfig.getNullable("androidNavigationBar")
   }
 
   fun getAndroidJsEngine(): String? {
     val expoClientConfig = getExpoClientConfigRootObject() ?: return null
-    val android = expoClientConfig.optJSONObject("android") ?: return null
-    return android.optString("jsEngine") ?: return null
+    val android = expoClientConfig.getNullable<JSONObject>("android") ?: return null
+    return android.getNullable("jsEngine")
   }
 
   fun getIconUrl(): String? {
     val expoClientConfig = getExpoClientConfigRootObject() ?: return null
-    return expoClientConfig.optString("iconUrl")
+    return expoClientConfig.getNullable("iconUrl")
   }
 
   fun getNotificationPreferences(): JSONObject? {
     val expoClientConfig = getExpoClientConfigRootObject() ?: return null
-    return expoClientConfig.optJSONObject("notification")
+    return expoClientConfig.getNullable("notification")
   }
 
   fun getAndroidSplashInfo(): JSONObject? {
     val expoClientConfig = getExpoClientConfigRootObject() ?: return null
-    return expoClientConfig.optJSONObject("android")?.optJSONObject("splash")
+    return expoClientConfig.getNullable<JSONObject>("android")?.getNullable("splash")
   }
 
   fun getRootSplashInfo(): JSONObject? {
     val expoClientConfig = getExpoClientConfigRootObject() ?: return null
-    return expoClientConfig.optJSONObject("splash")
+    return expoClientConfig.getNullable("splash")
   }
 
   fun getAndroidGoogleServicesFile(): String? {
     val expoClientConfig = getExpoClientConfigRootObject() ?: return null
-    val android = expoClientConfig.optJSONObject("android") ?: return null
-    return android.optString("googleServicesFile")
+    val android = expoClientConfig.getNullable<JSONObject>("android") ?: return null
+    return android.getNullable("googleServicesFile")
   }
 
   fun getAndroidPackageName(): String? {
     val expoClientConfig = getExpoClientConfigRootObject() ?: return null
-    val android = expoClientConfig.optJSONObject("android") ?: return null
-    return android.optString("packageName")
+    val android = expoClientConfig.getNullable<JSONObject>("android") ?: return null
+    return android.getNullable("packageName")
   }
 
   fun shouldUseNextNotificationsApi(): Boolean {
     val expoClientConfig = getExpoClientConfigRootObject() ?: return false
-    val android: JSONObject = expoClientConfig.optJSONObject("android") ?: return false
-    return android.optBoolean("useNextNotificationsApi", false)
+    val android: JSONObject = expoClientConfig.getNullable<JSONObject>("android") ?: return false
+    return android.getNullable("useNextNotificationsApi") ?: false
   }
 
   @Throws(JSONException::class)
-  fun getFacebookAppId(): String = getExpoClientConfigRootObject()!!.getString("facebookAppId")
+  fun getFacebookAppId(): String = getExpoClientConfigRootObject()!!.require("facebookAppId")
 
   @Throws(JSONException::class)
-  fun getFacebookApplicationName(): String = getExpoClientConfigRootObject()!!.getString("facebookDisplayName")
+  fun getFacebookApplicationName(): String = getExpoClientConfigRootObject()!!.require("facebookDisplayName")
 
   @Throws(JSONException::class)
-  fun getFacebookAutoInitEnabled(): Boolean = getExpoClientConfigRootObject()!!.getBoolean("facebookAutoInitEnabled")
+  fun getFacebookAutoInitEnabled(): Boolean = getExpoClientConfigRootObject()!!.require("facebookAutoInitEnabled")
 }

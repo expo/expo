@@ -49,7 +49,7 @@ describe('watchPositionAsync', () => {
   it(`receives repeated events`, async () => {
     let resolveBarrier;
     const callback = jest.fn();
-    const watchBarrier = new Promise(resolve => {
+    const watchBarrier = new Promise((resolve) => {
       resolveBarrier = resolve;
     });
     mockProperty(
@@ -103,7 +103,7 @@ describe('navigator.geolocation polyfill', () => {
   describe('getCurrentPosition', () => {
     it(`delegates to getCurrentPositionAsync`, async () => {
       let pass;
-      const barrier = new Promise(resolve => {
+      const barrier = new Promise((resolve) => {
         pass = resolve;
       });
       navigator.geolocation.getCurrentPosition(pass, pass, {});
@@ -115,7 +115,7 @@ describe('navigator.geolocation polyfill', () => {
   describe('watchPosition', () => {
     it(`watches for updates and stops when clearWatch is called`, async () => {
       let resolveBarrier;
-      const watchBarrier = new Promise(resolve => {
+      const watchBarrier = new Promise((resolve) => {
         resolveBarrier = resolve;
       });
       mockProperty(

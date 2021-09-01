@@ -83,7 +83,7 @@ export async function __handlePersistedRegistrationInfoAsync(
 if (ServerRegistrationModule.getRegistrationInfoAsync) {
   // A global scope (to get all the updates) device push token
   // subscription, never cleared.
-  addPushTokenListener(async token => {
+  addPushTokenListener(async (token) => {
     try {
       // Before updating the push token on server we always check if we should
       // Since modules can't change their method availability while running, we

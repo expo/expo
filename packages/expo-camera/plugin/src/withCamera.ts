@@ -17,8 +17,8 @@ const MICROPHONE_USAGE = 'Allow $(PRODUCT_NAME) to access your microphone';
 const gradleMaven =
   'allprojects { repositories { maven { url "$rootDir/../node_modules/expo-camera/android/maven" } } }';
 
-const withAndroidCameraGradle: ConfigPlugin = config => {
-  return withProjectBuildGradle(config, config => {
+const withAndroidCameraGradle: ConfigPlugin = (config) => {
+  return withProjectBuildGradle(config, (config) => {
     if (config.modResults.language === 'groovy') {
       config.modResults.contents = setGradleMaven(config.modResults.contents);
     } else {

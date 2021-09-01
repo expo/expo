@@ -20,7 +20,9 @@ export default class SharingScreen extends React.Component {
   };
 
   componentDidMount() {
-    Sharing.isAvailableAsync().then(isAvailable => this.setState({ isAvailable, loading: false }));
+    Sharing.isAvailableAsync().then((isAvailable) =>
+      this.setState({ isAvailable, loading: false })
+    );
   }
 
   _shareLocalImage = async () => {

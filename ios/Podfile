@@ -32,6 +32,7 @@ abstract_target 'Expo Go' do
       'expo-modules-core',
       'expo-updates',
       'expo-manifests',
+      'expo-json-utils',
       'expo-structured-headers',
     ],
     flags: {

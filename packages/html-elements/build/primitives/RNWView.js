@@ -31,7 +31,7 @@ const forwardPropsList = {
     onWheel: true,
     pointerEvents: true,
 };
-const pickProps = props => pick(props, forwardPropsList);
+const pickProps = (props) => pick(props, forwardPropsList);
 /**
  * This is the View from react-native-web copied out in order to supply a custom `__element` property.
  * In the past, you could use `createElement` to create an element with a custom HTML element, but this changed

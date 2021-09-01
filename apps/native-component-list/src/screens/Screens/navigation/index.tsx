@@ -61,7 +61,7 @@ class DetailsScreen extends React.Component<Props, { count: number; text: string
         <TextInput
           placeholder="Hello"
           style={styles.textInput}
-          onChangeText={text => this.setState({ text })}
+          onChangeText={(text) => this.setState({ text })}
           value={this.state.text}
         />
         <Animated.View

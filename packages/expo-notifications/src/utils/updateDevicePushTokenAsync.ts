@@ -95,7 +95,7 @@ export async function updateDevicePushTokenAsync(signal: AbortSignal, token: Dev
         backoffOptions
       );
       retriesCount += 1;
-      await new Promise(resolve => setTimeout(resolve, nextBackoffInterval));
+      await new Promise((resolve) => setTimeout(resolve, nextBackoffInterval));
     }
   }
 }

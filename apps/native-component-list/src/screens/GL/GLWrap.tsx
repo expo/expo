@@ -31,7 +31,7 @@ export default <P extends { style?: StyleProp<ViewStyle> } = {}>(
     render() {
       return (
         <View
-          onLayout={event => this.onLayout(event)}
+          onLayout={(event) => this.onLayout(event)}
           style={[
             {
               flex: 1,

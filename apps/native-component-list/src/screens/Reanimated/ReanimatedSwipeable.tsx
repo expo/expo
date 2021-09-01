@@ -65,7 +65,7 @@ function SwipableList(): React.ReactElement {
       <FlatList
         data={data}
         renderItem={({ item }) => <ListItem item={item} onRemove={onRemove} />}
-        keyExtractor={item => item.id}
+        keyExtractor={(item) => item.id}
       />
     </View>
   );
@@ -111,7 +111,7 @@ function ListItem({ item, onRemove }: ListItemProps) {
       translateX.value = Math.min(0, Math.max(nextTranslate, MAX_TRANSLATE));
     },
 
-    onEnd: evt => {
+    onEnd: (evt) => {
       if (evt.velocityX < -20) {
         translateX.value = withSpring(MAX_TRANSLATE, springConfig(evt.velocityX));
       } else {

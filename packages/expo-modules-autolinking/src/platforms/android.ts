@@ -57,7 +57,7 @@ import expo.modules.core.interfaces.Package;
 public class ExpoModulesPackageList {
   private static class LazyHolder {
     static final List<Package> packagesList = Arrays.<Package>asList(
-${packagesClasses.map(packageClass => `      new ${packageClass}()`).join(',\n')}
+${packagesClasses.map((packageClass) => `      new ${packageClass}()`).join(',\n')}
     );
   }
 
@@ -72,7 +72,7 @@ async function findAndroidPackagesAsync(modules: ModuleDescriptor[]): Promise<st
   const classes: string[] = [];
 
   await Promise.all(
-    modules.map(async module => {
+    modules.map(async (module) => {
       const files = await glob('src/**/*Package.{java,kt}', {
         cwd: module.sourceDir,
       });

@@ -87,10 +87,10 @@ export function postTransforms(versionName: string): TransformPipeline {
         paths: [
           `${versionName}EXNotifications`,
           `${versionName}EXUpdates`,
-          `${versionName}EXManifests`,
+          `${versionName}EXJSONUtils`,
         ],
         replace: new RegExp(
-          `NSDictionary\\+${versionName}(EXNotificationsVerifyingClass|EXManifestsManifest)\\.h`,
+          `NSDictionary\\+${versionName}(EXNotificationsVerifyingClass|EXJSONUtils)\\.h`,
           'g'
         ),
         with: `${versionName}NSDictionary+$1.h`,
