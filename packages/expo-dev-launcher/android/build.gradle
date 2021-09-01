@@ -139,9 +139,10 @@ def versionToNumber(major, minor, patch) {
 }
 
 def getRNVersion() {
-  def packageJsonFile = new File(rootProject.projectDir, '../package.json')
+  def reactNativePackageJsonPath = ["node", "-e", "console.log(require.resolve('react-native/package.json'));"].execute([], projectDir).text.trim()
+  def packageJsonFile = new File(reactNativePackageJsonPath)
   def packageJson = new JsonSlurper().parseText(packageJsonFile.text)
-  def version = safeExtGet("reactNativeVersion", packageJson.dependencies["react-native"])
+  def version = safeExtGet("reactNativeVersion", packageJson.version)
 
   def coreVersion = version.split("-")[0]
 
