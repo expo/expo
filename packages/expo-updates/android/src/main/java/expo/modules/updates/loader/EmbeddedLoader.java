@@ -23,7 +23,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class EmbeddedLoader {
+public class EmbeddedLoader extends Loader {
 
   private static final String TAG = EmbeddedLoader.class.getSimpleName();
 
@@ -51,13 +51,49 @@ public class EmbeddedLoader {
     this(context, configuration, database, updatesDirectory, new LoaderFiles());
   }
 
-  public EmbeddedLoader(Context context, UpdatesConfiguration configuration, UpdatesDatabase database, File updatesDirectory, LoaderFiles loaderFiles) {
+  // for testing purposes
+  EmbeddedLoader(Context context, UpdatesConfiguration configuration, UpdatesDatabase database, File updatesDirectory, LoaderFiles loaderFiles) {
+    super(context, configuration, database, updatesDirectory, loaderFiles);
     mContext = context;
     mConfiguration = configuration;
     mDatabase = database;
     mUpdatesDirectory = updatesDirectory;
     mPixelDensity = context.getResources().getDisplayMetrics().density;
     mLoaderFiles = loaderFiles;
+  }
+
+  @Override
+  protected void loadManifest(Context context, UpdatesDatabase database, UpdatesConfiguration configuration, FileDownloader.ManifestDownloadCallback callback) {
+    UpdateManifest updateManifest = mLoaderFiles.readEmbeddedManifest(mContext, mConfiguration);
+    if (updateManifest != null) {
+      callback.onSuccess(updateManifest);
+    } else {
+      String message = "Embedded manifest is null";
+      callback.onFailure(message, new Exception(message));
+    }
+  }
+
+  @Override
+  protected void loadAsset(AssetEntity assetEntity, File updatesDirectory, UpdatesConfiguration configuration, FileDownloader.AssetDownloadCallback callback) {
+    String filename = UpdatesUtils.createFilenameForAsset(assetEntity);
+    File destination = new File(updatesDirectory, filename);
+
+    if (mLoaderFiles.fileExists(destination)) {
+      assetEntity.relativePath = filename;
+      callback.onSuccess(assetEntity, false);
+    } else {
+      try {
+        assetEntity.hash = mLoaderFiles.copyAssetAndGetHash(assetEntity, destination, mContext);
+        assetEntity.downloadTime = new Date();
+        assetEntity.relativePath = filename;
+        callback.onSuccess(assetEntity, true);
+      } catch (FileNotFoundException e) {
+        throw new AssertionError("APK bundle must contain the expected embedded asset " +
+                (assetEntity.embeddedAssetFilename != null ? assetEntity.embeddedAssetFilename : assetEntity.resourcesFilename));
+      } catch (Exception e) {
+        callback.onFailure(e, assetEntity);
+      }
+    }
   }
 
   public boolean loadEmbeddedUpdate() {
@@ -78,8 +114,8 @@ public class EmbeddedLoader {
     mFinishedAssetList = new ArrayList<>();
   }
 
-  public static @Nullable
-  UpdateManifest readEmbeddedManifest(Context context, UpdatesConfiguration configuration) {
+  public static
+  @Nullable UpdateManifest readEmbeddedManifest(Context context, UpdatesConfiguration configuration) {
     if (!configuration.hasEmbeddedUpdate()) {
       return null;
     }
@@ -187,7 +223,8 @@ public class EmbeddedLoader {
     // TODO: maybe try downloading failed assets in background
   }
 
-  private boolean shouldSkipAsset(AssetEntity asset) {
+  @Override
+  protected boolean shouldSkipAsset(AssetEntity asset) {
     if (asset.scales == null || asset.scale == null) {
       return false;
     }

@@ -3,13 +3,18 @@ package expo.modules.updates.loader;
 import android.content.Context;
 import android.util.Log;
 
+import androidx.annotation.Nullable;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.NoSuchAlgorithmException;
 
+import expo.modules.updates.UpdatesConfiguration;
 import expo.modules.updates.UpdatesUtils;
 import expo.modules.updates.db.entity.AssetEntity;
+import expo.modules.updates.manifest.EmbeddedManifest;
+import expo.modules.updates.manifest.UpdateManifest;
 
 /**
  * Utility class for Loader and its subclasses, to allow for easy mocking
@@ -18,8 +23,14 @@ public class LoaderFiles {
 
   private static final String TAG = LoaderFiles.class.getSimpleName();
 
+  private static UpdateManifest sEmbeddedManifest = null;
+
   public boolean fileExists(File destination) {
     return destination.exists();
+  }
+
+  public @Nullable UpdateManifest readEmbeddedManifest(Context context, UpdatesConfiguration configuration) {
+    return EmbeddedManifest.get(context, configuration);
   }
 
   public byte[] copyAssetAndGetHash(AssetEntity asset, File destination, Context context) throws NoSuchAlgorithmException, IOException {

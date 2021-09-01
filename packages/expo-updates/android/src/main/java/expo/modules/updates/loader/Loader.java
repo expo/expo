@@ -34,6 +34,7 @@ public abstract class Loader {
   private LoaderCallback mCallback;
   private int mAssetTotal = 0;
   private ArrayList<AssetEntity> mErroredAssetList = new ArrayList<>();
+  private ArrayList<AssetEntity> mSkippedAssetList = new ArrayList<>();
   private ArrayList<AssetEntity> mExistingAssetList = new ArrayList<>();
   private ArrayList<AssetEntity> mFinishedAssetList = new ArrayList<>();
 
@@ -76,6 +77,8 @@ public abstract class Loader {
 
   protected abstract void loadAsset(AssetEntity assetEntity, File updatesDirectory, UpdatesConfiguration configuration, FileDownloader.AssetDownloadCallback callback);
 
+  protected abstract boolean shouldSkipAsset(AssetEntity assetEntity);
+
   // lifecycle methods for class
 
   public void start(LoaderCallback callback) {
@@ -110,6 +113,7 @@ public abstract class Loader {
     mCallback = null;
     mAssetTotal = 0;
     mErroredAssetList = new ArrayList<>();
+    mSkippedAssetList = new ArrayList<>();
     mExistingAssetList = new ArrayList<>();
     mFinishedAssetList = new ArrayList<>();
   }
@@ -183,6 +187,11 @@ public abstract class Loader {
   private void downloadAllAssets(List<AssetEntity> assetList) {
     mAssetTotal = assetList.size();
     for (AssetEntity assetEntity : assetList) {
+      if (shouldSkipAsset(assetEntity)) {
+        mSkippedAssetList.add(assetEntity);
+        continue;
+      }
+
       AssetEntity matchingDbEntry = mDatabase.assetDao().loadAssetWithKey(assetEntity.key);
       if (matchingDbEntry != null) {
         mDatabase.assetDao().mergeAndUpdateAsset(matchingDbEntry, assetEntity);
@@ -195,16 +204,10 @@ public abstract class Loader {
         continue;
       }
 
-      if (assetEntity.url == null) {
-        Log.e(TAG, "Failed to download asset with no URL provided");
-        handleAssetDownloadCompleted(assetEntity, false, false);
-        continue;
-      }
-
       loadAsset(assetEntity, mUpdatesDirectory, mConfiguration, new FileDownloader.AssetDownloadCallback() {
         @Override
         public void onFailure(Exception e, AssetEntity assetEntity) {
-          Log.e(TAG, "Failed to download asset from " + assetEntity.url, e);
+          Log.e(TAG, "Failed to download asset with key " + assetEntity.key, e);
           handleAssetDownloadCompleted(assetEntity, false, false);
         }
 
@@ -229,7 +232,7 @@ public abstract class Loader {
 
     mCallback.onAssetLoaded(assetEntity, mFinishedAssetList.size() + mExistingAssetList.size(), mErroredAssetList.size(), mAssetTotal);
 
-    if (mFinishedAssetList.size() + mErroredAssetList.size() + mExistingAssetList.size() == mAssetTotal) {
+    if (mFinishedAssetList.size() + mErroredAssetList.size() + mExistingAssetList.size() + mSkippedAssetList.size() == mAssetTotal) {
       try {
         for (AssetEntity asset : mExistingAssetList) {
           boolean existingAssetFound = mDatabase.assetDao().addExistingAssetToUpdate(mUpdateEntity, asset, asset.isLaunchAsset);
@@ -249,7 +252,7 @@ public abstract class Loader {
         }
         mDatabase.assetDao().insertAssets(mFinishedAssetList, mUpdateEntity);
         if (mErroredAssetList.size() == 0) {
-          mDatabase.updateDao().markUpdateFinished(mUpdateEntity);
+          mDatabase.updateDao().markUpdateFinished(mUpdateEntity, mSkippedAssetList.size() != 0);
         }
       } catch (Exception e) {
         finishWithError("Error while adding new update to database", e);

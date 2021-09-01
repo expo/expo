@@ -41,6 +41,7 @@ public class EmbeddedLoaderTest {
 
   private EmbeddedLoader loader;
   private LoaderFiles mockLoaderFiles;
+  private Loader.LoaderCallback mockCallback;
 
   @Before
   public void setup() throws JSONException {
@@ -65,12 +66,18 @@ public class EmbeddedLoaderTest {
             new BareManifest(new JSONObject("{\"id\":\"c3c47024-0e03-4cb4-8e8b-1a0ba2260be6\",\"commitTime\":1630374791665,\"assets\":[{\"name\":\"robot-dev\",\"type\":\"png\",\"scale\":1,\"packagerHash\":\"54da1e9816c77e30ebc5920e256736f2\",\"subdirectory\":\"/assets\",\"scales\":[1],\"resourcesFilename\":\"robotdev\",\"resourcesFolder\":\"drawable\"}]}")),
             configuration
     );
+    when(mockLoaderFiles.readEmbeddedManifest(any(), any())).thenReturn(manifest);
+
+    mockCallback = mock(Loader.LoaderCallback.class);
+    when(mockCallback.onUpdateManifestLoaded(any())).thenReturn(true);
   }
 
   @Test
   public void testEmbeddedLoader_SimpleCase() throws IOException, NoSuchAlgorithmException {
-    loader.processUpdateManifest(manifest);
+    loader.start(mockCallback);
 
+    verify(mockCallback).onSuccess(any());
+    verify(mockCallback, times(0)).onFailure(any());
     verify(mockLoaderFiles, times(2)).copyAssetAndGetHash(any(), any(), any());
 
     List<UpdateEntity> updates = db.updateDao().loadAllUpdates();
@@ -85,8 +92,10 @@ public class EmbeddedLoaderTest {
   public void testEmbeddedLoader_FailureCase() throws IOException, NoSuchAlgorithmException {
     when(mockLoaderFiles.copyAssetAndGetHash(any(), any(), any())).thenThrow(new IOException("mock failed to copy asset"));
 
-    loader.processUpdateManifest(manifest);
+    loader.start(mockCallback);
 
+    verify(mockCallback, times(0)).onSuccess(any());
+    verify(mockCallback).onFailure(any());
     verify(mockLoaderFiles, times(2)).copyAssetAndGetHash(any(), any(), any());
 
     List<UpdateEntity> updates = db.updateDao().loadAllUpdates();
@@ -104,9 +113,12 @@ public class EmbeddedLoaderTest {
             new BareManifest(new JSONObject("{\"id\":\"d26d7f92-c7a6-4c44-9ada-4804eda7e6e2\",\"commitTime\":1630435460610,\"assets\":[{\"name\":\"robot-dev\",\"type\":\"png\",\"scale\":1,\"packagerHash\":\"54da1e9816c77e30ebc5920e256736f2\",\"subdirectory\":\"/assets\",\"scales\":[1,2],\"resourcesFilename\":\"robotdev\",\"resourcesFolder\":\"drawable\"},{\"name\":\"robot-dev\",\"type\":\"png\",\"scale\":2,\"packagerHash\":\"4ecff55cf37460b7f768dc7b72bcea6b\",\"subdirectory\":\"/assets\",\"scales\":[1,2],\"resourcesFilename\":\"robotdev\",\"resourcesFolder\":\"drawable\"}]}")),
             configuration
     );
+    when(mockLoaderFiles.readEmbeddedManifest(any(), any())).thenReturn(multipleScalesManifest);
 
-    loader.processUpdateManifest(multipleScalesManifest);
+    loader.start(mockCallback);
 
+    verify(mockCallback).onSuccess(any());
+    verify(mockCallback, times(0)).onFailure(any());
     verify(mockLoaderFiles, times(2)).copyAssetAndGetHash(any(), any(), any());
 
     List<UpdateEntity> updates = db.updateDao().loadAllUpdates();
@@ -126,7 +138,10 @@ public class EmbeddedLoaderTest {
     existingAsset.relativePath = "54da1e9816c77e30ebc5920e256736f2.png";
     db.assetDao()._insertAsset(existingAsset);
 
-    loader.processUpdateManifest(manifest);
+    loader.start(mockCallback);
+
+    verify(mockCallback).onSuccess(any());
+    verify(mockCallback, times(0)).onFailure(any());
 
     // only 1 asset (bundle) should be copied since the other asset already exists
     verify(mockLoaderFiles, times(1)).copyAssetAndGetHash(any(), any(), any());
@@ -148,7 +163,10 @@ public class EmbeddedLoaderTest {
     existingAsset.relativePath = "54da1e9816c77e30ebc5920e256736f2.png";
     db.assetDao()._insertAsset(existingAsset);
 
-    loader.processUpdateManifest(manifest);
+    loader.start(mockCallback);
+
+    verify(mockCallback).onSuccess(any());
+    verify(mockCallback, times(0)).onFailure(any());
 
     // both assets should be copied regardless of what the database says
     verify(mockLoaderFiles, times(2)).copyAssetAndGetHash(any(), any(), any());
@@ -168,7 +186,10 @@ public class EmbeddedLoaderTest {
 
     Assert.assertEquals(0, db.assetDao().loadAllAssets().size());
 
-    loader.processUpdateManifest(manifest);
+    loader.start(mockCallback);
+
+    verify(mockCallback).onSuccess(any());
+    verify(mockCallback, times(0)).onFailure(any());
 
     // only 1 asset (bundle) should be copied since the other asset already exists
     verify(mockLoaderFiles, times(1)).copyAssetAndGetHash(any(), any(), any());
@@ -192,7 +213,10 @@ public class EmbeddedLoaderTest {
     update.status = UpdateStatus.READY;
     db.updateDao().insertUpdate(update);
 
-    loader.processUpdateManifest(manifest);
+    loader.start(mockCallback);
+
+    verify(mockCallback).onSuccess(any());
+    verify(mockCallback, times(0)).onFailure(any());
 
     verify(mockLoaderFiles, times(0)).copyAssetAndGetHash(any(), any(), any());
 
@@ -211,7 +235,10 @@ public class EmbeddedLoaderTest {
     update.status = UpdateStatus.PENDING;
     db.updateDao().insertUpdate(update);
 
-    loader.processUpdateManifest(manifest);
+    loader.start(mockCallback);
+
+    verify(mockCallback).onSuccess(any());
+    verify(mockCallback, times(0)).onFailure(any());
 
     // missing assets should still be copied
     verify(mockLoaderFiles, times(2)).copyAssetAndGetHash(any(), any(), any());
