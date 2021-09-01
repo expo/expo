@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Fixed Cmd+D opening two dev menus.
+- Fixed Cmd+D opening two dev menus. ([#14204](https://github.com/expo/expo/pull/14204) by [@fson](https://github.com/fson))
 
 ### 💡 Others
 
