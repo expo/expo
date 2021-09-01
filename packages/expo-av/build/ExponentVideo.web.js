@@ -45,14 +45,14 @@ export default class ExponentVideo extends React.Component {
         this.props.onLoadStart();
         this.onStatusUpdate();
     };
-    onLoadedData = event => {
+    onLoadedData = (event) => {
         if (!this.props.onLoad) {
             return;
         }
         this.props.onLoad(event);
         this.onStatusUpdate();
     };
-    onError = event => {
+    onError = (event) => {
         if (!this.props.onError) {
             return;
         }
@@ -71,7 +71,7 @@ export default class ExponentVideo extends React.Component {
     onLoadedMetadata = () => {
         this.onStatusUpdate();
     };
-    onCanPlay = event => {
+    onCanPlay = (event) => {
         if (!this.props.onReadyForDisplay) {
             return;
         }

@@ -125,6 +125,11 @@ class ExpoImageViewManager(applicationContext: ReactApplicationContext) : Simple
     view.defaultSourceMap = defaultSourceMap
   }
 
+  @ReactProp(name = "accessible")
+  fun setFocusable(view: ExpoImageView, accessible: Boolean) {
+    view.isFocusable = accessible // setFocusable(bool)
+  }
+
   // View lifecycle
   public override fun createViewInstance(context: ThemedReactContext): ExpoImageView {
     return ExpoImageView(context, mRequestManager, mProgressInterceptor)

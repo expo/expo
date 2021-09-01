@@ -13,9 +13,6 @@ import abi42_0_0.com.facebook.react.bridge.ReadableMap;
 import abi42_0_0.com.facebook.react.bridge.WritableMap;
 import com.google.firebase.iid.FirebaseInstanceId;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -24,7 +21,6 @@ import java.util.Random;
 
 import javax.inject.Inject;
 
-import expo.modules.updates.manifest.raw.RawManifest;
 import host.exp.exponent.Constants;
 import host.exp.exponent.ExponentManifest;
 import host.exp.exponent.analytics.EXL;

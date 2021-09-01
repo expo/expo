@@ -189,7 +189,7 @@ export default function Player(props: Props) {
       </View>
 
       <View style={[styles.container, styles.buttonsContainer]}>
-        {(props.extraButtons ?? []).map(button => {
+        {(props.extraButtons ?? []).map((button) => {
           if (typeof button === 'function') return button();
           return _renderAuxiliaryButton(button);
         })}
@@ -206,7 +206,7 @@ export default function Player(props: Props) {
           onPress={_toggleShouldCorrectPitch}
         />
         <SpeedSegmentedControl
-          onValueChange={rate => {
+          onValueChange={(rate) => {
             props.setRateAsync(rate, props.shouldCorrectPitch);
           }}
         />
@@ -309,14 +309,14 @@ function SpeedSegmentedControl({ onValueChange }: { onValueChange: (value: numbe
 
       <SegmentedControl
         style={{ width: '50%', minWidth: 260 }}
-        values={data.map(i => i + 'x')}
+        values={data.map((i) => i + 'x')}
         fontStyle={{ color: Colors.tintColor }}
         selectedIndex={index}
         tintColor="white"
-        onChange={event => {
+        onChange={(event) => {
           setIndex(event.nativeEvent.selectedSegmentIndex);
         }}
-        onValueChange={value => onValueChange(parseFloat(value))}
+        onValueChange={(value) => onValueChange(parseFloat(value))}
       />
       {renderIcon('speedometer')}
     </View>
@@ -389,14 +389,14 @@ function VolumeSlider({
         style={{ height, flex: 1 }}
         thumbTintColor={color}
         minimumTrackTintColor={color}
-        onSlidingComplete={value => {
+        onSlidingComplete={(value) => {
           onValueChanged({ isMuted: value <= 0, volume: value });
 
           if (value > 0) {
             lastUserValue.current = value;
           }
         }}
-        onValueChange={value => {
+        onValueChange={(value) => {
           setValue(value);
         }}
       />

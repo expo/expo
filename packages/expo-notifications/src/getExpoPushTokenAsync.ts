@@ -71,7 +71,7 @@ export default async function getExpoPushTokenAsync(options: Options = {}): Prom
       'content-type': 'application/json',
     },
     body: JSON.stringify(body),
-  }).catch(error => {
+  }).catch((error) => {
     throw new CodedError(
       'ERR_NOTIFICATIONS_NETWORK_ERROR',
       `Error encountered while fetching Expo token: ${error}.`
@@ -187,7 +187,8 @@ function getDeviceToken(devicePushToken: DevicePushToken) {
 async function shouldUseDevelopmentNotificationService() {
   if (Platform.OS === 'ios') {
     try {
-      const notificationServiceEnvironment = await Application.getIosPushNotificationServiceEnvironmentAsync();
+      const notificationServiceEnvironment =
+        await Application.getIosPushNotificationServiceEnvironmentAsync();
       if (notificationServiceEnvironment === 'development') {
         return true;
       }

@@ -66,7 +66,7 @@ export default function withNativeAd<P>(
           this.setState({ canRequestAds: true });
         });
       }
-      this._errorSubscription = this.props.adsManager.onAdsErrored(error => {
+      this._errorSubscription = this.props.adsManager.onAdsErrored((error) => {
         // From what I, @sjchmiela, understand, an error may be encountered multiple times
         // and it does *not* mean that the manager is not able to request ads at all -
         // - this may have been an intermittent error -- that's why we don't set canRequestAds to false

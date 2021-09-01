@@ -95,7 +95,7 @@ export async function updateDevicePushTokenAsync(signal: AbortSignal, token: Dev
         backoffOptions
       );
       retriesCount += 1;
-      await new Promise(resolve => setTimeout(resolve, nextBackoffInterval));
+      await new Promise((resolve) => setTimeout(resolve, nextBackoffInterval));
     }
   }
 }
@@ -133,7 +133,8 @@ function getTypeOfToken(devicePushToken: DevicePushToken) {
 async function shouldUseDevelopmentNotificationService() {
   if (Platform.OS === 'ios') {
     try {
-      const notificationServiceEnvironment = await Application.getIosPushNotificationServiceEnvironmentAsync();
+      const notificationServiceEnvironment =
+        await Application.getIosPushNotificationServiceEnvironmentAsync();
       if (notificationServiceEnvironment === 'development') {
         return true;
       }

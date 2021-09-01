@@ -2,7 +2,7 @@ const lazyImportsBlacklist = require('./lazy-imports-blacklist');
 
 let hasWarnedJsxRename = false;
 
-module.exports = function(api, options = {}) {
+module.exports = function (api, options = {}) {
   const { web = {}, native = {} } = options;
 
   const bundler = api.caller(getBundler);
@@ -81,7 +81,7 @@ module.exports = function(api, options = {}) {
           disableImportExportTransform: platformOptions.disableImportExportTransform,
           lazyImportExportTransform:
             lazyImportsOption === true
-              ? importModuleSpecifier => {
+              ? (importModuleSpecifier) => {
                   // Do not lazy-initialize packages that are local imports (similar to `lazy: true`
                   // behavior) or are in the blacklist.
                   return !(

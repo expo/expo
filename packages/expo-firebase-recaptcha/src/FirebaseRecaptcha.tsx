@@ -118,8 +118,9 @@ function getWebviewSource(
       }
     });
   </script>
-  <script src="https://www.google.com/recaptcha/api.js?onload=onLoad&render=explicit&hl=${languageCode ??
-    ''}" onerror="onError()"></script>
+  <script src="https://www.google.com/recaptcha/api.js?onload=onLoad&render=explicit&hl=${
+    languageCode ?? ''
+  }" onerror="onError()"></script>
 </body></html>`,
   };
 }
@@ -190,7 +191,7 @@ export default function FirebaseRecaptcha(props: Props) {
         invisible
       )}
       onError={onError}
-      onMessage={event => {
+      onMessage={(event) => {
         const data = JSON.parse(event.nativeEvent.data);
         switch (data.type) {
           case 'load':

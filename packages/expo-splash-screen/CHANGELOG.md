@@ -7,11 +7,14 @@
 ### 🎉 New features
 
 - Add warning for splash screen if visible for too long ([#12882](https://github.com/expo/expo/pull/12882) by [@ajsmth](https://github.com/ajsmth))
+- Show splash screen without additional setup in MainActivity and could customize resizeMode/statusBarTranslucent in resource. See PR description for changes migration. ([#14061](https://github.com/expo/expo/pull/14061) by [@kudo](https://github.com/kudo))
 - Re-show splash screen if rootViewController be replaced when splash is showing. ([#14063](https://github.com/expo/expo/pull/14063) by [@kudo](https://github.com/kudo))
 
 ### 🐛 Bug fixes
 
 - On iOS, search for a view controller with a RCTRootView rather than always using the keyWindow's rootViewController. ([#13429](https://github.com/expo/expo/pull/13429) by [@esamelson](https://github.com/esamelson))
+- Fix splash screen not dismissed if there is alert view appearing. ([#14208](https://github.com/expo/expo/pull/14208) by [@kudo](https://github.com/kudo))
+- Fix splash screen not dismissed while alert view appearing before RCTRootView did load. ([#14213](https://github.com/expo/expo/pull/14213) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others
 

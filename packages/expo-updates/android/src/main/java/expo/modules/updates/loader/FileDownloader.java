@@ -22,7 +22,7 @@ import java.util.Map;
 
 import expo.modules.updates.db.entity.AssetEntity;
 import expo.modules.updates.launcher.NoDatabaseLauncher;
-import expo.modules.updates.manifest.Manifest;
+import expo.modules.updates.manifest.UpdateManifest;
 import expo.modules.updates.manifest.ManifestFactory;
 import expo.modules.updates.manifest.ManifestResponse;
 import expo.modules.updates.selectionpolicy.SelectionPolicies;
@@ -46,7 +46,7 @@ public class FileDownloader {
 
   public interface ManifestDownloadCallback {
     void onFailure(String message, Exception e);
-    void onSuccess(Manifest manifest);
+    void onSuccess(UpdateManifest updateManifest);
   }
 
   public interface AssetDownloadCallback {
@@ -179,12 +179,12 @@ public class FileDownloader {
     if (configuration.expectsSignedManifest()) {
       preManifest.put("isVerified", isVerified);
     }
-    Manifest manifest = ManifestFactory.INSTANCE.getManifest(preManifest, new ManifestResponse(response), configuration);
-    if (!SelectionPolicies.matchesFilters(manifest.getUpdateEntity(), manifest.getManifestFilters())) {
+    UpdateManifest updateManifest = ManifestFactory.INSTANCE.getManifest(preManifest, new ManifestResponse(response), configuration);
+    if (!SelectionPolicies.matchesFilters(updateManifest.getUpdateEntity(), updateManifest.getManifestFilters())) {
       String message = "Downloaded manifest is invalid; provides filters that do not match its content";
       callback.onFailure(message, new Exception(message));
     } else {
-      callback.onSuccess(manifest);
+      callback.onSuccess(updateManifest);
     }
   }
 

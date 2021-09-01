@@ -31,7 +31,7 @@ import com.facebook.soloader.SoLoader
 import de.greenrobot.event.EventBus
 import expo.modules.notifications.service.NotificationsService.Companion.getNotificationResponseFromIntent
 import expo.modules.notifications.service.delegates.ExpoHandlingDelegate
-import expo.modules.updates.manifest.raw.RawManifest
+import expo.modules.manifests.core.Manifest
 import host.exp.exponent.*
 import host.exp.exponent.ExpoUpdatesAppLoader.AppLoaderCallback
 import host.exp.exponent.ExpoUpdatesAppLoader.AppLoaderStatus
@@ -679,12 +679,12 @@ class Kernel : KernelInterface() {
       ExpoUpdatesAppLoader(
         manifestUrl,
         object : AppLoaderCallback {
-          override fun onOptimisticManifest(optimisticManifest: RawManifest) {
+          override fun onOptimisticManifest(optimisticManifest: Manifest) {
             Exponent.instance
               .runOnUiThread { sendOptimisticManifestToExperienceActivity(optimisticManifest) }
           }
 
-          override fun onManifestCompleted(manifest: RawManifest) {
+          override fun onManifestCompleted(manifest: Manifest) {
             Exponent.instance.runOnUiThread {
               try {
                 openManifestUrlStep2(manifestUrl, manifest, finalExistingTask)
@@ -724,13 +724,13 @@ class Kernel : KernelInterface() {
   @Throws(JSONException::class)
   private fun openManifestUrlStep2(
     manifestUrl: String,
-    manifest: RawManifest,
+    manifest: Manifest,
     existingTask: AppTask?
   ) {
     val bundleUrl = toHttp(manifest.getBundleURL())
     val task = getExperienceActivityTask(manifestUrl)
     task.bundleUrl = bundleUrl
-    ExponentManifest.normalizeRawManifestInPlace(manifest, manifestUrl)
+    ExponentManifest.normalizeManifestInPlace(manifest, manifestUrl)
     if (existingTask == null) {
       sendManifestToExperienceActivity(manifestUrl, manifest, bundleUrl)
     }
@@ -778,7 +778,7 @@ class Kernel : KernelInterface() {
     AsyncCondition.notify(KernelConstants.OPEN_EXPERIENCE_ACTIVITY_KEY)
   }
 
-  fun sendOptimisticManifestToExperienceActivity(optimisticManifest: RawManifest) {
+  fun sendOptimisticManifestToExperienceActivity(optimisticManifest: Manifest) {
     AsyncCondition.wait(
       KernelConstants.OPEN_OPTIMISTIC_EXPERIENCE_ACTIVITY_KEY,
       object : AsyncConditionListener {
@@ -795,7 +795,7 @@ class Kernel : KernelInterface() {
 
   private fun sendManifestToExperienceActivity(
     manifestUrl: String,
-    manifest: RawManifest,
+    manifest: Manifest,
     bundleUrl: String,
   ) {
     AsyncCondition.wait(

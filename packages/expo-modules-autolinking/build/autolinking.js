@@ -32,7 +32,7 @@ const projectRequire = module_1.createRequire(projectPackageJsonPath);
  */
 async function resolveSearchPathsAsync(searchPaths, cwd) {
     return searchPaths && searchPaths.length > 0
-        ? searchPaths.map(searchPath => path_1.default.resolve(cwd, searchPath))
+        ? searchPaths.map((searchPath) => path_1.default.resolve(cwd, searchPath))
         : await findDefaultPathsAsync(cwd);
 }
 exports.resolveSearchPathsAsync = resolveSearchPathsAsync;
@@ -175,7 +175,7 @@ exports.mergeLinkingOptionsAsync = mergeLinkingOptionsAsync;
 function verifySearchResults(searchResults) {
     var _a;
     const cwd = process.cwd();
-    const relativePath = pkg => path_1.default.relative(cwd, pkg.path);
+    const relativePath = (pkg) => path_1.default.relative(cwd, pkg.path);
     let counter = 0;
     for (const moduleName in searchResults) {
         const revision = searchResults[moduleName];

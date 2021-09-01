@@ -63,7 +63,7 @@ export class Sound {
         }
     }
     _clearSubscriptions() {
-        this._subscriptions.forEach(e => e.remove());
+        this._subscriptions.forEach((e) => e.remove());
         this._subscriptions = [];
     }
     _errorCallback = (error) => {
@@ -95,7 +95,7 @@ export class Sound {
         }
         if (!this._loaded) {
             this._loading = true;
-            const { nativeSource, fullInitialStatus, } = await getNativeSourceAndFullInitialStatusForLoadAsync(source, initialStatus, downloadFirst);
+            const { nativeSource, fullInitialStatus } = await getNativeSourceAndFullInitialStatusForLoadAsync(source, initialStatus, downloadFirst);
             // This is a workaround, since using load with resolve / reject seems to not work.
             return new Promise((resolve, reject) => {
                 const loadSuccess = (result) => {
@@ -111,9 +111,7 @@ export class Sound {
                     this._loading = false;
                     reject(error);
                 };
-                ExponentAV.loadForSound(nativeSource, fullInitialStatus)
-                    .then(loadSuccess)
-                    .catch(loadError);
+                ExponentAV.loadForSound(nativeSource, fullInitialStatus).then(loadSuccess).catch(loadError);
             });
         }
         else {

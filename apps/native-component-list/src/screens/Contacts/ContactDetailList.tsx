@@ -41,7 +41,7 @@ export default function ContactDetailList(props: SectionListProps<DetailListItem
       {...props}
       renderSectionHeader={({ section: { title } }) => <Text style={styles.header}>{title}</Text>}
       style={styles.list}
-      keyExtractor={item => item.id}
+      keyExtractor={(item) => item.id}
       sections={props.sections}
       renderItem={({ item }) => <ContactDetailListItem {...item} />}
     />

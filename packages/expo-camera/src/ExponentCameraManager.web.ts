@@ -28,7 +28,7 @@ function getUserMedia(constraints: MediaStreamConstraints): Promise<MediaStream>
     navigator.getUserMedia ||
     (navigator as any).webkitGetUserMedia ||
     (navigator as any).mozGetUserMedia ||
-    function() {
+    function () {
       const error: any = new Error('Permission unimplemented');
       error.code = 0;
       error.name = 'NotAllowedError';

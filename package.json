@@ -29,9 +29,9 @@
     "react-native-unimodules": "~0.15.0-alpha.0"
   },
   "devDependencies": {
-    "@expo/config-types": "^40.0.0-beta.2",
-    "eslint": "^7.9.0",
+    "@expo/config-types": "^42.0.0",
+    "eslint": "^7.31.0",
     "expo-yarn-workspaces": "*",
-    "prettier": "^1.19.1"
+    "prettier": "^2.3.1"
   }
 }

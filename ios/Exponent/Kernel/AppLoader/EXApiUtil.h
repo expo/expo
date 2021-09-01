@@ -1,7 +1,7 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 #import <Foundation/Foundation.h>
-#import <EXUpdates/EXUpdatesRawManifest.h>
+#import <EXManifests/EXManifestsManifest.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -26,7 +26,7 @@ typedef void (^EXVerifySignatureErrorBlock)(NSError *error);
                            successBlock:(EXVerifySignatureSuccessBlock)successBlock
                              errorBlock:(EXVerifySignatureErrorBlock)errorBlock;
 
-+ (NSURL *)bundleUrlFromManifest:(EXUpdatesRawManifest *)manifest;
++ (NSURL *)bundleUrlFromManifest:(EXManifestsManifest *)manifest;
 + (NSURL *)encodedUrlFromString:(NSString *)urlString;
 
 @end

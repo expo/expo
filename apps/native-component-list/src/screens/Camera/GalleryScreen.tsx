@@ -27,7 +27,7 @@ function useLoadedPhotos() {
   React.useEffect(() => {
     let isMounted = true;
     if (Platform.OS !== 'web') {
-      FileSystem.readDirectoryAsync(PHOTOS_DIR).then(photos => {
+      FileSystem.readDirectoryAsync(PHOTOS_DIR).then((photos) => {
         if (isMounted) {
           setPhotos(photos);
         }
@@ -58,7 +58,7 @@ class LoadedGalleryScreen extends React.Component<
       if (isSelected) {
         selected.push(uri);
       } else {
-        selected = selected.filter(item => item !== uri);
+        selected = selected.filter((item) => item !== uri);
       }
       return { selected };
     });
@@ -74,7 +74,7 @@ class LoadedGalleryScreen extends React.Component<
         throw new Error('Denied MEDIA_LIBRARY permissions!');
       }
 
-      const promises = photos.map(photoUri => {
+      const promises = photos.map((photoUri) => {
         return MediaLibrary.createAssetAsync(photoUri);
       });
 

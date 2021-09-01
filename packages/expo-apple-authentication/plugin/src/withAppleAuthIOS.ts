@@ -7,8 +7,8 @@ import { ConfigPlugin, withEntitlementsPlist, withInfoPlist } from '@expo/config
  * @param config
  * @returns
  */
-export const withIOSMixedLocales: ConfigPlugin = config => {
-  return withInfoPlist(config, config => {
+export const withIOSMixedLocales: ConfigPlugin = (config) => {
+  return withInfoPlist(config, (config) => {
     config.modResults.CFBundleAllowMixedLocalizations =
       config.modResults.CFBundleAllowMixedLocalizations ?? true;
 
@@ -16,9 +16,9 @@ export const withIOSMixedLocales: ConfigPlugin = config => {
   });
 };
 
-export const withAppleAuthIOS: ConfigPlugin = config => {
+export const withAppleAuthIOS: ConfigPlugin = (config) => {
   config = withIOSMixedLocales(config);
-  return withEntitlementsPlist(config, config => {
+  return withEntitlementsPlist(config, (config) => {
     config.modResults['com.apple.developer.applesignin'] = ['Default'];
     return config;
   });

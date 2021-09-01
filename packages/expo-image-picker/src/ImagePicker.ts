@@ -120,8 +120,8 @@ export const useMediaLibraryPermissions = createPermissionHook<
   { writeOnly?: boolean }
 >({
   // TODO(cedric): permission requesters should have an options param or a different requester
-  getMethod: options => getMediaLibraryPermissionsAsync(options?.writeOnly),
-  requestMethod: options => requestMediaLibraryPermissionsAsync(options?.writeOnly),
+  getMethod: (options) => getMediaLibraryPermissionsAsync(options?.writeOnly),
+  requestMethod: (options) => requestMediaLibraryPermissionsAsync(options?.writeOnly),
 });
 
 // @needsAudit

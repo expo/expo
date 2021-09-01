@@ -95,7 +95,7 @@
 {
   EXKernelAppRecord *visibleApp = [EXKernel sharedInstance].visibleApp;
   NSString *manifestString = nil;
-  EXUpdatesRawManifest *manifest = visibleApp.appLoader.manifest;
+  EXManifestsManifest *manifest = visibleApp.appLoader.manifest;
   if (manifest && [NSJSONSerialization isValidJSONObject:manifest.rawManifestJSON]) {
     NSError *error;
     NSData *jsonData = [NSJSONSerialization dataWithJSONObject:manifest.rawManifestJSON options:0 error:&error];

@@ -246,7 +246,7 @@ static NSString * const ABI41_0_0EXUpdatesErrorEventName = @"error";
     [ABI41_0_0EXUpdatesUtils sendEventToBridge:_bridge withType:ABI41_0_0EXUpdatesErrorEventName body:@{@"message": error.localizedDescription}];
   } else if (status == ABI41_0_0EXUpdatesBackgroundUpdateStatusUpdateAvailable) {
     NSAssert(update != nil, @"Background update with error status must have a nonnull update object");
-    [ABI41_0_0EXUpdatesUtils sendEventToBridge:_bridge withType:ABI41_0_0EXUpdatesUpdateAvailableEventName body:@{@"manifest": update.rawManifest.rawManifestJSON}];
+    [ABI41_0_0EXUpdatesUtils sendEventToBridge:_bridge withType:ABI41_0_0EXUpdatesUpdateAvailableEventName body:@{@"manifest": update.manifest.rawManifestJSON}];
   } else if (status == ABI41_0_0EXUpdatesBackgroundUpdateStatusNoUpdateAvailable) {
     [ABI41_0_0EXUpdatesUtils sendEventToBridge:_bridge withType:ABI41_0_0EXUpdatesNoUpdateAvailableEventName body:@{}];
   }

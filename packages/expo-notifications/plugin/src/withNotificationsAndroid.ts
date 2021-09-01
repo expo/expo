@@ -45,7 +45,7 @@ export const withNotificationIcons: ConfigPlugin<{ icon: string | null }> = (con
   icon = icon || getNotificationIcon(config);
   return withDangerousMod(config, [
     'android',
-    async config => {
+    async (config) => {
       await setNotificationIconAsync(config.modRequest.projectRoot, icon);
       return config;
     },
@@ -57,7 +57,7 @@ export const withNotificationIconColor: ConfigPlugin<{ color: string | null }> =
   { color }
 ) => {
   // If no color provided in the config plugin props, fallback to value from app.json
-  return withAndroidColors(config, config => {
+  return withAndroidColors(config, (config) => {
     color = color || getNotificationColor(config);
     config.modResults = setNotificationIconColor(color, config.modResults);
     return config;
@@ -71,7 +71,7 @@ export const withNotificationManifest: ConfigPlugin<{
   // If no icon or color provided in the config plugin props, fallback to value from app.json
   icon = icon || getNotificationIcon(config);
   color = color || getNotificationColor(config);
-  return withAndroidManifest(config, config => {
+  return withAndroidManifest(config, (config) => {
     config.modResults = setNotificationConfig({ icon, color }, config.modResults);
     return config;
   });
@@ -80,7 +80,7 @@ export const withNotificationManifest: ConfigPlugin<{
 export const withNotificationSounds: ConfigPlugin<{ sounds: string[] }> = (config, { sounds }) => {
   return withDangerousMod(config, [
     'android',
-    config => {
+    (config) => {
       setNotificationSounds(config.modRequest.projectRoot, sounds);
       return config;
     },

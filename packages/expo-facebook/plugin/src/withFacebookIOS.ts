@@ -18,8 +18,8 @@ const fbSchemes = ['fbapi', 'fb-messenger-api', 'fbauth2', 'fbshareextension'];
 
 const USER_TRACKING = 'This identifier will be used to deliver personalized ads to you.';
 
-export const withFacebookIOS: ConfigPlugin = config => {
-  return withInfoPlist(config, config => {
+export const withFacebookIOS: ConfigPlugin = (config) => {
+  return withInfoPlist(config, (config) => {
     config.modResults = setFacebookConfig(config, config.modResults);
     return config;
   });
@@ -177,7 +177,7 @@ export function setFacebookApplicationQuerySchemes(
 
   // Remove all schemes
   for (const scheme of fbSchemes) {
-    const index = existingSchemes.findIndex(s => s === scheme);
+    const index = existingSchemes.findIndex((s) => s === scheme);
     if (index > -1) {
       existingSchemes.splice(index, 1);
     }

@@ -18,7 +18,7 @@
 
 @implementation EXManagedAppSplashScreenViewProvider
 
-- (instancetype)initWithManifest:(EXUpdatesRawManifest *)manifest
+- (instancetype)initWithManifest:(EXManifestsManifest *)manifest
 {
   if (self = [super init]) {
     _configuration = [EXManagedAppSplashScreenConfigurationBuilder parseManifest:manifest];
@@ -26,7 +26,7 @@
   return self;
 }
 
-- (void)updateSplashScreenViewWithManifest:(EXUpdatesRawManifest *)manifest
+- (void)updateSplashScreenViewWithManifest:(EXManifestsManifest *)manifest
 {
   EXManagedAppSplashScreenConfiguration *previousConfiguration = _configuration;
   _configuration = [EXManagedAppSplashScreenConfigurationBuilder parseManifest:manifest];
@@ -49,10 +49,10 @@
   dispatch_async(dispatch_get_main_queue(), ^{
     EX_ENSURE_STRONGIFY(self);
     splashScreenView.backgroundColor = self.configuration.backgroundColor;
-    
+
     if (self.configuration.imageUrl) {
       EXKernelAppRecord *homeAppRecord = [EXKernel sharedInstance].appRegistry.homeAppRecord;
-      
+
       if (homeAppRecord.appManager.reactBridge) {
         // Only re-create the splashImageView when the imageUrl or imageResizeMode changes
         if (![previousConfiguration.imageUrl isEqualToString:self.configuration.imageUrl] ||

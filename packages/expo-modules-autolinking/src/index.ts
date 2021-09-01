@@ -53,7 +53,7 @@ function registerResolveCommand<OptionsType extends ResolveOptions>(
   return registerSearchCommand<OptionsType>(commandName, fn);
 }
 
-module.exports = async function(args: string[]) {
+module.exports = async function (args: string[]) {
   // Searches for available expo modules.
   registerSearchCommand<SearchOptions & { json?: boolean }>('search', async (results, options) => {
     if (options.json) {
@@ -64,7 +64,7 @@ module.exports = async function(args: string[]) {
   }).option<boolean>('-j, --json', 'Output results in the plain JSON format.', () => true, false);
 
   // Checks whether there are no resolving issues in the current setup.
-  registerSearchCommand('verify', results => {
+  registerSearchCommand('verify', (results) => {
     const numberOfDuplicates = verifySearchResults(results);
     if (!numberOfDuplicates) {
       console.log('✅ Everything is fine!');

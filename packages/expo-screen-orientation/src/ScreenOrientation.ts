@@ -90,11 +90,8 @@ export async function lockPlatformAsync(options: PlatformOrientationInfo): Promi
     throw new UnavailabilityError('ScreenOrientation', 'lockPlatformAsync');
   }
 
-  const {
-    screenOrientationConstantAndroid,
-    screenOrientationArrayIOS,
-    screenOrientationLockWeb,
-  } = options;
+  const { screenOrientationConstantAndroid, screenOrientationArrayIOS, screenOrientationLockWeb } =
+    options;
   let platformOrientationParam: any;
   if (Platform.OS === 'android' && screenOrientationConstantAndroid) {
     if (isNaN(screenOrientationConstantAndroid)) {
@@ -314,5 +311,7 @@ export function removeOrientationChangeListener(subscription: Subscription): voi
     throw new TypeError(`Must pass in a valid subscription`);
   }
   subscription.remove();
-  _orientationChangeSubscribers = _orientationChangeSubscribers.filter(sub => sub !== subscription);
+  _orientationChangeSubscribers = _orientationChangeSubscribers.filter(
+    (sub) => sub !== subscription
+  );
 }

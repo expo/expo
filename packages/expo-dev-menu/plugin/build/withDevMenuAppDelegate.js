@@ -21,7 +21,7 @@ function modifyAppDelegate(appDelegate) {
         // expo-dev-launcher isn't present - we need to init expo-dev-menu
         if (!appDelegate.includes(DEV_MENU_IOS_INIT)) {
             const lines = appDelegate.split('\n');
-            const initializeReactNativeAppIndex = lines.findIndex(line => line.includes('- (RCTBridge *)initializeReactNativeApp'));
+            const initializeReactNativeAppIndex = lines.findIndex((line) => line.includes('- (RCTBridge *)initializeReactNativeApp'));
             const rootViewControllerIndex = lines.findIndex((line, index) => initializeReactNativeAppIndex < index && line.includes('rootViewController'));
             lines.splice(rootViewControllerIndex - 1, 0, DEV_MENU_IOS_INIT);
             appDelegate = lines.join('\n');
@@ -34,8 +34,8 @@ function modifyAppDelegate(appDelegate) {
     return appDelegate;
 }
 exports.modifyAppDelegate = modifyAppDelegate;
-const withDevMenuAppDelegate = config => {
-    return config_plugins_1.withAppDelegate(config, config => {
+const withDevMenuAppDelegate = (config) => {
+    return config_plugins_1.withAppDelegate(config, (config) => {
         if (config.modResults.language === 'objc') {
             config.modResults.contents = modifyAppDelegate(config.modResults.contents);
         }

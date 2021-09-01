@@ -14,12 +14,6 @@ import java.util.concurrent.TimeUnit
 object ReactNativeStaticHelpers {
   private val TAG = ReactNativeStaticHelpers::class.java.simpleName
 
-  private var bundleUrl: String? = null
-  @DoNotStrip
-  @JvmStatic fun setBundleUrl(bundleUrl: String?) {
-    this.bundleUrl = bundleUrl
-  }
-
   @DoNotStrip
   @JvmStatic fun reloadFromManifest(activityId: Int) {
     try {
@@ -34,14 +28,13 @@ object ReactNativeStaticHelpers {
   @DoNotStrip
   @JvmStatic fun getBundleUrlForActivityId(
     activityId: Int,
+    host: String?,
     mainModuleId: String?,
     bundleTypeId: String?,
-    host: String?,
     devMode: Boolean,
     jsMinify: Boolean
   ): String? {
     return try {
-      // TODO(wschurman): the argument order here looks out of order
       Class.forName("host.exp.exponent.kernel.Kernel")
         .getMethod(
           "getBundleUrlForActivityId",
@@ -52,9 +45,9 @@ object ReactNativeStaticHelpers {
           Boolean::class.javaPrimitiveType,
           Boolean::class.javaPrimitiveType
         )
-        .invoke(null, activityId, mainModuleId, bundleTypeId, host, devMode, jsMinify) as String
+        .invoke(null, activityId, host, mainModuleId, bundleTypeId, devMode, jsMinify) as String
     } catch (e: Exception) {
-      bundleUrl
+      null
     }
   }
 
@@ -79,7 +72,7 @@ object ReactNativeStaticHelpers {
         )
         .invoke(null, activityId, host, jsModulePath, devMode, jsMinify) as String
     } catch (e: Exception) {
-      bundleUrl
+      null
     }
   }
 
@@ -106,7 +99,7 @@ object ReactNativeStaticHelpers {
         )
         .invoke(null, activityId, host, jsModulePath, devMode, hmr, jsMinify) as String
     } catch (e: Exception) {
-      bundleUrl
+      null
     }
   }
 

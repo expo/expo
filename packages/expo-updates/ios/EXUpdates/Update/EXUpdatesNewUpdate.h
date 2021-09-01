@@ -1,13 +1,13 @@
 //  Copyright © 2019 650 Industries. All rights reserved.
 
 #import <EXUpdates/EXUpdatesUpdate.h>
-#import <EXUpdates/EXUpdatesNewRawManifest.h>
+#import <EXManifests/EXManifestsNewManifest.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
 @interface EXUpdatesNewUpdate : NSObject
 
-+ (EXUpdatesUpdate *)updateWithNewManifest:(EXUpdatesNewRawManifest *)manifest
++ (EXUpdatesUpdate *)updateWithNewManifest:(EXManifestsNewManifest *)manifest
                                   response:(nullable NSURLResponse *)response
                                     config:(EXUpdatesConfig *)config
                                   database:(EXUpdatesDatabase *)database;

@@ -11,7 +11,7 @@ A paid developer account is required to submit an app &mdash; you can create an 
 
 ## 1. Build a standalone app
 
-You'll need a native app binary signed for store submission. You can either use the [EAS Build](introduction.md) service or do it on your own. You will also need to have EAS CLI installed and authenticated with your Expo account: `npm install -g eas-cli & eas login`.
+You'll need a native app binary signed for store submission. You can either use the [EAS Build](introduction.md) service or do it on your own. You will also need to have EAS CLI installed and authenticated with your Expo account: `npm install -g eas-cli && eas login`.
 
 ## 2. Start the submission
 

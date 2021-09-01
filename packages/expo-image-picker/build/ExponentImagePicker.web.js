@@ -86,7 +86,7 @@ function openFileBrowserAsync({ mediaTypes, capture = false, allowsMultipleSelec
                     });
                 }
                 else {
-                    const imgs = await Promise.all(Array.from(input.files).map(file => readFile(file, { base64 })));
+                    const imgs = await Promise.all(Array.from(input.files).map((file) => readFile(file, { base64 })));
                     resolve({
                         cancelled: false,
                         selected: imgs,

@@ -14,7 +14,7 @@ const withAV: ConfigPlugin<{ microphonePermission?: string | false } | void> = (
   { microphonePermission } = {}
 ) => {
   if (microphonePermission !== false) {
-    config = withInfoPlist(config, config => {
+    config = withInfoPlist(config, (config) => {
       config.modResults.NSMicrophoneUsageDescription =
         microphonePermission || config.modResults.NSMicrophoneUsageDescription || MICROPHONE_USAGE;
       return config;

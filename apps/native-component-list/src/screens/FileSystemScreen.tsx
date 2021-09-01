@@ -41,7 +41,7 @@ export default class FileSystemScreen extends React.Component<{}, State> {
   _startDownloading = async () => {
     const url = 'http://ipv4.download.thinkbroadband.com/5MB.zip';
     const fileUri = FileSystem.documentDirectory + '5MB.zip';
-    const callback: FileSystem.DownloadProgressCallback = downloadProgress => {
+    const callback: FileSystem.DownloadProgressCallback = (downloadProgress) => {
       const progress =
         downloadProgress.totalBytesWritten / downloadProgress.totalBytesExpectedToWrite;
       this.setState({
@@ -122,7 +122,7 @@ export default class FileSystemScreen extends React.Component<{}, State> {
       const downloadJson = await AsyncStorage.getItem('pausedDownload');
       if (downloadJson !== null) {
         const downloadFromStore = JSON.parse(downloadJson);
-        const callback: FileSystem.DownloadProgressCallback = downloadProgress => {
+        const callback: FileSystem.DownloadProgressCallback = (downloadProgress) => {
           const progress =
             downloadProgress.totalBytesWritten / downloadProgress.totalBytesExpectedToWrite;
           this.setState({

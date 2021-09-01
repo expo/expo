@@ -3,6 +3,7 @@ org.unimodules.apploader
 org.unimodules.interfaces.taskManager
 org.unimodules.core.interfaces.Consumer
 org.unimodules.core.interfaces.SingletonModule
+expo.modules.manifests
 expo.modules.notifications.notifications.model
 expo.modules.notifications.notifications.enums
 expo.modules.notifications.badge.interfaces.BadgeManager

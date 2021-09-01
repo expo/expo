@@ -287,12 +287,20 @@ function _onAppStateChangeAndroid(state) {
     }
 }
 async function _openBrowserAndWaitAndroidAsync(startUrl, browserParams = {}) {
-    const appStateChangedToActive = new Promise(resolve => {
+    const appStateChangedToActive = new Promise((resolve) => {
         _onWebBrowserCloseAndroid = resolve;
         AppState.addEventListener('change', _onAppStateChangeAndroid);
     });
     let result = { type: WebBrowserResultType.CANCEL };
-    const { type } = await openBrowserAsync(startUrl, browserParams);
+    let type = null;
+    try {
+        ({ type } = await openBrowserAsync(startUrl, browserParams));
+    }
+    catch (e) {
+        AppState.removeEventListener('change', _onAppStateChangeAndroid);
+        _onWebBrowserCloseAndroid = null;
+        throw e;
+    }
     if (type === 'opened') {
         await appStateChangedToActive;
         result = { type: WebBrowserResultType.DISMISS };
@@ -339,7 +347,7 @@ function _stopWaitingForRedirect() {
     _redirectHandler = null;
 }
 function _waitForRedirectAsync(returnUrl) {
-    return new Promise(resolve => {
+    return new Promise((resolve) => {
         _redirectHandler = (event) => {
             if (event.url.startsWith(returnUrl)) {
                 resolve({ url: event.url, type: 'success' });

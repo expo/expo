@@ -16,7 +16,7 @@ import javax.inject.Inject;
 import androidx.annotation.Nullable;
 import abi42_0_0.expo.modules.constants.ConstantsService;
 import abi42_0_0.expo.modules.interfaces.constants.ConstantsInterface;
-import expo.modules.updates.manifest.raw.RawManifest;
+import expo.modules.manifests.core.Manifest;
 import host.exp.exponent.Constants;
 import host.exp.exponent.di.NativeModuleDepsProvider;
 import host.exp.exponent.kernel.ExpoViewKernel;
@@ -29,7 +29,7 @@ public class ConstantsBinding extends ConstantsService implements ConstantsInter
   ExponentSharedPreferences mExponentSharedPreferences;
 
   private final Map<String, Object> mExperienceProperties;
-  private RawManifest mManifest;
+  private Manifest mManifest;
 
   private static int convertPixelsToDp(float px, Context context) {
     Resources resources = context.getResources();
@@ -38,7 +38,7 @@ public class ConstantsBinding extends ConstantsService implements ConstantsInter
     return (int) dp;
   }
 
-  public ConstantsBinding(Context context, Map<String, Object> experienceProperties, RawManifest manifest) {
+  public ConstantsBinding(Context context, Map<String, Object> experienceProperties, Manifest manifest) {
     super(context);
     NativeModuleDepsProvider.getInstance().inject(ConstantsBinding.class, this);
 

@@ -8,7 +8,7 @@ export default function ViewPagerScreen() {
       style={styles.container}
       initialPage={0}
       transitionStyle={Platform.OS === 'ios' ? 'curl' : 'scroll'}
-      onPageSelected={_ => {
+      onPageSelected={(_) => {
         console.log('New page!');
       }}>
       <View key="1" style={styles.page}>

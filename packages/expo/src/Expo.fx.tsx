@@ -70,7 +70,7 @@ if (__DEV__) {
     const originalSetWrapperComponentProvider = AppRegistry.setWrapperComponentProvider;
 
     // @ts-ignore
-    AppRegistry.setWrapperComponentProvider = provider => {
+    AppRegistry.setWrapperComponentProvider = (provider) => {
       function PatchedProviderComponent(props: any) {
         const ProviderComponent = provider();
 

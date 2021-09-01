@@ -391,7 +391,7 @@ public class DevServerHelper {
 
     private String createBundleURL(String mainModuleID, BundleType type, String host) {
         try {
-            return (String) Class.forName("host.exp.exponent.ReactNativeStaticHelpers").getMethod("getBundleUrlForActivityId", int.class, String.class, String.class, String.class, boolean.class, boolean.class).invoke(null, mSettings.exponentActivityId, mainModuleID, type.typeID(), host, getDevMode(), getJSMinifyMode());
+            return (String) Class.forName("host.exp.exponent.ReactNativeStaticHelpers").getMethod("getBundleUrlForActivityId", int.class, String.class, String.class, String.class, boolean.class, boolean.class).invoke(null, mSettings.exponentActivityId, host, mainModuleID, type.typeID(), getDevMode(), getJSMinifyMode());
         } catch (Exception expoHandleErrorException) {
             expoHandleErrorException.printStackTrace();
             return null;
@@ -404,7 +404,7 @@ public class DevServerHelper {
 
     private String createBundleURL(String mainModuleID, BundleType type, String host, boolean modulesOnly, boolean runModule) {
         try {
-            return (String) Class.forName("host.exp.exponent.ReactNativeStaticHelpers").getMethod("getBundleUrlForActivityId", int.class, String.class, String.class, String.class, boolean.class, boolean.class).invoke(null, mSettings.exponentActivityId, mainModuleID, type.typeID(), host, getDevMode(), getJSMinifyMode());
+            return (String) Class.forName("host.exp.exponent.ReactNativeStaticHelpers").getMethod("getBundleUrlForActivityId", int.class, String.class, String.class, String.class, boolean.class, boolean.class).invoke(null, mSettings.exponentActivityId, host, mainModuleID, type.typeID(), getDevMode(), getJSMinifyMode());
         } catch (Exception expoHandleErrorException) {
             expoHandleErrorException.printStackTrace();
             return null;

@@ -4,24 +4,24 @@
 #import <ABI40_0_0EXUpdates/ABI40_0_0EXUpdatesEmbeddedAppLoader.h>
 #import <ABI40_0_0EXUpdates/ABI40_0_0EXUpdatesUpdate+Private.h>
 #import <ABI40_0_0EXUpdates/ABI40_0_0EXUpdatesUtils.h>
-#import <ABI40_0_0EXUpdates/ABI40_0_0EXUpdatesBareRawManifest.h>
+#import <ABI40_0_0EXManifests/ABI40_0_0EXManifestsBareManifest.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
 @implementation ABI40_0_0EXUpdatesBareUpdate
 
-+ (ABI40_0_0EXUpdatesUpdate *)updateWithBareRawManifest:(ABI40_0_0EXUpdatesBareRawManifest *)manifest
++ (ABI40_0_0EXUpdatesUpdate *)updateWithBareManifest:(ABI40_0_0EXManifestsBareManifest *)manifest
                                         config:(ABI40_0_0EXUpdatesConfig *)config
                                       database:(ABI40_0_0EXUpdatesDatabase *)database
 {
-  ABI40_0_0EXUpdatesUpdate *update = [[ABI40_0_0EXUpdatesUpdate alloc] initWithRawManifest:manifest
+  ABI40_0_0EXUpdatesUpdate *update = [[ABI40_0_0EXUpdatesUpdate alloc] initWithManifest:manifest
                                                                   config:config
                                                                 database:database];
 
   NSString *updateId = manifest.rawId;
   NSNumber *commitTime = manifest.commitTimeNumber;
   NSArray *assets = manifest.assets;
-  
+
   NSAssert(updateId != nil, @"update ID should not be null");
 
   NSUUID *uuid = [[NSUUID alloc] initWithUUIDString:(NSString *)updateId];

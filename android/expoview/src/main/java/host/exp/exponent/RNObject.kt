@@ -98,8 +98,9 @@ class RNObject {
     return callWithReceiver(null, name, *args)
   }
 
-  fun callStaticRecursive(name: String, vararg args: Any?): RNObject {
-    return wrap(callStatic(name, *args))
+  fun callStaticRecursive(name: String, vararg args: Any?): RNObject? {
+    val result = callStatic(name, *args) ?: return null
+    return wrap(result)
   }
 
   fun setField(name: String, value: Any) {
@@ -165,7 +166,7 @@ class RNObject {
 
     const val UNVERSIONED = "UNVERSIONED"
 
-    @JvmStatic fun wrap(obj: Any?): RNObject {
+    @JvmStatic fun wrap(obj: Any): RNObject {
       return RNObject(obj)
     }
 

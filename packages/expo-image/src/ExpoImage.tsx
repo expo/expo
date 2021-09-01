@@ -1,11 +1,22 @@
 import React from 'react';
-import { Image, requireNativeComponent, StyleSheet, Platform, processColor } from 'react-native';
+import {
+  Image,
+  requireNativeComponent,
+  NativeModules,
+  StyleSheet,
+  Platform,
+  processColor,
+} from 'react-native';
 
 import { ImageProps } from './Image';
 
 type NativeExpoImageProps = ImageProps;
 
 const NativeExpoImage = requireNativeComponent<NativeExpoImageProps>('ExpoImage');
+
+const ExpoImageModule = NativeModules.ExpoImageModule;
+
+export { ExpoImageModule };
 
 export default function ExpoImage({ source, style, defaultSource, ...props }: ImageProps) {
   const resolvedSource = Image.resolveAssetSource(source ?? {});

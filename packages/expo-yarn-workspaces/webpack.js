@@ -33,7 +33,7 @@ exports.createWebpackConfigAsync = async function createWebpackConfigAsync(env, 
     const trailingPattern = `/+(${registryFilenames})`;
 
     const files = await Promise.all(
-      patterns.map(pattern =>
+      patterns.map((pattern) =>
         glob(pattern.replace(/\/?$/, trailingPattern), {
           cwd: workspaceRootPath,
           ignore: `/node_modules/**/+(${registryFilenames})`,

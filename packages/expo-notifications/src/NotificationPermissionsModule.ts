@@ -56,9 +56,7 @@ async function resolvePermissionAsync({
           }
         }
         // Some browsers require a callback argument and some return a Promise
-        Notification.requestPermission(resolveOnce)
-          ?.then(resolveOnce)
-          ?.catch(reject);
+        Notification.requestPermission(resolveOnce)?.then(resolveOnce)?.catch(reject);
       });
     }
     return convertPermissionStatus(status);

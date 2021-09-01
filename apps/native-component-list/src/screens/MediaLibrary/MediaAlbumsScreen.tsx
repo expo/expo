@@ -34,12 +34,12 @@ export default class MediaAlbumsScreen extends React.Component<Props, State> {
   };
 
   componentDidMount() {
-    this.fetchAlbums(this.state.includeSmartAlbums).then(albums => this.setState({ albums }));
+    this.fetchAlbums(this.state.includeSmartAlbums).then((albums) => this.setState({ albums }));
   }
 
   componentDidUpdate(_: Props, lastState: State) {
     if (lastState.includeSmartAlbums !== this.state.includeSmartAlbums) {
-      this.fetchAlbums(this.state.includeSmartAlbums).then(albums => this.setState({ albums }));
+      this.fetchAlbums(this.state.includeSmartAlbums).then((albums) => this.setState({ albums }));
     }
   }
 
@@ -105,7 +105,7 @@ export default class MediaAlbumsScreen extends React.Component<Props, State> {
         <Switch
           value={this.state.includeSmartAlbums}
           onValueChange={() =>
-            this.setState(state => ({ includeSmartAlbums: !state.includeSmartAlbums }))
+            this.setState((state) => ({ includeSmartAlbums: !state.includeSmartAlbums }))
           }
         />
       </View>

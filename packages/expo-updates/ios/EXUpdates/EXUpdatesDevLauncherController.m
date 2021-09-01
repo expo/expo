@@ -96,7 +96,7 @@ typedef NS_ENUM(NSInteger, EXUpdatesDevLauncherErrorCode) {
 
   EXUpdatesRemoteAppLoader *loader = [[EXUpdatesRemoteAppLoader alloc] initWithConfig:updatesConfiguration database:controller.database directory:controller.updatesDirectory completionQueue:controller.controllerQueue];
   [loader loadUpdateFromUrl:updatesConfiguration.updateUrl onManifest:^BOOL(EXUpdatesUpdate * _Nonnull update) {
-    return manifestBlock(update.rawManifest.rawManifestJSON);
+    return manifestBlock(update.manifest.rawManifestJSON);
   } asset:^(EXUpdatesAsset * _Nonnull asset, NSUInteger successfulAssetCount, NSUInteger failedAssetCount, NSUInteger totalAssetCount) {
     progressBlock(successfulAssetCount, failedAssetCount, totalAssetCount);
   } success:^(EXUpdatesUpdate * _Nullable update) {
@@ -136,7 +136,7 @@ typedef NS_ENUM(NSInteger, EXUpdatesDevLauncherErrorCode) {
 
     [controller setIsStarted:YES];
     [controller setLauncher:launcher];
-    successBlock(launcher.launchedUpdate.rawManifest.rawManifestJSON);
+    successBlock(launcher.launchedUpdate.manifest.rawManifestJSON);
     [controller runReaper];
   }];
 }

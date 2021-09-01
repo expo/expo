@@ -21,7 +21,7 @@ export default function TitleSwitch({
   return (
     <View style={[styles.container, style]}>
       <B style={[styles.title, titleStyle]}>{outputTitle}</B>
-      <Switch disabled={disabled} value={value} onValueChange={value => setValue(value)} />
+      <Switch disabled={disabled} value={value} onValueChange={(value) => setValue(value)} />
     </View>
   );
 }

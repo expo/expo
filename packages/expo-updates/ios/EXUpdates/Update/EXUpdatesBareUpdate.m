@@ -4,24 +4,24 @@
 #import <EXUpdates/EXUpdatesEmbeddedAppLoader.h>
 #import <EXUpdates/EXUpdatesUpdate+Private.h>
 #import <EXUpdates/EXUpdatesUtils.h>
-#import <EXUpdates/EXUpdatesBareRawManifest.h>
+#import <EXManifests/EXManifestsBareManifest.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
 @implementation EXUpdatesBareUpdate
 
-+ (EXUpdatesUpdate *)updateWithBareRawManifest:(EXUpdatesBareRawManifest *)manifest
++ (EXUpdatesUpdate *)updateWithBareManifest:(EXManifestsBareManifest *)manifest
                                         config:(EXUpdatesConfig *)config
                                       database:(EXUpdatesDatabase *)database
 {
-  EXUpdatesUpdate *update = [[EXUpdatesUpdate alloc] initWithRawManifest:manifest
+  EXUpdatesUpdate *update = [[EXUpdatesUpdate alloc] initWithManifest:manifest
                                                                   config:config
                                                                 database:database];
 
   NSString *updateId = manifest.rawId;
   NSNumber *commitTime = manifest.commitTimeNumber;
   NSArray *assets = manifest.assets;
-  
+
   NSAssert(updateId != nil, @"update ID should not be null");
 
   NSUUID *uuid = [[NSUUID alloc] initWithUUIDString:(NSString *)updateId];

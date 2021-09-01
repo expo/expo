@@ -117,7 +117,7 @@ function openFileBrowserAsync<T extends OpenFileBrowserOptions>({
           } as ExpandImagePickerResult<T>);
         } else {
           const imgs: ImageInfo[] = await Promise.all(
-            Array.from(input.files).map(file => readFile(file, { base64 }))
+            Array.from(input.files).map((file) => readFile(file, { base64 }))
           );
           resolve({
             cancelled: false,

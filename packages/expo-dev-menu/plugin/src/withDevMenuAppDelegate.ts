@@ -24,7 +24,7 @@ export function modifyAppDelegate(appDelegate: string) {
     if (!appDelegate.includes(DEV_MENU_IOS_INIT)) {
       const lines = appDelegate.split('\n');
 
-      const initializeReactNativeAppIndex = lines.findIndex(line =>
+      const initializeReactNativeAppIndex = lines.findIndex((line) =>
         line.includes('- (RCTBridge *)initializeReactNativeApp')
       );
 
@@ -45,8 +45,8 @@ export function modifyAppDelegate(appDelegate: string) {
   return appDelegate;
 }
 
-export const withDevMenuAppDelegate: ConfigPlugin = config => {
-  return withAppDelegate(config, config => {
+export const withDevMenuAppDelegate: ConfigPlugin = (config) => {
+  return withAppDelegate(config, (config) => {
     if (config.modResults.language === 'objc') {
       config.modResults.contents = modifyAppDelegate(config.modResults.contents);
     } else {

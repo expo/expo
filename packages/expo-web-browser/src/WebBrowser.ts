@@ -349,13 +349,21 @@ async function _openBrowserAndWaitAndroidAsync(
   startUrl: string,
   browserParams: WebBrowserOpenOptions = {}
 ): Promise<WebBrowserResult> {
-  const appStateChangedToActive = new Promise<void>(resolve => {
+  const appStateChangedToActive = new Promise<void>((resolve) => {
     _onWebBrowserCloseAndroid = resolve;
     AppState.addEventListener('change', _onAppStateChangeAndroid);
   });
 
   let result: WebBrowserResult = { type: WebBrowserResultType.CANCEL };
-  const { type } = await openBrowserAsync(startUrl, browserParams);
+  let type: string | null = null;
+
+  try {
+    ({ type } = await openBrowserAsync(startUrl, browserParams));
+  } catch (e) {
+    AppState.removeEventListener('change', _onAppStateChangeAndroid);
+    _onWebBrowserCloseAndroid = null;
+    throw e;
+  }
 
   if (type === 'opened') {
     await appStateChangedToActive;
@@ -417,7 +425,7 @@ function _stopWaitingForRedirect() {
 }
 
 function _waitForRedirectAsync(returnUrl: string): Promise<WebBrowserRedirectResult> {
-  return new Promise(resolve => {
+  return new Promise((resolve) => {
     _redirectHandler = (event: RedirectEvent) => {
       if (event.url.startsWith(returnUrl)) {
         resolve({ url: event.url, type: 'success' });

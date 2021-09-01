@@ -32,7 +32,7 @@ function useCameraTypes(): CameraType[] | null {
       setTypes([CameraType.front, CameraType.back]);
     } else {
       // TODO: This method isn't supported on native
-      Camera.getAvailableCameraTypesAsync().then(types => {
+      Camera.getAvailableCameraTypesAsync().then((types) => {
         if (isMounted) {
           setTypes(types as CameraType[]);
         }
@@ -45,9 +45,7 @@ function useCameraTypes(): CameraType[] | null {
   return types;
 }
 
-function useToggleCameraType(
-  preferredInitialType: CameraType
-): {
+function useToggleCameraType(preferredInitialType: CameraType): {
   // The current camera type, null when loading types.
   type: CameraType | null;
   // Available camera types, null when loading types.
@@ -70,7 +68,7 @@ function useToggleCameraType(
   const toggle =
     types && types.length > 1
       ? () => {
-          const selectedIndex = types.findIndex(c => c === type);
+          const selectedIndex = types.findIndex((c) => c === type);
           const nextIndex = (selectedIndex + 1) % types.length;
           setType(types[nextIndex]);
           return types[nextIndex];
@@ -89,7 +87,7 @@ function useCameraAvailable(): boolean {
       setAvailable(true);
     } else {
       // TODO: This method isn't supported on native
-      Camera.isAvailableAsync().then(isAvailable => {
+      Camera.isAvailableAsync().then((isAvailable) => {
         if (isMounted) {
           setAvailable(isAvailable);
         }
@@ -132,7 +130,7 @@ function QRCodeView() {
   const { type, toggle } = useToggleCameraType(CameraType.back);
 
   const onFlashToggle = React.useCallback(() => {
-    setLit(isLit => !isLit);
+    setLit((isLit) => !isLit);
   }, []);
 
   // hide footer when no actions are possible -- i.e. desktop web
@@ -175,7 +173,7 @@ function QRCodeView() {
                 BarCodeScanner.Constants.BarCodeType.pdf417,
               ],
             }}
-            onBarCodeScanned={incoming => {
+            onBarCodeScanned={(incoming) => {
               if (data !== incoming.data) {
                 console.log('found: ', incoming);
                 setData(incoming.data);

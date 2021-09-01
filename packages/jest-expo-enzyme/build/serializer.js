@@ -28,7 +28,7 @@ function create(StyleSheet) {
             const children = node.children || node.props.children;
             if (children) {
                 if (Array.isArray(children)) {
-                    children.forEach(child => {
+                    children.forEach((child) => {
                         args.push(flattenNodeStyles(child));
                     });
                 }

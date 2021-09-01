@@ -60,7 +60,7 @@ async function getBlobFromWebGLRenderingContext(gl, options = {}) {
         blob = await canvas.convertToBlob({ quality: options.compress, type: options.format });
     }
     else {
-        blob = await new Promise(resolve => {
+        blob = await new Promise((resolve) => {
             canvas.toBlob((blob) => resolve(blob), options.format, options.compress);
         });
     }

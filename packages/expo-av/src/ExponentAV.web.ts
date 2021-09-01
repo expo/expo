@@ -36,7 +36,7 @@ function getUserMedia(constraints: MediaStreamConstraints): Promise<MediaStream>
     navigator.getUserMedia ||
     (navigator as any).webkitGetUserMedia ||
     (navigator as any).mozGetUserMedia ||
-    function() {
+    function () {
       const error: any = new Error('Permission unimplemented');
       error.code = 0;
       error.name = 'NotAllowedError';
@@ -232,9 +232,7 @@ export default {
       uri: null,
     };
   },
-  async prepareAudioRecorder(
-    options
-  ): Promise<{
+  async prepareAudioRecorder(options): Promise<{
     uri: string | null;
     // status is of type RecordingStatus, but without the canRecord field populated
     status: Pick<RecordingStatus, Exclude<keyof RecordingStatus, 'canRecord'>>;
@@ -274,7 +272,7 @@ export default {
       mediaRecorderIsRecording = false;
 
       // Clears recording icon in Chrome tab
-      stream.getTracks().forEach(track => track.stop());
+      stream.getTracks().forEach((track) => track.stop());
     });
 
     const { uri, ...status } = await this.getAudioRecordingStatus();
@@ -319,8 +317,8 @@ export default {
       return this.getAudioRecordingStatus();
     }
 
-    const dataPromise = new Promise(resolve =>
-      mediaRecorder.addEventListener('dataavailable', e => resolve(e.data))
+    const dataPromise = new Promise((resolve) =>
+      mediaRecorder.addEventListener('dataavailable', (e) => resolve(e.data))
     );
 
     mediaRecorder.stop();
@@ -361,7 +359,7 @@ export default {
   async requestPermissionsAsync(): Promise<PermissionResponse> {
     try {
       const stream = await getUserMedia({ audio: true });
-      stream.getTracks().forEach(track => track.stop());
+      stream.getTracks().forEach((track) => track.stop());
       return {
         status: PermissionStatus.GRANTED,
         expires: 'never',

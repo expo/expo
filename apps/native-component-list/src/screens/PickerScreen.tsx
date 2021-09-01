@@ -61,7 +61,7 @@ function GenericPicker(props: Partial<React.ComponentProps<typeof Picker>>) {
 
   return (
     <>
-      <Picker {...props} selectedValue={value} onValueChange={item => setValue(item)}>
+      <Picker {...props} selectedValue={value} onValueChange={(item) => setValue(item)}>
         <Picker.Item label="Java" value="java" />
         <Picker.Item label="JavaScript" value="js" />
         <Picker.Item label="Objective C" value="objc" />
@@ -82,7 +82,7 @@ function FocusPicker(props: Partial<React.ComponentProps<typeof Picker>>) {
         ref={pickerRef}
         {...props}
         selectedValue={value}
-        onValueChange={item => setValue(item)}>
+        onValueChange={(item) => setValue(item)}>
         <Picker.Item label="Java" value="java" />
         <Picker.Item label="JavaScript" value="js" />
         <Picker.Item label="Objective C" value="objc" />

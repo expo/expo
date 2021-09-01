@@ -30,7 +30,7 @@ describe('parse', () => {
     'custom://',
     'custom://?hello=bar',
     'invalid',
-  ])(`parses %p`, url => {
+  ])(`parses %p`, (url) => {
     expect(Linking.parse(url)).toMatchSnapshot();
   });
 });
@@ -59,11 +59,11 @@ describe(Linking.createURL, () => {
       { emptyParam: '' },
       { undefinedParam: undefined },
       { lotsOfSlashes: '/////' },
-    ])(`makes url %p`, queryParams => {
+    ])(`makes url %p`, (queryParams) => {
       expect(Linking.createURL('some/path', { queryParams })).toMatchSnapshot();
     });
 
-    test.each<string>(['path/into/app', ''])(`makes url %p`, path => {
+    test.each<string>(['path/into/app', ''])(`makes url %p`, (path) => {
       expect(Linking.createURL(path)).toMatchSnapshot();
     });
   });
@@ -88,11 +88,11 @@ describe(Linking.createURL, () => {
       { emptyParam: '' },
       { undefinedParam: undefined },
       { lotsOfSlashes: '/////' },
-    ])(`makes url %p`, queryParams => {
+    ])(`makes url %p`, (queryParams) => {
       expect(Linking.createURL('some/path', { queryParams })).toMatchSnapshot();
     });
 
-    test.each<string>(['path/into/app', ''])(`makes url %p`, path => {
+    test.each<string>(['path/into/app', ''])(`makes url %p`, (path) => {
       expect(Linking.createURL(path)).toMatchSnapshot();
     });
 

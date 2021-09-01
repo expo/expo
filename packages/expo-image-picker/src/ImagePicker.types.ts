@@ -98,10 +98,9 @@ export type OpenFileBrowserOptions = {
   base64: boolean;
 };
 
-export type ExpandImagePickerResult<
-  T extends ImagePickerOptions | OpenFileBrowserOptions
-> = T extends {
-  allowsMultipleSelection: true;
-}
-  ? ImagePickerMultipleResult
-  : ImagePickerResult;
+export type ExpandImagePickerResult<T extends ImagePickerOptions | OpenFileBrowserOptions> =
+  T extends {
+    allowsMultipleSelection: true;
+  }
+    ? ImagePickerMultipleResult
+    : ImagePickerResult;

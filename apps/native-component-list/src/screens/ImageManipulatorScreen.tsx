@@ -177,7 +177,7 @@ export default class ImageManipulatorScreen extends React.Component<{}, State> {
   };
 
   _reset = () => {
-    this.setState(state => ({ image: state.original }));
+    this.setState((state) => ({ image: state.original }));
   };
 
   _manipulate = async (
