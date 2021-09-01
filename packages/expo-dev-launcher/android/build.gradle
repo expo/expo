@@ -143,7 +143,7 @@ def getRNVersion() {
   def packageJson = new JsonSlurper().parseText(packageJsonFile.text)
   def version = safeExtGet("reactNativeVersion", packageJson.dependencies["react-native"])
 
-  def coreVersion = version.split("-")[0]
+  def coreVersion = version.replace('~', '').split("-")[0]
 
   def (major, minor, patch) = coreVersion.tokenize('.').collect { it.toInteger() }
 
