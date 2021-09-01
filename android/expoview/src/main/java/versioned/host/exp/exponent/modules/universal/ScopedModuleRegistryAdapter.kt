@@ -14,7 +14,6 @@ interface ScopedModuleRegistryAdapter {
     experienceKey: ExperienceKey,
     experienceProperties: Map<String, Any?>,
     manifest: Manifest,
-    experienceStableLegacyId: String,
     otherModules: List<NativeModule>
   ): List<NativeModule>
 }

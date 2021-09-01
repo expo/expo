@@ -13,5 +13,5 @@ import host.exp.exponent.utils.ScopedContext;
 
 public interface ScopedModuleRegistryAdapter {
   List<ViewManager> createViewManagers(ReactApplicationContext reactContext);
-  List<NativeModule> createNativeModules(ScopedContext scopedContext, ExperienceKey experienceKey, Map<String, Object> experienceProperties, Manifest manifest, String experienceStableLegacyId, List<NativeModule> otherModules);
+  List<NativeModule> createNativeModules(ScopedContext scopedContext, ExperienceKey experienceKey, Map<String, Object> experienceProperties, Manifest manifest, List<NativeModule> otherModules);
 }

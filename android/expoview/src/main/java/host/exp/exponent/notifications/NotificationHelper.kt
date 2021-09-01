@@ -85,8 +85,9 @@ object NotificationHelper {
   }
 
   @JvmStatic fun getPushNotificationToken(
-    deviceId: String?,
+    deviceId: String,
     experienceId: String?,
+    projectId: String?,
     exponentNetwork: ExponentNetwork,
     exponentSharedPreferences: ExponentSharedPreferences,
     listener: TokenListener
@@ -116,11 +117,23 @@ object NotificationHelper {
           val params = JSONObject().apply {
             try {
               put("deviceId", deviceId)
-              put("experienceId", experienceId)
               put("appId", exponentSharedPreferences.context.applicationContext.packageName)
               put("deviceToken", sharedPreferencesToken)
               put("type", "fcm")
               put("development", false)
+
+              when {
+                projectId !== null -> {
+                  put("projectId", projectId)
+                }
+                experienceId !== null -> {
+                  put("experienceId", experienceId)
+                }
+                else -> {
+                  listener.onFailure(Exception("Must supply either experienceId or projectId"))
+                  return
+                }
+              }
             } catch (e: JSONException) {
               listener.onFailure(Exception("Error constructing request"))
               return@execute

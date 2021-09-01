@@ -3,15 +3,16 @@ package versioned.host.exp.exponent.modules.universal
 import android.content.Context
 import com.amplitude.api.AmplitudeClient
 import expo.modules.analytics.amplitude.AmplitudeModule
+import host.exp.exponent.kernel.ExperienceKey
 import java.io.UnsupportedEncodingException
 import java.net.URLEncoder
 
-class ScopedAmplitudeModule(context: Context, experienceStableLegacyId: String) :
+class ScopedAmplitudeModule(context: Context, experienceKey: ExperienceKey) :
   AmplitudeModule(context) {
-  private val stableExperienceLegacyId: String = try {
-    URLEncoder.encode(experienceStableLegacyId, "UTF-8")
+  private val instanceKeyBase: String = try {
+    experienceKey.getUrlEncodedScopeKey()
   } catch (e: UnsupportedEncodingException) {
-    experienceStableLegacyId.hashCode().toString()
+    experienceKey.scopeKey.hashCode().toString()
   }
 
   override fun getClient(apiKey: String?): AmplitudeClient {
@@ -23,6 +24,6 @@ class ScopedAmplitudeModule(context: Context, experienceStableLegacyId: String) 
     //    database isn't cleared when initializing, so scoping by:
     //     - only experienceId would mix saved preferences for other Amplitude apps,
     //     - only apiKey would mix saved preferences for one Amplitude app between experiences.
-    return AmplitudeClient("$stableExperienceLegacyId#$apiKey")
+    return AmplitudeClient("$instanceKeyBase#$apiKey")
   }
 }

@@ -40,6 +40,9 @@ import host.exp.exponent.storage.ExponentSharedPreferences;
 
 import static host.exp.exponent.notifications.helpers.ExpoCronParser.createCronInstance;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 public class NotificationsModule extends ReactContextBaseJavaModule {
 
   private static final String TAG = NotificationsModule.class.getSimpleName();
@@ -53,15 +56,19 @@ public class NotificationsModule extends ReactContextBaseJavaModule {
   @Inject
   ExponentNetwork mExponentNetwork;
 
-  private final ExperienceKey mExperienceKey;
-  private final String mExperienceStableLegacyId;
+  private final @NonNull ExperienceKey mExperienceKey;
+  private final @Nullable String mExperienceStableLegacyId;
+  private final @Nullable String mEASProjectId;
 
   public NotificationsModule(ReactApplicationContext reactContext,
-                             ExperienceKey experienceKey, String experienceStableLegacyId, Map<String, Object> experienceProperties) {
+                             @NonNull ExperienceKey experienceKey,
+                             @Nullable String experienceStableLegacyId,
+                             @Nullable String easProjectId) {
     super(reactContext);
     NativeModuleDepsProvider.getInstance().inject(NotificationsModule.class, this);
     mExperienceKey = experienceKey;
     mExperienceStableLegacyId = experienceStableLegacyId;
+    mEASProjectId = easProjectId;
   }
 
   @Override
@@ -140,7 +147,7 @@ public class NotificationsModule extends ReactContextBaseJavaModule {
 
     try {
       String experienceId = mExperienceStableLegacyId;
-      NotificationHelper.getPushNotificationToken(uuid, experienceId, mExponentNetwork, mExponentSharedPreferences, new NotificationHelper.TokenListener() {
+      NotificationHelper.getPushNotificationToken(uuid, experienceId, mEASProjectId, mExponentNetwork, mExponentSharedPreferences, new NotificationHelper.TokenListener() {
         @Override
         public void onSuccess(String token) {
           promise.resolve(token);

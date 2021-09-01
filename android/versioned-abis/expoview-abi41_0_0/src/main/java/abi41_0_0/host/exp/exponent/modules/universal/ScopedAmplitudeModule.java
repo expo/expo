@@ -8,16 +8,17 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
 import abi41_0_0.expo.modules.analytics.amplitude.AmplitudeModule;
+import host.exp.exponent.kernel.ExperienceKey;
 
 public class ScopedAmplitudeModule extends AmplitudeModule {
-  private String mStableExperienceLegacyId;
+  private String mInstanceKeyBase;
 
-  public ScopedAmplitudeModule(Context context, String experienceStableLegacyId) {
+  public ScopedAmplitudeModule(Context context, ExperienceKey experienceKey) {
     super(context);
     try {
-      mStableExperienceLegacyId = URLEncoder.encode(experienceStableLegacyId, "UTF-8");
+      mInstanceKeyBase = experienceKey.getUrlEncodedScopeKey();
     } catch (UnsupportedEncodingException e) {
-      mStableExperienceLegacyId = Integer.toString(experienceStableLegacyId.hashCode());
+      mInstanceKeyBase = Integer.toString(experienceKey.getScopeKey().hashCode());
     }
   }
 
@@ -31,6 +32,6 @@ public class ScopedAmplitudeModule extends AmplitudeModule {
     //    database isn't cleared when initializing, so scoping by:
     //     - only experienceId would mix saved preferences for other Amplitude apps,
     //     - only apiKey would mix saved preferences for one Amplitude app between experiences.
-    return new AmplitudeClient(mStableExperienceLegacyId + "#" + apiKey);
+    return new AmplitudeClient(mInstanceKeyBase + "#" + apiKey);
   }
 }
