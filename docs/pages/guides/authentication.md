@@ -116,7 +116,7 @@ export default function App() {
 
 | Website                           | Provider | PKCE      | Auto Discovery |
 | --------------------------------- | -------- | --------- | -------------- |
-| [Sign-up][c-auth0] > Applications | OpenID   | Supported | Not Available  |
+| [Sign-up][c-auth0] > Applications | OpenID   | Supported | Available      |
 
 [c-auth0]: https://auth0.com/signup
 
