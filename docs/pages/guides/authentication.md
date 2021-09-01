@@ -27,6 +27,7 @@ If you'd like to see more, you can [open a PR](https://github.com/expo/expo/edit
 
 <SocialGrid>
   <SocialGridItem title="IdentityServer 4" protocol={['OAuth 2', 'OpenID']} href="#identityserver-4" image="/static/images/sdk/auth-session/identity4.png" />
+  <SocialGridItem title="Auth0" protocol={['OAuth 2', 'OpenID']} href="#auth0" image="/static/images/sdk/auth-session/auth0.png" />
   <SocialGridItem title="Azure" protocol={['OAuth 2', 'OpenID']} href="#azure" image="/static/images/sdk/auth-session/azure.png" />
   <SocialGridItem title="Apple" protocol={['iOS Only']} href="/versions/latest/sdk/apple-authentication" image="/static/images/sdk/auth-session/apple.png" />
   <SocialGridItem title="Coinbase" protocol={['OAuth 2']} href="#coinbase" image="/static/images/sdk/auth-session/coinbase.png" />
@@ -132,14 +133,18 @@ import React, { useState, useEffect } from 'react';
 import { makeRedirectUri, useAuthRequest, ResponseType, Prompt } from 'expo-auth-session';
 import * as WebBrowser from 'expo-web-browser';
 import { Button, Platform } from 'react-native';
+
 WebBrowser.maybeCompleteAuthSession();
+
 const discovery = {
   authorizationEndpoint: 'https://<AUTH0_DOMAIN>/authorize',
   tokenEndpoint: 'https://<AUTH0_DOMAIN>/oauth/token',
 };
+
 const App: React.FC = () => {
   const useProxy = Platform.select({ web: false, default: true });
   const [randomValue] = useState(Math.random().toString(36).substring(2, 15));
+
   const [request, response, promptAsync] = useAuthRequest(
     {
       redirectUri: makeRedirectUri({ useProxy }),
@@ -157,11 +162,13 @@ const App: React.FC = () => {
     },
     discovery,
   );
+
   useEffect(() => {
     if (response?.type === 'success') {
       const { code } = response.params;
     }
   }, [response]);
+
   return (
     <Button
       disabled={!request}
@@ -172,6 +179,7 @@ const App: React.FC = () => {
     />
   );
 };
+
 export default App;
 ```
 </SnackInline>
@@ -188,14 +196,18 @@ import React, { useState, useEffect } from 'react';
 import { makeRedirectUri, useAuthRequest, ResponseType, Prompt } from 'expo-auth-session';
 import * as WebBrowser from 'expo-web-browser';
 import { Button, Platform } from 'react-native';
+
 WebBrowser.maybeCompleteAuthSession();
+
 const discovery = {
   authorizationEndpoint: 'https://<AUTH0_DOMAIN>/authorize',
   tokenEndpoint: 'https://<AUTH0_DOMAIN>/oauth/token',
 };
+
 const App: React.FC = () => {
   const useProxy = Platform.select({ web: false, default: true });
   const [randomValue] = useState(Math.random().toString(36).substring(2, 15));
+
   const [request, response, promptAsync] = useAuthRequest(
     {
       redirectUri: makeRedirectUri({ useProxy }),
@@ -209,12 +221,14 @@ const App: React.FC = () => {
     },
     discovery,
   );
+
   useEffect(() => {
     if (response?.type === 'success') {
       //The id_token is used as the access token in implicit flow.
       const { id_token } = response.params;
     }
   }, [response]);
+
   return (
     <Button
       disabled={!request}
@@ -225,6 +239,7 @@ const App: React.FC = () => {
     />
   );
 };
+
 export default App;
 ```
 </SnackInline>
@@ -240,15 +255,19 @@ export default App;
 import React, { useState, useEffect } from 'react';
 import { makeRedirectUri, useAuthRequest, ResponseType, Prompt, exchangeCodeAsync } from 'expo-auth-session';
 import * as WebBrowser from 'expo-web-browser';
-import { Button, Platfor } from 'react-native';
+import { Button, Platform } from 'react-native';
+
 WebBrowser.maybeCompleteAuthSession();
+
 const discovery = {
   authorizationEndpoint: 'https://<AUTH0_DOMAIN>/authorize',
   tokenEndpoint: 'https://<AUTH0_DOMAIN>/oauth/token',
 };
+
 const App: React.FC = () => {
   const useProxy = Platform.select({ web: false, default: true });
   const [randomValue] = useState(Math.random().toString(36).substring(2, 15));
+
   const [request, response, promptAsync] = useAuthRequest(
     {
       redirectUri: makeRedirectUri({ useProxy }),
@@ -266,6 +285,7 @@ const App: React.FC = () => {
     },
     discovery,
   );
+
   useEffect(() => {
     async function getToken() {
       if (response?.type === 'success') {
@@ -289,6 +309,7 @@ const App: React.FC = () => {
     }
     getToken();
   }, [response]);
+
   return (
     <Button
       disabled={!request}
@@ -299,6 +320,7 @@ const App: React.FC = () => {
     />
   );
 };
+
 export default App;
 ```
 </SnackInline>
@@ -308,7 +330,7 @@ export default App;
 </Tabs>
 
 <!-- End Auth0 -->
-  
+
 ### Azure
 
 <CreateAppButton name="Azure" href="https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-overview" />
@@ -424,7 +446,7 @@ const discovery = {
 
 const redirectUri = makeRedirectUri({
   /* @info The URI <code>[scheme]://</code> to be used in bare and standalone. If undefined, the <code>scheme</code> property of your app.json or app.config.js will be used instead. */
-  scheme: 'your.app'  
+  scheme: 'your.app'
 /* @end */});
 
 const CLIENT_ID = "CLIENT_ID";
