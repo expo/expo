@@ -21,9 +21,9 @@ import * as Constants from '~/constants/theme';
 import { VERSIONS } from '~/constants/versions';
 import { NavigationRoute, Url } from '~/types/common';
 import { PageHeader } from '~/ui/components/page-header';
-import { Navigation } from '~/ui/containers/navigation';
-import { Menu } from '~/ui/containers/menu';
-import { Toc } from '~/ui/containers/toc';
+import { Navigation } from '~/ui/containers/Navigation';
+import { Menu } from '~/ui/containers/Menu';
+import { Toc } from '~/ui/containers/Toc';
 
 const STYLES_DOCUMENT = css`
   background: ${theme.background.default};

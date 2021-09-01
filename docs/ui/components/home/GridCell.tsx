@@ -3,8 +3,8 @@ import { borderRadius, theme, colors } from '@expo/styleguide';
 import React, { PropsWithChildren } from 'react';
 import { Col, ColProps } from 'react-grid-system';
 
-import { Link } from '~/ui/components/link';
-import { P } from '~/ui/components/text';
+import { Link } from '~/ui/components/Link';
+import { P } from '~/ui/components/Text';
 import { fontStacks } from '~/ui/foundations/typography';
 
 type GridCellProps = ColProps & {

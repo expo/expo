@@ -1,7 +1,7 @@
 import { css } from '@emotion/react';
 import React from 'react';
 
-import { TextAlign } from '~/ui/components/table/Table.shared';
+import { TextAlign } from '~/ui/components/Table/Table.shared';
 
 type CellProps = {
   children?: React.ReactNode;

@@ -2,8 +2,8 @@ import { css } from '@emotion/react';
 import { theme } from '@expo/styleguide';
 import React from 'react';
 
-import { Row } from '~/ui/components/table/Row';
-import { TextAlign } from '~/ui/components/table/Table.shared';
+import { Row } from '~/ui/components/Table/Row';
+import { TextAlign } from '~/ui/components/Table/Table.shared';
 
 type TableHeadProps = {
   headers: string[];
