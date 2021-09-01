@@ -9,17 +9,13 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
 import java.io.File;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.UUID;
 
 import androidx.room.Room;
 import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner;
@@ -44,7 +40,7 @@ public class EmbeddedLoaderTest {
   private UpdateManifest manifest;
 
   private EmbeddedLoader loader;
-  private EmbeddedFiles mockEmbeddedFiles;
+  private LoaderFiles mockLoaderFiles;
 
   @Before
   public void setup() throws JSONException {
@@ -55,14 +51,14 @@ public class EmbeddedLoaderTest {
 
     Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
     db = Room.inMemoryDatabaseBuilder(context, UpdatesDatabase.class).build();
-    mockEmbeddedFiles = mock(EmbeddedFiles.class);
+    mockLoaderFiles = mock(LoaderFiles.class);
 
     loader = new EmbeddedLoader(
             context,
             configuration,
             db,
             new File("testDirectory"),
-            mockEmbeddedFiles
+            mockLoaderFiles
     );
 
     manifest = BareUpdateManifest.Companion.fromBareManifest(
@@ -75,7 +71,7 @@ public class EmbeddedLoaderTest {
   public void testEmbeddedLoader_SimpleCase() throws IOException, NoSuchAlgorithmException {
     loader.processUpdateManifest(manifest);
 
-    verify(mockEmbeddedFiles, times(2)).copyAssetAndGetHash(any(), any(), any());
+    verify(mockLoaderFiles, times(2)).copyAssetAndGetHash(any(), any(), any());
 
     List<UpdateEntity> updates = db.updateDao().loadAllUpdates();
     Assert.assertEquals(1, updates.size());
@@ -87,11 +83,11 @@ public class EmbeddedLoaderTest {
 
   @Test
   public void testEmbeddedLoader_FailureCase() throws IOException, NoSuchAlgorithmException {
-    when(mockEmbeddedFiles.copyAssetAndGetHash(any(), any(), any())).thenThrow(new IOException("mock failed to copy asset"));
+    when(mockLoaderFiles.copyAssetAndGetHash(any(), any(), any())).thenThrow(new IOException("mock failed to copy asset"));
 
     loader.processUpdateManifest(manifest);
 
-    verify(mockEmbeddedFiles, times(2)).copyAssetAndGetHash(any(), any(), any());
+    verify(mockLoaderFiles, times(2)).copyAssetAndGetHash(any(), any(), any());
 
     List<UpdateEntity> updates = db.updateDao().loadAllUpdates();
     Assert.assertEquals(1, updates.size());
@@ -111,7 +107,7 @@ public class EmbeddedLoaderTest {
 
     loader.processUpdateManifest(multipleScalesManifest);
 
-    verify(mockEmbeddedFiles, times(2)).copyAssetAndGetHash(any(), any(), any());
+    verify(mockLoaderFiles, times(2)).copyAssetAndGetHash(any(), any(), any());
 
     List<UpdateEntity> updates = db.updateDao().loadAllUpdates();
     Assert.assertEquals(1, updates.size());
@@ -124,7 +120,7 @@ public class EmbeddedLoaderTest {
   @Test
   public void testEmbeddedLoader_AssetExists_BothDbAndDisk() throws IOException, NoSuchAlgorithmException {
     // return true when asked if file 54da1e9816c77e30ebc5920e256736f2 exists
-    when(mockEmbeddedFiles.fileExists(any())).thenAnswer((Answer<Boolean>) invocation -> invocation.getArgument(0).toString().contains("54da1e9816c77e30ebc5920e256736f2"));
+    when(mockLoaderFiles.fileExists(any())).thenAnswer((Answer<Boolean>) invocation -> invocation.getArgument(0).toString().contains("54da1e9816c77e30ebc5920e256736f2"));
 
     AssetEntity existingAsset = new AssetEntity("54da1e9816c77e30ebc5920e256736f2", "png");
     existingAsset.relativePath = "54da1e9816c77e30ebc5920e256736f2.png";
@@ -133,7 +129,7 @@ public class EmbeddedLoaderTest {
     loader.processUpdateManifest(manifest);
 
     // only 1 asset (bundle) should be copied since the other asset already exists
-    verify(mockEmbeddedFiles, times(1)).copyAssetAndGetHash(any(), any(), any());
+    verify(mockLoaderFiles, times(1)).copyAssetAndGetHash(any(), any(), any());
 
     List<UpdateEntity> updates = db.updateDao().loadAllUpdates();
     Assert.assertEquals(1, updates.size());
@@ -146,7 +142,7 @@ public class EmbeddedLoaderTest {
   @Test
   public void testEmbeddedLoader_AssetExists_DbOnly() throws IOException, NoSuchAlgorithmException {
     // return true when asked if file 54da1e9816c77e30ebc5920e256736f2 exists
-    when(mockEmbeddedFiles.fileExists(any())).thenReturn(false);
+    when(mockLoaderFiles.fileExists(any())).thenReturn(false);
 
     AssetEntity existingAsset = new AssetEntity("54da1e9816c77e30ebc5920e256736f2", "png");
     existingAsset.relativePath = "54da1e9816c77e30ebc5920e256736f2.png";
@@ -155,7 +151,7 @@ public class EmbeddedLoaderTest {
     loader.processUpdateManifest(manifest);
 
     // both assets should be copied regardless of what the database says
-    verify(mockEmbeddedFiles, times(2)).copyAssetAndGetHash(any(), any(), any());
+    verify(mockLoaderFiles, times(2)).copyAssetAndGetHash(any(), any(), any());
 
     List<UpdateEntity> updates = db.updateDao().loadAllUpdates();
     Assert.assertEquals(1, updates.size());
@@ -168,14 +164,14 @@ public class EmbeddedLoaderTest {
   @Test
   public void testEmbeddedLoader_AssetExists_DiskOnly() throws IOException, NoSuchAlgorithmException {
     // return true when asked if file 54da1e9816c77e30ebc5920e256736f2 exists
-    when(mockEmbeddedFiles.fileExists(any())).thenAnswer((Answer<Boolean>) invocation -> invocation.getArgument(0).toString().contains("54da1e9816c77e30ebc5920e256736f2"));
+    when(mockLoaderFiles.fileExists(any())).thenAnswer((Answer<Boolean>) invocation -> invocation.getArgument(0).toString().contains("54da1e9816c77e30ebc5920e256736f2"));
 
     Assert.assertEquals(0, db.assetDao().loadAllAssets().size());
 
     loader.processUpdateManifest(manifest);
 
     // only 1 asset (bundle) should be copied since the other asset already exists
-    verify(mockEmbeddedFiles, times(1)).copyAssetAndGetHash(any(), any(), any());
+    verify(mockLoaderFiles, times(1)).copyAssetAndGetHash(any(), any(), any());
 
     List<UpdateEntity> updates = db.updateDao().loadAllUpdates();
     Assert.assertEquals(1, updates.size());
@@ -198,7 +194,7 @@ public class EmbeddedLoaderTest {
 
     loader.processUpdateManifest(manifest);
 
-    verify(mockEmbeddedFiles, times(0)).copyAssetAndGetHash(any(), any(), any());
+    verify(mockLoaderFiles, times(0)).copyAssetAndGetHash(any(), any(), any());
 
     List<UpdateEntity> updates = db.updateDao().loadAllUpdates();
     Assert.assertEquals(1, updates.size());
@@ -218,7 +214,7 @@ public class EmbeddedLoaderTest {
     loader.processUpdateManifest(manifest);
 
     // missing assets should still be copied
-    verify(mockEmbeddedFiles, times(2)).copyAssetAndGetHash(any(), any(), any());
+    verify(mockLoaderFiles, times(2)).copyAssetAndGetHash(any(), any(), any());
 
     List<UpdateEntity> updates = db.updateDao().loadAllUpdates();
     Assert.assertEquals(1, updates.size());

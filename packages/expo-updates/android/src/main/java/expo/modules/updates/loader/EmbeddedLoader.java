@@ -18,9 +18,7 @@ import org.json.JSONObject;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.io.InputStream;
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -41,7 +39,7 @@ public class EmbeddedLoader {
   private File mUpdatesDirectory;
   private float mPixelDensity;
 
-  private EmbeddedFiles mEmbeddedFiles;
+  private LoaderFiles mLoaderFiles;
 
   private UpdateEntity mUpdateEntity;
   private ArrayList<AssetEntity> mErroredAssetList = new ArrayList<>();
@@ -50,16 +48,16 @@ public class EmbeddedLoader {
   private ArrayList<AssetEntity> mFinishedAssetList = new ArrayList<>();
 
   public EmbeddedLoader(Context context, UpdatesConfiguration configuration, UpdatesDatabase database, File updatesDirectory) {
-    this(context, configuration, database, updatesDirectory, new EmbeddedFiles());
+    this(context, configuration, database, updatesDirectory, new LoaderFiles());
   }
 
-  public EmbeddedLoader(Context context, UpdatesConfiguration configuration, UpdatesDatabase database, File updatesDirectory, EmbeddedFiles embeddedFiles) {
+  public EmbeddedLoader(Context context, UpdatesConfiguration configuration, UpdatesDatabase database, File updatesDirectory, LoaderFiles loaderFiles) {
     mContext = context;
     mConfiguration = configuration;
     mDatabase = database;
     mUpdatesDirectory = updatesDirectory;
     mPixelDensity = context.getResources().getDisplayMetrics().density;
-    mEmbeddedFiles = embeddedFiles;
+    mLoaderFiles = loaderFiles;
   }
 
   public boolean loadEmbeddedUpdate() {
@@ -140,7 +138,7 @@ public class EmbeddedLoader {
       }
 
       // if we already have a local copy of this asset, don't try to download it again!
-      if (asset.relativePath != null && mEmbeddedFiles.fileExists(new File(mUpdatesDirectory, asset.relativePath))) {
+      if (asset.relativePath != null && mLoaderFiles.fileExists(new File(mUpdatesDirectory, asset.relativePath))) {
         mExistingAssetList.add(asset);
         continue;
       }
@@ -148,12 +146,12 @@ public class EmbeddedLoader {
       String filename = UpdatesUtils.createFilenameForAsset(asset);
       File destination = new File(mUpdatesDirectory, filename);
 
-      if (mEmbeddedFiles.fileExists(destination)) {
+      if (mLoaderFiles.fileExists(destination)) {
         asset.relativePath = filename;
         mExistingAssetList.add(asset);
       } else {
         try {
-          asset.hash = mEmbeddedFiles.copyAssetAndGetHash(asset, destination, mContext);
+          asset.hash = mLoaderFiles.copyAssetAndGetHash(asset, destination, mContext);
           asset.downloadTime = new Date();
           asset.relativePath = filename;
           mFinishedAssetList.add(asset);

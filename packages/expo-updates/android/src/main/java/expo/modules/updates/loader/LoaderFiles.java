@@ -11,9 +11,12 @@ import java.security.NoSuchAlgorithmException;
 import expo.modules.updates.UpdatesUtils;
 import expo.modules.updates.db.entity.AssetEntity;
 
-public class EmbeddedFiles {
+/**
+ * Utility class for Loader and its subclasses, to allow for easy mocking
+ */
+public class LoaderFiles {
 
-  private static final String TAG = EmbeddedFiles.class.getSimpleName();
+  private static final String TAG = LoaderFiles.class.getSimpleName();
 
   public boolean fileExists(File destination) {
     return destination.exists();

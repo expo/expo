@@ -19,7 +19,7 @@ import expo.modules.updates.db.UpdatesDatabase;
 import expo.modules.updates.db.entity.AssetEntity;
 import expo.modules.updates.db.entity.UpdateEntity;
 import expo.modules.updates.db.enums.UpdateStatus;
-import expo.modules.updates.loader.EmbeddedFiles;
+import expo.modules.updates.loader.LoaderFiles;
 import expo.modules.updates.loader.EmbeddedLoader;
 import expo.modules.updates.loader.FileDownloader;
 import expo.modules.updates.manifest.UpdateManifest;
@@ -35,7 +35,7 @@ public class DatabaseLauncher implements Launcher {
   private FileDownloader mFileDownloader;
   private SelectionPolicy mSelectionPolicy;
 
-  private EmbeddedFiles mEmbeddedFiles;
+  private LoaderFiles mLoaderFiles;
 
   private UpdateEntity mLaunchedUpdate = null;
   private String mLaunchAssetFile = null;
@@ -53,7 +53,7 @@ public class DatabaseLauncher implements Launcher {
     mUpdatesDirectory = updatesDirectory;
     mFileDownloader = fileDownloader;
     mSelectionPolicy = selectionPolicy;
-    mEmbeddedFiles = new EmbeddedFiles();
+    mLoaderFiles = new LoaderFiles();
   }
 
   public @Nullable UpdateEntity getLaunchedUpdate() {
@@ -179,7 +179,7 @@ public class DatabaseLauncher implements Launcher {
 
         if (matchingEmbeddedAsset != null) {
           try {
-            byte[] hash = mEmbeddedFiles.copyAssetAndGetHash(matchingEmbeddedAsset, assetFile, context);
+            byte[] hash = mLoaderFiles.copyAssetAndGetHash(matchingEmbeddedAsset, assetFile, context);
             if (hash != null && Arrays.equals(hash, asset.hash)) {
               assetFileExists = true;
             }
