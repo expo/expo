@@ -4,8 +4,8 @@ description: Get started with Expo in less than five minutes.
 ---
 
 import { Code, Terminal } from '~/ui/components/Snippet';
-import { Select } from '~/ui/components/form';
-import { Table, Row, Cell, TextAlign } from '~/ui/components/table';
+import { Select } from '~/ui/components/Form';
+import { Table, Row, Cell, TextAlign } from '~/ui/components/Table';
 import { InfoIcon } from '~/ui/foundations/icons';
 
 Expo is a framework and a platform for universal React applications. It is a set of tools and services built around React Native and native platforms that help you develop, build, deploy, and quickly iterate on iOS, Android, and web apps from the same JavaScript/TypeScript codebase.
