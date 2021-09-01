@@ -39,7 +39,7 @@ export default class Image extends React.Component {
      * @return an empty promise.
      */
     static async prefetch(url, callback) {
-        if (!ExpoImageModule.abortPrefetch) {
+        if (!ExpoImageModule.prefetch) {
             throw new UnavailabilityError('Image', 'prefetch');
         }
         const requestId = generateRequestId();
