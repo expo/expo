@@ -33,8 +33,8 @@ export default class Image extends React.Component<ImageProps, ImageState> {
      *
      * @param url The remote location of the image.
      *
-     * @param callback The function that will be called with the `requestId`. Callback is executed before starting prefetching.
-     * You can use `abortPrefetch` only after prefetching started.
+     * @param callback The function that will be called with the `requestId`. Callback is performed before the prefetch starts.
+     * You can use `abortPrefetch` only after prefetching has started.
      *
      * @return an empty promise.
      */
