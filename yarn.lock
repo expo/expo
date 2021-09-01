@@ -19622,10 +19622,10 @@ react-native-webview@11.6.2:
     escape-string-regexp "2.0.0"
     invariant "2.2.4"
 
-react-navigation-shared-element@^3.0.0:
-  version "3.0.0"
-  resolved "https://registry.yarnpkg.com/react-navigation-shared-element/-/react-navigation-shared-element-3.0.0.tgz#3dfa6a71f138e4ceb457a91aea3ef2a8ab2a6a32"
-  integrity sha512-nSmbgf4+hKSZU1Rzi5Bm1Is5mt0Z+xY5sXeTx4t5KMnmNW4lz5M83p9oTW6mKDoXUeCocUfeVwbCmsAjlyTLQw==
+react-navigation-shared-element@^3.1.2:
+  version "3.1.2"
+  resolved "https://registry.yarnpkg.com/react-navigation-shared-element/-/react-navigation-shared-element-3.1.2.tgz#9e79c141ebb3a56ab01227c25cbf12a66d360c27"
+  integrity sha512-TQ7WEjgoJZMqK4gCzQN/PcuoPEuiAKBjyAW6qmy5HONXx1HkXJ4JK1n20FYchidJWuHRjhheHpdyCuilSMCPcg==
   dependencies:
     hoist-non-react-statics "^3.3.2"
 
