@@ -1,0 +1,90 @@
+---
+title: Get started with Expo
+description: Choose how to start the way that matches your learning style.
+hideTOC: true
+---
+
+import { Container, Row } from 'react-grid-system';
+import { colors } from '@expo/styleguide';
+
+import { APIGridCell, CommunityGridCell, GridCell } from '~/ui/components/home/GridCell';
+import { H3, P } from '~/ui/components/text';
+import { SDKIcon } from "~/ui/foundations/icons";
+
+<!-- https://github.com/sealninja/react-grid-system/issues/175 -->
+<Container fluid style={{ paddingLeft: -15, paddingRight: -15 }}>
+  <Row>
+    <GridCell md={9} style={{ backgroundColor: '#F0EBFF' }}>
+      <H3>Create a universal iOS, Android, and web photo sharing app</H3>
+    </GridCell>
+    <GridCell md={3} style={{ backgroundColor: colors.gray['1000']}}>
+      <H3 style={{ color: colors.gray['000']}}>Quick Start</H3>
+    </GridCell>
+  </Row>
+  <Row>
+    <GridCell md={4} style={{ backgroundColor: colors.blue['000'] }}>
+      <H3>Try Snack</H3>
+      <P>Snack lets you try Expo with zero local setup.</P>
+    </GridCell>
+    <GridCell md={4} style={{ backgroundColor: colors.orange['100'] }}>
+      <H3>Learn Expo on Codecademy</H3>
+    </GridCell>
+    <GridCell md={4} style={{ backgroundColor: colors.green['000'] }}>
+      <H3>Why and why not Expo</H3>
+    </GridCell>
+  </Row>
+</Container>
+
+## Get the most out of Expo
+
+Expo supplies over 192 APIs in the SDK. You can also create your own.
+
+<Container fluid style={{ paddingLeft: -15, paddingRight: -15 }}>
+  <Row>
+    <APIGridCell md={3} title="Maps" link="/versions/latest/sdk/map-view" icon={<SDKIcon size={58} />} />
+    <APIGridCell md={3} title="Camera" link="/versions/latest/sdk/camera" icon={<SDKIcon size={58} />} />
+    <APIGridCell md={3} title="Notifications" link="/versions/latest/sdk/notifications" icon={<SDKIcon size={58} />} />
+    <APIGridCell md={3} title="View all APIs" link="/versions/latest/" icon={<SDKIcon size={58} />} />
+  </Row>
+</Container>
+
+## Join the community
+
+See the source code, connect with others, and get connected.
+
+<Container fluid style={{ paddingLeft: -15, paddingRight: -15 }}>
+  <Row>
+    <CommunityGridCell
+      md={6}
+      title="GitHub"
+      description="View our SDK, submit a PR, or report an issue."
+      link="https://github.com/expo/expo"
+      icon={<SDKIcon size={20} />}
+    />
+    <CommunityGridCell
+      md={6}
+      title="Discord"
+      description="Join our Discord and chat with other Expo users."
+      link="https://chat.expo.dev"
+      icon={<SDKIcon size={20} />}
+      iconBackground="#3131E8"
+    />
+  </Row>
+  <Row>
+    <CommunityGridCell
+      md={6}
+      title="Twitter"
+      description="Follow Expo on Twitter for news and updates."
+      link="https://twitter.com/expo"
+      icon={<SDKIcon size={20} />}
+      iconBackground="#1E8EF0"
+    />
+    <CommunityGridCell
+      md={6}
+      title="Forums"
+      description="Ask or answer a question on the forums."
+      link="https://forums.expo.dev/"
+      icon={<SDKIcon size={20} />}
+    />
+  </Row>
+</Container>
