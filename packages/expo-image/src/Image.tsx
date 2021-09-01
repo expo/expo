@@ -46,6 +46,11 @@ interface ImageState {
   onError: ImageProps['onError'];
 }
 
+interface ImageSizes {
+  width: number;
+  height: number;
+}
+
 export default class Image extends React.Component<ImageProps, ImageState> {
   static getDerivedStateFromProps(props: ImageProps) {
     return {
@@ -77,6 +82,27 @@ export default class Image extends React.Component<ImageProps, ImageState> {
       throw new UnavailabilityError('Image', 'prefetch');
     }
     return await ExpoImageModule.prefetch(url);
+  }
+
+  /**
+   * **Available on @Android only**.
+   * TODO
+   * @param url TODO
+   * @param success TODO
+   * @param failure TODO
+   * @returns TODO
+   */
+  static async getSize(
+    url: string,
+    success: (width: number, height: number) => void,
+    failure?: (error: any) => void
+  ): Promise<void> {
+    if (!ExpoImageModule.getSize) {
+      throw new UnavailabilityError('Image', 'getSize');
+    }
+    return ExpoImageModule.getSize(url)
+      .then((sizes: ImageSizes) => success(sizes.width, sizes.height))
+      .catch(failure || console.warn('Failed to aquire size for image: ' + url));
   }
 
   state = {
