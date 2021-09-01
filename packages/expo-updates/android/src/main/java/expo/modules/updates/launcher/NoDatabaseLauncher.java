@@ -16,6 +16,7 @@ import expo.modules.updates.db.entity.AssetEntity;
 import expo.modules.updates.db.entity.UpdateEntity;
 import expo.modules.updates.loader.EmbeddedLoader;
 import expo.modules.updates.manifest.BareUpdateManifest;
+import expo.modules.updates.manifest.EmbeddedManifest;
 import expo.modules.updates.manifest.UpdateManifest;
 
 public class NoDatabaseLauncher implements Launcher {
@@ -32,7 +33,7 @@ public class NoDatabaseLauncher implements Launcher {
   }
 
   public NoDatabaseLauncher(final Context context, UpdatesConfiguration configuration, final @Nullable Exception fatalException) {
-    UpdateManifest embeddedUpdateManifest = EmbeddedLoader.readEmbeddedManifest(context, configuration);
+    UpdateManifest embeddedUpdateManifest = EmbeddedManifest.get(context, configuration);
     if (embeddedUpdateManifest == null) {
       throw new RuntimeException("Failed to launch with embedded update because the embedded manifest was null");
     }

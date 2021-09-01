@@ -20,6 +20,7 @@ import expo.modules.updates.db.entity.AssetEntity;
 import expo.modules.updates.db.entity.UpdateEntity;
 import expo.modules.updates.launcher.DatabaseLauncher;
 import expo.modules.updates.launcher.Launcher;
+import expo.modules.updates.manifest.EmbeddedManifest;
 import expo.modules.updates.selectionpolicy.SelectionPolicy;
 import expo.modules.updates.manifest.UpdateManifest;
 import expo.modules.updates.manifest.ManifestMetadata;
@@ -225,19 +226,7 @@ public class LoaderTask {
     DatabaseLauncher launcher = new DatabaseLauncher(mConfiguration, mDirectory, mFileDownloader, mSelectionPolicy);
     mCandidateLauncher = launcher;
 
-    if (mConfiguration.hasEmbeddedUpdate()) {
-      // if the embedded update should be launched (e.g. if it's newer than any other update we have
-      // in the database, which can happen if the app binary is updated), load it into the database
-      // so we can launch it
-      UpdateEntity embeddedUpdate = EmbeddedLoader.readEmbeddedManifest(context, mConfiguration).getUpdateEntity();
-      UpdateEntity launchableUpdate = launcher.getLaunchableUpdate(database, context);
-      JSONObject manifestFilters = ManifestMetadata.getManifestFilters(database, mConfiguration);
-      if (mSelectionPolicy.shouldLoadNewUpdate(embeddedUpdate, launchableUpdate, manifestFilters)) {
-        new EmbeddedLoader(context, mConfiguration, database, mDirectory).loadEmbeddedUpdate();
-      }
-    }
-
-    launcher.launch(database, context, new Launcher.LauncherCallback() {
+    Launcher.LauncherCallback launcherCallback = new Launcher.LauncherCallback() {
       @Override
       public void onFailure(Exception e) {
         mDatabaseHolder.releaseDatabase();
@@ -249,7 +238,44 @@ public class LoaderTask {
         mDatabaseHolder.releaseDatabase();
         diskUpdateCallback.onSuccess();
       }
-    });
+    };
+
+    if (mConfiguration.hasEmbeddedUpdate()) {
+      // if the embedded update should be launched (e.g. if it's newer than any other update we have
+      // in the database, which can happen if the app binary is updated), load it into the database
+      // so we can launch it
+      UpdateEntity embeddedUpdate = EmbeddedManifest.get(context, mConfiguration).getUpdateEntity();
+      UpdateEntity launchableUpdate = launcher.getLaunchableUpdate(database, context);
+      JSONObject manifestFilters = ManifestMetadata.getManifestFilters(database, mConfiguration);
+      if (mSelectionPolicy.shouldLoadNewUpdate(embeddedUpdate, launchableUpdate, manifestFilters)) {
+        new EmbeddedLoader(context, mConfiguration, database, mDirectory).start(new Loader.LoaderCallback() {
+          @Override
+          public void onFailure(Exception e) {
+            Log.e(TAG, "Unexpected error copying embedded update", e);
+            launcher.launch(database, context, launcherCallback);
+          }
+
+          @Override
+          public void onSuccess(@Nullable UpdateEntity update) {
+            launcher.launch(database, context, launcherCallback);
+          }
+
+          @Override
+          public void onAssetLoaded(AssetEntity asset, int successfulAssetCount, int failedAssetCount, int totalAssetCount) {
+            // do nothing
+          }
+
+          @Override
+          public boolean onUpdateManifestLoaded(UpdateManifest updateManifest) {
+            return true;
+          }
+        });
+      } else {
+        launcher.launch(database, context, launcherCallback);
+      }
+    } else {
+      launcher.launch(database, context, launcherCallback);
+    }
   }
 
   private void launchRemoteUpdateInBackground(Context context, Callback remoteUpdateCallback) {
