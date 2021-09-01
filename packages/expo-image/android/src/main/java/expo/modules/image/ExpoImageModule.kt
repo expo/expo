@@ -13,6 +13,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.runInterruptible
 import java.io.File
 import java.lang.Exception
+import java.util.concurrent.CancellationException
 import java.util.concurrent.ConcurrentHashMap
 
 /**
@@ -22,9 +23,9 @@ import java.util.concurrent.ConcurrentHashMap
 suspend fun <T> FutureTarget<T>.awaitGet() = runInterruptible(Dispatchers.IO) { get() }
 
 class ExpoImageModule(val context: ReactApplicationContext) : ReactContextBaseJavaModule(context) {
-  private val moduleCoroutineScope = CoroutineScope(Dispatchers.IO)
   override fun getName() = "ExpoImageModule"
-  var prefetchRequests = ConcurrentHashMap<Int, FutureTarget<File>>()
+  private val moduleCoroutineScope = CoroutineScope(Dispatchers.IO)
+  private val prefetchRequests = ConcurrentHashMap<Int, FutureTarget<File>>()
 
   @ReactMethod
   fun prefetch(url: String, requestId: Int, promise: Promise) {
@@ -43,7 +44,8 @@ class ExpoImageModule(val context: ReactApplicationContext) : ReactContextBaseJa
           promise.reject("ERR_IMAGE_PREFETCH_FAILURE", "Failed to prefetch the image: ${url}.")
         }
       } catch (e: Exception) {
-        promise.reject("ERR_IMAGE_PREFETCH_FAILURE", "Failed to prefetch the image: ${e.message}", e)
+        val message = if (e is CancellationException) "Prefetching was cancelled" else e.message
+        promise.reject("ERR_IMAGE_PREFETCH_FAILURE", "Failed to prefetch the image: $message", e)
       }
     }
   }

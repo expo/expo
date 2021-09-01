@@ -1,6 +1,6 @@
 import React from 'react';
 import { AccessibilityProps, ImageResizeMode, ImageSourcePropType, ImageStyle as RNImageStyle, NativeSyntheticEvent, StyleProp } from 'react-native';
-import { ImageErrorEventData, ImageLoadEventData, ImageLoadProgressEventData } from './Image.types';
+import { ImageErrorEventData, ImageLoadEventData, ImageLoadProgressEventData, ImagePrefetchCallback } from './Image.types';
 interface ImageStyle extends RNImageStyle {
     elevation?: number;
 }
@@ -29,10 +29,22 @@ export default class Image extends React.Component<ImageProps, ImageState> {
         onError: ((error: NativeSyntheticEvent<ImageErrorEventData>) => void) | undefined;
     };
     /**
-     * **Available on @Android only.** Caching the image that can be later used in ImageView
+     * **Available on @Android only.** Caches the image that can be later used in ImageView
+     *
+     * @param url The remote location of the image.
+     *
+     * @param callback The function that will be called with the `requestId`. Callback is executed before starting prefetching.
+     * You can use `abortPrefetch` only after prefetching started.
+     *
      * @return an empty promise.
      */
-    static prefetch(url: string, callback?: Function): Promise<void>;
+    static prefetch(url: string, callback?: ImagePrefetchCallback): Promise<void>;
+    /**
+     * **Available on @Android only.** Aborts prefetching the image.
+     *
+     * @param requestId Number which is returned in `prefetch` callback.
+     *
+     */
     static abortPrefetch(requestId: number): void;
     state: {
         onLoad: undefined;

@@ -31,6 +31,10 @@ interface AndroidGlideException extends AndroidThrowable {
   causes: AndroidThrowable[] | null;
 }
 
+export interface ImagePrefetchCallback {
+  (requestId: number): void;
+}
+
 export interface ImageErrorEventData {
   error: string;
   ios?: {

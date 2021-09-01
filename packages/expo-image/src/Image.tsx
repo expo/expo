@@ -1,4 +1,4 @@
-import { Platform, UnavailabilityError } from 'expo-modules-core';
+import { UnavailabilityError } from 'expo-modules-core';
 import React from 'react';
 import {
   AccessibilityProps,
@@ -11,7 +11,12 @@ import {
 } from 'react-native';
 
 import ExpoImage, { ExpoImageModule } from './ExpoImage';
-import { ImageErrorEventData, ImageLoadEventData, ImageLoadProgressEventData } from './Image.types';
+import {
+  ImageErrorEventData,
+  ImageLoadEventData,
+  ImageLoadProgressEventData,
+  ImagePrefetchCallback,
+} from './Image.types';
 
 const DEFAULT_RESIZE_MODE = 'cover';
 
@@ -74,11 +79,17 @@ export default class Image extends React.Component<ImageProps, ImageState> {
   }
 
   /**
-   * **Available on @Android only.** Caching the image that can be later used in ImageView
+   * **Available on @Android only.** Caches the image that can be later used in ImageView
+   *
+   * @param url The remote location of the image.
+   *
+   * @param callback The function that will be called with the `requestId`. Callback is executed before starting prefetching.
+   * You can use `abortPrefetch` only after prefetching started.
+   *
    * @return an empty promise.
    */
-  static async prefetch(url: string, callback?: Function): Promise<void> {
-    if (Platform.OS !== 'android') {
+  static async prefetch(url: string, callback?: ImagePrefetchCallback): Promise<void> {
+    if (!ExpoImageModule.abortPrefetch) {
       throw new UnavailabilityError('Image', 'prefetch');
     }
     const requestId = generateRequestId();
@@ -86,7 +97,16 @@ export default class Image extends React.Component<ImageProps, ImageState> {
     return await ExpoImageModule.prefetch(url, requestId);
   }
 
+  /**
+   * **Available on @Android only.** Aborts prefetching the image.
+   *
+   * @param requestId Number which is returned in `prefetch` callback.
+   *
+   */
   static abortPrefetch(requestId: number): void {
+    if (!ExpoImageModule.abortPrefetch) {
+      throw new UnavailabilityError('Image', 'abortPrefetch');
+    }
     ExpoImageModule.abortPrefetch(requestId);
   }
 
