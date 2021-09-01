@@ -120,7 +120,6 @@ export default function App() {
 
 [c-auth0]: https://auth0.com/signup
 
-
 <Tabs tabs={["Auth Code", "Implicit Flow", "Auth Code w/ PKCE"]}>
 
 <Tab>
@@ -182,6 +181,7 @@ const App: React.FC = () => {
 
 export default App;
 ```
+
 </SnackInline>
 
 </Tab>
@@ -242,6 +242,7 @@ const App: React.FC = () => {
 
 export default App;
 ```
+
 </SnackInline>
 
 </Tab>
@@ -323,6 +324,7 @@ const App: React.FC = () => {
 
 export default App;
 ```
+
 </SnackInline>
 
 </Tab>
@@ -2574,6 +2576,7 @@ Here are a few examples of some common redirect URI patterns you may end up usin
 In some cases there will be anywhere between 1 to 3 slashes (`/`).
 
 - **Environment:**
+
   - Bare workflow
     - `npx create-react-native-app` or `expo eject`
   - Standalone builds in the App or Play Store
