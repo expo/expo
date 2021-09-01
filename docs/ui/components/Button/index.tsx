@@ -192,7 +192,7 @@ export function Button(props: ButtonProps) {
             {icon}
           </div>
         )}
-        <div>{children}</div>
+        {children}
       </div>
     </ButtonComponent>
   );
@@ -234,7 +234,7 @@ const buttonInteractionStyle = css({
   // transform prevents a 1px shift on hover on Safari
   transform: 'translate3d(0,0,0)',
   ':hover': {
-    boxShadow: '0 2px 8px rgba(0, 1, 0, 0.2)',
+    boxShadow: `0 1px 6px ${theme.background.quaternary}`,
     opacity: 0.85,
   },
   ':active': {

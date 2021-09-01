@@ -30,6 +30,7 @@ const containerStyle = css`
 
 const iconStyle = css`
   margin-right: 0.5rem;
+  user-select: none;
 `;
 
 const contentStyle = css`

@@ -76,6 +76,7 @@ const iconStyle = css({
 const selectInputStyle = css({
   boxShadow: shadows.input,
   backgroundColor: theme.background.default,
+  color: theme.text.default,
   display: 'block',
   outline: 'none',
   appearance: 'none',
@@ -85,6 +86,7 @@ const selectInputStyle = css({
   padding: 16,
   paddingRight: 48,
   fontSize: 16,
+  userSelect: 'none',
   ':hover': {
     transition: 'background-color 100ms',
     cursor: 'pointer',
