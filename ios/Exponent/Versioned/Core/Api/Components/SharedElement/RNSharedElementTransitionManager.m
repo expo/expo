@@ -39,7 +39,7 @@ RCT_EXPORT_MODULE(RNSharedElementTransition);
 {
   if (json == nil) return nil;
   NSNumber* nodeHandle = [json valueForKey:@"nodeHandle"];
-  NSNumber* isParent =[json valueForKey:@"isParent"];
+  NSNumber* isParent = [json valueForKey:@"isParent"];
   if ([nodeHandle isKindOfClass:[NSNumber class]]) {
     UIView *sourceView = [self.bridge.uiManager viewForReactTag:nodeHandle];
     return [_nodeManager acquire:nodeHandle view:sourceView isParent:[isParent boolValue]];

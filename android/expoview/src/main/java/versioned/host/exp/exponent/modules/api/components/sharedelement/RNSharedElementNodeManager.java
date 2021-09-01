@@ -10,9 +10,9 @@ import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.uimanager.NativeViewHierarchyManager;
 
 class RNSharedElementNodeManager {
-  private Map<Integer, RNSharedElementNode> mNodes = new HashMap<Integer, RNSharedElementNode>();
+  private final Map<Integer, RNSharedElementNode> mNodes = new HashMap<>();
   private NativeViewHierarchyManager mNativeViewHierarchyManager;
-  private Context mContext;
+  private final Context mContext;
 
   RNSharedElementNodeManager(Context context) {
     mContext = context;
