@@ -142,7 +142,7 @@ public class ReactAndroidCodeTransformer {
             BlockStmt stmt = JavaParser.parseBlock(getCallMethodReflectionBlock(
                 "host.exp.exponent.ReactNativeStaticHelpers",
                 "\"getBundleUrlForActivityId\", int.class, String.class, String.class, String.class, boolean.class, boolean.class",
-                "null, mSettings.exponentActivityId, mainModuleID, type.typeID(), host, getDevMode(), getJSMinifyMode()",
+                "null, mSettings.exponentActivityId, host, mainModuleID, type.typeID(), getDevMode(), getJSMinifyMode()",
                 "return (String) ",
                 "return null;"));
             n.setBody(stmt);
