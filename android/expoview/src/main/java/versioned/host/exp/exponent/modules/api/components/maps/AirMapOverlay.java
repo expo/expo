@@ -20,6 +20,7 @@ public class AirMapOverlay extends AirMapFeature implements ImageReadable {
   private GroundOverlayOptions groundOverlayOptions;
   private GroundOverlay groundOverlay;
   private LatLngBounds bounds;
+  private float bearing;
   private BitmapDescriptor iconBitmapDescriptor;
   private Bitmap iconBitmap;
   private boolean tappable;
@@ -40,6 +41,13 @@ public class AirMapOverlay extends AirMapFeature implements ImageReadable {
     this.bounds = new LatLngBounds(sw, ne);
     if (this.groundOverlay != null) {
       this.groundOverlay.setPositionFromBounds(this.bounds);
+    }
+  }
+
+  public void setBearing(float bearing){
+    this.bearing = bearing;
+    if (this.groundOverlay != null) {
+      this.groundOverlay.setBearing(bearing);
     }
   }
 
@@ -92,6 +100,7 @@ public class AirMapOverlay extends AirMapFeature implements ImageReadable {
     }
     options.positionFromBounds(bounds);
     options.zIndex(zIndex);
+    options.bearing(bearing);
     return options;
   }
 
