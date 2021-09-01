@@ -161,7 +161,7 @@ function ImageTransition({
   const translateY = useSharedValue(0);
 
   const onPan = useAnimatedGestureHandler({
-    onActive: event => {
+    onActive: (event) => {
       translateX.value = event.translationX;
       translateY.value = event.translationY;
 

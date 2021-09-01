@@ -34,7 +34,7 @@ export function usePermissions(
 
   const askPermissions = useCallback(
     () =>
-      askAsync(...types).then(response => {
+      askAsync(...types).then((response) => {
         if (isMounted.current) {
           setData(response);
         }
@@ -44,7 +44,7 @@ export function usePermissions(
 
   const getPermissions = useCallback(
     () =>
-      getAsync(...types).then(response => {
+      getAsync(...types).then((response) => {
         if (isMounted.current) {
           setData(response);
         }

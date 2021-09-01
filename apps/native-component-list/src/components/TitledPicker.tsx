@@ -28,7 +28,7 @@ export default function TitledPicker({
       <Picker
         selectedValue={value}
         enabled={!disabled}
-        onValueChange={value => setValue(`${value}`)}>
+        onValueChange={(value) => setValue(`${value}`)}>
         {items.map(({ key, value }) => (
           <Picker.Item label={value} value={key} key={key} />
         ))}

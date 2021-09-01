@@ -69,7 +69,7 @@ export async function updateDevicePushTokenAsync(signal, token) {
         if (shouldTry && !signal.aborted) {
             nextBackoffInterval = computeNextBackoffInterval(initialBackoff, retriesCount, backoffOptions);
             retriesCount += 1;
-            await new Promise(resolve => setTimeout(resolve, nextBackoffInterval));
+            await new Promise((resolve) => setTimeout(resolve, nextBackoffInterval));
         }
     }
 }

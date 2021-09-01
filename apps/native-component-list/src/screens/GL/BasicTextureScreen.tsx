@@ -2,7 +2,7 @@ import { Asset } from 'expo-asset';
 
 import GLWrap from './GLWrap';
 
-export default GLWrap('Basic texture use', async gl => {
+export default GLWrap('Basic texture use', async (gl) => {
   const vert = gl.createShader(gl.VERTEX_SHADER)!;
   gl.shaderSource(
     vert,
@@ -54,7 +54,7 @@ export default GLWrap('Basic texture use', async gl => {
   gl.uniform1i(gl.getUniformLocation(program, 'texture'), 0);
 
   (async () => {
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    await new Promise((resolve) => setTimeout(resolve, 1000));
 
     const imageAsset = Asset.fromModule(require('../../../assets/images/nikki-small-purple.png'));
     await imageAsset.downloadAsync();

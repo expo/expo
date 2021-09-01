@@ -5,7 +5,7 @@ import { Dimensions } from 'react-native';
 
 import GLWrap from './GLWrap';
 
-export default GLWrap('Basic pixi.js use', async gl => {
+export default GLWrap('Basic pixi.js use', async (gl) => {
   const { scale: resolution } = Dimensions.get('window');
   const width = gl.drawingBufferWidth / resolution;
   const height = gl.drawingBufferHeight / resolution;

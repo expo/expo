@@ -86,7 +86,7 @@ export function setPurchaseListener(
 
   purchaseUpdatedSubscription = eventEmitter.addListener<IAPQueryResponse<InAppPurchase>>(
     PURCHASES_UPDATED_EVENT,
-    result => {
+    (result) => {
       callback(result);
     }
   );

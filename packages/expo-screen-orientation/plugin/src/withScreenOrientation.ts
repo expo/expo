@@ -52,7 +52,7 @@ const withScreenOrientationViewController: ConfigPlugin<{
 
   return withDangerousMod(config, [
     'ios',
-    async config => {
+    async (config) => {
       const fileInfo = IOSConfig.Paths.getAppDelegate(config.modRequest.projectRoot);
       let contents = fs.readFileSync(fileInfo.path, { encoding: 'utf-8' });
       if (fileInfo.language === 'objc') {

@@ -89,7 +89,7 @@ export function createRemoteConsole(originalConsole) {
      * responsible for asynchronous errors.
      */
     function _enqueueRemoteLog(level, additionalFields, data) {
-        RemoteLogging.enqueueRemoteLogAsync(level, { groupDepth, ...additionalFields }, data).catch(error => {
+        RemoteLogging.enqueueRemoteLogAsync(level, { groupDepth, ...additionalFields }, data).catch((error) => {
             originalConsole.error(`There was a problem sending log messages to your development environment`, error);
         });
     }

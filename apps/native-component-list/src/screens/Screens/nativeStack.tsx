@@ -36,7 +36,7 @@ export class Stack extends Component<StackProps, StackState> {
 
   removeByKey(key: string) {
     const { stack } = this.state;
-    this.setState({ stack: stack.filter(v => key !== v) });
+    this.setState({ stack: stack.filter((v) => key !== v) });
   }
 
   renderScreen = (key: string) => {

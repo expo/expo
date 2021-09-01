@@ -31,7 +31,7 @@ const withAppAuthGradleManifestPlaceholder: ConfigPlugin<{ placeholder?: string 
   config,
   { placeholder = AndroidConfig.Scheme.getScheme(config)[0] || 'dev.expo.app' } = {}
 ) => {
-  return withAppBuildGradle(config, config => {
+  return withAppBuildGradle(config, (config) => {
     if (config.modResults.language === 'groovy') {
       config.modResults.contents = setGradlePlaceholders(config.modResults.contents, placeholder);
     } else {
@@ -44,7 +44,7 @@ const withAppAuthGradleManifestPlaceholder: ConfigPlugin<{ placeholder?: string 
 };
 
 const withAppAuthInfoPlist: ConfigPlugin<string | void> = (config, OAuthRedirect) => {
-  return withInfoPlist(config, config => {
+  return withInfoPlist(config, (config) => {
     if (!Array.isArray(config.modResults.CFBundleURLTypes)) {
       config.modResults.CFBundleURLTypes = [];
     }

@@ -80,7 +80,7 @@ export default function MainTabbedNavigator(props: any) {
   return (
     <Drawer.Navigator
       {...props}
-      drawerContent={props => <CustomDrawerContent {...props} hideLabels={isTablet} />}
+      drawerContent={(props) => <CustomDrawerContent {...props} hideLabels={isTablet} />}
       drawerStyle={{ width: isLargeScreen ? undefined : 64 + left }}
       drawerType="permanent">
       {Object.entries(Screens).map(([name, Screen]) => (

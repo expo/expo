@@ -289,7 +289,7 @@ export function useURL() {
         setLink(event.url);
     }
     useEffect(() => {
-        getInitialURL().then(url => setLink(url));
+        getInitialURL().then((url) => setLink(url));
         addEventListener('url', onChange);
         return () => removeEventListener('url', onChange);
     }, []);

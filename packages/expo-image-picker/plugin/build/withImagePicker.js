@@ -22,7 +22,7 @@ function setImagePickerManifestActivity(androidManifest) {
     return androidManifest;
 }
 exports.setImagePickerManifestActivity = setImagePickerManifestActivity;
-const withImagePickerManifestActivity = config => {
+const withImagePickerManifestActivity = (config) => {
     // This plugin has no ability to remove the activity that it adds.
     return config_plugins_1.withAndroidManifest(config, async (config) => {
         config.modResults = setImagePickerManifestActivity(config.modResults);

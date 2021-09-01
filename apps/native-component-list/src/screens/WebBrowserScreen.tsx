@@ -62,8 +62,10 @@ export default class WebBrowserScreen extends React.Component<{}, State> {
   componentDidMount() {
     if (Platform.OS === 'android') {
       WebBrowser.getCustomTabsSupportingBrowsersAsync()
-        .then(({ browserPackages }) => browserPackages.map(name => ({ label: name, value: name })))
-        .then(packages => this.setState({ packages }));
+        .then(({ browserPackages }) =>
+          browserPackages.map((name) => ({ label: name, value: name }))
+        )
+        .then((packages) => this.setState({ packages }));
     }
   }
 

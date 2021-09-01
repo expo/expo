@@ -46,7 +46,7 @@ import expo.modules.core.interfaces.Package;
 public class ExpoModulesPackageList {
   private static class LazyHolder {
     static final List<Package> packagesList = Arrays.<Package>asList(
-${packagesClasses.map(packageClass => `      new ${packageClass}()`).join(',\n')}
+${packagesClasses.map((packageClass) => `      new ${packageClass}()`).join(',\n')}
     );
   }
 

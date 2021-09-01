@@ -37,7 +37,7 @@ export default async function getExpoPushTokenAsync(options = {}) {
             'content-type': 'application/json',
         },
         body: JSON.stringify(body),
-    }).catch(error => {
+    }).catch((error) => {
         throw new CodedError('ERR_NOTIFICATIONS_NETWORK_ERROR', `Error encountered while fetching Expo token: ${error}.`);
     });
     if (!response.ok) {

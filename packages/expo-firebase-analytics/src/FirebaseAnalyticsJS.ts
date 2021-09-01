@@ -86,7 +86,7 @@ class FirebaseAnalyticsJS {
     const lastTime = this.lastTime;
     if (events.size > 1) {
       body = '';
-      events.forEach(event => {
+      events.forEach((event) => {
         body += encodeQueryArgs(event, this.lastTime) + '\n';
         this.lastTime = event._et;
       });
@@ -154,7 +154,7 @@ class FirebaseAnalyticsJS {
     if (!this.eventQueue.size) return;
     const events = new Set<FirebaseAnalyticsJSCodedEvent>(this.eventQueue);
     await this.send(events);
-    events.forEach(event => this.eventQueue.delete(event));
+    events.forEach((event) => this.eventQueue.delete(event));
   }
 
   /**
@@ -347,10 +347,10 @@ class FirebaseAnalyticsJS {
 function encodeQueryArgs(queryArgs: FirebaseAnalyticsJSCodedEvent, lastTime: number): string {
   let keys = Object.keys(queryArgs);
   if (lastTime < 0) {
-    keys = keys.filter(key => key !== '_et');
+    keys = keys.filter((key) => key !== '_et');
   }
   return keys
-    .map(key => {
+    .map((key) => {
       return `${key}=${encodeURIComponent(
         key === '_et' ? Math.max(queryArgs[key] - lastTime, 0) : queryArgs[key]
       )}`;

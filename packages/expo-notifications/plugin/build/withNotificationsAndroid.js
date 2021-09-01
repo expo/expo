@@ -37,7 +37,7 @@ const withNotificationIcons = (config, { icon }) => {
 exports.withNotificationIcons = withNotificationIcons;
 const withNotificationIconColor = (config, { color }) => {
     // If no color provided in the config plugin props, fallback to value from app.json
-    return config_plugins_1.withAndroidColors(config, config => {
+    return config_plugins_1.withAndroidColors(config, (config) => {
         color = color || getNotificationColor(config);
         config.modResults = setNotificationIconColor(color, config.modResults);
         return config;
@@ -48,7 +48,7 @@ const withNotificationManifest = (config, { icon, color }) => {
     // If no icon or color provided in the config plugin props, fallback to value from app.json
     icon = icon || getNotificationIcon(config);
     color = color || getNotificationColor(config);
-    return config_plugins_1.withAndroidManifest(config, config => {
+    return config_plugins_1.withAndroidManifest(config, (config) => {
         config.modResults = setNotificationConfig({ icon, color }, config.modResults);
         return config;
     });
@@ -57,7 +57,7 @@ exports.withNotificationManifest = withNotificationManifest;
 const withNotificationSounds = (config, { sounds }) => {
     return config_plugins_1.withDangerousMod(config, [
         'android',
-        config => {
+        (config) => {
             setNotificationSounds(config.modRequest.projectRoot, sounds);
             return config;
         },

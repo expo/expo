@@ -102,12 +102,12 @@ export function addFullscreenListener(
 ): () => any {
   if (supportsFullscreenAPI(element)) {
     // Used by browsers that support the official spec
-    return addEventListener(element, 'fullscreenchange', event =>
+    return addEventListener(element, 'fullscreenchange', (event) =>
       callback(document.fullscreenElement === event.target)
     );
   } else if (supportsWebkitFullscreenAPI(element) && supportsWebkitFullscreenChangeEvent()) {
     // Used by Safari on macOS
-    return addEventListener(element, 'webkitfullscreenchange', event =>
+    return addEventListener(element, 'webkitfullscreenchange', (event) =>
       callback(document['webkitFullscreenElement'] === event.target)
     );
   } else if (supportsWebkitFullscreenAPI(element)) {
@@ -124,7 +124,7 @@ export function addFullscreenListener(
     };
   } else if (supportsMsFullscreenAPI(element)) {
     // Used by IE11
-    return addEventListener(document, 'MSFullscreenChange', event =>
+    return addEventListener(document, 'MSFullscreenChange', (event) =>
       callback(document['msFullscreenElement'] === event.target)
     );
   } else {

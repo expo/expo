@@ -40,8 +40,8 @@ function isLocationValid(location, options) {
  * for the current location, but there is no better way on web so far :(
  */
 async function getPermissionsAsync() {
-    return new Promise(resolve => {
-        const resolveWithStatus = status => resolve({
+    return new Promise((resolve) => {
+        const resolveWithStatus = (status) => resolve({
             status,
             granted: status === PermissionStatus.GRANTED,
             canAskAgain: true,
@@ -75,7 +75,7 @@ export default {
     },
     async getCurrentPositionAsync(options) {
         return new Promise((resolve, reject) => {
-            const resolver = position => {
+            const resolver = (position) => {
                 lastKnownPosition = geolocationPositionToJSON(position);
                 resolve(lastKnownPosition);
             };
@@ -102,9 +102,9 @@ export default {
         throw new GeocoderError();
     },
     async watchPositionImplAsync(watchId, options) {
-        return new Promise(resolve => {
+        return new Promise((resolve) => {
             // @ts-ignore: the types here need to be fixed
-            watchId = global.navigator.geolocation.watchPosition(position => {
+            watchId = global.navigator.geolocation.watchPosition((position) => {
                 lastKnownPosition = geolocationPositionToJSON(position);
                 LocationEventEmitter.emit('Expo.locationChanged', {
                     watchId,

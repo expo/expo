@@ -145,7 +145,7 @@ function ContactDetailView({
     for (const key of Object.keys(contact)) {
       const value = (contact as any)[key];
       if (Array.isArray(value) && value.length > 0) {
-        const data = value.map(item => {
+        const data = value.map((item) => {
           let transform: Partial<DetailListItem> = {};
           switch (key) {
             case Contacts.Fields.Relationships:

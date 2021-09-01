@@ -55,7 +55,7 @@ export default function AuthSessionScreen() {
           <TitledSwitch
             title="Switch Accounts"
             value={!!prompt}
-            setValue={value => setSwitch(value ? AuthSession.Prompt.SelectAccount : undefined)}
+            setValue={(value) => setSwitch(value ? AuthSession.Prompt.SelectAccount : undefined)}
           />
           <TitledSwitch title="Use PKCE" value={usePKCE} setValue={setPKCE} />
           <TitledPicker
@@ -631,7 +631,7 @@ function Strava({ redirectUri, prompt, usePKCE, useProxy }: any) {
           },
         },
         discovery
-      ).then(result => {
+      ).then((result) => {
         console.log('RES: ', result);
       });
     }

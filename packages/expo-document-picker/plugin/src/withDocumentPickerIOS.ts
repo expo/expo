@@ -5,7 +5,7 @@ export const withDocumentPickerIOS: ConfigPlugin<{ appleTeamId?: string }> = (
   config,
   { appleTeamId }
 ) => {
-  return withEntitlementsPlist(config, config => {
+  return withEntitlementsPlist(config, (config) => {
     if (appleTeamId) {
       config.modResults = setICloudEntitlments(config, appleTeamId, config.modResults);
     } else {
