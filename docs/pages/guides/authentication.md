@@ -156,7 +156,8 @@ const App: React.FC = () => {
       usePKCE: false,
       prompt: Prompt.Login,
       extraParams: {
-        nonce: randomValue, //Required. Ideally should be randomly generated as shown here.
+        nonce: randomValue,
+        audience: 'AUTH0_AUDIENCE',
       },
     },
     discovery,
@@ -216,7 +217,8 @@ const App: React.FC = () => {
       scopes: ['openid', 'profile', 'email'],
       prompt: Prompt.Login,
       extraParams: {
-        nonce: randomValue, //Required. Ideally should be randomly generated as shown here.
+        nonce: randomValue,
+        audience: 'AUTH0_AUDIENCE',
       },
     },
     discovery,
@@ -281,7 +283,8 @@ const App: React.FC = () => {
       usePKCE: true,
       prompt: Prompt.Login,
       extraParams: {
-        nonce: randomValue, //Required. Ideally should be randomly generated as shown here.
+        nonce: randomValue,
+        audience: 'AUTH0_AUDIENCE',
       },
     },
     discovery,
@@ -299,6 +302,7 @@ const App: React.FC = () => {
             extraParams: {
               //Required to complete PKCE flow.
               code_verifier: request?.codeVerifier || '',
+              audience: 'AUTH0_AUDIENCE',
             }
           },
           discovery,
