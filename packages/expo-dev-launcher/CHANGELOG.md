@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix crash in SDK 42 Android projects.
+
 ### 💡 Others
 
 ## 0.8.3 — 2021-10-15
