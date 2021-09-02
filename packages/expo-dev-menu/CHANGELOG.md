@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix keyboard commands getting ignored after dev menu is shown. ([#14266](https://github.com/expo/expo/pull/14266) by [@fson](https://github.com/fson))
+
 ### 💡 Others
 
 ## 0.7.7 — 2021-08-06
