@@ -58,70 +58,50 @@ If you're migrating from an ExpoKit project to the bare workflow with `expo-upda
 
 ## Configuration for iOS
 
-<ConfigurationDiff source="/static/diffs/expo-updates-ios.diff" />
+- Add the `"Supporting"` directory containing `"Expo.plist"` to your project in Xcode with the following content.
 
-### Final steps to perform in Xcode
-
-Once you have applied the changes from the above diff, the following additional changes are required:
-
-<div style={{marginTop: -10}} />
-
-- Add the `"Supporting"` directory containing `"Expo.plist"` to your project in Xcode.
-- In Xcode, under the Build Phases tab of your main project, expand the phase entitled "Bundle React Native code and images." Add the following to a new line at the bottom of the script: `` `node --print "require.resolve('expo-updates/package.json').slice(0, -13) + '/scripts/create-manifest-ios.sh'"` `` (supports monorepos and non-default project structure). You can alternatively use this line: `../node_modules/expo-updates/scripts/create-manifest-ios.sh` (supports only default project structure).
-
-<div style={{marginTop: -15}} />
-
-<details><summary><h4>💡 What is the create-manifest-ios script for?</h4></summary>
-<p>
-
-This provides expo-updates with some essential metadata about the update and assets that are embedded in your IPA.
-
-</p>
-</details>
-
-<div style={{marginTop: -10}} />
-
-<details><summary><h4>💡 Are you using expo-splash-screen in your app?</h4></summary>
-<p>
-
-If you have `expo-splash-screen` installed in your bare workflow project, you'll need to make the following additional change to `AppDelegate.m`:
-
-```diff
-+#import <EXSplashScreen/EXSplashScreenService.h>
-+#import <UMCore/UMModuleRegistryProvider.h>
-
- ...
-
- - (void)appController:(EXUpdatesAppController *)appController didStartWithSuccess:(BOOL)success
- {
-   appController.bridge = [self initializeReactNativeApp];
-+  EXSplashScreenService *splashScreenService = (EXSplashScreenService *)[UMModuleRegistryProvider getSingletonModuleForClass:[EXSplashScreenService class]];
-+  [splashScreenService showSplashScreenFor:self.window.rootViewController];
- }
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+  <dict>
+    <key>EXUpdatesSDKVersion</key>
+    <string>43.0.0</string>
+    <key>EXUpdatesURL</key>
+    <string>https://exp.host/@my-expo-username/my-app</string>
+  </dict>
+</plist>
 ```
-
-</p>
-</details>
-
-<div style={{marginTop: 50}} />
 
 ## Configuration for Android
 
+- Apply the following change to your AndroidManifest.xml.
+
+```diff
+--- a/apps/bare-update/android/app/src/main/AndroidManifest.xml
++++ b/apps/bare-update/android/app/src/main/AndroidManifest.xml
+@@ -5,6 +5,8 @@
+   <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+   <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+   <application android:name=".MainApplication" android:label="@string/app_name" android:icon="@mipmap/ic_launcher" android:roundIcon="@mipmap/ic_launcher_round" android:allowBackup="false" android:theme="@style/AppTheme" android:usesCleartextTraffic="true">
++    <meta-data android:name="expo.modules.updates.EXPO_UPDATE_URL" android:value="https://exp.host/@my-expo-username/my-app"/>
++    <meta-data android:name="expo.modules.updates.EXPO_SDK_VERSION" android:value="43.0.0"/>
+     <activity android:name=".MainActivity" android:label="@string/app_name" android:configChanges="keyboard|keyboardHidden|orientation|screenSize|uiMode" android:launchMode="singleTask" android:windowSoftInputMode="adjustResize" android:theme="@style/Theme.App.SplashScreen">
+       <intent-filter>
+         <action android:name="android.intent.action.MAIN"/>
+```
+
+## Customizing Automatic Setup for iOS
+
+By default `expo-updates` automatically install the module in the iOS AppDelegate. If you want to customize the installation, e.g. to enable updates only in some build variants, you can apply the setup manually.
+
+<ConfigurationDiff source="/static/diffs/expo-updates-ios.diff" />
+
+## Customizing Automatic Setup for Android
+
+By default `expo-updates` automatically install the module in the Android MainApplication.java. If you want to customize the installation, e.g. to enable updates only in some build variants, you can apply the setup manually.
+
 <ConfigurationDiff source="/static/diffs/expo-updates-android.diff" />
-
-<details><summary><h4>💡 Are you using ProGuard?</h4></summary>
-<p>
-
-If you have ProGuard enabled, you'll need to add the following rule to `proguard-rules.pro`:
-
-```
--keepclassmembers class com.facebook.react.ReactInstanceManager {
-    private final com.facebook.react.bridge.JSBundleLoader mBundleLoader;
-}
-```
-
-</p>
-</details>
 
 ## Usage
 
