@@ -51,7 +51,7 @@ it(`Verfies parseEvent eventParams`, async () => {
           id: '123456',
           name: 'nome',
           location_id: 'tv',
-          quanity: 2,
+          quantity: 2,
           brand: 'onfire',
           variant: 'loki',
           list: 'marvel',
@@ -69,7 +69,7 @@ it(`Verfies parseEvent eventParams`, async () => {
     'ep.foo': 'bar',
     'epn.num': 10,
     'ep.extraordinary': true,
-    pr1: 'id123456~nmnome~lotv~qt2~bronfire~valoki~lnmarvel~caawesome~k0foo1~v0bar1~k1foo2~v2bar2',
+    pr1: 'id123456~nmnome~lotv~qt2~bronfire~valoki~lnmarvel~caawesome~k0foo1~v0bar1~k1foo2~v1bar2',
     pr2: 'id98765',
   });
 });

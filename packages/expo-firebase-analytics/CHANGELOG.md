@@ -12,6 +12,7 @@
 ### 🐛 Bug fixes
 
 - Fix logEvent exception on Android when using arrays. ([#14189](https://github.com/expo/expo/pull/14189) by [@IjzerenHein](https://github.com/IjzerenHein))
+- Fix logEvent `items` array on pure JavaScript client (Expo Go) ([#14189](https://github.com/expo/expo/pull/14189) by [@IjzerenHein](https://github.com/IjzerenHein))
 
 ### 💡 Others
 

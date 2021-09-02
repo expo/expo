@@ -204,10 +204,27 @@ class FirebaseAnalyticsJS {
     };
     if (eventParams) {
       for (const key in eventParams) {
-        const paramKey =
-          SHORT_EVENT_PARAMS[key] ||
-          (typeof eventParams[key] === 'number' ? `epn.${key}` : `ep.${key}`);
-        params[paramKey] = eventParams[key];
+        if (key === 'items' && Array.isArray(eventParams[key])) {
+          eventParams[key].forEach((item, index) => {
+            const itemFields: string[] = [];
+            let customItemFieldCount = 0;
+            Object.keys(item).forEach((itemKey) => {
+              if (SHORT_EVENT_ITEM_PARAMS[itemKey]) {
+                itemFields.push(`${SHORT_EVENT_ITEM_PARAMS[itemKey]}${item[itemKey]}`);
+              } else {
+                itemFields.push(`k${customItemFieldCount}${itemKey}`);
+                itemFields.push(`v${customItemFieldCount}${item[itemKey]}`);
+                customItemFieldCount++;
+              }
+            });
+            params[`pr${index + 1}`] = itemFields.join('~');
+          });
+        } else {
+          const paramKey =
+            SHORT_EVENT_PARAMS[key] ||
+            (typeof eventParams[key] === 'number' ? `epn.${key}` : `ep.${key}`);
+          params[paramKey] = eventParams[key];
+        }
       }
     }
     return params;
@@ -360,6 +377,16 @@ function encodeQueryArgs(queryArgs: FirebaseAnalyticsJSCodedEvent, lastTime: num
 
 const SHORT_EVENT_PARAMS = {
   currency: 'cu',
+};
+const SHORT_EVENT_ITEM_PARAMS = {
+  id: 'id',
+  name: 'nm',
+  location_id: 'lo',
+  quantity: 'qt',
+  brand: 'br',
+  variant: 'va',
+  list: 'ln',
+  category: 'ca',
 };
 
 export default FirebaseAnalyticsJS;
