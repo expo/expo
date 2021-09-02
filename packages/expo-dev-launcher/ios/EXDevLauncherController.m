@@ -42,6 +42,7 @@ NSString *fakeLauncherBundleUrl = @"embedded://EXDevLauncher/dummy";
 @property (nonatomic, assign) BOOL shouldPreferUpdatesInterfaceSourceUrl;
 @property (nonatomic, strong) EXDevLauncherRecentlyOpenedAppsRegistry *recentlyOpenedAppsRegistry;
 @property (nonatomic, strong) EXDevLauncherManifest *manifest;
+@property (nonatomic, strong) NSURL *manifestURL;
 @property (nonatomic, strong) EXDevLauncherErrorManager *errorManager;
 
 @end
@@ -123,6 +124,11 @@ NSString *fakeLauncherBundleUrl = @"embedded://EXDevLauncher/dummy";
   return self.manifest;
 }
 
+- (NSURL * _Nullable)appManifestURL
+{
+  return self.manifestURL;
+}
+
 - (UIWindow *)currentWindow
 {
   return _window;
@@ -148,6 +154,7 @@ NSString *fakeLauncherBundleUrl = @"embedded://EXDevLauncher/dummy";
 {
   [_appBridge invalidate];
   self.manifest = nil;
+  self.manifestURL = nil;
 
   if (@available(iOS 12, *)) {
     [self _applyUserInterfaceStyle:UIUserInterfaceStyleUnspecified];
@@ -261,9 +268,9 @@ NSString *fakeLauncherBundleUrl = @"embedded://EXDevLauncher/dummy";
     RCTDevLoadingViewSetEnabled(NO);
     [self.recentlyOpenedAppsRegistry appWasOpened:expoUrl.absoluteString name:nil];
     if ([expoUrl.path isEqual:@"/"] || [expoUrl.path isEqual:@""]) {
-      [self _initApp:[NSURL URLWithString:@"index.bundle?platform=ios&dev=true&minify=false" relativeToURL:expoUrl] manifest:nil];
+      [self _initAppWithUrl:expoUrl bundleUrl:[NSURL URLWithString:@"index.bundle?platform=ios&dev=true&minify=false" relativeToURL:expoUrl] manifest:nil];
     } else {
-      [self _initApp:expoUrl manifest:nil];
+      [self _initAppWithUrl:expoUrl bundleUrl:expoUrl manifest:nil];
     }
     if (onSuccess) {
       onSuccess();
@@ -274,7 +281,7 @@ NSString *fakeLauncherBundleUrl = @"embedded://EXDevLauncher/dummy";
     self->_shouldPreferUpdatesInterfaceSourceUrl = !manifest.isUsingDeveloperTool;
     RCTDevLoadingViewSetEnabled(manifest.isUsingDeveloperTool);
     [self.recentlyOpenedAppsRegistry appWasOpened:expoUrl.absoluteString name:manifest.name];
-    [self _initApp:bundleURL manifest:manifest];
+    [self _initAppWithUrl:expoUrl bundleUrl:bundleURL manifest:manifest];
     if (onSuccess) {
       onSuccess();
     }
@@ -321,9 +328,10 @@ NSString *fakeLauncherBundleUrl = @"embedded://EXDevLauncher/dummy";
   } onError:onError];
 }
 
-- (void)_initApp:(NSURL *)bundleUrl manifest:(EXDevLauncherManifest * _Nullable)manifest
+- (void)_initAppWithUrl:(NSURL *)appUrl bundleUrl:(NSURL *)bundleUrl manifest:(EXDevLauncherManifest * _Nullable)manifest
 {
   self.manifest = manifest;
+  self.manifestURL = appUrl;
   __block UIInterfaceOrientation orientation = manifest.orientation;
   __block UIColor *backgroundColor = manifest.backgroundColor;
   

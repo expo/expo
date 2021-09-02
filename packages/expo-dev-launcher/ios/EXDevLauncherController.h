@@ -44,6 +44,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (EXDevLauncherManifest * _Nullable)appManifest;
 
+- (NSURL * _Nullable)appManifestURL;
+
 - (BOOL)isAppRunning;
 
 - (UIWindow * _Nullable)currentWindow;

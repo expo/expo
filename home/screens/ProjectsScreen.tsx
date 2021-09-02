@@ -61,7 +61,7 @@ export default function ProjectsScreen(props: NavigationProps) {
 
   const dispatch = useDispatch();
   const { recentHistory, allHistory, isAuthenticated } = useSelector(
-    React.useCallback(data => {
+    React.useCallback((data) => {
       const { history } = data.history;
 
       return {
@@ -178,7 +178,7 @@ class ProjectsView extends React.Component<Props, State> {
       // Fix this lint warning when converting to hooks
       // eslint-disable-next-line
       this.setState(({ projects }) => ({
-        projects: projects.filter(p => p.source === 'snack'),
+        projects: projects.filter((p) => p.source === 'snack'),
       }));
     }
   }
@@ -230,7 +230,7 @@ class ProjectsView extends React.Component<Props, State> {
     try {
       await Promise.all([
         this._fetchProjectsAsync(),
-        new Promise(resolve => setTimeout(resolve, 1000)),
+        new Promise((resolve) => setTimeout(resolve, 1000)),
       ]);
     } catch (e) {
       // not sure what to do here, maybe nothing?
