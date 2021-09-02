@@ -31,6 +31,7 @@ suspend fun <T> FutureTarget<T>.awaitGet() = runInterruptible(Dispatchers.IO) { 
 class ExpoImageModule(val context: ReactApplicationContext) : ReactContextBaseJavaModule(context) {
   private val moduleCoroutineScope = CoroutineScope(Dispatchers.IO)
   override fun getName() = "ExpoImageModule"
+  val sizes = WritableNativeMap()
 
   @ReactMethod
   fun prefetch(url: String, promise: Promise) {
@@ -54,26 +55,28 @@ class ExpoImageModule(val context: ReactApplicationContext) : ReactContextBaseJa
 
   @ReactMethod
   fun getSize(url: String, promise: Promise) {
-    val sizes = WritableNativeMap()
     try {
       Glide
           .with(context)
           .load(url)
           .diskCacheStrategy(DiskCacheStrategy.ALL)
           .addListener(object: RequestListener<Drawable> {
-            override fun onLoadFailed(e: GlideException?, model: Any?, target: Target<Drawable>?, isFirstResource: Boolean): Boolean =
-                false
+            private val promiseRef = promise
+
+            override fun onLoadFailed(e: GlideException?, model: Any?, target: Target<Drawable>?, isFirstResource: Boolean): Boolean {
+              promiseRef.reject("ERR_IMAGE_GETSIZE_FAILURE", "Failed to get size of the image: $url")
+              return false
+            }
 
             override fun onResourceReady(resource: Drawable?, model: Any?, target: Target<Drawable>?, dataSource: DataSource?, isFirstResource: Boolean): Boolean {
               resource?.let {
                 sizes.putInt("width", resource.intrinsicWidth)
                 sizes.putInt("height", resource.intrinsicHeight)
               }
+              promiseRef.resolve(sizes)
               return false
             }
-
           }).preload()
-      promise.resolve(sizes)
     } catch (e: Exception) {
       promise.reject("ERR_IMAGE_GETSIZE_FAILURE", "Failed to get size of the image: $url", e)
     }
