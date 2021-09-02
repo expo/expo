@@ -42,20 +42,35 @@ it(`Verfies parseEvent eventName validation`, async () => {
 it(`Verfies parseEvent eventParams`, async () => {
   expect(
     FirebaseAnalyticsJS.parseEvent(options, 'MyAnalyticsEvent', {
-      foo: 'bar',
-      num: 10,
-      obj: {
-        foo: 'bee',
-        numa: 11,
-      },
-      arr: [],
+      foo: 'bar', // string
+      num: 10, // number
+      extraordinary: true, // boolean
+      items: [
+        // items array
+        {
+          id: '123456',
+          name: 'nome',
+          location_id: 'tv',
+          quanity: 2,
+          brand: 'onfire',
+          variant: 'loki',
+          list: 'marvel',
+          category: 'awesome',
+          foo1: 'bar1',
+          foo2: 'bar2',
+        },
+        {
+          id: '98765',
+        },
+      ],
     })
   ).toMatchObject({
     en: 'MyAnalyticsEvent',
     'ep.foo': 'bar',
     'epn.num': 10,
-    'ep.obj.foo': 'bee',
-    'ep.obj.numa': 11,
+    'ep.extraordinary': true,
+    pr1: 'id123456~nmnome~lotv~qt2~bronfire~valoki~lnmarvel~caawesome~k0foo1~v0bar1~k1foo2~v2bar2',
+    pr2: 'id98765',
   });
 });
 
