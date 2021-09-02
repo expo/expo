@@ -1,8 +1,14 @@
 package expo.modules.image
 
+import android.graphics.drawable.Drawable
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.DataSource
+import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.load.model.GlideUrl
 import com.bumptech.glide.request.FutureTarget
+import com.bumptech.glide.request.RequestListener
+import com.bumptech.glide.request.target.Target
 
 import com.facebook.react.bridge.Promise
 import com.facebook.react.bridge.ReactApplicationContext
@@ -50,6 +56,23 @@ class ExpoImageModule(val context: ReactApplicationContext) : ReactContextBaseJa
   fun getSize(url: String, promise: Promise) {
     val sizes = WritableNativeMap()
     try {
+      Glide
+          .with(context)
+          .load(url)
+          .diskCacheStrategy(DiskCacheStrategy.ALL)
+          .addListener(object: RequestListener<Drawable> {
+            override fun onLoadFailed(e: GlideException?, model: Any?, target: Target<Drawable>?, isFirstResource: Boolean): Boolean =
+                false
+
+            override fun onResourceReady(resource: Drawable?, model: Any?, target: Target<Drawable>?, dataSource: DataSource?, isFirstResource: Boolean): Boolean {
+              resource?.let {
+                sizes.putInt("width", resource.intrinsicWidth)
+                sizes.putInt("height", resource.intrinsicHeight)
+              }
+              return false
+            }
+
+          }).preload()
       sizes.putInt("width", 80)
       sizes.putInt("height", 100)
       promise.resolve(sizes)
