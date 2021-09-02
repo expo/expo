@@ -34,7 +34,7 @@ export default function AudioDiagnosticsScreen() {
       <AudioOptionSwitch
         title="Enable Audio"
         value={isAudioEnabled}
-        onValueChange={value => {
+        onValueChange={(value) => {
           setAudioEnabled(value);
         }}
       />
@@ -42,7 +42,7 @@ export default function AudioDiagnosticsScreen() {
         title="Play in Silent Mode"
         value={audioMode.playsInSilentModeIOS}
         disabled={!isAudioEnabled}
-        onValueChange={value => {
+        onValueChange={(value) => {
           const newAudioMode = {
             ...audioMode,
             playsInSilentModeIOS: value,
@@ -55,7 +55,7 @@ export default function AudioDiagnosticsScreen() {
         title="Allow Recording"
         value={audioMode.allowsRecordingIOS}
         disabled={!isAudioEnabled || !audioMode.playsInSilentModeIOS}
-        onValueChange={value => {
+        onValueChange={(value) => {
           const newAudioMode = { ...audioMode, allowsRecordingIOS: value };
           setAudioMode(newAudioMode);
         }}
@@ -65,7 +65,7 @@ export default function AudioDiagnosticsScreen() {
           title="Continues Playing in Background"
           value={audioMode.staysActiveInBackground}
           disabled={!isAudioEnabled || !audioMode.playsInSilentModeIOS}
-          onValueChange={value => {
+          onValueChange={(value) => {
             const newAudioMode = { ...audioMode, staysActiveInBackground: value };
             setAudioMode(newAudioMode);
           }}
@@ -84,7 +84,7 @@ export default function AudioDiagnosticsScreen() {
         ]}
         disabled={!isAudioEnabled}
         selectedValue={audioMode.interruptionModeIOS}
-        onSelect={value => {
+        onSelect={(value) => {
           const newAudioMode = { ...audioMode, interruptionModeIOS: value };
           setAudioMode(newAudioMode);
         }}
@@ -126,7 +126,7 @@ function AudioOptionSelector<T>(props: AudioOptionSelectorProps<T>) {
   return (
     <>
       <StyledText style={styles.selectorTitle}>{props.title}</StyledText>
-      {props.items.map(item => (
+      {props.items.map((item) => (
         <BorderlessButton
           key={item.name}
           enabled={!props.disabled && !item.disabled}
