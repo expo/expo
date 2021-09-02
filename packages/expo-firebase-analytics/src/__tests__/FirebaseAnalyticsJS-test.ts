@@ -39,6 +39,26 @@ it(`Verfies parseEvent eventName validation`, async () => {
   FirebaseAnalyticsJS.parseEvent(options, 'user_id');
 });
 
+it(`Verfies parseEvent eventParams`, async () => {
+  expect(
+    FirebaseAnalyticsJS.parseEvent(options, 'MyAnalyticsEvent', {
+      foo: 'bar',
+      num: 10,
+      obj: {
+        foo: 'bee',
+        numa: 11,
+      },
+      arr: [],
+    })
+  ).toMatchObject({
+    en: 'MyAnalyticsEvent',
+    'ep.foo': 'bar',
+    'epn.num': 10,
+    'ep.obj.foo': 'bee',
+    'ep.obj.numa': 11,
+  });
+});
+
 it(`Verfies parseUserProperty userPropertyName validation`, async () => {
   const name = 'user-property name';
   expect.assertions(4);
