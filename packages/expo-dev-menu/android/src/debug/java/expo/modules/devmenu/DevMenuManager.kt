@@ -10,7 +10,6 @@ import android.util.Log
 import android.view.KeyEvent
 import android.view.MotionEvent
 import android.view.inputmethod.InputMethodManager
-import androidx.core.content.ContextCompat.getSystemService
 import com.facebook.react.ReactInstanceManager
 import com.facebook.react.ReactNativeHost
 import com.facebook.react.bridge.LifecycleEventListener
@@ -60,6 +59,7 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
   private var currentReactInstanceManager: WeakReference<ReactInstanceManager?> = WeakReference(null)
   private var currentScreenName: String? = null
   private val expoApiClient = DevMenuExpoApiClient()
+  private var canLaunchDevMenuOnStart = true
   var testInterceptor: DevMenuTestInterceptor = DevMenuDisabledTestInterceptor()
 
   //region helpers
@@ -212,13 +212,13 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
         ?: reactContext.applicationContext as Application)
     maybeStartDetectors(devMenuHost.getContext())
 
-    settings = testInterceptor.overrideSettings()
+    settings = (testInterceptor.overrideSettings()
         ?: if (reactContext.hasNativeModule(DevMenuSettings::class.java)) {
           reactContext.getNativeModule(DevMenuSettings::class.java)!!
         } else {
           DevMenuDefaultSettings()
-        }.also {
-          shouldLaunchDevMenuOnStart = it.showsAtLaunch || !it.isOnboardingFinished
+        }).also {
+          shouldLaunchDevMenuOnStart = canLaunchDevMenuOnStart && (it.showsAtLaunch || !it.isOnboardingFinished)
           if (shouldLaunchDevMenuOnStart) {
             reactContext.addLifecycleEventListener(this)
           }
@@ -421,6 +421,10 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
   override fun getMenuHost(): ReactNativeHost = devMenuHost
 
   override fun getExpoApiClient(): DevMenuExpoApiClientInterface = expoApiClient
+
+  override fun setCanLaunchDevMenuOnStart(canLaunchDevMenuOnStart: Boolean) {
+    this.canLaunchDevMenuOnStart = canLaunchDevMenuOnStart
+  }
 
   override fun synchronizeDelegate() {
     val newReactInstanceManager = requireNotNull(delegate).reactInstanceManager()
