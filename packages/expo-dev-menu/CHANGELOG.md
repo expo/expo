@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix keyboard commands getting ignored after dev menu is shown.
+
 ### 💡 Others
 
 ## 0.7.7 — 2021-08-06
