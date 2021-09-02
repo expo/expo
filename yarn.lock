@@ -19583,10 +19583,10 @@ react-native-scrollable-mixin@^1.0.0:
   resolved "https://registry.yarnpkg.com/react-native-scrollable-mixin/-/react-native-scrollable-mixin-1.0.1.tgz#34a32167b64248594154fd0d6a8b03f22740548e"
   integrity sha1-NKMhZ7ZCSFlBVP0NaosD8idAVI4=
 
-react-native-shared-element@0.7.0:
-  version "0.7.0"
-  resolved "https://registry.yarnpkg.com/react-native-shared-element/-/react-native-shared-element-0.7.0.tgz#c5e02eb372f6e38e48eb1030fd59be8f3d8c7a1f"
-  integrity sha512-TJTGwQceABYete+vH3ahNSgzVzXz7X2SPv3thT91gdcFCrm7ht7IKXBXJiYjOA+4TfdqnGEAWkspCy80oEnOgw==
+react-native-shared-element@0.8.2:
+  version "0.8.2"
+  resolved "https://registry.yarnpkg.com/react-native-shared-element/-/react-native-shared-element-0.8.2.tgz#64124ec7e19369b78b6924c93808e1ed058c8109"
+  integrity sha512-IalCG1Sn6Vq171JMh0cbHzf0dJxwUIGwf5baxWhZ6busLQ2AL0A0pFb86sLgOUtv+NZdZX2R1Xd+Ylqj8neuLw==
 
 react-native-svg@12.1.1:
   version "12.1.1"
@@ -19622,10 +19622,10 @@ react-native-webview@11.6.2:
     escape-string-regexp "2.0.0"
     invariant "2.2.4"
 
-react-navigation-shared-element@^3.0.0:
-  version "3.0.0"
-  resolved "https://registry.yarnpkg.com/react-navigation-shared-element/-/react-navigation-shared-element-3.0.0.tgz#3dfa6a71f138e4ceb457a91aea3ef2a8ab2a6a32"
-  integrity sha512-nSmbgf4+hKSZU1Rzi5Bm1Is5mt0Z+xY5sXeTx4t5KMnmNW4lz5M83p9oTW6mKDoXUeCocUfeVwbCmsAjlyTLQw==
+react-navigation-shared-element@^3.1.2:
+  version "3.1.2"
+  resolved "https://registry.yarnpkg.com/react-navigation-shared-element/-/react-navigation-shared-element-3.1.2.tgz#9e79c141ebb3a56ab01227c25cbf12a66d360c27"
+  integrity sha512-TQ7WEjgoJZMqK4gCzQN/PcuoPEuiAKBjyAW6qmy5HONXx1HkXJ4JK1n20FYchidJWuHRjhheHpdyCuilSMCPcg==
   dependencies:
     hoist-non-react-statics "^3.3.2"
 

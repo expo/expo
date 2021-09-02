@@ -17,11 +17,11 @@
 @property (nonatomic, assign) RNSharedElementAnimation animation;
 @property (nonatomic, assign) RNSharedElementResize resize;
 @property (nonatomic, assign) RNSharedElementAlign align;
-@property (nonatomic, assign) RNSharedElementNode* startNode;
-@property (nonatomic, assign) RNSharedElementNode* startAncestor;
+@property (nonatomic, strong) RNSharedElementNode* startNode;
+@property (nonatomic, strong) RNSharedElementNode* startAncestor;
 @property (nonatomic, copy) RCTDirectEventBlock onMeasureNode;
-@property (nonatomic, assign) RNSharedElementNode* endNode;
-@property (nonatomic, assign) RNSharedElementNode* endAncestor;
+@property (nonatomic, strong) RNSharedElementNode* endNode;
+@property (nonatomic, strong) RNSharedElementNode* endAncestor;
 
 - (instancetype)initWithNodeManager:(RNSharedElementNodeManager*)nodeManager;
 
