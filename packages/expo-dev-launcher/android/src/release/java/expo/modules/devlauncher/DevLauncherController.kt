@@ -31,6 +31,9 @@ class DevLauncherController private constructor() : DevLauncherControllerInterfa
   override val manifest: DevLauncherManifest
     get() = throw IllegalStateException(DEV_LAUNCHER_IS_NOT_AVAILABLE)
 
+  override val manifestURL: Uri
+    get() = throw IllegalStateException(DEV_LAUNCHER_IS_NOT_AVAILABLE)
+
   override val appHost: ReactNativeHost
     get() = throw IllegalStateException(DEV_LAUNCHER_IS_NOT_AVAILABLE)
 
