@@ -6,13 +6,14 @@
 
 ### 🎉 New features
 
+- Add support for logging the `items` array to `logEvent` ([#14189](https://github.com/expo/expo/pull/14189) by [@IjzerenHein](https://github.com/IjzerenHein))
 - Update JS code to read manifest2 when manifest is not available. ([#13602](https://github.com/expo/expo/pull/13602) by [@wschurman](https://github.com/wschurman))
 - Update TS typings to allow null user property values. ([#14105](https://github.com/expo/expo/pull/14105) by [@kylerjensen](https://github.com/kylerjensen))
 
 ### 🐛 Bug fixes
 
 - Fix logEvent exception on Android when using arrays. ([#14189](https://github.com/expo/expo/pull/14189) by [@IjzerenHein](https://github.com/IjzerenHein))
-- Fix logEvent `items` array on pure JavaScript client (Expo Go) ([#14189](https://github.com/expo/expo/pull/14189) by [@IjzerenHein](https://github.com/IjzerenHein))
+
 
 ### 💡 Others
 
