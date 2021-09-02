@@ -2328,6 +2328,8 @@ PODS:
     - React-jsi (= 0.64.2)
     - React-perflogger (= 0.64.2)
   - React-jsinspector (0.64.2)
+  - react-native-segmented-control (2.4.0):
+    - React-Core
   - react-native-webview (11.6.2):
     - React-Core
   - React-perflogger (0.64.2)
@@ -2866,6 +2868,7 @@ DEPENDENCIES:
   - React-jsi (from `../react-native-lab/react-native/ReactCommon/jsi`)
   - React-jsiexecutor (from `../react-native-lab/react-native/ReactCommon/jsiexecutor`)
   - React-jsinspector (from `../react-native-lab/react-native/ReactCommon/jsinspector`)
+  - "react-native-segmented-control (from `./vendored/unversioned/@react-native-segmented-control/segmented-control`)"
   - react-native-webview (from `./vendored/unversioned/react-native-webview`)
   - React-perflogger (from `../react-native-lab/react-native/ReactCommon/reactperflogger`)
   - React-RCTActionSheet (from `../react-native-lab/react-native/Libraries/ActionSheetIOS`)
@@ -3724,6 +3727,8 @@ EXTERNAL SOURCES:
     :path: "../react-native-lab/react-native/ReactCommon/jsiexecutor"
   React-jsinspector:
     :path: "../react-native-lab/react-native/ReactCommon/jsinspector"
+  react-native-segmented-control:
+    :path: "./vendored/unversioned/@react-native-segmented-control/segmented-control"
   react-native-webview:
     :path: "./vendored/unversioned/react-native-webview"
   React-perflogger:
@@ -4084,7 +4089,7 @@ SPEC CHECKSUMS:
   boost-for-react-native: 39c7adb57c4e60d6c5479dd8623128eb5b3f0f2c
   Branch: 9a37f707974a128c37829033c49018b79c7e7a2d
   CocoaLumberjack: 2f44e60eb91c176d471fdba43b9e3eae6a721947
-  DoubleConversion: cde416483dac037923206447da6e1454df403714
+  DoubleConversion: cf9b38bf0b2d048436d9a82ad2abe1404f11e7de
   EXAdsAdMob: 86e90081f156eb60a2d7b6da07408d3ec8c4a0d8
   EXAdsFacebook: 43c0cf0ec4e6a4fe07adaa25cf45570018653856
   EXAmplitude: f0c3dd959d629181c0c2b4bc52717580a539a600
@@ -4164,7 +4169,7 @@ SPEC CHECKSUMS:
   FirebaseCore: ac35d680a0bf32319a59966a1478e0741536b97b
   FirebaseCoreDiagnostics: 3d36e05da74cb8b7ce30e6594a8f201b982c725c
   FirebaseInstallations: a58d4f72ec5861840b84df489f2668d970df558a
-  glog: 40a13f7840415b9a77023fbcae0f1e6f43192af3
+  glog: 73c2498ac6884b13ede40eda8228cb1eee9d9d62
   Google-Maps-iOS-Utils: c32891ff472eaaa1fca032beedafa1a013af7875
   Google-Mobile-Ads-SDK: 2f288748a42920d1c744946a460896a95b0e9110
   GoogleAppMeasurement: 0c3b134b2c0a90c4c24833873894bfe0e42a0384
@@ -4201,6 +4206,7 @@ SPEC CHECKSUMS:
   React-jsi: 67747b9722f6dab2ffe15b011bcf6b3f2c3f1427
   React-jsiexecutor: 80c46bd381fd06e418e0d4f53672dc1d1945c4c3
   React-jsinspector: cc614ec18a9ca96fd275100c16d74d62ee11f0ae
+  react-native-segmented-control: 06607462630512ff8eef652ec560e6235a30cc3e
   react-native-webview: 193d233c29eacce1f42ca2637dab7ba79c25a6de
   React-perflogger: 25373e382fed75ce768a443822f07098a15ab737
   React-RCTActionSheet: af7796ba49ffe4ca92e7277a5d992d37203f7da5
