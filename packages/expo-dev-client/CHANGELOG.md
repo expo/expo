@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 0.5.0 — 2021-09-02
+
+### 💡 Others
+
 - Fix .npmignore and remove `tests/` directory from published npm package. ([#13990](https://github.com/expo/expo/pull/13990) by [@esamelson](https://github.com/esamelson))
 
 ## 0.4.7 — 2021-08-06

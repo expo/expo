@@ -102,7 +102,7 @@
     "expo-modules-core": "~0.3.0-alpha.0",
     "expo": "~42.0.0-alpha.0",
     "expo-camera": "~11.1.1",
-    "expo-dev-client": "~0.4.7",
+    "expo-dev-client": "~0.5.0",
     "expo-face-detector": "~10.1.0",
     "expo-image": "~1.0.0-alpha.1",
     "expo-notifications": "~0.12.0",
