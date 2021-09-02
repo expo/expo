@@ -60,6 +60,7 @@ android {
     targetSdkVersion safeExtGet("targetSdkVersion", 30)
     versionCode 31
     versionName '0.8.4'
+    consumerProguardFiles("proguard-rules.pro")
     testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     // uncomment below to export the database schema when making changes
     /* javaCompileOptions {
