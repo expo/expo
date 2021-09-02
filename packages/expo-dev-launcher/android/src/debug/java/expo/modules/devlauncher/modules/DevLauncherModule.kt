@@ -19,9 +19,15 @@ class DevLauncherModule(reactContext: ReactApplicationContext?) : ReactContextBa
     } catch (_: IllegalStateException) {
       null
     }
+    val manifestURLString = try {
+      controller?.manifestURL?.toString()
+    } catch (_: IllegalStateException) {
+      null
+    }
 
     return mapOf<String, Any?>(
-      "manifestString" to manifestString
+      "manifestString" to manifestString,
+      "manifestURL" to manifestURLString
     )
   }
 }

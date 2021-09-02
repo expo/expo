@@ -22,6 +22,7 @@ interface DevLauncherControllerInterface {
   fun handleIntent(intent: Intent?, activityToBeInvalidated: ReactActivity?): Boolean
 
   val manifest: DevLauncherManifest?
+  val manifestURL: Uri?
   val devClientHost: DevLauncherClientHost
   val mode: DevLauncherController.Mode
   val appHost: ReactNativeHost
