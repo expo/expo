@@ -5,7 +5,6 @@ import com.amplitude.api.AmplitudeClient
 import expo.modules.analytics.amplitude.AmplitudeModule
 import host.exp.exponent.kernel.ExperienceKey
 import java.io.UnsupportedEncodingException
-import java.net.URLEncoder
 
 class ScopedAmplitudeModule(context: Context, experienceKey: ExperienceKey) :
   AmplitudeModule(context) {

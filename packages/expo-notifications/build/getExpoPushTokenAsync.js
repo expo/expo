@@ -9,6 +9,8 @@ export default async function getExpoPushTokenAsync(options = {}) {
     const devicePushToken = options.devicePushToken || (await getDevicePushTokenAsync());
     const deviceId = options.deviceId || (await getDeviceIdAsync());
     const experienceId = options.experienceId ||
+        Constants.manifest2?.extra?.eas?.projectId ||
+        Constants.manifest?.projectId ||
         Constants.manifest?.originalFullName ||
         Constants.manifest2?.extra?.expoClient?.originalFullName ||
         Constants.manifest?.id;
