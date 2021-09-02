@@ -81,6 +81,7 @@ android {
 }
 
 dependencies { dependencyHandler ->
+  implementation project(':expo-modules-core')
   // Link expo modules as dependencies of the adapter. It uses `api` configuration so they all will be visible for the app as well.
   // A collection of the dependencies depends on the options passed to `useExpoModules` in your project's `settings.gradle`.
   addExpoModulesDependencies(dependencyHandler, project)
