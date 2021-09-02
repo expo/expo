@@ -111,7 +111,7 @@ function ProjectList({ data, loadMoreAsync, listTitle }: Props) {
   const theme = useTheme();
   const isLoading = React.useRef<null | boolean>(false);
 
-  const extractKey = React.useCallback(item => item.id, []);
+  const extractKey = React.useCallback((item) => item.id, []);
 
   const handleLoadMoreAsync = async () => {
     if (isLoading.current) return;

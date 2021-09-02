@@ -33,7 +33,7 @@ class Connectivity {
 
   _handleConnectivityChange = (netInfo: NetInfoState) => {
     this._isAvailable = netInfo.isConnected ?? false;
-    this._listeners.forEach(listener => {
+    this._listeners.forEach((listener) => {
       listener(this._isAvailable);
     });
   };

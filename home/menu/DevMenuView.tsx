@@ -133,7 +133,7 @@ class DevMenuView extends React.PureComponent<Props, State> {
       return (
         <>
           <StyledView style={styles.separator} />
-          {devMenuItems.map(key => {
+          {devMenuItems.map((key) => {
             return this.renderDevMenuItem(key, this.state.devMenuItems[key]);
           })}
         </>

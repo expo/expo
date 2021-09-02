@@ -44,7 +44,7 @@ function useSplashScreenWhileLoadingResources(loadResources: () => Promise<void>
 
 export default function HomeApp() {
   const colorScheme = useColorScheme();
-  const preferredAppearance = useSelector(data => data.settings.preferredAppearance);
+  const preferredAppearance = useSelector((data) => data.settings.preferredAppearance);
   const dispatch = useDispatch();
 
   const isShowingSplashScreen = useSplashScreenWhileLoadingResources(async () => {
@@ -58,7 +58,7 @@ export default function HomeApp() {
   React.useEffect(() => {
     if (!isShowingSplashScreen && Platform.OS === 'ios') {
       // If Expo Go is opened via deep linking, we'll get the URL here
-      Linking.getInitialURL().then(initialUrl => {
+      Linking.getInitialURL().then((initialUrl) => {
         if (initialUrl && shouldOpenUrl(initialUrl)) {
           Linking.openURL(UrlUtils.toExp(initialUrl));
         }
@@ -67,7 +67,7 @@ export default function HomeApp() {
   }, [isShowingSplashScreen]);
 
   const addProjectHistoryListener = () => {
-    addListenerWithNativeCallback('ExponentKernel.addHistoryItem', async event => {
+    addListenerWithNativeCallback('ExponentKernel.addHistoryItem', async (event) => {
       let { manifestUrl, manifest, manifestString } = event;
       if (!manifest && manifestString) {
         manifest = JSON.parse(manifestString);
