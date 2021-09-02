@@ -2,19 +2,17 @@ package expo.modules.image
 
 import android.graphics.drawable.Drawable
 import com.bumptech.glide.Glide
-import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.DiskCacheStrategy
-import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.load.model.GlideUrl
 import com.bumptech.glide.request.FutureTarget
-import com.bumptech.glide.request.RequestListener
-import com.bumptech.glide.request.target.Target
+import com.bumptech.glide.request.RequestOptions
+import com.bumptech.glide.request.target.SimpleTarget
+import com.bumptech.glide.request.transition.Transition
 
 import com.facebook.react.bridge.Promise
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactContextBaseJavaModule
 import com.facebook.react.bridge.ReactMethod
-import com.facebook.react.bridge.WritableNativeMap
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -30,8 +28,15 @@ suspend fun <T> FutureTarget<T>.awaitGet() = runInterruptible(Dispatchers.IO) { 
 
 class ExpoImageModule(val context: ReactApplicationContext) : ReactContextBaseJavaModule(context) {
   private val moduleCoroutineScope = CoroutineScope(Dispatchers.IO)
+
+  private val sizeOptions by lazy {
+    RequestOptions()
+        .skipMemoryCache(true)
+        .diskCacheStrategy(DiskCacheStrategy.DATA)
+  }
+
+
   override fun getName() = "ExpoImageModule"
-  val sizes = WritableNativeMap()
 
   @ReactMethod
   fun prefetch(url: String, promise: Promise) {
@@ -58,25 +63,20 @@ class ExpoImageModule(val context: ReactApplicationContext) : ReactContextBaseJa
     try {
       Glide
           .with(context)
+          .`as`(ExpoImageSize::class.java)
+          .apply(sizeOptions)
           .load(url)
-          .diskCacheStrategy(DiskCacheStrategy.ALL)
-          .addListener(object: RequestListener<Drawable> {
+          .into(object : SimpleTarget<ExpoImageSize>() {
             private val promiseRef = promise
 
-            override fun onLoadFailed(e: GlideException?, model: Any?, target: Target<Drawable>?, isFirstResource: Boolean): Boolean {
-              promiseRef.reject("ERR_IMAGE_GETSIZE_FAILURE", "Failed to get size of the image: $url")
-              return false
+            override fun onResourceReady(resource: ExpoImageSize, transition: Transition<in ExpoImageSize>?) {
+              promiseRef.resolve(resource.asWritableNativeMap())
             }
 
-            override fun onResourceReady(resource: Drawable?, model: Any?, target: Target<Drawable>?, dataSource: DataSource?, isFirstResource: Boolean): Boolean {
-              resource?.let {
-                sizes.putInt("width", resource.intrinsicWidth)
-                sizes.putInt("height", resource.intrinsicHeight)
-              }
-              promiseRef.resolve(sizes)
-              return false
+            override fun onLoadFailed(errorDrawable: Drawable?) {
+              promiseRef.reject("ERR_IMAGE_GETSIZE_FAILURE", "Failed to get size of the image: $url")
             }
-          }).preload()
+          })
     } catch (e: Exception) {
       promise.reject("ERR_IMAGE_GETSIZE_FAILURE", "Failed to get size of the image: $url", e)
     }
