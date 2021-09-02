@@ -45,7 +45,7 @@ PODS:
     - UMCore
   - EXClipboard (1.1.0):
     - UMCore
-  - EXConstants (11.0.1):
+  - EXConstants (11.0.2):
     - ExpoModulesCore
     - UMCore
   - EXContacts (9.2.5):
@@ -135,50 +135,50 @@ PODS:
   - EXPermissions (12.1.1):
     - ExpoModulesCore
     - UMCore
-  - expo-dev-client (0.4.7):
+  - expo-dev-client (0.5.0):
     - expo-dev-launcher
     - expo-dev-menu
     - expo-dev-menu-interface
     - EXUpdatesInterface
-  - expo-dev-launcher (0.6.7):
-    - expo-dev-launcher/Main (= 0.6.7)
+  - expo-dev-launcher (0.7.0):
+    - expo-dev-launcher/Main (= 0.7.0)
     - expo-dev-menu-interface
     - EXUpdatesInterface
     - React-Core
-  - expo-dev-launcher/Main (0.6.7):
+  - expo-dev-launcher/Main (0.7.0):
     - expo-dev-launcher/Unsafe
     - expo-dev-menu-interface
     - EXUpdatesInterface
     - React-Core
-  - expo-dev-launcher/Tests (0.6.7):
+  - expo-dev-launcher/Tests (0.7.0):
     - expo-dev-menu-interface
     - EXUpdatesInterface
     - OHHTTPStubs
     - React-Core
     - React-CoreModules
-  - expo-dev-launcher/Unsafe (0.6.7):
+  - expo-dev-launcher/Unsafe (0.7.0):
     - expo-dev-menu-interface
     - EXUpdatesInterface
     - React-Core
-  - expo-dev-menu (0.7.7):
+  - expo-dev-menu (0.8.0):
     - expo-dev-menu-interface
-    - expo-dev-menu/Main (= 0.7.7)
+    - expo-dev-menu/Main (= 0.8.0)
     - React-Core
-  - expo-dev-menu-interface (0.3.4)
-  - expo-dev-menu/Main (0.7.7):
+  - expo-dev-menu-interface (0.4.0)
+  - expo-dev-menu/Main (0.8.0):
     - expo-dev-menu-interface
     - expo-dev-menu/Vendored
     - React-Core
-  - expo-dev-menu/Tests (0.7.7):
+  - expo-dev-menu/Tests (0.8.0):
     - expo-dev-menu-interface
     - React-Core
     - React-CoreModules
-  - expo-dev-menu/UITests (0.7.7):
+  - expo-dev-menu/UITests (0.8.0):
     - expo-dev-menu-interface
     - React
     - React-Core
     - React-CoreModules
-  - expo-dev-menu/Vendored (0.7.7):
+  - expo-dev-menu/Vendored (0.8.0):
     - expo-dev-menu-interface
     - React-Core
   - expo-image (1.0.0-alpha.1):
@@ -1249,7 +1249,7 @@ SPEC CHECKSUMS:
   EXCamera: 0bef0a0d0066885a5596916cdf4189316aac69ce
   EXCellular: 82f7267f13f296f37434d0031e9a214bbd4b8919
   EXClipboard: c66f7d22ba754496b0fc6b23a2cb9a3e10fa1581
-  EXConstants: 3babb61f8f4bb7dffe85b8b7d6eaa31d903e4d7e
+  EXConstants: 4cb52b6d8f636c767104a44bf7db3873e9c01a6f
   EXContacts: d9467ff4835829b89a702641c6fcbdb17cd2ada3
   EXCrypto: 46e28f1eb7ec3e2ae5aab652fe1dc4d46bafb386
   EXDevice: 6f1eed02c099f5b382a12a40406c58868892aba6
@@ -1279,10 +1279,10 @@ SPEC CHECKSUMS:
   EXNetwork: 6682b2bbbd90e66c4738159abaf8cd206c25e8b8
   EXNotifications: f0d0a38e97c9a790f5fb3c14efab79b9ece83a7e
   EXPermissions: 916efb5b817cb0a40160c0cd2f369af3c23a78be
-  expo-dev-client: 6deebc5a4525c8b39ffc090448ccd21e6b008e35
-  expo-dev-launcher: 6ae81f30b06470413eeca0f9e2a115429f10c1c3
-  expo-dev-menu: 148071b2ca564529a0efb941cc2a72fe7397195a
-  expo-dev-menu-interface: 145d352ba9edff66b0c1fb13773f0f0dd9d50afd
+  expo-dev-client: 850031ec51581ef37c8b29021aa4b3134e013339
+  expo-dev-launcher: c04b363ed79d77cee2c2c656e7c230669bb4bde0
+  expo-dev-menu: 87d86e36a44edb40811658be208eed67e20a7d40
+  expo-dev-menu-interface: cca641e9e52dfe688fd24c67795f14d6daea4bb9
   expo-image: 2fded43b1489487d7e84911caaadc821258f4905
   ExpoModulesCore: 2734852616127a6c1fc23012197890a6f3763dc7
   EXPrint: a8af0ad2a73b4981cc1aef58ffd7d2cab4b0dd61
