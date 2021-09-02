@@ -12,6 +12,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed crashes when the app doesn't have custom deep link scheme on iOS. ([#14026](https://github.com/expo/expo/pull/14026) by [@lukmccall](https://github.com/lukmccall))
+- Fix config plugin not idempotent. ([#14065](https://github.com/expo/expo/pull/14065) by [@lukmccall](https://github.com/lukmccall))
 - Fix React Native version checker in build.gradle. ([#14251](https://github.com/expo/expo/pull/14251) by [@esamelson](https://github.com/esamelson))
 - Fixed Cmd+D opening two dev menus. ([#14204](https://github.com/expo/expo/pull/14204) by [@fson](https://github.com/fson))
 
@@ -24,7 +26,6 @@
 ### 🐛 Bug fixes
 
 - Fixed issue with opening multiple different published apps. ([#13926](https://github.com/expo/expo/pull/13926) by [@esamelson](https://github.com/esamelson))
-- Fixed crashes when the app doesn't have custom deep link scheme on iOS. ([#14026](https://github.com/expo/expo/pull/14026) by [@lukmccall](https://github.com/lukmccall))
 
 ## 0.6.6 — 2021-08-04
 
