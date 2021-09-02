@@ -334,7 +334,7 @@ class LocationModule(
       SmartLocation.with(mContext).geocoding()
         .direct(address!!) { _, list: List<LocationAddress> ->
           val results: MutableList<Bundle> = ArrayList(list.size)
-          for (locationAddress in list) {
+          list.forEach { locationAddress ->
             val coords = locationToCoordsBundle(locationAddress.location, Bundle::class.java)
             if (coords != null) {
               results.add(coords)
@@ -363,11 +363,9 @@ class LocationModule(
     location.longitude = locationMap["longitude"] as Double
     if (Geocoder.isPresent()) {
       SmartLocation.with(mContext).geocoding()
-        .reverse(location) { _, addresses: List<Address?> ->
+        .reverse(location) { _, addresses: List<Address> ->
           val results: MutableList<Bundle> = ArrayList(addresses.size)
-          for (address in addresses) {
-            results.add(addressToBundle(address!!))
-          }
+          addresses.mapTo(results) { addressToBundle(it) }
           SmartLocation.with(mContext).geocoding().stop()
           promise.resolve(results)
         }
@@ -593,7 +591,7 @@ class LocationModule(
 
   private fun resumeLocationUpdates() {
     val locationClient = locationProvider
-    for (requestId in mLocationCallbacks.keys) {
+    mLocationCallbacks.keys.forEach { requestId ->
       val locationCallback = mLocationCallbacks[requestId]
       val locationRequest = mLocationRequests[requestId]
       val looper = Looper.myLooper()
@@ -620,7 +618,7 @@ class LocationModule(
 
   private fun executePendingRequests(resultCode: Int) {
     // Propagate result to pending location requests.
-    for (listener in mPendingLocationRequests) {
+    mPendingLocationRequests.forEach { listener ->
       listener.onResult(resultCode)
     }
     mPendingLocationRequests.clear()
@@ -729,7 +727,7 @@ class LocationModule(
       SmartLocation.with(mContext).geocoding().stop()
       geocoderPaused = true
     }
-    for (requestId in mLocationCallbacks.keys) {
+    mLocationCallbacks.keys.forEach { requestId ->
       pauseLocationUpdatesForRequest(requestId)
     }
   }
@@ -770,8 +768,7 @@ class LocationModule(
   @RequiresApi(Build.VERSION_CODES.Q)
   private fun handleBackgroundLocationPermissions(result: Map<String, PermissionsResponse>) =
     Bundle().apply {
-      val accessBackgroundLocation = result[Manifest.permission.ACCESS_BACKGROUND_LOCATION]
-      accessBackgroundLocation!!
+      val accessBackgroundLocation = result[Manifest.permission.ACCESS_BACKGROUND_LOCATION]!!
       val status = accessBackgroundLocation.status
       val canAskAgain = accessBackgroundLocation.canAskAgain
       putString(PermissionsResponse.STATUS_KEY, status.status)
@@ -782,12 +779,9 @@ class LocationModule(
 
   @RequiresApi(Build.VERSION_CODES.Q)
   private fun handleLegacyPermissions(result: Map<String, PermissionsResponse>): Bundle {
-    val accessFineLocation = result[Manifest.permission.ACCESS_FINE_LOCATION]
-    val accessCoarseLocation = result[Manifest.permission.ACCESS_COARSE_LOCATION]
-    val backgroundLocation = result[Manifest.permission.ACCESS_BACKGROUND_LOCATION]
-    accessFineLocation!!
-    accessCoarseLocation!!
-    backgroundLocation!!
+    val accessFineLocation = result[Manifest.permission.ACCESS_FINE_LOCATION]!!
+    val accessCoarseLocation = result[Manifest.permission.ACCESS_COARSE_LOCATION]!!
+    val backgroundLocation = result[Manifest.permission.ACCESS_BACKGROUND_LOCATION]!!
     var status = PermissionsStatus.UNDETERMINED
     var accuracy = "none"
     val canAskAgain = accessCoarseLocation.canAskAgain && accessFineLocation.canAskAgain

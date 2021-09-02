@@ -73,8 +73,7 @@ class GeofencingTaskConsumer(
     val eventType = GeofencingHelpers.eventTypeFromTransitionType(geofenceTransition)
 
     // Get the geofences that were triggered. A single event can trigger multiple geofences.
-    val triggeringGeofences = event.triggeringGeofences
-    for (geofence in triggeringGeofences) {
+    event.triggeringGeofences.forEach { geofence ->
       val region = mRegions[geofence.requestId]
       if (region != null) {
         // Update region state in region bundle.
@@ -91,9 +90,7 @@ class GeofencingTaskConsumer(
 
   override fun didExecuteJob(jobService: JobService, params: JobParameters): Boolean {
     val task = mTask ?: return false
-    val data = taskManagerUtils.extractDataFromJobParams(params)
-    for (item in data) {
-
+    taskManagerUtils.extractDataFromJobParams(params).forEach { item ->
       val region = Bundle().apply {
         putAll(item.getPersistableBundle("region"))
       }

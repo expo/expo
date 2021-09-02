@@ -215,7 +215,7 @@ class LocationTaskConsumer(context: Context?, taskManagerUtils: TaskManagerUtils
     }
     val context = context.applicationContext
     val data: MutableList<PersistableBundle?> = ArrayList()
-    for (location in mDeferredLocations) {
+    mDeferredLocations.forEach { location ->
       val timestamp = location.time
 
       // Some devices may broadcast the same location multiple times (mostly twice) so we're filtering out these locations,
