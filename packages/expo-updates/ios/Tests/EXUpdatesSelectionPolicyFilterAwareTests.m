@@ -32,14 +32,12 @@
     @"hash": @"DW5MBgKq155wnX8rCP1lnsW6BsTbfKLXxGXRQx1RcOA",
     @"key": @"0436e5821bff7b95a84c21f22a43cb96.bundle",
     @"contentType": @"application/javascript",
-    @"fileExtension": @".js",
     @"url": @"https://url.to/bundle"
   };
   NSDictionary *imageAsset = @{
     @"hash": @"JSeRsPNKzhVdHP1OEsDVsLH500Zfe4j1O7xWfa14oBo",
     @"key": @"3261e570d51777be1e99116562280926.png",
     @"contentType": @"image/png",
-    @"fileExtension": @".png",
     @"url": @"https://url.to/asset"
   };
 
