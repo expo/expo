@@ -88,21 +88,21 @@ export default class Image extends React.Component<ImageProps, ImageState> {
    * **Available on @Android only**.
    * TODO
    * @param url TODO
-   * @param success TODO
-   * @param failure TODO
+   * @param onSuccess TODO
+   * @param onFailure TODO
    * @returns TODO
    */
   static async getSize(
     url: string,
-    success: (width: number, height: number) => void,
-    failure?: (error: any) => void
+    onSuccess: (width: number, height: number) => void,
+    onFailure?: (error: any) => void
   ): Promise<void> {
     if (!ExpoImageModule.getSize) {
       throw new UnavailabilityError('Image', 'getSize');
     }
     return ExpoImageModule.getSize(url)
-      .then((sizes: ImageSizes) => success(sizes.width, sizes.height))
-      .catch(failure || console.warn('Failed to aquire size for image: ' + url));
+      .then((sizes: ImageSizes) => onSuccess(sizes.width, sizes.height))
+      .catch(onFailure || console.warn('Failed to acquire size for image: ' + url));
   }
 
   state = {
