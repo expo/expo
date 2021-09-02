@@ -73,8 +73,6 @@ class ExpoImageModule(val context: ReactApplicationContext) : ReactContextBaseJa
             }
 
           }).preload()
-      sizes.putInt("width", 80)
-      sizes.putInt("height", 100)
       promise.resolve(sizes)
     } catch (e: Exception) {
       promise.reject("ERR_IMAGE_GETSIZE_FAILURE", "Failed to get size of the image: $url", e)
