@@ -961,8 +961,21 @@ EX_EXPORT_METHOD_AS(getTotalDiskCapacityAsync, getTotalDiskCapacityAsyncWithReso
   }
 }
 
-- (NSDictionary *)documentFileSystemAttributes {
-  return [[NSFileManager defaultManager] attributesOfFileSystemForPath:_documentDirectory error:nil];
+- (NSDictionary<NSURLResourceKey, id> *)documentFileResourcesForKeys:(NSArray<NSURLResourceKey> *)keys
+{
+  if (!keys.count) {
+    return @{};
+  }
+
+  NSURL *documentDirectoryUrl = [NSURL fileURLWithPath:_documentDirectory];
+  NSError *error = nil;
+  NSDictionary *results = [documentDirectoryUrl resourceValuesForKeys:keys error:&error];
+  if (!results) {
+      NSLog(@"Error retrieving resource keys: %@\n%@", [error localizedDescription], [error userInfo]);
+      return @{};
+  }
+
+  return results;
 }
 
 #pragma mark - Public utils
@@ -1023,24 +1036,16 @@ EX_EXPORT_METHOD_AS(getTotalDiskCapacityAsync, getTotalDiskCapacityAsyncWithReso
   return [directory stringByAppendingPathComponent:fileName];
 }
 
-- (NSNumber *)totalDiskCapacity {
-  NSDictionary *storage = [self documentFileSystemAttributes];
-  
-  if (storage) {
-    NSNumber *fileSystemSizeInBytes = storage[NSFileSystemSize];
-    return fileSystemSizeInBytes;
-  }
-  return nil;
+- (NSNumber *)totalDiskCapacity 
+{
+  NSDictionary *results = [self documentFileResourcesForKeys:@[NSURLVolumeTotalCapacityKey]];
+  return results[NSURLVolumeTotalCapacityKey];
 }
 
-- (NSNumber *)freeDiskStorage {
-  NSDictionary *storage = [self documentFileSystemAttributes];
-  
-  if (storage) {
-    NSNumber *freeFileSystemSizeInBytes = storage[NSFileSystemFreeSize];
-    return freeFileSystemSizeInBytes;
-  }
-  return nil;
+- (NSNumber *)freeDiskStorage 
+{
+  NSDictionary *results = [self documentFileResourcesForKeys:@[NSURLVolumeAvailableCapacityForImportantUsageKey]];
+  return results[NSURLVolumeAvailableCapacityForImportantUsageKey];
 }
 
 @end
