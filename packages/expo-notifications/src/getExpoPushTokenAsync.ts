@@ -32,6 +32,8 @@ export default async function getExpoPushTokenAsync(options: Options = {}): Prom
 
   const experienceId =
     options.experienceId ||
+    Constants.manifest2?.extra?.eas?.projectId ||
+    Constants.manifest?.projectId ||
     Constants.manifest?.originalFullName ||
     Constants.manifest2?.extra?.expoClient?.originalFullName ||
     Constants.manifest?.id;
