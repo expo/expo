@@ -6,6 +6,14 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 0.8.0 — 2021-09-02
+
+### 🎉 New features
+
 - Fix compatibility with RN 0.65. ([#14064](https://github.com/expo/expo/pull/14064) by [@lukmccall](https://github.com/lukmccall))
 - Add flag to disable auto-launch of dev menu on start. ([#14196](https://github.com/expo/expo/pull/14196) by [@esamelson](https://github.com/esamelson))
 
@@ -13,8 +21,6 @@
 
 - Fix only fullscreen opaque activities can request orientation. ([#14066](https://github.com/expo/expo/pull/14066) by [@lukmccall](https://github.com/lukmccall))
 - Fix keyboard commands getting ignored after dev menu is shown. ([#14266](https://github.com/expo/expo/pull/14266) by [@fson](https://github.com/fson))
-
-### 💡 Others
 
 ## 0.7.7 — 2021-08-06
 

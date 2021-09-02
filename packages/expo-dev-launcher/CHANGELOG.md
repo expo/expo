@@ -6,6 +6,14 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 0.7.0 — 2021-09-02
+
+### 🎉 New features
+
 - Fix compatibility with RN 0.65. ([#14064](https://github.com/expo/expo/pull/14064) by [@lukmccall](https://github.com/lukmccall))
 - Add manifestURL to exported constants. ([#14195](https://github.com/expo/expo/pull/14195) by [@esamelson](https://github.com/esamelson))
 - Add flag to disable auto-launch of dev menu on start. ([#14196](https://github.com/expo/expo/pull/14196) by [@esamelson](https://github.com/esamelson))

@@ -102,7 +102,7 @@
     "@unimodules/react-native-adapter": "^6.3.5",
     "expo": "~42.0.3",
     "expo-camera": "~11.2.2",
-    "expo-dev-client": "~0.4.7",
+    "expo-dev-client": "~0.5.0",
     "expo-face-detector": "~10.1.1",
     "expo-image": "~1.0.0-alpha.1",
     "expo-notifications": "~0.12.3",
