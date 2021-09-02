@@ -22,7 +22,7 @@ NODE_BINARY=${NODE_BINARY:-node}
 # ref: https://github.com/facebook/react-native/blob/c974cbff04a8d90ac0f856dbada3fc5a75c75b49/scripts/react-native-xcode.sh#L59-L65
 EXPO_UPDATES_PACKAGE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 # If PROJECT_ROOT is not specified, fallback to use Xcode PROJECT_DIR
-PROJECT_ROOT=${PROJECT_ROOT:-"$PROJECT_DIR"}
+PROJECT_ROOT=${PROJECT_ROOT:-"$PROJECT_DIR/../.."}
 PROJECT_ROOT=${PROJECT_ROOT:-"$EXPO_UPDATES_PACKAGE_DIR/../.."}
 
 cd "$PROJECT_ROOT" || exit
@@ -40,4 +40,4 @@ if [ "x$DIR_BASENAME" != "xPods" ]; then
   exit 0
 fi
 
-"$NODE_BINARY" "${EXPO_UPDATES_PACKAGE_DIR}/scripts/createManifest.js" ios "$PROJECT_ROOT/.." "$DEST/EXUpdates.bundle"
+"$NODE_BINARY" "${EXPO_UPDATES_PACKAGE_DIR}/scripts/createManifest.js" ios "$PROJECT_ROOT" "$DEST/EXUpdates.bundle"
