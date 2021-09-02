@@ -13,6 +13,7 @@
 ### 🐛 Bug fixes
 
 - Fix React Native version checker in build.gradle. ([#14251](https://github.com/expo/expo/pull/14251) by [@esamelson](https://github.com/esamelson))
+- Fixed Cmd+D opening two dev menus. ([#14204](https://github.com/expo/expo/pull/14204) by [@fson](https://github.com/fson))
 
 ### 💡 Others
 
