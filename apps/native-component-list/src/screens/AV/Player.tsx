@@ -52,7 +52,7 @@ interface Props {
   shouldCorrectPitch: boolean;
   isPlaying: boolean;
   isMuted: boolean;
-  metadata: AVMetadata;
+  metadata?: AVMetadata;
 
   // Error
   errorMessage?: string;
@@ -177,7 +177,7 @@ export default function Player(props: Props) {
         {_renderReplayButton()}
       </View>
 
-      <Text>{props.metadata.title ?? ''}</Text>
+      <Text>{props.metadata?.title ?? ''}</Text>
 
       <View style={styles.container}>
         <VolumeSlider
