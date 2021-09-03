@@ -13,6 +13,7 @@
 #import <EXUpdates/EXUpdatesUpdate.h>
 
 NSString * const kEXPublicKeyUrl = @"https://exp.host/--/manifest-public-key";
+NSString * const EXRuntimeErrorDomain = @"incompatible-runtime";
 
 @interface EXManifestResource ()
 
@@ -64,7 +65,7 @@ NSString * const kEXPublicKeyUrl = @"https://exp.host/--/manifest-public-key";
   }
 
   if (error) {
-    * error = [self formatError:[NSError errorWithDomain:EXNetworkErrorDomain code:0 userInfo:@{
+    * error = [self formatError:[NSError errorWithDomain:EXRuntimeErrorDomain code:0 userInfo:@{
                                                                                        @"errorCode": @"NO_COMPATIBLE_EXPERIENCE_FOUND",
                                                                                        NSLocalizedDescriptionKey: [NSString stringWithFormat:@"No compatible project found at %@. Only %@ are supported.", self.originalUrl, [[EXVersions sharedInstance].versions[@"sdkVersions"] componentsJoinedByString:@","]]
                                                                                        }]];
@@ -362,7 +363,7 @@ NSString * const kEXPublicKeyUrl = @"https://exp.host/--/manifest-public-key";
   }
   if (errorCode) {
     // will be handled by _validateErrorData:
-    return [self formatError:[NSError errorWithDomain:EXNetworkErrorDomain code:0 userInfo:@{
+    return [self formatError:[NSError errorWithDomain:EXRuntimeErrorDomain code:0 userInfo:@{
       @"errorCode": errorCode,
       @"metadata": metadata ?: @{},
     }]];
@@ -419,7 +420,7 @@ NSString * const kEXPublicKeyUrl = @"https://exp.host/--/manifest-public-key";
 
     NSString *earliestSDKVersion = [self _earliestSdkVersionSupported];
     formattedMessage = [NSString stringWithFormat:@"The project you requested uses Expo SDK v%@, but this copy of Expo Go "
-                        "requires at least v%@. The author should update their experience to a newer Expo SDK version.", sdkVersionRequired, earliestSDKVersion];
+                        "requires at least v%@. The author needs to update their project to a newer Expo SDK version.", sdkVersionRequired, earliestSDKVersion];
   } else if ([errorCode isEqualToString:@"EXPERIENCE_SDK_VERSION_TOO_NEW"]) {
     formattedMessage = @"The project you requested requires a newer version of Expo Go. Please download the latest version from the App Store.";
   } else if ([errorCode isEqualToString:@"NO_COMPATIBLE_EXPERIENCE_FOUND"]){
@@ -435,7 +436,7 @@ NSString * const kEXPublicKeyUrl = @"https://exp.host/--/manifest-public-key";
   }
   userInfo[NSLocalizedDescriptionKey] = formattedMessage;
 
-  return [NSError errorWithDomain:EXNetworkErrorDomain code:error.code userInfo:userInfo];
+  return [NSError errorWithDomain:EXRuntimeErrorDomain code:error.code userInfo:userInfo];
 }
 
 @end
