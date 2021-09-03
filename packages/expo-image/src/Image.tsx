@@ -79,9 +79,6 @@ export default class Image extends React.Component<ImageProps, ImageState> {
     return await ExpoImageModule.prefetch(url);
   }
 
-  /**
-   * **Available on @Android only**.
-   */
   static async getSize(
     url: string,
     onSuccess: (width: number, height: number) => void,

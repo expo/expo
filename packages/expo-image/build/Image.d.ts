@@ -33,9 +33,6 @@ export default class Image extends React.Component<ImageProps, ImageState> {
      * @return an empty promise.
      */
     static prefetch(url: string): Promise<void>;
-    /**
-     * **Available on @Android only**.
-     */
     static getSize(url: string, onSuccess: (width: number, height: number) => void, onFailure?: (error: any) => void): Promise<void>;
     state: {
         onLoad: undefined;

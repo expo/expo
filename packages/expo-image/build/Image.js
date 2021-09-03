@@ -34,9 +34,6 @@ export default class Image extends React.Component {
         }
         return await ExpoImageModule.prefetch(url);
     }
-    /**
-     * **Available on @Android only**.
-     */
     static async getSize(url, onSuccess, onFailure) {
         if (!ExpoImageModule.getSize) {
             throw new UnavailabilityError('Image', 'getSize');
