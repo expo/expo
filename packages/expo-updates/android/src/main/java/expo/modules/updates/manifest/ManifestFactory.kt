@@ -35,18 +35,4 @@ object ManifestFactory {
       BareUpdateManifest.fromBareManifest(BareManifest(manifestJson), configuration!!)
     }
   }
-
-  fun getManifestFromManifestJson(manifestJson: JSONObject): Manifest {
-    return when {
-      manifestJson.has("releaseId") -> {
-        LegacyManifest(manifestJson)
-      }
-      manifestJson.has("metadata") -> {
-        NewManifest(manifestJson)
-      }
-      else -> {
-        BareManifest(manifestJson)
-      }
-    }
-  }
 }

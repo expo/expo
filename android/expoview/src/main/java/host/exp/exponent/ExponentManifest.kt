@@ -154,7 +154,7 @@ class ExponentManifest @Inject constructor(
   private fun getLocalKernelManifest(): Manifest = try {
     val manifest = JSONObject(ExponentBuildConstants.BUILD_MACHINE_KERNEL_MANIFEST)
     manifest.put(MANIFEST_IS_VERIFIED_KEY, true)
-    ManifestFactory.getManifestFromManifestJson(manifest)
+    Manifest.fromManifestJson(manifest)
   } catch (e: JSONException) {
     throw RuntimeException("Can't get local manifest: $e")
   }
@@ -164,7 +164,7 @@ class ExponentManifest @Inject constructor(
     val jsonString = IOUtils.toString(inputStream)
     val manifest = JSONObject(jsonString)
     manifest.put(MANIFEST_IS_VERIFIED_KEY, true)
-    ManifestFactory.getManifestFromManifestJson(manifest)
+    Manifest.fromManifestJson(manifest)
   } catch (e: Exception) {
     KernelProvider.instance.handleError(e)
     null
