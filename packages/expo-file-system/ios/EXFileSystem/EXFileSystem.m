@@ -775,19 +775,25 @@ EX_EXPORT_METHOD_AS(networkTaskCancelAsync,
 
 EX_EXPORT_METHOD_AS(getFreeDiskStorageAsync, getFreeDiskStorageAsyncWithResolver:(EXPromiseResolveBlock)resolve rejecter:(EXPromiseRejectBlock)reject)
 {
-  if(![self freeDiskStorage]) {
-    reject(@"ERR_FILESYSTEM_CANNOT_DETERMINE_DISK_CAPACITY", @"Unable to determine free disk storage capacity", nil);
+  NSError *error = nil;
+  NSNumber *freeDiskStorage = [self freeDiskStorageWithError:error];
+  
+  if(!freeDiskStorage || error) {
+    reject(@"ERR_FILESYSTEM_CANNOT_DETERMINE_DISK_CAPACITY", @"Unable to determine free disk storage capacity", error);
   } else {
-    resolve([self freeDiskStorage]);
+    resolve(freeDiskStorage);
   }
 }
 
 EX_EXPORT_METHOD_AS(getTotalDiskCapacityAsync, getTotalDiskCapacityAsyncWithResolver:(EXPromiseResolveBlock)resolve rejecter:(EXPromiseRejectBlock)reject)
 {
-  if(![self totalDiskCapacity]) {
-    reject(@"ERR_FILESYSTEM_CANNOT_DETERMINE_DISK_CAPACITY", @"Unable to determine total disk capacity", nil);
+  NSError *error = nil;
+  NSNumber *diskCapacity = [self totalDiskCapacityWithError:error];
+
+  if (!diskCapacity || error) {
+    reject(@"ERR_FILESYSTEM_CANNOT_DETERMINE_DISK_CAPACITY", @"Unable to determine total disk capacity", error);
   } else {
-    resolve([self totalDiskCapacity]);
+    resolve(diskCapacity);
   }
 }
 
@@ -962,17 +968,18 @@ EX_EXPORT_METHOD_AS(getTotalDiskCapacityAsync, getTotalDiskCapacityAsyncWithReso
 }
 
 - (NSDictionary<NSURLResourceKey, id> *)documentFileResourcesForKeys:(NSArray<NSURLResourceKey> *)keys
+                                                               error:(NSError **)error
 {
   if (!keys.count) {
     return @{};
   }
 
   NSURL *documentDirectoryUrl = [NSURL fileURLWithPath:_documentDirectory];
-  NSError *error = nil;
-  NSDictionary *results = [documentDirectoryUrl resourceValuesForKeys:keys error:&error];
+  NSDictionary *results = [documentDirectoryUrl resourceValuesForKeys:keys 
+                                                                error:error];
+
   if (!results) {
-      NSLog(@"Error retrieving resource keys: %@\n%@", [error localizedDescription], [error userInfo]);
-      return @{};
+    return @{};
   }
 
   return results;
@@ -1036,15 +1043,19 @@ EX_EXPORT_METHOD_AS(getTotalDiskCapacityAsync, getTotalDiskCapacityAsyncWithReso
   return [directory stringByAppendingPathComponent:fileName];
 }
 
-- (NSNumber *)totalDiskCapacity 
+- (NSNumber *)totalDiskCapacityWithError(NSError **)error
 {
-  NSDictionary *results = [self documentFileResourcesForKeys:@[NSURLVolumeTotalCapacityKey]];
+  NSDictionary *results = [self documentFileResourcesForKeys:@[NSURLVolumeTotalCapacityKey] 
+                                                       error:error];
+
   return results[NSURLVolumeTotalCapacityKey];
 }
 
-- (NSNumber *)freeDiskStorage 
+- (NSNumber *)freeDiskStorageWithError(NSError **)error
 {
-  NSDictionary *results = [self documentFileResourcesForKeys:@[NSURLVolumeAvailableCapacityForImportantUsageKey]];
+  NSDictionary *results = [self documentFileResourcesForKeys:@[NSURLVolumeAvailableCapacityForImportantUsageKey] 
+                                                       error:error];
+
   return results[NSURLVolumeAvailableCapacityForImportantUsageKey];
 }
 
