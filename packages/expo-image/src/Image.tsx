@@ -79,6 +79,20 @@ export default class Image extends React.Component<ImageProps, ImageState> {
     return await ExpoImageModule.prefetch(url);
   }
 
+  /**
+   * **Available on @Android only.** Checks if images with given urls are cached.
+   *
+   * @param urls List of urls to check the cache for.
+   *
+   * @return A promise with cached urls.
+   */
+  static async queryCache(urls: string[]): Promise<string[]> {
+    if (!ExpoImageModule.queryCache) {
+      throw new UnavailabilityError('Image', 'queryCache');
+    }
+    return await ExpoImageModule.queryCache(urls);
+  }
+
   state = {
     onLoad: undefined,
     onError: undefined,

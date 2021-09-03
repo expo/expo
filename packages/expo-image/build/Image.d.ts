@@ -33,6 +33,14 @@ export default class Image extends React.Component<ImageProps, ImageState> {
      * @return an empty promise.
      */
     static prefetch(url: string): Promise<void>;
+    /**
+     * **Available on @Android only.** Checks if images with given urls are cached.
+     *
+     * @param urls List of urls to check the cache for.
+     *
+     * @return A promise with cached urls.
+     */
+    static queryCache(urls: string[]): Promise<string[]>;
     state: {
         onLoad: undefined;
         onError: undefined;

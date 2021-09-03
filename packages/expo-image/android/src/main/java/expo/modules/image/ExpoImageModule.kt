@@ -7,6 +7,8 @@ import com.facebook.react.bridge.Promise
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactContextBaseJavaModule
 import com.facebook.react.bridge.ReactMethod
+import com.facebook.react.bridge.ReadableArray
+import com.facebook.react.bridge.WritableNativeArray
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -41,5 +43,30 @@ class ExpoImageModule(val context: ReactApplicationContext) : ReactContextBaseJa
         promise.reject("ERR_IMAGE_PREFETCH_FAILURE", "Failed to prefetch the image: ${e.message}", e)
       }
     }
+  }
+
+  @ReactMethod
+  fun queryCache(urls: ReadableArray, promise: Promise) {
+    val result = WritableNativeArray()
+    urls.toArrayList().forEach {
+      val url = it as String
+      if (isInCache(url)) {
+        result.pushString(url)
+      }
+    }
+    promise.resolve(result)
+  }
+
+  private fun isInCache(url: String) : Boolean {
+    try {
+      Glide.with(context)
+        .load(GlideUrl(url))
+        .onlyRetrieveFromCache(true)
+        .submit()
+        .get()
+    } catch (e: Exception) {
+      return false
+    }
+    return true
   }
 }
