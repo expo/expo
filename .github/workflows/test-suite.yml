@@ -149,6 +149,8 @@ jobs:
 
   android:
     runs-on: macos-11
+    env:
+      NDK_ABI_FILTERS: x86_64
     steps:
       - name: 👀 Checkout
         uses: actions/checkout@v2
@@ -186,6 +188,9 @@ jobs:
       - name: Clean Detox
         run: yarn detox:clean
         working-directory: apps/bare-expo
+      - name: Patch react-native to support single abi
+        run: sed -i '' 's/^APP_ABI := .*$/APP_ABI := $(if $(NDK_ABI_FILTERS),$(NDK_ABI_FILTERS),$(armeabi-v7a x86 arm64-v8a x86_64))/g' ReactAndroid/src/main/jni/Application.mk
+        working-directory: react-native-lab/react-native
       - name: Prebuild react-native AAR
         # Workaround for next `yarn android:detox:build:release` occasionally failed at gradle fetching libraries on GitHub Actions
         # Just to introduce another trail for gradle building.
@@ -204,6 +209,7 @@ jobs:
         uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: 29
+          arch: x86_64
           avd-name: bare-expo
           script: yarn android:detox:test:release
           working-directory: ./apps/bare-expo
