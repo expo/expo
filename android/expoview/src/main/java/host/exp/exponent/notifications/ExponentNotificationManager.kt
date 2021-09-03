@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Build
 import androidx.core.app.NotificationManagerCompat
+import expo.modules.jsonutils.getNullable
 import expo.modules.manifests.core.Manifest
 import host.exp.exponent.Constants
 import host.exp.exponent.analytics.EXL
@@ -93,11 +94,7 @@ class ExponentNotificationManager(private val context: Context) {
   ) {
     try {
       val metadata = exponentSharedPreferences.getExperienceMetadata(experienceKey) ?: JSONObject()
-      val allChannels: JSONObject = if (metadata.has(ExponentSharedPreferences.EXPERIENCE_METADATA_NOTIFICATION_CHANNELS)) {
-        metadata.getJSONObject(ExponentSharedPreferences.EXPERIENCE_METADATA_NOTIFICATION_CHANNELS)
-      } else {
-        JSONObject()
-      }
+      val allChannels: JSONObject = metadata.getNullable(ExponentSharedPreferences.EXPERIENCE_METADATA_NOTIFICATION_CHANNELS) ?: JSONObject()
       allChannels.put(channelId, JSONObject(details))
       metadata.put(ExponentSharedPreferences.EXPERIENCE_METADATA_NOTIFICATION_CHANNELS, allChannels)
       exponentSharedPreferences.updateExperienceMetadata(experienceKey, metadata)
@@ -108,14 +105,8 @@ class ExponentNotificationManager(private val context: Context) {
 
   fun readChannelSettings(experienceKey: ExperienceKey, channelId: String?): JSONObject? {
     try {
-      val metadata = exponentSharedPreferences.getExperienceMetadata(
-        experienceKey
-      ) ?: JSONObject()
-      val allChannels: JSONObject = if (metadata.has(ExponentSharedPreferences.EXPERIENCE_METADATA_NOTIFICATION_CHANNELS)) {
-        metadata.getJSONObject(ExponentSharedPreferences.EXPERIENCE_METADATA_NOTIFICATION_CHANNELS)
-      } else {
-        JSONObject()
-      }
+      val metadata = exponentSharedPreferences.getExperienceMetadata(experienceKey) ?: JSONObject()
+      val allChannels: JSONObject = metadata.getNullable(ExponentSharedPreferences.EXPERIENCE_METADATA_NOTIFICATION_CHANNELS) ?: JSONObject()
       return allChannels.optJSONObject(channelId)
     } catch (e: JSONException) {
       EXL.e(TAG, "Could not read channel from shared preferences: " + e.message)

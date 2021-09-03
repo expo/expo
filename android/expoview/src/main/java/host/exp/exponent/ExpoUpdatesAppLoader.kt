@@ -5,6 +5,7 @@ import android.content.Context
 import android.net.Uri
 import android.os.Build
 import android.util.Log
+import expo.modules.jsonutils.getNullable
 import expo.modules.updates.UpdatesConfiguration
 import expo.modules.updates.UpdatesUtils
 import expo.modules.updates.db.DatabaseHolder
@@ -329,9 +330,7 @@ class ExpoUpdatesAppLoader @JvmOverloads constructor(
       val protocol = parsedManifestUrl.scheme
       val securityPrefix = if (protocol == "https" || protocol == "exps") "" else "UNVERIFIED-"
       val path = if (parsedManifestUrl.path != null) parsedManifestUrl.path else ""
-      val slug = if (manifestJson.has(ExponentManifest.MANIFEST_SLUG)) manifestJson.getString(
-        ExponentManifest.MANIFEST_SLUG
-      ) else ""
+      val slug = manifestJson.getNullable<String>(ExponentManifest.MANIFEST_SLUG) ?: ""
       val sandboxedId = securityPrefix + parsedManifestUrl.host + path + "-" + slug
       manifestJson.put(ExponentManifest.MANIFEST_ID_KEY, sandboxedId)
       manifestJson.put(ExponentManifest.MANIFEST_IS_VERIFIED_KEY, true)
