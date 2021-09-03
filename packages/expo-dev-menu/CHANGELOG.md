@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Add missing override to release DevMenuManager.
-
 ### 💡 Others
+
+## 0.8.1 — 2021-09-03
+
+### 🐛 Bug fixes
+
+- Add missing override to release DevMenuManager.
 
 ## 0.8.0 — 2021-09-02
 
