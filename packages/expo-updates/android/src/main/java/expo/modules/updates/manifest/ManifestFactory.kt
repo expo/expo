@@ -4,7 +4,6 @@ import expo.modules.updates.UpdatesConfiguration
 import expo.modules.manifests.core.BareManifest
 import expo.modules.manifests.core.LegacyManifest
 import expo.modules.manifests.core.NewManifest
-import expo.modules.manifests.core.Manifest
 import org.json.JSONException
 import org.json.JSONObject
 

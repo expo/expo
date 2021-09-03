@@ -9,7 +9,6 @@ import android.net.Uri
 import android.os.AsyncTask
 import android.text.TextUtils
 import android.util.LruCache
-import expo.modules.updates.manifest.ManifestFactory
 import expo.modules.manifests.core.InternalJSONMutator
 import expo.modules.manifests.core.Manifest
 import host.exp.exponent.analytics.EXL

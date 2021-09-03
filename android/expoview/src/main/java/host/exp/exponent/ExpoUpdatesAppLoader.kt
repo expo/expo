@@ -17,7 +17,6 @@ import expo.modules.updates.loader.LoaderTask
 import expo.modules.updates.loader.LoaderTask.BackgroundUpdateStatus
 import expo.modules.updates.loader.LoaderTask.LoaderTaskCallback
 import expo.modules.updates.manifest.UpdateManifest
-import expo.modules.updates.manifest.ManifestFactory
 import expo.modules.manifests.core.Manifest
 import expo.modules.updates.selectionpolicy.LauncherSelectionPolicyFilterAware
 import expo.modules.updates.selectionpolicy.LoaderSelectionPolicyFilterAware

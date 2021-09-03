@@ -5,7 +5,6 @@ import android.os.Build
 import android.view.Gravity
 import android.widget.Toast
 import expo.modules.manifests.core.Manifest
-import expo.modules.updates.manifest.ManifestFactory
 import host.exp.exponent.di.NativeModuleDepsProvider
 import org.json.JSONObject
 import javax.inject.Inject
