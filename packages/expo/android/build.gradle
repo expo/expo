@@ -8,7 +8,7 @@ apply from: "../scripts/autolinking.gradle"
 ensureDependeciesWereEvaluated(project)
 
 group = 'host.exp.exponent'
-version = '0.1.1'
+version = '42.0.0-alpha.0'
 
 buildscript {
   // Simple helper that allows the root project to override versions declared by this library.
@@ -62,7 +62,7 @@ android {
     minSdkVersion safeExtGet("minSdkVersion", 21)
     targetSdkVersion safeExtGet("targetSdkVersion", 30)
     versionCode 1
-    versionName "0.1.1"
+    versionName "42.0.0-alpha.0"
   }
   lintOptions {
     abortOnError false
@@ -81,6 +81,9 @@ android {
 }
 
 dependencies { dependencyHandler ->
+  //noinspection GradleDynamicVersion
+  implementation 'com.facebook.react:react-native:+'
+
   // Link expo modules as dependencies of the adapter. It uses `api` configuration so they all will be visible for the app as well.
   // A collection of the dependencies depends on the options passed to `useExpoModules` in your project's `settings.gradle`.
   addExpoModulesDependencies(dependencyHandler, project)

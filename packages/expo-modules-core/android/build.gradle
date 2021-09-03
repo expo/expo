@@ -2,10 +2,6 @@ apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply plugin: 'maven'
 
-// Import autolinking script
-apply from: "../scripts/autolinking.gradle"
-
-
 group = 'host.exp.exponent'
 version = '0.3.0-alpha.0'
 
@@ -78,5 +74,3 @@ dependencies {
   //noinspection GradleDynamicVersion
   implementation 'com.facebook.react:react-native:+'
 }
-
-addLinkerPackage(project)

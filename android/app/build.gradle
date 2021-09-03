@@ -248,7 +248,7 @@ dependencies {
 
   // WHEN_DETACHING_REMOVE_FROM_HERE
   /* UNCOMMENT WHEN DISTRIBUTING
-  implementation project(':expo-modules-linker')
+  implementation project(':expo')
   implementation 'host.exp.exponent:expo-random:+'
   END UNCOMMENT WHEN DISTRIBUTING */
   // WHEN_DETACHING_REMOVE_TO_HERE

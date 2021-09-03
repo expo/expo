@@ -1,4 +1,4 @@
-package expo.modules.adapters.react
+package expo.modules
 
 import android.app.Activity
 import android.content.Context
@@ -18,7 +18,7 @@ class ReactActivityDelegateWrapper(
   private val activity: ReactActivity,
   private val delegate: ReactActivityDelegate
 ) : ReactActivityDelegate(activity, null) {
-  private val reactActivityLifecycleListeners = ExpoModulesPackageListDelegate.getPackageList()
+  private val reactActivityLifecycleListeners = ExpoModulesPackage.packageList
     .flatMap { it.createReactActivityLifecycleListeners(activity) }
   private val methodMap: ArrayMap<String, Method> = ArrayMap()
 

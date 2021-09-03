@@ -1,4 +1,4 @@
-package expo.modules.adapters.react
+package expo.modules
 
 import android.app.Application
 import androidx.collection.ArrayMap
@@ -20,7 +20,7 @@ class ReactNativeHostWrapper(
   application: Application,
   private val host: ReactNativeHost
 ) : ReactNativeHost(application) {
-  private val reactNativeHostHandlers = ExpoModulesPackageListDelegate.getPackageList()
+  private val reactNativeHostHandlers = ExpoModulesPackage.packageList
     .flatMap { it.createReactNativeHostHandlers(application) }
   private val methodMap: ArrayMap<String, Method> = ArrayMap()
 
