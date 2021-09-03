@@ -4,7 +4,7 @@ import android.app.Application
 import android.os.Build
 import android.view.Gravity
 import android.widget.Toast
-import expo.modules.updates.manifest.ManifestFactory
+import expo.modules.manifests.core.Manifest
 import host.exp.exponent.di.NativeModuleDepsProvider
 import org.json.JSONObject
 import javax.inject.Inject
@@ -26,7 +26,7 @@ object ToastHelper {
           return
         }
 
-        val manifest = ManifestFactory.getManifestFromManifestJson(manifestJson)
+        val manifest = Manifest.fromManifestJson(manifestJson)
         if (!manifest.isDevelopmentMode()) {
           return
         }

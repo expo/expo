@@ -213,4 +213,20 @@ abstract class Manifest(protected val json: JSONObject) {
 
   @Throws(JSONException::class)
   fun getFacebookAutoInitEnabled(): Boolean = getExpoClientConfigRootObject()!!.require("facebookAutoInitEnabled")
+
+  companion object {
+    @JvmStatic fun fromManifestJson(manifestJson: JSONObject): Manifest {
+      return when {
+        manifestJson.has("releaseId") -> {
+          LegacyManifest(manifestJson)
+        }
+        manifestJson.has("metadata") -> {
+          NewManifest(manifestJson)
+        }
+        else -> {
+          BareManifest(manifestJson)
+        }
+      }
+    }
+  }
 }

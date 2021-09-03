@@ -16,6 +16,7 @@
 
 #import <EXConstants/EXConstantsService.h>
 #import <EXUpdates/EXUpdatesUpdate.h>
+#import <EXManifests/EXManifestsManifestFactory.h>
 
 #import <React/RCTUtils.h>
 #import <React/RCTBridge.h>
@@ -191,7 +192,7 @@ NSString *kEXHomeManifestResourceName = @"kernel-manifest";
       if (usesNSBundleManifest && !([manifest[@"id"] isEqualToString:@"@exponent/home"] || [manifest[@"id"] isEqualToString:@"@expo-dogfooding/home"])) {
         DDLogError(@"Bundled kernel manifest was published with an id other than @exponent/home or @expo-dogfooding/home");
       }
-      return [EXUpdatesUpdate manifestForManifestJSON:manifest];
+      return [EXManifestsManifestFactory manifestForManifestJSON:manifest];
     }
   }
   return nil;
