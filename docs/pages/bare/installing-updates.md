@@ -93,13 +93,13 @@ If you're migrating from an ExpoKit project to the bare workflow with `expo-upda
 
 ## Customizing Automatic Setup for iOS
 
-By default `expo-updates` automatically install the module in the iOS AppDelegate. If you want to customize the installation, e.g. to enable updates only in some build variants, you can apply the setup manually.
+By default, `expo-updates` requires no additional setup. If you want to customize the installation, e.g. to enable updates only in some build variants, you can instead follow these manual setup steps and then apply any customizations.
 
 <ConfigurationDiff source="/static/diffs/expo-updates-ios.diff" />
 
 ## Customizing Automatic Setup for Android
 
-By default `expo-updates` automatically install the module in the Android MainApplication.java. If you want to customize the installation, e.g. to enable updates only in some build variants, you can apply the setup manually.
+By default, `expo-updates` requires no additional setup. If you want to customize the installation, e.g. to enable updates only in some build variants, you can instead follow these manual setup steps and then apply any customizations.
 
 <ConfigurationDiff source="/static/diffs/expo-updates-android.diff" />
 
