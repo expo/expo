@@ -20,7 +20,7 @@
                                           params:(NSDictionary *)params NS_DESIGNATED_INITIALIZER;
 
 @property (nonatomic, readonly) NSString *scopeKey;
-@property (nonatomic, readonly) NSString *experienceStableLegacyId;
-@property (nonatomic, readonly) NSString *easProjectId;
+@property (nonatomic, readonly, nullable) NSString *experienceStableLegacyId;
+@property (nonatomic, readonly, nullable) NSString *easProjectId;
 
 @end

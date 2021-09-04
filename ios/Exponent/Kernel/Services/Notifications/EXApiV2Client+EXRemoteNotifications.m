@@ -39,8 +39,8 @@
 }
 
 
-- (NSURLSessionTask *)getExpoPushTokenForExperience:(NSString *)experienceStableLegacyId
-                                       easProjectId:(NSString *)easProjectId
+- (NSURLSessionTask *)getExpoPushTokenForEASProject:(nullable NSString *)easProjectId
+                           experienceStableLegacyId:(nullable NSString *)experienceStableLegacyId
                                         deviceToken:(NSData *)deviceToken
                                   completionHandler:(void (^)(NSString * _Nullable, NSError * _Nullable))handler
 {
@@ -55,6 +55,10 @@
     arguments[@"projectId"] = easProjectId;
   } else if (experienceStableLegacyId != nil) {
     arguments[@"experienceId"] = experienceStableLegacyId;
+  } else {
+    @throw [NSException exceptionWithName:NSInvalidArgumentException
+                                   reason:@"Must supply either experienceId or projectId."
+                                 userInfo:@{}];
   }
   
   // Presence of this file is assured in Expo Go

@@ -148,8 +148,8 @@ typedef void(^EXRemoteNotificationAPNSTokenHandler)(NSData * _Nullable apnsToken
       if (self->_currentAPNSToken) {
         NSString *experienceStableLegacyId = ((EXScopedBridgeModule *)scopedModule).experienceStableLegacyId;
         NSString *easProjectId = ((EXScopedBridgeModule *)scopedModule).easProjectId;
-        [[EXApiV2Client sharedClient] getExpoPushTokenForExperience:experienceStableLegacyId
-                                                       easProjectId:easProjectId
+        [[EXApiV2Client sharedClient] getExpoPushTokenForEASProject:easProjectId
+                                           experienceStableLegacyId:experienceStableLegacyId
                                                         deviceToken:self->_currentAPNSToken
                                                   completionHandler:handler];
         return;
@@ -171,8 +171,8 @@ typedef void(^EXRemoteNotificationAPNSTokenHandler)(NSData * _Nullable apnsToken
         if (apnsToken) {
           NSString *experienceStableLegacyId = ((EXScopedBridgeModule *)scopedModule).experienceStableLegacyId;
           NSString *easProjectId = ((EXScopedBridgeModule *)scopedModule).easProjectId;
-          [[EXApiV2Client sharedClient] getExpoPushTokenForExperience:experienceStableLegacyId
-                                                         easProjectId:easProjectId
+          [[EXApiV2Client sharedClient] getExpoPushTokenForEASProject:easProjectId
+                                             experienceStableLegacyId:experienceStableLegacyId
                                                           deviceToken:apnsToken
                                                     completionHandler:handler];
         } else {

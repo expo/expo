@@ -9,14 +9,22 @@ export default async function getExpoPushTokenAsync(options = {}) {
     const devicePushToken = options.devicePushToken || (await getDevicePushTokenAsync());
     const deviceId = options.deviceId || (await getDeviceIdAsync());
     const experienceId = options.experienceId ||
-        Constants.manifest2?.extra?.eas?.projectId ||
-        Constants.manifest?.projectId ||
         Constants.manifest?.originalFullName ||
         Constants.manifest2?.extra?.expoClient?.originalFullName ||
         Constants.manifest?.id;
-    if (!experienceId) {
-        throw new CodedError('ERR_NOTIFICATIONS_NO_EXPERIENCE_ID', "No experienceId found. If it can't be inferred from the manifest (eg. in bare workflow), you have to pass it in yourself.");
+    const projectId = options.projectId ||
+        Constants.manifest2?.extra?.eas?.projectId ||
+        Constants.manifest?.projectId;
+    if (!experienceId && !projectId) {
+        throw new CodedError('ERR_NOTIFICATIONS_NO_EXPERIENCE_ID', "No experienceId or projectId found. If one or the other can't be inferred from the manifest (eg. in bare workflow), you have to pass one in yourself.");
     }
+    const experienceIdOrProjectIdBodyParam = projectId
+        ? {
+            projectId,
+        }
+        : {
+            experienceId,
+        };
     const applicationId = options.applicationId || Application.applicationId;
     if (!applicationId) {
         throw new CodedError('ERR_NOTIFICATIONS_NO_APPLICATION_ID', "No applicationId found. If it can't be inferred from native configuration by expo-application, you have to pass it in yourself.");
@@ -29,9 +37,9 @@ export default async function getExpoPushTokenAsync(options = {}) {
         type,
         deviceId: deviceId.toLowerCase(),
         development,
-        experienceId,
         appId: applicationId,
         deviceToken: getDeviceToken(devicePushToken),
+        ...experienceIdOrProjectIdBodyParam,
     };
     const response = await fetch(url, {
         method: 'POST',

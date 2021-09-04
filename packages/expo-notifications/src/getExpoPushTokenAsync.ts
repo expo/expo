@@ -21,6 +21,7 @@ interface Options {
   deviceId?: string;
   development?: boolean;
   experienceId?: string;
+  projectId?: string;
   applicationId?: string;
   devicePushToken?: DevicePushToken;
 }
@@ -32,18 +33,29 @@ export default async function getExpoPushTokenAsync(options: Options = {}): Prom
 
   const experienceId =
     options.experienceId ||
-    Constants.manifest2?.extra?.eas?.projectId ||
-    Constants.manifest?.projectId ||
     Constants.manifest?.originalFullName ||
     Constants.manifest2?.extra?.expoClient?.originalFullName ||
     Constants.manifest?.id;
 
-  if (!experienceId) {
+  const projectId =
+    options.projectId ||
+    Constants.manifest2?.extra?.eas?.projectId ||
+    Constants.manifest?.projectId;
+
+  if (!experienceId && !projectId) {
     throw new CodedError(
       'ERR_NOTIFICATIONS_NO_EXPERIENCE_ID',
-      "No experienceId found. If it can't be inferred from the manifest (eg. in bare workflow), you have to pass it in yourself."
+      "No experienceId or projectId found. If one or the other can't be inferred from the manifest (eg. in bare workflow), you have to pass one in yourself."
     );
   }
+
+  const experienceIdOrProjectIdBodyParam = projectId
+    ? {
+        projectId,
+      }
+    : {
+        experienceId,
+      };
 
   const applicationId = options.applicationId || Application.applicationId;
   if (!applicationId) {
@@ -62,9 +74,9 @@ export default async function getExpoPushTokenAsync(options: Options = {}): Prom
     type,
     deviceId: deviceId.toLowerCase(),
     development,
-    experienceId,
     appId: applicationId,
     deviceToken: getDeviceToken(devicePushToken),
+    ...experienceIdOrProjectIdBodyParam,
   };
 
   const response = await fetch(url, {
