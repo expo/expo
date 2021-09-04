@@ -49,14 +49,6 @@ export default async function getExpoPushTokenAsync(options: Options = {}): Prom
     );
   }
 
-  const experienceIdOrProjectIdBodyParam = projectId
-    ? {
-        projectId,
-      }
-    : {
-        experienceId,
-      };
-
   const applicationId = options.applicationId || Application.applicationId;
   if (!applicationId) {
     throw new CodedError(
@@ -76,7 +68,7 @@ export default async function getExpoPushTokenAsync(options: Options = {}): Prom
     development,
     appId: applicationId,
     deviceToken: getDeviceToken(devicePushToken),
-    ...experienceIdOrProjectIdBodyParam,
+    ...(projectId ? { projectId } : { experienceId }),
   };
 
   const response = await fetch(url, {
