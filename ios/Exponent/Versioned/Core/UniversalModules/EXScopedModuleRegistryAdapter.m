@@ -107,7 +107,7 @@
 #endif
 
 #if __has_include(<EXAmplitude/EXAmplitude.h>)
-  EXScopedAmplitude *amplitudeModule = [[EXScopedAmplitude alloc] initWithExperienceStableLegacyId:experienceStableLegacyId];
+  EXScopedAmplitude *amplitudeModule = [[EXScopedAmplitude alloc] initWithScopeKey:scopeKey];
   [moduleRegistry registerExportedModule:amplitudeModule];
 #endif
 

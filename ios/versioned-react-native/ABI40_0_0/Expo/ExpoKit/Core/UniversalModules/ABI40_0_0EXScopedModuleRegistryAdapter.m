@@ -106,7 +106,7 @@
 #endif
 
 #if __has_include(<ABI40_0_0EXAmplitude/ABI40_0_0EXAmplitude.h>)
-  ABI40_0_0EXScopedAmplitude *amplitudeModule = [[ABI40_0_0EXScopedAmplitude alloc] initWithExperienceStableLegacyId:experienceStableLegacyId];
+  ABI40_0_0EXScopedAmplitude *amplitudeModule = [[ABI40_0_0EXScopedAmplitude alloc] initWithScopeKey:scopeKey];
   [moduleRegistry registerExportedModule:amplitudeModule];
 #endif
 

@@ -36,7 +36,7 @@ public class ExpoModuleRegistryAdapter extends ModuleRegistryAdapter implements 
     super(moduleRegistryProvider);
   }
 
-  public List<NativeModule> createNativeModules(ScopedContext scopedContext, ExperienceKey experienceKey, Map<String, Object> experienceProperties, Manifest manifest, String experienceStableLegacyId, List<NativeModule> otherModules) {
+  public List<NativeModule> createNativeModules(ScopedContext scopedContext, ExperienceKey experienceKey, Map<String, Object> experienceProperties, Manifest manifest, List<NativeModule> otherModules) {
     ModuleRegistry moduleRegistry = mModuleRegistryProvider.get(scopedContext);
 
     // Overriding sensor services from expo-sensors for scoped implementations using kernel services
@@ -71,7 +71,7 @@ public class ExpoModuleRegistryAdapter extends ModuleRegistryAdapter implements 
     moduleRegistry.registerExportedModule(new ScopedFacebookModule(scopedContext, manifest));
 
     // Scoping Amplitude
-    moduleRegistry.registerExportedModule(new ScopedAmplitudeModule(scopedContext, experienceStableLegacyId));
+    moduleRegistry.registerExportedModule(new ScopedAmplitudeModule(scopedContext, experienceKey));
 
     // Overriding expo-firebase-core
     moduleRegistry.registerInternalModule(new ScopedFirebaseCoreService(scopedContext, manifest, experienceKey));

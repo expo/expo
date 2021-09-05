@@ -6,6 +6,7 @@ interface Options {
     deviceId?: string;
     development?: boolean;
     experienceId?: string;
+    projectId?: string;
     applicationId?: string;
     devicePushToken?: DevicePushToken;
 }

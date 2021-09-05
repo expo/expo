@@ -33,8 +33,9 @@ ABI42_0_0RCT_ENUM_CONVERTER(WKContentMode, (@{
 
 - (instancetype)initWithExperienceStableLegacyId:(NSString *)experienceStableLegacyId
                                         scopeKey:(NSString *)scopeKey
-                                     kernelServiceDelegate:(id)kernelServiceInstance
-                                              params:(NSDictionary *)params
+                                    easProjectId:(NSString *)easProjectId
+                           kernelServiceDelegate:(id)kernelServiceInstance
+                                          params:(NSDictionary *)params
 {
   if (self = [super init]) {
     _scopeKey = _scopeKey;
