@@ -313,13 +313,11 @@ export const CommentTextBlock: React.FC<CommentTextBlockProps> = ({
   beforeContent,
 }) => {
   const shortText = comment?.shortText?.trim().length ? (
-    // @ts-ignore Invalid ReactMarkdown prop types
     <ReactMarkdown components={components} remarkPlugins={[remarkGfm]}>
       {parseCommentContent(comment.shortText)}
     </ReactMarkdown>
   ) : null;
   const text = comment?.text?.trim().length ? (
-    // @ts-ignore Invalid ReactMarkdown prop types
     <ReactMarkdown components={components} remarkPlugins={[remarkGfm]}>
       {parseCommentContent(comment.text)}
     </ReactMarkdown>
