@@ -13,6 +13,7 @@ Package-specific changes not released in any SDK will be added here just before 
 - Updated `react-native-webview` from `11.6.2` to `11.13.0`. ([#14301](https://github.com/expo/expo/pull/14301) by [@kudo](https://github.com/kudo))
 - Updated `react-native-lottie` from `4.0.2` to `4.0.3`. ([#14331](https://github.com/expo/expo/pull/14331) by [@cruzach](https://github.com/cruzach))
 - Updated `react-native-screens` from `3.4.0` to `3.7.0`. ([#14330](https://github.com/expo/expo/pull/14330) by [@cruzach](https://github.com/cruzach))
+- Updated `react-native-safe-area-context` from `3.2.0` to `3.3.2`. ([#14303](https://github.com/expo/expo/pull/14303) by [@kudo](https://github.com/kudo))
 
 ### 🛠 Breaking changes
 
