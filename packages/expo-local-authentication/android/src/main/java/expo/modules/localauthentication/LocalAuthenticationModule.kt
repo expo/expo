@@ -116,7 +116,7 @@ class LocalAuthenticationModule(context: Context) : ExportedModule(context), Act
     if (packageManager.hasSystemFeature("com.samsung.android.bio.face") && !results.contains(AUTHENTICATION_TYPE_FACIAL_RECOGNITION)) {
       results.add(AUTHENTICATION_TYPE_FACIAL_RECOGNITION)
     }
-    
+
     promise.resolve(results)
   }
 
