@@ -6,6 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.withDevLauncherAppDelegate = exports.modifyAppDelegate = void 0;
 const config_plugins_1 = require("@expo/config-plugins");
 const semver_1 = __importDefault(require("semver"));
+const constants_1 = require("./constants");
 const resolveExpoUpdatesVersion_1 = require("./resolveExpoUpdatesVersion");
 const DEV_LAUNCHER_APP_DELEGATE_SOURCE_FOR_URL = `  #if defined(EX_DEV_LAUNCHER_ENABLED)
   return [[EXDevLauncherController sharedInstance] sourceUrl];
@@ -112,7 +113,8 @@ const withDevLauncherAppDelegate = (config) => {
             config.modResults.contents = modifyAppDelegate(config.modResults.contents, expoUpdatesVersion);
         }
         else {
-            config_plugins_1.WarningAggregator.addWarningIOS('expo-dev-launcher', 'Swift AppDelegate files are not supported yet.');
+            config_plugins_1.WarningAggregator.addWarningIOS('expo-dev-launcher', `Swift AppDelegate files are not supported yet.
+See the expo-dev-client installation instruction to modify your AppDelegate manually: ${constants_1.InstallationPage}`);
         }
         return config;
     });

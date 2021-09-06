@@ -7,6 +7,7 @@ const config_plugins_1 = require("@expo/config-plugins");
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
 const semver_1 = __importDefault(require("semver"));
+const constants_1 = require("./constants");
 const resolveExpoUpdatesVersion_1 = require("./resolveExpoUpdatesVersion");
 const withDevLauncherAppDelegate_1 = require("./withDevLauncherAppDelegate");
 const pkg = require('expo-dev-launcher/package.json');
@@ -72,7 +73,8 @@ async function editMainApplication(config, action) {
         return await saveFileAsync(mainApplicationPath, mainApplication);
     }
     catch (e) {
-        config_plugins_1.WarningAggregator.addWarningIOS('expo-dev-launcher', `Couldn't modify MainApplication.java - ${e}.`);
+        config_plugins_1.WarningAggregator.addWarningAndroid('expo-dev-launcher', `Couldn't modify MainApplication.java - ${e}.
+See the expo-dev-client installation instruction to modify your MainApplication.java manually: ${constants_1.InstallationPage}`);
     }
 }
 async function editPodfile(config, action) {
@@ -82,7 +84,8 @@ async function editPodfile(config, action) {
         return await saveFileAsync(podfilePath, podfile);
     }
     catch (e) {
-        config_plugins_1.WarningAggregator.addWarningIOS('expo-dev-launcher', `Couldn't modify AppDelegate.m - ${e}.`);
+        config_plugins_1.WarningAggregator.addWarningIOS('expo-dev-launcher', `Couldn't modify AppDelegate.m - ${e}.
+See the expo-dev-client installation instruction to modify your AppDelegate.m manually: ${constants_1.InstallationPage}`);
     }
 }
 async function editIndex(config, action) {
@@ -92,7 +95,8 @@ async function editIndex(config, action) {
         return await saveFileAsync(indexPath, index);
     }
     catch (e) {
-        config_plugins_1.WarningAggregator.addWarningIOS('expo-dev-launcher', `Couldn't modify index.js - ${e}.`);
+        config_plugins_1.WarningAggregator.addWarningIOS('expo-dev-launcher', `Couldn't modify index.js - ${e}.
+See the expo-dev-client installation instruction to modify your index.js manually: ${constants_1.InstallationPage}`);
     }
 }
 const withDevLauncherApplication = (config) => {
@@ -143,7 +147,8 @@ const withDevLauncherActivity = (config) => {
             config.modResults.contents = content;
         }
         else {
-            config_plugins_1.WarningAggregator.addWarningAndroid('expo-dev-launcher', `Cannot automatically configure MainActivity if it's not java`);
+            config_plugins_1.WarningAggregator.addWarningAndroid('expo-dev-launcher', `Cannot automatically configure MainActivity if it's not java.
+See the expo-dev-client installation instruction to modify your MainActivity manually: ${constants_1.InstallationPage}`);
         }
         return config;
     });

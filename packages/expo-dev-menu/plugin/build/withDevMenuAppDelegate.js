@@ -2,6 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.withDevMenuAppDelegate = exports.modifyAppDelegate = void 0;
 const config_plugins_1 = require("@expo/config-plugins");
+const constants_1 = require("./constants");
 const DEV_MENU_IOS_IMPORT = `
 #if defined(EX_DEV_MENU_ENABLED)
 @import EXDevMenu;
@@ -40,7 +41,8 @@ const withDevMenuAppDelegate = (config) => {
             config.modResults.contents = modifyAppDelegate(config.modResults.contents);
         }
         else {
-            config_plugins_1.WarningAggregator.addWarningIOS('expo-dev-menu', 'Swift AppDelegate files are not supported yet.');
+            config_plugins_1.WarningAggregator.addWarningIOS('expo-dev-menu', `Swift AppDelegate files are not supported yet.
+See the expo-dev-client installation instruction to modify your AppDelegate manually: ${constants_1.InstallationPage}`);
         }
         return config;
     });

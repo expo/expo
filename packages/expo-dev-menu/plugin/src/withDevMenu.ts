@@ -10,6 +10,7 @@ import { ExpoConfig } from '@expo/config-types';
 import fs from 'fs';
 import path from 'path';
 
+import { InstallationPage } from './constants';
 import { withDevMenuAppDelegate } from './withDevMenuAppDelegate';
 
 const pkg = require('expo-dev-menu/package.json');
@@ -59,7 +60,11 @@ async function editPodfile(config: ExportedConfigWithProps, action: (podfile: st
 
     return await saveFileAsync(podfilePath, podfile);
   } catch (e) {
-    WarningAggregator.addWarningIOS('expo-dev-menu', `Couldn't modified AppDelegate.m - ${e}.`);
+    WarningAggregator.addWarningIOS(
+      'expo-dev-menu',
+      `Couldn't modified AppDelegate.m - ${e}. 
+See the expo-dev-client installation instruction to modify your AppDelegate manually: ${InstallationPage}`
+    );
   }
 }
 
@@ -76,7 +81,8 @@ const withDevMenuActivity: ConfigPlugin = (config) => {
     } else {
       WarningAggregator.addWarningAndroid(
         'expo-dev-menu',
-        `Cannot automatically configure MainActivity if it's not java`
+        `Cannot automatically configure MainActivity if it's not java.
+See the expo-dev-client installation instruction to modify your MainActivity manually: ${InstallationPage}`
       );
     }
 

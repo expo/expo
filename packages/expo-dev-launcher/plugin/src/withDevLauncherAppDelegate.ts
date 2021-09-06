@@ -1,6 +1,7 @@
 import { ConfigPlugin, WarningAggregator, withAppDelegate } from '@expo/config-plugins';
 import semver from 'semver';
 
+import { InstallationPage } from './constants';
 import { resolveExpoUpdatesVersion } from './resolveExpoUpdatesVersion';
 
 const DEV_LAUNCHER_APP_DELEGATE_SOURCE_FOR_URL = `  #if defined(EX_DEV_LAUNCHER_ENABLED)
@@ -151,7 +152,8 @@ export const withDevLauncherAppDelegate: ConfigPlugin = (config) => {
     } else {
       WarningAggregator.addWarningIOS(
         'expo-dev-launcher',
-        'Swift AppDelegate files are not supported yet.'
+        `Swift AppDelegate files are not supported yet.
+See the expo-dev-client installation instruction to modify your AppDelegate manually: ${InstallationPage}`
       );
     }
     return config;
