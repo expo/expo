@@ -13,8 +13,8 @@ import {
   TypeSignaturesData,
 } from '~/components/plugins/api/APIDataTypes';
 import {
-  mdInlineRenderers,
-  mdRenderers,
+  mdInlineComponents,
+  mdComponents,
   resolveTypeName,
   renderFlags,
   renderParam,
@@ -75,14 +75,14 @@ const renderTypePropertyRow = ({
       <td>{renderTypeOrSignatureType(type, signatures)}</td>
       <td>
         {commentData ? (
-          <CommentTextBlock comment={commentData} renderers={mdInlineRenderers} />
+          <CommentTextBlock comment={commentData} components={mdInlineComponents} />
         ) : (
           '-'
         )}
         {initValue ? (
           <>
             <br />
-            <ReactMarkdown renderers={mdInlineRenderers}>{`__Default:__ ${parseCommentContent(
+            <ReactMarkdown components={mdInlineComponents}>{`__Default:__ ${parseCommentContent(
               initValue
             )}`}</ReactMarkdown>
           </>
@@ -182,7 +182,7 @@ const renderType = ({ name, comment, type }: TypeGeneralData): JSX.Element | und
           <InlineCode>{name}</InlineCode>
         </H3Code>
         <CommentTextBlock comment={comment} />
-        <ReactMarkdown renderers={mdRenderers}>{'__Type:__ `' + type.name + '`'}</ReactMarkdown>
+        <ReactMarkdown components={mdComponents}>{'__Type:__ `' + type.name + '`'}</ReactMarkdown>
       </div>
     );
   }

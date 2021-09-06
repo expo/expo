@@ -2,6 +2,7 @@ import { css } from '@emotion/react';
 import { theme } from '@expo/styleguide';
 import React from 'react';
 import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 
 import { Code, InlineCode } from '~/components/base/code';
 import { H4 } from '~/components/base/headings';
@@ -27,30 +28,35 @@ export enum TypeDocKind {
   TypeAlias = 4194304,
 }
 
-export type MDRenderers = React.ComponentProps<typeof ReactMarkdown>['renderers'];
+export type MDRenderers = React.ComponentProps<typeof ReactMarkdown>['components'];
 
-export const mdRenderers: MDRenderers = {
+export const mdComponents: MDRenderers = {
   blockquote: ({ children }) => (
     <Quote>
-      {React.Children.map(children, child =>
-        child.type.name === 'paragraph' ? child.props.children : child
-      )}
+      {/* @ts-ignore - current implementation produce type issues, this would be fixed in docs redesign */}
+      {children.map(child => (child?.props?.node?.tagName === 'p' ? child?.props.children : child))}
     </Quote>
   ),
-  code: ({ value, language }) => <Code className={`language-${language}`}>{value}</Code>,
-  heading: ({ children }) => <H4>{children}</H4>,
-  inlineCode: ({ value }) => <InlineCode>{value}</InlineCode>,
-  list: ({ children }) => <UL>{children}</UL>,
-  listItem: ({ children }) => <LI>{children}</LI>,
-  link: ({ href, children }) => <Link href={href}>{children}</Link>,
-  paragraph: ({ children }) => (children ? <P>{children}</P> : null),
+  code: ({ children, node }) =>
+    Array.isArray(node.properties?.className) ? (
+      <Code className={node.properties?.className[0].toString() || 'language-unknown'}>
+        {children}
+      </Code>
+    ) : (
+      <InlineCode>{children}</InlineCode>
+    ),
+  h1: ({ children }) => <H4>{children}</H4>,
+  ul: ({ children }) => <UL>{children}</UL>,
+  li: ({ children }) => <LI>{children}</LI>,
+  a: ({ href, children }) => <Link href={href}>{children}</Link>,
+  p: ({ children }) => (children ? <P>{children}</P> : null),
   strong: ({ children }) => <B>{children}</B>,
-  text: ({ value }) => (value ? <span>{value}</span> : null),
+  span: ({ children }) => (children ? <span>{children}</span> : null),
 };
 
-export const mdInlineRenderers: MDRenderers = {
-  ...mdRenderers,
-  paragraph: ({ children }) => (children ? <span>{children}</span> : null),
+export const mdInlineComponents: MDRenderers = {
+  ...mdComponents,
+  p: ({ children }) => (children ? <span>{children}</span> : null),
 };
 
 const nonLinkableTypes = [
@@ -244,7 +250,7 @@ export const renderParam = ({ comment, name, type, flags }: MethodParamData): JS
       {parseParamName(name)}
       {flags?.isOptional && '?'} (<InlineCode>{resolveTypeName(type)}</InlineCode>)
     </B>
-    <CommentTextBlock comment={comment} renderers={mdInlineRenderers} withDash />
+    <CommentTextBlock comment={comment} components={mdInlineComponents} withDash />
   </LI>
 );
 
@@ -287,7 +293,7 @@ export const renderFlags = (flags?: TypePropertyDataFlags) =>
 
 export type CommentTextBlockProps = {
   comment?: CommentData;
-  renderers?: MDRenderers;
+  components?: MDRenderers;
   withDash?: boolean;
   beforeContent?: JSX.Element;
 };
@@ -302,27 +308,35 @@ export const getCommentOrSignatureComment = (
 
 export const CommentTextBlock: React.FC<CommentTextBlockProps> = ({
   comment,
-  renderers = mdRenderers,
+  components = mdComponents,
   withDash,
   beforeContent,
 }) => {
   const shortText = comment?.shortText?.trim().length ? (
-    <ReactMarkdown renderers={renderers}>{parseCommentContent(comment.shortText)}</ReactMarkdown>
+    // @ts-ignore Invalid ReactMarkdown prop types
+    <ReactMarkdown components={components} remarkPlugins={[remarkGfm]}>
+      {parseCommentContent(comment.shortText)}
+    </ReactMarkdown>
   ) : null;
   const text = comment?.text?.trim().length ? (
-    <ReactMarkdown renderers={renderers}>{parseCommentContent(comment.text)}</ReactMarkdown>
+    // @ts-ignore Invalid ReactMarkdown prop types
+    <ReactMarkdown components={components} remarkPlugins={[remarkGfm]}>
+      {parseCommentContent(comment.text)}
+    </ReactMarkdown>
   ) : null;
+
+  // console.warn(comment)
 
   const example = comment?.tags?.filter(tag => tag.tag === 'example')[0];
   const exampleText = example ? (
-    <ReactMarkdown renderers={renderers}>{`__Example:__ ${example.text}`}</ReactMarkdown>
+    <ReactMarkdown components={components}>{`__Example:__ ${example.text}`}</ReactMarkdown>
   ) : null;
 
   const deprecation = comment?.tags?.filter(tag => tag.tag === 'deprecated')[0];
   const deprecationNote = deprecation ? (
     <Quote key="deprecation-note">
       {deprecation.text.trim().length ? (
-        <ReactMarkdown renderers={mdInlineRenderers}>{deprecation.text}</ReactMarkdown>
+        <ReactMarkdown components={mdInlineComponents}>{deprecation.text}</ReactMarkdown>
       ) : (
         <B>Deprecated</B>
       )}
