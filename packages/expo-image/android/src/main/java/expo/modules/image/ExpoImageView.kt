@@ -1,14 +1,11 @@
 package expo.modules.image
 
 import android.annotation.SuppressLint
-import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Canvas
 import android.graphics.PorterDuff
 import android.graphics.Shader
-import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
-import android.graphics.drawable.PictureDrawable
 import androidx.appcompat.widget.AppCompatImageView
 import com.bumptech.glide.RequestManager
 import com.bumptech.glide.integration.webp.decoder.WebpDrawable
@@ -16,7 +13,6 @@ import com.bumptech.glide.integration.webp.decoder.WebpDrawableTransformation
 import com.bumptech.glide.load.model.GlideUrl
 import com.bumptech.glide.load.resource.bitmap.FitCenter
 import com.bumptech.glide.request.RequestOptions
-import com.bumptech.glide.request.target.ImageViewTarget
 import com.facebook.react.bridge.ReactContext
 import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.modules.i18nmanager.I18nUtil
@@ -155,19 +151,6 @@ class ExpoImageView(
         }
         .apply(propOptions)
         .into(this)
-        // Way 1 - to create anonymous view target and override setResource()
-
-//        .into(object : ImageViewTarget<Drawable>(this) {
-//          override fun setResource(resource: Drawable?) {
-//            if (resource != null && this@ExpoImageView.resizeMode == ImageResizeMode.REPEAT) {
-//              val bitmapDrawable = toBitmapDrawable(resource)
-//              bitmapDrawable.setTileModeXY(Shader.TileMode.REPEAT, Shader.TileMode.REPEAT)
-//              view.setImageDrawable(bitmapDrawable)
-//            } else {
-//              view.setImageDrawable(resource)
-//            }
-//          }
-//        })
 
       requestManager
         .`as`(BitmapFactory.Options::class.java)
@@ -222,19 +205,6 @@ class ExpoImageView(
         }
       }
   }
-
-  // TODO: Investigate performance impact
-  private fun toBitmapDrawable(drawable: Drawable): BitmapDrawable =
-      when (drawable) {
-        is BitmapDrawable -> drawable
-        is PictureDrawable -> {
-          val bitmap = Bitmap.createBitmap(drawable.intrinsicWidth, drawable.intrinsicHeight, Bitmap.Config.ARGB_8888)
-          val canvas = Canvas(bitmap)
-          canvas.drawPicture(drawable.picture)
-          BitmapDrawable(resources, bitmap)
-        }
-        else -> throw IllegalArgumentException("Drawable must be either BitmapDrawable or PictureDrawable")
-      }
   // endregion
 
   // region Drawing overrides
@@ -265,31 +235,18 @@ class ExpoImageView(
       }
     }
   }
-  // endregion
 
-  // region Other overrides
-
-  // Way 2 - to override setImageDrawable which is called in Glide...into(this)
+  /**
+   * Called when Glide "injects" drawable into the view
+   */
   override fun setImageDrawable(drawable: Drawable?) {
-    if (drawable != null && resizeMode == ImageResizeMode.REPEAT) {
-      val bitmapDrawable = toBitmapDrawable(drawable)
-      bitmapDrawable.setTileModeXY(Shader.TileMode.REPEAT, Shader.TileMode.REPEAT)
-      super.setImageDrawable(bitmapDrawable)
-    } else {
-      super.setImageDrawable(drawable)
-    }
+    val maybeUpdatedDrawable = drawable
+      ?.takeIf { resizeMode == ImageResizeMode.REPEAT }
+      ?.toBitmapDrawable(resources)
+      ?.apply {
+        setTileModeXY(Shader.TileMode.REPEAT, Shader.TileMode.REPEAT)
+      }
+    super.setImageDrawable(maybeUpdatedDrawable ?: drawable)
   }
-
-  // probably this is never called - I think we always receive Drawable (method above)
-  override fun setImageBitmap(bm: Bitmap?) {
-    if (bm != null && resizeMode == ImageResizeMode.REPEAT) {
-      val bitmapDrawable = BitmapDrawable(resources, bm)
-      bitmapDrawable.setTileModeXY(Shader.TileMode.REPEAT, Shader.TileMode.REPEAT)
-      super.setImageDrawable(bitmapDrawable)
-    } else {
-      super.setImageBitmap(bm)
-    }
-  }
-
   // endregion
 }
