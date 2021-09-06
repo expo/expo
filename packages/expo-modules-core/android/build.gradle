@@ -75,6 +75,9 @@ dependencies {
   implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${safeExtGet('kotlinVersion', '1.4.21')}"
   implementation 'androidx.annotation:annotation:1.2.0'
 
+  // used only in `expo.modules.core.errors.ModuleDestroyedException` for API export
+  compileOnly("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.3")
+
   //noinspection GradleDynamicVersion
   implementation 'com.facebook.react:react-native:+'
 }
