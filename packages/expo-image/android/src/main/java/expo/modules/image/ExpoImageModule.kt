@@ -35,7 +35,6 @@ class ExpoImageModule(val context: ReactApplicationContext) : ReactContextBaseJa
         .diskCacheStrategy(DiskCacheStrategy.DATA)
   }
 
-
   override fun getName() = "ExpoImageModule"
 
   @ReactMethod
