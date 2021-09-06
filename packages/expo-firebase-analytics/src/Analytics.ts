@@ -176,7 +176,8 @@ export async function resetAnalyticsData(): Promise<void> {
  * });
  * ```
  *
- * @param properties Key/value set of user properties.
+ * @param properties Key/value set of user properties. Values can be up to 36 characters long.
+ * Setting the value to null removes the user property.
  */
 export async function setUserProperties(properties: Record<string, string | null>): Promise<void> {
   if (!ExpoFirebaseAnalytics.setUserProperties) {
