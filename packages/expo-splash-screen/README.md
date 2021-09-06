@@ -25,17 +25,29 @@
 
 Scale the image uniformly (maintaining the image's aspect ratio) so that both dimensions the width and height of the image will be equal to or less than the corresponding dimension of the device's screen.
 
+SVGs:
 <table>
   <thead><tr><td>Android</td><td>iOS</td></tr></thead>
-  <tbody><tr>
-<td>
-
-https://user-images.githubusercontent.com/379606/120575867-aeeb3580-c3d6-11eb-825d-19a847fe30f5.mp4
-</td>
-<td>
-
-https://user-images.githubusercontent.com/379606/120575885-b6124380-c3d6-11eb-8485-75a11832962c.mp4
-</td>
+  <tbody>
+    <tr>
+      <td>
+        <svg viewBox="0 0 300 533" xmlns="http://www.w3.org/2000/svg">
+          <foreignObject width="100%" height="100%">
+            <div xmlns="http://www.w3.org/1999/xhtml" width="100%" height="100%">
+              <video src="https://user-images.githubusercontent.com/379606/120575867-aeeb3580-c3d6-11eb-825d-19a847fe30f5.mp4" type="video/mp4" width="600" height="1066" autoplay="" muted="" loop="" style="width: 100%; height: 100%" />
+            </div>
+          </foreignObject>
+        </svg>
+      </td>
+      <td>
+        <svg viewBox="0 0 300 533" xmlns="http://www.w3.org/2000/svg">
+          <foreignObject width="100%" height="100%">
+            <div xmlns="http://www.w3.org/1999/xhtml" width="100%" height="100%">
+              <video src="https://user-images.githubusercontent.com/379606/120575885-b6124380-c3d6-11eb-8485-75a11832962c.mp4" type="video/mp4" width="600" height="1066" autoplay="" muted="" loop="" style="width: 100%; height: 100%" />
+            </div>
+          </foreignObject>
+        </svg>
+      </td>
     </tr>
   </tbody>
 </table>
