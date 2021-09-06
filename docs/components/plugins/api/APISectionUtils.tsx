@@ -323,8 +323,6 @@ export const CommentTextBlock: React.FC<CommentTextBlockProps> = ({
     </ReactMarkdown>
   ) : null;
 
-  // console.warn(comment)
-
   const example = comment?.tags?.filter(tag => tag.tag === 'example')[0];
   const exampleText = example ? (
     <ReactMarkdown components={components}>{`__Example:__ ${example.text}`}</ReactMarkdown>
