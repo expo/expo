@@ -548,7 +548,6 @@ public class LocationModule extends ExportedModule implements LifecycleEventList
     final FusedLocationProviderClient locationProvider = getLocationProvider();
 
     LocationCallback locationCallback = new LocationCallback() {
-
       boolean isLocationAvailable = false;
       @Override
       public void onLocationResult(LocationResult locationResult) {
