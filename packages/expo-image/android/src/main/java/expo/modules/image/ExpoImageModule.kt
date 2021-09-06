@@ -11,9 +11,12 @@ import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.bridge.WritableNativeArray
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runInterruptible
 import java.lang.Exception
+import java.util.concurrent.ExecutionException
 
 /**
  * We need to convert blocking java.util.concurrent.Future result
@@ -47,26 +50,41 @@ class ExpoImageModule(val context: ReactApplicationContext) : ReactContextBaseJa
 
   @ReactMethod
   fun queryCache(urls: ReadableArray, promise: Promise) {
-    val result = WritableNativeArray()
-    urls.toArrayList().forEach {
-      val url = it as String
-      if (isInCache(url)) {
-        result.pushString(url)
+    moduleCoroutineScope.launch {
+      try {
+        val resultArray = WritableNativeArray()
+        urls.toArrayList()
+            .filterIsInstance<String>()
+            .map { url -> async { Pair(url, isInCache(url)) } }
+            .awaitAll()
+            .filter {
+              if (it.second == null) {
+                throw InterruptedException()
+              } else {
+                it.second == true
+              }
+            }
+            .forEach{ resultArray.pushString(it.first) }
+        promise.resolve(resultArray)
+      } catch (e: Exception) {
+        promise.reject("ERR_IMAGE_PREFETCH_FAILURE", "Failed to read the cache: ${e.message}", e)
       }
     }
-    promise.resolve(result)
   }
 
-  private fun isInCache(url: String) : Boolean {
-    try {
-      Glide.with(context)
-        .load(GlideUrl(url))
-        .onlyRetrieveFromCache(true)
-        .submit()
-        .get()
+  private suspend fun isInCache(url: String) : Boolean? {
+    return try {
+      val result = Glide.with(context)
+          .load(GlideUrl(url))
+          .onlyRetrieveFromCache(true)
+          .submit()
+          .awaitGet()
+      result != null
     } catch (e: Exception) {
-      return false
+      when (e) {
+        is ExecutionException -> false
+        else -> null
+      }
     }
-    return true
   }
 }
