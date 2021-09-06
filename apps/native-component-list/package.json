@@ -150,7 +150,7 @@
     "react-native-paper": "^4.0.1",
     "react-native-reanimated": "~2.2.0",
     "react-native-redash": "^14.1.1",
-    "react-native-safe-area-context": "3.2.0",
+    "react-native-safe-area-context": "3.3.2",
     "react-native-safe-area-view": "^0.14.8",
     "react-native-screens": "~3.7.0",
     "react-native-shared-element": "0.8.2",
