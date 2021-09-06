@@ -28,9 +28,9 @@ export enum TypeDocKind {
   TypeAlias = 4194304,
 }
 
-export type MDRenderers = React.ComponentProps<typeof ReactMarkdown>['components'];
+export type MDComponents = React.ComponentProps<typeof ReactMarkdown>['components'];
 
-export const mdComponents: MDRenderers = {
+export const mdComponents: MDComponents = {
   blockquote: ({ children }) => (
     <Quote>
       {/* @ts-ignore - current implementation produce type issues, this would be fixed in docs redesign */}
@@ -54,7 +54,7 @@ export const mdComponents: MDRenderers = {
   span: ({ children }) => (children ? <span>{children}</span> : null),
 };
 
-export const mdInlineComponents: MDRenderers = {
+export const mdInlineComponents: MDComponents = {
   ...mdComponents,
   p: ({ children }) => (children ? <span>{children}</span> : null),
 };
@@ -293,7 +293,7 @@ export const renderFlags = (flags?: TypePropertyDataFlags) =>
 
 export type CommentTextBlockProps = {
   comment?: CommentData;
-  components?: MDRenderers;
+  components?: MDComponents;
   withDash?: boolean;
   beforeContent?: JSX.Element;
 };
