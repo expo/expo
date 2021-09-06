@@ -41,13 +41,13 @@ describe('Android permissions', () => {
     const mainApplication = getMainApplicationOrThrow(androidManifestJson);
 
     const apiKeyItem = mainApplication['meta-data'].filter(
-      e => e.$['android:name'] === 'com.google.android.gms.ads.APPLICATION_ID'
+      (e) => e.$['android:name'] === 'com.google.android.gms.ads.APPLICATION_ID'
     );
     expect(apiKeyItem).toHaveLength(1);
     expect(apiKeyItem[0].$['android:value']).toMatch('MY-API-KEY');
 
     const usesLibraryItem = mainApplication['meta-data'].filter(
-      e => e.$['android:name'] === 'com.google.android.gms.ads.DELAY_APP_MEASUREMENT_INIT'
+      (e) => e.$['android:name'] === 'com.google.android.gms.ads.DELAY_APP_MEASUREMENT_INIT'
     );
     expect(usesLibraryItem).toHaveLength(1);
     expect(usesLibraryItem[0].$['android:value']).toBe('true');

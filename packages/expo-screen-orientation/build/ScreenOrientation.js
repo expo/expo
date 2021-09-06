@@ -260,6 +260,6 @@ export function removeOrientationChangeListener(subscription) {
         throw new TypeError(`Must pass in a valid subscription`);
     }
     subscription.remove();
-    _orientationChangeSubscribers = _orientationChangeSubscribers.filter(sub => sub !== subscription);
+    _orientationChangeSubscribers = _orientationChangeSubscribers.filter((sub) => sub !== subscription);
 }
 //# sourceMappingURL=ScreenOrientation.js.map

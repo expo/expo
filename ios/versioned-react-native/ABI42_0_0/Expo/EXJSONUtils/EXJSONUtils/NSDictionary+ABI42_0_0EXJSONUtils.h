@@ -4,7 +4,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface NSDictionary (EXManifestsManifest)
+@interface NSDictionary (ABI42_0_0EXJSONUtils)
 
 - (NSString *)stringForKey:(NSString *)key;
 - (nullable NSString *)nullableStringForKey:(NSString *)key;

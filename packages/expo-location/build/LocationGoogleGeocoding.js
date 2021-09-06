@@ -50,7 +50,7 @@ function assertGoogleApiKey() {
  */
 async function requestGoogleApiAsync(params) {
     const query = Object.entries(params)
-        .map(entry => `${entry[0]}=${encodeURI(entry[1])}`)
+        .map((entry) => `${entry[0]}=${encodeURI(entry[1])}`)
         .join('&');
     const result = await fetch(`${GOOGLE_API_URL}?key=${googleApiKey}&${query}`);
     return await result.json();

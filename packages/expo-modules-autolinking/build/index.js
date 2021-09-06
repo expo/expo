@@ -40,7 +40,7 @@ module.exports = async function (args) {
         }
     }).option('-j, --json', 'Output results in the plain JSON format.', () => true, false);
     // Checks whether there are no resolving issues in the current setup.
-    registerSearchCommand('verify', results => {
+    registerSearchCommand('verify', (results) => {
         const numberOfDuplicates = autolinking_1.verifySearchResults(results);
         if (!numberOfDuplicates) {
             console.log('✅ Everything is fine!');

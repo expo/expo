@@ -95,7 +95,7 @@ for (const moduleName of Object.keys(expoModules)) {
   });
 }
 
-mockNativeModules.NativeUnimoduleProxy.viewManagersNames.forEach(viewManagerName => {
+mockNativeModules.NativeUnimoduleProxy.viewManagersNames.forEach((viewManagerName) => {
   Object.defineProperty(mockNativeModules.UIManager, `ViewManagerAdapter_${viewManagerName}`, {
     get: () => ({
       NativeProps: {},
@@ -153,10 +153,10 @@ jest.mock('react-native/Libraries/Image/AssetRegistry', () => ({
 jest.doMock('react-native/Libraries/BatchedBridge/NativeModules', () => mockNativeModules);
 
 jest.doMock('react-native/Libraries/LogBox/LogBox', () => ({
-  ignoreLogs: patterns => {
+  ignoreLogs: (patterns) => {
     // Do nothing.
   },
-  ignoreAllLogs: value => {
+  ignoreAllLogs: (value) => {
     // Do nothing.
   },
   install: () => {

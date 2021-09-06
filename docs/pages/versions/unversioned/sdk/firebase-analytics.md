@@ -256,7 +256,7 @@ await Analytics.resetAnalyticsData();
 ### setUserProperties
 
 ```ts
-setUserProperties(properties: { [key: string]: string }): Promise<void>
+setUserProperties(properties: { [key: string]: string | null }): Promise<void>
 ```
 
 Sets multiple user properties to the supplied values.
@@ -265,7 +265,7 @@ Sets multiple user properties to the supplied values.
 
 | Name       | Type     | Description                      |
 | ---------- | -------- | -------------------------------- |
-| properties | `Object` | key/value set of user properties |
+| properties | `Object` | key/value set of user properties. Values can be up to 36 characters long. Setting the value to null removes the user property. |
 
 #### Example
 

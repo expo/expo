@@ -87,7 +87,7 @@
     "sharp": "^0.28.0",
     "source-map-support": "^0.5.9",
     "strip-ansi": "^6.0.0",
-    "tar": "^4.4.15",
+    "tar": "^4.4.18",
     "terminal-link": "^2.1.1",
     "transformer-proxy": "^0.3.4",
     "typedoc": "^0.21.6",

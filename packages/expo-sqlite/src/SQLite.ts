@@ -23,10 +23,10 @@ class SQLiteDatabase {
     }
 
     ExponentSQLite.exec(this._name, queries.map(_serializeQuery), readOnly).then(
-      nativeResultSets => {
+      (nativeResultSets) => {
         callback(null, nativeResultSets.map(_deserializeResultSet));
       },
-      error => {
+      (error) => {
         // TODO: make the native API consistently reject with an error, not a string or other type
         callback(error instanceof Error ? error : new Error(error));
       }
@@ -54,7 +54,7 @@ function _deserializeResultSet(nativeResult): ResultSet | ResultSetError {
   return {
     insertId,
     rowsAffected,
-    rows: rows.map(row => zipObject(columns, row)),
+    rows: rows.map((row) => zipObject(columns, row)),
   };
 }
 

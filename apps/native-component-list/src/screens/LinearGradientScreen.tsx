@@ -37,7 +37,7 @@ export default class LinearGradientScreen extends React.Component<{}, State> {
   componentDidMount() {
     // @ts-expect-error: TS resolves node types first
     this._interval = setInterval(() => {
-      this.setState(state => ({
+      this.setState((state) => ({
         count: state.count + 1,
         colorTop: incrementColor(state.colorTop, 1),
         colorBottom: incrementColor(state.colorBottom, -1),
@@ -108,8 +108,8 @@ const ControlPointTest: React.FunctionComponent<{
   start?: [number, number];
   end?: [number, number];
 }> = ({ start = [0.5, 0], end = [0, 1] }) => {
-  const startInfo = `start={[${start.map(point => +point.toFixed(2)).join(', ')}]}`;
-  const endInfo = `end={[${end.map(point => +point.toFixed(2)).join(', ')}]}`;
+  const startInfo = `start={[${start.map((point) => +point.toFixed(2)).join(', ')}]}`;
+  const endInfo = `end={[${end.map((point) => +point.toFixed(2)).join(', ')}]}`;
 
   return (
     <Container title="Control Points">
@@ -130,7 +130,7 @@ const ControlPointTest: React.FunctionComponent<{
 };
 
 const ColorsTest = ({ colors }: { colors: string[] }) => {
-  const info = colors.map(value => `"${value}"`).join(', ');
+  const info = colors.map((value) => `"${value}"`).join(', ');
   return (
     <Container title="Colors">
       <MonoText>{`colors={[${info}]}`}</MonoText>
@@ -140,7 +140,7 @@ const ColorsTest = ({ colors }: { colors: string[] }) => {
 };
 
 const LocationsTest: React.FunctionComponent<{ locations: number[] }> = ({ locations }) => {
-  const locationsInfo = locations.map(location => +location.toFixed(2)).join(', ');
+  const locationsInfo = locations.map((location) => +location.toFixed(2)).join(', ');
   return (
     <Container title="Locations">
       <MonoText>{`locations={[${locationsInfo}]}`}</MonoText>

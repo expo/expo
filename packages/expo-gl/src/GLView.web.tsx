@@ -110,7 +110,7 @@ async function getBlobFromWebGLRenderingContext(
   } else if (isOffscreenCanvas(canvas)) {
     blob = await canvas.convertToBlob({ quality: options.compress, type: options.format });
   } else {
-    blob = await new Promise(resolve => {
+    blob = await new Promise((resolve) => {
       canvas.toBlob((blob: Blob | null) => resolve(blob), options.format, options.compress);
     });
   }

@@ -43,7 +43,7 @@ export async function resolveSearchPathsAsync(
   cwd: string
 ): Promise<string[]> {
   return searchPaths && searchPaths.length > 0
-    ? searchPaths.map(searchPath => path.resolve(cwd, searchPath))
+    ? searchPaths.map((searchPath) => path.resolve(cwd, searchPath))
     : await findDefaultPathsAsync(cwd);
 }
 
@@ -215,7 +215,7 @@ export async function mergeLinkingOptionsAsync<OptionsType extends SearchOptions
  */
 export function verifySearchResults(searchResults: SearchResults): number {
   const cwd = process.cwd();
-  const relativePath: (pkg: PackageRevision) => string = pkg => path.relative(cwd, pkg.path);
+  const relativePath: (pkg: PackageRevision) => string = (pkg) => path.relative(cwd, pkg.path);
   let counter = 0;
 
   for (const moduleName in searchResults) {

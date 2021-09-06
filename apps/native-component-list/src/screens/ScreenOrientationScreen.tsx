@@ -87,7 +87,7 @@ export default class ScreenOrientationScreen extends React.Component<{}, State> 
         ScreenOrientation.Orientation.LANDSCAPE_RIGHT,
       ],
       screenOrientationConstantAndroid: 8, // reverse landscape
-    }).catch(e => alert(e)); // on iPhoneX PortraitUpsideDown would be rejected
+    }).catch((e) => alert(e)); // on iPhoneX PortraitUpsideDown would be rejected
 
     if (Platform.OS === 'web') {
       await document.exitFullscreen();
@@ -118,7 +118,7 @@ export default class ScreenOrientationScreen extends React.Component<{}, State> 
       ScreenOrientation.OrientationLock.LANDSCAPE_RIGHT,
     ];
 
-    return orientationOptions.map(orientation => ({
+    return orientationOptions.map((orientation) => ({
       key: ScreenOrientation.OrientationLock[orientation],
       value: orientation,
     }));
@@ -134,7 +134,7 @@ export default class ScreenOrientationScreen extends React.Component<{}, State> 
         {orientationLock !== undefined && (
           <Text>OrientationLock: {ScreenOrientation.OrientationLock[orientationLock]}</Text>
         )}
-        {this.getScreenOrientationLockOptions().map(o => (
+        {this.getScreenOrientationLockOptions().map((o) => (
           <ListButton key={o.key} onPress={() => this.lock(o.value)} title={o.key} />
         ))}
         <ListButton

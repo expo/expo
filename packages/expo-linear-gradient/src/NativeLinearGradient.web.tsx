@@ -71,7 +71,7 @@ export default function NativeLinearGradient({
         // @ts-ignore: [ts] Property 'backgroundImage' does not exist on type 'ViewStyle'.
         { backgroundImage },
       ]}
-      onLayout={event => {
+      onLayout={(event) => {
         const { x, y, width, height } = event.nativeEvent.layout;
         const oldLayout = layout ?? { x: 0, y: 0, width: 1, height: 1 };
         // don't set new layout state unless the layout has actually changed

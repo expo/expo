@@ -131,7 +131,7 @@ public class UpdatesDevLauncherController implements UpdatesInterface {
         callback.onSuccess(new Update() {
           @Override
           public JSONObject getManifest() {
-            Manifest manifest = ManifestFactory.INSTANCE.getManifestFromManifestJson(launcher.getLaunchedUpdate().manifest);
+            Manifest manifest = Manifest.fromManifestJson(launcher.getLaunchedUpdate().manifest);
             return manifest.getRawJson();
           }
 

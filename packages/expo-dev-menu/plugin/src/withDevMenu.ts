@@ -27,7 +27,7 @@ async function saveFileAsync(path: string, content: string): Promise<void> {
 
 function addJavaImports(javaSource: string, javaImports: string[]): string {
   const lines = javaSource.split('\n');
-  const lineIndexWithPackageDeclaration = lines.findIndex(line => line.match(/^package .*;$/));
+  const lineIndexWithPackageDeclaration = lines.findIndex((line) => line.match(/^package .*;$/));
   for (const javaImport of javaImports) {
     if (!javaSource.includes(javaImport)) {
       const importStatement = `import ${javaImport};`;
@@ -40,7 +40,7 @@ function addJavaImports(javaSource: string, javaImports: string[]): string {
 function addLines(content: string, find: string | RegExp, offset: number, toAdd: string[]) {
   const lines = content.split('\n');
 
-  let lineIndex = lines.findIndex(line => line.match(find));
+  let lineIndex = lines.findIndex((line) => line.match(find));
 
   for (const newLine of toAdd) {
     if (!content.includes(newLine)) {
@@ -63,8 +63,8 @@ async function editPodfile(config: ExportedConfigWithProps, action: (podfile: st
   }
 }
 
-const withDevMenuActivity: ConfigPlugin = config => {
-  return withMainActivity(config, config => {
+const withDevMenuActivity: ConfigPlugin = (config) => {
+  return withMainActivity(config, (config) => {
     if (config.modResults.language === 'java') {
       let content = config.modResults.contents;
       content = addJavaImports(content, [DEV_MENU_ANDROID_IMPORT]);
@@ -84,11 +84,11 @@ const withDevMenuActivity: ConfigPlugin = config => {
   });
 };
 
-const withDevMenuPodfile: ConfigPlugin = config => {
+const withDevMenuPodfile: ConfigPlugin = (config) => {
   return withDangerousMod(config, [
     'ios',
-    async config => {
-      await editPodfile(config, podfile => {
+    async (config) => {
+      await editPodfile(config, (podfile) => {
         podfile = podfile.replace("platform :ios, '10.0'", "platform :ios, '11.0'");
         // Match both variations of Ruby config:
         // unknown: pod 'expo-dev-menu', path: '../node_modules/expo-dev-menu', :configurations => :debug

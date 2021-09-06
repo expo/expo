@@ -157,7 +157,7 @@ function isDailyTriggerInput(
     Object.keys(triggerWithoutChannelId).length ===
       DAILY_TRIGGER_EXPECTED_DATE_COMPONENTS.length + 1 &&
     DAILY_TRIGGER_EXPECTED_DATE_COMPONENTS.every(
-      component => component in triggerWithoutChannelId
+      (component) => component in triggerWithoutChannelId
     ) &&
     'repeats' in triggerWithoutChannelId &&
     triggerWithoutChannelId.repeats === true
@@ -173,7 +173,7 @@ function isWeeklyTriggerInput(
     Object.keys(triggerWithoutChannelId).length ===
       WEEKLY_TRIGGER_EXPECTED_DATE_COMPONENTS.length + 1 &&
     WEEKLY_TRIGGER_EXPECTED_DATE_COMPONENTS.every(
-      component => component in triggerWithoutChannelId
+      (component) => component in triggerWithoutChannelId
     ) &&
     'repeats' in triggerWithoutChannelId &&
     triggerWithoutChannelId.repeats === true
@@ -189,7 +189,7 @@ function isYearlyTriggerInput(
     Object.keys(triggerWithoutChannelId).length ===
       YEARLY_TRIGGER_EXPECTED_DATE_COMPONENTS.length + 1 &&
     YEARLY_TRIGGER_EXPECTED_DATE_COMPONENTS.every(
-      component => component in triggerWithoutChannelId
+      (component) => component in triggerWithoutChannelId
     ) &&
     'repeats' in triggerWithoutChannelId &&
     triggerWithoutChannelId.repeats === true
@@ -217,7 +217,7 @@ function validateDateComponentsInTrigger(
   components: readonly ValidTriggerDateComponents[]
 ) {
   const anyTriggerType = trigger as any;
-  components.forEach(component => {
+  components.forEach((component) => {
     if (!(component in anyTriggerType)) {
       throw new TypeError(`The ${component} parameter needs to be present`);
     }

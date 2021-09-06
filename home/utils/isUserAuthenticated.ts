@@ -5,5 +5,5 @@ export default function isUserAuthenticated(session: { sessionSecret: string | n
 }
 
 export function useIsAuthenticated() {
-  return useSelector(data => isUserAuthenticated(data.session));
+  return useSelector((data) => isUserAuthenticated(data.session));
 }

@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Set thumbnail generator tolerances to 0 in order to accurately retrieve an image at a specific time. ([#14253](https://github.com/expo/expo/pull/14253) by [@tamagokun](https://github.com/tamagokun))
+
 ### 💡 Others
 
 - Migrated from `@unimodules/core` to `expo-modules-core`. ([#13757](https://github.com/expo/expo/pull/13757) by [@tsapeta](https://github.com/tsapeta))

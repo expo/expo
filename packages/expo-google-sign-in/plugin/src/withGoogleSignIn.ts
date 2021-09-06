@@ -25,14 +25,14 @@ export function setExcludedArchitectures(project: XcodeProject): XcodeProject {
   return project;
 }
 
-const withExcludedSimulatorArchitectures: ConfigPlugin = c => {
-  return withXcodeProject(c, config => {
+const withExcludedSimulatorArchitectures: ConfigPlugin = (c) => {
+  return withXcodeProject(c, (config) => {
     config.modResults = setExcludedArchitectures(config.modResults);
     return config;
   });
 };
 
-const withGoogleSignIn: ConfigPlugin = config => {
+const withGoogleSignIn: ConfigPlugin = (config) => {
   return withExcludedSimulatorArchitectures(config);
 };
 

@@ -13,7 +13,7 @@ const BACKGROUND_NOTIFICATION_TASK = 'BACKGROUND-NOTIFICATION-TASK';
 const BACKGROUND_TASK_SUCCESSFUL = 'Background task successfully ran!';
 const BACKGROUND_TEST_INFO = `To test background notification handling:\n(1) Background the app.\n(2) Send a push notification from your terminal. The push token can be found in your logs, and the command to send a notification can be found at https://docs.expo.io/push-notifications/sending-notifications/#http2-api. On iOS, you need to include "_contentAvailable": "true" in your payload.\n(3) After receiving the notification, check your terminal for:\n"${BACKGROUND_TASK_SUCCESSFUL}"`;
 
-TaskManager.defineTask(BACKGROUND_NOTIFICATION_TASK, _data => {
+TaskManager.defineTask(BACKGROUND_NOTIFICATION_TASK, (_data) => {
   console.log(BACKGROUND_TASK_SUCCESSFUL);
 });
 
@@ -73,8 +73,8 @@ export default class NotificationScreen extends React.Component<
           },
         },
       ])
-        .then(_category => {})
-        .catch(error => console.warn('Could not have set notification category', error));
+        .then((_category) => {})
+        .catch((error) => console.warn('Could not have set notification category', error));
     }
   }
 
@@ -140,7 +140,7 @@ export default class NotificationScreen extends React.Component<
         <HeadingText>Notification triggers debugging</HeadingText>
         <ListButton
           onPress={() =>
-            Notifications.getNextTriggerDateAsync({ seconds: 10 }).then(timestamp =>
+            Notifications.getNextTriggerDateAsync({ seconds: 10 }).then((timestamp) =>
               alert(new Date(timestamp!))
             )
           }
@@ -152,7 +152,7 @@ export default class NotificationScreen extends React.Component<
               hour: 9,
               minute: 0,
               repeats: true,
-            }).then(timestamp => alert(new Date(timestamp!)))
+            }).then((timestamp) => alert(new Date(timestamp!)))
           }
           title="Get next date for 9 AM"
         />
@@ -163,7 +163,7 @@ export default class NotificationScreen extends React.Component<
               minute: 0,
               weekday: 1,
               repeats: true,
-            }).then(timestamp => alert(new Date(timestamp!)))
+            }).then((timestamp) => alert(new Date(timestamp!)))
           }
           title="Get next date for Sunday, 9 AM"
         />

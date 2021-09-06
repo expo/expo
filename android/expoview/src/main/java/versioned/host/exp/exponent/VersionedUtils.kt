@@ -21,6 +21,7 @@ import com.facebook.react.modules.systeminfo.AndroidInfoHelpers
 import com.facebook.react.packagerconnection.NotificationOnlyHandler
 import com.facebook.react.packagerconnection.RequestHandler
 import com.facebook.react.shell.MainReactPackage
+import expo.modules.jsonutils.getNullable
 import host.exp.exponent.Constants
 import host.exp.exponent.RNObject
 import host.exp.exponent.experience.ExperienceActivity
@@ -145,11 +146,7 @@ object VersionedUtils {
     packagerCommandHandlers["sendDevCommand"] = object : NotificationOnlyHandler() {
       override fun onNotification(params: Any?) {
         if (params != null && params is JSONObject) {
-          val name = if (params.has("name")) {
-            params.optString("name")
-          } else null
-
-          when (name) {
+          when (params.getNullable<String>("name")) {
             "reload" -> reloadExpoApp()
             "toggleDevMenu" -> toggleExpoDevMenu()
             "toggleRemoteDebugging" -> {

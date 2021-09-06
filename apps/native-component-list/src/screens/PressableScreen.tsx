@@ -36,7 +36,7 @@ function DelayEvents() {
   const handlePress = (eventName: string) => {
     return () => {
       const limit = 6;
-      updateEventLog(state => {
+      updateEventLog((state) => {
         const nextState = state.slice(0, limit - 1);
         nextState.unshift(eventName);
         return nextState;
@@ -93,7 +93,7 @@ function FeedbackEvents() {
   const handlePress = (eventName: string) => {
     return () => {
       const limit = 6;
-      updateEventLog(state => {
+      updateEventLog((state) => {
         const nextState = state.slice(0, limit - 1);
         nextState.unshift(eventName);
         return nextState;

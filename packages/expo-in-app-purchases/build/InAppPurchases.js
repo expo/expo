@@ -46,7 +46,7 @@ export function setPurchaseListener(callback) {
     if (purchaseUpdatedSubscription) {
         purchaseUpdatedSubscription.remove();
     }
-    purchaseUpdatedSubscription = eventEmitter.addListener(PURCHASES_UPDATED_EVENT, result => {
+    purchaseUpdatedSubscription = eventEmitter.addListener(PURCHASES_UPDATED_EVENT, (result) => {
         callback(result);
     });
 }

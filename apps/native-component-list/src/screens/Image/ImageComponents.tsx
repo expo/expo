@@ -24,7 +24,7 @@ export function getSelectedCompareComponent(): React.ComponentType<any> {
 export function setSelectedCompareComponent(Component: React.ComponentType<any>) {
   if (selectedCompareComponent !== Component) {
     selectedCompareComponent = Component;
-    listeners.forEach(listener => listener());
+    listeners.forEach((listener) => listener());
   }
 }
 

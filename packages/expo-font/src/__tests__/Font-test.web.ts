@@ -12,7 +12,7 @@ beforeEach(() => {
     ExpoFontLoader,
     'loadAsync',
     jest.fn(async () => {
-      await new Promise(resolve => setTimeout(resolve, 5));
+      await new Promise((resolve) => setTimeout(resolve, 5));
     })
   );
   mockProperty(
@@ -64,7 +64,7 @@ it(`rejects unloading fonts if the font hasn't finished loading yet.`, async () 
   // Attempting to unload all should throw an error
   await expect(Font.unloadAllAsync()).rejects.toThrow('still loading');
   // Wait until the font finished loading
-  await new Promise(resolve => setTimeout(resolve, 6));
+  await new Promise((resolve) => setTimeout(resolve, 6));
   // Should still be loaded because unloadAll was invoked too early.
   expect(Font.isLoaded(name)).toBe(true);
   expect(Font.isLoading(name)).toBe(false);

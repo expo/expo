@@ -71,9 +71,9 @@ export default class SMSScreen extends React.Component<{}, State> {
           style={styles.phoneNumbers}
           placeholder="Phone numbers, comma separated"
           value={this.state.phoneNumbers.join(',')}
-          onChangeText={phoneNumbers =>
+          onChangeText={(phoneNumbers) =>
             this.setState({
-              phoneNumbers: phoneNumbers.split(',').map(e => e.trim()),
+              phoneNumbers: phoneNumbers.split(',').map((e) => e.trim()),
             })
           }
         />
@@ -81,7 +81,7 @@ export default class SMSScreen extends React.Component<{}, State> {
           style={styles.message}
           placeholder="Message"
           value={this.state.message}
-          onChangeText={message => this.setState({ message })}
+          onChangeText={(message) => this.setState({ message })}
         />
         <Button title="Send" disabled={!this.state.message} onPress={this._sendSMS}>
           Send SMS

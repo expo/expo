@@ -48,7 +48,7 @@ const screens = [
   'WebView',
 ];
 
-export const ScreenItems = screens.map(name => ({
+export const ScreenItems = screens.map((name) => ({
   name,
   route: `/components/${name.toLowerCase()}`,
   // isAvailable: !!Screens[name],

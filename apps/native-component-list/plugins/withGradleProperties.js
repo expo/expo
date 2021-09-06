@@ -8,7 +8,7 @@ module.exports = (config, options) => {
   assert(options, 'gradle.properties must be defined');
   return withDangerousMod(config, [
     'android',
-    async config => {
+    async (config) => {
       const filePath = path.join(config.modRequest.projectRoot, 'android', 'gradle.properties');
       const contents = await fs.readFile(filePath, 'utf-8');
       const results = [];

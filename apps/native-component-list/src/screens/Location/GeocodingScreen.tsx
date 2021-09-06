@@ -28,7 +28,7 @@ export default function GeocodingScreen() {
 
   const [useGoogleMaps, setGoogleMaps] = React.useState(false);
 
-  const toggleGoogleMaps = () => setGoogleMaps(value => !value);
+  const toggleGoogleMaps = () => setGoogleMaps((value) => !value);
 
   return (
     <ScrollView style={styles.container}>

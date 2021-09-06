@@ -55,13 +55,13 @@ function BrightnessView() {
     (type === 'Brightness'
       ? Brightness.getBrightnessAsync()
       : Brightness.getSystemBrightnessAsync()
-    ).then(value => {
+    ).then((value) => {
       alert(value);
     });
   }
 
   function updateBrightnessAsync(value: number, type: string) {
-    setBrightness(brightness => ({ ...brightness, [type]: value }));
+    setBrightness((brightness) => ({ ...brightness, [type]: value }));
     if (type === 'Brightness') {
       Brightness.setBrightnessAsync(value);
     } else {
@@ -74,7 +74,7 @@ function BrightnessView() {
     SystemBrightness: systemBrightness,
   };
 
-  const views = brightnessTypes.map(type => {
+  const views = brightnessTypes.map((type) => {
     const currentBrightness = initBrightness[type] ?? 0;
     return (
       <View key={type} style={{ padding: 20 }}>
@@ -104,7 +104,7 @@ function BrightnessView() {
         <Slider
           value={currentBrightness}
           disabled={type === 'SystemBrightness' && !systemBrightnessPermissionGranted}
-          onValueChange={value => updateBrightnessAsync(value, type)}
+          onValueChange={(value) => updateBrightnessAsync(value, type)}
         />
       </View>
     );

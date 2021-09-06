@@ -19,9 +19,7 @@ export function useAssets(moduleIds) {
     const [assets, setAssets] = useState();
     const [error, setError] = useState();
     useEffect(() => {
-        Asset.loadAsync(moduleIds)
-            .then(setAssets)
-            .catch(setError);
+        Asset.loadAsync(moduleIds).then(setAssets).catch(setError);
     }, []);
     return [assets, error];
 }

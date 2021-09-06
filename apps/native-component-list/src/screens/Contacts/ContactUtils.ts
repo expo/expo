@@ -21,7 +21,7 @@ export function parseAddress({
   street: string;
 }) {
   const address = [street, city, region, postalCode, country]
-    .filter(item => item !== '')
+    .filter((item) => item !== '')
     .join(', ');
   return address;
 }
@@ -117,7 +117,7 @@ export async function removeAllChildrenFromGroupWithNameAsync(groupName: string)
 
     const { data: contacts } = await Contacts.getContactsAsync({ groupId });
     await Promise.all(
-      contacts.map(contact => Contacts.removeContactFromGroupAsync(contact.id, groupId!))
+      contacts.map((contact) => Contacts.removeContactFromGroupAsync(contact.id, groupId!))
     );
   } catch ({ message }) {
     // tslint:disable-next-line no-console

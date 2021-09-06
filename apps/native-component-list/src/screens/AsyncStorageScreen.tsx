@@ -12,7 +12,7 @@ function PersistExample() {
   const [needsRestart, setNeedsRestart] = React.useState(false);
 
   React.useEffect(() => {
-    AsyncStorage.getItem(key).then(value => {
+    AsyncStorage.getItem(key).then((value) => {
       if (value) {
         setStoredNumber(value);
       }

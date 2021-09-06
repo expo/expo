@@ -14,7 +14,7 @@ import {
 import ShowActionSheetButton from '../components/ShowActionSheetButton';
 import { Colors } from '../constants';
 
-const Button: React.FunctionComponent<TouchableOpacityProps> = props => {
+const Button: React.FunctionComponent<TouchableOpacityProps> = (props) => {
   return (
     <TouchableOpacity
       onPress={props.onPress}
@@ -60,7 +60,7 @@ function ActionSheetIOSExample() {
         cancelButtonIndex: 3,
         destructiveButtonIndex: 2,
       },
-      buttonIndex => {
+      (buttonIndex) => {
         console.log({ buttonIndex });
       }
     );
@@ -73,7 +73,7 @@ function ActionSheetIOSExample() {
         message: 'message to go with the shared url',
         subject: 'a subject to go in the email heading',
       },
-      error => alert(error),
+      (error) => alert(error),
       (success, method) => {
         if (success) {
           alert(`Shared via ${method}`);
