@@ -121,7 +121,7 @@
     "react-native-svg": "12.1.1",
     "react-native-unimodules": "~0.15.0-alpha.0",
     "react-native-view-shot": "3.1.2",
-    "react-native-webview": "11.6.2",
+    "react-native-webview": "11.13.0",
     "test-suite": "*"
   },
   "devDependencies": {
