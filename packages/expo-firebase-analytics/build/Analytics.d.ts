@@ -145,7 +145,7 @@ export declare function setClientId(clientId: string): void;
  * __Expo Go Only.__ Enables or disabled debug mode on the Expo client, so events can
  * be tracked using the [DebugView in the Analytics dashboard](https://firebase.google.com/docs/analytics/debugview#reporting).
  *
- * This option is only available on the standard Expo client. When using a standalone build, the
+ * This option is only available in Expo Go. When using a custom development app, a standalone app, the
  * bare workflow or web, use the [natively available options](https://firebase.google.com/docs/analytics/debugview).
  *
  * @param isEnabled A flag that enables or disables debug mode.
