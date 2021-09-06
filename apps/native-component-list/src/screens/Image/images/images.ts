@@ -8,6 +8,7 @@ const images = {
   require_svg: require('../../../../assets/images/expo.svg'),
   require_highres: require('../../../../assets/images/highres.jpeg'),
   require_monochrome: require('../../../../assets/images/yellowwall.jpeg'),
+  require_loadingIndicator_svg: require('../../../../assets/images/spinner.svg'),
   uri_random_unsplash: {
     uri: `https://source.unsplash.com/random?${Math.floor(Math.random() * 1000)}`,
   },
