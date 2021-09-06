@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.setICloudEntitlments = exports.withDocumentPickerIOS = void 0;
 const config_plugins_1 = require("@expo/config-plugins");
 const withDocumentPickerIOS = (config, { appleTeamId }) => {
-    return config_plugins_1.withEntitlementsPlist(config, config => {
+    return config_plugins_1.withEntitlementsPlist(config, (config) => {
         if (appleTeamId) {
             config.modResults = setICloudEntitlments(config, appleTeamId, config.modResults);
         }

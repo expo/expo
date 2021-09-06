@@ -5,6 +5,7 @@ import android.content.Context
 import android.net.Uri
 import android.os.Build
 import android.util.Log
+import expo.modules.jsonutils.getNullable
 import expo.modules.updates.UpdatesConfiguration
 import expo.modules.updates.UpdatesUtils
 import expo.modules.updates.db.DatabaseHolder
@@ -17,7 +18,6 @@ import expo.modules.updates.loader.LoaderTask
 import expo.modules.updates.loader.LoaderTask.BackgroundUpdateStatus
 import expo.modules.updates.loader.LoaderTask.LoaderTaskCallback
 import expo.modules.updates.manifest.UpdateManifest
-import expo.modules.updates.manifest.ManifestFactory
 import expo.modules.manifests.core.Manifest
 import expo.modules.updates.selectionpolicy.LauncherSelectionPolicyFilterAware
 import expo.modules.updates.selectionpolicy.LoaderSelectionPolicyFilterAware
@@ -201,7 +201,7 @@ class ExpoUpdatesAppLoader @JvmOverloads constructor(
         }
 
         override fun onCachedUpdateLoaded(update: UpdateEntity): Boolean {
-          val manifest = ManifestFactory.getManifestFromManifestJson(update.manifest)
+          val manifest = Manifest.fromManifestJson(update.manifest)
           setShouldShowAppLoaderStatus(manifest)
           if (manifest.isUsingDeveloperTool()) {
             return false
@@ -226,7 +226,7 @@ class ExpoUpdatesAppLoader @JvmOverloads constructor(
         override fun onRemoteUpdateManifestLoaded(updateManifest: UpdateManifest) {
           // expo-cli does not always respect our SDK version headers and respond with a compatible update or an error
           // so we need to check the compatibility here
-          val sdkVersion = updateManifest.manifest.getSDKVersionNullable()
+          val sdkVersion = updateManifest.manifest.getSDKVersion()
           if (!isValidSdkVersion(sdkVersion)) {
             callback.onError(formatExceptionForIncompatibleSdk(sdkVersion ?: "null"))
             didAbort = true
@@ -245,7 +245,7 @@ class ExpoUpdatesAppLoader @JvmOverloads constructor(
           this@ExpoUpdatesAppLoader.isUpToDate = isUpToDate
           try {
             val manifestJson = processManifestJson(launcher.launchedUpdate!!.manifest)
-            val manifest = ManifestFactory.getManifestFromManifestJson(manifestJson)
+            val manifest = Manifest.fromManifestJson(manifestJson)
             callback.onManifestCompleted(manifest)
 
             // ReactAndroid will load the bundle on its own in development mode
@@ -307,7 +307,7 @@ class ExpoUpdatesAppLoader @JvmOverloads constructor(
         e
       )
     }
-    callback.onManifestCompleted(ManifestFactory.getManifestFromManifestJson(manifestJson))
+    callback.onManifestCompleted(Manifest.fromManifestJson(manifestJson))
     var launchAssetFile = launcher.launchAssetFile
     if (launchAssetFile == null) {
       // ReactInstanceManagerBuilder accepts embedded assets as strings with "assets://" prefixed
@@ -329,9 +329,7 @@ class ExpoUpdatesAppLoader @JvmOverloads constructor(
       val protocol = parsedManifestUrl.scheme
       val securityPrefix = if (protocol == "https" || protocol == "exps") "" else "UNVERIFIED-"
       val path = if (parsedManifestUrl.path != null) parsedManifestUrl.path else ""
-      val slug = if (manifestJson.has(ExponentManifest.MANIFEST_SLUG)) manifestJson.getString(
-        ExponentManifest.MANIFEST_SLUG
-      ) else ""
+      val slug = manifestJson.getNullable<String>(ExponentManifest.MANIFEST_SLUG) ?: ""
       val sandboxedId = securityPrefix + parsedManifestUrl.host + path + "-" + slug
       manifestJson.put(ExponentManifest.MANIFEST_ID_KEY, sandboxedId)
       manifestJson.put(ExponentManifest.MANIFEST_IS_VERIFIED_KEY, true)
@@ -343,7 +341,7 @@ class ExpoUpdatesAppLoader @JvmOverloads constructor(
       manifestJson.put(ExponentManifest.MANIFEST_IS_VERIFIED_KEY, false)
     }
     if (!manifestJson.optBoolean(ExponentManifest.MANIFEST_IS_VERIFIED_KEY, false) &&
-      exponentManifest.isAnonymousExperience(ManifestFactory.getManifestFromManifestJson(manifestJson))
+      exponentManifest.isAnonymousExperience(Manifest.fromManifestJson(manifestJson))
     ) {
       // automatically verified
       manifestJson.put(ExponentManifest.MANIFEST_IS_VERIFIED_KEY, true)

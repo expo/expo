@@ -13,7 +13,7 @@ export default {
       EventTypes.indexOf(type) !== -1,
       `Linking.addEventListener(): ${type} is not a valid event`
     );
-    const nativeListener: NativeURLListener = nativeEvent =>
+    const nativeListener: NativeURLListener = (nativeEvent) =>
       listener({ url: window.location.href, nativeEvent });
     listeners.push({ listener, nativeListener });
     window.addEventListener('message', nativeListener, false);
@@ -24,7 +24,7 @@ export default {
       EventTypes.indexOf(type) !== -1,
       `Linking.removeEventListener(): ${type} is not a valid event.`
     );
-    const listenerIndex = listeners.findIndex(pair => pair.listener === listener);
+    const listenerIndex = listeners.findIndex((pair) => pair.listener === listener);
     invariant(
       listenerIndex !== -1,
       'Linking.removeEventListener(): cannot remove an unregistered event listener.'

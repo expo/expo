@@ -8,8 +8,8 @@ import {
 const pkg = require('expo-location/package.json');
 const LOCATION_USAGE = 'Allow $(PRODUCT_NAME) to access your location';
 
-const withBackgroundLocation: ConfigPlugin = config => {
-  return withInfoPlist(config, config => {
+const withBackgroundLocation: ConfigPlugin = (config) => {
+  return withInfoPlist(config, (config) => {
     if (!Array.isArray(config.modResults.UIBackgroundModes)) {
       config.modResults.UIBackgroundModes = [];
     }
@@ -40,7 +40,7 @@ const withLocation: ConfigPlugin<{
     config = withBackgroundLocation(config);
   }
 
-  config = withInfoPlist(config, config => {
+  config = withInfoPlist(config, (config) => {
     config.modResults.NSLocationAlwaysAndWhenInUseUsageDescription =
       locationAlwaysAndWhenInUsePermission ||
       config.modResults.NSLocationAlwaysAndWhenInUseUsageDescription ||

@@ -428,8 +428,7 @@ open class ExperienceActivity : BaseExperienceActivity(), StartReactInstanceDele
     this.manifestUrl = manifestUrl
     this.manifest = manifest
 
-    // TODO(eric): remove when deleting old AppLoader class/logic
-    exponentSharedPreferences.updateManifest(this.manifestUrl!!, manifest, bundleUrl)
+    exponentSharedPreferences.removeLegacyManifest(this.manifestUrl!!)
 
     // Notifications logic uses this to determine which experience to route a notification to
     ExponentDB.saveExperience(ExponentDBObject(this.manifestUrl!!, manifest, bundleUrl))
@@ -442,7 +441,7 @@ open class ExperienceActivity : BaseExperienceActivity(), StartReactInstanceDele
     task.activityId = activityId
     task.bundleUrl = bundleUrl
 
-    sdkVersion = manifest.getSDKVersionNullable()
+    sdkVersion = manifest.getSDKVersion()
     isShellApp = this.manifestUrl == Constants.INITIAL_URL
 
     // Sometime we want to release a new version without adding a new .aar. Use TEMPORARY_ABI_VERSION

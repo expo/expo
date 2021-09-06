@@ -154,12 +154,12 @@ export default class InAppPurchases extends React.Component<any, any> {
         <SafeAreaView style={styles.container}>
           <Text style={styles.titleText}>In App Store</Text>
         </SafeAreaView>
-        {this.state.items.map(item => this.renderItem(item))}
+        {this.state.items.map((item) => this.renderItem(item))}
         <Text style={styles.itemTitle}>History</Text>
         <View style={styles.buttonContainer}>
           <Button title="Query History" onPress={() => this.queryPurchaseHistory()} />
         </View>
-        {this.state.history.map(historyRecord => this.renderHistoryRecord(historyRecord))}
+        {this.state.history.map((historyRecord) => this.renderHistoryRecord(historyRecord))}
         <View style={styles.buttonContainer}>
           <Button title="Update Response Code" onPress={() => this.getBillingResult()} />
         </View>

@@ -38,7 +38,7 @@ export default class LocalAuthenticationScreen extends React.Component<{}, State
 
   async getAuthenticationTypes() {
     return (await LocalAuthentication.supportedAuthenticationTypesAsync()).map(
-      type => LocalAuthentication.AuthenticationType[type]
+      (type) => LocalAuthentication.AuthenticationType[type]
     );
   }
 

@@ -315,13 +315,13 @@ function getId(ref: any): string | undefined {
 }
 
 function checkAssetIds(assetIds: any): void {
-  if (assetIds.some(id => !id || typeof id !== 'string')) {
+  if (assetIds.some((id) => !id || typeof id !== 'string')) {
     throw new Error('Asset ID must be a string!');
   }
 }
 
 function checkAlbumIds(albumIds: any): void {
-  if (albumIds.some(id => !id || typeof id !== 'string')) {
+  if (albumIds.some((id) => !id || typeof id !== 'string')) {
     throw new Error('Album ID must be a string!');
   }
 }
@@ -416,8 +416,8 @@ export async function getPermissionsAsync(writeOnly: boolean = false): Promise<P
  */
 export const usePermissions = createPermissionHook<PermissionResponse, { writeOnly?: boolean }>({
   // TODO(cedric): permission requesters should have an options param or a different requester
-  getMethod: options => getPermissionsAsync(options?.writeOnly),
-  requestMethod: options => requestPermissionsAsync(options?.writeOnly),
+  getMethod: (options) => getPermissionsAsync(options?.writeOnly),
+  requestMethod: (options) => requestPermissionsAsync(options?.writeOnly),
 });
 
 // @needsAudit

@@ -6,7 +6,7 @@ const fs_1 = require("fs");
 const path_1 = require("path");
 const ERROR_MSG_PREFIX = 'An error occurred while configuring iOS notifications. ';
 const withNotificationsIOS = (config, { mode = 'development', sounds = [] }) => {
-    config = config_plugins_1.withEntitlementsPlist(config, config => {
+    config = config_plugins_1.withEntitlementsPlist(config, (config) => {
         config.modResults['aps-environment'] = mode;
         return config;
     });
@@ -15,7 +15,7 @@ const withNotificationsIOS = (config, { mode = 'development', sounds = [] }) => 
 };
 exports.withNotificationsIOS = withNotificationsIOS;
 const withNotificationSounds = (config, { sounds }) => {
-    return config_plugins_1.withXcodeProject(config, config => {
+    return config_plugins_1.withXcodeProject(config, (config) => {
         setNotificationSounds(config.modRequest.projectRoot, {
             sounds,
             project: config.modResults,

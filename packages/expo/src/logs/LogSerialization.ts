@@ -69,7 +69,7 @@ async function serializeLogDataAsync(data: unknown[], level: LogLevel): Promise<
 }
 
 function _stringifyLogData(data: unknown[]): string[] {
-  return data.map(item => {
+  return data.map((item) => {
     // define the max length for log msg to be first 10000 characters
     const LOG_MESSAGE_MAX_LENGTH = 10000;
     const result =
@@ -124,7 +124,7 @@ async function _symbolicateErrorAsync(error: Error): Promise<StackFrame[]> {
 
 function _formatStack(stack: StackFrame[]): string {
   return stack
-    .map(frame => {
+    .map((frame) => {
       let line = `${frame.file}:${frame.lineNumber}`;
       if (frame.column != null) {
         line += `:${frame.column}`;
@@ -183,7 +183,7 @@ function _captureConsoleStackTrace(): Error {
     throw new Error();
   } catch (error) {
     let stackLines = error.stack.split('\n');
-    const consoleMethodIndex = stackLines.findIndex(frame =>
+    const consoleMethodIndex = stackLines.findIndex((frame) =>
       frame.includes(EXPO_CONSOLE_METHOD_NAME)
     );
     if (consoleMethodIndex !== -1) {

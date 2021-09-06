@@ -133,7 +133,7 @@ describe(`importing Expo`, () => {
   });
 
   it(`throws a clear error in bare React Native`, () => {
-    const clearPropertiesInPlace = aThing => {
+    const clearPropertiesInPlace = (aThing) => {
       const propertyNames = Object.keys(aThing);
       for (const propertyName of propertyNames) {
         if (!bareReactNativeModulesNames.includes(propertyName)) {
@@ -155,7 +155,7 @@ describe(`importing Expo`, () => {
     // Silence "No native module found" warnings raised in CRNA and expo-constants
     const warn = console.warn;
 
-    global.console.warn = str => {
+    global.console.warn = (str) => {
       const tst = (str || '') + '';
       if (!tst.includes('No native')) {
         warn.apply(console, [str]);

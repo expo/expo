@@ -48,7 +48,7 @@ class ExpoFirebaseMessagingDelegate(context: Context) : FirebaseMessagingDelegat
       return
     }
 
-    val sdkVersionString = exponentDBObject.manifest.getSDKVersionNullable()
+    val sdkVersionString = exponentDBObject.manifest.getSDKVersion()
     if (sdkVersionString == null) {
       dispatchToNextNotificationModule(remoteMessage)
       return

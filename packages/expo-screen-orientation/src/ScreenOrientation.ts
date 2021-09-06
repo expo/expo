@@ -311,5 +311,7 @@ export function removeOrientationChangeListener(subscription: Subscription): voi
     throw new TypeError(`Must pass in a valid subscription`);
   }
   subscription.remove();
-  _orientationChangeSubscribers = _orientationChangeSubscribers.filter(sub => sub !== subscription);
+  _orientationChangeSubscribers = _orientationChangeSubscribers.filter(
+    (sub) => sub !== subscription
+  );
 }

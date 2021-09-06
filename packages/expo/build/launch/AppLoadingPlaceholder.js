@@ -15,7 +15,7 @@ export default class AppLoadingPlaceholder extends React.Component {
     _isMounted = false;
     componentDidMount() {
         this._isMounted = true;
-        this.startLoadingAppResourcesAsync().catch(error => {
+        this.startLoadingAppResourcesAsync().catch((error) => {
             console.error(`AppLoading threw an unexpected error when loading:\n${error.stack}`);
         });
     }

@@ -24,6 +24,7 @@
 #import <EXUpdates/EXUpdatesReaperSelectionPolicyDevelopmentClient.h>
 #import <EXUpdates/EXUpdatesSelectionPolicy.h>
 #import <EXUpdates/EXUpdatesUtils.h>
+#import <EXManifests/EXManifestsManifestFactory.h>
 #import <React/RCTUtils.h>
 #import <sys/utsname.h>
 
@@ -485,7 +486,7 @@ NS_ASSUME_NONNULL_BEGIN
     mutableManifest[@"isVerified"] = @(YES);
   }
 
-  return [EXUpdatesUpdate manifestForManifestJSON:[mutableManifest copy]];
+  return [EXManifestsManifestFactory manifestForManifestJSON:[mutableManifest copy]];
 }
 
 + (BOOL)_isAnonymousExperience:(EXManifestsManifest *)manifest

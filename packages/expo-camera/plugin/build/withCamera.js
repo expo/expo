@@ -9,8 +9,8 @@ const MICROPHONE_USAGE = 'Allow $(PRODUCT_NAME) to access your microphone';
 // It's ok to have multiple allprojects.repositories, so we create a new one since it's cheaper than tokenizing
 // the existing block to find the correct place to insert our camera maven.
 const gradleMaven = 'allprojects { repositories { maven { url "$rootDir/../node_modules/expo-camera/android/maven" } } }';
-const withAndroidCameraGradle = config => {
-    return config_plugins_1.withProjectBuildGradle(config, config => {
+const withAndroidCameraGradle = (config) => {
+    return config_plugins_1.withProjectBuildGradle(config, (config) => {
         if (config.modResults.language === 'groovy') {
             config.modResults.contents = setGradleMaven(config.modResults.contents);
         }

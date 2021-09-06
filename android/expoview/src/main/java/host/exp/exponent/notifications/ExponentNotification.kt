@@ -1,6 +1,7 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 package host.exp.exponent.notifications
 
+import expo.modules.jsonutils.getNullable
 import host.exp.exponent.analytics.EXL.e
 import host.exp.exponent.RNObject
 import org.json.JSONException
@@ -62,23 +63,12 @@ open class ExponentNotification(
         null
       } else try {
         val jsonObject = JSONObject(json)
-        val body = if (jsonObject.has(NotificationConstants.NOTIFICATION_DATA_KEY)) {
-          jsonObject.getString(NotificationConstants.NOTIFICATION_DATA_KEY)
-        } else {
-          if (jsonObject.has(NotificationConstants.NOTIFICATION_MESSAGE_KEY)) {
-            jsonObject.getString(NotificationConstants.NOTIFICATION_MESSAGE_KEY)
-          } else {
-            null
-          }
-        }
+        val body = jsonObject.getNullable(NotificationConstants.NOTIFICATION_DATA_KEY)
+          ?: jsonObject.getString(NotificationConstants.NOTIFICATION_MESSAGE_KEY)
+        val experienceScopeKey = jsonObject.getNullable(NotificationConstants.NOTIFICATION_EXPERIENCE_SCOPE_KEY_KEY)
+          ?: jsonObject.getString(NotificationConstants.NOTIFICATION_EXPERIENCE_ID_KEY)
         ExponentNotification(
-          if (jsonObject.has(NotificationConstants.NOTIFICATION_EXPERIENCE_SCOPE_KEY_KEY)) {
-            jsonObject.optString(
-              NotificationConstants.NOTIFICATION_EXPERIENCE_SCOPE_KEY_KEY
-            )
-          } else {
-            jsonObject.getString(NotificationConstants.NOTIFICATION_EXPERIENCE_ID_KEY)
-          },
+          experienceScopeKey,
           body,
           jsonObject.getInt(NotificationConstants.NOTIFICATION_ID_KEY),
           jsonObject.getBoolean(NotificationConstants.NOTIFICATION_IS_MULTIPLE_KEY),

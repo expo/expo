@@ -9,8 +9,8 @@ const {
 
 const META_BRANCH_KEY = 'io.branch.sdk.BranchKey';
 
-export const withBranchAndroid: ConfigPlugin = config => {
-  return withAndroidManifest(config, config => {
+export const withBranchAndroid: ConfigPlugin = (config) => {
+  return withAndroidManifest(config, (config) => {
     config.modResults = setBranchApiKey(config, config.modResults);
     return config;
   });

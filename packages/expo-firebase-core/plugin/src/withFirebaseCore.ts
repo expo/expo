@@ -33,10 +33,10 @@ self.moduleRegistryAdapter = [[UMModuleRegistryAdapter alloc]`
   return contents;
 }
 
-const withFirebaseAppDelegate: ConfigPlugin = config => {
+const withFirebaseAppDelegate: ConfigPlugin = (config) => {
   return withDangerousMod(config, [
     'ios',
-    async config => {
+    async (config) => {
       const fileInfo = IOSConfig.Paths.getAppDelegate(config.modRequest.projectRoot);
       let contents = fs.readFileSync(fileInfo.path, { encoding: 'utf8' });
       if (fileInfo.language === 'objc') {

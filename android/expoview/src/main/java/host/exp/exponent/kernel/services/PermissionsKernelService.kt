@@ -3,6 +3,7 @@ package host.exp.exponent.kernel.services
 import android.content.Context
 import android.content.pm.PackageManager
 import android.content.pm.PermissionInfo
+import expo.modules.jsonutils.getNullable
 import host.exp.exponent.Constants
 import host.exp.exponent.kernel.ExperienceKey
 import host.exp.exponent.storage.ExponentSharedPreferences
@@ -19,16 +20,8 @@ class PermissionsKernelService(
       if (metadata == null) {
         metadata = JSONObject()
       }
-      val permissions: JSONObject = if (metadata.has(ExponentSharedPreferences.EXPERIENCE_METADATA_PERMISSIONS)) {
-        metadata.getJSONObject(ExponentSharedPreferences.EXPERIENCE_METADATA_PERMISSIONS)
-      } else {
-        JSONObject()
-      }
-      val permissionObject: JSONObject = if (permissions.has(permission)) {
-        permissions.getJSONObject(permission)
-      } else {
-        JSONObject()
-      }
+      val permissions: JSONObject = metadata.getNullable(ExponentSharedPreferences.EXPERIENCE_METADATA_PERMISSIONS) ?: JSONObject()
+      val permissionObject: JSONObject = permissions.getNullable(permission) ?: JSONObject()
       permissionObject.put("status", "granted")
       permissions.put(permission, permissionObject)
       metadata.put(ExponentSharedPreferences.EXPERIENCE_METADATA_PERMISSIONS, permissions)
@@ -67,7 +60,7 @@ class PermissionsKernelService(
           metadata.getJSONObject(ExponentSharedPreferences.EXPERIENCE_METADATA_PERMISSIONS)
         if (permissions.has(permission)) {
           val permissionsObject = permissions.getJSONObject(permission)
-          return permissionsObject.has("status") && permissionsObject.getString("status") == "granted"
+          return permissionsObject.getNullable<String>("status") == "granted"
         }
       }
     } catch (e: JSONException) {

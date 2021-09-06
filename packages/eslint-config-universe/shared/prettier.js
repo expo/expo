@@ -2,11 +2,6 @@ module.exports = {
   extends: ['prettier'],
   plugins: ['prettier'],
   rules: {
-    'prettier/prettier': [
-      'warn',
-      {
-        arrowParens: 'avoid',
-      },
-    ],
+    'prettier/prettier': ['warn'],
   },
 };

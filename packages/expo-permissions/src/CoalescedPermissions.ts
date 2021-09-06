@@ -1,7 +1,7 @@
 import { PermissionExpiration, PermissionMap, PermissionStatus } from './Permissions.types';
 
 export function coalesceStatuses(permissions: PermissionMap): PermissionStatus {
-  const statuses = Object.keys(permissions).map(type => permissions[type].status);
+  const statuses = Object.keys(permissions).map((type) => permissions[type].status);
   statuses.sort((status1, status2) => _getStatusWeight(status1) - _getStatusWeight(status2));
   // We choose the "heaviest" status with the most implications
   return statuses[statuses.length - 1];
@@ -25,7 +25,7 @@ function _getStatusWeight(status: PermissionStatus): number {
 
 export function coalesceExpirations(permissions: PermissionMap): PermissionExpiration {
   const maxExpiration = 9007199254740991; // Number.MAX_SAFE_INTEGER
-  const expirations = Object.keys(permissions).map(type => permissions[type].expires);
+  const expirations = Object.keys(permissions).map((type) => permissions[type].expires);
   expirations.sort(
     (e1, e2) =>
       (e1 == null || e1 === 'never' ? maxExpiration : e1) -

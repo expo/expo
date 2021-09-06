@@ -80,6 +80,10 @@ object DevMenuManager : DevMenuManagerInterface {
     throw IllegalStateException(DEV_MENU_IS_NOT_AVAILABLE)
   }
 
+  override fun setCanLaunchDevMenuOnStart(canLaunchDevMenuOnStart: Boolean) {
+    throw IllegalStateException(DEV_MENU_IS_NOT_AVAILABLE)
+  }
+
   override fun sendEventToDelegateBridge(eventName: String, eventData: Any?) {
     throw IllegalStateException(DEV_MENU_IS_NOT_AVAILABLE)
   }

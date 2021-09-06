@@ -23,7 +23,7 @@ self.moduleRegistryAdapter = [[UMModuleRegistryAdapter alloc]`);
     return contents;
 }
 exports.modifyObjcAppDelegate = modifyObjcAppDelegate;
-const withFirebaseAppDelegate = config => {
+const withFirebaseAppDelegate = (config) => {
     return config_plugins_1.withDangerousMod(config, [
         'ios',
         async (config) => {

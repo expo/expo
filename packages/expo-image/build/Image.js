@@ -7,7 +7,7 @@ export default class Image extends React.Component {
     static getDerivedStateFromProps(props) {
         return {
             onLoad: props.onLoadEnd
-                ? e => {
+                ? (e) => {
                     if (props.onLoad) {
                         props.onLoad(e);
                     }
@@ -15,7 +15,7 @@ export default class Image extends React.Component {
                 }
                 : props.onLoad,
             onError: props.onLoadEnd
-                ? e => {
+                ? (e) => {
                     if (props.onError) {
                         props.onError(e);
                     }

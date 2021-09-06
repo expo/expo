@@ -216,7 +216,7 @@ export default class AppleAuthenticationScreen extends React.Component<{}, State
             minimumValue={0}
             maximumValue={20}
             value={this.state.cornerRadius}
-            onValueChange={cornerRadius => this.setState({ cornerRadius })}
+            onValueChange={(cornerRadius) => this.setState({ cornerRadius })}
           />
         </View>
         {this.state.credentials && (

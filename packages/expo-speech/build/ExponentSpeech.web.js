@@ -54,7 +54,7 @@ export default {
     },
     getVoices() {
         const voices = window.speechSynthesis.getVoices();
-        return voices.map(voice => ({
+        return voices.map((voice) => ({
             identifier: voice.voiceURI,
             quality: VoiceQuality.Default,
             isDefault: voice.default,

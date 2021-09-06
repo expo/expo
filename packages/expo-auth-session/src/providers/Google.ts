@@ -341,7 +341,7 @@ export function useAuthRequest(
           code_verifier: request.codeVerifier,
         },
       });
-      exchangeRequest.performAsync(discovery).then(authentication => {
+      exchangeRequest.performAsync(discovery).then((authentication) => {
         if (isMounted) {
           setFullResult({
             ...result,

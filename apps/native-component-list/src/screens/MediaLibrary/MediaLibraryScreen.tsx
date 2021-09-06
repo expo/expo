@@ -108,7 +108,7 @@ export default function MediaLibraryScreen({ navigation, route }: Props) {
     const goToAlbums = () => navigation.navigate('MediaAlbums');
     const clearAlbumSelection = () => navigation.setParams({ album: undefined });
     const addImage = async () => {
-      const randomNameGenerator: (num: number) => string = num => {
+      const randomNameGenerator: (num: number) => string = (num) => {
         let res = '';
         for (let i = 0; i < num; i++) {
           const random = Math.floor(Math.random() * 27);
@@ -257,7 +257,7 @@ function MediaLibraryView({ navigation, route, accessPrivileges }: Props) {
   useFocusEffect(
     React.useCallback(() => {
       // When new media is added or removed, update the library
-      const subscription = MediaLibrary.addListener(event => {
+      const subscription = MediaLibrary.addListener((event) => {
         if (!event.hasIncrementalChanges) {
           dispatch({ type: 'reset', refreshing: false });
           return;

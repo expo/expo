@@ -63,7 +63,7 @@ export class Sound {
         }
     }
     _clearSubscriptions() {
-        this._subscriptions.forEach(e => e.remove());
+        this._subscriptions.forEach((e) => e.remove());
         this._subscriptions = [];
     }
     _errorCallback = (error) => {

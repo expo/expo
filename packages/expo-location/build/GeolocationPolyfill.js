@@ -40,7 +40,7 @@ async function _getCurrentPositionAsyncWrapper(success, error, options) {
 // Polyfill: navigator.geolocation.watchPosition
 function watchPosition(success, error, options) {
     const watchId = LocationSubscriber.registerCallback(success);
-    ExpoLocation.watchPositionImplAsync(watchId, options).catch(err => {
+    ExpoLocation.watchPositionImplAsync(watchId, options).catch((err) => {
         LocationSubscriber.unregisterCallback(watchId);
         error({ watchId, message: err.message, code: err.code });
     });

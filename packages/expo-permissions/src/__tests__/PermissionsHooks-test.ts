@@ -77,7 +77,7 @@ describe('ask option', () => {
     const asker = jest.spyOn(Permissions, 'askAsync').mockResolvedValue(response);
 
     const hook = renderHook(
-      permissions => usePermissions(permissions, { get: false, ask: false }),
+      (permissions) => usePermissions(permissions, { get: false, ask: false }),
       { initialProps: [Permissions.CAMERA] as Permissions.PermissionType[] }
     );
     hook.rerender([Permissions.CAMERA, Permissions.MEDIA_LIBRARY]);
@@ -133,7 +133,7 @@ describe('get option', () => {
   it('gets the permissions when rerendered', async () => {
     const getter = jest.spyOn(Permissions, 'getAsync').mockResolvedValue(response);
 
-    const hook = renderHook(permissions => usePermissions(permissions, { get: false }), {
+    const hook = renderHook((permissions) => usePermissions(permissions, { get: false }), {
       initialProps: [Permissions.CAMERA] as Permissions.PermissionType[],
     });
     hook.rerender([Permissions.CAMERA, Permissions.MEDIA_LIBRARY]);

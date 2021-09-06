@@ -191,7 +191,7 @@ export default function FirebaseRecaptcha(props: Props) {
         invisible
       )}
       onError={onError}
-      onMessage={event => {
+      onMessage={(event) => {
         const data = JSON.parse(event.nativeEvent.data);
         switch (data.type) {
           case 'load':

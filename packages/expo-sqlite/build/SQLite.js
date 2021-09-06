@@ -14,9 +14,9 @@ class SQLiteDatabase {
         if (this._closed) {
             throw new Error(`The SQLite database is closed`);
         }
-        ExponentSQLite.exec(this._name, queries.map(_serializeQuery), readOnly).then(nativeResultSets => {
+        ExponentSQLite.exec(this._name, queries.map(_serializeQuery), readOnly).then((nativeResultSets) => {
             callback(null, nativeResultSets.map(_deserializeResultSet));
-        }, error => {
+        }, (error) => {
             // TODO: make the native API consistently reject with an error, not a string or other type
             callback(error instanceof Error ? error : new Error(error));
         });
@@ -39,7 +39,7 @@ function _deserializeResultSet(nativeResult) {
     return {
         insertId,
         rowsAffected,
-        rows: rows.map(row => zipObject(columns, row)),
+        rows: rows.map((row) => zipObject(columns, row)),
     };
 }
 function _escapeBlob(data) {

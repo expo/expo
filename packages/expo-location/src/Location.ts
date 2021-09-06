@@ -93,10 +93,10 @@ export async function watchPositionAsync(options: LocationOptions, callback: Loc
  * and returns the one that is accurate enough.
  */
 export async function getHeadingAsync(): Promise<LocationHeadingObject> {
-  return new Promise<LocationHeadingObject>(async resolve => {
+  return new Promise<LocationHeadingObject>(async (resolve) => {
     let tries = 0;
 
-    const subscription = await watchHeadingAsync(heading => {
+    const subscription = await watchHeadingAsync((heading) => {
       if (heading.accuracy > 1 || tries > 5) {
         subscription.remove();
         resolve(heading);
