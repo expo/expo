@@ -1,3 +1,4 @@
+import Dispatch
 
 public class ConcreteMethod<Args, ReturnType>: AnyMethod {
   public typealias ClosureType = (Args) -> ReturnType

@@ -1,3 +1,5 @@
+import UIKit
+
 /**
  Specialized class for the view prop. Specifies the prop name and its setter.
  */
