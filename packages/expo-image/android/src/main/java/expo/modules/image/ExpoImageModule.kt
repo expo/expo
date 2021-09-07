@@ -12,8 +12,10 @@ import com.facebook.react.bridge.ReactMethod
 import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.bridge.WritableNativeMap
 import expo.modules.image.enums.ImageCacheType
+import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.launch
@@ -28,7 +30,7 @@ import java.util.concurrent.ExecutionException
 suspend fun <T> FutureTarget<T>.awaitGet() = runInterruptible(Dispatchers.IO) { get() }
 
 class ExpoImageModule(val context: ReactApplicationContext) : ReactContextBaseJavaModule(context) {
-  private val moduleCoroutineScope = CoroutineScope(Dispatchers.IO)
+  private val moduleCoroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
   override fun getName() = "ExpoImageModule"
 
   @ReactMethod
@@ -53,40 +55,41 @@ class ExpoImageModule(val context: ReactApplicationContext) : ReactContextBaseJa
 
   @ReactMethod
   fun queryCache(urls: ReadableArray, promise: Promise) {
-    moduleCoroutineScope.launch {
-      try {
-        val resultMap = WritableNativeMap()
-        urls.toArrayList()
-            .filterIsInstance<String>()
-            .map { url -> async { Triple(url, isInCache(url, ImageCacheType.DISK), isInCache(url, ImageCacheType.MEMORY))  } }
-            .awaitAll()
-            .filter {
-              if (it.second == null || it.third == null) {
-                throw InterruptedException()
-              } else {
-                it.second == true || it.third == true
-              }
+    moduleCoroutineScope.launch(
+        CoroutineExceptionHandler { _, e ->
+          promise.reject("ERR_IMAGE_QUERY_CACHE_FAILURE", "Failed to read the cache: ${e.message}", e)
+        }
+    ) {
+      val resultMap = WritableNativeMap()
+      urls.toArrayList()
+        .filterIsInstance<String>()
+        .map { url -> async {
+          val isInDiskCache = isInCache(url, ImageCacheType.DISK)
+          val isInMemoryCache = isInCache(url, ImageCacheType.MEMORY)
+          Triple(url, isInDiskCache, isInMemoryCache)
+        }
+        }
+        .awaitAll()
+        .filter {
+          (_, inDisk, inMemory) -> inDisk || inMemory
+        }
+        .forEach{ (url, inDisk, inMemory) ->
+          resultMap.putString(
+            url,
+            if (inDisk && inMemory) {
+              "disk/memory"
+            } else if (inDisk) {
+              "disk"
+            } else {
+              "memory"
             }
-            .forEach{
-              resultMap.putString(
-                  it.first,
-                  if (it.second == true && it.third == true) {
-                    "disk/memory"
-                  } else if (it.second == true) {
-                    "disk"
-                  } else {
-                    "memory"
-                  }
-              )
-            }
-        promise.resolve(resultMap)
-      } catch (e: Exception) {
-        promise.reject("ERR_IMAGE_PREFETCH_FAILURE", "Failed to read the cache: ${e.message}", e)
-      }
+          )
+        }
+      promise.resolve(resultMap)
     }
   }
 
-  private suspend fun isInCache(url: String, cacheOption: ImageCacheType) : Boolean? {
+  private suspend fun isInCache(url: String, cacheOption: ImageCacheType) : Boolean {
     val cacheOptions = RequestOptions()
         .apply {
           when (cacheOption) {
@@ -102,11 +105,9 @@ class ExpoImageModule(val context: ReactApplicationContext) : ReactContextBaseJa
           .submit()
           .awaitGet()
       result != null
-    } catch (e: Exception) {
-      when (e) {
-        is ExecutionException -> false
-        else -> null
-      }
+    } catch (e: ExecutionException) {
+      // ExecutionException means that asset was not available in cache. Other exceptions are not caught intentionally
+      return false
     }
   }
 }
