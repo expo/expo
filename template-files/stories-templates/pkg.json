@@ -12,6 +12,7 @@
   "dependencies": {
     "@babel/runtime": "^7.5.5",
     "expo": "~42.0.0-alpha.0",
+    "expo-cellular": "file:../../packages/expo-cellular",
     "expo-modules-core": "~0.3.0-alpha.0",
     "expo-modules-autolinking": "~0.3.0-alpha.0",
     "expo-updates": "~0.8.4",
