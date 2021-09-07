@@ -106,8 +106,9 @@ class ExpoAutolinkingManager {
       'android'
     ]
 
-    if (options?.searchPaths) {
-      args += options.searchPaths
+    def searchPaths = options?.get("searchPaths", options?.get("modulesPaths", null))
+    if (searchPaths) {
+      args += searchPaths
     }
 
     if (options?.ignorePaths) {
