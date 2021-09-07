@@ -140,10 +140,9 @@ class ExpoUpdatesAppLoader @JvmOverloads constructor(
     configMap["expectsSignedManifest"] = true
     val configuration = UpdatesConfiguration().loadValuesFromMap(configMap)
     val sdkVersionsList = mutableListOf<String>().apply {
-      addAll(Constants.SDK_VERSIONS_LIST)
-      add(RNObject.UNVERSIONED)
-      for (sdkVersion in Constants.SDK_VERSIONS_LIST) {
-        add("exposdk:$sdkVersion")
+      (Constants.SDK_VERSIONS_LIST + listOf(RNObject.UNVERSIONED)).forEach {
+        add(it)
+        add("exposdk:$it")
       }
     }
     val selectionPolicy = SelectionPolicy(
