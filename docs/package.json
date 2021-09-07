@@ -80,7 +80,7 @@
     "http-server": "^0.12.3",
     "jest": "26.1.0",
     "prettier": "^2.3.1",
-    "puppeteer": "^3.3.0",
+    "puppeteer": "^10.2.0",
     "remark-cli": "^9.0.0",
     "remark-validate-links": "^10.0.4",
     "rimraf": "^3.0.2",
