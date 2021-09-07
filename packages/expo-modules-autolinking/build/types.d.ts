@@ -9,7 +9,6 @@ export interface SearchOptions {
 }
 export interface ResolveOptions extends SearchOptions {
     json?: boolean;
-    packageListTarget?: string | null;
 }
 export interface GenerateOptions extends ResolveOptions {
     target: string;
