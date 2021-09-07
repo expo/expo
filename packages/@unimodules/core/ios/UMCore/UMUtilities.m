@@ -28,7 +28,9 @@ UM_REGISTER_MODULE();
 
 - (void)setModuleRegistry:(UMModuleRegistry *)moduleRegistry
 {
-  _moduleRegistry = moduleRegistry;
+  if ([moduleRegistry isKindOfClass:[UMModuleRegistry class]]) {
+    _moduleRegistry = moduleRegistry;
+  }
 }
 
 - (nullable NSDictionary *)launchOptions

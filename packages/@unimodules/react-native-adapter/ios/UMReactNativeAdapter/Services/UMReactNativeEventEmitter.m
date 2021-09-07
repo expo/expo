@@ -139,7 +139,9 @@ RCT_EXPORT_METHOD(removeProxiedListeners:(NSString *)moduleName count:(double)co
 
 - (void)setModuleRegistry:(UMModuleRegistry *)moduleRegistry
 {
-  _umModuleRegistry = moduleRegistry;
+  if ([moduleRegistry isKindOfClass:[UMModuleRegistry class]]) {
+    _umModuleRegistry = moduleRegistry;
+  }
 }
 
 @end
