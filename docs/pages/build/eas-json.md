@@ -4,11 +4,9 @@ title: Configuration with eas.json
 
 import EasJsonPropertiesTable from '~/components/plugins/EasJsonPropertiesTable';
 
-import commonSchema from '~/scripts/schemas/unversioned/eas-json-common-schema.js';
-import androidSchema from '~/scripts/schemas/unversioned/eas-json-android-schema.js';
-import iosSchema from '~/scripts/schemas/unversioned/eas-json-ios-schema.js';
-
-
+import commonSchema from '~/scripts/schemas/unversioned/eas-json-build-common-schema.js';
+import androidSchema from '~/scripts/schemas/unversioned/eas-json-build-android-schema.js';
+import iosSchema from '~/scripts/schemas/unversioned/eas-json-build-ios-schema.js';
 
 `eas.json` is your go-to place for configuring EAS Build. It is located at the root of your project next to your `package.json`. It looks something like this:
 
@@ -43,7 +41,7 @@ or
 }
 ```
 
-The JSON object under the `build` key can contain multiple build profiles. Every build profile can have an arbitrary name. The default profile that is expected by EAS CLI to exist is `release` (if you'd like to build your app using another build profile you need to specify it with a parameter - `eas build --platform android --profile foobar`). In the example, there are two build profiles (`release` and `development`), however they could be named `foo` or `bar` or whatever you'd like. Inside build profile you can specify `android` and `ios` fields that contain platform specific configuration for the build, any common options can be also stored there or in the root of the build profile.
+The JSON object under the `build` key can contain multiple build profiles. Every build profile can have an arbitrary name. The default profile that is expected by EAS CLI to exist is `release` (if you'd like to build your app using another build profile you need to specify it with a parameter - `eas build --platform android --profile foobar`). In the example, there are two build profiles (`release` and `development`), however they could be named `foo` or `bar` or whatever you'd like. Inside build profile you can specify `android` and `ios` fields that contain platform-specific configuration for the build, any common options can be also stored there or in the root of the build profile.
 
 Generally, the schema of this file looks like this:
 
@@ -131,6 +129,7 @@ Generally, the schema of this file looks like this:
   }
 }
 ```
+
 </details>
 
 <details>

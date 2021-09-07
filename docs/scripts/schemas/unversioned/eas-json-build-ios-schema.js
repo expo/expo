@@ -1,7 +1,7 @@
 export default [
   {
     name: 'simulator',
-    enum: 'boolean',
+    type: 'boolean',
     description: [ 'If set to true, creates build for simulator. Defaults to false' ],
   },
   {
