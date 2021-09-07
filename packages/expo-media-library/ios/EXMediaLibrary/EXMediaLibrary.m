@@ -817,12 +817,11 @@ EX_EXPORT_METHOD_AS(getAssetsAsync,
 {
   if (asset) {
     NSString *fileName = [asset valueForKey:@"filename"];
-    NSString *assetExtension = [fileName pathExtension];
     
     return @{
              @"id": asset.localIdentifier,
              @"filename": fileName,
-             @"uri": [EXMediaLibrary _assetUriForLocalId:asset.localIdentifier andExtension:assetExtension],
+             @"uri": [EXMediaLibrary _assetUriForLocalId:asset.localIdentifier],
              @"mediaType": [EXMediaLibrary _stringifyMediaType:asset.mediaType],
              @"mediaSubtypes": [EXMediaLibrary _stringifyMediaSubtypes:asset.mediaSubtypes],
              @"width": @(asset.pixelWidth),
@@ -916,12 +915,10 @@ EX_EXPORT_METHOD_AS(getAssetsAsync,
   return [localId stringByReplacingOccurrencesOfString:@"/.*" withString:@"" options:NSRegularExpressionSearch range:NSMakeRange(0, localId.length)];
 }
 
-+ (NSString *)_assetUriForLocalId:(nonnull NSString *)localId andExtension:(nonnull NSString *)extension
++ (NSString *)_assetUriForLocalId:(nonnull NSString *)localId
 {
   NSString *assetId = [EXMediaLibrary _assetIdFromLocalId:localId];
-  NSString *uppercasedExtension = [extension uppercaseString];
-  
-  return [NSString stringWithFormat:@"assets-library://asset/asset.%@?id=%@&ext=%@", uppercasedExtension, assetId, uppercasedExtension];
+  return [NSString stringWithFormat:@"ph://%@", assetId];
 }
 
 + (PHAssetMediaType)_assetTypeForUri:(nonnull NSString *)localUri

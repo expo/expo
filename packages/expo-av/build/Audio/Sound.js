@@ -12,6 +12,7 @@ export class Sound {
     _eventEmitter = new EventEmitter(ExponentAV);
     _coalesceStatusUpdatesInMillis = 100;
     _onPlaybackStatusUpdate = null;
+    _onMetadataUpdate = null;
     /** @deprecated Use `Sound.createAsync()` instead */
     static create = async (source, initialStatus = {}, onPlaybackStatusUpdate = null, downloadFirst = true) => {
         console.warn(`Sound.create is deprecated in favor of Sound.createAsync with the same API except for the new method name`);
@@ -50,6 +51,11 @@ export class Sound {
             this._callOnPlaybackStatusUpdateForNewStatus(status);
         }
     };
+    _internalMetadataUpdateCallback = ({ key, metadata, }) => {
+        if (this._key === key) {
+            this._onMetadataUpdate?.(metadata);
+        }
+    };
     _internalErrorCallback = ({ key, error }) => {
         if (this._key === key) {
             this._errorCallback(error);
@@ -58,7 +64,7 @@ export class Sound {
     // TODO: We can optimize by only using time observer on native if (this._onPlaybackStatusUpdate).
     _subscribeToNativeEvents() {
         if (this._loaded) {
-            this._subscriptions.push(this._eventEmitter.addListener('didUpdatePlaybackStatus', this._internalStatusUpdateCallback));
+            this._subscriptions.push(this._eventEmitter.addListener('didUpdatePlaybackStatus', this._internalStatusUpdateCallback), this._eventEmitter.addListener('didUpdateMetadata', this._internalMetadataUpdateCallback));
             this._subscriptions.push(this._eventEmitter.addListener('ExponentAV.onError', this._internalErrorCallback));
         }
     }
@@ -86,6 +92,9 @@ export class Sound {
     setOnPlaybackStatusUpdate(onPlaybackStatusUpdate) {
         this._onPlaybackStatusUpdate = onPlaybackStatusUpdate;
         this.getStatusAsync();
+    }
+    setOnMetadataUpdate(onMetadataUpdate) {
+        this._onMetadataUpdate = onMetadataUpdate;
     }
     // Loading / unloading API
     async loadAsync(source, initialStatus = {}, downloadFirst = true) {

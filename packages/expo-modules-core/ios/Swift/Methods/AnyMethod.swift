@@ -1,3 +1,4 @@
+import Dispatch
 
 /**
  A protocol for any type-erased module's method.

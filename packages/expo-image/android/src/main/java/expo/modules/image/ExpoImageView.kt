@@ -5,6 +5,7 @@ import android.graphics.BitmapFactory
 import android.graphics.Canvas
 import android.graphics.PorterDuff
 import android.graphics.drawable.Drawable
+import android.net.Uri
 import androidx.appcompat.widget.AppCompatImageView
 import com.bumptech.glide.RequestManager
 import com.bumptech.glide.integration.webp.decoder.WebpDrawable
@@ -66,6 +67,7 @@ class ExpoImageView(
 
   // region Component Props
   internal var sourceMap: ReadableMap? = null
+  internal var defaultSourceMap: ReadableMap? = null
   internal var blurRadius: Int? = null
     set(value) {
       field = value?.takeIf { it > 0 }
@@ -126,6 +128,7 @@ class ExpoImageView(
   // region ViewManager Lifecycle methods
   internal fun onAfterUpdateTransaction() {
     val sourceToLoad = createUrlFromSourceMap(sourceMap)
+    val defaultSourceToLoad = createUrlFromSourceMap(defaultSourceMap)
     if (sourceToLoad == null) {
       requestManager.clear(this)
       setImageDrawable(null)
@@ -140,6 +143,7 @@ class ExpoImageView(
       eventsManager.onLoadStarted()
       requestManager
         .load(sourceToLoad)
+        .apply { if (defaultSourceToLoad != null) thumbnail(requestManager.load(defaultSourceToLoad)) }
         .apply(options)
         .addListener(eventsManager)
         .run {

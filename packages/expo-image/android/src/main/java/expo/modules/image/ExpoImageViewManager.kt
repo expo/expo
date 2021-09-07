@@ -120,6 +120,11 @@ class ExpoImageViewManager(applicationContext: ReactApplicationContext) : Simple
     view.setTintColor(color)
   }
 
+  @ReactProp(name = "defaultSource")
+  fun setDefaultSource(view: ExpoImageView, defaultSourceMap: ReadableMap?) {
+    view.defaultSourceMap = defaultSourceMap
+  }
+
   @ReactProp(name = "accessible")
   fun setFocusable(view: ExpoImageView, accessible: Boolean) {
     view.isFocusable = accessible // setFocusable(bool)
