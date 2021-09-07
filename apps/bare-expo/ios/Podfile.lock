@@ -135,7 +135,7 @@ PODS:
   - EXPermissions (12.1.1):
     - ExpoModulesCore
     - UMCore
-  - expo-dev-client (0.5.0):
+  - expo-dev-client (0.5.1):
     - expo-dev-launcher
     - expo-dev-menu
     - expo-dev-menu-interface
@@ -160,25 +160,25 @@ PODS:
     - expo-dev-menu-interface
     - EXUpdatesInterface
     - React-Core
-  - expo-dev-menu (0.8.0):
+  - expo-dev-menu (0.8.1):
     - expo-dev-menu-interface
-    - expo-dev-menu/Main (= 0.8.0)
+    - expo-dev-menu/Main (= 0.8.1)
     - React-Core
   - expo-dev-menu-interface (0.4.0)
-  - expo-dev-menu/Main (0.8.0):
+  - expo-dev-menu/Main (0.8.1):
     - expo-dev-menu-interface
     - expo-dev-menu/Vendored
     - React-Core
-  - expo-dev-menu/Tests (0.8.0):
+  - expo-dev-menu/Tests (0.8.1):
     - expo-dev-menu-interface
     - React-Core
     - React-CoreModules
-  - expo-dev-menu/UITests (0.8.0):
+  - expo-dev-menu/UITests (0.8.1):
     - expo-dev-menu-interface
     - React
     - React-Core
     - React-CoreModules
-  - expo-dev-menu/Vendored (0.8.0):
+  - expo-dev-menu/Vendored (0.8.1):
     - expo-dev-menu-interface
     - React-Core
   - expo-image (1.0.0-alpha.1):
@@ -1235,7 +1235,7 @@ SPEC CHECKSUMS:
   AppAuth: 31bcec809a638d7bd2f86ea8a52bd45f6e81e7c7
   boost-for-react-native: 39c7adb57c4e60d6c5479dd8623128eb5b3f0f2c
   CocoaAsyncSocket: 065fd1e645c7abab64f7a6a2007a48038fdc6a99
-  DoubleConversion: cde416483dac037923206447da6e1454df403714
+  DoubleConversion: cf9b38bf0b2d048436d9a82ad2abe1404f11e7de
   EXAmplitude: b3ef1ed2ae853bccd08a685d2f0352c603b215fe
   EXAppAuth: 4eceeef2d606a5fd9412dcd8a447885dc625a2e2
   EXApplication: 9ff2a206009d6e55bca6c20b3f33d07986b51ef3
@@ -1279,9 +1279,9 @@ SPEC CHECKSUMS:
   EXNetwork: 6682b2bbbd90e66c4738159abaf8cd206c25e8b8
   EXNotifications: f0d0a38e97c9a790f5fb3c14efab79b9ece83a7e
   EXPermissions: 916efb5b817cb0a40160c0cd2f369af3c23a78be
-  expo-dev-client: 850031ec51581ef37c8b29021aa4b3134e013339
+  expo-dev-client: 85a8d52423aec858c10a977e468aef967e6a64b1
   expo-dev-launcher: c04b363ed79d77cee2c2c656e7c230669bb4bde0
-  expo-dev-menu: 87d86e36a44edb40811658be208eed67e20a7d40
+  expo-dev-menu: 2a8ba15595d6222d3b5e1c0a0e5c88f4c6d6f548
   expo-dev-menu-interface: cca641e9e52dfe688fd24c67795f14d6daea4bb9
   expo-image: 2fded43b1489487d7e84911caaadc821258f4905
   ExpoModulesCore: 2734852616127a6c1fc23012197890a6f3763dc7
@@ -1321,7 +1321,7 @@ SPEC CHECKSUMS:
   Flipper-RSocket: 127954abe8b162fcaf68d2134d34dc2bd7076154
   FlipperKit: 6a68648b412158059f9021b5e61c36bb3086ebc3
   Folly: b73c3869541e86821df3c387eb0af5f65addfab4
-  glog: 40a13f7840415b9a77023fbcae0f1e6f43192af3
+  glog: 73c2498ac6884b13ede40eda8228cb1eee9d9d62
   GoogleAppMeasurement: 0c3b134b2c0a90c4c24833873894bfe0e42a0384
   GoogleDataTransport: 8b0e733ea77c9218778e5a9e34ba9508b8328939
   GoogleMLKit: 6ca2a10de262ee1017b52ac045e8967884ace992
