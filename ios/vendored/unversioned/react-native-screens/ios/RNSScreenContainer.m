@@ -1,26 +1,6 @@
 #import "RNSScreenContainer.h"
 #import "RNSScreen.h"
 
-#import <React/RCTUIManager.h>
-#import <React/RCTUIManagerObserverCoordinator.h>
-#import <React/RCTUIManagerUtils.h>
-
-@interface RNSScreenContainerManager : RCTViewManager
-
-- (void)markUpdated:(RNSScreenContainerView *)screen;
-
-@end
-
-@interface RNSScreenContainerView () <RCTInvalidating>
-
-@property (nonatomic, retain) UIViewController *controller;
-@property (nonatomic, retain) NSMutableSet<RNSScreenView *> *activeScreens;
-@property (nonatomic, retain) NSMutableArray<RNSScreenView *> *reactSubviews;
-
-- (void)updateContainer;
-
-@end
-
 @implementation RNScreensViewController
 
 #if !TARGET_OS_TV
@@ -43,49 +23,51 @@
 {
   return [self findActiveChildVC].supportedInterfaceOrientations;
 }
+#endif
 
 - (UIViewController *)findActiveChildVC
 {
   for (UIViewController *childVC in self.childViewControllers) {
-    if ([childVC isKindOfClass:[RNSScreen class]] && ((RNSScreenView *)((RNSScreen *)childVC.view)).activityState == RNSActivityStateOnTop) {
+    if ([childVC isKindOfClass:[RNSScreen class]] &&
+        ((RNSScreenView *)((RNSScreen *)childVC.view)).activityState == RNSActivityStateOnTop) {
       return childVC;
     }
   }
   return [[self childViewControllers] lastObject];
 }
-#endif
 
 @end
 
 @implementation RNSScreenContainerView {
-  BOOL _needUpdate;
   BOOL _invalidated;
-  __weak RNSScreenContainerManager *_manager;
+  NSMutableSet *_activeScreens;
 }
 
-- (instancetype)initWithManager:(RNSScreenContainerManager *)manager
+- (instancetype)init
 {
   if (self = [super init]) {
     _activeScreens = [NSMutableSet new];
     _reactSubviews = [NSMutableArray new];
-    _controller = [[RNScreensViewController alloc] init];
-    _needUpdate = NO;
+    [self setupController];
     _invalidated = NO;
-    _manager = manager;
-    [self addSubview:_controller.view];
   }
   return self;
 }
 
+- (void)setupController
+{
+  _controller = [[RNScreensViewController alloc] init];
+  [self addSubview:_controller.view];
+}
+
 - (void)markChildUpdated
 {
-  // We want 'updateContainer' to be executed on main thread after all enqueued operations in
-  // uimanager are complete. For that we collect all marked containers in manager class and enqueue
-  // operation on ui thread that should run once all the updates are completed.
-  if (!_needUpdate) {
-    _needUpdate = YES;
-    [_manager markUpdated:self];
-  }
+  // We want the attaching/detaching of children to be always made on main queue, which
+  // is currently true for `react-navigation` since this method is triggered
+  // by the changes of `Animated` value in stack's transition or adding/removing screens
+  // in all navigators
+  RCTAssertMainQueue();
+  [self updateContainer];
 }
 
 - (void)insertReactSubview:(RNSScreenView *)subview atIndex:(NSInteger)atIndex
@@ -111,7 +93,7 @@
   return _controller;
 }
 
-- (UIViewController*)findChildControllerForScreen:(RNSScreenView*)screen
+- (UIViewController *)findChildControllerForScreen:(RNSScreenView *)screen
 {
   for (UIViewController *vc in _controller.childViewControllers) {
     if (vc.view == screen) {
@@ -152,7 +134,6 @@
 
 - (void)updateContainer
 {
-  _needUpdate = NO;
   BOOL screenRemoved = NO;
   // remove screens that are no longer active
   NSMutableSet *orphaned = [NSMutableSet setWithSet:_activeScreens];
@@ -193,14 +174,20 @@
     }
   }
 
-
   for (RNSScreenView *screen in _reactSubviews) {
     if (screen.activityState == RNSActivityStateOnTop) {
       [screen notifyFinishTransitioning];
     }
   }
 
-  if ((screenRemoved || screenAdded) && _controller.presentedViewController == nil && _controller.presentingViewController == nil) {
+  if (screenRemoved || screenAdded) {
+    [self maybeDismissVC];
+  }
+}
+
+- (void)maybeDismissVC
+{
+  if (_controller.presentedViewController == nil && _controller.presentingViewController == nil) {
     // if user has reachability enabled (one hand use) and the window is slided down the below
     // method will force it to slide back up as it is expected to happen with UINavController when
     // we push or pop views.
@@ -245,23 +232,13 @@
 
 @end
 
-
 @implementation RNSScreenContainerManager
 
 RCT_EXPORT_MODULE()
 
 - (UIView *)view
 {
-  return [[RNSScreenContainerView alloc] initWithManager:self];
-}
-
-- (void)markUpdated:(RNSScreenContainerView *)container
-{
-  // we want the attaching/detaching of children to be always made on main queue, which
-  // is currently true for `react-navigation` since the changes of `Animated` value in stack's
-  // transition and mounting/unmounting views in tabs and drawer are dispatched on main queue.
-  RCTAssertMainQueue();
-  [container updateContainer];
+  return [[RNSScreenContainerView alloc] init];
 }
 
 @end
