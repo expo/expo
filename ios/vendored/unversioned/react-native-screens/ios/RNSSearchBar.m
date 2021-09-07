@@ -55,7 +55,7 @@
 - (void)setBarTintColor:(UIColor *)barTintColor
 {
 #if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && defined(__IPHONE_13_0) && \
-    __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_13_0 && !TARGET_OS_TV
+__IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_13_0 && !TARGET_OS_TV
   if (@available(iOS 13.0, *)) {
     [_controller.searchBar.searchTextField setBackgroundColor:barTintColor];
   }
@@ -65,7 +65,7 @@
 - (void)setTextColor:(UIColor *)textColor
 {
 #if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && defined(__IPHONE_13_0) && \
-    __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_13_0 && !TARGET_OS_TV
+__IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_13_0 && !TARGET_OS_TV
   _textColor = textColor;
   if (@available(iOS 13.0, *)) {
     [_controller.searchBar.searchTextField setTextColor:_textColor];
@@ -107,7 +107,7 @@
 - (void)searchBarTextDidBeginEditing:(UISearchBar *)searchBar
 {
 #if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && defined(__IPHONE_13_0) && \
-    __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_13_0 && !TARGET_OS_TV
+__IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_13_0 && !TARGET_OS_TV
   if (@available(iOS 13.0, *)) {
     // for some reason, the color does not change when set at the beginning,
     // so we apply it again here
@@ -116,10 +116,10 @@
     }
   }
 #endif
-
+  
   [self showCancelButton];
   [self becomeFirstResponder];
-
+  
   if (self.onFocus) {
     self.onFocus(@{});
   }
@@ -138,7 +138,7 @@
   if (self.onChangeText) {
     self.onChangeText(@{
       @"text" : _controller.searchBar.text,
-    });
+                      });
   }
 }
 
@@ -147,7 +147,7 @@
   if (self.onSearchButtonPress) {
     self.onSearchButtonPress(@{
       @"text" : _controller.searchBar.text,
-    });
+                             });
   }
 }
 
@@ -157,14 +157,14 @@
   _controller.searchBar.text = @"";
   [self resignFirstResponder];
   [self hideCancelButton];
-
+  
   if (self.onCancelButtonPress) {
     self.onCancelButtonPress(@{});
   }
   if (self.onChangeText) {
     self.onChangeText(@{
       @"text" : _controller.searchBar.text,
-    });
+                      });
   }
 }
 #endif

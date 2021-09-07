@@ -12,10 +12,10 @@
 #import <React/RCTUIManagerUtils.h>
 
 @interface RNSScreenStackView () <
-    UINavigationControllerDelegate,
-    UIAdaptivePresentationControllerDelegate,
-    UIGestureRecognizerDelegate,
-    UIViewControllerTransitioningDelegate>
+UINavigationControllerDelegate,
+UIAdaptivePresentationControllerDelegate,
+UIGestureRecognizerDelegate,
+UIViewControllerTransitioningDelegate>
 
 @property (nonatomic) NSMutableArray<UIViewController *> *presentedModals;
 @property (nonatomic) BOOL updatingModals;
@@ -84,7 +84,7 @@
     _presentedModals = [NSMutableArray new];
     _controller = [[RNScreensNavigationController alloc] init];
     _controller.delegate = self;
-
+    
 #if !TARGET_OS_TV
     [self setupGestureHandlers];
 #endif
@@ -266,25 +266,25 @@
     _scheduleModalsUpdate = YES;
     return;
   }
-
+  
   // when there is no change we return immediately. This check is important because sometime we may
   // accidently trigger modal dismiss if we don't verify to run the below code only when an actual
   // change in the list of presented modal was made.
   if ([_presentedModals isEqualToArray:controllers]) {
     return;
   }
-
+  
   // if view controller is not yet attached to window we skip updates now and run them when view
   // is attached
   if (self.window == nil && _presentedModals.lastObject.view.window == nil) {
     return;
   }
-
+  
   _updatingModals = YES;
-
+  
   NSMutableArray<UIViewController *> *newControllers = [NSMutableArray arrayWithArray:controllers];
   [newControllers removeObjectsInArray:_presentedModals];
-
+  
   // find bottom-most controller that should stay on the stack for the duration of transition
   NSUInteger changeRootIndex = 0;
   UIViewController *changeRootController = _controller;
@@ -296,7 +296,7 @@
       break;
     }
   }
-
+  
   // we verify that controllers added on top of changeRootIndex are all new. Unfortunately modal
   // VCs cannot be reshuffled (there are some visual glitches when we try to dismiss then show as
   // even non-animated dismissal has delay and updates the screen several times)
@@ -305,9 +305,9 @@
       RCTAssert(false, @"Modally presented controllers are being reshuffled, this is not allowed");
     }
   }
-
+  
   __weak RNSScreenStackView *weakSelf = self;
-
+  
   void (^afterTransitions)(void) = ^{
     if (weakSelf.onFinishTransitioning) {
       weakSelf.onFinishTransitioning(nil);
@@ -324,14 +324,14 @@
     // neither `viewWillAppear` nor `presentationControllerDidDismiss` are called, same for status bar.
     [RNSScreenWindowTraits updateWindowTraits];
   };
-
+  
   void (^finish)(void) = ^{
     NSUInteger oldCount = weakSelf.presentedModals.count;
     if (changeRootIndex < oldCount) {
       [weakSelf.presentedModals removeObjectsInRange:NSMakeRange(changeRootIndex, oldCount - changeRootIndex)];
     }
     BOOL isAttached =
-        changeRootController.parentViewController != nil || changeRootController.presentingViewController != nil;
+    changeRootController.parentViewController != nil || changeRootController.presentingViewController != nil;
     if (!isAttached || changeRootIndex >= controllers.count) {
       // if change controller view is not attached, presenting modals will silently fail on iOS.
       // In such a case we trigger controllers update from didMoveToWindow.
@@ -344,38 +344,38 @@
       for (NSUInteger i = changeRootIndex; i < controllers.count; i++) {
         UIViewController *next = controllers[i];
         BOOL lastModal = (i == controllers.count - 1);
-
+        
 #if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && defined(__IPHONE_13_0) && \
-    __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_13_0
+__IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_13_0
         if (@available(iOS 13.0, tvOS 13.0, *)) {
           // Inherit UI style from its parent - solves an issue with incorrect style being applied to some UIKit views
           // like date picker or segmented control.
           next.overrideUserInterfaceStyle = self->_controller.overrideUserInterfaceStyle;
         }
 #endif
-
+        
         BOOL shouldAnimate = lastModal && [next isKindOfClass:[RNSScreen class]] &&
-            ((RNSScreenView *)next.view).stackAnimation != RNSScreenStackAnimationNone;
-
+        ((RNSScreenView *)next.view).stackAnimation != RNSScreenStackAnimationNone;
+        
         [previous presentViewController:next
                                animated:shouldAnimate
                              completion:^{
-                               [weakSelf.presentedModals addObject:next];
-                               if (lastModal) {
-                                 afterTransitions();
-                               };
-                             }];
+          [weakSelf.presentedModals addObject:next];
+          if (lastModal) {
+            afterTransitions();
+          };
+        }];
         previous = next;
       }
     }
   };
-
+  
   if (changeRootController.presentedViewController != nil &&
       [_presentedModals containsObject:changeRootController.presentedViewController]) {
     BOOL shouldAnimate = changeRootIndex == controllers.count &&
-        [changeRootController.presentedViewController isKindOfClass:[RNSScreen class]] &&
-        ((RNSScreenView *)changeRootController.presentedViewController.view).stackAnimation !=
-            RNSScreenStackAnimationNone;
+    [changeRootController.presentedViewController isKindOfClass:[RNSScreen class]] &&
+    ((RNSScreenView *)changeRootController.presentedViewController.view).stackAnimation !=
+    RNSScreenStackAnimationNone;
     [changeRootController dismissViewControllerAnimated:shouldAnimate completion:finish];
   } else {
     finish();
@@ -388,7 +388,7 @@
   if ([_controller.viewControllers isEqualToArray:controllers]) {
     return;
   }
-
+  
   // if view controller is not yet attached to window we skip updates now and run them when view
   // is attached
   if (self.window == nil) {
@@ -405,28 +405,28 @@
       _updateScheduled = YES;
       __weak RNSScreenStackView *weakSelf = self;
       [_controller.transitionCoordinator
-          animateAlongsideTransition:^(id<UIViewControllerTransitionCoordinatorContext> _Nonnull context) {
-            // do nothing here, we only want to be notified when transition is complete
-          }
-          completion:^(id<UIViewControllerTransitionCoordinatorContext> _Nonnull context) {
-            self->_updateScheduled = NO;
-            [weakSelf updateContainer];
-          }];
+       animateAlongsideTransition:^(id<UIViewControllerTransitionCoordinatorContext> _Nonnull context) {
+        // do nothing here, we only want to be notified when transition is complete
+      }
+       completion:^(id<UIViewControllerTransitionCoordinatorContext> _Nonnull context) {
+        self->_updateScheduled = NO;
+        [weakSelf updateContainer];
+      }];
     }
     return;
   }
-
+  
   UIViewController *top = controllers.lastObject;
   UIViewController *lastTop = _controller.viewControllers.lastObject;
-
+  
   // at the start we set viewControllers to contain a single UIVIewController
   // instance. This is a workaround for header height adjustment bug (see comment
   // in the init function). Here, we need to detect if the initial empty
   // controller is still there
   BOOL firstTimePush = ![lastTop isKindOfClass:[RNSScreen class]];
-
+  
   BOOL shouldAnimate = !firstTimePush && ((RNSScreenView *)lastTop.view).stackAnimation != RNSScreenStackAnimationNone;
-
+  
   if (firstTimePush) {
     // nothing pushed yet
     [_controller setViewControllers:controllers animated:NO];
@@ -484,7 +484,7 @@
       }
     }
   }
-
+  
   [self setPushViewControllers:pushControllers];
   [self setModalViewControllers:modalControllers];
 }
@@ -554,11 +554,11 @@
 - (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer
 {
   RNSScreenView *topScreen = (RNSScreenView *)_controller.viewControllers.lastObject.view;
-
+  
   if (!topScreen.gestureEnabled || _controller.viewControllers.count < 2) {
     return NO;
   }
-
+  
 #if TARGET_OS_TV
   [self cancelTouchesInParent];
   return YES;
@@ -573,15 +573,15 @@
     }
     return NO;
   }
-
+  
   if (topScreen.customAnimationOnSwipe && [RNSScreenStackAnimator isCustomAnimation:topScreen.stackAnimation]) {
     if ([gestureRecognizer isKindOfClass:[RNSScreenEdgeGestureRecognizer class]]) {
       // if we do not set any explicit `semanticContentAttribute`, it is `UISemanticContentAttributeUnspecified` instead
       // of `UISemanticContentAttributeForceLeftToRight`, so we just check if it is RTL or not
       BOOL isCorrectEdge = (_controller.view.semanticContentAttribute == UISemanticContentAttributeForceRightToLeft &&
                             ((RNSScreenEdgeGestureRecognizer *)gestureRecognizer).edges == UIRectEdgeRight) ||
-          (_controller.view.semanticContentAttribute != UISemanticContentAttributeForceRightToLeft &&
-           ((RNSScreenEdgeGestureRecognizer *)gestureRecognizer).edges == UIRectEdgeLeft);
+      (_controller.view.semanticContentAttribute != UISemanticContentAttributeForceRightToLeft &&
+       ((RNSScreenEdgeGestureRecognizer *)gestureRecognizer).edges == UIRectEdgeLeft);
       if (isCorrectEdge) {
         [self cancelTouchesInParent];
         return YES;
@@ -607,17 +607,17 @@
 {
   // gesture recognizers for custom stack animations
   RNSScreenEdgeGestureRecognizer *leftEdgeSwipeGestureRecognizer =
-      [[RNSScreenEdgeGestureRecognizer alloc] initWithTarget:self action:@selector(handleSwipe:)];
+  [[RNSScreenEdgeGestureRecognizer alloc] initWithTarget:self action:@selector(handleSwipe:)];
   leftEdgeSwipeGestureRecognizer.edges = UIRectEdgeLeft;
   leftEdgeSwipeGestureRecognizer.delegate = self;
   [self addGestureRecognizer:leftEdgeSwipeGestureRecognizer];
-
+  
   RNSScreenEdgeGestureRecognizer *rightEdgeSwipeGestureRecognizer =
-      [[RNSScreenEdgeGestureRecognizer alloc] initWithTarget:self action:@selector(handleSwipe:)];
+  [[RNSScreenEdgeGestureRecognizer alloc] initWithTarget:self action:@selector(handleSwipe:)];
   rightEdgeSwipeGestureRecognizer.edges = UIRectEdgeRight;
   rightEdgeSwipeGestureRecognizer.delegate = self;
   [self addGestureRecognizer:rightEdgeSwipeGestureRecognizer];
-
+  
   // gesture recognizer for full width swipe gesture
   RNSPanGestureRecognizer *panRecognizer = [[RNSPanGestureRecognizer alloc] initWithTarget:self
                                                                                     action:@selector(handleSwipe:)];
@@ -635,26 +635,26 @@
     translation = -translation;
     velocity = -velocity;
   }
-
+  
   float transitionProgress = (translation / distance);
-
+  
   switch (gestureRecognizer.state) {
     case UIGestureRecognizerStateBegan: {
       _interactionController = [UIPercentDrivenInteractiveTransition new];
       [_controller popViewControllerAnimated:YES];
       break;
     }
-
+      
     case UIGestureRecognizerStateChanged: {
       [_interactionController updateInteractiveTransition:transitionProgress];
       break;
     }
-
+      
     case UIGestureRecognizerStateCancelled: {
       [_interactionController cancelInteractiveTransition];
       break;
     }
-
+      
     case UIGestureRecognizerStateEnded: {
       // values taken from
       // https://github.com/react-navigation/react-navigation/blob/54739828598d7072c1bf7b369659e3682db3edc5/packages/stack/src/views/Stack/Card.tsx#L316
@@ -675,13 +675,13 @@
 
 - (id<UIViewControllerInteractiveTransitioning>)navigationController:(UINavigationController *)navigationController
                          interactionControllerForAnimationController:
-                             (id<UIViewControllerAnimatedTransitioning>)animationController
+(id<UIViewControllerAnimatedTransitioning>)animationController
 {
   return _interactionController;
 }
 
 - (id<UIViewControllerInteractiveTransitioning>)interactionControllerForDismissal:
-    (id<UIViewControllerAnimatedTransitioning>)animator
+(id<UIViewControllerAnimatedTransitioning>)animator
 {
   return _interactionController;
 }
