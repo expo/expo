@@ -85,7 +85,8 @@ const renderTypePropertyRow = ({
           <>
             <br />
             <br />
-            <ReactMarkdown components={mdInlineComponents}>{`__Default:__ ${initValue}`}</ReactMarkdown>
+            <ReactMarkdown
+              components={mdInlineComponents}>{`__Default:__ ${initValue}`}</ReactMarkdown>
           </>
         ) : null}
       </td>
