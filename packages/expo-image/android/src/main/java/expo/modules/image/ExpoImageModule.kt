@@ -63,11 +63,12 @@ class ExpoImageModule(val context: ReactApplicationContext) : ReactContextBaseJa
       val resultMap = WritableNativeMap()
       urls.toArrayList()
         .filterIsInstance<String>()
-        .map { url -> async {
-          val isInDiskCache = isInCache(url, ImageCacheType.DISK)
-          val isInMemoryCache = isInCache(url, ImageCacheType.MEMORY)
-          Triple(url, isInDiskCache, isInMemoryCache)
-        }
+        .map { url ->
+          async {
+            val isInDiskCache = isInCache(url, ImageCacheType.DISK)
+            val isInMemoryCache = isInCache(url, ImageCacheType.MEMORY)
+            Triple(url, isInDiskCache, isInMemoryCache)
+          }
         }
         .awaitAll()
         .filter {
