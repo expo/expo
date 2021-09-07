@@ -11,15 +11,15 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runInterruptible
 
 /**
- * Converts blocking java.util.concurrent.Future result into non-blocking suspend function.
+ * Converts blocking [java.util.concurrent.Future] result into non-blocking suspend function.
  */
 internal suspend fun <T> FutureTarget<T>.awaitGet(): T = runInterruptible(Dispatchers.IO) { get() }
 
 /**
- * Converts `Drawable` to `BitmapDrawable`
- * Supported drawable types: `PictureDrawable`, `BitmapDrawable`
+ * Converts [Drawable] to [BitmapDrawable]
+ * Supported drawable types: [PictureDrawable], [BitmapDrawable]
  * @param appResources Android application's resources
- * @throws IllegalArgumentException when given `Drawable` is not convertible into bitmap
+ * @throws IllegalArgumentException when conversion of given [Drawable] is not supported
  */
 internal fun Drawable.toBitmapDrawable(appResources: Resources): BitmapDrawable =
   when (this) {
