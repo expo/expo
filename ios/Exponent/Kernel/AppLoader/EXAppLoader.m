@@ -13,6 +13,7 @@
 #import "EXKernelAppRegistry.h"
 #import "EXKernelLinkingManager.h"
 #import "EXManifestResource.h"
+#import <EXManifests/EXManifestsManifestFactory.h>
 
 #import <React/RCTUtils.h>
 
@@ -417,7 +418,7 @@ NSTimeInterval const kEXJSBundleTimeout = 60 * 5;
     }
     mutableManifestJSON[@"loadedFromCache"] = @(loadedFromCache);
 
-    success([EXUpdatesUpdate manifestForManifestJSON:[NSDictionary dictionaryWithDictionary:mutableManifestJSON]]);
+    success([EXManifestsManifestFactory manifestForManifestJSON:[NSDictionary dictionaryWithDictionary:mutableManifestJSON]]);
   } errorBlock:^(NSError * _Nonnull error) {
 #if DEBUG
     if ([EXEnvironment sharedEnvironment].isDetached && error &&

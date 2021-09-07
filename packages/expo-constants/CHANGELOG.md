@@ -20,11 +20,19 @@
 
 ### 💡 Others
 
-- Skip running build scripts during iOS debug builds and add support for `SKIP_BUNDLING`/`FORCE_BUNDLING` environment variables. ([#14116](https://github.com/expo/expo/pull/14116) by [@fson](https://github.com/fson))
-
 ### ⚠️ Notices
 
 - Modularized expo-constants without further app setup. ([#13424](https://github.com/expo/expo/pull/13424) by [@kudo](https://github.com/kudo))
+
+## 11.0.2 — 2021-09-02
+
+### 💡 Others
+
+- Skip running build scripts during iOS debug builds and add support for `SKIP_BUNDLING`/`FORCE_BUNDLING` environment variables. ([#14116](https://github.com/expo/expo/pull/14116) by [@fson](https://github.com/fson))
+
+## 11.0.1 — 2021-06-22
+
+_This version does not introduce any user-facing changes._
 
 ## 11.0.0 — 2021-06-16
 

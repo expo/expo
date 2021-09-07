@@ -14,6 +14,7 @@ import android.text.format.DateUtils
 import androidx.core.app.NotificationCompat
 import de.greenrobot.event.EventBus
 import expo.modules.core.errors.InvalidArgumentException
+import expo.modules.jsonutils.getNullable
 import expo.modules.manifests.core.Manifest
 import host.exp.exponent.Constants
 import host.exp.exponent.ExponentManifest
@@ -52,7 +53,7 @@ object NotificationHelper {
     manifest: Manifest,
     exponentManifest: ExponentManifest
   ): Int {
-    val colorStringLocal = colorString ?: manifest.getNotificationPreferences()?.optString(ExponentManifest.MANIFEST_NOTIFICATION_COLOR_KEY)
+    val colorStringLocal = colorString ?: manifest.getNotificationPreferences()?.getNullable(ExponentManifest.MANIFEST_NOTIFICATION_COLOR_KEY)
     return if (colorString != null && ColorParser.isValid(colorStringLocal)) {
       Color.parseColor(colorString)
     } else {
@@ -71,11 +72,7 @@ object NotificationHelper {
     if (url == null) {
       iconUrl = manifest.getIconUrl()
       if (notificationPreferences != null) {
-        iconUrl = if (notificationPreferences.has(ExponentManifest.MANIFEST_NOTIFICATION_ICON_URL_KEY)) {
-          notificationPreferences.optString(ExponentManifest.MANIFEST_NOTIFICATION_ICON_URL_KEY)
-        } else {
-          null
-        }
+        iconUrl = notificationPreferences.getNullable(ExponentManifest.MANIFEST_NOTIFICATION_ICON_URL_KEY)
       }
     } else {
       iconUrl = url
@@ -85,8 +82,9 @@ object NotificationHelper {
   }
 
   @JvmStatic fun getPushNotificationToken(
-    deviceId: String?,
+    deviceId: String,
     experienceId: String?,
+    projectId: String?,
     exponentNetwork: ExponentNetwork,
     exponentSharedPreferences: ExponentSharedPreferences,
     listener: TokenListener
@@ -116,11 +114,23 @@ object NotificationHelper {
           val params = JSONObject().apply {
             try {
               put("deviceId", deviceId)
-              put("experienceId", experienceId)
               put("appId", exponentSharedPreferences.context.applicationContext.packageName)
               put("deviceToken", sharedPreferencesToken)
               put("type", "fcm")
               put("development", false)
+
+              when {
+                projectId !== null -> {
+                  put("projectId", projectId)
+                }
+                experienceId !== null -> {
+                  put("experienceId", experienceId)
+                }
+                else -> {
+                  listener.onFailure(Exception("Must supply either experienceId or projectId"))
+                  return
+                }
+              }
             } catch (e: JSONException) {
               listener.onFailure(Exception("Error constructing request"))
               return@execute
@@ -224,21 +234,9 @@ object NotificationHelper {
     try {
       // we want to throw immediately if there is no channel name
       val channelName = details.getString(NotificationConstants.NOTIFICATION_CHANNEL_NAME)
-      val description: String? = if (!details.isNull(NotificationConstants.NOTIFICATION_CHANNEL_DESCRIPTION)) {
-        details.optString(NotificationConstants.NOTIFICATION_CHANNEL_DESCRIPTION)
-      } else {
-        null
-      }
-      val priority: String? = if (!details.isNull(NotificationConstants.NOTIFICATION_CHANNEL_PRIORITY)) {
-        details.optString(NotificationConstants.NOTIFICATION_CHANNEL_PRIORITY)
-      } else {
-        null
-      }
-      val sound: Boolean? = if (!details.isNull(NotificationConstants.NOTIFICATION_CHANNEL_SOUND)) {
-        details.optBoolean(NotificationConstants.NOTIFICATION_CHANNEL_SOUND)
-      } else {
-        null
-      }
+      val description: String? = details.getNullable(NotificationConstants.NOTIFICATION_CHANNEL_DESCRIPTION)
+      val priority: String? = details.getNullable(NotificationConstants.NOTIFICATION_CHANNEL_PRIORITY)
+      val sound: Boolean? = details.getNullable(NotificationConstants.NOTIFICATION_CHANNEL_SOUND)
       val badge: Boolean? = if (!details.isNull(NotificationConstants.NOTIFICATION_CHANNEL_BADGE)) {
         details.optBoolean(NotificationConstants.NOTIFICATION_CHANNEL_BADGE, true)
       } else {
@@ -421,7 +419,7 @@ object NotificationHelper {
                       builder.setDefaults(NotificationCompat.DEFAULT_SOUND)
                     }
 
-                    builder.priority = when (storedChannelDetails.optString(NotificationConstants.NOTIFICATION_CHANNEL_PRIORITY)) {
+                    builder.priority = when (storedChannelDetails.getNullable<String>(NotificationConstants.NOTIFICATION_CHANNEL_PRIORITY)) {
                       "max" -> NotificationCompat.PRIORITY_MAX
                       "high" -> NotificationCompat.PRIORITY_HIGH
                       "low" -> NotificationCompat.PRIORITY_LOW

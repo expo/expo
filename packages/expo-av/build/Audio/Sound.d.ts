@@ -1,5 +1,5 @@
 import { EventEmitter } from 'expo-modules-core';
-import { Playback, AVPlaybackSource, AVPlaybackStatus, AVPlaybackStatusToSet } from '../AV';
+import { Playback, AVPlaybackSource, AVMetadata, AVPlaybackStatus, AVPlaybackStatusToSet } from '../AV';
 import { PitchCorrectionQuality } from '../Audio';
 declare type AudioInstance = number | HTMLMediaElement | null;
 export declare class Sound implements Playback {
@@ -14,6 +14,7 @@ export declare class Sound implements Playback {
     _eventEmitter: EventEmitter;
     _coalesceStatusUpdatesInMillis: number;
     _onPlaybackStatusUpdate: ((status: AVPlaybackStatus) => void) | null;
+    _onMetadataUpdate: ((metadata: AVMetadata) => void) | null;
     /** @deprecated Use `Sound.createAsync()` instead */
     static create: (source: AVPlaybackSource, initialStatus?: AVPlaybackStatusToSet, onPlaybackStatusUpdate?: ((status: AVPlaybackStatus) => void) | null, downloadFirst?: boolean) => Promise<{
         sound: Sound;
@@ -29,6 +30,10 @@ export declare class Sound implements Playback {
         key: AudioInstance;
         status: AVPlaybackStatus;
     }) => void;
+    _internalMetadataUpdateCallback: ({ key, metadata, }: {
+        key: AudioInstance;
+        metadata: AVMetadata;
+    }) => void;
     _internalErrorCallback: ({ key, error }: {
         key: AudioInstance;
         error: string;
@@ -38,6 +43,7 @@ export declare class Sound implements Playback {
     _errorCallback: (error: string) => void;
     getStatusAsync: () => Promise<AVPlaybackStatus>;
     setOnPlaybackStatusUpdate(onPlaybackStatusUpdate: ((status: AVPlaybackStatus) => void) | null): void;
+    setOnMetadataUpdate(onMetadataUpdate: (AVMetadata: any) => void): void;
     loadAsync(source: AVPlaybackSource, initialStatus?: AVPlaybackStatusToSet, downloadFirst?: boolean): Promise<AVPlaybackStatus>;
     unloadAsync(): Promise<AVPlaybackStatus>;
     setStatusAsync(status: AVPlaybackStatusToSet): Promise<AVPlaybackStatus>;

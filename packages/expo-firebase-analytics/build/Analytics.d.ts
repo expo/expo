@@ -26,25 +26,31 @@ export { default as FirebaseAnalyticsJS } from './FirebaseAnalyticsJS';
  * - `session_start`
  * - `user_engagement`
  *
- * @param name The name of the event. Should contain 1 to 40 alphanumeric characters or
- *     underscores. The name must start with an alphabetic character. Some event names are
- *     reserved. The "firebase_",
- *     "google_", and "ga_" prefixes are reserved and should not be used. Note that event names are
- *     case-sensitive and that logging two events whose names differ only in case will result in
- *     two distinct events.
- * @param parameters The dictionary of event parameters. Passing `undefined` indicates that the event has
- *     no parameters. Parameter names can be up to 40 characters long and must start with an
- *     alphabetic character and contain only alphanumeric characters and underscores. Only `String`
- *     and `Number` (signed 64-bit integer and 64-bit floating-point number) parameter types are
- *     supported. `String` parameter values can be up to 100 characters long. The "firebase_",
- *     "google_", and "ga_" prefixes are reserved and should not be used for parameter names.
+ * # Example
+ * ```ts
+ * await Analytics.logEvent('ButtonTapped', {
+ *   name: 'settings',
+ *   screen: 'profile',
+ *   purpose: 'Opens the internal settings',
+ * });
+ * ```
+ *
+ * @param name The name of the event. Should contain 1 to 40 alphanumeric characters or underscores.
+ * The name must start with an alphabetic character. Some event names are  reserved. The `firebase_`,
+ * `google_`, and `ga_` prefixes are reserved and should not be used. Note that event names are
+ * case-sensitive and that logging two events whose names differ only in case will result in two
+ * distinct events.
+ * @param properties The dictionary of event parameters. Passing `undefined` indicates that the
+ * event has no parameters. Parameter names can be up to 40 characters long and must start with an
+ * alphabetic character and contain only alphanumeric characters and underscores. Only `String` and
+ * `Number` (signed 64-bit integer and 64-bit floating-point number) parameter types are supported.
+ * `String` parameter values can be up to 100 characters long. The `firebase_`,  `google_`, and
+ * `ga_` prefixes are reserved and should not be used for parameter names.
  */
-export declare function logEvent(name: string, properties?: {
-    [key: string]: any;
-}): Promise<void>;
+export declare function logEvent(name: string, properties?: Record<string, any>): Promise<void>;
 /**
  * Sets whether analytics collection is enabled for this app on this device. This setting is
- * persisted across app sessions. By default it is enabled.
+ * persisted across app sessions. __By default it is enabled__.
  *
  * @param isEnabled A flag that enables or disables Analytics collection.
  */
@@ -53,11 +59,11 @@ export declare function setAnalyticsCollectionEnabled(isEnabled: boolean): Promi
  * Sets the current screen name, which specifies the current visual context in your app. This helps
  * identify the areas in your app where users spend their time and how they interact with your app.
  *
- * @param screenName The name of the current screen. Should contain 1 to 100 characters. Set to `undefined`
- *     to clear the current screen name.
+ * @param screenName The name of the current screen. Should contain 1 to 100 characters. Set to
+ * `undefined` to clear the current screen name.
  * @param screenClassOverride The name of the screen class. Should contain 1 to 100 characters. By
- *     default this is the class name of the current screen (UIViewController on iOS). Set to `undefined` to revert to the
- *     default class name.
+ * default this is the class name of the current screen (UIViewController on iOS). Set to
+ * `undefined` to revert to the default class name.
  */
 export declare function setCurrentScreen(screenName?: string, screenClassOverride?: string): Promise<void>;
 /**
@@ -65,15 +71,14 @@ export declare function setCurrentScreen(screenName?: string, screenClassOverrid
  * value is 1800000 milliseconds (30 minutes).
  *
  * @param sessionTimeoutInterval The custom time of inactivity in milliseconds before the current
- *     session terminates.
+ * session terminates.
  */
 export declare function setSessionTimeoutDuration(sessionTimeoutInterval: number): Promise<void>;
 /**
- * Sets the user ID property. This feature must be used in accordance with
- * [Google's Privacy Policy](https://www.google.com/policies/privacy)
+ * Sets the user ID property. This feature must be used in accordance with [Google's Privacy Policy](https://www.google.com/policies/privacy)
  *
- * @param userID The user ID to ascribe to the user of this app on this device, which must be
- *     non-empty and no more than 256 characters long. Setting userID to null removes the user ID.
+ * @param userId The user ID to ascribe to the user of this app on this device, which must be
+ * non-empty and no more than 256 characters long. Setting userID to null removes the user ID.
  */
 export declare function setUserId(userId: string | null): Promise<void>;
 /**
@@ -81,16 +86,20 @@ export declare function setUserId(userId: string | null): Promise<void>;
  * user property values persist throughout the app life-cycle and across sessions.
  *
  * The following user property names are reserved and cannot be used:
- *
  * - `first_open_time`
  * - `last_deep_link_referrer`
  * - `user_id`
  *
+ * # Example
+ * ```ts
+ * await Analytics.setUserProperty('favorite_batmobile', '1989 Burton-mobile');
+ * ```
+ *
  * @param name The name of the user property to set. Should contain 1 to 24 alphanumeric characters
- *     or underscores and must start with an alphabetic character. The "firebase_", "google_", and
- *     "ga_" prefixes are reserved and should not be used for user property names.
+ * or underscores and must start with an alphabetic character. The `firebase_`, `google_`, and
+ * `ga_` prefixes are reserved and should not be used for user property names.
  * @param value The value of the user property. Values can be up to 36 characters long. Setting the
- *     value to null removes the user property.
+ * value to null removes the user property.
  */
 export declare function setUserProperty(name: string, value: string | null): Promise<void>;
 /**
@@ -100,40 +109,44 @@ export declare function resetAnalyticsData(): Promise<void>;
 /**
  * Sets multiple user properties to the supplied values.
  *
- * @param properties key/value set of user properties
- */
-export declare function setUserProperties(properties: {
-    [key: string]: string | null;
-}): Promise<void>;
-/**
- * Enables or disables the warning and log messages when using
- * Firebase Analytics on the Expo client.
+ * # Example
+ * ```ts
+ * await Analytics.setUserProperties({
+ *   loves_expo: 'a lot',
+ * });
+ * ```
  *
- * Firebase Analytics is not available on the Expo client and therefore
- * logs the requests to the console for development purposes. To test
- * Firebase Analytics, create a standalone build or custom client.
- * Use this function to suppress the warning and log messages.
+ * @param properties Key/value set of user properties. Values can be up to 36 characters long.
+ * Setting the value to null removes the user property.
+ */
+export declare function setUserProperties(properties: Record<string, string | null>): Promise<void>;
+/**
+ * Enables or disables the warning and log messages when using Firebase Analytics on the Expo client.
+ *
+ * Firebase Analytics is not available on the Expo client and therefore logs the requests to the
+ * console for development purposes. To test Firebase Analytics, create a standalone build or custom
+ * client. Use this function to suppress the warning and log messages.
  *
  * @param isEnabled A flag that enables or disables unavailability logging.
  */
 export declare function setUnavailabilityLogging(isEnabled: boolean): void;
 /**
- * In Expo Go, sets the clientId to the given value for the current session.
+ * __Expo Go Only.__ Sets the clientId to the given value. For best results, set this value before
+ * calling any other functions on this module.
  *
- * By default, the clientId is set to `Constants.installationId` in Expo Go,
- * which is deprecated and will be removed in SDK 44. At that time, this method
- * will need to be used to set the `clientId` when using Expo Go.
+ * By default, the clientId is set to `Constants.installationId` in Expo Go, which is deprecated and
+ * will be removed in SDK 44. At that time, this method will need to be used to set the `clientId`
+ * when using Expo Go.
  *
- * @param clientId UUIDv4 string value to set for the current session in Expo Go
+ * @param clientId UUIDv4 string value to set for the current session in Expo Go.
  */
 export declare function setClientId(clientId: string): void;
 /**
- * Enables or disabled debug mode on the Expo client, so events can
+ * __Expo Go Only.__ Enables or disabled debug mode on the Expo client, so events can
  * be tracked using the [DebugView in the Analytics dashboard](https://firebase.google.com/docs/analytics/debugview#reporting).
  *
- * This option is only available on the standard Expo client.
- * When using a standalone build, the bare workflow or web, use the
- * [natively available options](https://firebase.google.com/docs/analytics/debugview).
+ * This option is only available in Expo Go. When using a custom development app, a standalone app, the
+ * bare workflow or web, use the [natively available options](https://firebase.google.com/docs/analytics/debugview).
  *
  * @param isEnabled A flag that enables or disables debug mode.
  */

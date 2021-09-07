@@ -15,10 +15,15 @@ ABI41_0_0EX_DEFINE_SCOPED_MODULE_GETTER(ABI41_0_0EXUtil, util)
 
 ABI41_0_0EX_EXPORT_SCOPED_MODULE(ExponentUtil, UtilService);
 
-- (instancetype)initWithExperienceStableLegacyId:(NSString *)experienceStableLegacyId scopeKey:(NSString *)scopeKey kernelServiceDelegate:(id<ABI41_0_0EXUtilService>)kernelServiceInstance params:(NSDictionary *)params
+- (instancetype)initWithExperienceStableLegacyId:(NSString *)experienceStableLegacyId
+                                        scopeKey:(NSString *)scopeKey
+                                    easProjectId:(NSString *)easProjectId
+                           kernelServiceDelegate:(id<ABI41_0_0EXUtilService>)kernelServiceInstance
+                                          params:(NSDictionary *)params
 {
   if (self = [super initWithExperienceStableLegacyId:experienceStableLegacyId
-                                  scopeKey:scopeKey
+                                            scopeKey:scopeKey
+                                        easProjectId:easProjectId
                                kernelServiceDelegate:kernelServiceInstance
                                               params:params]) {
     _kernelUtilService = kernelServiceInstance;

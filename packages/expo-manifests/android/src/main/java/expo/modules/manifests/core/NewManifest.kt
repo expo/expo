@@ -15,11 +15,7 @@ class NewManifest(json: JSONObject) : Manifest(json) {
   @Throws(JSONException::class)
   fun getID(): String = json.require("id")
 
-  /**
-   * Incorrect for now until we figure out how to get this in the new manifest format.
-   */
-  @Throws(JSONException::class)
-  override fun getStableLegacyID(): String = getID()
+  override fun getStableLegacyID(): String? = null
 
   @Throws(JSONException::class)
   override fun getScopeKey(): String {

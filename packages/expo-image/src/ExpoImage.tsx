@@ -26,6 +26,7 @@ export default function ExpoImage({
   ...props
 }: ImageProps) {
   const resolvedSource = Image.resolveAssetSource(source ?? {});
+  const resolvedDefaultSource = Image.resolveAssetSource(defaultSource ?? {});
   const resolvedStyle = StyleSheet.flatten([style]);
   const resolvedPlaceholder = Image.resolveAssetSource(
     defaultSource ?? loadingIndicatorSource ?? {}

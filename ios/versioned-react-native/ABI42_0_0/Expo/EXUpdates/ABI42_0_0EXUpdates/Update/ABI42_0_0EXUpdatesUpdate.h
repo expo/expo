@@ -57,8 +57,6 @@ typedef NS_ENUM(NSInteger, ABI42_0_0EXUpdatesUpdateStatus) {
                                     config:(ABI42_0_0EXUpdatesConfig *)config
                                   database:(nullable ABI42_0_0EXUpdatesDatabase *)database;
 
-+ (ABI42_0_0EXManifestsManifest *)manifestForManifestJSON:(NSDictionary *)manifestJSON;
-
 @end
 
 NS_ASSUME_NONNULL_END

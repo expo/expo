@@ -15,7 +15,7 @@ export default function ProfileScreen({
 }: StackScreenProps<AllStackRoutes, 'Profile'>) {
   const { isAuthenticated } = useSelector(
     React.useCallback(
-      data => {
+      (data) => {
         const isAuthenticated = isUserAuthenticated(data.session);
         return {
           isAuthenticated,
@@ -41,10 +41,10 @@ function ProfileView(
       setViewerUsername(null);
     } else {
       getViewerUsernameAsync().then(
-        viewerUsername => {
+        (viewerUsername) => {
           setViewerUsername(viewerUsername);
         },
-        error => {
+        (error) => {
           setViewerUsername(null);
           console.warn(`There was an error fetching the viewer's username`, error);
         }

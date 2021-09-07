@@ -2,9 +2,9 @@ import gql from 'graphql-tag';
 import { v4 as uuidv4 } from 'uuid';
 
 jest.mock('@react-native-async-storage/async-storage', () => ({
-  setItem: jest.fn(() => new Promise(resolve => resolve(null))),
-  getItem: jest.fn(() => new Promise(resolve => resolve(null))),
-  removeItem: jest.fn(() => new Promise(resolve => resolve(null))),
+  setItem: jest.fn(() => new Promise((resolve) => resolve(null))),
+  getItem: jest.fn(() => new Promise((resolve) => resolve(null))),
+  removeItem: jest.fn(() => new Promise((resolve) => resolve(null))),
 }));
 
 describe('User Authentication Flow', () => {

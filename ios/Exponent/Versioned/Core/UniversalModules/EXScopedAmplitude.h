@@ -7,7 +7,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface EXScopedAmplitude : EXAmplitude
 
-- (instancetype)initWithExperienceStableLegacyId:(NSString *)experienceStableLegacyId;
+- (instancetype)initWithScopeKey:(NSString *)scopeKey;
 
 @end
 

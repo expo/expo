@@ -62,7 +62,7 @@ class DevLauncherController private constructor()
   private val lifecycle: DevLauncherLifecycle by inject()
   private val pendingIntentRegistry: DevLauncherIntentRegistryInterface by inject()
   val internalUpdatesInterface: UpdatesInterface? by optInject()
-  private var devMenuManager: DevMenuManagerInterface? = null
+  var devMenuManager: DevMenuManagerInterface? = null
   override var updatesInterface: UpdatesInterface?
     get() = internalUpdatesInterface
     set(value) = DevLauncherKoinContext.app.koin.loadModules(listOf(module {
@@ -74,8 +74,11 @@ class DevLauncherController private constructor()
   private val recentlyOpedAppsRegistry = DevLauncherRecentlyOpenedAppsRegistry(context)
   override var manifest: DevLauncherManifest? = null
     private set
+  override var manifestURL: Uri? = null
+    private set
   override var latestLoadedApp: Uri? = null
   override var useDeveloperSupport = true
+  var canLaunchDevMenuOnStart = true
 
   enum class Mode {
     LAUNCHER, APP
@@ -105,6 +108,7 @@ class DevLauncherController private constructor()
       val appLoader = appLoaderFactory.createAppLoader(url, manifestParser)
       useDeveloperSupport = appLoaderFactory.shouldUseDeveloperSupport()
       manifest = appLoaderFactory.getManifest()
+      manifestURL = url
 
       val appLoaderListener = appLoader.createOnDelegateWillBeCreatedListener()
       lifecycle.addListener(appLoaderListener)
@@ -120,6 +124,7 @@ class DevLauncherController private constructor()
         // The app couldn't be loaded. For now, we just return to the launcher.
         mode = Mode.LAUNCHER
         manifest = null
+        manifestURL = null
       }
     } catch (e: Exception) {
       synchronized(this) {
@@ -154,6 +159,7 @@ class DevLauncherController private constructor()
 
     mode = Mode.LAUNCHER
     manifest = null
+    manifestURL = null
     context.applicationContext.startActivity(createLauncherIntent())
   }
 
@@ -161,6 +167,12 @@ class DevLauncherController private constructor()
     intent
       ?.data
       ?.let { uri ->
+        // used by appetize for snack
+        if (intent.getBooleanExtra("EXDevMenuDisableAutoLaunch", false)) {
+          canLaunchDevMenuOnStart = false
+          this.devMenuManager?.setCanLaunchDevMenuOnStart(canLaunchDevMenuOnStart)
+        }
+
         if (!isDevLauncherUrl(uri)) {
           return handleExternalIntent(intent)
         }
@@ -217,6 +229,7 @@ class DevLauncherController private constructor()
       } as? DevMenuManagerProviderInterface
 
     val devMenuManager = devMenuManagerProvider?.getDevMenuManager() ?: return
+    devMenuManager.setCanLaunchDevMenuOnStart(canLaunchDevMenuOnStart)
     devMenuManager.setDelegate(DevLauncherMenuDelegate(instance))
     this.devMenuManager = devMenuManager
   }

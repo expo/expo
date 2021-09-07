@@ -22,7 +22,6 @@ open class ExpoModuleRegistryAdapter(moduleRegistryProvider: ReactModuleRegistry
     experienceKey: ExperienceKey,
     experienceProperties: Map<String, Any?>,
     manifest: Manifest,
-    experienceStableLegacyId: String,
     otherModules: List<NativeModule>
   ): List<NativeModule> {
     val moduleRegistry = mModuleRegistryProvider[scopedContext]
@@ -59,7 +58,7 @@ open class ExpoModuleRegistryAdapter(moduleRegistryProvider: ReactModuleRegistry
     moduleRegistry.registerExportedModule(ScopedFacebookModule(scopedContext))
 
     // Scoping Amplitude
-    moduleRegistry.registerExportedModule(ScopedAmplitudeModule(scopedContext, experienceStableLegacyId))
+    moduleRegistry.registerExportedModule(ScopedAmplitudeModule(scopedContext, experienceKey))
 
     // Overriding expo-firebase-core
     moduleRegistry.registerInternalModule(ScopedFirebaseCoreService(scopedContext, manifest, experienceKey))

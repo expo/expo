@@ -6,6 +6,7 @@
 #import <ABI42_0_0EXUpdates/ABI42_0_0EXUpdatesNewUpdate.h>
 #import <ABI42_0_0EXUpdates/ABI42_0_0EXUpdatesUpdate+Private.h>
 #import <ABI42_0_0EXManifests/ABI42_0_0EXManifestsBareManifest.h>
+#import <ABI42_0_0EXManifests/ABI42_0_0EXManifestsManifestFactory.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -46,7 +47,7 @@ NSString * const ABI42_0_0EXUpdatesUpdateErrorDomain = @"ABI42_0_0EXUpdatesUpdat
                       config:(ABI42_0_0EXUpdatesConfig *)config
                     database:(ABI42_0_0EXUpdatesDatabase *)database
 {
-  ABI42_0_0EXUpdatesUpdate *update = [[self alloc] initWithManifest:[self manifestForManifestJSON:(manifest ?: @{})]
+  ABI42_0_0EXUpdatesUpdate *update = [[self alloc] initWithManifest:[ABI42_0_0EXManifestsManifestFactory manifestForManifestJSON:(manifest ?: @{})]
                                                        config:config
                                                      database:database];
   update.updateId = updateId;
@@ -122,18 +123,6 @@ NSString * const ABI42_0_0EXUpdatesUpdateErrorDomain = @"ABI42_0_0EXUpdatesUpdat
     });
   }
   return _assets;
-}
-
-+ (nonnull ABI42_0_0EXManifestsManifest *)manifestForManifestJSON:(nonnull NSDictionary *)manifestJSON {
-  ABI42_0_0EXManifestsManifest *manifest;
-  if (manifestJSON[@"releaseId"]) {
-    manifest = [[ABI42_0_0EXManifestsLegacyManifest alloc] initWithRawManifestJSON:manifestJSON];
-  } else if (manifestJSON[@"metadata"]) {
-    manifest = [[ABI42_0_0EXManifestsNewManifest alloc] initWithRawManifestJSON:manifestJSON];
-  } else {
-    manifest = [[ABI42_0_0EXManifestsBareManifest alloc] initWithRawManifestJSON:manifestJSON];
-  }
-  return manifest;
 }
 
 @end

@@ -33,6 +33,7 @@ import com.facebook.react.uimanager.events.EventDispatcher;
 import java.util.Map;
 
 import javax.annotation.Nullable;
+import host.exp.expoview.R;
 
 /**
  * {@link ViewManager} for the {@link ReactPicker} view. This is abstract because the
@@ -241,8 +242,8 @@ public abstract class ReactPickerManager extends BaseViewManager<ReactPicker, Re
 
       if (convertView == null) {
         int layoutResId = isDropdown
-              ? android.R.layout.simple_spinner_dropdown_item
-              : android.R.layout.simple_spinner_item;
+              ? R.layout.simple_spinner_dropdown_item
+              : R.layout.simple_spinner_item;
         convertView = mInflater.inflate(layoutResId, parent, false);
       }
 
