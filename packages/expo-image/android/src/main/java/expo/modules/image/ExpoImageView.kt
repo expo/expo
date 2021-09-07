@@ -76,7 +76,7 @@ class ExpoImageView(
       field = value?.takeIf { it > 0 }
       propsChanged = true
     }
-  internal var resizeMode = ImageResizeMode.COVER
+  internal var resizeMode = ImageResizeMode.COVER.also { scaleType = it.scaleType }
     set(value) {
       field = value
       scaleType = value.scaleType
