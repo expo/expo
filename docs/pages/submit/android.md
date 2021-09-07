@@ -24,7 +24,7 @@ See [expo.fyi/first-android-submission](https://expo.fyi/first-android-submissio
 
 ## 1. Build a standalone app
 
-You'll need a native app binary signed for store submission. You can either use the [EAS Build](introduction.md) service or do it on your own.
+You'll need a native app binary signed for store submission. You can either use [EAS Build](introduction.md) or do it on your own.
 
 ## 2. Start the submission
 

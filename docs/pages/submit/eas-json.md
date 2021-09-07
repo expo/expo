@@ -1,5 +1,5 @@
 ---
-title: EAS Submit - Configuration with eas.json
+title: Configuring EAS Submit with eas.json
 sidebar_title: Configuration with eas.json
 ---
 
