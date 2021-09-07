@@ -9,12 +9,11 @@ import android.os.Parcelable
 
 class ScopedNotificationRequest : NotificationRequest {
   // We store String instead of ExperienceKey because ScopedNotificationRequest must be serializable.
-  var experienceScopeKeyString: String?
-    private set
+  val experienceScopeKeyString: String?
 
   constructor(
-    identifier: String?,
-    content: NotificationContent?,
+    identifier: String,
+    content: NotificationContent,
     trigger: NotificationTrigger?,
     experienceScopeKey: String?
   ) : super(identifier, content, trigger) {
