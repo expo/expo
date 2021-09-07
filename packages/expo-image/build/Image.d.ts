@@ -33,6 +33,14 @@ export default class Image extends React.Component<ImageProps, ImageState> {
      * @return an empty promise.
      */
     static prefetch(url: string): Promise<void>;
+    /**
+     * Resolves an asset reference into an object which has the properties `uri`, `width` and `height`
+     *
+     * @param source A number (opaque type returned by require('./foo.png')) or an `ImageSource`.
+     *
+     * @return an object constaining `uri` `width` and `height`.
+     */
+    static resolveAssetSource(source: ImageSourcePropType): object;
     state: {
         onLoad: undefined;
         onError: undefined;

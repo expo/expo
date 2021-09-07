@@ -2,6 +2,7 @@ import { Platform, UnavailabilityError } from 'expo-modules-core';
 import React from 'react';
 import {
   AccessibilityProps,
+  Image as ReactNativeImage,
   ImageResizeMode,
   ImageSourcePropType,
   ImageStyle as RNImageStyle,
@@ -77,6 +78,17 @@ export default class Image extends React.Component<ImageProps, ImageState> {
       throw new UnavailabilityError('Image', 'prefetch');
     }
     return await ExpoImageModule.prefetch(url);
+  }
+
+  /**
+   * Resolves an asset reference into an object which has the properties `uri`, `width` and `height`
+   *
+   * @param source A number (opaque type returned by require('./foo.png')) or an `ImageSource`.
+   *
+   * @return an object constaining `uri` `width` and `height`.
+   */
+  static resolveAssetSource(source: ImageSourcePropType): object {
+    return ReactNativeImage.resolveAssetSource(source);
   }
 
   state = {
