@@ -8,7 +8,7 @@ import { MethodDefinitionData, MethodSignatureData } from '~/components/plugins/
 import {
   CommentTextBlock,
   listParams,
-  mdRenderers,
+  mdComponents,
   renderParam,
   resolveTypeName,
 } from '~/components/plugins/api/APISectionUtils';
@@ -54,7 +54,7 @@ const renderMethod = (
             </LI>
           </UL>
           {comment?.returns ? (
-            <ReactMarkdown renderers={mdRenderers}>{comment.returns}</ReactMarkdown>
+            <ReactMarkdown components={mdComponents}>{comment.returns}</ReactMarkdown>
           ) : null}
         </div>
       ) : null}
