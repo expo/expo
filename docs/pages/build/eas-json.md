@@ -74,7 +74,7 @@ Generally, the schema of this file looks like this:
 }
 ```
 
-If you're also using EAS Submit, [see how to use `eas.json` for configuring your submissions](/submit/eas-json.md).
+If you're also using EAS Submit, [see how to use `eas.json` to configure your submissions](/submit/eas-json.md).
 
 ## Examples
 

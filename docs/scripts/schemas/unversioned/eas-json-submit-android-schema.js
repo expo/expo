@@ -12,7 +12,7 @@ export default [
   {
     name: 'releaseStatus',
     enum: ['completed', 'draft', 'halted', 'inProgress'],
-    description: ['Release status - used when uploading new APKs/AABs.'],
+    description: ['The status of a release. [Learn more](https://developers.google.com/android-publisher/api-ref/rest/v3/edits.tracks).'],
   },
   {
     name: 'changesNotSentForReview',

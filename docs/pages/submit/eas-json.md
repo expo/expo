@@ -60,7 +60,7 @@ The schema of this file looks like this:
 }
 ```
 
-If you're also using EAS Build, [see how to use `eas.json` for configuring your builds](/build/eas-json.md).
+If you're also using EAS Build, [see how to use `eas.json` to configure your builds](/build/eas-json.md).
 
 ## Android-specific options
 
