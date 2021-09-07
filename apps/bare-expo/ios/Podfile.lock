@@ -731,8 +731,8 @@ PODS:
     - SDWebImage/Core (= 5.11.0)
   - SDWebImage/Core (5.11.0)
   - UMAppLoader (2.2.0)
-  - UMCore (7.1.1)
-  - UMReactNativeAdapter (6.3.5):
+  - UMCore (7.1.2)
+  - UMReactNativeAdapter (6.3.6):
     - ExpoModulesCore
     - React-Core
     - UMCore
@@ -1379,8 +1379,8 @@ SPEC CHECKSUMS:
   RNSVG: 551acb6562324b1d52a4e0758f7ca0ec234e278f
   SDWebImage: 7acbb57630ac7db4a495547fb73916ff3e432f6b
   UMAppLoader: 21af63390e55c82e037fb9752d93114a80ecf16e
-  UMCore: 912510bbff567298d738590f17788a8516f9d7f3
-  UMReactNativeAdapter: d18b9ea7f342d323fd9624970b8f327ebef81747
+  UMCore: 573e838e2a2d5dfcb23506fd7d7db6dcc07c2fb3
+  UMReactNativeAdapter: 05ad03be898fbe7635585e599daa0e50951dd437
   UMTaskManagerInterface: 2be431101b73604e64fbfffcf759336f9d8fccbb
   Yoga: 7740b94929bbacbddda59bf115b5317e9a161598
   YogaKit: f782866e155069a2cca2517aafea43200b01fd5a

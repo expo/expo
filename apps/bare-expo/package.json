@@ -99,7 +99,7 @@
     "@react-native-community/viewpager": "5.0.11",
     "@react-native-picker/picker": "1.16.1",
     "@react-native-segmented-control/segmented-control": "2.3.0",
-    "@unimodules/react-native-adapter": "^6.3.5",
+    "@unimodules/react-native-adapter": "^6.3.6",
     "expo": "~42.0.3",
     "expo-camera": "~11.2.2",
     "expo-dev-client": "~0.5.1",

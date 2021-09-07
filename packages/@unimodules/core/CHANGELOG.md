@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Fix `'-[RCTModuleRegistry getAllExportedModules]: unrecognized selector` crash while adding the event listener. ([#14130](https://github.com/expo/expo/pull/14130) by [@lukmccall](https://github.com/lukmccall))
-
 ### 💡 Others
+
+## 7.1.2 — 2021-09-07
+
+### 🐛 Bug fixes
+
+- Fix `'-[RCTModuleRegistry getAllExportedModules]: unrecognized selector` crash while adding the event listener. ([#14130](https://github.com/expo/expo/pull/14130) by [@lukmccall](https://github.com/lukmccall))
 
 ## 7.1.1 — 2021-05-25
 

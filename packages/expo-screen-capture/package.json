@@ -30,7 +30,7 @@
   "license": "MIT",
   "homepage": "https://docs.expo.io/versions/latest/sdk/screen-capture",
   "dependencies": {
-    "@unimodules/core": "~7.1.1"
+    "@unimodules/core": "~7.1.2"
   },
   "devDependencies": {
     "expo-module-scripts": "^2.0.0"
