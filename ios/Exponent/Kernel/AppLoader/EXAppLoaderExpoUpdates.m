@@ -358,8 +358,8 @@ NS_ASSUME_NONNULL_BEGIN
   for (NSString *sdkVersion in sdkVersions) {
     [sdkVersionRuntimeVersions addObject:[NSString stringWithFormat:@"exposdk:%@", sdkVersion]];
   }
+  [sdkVersionRuntimeVersions addObject:@"exposdk:UNVERSIONED"];
   [sdkVersions addObjectsFromArray:sdkVersionRuntimeVersions];
-  [sdkVersions addObject:@"exposdk:UNVERSIONED"];
   
 
   _selectionPolicy = [[EXUpdatesSelectionPolicy alloc]
