@@ -1043,7 +1043,7 @@ EX_EXPORT_METHOD_AS(getTotalDiskCapacityAsync, getTotalDiskCapacityAsyncWithReso
   return [directory stringByAppendingPathComponent:fileName];
 }
 
-- (NSNumber *)totalDiskCapacityWithError(NSError **)error
+- (NSNumber *)totalDiskCapacityWithError:(NSError **)error
 {
   NSDictionary *results = [self documentFileResourcesForKeys:@[NSURLVolumeTotalCapacityKey] 
                                                        error:error];
@@ -1051,7 +1051,7 @@ EX_EXPORT_METHOD_AS(getTotalDiskCapacityAsync, getTotalDiskCapacityAsyncWithReso
   return results[NSURLVolumeTotalCapacityKey];
 }
 
-- (NSNumber *)freeDiskStorageWithError(NSError **)error
+- (NSNumber *)freeDiskStorageWithError:(NSError **)error
 {
   NSDictionary *results = [self documentFileResourcesForKeys:@[NSURLVolumeAvailableCapacityForImportantUsageKey] 
                                                        error:error];
