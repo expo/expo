@@ -1,5 +1,6 @@
 ---
-title: Configuration with eas.json
+title: EAS Build - Configuration with eas.json
+sidebar_title: Configuration with eas.json
 ---
 
 import EasJsonPropertiesTable from '~/components/plugins/EasJsonPropertiesTable';
@@ -8,7 +9,7 @@ import commonSchema from '~/scripts/schemas/unversioned/eas-json-build-common-sc
 import androidSchema from '~/scripts/schemas/unversioned/eas-json-build-android-schema.js';
 import iosSchema from '~/scripts/schemas/unversioned/eas-json-build-ios-schema.js';
 
-`eas.json` is your go-to place for configuring EAS Build. It is located at the root of your project next to your `package.json`. It looks something like this:
+`eas.json` is your go-to place for configuring EAS Build (and [EAS Submit](/submit/eas-json.md)). It is located at the root of your project next to your `package.json`. It looks something like this:
 
 ```json
 {
@@ -65,9 +66,15 @@ Generally, the schema of this file looks like this:
 
     },
     ...
+  },
+  "submit": {
+    // EAS Submit configuration
+    ...
   }
 }
 ```
+
+If you're also using EAS Submit, [see how to use `eas.json` for configuring your submissions](/submit/eas-json.md).
 
 ## Examples
 
@@ -189,14 +196,14 @@ Generally, the schema of this file looks like this:
 
 </details>
 
-## Common options for both platforms
+## Options common for both platforms
 
 <EasJsonPropertiesTable schema={commonSchema}/>
 
-## Android specific options
+## Android-specific options
 
 <EasJsonPropertiesTable schema={androidSchema}/>
 
-## iOS specific options
+## iOS-specific options
 
 <EasJsonPropertiesTable schema={iosSchema}/>
