@@ -1,10 +1,10 @@
-import { NavigationContainer } from '@react-navigation/native';
+import { NavigationContainer, LinkingOptions } from '@react-navigation/native';
 import * as Linking from 'expo-linking';
 import * as React from 'react';
 
 import AppNavigator from './AppNavigator';
 
-const linking = {
+const linking: LinkingOptions = {
   prefixes: [Linking.makeUrl('/')],
   config: {
     select: '',

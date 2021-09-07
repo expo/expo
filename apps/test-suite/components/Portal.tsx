@@ -1,7 +1,11 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 
-export default function Portal({ isVisible, children }) {
+type PortalProps = {
+  isVisible: boolean;
+};
+
+export default function Portal({ isVisible, children }: React.PropsWithChildren<PortalProps>) {
   if (!children) {
     return null;
   }

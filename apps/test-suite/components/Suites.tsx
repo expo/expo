@@ -5,12 +5,22 @@ import { FlatList, StyleSheet } from 'react-native';
 import DoneText from './DoneText';
 import SuiteResult from './SuiteResult';
 
-export default function Suites({ suites, done, numFailed, results }) {
+export type SuiteResults = {
+  done: boolean;
+  numFailed: number;
+  results: string;
+};
+
+type SuitesProps = SuiteResults & {
+  suites: any[];
+};
+
+export default function Suites({ suites, done, numFailed, results }: SuitesProps) {
   const ref = React.useRef(null);
 
   const renderItem = ({ item }) => <SuiteResult r={item} depth={0} />;
 
-  const keyExtractor = item => item.get('result').get('id');
+  const keyExtractor = (item) => item.get('result').get('id');
 
   const scrollToEnd = React.useMemo(
     () => () => {

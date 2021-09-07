@@ -1,7 +1,9 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
-export default function DoneText({ done, numFailed, results }) {
+import { SuiteResults } from './Suites';
+
+export default function DoneText({ done, numFailed, results }: SuiteResults) {
   return (
     <View testID="test_suite_results" style={styles.container}>
       {!done && (
@@ -16,9 +18,9 @@ export default function DoneText({ done, numFailed, results }) {
         </Text>
       )}
       {done && (
-        <Text style={styles.finalResults} pointerEvents="none" testID="test_suite_final_results">
-          {results}
-        </Text>
+        <View pointerEvents="none" style={styles.finalResults}>
+          <Text testID="test_suite_final_results">{results}</Text>
+        </View>
       )}
     </View>
   );

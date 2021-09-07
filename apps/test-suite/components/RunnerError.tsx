@@ -1,12 +1,12 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import { useSafeArea } from 'react-native-safe-area-context';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-export default function RunnerError({ children }) {
-  const { top } = useSafeArea();
+export default function RunnerError({ children }: React.PropsWithChildren<any>) {
+  const { top } = useSafeAreaInsets();
 
   return (
-    <View style={[styles.container, top || 18]}>
+    <View style={[styles.container, { top: top || 18 }]}>
       <Text style={styles.text}>{children}</Text>
     </View>
   );

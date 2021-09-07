@@ -5,20 +5,34 @@ import Colors from '../constants/Colors';
 import StatusEmojis from '../constants/StatusEmojis';
 import Statuses from '../constants/Statuses';
 
-function getStatusEmoji(status) {
+function getStatusEmoji(status: string) {
   if (status in StatusEmojis) {
     return StatusEmojis[status];
   }
+
   return getStatusEmoji(Statuses.Disabled);
 }
 
-export default function SpecResult({ status = Statuses.Running, description, failedExpectations }) {
+type FailedExpectation = { get: (key: string) => string };
+
+type SpecResultProps = {
+  status?: string;
+  description: string;
+  failedExpectations: FailedExpectation[];
+};
+
+export default function SpecResult({
+  status = Statuses.Running,
+  description,
+  failedExpectations,
+}: SpecResultProps) {
   const renderExpectations = React.useMemo(
-    () => (e, i) => (
-      <Text testID="test_suite_text_spec_exception" key={i}>
-        {e.get('message')}
-      </Text>
-    ),
+    () => (e: FailedExpectation, i) =>
+      (
+        <Text testID="test_suite_text_spec_exception" key={i}>
+          {e.get('message')}
+        </Text>
+      ),
     []
   );
 

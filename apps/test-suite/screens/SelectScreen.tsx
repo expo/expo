@@ -1,14 +1,32 @@
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
+import { StackScreenProps } from '@react-navigation/stack';
 import Constants from 'expo-constants';
 import React from 'react';
-import { Alert, FlatList, Linking, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import {
+  Alert,
+  FlatList,
+  Linking,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  TouchableOpacityProps,
+  View,
+} from 'react-native';
 import { useSafeArea } from 'react-native-safe-area-context';
 
+import { RootStackParamList } from '../AppNavigator';
 import { getTestModules } from '../TestModules';
 import PlatformTouchable from '../components/PlatformTouchable';
 import Colors from '../constants/Colors';
 
-function ListItem({ title, onPressItem, selected, id }) {
+type ListItemProps = {
+  title: string;
+  onPressItem: (id: string) => void;
+  selected: boolean;
+  id: string;
+};
+
+function ListItem({ title, onPressItem, selected, id }: ListItemProps) {
   function onPress() {
     onPressItem(id);
   }
@@ -27,8 +45,8 @@ function ListItem({ title, onPressItem, selected, id }) {
   );
 }
 
-function createQueryString(tests) {
-  if (!Array.isArray(tests) || !tests.every(v => typeof v === 'string')) {
+function createQueryString(tests: string[]) {
+  if (!Array.isArray(tests) || !tests.every((v) => typeof v === 'string')) {
     throw new Error(
       `test-suite: Cannot create query string for runner. Expected array of strings, instead got: ${tests}`
     );
@@ -38,9 +56,17 @@ function createQueryString(tests) {
   return uniqueTests.join(' ');
 }
 
-export default class SelectScreen extends React.PureComponent {
+type Props = StackScreenProps<RootStackParamList, 'select'>;
+
+type State = {
+  selected: Set<string>;
+  // modules are require('module-with-tests')
+  modules: any[];
+};
+
+export default class SelectScreen extends React.PureComponent<Props, State> {
   state = {
-    selected: new Set(),
+    selected: new Set<string>(),
     modules: [],
   };
 
@@ -50,7 +76,7 @@ export default class SelectScreen extends React.PureComponent {
     if (global.ErrorUtils) {
       const originalErrorHandler = global.ErrorUtils.getGlobalHandler();
 
-      global.ErrorUtils.setGlobalHandler((error, isFatal) => {
+      global.ErrorUtils.setGlobalHandler((error: Error, isFatal: boolean) => {
         // Prevent optionalRequire from failing
         if (
           isFatal &&
@@ -71,9 +97,9 @@ export default class SelectScreen extends React.PureComponent {
     Linking.removeEventListener('url', this._handleOpenURL);
   }
 
-  checkLinking = incomingTests => {
+  checkLinking = (incomingTests: string) => {
     // TODO(Bacon): bare-expo should pass a space-separated string.
-    const tests = incomingTests.split(',').map(v => v.trim());
+    const tests = incomingTests.split(',').map((v) => v.trim());
     const query = createQueryString(tests);
     this.props.navigation.navigate('run', { tests: query });
   };
@@ -91,7 +117,7 @@ export default class SelectScreen extends React.PureComponent {
 
     if (url.includes('/all')) {
       // Test all available modules
-      const query = createQueryString(getTestModules().map(m => m.name));
+      const query = createQueryString(getTestModules().map((m) => m.name));
 
       this.props.navigation.navigate('run', {
         tests: query,
@@ -113,16 +139,16 @@ export default class SelectScreen extends React.PureComponent {
     Linking.addEventListener('url', this._handleOpenURL);
 
     Linking.getInitialURL()
-      .then(url => {
+      .then((url) => {
         this._handleOpenURL({ url });
       })
-      .catch(err => console.error('Failed to load initial URL', err));
+      .catch((err) => console.error('Failed to load initial URL', err));
   }
 
   _keyExtractor = ({ name }) => name;
 
-  _onPressItem = id => {
-    this.setState(state => {
+  _onPressItem = (id: string) => {
+    this.setState((state) => {
       const selected = new Set(state.selected);
       if (selected.has(id)) selected.delete(id);
       else selected.add(id);
@@ -140,17 +166,17 @@ export default class SelectScreen extends React.PureComponent {
   );
 
   _selectAll = () => {
-    this.setState(state => {
-      if (state.selected.size === this.state.modules.length) {
+    this.setState((state) => {
+      if (state.selected.size === state.modules.length) {
         return { selected: new Set() };
       }
-      return { selected: new Set(this.state.modules.map(item => item.name)) };
+      return { selected: new Set(state.modules.map((item) => item.name)) };
     });
   };
 
   _navigateToTests = () => {
     const { selected } = this.state;
-    if (selected.length === 0) {
+    if (selected.size === 0) {
       Alert.alert('Cannot Run Tests', 'You must select at least one test to run.');
     } else {
       const query = createQueryString([...selected]);
@@ -184,7 +210,14 @@ export default class SelectScreen extends React.PureComponent {
   }
 }
 
-function Footer({ buttonTitle, canRunTests, onToggle, onRun }) {
+type FooterProps = {
+  buttonTitle: string;
+  canRunTests: boolean;
+  onToggle: () => void;
+  onRun: () => void;
+};
+
+function Footer({ buttonTitle, canRunTests, onToggle, onRun }: FooterProps) {
   const { bottom, left, right } = useSafeArea();
 
   const isRunningInDetox = Constants.manifest && Constants.manifest.slug === 'bare-expo';
@@ -211,7 +244,11 @@ function Footer({ buttonTitle, canRunTests, onToggle, onRun }) {
   );
 }
 
-function FooterButton({ title, style, ...props }) {
+type FooterButtonProps = TouchableOpacityProps & {
+  title: string;
+};
+
+function FooterButton({ title, style, ...props }: FooterButtonProps) {
   return (
     <TouchableOpacity
       style={[styles.footerButton, { opacity: props.disabled ? 0.4 : 1 }, style]}
