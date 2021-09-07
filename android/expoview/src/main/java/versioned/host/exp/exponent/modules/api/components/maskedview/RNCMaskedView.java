@@ -20,7 +20,9 @@ public class RNCMaskedView extends ReactViewGroup {
 
   public RNCMaskedView(Context context) {
     super(context);
-    setLayerType(LAYER_TYPE_HARDWARE, null);
+
+    // Default to hardware rendering, androidRenderingMode prop will override
+    setRenderingMode("hardware");
 
     mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     mPorterDuffXferMode = new PorterDuffXfermode(PorterDuff.Mode.DST_IN);
@@ -51,8 +53,10 @@ public class RNCMaskedView extends ReactViewGroup {
 
     if (!mBitmapMaskInvalidated) {
       View maskView = getChildAt(0);
-      if (maskView.equals(child)) {
-        mBitmapMaskInvalidated = true;
+      if (maskView != null) {
+        if (maskView.equals(child)) {
+          mBitmapMaskInvalidated = true;
+        }
       }
     }
   }
@@ -78,9 +82,13 @@ public class RNCMaskedView extends ReactViewGroup {
     }
 
     View maskView = getChildAt(0);
-    maskView.setVisibility(View.VISIBLE);
-    this.mBitmapMask = getBitmapFromView(maskView);
-    maskView.setVisibility(View.INVISIBLE);
+    if (maskView != null) {
+      maskView.setVisibility(View.VISIBLE);
+      this.mBitmapMask = getBitmapFromView(maskView);
+      maskView.setVisibility(View.INVISIBLE);
+    } else{
+      this.mBitmapMask = null;
+    }
   }
 
   public static Bitmap getBitmapFromView(final View view) {
@@ -98,5 +106,13 @@ public class RNCMaskedView extends ReactViewGroup {
     view.draw(canvas);
 
     return bitmap;
+  }
+
+  public void setRenderingMode(String renderingMode) {
+    if (renderingMode.equals("software")) {
+      setLayerType(LAYER_TYPE_SOFTWARE, null);
+    } else {
+      setLayerType(LAYER_TYPE_HARDWARE, null);
+    }
   }
 }
