@@ -1457,10 +1457,6 @@
 				07CB4DC826045AFE0057443E /* RNCPicker.m */,
 				07CB4DC926045AFE0057443E /* RNCPickerManager.h */,
 				07CB4DCA26045AFE0057443E /* RNCPickerManager.m */,
-				391C76C28B9C4FA884972912 /* RNCPicker.h */,
-				C423B470610748B0A26DBB5E /* RNCPicker.m */,
-				C36B097625064AD19DB61F6C /* RNCPickerManager.h */,
-				9EE598E195D541FDBCFA2A70 /* RNCPickerManager.m */,
 			);
 			name = Picker;
 			sourceTree = "<group>";
@@ -3505,8 +3501,6 @@
 				8B1448C54DEB4CFDB79D7E45 /* RNCSafeAreaViewMode.m in Sources */,
 				6782D340A0024AF58B3805D0 /* RNSVGTopAlignedLabel.ios.m in Sources */,
 				827A699919CED163689E655D /* ExpoModulesProvider.swift in Sources */,
-				94251891314544EF95090E1A /* RNCPicker.m in Sources */,
-				FBB4609A3C6C42D3A151721C /* RNCPickerManager.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
