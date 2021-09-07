@@ -46,6 +46,7 @@
   },
   "expo-yarn-workspaces": {
     "symlinks": [
+      "expo-cellular",
       "expo-constants",
       "expo-updates",
       "expo-stories",
