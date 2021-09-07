@@ -85,7 +85,7 @@ export async function androidNativeUnitTests({
     console.log(chalk.yellow(pkg.packageSlug));
   });
 
-  const testCommand = type === 'instrumented' ? 'connectedAndroidTest' : 'test';
+  const testCommand = type === 'instrumented' ? 'connectedAndroidTest' : 'testDebugUnitTest';
 
   const partition = <T>(arr: T[], condition: (T) => boolean) => {
     const trues = arr.filter((el) => condition(el));
