@@ -243,7 +243,32 @@ RCT_EXPORT_METHOD(callMethod:(NSString *)moduleName methodNameOrKey:(id)methodNa
     NSString *className = NSStringFromClass(moduleClass);
 
     if ([moduleClass isSubclassOfClass:[RCTViewManager class]] && !componentDataByName[className]) {
-      componentDataByName[className] = [[RCTComponentData alloc] initWithManagerClass:moduleClass bridge:bridge];
+      SEL componentDataInit;
+      bool attachEventDispatcher = false;
+      RCTComponentData *componentData = [RCTComponentData alloc];
+      
+      // Init method was changed in RN 0.65
+      if ([componentData respondsToSelector:NSSelectorFromString(@"initWithManagerClass:bridge:eventDispatcher:")]) {
+        componentDataInit = NSSelectorFromString(@"initWithManagerClass:bridge:eventDispatcher:");
+        attachEventDispatcher = true;
+      } else {
+        // fallback for older RNs
+        componentDataInit = NSSelectorFromString(@"initWithManagerClass:bridge:");
+      }
+      
+      NSMethodSignature *signature = [componentData methodSignatureForSelector:componentDataInit];
+      NSInvocation *invocation = [NSInvocation invocationWithMethodSignature:signature];
+      
+      [invocation setTarget:componentData];
+      [invocation setSelector:componentDataInit];
+      [invocation setArgument:&moduleClass atIndex:2];
+      [invocation setArgument:&bridge atIndex:3];
+      if (attachEventDispatcher) {
+        [invocation setArgument:(__bridge void * _Nonnull)(bridge.eventDispatcher) atIndex:4];
+      }
+      
+      [invocation invoke];
+      componentDataByName[className] = componentData;
     }
   }
 }
