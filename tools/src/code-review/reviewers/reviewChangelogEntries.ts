@@ -11,8 +11,18 @@ export default async function ({ pullRequest, diff }: ReviewInput): Promise<Revi
   const comments: ReviewComment[] = [];
 
   for (const changelogDiff of changelogs) {
+    // We need a `position` for each review comment. The position value equals the number of
+    // lines down from the first "@@" chunk header in the file you want to add a comment.
+    // The line just below the "@@" line is position 1, the next line is position 2, and so on.
+    // The position in the diff continues to increase through lines of whitespace and additional
+    // chunks until the beginning of a new file.
+    // (ref: https://docs.github.com/en/rest/reference/pulls#create-a-review-for-a-pull-request)
+    let position = 0;
+
     for (const chunk of changelogDiff.chunks) {
-      chunk.changes.forEach((change, index) => {
+      chunk.changes.forEach((change) => {
+        position++;
+
         // No need to care about unchanged or deleted lines
         if (change.type !== 'add') {
           return;
@@ -35,7 +45,7 @@ export default async function ({ pullRequest, diff }: ReviewInput): Promise<Revi
 
         comments.push({
           path: changelogDiff.to!,
-          position: index + 1,
+          position,
           body: generateSuggestion(pullRequest, change),
         });
       });

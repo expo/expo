@@ -6,8 +6,8 @@ import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import expo.modules.core.Promise
+import expo.modules.core.errors.ModuleDestroyedException
 import expo.modules.imagepicker.ImagePickerConstants
-import expo.modules.imagepicker.ModuleDestroyedException
 import expo.modules.imagepicker.fileproviders.FileProvider
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch

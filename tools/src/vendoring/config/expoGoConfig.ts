@@ -90,7 +90,7 @@ const config: VendoringTargetConfig = {
               paths: 'RNCWKProcessPoolManager.h',
               find: '- (WKProcessPool *)sharedProcessPool;',
               replaceWith:
-                '- (WKProcessPool *)sharedProcessPoolForExperienceScopeKey:(NSString *)experienceScopeKey;',
+                '- (WKProcessPool *)sharedProcessPoolForScopeKey:(NSString *)scopeKey;',
             },
             {
               paths: 'RNCWKProcessPoolManager.m',
@@ -111,48 +111,50 @@ const config: VendoringTargetConfig = {
   return self;
 }
 
-- (WKProcessPool *)sharedProcessPoolForExperienceScopeKey:(NSString *)experienceScopeKey
+- (WKProcessPool *)sharedProcessPoolForScopeKey:(NSString *)scopeKey
 {
-  if (!experienceScopeKey) {
+  if (!scopeKey) {
     return [self sharedProcessPool];
   }
-  if (!_pools[experienceScopeKey]) {
-    _pools[experienceScopeKey] = [[WKProcessPool alloc] init];
+  if (!_pools[scopeKey]) {
+    _pools[scopeKey] = [[WKProcessPool alloc] init];
   }
-  return _pools[experienceScopeKey];
+  return _pools[scopeKey];
 }
 `,
             },
             {
               paths: 'RNCWebView.h',
               find: /@interface RNCWebView : RCTView/,
-              replaceWith: '$&\n@property (nonatomic, strong) NSString *experienceScopeKey;',
+              replaceWith: '$&\n@property (nonatomic, strong) NSString *scopeKey;',
             },
             {
               paths: 'RNCWebView.m',
               find: /(\[\[RNCWKProcessPoolManager sharedManager\] sharedProcessPool)]/,
-              replaceWith: '$1ForExperienceScopeKey:self.experienceScopeKey]',
+              replaceWith: '$1ForScopeKey:self.scopeKey]',
             },
             {
               paths: 'RNCWebViewManager.m',
               find: /@implementation RNCWebViewManager\s*{/,
-              replaceWith: '$&\n  NSString *_experienceScopeKey;',
+              replaceWith: '$&\n  NSString *_scopeKey;',
             },
             {
               paths: 'RNCWebViewManager.m',
               find: '*webView = [RNCWebView new];',
               replaceWith:
-                '*webView = [RNCWebView new];\n  webView.experienceScopeKey = _experienceScopeKey;',
+                '*webView = [RNCWebView new];\n  webView.scopeKey = _scopeKey;',
             },
             {
               paths: 'RNCWebViewManager.m',
               find: /RCT_EXPORT_MODULE\(\)/,
-              replaceWith: `- (instancetype)initWithExperienceScopeKey:(NSString *)experienceScopeKey
-               kernelServiceDelegate:(id)kernelServiceInstance
-                              params:(NSDictionary *)params
+              replaceWith: `- (instancetype)initWithExperienceStableLegacyId:(NSString *)experienceStableLegacyId
+                                        scopeKey:(NSString *)scopeKey
+                                    easProjectId:(NSString *)easProjectId
+                           kernelServiceDelegate:(id)kernelServiceInstance
+                                          params:(NSDictionary *)params
 {
   if (self = [super init]) {
-    _experienceScopeKey = experienceScopeKey;
+    _scopeKey = scopeKey;
   }
   return self;
 }`,

@@ -82,7 +82,7 @@ module Expo
 
     # Returns the provider name which is also a name of the generated file
     public def modules_provider_name
-      @options.fetch(:provider_name, Constants::MODULES_PROVIDER_FILE_NAME)
+      @options.fetch(:providerName, Constants::MODULES_PROVIDER_FILE_NAME)
     end
 
     # privates

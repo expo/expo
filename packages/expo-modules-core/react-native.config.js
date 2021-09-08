@@ -1,15 +1,9 @@
-const path = require('path');
-
+// Explicitly turn off react-native autolinking for this module
 module.exports = {
   dependency: {
     platforms: {
-      ios: {
-        podspecPath: path.join(__dirname, 'ios/ExpoModulesCore.podspec'),
-        project: 'ios/ExpoModulesCore.xcodeproj',
-      },
-      android: {
-        packageImportPath: 'import expo.modules.adapters.react.ModuleRegistryAdapter;',
-      },
+      ios: null,
+      android: null,
     },
   },
 };

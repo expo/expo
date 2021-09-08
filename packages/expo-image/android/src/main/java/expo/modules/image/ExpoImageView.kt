@@ -4,7 +4,9 @@ import android.annotation.SuppressLint
 import android.graphics.BitmapFactory
 import android.graphics.Canvas
 import android.graphics.PorterDuff
+import android.graphics.Shader
 import android.graphics.drawable.Drawable
+import android.net.Uri
 import androidx.appcompat.widget.AppCompatImageView
 import com.bumptech.glide.RequestManager
 import com.bumptech.glide.integration.webp.decoder.WebpDrawable
@@ -60,12 +62,12 @@ class ExpoImageView(
 
   init {
     clipToOutline = true
-    scaleType = ImageResizeMode.COVER.scaleType
     super.setOutlineProvider(outlineProvider)
   }
 
   // region Component Props
   internal var sourceMap: ReadableMap? = null
+  internal var defaultSourceMap: ReadableMap? = null
   internal var blurRadius: Int? = null
     set(value) {
       field = value?.takeIf { it > 0 }
@@ -76,11 +78,11 @@ class ExpoImageView(
       field = value?.takeIf { it > 0 }
       propsChanged = true
     }
-
-  internal fun setResizeMode(resizeMode: ImageResizeMode) {
-    scaleType = resizeMode.scaleType
-    // TODO: repeat mode handling
-  }
+  internal var resizeMode = ImageResizeMode.COVER.also { scaleType = it.scaleType }
+    set(value) {
+      field = value
+      scaleType = value.scaleType
+    }
 
   internal fun setBorderRadius(position: Int, borderRadius: Float) {
     var radius = borderRadius
@@ -126,6 +128,7 @@ class ExpoImageView(
   // region ViewManager Lifecycle methods
   internal fun onAfterUpdateTransaction() {
     val sourceToLoad = createUrlFromSourceMap(sourceMap)
+    val defaultSourceToLoad = createUrlFromSourceMap(defaultSourceMap)
     if (sourceToLoad == null) {
       requestManager.clear(this)
       setImageDrawable(null)
@@ -139,7 +142,9 @@ class ExpoImageView(
       progressInterceptor.registerProgressListener(sourceToLoad.toStringUrl(), eventsManager)
       eventsManager.onLoadStarted()
       requestManager
+        .asDrawable()
         .load(sourceToLoad)
+        .apply { if (defaultSourceToLoad != null) thumbnail(requestManager.load(defaultSourceToLoad)) }
         .apply(options)
         .addListener(eventsManager)
         .run {
@@ -233,6 +238,21 @@ class ExpoImageView(
         draw(canvas)
       }
     }
+  }
+
+  /**
+   * Called when Glide "injects" drawable into the view.
+   * When `resizeMode = REPEAT`, we need to update
+   * received drawable (unless null) and set correct tiling.
+   */
+  override fun setImageDrawable(drawable: Drawable?) {
+    val maybeUpdatedDrawable = drawable
+      ?.takeIf { resizeMode == ImageResizeMode.REPEAT }
+      ?.toBitmapDrawable(resources)
+      ?.apply {
+        setTileModeXY(Shader.TileMode.REPEAT, Shader.TileMode.REPEAT)
+      }
+    super.setImageDrawable(maybeUpdatedDrawable ?: drawable)
   }
   // endregion
 }

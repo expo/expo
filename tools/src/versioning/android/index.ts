@@ -42,7 +42,7 @@ const expoviewConstantsPath = path.join(
 );
 const testSuiteTestsPath = path.join(
   appPath,
-  'src/androidTest/java/host/exp/exponent/TestSuiteTests.java'
+  'src/androidTest/java/host/exp/exponent/TestSuiteTests.kt'
 );
 const versionedReactAndroidPath = path.join(ANDROID_DIR, 'versioned-react-native/ReactAndroid');
 const versionedReactAndroidJniPath = path.join(versionedReactAndroidPath, 'src/main');

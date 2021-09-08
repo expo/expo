@@ -299,7 +299,7 @@ export type CommentTextBlockProps = {
 };
 
 export const parseCommentContent = (content?: string): string =>
-  content && content.length ? content.replace(/&ast;/g, '*') : '';
+  content && content.length ? content.replace(/&ast;/g, '*').replace(/\t/g, '') : '';
 
 export const getCommentOrSignatureComment = (
   comment?: CommentData,
@@ -325,7 +325,11 @@ export const CommentTextBlock: React.FC<CommentTextBlockProps> = ({
 
   const example = comment?.tags?.filter(tag => tag.tag === 'example')[0];
   const exampleText = example ? (
-    <ReactMarkdown components={components}>{`__Example:__ ${example.text}`}</ReactMarkdown>
+    <>
+      <br />
+      <br />
+      <ReactMarkdown components={components}>{`__Example:__ ${example.text}`}</ReactMarkdown>
+    </>
   ) : null;
 
   const deprecation = comment?.tags?.filter(tag => tag.tag === 'deprecated')[0];

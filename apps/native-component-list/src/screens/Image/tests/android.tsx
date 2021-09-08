@@ -1,8 +1,17 @@
+import { images } from '../images';
 import { ImageTestGroup, ImageTestPropsFnInput } from '../types';
 
 const imageTests: ImageTestGroup = {
   name: 'Android',
   tests: [
+    {
+      name: 'Default source',
+      props: {
+        source: images.require_highres,
+        defaultSource: images.require_monochrome,
+      },
+      loadOnDemand: true,
+    },
     {
       name: 'accessible',
       props: {

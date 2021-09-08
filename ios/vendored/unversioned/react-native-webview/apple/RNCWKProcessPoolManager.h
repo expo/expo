@@ -9,7 +9,7 @@
 
 @interface RNCWKProcessPoolManager : NSObject
 
-+ (instancetype)sharedManager;
++ (instancetype) sharedManager;
 - (WKProcessPool *)sharedProcessPoolForScopeKey:(NSString *)scopeKey;
 
 @end
