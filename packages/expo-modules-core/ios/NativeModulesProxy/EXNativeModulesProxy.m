@@ -52,7 +52,7 @@ RCT_EXPORT_MODULE(NativeUnimoduleProxy)
 {
   if (self = [super init]) {
     _exModuleRegistry = moduleRegistry != nil ? moduleRegistry : [[EXModuleRegistryProvider new] moduleRegistry];
-    _swiftInteropBridge = [[SwiftInteropBridge alloc] initWithModulesProvider:[NSClassFromString(@"ExpoModulesProvider") new] legacyModuleRegistry:_exModuleRegistry];
+    _swiftInteropBridge = [[SwiftInteropBridge alloc] initWithModulesProvider:[self getExpoModulesProvider] legacyModuleRegistry:_exModuleRegistry];
     _exportedMethodsKeys = [NSMutableDictionary dictionary];
     _exportedMethodsReverseKeys = [NSMutableDictionary dictionary];
     _ownsModuleRegistry = moduleRegistry == nil;
@@ -171,6 +171,17 @@ RCT_EXPORT_METHOD(callMethod:(NSString *)moduleName methodNameOrKey:(id)methodNa
 }
 
 #pragma mark - Privates
+
+- (id<ModulesProviderObjCProtocol>)getExpoModulesProvider
+{
+  Class generatedExpoModulesProvider = NSClassFromString(@"ExpoModulesProvider");
+  // Checks if `ExpoModulesProvider` was generated
+  if (generatedExpoModulesProvider) {
+    return [generatedExpoModulesProvider new];
+  } else {
+    return [ModulesProvider new];
+  }
+}
 
 - (void)registerExpoModulesInBridge:(RCTBridge *)bridge
 {
