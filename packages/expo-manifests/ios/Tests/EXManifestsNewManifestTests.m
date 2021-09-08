@@ -10,13 +10,22 @@
 
 @implementation EXManifestsNewManifestTests
 
-- (void)testSDKVersion_ValidCases {
+- (void)testSDKVersion_ValidCaseNumeric {
   NSString *runtimeVersion = @"exposdk:39.0.0";
   NSDictionary *manifestJson = @{
     @"runtimeVersion": runtimeVersion
   };
   EXManifestsNewManifest *manifest = [[EXManifestsNewManifest alloc] initWithRawManifestJSON:manifestJson];
   XCTAssert([manifest.sdkVersion isEqualToString:@"39.0.0"], @"%@", manifest.sdkVersion);
+}
+
+- (void)testSDKVersion_ValidCaseUnversioned {
+  NSString *runtimeVersion = @"exposdk:UNVERSIONED";
+  NSDictionary *manifestJson = @{
+    @"runtimeVersion": runtimeVersion
+  };
+  EXManifestsNewManifest *manifest = [[EXManifestsNewManifest alloc] initWithRawManifestJSON:manifestJson];
+  XCTAssert([manifest.sdkVersion isEqualToString:@"UNVERSIONED"], @"%@", manifest.sdkVersion);
 }
 
 - (void)testSDKVersion_NotSDKRuntimeVersionCases {

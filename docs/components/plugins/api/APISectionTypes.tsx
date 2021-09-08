@@ -13,8 +13,8 @@ import {
   TypeSignaturesData,
 } from '~/components/plugins/api/APIDataTypes';
 import {
-  mdInlineRenderers,
-  mdRenderers,
+  mdInlineComponents,
+  mdComponents,
   resolveTypeName,
   renderFlags,
   renderParam,
@@ -64,7 +64,9 @@ const renderTypePropertyRow = ({
   defaultValue,
   signatures,
 }: PropData): JSX.Element => {
-  const initValue = defaultValue || comment?.tags?.filter(tag => tag.tag === 'default')[0]?.text;
+  const initValue = parseCommentContent(
+    defaultValue || comment?.tags?.filter(tag => tag.tag === 'default')[0]?.text
+  );
   const commentData = getCommentOrSignatureComment(comment, signatures);
   return (
     <tr key={name}>
@@ -75,16 +77,16 @@ const renderTypePropertyRow = ({
       <td>{renderTypeOrSignatureType(type, signatures)}</td>
       <td>
         {commentData ? (
-          <CommentTextBlock comment={commentData} renderers={mdInlineRenderers} />
+          <CommentTextBlock comment={commentData} components={mdInlineComponents} />
         ) : (
           '-'
         )}
         {initValue ? (
           <>
             <br />
-            <ReactMarkdown renderers={mdInlineRenderers}>{`__Default:__ ${parseCommentContent(
-              initValue
-            )}`}</ReactMarkdown>
+            <br />
+            <ReactMarkdown
+              components={mdInlineComponents}>{`__Default:__ ${initValue}`}</ReactMarkdown>
           </>
         ) : null}
       </td>
@@ -182,7 +184,7 @@ const renderType = ({ name, comment, type }: TypeGeneralData): JSX.Element | und
           <InlineCode>{name}</InlineCode>
         </H3Code>
         <CommentTextBlock comment={comment} />
-        <ReactMarkdown renderers={mdRenderers}>{'__Type:__ `' + type.name + '`'}</ReactMarkdown>
+        <ReactMarkdown components={mdComponents}>{'__Type:__ `' + type.name + '`'}</ReactMarkdown>
       </div>
     );
   }

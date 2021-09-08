@@ -12,30 +12,30 @@
 
 @interface ABI42_0_0EXScopedAmplitude ()
 
-@property (strong, nonatomic) NSString *escapedExperienceStableLegacyId;
+@property (strong, nonatomic) NSString *escapedScopeKey;
 
 @end
 
 @implementation ABI42_0_0EXScopedAmplitude
 
-- (instancetype)initWithExperienceStableLegacyId:(NSString *)experienceStableLegacyId
+- (instancetype)initWithScopeKey:(NSString *)scopeKey
 {
   if (self = [super init]) {
-    _escapedExperienceStableLegacyId = [self escapedExperienceStableLegacyId:experienceStableLegacyId];
+    _escapedScopeKey = [self escapedScopeKey:scopeKey];
   }
   return self;
 }
 
 - (Amplitude *)amplitudeInstance
 {
-  return [Amplitude instanceWithName:_escapedExperienceStableLegacyId];
+  return [Amplitude instanceWithName:_escapedScopeKey];
 }
 
-- (NSString *)escapedExperienceStableLegacyId:(NSString *)experienceStableLegacyId
+- (NSString *)escapedScopeKey:(NSString *)scopeKey
 {
   NSString *charactersToEscape = @"!*'();:@&=+$,/?%#[]";
   NSCharacterSet *allowedCharacters = [[NSCharacterSet characterSetWithCharactersInString:charactersToEscape] invertedSet];
-  return [experienceStableLegacyId stringByAddingPercentEncodingWithAllowedCharacters:allowedCharacters];
+  return [scopeKey stringByAddingPercentEncodingWithAllowedCharacters:allowedCharacters];
 }
 
 @end

@@ -65,7 +65,7 @@ export function ProjectContainer(
       platform: Platform.OS === 'ios' ? AppPlatform.Ios : AppPlatform.Android,
       runtimeVersions: Kernel.sdkVersions
         .split(',')
-        .map(kernelSDKVersion => getRuntimeVersionForSDKVersion(kernelSDKVersion)),
+        .map((kernelSDKVersion) => getRuntimeVersionForSDKVersion(kernelSDKVersion)),
     },
   });
   return <ProjectView {...props} {...query} />;

@@ -230,11 +230,6 @@ dependencies {
   versionedImplementation(project(':expoview-abi40_0_0'))
   // END_SDK_40
 
-
-  // BEGIN_SDK_39
-  versionedImplementation(project(':expoview-abi39_0_0'))
-  // END_SDK_39
-
   // This is not needed in shell apps, the Amplitude module will include this dep if installed
   implementation 'com.amplitude:android-sdk:2.23.2'
 
@@ -248,7 +243,7 @@ dependencies {
 
   // WHEN_DETACHING_REMOVE_FROM_HERE
   /* UNCOMMENT WHEN DISTRIBUTING
-  implementation project(':expo-modules-linker')
+  implementation project(':expo')
   implementation 'host.exp.exponent:expo-random:+'
   END UNCOMMENT WHEN DISTRIBUTING */
   // WHEN_DETACHING_REMOVE_TO_HERE

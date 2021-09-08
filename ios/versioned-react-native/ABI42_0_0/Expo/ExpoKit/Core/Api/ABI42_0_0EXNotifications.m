@@ -49,10 +49,15 @@ ABI42_0_0EX_EXPORT_SCOPED_MULTISERVICE_MODULE(ExponentNotifications, @"RemoteNot
 
 - (instancetype)initWithExperienceStableLegacyId:(NSString *)experienceStableLegacyId
                                         scopeKey:(NSString *)scopeKey
-                                    kernelServiceDelegates:(NSDictionary *)kernelServiceInstances
-                                                    params:(NSDictionary *)params
+                                    easProjectId:(NSString *)easProjectId
+                          kernelServiceDelegates:(NSDictionary *)kernelServiceInstances
+                                          params:(NSDictionary *)params
 {
-  if (self = [super initWithExperienceStableLegacyId:experienceStableLegacyId scopeKey:scopeKey kernelServiceDelegate:kernelServiceInstances params:params]) {
+  if (self = [super initWithExperienceStableLegacyId:experienceStableLegacyId
+                                            scopeKey:scopeKey
+                                        easProjectId:easProjectId
+                               kernelServiceDelegate:kernelServiceInstances
+                                              params:params]) {
     _userNotificationCenter = kernelServiceInstances[@"UserNotificationCenter"];
     _remoteNotificationsDelegate = kernelServiceInstances[@"RemoteNotificationManager"];
     _notificationsIdentifiersManager = kernelServiceInstances[@"UserNotificationManager"];
@@ -83,7 +88,7 @@ ABI42_0_0RCT_REMAP_METHOD(getExponentPushTokenAsync,
                  getExponentPushTokenAsyncWithResolver:(ABI42_0_0RCTPromiseResolveBlock)resolve
                  rejecter:(ABI42_0_0RCTPromiseRejectBlock)reject)
 {
-  if (!self.experienceStableLegacyId) {
+  if (!self.experienceStableLegacyId && !self.easProjectId) {
     reject(@"E_NOTIFICATIONS_INTERNAL_ERROR", @"The notifications module is missing the current project's ID", nil);
     return;
   }

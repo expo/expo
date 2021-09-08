@@ -33,6 +33,10 @@
 
 - (nullable NSString *)sdkVersion {
   NSString *runtimeVersion = self.runtimeVersion;
+  if ([runtimeVersion isEqualToString:@"exposdk:UNVERSIONED"]) {
+    return @"UNVERSIONED";
+  }
+  
   NSRegularExpression *regex =
       [NSRegularExpression regularExpressionWithPattern:@"^exposdk:(\\d+\\.\\d+\\.\\d+)$"
                                                 options:0

@@ -97,7 +97,7 @@ function getSDKMajorVersionForEASUpdateBranch(branch: ProjectUpdateBranch): numb
 
   return (
     updates
-      .map(update => {
+      .map((update) => {
         const potentialSDKVersion = getSDKVersionFromRuntimeVersion(update.runtimeVersion);
         return potentialSDKVersion ? semver.major(potentialSDKVersion) : null;
       })
@@ -111,7 +111,7 @@ function appHasLegacyUpdate(app: ProjectDataProject): boolean {
 }
 
 function appHasEASUpdates(app: ProjectDataProject): boolean {
-  return app.updateBranches.some(branch => branch.updates.length > 0);
+  return app.updateBranches.some((branch) => branch.updates.length > 0);
 }
 
 function ProjectContents({ app }: { app: ProjectDataProject }) {
@@ -246,7 +246,7 @@ function NewLaunchSection({ app }: { app: ProjectDataProject }) {
     return null;
   }
 
-  const branchManifests = app.updateBranches.map(branch => ({
+  const branchManifests = app.updateBranches.map((branch) => ({
     branchName: branch.name,
     manifestUrl: branch.updates[0].manifestPermalink,
     sdkVersion: getSDKMajorVersionForEASUpdateBranch(branch),

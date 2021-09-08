@@ -14,7 +14,7 @@ const Keys = mapValues(
     History: 'history',
     Settings: 'settings',
   },
-  value => `Exponent.${value}`
+  (value) => `Exponent.${value}`
 );
 
 async function getSettingsAsync(): Promise<Settings> {
@@ -92,7 +92,7 @@ async function removeSessionAsync(): Promise<void> {
 
 // adds a hook for native code to query Home's history.
 // needed for routing push notifications in Home.
-addListenerWithNativeCallback('ExponentKernel.getHistoryUrlForExperienceId', async event => {
+addListenerWithNativeCallback('ExponentKernel.getHistoryUrlForExperienceId', async (event) => {
   const { experienceId } = event; // scopeKey
   let history = await getHistoryAsync();
   history = history.sort((item1, item2) => {
@@ -106,7 +106,7 @@ addListenerWithNativeCallback('ExponentKernel.getHistoryUrlForExperienceId', asy
   // TODO(wschurman): only check for scope key in the future when most manifests contain it
   // TODO(wschurman): update for new manifest2 format (Manifest)
   const historyItem = history.find(
-    item =>
+    (item) =>
       item.manifest &&
       (item.manifest.id === experienceId ||
         ('scopeKey' in item.manifest && item.manifest.scopeKey === experienceId))

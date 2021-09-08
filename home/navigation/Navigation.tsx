@@ -185,7 +185,7 @@ function TabNavigator(props: { theme: string }) {
         name="ProjectsStack"
         component={ProjectsStackScreen}
         options={{
-          tabBarIcon: props => <Entypo {...props} style={styles.icon} name="grid" size={24} />,
+          tabBarIcon: (props) => <Entypo {...props} style={styles.icon} name="grid" size={24} />,
           tabBarLabel: 'Projects',
         }}
       />
@@ -194,7 +194,7 @@ function TabNavigator(props: { theme: string }) {
           name="DiagnosticsStack"
           component={DiagnosticsStackScreen}
           options={{
-            tabBarIcon: props => (
+            tabBarIcon: (props) => (
               <Ionicons {...props} style={styles.icon} name="ios-git-branch" size={26} />
             ),
             tabBarLabel: 'Diagnostics',
@@ -205,7 +205,7 @@ function TabNavigator(props: { theme: string }) {
         name="ProfileStack"
         component={ProfileStackScreen}
         options={{
-          tabBarIcon: props => (
+          tabBarIcon: (props) => (
             <Ionicons {...props} style={styles.icon} name="ios-person" size={26} />
           ),
           tabBarLabel: 'Profile',
@@ -242,7 +242,7 @@ export default (props: { theme: ColorTheme }) => {
     };
     if (!initialURLWasConsumed.current) {
       initialURLWasConsumed.current = true;
-      Linking.getInitialURL().then(url => {
+      Linking.getInitialURL().then((url) => {
         handleDeepLinks({ url });
       });
     }

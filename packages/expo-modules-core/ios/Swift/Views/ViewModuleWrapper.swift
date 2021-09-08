@@ -1,3 +1,6 @@
+import UIKit
+import ObjectiveC
+
 /**
  A protocol that helps in identifying whether the instance of `ViewModuleWrapper` is of a dynamically created class.
  */

@@ -39,17 +39,31 @@
 }
 
 
-- (NSURLSessionTask *)getExpoPushTokenForExperience:(NSString *)experienceStableLegacyId
-                                        deviceToken:(NSData *)deviceToken
-                                  completionHandler:(void (^)(NSString * _Nullable, NSError * _Nullable))handler
+- (void)getExpoPushTokenForEASProject:(nullable NSString *)easProjectId
+             experienceStableLegacyId:(nullable NSString *)experienceStableLegacyId
+                          deviceToken:(NSData *)deviceToken
+                    completionHandler:(void (^)(NSString * _Nullable, NSError * _Nullable))handler
 {
   NSMutableDictionary *arguments = [NSMutableDictionary dictionaryWithDictionary:@{
     @"deviceId": [EXKernel deviceInstallationUUID],
-    @"experienceId": experienceStableLegacyId,
     @"appId": NSBundle.mainBundle.bundleIdentifier,
     @"deviceToken": deviceToken.apnsTokenString,
     @"type": @"apns",
   }];
+  
+  if (easProjectId != nil) {
+    arguments[@"projectId"] = easProjectId;
+  } else if (experienceStableLegacyId != nil) {
+    arguments[@"experienceId"] = experienceStableLegacyId;
+  } else {
+    handler(nil, [NSError errorWithDomain:EXApiErrorDomain
+                                     code:EXApiErrorCodeMalformedRequestBody
+                                 userInfo:@{
+                                   NSLocalizedDescriptionKey: @"Must supply either experienceId or projectId.",
+                                 }]);
+    return;
+  }
+  
   // Presence of this file is assured in Expo Go
   // and in ejected projects Expo Push Notifications don't work anyway
   // so this codepath shouldn't be executed at all.
@@ -62,29 +76,29 @@
   }
 #endif
   
-  return [self callRemoteMethod:@"push/getExpoPushToken"
-                      arguments:arguments
-                     httpMethod:@"POST"
-              completionHandler:^(EXApiV2Result * _Nullable result, NSError * _Nullable error) {
-                if (error) {
-                  handler(nil, error);
-                  return;
-                }
-                
-                if (![result.data isKindOfClass:[NSDictionary class]]) {
-                  handler(nil, [self _errorForMalformedResult:result]);
-                  return;
-                }
-                
-                NSDictionary *data = (NSDictionary *)result.data;
-                if (![data[@"expoPushToken"] isKindOfClass:[NSString class]]) {
-                  handler(nil, [self _errorForMalformedResult:result]);
-                  return;
-                }
-                
-                NSString *expoPushToken = (NSString *)data[@"expoPushToken"];
-                handler(expoPushToken, nil);
-              }];
+  [self callRemoteMethod:@"push/getExpoPushToken"
+               arguments:arguments
+              httpMethod:@"POST"
+       completionHandler:^(EXApiV2Result * _Nullable result, NSError * _Nullable error) {
+    if (error) {
+      handler(nil, error);
+      return;
+    }
+    
+    if (![result.data isKindOfClass:[NSDictionary class]]) {
+      handler(nil, [self _errorForMalformedResult:result]);
+      return;
+    }
+    
+    NSDictionary *data = (NSDictionary *)result.data;
+    if (![data[@"expoPushToken"] isKindOfClass:[NSString class]]) {
+      handler(nil, [self _errorForMalformedResult:result]);
+      return;
+    }
+    
+    NSString *expoPushToken = (NSString *)data[@"expoPushToken"];
+    handler(expoPushToken, nil);
+  }];
 }
 
 - (NSError *)_errorForMalformedResult:(EXApiV2Result *)result

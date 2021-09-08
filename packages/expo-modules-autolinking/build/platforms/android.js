@@ -25,6 +25,10 @@ async function resolveModuleAsync(packageName, revision) {
         cwd: revision.path,
         ignore: ['**/node_modules/**'],
     });
+    // Just in case where the module doesn't have its own `build.gradle`.
+    if (!buildGradleFile) {
+        return null;
+    }
     const sourceDir = path_1.default.dirname(path_1.default.join(revision.path, buildGradleFile));
     return {
         projectName: convertPackageNameToProjectName(packageName),
@@ -36,7 +40,8 @@ exports.resolveModuleAsync = resolveModuleAsync;
  * Generates the string to put into the generated package list.
  */
 async function generatePackageListFileContentAsync(modules, namespace) {
-    const packagesClasses = await findAndroidPackagesAsync(modules);
+    // TODO: Instead of ignoring `expo` here, make the package class paths configurable from `expo-module.config.json`.
+    const packagesClasses = await findAndroidPackagesAsync(modules.filter((module) => module.packageName !== 'expo'));
     return `package ${namespace};
 
 import java.util.Arrays;

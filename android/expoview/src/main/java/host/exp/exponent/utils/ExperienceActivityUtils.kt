@@ -17,6 +17,7 @@ import androidx.annotation.UiThread
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.view.ViewCompat
+import expo.modules.jsonutils.getNullable
 import host.exp.exponent.analytics.EXL
 
 object ExperienceActivityUtils {
@@ -92,8 +93,8 @@ object ExperienceActivityUtils {
    */
   fun configureStatusBar(manifest: Manifest, activity: Activity) {
     val statusBarOptions = manifest.getAndroidStatusBarOptions()
-    val statusBarStyle = statusBarOptions?.optString(ExponentManifest.MANIFEST_STATUS_BAR_APPEARANCE)
-    val statusBarBackgroundColor = statusBarOptions?.optString(ExponentManifest.MANIFEST_STATUS_BAR_BACKGROUND_COLOR, null)
+    val statusBarStyle = statusBarOptions?.getNullable<String>(ExponentManifest.MANIFEST_STATUS_BAR_APPEARANCE)
+    val statusBarBackgroundColor = statusBarOptions?.getNullable<String>(ExponentManifest.MANIFEST_STATUS_BAR_BACKGROUND_COLOR)
 
     val statusBarHidden = statusBarOptions != null && statusBarOptions.optBoolean(
       ExponentManifest.MANIFEST_STATUS_BAR_HIDDEN,
@@ -249,9 +250,7 @@ object ExperienceActivityUtils {
     val navBarOptions = manifest.getAndroidNavigationBarOptions() ?: return
 
     // Set background color of navigation bar
-    val navBarColor = if (navBarOptions.has(ExponentManifest.MANIFEST_NAVIGATION_BAR_BACKGROUND_COLOR)) {
-      navBarOptions.optString(ExponentManifest.MANIFEST_NAVIGATION_BAR_BACKGROUND_COLOR)
-    } else null
+    val navBarColor = navBarOptions.getNullable<String>(ExponentManifest.MANIFEST_NAVIGATION_BAR_BACKGROUND_COLOR)
     if (navBarColor != null && ColorParser.isValid(navBarColor)) {
       try {
         activity.window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION)
@@ -262,9 +261,7 @@ object ExperienceActivityUtils {
     }
 
     // Set icon color of navigation bar
-    val navBarAppearance = if (navBarOptions.has(ExponentManifest.MANIFEST_NAVIGATION_BAR_APPEARANCE)) {
-      navBarOptions.optString(ExponentManifest.MANIFEST_NAVIGATION_BAR_APPEARANCE)
-    } else null
+    val navBarAppearance = navBarOptions.getNullable<String>(ExponentManifest.MANIFEST_NAVIGATION_BAR_APPEARANCE)
     if (navBarAppearance != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
       try {
         activity.window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION)
@@ -281,9 +278,7 @@ object ExperienceActivityUtils {
     }
 
     // Set visibility of navigation bar
-    val navBarVisible = if (navBarOptions.has(ExponentManifest.MANIFEST_NAVIGATION_BAR_VISIBLILITY)) {
-      navBarOptions.optString(ExponentManifest.MANIFEST_NAVIGATION_BAR_VISIBLILITY)
-    } else null
+    val navBarVisible = navBarOptions.getNullable<String>(ExponentManifest.MANIFEST_NAVIGATION_BAR_VISIBLILITY)
     if (navBarVisible != null) {
       // Hide both the navigation bar and the status bar. The Android docs recommend, "you should
       // design your app to hide the status bar whenever you hide the navigation bar."

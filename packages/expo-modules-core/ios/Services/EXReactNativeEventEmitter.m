@@ -26,7 +26,7 @@
 
 + (NSString *)moduleName
 {
-  return @"UMReactNativeEventEmitter";
+  return @"EXReactNativeEventEmitter";
 }
 
 + (BOOL)requiresMainQueueSetup
