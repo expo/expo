@@ -2328,6 +2328,8 @@ PODS:
     - React-Core
   - react-native-segmented-control (2.4.0):
     - React-Core
+  - react-native-pager-view (5.4.1):
+    - React-Core
   - react-native-webview (11.13.0):
     - React-Core
   - React-perflogger (0.64.2)
@@ -2872,6 +2874,7 @@ DEPENDENCIES:
   - React-jsinspector (from `../react-native-lab/react-native/ReactCommon/jsinspector`)
   - "react-native-netinfo (from `./vendored/unversioned/@react-native-community/netinfo`)"
   - "react-native-segmented-control (from `./vendored/unversioned/@react-native-segmented-control/segmented-control`)"
+  - react-native-pager-view (from `./vendored/unversioned/react-native-pager-view`)
   - react-native-webview (from `./vendored/unversioned/react-native-webview`)
   - React-perflogger (from `../react-native-lab/react-native/ReactCommon/reactperflogger`)
   - React-RCTActionSheet (from `../react-native-lab/react-native/Libraries/ActionSheetIOS`)
@@ -3737,6 +3740,8 @@ EXTERNAL SOURCES:
     :path: "./vendored/unversioned/@react-native-community/netinfo"
   react-native-segmented-control:
     :path: "./vendored/unversioned/@react-native-segmented-control/segmented-control"
+  react-native-pager-view:
+    :path: "./vendored/unversioned/react-native-pager-view"
   react-native-webview:
     :path: "./vendored/unversioned/react-native-webview"
   React-perflogger:
@@ -4217,6 +4222,7 @@ SPEC CHECKSUMS:
   React-jsinspector: cc614ec18a9ca96fd275100c16d74d62ee11f0ae
   react-native-netinfo: 92e6e4476eb8bf6fc2d7c0a6ca0a1406f663d73a
   react-native-segmented-control: 06607462630512ff8eef652ec560e6235a30cc3e
+  react-native-pager-view: 43f51f45f37ec9715f6c188e4af46ccdf79872e8
   react-native-webview: 133a6a5149f963259646e710b4545c67ef35d7c9
   React-perflogger: 25373e382fed75ce768a443822f07098a15ab737
   React-RCTActionSheet: af7796ba49ffe4ca92e7277a5d992d37203f7da5
