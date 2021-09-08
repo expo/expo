@@ -8,7 +8,7 @@ include(":expo-dev-client")
 project(":expo-dev-client").projectDir = new File("../../../packages/expo-dev-client/android")
 
 // Include Expo modules
-apply from: new File(["node", "--print", "require.resolve('expo-modules-core/package.json')"].execute().text.trim(), "../scripts/autolinking.gradle");
+apply from: new File(["node", "--print", "require.resolve('expo/package.json')"].execute().text.trim(), "../scripts/autolinking.gradle");
 useExpoModules()
 
 rootProject.name = 'BareExpo'

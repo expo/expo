@@ -71,8 +71,8 @@ dependencies {
   // We can't use BOM, cause it doesn't work with prebuilding and new autolinking.
   // > Could not find com.google.firebase:firebase-core:.
   // Required by:
-  // project :expo-modules-linker > host.exp.exponent:expo-firebase-analytics:X.X.X
-  // project :expo-modules-linker > host.exp.exponent:expo-firebase-core:X.X.X
+  // project :expo > host.exp.exponent:expo-firebase-analytics:X.X.X
+  // project :expo > host.exp.exponent:expo-firebase-core:X.X.X
   // api platform("com.google.firebase:firebase-bom:24.1.0")
   api 'com.google.firebase:firebase-core:17.2.1'
   api 'com.google.firebase:firebase-common:19.0.0'

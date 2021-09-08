@@ -273,7 +273,7 @@ dependencies {
 
   /* UNCOMMENT WHEN DISTRIBUTING
   api 'com.facebook.react:react-native:42.0.0'
-  compileOnly project(':expo-modules-linker')
+  compileOnly project(':expo')
   compileOnly project(':expo-random')
   END UNCOMMENT WHEN DISTRIBUTING */
 
@@ -284,9 +284,8 @@ dependencies {
   debugImplementation files(hermesPath + "hermes-debug.aar")
   releaseImplementation files(hermesPath + "hermes-release.aar")
 
-  // Universal modules
-  // In distribution they're "compileOnly" and it's the app/build.gradle who manages them.
-  api project(':expo-modules-linker')
+  // Expo modules
+  api project(':expo')
 
   // expo-random is no longer a unimodule
   api project(':expo-random')

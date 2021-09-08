@@ -1910,6 +1910,8 @@ PODS:
     - ExpoModulesCore
   - EXPermissions (12.1.0):
     - ExpoModulesCore
+  - Expo (42.0.0-alpha.0):
+    - ExpoModulesCore
   - ExpoModulesCore (0.3.0-alpha.0):
     - React-Core
   - ExpoModulesCore/Tests (0.3.0-alpha.0):
@@ -2819,6 +2821,7 @@ DEPENDENCIES:
   - EXNetwork (from `../packages/expo-network/ios`)
   - EXNotifications (from `../packages/expo-notifications/ios`)
   - EXPermissions (from `../packages/expo-permissions/ios`)
+  - Expo (from `../packages/expo/ios`)
   - ExpoModulesCore (from `../packages/expo-modules-core/ios`)
   - ExpoModulesCore/Tests (from `../packages/expo-modules-core/ios`)
   - EXPrint (from `../packages/expo-print/ios`)
@@ -3648,6 +3651,8 @@ EXTERNAL SOURCES:
     :path: "../packages/expo-notifications/ios"
   EXPermissions:
     :path: "../packages/expo-permissions/ios"
+  Expo:
+    :path: "../packages/expo/ios"
   ExpoModulesCore:
     :path: "../packages/expo-modules-core/ios"
   EXPrint:
@@ -4133,6 +4138,7 @@ SPEC CHECKSUMS:
   EXNetwork: b420f5e99b4291f2ba0f632a6eb099b1f126a7d8
   EXNotifications: 11ddca2668114114ffd7c36627ff3ffa259d64d2
   EXPermissions: 0760a7139b84dc8335ed297566892ddc856e89bb
+  Expo: e1392ae2f040d8e97c7ef808c12bb0c673eba3f9
   ExpoModulesCore: 9c9b14263d0172fda222033fc992250abc4dfec6
   EXPrint: 1b63871bd0f286f9dc5441412b3b9049b7c9fe32
   EXRandom: 4d6fe53e19a91df3f66665371962284677d741c9
@@ -4225,6 +4231,6 @@ SPEC CHECKSUMS:
   Yoga: 575c581c63e0d35c9a83f4b46d01d63abc1100ac
   ZXingObjC: fdbb269f25dd2032da343e06f10224d62f537bdb
 
-PODFILE CHECKSUM: e7f66f914d778455cb8e99513b730839f01a3b95
+PODFILE CHECKSUM: c6e79d1299e3e7ce8c040f8174b71d7408ffa09a
 
 COCOAPODS: 1.10.2
