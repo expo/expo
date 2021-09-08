@@ -5,7 +5,7 @@ export default {
     return '[DEFAULT]';
   },
 
-  get DEFAULT_APP_OPTIONS(): IFirebaseOptions | void {
+  get DEFAULT_APP_OPTIONS(): Partial<IFirebaseOptions> | void {
     return getDefaultWebOptions();
   },
 };

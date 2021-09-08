@@ -67,8 +67,6 @@ const nonLinkableTypes = [
   'FileList',
   'Manifest',
   'NativeSyntheticEvent',
-  'Omit',
-  'Pick',
   'React.FC',
   'ServiceActionResult',
   'StyleProp',
@@ -85,6 +83,9 @@ const nonLinkableTypes = [
 const hardcodedTypeLinks: Record<string, string> = {
   Date: 'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date',
   Error: 'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error',
+  Omit: 'https://www.typescriptlang.org/docs/handbook/utility-types.html#omittype-keys',
+  Pick: 'https://www.typescriptlang.org/docs/handbook/utility-types.html#picktype-keys',
+  Partial: 'https://www.typescriptlang.org/docs/handbook/utility-types.html#partialtype',
   Promise:
     'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise',
   View: '../../react-native/view',
