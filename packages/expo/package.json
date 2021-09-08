@@ -53,7 +53,7 @@
     "@expo/metro-config": "^0.1.70",
     "@expo/vector-icons": "^12.0.4",
     "@unimodules/core": "~7.1.2",
-    "@unimodules/react-native-adapter": "~6.3.6",
+    "@unimodules/react-native-adapter": "~6.3.7",
     "babel-preset-expo": "~8.4.1",
     "cross-spawn": "^6.0.5",
     "expo-application": "~3.2.0",
