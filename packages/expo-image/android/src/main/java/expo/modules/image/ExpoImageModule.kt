@@ -65,17 +65,7 @@ class ExpoImageModule(val context: ReactApplicationContext) : ReactContextBaseJa
           .`as`(ExpoImageSize::class.java)
           .apply(sizeOptions)
           .load(url)
-          .listener(object : RequestListener<ExpoImageSize> {
-            override fun onLoadFailed(e: GlideException?, model: Any?, target: Target<ExpoImageSize>?, isFirstResource: Boolean): Boolean {
-              promise.reject("ERR_IMAGE_GETSIZE_FAILURE", "Failed to get size of the image: $url. Error message: ${e?.message}", e)
-              return true // prevent onLoadFailed from being called on the target
-            }
-
-            override fun onResourceReady(resource: ExpoImageSize, model: Any?, target: Target<ExpoImageSize>?, dataSource: DataSource?, isFirstResource: Boolean): Boolean {
-              promise.resolve(resource.asWritableNativeMap())
-              return true // prevent onResourceReady from being called on the target
-            }
-          })
+          .listener(ExpoImageSizeRequestListener(promise, url))
           .into(ExpoImageSizeTarget())
     } catch (e: Exception) {
       promise.reject("ERR_IMAGE_GETSIZE_FAILURE", "Failed to get size of the image: $url. Error message: ${e.message}", e)
