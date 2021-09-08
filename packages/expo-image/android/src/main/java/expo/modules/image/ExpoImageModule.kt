@@ -1,5 +1,6 @@
 package expo.modules.image
 
+import android.util.Log
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.load.model.GlideUrl
@@ -18,9 +19,11 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runInterruptible
 import java.lang.Exception
+import java.lang.IllegalStateException
+import java.util.concurrent.CancellationException
 import java.util.concurrent.ExecutionException
 
 /**
@@ -110,5 +113,15 @@ class ExpoImageModule(val context: ReactApplicationContext) : ReactContextBaseJa
       // ExecutionException means that asset was not available in cache. Other exceptions are not caught intentionally
       return false
     }
+    
+  override fun onCatalystInstanceDestroy() {
+    try {
+      // TODO: Use [expo.modules.core.errors.ModuleDestroyedException] when migrated to Expo Module
+      moduleCoroutineScope.cancel(CancellationException("ExpoImage module is destroyed. Cancelling all jobs."))
+    } catch (e: IllegalStateException) {
+      Log.w("ExpoImageModule", "No coroutines to cancel")
+    }
+
+    super.onCatalystInstanceDestroy()
   }
 }

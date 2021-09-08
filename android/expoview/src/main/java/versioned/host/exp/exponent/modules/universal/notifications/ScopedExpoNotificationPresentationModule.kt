@@ -44,9 +44,9 @@ class ScopedExpoNotificationPresentationModule(
     NotificationsService.getAllPresented(
       context,
       object : ResultReceiver(null) {
-        override fun onReceiveResult(resultCode: Int, resultData: Bundle) {
+        override fun onReceiveResult(resultCode: Int, resultData: Bundle?) {
           super.onReceiveResult(resultCode, resultData)
-          val notifications = resultData.getParcelableArrayList<Notification>(
+          val notifications = resultData?.getParcelableArrayList<Notification>(
             NotificationsService.NOTIFICATIONS_KEY
           )
           if (resultCode == NotificationsService.SUCCESS_CODE && notifications != null) {
@@ -57,7 +57,7 @@ class ScopedExpoNotificationPresentationModule(
             }
             doDismissNotificationAsync(identifier, promise)
           } else {
-            val e = resultData.getSerializable(NotificationsService.EXCEPTION_KEY) as Exception
+            val e = resultData!!.getSerializable(NotificationsService.EXCEPTION_KEY) as Exception
             promise.reject(
               "ERR_NOTIFICATIONS_FETCH_FAILED",
               "A list of displayed notifications could not be fetched.",
@@ -73,10 +73,10 @@ class ScopedExpoNotificationPresentationModule(
     NotificationsService.getAllPresented(
       context,
       object : ResultReceiver(null) {
-        override fun onReceiveResult(resultCode: Int, resultData: Bundle) {
+        override fun onReceiveResult(resultCode: Int, resultData: Bundle?) {
           super.onReceiveResult(resultCode, resultData)
 
-          val notifications = resultData.getParcelableArrayList<Notification>(
+          val notifications = resultData?.getParcelableArrayList<Notification>(
             NotificationsService.NOTIFICATIONS_KEY
           )
           if (resultCode == NotificationsService.SUCCESS_CODE && notifications != null) {
@@ -88,7 +88,7 @@ class ScopedExpoNotificationPresentationModule(
             }
             dismissSelectedAsync(toDismiss.toTypedArray(), promise)
           } else {
-            val e = resultData.getSerializable(NotificationsService.EXCEPTION_KEY) as Exception
+            val e = resultData!!.getSerializable(NotificationsService.EXCEPTION_KEY) as Exception
             promise.reject(
               "ERR_NOTIFICATIONS_FETCH_FAILED",
               "A list of displayed notifications could not be fetched.",
@@ -109,13 +109,13 @@ class ScopedExpoNotificationPresentationModule(
       context,
       identifiers,
       object : ResultReceiver(null) {
-        override fun onReceiveResult(resultCode: Int, resultData: Bundle) {
+        override fun onReceiveResult(resultCode: Int, resultData: Bundle?) {
           super.onReceiveResult(resultCode, resultData)
 
           if (resultCode == NotificationsService.SUCCESS_CODE) {
             promise.resolve(null)
           } else {
-            val e = resultData.getSerializable(NotificationsService.EXCEPTION_KEY) as Exception
+            val e = resultData!!.getSerializable(NotificationsService.EXCEPTION_KEY) as Exception
             promise.reject(
               "ERR_NOTIFICATIONS_DISMISSAL_FAILED",
               "Notifications could not be dismissed.",

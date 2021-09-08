@@ -273,7 +273,7 @@ dependencies {
 
   /* UNCOMMENT WHEN DISTRIBUTING
   api 'com.facebook.react:react-native:42.0.0'
-  compileOnly project(':expo-modules-linker')
+  compileOnly project(':expo')
   compileOnly project(':expo-random')
   END UNCOMMENT WHEN DISTRIBUTING */
 
@@ -284,9 +284,8 @@ dependencies {
   debugImplementation files(hermesPath + "hermes-debug.aar")
   releaseImplementation files(hermesPath + "hermes-release.aar")
 
-  // Universal modules
-  // In distribution they're "compileOnly" and it's the app/build.gradle who manages them.
-  api project(':expo-modules-linker')
+  // Expo modules
+  api project(':expo')
 
   // expo-random is no longer a unimodule
   api project(':expo-random')
@@ -303,9 +302,6 @@ dependencies {
   // BEGIN_SDK_40
   versionedApi 'host.exp:reactandroid-abi40_0_0:1.0.0'
   // END_SDK_40
-  // BEGIN_SDK_39
-  versionedApi 'host.exp:reactandroid-abi39_0_0:1.0.0'
-  // END_SDK_39
   // WHEN_PREPARING_SHELL_REMOVE_TO_HERE
   // WHEN_VERSIONING_REMOVE_TO_HERE
   // WHEN_DISTRIBUTING_REMOVE_TO_HERE
@@ -391,6 +387,9 @@ dependencies {
   // stripe-react-native
   implementation 'com.stripe:stripe-android:16.10.0'
   implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.0'
+
+  // react-native-webview
+  implementation "androidx.webkit:webkit:1.4.0"
 }
 
 

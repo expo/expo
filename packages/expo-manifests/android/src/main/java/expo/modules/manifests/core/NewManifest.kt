@@ -35,6 +35,10 @@ class NewManifest(json: JSONObject) : Manifest(json) {
 
   override fun getSDKVersion(): String? {
     val runtimeVersion = getRuntimeVersion()
+    if (runtimeVersion == "exposdk:UNVERSIONED") {
+      return "UNVERSIONED"
+    }
+
     val expoSDKRuntimeVersionRegex: Pattern = Pattern.compile("^exposdk:(\\d+\\.\\d+\\.\\d+)$")
     val expoSDKRuntimeVersionMatch: Matcher = expoSDKRuntimeVersionRegex.matcher(runtimeVersion)
     if (expoSDKRuntimeVersionMatch.find()) {
