@@ -5,6 +5,7 @@
 	};
 	objectVersion = 46;
 	objects = {
+
 /* Begin PBXBuildFile section */
 		0726F0592007E438004992E7 /* EXKernelAppRecord.m in Sources */ = {isa = PBXBuildFile; fileRef = 0726F0582007E438004992E7 /* EXKernelAppRecord.m */; };
 		0726F05C2007E446004992E7 /* EXKernelAppRegistry.m in Sources */ = {isa = PBXBuildFile; fileRef = 0726F05B2007E446004992E7 /* EXKernelAppRegistry.m */; };
@@ -13,9 +14,6 @@
 		0799CFDA21839B520039E97C /* EXSession.m in Sources */ = {isa = PBXBuildFile; fileRef = 0799CFD921839B520039E97C /* EXSession.m */; };
 		07C6733224D220A5003F3F5C /* EXUpdatesBinding.m in Sources */ = {isa = PBXBuildFile; fileRef = 07C6733024D220A4003F3F5C /* EXUpdatesBinding.m */; };
 		07C6733524D2310C003F3F5C /* EXAppLoaderExpoUpdates.m in Sources */ = {isa = PBXBuildFile; fileRef = 07C6733424D2310C003F3F5C /* EXAppLoaderExpoUpdates.m */; };
-		07CB4DB526045AE00057443E /* RNCNetInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = 07CB4DAF26045ADF0057443E /* RNCNetInfo.m */; };
-		07CB4DB626045AE00057443E /* RNCConnectionState.m in Sources */ = {isa = PBXBuildFile; fileRef = 07CB4DB126045AE00057443E /* RNCConnectionState.m */; };
-		07CB4DB726045AE00057443E /* RNCConnectionStateWatcher.m in Sources */ = {isa = PBXBuildFile; fileRef = 07CB4DB326045AE00057443E /* RNCConnectionStateWatcher.m */; };
 		07CB4DCB26045AFF0057443E /* RNCPicker.m in Sources */ = {isa = PBXBuildFile; fileRef = 07CB4DC826045AFE0057443E /* RNCPicker.m */; };
 		07CB4DCC26045AFF0057443E /* RNCPickerManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 07CB4DCA26045AFE0057443E /* RNCPickerManager.m */; };
 		07CB4DD226045B100057443E /* RNCSegmentedControl.m in Sources */ = {isa = PBXBuildFile; fileRef = 07CB4DCE26045B100057443E /* RNCSegmentedControl.m */; };
@@ -350,7 +348,6 @@
 		F14217F0262CB68600BB97E6 /* EXAnalytics.m in Sources */ = {isa = PBXBuildFile; fileRef = B5A358611C7E6C4300D1BE67 /* EXAnalytics.m */; };
 		F14217F1262CB68600BB97E6 /* EXViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B5D0D65B204F152D00DDFC99 /* EXViewController.m */; };
 		F14217F2262CB68600BB97E6 /* AIRWeakTimerReference.m in Sources */ = {isa = PBXBuildFile; fileRef = 31AD9A292285B53000F19090 /* AIRWeakTimerReference.m */; settings = {COMPILER_FLAGS = "-w"; }; };
-		F14217F3262CB68600BB97E6 /* RNCConnectionStateWatcher.m in Sources */ = {isa = PBXBuildFile; fileRef = 07CB4DB326045AE00057443E /* RNCConnectionStateWatcher.m */; };
 		F14217F4262CB68600BB97E6 /* AIRMap.m in Sources */ = {isa = PBXBuildFile; fileRef = 31AD99F72285B52C00F19090 /* AIRMap.m */; settings = {COMPILER_FLAGS = "-w"; }; };
 		F14217F5262CB68600BB97E6 /* AIRGoogleMapURLTileManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 31AD99BC2285B50E00F19090 /* AIRGoogleMapURLTileManager.m */; settings = {COMPILER_FLAGS = "-w"; }; };
 		F14217F6262CB68600BB97E6 /* RNSVGTextManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 7043DF212283303800272D74 /* RNSVGTextManager.m */; settings = {COMPILER_FLAGS = "-w"; }; };
@@ -532,7 +529,6 @@
 		F14218AA262CB68600BB97E6 /* EXHomeAppSplashScreenViewProvider.m in Sources */ = {isa = PBXBuildFile; fileRef = 8767F97524D19FA7009F9372 /* EXHomeAppSplashScreenViewProvider.m */; };
 		F14218AB262CB68600BB97E6 /* EXScopedFirebaseCore.m in Sources */ = {isa = PBXBuildFile; fileRef = 2168B25A23E3058500A94C0D /* EXScopedFirebaseCore.m */; };
 		F14218AC262CB68600BB97E6 /* EXErrorView.m in Sources */ = {isa = PBXBuildFile; fileRef = B5A473D6204A66F60035C61C /* EXErrorView.m */; };
-		F14218AD262CB68600BB97E6 /* RNCConnectionState.m in Sources */ = {isa = PBXBuildFile; fileRef = 07CB4DB126045AE00057443E /* RNCConnectionState.m */; };
 		F14218AE262CB68600BB97E6 /* RNSVGPattern.m in Sources */ = {isa = PBXBuildFile; fileRef = 7043DF4D2283303800272D74 /* RNSVGPattern.m */; settings = {COMPILER_FLAGS = "-w"; }; };
 		F14218AF262CB68600BB97E6 /* RNSVGNode.m in Sources */ = {isa = PBXBuildFile; fileRef = 7043DF742283303800272D74 /* RNSVGNode.m */; settings = {COMPILER_FLAGS = "-w"; }; };
 		F14218B0262CB68600BB97E6 /* AIRGoogleMapOverlayManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 31AD99AD2285B50D00F19090 /* AIRGoogleMapOverlayManager.m */; settings = {COMPILER_FLAGS = "-w"; }; };
@@ -568,7 +564,6 @@
 		F14218D0262CB68600BB97E6 /* AIRGoogleMapPolylineManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 31AD99D52285B51100F19090 /* AIRGoogleMapPolylineManager.m */; settings = {COMPILER_FLAGS = "-w"; }; };
 		F14218D1262CB68600BB97E6 /* RNSVGTSpan.m in Sources */ = {isa = PBXBuildFile; fileRef = 7043DF712283303800272D74 /* RNSVGTSpan.m */; settings = {COMPILER_FLAGS = "-w"; }; };
 		F14218D2262CB68600BB97E6 /* EXReactAppExceptionHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = B5D0D671204F4C0400DDFC99 /* EXReactAppExceptionHandler.m */; };
-		F14218D3262CB68600BB97E6 /* RNCNetInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = 07CB4DAF26045ADF0057443E /* RNCNetInfo.m */; };
 		F14218D4262CB68600BB97E6 /* EXImageUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FB738F1FF6DADB001C764B /* EXImageUtils.m */; };
 		F14218D5262CB68600BB97E6 /* RNCSafeAreaViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = BBB83C592479C3B50004FF8E /* RNCSafeAreaViewManager.m */; };
 		F14218D6262CB68600BB97E6 /* RNSVGPainter.m in Sources */ = {isa = PBXBuildFile; fileRef = 7043DF022283303800272D74 /* RNSVGPainter.m */; settings = {COMPILER_FLAGS = "-w"; }; };
@@ -726,12 +721,6 @@
 		07C6733124D220A5003F3F5C /* EXUpdatesBinding.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXUpdatesBinding.h; sourceTree = "<group>"; };
 		07C6733324D230FB003F3F5C /* EXAppLoaderExpoUpdates.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXAppLoaderExpoUpdates.h; sourceTree = "<group>"; };
 		07C6733424D2310C003F3F5C /* EXAppLoaderExpoUpdates.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXAppLoaderExpoUpdates.m; sourceTree = "<group>"; };
-		07CB4DAF26045ADF0057443E /* RNCNetInfo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RNCNetInfo.m; path = NetInfo/RNCNetInfo.m; sourceTree = "<group>"; };
-		07CB4DB026045AE00057443E /* RNCConnectionState.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RNCConnectionState.h; path = NetInfo/RNCConnectionState.h; sourceTree = "<group>"; };
-		07CB4DB126045AE00057443E /* RNCConnectionState.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RNCConnectionState.m; path = NetInfo/RNCConnectionState.m; sourceTree = "<group>"; };
-		07CB4DB226045AE00057443E /* RNCConnectionStateWatcher.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RNCConnectionStateWatcher.h; path = NetInfo/RNCConnectionStateWatcher.h; sourceTree = "<group>"; };
-		07CB4DB326045AE00057443E /* RNCConnectionStateWatcher.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RNCConnectionStateWatcher.m; path = NetInfo/RNCConnectionStateWatcher.m; sourceTree = "<group>"; };
-		07CB4DB426045AE00057443E /* RNCNetInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RNCNetInfo.h; path = NetInfo/RNCNetInfo.h; sourceTree = "<group>"; };
 		07CB4DC726045AFE0057443E /* RNCPicker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RNCPicker.h; path = Picker/RNCPicker.h; sourceTree = "<group>"; };
 		07CB4DC826045AFE0057443E /* RNCPicker.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RNCPicker.m; path = Picker/RNCPicker.m; sourceTree = "<group>"; };
 		07CB4DC926045AFE0057443E /* RNCPickerManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RNCPickerManager.h; path = Picker/RNCPickerManager.h; sourceTree = "<group>"; };
@@ -1437,19 +1426,6 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		07CB4DAE26045AD50057443E /* NetInfo */ = {
-			isa = PBXGroup;
-			children = (
-				07CB4DB026045AE00057443E /* RNCConnectionState.h */,
-				07CB4DB126045AE00057443E /* RNCConnectionState.m */,
-				07CB4DB226045AE00057443E /* RNCConnectionStateWatcher.h */,
-				07CB4DB326045AE00057443E /* RNCConnectionStateWatcher.m */,
-				07CB4DB426045AE00057443E /* RNCNetInfo.h */,
-				07CB4DAF26045ADF0057443E /* RNCNetInfo.m */,
-			);
-			name = NetInfo;
-			sourceTree = "<group>";
-		};
 		07CB4DC626045AF50057443E /* Picker */ = {
 			isa = PBXGroup;
 			children = (
@@ -2394,7 +2370,6 @@
 		B5FB72711FF6DADB001C764B /* Api */ = {
 			isa = PBXGroup;
 			children = (
-				07CB4DAE26045AD50057443E /* NetInfo */,
 				BBB83C522479C3B50004FF8E /* SafeAreaContext */,
 				31F25C9123717B08009AD55F /* ViewShot */,
 				BBE6036F2310CD8900971F79 /* Appearance */,
@@ -3222,7 +3197,6 @@
 				B5A358621C7E6C4300D1BE67 /* EXAnalytics.m in Sources */,
 				B5D0D65C204F152D00DDFC99 /* EXViewController.m in Sources */,
 				31AD9A4A2285B53100F19090 /* AIRWeakTimerReference.m in Sources */,
-				07CB4DB726045AE00057443E /* RNCConnectionStateWatcher.m in Sources */,
 				31AD9A342285B53100F19090 /* AIRMap.m in Sources */,
 				31AD99E02285B51100F19090 /* AIRGoogleMapURLTileManager.m in Sources */,
 				7043DF852283303800272D74 /* RNSVGTextManager.m in Sources */,
@@ -3408,7 +3382,6 @@
 				8767F97624D19FA7009F9372 /* EXHomeAppSplashScreenViewProvider.m in Sources */,
 				2168B25C23E3058600A94C0D /* EXScopedFirebaseCore.m in Sources */,
 				B5A473DC204A66F70035C61C /* EXErrorView.m in Sources */,
-				07CB4DB626045AE00057443E /* RNCConnectionState.m in Sources */,
 				7043DF992283303800272D74 /* RNSVGPattern.m in Sources */,
 				7043DFAD2283303800272D74 /* RNSVGNode.m in Sources */,
 				31AD99DD2285B51100F19090 /* AIRGoogleMapOverlayManager.m in Sources */,
@@ -3444,7 +3417,6 @@
 				31AD99F12285B51100F19090 /* AIRGoogleMapPolylineManager.m in Sources */,
 				7043DFAB2283303800272D74 /* RNSVGTSpan.m in Sources */,
 				B5D0D67A204F4C0400DDFC99 /* EXReactAppExceptionHandler.m in Sources */,
-				07CB4DB526045AE00057443E /* RNCNetInfo.m in Sources */,
 				B5FB74AC1FF6DADC001C764B /* EXImageUtils.m in Sources */,
 				BBB83C662479C3B50004FF8E /* RNCSafeAreaViewManager.m in Sources */,
 				7043DF782283303800272D74 /* RNSVGPainter.m in Sources */,
@@ -3557,7 +3529,6 @@
 				F14217F0262CB68600BB97E6 /* EXAnalytics.m in Sources */,
 				F14217F1262CB68600BB97E6 /* EXViewController.m in Sources */,
 				F14217F2262CB68600BB97E6 /* AIRWeakTimerReference.m in Sources */,
-				F14217F3262CB68600BB97E6 /* RNCConnectionStateWatcher.m in Sources */,
 				F14217F4262CB68600BB97E6 /* AIRMap.m in Sources */,
 				F14217F5262CB68600BB97E6 /* AIRGoogleMapURLTileManager.m in Sources */,
 				F14217F6262CB68600BB97E6 /* RNSVGTextManager.m in Sources */,
@@ -3743,7 +3714,6 @@
 				F14218AA262CB68600BB97E6 /* EXHomeAppSplashScreenViewProvider.m in Sources */,
 				F14218AB262CB68600BB97E6 /* EXScopedFirebaseCore.m in Sources */,
 				F14218AC262CB68600BB97E6 /* EXErrorView.m in Sources */,
-				F14218AD262CB68600BB97E6 /* RNCConnectionState.m in Sources */,
 				F14218AE262CB68600BB97E6 /* RNSVGPattern.m in Sources */,
 				F14218AF262CB68600BB97E6 /* RNSVGNode.m in Sources */,
 				F14218B0262CB68600BB97E6 /* AIRGoogleMapOverlayManager.m in Sources */,
@@ -3779,7 +3749,6 @@
 				F14218D0262CB68600BB97E6 /* AIRGoogleMapPolylineManager.m in Sources */,
 				F14218D1262CB68600BB97E6 /* RNSVGTSpan.m in Sources */,
 				F14218D2262CB68600BB97E6 /* EXReactAppExceptionHandler.m in Sources */,
-				F14218D3262CB68600BB97E6 /* RNCNetInfo.m in Sources */,
 				F14218D4262CB68600BB97E6 /* EXImageUtils.m in Sources */,
 				F14218D5262CB68600BB97E6 /* RNCSafeAreaViewManager.m in Sources */,
 				F14218D6262CB68600BB97E6 /* RNSVGPainter.m in Sources */,
