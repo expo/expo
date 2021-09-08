@@ -15,6 +15,7 @@
   "files": [
     "bin",
     "build",
+    "scripts",
     "tools",
     "tsconfig.base.json",
     "bundledNativeModules.json",
