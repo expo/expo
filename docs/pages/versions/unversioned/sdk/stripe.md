@@ -11,8 +11,6 @@ Expo includes support for [`@stripe/stripe-react-native`](https://github.com/str
 
 If you're looking for a quick example, check out [this Snack](https://snack.expo.dev/@charliecruzan/stripe-react-native-example?platform=mydevice)!
 
-> Migrating from Expo's `expo-payments-stripe` module? [Here's a guide to help make the transition as easy as possible](https://github.com/expo/fyi/blob/master/payments-migration-guide.md#how-to-migrate-from-expo-payments-stripe-to-the-new-stripestripe-react-native-library).
-
 <PlatformsSection android emulator ios simulator />
 
 ## Installation
@@ -89,4 +87,4 @@ Apple Pay **is not** supported in Expo Go. To use Apple Pay, you must use either
 
 ### Google Pay
 
-Google Pay **is not** supported in Expo Go. To use Google Pay, you must use either a standalone app built with `expo build:android` or [EAS Build](/build/introduction.md), or run `expo run:android` in your project directory.
+Google Pay **is not** supported in Expo Go. To use Google Pay, you must use either [EAS Build](/build/introduction.md), or run `expo run:android` in your project directory.
