@@ -1,5 +1,6 @@
 import chalk from 'chalk';
 
+import Git from '../Git';
 import * as GitHub from '../GitHub';
 import logger from '../Logger';
 import { COMMENT_HEADER, generateReportFromOutputs } from './reports';
@@ -25,6 +26,13 @@ enum Label {
 export async function reviewPullRequestAsync(prNumber: number) {
   const pr = await GitHub.getPullRequestAsync(prNumber);
   const user = await GitHub.getAuthenticatedUserAsync();
+
+  logger.info('👾 Fetching head commit', chalk.yellow.bold(pr.head.sha));
+  await Git.fetchAsync({
+    remote: 'origin',
+    ref: pr.head.sha,
+    depth: pr.commits + 1,
+  });
 
   // Get the diff of the pull request.
   const diff = await GitHub.getPullRequestDiffAsync(prNumber);
