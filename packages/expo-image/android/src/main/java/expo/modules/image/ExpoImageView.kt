@@ -6,7 +6,6 @@ import android.graphics.Canvas
 import android.graphics.PorterDuff
 import android.graphics.Shader
 import android.graphics.drawable.Drawable
-import android.net.Uri
 import androidx.appcompat.widget.AppCompatImageView
 import com.bumptech.glide.RequestManager
 import com.bumptech.glide.integration.webp.decoder.WebpDrawable
