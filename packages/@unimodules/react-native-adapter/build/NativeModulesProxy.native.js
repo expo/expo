@@ -20,8 +20,22 @@ if (NativeProxy) {
         //
         // On Android only {start,stop}Observing are called on the native module
         // and these should be exported as Expo methods.
-        NativeModulesProxy[moduleName].addListener = (...args) => NativeModules.UMReactNativeEventEmitter.addProxiedListener(moduleName, ...args);
-        NativeModulesProxy[moduleName].removeListeners = (...args) => NativeModules.UMReactNativeEventEmitter.removeProxiedListeners(moduleName, ...args);
+        //
+        // Before the RN 65, addListener/removeListeners weren't called on Android. However, it no longer stays true.
+        // See https://github.com/facebook/react-native/commit/f5502fbda9fe271ff6e1d0da773a3a8ee206a453.
+        // That's why, we check if the `EXReactNativeEventEmitter` exists and only if yes, we use it in the listener implementation.
+        // Otherwise, those methods are NOOP.
+        if (NativeModules.UMReactNativeEventEmitter) {
+            NativeModulesProxy[moduleName].addListener = (...args) => NativeModules.UMReactNativeEventEmitter.addProxiedListener(moduleName, ...args);
+            NativeModulesProxy[moduleName].removeListeners = (...args) => NativeModules.UMReactNativeEventEmitter.removeProxiedListeners(moduleName, ...args);
+        }
+        else {
+            // Fixes on Android:
+            // WARN  `new NativeEventEmitter()` was called with a non-null argument without the required `addListener` method.
+            // WARN  `new NativeEventEmitter()` was called with a non-null argument without the required `removeListeners` method.
+            NativeModulesProxy[moduleName].addListener = () => { };
+            NativeModulesProxy[moduleName].removeListeners = () => { };
+        }
     });
 }
 else {

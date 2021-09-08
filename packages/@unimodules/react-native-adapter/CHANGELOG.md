@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix `Cannot read property 'addProxiedListener' of null` on Android. ([#14343](https://github.com/expo/expo/pull/14343) by [@lukmccall](https://github.com/lukmccall))
+
 ### 💡 Others
 
 ## 6.3.6 — 2021-09-07
