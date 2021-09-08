@@ -38,7 +38,7 @@ import versioned.host.exp.exponent.modules.api.components.sharedelement.RNShared
 import versioned.host.exp.exponent.modules.api.components.sharedelement.RNSharedElementPackage
 import versioned.host.exp.exponent.modules.api.components.slider.ReactSliderPackage
 import versioned.host.exp.exponent.modules.api.components.svg.SvgPackage
-import versioned.host.exp.exponent.modules.api.components.viewpager.RNCViewPagerPackage
+import versioned.host.exp.exponent.modules.api.components.pagerview.PagerViewPackage
 import versioned.host.exp.exponent.modules.api.components.webview.RNCWebViewModule
 import versioned.host.exp.exponent.modules.api.components.webview.RNCWebViewPackage
 import versioned.host.exp.exponent.modules.api.netinfo.NetInfoModule
@@ -193,7 +193,7 @@ class ExponentPackage : ReactPackage {
         RNCMaskedViewPackage(),
         RNCPickerPackage(),
         ReactSliderPackage(),
-        RNCViewPagerPackage(),
+        PagerViewPackage(),
         ExpoAppearancePackage(),
         stripePackage
       )
