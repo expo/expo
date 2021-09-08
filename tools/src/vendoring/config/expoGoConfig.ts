@@ -199,7 +199,7 @@ const config: VendoringTargetConfig = {
     '@react-native-masked-view/masked-view': {
       source: 'https://github.com/react-native-masked-view/masked-view',
     },
-    '@react-native-community/viewpager': {
+    'react-native-pager-view': {
       source: 'https://github.com/callstack/react-native-viewpager',
       ios: {},
     },
