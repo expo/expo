@@ -2,7 +2,6 @@ package expo.modules.image
 
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.model.GlideUrl
-import com.bumptech.glide.request.FutureTarget
 import com.facebook.react.bridge.Promise
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactContextBaseJavaModule
@@ -10,14 +9,7 @@ import com.facebook.react.bridge.ReactMethod
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runInterruptible
 import java.lang.Exception
-
-/**
- * We need to convert blocking java.util.concurrent.Future result
- * into non-blocking suspend function. We use extension function for that
- */
-suspend fun <T> FutureTarget<T>.awaitGet() = runInterruptible(Dispatchers.IO) { get() }
 
 class ExpoImageModule(val context: ReactApplicationContext) : ReactContextBaseJavaModule(context) {
   private val moduleCoroutineScope = CoroutineScope(Dispatchers.IO)
