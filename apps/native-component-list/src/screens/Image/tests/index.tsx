@@ -4,6 +4,7 @@ import AppearanceTests from './appearance';
 import BorderTests from './borders';
 import EventTests from './events';
 import IOSTests from './ios';
+import MethodsTests from './methods';
 import ShadowsTests from './shadows';
 import SourcesTests from './sources';
 
@@ -17,6 +18,7 @@ const tests: ImageTestGroup = {
     EventTests,
     IOSTests,
     AndroidTests,
+    MethodsTests,
   ],
 };
 

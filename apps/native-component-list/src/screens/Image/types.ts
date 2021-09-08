@@ -16,10 +16,24 @@ export type ImageTestPropsFn = (input: ImageTestPropsFnInput) => ImageProps;
 
 export type ImageTestProps = ImageProps | ImageTestPropsFn;
 
+export enum ImageMethodNames {
+  AbortPrefetch,
+  GetSize,
+  GetSizeWithHeaders,
+  Prefetch,
+  QueryCache,
+}
+
+export type ImageMethodResult = {
+  result: string;
+  time: number;
+};
+
 export interface ImageTest {
   name: string;
   props: ImageTestProps;
   loadOnDemand?: boolean;
+  method?: ImageMethodNames;
   testInformation?: string;
 }
 

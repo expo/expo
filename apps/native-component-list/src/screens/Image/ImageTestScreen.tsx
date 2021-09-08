@@ -12,10 +12,11 @@ import {
   setSelectedCompareComponent,
 } from './ImageComponents';
 import ImageEventsView from './ImageEventsView';
+import { getImageMethodResult } from './ImageMethods';
 import ImageStylesView from './ImageStylesView';
 import ImageTestView from './ImageTestView';
 import { resolveProps } from './resolveProps';
-import { ImageTest, Links } from './types';
+import { ImageMethodNames, ImageTest, Links } from './types';
 
 const AnimatedImage = Animated.Image;
 AnimatedImage.displayName = 'Image';
@@ -36,6 +37,7 @@ export default function ImageTestScreen({ navigation, route }: Props) {
   const [viewKey, setViewKey] = React.useState<string>('initial');
   const [events, setEvents] = React.useState<string[]>([]);
   const [loadDemanded, setLoadDemanded] = React.useState<boolean>(false);
+  const [methodResult, setMethodResult] = React.useState<string>('');
 
   React.useLayoutEffect(() => {
     const { test } = route.params;
@@ -106,6 +108,13 @@ export default function ImageTestScreen({ navigation, route }: Props) {
     setLoadDemanded(true);
   };
 
+  const onPressMethod = async () => {
+    if (test.method != null) {
+      const methodResult = await getImageMethodResult(test.method, test.props.source.uri);
+      setMethodResult(methodResult.result);
+    }
+  };
+
   const onClearEvents = () => setEvents([]);
 
   const isComponentLoaded = () => !loadOnDemand || loadDemanded;
@@ -136,9 +145,16 @@ export default function ImageTestScreen({ navigation, route }: Props) {
         </View>
       )}
       {!isComponentLoaded() && (
-        <View>
-          <Button title="Load" onPress={onPressLoad} />
-        </View>
+        <>
+          {test.method != null && (
+            <View style={{ borderBottomWidth: 10, borderBottomColor: 'transparent' }}>
+              <Button title={ImageMethodNames[test.method]} onPress={onPressMethod} />
+            </View>
+          )}
+          <View>
+            <Button title="Load" onPress={onPressLoad} />
+          </View>
+        </>
       )}
       <CompareBar
         collapsed={!compareEnabled}
@@ -156,6 +172,14 @@ export default function ImageTestScreen({ navigation, route }: Props) {
         </View>
       )}
       {hasEvents && <ImageEventsView onClear={onClearEvents} events={events} />}
+      {}
+      {test.method != null && methodResult.length > 0 && (
+        <View>
+          <Text>
+            {ImageMethodNames[test.method]} result: {methodResult}
+          </Text>
+        </View>
+      )}
     </View>
   );
 }
