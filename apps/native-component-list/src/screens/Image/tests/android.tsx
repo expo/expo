@@ -13,6 +13,14 @@ const imageTests: ImageTestGroup = {
       loadOnDemand: true,
     },
     {
+      name: 'Loading indicator source',
+      props: {
+        source: images.require_highres,
+        loadingIndicatorSource: images.require_loadingIndicator_svg,
+      },
+      loadOnDemand: true,
+    },
+    {
       name: 'accessible',
       props: {
         accessible: true,
