@@ -1,7 +1,7 @@
 PODS:
   - ABI40_0_0-lottie-react-native (3.4.0):
     - ABI40_0_0React
-    - lottie-ios (~> 3.1.8)
+    - lottie-ios (~> 3.2.3)
   - ABI40_0_0EXAdsAdMob (8.4.0):
     - ABI40_0_0UMCore
     - Google-Mobile-Ads-SDK (= 7.69.0)
@@ -875,7 +875,7 @@ PODS:
     - RCT-Folly (= 2020.01.13.00)
   - ABI41_0_0lottie-react-native (3.4.0):
     - ABI41_0_0React
-    - lottie-ios (~> 3.1.8)
+    - lottie-ios (~> 3.2.3)
   - ABI41_0_0RCTRequired (0.63.2)
   - ABI41_0_0RCTTypeSafety (0.63.2):
     - ABI41_0_0FBLazyVector (= 0.63.2)
@@ -1478,7 +1478,7 @@ PODS:
     - RCT-Folly (= 2020.01.13.00)
   - ABI42_0_0lottie-react-native (4.0.2):
     - ABI42_0_0React-Core
-    - lottie-ios (~> 3.1.8)
+    - lottie-ios (~> 3.2.3)
   - ABI42_0_0RCTRequired (0.63.2)
   - ABI42_0_0RCTTypeSafety (0.63.2):
     - ABI42_0_0FBLazyVector (= 0.63.2)
@@ -2105,9 +2105,9 @@ PODS:
     - GTMSessionFetcher/Core (~> 1.5)
   - GTMSessionFetcher/Core (1.5.0)
   - JKBigInteger2 (0.0.5)
-  - lottie-ios (3.1.9)
-  - lottie-react-native (4.0.2):
-    - lottie-ios (~> 3.1.8)
+  - lottie-ios (3.2.3)
+  - lottie-react-native (4.0.3):
+    - lottie-ios (~> 3.2.3)
     - React-Core
   - MBProgressHUD (1.2.0)
   - MLKitCommon (2.1.0):
@@ -3773,7 +3773,7 @@ EXTERNAL SOURCES:
     :path: "../react-native-lab/react-native/ReactCommon/yoga"
 
 SPEC CHECKSUMS:
-  ABI40_0_0-lottie-react-native: 26e0e92bec37b7d428d850d6d33c0327df520bf7
+  ABI40_0_0-lottie-react-native: 99b25649a9c260df2800ba6ad646edc0b68d02b1
   ABI40_0_0EXAdsAdMob: 8778f0ee1aac15a7f590c26609d9812142366935
   ABI40_0_0EXAdsFacebook: 2806ff4ba9bec16e3b3586af16a18db59802ee44
   ABI40_0_0EXAmplitude: fb7793f57385650c460819f1b83ab58ca99ac376
@@ -3945,7 +3945,7 @@ SPEC CHECKSUMS:
   ABI41_0_0EXWebBrowser: 5125cd0d9eba1f87301b784d1fbfb602a16d7fa1
   ABI41_0_0FBLazyVector: 6d79f50b57819134875729057a6709a7bdc2e2bb
   ABI41_0_0FBReactNativeSpec: eafcbea09ff7448a7b870a34d982604d01af10e3
-  ABI41_0_0lottie-react-native: f89d01fabb97a4e884ac009c41b8250e97f275ca
+  ABI41_0_0lottie-react-native: bd87703fa1839420dedbd08258b5d02450332414
   ABI41_0_0RCTRequired: c886a71bfed09ac26a1ee800bfc9b880cef06ddf
   ABI41_0_0RCTTypeSafety: 895eac82ff364b18023d6786f6ba5da9ef379047
   ABI41_0_0React: a8baf9eb14d4852c10d642e9518f6c01ebd60ccc
@@ -4053,7 +4053,7 @@ SPEC CHECKSUMS:
   ABI42_0_0EXWebBrowser: 54d4399ed04c284e183a90d0439b96fd041d2900
   ABI42_0_0FBLazyVector: b7ece1b8817a64a6e50199e5308f4f64f9c2258d
   ABI42_0_0FBReactNativeSpec: db1207c0dc76a1c1fc6f380f25a53ab4f6d94e26
-  ABI42_0_0lottie-react-native: f43915414d21becfef2d0a463edfc20e71c9b3da
+  ABI42_0_0lottie-react-native: 41c5bd906ed2e90b7bf87b98b99ff151ea2f0bcc
   ABI42_0_0RCTRequired: ef174cb948cb39f1816890f70bda9402c9e5fc49
   ABI42_0_0RCTTypeSafety: d32f0a5f43c09760e390e997525f9502d12031e6
   ABI42_0_0React: d1063307b9f7b60d60d1e0c55d12382711bc26ec
@@ -4185,8 +4185,8 @@ SPEC CHECKSUMS:
   GTMAppAuth: ad5c2b70b9a8689e1a04033c9369c4915bfcbe89
   GTMSessionFetcher: b3503b20a988c4e20cc189aa798fd18220133f52
   JKBigInteger2: e91672035c42328c48b7dd015b66812ddf40ca9b
-  lottie-ios: 3a3758ef5a008e762faec9c9d50a39842f26d124
-  lottie-react-native: 4dff8fe8d10ddef9e7880e770080f4a56121397e
+  lottie-ios: c058aeafa76daa4cf64d773554bccc8385d0150e
+  lottie-react-native: abf7a5255678c0cbb3b418b9f2f403efe6f54561
   MBProgressHUD: 3ee5efcc380f6a79a7cc9b363dd669c5e1ae7406
   MLKitCommon: 9ed187a042139d51c0d8bf6a8301bb20b375c576
   MLKitFaceDetection: 5b92261dd6e4205e3dab0df62537ac3f4e90e5db
