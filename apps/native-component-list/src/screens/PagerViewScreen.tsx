@@ -1,6 +1,6 @@
-import PagerView from 'react-native-pager-view';
 import React from 'react';
 import { Platform, StyleSheet, Text, View } from 'react-native';
+import PagerView from 'react-native-pager-view';
 
 export default function PagerViewScreen() {
   return (
