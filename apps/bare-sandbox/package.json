@@ -10,8 +10,8 @@
   },
   "dependencies": {
     "@babel/runtime": "^7.5.5",
-    "expo": "~42.0.0-alpha.0",
-    "expo-modules-core": "~0.3.0-alpha.0",
+    "expo": "~43.0.0-alpha.1",
+    "expo-modules-core": "~0.3.0",
     "expo-splash-screen": "~0.11.0",
     "expo-status-bar": "~1.0.4",
     "expo-dev-client": "~0.5.1",
@@ -29,7 +29,7 @@
     "expo-module-scripts": "^2.0.0",
     "expo-yarn-workspaces": "^1.5.2",
     "babel-plugin-module-resolver": "^4.1.0",
-    "babel-preset-expo": "~8.4.0"
+    "babel-preset-expo": "~8.5.0"
   },
   "expo-yarn-workspaces": {
     "symlinks": [

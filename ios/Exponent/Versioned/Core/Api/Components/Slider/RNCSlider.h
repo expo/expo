@@ -22,6 +22,7 @@
 @property (nonatomic, strong) UIImage *minimumTrackImage;
 @property (nonatomic, strong) UIImage *maximumTrackImage;
 @property (nonatomic, strong) UIImage *thumbImage;
+@property (nonatomic, assign) bool tapToSeek;
 @property (nonatomic, strong) NSString *accessibilityUnits;
 @property (nonatomic, strong) NSArray *accessibilityIncrements;
 

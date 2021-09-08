@@ -10,7 +10,7 @@ import com.facebook.react.ReactActivityDelegate;
 import com.facebook.react.ReactRootView;
 import com.swmansion.gesturehandler.react.RNGestureHandlerEnabledRootView;
 
-import expo.modules.adapters.react.ReactActivityDelegateWrapper;
+import expo.modules.ReactActivityDelegateWrapper;
 import expo.modules.devlauncher.DevLauncherController;
 import expo.modules.devmenu.react.DevMenuAwareReactActivity;
 

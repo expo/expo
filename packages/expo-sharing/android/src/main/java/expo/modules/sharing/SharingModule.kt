@@ -109,7 +109,7 @@ class SharingModule(
       addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
     }
 
-  override fun onActivityResult(activity: Activity, requestCode: Int, resultCode: Int, data: Intent) {
+  override fun onActivityResult(activity: Activity, requestCode: Int, resultCode: Int, data: Intent?) {
     if (requestCode == REQUEST_CODE && pendingPromise != null) {
       pendingPromise?.resolve(Bundle.EMPTY)
       pendingPromise = null
