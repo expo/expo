@@ -66,14 +66,12 @@ class ExpoImageModule(val context: ReactApplicationContext) : ReactContextBaseJa
           .apply(sizeOptions)
           .load(url)
           .into(object : SimpleTarget<ExpoImageSize>() {
-            private val promiseRef = promise
-
             override fun onResourceReady(resource: ExpoImageSize, transition: Transition<in ExpoImageSize>?) {
-              promiseRef.resolve(resource.asWritableNativeMap())
+              promise.resolve(resource.asWritableNativeMap())
             }
 
             override fun onLoadFailed(errorDrawable: Drawable?) {
-              promiseRef.reject("ERR_IMAGE_GETSIZE_FAILURE", "Failed to get size of the image: $url")
+              promise.reject("ERR_IMAGE_GETSIZE_FAILURE", "Failed to get size of the image: $url")
             }
           })
     } catch (e: Exception) {
