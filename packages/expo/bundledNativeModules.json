@@ -7,7 +7,7 @@
   "@react-native-community/slider": "4.1.4",
   "@react-native-community/viewpager": "5.0.11",
   "@react-native-picker/picker": "1.16.7",
-  "@react-native-segmented-control/segmented-control": "2.3.0",
+  "@react-native-segmented-control/segmented-control": "2.4.0",
   "@stripe/stripe-react-native": "0.1.4",
   "@unimodules/core": "~7.2.0-alpha.0",
   "@unimodules/react-native-adapter": "~6.5.0-alpha.0",
