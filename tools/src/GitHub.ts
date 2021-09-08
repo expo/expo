@@ -1,4 +1,9 @@
 import { Octokit, RestEndpointMethodTypes } from '@octokit/rest';
+import parseDiff from 'parse-diff';
+import path from 'path';
+
+import { EXPO_DIR } from './Constants';
+import { GitFileDiff } from './Git';
 
 const octokit = new Octokit({
   auth: process.env.GITHUB_TOKEN,
@@ -26,6 +31,34 @@ export async function getPullRequestAsync(pull_number: number): Promise<PullRequ
     pull_number,
   });
   return data;
+}
+
+/**
+ * Requests and parses the diff of the pull request with given number.
+ */
+export async function getPullRequestDiffAsync(
+  pull_number: number,
+  base_path: string = EXPO_DIR
+): Promise<GitFileDiff[]> {
+  const { data } = await octokit.pulls.get({
+    owner,
+    repo,
+    pull_number,
+    headers: {
+      accept: 'application/vnd.github.v3.diff',
+    },
+  });
+
+  // When the custom accept header is provided the returned data
+  // doesn't match declared type (it's a string).
+  const diff = parseDiff(data as unknown as string);
+
+  return diff.map((entry) => {
+    return {
+      ...entry,
+      path: path.join(base_path, (entry.deleted ? entry.from : entry.to)!),
+    };
+  });
 }
 
 /**
