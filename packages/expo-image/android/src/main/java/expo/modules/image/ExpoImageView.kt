@@ -237,7 +237,9 @@ class ExpoImageView(
   }
 
   /**
-   * Called when Glide "injects" drawable into the view
+   * Called when Glide "injects" drawable into the view.
+   * When `resizeMode = REPEAT`, we need to update
+   * received drawable (unless null) and set correct tiling.
    */
   override fun setImageDrawable(drawable: Drawable?) {
     val maybeUpdatedDrawable = drawable
