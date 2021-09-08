@@ -1,5 +1,7 @@
 package versioned.host.exp.exponent.modules.api.components.reactnativestripesdk
 
+import android.os.Bundle
+import android.util.Log
 import com.facebook.react.bridge.*
 import com.stripe.android.PaymentAuthConfig
 import com.stripe.android.model.*
@@ -22,6 +24,7 @@ internal fun mapIntentStatus(status: StripeIntent.Status?): String {
     else -> "Unknown"
   }
 }
+
 
 internal fun mapCaptureMethod(captureMethod: PaymentIntent.CaptureMethod?): String {
   return when (captureMethod) {
@@ -99,6 +102,7 @@ internal fun mapPaymentMethodType(type: PaymentMethod.Type?): String {
     PaymentMethod.Type.SepaDebit -> "SepaDebit"
     PaymentMethod.Type.Sofort -> "Sofort"
     PaymentMethod.Type.Upi -> "Upi"
+    PaymentMethod.Type.WeChatPay -> "WeChatPay"
     else -> "Unknown"
   }
 }
@@ -123,6 +127,7 @@ internal fun mapToPaymentMethodType(type: String?): PaymentMethod.Type? {
     "SepaDebit" -> PaymentMethod.Type.SepaDebit
     "Sofort" -> PaymentMethod.Type.Sofort
     "Upi" -> PaymentMethod.Type.Upi
+    "WeChatPay" -> PaymentMethod.Type.WeChatPay
     else -> null
   }
 }
@@ -236,6 +241,7 @@ internal fun mapFromCard(card: Card?): WritableMap? {
   return cardMap
 }
 
+
 internal fun mapFromToken(token: Token): WritableMap {
   val tokenMap: WritableMap = WritableNativeMap()
 
@@ -323,7 +329,7 @@ internal fun mapFromPaymentIntentResult(paymentIntent: PaymentIntent): WritableM
   map.putString("status", mapIntentStatus(paymentIntent.status))
   map.putString("description", paymentIntent.description)
   map.putString("receiptEmail", paymentIntent.receiptEmail)
-  map.putInt("created", convertToUnixTimestamp(paymentIntent.created))
+  map.putString("created", convertToUnixTimestamp(paymentIntent.created))
   map.putString("captureMethod", mapCaptureMethod(paymentIntent.captureMethod))
   map.putString("confirmationMethod", mapConfirmationMethod(paymentIntent.confirmationMethod))
   map.putNull("lastPaymentError")
@@ -353,7 +359,7 @@ internal fun mapFromPaymentIntentResult(paymentIntent: PaymentIntent): WritableM
     map.putDouble("amount", it.toDouble())
   }
   paymentIntent.canceledAt?.let {
-    map.putInt("canceledAt", convertToUnixTimestamp(it))
+    map.putString("canceledAt", convertToUnixTimestamp(it))
   }
   return map
 }
@@ -388,21 +394,31 @@ fun getValOr(map: ReadableMap, key: String, default: String? = ""): String? {
   return if (map.hasKey(key)) map.getString(key) else default
 }
 
-internal fun mapToAddress(addressMap: ReadableMap?): Address? {
+internal fun mapToAddress(addressMap: ReadableMap?, cardAddress: Address?): Address? {
   if (addressMap == null) {
     return null
   }
-  return Address.Builder()
+  val address = Address.Builder()
     .setPostalCode(getValOr(addressMap, "postalCode"))
     .setCity(getValOr(addressMap, "city"))
     .setCountry(getValOr(addressMap, "country"))
     .setLine1(getValOr(addressMap, "line1"))
     .setLine2(getValOr(addressMap, "line2"))
     .setState(getValOr(addressMap, "state"))
-    .build()
+
+    cardAddress?.let { ca ->
+      ca.postalCode?.let {
+        address.setPostalCode(it)
+      }
+      ca.country?.let {
+        address.setCountry(it)
+      }
+    }
+
+  return address.build()
 }
 
-internal fun mapToBillingDetails(billingDetails: ReadableMap?): PaymentMethod.BillingDetails? {
+internal fun mapToBillingDetails(billingDetails: ReadableMap?, cardAddress: Address?): PaymentMethod.BillingDetails? {
   if (billingDetails == null) {
     return null
   }
@@ -413,10 +429,18 @@ internal fun mapToBillingDetails(billingDetails: ReadableMap?): PaymentMethod.Bi
     .setLine1(getValOr(billingDetails, "addressLine1"))
     .setLine2(getValOr(billingDetails, "addressLine2"))
     .setState(getValOr(billingDetails, "addressState"))
-    .build()
+
+    cardAddress?.let { ca ->
+      ca.postalCode?.let {
+        address.setPostalCode(it)
+      }
+      ca.country?.let {
+        address.setCountry(it)
+      }
+    }
 
   return PaymentMethod.BillingDetails.Builder()
-    .setAddress(address)
+    .setAddress(address.build())
     .setName(getValOr(billingDetails, "name"))
     .setPhone(getValOr(billingDetails, "phone"))
     .setEmail(getValOr(billingDetails, "email"))
@@ -461,8 +485,8 @@ fun getBooleanOrFalse(map: ReadableMap?, key: String): Boolean {
   return if (map?.hasKey(key) == true) map.getBoolean(key) else false
 }
 
-private fun convertToUnixTimestamp(timestamp: Long): Int {
-  return (timestamp * 1000).toInt()
+private fun convertToUnixTimestamp(timestamp: Long): String {
+  return (timestamp * 1000).toString()
 }
 
 fun mapToUICustomization(params: ReadableMap): PaymentAuthConfig.Stripe3ds2UiCustomization {
@@ -485,35 +509,35 @@ fun mapToUICustomization(params: ReadableMap): PaymentAuthConfig.Stripe3ds2UiCus
   val continueButtonCustomizationBuilder = PaymentAuthConfig.Stripe3ds2ButtonCustomization.Builder()
   val resendButtonCustomizationBuilder = PaymentAuthConfig.Stripe3ds2ButtonCustomization.Builder()
 
-  getStringOrNull(labelCustomization, "headingTextColor")?.let {
+  getStringOrNull(labelCustomization,"headingTextColor")?.let {
     labelCustomizationBuilder.setHeadingTextColor(it)
   }
-  getStringOrNull(labelCustomization, "textColor")?.let {
+  getStringOrNull(labelCustomization,"textColor")?.let {
     labelCustomizationBuilder.setTextColor(it)
   }
-  getIntOrNull(labelCustomization, "headingFontSize")?.let {
+  getIntOrNull(labelCustomization,"headingFontSize")?.let {
     labelCustomizationBuilder.setHeadingTextFontSize(it)
   }
-  getIntOrNull(labelCustomization, "textFontSize")?.let {
+  getIntOrNull(labelCustomization,"textFontSize")?.let {
     labelCustomizationBuilder.setTextFontSize(it)
   }
 
-  getStringOrNull(navigationBarCustomization, "headerText")?.let {
+  getStringOrNull(navigationBarCustomization,"headerText")?.let {
     toolbarCustomizationBuilder.setHeaderText(it)
   }
-  getStringOrNull(navigationBarCustomization, "buttonText")?.let {
+  getStringOrNull(navigationBarCustomization,"buttonText")?.let {
     toolbarCustomizationBuilder.setButtonText(it)
   }
-  getStringOrNull(navigationBarCustomization, "textColor")?.let {
+  getStringOrNull(navigationBarCustomization,"textColor")?.let {
     toolbarCustomizationBuilder.setTextColor(it)
   }
-  getStringOrNull(navigationBarCustomization, "statusBarColor")?.let {
+  getStringOrNull(navigationBarCustomization,"statusBarColor")?.let {
     toolbarCustomizationBuilder.setStatusBarColor(it)
   }
-  getStringOrNull(navigationBarCustomization, "backgroundColor")?.let {
+  getStringOrNull(navigationBarCustomization,"backgroundColor")?.let {
     toolbarCustomizationBuilder.setBackgroundColor(it)
   }
-  getIntOrNull(navigationBarCustomization, "textFontSize")?.let {
+  getIntOrNull(navigationBarCustomization,"textFontSize")?.let {
     toolbarCustomizationBuilder.setTextFontSize(it)
   }
 
@@ -603,6 +627,8 @@ fun mapToUICustomization(params: ReadableMap): PaymentAuthConfig.Stripe3ds2UiCus
     resendButtonCustomizationBuilder.setTextFontSize(it)
   }
 
+
+
   val uiCustomization = PaymentAuthConfig.Stripe3ds2UiCustomization.Builder()
     .setLabelCustomization(
       labelCustomizationBuilder.build()
@@ -649,8 +675,8 @@ internal fun mapFromSetupIntentResult(setupIntent: SetupIntent): WritableMap {
   map.putString("paymentMethodId", setupIntent.paymentMethodId)
   map.putString("usage", mapSetupIntentUsage(setupIntent.usage))
 
-  if (setupIntent.created != null) {
-    map.putInt("created", convertToUnixTimestamp(setupIntent.created))
+  if(setupIntent.created != null) {
+    map.putString("created", convertToUnixTimestamp(setupIntent.created))
   }
 
   setupIntent.lastSetupError?.let {
@@ -691,8 +717,33 @@ internal fun mapSetupIntentUsage(type: StripeIntent.Usage?): String {
 
 fun mapToPaymentIntentFutureUsage(type: String?): ConfirmPaymentIntentParams.SetupFutureUsage? {
   return when (type) {
-    "OffSession" -> ConfirmPaymentIntentParams.SetupFutureUsage.OffSession
-    "OnSession" -> ConfirmPaymentIntentParams.SetupFutureUsage.OnSession
-    else -> null
+    "OffSession" ->  ConfirmPaymentIntentParams.SetupFutureUsage.OffSession
+    "OnSession" ->  ConfirmPaymentIntentParams.SetupFutureUsage.OnSession
+    else ->  null
   }
+}
+
+fun toBundleObject(readableMap: ReadableMap?): Bundle? {
+  val result = Bundle()
+  if (readableMap == null) {
+    return result
+  }
+  val iterator = readableMap.keySetIterator()
+  while (iterator.hasNextKey()) {
+    val key = iterator.nextKey()
+    when (readableMap.getType(key)) {
+      ReadableType.Null -> result.putString(key, null)
+      ReadableType.Boolean -> result.putBoolean(key, readableMap.getBoolean(key))
+      ReadableType.Number -> try {
+        result.putInt(key, readableMap.getInt(key))
+      } catch (e: Exception) {
+        result.putDouble(key, readableMap.getDouble(key))
+      }
+      ReadableType.String -> result.putString(key, readableMap.getString(key))
+      ReadableType.Map -> result.putBundle(key, toBundleObject(readableMap.getMap(key)))
+      ReadableType.Array -> Log.e("toBundleException", "Cannot put arrays of objects into bundles. Failed on: $key.")
+      else -> Log.e("toBundleException", "Could not convert object with key: $key.")
+    }
+  }
+  return result
 }

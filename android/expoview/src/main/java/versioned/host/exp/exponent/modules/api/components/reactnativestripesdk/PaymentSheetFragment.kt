@@ -41,12 +41,13 @@ class PaymentSheetFragment : Fragment() {
     val merchantDisplayName = arguments?.getString("merchantDisplayName").orEmpty()
     val customerId = arguments?.getString("customerId").orEmpty()
     val customerEphemeralKeySecret = arguments?.getString("customerEphemeralKeySecret").orEmpty()
-    val countryCode = arguments?.getString("countryCode").orEmpty()
+    val countryCode = arguments?.getString("merchantCountryCode").orEmpty()
+    val googlePayEnabled = arguments?.getBoolean("googlePay")
     val testEnv = arguments?.getBoolean("testEnv")
     paymentIntentClientSecret = arguments?.getString("paymentIntentClientSecret").orEmpty()
     setupIntentClientSecret = arguments?.getString("setupIntentClientSecret").orEmpty()
 
-    val paymentOptionCallback = object : PaymentOptionCallback {
+    val paymentOptionCallback = object: PaymentOptionCallback {
       override fun onPaymentOption(paymentOption: PaymentOption?) {
         val intent = Intent(ON_PAYMENT_OPTION_ACTION)
 
@@ -66,7 +67,7 @@ class PaymentSheetFragment : Fragment() {
         val intent = Intent(ON_PAYMENT_RESULT_ACTION)
 
         intent.putExtra("paymentResult", paymentResult)
-        activity?.sendBroadcast(intent)
+          activity?.sendBroadcast(intent)
       }
     }
 
@@ -76,10 +77,10 @@ class PaymentSheetFragment : Fragment() {
         id = customerId,
         ephemeralKeySecret = customerEphemeralKeySecret
       ) else null,
-      googlePay = PaymentSheet.GooglePayConfiguration(
+      googlePay = if (googlePayEnabled == true) PaymentSheet.GooglePayConfiguration(
         environment = if (testEnv == true) PaymentSheet.GooglePayConfiguration.Environment.Test else PaymentSheet.GooglePayConfiguration.Environment.Production,
         countryCode = countryCode
-      )
+      ) else null
     )
 
     if (arguments?.getBoolean("customFlow") == true) {
@@ -87,6 +88,8 @@ class PaymentSheetFragment : Fragment() {
       configureFlowController()
     } else {
       paymentSheet = PaymentSheet(this, paymentResultCallback)
+      val intent = Intent(ON_INIT_PAYMENT_SHEET)
+      activity?.sendBroadcast(intent)
     }
 
     val intent = Intent(ON_FRAGMENT_CREATED)
@@ -94,15 +97,15 @@ class PaymentSheetFragment : Fragment() {
   }
 
   fun present() {
-    if (!paymentIntentClientSecret.isNullOrEmpty()) {
-      paymentSheet?.presentWithPaymentIntent(paymentIntentClientSecret!!, paymentSheetConfiguration)
-    } else if (!setupIntentClientSecret.isNullOrEmpty()) {
-      paymentSheet?.presentWithSetupIntent(setupIntentClientSecret!!, paymentSheetConfiguration)
+    if(paymentSheet != null) {
+      if (!paymentIntentClientSecret.isNullOrEmpty()) {
+        paymentSheet?.presentWithPaymentIntent(paymentIntentClientSecret!!, paymentSheetConfiguration)
+      } else if (!setupIntentClientSecret.isNullOrEmpty()) {
+        paymentSheet?.presentWithSetupIntent(setupIntentClientSecret!!, paymentSheetConfiguration)
+      }
+    } else if(flowController != null) {
+      flowController?.presentPaymentOptions()
     }
-  }
-
-  fun presentPaymentOptions() {
-    flowController?.presentPaymentOptions()
   }
 
   fun confirmPayment() {
@@ -151,19 +154,18 @@ fun getBitmapFromVectorDrawable(context: Context?, drawableId: Int): Bitmap? {
 
   drawable = DrawableCompat.wrap(drawable).mutate()
   val bitmap = Bitmap.createBitmap(drawable.intrinsicWidth, drawable.intrinsicHeight, Bitmap.Config.ARGB_8888)
-  bitmap.eraseColor(Color.WHITE)
+  bitmap.eraseColor(Color.WHITE);
   val canvas = Canvas(bitmap)
   drawable.setBounds(0, 0, canvas.width, canvas.height)
   drawable.draw(canvas)
   return bitmap
 }
-
-fun getBase64FromBitmap(bitmap: Bitmap?): String? {
-  if (bitmap == null) {
-    return null
-  }
-  val baos = ByteArrayOutputStream()
-  bitmap.compress(Bitmap.CompressFormat.PNG, 100, baos)
-  val imageBytes: ByteArray = baos.toByteArray()
-  return Base64.encodeToString(imageBytes, Base64.DEFAULT)
-}
+ fun getBase64FromBitmap(bitmap: Bitmap?): String? {
+   if (bitmap == null) {
+     return null
+   }
+   val baos = ByteArrayOutputStream()
+   bitmap.compress(Bitmap.CompressFormat.PNG, 100, baos)
+   val imageBytes: ByteArray = baos.toByteArray()
+   return Base64.encodeToString(imageBytes, Base64.DEFAULT)
+ }

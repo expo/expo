@@ -51,4 +51,5 @@ internal class CardChangedEvent constructor(viewTag: Int, private val cardDetail
   companion object {
     const val EVENT_NAME = "onCardChange"
   }
+
 }
