@@ -26,12 +26,6 @@ import java.lang.IllegalStateException
 import java.util.concurrent.CancellationException
 import java.util.concurrent.ExecutionException
 
-/**
- * We need to convert blocking java.util.concurrent.Future result
- * into non-blocking suspend function. We use extension function for that
- */
-suspend fun <T> FutureTarget<T>.awaitGet() = runInterruptible(Dispatchers.IO) { get() }
-
 class ExpoImageModule(val context: ReactApplicationContext) : ReactContextBaseJavaModule(context) {
   private val moduleCoroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
   override fun getName() = "ExpoImageModule"
@@ -113,6 +107,7 @@ class ExpoImageModule(val context: ReactApplicationContext) : ReactContextBaseJa
       // ExecutionException means that asset was not available in cache. Other exceptions are not caught intentionally
       return false
     }
+  }
     
   override fun onCatalystInstanceDestroy() {
     try {
