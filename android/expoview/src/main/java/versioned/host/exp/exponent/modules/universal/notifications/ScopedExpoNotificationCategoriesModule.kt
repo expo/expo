@@ -19,8 +19,8 @@ class ScopedExpoNotificationCategoriesModule(
     NotificationsService.getCategories(
       context,
       object : ResultReceiver(null) {
-        override fun onReceiveResult(resultCode: Int, resultData: Bundle) {
-          val categories = resultData.getParcelableArrayList<NotificationCategory>(NotificationsService.NOTIFICATION_CATEGORIES_KEY)
+        override fun onReceiveResult(resultCode: Int, resultData: Bundle?) {
+          val categories = resultData?.getParcelableArrayList<NotificationCategory>(NotificationsService.NOTIFICATION_CATEGORIES_KEY)
           if (resultCode == NotificationsService.SUCCESS_CODE && categories != null) {
             promise.resolve(serializeScopedCategories(categories))
           } else {

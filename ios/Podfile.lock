@@ -1799,7 +1799,7 @@ PODS:
     - ExpoModulesCore
   - EXAppleAuthentication (3.2.0):
     - ExpoModulesCore
-  - EXApplication (3.2.0):
+  - EXApplication (3.3.0):
     - ExpoModulesCore
   - EXAV (9.2.0):
     - ExpoModulesCore
@@ -1828,7 +1828,7 @@ PODS:
     - ExpoModulesCore
   - EXClipboard (1.1.0):
     - ExpoModulesCore
-  - EXConstants (11.0.0):
+  - EXConstants (11.1.0):
     - ExpoModulesCore
   - EXContacts (9.2.0):
     - ExpoModulesCore
@@ -1838,7 +1838,7 @@ PODS:
     - ExpoModulesCore
   - EXDocumentPicker (9.2.0):
     - ExpoModulesCore
-  - EXErrorRecovery (2.2.0):
+  - EXErrorRecovery (2.3.0):
     - ExpoModulesCore
   - EXFacebook (11.2.0):
     - ExpoModulesCore
@@ -1850,7 +1850,7 @@ PODS:
     - MLKitCommon (= 2.1.0)
     - MLKitFaceDetection (= 1.2.0)
     - MLKitVision (= 1.2.0)
-  - EXFileSystem (11.1.0):
+  - EXFileSystem (12.0.0):
     - ExpoModulesCore
   - EXFirebaseAnalytics (4.1.0):
     - EXFirebaseCore
@@ -1859,7 +1859,7 @@ PODS:
   - EXFirebaseCore (3.1.0):
     - ExpoModulesCore
     - Firebase/Core (= 7.7.0)
-  - EXFont (9.2.0):
+  - EXFont (9.3.0):
     - ExpoModulesCore
   - EXGL (10.4.0):
     - EXGL_CPP
@@ -1882,7 +1882,7 @@ PODS:
     - ExpoModulesCore
   - EXJSONUtils/Tests (0.1.0):
     - ExpoModulesCore
-  - EXKeepAwake (9.2.0):
+  - EXKeepAwake (9.3.0):
     - ExpoModulesCore
   - EXLinearGradient (9.3.0-alpha.0):
     - ExpoModulesCore
@@ -1910,9 +1910,11 @@ PODS:
     - ExpoModulesCore
   - EXPermissions (12.1.0):
     - ExpoModulesCore
-  - ExpoModulesCore (0.3.0-alpha.0):
+  - Expo (43.0.0-alpha.0):
+    - ExpoModulesCore
+  - ExpoModulesCore (0.3.0):
     - React-Core
-  - ExpoModulesCore/Tests (0.3.0-alpha.0):
+  - ExpoModulesCore/Tests (0.3.0):
     - Nimble
     - Quick
     - React-Core
@@ -2328,7 +2330,7 @@ PODS:
     - React-jsi (= 0.64.2)
     - React-perflogger (= 0.64.2)
   - React-jsinspector (0.64.2)
-  - react-native-webview (11.6.2):
+  - react-native-webview (11.13.0):
     - React-Core
   - React-perflogger (0.64.2)
   - React-RCTActionSheet (0.64.2):
@@ -2819,6 +2821,7 @@ DEPENDENCIES:
   - EXNetwork (from `../packages/expo-network/ios`)
   - EXNotifications (from `../packages/expo-notifications/ios`)
   - EXPermissions (from `../packages/expo-permissions/ios`)
+  - Expo (from `../packages/expo/ios`)
   - ExpoModulesCore (from `../packages/expo-modules-core/ios`)
   - ExpoModulesCore/Tests (from `../packages/expo-modules-core/ios`)
   - EXPrint (from `../packages/expo-print/ios`)
@@ -3648,6 +3651,8 @@ EXTERNAL SOURCES:
     :path: "../packages/expo-notifications/ios"
   EXPermissions:
     :path: "../packages/expo-permissions/ios"
+  Expo:
+    :path: "../packages/expo/ios"
   ExpoModulesCore:
     :path: "../packages/expo-modules-core/ios"
   EXPrint:
@@ -4090,7 +4095,7 @@ SPEC CHECKSUMS:
   EXAmplitude: f0c3dd959d629181c0c2b4bc52717580a539a600
   EXAppAuth: b08cb811e9da25a3e0bde00f7f2f661de81d437e
   EXAppleAuthentication: 7cb875a822aa952e48a70d1c2d6e55ee16e5228f
-  EXApplication: 9e62c21a7eeef9e9f65dea359c92d0efee1b3c7a
+  EXApplication: d99a1ecb99dfb63dab8acb66d0181857ee79b25f
   EXAV: d92c151ecee1466cf8b5f6b51b8e01c9c161261e
   EXBackgroundFetch: 9d0e1b3e5b59639884758de88c251d9d476f6a11
   EXBarCodeScanner: 295ec5b7dd14f3eda97bcee30ca191f320edf7a4
@@ -4102,18 +4107,18 @@ SPEC CHECKSUMS:
   EXCamera: ae8d2ffc917f3f6c726fadbdcf2190e6d724c6d6
   EXCellular: b416818c34a08e9ed2827885dcabd815adf89128
   EXClipboard: 0286db41a88d13d5a8b12faaa1bc3ac74a1ee680
-  EXConstants: 5fb4f6412de04130e2b0f42a108c9acbad4159d3
+  EXConstants: d948a2e8be3ccc5abdc9cda7a45169329b05b6f9
   EXContacts: 204931c2a86dd94e0f4a29601cc1277ff19bd410
   EXCrypto: 1c33beef27cfe7bd3a9625652647233ff56943b7
   EXDevice: 2519a0b4a54da12218da20f768f64eb5a2000e6a
   EXDocumentPicker: d410f3158bf3893ce80c042c946066bb1942329b
-  EXErrorRecovery: 9cb7806aaa8318ee07663a3c517774c886a3b19a
+  EXErrorRecovery: 01ad515c94afe82e0b5cab7ce3fdee1560648f54
   EXFacebook: d0f98bce00489c07f966ae11d1334423ef53cf59
   EXFaceDetector: 0a4cc20bf5fe0e5bbf82656c7c4355d0042c4263
-  EXFileSystem: 84376b30d7124634a2c78e98dd01bc4db1eb57f6
+  EXFileSystem: 097ec5742242d068c22b9d2a133e9027ac34b4fb
   EXFirebaseAnalytics: 6a62227660282dbf5329d4eb88e9e351c7535dab
   EXFirebaseCore: 9eac3c2c435e4629544aa9011f33d3aa1131b2b5
-  EXFont: 5dc6738a1cc56fae071e5f69dfb0a5d394cbabfc
+  EXFont: d85c861ebfe3fafcb8046cafe52242542b6a35d7
   EXGL: fa9238e146f0ce530ea2d883328c114d07ee2d62
   EXGL_CPP: 93d2668e22b8fde8ac76f067ffbafefed3540dab
   EXGoogleSignIn: 145c08cf9ccfc11c2376f239f76a56f56f5cbc24
@@ -4122,7 +4127,7 @@ SPEC CHECKSUMS:
   EXImageManipulator: 609ec11891dff0b0ef303c43ef0be1a4eb0b0af3
   EXImagePicker: 624295ff8decc995e1a005c9ea72ff4b772f5216
   EXJSONUtils: 219837572921f8dc21ee6e60a6503efec4ce1c59
-  EXKeepAwake: 7ef7a081f90fa7e81b57257bd772efe7a4403966
+  EXKeepAwake: 5b0143f9834f154456b65d25e6c8fdc34b5234f4
   EXLinearGradient: 6549f5881005464c6ebc66a9af9049b71a3f2fda
   EXLocalAuthentication: 2b438d36b152406011c3c24803e1df226ddc0a41
   EXLocalization: 18c4461eb66125734dc2c73866572f3450f7c9b8
@@ -4133,7 +4138,8 @@ SPEC CHECKSUMS:
   EXNetwork: b420f5e99b4291f2ba0f632a6eb099b1f126a7d8
   EXNotifications: 11ddca2668114114ffd7c36627ff3ffa259d64d2
   EXPermissions: 0760a7139b84dc8335ed297566892ddc856e89bb
-  ExpoModulesCore: 9c9b14263d0172fda222033fc992250abc4dfec6
+  Expo: e474a8224db7ce7f1387b3ea36e61df07ec34e0d
+  ExpoModulesCore: addd06a6516be2f8553196449524852ea95f21b5
   EXPrint: 1b63871bd0f286f9dc5441412b3b9049b7c9fe32
   EXRandom: 4d6fe53e19a91df3f66665371962284677d741c9
   EXScreenCapture: 27e03154defba1f0e28cda34777f49c34ead3497
@@ -4201,7 +4207,7 @@ SPEC CHECKSUMS:
   React-jsi: 67747b9722f6dab2ffe15b011bcf6b3f2c3f1427
   React-jsiexecutor: 80c46bd381fd06e418e0d4f53672dc1d1945c4c3
   React-jsinspector: cc614ec18a9ca96fd275100c16d74d62ee11f0ae
-  react-native-webview: 193d233c29eacce1f42ca2637dab7ba79c25a6de
+  react-native-webview: 133a6a5149f963259646e710b4545c67ef35d7c9
   React-perflogger: 25373e382fed75ce768a443822f07098a15ab737
   React-RCTActionSheet: af7796ba49ffe4ca92e7277a5d992d37203f7da5
   React-RCTAnimation: 6a2e76ab50c6f25b428d81b76a5a45351c4d77aa
@@ -4225,6 +4231,6 @@ SPEC CHECKSUMS:
   Yoga: 575c581c63e0d35c9a83f4b46d01d63abc1100ac
   ZXingObjC: fdbb269f25dd2032da343e06f10224d62f537bdb
 
-PODFILE CHECKSUM: e7f66f914d778455cb8e99513b730839f01a3b95
+PODFILE CHECKSUM: c6e79d1299e3e7ce8c040f8174b71d7408ffa09a
 
 COCOAPODS: 1.10.2

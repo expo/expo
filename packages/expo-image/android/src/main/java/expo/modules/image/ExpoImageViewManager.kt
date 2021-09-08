@@ -52,7 +52,7 @@ class ExpoImageViewManager(applicationContext: ReactApplicationContext) : Simple
   @ReactProp(name = "resizeMode")
   fun setResizeMode(view: ExpoImageView, stringValue: String) {
     val resizeMode = ImageResizeMode.fromStringValue(stringValue)
-    view.setResizeMode(resizeMode)
+    view.resizeMode = resizeMode
   }
 
   @ReactProp(name = "blurRadius")

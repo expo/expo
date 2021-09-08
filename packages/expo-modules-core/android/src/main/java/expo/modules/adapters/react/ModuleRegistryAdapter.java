@@ -9,6 +9,7 @@ import expo.modules.adapters.react.views.SimpleViewManagerAdapter;
 import expo.modules.adapters.react.views.ViewGroupManagerAdapter;
 import expo.modules.core.ModuleRegistry;
 import expo.modules.core.interfaces.InternalModule;
+import expo.modules.core.interfaces.Package;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,8 +23,8 @@ public class ModuleRegistryAdapter implements ReactPackage {
   protected ReactModuleRegistryProvider mModuleRegistryProvider;
   protected ReactAdapterPackage mReactAdapterPackage = new ReactAdapterPackage();
 
-  public ModuleRegistryAdapter() {
-    mModuleRegistryProvider = new ReactModuleRegistryProvider(ExpoModulesPackageListDelegate.getPackageList(), null);
+  public ModuleRegistryAdapter(List<Package> packageList) {
+    mModuleRegistryProvider = new ReactModuleRegistryProvider(packageList, null);
   }
 
   public ModuleRegistryAdapter(ReactModuleRegistryProvider moduleRegistryProvider) {

@@ -1,6 +1,5 @@
 import chalk from 'chalk';
 
-import Git from '../Git';
 import * as GitHub from '../GitHub';
 import logger from '../Logger';
 import { COMMENT_HEADER, generateReportFromOutputs } from './reports';
@@ -27,22 +26,8 @@ export async function reviewPullRequestAsync(prNumber: number) {
   const pr = await GitHub.getPullRequestAsync(prNumber);
   const user = await GitHub.getAuthenticatedUserAsync();
 
-  // Fetch the base commit with a depth that is equal to the number of commits in the PR increased by one.
-  // The last one is a merge base.
-  logger.info(
-    '👾 Fetching base commit',
-    chalk.yellow.bold(pr.head.sha),
-    'with depth',
-    chalk.yellow((pr.commits + 1).toString())
-  );
-  await Git.fetchAsync({
-    remote: 'origin',
-    ref: pr.head.sha,
-    depth: pr.commits + 1,
-  });
-
   // Get the diff of the pull request.
-  const diff = await Git.getDiffAsync(`${pr.head.sha}~${pr.commits}`, pr.head.sha);
+  const diff = await GitHub.getPullRequestDiffAsync(prNumber);
 
   const input: ReviewInput = {
     pullRequest: pr,

@@ -9,6 +9,7 @@ Package-specific changes not released in any SDK will be added here just before 
 
 - Updated `react-native-shared-element` from `0.7.0` to `0.8.2`. ([#14245](https://github.com/expo/expo/pull/14245) by [@IjzerenHein](https://github.com/IjzerenHein))
 - Updated `firebase` from `8.2.3` to `8.10.0`. ([#14259](https://github.com/expo/expo/pull/14259) by [@IjzerenHein](https://github.com/IjzerenHein))
+- Updated `react-native-webview` from `11.6.2` to `11.13.0`. ([#14301](https://github.com/expo/expo/pull/14301) by [@kudo](https://github.com/kudo))
 - Updated `react-native-lottie` from `4.0.2` to `4.0.3`. ([#14331](https://github.com/expo/expo/pull/14331) by [@cruzach](https://github.com/cruzach))
 
 ### 🛠 Breaking changes
