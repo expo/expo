@@ -26,6 +26,12 @@ interface AndroidGlideException extends AndroidThrowable {
     origin: AndroidThrowable | null;
     causes: AndroidThrowable[] | null;
 }
+export interface ImageResolvedAssetSource {
+    height: number;
+    width: number;
+    scale: number;
+    uri: string;
+}
 export interface ImageErrorEventData {
     error: string;
     ios?: {

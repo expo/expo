@@ -1,6 +1,6 @@
 import React from 'react';
 import { AccessibilityProps, ImageResizeMode, ImageSourcePropType, ImageStyle as RNImageStyle, NativeSyntheticEvent, StyleProp } from 'react-native';
-import { ImageErrorEventData, ImageLoadEventData, ImageLoadProgressEventData } from './Image.types';
+import { ImageErrorEventData, ImageLoadEventData, ImageLoadProgressEventData, ImageResolvedAssetSource } from './Image.types';
 interface ImageStyle extends RNImageStyle {
     elevation?: number;
 }
@@ -40,7 +40,7 @@ export default class Image extends React.Component<ImageProps, ImageState> {
      *
      * @return an object constaining `uri` `width` and `height`.
      */
-    static resolveAssetSource(source: ImageSourcePropType): object;
+    static resolveAssetSource(source: ImageSourcePropType): ImageResolvedAssetSource;
     state: {
         onLoad: undefined;
         onError: undefined;

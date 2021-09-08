@@ -12,7 +12,12 @@ import {
 } from 'react-native';
 
 import ExpoImage, { ExpoImageModule } from './ExpoImage';
-import { ImageErrorEventData, ImageLoadEventData, ImageLoadProgressEventData } from './Image.types';
+import {
+  ImageErrorEventData,
+  ImageLoadEventData,
+  ImageLoadProgressEventData,
+  ImageResolvedAssetSource,
+} from './Image.types';
 
 const DEFAULT_RESIZE_MODE = 'cover';
 
@@ -87,7 +92,7 @@ export default class Image extends React.Component<ImageProps, ImageState> {
    *
    * @return an object constaining `uri` `width` and `height`.
    */
-  static resolveAssetSource(source: ImageSourcePropType): object {
+  static resolveAssetSource(source: ImageSourcePropType): ImageResolvedAssetSource {
     return ReactNativeImage.resolveAssetSource(source);
   }
 
