@@ -19,6 +19,7 @@ const PODS_DIR = path.join(IOS_DIR, 'Pods');
 // We will be increasing this list slowly. Once all are enabled,
 // find a better way to ignore some packages that shouldn't be prebuilt (like interfaces).
 export const PACKAGES_TO_PREBUILD = [
+  'expo-modules-core',
   // '@unimodules/core',
   // '@unimodules/react-native-adapter',
   // 'expo-ads-admob',
@@ -130,6 +131,7 @@ export async function buildFrameworksForProjectAsync(
       await xcodeProject.buildFrameworkAsync(xcodeProject.name, flavor, {
         ONLY_ACTIVE_ARCH: false,
         BITCODE_GENERATION_MODE: 'bitcode',
+        // Disable `BUILD_LIBRARY_FOR_DISTRIBUTION` to workaround segmentation fault: 11
         BUILD_LIBRARY_FOR_DISTRIBUTION: true,
         DEAD_CODE_STRIPPING: true,
         DEPLOYMENT_POSTPROCESSING: true,

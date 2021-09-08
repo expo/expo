@@ -130,6 +130,7 @@ export async function createSpecFromPodspecAsync(
 
         // Suppresses deprecation warnings coming from frameworks like OpenGLES.
         VALIDATE_WORKSPACE_SKIPPED_SDK_FRAMEWORKS: arrayize(podspec.frameworks).join(' '),
+        MODULEMAP_FILE: '$(SRCROOT)/module.modulemap',
       },
     },
   };
