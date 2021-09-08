@@ -17,7 +17,7 @@ PODS:
   - EXAppAuth (10.2.0):
     - AppAuth (~> 1.2)
     - ExpoModulesCore
-  - EXApplication (3.2.0):
+  - EXApplication (3.3.0):
     - ExpoModulesCore
   - EXAV (9.2.0):
     - ExpoModulesCore
@@ -42,7 +42,7 @@ PODS:
     - ExpoModulesCore
   - EXClipboard (1.1.0):
     - ExpoModulesCore
-  - EXConstants (11.0.0):
+  - EXConstants (11.1.0):
     - ExpoModulesCore
   - EXContacts (9.2.0):
     - ExpoModulesCore
@@ -52,7 +52,7 @@ PODS:
     - ExpoModulesCore
   - EXDocumentPicker (9.2.0):
     - ExpoModulesCore
-  - EXErrorRecovery (2.2.0):
+  - EXErrorRecovery (2.3.0):
     - ExpoModulesCore
   - EXFacebook (11.2.0):
     - ExpoModulesCore
@@ -64,7 +64,7 @@ PODS:
     - MLKitCommon (= 2.1.0)
     - MLKitFaceDetection (= 1.2.0)
     - MLKitVision (= 1.2.0)
-  - EXFileSystem (11.1.0):
+  - EXFileSystem (12.0.0):
     - ExpoModulesCore
   - EXFirebaseAnalytics (4.1.0):
     - EXFirebaseCore
@@ -73,7 +73,7 @@ PODS:
   - EXFirebaseCore (3.1.0):
     - ExpoModulesCore
     - Firebase/Core (= 7.7.0)
-  - EXFont (9.2.0):
+  - EXFont (9.3.0):
     - ExpoModulesCore
   - EXGL (10.4.0):
     - EXGL_CPP
@@ -96,7 +96,7 @@ PODS:
     - ExpoModulesCore
   - EXJSONUtils (0.1.0):
     - ExpoModulesCore
-  - EXKeepAwake (9.2.0):
+  - EXKeepAwake (9.3.0):
     - ExpoModulesCore
   - EXLinearGradient (9.3.0-alpha.0):
     - ExpoModulesCore
@@ -121,7 +121,7 @@ PODS:
     - ExpoModulesCore
   - EXPermissions (12.1.0):
     - ExpoModulesCore
-  - Expo (42.0.0-alpha.0):
+  - Expo (43.0.0-alpha.0):
     - ExpoModulesCore
   - expo-dev-client (0.5.1):
     - expo-dev-launcher
@@ -175,7 +175,7 @@ PODS:
     - SDWebImageSVGKitPlugin (~> 1.3)
     - SDWebImageWebPCoder (~> 0.8.4)
     - SVGKit (~> 2.1)
-  - ExpoModulesCore (0.3.0-alpha.0):
+  - ExpoModulesCore (0.3.0):
     - React-Core
   - EXPrint (10.2.0):
     - ExpoModulesCore
@@ -1207,7 +1207,7 @@ SPEC CHECKSUMS:
   DoubleConversion: cf9b38bf0b2d048436d9a82ad2abe1404f11e7de
   EXAmplitude: f0c3dd959d629181c0c2b4bc52717580a539a600
   EXAppAuth: b08cb811e9da25a3e0bde00f7f2f661de81d437e
-  EXApplication: 9e62c21a7eeef9e9f65dea359c92d0efee1b3c7a
+  EXApplication: d99a1ecb99dfb63dab8acb66d0181857ee79b25f
   EXAV: d92c151ecee1466cf8b5f6b51b8e01c9c161261e
   EXBackgroundFetch: 9d0e1b3e5b59639884758de88c251d9d476f6a11
   EXBarCodeScanner: 295ec5b7dd14f3eda97bcee30ca191f320edf7a4
@@ -1218,18 +1218,18 @@ SPEC CHECKSUMS:
   EXCamera: ae8d2ffc917f3f6c726fadbdcf2190e6d724c6d6
   EXCellular: b416818c34a08e9ed2827885dcabd815adf89128
   EXClipboard: 0286db41a88d13d5a8b12faaa1bc3ac74a1ee680
-  EXConstants: 5fb4f6412de04130e2b0f42a108c9acbad4159d3
+  EXConstants: d948a2e8be3ccc5abdc9cda7a45169329b05b6f9
   EXContacts: 204931c2a86dd94e0f4a29601cc1277ff19bd410
   EXCrypto: 1c33beef27cfe7bd3a9625652647233ff56943b7
   EXDevice: 2519a0b4a54da12218da20f768f64eb5a2000e6a
   EXDocumentPicker: d410f3158bf3893ce80c042c946066bb1942329b
-  EXErrorRecovery: 9cb7806aaa8318ee07663a3c517774c886a3b19a
+  EXErrorRecovery: 01ad515c94afe82e0b5cab7ce3fdee1560648f54
   EXFacebook: d0f98bce00489c07f966ae11d1334423ef53cf59
   EXFaceDetector: 0a4cc20bf5fe0e5bbf82656c7c4355d0042c4263
-  EXFileSystem: 84376b30d7124634a2c78e98dd01bc4db1eb57f6
+  EXFileSystem: 097ec5742242d068c22b9d2a133e9027ac34b4fb
   EXFirebaseAnalytics: 6a62227660282dbf5329d4eb88e9e351c7535dab
   EXFirebaseCore: 9eac3c2c435e4629544aa9011f33d3aa1131b2b5
-  EXFont: 5dc6738a1cc56fae071e5f69dfb0a5d394cbabfc
+  EXFont: d85c861ebfe3fafcb8046cafe52242542b6a35d7
   EXGL: fa9238e146f0ce530ea2d883328c114d07ee2d62
   EXGL_CPP: 93d2668e22b8fde8ac76f067ffbafefed3540dab
   EXGoogleSignIn: 145c08cf9ccfc11c2376f239f76a56f56f5cbc24
@@ -1239,7 +1239,7 @@ SPEC CHECKSUMS:
   EXImagePicker: 624295ff8decc995e1a005c9ea72ff4b772f5216
   EXInAppPurchases: 68c5adea26e9fca756a71a008bfe4b8e50fc5490
   EXJSONUtils: 219837572921f8dc21ee6e60a6503efec4ce1c59
-  EXKeepAwake: 7ef7a081f90fa7e81b57257bd772efe7a4403966
+  EXKeepAwake: 5b0143f9834f154456b65d25e6c8fdc34b5234f4
   EXLinearGradient: 6549f5881005464c6ebc66a9af9049b71a3f2fda
   EXLocalAuthentication: 2b438d36b152406011c3c24803e1df226ddc0a41
   EXLocalization: 18c4461eb66125734dc2c73866572f3450f7c9b8
@@ -1250,13 +1250,13 @@ SPEC CHECKSUMS:
   EXNetwork: b420f5e99b4291f2ba0f632a6eb099b1f126a7d8
   EXNotifications: 11ddca2668114114ffd7c36627ff3ffa259d64d2
   EXPermissions: 0760a7139b84dc8335ed297566892ddc856e89bb
-  Expo: e1392ae2f040d8e97c7ef808c12bb0c673eba3f9
+  Expo: e474a8224db7ce7f1387b3ea36e61df07ec34e0d
   expo-dev-client: 5d7dec0d6f961145dce1c86c40bd61bf39177881
   expo-dev-launcher: c04b363ed79d77cee2c2c656e7c230669bb4bde0
   expo-dev-menu: 2a8ba15595d6222d3b5e1c0a0e5c88f4c6d6f548
   expo-dev-menu-interface: cca641e9e52dfe688fd24c67795f14d6daea4bb9
   expo-image: 8c08b81eab730b5cc0ef56c1fc80d7ae0d5f2b97
-  ExpoModulesCore: 9c9b14263d0172fda222033fc992250abc4dfec6
+  ExpoModulesCore: addd06a6516be2f8553196449524852ea95f21b5
   EXPrint: 1b63871bd0f286f9dc5441412b3b9049b7c9fe32
   EXRandom: 4d6fe53e19a91df3f66665371962284677d741c9
   EXScreenCapture: 27e03154defba1f0e28cda34777f49c34ead3497

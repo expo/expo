@@ -6,6 +6,14 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 11.1.0 — 2021-09-08
+
+### 🎉 New features
+
 - Use stable manifest ID where applicable. ([#12964](https://github.com/expo/expo/pull/12964) by [@wschurman](https://github.com/wschurman))
 - Update JS code to read manifest2 when manifest is not available. ([#13602](https://github.com/expo/expo/pull/13602) by [@wschurman](https://github.com/wschurman))
 - Update location of EAS projectId in new manifest. ([#13739](https://github.com/expo/expo/pull/13739) by [@wschurman](https://github.com/wschurman))
@@ -17,8 +25,6 @@
 - Fix `PROJECT_ROOT` path resolution in `get-app-config-ios.sh`. ([#13439](https://github.com/expo/expo/pull/13439) by [@ajsmth](https://github.com/ajsmth))
 - Fix app.config not generated. ([#13667](https://github.com/expo/expo/pull/13667) by [@kudo](https://github.com/kudo))
 - Fix build phase error in xcode for nodejs possibly not found in nvm. ([#14047](https://github.com/expo/expo/pull/14047) by [@kudo](https://github.com/kudo))
-
-### 💡 Others
 
 ### ⚠️ Notices
 
