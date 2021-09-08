@@ -77,7 +77,7 @@ class ExpoImageModule(val context: ReactApplicationContext) : ReactContextBaseJa
             }
           })
     } catch (e: Exception) {
-      promise.reject("ERR_IMAGE_GETSIZE_FAILURE", "Failed to get size of the image: $url", e)
+      promise.reject("ERR_IMAGE_GETSIZE_FAILURE", "Failed to get size of the image: $url: ${e.message}", e)
     }
   }
 }
