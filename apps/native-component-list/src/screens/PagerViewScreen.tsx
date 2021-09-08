@@ -1,10 +1,10 @@
-import ViewPager from '@react-native-community/viewpager';
+import PagerView from 'react-native-pager-view';
 import React from 'react';
 import { Platform, StyleSheet, Text, View } from 'react-native';
 
-export default function ViewPagerScreen() {
+export default function PagerViewScreen() {
   return (
-    <ViewPager
+    <PagerView
       style={styles.container}
       initialPage={0}
       transitionStyle={Platform.OS === 'ios' ? 'curl' : 'scroll'}
@@ -19,12 +19,12 @@ export default function ViewPagerScreen() {
         <Text style={styles.text}>Second page</Text>
         <Text style={styles.description}>Swipe this to scroll back</Text>
       </View>
-    </ViewPager>
+    </PagerView>
   );
 }
 
-ViewPagerScreen.navigationOptions = {
-  title: 'ViewPager Example',
+PagerViewScreen.navigationOptions = {
+  title: 'PagerView Example',
   gesturesEnabled: false,
 };
 
