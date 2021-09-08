@@ -11,12 +11,12 @@
     "eject": "expo eject"
   },
   "dependencies": {
-    "expo": "~42.0.0-alpha.0",
-    "expo-status-bar": "~1.0.4",
+    "expo": "~43.0.0-alpha.2",
+    "expo-status-bar": "~1.1.0",
     "react": "17.0.1",
     "react-dom": "17.0.1",
     "react-native": "0.64.2",
-    "react-native-web": "~0.13.12"
+    "react-native-web": "0.17.1"
   },
   "devDependencies": {
     "@babel/core": "^7.12.9"
