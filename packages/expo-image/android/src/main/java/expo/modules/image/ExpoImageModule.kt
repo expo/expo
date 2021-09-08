@@ -1,26 +1,26 @@
 package expo.modules.image
 
-import android.graphics.drawable.Drawable
 import android.util.Log
 
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.load.model.GlideUrl
-import com.bumptech.glide.request.FutureTarget
+import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.RequestOptions
-import com.bumptech.glide.request.target.SimpleTarget
-import com.bumptech.glide.request.transition.Transition
+import com.bumptech.glide.request.target.Target
 
 import com.facebook.react.bridge.Promise
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactContextBaseJavaModule
 import com.facebook.react.bridge.ReactMethod
+import expo.modules.image.targets.ExpoImageSizeTarget
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runInterruptible
 import kotlin.Exception
 
 import java.lang.IllegalStateException
@@ -65,17 +65,20 @@ class ExpoImageModule(val context: ReactApplicationContext) : ReactContextBaseJa
           .`as`(ExpoImageSize::class.java)
           .apply(sizeOptions)
           .load(url)
-          .into(object : SimpleTarget<ExpoImageSize>() {
-            override fun onResourceReady(resource: ExpoImageSize, transition: Transition<in ExpoImageSize>?) {
-              promise.resolve(resource.asWritableNativeMap())
+          .listener(object : RequestListener<ExpoImageSize> {
+            override fun onLoadFailed(e: GlideException?, model: Any?, target: Target<ExpoImageSize>?, isFirstResource: Boolean): Boolean {
+              promise.reject("ERR_IMAGE_GETSIZE_FAILURE", "Failed to get size of the image: $url. Error message: ${e?.message}", e)
+              return true // prevent onLoadFailed from being called on the target
             }
 
-            override fun onLoadFailed(errorDrawable: Drawable?) {
-              promise.reject("ERR_IMAGE_GETSIZE_FAILURE", "Failed to get size of the image: $url")
+            override fun onResourceReady(resource: ExpoImageSize, model: Any?, target: Target<ExpoImageSize>?, dataSource: DataSource?, isFirstResource: Boolean): Boolean {
+              promise.resolve(resource.asWritableNativeMap())
+              return true // prevent onResourceReady from being called on the target
             }
           })
+          .into(ExpoImageSizeTarget())
     } catch (e: Exception) {
-      promise.reject("ERR_IMAGE_GETSIZE_FAILURE", "Failed to get size of the image: $url: ${e.message}", e)
+      promise.reject("ERR_IMAGE_GETSIZE_FAILURE", "Failed to get size of the image: $url. Error message: ${e.message}", e)
     }
   }
 
