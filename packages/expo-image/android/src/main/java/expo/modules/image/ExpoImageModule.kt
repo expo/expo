@@ -1,6 +1,8 @@
 package expo.modules.image
 
 import android.graphics.drawable.Drawable
+import android.util.Log
+
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.load.model.GlideUrl
@@ -16,9 +18,13 @@ import com.facebook.react.bridge.ReactMethod
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runInterruptible
 import kotlin.Exception
+
+import java.lang.IllegalStateException
+import java.util.concurrent.CancellationException
 
 /**
  * We need to convert blocking java.util.concurrent.Future result
@@ -77,5 +83,16 @@ class ExpoImageModule(val context: ReactApplicationContext) : ReactContextBaseJa
     } catch (e: Exception) {
       promise.reject("ERR_IMAGE_GETSIZE_FAILURE", "Failed to get size of the image: $url: ${e.message}", e)
     }
+  }
+
+  override fun onCatalystInstanceDestroy() {
+    try {
+      // TODO: Use [expo.modules.core.errors.ModuleDestroyedException] when migrated to Expo Module
+      moduleCoroutineScope.cancel(CancellationException("ExpoImage module is destroyed. Cancelling all jobs."))
+    } catch (e: IllegalStateException) {
+      Log.w("ExpoImageModule", "No coroutines to cancel")
+    }
+
+    super.onCatalystInstanceDestroy()
   }
 }

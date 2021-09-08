@@ -2,6 +2,7 @@ package expo.modules.updates.manifest
 
 import android.net.Uri
 import android.util.Log
+import expo.modules.jsonutils.getNullable
 import expo.modules.structuredheaders.BooleanItem
 import expo.modules.structuredheaders.NumberItem
 import expo.modules.structuredheaders.Parser
@@ -54,7 +55,7 @@ class NewUpdateManifest private constructor(
         AssetEntity(
           mLaunchAsset.getString("key"),
           // the fileExtension is not necessary for the launch asset and EAS servers will not include it.
-          mLaunchAsset.optString("fileExtension")
+          mLaunchAsset.getNullable("fileExtension")
         ).apply {
           url = Uri.parse(mLaunchAsset.getString("url"))
           isLaunchAsset = true
@@ -74,7 +75,7 @@ class NewUpdateManifest private constructor(
               assetObject.getString("fileExtension")
             ).apply {
               url = Uri.parse(assetObject.getString("url"))
-              embeddedAssetFilename = assetObject.optString("embeddedAssetFilename")
+              embeddedAssetFilename = assetObject.getNullable("embeddedAssetFilename")
             }
           )
         } catch (e: JSONException) {

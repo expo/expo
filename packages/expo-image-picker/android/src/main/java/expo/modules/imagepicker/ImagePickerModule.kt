@@ -15,6 +15,7 @@ import expo.modules.core.ExportedModule
 import expo.modules.core.ModuleRegistry
 import expo.modules.core.ModuleRegistryDelegate
 import expo.modules.core.Promise
+import expo.modules.core.errors.ModuleDestroyedException
 import expo.modules.core.interfaces.ActivityEventListener
 import expo.modules.core.interfaces.ActivityProvider
 import expo.modules.core.interfaces.ExpoMethod
@@ -56,7 +57,7 @@ class ImagePickerModule(
   override fun onDestroy() {
     try {
       mUIManager.unregisterLifecycleEventListener(this)
-      moduleCoroutineScope.cancel(ModuleDestroyedException())
+      moduleCoroutineScope.cancel(ModuleDestroyedException(ImagePickerConstants.PROMISES_CANCELED))
     } catch (e: IllegalStateException) {
       Log.e(ImagePickerConstants.TAG, "The scope does not have a job in it")
     }

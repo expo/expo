@@ -12,8 +12,8 @@ import com.facebook.soloader.SoLoader;
 import java.util.List;
 
 import androidx.annotation.NonNull;
-import expo.modules.adapters.react.ApplicationLifecycleDispatcher;
-import expo.modules.adapters.react.ReactNativeHostWrapper;
+import expo.modules.ReactNativeHostWrapper;
+import expo.modules.ApplicationLifecycleDispatcher;
 import expo.modules.devlauncher.DevLauncherController;
 
 public class MainApplication extends Application implements ReactApplication {

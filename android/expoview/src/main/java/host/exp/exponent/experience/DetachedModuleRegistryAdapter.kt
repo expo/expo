@@ -22,7 +22,6 @@ open class DetachedModuleRegistryAdapter(moduleRegistryProvider: ReactModuleRegi
     experienceKey: ExperienceKey,
     experienceProperties: Map<String, Any?>,
     manifest: Manifest,
-    experienceStableLegacyId: String,
     otherModules: List<NativeModule>
   ): List<NativeModule> {
     val reactApplicationContext = scopedContext.context as ReactApplicationContext

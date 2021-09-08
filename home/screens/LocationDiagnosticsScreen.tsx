@@ -94,7 +94,7 @@ export default class LocationDiagnosticsScreen extends React.Component<Props, St
       alert('Click `Start tracking` to start getting location updates.');
     }
 
-    this.setState(state => ({
+    this.setState((state) => ({
       accuracy: (task && task.options.accuracy) || state.accuracy,
       isTracking,
       savedLocations,
@@ -179,7 +179,7 @@ export default class LocationDiagnosticsScreen extends React.Component<Props, St
 
   toggleLocationIndicator = async () => {
     this.setState(
-      state => ({ showsBackgroundLocationIndicator: !state.showsBackgroundLocationIndicator }),
+      (state) => ({ showsBackgroundLocationIndicator: !state.showsBackgroundLocationIndicator }),
       async () => {
         if (this.state.isTracking) {
           await this.startLocationUpdates();

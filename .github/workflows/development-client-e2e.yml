@@ -1,0 +1,50 @@
+name: Development Client e2e
+
+on:
+  workflow_dispatch: {}
+  pull_request:
+    paths:
+      - .github/workflows/development-client-e2e.yml
+      - packages/expo-dev-*/**
+  push:
+    branches: [master]
+    paths:
+      - .github/workflows/development-client-e2e.yml
+      - packages/expo-dev-*/**
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  detox_e2e:
+    runs-on: macos-11
+    steps:
+      - name: 👀 Checkout
+        uses: actions/checkout@v2
+      - name: 🍺 Install required tools
+        run: |
+          brew tap wix/brew
+          brew install applesimutils
+          brew install watchman
+          echo "$(pwd)/bin" >> $GITHUB_PATH
+      - name: 💎 Setup Ruby and install gems
+        uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true
+      - name: 💎 Install cocoapods
+        run: sudo gem install cocoapods
+      - name: 🤖 Set up android emulator
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 29
+          avd-name: DevClientEmulator
+          script: echo "expo is awesome"
+      - name: 🧶 Install `expo-test-runner`
+        run: |
+          yarn global add expo-test-runner@$(cat package.json | grep '"expo-test-runner": "[0-9]*\.[0-9]*\.[0-9]*' | head -n 1 | awk '{print $2}' | sed 's/"//g; s/,//g')
+        working-directory: packages/expo-dev-client
+      - name: 🏃‍♂️ Run tests
+        run: |
+          yarn e2e
+        working-directory: packages/expo-dev-client

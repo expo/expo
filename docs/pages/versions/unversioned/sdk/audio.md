@@ -330,6 +330,15 @@ A static convenience method to construct and load a sound is also provided:
   }
   ```
 
+On the `soundObject` reference, the following API is provided:
+
+- `soundObject.setOnMetadataUpdate(onMetadataUpdate)` _[iOS only]_ 
+Sets a function to be called whenever the metadata (of type `AVMetadata`, details below) of the sound object, if any, changes.
+
+  #### Parameters
+
+  - **onMetadataUpdate (_function_)** -- A function taking a single object of type `AVMetadata` (described below) as a parameter.
+
 The rest of the API for `Audio.Sound` is the same as the imperative playback API for `Video`-- see the [AV documentation](av.md) for further information:
 
 - `soundObject.loadAsync(source, initialStatus = {}, downloadFirst = true)`
@@ -361,6 +370,12 @@ The rest of the API for `Audio.Sound` is the same as the imperative playback API
 - `soundObject.setIsLoopingAsync(value)`
 
 - `soundObject.setProgressUpdateIntervalAsync(millis)`
+
+## `AVMetadata`
+
+Object passed to the `onMetadataUpdate` function. It has the following keys:
+
+- `title`: a string with the title of the sound object. This key is optional.
 
 ## Recording sounds
 

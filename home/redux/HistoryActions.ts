@@ -35,7 +35,7 @@ export default {
       };
 
       let history = await LocalStorage.getHistoryAsync();
-      history = history.filter(item => item.url !== historyItem.url);
+      history = history.filter((item) => item.url !== historyItem.url);
       history.unshift(historyItem);
       await LocalStorage.saveHistoryAsync(history);
 

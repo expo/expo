@@ -45,9 +45,10 @@
     "react": "^17.0.2",
     "react-diff-view": "^2.4.7",
     "react-dom": "^17.0.2",
-    "react-markdown": "^5.0.3",
+    "react-markdown": "^6.0.3",
     "react-player": "^1.11.1",
     "react-visibility-sensor": "^5.1.1",
+    "remark-gfm": "^1.0.0",
     "tippy.js": "^6.3.1"
   },
   "devDependencies": {
@@ -79,7 +80,7 @@
     "http-server": "^0.12.3",
     "jest": "26.1.0",
     "prettier": "^2.3.1",
-    "puppeteer": "^3.3.0",
+    "puppeteer": "^10.2.0",
     "remark-cli": "^9.0.0",
     "remark-validate-links": "^10.0.4",
     "rimraf": "^3.0.2",

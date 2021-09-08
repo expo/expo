@@ -8,6 +8,7 @@ import android.util.Log
 import android.view.TextureView
 import android.view.TextureView.SurfaceTextureListener
 import expo.modules.core.ModuleRegistryDelegate
+import expo.modules.core.errors.ModuleDestroyedException
 import expo.modules.interfaces.barcodescanner.BarCodeScannerInterface
 import expo.modules.interfaces.barcodescanner.BarCodeScannerProviderInterface
 import expo.modules.interfaces.barcodescanner.BarCodeScannerSettings
@@ -53,7 +54,7 @@ internal class BarCodeScannerViewFinder(
     finderSurfaceTexture = null
     stopCamera()
     try {
-      coroutineScope.cancel(ScopeCancellationException())
+      coroutineScope.cancel(ModuleDestroyedException("View destroyed, scope canceled"))
     } catch (e: Exception) {
       Log.w("ScannerViewFinder", e.message ?: "", e)
     }
@@ -203,7 +204,7 @@ internal class BarCodeScannerViewFinder(
           }
         }
         barCodeScannerTaskLock = false
-      } catch (e: ScopeCancellationException) {
+      } catch (e: ModuleDestroyedException) {
         Log.w("BarCodeScanner", e.message ?: "", e)
       }
     }

@@ -548,20 +548,21 @@ public class LocationModule extends ExportedModule implements LifecycleEventList
     final FusedLocationProviderClient locationProvider = getLocationProvider();
 
     LocationCallback locationCallback = new LocationCallback() {
+      boolean isLocationAvailable = false;
       @Override
       public void onLocationResult(LocationResult locationResult) {
         Location location = locationResult != null ? locationResult.getLastLocation() : null;
 
         if (location != null) {
           callbacks.onLocationChanged(location);
+        } else if (!isLocationAvailable) {
+          callbacks.onLocationError(new LocationUnavailableException());
         }
       }
 
       @Override
       public void onLocationAvailability(LocationAvailability locationAvailability) {
-        if (!locationAvailability.isLocationAvailable()) {
-          callbacks.onLocationError(new LocationUnavailableException());
-        }
+        isLocationAvailable = locationAvailability.isLocationAvailable();
       }
     };
 

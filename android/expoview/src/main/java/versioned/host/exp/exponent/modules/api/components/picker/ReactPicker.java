@@ -9,8 +9,13 @@ package versioned.host.exp.exponent.modules.api.components.picker;
 
 import android.content.Context;
 import android.content.ContextWrapper;
+import android.content.res.ColorStateList;
 import android.content.res.Resources;
-import android.os.Build;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.GradientDrawable;
+import android.graphics.drawable.LayerDrawable;
+import android.graphics.drawable.RippleDrawable;
 import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.view.View;
@@ -24,6 +29,7 @@ import com.facebook.react.modules.i18nmanager.I18nUtil;
 import com.facebook.react.uimanager.UIManagerModule;
 
 import javax.annotation.Nullable;
+import host.exp.expoview.R;
 
 public class ReactPicker extends AppCompatSpinner {
 
@@ -66,40 +72,52 @@ public class ReactPicker extends AppCompatSpinner {
   public ReactPicker(Context context) {
     super(context);
     handleRTL(context);
+    setSpinnerBackground();
   }
 
   public ReactPicker(Context context, int mode) {
     super(context, mode);
     mMode = mode;
     handleRTL(context);
+    setSpinnerBackground();
   }
 
   public ReactPicker(Context context, AttributeSet attrs) {
     super(context, attrs);
     handleRTL(context);
+    setSpinnerBackground();
   }
 
   public ReactPicker(Context context, AttributeSet attrs, int defStyle) {
     super(context, attrs, defStyle);
     handleRTL(context);
+    setSpinnerBackground();
   }
 
   public ReactPicker(Context context, AttributeSet attrs, int defStyle, int mode) {
     super(context, attrs, defStyle, mode);
     mMode = mode;
     handleRTL(context);
+    setSpinnerBackground();
+  }
+
+  private void setSpinnerBackground() {
+    this.setBackgroundResource(R.drawable.spinner_dropdown_background);
+    // If there are multiple spinners rendered, for some reason, next spinners are inheriting
+    // background color of previous spinners if there is no color provided as a style
+    // To prevent, let's set color manually in constructor, if any value will be provided as a style,
+    // it will override value that is set here.
+    this.setBackgroundColor(Color.TRANSPARENT);
   }
 
   private void handleRTL(Context context) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-      boolean isRTL = I18nUtil.getInstance().isRTL(context);
-      if (isRTL) {
-        this.setLayoutDirection(View.LAYOUT_DIRECTION_RTL);
-        this.setTextDirection(View.TEXT_DIRECTION_RTL);
-      } else {
-        this.setLayoutDirection(View.LAYOUT_DIRECTION_LTR);
-        this.setTextDirection(View.TEXT_DIRECTION_LTR);
-      }
+    boolean isRTL = I18nUtil.getInstance().isRTL(context);
+    if (isRTL) {
+      this.setLayoutDirection(View.LAYOUT_DIRECTION_RTL);
+      this.setTextDirection(View.TEXT_DIRECTION_RTL);
+    } else {
+      this.setLayoutDirection(View.LAYOUT_DIRECTION_LTR);
+      this.setTextDirection(View.TEXT_DIRECTION_LTR);
     }
   }
 
@@ -238,6 +256,24 @@ public class ReactPicker extends AppCompatSpinner {
 
   public void setPrimaryColor(@Nullable Integer primaryColor) {
     mPrimaryColor = primaryColor;
+  }
+
+  public void setDropdownIconColor(@Nullable int color) {
+    LayerDrawable drawable = (LayerDrawable) this.getBackground();
+    RippleDrawable backgroundDrawable = (RippleDrawable) drawable.findDrawableByLayerId(R.id.dropdown_icon);
+    backgroundDrawable.setColorFilter(color, PorterDuff.Mode.SRC_ATOP);
+  }
+
+  public void setDropdownIconRippleColor(@Nullable int color) {
+    LayerDrawable drawable = (LayerDrawable) this.getBackground();
+    RippleDrawable backgroundDrawable = (RippleDrawable) drawable.findDrawableByLayerId(R.id.dropdown_icon);
+    backgroundDrawable.setColor(ColorStateList.valueOf(color));
+  }
+
+  public void setBackgroundColor(@Nullable int color) {
+    LayerDrawable drawable = (LayerDrawable) this.getBackground();
+    GradientDrawable backgroundDrawable = (GradientDrawable) drawable.findDrawableByLayerId(R.id.dropdown_background);
+    backgroundDrawable.setColor(color);
   }
 
   @VisibleForTesting

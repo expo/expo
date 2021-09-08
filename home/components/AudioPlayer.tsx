@@ -58,7 +58,7 @@ export default function AudioPlayer({ isAudioEnabled, source, style }: Props) {
 
   useEffect(() => {
     const sound = new Audio.Sound();
-    sound.setOnPlaybackStatusUpdate(status => {
+    sound.setOnPlaybackStatusUpdate((status) => {
       handlePlaybackStatusUpdate(sound, status);
     });
 

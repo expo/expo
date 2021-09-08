@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 9.3.0 — 2021-09-08
+
+### 💡 Others
+
 - Rewrite android code to Kotlin. ([#13996](https://github.com/expo/expo/pull/13996) by [@kkafar](https://github.com/kkafar))
 
 ## 9.2.0 — 2021-06-16

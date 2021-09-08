@@ -118,22 +118,22 @@ export const Quote = ({ children, ...rest }: { children: JSX.Element | JSX.Eleme
     </div>
   );
 
-  const newChildren: JSX.Element[] = React.Children.map(children, _children => {
-    const emoji = captureEmoji(_children?.props.children);
+  const newChildren: JSX.Element[] = React.Children.map(children, child => {
+    const emoji = captureEmoji(child?.props?.children);
 
     if (emoji) {
       icon = emoji;
 
       return {
-        ..._children,
+        ...child,
         props: {
-          ..._children.props,
-          children: removeEmoji(emoji, _children.props.children),
+          ...child?.props,
+          children: removeEmoji(emoji, child?.props?.children),
         },
       };
     }
 
-    return _children;
+    return child;
   });
 
   return (

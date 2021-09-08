@@ -32,7 +32,7 @@
     "@testing-library/react-hooks": "^3.2.1",
     "@tsconfig/node12": "^1.0.7",
     "@types/jest": "^26.0.24",
-    "babel-preset-expo": "~8.4.0",
+    "babel-preset-expo": "~8.5.0",
     "commander": "^2.19.0",
     "eslint-config-universe": "^7.0.1",
     "find-yarn-workspace-root": "~2.0.0",

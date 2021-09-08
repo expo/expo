@@ -4,6 +4,7 @@ import {
   Playback,
   PlaybackMixin,
   AVPlaybackSource,
+  AVMetadata,
   AVPlaybackStatus,
   AVPlaybackStatusToSet,
   assertStatusValuesInBounds,
@@ -25,6 +26,7 @@ export class Sound implements Playback {
   _eventEmitter: EventEmitter = new EventEmitter(ExponentAV);
   _coalesceStatusUpdatesInMillis: number = 100;
   _onPlaybackStatusUpdate: ((status: AVPlaybackStatus) => void) | null = null;
+  _onMetadataUpdate: ((metadata: AVMetadata) => void) | null = null;
 
   /** @deprecated Use `Sound.createAsync()` instead */
   static create = async (
@@ -91,6 +93,18 @@ export class Sound implements Playback {
     }
   };
 
+  _internalMetadataUpdateCallback = ({
+    key,
+    metadata,
+  }: {
+    key: AudioInstance;
+    metadata: AVMetadata;
+  }) => {
+    if (this._key === key) {
+      this._onMetadataUpdate?.(metadata);
+    }
+  };
+
   _internalErrorCallback = ({ key, error }: { key: AudioInstance; error: string }) => {
     if (this._key === key) {
       this._errorCallback(error);
@@ -104,7 +118,8 @@ export class Sound implements Playback {
         this._eventEmitter.addListener(
           'didUpdatePlaybackStatus',
           this._internalStatusUpdateCallback
-        )
+        ),
+        this._eventEmitter.addListener('didUpdateMetadata', this._internalMetadataUpdateCallback)
       );
 
       this._subscriptions.push(
@@ -144,6 +159,10 @@ export class Sound implements Playback {
   setOnPlaybackStatusUpdate(onPlaybackStatusUpdate: ((status: AVPlaybackStatus) => void) | null) {
     this._onPlaybackStatusUpdate = onPlaybackStatusUpdate;
     this.getStatusAsync();
+  }
+
+  setOnMetadataUpdate(onMetadataUpdate: (AVMetadata) => void) {
+    this._onMetadataUpdate = onMetadataUpdate;
   }
 
   // Loading / unloading API

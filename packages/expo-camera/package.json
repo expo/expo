@@ -36,7 +36,7 @@
   "dependencies": {
     "@expo/config-plugins": "^3.0.0",
     "@koale/useworker": "^4.0.2",
-    "expo-modules-core": "~0.3.0-alpha.0",
+    "expo-modules-core": "~0.3.0",
     "invariant": "2.2.4"
   },
   "devDependencies": {

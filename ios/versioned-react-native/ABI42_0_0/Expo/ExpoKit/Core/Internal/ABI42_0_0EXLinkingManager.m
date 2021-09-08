@@ -24,9 +24,15 @@ ABI42_0_0EX_EXPORT_SCOPED_MODULE(ABI42_0_0RCTLinkingManager, KernelLinkingManage
 
 - (instancetype)initWithExperienceStableLegacyId:(NSString *)experienceStableLegacyId
                                         scopeKey:(NSString *)scopeKey
-                                     kernelServiceDelegate:(id)kernelServiceInstance params:(NSDictionary *)params
-                {
-                  if (self = [super initWithExperienceStableLegacyId:experienceStableLegacyId scopeKey:scopeKey kernelServiceDelegate:kernelServiceInstance params:params]) {
+                                    easProjectId:(NSString *)easProjectId
+                           kernelServiceDelegate:(id)kernelServiceInstance
+                                          params:(NSDictionary *)params
+{
+  if (self = [super initWithExperienceStableLegacyId:experienceStableLegacyId
+                                            scopeKey:scopeKey
+                                        easProjectId:easProjectId
+                               kernelServiceDelegate:kernelServiceInstance
+                                              params:params]) {
     _kernelLinkingDelegate = kernelServiceInstance;
     _initialUrl = params[@"initialUri"];
     if (_initialUrl == [NSNull null]) {

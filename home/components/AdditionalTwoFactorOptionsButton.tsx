@@ -35,14 +35,14 @@ function AdditionalTwoFactorOptionsButton({
 }) {
   const handlePress = () => {
     const hasAuthenticatorSecondFactorDevices = secondFactorDevices.some(
-      device => device.method === UserSecondFactorDeviceMethod.AUTHENTICATOR
+      (device) => device.method === UserSecondFactorDeviceMethod.AUTHENTICATOR
     );
 
     const smsSecondFactorDevices = secondFactorDevices.filter(
-      device => device.method === UserSecondFactorDeviceMethod.SMS
+      (device) => device.method === UserSecondFactorDeviceMethod.SMS
     );
 
-    const deviceOptions = smsSecondFactorDevices.map(device => device.sms_phone_number!);
+    const deviceOptions = smsSecondFactorDevices.map((device) => device.sms_phone_number!);
     const options = [
       ...deviceOptions,
       ...(hasAuthenticatorSecondFactorDevices ? ['Authenticator'] : []),
@@ -55,7 +55,7 @@ function AdditionalTwoFactorOptionsButton({
         options,
         cancelButtonIndex,
       },
-      buttonIndex => {
+      (buttonIndex) => {
         if (buttonIndex < deviceOptions.length) {
           onSelectSMSSecondFactorDevice(smsSecondFactorDevices[buttonIndex]);
         } else if (hasAuthenticatorSecondFactorDevices && buttonIndex === deviceOptions.length) {

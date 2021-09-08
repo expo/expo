@@ -10,25 +10,13 @@
 @implementation RNCSlider
 {
   float _unclippedValue;
-  UITapGestureRecognizer * tapGesturer;
+  bool _minimumTrackImageSet;
+  bool _maximumTrackImageSet;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame
 {
-    self = [super initWithFrame:frame];
-    if (self) {
-        tapGesturer = [[UITapGestureRecognizer alloc] initWithTarget: self action:@selector(tapHandler:)];
-        [tapGesturer setNumberOfTapsRequired: 1];
-        [self addGestureRecognizer:tapGesturer];
-    }
-    return self;
-}
-
-- (void)tapHandler:(UITapGestureRecognizer *)gesture {
-    CGPoint touchPoint = [gesture locationInView:self];
-    float rangeWidth = self.maximumValue - self.minimumValue;
-    float sliderPercent = touchPoint.x / self.bounds.size.width;
-    [self setValue:self.minimumValue + (rangeWidth * sliderPercent) animated: YES];
+    return [super initWithFrame:frame];
 }
 
 - (void)setValue:(float)value
@@ -78,20 +66,25 @@
   if (trackImage != _trackImage) {
     _trackImage = trackImage;
     CGFloat width = trackImage.size.width / 2;
-    UIImage *minimumTrackImage = [trackImage resizableImageWithCapInsets:(UIEdgeInsets){
-      0, width, 0, width
-    } resizingMode:UIImageResizingModeStretch];
-    UIImage *maximumTrackImage = [trackImage resizableImageWithCapInsets:(UIEdgeInsets){
-      0, width, 0, width
-    } resizingMode:UIImageResizingModeStretch];
-    [self setMinimumTrackImage:minimumTrackImage forState:UIControlStateNormal];
-    [self setMaximumTrackImage:maximumTrackImage forState:UIControlStateNormal];
+    if (!_minimumTrackImageSet) {
+      UIImage *minimumTrackImage = [trackImage resizableImageWithCapInsets:(UIEdgeInsets){
+        0, width, 0, width
+      } resizingMode:UIImageResizingModeStretch];
+      [self setMinimumTrackImage:minimumTrackImage forState:UIControlStateNormal];
+    }
+    if (!_maximumTrackImageSet) {
+      UIImage *maximumTrackImage = [trackImage resizableImageWithCapInsets:(UIEdgeInsets){
+        0, width, 0, width
+      } resizingMode:UIImageResizingModeStretch];
+      [self setMaximumTrackImage:maximumTrackImage forState:UIControlStateNormal];
+    }
   }
 }
 
 - (void)setMinimumTrackImage:(UIImage *)minimumTrackImage
 {
   _trackImage = nil;
+  _minimumTrackImageSet = true;
   minimumTrackImage = [minimumTrackImage resizableImageWithCapInsets:(UIEdgeInsets){
     0, minimumTrackImage.size.width, 0, 0
   } resizingMode:UIImageResizingModeStretch];
@@ -106,6 +99,7 @@
 - (void)setMaximumTrackImage:(UIImage *)maximumTrackImage
 {
   _trackImage = nil;
+  _maximumTrackImageSet = true;
   maximumTrackImage = [maximumTrackImage resizableImageWithCapInsets:(UIEdgeInsets){
     0, 0, 0, maximumTrackImage.size.width
   } resizingMode:UIImageResizingModeStretch];
@@ -134,11 +128,6 @@
   } else {
     self.transform = CGAffineTransformMakeScale(1, 1);
   }
-}
-
-- (BOOL)beginTrackingWithTouch:(UITouch *)touch withEvent:(UIEvent *)event
-{
-    return YES;
 }
 
 @end

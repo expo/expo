@@ -1,4 +1,4 @@
-import { Picker } from '@react-native-picker/picker';
+import { Picker, PickerProps } from '@react-native-picker/picker';
 import { Platform } from 'expo-modules-core';
 import * as React from 'react';
 import { Text, Button } from 'react-native';
@@ -22,6 +22,22 @@ export default function PickerScreen() {
       {Platform.OS !== 'ios' && (
         <Section title="Disabled">
           <GenericPicker enabled={false} />
+        </Section>
+      )}
+
+      {Platform.OS === 'android' && (
+        <Section title="Multiline picker item">
+          <GenericPicker numberOfLines={2}>
+            <Picker.Item label="Really really really really really really really long label" />
+          </GenericPicker>
+        </Section>
+      )}
+
+      {Platform.OS === 'android' && (
+        <Section title="Single line picker item">
+          <GenericPicker numberOfLines={1}>
+            <Picker.Item label="Really really really really really really really long label" />
+          </GenericPicker>
         </Section>
       )}
 
@@ -56,7 +72,7 @@ PickerScreen.navigationOptions = {
   title: 'Picker',
 };
 
-function GenericPicker(props: Partial<React.ComponentProps<typeof Picker>>) {
+function GenericPicker(props: React.PropsWithChildren<PickerProps>) {
   const [value, setValue] = React.useState<any>('java');
 
   return (
@@ -66,6 +82,7 @@ function GenericPicker(props: Partial<React.ComponentProps<typeof Picker>>) {
         <Picker.Item label="JavaScript" value="js" />
         <Picker.Item label="Objective C" value="objc" />
         <Picker.Item label="Swift" value="swift" />
+        {props.children}
       </Picker>
       <Text>Selected: {value}</Text>
     </>
