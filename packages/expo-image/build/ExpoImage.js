@@ -5,7 +5,6 @@ const ExpoImageModule = NativeModules.ExpoImageModule;
 export { ExpoImageModule };
 export default function ExpoImage({ source, style, defaultSource, loadingIndicatorSource, ...props }) {
     const resolvedSource = Image.resolveAssetSource(source ?? {});
-    const resolvedDefaultSource = Image.resolveAssetSource(defaultSource ?? {});
     const resolvedStyle = StyleSheet.flatten([style]);
     const resolvedPlaceholder = Image.resolveAssetSource(defaultSource ?? loadingIndicatorSource ?? {});
     // If both are specified, we default to use default source
