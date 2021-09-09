@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix intent that started activity isn't passed further.
+
 ### 💡 Others
 
 ## 0.7.0 — 2021-09-02
