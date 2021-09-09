@@ -94,8 +94,7 @@ PODS:
     - ExpoModulesCore
   - EXInAppPurchases (11.0.0):
     - ExpoModulesCore
-  - EXJSONUtils (0.1.0):
-    - ExpoModulesCore
+  - EXJSONUtils (0.1.0)
   - EXKeepAwake (9.3.0):
     - ExpoModulesCore
   - EXLinearGradient (9.3.0-alpha.0):
@@ -111,7 +110,6 @@ PODS:
     - ExpoModulesCore
   - EXManifests (0.1.0):
     - EXJSONUtils
-    - ExpoModulesCore
   - EXMediaLibrary (12.1.0):
     - ExpoModulesCore
     - React-Core
@@ -206,8 +204,7 @@ PODS:
     - ExpoModulesCore
   - EXStoreReview (4.1.0):
     - ExpoModulesCore
-  - EXStructuredHeaders (1.1.0):
-    - ExpoModulesCore
+  - EXStructuredHeaders (1.1.0)
   - EXTaskManager (9.2.0):
     - ExpoModulesCore
     - UMAppLoader
@@ -1238,14 +1235,14 @@ SPEC CHECKSUMS:
   EXImageManipulator: 609ec11891dff0b0ef303c43ef0be1a4eb0b0af3
   EXImagePicker: 624295ff8decc995e1a005c9ea72ff4b772f5216
   EXInAppPurchases: 68c5adea26e9fca756a71a008bfe4b8e50fc5490
-  EXJSONUtils: 219837572921f8dc21ee6e60a6503efec4ce1c59
+  EXJSONUtils: b26b9ae6f60d27344f55e136ef68a3a44516f428
   EXKeepAwake: 5b0143f9834f154456b65d25e6c8fdc34b5234f4
   EXLinearGradient: 6549f5881005464c6ebc66a9af9049b71a3f2fda
   EXLocalAuthentication: 2b438d36b152406011c3c24803e1df226ddc0a41
   EXLocalization: 18c4461eb66125734dc2c73866572f3450f7c9b8
   EXLocation: 2ab9fcb91e381aada094f7312bfc9684ced76d3e
   EXMailComposer: e5d206471deef0d515bf6ec93697df4d3e5a15ae
-  EXManifests: 93083f5ab6259ce8719c86740458e8813b882b4b
+  EXManifests: 4c3dcfc35aaa71e6259cf9f2f52bd23da8ca7a86
   EXMediaLibrary: 2256df25d4371037570a1ed01e605a50759caaa5
   EXNetwork: b420f5e99b4291f2ba0f632a6eb099b1f126a7d8
   EXNotifications: 11ddca2668114114ffd7c36627ff3ffa259d64d2
@@ -1270,7 +1267,7 @@ SPEC CHECKSUMS:
   EXSplashScreen: 0ea93f1bc4138c4e5fe14784bc94128328598895
   EXSQLite: 613282078b36ac75856cfc43931fdad2803e499f
   EXStoreReview: 93a464b2085d841ffb6bc959f16645149ee5690e
-  EXStructuredHeaders: ce164ef0ffc9a85fc6e39d8a9151db6a8668e20d
+  EXStructuredHeaders: 2450076536025d893cb2614a056baca1da5bcef7
   EXTaskManager: e416167eb16046979026555b493a1317788efc97
   EXTrackingTransparency: 3331861717c233fc079f5bf7831dd627ac085cd5
   EXUpdatesInterface: 31a0826d3036c570f8d09a38504865332915269f
