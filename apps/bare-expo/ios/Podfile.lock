@@ -581,11 +581,11 @@ PODS:
   - React-jsinspector (0.64.2)
   - react-native-appearance (0.3.4):
     - React
-  - react-native-netinfo (6.0.0):
+  - react-native-netinfo (6.0.2):
     - React-Core
   - react-native-safe-area-context (3.2.0):
     - React-Core
-  - react-native-segmented-control (2.3.0):
+  - react-native-segmented-control (2.4.0):
     - React-Core
   - react-native-slider (4.1.4):
     - React-Core
@@ -1204,7 +1204,7 @@ SPEC CHECKSUMS:
   AppAuth: 31bcec809a638d7bd2f86ea8a52bd45f6e81e7c7
   boost-for-react-native: 39c7adb57c4e60d6c5479dd8623128eb5b3f0f2c
   CocoaLumberjack: b7e05132ff94f6ae4dfa9d5bce9141893a21d9da
-  DoubleConversion: cf9b38bf0b2d048436d9a82ad2abe1404f11e7de
+  DoubleConversion: cde416483dac037923206447da6e1454df403714
   EXAmplitude: f0c3dd959d629181c0c2b4bc52717580a539a600
   EXAppAuth: b08cb811e9da25a3e0bde00f7f2f661de81d437e
   EXApplication: d99a1ecb99dfb63dab8acb66d0181857ee79b25f
@@ -1285,7 +1285,7 @@ SPEC CHECKSUMS:
   FirebaseCore: ac35d680a0bf32319a59966a1478e0741536b97b
   FirebaseCoreDiagnostics: 3d36e05da74cb8b7ce30e6594a8f201b982c725c
   FirebaseInstallations: bf2ec8dbf36ff4c91af6b9a003d15855757680c1
-  glog: 73c2498ac6884b13ede40eda8228cb1eee9d9d62
+  glog: 40a13f7840415b9a77023fbcae0f1e6f43192af3
   GoogleAppMeasurement: 0c3b134b2c0a90c4c24833873894bfe0e42a0384
   GoogleDataTransport: 8b0e733ea77c9218778e5a9e34ba9508b8328939
   GoogleMLKit: 6ca2a10de262ee1017b52ac045e8967884ace992
@@ -1317,9 +1317,9 @@ SPEC CHECKSUMS:
   React-jsiexecutor: 80c46bd381fd06e418e0d4f53672dc1d1945c4c3
   React-jsinspector: cc614ec18a9ca96fd275100c16d74d62ee11f0ae
   react-native-appearance: 0f0e5fc2fcef70e03d48c8fe6b00b9158c2ba8aa
-  react-native-netinfo: e849fc21ca2f4128a5726c801a82fc6f4a6db50d
+  react-native-netinfo: 92e6e4476eb8bf6fc2d7c0a6ca0a1406f663d73a
   react-native-safe-area-context: f0906bf8bc9835ac9a9d3f97e8bde2a997d8da79
-  react-native-segmented-control: 83a05d42acd1234ad5e061d603c145973a61b5ee
+  react-native-segmented-control: 06607462630512ff8eef652ec560e6235a30cc3e
   react-native-slider: f8455cf286f225ab62b83a8f607510ac8abb9482
   react-native-view-shot: 4475fde003fe8a210053d1f98fb9e06c1d834e1c
   react-native-viewpager: b99b53127d830885917ef84809c5065edd614a78
