@@ -1,24 +1,41 @@
 import ExpoImage from 'expo-image';
+import React from 'react';
+import { View, Text } from 'react-native';
 
-import { ImageMethodNames, ImageMethodResult } from './types';
+import { ImageMethodResult } from './types';
 
 export async function getImageMethodResult(
-  methodName: ImageMethodNames,
+  method: Function,
   uri: string
 ): Promise<ImageMethodResult> {
-  let result = '';
-  const time = 0; // TODO: measure time
-  if (methodName === ImageMethodNames.Prefetch) {
-    result = await ExpoImage.prefetch(uri)
+  let message = '';
+  const startTime = performance.now();
+  if (method.name === 'prefetch') {
+    message = await ExpoImage.prefetch(uri)
       .then(() => {
-        return 'succes';
+        return 'success';
       })
       .catch(() => {
         return 'failure';
       });
   }
   return {
-    result,
-    time,
+    message,
+    time: performance.now() - startTime,
   };
+}
+
+type PropsType = {
+  methodResult: ImageMethodResult;
+};
+
+export function MethodResultView({ methodResult }: PropsType) {
+  const message = methodResult.message;
+  const time = methodResult.time;
+  return message && time ? (
+    <View>
+      <Text>Method result: {message}</Text>
+      <Text>Time: {time.toFixed(0)}ms</Text>
+    </View>
+  ) : null;
 }

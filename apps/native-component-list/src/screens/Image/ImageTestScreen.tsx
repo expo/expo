@@ -1,6 +1,6 @@
 import { StackScreenProps } from '@react-navigation/stack';
 import * as React from 'react';
-import { Animated, StyleSheet, View, Button, Text } from 'react-native';
+import { Animated, StyleSheet, View, Button, Text, Image as ReactImage } from 'react-native';
 
 import HeaderIconButton, { HeaderContainerRight } from '../../components/HeaderIconButton';
 import AnimationBar from './AnimationBar';
@@ -12,11 +12,11 @@ import {
   setSelectedCompareComponent,
 } from './ImageComponents';
 import ImageEventsView from './ImageEventsView';
-import { getImageMethodResult } from './ImageMethods';
+import { getImageMethodResult, MethodResultView } from './ImageMethods';
 import ImageStylesView from './ImageStylesView';
 import ImageTestView from './ImageTestView';
 import { resolveProps } from './resolveProps';
-import { ImageMethodNames, ImageTest, Links } from './types';
+import { ImageMethodResult, ImageTest, Links } from './types';
 
 const AnimatedImage = Animated.Image;
 AnimatedImage.displayName = 'Image';
@@ -37,7 +37,14 @@ export default function ImageTestScreen({ navigation, route }: Props) {
   const [viewKey, setViewKey] = React.useState<string>('initial');
   const [events, setEvents] = React.useState<string[]>([]);
   const [loadDemanded, setLoadDemanded] = React.useState<boolean>(false);
-  const [methodResult, setMethodResult] = React.useState<string>('');
+  const [expoMethodResult, setExpoMethodResult] = React.useState<ImageMethodResult>({
+    message: undefined,
+    time: undefined,
+  });
+  const [reactMethodResult, setReactMethodResult] = React.useState<ImageMethodResult>({
+    message: undefined,
+    time: undefined,
+  });
 
   React.useLayoutEffect(() => {
     const { test } = route.params;
@@ -109,9 +116,14 @@ export default function ImageTestScreen({ navigation, route }: Props) {
   };
 
   const onPressMethod = async () => {
+    const uri = test.props.source.uri;
     if (test.method != null) {
-      const methodResult = await getImageMethodResult(test.method, test.props.source.uri);
-      setMethodResult(methodResult.result);
+      const expoMethodResult = await getImageMethodResult(test.method, uri);
+      setExpoMethodResult(expoMethodResult);
+      if (compareEnabled && test.reactMethod != null) {
+        const reactMethodResult = await getImageMethodResult(test.reactMethod, uri);
+        setReactMethodResult(reactMethodResult);
+      }
     }
   };
 
@@ -148,7 +160,7 @@ export default function ImageTestScreen({ navigation, route }: Props) {
         <>
           {test.method != null && (
             <View style={{ borderBottomWidth: 10, borderBottomColor: 'transparent' }}>
-              <Button title={ImageMethodNames[test.method]} onPress={onPressMethod} />
+              <Button title={test.method.name} onPress={onPressMethod} />
             </View>
           )}
           <View>
@@ -156,30 +168,28 @@ export default function ImageTestScreen({ navigation, route }: Props) {
           </View>
         </>
       )}
+      {test.method != null && <MethodResultView methodResult={expoMethodResult} />}
       <CompareBar
         collapsed={!compareEnabled}
         ImageComponent={getSelectedCompareComponent()}
         onPress={onPressCompare}
         onPressComponent={onPressCompareComponent}
       />
-      {isComponentLoaded() && compareEnabled && (
-        <View style={styles.content}>
-          <ImageTestView
-            imageProps={imageProps}
-            ImageComponent={getSelectedCompareComponent()}
-            loadOnDemand={false}
-          />
-        </View>
+      {compareEnabled && (
+        <>
+          {isComponentLoaded() && (
+            <View style={styles.content}>
+              <ImageTestView
+                imageProps={imageProps}
+                ImageComponent={getSelectedCompareComponent()}
+                loadOnDemand={false}
+              />
+            </View>
+          )}
+          {test.method != null && <MethodResultView methodResult={reactMethodResult} />}
+        </>
       )}
       {hasEvents && <ImageEventsView onClear={onClearEvents} events={events} />}
-      {}
-      {test.method != null && methodResult.length > 0 && (
-        <View>
-          <Text>
-            {ImageMethodNames[test.method]} result: {methodResult}
-          </Text>
-        </View>
-      )}
     </View>
   );
 }

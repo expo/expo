@@ -1,5 +1,8 @@
+import ExpoImage from 'expo-image';
+import { Image as ReactImage } from 'react-native';
+
 import { images } from '../images';
-import { ImageMethodNames, ImageTestGroup } from '../types';
+import { ImageTestGroup } from '../types';
 
 const imageTests: ImageTestGroup = {
   name: 'Methods',
@@ -7,11 +10,12 @@ const imageTests: ImageTestGroup = {
     {
       name: 'prefetch',
       props: {
-        source: images.uri_png,
+        source: images.uri_lorem_picsum,
         defaultSource: images.require_monochrome,
       },
       loadOnDemand: true,
-      method: ImageMethodNames.Prefetch,
+      method: ExpoImage.prefetch,
+      reactMethod: ReactImage.prefetch,
     },
   ],
 };
