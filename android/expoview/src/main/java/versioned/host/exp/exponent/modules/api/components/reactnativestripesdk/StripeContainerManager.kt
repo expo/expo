@@ -9,7 +9,7 @@ class StripeContainerManager : ViewGroupManager<StripeContainerView>() {
 
   @ReactProp(name = "keyboardShouldPersistTaps")
   fun setKeyboardShouldPersistTaps(view: StripeContainerView, keyboardShouldPersistTaps: Boolean) {
-    view.setKeyboardShouldPersistTaps(keyboardShouldPersistTaps);
+    view.setKeyboardShouldPersistTaps(keyboardShouldPersistTaps)
   }
 
   override fun createViewInstance(reactContext: ThemedReactContext): StripeContainerView {

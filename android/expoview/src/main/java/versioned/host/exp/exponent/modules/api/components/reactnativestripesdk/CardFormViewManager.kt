@@ -3,7 +3,6 @@ package versioned.host.exp.exponent.modules.api.components.reactnativestripesdk
 import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.common.MapBuilder
-import com.facebook.react.uimanager.ReactStylesDiffMap
 import com.facebook.react.uimanager.SimpleViewManager
 import com.facebook.react.uimanager.ThemedReactContext
 import com.facebook.react.uimanager.annotations.ReactProp
@@ -16,7 +15,8 @@ class CardFormViewManager : SimpleViewManager<CardFormView>() {
   override fun getExportedCustomDirectEventTypeConstants(): MutableMap<String, Any> {
     return MapBuilder.of(
       CardFocusEvent.EVENT_NAME, MapBuilder.of("registrationName", "onFocusChange"),
-      CardFormCompleteEvent.EVENT_NAME, MapBuilder.of("registrationName", "onFormComplete"))
+      CardFormCompleteEvent.EVENT_NAME, MapBuilder.of("registrationName", "onFormComplete")
+    )
   }
 
   override fun receiveCommand(root: CardFormView, commandId: String?, args: ReadableArray?) {
@@ -29,12 +29,12 @@ class CardFormViewManager : SimpleViewManager<CardFormView>() {
 
   @ReactProp(name = "dangerouslyGetFullCardDetails")
   fun setDangerouslyGetFullCardDetails(view: CardFormView, dangerouslyGetFullCardDetails: Boolean = false) {
-    view.setDangerouslyGetFullCardDetails(dangerouslyGetFullCardDetails);
+    view.setDangerouslyGetFullCardDetails(dangerouslyGetFullCardDetails)
   }
 
   @ReactProp(name = "postalCodeEnabled")
   fun setPostalCodeEnabled(view: CardFormView, postalCodeEnabled: Boolean = false) {
-    view.setPostalCodeEnabled(postalCodeEnabled);
+    view.setPostalCodeEnabled(postalCodeEnabled)
   }
 
   // @ReactProp(name = "placeholder")
@@ -44,12 +44,12 @@ class CardFormViewManager : SimpleViewManager<CardFormView>() {
 
   @ReactProp(name = "autofocus")
   fun setAutofocus(view: CardFormView, autofocus: Boolean = false) {
-    view.setAutofocus(autofocus);
+    view.setAutofocus(autofocus)
   }
 
   @ReactProp(name = "cardStyle")
   fun setCardStyle(view: CardFormView, cardStyle: ReadableMap) {
-    view.setCardStyle(cardStyle);
+    view.setCardStyle(cardStyle)
   }
 
   override fun createViewInstance(reactContext: ThemedReactContext): CardFormView {
