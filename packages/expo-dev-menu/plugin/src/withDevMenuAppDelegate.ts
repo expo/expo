@@ -1,5 +1,7 @@
 import { ConfigPlugin, WarningAggregator, withAppDelegate } from '@expo/config-plugins';
 
+import { InstallationPage } from './constants';
+
 const DEV_MENU_IOS_IMPORT = `
 #if defined(EX_DEV_MENU_ENABLED)
 @import EXDevMenu;
@@ -52,7 +54,8 @@ export const withDevMenuAppDelegate: ConfigPlugin = (config) => {
     } else {
       WarningAggregator.addWarningIOS(
         'expo-dev-menu',
-        'Swift AppDelegate files are not supported yet.'
+        `Swift AppDelegate files are not supported yet.
+See the expo-dev-client installation instructions to modify your AppDelegate manually: ${InstallationPage}`
       );
     }
     return config;
