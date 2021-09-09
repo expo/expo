@@ -13,15 +13,19 @@
     "expo": "bin/cli.js"
   },
   "files": [
+    "android",
     "bin",
     "build",
+    "ios",
     "scripts",
     "tools",
-    "tsconfig.base.json",
-    "bundledNativeModules.json",
-    "requiresExtraSetup.json",
     "AppEntry.js",
-    "metro-config.js"
+    "bundledNativeModules.json",
+    "expo-module.config.json",
+    "metro-config.js",
+    "react-native.config.js",
+    "requiresExtraSetup.json",
+    "tsconfig.base.json"
   ],
   "scripts": {
     "build": "expo-module build",
