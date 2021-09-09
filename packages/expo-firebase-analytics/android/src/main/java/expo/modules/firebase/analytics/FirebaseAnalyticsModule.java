@@ -84,7 +84,7 @@ public class FirebaseAnalyticsModule extends ExportedModule implements RegistryL
 
   private static Bundle convertToBundle(final MapArguments mapArguments) {
     // A variation on MapArguments.toBundle that recursively converts the contents
-    // of arrays to Bundle objects if needed.
+    // of arrays to Bundle objects if needed (to support the `items` array).
     Bundle bundle = new Bundle();
     for (String key : mapArguments.keys()) {
       Object value = mapArguments.get(key);
