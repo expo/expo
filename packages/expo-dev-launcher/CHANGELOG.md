@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Fix intent that started activity isn't passed further.
+- Fix intent that started activity isn't passed further. ([#14097](https://github.com/expo/expo/pull/14097) by [@lukmccall](https://github.com/lukmccall))
 
 ### 💡 Others
 
