@@ -24,6 +24,7 @@ const PLATFORMS_MAPPING: Record<string, ProjectSpecPlatform> = {
 };
 
 export const INFO_PLIST_FILENAME = 'Info-generated.plist';
+export const GENERATED_MODULEMAP_FILENAME = 'generated.modulemap';
 
 /**
  * Generates `.xcodeproj` from given project spec and saves it at given dir.
@@ -218,14 +219,15 @@ function podNameToBundleId(podName: string): string {
  * Generate custom modulemap for expo-modules-core which needs to make React-Core headers modular
  */
 export async function generateExpoModulesCoreModulemapAsync(destDir: string): Promise<string> {
+  const expoModulesCoreUmbrellaHeaderName = 'ExpoModulesCore-umbrella.h';
   const expoModulesCoreUmbrellaHeader = path.join(
     PODS_PUBLIC_HEADERS_DIR,
     'ExpoModulesCore',
-    'ExpoModulesCore-umbrella.h'
+    expoModulesCoreUmbrellaHeaderName
   );
   await fs.copyFile(
     expoModulesCoreUmbrellaHeader,
-    path.join(destDir, 'ExpoModulesCore-umbrella.h')
+    path.join(destDir, expoModulesCoreUmbrellaHeaderName)
   );
 
   const reactCoreHeaderDir = path.join(PODS_PUBLIC_HEADERS_DIR, 'React-Core');
@@ -250,7 +252,7 @@ framework module ExpoModulesCore {
 }
 `;
 
-  const modulemapFile = path.join(destDir, 'generated.modulemap');
+  const modulemapFile = path.join(destDir, GENERATED_MODULEMAP_FILENAME);
   await fs.writeFile(modulemapFile, modulemapContent);
   return modulemapFile;
 }

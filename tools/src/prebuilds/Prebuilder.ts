@@ -9,6 +9,7 @@ import {
   createSpecFromPodspecAsync,
   generateExpoModulesCoreModulemapAsync,
   generateXcodeProjectAsync,
+  GENERATED_MODULEMAP_FILENAME,
   INFO_PLIST_FILENAME,
 } from './XcodeGen';
 import { Flavor, Framework, XcodebuildSettings } from './XcodeProject.types';
@@ -165,7 +166,7 @@ export async function cleanTemporaryFilesAsync(xcodeProject: XcodeProject) {
   const pathsToRemove = [
     `${xcodeProject.name}.xcodeproj`,
     INFO_PLIST_FILENAME,
-    'generated.modulemap',
+    GENERATED_MODULEMAP_FILENAME,
     `${xcodeProject.name}-umbrella.h`,
   ];
 
