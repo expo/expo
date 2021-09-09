@@ -47,7 +47,7 @@ async function editPodfile(config, action) {
     }
     catch (e) {
         config_plugins_1.WarningAggregator.addWarningIOS('expo-dev-menu', `Couldn't modified AppDelegate.m - ${e}. 
-See the expo-dev-client installation instruction to modify your AppDelegate manually: ${constants_1.InstallationPage}`);
+See the expo-dev-client installation instructions to modify your AppDelegate manually: ${constants_1.InstallationPage}`);
     }
 }
 const withDevMenuActivity = (config) => {
@@ -60,7 +60,7 @@ const withDevMenuActivity = (config) => {
         }
         else {
             config_plugins_1.WarningAggregator.addWarningAndroid('expo-dev-menu', `Cannot automatically configure MainActivity if it's not java.
-See the expo-dev-client installation instruction to modify your MainActivity manually: ${constants_1.InstallationPage}`);
+See the expo-dev-client installation instructions to modify your MainActivity manually: ${constants_1.InstallationPage}`);
         }
         return config;
     });

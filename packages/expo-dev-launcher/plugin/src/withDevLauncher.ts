@@ -106,7 +106,7 @@ async function editMainApplication(
     WarningAggregator.addWarningAndroid(
       'expo-dev-launcher',
       `Couldn't modify MainApplication.java - ${e}.
-See the expo-dev-client installation instruction to modify your MainApplication.java manually: ${InstallationPage}`
+See the expo-dev-client installation instructions to modify your MainApplication.java manually: ${InstallationPage}`
     );
   }
 }
@@ -120,7 +120,7 @@ async function editPodfile(config: ExportedConfigWithProps, action: (podfile: st
     WarningAggregator.addWarningIOS(
       'expo-dev-launcher',
       `Couldn't modify AppDelegate.m - ${e}.
-See the expo-dev-client installation instruction to modify your AppDelegate.m manually: ${InstallationPage}`
+See the expo-dev-client installation instructions to modify your AppDelegate.m manually: ${InstallationPage}`
     );
   }
 }
@@ -134,7 +134,7 @@ async function editIndex(config: ExportedConfigWithProps, action: (index: string
     WarningAggregator.addWarningIOS(
       'expo-dev-launcher',
       `Couldn't modify index.js - ${e}.
-See the expo-dev-client installation instruction to modify your index.js manually: ${InstallationPage}`
+See the expo-dev-client installation instructions to modify your index.js manually: ${InstallationPage}`
     );
   }
 }
@@ -207,7 +207,7 @@ const withDevLauncherActivity: ConfigPlugin = (config) => {
       WarningAggregator.addWarningAndroid(
         'expo-dev-launcher',
         `Cannot automatically configure MainActivity if it's not java.
-See the expo-dev-client installation instruction to modify your MainActivity manually: ${InstallationPage}`
+See the expo-dev-client installation instructions to modify your MainActivity manually: ${InstallationPage}`
       );
     }
 

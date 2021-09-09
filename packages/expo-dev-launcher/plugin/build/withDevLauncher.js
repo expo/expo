@@ -74,7 +74,7 @@ async function editMainApplication(config, action) {
     }
     catch (e) {
         config_plugins_1.WarningAggregator.addWarningAndroid('expo-dev-launcher', `Couldn't modify MainApplication.java - ${e}.
-See the expo-dev-client installation instruction to modify your MainApplication.java manually: ${constants_1.InstallationPage}`);
+See the expo-dev-client installation instructions to modify your MainApplication.java manually: ${constants_1.InstallationPage}`);
     }
 }
 async function editPodfile(config, action) {
@@ -85,7 +85,7 @@ async function editPodfile(config, action) {
     }
     catch (e) {
         config_plugins_1.WarningAggregator.addWarningIOS('expo-dev-launcher', `Couldn't modify AppDelegate.m - ${e}.
-See the expo-dev-client installation instruction to modify your AppDelegate.m manually: ${constants_1.InstallationPage}`);
+See the expo-dev-client installation instructions to modify your AppDelegate.m manually: ${constants_1.InstallationPage}`);
     }
 }
 async function editIndex(config, action) {
@@ -96,7 +96,7 @@ async function editIndex(config, action) {
     }
     catch (e) {
         config_plugins_1.WarningAggregator.addWarningIOS('expo-dev-launcher', `Couldn't modify index.js - ${e}.
-See the expo-dev-client installation instruction to modify your index.js manually: ${constants_1.InstallationPage}`);
+See the expo-dev-client installation instructions to modify your index.js manually: ${constants_1.InstallationPage}`);
     }
 }
 const withDevLauncherApplication = (config) => {
@@ -148,7 +148,7 @@ const withDevLauncherActivity = (config) => {
         }
         else {
             config_plugins_1.WarningAggregator.addWarningAndroid('expo-dev-launcher', `Cannot automatically configure MainActivity if it's not java.
-See the expo-dev-client installation instruction to modify your MainActivity manually: ${constants_1.InstallationPage}`);
+See the expo-dev-client installation instructions to modify your MainActivity manually: ${constants_1.InstallationPage}`);
         }
         return config;
     });

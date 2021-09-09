@@ -63,7 +63,7 @@ async function editPodfile(config: ExportedConfigWithProps, action: (podfile: st
     WarningAggregator.addWarningIOS(
       'expo-dev-menu',
       `Couldn't modified AppDelegate.m - ${e}. 
-See the expo-dev-client installation instruction to modify your AppDelegate manually: ${InstallationPage}`
+See the expo-dev-client installation instructions to modify your AppDelegate manually: ${InstallationPage}`
     );
   }
 }
@@ -82,7 +82,7 @@ const withDevMenuActivity: ConfigPlugin = (config) => {
       WarningAggregator.addWarningAndroid(
         'expo-dev-menu',
         `Cannot automatically configure MainActivity if it's not java.
-See the expo-dev-client installation instruction to modify your MainActivity manually: ${InstallationPage}`
+See the expo-dev-client installation instructions to modify your MainActivity manually: ${InstallationPage}`
       );
     }
 

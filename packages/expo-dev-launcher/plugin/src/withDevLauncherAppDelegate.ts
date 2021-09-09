@@ -153,7 +153,7 @@ export const withDevLauncherAppDelegate: ConfigPlugin = (config) => {
       WarningAggregator.addWarningIOS(
         'expo-dev-launcher',
         `Swift AppDelegate files are not supported yet.
-See the expo-dev-client installation instruction to modify your AppDelegate manually: ${InstallationPage}`
+See the expo-dev-client installation instructions to modify your AppDelegate manually: ${InstallationPage}`
       );
     }
     return config;

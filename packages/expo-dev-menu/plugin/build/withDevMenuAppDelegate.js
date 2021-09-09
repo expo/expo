@@ -42,7 +42,7 @@ const withDevMenuAppDelegate = (config) => {
         }
         else {
             config_plugins_1.WarningAggregator.addWarningIOS('expo-dev-menu', `Swift AppDelegate files are not supported yet.
-See the expo-dev-client installation instruction to modify your AppDelegate manually: ${constants_1.InstallationPage}`);
+See the expo-dev-client installation instructions to modify your AppDelegate manually: ${constants_1.InstallationPage}`);
         }
         return config;
     });
