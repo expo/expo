@@ -4,7 +4,7 @@
 
 ### 🛠 Breaking changes
 
-- Rename `IFirebaseOptions` type to `FirebaseOptions`, since it is not an interface. ([#14342](https://github.com/expo/expo/pull/14342) by [@Simek](https://github.com/Simek))
+- Rename `IFirebaseOptions` type to `FirebaseOptions`. ([#14342](https://github.com/expo/expo/pull/14342) by [@Simek](https://github.com/Simek))
 
 ### 🎉 New features
 
