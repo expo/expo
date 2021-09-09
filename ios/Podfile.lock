@@ -1906,11 +1906,11 @@ PODS:
     - ExpoModulesCore
   - EXPermissions (12.1.0):
     - ExpoModulesCore
-  - Expo (43.0.0-alpha.1):
+  - Expo (43.0.0-alpha.2):
     - ExpoModulesCore
-  - ExpoModulesCore (0.3.0):
+  - ExpoModulesCore (0.3.1):
     - React-Core
-  - ExpoModulesCore/Tests (0.3.0):
+  - ExpoModulesCore/Tests (0.3.1):
     - Nimble
     - Quick
     - React-Core
@@ -1936,7 +1936,7 @@ PODS:
     - ExpoModulesCore
   - EXSpeech (9.2.0):
     - ExpoModulesCore
-  - EXSplashScreen (0.11.0):
+  - EXSplashScreen (0.12.0):
     - ExpoModulesCore
     - React-Core
   - EXSQLite (9.2.0):
@@ -1951,13 +1951,13 @@ PODS:
     - UMTaskManagerInterface
   - EXTrackingTransparency (1.1.0):
     - ExpoModulesCore
-  - EXUpdates (0.8.4):
+  - EXUpdates (0.9.0):
     - EXManifests
     - ExpoModulesCore
     - EXStructuredHeaders
     - EXUpdatesInterface
     - React-Core
-  - EXUpdates/Tests (0.8.4):
+  - EXUpdates/Tests (0.9.0):
     - EXManifests
     - ExpoModulesCore
     - EXStructuredHeaders
@@ -1966,7 +1966,7 @@ PODS:
   - EXUpdatesInterface (0.2.2)
   - EXVideoThumbnails (5.2.0):
     - ExpoModulesCore
-  - EXWebBrowser (9.2.0):
+  - EXWebBrowser (9.3.0):
     - ExpoModulesCore
   - FacebookSDK/CoreKit (9.2.0):
     - FBSDKCoreKit (~> 9.2.0)
@@ -4142,8 +4142,8 @@ SPEC CHECKSUMS:
   EXNetwork: b420f5e99b4291f2ba0f632a6eb099b1f126a7d8
   EXNotifications: 11ddca2668114114ffd7c36627ff3ffa259d64d2
   EXPermissions: 0760a7139b84dc8335ed297566892ddc856e89bb
-  Expo: c65c0caca87514fc90c1e210d0cc98931c4578e9
-  ExpoModulesCore: addd06a6516be2f8553196449524852ea95f21b5
+  Expo: 0646ade6698b625dc61b040f430b4bea01521b5a
+  ExpoModulesCore: fe2cb2545de8d5b5dee42cdc1d66483b99411895
   EXPrint: 1b63871bd0f286f9dc5441412b3b9049b7c9fe32
   EXRandom: 4d6fe53e19a91df3f66665371962284677d741c9
   EXScreenCapture: 27e03154defba1f0e28cda34777f49c34ead3497
@@ -4154,16 +4154,16 @@ SPEC CHECKSUMS:
   EXSharing: 7d30213ec67fbf73fff13710c9cd96894c53b9b3
   EXSMS: cf81d1899ba17785890f7e27ad0271d60bdcccba
   EXSpeech: ee6fd54013b0b3dacbb156c5832a6848056235f7
-  EXSplashScreen: 0ea93f1bc4138c4e5fe14784bc94128328598895
+  EXSplashScreen: d270412e7f97ae750e12ff0bdcddc3ca9325221e
   EXSQLite: 613282078b36ac75856cfc43931fdad2803e499f
   EXStoreReview: 93a464b2085d841ffb6bc959f16645149ee5690e
   EXStructuredHeaders: 2450076536025d893cb2614a056baca1da5bcef7
   EXTaskManager: e416167eb16046979026555b493a1317788efc97
   EXTrackingTransparency: 3331861717c233fc079f5bf7831dd627ac085cd5
-  EXUpdates: a871496b468dd7584187223376b9d8e88851a7b7
+  EXUpdates: c3c513597396518b8f80da864aa8fdad53adc6b8
   EXUpdatesInterface: 31a0826d3036c570f8d09a38504865332915269f
   EXVideoThumbnails: da38473f6d86ce08c5a4a9e6e839816e1aac01c3
-  EXWebBrowser: 144b3209de7feec39104531ce205912d8ade93c9
+  EXWebBrowser: f9435daf809a688e0cb63675da208196007573b6
   FacebookSDK: 4b9bb8e2824898b47f18c666dc145c09b40609e6
   FBAudienceNetwork: cfe55330dcc4e9a1df083c34a346ca7f8e32951e
   FBLazyVector: e686045572151edef46010a6f819ade377dfeb4b

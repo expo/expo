@@ -11,7 +11,7 @@
   "dependencies": {
     "@expo/html-elements": "^0.0.2",
     "async-retry": "^1.1.4",
-    "expo": "~43.0.0-alpha.1",
+    "expo": "~43.0.0-alpha.2",
     "expo-ads-admob": "~10.1.0",
     "expo-ads-facebook": "~10.1.0",
     "expo-analytics-segment": "~10.2.0",
@@ -45,7 +45,7 @@
     "expo-speech": "~9.2.0",
     "expo-sqlite": "~9.2.0",
     "expo-task-manager": "~9.2.0",
-    "expo-web-browser": "~9.2.0",
+    "expo-web-browser": "~9.3.0",
     "firebase": "8.10.0",
     "i18n-js": "^3.0.11",
     "immutable": "^3.8.1",
