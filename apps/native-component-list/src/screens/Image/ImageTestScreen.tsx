@@ -1,6 +1,6 @@
 import { StackScreenProps } from '@react-navigation/stack';
 import * as React from 'react';
-import { Animated, StyleSheet, View, Button, Text, Image as ReactImage } from 'react-native';
+import { Animated, StyleSheet, View, Button, Text } from 'react-native';
 
 import HeaderIconButton, { HeaderContainerRight } from '../../components/HeaderIconButton';
 import AnimationBar from './AnimationBar';
