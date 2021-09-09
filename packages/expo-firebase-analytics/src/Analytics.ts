@@ -71,11 +71,16 @@ export async function setAnalyticsCollectionEnabled(isEnabled: boolean): Promise
   return await ExpoFirebaseAnalytics.setAnalyticsCollectionEnabled(isEnabled);
 }
 
+let hasWarnedAboutSetCurrentScreen = false;
 // @needsAudit
 /**
  * Sets the current screen name, which specifies the current visual context in your app. This helps
  * identify the areas in your app where users spend their time and how they interact with your app.
  *
+ * @deprecated FirebaseAnalytics.setCurrentScreen is deprecated.
+ * Use `logEvent('screen_view', { screen_name: 'MyScreen', ... })` instead.
+ * This API will be removed in SDK 45.
+
  * @param screenName The name of the current screen. Should contain 1 to 100 characters. Set to
  * `undefined` to clear the current screen name.
  * @param screenClassOverride The name of the screen class. Should contain 1 to 100 characters. By
@@ -86,10 +91,23 @@ export async function setCurrentScreen(
   screenName?: string,
   screenClassOverride?: string
 ): Promise<void> {
-  if (!ExpoFirebaseAnalytics.setCurrentScreen) {
-    throw new UnavailabilityError('expo-firebase-analytics', 'setCurrentScreen');
+  if (!hasWarnedAboutSetCurrentScreen) {
+    console.warn(
+      "`FirebaseAnalytics.setCurrentScreen` is deprecated. Use `logEvent('screen_view', { screen_name: 'MyScreen', ... })` instead. This API will be removed in SDK 45."
+    );
+    hasWarnedAboutSetCurrentScreen = true;
   }
-  return await ExpoFirebaseAnalytics.setCurrentScreen(screenName, screenClassOverride);
+  return await logEvent(
+    'screen_view',
+    screenClassOverride
+      ? {
+          screen_name: screenName,
+          screen_class: screenClassOverride,
+        }
+      : {
+          screen_name: screenName,
+        }
+  );
 }
 
 // @needsAudit

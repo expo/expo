@@ -98,12 +98,7 @@ EX_EXPORT_METHOD_AS(setCurrentScreen,
   if ([self getAppOrReject:reject] == nil) return;
   [EXUtilities performSynchronouslyOnMainThread:^{
     @try {
-      [FIRAnalytics logEventWithName:kFIREventScreenView parameters: screenClassOverview ? @{
-        kFIRParameterScreenName: screenName,
-        kFIRParameterScreenClass: screenClassOverview
-      } : @{
-        kFIRParameterScreenName: screenName
-      }];
+      [FIRAnalytics setScreenName:screenName screenClass:screenClassOverview];
       resolve([NSNull null]);
     } @catch (NSException *exception) {
       [self reject:reject withException:exception];
