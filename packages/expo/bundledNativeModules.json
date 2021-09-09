@@ -70,7 +70,7 @@
   "expo-permissions": "~12.1.1",
   "expo-print": "~10.2.1",
   "expo-random": "~11.2.0",
-  "expo-screen-orientation": "~3.2.1",
+  "expo-screen-orientation": "~3.3.0",
   "expo-secure-store": "~10.2.0",
   "expo-sensors": "~10.2.2",
   "expo-sharing": "~9.2.1",

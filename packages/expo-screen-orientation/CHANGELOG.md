@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Fixed an issue with building on Xcode 13. ([#13898](https://github.com/expo/expo/pull/13898) by [@cruzach](https://github.com/cruzach))
-
 ### 💡 Others
+
+## 3.3.0 — 2021-09-09
+
+### 🐛 Bug fixes
+
+- Fixed an issue with building on Xcode 13. ([#13898](https://github.com/expo/expo/pull/13898) by [@cruzach](https://github.com/cruzach))
 
 ## 3.2.1 — 2021-06-24
 
