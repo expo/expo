@@ -24,8 +24,8 @@ index 4b0d17d89d..5d6f1bb620 100644
  import com.facebook.react.ReactApplication;
 @@ -14,6 +15,7 @@ import com.facebook.soloader.SoLoader;
  
- import expo.modules.adapters.react.ApplicationLifecycleDispatcher;
- import expo.modules.adapters.react.ReactNativeHostWrapper;
+ import expo.modules.ApplicationLifecycleDispatcher;
+ import expo.modules.ReactNativeHostWrapper;
 +import expo.modules.updates.UpdatesController;
  
  import com.facebook.react.bridge.JSIModulePackage;
