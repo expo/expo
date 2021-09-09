@@ -331,15 +331,22 @@ function encodeQueryArgs(queryArgs, lastTime) {
 const SHORT_EVENT_PARAMS = {
     currency: 'cu',
 };
+// https://developers.google.com/gtagjs/reference/event
 const SHORT_EVENT_ITEM_PARAMS = {
     id: 'id',
     name: 'nm',
+    brand: 'br',
+    category: 'ca',
+    coupon: 'cp',
+    list: 'ln',
+    list_name: 'ln',
+    list_position: 'lp',
+    price: 'pr',
     location_id: 'lo',
     quantity: 'qt',
-    brand: 'br',
     variant: 'va',
-    list: 'ln',
-    category: 'ca',
+    affiliation: 'af',
+    discount: 'ds',
 };
 export default FirebaseAnalyticsJS;
 //# sourceMappingURL=FirebaseAnalyticsJS.js.map
