@@ -6,6 +6,7 @@
 #import <React/RCTUIManager.h>
 #import <React/RCTComponentData.h>
 #import <React/RCTModuleData.h>
+#import <React/RCTEventDispatcherProtocol.h>
 
 #import <ExpoModulesCore/EXNativeModulesProxy.h>
 #import <ExpoModulesCore/EXEventEmitter.h>
@@ -25,6 +26,13 @@ static const NSString *methodInfoArgumentsCountKey = @"argumentsCount";
 @interface RCTBridge (RegisterAdditionalModuleClasses)
 
 - (void)registerAdditionalModuleClasses:(NSArray<Class> *)modules;
+
+@end
+
+@interface RCTComponentData (EXRCTComponentData)
+
+- (instancetype)initWithManagerClass:(Class)managerClass bridge:(RCTBridge *)bridge eventDispatcher:(id<RCTEventDispatcherProtocol>) eventDispatcher; // available in RN 0.65+
+- (instancetype)initWithManagerClass:(Class)managerClass bridge:(RCTBridge *)bridge;
 
 @end
 
@@ -243,31 +251,15 @@ RCT_EXPORT_METHOD(callMethod:(NSString *)moduleName methodNameOrKey:(id)methodNa
     NSString *className = NSStringFromClass(moduleClass);
 
     if ([moduleClass isSubclassOfClass:[RCTViewManager class]] && !componentDataByName[className]) {
-      SEL componentDataInit;
-      bool attachEventDispatcher = false;
       RCTComponentData *componentData = [RCTComponentData alloc];
-      
-      // Init method was changed in RN 0.65
-      if ([componentData respondsToSelector:NSSelectorFromString(@"initWithManagerClass:bridge:eventDispatcher:")]) {
-        componentDataInit = NSSelectorFromString(@"initWithManagerClass:bridge:eventDispatcher:");
-        attachEventDispatcher = true;
+      if ([componentData respondsToSelector:@selector(initWithManagerClass:bridge:eventDispatcher:)]) {
+        // Init method was changed in RN 0.65
+        [componentData initWithManagerClass:moduleClass bridge:bridge eventDispatcher:bridge.eventDispatcher];
       } else {
         // fallback for older RNs
-        componentDataInit = NSSelectorFromString(@"initWithManagerClass:bridge:");
+        [componentData initWithManagerClass:moduleClass bridge:bridge];
       }
       
-      NSMethodSignature *signature = [componentData methodSignatureForSelector:componentDataInit];
-      NSInvocation *invocation = [NSInvocation invocationWithMethodSignature:signature];
-      
-      [invocation setTarget:componentData];
-      [invocation setSelector:componentDataInit];
-      [invocation setArgument:&moduleClass atIndex:2];
-      [invocation setArgument:&bridge atIndex:3];
-      if (attachEventDispatcher) {
-        [invocation setArgument:(__bridge void * _Nonnull)(bridge.eventDispatcher) atIndex:4];
-      }
-      
-      [invocation invoke];
       componentDataByName[className] = componentData;
     }
   }
