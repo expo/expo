@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Fixed `Location.getCurrentPositionAsync` throwing `Location provider is unavailable.` error. ([#14281](https://github.com/expo/expo/pull/14281) by [@m1st4ke](https://github.com/m1st4ke))
-
 ### 💡 Others
+
+## 12.1.3 — 2021-09-09
+
+### 🐛 Bug fixes
+
+- Fixed `Location.getCurrentPositionAsync` throwing `Location provider is unavailable.` error. ([#14281](https://github.com/expo/expo/pull/14281) by [@m1st4ke](https://github.com/m1st4ke))
 
 ## 12.1.2 — 2021-06-24
 

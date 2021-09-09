@@ -116,7 +116,7 @@ PODS:
     - UMCore
   - EXLocalization (10.2.0):
     - UMCore
-  - EXLocation (12.1.2):
+  - EXLocation (12.1.3):
     - ExpoModulesCore
     - UMCore
     - UMTaskManagerInterface
@@ -1235,7 +1235,7 @@ SPEC CHECKSUMS:
   AppAuth: 31bcec809a638d7bd2f86ea8a52bd45f6e81e7c7
   boost-for-react-native: 39c7adb57c4e60d6c5479dd8623128eb5b3f0f2c
   CocoaAsyncSocket: 065fd1e645c7abab64f7a6a2007a48038fdc6a99
-  DoubleConversion: cf9b38bf0b2d048436d9a82ad2abe1404f11e7de
+  DoubleConversion: cde416483dac037923206447da6e1454df403714
   EXAmplitude: b3ef1ed2ae853bccd08a685d2f0352c603b215fe
   EXAppAuth: 4eceeef2d606a5fd9412dcd8a447885dc625a2e2
   EXApplication: 9ff2a206009d6e55bca6c20b3f33d07986b51ef3
@@ -1273,7 +1273,7 @@ SPEC CHECKSUMS:
   EXLinearGradient: f9ea3259f096b27008860ca50764184225dc71c9
   EXLocalAuthentication: 88a1a69ea66c4934387d1eb503628170c853caef
   EXLocalization: 356f4e16a606cec21a77d6250528fde526152b45
-  EXLocation: ec9f39522adef7de20bd34e086d82caed5088b84
+  EXLocation: a721df28f6fcc5b4ad7a61990ce5e2f0d017ef44
   EXMailComposer: ea8f537bcd4b89daf12c52298aeee61562c89146
   EXMediaLibrary: a90b1d33334e7a5da30f86cbcf3c3a1a6ac164ed
   EXNetwork: 6682b2bbbd90e66c4738159abaf8cd206c25e8b8
@@ -1321,7 +1321,7 @@ SPEC CHECKSUMS:
   Flipper-RSocket: 127954abe8b162fcaf68d2134d34dc2bd7076154
   FlipperKit: 6a68648b412158059f9021b5e61c36bb3086ebc3
   Folly: b73c3869541e86821df3c387eb0af5f65addfab4
-  glog: 73c2498ac6884b13ede40eda8228cb1eee9d9d62
+  glog: 40a13f7840415b9a77023fbcae0f1e6f43192af3
   GoogleAppMeasurement: 0c3b134b2c0a90c4c24833873894bfe0e42a0384
   GoogleDataTransport: 8b0e733ea77c9218778e5a9e34ba9508b8328939
   GoogleMLKit: 6ca2a10de262ee1017b52ac045e8967884ace992
