@@ -1943,8 +1943,8 @@ PODS:
     - ExpoModulesCore
   - EXStoreReview (4.1.0):
     - ExpoModulesCore
-  - EXStructuredHeaders (1.1.0)
-  - EXStructuredHeaders/Tests (1.1.0)
+  - EXStructuredHeaders (1.2.0)
+  - EXStructuredHeaders/Tests (1.2.0)
   - EXTaskManager (9.2.0):
     - ExpoModulesCore
     - UMAppLoader
@@ -1963,7 +1963,7 @@ PODS:
     - EXStructuredHeaders
     - EXUpdatesInterface
     - React-Core
-  - EXUpdatesInterface (0.2.2)
+  - EXUpdatesInterface (0.3.0)
   - EXVideoThumbnails (5.2.0):
     - ExpoModulesCore
   - EXWebBrowser (9.3.0):
@@ -4157,11 +4157,11 @@ SPEC CHECKSUMS:
   EXSplashScreen: d270412e7f97ae750e12ff0bdcddc3ca9325221e
   EXSQLite: 613282078b36ac75856cfc43931fdad2803e499f
   EXStoreReview: 93a464b2085d841ffb6bc959f16645149ee5690e
-  EXStructuredHeaders: 2450076536025d893cb2614a056baca1da5bcef7
+  EXStructuredHeaders: 43b5d5547fd40f5363b007c4c158af26dc0a4b7b
   EXTaskManager: e416167eb16046979026555b493a1317788efc97
   EXTrackingTransparency: 3331861717c233fc079f5bf7831dd627ac085cd5
   EXUpdates: c3c513597396518b8f80da864aa8fdad53adc6b8
-  EXUpdatesInterface: 31a0826d3036c570f8d09a38504865332915269f
+  EXUpdatesInterface: 69176435f67804831967f833152fee892febef87
   EXVideoThumbnails: da38473f6d86ce08c5a4a9e6e839816e1aac01c3
   EXWebBrowser: f9435daf809a688e0cb63675da208196007573b6
   FacebookSDK: 4b9bb8e2824898b47f18c666dc145c09b40609e6
