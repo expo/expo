@@ -7,12 +7,19 @@
 #import <React/RCTComponentData.h>
 #import <React/RCTModuleData.h>
 
+#import <ExpoModulesCore/EXModuleRegistryProvider.h>
+#import <ExpoModulesCore/EXReactNativeEventEmitter.h>
 #import <ExpoModulesCore/EXNativeModulesProxy.h>
 #import <ExpoModulesCore/EXEventEmitter.h>
 #import <ExpoModulesCore/EXViewManager.h>
 #import <ExpoModulesCore/EXViewManagerAdapter.h>
 #import <ExpoModulesCore/EXViewManagerAdapterClassesRegistry.h>
+#if __has_include(<ExpoModulesCore/ExpoModulesCore-Swift.h>)
+// For prebuilding xcframework, do not use quote notation.
+#import <ExpoModulesCore/ExpoModulesCore-Swift.h>
+#elif __has_include("ExpoModulesCore-Swift.h")
 #import "ExpoModulesCore-Swift.h"
+#endif
 
 static const NSString *exportedMethodsNamesKeyPath = @"exportedMethods";
 static const NSString *viewManagersNamesKeyPath = @"viewManagersNames";
