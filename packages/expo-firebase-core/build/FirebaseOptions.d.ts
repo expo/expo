@@ -2,29 +2,29 @@ export declare type IFirebaseOptions = {
     /**
      * Unique identifier of the Firebase app.
      */
-    appId: string;
+    appId?: string;
     /**
      * Firebase API key.
      */
-    apiKey: string;
+    apiKey?: string;
     /**
      * Firebase database URL.
      */
-    databaseURL: string;
+    databaseURL?: string;
     /**
      * Tracking identifier for Google Analytics.
      */
-    trackingId: string;
-    messagingSenderId: string;
+    trackingId?: string;
+    messagingSenderId?: string;
     /**
      * Google Cloud Storage bucket name.
      */
-    storageBucket: string;
+    storageBucket?: string;
     /**
      * Unique identifier of the Firebase project.
      */
-    projectId: string;
-    authDomain: string;
-    measurementId: string;
+    projectId?: string;
+    authDomain?: string;
+    measurementId?: string;
 };
-export declare function getDefaultWebOptions(): Partial<IFirebaseOptions> | void;
+export declare function getDefaultWebOptions(): IFirebaseOptions | void;

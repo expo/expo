@@ -35,8 +35,8 @@ export declare const DEFAULT_APP_NAME: string | void;
  * }
  * ```
  */
-export declare const DEFAULT_APP_OPTIONS: Partial<IFirebaseOptions> | void;
+export declare const DEFAULT_APP_OPTIONS: IFirebaseOptions | void;
 /**
  * The default Firebase options as defined in `web.config.firebase` in `app.json`.
  */
-export declare const DEFAULT_WEB_APP_OPTIONS: Partial<IFirebaseOptions> | void;
+export declare const DEFAULT_WEB_APP_OPTIONS: IFirebaseOptions | void;
