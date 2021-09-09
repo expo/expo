@@ -16,7 +16,6 @@ import versioned.host.exp.exponent.modules.api.components.pagerview.event.PageSc
 import versioned.host.exp.exponent.modules.api.components.pagerview.event.PageScrollStateChangedEvent
 import versioned.host.exp.exponent.modules.api.components.pagerview.event.PageSelectedEvent
 
-
 class PagerViewViewManager : ViewGroupManager<ViewPager2>() {
   private lateinit var eventDispatcher: EventDispatcher
 
@@ -27,7 +26,7 @@ class PagerViewViewManager : ViewGroupManager<ViewPager2>() {
   override fun createViewInstance(reactContext: ThemedReactContext): ViewPager2 {
     val vp = ViewPager2(reactContext)
     vp.adapter = ViewPagerAdapter()
-    //https://github.com/callstack/react-native-viewpager/issues/183
+    // https://github.com/callstack/react-native-viewpager/issues/183
     vp.isSaveEnabled = false
     eventDispatcher = reactContext.getNativeModule(UIManagerModule::class.java)!!.eventDispatcher
 
@@ -36,13 +35,15 @@ class PagerViewViewManager : ViewGroupManager<ViewPager2>() {
         override fun onPageScrolled(position: Int, positionOffset: Float, positionOffsetPixels: Int) {
           super.onPageScrolled(position, positionOffset, positionOffsetPixels)
           eventDispatcher.dispatchEvent(
-                  PageScrollEvent(vp.id, position, positionOffset))
+            PageScrollEvent(vp.id, position, positionOffset)
+          )
         }
 
         override fun onPageSelected(position: Int) {
           super.onPageSelected(position)
           eventDispatcher.dispatchEvent(
-                  PageSelectedEvent(vp.id, position))
+            PageSelectedEvent(vp.id, position)
+          )
         }
 
         override fun onPageScrollStateChanged(state: Int) {
@@ -54,7 +55,8 @@ class PagerViewViewManager : ViewGroupManager<ViewPager2>() {
             else -> throw IllegalStateException("Unsupported pageScrollState")
           }
           eventDispatcher.dispatchEvent(
-                  PageScrollStateChangedEvent(vp.id, pageScrollState))
+            PageScrollStateChangedEvent(vp.id, pageScrollState)
+          )
         }
       })
 
@@ -74,7 +76,7 @@ class PagerViewViewManager : ViewGroupManager<ViewPager2>() {
       return
     }
 
-    (parent.adapter as ViewPagerAdapter?)?.addChild(child, index);
+    (parent.adapter as ViewPagerAdapter?)?.addChild(child, index)
 
     if (parent.currentItem == index) {
       // Solves https://github.com/callstack/react-native-pager-view/issues/219
@@ -86,7 +88,7 @@ class PagerViewViewManager : ViewGroupManager<ViewPager2>() {
   }
 
   override fun getChildCount(parent: ViewPager2): Int {
-    return parent.adapter?.itemCount ?: 0;
+    return parent.adapter?.itemCount ?: 0
   }
 
   override fun getChildAt(parent: ViewPager2, index: Int): View {
@@ -96,7 +98,7 @@ class PagerViewViewManager : ViewGroupManager<ViewPager2>() {
   override fun removeView(parent: ViewPager2, view: View) {
     (parent.adapter as ViewPagerAdapter?)?.removeChild(view)
 
-    // Required so ViewPager actually animates the removed view right away (otherwise 
+    // Required so ViewPager actually animates the removed view right away (otherwise
     // a white screen is shown until the next user interaction).
     // https://github.com/facebook/react-native/issues/17968#issuecomment-697136929
     refreshViewChildrenLayout(parent)
@@ -112,7 +114,7 @@ class PagerViewViewManager : ViewGroupManager<ViewPager2>() {
     val adapter = parent.adapter as ViewPagerAdapter?
     adapter?.removeChildAt(index)
 
-    // Required so ViewPager actually animates the removed view right away (otherwise 
+    // Required so ViewPager actually animates the removed view right away (otherwise
     // a white screen is shown until the next user interaction).
     // https://github.com/facebook/react-native/issues/17968#issuecomment-697136929
     refreshViewChildrenLayout(parent)
@@ -148,18 +150,18 @@ class PagerViewViewManager : ViewGroupManager<ViewPager2>() {
   fun setOverScrollMode(viewPager: ViewPager2, value: String) {
     val child = viewPager.getChildAt(0)
     when (value) {
-        "never" -> {
-          child.overScrollMode = ViewPager2.OVER_SCROLL_NEVER
-        }
-        "always" -> {
-          child.overScrollMode = ViewPager2.OVER_SCROLL_ALWAYS
-        }
-        else -> {
-          child.overScrollMode = ViewPager2.OVER_SCROLL_IF_CONTENT_SCROLLS
-        }
+      "never" -> {
+        child.overScrollMode = ViewPager2.OVER_SCROLL_NEVER
+      }
+      "always" -> {
+        child.overScrollMode = ViewPager2.OVER_SCROLL_ALWAYS
+      }
+      else -> {
+        child.overScrollMode = ViewPager2.OVER_SCROLL_IF_CONTENT_SCROLLS
+      }
     }
   }
-  
+
   @ReactProp(name = "layoutDirection")
   fun setLayoutDirection(viewPager: ViewPager2, value: String) {
     when (value) {
@@ -176,7 +178,8 @@ class PagerViewViewManager : ViewGroupManager<ViewPager2>() {
     return MapBuilder.of(
       PageScrollEvent.EVENT_NAME, MapBuilder.of("registrationName", "onPageScroll"),
       PageScrollStateChangedEvent.EVENT_NAME, MapBuilder.of("registrationName", "onPageScrollStateChanged"),
-      PageSelectedEvent.EVENT_NAME, MapBuilder.of("registrationName", "onPageSelected"))
+      PageSelectedEvent.EVENT_NAME, MapBuilder.of("registrationName", "onPageSelected")
+    )
   }
 
   override fun getCommandsMap(): Map<String, Int>? {
@@ -186,7 +189,8 @@ class PagerViewViewManager : ViewGroupManager<ViewPager2>() {
       "setPageWithoutAnimation",
       COMMAND_SET_PAGE_WITHOUT_ANIMATION,
       "setScrollEnabled",
-      COMMAND_SET_SCROLL_ENABLED)
+      COMMAND_SET_SCROLL_ENABLED
+    )
   }
 
   override fun receiveCommand(root: ViewPager2, commandId: Int, args: ReadableArray?) {
@@ -208,10 +212,13 @@ class PagerViewViewManager : ViewGroupManager<ViewPager2>() {
       COMMAND_SET_SCROLL_ENABLED -> {
         root.isUserInputEnabled = args!!.getBoolean(0)
       }
-      else -> throw IllegalArgumentException(String.format(
-        "Unsupported command %d received by %s.",
-        commandId,
-        javaClass.simpleName))
+      else -> throw IllegalArgumentException(
+        String.format(
+          "Unsupported command %d received by %s.",
+          commandId,
+          javaClass.simpleName
+        )
+      )
     }
   }
 
@@ -235,8 +242,9 @@ class PagerViewViewManager : ViewGroupManager<ViewPager2>() {
   private fun refreshViewChildrenLayout(view: View) {
     view.post {
       view.measure(
-              View.MeasureSpec.makeMeasureSpec(view.width, View.MeasureSpec.EXACTLY),
-              View.MeasureSpec.makeMeasureSpec(view.height, View.MeasureSpec.EXACTLY))
+        View.MeasureSpec.makeMeasureSpec(view.width, View.MeasureSpec.EXACTLY),
+        View.MeasureSpec.makeMeasureSpec(view.height, View.MeasureSpec.EXACTLY)
+      )
       view.layout(view.left, view.top, view.right, view.bottom)
     }
   }
@@ -248,4 +256,3 @@ class PagerViewViewManager : ViewGroupManager<ViewPager2>() {
     private const val COMMAND_SET_SCROLL_ENABLED = 3
   }
 }
-
