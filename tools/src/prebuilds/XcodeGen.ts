@@ -215,7 +215,7 @@ function podNameToBundleId(podName: string): string {
 }
 
 /**
- * Generate custom modulemap for expo-modules-core where requiring React-Core as modular headers
+ * Generate custom modulemap for expo-modules-core which needs to make React-Core headers modular
  */
 export async function generateExpoModulesCoreModulemapAsync(destDir: string): Promise<string> {
   const expoModulesCoreUmbrellaHeader = path.join(
