@@ -1951,13 +1951,13 @@ PODS:
     - UMTaskManagerInterface
   - EXTrackingTransparency (1.1.0):
     - ExpoModulesCore
-  - EXUpdates (0.9.0):
+  - EXUpdates (0.9.1):
     - EXManifests
     - ExpoModulesCore
     - EXStructuredHeaders
     - EXUpdatesInterface
     - React-Core
-  - EXUpdates/Tests (0.9.0):
+  - EXUpdates/Tests (0.9.1):
     - EXManifests
     - ExpoModulesCore
     - EXStructuredHeaders
@@ -4160,7 +4160,7 @@ SPEC CHECKSUMS:
   EXStructuredHeaders: 43b5d5547fd40f5363b007c4c158af26dc0a4b7b
   EXTaskManager: e416167eb16046979026555b493a1317788efc97
   EXTrackingTransparency: 3331861717c233fc079f5bf7831dd627ac085cd5
-  EXUpdates: c3c513597396518b8f80da864aa8fdad53adc6b8
+  EXUpdates: b73ae055a20e2b3a5b979de98dd3883996e2c99c
   EXUpdatesInterface: 69176435f67804831967f833152fee892febef87
   EXVideoThumbnails: da38473f6d86ce08c5a4a9e6e839816e1aac01c3
   EXWebBrowser: f9435daf809a688e0cb63675da208196007573b6

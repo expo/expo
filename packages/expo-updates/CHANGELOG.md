@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 0.9.1 — 2021-09-09
+
+_This version does not introduce any user-facing changes._
+
 ## 0.9.0 — 2021-09-09
 
 ### 🎉 New features
