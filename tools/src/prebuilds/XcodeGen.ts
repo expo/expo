@@ -127,10 +127,10 @@ export async function createSpecFromPodspecAsync(
         IPHONEOS_DEPLOYMENT_TARGET: podspec.platforms.ios,
         FRAMEWORK_SEARCH_PATHS: constructFrameworkSearchPaths(dependencies),
         HEADER_SEARCH_PATHS: constructHeaderSearchPaths(dependenciesNames),
+        MODULEMAP_FILE: podspec.modulemap_file ?? '',
 
         // Suppresses deprecation warnings coming from frameworks like OpenGLES.
         VALIDATE_WORKSPACE_SKIPPED_SDK_FRAMEWORKS: arrayize(podspec.frameworks).join(' '),
-        MODULEMAP_FILE: '$(SRCROOT)/module.modulemap',
       },
     },
   };
@@ -212,4 +212,45 @@ function podNameToBundleId(podName: string): string {
     .replace(/^EX/, 'expo')
     .replace(/(\_|[^\w\d\.])+/g, '.')
     .replace(/\.*([A-Z]+)/g, (_, p1) => `.${p1.toLowerCase()}`);
+}
+
+/**
+ * Generate custom modulemap for expo-modules-core where requiring React-Core as modular headers
+ */
+export async function generateExpoModulesCoreModulemapAsync(destDir: string): Promise<string> {
+  const expoModulesCoreUmbrellaHeader = path.join(
+    PODS_PUBLIC_HEADERS_DIR,
+    'ExpoModulesCore',
+    'ExpoModulesCore-umbrella.h'
+  );
+  await fs.copyFile(
+    expoModulesCoreUmbrellaHeader,
+    path.join(destDir, 'ExpoModulesCore-umbrella.h')
+  );
+
+  const reactCoreHeaderDir = path.join(PODS_PUBLIC_HEADERS_DIR, 'React-Core');
+  const yogaUmbrellaHeader = path.join(PODS_PUBLIC_HEADERS_DIR, 'Yoga', 'Yoga-umbrella.h');
+  const modulemapContent = `
+framework module ExpoModulesCore {
+  umbrella header "ExpoModulesCore.h"
+  export *
+  module * { export * }
+
+  module React {
+    umbrella "${reactCoreHeaderDir}"
+    export *
+    module * { export * }
+  }
+
+  module Yoga {
+    umbrella header "${yogaUmbrellaHeader}"
+    export *
+    module * { export * }
+  }
+}
+`;
+
+  const modulemapFile = path.join(destDir, 'generated.modulemap');
+  await fs.writeFile(modulemapFile, modulemapContent);
+  return modulemapFile;
 }

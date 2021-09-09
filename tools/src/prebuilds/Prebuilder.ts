@@ -7,6 +7,7 @@ import logger from '../Logger';
 import XcodeProject from './XcodeProject';
 import {
   createSpecFromPodspecAsync,
+  generateExpoModulesCoreModulemapAsync,
   generateXcodeProjectAsync,
   INFO_PLIST_FILENAME,
 } from './XcodeGen';
@@ -131,7 +132,6 @@ export async function buildFrameworksForProjectAsync(
       await xcodeProject.buildFrameworkAsync(xcodeProject.name, flavor, {
         ONLY_ACTIVE_ARCH: false,
         BITCODE_GENERATION_MODE: 'bitcode',
-        // Disable `BUILD_LIBRARY_FOR_DISTRIBUTION` to workaround segmentation fault: 11
         BUILD_LIBRARY_FOR_DISTRIBUTION: true,
         DEAD_CODE_STRIPPING: true,
         DEPLOYMENT_POSTPROCESSING: true,
@@ -162,7 +162,12 @@ export async function buildFrameworksForProjectAsync(
 export async function cleanTemporaryFilesAsync(xcodeProject: XcodeProject) {
   logger.log('   Cleaning up temporary files');
 
-  const pathsToRemove = [`${xcodeProject.name}.xcodeproj`, INFO_PLIST_FILENAME];
+  const pathsToRemove = [
+    `${xcodeProject.name}.xcodeproj`,
+    INFO_PLIST_FILENAME,
+    'generated.modulemap',
+    `${xcodeProject.name}-umbrella.h`,
+  ];
 
   await Promise.all(
     pathsToRemove.map((pathToRemove) => fs.remove(path.join(xcodeProject.rootDir, pathToRemove)))
@@ -180,6 +185,13 @@ export async function generateXcodeProjectSpecAsync(pkg: Package): Promise<Xcode
   }
 
   logger.log('   Generating Xcode project spec');
+
+  if (pkg.packageName === 'expo-modules-core') {
+    const modulemapFile = await generateExpoModulesCoreModulemapAsync(
+      path.join(pkg.path, pkg.iosSubdirectory)
+    );
+    podspec.modulemap_file = modulemapFile;
+  }
 
   const spec = await createSpecFromPodspecAsync(podspec, async (dependencyName) => {
     const frameworkPath = await findFrameworkForProjectAsync(dependencyName);
