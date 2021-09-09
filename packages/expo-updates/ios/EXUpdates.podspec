@@ -31,6 +31,20 @@ Pod::Spec.new do |s|
     s.source_files = "#{s.name}/**/*.{h,m}"
   end
 
+  if $expo_updates_create_manifest != false
+    s.script_phase = {
+      :name => 'Generate app.manifest for expo-updates',
+      :script => 'bash -l -c "$PODS_TARGET_SRCROOT/../scripts/create-manifest-ios.sh"',
+      :execution_position => :before_compile
+    }
+
+    # Generate EXUpdates.bundle without existing resources
+    # `create-manifest-ios.sh` will generate app.manifest in EXUpdates.bundle
+    s.resource_bundles = {
+      'EXUpdates' => []
+    }
+  end
+
   s.test_spec 'Tests' do |test_spec|
     test_spec.source_files = 'Tests/*.{h,m,swift}'
   end

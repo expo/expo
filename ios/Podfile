@@ -11,6 +11,9 @@ inhibit_all_warnings!
 # Enables Swift modules in Expo Go
 use_swift_modules!
 
+# Disable expo-updates auto create manifest in podspec script_phase
+$expo_updates_create_manifest = false
+
 abstract_target 'Expo Go' do
   # Expo Client dependencies
   pod 'Amplitude'

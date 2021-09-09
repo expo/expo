@@ -20,7 +20,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
-static NSString * const EXUpdatesConfigPlistName = @"Expo";
+NSString * const EXUpdatesConfigPlistName = @"Expo";
+NSString * const EXUpdatesConfigEnableAutoSetupKey = @"EXUpdatesAutoSetup";
 
 static NSString * const EXUpdatesDefaultReleaseChannelName = @"default";
 
