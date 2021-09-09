@@ -58,7 +58,6 @@
     "expo-application": "~3.3.0",
     "expo-asset": "~8.4.0",
     "expo-constants": "~11.1.0",
-    "expo-error-recovery": "~2.3.0",
     "expo-file-system": "~12.0.0",
     "expo-font": "~9.3.0",
     "expo-keep-awake": "~9.3.0",
@@ -71,6 +70,9 @@
     "react-native-safe-area-context": "3.2.0",
     "serialize-error": "^2.1.0",
     "uuid": "^3.4.0"
+  },
+  "optionalDependencies": {
+    "expo-error-recovery": "~2.3.0"
   },
   "devDependencies": {
     "@types/fbemitter": "^2.0.32",
