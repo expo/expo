@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Suppress the `"main" has not been registered` exception if it was caused by a different error.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
