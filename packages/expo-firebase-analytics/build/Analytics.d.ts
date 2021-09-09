@@ -2,42 +2,10 @@ export { default as FirebaseAnalyticsJS } from './FirebaseAnalyticsJS';
 /**
  * Logs an app event. The event can have up to 25 parameters. Events with the same name must have
  * the same parameters. Up to 500 event names are supported. Using predefined events and/or
- * parameters is recommended for optimal reporting.
- * See https://developers.google.com/gtagjs/reference/event
+ * parameters is recommended for optimal reporting. See [the Google Analytics event reference](https://developers.google.com/gtagjs/reference/event)
+ * for a list of all predefined events.
  *
- * The following event names are reserved and cannot be used:
- * - `ad_activeview`
- * - `ad_click`
- * - `ad_exposure`
- * - `ad_query`
- * - `ad_reward`
- * - `adunit_exposure`
- * - `app_background`
- * - `app_clear_data`
- * - `app_exception`
- * - `app_remove`
- * - `app_store_refund`
- * - `app_store_subscription_cancel`
- * - `app_store_subscription_convert`
- * - `app_store_subscription_renew`
- * - `app_update`
- * - `app_upgrade`
- * - `dynamic_link_app_open`
- * - `dynamic_link_app_update`
- * - `dynamic_link_first_open`
- * - `error`
- * - `firebase_campaign`
- * - `first_open`
- * - `first_visit`
- * - `in_app_purchase`
- * - `notification_dismiss`
- * - `notification_foreground`
- * - `notification_open`
- * - `notification_receive`
- * - `os_update`
- * - `session_start`
- * - `session_start_with_rollout`
- * - `user_engagement`
+ * > The following event names are reserved for the native SDKs automatic collection and cannot be used: `ad_activeview, ad_click, ad_exposure, ad_query, ad_reward, adunit_exposure, app_background, app_clear_data, app_exception, app_remove, app_store_refund, app_store_subscription_cancel, ad_activeview, ad_click, ad_exposure, ad_query, ad_reward, adunit_exposure, app_background, app_clear_data, app_exception, app_remove, app_store_refund, app_store_subscription_cancel, app_store_subscription_convert, app_store_subscription_renew, app_update, app_upgrade, dynamic_link_app_open, dynamic_link_app_update, dynamic_link_first_open, error, firebase_campaign, first_open, first_visit, in_app_purchase, notification_dismiss, notification_foreground, notification_open, notification_receive, os_update, session_start, session_start_with_rollout, user_engagement`
  *
  * # Example
  * ```ts
