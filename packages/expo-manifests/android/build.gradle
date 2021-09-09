@@ -72,7 +72,6 @@ android {
 }
 
 dependencies {
-  implementation project(':expo-modules-core')
   implementation project(':expo-json-utils')
 
   testImplementation 'junit:junit:4.12'
