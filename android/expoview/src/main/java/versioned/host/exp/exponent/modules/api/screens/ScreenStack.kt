@@ -13,7 +13,6 @@ import versioned.host.exp.exponent.modules.api.screens.events.StackFinishTransit
 import java.util.Collections
 import kotlin.collections.ArrayList
 import kotlin.collections.HashSet
-import host.exp.expoview.R
 
 class ScreenStack(context: Context?) : ScreenContainer<ScreenStackFragment>(context) {
   private val mStack = ArrayList<ScreenStackFragment>()
@@ -43,7 +42,7 @@ class ScreenStack(context: Context?) : ScreenContainer<ScreenStackFragment>(cont
   var goingForward = false
   fun dismiss(screenFragment: ScreenStackFragment) {
     mDismissed.add(screenFragment)
-    markUpdated()
+    performUpdatesNow()
   }
 
   override val topScreen: Screen?
@@ -129,8 +128,7 @@ class ScreenStack(context: Context?) : ScreenContainer<ScreenStackFragment>(cont
     return super.hasScreen(screenFragment) && !mDismissed.contains(screenFragment)
   }
 
-  override fun performUpdate() {
-
+  override fun onUpdate() {
     // When going back from a nested stack with a single screen on it, we may hit an edge case
     // when all screens are dismissed and no screen is to be displayed on top. We need to gracefully
     // handle the case of newTop being NULL, which happens in several places below
@@ -186,7 +184,7 @@ class ScreenStack(context: Context?) : ScreenContainer<ScreenStackFragment>(cont
       stackAnimation = mTopScreen?.screen?.stackAnimation
     }
 
-    getOrCreateTransaction().let {
+    createTransaction().let {
       // animation logic start
       if (stackAnimation != null) {
         if (shouldUseOpenAnimation) {
@@ -279,7 +277,7 @@ class ScreenStack(context: Context?) : ScreenContainer<ScreenStackFragment>(cont
       mTopScreen = newTop
       mStack.clear()
       mStack.addAll(mScreenFragments)
-      tryCommitTransaction()
+      it.commitNowAllowingStateLoss()
       mTopScreen?.let { screen -> setupBackHandlerIfNeeded(screen) }
     }
   }
@@ -339,7 +337,7 @@ class ScreenStack(context: Context?) : ScreenContainer<ScreenStackFragment>(cont
           .show(topScreen)
           .addToBackStack(BACK_STACK_TAG)
           .setPrimaryNavigationFragment(topScreen)
-          .commitAllowingStateLoss()
+          .commitNowAllowingStateLoss()
         it.addOnBackStackChangedListener(mBackStackListener)
       }
     }

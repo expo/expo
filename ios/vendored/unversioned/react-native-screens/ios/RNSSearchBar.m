@@ -18,7 +18,7 @@
 {
   if (self = [super init]) {
     _bridge = bridge;
-    _controller = [UISearchController new];
+    _controller = [[UISearchController alloc] initWithSearchResultsController:nil];
     _controller.searchBar.delegate = self;
     _hideWhenScrolling = YES;
   }

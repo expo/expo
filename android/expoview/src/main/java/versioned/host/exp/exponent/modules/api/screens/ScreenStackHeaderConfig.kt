@@ -18,8 +18,6 @@ import com.facebook.react.ReactApplication
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException
 import com.facebook.react.bridge.ReactContext
 import com.facebook.react.views.text.ReactTypefaceUtils
-import host.exp.expoview.BuildConfig
-import host.exp.expoview.R
 
 class ScreenStackHeaderConfig(context: Context) : ViewGroup(context) {
   private val mConfigSubviews = ArrayList<ScreenStackHeaderSubview>(3)
@@ -371,7 +369,7 @@ class ScreenStackHeaderConfig(context: Context) : ViewGroup(context) {
     mDirection = direction
   }
 
-  private class DebugMenuToolbar(context: Context) : Toolbar(context) {
+  private class DebugMenuToolbar(context: Context?) : Toolbar(context) {
     override fun showOverflowMenu(): Boolean {
       (context.applicationContext as ReactApplication)
         .reactNativeHost

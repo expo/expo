@@ -2,7 +2,9 @@ package versioned.host.exp.exponent.modules.api.screens
 
 import android.view.View
 import android.view.ViewGroup
+import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.module.annotations.ReactModule
+import com.facebook.react.uimanager.LayoutShadowNode
 import com.facebook.react.uimanager.ThemedReactContext
 import com.facebook.react.uimanager.ViewGroupManager
 
@@ -56,6 +58,10 @@ class ScreenStackViewManager : ViewGroupManager<ScreenStack>() {
 
   override fun getChildAt(parent: ScreenStack, index: Int): View {
     return parent.getScreenAt(index)
+  }
+
+  override fun createShadowNodeInstance(context: ReactApplicationContext): LayoutShadowNode {
+    return ScreensShadowNode(context)
   }
 
   override fun needsCustomLayoutForChildren(): Boolean {
