@@ -1,5 +1,5 @@
-import { IFirebaseOptions } from './FirebaseOptions';
-export { IFirebaseOptions } from './FirebaseOptions';
+import { FirebaseOptions } from './FirebaseOptions';
+export { FirebaseOptions } from './FirebaseOptions';
 /**
  * Name of the default Firebase app (e.g. `[DEFAULT]`).
  *
@@ -35,8 +35,8 @@ export declare const DEFAULT_APP_NAME: string | void;
  * }
  * ```
  */
-export declare const DEFAULT_APP_OPTIONS: IFirebaseOptions | void;
+export declare const DEFAULT_APP_OPTIONS: FirebaseOptions | void;
 /**
  * The default Firebase options as defined in `web.config.firebase` in `app.json`.
  */
-export declare const DEFAULT_WEB_APP_OPTIONS: IFirebaseOptions | void;
+export declare const DEFAULT_WEB_APP_OPTIONS: FirebaseOptions | void;

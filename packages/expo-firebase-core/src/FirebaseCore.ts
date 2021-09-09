@@ -1,6 +1,6 @@
 import ExpoFirebaseCore from './ExpoFirebaseCore';
-import { IFirebaseOptions, getDefaultWebOptions } from './FirebaseOptions';
-export { IFirebaseOptions } from './FirebaseOptions';
+import { FirebaseOptions, getDefaultWebOptions } from './FirebaseOptions';
+export { FirebaseOptions } from './FirebaseOptions';
 
 if (!ExpoFirebaseCore) {
   console.warn(
@@ -48,7 +48,7 @@ export const DEFAULT_APP_NAME: string | void = ExpoFirebaseCore
  * }
  * ```
  */
-export const DEFAULT_APP_OPTIONS: IFirebaseOptions | void = ExpoFirebaseCore
+export const DEFAULT_APP_OPTIONS: FirebaseOptions | void = ExpoFirebaseCore
   ? ExpoFirebaseCore.DEFAULT_APP_OPTIONS
   : undefined;
 
@@ -56,4 +56,4 @@ export const DEFAULT_APP_OPTIONS: IFirebaseOptions | void = ExpoFirebaseCore
 /**
  * The default Firebase options as defined in `web.config.firebase` in `app.json`.
  */
-export const DEFAULT_WEB_APP_OPTIONS: IFirebaseOptions | void = getDefaultWebOptions();
+export const DEFAULT_WEB_APP_OPTIONS: FirebaseOptions | void = getDefaultWebOptions();

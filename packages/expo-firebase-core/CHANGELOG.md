@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- Rename `IFirebaseOptions` type to `FirebaseOptions`, since it is not an interface. ([#14342](https://github.com/expo/expo/pull/14342) by [@Simek](https://github.com/Simek))
+
 ### 🎉 New features
 
 - Update JS code to read manifest2 when manifest is not available. ([#13602](https://github.com/expo/expo/pull/13602) by [@wschurman](https://github.com/wschurman))

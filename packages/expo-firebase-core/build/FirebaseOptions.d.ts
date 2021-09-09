@@ -1,4 +1,4 @@
-export declare type IFirebaseOptions = {
+export declare type FirebaseOptions = {
     /**
      * Unique identifier of the Firebase app.
      */
@@ -27,4 +27,4 @@ export declare type IFirebaseOptions = {
     authDomain?: string;
     measurementId?: string;
 };
-export declare function getDefaultWebOptions(): IFirebaseOptions | void;
+export declare function getDefaultWebOptions(): FirebaseOptions | void;

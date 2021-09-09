@@ -1,7 +1,7 @@
 import Constants from 'expo-constants';
 
 // @docsMissing
-export type IFirebaseOptions = {
+export type FirebaseOptions = {
   /**
    * Unique identifier of the Firebase app.
    */
@@ -31,7 +31,7 @@ export type IFirebaseOptions = {
   measurementId?: string;
 };
 
-export function getDefaultWebOptions(): IFirebaseOptions | void {
+export function getDefaultWebOptions(): FirebaseOptions | void {
   return (
     Constants.manifest?.web?.config?.firebase ??
     Constants.manifest2?.extra?.expoClient?.web?.config?.firebase
