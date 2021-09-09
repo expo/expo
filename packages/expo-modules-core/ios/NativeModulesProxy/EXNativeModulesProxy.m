@@ -29,7 +29,7 @@ static const NSString *methodInfoArgumentsCountKey = @"argumentsCount";
 
 @end
 
-@interface RCTComponentData (EXRCTComponentData)
+@interface RCTComponentData (EXNativeModulesProxy)
 
 - (instancetype)initWithManagerClass:(Class)managerClass bridge:(RCTBridge *)bridge eventDispatcher:(id<RCTEventDispatcherProtocol>) eventDispatcher; // available in RN 0.65+
 - (instancetype)initWithManagerClass:(Class)managerClass bridge:(RCTBridge *)bridge;
