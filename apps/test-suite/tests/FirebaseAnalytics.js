@@ -121,6 +121,12 @@ export async function test({ describe, beforeAll, afterAll, it, xit, expect }) {
         } catch (e) {
           error = e;
         }
+        if ((!isExpoClient && Platform.OS === 'android') || Platform.OS === 'ios') {
+          expect(error).not.toBeNull();
+        } else {
+          expect(error).toBeNull();
+        }
+
         expect(error).not.toBeNull();
       });
     });
