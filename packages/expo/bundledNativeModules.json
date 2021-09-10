@@ -66,7 +66,6 @@
   "expo-modules-core": "~0.3.1",
   "expo-network": "~3.2.0",
   "expo-notifications": "~0.12.0",
-  "expo-payments-stripe": "~10.0.0",
   "expo-permissions": "~12.1.0",
   "expo-print": "~10.2.0",
   "expo-random": "~11.2.0",
