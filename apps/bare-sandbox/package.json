@@ -104,7 +104,6 @@
         "expo-ads-facebook",
         "expo-branch",
         "expo-module-template",
-        "expo-payments-stripe",
         "expo-web-browser"
       ]
     }

@@ -45,12 +45,6 @@ Pod::Spec.new do |s|
     ss.dependency 'UMReactNativeAdapter'
   end
 
-  s.subspec "Payments" do |ss|
-    ss.dependency "ExpoKit/Core"
-    ss.dependency 'Stripe', '~> 10.1.0'
-    ss.source_files = 'Exponent/Versioned/Optional/Payments/*.{h,m}'
-  end
-
   s.subspec "FaceDetector" do |ss|
     ss.dependency "EXFaceDetector"
   end

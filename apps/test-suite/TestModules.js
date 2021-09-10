@@ -126,7 +126,6 @@ export function getTestModules() {
     optionalRequire(() => require('./tests/Speech')),
     optionalRequire(() => require('./tests/Recording')),
     optionalRequire(() => require('./tests/ScreenOrientation')),
-    optionalRequire(() => require('./tests/Payments')),
     optionalRequire(() => require('./tests/AdMobInterstitial')),
     optionalRequire(() => require('./tests/AdMobRewarded')),
     optionalRequire(() => require('./tests/FBBannerAd')),
