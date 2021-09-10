@@ -457,12 +457,6 @@ export const Screens = [
     },
     name: 'ViewShot',
   },
-  {
-    getComponent() {
-      return optionalRequire(() => require('../screens/PaymentsScreen'));
-    },
-    name: 'Payments',
-  },
 ];
 
 function ExpoApisStackNavigator(props: { navigation: BottomTabNavigationProp<any> }) {

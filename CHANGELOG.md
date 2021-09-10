@@ -16,6 +16,8 @@ Package-specific changes not released in any SDK will be added here just before 
 
 ### 🛠 Breaking changes
 
+- Removed `expo-payments-stripe`. Please use `@stripe/stripe-react-native` instead. ([#14382](https://github.com/expo/expo/pull/14382) by [@cruzach](https://github.com/cruzach))
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes

@@ -109,7 +109,6 @@
     "expo-location": "~12.1.0",
     "expo-mail-composer": "~10.2.0",
     "expo-media-library": "~12.1.0",
-    "expo-payments-stripe": "~10.0.0",
     "expo-permissions": "~12.1.0",
     "expo-print": "~10.2.0",
     "expo-processing": "2.0.2",

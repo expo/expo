@@ -37,7 +37,6 @@
     "autolinking": {
       "exclude": [
         "expo-branch",
-        "expo-payments-stripe",
         "expo-ads-facebook",
         "expo-ads-admob",
         "expo-apple-authentication",

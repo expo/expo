@@ -235,12 +235,6 @@
             </intent-filter>
         </receiver>
 
-        <activity
-            android:name="abi42_0_0.expo.modules.payments.stripe.OpenBrowserActivity"
-            android:exported="false"
-            android:launchMode="singleTask"
-            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
-
         <provider
             android:name="abi42_0_0.expo.modules.sharing.SharingFileProvider"
             android:authorities="${applicationId}.SharingFileProvider"
