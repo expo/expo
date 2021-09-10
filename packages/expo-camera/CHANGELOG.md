@@ -5,6 +5,7 @@
 ### 🛠 Breaking changes
 
 - Deprecate `getPermissionsAsync` and `requestPermissionsAsync` methods, use specific permission requesters. ([#13855](https://github.com/expo/expo/pull/13855) by [@bycedric](https://github.com/bycedric))
+- Dropped support for iOS 11.0
 
 ### 🎉 New features
 

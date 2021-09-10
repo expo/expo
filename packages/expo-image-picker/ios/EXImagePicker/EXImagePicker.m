@@ -184,9 +184,7 @@ EX_EXPORT_METHOD_AS(launchImageLibraryAsync, launchImageLibraryAsync:(NSDictiona
 
     self.picker.mediaTypes = [self convertMediaTypes:self.options[@"mediaTypes"]];
     
-    if (@available(iOS 11.0, *)) {
-      self.picker.videoExportPreset = [self importVideoExportPreset:self.options[@"videoExportPreset"]];
-    }
+    self.picker.videoExportPreset = [self importVideoExportPreset:self.options[@"videoExportPreset"]];
       
     NSNumber* videoQuality = [self.options valueForKey:@"videoQuality"];
     self.picker.videoQuality = [videoQuality intValue];
@@ -332,10 +330,8 @@ EX_EXPORT_METHOD_AS(launchImageLibraryAsync, launchImageLibraryAsync:(NSDictiona
   response[@"uri"] = filePath;
 
   if ([[self.options objectForKey:@"base64"] boolValue]) {
-    if (@available(iOS 11.0, *)) {
-      if (fileCopied) {
-        data = [NSData dataWithContentsOfFile:path];
-      }
+    if (fileCopied) {
+      data = [NSData dataWithContentsOfFile:path];
     }
     response[@"base64"] = [data base64EncodedStringWithOptions:0];
   }
@@ -346,14 +342,12 @@ EX_EXPORT_METHOD_AS(launchImageLibraryAsync, launchImageLibraryAsync:(NSDictiona
       completionHandler();
     } else {
       PHAsset *asset;
-      if (@available(iOS 11.0, *)) {
-        asset = [info objectForKey:UIImagePickerControllerPHAsset];
-      } else {
-        PHFetchResult<PHAsset *> *assets = [PHAsset fetchAssetsWithALAssetURLs:@[imageURL] options:nil];
-        if (assets.count > 0) {
-          asset = assets.firstObject;
-        }
+      asset = [info objectForKey:UIImagePickerControllerPHAsset];
+      PHFetchResult<PHAsset *> *assets = [PHAsset fetchAssetsWithALAssetURLs:@[imageURL] options:nil];
+      if (assets.count > 0) {
+        asset = assets.firstObject;
       }
+      
       if (!asset) {
         EXLogInfo(@"Could not fetch metadata for image %@", [imageURL absoluteString]);
         completionHandler();
@@ -375,18 +369,16 @@ EX_EXPORT_METHOD_AS(launchImageLibraryAsync, launchImageLibraryAsync:(NSDictiona
 }
 
 - (BOOL)tryCopyImage:(NSDictionary * _Nonnull)info path:(NSString *)toPath {
-  if (@available(iOS 11.0, *)) {
-    NSError *error = nil;
-    NSString *fromPath = [[info objectForKey:UIImagePickerControllerImageURL] path];
-    if (fromPath == nil) {
-      return false;
-    }
-    [[NSFileManager defaultManager] copyItemAtPath:fromPath
-                                            toPath:toPath
-                                             error:&error];
-    if (error == nil) {
-      return true;
-    }
+  NSError *error = nil;
+  NSString *fromPath = [[info objectForKey:UIImagePickerControllerImageURL] path];
+  if (fromPath == nil) {
+    return false;
+  }
+  [[NSFileManager defaultManager] copyItemAtPath:fromPath
+                                          toPath:toPath
+                                           error:&error];
+  if (error == nil) {
+    return true;
   }
 
   // Try to save recompressed image if saving the original one failed

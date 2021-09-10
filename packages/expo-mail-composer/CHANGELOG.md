@@ -5,6 +5,7 @@
 ### 🛠 Breaking changes
 
 - Added `AndroidManifest.xml` queries for intent handling. ([#13388](https://github.com/expo/expo/pull/13388) by [@EvanBacon](https://github.com/EvanBacon))
+- Dropped support for iOS 11.0
 
 ### 🎉 New features
 

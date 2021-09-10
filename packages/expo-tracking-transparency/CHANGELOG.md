@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- Dropped support for iOS 11.0
+
 ### 🎉 New features
 
 - Add `useTrackingPermissions` hook from modules factory. ([#13864](https://github.com/expo/expo/pull/13864) by [@bycedric](https://github.com/bycedric))

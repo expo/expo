@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- Dropped support for iOS 11.0
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes

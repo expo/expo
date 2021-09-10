@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- Dropped support for iOS 11.0
+
 ### 🎉 New features
 
 - Add useCalendarPermissions and useRemindersPermissions hooks from modules factory. ([#13854](https://github.com/expo/expo/pull/13854) by [@bycedric](https://github.com/bycedric))

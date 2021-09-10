@@ -5,7 +5,7 @@ require File.join(File.dirname(`node --print "require.resolve('expo/package.json
 install! 'cocoapods',
          :generate_multiple_pod_projects => true,
          :incremental_installation => true
-platform :ios, '11.0'
+platform :ios, '12.0'
 inhibit_all_warnings!
 
 # Disable expo-updates auto create manifest in podspec script_phase
@@ -63,7 +63,7 @@ abstract_target 'Expo Go' do
       run_versioned_postinstalls!(pod_name, target_installation_result)
 
       target_installation_result.native_target.build_configurations.each do |config|
-        config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '11.0'
+        config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '12.0'
 
         # Fix building failures on M1
         config.build_settings['EXCLUDED_ARCHS[sdk=iphonesimulator*]'] = 'arm64'

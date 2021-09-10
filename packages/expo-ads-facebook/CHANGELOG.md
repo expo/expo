@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- Dropped support for iOS 11.0
+
 ### 🎉 New features
 
 - Add `usePermissions` hooks from modules factory. ([#13850](https://github.com/expo/expo/pull/13850) by [@bycedric](https://github.com/bycedric))
