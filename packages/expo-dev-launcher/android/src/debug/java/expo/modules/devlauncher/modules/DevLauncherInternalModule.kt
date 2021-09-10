@@ -100,7 +100,12 @@ class DevLauncherInternalModule(reactContext: ReactApplicationContext?)
 
   @ReactMethod
   fun getPendingDeepLink(promise: Promise) {
-    promise.resolve(intentRegistry.intent?.data?.toString())
+    intentRegistry.intent?.data?.let {
+      promise.resolve(it.toString())
+      return
+    }
+
+    promise.resolve(intentRegistry.intent?.action)
   }
 
   private fun onNewPendingIntent(intent: Intent) {

@@ -188,6 +188,11 @@ class DevLauncherController private constructor()
         }
         return true
       }
+
+    intent?.let {
+      return handleExternalIntent(it)
+    }
+
     return false
   }
 
