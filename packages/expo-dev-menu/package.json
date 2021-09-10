@@ -45,7 +45,7 @@
     "expo-dev-menu-interface": "0.4.0"
   },
   "devDependencies": {
-    "@apollo/client": "~3.3.21",
+    "@apollo/client": "^3.2.0",
     "@react-navigation/core": "5.15.1",
     "@react-navigation/native": "5.9.2",
     "@react-navigation/stack": "5.14.2",
