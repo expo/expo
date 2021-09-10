@@ -51,7 +51,7 @@ describe('monorepo', () => {
 
       expect(resolveResult.status).toBe(0);
       const { modules } = JSON.parse(resolveResult.stdout);
-      const parsedModules = modules.map(module => ({
+      const parsedModules = modules.map((module) => ({
         ...module,
         sourceDir: removeProjectPath(module.sourceDir),
         podspecDir: removeProjectPath(module.podspecDir),
@@ -72,7 +72,7 @@ describe('monorepo', () => {
   });
 
   describe('search', () => {
-    test.each(apps)('%s', async app => {
+    test.each(apps)('%s', async (app) => {
       const searchResults = await autolinkingRunAsync(['search', '--json'], {
         cwd: projectPath(app),
       });
@@ -82,7 +82,7 @@ describe('monorepo', () => {
       for (const key in modules) {
         const module = modules[key];
         module.path = removeProjectPath(module.path);
-        module.duplicates = module.duplicates.map(conflict => ({
+        module.duplicates = module.duplicates.map((conflict) => ({
           ...conflict,
           path: removeProjectPath(conflict.path),
         }));
