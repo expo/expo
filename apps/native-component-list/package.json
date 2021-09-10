@@ -64,7 +64,7 @@
     "@use-expo/permissions": "^2.0.0",
     "date-format": "^2.0.0",
     "deep-object-diff": "^1.1.0",
-    "expo": "~42.0.3",
+    "expo": "~42.0.4",
     "expo-2d-context": "^0.0.2",
     "expo-ads-admob": "~10.1.2",
     "expo-ads-facebook": "~10.1.2",
