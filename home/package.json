@@ -17,7 +17,7 @@
     "preset": "jest-expo"
   },
   "dependencies": {
-    "@apollo/client": "^3.4.10",
+    "@apollo/client": "~3.3.21",
     "@expo/react-native-action-sheet": "^2.1.0",
     "@expo/sdk-runtime-versions": "^1.0.0",
     "@expo/vector-icons": "^12.0.4",
