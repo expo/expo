@@ -7,6 +7,7 @@ import withDevMenu from 'expo-dev-menu/app.plugin';
 import fs from 'fs';
 import path from 'path';
 
+import { InstallationPage } from './constants';
 import withGeneratedAndroidScheme from './withGeneratedAndroidScheme';
 import withGeneratedIosScheme from './withGeneratedIosScheme';
 
@@ -33,7 +34,7 @@ const addReactNativeConfigAsync: Mod = async (config) => {
     const config = fs.readFileSync(filename, 'utf8');
     if (!config.includes('expo-dev-client/dependencies')) {
       throw new Error(
-        `Could not add expo-dev-client dependencies to existing file ${filename}. See expo-dev-client installation instructions to add them manually.`
+        `Could not add expo-dev-client dependencies to existing file ${filename}. See expo-dev-client installation instructions to add them manually: ${InstallationPage}`
       );
     }
   } catch (error) {

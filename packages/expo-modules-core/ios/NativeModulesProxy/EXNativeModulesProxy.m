@@ -7,12 +7,19 @@
 #import <React/RCTComponentData.h>
 #import <React/RCTModuleData.h>
 
+#import <ExpoModulesCore/EXModuleRegistryProvider.h>
+#import <ExpoModulesCore/EXReactNativeEventEmitter.h>
 #import <ExpoModulesCore/EXNativeModulesProxy.h>
 #import <ExpoModulesCore/EXEventEmitter.h>
 #import <ExpoModulesCore/EXViewManager.h>
 #import <ExpoModulesCore/EXViewManagerAdapter.h>
 #import <ExpoModulesCore/EXViewManagerAdapterClassesRegistry.h>
+#if __has_include(<ExpoModulesCore/ExpoModulesCore-Swift.h>)
+// For prebuilding xcframework, do not use quote notation.
+#import <ExpoModulesCore/ExpoModulesCore-Swift.h>
+#elif __has_include("ExpoModulesCore-Swift.h")
 #import "ExpoModulesCore-Swift.h"
+#endif
 
 static const NSString *exportedMethodsNamesKeyPath = @"exportedMethods";
 static const NSString *viewManagersNamesKeyPath = @"viewManagersNames";
@@ -52,7 +59,7 @@ RCT_EXPORT_MODULE(NativeUnimoduleProxy)
 {
   if (self = [super init]) {
     _exModuleRegistry = moduleRegistry != nil ? moduleRegistry : [[EXModuleRegistryProvider new] moduleRegistry];
-    _swiftInteropBridge = [[SwiftInteropBridge alloc] initWithModulesProvider:[NSClassFromString(@"ExpoModulesProvider") new] legacyModuleRegistry:_exModuleRegistry];
+    _swiftInteropBridge = [[SwiftInteropBridge alloc] initWithModulesProvider:[self getExpoModulesProvider] legacyModuleRegistry:_exModuleRegistry];
     _exportedMethodsKeys = [NSMutableDictionary dictionary];
     _exportedMethodsReverseKeys = [NSMutableDictionary dictionary];
     _ownsModuleRegistry = moduleRegistry == nil;
@@ -171,6 +178,17 @@ RCT_EXPORT_METHOD(callMethod:(NSString *)moduleName methodNameOrKey:(id)methodNa
 }
 
 #pragma mark - Privates
+
+- (id<ModulesProviderObjCProtocol>)getExpoModulesProvider
+{
+  Class generatedExpoModulesProvider = NSClassFromString(@"ExpoModulesProvider");
+  // Checks if `ExpoModulesProvider` was generated
+  if (generatedExpoModulesProvider) {
+    return [generatedExpoModulesProvider new];
+  } else {
+    return [ModulesProvider new];
+  }
+}
 
 - (void)registerExpoModulesInBridge:(RCTBridge *)bridge
 {

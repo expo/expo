@@ -4,7 +4,7 @@ apply plugin: 'kotlin-android-extensions'
 apply plugin: 'maven'
 
 group = 'host.exp.exponent'
-version = '0.2.2'
+version = '0.3.0'
 
 buildscript {
   // Simple helper that allows the root project to override versions declared by this library.
@@ -53,7 +53,7 @@ android {
     minSdkVersion safeExtGet("minSdkVersion", 21)
     targetSdkVersion safeExtGet("targetSdkVersion", 28)
     versionCode 1
-    versionName '0.2.2'
+    versionName '0.3.0'
   }
   lintOptions {
     abortOnError false
@@ -65,5 +65,7 @@ repositories {
 }
 
 dependencies {
+  implementation project(':expo-modules-core')
+
   implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${safeExtGet("kotlinVersion", "1.3.50")}"
 }

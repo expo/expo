@@ -94,8 +94,7 @@ PODS:
     - ExpoModulesCore
   - EXInAppPurchases (11.0.0):
     - ExpoModulesCore
-  - EXJSONUtils (0.1.0):
-    - ExpoModulesCore
+  - EXJSONUtils (0.1.0)
   - EXKeepAwake (9.3.0):
     - ExpoModulesCore
   - EXLinearGradient (9.3.0-alpha.0):
@@ -111,7 +110,6 @@ PODS:
     - ExpoModulesCore
   - EXManifests (0.1.0):
     - EXJSONUtils
-    - ExpoModulesCore
   - EXMediaLibrary (12.1.0):
     - ExpoModulesCore
     - React-Core
@@ -121,7 +119,7 @@ PODS:
     - ExpoModulesCore
   - EXPermissions (12.1.0):
     - ExpoModulesCore
-  - Expo (43.0.0-alpha.0):
+  - Expo (43.0.0-alpha.2):
     - ExpoModulesCore
   - expo-dev-client (0.5.1):
     - expo-dev-launcher
@@ -175,7 +173,7 @@ PODS:
     - SDWebImageSVGKitPlugin (~> 1.3)
     - SDWebImageWebPCoder (~> 0.8.4)
     - SVGKit (~> 2.1)
-  - ExpoModulesCore (0.3.0):
+  - ExpoModulesCore (0.3.1):
     - React-Core
   - EXPrint (10.2.0):
     - ExpoModulesCore
@@ -199,25 +197,24 @@ PODS:
     - ExpoModulesCore
   - EXSpeech (9.2.0):
     - ExpoModulesCore
-  - EXSplashScreen (0.11.0):
+  - EXSplashScreen (0.12.0):
     - ExpoModulesCore
     - React-Core
   - EXSQLite (9.2.0):
     - ExpoModulesCore
   - EXStoreReview (4.1.0):
     - ExpoModulesCore
-  - EXStructuredHeaders (1.1.0):
-    - ExpoModulesCore
+  - EXStructuredHeaders (1.2.0)
   - EXTaskManager (9.2.0):
     - ExpoModulesCore
     - UMAppLoader
     - UMTaskManagerInterface
   - EXTrackingTransparency (1.1.0):
     - ExpoModulesCore
-  - EXUpdatesInterface (0.2.2)
+  - EXUpdatesInterface (0.3.0)
   - EXVideoThumbnails (5.2.0):
     - ExpoModulesCore
-  - EXWebBrowser (9.2.0):
+  - EXWebBrowser (9.3.0):
     - ExpoModulesCore
   - FacebookSDK/CoreKit (9.2.0):
     - FBSDKCoreKit (~> 9.2.0)
@@ -581,11 +578,11 @@ PODS:
   - React-jsinspector (0.64.2)
   - react-native-appearance (0.3.4):
     - React
-  - react-native-netinfo (6.0.0):
+  - react-native-netinfo (6.0.2):
     - React-Core
   - react-native-safe-area-context (3.2.0):
     - React-Core
-  - react-native-segmented-control (2.3.0):
+  - react-native-segmented-control (2.4.0):
     - React-Core
   - react-native-slider (4.1.4):
     - React-Core
@@ -1238,25 +1235,25 @@ SPEC CHECKSUMS:
   EXImageManipulator: 609ec11891dff0b0ef303c43ef0be1a4eb0b0af3
   EXImagePicker: 624295ff8decc995e1a005c9ea72ff4b772f5216
   EXInAppPurchases: 68c5adea26e9fca756a71a008bfe4b8e50fc5490
-  EXJSONUtils: 219837572921f8dc21ee6e60a6503efec4ce1c59
+  EXJSONUtils: b26b9ae6f60d27344f55e136ef68a3a44516f428
   EXKeepAwake: 5b0143f9834f154456b65d25e6c8fdc34b5234f4
   EXLinearGradient: 6549f5881005464c6ebc66a9af9049b71a3f2fda
   EXLocalAuthentication: 2b438d36b152406011c3c24803e1df226ddc0a41
   EXLocalization: 18c4461eb66125734dc2c73866572f3450f7c9b8
   EXLocation: 2ab9fcb91e381aada094f7312bfc9684ced76d3e
   EXMailComposer: e5d206471deef0d515bf6ec93697df4d3e5a15ae
-  EXManifests: 93083f5ab6259ce8719c86740458e8813b882b4b
+  EXManifests: 4c3dcfc35aaa71e6259cf9f2f52bd23da8ca7a86
   EXMediaLibrary: 2256df25d4371037570a1ed01e605a50759caaa5
   EXNetwork: b420f5e99b4291f2ba0f632a6eb099b1f126a7d8
   EXNotifications: 11ddca2668114114ffd7c36627ff3ffa259d64d2
   EXPermissions: 0760a7139b84dc8335ed297566892ddc856e89bb
-  Expo: e474a8224db7ce7f1387b3ea36e61df07ec34e0d
+  Expo: 0646ade6698b625dc61b040f430b4bea01521b5a
   expo-dev-client: 5d7dec0d6f961145dce1c86c40bd61bf39177881
   expo-dev-launcher: c04b363ed79d77cee2c2c656e7c230669bb4bde0
   expo-dev-menu: 2a8ba15595d6222d3b5e1c0a0e5c88f4c6d6f548
   expo-dev-menu-interface: cca641e9e52dfe688fd24c67795f14d6daea4bb9
   expo-image: 8c08b81eab730b5cc0ef56c1fc80d7ae0d5f2b97
-  ExpoModulesCore: addd06a6516be2f8553196449524852ea95f21b5
+  ExpoModulesCore: fe2cb2545de8d5b5dee42cdc1d66483b99411895
   EXPrint: 1b63871bd0f286f9dc5441412b3b9049b7c9fe32
   EXRandom: 4d6fe53e19a91df3f66665371962284677d741c9
   EXScreenCapture: 27e03154defba1f0e28cda34777f49c34ead3497
@@ -1267,15 +1264,15 @@ SPEC CHECKSUMS:
   EXSharing: 7d30213ec67fbf73fff13710c9cd96894c53b9b3
   EXSMS: cf81d1899ba17785890f7e27ad0271d60bdcccba
   EXSpeech: ee6fd54013b0b3dacbb156c5832a6848056235f7
-  EXSplashScreen: 0ea93f1bc4138c4e5fe14784bc94128328598895
+  EXSplashScreen: d270412e7f97ae750e12ff0bdcddc3ca9325221e
   EXSQLite: 613282078b36ac75856cfc43931fdad2803e499f
   EXStoreReview: 93a464b2085d841ffb6bc959f16645149ee5690e
-  EXStructuredHeaders: ce164ef0ffc9a85fc6e39d8a9151db6a8668e20d
+  EXStructuredHeaders: 43b5d5547fd40f5363b007c4c158af26dc0a4b7b
   EXTaskManager: e416167eb16046979026555b493a1317788efc97
   EXTrackingTransparency: 3331861717c233fc079f5bf7831dd627ac085cd5
-  EXUpdatesInterface: 31a0826d3036c570f8d09a38504865332915269f
+  EXUpdatesInterface: 69176435f67804831967f833152fee892febef87
   EXVideoThumbnails: da38473f6d86ce08c5a4a9e6e839816e1aac01c3
-  EXWebBrowser: 144b3209de7feec39104531ce205912d8ade93c9
+  EXWebBrowser: f9435daf809a688e0cb63675da208196007573b6
   FacebookSDK: 4b9bb8e2824898b47f18c666dc145c09b40609e6
   FBLazyVector: e686045572151edef46010a6f819ade377dfeb4b
   FBReactNativeSpec: 6baddc2c2b39d192b96965ec745b4d6628e62b2e
@@ -1317,9 +1314,9 @@ SPEC CHECKSUMS:
   React-jsiexecutor: 80c46bd381fd06e418e0d4f53672dc1d1945c4c3
   React-jsinspector: cc614ec18a9ca96fd275100c16d74d62ee11f0ae
   react-native-appearance: 0f0e5fc2fcef70e03d48c8fe6b00b9158c2ba8aa
-  react-native-netinfo: e849fc21ca2f4128a5726c801a82fc6f4a6db50d
+  react-native-netinfo: 92e6e4476eb8bf6fc2d7c0a6ca0a1406f663d73a
   react-native-safe-area-context: f0906bf8bc9835ac9a9d3f97e8bde2a997d8da79
-  react-native-segmented-control: 83a05d42acd1234ad5e061d603c145973a61b5ee
+  react-native-segmented-control: 06607462630512ff8eef652ec560e6235a30cc3e
   react-native-slider: f8455cf286f225ab62b83a8f607510ac8abb9482
   react-native-view-shot: 4475fde003fe8a210053d1f98fb9e06c1d834e1c
   react-native-viewpager: b99b53127d830885917ef84809c5065edd614a78

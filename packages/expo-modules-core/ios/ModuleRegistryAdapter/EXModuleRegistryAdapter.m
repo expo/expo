@@ -1,11 +1,17 @@
 // Copyright 2018-present 650 Industries. All rights reserved.
 
 #import <ExpoModulesCore/EXNativeModulesProxy.h>
+#import <ExpoModulesCore/EXReactNativeEventEmitter.h>
 #import <ExpoModulesCore/EXViewManagerAdapter.h>
 #import <ExpoModulesCore/EXModuleRegistryAdapter.h>
 #import <ExpoModulesCore/EXViewManagerAdapterClassesRegistry.h>
 #import <ExpoModulesCore/EXModuleRegistryHolderReactModule.h>
+#if __has_include(<ExpoModulesCore/ExpoModulesCore-Swift.h>)
+// For prebuilding xcframework, do not use quote notation.
+#import <ExpoModulesCore/ExpoModulesCore-Swift.h>
+#elif __has_include("ExpoModulesCore-Swift.h")
 #import "ExpoModulesCore-Swift.h"
+#endif
 
 @interface EXModuleRegistryAdapter ()
 

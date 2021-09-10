@@ -13,7 +13,6 @@ import com.facebook.react.bridge.JavaScriptExecutorFactory
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.devsupport.RedBoxHandler
 import com.facebook.react.uimanager.UIImplementationProvider
-import expo.modules.core.interfaces.ReactNativeHostHandler
 import java.lang.reflect.Method
 
 class ReactNativeHostWrapper(
@@ -25,8 +24,10 @@ class ReactNativeHostWrapper(
   private val methodMap: ArrayMap<String, Method> = ArrayMap()
 
   override fun createReactInstanceManager(): ReactInstanceManager {
-    return reactNativeHostHandlers.asSequence()
-      .map(ReactNativeHostHandler::createReactInstanceManager)
+    // map() without asSequence() gives a chance for handlers
+    // to get noticed before createReactInstanceManager()
+    return reactNativeHostHandlers
+      .map { it.createReactInstanceManager(useDeveloperSupport) }
       .firstOrNull() ?: super.createReactInstanceManager()
   }
 
@@ -53,13 +54,13 @@ class ReactNativeHostWrapper(
 
   override fun getJSBundleFile(): String? {
     return reactNativeHostHandlers.asSequence()
-      .map(ReactNativeHostHandler::getJSBundleFile)
+      .map { it.getJSBundleFile(useDeveloperSupport) }
       .firstOrNull() ?: invokeDelegateMethod<String?>("getJSBundleFile")
   }
 
   override fun getBundleAssetName(): String? {
     return reactNativeHostHandlers.asSequence()
-      .map(ReactNativeHostHandler::getBundleAssetName)
+      .map { it.getBundleAssetName(useDeveloperSupport) }
       .firstOrNull() ?: invokeDelegateMethod<String?>("getBundleAssetName")
   }
 
@@ -82,7 +83,7 @@ class ReactNativeHostWrapper(
       jsContext: JavaScriptContextHolder
     ): List<JSIModuleSpec<JSIModule>> {
       reactNativeHostHandlers.forEach { handler ->
-        handler.onRegisterJSIModules(reactApplicationContext, jsContext)
+        handler.onRegisterJSIModules(reactApplicationContext, jsContext, useDeveloperSupport)
       }
       userJSIModulePackage?.getJSIModules(reactApplicationContext, jsContext)
       return emptyList()

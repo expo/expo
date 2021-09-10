@@ -9,7 +9,10 @@ Package-specific changes not released in any SDK will be added here just before 
 
 - Updated `react-native-shared-element` from `0.7.0` to `0.8.2`. ([#14245](https://github.com/expo/expo/pull/14245) by [@IjzerenHein](https://github.com/IjzerenHein))
 - Updated `firebase` from `8.2.3` to `8.10.0`. ([#14259](https://github.com/expo/expo/pull/14259) by [@IjzerenHein](https://github.com/IjzerenHein))
+- Updated `@react-native-community/netinfo` from `6.0.0` to `6.0.2`. ([#14329](https://github.com/expo/expo/pull/14329) by [@cruzach](https://github.com/cruzach))
 - Updated `react-native-webview` from `11.6.2` to `11.13.0`. ([#14301](https://github.com/expo/expo/pull/14301) by [@kudo](https://github.com/kudo))
+- Updated `react-native-lottie` from `4.0.2` to `4.0.3`. ([#14331](https://github.com/expo/expo/pull/14331) by [@cruzach](https://github.com/cruzach))
+- Updated `react-native-screens` from `3.4.0` to `3.7.0`. ([#14330](https://github.com/expo/expo/pull/14330) by [@cruzach](https://github.com/cruzach))
 
 ### 🛠 Breaking changes
 
@@ -70,7 +73,7 @@ Package-specific changes not released in any SDK will be added here just before 
 - **`expo-auth-session`**
   - Add support for useProxy in bare workflow. ([#12464](https://github.com/expo/expo/pull/12464) by [@EvanBacon](https://github.com/EvanBacon)) ([#12464](https://github.com/expo/expo/pull/12464) by [@EvanBacon](https://github.com/EvanBacon))
 - **`expo-asset`**
-  - Find local assets without extensions.  ([#12624](https://github.com/expo/expo/pull/12624) by [@jkhales](https://github.com/jkhales)) ([#12624](https://github.com/expo/expo/pull/12624) by [@jkhales](https://github.com/jkhales))
+  - Find local assets without extensions. ([#12624](https://github.com/expo/expo/pull/12624) by [@jkhales](https://github.com/jkhales)) ([#12624](https://github.com/expo/expo/pull/12624) by [@jkhales](https://github.com/jkhales))
 - **`expo-battery`**
   - Added `isBatteryOptimizationEnabledAsync` method to check if the battery optimization is enabled on android. ([#13138](https://github.com/expo/expo/pull/13138) by [@FelipeACP](https://github.com/FelipeACP)) ([#13138](https://github.com/expo/expo/pull/13138) by [@FelipeACP](https://github.com/FelipeACP))
 - **`expo-branch`**
