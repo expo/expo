@@ -441,26 +441,6 @@ async function addVersionedActivitesToManifests(version: string) {
     <activity android:name="${abiName}.com.facebook.react.devsupport.DevSettingsActivity"/>
     <!-- END_SDK_${majorVersion} -->`
   );
-
-  await transformFileAsync(
-    templateManifestPath,
-    new RegExp('<!-- Versioned Activity for Stripe -->'),
-    `<!-- Versioned Activity for Stripe -->
-    <!-- BEGIN_SDK_${majorVersion} -->
-    <activity
-      android:exported="true"
-      android:launchMode="singleTask"
-      android:name="${abiName}.expo.modules.payments.stripe.RedirectUriReceiver"
-      android:theme="@android:style/Theme.Translucent.NoTitleBar.Fullscreen">
-      <intent-filter>
-        <action android:name="android.intent.action.VIEW" />
-        <category android:name="android.intent.category.DEFAULT" />
-        <category android:name="android.intent.category.BROWSABLE" />
-        <data android:scheme="${abiName}.expo.modules.payments.stripe" />
-      </intent-filter>
-    </activity>
-    <!-- END_SDK_${majorVersion} -->`
-  );
 }
 
 async function registerNewVersionUnderSdkVersions(version: string) {
