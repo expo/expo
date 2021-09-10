@@ -14,7 +14,7 @@
 
 ### ⚠️ Deprecated
 
-`@unimodules/core`, `@unimodules/react-native-adapter` and `react-native-unimodules` are now deprecated in favor of `expo-modules-core`. Follow this guide to migrate your apps: https://expo.fyi/expo-modules-core-migration
+`@unimodules/core`, `@unimodules/react-native-adapter` and `react-native-unimodules` are now deprecated in favor of `expo`. Follow this guide to migrate your apps: https://expo.fyi/expo-modules-migration
 
 ## 0.14.1 — 2021-06-16
 
@@ -168,4 +168,4 @@ _This version does not introduce any user-facing changes._
 ### 🎉 New features
 
 - Automatically generated list of Android packages ([#28](https://github.com/unimodules/react-native-unimodules/pull/28))
-As of this version, you no longer need to add new packages to your `MainApplication.java` file. Just use `new BasePackageList().getPackageList()` instead 🎉. `BasePackageList` is auto-generated with a list of installed unimodules found in your `node_modules` folder during Gradle's Sync operation.
+  As of this version, you no longer need to add new packages to your `MainApplication.java` file. Just use `new BasePackageList().getPackageList()` instead 🎉. `BasePackageList` is auto-generated with a list of installed unimodules found in your `node_modules` folder during Gradle's Sync operation.

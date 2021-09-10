@@ -37,11 +37,11 @@
   },
   "dependencies": {
     "chalk": "^2.4.2",
+    "expo": "~43.0.0-alpha.2",
     "expo-asset": "~8.4.0",
     "expo-constants": "~11.1.0",
     "expo-file-system": "~12.0.0",
     "expo-image-loader": "~2.3.0-alpha.0",
-    "expo-modules-core": "~0.3.1",
     "find-up": "~5.0.0",
     "unimodules-app-loader": "~2.3.0-alpha.0",
     "unimodules-task-manager-interface": "~6.3.0-alpha.0"
