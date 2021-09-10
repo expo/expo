@@ -6,7 +6,7 @@ sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-41/packages/expo-payments-
 import InstallSection from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 
-> **This library is deprecated in favor of [`@stripe/stripe-react-native`](./stripe.md), and will be removed in SDK 43.** [Here's a guide to help make the transition as easy as possible](https://github.com/expo/fyi/blob/master/payments-migration-guide.md#how-to-migrate-from-expo-payments-stripe-to-the-new-stripestripe-react-native-library).
+> **This library is deprecated in favor of [`@stripe/stripe-react-native`](./stripe.md), and will no longer be available after the release of SDK 43.** [Here's a guide to help make the transition as easy as possible](https://github.com/expo/fyi/blob/master/payments-migration-guide.md#how-to-migrate-from-expo-payments-stripe-to-the-new-stripestripe-react-native-library).
 
 > 🚨 On iOS, the Payments module is currently only supported the [bare workflow](https://docs.expo.dev/workflow/customizing/).
 
