@@ -12,7 +12,7 @@ public protocol ModulesProviderObjCProtocol {}
  Swift protocol defining the requirements for modules providers. Extends its Objective-C counterpart `ModulesProviderObjCProtocol`.
  */
 public protocol ModulesProviderProtocol: ModulesProviderObjCProtocol {
-  func exportedModules() -> [AnyModule.Type]
+  func getModuleClasses() -> [AnyModule.Type]
 }
 
 /**
@@ -21,7 +21,7 @@ public protocol ModulesProviderProtocol: ModulesProviderObjCProtocol {
  */
 @objc
 open class ModulesProvider: NSObject, ModulesProviderProtocol, ModulesProviderObjCProtocol {
-  open func exportedModules() -> [AnyModule.Type] {
+  open func getModuleClasses() -> [AnyModule.Type] {
     return []
   }
 }

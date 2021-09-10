@@ -26,7 +26,7 @@ public class ModuleRegistry: Sequence {
       // TODO: (@tsapeta) App context is deallocated, throw an error?
       return
     }
-    provider.exportedModules().forEach { moduleType in
+    provider.getModuleClasses().forEach { moduleType in
       register(module: moduleType.init(appContext: appContext))
     }
   }
