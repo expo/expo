@@ -2467,7 +2467,7 @@ PODS:
     - React-Core
   - EXScreenCapture (3.2.0):
     - UMCore
-  - EXScreenOrientation (3.2.1):
+  - EXScreenOrientation (3.3.0):
     - React-Core
     - UMCore
   - EXSecureStore (10.2.0):
@@ -5023,7 +5023,7 @@ SPEC CHECKSUMS:
   EXPrint: a8af0ad2a73b4981cc1aef58ffd7d2cab4b0dd61
   EXRandom: ecb71f5d01991f29bb0277f8a2c35d168f85d637
   EXScreenCapture: c51844407fbac8bbca4415467bc43f2b7764d225
-  EXScreenOrientation: d94f791c7ade3639352f34fcf5353f7c554b7d69
+  EXScreenOrientation: 09fe6b6b87899ae0c9320255bda7b7513cdfc8ec
   EXSecureStore: 1aa80d49a3a101418bbd2675e2a0d32dceea10c2
   EXSegment: 24e2986d5e4b3a318f2240312f2b33deb76900e6
   EXSensors: 423ccb735109a7a47c280ec639638447dedf8298
