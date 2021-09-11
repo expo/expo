@@ -19,7 +19,7 @@ static NSString * const EXUpdatesUpdateAvailableEventName = @"updateAvailable";
 static NSString * const EXUpdatesNoUpdateAvailableEventName = @"noUpdateAvailable";
 static NSString * const EXUpdatesErrorEventName = @"error";
 
-@interface EXUpdatesAppController ()
+@interface EXUpdatesAppController () <EXUpdatesErrorRecoveryDelegate>
 
 @property (nonatomic, readwrite, strong) EXUpdatesConfig *config;
 @property (nonatomic, readwrite, strong, nullable) id<EXUpdatesAppLauncher> launcher;
@@ -38,6 +38,7 @@ static NSString * const EXUpdatesErrorEventName = @"error";
 @property (nonatomic, assign) BOOL isStarted;
 @property (nonatomic, assign) BOOL isEmergencyLaunch;
 
+@property (nonatomic, readwrite, assign) EXUpdatesRemoteLoadStatus remoteLoadStatus;
 @property (nonatomic, copy) RCTFatalHandler previousFatalErrorHandler;
 @property (nonatomic, copy) RCTFatalExceptionHandler previousFatalExceptionHandler;
 
@@ -64,9 +65,11 @@ static NSString * const EXUpdatesErrorEventName = @"error";
     _database = [[EXUpdatesDatabase alloc] init];
     _defaultSelectionPolicy = [EXUpdatesSelectionPolicyFactory filterAwarePolicyWithRuntimeVersion:[EXUpdatesUtils getRuntimeVersionWithConfig:_config]];
     _errorRecovery = [EXUpdatesErrorRecovery new];
+    _errorRecovery.delegate = self;
     _assetFilesQueue = dispatch_queue_create("expo.controller.AssetFilesQueue", DISPATCH_QUEUE_SERIAL);
     _controllerQueue = dispatch_queue_create("expo.controller.ControllerQueue", DISPATCH_QUEUE_SERIAL);
     _isStarted = NO;
+    _remoteLoadStatus = EXUpdatesRemoteLoadStatusIdle;
   }
   return self;
 }
@@ -231,7 +234,7 @@ static NSString * const EXUpdatesErrorEventName = @"error";
 
 - (void)appLoaderTask:(EXUpdatesAppLoaderTask *)appLoaderTask didStartLoadingUpdate:(EXUpdatesUpdate *)update
 {
-  // do nothing here for now
+  _remoteLoadStatus = EXUpdatesRemoteLoadStatusLoading;
 }
 
 - (void)appLoaderTask:(EXUpdatesAppLoaderTask *)appLoaderTask didFinishWithLauncher:(id<EXUpdatesAppLauncher>)launcher isUpToDate:(BOOL)isUpToDate
@@ -252,14 +255,18 @@ static NSString * const EXUpdatesErrorEventName = @"error";
 - (void)appLoaderTask:(EXUpdatesAppLoaderTask *)appLoaderTask didFinishBackgroundUpdateWithStatus:(EXUpdatesBackgroundUpdateStatus)status update:(nullable EXUpdatesUpdate *)update error:(nullable NSError *)error
 {
   if (status == EXUpdatesBackgroundUpdateStatusError) {
+    _remoteLoadStatus = EXUpdatesRemoteLoadStatusIdle;
     NSAssert(error != nil, @"Background update with error status must have a nonnull error object");
     [EXUpdatesUtils sendEventToBridge:_bridge withType:EXUpdatesErrorEventName body:@{@"message": error.localizedDescription}];
   } else if (status == EXUpdatesBackgroundUpdateStatusUpdateAvailable) {
+    _remoteLoadStatus = EXUpdatesRemoteLoadStatusNewUpdateLoaded;
     NSAssert(update != nil, @"Background update with error status must have a nonnull update object");
     [EXUpdatesUtils sendEventToBridge:_bridge withType:EXUpdatesUpdateAvailableEventName body:@{@"manifest": update.manifest.rawManifestJSON}];
   } else if (status == EXUpdatesBackgroundUpdateStatusNoUpdateAvailable) {
+    _remoteLoadStatus = EXUpdatesRemoteLoadStatusIdle;
     [EXUpdatesUtils sendEventToBridge:_bridge withType:EXUpdatesNoUpdateAvailableEventName body:@{}];
   }
+  [_errorRecovery notifyNewRemoteLoadStatus:_remoteLoadStatus];
 }
 
 # pragma mark - EXUpdatesAppController+Internal
@@ -315,6 +322,43 @@ static NSString * const EXUpdatesErrorEventName = @"error";
                                  selectionPolicy:self.selectionPolicy
                                   launchedUpdate:_launcher.launchedUpdate];
   }
+}
+
+# pragma mark - EXUpdatesErrorRecoveryDelegate
+
+- (void)relaunchWithCompletion:(EXUpdatesAppLauncherCompletionBlock)completion
+{
+  EXUpdatesAppLauncherWithDatabase *launcher = [[EXUpdatesAppLauncherWithDatabase alloc] initWithConfig:_config database:_database directory:_updatesDirectory completionQueue:_controllerQueue];
+  _candidateLauncher = launcher;
+  [launcher launchUpdateWithSelectionPolicy:self.selectionPolicy completion:^(NSError * _Nullable error, BOOL success) {
+    if (success) {
+      self->_launcher = self->_candidateLauncher;
+      [self _setRCTErrorHandlers];
+      RCTReloadCommandSetBundleURL(launcher.launchAssetUrl);
+      RCTTriggerReloadCommandListeners(@"Relaunch after fatal error");
+      completion(nil, YES);
+    } else {
+      completion(error, NO);
+    }
+  }];
+}
+
+- (BOOL)relaunchUsingEmbeddedUpdate
+{
+  _isEmergencyLaunch = YES;
+
+  EXUpdatesAppLauncherNoDatabase *launcher = [[EXUpdatesAppLauncherNoDatabase alloc] init];
+  _launcher = launcher;
+  [launcher launchUpdateWithConfig:_config];
+  if (!launcher.launchAssetUrl) {
+    return NO;
+  }
+
+  [self _setRCTErrorHandlers];
+  RCTReloadCommandSetBundleURL(launcher.launchAssetUrl);
+  RCTTriggerReloadCommandListeners(@"Relaunch after fatal error");
+
+  return YES;
 }
 
 # pragma mark - internal
