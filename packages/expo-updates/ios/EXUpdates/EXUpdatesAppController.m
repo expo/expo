@@ -4,9 +4,11 @@
 #import <EXUpdates/EXUpdatesAppLauncher.h>
 #import <EXUpdates/EXUpdatesAppLauncherNoDatabase.h>
 #import <EXUpdates/EXUpdatesAppLauncherWithDatabase.h>
+#import <EXUpdates/EXUpdatesErrorRecovery.h>
 #import <EXUpdates/EXUpdatesReaper.h>
 #import <EXUpdates/EXUpdatesSelectionPolicyFactory.h>
 #import <EXUpdates/EXUpdatesUtils.h>
+#import <React/RCTAssert.h>
 #import <React/RCTReloadCommand.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -24,6 +26,7 @@ static NSString * const EXUpdatesErrorEventName = @"error";
 @property (nonatomic, readwrite, strong) EXUpdatesDatabase *database;
 @property (nonatomic, readwrite, strong) EXUpdatesSelectionPolicy *selectionPolicy;
 @property (nonatomic, readwrite, strong) EXUpdatesSelectionPolicy *defaultSelectionPolicy;
+@property (nonatomic, readwrite, strong) EXUpdatesErrorRecovery *errorRecovery;
 @property (nonatomic, readwrite, strong) dispatch_queue_t controllerQueue;
 @property (nonatomic, readwrite, strong) dispatch_queue_t assetFilesQueue;
 
@@ -34,6 +37,9 @@ static NSString * const EXUpdatesErrorEventName = @"error";
 
 @property (nonatomic, assign) BOOL isStarted;
 @property (nonatomic, assign) BOOL isEmergencyLaunch;
+
+@property (nonatomic, copy) RCTFatalHandler previousFatalErrorHandler;
+@property (nonatomic, copy) RCTFatalExceptionHandler previousFatalExceptionHandler;
 
 @end
 
@@ -57,6 +63,7 @@ static NSString * const EXUpdatesErrorEventName = @"error";
     _config = [EXUpdatesConfig configWithExpoPlist];
     _database = [[EXUpdatesDatabase alloc] init];
     _defaultSelectionPolicy = [EXUpdatesSelectionPolicyFactory filterAwarePolicyWithRuntimeVersion:[EXUpdatesUtils getRuntimeVersionWithConfig:_config]];
+    _errorRecovery = [EXUpdatesErrorRecovery new];
     _assetFilesQueue = dispatch_queue_create("expo.controller.AssetFilesQueue", DISPATCH_QUEUE_SERIAL);
     _controllerQueue = dispatch_queue_create("expo.controller.ControllerQueue", DISPATCH_QUEUE_SERIAL);
     _isStarted = NO;
@@ -96,6 +103,8 @@ static NSString * const EXUpdatesErrorEventName = @"error";
 - (void)start
 {
   NSAssert(!_isStarted, @"EXUpdatesAppController:start should only be called once per instance");
+
+  [self _setRCTErrorHandlers];
 
   if (!_config.isEnabled) {
     EXUpdatesAppLauncherNoDatabase *launcher = [[EXUpdatesAppLauncherNoDatabase alloc] init];
@@ -179,6 +188,7 @@ static NSString * const EXUpdatesErrorEventName = @"error";
     if (success) {
       self->_launcher = self->_candidateLauncher;
       completion(YES);
+      [self _setRCTErrorHandlers];
       RCTReloadCommandSetBundleURL(launcher.launchAssetUrl);
       RCTTriggerReloadCommandListeners(@"Requested by JavaScript - Updates.reloadAsync()");
       [self runReaper];
@@ -322,6 +332,60 @@ static NSString * const EXUpdatesErrorEventName = @"error";
       [self->_delegate appController:self didStartWithSuccess:self.launchAssetUrl != nil];
     }];
   }
+}
+
+- (void)_registerObservers
+{
+  [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_handleJavaScriptDidLoad) name:RCTJavaScriptDidLoadNotification object:nil];
+  [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_handleJavaScriptDidFailToLoad) name:RCTJavaScriptDidFailToLoadNotification object:nil];
+}
+
+- (void)_unregisterObservers
+{
+  [[NSNotificationCenter defaultCenter] removeObserver:self name:RCTJavaScriptDidLoadNotification object:nil];
+  [[NSNotificationCenter defaultCenter] removeObserver:self name:RCTJavaScriptDidFailToLoadNotification object:nil];
+}
+
+- (void)_handleJavaScriptDidLoad
+{
+  [self _unregisterObservers];
+  dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 10 * NSEC_PER_SEC), _controllerQueue, ^{
+    [self _unsetRCTErrorHandlers];
+  });
+}
+
+- (void)_handleJavaScriptDidFailToLoad
+{
+  [self _unregisterObservers];
+}
+
+- (void)_setRCTErrorHandlers
+{
+  [self _registerObservers];
+
+  if (_previousFatalErrorHandler || _previousFatalExceptionHandler) {
+    return;
+  }
+
+  _previousFatalErrorHandler = RCTGetFatalHandler();
+  _previousFatalExceptionHandler = RCTGetFatalExceptionHandler();
+
+  RCTFatalHandler fatalErrorHandler = ^(NSError *error) {
+    [self->_errorRecovery handleError:error fromLaunchedUpdate:self.launchedUpdate];
+  };
+  RCTFatalExceptionHandler fatalExceptionHandler = ^(NSException *exception) {
+    [self->_errorRecovery handleException:exception fromLaunchedUpdate:self.launchedUpdate];
+  };
+  RCTSetFatalHandler(fatalErrorHandler);
+  RCTSetFatalExceptionHandler(fatalExceptionHandler);
+}
+
+- (void)_unsetRCTErrorHandlers
+{
+  RCTSetFatalHandler(_previousFatalErrorHandler);
+  RCTSetFatalExceptionHandler(_previousFatalExceptionHandler);
+  _previousFatalErrorHandler = nil;
+  _previousFatalExceptionHandler = nil;
 }
 
 @end
