@@ -19,7 +19,7 @@
 - (void)setUp
 {
   _testQueue = dispatch_queue_create("expo.errorRecoveryTestQueue", DISPATCH_QUEUE_SERIAL);
-  _errorRecovery = [[EXUpdatesErrorRecovery alloc] initWithErrorRecoveryQueue:_testQueue remoteLoadTimeout:500];
+  _errorRecovery = [[EXUpdatesErrorRecovery alloc] initWithErrorRecoveryQueue:_testQueue diskWriteQueue:_testQueue remoteLoadTimeout:500];
 }
 
 - (void)testHandleError_NewWorkingUpdateAlreadyLoaded
@@ -313,6 +313,41 @@
   [verifyCount(mockDelegate, never()) relaunchWithCompletion:(id)anything()];
   [verifyCount(mockDelegate, never()) loadRemoteUpdate];
   [verifyCount(mockDelegate, never()) throwException:anything()];
+}
+
+- (void)testConsumeErrorLog
+{
+  // start with a clean slate
+  [EXUpdatesErrorRecovery consumeErrorLog];
+
+  NSError *error = [NSError errorWithDomain:@"TestDomain" code:47 userInfo:@{NSLocalizedDescriptionKey: @"TestLocalizedDescription"}];
+  [_errorRecovery writeErrorOrExceptionToLog:error];
+  dispatch_sync(_testQueue, ^{}); // flush queue
+
+  NSString *errorLog = [EXUpdatesErrorRecovery consumeErrorLog];
+  XCTAssertTrue([errorLog containsString:@"TestDomain"]);
+  XCTAssertTrue([errorLog containsString:@"47"]);
+  XCTAssertTrue([errorLog containsString:@"TestLocalizedDescription"]);
+}
+
+- (void)testConsumeErrorLog_MultipleErrors
+{
+  // start with a clean slate
+  [EXUpdatesErrorRecovery consumeErrorLog];
+
+  NSError *error = [NSError errorWithDomain:@"TestDomain" code:47 userInfo:@{NSLocalizedDescriptionKey: @"TestLocalizedDescription"}];
+  [_errorRecovery writeErrorOrExceptionToLog:error];
+
+  NSException *exception = [NSException exceptionWithName:@"TestName" reason:@"TestReason" userInfo:nil];
+  [_errorRecovery writeErrorOrExceptionToLog:exception];
+  dispatch_sync(_testQueue, ^{}); // flush queue
+
+  NSString *errorLog = [EXUpdatesErrorRecovery consumeErrorLog];
+  XCTAssertTrue([errorLog containsString:@"TestDomain"]);
+  XCTAssertTrue([errorLog containsString:@"47"]);
+  XCTAssertTrue([errorLog containsString:@"TestLocalizedDescription"]);
+  XCTAssertTrue([errorLog containsString:@"TestName"]);
+  XCTAssertTrue([errorLog containsString:@"TestReason"]);
 }
 
 - (void)verifySuccessfulRelaunchWithCompletion_WithMockDelegate:(id<EXUpdatesErrorRecoveryDelegate>)mockDelegate

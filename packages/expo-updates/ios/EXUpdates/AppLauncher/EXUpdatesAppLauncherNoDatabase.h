@@ -8,8 +8,6 @@ NS_ASSUME_NONNULL_BEGIN
 @interface EXUpdatesAppLauncherNoDatabase : NSObject <EXUpdatesAppLauncher>
 
 - (void)launchUpdateWithConfig:(EXUpdatesConfig *)config;
-- (void)launchUpdateWithConfig:(EXUpdatesConfig *)config fatalError:(NSError *)error;
-+ (nullable NSString *)consumeError;
 
 @end
 
