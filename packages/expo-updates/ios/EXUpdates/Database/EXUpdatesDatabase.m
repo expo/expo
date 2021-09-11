@@ -191,7 +191,7 @@ static NSString * const EXUpdatesDatabaseServerDefinedHeadersKey = @"serverDefin
 
 - (void)markUpdateFinished:(EXUpdatesUpdate *)update error:(NSError ** _Nullable)error
 {
-  if (update.status != EXUpdatesUpdateStatusDevelopment) {
+  if (update.status != EXUpdatesUpdateStatusDevelopment && update.status != EXUpdatesUpdateStatusFailed) {
     update.status = EXUpdatesUpdateStatusReady;
   }
   NSString * const updateSql = @"UPDATE updates SET status = ?1, keep = 1 WHERE id = ?2;";

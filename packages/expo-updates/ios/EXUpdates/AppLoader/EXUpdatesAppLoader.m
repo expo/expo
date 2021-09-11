@@ -136,7 +136,7 @@ static NSString * const EXUpdatesAppLoaderErrorDomain = @"EXUpdatesAppLoader";
       NSLog(@"EXUpdatesAppLoader: Loaded an update with the same ID but a different scopeKey than one we already have on disk. This is a server error. Overwriting the scopeKey and loading the existing update.");
     }
 
-    if (existingUpdate && existingUpdate.status == EXUpdatesUpdateStatusReady) {
+    if (existingUpdate && (existingUpdate.status == EXUpdatesUpdateStatusReady || existingUpdate.status == EXUpdatesUpdateStatusFailed)) {
       if (self->_successBlock) {
         dispatch_async(self->_completionQueue, ^{
           self->_successBlock(updateManifest);
