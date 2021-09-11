@@ -31,6 +31,9 @@ typedef NS_ENUM(NSInteger, EXUpdatesRemoteLoadStatus) {
 - (void)handleException:(NSException *)exception fromLaunchedUpdate:(nullable EXUpdatesUpdate *)launchedUpdate;
 - (void)notifyNewRemoteLoadStatus:(EXUpdatesRemoteLoadStatus)newStatus;
 
++ (nullable NSString *)consumeErrorLog;
+- (void)writeErrorOrExceptionToLog:(id)errorOrException;
+
 @end
 
 NS_ASSUME_NONNULL_END

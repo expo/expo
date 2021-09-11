@@ -14,6 +14,8 @@ typedef NS_ENUM(NSInteger, EXUpdatesErrorRecoveryTask) {
   EXUpdatesErrorRecoveryTaskCrash
 };
 
+static NSString * const EXUpdatesErrorLogFile = @"expo-error.log";
+
 @interface EXUpdatesErrorRecovery ()
 
 @property (nonatomic, strong) NSMutableArray<NSNumber *> *pipeline;
@@ -50,6 +52,7 @@ typedef NS_ENUM(NSInteger, EXUpdatesErrorRecoveryTask) {
     [self _markUpdateFailed:launchedUpdate];
   }
   [self _startPipelineWithEncounteredError:error];
+  [self writeErrorOrExceptionToLog:error];
 }
 
 - (void)handleException:(NSException *)exception fromLaunchedUpdate:(nullable EXUpdatesUpdate *)launchedUpdate
@@ -58,6 +61,7 @@ typedef NS_ENUM(NSInteger, EXUpdatesErrorRecoveryTask) {
     [self _markUpdateFailed:launchedUpdate];
   }
   [self _startPipelineWithEncounteredError:exception];
+  [self writeErrorOrExceptionToLog:exception];
 }
 
 - (void)notifyNewRemoteLoadStatus:(EXUpdatesRemoteLoadStatus)newStatus
@@ -201,6 +205,85 @@ typedef NS_ENUM(NSInteger, EXUpdatesErrorRecoveryTask) {
 
   userInfo[@"EXUpdatesLaterEncounteredErrors"] = [_encounteredErrors copy];
   @throw [NSException exceptionWithName:name reason:reason userInfo:userInfo];
+}
+
+# pragma mark - error persisting
+
++ (nullable NSString *)consumeErrorLog
+{
+  NSString *errorLogFilePath = [[self class] _errorLogFilePath];
+  NSData *data = [NSData dataWithContentsOfFile:errorLogFilePath options:kNilOptions error:nil];
+  if (data) {
+    NSError *err;
+    if (![NSFileManager.defaultManager removeItemAtPath:errorLogFilePath error:&err]) {
+      NSLog(@"Could not delete error log: %@", err.localizedDescription);
+    }
+    return [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+  } else {
+    return nil;
+  }
+}
+
+- (void)writeErrorOrExceptionToLog:(id)errorOrException
+{
+  dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+    NSString *serializedError;
+    if ([errorOrException isKindOfClass:[NSError class]]) {
+      serializedError = [NSString stringWithFormat:@"Fatal error: %@", [self _serializeError:(NSError *)errorOrException]];
+    } else if ([errorOrException isKindOfClass:[NSException class]]) {
+      serializedError = [NSString stringWithFormat:@"Fatal exception: %@", [self _serializeException:(NSException *)errorOrException]];
+    } else {
+      return;
+    }
+
+    NSData *data = [serializedError dataUsingEncoding:NSUTF8StringEncoding];
+    NSString *errorLogFilePath = [[self class] _errorLogFilePath];
+    if ([NSFileManager.defaultManager fileExistsAtPath:errorLogFilePath]) {
+      NSFileHandle *fileHandle = [NSFileHandle fileHandleForWritingAtPath:errorLogFilePath];
+      [fileHandle seekToEndOfFile];
+      [fileHandle writeData:data];
+      [fileHandle closeFile];
+    } else {
+      NSError *err;
+      if (![data writeToFile:[[self class] _errorLogFilePath] options:NSDataWritingAtomic error:&err]) {
+        NSLog(@"Could not write fatal error to log: %@", err.localizedDescription);
+      }
+    }
+  });
+}
+
+- (NSString *)_serializeException:(NSException *)exception
+{
+  return [NSString stringWithFormat:@"Time: %f\nName: %@\nReason: %@\n\n",
+    [NSDate date].timeIntervalSince1970 * 1000,
+    exception.name,
+    exception.reason];
+}
+
+- (NSString *)_serializeError:(NSError *)error
+{
+  NSString *localizedFailureReason = error.localizedFailureReason;
+  NSError *underlyingError = error.userInfo[NSUnderlyingErrorKey];
+
+  NSMutableString *serialization = [[NSString stringWithFormat:@"Time: %f\nDomain: %@\nCode: %li\nDescription: %@",
+                                     [[NSDate date] timeIntervalSince1970] * 1000,
+                                     error.domain,
+                                     (long)error.code,
+                                     error.localizedDescription] mutableCopy];
+  if (localizedFailureReason) {
+    [serialization appendFormat:@"\nFailure Reason: %@", localizedFailureReason];
+  }
+  if (underlyingError) {
+    [serialization appendFormat:@"\n\nUnderlying Error:\n%@", [self _serializeError:underlyingError]];
+  }
+  [serialization appendString:@"\n\n"];
+  return serialization;
+}
+
++ (NSString *)_errorLogFilePath
+{
+  NSURL *applicationDocumentsDirectory = [[NSFileManager.defaultManager URLsForDirectory:NSApplicationSupportDirectory inDomains:NSUserDomainMask] lastObject];
+  return [[applicationDocumentsDirectory URLByAppendingPathComponent:EXUpdatesErrorLogFile] path];
 }
 
 @end

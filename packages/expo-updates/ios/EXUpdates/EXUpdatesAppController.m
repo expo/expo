@@ -369,13 +369,15 @@ static NSString * const EXUpdatesErrorEventName = @"error";
 
   EXUpdatesAppLauncherNoDatabase *launcher = [[EXUpdatesAppLauncherNoDatabase alloc] init];
   _launcher = launcher;
-  [launcher launchUpdateWithConfig:_config fatalError:error];
+  [launcher launchUpdateWithConfig:_config];
 
   if (_delegate) {
     [EXUpdatesUtils runBlockOnMainThread:^{
       [self->_delegate appController:self didStartWithSuccess:self.launchAssetUrl != nil];
     }];
   }
+
+  [_errorRecovery writeErrorOrExceptionToLog:error];
 }
 
 - (void)_registerObservers

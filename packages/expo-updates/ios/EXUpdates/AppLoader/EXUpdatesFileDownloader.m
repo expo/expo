@@ -1,7 +1,7 @@
 //  Copyright © 2019 650 Industries. All rights reserved.
 
-#import <EXUpdates/EXUpdatesAppLauncherNoDatabase.h>
 #import <EXUpdates/EXUpdatesCrypto.h>
+#import <EXUpdates/EXUpdatesErrorRecovery.h>
 #import <EXUpdates/EXUpdatesFileDownloader.h>
 #import <EXUpdates/EXUpdatesSelectionPolicies.h>
 
@@ -330,7 +330,7 @@ NSTimeInterval const EXUpdatesDefaultTimeoutInterval = 60;
     [request setValue:_config.sdkVersion forHTTPHeaderField:@"Expo-SDK-Version"];
   }
 
-  NSString *previousFatalError = [EXUpdatesAppLauncherNoDatabase consumeError];
+  NSString *previousFatalError = [EXUpdatesErrorRecovery consumeErrorLog];
   if (previousFatalError) {
     // some servers can have max length restrictions for headers,
     // so we restrict the length of the string to 1024 characters --
