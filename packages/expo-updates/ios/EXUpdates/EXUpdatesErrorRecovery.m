@@ -15,13 +15,17 @@ typedef NS_ENUM(NSInteger, EXUpdatesErrorRecoveryTask) {
 };
 
 static NSString * const EXUpdatesErrorLogFile = @"expo-error.log";
+static NSInteger const EXUpdatesErrorRecoveryRemoteLoadTimeoutMs = 5000;
 
 @interface EXUpdatesErrorRecovery ()
 
 @property (nonatomic, strong) NSMutableArray<NSNumber *> *pipeline;
 @property (nonatomic, assign) BOOL isRunning;
 @property (nonatomic, assign) BOOL isWaitingForRemoteUpdate;
+@property (nonatomic, assign) NSInteger remoteLoadTimeout;
+
 @property (nonatomic, strong) dispatch_queue_t errorRecoveryQueue;
+@property (nonatomic, strong, nullable) dispatch_queue_t diskWriteQueue;
 
 @property (nonatomic, strong) NSMutableArray *encounteredErrors;
 
@@ -30,6 +34,15 @@ static NSString * const EXUpdatesErrorLogFile = @"expo-error.log";
 @implementation EXUpdatesErrorRecovery
 
 - (instancetype)init
+{
+  return [self initWithErrorRecoveryQueue:dispatch_queue_create("expo.controller.errorRecoveryQueue", DISPATCH_QUEUE_SERIAL)
+                           diskWriteQueue:nil
+                        remoteLoadTimeout:EXUpdatesErrorRecoveryRemoteLoadTimeoutMs];
+}
+
+- (instancetype)initWithErrorRecoveryQueue:(dispatch_queue_t)errorRecoveryQueue
+                            diskWriteQueue:(nullable dispatch_queue_t)diskWriteQueue
+                         remoteLoadTimeout:(NSInteger)remoteLoadTimeout
 {
   if (self = [super init]) {
     _pipeline = @[
@@ -40,7 +53,9 @@ static NSString * const EXUpdatesErrorLogFile = @"expo-error.log";
     ].mutableCopy;
     _isRunning = NO;
     _isWaitingForRemoteUpdate = NO;
-    _errorRecoveryQueue = dispatch_queue_create("expo.controller.errorRecoveryQueue", DISPATCH_QUEUE_SERIAL);
+    _errorRecoveryQueue = errorRecoveryQueue;
+    _diskWriteQueue = diskWriteQueue;
+    _remoteLoadTimeout = remoteLoadTimeout;
     _encounteredErrors = [NSMutableArray new];
   }
   return self;
@@ -134,7 +149,7 @@ static NSString * const EXUpdatesErrorLogFile = @"expo-error.log";
   dispatch_assert_queue(_errorRecoveryQueue);
   if (_delegate.remoteLoadStatus == EXUpdatesRemoteLoadStatusLoading) {
     _isWaitingForRemoteUpdate = YES;
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 5 * NSEC_PER_SEC), _errorRecoveryQueue, ^{
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, _remoteLoadTimeout * NSEC_PER_MSEC), _errorRecoveryQueue, ^{
       if (!self->_isWaitingForRemoteUpdate) {
         return;
       }
@@ -226,7 +241,7 @@ static NSString * const EXUpdatesErrorLogFile = @"expo-error.log";
 
 - (void)writeErrorOrExceptionToLog:(id)errorOrException
 {
-  dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+  dispatch_async(_diskWriteQueue ?: dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
     NSString *serializedError;
     if ([errorOrException isKindOfClass:[NSError class]]) {
       serializedError = [NSString stringWithFormat:@"Fatal error: %@", [self _serializeError:(NSError *)errorOrException]];
