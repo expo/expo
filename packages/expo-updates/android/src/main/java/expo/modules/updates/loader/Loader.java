@@ -184,11 +184,18 @@ public abstract class Loader {
     }
   }
 
+  private enum AssetLoadResult {
+    FINISHED,
+    ALREADY_EXISTS,
+    ERRORED,
+    SKIPPED
+  }
+
   private void downloadAllAssets(List<AssetEntity> assetList) {
     mAssetTotal = assetList.size();
     for (AssetEntity assetEntity : assetList) {
       if (shouldSkipAsset(assetEntity)) {
-        mSkippedAssetList.add(assetEntity);
+        handleAssetDownloadCompleted(assetEntity, AssetLoadResult.SKIPPED);
         continue;
       }
 
@@ -200,7 +207,7 @@ public abstract class Loader {
 
       // if we already have a local copy of this asset, don't try to download it again!
       if (assetEntity.relativePath != null && mLoaderFiles.fileExists(new File(mUpdatesDirectory, assetEntity.relativePath))) {
-        handleAssetDownloadCompleted(assetEntity, true, false);
+        handleAssetDownloadCompleted(assetEntity, AssetLoadResult.ALREADY_EXISTS);
         continue;
       }
 
@@ -208,26 +215,31 @@ public abstract class Loader {
         @Override
         public void onFailure(Exception e, AssetEntity assetEntity) {
           Log.e(TAG, "Failed to download asset with key " + assetEntity.key, e);
-          handleAssetDownloadCompleted(assetEntity, false, false);
+          handleAssetDownloadCompleted(assetEntity, AssetLoadResult.ERRORED);
         }
 
         @Override
         public void onSuccess(AssetEntity assetEntity, boolean isNew) {
-          handleAssetDownloadCompleted(assetEntity, true, isNew);
+          handleAssetDownloadCompleted(assetEntity, isNew ? AssetLoadResult.FINISHED : AssetLoadResult.ALREADY_EXISTS);
         }
       });
     }
   }
 
-  private synchronized void handleAssetDownloadCompleted(AssetEntity assetEntity, boolean success, boolean isNew) {
-    if (success) {
-      if (isNew) {
+  private synchronized void handleAssetDownloadCompleted(AssetEntity assetEntity, AssetLoadResult result) {
+    switch (result) {
+      case FINISHED:
         mFinishedAssetList.add(assetEntity);
-      } else {
+        break;
+      case ALREADY_EXISTS:
         mExistingAssetList.add(assetEntity);
-      }
-    } else {
-      mErroredAssetList.add(assetEntity);
+        break;
+      case ERRORED:
+        mErroredAssetList.add(assetEntity);
+        break;
+      case SKIPPED:
+        mSkippedAssetList.add(assetEntity);
+        break;
     }
 
     mCallback.onAssetLoaded(assetEntity, mFinishedAssetList.size() + mExistingAssetList.size(), mErroredAssetList.size(), mAssetTotal);

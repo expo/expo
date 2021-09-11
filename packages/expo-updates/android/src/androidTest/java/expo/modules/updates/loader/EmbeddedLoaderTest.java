@@ -130,6 +130,28 @@ public class EmbeddedLoaderTest {
   }
 
   @Test
+  public void testEmbeddedLoader_MultipleScales_ReverseOrder() throws JSONException, IOException, NoSuchAlgorithmException {
+    UpdateManifest multipleScalesManifest = BareUpdateManifest.Companion.fromBareManifest(
+            new BareManifest(new JSONObject("{\"id\":\"d26d7f92-c7a6-4c44-9ada-4804eda7e6e2\",\"commitTime\":1630435460610,\"assets\":[{\"name\":\"robot-dev\",\"type\":\"png\",\"scale\":2,\"packagerHash\":\"4ecff55cf37460b7f768dc7b72bcea6b\",\"subdirectory\":\"/assets\",\"scales\":[1,2],\"resourcesFilename\":\"robotdev\",\"resourcesFolder\":\"drawable\"},{\"name\":\"robot-dev\",\"type\":\"png\",\"scale\":1,\"packagerHash\":\"54da1e9816c77e30ebc5920e256736f2\",\"subdirectory\":\"/assets\",\"scales\":[1,2],\"resourcesFilename\":\"robotdev\",\"resourcesFolder\":\"drawable\"}]}")),
+            configuration
+    );
+    when(mockLoaderFiles.readEmbeddedManifest(any(), any())).thenReturn(multipleScalesManifest);
+
+    loader.start(mockCallback);
+
+    verify(mockCallback).onSuccess(any());
+    verify(mockCallback, times(0)).onFailure(any());
+    verify(mockLoaderFiles, times(2)).copyAssetAndGetHash(any(), any(), any());
+
+    List<UpdateEntity> updates = db.updateDao().loadAllUpdates();
+    Assert.assertEquals(1, updates.size());
+    Assert.assertEquals(UpdateStatus.EMBEDDED, updates.get(0).status);
+
+    List<AssetEntity> assets = db.assetDao().loadAllAssets();
+    Assert.assertEquals(2, assets.size());
+  }
+
+  @Test
   public void testEmbeddedLoader_AssetExists_BothDbAndDisk() throws IOException, NoSuchAlgorithmException {
     // return true when asked if file 54da1e9816c77e30ebc5920e256736f2 exists
     when(mockLoaderFiles.fileExists(any())).thenAnswer((Answer<Boolean>) invocation -> invocation.getArgument(0).toString().contains("54da1e9816c77e30ebc5920e256736f2"));
