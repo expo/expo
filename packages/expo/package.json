@@ -71,7 +71,7 @@
     "invariant": "^2.2.2",
     "md5-file": "^3.2.3",
     "pretty-format": "^26.4.0",
-    "react-native-safe-area-context": "3.2.0",
+    "react-native-safe-area-context": "3.3.2",
     "serialize-error": "^2.1.0",
     "uuid": "^3.4.0"
   },
