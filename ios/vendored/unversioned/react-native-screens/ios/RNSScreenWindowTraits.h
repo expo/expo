@@ -4,7 +4,9 @@
 
 + (void)updateWindowTraits;
 
+#if !TARGET_OS_TV
 + (void)assertViewControllerBasedStatusBarAppearenceSet;
+#endif
 + (void)updateStatusBarAppearance;
 + (void)enforceDesiredDeviceOrientation;
 

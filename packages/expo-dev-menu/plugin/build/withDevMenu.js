@@ -6,6 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const config_plugins_1 = require("@expo/config-plugins");
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
+const constants_1 = require("./constants");
 const withDevMenuAppDelegate_1 = require("./withDevMenuAppDelegate");
 const pkg = require('expo-dev-menu/package.json');
 const DEV_MENU_ANDROID_IMPORT = 'expo.modules.devmenu.react.DevMenuAwareReactActivity';
@@ -45,7 +46,8 @@ async function editPodfile(config, action) {
         return await saveFileAsync(podfilePath, podfile);
     }
     catch (e) {
-        config_plugins_1.WarningAggregator.addWarningIOS('expo-dev-menu', `Couldn't modified AppDelegate.m - ${e}.`);
+        config_plugins_1.WarningAggregator.addWarningIOS('expo-dev-menu', `Couldn't modified AppDelegate.m - ${e}. 
+See the expo-dev-client installation instructions to modify your AppDelegate manually: ${constants_1.InstallationPage}`);
     }
 }
 const withDevMenuActivity = (config) => {
@@ -57,7 +59,8 @@ const withDevMenuActivity = (config) => {
             config.modResults.contents = content;
         }
         else {
-            config_plugins_1.WarningAggregator.addWarningAndroid('expo-dev-menu', `Cannot automatically configure MainActivity if it's not java`);
+            config_plugins_1.WarningAggregator.addWarningAndroid('expo-dev-menu', `Cannot automatically configure MainActivity if it's not java.
+See the expo-dev-client installation instructions to modify your MainActivity manually: ${constants_1.InstallationPage}`);
         }
         return config;
     });

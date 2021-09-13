@@ -5,6 +5,8 @@
 ### 🛠 Breaking changes
 
 - Replace exported `FaceDetector.Constants.*` with String Enums (`FaceDetector.FaceDetectorMode`, `FaceDetector.FaceDetectorLandmarks` and `FaceDetector.FaceDetectorClassifications`). ([#14179](https://github.com/expo/expo/pull/14179) by [@Simek](https://github.com/Simek))
+- Dropped support for iOS 11.0 ([#14383](https://github.com/expo/expo/pull/14383) by [@cruzach](https://github.com/cruzach))
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
@@ -12,7 +14,7 @@
 ### 💡 Others
 
 - Migrated from `@unimodules/core` to `expo-modules-core`. ([#13757](https://github.com/expo/expo/pull/13757) by [@tsapeta](https://github.com/tsapeta))
-- Extract `detectFacesAsync` options as separate type named `DetectionOptions`.  ([#14179](https://github.com/expo/expo/pull/14179) by [@Simek](https://github.com/Simek))
+- Extract `detectFacesAsync` options as separate type named `DetectionOptions`. ([#14179](https://github.com/expo/expo/pull/14179) by [@Simek](https://github.com/Simek))
 - Add missing `minDetectionInterval` and `tracking` parameters to the `DetectionOptions` type. ([#14179](https://github.com/expo/expo/pull/14179) by [@Simek](https://github.com/Simek))
 
 ## 10.1.0 — 2021-06-16

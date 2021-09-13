@@ -4,6 +4,20 @@
 
 ### 🛠 Breaking changes
 
+- Dropped support for iOS 11.0 ([#14383](https://github.com/expo/expo/pull/14383) by [@cruzach](https://github.com/cruzach))
+
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 0.9.1 — 2021-09-09
+
+_This version does not introduce any user-facing changes._
+
+## 0.9.0 — 2021-09-09
+
 ### 🎉 New features
 
 - Version expo-updates plugin by importing from @expo/config-plugins@3.0.7. This allows the update url to be defined in app.confg ([#13981](https://github.com/expo/expo/pull/13981) by [@jkhales](https://github.com/jkhales))
@@ -12,14 +26,13 @@
 - Update NewManifest field paths for new extra field format. ([#13398](https://github.com/expo/expo/pull/13398) by [@wschurman](https://github.com/wschurman))
 - Update location of EAS projectId in new manifest. ([#13739](https://github.com/expo/expo/pull/13739) by [@wschurman](https://github.com/wschurman))
 - Update location of scopeKey in new manifest. ([#13817](https://github.com/expo/expo/pull/13817) by [@wschurman](https://github.com/wschurman))
+- Introduce automatically setup where iOS AppDelegate or Android MainApplication customization is not necessary. ([#14198](https://github.com/expo/expo/pull/14198) by [@kudo](https://github.com/kudo))
 
 ### 🐛 Bug fixes
 
 - Fix `PROJECT_ROOT` path resolution in `create-manifest-ios.sh` and in `createManifest.js` ([#13439](https://github.com/expo/expo/pull/13439) by [@ajsmth](https://github.com/ajsmth))
 - Fix erroneous manifest JSON direct access. ([#13906](https://github.com/expo/expo/pull/13906) by [@wschurman](https://github.com/wschurman))
 - Fixed `userInterfaceStyle` not being applied when only set in root `expo` options and not in `expo.android` options. ([#13959](https://github.com/expo/expo/pull/13959) by [@mrousavy](https://github.com/mrousavy))
-
-### 💡 Others
 
 ## 0.8.5 — 2021-09-02
 

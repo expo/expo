@@ -46,21 +46,16 @@
   CGFloat pageHeight = webView.bounds.size.height;
 
   [webView.scrollView setContentOffset:CGPointMake(0, pageHeight * pageIndex) animated:NO];
-  if (@available(iOS 11.0, *)) {
-    [webView takeSnapshotWithConfiguration:nil completionHandler:^(UIImage * _Nullable snapshotImage, NSError * _Nullable error) {
-      if (snapshotImage) {
-        CGRect printRect = UIGraphicsGetPDFContextBounds();
-        UIGraphicsBeginPDFPage();
-        [snapshotImage drawInRect:printRect];
-        [self takeSnapshotForPage:(pageIndex + 1) ofPages:pagesCount ofWebView:webView withCompletionHandler:completionHandler];
-      } else {
-        completionHandler(error);
-      }
-    }];
-  } else {
-    NSError *error = EXErrorWithMessage(@"Unexpected error occurred - on iOS under 11.0 use EXWKViewPDFRenderer.");
-    completionHandler(error);
-  }
+  [webView takeSnapshotWithConfiguration:nil completionHandler:^(UIImage * _Nullable snapshotImage, NSError * _Nullable error) {
+    if (snapshotImage) {
+      CGRect printRect = UIGraphicsGetPDFContextBounds();
+      UIGraphicsBeginPDFPage();
+      [snapshotImage drawInRect:printRect];
+      [self takeSnapshotForPage:(pageIndex + 1) ofPages:pagesCount ofWebView:webView withCompletionHandler:completionHandler];
+    } else {
+      completionHandler(error);
+    }
+  }];
 }
 
 @end

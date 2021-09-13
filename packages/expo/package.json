@@ -1,6 +1,6 @@
 {
   "name": "expo",
-  "version": "43.0.0-alpha.1",
+  "version": "43.0.0-alpha.2",
   "description": "The Expo SDK",
   "main": "build/Expo.js",
   "module": "build/Expo.js",
@@ -13,15 +13,19 @@
     "expo": "bin/cli.js"
   },
   "files": [
+    "android",
     "bin",
     "build",
+    "ios",
     "scripts",
     "tools",
-    "tsconfig.base.json",
-    "bundledNativeModules.json",
-    "requiresExtraSetup.json",
     "AppEntry.js",
-    "metro-config.js"
+    "bundledNativeModules.json",
+    "expo-module.config.json",
+    "metro-config.js",
+    "react-native.config.js",
+    "requiresExtraSetup.json",
+    "tsconfig.base.json"
   ],
   "scripts": {
     "build": "expo-module build",
@@ -58,19 +62,21 @@
     "expo-application": "~3.3.0",
     "expo-asset": "~8.4.0",
     "expo-constants": "~11.1.0",
-    "expo-error-recovery": "~2.3.0",
     "expo-file-system": "~12.0.0",
     "expo-font": "~9.3.0",
     "expo-keep-awake": "~9.3.0",
     "expo-modules-autolinking": "~0.3.0",
-    "expo-modules-core": "~0.3.0",
+    "expo-modules-core": "~0.3.1",
     "fbemitter": "^2.1.1",
     "invariant": "^2.2.2",
     "md5-file": "^3.2.3",
     "pretty-format": "^26.4.0",
-    "react-native-safe-area-context": "3.2.0",
+    "react-native-safe-area-context": "3.3.2",
     "serialize-error": "^2.1.0",
     "uuid": "^3.4.0"
+  },
+  "optionalDependencies": {
+    "expo-error-recovery": "~2.3.0"
   },
   "devDependencies": {
     "@types/fbemitter": "^2.0.32",

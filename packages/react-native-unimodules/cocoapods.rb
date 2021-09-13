@@ -1,9 +1,9 @@
-require File.join(File.dirname(`node --print "require.resolve('expo-modules-core/package.json')"`), "scripts/autolinking")
+require File.join(File.dirname(`node --print "require.resolve('expo/package.json')"`), "scripts/autolinking")
 require 'colored2'
 
 def use_unimodules!(custom_options = {})
-  puts '⚠️ ' << 'react-native-unimodules'.green.bold << ' is deprecated in favor of '.yellow.bold << 'expo-modules-core'.green.bold
-  puts '⚠️ Follow this guide to migrate: '.yellow.bold << 'https://expo.fyi/expo-modules-core-migration'.blue.bold
+  puts '⚠️ ' << 'react-native-unimodules'.green.bold << ' is deprecated in favor of '.yellow.bold << 'expo'.green.bold
+  puts '⚠️ Follow this guide to migrate: '.yellow.bold << 'https://expo.fyi/expo-modules-migration'.blue.bold
   puts
 
   root_package_json = JSON.parse(File.read(find_project_package_json_path))

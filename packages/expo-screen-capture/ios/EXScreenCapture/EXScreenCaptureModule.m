@@ -44,17 +44,15 @@ EX_EXPORT_METHOD_AS(preventScreenCapture,
                     preventScreenCaptureWithResolver:(EXPromiseResolveBlock)resolve
                     reject:(EXPromiseRejectBlock)reject)
 {
-  if (@available(iOS 11.0, *) ) {
-    // If already recording, block it
-    dispatch_async(dispatch_get_main_queue(), ^{
-      [self preventScreenRecording];
-    });
+  // If already recording, block it
+  dispatch_async(dispatch_get_main_queue(), ^{
+    [self preventScreenRecording];
+  });
 
-    // Avoid setting duplicate observers
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIScreenCapturedDidChangeNotification object:nil];
+  // Avoid setting duplicate observers
+  [[NSNotificationCenter defaultCenter] removeObserver:self name:UIScreenCapturedDidChangeNotification object:nil];
           
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(preventScreenRecording) name:UIScreenCapturedDidChangeNotification object:nil];
-  }
+  [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(preventScreenRecording) name:UIScreenCapturedDidChangeNotification object:nil];
   
   resolve([NSNull null]);
 }
@@ -63,22 +61,18 @@ EX_EXPORT_METHOD_AS(allowScreenCapture,
                     allowScreenCaptureWithResolver:(EXPromiseResolveBlock)resolve
                     rejecter:(EXPromiseRejectBlock)reject)
 {
-  if (@available(iOS 11.0, *)) {
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIScreenCapturedDidChangeNotification object:nil];
-  }
+  [[NSNotificationCenter defaultCenter] removeObserver:self name:UIScreenCapturedDidChangeNotification object:nil];
 
   resolve([NSNull null]);
 }
 
 - (void)preventScreenRecording {
-  if (@available(iOS 11.0, *)) {
-    BOOL isCaptured = [[UIScreen mainScreen] isCaptured];
+  BOOL isCaptured = [[UIScreen mainScreen] isCaptured];
 
-    if (isCaptured) {
-      [UIApplication.sharedApplication.keyWindow.subviews.firstObject addSubview:_blockView];
-    } else {
-      [_blockView removeFromSuperview];
-    }
+  if (isCaptured) {
+    [UIApplication.sharedApplication.keyWindow.subviews.firstObject addSubview:_blockView];
+  } else {
+    [_blockView removeFromSuperview];
   }
 }
 

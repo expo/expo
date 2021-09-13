@@ -57,7 +57,6 @@
 /packages/expo-module-template                  @bbarthec @tsapeta
 /packages/expo-network                          @ide
 /packages/expo-notifications                    @cruzach
-/packages/expo-payments-stripe                  @tsapeta
 /packages/expo-permissions                      @bbarthec @lukmccall
 /packages/expo-print                            @lukmccall
 /packages/expo-processing                       @EvanBacon

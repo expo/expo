@@ -10,7 +10,7 @@ Pod::Spec.new do |s|
   s.license = 'MIT'
   s.author = "650 Industries, Inc."
   s.requires_arc = true
-  s.platform = :ios, "11.0"
+  s.platform = :ios, "12.0"
   s.default_subspec = "Core"
   s.source = { :git => "http://github.com/expo/expo.git" }
   s.xcconfig = {
@@ -43,12 +43,6 @@ Pod::Spec.new do |s|
     ss.dependency 'UMCore'
     ss.dependency 'ExpoModulesCore'
     ss.dependency 'UMReactNativeAdapter'
-  end
-
-  s.subspec "Payments" do |ss|
-    ss.dependency "ExpoKit/Core"
-    ss.dependency 'Stripe', '~> 10.1.0'
-    ss.source_files = 'Exponent/Versioned/Optional/Payments/*.{h,m}'
   end
 
   s.subspec "FaceDetector" do |ss|

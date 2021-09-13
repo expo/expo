@@ -72,9 +72,7 @@
     locationManager.activityType = [EXLocation CLActivityTypeFromOption:[options[@"activityType"] integerValue]];
     locationManager.pausesLocationUpdatesAutomatically = [options[@"pausesUpdatesAutomatically"] boolValue];
 
-    if (@available(iOS 11.0, *)) {
-      locationManager.showsBackgroundLocationIndicator = [options[@"showsBackgroundLocationIndicator"] boolValue];
-    }
+    locationManager.showsBackgroundLocationIndicator = [options[@"showsBackgroundLocationIndicator"] boolValue];
 
     [locationManager startUpdatingLocation];
     [locationManager startMonitoringSignificantLocationChanges];
