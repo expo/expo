@@ -37,6 +37,7 @@ Pod::Spec.new do |s|
   
   s.dependency "React-Core"
   s.dependency "expo-dev-menu-interface"
+  s.dependency "EXManifests"
   s.dependency "EXUpdatesInterface"
   
   s.subspec 'Unsafe' do |unsafe|
