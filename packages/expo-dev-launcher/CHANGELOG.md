@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- Suppress the `"main" has not been registered` exception if it was caused by a different error.
+- Suppress the `"main" has not been registered` exception if it was caused by a different error. ([#14363](https://github.com/expo/expo/pull/14363) by [@lukmccall](https://github.com/lukmccall))
 
 ### 🐛 Bug fixes
 
