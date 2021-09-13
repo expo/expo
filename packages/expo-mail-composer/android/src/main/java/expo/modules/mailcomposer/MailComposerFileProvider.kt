@@ -1,9 +1,8 @@
-package expo.modules.mailcomposer;
+package expo.modules.mailcomposer
 
-import androidx.core.content.FileProvider;
+import androidx.core.content.FileProvider
 
 /**
  * Dummy class for proving files for this module.
  */
-public class MailComposerFileProvider extends FileProvider {
-}
+class MailComposerFileProvider : FileProvider()

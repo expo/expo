@@ -1,16 +1,9 @@
-package expo.modules.mailcomposer;
+package expo.modules.mailcomposer
 
-import android.content.Context;
+import android.content.Context
+import expo.modules.core.BasePackage
 
-import java.util.Collections;
-import java.util.List;
-
-import expo.modules.core.BasePackage;
-import expo.modules.core.ExportedModule;
-
-public class MailComposerPackage extends BasePackage {
-  @Override
-  public List<ExportedModule> createExportedModules(Context context) {
-    return Collections.singletonList((ExportedModule) new MailComposerModule(context));
-  }
+class MailComposerPackage : BasePackage() {
+  override fun createExportedModules(context: Context) =
+    listOf(MailComposerModule(context))
 }
