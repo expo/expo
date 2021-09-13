@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- Using compat firebase libraries in version 9.0.2. ([#14400](https://github.com/expo/expo/pull/14400) by [@sebastianwilczek](https://github.com/sebastianwilczek))
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes

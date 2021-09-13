@@ -71,6 +71,7 @@ export function getTestModules() {
     require('./tests/FirebaseAnalytics'),
     require('./tests/FirebaseRecaptcha'),
     require('./tests/FirebaseJSSDK'),
+    require('./tests/FirebaseJSSDKv9'),
     require('./tests/ImageManipulator'),
     optionalRequire(() => require('./tests/SQLite'))
   );

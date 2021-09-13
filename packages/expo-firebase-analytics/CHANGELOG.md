@@ -27,6 +27,8 @@
 - Fix `logEvent` exception on Android when using arrays. ([#14189](https://github.com/expo/expo/pull/14189) by [@IjzerenHein](https://github.com/IjzerenHein))
 - Fix building errors from use_frameworks! in Podfile. ([#14523](https://github.com/expo/expo/pull/14523) by [@kudo](https://github.com/kudo))
 
+- Using compat firebase libraries in version 9.0.2. ([#14400](https://github.com/expo/expo/pull/14400) by [@sebastianwilczek](https://github.com/sebastianwilczek))
+
 ## 4.1.0 — 2021-06-16
 
 ### 🎉 New features

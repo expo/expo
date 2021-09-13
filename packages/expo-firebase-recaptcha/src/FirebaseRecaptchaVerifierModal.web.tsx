@@ -1,4 +1,4 @@
-import firebase from 'firebase';
+import firebase from 'firebase/compat';
 import * as React from 'react';
 
 import { FirebaseAuthApplicationVerifier } from './FirebaseRecaptcha.types';
