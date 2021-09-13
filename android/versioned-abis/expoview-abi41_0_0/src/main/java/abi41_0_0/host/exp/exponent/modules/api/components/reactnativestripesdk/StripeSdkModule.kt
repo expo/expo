@@ -11,6 +11,7 @@ import android.os.Parcelable
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import abi41_0_0.com.facebook.react.bridge.*
+import androidx.activity.ComponentActivity
 import com.stripe.android.*
 import com.stripe.android.model.*
 import com.stripe.android.paymentsheet.PaymentSheetResult
@@ -323,8 +324,10 @@ class StripeSdkModule(reactContext: ReactApplicationContext, cardFieldManager: S
   private fun onFpxPaymentMethodResult(result: AddPaymentMethodActivityStarter.Result) {
     when (result) {
       is AddPaymentMethodActivityStarter.Result.Success -> {
+        val activity = currentActivity as ComponentActivity
+
         stripe.confirmPayment(
-          currentActivity!!,
+          activity,
           ConfirmPaymentIntentParams.createWithPaymentMethodId(
             result.paymentMethod.id!!,
             confirmPaymentClientSecret!!,
