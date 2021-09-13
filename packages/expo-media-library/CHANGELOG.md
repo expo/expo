@@ -11,6 +11,8 @@
 
 ### 🐛 Bug fixes
 
+- EXIF parsing failure no longer crashes the `getAssetsAsync` and `getAssetInfoAsync`, the promise returns `exif: null` instead.
+
 ### 💡 Others
 
 - Migrated from `@unimodules/core` to `expo-modules-core`. ([#13755](https://github.com/expo/expo/pull/13755) by [@tsapeta](https://github.com/tsapeta))
