@@ -3,7 +3,7 @@ import {
   Home_ViewerUsernameDocument,
   Home_ViewerUsernameQuery,
   Home_ViewerUsernameQueryVariables,
-} from '../graphql/queries/ViewerUsernameQuery.query.generated';
+} from '../graphql/types';
 import Store from '../redux/Store';
 
 export default async function getViewerUsernameAsync(): Promise<string | null> {
