@@ -2,8 +2,6 @@ import Foundation
 import UIKit
 import Stripe
 
-let CARD_FIELD_INSTANCE_ID = "CardFieldInstance"
-
 class CardFieldView: UIView, STPPaymentCardTextFieldDelegate {
     @objc var onCardChange: RCTDirectEventBlock?
     @objc var onFocusChange: RCTDirectEventBlock?
@@ -12,15 +10,14 @@ class CardFieldView: UIView, STPPaymentCardTextFieldDelegate {
     private var cardField = STPPaymentCardTextField()
     
     public var cardParams: STPPaymentMethodCardParams? = nil
-    
-    public var delegate: CardFieldDelegate?
-    
+    public var cardPostalCode: String? = nil
+
     @objc var postalCodeEnabled: Bool = true {
         didSet {
             cardField.postalCodeEntryEnabled = postalCodeEnabled
         }
     }
-
+    
     @objc var placeholder: NSDictionary = NSDictionary() {
         didSet {
             if let numberPlaceholder = placeholder["number"] as? String {
@@ -74,7 +71,7 @@ class CardFieldView: UIView, STPPaymentCardTextFieldDelegate {
                 cardField.textErrorColor = UIColor(hexString: textErrorColor)
             }
             let fontSize = cardStyle["fontSize"] as? Int ?? 14
-
+            
             if let fontFamily = cardStyle["fontFamily"] as? String {
                 cardField.font = UIFont(name: fontFamily, size: CGFloat(fontSize)) ?? UIFont.systemFont(ofSize: CGFloat(fontSize))
             } else {
@@ -91,19 +88,24 @@ class CardFieldView: UIView, STPPaymentCardTextFieldDelegate {
     override init(frame: CGRect) {
         super.init(frame: frame)
         cardField.delegate = self
-
+        
         self.addSubview(cardField)
     }
     
-    convenience init(delegate: CardFieldDelegate) {
-        self.init(frame: CGRect.zero)
-        self.delegate = delegate
-        
-        self.delegate?.onDidCreateViewInstance(id: CARD_FIELD_INSTANCE_ID, reference: self)
+    func focus() {
+        cardField.becomeFirstResponder()
     }
     
-    override func removeFromSuperview() {
-        self.delegate?.onDidDestroyViewInstance(id: CARD_FIELD_INSTANCE_ID)
+    func blur() {
+        cardField.resignFirstResponder()
+    }
+    
+    func clear() {
+        cardField.clear()
+    }
+    
+    func paymentCardTextFieldDidEndEditing(_ textField: STPPaymentCardTextField) {
+        onFocusChange?(["focusedField": NSNull()])
     }
     
     func paymentCardTextFieldDidBeginEditingNumber(_ textField: STPPaymentCardTextField) {
@@ -142,8 +144,10 @@ class CardFieldView: UIView, STPPaymentCardTextFieldDelegate {
         }
         if (textField.isValid) {
             self.cardParams = textField.cardParams
+            self.cardPostalCode = textField.postalCode
         } else {
             self.cardParams = nil
+            self.cardPostalCode = nil
         }
     }
     

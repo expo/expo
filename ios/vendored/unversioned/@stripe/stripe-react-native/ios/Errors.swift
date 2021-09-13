@@ -33,6 +33,34 @@ enum CreateTokenErrorType: String {
 }
 
 class Errors {
+    static internal let isPIClientSecretValidRegex: NSRegularExpression? = try? NSRegularExpression(
+        pattern: "^pi_[^_]+_secret_[^_]+$", options: [])
+
+    static internal let isSetiClientSecretValidRegex: NSRegularExpression? = try? NSRegularExpression(
+        pattern: "^seti_[^_]+_secret_[^_]+$", options: [])
+    
+    static internal let isEKClientSecretValidRegex: NSRegularExpression? = try? NSRegularExpression(
+        pattern: "^ek_[^_](.)+$", options: [])
+
+    class func isPIClientSecretValid(clientSecret: String) -> Bool {
+        return (Errors.isPIClientSecretValidRegex?.numberOfMatches(
+            in: clientSecret,
+            options: .anchored,
+            range: NSRange(location: 0, length: clientSecret.count))) == 1
+    }
+    class func isSetiClientSecretValid(clientSecret: String) -> Bool {
+        return (Errors.isSetiClientSecretValidRegex?.numberOfMatches(
+            in: clientSecret,
+            options: .anchored,
+            range: NSRange(location: 0, length: clientSecret.count))) == 1
+    }
+    class func isEKClientSecretValid(clientSecret: String) -> Bool {
+        return (Errors.isEKClientSecretValidRegex?.numberOfMatches(
+            in: clientSecret,
+            options: .anchored,
+            range: NSRange(location: 0, length: clientSecret.count))) == 1
+    }
+
     class func createError (_ code: String, _ message: String?) -> NSDictionary {
         let value: NSDictionary = [
             "code": code,
@@ -83,3 +111,4 @@ class Errors {
         return ["error": value]
     }
 }
+

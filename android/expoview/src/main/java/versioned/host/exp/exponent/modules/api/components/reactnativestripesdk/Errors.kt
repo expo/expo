@@ -37,6 +37,10 @@ enum class PaymentSheetErrorType {
   Failed, Canceled
 }
 
+enum class GooglePayErrorType {
+  Failed, Canceled, Unknown
+}
+
 internal fun mapError(code: String, message: String?, localizedMessage: String?, declineCode: String?, type: String?, stripeErrorCode: String?): WritableMap {
   val map: WritableMap = WritableNativeMap()
   val details: WritableMap = WritableNativeMap()

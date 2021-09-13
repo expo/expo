@@ -328,7 +328,6 @@ class StripeSdkModule(reactContext: ReactApplicationContext, cardFieldManager: S
           ConfirmPaymentIntentParams.createWithPaymentMethodId(
             result.paymentMethod.id!!,
             confirmPaymentClientSecret!!,
-            returnUrl = mapToReturnURL(urlScheme)
           )
         )
       }
@@ -383,7 +382,7 @@ class StripeSdkModule(reactContext: ReactApplicationContext, cardFieldManager: S
 
   @ReactMethod
   fun handleCardAction(paymentIntentClientSecret: String, promise: Promise) {
-    val activity = currentActivity
+    val activity = currentActivity as ComponentActivity
     if (activity != null) {
       handleCardActionPromise = promise
       stripe.handleNextActionForPayment(activity, paymentIntentClientSecret)
@@ -413,9 +412,10 @@ class StripeSdkModule(reactContext: ReactApplicationContext, cardFieldManager: S
     val factory = PaymentMethodCreateParamsFactory(paymentIntentClientSecret, params, urlScheme, cardParams)
 
     try {
+      val activity = currentActivity as ComponentActivity
       val confirmParams = factory.createConfirmParams(paymentMethodType)
       confirmParams.shipping = mapToShippingDetails(getMapOrNull(params, "shippingDetails"))
-      stripe.confirmPayment(currentActivity!!, confirmParams)
+      stripe.confirmPayment(activity, confirmParams)
     } catch (error: PaymentMethodCreateParamsException) {
       promise.reject(ConfirmPaymentErrorType.Failed.toString(), error.localizedMessage)
     }
@@ -460,8 +460,9 @@ class StripeSdkModule(reactContext: ReactApplicationContext, cardFieldManager: S
     val factory = PaymentMethodCreateParamsFactory(setupIntentClientSecret, params, urlScheme, cardParams)
 
     try {
+      val activity = currentActivity as ComponentActivity
       val confirmParams = factory.createSetupParams(paymentMethodType)
-      stripe.confirmSetupIntent(currentActivity!!, confirmParams)
+      stripe.confirmSetupIntent(activity, confirmParams)
     } catch (error: PaymentMethodCreateParamsException) {
       promise.reject(ConfirmPaymentErrorType.Failed.toString(), error.localizedMessage)
     }

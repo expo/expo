@@ -89,4 +89,4 @@ Apple Pay **is not** supported in Expo Go. To use Apple Pay, you must use either
 
 ### Google Pay
 
-Google Pay **is not** supported in Expo Go. To use Google Pay, you must use either a standalone app built with `expo build:android` or [EAS Build](/build/introduction.md), or run `expo run:android` in your project directory.
+Google Pay **is not** supported in Expo Go. To use Google Pay, you must use either [EAS Build](/build/introduction.md), or run `expo run:android` in your project directory.

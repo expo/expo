@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-  <style name="Theme.Exponent.Dark" parent="Theme.AppCompat.Light.NoActionBar">
+  <style name="Theme.Exponent.Dark" parent="Theme.MaterialComponents.Light.NoActionBar">
     <item name="android:windowLightStatusBar">false</item>
     <item name="android:statusBarColor">@android:color/transparent</item>
     <item name="colorPrimary">@color/colorPrimary</item>
@@ -9,7 +9,7 @@
     <item name="android:windowBackground">@color/colorPrimary</item>
   </style>
 
-  <style name="Theme.Exponent.Light" parent="Theme.AppCompat.Light.NoActionBar">
+  <style name="Theme.Exponent.Light" parent="Theme.MaterialComponents.Light.NoActionBar">
     <item name="android:windowLightStatusBar">false</item>
     <item name="android:statusBarColor">@android:color/transparent</item>
     <item name="colorPrimary">@color/colorPrimary</item>

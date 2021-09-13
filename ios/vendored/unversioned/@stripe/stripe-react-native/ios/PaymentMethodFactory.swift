@@ -1,16 +1,17 @@
 import Foundation
 import Stripe
 
-
 class PaymentMethodFactory {
     var billingDetailsParams: STPPaymentMethodBillingDetails? = nil
     var params: NSDictionary? = nil
     var cardFieldView: CardFieldView? = nil
-    
-    init(params: NSDictionary, cardFieldView: CardFieldView?) {
+    var cardFormView: CardFormView? = nil
+
+    init(params: NSDictionary, cardFieldView: CardFieldView?, cardFormView: CardFormView?) {
         self.billingDetailsParams = Mappers.mapToBillingDetails(billingDetails: params["billingDetails"] as? NSDictionary)
         self.params = params
         self.cardFieldView = cardFieldView
+        self.cardFormView = cardFormView
     }
     
     func createParams(paymentMethodType: STPPaymentMethodType) throws -> STPPaymentMethodParams? {
@@ -44,6 +45,8 @@ class PaymentMethodFactory {
                 return try createBECSDebitPaymentMethodParams()
             case STPPaymentMethodType.afterpayClearpay:
                 return try createAfterpayClearpayPaymentMethodParams()
+//            case STPPaymentMethodType.weChatPay:
+//                return try createWeChatPayPaymentMethodParams()
             default:
                 throw PaymentMethodError.paymentNotSupported
             }
@@ -83,12 +86,29 @@ class PaymentMethodFactory {
                 return nil
             case STPPaymentMethodType.afterpayClearpay:
                 return nil
+            case STPPaymentMethodType.weChatPay:
+                return try createWeChatPayPaymentMethodOptions()
             default:
                 throw PaymentMethodError.paymentNotSupported
             }
         } catch {
             throw error
         }
+    }
+    
+//    private func createWeChatPayPaymentMethodParams() throws -> STPPaymentMethodParams {
+//        let params = STPPaymentMethodWeChatPayParams()
+//        return STPPaymentMethodParams(weChatPay: params, billingDetails: billingDetailsParams, metadata: nil)
+//    }
+//
+    private func createWeChatPayPaymentMethodOptions() throws -> STPConfirmPaymentMethodOptions {
+        guard let appId = self.params?["appId"] as? String else {
+            throw PaymentMethodError.weChatPayPaymentMissingParams
+        }
+        let paymentOptions = STPConfirmPaymentMethodOptions()
+        paymentOptions.weChatPayOptions = STPConfirmWeChatPayOptions(appId: appId)
+        
+        return paymentOptions
     }
     
     private func createIDEALPaymentMethodParams() throws -> STPPaymentMethodParams {
@@ -112,8 +132,36 @@ class PaymentMethodFactory {
             methodParams.token = RCTConvert.nsString(token)
             return STPPaymentMethodParams(card: methodParams, billingDetails: billingDetailsParams, metadata: nil)
         }
-        guard let cardParams = cardFieldView?.cardParams else {
+        
+        guard let cardParams = cardFieldView?.cardParams ?? cardFormView?.cardParams else {
             throw PaymentMethodError.cardPaymentMissingParams
+        }
+        
+        if cardFieldView?.cardParams != nil {
+            if let postalCode = cardFieldView?.cardPostalCode{
+                if (billingDetailsParams == nil) {
+                    let bd = STPPaymentMethodBillingDetails()
+                    bd.address = STPPaymentMethodAddress()
+                    bd.address?.postalCode = postalCode
+                    billingDetailsParams = bd
+                } else {
+                    billingDetailsParams?.address?.postalCode = postalCode
+                }
+            }
+        }
+        if cardFormView?.cardParams != nil {
+            if let address = cardFormView?.cardForm?.cardParams?.billingDetails?.address {
+                if (billingDetailsParams == nil) {
+                    let bd = STPPaymentMethodBillingDetails()
+                    bd.address = STPPaymentMethodAddress()
+                    bd.address?.postalCode = address.postalCode
+                    bd.address?.country = address.country
+                    billingDetailsParams = bd
+                } else {
+                    billingDetailsParams?.address?.postalCode = address.postalCode
+                    billingDetailsParams?.address?.country = address.country
+                }
+            }
         }
         
         return STPPaymentMethodParams(card: cardParams, billingDetails: billingDetailsParams, metadata: nil)
@@ -266,6 +314,7 @@ enum PaymentMethodError: Error {
     case giropayPaymentMissingParams
     case p24PaymentMissingParams
     case afterpayClearpayPaymentMissingParams
+    case weChatPayPaymentMissingParams
 }
 
 extension PaymentMethodError: LocalizedError {
@@ -293,7 +342,8 @@ extension PaymentMethodError: LocalizedError {
             return NSLocalizedString("This payment type is not supported yet", comment: "Create payment error")
         case .cardPaymentOptionsMissingParams:
             return NSLocalizedString("You must provide CVC number", comment: "Create payment error")
+        case .weChatPayPaymentMissingParams:
+            return NSLocalizedString("You must provide appId", comment: "Create payment error")
         }
-       
     }
 }

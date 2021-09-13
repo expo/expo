@@ -41,7 +41,8 @@ class PaymentSheetFragment : Fragment() {
     val merchantDisplayName = arguments?.getString("merchantDisplayName").orEmpty()
     val customerId = arguments?.getString("customerId").orEmpty()
     val customerEphemeralKeySecret = arguments?.getString("customerEphemeralKeySecret").orEmpty()
-    val countryCode = arguments?.getString("countryCode").orEmpty()
+    val countryCode = arguments?.getString("merchantCountryCode").orEmpty()
+    val googlePayEnabled = arguments?.getBoolean("googlePay")
     val testEnv = arguments?.getBoolean("testEnv")
     paymentIntentClientSecret = arguments?.getString("paymentIntentClientSecret").orEmpty()
     setupIntentClientSecret = arguments?.getString("setupIntentClientSecret").orEmpty()
@@ -76,10 +77,10 @@ class PaymentSheetFragment : Fragment() {
         id = customerId,
         ephemeralKeySecret = customerEphemeralKeySecret
       ) else null,
-      googlePay = PaymentSheet.GooglePayConfiguration(
+      googlePay = if (googlePayEnabled == true) PaymentSheet.GooglePayConfiguration(
         environment = if (testEnv == true) PaymentSheet.GooglePayConfiguration.Environment.Test else PaymentSheet.GooglePayConfiguration.Environment.Production,
         countryCode = countryCode
-      )
+      ) else null
     )
 
     if (arguments?.getBoolean("customFlow") == true) {
@@ -87,6 +88,8 @@ class PaymentSheetFragment : Fragment() {
       configureFlowController()
     } else {
       paymentSheet = PaymentSheet(this, paymentResultCallback)
+      val intent = Intent(ON_INIT_PAYMENT_SHEET)
+      activity?.sendBroadcast(intent)
     }
 
     val intent = Intent(ON_FRAGMENT_CREATED)
@@ -94,15 +97,15 @@ class PaymentSheetFragment : Fragment() {
   }
 
   fun present() {
-    if (!paymentIntentClientSecret.isNullOrEmpty()) {
-      paymentSheet?.presentWithPaymentIntent(paymentIntentClientSecret!!, paymentSheetConfiguration)
-    } else if (!setupIntentClientSecret.isNullOrEmpty()) {
-      paymentSheet?.presentWithSetupIntent(setupIntentClientSecret!!, paymentSheetConfiguration)
+    if (paymentSheet != null) {
+      if (!paymentIntentClientSecret.isNullOrEmpty()) {
+        paymentSheet?.presentWithPaymentIntent(paymentIntentClientSecret!!, paymentSheetConfiguration)
+      } else if (!setupIntentClientSecret.isNullOrEmpty()) {
+        paymentSheet?.presentWithSetupIntent(setupIntentClientSecret!!, paymentSheetConfiguration)
+      }
+    } else if (flowController != null) {
+      flowController?.presentPaymentOptions()
     }
-  }
-
-  fun presentPaymentOptions() {
-    flowController?.presentPaymentOptions()
   }
 
   fun confirmPayment() {
@@ -157,7 +160,6 @@ fun getBitmapFromVectorDrawable(context: Context?, drawableId: Int): Bitmap? {
   drawable.draw(canvas)
   return bitmap
 }
-
 fun getBase64FromBitmap(bitmap: Bitmap?): String? {
   if (bitmap == null) {
     return null

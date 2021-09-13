@@ -168,5 +168,6 @@ dependencies {
   // @react-native-community/viewpager
   api 'com.github.troZee:ViewPager2:v1.0.6'
 
-  implementation 'com.stripe:stripe-android:16.10.0'
+  // expo-payments-stripe
+  implementation 'com.stripe:stripe-android:17.1.0'
 }
