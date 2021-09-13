@@ -257,12 +257,15 @@ EX_REGISTER_SINGLETON_MODULE(TaskService)
     }
   }
   
-  // Remove events queue for that app.
-  [_eventsQueues removeObjectForKey:appId];
-  
-  if (!isHeadless) {
-    // Maybe update app url in user defaults. It might change only in non-headless mode.
-    [self _maybeUpdateAppUrl:appUrl forAppId:appId];
+  // This can happen when the manifest fails to load.
+  if (appId != nil) {
+    // Remove events queue for that app.
+    [_eventsQueues removeObjectForKey:appId];
+    
+    if (!isHeadless) {
+      // Maybe update app url in user defaults. It might change only in non-headless mode.
+      [self _maybeUpdateAppUrl:appUrl forAppId:appId];
+    }
   }
 }
 
