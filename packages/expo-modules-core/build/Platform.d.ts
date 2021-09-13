@@ -35,5 +35,10 @@ declare const Platform: {
      * return false in native React runtimes and Node.js.
      */
     canUseViewport: boolean;
+    /**
+     * If the JavaScript is being executed in a remote JavaScript environment.
+     * When `true`, synchronous native invocations cannot be executed.
+     */
+    isAsyncDebugging: boolean;
 };
 export default Platform;
