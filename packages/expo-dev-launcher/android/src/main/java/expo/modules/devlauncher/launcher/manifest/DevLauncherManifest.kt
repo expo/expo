@@ -6,6 +6,8 @@ import com.google.gson.GsonBuilder
 import com.google.gson.JsonDeserializationContext
 import com.google.gson.JsonDeserializer
 import com.google.gson.JsonElement
+import expo.modules.manifests.core.Manifest
+import org.json.JSONObject
 import java.io.Reader
 import java.lang.reflect.Type
 import kotlin.reflect.full.declaredMemberProperties

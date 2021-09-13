@@ -26,10 +26,10 @@ private class LauncherDelegate(private val controller: DevLauncherControllerInte
 
 private class AppDelegate(private val controller: DevLauncherControllerInterface) : DevMenuDelegateInterface {
   override fun appInfo(): Bundle = Bundle().apply {
-    putString("appName", controller.manifest?.name ?: "Development Client - App")
-    putString("appVersion", controller.manifest?.version)
+    putString("appName", controller.manifest?.getName() ?: "Development Client - App")
+    putString("appVersion", controller.manifest?.getVersion())
     putString("appIcon", null)
-    putString("hostUrl", controller.manifest?.hostUri
+    putString("hostUrl", controller.manifest?.getHostUri()
       ?: reactInstanceManager().devSupportManager?.sourceUrl)
   }
 
