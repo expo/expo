@@ -1,13 +1,11 @@
 package expo.modules.location.services
 
-import expo.modules.location.services.LocationTaskService
 import android.os.IBinder
 import expo.modules.location.services.LocationTaskService.ServiceBinder
 import android.content.Intent
 import android.annotation.TargetApi
 import android.os.Bundle
 import android.app.PendingIntent
-import android.app.Activity
 import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -67,40 +65,40 @@ class LocationTaskService : Service() {
   //region private
   @TargetApi(26)
   private fun buildServiceNotification(serviceOptions: Bundle) =
-      Notification.Builder(this, mChannelId).apply {
-        prepareChannel(mChannelId)
-        val title = serviceOptions.getString("notificationTitle")
-        val body = serviceOptions.getString("notificationBody")
-        val color = colorStringToInteger(serviceOptions.getString("notificationColor"))
-        if (title != null) {
-          setContentTitle(title)
-        }
-        if (body != null) {
-          setContentText(body)
-        }
-        if (color != null) {
-          setColorized(true).setColor(color)
-        } else {
-          setColorized(false)
-        }
-        if (::mParentContext.isInitialized) {
-          val intent = mParentContext.packageManager.getLaunchIntentForPackage(
-              mParentContext.packageName
+    Notification.Builder(this, mChannelId).apply {
+      prepareChannel(mChannelId)
+      val title = serviceOptions.getString("notificationTitle")
+      val body = serviceOptions.getString("notificationBody")
+      val color = colorStringToInteger(serviceOptions.getString("notificationColor"))
+      if (title != null) {
+        setContentTitle(title)
+      }
+      if (body != null) {
+        setContentText(body)
+      }
+      if (color != null) {
+        setColorized(true).setColor(color)
+      } else {
+        setColorized(false)
+      }
+      if (::mParentContext.isInitialized) {
+        val intent = mParentContext.packageManager.getLaunchIntentForPackage(
+          mParentContext.packageName
+        )
+        if (intent != null) {
+          intent.flags = Intent.FLAG_ACTIVITY_SINGLE_TOP
+          val contentIntent = PendingIntent.getActivity(
+            this@LocationTaskService,
+            0,
+            intent,
+            PendingIntent.FLAG_UPDATE_CURRENT
           )
-          if (intent != null) {
-            intent.flags = Intent.FLAG_ACTIVITY_SINGLE_TOP
-            val contentIntent = PendingIntent.getActivity(
-                this@LocationTaskService,
-                0,
-                intent,
-                PendingIntent.FLAG_UPDATE_CURRENT
-            )
-            setContentIntent(contentIntent)
-          }
+          setContentIntent(contentIntent)
         }
-        setCategory(Notification.CATEGORY_SERVICE)
-        setSmallIcon(applicationInfo.icon)
-      }.build()
+      }
+      setCategory(Notification.CATEGORY_SERVICE)
+      setSmallIcon(applicationInfo.icon)
+    }.build()
 
   @TargetApi(26)
   private fun prepareChannel(id: String?) {

@@ -232,8 +232,8 @@ class LocationModule(
   fun getCurrentPositionAsync(options: Map<String?, Any?>, promise: Promise) {
     // Read options
     val locationRequest = prepareLocationRequest(options)
-    val showUserSettingsDialog = !options.containsKey(SHOW_USER_SETTINGS_DIALOG_KEY)
-      || options[SHOW_USER_SETTINGS_DIALOG_KEY] as Boolean
+    val showUserSettingsDialog = !options.containsKey(SHOW_USER_SETTINGS_DIALOG_KEY) ||
+      options[SHOW_USER_SETTINGS_DIALOG_KEY] as Boolean
 
     // Check for permissions
     if (isMissingForegroundPermissions()) {
@@ -244,28 +244,33 @@ class LocationModule(
       requestSingleLocation(this, locationRequest, promise)
     } else {
       // Pending requests can ask the user to turn on improved accuracy mode in user's settings.
-      addPendingLocationRequest(locationRequest, object : LocationActivityResultListener {
-        override fun onResult(resultCode: Int) {
-          if (resultCode == Activity.RESULT_OK) {
-            requestSingleLocation(this@LocationModule, locationRequest, promise)
-          } else {
-            promise.reject(LocationSettingsUnsatisfiedException())
+      addPendingLocationRequest(
+        locationRequest,
+        object : LocationActivityResultListener {
+          override fun onResult(resultCode: Int) {
+            if (resultCode == Activity.RESULT_OK) {
+              requestSingleLocation(this@LocationModule, locationRequest, promise)
+            } else {
+              promise.reject(LocationSettingsUnsatisfiedException())
+            }
           }
         }
-      })
+      )
     }
   }
 
   @ExpoMethod
   fun getProviderStatusAsync(promise: Promise) {
     val state = SmartLocation.with(mContext).location().state()
-    promise.resolve(Bundle().apply {
-      putBoolean("locationServicesEnabled", state.locationServicesEnabled()) // If location is off
-      putBoolean("gpsAvailable", state.isGpsAvailable) // If GPS provider is enabled
-      putBoolean("networkAvailable", state.isNetworkAvailable) // If network provider is enabled
-      putBoolean("passiveAvailable", state.isPassiveAvailable) // If passive provider is enabled
-      putBoolean("backgroundModeEnabled", state.locationServicesEnabled())
-    }) // background mode is always available if location services are on
+    promise.resolve(
+      Bundle().apply {
+        putBoolean("locationServicesEnabled", state.locationServicesEnabled()) // If location is off
+        putBoolean("gpsAvailable", state.isGpsAvailable) // If GPS provider is enabled
+        putBoolean("networkAvailable", state.isNetworkAvailable) // If network provider is enabled
+        putBoolean("passiveAvailable", state.isPassiveAvailable) // If passive provider is enabled
+        putBoolean("backgroundModeEnabled", state.locationServicesEnabled())
+      }
+    ) // background mode is always available if location services are on
   }
 
   // Start Compass Module
@@ -285,22 +290,25 @@ class LocationModule(
       return
     }
     val locationRequest = prepareLocationRequest(options)
-    val showUserSettingsDialog = !options.containsKey(SHOW_USER_SETTINGS_DIALOG_KEY)
-      || options[SHOW_USER_SETTINGS_DIALOG_KEY] as Boolean
+    val showUserSettingsDialog = !options.containsKey(SHOW_USER_SETTINGS_DIALOG_KEY) ||
+      options[SHOW_USER_SETTINGS_DIALOG_KEY] as Boolean
 
     if (hasNetworkProviderEnabled(mContext) || !showUserSettingsDialog) {
       requestContinuousUpdates(this, locationRequest, watchId, promise)
     } else {
       // Pending requests can ask the user to turn on improved accuracy mode in user's settings.
-      addPendingLocationRequest(locationRequest, object : LocationActivityResultListener {
-        override fun onResult(resultCode: Int) {
-          if (resultCode == Activity.RESULT_OK) {
-            requestContinuousUpdates(this@LocationModule, locationRequest, watchId, promise)
-          } else {
-            promise.reject(LocationSettingsUnsatisfiedException())
+      addPendingLocationRequest(
+        locationRequest,
+        object : LocationActivityResultListener {
+          override fun onResult(resultCode: Int) {
+            if (resultCode == Activity.RESULT_OK) {
+              requestContinuousUpdates(this@LocationModule, locationRequest, watchId, promise)
+            } else {
+              promise.reject(LocationSettingsUnsatisfiedException())
+            }
           }
         }
-      })
+      )
     }
   }
 
@@ -381,15 +389,18 @@ class LocationModule(
       return
     }
     val locationRequest = prepareLocationRequest(HashMap())
-    addPendingLocationRequest(locationRequest, object : LocationActivityResultListener {
-      override fun onResult(resultCode: Int) {
-        if (resultCode == Activity.RESULT_OK) {
-          promise.resolve(null)
-        } else {
-          promise.reject(LocationSettingsUnsatisfiedException())
+    addPendingLocationRequest(
+      locationRequest,
+      object : LocationActivityResultListener {
+        override fun onResult(resultCode: Int) {
+          if (resultCode == Activity.RESULT_OK) {
+            promise.resolve(null)
+          } else {
+            promise.reject(LocationSettingsUnsatisfiedException())
+          }
         }
       }
-    })
+    )
   }
 
   @ExpoMethod
@@ -477,17 +488,18 @@ class LocationModule(
   //region public methods
   fun requestLocationUpdates(locationRequest: LocationRequest, requestId: Int?, callbacks: LocationRequestCallbacks) {
     val locationCallback: LocationCallback = object : LocationCallback() {
+      var isLocationAvailable = false
       override fun onLocationResult(locationResult: LocationResult?) {
         val location = locationResult?.lastLocation
         if (location != null) {
           callbacks.onLocationChanged(location)
+        } else if (!isLocationAvailable) {
+          callbacks.onLocationError(LocationUnavailableException())
         }
       }
 
       override fun onLocationAvailability(locationAvailability: LocationAvailability) {
-        if (!locationAvailability.isLocationAvailable) {
-          callbacks.onLocationError(LocationUnavailableException())
-        }
+        isLocationAvailable = locationAvailability.isLocationAvailable
       }
     }
     if (requestId != null) {
@@ -505,6 +517,7 @@ class LocationModule(
       }
     }
   }
+
   //region private methods
   /**
    * Checks whether all required permissions have been granted by the user.
@@ -519,8 +532,10 @@ class LocationModule(
    * Checks if the background location permission is granted by the user.
    */
   private fun isMissingBackgroundPermissions() =
-    (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
-      && !mPermissionsManager.hasGrantedPermissions(Manifest.permission.ACCESS_BACKGROUND_LOCATION))
+    (
+      Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q &&
+        !mPermissionsManager.hasGrantedPermissions(Manifest.permission.ACCESS_BACKGROUND_LOCATION)
+      )
 
   /**
    * Gets the best most recent location found by the provider.
@@ -635,18 +650,22 @@ class LocationModule(
         currLoc.latitude.toFloat(),
         currLoc.longitude.toFloat(),
         currLoc.altitude.toFloat(),
-        System.currentTimeMillis())
+        System.currentTimeMillis()
+      )
     } else {
       locationControl.start { location: Location ->
         mGeofield = GeomagneticField(
           location.latitude.toFloat(),
           location.longitude.toFloat(),
           location.altitude.toFloat(),
-          System.currentTimeMillis())
+          System.currentTimeMillis()
+        )
       }
     }
-    mSensorManager!!.registerListener(this, mSensorManager!!.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD),
-      SensorManager.SENSOR_DELAY_NORMAL)
+    mSensorManager!!.registerListener(
+      this, mSensorManager!!.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD),
+      SensorManager.SENSOR_DELAY_NORMAL
+    )
     mSensorManager!!.registerListener(this, mSensorManager!!.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_NORMAL)
   }
 
@@ -747,8 +766,8 @@ class LocationModule(
       accuracy = "coarse"
       status = PermissionsStatus.GRANTED
     } else if (
-      accessFineLocation.status == PermissionsStatus.DENIED
-      && accessCoarseLocation.status == PermissionsStatus.DENIED
+      accessFineLocation.status == PermissionsStatus.DENIED &&
+      accessCoarseLocation.status == PermissionsStatus.DENIED
     ) {
       status = PermissionsStatus.DENIED
     }
@@ -792,8 +811,8 @@ class LocationModule(
       accuracy = "coarse"
       status = PermissionsStatus.GRANTED
     } else if (
-      accessFineLocation.status == PermissionsStatus.DENIED
-      && accessCoarseLocation.status == PermissionsStatus.DENIED
+      accessFineLocation.status == PermissionsStatus.DENIED &&
+      accessCoarseLocation.status == PermissionsStatus.DENIED
     ) {
       status = PermissionsStatus.DENIED
     }

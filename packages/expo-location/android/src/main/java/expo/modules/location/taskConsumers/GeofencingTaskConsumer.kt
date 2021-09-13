@@ -34,7 +34,6 @@ class GeofencingTaskConsumer(
   //region TaskConsumerInterface
   override fun taskType() = "geofencing"
 
-
   override fun didRegister(task: TaskInterface?) {
     if (task != null) {
       mTask = task

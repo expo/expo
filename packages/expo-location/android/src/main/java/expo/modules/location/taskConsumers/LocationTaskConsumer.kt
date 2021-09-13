@@ -91,10 +91,12 @@ class LocationTaskConsumer(context: Context?, taskManagerUtils: TaskManagerUtils
         val coordsBundle = Bundle().apply {
           putAll(it.getPersistableBundle("coords"))
         }
-        locationBundles.add(Bundle().apply {
-          putAll(it)
-          putBundle("coords", coordsBundle)
-        })
+        locationBundles.add(
+          Bundle().apply {
+            putAll(it)
+            putBundle("coords", coordsBundle)
+          }
+        )
       }
     }
     executeTaskWithLocationBundles(locationBundles) { jobService.jobFinished(params, false) }
@@ -172,19 +174,23 @@ class LocationTaskConsumer(context: Context?, taskManagerUtils: TaskManagerUtils
       }
       serviceIntent.putExtras(extras)
       context.startForegroundService(serviceIntent)
-      context.bindService(serviceIntent, object : ServiceConnection {
-        override fun onServiceConnected(name: ComponentName, service: IBinder) {
-          val innerService = (service as ServiceBinder).service
-          innerService.setParentContext(context)
-          innerService.startForeground(serviceOptions)
-          mService = innerService
-        }
+      context.bindService(
+        serviceIntent,
+        object : ServiceConnection {
+          override fun onServiceConnected(name: ComponentName, service: IBinder) {
+            val innerService = (service as ServiceBinder).service
+            innerService.setParentContext(context)
+            innerService.startForeground(serviceOptions)
+            mService = innerService
+          }
 
-        override fun onServiceDisconnected(name: ComponentName) {
-          mService?.stop()
-          mService = null
-        }
-      }, Context.BIND_AUTO_CREATE)
+          override fun onServiceDisconnected(name: ComponentName) {
+            mService?.stop()
+            mService = null
+          }
+        },
+        Context.BIND_AUTO_CREATE
+      )
     } else {
       // Restart the service with new service options.
       mService!!.startForeground(options.getArguments(FOREGROUND_SERVICE_KEY).toBundle())

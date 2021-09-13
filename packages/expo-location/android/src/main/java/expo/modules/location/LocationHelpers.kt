@@ -24,9 +24,11 @@ object LocationHelpers {
       return false
     }
     val locationManager = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager?
-    return locationManager != null
-        && (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
-        || locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER))
+    return locationManager != null &&
+      (
+        locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) ||
+          locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
+        )
   }
 
   fun hasNetworkProviderEnabled(context: Context?): Boolean {
@@ -34,13 +36,13 @@ object LocationHelpers {
       return false
     }
     val locationManager = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager?
-    return locationManager != null
-        && locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
+    return locationManager != null &&
+      locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
   }
 
   fun <BundleType : BaseBundle> locationToBundle(
-      location: Location?,
-      bundleTypeClass: Class<BundleType>
+    location: Location?,
+    bundleTypeClass: Class<BundleType>
   ): BundleType? {
     return if (location == null) {
       null
@@ -65,8 +67,8 @@ object LocationHelpers {
   }
 
   fun <BundleType : BaseBundle> locationToCoordsBundle(
-      location: Location,
-      bundleTypeClass: Class<BundleType>
+    location: Location,
+    bundleTypeClass: Class<BundleType>
   ): BundleType? {
     return try {
       val coords = bundleTypeClass.newInstance().apply {
@@ -85,14 +87,14 @@ object LocationHelpers {
       coords
     } catch (e: IllegalAccessException) {
       Log.e(
-          TAG,
-          "Unexpected exception was thrown when converting location to coords bundle: $e"
+        TAG,
+        "Unexpected exception was thrown when converting location to coords bundle: $e"
       )
       null
     } catch (e: InstantiationException) {
       Log.e(
-          TAG,
-          "Unexpected exception was thrown when converting location to coords bundle: $e"
+        TAG,
+        "Unexpected exception was thrown when converting location to coords bundle: $e"
       )
       null
     }
@@ -121,11 +123,11 @@ object LocationHelpers {
     val locationParams = mapOptionsToLocationParams(options)
     val accuracy = getAccuracyFromOptions(options)
     return LocationRequest()
-        .setFastestInterval(locationParams.interval)
-        .setInterval(locationParams.interval)
-        .setMaxWaitTime(locationParams.interval)
-        .setSmallestDisplacement(locationParams.distance)
-        .setPriority(mapAccuracyToPriority(accuracy))
+      .setFastestInterval(locationParams.interval)
+      .setInterval(locationParams.interval)
+      .setMaxWaitTime(locationParams.interval)
+      .setSmallestDisplacement(locationParams.distance)
+      .setPriority(mapAccuracyToPriority(accuracy))
   }
 
   private fun mapOptionsToLocationParams(options: Map<String?, Any?>): LocationParams {
@@ -143,54 +145,56 @@ object LocationHelpers {
   }
 
   fun requestSingleLocation(
-      locationModule: LocationModule,
-      locationRequest: LocationRequest,
-      promise: Promise
+    locationModule: LocationModule,
+    locationRequest: LocationRequest,
+    promise: Promise
   ) {
     // we want just one update
     locationRequest.numUpdates = 1
     locationModule.requestLocationUpdates(
-        locationRequest,
-        null,
-        object : LocationRequestCallbacks() {
-          override fun onLocationChanged(location: Location?) {
-            promise.resolve(locationToBundle(location, Bundle::class.java))
-          }
+      locationRequest,
+      null,
+      object : LocationRequestCallbacks() {
+        override fun onLocationChanged(location: Location?) {
+          promise.resolve(locationToBundle(location, Bundle::class.java))
+        }
 
-          override fun onLocationError(throwable: CodedException?) {
-            promise.reject(throwable)
-          }
+        override fun onLocationError(throwable: CodedException?) {
+          promise.reject(throwable)
+        }
 
-          override fun onRequestFailed(throwable: CodedException?) {
-            promise.reject(throwable)
-          }
-        })
+        override fun onRequestFailed(throwable: CodedException?) {
+          promise.reject(throwable)
+        }
+      }
+    )
   }
 
   fun requestContinuousUpdates(
-      locationModule: LocationModule,
-      locationRequest: LocationRequest,
-      watchId: Int,
-      promise: Promise
+    locationModule: LocationModule,
+    locationRequest: LocationRequest,
+    watchId: Int,
+    promise: Promise
   ) {
     locationModule.requestLocationUpdates(
-        locationRequest,
-        watchId,
-        object : LocationRequestCallbacks() {
-          override fun onLocationChanged(location: Location?) {
-            val response = Bundle()
-            response.putBundle("location", locationToBundle(location, Bundle::class.java))
-            locationModule.sendLocationResponse(watchId, response)
-          }
+      locationRequest,
+      watchId,
+      object : LocationRequestCallbacks() {
+        override fun onLocationChanged(location: Location?) {
+          val response = Bundle()
+          response.putBundle("location", locationToBundle(location, Bundle::class.java))
+          locationModule.sendLocationResponse(watchId, response)
+        }
 
-          override fun onRequestSuccess() {
-            promise.resolve(null)
-          }
+        override fun onRequestSuccess() {
+          promise.resolve(null)
+        }
 
-          override fun onRequestFailed(throwable: CodedException?) {
-            promise.reject(throwable)
-          }
-        })
+        override fun onRequestFailed(throwable: CodedException?) {
+          promise.reject(throwable)
+        }
+      }
+    )
   }
 
   /**
@@ -227,33 +231,33 @@ object LocationHelpers {
   private fun buildLocationParamsForAccuracy(accuracy: Int): LocationParams.Builder {
     return when (accuracy) {
       LocationModule.ACCURACY_LOWEST -> LocationParams.Builder()
-          .setAccuracy(LocationAccuracy.LOWEST)
-          .setDistance(3000f)
-          .setInterval(10000)
+        .setAccuracy(LocationAccuracy.LOWEST)
+        .setDistance(3000f)
+        .setInterval(10000)
       LocationModule.ACCURACY_LOW -> LocationParams.Builder()
-          .setAccuracy(LocationAccuracy.LOW)
-          .setDistance(1000f)
-          .setInterval(5000)
+        .setAccuracy(LocationAccuracy.LOW)
+        .setDistance(1000f)
+        .setInterval(5000)
       LocationModule.ACCURACY_BALANCED -> LocationParams.Builder()
-          .setAccuracy(LocationAccuracy.MEDIUM)
-          .setDistance(100f)
-          .setInterval(3000)
+        .setAccuracy(LocationAccuracy.MEDIUM)
+        .setDistance(100f)
+        .setInterval(3000)
       LocationModule.ACCURACY_HIGH -> LocationParams.Builder()
-          .setAccuracy(LocationAccuracy.HIGH)
-          .setDistance(50f)
-          .setInterval(2000)
+        .setAccuracy(LocationAccuracy.HIGH)
+        .setDistance(50f)
+        .setInterval(2000)
       LocationModule.ACCURACY_HIGHEST -> LocationParams.Builder()
-          .setAccuracy(LocationAccuracy.HIGH)
-          .setDistance(25f)
-          .setInterval(1000)
+        .setAccuracy(LocationAccuracy.HIGH)
+        .setDistance(25f)
+        .setInterval(1000)
       LocationModule.ACCURACY_BEST_FOR_NAVIGATION -> LocationParams.Builder()
-          .setAccuracy(LocationAccuracy.HIGH)
-          .setDistance(0f)
-          .setInterval(500)
+        .setAccuracy(LocationAccuracy.HIGH)
+        .setDistance(0f)
+        .setInterval(500)
       else -> LocationParams.Builder()
-          .setAccuracy(LocationAccuracy.MEDIUM)
-          .setDistance(100f)
-          .setInterval(3000)
+        .setAccuracy(LocationAccuracy.MEDIUM)
+        .setDistance(100f)
+        .setInterval(3000)
     }
   }
 
