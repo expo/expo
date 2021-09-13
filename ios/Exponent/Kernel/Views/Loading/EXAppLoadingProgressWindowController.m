@@ -33,10 +33,7 @@
     if (!self.window) {
       CGSize screenSize = [UIScreen mainScreen].bounds.size;
       
-      int bottomInsets = 0;
-      if (@available(iOS 11.0, *)) {
-        bottomInsets = EXSharedApplication().keyWindow.safeAreaInsets.bottom;
-      }
+      int bottomInsets = EXSharedApplication().keyWindow.safeAreaInsets.bottom;
       self.window = [[UIWindow alloc] initWithFrame:CGRectMake(0,
                                                                screenSize.height - 36 - bottomInsets,
                                                                screenSize.width,

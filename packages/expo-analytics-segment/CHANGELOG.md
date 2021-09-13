@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- Dropped support for iOS 11.0 ([#14383](https://github.com/expo/expo/pull/14383) by [@cruzach](https://github.com/cruzach))
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
@@ -59,7 +61,7 @@ _This version does not introduce any user-facing changes._
 - Upgraded Segment Analytics iOS to 4.0.4. **This removes the IDFA code that was previously included with the Segment library.** If you would like to collect the IDFA, you must be in the bare workflow or use SDK < 39. ([#9606](https://github.com/expo/expo/pull/9606) by [@cruzach](https://github.com/cruzach/)).
 - The `options` argument for `Segment.alias` now accepts context configuration as well as integration configuration. Previously, this expected just the `integrations` configuration. ([#9606](https://github.com/expo/expo/pull/9606) by [@cruzach](https://github.com/cruzach/)). The expected format now is:
 
-```js
+````js
 {
     integrations: {
         [integrationName]: {
@@ -82,4 +84,4 @@ _This version does not introduce any user-facing changes._
 ## 8.2.0 — 2020-05-27
 
 _This version does not introduce any user-facing changes._
-```
+````

@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- Dropped support for iOS 11.0 ([#14383](https://github.com/expo/expo/pull/14383) by [@cruzach](https://github.com/cruzach))
+
 ### 🎉 New features
 
 - Add support for logging the `items` array to `logEvent` ([#14189](https://github.com/expo/expo/pull/14189) by [@IjzerenHein](https://github.com/IjzerenHein))
@@ -13,7 +15,6 @@
 ### 🐛 Bug fixes
 
 - Fix `logEvent` exception on Android when using arrays. ([#14189](https://github.com/expo/expo/pull/14189) by [@IjzerenHein](https://github.com/IjzerenHein))
-
 
 ### 💡 Others
 
