@@ -49,7 +49,7 @@ function errorHandler(originalHandler, error, isFatal) {
     customizeError(error);
   }
 
-  wasHit = false;
+  wasHit = true;
   originalHandler(error, isFatal);
 }
 
