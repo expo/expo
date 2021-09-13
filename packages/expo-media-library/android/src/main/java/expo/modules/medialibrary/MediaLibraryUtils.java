@@ -179,7 +179,12 @@ final class MediaLibraryUtils {
 
       ExifInterface exifInterface = null;
       if (mediaType == Files.FileColumns.MEDIA_TYPE_IMAGE) {
-        exifInterface = new ExifInterface(path);
+        try {
+          exifInterface = new ExifInterface(path);
+        } catch (IOException e) {
+          Log.w("expo-media-library", "Could not parse EXIF tags for " + localUri);
+          e.printStackTrace();
+        }
       }
 
       int[] size = getSizeFromCursor(contentResolver, exifInterface, cursor, mediaType, localUriIndex);
