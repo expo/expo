@@ -13,6 +13,7 @@
 ### 💡 Others
 
 - Migrated from `@unimodules/core` to `expo-modules-core`. ([#13757](https://github.com/expo/expo/pull/13757) by [@tsapeta](https://github.com/tsapeta))
+- Rewrote Android part from Java to Kotlin ([#14394](https://github.com/expo/expo/pull/14394) by [@m1st4ke](https://github.com/m1st4ke))
 
 ## 10.2.0 — 2021-06-16
 
