@@ -2,6 +2,7 @@
 type CodedError = Error & { code?: string };
 
 let isErrorHandlingEnabled = true;
+let wasHit = false; // whether the original error handler was called
 
 const unavailableErrorPossibleSolutions = `Some possible solutions:
 - Make sure that the method is available on the current platform.
@@ -40,9 +41,15 @@ function customizeError(error: Error | CodedError) {
 
 function errorHandler(originalHandler, error, isFatal) {
   if (error instanceof Error) {
+    // Suppresses `"main" has not been registered` error only if it was caused by a different error.
+    // Otherwise, we want to show it, cause the user may forget to call `AppRegistry.registerComponent`.
+    if (wasHit && error.message?.includes('has not been registered. This can happen if')) {
+      return;
+    }
     customizeError(error);
   }
 
+  wasHit = true;
   originalHandler(error, isFatal);
 }
 

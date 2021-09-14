@@ -100,7 +100,7 @@ function modifyAppDelegate(appDelegate, expoUpdatesVersion = null) {
     return appDelegate;
 }
 exports.modifyAppDelegate = modifyAppDelegate;
-const withDevLauncherAppDelegate = (config) => {
+exports.withDevLauncherAppDelegate = (config) => {
     return config_plugins_1.withAppDelegate(config, (config) => {
         if (config.modResults.language === 'objc') {
             let expoUpdatesVersion;
@@ -119,4 +119,3 @@ See the expo-dev-client installation instructions to modify your AppDelegate man
         return config;
     });
 };
-exports.withDevLauncherAppDelegate = withDevLauncherAppDelegate;
