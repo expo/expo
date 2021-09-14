@@ -532,7 +532,7 @@ Alias: `expo bi`
 Alias: `expo ba`
 
 | Option                             | Description                                                     |
-| ---------------------------------- | --------------------------------------------------------------- | ----- |
+| ---------------------------------- | --------------------------------------------------------------- |
 | `-c, --clear-credentials`          | Clear stored credentials.                                       |
 | `--release-channel [channel-name]` | Pull from specified release channel.                            |
 | `--no-publish`                     | Disable automatic publishing before building.                   |
@@ -542,7 +542,7 @@ Alias: `expo ba`
 | `--generate-keystore`              | [deprecated] Generate Keystore if one does not exist            |
 | `--public-url [url]`               | The URL of an externally hosted manifest (for self-hosted apps) |
 | `--skip-workflow-check`            | Skip warning about build service bare workflow limitations.     |
-| `-t --type [build]`                | Type of build: [app-bundle                                      | apk]. |
+| `-t --type [build]`                | Type of build: `app-bundle` or `apk`                            |
 | `--config [file]`                  | Deprecated: Use app.config.js to switch config files instead.   |
 
 </p>
@@ -594,8 +594,8 @@ Alias: `expo bs`
 <p>
 
 | Option                     | Description                                                   |
-| -------------------------- | ------------------------------------------------------------- | ---- |
-| `-p --platform [platform]` | Platform: [android                                            | ios] |
+| -------------------------- | ------------------------------------------------------------- | 
+| `-p --platform [platform]` | Platform: `android` or `ios`                                  |
 | `--config [file]`          | Deprecated: Use app.config.js to switch config files instead. |
 
 </p>
