@@ -11,12 +11,13 @@ import android.view.WindowManager
 import androidx.test.core.app.ApplicationProvider
 import com.facebook.react.ReactActivity
 import com.google.common.truth.Truth
-import expo.modules.devlauncher.launcher.manifest.DevLauncherManifest
+import expo.modules.manifests.core.Manifest
 import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.slot
 import io.mockk.verify
+import org.json.JSONObject
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
@@ -30,7 +31,7 @@ internal class DevLauncherExpoActivityConfiguratorTest {
   @Config(sdk = [28])
   @Test
   fun `sets task description from manifest`() {
-    val manifest = DevLauncherManifest.fromJson("{\"name\":\"test-app-name\",\"primaryColor\":\"#cccccc\",\"slug\":\"test-app-slug\",\"version\":\"1.0.0\",\"sdkVersion\":\"42.0.0\",\"bundleUrl\":\"https://d1wp6m56sqw74a.cloudfront.net/%40esamelson%2Fsdk42updates%2F1.0.0%2F67b67696b1cab67319035d39a7379786-42.0.0-ios.js\",\"hostUri\":\"exp.host/@esamelson/sdk42updates\"}".reader())
+    val manifest = Manifest.fromManifestJson(JSONObject("{\"name\":\"test-app-name\",\"primaryColor\":\"#cccccc\",\"slug\":\"test-app-slug\",\"version\":\"1.0.0\",\"sdkVersion\":\"42.0.0\",\"bundleUrl\":\"https://d1wp6m56sqw74a.cloudfront.net/%40esamelson%2Fsdk42updates%2F1.0.0%2F67b67696b1cab67319035d39a7379786-42.0.0-ios.js\",\"hostUri\":\"exp.host/@esamelson/sdk42updates\"}"))
     val configurator = DevLauncherExpoActivityConfigurator(manifest, context)
     val mockActivity = mockk<Activity>(relaxed = true)
     val slot = slot<ActivityManager.TaskDescription>()
@@ -45,7 +46,7 @@ internal class DevLauncherExpoActivityConfiguratorTest {
 
   @Test
   fun `does not set task description if manifest primaryColor is invalid`() {
-    val manifest = DevLauncherManifest.fromJson("{\"name\":\"test-app-name\",\"primaryColor\":\"invalid\",\"slug\":\"test-app-slug\",\"version\":\"1.0.0\",\"sdkVersion\":\"42.0.0\",\"bundleUrl\":\"https://d1wp6m56sqw74a.cloudfront.net/%40esamelson%2Fsdk42updates%2F1.0.0%2F67b67696b1cab67319035d39a7379786-42.0.0-ios.js\",\"hostUri\":\"exp.host/@esamelson/sdk42updates\"}".reader())
+    val manifest = Manifest.fromManifestJson(JSONObject("{\"name\":\"test-app-name\",\"primaryColor\":\"invalid\",\"slug\":\"test-app-slug\",\"version\":\"1.0.0\",\"sdkVersion\":\"42.0.0\",\"bundleUrl\":\"https://d1wp6m56sqw74a.cloudfront.net/%40esamelson%2Fsdk42updates%2F1.0.0%2F67b67696b1cab67319035d39a7379786-42.0.0-ios.js\",\"hostUri\":\"exp.host/@esamelson/sdk42updates\"}"))
     val configurator = DevLauncherExpoActivityConfigurator(manifest, context)
     val mockActivity = mockk<Activity>(relaxed = true)
 
@@ -63,7 +64,7 @@ internal class DevLauncherExpoActivityConfiguratorTest {
   }
 
   private fun verifyOrientation(expectedOrientation: Int, manifestString: String) {
-    val manifest = DevLauncherManifest.fromJson(manifestString.reader())
+    val manifest = Manifest.fromManifestJson(JSONObject(manifestString))
     val configurator = DevLauncherExpoActivityConfigurator(manifest, context)
     val mockActivity = mockk<ReactActivity>(relaxed = true)
 
@@ -102,7 +103,7 @@ internal class DevLauncherExpoActivityConfiguratorTest {
       runOnUiThreadSlot.captured.run()
     }
 
-    val manifest = DevLauncherManifest.fromJson(manifestString.reader())
+    val manifest = Manifest.fromManifestJson(JSONObject(manifestString))
     val configurator = DevLauncherExpoActivityConfigurator(manifest, context)
     configurator.applyStatusBarConfiguration(mockActivity)
 

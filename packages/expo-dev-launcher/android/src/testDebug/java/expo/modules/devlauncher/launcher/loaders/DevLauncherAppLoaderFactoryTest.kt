@@ -8,8 +8,8 @@ import com.google.common.truth.Truth
 import expo.modules.devlauncher.helpers.loadUpdate
 import expo.modules.devlauncher.koin.DevLauncherKoinContext
 import expo.modules.devlauncher.launcher.DevLauncherControllerInterface
-import expo.modules.devlauncher.launcher.manifest.DevLauncherManifest
 import expo.modules.devlauncher.launcher.manifest.DevLauncherManifestParser
+import expo.modules.manifests.core.Manifest
 import expo.modules.updatesinterface.UpdatesInterface
 import io.mockk.coEvery
 import io.mockk.mockk
@@ -64,9 +64,9 @@ internal class DevLauncherAppLoaderFactoryTest {
     val appLoaderFactory = DevLauncherAppLoaderFactory()
 
     val manifestParser = mockk<DevLauncherManifestParser>()
-    val manifest = DevLauncherManifest.fromJson(developmentManifestJSONString.reader())
+    val manifest = Manifest.fromManifestJson(JSONObject(developmentManifestJSONString))
     coEvery { manifestParser.isManifestUrl() } returns true
-    coEvery { manifestParser.parseManifest() } returns manifest
+    coEvery { manifestParser.parseManifestTmp() } returns manifest
 
     val appLoader = appLoaderFactory.createAppLoader(developmentManifestURL, manifestParser)
     Truth.assertThat(appLoader).isInstanceOf(DevLauncherLocalAppLoader::class.java)
@@ -78,9 +78,9 @@ internal class DevLauncherAppLoaderFactoryTest {
     val appLoaderFactory = DevLauncherAppLoaderFactory()
 
     val manifestParser = mockk<DevLauncherManifestParser>()
-    val manifest = DevLauncherManifest.fromJson(publishedManifestJSONString.reader())
+    val manifest = Manifest.fromManifestJson(JSONObject(publishedManifestJSONString))
     coEvery { manifestParser.isManifestUrl() } returns true
-    coEvery { manifestParser.parseManifest() } returns manifest
+    coEvery { manifestParser.parseManifestTmp() } returns manifest
 
     Assert.assertThrows(Exception::class.java) {
       runBlocking { appLoaderFactory.createAppLoader(publishedManifestURL, manifestParser) }

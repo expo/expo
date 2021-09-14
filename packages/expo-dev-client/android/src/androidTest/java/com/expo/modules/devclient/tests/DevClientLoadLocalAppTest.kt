@@ -36,17 +36,17 @@ import expo.modules.devlauncher.launcher.errors.DevLauncherErrorActivity
 import expo.modules.devlauncher.launcher.loaders.DevLauncherAppLoader
 import expo.modules.devlauncher.launcher.loaders.DevLauncherAppLoaderFactoryInterface
 import expo.modules.devlauncher.launcher.loaders.DevLauncherPublishedAppLoader
-import expo.modules.devlauncher.launcher.manifest.DevLauncherManifest
 import expo.modules.devlauncher.launcher.manifest.DevLauncherManifestParser
 import expo.modules.devmenu.DevMenuManager
 import expo.modules.devmenu.DevMenuPackage
+import expo.modules.manifests.core.Manifest
 import kotlinx.coroutines.runBlocking
+import org.json.JSONObject
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.koin.test.inject
 import java.io.File
 import java.io.IOException
-import java.io.StringReader
 
 private const val appURL = "http://localhost:1234"
 
@@ -79,9 +79,7 @@ internal class DevClientLoadLocalAppTest : DevLauncherKoinTest() {
       object : DevLauncherAppLoaderFactoryInterface, DevLauncherKoinComponent {
         private val context: Context by inject()
         private val appHost: ReactNativeHost by inject()
-        private val parsedManifest = StringReader(BundledAppManifest).use {
-          DevLauncherManifest.fromJson(it)
-        }
+        private val parsedManifest = Manifest.fromManifestJson(JSONObject(BundledAppManifest))
         private val controller: DevLauncherControllerInterface by inject()
 
         override suspend fun createAppLoader(url: Uri, manifestParser: DevLauncherManifestParser): DevLauncherAppLoader {
@@ -95,7 +93,7 @@ internal class DevClientLoadLocalAppTest : DevLauncherKoinTest() {
           )
         }
 
-        override fun getManifest(): DevLauncherManifest = parsedManifest
+        override fun getManifest(): Manifest = parsedManifest
 
         override fun shouldUseDeveloperSupport(): Boolean = false
 
