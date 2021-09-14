@@ -10,6 +10,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithEventDispatcher:(RCTEventDispatcher *)eventDispatcher;
 
 @property(nonatomic) NSInteger initialPage;
+@property(nonatomic) NSInteger lastReportedIndex;
 @property(nonatomic) NSInteger currentIndex;
 @property(nonatomic) NSInteger pageMargin;
 @property(nonatomic, readonly) BOOL scrollEnabled;
@@ -21,6 +22,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property(nonatomic, copy) RCTDirectEventBlock onPageScroll;
 @property(nonatomic, copy) RCTDirectEventBlock onPageScrollStateChanged;
 @property(nonatomic) BOOL overdrag;
+@property(nonatomic) NSString* layoutDirection;
 
 
 - (void)goTo:(NSInteger)index animated:(BOOL)animated;

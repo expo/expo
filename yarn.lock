@@ -19432,6 +19432,11 @@ react-native-maps@0.28.0:
   dependencies:
     "@types/geojson" "^7946.0.7"
 
+react-native-pager-view@5.4.4:
+  version "5.4.4"
+  resolved "https://registry.yarnpkg.com/react-native-pager-view/-/react-native-pager-view-5.4.4.tgz#83a873a82748440696ca0e0fd07a77477b854a78"
+  integrity sha512-5zyol+FZ9X4N4OEz92IyaFFROR3KtgAgTmgqlUvG59Eigf+f6aWs5fvcbWwzuz/AlLZbrxIDrnLmSpMUOK57ww==
+
 react-native-paper@^4.0.1:
   version "4.2.0"
   resolved "https://registry.yarnpkg.com/react-native-paper/-/react-native-paper-4.2.0.tgz#534c0f9dbeecfd73d20f1f7b1ef3df32aa2ca4b0"
