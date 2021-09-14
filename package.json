@@ -25,9 +25,6 @@
     "react-native": "0.64.2"
   },
   "dependencies": {
-    "jsc-android": "^245459.0.0"
-  },
-  "devDependencies": {
     "@expo/config-types": "^42.0.0",
     "eslint": "^7.31.0",
     "expo-yarn-workspaces": "*",
