@@ -38,6 +38,7 @@ import expo.modules.interfaces.permissions.Permissions;
 
 import static android.Manifest.permission.READ_EXTERNAL_STORAGE;
 import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
+import static android.Manifest.permission.ACCESS_MEDIA_LOCATION;
 import static expo.modules.medialibrary.MediaLibraryConstants.ERROR_NO_ALBUM;
 import static expo.modules.medialibrary.MediaLibraryConstants.ERROR_NO_PERMISSIONS;
 import static expo.modules.medialibrary.MediaLibraryConstants.ERROR_NO_PERMISSIONS_MESSAGE;
@@ -452,12 +453,14 @@ public class MediaLibraryModule extends ExportedModule implements ActivityEventL
   private String[] getManifestPermissions(boolean writeOnly) {
     if (writeOnly) {
       return new String[]{
-        WRITE_EXTERNAL_STORAGE
+        WRITE_EXTERNAL_STORAGE,
+        ACCESS_MEDIA_LOCATION
       };
     }
     return new String[]{
       READ_EXTERNAL_STORAGE,
-      WRITE_EXTERNAL_STORAGE
+      WRITE_EXTERNAL_STORAGE,
+      ACCESS_MEDIA_LOCATION,
     };
   }
 
