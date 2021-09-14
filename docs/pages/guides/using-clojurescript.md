@@ -130,7 +130,7 @@ React Native uses JavaScriptCore, so modules using built-in node like stream, fs
 
 ### Do I need to restart the REPL after adding new JavaScript modules or assets?
 
-No, you do need to reload JavaScript. To do that, select **Reload** from the Developer Menu. You can also press `⌘ + R` in the iOS Simulator, or press `R` twice on Android emulators.
+No, you do need to reload JavaScript. To do that, select **Reload** from the Developer Menu. You can also press `r` in the iOS Simulator, or press `R` twice on Android emulators.
 
 ### Will it support Boot?
 
