@@ -286,16 +286,7 @@ NS_ASSUME_NONNULL_BEGIN
       [self _enforceDesiredDeviceOrientation];
       [self _invalidateRecoveryTimer];
       [[EXKernel sharedInstance] logAnalyticsEvent:@"LOAD_EXPERIENCE" forAppRecord:self.appRecord];
-
-      @try {
-        [self.appRecord.appManager rebuildBridge];
-      }
-      @catch (NSException *exception) {
-        // Catch errors related to invalid manifests, specifically if the manifest doesn't have a scopeKey.
-        [self maybeShowError:[NSError errorWithDomain:@"ExpoRebuildingBridge"
-                                                 code:1023
-                                             userInfo:@{NSLocalizedDescriptionKey: [@"Failed to rebuild the bridge: " stringByAppendingString:exception.reason] }]];
-      }
+      [self.appRecord.appManager rebuildBridge];
     });
   }
 }

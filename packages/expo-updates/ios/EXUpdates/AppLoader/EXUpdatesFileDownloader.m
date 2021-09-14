@@ -216,6 +216,7 @@ NSTimeInterval const EXUpdatesDefaultTimeoutInterval = 60;
   @catch (NSException *exception) {
     // Catch any assertions related to parsing the manifest JSON,
     // this will ensure invalid manifests can be easily debugged.
+    // For example, this will catch nullish sdkVersion assertions.
     error = [NSError errorWithDomain:EXUpdatesFileDownloaderErrorDomain
                                 code:1022
                             userInfo:@{NSLocalizedDescriptionKey: [@"Failed to parse manifest: " stringByAppendingString:exception.reason] }];
