@@ -72,7 +72,7 @@ dependencies {
   implementation project(':expo-modules-core')
   implementation project(':unimodules-task-manager-interface')
 
-  api 'com.google.android.gms:play-services-location:18.0.0'
+  api 'com.google.android.gms:play-services-location:16.0.0'
 
   api('io.nlopez.smartlocation:library:3.2.11') {
     transitive = false

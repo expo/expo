@@ -20,50 +20,37 @@ object LocationHelpers {
 
   //region public methods
   fun isAnyProviderAvailable(context: Context?): Boolean {
-    if (context == null) {
-      return false
-    }
-    val locationManager = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager?
-    return locationManager != null &&
-      (
-        locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) ||
-          locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
-        )
+    val locationManager = context?.getSystemService(Context.LOCATION_SERVICE) as? LocationManager ?: return false
+    return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) || locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
   }
 
   fun hasNetworkProviderEnabled(context: Context?): Boolean {
-    if (context == null) {
-      return false
-    }
-    val locationManager = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager?
-    return locationManager != null &&
-      locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
+    val locationManager = context?.getSystemService(Context.LOCATION_SERVICE) as? LocationManager ?: return false
+    return locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
   }
 
   fun <BundleType : BaseBundle> locationToBundle(
     location: Location?,
     bundleTypeClass: Class<BundleType>
   ): BundleType? {
-    return if (location == null) {
-      null
-    } else try {
+    val location = location ?: return null
+	try {
       val map = bundleTypeClass.newInstance()
       val coords = locationToCoordsBundle(location, bundleTypeClass) ?: return null
       if (map is PersistableBundle) {
-        (map as PersistableBundle).putPersistableBundle("coords", coords as PersistableBundle)
+        map.putPersistableBundle("coords", coords as PersistableBundle)
       } else if (map is Bundle) {
-        (map as Bundle).putBundle("coords", coords as Bundle)
-        (map as Bundle).putBoolean("mocked", location.isFromMockProvider)
+        map.putBundle("coords", coords as Bundle)
+        map.putBoolean("mocked", location.isFromMockProvider)
       }
       map.putDouble("timestamp", location.time.toDouble())
-      map
+      return map
     } catch (e: IllegalAccessException) {
       Log.e(TAG, "Unexpected exception was thrown when converting location to the bundle: $e")
-      null
     } catch (e: InstantiationException) {
       Log.e(TAG, "Unexpected exception was thrown when converting location to the bundle: $e")
-      null
     }
+    return null
   }
 
   fun <BundleType : BaseBundle> locationToCoordsBundle(
@@ -181,8 +168,9 @@ object LocationHelpers {
       watchId,
       object : LocationRequestCallbacks() {
         override fun onLocationChanged(location: Location?) {
-          val response = Bundle()
-          response.putBundle("location", locationToBundle(location, Bundle::class.java))
+          val response = Bundle().apply {
+         	putBundle("location", locationToBundle(location, Bundle::class.java))
+          }
           locationModule.sendLocationResponse(watchId, response)
         }
 

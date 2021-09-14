@@ -68,31 +68,27 @@ import org.unimodules.interfaces.taskManager.TaskManagerInterface
 import kotlin.math.abs
 
 class LocationModule(
-  private val mContext: Context,
+  context: Context,
   private val moduleRegistryDelegate: ModuleRegistryDelegate = ModuleRegistryDelegate()
-) : ExportedModule(mContext), LifecycleEventListener, SensorEventListener, ActivityEventListener {
+) : ExportedModule(context), LifecycleEventListener, SensorEventListener, ActivityEventListener {
   override fun getName() = "ExpoLocation"
 
   private inline fun <reified T> moduleRegistry() = moduleRegistryDelegate.getFromModuleRegistry<T>()
 
-  interface OnResultListener {
-    fun onResult(location: Location?)
-  }
-
-  private var mSensorManager: SensorManager? = null
-  private var mGeofield: GeomagneticField? = null
+  private var sensorManager: SensorManager? = null
+  private var geofield: GeomagneticField? = null
   private val locationProvider: FusedLocationProviderClient by lazy {
-    LocationServices.getFusedLocationProviderClient(mContext)
+    LocationServices.getFusedLocationProviderClient(context)
   }
   private val mLocationCallbacks: MutableMap<Int, LocationCallback> = HashMap()
   private val mLocationRequests: MutableMap<Int, LocationRequest> = HashMap()
 
-  private val mPendingLocationRequests: MutableList<LocationActivityResultListener> = ArrayList()
+  private val pendingLocationRequests: MutableList<LocationActivityResultListener> = ArrayList()
 
   // modules
-  private val mEventEmitter: EventEmitter by moduleRegistry()
-  private val mUIManager: UIManager by moduleRegistry()
-  private val mPermissionsManager: Permissions by moduleRegistry()
+  private val eventEmitter: EventEmitter by moduleRegistry()
+  private val uiManager: UIManager by moduleRegistry()
+  private val permissionsManager: Permissions by moduleRegistry()
   private val taskManager: TaskManagerInterface by moduleRegistry()
   private val activityProvider: ActivityProvider by moduleRegistry()
 
@@ -100,7 +96,7 @@ class LocationModule(
   private var geomagnetic: FloatArray? = null
   private var headingId = 0
   private var lastAzimuth = 0f
-  private var mAccuracy = 0
+  private var accuracy = 0
   private var lastUpdate: Long = 0
   private var geocoderPaused = false
 
@@ -115,7 +111,7 @@ class LocationModule(
   @ExpoMethod
   fun requestPermissionsAsync(promise: Promise) {
     if (Build.VERSION.SDK_INT == Build.VERSION_CODES.Q) {
-      mPermissionsManager.askForPermissions(
+      permissionsManager.askForPermissions(
         { result: Map<String, PermissionsResponse> ->
           promise.resolve(handleLegacyPermissions(result))
         },
@@ -132,7 +128,7 @@ class LocationModule(
   @ExpoMethod
   fun getPermissionsAsync(promise: Promise) {
     if (Build.VERSION.SDK_INT == Build.VERSION_CODES.Q) {
-      mPermissionsManager.getPermissions(
+      permissionsManager.getPermissions(
         { result: Map<String, PermissionsResponse> ->
           promise.resolve(handleLegacyPermissions(result))
         },
@@ -147,7 +143,7 @@ class LocationModule(
 
   @ExpoMethod
   fun requestForegroundPermissionsAsync(promise: Promise) {
-    mPermissionsManager.askForPermissions(
+    permissionsManager.askForPermissions(
       { result: Map<String, PermissionsResponse> ->
         promise.resolve(handleForegroundLocationPermissions(result))
       },
@@ -166,7 +162,7 @@ class LocationModule(
       requestForegroundPermissionsAsync(promise)
       return
     }
-    mPermissionsManager.askForPermissions(
+    permissionsManager.askForPermissions(
       { result: Map<String, PermissionsResponse> ->
         promise.resolve(handleBackgroundLocationPermissions(result))
       },
@@ -176,7 +172,7 @@ class LocationModule(
 
   @ExpoMethod
   fun getForegroundPermissionsAsync(promise: Promise) {
-    mPermissionsManager.getPermissions(
+    permissionsManager.getPermissions(
       { result: Map<String, PermissionsResponse> ->
         promise.resolve(handleForegroundLocationPermissions(result))
       },
@@ -195,7 +191,7 @@ class LocationModule(
       getForegroundPermissionsAsync(promise)
       return
     }
-    mPermissionsManager.getPermissions(
+    permissionsManager.getPermissions(
       { result: Map<String, PermissionsResponse> ->
         promise.resolve(handleBackgroundLocationPermissions(result))
       },
@@ -213,15 +209,13 @@ class LocationModule(
       promise.reject(LocationUnauthorizedException())
       return
     }
-    getLastKnownLocation(object : OnResultListener {
-      override fun onResult(location: Location?) {
-        if (isLocationValid(location, options)) {
-          promise.resolve(locationToBundle(location, Bundle::class.java))
-        } else {
-          promise.resolve(null)
-        }
+    getLastKnownLocation { location: Location? ->
+      if (isLocationValid(location, options)) {
+        promise.resolve(locationToBundle(location, Bundle::class.java))
+      } else {
+        promise.resolve(null)
       }
-    })
+    }
   }
 
   /**
@@ -240,7 +234,7 @@ class LocationModule(
       promise.reject(LocationUnauthorizedException())
       return
     }
-    if (hasNetworkProviderEnabled(mContext) || !showUserSettingsDialog) {
+    if (hasNetworkProviderEnabled(context) || !showUserSettingsDialog) {
       requestSingleLocation(this, locationRequest, promise)
     } else {
       // Pending requests can ask the user to turn on improved accuracy mode in user's settings.
@@ -261,7 +255,7 @@ class LocationModule(
 
   @ExpoMethod
   fun getProviderStatusAsync(promise: Promise) {
-    val state = SmartLocation.with(mContext).location().state()
+    val state = SmartLocation.with(context).location().state()
     promise.resolve(
       Bundle().apply {
         putBoolean("locationServicesEnabled", state.locationServicesEnabled()) // If location is off
@@ -276,7 +270,7 @@ class LocationModule(
   // Start Compass Module
   @ExpoMethod
   fun watchDeviceHeading(watchId: Int, promise: Promise) {
-    mSensorManager = mContext.getSystemService(Context.SENSOR_SERVICE) as SensorManager?
+    sensorManager = context.getSystemService(Context.SENSOR_SERVICE) as SensorManager?
     headingId = watchId
     startHeadingUpdate()
     promise.resolve(null)
@@ -293,7 +287,7 @@ class LocationModule(
     val showUserSettingsDialog = !options.containsKey(SHOW_USER_SETTINGS_DIALOG_KEY) ||
       options[SHOW_USER_SETTINGS_DIALOG_KEY] as Boolean
 
-    if (hasNetworkProviderEnabled(mContext) || !showUserSettingsDialog) {
+    if (hasNetworkProviderEnabled(context) || !showUserSettingsDialog) {
       requestContinuousUpdates(this, locationRequest, watchId, promise)
     } else {
       // Pending requests can ask the user to turn on improved accuracy mode in user's settings.
@@ -339,7 +333,7 @@ class LocationModule(
       return
     }
     if (Geocoder.isPresent()) {
-      SmartLocation.with(mContext).geocoding()
+      SmartLocation.with(context).geocoding()
         .direct(address!!) { _, list: List<LocationAddress> ->
           val results: MutableList<Bundle> = ArrayList(list.size)
           list.forEach { locationAddress ->
@@ -348,7 +342,7 @@ class LocationModule(
               results.add(coords)
             }
           }
-          SmartLocation.with(mContext).geocoding().stop()
+          SmartLocation.with(context).geocoding().stop()
           promise.resolve(results)
         }
     } else {
@@ -370,11 +364,11 @@ class LocationModule(
     location.latitude = locationMap["latitude"] as Double
     location.longitude = locationMap["longitude"] as Double
     if (Geocoder.isPresent()) {
-      SmartLocation.with(mContext).geocoding()
+      SmartLocation.with(context).geocoding()
         .reverse(location) { _, addresses: List<Address> ->
           val results: MutableList<Bundle> = ArrayList(addresses.size)
           addresses.mapTo(results) { addressToBundle(it) }
-          SmartLocation.with(mContext).geocoding().stop()
+          SmartLocation.with(context).geocoding().stop()
           promise.resolve(results)
         }
     } else {
@@ -384,7 +378,7 @@ class LocationModule(
 
   @ExpoMethod
   fun enableNetworkProviderAsync(promise: Promise) {
-    if (hasNetworkProviderEnabled(mContext)) {
+    if (hasNetworkProviderEnabled(context)) {
       promise.resolve(null)
       return
     }
@@ -405,7 +399,7 @@ class LocationModule(
 
   @ExpoMethod
   fun hasServicesEnabledAsync(promise: Promise) {
-    val servicesEnabled = isAnyProviderAvailable(mContext)
+    val servicesEnabled = isAnyProviderAvailable(context)
     promise.resolve(servicesEnabled)
   }
 
@@ -523,7 +517,7 @@ class LocationModule(
    * Checks whether all required permissions have been granted by the user.
    */
   private fun isMissingForegroundPermissions() =
-    !mPermissionsManager.hasGrantedPermissions(
+    !permissionsManager.hasGrantedPermissions(
       Manifest.permission.ACCESS_FINE_LOCATION,
       Manifest.permission.ACCESS_COARSE_LOCATION
     )
@@ -534,29 +528,29 @@ class LocationModule(
   private fun isMissingBackgroundPermissions() =
     (
       Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q &&
-        !mPermissionsManager.hasGrantedPermissions(Manifest.permission.ACCESS_BACKGROUND_LOCATION)
+        !permissionsManager.hasGrantedPermissions(Manifest.permission.ACCESS_BACKGROUND_LOCATION)
       )
 
   /**
    * Gets the best most recent location found by the provider.
    */
-  private fun getLastKnownLocation(callback: OnResultListener) {
+  private fun getLastKnownLocation(callback: (location: Location?) -> Unit) {
     try {
       locationProvider.lastLocation
-        .addOnSuccessListener { location: Location? -> callback.onResult(location) }
-        .addOnCanceledListener { callback.onResult(null) }
-        .addOnFailureListener { callback.onResult(null) }
+        .addOnSuccessListener { location: Location? -> callback(location) }
+        .addOnCanceledListener { callback(null) }
+        .addOnFailureListener { callback(null) }
     } catch (e: SecurityException) {
-      callback.onResult(null)
+      callback(null)
     }
   }
 
   private fun addPendingLocationRequest(locationRequest: LocationRequest, listener: LocationActivityResultListener) {
     // Add activity result listener to an array of pending requests.
-    mPendingLocationRequests.add(listener)
+    pendingLocationRequests.add(listener)
 
     // If it's the first pending request, let's ask the user to turn on high accuracy location.
-    if (mPendingLocationRequests.size == 1) {
+    if (pendingLocationRequests.size == 1) {
       resolveUserSettingsForRequest(locationRequest)
     }
   }
@@ -572,7 +566,7 @@ class LocationModule(
       return
     }
     val builder = LocationSettingsRequest.Builder().addLocationRequest(locationRequest)
-    val client = LocationServices.getSettingsClient(mContext)
+    val client = LocationServices.getSettingsClient(context)
     val task = client.checkLocationSettings(builder.build())
     task.addOnSuccessListener {
       // All location settings requirements are satisfied.
@@ -585,7 +579,7 @@ class LocationModule(
         // Show the dialog by calling startResolutionForResult(), and check the result in onActivityResult().
         try {
           val resolvable = e as ResolvableApiException
-          mUIManager.registerActivityEventListener(this@LocationModule)
+          uiManager.registerActivityEventListener(this@LocationModule)
           resolvable.startResolutionForResult(activity, CHECK_SETTINGS_REQUEST_CODE)
         } catch (sendEx: SendIntentException) {
           // Ignore the error.
@@ -628,25 +622,25 @@ class LocationModule(
 
   fun sendLocationResponse(watchId: Int, response: Bundle) {
     response.putInt("watchId", watchId)
-    mEventEmitter.emit(LOCATION_EVENT_NAME, response)
+    eventEmitter.emit(LOCATION_EVENT_NAME, response)
   }
 
   private fun executePendingRequests(resultCode: Int) {
     // Propagate result to pending location requests.
-    mPendingLocationRequests.forEach { listener ->
+    pendingLocationRequests.forEach { listener ->
       listener.onResult(resultCode)
     }
-    mPendingLocationRequests.clear()
+    pendingLocationRequests.clear()
   }
 
   private fun startHeadingUpdate() {
-    if (mSensorManager == null) {
+    if (sensorManager == null) {
       return
     }
-    val locationControl = SmartLocation.with(mContext).location().oneFix().config(LocationParams.BEST_EFFORT)
+    val locationControl = SmartLocation.with(context).location().oneFix().config(LocationParams.BEST_EFFORT)
     val currLoc = locationControl.lastLocation
     if (currLoc != null) {
-      mGeofield = GeomagneticField(
+      geofield = GeomagneticField(
         currLoc.latitude.toFloat(),
         currLoc.longitude.toFloat(),
         currLoc.altitude.toFloat(),
@@ -654,7 +648,7 @@ class LocationModule(
       )
     } else {
       locationControl.start { location: Location ->
-        mGeofield = GeomagneticField(
+        geofield = GeomagneticField(
           location.latitude.toFloat(),
           location.longitude.toFloat(),
           location.altitude.toFloat(),
@@ -662,11 +656,11 @@ class LocationModule(
         )
       }
     }
-    mSensorManager!!.registerListener(
-      this, mSensorManager!!.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD),
+    sensorManager!!.registerListener(
+      this, sensorManager!!.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD),
       SensorManager.SENSOR_DELAY_NORMAL
     )
-    mSensorManager!!.registerListener(this, mSensorManager!!.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_NORMAL)
+    sensorManager!!.registerListener(this, sensorManager!!.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_NORMAL)
   }
 
   private fun sendUpdate() {
@@ -690,10 +684,10 @@ class LocationModule(
 
         // Write data to send back to React
         val response = Bundle()
-        val heading = headingToBundle(trueNorth.toDouble(), magneticNorth.toDouble(), mAccuracy)
+        val heading = headingToBundle(trueNorth.toDouble(), magneticNorth.toDouble(), accuracy)
         response.putInt("watchId", headingId)
         response.putBundle("heading", heading)
-        mEventEmitter.emit(HEADING_EVENT_NAME, response)
+        eventEmitter.emit(HEADING_EVENT_NAME, response)
       }
     }
   }
@@ -705,29 +699,29 @@ class LocationModule(
 
   private fun calcTrueNorth(magNorth: Float): Float {
     // Need to request geo location info to calculate true north
-    return if (isMissingForegroundPermissions() || mGeofield == null) {
+    return if (isMissingForegroundPermissions() || geofield == null) {
       (-1).toFloat()
     } else {
-      magNorth + mGeofield!!.declination
+      magNorth + geofield!!.declination
     }
   }
 
   private fun stopHeadingWatch() {
-    if (mSensorManager == null) {
+    if (sensorManager == null) {
       return
     }
-    mSensorManager!!.unregisterListener(this)
+    sensorManager!!.unregisterListener(this)
   }
 
   private fun destroyHeadingWatch() {
     stopHeadingWatch()
-    mSensorManager = null
+    sensorManager = null
     gravity = null
     geomagnetic = null
-    mGeofield = null
+    geofield = null
     headingId = 0
     lastAzimuth = 0f
-    mAccuracy = 0
+    accuracy = 0
   }
 
   private fun startWatching() {
@@ -743,7 +737,7 @@ class LocationModule(
   private fun stopWatching() {
     // if permissions not granted it won't work anyway, but this can be invoked when permission dialog appears
     if (Geocoder.isPresent() && !isMissingForegroundPermissions()) {
-      SmartLocation.with(mContext).geocoding().stop()
+      SmartLocation.with(context).geocoding().stop()
       geocoderPaused = true
     }
     mLocationCallbacks.keys.forEach { requestId ->
@@ -839,7 +833,7 @@ class LocationModule(
 
   private fun isBackgroundPermissionInManifest() =
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-      mPermissionsManager.isPermissionPresentInManifest(Manifest.permission.ACCESS_BACKGROUND_LOCATION)
+      permissionsManager.isPermissionPresentInManifest(Manifest.permission.ACCESS_BACKGROUND_LOCATION)
     } else {
       true
     }
@@ -860,7 +854,7 @@ class LocationModule(
   // Android returns 4 different values for accuracy
   // 3: high accuracy, 2: medium, 1: low, 0: none
   override fun onAccuracyChanged(sensor: Sensor, accuracy: Int) {
-    mAccuracy = accuracy
+    this.accuracy = accuracy
   }
 
   //endregion
@@ -870,7 +864,7 @@ class LocationModule(
       return
     }
     executePendingRequests(resultCode)
-    mUIManager.unregisterActivityEventListener(this)
+    uiManager.unregisterActivityEventListener(this)
   }
 
   override fun onNewIntent(intent: Intent) {}
