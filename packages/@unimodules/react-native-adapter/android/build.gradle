@@ -58,7 +58,6 @@ android {
     targetSdkVersion safeExtGet("targetSdkVersion", 30)
     versionCode 23
     versionName "6.5.0-alpha.0"
-    consumerProguardFiles("proguard-rules.pro")
   }
   lintOptions {
     abortOnError false

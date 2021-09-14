@@ -1,6 +1,6 @@
 import groovy.json.JsonSlurper
 
-apply from: new File(["node", "--print", "require.resolve('expo-modules-core/package.json')"].execute().text.trim(), "../scripts/autolinking.gradle")
+apply from: new File(["node", "--print", "require.resolve('expo/package.json')"].execute().text.trim(), "../scripts/autolinking.gradle")
 
 def getProjectPackageJson(File projectRoot) {
   String resolveScript = """
@@ -54,8 +54,8 @@ ext.addMavenUnimodulesDependencies = { Map customOptions = [:] ->
 }
 
 ext.includeUnimodulesProjects = { Map customOptions = [:] ->
-  println '⚠️ ' + Colors.GREEN + 'react-native-unimodules' + Colors.YELLOW + ' is deprecated in favor of ' + Colors.GREEN + 'expo-modules-core' + Colors.NORMAL
-  println Colors.YELLOW + '⚠️ Follow this guide to migrate: ' + Colors.BLUE + 'https://expo.fyi/expo-modules-core-migration' + Colors.NORMAL
+  println '⚠️ ' + Colors.GREEN + 'react-native-unimodules' + Colors.YELLOW + ' is deprecated in favor of ' + Colors.GREEN + 'expo' + Colors.NORMAL
+  println Colors.YELLOW + '⚠️ Follow this guide to migrate: ' + Colors.BLUE + 'https://expo.fyi/expo-modules-migration' + Colors.NORMAL
   println()
 
   def options = [

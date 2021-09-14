@@ -44,7 +44,7 @@ const screens = [
   'TouchableBounce',
   'Touchables',
   'Video',
-  'ViewPager',
+  'PagerView',
   'WebView',
 ];
 

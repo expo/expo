@@ -10,6 +10,7 @@ import android.os.Build
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import de.greenrobot.event.EventBus
+import expo.modules.jsonutils.getNullable
 import expo.modules.manifests.core.Manifest
 import host.exp.exponent.Constants
 import host.exp.exponent.ExponentManifest
@@ -110,7 +111,7 @@ class PushNotificationHelper {
 
           // Modes
           if (notificationPreferences != null) {
-            val modeString = notificationPreferences.optString(ExponentManifest.MANIFEST_NOTIFICATION_ANDROID_MODE)
+            val modeString = notificationPreferences.getNullable<String>(ExponentManifest.MANIFEST_NOTIFICATION_ANDROID_MODE)
             if (NotificationConstants.NOTIFICATION_COLLAPSE_MODE == modeString) {
               mode = Mode.COLLAPSE
             }
@@ -123,11 +124,7 @@ class PushNotificationHelper {
           // Collapse mode fields
           if (mode == Mode.COLLAPSE) {
             unreadNotifications = getUnreadNotificationsFromMetadata(experienceKey)
-            val collapsedTitleRaw = if (notificationPreferences!!.has(ExponentManifest.MANIFEST_NOTIFICATION_ANDROID_COLLAPSED_TITLE)) {
-              notificationPreferences.optString(ExponentManifest.MANIFEST_NOTIFICATION_ANDROID_COLLAPSED_TITLE)
-            } else {
-              null
-            }
+            val collapsedTitleRaw = notificationPreferences!!.getNullable<String>(ExponentManifest.MANIFEST_NOTIFICATION_ANDROID_COLLAPSED_TITLE)
             if (collapsedTitleRaw != null) {
               collapsedTitle = collapsedTitleRaw.replace(NotificationConstants.NOTIFICATION_UNREAD_COUNT_KEY, "" + unreadNotifications.length())
             }

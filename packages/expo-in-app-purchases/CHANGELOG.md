@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- Dropped support for iOS 11.0 ([#14383](https://github.com/expo/expo/pull/14383) by [@cruzach](https://github.com/cruzach))
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
@@ -11,6 +13,8 @@
 ### 💡 Others
 
 - Cache products on iOS when calling `getProductsAsync`, so that `purchaseItemAsync` no longer needs to make a second request to StoreKit. This matches the Android implementation. ([#13961](https://github.com/expo/expo/pull/13961) by [@cruzach](https://github.com/cruzach))
+- Extract `getPurchaseHistoryAsync` embedded parameter type to `IAPPurchaseHistoryOptions` type. ([#14217](https://github.com/expo/expo/pull/14217) by [@Simek](https://github.com/Simek))
+- Use correct enum types instead of more general `number` in few type definitions. ([#14217](https://github.com/expo/expo/pull/14217) by [@Simek](https://github.com/Simek))
 
 ## 11.0.0 — 2021-08-10
 

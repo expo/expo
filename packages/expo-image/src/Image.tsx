@@ -27,6 +27,8 @@ export interface ImageProps extends AccessibilityProps {
   // or not.
   source?: ImageSourcePropType | null;
   style?: StyleProp<ImageStyle>;
+  defaultSource?: ImageSourcePropType | null;
+  loadingIndicatorSource?: ImageSourcePropType | null;
   resizeMode?: ImageResizeMode;
   /**
    * @Android only

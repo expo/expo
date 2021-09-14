@@ -154,7 +154,9 @@ void EXGLContext::maybeReadAndCacheSupportedExtensions() {
         if (extensionName.substr(0, 3) == "GL_") {
           extensionName.erase(0, 3);
         }
-        supportedExtensions.insert(extensionName);
+        if (extensionName != "OES_vertex_array_object") {
+          supportedExtensions.insert(extensionName);
+        }
       }
     });
 

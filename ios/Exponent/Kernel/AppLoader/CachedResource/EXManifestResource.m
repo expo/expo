@@ -8,6 +8,7 @@
 #import "EXKernelLinkingManager.h"
 #import "EXKernelUtil.h"
 #import "EXVersions.h"
+#import <EXManifests/EXManifestsManifestFactory.h>
 
 #import <React/RCTConvert.h>
 #import <EXUpdates/EXUpdatesUpdate.h>
@@ -55,7 +56,7 @@ NSString * const EXRuntimeErrorDomain = @"incompatible-runtime";
   if (jsonManifestObjArray) {
     for (id providedManifestJSON in jsonManifestObjArray) {
       if ([providedManifestJSON isKindOfClass:[NSDictionary class]]) {
-        EXManifestsManifest *providedManifest = [EXUpdatesUpdate manifestForManifestJSON:providedManifestJSON];
+        EXManifestsManifest *providedManifest = [EXManifestsManifestFactory manifestForManifestJSON:providedManifestJSON];
         NSString *sdkVersion = providedManifest.sdkVersion;
         if (sdkVersion && [[EXVersions sharedInstance] supportsVersion:sdkVersion]) {
           return providedManifestJSON;
@@ -125,9 +126,9 @@ NSString * const EXRuntimeErrorDomain = @"incompatible-runtime";
         return;
       }
     }
-    
-    EXManifestsManifest *manifest = [EXUpdatesUpdate manifestForManifestJSON:innerManifestObj];
-    
+
+    EXManifestsManifest *manifest = [EXManifestsManifestFactory manifestForManifestJSON:innerManifestObj];
+
     NSError *sdkVersionError = [self verifyManifestSdkVersion:manifest];
     if (sdkVersionError) {
       errorBlock(sdkVersionError);

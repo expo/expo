@@ -20,6 +20,16 @@ class NewManifestTest {
 
   @Test
   @Throws(Exception::class)
+  fun testGetSDKVersionNullable_ValidCaseUnversioned() {
+    val runtimeVersion = "exposdk:UNVERSIONED"
+    val manifestJson =
+      "{\"runtimeVersion\":\"$runtimeVersion\"}"
+    val manifest = NewManifest(JSONObject(manifestJson))
+    Assert.assertEquals(manifest.getSDKVersion(), "UNVERSIONED")
+  }
+
+  @Test
+  @Throws(Exception::class)
   fun testGetSDKVersionNullable_NotSDKRuntimeVersionCases() {
     val runtimeVersions = listOf(
       "exposdk:123",

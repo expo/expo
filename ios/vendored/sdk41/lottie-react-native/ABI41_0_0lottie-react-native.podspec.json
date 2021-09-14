@@ -18,9 +18,7 @@
   "swift_versions": "5.0",
   "dependencies": {
     "ABI41_0_0React": [],
-    "lottie-ios": [
-      "~> 3.1.8"
-    ]
+    "lottie-ios": ["~> 3.2.3"]
   },
   "swift_version": "5.0"
 }

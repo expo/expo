@@ -59,4 +59,14 @@ public class NetInfoModule extends ReactContextBaseJavaModule implements AmazonF
     public void onAmazonFireDeviceConnectivityChanged(boolean isConnected) {
         mConnectivityReceiver.setIsInternetReachableOverride(isConnected);
     }
+
+    @ReactMethod
+    public void addListener(String eventName) {
+        // Keep: Required for RN built in Event Emitter Calls.
+    }
+
+    @ReactMethod
+    public void removeListeners(Integer count) {
+        // Keep: Required for RN built in Event Emitter Calls.
+    }
 }

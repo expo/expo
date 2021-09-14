@@ -11,3 +11,4 @@ export const isDOMAvailable = typeof window !== 'undefined' && !!window.document
 export const canUseEventListeners =
   isDOMAvailable && !!(window.addEventListener || window.attachEvent);
 export const canUseViewport = isDOMAvailable && !!window.screen;
+export const isAsyncDebugging = false;

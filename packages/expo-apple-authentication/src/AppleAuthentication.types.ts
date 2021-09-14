@@ -190,7 +190,7 @@ export type AppleAuthenticationFullName = {
  * An enum whose values specify scopes you can request when calling [`AppleAuthentication.signInAsync()`](#appleauthenticationsigninasyncoptions).
  *
  * > Note that it is possible that you will not be granted all of the scopes which you request.
- * You will still need to handle null values for any fields you request.
+ * > You will still need to handle null values for any fields you request.
  *
  * @see [Apple
  * Documentation](https://developer.apple.com/documentation/authenticationservices/asauthorizationscope)

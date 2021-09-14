@@ -405,17 +405,17 @@ const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
       },
     ],
   },
-  '@react-native-community/viewpager': {
-    repoUrl: 'https://github.com/react-native-community/react-native-viewpager',
+  'react-native-pager-view': {
+    repoUrl: 'https://github.com/callstack/react-native-pager-view',
     installableInManagedApps: true,
     steps: [
       {
         sourceIosPath: 'ios',
-        targetIosPath: 'Api/Components/ViewPager',
-        sourceAndroidPath: 'android/src/main/java/com/reactnativecommunity/viewpager',
-        targetAndroidPath: 'modules/api/components/viewpager',
-        sourceAndroidPackage: 'com.reactnativecommunity.viewpager',
-        targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.components.viewpager',
+        targetIosPath: 'Api/Components/PagerView',
+        sourceAndroidPath: 'android/src/main/java/com/reactnativepagerview/',
+        targetAndroidPath: 'modules/api/components/pagerview',
+        sourceAndroidPackage: 'com.reactnativepagerview',
+        targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.components.pagerview',
       },
     ],
   },
@@ -472,7 +472,7 @@ const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
       },
     ],
   },
-  'stripe-react-native': {
+  '@stripe/stripe-react-native': {
     repoUrl: 'https://github.com/stripe/stripe-react-native',
     installableInManagedApps: true,
     steps: [

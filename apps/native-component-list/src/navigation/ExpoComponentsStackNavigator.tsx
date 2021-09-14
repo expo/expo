@@ -405,10 +405,10 @@ export const Screens = [
   },
   {
     getComponent() {
-      return optionalRequire(() => require('../screens/ViewPagerScreen'));
+      return optionalRequire(() => require('../screens/PagerViewScreen'));
     },
-    name: 'ViewPager',
-    options: { gesturesEnabled: false, title: 'ViewPager Example' },
+    name: 'PagerView',
+    options: { gesturesEnabled: false, title: 'PagerView Example' },
   },
   {
     getComponent() {

@@ -10,6 +10,7 @@ const app_plugin_1 = __importDefault(require("expo-dev-launcher/app.plugin"));
 const app_plugin_2 = __importDefault(require("expo-dev-menu/app.plugin"));
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
+const constants_1 = require("./constants");
 const withGeneratedAndroidScheme_1 = __importDefault(require("./withGeneratedAndroidScheme"));
 const withGeneratedIosScheme_1 = __importDefault(require("./withGeneratedIosScheme"));
 const pkg = require('expo-dev-client/package.json');
@@ -31,7 +32,7 @@ const addReactNativeConfigAsync = async (config) => {
     try {
         const config = fs_1.default.readFileSync(filename, 'utf8');
         if (!config.includes('expo-dev-client/dependencies')) {
-            throw new Error(`Could not add expo-dev-client dependencies to existing file ${filename}. See expo-dev-client installation instructions to add them manually.`);
+            throw new Error(`Could not add expo-dev-client dependencies to existing file ${filename}. See expo-dev-client installation instructions to add them manually: ${constants_1.InstallationPage}`);
         }
     }
     catch (error) {

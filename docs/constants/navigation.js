@@ -36,7 +36,7 @@ const sections = [
     reference: [
       'EAS Build',
       'Creating your first build',
-      'Configuration with eas.json',
+      'Configuring EAS Build with eas.json',
       'Over-the-air updates',
       'Internal distribution',
       'Triggering builds from CI',
@@ -79,6 +79,7 @@ const sections = [
     name: 'EAS Submit',
     reference: [
       'EAS Submit',
+      'Configuring EAS Submit with eas.json',
       'Submitting to the Google Play Store',
       'Submitting to the Apple App Store',
     ],

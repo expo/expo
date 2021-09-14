@@ -1,6 +1,6 @@
 {
   "name": "expo-file-system",
-  "version": "11.1.0",
+  "version": "12.0.0",
   "description": "Provides access to the local file system on the device.",
   "main": "build/index.js",
   "types": "build/index.d.ts",
@@ -36,7 +36,7 @@
   },
   "dependencies": {
     "@expo/config-plugins": "^3.0.0",
-    "expo-modules-core": "~0.3.0-alpha.0",
+    "expo-modules-core": "~0.3.1",
     "uuid": "^3.4.0"
   },
   "devDependencies": {

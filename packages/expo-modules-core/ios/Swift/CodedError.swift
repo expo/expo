@@ -1,3 +1,5 @@
+import Foundation
+
 /**
  A protocol for errors specyfing its `code` and providing the `description`.
  */

@@ -102,17 +102,15 @@ EX_EXPORT_METHOD_AS(openBrowserAsync,
     safariVC = [[SFSafariViewController alloc] initWithURL:url entersReaderIfAvailable:readerMode];
   }
 
-  if (@available(iOS 11.0, *)) {
-    NSString *dismissButtonStyle = [arguments valueForKey:@"dismissButtonStyle"];
-    if ([@"done" isEqualToString:dismissButtonStyle]) {
-      safariVC.dismissButtonStyle = SFSafariViewControllerDismissButtonStyleDone;
-    }
-    else if ([@"close" isEqualToString:dismissButtonStyle]) {
-      safariVC.dismissButtonStyle = SFSafariViewControllerDismissButtonStyleClose;
-    }
-    else if ([@"cancel" isEqualToString:dismissButtonStyle]) {
-      safariVC.dismissButtonStyle = SFSafariViewControllerDismissButtonStyleCancel;
-    }
+  NSString *dismissButtonStyle = [arguments valueForKey:@"dismissButtonStyle"];
+  if ([@"done" isEqualToString:dismissButtonStyle]) {
+    safariVC.dismissButtonStyle = SFSafariViewControllerDismissButtonStyleDone;
+  }
+  else if ([@"close" isEqualToString:dismissButtonStyle]) {
+    safariVC.dismissButtonStyle = SFSafariViewControllerDismissButtonStyleClose;
+  }
+  else if ([@"cancel" isEqualToString:dismissButtonStyle]) {
+    safariVC.dismissButtonStyle = SFSafariViewControllerDismissButtonStyleCancel;
   }
 
   if([[arguments allKeys] containsObject:WebBrowserToolbarColorKey]) {

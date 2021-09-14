@@ -57,9 +57,7 @@ static NSDictionary *_requestedPermissions;
     }
 
     status[@"alertStyle"] = [self alertStyleToEnum:settings.alertStyle];
-    if (@available(iOS 11.0, *)) {
-      status[@"allowsPreviews"] = [self showPreviewsSettingToEnum:settings.showPreviewsSetting];
-    }
+    status[@"allowsPreviews"] = [self showPreviewsSettingToEnum:settings.showPreviewsSetting];
     if (@available(iOS 12.0, *)) {
       status[@"providesAppNotificationSettings"] = @(settings.providesAppNotificationSettings);
     }
@@ -144,7 +142,7 @@ static NSDictionary *_requestedPermissions;
 
 # pragma mark - Utilities - notification settings to string
 
-- (NSNumber *)showPreviewsSettingToEnum:(UNShowPreviewsSetting)setting API_AVAILABLE(ios(11.0)) {
+- (NSNumber *)showPreviewsSettingToEnum:(UNShowPreviewsSetting)setting {
   switch (setting) {
     case UNShowPreviewsSettingNever:
       return @(0);

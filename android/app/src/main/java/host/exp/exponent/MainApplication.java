@@ -5,7 +5,7 @@ import com.facebook.react.ReactPackage;
 import java.util.Arrays;
 import java.util.List;
 
-import expo.modules.adapters.react.ExpoModulesPackageListDelegate;
+import expo.modules.ExpoModulesPackageList;
 import expo.modules.apploader.AppLoaderPackagesProviderInterface;
 import expo.modules.core.interfaces.Package;
 
@@ -31,6 +31,6 @@ public class MainApplication extends ExpoApplication implements AppLoaderPackage
   }
 
   public List<Package> getExpoPackages() {
-    return ExpoModulesPackageListDelegate.getPackageList();
+    return ExpoModulesPackageList.getPackageList();
   }
 }

@@ -3,9 +3,14 @@ import { Image, requireNativeComponent, NativeModules, StyleSheet, Platform, pro
 const NativeExpoImage = requireNativeComponent('ExpoImage');
 const ExpoImageModule = NativeModules.ExpoImageModule;
 export { ExpoImageModule };
-export default function ExpoImage({ source, style, ...props }) {
+export default function ExpoImage({ source, style, defaultSource, loadingIndicatorSource, ...props }) {
     const resolvedSource = Image.resolveAssetSource(source ?? {});
     const resolvedStyle = StyleSheet.flatten([style]);
+    const resolvedPlaceholder = Image.resolveAssetSource(defaultSource ?? loadingIndicatorSource ?? {});
+    // If both are specified, we default to use default source
+    if (defaultSource && loadingIndicatorSource) {
+        console.warn("<Image> component can't have both defaultSource and loadingIndicatorSource at the same time. Defaulting to defaultSource");
+    }
     // When possible, pass through the intrinsic size of the asset to the Yoga layout
     // system. While this is also possible in native code, doing it here is more efficient
     // as the yoga node gets initialized with the correct size from the start.
@@ -48,6 +53,6 @@ export default function ExpoImage({ source, style, ...props }) {
             console.warn(`"expo-image" Shadows may not be rendered correctly for the transparent parts of images. Set "backgroundColor" to a non-transparent color when using a shadow.`);
         }
     }
-    return React.createElement(NativeExpoImage, { ...props, source: resolvedSource, style: resolvedStyle });
+    return (React.createElement(NativeExpoImage, { ...props, source: resolvedSource, style: resolvedStyle, defaultSource: resolvedPlaceholder }));
 }
 //# sourceMappingURL=ExpoImage.js.map

@@ -92,7 +92,7 @@ const App = () => (
       component={DetailsScreen}
       options={({ route }) => {
         return {
-          title: 'Details screen #' + (route.params as any)?.index ?? '0',
+          title: 'Details screen #' + ((route.params as any)?.index ?? '0'),
         };
       }}
     />

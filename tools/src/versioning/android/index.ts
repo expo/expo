@@ -42,7 +42,7 @@ const expoviewConstantsPath = path.join(
 );
 const testSuiteTestsPath = path.join(
   appPath,
-  'src/androidTest/java/host/exp/exponent/TestSuiteTests.java'
+  'src/androidTest/java/host/exp/exponent/TestSuiteTests.kt'
 );
 const versionedReactAndroidPath = path.join(ANDROID_DIR, 'versioned-react-native/ReactAndroid');
 const versionedReactAndroidJniPath = path.join(versionedReactAndroidPath, 'src/main');
@@ -439,26 +439,6 @@ async function addVersionedActivitesToManifests(version: string) {
     `<!-- ADD DEV SETTINGS HERE -->
     <!-- BEGIN_SDK_${majorVersion} -->
     <activity android:name="${abiName}.com.facebook.react.devsupport.DevSettingsActivity"/>
-    <!-- END_SDK_${majorVersion} -->`
-  );
-
-  await transformFileAsync(
-    templateManifestPath,
-    new RegExp('<!-- Versioned Activity for Stripe -->'),
-    `<!-- Versioned Activity for Stripe -->
-    <!-- BEGIN_SDK_${majorVersion} -->
-    <activity
-      android:exported="true"
-      android:launchMode="singleTask"
-      android:name="${abiName}.expo.modules.payments.stripe.RedirectUriReceiver"
-      android:theme="@android:style/Theme.Translucent.NoTitleBar.Fullscreen">
-      <intent-filter>
-        <action android:name="android.intent.action.VIEW" />
-        <category android:name="android.intent.category.DEFAULT" />
-        <category android:name="android.intent.category.BROWSABLE" />
-        <data android:scheme="${abiName}.expo.modules.payments.stripe" />
-      </intent-filter>
-    </activity>
     <!-- END_SDK_${majorVersion} -->`
   );
 }

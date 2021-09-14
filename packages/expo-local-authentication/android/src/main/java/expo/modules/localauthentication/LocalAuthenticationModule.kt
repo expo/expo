@@ -111,6 +111,12 @@ class LocalAuthenticationModule(context: Context) : ExportedModule(context), Act
         results.add(AUTHENTICATION_TYPE_IRIS)
       }
     }
+
+    // check for face recognition support on some samsung devices
+    if (packageManager.hasSystemFeature("com.samsung.android.bio.face") && !results.contains(AUTHENTICATION_TYPE_FACIAL_RECOGNITION)) {
+      results.add(AUTHENTICATION_TYPE_FACIAL_RECOGNITION)
+    }
+
     promise.resolve(results)
   }
 

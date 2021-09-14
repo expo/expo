@@ -3,7 +3,9 @@ apply plugin: 'kotlin-android'
 apply plugin: 'maven'
 
 group = 'host.exp.exponent'
-version = '0.8.4'
+version = '0.9.1'
+
+apply from: "../scripts/create-manifest-android.gradle"
 
 buildscript {
   // Simple helper that allows the root project to override versions declared by this library.
@@ -57,7 +59,8 @@ android {
     minSdkVersion safeExtGet("minSdkVersion", 21)
     targetSdkVersion safeExtGet("targetSdkVersion", 30)
     versionCode 31
-    versionName '0.8.4'
+    versionName '0.9.1'
+    consumerProguardFiles("proguard-rules.pro")
     testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     // uncomment below to export the database schema when making changes
     /* javaCompileOptions {
@@ -83,6 +86,7 @@ dependencies {
   implementation project(':expo-structured-headers')
   implementation project(':expo-updates-interface')
   implementation project(':expo-manifests')
+  implementation project(':expo-json-utils')
   //noinspection GradleDynamicVersion
   implementation "com.facebook.react:react-native:+"
 

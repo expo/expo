@@ -1,101 +1,76 @@
-diff --git a/android/app/build.gradle b/android/app/build.gradle
-index e5b1a7d..d06dfd0 100644
---- a/android/app/build.gradle
-+++ b/android/app/build.gradle
-@@ -81,10 +81,11 @@ import com.android.build.OutputFile
- project.ext.react = [
-     enableHermes: false,  // clean and rebuild if changing
- ]
-
--apply from: "../../node_modules/react-native/react.gradle"
-+apply from: new File(["node", "--print", "require.resolve('react-native/package.json')"].execute().text.trim(), "../react.gradle")
-+apply from: new File(["node", "--print", "require.resolve('expo-updates/package.json')"].execute().text.trim(), "../scripts/create-manifest-android.gradle")
-
- /**
-  * Set this to true to create two separate APKs instead of one:
-  *   - An APK that only works on ARM devices
-  *   - An APK that only works on x86 devices
-diff --git a/android/app/src/main/AndroidManifest.xml b/android/app/src/main/AndroidManifest.xml
-index 955757b..3fa4cb1 100644
---- a/android/app/src/main/AndroidManifest.xml
-+++ b/android/app/src/main/AndroidManifest.xml
-@@ -8,12 +8,15 @@
-       android:label="@string/app_name"
-       android:icon="@mipmap/ic_launcher"
-       android:roundIcon="@mipmap/ic_launcher_round"
-       android:allowBackup="false"
-       android:theme="@style/AppTheme">
-+      <meta-data android:name="expo.modules.updates.EXPO_UPDATE_URL" android:value="https://exp.host/@my-expo-username/my-app" />
-+      <meta-data android:name="expo.modules.updates.EXPO_SDK_VERSION" android:value="38.0.0" />
-+
-  <activity
-        android:name=".MainActivity"
-         android:label="@string/app_name"
-         android:configChanges="keyboard|keyboardHidden|orientation|screenSize|uiMode"
-         android:launchMode="singleTask"
-         android:windowSoftInputMode="adjustResize">
-         <intent-filter>
-diff --git a/android/app/src/main/java/com/myapp/MainApplication.java b/android/app/src/main/java/com/myapp/MainApplication.java
-index 0151e90..48cc96c 100644
---- a/android/app/src/main/java/com/myapp/MainApplication.java
-+++ b/android/app/src/main/java/com/myapp/MainApplication.java
-@@ -17,10 +17,14 @@ import java.util.Arrays;
-
- import org.unimodules.adapters.react.ModuleRegistryAdapter;
- import org.unimodules.adapters.react.ReactModuleRegistryProvider;
- import org.unimodules.core.interfaces.SingletonModule;
-
+diff --git a/apps/bare-update/android/app/src/main/AndroidManifest.xml b/apps/bare-update/android/app/src/main/AndroidManifest.xml
+index 4a74a05751..bac2b2f677 100644
+--- a/apps/bare-update/android/app/src/main/AndroidManifest.xml
++++ b/apps/bare-update/android/app/src/main/AndroidManifest.xml
+@@ -7,6 +7,7 @@
+   <application android:name=".MainApplication" android:label="@string/app_name" android:icon="@mipmap/ic_launcher" android:roundIcon="@mipmap/ic_launcher_round" android:allowBackup="false" android:theme="@style/AppTheme" android:usesCleartextTraffic="true">
+     <meta-data android:name="expo.modules.updates.EXPO_UPDATE_URL" android:value="https://exp.host/@my-expo-username/my-app"/>
+     <meta-data android:name="expo.modules.updates.EXPO_SDK_VERSION" android:value="43.0.0"/>
++    <meta-data android:name="expo.modules.updates.AUTO_SETUP" android:value="false"/>
+     <activity android:name=".MainActivity" android:label="@string/app_name" android:configChanges="keyboard|keyboardHidden|orientation|screenSize|uiMode" android:launchMode="singleTask" android:windowSoftInputMode="adjustResize" android:theme="@style/Theme.App.SplashScreen">
+       <intent-filter>
+         <action android:name="android.intent.action.MAIN"/>
+diff --git a/apps/bare-update/android/app/src/main/java/com/bareupdate/MainApplication.java b/apps/bare-update/android/app/src/main/java/com/bareupdate/MainApplication.java
+index 4b0d17d89d..5d6f1bb620 100644
+--- a/apps/bare-update/android/app/src/main/java/com/bareupdate/MainApplication.java
++++ b/apps/bare-update/android/app/src/main/java/com/bareupdate/MainApplication.java
+@@ -3,6 +3,7 @@ package com.bareupdate;
+ import android.app.Application;
+ import android.content.Context;
+ import android.content.res.Configuration;
 +import android.net.Uri;
+ 
+ import com.facebook.react.PackageList;
+ import com.facebook.react.ReactApplication;
+@@ -14,6 +15,7 @@ import com.facebook.soloader.SoLoader;
+ 
+ import expo.modules.ApplicationLifecycleDispatcher;
+ import expo.modules.ReactNativeHostWrapper;
 +import expo.modules.updates.UpdatesController;
+ 
+ import com.facebook.react.bridge.JSIModulePackage;
+ import com.swmansion.reanimated.ReanimatedJSIModulePackage;
+@@ -22,6 +24,7 @@ import androidx.annotation.NonNull;
+ import java.lang.reflect.InvocationTargetException;
+ import java.util.Arrays;
+ import java.util.List;
 +import javax.annotation.Nullable;
-+
+ 
  public class MainApplication extends Application implements ReactApplication {
-   private final ReactModuleRegistryProvider mModuleRegistryProvider = new ReactModuleRegistryProvider(new BasePackageList().getPackageList(), null);
-
-   private final ReactNativeHost mReactNativeHost =
-       new ReactNativeHost(this) {
-@@ -46,10 +50,28 @@ public class MainApplication extends Application implements ReactApplication {
-
-         @Override
-         protected String getJSMainModuleName() {
-           return "index";
-         }
+   private final ReactNativeHost mReactNativeHost = new ReactNativeHostWrapper(
+@@ -46,6 +49,24 @@ public class MainApplication extends Application implements ReactApplication {
+     protected JSIModulePackage getJSIModulePackage() {
+       return new ReanimatedJSIModulePackage();
+     }
 +
-+        @Override
-+        protected @Nullable String getJSBundleFile() {
-+          if (BuildConfig.DEBUG) {
-+            return super.getJSBundleFile();
-+          } else {
-+            return UpdatesController.getInstance().getLaunchAssetFile();
-+          }
-+        }
++    @Override
++    protected @Nullable String getJSBundleFile() {
++      if (BuildConfig.DEBUG) {
++        return super.getJSBundleFile();
++      } else {
++        return UpdatesController.getInstance().getLaunchAssetFile();
++      }
++    }
 +
-+        @Override
-+        protected @Nullable String getBundleAssetName() {
-+          if (BuildConfig.DEBUG) {
-+            return super.getBundleAssetName();
-+          } else {
-+            return UpdatesController.getInstance().getBundleAssetName();
-+          }
-+        }
-       };
-
++    @Override
++    protected @Nullable String getBundleAssetName() {
++      if (BuildConfig.DEBUG) {
++        return super.getBundleAssetName();
++      } else {
++        return UpdatesController.getInstance().getBundleAssetName();
++      }
++    }
+   });
+ 
    @Override
-   public ReactNativeHost getReactNativeHost() {
-     return mReactNativeHost;
-@@ -57,10 +79,15 @@ public class MainApplication extends Application implements ReactApplication {
-
-   @Override
-   public void onCreate() {
+@@ -58,6 +79,10 @@ public class MainApplication extends Application implements ReactApplication {
      super.onCreate();
      SoLoader.init(this, /* native exopackage */ false);
-+
+ 
 +    if (!BuildConfig.DEBUG) {
 +      UpdatesController.initialize(this);
 +    }
 +
      initializeFlipper(this, getReactNativeHost().getReactInstanceManager());
+     ApplicationLifecycleDispatcher.onApplicationCreate(this);
    }
-
-   /**
-    * Loads Flipper in React Native templates. Call this in the onCreate method with something like

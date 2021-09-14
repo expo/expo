@@ -44,7 +44,6 @@ import expo.modules.mailcomposer.MailComposerPackage
 import expo.modules.medialibrary.MediaLibraryPackage
 import expo.modules.network.NetworkPackage
 import expo.modules.notifications.NotificationsPackage
-import expo.modules.payments.stripe.StripePackage
 import expo.modules.permissions.PermissionsPackage
 import expo.modules.print.PrintPackage
 import expo.modules.screencapture.ScreenCapturePackage
@@ -120,7 +119,6 @@ object ExperiencePackagePicker {
     SharingPackage(),
     SpeechPackage(),
     SplashScreenPackage(),
-    StripePackage(),
     TaskManagerPackage(),
     UpdatesPackage(),
     VideoThumbnailsPackage(),
