@@ -90,7 +90,7 @@
   "react-native-gesture-handler": "~1.10.2",
   "react-native-get-random-values": "~1.7.0",
   "react-native-maps": "0.28.0",
-  "react-native-pager-view": "5.4.1",
+  "react-native-pager-view": "5.4.4",
   "react-native-reanimated": "~2.2.0",
   "react-native-safe-area-context": "3.3.2",
   "react-native-screens": "~3.7.0",

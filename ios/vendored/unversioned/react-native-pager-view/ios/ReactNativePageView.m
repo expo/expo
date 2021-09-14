@@ -153,7 +153,7 @@
         } else {
             initialController = [[UIViewController alloc] initWithView:initialView];
         }
-
+        
         [self.cachedControllers addObject:initialController];
         
         [self setReactViewControllers:self.initialPage
@@ -231,21 +231,40 @@
     BOOL isForward = (index > self.currentIndex && [self isLtrLayout]) || (index < self.currentIndex && ![self isLtrLayout]);
     UIPageViewControllerNavigationDirection direction = isForward ? UIPageViewControllerNavigationDirectionForward : UIPageViewControllerNavigationDirectionReverse;
     
-    NSInteger indexToDisplay = index;
-    
-    UIView *viewToDisplay = self.reactSubviews[indexToDisplay];
-    UIViewController *controllerToDisplay = [self findAndCacheControllerForView:viewToDisplay];
-    
     self.reactPageIndicatorView.numberOfPages = numberOfPages;
-    self.reactPageIndicatorView.currentPage = indexToDisplay;
+    self.reactPageIndicatorView.currentPage = index;
+    long diff = labs(index - _currentIndex);
     
-    [self setReactViewControllers:indexToDisplay
+    if (isForward && diff > 0) {
+        for (NSInteger i=_currentIndex+1; i<=index; i++) {
+            [self goToViewController:i direction:direction animated:animated];
+        }
+    }
+    
+    if (!isForward && diff > 0) {
+        for (NSInteger i=_currentIndex-1; i>=index; i--) {
+            if (i >=0) {
+                [self goToViewController:i direction:direction animated:animated];
+            }
+        }
+    }
+    
+    if (diff == 0) {
+        [self goToViewController:index direction:direction animated:animated];
+    }
+}
+
+- (void)goToViewController:(NSInteger)index
+                            direction:(UIPageViewControllerNavigationDirection)direction
+                            animated:(BOOL)animated {
+    UIView *viewToDisplay = self.reactSubviews[index];
+    UIViewController *controllerToDisplay = [self findAndCacheControllerForView:viewToDisplay];
+    [self setReactViewControllers:index
                              with:controllerToDisplay
                         direction:direction
                          animated:animated];
-    
 }
-
+    
 - (UIViewController *)findAndCacheControllerForView:(UIView *)viewToDisplay {
     if (!viewToDisplay) { return nil; }
     
@@ -383,7 +402,7 @@
 
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView {
     CGPoint point = scrollView.contentOffset;
-
+    
     float offset = 0;
     
     if (self.isHorizontal) {
@@ -395,12 +414,12 @@
             offset = (point.y - self.frame.size.height)/self.frame.size.height;
         }
     }
-
+    
     float absoluteOffset = fabs(offset);
     
     NSInteger position = self.currentIndex;
     
-
+    
     BOOL isAnimatingBackwards = ([self isLtrLayout] && offset<0) || (![self isLtrLayout] && offset > 0.05f);
     if(isAnimatingBackwards){
         position =  self.currentIndex - 1;
@@ -415,7 +434,7 @@
         BOOL isLastPage = _currentIndex == lastPageIndex;
         CGFloat contentOffset =[self isHorizontal] ? scrollView.contentOffset.x : scrollView.contentOffset.y;
         CGFloat topBound = [self isHorizontal] ? scrollView.bounds.size.width : scrollView.bounds.size.height;
-
+        
         if ((isFirstPage && contentOffset <= topBound) || (isLastPage && contentOffset >= topBound)) {
             CGPoint croppedOffset = [self isHorizontal] ? CGPointMake(topBound, 0) : CGPointMake(0, topBound);
             scrollView.contentOffset = croppedOffset;
