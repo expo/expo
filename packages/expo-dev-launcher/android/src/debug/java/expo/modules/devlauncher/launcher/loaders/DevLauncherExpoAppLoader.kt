@@ -12,7 +12,7 @@ import expo.modules.devlauncher.helpers.isValidColor
 import expo.modules.devlauncher.helpers.setProtectedDeclaredField
 import expo.modules.devlauncher.launcher.DevLauncherControllerInterface
 import expo.modules.devlauncher.launcher.configurators.DevLauncherExpoActivityConfigurator
-import expo.modules.devlauncher.launcher.manifest.DevLauncherUserInterfaceValues
+import expo.modules.devlauncher.launcher.manifest.DevLauncherUserInterface
 import expo.modules.manifests.core.Manifest
 
 abstract class DevLauncherExpoAppLoader(
@@ -40,8 +40,8 @@ abstract class DevLauncherExpoAppLoader(
 
   private fun applyUserInterfaceStyle(context: ReactContext) {
     val userInterfaceStyle = when (manifest.getAndroidUserInterfaceStyle()) {
-      DevLauncherUserInterfaceValues.DARK -> "dark"
-      DevLauncherUserInterfaceValues.LIGHT -> "light"
+      DevLauncherUserInterface.DARK -> "dark"
+      DevLauncherUserInterface.LIGHT -> "light"
       else -> return
     }
 

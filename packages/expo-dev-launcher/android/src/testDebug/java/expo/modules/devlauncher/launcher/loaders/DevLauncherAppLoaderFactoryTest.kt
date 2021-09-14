@@ -66,7 +66,7 @@ internal class DevLauncherAppLoaderFactoryTest {
     val manifestParser = mockk<DevLauncherManifestParser>()
     val manifest = Manifest.fromManifestJson(JSONObject(developmentManifestJSONString))
     coEvery { manifestParser.isManifestUrl() } returns true
-    coEvery { manifestParser.parseManifestTmp() } returns manifest
+    coEvery { manifestParser.parseManifest() } returns manifest
 
     val appLoader = appLoaderFactory.createAppLoader(developmentManifestURL, manifestParser)
     Truth.assertThat(appLoader).isInstanceOf(DevLauncherLocalAppLoader::class.java)
@@ -80,7 +80,7 @@ internal class DevLauncherAppLoaderFactoryTest {
     val manifestParser = mockk<DevLauncherManifestParser>()
     val manifest = Manifest.fromManifestJson(JSONObject(publishedManifestJSONString))
     coEvery { manifestParser.isManifestUrl() } returns true
-    coEvery { manifestParser.parseManifestTmp() } returns manifest
+    coEvery { manifestParser.parseManifest() } returns manifest
 
     Assert.assertThrows(Exception::class.java) {
       runBlocking { appLoaderFactory.createAppLoader(publishedManifestURL, manifestParser) }

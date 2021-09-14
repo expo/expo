@@ -25,7 +25,7 @@ internal class DevLauncherManifestTest {
     Truth.assertThat(manifestObj.getHostUri()).isEqualTo("127.0.0.1:19000")
     Truth.assertThat(manifestObj.getPrimaryColor()).isEqualTo("#cccccc")
     Truth.assertThat(manifestObj.getBundleURL()).isEqualTo("http://127.0.0.1:19000/__generated__/AppEntry.bundle?platform=ios&dev=true&hot=false&minify=false")
-    Truth.assertThat(manifestObj.getOrientation()).isEqualTo(DevLauncherOrientationValues.DEFAULT)
+    Truth.assertThat(manifestObj.getOrientation()).isEqualTo(DevLauncherOrientation.DEFAULT)
   }
 
   @Test
@@ -43,7 +43,7 @@ internal class DevLauncherManifestTest {
     val manifestObj = Manifest.fromManifestJson(JSONObject(manifest))
 
     Truth.assertThat(manifestObj).isNotNull()
-    Truth.assertThat(manifestObj.getAndroidUserInterfaceStyle()).isEqualTo(DevLauncherUserInterfaceValues.DARK)
+    Truth.assertThat(manifestObj.getAndroidUserInterfaceStyle()).isEqualTo(DevLauncherUserInterface.DARK)
     Truth.assertThat(manifestObj.getAndroidBackgroundColor()).isEqualTo("#ff0000")
   }
 

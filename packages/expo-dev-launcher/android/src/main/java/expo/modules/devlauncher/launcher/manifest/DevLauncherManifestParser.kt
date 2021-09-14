@@ -30,15 +30,9 @@ class DevLauncherManifestParser(
     return response.body()!!.charStream()
   }
 
-  suspend fun parseManifestTmp(): Manifest {
+  suspend fun parseManifest(): Manifest {
     downloadManifest().use {
       return Manifest.fromManifestJson(JSONObject(it.readText()))
-    }
-  }
-
-  suspend fun parseManifest(): DevLauncherManifest {
-    downloadManifest().use {
-      return DevLauncherManifest.fromJson(it)
     }
   }
 }

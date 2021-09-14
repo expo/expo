@@ -37,7 +37,7 @@ class DevLauncherAppLoaderFactory : DevLauncherKoinComponent, DevLauncherAppLoad
       DevLauncherReactNativeAppLoader(url, appHost, context, controller)
     } else {
       if (updatesInterface == null) {
-        manifest = manifestParser.parseManifestTmp()
+        manifest = manifestParser.parseManifest()
         if (!manifest!!.isUsingDeveloperTool()) {
           throw Exception("expo-updates is not properly installed or integrated. In order to load published projects with this development client, follow all installation and setup instructions for both the expo-dev-client and expo-updates packages.")
         }
