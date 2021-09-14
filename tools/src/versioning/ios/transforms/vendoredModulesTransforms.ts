@@ -6,7 +6,7 @@ type Config = {
 
 export default function vendoredModulesTransformsFactory(prefix: string): Config {
   return {
-    'stripe-react-native': {
+    '@stripe/stripe-react-native': {
       content: [
         {
           paths: '*.m',

@@ -472,7 +472,7 @@ const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
       },
     ],
   },
-  'stripe-react-native': {
+  '@stripe/stripe-react-native': {
     repoUrl: 'https://github.com/stripe/stripe-react-native',
     installableInManagedApps: true,
     steps: [

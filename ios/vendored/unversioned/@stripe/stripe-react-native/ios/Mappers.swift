@@ -296,6 +296,7 @@ class Mappers {
             case "Sofort": return STPPaymentMethodType.sofort
             case "Upi": return STPPaymentMethodType.UPI
             case "AfterpayClearpay": return STPPaymentMethodType.afterpayClearpay
+            case "WeChatPay": return STPPaymentMethodType.weChatPay
             default: return STPPaymentMethodType.unknown
             }
         }
@@ -823,7 +824,8 @@ class Mappers {
     
     class func convertDateToUnixTimestamp(date: Date?) -> String? {
         if let date = date {
-            return String(date.timeIntervalSince1970 * 1000.0)
+            let value = date.timeIntervalSince1970 * 1000.0
+            return String(format: "%.0f", value)
         }
         return nil
     }

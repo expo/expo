@@ -12,7 +12,7 @@ const config: VendoringTargetConfig = {
     },
   },
   modules: {
-    'stripe-react-native': {
+    '@stripe/stripe-react-native': {
       source: 'https://github.com/stripe/stripe-react-native.git',
       ios: {},
       // android: {
@@ -43,7 +43,6 @@ const config: VendoringTargetConfig = {
           // is set to `0.64.0`. we should manually transform to the exact RN version.
           // currently both expo go and reanimated latest RN version is `0.64` that we don't need to transform.
           // keep the code here in case reanimated upgrade and fallback default RN version as `0.65.0`.
-
           // Fix compiler flags
           // podspec.compiler_flags = podspec.compiler_flags.replace('RNVERSION=64', 'RNVERSION=63');
           // podspec.xcconfig.OTHER_CFLAGS = podspec.xcconfig.OTHER_CFLAGS.replace(
@@ -89,8 +88,7 @@ const config: VendoringTargetConfig = {
             {
               paths: 'RNCWKProcessPoolManager.h',
               find: '- (WKProcessPool *)sharedProcessPool;',
-              replaceWith:
-                '- (WKProcessPool *)sharedProcessPoolForScopeKey:(NSString *)scopeKey;',
+              replaceWith: '- (WKProcessPool *)sharedProcessPoolForScopeKey:(NSString *)scopeKey;',
             },
             {
               paths: 'RNCWKProcessPoolManager.m',
@@ -141,8 +139,7 @@ const config: VendoringTargetConfig = {
             {
               paths: 'RNCWebViewManager.m',
               find: '*webView = [RNCWebView new];',
-              replaceWith:
-                '*webView = [RNCWebView new];\n  webView.scopeKey = _scopeKey;',
+              replaceWith: '*webView = [RNCWebView new];\n  webView.scopeKey = _scopeKey;',
             },
             {
               paths: 'RNCWebViewManager.m',

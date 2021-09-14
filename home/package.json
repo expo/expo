@@ -17,7 +17,7 @@
     "preset": "jest-expo"
   },
   "dependencies": {
-    "@apollo/client": "^3.2.0",
+    "@apollo/client": "^3.4.10",
     "@expo/react-native-action-sheet": "^2.1.0",
     "@expo/sdk-runtime-versions": "^1.0.0",
     "@expo/vector-icons": "^12.0.4",
@@ -71,11 +71,10 @@
     "url": "^0.11.0"
   },
   "devDependencies": {
-    "@graphql-codegen/cli": "1.21.4",
-    "@graphql-codegen/near-operation-file-preset": "^1.18.0",
-    "@graphql-codegen/typescript": "1.22.0",
-    "@graphql-codegen/typescript-operations": "1.17.16",
-    "@graphql-codegen/typescript-react-apollo": "2.2.4",
+    "@graphql-codegen/cli": "^2.2.0",
+    "@graphql-codegen/typed-document-node": "^2.1.3",
+    "@graphql-codegen/typescript": "^2.2.1",
+    "@graphql-codegen/typescript-operations": "^2.1.3",
     "@types/dedent": "^0.7.0",
     "@types/jest": "^26.0.20",
     "@types/react-redux": "^7.1.16",

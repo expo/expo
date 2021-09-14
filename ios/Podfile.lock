@@ -1154,7 +1154,7 @@ PODS:
     - Yoga
   - ABI41_0_0stripe-react-native (0.1.0):
     - ABI41_0_0React
-    - Stripe (~> 21.6.0)
+    - Stripe (~> 21.8.1)
   - ABI41_0_0UMAppLoader (2.1.0)
   - ABI41_0_0UMBarCodeScannerInterface (6.1.0):
     - ABI41_0_0UMCore
@@ -1762,7 +1762,7 @@ PODS:
     - ABI42_0_0React-RCTImage
   - ABI42_0_0stripe-react-native (0.1.4):
     - ABI42_0_0React
-    - Stripe (~> 21.6.0)
+    - Stripe (~> 21.8.1)
   - ABI42_0_0UMAppLoader (2.2.0)
   - ABI42_0_0UMCore (7.1.1)
   - ABI42_0_0UMReactNativeAdapter (6.3.0):
@@ -2426,12 +2426,15 @@ PODS:
   - RNScreens (3.7.0):
     - React-Core
     - React-RCTImage
-  - Stripe (21.6.0):
-    - Stripe/Stripe3DS2 (= 21.6.0)
-  - stripe-react-native (0.1.4):
+  - Stripe (21.8.1):
+    - Stripe/Stripe3DS2 (= 21.8.1)
+    - StripeCore (= 21.8.1)
+  - stripe-react-native (0.2.1):
     - React
-    - Stripe (~> 21.6.0)
-  - Stripe/Stripe3DS2 (21.6.0)
+    - Stripe (~> 21.8.1)
+  - Stripe/Stripe3DS2 (21.8.1):
+    - StripeCore (= 21.8.1)
+  - StripeCore (21.8.1)
   - UMAppLoader (2.3.0-alpha.0)
   - UMCore (7.2.0-alpha.0):
     - ExpoModulesCore
@@ -2884,7 +2887,7 @@ DEPENDENCIES:
   - ReactCommon/turbomodule/core (from `../react-native-lab/react-native/ReactCommon`)
   - RNReanimated (from `./vendored/unversioned/react-native-reanimated`)
   - RNScreens (from `./vendored/unversioned/react-native-screens`)
-  - stripe-react-native (from `./vendored/unversioned/stripe-react-native`)
+  - "stripe-react-native (from `./vendored/unversioned/@stripe/stripe-react-native`)"
   - UMAppLoader (from `../packages/unimodules-app-loader/ios`)
   - "UMCore (from `../packages/@unimodules/core/ios`)"
   - "UMReactNativeAdapter (from `../packages/@unimodules/react-native-adapter/ios`)"
@@ -2930,6 +2933,7 @@ SPEC REPOS:
     - PromisesObjC
     - Protobuf
     - Stripe
+    - StripeCore
     - ZXingObjC
 
 EXTERNAL SOURCES:
@@ -3764,7 +3768,7 @@ EXTERNAL SOURCES:
   RNScreens:
     :path: "./vendored/unversioned/react-native-screens"
   stripe-react-native:
-    :path: "./vendored/unversioned/stripe-react-native"
+    :path: "./vendored/unversioned/@stripe/stripe-react-native"
   UMAppLoader:
     :path: "../packages/unimodules-app-loader/ios"
   UMCore:
@@ -3971,7 +3975,7 @@ SPEC CHECKSUMS:
   ABI41_0_0React-RCTVibration: ea2ae0f0559e32d2a17d28162ee1ce902fcf0f98
   ABI41_0_0ReactCommon: bedf6c58cbcd774db4ca5c5f9b39196493a683a6
   ABI41_0_0RNReanimated: 9ec256ef7b229c919835501640706028bf438678
-  ABI41_0_0stripe-react-native: e1b0af5c90922f4180a678d6303a1afa7310b8f4
+  ABI41_0_0stripe-react-native: 30b6621836aa6648c58515394e8fac9961d020a6
   ABI41_0_0UMAppLoader: c44d678dc80cd36783ecf36e036690eff34a28b2
   ABI41_0_0UMBarCodeScannerInterface: 7a08c48a07b33412c5a61465f96915bb778ae789
   ABI41_0_0UMCameraInterface: be8c85a4debae7bbabb0df68720642e11d0196d1
@@ -4081,7 +4085,7 @@ SPEC CHECKSUMS:
   ABI42_0_0ReactCommon: c3bb4c4691c125880ac8c6d6a13a44744059738a
   ABI42_0_0RNReanimated: c83b815abf46671c46634e2b3d3813e434ef174f
   ABI42_0_0RNScreens: 54491fe4857af5649b9bbcdb68f80bfaea9184df
-  ABI42_0_0stripe-react-native: 4dacb836ee43e10d08e4f126ca6976f2b00df508
+  ABI42_0_0stripe-react-native: a35a5ca9f6ef2d6761a1856e4db6eeff8ed15bc8
   ABI42_0_0UMAppLoader: dabb1f8c2f864f5559f314a0e027b6f9489d4687
   ABI42_0_0UMCore: 80a911c91edb192260601ffc5fd818e965d4aac3
   ABI42_0_0UMReactNativeAdapter: 17dc58444122eda6fd493dff06546882fe00bcf7
@@ -4228,8 +4232,9 @@ SPEC CHECKSUMS:
   ReactCommon: 149906e01aa51142707a10665185db879898e966
   RNReanimated: 9c13c86454bfd54dab7505c1a054470bfecd2563
   RNScreens: 2a71d74b4e530f051f5684c8111d7591176722cf
-  Stripe: 6cc7bb348f4b1fad111129f6ee40eb6682deaefb
-  stripe-react-native: 2598d45be4bad95f0c11a1dde7af185e8829bc67
+  Stripe: 57c6997c64042a3f5aedae9b76e331942f8b75d2
+  stripe-react-native: b98c63486a0b24aa5ae278cf7ea87aa524651fea
+  StripeCore: a6e50d58119a0c7601773b56f274db2d394dcdac
   UMAppLoader: a2f89c43ef303ef25947497f2166463506758924
   UMCore: 7187af6e861d1e9983f3b83db7040320851b435a
   UMReactNativeAdapter: 687fafb1c18b2bc874d2ca44f61d9101196dccd6
