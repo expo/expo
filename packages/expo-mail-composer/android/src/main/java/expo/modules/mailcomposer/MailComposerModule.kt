@@ -36,9 +36,8 @@ class MailComposerModule(
 
   @ExpoMethod
   fun composeAsync(options: ReadableArguments, promise: Promise) {
-    val intent = Intent(Intent.ACTION_SENDTO)
+    val intent = Intent(Intent.ACTION_SENDTO).apply { data = Uri.parse("mailto:") }
     val application = activityProvider.currentActivity.application
-    intent.data = Uri.parse("mailto:")
     val resolveInfo = context.packageManager.queryIntentActivities(intent, 0)
     val mailIntents = resolveInfo.map { info ->
       val isHtml = options.containsKey("isHtml") && options.getBoolean("isHtml")
@@ -61,7 +60,6 @@ class MailComposerModule(
         info.icon
       )
     }.toMutableList()
-    pendingPromise = promise
     val chooser = Intent.createChooser(
       mailIntents.removeAt(mailIntents.size - 1),
       null
@@ -70,6 +68,7 @@ class MailComposerModule(
       addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
       addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
     }
+    pendingPromise = promise
     context.startActivity(chooser)
     composerOpened = true
   }
@@ -78,15 +77,11 @@ class MailComposerModule(
     val promise = pendingPromise ?: return
     if (composerOpened) {
       composerOpened = false
-      val response = Bundle()
-      response.putString("status", "sent")
-      promise.resolve(response)
+      promise.resolve(Bundle().apply { putString("status", "sent") })
     }
   }
 
-  override fun onHostPause() {
-    // do nothing
-  }
+  override fun onHostPause() = Unit
 
   override fun onHostDestroy() {
     // do nothing

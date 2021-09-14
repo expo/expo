@@ -15,6 +15,7 @@ class MailIntentBuilder(
 ) {
   private val mailIntent = Intent(Intent.ACTION_SEND_MULTIPLE)
 
+  @Suppress("UNCHECKED_CAST")
   private fun getStringArrayFrom(key: String): Array<String?> {
     return (options.getList(key) as List<String?>).toTypedArray()
   }
@@ -31,12 +32,11 @@ class MailIntentBuilder(
 
   fun build() = mailIntent
 
-  fun setComponentName(pkg: String, cls: String): MailIntentBuilder {
+  fun setComponentName(pkg: String, cls: String) = apply {
     mailIntent.component = ComponentName(pkg, cls)
-    return this
   }
 
-  fun putExtraIfKeyExists(key: String, intentName: String): MailIntentBuilder {
+  fun putExtraIfKeyExists(key: String, intentName: String) = apply {
     if (options.containsKey(key)) {
       if (options.getList(key) != null) {
         mailIntent.putExtra(intentName, getStringArrayFrom(key))
@@ -44,10 +44,9 @@ class MailIntentBuilder(
         mailIntent.putExtra(intentName, options.getString(key))
       }
     }
-    return this
   }
 
-  fun putExtraIfKeyExists(key: String, intentName: String, isBodyHtml: Boolean): MailIntentBuilder {
+  fun putExtraIfKeyExists(key: String, intentName: String, isBodyHtml: Boolean) = apply {
     if (options.containsKey(key)) {
       val body = if (isBodyHtml) {
         Html.fromHtml(options.getString(key))
@@ -56,14 +55,13 @@ class MailIntentBuilder(
       }
       mailIntent.putExtra(intentName, body)
     }
-    return this
   }
 
   fun putParcelableArrayListExtraIfKeyExists(
     key: String,
     intentName: String,
     application: Application,
-  ): MailIntentBuilder {
+  ) = apply {
     try {
       if (options.containsKey(key)) {
         val requestedAttachments = getStringArrayFrom(key)
@@ -78,6 +76,5 @@ class MailIntentBuilder(
     } catch (error: IllegalArgumentException) {
       Log.e("ExpoMailComposer", "Illegal argument:", error)
     }
-    return this
   }
 }
