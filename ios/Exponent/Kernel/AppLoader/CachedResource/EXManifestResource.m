@@ -417,10 +417,9 @@ NSString * const EXRuntimeErrorDomain = @"incompatible-runtime";
     NSDictionary *metadata = userInfo[@"metadata"];
     NSArray *availableSDKVersions = metadata[@"availableSDKVersions"];
     NSString *sdkVersionRequired = [availableSDKVersions firstObject];
-
-    NSString *earliestSDKVersion = [self _earliestSdkVersionSupported];
-    formattedMessage = [NSString stringWithFormat:@"The project you requested uses Expo SDK v%@, but this copy of Expo Go "
-                        "requires at least v%@. The author needs to update their project to a newer Expo SDK version.", sdkVersionRequired, earliestSDKVersion];
+    NSString *supportedSDKVersions = [[EXVersions sharedInstance].versions[@"sdkVersions"] componentsJoinedByString:@", "];
+    
+    formattedMessage = [NSString stringWithFormat:@"This project uses SDK %@, but this version of Expo Go only supports the following SDKs: %@. To load the project, it must be updated to a supported SDK version or an older version of Expo Go must be used.", sdkVersionRequired, supportedSDKVersions];
   } else if ([errorCode isEqualToString:@"EXPERIENCE_SDK_VERSION_TOO_NEW"]) {
     formattedMessage = @"The project you requested requires a newer version of Expo Go. Please download the latest version from the App Store.";
   } else if ([errorCode isEqualToString:@"NO_COMPATIBLE_EXPERIENCE_FOUND"]){
