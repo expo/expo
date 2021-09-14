@@ -82,7 +82,6 @@ project.ext.react = [
 ]
 
 apply from: new File(["node", "--print", "require.resolve('react-native/package.json')"].execute().text.trim(), "../react.gradle")
-apply from: new File(["node", "--print", "require.resolve('expo-updates/package.json')"].execute().text.trim(), "../scripts/create-manifest-android.gradle")
 
 /**
  * Set this to true to create two separate APKs instead of one:
