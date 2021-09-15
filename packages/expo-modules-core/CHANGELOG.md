@@ -4,6 +4,16 @@
 
 ### 🛠 Breaking changes
 
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 0.3.2 — 2021-09-15
+
+### 🛠 Breaking changes
+
 - Dropped support for iOS 11.0 ([#14383](https://github.com/expo/expo/pull/14383) by [@cruzach](https://github.com/cruzach))
 
 ### 🎉 New features
@@ -13,8 +23,6 @@
 ### 🐛 Bug fixes
 
 - Revert prebuilt binaries on iOS to fix build errors. ([#14418](https://github.com/expo/expo/pull/14418) by [@kudo](https://github.com/kudo))
-
-### 💡 Others
 
 ## 0.3.1 — 2021-09-09
 

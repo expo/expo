@@ -98,7 +98,7 @@
     "@react-native-masked-view/masked-view": "0.2.5",
     "@react-native-picker/picker": "1.16.7",
     "@react-native-segmented-control/segmented-control": "2.4.0",
-    "expo": "~43.0.0-alpha.2",
+    "expo": "~43.0.0-alpha.3",
     "expo-camera": "~11.1.1",
     "expo-dev-client": "~0.5.1",
     "expo-error-recovery": "~2.3.0",
