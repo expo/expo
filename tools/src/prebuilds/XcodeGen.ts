@@ -24,7 +24,6 @@ const PLATFORMS_MAPPING: Record<string, ProjectSpecPlatform> = {
 };
 
 export const INFO_PLIST_FILENAME = 'Info-generated.plist';
-export const GENERATED_MODULEMAP_FILENAME = 'generated.modulemap';
 
 /**
  * Generates `.xcodeproj` from given project spec and saves it at given dir.
@@ -128,7 +127,6 @@ export async function createSpecFromPodspecAsync(
         IPHONEOS_DEPLOYMENT_TARGET: podspec.platforms.ios,
         FRAMEWORK_SEARCH_PATHS: constructFrameworkSearchPaths(dependencies),
         HEADER_SEARCH_PATHS: constructHeaderSearchPaths(dependenciesNames),
-        MODULEMAP_FILE: podspec.modulemap_file ?? '',
 
         // Suppresses deprecation warnings coming from frameworks like OpenGLES.
         VALIDATE_WORKSPACE_SKIPPED_SDK_FRAMEWORKS: arrayize(podspec.frameworks).join(' '),
@@ -213,46 +211,4 @@ function podNameToBundleId(podName: string): string {
     .replace(/^EX/, 'expo')
     .replace(/(\_|[^\w\d\.])+/g, '.')
     .replace(/\.*([A-Z]+)/g, (_, p1) => `.${p1.toLowerCase()}`);
-}
-
-/**
- * Generate custom modulemap for expo-modules-core which needs to make React-Core headers modular
- */
-export async function generateExpoModulesCoreModulemapAsync(destDir: string): Promise<string> {
-  const expoModulesCoreUmbrellaHeaderName = 'ExpoModulesCore-umbrella.h';
-  const expoModulesCoreUmbrellaHeader = path.join(
-    PODS_PUBLIC_HEADERS_DIR,
-    'ExpoModulesCore',
-    expoModulesCoreUmbrellaHeaderName
-  );
-  await fs.copyFile(
-    expoModulesCoreUmbrellaHeader,
-    path.join(destDir, expoModulesCoreUmbrellaHeaderName)
-  );
-
-  const reactCoreHeaderDir = path.join(PODS_PUBLIC_HEADERS_DIR, 'React-Core');
-  const yogaUmbrellaHeader = path.join(PODS_PUBLIC_HEADERS_DIR, 'Yoga', 'Yoga-umbrella.h');
-  const modulemapContent = `
-framework module ExpoModulesCore {
-  umbrella header "ExpoModulesCore.h"
-  export *
-  module * { export * }
-
-  module React {
-    umbrella "${reactCoreHeaderDir}"
-    export *
-    module * { export * }
-  }
-
-  module Yoga {
-    umbrella header "${yogaUmbrellaHeader}"
-    export *
-    module * { export * }
-  }
-}
-`;
-
-  const modulemapFile = path.join(destDir, GENERATED_MODULEMAP_FILENAME);
-  await fs.writeFile(modulemapFile, modulemapContent);
-  return modulemapFile;
 }
