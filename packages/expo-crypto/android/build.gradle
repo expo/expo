@@ -68,6 +68,7 @@ dependencies {
   implementation project(':expo-modules-core')
 
   implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${safeExtGet('kotlinVersion', '1.4.21')}"
+  implementation project(path: ':expo-modules-core')
 
   if (project.findProject(':unimodules-test-core')) {
     testImplementation project(':unimodules-test-core')
