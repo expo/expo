@@ -4,16 +4,13 @@ import android.content.Context
 import android.util.Base64
 
 import expo.modules.core.ExportedModule
-import expo.modules.core.ModuleRegistry
 import expo.modules.core.Promise
 import expo.modules.core.interfaces.ExpoMethod
 
 import java.security.MessageDigest
 import java.security.NoSuchAlgorithmException
 
-class CryptoModule(context: Context?) : ExportedModule(context) {
-  override fun onCreate(moduleRegistry: ModuleRegistry) { }
-
+class CryptoModule(context: Context) : ExportedModule(context) {
   override fun getName() = "ExpoCrypto"
 
   @ExpoMethod
