@@ -155,7 +155,7 @@ final class MediaLibraryUtils {
       promise.reject(ERROR_UNABLE_TO_LOAD_PERMISSION,
         "Could not get asset: need READ_EXTERNAL_STORAGE permission.", e);
     } catch (IOException e) {
-      promise.reject(ERROR_IO_EXCEPTION, "Could not read file or parse EXIF tags", e);
+      promise.reject(ERROR_IO_EXCEPTION, "Could not read file", e);
     }
   }
 
@@ -179,7 +179,12 @@ final class MediaLibraryUtils {
 
       ExifInterface exifInterface = null;
       if (mediaType == Files.FileColumns.MEDIA_TYPE_IMAGE) {
-        exifInterface = new ExifInterface(path);
+        try {
+          exifInterface = new ExifInterface(path);
+        } catch (IOException e) {
+          Log.w("expo-media-library", "Could not parse EXIF tags for " + localUri);
+          e.printStackTrace();
+        }
       }
 
       int[] size = getSizeFromCursor(contentResolver, exifInterface, cursor, mediaType, localUriIndex);
