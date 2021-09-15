@@ -36,8 +36,8 @@ class CryptoModule(context: Context?) : ExportedModule(context) {
       "hex" -> {
         val output = digest.joinToString(separator = "") {
           ((it.toInt() and 0xff) + 0x100)
-              .toString(16)
-              .substring(1)
+            .toString(16)
+            .substring(1)
         }
         promise.resolve(output)
       }
