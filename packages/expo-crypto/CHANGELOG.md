@@ -12,6 +12,7 @@
 
 ### 💡 Others
 
+- Rewrite android code to Kotlin.
 - Add tests. ([#13592](https://github.com/expo/expo/pull/13592) by [@mstach60161](https://github.com/mstach60161))
 - Migrated from `@unimodules/core` to `expo-modules-core`. ([#13757](https://github.com/expo/expo/pull/13757) by [@tsapeta](https://github.com/tsapeta))
 
