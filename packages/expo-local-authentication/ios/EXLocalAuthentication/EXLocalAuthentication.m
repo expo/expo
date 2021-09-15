@@ -60,6 +60,32 @@ EX_EXPORT_METHOD_AS(isEnrolledAsync,
   resolve(@(isEnrolled));
 }
 
+EX_EXPORT_METHOD_AS(isDeviceAuthenticationWithBiometricsEnrolledAsync,
+                    isDeviceAuthenticationWithBiometricsEnrolledAsync:(EXPromiseResolveBlock)resolve
+                    reject:(EXPromiseRejectBlock)reject)
+{
+  LAContext *context = [LAContext new];
+  NSError *error = nil;
+
+  BOOL isSupported = [context canEvaluatePolicy:LAPolicyDeviceOwnerAuthenticationWithBiometrics error:&error];
+  BOOL isEnrolled = isSupported && error == nil;
+
+  resolve(@(isEnrolled));
+}
+
+EX_EXPORT_METHOD_AS(isDeviceAuthenticationEnrolledAsync,
+                    isDeviceAuthenticationEnrolledAsync:(EXPromiseResolveBlock)resolve
+                    reject:(EXPromiseRejectBlock)reject)
+{
+  LAContext *context = [LAContext new];
+  NSError *error = nil;
+
+  BOOL isSupported = [context canEvaluatePolicy:LAPolicyDeviceOwnerAuthentication error:&error];
+  BOOL isEnrolled = isSupported && error == nil;
+
+  resolve(@(isEnrolled));
+}
+
 EX_EXPORT_METHOD_AS(getEnrolledLevelAsync,
                     getEnrolledLevelAsync:(EXPromiseResolveBlock)resolve
                     reject:(EXPromiseRejectBlock)reject)
