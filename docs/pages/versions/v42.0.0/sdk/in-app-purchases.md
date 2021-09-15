@@ -149,7 +149,7 @@ setPurchaseListener(({ responseCode, results, errorCode }) => {
 });
 ```
 
-### `InAppPurchases.purchaseItemAsync(productId: string, oldItem?: string)`
+### `InAppPurchases.purchaseItemAsync(productId: string, oldPurchaseToken?: string)`
 
 Initiates the purchase flow to buy the item associated with this `productId`. This will display a prompt to the user that will allow them to either buy the item or cancel the purchase. When the purchase completes, the result must be handled in the callback that you passed in to `setPurchaseListener`.
 
@@ -161,7 +161,7 @@ Remember, you have to query an item's details via `getProductsAsync` and set the
 
 - **productId (_string_)** -- The product ID of the item you want to buy.
 
-- **oldItem (_string_)** -- The product ID of the item that the user is upgrading or downgrading from. This is mandatory for replacing an old subscription such as when a user upgrades from a monthly subscription to a yearly one that provides the same content (Android only).
+- **oldPurchaseToken (_string_)** -- (Android only) The `purchaseToken` of the purchase that the user is upgrading or downgrading from. This is mandatory for replacing an old subscription such as when a user upgrades from a monthly subscription to a yearly one that provides the same content. You can get the purchase token from [`getPurchaseHistoryAsync`](#inapppurchasesgetpurchasehistoryasyncrefresh-boolean).
 
 #### Returns
 

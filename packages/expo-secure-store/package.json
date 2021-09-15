@@ -36,7 +36,7 @@
     "preset": "expo-module-scripts"
   },
   "dependencies": {
-    "expo-modules-core": "~0.3.1"
+    "expo-modules-core": "~0.3.2"
   },
   "devDependencies": {
     "expo-module-scripts": "^2.0.0"

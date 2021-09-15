@@ -7,7 +7,7 @@
   "scripts": {
     "setup:docs": "./scripts/download-dependencies.sh",
     "setup:native": "./scripts/download-dependencies.sh && ./scripts/setup-react-android.sh",
-    "postinstall": "expo-yarn-workspaces check-workspace-dependencies",
+    "postinstall": "yarn-deduplicate && expo-yarn-workspaces check-workspace-dependencies",
     "lint": "eslint .",
     "tsc": "echo 'You are trying to run \"tsc\" in the workspace root. Run it from an individual package instead.' && exit 1"
   },
@@ -25,12 +25,11 @@
     "react-native": "0.64.2"
   },
   "dependencies": {
-    "jsc-android": "^245459.0.0"
-  },
-  "devDependencies": {
     "@expo/config-types": "^42.0.0",
     "eslint": "^7.31.0",
     "expo-yarn-workspaces": "*",
-    "prettier": "^2.3.1"
+    "jsc-android": "^245459.0.0",
+    "prettier": "^2.3.1",
+    "yarn-deduplicate": "^3.1.0"
   }
 }
