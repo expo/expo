@@ -11,7 +11,7 @@
     "eject": "expo eject"
   },
   "dependencies": {
-    "expo": "~43.0.0-alpha.2",
+    "expo": "~43.0.0-alpha.3",
     "expo-status-bar": "~1.1.0",
     "react": "17.0.1",
     "react-dom": "17.0.1",
