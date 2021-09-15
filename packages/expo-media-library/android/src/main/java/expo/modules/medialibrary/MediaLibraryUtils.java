@@ -155,7 +155,7 @@ final class MediaLibraryUtils {
       promise.reject(ERROR_UNABLE_TO_LOAD_PERMISSION,
         "Could not get asset: need READ_EXTERNAL_STORAGE permission.", e);
     } catch (IOException e) {
-      promise.reject(ERROR_IO_EXCEPTION, "Could not read file or parse EXIF tags", e);
+      promise.reject(ERROR_IO_EXCEPTION, "Could not read file", e);
     }
   }
 
