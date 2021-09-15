@@ -128,7 +128,7 @@ export async function isDeviceAuthenticationWithBiometricsEnrolledAsync(): Promi
 /**
  * Determine whether the device has saved any data to use for authentication.
  * @return Returns a promise which fulfils to `boolean` value indicating whether the device has
- * saved fingerprints or facial data for authentication.
+ * saved any data for authentication.
  */
 export async function isDeviceAuthenticationEnrolledAsync(): Promise<boolean> {
   if (!ExpoLocalAuthentication.isDeviceAuthenticationEnrolledAsync) {
