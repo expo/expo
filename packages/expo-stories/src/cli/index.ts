@@ -21,7 +21,7 @@ initCommand
   )
   .option('-w --watchRoot <path>', 'the directory to search for .stories files', process.cwd())
   .option('--no-watch', 'disable watching source file changes', false)
-  .action(async options => {
+  .action(async (options) => {
     const pkgPath = path.resolve(process.cwd(), 'package.json');
 
     if (fs.existsSync(pkgPath)) {

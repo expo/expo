@@ -22,7 +22,7 @@ export function getStoryManifest(projectRoot: string): StoryManifest {
 
 export function getStories(config: StoryOptions) {
   const storyManifest = getStoryManifest(config.projectRoot);
-  const stories = Object.keys(storyManifest.files).map(key => {
+  const stories = Object.keys(storyManifest.files).map((key) => {
     return storyManifest.files[key];
   });
 
@@ -43,7 +43,7 @@ export function getStoriesFile(config: StoryOptions) {
 export function hashPath(filePath: string) {
   let id = filePath
     .split('/')
-    .map(substr => substr.replace(/[-.]/g, ''))
+    .map((substr) => substr.replace(/[-.]/g, ''))
     .join('');
 
   // if it starts with a digit, replace that digit with its char equivalent

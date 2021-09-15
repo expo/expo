@@ -10,6 +10,7 @@ test('hashPath() returns unique identifier', () => {
 test('hashPath() returns valid js identifier for paths with non-valid js characters', () => {
   const id = hashPath('/123/this/is/132my-component132.stories123.tsx');
   const template = `const ${id} = '123'`;
+  // eslint-disable-next-line
   expect(() => eval(template)).not.toThrowError();
 });
 

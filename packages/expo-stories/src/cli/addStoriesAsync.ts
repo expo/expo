@@ -14,14 +14,11 @@ export async function addStoriesAsync(relPaths: string[], config: StoryOptions) 
 
   // 2. update story manifest with new files
   await Promise.all(
-    relPaths.map(async relativePath => {
+    relPaths.map(async (relativePath) => {
       const fullPath = path.resolve(watchRoot, relativePath);
       const id = hashPath(fullPath);
 
-      const defaultTitle = relativePath
-        .split('/')
-        .pop()
-        ?.replace('.stories.tsx', '');
+      const defaultTitle = relativePath.split('/').pop()?.replace('.stories.tsx', '');
 
       const story = await parseStoryConfigAsync({
         id,
@@ -57,12 +54,12 @@ async function parseStoryConfigAsync(storyFile: StoryFile) {
     ...storyFile,
   };
 
-  parsed.body.forEach(node => {
+  parsed.body.forEach((node) => {
     if (node.type === 'ExportNamedDeclaration') {
       if (node.declaration !== null) {
         const { type } = node.declaration;
         if (type === 'VariableDeclaration') {
-          node.declaration.declarations.forEach(d => {
+          node.declaration.declarations.forEach((d) => {
             const name = d.id.name;
             storyData.stories.push({
               name,
@@ -83,7 +80,7 @@ async function parseStoryConfigAsync(storyFile: StoryFile) {
       }
 
       if (node.specifiers.length > 0) {
-        node.specifiers.forEach(specifier => {
+        node.specifiers.forEach((specifier) => {
           const name = specifier.exported.name;
           if (!storyData.stories.includes(name)) {
             storyData.stories.push({
@@ -96,10 +93,10 @@ async function parseStoryConfigAsync(storyFile: StoryFile) {
     }
   });
 
-  const defaultExport = parsed.body.find(node => node.type === 'ExportDefaultDeclaration');
+  const defaultExport = parsed.body.find((node) => node.type === 'ExportDefaultDeclaration');
 
   if (defaultExport) {
-    defaultExport.declaration.properties.forEach(property => {
+    defaultExport.declaration.properties.forEach((property) => {
       const key = property.key.name;
       const value = property.value.value;
 

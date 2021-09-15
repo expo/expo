@@ -18,12 +18,12 @@ export async function watchAsync(config: StoryOptions) {
   // watcher.on('change', relPath => {
   // });
 
-  watcher.on('add', async function(relPath: string) {
+  watcher.on('add', async function (relPath: string) {
     await addStoriesAsync([relPath], config);
     console.log(`Added ${relPath} file to stories`);
   });
 
-  watcher.on('delete', async function(relPath: string) {
+  watcher.on('delete', async function (relPath: string) {
     await removeStoryAsync(relPath, config);
     console.log(`Removed ${relPath} file from stories`);
   });

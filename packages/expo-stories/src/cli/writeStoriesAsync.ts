@@ -6,11 +6,11 @@ import { getStoriesDir, getStoryManifest } from './shared';
 
 export async function writeStoriesAsync(config: StoryOptions) {
   const storyManifest = getStoryManifest(config.projectRoot);
-  const stories = Object.keys(storyManifest.files).map(id => storyManifest.files[id]);
+  const stories = Object.keys(storyManifest.files).map((id) => storyManifest.files[id]);
 
   let template = `
       const storiesToExport = {}
-      ${stories.map(story => generateTemplateForStory(story)).join('')}
+      ${stories.map((story) => generateTemplateForStory(story)).join('')}
       module.exports = storiesToExport
     `;
 
@@ -27,10 +27,7 @@ export async function writeStoriesAsync(config: StoryOptions) {
 
 // the formatting of this template is important because it preserves fast refresh w/ metro
 function generateTemplateForStory(story: StoryFile) {
-  const defaultTitle = story.relativePath
-    .replace('.stories.tsx', '')
-    .split('/')
-    .pop();
+  const defaultTitle = story.relativePath.replace('.stories.tsx', '').split('/').pop();
 
   return `
     function ${story.id}Setup() {

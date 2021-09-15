@@ -70,10 +70,7 @@ function writeStoriesAsync(config) {
 exports.writeStoriesAsync = writeStoriesAsync;
 // the formatting of this template is important because it preserves fast refresh w/ metro
 function generateTemplateForStory(story) {
-    var defaultTitle = story.relativePath
-        .replace('.stories.tsx', '')
-        .split('/')
-        .pop();
+    var defaultTitle = story.relativePath.replace('.stories.tsx', '').split('/').pop();
     return "\n    function " + story.id + "Setup() {\n      const stories = require(\"" + story.fullPath + "\")\n      const file = stories.default || {}\n      file.id = \"" + story.id + "\"\n      file.title = file.title || '" + defaultTitle + "'\n\n      Object.keys(stories).forEach((key) => {\n        const Component = stories[key]\n        \n        if (typeof Component === \"function\") {\n          const storyId = \"" + story.id + "\" + \"_\" + key\n          \n          Component.storyConfig = {\n            id: storyId,\n            name: key,\n            ...Component.storyConfig,\n          }\n\n          Component.file = file\n\n          storiesToExport[storyId] = Component \n        }\n      })\n    }\n\n    " + story.id + "Setup()\n  ";
 }
 //# sourceMappingURL=writeStoriesAsync.js.map

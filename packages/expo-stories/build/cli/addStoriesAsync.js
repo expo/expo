@@ -74,9 +74,7 @@ function addStoriesAsync(relPaths, config) {
                                     case 0:
                                         fullPath = path_1.default.resolve(watchRoot, relativePath);
                                         id = shared_1.hashPath(fullPath);
-                                        defaultTitle = (_a = relativePath
-                                            .split('/')
-                                            .pop()) === null || _a === void 0 ? void 0 : _a.replace('.stories.tsx', '');
+                                        defaultTitle = (_a = relativePath.split('/').pop()) === null || _a === void 0 ? void 0 : _a.replace('.stories.tsx', '');
                                         return [4 /*yield*/, parseStoryConfigAsync({
                                                 id: id,
                                                 fullPath: fullPath,
