@@ -24,7 +24,13 @@ static NSPointerArray *currentFontProcessors;
          scaleMultiplier:(CGFloat)scaleMultiplier
 {
   UIFont *font;
-  for (id<EXFontProcessorInterface> fontProcessor in currentFontProcessors) {
+  // Here, we extend a broken React Native function that has thread saftey issues,
+  // if the app is reloaded multiple times, it has increased potential of crashing due to:
+  // `Thread 163: "*** Collection <NSConcretePointerArray: 0x600003088000> was mutated while being enumerated."`
+  // https://github.com/facebook/react-native/blob/1ecd98adc7b18504600fc7e9d56c7b4c9a090abd/Libraries/Text/RCTTextAttributes.m#L195
+  // For now, we'll skip over the array's enumerator, and using a loop.
+  for (int i = 0; i < currentFontProcessors.count; i++) {
+    id<EXFontProcessorInterface> fontProcessor = [currentFontProcessors pointerAtIndex:i];
     font = [fontProcessor updateFont:uiFont withFamily:family size:size weight:weight style:style variant:variant scaleMultiplier:scaleMultiplier];
     if (font) {
       return font;
