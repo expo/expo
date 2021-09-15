@@ -20,7 +20,7 @@
 # pragma mark - Field Getters
 
 - (NSString *)legacyId {
-  return [self.rawManifestJSON nullableStringForKey:@"id"];
+  return [self.rawManifestJSON stringForKey:@"id"];
 }
 
 - (nullable NSString *)revisionId {
