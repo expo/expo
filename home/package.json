@@ -80,6 +80,7 @@
     "@types/react-redux": "^7.1.16",
     "@types/semver": "^7.3.6",
     "@types/sha1": "^1.1.2",
+    "@types/lodash": "^4.14.161",
     "jest-expo": "~42.0.0",
     "react-native-bundle-visualizer": "^2.2.1",
     "uuid": "^3.3.2"
