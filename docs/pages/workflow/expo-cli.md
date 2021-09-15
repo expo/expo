@@ -36,6 +36,8 @@ Run `yarn introspect md` in expo-cli/packages/expo-cli then paste the results be
 
 <!-- BEGIN GENERATED BLOCK. DO NOT MODIFY MANUALLY. https://github.com/expo/expo-cli/blob/master/packages/expo-cli/scripts/introspect.ts -->
 
+> Based on `expo-cli` v4.11.0
+
 ---
 
 ### Core
