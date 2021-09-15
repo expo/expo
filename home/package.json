@@ -8,7 +8,7 @@
     "postinstall": "expo-yarn-workspaces postinstall",
     "test": "jest",
     "lint": "eslint .",
-    "report": "npx react-native-bundle-visualizer --entry-file __generated__/AppEntry.js",
+    "report": "react-native-bundle-visualizer --entry-file __generated__/AppEntry.js",
     "generate-graphql-code": "graphql-codegen --config graphql-codegen.yml"
   },
   "author": "Expo",
@@ -80,8 +80,9 @@
     "@types/react-redux": "^7.1.16",
     "@types/semver": "^7.3.6",
     "@types/sha1": "^1.1.2",
+    "expo-module-scripts": "^2.0.0",
     "jest-expo": "~42.0.0",
-    "react-native-bundle-visualizer": "^2.2.1",
+    "react-native-bundle-visualizer": "^3.0.0",
     "uuid": "^3.3.2"
   }
 }
