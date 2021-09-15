@@ -12,6 +12,8 @@
 
 ### 🐛 Bug fixes
 
+- Revert prebuilt binaries on iOS to fix build errors. ([#14418](https://github.com/expo/expo/pull/14418) by [@kudo](https://github.com/kudo))
+
 ### 💡 Others
 
 ## 0.3.1 — 2021-09-09
