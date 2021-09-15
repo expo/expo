@@ -3,7 +3,7 @@ description: 'You have a question about Expo or want to discuss some aspects of 
 body:
   - type: markdown
     attributes:
-      value: If you have a question about Expo or want to discuss about related aspects, please post it on our forums at https://forums.expo.io/.
+      value: If you have a question about Expo or want to discuss about related aspects, please post it on our forums at https://forums.expo.dev/ or join our Discord at https://chat.expo.dev/.
   - type: dropdown
     attributes:
       label: Do you understand that any discussions or questions opened as issues in the core Expo repository will be closed?
