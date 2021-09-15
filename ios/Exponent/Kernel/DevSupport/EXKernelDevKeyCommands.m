@@ -100,11 +100,15 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
       }
     }
     
-    if (firstResponder && [firstResponder isKindOfClass: [UITextField class]]) {
-      // call the original swizzled method
-      [self EX_handleKeyUIEventSwizzle:event];
-    } else {
-      [EXKernelDevKeyCommands handleKeyboardEvent:event];
+    if (firstResponder) {
+      BOOL isTextField = [firstResponder isKindOfClass: [UITextField class]] || [firstResponder isKindOfClass: [UITextView class]];
+      
+      if (isTextField) {
+        // Call the original swizzled method
+        [self EX_handleKeyUIEventSwizzle:event];
+      } else {
+        [EXKernelDevKeyCommands handleKeyboardEvent:event];
+      }
     }
   }
 };
