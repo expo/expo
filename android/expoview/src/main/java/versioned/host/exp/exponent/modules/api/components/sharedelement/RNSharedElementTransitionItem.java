@@ -1,23 +1,23 @@
 package versioned.host.exp.exponent.modules.api.components.sharedelement;
 
-import android.util.Log;
+// import android.util.Log;
 import android.view.View;
 import android.view.ViewParent;
 import android.view.ViewGroup;
-import android.graphics.Rect;
+import android.graphics.RectF;
 
 class RNSharedElementTransitionItem {
-  static private String LOG_TAG = "RNSharedElementTransitionItem";
+  // static private final String LOG_TAG = "RNSharedElementTransitionItem";
 
-  private RNSharedElementNodeManager mNodeManager;
-  private String mName;
+  private final RNSharedElementNodeManager mNodeManager;
+  private final String mName;
   private RNSharedElementNode mNode;
   private boolean mHidden;
   private boolean mNeedsStyle;
   private RNSharedElementStyle mStyle;
   private boolean mNeedsContent;
   private RNSharedElementContent mContent;
-  private Rect mClippedLayoutCache;
+  private RectF mClippedLayoutCache;
   private boolean mHasCalledOnMeasure;
 
   RNSharedElementTransitionItem(RNSharedElementNodeManager nodeManager, String name) {
@@ -119,29 +119,23 @@ class RNSharedElementTransitionItem {
     return (mNode != null) ? mNode.getResolvedView() : null;
   }
 
-  Rect getClippedLayout() {
+  RectF getClippedLayout() {
     if (mClippedLayoutCache != null) return mClippedLayoutCache;
     if (mStyle == null) return null;
 
-    View view = getView();
     View ancestorView = mNode.getAncestorView();
 
     // Get visible area (some parts may be clipped in a scrollview or something)
-    Rect clippedLayout = new Rect(mStyle.layout);
-    ViewParent parentView = view.getParent();
-    int[] location = new int[2];
-    Rect bounds = new Rect();
+    RectF clippedLayout = new RectF(mStyle.layout);
+    ViewParent parentView = getView().getParent();
+    RectF bounds = new RectF();
     while (parentView != null) {
       if (!(parentView instanceof ViewGroup)) break;
       ViewGroup viewGroup = (ViewGroup) parentView;
-      viewGroup.getLocationOnScreen(location);
-
-      bounds.left = location[0];
-      bounds.top = location[1];
-      bounds.right = location[0] + (viewGroup.getWidth());
-      bounds.bottom = location[1] + (viewGroup.getHeight());
 
       if (viewGroup.getClipChildren()) {
+        RNSharedElementStyle.getLayoutOnScreen(viewGroup, bounds);
+
         if (!clippedLayout.intersect(bounds)) {
           if (clippedLayout.bottom < bounds.top) {
             clippedLayout.top = bounds.top;
@@ -165,7 +159,6 @@ class RNSharedElementTransitionItem {
       if (parentView == ancestorView) {
         break;
       }
-      view = (View) parentView;
       parentView = parentView.getParent();
     }
 

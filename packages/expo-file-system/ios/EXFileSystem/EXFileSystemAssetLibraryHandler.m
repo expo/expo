@@ -7,8 +7,8 @@
 
 + (void)getInfoForFile:(NSURL *)fileUri
            withOptions:(NSDictionary *)options
-              resolver:(UMPromiseResolveBlock)resolve
-              rejecter:(UMPromiseRejectBlock)reject
+              resolver:(EXPromiseResolveBlock)resolve
+              rejecter:(EXPromiseRejectBlock)reject
 {
   NSError *error;
   PHFetchResult<PHAsset *> *fetchResult = [self fetchResultForUri:fileUri error:&error];
@@ -41,8 +41,8 @@
 
 + (void)copyFrom:(NSURL *)from
               to:(NSURL *)to
-        resolver:(UMPromiseResolveBlock)resolve
-        rejecter:(UMPromiseRejectBlock)reject
+        resolver:(EXPromiseResolveBlock)resolve
+        rejecter:(EXPromiseRejectBlock)reject
 {
   NSString *toPath = [to.path stringByStandardizingPath];
   
@@ -126,8 +126,8 @@
 
 + (void)copyData:(NSData *)data
           toPath:(NSString *)path
-        resolver:(UMPromiseResolveBlock)resolve
-        rejecter:(UMPromiseRejectBlock)reject
+        resolver:(EXPromiseResolveBlock)resolve
+        rejecter:(EXPromiseRejectBlock)reject
 {
   if ([data writeToFile:path atomically:YES]) {
     resolve(nil);

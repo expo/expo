@@ -31,7 +31,7 @@ public class EXDevLauncherRecentlyOpenedAppsRegistry : NSObject {
   @objc
   public func recentlyOpenedApps() -> [String: Any] {
     var result = [String: Any]()
-    guard var registry = appRegistry as? [String: [String: Any]] else {
+    guard let registry = appRegistry as? [String: [String: Any]] else {
       return [:]
     }
     
@@ -47,7 +47,7 @@ public class EXDevLauncherRecentlyOpenedAppsRegistry : NSObject {
     return result
   }
   
-  private func getCurrentTimestamp() -> Int64 {
+  func getCurrentTimestamp() -> Int64 {
     return Int64(Date().timeIntervalSince1970 * 1000);
   }
 }

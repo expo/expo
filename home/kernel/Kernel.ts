@@ -13,7 +13,9 @@ export enum ExpoClientReleaseType {
   APPLE_APP_STORE = 'APPLE_APP_STORE',
 }
 
-export const sdkVersions: string[] = NativeKernel.sdkVersions;
+export const sdkVersions: string = Array.isArray(NativeKernel.sdkVersions)
+  ? NativeKernel.sdkVersions.join(',')
+  : NativeKernel.sdkVersions;
 
 export const iosClientReleaseType: ExpoClientReleaseType =
   NativeKernel.IOSClientReleaseType || ExpoClientReleaseType.UNKNOWN;

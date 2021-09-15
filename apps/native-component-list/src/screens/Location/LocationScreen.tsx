@@ -16,7 +16,7 @@ function SubscriptionDemo(props: SubscriptionDemoProps) {
   const [subscription, setSubscription] = React.useState<Subscription | null>(null);
 
   const toggle = React.useCallback(
-    async setValue => {
+    async (setValue) => {
       if (subscription) {
         setValue(undefined);
         subscription.remove();
@@ -107,12 +107,12 @@ export default class LocationScreen extends React.Component<{
         />
         <SubscriptionDemo
           title="watchPositionAsync"
-          subscribe={setValue => Location.watchPositionAsync({}, setValue)}
+          subscribe={(setValue) => Location.watchPositionAsync({}, setValue)}
         />
         <SimpleActionDemo title="getHeadingAsync" action={() => Location.getHeadingAsync()} />
         <SubscriptionDemo
           title="watchHeadingAsync"
-          subscribe={setValue => Location.watchHeadingAsync(setValue)}
+          subscribe={(setValue) => Location.watchHeadingAsync(setValue)}
         />
         {this.renderLocationMapButton()}
       </ScrollView>

@@ -1,7 +1,7 @@
 package expo.modules.imagepicker.fileproviders
 
 import expo.modules.imagepicker.ImagePickerConstants
-import org.unimodules.core.utilities.FileUtilities
+import expo.modules.core.utilities.FileUtilities
 import java.io.File
 
 class CacheFileProvider(

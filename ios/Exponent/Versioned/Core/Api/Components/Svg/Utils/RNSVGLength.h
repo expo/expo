@@ -1,4 +1,4 @@
-#import <UIKit/UIKit.h>
+#import "RNSVGUIKit.h"
 
 #ifndef RNSVGLength_h
 #define RNSVGLength_h

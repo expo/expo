@@ -1,5 +1,5 @@
+import { PermissionResponse, PermissionStatus, PermissionExpiration, PermissionHookOptions } from 'expo-modules-core';
 import { ViewProps } from 'react-native';
-import { PermissionResponse, PermissionStatus, PermissionExpiration } from 'unimodules-permissions-interface';
 export declare enum CameraType {
     /**
      * @platforms ios, android, web
@@ -84,6 +84,31 @@ export declare enum ImageType {
     png = "png",
     jpg = "jpg"
 }
+/**
+ * This option specifies what codec to use when recording a video.
+ */
+export declare enum VideoCodec {
+    /**
+     * @platforms ios
+     */
+    H264 = "avc1",
+    /**
+     * @platforms ios
+     */
+    HEVC = "hvc1",
+    /**
+     * @platforms ios
+     */
+    JPEG = "jpeg",
+    /**
+     * @platforms ios
+     */
+    AppleProRes422 = "apcn",
+    /**
+     * @platforms ios
+     */
+    AppleProRes4444 = "ap4h"
+}
 export declare type ImageParameters = {
     imageType: ImageType;
     quality: number | null;
@@ -132,6 +157,7 @@ export declare type CameraRecordingOptions = {
     mute?: boolean;
     mirror?: boolean;
     videoBitrate?: number;
+    codec?: VideoCodec;
 };
 export declare type CameraCapturedPicture = {
     width: number;
@@ -199,6 +225,7 @@ export declare type ConstantsType = {
     WhiteBalance: typeof WhiteBalance;
     VideoQuality: any;
     VideoStabilization: any;
+    VideoCodec: typeof VideoCodec;
 };
 export declare type CameraProps = ViewProps & {
     type?: number | keyof typeof CameraType;
@@ -254,4 +281,4 @@ export declare type BarCodeSettings = {
     barCodeTypes: string[];
     interval?: number;
 };
-export { PermissionResponse, PermissionStatus, PermissionExpiration };
+export { PermissionResponse, PermissionStatus, PermissionExpiration, PermissionHookOptions };

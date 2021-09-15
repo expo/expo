@@ -3,7 +3,7 @@
 
 namespace reanimated {
 
-std::unique_ptr<LoggerInterface> Logger::instance = std::unique_ptr<REAIOSLogger>(new REAIOSLogger());
+std::unique_ptr<LoggerInterface> Logger::instance = std::make_unique<REAIOSLogger>();
 
 void REAIOSLogger::log(const char* str) {
   NSLog(@"%@", [NSString stringWithCString:str encoding:[NSString defaultCStringEncoding]]);

@@ -15,6 +15,7 @@
 @interface AIRGoogleMapOverlay()
   @property (nonatomic, strong, readwrite) UIImage *overlayImage;
   @property (nonatomic, readwrite) GMSCoordinateBounds *overlayBounds;
+  @property (nonatomic) CLLocationDirection bearing;
 @end
 
 @implementation AIRGoogleMapOverlay {
@@ -73,6 +74,12 @@
                                                         coordinate:_northEast];
 
   _overlay.bounds = _overlayBounds;
+}
+
+- (void)setBearing:(double)bearing
+{
+    _bearing = (double)bearing;
+    _overlay.bearing = _bearing;
 }
 
 - (void)setOpacity:(CGFloat)opacity

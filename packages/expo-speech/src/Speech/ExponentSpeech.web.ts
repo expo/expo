@@ -1,4 +1,4 @@
-import { SyntheticPlatformEmitter, CodedError } from '@unimodules/core';
+import { SyntheticPlatformEmitter, CodedError } from 'expo-modules-core';
 
 import { SpeechOptions, WebVoice, VoiceQuality } from './Speech.types';
 
@@ -66,7 +66,7 @@ export default {
   },
   getVoices(): WebVoice[] {
     const voices = window.speechSynthesis.getVoices();
-    return voices.map(voice => ({
+    return voices.map((voice) => ({
       identifier: voice.voiceURI,
       quality: VoiceQuality.Default,
       isDefault: voice.default,

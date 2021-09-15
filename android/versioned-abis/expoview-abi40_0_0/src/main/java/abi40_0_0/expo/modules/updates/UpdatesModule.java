@@ -19,7 +19,7 @@ import expo.modules.updates.db.entity.AssetEntity;
 import expo.modules.updates.db.entity.UpdateEntity;
 import expo.modules.updates.launcher.Launcher;
 import expo.modules.updates.loader.FileDownloader;
-import expo.modules.updates.manifest.Manifest;
+import expo.modules.updates.manifest.UpdateManifest;
 import expo.modules.updates.loader.RemoteLoader;
 
 public class UpdatesModule extends ExportedModule {
@@ -58,7 +58,7 @@ public class UpdatesModule extends ExportedModule {
         UpdateEntity launchedUpdate = updatesService.getLaunchedUpdate();
         if (launchedUpdate != null) {
           constants.put("updateId", launchedUpdate.id.toString());
-          constants.put("manifestString", launchedUpdate.metadata != null ? launchedUpdate.metadata.toString() : "{}");
+          constants.put("manifestString", launchedUpdate.manifest != null ? launchedUpdate.manifest.toString() : "{}");
         }
 
         Map<AssetEntity, String> localAssetFiles = updatesService.getLocalAssetFiles();
@@ -130,21 +130,21 @@ public class UpdatesModule extends ExportedModule {
         }
 
         @Override
-        public void onSuccess(Manifest manifest) {
+        public void onSuccess(UpdateManifest updateManifest) {
           UpdateEntity launchedUpdate = updatesService.getLaunchedUpdate();
           Bundle updateInfo = new Bundle();
           if (launchedUpdate == null) {
             // this shouldn't ever happen, but if we don't have anything to compare
             // the new manifest to, let the user know an update is available
             updateInfo.putBoolean("isAvailable", true);
-            updateInfo.putString("manifestString", manifest.getRawManifestJson().toString());
+            updateInfo.putString("manifestString", updateManifest.getManifest().toString());
             promise.resolve(updateInfo);
             return;
           }
 
-          if (updatesService.getSelectionPolicy().shouldLoadNewUpdate(manifest.getUpdateEntity(), launchedUpdate, null)) {
+          if (updatesService.getSelectionPolicy().shouldLoadNewUpdate(updateManifest.getUpdateEntity(), launchedUpdate, null)) {
             updateInfo.putBoolean("isAvailable", true);
-            updateInfo.putString("manifestString", manifest.getRawManifestJson().toString());
+            updateInfo.putString("manifestString", updateManifest.getManifest().toString());
             promise.resolve(updateInfo);
           } else {
             updateInfo.putBoolean("isAvailable", false);
@@ -185,9 +185,9 @@ public class UpdatesModule extends ExportedModule {
               }
 
               @Override
-              public boolean onManifestLoaded(Manifest manifest) {
+              public boolean onUpdateManifestLoaded(UpdateManifest updateManifest) {
                 return updatesService.getSelectionPolicy().shouldLoadNewUpdate(
-                  manifest.getUpdateEntity(),
+                  updateManifest.getUpdateEntity(),
                   updatesService.getLaunchedUpdate(),
                   null);
               }
@@ -200,7 +200,7 @@ public class UpdatesModule extends ExportedModule {
                   updateInfo.putBoolean("isNew", false);
                 } else {
                   updateInfo.putBoolean("isNew", true);
-                  updateInfo.putString("manifestString", update.metadata.toString());
+                  updateInfo.putString("manifestString", update.manifest.toString());
                 }
                 promise.resolve(updateInfo);
               }

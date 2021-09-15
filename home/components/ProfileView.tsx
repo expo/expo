@@ -1,8 +1,9 @@
 import { StackScreenProps } from '@react-navigation/stack';
+import { Project } from 'components/ProjectList';
 import dedent from 'dedent';
 import { take, takeRight } from 'lodash';
 import React from 'react';
-import { ActivityIndicator, Image, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, Image, StyleSheet, View } from 'react-native';
 import FadeIn from 'react-native-fade-in-image';
 
 import Colors from '../constants/Colors';
@@ -94,7 +95,7 @@ export default function ProfileView({ navigation, loading, error, refetch, data 
     );
   }
 
-  if (loading) {
+  if (loading && !isRefreshing) {
     return (
       <View style={{ flex: 1, padding: 30, alignItems: 'center' }}>
         <ActivityIndicator color={Colors.light.tintColor} />
@@ -109,10 +110,10 @@ export default function ProfileView({ navigation, loading, error, refetch, data 
       style={styles.container}>
       {data?.me && (
         <>
-          <ProfileHeader data={data} />
-          <ProfileAccountsSection data={data} navigation={navigation} />
-          <ProfileProjectsSection data={data} navigation={navigation} />
-          <ProfileSnacksSection data={data} navigation={navigation} />
+          <ProfileHeader me={data.me} />
+          <ProfileAccountsSection accounts={data.me.accounts} navigation={navigation} />
+          <ProfileProjectsSection me={data.me} navigation={navigation} />
+          <ProfileSnacksSection snacks={data.me.snacks} navigation={navigation} />
         </>
       )}
     </ScrollView>
@@ -142,7 +143,7 @@ function ProfileErrorView({
         {isConnectionError ? NETWORK_ERROR_TEXT : SERVER_ERROR_TEXT}
       </StyledText>
 
-      <PrimaryButton plain onPress={onRefresh} fallback={TouchableOpacity}>
+      <PrimaryButton plain onPress={onRefresh}>
         Try again
       </PrimaryButton>
 
@@ -155,8 +156,8 @@ function ProfileErrorView({
   );
 }
 
-function ProfileHeader({ data }: { data: NonNullable<Props['data']> }) {
-  const { firstName, lastName, profilePhoto } = data.me;
+function ProfileHeader({ me }: { me: NonNullable<NonNullable<Props['data']>['me']> }) {
+  const { firstName, lastName, profilePhoto } = me;
   return (
     <StyledView style={styles.header} darkBackgroundColor="#000" darkBorderColor="#000">
       <View style={styles.headerAvatarContainer}>
@@ -169,7 +170,7 @@ function ProfileHeader({ data }: { data: NonNullable<Props['data']> }) {
       </StyledText>
       <View style={styles.headerAccountName}>
         <StyledText style={styles.headerAccountText} lightColor="#232B3A" darkColor="#ccc">
-          @{data.me.username}
+          @{me.username}
         </StyledText>
       </View>
     </StyledView>
@@ -177,16 +178,15 @@ function ProfileHeader({ data }: { data: NonNullable<Props['data']> }) {
 }
 
 function ProfileAccountsSection({
-  data,
+  accounts,
   navigation,
 }: Pick<Props, 'navigation'> & {
-  data: NonNullable<Props['data']>;
+  accounts: NonNullable<NonNullable<Props['data']>['me']>['accounts'];
 }) {
   const onPressAccount = (accountName: string) => {
     navigation.navigate('Account', { accountName });
   };
 
-  const accounts = data.me.accounts;
   if (accounts.length === 1) {
     return null;
   }
@@ -211,16 +211,16 @@ function ProfileAccountsSection({
 }
 
 function ProfileProjectsSection({
-  data,
+  me,
   navigation,
 }: Pick<Props, 'navigation'> & {
-  data: NonNullable<Props['data']>;
+  me: NonNullable<NonNullable<Props['data']>['me']>;
 }) {
   const onPressProjectList = () => {
     navigation.navigate('ProfileAllProjects', {});
   };
 
-  const renderApp = (app: any, i: number) => {
+  const renderApp = (app: Project, i: number) => {
     return (
       <ProjectListItem
         key={i}
@@ -230,13 +230,13 @@ function ProfileProjectsSection({
         title={app.name}
         sdkVersion={app.sdkVersion}
         subtitle={app.packageName || app.fullName}
-        experienceInfo={{ username: app.username, slug: app.packageName }}
+        experienceInfo={{ id: app.id, username: app.username, slug: app.packageName }}
       />
     );
   };
 
   const renderContents = () => {
-    const apps = data.me.apps;
+    const apps = me.apps;
     if (!apps.length) {
       return <EmptyAccountProjectsNotice />;
     }
@@ -246,7 +246,7 @@ function ProfileProjectsSection({
         {take(apps, MAX_APPS_TO_DISPLAY).map(renderApp)}
         <SeeAllProjectsButton
           apps={otherApps}
-          appCount={data.me.appCount - MAX_APPS_TO_DISPLAY}
+          appCount={me.appCount - MAX_APPS_TO_DISPLAY}
           onPress={onPressProjectList}
         />
       </>
@@ -262,16 +262,14 @@ function ProfileProjectsSection({
 }
 
 function ProfileSnacksSection({
-  data,
+  snacks,
   navigation,
 }: Pick<Props, 'navigation'> & {
-  data: NonNullable<Props['data']>;
+  snacks: NonNullable<NonNullable<Props['data']>['me']>['snacks'];
 }) {
   const onPressSnackList = () => {
     navigation.navigate('ProfileAllSnacks', {});
   };
-
-  const snacks = data.me.snacks;
 
   const renderSnack = (snack: any, i: number) => {
     return (

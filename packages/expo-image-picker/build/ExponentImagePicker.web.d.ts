@@ -1,4 +1,4 @@
-import { PermissionResponse } from 'unimodules-permissions-interface';
+import { PermissionResponse } from 'expo-modules-core';
 import { ImagePickerMultipleResult, ImagePickerResult, MediaTypeOptions } from './ImagePicker.types';
 declare const _default: {
     readonly name: string;

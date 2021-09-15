@@ -24,15 +24,15 @@
   return self;
 }
 
-- (WKProcessPool *)sharedProcessPoolForExperienceId:(NSString *)experienceId
+- (WKProcessPool *)sharedProcessPoolForScopeKey:(NSString *)scopeKey
 {
-  if (!experienceId) {
+  if (!scopeKey) {
     return [self sharedProcessPool];
   }
-  if (!_pools[experienceId]) {
-    _pools[experienceId] = [[WKProcessPool alloc] init];
+  if (!_pools[scopeKey]) {
+    _pools[scopeKey] = [[WKProcessPool alloc] init];
   }
-  return _pools[experienceId];
+  return _pools[scopeKey];
 }
 
 

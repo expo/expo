@@ -24,3 +24,5 @@ export async function openCamera(): Promise<void> {
 export function addDeepLinkListener(callback: (string) => void): EventSubscription {
   return EventEmitter.addListener(ON_NEW_DEEP_LINK_EVENT, callback);
 }
+
+export const clientUrlScheme = DevLauncher.clientUrlScheme;

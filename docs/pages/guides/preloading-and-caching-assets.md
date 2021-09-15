@@ -102,7 +102,7 @@ See a full working example in [this Expo template project](https://github.com/ex
 
 ### Publishing Assets
 
-When you publish your project, it will upload your assets to the CDN so that they may be fetched when users run your app. However, in order for assets to be uploaded to the CDN they must be explicitly required somewhere in your application's code. Conditionally requiring assets will result in the packager being unable to detect them and therefore they will not be uploaded when you publish your project.
+When you publish your project, it will upload your assets to the CDN so that they may be fetched when users run your app. However, in order for assets to be uploaded to the CDN they must be explicitly required somewhere in your application's code. Conditionally requiring assets will result in the bundler being unable to detect them and therefore they will not be uploaded when you publish your project.
 
 ### Optimizing Assets
 

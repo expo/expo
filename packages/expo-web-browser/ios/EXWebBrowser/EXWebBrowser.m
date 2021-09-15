@@ -3,7 +3,7 @@
 #import <SafariServices/SafariServices.h>
 #import <EXWebBrowser/EXWebBrowser.h>
 
-#import <UMCore/UMUtilities.h>
+#import <ExpoModulesCore/EXUtilities.h>
 
 static NSString* const WebBrowserErrorCode = @"WebBrowser";
 static NSString* const WebBrowserControlsColorKey = @"controlsColor";
@@ -11,9 +11,9 @@ static NSString* const WebBrowserToolbarColorKey = @"toolbarColor";
 
 @interface EXWebBrowser () <SFSafariViewControllerDelegate>
 
-@property (nonatomic, copy) UMPromiseResolveBlock redirectResolve;
-@property (nonatomic, copy) UMPromiseRejectBlock redirectReject;
-@property (nonatomic, weak) UMModuleRegistry *moduleRegistry;
+@property (nonatomic, copy) EXPromiseResolveBlock redirectResolve;
+@property (nonatomic, copy) EXPromiseRejectBlock redirectReject;
+@property (nonatomic, weak) EXModuleRegistry *moduleRegistry;
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wpartial-availability"
@@ -27,18 +27,18 @@ static NSString* const WebBrowserToolbarColorKey = @"toolbarColor";
   UIStatusBarStyle _initialStatusBarStyle;
 }
 
-UM_EXPORT_MODULE(ExpoWebBrowser)
+EX_EXPORT_MODULE(ExpoWebBrowser)
 
 - (dispatch_queue_t)methodQueue
 {
   return dispatch_get_main_queue();
 }
 
-UM_EXPORT_METHOD_AS(openAuthSessionAsync,
+EX_EXPORT_METHOD_AS(openAuthSessionAsync,
                     openAuthSessionAsync:(NSString *)authURL
                     redirectURL:(NSString *)redirectURL
-                    resolver:(UMPromiseResolveBlock)resolve
-                    rejecter:(UMPromiseRejectBlock)reject)
+                    resolver:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
 {
   [self initializeWebBrowserWithResolver:resolve andRejecter:reject];
 
@@ -79,11 +79,11 @@ UM_EXPORT_METHOD_AS(openAuthSessionAsync,
 }
 
 
-UM_EXPORT_METHOD_AS(openBrowserAsync,
+EX_EXPORT_METHOD_AS(openBrowserAsync,
                     openBrowserAsync:(NSString *)authURL
                     withArguments:(NSDictionary *)arguments
-                    resolver:(UMPromiseResolveBlock)resolve
-                    rejecter:(UMPromiseRejectBlock)reject)
+                    resolver:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
 {
   if (![self initializeWebBrowserWithResolver:resolve andRejecter:reject]) {
     return;
@@ -102,17 +102,15 @@ UM_EXPORT_METHOD_AS(openBrowserAsync,
     safariVC = [[SFSafariViewController alloc] initWithURL:url entersReaderIfAvailable:readerMode];
   }
 
-  if (@available(iOS 11.0, *)) {
-    NSString *dismissButtonStyle = [arguments valueForKey:@"dismissButtonStyle"];
-    if ([@"done" isEqualToString:dismissButtonStyle]) {
-      safariVC.dismissButtonStyle = SFSafariViewControllerDismissButtonStyleDone;
-    }
-    else if ([@"close" isEqualToString:dismissButtonStyle]) {
-      safariVC.dismissButtonStyle = SFSafariViewControllerDismissButtonStyleClose;
-    }
-    else if ([@"cancel" isEqualToString:dismissButtonStyle]) {
-      safariVC.dismissButtonStyle = SFSafariViewControllerDismissButtonStyleCancel;
-    }
+  NSString *dismissButtonStyle = [arguments valueForKey:@"dismissButtonStyle"];
+  if ([@"done" isEqualToString:dismissButtonStyle]) {
+    safariVC.dismissButtonStyle = SFSafariViewControllerDismissButtonStyleDone;
+  }
+  else if ([@"close" isEqualToString:dismissButtonStyle]) {
+    safariVC.dismissButtonStyle = SFSafariViewControllerDismissButtonStyleClose;
+  }
+  else if ([@"cancel" isEqualToString:dismissButtonStyle]) {
+    safariVC.dismissButtonStyle = SFSafariViewControllerDismissButtonStyleCancel;
   }
 
   if([[arguments allKeys] containsObject:WebBrowserToolbarColorKey]) {
@@ -139,9 +137,9 @@ UM_EXPORT_METHOD_AS(openBrowserAsync,
   [currentViewController presentViewController:safariHackVC animated:true completion:nil];
 }
 
-UM_EXPORT_METHOD_AS(dismissBrowser,
-                    dismissBrowserWithResolver:(UMPromiseResolveBlock)resolve
-                    rejecter:(UMPromiseRejectBlock)reject)
+EX_EXPORT_METHOD_AS(dismissBrowser,
+                    dismissBrowserWithResolver:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
 {
   __weak typeof(self) weakSelf = self;
   UIViewController *currentViewController = [UIApplication sharedApplication].keyWindow.rootViewController;
@@ -162,9 +160,9 @@ UM_EXPORT_METHOD_AS(dismissBrowser,
   }];
 }
 
-UM_EXPORT_METHOD_AS(dismissAuthSession,
-                    dismissAuthSessionWithResolver:(UMPromiseResolveBlock)resolve
-                    rejecter:(UMPromiseRejectBlock)reject)
+EX_EXPORT_METHOD_AS(dismissAuthSession,
+                    dismissAuthSessionWithResolver:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
 {
   if (@available(iOS 11, *)) {
     [_authSession cancel];
@@ -181,34 +179,34 @@ UM_EXPORT_METHOD_AS(dismissAuthSession,
   }
 }
 
-UM_EXPORT_METHOD_AS(warmUpAsync,
+EX_EXPORT_METHOD_AS(warmUpAsync,
                     warmUpAsyncWithPackage:(NSString*)browserPackage
-                    resolver:(UMPromiseResolveBlock)resolve
-                    rejecter:(UMPromiseRejectBlock)reject)
+                    resolver:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
 {
   // stub for jest-expo-mock-generator
 }
 
-UM_EXPORT_METHOD_AS(coolDownAsync,
+EX_EXPORT_METHOD_AS(coolDownAsync,
                     coolDownAsyncWithPackage:(NSString*)browserPackage
-                    resolver:(UMPromiseResolveBlock)resolve
-                    rejecter:(UMPromiseRejectBlock)reject)
+                    resolver:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
 {
   // stub for jest-expo-mock-generator
 }
 
-UM_EXPORT_METHOD_AS(getCustomTabsSupportingBrowsers,
-                    getCustomTabsSupportingBrowsersWithPackage:(UMPromiseResolveBlock)resolve
-                    rejecter:(UMPromiseRejectBlock)reject)
+EX_EXPORT_METHOD_AS(getCustomTabsSupportingBrowsers,
+                    getCustomTabsSupportingBrowsersWithPackage:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
 {
   // stub for jest-expo-mock-generator
 }
 
-UM_EXPORT_METHOD_AS(mayInitWithUrlAsync,
+EX_EXPORT_METHOD_AS(mayInitWithUrlAsync,
                      warmUpAsyncWithUrl:(NSString*)url
                      browserPackage:(NSString*)package
-                    resolver:(UMPromiseResolveBlock)resolve
-                    rejecter:(UMPromiseRejectBlock)reject)
+                    resolver:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
 {
   // stub for jest-expo-mock-generator
 }
@@ -216,7 +214,7 @@ UM_EXPORT_METHOD_AS(mayInitWithUrlAsync,
 /**
  * Helper that is used in openBrowserAsync and openAuthSessionAsync
  */
-- (BOOL)initializeWebBrowserWithResolver:(UMPromiseResolveBlock)resolve andRejecter:(UMPromiseRejectBlock)reject {
+- (BOOL)initializeWebBrowserWithResolver:(EXPromiseResolveBlock)resolve andRejecter:(EXPromiseRejectBlock)reject {
   if (_redirectResolve) {
     reject(WebBrowserErrorCode, @"Another WebBrowser is already being presented.", nil);
     return NO;
@@ -255,7 +253,7 @@ UM_EXPORT_METHOD_AS(mayInitWithUrlAsync,
   _redirectReject = nil;
 }
 
-- (void)setModuleRegistry:(UMModuleRegistry *)moduleRegistry
+- (void)setModuleRegistry:(EXModuleRegistry *)moduleRegistry
 {
   _moduleRegistry = moduleRegistry;
 }

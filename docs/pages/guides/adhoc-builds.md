@@ -2,7 +2,7 @@
 title: Custom Expo Go builds
 ---
 
-> This is an experimental feature, and the exact approach taken here will be deprecated in the near future in favor of a more flexible and portable development client library.
+> 🚫 **This experimental feature has been cancelled, and it is not supported in SDK >= 41, but you can keep using it for SDK <= 40 projects**. We are working on a more flexible and portable development client library, you can read more about this in the ["Expo managed workflow in 2021" blog posts](https://blog.expo.dev/expo-managed-workflow-in-2021-5b887bbf7dbb).
 
 Build and install a custom version of [Expo Go](../get-started/installation.md#2-mobile-app-expo-client-for-ios) with your own Apple Credentials using our build service. This custom version of the Expo Go app contains features that were previously only available on the Android versions. Our build service will prepare your custom Expo Go app, and you can install it to your iOS device directly from our website.
 
@@ -115,7 +115,7 @@ If you would like to install the Expo Go app on an iOS device that is not listed
 
 Open the following link on your iOS device (or scan the QR code) and follow the instructions to install the development profile:
 
-https://expo.io/udid/XXXXXXXXXXXXX
+https://expo.dev/udid/XXXXXXXXXXXXX
 
 
 After you register your device, we'll start building your client, and you'll receive an email when it's ready to install.
@@ -135,7 +135,7 @@ On iOS versions 12.2 or later, a window will popup saying `Profile Downloaded`. 
 
 ### 2. Wait for it to finish building
 
-You can monitor the status of your Expo Go build by visiting the link. You will also be notified via email when there are updates to your build. More details can be found on your build dashboard [here](https://expo.io/builds).
+You can monitor the status of your Expo Go build by visiting the link. You will also be notified via email when there are updates to your build. More details can be found on your build dashboard [here](https://expo.dev/builds).
 
 ```sh
 ==================
@@ -145,7 +145,7 @@ You can monitor the status of your Expo Go build by visiting the link. You will 
 Your custom Expo Go is being built! 🛠
 Open this link on your iOS device (or scan the QR code) to view build logs and install the client:
 
-https://expo.io/client/XXXXXXXXXX
+https://expo.dev/client/XXXXXXXXXX
 ```
 
 ### 3. Install the Custom Expo Go on your iOS device
@@ -172,7 +172,7 @@ The administrator of the Apple Enterprise account will need to make you an App M
 
 ## App crashes / App icon is blacked out
 
-If your app icon is blacked out like [this](/static/images/adhoc-builds-black-icon.jpg) or if it crashes at the splash screen like [this](/static/images/adhoc-builds-app-crash.gif), check that your ad hoc provisioning profile is still valid. You can do this by navigating to the Apple Development Portal [profile list](https://developer.apple.com/account/resources/profiles/list). the Expo Go app ad hoc profile should be prefixed with `*[expo]` for a bundle identifier that starts with `dev.expo.client`.
+If your app icon is blacked out like [this](/static/images/adhoc-builds-black-icon.jpg) or if it crashes at the splash screen like [this](/static/video/adhoc-builds/adhoc-builds-app-crash.mp4), check that your ad hoc provisioning profile is still valid. You can do this by navigating to the Apple Development Portal [profile list](https://developer.apple.com/account/resources/profiles/list). the Expo Go app ad hoc profile should be prefixed with `*[expo]` for a bundle identifier that starts with `dev.expo.client`.
 
 An invalid profile can be caused by revoking the distribution certificate or disabling the iOS devices associated with the profile. You can fix this by associating valid certificates and devices to the profile and pressing `Save` from the Apple Development Portal interface.
 

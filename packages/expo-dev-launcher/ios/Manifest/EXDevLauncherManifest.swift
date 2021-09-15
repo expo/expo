@@ -34,6 +34,16 @@ public class CanHavePlatformSpecificValue<T> : Decodable where T : Decodable {
 public class iOSSection: NSObject, Decodable {}
 
 @objc
+public class DeveloperSection: NSObject, Decodable {
+  @objc
+  public var tool: String?
+
+  public enum CodingKeys: String, CodingKey {
+    case tool
+  }
+}
+
+@objc
 public class EXDevLauncherManifest: NSObject, Decodable {
   @objc
   var _rawData: String? = nil
@@ -80,13 +90,26 @@ public class EXDevLauncherManifest: NSObject, Decodable {
     return EXDevLauncherManifestHelper.exportManifestOrientation(_orientation)
   }
   
+  @objc
+  public var developer: DeveloperSection?
+
   var ios: iOSSection?
   
   public enum CodingKeys: String, CodingKey {
-    case name, slug, version, ios, bundleUrl
+    case name, slug, version, ios, bundleUrl, developer
     case _backgroundColor = "backgroundColor"
     case _orientation = "orientation"
     case _userInterfaceStyle = "userInterfaceStyle"
+  }
+
+  @objc
+  public static func fromJsonObject(_ jsonObject: NSDictionary) -> EXDevLauncherManifest? {
+    do {
+      let data = try JSONSerialization.data(withJSONObject: jsonObject, options: [])
+      return fromJsonData(data)
+    } catch {
+      return nil
+    }
   }
 
   @objc
@@ -100,6 +123,11 @@ public class EXDevLauncherManifest: NSObject, Decodable {
     } catch {
       return nil
     }
+  }
+
+  @objc
+  public func isUsingDeveloperTool() -> Bool {
+    return self.developer?.tool != nil;
   }
 }
 

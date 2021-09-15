@@ -37,12 +37,14 @@ internal class GetAlbumInfoTests {
     val selectionArgsSlot = slot<Array<String>>()
 
     mockkStatic(MediaLibraryUtils::class)
-    every { MediaLibraryUtils.queryAlbum(
-      context,
-      capture(selectionSlot),
-      capture(selectionArgsSlot),
-      promise
-    ) } just runs
+    every {
+      MediaLibraryUtils.queryAlbum(
+        context,
+        capture(selectionSlot),
+        capture(selectionArgsSlot),
+        promise
+      )
+    } just runs
 
     val expectedSelection = "${MediaStore.Images.Media.BUCKET_DISPLAY_NAME}=?"
     val albumName = "testAlbumName"
@@ -63,10 +65,12 @@ internal class GetAlbumInfoTests {
     val selection = MediaStore.Images.Media.BUCKET_DISPLAY_NAME + "=?"
     val selectionArgs = arrayOf(bucketDisplayName)
 
-    val cursor = mockCursor(arrayOf(
-      arrayOf(*MockData.mockImage.toColumnArray(), bucketDisplayName),
-      arrayOf(*MockData.mockVideo.toColumnArray(), bucketDisplayName)
-    ))
+    val cursor = mockCursor(
+      arrayOf(
+        arrayOf(*MockData.mockImage.toColumnArray(), bucketDisplayName),
+        arrayOf(*MockData.mockVideo.toColumnArray(), bucketDisplayName)
+      )
+    )
     cursor.setColumnNames(arrayListOf(*cursor.columnNames, MediaStore.Images.Media.BUCKET_DISPLAY_NAME))
 
     val context = mockContext with mockContentResolver(cursor)

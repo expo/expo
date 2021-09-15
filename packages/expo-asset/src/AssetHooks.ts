@@ -22,9 +22,7 @@ export function useAssets(moduleIds: number | number[]): [Asset[] | undefined, E
   const [error, setError] = useState<Error>();
 
   useEffect(() => {
-    Asset.loadAsync(moduleIds)
-      .then(setAssets)
-      .catch(setError);
+    Asset.loadAsync(moduleIds).then(setAssets).catch(setError);
   }, []);
 
   return [assets, error];

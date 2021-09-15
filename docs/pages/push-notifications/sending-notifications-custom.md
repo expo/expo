@@ -173,7 +173,7 @@ The examples above show bare minimum notification requests, which aren't that ex
     "link": the link this notification should open,
     "sound": boolean or the custom sound file you'd like to play,
     "vibrate": "true" | "false" | number[],
-    "priority": AndroidNotificationPriority, // https://docs.expo.io/versions/latest/sdk/notifications/#androidnotificationpriority
+    "priority": AndroidNotificationPriority, // https://docs.expo.dev/versions/latest/sdk/notifications/#androidnotificationpriority
     "badge": the number to set the icon badge to,
     "body": { object of key-value pairs }
   }
@@ -226,7 +226,7 @@ admin.messaging().sendToDevice(
       // ⚠️ Notice the schema of this payload is different
       // than that of Firebase SDK. What is there called "body"
       // here is a "message". For more info see:
-      // https://docs.expo.io/versions/latest/sdk/notifications/#android-push-notification-payload-specification
+      // https://docs.expo.dev/versions/latest/sdk/notifications/#android-push-notification-payload-specification
 
       body:                              // ⚠️ As per Android payload format specified above, the
         JSON.stringify({ photoId: 42 }), // additional "data" should be placed under "body" key.
@@ -235,3 +235,7 @@ admin.messaging().sendToDevice(
   options
 );
 ```
+
+## Next steps
+
+Now that you can send notifications to your app, set your app up for [receiving notifications and taking action based on those events](./receiving-notifications.md)!

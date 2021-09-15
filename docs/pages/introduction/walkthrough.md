@@ -24,7 +24,7 @@ Now we just run `yarn start` (or `npm start` if you prefer that package manager)
 
 ## Open the project with the Expo Go app on iOS or Android, or in your web browser
 
-To run the app we don’t need to build any native code because it runs in the [Expo Go](https://expo.io/tools#client), and the CLI will automatically install it for us in the [iOS simulator](../workflow/ios-simulator.md) or on any connected [Android emulator](../workflow/android-studio-emulator.md) or device. You can also download it from the App Store and Play Store.
+To run the app we don’t need to build any native code because it runs in the [Expo Go](https://expo.dev/tools#client), and the CLI will automatically install it for us in the [iOS simulator](../workflow/ios-simulator.md) or on any connected [Android emulator](../workflow/android-studio-emulator.md) or device. You can also download it from the App Store and Play Store.
 
 <Video file="exploring-managed/open.mp4" />
 
@@ -77,9 +77,9 @@ You may have noticed that when we ran `expo publish` the CLI warned us about opt
 
 <Video file="exploring-managed/optimize.mp4" />
 
-Upon publishing you are given a persistent URL that you can share with colleagues, in this case it was [https://expo.io/@notbrent/blearexp](https://expo.io/@notbrent/blearexp). This is determined by your Expo account username and the `slug` field in your project `app.json`.
+Upon publishing you are given a persistent URL that you can share with colleagues, in this case it was [https://expo.dev/@notbrent/blearexp](https://expo.dev/@notbrent/blearexp). This is determined by your Expo account username and the `slug` field in your project `app.json`.
 
-On iOS, only you can open projects that you have built unless you have a [priority plan](https://expo.io/developer-services), in which case your teammates can open your projects as well. Another option to open any published managed app is to do a custom build of an Expo iOS client. [Read more about that here](../guides/adhoc-builds.md).
+On iOS, only you can open projects that you have built unless you have a [priority plan](https://expo.dev/developer-services), in which case your teammates can open your projects as well. Another option to open any published managed app is to do a custom build of an Expo iOS client. [Read more about that here](../guides/adhoc-builds.md).
 
 ## Building and deploying
 
@@ -133,7 +133,7 @@ We frequently release updates to the [Expo SDK](/versions/latest/). If you decid
 
 ## Sending notifications
 
-An [in-depth guide](../push-notifications/overview.md) to setting up push notifications end-to-end from your app to server is a good place to look for more information here. To quickly demonstrate how easy it is to get something simple wired up, without introducing any complexity of a server, take a look at how we can test out notifications using the [Push notifications tool](https://expo.io/notifications).
+An [in-depth guide](../push-notifications/overview.md) to setting up push notifications end-to-end from your app to server is a good place to look for more information here. To quickly demonstrate how easy it is to get something simple wired up, without introducing any complexity of a server, take a look at how we can test out notifications using the [Push notifications tool](https://expo.dev/notifications).
 
 <Video file="exploring-managed/notify.mp4" />
 

@@ -1,2 +1,2 @@
-declare const _default: import("@unimodules/core").ProxyNativeModule;
+declare const _default: import("expo-modules-core").ProxyNativeModule;
 export default _default;

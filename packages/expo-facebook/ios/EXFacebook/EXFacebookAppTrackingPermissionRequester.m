@@ -12,24 +12,24 @@
 
 - (NSDictionary *)getPermissions
 {
-  UMPermissionStatus status;
+  EXPermissionStatus status;
   
   if (@available(iOS 14, *)) {
     ATTrackingManagerAuthorizationStatus systemStatus = [ATTrackingManager trackingAuthorizationStatus];
     switch (systemStatus) {
       case ATTrackingManagerAuthorizationStatusAuthorized:
-        status = UMPermissionStatusGranted;
+        status = EXPermissionStatusGranted;
         break;
       case ATTrackingManagerAuthorizationStatusNotDetermined:
-        status = UMPermissionStatusUndetermined;
+        status = EXPermissionStatusUndetermined;
         break;
       case ATTrackingManagerAuthorizationStatusRestricted:
       case ATTrackingManagerAuthorizationStatusDenied:
-        status = UMPermissionStatusDenied;
+        status = EXPermissionStatusDenied;
         break;
     }
   } else {
-    status = UMPermissionStatusGranted;
+    status = EXPermissionStatusGranted;
   }
   
   return @{
@@ -37,12 +37,12 @@
   };
 }
 
-- (void)requestPermissionsWithResolver:(UMPromiseResolveBlock)resolve rejecter:(UMPromiseRejectBlock)reject
+- (void)requestPermissionsWithResolver:(EXPromiseResolveBlock)resolve rejecter:(EXPromiseRejectBlock)reject
 {
   if (@available(iOS 14, *)) {
-    UM_WEAKIFY(self)
+    EX_WEAKIFY(self)
     [ATTrackingManager requestTrackingAuthorizationWithCompletionHandler:^(ATTrackingManagerAuthorizationStatus status) {
-      UM_STRONGIFY(self)
+      EX_STRONGIFY(self)
       resolve([self getPermissions]);
     }];
   } else {

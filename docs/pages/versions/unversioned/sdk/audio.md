@@ -11,9 +11,9 @@ import SnackInline from '~/components/plugins/SnackInline';
 
 Note that audio automatically stops if headphones / bluetooth audio devices are disconnected.
 
-Try the [playlist example app](https://expo.io/@documentation/playlist-example) (source code is [on GitHub](https://github.com/expo/playlist-example)) to see an example usage of the media playback API, and the [recording example app](https://expo.io/@documentation/record) (source code is [on GitHub](https://github.com/expo/audio-recording-example)) to see an example usage of the recording API.
+Try the [playlist example app](https://expo.dev/@documentation/playlist-example) (source code is [on GitHub](https://github.com/expo/playlist-example)) to see an example usage of the media playback API, and the [recording example app](https://expo.dev/@documentation/record) (source code is [on GitHub](https://github.com/expo/audio-recording-example)) to see an example usage of the recording API.
 
-<PlatformsSection android emulator ios simulator web />
+<PlatformsSection android emulator ios simulator web={{ pending: 'https://github.com/expo/expo/issues/8721' }} />
 
 ## Installation
 
@@ -330,6 +330,15 @@ A static convenience method to construct and load a sound is also provided:
   }
   ```
 
+On the `soundObject` reference, the following API is provided:
+
+- `soundObject.setOnMetadataUpdate(onMetadataUpdate)` _[iOS only]_ 
+Sets a function to be called whenever the metadata (of type `AVMetadata`, details below) of the sound object, if any, changes.
+
+  #### Parameters
+
+  - **onMetadataUpdate (_function_)** -- A function taking a single object of type `AVMetadata` (described below) as a parameter.
+
 The rest of the API for `Audio.Sound` is the same as the imperative playback API for `Video`-- see the [AV documentation](av.md) for further information:
 
 - `soundObject.loadAsync(source, initialStatus = {}, downloadFirst = true)`
@@ -362,7 +371,19 @@ The rest of the API for `Audio.Sound` is the same as the imperative playback API
 
 - `soundObject.setProgressUpdateIntervalAsync(millis)`
 
+## `AVMetadata`
+
+Object passed to the `onMetadataUpdate` function. It has the following keys:
+
+- `title`: a string with the title of the sound object. This key is optional.
+
 ## Recording sounds
+
+> **Notes on web usage:**
+>
+> - A MediaRecorder issue on Chrome produces WebM files missing the duration metadata. [See the open Chromium issue](https://bugs.chromium.org/p/chromium/issues/detail?id=642012)
+> - MediaRecorder encoding options and other configurations are inconsistent across browsers, utilising a Polyfill such as [kbumsik/opus-media-recorder](https://github.com/kbumsik/opus-media-recorder) or [ai/audio-recorder-polyfill](https://github.com/ai/audio-recorder-polyfill) in your application will improve your experience. Any options passed to `prepareToRecordAsync` will be passed directly to the MediaRecorder API and as such the polyfill.
+> - Web browsers require sites to be served securely in order for them to listen to a mic. See [MediaDevices#getUserMedia Security](https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/getUserMedia#security) for more details.
 
 ### `Audio.Recording`
 
@@ -528,11 +549,11 @@ A static convenience method to construct and start a recording is also provided:
 
 - `recordingInstance.getURI()`
 
-  Gets the local URI of the `Recording`. Note that this will only succeed once the `Recording` is prepared to record.
+  Gets the local URI of the `Recording`. Note that this will only succeed once the `Recording` is prepared to record. On web, this will not return the URI until the recording is finished.
 
   #### Returns
 
-  A `string` with the local URI of the `Recording`, or `null` if the `Recording` is not prepared to record.
+  A `string` with the local URI of the `Recording`, or `null` if the `Recording` is not prepared to record (or, on Web, if the recording has not finished).
 
 - `recordingInstance.createNewLoadedSoundAsync()`
 

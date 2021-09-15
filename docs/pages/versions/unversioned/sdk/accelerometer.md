@@ -173,5 +173,3 @@ Subscribe for updates to the accelerometer.
 
 - **intervalMs (_number_)** Desired interval in milliseconds between
   accelerometer updates.
-
-#

@@ -1,7 +1,6 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 #import <EXSegment/EXSegment.h>
-#import <UMConstantsInterface/UMConstantsInterface.h>
 #import <Analytics/SEGAnalytics.h>
 
 static NSString *const EXSegmentEnabledKey = @"EXSegmentEnabledKey";
@@ -14,12 +13,12 @@ static NSString *const EXSegmentEnabledKey = @"EXSegmentEnabledKey";
 
 @implementation EXSegment
 
-UM_EXPORT_MODULE(ExponentSegment)
+EX_EXPORT_MODULE(ExponentSegment)
 
-UM_EXPORT_METHOD_AS(initialize,
+EX_EXPORT_METHOD_AS(initialize,
                     initialize:(NSString *)writeKey
-                    resolver:(UMPromiseResolveBlock)resolve
-                    rejecter:(UMPromiseRejectBlock)reject)
+                    resolver:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
 {
   SEGAnalyticsConfiguration *configuration = [SEGAnalyticsConfiguration configurationWithWriteKey:writeKey];
   NSNumber *enabledSetting = [[NSUserDefaults standardUserDefaults] objectForKey:EXSegmentEnabledKey];
@@ -30,10 +29,10 @@ UM_EXPORT_METHOD_AS(initialize,
   resolve(nil);
 }
 
-UM_EXPORT_METHOD_AS(identify,
+EX_EXPORT_METHOD_AS(identify,
                     identify:(NSString *)userId
-                    resolver:(UMPromiseResolveBlock)resolve
-                    rejecter:(UMPromiseRejectBlock)reject)
+                    resolver:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
 {
   if (_instance) {
     [_instance identify:userId];
@@ -42,12 +41,12 @@ UM_EXPORT_METHOD_AS(identify,
 }
 
 
- UM_EXPORT_METHOD_AS(identifyWithTraits,
+ EX_EXPORT_METHOD_AS(identifyWithTraits,
                      identifyWithTraits:(NSString *)userId
                      withTraits:(NSDictionary *)traits
                      withOptions:(nullable NSDictionary *)options
-                     resolver:(UMPromiseResolveBlock)resolve
-                     rejecter:(UMPromiseRejectBlock)reject)
+                     resolver:(EXPromiseResolveBlock)resolve
+                     rejecter:(EXPromiseRejectBlock)reject)
 {
   if (_instance) {
     [_instance identify:userId traits:traits options:options];
@@ -55,10 +54,10 @@ UM_EXPORT_METHOD_AS(identify,
   resolve(nil);
 }
 
-UM_EXPORT_METHOD_AS(track,
+EX_EXPORT_METHOD_AS(track,
                     track:(NSString *)event
-                    resolver:(UMPromiseResolveBlock)resolve
-                    rejecter:(UMPromiseRejectBlock)reject)
+                    resolver:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
 {
   if (_instance) {
     [_instance track:event];
@@ -66,12 +65,12 @@ UM_EXPORT_METHOD_AS(track,
   resolve(nil);
 }
 
-UM_EXPORT_METHOD_AS(trackWithProperties,
+EX_EXPORT_METHOD_AS(trackWithProperties,
                     trackWithProperties:(NSString *)event 
                     withProperties:(NSDictionary *)properties
                     withOptions:(nullable NSDictionary *)options
-                    resolver:(UMPromiseResolveBlock)resolve
-                    rejecter:(UMPromiseRejectBlock)reject)
+                    resolver:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
 {
   if (_instance) {
     [_instance track:event properties:properties options:options];
@@ -79,10 +78,10 @@ UM_EXPORT_METHOD_AS(trackWithProperties,
   resolve(nil);
 }
 
-UM_EXPORT_METHOD_AS(group,
+EX_EXPORT_METHOD_AS(group,
                     group:(NSString *)groupId
-                    resolver:(UMPromiseResolveBlock)resolve
-                    rejecter:(UMPromiseRejectBlock)reject)
+                    resolver:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
 {
   if (_instance) {
     [_instance group:groupId];
@@ -90,12 +89,12 @@ UM_EXPORT_METHOD_AS(group,
   resolve(nil);
 }
 
-UM_EXPORT_METHOD_AS(groupWithTraits,
+EX_EXPORT_METHOD_AS(groupWithTraits,
                     groupWithTraits:(NSString *)groupId
                     withTraits:(NSDictionary *)traits
                     withOptions:(nullable NSDictionary *)options
-                    resolver:(UMPromiseResolveBlock)resolve
-                    rejecter:(UMPromiseRejectBlock)reject)
+                    resolver:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
 {
   if (_instance) {
     [_instance group:groupId traits:traits options:options];
@@ -103,25 +102,25 @@ UM_EXPORT_METHOD_AS(groupWithTraits,
   resolve(nil);
 }
 
-UM_EXPORT_METHOD_AS(alias,
+EX_EXPORT_METHOD_AS(alias,
                     alias:(NSString *)newId
                     withOptions:(nullable NSDictionary *)options
-                    resolver:(UMPromiseResolveBlock)resolve
-                    rejecter:(UMPromiseRejectBlock)reject)
+                    resolver:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
 {
   SEGAnalytics *analytics = _instance;
   if (analytics) {
     [analytics alias:newId options:options];
-    resolve(UMNullIfNil(nil));
+    resolve(EXNullIfNil(nil));
   } else {
     reject(@"E_NO_SEG", @"Segment instance has not been initialized yet, have you tried calling Segment.initialize prior to calling Segment.alias?", nil);
   }
 }
 
-UM_EXPORT_METHOD_AS(screen,
+EX_EXPORT_METHOD_AS(screen,
                     screen:(NSString *)screenName
-                    resolver:(UMPromiseResolveBlock)resolve
-                    rejecter:(UMPromiseRejectBlock)reject)
+                    resolver:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
 {
   if (_instance) {
     [_instance screen:screenName];
@@ -129,12 +128,12 @@ UM_EXPORT_METHOD_AS(screen,
   resolve(nil);
 }
 
-UM_EXPORT_METHOD_AS(screenWithProperties,
+EX_EXPORT_METHOD_AS(screenWithProperties,
                     screenWithProperties:(NSString *)screenName
                     withProperties:(NSDictionary *)properties
                     withOptions:(NSDictionary *)options
-                    resolver:(UMPromiseResolveBlock)resolve
-                    rejecter:(UMPromiseRejectBlock)reject)
+                    resolver:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
 {
   if (_instance) {
     [_instance screen:screenName properties:properties options:options];
@@ -142,9 +141,9 @@ UM_EXPORT_METHOD_AS(screenWithProperties,
   resolve(nil);
 }
 
-UM_EXPORT_METHOD_AS(reset,
-                    resetWithResolver:(UMPromiseResolveBlock)resolve
-                    rejecter:(UMPromiseRejectBlock)reject)
+EX_EXPORT_METHOD_AS(reset,
+                    resetWithResolver:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
 {
   if (_instance) {
     [_instance reset];
@@ -152,9 +151,9 @@ UM_EXPORT_METHOD_AS(reset,
   resolve(nil);
 }
 
-UM_EXPORT_METHOD_AS(flush,
-                    flushWithResolver:(UMPromiseResolveBlock)resolve
-                    rejecter:(UMPromiseRejectBlock)reject)
+EX_EXPORT_METHOD_AS(flush,
+                    flushWithResolver:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
 {
   if (_instance) {
     [_instance flush];
@@ -162,19 +161,19 @@ UM_EXPORT_METHOD_AS(flush,
   resolve(nil);
 }
 
-UM_EXPORT_METHOD_AS(getEnabledAsync,
-                    getEnabledWithResolver:(UMPromiseResolveBlock)resolve
-                    rejecter:(UMPromiseRejectBlock)reject)
+EX_EXPORT_METHOD_AS(getEnabledAsync,
+                    getEnabledWithResolver:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
 {
   NSNumber *optOutSetting = [[NSUserDefaults standardUserDefaults] objectForKey:EXSegmentEnabledKey];
   // default is enabled: true
   resolve(optOutSetting ?: @(YES));
 }
 
-UM_EXPORT_METHOD_AS(setEnabledAsync,
+EX_EXPORT_METHOD_AS(setEnabledAsync,
                     setEnabled:(BOOL)enabled
-                    withResolver:(UMPromiseResolveBlock)resolve
-                    rejecter:(UMPromiseRejectBlock)reject)
+                    withResolver:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
 {
   [[NSUserDefaults standardUserDefaults] setBool:enabled forKey:EXSegmentEnabledKey];
   if (_instance) {

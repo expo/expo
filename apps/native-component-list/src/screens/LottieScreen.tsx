@@ -70,22 +70,24 @@ const PlayerControls: React.FunctionComponent<{
       <Text>Use Imperative API:</Text>
       <View />
       <Switch
-        onValueChange={imperative => onConfigChange({ ...config, imperative })}
+        onValueChange={(imperative) => onConfigChange({ ...config, imperative })}
         value={config.imperative}
       />
     </View>
-    <View style={{ paddingBottom: 10 }}>
-      <View>
-        <Text>Progress:</Text>
+    {!config.imperative && (
+      <View style={{ paddingBottom: 10 }}>
+        <View>
+          <Text>Progress:</Text>
+        </View>
+        <Slider
+          minimumValue={0}
+          maximumValue={1}
+          // @ts-ignore
+          value={progress.__getValue()}
+          onValueChange={onProgressChange}
+        />
       </View>
-      <Slider
-        minimumValue={0}
-        maximumValue={1}
-        // @ts-ignore
-        value={progress.__getValue()}
-        onValueChange={onProgressChange}
-      />
-    </View>
+    )}
     <View>
       <View>
         <Text>Duration: ({Math.round(config.duration)}ms)</Text>
@@ -94,7 +96,7 @@ const PlayerControls: React.FunctionComponent<{
         minimumValue={50}
         maximumValue={4000}
         value={config.duration}
-        onValueChange={duration => onConfigChange({ ...config, duration })}
+        onValueChange={(duration) => onConfigChange({ ...config, duration })}
       />
     </View>
   </View>
@@ -170,7 +172,7 @@ export default class LottieScreen extends React.Component<{}, State> {
       <ScrollView style={StyleSheet.absoluteFill}>
         <ExamplePicker
           value={this.state.exampleName}
-          onChange={exampleName => this.setState({ exampleName })}
+          onChange={(exampleName) => this.setState({ exampleName })}
         />
         <View style={styles.animationContainer}>
           <View key={this.state.exampleName}>
@@ -185,8 +187,8 @@ export default class LottieScreen extends React.Component<{}, State> {
         <PlayerControls
           progress={this.state.progress}
           config={this.state.config}
-          onProgressChange={value => this.state.progress.setValue(value)}
-          onConfigChange={config => this.setState({ config })}
+          onProgressChange={(value) => this.state.progress.setValue(value)}
+          onConfigChange={(config) => this.setState({ config })}
           onPlayPress={this.onPlayPress}
           onResetPress={this.onResetPress}
         />

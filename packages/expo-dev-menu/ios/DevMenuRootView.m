@@ -15,7 +15,7 @@
   // Use the (batched) bridge that's sent in the notification payload, so the
   // RCTRootContentView is scoped to the right bridge
   RCTBridge *bridge = notification.userInfo[@"bridge"];
-  RCTRootContentView *rootView = self.contentView;
+  RCTRootContentView *rootView = (RCTRootContentView *)self.contentView;
   if (bridge != rootView.bridge) {
     if (self.reactTag == rootView.reactTag) {
       // Clear the reactTag so it can be re-assigned
@@ -26,5 +26,11 @@
 }
 
 - (void)bundleFinishedLoading:(RCTBridge *)bridge {}
+
+- (bool)becomeFirstResponder
+{
+  // Avoid first responder status so that it won't hijack React Native keyboard commands.
+  return NO;
+}
 
 @end

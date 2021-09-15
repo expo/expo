@@ -2,12 +2,11 @@
 
 #if __has_include(<EXFileSystem/EXFilePermissionModule.h>)
 #import "EXScopedFilePermissionModule.h"
-#import <UMFileSystemInterface/UMFileSystemInterface.h>
-#import <UMConstantsInterface/UMConstantsInterface.h>
+#import <ExpoModulesCore/EXFileSystemInterface.h>
 
 @interface EXFilePermissionModule (Protected)
 
-- (UMFileSystemPermissionFlags)getExternalPathPermissions:(NSString *)path;
+- (EXFileSystemPermissionFlags)getExternalPathPermissions:(NSString *)path;
 
 @end
 
@@ -27,13 +26,13 @@
   return self;
 }
 
-- (UMFileSystemPermissionFlags)getExternalPathPermissions:(NSString *)path
+- (EXFileSystemPermissionFlags)getExternalPathPermissions:(NSString *)path
 {
   // may block access to external paths which contain "ExponentExperienceData" 
   if (![self shouldForbidAccessToExternalDirectories] || (![path containsString:@"ExponentExperienceData"])) {
     return [super getExternalPathPermissions:path];
   }
-  return UMFileSystemPermissionNone;
+  return EXFileSystemPermissionNone;
 }
 
 - (BOOL)shouldForbidAccessToExternalDirectories {

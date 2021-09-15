@@ -14,14 +14,13 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.SystemClock;
 
-import org.unimodules.core.ModuleRegistry;
-import org.unimodules.core.Promise;
-import org.unimodules.core.arguments.ReadableArguments;
-import org.unimodules.core.interfaces.InternalModule;
-import org.unimodules.core.interfaces.LifecycleEventListener;
-import org.unimodules.core.interfaces.services.EventEmitter;
-import org.unimodules.core.interfaces.services.UIManager;
-import org.unimodules.interfaces.permissions.Permissions;
+import expo.modules.core.ModuleRegistry;
+import expo.modules.core.Promise;
+import expo.modules.core.arguments.ReadableArguments;
+import expo.modules.core.interfaces.InternalModule;
+import expo.modules.core.interfaces.LifecycleEventListener;
+import expo.modules.core.interfaces.services.EventEmitter;
+import expo.modules.core.interfaces.services.UIManager;
 
 import java.io.File;
 import java.io.IOException;
@@ -38,6 +37,7 @@ import java.util.UUID;
 import expo.modules.av.player.PlayerData;
 import expo.modules.av.video.VideoView;
 import expo.modules.av.video.VideoViewWrapper;
+import expo.modules.interfaces.permissions.Permissions;
 
 import static android.media.MediaRecorder.MEDIA_RECORDER_INFO_MAX_FILESIZE_REACHED;
 
@@ -339,6 +339,7 @@ public class AVManager implements LifecycleEventListener, AudioManager.OnAudioFo
     switch (interruptionModeInt) {
       case 1:
         mAudioInterruptionMode = AudioInterruptionMode.DO_NOT_MIX;
+        break;
       case 2:
       default:
         mAudioInterruptionMode = AudioInterruptionMode.DUCK_OTHERS;

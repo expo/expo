@@ -14,8 +14,23 @@ let _authLock = false;
  * [Section 4.1.1](https://tools.ietf.org/html/rfc6749#section-4.1.1)
  */
 export class AuthRequest {
+    /**
+     * Used for protection against [Cross-Site Request Forgery](https://tools.ietf.org/html/rfc6749#section-10.12).
+     */
+    state;
+    url = null;
+    codeVerifier;
+    codeChallenge;
+    responseType;
+    clientId;
+    extraParams;
+    usePKCE;
+    codeChallengeMethod;
+    redirectUri;
+    scopes;
+    clientSecret;
+    prompt;
     constructor(request) {
-        this.url = null;
         this.responseType = request.responseType ?? ResponseType.Code;
         this.clientId = request.clientId;
         this.redirectUri = request.redirectUri;

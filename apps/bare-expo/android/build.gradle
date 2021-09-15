@@ -9,12 +9,14 @@ buildscript {
         minSdkVersion = 21
         compileSdkVersion = 30
         targetSdkVersion = 30
+        ndkVersion = "21.4.7075529"
         // Some dependencies still expect supportLibVersion to be defined
         supportLibVersion = "29.0.0"
         kotlinVersion = '1.4.21'
     }
     repositories {
         google()
+        mavenCentral()
         jcenter()
     }
     dependencies {
@@ -30,6 +32,10 @@ buildscript {
         // in the individual module build.gradle files
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
     }
+}
+
+plugins {
+  id "com.diffplug.spotless" version "5.14.1"
 }
 
 def packageJsonFile = new File(rootProject.projectDir, '../package.json')
@@ -61,8 +67,36 @@ allprojects {
             url "$rootDir/../node_modules/expo-camera/android/maven"
         }
 
+       maven {
+           // Detox is installed from npm
+           url "$rootDir/../node_modules/detox/Detox-android"
+       }
+
         google()
+        mavenCentral()
         jcenter()
         maven { url 'https://jitpack.io' }
     }
+}
+
+subprojects {
+  plugins.apply("com.diffplug.spotless")
+  spotless {
+    kotlin {
+      target '**/*.kt'
+      ktlint("0.41.0").userData([
+        "disabled_rules"           : "no-wildcard-imports,import-ordering",
+        "charset"                  : "utf-8",
+        "end_of_line"              : "lf",
+        "indent_size"              : "2",
+        "indent_style"             : "space",
+        "insert_final_newline"     : "true",
+        "tab_width"                : "2",
+        "trim_trailing_whitespace" : "true"
+      ])
+      trimTrailingWhitespace()
+      indentWithSpaces()
+      endWithNewline()
+    }
+  }
 }

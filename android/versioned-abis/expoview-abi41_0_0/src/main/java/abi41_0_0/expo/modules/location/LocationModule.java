@@ -113,7 +113,7 @@ public class LocationModule extends ExportedModule implements LifecycleEventList
   private float[] mGravity;
   private float[] mGeomagnetic;
   private int mHeadingId;
-  private float mLastAzimut = 0;
+  private float mLastAzimuth = 0;
   private int mAccuracy = 0;
   private long mLastUpdate = 0;
   private boolean mGeocoderPaused = false;
@@ -552,20 +552,21 @@ public class LocationModule extends ExportedModule implements LifecycleEventList
     final FusedLocationProviderClient locationProvider = getLocationProvider();
 
     LocationCallback locationCallback = new LocationCallback() {
+      boolean isLocationAvailable = false;
       @Override
       public void onLocationResult(LocationResult locationResult) {
         Location location = locationResult != null ? locationResult.getLastLocation() : null;
 
         if (location != null) {
           callbacks.onLocationChanged(location);
+        } else if (!isLocationAvailable) {
+          callbacks.onLocationError(new LocationUnavailableException());
         }
       }
 
       @Override
       public void onLocationAvailability(LocationAvailability locationAvailability) {
-        if (!locationAvailability.isLocationAvailable()) {
-          callbacks.onLocationError(new LocationUnavailableException());
-        }
+        isLocationAvailable = locationAvailability.isLocationAvailable();
       }
     };
 
@@ -757,8 +758,8 @@ public class LocationModule extends ExportedModule implements LifecycleEventList
 
       // Make sure Delta is big enough to warrant an update
       // Currently: 50ms and ~2 degrees of change (android has a lot of useless updates block up the sending)
-      if ((Math.abs(orientation[0] - mLastAzimut)) > DEGREE_DELTA && (System.currentTimeMillis() - mLastUpdate) > TIME_DELTA) {
-        mLastAzimut = orientation[0];
+      if ((Math.abs(orientation[0] - mLastAzimuth)) > DEGREE_DELTA && (System.currentTimeMillis() - mLastUpdate) > TIME_DELTA) {
+        mLastAzimuth = orientation[0];
         mLastUpdate = System.currentTimeMillis();
         float magneticNorth = calcMagNorth(orientation[0]);
         float trueNorth = calcTrueNorth(magneticNorth);
@@ -775,9 +776,9 @@ public class LocationModule extends ExportedModule implements LifecycleEventList
     }
   }
 
-  private float calcMagNorth(float azimut) {
-    float azimutDeg = (float) Math.toDegrees(azimut);
-    return (azimutDeg + 360) % 360;
+  private float calcMagNorth(float azimuth) {
+    float azimuthDeg = (float) Math.toDegrees(azimuth);
+    return (azimuthDeg + 360) % 360;
   }
 
   private float calcTrueNorth(float magNorth) {
@@ -802,7 +803,7 @@ public class LocationModule extends ExportedModule implements LifecycleEventList
     mGeomagnetic = null;
     mGeofield = null;
     mHeadingId = 0;
-    mLastAzimut = 0;
+    mLastAzimuth = 0;
     mAccuracy = 0;
   }
 

@@ -76,7 +76,7 @@ Expo abstracts the majority of credential management away so that you can focus 
 
 ### Push notifications _occasionally_ stop coming through on Android
 
-This is likely due to the `priority` level of the notifications you're sending. You can learn more about Android priority [here](https://firebase.google.com/docs/cloud-messaging/http-server-ref#downstream-http-messages-json), but as for how it relates to Expo- [Expo accepts four priorities](https://docs.expo.io/push-notifications/sending-notifications/#message-request-format):
+This is likely due to the `priority` level of the notifications you're sending. You can learn more about Android priority [here](https://firebase.google.com/docs/cloud-messaging/http-server-ref#downstream-http-messages-json), but as for how it relates to Expo- [Expo accepts four priorities](https://docs.expo.dev/push-notifications/sending-notifications/#message-request-format):
 
 - `default`: manually mapped to the default priority documented by Apple and Google
 - `high`: mapped to the high priority level documented by Apple and Google
@@ -116,3 +116,7 @@ This indicates an issue with the image asset you're providing. The image should 
 ### I'm getting back an error message when I send a notification
 
 Check the `details` property of the returned push ticket or receipt for more information which you can use to debug further. [Read here for common error code responses and their associated solutions](/push-notifications/sending-notifications.md#errors).
+
+### I want to play a custom sound when I send a notification
+
+The Expo push notification service currently doesn't support custom sounds. You will need to use APNs and FCM directly with the native device tokens received from `expo-notifications` in standalone apps.

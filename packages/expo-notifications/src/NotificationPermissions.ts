@@ -1,6 +1,9 @@
-import { Platform, UnavailabilityError } from '@unimodules/core';
+import { createPermissionHook, Platform, UnavailabilityError } from 'expo-modules-core';
 
-import { NotificationPermissionsRequest } from './NotificationPermissions.types';
+import {
+  NotificationPermissionsRequest,
+  NotificationPermissionsStatus,
+} from './NotificationPermissions.types';
 import NotificationPermissionsModule from './NotificationPermissionsModule';
 
 export async function getPermissionsAsync() {
@@ -26,3 +29,21 @@ export async function requestPermissionsAsync(permissions?: NotificationPermissi
   const requestedPlatformPermissions = requestedPermissions[Platform.OS];
   return await NotificationPermissionsModule.requestPermissionsAsync(requestedPlatformPermissions);
 }
+
+// @needsAudit
+/**
+ * Check or request permissions to send and receive push notifications.
+ * This uses both `requestPermissionsAsync` and `getPermissionsAsync` to interact with the permissions.
+ *
+ * @example
+ * ```ts
+ * const [status, requestPermission] = Notifications.usePermissions();
+ * ```
+ */
+export const usePermissions = createPermissionHook<
+  NotificationPermissionsStatus,
+  NotificationPermissionsRequest
+>({
+  requestMethod: requestPermissionsAsync,
+  getMethod: getPermissionsAsync,
+});

@@ -3,6 +3,7 @@ title: Using Sentry
 ---
 
 import PlatformsSection from '~/components/plugins/PlatformsSection';
+import TerminalBlock from '~/components/plugins/TerminalBlock';
 
 [Sentry](http://getsentry.com/) is a crash reporting platform that provides you with "real-time insight into production deployments with info to reproduce and fix crashes".
 
@@ -33,15 +34,23 @@ Before getting real-time updates on errors and making your app generally incredi
    - **project name** is available in your project's `Settings` > `General Settings` tab
    - **`DSN`** is avalable in your project's `Settings` > `Client Keys` tab
 
-2. Go to the [Sentry API section](https://sentry.io/settings/account/api/auth-tokens/), and create an **auth token** (Ensure you have `project:write` selected under scopes). Save this, too.
+2. Go to the [Sentry API section](https://sentry.io/settings/account/api/auth-tokens/), and create an **auth token**. The token requires the scopes: `org:read`, `project:releases`, and `project:write`. Save this, too.
 
 Once you have each of these: organization name, project name, DSN, and auth token, you're all set!
 
 ### Install and configure Sentry
 
-- In your project, install the Expo integration: `expo install sentry-expo`
-  > If you're using SDK 39 or lower, run `npm install sentry-expo@~3.0.0`
-- Add the following in your app's main file (usually `App.js`):
+In your project directory, run:
+
+<TerminalBlock cmd={['expo install sentry-expo']} />
+
+> If you're using SDK 39 or lower, run `yarn add sentry-expo@~3.0.0`
+
+`sentry-expo` also requires some additional dependencies, otherwise it won't work properly. To install them, run:
+
+<TerminalBlock cmd={['expo install expo-application expo-constants expo-device expo-updates']} />
+
+Then, add the following in your app's main file (usually `App.js`):
 
 ```javascript
 import * as Sentry from 'sentry-expo';

@@ -10,4 +10,6 @@ class DevLauncherPackagerConnectionSettings(
   override fun getDebugServerHost() = serverIp
 
   override fun setDebugServerHost(host: String) = Unit
+
+  override fun getInspectorServerHost() = serverIp
 }

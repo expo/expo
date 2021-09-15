@@ -191,8 +191,14 @@ pod 'ABI40_0_0EXStoreReview',
 pod 'ABI40_0_0EXTaskManager',
   :path => './versioned-react-native/ABI40_0_0/Expo/EXTaskManager',
   :project_name => 'ABI40_0_0'
+pod 'ABI40_0_0EXStructuredHeaders',
+  :path => './versioned-react-native/ABI40_0_0/Expo/EXStructuredHeaders',
+  :project_name => 'ABI40_0_0'
 pod 'ABI40_0_0EXUpdates',
   :path => './versioned-react-native/ABI40_0_0/Expo/EXUpdates',
+  :project_name => 'ABI40_0_0'
+pod 'ABI40_0_0EXUpdatesInterface',
+  :path => './versioned-react-native/ABI40_0_0/Expo/EXUpdatesInterface',
   :project_name => 'ABI40_0_0'
 pod 'ABI40_0_0EXVideoThumbnails',
   :path => './versioned-react-native/ABI40_0_0/Expo/EXVideoThumbnails',
@@ -232,4 +238,10 @@ pod 'ABI40_0_0UMSensorsInterface',
   :project_name => 'ABI40_0_0'
 pod 'ABI40_0_0UMTaskManagerInterface',
   :path => './versioned-react-native/ABI40_0_0/Expo/UMTaskManagerInterface',
+  :project_name => 'ABI40_0_0'
+pod 'ABI40_0_0EXManifests',
+  :path => './versioned-react-native/ABI40_0_0/Expo/EXManifests',
+  :project_name => 'ABI40_0_0'
+pod 'ABI40_0_0EXJSONUtils',
+  :path => './versioned-react-native/ABI40_0_0/Expo/EXJSONUtils',
   :project_name => 'ABI40_0_0'

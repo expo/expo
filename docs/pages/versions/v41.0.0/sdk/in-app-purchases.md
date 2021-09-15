@@ -139,10 +139,7 @@ setPurchaseListener(({ responseCode, results, errorCode }) => {
         finishTransactionAsync(purchase, true);
       }
     });
-  }
-
-  // Else find out what went wrong
-  if (responseCode === IAPResponseCode.USER_CANCELED) {
+  } else if (responseCode === IAPResponseCode.USER_CANCELED) {
     console.log('User canceled the transaction');
   } else if (responseCode === IAPResponseCode.DEFERRED) {
     console.log('User does not have permissions to buy but requested parental approval (iOS only)');
@@ -223,6 +220,8 @@ Retrieves the user's previous purchase history.
 On Android, if refresh is set to `true` it will make a network request and return up to one entry per item even if that purchase is expired, canceled, or consumed. Use this if you want to sync purchases across devices or see purchases that are expired or consumed. If refresh is `false` it relies on the Play Store cache. An important caveat is that the return type when refresh is `true` is actually a subset of when it's `false`. This is because Android returns a `PurchaseHistoryRecord` which only contains the purchase time, purchase token, and product ID, rather than all of the attributes found in the `InAppPurchase` type.
 
 On iOS, the refresh boolean is ignored. An important thing to note is that on iOS, Storekit actually creates a new transaction object every time you restore completed transactions, therefore the `purchaseTime` and `orderId` may be inaccurate if it's a restored purchase. If you need the original transaction's information you can use `originalPurchaseTime` and `originalOrderId`, but those will be 0 and an empty string respectively if it is the original transaction.
+
+You should not call this method on launch because restoring purchases on iOS prompts for the user’s App Store credentials, which could interrupt the flow of your app.
 
 #### Arguments
 

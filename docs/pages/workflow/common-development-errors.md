@@ -20,7 +20,7 @@ Here you will find a list of errors that are commonly encountered by developers 
 
 - An error in your code is preventing the JavaScript bundle from being executed on startup.
 
-- Try running `expo start --no-dev --minify` to reproduce the production JS bundle locally. If possible, connect your device and access the device logs via Android Studio or Xcode. Device logs contain much more detailed stacktraces and information. Check to see if you have any changes or errors in your Babel configuration. In some rare cases, this issue could be caused by incompatibility between the Metro JavaScript minifier and certain code in your app ([more information](https://forums.expo.io/t/change-minifierconfig-for-minify-uglify/36460/2)).
+- Try running `expo start --no-dev --minify` to reproduce the production JS bundle locally. If possible, connect your device and access the device logs via Android Studio or Xcode. Device logs contain much more detailed stacktraces and information. Check to see if you have any changes or errors in your Babel configuration. In some rare cases, this issue could be caused by incompatibility between the Metro JavaScript minifier and certain code in your app ([more information](https://forums.expo.dev/t/change-minifierconfig-for-minify-uglify/36460/2)).
 
 ### npm ERR! No git binary found in \$PATH
 
@@ -36,9 +36,9 @@ Here you will find a list of errors that are commonly encountered by developers 
 
 ### React Native version mismatch
 
-- The packager running in your terminal is using a different version of React Native than the app in your device or simulator.
+- The development server running in your terminal is bundling a different version of React Native than the app in your device or simulator.
 
-- [Align your versions of react-native](../troubleshooting/react-native-version-mismatch) by checking the versions in your `app.json` and `package.json` 
+- [Align your versions of react-native](../troubleshooting/react-native-version-mismatch) by checking the versions in your `app.json` and `package.json`
 
 ### Application has not been registered
 

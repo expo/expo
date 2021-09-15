@@ -1,6 +1,6 @@
 package org.unimodules.test.core
 
-import org.unimodules.core.Promise
+import expo.modules.core.Promise
 
 enum class PromiseState {
   NONE,

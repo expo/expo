@@ -11,15 +11,15 @@ import org.unimodules.interfaces.taskManager.TaskInterface;
 
 public class Task implements TaskInterface {
   private String mName;
-  private String mAppId;
+  private String mAppScopeKey;
   private String mAppUrl;
   private TaskConsumerInterface mConsumer;
   private Map<String, Object> mOptions;
   private TaskServiceInterface mService;
 
-  public Task(String name, String appId, String appUrl, TaskConsumerInterface consumer, Map<String, Object> options, TaskServiceInterface service) {
+  public Task(String name, String appScopeKey, String appUrl, TaskConsumerInterface consumer, Map<String, Object> options, TaskServiceInterface service) {
     mName = name;
-    mAppId = appId;
+    mAppScopeKey = appScopeKey;
     mAppUrl = appUrl;
     mConsumer = consumer;
     mOptions = options;
@@ -30,8 +30,8 @@ public class Task implements TaskInterface {
     return mName;
   }
 
-  public String getAppId() {
-    return mAppId;
+  public String getAppScopeKey() {
+    return mAppScopeKey;
   }
 
   public String getAppUrl() {

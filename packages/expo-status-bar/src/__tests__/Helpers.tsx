@@ -24,8 +24,5 @@ export function mockAppearance(colorScheme: ColorSchemeName, fn: any) {
 export function renderedPropValue(element: any, prop: string) {
   const result = mount(element);
 
-  return result
-    .children()
-    .first()
-    .props()[prop];
+  return result.children().first().props()[prop];
 }

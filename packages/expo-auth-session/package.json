@@ -1,6 +1,6 @@
 {
   "name": "expo-auth-session",
-  "version": "3.2.3",
+  "version": "3.3.0",
   "description": "Expo module for browser-based authentication",
   "main": "build/AuthSession.js",
   "types": "build/AuthSession.d.ts",
@@ -32,12 +32,12 @@
   },
   "author": "650 Industries, Inc.",
   "license": "MIT",
-  "homepage": "https://docs.expo.io/versions/latest/sdk/auth-session",
+  "homepage": "https://docs.expo.dev/versions/latest/sdk/auth-session",
   "dependencies": {
-    "expo-constants": "~10.1.3",
-    "expo-crypto": "~9.1.0",
-    "expo-linking": "~2.2.3",
-    "expo-web-browser": "~9.1.0",
+    "expo-constants": "~11.1.0",
+    "expo-crypto": "~9.2.0",
+    "expo-linking": "~2.4.0",
+    "expo-web-browser": "~9.3.0",
     "invariant": "^2.2.4",
     "qs": "6.9.1"
   },

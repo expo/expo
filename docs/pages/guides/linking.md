@@ -24,19 +24,19 @@ As mentioned in the introduction, there are some URL schemes for core functional
 
 | Scheme           | Description                                  | iOS | Android |
 | ---------------- | -------------------------------------------- | --- | ------- |
-| `mailto`         | Open mail app, eg: `mailto: support@expo.io` | ✅  | ✅      |
+| `mailto`         | Open mail app, eg: `mailto: support@expo.dev` | ✅  | ✅      |
 | `tel`            | Open phone app, eg: `tel:+123456789`         | ✅  | ✅      |
 | `sms`            | Open SMS app, eg: `sms:+123456789`           | ✅  | ✅      |
-| `https` / `http` | Open web browser app, eg: `https://expo.io`  | ✅  | ✅      |
+| `https` / `http` | Open web browser app, eg: `https://expo.dev`  | ✅  | ✅      |
 
 ### Opening links from your app
 
-There is no anchor tag in React Native, so we can't write `<a href="https://expo.io">`, instead we have to use `Linking.openURL`.
+There is no anchor tag in React Native, so we can't write `<a href="https://expo.dev">`, instead we have to use `Linking.openURL`.
 
 ```javascript
 import * as Linking from 'expo-linking';
 
-Linking.openURL('https://expo.io');
+Linking.openURL('https://expo.dev');
 ```
 
 Usually you don't open a URL without it being requested by the user -- here's an example of a simple `Anchor` component that will open a URL when it is pressed.
@@ -61,7 +61,7 @@ export default class Anchor extends React.Component {
 }
 
 // <Anchor href="https://google.com">Go to Google</Anchor>
-// <Anchor href="mailto:support@expo.io">Email support</Anchor>
+// <Anchor href="mailto:support@expo.dev">Email support</Anchor>
 ```
 
 ### Using `WebBrowser` instead of `Linking` for opening web links
@@ -97,11 +97,11 @@ export default class App extends Component {
   }
 
   _handleOpenWithLinking = () => {
-    Linking.openURL('https://expo.io');
+    Linking.openURL('https://expo.dev');
   };
 
   _handleOpenWithWebBrowser = () => {
-    WebBrowser.openBrowserAsync('https://expo.io');
+    WebBrowser.openBrowserAsync('https://expo.dev');
   };
 }
 
@@ -147,7 +147,7 @@ If you don't specify this list, `Linking.canOpenURL` may return `false` regardle
 
 Before continuing it's worth taking a moment to learn how to link to your app within the Expo Go app. Expo Go uses the `exp://` scheme, but if we link to `exp://` without any address afterwards, it will open the app to the main screen.
 
-In development, your app will live at a url like `exp://wg-qka.community.app.exp.direct:80`. When it's deployed, it will be at a URL like `exp://exp.host/@community/with-webbrowser-redirect`. If you create a website with a link like `<a href="exp://expo.io/@community/with-webbrowser-redirect">Open my project</a>`, then open that site on your device and click the link, it will open your app within the Expo Go app. You can link to it from another app by using `Linking.openURL` too.
+In development, your app will live at a url like `exp://wg-qka.community.app.exp.direct:80`. When it's deployed, it will be at a URL like `exp://exp.host/@community/with-webbrowser-redirect`. If you create a website with a link like `<a href="exp://expo.dev/@community/with-webbrowser-redirect">Open my project</a>`, then open that site on your device and click the link, it will open your app within the Expo Go app. You can link to it from another app by using `Linking.openURL` too.
 
 ### In a standalone app
 
@@ -166,18 +166,18 @@ Once you build your standalone app and install it to your device, you will be ab
 If your app is ejected, note that like some other parts of `app.json`, changing the `scheme` key after your app is already ejected will not have the desired effect. If you'd like to change the deep link scheme in your bare app, you'll need to replace the existing scheme with the new one in the following locations:
 
 - `scheme` in `app.json`
-- Under the first occurrence of `CFBundleURLSchemes` in `ios/<your-project-name>/Supporting/Info.plist`
+- Under the first occurrence of `CFBundleURLSchemes` in `ios/<your-project-name>/Info.plist`
 - In the `data android:scheme` tag in `android/app/src/main/AndroidManifest.xml`
 
 ### `Linking` module
 
-To save you the trouble of inserting a bunch of conditionals based on the environment that you're in and hardcoding urls, we provide some helper methods in our extension of the `Linking` module. When you want to provide a service with a url that it needs to redirect back into your app, you can call `Linking.makeUrl()` and it will resolve to the following:
+To save you the trouble of inserting a bunch of conditionals based on the environment that you're in and hardcoding urls, we provide some helper methods in our extension of the `Linking` module. When you want to provide a service with a url that it needs to redirect back into your app, you can call `Linking.createURL()` and it will resolve to the following:
 
 - _Published app in Expo Go_: `exp://exp.host/@community/with-webbrowser-redirect`
 - _Published app in standalone_: `myapp://`
-- _Development_: `exp://localhost:19000`
+- _Development in Expo Go_: `exp://127.0.0.1:19000`
 
-You can also change the returned url by passing optional parameters into `Linking.makeUrl()`. These will be used by your app to receive data, which we will talk about in the next section.
+You can also change the returned url by passing optional parameters into `Linking.createURL()`. These will be used by your app to receive data, which we will talk about in the next section.
 
 ### Handling links into your app
 
@@ -201,11 +201,17 @@ To pass some data into your app, you can append it as a path or query string on 
 
 ```javascript
 let redirectUrl = Linking.createURL('path/into/app', {
-  queryParams: { hello: 'world', goodbye: 'now' },
+  queryParams: { hello: 'world' },
 });
 ```
 
-This would return something like `myapp://path/into/app?hello=world&goodbye=now` for a standalone app.
+This will resolve into the following, depending on the environment:
+
+- _Published app in Expo Go_: `exp://exp.host/@community/with-webbrowser-redirect/--/path/into/app?hello=world`
+- _Published app in standalone_: `myapp://path/into/app?hello=world`
+- _Development in Expo Go_: `exp://127.0.0.1:19000/--/path/into/app?hello=world`
+
+> Notice in Expo Go that `/--/` is added to the URL when a path is specified. This indicates to Expo Go that the substring after it corresponds to the deep link path, and is not part of the path to the app itself.
 
 When your app is opened using the deep link, you can parse the link with `Linking.parse()` to get back the path and query parameters you passed in.
 
@@ -220,12 +226,12 @@ _handleUrl = url => {
 ```
 
 If you opened a URL like
-`myapp://path/into/app?hello=world&goodbye=now`, this would alert
-`Linked to app with path: path/into/app and data: {hello: 'world', goodbye: 'now'}`.
+`myapp://path/into/app?hello=world`, this would alert
+`Linked to app with path: path/into/app and data: {hello: 'world'}`.
 
 ### Example: linking back to your app from WebBrowser
 
-The example project [examples/with-webbrowser-redirect](https://github.com/expo/examples/tree/master/with-webbrowser-redirect) demonstrates handling redirects from `WebBrowser` and taking data out of the query string. [Try it out in Expo](https://expo.io/@community/with-webbrowser-redirect).
+The example project [examples/with-webbrowser-redirect](https://github.com/expo/examples/tree/master/with-webbrowser-redirect) demonstrates handling redirects from `WebBrowser` and taking data out of the query string. [Try it out in Expo](https://expo.dev/@community/with-webbrowser-redirect).
 
 ### Example: using linking for authentication
 
@@ -233,7 +239,7 @@ A common use case for linking to your app is to redirect back to your app after 
 
 **Note**: if try to use `Linking.openURL` to open the web browser for authentication then your app may be rejected by Apple on the grounds of a bad or confusing user experience. `WebBrowser.openBrowserAsync` opens the browser window in a modal, which looks and feels good and is Apple approved.
 
-To see a full example of using `WebBrowser` for authentication with Facebook, see [examples/with-facebook-auth](https://github.com/expo/examples/tree/master/with-facebook-auth). Currently Facebook authentication requires that you deploy a small webserver to redirect back to your app (as described in the example) because Facebook does not let you redirect to custom schemes, Expo is working on a solution to make this easier for you. [Try it out in Expo](https://expo.io/@community/with-facebook-auth).
+To see a full example of using `WebBrowser` for authentication with Facebook, see [examples/with-facebook-auth](https://github.com/expo/examples/tree/master/with-facebook-auth). Currently Facebook authentication requires that you deploy a small webserver to redirect back to your app (as described in the example) because Facebook does not let you redirect to custom schemes, Expo is working on a solution to make this easier for you. [Try it out in Expo](https://expo.dev/@community/with-facebook-auth).
 
 Another example of using `WebBrowser` for authentication can be found at [examples/with-auth0](https://github.com/expo/examples/tree/master/with-auth0).
 

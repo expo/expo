@@ -1,6 +1,6 @@
 import * as WebBrowser from 'expo-web-browser';
 import * as React from 'react';
-import { Platform, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { Platform, StyleSheet, View } from 'react-native';
 import url from 'url';
 
 import Analytics from '../api/Analytics';
@@ -46,7 +46,15 @@ export default function ProfileUnauthenticated() {
       const authSessionURL = `${
         Config.website.origin
       }/${urlPath}?app_redirect_uri=${encodeURIComponent(redirectBase)}`;
-      const result = await WebBrowser.openAuthSessionAsync(authSessionURL, redirectBase);
+      const result = await WebBrowser.openAuthSessionAsync(authSessionURL, redirectBase, {
+        /** note(brentvatne): We should disable the showInRecents option when
+         * https://github.com/expo/expo/issues/8072 is resolved. This workaround
+         * prevents the Chrome Custom Tabs activity from closing when the user
+         * switches from the login / sign up form to a password manager or 2fa
+         * app. The downside of using this flag is that the browser window will
+         * remain open in the background after authentication completes. */
+        showInRecents: true,
+      });
 
       if (!mounted.current) {
         return;
@@ -99,13 +107,11 @@ export default function ProfileUnauthenticated() {
         {description}
       </StyledText>
 
-      <PrimaryButton onPress={_handleSignInPress} fallback={TouchableOpacity}>
-        Sign in to your account
-      </PrimaryButton>
+      <PrimaryButton onPress={_handleSignInPress}>Sign in to your account</PrimaryButton>
 
       <View style={{ marginBottom: 20 }} />
 
-      <PrimaryButton plain onPress={_handleSignUpPress} fallback={TouchableOpacity}>
+      <PrimaryButton plain onPress={_handleSignUpPress}>
         Sign up for Expo
       </PrimaryButton>
 

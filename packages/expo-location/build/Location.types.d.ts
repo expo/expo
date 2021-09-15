@@ -1,4 +1,4 @@
-import { PermissionResponse as UMPermissionResponse } from 'unimodules-permissions-interface';
+import { PermissionResponse as UMPermissionResponse } from 'expo-modules-core';
 /**
  * Enum with available location accuracies.
  */

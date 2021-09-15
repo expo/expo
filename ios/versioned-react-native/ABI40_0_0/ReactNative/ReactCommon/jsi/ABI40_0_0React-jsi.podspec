@@ -33,7 +33,7 @@ Pod::Spec.new do |s|
 
   s.dependency "boost-for-react-native", "1.63.0"
   s.dependency "DoubleConversion"
-  s.dependency "Folly", folly_version
+  s.dependency "RCT-Folly", folly_version
   s.dependency "glog"
 
   s.subspec "Default" do

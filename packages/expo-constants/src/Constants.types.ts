@@ -36,11 +36,51 @@ export interface WebManifest {
   [key: string]: any;
 }
 
-export interface AppManifest extends ExpoConfig {
-  /** Published Apps Only */
-  releaseId?: string;
-  revisionId?: string;
-  releaseChannel?: string;
+export interface ManifestAsset {
+  url: string;
+}
+
+/**
+ * A modern manifest.
+ */
+export type Manifest = {
+  id: string;
+  createdAt: string;
+  runtimeVersion: string;
+  launchAsset: ManifestAsset;
+  assets: ManifestAsset[];
+  metadata: object;
+  extra?: ClientScopingConfig & {
+    expoClient?: ExpoClientConfig;
+    expoGo?: ExpoGoConfig;
+    eas?: EASConfig;
+  };
+};
+
+export type EASConfig = {
+  /**
+   * The ID for this project if it's using EAS. UUID. This value will not change when a project is transferred
+   * between accounts or renamed.
+   */
+  projectId?: string;
+};
+
+export type ClientScopingConfig = {
+  /**
+   * An opaque unique string for scoping client-side data to this project. This value
+   * will not change when a project is transferred between accounts or renamed.
+   */
+  scopeKey?: string;
+};
+
+export type ExpoGoConfig = {
+  mainModuleName?: string;
+  debuggerHost?: string;
+  logUrl?: string;
+  developer?: {
+    tool?: string;
+    [key: string]: any;
+  };
   packagerOpts?: {
     hostType?: string;
     dev?: boolean;
@@ -51,16 +91,48 @@ export interface AppManifest extends ExpoConfig {
     lanType?: string;
     [key: string]: any;
   };
-  developer?: {
-    tool?: string;
+};
+
+export type ExpoClientConfig = ExpoConfig & {
+  /** Published Apps Only */
+  releaseId?: string;
+  revisionId?: string;
+  releaseChannel?: string;
+  bundleUrl: string;
+  hostUri?: string;
+  publishedTime?: string;
+
+  /**
+   * The Expo account name and slug for this project.
+   * @deprecated - Prefer `projectId` or `originalFullName` instead for identification and `scopeKey` for
+   * scoping due to immutability.
+   */
+  id?: string;
+
+  /**
+   * The original Expo account name and slug for this project. Formatted like `@username/slug`.
+   * When unauthenticated, the username is `@anonymous`. For published projects, this value
+   * will not change when a project is transferred between accounts or renamed.
+   */
+  originalFullName?: string;
+
+  /**
+   * The Expo account name and slug used for display purposes. Formatted like `@username/slug`.
+   * When unauthenticated, the username is `@anonymous`. For published projects, this value
+   * may change when a project is transferred between accounts or renamed.
+   */
+  currentFullName?: string;
+};
+
+/**
+ * A classic manifest https://docs.expo.io/guides/how-expo-works/#expo-manifest
+ */
+export type AppManifest = ExpoClientConfig &
+  ExpoGoConfig &
+  EASConfig &
+  ClientScopingConfig & {
     [key: string]: any;
   };
-  bundleUrl: string;
-  debuggerHost?: string;
-  mainModuleName?: string;
-  logUrl?: string;
-  [key: string]: any;
-}
 
 export interface PlatformManifest {
   ios?: IOSManifest;
@@ -89,7 +161,7 @@ export interface NativeConstants {
   expoRuntimeVersion: string | null;
   /**
    * The version string of the Expo client currently running.
-   * Returns `null` on and bare workflow and web.
+   * Returns `null` in bare workflow and web.
    */
   expoVersion: string | null;
   isDetached?: boolean;
@@ -104,7 +176,16 @@ export interface NativeConstants {
   linkingUri: string;
   nativeAppVersion: string | null;
   nativeBuildVersion: string | null;
-  manifest: AppManifest;
+  /**
+   * Classic manifest for Expo apps using classic updates.
+   * Returns `null` in bare workflow and when `manifest2` is non-null.
+   */
+  manifest: AppManifest | null;
+  /**
+   * New manifest for Expo apps using modern Expo Updates.
+   * Returns `null` in bare workflow and when `manifest` is non-null.
+   */
+  manifest2: Manifest | null;
   sessionId: string;
   statusBarHeight: number;
   systemFonts: string[];
@@ -132,5 +213,12 @@ export interface Constants extends NativeConstants {
    * In certain cases accessing manifest via this property
    * suppresses important warning about missing manifest.
    */
-  __unsafeNoWarnManifest: AppManifest;
+  __unsafeNoWarnManifest?: AppManifest;
+  /**
+   * @warning do not use this property. Use `manifest2` by default.
+   *
+   * In certain cases accessing manifest via this property
+   * suppresses important warning about missing manifest.
+   */
+  __unsafeNoWarnManifest2?: Manifest;
 }

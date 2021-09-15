@@ -1,6 +1,11 @@
 import Entypo from '@expo/vector-icons/build/Entypo';
 import Ionicons from '@expo/vector-icons/build/Ionicons';
-import { NavigationContainer, useTheme, NavigationContainerRef } from '@react-navigation/native';
+import {
+  NavigationContainer,
+  useTheme,
+  NavigationContainerRef,
+  RouteProp,
+} from '@react-navigation/native';
 import { createStackNavigator, TransitionPresets } from '@react-navigation/stack';
 import Constants from 'expo-constants';
 import * as React from 'react';
@@ -9,34 +14,48 @@ import { Platform, StyleSheet, Linking } from 'react-native';
 import OpenProjectByURLButton from '../components/OpenProjectByURLButton.ios';
 import OptionsButton from '../components/OptionsButton';
 import UserSettingsButton from '../components/UserSettingsButton';
-import * as Themes from '../constants/Themes';
+import { ColorTheme } from '../constants/Colors';
+import Themes from '../constants/Themes';
 import AccountScreen from '../screens/AccountScreen';
 import AudioDiagnosticsScreen from '../screens/AudioDiagnosticsScreen';
 import DiagnosticsScreen from '../screens/DiagnosticsScreen';
-import ExperienceScreen from '../screens/ExperienceScreen';
 import GeofencingScreen from '../screens/GeofencingScreen';
 import LocationDiagnosticsScreen from '../screens/LocationDiagnosticsScreen';
 import ProfileAllProjectsScreen from '../screens/ProfileAllProjectsScreen';
 import ProfileAllSnacksScreen from '../screens/ProfileAllSnacksScreen';
 import ProfileScreen from '../screens/ProfileScreen';
+import ProjectScreen from '../screens/ProjectScreen';
 import ProjectsForAccountScreen from '../screens/ProjectsForAccountScreen';
 import ProjectsScreen from '../screens/ProjectsScreen';
 import QRCodeScreen from '../screens/QRCodeScreen';
 import SnacksForAccountScreen from '../screens/SnacksForAccountScreen';
 import UserSettingsScreen from '../screens/UserSettingsScreen';
 import Environment from '../utils/Environment';
+import {
+  alertWithCameraPermissionInstructions,
+  requestCameraPermissionsAsync,
+} from '../utils/PermissionUtils';
 import BottomTab, { getNavigatorProps } from './BottomTabNavigator';
+import {
+  DiagnosticsStackRoutes,
+  ProfileStackRoutes,
+  ProjectsStackRoutes,
+} from './Navigation.types';
 import defaultNavigationOptions from './defaultNavigationOptions';
 
 // TODO(Bacon): Do we need to create a new one each time?
-const ProjectsStack = createStackNavigator();
+const ProjectsStack = createStackNavigator<ProjectsStackRoutes>();
 
 function useThemeName() {
   const theme = useTheme();
-  return theme.dark ? 'dark' : 'light';
+  return theme.dark ? ColorTheme.DARK : ColorTheme.LIGHT;
 }
 
-const accountNavigationOptions = ({ route }) => {
+const accountNavigationOptions = ({
+  route,
+}: {
+  route: RouteProp<ProfileStackRoutes, 'Account'>;
+}) => {
   const accountName = route.params?.accountName;
   return {
     title: `@${accountName}`,
@@ -44,7 +63,7 @@ const accountNavigationOptions = ({ route }) => {
   };
 };
 
-const profileNavigationOptions = ({ route }) => {
+const profileNavigationOptions = () => {
   return {
     title: 'Profile',
     headerRight: () => <UserSettingsButton />,
@@ -73,7 +92,7 @@ function ProjectsStackScreen() {
   );
 }
 
-const ProfileStack = createStackNavigator();
+const ProfileStack = createStackNavigator<ProfileStackRoutes>();
 
 function ProfileStackScreen() {
   const theme = useThemeName();
@@ -116,11 +135,12 @@ function ProfileStackScreen() {
         component={SnacksForAccountScreen}
         options={{ title: 'Snacks' }}
       />
+      <ProfileStack.Screen name="Project" component={ProjectScreen} />
     </ProfileStack.Navigator>
   );
 }
 
-const DiagnosticsStack = createStackNavigator();
+const DiagnosticsStack = createStackNavigator<DiagnosticsStackRoutes>();
 
 function DiagnosticsStackScreen() {
   const theme = useThemeName();
@@ -165,7 +185,7 @@ function TabNavigator(props: { theme: string }) {
         name="ProjectsStack"
         component={ProjectsStackScreen}
         options={{
-          tabBarIcon: props => <Entypo {...props} style={styles.icon} name="grid" size={24} />,
+          tabBarIcon: (props) => <Entypo {...props} style={styles.icon} name="grid" size={24} />,
           tabBarLabel: 'Projects',
         }}
       />
@@ -174,7 +194,7 @@ function TabNavigator(props: { theme: string }) {
           name="DiagnosticsStack"
           component={DiagnosticsStackScreen}
           options={{
-            tabBarIcon: props => (
+            tabBarIcon: (props) => (
               <Ionicons {...props} style={styles.icon} name="ios-git-branch" size={26} />
             ),
             tabBarLabel: 'Diagnostics',
@@ -185,7 +205,7 @@ function TabNavigator(props: { theme: string }) {
         name="ProfileStack"
         component={ProfileStackScreen}
         options={{
-          tabBarIcon: props => (
+          tabBarIcon: (props) => (
             <Ionicons {...props} style={styles.icon} name="ios-person" size={26} />
           ),
           tabBarLabel: 'Profile',
@@ -197,13 +217,13 @@ function TabNavigator(props: { theme: string }) {
 
 const ModalStack = createStackNavigator();
 
-export default (props: { theme: string }) => {
+export default (props: { theme: ColorTheme }) => {
   const navigationRef = React.useRef<NavigationContainerRef>(null);
   const isNavigationReadyRef = React.useRef(false);
   const initialURLWasConsumed = React.useRef(false);
 
   React.useEffect(() => {
-    const handleDeepLinks = ({ url }) => {
+    const handleDeepLinks = async ({ url }: { url: string | null }) => {
       if (Platform.OS === 'ios' || !url || !isNavigationReadyRef.current) {
         return;
       }
@@ -213,12 +233,16 @@ export default (props: { theme: string }) => {
       }
 
       if (url.startsWith('expo-home://qr-scanner')) {
-        nav.navigate('QRCode');
+        if (await requestCameraPermissionsAsync()) {
+          nav.navigate('QRCode');
+        } else {
+          await alertWithCameraPermissionInstructions();
+        }
       }
     };
     if (!initialURLWasConsumed.current) {
       initialURLWasConsumed.current = true;
-      Linking.getInitialURL().then(url => {
+      Linking.getInitialURL().then((url) => {
         handleDeepLinks({ url });
       });
     }
@@ -260,7 +284,6 @@ export default (props: { theme: string }) => {
           )}
         </ModalStack.Screen>
         <ModalStack.Screen name="QRCode" component={QRCodeScreen} />
-        <ModalStack.Screen name="Experience" component={ExperienceScreen} />
       </ModalStack.Navigator>
     </NavigationContainer>
   );

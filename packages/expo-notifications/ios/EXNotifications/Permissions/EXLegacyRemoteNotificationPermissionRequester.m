@@ -1,14 +1,14 @@
 // Copyright 2016-present 650 Industries. All rights reserved.
 
 #import <EXNotifications/EXLegacyRemoteNotificationPermissionRequester.h>
-#import <UMCore/UMUtilities.h>
+#import <ExpoModulesCore/EXUtilities.h>
 
 @interface EXLegacyRemoteNotificationPermissionRequester ()
 
-@property (nonatomic, strong) UMPromiseResolveBlock resolve;
-@property (nonatomic, strong) UMPromiseRejectBlock reject;
+@property (nonatomic, strong) EXPromiseResolveBlock resolve;
+@property (nonatomic, strong) EXPromiseRejectBlock reject;
 @property (nonatomic, assign) BOOL remoteNotificationsRegistrationIsPending;
-@property (nonatomic, weak) id<UMPermissionsRequester> userNotificationPermissionRequester;
+@property (nonatomic, weak) id<EXPermissionsRequester> userNotificationPermissionRequester;
 @property (nonatomic, weak) dispatch_queue_t methodQueue;
 @property (nonatomic, weak) id<EXRemoteNotificationPermissionProgressPublisher> permissionProgressPublisher;
 
@@ -21,7 +21,7 @@
   return @"notifications";
 }
 
-- (instancetype)initWithUserNotificationPermissionRequester:(id<UMPermissionsRequester>)userNotificationPermissionRequester
+- (instancetype)initWithUserNotificationPermissionRequester:(id<EXPermissionsRequester>)userNotificationPermissionRequester
                                         permissionPublisher:(id<EXRemoteNotificationPermissionProgressPublisher>)permissionProgressPublisher
                                             withMethodQueue:(dispatch_queue_t)methodQueue
 {
@@ -36,11 +36,11 @@
 
 - (NSDictionary *)getPermissions
 {
-  __block UMPermissionStatus status;
-  [UMUtilities performSynchronouslyOnMainThread:^{
+  __block EXPermissionStatus status;
+  [EXUtilities performSynchronouslyOnMainThread:^{
     status = (UMSharedApplication().isRegisteredForRemoteNotifications) ?
-    UMPermissionStatusGranted :
-    UMPermissionStatusUndetermined;
+    EXPermissionStatusGranted :
+    EXPermissionStatusUndetermined;
   }];
   NSMutableDictionary *permissions = [[_userNotificationPermissionRequester getPermissions] mutableCopy];
   
@@ -51,7 +51,7 @@
   return permissions;
 }
 
-- (void)requestPermissionsWithResolver:(UMPromiseResolveBlock)resolve rejecter:(UMPromiseRejectBlock)reject
+- (void)requestPermissionsWithResolver:(EXPromiseResolveBlock)resolve rejecter:(EXPromiseRejectBlock)reject
 {
   if (_resolve != nil || _reject != nil) {
     reject(@"E_AWAIT_PROMISE", @"Another request for the same permission is already being handled.", nil);
@@ -62,7 +62,7 @@
   _reject = reject;
 
   BOOL __block isRegisteredForRemoteNotifications = NO;
-  [UMUtilities performSynchronouslyOnMainThread:^{
+  [EXUtilities performSynchronouslyOnMainThread:^{
     isRegisteredForRemoteNotifications = UMSharedApplication().isRegisteredForRemoteNotifications;
   }];
 
@@ -71,10 +71,10 @@
     [self _maybeConsumeResolverWithCurrentPermissions];
   } else {
     [_permissionProgressPublisher addDelegate:self];
-     UM_WEAKIFY(self)
+     EX_WEAKIFY(self)
     [_userNotificationPermissionRequester requestPermissionsWithResolver:^(NSDictionary *permission){
-      UM_STRONGIFY(self)
-      UMPermissionStatus localNotificationsStatus = [[permission objectForKey:@"status"] intValue];
+      EX_STRONGIFY(self)
+      EXPermissionStatus localNotificationsStatus = [[permission objectForKey:@"status"] intValue];
       // We may assume that `EXLocalNotificationRequester`'s permission request will always finish
       // when the user responds to the dialog or has already responded in the past.
       // However, `UIApplication.registerForRemoteNotification` results in calling
@@ -82,7 +82,7 @@
       // `application:didFailToRegisterForRemoteNotificationsWithError:` on the application delegate
       // ONLY when the notifications are enabled in settings (by allowing sound, alerts or app badge).
       // So, when the local notifications are disabled, the application delegate's callbacks will not be called instantly.
-      if (localNotificationsStatus == UMPermissionStatusDenied) {
+      if (localNotificationsStatus == EXPermissionStatusDenied) {
         [self _clearObserver];
         [self _maybeConsumeResolverWithCurrentPermissions];
       } else {
@@ -108,9 +108,9 @@
 - (void)handleDidFinishRegisteringForRemoteNotifications
 {
   [self _clearObserver];
-  UM_WEAKIFY(self)
+  EX_WEAKIFY(self)
   dispatch_async(_methodQueue, ^{
-    UM_STRONGIFY(self)
+    EX_STRONGIFY(self)
     [self _maybeConsumeResolverWithCurrentPermissions];
   });
 }

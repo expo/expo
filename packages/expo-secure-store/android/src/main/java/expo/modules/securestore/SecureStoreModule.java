@@ -15,10 +15,10 @@ import android.util.Log;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.unimodules.core.ExportedModule;
-import org.unimodules.core.Promise;
-import org.unimodules.core.arguments.ReadableArguments;
-import org.unimodules.core.interfaces.ExpoMethod;
+import expo.modules.core.ExportedModule;
+import expo.modules.core.Promise;
+import expo.modules.core.arguments.ReadableArguments;
+import expo.modules.core.interfaces.ExpoMethod;
 
 import java.io.IOException;
 import java.math.BigInteger;

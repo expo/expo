@@ -22,7 +22,7 @@ export default class SnackEmbed extends React.Component<Props> {
     // inject script if it hasn't been loaded by a previous page
     if (!script) {
       script = document.createElement('script');
-      script.src = `${this.props.snackId ? 'https://snack.expo.io' : SNACK_URL}/embed.js`;
+      script.src = `${this.props.snackId ? 'https://snack.expo.dev' : SNACK_URL}/embed.js`;
       script.async = true;
       script.id = 'snack';
 

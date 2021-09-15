@@ -6,14 +6,15 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import <UIKit/UIKit.h>
+#import "RNSVGUIKit.h"
+
 #import "RNSVGPainter.h"
 #import "RNSVGContainer.h"
 #import "RNSVGVBMOS.h"
 
 @class RNSVGNode;
 
-@interface RNSVGSvgView : UIView <RNSVGContainer>
+@interface RNSVGSvgView : RNSVGView <RNSVGContainer>
 
 @property (nonatomic, strong) RNSVGLength *bbWidth;
 @property (nonatomic, strong) RNSVGLength *bbHeight;
@@ -29,8 +30,6 @@
 @property (nonatomic, assign) CGAffineTransform initialCTM;
 @property (nonatomic, assign) CGAffineTransform invInitialCTM;
 @property (nonatomic, assign) CGAffineTransform viewBoxTransform;
-
-
 
 /**
  * define <ClipPath></ClipPath> content as clipPath template.

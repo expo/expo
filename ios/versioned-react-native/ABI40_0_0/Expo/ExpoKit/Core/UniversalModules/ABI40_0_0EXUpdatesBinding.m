@@ -8,7 +8,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface ABI40_0_0EXUpdatesBinding ()
 
-@property (nonatomic, strong) NSString *experienceId;
+@property (nonatomic, strong) NSString *scopeKey;
 @property (nonatomic, weak) id<ABI40_0_0EXUpdatesBindingDelegate> updatesKernelService;
 @property (nonatomic, weak) id<ABI40_0_0EXUpdatesDatabaseBindingDelegate> databaseKernelService;
 
@@ -16,10 +16,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation ABI40_0_0EXUpdatesBinding : ABI40_0_0EXUpdatesService
 
-- (instancetype)initWithExperienceId:(NSString *)experienceId updatesKernelService:(id<ABI40_0_0EXUpdatesBindingDelegate>)updatesKernelService databaseKernelService:(id<ABI40_0_0EXUpdatesDatabaseBindingDelegate>)databaseKernelService
+- (instancetype)initWithScopeKey:(NSString *)scopeKey updatesKernelService:(id<ABI40_0_0EXUpdatesBindingDelegate>)updatesKernelService databaseKernelService:(id<ABI40_0_0EXUpdatesDatabaseBindingDelegate>)databaseKernelService
 {
   if (self = [super init]) {
-    _experienceId = experienceId;
+    _scopeKey = scopeKey;
     _updatesKernelService = updatesKernelService;
     _databaseKernelService = databaseKernelService;
   }
@@ -28,7 +28,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (ABI40_0_0EXUpdatesConfig *)config
 {
-  return [_updatesKernelService configForExperienceId:_experienceId];
+  return [_updatesKernelService configForScopeKey:_scopeKey];
 }
 
 - (ABI40_0_0EXUpdatesDatabase *)database
@@ -36,9 +36,9 @@ NS_ASSUME_NONNULL_BEGIN
   return _databaseKernelService.database;
 }
 
-- (id<ABI40_0_0EXUpdatesSelectionPolicy>)selectionPolicy
+- (ABI40_0_0EXUpdatesSelectionPolicy *)selectionPolicy
 {
-  return [_updatesKernelService selectionPolicyForExperienceId:_experienceId];
+  return [_updatesKernelService selectionPolicyForScopeKey:_scopeKey];
 }
 
 - (NSURL *)directory
@@ -48,27 +48,27 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (nullable ABI40_0_0EXUpdatesUpdate *)launchedUpdate
 {
-  return [_updatesKernelService launchedUpdateForExperienceId:_experienceId];
+  return [_updatesKernelService launchedUpdateForScopeKey:_scopeKey];
 }
 
 - (nullable NSDictionary *)assetFilesMap
 {
-  return [_updatesKernelService assetFilesMapForExperienceId:_experienceId];
+  return [_updatesKernelService assetFilesMapForScopeKey:_scopeKey];
 }
 
 - (BOOL)isUsingEmbeddedAssets
 {
-  return [_updatesKernelService isUsingEmbeddedAssetsForExperienceId:_experienceId];
+  return [_updatesKernelService isUsingEmbeddedAssetsForScopeKey:_scopeKey];
 }
 
 - (BOOL)isStarted
 {
-  return [_updatesKernelService isStartedForExperienceId:_experienceId];
+  return [_updatesKernelService isStartedForScopeKey:_scopeKey];
 }
 
 - (BOOL)isEmergencyLaunch
 {
-  return [_updatesKernelService isEmergencyLaunchForExperienceId:_experienceId];
+  return [_updatesKernelService isEmergencyLaunchForScopeKey:_scopeKey];
 }
 
 - (BOOL)canRelaunch
@@ -78,7 +78,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)requestRelaunchWithCompletion:(ABI40_0_0EXUpdatesAppRelaunchCompletionBlock)completion
 {
-  return [_updatesKernelService requestRelaunchForExperienceId:_experienceId withCompletion:completion];
+  return [_updatesKernelService requestRelaunchForScopeKey:_scopeKey withCompletion:completion];
+}
+
+- (void)resetSelectionPolicy
+{
+  // no-op in managed
 }
 
 @end

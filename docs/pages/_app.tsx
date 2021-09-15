@@ -1,13 +1,14 @@
-/// <reference types="google.analytics" />
-
 import { ThemeProvider } from '@expo/styleguide';
 import * as Sentry from '@sentry/browser';
-import App from 'next/app';
-import React from 'react';
+import { AppProps, NextWebVitalsMetric } from 'next/app';
+import dynamic from 'next/dynamic';
+import Head from 'next/head';
+import React, { useState, useEffect } from 'react';
 
+import { TrackPageView } from '~/common/analytics';
 import { preprocessSentryError } from '~/common/sentry-utilities';
 import 'react-diff-view/style/index.css';
-import '@expo/styleguide/dist/expo-colors.css';
+import '@expo/styleguide/dist/expo-theme.css';
 import 'tippy.js/dist/tippy.css';
 import '../public/static/libs/algolia/algolia.css';
 import '../public/static/libs/algolia/algolia-mobile.css';
@@ -17,44 +18,57 @@ Sentry.init({
   beforeSend: preprocessSentryError,
 });
 
-export function reportWebVitals({
-  id,
-  name,
-  label,
-  value,
-}: {
-  id: string;
-  name: string;
-  label: string;
-  value: number;
-}) {
-  window?.ga('send', 'event', {
-    eventCategory: label === 'web-vital' ? 'Web Vitals' : 'Next.js custom metric',
-    eventAction: name,
+const DynamicLoadAnalytics = dynamic<{ id: string }>(() =>
+  import('~/common/analytics').then(mod => mod.LoadAnalytics)
+);
+
+export function reportWebVitals({ id, name, label, value }: NextWebVitalsMetric) {
+  window?.gtag?.('event', name, {
+    event_category: label === 'web-vital' ? 'Web Vitals' : 'Next.js custom metric',
+    // Google Analytics metrics must be integers, so the value is rounded.
+    // For CLS the value is first multiplied by 1000 for greater precision
+    // (note: increase the multiplier for greater precision if needed).
+    value: Math.round(name === 'CLS' ? value * 1000 : value),
     // The `id` value will be unique to the current page load. When sending
     // multiple values from the same page (e.g. for CLS), Google Analytics can
     // compute a total by grouping on this ID (note: requires `eventLabel` to
     // be a dimension in your report).
-    eventLabel: id,
-    // Google Analytics metrics must be integers, so the value is rounded.
-    // For CLS the value is first multiplied by 1000 for greater precision
-    // (note: increase the multiplier for greater precision if needed).
-    eventValue: Math.round(name === 'CLS' ? value * 1000 : value),
+    event_label: id,
     // Use a non-interaction event to avoid affecting bounce rate.
-    nonInteraction: true,
-    // Use `sendBeacon()` if the browser supports it.
-    transport: 'beacon',
+    non_interaction: true,
   });
 }
 
-export default class MyApp extends App {
-  render() {
-    const { Component, pageProps } = this.props;
+function App({ Component, pageProps }: AppProps) {
+  const googleAnalyticsId = 'UA-107832480-3';
+  const [shouldLoadAnalytics, setShouldLoadAnalytics] = useState(false);
 
-    return (
+  useEffect(() => {
+    setShouldLoadAnalytics(true);
+  }, []);
+
+  return (
+    <>
+      <Head>
+        <script
+          type="text/javascript"
+          dangerouslySetInnerHTML={{
+            __html: `
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){dataLayer.push(arguments);}
+                gtag('js', new Date());
+                gtag('config', '${googleAnalyticsId}', { 'transport_type': 'beacon' });
+              `,
+          }}
+        />
+      </Head>
+      {shouldLoadAnalytics && <DynamicLoadAnalytics id={googleAnalyticsId} />}
       <ThemeProvider>
         <Component {...pageProps} />
       </ThemeProvider>
-    );
-  }
+      <TrackPageView id={googleAnalyticsId} />
+    </>
+  );
 }
+
+export default App;

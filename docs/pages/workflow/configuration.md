@@ -30,7 +30,7 @@ Most configuration from `app.json` is accessible at runtime from your JavaScript
 For more customization you can use the JavaScript and TypeScript `app.config.js`, or `app.config.ts`. These configs have the following properties:
 
 - Comments, variables, and single quotes!
-- ES module support (import/export).
+- Importing/requiring other JavaScript files. Using import/export syntax in external files is not supported. All imported files must be transpiled to support your current version of Node.js. 
 - TypeScript support with nullish coalescing and optional chaining.
 - Updated whenever Metro bundler reloads.
 - Provide environment information to your app.
@@ -85,7 +85,7 @@ export default ({ config }) => {
 
 ### Switching configuration based on the environment
 
-It's common to want to want to have some different configuration in development, staging, and production environments, or to swap out configuration entirely in order to white label an app. To accomplish this, you can use `app.config.js` along with environment variables.
+It's common to have some different configuration in development, staging, and production environments, or to swap out configuration entirely in order to white label an app. To accomplish this, you can use `app.config.js` along with environment variables.
 
 ```js
 module.exports = () => {

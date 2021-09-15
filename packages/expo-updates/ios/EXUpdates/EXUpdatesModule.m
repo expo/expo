@@ -10,17 +10,17 @@
 
 @interface EXUpdatesModule ()
 
-@property (nonatomic, weak) id<EXUpdatesInterface> updatesService;
+@property (nonatomic, weak) id<EXUpdatesModuleInterface> updatesService;
 
 @end
 
 @implementation EXUpdatesModule
 
-UM_EXPORT_MODULE(ExpoUpdates);
+EX_EXPORT_MODULE(ExpoUpdates);
 
-- (void)setModuleRegistry:(UMModuleRegistry *)moduleRegistry
+- (void)setModuleRegistry:(EXModuleRegistry *)moduleRegistry
 {
-  _updatesService = [moduleRegistry getModuleImplementingProtocol:@protocol(EXUpdatesInterface)];
+  _updatesService = [moduleRegistry getModuleImplementingProtocol:@protocol(EXUpdatesModuleInterface)];
 }
 
 - (NSDictionary *)constantsToExport
@@ -42,7 +42,7 @@ UM_EXPORT_MODULE(ExpoUpdates);
       @"isEnabled": @(YES),
       @"isUsingEmbeddedAssets": @(_updatesService.isUsingEmbeddedAssets),
       @"updateId": launchedUpdate.updateId.UUIDString ?: @"",
-      @"manifest": launchedUpdate.rawManifest.rawManifestJSON ?: @{},
+      @"manifest": launchedUpdate.manifest.rawManifestJSON ?: @{},
       @"releaseChannel": _updatesService.config.releaseChannel,
       @"localAssets": _updatesService.assetFilesMap ?: @{},
       @"isEmergencyLaunch": @(_updatesService.isEmergencyLaunch),
@@ -52,9 +52,9 @@ UM_EXPORT_MODULE(ExpoUpdates);
   
 }
 
-UM_EXPORT_METHOD_AS(reload,
-                    reloadAsync:(UMPromiseResolveBlock)resolve
-                         reject:(UMPromiseRejectBlock)reject)
+EX_EXPORT_METHOD_AS(reload,
+                    reloadAsync:(EXPromiseResolveBlock)resolve
+                         reject:(EXPromiseRejectBlock)reject)
 {
   if (!_updatesService.config.isEnabled) {
     reject(@"ERR_UPDATES_DISABLED", @"You cannot reload when expo-updates is not enabled.", nil);
@@ -74,9 +74,9 @@ UM_EXPORT_METHOD_AS(reload,
   }];
 }
 
-UM_EXPORT_METHOD_AS(checkForUpdateAsync,
-                    checkForUpdateAsync:(UMPromiseResolveBlock)resolve
-                                 reject:(UMPromiseRejectBlock)reject)
+EX_EXPORT_METHOD_AS(checkForUpdateAsync,
+                    checkForUpdateAsync:(EXPromiseResolveBlock)resolve
+                                 reject:(EXPromiseRejectBlock)reject)
 {
   if (!_updatesService.config.isEnabled) {
     reject(@"ERR_UPDATES_DISABLED", @"You cannot check for updates when expo-updates is not enabled.", nil);
@@ -106,7 +106,7 @@ UM_EXPORT_METHOD_AS(checkForUpdateAsync,
     if ([selectionPolicy shouldLoadNewUpdate:update withLaunchedUpdate:launchedUpdate filters:update.manifestFilters]) {
       resolve(@{
         @"isAvailable": @(YES),
-        @"manifest": update.rawManifest.rawManifestJSON
+        @"manifest": update.manifest.rawManifestJSON
       });
     } else {
       resolve(@{
@@ -118,9 +118,9 @@ UM_EXPORT_METHOD_AS(checkForUpdateAsync,
   }];
 }
 
-UM_EXPORT_METHOD_AS(fetchUpdateAsync,
-                    fetchUpdateAsync:(UMPromiseResolveBlock)resolve
-                              reject:(UMPromiseRejectBlock)reject)
+EX_EXPORT_METHOD_AS(fetchUpdateAsync,
+                    fetchUpdateAsync:(EXPromiseResolveBlock)resolve
+                              reject:(EXPromiseRejectBlock)reject)
 {
   if (!_updatesService.config.isEnabled) {
     reject(@"ERR_UPDATES_DISABLED", @"You cannot fetch updates when expo-updates is not enabled.", nil);
@@ -141,7 +141,7 @@ UM_EXPORT_METHOD_AS(fetchUpdateAsync,
       [self->_updatesService resetSelectionPolicy];
       resolve(@{
         @"isNew": @(YES),
-        @"manifest": update.rawManifest.rawManifestJSON
+        @"manifest": update.manifest.rawManifestJSON
       });
     } else {
       resolve(@{

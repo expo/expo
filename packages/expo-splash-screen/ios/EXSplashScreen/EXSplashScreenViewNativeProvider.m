@@ -1,7 +1,7 @@
 // Copyright © 2018 650 Industries. All rights reserved.
 
 #import <EXSplashScreen/EXSplashScreenViewNativeProvider.h>
-#import <UMCore/UMLogManager.h>
+#import <ExpoModulesCore/EXLogManager.h>
 
 @implementation EXSplashScreenViewNativeProvider
 
@@ -12,7 +12,7 @@
   @try {
     storyboard = [UIStoryboard storyboardWithName:splashScreenFilename bundle:[NSBundle mainBundle]];
   } @catch (NSException *_) {
-    UMLogWarn([NSString stringWithFormat:@"'%@.storyboard' file is missing. Fallbacking to '%@.xib' file.", splashScreenFilename, splashScreenFilename]);
+    EXLogWarn([NSString stringWithFormat:@"'%@.storyboard' file is missing. Fallbacking to '%@.xib' file.", splashScreenFilename, splashScreenFilename]);
   }
   if (storyboard) {
     @try {
@@ -30,7 +30,7 @@
   @try {
     views = [[NSBundle mainBundle] loadNibNamed:splashScreenFilename owner:self options:nil];
   } @catch (NSException *_) {
-    UMLogWarn([NSString stringWithFormat:@"'%@.xib' file is missing - 'expo-splash-screen' will not work as expected.", splashScreenFilename]);
+    EXLogWarn([NSString stringWithFormat:@"'%@.xib' file is missing - 'expo-splash-screen' will not work as expected.", splashScreenFilename]);
   }
   if (views) {
     if (!views.firstObject) {

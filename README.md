@@ -2,7 +2,7 @@
 
 <p align="center">
   <a href="https://expo.io/">
-    <img alt="expo sdk" height="128" src="./style/banner.png">
+    <img alt="expo sdk" height="128" src="./.github/resources/banner.png">
     <h1 align="center">Expo</h1>
   </a>
 </p>
@@ -59,8 +59,8 @@ Expo is an open-source platform for making universal native apps that run on And
 <p>Learn about building and deploying universal apps <a aria-label="expo documentation" href="https://docs.expo.io">in our official docs!</a></p>
 
 - [Getting Started](https://docs.expo.io/)
-- [API Reference](https://docs.expo.io/versions/latest/sdk/overview/)
-- [Using Custom Native Modules](https://docs.expo.io/versions/latest/bare/exploring-bare-workflow/)
+- [API Reference](https://docs.expo.io/versions/latest/)
+- [Using Custom Native Modules](https://docs.expo.io/bare/exploring-bare-workflow/)
 
 ## 🗺 Project Layout
 
@@ -80,17 +80,17 @@ Expo is an open-source platform for making universal native apps that run on And
 
 ## 🏅 Badges
 
-Let everyone know your app is universal with _Expo_!
+Let everyone know your app can be run instantly in the _Expo Go_ app!
 <br/>
 
-[![runs with expo](https://img.shields.io/badge/Runs%20with%20Expo-000.svg?style=flat-square&logo=EXPO&labelColor=f3f3f3&logoColor=000)](https://expo.io/)
+[![runs with Expo Go](https://img.shields.io/badge/Runs%20with%20Expo%20Go-000.svg?style=flat-square&logo=EXPO&labelColor=f3f3f3&logoColor=000)](https://expo.io/client)
 
-[![runs with expo](https://img.shields.io/badge/Runs%20with%20Expo-4630EB.svg?style=flat-square&logo=EXPO&labelColor=f3f3f3&logoColor=000)](https://expo.io/)
+[![runs with Expo Go](https://img.shields.io/badge/Runs%20with%20Expo%20Go-4630EB.svg?style=flat-square&logo=EXPO&labelColor=f3f3f3&logoColor=000)](https://expo.io/client)
 
 ```md
-[![runs with expo](https://img.shields.io/badge/Runs%20with%20Expo-000.svg?style=flat-square&logo=EXPO&labelColor=f3f3f3&logoColor=000)](https://expo.io/)
+[![runs with Expo Go](https://img.shields.io/badge/Runs%20with%20Expo%20Go-000.svg?style=flat-square&logo=EXPO&labelColor=f3f3f3&logoColor=000)](https://expo.io/client)
 
-[![runs with expo](https://img.shields.io/badge/Runs%20with%20Expo-4630EB.svg?style=flat-square&logo=EXPO&labelColor=f3f3f3&logoColor=000)](https://expo.io/)
+[![runs with Expo Go](https://img.shields.io/badge/Runs%20with%20Expo%20Go-4630EB.svg?style=flat-square&logo=EXPO&labelColor=f3f3f3&logoColor=000)](https://expo.io/client)
 ```
 
 ## 👏 Contributing

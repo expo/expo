@@ -19,14 +19,14 @@ export default class DevMenuMainScreen extends React.PureComponent {
 
     if (!isAuthenticated) {
       return (
-        <View style={styles.container}>
+        <View testID="DevMenuProfileScreen" style={styles.container}>
           <ProfileUnauthenticated />
         </View>
       );
     }
 
     return (
-      <View style={styles.container}>
+      <View testID="DevMenuProfileScreen" style={styles.container}>
         <Profile />
       </View>
     );

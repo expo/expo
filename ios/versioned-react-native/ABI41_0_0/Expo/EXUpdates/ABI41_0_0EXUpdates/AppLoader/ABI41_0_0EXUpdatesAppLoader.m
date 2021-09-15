@@ -52,6 +52,7 @@ static NSString * const ABI41_0_0EXUpdatesAppLoaderErrorDomain = @"ABI41_0_0EXUp
   _existingAssets = [NSMutableArray new];
   _updateManifest = nil;
   _manifestBlock = nil;
+  _assetBlock = nil;
   _successBlock = nil;
   _errorBlock = nil;
 }
@@ -60,6 +61,7 @@ static NSString * const ABI41_0_0EXUpdatesAppLoaderErrorDomain = @"ABI41_0_0EXUp
 
 - (void)loadUpdateFromUrl:(NSURL *)url
                onManifest:(ABI41_0_0EXUpdatesAppLoaderManifestBlock)manifestBlock
+                    asset:(ABI41_0_0EXUpdatesAppLoaderAssetBlock)assetBlock
                   success:(ABI41_0_0EXUpdatesAppLoaderSuccessBlock)success
                     error:(ABI41_0_0EXUpdatesAppLoaderErrorBlock)error
 {
@@ -203,6 +205,7 @@ static NSString * const ABI41_0_0EXUpdatesAppLoaderErrorDomain = @"ABI41_0_0EXUp
   [_arrayLock lock];
   [self->_assetsToLoad removeObject:asset];
   [self->_existingAssets addObject:asset];
+  [self _notifyProgressWithAsset:asset];
   if (![self->_assetsToLoad count]) {
     [self _finish];
   }
@@ -216,6 +219,7 @@ static NSString * const ABI41_0_0EXUpdatesAppLoaderErrorDomain = @"ABI41_0_0EXUp
   [_arrayLock lock];
   [self->_assetsToLoad removeObject:asset];
   [self->_erroredAssets addObject:asset];
+  [self _notifyProgressWithAsset:asset];
   if (![self->_assetsToLoad count]) {
     [self _finish];
   }
@@ -233,6 +237,7 @@ static NSString * const ABI41_0_0EXUpdatesAppLoaderErrorDomain = @"ABI41_0_0EXUp
   asset.contentHash = [ABI41_0_0EXUpdatesUtils sha256WithData:data];
   asset.downloadTime = [NSDate date];
   [self->_finishedAssets addObject:asset];
+  [self _notifyProgressWithAsset:asset];
 
   if (![self->_assetsToLoad count]) {
     [self _finish];
@@ -245,6 +250,19 @@ static NSString * const ABI41_0_0EXUpdatesAppLoaderErrorDomain = @"ABI41_0_0EXUp
 - (BOOL)_shouldStartLoadingUpdate:(ABI41_0_0EXUpdatesUpdate *)updateManifest
 {
   return _manifestBlock(updateManifest);
+}
+
+/**
+ * This should only be called on threads that have acquired self->_arrayLock
+ */
+- (void)_notifyProgressWithAsset:(ABI41_0_0EXUpdatesAsset *)asset
+{
+  if (_assetBlock) {
+    _assetBlock(asset,
+                _finishedAssets.count + _existingAssets.count,
+                _erroredAssets.count,
+                _finishedAssets.count + _existingAssets.count + _erroredAssets.count + _assetsToLoad.count);
+  }
 }
 
 - (void)_finishWithError:(NSError *)error

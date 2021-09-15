@@ -1,16 +1,16 @@
 #import <EXAdsFacebook/EXNativeAdView.h>
 #import <FBAudienceNetwork/FBAudienceNetwork.h>
-#import <UMCore/UMUtilitiesInterface.h>
+#import <ExpoModulesCore/EXUtilitiesInterface.h>
 
 @interface EXNativeAdView ()
 
-@property (nonatomic, weak) UMModuleRegistry *moduleRegistry;
+@property (nonatomic, weak) EXModuleRegistry *moduleRegistry;
 
 @end
 
 @implementation EXNativeAdView
 
-- (instancetype)initWithModuleRegistry:(UMModuleRegistry *)moduleRegistry
+- (instancetype)initWithModuleRegistry:(EXModuleRegistry *)moduleRegistry
 {
   if (self = [super init]) {
     _moduleRegistry = moduleRegistry;
@@ -18,7 +18,7 @@
   return self;
 }
 
-- (void)setOnAdLoaded:(UMDirectEventBlock)onAdLoaded
+- (void)setOnAdLoaded:(EXDirectEventBlock)onAdLoaded
 {
   _onAdLoaded = onAdLoaded;
   
@@ -59,7 +59,7 @@
       [strongSelf.nativeAd registerViewForInteraction:strongSelf
                                             mediaView:mediaView
                                              iconView:adIconView
-                                       viewController:[[strongSelf.moduleRegistry getModuleImplementingProtocol:@protocol(UMUtilitiesInterface)] currentViewController]
+                                       viewController:[[strongSelf.moduleRegistry getModuleImplementingProtocol:@protocol(EXUtilitiesInterface)] currentViewController]
                                        clickableViews:clickable];
     }
   });

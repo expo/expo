@@ -16,14 +16,18 @@ public class Common {
       return;
     }
 
-    FragmentManager fragmentManager = activity.getSupportFragmentManager();
-    final DialogFragment oldFragment = (DialogFragment) fragmentManager.findFragmentByTag(fragmentTag);
+    try {
+      FragmentManager fragmentManager = activity.getSupportFragmentManager();
+      final DialogFragment oldFragment = (DialogFragment) fragmentManager.findFragmentByTag(fragmentTag);
 
-    boolean fragmentFound = oldFragment != null;
-    if (fragmentFound) {
-      oldFragment.dismiss();
+      boolean fragmentFound = oldFragment != null;
+      if (fragmentFound) {
+        oldFragment.dismiss();
+      }
+
+      promise.resolve(fragmentFound);
+    } catch (Exception e) {
+      promise.reject(e);
     }
-
-    promise.resolve(fragmentFound);
   }
 }

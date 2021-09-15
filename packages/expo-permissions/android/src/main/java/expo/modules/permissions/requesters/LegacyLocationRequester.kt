@@ -3,12 +3,12 @@ package expo.modules.permissions.requesters
 import android.Manifest
 import android.os.Build
 import android.os.Bundle
-import org.unimodules.interfaces.permissions.PermissionsResponse
-import org.unimodules.interfaces.permissions.PermissionsResponse.Companion.SCOPE_ALWAYS
-import org.unimodules.interfaces.permissions.PermissionsResponse.Companion.SCOPE_IN_USE
-import org.unimodules.interfaces.permissions.PermissionsResponse.Companion.SCOPE_KEY
-import org.unimodules.interfaces.permissions.PermissionsResponse.Companion.SCOPE_NONE
-import org.unimodules.interfaces.permissions.PermissionsStatus
+import expo.modules.interfaces.permissions.PermissionsResponse
+import expo.modules.interfaces.permissions.PermissionsResponse.Companion.SCOPE_ALWAYS
+import expo.modules.interfaces.permissions.PermissionsResponse.Companion.SCOPE_IN_USE
+import expo.modules.interfaces.permissions.PermissionsResponse.Companion.SCOPE_KEY
+import expo.modules.interfaces.permissions.PermissionsResponse.Companion.SCOPE_NONE
+import expo.modules.interfaces.permissions.PermissionsStatus
 
 class LegacyLocationRequester(private val includeBackgroundPermission: Boolean = false) : PermissionRequester {
   override fun getAndroidPermissions(): List<String> {
@@ -54,9 +54,12 @@ class LegacyLocationRequester(private val includeBackgroundPermission: Boolean =
         }
 
       putString(SCOPE_KEY, scope)
-      putBundle("android", Bundle().apply {
-        putString("accuracy", accuracy)
-      })
+      putBundle(
+        "android",
+        Bundle().apply {
+          putString("accuracy", accuracy)
+        }
+      )
     }
   }
 }

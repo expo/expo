@@ -4,11 +4,28 @@
 
 ### 🛠 Breaking changes
 
+- Replace the stand-alone action constant strings with String Enum named `ActivityAction`. ([#14070](https://github.com/expo/expo/pull/14070) by [@Simek](https://github.com/Simek))
+
+```diff
+- IntentLauncher.ACTION_* // ACTION_ACCESSIBILITY_SETTINGS
++ IntentLauncher.ActivityAction.* // ActivityAction.ACCESSIBILITY_SETTINGS
+```
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 9.1.0 — 2021-06-16
+
+### 🐛 Bug fixes
+
 - Enable kotlin in all modules. ([#12716](https://github.com/expo/expo/pull/12716) by [@wschurman](https://github.com/wschurman))
+
+### 💡 Others
+
+- Build Android code using Java 8 to fix Android instrumented test build error. ([#12939](https://github.com/expo/expo/pull/12939) by [@kudo](https://github.com/kudo))
 
 ## 9.0.0 — 2021-03-10
 

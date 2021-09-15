@@ -1,5 +1,6 @@
 //  Copyright © 2019 650 Industries. All rights reserved.
 
+#import <ABI41_0_0EXUpdates/ABI41_0_0EXUpdatesAsset.h>
 #import <ABI41_0_0EXUpdates/ABI41_0_0EXUpdatesConfig.h>
 #import <ABI41_0_0EXUpdates/ABI41_0_0EXUpdatesDatabase.h>
 #import <ABI41_0_0EXUpdates/ABI41_0_0EXUpdatesUpdate.h>
@@ -7,6 +8,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 typedef BOOL (^ABI41_0_0EXUpdatesAppLoaderManifestBlock)(ABI41_0_0EXUpdatesUpdate *update);
+typedef void (^ABI41_0_0EXUpdatesAppLoaderAssetBlock) (ABI41_0_0EXUpdatesAsset *asset, NSUInteger successfulAssetCount, NSUInteger failedAssetCount, NSUInteger totalAssetCount);
 typedef void (^ABI41_0_0EXUpdatesAppLoaderSuccessBlock)(ABI41_0_0EXUpdatesUpdate * _Nullable update);
 typedef void (^ABI41_0_0EXUpdatesAppLoaderErrorBlock)(NSError *error);
 
@@ -24,9 +26,13 @@ typedef void (^ABI41_0_0EXUpdatesAppLoaderErrorBlock)(NSError *error);
  * The block should determine whether or not the update described by this manifest
  * should be downloaded, based on (for example) whether or not it already has the
  * update downloaded locally, and return the corresponding BOOL value.
+ *
+ * The `asset` block is called when an asset has either been successfully downloaded
+ * or failed to download.
  */
 - (void)loadUpdateFromUrl:(NSURL *)url
                onManifest:(ABI41_0_0EXUpdatesAppLoaderManifestBlock)manifestBlock
+                    asset:(ABI41_0_0EXUpdatesAppLoaderAssetBlock)assetBlock
                   success:(ABI41_0_0EXUpdatesAppLoaderSuccessBlock)success
                     error:(ABI41_0_0EXUpdatesAppLoaderErrorBlock)error;
 

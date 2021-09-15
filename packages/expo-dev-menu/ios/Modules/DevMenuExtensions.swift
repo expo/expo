@@ -3,18 +3,7 @@
 import EXDevMenuInterface
 
 @objc(DevMenuExtensions)
-open class DevMenuExtensions: NSObject, RCTBridgeModule, DevMenuExtensionProtocol {
-  // MARK: RCTBridgeModule
-
-  @objc
-  public static func moduleName() -> String! {
-    return "ExpoDevMenuExtensions"
-  }
-
-  @objc
-  public static func requiresMainQueueSetup() -> Bool {
-    return true
-  }
+open class DevMenuExtensions: NSObject, DevMenuExtensionProtocol {
 
   @objc
   open var bridge: RCTBridge?
@@ -27,127 +16,60 @@ open class DevMenuExtensions: NSObject, RCTBridgeModule, DevMenuExtensionProtoco
       return nil
     }
     
-    guard let devSettings = bridge?.module(forName: "DevSettings") as? RCTDevSettings else {
+    guard let bridge = bridge else {
+      return nil
+    }
+    
+    let devDelegate = DevMenuDevOptionsDelegate(forBridge: bridge)
+    guard let devSettings = devDelegate.devSettings else {
       return nil
     }
     
     let container = DevMenuItemsContainer()
     
-    let reload = DevMenuExtensions.reloadAction {
-      // Without this the `expo-splash-screen` will reject
-      // No native splash screen registered for given view controller. Call 'SplashScreen.show' for given view controller first.
-      DevMenuManager.shared.hideMenu();
-      self.bridge?.requestReload()
-    }
+    let reload = DevMenuExtensions.reloadAction(devDelegate.reload)
     reload.isAvailable = { !DevMenuExtensions.checkIfLogBoxIsOpened() }
 
-    let inspector = DevMenuExtensions.elementInspectorAction {
-      devSettings.toggleElementInspector()
-    }
+    let inspector = DevMenuExtensions.elementInspectorAction(devDelegate.toggleElementInsector)
     inspector.isEnabled = { devSettings.isElementInspectorShown }
 
     #if DEBUG
-    let remoteDebug = DevMenuExtensions.remoteDebugAction {
-      DispatchQueue.main.async {
-        devSettings.isDebuggingRemotely = !devSettings.isDebuggingRemotely
-      }
-    }
+    let remoteDebug = DevMenuExtensions.remoteDebugAction(devDelegate.toggleRemoteDebugging)
     remoteDebug.isAvailable = { devSettings.isRemoteDebuggingAvailable }
     remoteDebug.isEnabled = { devSettings.isDebuggingRemotely }
 
-    let fastRefresh = DevMenuExtensions.fastRefreshAction {
-      devSettings.isHotLoadingEnabled = !devSettings.isHotLoadingEnabled
-    }
+    let fastRefresh = DevMenuExtensions.fastRefreshAction(devDelegate.toggleFastRefresh)
     fastRefresh.isAvailable = { devSettings.isHotLoadingAvailable }
     fastRefresh.isEnabled = { devSettings.isHotLoadingEnabled }
 
-    let perfMonitor = DevMenuExtensions.performanceMonitorAction {
-      if let perfMonitorModule = self.bridge?.module(forName: "PerfMonitor") as? RCTPerfMonitor {
-        DispatchQueue.main.async {
-          devSettings.isPerfMonitorShown ? perfMonitorModule.hide() : perfMonitorModule.show()
-          devSettings.isPerfMonitorShown = !devSettings.isPerfMonitorShown
-        }
-      }
-    }
-    perfMonitor.isAvailable = { self.bridge?.module(forName: "PerfMonitor") != nil }
+    let perfMonitor = DevMenuExtensions.performanceMonitorAction(devDelegate.togglePerformanceMonitor)
+    perfMonitor.isAvailable = { devDelegate.perfMonitor != nil }
     perfMonitor.isEnabled = { devSettings.isPerfMonitorShown }
 
+    container.addItem(reload)
+    container.addItem(perfMonitor)
+    container.addItem(inspector)
     container.addItem(remoteDebug)
     container.addItem(fastRefresh)
-    container.addItem(perfMonitor)
   
-    container.addItem(reload)
-    container.addItem(inspector)
     #endif
-    
-    let group = DevMenuGroup()
-    group.importance = DevMenuScreenItem.ImportanceLowest
-    
-    let link = DevMenuLink(withTarget: "testScreen")
-    link.label = { "Test Screen" }
-    link.glyphName = { "test-tube" }
-    
-    group.addItem(link)
-    container.addItem(group)
-    
+
     return container
   }
   
   @objc
   open func devMenuScreens(_ settings: DevMenuExtensionSettingsProtocol) -> [DevMenuScreen]? {
-    if (!settings.wasRunOnDevelopmentBridge()) {
-      return nil
-    }
-    
-    let testScreen = DevMenuScreen("testScreen")
-
-    let selectionList = DevMenuSelectionList(dataSourceId: "updatesList")
-    selectionList.addOnClick { data in
-      print(data?["id"])
-    }
-    
-    testScreen.addItem(selectionList)
-    
-    return [testScreen]
+    return nil
   }
   
   @objc
   open func devMenuDataSources(_ settings: DevMenuExtensionSettingsProtocol) -> [DevMenuDataSourceProtocol]? {
-    if (!settings.wasRunOnDevelopmentBridge()) {
-      return nil
-    }
-    
-    let updatesList = DevMenuListDataSource(id: "updatesList") { resolver in
-      let client = DevMenuManager.shared.expoApiClient
-      client.queryUpdateBranches(
-        appId: "3d4813b8-ad48-4e1e-9e8f-0f7d108bf041",
-        completionHandler: { branches, response, error in
-          guard let branches = branches else {
-            resolver([])
-            return
-          }
-          
-          let items = branches
-            .flatMap { $0.updates }
-            .filter { $0.platform == "ios" }
-            .map { update -> DevMenuSelectionList.Item  in
-              let item = DevMenuSelectionList.Item()
-              item.title = { update.message }
-              item.onClickData = { ["id": update.id] }
-              return item
-            }
-        
-          resolver(items)
-        }
-      )
-    }
-    
-    return [updatesList]
+    return nil
   }
 
   // MARK: static helpers
 
-  private static func reloadAction(action: @escaping () -> ()) -> DevMenuAction {
+  private static func reloadAction(_ action: @escaping () -> ()) -> DevMenuAction {
     let reload = DevMenuAction(withId: "reload", action: action)
     reload.label = { "Reload" }
     reload.glyphName = { "reload" }

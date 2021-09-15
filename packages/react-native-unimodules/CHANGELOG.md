@@ -8,6 +8,28 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 0.15.0-alpha.0 — 2021-08-17
+
+### ⚠️ Deprecated
+
+`@unimodules/core`, `@unimodules/react-native-adapter` and `react-native-unimodules` are now deprecated in favor of `expo`. Follow this guide to migrate your apps: https://expo.fyi/expo-modules-migration
+
+## 0.14.1 — 2021-06-16
+
+_This version does not introduce any user-facing changes._
+
+## 0.14.0 — 2021-05-25
+
+### 🐛 Bug fixes
+
+- Remove expo-permissions (again). ([#12900](https://github.com/expo/expo/pull/12900) by [@brentvatne](https://github.com/brentvatne))
+
+### 💡 Others
+
+- Migrated interfaces from their own packages to `expo-modules-core`. ([#12868](https://github.com/expo/expo/pull/12868), [#12876](https://github.com/expo/expo/pull/12876), [#12888](https://github.com/expo/expo/pull/12888), [#12918](https://github.com/expo/expo/pull/12918), [#12949](https://github.com/expo/expo/pull/12949) by [@tsapeta](https://github.com/tsapeta))
+
 ## 0.13.3 — 2021-04-13
 
 _This version does not introduce any user-facing changes._
@@ -146,4 +168,4 @@ _This version does not introduce any user-facing changes._
 ### 🎉 New features
 
 - Automatically generated list of Android packages ([#28](https://github.com/unimodules/react-native-unimodules/pull/28))
-As of this version, you no longer need to add new packages to your `MainApplication.java` file. Just use `new BasePackageList().getPackageList()` instead 🎉. `BasePackageList` is auto-generated with a list of installed unimodules found in your `node_modules` folder during Gradle's Sync operation.
+  As of this version, you no longer need to add new packages to your `MainApplication.java` file. Just use `new BasePackageList().getPackageList()` instead 🎉. `BasePackageList` is auto-generated with a list of installed unimodules found in your `node_modules` folder during Gradle's Sync operation.

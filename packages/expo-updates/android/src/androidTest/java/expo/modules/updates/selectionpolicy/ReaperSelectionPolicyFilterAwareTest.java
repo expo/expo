@@ -69,4 +69,16 @@ public class ReaperSelectionPolicyFilterAwareTest {
     Assert.assertFalse(updatesToDelete.contains(update4));
     Assert.assertFalse(updatesToDelete.contains(update5));
   }
+
+  @Test
+  public void testSelectUpdatesToDelete_differentScopeKey() {
+    UpdateEntity update4DifferentScope = new UpdateEntity(update4.id, update4.commitTime, update4.runtimeVersion, "differentScopeKey");
+    List<UpdateEntity> updatesToDelete = selectionPolicy.selectUpdatesToDelete(
+            Arrays.asList(update1, update2, update3, update4DifferentScope),
+            update4DifferentScope,
+            null);
+
+    // shouldn't delete any updates whose scope key doesn't match that of `launchedUpdate`
+    Assert.assertEquals(0, updatesToDelete.size());
+  }
 }

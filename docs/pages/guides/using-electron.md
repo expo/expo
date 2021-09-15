@@ -3,7 +3,7 @@ title: Using Electron with Expo for Web
 sidebar_title: Using Electron
 ---
 
-> 🚨 Electron support is experimental, so the workflow is suboptimal and subject to breaking changes. If you find bugs please report them on [expo/expo-cli](https://github.com/expo/expo-cli/issues) with the `[electron]` tag in the title.
+> 🚨 Electron support is an experimental community project, so the workflow is suboptimal and subject to breaking changes. If you find bugs please report them on [expo/expo-electron-adapter](https://github.com/expo/expo-electron-adapter/issues).
 
 [Electron][electron] is a framework for creating desktop apps that run in a Chromium wrapper. Using Expo with Electron will enable you to use your existing components to build OSX, Windows, and Linux apps.
 
@@ -71,7 +71,7 @@ To simplify this we created the package `@expo/electron-adapter` which wraps [`e
 
 If you would like to help make Electron support in Expo better, please feel free to open a PR or submit an issue:
 
-- [Expo CLI][expo-cli]
+- [Expo Electron Adapter](https://github.com/expo/expo-electron-adapter)
 
 If you want to add first-class electron support to any of the Unimodules then you can submit PRs to the expo/expo repo:
 
@@ -82,7 +82,6 @@ If you want to add first-class electron support to any of the Unimodules then yo
 Learn more about how to use Electron in their [docs][electron-docs].
 
 [expo-packages]: https://github.com/expo/expo/tree/master/packages
-[expo-cli]: https://github.com/expo/expo-cli/
 [electron]: https://electronjs.org/
 [electron-docs]: https://electronjs.org/docs/
 [electron-builder]: https://www.electron.build/

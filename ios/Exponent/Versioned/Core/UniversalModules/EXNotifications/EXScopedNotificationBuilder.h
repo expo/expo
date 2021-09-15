@@ -9,8 +9,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface EXScopedNotificationBuilder : EXNotificationBuilder
 
-- (instancetype)initWithExperienceId:(NSString *)experienceId
-                 andConstantsBinding:(EXConstantsBinding *)constantsBinding;
+- (instancetype)initWithScopeKey:(NSString *)scopeKey
+                       andConstantsBinding:(EXConstantsBinding *)constantsBinding;
 
 @end
 

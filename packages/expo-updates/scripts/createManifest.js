@@ -2,7 +2,7 @@ const { loadAsync } = require('@expo/metro-config');
 const fs = require('fs');
 const Server = require('metro/src/Server');
 const path = require('path');
-const uuid = require('uuid/v4');
+const { v4: uuidv4 } = require('uuid');
 
 const filterPlatformAssetScales = require('./filterPlatformAssetScales');
 
@@ -15,10 +15,12 @@ const filterPlatformAssetScales = require('./filterPlatformAssetScales');
   // Remove projectRoot validation when we no longer support React Native <= 62
   let projectRoot;
   if (fs.existsSync(path.join(possibleProjectRoot, entryFile))) {
-    projectRoot = possibleProjectRoot;
+    projectRoot = path.resolve(possibleProjectRoot);
   } else if (fs.existsSync(path.join(possibleProjectRoot, '..', entryFile))) {
     projectRoot = path.resolve(possibleProjectRoot, '..');
   }
+
+  process.chdir(projectRoot);
 
   let metroConfig;
   try {
@@ -43,7 +45,7 @@ const filterPlatformAssetScales = require('./filterPlatformAssetScales');
   }
 
   const manifest = {
-    id: uuid(),
+    id: uuidv4(),
     commitTime: new Date().getTime(),
     assets: [],
   };

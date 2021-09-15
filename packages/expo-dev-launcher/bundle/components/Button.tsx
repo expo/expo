@@ -4,13 +4,25 @@ import { Text, TouchableOpacity, StyleSheet } from 'react-native';
 import Colors from '../constants/Colors';
 import { useThemeName } from '../hooks/useThemeName';
 
-export default ({ label, onPress }) => {
+type Props = {
+  label: string;
+  onPress: () => void;
+  disabled?: boolean;
+  testID?: string;
+};
+
+export default ({ label, onPress, disabled, testID }: Props) => {
   const themeName = useThemeName();
   const backgroundColor = themeName === 'dark' ? Colors.dark.tint : Colors.light.tint;
 
   return (
-    <TouchableOpacity style={[styles.buttonContainer, { backgroundColor }]} onPress={onPress}>
-      <Text style={styles.buttonText}>{label}</Text>
+    <TouchableOpacity
+      disabled={disabled}
+      style={[styles.buttonContainer, { backgroundColor }]}
+      onPress={onPress}>
+      <Text testID={testID} style={styles.buttonText}>
+        {label}
+      </Text>
     </TouchableOpacity>
   );
 };

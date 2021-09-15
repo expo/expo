@@ -8,6 +8,8 @@
 
 #import <Foundation/Foundation.h>
 
+#import "RNSVGUIKit.h"
+
 #import "RNSVGBrush.h"
 #import "RNSVGCGFCRule.h"
 #import "RNSVGNode.h"

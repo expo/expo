@@ -19,6 +19,7 @@ class DevMenuAppInfo extends React.PureComponent<Props, any> {
     }
 
     const { appName, appVersion, appIcon, hostUrl, expoSdkVersion } = appInfo;
+    const jsRuntime = createJSRuntimeInfo();
 
     return (
       <StyledView
@@ -41,6 +42,7 @@ class DevMenuAppInfo extends React.PureComponent<Props, any> {
           <AppInfoRow name="Version" value={appVersion} />
           <AppInfoRow name="Host" value={hostUrl?.replace(/^\w+:\/\//, '').replace(/\/.*$/, '')} />
           <AppInfoRow name="SDK" value={expoSdkVersion} />
+          <AppInfoRow name="JS Engine" value={jsRuntime} />
         </View>
       </StyledView>
     );
@@ -84,6 +86,18 @@ function AppInfoRow({ name, value }: { name: string; value?: string }) {
       </AppInfoStyledText>
     </View>
   );
+}
+
+function createJSRuntimeInfo(): string {
+  if (global['HermesInternal']) {
+    let result = 'Hermes';
+    const bytecodeVersion = global['HermesInternal'].getRuntimeProperties()['Bytecode Version'];
+    if (bytecodeVersion) {
+      result += ` (bytecode v${bytecodeVersion})`;
+    }
+    return result;
+  }
+  return 'JavaScriptCore';
 }
 
 const styles = StyleSheet.create({

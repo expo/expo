@@ -7,6 +7,7 @@
 #include <react/jni/WritableNativeMap.h>
 #include "NativeReanimatedModule.h"
 #include <ReactCommon/CallInvokerHolder.h>
+#include <react/jni/JavaScriptExecutorHolder.h>
 #include <memory>
 #include <unordered_map>
 

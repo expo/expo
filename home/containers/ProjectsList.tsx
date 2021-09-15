@@ -1,59 +1,18 @@
 import { useQuery } from '@apollo/client';
-import gql from 'graphql-tag';
 import * as React from 'react';
 
-import ProjectList, { Project } from '../components/ProjectList';
-
-interface ProjectsData {
-  account: {
-    byName: {
-      id: string;
-      appCount: number;
-      apps: Project[];
-    };
-  };
-}
-
-interface ProjectsVars {
-  accountName: string;
-  limit: number;
-  offset: number;
-}
-
-const ProjectsQuery = gql`
-  query Home_AccountApps($accountName: String!, $limit: Int!, $offset: Int!) {
-    account {
-      byName(accountName: $accountName) {
-        id
-        appCount
-        apps(limit: $limit, offset: $offset) {
-          id
-          fullName
-          name
-          iconUrl
-          packageName
-          username
-          description
-          lastPublishedTime
-          sdkVersion
-        }
-      }
-    }
-  }
-`;
+import ProjectList from '../components/ProjectList';
+import { Home_AccountAppsDocument } from '../graphql/types';
 
 function useOtherProjectsQuery({ accountName }: { accountName: string }) {
-  const { data, fetchMore, loading, error, refetch } = useQuery<ProjectsData, ProjectsVars>(
-    ProjectsQuery,
-    {
-      variables: {
-        accountName,
-        limit: 15,
-        offset: 0,
-      },
-      fetchPolicy: 'cache-and-network',
-    }
-  );
+  const { data, fetchMore, loading, error, refetch } = useQuery(Home_AccountAppsDocument, {
+    variables: {
+      accountName,
+      limit: 15,
+      offset: 0,
+    },
+    fetchPolicy: 'cache-and-network',
+  });
 
   const apps = data?.account.byName.apps;
   const appCount = data?.account.byName.appCount;

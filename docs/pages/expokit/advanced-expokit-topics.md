@@ -2,7 +2,7 @@
 title: Advanced ExpoKit Topics
 ---
 
-> ExpoKit is deprecated and will no longer be supported after SDK 38. If you need to make customizations to your Expo project, we recommend using the [bare workflow](../bare/customizing.md) instead.
+> ExpoKit is deprecated and will no longer be supported after SDK 38. If you need to make customizations to your Expo project, we recommend using the [bare workflow](../workflow/customizing.md) instead.
 
 This guide goes deeper into a few [ExpoKit](expokit.md) topics that aren't critical
 right out of the box, but that you may encounter down the road. If you're not familiar with

@@ -1,5 +1,4 @@
-import { Subscription } from '@unimodules/core';
-import { PermissionResponse, PermissionStatus } from 'unimodules-permissions-interface';
+import { PermissionResponse, PermissionStatus, PermissionHookOptions, Subscription } from 'expo-modules-core';
 import { AVPlaybackStatus, AVPlaybackStatusToSet } from '../AV';
 import { Sound } from './Sound';
 export declare type RecordingOptions = {
@@ -26,6 +25,10 @@ export declare type RecordingOptions = {
         linearPCMBitDepth?: number;
         linearPCMIsBigEndian?: boolean;
         linearPCMIsFloat?: boolean;
+    };
+    web: {
+        mimeType?: string;
+        bitsPerSecond?: number;
     };
 };
 export declare const RECORDING_OPTION_ANDROID_OUTPUT_FORMAT_DEFAULT = 0;
@@ -95,10 +98,21 @@ export declare type RecordingStatus = {
     isDoneRecording: boolean;
     durationMillis: number;
     metering?: number;
+    uri?: string | null;
 };
-export { PermissionResponse, PermissionStatus };
+export { PermissionResponse, PermissionStatus, PermissionHookOptions };
 export declare function getPermissionsAsync(): Promise<PermissionResponse>;
 export declare function requestPermissionsAsync(): Promise<PermissionResponse>;
+/**
+ * Check or request permissions to record audio.
+ * This uses both `requestPermissionAsync` and `getPermissionsAsync` to interact with the permissions.
+ *
+ * @example
+ * ```ts
+ * const [status, requestPermission] = Audio.usePermissions();
+ * ```
+ */
+export declare const usePermissions: (options?: PermissionHookOptions<object> | undefined) => [PermissionResponse | null, () => Promise<PermissionResponse>, () => Promise<PermissionResponse>];
 export declare class Recording {
     _subscription: Subscription | null;
     _canRecord: boolean;

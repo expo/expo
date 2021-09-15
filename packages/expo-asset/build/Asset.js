@@ -1,4 +1,4 @@
-import { Platform } from '@unimodules/core';
+import { Platform } from 'expo-modules-core';
 import { getAssetByID } from './AssetRegistry';
 import * as AssetSources from './AssetSources';
 import * as AssetUris from './AssetUris';
@@ -7,14 +7,19 @@ import { getLocalAssetUri } from './LocalAssets';
 import { downloadAsync, IS_ENV_WITH_UPDATES_ENABLED } from './PlatformUtils';
 import resolveAssetSource from './resolveAssetSource';
 export class Asset {
+    static byHash = {};
+    static byUri = {};
+    name;
+    type;
+    hash = null;
+    uri;
+    localUri = null;
+    width = null;
+    height = null;
+    downloading = false;
+    downloaded = false;
+    _downloadCallbacks = [];
     constructor({ name, type, hash = null, uri, width, height }) {
-        this.hash = null;
-        this.localUri = null;
-        this.width = null;
-        this.height = null;
-        this.downloading = false;
-        this.downloaded = false;
-        this._downloadCallbacks = [];
         this.name = name;
         this.type = type;
         this.hash = hash;
@@ -42,7 +47,7 @@ export class Asset {
     }
     static loadAsync(moduleId) {
         const moduleIds = Array.isArray(moduleId) ? moduleId : [moduleId];
-        return Promise.all(moduleIds.map(moduleId => Asset.fromModule(moduleId).downloadAsync()));
+        return Promise.all(moduleIds.map((moduleId) => Asset.fromModule(moduleId).downloadAsync()));
     }
     static fromModule(virtualAssetModule) {
         if (typeof virtualAssetModule === 'string') {
@@ -156,6 +161,4 @@ export class Asset {
         return this;
     }
 }
-Asset.byHash = {};
-Asset.byUri = {};
 //# sourceMappingURL=Asset.js.map

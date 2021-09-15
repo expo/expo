@@ -1,4 +1,4 @@
-import { EventEmitter, UnavailabilityError } from '@unimodules/core';
+import { EventEmitter, UnavailabilityError } from 'expo-modules-core';
 import { setTestDeviceIDAsync } from './AdMob';
 import AdMobNativeModule from './ExpoAdsAdMobRewardedVideoAdManager';
 const moduleName = 'AdMobRewarded';

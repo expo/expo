@@ -16,6 +16,10 @@ on:
       - packages/**
       - yarn.lock
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build:
     runs-on: ubuntu-18.04
@@ -23,9 +27,9 @@ jobs:
       - uses: actions/checkout@v2
         with:
           submodules: true
-      - uses: actions/setup-node@v2-beta
+      - uses: actions/setup-node@v2
         with:
-          node-version: '12'
+          node-version: '14.17'
       - name: Get yarn cache directory path
         id: yarn-cache-dir-path
         run: echo "::set-output name=dir::$(yarn cache dir)"
@@ -49,5 +53,5 @@ jobs:
         with:
           channel: '#api'
           status: ${{ job.status }}
-          fields: job,commit,ref,eventName,author,took
+          fields: job,message,ref,eventName,author,took
           author_name: Build Native Component List

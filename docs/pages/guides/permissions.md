@@ -4,7 +4,7 @@ title: Permissions
 
 When you are creating an app that requires access to potentially sensitive information on a user's device, such as their location or contacts, you need to ask for the user's permission first. For example, to access the user's media library, you will need to use [MediaLibrary.requestPermissionsAsync()](../../versions/latest/sdk/media-library.md#medialibraryrequestpermissionsasync).
 
-In Expo Go, there isn't much you need to think about to interact with permissions beyond requesting permissions before using certain APIs. This changes when you want to deploy your app to an app store. Please read the [permissions on iOS](#permissions-on-ios) and [permissions on Android](#permissions-on-android) sections carefully before deploying your app to stores. If you don't configure or explain the permissions properly **it may result in your app getting rejected or pulled from the stores**. Read more about deploying to the stores in the [App Store Deployment Guide](../../../distribution/app-stores.md#system-permissions-dialogs-on-ios).
+In Expo Go, there isn't much you need to think about to interact with permissions beyond requesting permissions before using certain APIs. This changes when you want to deploy your app to an app store. Please read the [permissions on iOS](#ios) and [permissions on Android](#android) sections carefully before deploying your app to stores. If you don't configure or explain the permissions properly **it may result in your app getting rejected or pulled from the stores**. Read more about deploying to the stores in the [App Store Deployment Guide](../../../distribution/app-stores.md#system-permissions-dialogs-on-ios).
 
 ## iOS
 
@@ -32,7 +32,7 @@ Some Expo and React Native modules include permissions by default. If you use `e
 
 To limit the permissions your managed workflow app requires, set the `android.permissions` property in your [`app.json` file](../../workflow/configuration.md#android) to list only the permissions you need, and Expo will also include the minimum permissions it requires to run. See the [`Permission types`](#permission-types) below to learn about which Android permissions are added. You can find a full list of all available permissions in the [Android Manifest.permissions reference](https://developer.android.com/reference/android/Manifest.permission).
 
-- [See the `android.permissions` documentation](../config/app.md#permissions) to learn about which permissions are always included.
+- [See the `android.permissions` documentation](/versions/latest/config/app.md#permissions) to learn about which permissions are always included.
 - Apps using dangerous or signature permissions without valid reasons _may be rejected by Google_. Make sure you follow the [Android permissions best practices](https://developer.android.com/training/permissions/usage-notes) when submitting your app.
 - By default, the permissions implied by the modules you installed are added to the `AndroidManifest.xml` at build time. To exclude permissions, you have to define the `android.permissions` manifest property.
 

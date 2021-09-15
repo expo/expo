@@ -1,4 +1,4 @@
-import { PermissionStatus, } from 'unimodules-permissions-interface';
+import { PermissionStatus, } from 'expo-modules-core';
 export var CameraType;
 (function (CameraType) {
     /**
@@ -88,5 +88,31 @@ export var ImageType;
     ImageType["png"] = "png";
     ImageType["jpg"] = "jpg";
 })(ImageType || (ImageType = {}));
+/**
+ * This option specifies what codec to use when recording a video.
+ */
+export var VideoCodec;
+(function (VideoCodec) {
+    /**
+     * @platforms ios
+     */
+    VideoCodec["H264"] = "avc1";
+    /**
+     * @platforms ios
+     */
+    VideoCodec["HEVC"] = "hvc1";
+    /**
+     * @platforms ios
+     */
+    VideoCodec["JPEG"] = "jpeg";
+    /**
+     * @platforms ios
+     */
+    VideoCodec["AppleProRes422"] = "apcn";
+    /**
+     * @platforms ios
+     */
+    VideoCodec["AppleProRes4444"] = "ap4h";
+})(VideoCodec || (VideoCodec = {}));
 export { PermissionStatus };
 //# sourceMappingURL=Camera.types.js.map

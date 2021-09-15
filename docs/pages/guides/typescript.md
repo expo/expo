@@ -32,7 +32,7 @@ An Expo app's `tsconfig.json` should extend the `expo/tsconfig.base` by default.
   - Improve Babel ecosystem compatibility. This also sets `allowSyntheticDefaultImports` to `true`, allowing default imports from modules with no default export.
 - [`"jsx"`][tsc-jsx]: `"react-native"`
   - Preserve JSX, and converts the `jsx` extension to `js`. This is optimized for bundlers that transform the JSX internally (like Metro).
-- `"lib"`: -- `["ESNext"]`
+- `"lib"`: `["DOM", "ESNext"]`
   - Allow using the latest [ECMAScript proposed features and libraries](https://github.com/tc39/proposals).
 - [`"moduleResolution"`][tsc-moduleresolution]: `"node"`
   - Emulate how Metro and Webpack resolve modules.

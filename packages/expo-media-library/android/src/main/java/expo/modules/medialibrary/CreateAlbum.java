@@ -5,7 +5,7 @@ import android.media.MediaScannerConnection;
 import android.os.AsyncTask;
 import android.provider.MediaStore;
 
-import org.unimodules.core.Promise;
+import expo.modules.core.Promise;
 
 import java.io.File;
 import java.io.IOException;

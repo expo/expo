@@ -114,8 +114,6 @@ Create (or edit) `credentials.json` and configure it with the credentials:
 
 #### Multi-target project
 
-> 👉 **Currently, building multi-target iOS projects is only supported via `credentials.json`. Managing multiple sets of credentials for multi-target projects will be available in EAS CLI in the future.**
-
 If your iOS app is using [App Extensions](https://developer.apple.com/app-extensions/) like Share Extension, Widget Extension, and so on, you need to provide credentials for every target of the Xcode project. This is necessary because each extension is identified by an individual bundle identifier.
 
 Let's say that your project consists of a main application target (named `multitarget`) and a Share Extension target (named `shareextension`).
@@ -140,31 +138,28 @@ In this case your `credentials.json` should like like this:
         "path": "ios/certs/another-dist.p12",
         "password": "ANOTHER_DISTRIBUTION_CERTIFICATE_PASSWORD"
       } /* @end */
-
     }
   }
 }
 ```
 
-## Setting a credentials source (optional)
+## Setting a credentials source
 
 You can tell EAS Build how it should resolve credentials by specifying `"credentialsSource": "local"` or `"credentialsSource:" "remote"` on a build profile.
 
-- If `"local"` is provided, then `credentials.json` will always be used.
-- If `"remote"` is provided, then credentials will always be resolved from EAS servers.
+- If `"local"` is provided, then `credentials.json` will be used.
+- If `"remote"` is provided, then credentials will be resolved from EAS servers.
 
 For example, maybe you want to use local credentials when deploying to the Amazon Appstore and remote credentials when deploying to the Google Play Store:
 
 ```json
 {
-  "builds": {
+  "build": {
     "android": {
       "amazon": {
-        "workflow": "generic",
         "credentialsSource": "local"
       },
       "google": {
-        "workflow": "generic",
         "credentialsSource": "remote"
       }
     }
@@ -172,36 +167,7 @@ For example, maybe you want to use local credentials when deploying to the Amazo
 }
 ```
 
-If credentials are not available at the given source and `eas build` has been run with the `--non-interactive` flag, the command will error. If you know that you always want to use local credentials for a particular profile, we encourage you to set this option.
-
-If you do not set any option, `"credentialsSource"` will default to `"auto"`.
-
-### Automatic credentials resolution (default)
-
-Let's assume we're building only for Android and using the following configuration (defined in `eas.json` - [learn more about using the `eas.json` file](/build/eas-json.md)):
-
-```json
-{
-  "builds": {
-    "android": {
-      "release": {
-        "workflow": "generic"
-      }
-    }
-  }
-}
-```
-
-Given this configuration, `eas build --platform android` will resolve the credentials using the so-called **auto mode**.
-
-The algorithm of the auto mode works like this:
-
-- If the entry for a given platform in `credentials.json` is defined and the project's credentials exist on the EAS servers:
-  - Check if the local credentials match the remote credentials, and if so - use the local credentials.
-  - Otherwise, display a prompt to ask which credentials should be used.
-- If the entry for a given platform in `credentials.json` is defined but the project's credentials do **not** exist on the EAS servers - use the credentials defined in `credentials.json`.
-- If the entry for a given platform in `credentials.json` is **not** defined but the project's credentials exist on the EAS servers - use the credentials from the EAS servers.
-- If neither the entry for a given platform in `credentials.json` is defined nor remote credentials exist - display a prompt to ask whether new credentials should be generated and stored on the EAS servers.
+If you do not set any option, `"credentialsSource"` will default to `"remote"`.
 
 ## Using local credentials on builds triggered from CI
 

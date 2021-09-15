@@ -11,7 +11,7 @@ Snack solves precisely that problem. It's an open-source platform for running Re
 
 ## Let's get started
 
-Head over to [https://snack.expo.io](https://snack.expo.io) and start typing! On the right, you'll see the preview of the changes you make. By going to the "Android" or "iOS" tabs, you can preview it on a simulator directly in the browser. To open it on your device, go to the "My Device" tab and open it in the Expo Go app.
+Head over to [https://snack.expo.dev](https://snack.expo.dev) and start typing! On the right, you'll see the preview of the changes you make. By going to the "Android" or "iOS" tabs, you can preview it on a simulator directly in the browser. To open it on your device, go to the "My Device" tab and open it in the Expo Go app.
 
 ## Adding a library
 

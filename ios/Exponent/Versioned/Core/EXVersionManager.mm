@@ -31,14 +31,14 @@
 #import <React/RCTGIFImageDecoder.h>
 #import <React/RCTImageLoader.h>
 #import <React/RCTAsyncLocalStorage.h>
+#import <React/RCTJSIExecutorRuntimeInstaller.h>
 
 #import <objc/message.h>
 
-#import <UMCore/UMDefines.h>
-#import <UMFileSystemInterface/UMFileSystemInterface.h>
-#import <UMCore/UMModuleRegistry.h>
-#import <UMCore/UMModuleRegistryDelegate.h>
-#import <UMReactNativeAdapter/UMNativeModulesProxy.h>
+#import <ExpoModulesCore/EXDefines.h>
+#import <ExpoModulesCore/EXModuleRegistry.h>
+#import <ExpoModulesCore/EXModuleRegistryDelegate.h>
+#import <ExpoModulesCore/EXNativeModulesProxy.h>
 #import <EXMediaLibrary/EXMediaLibraryImageLoader.h>
 #import <EXFileSystem/EXFileSystem.h>
 #import "EXScopedModuleRegistry.h"
@@ -87,6 +87,7 @@ RCT_EXTERN void EXRegisterScopedModule(Class, ...);
 // is this the first time this ABI has been touched at runtime?
 @property (nonatomic, assign) BOOL isFirstLoad;
 @property (nonatomic, strong) NSDictionary *params;
+@property (nonatomic, strong) EXManifestsManifest *manifest;
 @property (nonatomic, strong) RCTTurboModuleManager *turboModuleManager;
 
 @end
@@ -95,7 +96,6 @@ RCT_EXTERN void EXRegisterScopedModule(Class, ...);
 
 /**
  *  Expected params:
- *    NSDictionary *manifest
  *    NSDictionary *constants
  *    NSURL *initialUri
  *    @BOOL isDeveloper
@@ -109,12 +109,14 @@ RCT_EXTERN void EXRegisterScopedModule(Class, ...);
  *    id exceptionsManagerDelegate
  */
 - (instancetype)initWithParams:(NSDictionary *)params
+                      manifest:(EXManifestsManifest *)manifest
                   fatalHandler:(void (^)(NSError *))fatalHandler
                    logFunction:(RCTLogFunction)logFunction
                   logThreshold:(NSInteger)threshold
 {
   if (self = [super init]) {
     _params = params;
+    _manifest = manifest;
     [self configureABIWithFatalHandler:fatalHandler logFunction:logFunction logThreshold:threshold];
   }
   return self;
@@ -172,7 +174,7 @@ RCT_EXTERN void EXRegisterScopedModule(Class, ...);
       @"isEnabled": @NO
     };
   }
-  
+
   if (devSettings.isRemoteDebuggingAvailable && isDevModeEnabled) {
     items[@"dev-remote-debug"] = @{
       @"label": (devSettings.isDebuggingRemotely) ? @"Stop Remote Debugging" : @"Debug Remote JS",
@@ -314,7 +316,7 @@ RCT_EXTERN void EXRegisterScopedModule(Class, ...);
                          logFunction:(RCTLogFunction)logFunction
                         logThreshold:(NSInteger)threshold
 {
-  RCTEnableTurboModule([self.params[@"manifest"][@"experiments"][@"turboModules"] boolValue]);
+  RCTEnableTurboModule([self.manifest.experiments[@"turboModules"] boolValue]);
   RCTSetFatalHandler(fatalHandler);
   RCTSetLogThreshold((RCTLogLevel) threshold);
   RCTSetLogFunction(logFunction);
@@ -323,8 +325,6 @@ RCT_EXTERN void EXRegisterScopedModule(Class, ...);
 - (NSArray *)extraModulesForBridge:(id)bridge
 {
   NSDictionary *params = _params;
-  NSDictionary *manifest = params[@"manifest"];
-  NSString *experienceId = manifest[@"id"];
   NSDictionary *services = params[@"services"];
 
   NSMutableArray *extraModules = [NSMutableArray arrayWithArray:
@@ -333,10 +333,10 @@ RCT_EXTERN void EXRegisterScopedModule(Class, ...);
                                     [[EXDisabledDevLoadingView alloc] init],
                                     [[EXStatusBarManager alloc] init],
                                     ]];
-  
+
   // add scoped modules
-  [extraModules addObjectsFromArray:[self _newScopedModulesWithExperienceId:experienceId services:services params:params]];
-  
+  [extraModules addObjectsFromArray:[self _newScopedModulesForServices:services params:params]];
+
   if (params[@"testEnvironment"]) {
     EXTestEnvironment testEnvironment = (EXTestEnvironment)[params[@"testEnvironment"] unsignedIntegerValue];
     if (testEnvironment != EXTestEnvironmentNone) {
@@ -344,30 +344,40 @@ RCT_EXTERN void EXRegisterScopedModule(Class, ...);
       [extraModules addObject:testModule];
     }
   }
-  
+
   if (params[@"browserModuleClass"]) {
     Class browserModuleClass = params[@"browserModuleClass"];
-    id homeModule = [[browserModuleClass alloc] initWithExperienceId:experienceId
-                                                    kernelServiceDelegate:services[EX_UNVERSIONED(@"EXHomeModuleManager")]
-                                                                   params:params];
+    id homeModule = [[browserModuleClass alloc] initWithExperienceStableLegacyId:self.manifest.stableLegacyId
+                                                                        scopeKey:self.manifest.scopeKey
+                                                                    easProjectId:self.manifest.easProjectId
+                                                           kernelServiceDelegate:services[EX_UNVERSIONED(@"EXHomeModuleManager")]
+                                                                          params:params];
     [extraModules addObject:homeModule];
   }
 
-  UMModuleRegistryProvider *moduleRegistryProvider = [[UMModuleRegistryProvider alloc] initWithSingletonModules:params[@"singletonModules"]];
+  EXModuleRegistryProvider *moduleRegistryProvider = [[EXModuleRegistryProvider alloc] initWithSingletonModules:params[@"singletonModules"]];
 
   Class resolverClass = [EXScopedModuleRegistryDelegate class];
   if (params[@"moduleRegistryDelegateClass"] && params[@"moduleRegistryDelegateClass"] != [NSNull null]) {
     resolverClass = params[@"moduleRegistryDelegateClass"];
   }
 
-  id<UMModuleRegistryDelegate> moduleRegistryDelegate = [[resolverClass alloc] initWithParams:params];
+  id<EXModuleRegistryDelegate> moduleRegistryDelegate = [[resolverClass alloc] initWithParams:params];
   [moduleRegistryProvider setModuleRegistryDelegate:moduleRegistryDelegate];
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
   EXScopedModuleRegistryAdapter *moduleRegistryAdapter = [[EXScopedModuleRegistryAdapter alloc] initWithModuleRegistryProvider:moduleRegistryProvider];
-  UMModuleRegistry *moduleRegistry = [moduleRegistryAdapter moduleRegistryForParams:params forExperienceId:experienceId withKernelServices:services];
+#pragma clang diagnostic pop
+
+  EXModuleRegistry *moduleRegistry = [moduleRegistryAdapter moduleRegistryForParams:params
+                                                        forExperienceStableLegacyId:self.manifest.stableLegacyId
+                                                                           scopeKey:self.manifest.scopeKey
+                                                                           manifest:self.manifest
+                                                                 withKernelServices:services];
   NSArray<id<RCTBridgeModule>> *expoModules = [moduleRegistryAdapter extraModulesForModuleRegistry:moduleRegistry];
   [extraModules addObjectsFromArray:expoModules];
-  
+
   if (!RCTTurboModuleEnabled()) {
     [extraModules addObject:[self getModuleInstanceFromClass:[self getModuleClassFromName:"DevSettings"]]];
     id exceptionsManager = [self getModuleInstanceFromClass:RCTExceptionsManagerCls()];
@@ -382,7 +392,7 @@ RCT_EXTERN void EXRegisterScopedModule(Class, ...);
   return extraModules;
 }
 
-- (NSArray *)_newScopedModulesWithExperienceId: (NSString *)experienceId services:(NSDictionary *)services params:(NSDictionary *)params
+- (NSArray *)_newScopedModulesForServices:(NSDictionary *)services params:(NSDictionary *)params
 {
   NSMutableArray *result = [NSMutableArray array];
   NSDictionary<NSString *, NSDictionary *> *EXScopedModuleClasses = EXGetScopedModuleClasses();
@@ -394,17 +404,29 @@ RCT_EXTERN void EXRegisterScopedModule(Class, ...);
         id service = ([kernelSerivceName isEqualToString:EX_KERNEL_SERVICE_NONE]) ? [NSNull null] : services[kernelSerivceName];
         moduleServices[kernelServiceClassName] = service;
       }
-      
+
       id scopedModule;
       Class scopedModuleClass = NSClassFromString(scopedModuleClassName);
       if (moduleServices.count > 1) {
-        scopedModule = [[scopedModuleClass alloc] initWithExperienceId:experienceId kernelServiceDelegates:moduleServices params:params];
+        scopedModule = [[scopedModuleClass alloc] initWithExperienceStableLegacyId:self.manifest.stableLegacyId
+                                                                          scopeKey:self.manifest.scopeKey
+                                                                      easProjectId:self.manifest.easProjectId
+                                                            kernelServiceDelegates:moduleServices
+                                                                            params:params];
       } else if (moduleServices.count == 0) {
-        scopedModule = [[scopedModuleClass alloc] initWithExperienceId:experienceId kernelServiceDelegate:nil params:params];
+        scopedModule = [[scopedModuleClass alloc] initWithExperienceStableLegacyId:self.manifest.stableLegacyId
+                                                                          scopeKey:self.manifest.scopeKey
+                                                                      easProjectId:self.manifest.easProjectId
+                                                             kernelServiceDelegate:nil
+                                                                            params:params];
       } else {
-        scopedModule = [[scopedModuleClass alloc] initWithExperienceId:experienceId kernelServiceDelegate:moduleServices[[moduleServices allKeys][0]] params:params];
+        scopedModule = [[scopedModuleClass alloc] initWithExperienceStableLegacyId:self.manifest.stableLegacyId
+                                                                          scopeKey:self.manifest.scopeKey
+                                                                      easProjectId:self.manifest.easProjectId
+                                                             kernelServiceDelegate:moduleServices[[moduleServices allKeys][0]]
+                                                                            params:params];
       }
-      
+
       if (scopedModule) {
         [result addObject:scopedModule];
       }
@@ -465,7 +487,7 @@ RCT_EXTERN void EXRegisterScopedModule(Class, ...);
   // Expo-specific
   if (moduleClass == EXDevSettings.class) {
     BOOL isDevelopment = ![self _isOpeningHomeInProductionMode] && [_params[@"isDeveloper"] boolValue];
-    return [[moduleClass alloc] initWithExperienceId:[self _experienceId] isDevelopment:isDevelopment];
+    return [[moduleClass alloc] initWithScopeKey:self.manifest.scopeKey isDevelopment:isDevelopment];
   } else if (moduleClass == RCTExceptionsManagerCls()) {
     id exceptionsManagerDelegate = _params[@"exceptionsManagerDelegate"];
     if (exceptionsManagerDelegate) {
@@ -489,24 +511,15 @@ RCT_EXTERN void EXRegisterScopedModule(Class, ...);
 }
 
 - (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:(const std::string &)name
-                                                       instance:(id<RCTTurboModule>)instance
-                                                      jsInvoker:(std::shared_ptr<facebook::react::CallInvoker>)jsInvoker
-                                                  nativeInvoker:(std::shared_ptr<facebook::react::CallInvoker>)nativeInvoker
-                                                     perfLogger:(id<RCTTurboModulePerformanceLogger>)perfLogger
+                                                     initParams:(const facebook::react::ObjCTurboModule::InitParams &)params
 {
   // TODO: ADD
   return nullptr;
 }
 
-
-- (NSString *)_experienceId
-{
-  return _params[@"manifest"][@"id"];
-}
-
 - (BOOL)_isOpeningHomeInProductionMode
 {
-  return _params[@"browserModuleClass"] && !_params[@"manifest"][@"developer"];
+  return _params[@"browserModuleClass"] && !self.manifest.developer;
 }
 
 - (void *)versionedJsExecutorFactoryForBridge:(RCTBridge *)bridge
@@ -517,23 +530,18 @@ RCT_EXTERN void EXRegisterScopedModule(Class, ...);
   [bridge updateModuleWithInstance:eventDispatcher];
   _bridge_reanimated = bridge;
 
-  UM_WEAKIFY(self);
-  return new facebook::react::JSCExecutorFactory([UMWeak_self, bridge](facebook::jsi::Runtime &runtime) {
+  EX_WEAKIFY(self);
+  const auto executor = [EXWeak_self, bridge](facebook::jsi::Runtime &runtime) {
     if (!bridge) {
       return;
     }
-    UM_ENSURE_STRONGIFY(self);
-    self->_turboModuleManager = [[RCTTurboModuleManager alloc] initWithBridge:bridge
-                                                                     delegate:self
-                                                                    jsInvoker:bridge.jsCallInvoker];
-    [self->_turboModuleManager installJSBindingWithRuntime:&runtime];
-    
+    EX_ENSURE_STRONGIFY(self);
     auto reanimatedModule = reanimated::createReanimatedModule(bridge.jsCallInvoker);
     runtime.global().setProperty(runtime,
                                  jsi::PropNameID::forAscii(runtime, "__reanimatedModuleProxy"),
-                                 jsi::Object::createFromHostObject(runtime, reanimatedModule)
-    );
-  });
+                                 jsi::Object::createFromHostObject(runtime, reanimatedModule));
+  };
+  return new facebook::react::JSCExecutorFactory(RCTJSIExecutorRuntimeInstaller(executor));
 }
 
 @end

@@ -10,7 +10,7 @@ import expo.modules.updates.UpdatesUtils;
 import expo.modules.updates.db.UpdatesDatabase;
 import expo.modules.updates.db.entity.AssetEntity;
 import expo.modules.updates.db.entity.UpdateEntity;
-import expo.modules.updates.manifest.Manifest;
+import expo.modules.updates.manifest.UpdateManifest;
 import expo.modules.updates.manifest.ManifestFactory;
 
 import org.apache.commons.io.IOUtils;
@@ -33,7 +33,7 @@ public class EmbeddedLoader {
   public static final String BUNDLE_FILENAME = "app.bundle";
   public static final String BARE_BUNDLE_FILENAME = "index.android.bundle";
 
-  private static Manifest sEmbeddedManifest = null;
+  private static UpdateManifest sEmbeddedUpdateManifest = null;
 
   private Context mContext;
   private UpdatesConfiguration mConfiguration;
@@ -57,9 +57,9 @@ public class EmbeddedLoader {
 
   public boolean loadEmbeddedUpdate() {
     boolean success = false;
-    Manifest manifest = readEmbeddedManifest(mContext, mConfiguration);
-    if (manifest != null) {
-      success = processManifest(manifest);
+    UpdateManifest updateManifest = readEmbeddedManifest(mContext, mConfiguration);
+    if (updateManifest != null) {
+      success = processUpdateManifest(updateManifest);
       reset();
     }
     return success;
@@ -73,25 +73,26 @@ public class EmbeddedLoader {
     mFinishedAssetList = new ArrayList<>();
   }
 
-  public static @Nullable Manifest readEmbeddedManifest(Context context, UpdatesConfiguration configuration) {
+  public static @Nullable
+  UpdateManifest readEmbeddedManifest(Context context, UpdatesConfiguration configuration) {
     if (!configuration.hasEmbeddedUpdate()) {
       return null;
     }
 
-    if (sEmbeddedManifest == null) {
+    if (sEmbeddedUpdateManifest == null) {
       try (InputStream stream = context.getAssets().open(MANIFEST_FILENAME)) {
         String manifestString = IOUtils.toString(stream, "UTF-8");
         JSONObject manifestJson = new JSONObject(manifestString);
         // automatically verify embedded manifest since it was already codesigned
         manifestJson.put("isVerified", true);
-        sEmbeddedManifest = ManifestFactory.INSTANCE.getEmbeddedManifest(manifestJson, configuration);
+        sEmbeddedUpdateManifest = ManifestFactory.INSTANCE.getEmbeddedManifest(manifestJson, configuration);
       } catch (Exception e) {
         Log.e(TAG, "Could not read embedded manifest", e);
         throw new AssertionError("The embedded manifest is invalid or could not be read. Make sure you have configured expo-updates correctly in android/app/build.gradle. " + e.getMessage());
       }
     }
 
-    return sEmbeddedManifest;
+    return sEmbeddedUpdateManifest;
   }
 
   public static byte[] copyAssetAndGetHash(AssetEntity asset, File destination, Context context) throws NoSuchAlgorithmException, IOException {
@@ -129,8 +130,8 @@ public class EmbeddedLoader {
 
   // private helper methods
 
-  private boolean processManifest(Manifest manifest) {
-    UpdateEntity newUpdateEntity = manifest.getUpdateEntity();
+  private boolean processUpdateManifest(UpdateManifest updateManifest) {
+    UpdateEntity newUpdateEntity = updateManifest.getUpdateEntity();
     UpdateEntity existingUpdateEntity = mDatabase.updateDao().loadUpdateWithId(newUpdateEntity.id);
     if (existingUpdateEntity != null && existingUpdateEntity.status == UpdateStatus.READY) {
       // hooray, we already have this update downloaded and ready to go!
@@ -146,7 +147,7 @@ public class EmbeddedLoader {
         // however, it's not ready, so we should try to download all the assets again.
         mUpdateEntity = existingUpdateEntity;
       }
-      copyAllAssets(manifest.getAssetEntityList());
+      copyAllAssets(updateManifest.getAssetEntityList());
       return true;
     }
   }

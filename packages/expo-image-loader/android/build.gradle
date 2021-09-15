@@ -18,7 +18,7 @@ buildscript {
 }
 
 group = 'host.exp.exponent'
-version = '2.1.1'
+version = '2.3.0-alpha.0'
 
 // Upload android library to maven with javadoc and android sources
 configurations {
@@ -48,18 +48,19 @@ uploadArchives {
 android {
   compileSdkVersion safeExtGet("compileSdkVersion", 30)
 
+  compileOptions {
+    sourceCompatibility JavaVersion.VERSION_1_8
+    targetCompatibility JavaVersion.VERSION_1_8
+  }
+
   defaultConfig {
     minSdkVersion safeExtGet("minSdkVersion", 21)
     targetSdkVersion safeExtGet("targetSdkVersion", 30)
     versionCode 8
-    versionName "2.1.1"
+    versionName "2.3.0-alpha.0"
   }
   lintOptions {
     abortOnError false
-  }
-  compileOptions {
-    sourceCompatibility = '1.8'
-    targetCompatibility = '1.8'
   }
 }
 
@@ -67,17 +68,8 @@ repositories {
   mavenCentral()
 }
 
-if (new File(rootProject.projectDir.parentFile, 'package.json').exists()) {
-  apply from: project(":unimodules-core").file("../unimodules-core.gradle")
-} else {
-  throw new GradleException(
-      '\'unimodules-core.gradle\' was not found in the usual React Native dependency location. ' +
-          'This package can only be used in such projects. Are you sure you\'ve installed the dependencies properly?')
-}
-
 dependencies {
-  unimodule 'unimodules-core'
-  unimodule 'unimodules-image-loader-interface'
+  implementation project(':expo-modules-core')
 
   implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${safeExtGet('kotlinVersion', '1.4.21')}"
   api 'com.github.bumptech.glide:glide:4.9.0'

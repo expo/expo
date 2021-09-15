@@ -67,7 +67,7 @@ Once you have applied the changes from the above diff, the following additional 
 <div style={{marginTop: -10}} />
 
 - Add the `"Supporting"` directory containing `"Expo.plist"` to your project in Xcode.
-- In Xcode, under the Build Phases tab of your main project, expand the phase entitled "Bundle React Native code and images." Add the following to a new line at the bottom of the script: `../node_modules/expo-updates/scripts/create-manifest-ios.sh`
+- In Xcode, under the Build Phases tab of your main project, expand the phase entitled "Bundle React Native code and images." Add the following to a new line at the bottom of the script: `` `node --print "require.resolve('expo-updates/package.json').slice(0, -13) + '/scripts/create-manifest-ios.sh'"` `` (supports monorepos and non-default project structure). You can alternatively use this line: `../node_modules/expo-updates/scripts/create-manifest-ios.sh` (supports only default project structure).
 
 <div style={{marginTop: -15}} />
 

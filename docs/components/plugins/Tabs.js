@@ -1,4 +1,4 @@
-import { css } from '@emotion/core';
+import { css } from '@emotion/react';
 import { theme } from '@expo/styleguide';
 import { Tab as ReachTab, TabList, TabPanel, TabPanels, Tabs as ReachTabs } from '@reach/tabs';
 import * as React from 'react';
@@ -17,10 +17,6 @@ const STYLES_TAB_BUTTON = css`
     background-color: ${theme.background.tertiary};
     cursor: pointer;
   }
-`;
-
-const STYLES_TAB_PANELS = css`
-  padding-top: 6;
 `;
 
 function TabButton({ selected, ...props }) {
@@ -52,7 +48,7 @@ export function Tabs({ children, tabs }) {
           </TabButton>
         ))}
       </TabList>
-      <TabPanels className={STYLES_TAB_PANELS}>{children}</TabPanels>
+      <TabPanels style={{ paddingTop: 6 }}>{children}</TabPanels>
     </ReachTabs>
   );
 }

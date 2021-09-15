@@ -5,16 +5,16 @@
 
 @interface EXScopedErrorRecoveryModule ()
 
-@property (nonatomic, strong) NSString *experienceId;
+@property (nonatomic, strong) NSString *scopeKey;
 
 @end
 
 @implementation EXScopedErrorRecoveryModule
 
-- (instancetype)initWithExperienceId:(NSString *)experienceId
+- (instancetype)initWithScopeKey:(NSString *)scopeKey
 {
   if (self = [super init]) {
-    _experienceId = experienceId;
+    _scopeKey = scopeKey;
   }
   return self;
 }
@@ -24,7 +24,7 @@
   NSUserDefaults *preferences = [NSUserDefaults standardUserDefaults];
   NSDictionary *errorRecoveryStore = [preferences dictionaryForKey:[self userDefaultsKey]] ?: @{};
   NSMutableDictionary *newStore = [errorRecoveryStore mutableCopy];
-  newStore[_experienceId] = props;
+  newStore[_scopeKey] = props;
   [preferences setObject:newStore forKey:[self userDefaultsKey]];
   return [preferences synchronize];
 }
@@ -34,10 +34,10 @@
   NSUserDefaults *preferences = [NSUserDefaults standardUserDefaults];
   NSDictionary *errorRecoveryStore = [preferences dictionaryForKey:[self userDefaultsKey]];
   if (errorRecoveryStore) {
-    NSString *props = errorRecoveryStore[_experienceId];
+    NSString *props = errorRecoveryStore[_scopeKey];
     if (props) {
       NSMutableDictionary *storeWithRemovedProps = [errorRecoveryStore mutableCopy];
-      [storeWithRemovedProps removeObjectForKey:_experienceId];
+      [storeWithRemovedProps removeObjectForKey:_scopeKey];
       [preferences setObject:storeWithRemovedProps forKey:[self userDefaultsKey]];
       [preferences synchronize];
       return props;

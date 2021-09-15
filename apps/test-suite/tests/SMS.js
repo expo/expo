@@ -1,6 +1,7 @@
 import * as SMS from 'expo-sms';
 import { Platform } from 'react-native';
 
+import { expectMethodToThrowAsync } from '../TestUtils';
 import { isInteractive } from '../utils/Environment';
 import {
   loadAttachmentsAsync,
@@ -8,6 +9,8 @@ import {
   testSMSComposeWithSingleImageAttachment,
   testSMSComposeWithAudioAttachment,
   testSMSComposeWithTwoImageAttachments,
+  testSMSComposeWithNullRecipient,
+  testSMSComposeWithUndefinedRecipient,
 } from './SMSCommon';
 
 export const name = 'SMS';
@@ -32,6 +35,16 @@ export function test({ describe, it, expect, beforeAll, afterAll }) {
 
         it(`opens an SMS composer with audio attachment`, async () => {
           await testSMSComposeWithAudioAttachment(expect);
+        });
+
+        it(`throws when provided with undefined recipient`, async () => {
+          const error = await expectMethodToThrowAsync(testSMSComposeWithUndefinedRecipient);
+          expect(error.message).toBe('undefined or null address');
+        });
+
+        it(`throws when provided with null recipient`, async () => {
+          const error = await expectMethodToThrowAsync(testSMSComposeWithNullRecipient);
+          expect(error.message).toBe('undefined or null address');
         });
 
         afterAll(() => cleanupAttachmentsAsync(expect));

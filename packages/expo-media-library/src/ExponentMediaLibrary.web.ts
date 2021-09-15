@@ -1,4 +1,6 @@
-import { PermissionResponse, PermissionStatus } from 'unimodules-permissions-interface';
+import { PermissionResponse, PermissionStatus } from 'expo-modules-core';
+
+import { MediaTypeObject, SortByObject } from './MediaLibrary';
 
 const noPermissionResponse: PermissionResponse = {
   status: PermissionStatus.UNDETERMINED,
@@ -14,7 +16,7 @@ export default {
   get CHANGE_LISTENER_NAME(): string {
     return 'mediaLibraryDidChange';
   },
-  get MediaType(): { [key: string]: string } {
+  get MediaType(): MediaTypeObject {
     return {
       audio: 'audio',
       photo: 'photo',
@@ -22,7 +24,7 @@ export default {
       unknown: 'unknown',
     };
   },
-  get SortBy(): { [key: string]: string } {
+  get SortBy(): SortByObject {
     return {
       default: 'default',
       mediaType: 'mediaType',

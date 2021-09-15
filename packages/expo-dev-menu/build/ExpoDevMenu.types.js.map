@@ -1,0 +1,1 @@
+{"version":3,"file":"ExpoDevMenu.types.js","sourceRoot":"","sources":["../src/ExpoDevMenu.types.ts"],"names":[],"mappings":"","sourcesContent":["export type ExpoDevMenu = {\n  openMenu();\n  openProfile();\n  openSettings();\n};\n"]}

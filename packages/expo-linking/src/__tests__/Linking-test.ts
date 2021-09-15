@@ -1,9 +1,17 @@
 import Constants, { ExecutionEnvironment } from 'expo-constants';
+import { mockProperty, unmockAllProperties } from 'jest-expo';
 
 import * as Linking from '../Linking';
 import { QueryParams } from '../Linking.types';
 
 describe('parse', () => {
+  beforeAll(() => {
+    mockProperty(Constants.manifest, 'hostUri', 'exp.host/@test/test');
+  });
+  afterAll(() => {
+    unmockAllProperties();
+  });
+
   test.each<string>([
     'exp://127.0.0.1:19000/',
     'exp://127.0.0.1:19000/--/test/path?query=param',
@@ -22,29 +30,27 @@ describe('parse', () => {
     'custom://',
     'custom://?hello=bar',
     'invalid',
-  ])(`parses %p`, url => {
+  ])(`parses %p`, (url) => {
     expect(Linking.parse(url)).toMatchSnapshot();
   });
 });
 
 describe(Linking.createURL, () => {
   const consoleWarn = console.warn;
-  const manifest = Constants.manifest;
   const executionEnvironment = Constants.executionEnvironment;
+
   describe('queries', () => {
     beforeEach(() => {
       console.warn = jest.fn();
       Constants.executionEnvironment = ExecutionEnvironment.StoreClient;
-      Constants.manifest = {
-        ...Constants.manifest,
-        scheme: 'demo',
-      };
+      mockProperty(Constants.manifest, 'hostUri', 'exp.host/@test/test');
+      mockProperty(Constants.manifest, 'scheme', 'demo');
     });
 
     afterEach(() => {
       console.warn = consoleWarn;
       Constants.executionEnvironment = executionEnvironment;
-      Constants.manifest = manifest;
+      unmockAllProperties();
     });
 
     test.each<QueryParams>([
@@ -53,29 +59,27 @@ describe(Linking.createURL, () => {
       { emptyParam: '' },
       { undefinedParam: undefined },
       { lotsOfSlashes: '/////' },
-    ])(`makes url %p`, queryParams => {
+    ])(`makes url %p`, (queryParams) => {
       expect(Linking.createURL('some/path', { queryParams })).toMatchSnapshot();
     });
 
-    test.each<string>(['path/into/app', ''])(`makes url %p`, path => {
+    test.each<string>(['path/into/app', ''])(`makes url %p`, (path) => {
       expect(Linking.createURL(path)).toMatchSnapshot();
     });
   });
+
   describe('bare', () => {
     beforeEach(() => {
       console.warn = jest.fn();
       Constants.executionEnvironment = ExecutionEnvironment.Bare;
-      Constants.manifest = {
-        ...Constants.manifest,
-        hostUri: null,
-        scheme: 'demo',
-      };
+      mockProperty(Constants.manifest, 'hostUri', null);
+      mockProperty(Constants.manifest, 'scheme', 'demo');
     });
 
     afterEach(() => {
       console.warn = consoleWarn;
       Constants.executionEnvironment = executionEnvironment;
-      Constants.manifest = manifest;
+      unmockAllProperties();
     });
 
     test.each<QueryParams>([
@@ -84,11 +88,11 @@ describe(Linking.createURL, () => {
       { emptyParam: '' },
       { undefinedParam: undefined },
       { lotsOfSlashes: '/////' },
-    ])(`makes url %p`, queryParams => {
+    ])(`makes url %p`, (queryParams) => {
       expect(Linking.createURL('some/path', { queryParams })).toMatchSnapshot();
     });
 
-    test.each<string>(['path/into/app', ''])(`makes url %p`, path => {
+    test.each<string>(['path/into/app', ''])(`makes url %p`, (path) => {
       expect(Linking.createURL(path)).toMatchSnapshot();
     });
 

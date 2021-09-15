@@ -1,5 +1,8 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
+import Foundation
+import UIKit
+
 @objc
 open class DevMenuAction: DevMenuScreenItem, DevMenuCallableProvider {
   @objc
@@ -45,6 +48,11 @@ open class DevMenuAction: DevMenuScreenItem, DevMenuCallableProvider {
     self.callable.action = action
   }
   
+  @objc
+  public convenience init(withId id: String, _ action: @escaping () -> ()) {
+    self.init(withId: id, action: action)
+  }
+  
   public func registerCallable() -> DevMenuExportedCallable? {
     return self.callable
   }
@@ -59,7 +67,7 @@ open class DevMenuAction: DevMenuScreenItem, DevMenuCallableProvider {
     var dict = super.serialize()
     dict["actionId"] = self.callable.id
     dict["keyCommand"] = self.callable.keyCommand == nil ? nil : [
-      "input": self.callable.keyCommand!.input,
+      "input": self.callable.keyCommand!.input!,
       "modifiers": exportKeyCommandModifiers()
     ]
     

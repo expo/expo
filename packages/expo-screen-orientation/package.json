@@ -1,6 +1,6 @@
 {
   "name": "expo-screen-orientation",
-  "version": "3.1.0",
+  "version": "3.2.0",
   "description": "Expo universal module for managing device's screen orientation",
   "main": "build/ScreenOrientation.js",
   "types": "build/ScreenOrientation.d.ts",
@@ -31,17 +31,15 @@
   },
   "author": "650 Industries, Inc.",
   "license": "MIT",
-  "homepage": "https://docs.expo.io/versions/latest/sdk/screen-orientation/",
+  "homepage": "https://docs.expo.dev/versions/latest/sdk/screen-orientation/",
   "jest": {
     "preset": "expo-module-scripts"
   },
-  "unimodulePeerDependencies": {
-    "@unimodules/core": "*"
+  "dependencies": {
+    "@expo/config-plugins": "^3.0.0",
+    "expo-modules-core": "~0.3.1"
   },
   "devDependencies": {
     "expo-module-scripts": "^2.0.0"
-  },
-  "dependencies": {
-    "@expo/config-plugins": "^1.0.18"
   }
 }

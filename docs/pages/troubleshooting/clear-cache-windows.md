@@ -46,7 +46,7 @@ There are a number of different caches associated with your project that can pre
    watchman watch-del-all
    del %appdata%\Temp\haste-map-*
    del %appdata%\Temp\metro-cache
-   yarn start -- --reset-cache
+   npm start -- --reset-cache
    ```
 
 ## What these commands are doing

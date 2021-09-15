@@ -1,20 +1,20 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 #import <EXSensors/EXMagnetometerUncalibrated.h>
-#import <UMSensorsInterface/UMMagnetometerUncalibratedInterface.h>
+#import <ExpoModulesCore/EXMagnetometerUncalibratedInterface.h>
 
 @implementation EXMagnetometerUncalibrated
 
-UM_EXPORT_MODULE(ExponentMagnetometerUncalibrated);
+EX_EXPORT_MODULE(ExponentMagnetometerUncalibrated);
 
 - (const NSString *)updateEventName
 {
   return @"magnetometerUncalibratedDidUpdate";
 }
 
-- (id)getSensorServiceFromModuleRegistry:(UMModuleRegistry *)moduleRegistry
+- (id)getSensorServiceFromModuleRegistry:(EXModuleRegistry *)moduleRegistry
 {
-  return [moduleRegistry getModuleImplementingProtocol:@protocol(UMMagnetometerUncalibratedInterface)];
+  return [moduleRegistry getModuleImplementingProtocol:@protocol(EXMagnetometerUncalibratedInterface)];
 }
 
 - (void)setUpdateInterval:(double)updateInterval onSensorService:(id)sensorService

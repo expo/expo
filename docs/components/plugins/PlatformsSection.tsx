@@ -1,4 +1,4 @@
-import { css } from '@emotion/core';
+import { css } from '@emotion/react';
 import { theme } from '@expo/styleguide';
 import * as React from 'react';
 
@@ -19,6 +19,10 @@ const STYLES_LINK = css`
   text-align: left;
   grid-gap: 8px;
   color: ${theme.link.default};
+`;
+
+const STYLES_TABLE = css`
+  table-layout: fixed;
 `;
 
 const platforms = [
@@ -71,7 +75,7 @@ export default class PlatformsSection extends React.Component<Props> {
     return (
       <div>
         <H4 css={STYLES_TITLE}>{this.props.title || 'Platform Compatibility'}</H4>
-        <table>
+        <table css={STYLES_TABLE}>
           <thead>
             <tr>
               {platforms.map(({ title }) => (

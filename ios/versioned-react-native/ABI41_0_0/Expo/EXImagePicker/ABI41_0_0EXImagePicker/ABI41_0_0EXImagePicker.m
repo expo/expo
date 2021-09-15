@@ -209,7 +209,7 @@ ABI41_0_0UM_EXPORT_METHOD_AS(launchImageLibraryAsync, launchImageLibraryAsync:(N
     
     self.picker.videoMaximumDuration = videoMaxDuration;
     
-    self.picker.modalPresentationStyle = UIModalPresentationOverCurrentContext;
+    self.picker.modalPresentationStyle = UIModalPresentationPageSheet;
     self.picker.delegate = self;
 
     [self maybePreserveVisibilityAndHideStatusBar:[[self.options objectForKey:@"allowsEditing"] boolValue]];

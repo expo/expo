@@ -5,21 +5,29 @@ import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.uimanager.ViewManager;
 
-import org.unimodules.adapters.react.views.SimpleViewManagerAdapter;
-import org.unimodules.adapters.react.views.ViewGroupManagerAdapter;
-import org.unimodules.core.ModuleRegistry;
-import org.unimodules.core.interfaces.InternalModule;
+import expo.modules.adapters.react.ModuleRegistryReadyNotifier;
+import expo.modules.adapters.react.NativeModulesProxy;
+import expo.modules.adapters.react.ReactAdapterPackage;
+import expo.modules.adapters.react.ReactModuleRegistryProvider;
+import expo.modules.adapters.react.ReactPackagesProvider;
+import expo.modules.adapters.react.views.SimpleViewManagerAdapter;
+import expo.modules.adapters.react.views.ViewGroupManagerAdapter;
+import expo.modules.core.ModuleRegistry;
+import expo.modules.core.interfaces.InternalModule;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * @deprecated use {@link expo.modules.adapters.react.ModuleRegistryAdapter} instead.
+ * <p>
  * An adapter over {@link ModuleRegistry}, compatible with React (implementing {@link ReactPackage}).
  * Provides React Native with native modules and view managers,
- * which in turn are created by packages provided by {@link ReactModuleRegistryProvider}.
+ * which in turn are created by packages provided by {@link expo.modules.adapters.react.ReactModuleRegistryProvider}.
  */
+@Deprecated
 public class ModuleRegistryAdapter implements ReactPackage {
-  protected ReactModuleRegistryProvider mModuleRegistryProvider;
+  protected expo.modules.adapters.react.ReactModuleRegistryProvider mModuleRegistryProvider;
   protected ReactAdapterPackage mReactAdapterPackage = new ReactAdapterPackage();
 
   public ModuleRegistryAdapter(ReactModuleRegistryProvider moduleRegistryProvider) {
@@ -42,7 +50,7 @@ public class ModuleRegistryAdapter implements ReactPackage {
 
     nativeModulesList.add(new NativeModulesProxy(reactContext, moduleRegistry));
 
-    // Add listener that will notify org.unimodules.core.ModuleRegistry when all modules are ready
+    // Add listener that will notify expo.modules.core.ModuleRegistry when all modules are ready
     nativeModulesList.add(new ModuleRegistryReadyNotifier(moduleRegistry));
 
     ReactPackagesProvider reactPackagesProvider = moduleRegistry.getModule(ReactPackagesProvider.class);
@@ -58,7 +66,7 @@ public class ModuleRegistryAdapter implements ReactPackage {
   public List<ViewManager> createViewManagers(ReactApplicationContext reactContext) {
     List<ViewManager> viewManagerList = new ArrayList<>(mModuleRegistryProvider.getReactViewManagers(reactContext));
 
-    for (org.unimodules.core.ViewManager viewManager : mModuleRegistryProvider.getViewManagers(reactContext)) {
+    for (expo.modules.core.ViewManager viewManager : mModuleRegistryProvider.getViewManagers(reactContext)) {
       switch (viewManager.getViewManagerType()) {
         case GROUP:
           viewManagerList.add(new ViewGroupManagerAdapter(viewManager));

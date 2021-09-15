@@ -20,7 +20,6 @@
   <uses-permission android:name="android.permission.MANAGE_DOCUMENTS" />
   <uses-permission android:name="android.permission.USE_FINGERPRINT" />
   <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
-
   <!-- Used by react-native-netinfo module -->
   <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
 

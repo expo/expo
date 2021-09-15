@@ -22,7 +22,7 @@ public class DatabaseIntegrityCheck {
     }
 
     if (missingAssets.size() > 0) {
-      database.assetDao().markMissingAssets(missingAssets);
+      database.updateDao().markUpdatesWithMissingAssets(missingAssets);
     }
 
     List<UpdateEntity> updatesToDelete = new ArrayList<>();

@@ -73,20 +73,20 @@ class Queue
   std::condition_variable cond_;
 };
 
-class NativeReanimatedModule;
+class RuntimeManager;
 
 class Scheduler {
   public:
     void scheduleOnJS(std::function<void()> job);
     void setJSCallInvoker(std::shared_ptr<facebook::react::CallInvoker> jsCallInvoker);
-    void setModule(std::shared_ptr<NativeReanimatedModule> module);
+    void setRuntimeManager(std::shared_ptr<RuntimeManager> runtimeManager);
     virtual void scheduleOnUI(std::function<void()> job);
     virtual void triggerUI();
     virtual ~Scheduler();
   protected:
     Queue<std::function<void()>> uiJobs;
     std::shared_ptr<facebook::react::CallInvoker> jsCallInvoker_;
-    std::weak_ptr<NativeReanimatedModule> module;
+    std::weak_ptr<RuntimeManager> runtimeManager;
 };
 
 }

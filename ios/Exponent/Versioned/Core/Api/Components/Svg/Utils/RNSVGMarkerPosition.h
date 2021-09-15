@@ -1,6 +1,6 @@
-
-#import <UIKit/UIKit.h>
 #import <Foundation/Foundation.h>
+
+#import "RNSVGUIKit.h"
 
 typedef enum RNSVGMarkerType {
     kStartMarker,

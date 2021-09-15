@@ -8,18 +8,18 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (BOOL)doesUpdate:(EXUpdatesUpdate *)update matchFilters:(nullable NSDictionary *)filters
 {
-  if (!filters || !update.metadata) {
+  if (!filters || !update.manifestJSON) {
     return YES;
   }
   
-  NSDictionary *updateMetadata = update.metadata[@"updateMetadata"];
-  if (!updateMetadata || ![updateMetadata isKindOfClass:[NSDictionary class]]) {
+  NSDictionary *metadata = update.manifestJSON[@"metadata"];
+  if (!metadata || ![metadata isKindOfClass:[NSDictionary class]]) {
     return YES;
   }
   
   // create lowercase copy for case-insensitive search
-  NSMutableDictionary *metadataLCKeys = [NSMutableDictionary dictionaryWithCapacity:updateMetadata.count];
-  [updateMetadata enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
+  NSMutableDictionary *metadataLCKeys = [NSMutableDictionary dictionaryWithCapacity:metadata.count];
+  [metadata enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
     if ([key isKindOfClass:[NSString class]]) {
       metadataLCKeys[((NSString *)key).lowercaseString] = obj;
     }

@@ -8,7 +8,7 @@ import com.squareup.picasso.Callback
 import com.squareup.picasso.Picasso
 import expo.modules.splashscreen.SplashScreenView
 import expo.modules.splashscreen.SplashScreenViewProvider
-import expo.modules.updates.manifest.raw.RawManifest
+import expo.modules.manifests.core.Manifest
 import host.exp.exponent.analytics.EXL
 
 /**
@@ -23,14 +23,13 @@ class ManagedAppSplashScreenViewProvider(
   companion object {
     private const val TAG: String = "ExperienceSplashScreenManifestBasedResourceProvider"
   }
-
   override fun createSplashScreenView(context: Context): View {
     splashScreenView = SplashScreenView(context)
     configureSplashScreenView(context, config, null)
     return splashScreenView
   }
 
-  fun updateSplashScreenViewWithManifest(context: Context, manifest: RawManifest) {
+  fun updateSplashScreenViewWithManifest(context: Context, manifest: Manifest) {
     val previousConfig = config
     config = ManagedAppSplashScreenConfiguration.parseManifest(manifest)
     configureSplashScreenView(context, config, previousConfig)
@@ -57,19 +56,22 @@ class ManagedAppSplashScreenViewProvider(
     if (config.imageUrl == null) {
       return
     }
-    Picasso.with(context).load(config.imageUrl).into(splashScreenView.imageView, object : Callback {
-      override fun onSuccess() {
-        splashScreenView.imageView.visibility = View.VISIBLE
-        splashScreenView.imageView.animation = AlphaAnimation(0.0f, 1.0f).also {
-          it.duration = 300
-          it.interpolator = AccelerateDecelerateInterpolator()
-          it.fillAfter = true
+    Picasso.with(context).load(config.imageUrl).into(
+      splashScreenView.imageView,
+      object : Callback {
+        override fun onSuccess() {
+          splashScreenView.imageView.visibility = View.VISIBLE
+          splashScreenView.imageView.animation = AlphaAnimation(0.0f, 1.0f).also {
+            it.duration = 300
+            it.interpolator = AccelerateDecelerateInterpolator()
+            it.fillAfter = true
+          }
+        }
+
+        override fun onError() {
+          EXL.e(TAG, "Couldn't load image at url " + config.imageUrl)
         }
       }
-
-      override fun onError() {
-        EXL.e(TAG, "Couldn't load image at url " + config.imageUrl)
-      }
-    })
+    )
   }
 }

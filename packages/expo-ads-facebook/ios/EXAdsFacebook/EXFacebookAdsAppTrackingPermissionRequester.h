@@ -1,7 +1,7 @@
 // Copyright 2017-present 650 Industries. All rights reserved.
 
-#import <UMPermissionsInterface/UMPermissionsInterface.h>
+#import <ExpoModulesCore/EXPermissionsInterface.h>
 
-@interface EXFacebookAdsAppTrackingPermissionRequester : NSObject<UMPermissionsRequester>
+@interface EXFacebookAdsAppTrackingPermissionRequester : NSObject<EXPermissionsRequester>
 
 @end

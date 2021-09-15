@@ -108,7 +108,7 @@ lein prod-build
 expo publish
 ```
 
-This will publish your app to a persistent URL on Expo, for example: <https://expo.io/@community/startr>
+This will publish your app to a persistent URL on Expo, for example: <https://expo.dev/@community/startr>
 
 ## FAQ
 
@@ -126,11 +126,11 @@ Yes.
 
 ### Can I use npm modules?
 
-React Native uses JavascriptCore, so modules using built-in node like stream, fs, etc wont work. Otherwise, you can just require like: `(js/require "SomeModule")`.
+React Native uses JavaScriptCore, so modules using built-in node like stream, fs, etc wont work. Otherwise, you can just require like: `(js/require "SomeModule")`.
 
-### Do I need to restart the REPL after adding new Javascript modules or assets?
+### Do I need to restart the REPL after adding new JavaScript modules or assets?
 
-No, you do need to reload Javascript. To do that, select **Reload** from the Developer Menu. You can also press `⌘ + R` in the iOS Simulator, or press `R` twice on Android emulators.
+No, you do need to reload JavaScript. To do that, select **Reload** from the Developer Menu. You can also press `⌘ + R` in the iOS Simulator, or press `R` twice on Android emulators.
 
 ### Will it support Boot?
 

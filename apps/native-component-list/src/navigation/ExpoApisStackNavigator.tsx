@@ -24,6 +24,12 @@ export const Screens = [
   },
   {
     getComponent() {
+      return optionalRequire(() => require('../screens/Amplitude/AmplitudeScreen'));
+    },
+    name: 'Amplitude',
+  },
+  {
+    getComponent() {
       return optionalRequire(() => require('../screens/ClipboardScreen'));
     },
     name: 'Clipboard',
@@ -434,6 +440,13 @@ export const Screens = [
   },
   {
     getComponent() {
+      return optionalRequire(() => require('../screens/TrackingTransparencyScreen'));
+    },
+    name: 'TrackingTransparency',
+    options: { title: 'TrackingTransparency' },
+  },
+  {
+    getComponent() {
       return optionalRequire(() => require('../screens/WebBrowserScreen'));
     },
     name: 'WebBrowser',
@@ -443,12 +456,6 @@ export const Screens = [
       return optionalRequire(() => require('../screens/ViewShotScreen'));
     },
     name: 'ViewShot',
-  },
-  {
-    getComponent() {
-      return optionalRequire(() => require('../screens/PaymentsScreen'));
-    },
-    name: 'Payments',
   },
 ];
 

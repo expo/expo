@@ -78,8 +78,8 @@
     @"EXUpdatesScopeKey": scopeKey,
     @"EXUpdatesRuntimeVersion": runtimeVersion
   }];
-  EXUpdatesUpdate *update1 = [EXUpdatesUpdate updateWithId:NSUUID.UUID scopeKey:scopeKey commitTime:[NSDate dateWithTimeIntervalSince1970:1608667851] runtimeVersion:runtimeVersion metadata:nil status:EXUpdatesUpdateStatusReady keep:YES config:config database:_db];
-  EXUpdatesUpdate *update2 = [EXUpdatesUpdate updateWithId:NSUUID.UUID scopeKey:scopeKey commitTime:[NSDate dateWithTimeIntervalSince1970:1608667852] runtimeVersion:runtimeVersion metadata:nil status:EXUpdatesUpdateStatusReady keep:YES config:config database:_db];
+  EXUpdatesUpdate *update1 = [EXUpdatesUpdate updateWithId:NSUUID.UUID scopeKey:scopeKey commitTime:[NSDate dateWithTimeIntervalSince1970:1608667851] runtimeVersion:runtimeVersion manifest:nil status:EXUpdatesUpdateStatusReady keep:YES config:config database:_db];
+  EXUpdatesUpdate *update2 = [EXUpdatesUpdate updateWithId:NSUUID.UUID scopeKey:scopeKey commitTime:[NSDate dateWithTimeIntervalSince1970:1608667852] runtimeVersion:runtimeVersion manifest:nil status:EXUpdatesUpdateStatusReady keep:YES config:config database:_db];
 
   update1.status = EXUpdatesUpdateStatusEmbedded;
   update2.status = EXUpdatesUpdateStatusEmbedded;
@@ -119,8 +119,8 @@
     @"EXUpdatesScopeKey": scopeKey,
     @"EXUpdatesRuntimeVersion": runtimeVersion
   }];
-  EXUpdatesUpdate *update1 = [EXUpdatesUpdate updateWithId:NSUUID.UUID scopeKey:scopeKey commitTime:[NSDate dateWithTimeIntervalSince1970:1608667851] runtimeVersion:runtimeVersion metadata:nil status:EXUpdatesUpdateStatusReady keep:YES config:config database:_db];
-  EXUpdatesUpdate *update2 = [EXUpdatesUpdate updateWithId:NSUUID.UUID scopeKey:scopeKey commitTime:[NSDate dateWithTimeIntervalSince1970:1608667852] runtimeVersion:runtimeVersion metadata:nil status:EXUpdatesUpdateStatusReady keep:YES config:config database:_db];
+  EXUpdatesUpdate *update1 = [EXUpdatesUpdate updateWithId:NSUUID.UUID scopeKey:scopeKey commitTime:[NSDate dateWithTimeIntervalSince1970:1608667851] runtimeVersion:runtimeVersion manifest:nil status:EXUpdatesUpdateStatusReady keep:YES config:config database:_db];
+  EXUpdatesUpdate *update2 = [EXUpdatesUpdate updateWithId:NSUUID.UUID scopeKey:scopeKey commitTime:[NSDate dateWithTimeIntervalSince1970:1608667852] runtimeVersion:runtimeVersion manifest:nil status:EXUpdatesUpdateStatusReady keep:YES config:config database:_db];
 
   update1.status = EXUpdatesUpdateStatusReady;
   update2.status = EXUpdatesUpdateStatusReady;

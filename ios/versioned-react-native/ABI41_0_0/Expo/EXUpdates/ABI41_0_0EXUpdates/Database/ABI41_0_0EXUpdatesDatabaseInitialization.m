@@ -8,7 +8,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 static NSString * const ABI41_0_0EXUpdatesDatabaseInitializationErrorDomain = @"ABI41_0_0EXUpdatesDatabaseInitialization";
-static NSString * const ABI41_0_0EXUpdatesDatabaseLatestFilename = @"expo-v5.db";
+static NSString * const ABI41_0_0EXUpdatesDatabaseLatestFilename = @"expo-v6.db";
 
 static NSString * const ABI41_0_0EXUpdatesDatabaseInitializationLatestSchema = @"\
 CREATE TABLE \"updates\" (\
@@ -17,9 +17,10 @@ CREATE TABLE \"updates\" (\
 \"commit_time\"  INTEGER NOT NULL,\
 \"runtime_version\"  TEXT NOT NULL,\
 \"launch_asset_id\" INTEGER,\
-\"metadata\"  TEXT,\
+\"manifest\"  TEXT,\
 \"status\"  INTEGER NOT NULL,\
 \"keep\"  INTEGER NOT NULL,\
+\"last_accessed\"  INTEGER NOT NULL,\
 PRIMARY KEY(\"id\"),\
 FOREIGN KEY(\"launch_asset_id\") REFERENCES \"assets\"(\"id\") ON DELETE CASCADE\
 );\
@@ -60,10 +61,22 @@ CREATE INDEX \"index_json_data_scope_key\" ON \"json_data\" (\"scope_key\")\
                                              database:(struct sqlite3 * _Nullable * _Nonnull)database
                                                 error:(NSError ** _Nullable)error
 {
+  return [[self class] initializeDatabaseWithLatestSchemaInDirectory:directory
+                                                            database:database
+                                                          migrations:[ABI41_0_0EXUpdatesDatabaseMigrationRegistry migrations]
+                                                               error:error];
+}
+
++ (BOOL)initializeDatabaseWithLatestSchemaInDirectory:(NSURL *)directory
+                                             database:(struct sqlite3 * _Nullable * _Nonnull)database
+                                           migrations:(NSArray<id<ABI41_0_0EXUpdatesDatabaseMigration>> *)migrations
+                                                error:(NSError ** _Nullable)error
+{
   return [[self class] initializeDatabaseWithSchema:ABI41_0_0EXUpdatesDatabaseInitializationLatestSchema
                                            filename:ABI41_0_0EXUpdatesDatabaseLatestFilename
                                         inDirectory:directory
                                       shouldMigrate:YES
+                                         migrations:migrations
                                            database:database
                                               error:error];
 }
@@ -72,6 +85,7 @@ CREATE INDEX \"index_json_data_scope_key\" ON \"json_data\" (\"scope_key\")\
                             filename:(NSString *)filename
                          inDirectory:(NSURL *)directory
                        shouldMigrate:(BOOL)shouldMigrate
+                          migrations:(NSArray<id<ABI41_0_0EXUpdatesDatabaseMigration>> *)migrations
                             database:(struct sqlite3 * _Nullable * _Nonnull)database
                                error:(NSError ** _Nullable)error
 {
@@ -79,7 +93,7 @@ CREATE INDEX \"index_json_data_scope_key\" ON \"json_data\" (\"scope_key\")\
   NSURL *dbUrl = [directory URLByAppendingPathComponent:filename];
   BOOL shouldInitializeDatabaseSchema = ![[NSFileManager defaultManager] fileExistsAtPath:[dbUrl path]];
 
-  BOOL success = [[self class] _migrateDatabaseInDirectory:directory];
+  BOOL success = [[self class] _migrateDatabaseInDirectory:directory withMigrations:migrations];
   if (!success) {
     NSError *removeFailedMigrationError;
     if ([NSFileManager.defaultManager fileExistsAtPath:dbUrl.path] &&
@@ -153,7 +167,7 @@ CREATE INDEX \"index_json_data_scope_key\" ON \"json_data\" (\"scope_key\")\
   return YES;
 }
 
-+ (BOOL)_migrateDatabaseInDirectory:(NSURL *)directory
++ (BOOL)_migrateDatabaseInDirectory:(NSURL *)directory withMigrations:(NSArray<id<ABI41_0_0EXUpdatesDatabaseMigration>> *)migrations
 {
   NSURL *latestURL = [directory URLByAppendingPathComponent:ABI41_0_0EXUpdatesDatabaseLatestFilename];
   if ([NSFileManager.defaultManager fileExistsAtPath:latestURL.path]) {
@@ -161,7 +175,6 @@ CREATE INDEX \"index_json_data_scope_key\" ON \"json_data\" (\"scope_key\")\
   }
 
   // find the newest database version that exists and try to migrate that file (ignore any older ones)
-  NSArray<id<ABI41_0_0EXUpdatesDatabaseMigration>> *migrations = [ABI41_0_0EXUpdatesDatabaseMigrationRegistry migrations];
   __block NSURL *existingURL;
   __block NSUInteger startingMigrationIndex;
   [migrations enumerateObjectsWithOptions:NSEnumerationReverse usingBlock:^(id<ABI41_0_0EXUpdatesDatabaseMigration> migration, NSUInteger idx, BOOL *stop) {

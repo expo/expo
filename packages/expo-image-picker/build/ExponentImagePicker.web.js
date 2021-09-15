@@ -1,5 +1,4 @@
-import { Platform } from '@unimodules/core';
-import { PermissionStatus } from 'unimodules-permissions-interface';
+import { PermissionStatus, Platform } from 'expo-modules-core';
 import { v4 } from 'uuid';
 import { MediaTypeOptions, } from './ImagePicker.types';
 const MediaTypeInput = {
@@ -87,7 +86,7 @@ function openFileBrowserAsync({ mediaTypes, capture = false, allowsMultipleSelec
                     });
                 }
                 else {
-                    const imgs = await Promise.all(Array.from(input.files).map(file => readFile(file, { base64 })));
+                    const imgs = await Promise.all(Array.from(input.files).map((file) => readFile(file, { base64 })));
                     resolve({
                         cancelled: false,
                         selected: imgs,

@@ -1,10 +1,10 @@
 import gql from 'graphql-tag';
-import uuid from 'uuid';
+import { v4 as uuidv4 } from 'uuid';
 
 jest.mock('@react-native-async-storage/async-storage', () => ({
-  setItem: jest.fn(() => new Promise(resolve => resolve(null))),
-  getItem: jest.fn(() => new Promise(resolve => resolve(null))),
-  removeItem: jest.fn(() => new Promise(resolve => resolve(null))),
+  setItem: jest.fn(() => new Promise((resolve) => resolve(null))),
+  getItem: jest.fn(() => new Promise((resolve) => resolve(null))),
+  removeItem: jest.fn(() => new Promise((resolve) => resolve(null))),
 }));
 
 describe('User Authentication Flow', () => {
@@ -32,7 +32,7 @@ describe('User Authentication Flow', () => {
   });
 
   it(`logs in and stores session tokens correctly`, async () => {
-    const { sessionSecret } = { sessionSecret: uuid.v4() };
+    const { sessionSecret } = { sessionSecret: uuidv4() };
 
     // store session token
     await Store.dispatch(SessionActions.setSession({ sessionSecret }));
@@ -50,7 +50,7 @@ describe('User Authentication Flow', () => {
     const ApolloClient = require('../ApolloClient').default;
     const apolloLinkRequest = jest.spyOn(ApolloClient.link, 'request');
 
-    const { sessionSecret } = { sessionSecret: uuid.v4() };
+    const { sessionSecret } = { sessionSecret: uuidv4() };
 
     // store session token
     await Store.dispatch(SessionActions.setSession({ sessionSecret }));

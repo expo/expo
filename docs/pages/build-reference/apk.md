@@ -8,51 +8,33 @@ The default file format used when building Android apps with EAS Build is an [An
 
 ### Managed projects
 
-Build profiles where your `workflow` is `managed` have a field called `buildType` which defaults to `app-bundle`, and we'll change it to `apk` in order to produce APKs.
+By default, EAS Build produces Android App Bundle, you can change it by:
+- setting `buildType` to `apk`
+- setting `developmentClient` to true
+- setting `gradleCommand` to `:app:assembleRelease`, `:app:assembleDebug` or any other gradle command that produces APK
 
 ```json
 {
-  "builds": {
-    "android": {
-      "release": {
-        "workflow": "managed"
-      },
-      "preview": {
-        "workflow": "managed",
+  "build": {
+    "release": {},
+    "preview": {
+      "android": {
         "buildType": "apk"
       }
-    }
-  }
-}
-```
-
-Now, to run your build run `eas build -p android --profile preview`. Remember that you can name the profile whatever you like; we named the profile "preview", but you could call it "local" or "simulador", whatever makes most sense for you.
-
-> `buildType` will default to `apk` if you set `distribution` to `internal`. Learn more in ["Internal distribution"](/build/internal-distribution.md).
-
-### Generic projects
-
-Build profiles where your `workflow` is `generic` have a field called `gradleCommand` which defaults to `:app:bundleRelease`, and we'll change it to `:app:assembleRelease` in order to produce APKs.
-
-```json
-{
-  "builds": {
-    "android": {
-      "release": {
-        "workflow": "generic"
-      },
-      "preview": {
-        "workflow": "generic",
+    },
+    "preview2": {
+      "android": {
         "gradleCommand": ":app:assembleRelease"
       }
+    },
+    "preview3": {
+      "developmentClient": true
     }
   }
 }
 ```
 
-Now, to run your build run `eas build -p android --profile preview`. Remember that you can name the profile whatever you like; we named the profile "preview", but you could call it "local" or "simulador", whatever makes most sense for you.
-
-> `gradleCommand` will default to `:app:assembleRelease` if you set `distribution` to `internal`. Learn more in ["Internal distribution"](/build/internal-distribution.md).
+Now, to run your build run `eas build -p android --profile preview`. Remember that you can name the profile whatever you like; we named the profile "preview", but you could call it "local" or "simulator", whatever makes most sense for you.
 
 ## Installing your build
 

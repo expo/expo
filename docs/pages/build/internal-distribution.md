@@ -23,25 +23,17 @@ Open up `eas.json` and add a new build profile for iOS and/or Android.
 
 ```json
 {
-  "builds": {
-    "android": {
-      "preview": {
-        "distribution": "internal",
-        "workflow": "generic"
-      }
+  "build": {
+    "preview": {
+      "distribution": "internal"
     },
-    "ios": {
-      "preview": {
-        "distribution": "internal",
-        "workflow": "generic"
-      },
-      /* @info add this profile only if have an account with Apple Developer Enterprise Program membership */
-      "preview-enterprise" /* @end */: {
-        "distribution": "internal",
+    /* @info add this profile only if you have an account with Apple Developer Enterprise Program membership */
+    "preview-enterprise" /* @end */: {
+      "distribution": "internal",
+      "ios": {
         /* @info valid values: universal, adhoc */
-        "enterpriseProvisioning": "universal",
-        /* @end */
-        "workflow": "generic"
+        "enterpriseProvisioning": "universal"/* @end */
+
       }
     }
   }
@@ -80,16 +72,18 @@ You can register new devices at any time, but builds that were created before th
 
 The next step is to generate or update the provisioning profile. When you proceed to running a build, you will be guided through this process.
 
+> **Are you using manual local credentials?** Make sure to point your `credentials.json` to an ad hoc or enterprise provisioning profile that you generate through the Apple Developer portal (either update an existing credentials.json used for another type of distribution or replace it with a new one that points to the appropriate provisioning profile). Beware that EAS CLI does only a limited validation of your local credentials, and you will have to handle device UDID registration manually. Read more about [using local credentials](/app-signing/local-credentials.md).
+
 #### Setting up enterprise provisioning
 
 Apple Enterprise Program membership costs $299 USD per year and is only available to organizations that match certain criteria, so you will likely be using ad hoc provisioning, which works with any normal paid Apple developer account.
 
-If you have an [Apple Developer Enterprise Program membership](https://developer.apple.com/programs/enterprise/) users can install your app to their device without pre-regstering their UDID; they just need to install the profile to their device and they can then access existing builds. You will need to sign in using your Apple Developer Enterprise account during the `eas build` process to set up the correct provisioning.
+If you have an [Apple Developer Enterprise Program membership](https://developer.apple.com/programs/enterprise/) users can install your app to their device without pre-registering their UDID; they just need to install the profile to their device and they can then access existing builds. You will need to sign in using your Apple Developer Enterprise account during the `eas build` process to set up the correct provisioning.
 
 If you distribute your app both through enterprise provisioning and the App Store, you will need to have a distinct bundle identifier for each context. We recommend either:
 
-- Setting your bundle identifier for internal distribution and committing that change on another branch. After that, whenever you want to create a preview branch you can check out that branch and rebase against the branch you'd like to create a build for. This is most useful in "generic" projects.
-- Using `app.config.js` to dynamically switch identifiers. This is most useful in "managed" projects.
+- In managed projects, use `app.config.js` to dynamically switch identifiers.
+- In bare projects, create a separate `scheme` for each bundle identifier and specify the scheme name in separate build profiles.
 
 > **Are you using manual local credentials?** Make sure to point your `credentials.json` to an ad hoc or enterprise provisioning profile that you generate through the Apple Developer portal. Beware that EAS CLI does only a limited validation of your local credentials, and you will have to handle device UDID registration manually. Read more about [using local credentials](/app-signing/local-credentials.md).
 

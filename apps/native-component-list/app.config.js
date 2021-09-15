@@ -36,23 +36,19 @@ export default ({ config }) => {
     ],
   ];
 
-  // NOTE(brentvatne):
-  // This adds an ios.scheme property to manifest, which does not validate
-  // against our schema but works with config plugins. Comment this plugin
-  // out if you need to publish.
-  //
-  config.plugins.push([
-    'expo-payments-stripe',
-    {
-      scheme: 'ncl-payments',
-      merchantId: 'merchant.com.example.development',
-    },
-  ]);
-
   config.plugins.push([
     'expo-document-picker',
     {
       appleTeamId: 'XXXXXX',
+    },
+  ]);
+
+  config.plugins.push([
+    'expo-notifications',
+    {
+      icon: './assets/icons/notificationIcon.png',
+      color: '#5539cc',
+      sounds: ['./assets/sounds/cat.wav'],
     },
   ]);
 

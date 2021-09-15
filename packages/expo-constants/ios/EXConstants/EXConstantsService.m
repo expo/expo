@@ -4,7 +4,7 @@
 #include <sys/sysctl.h>
 #include <sys/utsname.h>
 
-#import <UMCore/UMUtilities.h>
+#import <ExpoModulesCore/EXUtilities.h>
 #import <EXConstants/EXConstantsService.h>
 #import <EXConstants/EXConstantsInstallationIdProvider.h>
 
@@ -34,11 +34,11 @@ NSString * const EXConstantsExecutionEnvironmentStoreClient = @"storeClient";
   return self;
 }
 
-UM_REGISTER_MODULE();
+EX_REGISTER_MODULE();
 
 + (const NSArray<Protocol *> *)exportedInterfaces
 {
-  return @[@protocol(UMConstantsInterface)];
+  return @[@protocol(EXConstantsInterface)];
 }
 
 - (NSDictionary *)constants
@@ -65,12 +65,12 @@ UM_REGISTER_MODULE();
            @"nativeAppVersion": [self appVersion],
            @"nativeBuildVersion": [self buildVersion],
            @"installationId": [_installationIdProvider getOrCreateInstallationId],
-           @"manifest": UMNullIfNil([[self class] appConfig]),
+           @"manifest": EXNullIfNil([[self class] appConfig]),
            @"platform": @{
                @"ios": @{
                    @"buildNumber": [self buildVersion],
                    @"platform": [[self class] devicePlatform],
-                   @"model": UMNullIfNil([[self class] deviceModel]),
+                   @"model": EXNullIfNil([[self class] deviceModel]),
                    @"userInterfaceIdiom": [self userInterfaceIdiom],
                    @"systemVersion": [self iosVersion],
                    },
@@ -91,7 +91,7 @@ UM_REGISTER_MODULE();
 - (CGFloat)statusBarHeight
 {
   __block CGSize statusBarSize;
-  [UMUtilities performSynchronouslyOnMainThread:^{
+  [EXUtilities performSynchronouslyOnMainThread:^{
     statusBarSize = [UIApplication sharedApplication].statusBarFrame.size;
   }];
   return MIN(statusBarSize.width, statusBarSize.height);
@@ -458,7 +458,10 @@ UM_REGISTER_MODULE();
 
 + (NSDictionary *)appConfig
 {
-  NSString *path = [[NSBundle mainBundle] pathForResource:@"app" ofType:@"config"];
+  NSBundle *frameworkBundle = [NSBundle bundleForClass:[EXConstantsService class]];
+  NSURL *bundleUrl = [frameworkBundle.resourceURL URLByAppendingPathComponent:@"EXConstants.bundle"];
+  NSBundle *bundle = [NSBundle bundleWithURL:bundleUrl];
+  NSString *path = [bundle pathForResource:@"app" ofType:@"config"];
   if (path) {
     NSData *configData = [NSData dataWithContentsOfFile:path];
     if (configData) {

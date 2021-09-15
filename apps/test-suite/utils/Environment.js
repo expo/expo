@@ -1,5 +1,5 @@
 'use strict';
-import { Platform } from '@unimodules/core';
+import { Platform } from 'expo-modules-core';
 
 import ExponentTest from '../ExponentTest';
 

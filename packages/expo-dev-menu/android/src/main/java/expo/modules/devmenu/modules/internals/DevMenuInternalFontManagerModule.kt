@@ -8,9 +8,8 @@ import expo.modules.devmenu.modules.DevMenuInternalFontManagerModuleInterface
 
 private var fontsWereLoaded = false
 
-
-class DevMenuInternalFontManagerModule(private val reactContext: ReactApplicationContext)
-  : DevMenuInternalFontManagerModuleInterface {
+class DevMenuInternalFontManagerModule(private val reactContext: ReactApplicationContext) :
+  DevMenuInternalFontManagerModuleInterface {
   override fun loadFontsAsync(promise: Promise) {
     if (fontsWereLoaded) {
       promise.resolve(null)

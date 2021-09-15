@@ -1,5 +1,4 @@
-import { Platform } from '@unimodules/core';
-import { PermissionResponse, PermissionStatus } from 'unimodules-permissions-interface';
+import { PermissionResponse, PermissionStatus, Platform } from 'expo-modules-core';
 import { v4 } from 'uuid';
 
 import {
@@ -118,7 +117,7 @@ function openFileBrowserAsync<T extends OpenFileBrowserOptions>({
           } as ExpandImagePickerResult<T>);
         } else {
           const imgs: ImageInfo[] = await Promise.all(
-            Array.from(input.files).map(file => readFile(file, { base64 }))
+            Array.from(input.files).map((file) => readFile(file, { base64 }))
           );
           resolve({
             cancelled: false,

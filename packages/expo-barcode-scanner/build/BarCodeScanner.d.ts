@@ -1,6 +1,6 @@
+import { PermissionResponse, PermissionStatus, PermissionHookOptions } from 'expo-modules-core';
 import * as React from 'react';
 import { ViewProps } from 'react-native';
-import { PermissionResponse, PermissionStatus } from 'unimodules-permissions-interface';
 export declare type BarCodePoint = {
     x: number;
     y: number;
@@ -25,8 +25,8 @@ export declare type BarCodeEvent = BarCodeScannerResult & {
 export declare type BarCodeEventCallbackArguments = {
     nativeEvent: BarCodeEvent;
 };
+export { PermissionResponse, PermissionStatus, PermissionHookOptions };
 export declare type BarCodeScannedCallback = (params: BarCodeEvent) => void;
-export { PermissionResponse, PermissionStatus };
 export interface BarCodeScannerProps extends ViewProps {
     type?: 'front' | 'back' | number;
     barCodeTypes?: string[];
@@ -52,12 +52,22 @@ export declare class BarCodeScanner extends React.Component<BarCodeScannerProps>
     };
     static getPermissionsAsync(): Promise<PermissionResponse>;
     static requestPermissionsAsync(): Promise<PermissionResponse>;
+    /**
+     * Check or request permissions for the barcode scanner.
+     * This uses both `requestPermissionAsync` and `getPermissionsAsync` to interact with the permissions.
+     *
+     * @example
+     * ```ts
+     * const [status, requestPermission] = BarCodeScanner.usePermissions();
+     * ```
+     */
+    static usePermissions: (options?: PermissionHookOptions<object> | undefined) => [PermissionResponse | null, () => Promise<PermissionResponse>, () => Promise<PermissionResponse>];
     static scanFromURLAsync(url: string, barCodeTypes?: string[]): Promise<BarCodeScannerResult[]>;
     render(): JSX.Element;
-    onObjectDetected: (callback?: BarCodeScannedCallback | undefined) => ({ nativeEvent, }: BarCodeEventCallbackArguments) => void;
+    onObjectDetected: (callback?: BarCodeScannedCallback | undefined) => ({ nativeEvent }: BarCodeEventCallbackArguments) => void;
     convertNativeProps(props: BarCodeScannerProps): BarCodeScannerProps;
 }
 export declare const Constants: {
     BarCodeType: any;
     Type: any;
-}, getPermissionsAsync: typeof BarCodeScanner.getPermissionsAsync, requestPermissionsAsync: typeof BarCodeScanner.requestPermissionsAsync;
+}, getPermissionsAsync: typeof BarCodeScanner.getPermissionsAsync, requestPermissionsAsync: typeof BarCodeScanner.requestPermissionsAsync, usePermissions: (options?: PermissionHookOptions<object> | undefined) => [PermissionResponse | null, () => Promise<PermissionResponse>, () => Promise<PermissionResponse>];

@@ -2,7 +2,7 @@ package expo.modules.updates.db.entity;
 
 import expo.modules.updates.db.enums.UpdateStatus;
 import expo.modules.updates.manifest.ManifestFactory;
-import expo.modules.updates.manifest.raw.RawManifest;
+import expo.modules.manifests.core.Manifest;
 
 import org.json.JSONObject;
 
@@ -46,11 +46,8 @@ public class UpdateEntity {
   @ColumnInfo(name = "launch_asset_id")
   public Long launchAssetId = null;
 
-  public JSONObject metadata = null;
-
-  public RawManifest getRawManifest() {
-    return ManifestFactory.INSTANCE.getRawManifestFromJson(this.metadata);
-  }
+  @ColumnInfo(name = "manifest")
+  public JSONObject manifest = null;
 
   @NonNull
   public UpdateStatus status = UpdateStatus.PENDING;
@@ -58,10 +55,15 @@ public class UpdateEntity {
   @NonNull
   public boolean keep = false;
 
+  @ColumnInfo(name = "last_accessed")
+  @NonNull
+  public Date lastAccessed;
+
   public UpdateEntity(UUID id, Date commitTime, String runtimeVersion, String scopeKey) {
     this.id = id;
     this.commitTime = commitTime;
     this.runtimeVersion = runtimeVersion;
     this.scopeKey = scopeKey;
+    this.lastAccessed = new Date();
   }
 }

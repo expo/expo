@@ -1,2 +1,2 @@
-declare const _default: import("react").ComponentType<any>;
+declare const _default;
 export default _default;

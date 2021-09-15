@@ -7,7 +7,7 @@ When developing an Expo or React Native app, it's not uncommon to run into an er
 ```
 React Native version mismatch.
 
-Javascript version: X.XX.X
+JavaScript version: X.XX.X
 Native version: X.XX.X
 
 Make sure you have rebuilt the native code...
@@ -15,11 +15,11 @@ Make sure you have rebuilt the native code...
 
 ## What this error means
 
-The packager that you're running in your terminal (either with `expo start` or `react-native start`) is using a different version of `react-native` than the app on your device or emulator. This can happen after upgrading your React Native or Expo SDK version, _or_ when connecting to the wrong local packager instance.
+The bundler that you're running in your terminal (via `expo start`) is using a different JavaScript version of `react-native` than the native app on your device or emulator. This can happen after upgrading your React Native or Expo SDK version, _or_ when connecting to the wrong local development server.
 
 ## How to fix it
 
-- Close out any packagers you have running (you can list all terminal processes with the `ps` command, and search for Expo CLI or React Native CLI processes with `ps -A | grep "expo\|react-native"`).
+- Close out any development servers that you have running (you can list all terminal processes with the `ps` command, and search for Expo CLI or React Native community CLI processes with `ps -A | grep "expo\|react-native"`).
 
 - If this is a managed workflow project, either remove the `sdkVersion` field from your `app.json` file, or make sure it matches the value of the `expo` dependency in your `package.json` file.
 
@@ -29,6 +29,6 @@ The packager that you're running in your terminal (either with `expo start` or `
 
 - Finally:
   - Clear your bundler caches by running `rm -rf node_modules && npm cache clean --force && npm install && watchman watch-del-all && rm -rf $TMPDIR/haste-map-* && rm -rf $TMPDIR/metro-cache && expo start --clear`
-     - Commands if you are using npm can be found [here.](clear-cache-macos-linux)
-     - Commands if you are using Windows can be found [here.](clear-cache-windows)
+    - Commands if you are using npm can be found [here.](clear-cache-macos-linux)
+    - Commands if you are using Windows can be found [here.](clear-cache-windows)
   - If this is a bare workflow project, run `npx pod-install`, then rebuild your native projects (run `yarn android` to rebuild for Android, and `yarn ios` to rebuild iOS)

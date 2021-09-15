@@ -145,7 +145,7 @@ export default (program: Command) => {
     .command('update-project-templates')
     .alias('update-templates', 'upt')
     .description(
-      'Updates dependencies of project templates to the versions that are defined in `bundledNativeModules.json` file.'
+      'Updates dependencies of project templates to the versions that are defined in bundledNativeModules.json file.'
     )
     .option(
       '-s, --sdkVersion [string]',

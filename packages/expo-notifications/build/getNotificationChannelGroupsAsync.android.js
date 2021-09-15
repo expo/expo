@@ -1,4 +1,4 @@
-import { UnavailabilityError } from '@unimodules/core';
+import { UnavailabilityError } from 'expo-modules-core';
 import NotificationChannelGroupManager from './NotificationChannelGroupManager';
 export default async function getNotificationChannelGroupsAsync() {
     if (!NotificationChannelGroupManager.getNotificationChannelGroupsAsync) {

@@ -1,11 +1,5 @@
 // Copyright © 2018 650 Industries. All rights reserved.
 
-#import <Foundation/Foundation.h>
-#import <UMCore/UMDefines.h>
-#import <UMCore/UMExportedModule.h>
+#import <ExpoModulesCore/EXEventEmitterService.h>
 
-@protocol UMEventEmitterService
-
-- (void)sendEventWithName:(NSString *)name body:(id)body;
-
-@end
+#define UMEventEmitterService EXEventEmitterService

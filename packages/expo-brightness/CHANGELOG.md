@@ -4,11 +4,29 @@
 
 ### 🛠 Breaking changes
 
+- Dropped support for iOS 11.0 ([#14383](https://github.com/expo/expo/pull/14383) by [@cruzach](https://github.com/cruzach))
+
 ### 🎉 New features
+
+- Add `Brightness.usePermissions` hook from modules factory. ([#13853](https://github.com/expo/expo/pull/13853) by [@bycedric](https://github.com/bycedric))
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+- Rewrite android code to Kotlin. ([#13993](https://github.com/expo/expo/pull/13993) by [@kkafar](https://github.com/kkafar))
+- Migrated from `@unimodules/core` to `expo-modules-core`. ([#13757](https://github.com/expo/expo/pull/13757) by [@tsapeta](https://github.com/tsapeta))
+- Export missing `PermissionExpiration` type. ([#14120](https://github.com/expo/expo/pull/14120) by [@simek](https://github.com/simek))
+
+## 9.2.0 — 2021-06-16
 
 ### 🐛 Bug fixes
 
 - Enable kotlin in all modules. ([#12716](https://github.com/expo/expo/pull/12716) by [@wschurman](https://github.com/wschurman))
+
+### 💡 Others
+
+- Migrated from `unimodules-permissions-interface` to `expo-modules-core`. ([#12961](https://github.com/expo/expo/pull/12961) by [@tsapeta](https://github.com/tsapeta))
 
 ## 9.1.2 — 2021-04-13
 

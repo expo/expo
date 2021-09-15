@@ -1,4 +1,5 @@
-import { css } from '@emotion/core';
+import { css } from '@emotion/react';
+import { SerializedStyles } from '@emotion/serialize';
 import { theme } from '@expo/styleguide';
 import * as React from 'react';
 
@@ -19,8 +20,17 @@ const STYLES_UNORDERED_LIST = css`
   }
 `;
 
-export const UL: React.FC = ({ children }) => (
-  <ul {...attributes} css={STYLES_UNORDERED_LIST}>
+const STYLES_NO_LIST_STYLE = css`
+  list-style: none;
+  margin-left: 0;
+`;
+
+type ULProps = {
+  hideBullets?: boolean;
+};
+
+export const UL: React.FC<ULProps> = ({ children, hideBullets }) => (
+  <ul {...attributes} css={[STYLES_UNORDERED_LIST, hideBullets && STYLES_NO_LIST_STYLE]}>
     {children}
   </ul>
 );
@@ -65,11 +75,14 @@ const STYLE_RETURN_LIST = css`
 
 type LIProps = {
   returnType?: boolean;
+  customCss?: SerializedStyles | undefined;
 };
 
-export const LI: React.FC<LIProps> = ({ children, returnType }) => {
+export const LI: React.FC<LIProps> = ({ children, returnType, customCss }) => {
   return (
-    <li css={[STYLES_LIST_ITEM, returnType && STYLE_RETURN_LIST]} className="docs-list-item">
+    <li
+      css={[STYLES_LIST_ITEM, returnType && STYLE_RETURN_LIST, customCss]}
+      className="docs-list-item">
       {children}
     </li>
   );

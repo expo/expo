@@ -1,7 +1,7 @@
 // Copyright 2021-present 650 Industries. All rights reserved.
 
-#import <UMPermissionsInterface/UMPermissionsInterface.h>
+#import <ExpoModulesCore/EXPermissionsInterface.h>
 
-@interface EXMotionPermissionRequester : NSObject<UMPermissionsRequester>
+@interface EXMotionPermissionRequester : NSObject<EXPermissionsRequester>
 
 @end

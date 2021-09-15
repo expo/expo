@@ -1,6 +1,6 @@
 package expo.modules.camera.tasks;
 
-import org.unimodules.interfaces.facedetector.FaceDetector;
+import expo.modules.interfaces.facedetector.FaceDetectorInterface;
 
 public class FaceDetectorTask {
 
@@ -11,12 +11,12 @@ public class FaceDetectorTask {
   private boolean mMirrored;
   private double mScaleX;
   private double mScaleY;
-  private FaceDetector mFaceDetector;
+  private FaceDetectorInterface mFaceDetector;
   private FaceDetectorAsyncTaskDelegate mDelegate;
 
   public FaceDetectorTask(
       FaceDetectorAsyncTaskDelegate delegate,
-      FaceDetector faceDetector,
+      FaceDetectorInterface faceDetector,
       byte[] imageData,
       int width,
       int height,

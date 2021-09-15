@@ -100,7 +100,7 @@ You are free to use any native Firebase packages such as [react-native-firebase]
   ```groovy
   apply plugin: 'com.google.gms.google-services'
   ```
-- Finally rebuild your native Android app: `yarn react-native run-android`
+- Finally rebuild your native Android app: `expo run:android`
 
 ### iOS
 
@@ -121,7 +121,7 @@ You are free to use any native Firebase packages such as [react-native-firebase]
   - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
       [FIRApp configure];
   ```
-- Rebuild your iOS project to see the changes: `yarn react-native run-ios`
+- Rebuild your iOS project to see the changes: `expo run:ios`
 
 ### Usage with react-native-firebase
 
@@ -132,8 +132,8 @@ After following the iOS and Android setup, you can optionally configure your pro
 
 ```rb
   # At the top of the file
-  require_relative '../node_modules/@react-native-community/cli-platform-ios/native_modules'
-  require_relative '../node_modules/react-native-unimodules/cocoapods'
+  require File.join(File.dirname(`node --print "require.resolve('@react-native-community/cli-platform-ios/package.json')"`), "native_modules")
+  require File.join(File.dirname(`node --print "require.resolve('react-native-unimodules/package.json')"`), "cocoapods.rb")
 
   # ...
 

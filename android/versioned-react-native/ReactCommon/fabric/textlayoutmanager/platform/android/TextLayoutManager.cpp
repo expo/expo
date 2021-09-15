@@ -53,7 +53,7 @@ TextMeasurement TextLayoutManager::doMeasure(
   auto attachmentPositions = env->NewIntArray(attachmentsCount * 2);
 
   static auto measure =
-      jni::findClassStatic("abi41_0_0/com/facebook/react/fabric/FabricUIManager")
+      jni::findClassStatic("abi42_0_0/com/facebook/react/fabric/FabricUIManager")
           ->getMethod<jlong(
               jint,
               jstring,

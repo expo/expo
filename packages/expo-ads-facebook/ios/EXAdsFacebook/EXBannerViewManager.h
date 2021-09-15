@@ -1,5 +1,5 @@
-#import <UMCore/UMViewManager.h>
+#import <ExpoModulesCore/EXViewManager.h>
 
-@interface EXBannerViewManager : UMViewManager
+@interface EXBannerViewManager : EXViewManager
 
 @end

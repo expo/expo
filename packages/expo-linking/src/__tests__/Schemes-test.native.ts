@@ -5,40 +5,40 @@ import { collectManifestSchemes, resolveScheme } from '../Schemes';
 
 describe(collectManifestSchemes, () => {
   const consoleWarn = console.warn;
-  const manifest = Constants.manifest;
+  const manifest = Constants.__rawManifest_TEST;
   const executionEnvironment = Constants.executionEnvironment;
 
   afterEach(() => {
     console.warn = consoleWarn;
     Constants.executionEnvironment = executionEnvironment;
-    Constants.manifest = manifest;
+    Constants.__rawManifest_TEST = manifest;
   });
 
   beforeEach(() => {
     console.warn = jest.fn();
     Constants.executionEnvironment = ExecutionEnvironment.StoreClient;
-    Constants.manifest = {
+    Constants.__rawManifest_TEST = {
       ...manifest,
       scheme: 'demo',
     };
   });
 
   it(`collects none`, () => {
-    Constants.manifest = {
+    Constants.__rawManifest_TEST = {
       ...manifest,
       scheme: undefined,
     };
     expect(collectManifestSchemes()).toStrictEqual([]);
   });
   it(`collects default`, () => {
-    Constants.manifest = {
+    Constants.__rawManifest_TEST = {
       ...manifest,
       scheme: 'demo',
     };
     expect(collectManifestSchemes()).toStrictEqual(['demo']);
   });
   it(`collects all`, () => {
-    Constants.manifest = {
+    Constants.__rawManifest_TEST = {
       ...manifest,
       // @ts-ignore An array of strings is a secret feature until we drop turtle v1
       scheme: ['scheme.1', 'scheme.2'],
@@ -68,28 +68,28 @@ describe(collectManifestSchemes, () => {
 
 describe(resolveScheme, () => {
   const consoleWarn = console.warn;
-  const manifest = Constants.manifest;
+  const manifest = Constants.__rawManifest_TEST;
   const executionEnvironment = Constants.executionEnvironment;
 
   afterEach(() => {
     console.warn = consoleWarn;
     Constants.executionEnvironment = executionEnvironment;
-    Constants.manifest = manifest;
+    Constants.__rawManifest_TEST = manifest;
   });
 
   beforeEach(() => {
     console.warn = jest.fn();
     Constants.executionEnvironment = ExecutionEnvironment.StoreClient;
-    Constants.manifest = {
-      ...Constants.manifest,
+    Constants.__rawManifest_TEST = {
+      ...Constants.__rawManifest_TEST,
       scheme: 'demo',
     };
   });
 
   it(`collects default in client`, () => {
     Constants.executionEnvironment = ExecutionEnvironment.StoreClient;
-    Constants.manifest = {
-      ...Constants.manifest,
+    Constants.__rawManifest_TEST = {
+      ...Constants.__rawManifest_TEST,
       scheme: undefined,
     };
     expect(resolveScheme({})).toStrictEqual('exp');
@@ -98,8 +98,8 @@ describe(resolveScheme, () => {
 
   it(`allows for compliant alternative in client`, () => {
     Constants.executionEnvironment = ExecutionEnvironment.StoreClient;
-    Constants.manifest = {
-      ...Constants.manifest,
+    Constants.__rawManifest_TEST = {
+      ...Constants.__rawManifest_TEST,
       scheme: 'unused',
     };
     expect(resolveScheme({ scheme: 'exps' })).toStrictEqual('exps');
@@ -107,8 +107,8 @@ describe(resolveScheme, () => {
 
   it(`silently rejects non-compliant alternative in client`, () => {
     Constants.executionEnvironment = ExecutionEnvironment.StoreClient;
-    Constants.manifest = {
-      ...Constants.manifest,
+    Constants.__rawManifest_TEST = {
+      ...Constants.__rawManifest_TEST,
       scheme: 'unused',
     };
     expect(resolveScheme({ scheme: 'foobar' })).toStrictEqual('exp');
@@ -118,24 +118,24 @@ describe(resolveScheme, () => {
 
   it(`uses property over manifest in bare`, () => {
     Constants.executionEnvironment = ExecutionEnvironment.Bare;
-    Constants.manifest = {
-      ...Constants.manifest,
+    Constants.__rawManifest_TEST = {
+      ...Constants.__rawManifest_TEST,
       scheme: 'unused',
     };
     expect(resolveScheme({ scheme: 'foobar' })).toStrictEqual('foobar');
   });
   it(`uses manifest when property is missing in bare`, () => {
     Constants.executionEnvironment = ExecutionEnvironment.Bare;
-    Constants.manifest = {
-      ...Constants.manifest,
+    Constants.__rawManifest_TEST = {
+      ...Constants.__rawManifest_TEST,
       scheme: 'foobar',
     };
     expect(resolveScheme({})).toStrictEqual('foobar');
   });
   it(`warns when multiple schemes are defined in bare`, () => {
     Constants.executionEnvironment = ExecutionEnvironment.Bare;
-    Constants.manifest = {
-      ...Constants.manifest,
+    Constants.__rawManifest_TEST = {
+      ...Constants.__rawManifest_TEST,
       // @ts-ignore An array of strings is a secret feature until we drop turtle v1
       scheme: ['foobar', 'beta'],
     };
@@ -144,8 +144,8 @@ describe(resolveScheme, () => {
   });
   it(`warns no scheme is defined in but the app id is in bare`, () => {
     Constants.executionEnvironment = ExecutionEnvironment.Bare;
-    Constants.manifest = {
-      ...Constants.manifest,
+    Constants.__rawManifest_TEST = {
+      ...Constants.__rawManifest_TEST,
       scheme: undefined,
       ios: { bundleIdentifier: 'bundleIdentifier' },
       android: { package: 'package' },
@@ -160,8 +160,8 @@ describe(resolveScheme, () => {
   });
   it(`throws when no scheme is provided in bare`, () => {
     Constants.executionEnvironment = ExecutionEnvironment.Bare;
-    Constants.manifest = {
-      ...Constants.manifest,
+    Constants.__rawManifest_TEST = {
+      ...Constants.__rawManifest_TEST,
       scheme: undefined,
     };
 
@@ -170,7 +170,7 @@ describe(resolveScheme, () => {
   it(`throws when no manifest is linked in bare`, () => {
     Constants.executionEnvironment = ExecutionEnvironment.Bare;
     // @ts-ignore: invalid manifest for test
-    Constants.manifest = {};
+    Constants.__rawManifest_TEST = {};
     expect(() => resolveScheme({})).toThrow('expo-constants manifest');
   });
 });

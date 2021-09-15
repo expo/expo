@@ -10,6 +10,10 @@ typedef NS_ENUM(NSInteger, EXUpdatesCheckAutomaticallyConfig) {
   EXUpdatesCheckAutomaticallyConfigNever = 2
 };
 
+FOUNDATION_EXPORT NSString * const EXUpdatesConfigPlistName;
+FOUNDATION_EXPORT NSString * const EXUpdatesConfigEnableAutoSetupKey;
+
+
 @interface EXUpdatesConfig : NSObject
 
 @property (nonatomic, readonly) BOOL isEnabled;
@@ -27,6 +31,7 @@ typedef NS_ENUM(NSInteger, EXUpdatesCheckAutomaticallyConfig) {
 
 @property (nonatomic, readonly) BOOL hasEmbeddedUpdate;
 
++ (instancetype)configWithExpoPlist;
 + (instancetype)configWithDictionary:(NSDictionary *)config;
 - (void)loadConfigFromDictionary:(NSDictionary *)config;
 

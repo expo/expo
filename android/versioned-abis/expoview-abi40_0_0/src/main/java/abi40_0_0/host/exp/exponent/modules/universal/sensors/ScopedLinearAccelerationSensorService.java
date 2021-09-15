@@ -5,12 +5,12 @@ import java.util.List;
 
 import abi40_0_0.org.unimodules.core.interfaces.InternalModule;
 import abi40_0_0.org.unimodules.interfaces.sensors.services.LinearAccelerationSensorService;
-import host.exp.exponent.kernel.ExperienceId;
+import host.exp.exponent.kernel.ExperienceKey;
 import host.exp.exponent.kernel.services.sensors.SubscribableSensorKernelService;
 
 public class ScopedLinearAccelerationSensorService extends BaseSensorService implements InternalModule, LinearAccelerationSensorService {
-  public ScopedLinearAccelerationSensorService(ExperienceId experienceId) {
-    super(experienceId);
+  public ScopedLinearAccelerationSensorService(ExperienceKey experienceKey) {
+    super(experienceKey);
   }
 
   @Override

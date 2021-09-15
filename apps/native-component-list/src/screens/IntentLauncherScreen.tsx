@@ -1,4 +1,4 @@
-import * as IntentLauncher from 'expo-intent-launcher';
+import { startActivityAsync, ActivityAction } from 'expo-intent-launcher';
 import React from 'react';
 import { Platform, ScrollView, Text, ToastAndroid, View } from 'react-native';
 
@@ -9,13 +9,13 @@ export default class IntentLauncherScreen extends React.Component {
     title: 'IntentLauncher',
   };
 
-  renderSettingsLink(title: string, activityAction: string, intentParams = {}) {
+  renderSettingsLink(title: string, activityAction: ActivityAction, intentParams = {}) {
     return (
       <View>
         <Button
           onPress={async () => {
             try {
-              const result = await IntentLauncher.startActivityAsync(activityAction, intentParams);
+              const result = await startActivityAsync(activityAction, intentParams);
               ToastAndroid.show(`Activity finished: ${JSON.stringify(result)}`, ToastAndroid.SHORT);
             } catch (e) {
               ToastAndroid.show(`An error occurred: ${e.message}`, ToastAndroid.SHORT);
@@ -39,16 +39,13 @@ export default class IntentLauncherScreen extends React.Component {
 
     return (
       <ScrollView style={{ padding: 10 }}>
-        {this.renderSettingsLink(
-          'Location Settings',
-          IntentLauncher.ACTION_LOCATION_SOURCE_SETTINGS
-        )}
+        {this.renderSettingsLink('Location Settings', ActivityAction.LOCATION_SOURCE_SETTINGS)}
 
-        {this.renderSettingsLink('Wireless Settings', IntentLauncher.ACTION_WIRELESS_SETTINGS)}
+        {this.renderSettingsLink('Wireless Settings', ActivityAction.WIRELESS_SETTINGS)}
 
         {this.renderSettingsLink(
           'Application Details for Expo Go',
-          IntentLauncher.ACTION_APPLICATION_DETAILS_SETTINGS,
+          ActivityAction.APPLICATION_DETAILS_SETTINGS,
           {
             data: 'package:host.exp.exponent',
           }
@@ -56,7 +53,7 @@ export default class IntentLauncherScreen extends React.Component {
 
         {this.renderSettingsLink(
           'Application Details for Play Store',
-          IntentLauncher.ACTION_APPLICATION_DETAILS_SETTINGS,
+          ActivityAction.APPLICATION_DETAILS_SETTINGS,
           {
             data: 'package:com.android.vending',
           }
@@ -64,7 +61,7 @@ export default class IntentLauncherScreen extends React.Component {
 
         {this.renderSettingsLink(
           'Application Details for not existing package',
-          IntentLauncher.ACTION_APPLICATION_DETAILS_SETTINGS,
+          ActivityAction.APPLICATION_DETAILS_SETTINGS,
           {
             data: 'package:package.name.that.doesnt.exist',
           }

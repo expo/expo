@@ -9,11 +9,11 @@ import expo.modules.devmenu.modules.DevMenuManagerProvider
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
-class DevMenuInternalMenuControllerModule(private val reactContext: ReactContext)
-  : DevMenuInternalMenuControllerModuleInterface {
+class DevMenuInternalMenuControllerModule(private val reactContext: ReactContext) :
+  DevMenuInternalMenuControllerModuleInterface {
   private val devMenuManger by lazy {
     reactContext
-      .getNativeModule(DevMenuManagerProvider::class.java)
+      .getNativeModule(DevMenuManagerProvider::class.java)!!
       .getDevMenuManager()
   }
 

@@ -32,7 +32,7 @@ buildscript {
 }
 
 plugins {
-  id "com.diffplug.spotless" version "5.12.1"
+  id "com.diffplug.spotless" version "5.14.1"
 }
 
 allprojects {
@@ -43,13 +43,13 @@ allprojects {
     }
     // For old expoviews to work
     maven {
+      url "$rootDir/versioned-abis/expoview-abi42_0_0/maven"
+    }
+    maven {
       url "$rootDir/versioned-abis/expoview-abi41_0_0/maven"
     }
     maven {
       url "$rootDir/versioned-abis/expoview-abi40_0_0/maven"
-    }
-    maven {
-      url "$rootDir/versioned-abis/expoview-abi39_0_0/maven"
     }
     maven {
       url "$rootDir/versioned-abis/maven"
@@ -114,10 +114,15 @@ subprojects {
     }
     kotlin {
       target '**/*.kt'
-      ktlint().userData([
-          "disabled_rules"          : "no-wildcard-imports,import-ordering",
-          "indent_size"             : "2",
-          "continuation_indent_size": "4"
+      ktlint("0.41.0").userData([
+        "disabled_rules"           : "no-wildcard-imports,import-ordering",
+        "charset"                  : "utf-8",
+        "end_of_line"              : "lf",
+        "indent_size"              : "2",
+        "indent_style"             : "space",
+        "insert_final_newline"     : "true",
+        "tab_width"                : "2",
+        "trim_trailing_whitespace" : "true"
       ])
       trimTrailingWhitespace()
       indentWithSpaces()

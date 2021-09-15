@@ -1,5 +1,4 @@
-import { Subscription } from '@unimodules/core';
-import { PermissionExpiration, PermissionResponse, PermissionStatus } from 'unimodules-permissions-interface';
+import { PermissionExpiration, PermissionResponse, PermissionStatus, Subscription } from 'expo-modules-core';
 export declare type PedometerResult = {
     /**
      * Number of steps taken between the given dates.

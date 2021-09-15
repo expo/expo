@@ -1,5 +1,12 @@
-import { EventEmitter, Subscription, Platform } from '@unimodules/core';
-import { PermissionResponse, PermissionStatus } from 'unimodules-permissions-interface';
+import {
+  PermissionResponse,
+  PermissionStatus,
+  PermissionHookOptions,
+  createPermissionHook,
+  EventEmitter,
+  Subscription,
+  Platform,
+} from 'expo-modules-core';
 
 import {
   _DEFAULT_PROGRESS_UPDATE_INTERVAL_MILLIS,
@@ -34,6 +41,10 @@ export type RecordingOptions = {
     linearPCMBitDepth?: number;
     linearPCMIsBigEndian?: boolean;
     linearPCMIsFloat?: boolean;
+  };
+  web: {
+    mimeType?: string;
+    bitsPerSecond?: number;
   };
 };
 
@@ -115,7 +126,8 @@ export const RECORDING_OPTIONS_PRESET_HIGH_QUALITY: RecordingOptions = {
     bitRate: 128000,
   },
   ios: {
-    extension: '.caf',
+    extension: '.m4a',
+    outputFormat: RECORDING_OPTION_IOS_OUTPUT_FORMAT_MPEG4AAC,
     audioQuality: RECORDING_OPTION_IOS_AUDIO_QUALITY_MAX,
     sampleRate: 44100,
     numberOfChannels: 2,
@@ -123,6 +135,10 @@ export const RECORDING_OPTIONS_PRESET_HIGH_QUALITY: RecordingOptions = {
     linearPCMBitDepth: 16,
     linearPCMIsBigEndian: false,
     linearPCMIsFloat: false,
+  },
+  web: {
+    mimeType: 'audio/webm',
+    bitsPerSecond: 128000,
   },
 };
 
@@ -146,6 +162,10 @@ export const RECORDING_OPTIONS_PRESET_LOW_QUALITY: RecordingOptions = {
     linearPCMIsBigEndian: false,
     linearPCMIsFloat: false,
   },
+  web: {
+    mimeType: 'audio/webm',
+    bitsPerSecond: 128000,
+  },
 };
 
 // TODO: For consistency with PlaybackStatus, should we include progressUpdateIntervalMillis here as
@@ -156,9 +176,10 @@ export type RecordingStatus = {
   isDoneRecording: boolean;
   durationMillis: number;
   metering?: number;
+  uri?: string | null;
 };
 
-export { PermissionResponse, PermissionStatus };
+export { PermissionResponse, PermissionStatus, PermissionHookOptions };
 
 let _recorderExists: boolean = false;
 const eventEmitter = Platform.OS === 'android' ? new EventEmitter(ExponentAV) : null;
@@ -170,6 +191,20 @@ export async function getPermissionsAsync(): Promise<PermissionResponse> {
 export async function requestPermissionsAsync(): Promise<PermissionResponse> {
   return ExponentAV.requestPermissionsAsync();
 }
+
+/**
+ * Check or request permissions to record audio.
+ * This uses both `requestPermissionAsync` and `getPermissionsAsync` to interact with the permissions.
+ *
+ * @example
+ * ```ts
+ * const [status, requestPermission] = Audio.usePermissions();
+ * ```
+ */
+export const usePermissions = createPermissionHook({
+  getMethod: getPermissionsAsync,
+  requestMethod: requestPermissionsAsync,
+});
 
 export class Recording {
   _subscription: Subscription | null = null;
@@ -344,7 +379,7 @@ export class Recording {
         uri,
         status,
       }: {
-        uri: string;
+        uri: string | null;
         // status is of type RecordingStatus, but without the canRecord field populated
         status: Pick<RecordingStatus, Exclude<keyof RecordingStatus, 'canRecord'>>;
       } = await ExponentAV.prepareAudioRecorder(options);
@@ -386,6 +421,11 @@ export class Recording {
       stopResult = await ExponentAV.stopAudioRecording();
     } catch (err) {
       stopError = err;
+    }
+
+    // Web has to return the URI at the end of recording, so needs a little destructuring
+    if (Platform.OS === 'web' && stopResult?.uri !== undefined) {
+      this._uri = stopResult.uri;
     }
 
     // Clean-up and return status

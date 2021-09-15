@@ -2,19 +2,21 @@ package expo.modules.facedetector;
 
 import android.content.Context;
 
-import org.unimodules.core.interfaces.InternalModule;
-import org.unimodules.interfaces.facedetector.FaceDetector;
+import expo.modules.core.interfaces.InternalModule;
 
 import java.util.Collections;
 import java.util.List;
 
-public class ExpoFaceDetectorProvider implements org.unimodules.interfaces.facedetector.FaceDetectorProvider, InternalModule {
+import expo.modules.interfaces.facedetector.FaceDetectorInterface;
+import expo.modules.interfaces.facedetector.FaceDetectorProviderInterface;
+
+public class ExpoFaceDetectorProvider implements FaceDetectorProviderInterface, InternalModule {
   @Override
   public List<Class> getExportedInterfaces() {
-    return Collections.singletonList((Class) org.unimodules.interfaces.facedetector.FaceDetectorProvider.class);
+    return Collections.singletonList(FaceDetectorProviderInterface.class);
   }
 
-  public FaceDetector createFaceDetectorWithContext(Context context) {
+  public FaceDetectorInterface createFaceDetectorWithContext(Context context) {
     return new ExpoFaceDetector(context);
   }
 }

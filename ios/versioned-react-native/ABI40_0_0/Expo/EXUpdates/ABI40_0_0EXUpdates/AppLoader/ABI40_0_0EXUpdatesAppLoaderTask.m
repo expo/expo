@@ -16,14 +16,14 @@ static NSString * const ABI40_0_0EXUpdatesAppLoaderTaskErrorDomain = @"ABI40_0_0
 @property (nonatomic, strong) ABI40_0_0EXUpdatesConfig *config;
 @property (nonatomic, strong) ABI40_0_0EXUpdatesDatabase *database;
 @property (nonatomic, strong) NSURL *directory;
-@property (nonatomic, strong) id<ABI40_0_0EXUpdatesSelectionPolicy> selectionPolicy;
+@property (nonatomic, strong) ABI40_0_0EXUpdatesSelectionPolicy * selectionPolicy;
 @property (nonatomic, strong) dispatch_queue_t delegateQueue;
 
-@property (nonatomic, strong) id<ABI40_0_0EXUpdatesAppLauncher> launcher;
+@property (nonatomic, strong) id<ABI40_0_0EXUpdatesAppLauncher> candidateLauncher;
+@property (nonatomic, strong) id<ABI40_0_0EXUpdatesAppLauncher> finalizedLauncher;
 @property (nonatomic, strong) ABI40_0_0EXUpdatesEmbeddedAppLoader *embeddedAppLoader;
 @property (nonatomic, strong) ABI40_0_0EXUpdatesRemoteAppLoader *remoteAppLoader;
 
-@property (nonatomic, strong) id<ABI40_0_0EXUpdatesAppLauncher> candidateLauncher;
 @property (nonatomic, strong) NSTimer *timer;
 @property (nonatomic, assign) BOOL isReadyToLaunch;
 @property (nonatomic, assign) BOOL isTimerFinished;
@@ -39,7 +39,7 @@ static NSString * const ABI40_0_0EXUpdatesAppLoaderTaskErrorDomain = @"ABI40_0_0
 - (instancetype)initWithConfig:(ABI40_0_0EXUpdatesConfig *)config
                       database:(ABI40_0_0EXUpdatesDatabase *)database
                      directory:(NSURL *)directory
-               selectionPolicy:(id<ABI40_0_0EXUpdatesSelectionPolicy>)selectionPolicy
+               selectionPolicy:(ABI40_0_0EXUpdatesSelectionPolicy *)selectionPolicy
                  delegateQueue:(dispatch_queue_t)delegateQueue
 {
   if (self = [super init]) {
@@ -105,9 +105,9 @@ static NSString * const ABI40_0_0EXUpdatesAppLoaderTaskErrorDomain = @"ABI40_0_0
         NSLog(@"Failed to launch embedded or launchable update: %@", error.localizedDescription);
       } else {
         if (self->_delegate &&
-            ![self->_delegate appLoaderTask:self didLoadCachedUpdate:self->_launcher.launchedUpdate]) {
+            ![self->_delegate appLoaderTask:self didLoadCachedUpdate:self->_candidateLauncher.launchedUpdate]) {
           // ignore timer and other settings and force launch a remote update.
-          self->_launcher = nil;
+          self->_candidateLauncher = nil;
           [self _stopTimer];
           shouldCheckForUpdate = YES;
         } else {
@@ -136,11 +136,12 @@ static NSString * const ABI40_0_0EXUpdatesAppLoaderTaskErrorDomain = @"ABI40_0_0
     return;
   }
   _hasLaunched = YES;
+  _finalizedLauncher = _candidateLauncher;
 
   if (_delegate) {
     dispatch_async(_delegateQueue, ^{
-      if (self->_isReadyToLaunch && (self->_launcher.launchAssetUrl || self->_launcher.launchedUpdate.status == ABI40_0_0EXUpdatesUpdateStatusDevelopment)) {
-        [self->_delegate appLoaderTask:self didFinishWithLauncher:self->_launcher isUpToDate:self->_isUpToDate];
+      if (self->_isReadyToLaunch && (self->_finalizedLauncher.launchAssetUrl || self->_finalizedLauncher.launchedUpdate.status == ABI40_0_0EXUpdatesUpdateStatusDevelopment)) {
+        [self->_delegate appLoaderTask:self didFinishWithLauncher:self->_finalizedLauncher isUpToDate:self->_isUpToDate];
       } else {
         [self->_delegate appLoaderTask:self didFinishWithError:error ?: [NSError errorWithDomain:ABI40_0_0EXUpdatesAppLoaderTaskErrorDomain code:1031 userInfo:@{
           NSLocalizedDescriptionKey: @"ABI40_0_0EXUpdatesAppLoaderTask encountered an unexpected error and could not launch an update."
@@ -180,41 +181,53 @@ static NSString * const ABI40_0_0EXUpdatesAppLoaderTaskErrorDomain = @"ABI40_0_0
 
 - (void)_runReaper
 {
-  if (_launcher.launchedUpdate) {
+  if (_finalizedLauncher.launchedUpdate) {
     [ABI40_0_0EXUpdatesReaper reapUnusedUpdatesWithConfig:_config
                                         database:_database
                                        directory:_directory
                                  selectionPolicy:_selectionPolicy
-                                  launchedUpdate:_launcher.launchedUpdate];
+                                  launchedUpdate:_finalizedLauncher.launchedUpdate];
   }
 }
 
 - (void)_loadEmbeddedUpdateWithCompletion:(void (^)(void))completion
 {
   [ABI40_0_0EXUpdatesAppLauncherWithDatabase launchableUpdateWithConfig:_config database:_database selectionPolicy:_selectionPolicy completion:^(NSError * _Nullable error, ABI40_0_0EXUpdatesUpdate * _Nullable launchableUpdate) {
-    if (self->_config.hasEmbeddedUpdate &&
-        [self->_selectionPolicy shouldLoadNewUpdate:[ABI40_0_0EXUpdatesEmbeddedAppLoader embeddedManifestWithConfig:self->_config database:self->_database]
-                                 withLaunchedUpdate:launchableUpdate
-                                            filters:nil]) {
-      self->_embeddedAppLoader = [[ABI40_0_0EXUpdatesEmbeddedAppLoader alloc] initWithConfig:self->_config database:self->_database directory:self->_directory completionQueue:self->_loaderTaskQueue];
-      [self->_embeddedAppLoader loadUpdateFromEmbeddedManifestWithCallback:^BOOL(ABI40_0_0EXUpdatesUpdate * _Nonnull update) {
-        // we already checked using selection policy, so we don't need to check again
-        return YES;
-      } success:^(ABI40_0_0EXUpdatesUpdate * _Nullable update) {
-        completion();
-      } error:^(NSError * _Nonnull error) {
-        completion();
-      }];
-    } else {
-      completion();
-    }
+    dispatch_async(self->_database.databaseQueue, ^{
+      NSError *manifestFiltersError;
+      NSDictionary *manifestFilters = [self->_database manifestFiltersWithScopeKey:self->_config.scopeKey error:&manifestFiltersError];
+      dispatch_async(self->_loaderTaskQueue, ^{
+        if (manifestFiltersError) {
+          completion();
+          return;
+        }
+        if (self->_config.hasEmbeddedUpdate &&
+            [self->_selectionPolicy shouldLoadNewUpdate:[ABI40_0_0EXUpdatesEmbeddedAppLoader embeddedManifestWithConfig:self->_config database:self->_database]
+                                     withLaunchedUpdate:launchableUpdate
+                                                filters:manifestFilters]) {
+          self->_embeddedAppLoader = [[ABI40_0_0EXUpdatesEmbeddedAppLoader alloc] initWithConfig:self->_config database:self->_database directory:self->_directory completionQueue:self->_loaderTaskQueue];
+          [self->_embeddedAppLoader loadUpdateFromEmbeddedManifestWithCallback:^BOOL(ABI40_0_0EXUpdatesUpdate * _Nonnull update) {
+            // we already checked using selection policy, so we don't need to check again
+            return YES;
+          } onAsset:^(ABI40_0_0EXUpdatesAsset *asset, NSUInteger successfulAssetCount, NSUInteger failedAssetCount, NSUInteger totalAssetCount) {
+            // do nothing for now
+          } success:^(ABI40_0_0EXUpdatesUpdate * _Nullable update) {
+            completion();
+          } error:^(NSError * _Nonnull error) {
+            completion();
+          }];
+        } else {
+          completion();
+        }
+      });
+    });
   } completionQueue:_loaderTaskQueue];
 }
 
 - (void)_launchWithCompletion:(void (^)(NSError * _Nullable error, BOOL success))completion
 {
   ABI40_0_0EXUpdatesAppLauncherWithDatabase *launcher = [[ABI40_0_0EXUpdatesAppLauncherWithDatabase alloc] initWithConfig:_config database:_database directory:_directory completionQueue:_loaderTaskQueue];
-  _launcher = launcher;
+  _candidateLauncher = launcher;
   [launcher launchUpdateWithSelectionPolicy:_selectionPolicy completion:completion];
 }
 
@@ -222,7 +235,7 @@ static NSString * const ABI40_0_0EXUpdatesAppLoaderTaskErrorDomain = @"ABI40_0_0
 {
   _remoteAppLoader = [[ABI40_0_0EXUpdatesRemoteAppLoader alloc] initWithConfig:_config database:_database directory:_directory completionQueue:_loaderTaskQueue];
   [_remoteAppLoader loadUpdateFromUrl:_config.updateUrl onManifest:^BOOL(ABI40_0_0EXUpdatesUpdate * _Nonnull update) {
-    if ([self->_selectionPolicy shouldLoadNewUpdate:update withLaunchedUpdate:self->_launcher.launchedUpdate filters:nil]) {
+    if ([self->_selectionPolicy shouldLoadNewUpdate:update withLaunchedUpdate:self->_candidateLauncher.launchedUpdate filters:update.manifestFilters]) {
       self->_isUpToDate = NO;
       if (self->_delegate) {
         dispatch_async(self->_delegateQueue, ^{
@@ -234,6 +247,8 @@ static NSString * const ABI40_0_0EXUpdatesAppLoaderTaskErrorDomain = @"ABI40_0_0
       self->_isUpToDate = YES;
       return NO;
     }
+  } asset:^(ABI40_0_0EXUpdatesAsset *asset, NSUInteger successfulAssetCount, NSUInteger failedAssetCount, NSUInteger totalAssetCount) {
+    // do nothing for now
   } success:^(ABI40_0_0EXUpdatesUpdate * _Nullable update) {
     completion(nil, update);
   } error:^(NSError *error) {
@@ -252,12 +267,11 @@ static NSString * const ABI40_0_0EXUpdatesAppLoaderTaskErrorDomain = @"ABI40_0_0
 
     if (update) {
       if (!self->_hasLaunched) {
-        ABI40_0_0EXUpdatesAppLauncherWithDatabase *launcher = [[ABI40_0_0EXUpdatesAppLauncherWithDatabase alloc] initWithConfig:self->_config database:self->_database directory:self->_directory completionQueue:self->_loaderTaskQueue];
-        self->_candidateLauncher = launcher;
-        [launcher launchUpdateWithSelectionPolicy:self->_selectionPolicy completion:^(NSError * _Nullable error, BOOL success) {
+        ABI40_0_0EXUpdatesAppLauncherWithDatabase *newLauncher = [[ABI40_0_0EXUpdatesAppLauncherWithDatabase alloc] initWithConfig:self->_config database:self->_database directory:self->_directory completionQueue:self->_loaderTaskQueue];
+        [newLauncher launchUpdateWithSelectionPolicy:self->_selectionPolicy completion:^(NSError * _Nullable error, BOOL success) {
           if (success) {
             if (!self->_hasLaunched) {
-              self->_launcher = self->_candidateLauncher;
+              self->_candidateLauncher = newLauncher;
               self->_isReadyToLaunch = YES;
               self->_isUpToDate = YES;
               [self _finishWithError:nil];

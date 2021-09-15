@@ -7,8 +7,8 @@
 #import <mach-o/arch.h>
 #import <sys/utsname.h>
 
-#import <UMCore/UMUtilitiesInterface.h>
-#import <UMCore/UMUtilities.h>
+#import <ExpoModulesCore/EXUtilitiesInterface.h>
+#import <ExpoModulesCore/EXUtilities.h>
 
 #if !(TARGET_OS_TV)
 @import Darwin.sys.sysctl;
@@ -22,7 +22,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation EXDevice
 
-UM_EXPORT_MODULE(ExpoDevice);
+EX_EXPORT_MODULE(ExpoDevice);
 
 - (dispatch_queue_t)methodQueue
 {
@@ -38,10 +38,10 @@ UM_EXPORT_MODULE(ExpoDevice);
            @"isDevice": @([[self class] isDevice]),
            @"brand": @"Apple",
            @"manufacturer": @"Apple",
-           @"modelId": UMNullIfNil([[self class] modelId]),
+           @"modelId": EXNullIfNil([[self class] modelId]),
            @"deviceYearClass": [[self class] deviceYear],
            @"totalMemory": @(NSProcessInfo.processInfo.physicalMemory),
-           @"supportedCpuArchitectures": UMNullIfNil([[self class] cpuArchitectures]),
+           @"supportedCpuArchitectures": EXNullIfNil([[self class] cpuArchitectures]),
            @"osName": currentDevice.systemName,
            @"osVersion": currentDevice.systemVersion,
            @"osBuildId": osBuildId,
@@ -50,24 +50,24 @@ UM_EXPORT_MODULE(ExpoDevice);
            };
 }
 
-UM_EXPORT_METHOD_AS(getDeviceTypeAsync,
-                    getDeviceTypeAsyncWithResolver:(UMPromiseResolveBlock)resolve
-                    rejecter:(UMPromiseRejectBlock)reject)
+EX_EXPORT_METHOD_AS(getDeviceTypeAsync,
+                    getDeviceTypeAsyncWithResolver:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
 {
   resolve(@([[self class] deviceType]));
 }
 
-UM_EXPORT_METHOD_AS(getUptimeAsync,
-                    getUptimeAsyncWithResolver:(UMPromiseResolveBlock)resolve
-                    rejecter:(UMPromiseRejectBlock)reject)
+EX_EXPORT_METHOD_AS(getUptimeAsync,
+                    getUptimeAsyncWithResolver:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
 {
   double uptimeMs = NSProcessInfo.processInfo.systemUptime * 1000;
   resolve(@(uptimeMs));
 }
 
-UM_EXPORT_METHOD_AS(isRootedExperimentalAsync,
-                    isRootedExperimentalAsyncWithResolver:(UMPromiseResolveBlock)resolve
-                    rejecter:(UMPromiseRejectBlock)reject)
+EX_EXPORT_METHOD_AS(isRootedExperimentalAsync,
+                    isRootedExperimentalAsyncWithResolver:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
 {
   resolve(@([[self class] isRooted]));
 }
@@ -256,6 +256,11 @@ UM_EXPORT_METHOD_AS(isRootedExperimentalAsync,
     @"iPhone12,1": @2019, // iPhone 11
     @"iPhone12,3": @2019, // iPhone 11 Pro
     @"iPhone12,5": @2019, // iPhone 11 Pro Max
+    @"iPhone12,8": @2020, // iPhone SE 2nd Gen
+    @"iPhone13,1": @2020, // iPhone 12 mini
+    @"iPhone13,2": @2020, // iPhone 12
+    @"iPhone13,3": @2020, // iPhone 12 Pro
+    @"iPhone13,4": @2020, // iPhone 12 Pro Max
     
     // iPod
     @"iPod1,1": @2007,
@@ -320,6 +325,18 @@ UM_EXPORT_METHOD_AS(isRootedExperimentalAsync,
     @"iPad11,2": @2019, // iPad Mini 5th Gen
     @"iPad11,3": @2019, // iPad Air 3rd Gen (WiFi)
     @"iPad11,4": @2019, // iPad Air 3rd Gen
+    @"iPad11,6": @2020, // iPad 8th Gen
+    @"iPad11,7": @2020, // iPad 8th Gen
+    @"iPad13,1": @2020, // iPad Air 4th Gen (WiFi)
+    @"iPad13,2": @2020, // iPad Air 4th Gen (WiFi+Cellular)
+    @"iPad13,4": @2021, // iPad Pro 11-inch 3rd Gen
+    @"iPad13,5": @2021, // iPad Pro 11-inch 3rd Gen
+    @"iPad13,6": @2021, // iPad Pro 11-inch 3rd Gen
+    @"iPad13,7": @2021, // iPad Pro 11-inch 3rd Gen
+    @"iPad13,8": @2021, // iPad Pro 12.9-inch 5th Gen
+    @"iPad13,9": @2021, // iPad Pro 12.9-inch 5th Gen
+    @"iPad13,10": @2021, // iPad Pro 12.9-inch 5th Gen
+    @"iPad13,11": @2021, // iPad Pro 12.9-inch 5th Gen
   };
   
   NSNumber *deviceYear = mapping[platform];

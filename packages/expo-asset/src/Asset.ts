@@ -1,4 +1,4 @@
-import { Platform } from '@unimodules/core';
+import { Platform } from 'expo-modules-core';
 
 import { getAssetByID } from './AssetRegistry';
 import * as AssetSources from './AssetSources';
@@ -71,7 +71,7 @@ export class Asset {
 
   static loadAsync(moduleId: number | number[] | string | string[]): Promise<Asset[]> {
     const moduleIds = Array.isArray(moduleId) ? moduleId : [moduleId];
-    return Promise.all(moduleIds.map(moduleId => Asset.fromModule(moduleId).downloadAsync()));
+    return Promise.all(moduleIds.map((moduleId) => Asset.fromModule(moduleId).downloadAsync()));
   }
 
   static fromModule(virtualAssetModule: number | string): Asset {
@@ -165,7 +165,7 @@ export class Asset {
       return this;
     }
     if (this.downloading) {
-      await new Promise((resolve, reject) => {
+      await new Promise<void>((resolve, reject) => {
         this._downloadCallbacks.push({ resolve, reject });
       });
       return this;

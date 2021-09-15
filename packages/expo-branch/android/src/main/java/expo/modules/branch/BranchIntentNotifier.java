@@ -3,8 +3,8 @@ package expo.modules.branch;
 import android.app.Activity;
 import android.content.Intent;
 
-import org.unimodules.core.interfaces.ActivityEventListener;
-import org.unimodules.core.interfaces.InternalModule;
+import expo.modules.core.interfaces.ActivityEventListener;
+import expo.modules.core.interfaces.InternalModule;
 
 import java.util.Collections;
 import java.util.List;

@@ -1,0 +1,30 @@
+query Home_AccountData($accountName: String!, $appLimit: Int!, $snackLimit: Int!) {
+  account {
+    byName(accountName: $accountName) {
+      id
+      name
+      appCount
+      apps(limit: $appLimit, offset: 0) {
+        id
+        fullName
+        name
+        iconUrl
+        packageName
+        username
+        description
+        sdkVersion
+        published
+        lastPublishedTime
+        privacy
+      }
+      snacks(limit: $snackLimit, offset: 0) {
+        id
+        name
+        description
+        fullName
+        slug
+        isDraft
+      }
+    }
+  }
+}

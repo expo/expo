@@ -3,6 +3,7 @@
 #import <EXUpdates/EXUpdatesDatabaseMigrationRegistry.h>
 
 #import <EXUpdates/EXUpdatesDatabaseMigration4To5.h>
+#import <EXUpdates/EXUpdatesDatabaseMigration5To6.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -11,7 +12,10 @@ NS_ASSUME_NONNULL_BEGIN
 + (NSArray<id<EXUpdatesDatabaseMigration>> *)migrations
 {
   // migrations should be added here in the order they should be performed (e.g. oldest first)
-  return @[[EXUpdatesDatabaseMigration4To5 new]];
+  return @[
+    [EXUpdatesDatabaseMigration4To5 new],
+    [EXUpdatesDatabaseMigration5To6 new]
+  ];
 }
 
 @end

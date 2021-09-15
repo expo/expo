@@ -122,7 +122,7 @@ import p from '@scope/package';
 
 Write default imports before namespace imports before named imports:
 
-````js
+```js
 // CORRECT
 import a, * as b, { c } from 'module';
 ```

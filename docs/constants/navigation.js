@@ -6,23 +6,22 @@ const prevaledNavigationData = require('./navigation-data');
 // Groups -> Sections -> Pages
 const GROUPS = {
   'The Basics': ['Conceptual Overview', 'Get Started', 'Tutorial', 'Next Steps'],
-  'Managed Workflow': [
-    'Fundamentals',
-    'UI Programming',
-    'Assorted Guides',
-    'Push Notifications',
-    'Distributing Your App',
-    'Expo Accounts',
-    'Regulatory Compliance',
-  ],
+  Fundamentals: ['Fundamentals'],
+  'UI Programming': ['UI Programming'],
+  'Assorted Guides': ['Assorted Guides'],
+  'Push Notifications': ['Push Notifications'],
+  'Distributing Your App': ['Distributing Your App'],
+  'Expo Accounts': ['Expo Accounts'],
+  'Regulatory Compliance': ['Regulatory Compliance'],
   Deprecated: ['ExpoKit', 'Archived'],
-  'Bare Workflow': ['Essentials'],
+  'Bare Workflow': ['Bare Workflow'],
   'Expo SDK': ['Expo SDK'],
   'Configuration Files': ['Configuration Files'],
   'React Native': ['React Native'],
   Preview: ['Preview'],
   'EAS Build': ['Start Building', 'App Signing', 'Reference'],
   'EAS Submit': ['EAS Submit'],
+  'Technical Specs': ['Technical Specs'],
   'Development Clients': ['Development Clients'],
 };
 
@@ -37,7 +36,7 @@ const sections = [
     reference: [
       'EAS Build',
       'Creating your first build',
-      'Configuration with eas.json',
+      'Configuring EAS Build with eas.json',
       'Over-the-air updates',
       'Internal distribution',
       'Triggering builds from CI',
@@ -62,10 +61,11 @@ const sections = [
     name: 'Reference',
     reference: [
       'Migrating from "expo build"',
-      'Integrating with JavaScript tooling',
+      'Integrating with third-party tooling',
       'Environment variables and secrets',
       'Server infrastructure',
       'Caching dependencies',
+      'Running builds on your own infrastructure',
       'Build webhooks',
       'Building APKs for Android emulators and devices',
       'Building for iOS simulators',
@@ -79,18 +79,23 @@ const sections = [
     name: 'EAS Submit',
     reference: [
       'EAS Submit',
+      'Configuring EAS Submit with eas.json',
       'Submitting to the Google Play Store',
       'Submitting to the Apple App Store',
     ],
   },
   {
+    name: 'Technical Specs',
+    reference: ['Expo Updates', 'Expo Structured Field Values'],
+  },
+  {
     name: 'Development Clients',
     reference: [
       'Introduction',
-      'Installation',
-      'Building With EAS',
-      'Building iOS Locally',
-      'Building Android Locally',
+      'Getting Started',
+      'Installation in React Native and Bare workflow projects',
+      'Building with EAS',
+      'Development Workflows',
       'Extending the Development Menu',
     ],
   },
@@ -148,6 +153,7 @@ const sections = [
       'Deploying to App Stores',
       'Release Channels',
       'Advanced Release Channels',
+      'Runtime Versions',
       'Build Webhooks',
       'Hosting Updates on Your Servers',
       'Building Standalone Apps on Your CI',
@@ -184,7 +190,7 @@ const sections = [
       'Upgrading Expo SDK',
       'Developing for Web',
       'Snack: a playground in your browser',
-      'Ejecting to Bare Workflow',
+      'Adding custom native code',
       'Glossary of terms',
     ],
   },
@@ -196,6 +202,7 @@ const sections = [
       'Implementing a checkbox for Expo and React Native apps',
       'Stacking overlapping views with zIndex in Expo and React Native apps',
       'Using SVGs',
+      'How to display a popup toast',
     ],
   },
   {
@@ -249,9 +256,9 @@ const sections = [
     ],
   },
   {
-    name: 'Essentials',
+    name: 'Bare Workflow',
     reference: [
-      'Bare Workflow Walkthrough',
+      'Walkthrough',
       'Up and Running',
       'Using Libraries',
       'Existing Apps',
@@ -393,21 +400,30 @@ const ROOT = [
   'Tutorial',
   'Conceptual Overview',
   'Fundamentals',
-  'UI Programming',
-  'Assorted Guides',
-  'Push Notifications',
   'Distributing Your App',
+  'Assorted Guides',
   'Expo Accounts',
+  'Bare Workflow',
+  'Push Notifications',
+  'UI Programming',
   'Regulatory Compliance',
-  'Essentials',
   'Configuration Files',
   'Expo SDK',
   'React Native',
+  'Technical Specs',
   'ExpoKit',
 ];
 
 // These directories will not be placed in the sidebar, but will still be searchable
 const hiddenSections = ['FAQ', 'Troubleshooting'];
+
+// These sections will NOT be expanded by default in the sidebar
+const collapsedSections = [
+  'Deprecated',
+  'Regulatory Compliance',
+  'UI Programming',
+  'Technical Specs',
+];
 
 const sortAccordingToReference = (arr, reference) => {
   reference = Array.from(reference).reverse();
@@ -482,17 +498,18 @@ const sortedReference = Object.assign(
 const sortedGeneral = groupNav(sortNav(prevaledNavigationData.general));
 const sortedStarting = groupNav(sortNav(prevaledNavigationData.starting));
 const sortedPreview = groupNav(sortNav(prevaledNavigationData.preview));
-const sortedEas = groupNav(sortNav(prevaledNavigationData.eas));
+const sortedFeaturePreview = groupNav(sortNav(prevaledNavigationData.featurePreview));
 
 module.exports = {
   generalDirectories: prevaledNavigationData.generalDirectories,
   startingDirectories: prevaledNavigationData.startingDirectories,
   previewDirectories: prevaledNavigationData.previewDirectories,
-  easDirectories: prevaledNavigationData.easDirectories,
+  featurePreviewDirectories: prevaledNavigationData.featurePreviewDirectories,
   starting: sortedStarting,
   general: sortedGeneral,
   preview: sortedPreview,
-  eas: sortedEas,
+  featurePreview: sortedFeaturePreview,
   reference: { ...sortedReference, latest: sortedReference['v' + packageVersion] },
   hiddenSections,
+  collapsedSections,
 };

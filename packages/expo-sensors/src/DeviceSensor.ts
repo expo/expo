@@ -1,5 +1,10 @@
-import { EventEmitter, Subscription, Platform } from '@unimodules/core';
-import { PermissionResponse, PermissionStatus } from 'unimodules-permissions-interface';
+import {
+  PermissionResponse,
+  PermissionStatus,
+  EventEmitter,
+  Subscription,
+  Platform,
+} from 'expo-modules-core';
 
 type Listener<E> = (event: E) => void;
 

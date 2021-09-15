@@ -5,14 +5,14 @@
 
 @implementation EXCrypto
 
-UM_EXPORT_MODULE(ExpoCrypto);
+EX_EXPORT_MODULE(ExpoCrypto);
 
-UM_EXPORT_METHOD_AS(digestStringAsync,
+EX_EXPORT_METHOD_AS(digestStringAsync,
                     digestStringAsync:(NSString *)algorithm
                     data:(NSString *)data
                     options:(NSDictionary *)options
-                    resolver:(UMPromiseResolveBlock)resolve
-                    rejecter:(UMPromiseRejectBlock)reject)
+                    resolver:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
 {
   NSString *encoding = options[@"encoding"];
   

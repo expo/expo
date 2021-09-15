@@ -132,6 +132,60 @@ import { Camera } from 'expo-camera';
 const types = await Camera.getAvailableCameraTypesAsync();
 ```
 
+### `Camera.requestPermissionsAsync()`
+
+Asks the user to grant permissions for accessing camera. 
+
+On iOS this will require apps to specify both `NSCameraUsageDescription` and `NSMicrophoneUsageDescription` entries in the `Info.plist`
+
+#### Returns
+
+A promise that resolves to an object of type [PermissionResponse](permissions.md#permissionresponse).
+
+### `Camera.requestCameraPermissionsAsync()`
+
+Asks the user to grant permissions for accessing camera.
+
+On iOS this will require apps to specify an `NSCameraUsageDescription` entry in the `Info.plist`
+
+#### Returns
+
+A promise that resolves to an object of type [PermissionResponse](permissions.md#permissionresponse).
+
+### `Camera.requestMicrophonePermissionsAsync()`
+
+Asks the user to grant permissions for accessing the microphone.
+
+On iOS this will require apps to specify an `NSMicrophoneUsageDescription` entry in the `Info.plist`
+
+#### Returns
+
+A promise that resolves to an object of type [PermissionResponse](permissions.md#permissionresponse).
+
+### `Camera.getPermissionsAsync()`
+
+Checks user's permissions for accessing camera.
+
+### `Camera.getCameraPermissionsAsync()`
+
+Checks user's permissions for accessing camera.
+
+### `Camera.getMicrophonePermissionsAsync()`
+
+Checks user's permissions for accessing microphone.
+
+#### Returns
+
+A promise that resolves to an object of type [PermissionResponse](permissions.md#permissionresponse).
+
+### `Camera.getAvailableVideoCodecsAsync()`
+
+(iOS only). Queries the device for the available video codecs that can be used in video recording.
+
+#### Returns
+
+A promise that resolves to a list of strings that represents available codecs.
+
 ## Props
 
 ### `type`
@@ -281,11 +335,12 @@ Starts recording a video that will be saved to cache directory. Videos are rotat
   - **maxFileSize (_number_)** -- Maximum video file size in bytes.
   - **mute (_boolean_)** -- If present, video will be recorded with no sound.
   - **mirror (_boolean_)** -- (iOS only; on Android, this is handled in the user's device settings) If `true`, the recorded video will be flipped along the vertical axis. iOS flips videos recorded with the front camera by default, but you can reverse that back by setting this to `true`.
-  - **videoBitrate (_number_)** -- Android only and works if `useCamera2Api` is set to `true`. (int greater than 0) This option specifies a desired video bitrate.  For example, 5\*1000\*1000 would be 5Mbps.
+  - **videoBitrate (_number_)** -- Android only and works if `useCamera2Api` is set to `true`. (int greater than 0) This option specifies a desired video bitrate. For example, 5\*1000\*1000 would be 5Mbps.
+  - **codec (_VideoCodec_)** -- (iOS only) This option specifies what codec to use when recording the video. Usage: `Camera.Constants.VideoCodec['<value>']`
 
 #### Returns
 
-Returns a Promise that resolves to an object containing video file `uri` property. The Promise is returned if `stopRecording` was invoked, one of `maxDuration` and `maxFileSize` is reached or camera preview is stopped.
+Returns a Promise that resolves to an object containing video file `uri` property and a `codec` property on iOS. The Promise is returned if `stopRecording` was invoked, one of `maxDuration` and `maxFileSize` is reached or camera preview is stopped.
 
 ### `stopRecording()`
 
@@ -318,22 +373,6 @@ Pauses the camera preview. It is not recommended to use `takePictureAsync` when 
 ### `resumePreview()`
 
 Resumes the camera preview.
-
-### `requestPermissionsAsync()`
-
-Asks the user to grant permissions for accessing camera.
-
-#### Returns
-
-A promise that resolves to an object of type [PermissionResponse](permissions.md#permissionresponse).
-
-### `getPermissionsAsync()`
-
-Checks user's permissions for accessing camera.
-
-#### Returns
-
-A promise that resolves to an object of type [PermissionResponse](permissions.md#permissionresponse).
 
 ## Web Support
 

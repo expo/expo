@@ -6,17 +6,15 @@
 @interface ABI40_0_0EXConstantsBinding ()
 
 @property (nonatomic, strong) NSString *appOwnership;
-@property (nonatomic, strong) NSString *experienceId;
 @property (nonatomic, strong) NSDictionary *unversionedConstants;
 
 @end
 
 @implementation ABI40_0_0EXConstantsBinding : ABI40_0_0EXConstantsService
 
-- (instancetype)initWithExperienceId:(NSString *)experienceId andParams:(NSDictionary *)params
+- (instancetype)initWithParams:(NSDictionary *)params
 {
   if (self = [super init]) {
-    _experienceId = experienceId;
     _unversionedConstants = params[@"constants"];
     if (_unversionedConstants && _unversionedConstants[@"appOwnership"]) {
       _appOwnership = _unversionedConstants[@"appOwnership"];
@@ -37,7 +35,7 @@
 #endif
 
   constants[@"isDetached"] = @(isDetached);
-  
+
   if (_unversionedConstants) {
     [constants addEntriesFromDictionary:_unversionedConstants];
   }

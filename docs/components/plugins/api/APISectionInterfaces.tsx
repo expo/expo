@@ -1,19 +1,43 @@
 import React from 'react';
-import ReactMarkdown from 'react-markdown';
 
 import { InlineCode } from '~/components/base/code';
 import { B } from '~/components/base/paragraph';
 import { H2, H3Code } from '~/components/plugins/Headings';
-import { InterfaceDefinitionData, InterfaceValueData } from '~/components/plugins/api/APIDataTypes';
+import {
+  CommentData,
+  InterfaceDefinitionData,
+  InterfaceValueData,
+  MethodSignatureData,
+} from '~/components/plugins/api/APIDataTypes';
 import {
   CommentTextBlock,
-  mdInlineRenderers,
+  mdInlineComponents,
+  renderFlags,
+  renderParam,
+  renderTypeOrSignatureType,
   resolveTypeName,
-  STYLES_OPTIONAL,
 } from '~/components/plugins/api/APISectionUtils';
 
 export type APISectionInterfacesProps = {
   data: InterfaceDefinitionData[];
+};
+
+const renderInterfaceComment = (comment?: CommentData, signatures?: MethodSignatureData[]) => {
+  if (signatures && signatures.length) {
+    const { type, parameters, comment: signatureComment } = signatures[0];
+    return (
+      <>
+        {parameters.map(param => renderParam(param))}
+        <B>Returns: </B>
+        <InlineCode>{resolveTypeName(type)}</InlineCode>
+        {signatureComment && (
+          <CommentTextBlock comment={signatureComment} components={mdInlineComponents} />
+        )}
+      </>
+    );
+  } else {
+    return comment ? <CommentTextBlock comment={comment} components={mdInlineComponents} /> : '-';
+  }
 };
 
 const renderInterfacePropertyRow = ({
@@ -21,48 +45,44 @@ const renderInterfacePropertyRow = ({
   flags,
   type,
   comment,
+  signatures,
 }: InterfaceValueData): JSX.Element => (
   <tr key={name}>
     <td>
-      <B>{name}</B>
-      {flags?.isOptional ? (
-        <>
-          <br />
-          <span css={STYLES_OPTIONAL}>(optional)</span>
-        </>
-      ) : null}
+      <B>
+        {name}
+        {signatures && signatures.length ? '()' : ''}
+      </B>
+      {renderFlags(flags)}
     </td>
-    <td>
-      <InlineCode>{resolveTypeName(type)}</InlineCode>
-    </td>
-    <td>
-      {comment?.shortText ? (
-        <ReactMarkdown renderers={mdInlineRenderers}>{comment.shortText}</ReactMarkdown>
-      ) : (
-        '-'
-      )}
-    </td>
+    <td>{renderTypeOrSignatureType(type, signatures)}</td>
+    <td>{renderInterfaceComment(comment, signatures)}</td>
   </tr>
 );
 
-const renderInterface = ({ name, children, comment }: InterfaceDefinitionData): JSX.Element => (
-  <div key={`interface-definition-${name}`}>
-    <H3Code>
-      <InlineCode>{name}</InlineCode>
-    </H3Code>
-    <CommentTextBlock comment={comment} />
-    <table>
-      <thead>
-        <tr>
-          <th>Name</th>
-          <th>Type</th>
-          <th>Description</th>
-        </tr>
-      </thead>
-      <tbody>{children.map(renderInterfacePropertyRow)}</tbody>
-    </table>
-  </div>
-);
+const renderInterface = ({
+  name,
+  children,
+  comment,
+}: InterfaceDefinitionData): JSX.Element | null =>
+  children ? (
+    <div key={`interface-definition-${name}`}>
+      <H3Code>
+        <InlineCode>{name}</InlineCode>
+      </H3Code>
+      <CommentTextBlock comment={comment} />
+      <table>
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+          </tr>
+        </thead>
+        <tbody>{children.map(renderInterfacePropertyRow)}</tbody>
+      </table>
+    </div>
+  ) : null;
 
 const APISectionInterfaces: React.FC<APISectionInterfacesProps> = ({ data }) =>
   data?.length ? (

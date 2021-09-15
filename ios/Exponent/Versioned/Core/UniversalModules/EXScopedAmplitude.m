@@ -12,30 +12,30 @@
 
 @interface EXScopedAmplitude ()
 
-@property (strong, nonatomic) NSString *escapedExperienceId;
+@property (strong, nonatomic) NSString *escapedScopeKey;
 
 @end
 
 @implementation EXScopedAmplitude
 
-- (instancetype)initWithExperienceId:(NSString *)experienceId
+- (instancetype)initWithScopeKey:(NSString *)scopeKey
 {
   if (self = [super init]) {
-    _escapedExperienceId = [self escapedExperienceId:experienceId];
+    _escapedScopeKey = [self escapedScopeKey:scopeKey];
   }
   return self;
 }
 
 - (Amplitude *)amplitudeInstance
 {
-  return [Amplitude instanceWithName:_escapedExperienceId];
+  return [Amplitude instanceWithName:_escapedScopeKey];
 }
 
-- (NSString *)escapedExperienceId:(NSString *)experienceId
+- (NSString *)escapedScopeKey:(NSString *)scopeKey
 {
   NSString *charactersToEscape = @"!*'();:@&=+$,/?%#[]";
   NSCharacterSet *allowedCharacters = [[NSCharacterSet characterSetWithCharactersInString:charactersToEscape] invertedSet];
-  return [experienceId stringByAddingPercentEncodingWithAllowedCharacters:allowedCharacters];
+  return [scopeKey stringByAddingPercentEncodingWithAllowedCharacters:allowedCharacters];
 }
 
 @end

@@ -5,26 +5,33 @@
 #import <ABI40_0_0EXUpdates/ABI40_0_0EXUpdatesLegacyUpdate.h>
 #import <ABI40_0_0EXUpdates/ABI40_0_0EXUpdatesNewUpdate.h>
 #import <ABI40_0_0EXUpdates/ABI40_0_0EXUpdatesUpdate+Private.h>
+#import <ABI40_0_0EXManifests/ABI40_0_0EXManifestsBareManifest.h>
+#import <ABI40_0_0EXManifests/ABI40_0_0EXManifestsManifestFactory.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
+NSString * const ABI40_0_0EXUpdatesUpdateErrorDomain = @"ABI40_0_0EXUpdatesUpdate";
+
+
 @interface ABI40_0_0EXUpdatesUpdate ()
 
-@property (nonatomic, strong, readwrite) NSDictionary *rawManifest;
+@property (nonatomic, strong, readwrite) ABI40_0_0EXManifestsManifest* manifest;
 
 @end
 
 @implementation ABI40_0_0EXUpdatesUpdate
 
-- (instancetype)initWithRawManifest:(NSDictionary *)manifest
+- (instancetype)initWithManifest:(ABI40_0_0EXManifestsManifest *)manifest
                              config:(ABI40_0_0EXUpdatesConfig *)config
                            database:(nullable ABI40_0_0EXUpdatesDatabase *)database
 {
   if (self = [super init]) {
-    _rawManifest = manifest;
+    _manifest = manifest;
     _config = config;
     _database = database;
     _scopeKey = config.scopeKey;
+    _status = ABI40_0_0EXUpdatesUpdateStatusPending;
+    _lastAccessed = [NSDate date];
     _isDevelopmentMode = NO;
   }
   return self;
@@ -34,59 +41,75 @@ NS_ASSUME_NONNULL_BEGIN
                     scopeKey:(NSString *)scopeKey
                   commitTime:(NSDate *)commitTime
               runtimeVersion:(NSString *)runtimeVersion
-                    metadata:(nullable NSDictionary *)metadata
+                    manifest:(nullable NSDictionary *)manifest
                       status:(ABI40_0_0EXUpdatesUpdateStatus)status
                         keep:(BOOL)keep
                       config:(ABI40_0_0EXUpdatesConfig *)config
                     database:(ABI40_0_0EXUpdatesDatabase *)database
 {
-  // for now, we store the entire managed manifest in the metadata field
-  ABI40_0_0EXUpdatesUpdate *update = [[self alloc] initWithRawManifest:metadata ?: @{}
+  ABI40_0_0EXUpdatesUpdate *update = [[self alloc] initWithManifest:[ABI40_0_0EXManifestsManifestFactory manifestForManifestJSON:(manifest ?: @{})]
                                                        config:config
                                                      database:database];
   update.updateId = updateId;
   update.scopeKey = scopeKey;
   update.commitTime = commitTime;
   update.runtimeVersion = runtimeVersion;
-  update.metadata = metadata;
+  update.manifestJSON = manifest;
   update.status = status;
   update.keep = keep;
   return update;
 }
 
 + (instancetype)updateWithManifest:(NSDictionary *)manifest
+                          response:(nullable NSURLResponse *)response
                             config:(ABI40_0_0EXUpdatesConfig *)config
                           database:(ABI40_0_0EXUpdatesDatabase *)database
+                             error:(NSError ** _Nullable)error
 {
-  return [ABI40_0_0EXUpdatesLegacyUpdate updateWithLegacyManifest:manifest
-                                                  config:config
-                                                database:database];
+  if (![response isKindOfClass:[NSHTTPURLResponse class]]) {
+    if(error){
+      *error = [NSError errorWithDomain:ABI40_0_0EXUpdatesUpdateErrorDomain
+                                   code:1001
+                               userInfo:@{NSLocalizedDescriptionKey:@"response must be a NSHTTPURLResponse"}];
+    }
+    return nil;
+  }
+
+  NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)response;
+  NSDictionary *headerDictionary = [httpResponse allHeaderFields];
+  NSString *expoProtocolVersion = headerDictionary[@"expo-protocol-version"];
+
+  if (expoProtocolVersion == nil) {
+    return [ABI40_0_0EXUpdatesLegacyUpdate updateWithLegacyManifest:[[ABI40_0_0EXManifestsLegacyManifest alloc] initWithRawManifestJSON:manifest]
+                                                    config:config
+                                                  database:database];
+  } else if (expoProtocolVersion.integerValue == 0) {
+    return [ABI40_0_0EXUpdatesNewUpdate updateWithNewManifest:[[ABI40_0_0EXManifestsNewManifest alloc] initWithRawManifestJSON:manifest]
+                                            response:response
+                                              config:config
+                                            database:database];
+  } else {
+    if(error){
+      *error = [NSError errorWithDomain:ABI40_0_0EXUpdatesUpdateErrorDomain
+                                   code:1000
+                               userInfo:@{NSLocalizedDescriptionKey:[NSString stringWithFormat:@"expo-protocol-version '%@' is invalid", expoProtocolVersion]}];
+    }
+    return nil;
+  }
 }
 
 + (instancetype)updateWithEmbeddedManifest:(NSDictionary *)manifest
                                     config:(ABI40_0_0EXUpdatesConfig *)config
                                   database:(nullable ABI40_0_0EXUpdatesDatabase *)database
 {
-  if (config.usesLegacyManifest) {
-    if (manifest[@"releaseId"]) {
-      return [ABI40_0_0EXUpdatesLegacyUpdate updateWithLegacyManifest:manifest
-                                                      config:config
-                                                    database:database];
-    } else {
-      return [ABI40_0_0EXUpdatesBareUpdate updateWithBareManifest:manifest
-                                                  config:config
-                                                database:database];
-    }
+  if (manifest[@"releaseId"]) {
+    return [ABI40_0_0EXUpdatesLegacyUpdate updateWithLegacyManifest:[[ABI40_0_0EXManifestsLegacyManifest alloc] initWithRawManifestJSON:manifest]
+                                                    config:config
+                                                  database:database];
   } else {
-    if (manifest[@"runtimeVersion"]) {
-      return [ABI40_0_0EXUpdatesNewUpdate updateWithNewManifest:manifest
-                                                config:config
-                                              database:database];
-    } else {
-      return [ABI40_0_0EXUpdatesBareUpdate updateWithBareManifest:manifest
-                                                  config:config
-                                                database:database];
-    }
+    return [ABI40_0_0EXUpdatesBareUpdate updateWithBareManifest:[[ABI40_0_0EXManifestsBareManifest alloc] initWithRawManifestJSON:manifest]
+                                                   config:config
+                                                 database:database];
   }
 }
 

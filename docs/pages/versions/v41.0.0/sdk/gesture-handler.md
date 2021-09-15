@@ -1,6 +1,6 @@
 ---
 title: GestureHandler
-sourceCodeUrl: 'https://github.com/kmagiera/react-native-gesture-handler'
+sourceCodeUrl: 'https://github.com/software-mansion/react-native-gesture-handler'
 ---
 
 import InstallSection from '~/components/plugins/InstallSection';
@@ -18,7 +18,13 @@ An API for handling complex gestures. From the project's README:
 
 ## API
 
-Importing gesture handlers:
+Add this import to the top of your app entry file, such as `App.js`:
+
+```js
+import 'react-native-gesture-handler';
+```
+
+This will ensure that appropriate event handlers are registered with React Native. Now, you can import gesture handlers wherever you need them:
 
 ```js
 import { TapGestureHandler, RotationGestureHandler } from 'react-native-gesture-handler';

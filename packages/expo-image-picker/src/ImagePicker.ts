@@ -1,5 +1,11 @@
-import { UnavailabilityError, CodedError } from '@unimodules/core';
-import { PermissionStatus, PermissionExpiration } from 'unimodules-permissions-interface';
+import {
+  PermissionStatus,
+  PermissionExpiration,
+  PermissionHookOptions,
+  createPermissionHook,
+  UnavailabilityError,
+  CodedError,
+} from 'expo-modules-core';
 
 import ExponentImagePicker from './ExponentImagePicker';
 import {
@@ -99,6 +105,40 @@ export async function requestMediaLibraryPermissionsAsync(
   return imagePickerMethod(writeOnly);
 }
 
+// @needsAudit
+/**
+ * Check or request permissions to access the media library.
+ * This uses both `requestMediaLibraryPermissionsAsync` and `getMediaLibraryPermissionsAsync` to interact with the permissions.
+ *
+ * @example
+ * ```ts
+ * const [status, requestPermission] = ImagePicker.useMediaLibraryPermissions();
+ * ```
+ */
+export const useMediaLibraryPermissions = createPermissionHook<
+  MediaLibraryPermissionResponse,
+  { writeOnly?: boolean }
+>({
+  // TODO(cedric): permission requesters should have an options param or a different requester
+  getMethod: (options) => getMediaLibraryPermissionsAsync(options?.writeOnly),
+  requestMethod: (options) => requestMediaLibraryPermissionsAsync(options?.writeOnly),
+});
+
+// @needsAudit
+/**
+ * Check or request permissions to access the camera.
+ * This uses both `requestCameraPermissionsAsync` and `getCameraPermissionsAsync` to interact with the permissions.
+ *
+ * @example
+ * ```ts
+ * const [status, requestPermission] = ImagePicker.useCameraPermissions();
+ * ```
+ */
+export const useCameraPermissions = createPermissionHook({
+  getMethod: getCameraPermissionsAsync,
+  requestMethod: requestCameraPermissionsAsync,
+});
+
 export async function getPendingResultAsync(): Promise<
   (ImagePickerResult | ImagePickerErrorResult)[]
 > {
@@ -137,4 +177,5 @@ export {
   MediaLibraryPermissionResponse,
   PermissionStatus,
   PermissionExpiration,
+  PermissionHookOptions,
 };

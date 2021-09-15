@@ -1,10 +1,12 @@
-import { EventEmitter, Subscription, UnavailabilityError } from '@unimodules/core';
-import invariant from 'invariant';
 import {
   PermissionExpiration,
   PermissionResponse,
   PermissionStatus,
-} from 'unimodules-permissions-interface';
+  EventEmitter,
+  Subscription,
+  UnavailabilityError,
+} from 'expo-modules-core';
+import invariant from 'invariant';
 
 import ExponentPedometer from './ExponentPedometer';
 

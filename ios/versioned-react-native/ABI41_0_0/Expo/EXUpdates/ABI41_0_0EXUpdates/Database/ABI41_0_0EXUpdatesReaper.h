@@ -12,7 +12,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (void)reapUnusedUpdatesWithConfig:(ABI41_0_0EXUpdatesConfig *)config
                            database:(ABI41_0_0EXUpdatesDatabase *)database
                           directory:(NSURL *)directory
-                    selectionPolicy:(id<ABI41_0_0EXUpdatesSelectionPolicy>)selectionPolicy
+                    selectionPolicy:(ABI41_0_0EXUpdatesSelectionPolicy *)selectionPolicy
                      launchedUpdate:(ABI41_0_0EXUpdatesUpdate *)launchedUpdate;
 
 @end

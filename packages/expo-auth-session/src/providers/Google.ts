@@ -329,7 +329,7 @@ export function useAuthRequest(
 
   useEffect(() => {
     let isMounted = true;
-    if (!fullResult && shouldAutoExchangeCode && result?.type === 'success') {
+    if (shouldAutoExchangeCode && result?.type === 'success') {
       const exchangeRequest = new AccessTokenRequest({
         clientId,
         clientSecret: config.clientSecret,
@@ -341,7 +341,7 @@ export function useAuthRequest(
           code_verifier: request.codeVerifier,
         },
       });
-      exchangeRequest.performAsync(discovery).then(authentication => {
+      exchangeRequest.performAsync(discovery).then((authentication) => {
         if (isMounted) {
           setFullResult({
             ...result,
@@ -356,7 +356,7 @@ export function useAuthRequest(
         }
       });
     } else {
-      setFullResult(fullResult ?? result);
+      setFullResult(result);
     }
     return () => {
       isMounted = false;
@@ -368,7 +368,7 @@ export function useAuthRequest(
     config.clientSecret,
     config.scopes?.join(','),
     request?.codeVerifier,
-    fullResult,
+    result,
   ]);
 
   return [request, fullResult, promptAsync];

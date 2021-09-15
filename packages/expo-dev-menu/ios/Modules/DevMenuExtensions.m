@@ -4,4 +4,9 @@
 
 @interface RCT_EXTERN_REMAP_MODULE(ExpoDevMenuExtensions, DevMenuExtensions, NSObject)
 
++ (BOOL)requiresMainQueueSetup
+{
+  return true;
+}
+
 @end

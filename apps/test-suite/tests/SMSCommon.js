@@ -98,3 +98,11 @@ export async function testSMSComposeWithAudioAttachment(expect) {
     ],
   });
 }
+
+export async function testSMSComposeWithNullRecipient() {
+  await SMS.sendSMSAsync(null, 'test with null recipient, no attachments', null);
+}
+
+export async function testSMSComposeWithUndefinedRecipient() {
+  await SMS.sendSMSAsync(undefined, 'test with undefined recipient, no attachments', null);
+}

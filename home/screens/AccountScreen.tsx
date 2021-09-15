@@ -1,8 +1,8 @@
 import { StackScreenProps } from '@react-navigation/stack';
-import { AllStackRoutes } from 'navigation/Navigation.types';
 import * as React from 'react';
 
 import Account from '../containers/Account';
+import { AllStackRoutes } from '../navigation/Navigation.types';
 
 export default function AccountScreen({
   navigation,

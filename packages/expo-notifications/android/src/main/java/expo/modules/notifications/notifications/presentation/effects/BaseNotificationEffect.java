@@ -3,8 +3,8 @@ package expo.modules.notifications.notifications.presentation.effects;
 import android.app.Notification;
 import android.content.Context;
 
-import org.unimodules.core.ModuleRegistry;
-import org.unimodules.core.interfaces.InternalModule;
+import expo.modules.core.ModuleRegistry;
+import expo.modules.core.interfaces.InternalModule;
 
 import java.util.Collections;
 import java.util.List;

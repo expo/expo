@@ -80,20 +80,10 @@ const styles = StyleSheet.create({
 
 </SnackInline>
 
-## Importing Lottie
-
-You can import it like this:
+## API
 
 ```javascript
 import LottieView from 'lottie-react-native';
 ```
 
-## Known Issues
-
-> The Lottie SDK is currently considered to be under Expo's "DangerZone" because it's implementation is still in Alpha.
-
-- Importing Lottie 3 files causes the previewer to crash without a visible error, because Expo relies on `lottie-react-native` v2.
-
-## Using the Lottie API
-
-We pull in the API from [lottie-react-native](https://github.com/airbnb/lottie-react-native#basic-usage), so the documentation there is the best resource to follow.
+Refer to the [lottie-react-native repository](https://github.com/airbnb/lottie-react-native#usage) for more detailed documentation.

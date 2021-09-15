@@ -2,8 +2,7 @@
 
 #import <LocalAuthentication/LocalAuthentication.h>
 
-#import <UMCore/UMUtilities.h>
-#import <UMConstantsInterface/UMConstantsInterface.h>
+#import <ExpoModulesCore/EXUtilities.h>
 #import <EXLocalAuthentication/EXLocalAuthentication.h>
 
 typedef NS_ENUM(NSInteger, EXAuthenticationType) {
@@ -19,11 +18,11 @@ typedef NS_ENUM(NSInteger, EXSecurityLevel) {
 
 @implementation EXLocalAuthentication
 
-UM_EXPORT_MODULE(ExpoLocalAuthentication)
+EX_EXPORT_MODULE(ExpoLocalAuthentication)
 
-UM_EXPORT_METHOD_AS(supportedAuthenticationTypesAsync,
-                    supportedAuthenticationTypesAsync:(UMPromiseResolveBlock)resolve
-                    reject:(UMPromiseRejectBlock)reject)
+EX_EXPORT_METHOD_AS(supportedAuthenticationTypesAsync,
+                    supportedAuthenticationTypesAsync:(EXPromiseResolveBlock)resolve
+                    reject:(EXPromiseRejectBlock)reject)
 {
   NSMutableArray *results = [NSMutableArray array];
   if ([[self class] isTouchIdDevice]) {
@@ -35,28 +34,22 @@ UM_EXPORT_METHOD_AS(supportedAuthenticationTypesAsync,
   resolve(results);
 }
 
-UM_EXPORT_METHOD_AS(hasHardwareAsync,
-                    hasHardwareAsync:(UMPromiseResolveBlock)resolve
-                    reject:(UMPromiseRejectBlock)reject)
+EX_EXPORT_METHOD_AS(hasHardwareAsync,
+                    hasHardwareAsync:(EXPromiseResolveBlock)resolve
+                    reject:(EXPromiseRejectBlock)reject)
 {
   LAContext *context = [LAContext new];
   NSError *error = nil;
 
   BOOL isSupported = [context canEvaluatePolicy:LAPolicyDeviceOwnerAuthenticationWithBiometrics error:&error];
-  BOOL isAvailable;
-
-  if (@available(iOS 11.0.1, *)) {
-    isAvailable = isSupported || error.code != LAErrorBiometryNotAvailable;
-  } else {
-    isAvailable = isSupported || error.code != LAErrorTouchIDNotAvailable;
-  }
+  BOOL isAvailable = isSupported || error.code != LAErrorBiometryNotAvailable;
 
   resolve(@(isAvailable));
 }
 
-UM_EXPORT_METHOD_AS(isEnrolledAsync,
-                    isEnrolledAsync:(UMPromiseResolveBlock)resolve
-                    reject:(UMPromiseRejectBlock)reject)
+EX_EXPORT_METHOD_AS(isEnrolledAsync,
+                    isEnrolledAsync:(EXPromiseResolveBlock)resolve
+                    reject:(EXPromiseRejectBlock)reject)
 {
   LAContext *context = [LAContext new];
   NSError *error = nil;
@@ -67,9 +60,9 @@ UM_EXPORT_METHOD_AS(isEnrolledAsync,
   resolve(@(isEnrolled));
 }
 
-UM_EXPORT_METHOD_AS(getEnrolledLevelAsync,
-                    getEnrolledLevelAsync:(UMPromiseResolveBlock)resolve
-                    reject:(UMPromiseRejectBlock)reject)
+EX_EXPORT_METHOD_AS(getEnrolledLevelAsync,
+                    getEnrolledLevelAsync:(EXPromiseResolveBlock)resolve
+                    reject:(EXPromiseRejectBlock)reject)
 {
   LAContext *context = [LAContext new];
   NSError *error = nil;
@@ -88,10 +81,10 @@ UM_EXPORT_METHOD_AS(getEnrolledLevelAsync,
   resolve(@(level));
 }
 
-UM_EXPORT_METHOD_AS(authenticateAsync,
+EX_EXPORT_METHOD_AS(authenticateAsync,
                     authenticateWithOptions:(NSDictionary *)options
-                    resolve:(UMPromiseResolveBlock)resolve
-                    reject:(UMPromiseRejectBlock)reject)
+                    resolve:(EXPromiseResolveBlock)resolve
+                    reject:(EXPromiseRejectBlock)reject)
 {
   NSString *warningMessage;
   NSString *reason = options[@"promptMessage"];
@@ -117,9 +110,7 @@ UM_EXPORT_METHOD_AS(authenticateAsync,
     context.localizedCancelTitle = cancelLabel;
   }
 
-  if (@available(iOS 11.0, *)) {
-    context.interactionNotAllowed = false;
-  }
+  context.interactionNotAllowed = false;
 
   if ([disableDeviceFallback boolValue]) {
     if (warningMessage) {
@@ -138,7 +129,7 @@ UM_EXPORT_METHOD_AS(authenticateAsync,
                       resolve(@{
                                 @"success": @(success),
                                 @"error": error == nil ? [NSNull null] : [self convertErrorCode:error],
-                                @"warning": UMNullIfNil(warningMessage),
+                                @"warning": EXNullIfNil(warningMessage),
                                 });
                     }];
   } else {
@@ -148,7 +139,7 @@ UM_EXPORT_METHOD_AS(authenticateAsync,
                       resolve(@{
                                 @"success": @(success),
                                 @"error": error == nil ? [NSNull null] : [self convertErrorCode:error],
-                                @"warning": UMNullIfNil(warningMessage),
+                                @"warning": EXNullIfNil(warningMessage),
                                 });
                     }];
   }
@@ -187,15 +178,13 @@ UM_EXPORT_METHOD_AS(authenticateAsync,
 {
   static BOOL isFaceIDDevice = NO;
 
-  if (@available(iOS 11.0.1, *)) {
-    static dispatch_once_t onceToken;
+  static dispatch_once_t onceToken;
 
-    dispatch_once(&onceToken, ^{
-      LAContext *context = [LAContext new];
-      [context canEvaluatePolicy:LAPolicyDeviceOwnerAuthenticationWithBiometrics error:nil];
-      isFaceIDDevice = context.biometryType == LABiometryTypeFaceID;
-    });
-  }
+  dispatch_once(&onceToken, ^{
+    LAContext *context = [LAContext new];
+    [context canEvaluatePolicy:LAPolicyDeviceOwnerAuthenticationWithBiometrics error:nil];
+    isFaceIDDevice = context.biometryType == LABiometryTypeFaceID;
+  });
 
   return isFaceIDDevice;
 }
@@ -208,11 +197,7 @@ UM_EXPORT_METHOD_AS(authenticateAsync,
   dispatch_once(&onceToken, ^{
     LAContext *context = [LAContext new];
     [context canEvaluatePolicy:LAPolicyDeviceOwnerAuthenticationWithBiometrics error:nil];
-    if (@available(iOS 11.0.1, *)) {
-      isTouchIDDevice = context.biometryType == LABiometryTypeTouchID;
-    } else {
-      isTouchIDDevice = true;
-    }
+    isTouchIDDevice = context.biometryType == LABiometryTypeTouchID;
   });
 
   return isTouchIDDevice;

@@ -1,6 +1,6 @@
 {
   "name": "expo-module-template",
-  "version": "9.0.1",
+  "version": "9.1.0",
   "description": "ExpoModuleTemplate standalone module",
   "main": "build/ModuleTemplate.js",
   "types": "build/ModuleTemplate.d.ts",
@@ -22,5 +22,5 @@
   },
   "author": "650 Industries, Inc.",
   "license": "MIT",
-  "homepage": "https://docs.expo.io/versions/latest/sdk/module-template"
+  "homepage": "https://docs.expo.dev/versions/latest/sdk/module-template"
 }

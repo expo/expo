@@ -146,7 +146,7 @@ static NSDictionary* customCertificatesForHost;
 #if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 130000 /* __IPHONE_13_0 */
     _savedAutomaticallyAdjustsScrollIndicatorInsets = NO;
 #endif
-      
+
   }
 
 #if !TARGET_OS_OSX
@@ -233,7 +233,7 @@ static NSDictionary* customCertificatesForHost;
     wkWebViewConfig.websiteDataStore = [WKWebsiteDataStore defaultDataStore];
   }
   if(self.useSharedProcessPool) {
-    wkWebViewConfig.processPool = [[ABI41_0_0RNCWKProcessPoolManager sharedManager] sharedProcessPoolForExperienceId:self.experienceId];
+    wkWebViewConfig.processPool = [[ABI41_0_0RNCWKProcessPoolManager sharedManager] sharedProcessPoolForScopeKey:self.scopeKey];
   }
   wkWebViewConfig.userContentController = [WKUserContentController new];
 

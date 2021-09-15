@@ -20,6 +20,10 @@ NS_ASSUME_NONNULL_BEGIN
   EXUpdatesUpdate *nextNewestUpdate;
   EXUpdatesUpdate *nextNewestUpdateMatchingFilters;
   for (EXUpdatesUpdate *update in updates) {
+    // ignore any updates whose scopeKey doesn't match that of the launched update
+    if (![launchedUpdate.scopeKey isEqualToString:update.scopeKey]) {
+      continue;
+    }
     if ([launchedUpdate.commitTime compare:update.commitTime] == NSOrderedDescending) {
       [updatesToDelete addObject:update];
       if (!nextNewestUpdate || [update.commitTime compare:nextNewestUpdate.commitTime] == NSOrderedDescending) {

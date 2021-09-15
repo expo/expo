@@ -1,4 +1,4 @@
-import { SyntheticPlatformEmitter, CodedError } from '@unimodules/core';
+import { SyntheticPlatformEmitter, CodedError } from 'expo-modules-core';
 import { VoiceQuality } from './Speech.types';
 //https://developer.mozilla.org/en-US/docs/Web/API/SpeechSynthesisUtterance/text
 const MAX_SPEECH_INPUT_LENGTH = 32767;
@@ -54,7 +54,7 @@ export default {
     },
     getVoices() {
         const voices = window.speechSynthesis.getVoices();
-        return voices.map(voice => ({
+        return voices.map((voice) => ({
             identifier: voice.voiceURI,
             quality: VoiceQuality.Default,
             isDefault: voice.default,

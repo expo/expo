@@ -8,6 +8,12 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 1.5.2 — 2021-06-16
+
+_This version does not introduce any user-facing changes._
+
 ## 1.5.1 — 2021-04-20
 
 ### 🐛 Bug fixes

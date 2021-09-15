@@ -12,7 +12,7 @@ import expo.modules.updates.UpdatesUtils;
 import expo.modules.updates.db.UpdatesDatabase;
 import expo.modules.updates.db.entity.AssetEntity;
 import expo.modules.updates.db.entity.UpdateEntity;
-import expo.modules.updates.manifest.Manifest;
+import expo.modules.updates.manifest.UpdateManifest;
 import expo.modules.updates.manifest.ManifestMetadata;
 
 import java.io.File;
@@ -30,7 +30,7 @@ public class RemoteLoader {
   private FileDownloader mFileDownloader;
   private File mUpdatesDirectory;
 
-  private Manifest mManifest;
+  private UpdateManifest mUpdateManifest;
   private UpdateEntity mUpdateEntity;
   private LoaderCallback mCallback;
   private int mAssetTotal = 0;
@@ -58,11 +58,11 @@ public class RemoteLoader {
      * the RemoteLoader should continue to download the update described by this manifest, based on
      * (for example) whether or not it already has the update downloaded locally.
      *
-     * @param manifest Manifest downloaded by RemoteLoader
+     * @param updateManifest Manifest downloaded by RemoteLoader
      * @return true if RemoteLoader should download the update described in the manifest,
      *         false if not.
      */
-    boolean onManifestLoaded(Manifest manifest);
+    boolean onUpdateManifestLoaded(UpdateManifest updateManifest);
   }
 
   public RemoteLoader(Context context, UpdatesConfiguration configuration, UpdatesDatabase database, FileDownloader fileDownloader, File updatesDirectory) {
@@ -91,10 +91,10 @@ public class RemoteLoader {
       }
 
       @Override
-      public void onSuccess(Manifest manifest) {
-        mManifest = manifest;
-        if (mCallback.onManifestLoaded(manifest)) {
-          processManifest(manifest);
+      public void onSuccess(UpdateManifest updateManifest) {
+        mUpdateManifest = updateManifest;
+        if (mCallback.onUpdateManifestLoaded(updateManifest)) {
+          processUpdateManifest(updateManifest);
         } else {
           mUpdateEntity = null;
           finishWithSuccess();
@@ -118,7 +118,7 @@ public class RemoteLoader {
       return;
     }
 
-    ManifestMetadata.saveMetadata(mManifest, mDatabase, mConfiguration);
+    ManifestMetadata.saveMetadata(mUpdateManifest, mDatabase, mConfiguration);
 
     mCallback.onSuccess(mUpdateEntity);
     reset();
@@ -138,18 +138,18 @@ public class RemoteLoader {
 
   // private helper methods
 
-  private void processManifest(Manifest manifest) {
-    if (manifest.isDevelopmentMode()) {
+  private void processUpdateManifest(UpdateManifest updateManifest) {
+    if (updateManifest.isDevelopmentMode()) {
       // insert into database but don't try to load any assets;
       // the RN runtime will take care of that and we don't want to cache anything
-      UpdateEntity updateEntity = manifest.getUpdateEntity();
+      UpdateEntity updateEntity = updateManifest.getUpdateEntity();
       mDatabase.updateDao().insertUpdate(updateEntity);
       mDatabase.updateDao().markUpdateFinished(updateEntity);
       finishWithSuccess();
       return;
     }
 
-    UpdateEntity newUpdateEntity = manifest.getUpdateEntity();
+    UpdateEntity newUpdateEntity = updateManifest.getUpdateEntity();
     UpdateEntity existingUpdateEntity = mDatabase.updateDao().loadUpdateWithId(newUpdateEntity.id);
 
     // if something has gone wrong on the server and we have two updates with the same id
@@ -174,7 +174,7 @@ public class RemoteLoader {
         // however, it's not ready, so we should try to download all the assets again.
         mUpdateEntity = existingUpdateEntity;
       }
-      downloadAllAssets(manifest.getAssetEntityList());
+      downloadAllAssets(updateManifest.getAssetEntityList());
     }
   }
 

@@ -1,4 +1,4 @@
-import { css } from '@emotion/core';
+import { css } from '@emotion/react';
 import { theme } from '@expo/styleguide';
 
 import * as Constants from '~/constants/theme';
@@ -33,6 +33,11 @@ export const globalTables = css`
 
   td {
     text-align: left;
+
+    li,
+    blockquote {
+      font-size: 0.8rem !important;
+    }
   }
 
   th {

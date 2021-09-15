@@ -1,3 +1,3 @@
-import { NativeModulesProxy } from '@unimodules/core';
+import { NativeModulesProxy } from 'expo-modules-core';
 export default NativeModulesProxy.ExpoFontLoader;
 //# sourceMappingURL=ExpoFontLoader.js.map

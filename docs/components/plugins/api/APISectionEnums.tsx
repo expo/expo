@@ -4,10 +4,21 @@ import { InlineCode } from '~/components/base/code';
 import { LI, UL } from '~/components/base/list';
 import { H2, H3Code } from '~/components/plugins/Headings';
 import { EnumDefinitionData, EnumValueData } from '~/components/plugins/api/APIDataTypes';
-import { CommentTextBlock, mdInlineRenderers } from '~/components/plugins/api/APISectionUtils';
+import { CommentTextBlock, mdInlineComponents } from '~/components/plugins/api/APISectionUtils';
 
 export type APISectionEnumsProps = {
   data: EnumDefinitionData[];
+};
+
+const sortByValue = (a: EnumValueData, b: EnumValueData) => {
+  if (a.defaultValue && b.defaultValue) {
+    if (a.defaultValue.includes(`'`) && b.defaultValue.includes(`'`)) {
+      return a.defaultValue.localeCompare(b.defaultValue);
+    } else {
+      return parseInt(a.defaultValue, 10) - parseInt(b.defaultValue, 10);
+    }
+  }
+  return 0;
 };
 
 const renderEnum = ({ name, children, comment }: EnumDefinitionData): JSX.Element => (
@@ -17,12 +28,18 @@ const renderEnum = ({ name, children, comment }: EnumDefinitionData): JSX.Elemen
     </H3Code>
     <CommentTextBlock comment={comment} />
     <UL>
-      {children.map((enumValue: EnumValueData) => (
+      {children.sort(sortByValue).map((enumValue: EnumValueData) => (
         <LI key={enumValue.name}>
           <InlineCode>
             {name}.{enumValue.name}
           </InlineCode>
-          <CommentTextBlock comment={enumValue.comment} renderers={mdInlineRenderers} withDash />
+          {enumValue?.defaultValue && (
+            <>
+              {' : '}
+              <InlineCode>{enumValue?.defaultValue}</InlineCode>
+            </>
+          )}
+          <CommentTextBlock comment={enumValue.comment} components={mdInlineComponents} withDash />
         </LI>
       ))}
     </UL>

@@ -1,8 +1,9 @@
 import { Command } from '@expo/commander';
 import JsonFile from '@expo/json-file';
 import chalk from 'chalk';
-import path from 'path';
 import inquirer from 'inquirer';
+import nullthrows from 'nullthrows';
+import path from 'path';
 import semver from 'semver';
 
 import {
@@ -42,7 +43,7 @@ export default (program: Command) => {
       const changesMap: ChangesMap = new Map();
       const versions = await JsonFile.readAsync<ChangelogVersions>(VERSIONS_FILE_PATH);
       const previousVersion = await mainChangelog.getLastPublishedVersionAsync();
-      const nextVersion = semver.inc(previousVersion, 'major');
+      const nextVersion = nullthrows(semver.inc(nullthrows(previousVersion), 'major'));
 
       if (!previousVersion) {
         throw new Error('Cannot find last published version in SDK changelog.');

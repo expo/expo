@@ -1,5 +1,5 @@
-import { CodedError, Platform } from '@unimodules/core';
 import compareUrls from 'compare-urls';
+import { CodedError, Platform } from 'expo-modules-core';
 import { AppState, Dimensions } from 'react-native';
 import { WebBrowserResultType, } from './WebBrowser.types';
 const POPUP_WIDTH = 500;
@@ -46,7 +46,7 @@ export default {
             return;
         dismissPopup();
     },
-    maybeCompleteAuthSession({ skipRedirectCheck, }) {
+    maybeCompleteAuthSession({ skipRedirectCheck }) {
         if (!Platform.isDOMAvailable) {
             return {
                 type: 'failed',
@@ -77,7 +77,7 @@ export default {
             throw new CodedError('ERR_WEB_BROWSER_REDIRECT', `The window cannot complete the redirect request because the invoking window doesn't have a reference to it's parent. This can happen if the parent window was reloaded.`);
         }
         // Send the URL back to the opening window.
-        parent.postMessage({ url, expoSender: handle }, parent.location);
+        parent.postMessage({ url, expoSender: handle }, parent.location.toString());
         return { type: 'success', message: `Attempting to complete auth` };
         // Maybe set timer to throw an error if the window is still open after attempting to complete.
     },

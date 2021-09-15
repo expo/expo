@@ -18,6 +18,13 @@ module.exports = {
           req.url = req.url.replace(assets, `/assets/../..${assets}`);
         }
 
+        // Same as above when testing anything required via Asset.downloadAsync() in test-suite
+        const testSuiteAssets = '/test-suite/assets/';
+
+        if (req.url.startsWith(testSuiteAssets)) {
+          req.url = req.url.replace(testSuiteAssets, '/assets/../test-suite/assets/');
+        }
+
         return middleware(req, res, next);
       };
     },

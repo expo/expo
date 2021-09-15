@@ -20,7 +20,7 @@ function _createMockAsset({
 }
 
 beforeEach(() => {
-  ({ NativeModulesProxy } = require('@unimodules/core'));
+  ({ NativeModulesProxy } = require('expo-modules-core'));
   NativeModulesProxy.ExpoFontLoader.loadAsync.mockImplementation(async () => {});
   Font = require('expo-font');
 });

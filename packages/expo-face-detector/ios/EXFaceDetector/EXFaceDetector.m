@@ -6,7 +6,6 @@
 //
 
 #import <EXFaceDetector/EXFaceDetector.h>
-#import <Firebase/Firebase.h>
 #import <MLKitFaceDetection/MLKitFaceDetection.h>
 
 @implementation EXFaceDetector

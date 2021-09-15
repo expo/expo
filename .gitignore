@@ -14,6 +14,9 @@ yarn-error.log
 # Ruby
 .direnv
 
+# Env
+.envrc.local
+
 # Emacs
 *~
 
@@ -50,6 +53,7 @@ xcuserdata
 *.apk
 *.hprof
 /android/**/build
+/android/**/.cxx
 /android/**/local.properties
 /android/captures
 /android/expoview/libs/ReactAndroid-temp

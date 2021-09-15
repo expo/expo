@@ -2,11 +2,11 @@
 
 #if __has_include(<EXSegment/EXSegment.h>)
 #import <EXSegment/EXSegment.h>
-#import <UMCore/UMModuleRegistryConsumer.h>
+#import <ExpoModulesCore/EXModuleRegistryConsumer.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface EXScopedSegment : EXSegment <UMModuleRegistryConsumer>
+@interface EXScopedSegment : EXSegment <EXModuleRegistryConsumer>
 
 @end
 

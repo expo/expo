@@ -1,4 +1,4 @@
-import { css } from '@emotion/core';
+import { css } from '@emotion/react';
 import {
   theme,
   palette,
@@ -19,7 +19,7 @@ import { X } from './icons/X';
 
 import { paragraph } from '~/components/base/typography';
 import AlgoliaSearch from '~/components/plugins/AlgoliaSearch';
-import { isEasReleased } from '~/constants/FeatureFlags';
+import { shouldShowFeaturePreviewLink } from '~/constants/FeatureFlags';
 import * as Constants from '~/constants/theme';
 
 const STYLES_LOGO = css`
@@ -388,9 +388,13 @@ export default class DocumentationHeader extends React.PureComponent<Props> {
               <span css={SECTION_LINK_TEXT}>Guides</span>
             </a>
           </Link>
-          {isEasReleased ? (
-            <Link href="/eas" passHref>
-              <a css={[SECTION_LINK, this.props.activeSection === 'eas' && SECTION_LINK_ACTIVE]}>
+          {shouldShowFeaturePreviewLink() ? (
+            <Link href="/feature-preview" passHref>
+              <a
+                css={[
+                  SECTION_LINK,
+                  this.props.activeSection === 'featurePreview' && SECTION_LINK_ACTIVE,
+                ]}>
                 <span css={SECTION_LINK_TEXT}>Feature Preview</span>
               </a>
             </Link>

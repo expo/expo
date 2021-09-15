@@ -52,6 +52,7 @@ static NSString * const ABI40_0_0EXUpdatesAppLoaderErrorDomain = @"ABI40_0_0EXUp
   _existingAssets = [NSMutableArray new];
   _updateManifest = nil;
   _manifestBlock = nil;
+  _assetBlock = nil;
   _successBlock = nil;
   _errorBlock = nil;
 }
@@ -60,6 +61,7 @@ static NSString * const ABI40_0_0EXUpdatesAppLoaderErrorDomain = @"ABI40_0_0EXUp
 
 - (void)loadUpdateFromUrl:(NSURL *)url
                onManifest:(ABI40_0_0EXUpdatesAppLoaderManifestBlock)manifestBlock
+                    asset:(ABI40_0_0EXUpdatesAppLoaderAssetBlock)assetBlock
                   success:(ABI40_0_0EXUpdatesAppLoaderSuccessBlock)success
                     error:(ABI40_0_0EXUpdatesAppLoaderErrorBlock)error
 {
@@ -77,7 +79,9 @@ static NSString * const ABI40_0_0EXUpdatesAppLoaderErrorDomain = @"ABI40_0_0EXUp
 {
   if (![self _shouldStartLoadingUpdate:updateManifest]) {
     if (_successBlock) {
-      _successBlock(nil);
+      dispatch_async(_completionQueue, ^{
+        self->_successBlock(nil);
+      });
     }
     return;
   }
@@ -201,6 +205,7 @@ static NSString * const ABI40_0_0EXUpdatesAppLoaderErrorDomain = @"ABI40_0_0EXUp
   [_arrayLock lock];
   [self->_assetsToLoad removeObject:asset];
   [self->_existingAssets addObject:asset];
+  [self _notifyProgressWithAsset:asset];
   if (![self->_assetsToLoad count]) {
     [self _finish];
   }
@@ -214,6 +219,7 @@ static NSString * const ABI40_0_0EXUpdatesAppLoaderErrorDomain = @"ABI40_0_0EXUp
   [_arrayLock lock];
   [self->_assetsToLoad removeObject:asset];
   [self->_erroredAssets addObject:asset];
+  [self _notifyProgressWithAsset:asset];
   if (![self->_assetsToLoad count]) {
     [self _finish];
   }
@@ -231,6 +237,7 @@ static NSString * const ABI40_0_0EXUpdatesAppLoaderErrorDomain = @"ABI40_0_0EXUp
   asset.contentHash = [ABI40_0_0EXUpdatesUtils sha256WithData:data];
   asset.downloadTime = [NSDate date];
   [self->_finishedAssets addObject:asset];
+  [self _notifyProgressWithAsset:asset];
 
   if (![self->_assetsToLoad count]) {
     [self _finish];
@@ -243,6 +250,19 @@ static NSString * const ABI40_0_0EXUpdatesAppLoaderErrorDomain = @"ABI40_0_0EXUp
 - (BOOL)_shouldStartLoadingUpdate:(ABI40_0_0EXUpdatesUpdate *)updateManifest
 {
   return _manifestBlock(updateManifest);
+}
+
+/**
+ * This should only be called on threads that have acquired self->_arrayLock
+ */
+- (void)_notifyProgressWithAsset:(ABI40_0_0EXUpdatesAsset *)asset
+{
+  if (_assetBlock) {
+    _assetBlock(asset,
+                _finishedAssets.count + _existingAssets.count,
+                _erroredAssets.count,
+                _finishedAssets.count + _existingAssets.count + _erroredAssets.count + _assetsToLoad.count);
+  }
 }
 
 - (void)_finishWithError:(NSError *)error
@@ -265,6 +285,7 @@ static NSString * const ABI40_0_0EXUpdatesAppLoaderErrorDomain = @"ABI40_0_0EXUp
       if (!existingAssetFound) {
         // the database and filesystem have gotten out of sync
         // do our best to create a new entry for this file even though it already existed on disk
+        // TODO: we should probably get rid of this assumption that if an asset exists on disk with the same filename, it's the same asset
         NSData *contents = [NSData dataWithContentsOfURL:[self->_directory URLByAppendingPathComponent:existingAsset.filename]];
         existingAsset.contentHash = [ABI40_0_0EXUpdatesUtils sha256WithData:contents];
         existingAsset.downloadTime = [NSDate date];

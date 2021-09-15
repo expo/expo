@@ -10,18 +10,30 @@
   return @"ExponentScopedBridgeModule";
 }
 
-- (instancetype)initWithExperienceId:(NSString *)experienceId kernelServiceDelegate:(id)kernelServiceInstance params:(NSDictionary *)params
+- (instancetype)initWithExperienceStableLegacyId:(NSString *)experienceStableLegacyId
+                                        scopeKey:(NSString *)scopeKey
+                                    easProjectId:(NSString *)easProjectId
+                           kernelServiceDelegate:(id)kernelServiceInstance
+                                          params:(NSDictionary *)params
 {
   if (self = [super init]) {
-    _experienceId = experienceId;
+    _experienceStableLegacyId = experienceStableLegacyId;
+    _scopeKey = scopeKey;
+    _easProjectId = easProjectId;
   }
   return self;
 }
 
-- (instancetype)initWithExperienceId:(NSString *)experienceId kernelServiceDelegates:(NSDictionary *)kernelServiceInstances params:(NSDictionary *)params
+- (instancetype)initWithExperienceStableLegacyId:(NSString *)experienceStableLegacyId
+                                        scopeKey:(NSString *)scopeKey
+                                    easProjectId:(NSString *)easProjectId
+                          kernelServiceDelegates:(NSDictionary *)kernelServiceInstances
+                                          params:(NSDictionary *)params
 {
   if (self = [super init]) {
-    _experienceId = experienceId;
+    _experienceStableLegacyId = experienceStableLegacyId;
+    _scopeKey = scopeKey;
+    _easProjectId = easProjectId;
   }
   return self;
 }

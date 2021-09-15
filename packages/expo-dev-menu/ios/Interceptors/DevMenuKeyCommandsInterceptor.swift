@@ -58,6 +58,7 @@ extension UIResponder: DevMenuUIResponderExtensionProtocol {
       
       if action.isAvailable() {
         action.call()
+        DevMenuManager.shared.closeMenu()
       }
     }
   }

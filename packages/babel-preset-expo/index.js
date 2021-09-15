@@ -1,6 +1,8 @@
 const lazyImportsBlacklist = require('./lazy-imports-blacklist');
 
-module.exports = function(api, options = {}) {
+let hasWarnedJsxRename = false;
+
+module.exports = function (api, options = {}) {
   const { web = {}, native = {} } = options;
 
   const bundler = api.caller(getBundler);
@@ -22,6 +24,34 @@ module.exports = function(api, options = {}) {
   // `metro-react-native-babel-preset` will handle it.
   const lazyImportsOption = options && options.lazyImports;
 
+  const extraPlugins = [];
+
+  if ('useTransformReactJsxExperimental' in platformOptions && !hasWarnedJsxRename) {
+    // https://github.com/expo/expo/pull/13945#pullrequestreview-724327024
+    hasWarnedJsxRename = true;
+    console.warn(
+      'Warning: useTransformReactJsxExperimental has been renamed to useTransformReactJSXExperimental (capitalized JSX) in react-native@0.64.0'
+    );
+  }
+
+  // Set true to disable `@babel/plugin-transform-react-jsx`
+  // we override this logic outside of the metro preset so we can add support for
+  // React 17 automatic JSX transformations.
+  // If the logic for `useTransformReactJSXExperimental` ever changes in `metro-react-native-babel-preset`
+  // then this block should be updated to reflect those changes.
+  if (!platformOptions.useTransformReactJSXExperimental) {
+    extraPlugins.push([
+      require('@babel/plugin-transform-react-jsx'),
+      {
+        // Defaults to `classic`, pass in `automatic` for auto JSX transformations.
+        runtime: options && options.jsxRuntime,
+      },
+    ]);
+    // Purposefully not adding the deprecated packages:
+    // `@babel/plugin-transform-react-jsx-self` and `@babel/plugin-transform-react-jsx-source`
+    // back to the preset.
+  }
+
   return {
     presets: [
       [
@@ -31,10 +61,27 @@ module.exports = function(api, options = {}) {
         // Reference: https://github.com/expo/expo/pull/4685#discussion_r307143920
         require('metro-react-native-babel-preset'),
         {
+          // Defaults to undefined, set to something truthy to disable `@babel/plugin-transform-react-jsx-self` and `@babel/plugin-transform-react-jsx-source`.
+          withDevTools: platformOptions.withDevTools,
+          // Defaults to undefined, set to `true` to disable `@babel/plugin-transform-flow-strip-types`
+          disableFlowStripTypesTransform: platformOptions.disableFlowStripTypesTransform,
+          // Defaults to undefined, set to `false` to disable `@babel/plugin-transform-runtime`
+          enableBabelRuntime: platformOptions.enableBabelRuntime,
+          // Defaults to `'default'`, can also use `'hermes-canary'`
+          unstable_transformProfile: platformOptions.unstable_transformProfile,
+          // Set true to disable `@babel/plugin-transform-react-jsx` and
+          // the deprecated packages `@babel/plugin-transform-react-jsx-self`, and `@babel/plugin-transform-react-jsx-source`.
+          //
+          // Otherwise, you'll sometime get errors like the following (starting in Expo SDK 43, React Native 64, React 17):
+          //
+          // TransformError App.js: /path/to/App.js: Duplicate __self prop found. You are most likely using the deprecated transform-react-jsx-self Babel plugin.
+          // Both __source and __self are automatically set when using the automatic jsxRuntime. Please remove transform-react-jsx-source and transform-react-jsx-self from your Babel config.
+          useTransformReactJSXExperimental: true,
+
           disableImportExportTransform: platformOptions.disableImportExportTransform,
           lazyImportExportTransform:
             lazyImportsOption === true
-              ? importModuleSpecifier => {
+              ? (importModuleSpecifier) => {
                   // Do not lazy-initialize packages that are local imports (similar to `lazy: true`
                   // behavior) or are in the blacklist.
                   return !(
@@ -49,6 +96,8 @@ module.exports = function(api, options = {}) {
       ],
     ],
     plugins: [
+      getObjectRestSpreadPlugin(),
+      ...extraPlugins,
       getAliasPlugin(),
       [require.resolve('@babel/plugin-proposal-decorators'), { legacy: true }],
       platform === 'web' && [require.resolve('babel-plugin-react-native-web')],
@@ -73,6 +122,15 @@ function getAliasPlugin() {
     ];
   }
   return null;
+}
+
+/**
+ * metro-react-native-babel-preset configures this plugin with `{ loose: true }`, which breaks all
+ * getters and setters in spread objects. We need to add this plugin ourself without that option.
+ * @see https://github.com/expo/expo/pull/11960#issuecomment-887796455
+ */
+function getObjectRestSpreadPlugin() {
+  return [require.resolve('@babel/plugin-proposal-object-rest-spread'), { loose: false }];
 }
 
 function hasModule(name) {
@@ -104,8 +162,11 @@ function getBundler(caller) {
     if (name === 'metro') {
       // This is a hack to determine if metro is being used.
       return 'metro';
+    } else if (name === 'next-babel-turbo-loader') {
+      // NextJS 11
+      return 'webpack';
     } else if (name === 'babel-loader') {
-      // This won't work in all cases as tools like Next.js could change the name of their loader.
+      // expo/webpack-config, gatsby, storybook, and next.js <10
       return 'webpack';
     }
   }

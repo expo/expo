@@ -3,6 +3,7 @@ title: DocumentPicker
 sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-document-picker'
 ---
 
+import APISection from '~/components/plugins/APISection';
 import InstallSection from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 import Video from '~/components/plugins/Video'
@@ -43,23 +44,4 @@ For iOS bare projects, the `DocumentPicker` module requires the iCloud entitleme
 import * as DocumentPicker from 'expo-document-picker';
 ```
 
-### `DocumentPicker.getDocumentAsync(options)`
-
-Display the system UI for choosing a document. By default, the chosen file is copied to [the app's internal cache directory](filesystem.md#filesystemcachedirectory).
-
-> **Notes for Web:** The system UI can only be shown after user activation (e.g. a `Button` press). Therefore, calling `getDocumentAsync` in `componentDidMount`, for example, will **not** work as intended. The `cancel` event will not be returned in the browser due to platform restrictions and inconsistencies across browsers.
-
-#### Arguments
-
-- **options (_object_)** --
-
-  A map of options:
-
-  - **type (_string_)** -- The [MIME type](https://en.wikipedia.org/wiki/Media_type) of the documents that are available to be picked. Is also supports wildcards like `image/*` to choose any image. To allow any type of document you can use `*/*`. Defaults to `*/*`.
-  - **copyToCacheDirectory (_boolean_)** -- If `true`, the picked file is copied to [`FileSystem.CacheDirectory`](filesystem.md#filesystemcachedirectory), which allows other Expo APIs to read the file immediately. Defaults to `true`. This may impact performance for large files, so you should consider setting this to `false` if you expect users to pick particularly large files and your app does not need immediate read access.
-  - **multiple (_boolean_)** -- (Web Only) Allows multiple files to be selected from the system UI. Defaults to `false`.
-
-#### Returns
-
-On success returns a promise that resolves to an object containing `{ type: 'success', uri, name, size }` where `uri` is a URI to the local document file, `name` is its original name and `size` is its size in bytes.
-If the user cancelled the document picking, the promise resolves to `{ type: 'cancel' }`.
+<APISection packageName="expo-document-picker" apiName="DocumentPicker" />

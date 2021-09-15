@@ -1,18 +1,17 @@
 //  Copyright © 2019 650 Industries. All rights reserved.
 
-#import <ABI40_0_0EXUpdates/ABI40_0_0EXUpdatesAppController.h>
+#import <ABI40_0_0EXUpdates/ABI40_0_0EXUpdatesAppController+Internal.h>
 #import <ABI40_0_0EXUpdates/ABI40_0_0EXUpdatesAppLauncher.h>
 #import <ABI40_0_0EXUpdates/ABI40_0_0EXUpdatesAppLauncherNoDatabase.h>
 #import <ABI40_0_0EXUpdates/ABI40_0_0EXUpdatesAppLauncherWithDatabase.h>
 #import <ABI40_0_0EXUpdates/ABI40_0_0EXUpdatesReaper.h>
-#import <ABI40_0_0EXUpdates/ABI40_0_0EXUpdatesSelectionPolicyNewest.h>
+#import <ABI40_0_0EXUpdates/ABI40_0_0EXUpdatesSelectionPolicyFactory.h>
 #import <ABI40_0_0EXUpdates/ABI40_0_0EXUpdatesUtils.h>
+#import <ABI40_0_0React/ABI40_0_0RCTReloadCommand.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
 static NSString * const ABI40_0_0EXUpdatesAppControllerErrorDomain = @"ABI40_0_0EXUpdatesAppController";
-
-static NSString * const ABI40_0_0EXUpdatesConfigPlistName = @"Expo";
 
 static NSString * const ABI40_0_0EXUpdatesUpdateAvailableEventName = @"updateAvailable";
 static NSString * const ABI40_0_0EXUpdatesNoUpdateAvailableEventName = @"noUpdateAvailable";
@@ -21,16 +20,17 @@ static NSString * const ABI40_0_0EXUpdatesErrorEventName = @"error";
 @interface ABI40_0_0EXUpdatesAppController ()
 
 @property (nonatomic, readwrite, strong) ABI40_0_0EXUpdatesConfig *config;
-@property (nonatomic, readwrite, strong) id<ABI40_0_0EXUpdatesAppLauncher> launcher;
+@property (nonatomic, readwrite, strong, nullable) id<ABI40_0_0EXUpdatesAppLauncher> launcher;
 @property (nonatomic, readwrite, strong) ABI40_0_0EXUpdatesDatabase *database;
-@property (nonatomic, readwrite, strong) id<ABI40_0_0EXUpdatesSelectionPolicy> selectionPolicy;
+@property (nonatomic, readwrite, strong) ABI40_0_0EXUpdatesSelectionPolicy *selectionPolicy;
+@property (nonatomic, readwrite, strong) ABI40_0_0EXUpdatesSelectionPolicy *defaultSelectionPolicy;
+@property (nonatomic, readwrite, strong) dispatch_queue_t controllerQueue;
 @property (nonatomic, readwrite, strong) dispatch_queue_t assetFilesQueue;
 
 @property (nonatomic, readwrite, strong) NSURL *updatesDirectory;
 
 @property (nonatomic, strong) id<ABI40_0_0EXUpdatesAppLauncher> candidateLauncher;
 @property (nonatomic, assign) BOOL hasLaunched;
-@property (nonatomic, strong) dispatch_queue_t controllerQueue;
 
 @property (nonatomic, assign) BOOL isStarted;
 @property (nonatomic, assign) BOOL isEmergencyLaunch;
@@ -54,9 +54,9 @@ static NSString * const ABI40_0_0EXUpdatesErrorEventName = @"error";
 - (instancetype)init
 {
   if (self = [super init]) {
-    _config = [self _loadConfigFromExpoPlist];
+    _config = [ABI40_0_0EXUpdatesConfig configWithExpoPlist];
     _database = [[ABI40_0_0EXUpdatesDatabase alloc] init];
-    _selectionPolicy = [[ABI40_0_0EXUpdatesSelectionPolicyNewest alloc] initWithRuntimeVersion:[ABI40_0_0EXUpdatesUtils getRuntimeVersionWithConfig:_config]];
+    _defaultSelectionPolicy = [ABI40_0_0EXUpdatesSelectionPolicyFactory filterAwarePolicyWithRuntimeVersion:[ABI40_0_0EXUpdatesUtils getRuntimeVersionWithConfig:_config]];
     _assetFilesQueue = dispatch_queue_create("expo.controller.AssetFilesQueue", DISPATCH_QUEUE_SERIAL);
     _controllerQueue = dispatch_queue_create("expo.controller.ControllerQueue", DISPATCH_QUEUE_SERIAL);
     _isStarted = NO;
@@ -66,18 +66,36 @@ static NSString * const ABI40_0_0EXUpdatesErrorEventName = @"error";
 
 - (void)setConfiguration:(NSDictionary *)configuration
 {
-  if (_updatesDirectory) {
+  if (_isStarted) {
     @throw [NSException exceptionWithName:NSInternalInconsistencyException
                                    reason:@"ABI40_0_0EXUpdatesAppController:setConfiguration should not be called after start"
                                  userInfo:@{}];
   }
   [_config loadConfigFromDictionary:configuration];
-  _selectionPolicy = [[ABI40_0_0EXUpdatesSelectionPolicyNewest alloc] initWithRuntimeVersion:[ABI40_0_0EXUpdatesUtils getRuntimeVersionWithConfig:_config]];
+  [self resetSelectionPolicyToDefault];
+}
+
+- (ABI40_0_0EXUpdatesSelectionPolicy *)selectionPolicy
+{
+  if (!_selectionPolicy) {
+    _selectionPolicy = _defaultSelectionPolicy;
+  }
+  return _selectionPolicy;
+}
+
+- (void)setNextSelectionPolicy:(ABI40_0_0EXUpdatesSelectionPolicy *)nextSelectionPolicy
+{
+  _selectionPolicy = nextSelectionPolicy;
+}
+
+- (void)resetSelectionPolicyToDefault
+{
+  _selectionPolicy = nil;
 }
 
 - (void)start
 {
-  NSAssert(!_updatesDirectory, @"ABI40_0_0EXUpdatesAppController:start should only be called once per instance");
+  NSAssert(!_isStarted, @"ABI40_0_0EXUpdatesAppController:start should only be called once per instance");
 
   if (!_config.isEnabled) {
     ABI40_0_0EXUpdatesAppLauncherNoDatabase *launcher = [[ABI40_0_0EXUpdatesAppLauncherNoDatabase alloc] init];
@@ -96,26 +114,23 @@ static NSString * const ABI40_0_0EXUpdatesErrorEventName = @"error";
                                    reason:@"expo-updates is enabled, but no valid URL is configured under ABI40_0_0EXUpdatesURL. If you are making a release build for the first time, make sure you have run `expo publish` at least once."
                                  userInfo:@{}];
   }
+  if (!_config.scopeKey) {
+    @throw [NSException exceptionWithName:NSInternalInconsistencyException
+                                   reason:@"expo-updates was configured with no scope key. Make sure a valid URL is configured under ABI40_0_0EXUpdatesURL."
+                                 userInfo:@{}];
+  }
 
   _isStarted = YES;
 
   NSError *fsError;
-  _updatesDirectory = [ABI40_0_0EXUpdatesUtils initializeUpdatesDirectoryWithError:&fsError];
+  [self initializeUpdatesDirectoryWithError:&fsError];
   if (fsError) {
     [self _emergencyLaunchWithFatalError:fsError];
     return;
   }
 
-  __block BOOL dbSuccess;
-  __block NSError *dbError;
-  dispatch_semaphore_t dbSemaphore = dispatch_semaphore_create(0);
-  dispatch_async(_database.databaseQueue, ^{
-    dbSuccess = [self->_database openDatabaseInDirectory:self->_updatesDirectory withError:&dbError];
-    dispatch_semaphore_signal(dbSemaphore);
-  });
-
-  dispatch_semaphore_wait(dbSemaphore, DISPATCH_TIME_FOREVER);
-  if (!dbSuccess) {
+  NSError *dbError;
+  if (![self initializeUpdatesDatabaseWithError:&dbError]) {
     [self _emergencyLaunchWithFatalError:dbError];
     return;
   }
@@ -123,7 +138,7 @@ static NSString * const ABI40_0_0EXUpdatesErrorEventName = @"error";
   ABI40_0_0EXUpdatesAppLoaderTask *loaderTask = [[ABI40_0_0EXUpdatesAppLoaderTask alloc] initWithConfig:_config
                                                                              database:_database
                                                                             directory:_updatesDirectory
-                                                                      selectionPolicy:_selectionPolicy
+                                                                      selectionPolicy:self.selectionPolicy
                                                                         delegateQueue:_controllerQueue];
   loaderTask.delegate = self;
   [loaderTask start];
@@ -158,24 +173,20 @@ static NSString * const ABI40_0_0EXUpdatesErrorEventName = @"error";
 
 - (void)requestRelaunchWithCompletion:(ABI40_0_0EXUpdatesAppRelaunchCompletionBlock)completion
 {
-  if (_bridge) {
-    ABI40_0_0EXUpdatesAppLauncherWithDatabase *launcher = [[ABI40_0_0EXUpdatesAppLauncherWithDatabase alloc] initWithConfig:_config database:_database directory:_updatesDirectory completionQueue:_controllerQueue];
-    _candidateLauncher = launcher;
-    [launcher launchUpdateWithSelectionPolicy:self->_selectionPolicy completion:^(NSError * _Nullable error, BOOL success) {
-      if (success) {
-        self->_launcher = self->_candidateLauncher;
-        completion(YES);
-        [self->_bridge reload];
-        [self _runReaper];
-      } else {
-        NSLog(@"Failed to relaunch: %@", error.localizedDescription);
-        completion(NO);
-      }
-    }];
-  } else {
-    NSLog(@"ABI40_0_0EXUpdatesAppController: Failed to reload because bridge was nil. Did you set the bridge property on the controller singleton?");
-    completion(NO);
-  }
+  ABI40_0_0EXUpdatesAppLauncherWithDatabase *launcher = [[ABI40_0_0EXUpdatesAppLauncherWithDatabase alloc] initWithConfig:_config database:_database directory:_updatesDirectory completionQueue:_controllerQueue];
+  _candidateLauncher = launcher;
+  [launcher launchUpdateWithSelectionPolicy:self.selectionPolicy completion:^(NSError * _Nullable error, BOOL success) {
+    if (success) {
+      self->_launcher = self->_candidateLauncher;
+      completion(YES);
+      ABI40_0_0RCTReloadCommandSetBundleURL(launcher.launchAssetUrl);
+      ABI40_0_0RCTTriggerReloadCommandListeners(@"Requested by JavaScript - Updates.reloadAsync()");
+      [self runReaper];
+    } else {
+      NSLog(@"Failed to relaunch: %@", error.localizedDescription);
+      completion(NO);
+    }
+  }];
 }
 
 - (nullable ABI40_0_0EXUpdatesUpdate *)launchedUpdate
@@ -235,36 +246,68 @@ static NSString * const ABI40_0_0EXUpdatesErrorEventName = @"error";
     [ABI40_0_0EXUpdatesUtils sendEventToBridge:_bridge withType:ABI40_0_0EXUpdatesErrorEventName body:@{@"message": error.localizedDescription}];
   } else if (status == ABI40_0_0EXUpdatesBackgroundUpdateStatusUpdateAvailable) {
     NSAssert(update != nil, @"Background update with error status must have a nonnull update object");
-    [ABI40_0_0EXUpdatesUtils sendEventToBridge:_bridge withType:ABI40_0_0EXUpdatesUpdateAvailableEventName body:@{@"manifest": update.rawManifest}];
+    [ABI40_0_0EXUpdatesUtils sendEventToBridge:_bridge withType:ABI40_0_0EXUpdatesUpdateAvailableEventName body:@{@"manifest": update.manifest.rawManifestJSON}];
   } else if (status == ABI40_0_0EXUpdatesBackgroundUpdateStatusNoUpdateAvailable) {
     [ABI40_0_0EXUpdatesUtils sendEventToBridge:_bridge withType:ABI40_0_0EXUpdatesNoUpdateAvailableEventName body:@{}];
   }
 }
 
-# pragma mark - internal
+# pragma mark - ABI40_0_0EXUpdatesAppController+Internal
 
-- (ABI40_0_0EXUpdatesConfig *)_loadConfigFromExpoPlist
+- (BOOL)initializeUpdatesDirectoryWithError:(NSError ** _Nullable)error
 {
-  NSString *configPath = [[NSBundle mainBundle] pathForResource:ABI40_0_0EXUpdatesConfigPlistName ofType:@"plist"];
-  if (!configPath) {
-    @throw [NSException exceptionWithName:NSInternalInconsistencyException
-                                   reason:@"Cannot load configuration from Expo.plist. Please ensure you've followed the setup and installation instructions for expo-updates to create Expo.plist and add it to your Xcode project."
-                                 userInfo:@{}];
-  }
-
-  return [ABI40_0_0EXUpdatesConfig configWithDictionary:[NSDictionary dictionaryWithContentsOfFile:configPath]];
+  _updatesDirectory = [ABI40_0_0EXUpdatesUtils initializeUpdatesDirectoryWithError:error];
+  return _updatesDirectory != nil;
 }
 
-- (void)_runReaper
+- (BOOL)initializeUpdatesDatabaseWithError:(NSError ** _Nullable)error
+{
+  __block NSError *dbError;
+  dispatch_semaphore_t dbSemaphore = dispatch_semaphore_create(0);
+  dispatch_async(_database.databaseQueue, ^{
+    [self->_database openDatabaseInDirectory:self->_updatesDirectory withError:&dbError];
+    dispatch_semaphore_signal(dbSemaphore);
+  });
+
+  dispatch_semaphore_wait(dbSemaphore, DISPATCH_TIME_FOREVER);
+  if (dbError && error) {
+    *error = dbError;
+  }
+  return dbError == nil;
+}
+
+- (void)setDefaultSelectionPolicy:(ABI40_0_0EXUpdatesSelectionPolicy *)selectionPolicy
+{
+  _defaultSelectionPolicy = selectionPolicy;
+}
+
+- (void)setLauncher:(nullable id<ABI40_0_0EXUpdatesAppLauncher>)launcher
+{
+  _launcher = launcher;
+}
+
+- (void)setConfigurationInternal:(ABI40_0_0EXUpdatesConfig *)configuration
+{
+  _config = configuration;
+}
+
+- (void)setIsStarted:(BOOL)isStarted
+{
+  _isStarted = isStarted;
+}
+
+- (void)runReaper
 {
   if (_launcher.launchedUpdate) {
     [ABI40_0_0EXUpdatesReaper reapUnusedUpdatesWithConfig:_config
                                         database:_database
                                        directory:_updatesDirectory
-                                 selectionPolicy:_selectionPolicy
+                                 selectionPolicy:self.selectionPolicy
                                   launchedUpdate:_launcher.launchedUpdate];
   }
 }
+
+# pragma mark - internal
 
 - (void)_emergencyLaunchWithFatalError:(NSError *)error
 {

@@ -2,9 +2,9 @@
 title: Troubleshooting
 ---
 
-### The --dev-client flag is not supported in expo-cli
+Issues will often be solved by upgrading to the latest version of `expo-dev-client`, Expo CLI, and EAS CLI.
 
-You will need to upgrade your expo-cli to version 4.0.16 or above to use your development client
+If you're not able to resolve your issue, please [let us know!](https://github.com/expo/expo/issues/new?template=dev_client_bug_report.yml)
 
 ### The keyboard shortcuts for the Dev Menu don't work reliably in my iOS simulator
 

@@ -12,6 +12,14 @@ const config: VendoringTargetConfig = {
     },
   },
   modules: {
+    '@stripe/stripe-react-native': {
+      source: 'https://github.com/stripe/stripe-react-native.git',
+      ios: {},
+      // android: {
+      //   includeFiles: 'android/**',
+      //   excludeFiles: ['android/gradle.properties', 'android/.settings', 'android/.project'],
+      // },
+    },
     'lottie-react-native': {
       source: 'https://github.com/lottie-react-native/lottie-react-native.git',
       ios: {},
@@ -29,29 +37,18 @@ const config: VendoringTargetConfig = {
       source: 'https://github.com/software-mansion/react-native-reanimated.git',
       semverPrefix: '~',
       ios: {
-        // TODO: The podspec checks RN version to choose between Folly and RCT-Folly dependency,
-        // however we don't have RN's package.json in the place where it looks for and the fallback
-        // is set to `0.64.0` that we don't support yet.
-        // You can remove these mutations once we update RN to 0.64 or higher.
         mutatePodspec(podspec: Podspec) {
-          // Depend on Folly instead of RCT-Folly
-          delete podspec.dependencies['RCT-Folly'];
-          podspec.dependencies.Folly = [];
-
-          // Overwrite search paths for Folly
-          [podspec.pod_target_xcconfig, podspec.xcconfig].forEach((xcconfig) => {
-            xcconfig.HEADER_SEARCH_PATHS = xcconfig.HEADER_SEARCH_PATHS.replace(
-              '/RCT-Folly',
-              '/Folly'
-            );
-          });
-
+          // TODO: The podspec checks RN version from package.json.
+          // however we don't have RN's package.json in the place where it looks for and the fallback
+          // is set to `0.64.0`. we should manually transform to the exact RN version.
+          // currently both expo go and reanimated latest RN version is `0.64` that we don't need to transform.
+          // keep the code here in case reanimated upgrade and fallback default RN version as `0.65.0`.
           // Fix compiler flags
-          podspec.compiler_flags = podspec.compiler_flags.replace('RNVERSION=64', 'RNVERSION=63');
-          podspec.xcconfig.OTHER_CFLAGS = podspec.xcconfig.OTHER_CFLAGS.replace(
-            'RNVERSION=64',
-            'RNVERSION=63'
-          );
+          // podspec.compiler_flags = podspec.compiler_flags.replace('RNVERSION=64', 'RNVERSION=63');
+          // podspec.xcconfig.OTHER_CFLAGS = podspec.xcconfig.OTHER_CFLAGS.replace(
+          //   'RNVERSION=64',
+          //   'RNVERSION=63'
+          // );
         },
       },
     },
@@ -91,8 +88,7 @@ const config: VendoringTargetConfig = {
             {
               paths: 'RNCWKProcessPoolManager.h',
               find: '- (WKProcessPool *)sharedProcessPool;',
-              replaceWith:
-                '- (WKProcessPool *)sharedProcessPoolForExperienceId:(NSString *)experienceId;',
+              replaceWith: '- (WKProcessPool *)sharedProcessPoolForScopeKey:(NSString *)scopeKey;',
             },
             {
               paths: 'RNCWKProcessPoolManager.m',
@@ -113,47 +109,49 @@ const config: VendoringTargetConfig = {
   return self;
 }
 
-- (WKProcessPool *)sharedProcessPoolForExperienceId:(NSString *)experienceId
+- (WKProcessPool *)sharedProcessPoolForScopeKey:(NSString *)scopeKey
 {
-  if (!experienceId) {
+  if (!scopeKey) {
     return [self sharedProcessPool];
   }
-  if (!_pools[experienceId]) {
-    _pools[experienceId] = [[WKProcessPool alloc] init];
+  if (!_pools[scopeKey]) {
+    _pools[scopeKey] = [[WKProcessPool alloc] init];
   }
-  return _pools[experienceId];
+  return _pools[scopeKey];
 }
 `,
             },
             {
               paths: 'RNCWebView.h',
               find: /@interface RNCWebView : RCTView/,
-              replaceWith: '$&\n@property (nonatomic, strong) NSString *experienceId;',
+              replaceWith: '$&\n@property (nonatomic, strong) NSString *scopeKey;',
             },
             {
               paths: 'RNCWebView.m',
               find: /(\[\[RNCWKProcessPoolManager sharedManager\] sharedProcessPool)]/,
-              replaceWith: '$1ForExperienceId:self.experienceId]',
+              replaceWith: '$1ForScopeKey:self.scopeKey]',
             },
             {
               paths: 'RNCWebViewManager.m',
               find: /@implementation RNCWebViewManager\s*{/,
-              replaceWith: '$&\n  NSString *_experienceId;',
+              replaceWith: '$&\n  NSString *_scopeKey;',
             },
             {
               paths: 'RNCWebViewManager.m',
               find: '*webView = [RNCWebView new];',
-              replaceWith: '*webView = [RNCWebView new];\n  webView.experienceId = _experienceId;',
+              replaceWith: '*webView = [RNCWebView new];\n  webView.scopeKey = _scopeKey;',
             },
             {
               paths: 'RNCWebViewManager.m',
               find: /RCT_EXPORT_MODULE\(\)/,
-              replaceWith: `- (instancetype)initWithExperienceId:(NSString *)experienceId
-               kernelServiceDelegate:(id)kernelServiceInstance
-                              params:(NSDictionary *)params
+              replaceWith: `- (instancetype)initWithExperienceStableLegacyId:(NSString *)experienceStableLegacyId
+                                        scopeKey:(NSString *)scopeKey
+                                    easProjectId:(NSString *)easProjectId
+                           kernelServiceDelegate:(id)kernelServiceInstance
+                                          params:(NSDictionary *)params
 {
   if (self = [super init]) {
-    _experienceId = experienceId;
+    _scopeKey = scopeKey;
   }
   return self;
 }`,
@@ -167,14 +165,41 @@ const config: VendoringTargetConfig = {
     },
     '@react-native-community/datetimepicker': {
       source: 'https://github.com/react-native-community/react-native-datetimepicker.git',
+      // TODO: Uncomment the following once the new vendoring scripts support Android
+      // android: {
+      //   transforms: {
+      //     content: [
+      //       {
+      //         paths: 'RNTimePickerDialogFragment.java',
+      //         find: /"ClockTimePickerDialog"/,
+      //         replaceWith: '"ReactAndroidClockTimePickerDialog"',
+      //       },
+      //       {
+      //         paths: 'RNTimePickerDialogFragment.java',
+      //         find: /"SpinnerTimePickerDialog"/,
+      //         replaceWith: '"ReactAndroidSpinnerTimePickerDialog"',
+      //       },
+      //       {
+      //         paths: 'RNDatePickerDialogFragment.java',
+      //         find: /"CalendarDatePickerDialog"/,
+      //         replaceWith: '"ReactAndroidCalendarDatePickerDialog"',
+      //       },
+      //       {
+      //         paths: 'RNDatePickerDialogFragment.java',
+      //         find: /"SpinnerDatePickerDialog"/,
+      //         replaceWith: '"ReactAndroidSpinnerDatePickerDialog"',
+      //       },
+      //     ],
+      //   },
+      // },
     },
     // NOTE(brentvatne): masked-view has been renamed to
     // @react-native-masked-view/masked-view but we should synchronize moving
     // over to the new package name along with React Navigation
-    '@react-native-community/masked-view': {
+    '@react-native-masked-view/masked-view': {
       source: 'https://github.com/react-native-masked-view/masked-view',
     },
-    '@react-native-community/viewpager': {
+    'react-native-pager-view': {
       source: 'https://github.com/callstack/react-native-viewpager',
       ios: {},
     },
@@ -187,7 +212,6 @@ const config: VendoringTargetConfig = {
     },
     '@react-native-picker/picker': {
       source: 'https://github.com/react-native-picker/picker',
-      ios: {},
     },
     '@react-native-community/slider': {
       source: 'https://github.com/callstack/react-native-slider',

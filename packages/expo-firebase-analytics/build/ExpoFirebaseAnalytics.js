@@ -1,6 +1,6 @@
-import { NativeModulesProxy, UnavailabilityError, CodedError } from '@unimodules/core';
 import Constants from 'expo-constants';
 import { DEFAULT_APP_NAME, DEFAULT_APP_OPTIONS, DEFAULT_WEB_APP_OPTIONS } from 'expo-firebase-core';
+import { NativeModulesProxy, UnavailabilityError, CodedError } from 'expo-modules-core';
 import { Platform } from 'react-native';
 import FirebaseAnalyticsJS from './FirebaseAnalyticsJS';
 const { ExpoFirebaseAnalytics } = NativeModulesProxy;
@@ -41,7 +41,9 @@ function callAnalyticsModule(funcName, ...args) {
                 clientId: clientIdForJS ?? Constants.installationId,
                 sessionId: Constants.sessionId,
                 strictNativeEmulation: true,
-                appName: Constants.manifest?.name || 'Unnamed Expo project',
+                appName: Constants.manifest?.name ||
+                    Constants.manifest2?.extra?.expoClient?.name ||
+                    'Unnamed Expo project',
                 appVersion: Constants.nativeAppVersion || undefined,
                 headers: {
                     // Google Analaytics seems to ignore certain user-agents. (e.g. "okhttp/3.12.1")
@@ -55,7 +57,7 @@ function callAnalyticsModule(funcName, ...args) {
         }
         if (isUnavailabilityLoggingEnabled) {
             if (!isUnavailabilityWarningLogged) {
-                console.warn(`Firebase Analytics is not available in the Expo client. See "https://docs.expo.io/versions/latest/sdk/firebase-analytics" on more information on setting up Firebase Analytics with the standard Expo client.`);
+                console.warn(`Firebase Analytics is not available in the Expo client. See "https://docs.expo.dev/versions/latest/sdk/firebase-analytics" on more information on setting up Firebase Analytics with the standard Expo client.`);
                 isUnavailabilityWarningLogged = true;
             }
             console.info(`ExpoFirebaseAnalytics.${funcName}: ${JSON.stringify(args)}`);

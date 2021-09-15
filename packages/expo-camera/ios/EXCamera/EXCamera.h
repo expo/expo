@@ -1,9 +1,9 @@
 #import <AVFoundation/AVFoundation.h>
 #import <UIKit/UIKit.h>
 #import <EXCamera/EXCameraManager.h>
-#import <UMCore/UMModuleRegistry.h>
-#import <UMCore/UMAppLifecycleListener.h>
-#import <UMCameraInterface/UMCameraInterface.h>
+#import <ExpoModulesCore/EXModuleRegistry.h>
+#import <ExpoModulesCore/EXAppLifecycleListener.h>
+#import <ExpoModulesCore/EXCameraInterface.h>
 
 @class EXCameraManager;
 
@@ -56,7 +56,15 @@ typedef NS_ENUM(NSInteger, EXCameraVideoResolution) {
   EXCameraVideo4x3 = 3,
 };
 
-@interface EXCamera : UIView <AVCaptureMetadataOutputObjectsDelegate, AVCaptureFileOutputRecordingDelegate, UMAppLifecycleListener, UMCameraInterface, AVCapturePhotoCaptureDelegate>
+typedef NS_ENUM(NSInteger, EXCameraVideoCodec) {
+  EXCameraVideoCodecH264 = 0,
+  EXCameraVideoCodecHEVC = 1,
+  EXCameraVideoCodecJPEG = 2,
+  EXCameraVideoCodecAppleProRes422 = 3,
+  EXCameraVideoCodecAppleProRes4444 = 4,
+};
+
+@interface EXCamera : UIView <AVCaptureMetadataOutputObjectsDelegate, AVCaptureFileOutputRecordingDelegate, EXAppLifecycleListener, EXCameraInterface, AVCapturePhotoCaptureDelegate>
 
 @property (nonatomic, strong) dispatch_queue_t sessionQueue;
 @property (nonatomic, strong) AVCaptureSession *session;
@@ -77,8 +85,9 @@ typedef NS_ENUM(NSInteger, EXCameraVideoResolution) {
 
 @property (nonatomic, assign) BOOL isScanningBarCodes;
 @property (nonatomic, assign) BOOL isDetectingFaces;
+@property (nonatomic, assign) AVVideoCodecType videoCodecType;
 
-- (id)initWithModuleRegistry:(UMModuleRegistry *)moduleRegistry;
+- (id)initWithModuleRegistry:(EXModuleRegistry *)moduleRegistry;
 - (void)updateType;
 - (void)updateFlashMode;
 - (void)updateFocusMode;
@@ -88,8 +97,8 @@ typedef NS_ENUM(NSInteger, EXCameraVideoResolution) {
 - (void)updatePictureSize;
 - (void)updateFaceDetectorSettings:(NSDictionary *)settings;
 - (void)setBarCodeScannerSettings:(NSDictionary *)settings;
-- (void)takePicture:(NSDictionary *)options resolve:(UMPromiseResolveBlock)resolve reject:(UMPromiseRejectBlock)reject;
-- (void)record:(NSDictionary *)options resolve:(UMPromiseResolveBlock)resolve reject:(UMPromiseRejectBlock)reject;
+- (void)takePicture:(NSDictionary *)options resolve:(EXPromiseResolveBlock)resolve reject:(EXPromiseRejectBlock)reject;
+- (void)record:(NSDictionary *)options resolve:(EXPromiseResolveBlock)resolve reject:(EXPromiseRejectBlock)reject;
 - (void)stopRecording;
 - (void)resumePreview;
 - (void)pausePreview;
@@ -98,5 +107,4 @@ typedef NS_ENUM(NSInteger, EXCameraVideoResolution) {
 - (void)onPictureSaved:(NSDictionary *)event;
 
 @end
-
 

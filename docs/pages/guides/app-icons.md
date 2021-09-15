@@ -41,4 +41,4 @@ Create an app icon and splash image with the [Figma template](https://www.figma.
 
 ### Expo Go and Web
 
-- If your app contains `privacy: public` in [app.json](../workflow/configuration.md), it will show up on your expo.io profile. We will mask your icon to have rounded corners in that circumstance, so if it already looks reasonable on iOS, it will probably look good here as well.
+- If your app contains `privacy: public` in [app.json](../workflow/configuration.md), it will show up on your expo.dev profile. We will mask your icon to have rounded corners in that circumstance, so if it already looks reasonable on iOS, it will probably look good here as well.

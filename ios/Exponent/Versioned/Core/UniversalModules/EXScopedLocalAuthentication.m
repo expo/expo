@@ -1,11 +1,12 @@
 // Copyright © 2019-present 650 Industries. All rights reserved.
 
 #if __has_include(<EXLocalAuthentication/EXLocalAuthentication.h>)
-#import "EXScopedLocalAuthentication.h"
 #import <LocalAuthentication/LocalAuthentication.h>
-#import <UMCore/UMUtilities.h>
+#import <ExpoModulesCore/EXUtilities.h>
+#import <ExpoModulesCore/EXConstantsInterface.h>
+
+#import "EXScopedLocalAuthentication.h"
 #import "EXConstantsBinding.h"
-#import <UMConstantsInterface/UMConstantsInterface.h>
 
 @interface EXScopedLocalAuthentication ()
 
@@ -15,15 +16,15 @@
 
 @implementation EXScopedLocalAuthentication
 
-- (void)setModuleRegistry:(UMModuleRegistry *)moduleRegistry
+- (void)setModuleRegistry:(EXModuleRegistry *)moduleRegistry
 {
-  _isInExpoClient = [((EXConstantsBinding *)[moduleRegistry getModuleImplementingProtocol:@protocol(UMConstantsInterface)]).appOwnership isEqualToString:@"expo"];
+  _isInExpoClient = [((EXConstantsBinding *)[moduleRegistry getModuleImplementingProtocol:@protocol(EXConstantsInterface)]).appOwnership isEqualToString:@"expo"];
 }
 
-UM_EXPORT_METHOD_AS(authenticateAsync,
+EX_EXPORT_METHOD_AS(authenticateAsync,
                     authenticateWithOptions:(NSDictionary *)options
-                    resolve:(UMPromiseResolveBlock)resolve
-                    reject:(UMPromiseRejectBlock)reject)
+                    resolve:(EXPromiseResolveBlock)resolve
+                    reject:(EXPromiseRejectBlock)reject)
 {
   BOOL isInExpoClient = _isInExpoClient;
   [super authenticateWithOptions:options resolve:^(NSDictionary *result) {

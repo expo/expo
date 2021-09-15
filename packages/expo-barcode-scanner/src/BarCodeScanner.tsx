@@ -1,7 +1,12 @@
-import { UnavailabilityError } from '@unimodules/core';
+import {
+  PermissionResponse,
+  PermissionStatus,
+  PermissionHookOptions,
+  createPermissionHook,
+  UnavailabilityError,
+} from 'expo-modules-core';
 import * as React from 'react';
 import { Platform, ViewProps } from 'react-native';
-import { PermissionResponse, PermissionStatus } from 'unimodules-permissions-interface';
 
 import ExpoBarCodeScannerModule from './ExpoBarCodeScannerModule';
 import ExpoBarCodeScannerView from './ExpoBarCodeScannerView';
@@ -40,9 +45,9 @@ export type BarCodeEventCallbackArguments = {
   nativeEvent: BarCodeEvent;
 };
 
-export type BarCodeScannedCallback = (params: BarCodeEvent) => void;
+export { PermissionResponse, PermissionStatus, PermissionHookOptions };
 
-export { PermissionResponse, PermissionStatus };
+export type BarCodeScannedCallback = (params: BarCodeEvent) => void;
 
 export interface BarCodeScannerProps extends ViewProps {
   type?: 'front' | 'back' | number;
@@ -75,6 +80,21 @@ export class BarCodeScanner extends React.Component<BarCodeScannerProps> {
   static async requestPermissionsAsync(): Promise<PermissionResponse> {
     return ExpoBarCodeScannerModule.requestPermissionsAsync();
   }
+
+  // @needsAudit
+  /**
+   * Check or request permissions for the barcode scanner.
+   * This uses both `requestPermissionAsync` and `getPermissionsAsync` to interact with the permissions.
+   *
+   * @example
+   * ```ts
+   * const [status, requestPermission] = BarCodeScanner.usePermissions();
+   * ```
+   */
+  static usePermissions = createPermissionHook({
+    getMethod: BarCodeScanner.getPermissionsAsync,
+    requestMethod: BarCodeScanner.requestPermissionsAsync,
+  });
 
   static async scanFromURLAsync(
     url: string,
@@ -111,25 +131,25 @@ export class BarCodeScanner extends React.Component<BarCodeScannerProps> {
     );
   }
 
-  onObjectDetected = (callback?: BarCodeScannedCallback) => ({
-    nativeEvent,
-  }: BarCodeEventCallbackArguments) => {
-    const { type } = nativeEvent;
-    if (
-      this.lastEvents[type] &&
-      this.lastEventsTimes[type] &&
-      JSON.stringify(nativeEvent) === this.lastEvents[type] &&
-      Date.now() - this.lastEventsTimes[type] < EVENT_THROTTLE_MS
-    ) {
-      return;
-    }
+  onObjectDetected =
+    (callback?: BarCodeScannedCallback) =>
+    ({ nativeEvent }: BarCodeEventCallbackArguments) => {
+      const { type } = nativeEvent;
+      if (
+        this.lastEvents[type] &&
+        this.lastEventsTimes[type] &&
+        JSON.stringify(nativeEvent) === this.lastEvents[type] &&
+        Date.now() - this.lastEventsTimes[type] < EVENT_THROTTLE_MS
+      ) {
+        return;
+      }
 
-    if (callback) {
-      callback(nativeEvent);
-      this.lastEventsTimes[type] = new Date();
-      this.lastEvents[type] = JSON.stringify(nativeEvent);
-    }
-  };
+      if (callback) {
+        callback(nativeEvent);
+        this.lastEventsTimes[type] = new Date();
+        this.lastEvents[type] = JSON.stringify(nativeEvent);
+      }
+    };
 
   convertNativeProps(props: BarCodeScannerProps) {
     const nativeProps: BarCodeScannerProps = {};
@@ -146,4 +166,5 @@ export class BarCodeScanner extends React.Component<BarCodeScannerProps> {
   }
 }
 
-export const { Constants, getPermissionsAsync, requestPermissionsAsync } = BarCodeScanner;
+export const { Constants, getPermissionsAsync, requestPermissionsAsync, usePermissions } =
+  BarCodeScanner;

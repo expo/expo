@@ -1,22 +1,22 @@
 // Copyright 2019-present 650 Industries. All rights reserved.
 
-#if __has_include(<UMReactNativeAdapter/EXPermissionsService.h>)
+#if __has_include(<ExpoModulesCore/EXPermissionsService.h>)
 #import <UIKit/UIKit.h>
-#import <UMReactNativeAdapter/EXPermissionsService.h>
+#import <ExpoModulesCore/EXPermissionsService.h>
 #import "EXConstantsBinding.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
 @protocol EXPermissionsScopedModuleDelegate
 
-- (UMPermissionStatus)getPermission:(NSString *)permissionType forExperience:(NSString *)experienceId;
-- (BOOL)savePermission:(NSDictionary *)permission ofType:(NSString *)type forExperience:(NSString *)experienceId;
+- (EXPermissionStatus)getPermission:(NSString *)permissionType forExperience:(NSString *)scopeKey;
+- (BOOL)savePermission:(NSDictionary *)permission ofType:(NSString *)type forExperience:(NSString *)scopeKey;
 
 @end
 
 @interface EXScopedPermissions : EXPermissionsService
 
-- (instancetype)initWithExperienceId:(NSString *)experienceId andConstantsBinding:(EXConstantsBinding *)constantsBinding;
+- (instancetype)initWithScopeKey:(NSString *)scopeKey andConstantsBinding:(EXConstantsBinding *)constantsBinding;
 
 @end
 

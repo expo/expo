@@ -1,7 +1,7 @@
 // Copyright 2016-present 650 Industries. All rights reserved.
 
-#import <UMPermissionsInterface/UMPermissionsInterface.h>
+#import <ExpoModulesCore/EXPermissionsInterface.h>
 
-@interface EXBareCodeCameraRequester : NSObject<UMPermissionsRequester>
+@interface EXBareCodeCameraRequester : NSObject<EXPermissionsRequester>
 
 @end

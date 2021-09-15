@@ -10,6 +10,7 @@
 @property (nonatomic, strong) NSURL *url;
 @property (nonatomic, strong) NSDictionary *headers;
 @property (nonatomic, strong) void (^statusUpdateCallback)(NSDictionary *);
+@property (nonatomic, strong) void (^metadataUpdateCallback)(NSDictionary *);
 @property (nonatomic, strong) void (^errorCallback)(NSString *);
 
 + (NSDictionary *)getUnloadedStatus;
@@ -20,13 +21,13 @@
          withLoadFinishBlock:(void (^)(BOOL success, NSDictionary *successStatus, NSString *error))loadFinishBlock;
 
 - (void)setStatus:(NSDictionary *)parameters
-         resolver:(UMPromiseResolveBlock)resolve
-         rejecter:(UMPromiseRejectBlock)reject;
+         resolver:(EXPromiseResolveBlock)resolve
+         rejecter:(EXPromiseRejectBlock)reject;
 
 - (NSDictionary *)getStatus;
 
 - (void)replayWithStatus:(NSDictionary *)status
-                resolver:(UMPromiseResolveBlock)resolve
-                rejecter:(UMPromiseRejectBlock)reject;
+                resolver:(EXPromiseResolveBlock)resolve
+                rejecter:(EXPromiseRejectBlock)reject;
 
 @end

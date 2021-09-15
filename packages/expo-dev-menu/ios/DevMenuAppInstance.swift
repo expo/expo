@@ -27,10 +27,7 @@ class DevMenuAppInstance: NSObject, RCTBridgeDelegate {
   func sourceURL(for bridge: RCTBridge!) -> URL! {
     #if DEBUG
     if let packagerHost = jsPackagerHost() {
-      if RCTBundleURLProvider.sharedSettings()?.isPackagerRunning(packagerHost) == true {
-        return RCTBundleURLProvider.jsBundleURL(forBundleRoot: "index", packagerHost: packagerHost, enableDev: true, enableMinification: false)
-      }
-      print("Expo DevMenu packager host \(packagerHost) not found, falling back to bundled source file...");
+      return RCTBundleURLProvider.jsBundleURL(forBundleRoot: "index", packagerHost: packagerHost, enableDev: true, enableMinification: false)
     }
     #endif
     return jsSourceUrl()

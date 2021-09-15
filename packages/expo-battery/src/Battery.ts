@@ -1,4 +1,4 @@
-import { EventEmitter, Subscription } from '@unimodules/core';
+import { EventEmitter, Subscription } from 'expo-modules-core';
 
 import {
   BatteryLevelEvent,
@@ -78,6 +78,26 @@ export async function isLowPowerModeEnabledAsync(): Promise<boolean> {
     return false;
   }
   return await ExpoBattery.isLowPowerModeEnabledAsync();
+}
+
+// @needsAudit
+/**
+ * Checks whether battery optimization is enabled for your application.
+ * If battery optimization is enabled for your app, background tasks might be affected
+ * when your app goes into doze mode state. (only on Android 6.0 or later)
+ * @return Returns a `Promise` which fulfills with a `boolean` value of either `true` or `false`,
+ * indicating whether the battery optimization is enabled or disabled, respectively. (Android only)
+ * # Example
+ * ```ts
+ * await Battery.isBatteryOptimizationEnabledAsync();
+ * // true
+ * ```
+ */
+export async function isBatteryOptimizationEnabledAsync(): Promise<boolean> {
+  if (!ExpoBattery.isBatteryOptimizationEnabledAsync) {
+    return false;
+  }
+  return await ExpoBattery.isBatteryOptimizationEnabledAsync();
 }
 
 /**

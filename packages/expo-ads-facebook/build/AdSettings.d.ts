@@ -1,13 +1,16 @@
-import { PermissionResponse, PermissionStatus, PermissionExpiration } from 'unimodules-permissions-interface';
+import { PermissionResponse, PermissionStatus, PermissionExpiration, PermissionHookOptions } from 'expo-modules-core';
 export declare type AdLogLevel = 'none' | 'debug' | 'verbose' | 'warning' | 'error' | 'notification';
-export { PermissionResponse, PermissionStatus, PermissionExpiration };
+export { PermissionResponse, PermissionStatus, PermissionExpiration, PermissionHookOptions };
+declare function requestPermissionsAsync(): Promise<PermissionResponse>;
+declare function getPermissionsAsync(): Promise<PermissionResponse>;
 declare const _default: {
     /**
      * Contains hash of the device id
      */
     readonly currentDeviceHash: string;
-    requestPermissionsAsync(): Promise<PermissionResponse>;
-    getPermissionsAsync(): Promise<PermissionResponse>;
+    requestPermissionsAsync: typeof requestPermissionsAsync;
+    getPermissionsAsync: typeof getPermissionsAsync;
+    usePermissions: (options?: PermissionHookOptions<object> | undefined) => [PermissionResponse | null, () => Promise<PermissionResponse>, () => Promise<PermissionResponse>];
     /**
      * Sets whether Facebook SDK should enable advertising tracking.
      */

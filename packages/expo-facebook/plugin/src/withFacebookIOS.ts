@@ -1,6 +1,4 @@
-import { ConfigPlugin, IOSConfig } from '@expo/config-plugins';
-import { InfoPlist } from '@expo/config-plugins/build/ios/IosConfig.types';
-import { createInfoPlistPlugin } from '@expo/config-plugins/build/plugins/ios-plugins';
+import { ConfigPlugin, InfoPlist, IOSConfig, withInfoPlist } from '@expo/config-plugins';
 import { ExpoConfig } from '@expo/config-types';
 
 const { Scheme } = IOSConfig;
@@ -20,7 +18,12 @@ const fbSchemes = ['fbapi', 'fb-messenger-api', 'fbauth2', 'fbshareextension'];
 
 const USER_TRACKING = 'This identifier will be used to deliver personalized ads to you.';
 
-export const withFacebookIOS = createInfoPlistPlugin(setFacebookConfig, 'withFacebookIOS');
+export const withFacebookIOS: ConfigPlugin = (config) => {
+  return withInfoPlist(config, (config) => {
+    config.modResults = setFacebookConfig(config, config.modResults);
+    return config;
+  });
+};
 
 /**
  * Getters
@@ -38,6 +41,7 @@ export function getFacebookAppId(config: Pick<ExpoConfigFacebook, 'facebookAppId
 export function getFacebookDisplayName(config: ExpoConfigFacebook) {
   return config.facebookDisplayName ?? null;
 }
+
 export function getFacebookAutoInitEnabled(config: ExpoConfigFacebook) {
   return config.facebookAutoInitEnabled ?? null;
 }
@@ -173,7 +177,7 @@ export function setFacebookApplicationQuerySchemes(
 
   // Remove all schemes
   for (const scheme of fbSchemes) {
-    const index = existingSchemes.findIndex(s => s === scheme);
+    const index = existingSchemes.findIndex((s) => s === scheme);
     if (index > -1) {
       existingSchemes.splice(index, 1);
     }
@@ -200,8 +204,11 @@ export function setFacebookApplicationQuerySchemes(
 }
 
 export const withUserTrackingPermission: ConfigPlugin<{
-  userTrackingPermission?: string;
+  userTrackingPermission?: string | false;
 } | void> = (config, { userTrackingPermission } = {}) => {
+  if (userTrackingPermission === false) {
+    return config;
+  }
   if (!config.ios) config.ios = {};
   if (!config.ios.infoPlist) config.ios.infoPlist = {};
   config.ios.infoPlist.NSUserTrackingUsageDescription =

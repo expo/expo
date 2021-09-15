@@ -99,11 +99,16 @@ export default class ImageManipulatorScreen extends React.Component<{}, State> {
   }
 
   _renderImage = () => {
+    const height =
+      this.state.image?.height && this.state.image?.height < 300 ? this.state.image?.height : 300;
+    const width =
+      this.state.image?.width && this.state.image?.width < 300 ? this.state.image?.width : 300;
+
     return (
       <View style={styles.imageContainer}>
         <Image
           source={{ uri: (this.state.image! as Asset).localUri || this.state.image!.uri }}
-          style={styles.image}
+          style={[styles.image, { height, width }]}
         />
       </View>
     );
@@ -172,7 +177,7 @@ export default class ImageManipulatorScreen extends React.Component<{}, State> {
   };
 
   _reset = () => {
-    this.setState(state => ({ image: state.original }));
+    this.setState((state) => ({ image: state.original }));
   };
 
   _manipulate = async (
@@ -205,8 +210,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   image: {
-    width: 300,
-    height: 300,
     resizeMode: 'contain',
   },
   button: {

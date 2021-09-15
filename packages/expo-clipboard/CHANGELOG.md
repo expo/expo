@@ -2,13 +2,29 @@
 
 ## Unpublished
 
-- Fixed `getStringAsync ` causing crashes on Web when an exception is thrown. ([#12494](https://github.com/expo/expo/pull/12494) by [@robertherber](https://github.com/robertherber))
-
 ### 🛠 Breaking changes
+
+- Dropped support for iOS 11.0 ([#14383](https://github.com/expo/expo/pull/14383) by [@cruzach](https://github.com/cruzach))
 
 ### 🎉 New features
 
 ### 🐛 Bug fixes
+
+### 💡 Others
+
+- Clean up Android code. ([#13517](https://github.com/expo/expo/pull/13517) by [@mstach60161](https://github.com/mstach60161))
+- Migrated from `@unimodules/core` to `expo-modules-core`. ([#13757](https://github.com/expo/expo/pull/13757) by [@tsapeta](https://github.com/tsapeta))
+
+## 1.1.0 — 2021-06-16
+
+### 🎉 New features
+
+- Added Clipboard event listener ([#13050](https://github.com/expo/expo/pull/13050) by [@cruzach](https://github.com/cruzach))
+
+### 🐛 Bug fixes
+
+- Fixed `getStringAsync` causing crashes on Web when an exception is thrown. ([#12494](https://github.com/expo/expo/pull/12494) by [@robertherber](https://github.com/robertherber))
+- Fixed newlines not being copied on web. ([#12951](https://github.com/expo/expo/pull/12951) by [@cruzach](https://github.com/cruzach))
 
 ## 1.0.2 — 2021-03-23
 

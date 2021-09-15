@@ -4,7 +4,7 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.provider.MediaStore.Images.Media;
 
-import org.unimodules.core.Promise;
+import expo.modules.core.Promise;
 
 import static expo.modules.medialibrary.MediaLibraryUtils.queryAssetInfo;
 

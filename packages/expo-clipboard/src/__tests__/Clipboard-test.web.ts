@@ -2,7 +2,7 @@
  * @jest-environment jsdom
  */
 
-import Clipboard from '../Clipboard';
+import * as Clipboard from '../Clipboard';
 
 describe('Clipboard', () => {
   it('copies the provided string', () => {

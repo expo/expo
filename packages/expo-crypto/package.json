@@ -1,6 +1,6 @@
 {
   "name": "expo-crypto",
-  "version": "9.1.0",
+  "version": "9.2.0",
   "description": "Expo universal module for crypto",
   "main": "build/Crypto.js",
   "types": "build/Crypto.d.ts",
@@ -34,12 +34,12 @@
   },
   "author": "650 Industries, Inc.",
   "license": "MIT",
-  "homepage": "https://docs.expo.io/versions/latest/sdk/crypto/",
+  "homepage": "https://docs.expo.dev/versions/latest/sdk/crypto/",
   "jest": {
     "preset": "expo-module-scripts"
   },
-  "unimodulePeerDependencies": {
-    "@unimodules/core": "*"
+  "dependencies": {
+    "expo-modules-core": "~0.3.1"
   },
   "devDependencies": {
     "expo-module-scripts": "^2.0.0"

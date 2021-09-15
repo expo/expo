@@ -1,10 +1,8 @@
-import { Global } from '@emotion/core';
+import { Global } from '@emotion/react';
 import { BlockingSetInitialColorMode } from '@expo/styleguide';
-import { extractCritical } from 'emotion-server';
 import Document, { Html, Head, Main, NextScript, DocumentContext } from 'next/document';
-import * as React from 'react';
+import React from 'react';
 
-import { getInitGoogleScriptTag, getGoogleScriptTag } from '~/common/analytics';
 import { globalExtras } from '~/global-styles/extras';
 import { globalFonts } from '~/global-styles/fonts';
 import { globalNProgress } from '~/global-styles/nprogress';
@@ -16,18 +14,9 @@ import { globalTippy } from '~/global-styles/tippy';
 export default class MyDocument extends Document<{ css?: string }> {
   static async getInitialProps(ctx: DocumentContext) {
     const initialProps = await Document.getInitialProps(ctx);
-    const styles = extractCritical(initialProps.html);
     return {
       ...initialProps,
-      styles: (
-        <>
-          {initialProps.styles}
-          <style
-            data-emotion-css={styles.ids.join(' ')}
-            dangerouslySetInnerHTML={{ __html: styles.css }}
-          />
-        </>
-      ),
+      styles: <>{initialProps.styles}</>,
     };
   }
 
@@ -54,9 +43,6 @@ export default class MyDocument extends Document<{ css?: string }> {
             type="font/woff2"
             crossOrigin="anonymous"
           />
-
-          {getInitGoogleScriptTag({ id: 'UA-107832480-3' })}
-          {getGoogleScriptTag()}
         </Head>
         <body>
           <BlockingSetInitialColorMode />

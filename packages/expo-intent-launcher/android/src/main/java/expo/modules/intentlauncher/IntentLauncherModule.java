@@ -9,16 +9,16 @@ import android.os.Bundle;
 import android.net.Uri;
 import androidx.annotation.NonNull;
 
-import org.unimodules.core.ExportedModule;
-import org.unimodules.core.ModuleRegistry;
-import org.unimodules.core.Promise;
-import org.unimodules.core.arguments.ReadableArguments;
-import org.unimodules.core.interfaces.ActivityEventListener;
-import org.unimodules.core.interfaces.ActivityProvider;
-import org.unimodules.core.interfaces.ExpoMethod;
-import org.unimodules.core.interfaces.services.UIManager;
-import org.unimodules.core.errors.CurrentActivityNotFoundException;
-import org.unimodules.core.errors.ModuleNotFoundException;
+import expo.modules.core.ExportedModule;
+import expo.modules.core.ModuleRegistry;
+import expo.modules.core.Promise;
+import expo.modules.core.arguments.ReadableArguments;
+import expo.modules.core.interfaces.ActivityEventListener;
+import expo.modules.core.interfaces.ActivityProvider;
+import expo.modules.core.interfaces.ExpoMethod;
+import expo.modules.core.interfaces.services.UIManager;
+import expo.modules.core.errors.CurrentActivityNotFoundException;
+import expo.modules.core.errors.ModuleNotFoundException;
 import expo.modules.intentlauncher.exceptions.ActivityAlreadyStartedException;
 
 public class IntentLauncherModule extends ExportedModule implements ActivityEventListener {

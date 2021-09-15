@@ -1,5 +1,7 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
+import Foundation
+
 @objc
 open class DevMenuScreenItem: DevMenuItem {
   // Static members fit better than enum as we allow any other number.

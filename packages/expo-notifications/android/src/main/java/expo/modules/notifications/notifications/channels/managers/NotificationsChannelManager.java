@@ -3,7 +3,7 @@ package expo.modules.notifications.notifications.channels.managers;
 import android.app.NotificationChannel;
 import android.os.Build;
 
-import org.unimodules.core.arguments.ReadableArguments;
+import expo.modules.core.arguments.ReadableArguments;
 
 import java.util.List;
 

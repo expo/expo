@@ -1,10 +1,10 @@
 ---
-title: Integrating with JavaScript tooling
+title: Integrating with third-party tooling
 ---
 
 import ImageSpotlight from '~/components/plugins/ImageSpotlight'
 
-This document outlines how to configure EAS Build for some common scenarios, such as monorepos and repositories with private dependencies. The examples described here do not provide step-by-step instructions to set up EAS Build from scratch. Instead, they explain the changes from the standard process that are necessary to acommodate the given scenario.
+This document outlines how to configure EAS Build for some common scenarios, such as monorepos and repositories with private dependencies. The examples described here do not provide step-by-step instructions to set up EAS Build from scratch. Instead, they explain the changes from the standard process that are necessary to accommodate the given scenario.
 
 ## EAS Build-specific npm hooks
 
@@ -25,8 +25,8 @@ This is an example of how your package.json might look like:
     "eas-build-pre-install": "echo 123",
     "eas-build-post-install": "echo 456",
     "eas-build-pre-upload-artifacts": "echo 789",
-    "android": "react-native run-android",
-    "ios": "react-native run-ios",
+    "android": "expo run:android",
+    "ios": "expo run:ios",
     "web": "expo start --web",
     "start": "react-native start",
     "test": "jest"
@@ -49,7 +49,8 @@ This is an example of how your package.json might look like:
 
 - Run all EAS CLI commands from the root of the app directory. For example: if your project exists inside of your git repository at `apps/my-app`, then run `eas build` from there.
 - All files related to EAS Build, such as `eas.json` and `credentials.json`, should be in the root of the app directory. If you have multiple apps that use EAS Build in your monorepo, each app directory will have its own copy of these files.
-- If your project needs additional setup beyond what is provided, add a `postinstall` step to `package.json` in your project that builds all necessary dependecies in other workspaces. For example:
+- **If you are building a managed project in a monorepo**, please refer to [byCedric/eas-monorepo-example](https://github.com/byCedric/eas-monorepo-example) for a working example. You will need to set up [symlinks with expo-yarn-workspaces](https://github.com/byCedric/eas-monorepo-example/blob/dc62206a23f591923a38c0c6ea5d94b84ede6df4/apps/managed/package.json#L45-L63) in order to ensure that Expo module packages can be resolved. A better solution for this is in progress and should be available by SDK 43.
+- If your project needs additional setup beyond what is provided, add a `postinstall` step to `package.json` in your project that builds all necessary dependencies in other workspaces. For example:
 
 ```json
 {
@@ -59,13 +60,15 @@ This is an example of how your package.json might look like:
 }
 ```
 
+
 ## How to use private package repositories
 
-- Configure your project in a way that works with `yarn` and relies on the `NPM_TOKEN` env variable to authenticate with private repositories
+- Configure your project in a way that relies on the `NPM_TOKEN` env variable to authenticate with private repositories.
 - Add `NPM_TOKEN` to your account or project's secrets. See the [secret environment variables](/build-reference/variables/#using-secrets-in-environment-variables) docs to learn how to do this.
 
 <ImageSpotlight alt="Secret creation UI filled" src="/static/images/eas-build/environment-secrets/secrets-create-filled.png" />
 
+Before setting up private packages, check the existing configuration described in the [build server infrastructure](/build-reference/infrastructure) page under `.npmrc` and `yarnrc.yml` to verify that it won't affect your setup.
 
 ## Using npm cache with yarn v1
 
@@ -81,58 +84,28 @@ e.g.
 }
 ```
 
-## Maintaining generic projects with multiple bundle identifiers
+## How to use git submodules
 
-It's common to have multiple schemes with unique bundle identifiers in iOS projects in order to have development and production versions of your app on one phone at the same time. The current implementations of `eas build` and `eas build:configure` assume that the native project can only have one bundle identifier, so as a temporary workaround we added `experimental.disableIosBundleIdentifierValidation`, to disable that validation in both commands. With that flag enabled, the value of the bundle identifier from `app.json`/`app.config.js` will take precedence, and you can use the `scheme` property in your `eas.json` to switch between build schemes.
+First, create a [secret](/build-reference/variables/#using-secrets-in-environment-variables) with a base64 encoded private SSH key that has permission to access submodule repositories. Next, add an `eas-build-pre-install` npm hook to check out those submodules, for example:
 
 ```bash
-# to build staging
-APP_ENV=staging eas build --platform ios --profile staging
+#!/usr/bin/env bash
 
-# to build production
-APP_ENV=production eas build --platform ios --profile production
-```
+mkdir -p ~/.ssh
 
-```js
-// example app.config.js
+# Real origin URl is lost during the packaging process, so if your
+# submodules are defined using relative urls in .gitmodules then
+# you need to restore it with:
+#
+# git remote set-url origin git@github.com:example/repo.git
 
-const isStaging = process.env.APP_ENV === 'staging';
-const bundleIdentifier = isStaging ? 'xyz.easbuildapp.staging' : 'xyz.easbuildapp';
+# restore private key from env variable and generate public key
+echo "$SSH_KEY_BASE64" | base64 -d > ~/.ssh/id_rsa
+chmod 0600 ~/.ssh/id_rsa
+ssh-keygen -y -f ~/.ssh/id_rsa > ~/.ssh/id_rsa.pub
 
-export default ({ config }) => ({
-  expo: {
-    ...config,
-    ios: {
-      bundleIdentifier,
-    },
-  },
-});
-```
+# add your git provider to the list of known hosts
+ssh-keyscan github.com >> ~/.ssh/known_hosts
 
-```json
-// example eas.json
-
-{
-  "experimental": {
-    "disableIosBundleIdentifierValidation": true
-  },
-  "build": {
-    "ios": {
-      "staging": {
-        "workflow": "generic",
-        "scheme": "myapp-staging",
-        "env": {
-          "APP_ENV": "staging"
-        }
-      },
-      "production": {
-        "workflow": "generic",
-        "scheme": "myapp",
-        "env": {
-          "APP_ENV": "production"
-        }
-      }
-    }
-  }
-}
+git submodule update --init
 ```

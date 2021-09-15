@@ -21,7 +21,7 @@ import expo.modules.updates.db.entity.UpdateEntity;
 import expo.modules.updates.launcher.DatabaseLauncher;
 import expo.modules.updates.launcher.Launcher;
 import expo.modules.updates.selectionpolicy.SelectionPolicy;
-import expo.modules.updates.manifest.Manifest;
+import expo.modules.updates.manifest.UpdateManifest;
 import expo.modules.updates.manifest.ManifestMetadata;
 
 public class LoaderTask {
@@ -42,7 +42,7 @@ public class LoaderTask {
      * LoaderTask proceed as usual.
      */
     boolean onCachedUpdateLoaded(UpdateEntity update);
-    void onRemoteManifestLoaded(Manifest manifest);
+    void onRemoteUpdateManifestLoaded(UpdateManifest updateManifest);
     void onSuccess(Launcher launcher, boolean isUpToDate);
     void onBackgroundUpdateFinished(BackgroundUpdateStatus status, @Nullable UpdateEntity update, @Nullable Exception exception);
   }
@@ -270,13 +270,13 @@ public class LoaderTask {
           }
 
           @Override
-          public boolean onManifestLoaded(Manifest manifest) {
+          public boolean onUpdateManifestLoaded(UpdateManifest updateManifest) {
             if (mSelectionPolicy.shouldLoadNewUpdate(
-                  manifest.getUpdateEntity(),
+                  updateManifest.getUpdateEntity(),
                   mCandidateLauncher == null ? null : mCandidateLauncher.getLaunchedUpdate(),
-                  manifest.getManifestFilters())) {
+                  updateManifest.getManifestFilters())) {
               mIsUpToDate = false;
-              mCallback.onRemoteManifestLoaded(manifest);
+              mCallback.onRemoteUpdateManifestLoaded(updateManifest);
               return true;
             } else {
               mIsUpToDate = true;

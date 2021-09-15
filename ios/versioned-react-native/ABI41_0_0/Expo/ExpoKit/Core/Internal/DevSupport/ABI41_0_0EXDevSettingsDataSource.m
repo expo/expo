@@ -16,7 +16,7 @@ NSString *const ABI41_0_0EXDevSettingIsDebuggingRemotely = @"isDebuggingRemotely
 
 @interface ABI41_0_0EXDevSettingsDataSource ()
 
-@property (nonatomic, strong) NSString *experienceId;
+@property (nonatomic, strong) NSString *scopeKey;
 @property (nonatomic, readonly) NSSet *settingsDisabledInProduction;
 
 @end
@@ -27,10 +27,12 @@ NSString *const ABI41_0_0EXDevSettingIsDebuggingRemotely = @"isDebuggingRemotely
   BOOL _isDevelopment;
 }
 
-- (instancetype)initWithDefaultValues:(NSDictionary *)defaultValues forExperienceId:(NSString *)experienceId isDevelopment:(BOOL)isDevelopment
+- (instancetype)initWithDefaultValues:(NSDictionary *)defaultValues
+                forScopeKey:(NSString *)scopeKey
+                        isDevelopment:(BOOL)isDevelopment
 {
   if (self = [super init]) {
-    _experienceId = experienceId;
+    _scopeKey = scopeKey;
     _userDefaults = [NSUserDefaults standardUserDefaults];
     _isDevelopment = isDevelopment;
     _settingsDisabledInProduction = [NSSet setWithArray:@[
@@ -97,8 +99,8 @@ NSString *const ABI41_0_0EXDevSettingIsDebuggingRemotely = @"isDebuggingRemotely
 
 - (NSString *)_userDefaultsKey
 {
-  if (_experienceId) {
-    return [NSString stringWithFormat:@"%@/%@", _experienceId, ABI41_0_0EXDevSettingsUserDefaultsKey];
+  if (_scopeKey) {
+    return [NSString stringWithFormat:@"%@/%@", _scopeKey, ABI41_0_0EXDevSettingsUserDefaultsKey];
   } else {
     ABI41_0_0RCTLogWarn(@"Can't scope dev settings because bridge is not set");
     return ABI41_0_0EXDevSettingsUserDefaultsKey;

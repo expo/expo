@@ -14,7 +14,7 @@ function modifyAndroidManifest(manifest) {
     return manifest;
 }
 exports.modifyAndroidManifest = modifyAndroidManifest;
-const withMediaLibraryExternalStorage = config => {
+const withMediaLibraryExternalStorage = (config) => {
     return config_plugins_1.withAndroidManifest(config, async (config) => {
         config.modResults = modifyAndroidManifest(config.modResults);
         return config;

@@ -124,10 +124,18 @@ export const iosModelNames = {
     'iPad11,7': 'iPad (8th generation)',
     'iPad13,1': 'iPad Air (4th generation)',
     'iPad13,2': 'iPad Air (4th generation)',
+    'iPad13,4': 'iPad Pro 11-inch (3rd generation)',
+    'iPad13,5': 'iPad Pro 11-inch (3rd generation)',
+    'iPad13,6': 'iPad Pro 11-inch (3rd generation)',
+    'iPad13,7': 'iPad Pro 11-inch (3rd generation)',
+    'iPad13,8': 'iPad Pro 12.9-inch (5th generation)',
+    'iPad13,9': 'iPad Pro 12.9-inch (5th generation)',
+    'iPad13,10': 'iPad Pro 12.9-inch (5th generation)',
+    'iPad13,11': 'iPad Pro 12.9-inch (5th generation)',
     'AppleTV2,1': 'Apple TV',
     'AppleTV3,1': 'Apple TV',
     'AppleTV3,2': 'Apple TV',
     'AppleTV5,3': 'Apple TV',
-    'AppleTV6,2': 'Apple TV 4K',
+    'AppleTV6,2': 'Apple TV 4K', // Apple TV 4K
 };
 //# sourceMappingURL=ModelNames.js.map

@@ -7,13 +7,13 @@ import com.facebook.react.bridge.ReactMethod
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
-class DevMenuModule(reactContext: ReactApplicationContext)
-  : ReactContextBaseJavaModule(reactContext) {
+class DevMenuModule(reactContext: ReactApplicationContext) :
+  ReactContextBaseJavaModule(reactContext) {
   override fun getName() = "ExpoDevMenu"
 
   private val devMenuManager by lazy {
     reactContext
-      .getNativeModule(DevMenuManagerProvider::class.java)
+      .getNativeModule(DevMenuManagerProvider::class.java)!!
       .getDevMenuManager()
   }
 
@@ -42,6 +42,7 @@ class DevMenuModule(reactContext: ReactApplicationContext)
           .getExpoApiClient()
           .queryMyProjects()
           .use {
+            @Suppress("DEPRECATION_ERROR")
             promise.resolve(it.body()?.charStream()?.readText() ?: "")
           }
       } catch (e: Exception) {
@@ -58,6 +59,7 @@ class DevMenuModule(reactContext: ReactApplicationContext)
           .getExpoApiClient()
           .queryDevSessions()
           .use {
+            @Suppress("DEPRECATION_ERROR")
             promise.resolve(it.body()?.charStream()?.readText() ?: "")
           }
       } catch (e: Exception) {

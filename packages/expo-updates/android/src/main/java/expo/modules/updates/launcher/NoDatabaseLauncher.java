@@ -15,8 +15,8 @@ import expo.modules.updates.UpdatesConfiguration;
 import expo.modules.updates.db.entity.AssetEntity;
 import expo.modules.updates.db.entity.UpdateEntity;
 import expo.modules.updates.loader.EmbeddedLoader;
-import expo.modules.updates.manifest.BareManifest;
-import expo.modules.updates.manifest.Manifest;
+import expo.modules.updates.manifest.BareUpdateManifest;
+import expo.modules.updates.manifest.UpdateManifest;
 
 public class NoDatabaseLauncher implements Launcher {
 
@@ -32,17 +32,17 @@ public class NoDatabaseLauncher implements Launcher {
   }
 
   public NoDatabaseLauncher(final Context context, UpdatesConfiguration configuration, final @Nullable Exception fatalException) {
-    Manifest embeddedManifest = EmbeddedLoader.readEmbeddedManifest(context, configuration);
-    if (embeddedManifest == null) {
+    UpdateManifest embeddedUpdateManifest = EmbeddedLoader.readEmbeddedManifest(context, configuration);
+    if (embeddedUpdateManifest == null) {
       throw new RuntimeException("Failed to launch with embedded update because the embedded manifest was null");
     }
-    if (embeddedManifest instanceof BareManifest) {
+    if (embeddedUpdateManifest instanceof BareUpdateManifest) {
       mBundleAssetName = EmbeddedLoader.BARE_BUNDLE_FILENAME;
       mLocalAssetFiles = null;
     } else {
       mBundleAssetName = EmbeddedLoader.BUNDLE_FILENAME;
       mLocalAssetFiles = new HashMap<>();
-      for (AssetEntity asset : embeddedManifest.getAssetEntityList()) {
+      for (AssetEntity asset : embeddedUpdateManifest.getAssetEntityList()) {
         mLocalAssetFiles.put(
           asset,
           "asset:///" + asset.embeddedAssetFilename

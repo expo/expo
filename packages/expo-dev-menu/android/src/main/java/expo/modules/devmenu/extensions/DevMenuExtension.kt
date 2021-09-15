@@ -1,30 +1,24 @@
 package expo.modules.devmenu.extensions
 
-import android.content.Intent
-import android.net.Uri
-import android.os.Build
-import android.os.Bundle
-import android.provider.Settings
 import android.util.Log
 import android.view.KeyEvent
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactContextBaseJavaModule
-import com.facebook.react.bridge.UiThreadUtil
 import com.facebook.react.devsupport.DevInternalSettings
 import expo.interfaces.devmenu.DevMenuExtensionInterface
 import expo.interfaces.devmenu.DevMenuExtensionSettingsInterface
 import expo.interfaces.devmenu.items.DevMenuDataSourceInterface
 import expo.interfaces.devmenu.items.DevMenuItemImportance
 import expo.interfaces.devmenu.items.DevMenuItemsContainer
-import expo.interfaces.devmenu.items.DevMenuListDataSource
 import expo.interfaces.devmenu.items.DevMenuScreen
-import expo.interfaces.devmenu.items.DevMenuSelectionList
 import expo.interfaces.devmenu.items.KeyCommand
-import expo.interfaces.devmenu.items.screen
 import expo.modules.devmenu.DEV_MENU_TAG
+import expo.modules.devmenu.DevMenuManager
+import expo.modules.devmenu.devtools.DevMenuDevToolsDelegate
+import kotlinx.coroutines.runBlocking
 
-class DevMenuExtension(reactContext: ReactApplicationContext)
-  : ReactContextBaseJavaModule(reactContext), DevMenuExtensionInterface {
+class DevMenuExtension(reactContext: ReactApplicationContext) :
+  ReactContextBaseJavaModule(reactContext), DevMenuExtensionInterface {
   override fun getName() = "ExpoDevMenuExtensions"
 
   override fun devMenuItems(settings: DevMenuExtensionSettingsInterface) = DevMenuItemsContainer.export {
@@ -32,70 +26,36 @@ class DevMenuExtension(reactContext: ReactApplicationContext)
       return@export
     }
 
-    val reactDevManager = settings
-      .manager
-      .getSession()
-      ?.reactInstanceManager
-      ?.devSupportManager
-    val devSettings = reactDevManager?.devSettings
+    val reactInstanceManager = settings.manager.getSession()?.reactInstanceManager
+    if (reactInstanceManager == null) {
+      Log.w(DEV_MENU_TAG, "Couldn't export dev-menu items, because the react instance manager isn't present.")
+      return@export
+    }
+
+    val devDelegate = DevMenuDevToolsDelegate(settings.manager, reactInstanceManager)
+    val reactDevManager = devDelegate.reactDevManager
+    val devSettings = devDelegate.devSettings
 
     if (reactDevManager == null || devSettings == null) {
       Log.w(DEV_MENU_TAG, "Couldn't export dev-menu items, because react-native bridge doesn't contain the dev support manager.")
       return@export
     }
 
-    // RN will temporary disable `devSupport` if the current activity isn't active.
-    // Because of that we can't call some functions like `toggleElementInspector`.
-    // However, we can temporary set the `devSupport` flag to true and run needed methods.
-    val runWithDevSupportEnabled = { action: () -> Unit ->
-      val currentSetting = reactDevManager.devSupportEnabled
-      reactDevManager.devSupportEnabled = true
-      action()
-      reactDevManager.devSupportEnabled = currentSetting
-    }
-
-    val reloadAction = {
-      UiThreadUtil.runOnUiThread {
-        reactDevManager.handleReloadJS()
-      }
-    }
-
-    val elementInspectorAction = {
-      runWithDevSupportEnabled {
-        reactDevManager.toggleElementInspector()
-      }
-    }
-
-    val performanceMonitorAction = {
-      requestOverlaysPermission()
-      runWithDevSupportEnabled {
-        reactDevManager.setFpsDebugEnabled(!devSettings.isFpsDebugEnabled)
-      }
-    }
-
-    val remoteDebugAction = {
-      UiThreadUtil.runOnUiThread {
-        devSettings.isRemoteJSDebugEnabled = !devSettings.isRemoteJSDebugEnabled
-        reactDevManager.handleReloadJS()
-      }
-    }
-
-    action("reload", reloadAction) {
+    action("reload", devDelegate::reload) {
       label = { "Reload" }
       glyphName = { "reload" }
       keyCommand = KeyCommand(KeyEvent.KEYCODE_R)
       importance = DevMenuItemImportance.HIGHEST.value
     }
 
-    action("inspector", elementInspectorAction) {
-      isEnabled = { devSettings.isElementInspectorEnabled }
-      label = { if (isEnabled()) "Hide Element Inspector" else "Show Element Inspector" }
-      glyphName = { "border-style" }
-      keyCommand = KeyCommand(KeyEvent.KEYCODE_I)
-      importance = DevMenuItemImportance.HIGH.value
-    }
-
-    action("performance-monitor", performanceMonitorAction) {
+    action(
+      "performance-monitor",
+      {
+        currentActivity?.let {
+          devDelegate.togglePerformanceMonitor(it)
+        }
+      }
+    ) {
       isEnabled = { devSettings.isFpsDebugEnabled }
       label = { if (isEnabled()) "Hide Performance Monitor" else "Show Performance Monitor" }
       glyphName = { "speedometer" }
@@ -103,7 +63,15 @@ class DevMenuExtension(reactContext: ReactApplicationContext)
       importance = DevMenuItemImportance.HIGH.value
     }
 
-    action("remote-debug", remoteDebugAction) {
+    action("inspector", devDelegate::toggleElementInspector) {
+      isEnabled = { devSettings.isElementInspectorEnabled }
+      label = { if (isEnabled()) "Hide Element Inspector" else "Show Element Inspector" }
+      glyphName = { "border-style" }
+      keyCommand = KeyCommand(KeyEvent.KEYCODE_I)
+      importance = DevMenuItemImportance.HIGH.value
+    }
+
+    action("remote-debug", devDelegate::toggleRemoteDebugging) {
       isEnabled = {
         devSettings.isRemoteJSDebugEnabled
       }
@@ -113,6 +81,21 @@ class DevMenuExtension(reactContext: ReactApplicationContext)
     }
 
     if (devSettings is DevInternalSettings) {
+      action("js-inspector", devDelegate::openJsInspector) {
+        isAvailable = {
+          val metroHost = "http://${devSettings.packagerConnectionSettings.debugServerHost}"
+          var result: Boolean
+          runBlocking {
+            result = DevMenuManager.metroClient
+              .queryJSInspectorAvailability(metroHost, reactApplicationContext.packageName)
+          }
+          result
+        }
+        label = { "Open JavaScript Inspector" }
+        glyphName = { "language-javascript" }
+        importance = DevMenuItemImportance.LOW.value
+      }
+
       val fastRefreshAction = {
         devSettings.isHotModuleReplacementEnabled = !devSettings.isHotModuleReplacementEnabled
       }
@@ -124,78 +107,9 @@ class DevMenuExtension(reactContext: ReactApplicationContext)
         importance = DevMenuItemImportance.LOW.value
       }
     }
-
-    group {
-      importance = DevMenuItemImportance.LOWEST.value
-
-      link("testScreen") {
-        label = { "Test screen" }
-        glyphName = { "test-tube" }
-      }
-    }
   }
 
-  override fun devMenuScreens(settings: DevMenuExtensionSettingsInterface): List<DevMenuScreen>? {
-    if (!settings.wasRunOnDevelopmentBridge()) {
-      return null
-    }
+  override fun devMenuScreens(settings: DevMenuExtensionSettingsInterface): List<DevMenuScreen>? = null
 
-    return listOf(
-      screen("testScreen") {
-        group {
-          selectionList {
-            dataSourceId = { "updatesList" }
-            addOnClick {
-              print(it.toString())
-            }
-          }
-        }
-      }
-    )
-  }
-
-  override fun devMenuDataSources(settings: DevMenuExtensionSettingsInterface): List<DevMenuDataSourceInterface> {
-    return listOf(
-      DevMenuListDataSource("updatesList") {
-        val client = settings.manager.getExpoApiClient()
-        val response = client.queryUpdateBranches("3d4813b8-ad48-4e1e-9e8f-0f7d108bf041")
-        val data = response.data
-        if (response.status != 200 || data == null) {
-          return@DevMenuListDataSource emptyList()
-        }
-
-        return@DevMenuListDataSource data
-          .flatMap { it.updates.toList() }
-          .filter { it.platform == "android" }
-          .map {
-            DevMenuSelectionList.Item().apply {
-              onClickData = {
-                Bundle().apply { putString("id", it.id) }
-              }
-              title = { it.message }
-
-            }
-          }
-      }
-    )
-  }
-
-  /**
-   * Requests for the permission that allows the app to draw overlays on other apps.
-   * Such permission is required to enable performance monitor.
-   */
-  private fun requestOverlaysPermission() {
-    val context = currentActivity ?: return
-
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
-      && !Settings.canDrawOverlays(context)) {
-      val uri = Uri.parse("package:" + context.applicationContext.packageName)
-      val intent = Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, uri).apply {
-        flags = Intent.FLAG_ACTIVITY_NEW_TASK
-      }
-      if (intent.resolveActivity(context.packageManager) != null) {
-        context.startActivity(intent)
-      }
-    }
-  }
+  override fun devMenuDataSources(settings: DevMenuExtensionSettingsInterface): List<DevMenuDataSourceInterface>? = null
 }

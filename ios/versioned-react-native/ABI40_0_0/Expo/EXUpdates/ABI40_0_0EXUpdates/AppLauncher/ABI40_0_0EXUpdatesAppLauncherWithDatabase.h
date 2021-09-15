@@ -15,12 +15,12 @@ typedef void (^ABI40_0_0EXUpdatesAppLauncherUpdateCompletionBlock)(NSError * _Nu
                      directory:(NSURL *)directory
                completionQueue:(dispatch_queue_t)completionQueue;
 
-- (void)launchUpdateWithSelectionPolicy:(id<ABI40_0_0EXUpdatesSelectionPolicy>)selectionPolicy
+- (void)launchUpdateWithSelectionPolicy:(ABI40_0_0EXUpdatesSelectionPolicy *)selectionPolicy
                              completion:(ABI40_0_0EXUpdatesAppLauncherCompletionBlock)completion;
 
 + (void)launchableUpdateWithConfig:(ABI40_0_0EXUpdatesConfig *)config
                           database:(ABI40_0_0EXUpdatesDatabase *)database
-                   selectionPolicy:(id<ABI40_0_0EXUpdatesSelectionPolicy>)selectionPolicy
+                   selectionPolicy:(ABI40_0_0EXUpdatesSelectionPolicy *)selectionPolicy
                         completion:(ABI40_0_0EXUpdatesAppLauncherUpdateCompletionBlock)completion
                    completionQueue:(dispatch_queue_t)completionQueue;
 

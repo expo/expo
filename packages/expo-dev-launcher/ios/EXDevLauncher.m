@@ -16,8 +16,12 @@ RCT_EXPORT_MODULE()
 
 - (NSDictionary *)constantsToExport
 {
-  NSString *manifestString = [EXDevLauncherController.sharedInstance appManifest].rawData ?: [NSNull null];
-  return @{ @"manifestString": manifestString };
+  NSString *manifestString = [EXDevLauncherController.sharedInstance appManifest].rawData;
+  NSString *manifestURLString = [EXDevLauncherController.sharedInstance appManifestURL].absoluteString;
+  return @{
+    @"manifestString": manifestString ?: [NSNull null],
+    @"manifestURL": manifestURLString ?: [NSNull null]
+  };
 }
 
 @end

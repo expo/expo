@@ -1,4 +1,4 @@
-import { SyntheticPlatformEmitter, Platform } from '@unimodules/core';
+import { SyntheticPlatformEmitter, Platform } from 'expo-modules-core';
 import { getOrientationLockAsync, getOrientationAsync } from './ScreenOrientation';
 import { Orientation, OrientationLock, WebOrientationLock, WebOrientation, } from './ScreenOrientation.types';
 const OrientationLockAPIToWeb = {

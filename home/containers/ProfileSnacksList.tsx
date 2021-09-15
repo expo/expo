@@ -1,38 +1,11 @@
 import { useQuery } from '@apollo/client';
-import gql from 'graphql-tag';
 import * as React from 'react';
 
-import SnackList, { Snack } from '../components/SnackList';
-
-interface ProfileSnacksData {
-  me: {
-    id: string;
-    snacks: Snack[];
-  };
-}
-
-interface ProfileSnacksVars {
-  limit: number;
-  offset: number;
-}
-
-const ProfileSnacksQuery = gql`
-  query Home_ProfileSnacks($limit: Int!, $offset: Int!) {
-    me {
-      id
-      snacks(limit: $limit, offset: $offset) {
-        name
-        description
-        fullName
-        slug
-        isDraft
-      }
-    }
-  }
-`;
+import SnackList from '../components/SnackList';
+import { Home_ProfileSnacksDocument } from '../graphql/types';
 
 function useProfileSnacksQuery() {
-  const { data, fetchMore } = useQuery<ProfileSnacksData, ProfileSnacksVars>(ProfileSnacksQuery, {
+  const { data, fetchMore } = useQuery(Home_ProfileSnacksDocument, {
     variables: {
       limit: 15,
       offset: 0,
@@ -55,7 +28,7 @@ function useProfileSnacksQuery() {
           me: {
             ...previousData.me,
             ...fetchMoreResult.me,
-            snacks: [...previousData.me.snacks, ...fetchMoreResult.me.snacks],
+            snacks: [...(previousData.me?.snacks ?? []), ...fetchMoreResult.me.snacks],
           },
         };
 

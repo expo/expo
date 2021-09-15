@@ -17,13 +17,12 @@ private const val SessionKey = "expo-dev-menu.session"
 
 private const val SessionStore = "expo.modules.devmenu.sessionstore"
 
-
 class DevMenuInternalSessionManagerModule(
   private val reactContext: ReactApplicationContext
 ) : DevMenuInternalSessionManagerModuleInterface {
   private val devMenuManger by lazy {
     reactContext
-      .getNativeModule(DevMenuManagerProvider::class.java)
+      .getNativeModule(DevMenuManagerProvider::class.java)!!
       .getDevMenuManager()
   }
 

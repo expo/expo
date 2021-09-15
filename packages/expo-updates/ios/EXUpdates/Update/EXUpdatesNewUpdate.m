@@ -11,75 +11,71 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation EXUpdatesNewUpdate
 
-+ (EXUpdatesUpdate *)updateWithNewManifest:(EXUpdatesNewRawManifest *)manifest
++ (EXUpdatesUpdate *)updateWithNewManifest:(EXManifestsNewManifest *)manifest
                                   response:(nullable NSURLResponse *)response
                                     config:(EXUpdatesConfig *)config
                                   database:(EXUpdatesDatabase *)database
 {
-  EXUpdatesUpdate *update = [[EXUpdatesUpdate alloc] initWithRawManifest:manifest
+  EXUpdatesUpdate *update = [[EXUpdatesUpdate alloc] initWithManifest:manifest
                                                                   config:config
                                                                 database:database];
-  
-  id updateId = manifest.rawID;
-  id commitTime = manifest.createdAt;
-  id runtimeVersion = manifest.runtimeVersion;
-  id launchAsset = manifest.launchAsset;
-  id assets = manifest.assets;
-  
-  NSAssert([updateId isKindOfClass:[NSString class]], @"update ID should be a string");
-  NSAssert([commitTime isKindOfClass:[NSString class]], @"createdAt should be a string");
-  NSAssert([runtimeVersion isKindOfClass:[NSString class]], @"runtimeVersion should be a string");
-  NSAssert([launchAsset isKindOfClass:[NSDictionary class]], @"launchAsset should be a dictionary");
-  NSAssert(!assets || [assets isKindOfClass:[NSArray class]], @"assets should be null or an array");
-  
+
+  NSString *updateId = manifest.rawId;
+  NSString *commitTime = manifest.createdAt;
+  NSString *runtimeVersion = manifest.runtimeVersion;
+  NSDictionary *launchAsset = manifest.launchAsset;
+  NSArray *assets = manifest.assets;
+
+  NSAssert(updateId != nil, @"update ID should not be null");
+
   NSUUID *uuid = [[NSUUID alloc] initWithUUIDString:(NSString *)updateId];
   NSAssert(uuid, @"update ID should be a valid UUID");
-  
+
   id bundleUrlString = (NSDictionary *)launchAsset[@"url"];
   NSAssert([bundleUrlString isKindOfClass:[NSString class]], @"launchAsset.url should be a string");
   NSURL *bundleUrl = [NSURL URLWithString:bundleUrlString];
   NSAssert(bundleUrl, @"launchAsset.url should be a valid URL");
-  
+
   NSMutableArray<EXUpdatesAsset *> *processedAssets = [NSMutableArray new];
-  
+
   NSString *bundleKey = launchAsset[@"key"];
   EXUpdatesAsset *jsBundleAsset = [[EXUpdatesAsset alloc] initWithKey:bundleKey type:EXUpdatesEmbeddedBundleFileType];
   jsBundleAsset.url = bundleUrl;
   jsBundleAsset.isLaunchAsset = YES;
   jsBundleAsset.mainBundleFilename = EXUpdatesEmbeddedBundleFilename;
   [processedAssets addObject:jsBundleAsset];
-  
+
   if (assets) {
     for (NSDictionary *assetDict in (NSArray *)assets) {
       NSAssert([assetDict isKindOfClass:[NSDictionary class]], @"assets must be objects");
       id key = assetDict[@"key"];
       id urlString = assetDict[@"url"];
-      id type = assetDict[@"contentType"];
+      id fileExtension = assetDict[@"fileExtension"];
       id metadata = assetDict[@"metadata"];
       id mainBundleFilename = assetDict[@"mainBundleFilename"];
       NSAssert(key && [key isKindOfClass:[NSString class]], @"asset key should be a nonnull string");
       NSAssert(urlString && [urlString isKindOfClass:[NSString class]], @"asset url should be a nonnull string");
-      NSAssert(type && [type isKindOfClass:[NSString class]], @"asset contentType should be a nonnull string");
+      NSAssert(fileExtension && [fileExtension isKindOfClass:[NSString class]], @"asset fileExtension should be a nonnull string");
       NSURL *url = [NSURL URLWithString:(NSString *)urlString];
       NSAssert(url, @"asset url should be a valid URL");
-      
-      EXUpdatesAsset *asset = [[EXUpdatesAsset alloc] initWithKey:key type:(NSString *)type];
+
+      EXUpdatesAsset *asset = [[EXUpdatesAsset alloc] initWithKey:key type:(NSString *)fileExtension];
       asset.url = url;
-      
+
       if (metadata) {
         NSAssert([metadata isKindOfClass:[NSDictionary class]], @"asset metadata should be an object");
         asset.metadata = (NSDictionary *)metadata;
       }
-      
+
       if (mainBundleFilename) {
         NSAssert([mainBundleFilename isKindOfClass:[NSString class]], @"asset localPath should be a string");
         asset.mainBundleFilename = (NSString *)mainBundleFilename;
       }
-      
+
       [processedAssets addObject:asset];
     }
   }
-  
+
   update.updateId = uuid;
   update.commitTime = [RCTConvert NSDate:(NSString *)commitTime];
   update.runtimeVersion = (NSString *)runtimeVersion;
@@ -87,14 +83,14 @@ NS_ASSUME_NONNULL_BEGIN
   update.keep = YES;
   update.bundleUrl = bundleUrl;
   update.assets = processedAssets;
-  update.metadata = manifest.rawManifestJSON;
-  
+  update.manifestJSON = manifest.rawManifestJSON;
+
   if ([response isKindOfClass:[NSHTTPURLResponse class]]) {
     NSDictionary *headersDictionary = ((NSHTTPURLResponse *)response).allHeaderFields;
     update.serverDefinedHeaders = [[self class] dictionaryWithStructuredHeader:headersDictionary[@"expo-server-defined-headers"]];
     update.manifestFilters = [[self class] dictionaryWithStructuredHeader:headersDictionary[@"expo-manifest-filters"]];
   }
-  
+
   return update;
 }
 
@@ -103,7 +99,7 @@ NS_ASSUME_NONNULL_BEGIN
   if (!headerString) {
     return nil;
   }
-  
+
   EXStructuredHeadersParser *parser = [[EXStructuredHeadersParser alloc] initWithRawInput:headerString fieldType:EXStructuredHeadersParserFieldTypeDictionary ignoringParameters:YES];
   NSError *error;
   NSDictionary *parserOutput = [parser parseStructuredFieldsWithError:&error];
@@ -111,7 +107,7 @@ NS_ASSUME_NONNULL_BEGIN
     NSLog(@"Error parsing header value: %@", error ? error.localizedDescription : @"Header was not a structured fields dictionary");
     return nil;
   }
-  
+
   NSMutableDictionary *mutableDict = [NSMutableDictionary dictionaryWithCapacity:parserOutput.count];
   [parserOutput enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
     // ignore any dictionary entries whose type is not string, number, or boolean

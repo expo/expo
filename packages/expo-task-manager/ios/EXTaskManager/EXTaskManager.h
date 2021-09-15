@@ -1,14 +1,14 @@
 // Copyright 2018-present 650 Industries. All rights reserved.
 
-#import <UMCore/UMEventEmitter.h>
-#import <UMCore/UMExportedModule.h>
-#import <UMCore/UMInternalModule.h>
-#import <UMCore/UMModuleRegistryConsumer.h>
+#import <ExpoModulesCore/EXEventEmitter.h>
+#import <ExpoModulesCore/EXExportedModule.h>
+#import <ExpoModulesCore/EXInternalModule.h>
+#import <ExpoModulesCore/EXModuleRegistryConsumer.h>
 
 #import <UMTaskManagerInterface/UMTaskManagerInterface.h>
 
-@interface EXTaskManager : UMExportedModule <UMInternalModule, UMEventEmitter, UMModuleRegistryConsumer, UMTaskManagerInterface>
+@interface EXTaskManager : EXExportedModule <EXInternalModule, EXEventEmitter, EXModuleRegistryConsumer, UMTaskManagerInterface>
 
-- (instancetype)initWithExperienceId:(NSString *)experienceId NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithScopeKey:(NSString *)scopeKey NS_DESIGNATED_INITIALIZER;
 
 @end

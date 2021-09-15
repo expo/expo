@@ -128,28 +128,28 @@ export function createListItemToken(text: string, depth: number = 0): ListItemTo
  * Type guard for tokens extending TextToken.
  */
 export function isTextToken(token: Token): token is TextToken {
-  return token.type === TokenType.TEXT;
+  return token?.type === TokenType.TEXT;
 }
 
 /**
  * Type guard for HeadingToken type.
  */
 export function isHeadingToken(token: Token): token is HeadingToken {
-  return token.type === TokenType.HEADING;
+  return token?.type === TokenType.HEADING;
 }
 
 /**
  * Type guard for ListToken type.
  */
 export function isListToken(token: Token): token is ListToken {
-  return token.type === TokenType.LIST;
+  return token?.type === TokenType.LIST;
 }
 
 /**
  * Type guard for ListItemToken type.
  */
 export function isListItemToken(token: Token): token is ListItemToken {
-  return token.type === TokenType.LIST_ITEM;
+  return token?.type === TokenType.LIST_ITEM;
 }
 
 /**
@@ -216,7 +216,7 @@ export class MarkdownRenderer implements Renderer {
       default:
         // `marked` provides much more tokens, however we don't need to go so deep.
         // So far we needed only tokens with above types.
-        throw new Error(`Cannot parse token with type: ${token!.type}`);
+        throw new Error(`Cannot parse token: ${token}`);
     }
   }
 

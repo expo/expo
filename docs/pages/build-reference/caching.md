@@ -25,7 +25,6 @@ EAS Build runs a Maven cache server that can speed up downloading Android depend
 Currently we are caching:
 - `maven-central` - [https://repo1.maven.org/maven2/](https://repo1.maven.org/maven2/)
 - `google` - [https://maven.google.com/](https://maven.google.com/)
-- `android-tools` - [https://dl.bintray.com/android/android-tools/](https://dl.bintray.com/android/android-tools/)
 - `jcenter` - [https://jcenter.bintray.com/](https://jcenter.bintray.com/)
 - `plugins` - [https://plugins.gradle.org/m2/](https://plugins.gradle.org/m2/)
 

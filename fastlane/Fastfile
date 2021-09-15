@@ -108,10 +108,22 @@ def remove_background_audio
   )
 end
 
+def remove_background_notification
+  update_info_plist(
+    xcodeproj: "ios/Exponent.xcodeproj",
+    plist_path: "Exponent/Supporting/Info.plist",
+    block: proc do |plist|
+      puts "Removing remote-notification from UIBackgroundModes..."
+      plist["UIBackgroundModes"].delete("remote-notification")
+    end
+  )
+end
+
 def configure_for_app_store
   puts "Configuring app for App Store submission..."
   remove_background_location
   remove_background_audio
+  remove_background_notification
 end
 
 platform :ios do
@@ -120,7 +132,7 @@ platform :ios do
     FileUtils.mkdir_p(output_directory)
     Actions.lane_context[SharedValues::VERSION_NUMBER] = get_version_number(
       xcodeproj: "./ios/Exponent.xcodeproj",
-      target: "Exponent"
+      target: "Expo Go (versioned)"
     )
     save_original_info_plists
     update_bundle_versions
@@ -151,12 +163,15 @@ platform :ios do
     )
   end
 
-  lane :create_simulator_build do
+  lane :create_simulator_build do |options|
     directory = "./ios/simulator-build"
     puts "Build will be written to: " + File.expand_path(directory)
+
+    flavor = options.fetch(:flavor, "versioned")
+
     xcbuild(
       workspace: "ios/Exponent.xcworkspace",
-      scheme: "Exponent",
+      scheme: "Expo Go (#{flavor})",
       sdk: "iphonesimulator",
       configuration: "Release",
       derivedDataPath: directory,
@@ -165,15 +180,18 @@ platform :ios do
     )
   end
 
-  lane :create_expo_client_build do
+  lane :create_expo_client_build do |options|
     directory = "./ios" + prompt(
       ci_input: "/../expo-client-build",
       text: "Please enter the path where we should output the build, relative to ./ios (i.e. ../my-build):",
     )
     puts "Build will be written to: " + File.expand_path(directory)
+
+    flavor = options.fetch(:flavor, "versioned")
+
     xcbuild(
       workspace: "ios/Exponent.xcworkspace",
-      scheme: "Exponent",
+      scheme: "Expo Go (#{flavor})",
       configuration: "Release",
       derivedDataPath: directory,
       sdk: "iphoneos",
@@ -184,7 +202,7 @@ platform :ios do
     )
   end
 
-  lane :release do
+  lane :release do |options|
     cert(
       team_id: "C8D8QTF339",
     )
@@ -204,9 +222,11 @@ platform :ios do
 
     configure_for_app_store
 
+    flavor = options.fetch(:flavor, "versioned")
+
     gym(
       workspace: "ios/Exponent.xcworkspace",
-      scheme: "Exponent",
+      scheme: "Expo Go (#{flavor})",
       configuration: "Release",
       xcargs: xcodebuild_args,
       clean: true,
@@ -259,11 +279,12 @@ platform :android do
     UI.message "APK version #{version_name} has been uploaded to staging"
   end
 
-  lane :start do
+  lane :start do |flavor: "unversioned"|
     gradle(
       project_dir: "android",
       task: "install",
       build_type: "Debug",
+      flavor: flavor,
     )
     adb(command: "shell am start -n host.exp.exponent/host.exp.exponent.LauncherActivity")
   end
@@ -304,11 +325,12 @@ platform :android do
     devicefarm_follow_run("arn:aws:devicefarm:us-west-2:274251141632:run:#{result_info[:project_id]}/#{result_info[:run_id]}")
   end
 
-  lane :build do |build_type: "Debug", sign: true|
+  lane :build do |build_type: "Debug", flavor: "versioned", sign: true|
     ENV['ANDROID_UNSIGNED'] = '1' unless sign
     gradle(
       project_dir: "android",
       task: "app:assemble",
+      flavor: flavor,
       build_type: build_type,
     )
   end

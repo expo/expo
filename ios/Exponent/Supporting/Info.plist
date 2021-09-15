@@ -110,7 +110,7 @@
 	<key>NSRemindersUsageDescription</key>
 	<string>Allow Expo projects to access your reminders</string>
 	<key>NSUserTrackingUsageDescription</key>
-	<string>Allow Expo projects to use data for tracking the user or the device</string>
+	<string>This identifier will be used to deliver personalized ads to you</string>
 	<key>SKAdNetworkItems</key>
 	<array>
 		<dict>
@@ -131,6 +131,7 @@
 		<string>audio</string>
 		<string>fetch</string>
 		<string>location</string>
+		<string>remote-notification</string>
 	</array>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>

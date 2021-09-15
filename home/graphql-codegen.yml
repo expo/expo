@@ -1,0 +1,11 @@
+overwrite: true
+schema: 'https://exp.host/--/graphql'
+documents:
+  - '**/*.graphql'
+  - '!node_modules/**/*'
+generates:
+  graphql/types.ts:
+    plugins:
+      - typescript
+      - typescript-operations
+      - typed-document-node

@@ -1,5 +1,5 @@
-import { Platform } from '@unimodules/core';
 import Constants, { ExecutionEnvironment } from 'expo-constants';
+import { Platform } from 'expo-modules-core';
 import * as Notifications from 'expo-notifications';
 import React from 'react';
 
@@ -30,6 +30,7 @@ const screens = [
   'Accelerometer',
   'ActionSheet',
   'Alert',
+  'Amplitude',
   'AppAuth',
   'Appearance',
   'AppleAuthentication',
@@ -88,6 +89,7 @@ const screens = [
   'StoreReview',
   'TaskManager',
   'TextToSpeech',
+  'TrackingTransparency',
   'ViewShot',
   'WebBrowser',
 ];
@@ -97,7 +99,7 @@ if (Constants.executionEnvironment !== ExecutionEnvironment.StoreClient) {
   screens.push('Payments');
 }
 
-export const ScreenItems = screens.map(name => ({
+export const ScreenItems = screens.map((name) => ({
   name,
   route: `/apis/${name.toLowerCase()}`,
   // isAvailable: !!Screens[name],

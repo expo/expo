@@ -1,11 +1,3 @@
-// Temporary for SDK 40 until we make our own native implementation
-import Clipboard from 'react-native/Libraries/Components/Clipboard/Clipboard';
+import { NativeModulesProxy } from 'expo-modules-core';
 
-export default {
-  async getStringAsync(): Promise<string> {
-    return await Clipboard.getString();
-  },
-  setString(text: string): void {
-    Clipboard.setString(text);
-  },
-};
+export default NativeModulesProxy.ExpoClipboard;

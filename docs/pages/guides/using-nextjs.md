@@ -5,7 +5,7 @@ sidebar_title: Using Next.js
 
 > Please open any issues related to Next.js with Expo at [expo-cli/issues](https://github.com/expo/expo-cli/issues).
 
-[Next.js](https://nextjs.org/) is a React framework that provides simple page-based routing as well as server-side rendering. To use Next.js with Expo for web we recommend that you use a library called [`@expo/next-adapter`][next-adapter] to handle the configuration and integration of the tools.
+[Next.js][nextjs] is a React framework that provides simple page-based routing as well as server-side rendering. To use Next.js with Expo for web we recommend that you use a library called [`@expo/next-adapter`][next-adapter] to handle the configuration and integration of the tools.
 
 Using Expo with Next.js means you can share all of your existing components and APIs across your mobile and web. Next.js has it's own Webpack config so **you'll need to start your web projects with the `next-cli` and not with `expo start:web`.**
 
@@ -16,36 +16,6 @@ Using Expo with Next.js means you can share all of your existing components and 
 - Init: `npx create-react-native-app -t with-nextjs` (or `npx create-next-app -e with-expo`)
 - Start: `yarn next dev`
 - Open: `http://localhost:3000/`
-
-- [TL;DR:](#tldr)
-- [🏁 Setup](#-setup)
-  - [Add Next.js to Expo projects](#add-nextjs-to-expo-projects)
-  - [Add Expo to Next.js projects](#add-expo-to-nextjs-projects)
-  - [Manual setup](#manual-setup)
-- [Guides](#guides)
-  - [Deploy to Vercel](#deploy-to-vercel)
-  - [Polyfill setImmediate](#polyfill-setimmediate)
-  - [Image support](#image-support)
-  - [Font support](#font-support)
-  - [Offline support](#offline-support)
-  - [Using a custom server](#using-a-custom-server)
-  - [Handle server requests](#handle-server-requests)
-  - [Web push notifications support](#web-push-notifications-support)
-- [API](#api)
-  - [CLI](#cli)
-    - [⚙️ CLI Options](#️-cli-options)
-  - [Babel](#babel)
-  - [Config](#config)
-    - [`withExpo`](#withexpo)
-  - [Document](#document)
-    - [Customizing the Document](#customizing-the-document)
-  - [Server](#server)
-    - [`startServerAsync`](#startserverasync)
-    - [`createServerAsync`](#createserverasync)
-    - [`handleRequest`](#handlerequest)
-- [Limitations or differences comparing to the default Expo for Web](#limitations-or-differences-comparing-to-the-default-expo-for-web)
-- [Contributing](#contributing)
-- [Learn more about Next.js](#learn-more-about-nextjs)
 
 ## 🏁 Setup
 
@@ -293,159 +263,6 @@ export default function FontDemo() {
 
 [next-fonts]: https://github.com/rohanray/next-fonts
 
-### Offline support
-
-Unlike the default Expo for web workflow, Workbox and PWA are not supported out of the box. Here you can learn how to use the plugin [next-offline][next-offline] to get offline support in your Next.js + Expo app.
-
-<details><summary>Instructions</summary>
-<p>
-
-- Install `next-offline` to emulate Expo PWA features: `yarn add next-offline`
-- Configure your Next.js project to use `expo-notifications` in the browser:
-
-  - We inject a custom service worker so we'll need to change what Workbox names their service worker (it must be `workbox-service-worker.js`).
-
-  `next.config.js`
-
-  ```js
-  const withOffline = require('next-offline');
-  const { withExpo } = require('@expo/next-adapter');
-
-  // If you didn't install next-offline, then simply delete this method and the import.
-  module.exports = withOffline({
-    workboxOpts: {
-      swDest: 'workbox-service-worker.js',
-
-      /* changing any value means you'll have to copy over all the defaults  */
-      /* next-offline */
-      globPatterns: ['static/**/*'],
-      globDirectory: '.',
-      runtimeCaching: [
-        {
-          urlPattern: /^https?.*/,
-          handler: 'NetworkFirst',
-          options: {
-            cacheName: 'offlineCache',
-            expiration: {
-              maxEntries: 200,
-            },
-          },
-        },
-      ],
-    },
-    ...withExpo({
-      projectRoot: __dirname,
-    }),
-  });
-  ```
-
-- Copy the Expo service worker into your project's public folder: `mkdir public; cp node_modules/\@expo/next-adapter/service-worker.js public/service-worker.js`
-- You can now test your project in production mode using the following: `yarn next build && yarn next export && serve -p 3000 ./out`
-
-</p>
-</details>
-
-### Using a custom server
-
-If you have a complex project that requires custom server control then you can extend the default server to control hosting.
-
-<details><summary>Instructions</summary>
-<p>
-
-- Create a custom server to host your service worker:
-  `server.js`
-
-  ```js
-  const { startServerAsync } = require('@expo/next-adapter');
-
-  startServerAsync(__dirname, {
-    /* port: 3000 */
-  });
-  ```
-
-- Start your project with `node server.js`
-
-### Handle server requests
-
-You may want to intercept server requests, this will allow for that:
-
-`server.js`
-
-```js
-const { createServerAsync } = require('@expo/next-adapter');
-const { parse } = require('url');
-
-createServerAsync(projectRoot, {
-  handleRequest(req, res) {
-    const parsedUrl = parse(req.url, true);
-    const { pathname } = parsedUrl;
-
-    // handle GET request to /cool-file.png
-    if (pathname === '/cool-file.png') {
-      const filePath = join(__dirname, '.next', pathname);
-
-      app.serveStatic(req, res, filePath);
-      // Return true to prevent the default handler
-      return true;
-    }
-  },
-}).then(({ server, app }) => {
-  const port = 3000;
-
-  server.listen(port, () => {
-    console.log(`> Ready on http://localhost:${port}`);
-  });
-});
-```
-
-</p>
-</details>
-
-### Web push notifications support
-
-With the regular `expo start:web` or `expo start --web` commands [web push notifications](../push-notifications/overview.md) are supported without any additional configuration. To get this same functionality working with Next.js you'll need to configure a few things.
-
-<details><summary>Instructions</summary>
-<p>
-
-To use it with other services such as Vercel, you would need appropriate configuration to
-
-- let `/service-worker.js` serve the file content of `/public/service-worker.js`, and
-- let `/workbox-service-worker.js` serve the file content of a service worker, which be:
-  - `/public/workbox-service-worker.js` (which will by default be a blank file) if you do not want to use any other service worker, or
-  - `/_next/public/workbox-service-worker.js` if you are using [next-offline](https://github.com/hanford/next-offline), or
-  - your own service worker file.
-
-Here is an example `vercel.json` configuration file:
-
-```json
-{
-  "version": 2,
-  "routes": [
-    {
-      "src": "/service-worker.js",
-      "dest": "/public/service-worker.js",
-      "headers": {
-        "cache-control": "public, max-age=43200, immutable",
-        "Service-Worker-Allowed": "/"
-      }
-    },
-    // If you are using next-offline, change the object below according to their guide.
-    {
-      "src": "/workbox-service-worker.js",
-      "dest": "/public/workbox-service-worker.js",
-      "headers": {
-        "cache-control": "public, max-age=43200, immutable",
-        "Service-Worker-Allowed": "/"
-      }
-    }
-  ]
-}
-```
-
-</p>
-</details>
-
 ## API
 
 ### CLI
@@ -542,76 +359,10 @@ CustomDocument.getInitialProps = async props => {
 export default CustomDocument;
 ```
 
-### Server
-
-`@expo/next-adapter` provides you with a light-weight and easy to use `http` server for controlling how your project is hosted. The main reason for using this is to forward the requests for service workers to the static folder where Next.js expects them to be.
-
-```js
-import { createServerAsync, startServerAsync, handleRequest } from '@expo/next-adapter';
-```
-
-#### `startServerAsync`
-
-- The easiest method for starting an HTTP server with Next.js support.
-- Invokes `createServerAsync` with all of the defaults provided and starts listening.
-  - `port: 3000`
-- Returns all of the results `createServerAsync` (Next app, handle, and HTTP server)
-
-```ts
-function startServerAsync(
-  projectRoot: string,
-  {
-    port,
-  }?: {
-    port?: number;
-  }
-): Promise<{
-  app: App;
-  handle: Function;
-  server: Server;
-}>;
-```
-
-#### `createServerAsync`
-
-- Create an HTTP server and possibly a Next app, unless one is provided.
-- Handle all requests internally, unless the `handleRequest` option is provided.
-- Returns the Next.js app, handle (created with `app.getRequestHandler()`) and HTTP server.
-
-```ts
-function createServerAsync(
-  projectRoot: string,
-  {
-    app,
-    handleRequest,
-  }: {
-    app?: App;
-    handleRequest?: (req: IncomingMessage, res: ServerResponse) => Promise<void> | void;
-  }
-): Promise<{
-  app: App;
-  handle: Function;
-  server: Server;
-}>;
-```
-
-#### `handleRequest`
-
-- Use this if you want to completely skip Expo's server but still ensure that the service-workers are hosted in the Next.js static folder.
-
-```ts
-handleRequest(
-  { projectRoot, app, handle }: {
-    projectRoot: string;
-    app: App;
-    handle: Function;
-}, req: IncomingMessage, res: ServerResponse): void;
-```
-
 ## Limitations or differences comparing to the default Expo for Web
 
-- Unlike the default Expo for Web, Workbox and PWA are not supported by default. Use Next.js plugins such as [next-offline](https://github.com/hanford/next-offline) instead. Learn more [here](https://nextjs.org/features/progressive-web-apps).
-- You might need to use the [next-transpile-modules](https://github.com/martpie/next-transpile-modules) plugin to transpile certain third-party modules in order for them to work (such as Emotion). An easy but fragile way to do this is by defining the package name in your `app.json` under `expo.web.build.babel.include` (it's experimental because that's a really deeply nested object).
+- To get PWA support, use Next.js plugins such as [next-offline][next-offline] instead. Learn more [here][next-pwa].
+- You might need to use the [next-transpile-modules](https://github.com/martpie/next-transpile-modules) plugin to transpile certain third-party modules in order for them to work (such as Emotion).
 - Only the Next.js default page-based routing is supported. You'll need to use a completely different routing solution to do native navigation. We strongly recommend [react-navigation](https://reactnavigation.org/) for this.
 
 ## Contributing
@@ -627,10 +378,6 @@ If you have any problems rendering a certain component with SSR then you can sub
 Thanks so much 👋
 
 <!-- Footer -->
-
-## Learn more about Next.js
-
-Learn more about how to use Next.js from their [docs](https://nextjs.org/docs).
 
 [expo-packages]: https://github.com/expo/expo/tree/master/packages
 [nextjs]: https://nextjs.org/

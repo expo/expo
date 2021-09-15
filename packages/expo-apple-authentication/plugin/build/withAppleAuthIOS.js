@@ -1,18 +1,28 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.setAppleAuthEntitlements = exports.withAppleAuthIOS = void 0;
+exports.withAppleAuthIOS = exports.withIOSMixedLocales = void 0;
 const config_plugins_1 = require("@expo/config-plugins");
-exports.withAppleAuthIOS = config => {
-    return config_plugins_1.withEntitlementsPlist(config, config => {
-        config.modResults = setAppleAuthEntitlements(config, config.modResults);
+/**
+ * Enable including `strings` files from external packages.
+ * Required for making the Apple Auth button support localizations.
+ *
+ * @param config
+ * @returns
+ */
+const withIOSMixedLocales = (config) => {
+    return config_plugins_1.withInfoPlist(config, (config) => {
+        var _a;
+        config.modResults.CFBundleAllowMixedLocalizations =
+            (_a = config.modResults.CFBundleAllowMixedLocalizations) !== null && _a !== void 0 ? _a : true;
         return config;
     });
 };
-function setAppleAuthEntitlements(config, entitlements) {
-    var _a;
-    if ((_a = config.ios) === null || _a === void 0 ? void 0 : _a.usesAppleSignIn) {
-        entitlements['com.apple.developer.applesignin'] = ['Default'];
-    }
-    return entitlements;
-}
-exports.setAppleAuthEntitlements = setAppleAuthEntitlements;
+exports.withIOSMixedLocales = withIOSMixedLocales;
+const withAppleAuthIOS = (config) => {
+    config = exports.withIOSMixedLocales(config);
+    return config_plugins_1.withEntitlementsPlist(config, (config) => {
+        config.modResults['com.apple.developer.applesignin'] = ['Default'];
+        return config;
+    });
+};
+exports.withAppleAuthIOS = withAppleAuthIOS;

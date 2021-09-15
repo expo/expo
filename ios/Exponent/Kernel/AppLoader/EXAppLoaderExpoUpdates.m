@@ -18,9 +18,13 @@
 #import <EXUpdates/EXUpdatesConfig.h>
 #import <EXUpdates/EXUpdatesDatabase.h>
 #import <EXUpdates/EXUpdatesFileDownloader.h>
+#import <EXUpdates/EXUpdatesLauncherSelectionPolicyFilterAware.h>
+#import <EXUpdates/EXUpdatesLoaderSelectionPolicyFilterAware.h>
 #import <EXUpdates/EXUpdatesReaper.h>
-#import <EXUpdates/EXUpdatesSelectionPolicyFactory.h>
+#import <EXUpdates/EXUpdatesReaperSelectionPolicyDevelopmentClient.h>
+#import <EXUpdates/EXUpdatesSelectionPolicy.h>
 #import <EXUpdates/EXUpdatesUtils.h>
+#import <EXManifests/EXManifestsManifestFactory.h>
 #import <React/RCTUtils.h>
 #import <sys/utsname.h>
 
@@ -31,8 +35,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong, nullable) NSURL *manifestUrl;
 @property (nonatomic, strong, nullable) NSURL *httpManifestUrl;
 
-@property (nonatomic, strong, nullable) EXUpdatesRawManifest *confirmedManifest;
-@property (nonatomic, strong, nullable) EXUpdatesRawManifest *optimisticManifest;
+@property (nonatomic, strong, nullable) EXManifestsManifest *confirmedManifest;
+@property (nonatomic, strong, nullable) EXManifestsManifest *optimisticManifest;
 @property (nonatomic, strong, nullable) NSData *bundle;
 @property (nonatomic, assign) EXAppLoaderRemoteUpdateStatus remoteUpdateStatus;
 @property (nonatomic, assign) BOOL shouldShowRemoteUpdateStatus;
@@ -111,7 +115,7 @@ NS_ASSUME_NONNULL_BEGIN
   return kEXAppLoaderStatusNew;
 }
 
-- (nullable EXUpdatesRawManifest *)manifest
+- (nullable EXManifestsManifest *)manifest
 {
   if (_confirmedManifest) {
     return _confirmedManifest;
@@ -151,7 +155,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL)supportsBundleReload
 {
   if (_optimisticManifest) {
-    return _optimisticManifest.isDevelopmentMode;
+    return _optimisticManifest.isUsingDeveloperTool;
   }
   return NO;
 }
@@ -179,9 +183,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (BOOL)appLoaderTask:(EXUpdatesAppLoaderTask *)appLoaderTask didLoadCachedUpdate:(EXUpdatesUpdate *)update
 {
-  [self _setShouldShowRemoteUpdateStatus:update.rawManifest];
+  [self _setShouldShowRemoteUpdateStatus:update.manifest];
   // if cached manifest was dev mode, or a previous run of this app failed due to a loading error, we want to make sure to check for remote updates
-  if (update.rawManifest.isUsingDeveloperTool || [[EXKernel sharedInstance].serviceRegistry.errorRecoveryManager experienceIdIsRecoveringFromError:[EXAppFetcher experienceIdWithManifest:update.rawManifest]]) {
+  if (update.manifest.isUsingDeveloperTool || [[EXKernel sharedInstance].serviceRegistry.errorRecoveryManager scopeKeyIsRecoveringFromError:update.manifest.scopeKey]) {
     return NO;
   }
   return YES;
@@ -192,7 +196,7 @@ NS_ASSUME_NONNULL_BEGIN
   // expo-cli does not always respect our SDK version headers and respond with a compatible update or an error
   // so we need to check the compatibility here
   EXManifestResource *manifestResource = [[EXManifestResource alloc] initWithManifestUrl:_httpManifestUrl originalUrl:_manifestUrl];
-  NSError *manifestCompatibilityError = [manifestResource verifyManifestSdkVersion:update.rawManifest];
+  NSError *manifestCompatibilityError = [manifestResource verifyManifestSdkVersion:update.manifest];
   if (manifestCompatibilityError) {
     _error = manifestCompatibilityError;
     if (self.delegate) {
@@ -202,8 +206,8 @@ NS_ASSUME_NONNULL_BEGIN
   }
 
   _remoteUpdateStatus = kEXAppLoaderRemoteUpdateStatusDownloading;
-  [self _setShouldShowRemoteUpdateStatus:update.rawManifest];
-  [self _setOptimisticManifest:[self _processManifest:update.rawManifest]];
+  [self _setShouldShowRemoteUpdateStatus:update.manifest];
+  [self _setOptimisticManifest:[self _processManifest:update.manifest]];
 }
 
 - (void)appLoaderTask:(EXUpdatesAppLoaderTask *)appLoaderTask didFinishWithLauncher:(id<EXUpdatesAppLauncher>)launcher isUpToDate:(BOOL)isUpToDate
@@ -213,14 +217,14 @@ NS_ASSUME_NONNULL_BEGIN
   }
 
   if (!_optimisticManifest) {
-    [self _setOptimisticManifest:[self _processManifest:launcher.launchedUpdate.rawManifest]];
+    [self _setOptimisticManifest:[self _processManifest:launcher.launchedUpdate.manifest]];
   }
   _isUpToDate = isUpToDate;
-  if (launcher.launchedUpdate.rawManifest.isUsingDeveloperTool) {
+  if (launcher.launchedUpdate.manifest.isUsingDeveloperTool) {
     // in dev mode, we need to set an optimistic manifest but nothing else
     return;
   }
-  _confirmedManifest = [self _processManifest:launcher.launchedUpdate.rawManifest];
+  _confirmedManifest = [self _processManifest:launcher.launchedUpdate.manifest];
   _bundle = [NSData dataWithContentsOfURL:launcher.launchAssetUrl];
   _appLauncher = launcher;
   if (self.delegate) {
@@ -253,7 +257,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)appLoaderTask:(EXUpdatesAppLoaderTask *)appLoaderTask didFinishBackgroundUpdateWithStatus:(EXUpdatesBackgroundUpdateStatus)status update:(nullable EXUpdatesUpdate *)update error:(nullable NSError *)error
 {
   if (self.delegate) {
-    [self.delegate appLoader:self didResolveUpdatedBundleWithManifest:update.rawManifest isFromCache:(status == EXUpdatesBackgroundUpdateStatusNoUpdateAvailable) error:error];
+    [self.delegate appLoader:self didResolveUpdatedBundleWithManifest:update.manifest isFromCache:(status == EXUpdatesBackgroundUpdateStatusNoUpdateAvailable) error:error];
   }
 }
 
@@ -320,11 +324,18 @@ NS_ASSUME_NONNULL_BEGIN
 
   NSURL *httpManifestUrl = [[self class] _httpUrlFromManifestUrl:_manifestUrl];
 
+  NSString *releaseChannel = [EXEnvironment sharedEnvironment].releaseChannel;
+  if (![EXEnvironment sharedEnvironment].isDetached) {
+    // in Expo Go, the release channel can change at runtime depending on the URL we load
+    NSURLComponents *manifestUrlComponents = [NSURLComponents componentsWithURL:httpManifestUrl resolvingAgainstBaseURL:YES];
+    releaseChannel = [EXKernelLinkingManager releaseChannelWithUrlComponents:manifestUrlComponents];
+  }
+
   _config = [EXUpdatesConfig configWithDictionary:@{
     @"EXUpdatesURL": httpManifestUrl.absoluteString,
     @"EXUpdatesSDKVersion": [self _sdkVersions],
     @"EXUpdatesScopeKey": httpManifestUrl.absoluteString,
-    @"EXUpdatesReleaseChannel": [EXEnvironment sharedEnvironment].releaseChannel,
+    @"EXUpdatesReleaseChannel": releaseChannel,
     @"EXUpdatesHasEmbeddedUpdate": @([EXEnvironment sharedEnvironment].isDetached),
     @"EXUpdatesEnabled": @([EXEnvironment sharedEnvironment].areRemoteUpdatesEnabled),
     @"EXUpdatesLaunchWaitMs": launchWaitMs,
@@ -347,9 +358,14 @@ NS_ASSUME_NONNULL_BEGIN
   for (NSString *sdkVersion in sdkVersions) {
     [sdkVersionRuntimeVersions addObject:[NSString stringWithFormat:@"exposdk:%@", sdkVersion]];
   }
+  [sdkVersionRuntimeVersions addObject:@"exposdk:UNVERSIONED"];
   [sdkVersions addObjectsFromArray:sdkVersionRuntimeVersions];
+  
 
-  _selectionPolicy = [EXUpdatesSelectionPolicyFactory filterAwarePolicyWithRuntimeVersions:sdkVersions];
+  _selectionPolicy = [[EXUpdatesSelectionPolicy alloc]
+                      initWithLauncherSelectionPolicy:[[EXUpdatesLauncherSelectionPolicyFilterAware alloc] initWithRuntimeVersions:sdkVersions]
+                      loaderSelectionPolicy:[EXUpdatesLoaderSelectionPolicyFilterAware new]
+                      reaperSelectionPolicy:[EXUpdatesReaperSelectionPolicyDevelopmentClient new]];
 
   EXUpdatesAppLoaderTask *loaderTask = [[EXUpdatesAppLoaderTask alloc] initWithConfig:_config
                                                                              database:updatesDatabaseManager.database
@@ -365,7 +381,7 @@ NS_ASSUME_NONNULL_BEGIN
   EXUpdatesAppLauncherNoDatabase *appLauncher = [[EXUpdatesAppLauncherNoDatabase alloc] init];
   [appLauncher launchUpdateWithConfig:_config fatalError:error];
 
-  _confirmedManifest = [self _processManifest:appLauncher.launchedUpdate.rawManifest];
+  _confirmedManifest = [self _processManifest:appLauncher.launchedUpdate.manifest];
   _optimisticManifest = _confirmedManifest;
   _bundle = [NSData dataWithContentsOfURL:appLauncher.launchAssetUrl];
   _appLauncher = appLauncher;
@@ -387,7 +403,7 @@ NS_ASSUME_NONNULL_BEGIN
   }
 }
 
-- (void)_setOptimisticManifest:(EXUpdatesRawManifest *)manifest
+- (void)_setOptimisticManifest:(EXManifestsManifest *)manifest
 {
   _optimisticManifest = manifest;
   if (self.delegate) {
@@ -395,7 +411,7 @@ NS_ASSUME_NONNULL_BEGIN
   }
 }
 
-- (void)_setShouldShowRemoteUpdateStatus:(EXUpdatesRawManifest *)manifest
+- (void)_setShouldShowRemoteUpdateStatus:(EXManifestsManifest *)manifest
 {
   // we don't want to show the cached experience alert when Updates.reloadAsync() is called
   if (_shouldUseCacheOnly) {
@@ -417,7 +433,6 @@ NS_ASSUME_NONNULL_BEGIN
     if (![@"UNVERSIONED" isEqual:sdkVersion] &&
         sdkVersion.integerValue < 39 &&
         [@"snack" isEqual:manifest.slug] &&
-        bundleUrl && [bundleUrl isKindOfClass:[NSString class]] &&
         [bundleUrl hasPrefix:@"https://d1wp6m56sqw74a.cloudfront.net/%40exponent%2Fsnack"]) {
       _shouldShowRemoteUpdateStatus = NO;
       return;
@@ -452,7 +467,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 # pragma mark - manifest processing
 
-- (EXUpdatesRawManifest *)_processManifest:(EXUpdatesRawManifest *)manifest
+- (EXManifestsManifest *)_processManifest:(EXManifestsManifest *)manifest
 {
   NSMutableDictionary *mutableManifest = [manifest.rawManifestJSON mutableCopy];
   if (!mutableManifest[@"isVerified"] && ![EXKernelLinkingManager isExpoHostedUrl:_httpManifestUrl] && !EXEnvironment.sharedEnvironment.isDetached){
@@ -469,17 +484,16 @@ NS_ASSUME_NONNULL_BEGIN
     mutableManifest[@"isVerified"] = @(NO);
   }
 
-  if (![mutableManifest[@"isVerified"] boolValue] && (EXEnvironment.sharedEnvironment.isManifestVerificationBypassed || [self _isAnonymousExperience:manifest])) {
+  if (![mutableManifest[@"isVerified"] boolValue] && (EXEnvironment.sharedEnvironment.isManifestVerificationBypassed || [EXAppLoaderExpoUpdates _isAnonymousExperience:manifest])) {
     mutableManifest[@"isVerified"] = @(YES);
   }
 
-  return [EXUpdatesUpdate rawManifestForJSON:[mutableManifest copy]];
+  return [EXManifestsManifestFactory manifestForManifestJSON:[mutableManifest copy]];
 }
 
-- (BOOL)_isAnonymousExperience:(EXUpdatesRawManifest *)manifest
++ (BOOL)_isAnonymousExperience:(EXManifestsManifest *)manifest
 {
-  NSString *experienceId = manifest.rawID;
-  return experienceId != nil && [experienceId hasPrefix:@"@anonymous/"];
+  return manifest.legacyId != nil && [manifest.legacyId hasPrefix:@"@anonymous/"];
 }
 
 #pragma mark - headers

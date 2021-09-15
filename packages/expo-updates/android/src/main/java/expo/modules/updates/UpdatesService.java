@@ -2,7 +2,7 @@ package expo.modules.updates;
 
 import android.content.Context;
 
-import org.unimodules.core.interfaces.InternalModule;
+import expo.modules.core.interfaces.InternalModule;
 
 import java.io.File;
 import java.util.Collections;
@@ -73,7 +73,7 @@ public class UpdatesService implements InternalModule, UpdatesInterface {
 
   @Override
   public boolean canRelaunch() {
-    return getConfiguration().isEnabled();
+    return getConfiguration().isEnabled() && getLaunchedUpdate() != null;
   }
 
   @Override

@@ -2,20 +2,18 @@
 title: Compatibility
 ---
 
-Expo Development Client contains three packages, which have to be compatible with each other. To check which versions are compatible, check the tables below.
+Expo Development Client is only compatible with specific versions of certain Expo and React Native modules. If you find another incompatible module that isn't on this list, please [open an issue](https://github.com/expo/expo/issues/new?assignees=&labels=needs+review&template=dev_client_bug_report.yml) and let us know.
 
-## expo-dev-menu
+You do not need to use any of these packages in your project in order to use `expo-dev-client`, but if you do, you must use a compatible version.
 
-| expo-dev-menu-interface | expo-dev-menu     |
-| ----------------------- | ----------------- |
-| `0.2.0`                 | `0.4.X`           |
-| `0.1.2`                 | `0.3.X`           |
-| `0.1.0` - `0.1.1`       | `0.1.X` - `0.2.X` |
+## expo-splash-screen
 
-## expo-dev-launcher
+| expo-dev-client | expo-splash-screen           |
+| --------------- | ---------------------------- |
+| `0.4.X`         | `0.10.3`, `0.11.2` and above |
 
-| expo-dev-menu-interface | expo-dev-launcher |
-| ----------------------- | ----------------- |
-| `0.2.0`                 | `0.3.X`           |
-| `0.1.2`                 | `0.2.X`           |
-| `0.1.0` - `0.1.1`       | `0.1.X`           |
+## react-native-reanimated
+
+| expo-dev-client | react-native-reanimated |
+| --------------- | ----------------------- |
+| `0.4.X`         | `2.2.0` and above       |

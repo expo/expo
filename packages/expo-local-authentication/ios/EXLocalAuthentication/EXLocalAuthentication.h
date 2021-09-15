@@ -1,13 +1,13 @@
 // Copyright 2018-present 650 Industries. All rights reserved.
 
-#import <UMCore/UMExportedModule.h>
-#import <UMCore/UMModuleRegistryConsumer.h>
+#import <ExpoModulesCore/EXExportedModule.h>
+#import <ExpoModulesCore/EXModuleRegistryConsumer.h>
 
-@interface EXLocalAuthentication : UMExportedModule
+@interface EXLocalAuthentication : EXExportedModule
 
 - (void)authenticateWithOptions:(NSDictionary *)options
-                        resolve:(UMPromiseResolveBlock)resolve
-                         reject:(UMPromiseRejectBlock)reject;
+                        resolve:(EXPromiseResolveBlock)resolve
+                         reject:(EXPromiseRejectBlock)reject;
 - (NSString *)convertErrorCode:(NSError *)error;
 + (BOOL)isTouchIdDevice;
 + (BOOL)isFaceIdDevice;

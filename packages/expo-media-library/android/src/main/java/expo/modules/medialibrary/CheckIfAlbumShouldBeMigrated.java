@@ -4,7 +4,7 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Build;
 
-import org.unimodules.core.Promise;
+import expo.modules.core.Promise;
 
 import java.io.File;
 

@@ -1,6 +1,6 @@
-import { Platform } from '@unimodules/core';
 import * as Device from 'expo-device';
 import * as Facebook from 'expo-facebook';
+import { Platform } from 'expo-modules-core';
 
 import { isInteractive } from '../utils/Environment';
 
@@ -27,7 +27,7 @@ export async function test(
   describe(name, () => {
     beforeAll(async () => {
       await Facebook.initializeAsync({
-        appId: '629712900716487',
+        appId: '1696089354000816',
         version: Platform.select({
           web: 'v5.0',
         }),
@@ -47,13 +47,13 @@ export async function test(
       });
     } else {
       it(`calls setAdvertiserTrackingEnabled`, async () => {
-      const result = await Facebook.setAdvertiserTrackingEnabledAsync(true);
+        const result = await Facebook.setAdvertiserTrackingEnabledAsync(true);
         if (Platform.OS === 'ios') {
           if (parseInt(Device.osVersion, 10) >= 14) {
             expect(result).toBe(true);
           } else {
             expect(result).toBe(false);
-          } 
+          }
         } else {
           expect(result).toBe(false);
         }

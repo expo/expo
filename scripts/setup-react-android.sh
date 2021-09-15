@@ -19,7 +19,7 @@ sdk_manager_options='--no_https --verbose --channel=0'
 ${sdk_manager} emulator ${sdk_manager_options}
 
 # Install NDK...
-${sdk_manager} ndk-bundle ${sdk_manager_options}
+${sdk_manager} "ndk;21.4.7075529" ${sdk_manager_options}
 ${sdk_manager} platform-tools ${sdk_manager_options}
 # Install Intel HAXM (for emulators)
 ${sdk_manager} "extras;intel;Hardware_Accelerated_Execution_Manager" ${sdk_manager_options}

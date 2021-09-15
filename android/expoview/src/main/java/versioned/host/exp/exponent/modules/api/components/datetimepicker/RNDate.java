@@ -9,14 +9,16 @@ public class RNDate {
 
   public RNDate(Bundle args) {
     now = Calendar.getInstance();
-    if (args != null && args.containsKey(RNConstants.ARG_TZOFFSET_MIN)) {
-      now.setTimeZone(TimeZone.getTimeZone("GMT"));
-      Integer timeZoneOffsetInMinutes = args.getInt(RNConstants.ARG_TZOFFSET_MIN);
-      now.add(Calendar.MILLISECOND, timeZoneOffsetInMinutes * 60000);
-    }
 
     if (args != null && args.containsKey(RNConstants.ARG_VALUE)) {
       set(args.getLong(RNConstants.ARG_VALUE));
+    }
+
+    if (args != null && args.containsKey(RNConstants.ARG_TZOFFSET_MINS)) {
+      now.setTimeZone(TimeZone.getTimeZone("GMT"));
+      Long timeZoneOffsetInMinutesFallback = args.getLong(RNConstants.ARG_TZOFFSET_MINS);
+      Integer timeZoneOffsetInMinutes = args.getInt(RNConstants.ARG_TZOFFSET_MINS, timeZoneOffsetInMinutesFallback.intValue());
+      now.add(Calendar.MILLISECOND, timeZoneOffsetInMinutes * 60000);
     }
   }
 

@@ -1,5 +1,7 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
+import Foundation
+
 public typealias HTTPCompletionHandler = (Data?, URLResponse?, Error?) -> Void
 
 @objc
@@ -49,14 +51,14 @@ public protocol DevMenuExpoApiClientProtocol {
 }
 
 public extension DevMenuExpoApiClientProtocol {
-  public func queryUpdateChannels(
+  func queryUpdateChannels(
     appId: String,
     completionHandler: @escaping ([DevMenuEASUpdates.Channel]?, URLResponse?, Error?) -> Void
   ) {
     queryUpdateChannels(appId: appId, completionHandler: completionHandler, options: DevMenuGraphQLOptions())
   }
   
-  public func queryUpdateBranches(
+  func queryUpdateBranches(
     appId: String,
     completionHandler: @escaping ([DevMenuEASUpdates.Branch]?, URLResponse?, Error?) -> Void
   ) {

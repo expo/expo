@@ -8,7 +8,7 @@ import androidx.annotation.Nullable;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.unimodules.core.arguments.MapArguments;
+import expo.modules.core.arguments.MapArguments;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -100,7 +100,7 @@ public class NotificationSerializer {
     return serializedContent;
   }
 
-  private static Bundle toBundle(@Nullable JSONObject notification) {
+  public static Bundle toBundle(@Nullable JSONObject notification) {
     if (notification == null) {
       return null;
     }

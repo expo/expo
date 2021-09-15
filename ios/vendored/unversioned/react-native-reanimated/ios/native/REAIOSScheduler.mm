@@ -1,4 +1,5 @@
 #include "REAIOSScheduler.h"
+#include "RuntimeManager.h"
 
 namespace reanimated {
 
@@ -10,25 +11,25 @@ REAIOSScheduler::REAIOSScheduler(std::shared_ptr<CallInvoker> jsInvoker) {
 }
 
 void REAIOSScheduler::scheduleOnUI(std::function<void()> job) {
-  if (module.lock() == nullptr) {
+  if (runtimeManager.lock() == nullptr) {
     return;
   }
-  
+
   if([NSThread isMainThread]) {
-    if (module.lock()) job();
+    if (runtimeManager.lock()) job();
     return;
   }
-  
+
   Scheduler::scheduleOnUI(job);
   if([NSThread isMainThread]) {
-    if (module.lock()) triggerUI();
+    if (runtimeManager.lock()) triggerUI();
     return;
   }
-  
-  __block std::weak_ptr<NativeReanimatedModule> blockModule = module;
-  
+
+  __block std::weak_ptr<RuntimeManager> blockRuntimeManager = runtimeManager;
+
   dispatch_async(dispatch_get_main_queue(), ^{
-    if (blockModule.lock()) triggerUI();
+    if (blockRuntimeManager.lock()) triggerUI();
   });
 }
 

@@ -11,35 +11,26 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation ABI41_0_0EXUpdatesNewUpdate
 
-+ (ABI41_0_0EXUpdatesUpdate *)updateWithNewManifest:(NSDictionary *)rootManifest
++ (ABI41_0_0EXUpdatesUpdate *)updateWithNewManifest:(ABI41_0_0EXManifestsNewManifest *)manifest
                                   response:(nullable NSURLResponse *)response
                                     config:(ABI41_0_0EXUpdatesConfig *)config
                                   database:(ABI41_0_0EXUpdatesDatabase *)database
 {
-  NSDictionary *manifest = rootManifest;
-  if (manifest[@"manifest"]) {
-    manifest = manifest[@"manifest"];
-  }
-
-  ABI41_0_0EXUpdatesUpdate *update = [[ABI41_0_0EXUpdatesUpdate alloc] initWithRawManifest:manifest
+  ABI41_0_0EXUpdatesUpdate *update = [[ABI41_0_0EXUpdatesUpdate alloc] initWithManifest:manifest
                                                                   config:config
                                                                 database:database];
 
-  id updateId = manifest[@"id"];
-  id commitTime = manifest[@"createdAt"];
-  id runtimeVersion = manifest[@"runtimeVersion"];
-  id launchAsset = manifest[@"launchAsset"];
-  id assets = manifest[@"assets"];
+  NSString *updateId = manifest.rawId;
+  NSString *commitTime = manifest.createdAt;
+  NSString *runtimeVersion = manifest.runtimeVersion;
+  NSDictionary *launchAsset = manifest.launchAsset;
+  NSArray *assets = manifest.assets;
 
-  NSAssert([updateId isKindOfClass:[NSString class]], @"update ID should be a string");
-  NSAssert([commitTime isKindOfClass:[NSString class]], @"createdAt should be a string");
-  NSAssert([runtimeVersion isKindOfClass:[NSString class]], @"runtimeVersion should be a string");
-  NSAssert([launchAsset isKindOfClass:[NSDictionary class]], @"launchAsset should be a dictionary");
-  NSAssert(!assets || [assets isKindOfClass:[NSArray class]], @"assets should be null or an array");
+  NSAssert(updateId != nil, @"update ID should not be null");
 
   NSUUID *uuid = [[NSUUID alloc] initWithUUIDString:(NSString *)updateId];
   NSAssert(uuid, @"update ID should be a valid UUID");
-  
+
   id bundleUrlString = (NSDictionary *)launchAsset[@"url"];
   NSAssert([bundleUrlString isKindOfClass:[NSString class]], @"launchAsset.url should be a string");
   NSURL *bundleUrl = [NSURL URLWithString:bundleUrlString];
@@ -92,7 +83,7 @@ NS_ASSUME_NONNULL_BEGIN
   update.keep = YES;
   update.bundleUrl = bundleUrl;
   update.assets = processedAssets;
-  update.metadata = manifest;
+  update.manifestJSON = manifest.rawManifestJSON;
 
   if ([response isKindOfClass:[NSHTTPURLResponse class]]) {
     NSDictionary *headersDictionary = ((NSHTTPURLResponse *)response).allHeaderFields;

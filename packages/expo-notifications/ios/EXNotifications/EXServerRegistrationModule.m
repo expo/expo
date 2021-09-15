@@ -9,11 +9,11 @@ static NSString * const kEXRegistrationInfoKey = @"EXNotificationRegistrationInf
 
 @implementation EXServerRegistrationModule
 
-UM_EXPORT_MODULE(NotificationsServerRegistrationModule)
+EX_EXPORT_MODULE(NotificationsServerRegistrationModule)
 
-UM_EXPORT_METHOD_AS(getInstallationIdAsync,
-                    getInstallationIdAsyncWithResolver:(UMPromiseResolveBlock)resolve
-                                              rejecter:(UMPromiseRejectBlock)reject)
+EX_EXPORT_METHOD_AS(getInstallationIdAsync,
+                    getInstallationIdAsyncWithResolver:(EXPromiseResolveBlock)resolve
+                                              rejecter:(EXPromiseRejectBlock)reject)
 {
   resolve([self getInstallationId]);
 }
@@ -148,9 +148,9 @@ UM_EXPORT_METHOD_AS(getInstallationIdAsync,
   }];
 }
 
-UM_EXPORT_METHOD_AS(getRegistrationInfoAsync,
-                    getRegistrationInfoAsyncWithResolver:(UMPromiseResolveBlock)resolve
-                                                rejecter:(UMPromiseRejectBlock)reject)
+EX_EXPORT_METHOD_AS(getRegistrationInfoAsync,
+                    getRegistrationInfoAsyncWithResolver:(EXPromiseResolveBlock)resolve
+                                                rejecter:(EXPromiseRejectBlock)reject)
 {
   CFTypeRef keychainResult = NULL;
   OSStatus status = SecItemCopyMatching((__bridge CFDictionaryRef)[self registrationGetQuery], &keychainResult);
@@ -167,10 +167,10 @@ UM_EXPORT_METHOD_AS(getRegistrationInfoAsync,
   }
 }
 
-UM_EXPORT_METHOD_AS(setRegistrationInfoAsync,
+EX_EXPORT_METHOD_AS(setRegistrationInfoAsync,
                     setRegistrationInfoAsync:(NSString *)registrationInfo
-                                    resolver:(UMPromiseResolveBlock)resolve
-                                    rejecter:(UMPromiseRejectBlock)reject)
+                                    resolver:(EXPromiseResolveBlock)resolve
+                                    rejecter:(EXPromiseRejectBlock)reject)
 {
   // Delete existing registration so we don't need to handle "duplicate item" error
   SecItemDelete((__bridge CFDictionaryRef)[self registrationSearchQuery]);

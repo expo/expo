@@ -20,13 +20,13 @@ Managed Expo projects also offer OTA (Over The Air) updates and a push notificat
 
 - If you've ever been in a situation where you find a spelling mistake in your app and have to wait for Apple to approve a change, you'll appreciate OTA updates - these changes will appear as soon as you run `expo publish`! You aren't limited to text either, this applies to assets like images and configuration updates too!
 
-There's no need re-build or redeploy your app to the App and Play store. It's like [Code Push](https://microsoft.github.io/code-push/) if you've used that before. There are a few limitations, however. [Read about those here](../workflow/publishing.md#limitations).
+There's no need to re-build or redeploy your app to the App and Play store. It's like [Code Push](https://microsoft.github.io/code-push/) if you've used that before. There are a few limitations, however. [Read about those here](../workflow/publishing.md#limitations).
 
-Expo offers a shared configuration file we call a manifest. Typically you'd update your Xcode plist or Android Studio xml files to handle changes. For example, if you want to lock screen orientation, change your icon, customize your splash screen or add/remove permissions you'd do this within `app.json` once and it would apply to both.
+Expo offers a shared configuration file we call a _manifest_.
 
-- Configuration that you would typically do inside of your Xcode / plist files or Android studio / xml files is handled through `app.json`. For example, if you want to lock the orientation, change your icon, customize your splash screen, add/remove permissions and entitlements (in standalone apps), configure keys for Google Maps and other services, you set this in `app.json`. [See the guide here](../workflow/configuration.md).
+- Configuration that you would typically do inside of your Xcode / plist files or Android studio / xml files is handled through `app.json`. For example, if you want to lock the orientation, change your icon, customize your splash screen, add/remove permissions and entitlements (in standalone apps), configure keys for Google Maps and other services, you set this in `app.json` and it will apply to both iOS and Android. [See the guide here](/workflow/configuration.md).
 
-In the managed workflow, you can share your app with anyone, anywhere in the world while you're working through the Expo Go app [(available on the App / Play Store)](https://expo.io). Scan a QR code, or enter in a phone number and we'll send you a link that will instantly load your app on your device.
+In the managed workflow, you can share your app with anyone, anywhere in the world while you're working through the Expo Go app [(available on the App / Play Store)](https://expo.dev). Scan a QR code, or enter in a phone number and we'll send you a link that will instantly load your app on your device.
 
 - Instead of having to sign up several external testers through App Store Connect, you can easily have them download the Expo Go app and immediately have a working version on their phone.
 
@@ -34,7 +34,7 @@ We talk about permissions we set within `app.json`, but there's also the [Permis
 
 ## How does Expo work?
 
-Since you write your code in Javascript, we bundle it up and serve it from S3. Every time you publish your app, we update those assets and then push them to your app so you've always got an up-to-date version.
+Since you write your code in JavaScript, we bundle it up and serve it from S3. Every time you publish your app, we update those assets and then push them to your app so you've always got an up-to-date version.
 
 ## Developing in Expo
 
@@ -54,11 +54,11 @@ If you prefer to build your app on your own machine, you can [follow these steps
 
 ## Helpful Tools & Resources
 
-- [snack.expo.io](https://snack.expo.io)
+- [snack.expo.dev](https://snack.expo.dev)
   - The best way to test and share examples and small projects directly from your browser. Point your phone at the QR code and you have a sandbox environment you can build in the browser and test directly on your device.
-- [docs.expo.io](/versions/latest/)
+- [docs.expo.dev](/versions/latest/)
   - If there's something you don't understand or wish to learn more about, this is a great place to start.
-- [forums.expo.io](https://forums.expo.io)
+- [forums.expo.dev](https://forums.expo.dev)
   - The fastest way to get help from the Expo team or community
 - [github.com/expo](https://github.com/expo)
   - the Expo Go app and SDK are all open source. If there's something you'd like to fix, or figure out how we implement our native modules, you're welcome to look through the code yourself!

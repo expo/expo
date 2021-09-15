@@ -1,6 +1,6 @@
 {
   "name": "expo-screen-capture",
-  "version": "3.1.0",
+  "version": "3.2.0",
   "description": "ExpoScreenCapture standalone module",
   "main": "build/ScreenCapture.js",
   "types": "build/ScreenCapture.d.ts",
@@ -28,14 +28,14 @@
   },
   "author": "650 Industries, Inc.",
   "license": "MIT",
-  "homepage": "https://docs.expo.io/versions/latest/sdk/screen-capture",
+  "homepage": "https://docs.expo.dev/versions/latest/sdk/screen-capture",
+  "jest": {
+    "preset": "expo-module-scripts"
+  },
   "dependencies": {
-    "@unimodules/core": "~7.1.0"
+    "expo-modules-core": "~0.3.1"
   },
   "devDependencies": {
     "expo-module-scripts": "^2.0.0"
-  },
-  "jest": {
-    "preset": "expo-module-scripts"
   }
 }

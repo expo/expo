@@ -1,6 +1,6 @@
 {
   "name": "expo-permissions",
-  "version": "12.0.1",
+  "version": "12.1.0",
   "description": "Allows you prompt for various permissions to access device sensors, personal data, etc.",
   "main": "build/index.js",
   "types": "build/index.d.ts",
@@ -29,9 +29,12 @@
   },
   "author": "650 Industries, Inc.",
   "license": "MIT",
-  "homepage": "https://docs.expo.io/versions/latest/sdk/permissions/",
+  "homepage": "https://docs.expo.dev/versions/latest/sdk/permissions/",
   "jest": {
     "preset": "expo-module-scripts/ios"
+  },
+  "dependencies": {
+    "expo-modules-core": "~0.3.1"
   },
   "devDependencies": {
     "@testing-library/react-hooks": "^3.3.0",

@@ -9,6 +9,7 @@ import com.google.gson.JsonElement
 import java.io.Reader
 import java.lang.reflect.Type
 import kotlin.reflect.full.declaredMemberProperties
+import kotlin.reflect.jvm.isAccessible
 
 /**
  * A representation of the android specific properties such as `primaryColor` or status bar configuration.
@@ -25,6 +26,10 @@ data class DevLauncherStatusBarSection(
   val translucent: Boolean?
 )
 
+data class DevLauncherManifestDeveloperSection(
+  val tool: String?
+)
+
 data class DevLauncherManifest(
   val name: String,
   val slug: String,
@@ -37,6 +42,8 @@ data class DevLauncherManifest(
 
   val android: DevLauncherAndroidManifestSection?,
 
+  val developer: DevLauncherManifestDeveloperSection?,
+
   val userInterfaceStyle: DevLauncherUserInterface?,
   val backgroundColor: String?,
   val primaryColor: String?,
@@ -45,6 +52,10 @@ data class DevLauncherManifest(
 ) {
   var rawData: String? = null
     private set
+
+  fun isUsingDeveloperTool(): Boolean {
+    return developer?.tool != null
+  }
 
   /**
    * Class which contains all fields that the user can override in the android section.
@@ -71,6 +82,9 @@ data class DevLauncherManifest(
     private fun applyOverriddenProperties(baseManifest: DevLauncherManifest, overriddenProperties: DevLauncherOverriddenProperties) {
       for (field in DevLauncherOverriddenProperties::class.declaredMemberProperties) {
         try {
+          // It shouldn't be needed, but when we try to run this code on JVM (unit test)
+          // we get `IllegalAccessException`.
+          field.isAccessible = true
           val overriddenValue = field.get(overriddenProperties) ?: continue
           val baseField = baseManifest::class.java.getDeclaredField(field.name)
           baseField.isAccessible = true
@@ -95,4 +109,3 @@ data class DevLauncherManifest(
     }
   }
 }
-

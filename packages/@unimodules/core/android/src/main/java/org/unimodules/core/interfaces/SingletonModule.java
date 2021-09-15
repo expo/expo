@@ -1,5 +1,10 @@
 package org.unimodules.core.interfaces;
 
-public interface SingletonModule {
-  String getName();
+/**
+ * @deprecated use {@link expo.modules.core.interfaces.SingletonModule} instead.
+ *
+ * This interface was left, cause we had it in the unimodules installations steps.
+ */
+@Deprecated
+interface SingletonModule extends expo.modules.core.interfaces.SingletonModule {
 }

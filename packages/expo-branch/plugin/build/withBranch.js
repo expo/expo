@@ -4,7 +4,7 @@ const config_plugins_1 = require("@expo/config-plugins");
 const withBranchAndroid_1 = require("./withBranchAndroid");
 const withBranchIOS_1 = require("./withBranchIOS");
 const pkg = require('expo-branch/package.json');
-const withBranch = config => {
+const withBranch = (config) => {
     config = withBranchAndroid_1.withBranchAndroid(config);
     config = withBranchIOS_1.withBranchIOS(config);
     return config;

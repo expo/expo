@@ -24,7 +24,7 @@ public class Reaper {
       return;
     }
 
-    List<UpdateEntity> allUpdates = database.updateDao().loadAllUpdatesForScope(configuration.getScopeKey());
+    List<UpdateEntity> allUpdates = database.updateDao().loadAllUpdates();
 
     JSONObject manifestFilters = ManifestMetadata.getManifestFilters(database, configuration);
     List<UpdateEntity> updatesToDelete = selectionPolicy.selectUpdatesToDelete(allUpdates, launchedUpdate, manifestFilters);

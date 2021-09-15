@@ -93,10 +93,13 @@ open class NotificationsService : BroadcastReceiver() {
      * @param receiver A receiver to which send the notifications
      */
     fun getAllPresented(context: Context, receiver: ResultReceiver? = null) {
-      doWork(context, Intent(NOTIFICATION_EVENT_ACTION, getUriBuilder().build()).also {
-        it.putExtra(EVENT_TYPE_KEY, GET_ALL_DISPLAYED_TYPE)
-        it.putExtra(RECEIVER_KEY, receiver)
-      })
+      doWork(
+        context,
+        Intent(NOTIFICATION_EVENT_ACTION, getUriBuilder().build()).also {
+          it.putExtra(EVENT_TYPE_KEY, GET_ALL_DISPLAYED_TYPE)
+          it.putExtra(RECEIVER_KEY, receiver)
+        }
+      )
     }
 
     /**
@@ -109,12 +112,15 @@ open class NotificationsService : BroadcastReceiver() {
      */
     fun present(context: Context, notification: Notification, behavior: NotificationBehavior? = null, receiver: ResultReceiver? = null) {
       val data = getUriBuilderForIdentifier(notification.notificationRequest.identifier).appendPath("present").build()
-      doWork(context, Intent(NOTIFICATION_EVENT_ACTION, data).also { intent ->
-        intent.putExtra(EVENT_TYPE_KEY, PRESENT_TYPE)
-        intent.putExtra(NOTIFICATION_KEY, notification)
-        intent.putExtra(NOTIFICATION_BEHAVIOR_KEY, behavior)
-        intent.putExtra(RECEIVER_KEY, receiver)
-      })
+      doWork(
+        context,
+        Intent(NOTIFICATION_EVENT_ACTION, data).also { intent ->
+          intent.putExtra(EVENT_TYPE_KEY, PRESENT_TYPE)
+          intent.putExtra(NOTIFICATION_KEY, notification)
+          intent.putExtra(NOTIFICATION_BEHAVIOR_KEY, behavior)
+          intent.putExtra(RECEIVER_KEY, receiver)
+        }
+      )
     }
 
     /**
@@ -126,11 +132,14 @@ open class NotificationsService : BroadcastReceiver() {
      */
     fun receive(context: Context, notification: Notification, receiver: ResultReceiver? = null) {
       val data = getUriBuilderForIdentifier(notification.notificationRequest.identifier).appendPath("receive").build()
-      doWork(context, Intent(NOTIFICATION_EVENT_ACTION, data).also { intent ->
-        intent.putExtra(EVENT_TYPE_KEY, RECEIVE_TYPE)
-        intent.putExtra(NOTIFICATION_KEY, notification)
-        intent.putExtra(RECEIVER_KEY, receiver)
-      })
+      doWork(
+        context,
+        Intent(NOTIFICATION_EVENT_ACTION, data).also { intent ->
+          intent.putExtra(EVENT_TYPE_KEY, RECEIVE_TYPE)
+          intent.putExtra(NOTIFICATION_KEY, notification)
+          intent.putExtra(RECEIVER_KEY, receiver)
+        }
+      )
     }
 
     /**
@@ -142,11 +151,14 @@ open class NotificationsService : BroadcastReceiver() {
      */
     fun dismiss(context: Context, identifiers: Array<String>, receiver: ResultReceiver? = null) {
       val data = getUriBuilder().appendPath("dismiss").build()
-      doWork(context, Intent(NOTIFICATION_EVENT_ACTION, data).also { intent ->
-        intent.putExtra(EVENT_TYPE_KEY, DISMISS_SELECTED_TYPE)
-        intent.putExtra(IDENTIFIERS_KEY, identifiers)
-        intent.putExtra(RECEIVER_KEY, receiver)
-      })
+      doWork(
+        context,
+        Intent(NOTIFICATION_EVENT_ACTION, data).also { intent ->
+          intent.putExtra(EVENT_TYPE_KEY, DISMISS_SELECTED_TYPE)
+          intent.putExtra(IDENTIFIERS_KEY, identifiers)
+          intent.putExtra(RECEIVER_KEY, receiver)
+        }
+      )
     }
 
     /**
@@ -157,10 +169,13 @@ open class NotificationsService : BroadcastReceiver() {
      */
     fun dismissAll(context: Context, receiver: ResultReceiver? = null) {
       val data = getUriBuilder().appendPath("dismiss").build()
-      doWork(context, Intent(NOTIFICATION_EVENT_ACTION, data).also { intent ->
-        intent.putExtra(EVENT_TYPE_KEY, DISMISS_ALL_TYPE)
-        intent.putExtra(RECEIVER_KEY, receiver)
-      })
+      doWork(
+        context,
+        Intent(NOTIFICATION_EVENT_ACTION, data).also { intent ->
+          intent.putExtra(EVENT_TYPE_KEY, DISMISS_ALL_TYPE)
+          intent.putExtra(RECEIVER_KEY, receiver)
+        }
+      )
     }
 
     /**
@@ -169,9 +184,12 @@ open class NotificationsService : BroadcastReceiver() {
      * @param context Context where to start the service.
      */
     fun handleDropped(context: Context) {
-      doWork(context, Intent(NOTIFICATION_EVENT_ACTION).also { intent ->
-        intent.putExtra(EVENT_TYPE_KEY, DROPPED_TYPE)
-      })
+      doWork(
+        context,
+        Intent(NOTIFICATION_EVENT_ACTION).also { intent ->
+          intent.putExtra(EVENT_TYPE_KEY, DROPPED_TYPE)
+        }
+      )
     }
 
     /**
@@ -247,10 +265,13 @@ open class NotificationsService : BroadcastReceiver() {
      * @param resultReceiver Receiver to be called with the results
      */
     fun getAllScheduledNotifications(context: Context, resultReceiver: ResultReceiver? = null) {
-      doWork(context, Intent(NOTIFICATION_EVENT_ACTION).also { intent ->
-        intent.putExtra(EVENT_TYPE_KEY, GET_ALL_SCHEDULED_TYPE)
-        intent.putExtra(RECEIVER_KEY, resultReceiver)
-      })
+      doWork(
+        context,
+        Intent(NOTIFICATION_EVENT_ACTION).also { intent ->
+          intent.putExtra(EVENT_TYPE_KEY, GET_ALL_SCHEDULED_TYPE)
+          intent.putExtra(RECEIVER_KEY, resultReceiver)
+        }
+      )
     }
 
     /**

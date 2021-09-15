@@ -12,7 +12,7 @@ function applyMocks() {
       default: {
         ...Constants,
         executionEnvironment: ExecutionEnvironment.Standalone,
-        manifest: { ...Constants.manifest, id: '@example/abc', currentFullName: '@example/abc' },
+        manifest: { ...Constants.manifest, id: '@example/abc', originalFullName: '@example/abc' },
       },
     };
   });
@@ -68,7 +68,7 @@ it(`only lets you call startAsync once at a time`, async () => {
   const WebBrowser = require('expo-web-browser');
 
   mockOpenAuthSessionAsync(WebBrowser, () => {
-    return new Promise(resolve => {
+    return new Promise((resolve) => {
       setTimeout(() => resolve(normalResponse), 0);
     });
   });
@@ -159,7 +159,7 @@ it(`lets us call AuthSession.startAsync after param validation throws`, async ()
 it(`warns if user is @anonymous in getRedirectUrl`, () => {
   const Constants = require('expo-constants').default;
   mockProperty(Constants.manifest, 'id', '@anonymous/abc');
-  mockProperty(Constants.manifest, 'currentFullName', null);
+  mockProperty(Constants.manifest, 'originalFullName', null);
   mockProperty(console, 'warn', jest.fn());
   const { getRedirectUrl } = require('../AuthSession');
   getRedirectUrl();

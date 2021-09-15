@@ -24,7 +24,7 @@ public class VersionedUtils {
 
   public static ReactInstanceManagerBuilder getReactInstanceManagerBuilder(Exponent.InstanceManagerBuilderProperties instanceManagerBuilderProperties) {
     ReactInstanceManagerBuilder builder = ReactInstanceManager.builder()
-        .setApplication(instanceManagerBuilderProperties.application)
+        .setApplication(instanceManagerBuilderProperties.getApplication())
         .setJSIModulesPackage((reactApplicationContext, jsContext) -> {
           RNObject devSupportManager = getDevSupportManager(reactApplicationContext);
           if (devSupportManager == null) {
@@ -42,17 +42,17 @@ public class VersionedUtils {
         })
         .addPackage(new MainReactPackage())
         .addPackage(new ExponentPackage(
-                instanceManagerBuilderProperties.experienceProperties,
-                instanceManagerBuilderProperties.manifest,
+                instanceManagerBuilderProperties.getExperienceProperties(),
+                instanceManagerBuilderProperties.getManifest(),
                 null, null,
-                instanceManagerBuilderProperties.singletonModules))
+                instanceManagerBuilderProperties.getSingletonModules()))
         .addPackage(new ExpoTurboPackage(
-          instanceManagerBuilderProperties.experienceProperties,
-          instanceManagerBuilderProperties.manifest))
+          instanceManagerBuilderProperties.getExperienceProperties(),
+          instanceManagerBuilderProperties.getManifest()))
         .setInitialLifecycleState(LifecycleState.BEFORE_CREATE);
 
-    if (instanceManagerBuilderProperties.jsBundlePath != null && instanceManagerBuilderProperties.jsBundlePath.length() > 0) {
-      builder = builder.setJSBundleFile(instanceManagerBuilderProperties.jsBundlePath);
+    if (instanceManagerBuilderProperties.getJsBundlePath() != null && instanceManagerBuilderProperties.getJsBundlePath().length() > 0) {
+      builder = builder.setJSBundleFile(instanceManagerBuilderProperties.getJsBundlePath());
     }
 
     return builder;

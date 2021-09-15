@@ -4,18 +4,18 @@
 
 @implementation ABI40_0_0EXScopedNotificationsUtils
 
-+ (BOOL)shouldNotificationRequest:(UNNotificationRequest *)request beHandledByExperience:(NSString *)experienceId
++ (BOOL)shouldNotificationRequest:(UNNotificationRequest *)request beHandledByExperience:(NSString *)scopeKey
 {
-  NSString *notificationExperienceId = request.content.userInfo[@"experienceId"];
-  if (!notificationExperienceId) {
+  NSString *notificationScopeKey = request.content.userInfo[@"experienceId"];
+  if (!notificationScopeKey) {
     return true;
   }
-  return [notificationExperienceId isEqual:experienceId];
+  return [notificationScopeKey isEqual:scopeKey];
 }
 
-+ (BOOL)shouldNotification:(UNNotification *)notification beHandledByExperience:(NSString *)experienceId
++ (BOOL)shouldNotification:(UNNotification *)notification beHandledByExperience:(NSString *)scopeKey
 {
-  return [ABI40_0_0EXScopedNotificationsUtils shouldNotificationRequest:notification.request beHandledByExperience:experienceId];
+  return [ABI40_0_0EXScopedNotificationsUtils shouldNotificationRequest:notification.request beHandledByExperience:scopeKey];
 }
 
 @end

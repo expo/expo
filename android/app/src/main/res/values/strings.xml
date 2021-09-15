@@ -1,5 +1,6 @@
 <resources>
-  <string name="app_name">Expo Go</string>
+  <string name="versioned_app_name">Expo Go</string>
+  <string name="unversioned_app_name">Expo Go (unversioned)</string>
   <string name="preference_file_key">host.exp.exponent.SharedPreferences</string>
   <string name="error_header">Something went wrong.</string>
   <string name="error_default_client">Sorry about that. You can go back to Expo home or try to reload the project.</string>

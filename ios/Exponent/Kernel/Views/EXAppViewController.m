@@ -9,6 +9,7 @@
 #import "EXAppLoadingCancelView.h"
 #import "EXManagedAppSplashScreenViewProvider.h"
 #import "EXManagedAppSplashScreenConfigurationBuilder.h"
+#import "EXManagedAppSplashScreenViewController.h"
 #import "EXHomeAppSplashScreenViewProvider.h"
 #import "EXEnvironment.h"
 #import "EXErrorRecoveryManager.h"
@@ -24,21 +25,21 @@
 
 #import <EXSplashScreen/EXSplashScreenService.h>
 #import <React/RCTUtils.h>
-#import <UMCore/UMModuleRegistryProvider.h>
+#import <ExpoModulesCore/EXModuleRegistryProvider.h>
 
 #if __has_include(<EXScreenOrientation/EXScreenOrientationRegistry.h>)
 #import <EXScreenOrientation/EXScreenOrientationRegistry.h>
 #endif
 
 #import <React/RCTAppearance.h>
-#if __has_include(<ABI41_0_0React/ABI41_0_0RCTAppearance.h>)
+#if defined(INCLUDES_VERSIONED_CODE) && __has_include(<ABI42_0_0React/ABI42_0_0RCTAppearance.h>)
+#import <ABI42_0_0React/ABI42_0_0RCTAppearance.h>
+#endif
+#if defined(INCLUDES_VERSIONED_CODE) && __has_include(<ABI41_0_0React/ABI41_0_0RCTAppearance.h>)
 #import <ABI41_0_0React/ABI41_0_0RCTAppearance.h>
 #endif
-#if __has_include(<ABI40_0_0React/ABI40_0_0RCTAppearance.h>)
+#if defined(INCLUDES_VERSIONED_CODE) && __has_include(<ABI40_0_0React/ABI40_0_0RCTAppearance.h>)
 #import <ABI40_0_0React/ABI40_0_0RCTAppearance.h>
-#endif
-#if __has_include(<ABI39_0_0React/ABI39_0_0RCTAppearance.h>)
-#import <ABI39_0_0React/ABI39_0_0RCTAppearance.h>
 #endif
 
 #define EX_INTERFACE_ORIENTATION_USE_MANIFEST 0
@@ -328,7 +329,7 @@ NS_ASSUME_NONNULL_BEGIN
  * therefore for any consecutive SplashScreen.show call we just reconfigure what's already visible.
  * In HomeApp or standalone apps this function is no-op as SplashScreen is managed differently.
  */
-- (void)_showOrReconfigureManagedAppSplashScreen:(EXUpdatesRawManifest *)manifest
+- (void)_showOrReconfigureManagedAppSplashScreen:(EXManifestsManifest *)manifest
 {
   if (_isStandalone || _isHomeApp) {
     return;
@@ -336,7 +337,7 @@ NS_ASSUME_NONNULL_BEGIN
   if (!_managedAppSplashScreenViewProvider) {
     _managedAppSplashScreenViewProvider = [[EXManagedAppSplashScreenViewProvider alloc] initWithManifest:manifest];
 
-    [self _showSplashScreenWithProvider:_managedAppSplashScreenViewProvider];
+    [self _showManagedSplashScreenWithProvider:_managedAppSplashScreenViewProvider];
   } else {
     [_managedAppSplashScreenViewProvider updateSplashScreenViewWithManifest:manifest];
   }
@@ -372,7 +373,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)_showSplashScreenWithProvider:(id<EXSplashScreenViewProvider>)provider
 {
-  EXSplashScreenService *splashScreenService = (EXSplashScreenService *)[UMModuleRegistryProvider getSingletonModuleForClass:[EXSplashScreenService class]];
+  EXSplashScreenService *splashScreenService = (EXSplashScreenService *)[EXModuleRegistryProvider getSingletonModuleForClass:[EXSplashScreenService class]];
 
   // EXSplashScreenService presents a splash screen on a root view controller
   // at the start of the app. Since we want the EXAppViewController to manage
@@ -390,19 +391,40 @@ NS_ASSUME_NONNULL_BEGIN
       [splashScreenService hideSplashScreenFor:rootViewController
                                successCallback:^(BOOL hasEffect){}
                                failureCallback:^(NSString * _Nonnull message) {
-        UMLogWarn(@"Hiding splash screen from root view controller did not succeed: %@", message);
+        EXLogWarn(@"Hiding splash screen from root view controller did not succeed: %@", message);
       }];
     });
   };
 
-  UM_WEAKIFY(self);
+  EX_WEAKIFY(self);
   dispatch_async(dispatch_get_main_queue(), ^{
-    UM_ENSURE_STRONGIFY(self);
+    EX_ENSURE_STRONGIFY(self);
     [splashScreenService showSplashScreenFor:self
                     splashScreenViewProvider:provider
                              successCallback:hideRootViewControllerSplashScreen
-                             failureCallback:^(NSString *message){ UMLogWarn(@"%@", message); }];
+                             failureCallback:^(NSString *message){ EXLogWarn(@"%@", message); }];
   });
+}
+
+- (void)_showManagedSplashScreenWithProvider:(id<EXSplashScreenViewProvider>)provider
+{
+
+  EXSplashScreenService *splashScreenService = (EXSplashScreenService *)[EXModuleRegistryProvider getSingletonModuleForClass:[EXSplashScreenService class]];
+
+  EX_WEAKIFY(self);
+  dispatch_async(dispatch_get_main_queue(), ^{
+    EX_ENSURE_STRONGIFY(self);
+
+    UIView *rootView = self.view;
+    UIView *splashScreenView = [provider createSplashScreenView];
+    EXManagedAppSplashScreenViewController *controller = [[EXManagedAppSplashScreenViewController alloc] initWithRootView:rootView
+                                                                                                 splashScreenView:splashScreenView];
+    [splashScreenService showSplashScreenFor:self
+                      splashScreenController:controller
+                             successCallback:^{}
+                             failureCallback:^(NSString *message){ EXLogWarn(@"%@", message); }];
+  });
+
 }
 
 - (void)hideLoadingProgressWindow
@@ -412,12 +434,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - EXAppLoaderDelegate
 
-- (void)appLoader:(EXAppLoader *)appLoader didLoadOptimisticManifest:(EXUpdatesRawManifest *)manifest
+- (void)appLoader:(EXAppLoader *)appLoader didLoadOptimisticManifest:(EXManifestsManifest *)manifest
 {
   if (_appLoadingCancelView) {
-    UM_WEAKIFY(self);
+    EX_WEAKIFY(self);
     dispatch_async(dispatch_get_main_queue(), ^{
-      UM_ENSURE_STRONGIFY(self);
+      EX_ENSURE_STRONGIFY(self);
       [self.appLoadingCancelView removeFromSuperview];
       self.appLoadingCancelView = nil;
     });
@@ -437,7 +459,7 @@ NS_ASSUME_NONNULL_BEGIN
   }
 }
 
-- (void)appLoader:(EXAppLoader *)appLoader didFinishLoadingManifest:(EXUpdatesRawManifest *)manifest bundle:(NSData *)data
+- (void)appLoader:(EXAppLoader *)appLoader didFinishLoadingManifest:(EXManifestsManifest *)manifest bundle:(NSData *)data
 {
   [self _showOrReconfigureManagedAppSplashScreen:manifest];
   [self _rebuildBridge];
@@ -458,7 +480,7 @@ NS_ASSUME_NONNULL_BEGIN
   [self maybeShowError:error];
 }
 
-- (void)appLoader:(EXAppLoader *)appLoader didResolveUpdatedBundleWithManifest:(EXUpdatesRawManifest * _Nullable)manifest isFromCache:(BOOL)isFromCache error:(NSError * _Nullable)error
+- (void)appLoader:(EXAppLoader *)appLoader didResolveUpdatedBundleWithManifest:(EXManifestsManifest * _Nullable)manifest isFromCache:(BOOL)isFromCache error:(NSError * _Nullable)error
 {
   [[EXKernel sharedInstance].serviceRegistry.updatesManager notifyApp:_appRecord ofDownloadWithManifest:manifest isNew:!isFromCache error:error];
 }
@@ -499,12 +521,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)reactAppManagerAppContentDidAppear:(EXReactAppManager *)appManager
 {
-  EXSplashScreenService *splashScreenService = (EXSplashScreenService *)[UMModuleRegistryProvider getSingletonModuleForClass:[EXSplashScreenService class]];
+  EXSplashScreenService *splashScreenService = (EXSplashScreenService *)[EXModuleRegistryProvider getSingletonModuleForClass:[EXSplashScreenService class]];
   [splashScreenService onAppContentDidAppear:self];
 }
 
 - (void)reactAppManagerAppContentWillReload:(EXReactAppManager *)appManager {
-  EXSplashScreenService *splashScreenService = (EXSplashScreenService *)[UMModuleRegistryProvider getSingletonModuleForClass:[EXSplashScreenService class]];
+  EXSplashScreenService *splashScreenService = (EXSplashScreenService *)[EXModuleRegistryProvider getSingletonModuleForClass:[EXSplashScreenService class]];
   [splashScreenService onAppContentWillReload:self];
 }
 
@@ -528,7 +550,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (UIInterfaceOrientationMask)supportedInterfaceOrientations
 {
 #if __has_include(<EXScreenOrientation/EXScreenOrientationRegistry.h>)
-  EXScreenOrientationRegistry *screenOrientationRegistry = (EXScreenOrientationRegistry *)[UMModuleRegistryProvider getSingletonModuleForClass:[EXScreenOrientationRegistry class]];
+  EXScreenOrientationRegistry *screenOrientationRegistry = (EXScreenOrientationRegistry *)[EXModuleRegistryProvider getSingletonModuleForClass:[EXScreenOrientationRegistry class]];
   if (screenOrientationRegistry && [screenOrientationRegistry requiredOrientationMask] > 0) {
     return [screenOrientationRegistry requiredOrientationMask];
   }
@@ -570,7 +592,7 @@ NS_ASSUME_NONNULL_BEGIN
       || (self.traitCollection.horizontalSizeClass != previousTraitCollection.horizontalSizeClass)) {
 
     #if __has_include(<EXScreenOrientation/EXScreenOrientationRegistry.h>)
-      EXScreenOrientationRegistry *screenOrientationRegistryController = (EXScreenOrientationRegistry *)[UMModuleRegistryProvider getSingletonModuleForClass:[EXScreenOrientationRegistry class]];
+      EXScreenOrientationRegistry *screenOrientationRegistryController = (EXScreenOrientationRegistry *)[EXModuleRegistryProvider getSingletonModuleForClass:[EXScreenOrientationRegistry class]];
       [screenOrientationRegistryController traitCollectionDidChangeTo:self.traitCollection];
     #endif
 
@@ -642,14 +664,15 @@ NS_ASSUME_NONNULL_BEGIN
     appearancePreference = nil;
   }
   RCTOverrideAppearancePreference(appearancePreference);
-#if __has_include(<ABI41_0_0React/ABI41_0_0RCTAppearance.h>)
+
+#if defined(INCLUDES_VERSIONED_CODE) && __has_include(<ABI42_0_0React/ABI42_0_0RCTAppearance.h>)
+  ABI42_0_0RCTOverrideAppearancePreference(appearancePreference);
+#endif
+#if defined(INCLUDES_VERSIONED_CODE) && __has_include(<ABI41_0_0React/ABI41_0_0RCTAppearance.h>)
   ABI41_0_0RCTOverrideAppearancePreference(appearancePreference);
 #endif
-#if __has_include(<ABI40_0_0React/ABI40_0_0RCTAppearance.h>)
+#if defined(INCLUDES_VERSIONED_CODE) && __has_include(<ABI40_0_0React/ABI40_0_0RCTAppearance.h>)
   ABI40_0_0RCTOverrideAppearancePreference(appearancePreference);
-#endif
-#if __has_include(<ABI39_0_0React/ABI39_0_0RCTAppearance.h>)
-  ABI39_0_0RCTOverrideAppearancePreference(appearancePreference);
 #endif
 }
 
@@ -663,7 +686,7 @@ NS_ASSUME_NONNULL_BEGIN
   }
 }
 
-- (NSString * _Nullable)_readUserInterfaceStyleFromManifest:(EXUpdatesRawManifest *)manifest
+- (NSString * _Nullable)_readUserInterfaceStyleFromManifest:(EXManifestsManifest *)manifest
 {
   return manifest.userInterfaceStyle;
 }
@@ -709,9 +732,9 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
-- (NSString * _Nullable)_readBackgroundColorFromManifest:(EXUpdatesRawManifest *)manifest
+- (NSString * _Nullable)_readBackgroundColorFromManifest:(EXManifestsManifest *)manifest
 {
-  return manifest.androidOrRootBackroundColor;
+  return manifest.iosOrRootBackgroundColor;
 }
 
 
@@ -751,9 +774,9 @@ NS_ASSUME_NONNULL_BEGIN
     }
   }
   _isLoading = isLoading;
-  UM_WEAKIFY(self);
+  EX_WEAKIFY(self);
   dispatch_async(dispatch_get_main_queue(), ^{
-    UM_ENSURE_STRONGIFY(self);
+    EX_ENSURE_STRONGIFY(self);
     if (!isLoading) {
       [self.appLoadingProgressWindowController hide];
     }
@@ -765,7 +788,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL)_willAutoRecoverFromError:(NSError *)error
 {
   if (![_appRecord.appManager enablesDeveloperTools]) {
-    BOOL shouldRecover = [[EXKernel sharedInstance].serviceRegistry.errorRecoveryManager experienceIdShouldReloadOnError:_appRecord.experienceId];
+    BOOL shouldRecover = [[EXKernel sharedInstance].serviceRegistry.errorRecoveryManager experienceShouldReloadOnError:_appRecord.scopeKey];
     if (shouldRecover) {
       [self _invalidateRecoveryTimer];
       _tmrAutoReloadDebounce = [NSTimer scheduledTimerWithTimeInterval:kEXAutoReloadDebounceSeconds

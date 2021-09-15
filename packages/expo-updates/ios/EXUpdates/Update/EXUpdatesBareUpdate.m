@@ -4,29 +4,25 @@
 #import <EXUpdates/EXUpdatesEmbeddedAppLoader.h>
 #import <EXUpdates/EXUpdatesUpdate+Private.h>
 #import <EXUpdates/EXUpdatesUtils.h>
-#import <EXUpdates/EXUpdatesBareRawManifest.h>
+#import <EXManifests/EXManifestsBareManifest.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
 @implementation EXUpdatesBareUpdate
 
-+ (EXUpdatesUpdate *)updateWithBareRawManifest:(EXUpdatesBareRawManifest *)manifest
++ (EXUpdatesUpdate *)updateWithBareManifest:(EXManifestsBareManifest *)manifest
                                         config:(EXUpdatesConfig *)config
                                       database:(EXUpdatesDatabase *)database
 {
-  EXUpdatesUpdate *update = [[EXUpdatesUpdate alloc] initWithRawManifest:manifest
+  EXUpdatesUpdate *update = [[EXUpdatesUpdate alloc] initWithManifest:manifest
                                                                   config:config
                                                                 database:database];
 
-  id updateId = manifest.rawID;
-  id commitTime = manifest.commitTimeNumber;
-  id metadata = manifest.metadata;
-  id assets = manifest.assets;
+  NSString *updateId = manifest.rawId;
+  NSNumber *commitTime = manifest.commitTimeNumber;
+  NSArray *assets = manifest.assets;
 
-  NSAssert([updateId isKindOfClass:[NSString class]], @"update ID should be a string");
-  NSAssert([commitTime isKindOfClass:[NSNumber class]], @"commitTime should be a number");
-  NSAssert(!metadata || [metadata isKindOfClass:[NSDictionary class]], @"metadata should be null or an object");
-  NSAssert(!assets || [assets isKindOfClass:[NSArray class]], @"assets should be null or an array");
+  NSAssert(updateId != nil, @"update ID should not be null");
 
   NSUUID *uuid = [[NSUUID alloc] initWithUUIDString:(NSString *)updateId];
   NSAssert(uuid, @"update ID should be a valid UUID");
@@ -54,7 +50,7 @@ NS_ASSUME_NONNULL_BEGIN
         NSAssert([mainBundleDir isKindOfClass:[NSString class]], @"asset nsBundleDir should be a string");
       }
 
-      NSString *key = [NSString stringWithFormat:@"%@.%@", packagerHash, type];
+      NSString *key = packagerHash;
       EXUpdatesAsset *asset = [[EXUpdatesAsset alloc] initWithKey:key type:(NSString *)type];
       asset.mainBundleDir = mainBundleDir;
       asset.mainBundleFilename = mainBundleFilename;
@@ -66,9 +62,6 @@ NS_ASSUME_NONNULL_BEGIN
   update.updateId = uuid;
   update.commitTime = [NSDate dateWithTimeIntervalSince1970:[(NSNumber *)commitTime doubleValue] / 1000];
   update.runtimeVersion = [EXUpdatesUtils getRuntimeVersionWithConfig:config];
-  if (metadata) {
-    update.metadata = (NSDictionary *)metadata;
-  }
   update.status = EXUpdatesUpdateStatusEmbedded;
   update.keep = YES;
   update.assets = processedAssets;

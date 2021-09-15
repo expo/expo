@@ -1,6 +1,6 @@
 {
   "name": "@unimodules/core",
-  "version": "7.1.0",
+  "version": "7.2.0-alpha.0",
   "description": "Universal modules core",
   "main": "build/index.js",
   "types": "build/index.d.ts",
@@ -32,7 +32,7 @@
     "preset": "expo-module-scripts/ios"
   },
   "dependencies": {
-    "compare-versions": "^3.4.0"
+    "expo-modules-core": "~0.3.1"
   },
   "devDependencies": {
     "expo-module-scripts": "^2.0.0"

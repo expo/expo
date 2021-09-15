@@ -2,7 +2,6 @@ package expo.modules.devlauncher.modules
 
 import android.content.ActivityNotFoundException
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.net.Uri
 import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.Promise
@@ -10,29 +9,36 @@ import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactContextBaseJavaModule
 import com.facebook.react.bridge.ReactMethod
 import com.facebook.react.modules.core.DeviceEventManagerModule.RCTDeviceEventEmitter
-import expo.modules.devlauncher.DevLauncherController.Companion.instance
 import expo.modules.devlauncher.DevLauncherController.Companion.wasInitialized
 import expo.modules.devlauncher.helpers.getAppUrlFromDevLauncherUrl
 import expo.modules.devlauncher.helpers.isDevLauncherUrl
+import expo.modules.devlauncher.koin.DevLauncherKoinComponent
+import expo.modules.devlauncher.launcher.DevLauncherControllerInterface
+import expo.modules.devlauncher.launcher.DevLauncherIntentRegistryInterface
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import org.koin.core.component.inject
 
 private const val ON_NEW_DEEP_LINK_EVENT = "expo.modules.devlauncher.onnewdeeplink"
 private const val CLIENT_PACKAGE_NAME = "host.exp.exponent"
 private val CLIENT_HOME_QR_SCANNER_DEEP_LINK = Uri.parse("expo-home://qr-scanner")
 
-class DevLauncherInternalModule(reactContext: ReactApplicationContext?) : ReactContextBaseJavaModule(reactContext) {
+class DevLauncherInternalModule(reactContext: ReactApplicationContext?)
+  : ReactContextBaseJavaModule(reactContext), DevLauncherKoinComponent {
+  private val controller: DevLauncherControllerInterface by inject()
+  private val intentRegistry: DevLauncherIntentRegistryInterface by inject()
+
   override fun initialize() {
     super.initialize()
     if (wasInitialized()) {
-      instance.pendingIntentRegistry.subscribe(this::onNewPendingIntent)
+      intentRegistry.subscribe(this::onNewPendingIntent)
     }
   }
 
   override fun invalidate() {
     super.invalidate()
     if (wasInitialized()) {
-      instance.pendingIntentRegistry.unsubscribe(this::onNewPendingIntent)
+      intentRegistry.unsubscribe(this::onNewPendingIntent)
     }
   }
 
@@ -48,9 +54,10 @@ class DevLauncherInternalModule(reactContext: ReactApplicationContext?) : ReactC
         } else {
           parsedUrl
         }
-        instance.loadApp(appUrl)
+        controller.loadApp(appUrl)
       } catch (e: Exception) {
         promise.reject("ERR_DEV_LAUNCHER_CANNOT_LOAD_APP", e.message, e)
+        return@launch
       }
       promise.resolve(null)
     }
@@ -61,7 +68,7 @@ class DevLauncherInternalModule(reactContext: ReactApplicationContext?) : ReactC
     promise.resolve(Arguments
       .createMap()
       .apply {
-        instance.getRecentlyOpenedApps().forEach { (key, value) ->
+        controller.getRecentlyOpenedApps().forEach { (key, value) ->
           putString(key, value)
         }
       })
@@ -93,7 +100,12 @@ class DevLauncherInternalModule(reactContext: ReactApplicationContext?) : ReactC
 
   @ReactMethod
   fun getPendingDeepLink(promise: Promise) {
-    promise.resolve(instance.pendingIntentRegistry.intent?.data?.toString())
+    intentRegistry.intent?.data?.let {
+      promise.resolve(it.toString())
+      return
+    }
+
+    promise.resolve(intentRegistry.intent?.action)
   }
 
   private fun onNewPendingIntent(intent: Intent) {
@@ -109,7 +121,7 @@ class DevLauncherInternalModule(reactContext: ReactApplicationContext?) : ReactC
       return
     }
 
-    reactApplicationContext.startActivity(fallback);
+    reactApplicationContext.startActivity(fallback)
   }
 
   private fun openLink(uri: Uri): Boolean {

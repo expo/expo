@@ -12,7 +12,7 @@ ABI40_0_0UM_REGISTER_MODULE();
 
 + (const NSArray<Protocol *> *)exportedInterfaces
 {
-  return @[@protocol(ABI40_0_0EXUpdatesInterface)];
+  return @[@protocol(ABI40_0_0EXUpdatesModuleInterface)];
 }
 
 - (ABI40_0_0EXUpdatesConfig *)config
@@ -25,7 +25,7 @@ ABI40_0_0UM_REGISTER_MODULE();
   return ABI40_0_0EXUpdatesAppController.sharedInstance.database;
 }
 
-- (id<ABI40_0_0EXUpdatesSelectionPolicy>)selectionPolicy
+- (ABI40_0_0EXUpdatesSelectionPolicy *)selectionPolicy
 {
   return ABI40_0_0EXUpdatesAppController.sharedInstance.selectionPolicy;
 }
@@ -68,6 +68,11 @@ ABI40_0_0UM_REGISTER_MODULE();
 - (void)requestRelaunchWithCompletion:(ABI40_0_0EXUpdatesAppRelaunchCompletionBlock)completion
 {
   return [ABI40_0_0EXUpdatesAppController.sharedInstance requestRelaunchWithCompletion:completion];
+}
+
+- (void)resetSelectionPolicy
+{
+  return [ABI40_0_0EXUpdatesAppController.sharedInstance resetSelectionPolicyToDefault];
 }
 
 @end

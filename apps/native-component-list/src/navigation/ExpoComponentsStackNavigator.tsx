@@ -13,6 +13,18 @@ const Stack = createStackNavigator();
 export const Screens = [
   {
     getComponent() {
+      return optionalRequire(() => require('../screens/FacebookAdsScreen'));
+    },
+    name: 'FacebookAds',
+  },
+  {
+    getComponent() {
+      return optionalRequire(() => require('../screens/DrawerLayoutAndroidScreen'));
+    },
+    name: 'DrawerLayoutAndroid',
+  },
+  {
+    getComponent() {
       return optionalRequire(() => require('../screens/AdMobScreen'));
     },
     name: 'Admob',
@@ -393,10 +405,10 @@ export const Screens = [
   },
   {
     getComponent() {
-      return optionalRequire(() => require('../screens/ViewPagerScreen'));
+      return optionalRequire(() => require('../screens/PagerViewScreen'));
     },
-    name: 'ViewPager',
-    options: { gesturesEnabled: false, title: 'ViewPager Example' },
+    name: 'PagerView',
+    options: { gesturesEnabled: false, title: 'PagerView Example' },
   },
   {
     getComponent() {

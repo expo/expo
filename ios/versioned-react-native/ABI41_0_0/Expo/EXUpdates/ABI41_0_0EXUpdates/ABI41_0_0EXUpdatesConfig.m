@@ -20,6 +20,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
+static NSString * const ABI41_0_0EXUpdatesConfigPlistName = @"Expo";
+
 static NSString * const ABI41_0_0EXUpdatesDefaultReleaseChannelName = @"default";
 
 static NSString * const ABI41_0_0EXUpdatesConfigEnabledKey = @"ABI41_0_0EXUpdatesEnabled";
@@ -31,7 +33,6 @@ static NSString * const ABI41_0_0EXUpdatesConfigLaunchWaitMsKey = @"ABI41_0_0EXU
 static NSString * const ABI41_0_0EXUpdatesConfigCheckOnLaunchKey = @"ABI41_0_0EXUpdatesCheckOnLaunch";
 static NSString * const ABI41_0_0EXUpdatesConfigSDKVersionKey = @"ABI41_0_0EXUpdatesSDKVersion";
 static NSString * const ABI41_0_0EXUpdatesConfigRuntimeVersionKey = @"ABI41_0_0EXUpdatesRuntimeVersion";
-static NSString * const ABI41_0_0EXUpdatesConfigUsesLegacyManifestKey = @"ABI41_0_0EXUpdatesUsesLegacyManifest";
 static NSString * const ABI41_0_0EXUpdatesConfigHasEmbeddedUpdateKey = @"ABI41_0_0EXUpdatesHasEmbeddedUpdate";
 
 static NSString * const ABI41_0_0EXUpdatesConfigAlwaysString = @"ALWAYS";
@@ -49,7 +50,6 @@ static NSString * const ABI41_0_0EXUpdatesConfigNeverString = @"NEVER";
     _releaseChannel = ABI41_0_0EXUpdatesDefaultReleaseChannelName;
     _launchWaitMs = @(0);
     _checkOnLaunch = ABI41_0_0EXUpdatesCheckAutomaticallyConfigAlways;
-    _usesLegacyManifest = YES;
     _hasEmbeddedUpdate = YES;
   }
   return self;
@@ -60,6 +60,17 @@ static NSString * const ABI41_0_0EXUpdatesConfigNeverString = @"NEVER";
   ABI41_0_0EXUpdatesConfig *updatesConfig = [[ABI41_0_0EXUpdatesConfig alloc] init];
   [updatesConfig loadConfigFromDictionary:config];
   return updatesConfig;
+}
+
++ (instancetype)configWithExpoPlist
+{
+  NSString *configPath = [[NSBundle mainBundle] pathForResource:ABI41_0_0EXUpdatesConfigPlistName ofType:@"plist"];
+  if (!configPath) {
+    @throw [NSException exceptionWithName:NSInternalInconsistencyException
+                                   reason:@"Cannot load configuration from Expo.plist. Please ensure you've followed the setup and installation instructions for expo-updates to create Expo.plist and add it to your Xcode project."
+                                 userInfo:@{}];
+  }
+  return [[self class] configWithDictionary:[NSDictionary dictionaryWithContentsOfFile:configPath]];
 }
 
 - (void)loadConfigFromDictionary:(NSDictionary *)config
@@ -89,16 +100,25 @@ static NSString * const ABI41_0_0EXUpdatesConfigNeverString = @"NEVER";
   if (!_scopeKey) {
     if (_updateUrl) {
       _scopeKey = [[self class] normalizedURLOrigin:_updateUrl];
-    } else {
-      @throw [NSException exceptionWithName:NSInternalInconsistencyException
-                                     reason:@"expo-updates must be configured with a valid update URL or scope key."
-                                   userInfo:@{}];
     }
   }
 
   id requestHeaders = config[ABI41_0_0EXUpdatesConfigRequestHeadersKey];
-  if (requestHeaders && [requestHeaders isKindOfClass:[NSDictionary class]]) {
+  if (requestHeaders) {
+    if(![requestHeaders isKindOfClass:[NSDictionary class]]){
+      @throw [NSException exceptionWithName:NSInternalInconsistencyException
+                                     reason:[NSString stringWithFormat:@"PList key '%@' must be a string valued Dictionary.", ABI41_0_0EXUpdatesConfigRequestHeadersKey]
+                                   userInfo:@{}];
+    }
     _requestHeaders = (NSDictionary *)requestHeaders;
+    
+    for (id key in _requestHeaders){
+      if (![_requestHeaders[key] isKindOfClass:[NSString class]]){
+        @throw [NSException exceptionWithName:NSInternalInconsistencyException
+                                       reason:[NSString stringWithFormat:@"PList key '%@' must be a string valued Dictionary.", ABI41_0_0EXUpdatesConfigRequestHeadersKey]
+                                     userInfo:@{}];
+      }
+    }
   }
 
   id releaseChannel = config[ABI41_0_0EXUpdatesConfigReleaseChannelKey];
@@ -134,11 +154,6 @@ static NSString * const ABI41_0_0EXUpdatesConfigNeverString = @"NEVER";
   id runtimeVersion = config[ABI41_0_0EXUpdatesConfigRuntimeVersionKey];
   if (runtimeVersion && [runtimeVersion isKindOfClass:[NSString class]]) {
     _runtimeVersion = (NSString *)runtimeVersion;
-  }
-
-  id usesLegacyManifest = config[ABI41_0_0EXUpdatesConfigUsesLegacyManifestKey];
-  if (usesLegacyManifest && [usesLegacyManifest isKindOfClass:[NSNumber class]]) {
-    _usesLegacyManifest = [(NSNumber *)usesLegacyManifest boolValue];
   }
 
   id hasEmbeddedUpdate = config[ABI41_0_0EXUpdatesConfigHasEmbeddedUpdateKey];

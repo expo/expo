@@ -8,11 +8,17 @@ on:
     paths:
       - .github/workflows/shell-app-android.yml
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build:
     runs-on: ubuntu-18.04
     steps:
       - uses: actions/checkout@v2
+        with:
+          submodules: true
       - name: Get cache key of git lfs files
         id: git-lfs
         run: echo "::set-output name=sha256::$(git lfs ls-files | openssl dgst -sha256)"
@@ -49,7 +55,7 @@ jobs:
       - name: Install NDK
         if: steps.cache-android-ndk.outputs.cache-hit != 'true'
         run: |
-          sudo $ANDROID_HOME/tools/bin/sdkmanager --install "ndk;19.2.5345600"
+          sudo $ANDROID_SDK_ROOT/tools/bin/sdkmanager --install "ndk;19.2.5345600"
       - name: Build Android packages
         env:
           ANDROID_NDK_HOME: /usr/local/lib/android/sdk/ndk/19.2.5345600/
@@ -66,7 +72,6 @@ jobs:
         with:
           name: android-shell-app
           path: artifacts/android-shell-builder.tar.gz
-      - run: sudo apt-get install awscli
       - name: Upload shell app tarball to S3
         if: ${{ github.event_name == 'workflow_dispatch' }}
         env:
@@ -94,5 +99,5 @@ jobs:
         with:
           channel: '#platform-android'
           status: ${{ job.status }}
-          fields: job,commit,ref,eventName,author,took
+          fields: job,message,ref,eventName,author,took
           author_name: Android Shell App (${{ env.SLACK_MESSAGE_DESCRIPTION }})

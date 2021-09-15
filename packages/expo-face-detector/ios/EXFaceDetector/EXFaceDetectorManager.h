@@ -7,9 +7,9 @@
 //
 
 #import <AVFoundation/AVFoundation.h>
-#import <UMFaceDetectorInterface/UMFaceDetectorManager.h>
+#import <ExpoModulesCore/EXFaceDetectorManagerInterface.h>
 
-@interface EXFaceDetectorManager : NSObject <UMFaceDetectorManager>
+@interface EXFaceDetectorManager : NSObject <EXFaceDetectorManagerInterface>
 
 - (void)setOnFacesDetected:(void (^)(NSArray<NSDictionary *> *))onFacesDetected;
 

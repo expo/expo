@@ -10,16 +10,20 @@ void runBefore(String dependentTaskName, Task task) {
   }
 }
 
-def expoConstantsDir = ["node", "-e", "console.log(require('path').dirname(require.resolve('expo-constants/package.json')));"].execute([], projectDir).text.trim()
+def expoConstantsDir = ["node", "-e", "console.log(require('path').dirname(require.resolve('expo-constants/package.json')));"].execute(null, projectDir).text.trim()
 
 def config = project.hasProperty("react") ? project.react : [];
 def nodeExecutableAndArgs = config.nodeExecutableAndArgs ?: ["node"]
 
 afterEvaluate {
-  def projectRoot = file("../../")
+  def projectRoot = file("${rootProject.projectDir}")
   def inputExcludes = ["android/**", "ios/**"]
 
-  android.applicationVariants.each { variant ->
+  if (!android.hasProperty('libraryVariants')) {
+    // For traditional application level integration, will be no-op to prevent duplicated app.config creation.
+    return;
+  }
+  android.libraryVariants.each { variant ->
     def targetName = variant.name.capitalize()
     def targetPath = variant.dirName
 
@@ -49,31 +53,31 @@ afterEvaluate {
       }
     }
 
-    def currentAssetsCopyTask = tasks.create(
+    def currentCopyAppConfigTask = tasks.create(
         name: "copy${targetName}ExpoConfig",
         type: Copy) {
-      description = "expo-constants: Copy config into ${targetName}."
+      description = "expo-constants: Copy generated app.config into ${targetName}."
 
-      into ("$buildDir/intermediates")
-      into ("assets/${targetPath}") {
-        from(assetsDir)
-      }
+      from(assetsDir)
+      into("${projectDir}/src/main/assets")
+      include('app.config')
 
-      // Workaround for Android Gradle Plugin 3.2+ new asset directory
-      into ("merged_assets/${variant.name}/merge${targetName}Assets/out") {
-        from(assetsDir)
-      }
-
-      // Workaround for Android Gradle Plugin 3.4+ new asset directory
-      into ("merged_assets/${variant.name}/out") {
-        from(assetsDir)
-      }
-
-      // mergeAssets must run first, as it clears the intermediates directory
-      dependsOn(variant.mergeAssetsProvider.get())
       dependsOn(currentBundleTask)
     }
 
-    runBefore("process${targetName}Resources", currentAssetsCopyTask)
+    def currentCleanupAppConfigTask = tasks.create(
+        name: "cleanup${targetName}ExpoConfig",
+        type: Delete) {
+      description = "expo-constants: Cleanup generated app.config from ${targetName}."
+
+      delete files("${projectDir}/src/main/assets/app.config")
+    }
+
+    // In summary, these tasks try to create `src/main/assets/app.config` in building time for gradle to merge the asset.
+    // And cleanup the generated app.config after building time.
+    def packageTask = tasks.findByPath("package${targetName}Assets")
+    packageTask.dependsOn(currentCopyAppConfigTask)
+    currentCleanupAppConfigTask.dependsOn(packageTask)
+    runBefore("process${targetName}JavaRes", currentCleanupAppConfigTask)
   }
 }

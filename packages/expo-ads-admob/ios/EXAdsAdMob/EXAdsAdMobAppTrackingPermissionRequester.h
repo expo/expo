@@ -1,7 +1,7 @@
 // Copyright 2017-present 650 Industries. All rights reserved.
 
-#import <UMPermissionsInterface/UMPermissionsInterface.h>
+#import <ExpoModulesCore/EXPermissionsInterface.h>
 
-@interface EXAdsAdMobAppTrackingPermissionRequester : NSObject<UMPermissionsRequester>
+@interface EXAdsAdMobAppTrackingPermissionRequester : NSObject<EXPermissionsRequester>
 
 @end

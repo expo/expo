@@ -2,8 +2,8 @@ package expo.modules.lineargradient;
 
 import android.content.Context;
 
-import org.unimodules.core.ViewManager;
-import org.unimodules.core.interfaces.ExpoProp;
+import expo.modules.core.ViewManager;
+import expo.modules.core.interfaces.ExpoProp;
 
 import java.util.ArrayList;
 

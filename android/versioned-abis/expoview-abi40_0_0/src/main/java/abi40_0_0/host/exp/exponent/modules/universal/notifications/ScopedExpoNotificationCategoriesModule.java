@@ -15,18 +15,18 @@ import androidx.annotation.NonNull;
 import abi40_0_0.expo.modules.notifications.notifications.categories.ExpoNotificationCategoriesModule;
 import expo.modules.notifications.notifications.model.NotificationCategory;
 import abi40_0_0.expo.modules.notifications.service.NotificationsService;
-import host.exp.exponent.kernel.ExperienceId;
+import host.exp.exponent.kernel.ExperienceKey;
 import abi40_0_0.host.exp.exponent.modules.api.notifications.ScopedNotificationsIdUtils;
 
 import static abi40_0_0.expo.modules.notifications.service.NotificationsService.NOTIFICATION_CATEGORIES_KEY;
 import static abi40_0_0.expo.modules.notifications.service.NotificationsService.SUCCESS_CODE;
 
 public class ScopedExpoNotificationCategoriesModule extends ExpoNotificationCategoriesModule {
-  private final ExperienceId mExperienceId;
+  private final ExperienceKey mExperienceKey;
 
-  public ScopedExpoNotificationCategoriesModule(Context context, @NonNull ExperienceId experienceId) {
+  public ScopedExpoNotificationCategoriesModule(Context context, @NonNull ExperienceKey experienceKey) {
     super(context);
-    mExperienceId = experienceId;
+    mExperienceKey = experienceKey;
   }
 
   @Override
@@ -46,20 +46,20 @@ public class ScopedExpoNotificationCategoriesModule extends ExpoNotificationCate
 
   @Override
   public void setNotificationCategoryAsync(final String identifier, List<HashMap<String, Object>> actionArguments, HashMap<String, Object> categoryOptions, final Promise promise) {
-    String scopedCategoryIdentifier = ScopedNotificationsIdUtils.getScopedCategoryId(mExperienceId, identifier);
+    String scopedCategoryIdentifier = ScopedNotificationsIdUtils.getScopedCategoryId(mExperienceKey, identifier);
     super.setNotificationCategoryAsync(scopedCategoryIdentifier, actionArguments, categoryOptions, promise);
   }
 
   @Override
   public void deleteNotificationCategoryAsync(String identifier, final Promise promise) {
-    String scopedCategoryIdentifier = ScopedNotificationsIdUtils.getScopedCategoryId(mExperienceId, identifier);
+    String scopedCategoryIdentifier = ScopedNotificationsIdUtils.getScopedCategoryId(mExperienceKey, identifier);
     super.deleteNotificationCategoryAsync(scopedCategoryIdentifier, promise);
   }
 
   protected ArrayList<Bundle> serializeScopedCategories(@NonNull Collection<NotificationCategory> categories) {
     ArrayList<Bundle> serializedCategories = new ArrayList<>();
     for (NotificationCategory category : categories) {
-      if (ScopedNotificationsIdUtils.checkIfCategoryBelongsToExperience(mExperienceId, category)) {
+      if (ScopedNotificationsIdUtils.checkIfCategoryBelongsToExperience(mExperienceKey, category)) {
         serializedCategories.add(mSerializer.toBundle(category));
       }
     }

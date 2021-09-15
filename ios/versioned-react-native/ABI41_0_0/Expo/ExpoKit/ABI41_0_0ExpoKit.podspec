@@ -135,7 +135,7 @@ Pod::Spec.new do |s|
     ss.dependency         "JKBigInteger2"
     ss.dependency         "Branch"
     ss.dependency         "Google-Mobile-Ads-SDK"
-    ss.dependency         "Folly"
+    ss.dependency         "RCT-Folly"
   end
 
   s.subspec "ExpoOptional" do |ss|

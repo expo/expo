@@ -17,6 +17,7 @@ extern NSString * const ABI41_0_0EXUpdatesBareEmbeddedBundleFileType;
                                                 database:(nullable ABI41_0_0EXUpdatesDatabase *)database;
 
 - (void)loadUpdateFromEmbeddedManifestWithCallback:(ABI41_0_0EXUpdatesAppLoaderManifestBlock)manifestBlock
+                                           onAsset:(ABI41_0_0EXUpdatesAppLoaderAssetBlock)assetBlock
                                            success:(ABI41_0_0EXUpdatesAppLoaderSuccessBlock)success
                                              error:(ABI41_0_0EXUpdatesAppLoaderErrorBlock)error;
 

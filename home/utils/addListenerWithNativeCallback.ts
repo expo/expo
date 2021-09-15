@@ -6,7 +6,7 @@ const addListenerWithNativeCallback = (
   eventName: string,
   eventListener: (event: any) => Promise<any>
 ) => {
-  return DeviceEventEmitter.addListener(eventName, async event => {
+  return DeviceEventEmitter.addListener(eventName, async (event) => {
     try {
       let result = await eventListener(event);
       if (!result) {

@@ -41,7 +41,7 @@ export default class FileSystemScreen extends React.Component<{}, State> {
   _startDownloading = async () => {
     const url = 'http://ipv4.download.thinkbroadband.com/5MB.zip';
     const fileUri = FileSystem.documentDirectory + '5MB.zip';
-    const callback: FileSystem.DownloadProgressCallback = downloadProgress => {
+    const callback: FileSystem.DownloadProgressCallback = (downloadProgress) => {
       const progress =
         downloadProgress.totalBytesWritten / downloadProgress.totalBytesExpectedToWrite;
       this.setState({
@@ -90,6 +90,24 @@ export default class FileSystemScreen extends React.Component<{}, State> {
     }
   };
 
+  _cancel = async () => {
+    if (!this.download) {
+      alert('Initiate a download first!');
+      return;
+    }
+
+    try {
+      await this.download.cancelAsync();
+      delete this.download;
+      await AsyncStorage.removeItem('pausedDownload');
+      this.setState({
+        downloadProgress: 0,
+      });
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
   _downloadComplete = () => {
     if (this.state.downloadProgress !== 1) {
       this.setState({
@@ -104,7 +122,7 @@ export default class FileSystemScreen extends React.Component<{}, State> {
       const downloadJson = await AsyncStorage.getItem('pausedDownload');
       if (downloadJson !== null) {
         const downloadFromStore = JSON.parse(downloadJson);
-        const callback: FileSystem.DownloadProgressCallback = downloadProgress => {
+        const callback: FileSystem.DownloadProgressCallback = (downloadProgress) => {
           const progress =
             downloadProgress.totalBytesWritten / downloadProgress.totalBytesExpectedToWrite;
           this.setState({
@@ -137,7 +155,7 @@ export default class FileSystemScreen extends React.Component<{}, State> {
       return;
     }
     try {
-      const info = await FileSystem.getInfoAsync(this.download._fileUri);
+      const info = await FileSystem.getInfoAsync(this.download.fileUri);
       Alert.alert('File Info:', JSON.stringify(info), [{ text: 'OK', onPress: () => {} }]);
     } catch (e) {
       console.log(e);
@@ -270,6 +288,7 @@ export default class FileSystemScreen extends React.Component<{}, State> {
         {/* <Progress.Bar style={styles.progress} isAnimated progress={this.state.downloadProgress} /> */}
         <ListButton onPress={this._pause} title="Pause Download" />
         <ListButton onPress={this._resume} title="Resume Download" />
+        <ListButton onPress={this._cancel} title="Cancel Download" />
         <ListButton onPress={this._getInfo} title="Get Info" />
         <ListButton onPress={this._readAsset} title="Read Asset" />
         <ListButton onPress={this._getInfoAsset} title="Get Info Asset" />

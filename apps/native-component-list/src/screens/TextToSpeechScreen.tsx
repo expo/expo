@@ -21,9 +21,11 @@ const EXAMPLES = [
   { language: 'en', text: 'Adam Perry ate a pear in pairs in Paris' },
 ];
 
-const AmountControlButton: React.FunctionComponent<React.ComponentProps<typeof TouchableOpacity> & {
-  title: string;
-}> = props => (
+const AmountControlButton: React.FunctionComponent<
+  React.ComponentProps<typeof TouchableOpacity> & {
+    title: string;
+  }
+> = (props) => (
   <TouchableOpacity
     disabled={props.disabled}
     onPress={props.onPress}
@@ -101,8 +103,8 @@ export default class TextToSpeechScreen extends React.Component<{}, State> {
           <View>
             <Picker
               selectedValue={this.state.voice}
-              onValueChange={voice => this.setState({ voice })}>
-              {this.state.voiceList.map(voice => (
+              onValueChange={(voice) => this.setState({ voice })}>
+              {this.state.voiceList.map((voice) => (
                 <Picker.Item key={voice.identifier} label={voice.name} value={voice.identifier} />
               ))}
             </Picker>
@@ -188,28 +190,28 @@ export default class TextToSpeechScreen extends React.Component<{}, State> {
   };
 
   _increasePitch = () => {
-    this.setState(state => ({
+    this.setState((state) => ({
       ...state,
       pitch: state.pitch + 0.1,
     }));
   };
 
   _increaseRate = () => {
-    this.setState(state => ({
+    this.setState((state) => ({
       ...state,
       rate: state.rate + 0.1,
     }));
   };
 
   _decreasePitch = () => {
-    this.setState(state => ({
+    this.setState((state) => ({
       ...state,
       pitch: state.pitch - 0.1,
     }));
   };
 
   _decreaseRate = () => {
-    this.setState(state => ({
+    this.setState((state) => ({
       ...state,
       rate: state.rate - 0.1,
     }));

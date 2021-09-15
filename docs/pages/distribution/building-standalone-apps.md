@@ -46,7 +46,7 @@ to launch Ubuntu at least once. After that, use an Admin powershell to run:
 
 - The iOS `bundleIdentifier` and Android `package` fields use reverse DNS notation, but don't have to be related to a domain. Replace `"com.yourcompany.yourappname"` with whatever makes sense for your app.
 - You're probably not surprised that `name`, `icon` and `version` are required.
-- `slug` is the url name that your app's JavaScript is published to. For example: `expo.io/@community/native-component-list`, where `community` is my username and `native-component-list` is the slug.
+- `slug` is the url name that your app's JavaScript is published to. For example: `expo.dev/@community/native-component-list`, where `community` is my username and `native-component-list` is the slug.
 - The `ios.buildNumber` and `android.versionCode` distinguish different binaries of your app. Make sure to increment these for each build you upload to the App Store or Google Play Store.
 
 There are other options you might want to add to `app.json`. We have only covered what is
@@ -57,7 +57,7 @@ for App Store metadata.
 
 ## 3. Start the build
 
-Run `expo build:android` or `expo build:ios`. If you don't already have a packager running for this project, `expo` will start one for you.
+Run `expo build:android` or `expo build:ios`. If you don't already have a development server running for this project, `expo` will start one for you.
 
 **Please note:** When you run `expo build`, Expo automatically publishes your app (with `expo publish`). In order to avoid accidentally publishing changes to your production app, you may want to use [release channels](release-channels.md).
 
@@ -149,7 +149,7 @@ to start the build with `--clear-push-cert`. We will remove the legacy certifica
 
 ## 4. Wait for it to finish building
 
-When one of our building machines is free, it'll start building your app. You can check how long you'll wait on the [Turtle status](https://expo.io/turtle-status) site. We'll print a url you can visit (such as `expo.io/builds/some-unique-id`) to watch your build progress and access the build logs. Alternatively, you can check up on it by running `expo build:status`. When it's done, you'll see the url to your app file - an `.apk`, `.aab` (both Android), or `.ipa` (iOS) file. Copy and paste the link into your browser to download the file.
+When one of our building machines is free, it'll start building your app. You can check how long you'll wait on the [Turtle status](https://expo.dev/turtle-status) site. We'll print a url you can visit (such as `expo.dev/builds/some-unique-id`) to watch your build progress and access the build logs. Alternatively, you can check up on it by running `expo build:status`. When it's done, you'll see the url to your app file - an `.apk`, `.aab` (both Android), or `.ipa` (iOS) file. Copy and paste the link into your browser to download the file.
 
 > Want to be notified programmatically as soon as your build is done? [Here's how you can set that up with webhooks](webhooks.md).
 
@@ -181,4 +181,4 @@ To keep track of this, you'll need to update your app's `versionCode` and `build
 
 It is a good idea to glance through the [app.json documentation](../workflow/configuration.md) to get an idea of all the properties you can change, e.g. the icons, deep linking url scheme, handset/tablet support, and a lot more.
 
-If you run into problems during this process, we're more than happy to help out! [Join our Forums](https://forums.expo.io/) and let us know if you have any questions.
+If you run into problems during this process, we're more than happy to help out! [Join our Forums](https://forums.expo.dev/) and let us know if you have any questions.

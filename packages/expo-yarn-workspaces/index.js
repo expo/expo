@@ -5,8 +5,8 @@ const debug = require('debug')('workspaces');
 const findYarnWorkspaceRoot = require('find-yarn-workspace-root');
 // TODO: Use the vendored metro config in a future version after SDK 41 is released
 // const { getDefaultConfig } = require('expo/metro-config');
-const blacklist = require('metro-config/src/defaults/blacklist');
 const { assetExts } = require('metro-config/src/defaults/defaults');
+const exclusionList = require('metro-config/src/defaults/exclusionList');
 const path = require('path');
 
 const getSymlinkedNodeModulesForDirectory = require('./common/get-symlinked-modules');
@@ -65,7 +65,7 @@ exports.createMetroConfiguration = function createMetroConfiguration(projectPath
       providesModuleNodeModules: [],
 
       // Ignore JS files in the native Android and Xcode projects
-      blacklistRE: blacklist([
+      blacklistRE: exclusionList([
         /.*\/android\/React(Android|Common)\/.*/,
         /.*\/versioned-react-native\/.*/,
       ]),

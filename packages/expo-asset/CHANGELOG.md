@@ -8,6 +8,14 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 8.4.0 — 2021-09-08
+
+### 🎉 New features
+
+- Reapply [#12624](https://github.com/expo/expo/pull/12624)  ([#13789](https://github.com/expo/expo/pull/13789) by [@jkhales](https://github.com/jkhales))
+
 ## 8.3.2 — 2021-04-21
 
 ### 🎉 New features

@@ -32,7 +32,7 @@ private class AppDelegate : DevMenuDelegateProtocol {
     self.controller = controller
   }
   
-  func appBridge(forDevMenuManager manager: DevMenuManagerProtocol) -> AnyObject?{
+  func appBridge(forDevMenuManager manager: DevMenuManagerProtocol) -> AnyObject? {
     return controller.appBridge
   }
   
@@ -42,7 +42,8 @@ private class AppDelegate : DevMenuDelegateProtocol {
         "appName": "Development Client - App",
         "appVersion": NSNull(),
         "appIcon": NSNull(),
-        "hostUrl": controller.appBridge.bundleURL?.absoluteString,
+        // AppBridge should be present here, but for safety, we use null checks
+        "hostUrl": controller.appBridge?.bundleURL?.absoluteString ?? NSNull(),
       ]
     }
     

@@ -34,7 +34,7 @@
 - (void)testUpdateWithNewManifest_AllFields
 {
   // production manifests should require the id, createdAt, runtimeVersion, and launchAsset fields
-  EXUpdatesNewRawManifest *manifest = [[EXUpdatesNewRawManifest alloc] initWithRawManifestJSON:@{
+  EXManifestsNewManifest *manifest = [[EXManifestsNewManifest alloc] initWithRawManifestJSON:@{
     @"runtimeVersion": @"1",
     @"id": @"0eef8214-4833-4089-9dff-b4138a14f196",
     @"createdAt": @"2020-11-11T00:17:54.797Z",
@@ -45,7 +45,7 @@
 
 - (void)testUpdateWithNewManifest_NoRuntimeVersion
 {
-  EXUpdatesNewRawManifest *manifest = [[EXUpdatesNewRawManifest alloc] initWithRawManifestJSON:@{
+  EXManifestsNewManifest *manifest = [[EXManifestsNewManifest alloc] initWithRawManifestJSON:@{
     @"id": @"0eef8214-4833-4089-9dff-b4138a14f196",
     @"createdAt": @"2020-11-11T00:17:54.797Z",
     @"launchAsset": @{@"url": @"https://url.to/bundle.js", @"contentType": @"application/javascript"}
@@ -55,7 +55,7 @@
 
 - (void)testUpdateWithNewManifest_NoId
 {
-  EXUpdatesNewRawManifest *manifest = [[EXUpdatesNewRawManifest alloc] initWithRawManifestJSON:@{
+  EXManifestsNewManifest *manifest = [[EXManifestsNewManifest alloc] initWithRawManifestJSON:@{
     @"runtimeVersion": @"1",
     @"createdAt": @"2020-11-11T00:17:54.797Z",
     @"launchAsset": @{@"url": @"https://url.to/bundle.js", @"contentType": @"application/javascript"}
@@ -65,7 +65,7 @@
 
 - (void)testUpdateWithNewManifest_NoCreatedAt
 {
-  EXUpdatesNewRawManifest *manifest = [[EXUpdatesNewRawManifest alloc] initWithRawManifestJSON:@{
+  EXManifestsNewManifest *manifest = [[EXManifestsNewManifest alloc] initWithRawManifestJSON:@{
     @"runtimeVersion": @"1",
     @"id": @"0eef8214-4833-4089-9dff-b4138a14f196",
     @"launchAsset": @{@"url": @"https://url.to/bundle.js", @"contentType": @"application/javascript"}
@@ -75,7 +75,7 @@
 
 - (void)testUpdateWithNewManifest_NoLaunchAsset
 {
-  EXUpdatesNewRawManifest *manifest = [[EXUpdatesNewRawManifest alloc] initWithRawManifestJSON:@{
+  EXManifestsNewManifest *manifest = [[EXManifestsNewManifest alloc] initWithRawManifestJSON:@{
     @"runtimeVersion": @"1",
     @"id": @"0eef8214-4833-4089-9dff-b4138a14f196",
     @"createdAt": @"2020-11-11T00:17:54.797Z"

@@ -6,9 +6,6 @@ import { BlurView } from '..';
 it(`renders a native blur view`, () => {
   const component = mount(<BlurView tint="light" intensity={0.65} />);
   expect(
-    component
-      .find('ViewManagerAdapter_ExpoBlurView')
-      .first()
-      .prop('proxiedProperties')
+    component.find('ViewManagerAdapter_ExpoBlurView').first().prop('proxiedProperties')
   ).toMatchSnapshot();
 });

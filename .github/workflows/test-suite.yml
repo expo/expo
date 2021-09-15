@@ -18,6 +18,10 @@ on:
       - packages/**
       - yarn.lock
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   web:
     runs-on: ubuntu-18.04
@@ -25,7 +29,7 @@ jobs:
       - name: ⬢ Setup Node
         uses: actions/setup-node@v2
         with:
-          node-version: '14.4.0'
+          node-version: '14.17'
       - name: 👀 Checkout
         uses: actions/checkout@v2
         with:
@@ -45,7 +49,6 @@ jobs:
             react-native-lab/react-native/node_modules
           key: ${{ runner.os }}-modules-${{ hashFiles('yarn.lock') }}
       - name: 🧶 Install node modules in root dir
-        if: steps.node-modules-cache.outputs.cache-hit != 'true'
         run: yarn install --frozen-lockfile
       - run: yarn global add expo-cli
       - run: yarn test:web
@@ -59,11 +62,11 @@ jobs:
         with:
           channel: '#platform-web'
           status: ${{ job.status }}
-          fields: job,commit,ref,eventName,author,took
+          fields: job,message,ref,eventName,author,took
           author_name: Test Suite (Web)
 
   ios:
-    runs-on: macos-10.15
+    runs-on: macos-11
     steps:
       - name: 👀 Checkout
         uses: actions/checkout@v2
@@ -94,7 +97,6 @@ jobs:
             react-native-lab/react-native/node_modules
           key: ${{ runner.os }}-modules-${{ hashFiles('yarn.lock') }}
       - name: 🧶 Install node modules in root dir
-        if: steps.node-modules-cache.outputs.cache-hit != 'true'
         run: yarn install --frozen-lockfile
       - name: ♻️ Restore apps/bare-expo/ios/Pods from cache
         uses: actions/cache@v2
@@ -108,9 +110,14 @@ jobs:
         run: git diff Podfile.lock Pods/Manifest.lock
         working-directory: apps/bare-expo/ios
         continue-on-error: true
+      - name: ⚛️ Display React Native config
+        run: yarn react-native config
+        working-directory: apps/bare-expo
+      - name: 🌳 Display pod environment
+        run: pod env
+        working-directory: apps/bare-expo/ios
       - name: 🥥 Install pods in apps/bare-expo/ios
         run: pod install
-        if: steps.pods-cache.outputs.cache-hit != 'true' || hashFiles('apps/bare-expo/ios/Podfile.lock') != hashFiles('apps/bare-expo/ios/Pods/Manifest.lock')
         working-directory: apps/bare-expo/ios
       - name: Clean Detox
         run: yarn detox:clean
@@ -137,5 +144,89 @@ jobs:
         with:
           channel: '#platform-ios'
           status: ${{ job.status }}
-          fields: job,commit,ref,eventName,author,took
+          fields: job,message,ref,eventName,author,took
           author_name: Test Suite (iOS)
+
+  android:
+    runs-on: macos-11
+    env:
+      NDK_ABI_FILTERS: x86_64
+    steps:
+      - name: 👀 Checkout
+        uses: actions/checkout@v2
+        with:
+          submodules: true
+      - name: 🍺 Install required tools
+        run: |
+          brew install watchman
+          echo "$(pwd)/bin" >> $GITHUB_PATH
+      - name: ♻️ Restore workspace node modules
+        uses: actions/cache@v2
+        id: node-modules-cache
+        with:
+          path: |
+            # See "workspaces" → "packages" in the root package.json for the source of truth of
+            # which node_modules are affected by the root yarn.lock
+            node_modules
+            apps/*/node_modules
+            home/node_modules
+            packages/*/node_modules
+            packages/@unimodules/*/node_modules
+            react-native-lab/react-native/node_modules
+          key: ${{ runner.os }}-modules-${{ hashFiles('yarn.lock') }}
+      - name: 🧶 Install node modules in root dir
+        run: yarn install --frozen-lockfile
+      - uses: actions/cache@v2
+        with:
+          path: ~/.gradle/caches
+          key: ${{ runner.os }}-gradle-v20210625-${{ hashFiles('android/*.gradle*') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-v20210625
+      - name: ⚛️ Display React Native config
+        run: yarn react-native config
+        working-directory: apps/bare-expo
+      - name: Clean Detox
+        run: yarn detox:clean
+        working-directory: apps/bare-expo
+      - name: 💿 Patch react-native to support single abi
+        run: sed -i '' 's/^APP_ABI := .*$/APP_ABI := $(if $(NDK_ABI_FILTERS),$(NDK_ABI_FILTERS),$(armeabi-v7a x86 arm64-v8a x86_64))/g' ReactAndroid/src/main/jni/Application.mk
+        working-directory: react-native-lab/react-native
+      - name: Prebuild react-native AAR
+        # Workaround for next `yarn android:detox:build:release` occasionally failed at gradle fetching libraries on GitHub Actions
+        # Just to introduce another trail for gradle building.
+        run: ./gradlew :ReactAndroid:installArchives | true
+        working-directory: react-native-lab/react-native
+        timeout-minutes: 35
+        env:
+          GRADLE_OPTS: '-Dorg.gradle.internal.http.connectionTimeout=180000 -Dorg.gradle.internal.http.socketTimeout=180000 -Dorg.gradle.internal.network.retry.max.attempts=18 -Dorg.gradle.internal.network.retry.initial.backOff=2000'
+      - name: Build Android project for Detox
+        run: yarn android:detox:build:release
+        working-directory: apps/bare-expo
+        timeout-minutes: 35
+        env:
+          GRADLE_OPTS: '-Dorg.gradle.internal.http.connectionTimeout=180000 -Dorg.gradle.internal.http.socketTimeout=180000 -Dorg.gradle.internal.network.retry.max.attempts=18 -Dorg.gradle.internal.network.retry.initial.backOff=2000'
+      - name: Run tests
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 29
+          arch: x86_64
+          avd-name: bare-expo
+          script: yarn android:detox:test:release
+          working-directory: ./apps/bare-expo
+      - name: Store images of build failures
+        if: always()
+        uses: actions/upload-artifact@v2
+        with:
+          name: bare-expo-artifacts
+          path: apps/bare-expo/artifacts
+      - name: 🔔 Notify on Slack
+        uses: 8398a7/action-slack@v3
+        if: failure() && (github.event.ref == 'refs/heads/master' || startsWith(github.event.ref, 'refs/heads/sdk-'))
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SLACK_WEBHOOK_URL: ${{ secrets.slack_webhook_android }}
+        with:
+          channel: '#platform-android'
+          status: ${{ job.status }}
+          fields: job,message,ref,eventName,author,took
+          author_name: Test Suite (Android)

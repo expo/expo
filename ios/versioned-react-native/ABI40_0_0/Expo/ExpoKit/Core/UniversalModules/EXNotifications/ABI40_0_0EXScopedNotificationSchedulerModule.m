@@ -6,7 +6,7 @@
 
 @interface ABI40_0_0EXScopedNotificationSchedulerModule ()
 
-@property (nonatomic, strong) NSString *experienceId;
+@property (nonatomic, strong) NSString *scopeKey;
 
 @end
 
@@ -14,10 +14,10 @@
 // See https://github.com/expo/expo/pull/8361#discussion_r429153429.
 @implementation ABI40_0_0EXScopedNotificationSchedulerModule
 
-- (instancetype)initWithExperienceId:(NSString *)experienceId
+- (instancetype)initWithScopeKey:(NSString *)scopeKey
 {
   if (self = [super init]) {
-    _experienceId = experienceId;
+    _scopeKey = scopeKey;
   }
 
   return self;
@@ -27,7 +27,7 @@
 {
   NSMutableArray *serializedRequests = [NSMutableArray new];
   for (UNNotificationRequest *request in requests) {
-    if ([ABI40_0_0EXScopedNotificationsUtils shouldNotificationRequest:request beHandledByExperience:_experienceId]) {
+    if ([ABI40_0_0EXScopedNotificationsUtils shouldNotificationRequest:request beHandledByExperience:_scopeKey]) {
       [serializedRequests addObject:[ABI40_0_0EXScopedNotificationSerializer serializedNotificationRequest:request]];
     }
   }
@@ -36,11 +36,11 @@
 
 - (void)cancelNotification:(NSString *)identifier resolve:(ABI40_0_0UMPromiseResolveBlock)resolve rejecting:(ABI40_0_0UMPromiseRejectBlock)reject
 {
-  __block NSString *experienceId = _experienceId;
+  __block NSString *scopeKey = _scopeKey;
   [[UNUserNotificationCenter currentNotificationCenter] getPendingNotificationRequestsWithCompletionHandler:^(NSArray<UNNotificationRequest *> * _Nonnull requests) {
     for (UNNotificationRequest *request in requests) {
       if ([request.identifier isEqual:identifier]) {
-        if ([ABI40_0_0EXScopedNotificationsUtils shouldNotificationRequest:request beHandledByExperience:experienceId]) {
+        if ([ABI40_0_0EXScopedNotificationsUtils shouldNotificationRequest:request beHandledByExperience:scopeKey]) {
           [[UNUserNotificationCenter currentNotificationCenter] removePendingNotificationRequestsWithIdentifiers:@[identifier]];
         }
         break;
@@ -52,11 +52,11 @@
 
 - (void)cancelAllNotificationsWithResolver:(ABI40_0_0UMPromiseResolveBlock)resolve rejecting:(ABI40_0_0UMPromiseRejectBlock)reject
 {
-  __block NSString *experienceId = _experienceId;
+  __block NSString *scopeKey = _scopeKey;
   [[UNUserNotificationCenter currentNotificationCenter] getPendingNotificationRequestsWithCompletionHandler:^(NSArray<UNNotificationRequest *> * _Nonnull requests) {
     NSMutableArray<NSString *> *toRemove = [NSMutableArray new];
     for (UNNotificationRequest *request in requests) {
-      if ([ABI40_0_0EXScopedNotificationsUtils shouldNotificationRequest:request beHandledByExperience:experienceId]) {
+      if ([ABI40_0_0EXScopedNotificationsUtils shouldNotificationRequest:request beHandledByExperience:scopeKey]) {
         [toRemove addObject:request.identifier];
       }
     }

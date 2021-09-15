@@ -7,7 +7,7 @@ import { SessionUrlProvider } from '../SessionUrlProvider';
 const managedSessionUrlProvider = new SessionUrlProvider();
 
 function applyMocks() {
-  mockProperty(Constants.manifest, 'currentFullName', '@example/abc');
+  mockProperty(Constants.manifest, 'originalFullName', '@example/abc');
   mockProperty(Constants.manifest, 'scheme', 'my-app');
 }
 
@@ -47,7 +47,7 @@ describe(`getRedirectUrl`, () => {
       beforeEach(() => {
         mockProperty(Constants, 'executionEnvironment', execution);
         mockProperty(Constants.manifest, 'scheme', 'my-app');
-        mockProperty(Constants.manifest, 'currentFullName', '@example/abc');
+        mockProperty(Constants.manifest, 'originalFullName', '@example/abc');
       });
       const originalWarn = console.warn;
 
@@ -66,14 +66,17 @@ describe(`getRedirectUrl`, () => {
       });
 
       if (Platform.OS !== 'web') {
-        it(`throws a useful error if currentFullName and id are not defined`, () => {
-          mockProperty(Constants.manifest, 'currentFullName', undefined);
+        it(`throws a useful error if originalFullName and id are not defined`, () => {
+          mockProperty(Constants.manifest, 'originalFullName', undefined);
           mockProperty(Constants.manifest, 'id', undefined);
 
           const errorName = {
-            [ExecutionEnvironment.StoreClient]: /Cannot use AuthSession proxy because the project ID is not defined. Please report this as a bug/,
-            [ExecutionEnvironment.Bare]: /Cannot use AuthSession proxy because the project ID is not defined. Please ensure you have the latest/,
-            [ExecutionEnvironment.Standalone]: /Cannot use AuthSession proxy because the project ID is not defined./,
+            [ExecutionEnvironment.StoreClient]:
+              /Cannot use AuthSession proxy because the project ID is not defined. Please report this as a bug/,
+            [ExecutionEnvironment.Bare]:
+              /Cannot use AuthSession proxy because the project ID is not defined. Please ensure you have the latest/,
+            [ExecutionEnvironment.Standalone]:
+              /Cannot use AuthSession proxy because the project ID is not defined./,
           };
           expect(() => managedSessionUrlProvider.getRedirectUrl()).toThrowError(
             errorName[execution]
@@ -90,6 +93,7 @@ if (Platform.OS !== 'web') {
       beforeEach(() => {
         mockProperty(Constants, 'executionEnvironment', 'storeClient');
         mockProperty(Constants.manifest, 'scheme', 'my-app');
+        mockProperty(Constants.manifest, 'hostUri', 'exp.host/@test/test');
       });
       it(`checks return url`, () => {
         mockProperty(Constants.manifest, 'hostUri', 'exp.host/@example/abc');

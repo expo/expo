@@ -5,12 +5,12 @@
 
 @implementation EXNotificationCategoriesModule
 
-UM_EXPORT_MODULE(ExpoNotificationCategoriesModule);
+EX_EXPORT_MODULE(ExpoNotificationCategoriesModule);
 
 # pragma mark - Exported methods
 
-UM_EXPORT_METHOD_AS(getNotificationCategoriesAsync,
-                 getNotificationCategoriesAsyncWithResolver:(UMPromiseResolveBlock)resolve reject:(UMPromiseRejectBlock)reject)
+EX_EXPORT_METHOD_AS(getNotificationCategoriesAsync,
+                 getNotificationCategoriesAsyncWithResolver:(EXPromiseResolveBlock)resolve reject:(EXPromiseRejectBlock)reject)
 {
   [[UNUserNotificationCenter currentNotificationCenter] getNotificationCategoriesWithCompletionHandler:^(NSSet<UNNotificationCategory *> *categories) {
     NSMutableArray* existingCategories = [NSMutableArray new];
@@ -21,11 +21,11 @@ UM_EXPORT_METHOD_AS(getNotificationCategoriesAsync,
   }];
 }
 
-UM_EXPORT_METHOD_AS(setNotificationCategoryAsync,
+EX_EXPORT_METHOD_AS(setNotificationCategoryAsync,
                  setNotificationCategoryWithCategoryId:(NSString *)categoryId
                  actions:(NSArray *)actions
                  options:(NSDictionary *)options
-                 resolve:(UMPromiseResolveBlock)resolve reject:(UMPromiseRejectBlock)reject)
+                 resolve:(EXPromiseResolveBlock)resolve reject:(EXPromiseRejectBlock)reject)
 {
   UNNotificationCategory *newCategory = [EXNotificationCategoriesModule createCategoryWithId:categoryId
                                                                                      actions:actions
@@ -45,9 +45,9 @@ UM_EXPORT_METHOD_AS(setNotificationCategoryAsync,
   }];
 }
 
-UM_EXPORT_METHOD_AS(deleteNotificationCategoryAsync,
+EX_EXPORT_METHOD_AS(deleteNotificationCategoryAsync,
                  deleteNotificationCategoryWithCategoryId:(NSString *)categoryId
-                 resolve:(UMPromiseResolveBlock)resolve reject:(UMPromiseRejectBlock)reject)
+                 resolve:(EXPromiseResolveBlock)resolve reject:(EXPromiseRejectBlock)reject)
 {
   [[UNUserNotificationCenter currentNotificationCenter] getNotificationCategoriesWithCompletionHandler:^(NSSet<UNNotificationCategory *> *categories) {
     BOOL didDelete = NO;

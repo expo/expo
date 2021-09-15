@@ -2,8 +2,8 @@ package expo.modules.permissions.requesters
 
 import android.Manifest
 import android.os.Bundle
-import org.unimodules.interfaces.permissions.PermissionsResponse
-import org.unimodules.interfaces.permissions.PermissionsStatus
+import expo.modules.interfaces.permissions.PermissionsResponse
+import expo.modules.interfaces.permissions.PermissionsStatus
 
 class ForegroundLocationRequester : PermissionRequester {
   override fun getAndroidPermissions() = listOf(
@@ -28,9 +28,12 @@ class ForegroundLocationRequester : PermissionRequester {
         }
       }
 
-      putBundle("android", Bundle().apply {
-        putString("accuracy", accuracy)
-      })
+      putBundle(
+        "android",
+        Bundle().apply {
+          putString("accuracy", accuracy)
+        }
+      )
     }
   }
 }

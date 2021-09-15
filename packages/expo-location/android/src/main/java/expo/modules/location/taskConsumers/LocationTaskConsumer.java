@@ -21,11 +21,11 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 
-import org.unimodules.core.MapHelper;
-import org.unimodules.core.arguments.MapArguments;
-import org.unimodules.core.arguments.ReadableArguments;
-import org.unimodules.core.interfaces.Arguments;
-import org.unimodules.core.interfaces.LifecycleEventListener;
+import expo.modules.core.MapHelper;
+import expo.modules.core.arguments.MapArguments;
+import expo.modules.core.arguments.ReadableArguments;
+import expo.modules.core.interfaces.Arguments;
+import expo.modules.core.interfaces.LifecycleEventListener;
 import org.unimodules.interfaces.taskManager.TaskConsumer;
 import org.unimodules.interfaces.taskManager.TaskConsumerInterface;
 import org.unimodules.interfaces.taskManager.TaskExecutionCallback;
@@ -227,7 +227,8 @@ public class LocationTaskConsumer extends TaskConsumer implements TaskConsumerIn
       Bundle extras = new Bundle();
       final Bundle serviceOptions = options.getArguments(FOREGROUND_SERVICE_KEY).toBundle();
 
-      extras.putString("appId", mTask.getAppId());
+      // extras param name is appId for legacy reasons
+      extras.putString("appId", mTask.getAppScopeKey());
       extras.putString("taskName", mTask.getName());
       serviceIntent.putExtras(extras);
 

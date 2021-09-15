@@ -12,7 +12,7 @@ NSString *const kABI41_0_0RCTDevSettingHotLoadingEnabled = @"hotLoadingEnabled";
 
 + (NSString *)moduleName { return @"ABI41_0_0RCTDevSettings"; }
 
-- (instancetype)initWithExperienceId:(NSString *)experienceId isDevelopment:(BOOL)isDevelopment
+- (instancetype)initWithScopeKey:(NSString *)scopeKey isDevelopment:(BOOL)isDevelopment
 {
   NSDictionary *defaultValues = @{
                                   kABI41_0_0RCTDevSettingShakeToShowDevMenu: @YES,
@@ -20,7 +20,7 @@ NSString *const kABI41_0_0RCTDevSettingHotLoadingEnabled = @"hotLoadingEnabled";
                                   kABI41_0_0RCTDevSettingLiveReloadEnabled: @NO,
                                   };
   ABI41_0_0EXDevSettingsDataSource *dataSource = [[ABI41_0_0EXDevSettingsDataSource alloc] initWithDefaultValues:defaultValues
-                                                                               forExperienceId:experienceId
+                                                                         forScopeKey:scopeKey
                                                                                  isDevelopment:isDevelopment];
   return [super initWithDataSource:dataSource];
 }

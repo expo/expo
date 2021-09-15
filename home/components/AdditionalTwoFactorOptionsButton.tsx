@@ -1,6 +1,6 @@
 import { connectActionSheet } from '@expo/react-native-action-sheet';
 import React from 'react';
-import { TouchableOpacity, ActionSheetIOSOptions } from 'react-native';
+import { ActionSheetIOSOptions } from 'react-native';
 
 import PrimaryButton from '../components/PrimaryButton';
 
@@ -35,14 +35,14 @@ function AdditionalTwoFactorOptionsButton({
 }) {
   const handlePress = () => {
     const hasAuthenticatorSecondFactorDevices = secondFactorDevices.some(
-      device => device.method === UserSecondFactorDeviceMethod.AUTHENTICATOR
+      (device) => device.method === UserSecondFactorDeviceMethod.AUTHENTICATOR
     );
 
     const smsSecondFactorDevices = secondFactorDevices.filter(
-      device => device.method === UserSecondFactorDeviceMethod.SMS
+      (device) => device.method === UserSecondFactorDeviceMethod.SMS
     );
 
-    const deviceOptions = smsSecondFactorDevices.map(device => device.sms_phone_number!);
+    const deviceOptions = smsSecondFactorDevices.map((device) => device.sms_phone_number!);
     const options = [
       ...deviceOptions,
       ...(hasAuthenticatorSecondFactorDevices ? ['Authenticator'] : []),
@@ -55,7 +55,7 @@ function AdditionalTwoFactorOptionsButton({
         options,
         cancelButtonIndex,
       },
-      buttonIndex => {
+      (buttonIndex) => {
         if (buttonIndex < deviceOptions.length) {
           onSelectSMSSecondFactorDevice(smsSecondFactorDevices[buttonIndex]);
         } else if (hasAuthenticatorSecondFactorDevices && buttonIndex === deviceOptions.length) {
@@ -66,7 +66,7 @@ function AdditionalTwoFactorOptionsButton({
   };
 
   return (
-    <PrimaryButton plain onPress={handlePress} fallback={TouchableOpacity}>
+    <PrimaryButton plain onPress={handlePress}>
       More one-time password options
     </PrimaryButton>
   );

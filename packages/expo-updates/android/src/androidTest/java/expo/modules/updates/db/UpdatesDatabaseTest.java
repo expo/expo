@@ -62,7 +62,7 @@ public class UpdatesDatabaseTest {
     Assert.assertEquals(projectId, byId.scopeKey);
 
     updateDao.deleteUpdates(Arrays.asList(testUpdate));
-    Assert.assertEquals(0, updateDao.loadAllUpdatesForScope(projectId).size());
+    Assert.assertEquals(0, updateDao.loadAllUpdates().size());
   }
 
   @Test(expected = SQLiteConstraintException.class)
@@ -97,7 +97,7 @@ public class UpdatesDatabaseTest {
     Assert.assertEquals(1, updateDao.loadLaunchableUpdatesForScope(projectId).size());
 
     updateDao.deleteUpdates(Arrays.asList(testUpdate));
-    Assert.assertEquals(0, updateDao.loadAllUpdatesForScope(projectId).size());
+    Assert.assertEquals(0, updateDao.loadAllUpdates().size());
   }
 
   @Test
@@ -130,7 +130,7 @@ public class UpdatesDatabaseTest {
     updateDao.markUpdateFinished(update3);
 
     // check that test has been properly set up
-    List<UpdateEntity> allUpdates = updateDao.loadAllUpdatesForScope(projectId);
+    List<UpdateEntity> allUpdates = updateDao.loadAllUpdates();
     Assert.assertEquals(2, allUpdates.size());
     for (UpdateEntity update : allUpdates) {
       if (update.id.equals(update2.id)) {

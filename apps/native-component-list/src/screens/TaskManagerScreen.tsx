@@ -10,7 +10,7 @@ import MonoText from '../components/MonoText';
 
 export default function TaskManagerScreen(props: {
   navigation: StackNavigationProp<{
-    BackgroundLocationMap: undefined;
+    BackgroundLocation: undefined;
     Geofencing: undefined;
     BackgroundFetch: undefined;
   }>;
@@ -24,7 +24,7 @@ export default function TaskManagerScreen(props: {
 
   const onFocus = React.useCallback(() => {
     let isActive = true;
-    TaskManager.getRegisteredTasksAsync().then(tasks => {
+    TaskManager.getRegisteredTasksAsync().then((tasks) => {
       if (isActive) setTasks(tasks);
     });
     return () => (isActive = false);
@@ -81,7 +81,7 @@ export default function TaskManagerScreen(props: {
           style={styles.button}
           buttonStyle={{ backgroundColor: 'green' }}
           title="Go to background location screen"
-          onPress={() => props.navigation.navigate('BackgroundLocationMap')}
+          onPress={() => props.navigation.navigate('BackgroundLocation')}
         />
         <Button
           style={styles.button}

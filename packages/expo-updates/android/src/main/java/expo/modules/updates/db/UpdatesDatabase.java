@@ -20,7 +20,9 @@ import androidx.room.RoomDatabase;
 import androidx.room.TypeConverters;
 import androidx.sqlite.db.SupportSQLiteDatabase;
 
-@Database(entities = {UpdateEntity.class, UpdateAssetEntity.class, AssetEntity.class, JSONDataEntity.class}, exportSchema = false, version = 5)
+import java.util.Date;
+
+@Database(entities = {UpdateEntity.class, UpdateAssetEntity.class, AssetEntity.class, JSONDataEntity.class}, exportSchema = false, version = 6)
 @TypeConverters({Converters.class})
 public abstract class UpdatesDatabase extends RoomDatabase {
 
@@ -58,6 +60,33 @@ public abstract class UpdatesDatabase extends RoomDatabase {
           database.execSQL("DROP TABLE `assets`");
           database.execSQL("ALTER TABLE `new_assets` RENAME TO `assets`");
           database.execSQL("CREATE UNIQUE INDEX `index_assets_key` ON `assets` (`key`)");
+          database.setTransactionSuccessful();
+        } finally {
+          database.endTransaction();
+        }
+      } finally {
+        database.execSQL("PRAGMA foreign_keys=ON");
+      }
+    }
+  };
+
+  static final Migration MIGRATION_5_6 = new Migration(5, 6) {
+    @Override
+    public void migrate(@NonNull SupportSQLiteDatabase database) {
+      // https://www.sqlite.org/lang_altertable.html#otheralter
+      database.execSQL("PRAGMA foreign_keys=OFF");
+      database.beginTransaction();
+      try {
+        try {
+          database.execSQL("CREATE TABLE `new_updates` (`id` BLOB NOT NULL, `scope_key` TEXT NOT NULL, `commit_time` INTEGER NOT NULL, `runtime_version` TEXT NOT NULL, `launch_asset_id` INTEGER, `manifest` TEXT, `status` INTEGER NOT NULL, `keep` INTEGER NOT NULL, `last_accessed` INTEGER NOT NULL, PRIMARY KEY(`id`), FOREIGN KEY(`launch_asset_id`) REFERENCES `assets`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )");
+          // insert current time as lastAccessed date for all existing updates
+          long currentTime = new Date().getTime();
+          database.execSQL("INSERT INTO `new_updates` (`id`, `scope_key`, `commit_time`, `runtime_version`, `launch_asset_id`, `manifest`, `status`, `keep`, `last_accessed`)" +
+                  " SELECT `id`, `scope_key`, `commit_time`, `runtime_version`, `launch_asset_id`, `metadata` AS `manifest`, `status`, `keep`, ?1 AS `last_accessed` FROM `updates`", new Object[]{currentTime});
+          database.execSQL("DROP TABLE `updates`");
+          database.execSQL("ALTER TABLE `new_updates` RENAME TO `updates`");
+          database.execSQL("CREATE INDEX `index_updates_launch_asset_id` ON `updates` (`launch_asset_id`)");
+          database.execSQL("CREATE UNIQUE INDEX `index_updates_scope_key_commit_time` ON `updates` (`scope_key`, `commit_time`)");
           database.setTransactionSuccessful();
         } finally {
           database.endTransaction();

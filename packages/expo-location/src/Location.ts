@@ -1,5 +1,10 @@
-import { Platform } from '@unimodules/core';
-import { PermissionStatus, PermissionResponse } from 'unimodules-permissions-interface';
+import {
+  PermissionStatus,
+  PermissionResponse,
+  PermissionHookOptions,
+  createPermissionHook,
+  Platform,
+} from 'expo-modules-core';
 
 import ExpoLocation from './ExpoLocation';
 import {
@@ -88,10 +93,10 @@ export async function watchPositionAsync(options: LocationOptions, callback: Loc
  * and returns the one that is accurate enough.
  */
 export async function getHeadingAsync(): Promise<LocationHeadingObject> {
-  return new Promise<LocationHeadingObject>(async resolve => {
+  return new Promise<LocationHeadingObject>(async (resolve) => {
     let tries = 0;
 
-    const subscription = await watchHeadingAsync(heading => {
+    const subscription = await watchHeadingAsync((heading) => {
       if (heading.accuracy > 1 || tries > 5) {
         subscription.remove();
         resolve(heading);
@@ -190,6 +195,21 @@ export async function requestForegroundPermissionsAsync(): Promise<LocationPermi
   return await ExpoLocation.requestForegroundPermissionsAsync();
 }
 
+// @needsAudit
+/**
+ * Check or request permissions for the foreground location.
+ * This uses both `requestForegroundPermissionsAsync` and `getForegroundPermissionsAsync` to interact with the permissions.
+ *
+ * @example
+ * ```ts
+ * const [status, requestPermission] = Location.useForegroundPermissions();
+ * ```
+ */
+export const useForegroundPermissions = createPermissionHook({
+  getMethod: getForegroundPermissionsAsync,
+  requestMethod: requestForegroundPermissionsAsync,
+});
+
 /**
  * Gets the current state of background location permissions.
  */
@@ -203,6 +223,21 @@ export async function getBackgroundPermissionsAsync(): Promise<PermissionRespons
 export async function requestBackgroundPermissionsAsync(): Promise<PermissionResponse> {
   return await ExpoLocation.requestBackgroundPermissionsAsync();
 }
+
+// @needsAudit
+/**
+ * Check or request permissions for the foreground location.
+ * This uses both `requestBackgroundPermissionsAsync` and `getBackgroundPermissionsAsync` to interact with the permissions.
+ *
+ * @example
+ * ```ts
+ * const [status, requestPermission] = Location.useBackgroundPermissions();
+ * ```
+ */
+export const useBackgroundPermissions = createPermissionHook({
+  getMethod: getBackgroundPermissionsAsync,
+  requestMethod: requestBackgroundPermissionsAsync,
+});
 
 // --- Location service
 
@@ -305,6 +340,7 @@ export {
   LocationGeofencingEventType as GeofencingEventType,
   LocationGeofencingRegionState as GeofencingRegionState,
   PermissionStatus,
+  PermissionHookOptions,
   setGoogleApiKey,
 };
 

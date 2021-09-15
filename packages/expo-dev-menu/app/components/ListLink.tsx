@@ -11,7 +11,7 @@ class ListLink extends React.PureComponent<{
   static contextType = NavigationContext;
 
   action = () => {
-    this.context.push(this.props.route);
+    this.context.navigate(this.props.route);
   };
 
   render() {

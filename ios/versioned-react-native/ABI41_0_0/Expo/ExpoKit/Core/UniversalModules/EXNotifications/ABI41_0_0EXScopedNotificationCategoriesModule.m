@@ -6,17 +6,16 @@
 
 @interface ABI41_0_0EXScopedNotificationCategoriesModule ()
 
-@property (nonatomic, strong) NSString *experienceId;
+@property (nonatomic, strong) NSString *scopeKey;
 
 @end
 
 @implementation ABI41_0_0EXScopedNotificationCategoriesModule
 
-- (instancetype)initWithExperienceId:(NSString *)experienceId
-                 andConstantsBinding:(ABI41_0_0EXConstantsBinding *)constantsBinding
+- (instancetype)initWithScopeKey:(NSString *)scopeKey
 {
   if (self = [super init]) {
-    _experienceId = experienceId;
+    _scopeKey = scopeKey;
   }
   return self;
 }
@@ -26,7 +25,7 @@
   [[UNUserNotificationCenter currentNotificationCenter] getNotificationCategoriesWithCompletionHandler:^(NSSet<UNNotificationCategory *> *categories) {
     NSMutableArray* existingCategories = [NSMutableArray new];
     for (UNNotificationCategory *category in categories) {
-      if ([ABI41_0_0EXScopedNotificationsUtils isId:category.identifier scopedByExperience:self->_experienceId]) {
+      if ([ABI41_0_0EXScopedNotificationsUtils isId:category.identifier scopedByExperience:self->_scopeKey]) {
         [existingCategories addObject:[self serializeCategory:category]];
       }
     }
@@ -41,7 +40,7 @@
                                        reject:(ABI41_0_0UMPromiseRejectBlock)reject
 {
   NSString *scopedCategoryIdentifier = [ABI41_0_0EXScopedNotificationsUtils scopedIdentifierFromId:categoryId
-                                                                            forExperience:_experienceId];
+                                                                            forExperience:_scopeKey];
   [super setNotificationCategoryWithCategoryId:scopedCategoryIdentifier
                                        actions:actions
                                        options:options
@@ -54,7 +53,7 @@
                                           reject:(ABI41_0_0UMPromiseRejectBlock)reject
 {
   NSString *scopedCategoryIdentifier = [ABI41_0_0EXScopedNotificationsUtils scopedIdentifierFromId:categoryId
-                                                                            forExperience:_experienceId];
+                                                                            forExperience:_scopeKey];
   [super deleteNotificationCategoryWithCategoryId:scopedCategoryIdentifier
                                           resolve:resolve
                                            reject:reject];
@@ -70,14 +69,16 @@
 
 #pragma mark - static method for migrating categories in both Expo Go and standalones. Added in SDK 41. TODO(Cruzan): Remove in SDK 47
 
-+ (void)maybeMigrateLegacyCategoryIdentifiersForProject:(NSString *)experienceId isInExpoGo:(BOOL)isInExpoGo
++ (void)maybeMigrateLegacyCategoryIdentifiersForProjectWithExperienceStableLegacyId:(NSString *)experienceStableLegacyId
+                                                                 scopeKey:(NSString *)scopeKey
+                                                                         isInExpoGo:(BOOL)isInExpoGo
 {
   if (isInExpoGo) {
     // Changed scoping prefix in SDK 41 FROM "experienceId-" to ESCAPED "experienceId/"
-    [ABI41_0_0EXScopedNotificationCategoryMigrator migrateLegacyScopedCategoryIdentifiersForProject:experienceId];
+    [ABI41_0_0EXScopedNotificationCategoryMigrator migrateLegacyScopedCategoryIdentifiersForProjectWithScopeKey:scopeKey];
   } else {
     // Used to prefix with "experienceId-" even in standalone apps in SDKs <= 40, so we need to unscope those
-    [ABI41_0_0EXScopedNotificationCategoryMigrator unscopeLegacyCategoryIdentifiersForProject:experienceId];
+    [ABI41_0_0EXScopedNotificationCategoryMigrator unscopeLegacyCategoryIdentifiersForProjectWithScopeKey:scopeKey];
   }
 }
 

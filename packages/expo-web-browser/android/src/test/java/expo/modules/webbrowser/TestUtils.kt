@@ -5,7 +5,7 @@ import io.mockk.CapturingSlot
 import io.mockk.Runs
 import io.mockk.every
 import io.mockk.just
-import org.unimodules.core.arguments.ReadableArguments
+import expo.modules.core.arguments.ReadableArguments
 import org.unimodules.test.core.mockkInternalModule
 import org.unimodules.test.core.readableArgumentsOf
 
@@ -47,14 +47,16 @@ fun browserArguments(
   createTask: Boolean = true
 ): ReadableArguments {
   // Move creation of readable arguments to TestUtils
-  return readableArgumentsOf(mapOf(
-    "toolbarColor" to toolbarColor,
-    "toolbarSecondaryColor" to toolbarSecondaryColor,
-    "browserPackage" to browserPackage,
-    "enableBarCollapsing" to enableBarCollapsing,
-    "showTitle" to showTitle,
-    "enableDefaultShareMenuItem" to enableDefaultShareMenuItem,
-    "showInRecents" to showInRecents,
-    "createTask" to createTask
-  ))
+  return readableArgumentsOf(
+    mapOf(
+      "toolbarColor" to toolbarColor,
+      "toolbarSecondaryColor" to toolbarSecondaryColor,
+      "browserPackage" to browserPackage,
+      "enableBarCollapsing" to enableBarCollapsing,
+      "showTitle" to showTitle,
+      "enableDefaultShareMenuItem" to enableDefaultShareMenuItem,
+      "showInRecents" to showInRecents,
+      "createTask" to createTask
+    )
+  )
 }

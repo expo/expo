@@ -9,7 +9,7 @@ React Native exports a [`<Button />`](https://reactnative.dev/docs/button) compo
 
 ![default-button](/static/images/faq-button-style-button.png)
 
-To create a button with a custom style, we can to turn to the [`<Pressable />`](../versions/latest/react-native/pressable/) component.`<Pressable />`let's us fully customize the appearance of a pressable element (like a button), in addition to allowing us to customize it's behavior. Here's an example of using`<Pressable />` to create a button component:
+To create a button with a custom style, we can to turn to the [`<Pressable />`](../versions/latest/react-native/pressable/) component.`<Pressable />`lets us fully customize the appearance of a pressable element (like a button), in addition to allowing us to customize its behavior. Here's an example of using`<Pressable />` to create a button component:
 
 <SnackInline>
 

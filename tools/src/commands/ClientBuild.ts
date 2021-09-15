@@ -12,7 +12,7 @@ import { link } from '../Formatter';
 import Git from '../Git';
 import logger from '../Logger';
 import { modifySdkVersionsAsync, getSdkVersionsAsync } from '../Versions';
-import { ClientBuilder, Platform } from '../client-build/types';
+import { ClientBuilder, ClientBuildFlavor, Platform } from '../client-build/types';
 import IosClientBuilder from '../client-build/IosClientBuilder';
 import AndroidClientBuilder from '../client-build/AndroidClientBuilder';
 import { getNewestSDKVersionAsync } from '../ProjectVersions';
@@ -23,7 +23,10 @@ const { yellow, blue, magenta } = chalk;
 type ActionOptions = {
   platform?: Platform;
   release: boolean;
+  flavor: ClientBuildFlavor;
 };
+
+const flavors = ['versioned', 'unversioned'];
 
 export default (program: Command) => {
   program
@@ -38,6 +41,11 @@ export default (program: Command) => {
       'Whether to upload and release the client build to staging versions endpoint.',
       false
     )
+    .option(
+      '-f, --flavor [string]',
+      `Which build flavor to use. Possible values: ${flavors}`,
+      flavors[0]
+    )
     .asyncAction(main);
 };
 
@@ -48,6 +56,9 @@ async function main(options: ActionOptions) {
   if (options.release && !sdkBranchVersion) {
     throw new Error(`Client builds can be released only from the release branch!`);
   }
+  if (!Object.values(ClientBuildFlavor).includes(options.flavor)) {
+    throw new Error(`Flavor "${options.flavor}" is not valid, use one of: ${flavors}`);
+  }
 
   const builder = getBuilderForPlatform(platform);
   const sdkVersion =
@@ -55,7 +66,7 @@ async function main(options: ActionOptions) {
     (await askForSdkVersionAsync(platform, await getNewestSDKVersionAsync(platform)));
   const appVersion = await builder.getAppVersionAsync();
 
-  await buildOrUseCacheAsync(builder);
+  await buildOrUseCacheAsync(builder, options.flavor);
 
   if (sdkVersion && options.release) {
     await uploadAsync(builder, sdkVersion, appVersion);
@@ -106,7 +117,10 @@ async function askToOverrideBuildAsync(): Promise<boolean> {
   return override;
 }
 
-async function buildOrUseCacheAsync(builder: ClientBuilder): Promise<void> {
+async function buildOrUseCacheAsync(
+  builder: ClientBuilder,
+  flavor: ClientBuildFlavor
+): Promise<void> {
   const appPath = builder.getAppPath();
 
   // Build directory already exists, we could reuse that one — especially useful on the CI.
@@ -119,7 +133,7 @@ async function buildOrUseCacheAsync(builder: ClientBuilder): Promise<void> {
       return;
     }
   }
-  await builder.buildAsync();
+  await builder.buildAsync(flavor);
 }
 
 async function uploadAsync(

@@ -1,5 +1,4 @@
-import { Platform } from '@unimodules/core';
-import { PermissionResponse, PermissionStatus } from 'unimodules-permissions-interface';
+import { PermissionResponse, PermissionStatus, Platform } from 'expo-modules-core';
 
 type SensorEventName = 'deviceorientation' | 'devicemotion';
 
@@ -131,7 +130,7 @@ export async function isSensorEnabledAsync(
     return true;
   }
 
-  return new Promise(resolve => {
+  return new Promise((resolve) => {
     const id = setTimeout(() => {
       window.removeEventListener(eventName, listener);
       resolve(false);

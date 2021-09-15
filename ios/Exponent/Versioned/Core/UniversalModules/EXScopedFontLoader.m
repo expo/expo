@@ -3,7 +3,7 @@
 #if __has_include(<EXFont/EXFontLoader.h>)
 #import "EXScopedFontLoader.h"
 #import "EXConstantsBinding.h"
-#import <UMConstantsInterface/UMConstantsInterface.h>
+#import <ExpoModulesCore/EXConstantsInterface.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

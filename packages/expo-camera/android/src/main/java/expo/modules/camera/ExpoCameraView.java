@@ -2,7 +2,6 @@ package expo.modules.camera;
 
 import android.Manifest;
 import android.content.Context;
-import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.media.CamcorderProfile;
 import android.net.Uri;
@@ -13,19 +12,11 @@ import android.view.View;
 import com.google.android.cameraview.CameraView;
 import com.google.android.cameraview.Size;
 
-import org.unimodules.core.ModuleRegistry;
-import org.unimodules.core.Promise;
-import org.unimodules.core.interfaces.LifecycleEventListener;
-import org.unimodules.core.interfaces.services.EventEmitter;
-import org.unimodules.core.interfaces.services.UIManager;
-import org.unimodules.interfaces.barcodescanner.BarCodeScanner;
-import org.unimodules.interfaces.barcodescanner.BarCodeScannerProvider;
-import org.unimodules.interfaces.barcodescanner.BarCodeScannerResult;
-import org.unimodules.interfaces.barcodescanner.BarCodeScannerSettings;
-import org.unimodules.interfaces.camera.CameraViewInterface;
-import org.unimodules.interfaces.facedetector.FaceDetector;
-import org.unimodules.interfaces.facedetector.FaceDetectorProvider;
-import org.unimodules.interfaces.permissions.Permissions;
+import expo.modules.core.ModuleRegistry;
+import expo.modules.core.Promise;
+import expo.modules.core.interfaces.LifecycleEventListener;
+import expo.modules.core.interfaces.services.EventEmitter;
+import expo.modules.core.interfaces.services.UIManager;
 
 import java.io.File;
 import java.io.IOException;
@@ -44,6 +35,14 @@ import expo.modules.camera.tasks.PictureSavedDelegate;
 import expo.modules.camera.tasks.ResolveTakenPictureAsyncTask;
 import expo.modules.camera.utils.FileSystemUtils;
 import expo.modules.camera.utils.ImageDimensions;
+import expo.modules.interfaces.barcodescanner.BarCodeScannerInterface;
+import expo.modules.interfaces.barcodescanner.BarCodeScannerProviderInterface;
+import expo.modules.interfaces.barcodescanner.BarCodeScannerResult;
+import expo.modules.interfaces.barcodescanner.BarCodeScannerSettings;
+import expo.modules.interfaces.camera.CameraViewInterface;
+import expo.modules.interfaces.facedetector.FaceDetectorInterface;
+import expo.modules.interfaces.facedetector.FaceDetectorProviderInterface;
+import expo.modules.interfaces.permissions.Permissions;
 
 public class ExpoCameraView extends CameraView implements LifecycleEventListener, BarCodeScannerAsyncTaskDelegate, FaceDetectorAsyncTaskDelegate, PictureSavedDelegate, CameraViewInterface {
   private static final String MUTE_KEY = "mute";
@@ -66,8 +65,8 @@ public class ExpoCameraView extends CameraView implements LifecycleEventListener
   public volatile boolean faceDetectorTaskLock = false;
 
   // Scanning-related properties
-  private BarCodeScanner mBarCodeScanner;
-  private FaceDetector mFaceDetector;
+  private BarCodeScannerInterface mBarCodeScanner;
+  private FaceDetectorInterface mFaceDetector;
   private Map<String, Object> mPendingFaceDetectorSettings;
   private boolean mShouldDetectFaces = false;
   private boolean mShouldScanBarCodes = false;
@@ -255,7 +254,7 @@ public class ExpoCameraView extends CameraView implements LifecycleEventListener
    * Additionally supports [codabar, code128, maxicode, rss14, rssexpanded, upc_a, upc_ean]
    */
   private void initBarCodeScanner() {
-    BarCodeScannerProvider barCodeScannerProvider = mModuleRegistry.getModule(BarCodeScannerProvider.class);
+    BarCodeScannerProviderInterface barCodeScannerProvider = mModuleRegistry.getModule(BarCodeScannerProviderInterface.class);
     if (barCodeScannerProvider != null) {
       mBarCodeScanner = barCodeScannerProvider.createBarCodeDetectorWithContext(getContext());
     }
@@ -299,7 +298,7 @@ public class ExpoCameraView extends CameraView implements LifecycleEventListener
         if (!Build.FINGERPRINT.contains("generic")) {
           start();
 
-          FaceDetectorProvider faceDetectorProvider = mModuleRegistry.getModule(FaceDetectorProvider.class);
+          FaceDetectorProviderInterface faceDetectorProvider = mModuleRegistry.getModule(FaceDetectorProviderInterface.class);
           if (faceDetectorProvider != null) {
             mFaceDetector = faceDetectorProvider.createFaceDetectorWithContext(getContext());
             if (mPendingFaceDetectorSettings != null) {
@@ -361,7 +360,7 @@ public class ExpoCameraView extends CameraView implements LifecycleEventListener
   }
 
   @Override
-  public void onFaceDetectionError(FaceDetector faceDetector) {
+  public void onFaceDetectionError(FaceDetectorInterface faceDetector) {
     faceDetectorTaskLock = false;
     if (!mShouldDetectFaces) {
       return;

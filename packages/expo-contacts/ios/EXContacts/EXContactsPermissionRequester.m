@@ -13,18 +13,18 @@
 
 - (NSDictionary *)getPermissions
 {
-  UMPermissionStatus status;
+  EXPermissionStatus status;
   CNAuthorizationStatus permissions = [CNContactStore authorizationStatusForEntityType:CNEntityTypeContacts];
   switch (permissions) {
     case CNAuthorizationStatusAuthorized:
-      status = UMPermissionStatusGranted;
+      status = EXPermissionStatusGranted;
       break;
     case CNAuthorizationStatusDenied:
     case CNAuthorizationStatusRestricted:
-      status = UMPermissionStatusDenied;
+      status = EXPermissionStatusDenied;
       break;
     case CNAuthorizationStatusNotDetermined:
-      status = UMPermissionStatusUndetermined;
+      status = EXPermissionStatusUndetermined;
       break;
   }
   return @{
@@ -32,12 +32,12 @@
   };
 }
 
-- (void)requestPermissionsWithResolver:(UMPromiseResolveBlock)resolve rejecter:(UMPromiseRejectBlock)reject
+- (void)requestPermissionsWithResolver:(EXPromiseResolveBlock)resolve rejecter:(EXPromiseRejectBlock)reject
 {
   CNContactStore *contactStore = [CNContactStore new];
-  UM_WEAKIFY(self)
+  EX_WEAKIFY(self)
   [contactStore requestAccessForEntityType:CNEntityTypeContacts completionHandler:^(BOOL granted, NSError * _Nullable error) {
-    UM_STRONGIFY(self)
+    EX_STRONGIFY(self)
     // Error code 100 is a when the user denies permission, in that case we don't want to reject.
     if (error && error.code != 100) {
       reject(@"E_CONTACTS_ERROR_UNKNOWN", error.localizedDescription, error);

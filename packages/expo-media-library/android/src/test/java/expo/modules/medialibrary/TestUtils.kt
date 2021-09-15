@@ -18,9 +18,11 @@ fun mockCursor(cursorResults: CursorResults): RoboCursor {
 
 fun mockContentResolver(cursor: Cursor?): ContentResolver {
   val contentResolver = mockk<ContentResolver>()
-  every { contentResolver.query(
-    MediaLibraryConstants.EXTERNAL_CONTENT,
-    any(), any(), any(), any())
+  every {
+    contentResolver.query(
+      MediaLibraryConstants.EXTERNAL_CONTENT,
+      any(), any(), any(), any()
+    )
   } returns cursor
   return contentResolver
 }

@@ -1,7 +1,6 @@
 #import "NativeProxy.h"
 #import "REAIOSScheduler.h"
 #import "REAIOSErrorHandler.h"
-#import "RuntimeDecorator.h"
 #import "REAModule.h"
 #import "REANodesManager.h"
 #import "NativeMethods.h"
@@ -111,13 +110,14 @@ std::shared_ptr<NativeReanimatedModule> createReanimatedModule(std::shared_ptr<C
       return val;
   };
 
-  std::shared_ptr<Scheduler> scheduler(new REAIOSScheduler(jsInvoker));
 
 #if __has_include(<hermes/hermes.h>)
   std::unique_ptr<jsi::Runtime> animatedRuntime = facebook::hermes::makeHermesRuntime();
 #else
   std::unique_ptr<jsi::Runtime> animatedRuntime = facebook::jsc::makeJSCRuntime();
 #endif
+
+  std::shared_ptr<Scheduler> scheduler = std::make_shared<REAIOSScheduler>(jsInvoker);
   std::shared_ptr<ErrorHandler> errorHandler = std::make_shared<REAIOSErrorHandler>(scheduler);
   std::shared_ptr<NativeReanimatedModule> module;
 
@@ -142,15 +142,15 @@ std::shared_ptr<NativeReanimatedModule> createReanimatedModule(std::shared_ptr<C
     getCurrentTime,
   };
 
-module = std::make_shared<NativeReanimatedModule>(jsInvoker,
-                                                  scheduler,
-                                                  std::move(animatedRuntime),
-                                                  errorHandler,
-                                                  propObtainer,
-                                                  platformDepMethodsHolder
-                                                  );
+  module = std::make_shared<NativeReanimatedModule>(jsInvoker,
+                                                    scheduler,
+                                                    std::move(animatedRuntime),
+                                                    errorHandler,
+                                                    propObtainer,
+                                                    platformDepMethodsHolder
+                                                    );
 
-  scheduler->setModule(module);
+  scheduler->setRuntimeManager(module);
 
   [reanimatedModule.nodesManager registerEventHandler:^(NSString *eventName, id<RCTEvent> event) {
     std::string eventNameString([eventName UTF8String]);

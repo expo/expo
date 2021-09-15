@@ -9,7 +9,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface ABI41_0_0EXScopedSecureStore : ABI41_0_0EXSecureStore
 
-- (instancetype)initWithExperienceId:(NSString *)experienceId
+- (instancetype)initWithScopeKey:(NSString *)scopeKey
                  andConstantsBinding:(ABI41_0_0EXConstantsBinding *)constantsBinding;
 
 @end

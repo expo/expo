@@ -1,38 +1,45 @@
-import { UnavailabilityError } from '@unimodules/core';
+import { PermissionStatus, createPermissionHook, UnavailabilityError, } from 'expo-modules-core';
 import * as React from 'react';
 import { Platform } from 'react-native';
-import { PermissionStatus } from 'unimodules-permissions-interface';
 import ExpoBarCodeScannerModule from './ExpoBarCodeScannerModule';
 import ExpoBarCodeScannerView from './ExpoBarCodeScannerView';
 const { BarCodeType, Type } = ExpoBarCodeScannerModule;
 const EVENT_THROTTLE_MS = 500;
 export { PermissionStatus };
 export class BarCodeScanner extends React.Component {
-    constructor() {
-        super(...arguments);
-        this.lastEvents = {};
-        this.lastEventsTimes = {};
-        this.onObjectDetected = (callback) => ({ nativeEvent, }) => {
-            const { type } = nativeEvent;
-            if (this.lastEvents[type] &&
-                this.lastEventsTimes[type] &&
-                JSON.stringify(nativeEvent) === this.lastEvents[type] &&
-                Date.now() - this.lastEventsTimes[type] < EVENT_THROTTLE_MS) {
-                return;
-            }
-            if (callback) {
-                callback(nativeEvent);
-                this.lastEventsTimes[type] = new Date();
-                this.lastEvents[type] = JSON.stringify(nativeEvent);
-            }
-        };
-    }
+    lastEvents = {};
+    lastEventsTimes = {};
+    static Constants = {
+        BarCodeType,
+        Type,
+    };
+    static ConversionTables = {
+        type: Type,
+    };
+    static defaultProps = {
+        type: Type.back,
+        barCodeTypes: Object.values(BarCodeType),
+    };
     static async getPermissionsAsync() {
         return ExpoBarCodeScannerModule.getPermissionsAsync();
     }
     static async requestPermissionsAsync() {
         return ExpoBarCodeScannerModule.requestPermissionsAsync();
     }
+    // @needsAudit
+    /**
+     * Check or request permissions for the barcode scanner.
+     * This uses both `requestPermissionAsync` and `getPermissionsAsync` to interact with the permissions.
+     *
+     * @example
+     * ```ts
+     * const [status, requestPermission] = BarCodeScanner.usePermissions();
+     * ```
+     */
+    static usePermissions = createPermissionHook({
+        getMethod: BarCodeScanner.getPermissionsAsync,
+        requestMethod: BarCodeScanner.requestPermissionsAsync,
+    });
     static async scanFromURLAsync(url, barCodeTypes = Object.values(BarCodeType)) {
         if (!ExpoBarCodeScannerModule.scanFromURLAsync) {
             throw new UnavailabilityError('expo-barcode-scanner', 'scanFromURLAsync');
@@ -54,8 +61,22 @@ export class BarCodeScanner extends React.Component {
     render() {
         const nativeProps = this.convertNativeProps(this.props);
         const { onBarCodeScanned } = this.props;
-        return (React.createElement(ExpoBarCodeScannerView, Object.assign({}, nativeProps, { onBarCodeScanned: this.onObjectDetected(onBarCodeScanned) })));
+        return (React.createElement(ExpoBarCodeScannerView, { ...nativeProps, onBarCodeScanned: this.onObjectDetected(onBarCodeScanned) }));
     }
+    onObjectDetected = (callback) => ({ nativeEvent }) => {
+        const { type } = nativeEvent;
+        if (this.lastEvents[type] &&
+            this.lastEventsTimes[type] &&
+            JSON.stringify(nativeEvent) === this.lastEvents[type] &&
+            Date.now() - this.lastEventsTimes[type] < EVENT_THROTTLE_MS) {
+            return;
+        }
+        if (callback) {
+            callback(nativeEvent);
+            this.lastEventsTimes[type] = new Date();
+            this.lastEvents[type] = JSON.stringify(nativeEvent);
+        }
+    };
     convertNativeProps(props) {
         const nativeProps = {};
         for (const [key, value] of Object.entries(props)) {
@@ -69,16 +90,5 @@ export class BarCodeScanner extends React.Component {
         return nativeProps;
     }
 }
-BarCodeScanner.Constants = {
-    BarCodeType,
-    Type,
-};
-BarCodeScanner.ConversionTables = {
-    type: Type,
-};
-BarCodeScanner.defaultProps = {
-    type: Type.back,
-    barCodeTypes: Object.values(BarCodeType),
-};
-export const { Constants, getPermissionsAsync, requestPermissionsAsync } = BarCodeScanner;
+export const { Constants, getPermissionsAsync, requestPermissionsAsync, usePermissions } = BarCodeScanner;
 //# sourceMappingURL=BarCodeScanner.js.map

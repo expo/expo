@@ -132,6 +132,22 @@ import { Camera } from 'expo-camera';
 const types = await Camera.getAvailableCameraTypesAsync();
 ```
 
+### `Camera.requestPermissionsAsync()`
+
+Asks the user to grant permissions for accessing camera.
+
+#### Returns
+
+A promise that resolves to an object of type [PermissionResponse](permissions.md#permissionresponse).
+
+### `Camera.getPermissionsAsync()`
+
+Checks user's permissions for accessing camera.
+
+#### Returns
+
+A promise that resolves to an object of type [PermissionResponse](permissions.md#permissionresponse).
+
 ## Props
 
 ### `type`
@@ -319,21 +335,6 @@ Pauses the camera preview. It is not recommended to use `takePictureAsync` when 
 
 Resumes the camera preview.
 
-### `requestPermissionsAsync()`
-
-Asks the user to grant permissions for accessing camera.
-
-#### Returns
-
-A promise that resolves to an object of type [PermissionResponse](permissions.md#permissionresponse).
-
-### `getPermissionsAsync()`
-
-Checks user's permissions for accessing camera.
-
-#### Returns
-
-A promise that resolves to an object of type [PermissionResponse](permissions.md#permissionresponse).
 
 ## Web Support
 

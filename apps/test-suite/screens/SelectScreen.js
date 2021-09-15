@@ -4,9 +4,9 @@ import React from 'react';
 import { Alert, FlatList, Linking, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useSafeArea } from 'react-native-safe-area-context';
 
+import { getTestModules } from '../TestModules';
 import PlatformTouchable from '../components/PlatformTouchable';
 import Colors from '../constants/Colors';
-import { getTestModules } from '../TestModules';
 
 function ListItem({ title, onPressItem, selected, id }) {
   function onPress() {
@@ -156,7 +156,6 @@ export default class SelectScreen extends React.PureComponent {
       const query = createQueryString([...selected]);
 
       this.props.navigation.navigate('run', { tests: query });
-      this.setState({ selected: new Set() });
     }
   };
 
@@ -164,6 +163,7 @@ export default class SelectScreen extends React.PureComponent {
     const { selected } = this.state;
     const allSelected = selected.size === this.state.modules.length;
     const buttonTitle = allSelected ? 'Deselect All' : 'Select All';
+
     return (
       <React.Fragment>
         <FlatList
@@ -187,7 +187,7 @@ export default class SelectScreen extends React.PureComponent {
 function Footer({ buttonTitle, canRunTests, onToggle, onRun }) {
   const { bottom, left, right } = useSafeArea();
 
-  const isRunningInDetox = Constants.manifest.slug === 'bare-expo';
+  const isRunningInDetox = Constants.manifest && Constants.manifest.slug === 'bare-expo';
   const paddingVertical = 16;
 
   return (

@@ -38,8 +38,6 @@ class DevMenuReactInternalSettings(
 
   override fun isHotModuleReplacementEnabled() = true
 
-  override fun isNuclideJSDebugEnabled() = false
-
   override fun setHotModuleReplacementEnabled(enabled: Boolean) = Unit
 
   override fun addMenuItem(title: String?) = Unit

@@ -3,7 +3,7 @@ apply plugin: 'kotlin-android'
 apply plugin: 'maven'
 
 group = 'host.exp.exponent'
-version = '9.1.2'
+version = '9.2.0'
 
 buildscript {
   // Simple helper that allows the root project to override versions declared by this library.
@@ -48,39 +48,29 @@ uploadArchives {
 android {
   compileSdkVersion safeExtGet("compileSdkVersion", 30)
 
+  compileOptions {
+    sourceCompatibility JavaVersion.VERSION_1_8
+    targetCompatibility JavaVersion.VERSION_1_8
+  }
+
   defaultConfig {
     minSdkVersion safeExtGet("minSdkVersion", 21)
     targetSdkVersion safeExtGet("targetSdkVersion", 30)
     versionCode 24
-    versionName "9.1.2"
+    versionName "9.2.0"
   }
   lintOptions {
     abortOnError false
   }
-  compileOptions {
-    sourceCompatibility = '1.8'
-    targetCompatibility = '1.8'
-  }
-
   testOptions {
     unitTests.all {
       useJUnitPlatform()
     }
   }
-
-}
-
-if (new File(rootProject.projectDir.parentFile, 'package.json').exists()) {
-  apply from: project(":unimodules-core").file("../unimodules-core.gradle")
-} else {
-  throw new GradleException(
-      "'unimodules-core.gradle' was not found in the usual React Native dependency location. " +
-          "This package can only be used in such projects. Are you sure you've installed the dependencies properly?")
 }
 
 dependencies {
-  unimodule "unimodules-core"
-  unimodule "unimodules-permissions-interface"
+  implementation project(':expo-modules-core')
 
   implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${safeExtGet('kotlinVersion', '1.4.21')}"
 

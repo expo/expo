@@ -115,7 +115,7 @@ class SvgNativeMethods extends React.Component {
         <Svg.Svg
           height="100"
           width="150"
-          ref={ele => {
+          ref={(ele) => {
             this.root = ele;
           }}>
           <G x="40" onPress={this.alert}>

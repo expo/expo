@@ -2,10 +2,10 @@ import { StackScreenProps } from '@react-navigation/stack';
 import { AllStackRoutes } from 'navigation/Navigation.types';
 import * as React from 'react';
 import { StyleSheet, View } from 'react-native';
-import { useSelector } from 'react-redux';
 
 import ProfileUnauthenticated from '../components/ProfileUnauthenticated';
 import Profile from '../containers/Profile';
+import { useSelector } from '../redux/Hooks';
 import getViewerUsernameAsync from '../utils/getViewerUsernameAsync';
 import isUserAuthenticated from '../utils/isUserAuthenticated';
 
@@ -13,9 +13,9 @@ export default function ProfileScreen({
   navigation,
   ...props
 }: StackScreenProps<AllStackRoutes, 'Profile'>) {
-  const { isAuthenticated }: { isAuthenticated: boolean } = useSelector(
+  const { isAuthenticated } = useSelector(
     React.useCallback(
-      data => {
+      (data) => {
         const isAuthenticated = isUserAuthenticated(data.session);
         return {
           isAuthenticated,
@@ -41,10 +41,10 @@ function ProfileView(
       setViewerUsername(null);
     } else {
       getViewerUsernameAsync().then(
-        viewerUsername => {
+        (viewerUsername) => {
           setViewerUsername(viewerUsername);
         },
-        error => {
+        (error) => {
           setViewerUsername(null);
           console.warn(`There was an error fetching the viewer's username`, error);
         }

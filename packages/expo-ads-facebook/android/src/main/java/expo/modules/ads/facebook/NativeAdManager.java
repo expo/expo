@@ -8,11 +8,11 @@ import com.facebook.ads.AdError;
 import com.facebook.ads.MediaView;
 import com.facebook.ads.NativeAdsManager;
 
-import org.unimodules.core.ModuleRegistry;
-import org.unimodules.core.Promise;
-import org.unimodules.core.interfaces.InternalModule;
-import org.unimodules.core.interfaces.services.EventEmitter;
-import org.unimodules.core.interfaces.services.UIManager;
+import expo.modules.core.ModuleRegistry;
+import expo.modules.core.Promise;
+import expo.modules.core.interfaces.InternalModule;
+import expo.modules.core.interfaces.services.EventEmitter;
+import expo.modules.core.interfaces.services.UIManager;
 
 import java.util.ArrayList;
 import java.util.Collections;

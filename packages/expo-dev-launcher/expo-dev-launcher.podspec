@@ -15,14 +15,45 @@ Pod::Spec.new do |s|
   s.source         = { :git => 'https://github.com/github_account/expo-development-client.git', :tag => "#{s.version}" }
   s.source_files   = 'ios/**/*.{h,m,swift,cpp}'
   s.preserve_paths = 'ios/**/*.{h,m,swift}'
+  s.exclude_files  = ['ios/Unsafe/**/*.{h,m,mm,swift,cpp}', 'ios/Tests/**/*.{h,m,swift}']
   s.requires_arc   = true
   s.header_dir     = 'EXDevLauncher'
 
-  s.xcconfig = { 'GCC_PREPROCESSOR_DEFINITIONS' => "EX_DEV_LAUNCHER_ENABLED=1 EX_DEV_LAUNCHER_VERSION=#{s.version}", 'OTHER_SWIFT_FLAGS' => '-DEX_DEV_LAUNCHER_ENABLED=1' }
+  s.resource_bundles = {
+    'EXDevLauncher' => [
+      'ios/assets',
+      'ios/main.jsbundle',
+      'ios/Views/EXDevLauncherErrorView.storyboard'
+    ]
+  }
+
+  s.xcconfig = {
+    'GCC_PREPROCESSOR_DEFINITIONS' => "EX_DEV_LAUNCHER_ENABLED=1 EX_DEV_LAUNCHER_VERSION=#{s.version}",
+    'OTHER_SWIFT_FLAGS' => '-DEX_DEV_LAUNCHER_ENABLED=1'
+  }
 
   # Swift/Objective-C compatibility
   s.pod_target_xcconfig = { "DEFINES_MODULE" => "YES" }
   
-  s.dependency "React"
+  s.dependency "React-Core"
   s.dependency "expo-dev-menu-interface"
+  s.dependency "EXUpdatesInterface"
+  
+  s.subspec 'Unsafe' do |unsafe|
+    unsafe.source_files = 'ios/Unsafe/**/*.{h,m,mm,swift,cpp}'
+    unsafe.compiler_flags = '-x objective-c++ -std=c++1z -fno-objc-arc' # Disable Automatic Reference Counting
+  end
+  
+  s.subspec 'Main' do |main|
+    main.dependency "expo-dev-launcher/Unsafe"
+  end
+
+  s.test_spec 'Tests' do |test_spec|
+    test_spec.platform     = :ios, '12.0'
+    test_spec.source_files = 'ios/Tests/**/*.{h,m,swift}'
+    test_spec.dependency "React-CoreModules"
+    test_spec.dependency "OHHTTPStubs"
+  end
+  
+  s.default_subspec = 'Main'
 end

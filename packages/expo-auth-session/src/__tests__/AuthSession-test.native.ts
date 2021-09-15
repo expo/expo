@@ -68,6 +68,7 @@ describe('Managed', () => {
         linkingUri: 'exp://exp.host/@test/test',
         manifest: {
           scheme: 'demo',
+          hostUri: 'exp.host/@test/test',
         },
         appOwnership: 'standalone',
         executionEnvironment: ExecutionEnvironment.Standalone,
@@ -116,6 +117,7 @@ describe('Managed', () => {
         linkingUri: 'exp://exp.host/@test/test',
         manifest: {
           scheme: 'demo',
+          hostUri: 'exp.host/@test/test',
         },
         appOwnership: 'expo',
         executionEnvironment: ExecutionEnvironment.StoreClient,
@@ -129,6 +131,7 @@ describe('Managed', () => {
         linkingUri: 'exp://exp.host/@test/test',
         manifest: {
           scheme: 'demo',
+          hostUri: 'exp.host/@test/test',
         },
         appOwnership: 'expo',
         executionEnvironment: ExecutionEnvironment.StoreClient,
@@ -186,7 +189,7 @@ describe('Managed', () => {
 
       // Should create a proxy URL and omit the extra path component
       expect(makeRedirectUri({ path: 'bacon', useProxy: true })).toBe(
-        'https://auth.expo.io/@test/test'
+        'https://auth.expo.io/@test/originaltest'
       );
     });
   });
