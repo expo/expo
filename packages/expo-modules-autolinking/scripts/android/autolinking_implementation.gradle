@@ -166,7 +166,6 @@ if (rootProject instanceof ProjectDescriptor) {
       return
     }
 
-    println ''
     println 'Using expo modules'
 
     for (module in modules) {
@@ -182,10 +181,8 @@ if (rootProject instanceof ProjectDescriptor) {
         continue
       }
 
-      println "  - ${Colors.GREEN}${module.name}${Colors.RESET} (${module.version})"
+      println "— ${Colors.GREEN}${module.name}${Colors.RESET} (${module.version})"
     }
-
-    println ''
   }
 
   // Adding dependencies
