@@ -3,7 +3,7 @@ require File.join(File.dirname(`node --print "require.resolve('react-native-unim
 require File.join(File.dirname(`node --print "require.resolve('expo-modules-core/package.json')"`), "scripts/autolinking")
 require File.join(File.dirname(`node --print "require.resolve('@react-native-community/cli-platform-ios/package.json')"`), "native_modules")
 
-platform :ios, '11.0'
+platform :ios, '12.0'
 
 target 'HelloWorld' do
   use_unimodules!

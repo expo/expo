@@ -10,7 +10,7 @@ Pod::Spec.new do |s|
   s.license = 'MIT'
   s.author = "650 Industries, Inc."
   s.requires_arc = true
-  s.platform = :ios, "11.0"
+  s.platform = :ios, "12.0"
   s.default_subspec = "Core"
   s.source = { :git => "http://github.com/expo/expo.git" }
   s.xcconfig = {
@@ -33,7 +33,7 @@ Pod::Spec.new do |s|
     ss.dependency 'CocoaLumberjack', '~> 3.5.3'
     ss.dependency 'GoogleMaps', '~> 3.3'
     ss.dependency 'Google-Maps-iOS-Utils', '~> 2.1.0'
-    ss.dependency 'lottie-ios', '~> 3.1.9'
+    ss.dependency 'lottie-ios', '~> 3.2.3'
     ss.dependency 'JKBigInteger2', '0.0.5'
     ss.dependency 'MBProgressHUD', '~> 1.2.0'
     ss.dependency 'React-Core' # explicit dependency required for CocoaPods >= 1.5.0
