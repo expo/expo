@@ -776,7 +776,7 @@ EX_EXPORT_METHOD_AS(networkTaskCancelAsync,
 EX_EXPORT_METHOD_AS(getFreeDiskStorageAsync, getFreeDiskStorageAsyncWithResolver:(EXPromiseResolveBlock)resolve rejecter:(EXPromiseRejectBlock)reject)
 {
   NSError *error = nil;
-  NSNumber *freeDiskStorage = [self freeDiskStorageWithError:error];
+  NSNumber *freeDiskStorage = [self freeDiskStorageWithError:&error];
   
   if(!freeDiskStorage || error) {
     reject(@"ERR_FILESYSTEM_CANNOT_DETERMINE_DISK_CAPACITY", @"Unable to determine free disk storage capacity", error);
@@ -788,7 +788,7 @@ EX_EXPORT_METHOD_AS(getFreeDiskStorageAsync, getFreeDiskStorageAsyncWithResolver
 EX_EXPORT_METHOD_AS(getTotalDiskCapacityAsync, getTotalDiskCapacityAsyncWithResolver:(EXPromiseResolveBlock)resolve rejecter:(EXPromiseRejectBlock)reject)
 {
   NSError *error = nil;
-  NSNumber *diskCapacity = [self totalDiskCapacityWithError:error];
+  NSNumber *diskCapacity = [self totalDiskCapacityWithError:&error];
 
   if (!diskCapacity || error) {
     reject(@"ERR_FILESYSTEM_CANNOT_DETERMINE_DISK_CAPACITY", @"Unable to determine total disk capacity", error);
@@ -968,7 +968,7 @@ EX_EXPORT_METHOD_AS(getTotalDiskCapacityAsync, getTotalDiskCapacityAsyncWithReso
 }
 
 - (NSDictionary<NSURLResourceKey, id> *)documentFileResourcesForKeys:(NSArray<NSURLResourceKey> *)keys
-                                                               error:(NSError **)error
+                                                               error:(out NSError * __autoreleasing *)error
 {
   if (!keys.count) {
     return @{};
@@ -1043,7 +1043,8 @@ EX_EXPORT_METHOD_AS(getTotalDiskCapacityAsync, getTotalDiskCapacityAsyncWithReso
   return [directory stringByAppendingPathComponent:fileName];
 }
 
-- (NSNumber *)totalDiskCapacityWithError:(NSError **)error
+// '<ARCType> *__autoreleasing*' problem solution: https://stackoverflow.com/a/8862061/4337317
+- (NSNumber *)totalDiskCapacityWithError:(out NSError * __autoreleasing *)error
 {
   NSDictionary *results = [self documentFileResourcesForKeys:@[NSURLVolumeTotalCapacityKey] 
                                                        error:error];
@@ -1051,7 +1052,8 @@ EX_EXPORT_METHOD_AS(getTotalDiskCapacityAsync, getTotalDiskCapacityAsyncWithReso
   return results[NSURLVolumeTotalCapacityKey];
 }
 
-- (NSNumber *)freeDiskStorageWithError:(NSError **)error
+// '<ARCType> *__autoreleasing*' problem solution: https://stackoverflow.com/a/8862061/4337317
+- (NSNumber *)freeDiskStorageWithError:(out NSError * __autoreleasing *)error
 {
   NSDictionary *results = [self documentFileResourcesForKeys:@[NSURLVolumeAvailableCapacityForImportantUsageKey] 
                                                        error:error];
