@@ -24,11 +24,17 @@
     "typescript": "~4.3.5"
   },
   "dependencies": {
+    "@expo/styleguide-native": "^0.4.0",
+    "@react-navigation/native": "^6.0.1",
+    "@react-navigation/stack": "^6.0.1",
     "acorn-loose": "^8.1.0",
     "commander": "^8.0.0",
     "esbuild": "^0.12.15",
     "fs-extra": "^9.1.0",
     "glob": "^7.1.7",
+    "react-native-safe-area-context": "3.2.0",
+    "react-native-screens": "^3.5.0",
+    "react-native-svg": "^12.1.1",
     "sane": "^5.0.1"
   }
 }
