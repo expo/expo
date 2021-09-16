@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix auto setup issues on iOS. ([#14429](https://github.com/expo/expo/pull/14429) by [@kudo](https://github.com/kudo))
+
 ### 💡 Others
 
 ## 0.9.1 — 2021-09-09
