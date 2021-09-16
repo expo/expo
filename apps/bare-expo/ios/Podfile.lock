@@ -108,7 +108,7 @@ PODS:
     - UMTaskManagerInterface
   - EXMailComposer (10.2.0):
     - ExpoModulesCore
-  - EXManifests (0.1.0):
+  - EXManifests (0.1.1):
     - EXJSONUtils
   - EXMediaLibrary (12.1.0):
     - ExpoModulesCore
@@ -211,7 +211,7 @@ PODS:
     - UMTaskManagerInterface
   - EXTrackingTransparency (1.1.0):
     - ExpoModulesCore
-  - EXUpdatesInterface (0.3.0)
+  - EXUpdatesInterface (0.3.1)
   - EXVideoThumbnails (5.2.0):
     - ExpoModulesCore
   - EXWebBrowser (9.3.0):
@@ -1242,7 +1242,7 @@ SPEC CHECKSUMS:
   EXLocalization: baeeda60ec3bf94c7d3f15bcbcebff0eda557b30
   EXLocation: eb11da50338f6e4750166d1faee540108736f5ab
   EXMailComposer: 4c710ebe2570d7243ffc907a3d92d4ad8db763dc
-  EXManifests: 5f5c6eed84611c4d11622ea8e3b473335ffe06bd
+  EXManifests: 1077398d87071ff8130d1db7890185552d6a4567
   EXMediaLibrary: 92ab16eed395d685a309543de92ca874f8327d0b
   EXNetwork: 58c5faaf0f7d5d6178906020314dd7b4b6ebcea4
   EXNotifications: 238aa36d5f5257cfa050f4879d522f01b6e7bed7
@@ -1270,7 +1270,7 @@ SPEC CHECKSUMS:
   EXStructuredHeaders: 65075e180f983a3bc6a625ac32175094bb0d1305
   EXTaskManager: 696c89798e26d2cd79f50721c94fd4849ff0a7a1
   EXTrackingTransparency: 770b8169bc72ee67d27d14a1e79974a6a3af2a35
-  EXUpdatesInterface: 427b75e4f4e58b098df69c18209a6140b9439b97
+  EXUpdatesInterface: c8792fd80c61e297e40faafe2efcba74106a6ce5
   EXVideoThumbnails: 49cec6b4122a7d1778ffa12c91e3c2322cf0a3cb
   EXWebBrowser: 36fd0e3d0138743ae3e220c4647abb687cd6cbc0
   FacebookSDK: 4b9bb8e2824898b47f18c666dc145c09b40609e6
