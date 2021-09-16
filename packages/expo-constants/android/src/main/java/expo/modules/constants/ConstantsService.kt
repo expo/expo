@@ -36,8 +36,7 @@ class ConstantsService(private val context: Context) : InternalModule, Constants
     listOf(ConstantsInterface::class.java as Class<*>)
 
   override fun getConstants(): Map<String, Any> {
-    val platform: Map<String, Any> = mapOf("android" to hashMapOf<String, Any>(/* empty */))
-
+    val platform: Map<String, Any> = mapOf("android" to emptyMapOf<String, Any>())
     val constants: MutableMap<String, Any> = hashMapOf(
       "sessionId" to sessionId,
       "executionEnvironment" to ExecutionEnvironment.BARE.string,
