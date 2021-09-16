@@ -119,7 +119,10 @@ export async function cancelAuthenticate(): Promise<void> {
  */
 export async function isDeviceAuthenticationWithBiometricsEnrolledAsync(): Promise<boolean> {
   if (!ExpoLocalAuthentication.isDeviceAuthenticationWithBiometricsEnrolledAsync) {
-    throw new UnavailabilityError('expo-local-authentication', 'isDeviceAuthenticationWithBiometricsEnrolledAsync');
+    throw new UnavailabilityError(
+      'expo-local-authentication',
+      'isDeviceAuthenticationWithBiometricsEnrolledAsync'
+    );
   }
   return await ExpoLocalAuthentication.isDeviceAuthenticationWithBiometricsEnrolledAsync();
 }
@@ -132,7 +135,10 @@ export async function isDeviceAuthenticationWithBiometricsEnrolledAsync(): Promi
  */
 export async function isDeviceAuthenticationEnrolledAsync(): Promise<boolean> {
   if (!ExpoLocalAuthentication.isDeviceAuthenticationEnrolledAsync) {
-    throw new UnavailabilityError('expo-local-authentication', 'isDeviceAuthenticationEnrolledAsync');
+    throw new UnavailabilityError(
+      'expo-local-authentication',
+      'isDeviceAuthenticationEnrolledAsync'
+    );
   }
   return await ExpoLocalAuthentication.isDeviceAuthenticationEnrolledAsync();
 }
