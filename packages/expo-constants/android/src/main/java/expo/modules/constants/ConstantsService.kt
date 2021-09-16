@@ -33,7 +33,7 @@ class ConstantsService(private val context: Context) : InternalModule, Constants
   }
 
   override fun getExportedInterfaces(): List<Class<*>> =
-      listOf(ConstantsInterface::class.java as Class<*>)
+    listOf(ConstantsInterface::class.java as Class<*>)
 
   override fun getConstants(): Map<String, Any> {
     val platform: Map<String, Any> = mapOf("android" to hashMapOf<String, Any>(/* empty */))
@@ -101,7 +101,8 @@ class ConstantsService(private val context: Context) : InternalModule, Constants
     get() {
       try {
         context.assets.open(CONFIG_FILE_NAME).use {
-          stream -> return IOUtils.toString(stream, StandardCharsets.UTF_8)
+          stream ->
+          return IOUtils.toString(stream, StandardCharsets.UTF_8)
         }
       } catch (e: FileNotFoundException) {
         // do nothing, expected in managed apps

@@ -11,8 +11,8 @@ import expo.modules.interfaces.constants.ConstantsInterface
 import expo.modules.core.interfaces.ExpoMethod
 
 class ConstantsModule(
-    context: Context,
-    private val moduleRegistryDelegate: ModuleRegistryDelegate = ModuleRegistryDelegate()
+  context: Context,
+  private val moduleRegistryDelegate: ModuleRegistryDelegate = ModuleRegistryDelegate()
 ) : ExportedModule(context) {
 
   private inline fun <reified T> moduleRegistry() = moduleRegistryDelegate.getFromModuleRegistry<T>()

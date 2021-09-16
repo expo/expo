@@ -8,8 +8,8 @@ import expo.modules.core.ExportedModule
 
 class ConstantsPackage : BasePackage() {
   override fun createInternalModules(context: Context): List<InternalModule> =
-      listOf(ConstantsService(context))
+    listOf(ConstantsService(context))
 
   override fun createExportedModules(context: Context): List<ExportedModule> =
-      listOf(ConstantsModule(context))
+    listOf(ConstantsModule(context))
 }
