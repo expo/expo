@@ -84,7 +84,7 @@ export default class AssetSourceResolver {
     return this.fromSource(getScaledAssetPath(this.asset));
   }
   scaledAssetURLNearBundle(): ResolvedAssetSource {
-    const path = this.jsbundleUrl || 'file://';
+    const path = this.jsbundleUrl || '';
     return this.fromSource(path + getScaledAssetPath(this.asset));
   }
   resourceIdentifierWithoutScale(): ResolvedAssetSource {
