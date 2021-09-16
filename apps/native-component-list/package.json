@@ -53,7 +53,7 @@
     "@react-native-community/netinfo": "6.0.2",
     "@react-native-community/slider": "4.1.4",
     "@react-native-masked-view/masked-view": "0.2.5",
-    "@react-native-picker/picker": "1.16.7",
+    "@react-native-picker/picker": "2.1.0",
     "@react-native-segmented-control/segmented-control": "2.4.0",
     "@react-navigation/bottom-tabs": "~5.11.1",
     "@react-navigation/drawer": "~5.11.3",
