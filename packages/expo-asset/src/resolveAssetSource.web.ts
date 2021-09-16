@@ -18,7 +18,7 @@ function getSourceCodeScriptURL(): string | undefined | null {
   if (!sourceCode) {
     sourceCode = NativeModules?.SourceCode;
   }
-  _sourceCodeScriptURL = sourceCode.scriptURL;
+  _sourceCodeScriptURL = sourceCode?.scriptURL;
   return _sourceCodeScriptURL;
 }
 

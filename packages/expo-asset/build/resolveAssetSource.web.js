@@ -12,7 +12,7 @@ function getSourceCodeScriptURL() {
     if (!sourceCode) {
         sourceCode = NativeModules?.SourceCode;
     }
-    _sourceCodeScriptURL = sourceCode.scriptURL;
+    _sourceCodeScriptURL = sourceCode?.scriptURL;
     return _sourceCodeScriptURL;
 }
 function getDevServerURL() {
