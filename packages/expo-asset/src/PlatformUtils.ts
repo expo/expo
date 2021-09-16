@@ -38,9 +38,8 @@ export const manifestBaseUrl = Constants.experienceUrl
   ? getManifestBaseUrl(Constants.experienceUrl)
   : null;
 
-// TODO: how should this behave in bare app with updates? re: hashAssetFiles
 export async function downloadAsync(uri, hash, type, name): Promise<string> {
-  if (IS_MANAGED_ENV || hash !== null) {
+  if (hash !== null) {
     return _downloadAsyncWithIntegrityCheck(uri, hash, type, name);
   }
 
