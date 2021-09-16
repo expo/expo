@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import ExpoModulesCore
 import EXDevMenuInterface
 #if EX_DEV_MENU_ENABLED
 import EXDevMenu
@@ -34,6 +35,12 @@ class AppDelegate: AppDelegateWrapper {
     } else {
       initializeReactNativeBridge(launchOptions);
     }
+
+    #if DEBUG
+    EXAppDefines.initDefines(true)
+    #else
+    EXAppDefines.initDefines(false)
+    #endif
 
     super.application(application, didFinishLaunchingWithOptions: launchOptions)
     
