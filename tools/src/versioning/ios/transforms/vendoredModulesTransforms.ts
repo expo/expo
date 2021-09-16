@@ -10,7 +10,7 @@ export default function vendoredModulesTransformsFactory(prefix: string): Config
       content: [
         {
           paths: '*.m',
-          find: /RCT_EXTERN_MODULE\((ApplePayButtonManager|CardFieldManager|AuBECSDebitFormManager|StripeSdk|StripeContainerManager)/,
+          find: /RCT_EXTERN_MODULE\((ApplePayButtonManager|CardFieldManager|AuBECSDebitFormManager|StripeSdk|StripeContainerManager|CardFormManager)/,
           replaceWith: `RCT_EXTERN_REMAP_MODULE($1, ${prefix}$1`,
         },
         {
