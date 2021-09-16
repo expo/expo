@@ -13,7 +13,7 @@
     "expo": "~43.0.0-alpha.3",
     "expo-splash-screen": "~0.12.0",
     "expo-status-bar": "~1.1.0",
-    "expo-updates": "~0.9.1",
+    "expo-updates": "~0.9.3",
     "react": "17.0.1",
     "react-dom": "17.0.1",
     "react-native": "0.64.2",
