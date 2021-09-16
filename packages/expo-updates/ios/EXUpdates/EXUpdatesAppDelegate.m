@@ -2,6 +2,7 @@
 
 #import <EXUpdates/EXUpdatesAppDelegate.h>
 
+#import <ExpoModulesCore/EXAppDefines.h>
 #import <ExpoModulesCore/EXAppDelegateWrapper.h>
 #import <ExpoModulesCore/EXDefines.h>
 #import <EXUpdates/EXUpdatesConfig.h>
@@ -26,11 +27,7 @@
 
 @implementation EXUpdatesAppDelegate
 
-#if !defined(DEBUG)
-
 EX_REGISTER_SINGLETON_MODULE(EXUpdatesAppDelegate)
-
-#endif
 
 - (const NSInteger)priority
 {
@@ -46,13 +43,8 @@ EX_REGISTER_SINGLETON_MODULE(EXUpdatesAppDelegate)
   if (![self shouldEnableAutoSetup]) {
     return NO;
   }
-  EXUpdatesAppController *controller = [EXUpdatesAppController sharedInstance];
-  if (controller.isStarted) {
-    // backward compatible if main AppDelegate already has expo-updates setup,
-    // we just skip in this case.
-    return NO;
-  }
   self.launchOptions = launchOptions;
+  EXUpdatesAppController *controller = [EXUpdatesAppController sharedInstance];
   controller.delegate = self;
   [controller startAndShowLaunchScreen:application.delegate.window];
   return YES;
@@ -69,6 +61,18 @@ EX_REGISTER_SINGLETON_MODULE(EXUpdatesAppDelegate)
 
 - (BOOL)shouldEnableAutoSetup
 {
+  // backward compatible if main AppDelegate already has expo-updates setup,
+  // we just skip in this case.
+  EXUpdatesAppController *controller = [EXUpdatesAppController sharedInstance];
+  if (controller.isStarted) {
+    return NO;
+  }
+
+  // if app is development build
+  if (EXAppDefines.APP_RCT_DEV) {
+    return NO;
+  }
+
   // if Expo.plist not found or its content is invalid, disable the auto setup
   NSString *configPath = [[NSBundle mainBundle] pathForResource:EXUpdatesConfigPlistName ofType:@"plist"];
   if (!configPath) {
