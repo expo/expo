@@ -7,7 +7,6 @@ declare let nativeExtensions: any;
 
 let _customSourceTransformer;
 let _serverURL: string | undefined | null;
-let _scriptURL: string | undefined | null;
 let _sourceCodeScriptURL: string | undefined | null;
 
 function getSourceCodeScriptURL(): string | undefined | null {
@@ -15,9 +14,9 @@ function getSourceCodeScriptURL(): string | undefined | null {
     return _sourceCodeScriptURL;
   }
 
-  let sourceCode = nativeExtensions && nativeExtensions.SourceCode;
+  let sourceCode = typeof nativeExtensions !== 'undefined' ? nativeExtensions.SourceCode : null;
   if (!sourceCode) {
-    sourceCode = NativeModules && NativeModules.SourceCode;
+    sourceCode = NativeModules?.SourceCode;
   }
   _sourceCodeScriptURL = sourceCode.scriptURL;
   return _sourceCodeScriptURL;
@@ -36,29 +35,6 @@ function getDevServerURL(): string | null {
     }
   }
   return _serverURL;
-}
-
-function _coerceLocalScriptURL(scriptURL: string | undefined | null): string | null {
-  if (scriptURL) {
-    if (scriptURL.startsWith('assets://')) {
-      // android: running from within assets, no offline path to use
-      return null;
-    }
-    scriptURL = scriptURL.substring(0, scriptURL.lastIndexOf('/') + 1);
-    if (!scriptURL.includes('://')) {
-      // Add file protocol in case we have an absolute file path and not a URL.
-      // This shouldn't really be necessary. scriptURL should be a URL.
-      scriptURL = 'file://' + scriptURL;
-    }
-  }
-  return null;
-}
-
-function getScriptURL(): string | null {
-  if (_scriptURL === undefined) {
-    _scriptURL = _coerceLocalScriptURL(getSourceCodeScriptURL());
-  }
-  return _scriptURL;
 }
 
 export function setCustomSourceTransformer(
@@ -81,7 +57,7 @@ export default function resolveAssetSource(source: any): ResolvedAssetSource | u
     return undefined;
   }
 
-  const resolver = new AssetSourceResolver(getDevServerURL(), getScriptURL(), asset);
+  const resolver = new AssetSourceResolver(getDevServerURL(), null, asset);
   if (_customSourceTransformer) {
     return _customSourceTransformer(resolver);
   }
