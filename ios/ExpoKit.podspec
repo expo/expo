@@ -34,7 +34,7 @@ Pod::Spec.new do |s|
     ss.dependency 'GoogleMaps', '~> 3.3'
     ss.dependency 'Google-Maps-iOS-Utils', '~> 2.1.0'
     ss.dependency 'lottie-ios', '~> 3.2.3'
-    ss.dependency 'JKBigInteger2', '0.0.5'
+    ss.dependency 'JKBigInteger', '0.0.6'
     ss.dependency 'MBProgressHUD', '~> 1.2.0'
     ss.dependency 'React-Core' # explicit dependency required for CocoaPods >= 1.5.0
     ss.dependency 'ReactCommon' # needed for react-native-reanimated, see https://github.com/expo/expo/pull/11096#how
