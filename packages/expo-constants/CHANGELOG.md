@@ -12,6 +12,8 @@
 
 ### 💡 Others
 
+- Rewrite android code to Kotlin.
+
 ## 11.1.0 — 2021-09-08
 
 ### 🎉 New features
