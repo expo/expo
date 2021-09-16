@@ -17,7 +17,7 @@ class CryptoModule(context: Context) : ExportedModule(context) {
   fun digestStringAsync(algorithm: String, data: String, options: Map<String, Any?>, promise: Promise) {
     val encoding = options["encoding"] as String?
 
-    val messageDigest: MessageDigest = try {
+    val messageDigest = try {
       MessageDigest.getInstance(algorithm).apply { update(data.toByteArray()) }
     } catch (e: NoSuchAlgorithmException) {
       promise.reject("ERR_CRYPTO_DIGEST", e)
@@ -31,10 +31,10 @@ class CryptoModule(context: Context) : ExportedModule(context) {
         promise.resolve(output)
       }
       "hex" -> {
-        val output = digest.joinToString(separator = "") {
-          ((it.toInt() and 0xff) + 0x100)
-            .toString(16)
-            .substring(1)
+        val output = digest.joinToString(separator = "") { byte ->
+          ((byte.toInt() and 0xff) + 0x100)
+            .toString(radix = 16)
+            .substring(startIndex = 1)
         }
         promise.resolve(output)
       }
