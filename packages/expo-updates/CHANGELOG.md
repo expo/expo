@@ -10,7 +10,7 @@
 
 ### 🐛 Bug fixes
 
-- Fix auto setup issues on iOS. ([#14429](https://github.com/expo/expo/pull/14429) by [@kudo](https://github.com/kudo))
+- Fix auto setup in iOS is always turning on even for debug builds. ([#14429](https://github.com/expo/expo/pull/14429) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others
 
