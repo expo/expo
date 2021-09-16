@@ -51,26 +51,14 @@ EX_EXPORT_METHOD_AS(isEnrolledAsync,
                     isEnrolledAsync:(EXPromiseResolveBlock)resolve
                     reject:(EXPromiseRejectBlock)reject)
 {
-  LAContext *context = [LAContext new];
-  NSError *error = nil;
-
-  BOOL isSupported = [context canEvaluatePolicy:LAPolicyDeviceOwnerAuthenticationWithBiometrics error:&error];
-  BOOL isEnrolled = isSupported && error == nil;
-
-  resolve(@(isEnrolled));
+  resolve(@([self isDeviceAuthenticationWithBiometricsEnrolled]));
 }
 
 EX_EXPORT_METHOD_AS(isDeviceAuthenticationWithBiometricsEnrolledAsync,
                     isDeviceAuthenticationWithBiometricsEnrolledAsync:(EXPromiseResolveBlock)resolve
                     reject:(EXPromiseRejectBlock)reject)
 {
-  LAContext *context = [LAContext new];
-  NSError *error = nil;
-
-  BOOL isSupported = [context canEvaluatePolicy:LAPolicyDeviceOwnerAuthenticationWithBiometrics error:&error];
-  BOOL isEnrolled = isSupported && error == nil;
-
-  resolve(@(isEnrolled));
+  resolve(@([self isDeviceAuthenticationWithBiometricsEnrolled]));
 }
 
 EX_EXPORT_METHOD_AS(isDeviceAuthenticationEnrolledAsync,
@@ -170,6 +158,15 @@ EX_EXPORT_METHOD_AS(authenticateAsync,
                     }];
   }
 
+}
+
+- (Boolean)isDeviceAuthenticationWithBiometricsEnrolled
+{
+  LAContext *context = [LAContext new];
+  NSError *error = nil;
+
+  BOOL isSupported = [context canEvaluatePolicy:LAPolicyDeviceOwnerAuthenticationWithBiometrics error:&error];
+  return isSupported && error == nil;
 }
 
 - (NSString *)convertErrorCode:(NSError *)error
