@@ -32,12 +32,11 @@ class ConstantsService(private val context: Context) : InternalModule, Constants
     STORE_CLIENT("storeClient");
   }
 
-  override fun getExportedInterfaces(): List<Class<*>> =
-    listOf(ConstantsInterface::class.java as Class<*>)
+  override fun getExportedInterfaces(): List<Class<*>> = listOf(ConstantsInterface::class.java)
 
-  override fun getConstants(): Map<String, Any> {
+  override fun getConstants(): Map<String, Any?> {
     val platform: Map<String, Any> = mapOf("android" to emptyMap<String, Any>())
-    val constants: MutableMap<String, Any> = hashMapOf(
+    val constants: MutableMap<String, Any?> = hashMapOf(
       "sessionId" to sessionId,
       "executionEnvironment" to ExecutionEnvironment.BARE.string,
       "statusBarHeight" to statusBarHeight,
@@ -47,8 +46,8 @@ class ConstantsService(private val context: Context) : InternalModule, Constants
       "systemFonts" to systemFonts,
       "systemVersion" to systemVersion,
       "installationId" to getOrCreateInstallationId,
-      "manifest" to appConfig!!,
-      "platform" to platform,
+      "manifest" to appConfig,
+      "platform" to platform
     )
 
     try {
