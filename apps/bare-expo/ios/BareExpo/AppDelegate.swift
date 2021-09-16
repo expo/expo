@@ -36,6 +36,12 @@ class AppDelegate: ExpoAppDelegate {
       initializeReactNativeBridge(launchOptions);
     }
 
+    #if DEBUG
+    EXAppDefines.initDefines(true)
+    #else
+    EXAppDefines.initDefines(false)
+    #endif
+
     super.application(application, didFinishLaunchingWithOptions: launchOptions)
     
     return true
