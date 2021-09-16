@@ -34,7 +34,7 @@ object LocationHelpers {
     bundleTypeClass: Class<BundleType>
   ): BundleType? {
     val location = location ?: return null
-	try {
+    try {
       val map = bundleTypeClass.newInstance()
       val coords = locationToCoordsBundle(location, bundleTypeClass) ?: return null
       if (map is PersistableBundle) {
@@ -169,7 +169,7 @@ object LocationHelpers {
       object : LocationRequestCallbacks() {
         override fun onLocationChanged(location: Location?) {
           val response = Bundle().apply {
-         	putBundle("location", locationToBundle(location, Bundle::class.java))
+            putBundle("location", locationToBundle(location, Bundle::class.java))
           }
           locationModule.sendLocationResponse(watchId, response)
         }

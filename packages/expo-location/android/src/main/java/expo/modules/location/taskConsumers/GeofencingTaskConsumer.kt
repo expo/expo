@@ -24,30 +24,30 @@ class GeofencingTaskConsumer(
   context: Context,
   taskManagerUtils: TaskManagerUtilsInterface?
 ) : TaskConsumer(context, taskManagerUtils), TaskConsumerInterface {
-  private var mTask: TaskInterface? = null
-  private var mPendingIntent: PendingIntent? = null
-  private var mGeofencingClient: GeofencingClient? = null
-  private var mGeofencingRequest: GeofencingRequest? = null
-  private var mGeofencingList = mutableListOf<Geofence>()
-  private val mRegions = mutableMapOf<String, PersistableBundle>()
+  private var task: TaskInterface? = null
+  private var pendingIntent: PendingIntent? = null
+  private var geofencingClient: GeofencingClient? = null
+  private var geofencingRequest: GeofencingRequest? = null
+  private var geofencingList = mutableListOf<Geofence>()
+  private val regions = mutableMapOf<String, PersistableBundle>()
 
   //region TaskConsumerInterface
   override fun taskType() = "geofencing"
 
-  override fun didRegister(task: TaskInterface?) {
-    if (task != null) {
-      mTask = task
+  override fun didRegister(internalTask: TaskInterface?) {
+    internalTask?.let {
+      task = internalTask
       startGeofencing()
     }
   }
 
   override fun didUnregister() {
     stopGeofencing()
-    mTask = null
-    mPendingIntent = null
-    mGeofencingClient = null
-    mGeofencingRequest = null
-    mGeofencingList.clear()
+    task = null
+    pendingIntent = null
+    geofencingClient = null
+    geofencingRequest = null
+    geofencingList.clear()
   }
 
   override fun setOptions(options: Map<String, Any>) {
@@ -57,12 +57,12 @@ class GeofencingTaskConsumer(
   }
 
   override fun didReceiveBroadcast(intent: Intent) {
+    val internalTask = task ?: return
     val event = GeofencingEvent.fromIntent(intent)
-    val task = mTask ?: return
     if (event.hasError()) {
       val errorMessage = GeofencingHelpers.getErrorString(event.errorCode)
       val error = Error(errorMessage)
-      task.execute(null, error)
+      internalTask.execute(null, error)
       return
     }
 
@@ -73,22 +73,22 @@ class GeofencingTaskConsumer(
 
     // Get the geofences that were triggered. A single event can trigger multiple geofences.
     event.triggeringGeofences.forEach { geofence ->
-      val region = mRegions[geofence.requestId]
-      if (region != null) {
+      val region = regions[geofence.requestId]
+      region?.let {
         // Update region state in region bundle.
-        region.putInt("state", regionState)
+        it.putInt("state", regionState)
         val data = PersistableBundle().apply {
           putInt("eventType", eventType)
-          putPersistableBundle("region", region)
+          putPersistableBundle("region", it)
         }
         val context = context.applicationContext
-        taskManagerUtils.scheduleJob(context, task, listOf(data))
+        taskManagerUtils.scheduleJob(context, internalTask, listOf(data))
       }
     }
   }
 
   override fun didExecuteJob(jobService: JobService, params: JobParameters): Boolean {
-    val task = mTask ?: return false
+    val internalTask = task ?: return false
     taskManagerUtils.extractDataFromJobParams(params).forEach { item ->
       val region = Bundle().apply {
         putAll(item.getPersistableBundle("region"))
@@ -97,7 +97,7 @@ class GeofencingTaskConsumer(
         putInt("eventType", item.getInt("eventType"))
         putBundle("region", region)
       }
-      task.execute(bundle, null)
+      internalTask.execute(bundle, null)
     }
     return true
   }
@@ -113,43 +113,43 @@ class GeofencingTaskConsumer(
       Log.w(TAG, "There is no location provider available.")
       return
     }
-    val task = mTask
-    if (task == null) {
+    val internalTask = task
+    if (internalTask == null) {
       Log.w(TAG, "Task is null")
       return
     }
 
     // Create geofences from task options.
-    val options = task.options
-    val regions = options["regions"] as ArrayList<HashMap<String, Any>>?
-    regions?.forEach { region ->
+    val options = internalTask.options
+    val internalRegions = options["regions"] as ArrayList<HashMap<String, Any>>?
+    internalRegions?.forEach { region ->
       val geofence = GeofencingHelpers.geofenceFromRegion(region)
       val regionIdentifier = geofence.requestId
 
       // Make a bundle for the region to remember its attributes. Only request ID is public in Geofence object.
-      mRegions[regionIdentifier] = GeofencingHelpers.bundleFromRegion(regionIdentifier, region)
+      regions[regionIdentifier] = GeofencingHelpers.bundleFromRegion(regionIdentifier, region)
 
       // Add geofence to the list of observed regions.
-      mGeofencingList.add(geofence)
+      geofencingList.add(geofence)
     }
 
     // Prepare pending intent, geofencing request and client.
     val innerPendingIntent = preparePendingIntent()
-    mPendingIntent = innerPendingIntent
-    val innerGeofencingRequest = prepareGeofencingRequest(mGeofencingList)
-    mGeofencingRequest = innerGeofencingRequest
+    pendingIntent = innerPendingIntent
+    val innerGeofencingRequest = prepareGeofencingRequest(geofencingList)
+    geofencingRequest = innerGeofencingRequest
     val innerGeofencingClient = LocationServices.getGeofencingClient(context)
     try {
       innerGeofencingClient.addGeofences(innerGeofencingRequest, innerPendingIntent)
-      mGeofencingClient = innerGeofencingClient
+      geofencingClient = innerGeofencingClient
     } catch (e: SecurityException) {
       Log.w(TAG, "Geofencing request has been rejected.", e)
     }
   }
 
   private fun stopGeofencing() {
-    val innerGeofencingClient = mGeofencingClient ?: return
-    val innerPendingIntent = mPendingIntent ?: return
+    val innerGeofencingClient = geofencingClient ?: return
+    val innerPendingIntent = pendingIntent ?: return
     innerGeofencingClient.removeGeofences(innerPendingIntent)
     innerPendingIntent.cancel()
   }
@@ -161,7 +161,7 @@ class GeofencingTaskConsumer(
       .build()
 
   private fun preparePendingIntent() =
-    taskManagerUtils.createTaskIntent(context, mTask)
+    taskManagerUtils.createTaskIntent(context, task)
 
   companion object {
     private const val TAG = "GeofencingTaskConsumer"

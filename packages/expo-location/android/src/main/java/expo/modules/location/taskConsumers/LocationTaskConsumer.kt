@@ -34,22 +34,22 @@ import org.unimodules.interfaces.taskManager.TaskManagerUtilsInterface
 import kotlin.math.abs
 
 class LocationTaskConsumer(context: Context?, taskManagerUtils: TaskManagerUtilsInterface?) : TaskConsumer(context, taskManagerUtils), TaskConsumerInterface, LifecycleEventListener {
-  private var mTask: TaskInterface? = null
-  private var mPendingIntent: PendingIntent? = null
-  private var mService: LocationTaskService? = null
-  private var mLocationClient: FusedLocationProviderClient? = null
-  private var mLastReportedLocation: Location? = null
-  private var mDeferredDistance = 0.0
-  private val mDeferredLocations: MutableList<Location> = ArrayList()
-  private var mIsHostPaused = true
+  private var task: TaskInterface? = null
+  private var pendingIntent: PendingIntent? = null
+  private var service: LocationTaskService? = null
+  private var locationClient: FusedLocationProviderClient? = null
+  private var lastReportedLocation: Location? = null
+  private var deferredDistance = 0.0
+  private val deferredLocations: MutableList<Location> = ArrayList()
+  private var isHostPaused = true
 
   //region TaskConsumerInterface
   override fun taskType(): String {
     return "location"
   }
 
-  override fun didRegister(task: TaskInterface) {
-    mTask = task
+  override fun didRegister(internalTask: TaskInterface) {
+    task = internalTask
     startLocationUpdates()
     maybeStartForegroundService()
   }
@@ -57,9 +57,9 @@ class LocationTaskConsumer(context: Context?, taskManagerUtils: TaskManagerUtils
   override fun didUnregister() {
     stopLocationUpdates()
     stopForegroundService()
-    mTask = null
-    mPendingIntent = null
-    mLocationClient = null
+    task = null
+    pendingIntent = null
+    locationClient = null
   }
 
   override fun setOptions(options: Map<String, Any>) {
@@ -74,7 +74,7 @@ class LocationTaskConsumer(context: Context?, taskManagerUtils: TaskManagerUtils
   }
 
   override fun didReceiveBroadcast(intent: Intent) {
-    if (mTask == null) {
+    if (task == null) {
       return
     }
     val result = LocationResult.extractResult(intent) ?: return
@@ -117,24 +117,24 @@ class LocationTaskConsumer(context: Context?, taskManagerUtils: TaskManagerUtils
       Log.w(TAG, "There is no location provider available.")
       return
     }
-    val locationRequest = prepareLocationRequest(mTask!!.options)
-    val pendingIntent = preparePendingIntent()
-    mPendingIntent = pendingIntent
+    val locationRequest = prepareLocationRequest(task!!.options)
+    val intent = preparePendingIntent()
+    pendingIntent = intent
     try {
       val innerLocationClient = LocationServices.getFusedLocationProviderClient(context)
-      innerLocationClient.requestLocationUpdates(locationRequest, pendingIntent)
-      mLocationClient = innerLocationClient
+      innerLocationClient.requestLocationUpdates(locationRequest, intent)
+      locationClient = innerLocationClient
     } catch (e: SecurityException) {
       Log.w(TAG, "Location request has been rejected.", e)
     }
   }
 
   private fun stopLocationUpdates() {
-    val locationClient = mLocationClient
-    val pendingIntent = mPendingIntent
-    if (null != locationClient && pendingIntent != null) {
-      locationClient.removeLocationUpdates(pendingIntent)
-      pendingIntent.cancel()
+    val locationProviderClient = locationClient
+    val intent = pendingIntent
+    if (null != locationProviderClient && intent != null) {
+      locationProviderClient.removeLocationUpdates(intent)
+      intent.cancel()
     }
   }
 
@@ -143,16 +143,16 @@ class LocationTaskConsumer(context: Context?, taskManagerUtils: TaskManagerUtils
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
       return
     }
-    val task = mTask ?: return
-    val options: ReadableArguments = MapArguments(task.options)
-    val useForegroundService = shouldUseForegroundService(task.options)
+    val internalTask = task ?: return
+    val options: ReadableArguments = MapArguments(internalTask.options)
+    val useForegroundService = shouldUseForegroundService(internalTask.options)
     if (context == null) {
       Log.w(TAG, "Context not found when trying to start foreground service.")
       return
     }
 
-    // Service is already running, but the task has been registered again without `foregroundService` option.
-    if (mService != null && !useForegroundService) {
+    // Service is already running, but the internalTask has been registered again without `foregroundService` option.
+    if (service != null && !useForegroundService) {
       stopForegroundService()
       return
     }
@@ -163,55 +163,55 @@ class LocationTaskConsumer(context: Context?, taskManagerUtils: TaskManagerUtils
     }
 
     // Foreground service is requested but not running.
-    if (mService == null) {
+    if (service == null) {
       val serviceIntent = Intent(context, LocationTaskService::class.java)
       val serviceOptions = options.getArguments(FOREGROUND_SERVICE_KEY).toBundle()
 
       // extras param name is appId for legacy reasons
       val extras = Bundle().apply {
-        putString("appId", task.appScopeKey)
-        putString("taskName", task.name)
+        putString("appId", internalTask.appScopeKey)
+        putString("taskName", internalTask.name)
       }
       serviceIntent.putExtras(extras)
       context.startForegroundService(serviceIntent)
       context.bindService(
         serviceIntent,
         object : ServiceConnection {
-          override fun onServiceConnected(name: ComponentName, service: IBinder) {
-            val innerService = (service as ServiceBinder).service
+          override fun onServiceConnected(name: ComponentName, serviceBinder: IBinder) {
+            val innerService = (serviceBinder as ServiceBinder).service
             innerService.setParentContext(context)
             innerService.startForeground(serviceOptions)
-            mService = innerService
+            service = innerService
           }
 
           override fun onServiceDisconnected(name: ComponentName) {
-            mService?.stop()
-            mService = null
+            service?.stop()
+            service = null
           }
         },
         Context.BIND_AUTO_CREATE
       )
     } else {
       // Restart the service with new service options.
-      mService!!.startForeground(options.getArguments(FOREGROUND_SERVICE_KEY).toBundle())
+      service!!.startForeground(options.getArguments(FOREGROUND_SERVICE_KEY).toBundle())
     }
   }
 
   private fun stopForegroundService() {
-    val service = mService ?: return
-    service.stop()
+    val locationTaskService = service ?: return
+    locationTaskService.stop()
   }
 
   private fun deferLocations(locations: List<Location>) {
-    val size = mDeferredLocations.size
-    var lastLocation = if (size > 0) mDeferredLocations[size - 1] else mLastReportedLocation
+    val size = deferredLocations.size
+    var lastLocation = if (size > 0) deferredLocations[size - 1] else lastReportedLocation
     locations.forEach { location ->
       if (lastLocation != null) {
-        mDeferredDistance += abs(location.distanceTo(lastLocation)).toDouble()
+        deferredDistance += abs(location.distanceTo(lastLocation)).toDouble()
       }
       lastLocation = location
     }
-    mDeferredLocations.addAll(locations)
+    deferredLocations.addAll(locations)
   }
 
   private fun maybeReportDeferredLocations() {
@@ -221,7 +221,7 @@ class LocationTaskConsumer(context: Context?, taskManagerUtils: TaskManagerUtils
     }
     val context = context.applicationContext
     val data: MutableList<PersistableBundle?> = ArrayList()
-    mDeferredLocations.forEach { location ->
+    deferredLocations.forEach { location ->
       val timestamp = location.time
 
       // Some devices may broadcast the same location multiple times (mostly twice) so we're filtering out these locations,
@@ -234,67 +234,70 @@ class LocationTaskConsumer(context: Context?, taskManagerUtils: TaskManagerUtils
     }
     if (data.size > 0) {
       // Save last reported location, reset the distance and clear a list of locations.
-      mLastReportedLocation = mDeferredLocations[mDeferredLocations.size - 1]
-      mDeferredDistance = 0.0
-      mDeferredLocations.clear()
+      lastReportedLocation = deferredLocations[deferredLocations.size - 1]
+      deferredDistance = 0.0
+      deferredLocations.clear()
 
       // Schedule new job.
-      taskManagerUtils.scheduleJob(context, mTask, data)
+      taskManagerUtils.scheduleJob(context, task, data)
     }
   }
 
   private fun shouldReportDeferredLocations(): Boolean {
-    val task = mTask
-    if (mDeferredLocations.size == 0 || task == null) {
+    val internalTask = task ?: return false
+    if (deferredLocations.size == 0) {
       return false
     }
-    if (!mIsHostPaused) {
+    if (!isHostPaused) {
       // Don't defer location updates when the activity is in foreground state.
       return true
     }
-    val oldestLocation = mLastReportedLocation ?: mDeferredLocations[0]
-    val newestLocation = mDeferredLocations[mDeferredLocations.size - 1]
-    val options: Arguments = MapHelper(task.options)
+    val oldestLocation = lastReportedLocation ?: deferredLocations[0]
+    val newestLocation = deferredLocations[deferredLocations.size - 1]
+    val options: Arguments = MapHelper(internalTask.options)
     val distance = options.getDouble("deferredUpdatesDistance")
     val interval = options.getLong("deferredUpdatesInterval")
-    return newestLocation.time - oldestLocation.time >= interval && mDeferredDistance >= distance
+    return newestLocation.time - oldestLocation.time >= interval && deferredDistance >= distance
   }
 
   private fun preparePendingIntent() =
-    taskManagerUtils.createTaskIntent(context, mTask)
+    taskManagerUtils.createTaskIntent(context, task)
 
   private fun executeTaskWithLocationBundles(
     locationBundles: ArrayList<Bundle>,
     callback: TaskExecutionCallback
   ) {
-    val task = mTask
-    if (locationBundles.size > 0 && task != null) {
-      val data = Bundle()
-      data.putParcelableArrayList("locations", locationBundles)
-      task.execute(data, null, callback)
+    val internalTask = task
+    if (locationBundles.size > 0 && internalTask != null) {
+      internalTask.execute(
+        Bundle().apply {
+          putParcelableArrayList("locations", locationBundles)
+        },
+        null, callback
+      )
     } else {
       callback.onFinished(null)
     }
   }
 
   override fun onHostResume() {
-    mIsHostPaused = false
+    isHostPaused = false
     maybeReportDeferredLocations()
   }
 
   override fun onHostPause() {
-    mIsHostPaused = true
+    isHostPaused = true
   }
 
   override fun onHostDestroy() {
-    mIsHostPaused = true
+    isHostPaused = true
   } //endregion
 
   companion object {
     private const val TAG = "LocationTaskConsumer"
     private const val FOREGROUND_SERVICE_KEY = "foregroundService"
     private var sLastTimestamp: Long = 0
-    fun shouldUseForegroundService(options: Map<String?, Any?>): Boolean {
+    fun shouldUseForegroundService(options: Map<String, Any?>): Boolean {
       return options.containsKey(FOREGROUND_SERVICE_KEY)
     }
   }

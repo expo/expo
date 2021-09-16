@@ -80,8 +80,8 @@ class LocationModule(
   private val locationProvider: FusedLocationProviderClient by lazy {
     LocationServices.getFusedLocationProviderClient(context)
   }
-  private val mLocationCallbacks: MutableMap<Int, LocationCallback> = HashMap()
-  private val mLocationRequests: MutableMap<Int, LocationRequest> = HashMap()
+  private val locationCallbacks: MutableMap<Int, LocationCallback> = HashMap()
+  private val locationRequests: MutableMap<Int, LocationRequest> = HashMap()
 
   private val pendingLocationRequests: MutableList<LocationActivityResultListener> = ArrayList()
 
@@ -405,8 +405,8 @@ class LocationModule(
 
   //region Background location
   @ExpoMethod
-  fun startLocationUpdatesAsync(taskName: String?, options: Map<String?, Any?>?, promise: Promise) {
-    val shouldUseForegroundService = shouldUseForegroundService(options!!)
+  fun startLocationUpdatesAsync(taskName: String?, options: Map<String, Any?>, promise: Promise) {
+    val shouldUseForegroundService = shouldUseForegroundService(options)
 
     // There are two ways of starting this service.
     // 1. As a background location service, this requires the background location permission.
@@ -498,8 +498,8 @@ class LocationModule(
     }
     if (requestId != null) {
       // Save location callback and request so we will be able to pause/resume receiving updates.
-      mLocationCallbacks[requestId] = locationCallback
-      mLocationRequests[requestId] = locationRequest
+      locationCallbacks[requestId] = locationCallback
+      locationRequests[requestId] = locationRequest
     }
     val looper = Looper.myLooper()
     if (looper != null) {
@@ -592,7 +592,7 @@ class LocationModule(
   }
 
   private fun pauseLocationUpdatesForRequest(requestId: Int) {
-    val locationCallback = mLocationCallbacks[requestId]
+    val locationCallback = locationCallbacks[requestId]
     if (locationCallback != null) {
       locationProvider.removeLocationUpdates(locationCallback)
     }
@@ -600,9 +600,9 @@ class LocationModule(
 
   private fun resumeLocationUpdates() {
     val locationClient = locationProvider
-    mLocationCallbacks.keys.forEach { requestId ->
-      val locationCallback = mLocationCallbacks[requestId]
-      val locationRequest = mLocationRequests[requestId]
+    locationCallbacks.keys.forEach { requestId ->
+      val locationCallback = locationCallbacks[requestId]
+      val locationRequest = locationRequests[requestId]
       val looper = Looper.myLooper()
       if (locationCallback != null && locationRequest != null && looper != null) {
         try {
@@ -616,8 +616,8 @@ class LocationModule(
 
   private fun removeLocationUpdatesForRequest(requestId: Int) {
     pauseLocationUpdatesForRequest(requestId)
-    mLocationCallbacks.remove(requestId)
-    mLocationRequests.remove(requestId)
+    locationCallbacks.remove(requestId)
+    locationRequests.remove(requestId)
   }
 
   fun sendLocationResponse(watchId: Int, response: Bundle) {
@@ -634,9 +634,7 @@ class LocationModule(
   }
 
   private fun startHeadingUpdate() {
-    if (sensorManager == null) {
-      return
-    }
+    val internalSensorManager = sensorManager ?: return
     val locationControl = SmartLocation.with(context).location().oneFix().config(LocationParams.BEST_EFFORT)
     val currLoc = locationControl.lastLocation
     if (currLoc != null) {
@@ -656,11 +654,11 @@ class LocationModule(
         )
       }
     }
-    sensorManager!!.registerListener(
-      this, sensorManager!!.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD),
+    internalSensorManager.registerListener(
+      this, internalSensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD),
       SensorManager.SENSOR_DELAY_NORMAL
     )
-    sensorManager!!.registerListener(this, sensorManager!!.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_NORMAL)
+    internalSensorManager.registerListener(this, internalSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_NORMAL)
   }
 
   private fun sendUpdate() {
@@ -683,10 +681,11 @@ class LocationModule(
         val trueNorth = calcTrueNorth(magneticNorth)
 
         // Write data to send back to React
-        val response = Bundle()
         val heading = headingToBundle(trueNorth.toDouble(), magneticNorth.toDouble(), accuracy)
-        response.putInt("watchId", headingId)
-        response.putBundle("heading", heading)
+        val response = Bundle().apply {
+          putInt("watchId", headingId)
+          putBundle("heading", heading)
+        }
         eventEmitter.emit(HEADING_EVENT_NAME, response)
       }
     }
@@ -740,7 +739,7 @@ class LocationModule(
       SmartLocation.with(context).geocoding().stop()
       geocoderPaused = true
     }
-    mLocationCallbacks.keys.forEach { requestId ->
+    locationCallbacks.keys.forEach { requestId ->
       pauseLocationUpdatesForRequest(requestId)
     }
   }

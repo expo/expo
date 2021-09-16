@@ -1,7 +1,6 @@
 package expo.modules.location.services
 
 import android.os.IBinder
-import expo.modules.location.services.LocationTaskService.ServiceBinder
 import android.content.Intent
 import android.annotation.TargetApi
 import android.os.Bundle
@@ -17,8 +16,8 @@ import android.util.Log
 import java.lang.Exception
 
 class LocationTaskService : Service() {
-  private var mChannelId: String? = null
-  private lateinit var mParentContext: Context
+  private var channelId: String? = null
+  private lateinit var parentContext: Context
   private val mServiceId = sServiceId++
   private val mBinder: IBinder = ServiceBinder()
 
@@ -36,7 +35,7 @@ class LocationTaskService : Service() {
   override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
     val extras = intent.extras
     if (extras != null) {
-      mChannelId = extras.getString("appId") + ":" + extras.getString("taskName")
+      channelId = extras.getString("appId") + ":" + extras.getString("taskName")
     }
     return START_REDELIVER_INTENT
   }
@@ -44,7 +43,7 @@ class LocationTaskService : Service() {
   fun setParentContext(context: Context) {
     // Background location logic is still outside LocationTaskService,
     // so we have to save parent context in order to make sure it won't be destroyed by the OS.
-    mParentContext = context
+    parentContext = context
   }
 
   fun stop() {
@@ -65,8 +64,8 @@ class LocationTaskService : Service() {
   //region private
   @TargetApi(26)
   private fun buildServiceNotification(serviceOptions: Bundle) =
-    Notification.Builder(this, mChannelId).apply {
-      prepareChannel(mChannelId)
+    Notification.Builder(this, channelId).apply {
+      prepareChannel(channelId)
       val title = serviceOptions.getString("notificationTitle")
       val body = serviceOptions.getString("notificationBody")
       val color = colorStringToInteger(serviceOptions.getString("notificationColor"))
@@ -81,9 +80,9 @@ class LocationTaskService : Service() {
       } else {
         setColorized(false)
       }
-      if (::mParentContext.isInitialized) {
-        val intent = mParentContext.packageManager.getLaunchIntentForPackage(
-          mParentContext.packageName
+      if (::parentContext.isInitialized) {
+        val intent = parentContext.packageManager.getLaunchIntentForPackage(
+          parentContext.packageName
         )
         if (intent != null) {
           intent.flags = Intent.FLAG_ACTIVITY_SINGLE_TOP
@@ -102,15 +101,14 @@ class LocationTaskService : Service() {
 
   @TargetApi(26)
   private fun prepareChannel(id: String?) {
-    val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager?
-    if (notificationManager != null) {
-      val appName = applicationInfo.loadLabel(packageManager).toString()
-      var channel = notificationManager.getNotificationChannel(id)
-      if (channel == null) {
-        channel = NotificationChannel(id, appName, NotificationManager.IMPORTANCE_LOW)
-        channel.description = "Background location notification channel"
-        notificationManager.createNotificationChannel(channel)
-      }
+    val notificationManager =
+      getSystemService(NOTIFICATION_SERVICE) as? NotificationManager ?: return
+    val appName = applicationInfo.loadLabel(packageManager).toString()
+    var channel = notificationManager.getNotificationChannel(id)
+    if (channel == null) {
+      channel = NotificationChannel(id, appName, NotificationManager.IMPORTANCE_LOW)
+      channel.description = "Background location notification channel"
+      notificationManager.createNotificationChannel(channel)
     }
   }
 

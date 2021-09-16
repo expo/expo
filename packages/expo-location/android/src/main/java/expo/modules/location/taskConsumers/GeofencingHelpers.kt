@@ -10,15 +10,9 @@ object GeofencingHelpers {
   fun bundleFromRegion(identifier: String, region: Map<String, Any>) =
     PersistableBundle().apply {
       putString("identifier", identifier)
-      if (region.containsKey("radius")) {
-        region["radius"]?.let { putDouble("radius", doubleFromObject(it)) }
-      }
-      if (region.containsKey("latitude")) {
-        region["latitude"]?.let { putDouble("latitude", doubleFromObject(it)) }
-      }
-      if (region.containsKey("longitude")) {
-        region["longitude"]?.let { putDouble("longitude", doubleFromObject(it)) }
-      }
+      region["radius"]?.let { putDouble("radius", doubleFromObject(it)) }
+      region["latitude"]?.let { putDouble("latitude", doubleFromObject(it)) }
+      region["longitude"]?.let { putDouble("longitude", doubleFromObject(it)) }
       putInt("state", LocationModule.GEOFENCING_REGION_STATE_UNKNOWN)
     }
 
