@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixing app.manifest does not generated from Xcode build phase script. ([#14438](https://github.com/expo/expo/pull/14438) by [@kudo](https://github.com/kudo))
+
 ### 💡 Others
 
 ## 0.9.1 — 2021-09-09
