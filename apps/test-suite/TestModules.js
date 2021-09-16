@@ -175,5 +175,5 @@ export function getTestModules() {
     modules.push(optionalRequire(() => require('./tests/Cellular')));
     modules.push(optionalRequire(() => require('./tests/BarCodeScanner')));
   }
-  return modules.filter(Boolean).sort((a, b) => a.name.toLowerCase() > b.name.toLowerCase());
+  return modules.filter(Boolean).sort((a, b) => a.name.toLowerCase() > b.name.toLowerCase() ? 1 : -1);
 }
