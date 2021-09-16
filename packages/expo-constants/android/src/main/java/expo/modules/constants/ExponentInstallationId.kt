@@ -4,7 +4,7 @@ import android.util.Log
 import android.content.Context
 import android.content.SharedPreferences
 
-import java.util.UUID as JUUID
+import java.util.UUID
 import java.io.File
 import java.io.FileReader
 import java.io.FileWriter
@@ -25,15 +25,15 @@ private const val PREFERENCES_FILE_NAME = "host.exp.exponent.SharedPreferences"
  * Similar class exists in expoview and expo-notifications.
  */
 class ExponentInstallationId internal constructor(private val context: Context) {
-  private var _uuid: String? = null
+  private var mUuid: String? = null
 
   private val mSharedPreferences: SharedPreferences = context.getSharedPreferences(PREFERENCES_FILE_NAME, Context.MODE_PRIVATE)
 
-  val UUID: String?
+  private val uuid: String?
     get() {
       // If it has already been cached, return the value.
-      if (_uuid != null) {
-        return _uuid
+      if (mUuid != null) {
+        return mUuid
       }
 
       // Read from non-backed-up storage
@@ -42,7 +42,7 @@ class ExponentInstallationId internal constructor(private val context: Context) 
         FileReader(uuidFile).use { fileReader ->
           BufferedReader(fileReader).use { bufferedReader ->
             // Cache for future calls
-            _uuid = JUUID.fromString(bufferedReader.readLine()).toString()
+            mUuid = UUID.fromString(bufferedReader.readLine()).toString()
           }
         }
       } catch (e: Exception) {
@@ -55,8 +55,8 @@ class ExponentInstallationId internal constructor(private val context: Context) 
       // We could have returned inside try clause,
       // but putting it like this here makes it immediately
       // visible.
-      if (_uuid != null) {
-        return _uuid
+      if (mUuid != null) {
+        return mUuid
       }
 
       // In November 2020 we decided to move installationID (backed by LEGACY_UUID_KEY value) from
@@ -64,7 +64,7 @@ class ExponentInstallationId internal constructor(private val context: Context) 
       // from backups have the same installation IDs as the devices where the backup was created.
       val legacyUuid = mSharedPreferences.getString(LEGACY_UUID_KEY, null)
       if (legacyUuid != null) {
-        _uuid = legacyUuid
+        mUuid = legacyUuid
         var uuidHasBeenSuccessfullyMigrated = true
         try {
           FileWriter(uuidFile).use { writer -> writer.write(legacyUuid) }
@@ -80,27 +80,27 @@ class ExponentInstallationId internal constructor(private val context: Context) 
       }
 
       // Return either value from legacy storage or null
-      return _uuid
+      return mUuid
     }
 
-  val orCreateUUID: String
+  val getOrCreateUUID: String
     get() {
-      val uuid = UUID
-      if (uuid != null) {
-        return uuid
+      val localUuid = uuid
+      if (localUuid != null) {
+        return localUuid
       }
 
       // We persist the new UUID in "session storage"
       // so that if writing to persistent storage
       // fails subsequent calls to get(orCreate)UUID
       // return the same value.
-      _uuid = JUUID.randomUUID().toString()
+      mUuid = UUID.randomUUID().toString()
       try {
-        FileWriter(nonBackedUpUuidFile).use { writer -> writer.write(_uuid) }
+        FileWriter(nonBackedUpUuidFile).use { writer -> writer.write(mUuid) }
       } catch (e: IOException) {
         Log.e(TAG, "Error while writing new UUID. $e")
       }
-      return _uuid!!
+      return mUuid!!
     }
 
   private val nonBackedUpUuidFile: File
