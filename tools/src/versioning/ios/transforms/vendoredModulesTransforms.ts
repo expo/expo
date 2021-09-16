@@ -104,6 +104,24 @@ export default function vendoredModulesTransformsFactory(prefix: string): Config
         },
       ],
     },
+    'react-native-pager-view': {
+      path: [
+        {
+          find: /(ReactNativePageView|ReactViewPagerManager)\.(h|m)/,
+          replaceWith: `${prefix}$1.$2`,
+        },
+      ],
+      content: [
+        {
+          find: `UIView+${prefix}React.h`,
+          replaceWith: `${prefix}UIView+React.h`,
+        },
+        {
+          find: `${prefix}JKBigInteger.h`,
+          replaceWith: `JKBigInteger.h`,
+        },
+      ],
+    },
     'react-native-screens': {
       content: [],
     },
