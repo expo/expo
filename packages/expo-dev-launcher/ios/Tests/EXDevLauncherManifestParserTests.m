@@ -4,8 +4,7 @@
 #import <OHHTTPStubs/HTTPStubs.h>
 
 #import <EXDevLauncher/EXDevLauncherManifestParser.h>
-
-@import EXDevLauncher;
+#import <EXManifests/EXManifestsManifest.h>
 
 @interface EXDevLauncherManifestParserTests : XCTestCase
 
@@ -133,13 +132,13 @@
 
   XCTestExpectation *expectation = [self expectationWithDescription:@"should parse manifest successfully"];
 
-  [parser tryToParseManifest:^(EXDevLauncherManifest * _Nonnull manifest) {
+  [parser tryToParseManifest:^(EXManifestsManifest * _Nonnull manifest) {
     XCTAssertEqualObjects(@"testproject", manifest.name);
     XCTAssertEqualObjects(@"testproject", manifest.slug);
     XCTAssertEqualObjects(@"1.0.0", manifest.version);
-    XCTAssertEqual(UIInterfaceOrientationPortrait, manifest.orientation);
-    XCTAssertEqual(UIUserInterfaceStyleLight, manifest.userInterfaceStyle);
-    XCTAssertEqualObjects([UIColor colorWithRed:192.0/255.0 green:1.0 blue:51.0/255.0 alpha:1.0], manifest.backgroundColor);
+    XCTAssertEqualObjects(@"portrait", manifest.orientation);
+    XCTAssertEqualObjects(@"light", manifest.userInterfaceStyle);
+    XCTAssertEqualObjects(@"#c0ff33", manifest.iosOrRootBackgroundColor);
     XCTAssertEqualObjects(@"http://test.io/bundle.js", manifest.bundleUrl);
     XCTAssertFalse(manifest.isUsingDeveloperTool);
     [expectation fulfill];
@@ -156,7 +155,7 @@
   [HTTPStubs stubRequestsPassingTest:^BOOL(NSURLRequest * _Nonnull request) {
     return [request.URL.host isEqualToString:@"ohhttpstubs"];
   } withStubResponse:^HTTPStubsResponse * _Nonnull(NSURLRequest * _Nonnull request) {
-    NSString *manifestString = @"{\"name\":\"testproject\",\"slug\":\"testproject\",\"version\":\"1.0.0\",\"orientation\":\"portrait\",\"userInterfaceStyle\":\"light\",\"backgroundColor\":\"#c0ff33\",\"sdkVersion\":\"42.0.0\",\"bundleUrl\":\"http://test.io/bundle.js\",\"ios\":{\"orientation\":\"landscape\",\"userInterfaceStyle\":\"dark\",\"backgroundColor\":\"#e41c00\"}}";
+    NSString *manifestString = @"{\"name\":\"testproject\",\"slug\":\"testproject\",\"version\":\"1.0.0\",\"orientation\":\"portrait\",\"userInterfaceStyle\":\"light\",\"backgroundColor\":\"#c0ff33\",\"sdkVersion\":\"42.0.0\",\"bundleUrl\":\"http://test.io/bundle.js\",\"ios\":{\"userInterfaceStyle\":\"dark\",\"backgroundColor\":\"#e41c00\"}}";
     NSData *jsonData = [manifestString dataUsingEncoding:NSUTF8StringEncoding];
     return [HTTPStubsResponse responseWithData:jsonData statusCode:200 headers:nil];
   }];
@@ -166,10 +165,9 @@
 
   XCTestExpectation *expectation = [self expectationWithDescription:@"should parse manifest successfully"];
 
-  [parser tryToParseManifest:^(EXDevLauncherManifest * _Nonnull manifest) {
-    XCTAssertEqual(UIInterfaceOrientationLandscapeLeft, manifest.orientation);
-    XCTAssertEqual(UIUserInterfaceStyleDark, manifest.userInterfaceStyle);
-    XCTAssertEqualObjects([UIColor colorWithRed:228.0/255.0 green:28.0/255.0 blue:0.0 alpha:1.0], manifest.backgroundColor);
+  [parser tryToParseManifest:^(EXManifestsManifest * _Nonnull manifest) {
+    XCTAssertEqualObjects(@"dark", manifest.userInterfaceStyle);
+    XCTAssertEqualObjects(@"#e41c00", manifest.iosOrRootBackgroundColor);
     [expectation fulfill];
   } onError:^(NSError * _Nonnull error) {
     XCTFail(@"Response should have been successful");
@@ -194,7 +192,7 @@
 
   XCTestExpectation *expectation = [self expectationWithDescription:@"should parse manifest successfully"];
 
-  [parser tryToParseManifest:^(EXDevLauncherManifest * _Nonnull manifest) {
+  [parser tryToParseManifest:^(EXManifestsManifest * _Nonnull manifest) {
     XCTAssertTrue(manifest.isUsingDeveloperTool);
     [expectation fulfill];
   } onError:^(NSError * _Nonnull error) {
@@ -220,8 +218,8 @@
 
   XCTestExpectation *expectation = [self expectationWithDescription:@"should fail to parse manifest"];
 
-  [parser tryToParseManifest:^(EXDevLauncherManifest * _Nonnull manifest) {
-    XCTFail(@"Parsing bad JSON should have been successful");
+  [parser tryToParseManifest:^(EXManifestsManifest * _Nonnull manifest) {
+    XCTFail(@"Parsing bad JSON should not have been successful");
     [expectation fulfill];
   } onError:^(NSError * _Nonnull error) {
     XCTAssertNotNil(error);

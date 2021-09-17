@@ -66,7 +66,7 @@ public class EXDevLauncherManifest: NSObject, Decodable {
   public var bundleUrl: String
   
   @CanHavePlatformSpecificValue
-  var _userInterfaceStyle: EXDevLauncherUserInterfaceStyle?
+  var _userInterfaceStyle: String?
   
   @objc
   @available(iOS 12.0, *)
@@ -83,7 +83,7 @@ public class EXDevLauncherManifest: NSObject, Decodable {
   }
   
   @CanHavePlatformSpecificValue
-  var _orientation: EXDevLauncherOrientation?
+  var _orientation: String?
 
   @objc
   public var orientation: UIInterfaceOrientation {

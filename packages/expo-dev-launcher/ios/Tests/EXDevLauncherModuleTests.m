@@ -5,21 +5,21 @@
 #import <objc/runtime.h>
 #import <EXDevLauncher/EXDevLauncher.h>
 #import <EXDevLauncher/EXDevLauncherController.h>
-
-@import EXDevLauncher;
+#import <EXManifests/EXManifestsManifest.h>
+#import <EXManifests/EXManifestsManifestFactory.h>
 
 @interface EXDevLauncherController (EXDevLauncherModuleTests)
 
-- (EXDevLauncherManifest * _Nullable)mockAppManifest;
+- (EXManifestsManifest * _Nullable)mockAppManifest;
 - (NSURL *)mockAppManifestURL;
 
 @end
 
 @implementation EXDevLauncherController (EXDevLauncherModuleTests)
 
-- (EXDevLauncherManifest * _Nullable)mockAppManifest
+- (EXManifestsManifest * _Nullable)mockAppManifest
 {
-  return [EXDevLauncherManifest fromJsonObject:@{
+  return [EXManifestsManifestFactory manifestForManifestJSON:@{
     @"name": @"testproject",
     @"slug": @"testproject",
     @"version": @"1.0.0",
