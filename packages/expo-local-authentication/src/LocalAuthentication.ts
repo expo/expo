@@ -44,8 +44,14 @@ export async function supportedAuthenticationTypesAsync(): Promise<Authenticatio
  * Determine whether the device has saved fingerprints or facial data to use for authentication.
  * @return Returns a promise which fulfils to `boolean` value indicating whether the device has
  * saved fingerprints or facial data for authentication.
+ *
+ * @deprecated Use
+ * [`isDeviceAuthenticationWithBiometricsEnrolledAsync()`](#isdeviceauthenticationwithbiometricsenrolledasync) instead.
  */
 export async function isEnrolledAsync(): Promise<boolean> {
+  console.warn(
+    `isEnrolledAsync() is deprecated in favor of isDeviceAuthenticationWithBiometricsEnrolledAsync() with the same API except for the new method name`
+  );
   if (!ExpoLocalAuthentication.isEnrolledAsync) {
     throw new UnavailabilityError('expo-local-authentication', 'isEnrolledAsync');
   }
