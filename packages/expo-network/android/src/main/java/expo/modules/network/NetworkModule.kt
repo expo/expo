@@ -1,37 +1,31 @@
 package expo.modules.network
 
+import expo.modules.core.Promise
 import expo.modules.core.ExportedModule
+import expo.modules.core.interfaces.ExpoMethod
 import expo.modules.core.interfaces.RegistryLifecycleListener
-import expo.modules.core.ModuleRegistry
-import android.app.Activity
+
+import android.util.Log
+import android.os.Build
+import android.os.Bundle
 import android.content.Context
-import expo.modules.network.NetworkModule
+import android.net.NetworkInfo
 import android.net.wifi.WifiInfo
 import android.net.wifi.WifiManager
-import android.net.NetworkInfo
-import expo.modules.network.NetworkModule.NetworkStateType
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
-import android.os.Build
-import expo.modules.core.interfaces.ExpoMethod
-import android.os.Bundle
 import android.provider.Settings
-import android.util.Log
-import expo.modules.core.ModuleRegistryDelegate
-import expo.modules.core.Promise
-import expo.modules.core.interfaces.ActivityProvider
+
 import java.lang.Exception
 import java.math.BigInteger
 import java.net.InetAddress
-import java.net.UnknownHostException
 import java.nio.ByteOrder
+import java.net.UnknownHostException
 
 private const val NAME = "ExpoNetwork"
 private val TAG = NetworkModule::class.java.simpleName
 
-class NetworkModule(
-    private val mContext: Context
-) : ExportedModule(mContext), RegistryLifecycleListener {
+class NetworkModule(private val mContext: Context) : ExportedModule(mContext), RegistryLifecycleListener {
 
   enum class NetworkStateType(val value: String) {
     NONE("NONE"),
