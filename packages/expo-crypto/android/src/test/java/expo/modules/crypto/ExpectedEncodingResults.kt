@@ -1,8 +1,8 @@
 package expo.modules.crypto
 
 // These are the expected results for the following encoding for text "Expo"
-val expectedEncodingResults = hashMapOf(
-  "hex" to hashMapOf(
+val expectedEncodingResults = mapOf(
+  "hex" to mapOf(
     "SHA-1" to "c275355dc46ac171633935033d113e3872d595e5",
     "SHA-256" to "f5e5cae536b49d394e1e72d4368d64b00a23298ec5ae11f3a9102a540e2532dc",
     "SHA-384" to "aa356c88afdbd8a7a5a9c3133541af0035e4b04e82438a223aa1939240ccb6b3ca28294b5ac0f42703b15183f4c016fc",
@@ -11,7 +11,7 @@ val expectedEncodingResults = hashMapOf(
     "MD4" to "2d36099794ec182cbb36d02e1188fc1e",
     "MD5" to "c29f23f279126757ba18ec74d0d27cfa"
   ),
-  "base64" to hashMapOf(
+  "base64" to mapOf(
     "SHA-1" to "wnU1XcRqwXFjOTUDPRE+OHLVleU=",
     "SHA-256" to "9eXK5Ta0nTlOHnLUNo1ksAojKY7FrhHzqRAqVA4lMtw=",
     "SHA-384" to "qjVsiK/b2KelqcMTNUGvADXksE6CQ4oiOqGTkkDMtrPKKClLWsD0JwOxUYP0wBb8",
