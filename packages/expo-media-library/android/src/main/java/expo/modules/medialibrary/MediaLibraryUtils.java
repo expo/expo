@@ -415,7 +415,7 @@ public final class MediaLibraryUtils {
       selectionArgs,
       null)) {
       if (filesToDelete == null) {
-        promise.reject(ERROR_UNABLE_TO_LOAD, "Could not get album. Query returns null.");
+        promise.reject(ERROR_UNABLE_TO_LOAD, "Could not delete assets. Cursor is null.");
       } else {
         while (filesToDelete.moveToNext()) {
           if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
