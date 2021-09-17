@@ -502,7 +502,7 @@ final class MediaLibraryUtils {
     }
   }
 
-  static String getInPart(String assetsId[]) {
+  static String getInPart(String[] assetsId) {
     int length = assetsId.length;
     String[] array = new String[length];
     Arrays.fill(array, "?");
