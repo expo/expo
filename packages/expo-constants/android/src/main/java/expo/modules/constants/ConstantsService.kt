@@ -22,7 +22,12 @@ private val TAG = ConstantsService::class.java.simpleName
 private const val CONFIG_FILE_NAME = "app.config"
 
 class ConstantsService(private val context: Context) : InternalModule, ConstantsInterface {
-  private var statusBarHeight = 0
+  private var statusBarHeight = context.resources.getIdentifier("status_bar_height", "dimen", "android")
+    .takeIf { it > 0 }
+    ?.let { (context.resources::getDimensionPixelSize)(it) }
+    ?.let { pixels -> convertPixelsToDp(pixels.toFloat(), context) }
+    ?: 0
+
   private val sessionId = UUID.randomUUID().toString()
   private val exponentInstallationId: ExponentInstallationId = ExponentInstallationId(context)
 
@@ -126,14 +131,5 @@ class ConstantsService(private val context: Context) : InternalModule, Constants
     private fun getLongVersionCode(info: PackageInfo) =
       if (Build.VERSION.SDK_INT >= 28) info.longVersionCode
       else info.versionCode.toLong()
-  }
-
-  init {
-    val resourceId = context.resources.getIdentifier("status_bar_height", "dimen", "android")
-    if (resourceId > 0) {
-      val statusBarHeightPixels = context.resources.getDimensionPixelSize(resourceId)
-      // Convert from pixels to dip
-      statusBarHeight = convertPixelsToDp(statusBarHeightPixels.toFloat(), context)
-    }
   }
 }
