@@ -35,7 +35,6 @@ class ConstantsService(private val context: Context) : InternalModule, Constants
   override fun getExportedInterfaces(): List<Class<*>> = listOf(ConstantsInterface::class.java)
 
   override fun getConstants(): Map<String, Any?> {
-    val platform: Map<String, Any> = mapOf("android" to emptyMap<String, Any>())
     val constants: MutableMap<String, Any?> = hashMapOf(
       "sessionId" to sessionId,
       "executionEnvironment" to ExecutionEnvironment.BARE.string,
@@ -47,7 +46,7 @@ class ConstantsService(private val context: Context) : InternalModule, Constants
       "systemVersion" to systemVersion,
       "installationId" to getOrCreateInstallationId,
       "manifest" to appConfig,
-      "platform" to platform
+      "platform" to mapOf("android" to emptyMap<String, Any>())
     )
 
     try {
