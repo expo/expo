@@ -79,6 +79,7 @@
   "expo-sqlite": "~9.2.0",
   "expo-status-bar": "~1.1.0",
   "expo-store-review": "~4.1.0",
+  "expo-system-ui": "~1.0.0-alpha.1",
   "expo-task-manager": "~9.2.0",
   "expo-tracking-transparency": "~1.1.0",
   "expo-updates": "~0.9.3",

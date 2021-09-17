@@ -96,6 +96,7 @@
         "expo-sqlite",
         "expo-store-review",
         "expo-structured-headers",
+        "expo-system-ui",
         "expo-task-manager",
         "expo-tracking-transparency",
         "expo-video-thumbnails",

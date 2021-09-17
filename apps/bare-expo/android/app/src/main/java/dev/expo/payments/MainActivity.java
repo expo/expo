@@ -37,7 +37,7 @@ public class MainActivity extends DevMenuAwareReactActivity {
 
       @Override
       protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+        super.onCreate(null); // <-- prevent RNScreens from restoring
 
         // Hacky way to prevent onboarding DevMenuActivity breaks detox testing,
         // we do this by setting the dev-menu internal setting.

@@ -87,6 +87,7 @@ const screens = [
   'Sharing',
   'StatusBar',
   'StoreReview',
+  'SystemUI',
   'TaskManager',
   'TextToSpeech',
   'TrackingTransparency',

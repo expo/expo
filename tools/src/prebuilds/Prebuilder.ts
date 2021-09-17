@@ -1,18 +1,18 @@
-import path from 'path';
-import fs from 'fs-extra';
 import chalk from 'chalk';
+import fs from 'fs-extra';
 import glob from 'glob-promise';
+import path from 'path';
 
+import { IOS_DIR } from '../Constants';
 import logger from '../Logger';
-import XcodeProject from './XcodeProject';
+import { Package } from '../Packages';
 import {
   createSpecFromPodspecAsync,
   generateXcodeProjectAsync,
   INFO_PLIST_FILENAME,
 } from './XcodeGen';
+import XcodeProject from './XcodeProject';
 import { Flavor, Framework, XcodebuildSettings } from './XcodeProject.types';
-import { Package } from '../Packages';
-import { IOS_DIR } from '../Constants';
 
 const PODS_DIR = path.join(IOS_DIR, 'Pods');
 
@@ -78,6 +78,7 @@ export const PACKAGES_TO_PREBUILD = [
   'expo-splash-screen',
   // 'expo-sqlite',
   // 'expo-store-review',
+  // 'expo-system-ui',
   'expo-structured-headers',
   // 'expo-task-manager',
   // 'expo-updates',

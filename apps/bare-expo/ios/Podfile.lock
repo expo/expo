@@ -210,6 +210,8 @@ PODS:
   - EXStoreReview (4.1.0):
     - ExpoModulesCore
   - EXStructuredHeaders (1.2.0)
+  - ExpoSystemUI (1.0.0):
+    - ExpoModulesCore
   - EXTaskManager (9.2.0):
     - ExpoModulesCore
     - UMAppLoader
@@ -799,6 +801,7 @@ DEPENDENCIES:
   - EXSQLite (from `../../../packages/expo-sqlite/ios`)
   - EXStoreReview (from `../../../packages/expo-store-review/ios`)
   - EXStructuredHeaders (from `../../../packages/expo-structured-headers/ios`)
+  - ExpoSystemUI (from `../../../packages/expo-system-ui/ios`)
   - EXTaskManager (from `../../../packages/expo-task-manager/ios`)
   - EXTrackingTransparency (from `../../../packages/expo-tracking-transparency/ios`)
   - EXUpdatesInterface (from `../../../packages/expo-updates-interface/ios`)
@@ -1090,6 +1093,9 @@ EXTERNAL SOURCES:
   EXStructuredHeaders:
     inhibit_warnings: false
     :path: "../../../packages/expo-structured-headers/ios"
+  ExpoSystemUI:
+    inhibit_warnings: false
+    :path: "../../../packages/expo-system-ui/ios"
   EXTaskManager:
     inhibit_warnings: false
     :path: "../../../packages/expo-task-manager/ios"
@@ -1273,6 +1279,7 @@ SPEC CHECKSUMS:
   EXSQLite: 096f1813d044eb3b742b1fff76a1c0a6ce38ce76
   EXStoreReview: 2c5f2902221d47c34c037d7fa9f62ded864efbd2
   EXStructuredHeaders: 65075e180f983a3bc6a625ac32175094bb0d1305
+  ExpoSystemUI: 4374c9c54b05a2f57424d3d09fbd6be07200157d
   EXTaskManager: 696c89798e26d2cd79f50721c94fd4849ff0a7a1
   EXTrackingTransparency: 770b8169bc72ee67d27d14a1e79974a6a3af2a35
   EXUpdatesInterface: c8792fd80c61e297e40faafe2efcba74106a6ce5

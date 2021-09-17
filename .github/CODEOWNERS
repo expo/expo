@@ -72,6 +72,7 @@
 /packages/expo-splash-screen-command            @bbarthec
 /packages/expo-sqlite                           @bbarthec
 /packages/expo-store-review                     @EvanBacon
+/packages/expo-system-ui                        @mrousavy
 /packages/expo-task-manager                     @tsapeta @bycedric
 /packages/expo-tracking-transparency            @cruzan
 /packages/expo-updates                          @esamelson
