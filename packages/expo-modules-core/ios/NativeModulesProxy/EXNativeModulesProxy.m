@@ -13,6 +13,8 @@
 #import <ExpoModulesCore/EXViewManager.h>
 #import <ExpoModulesCore/EXViewManagerAdapter.h>
 #import <ExpoModulesCore/EXViewManagerAdapterClassesRegistry.h>
+#import <ExpoModulesCore/EXModuleRegistryProvider.h>
+#import <ExpoModulesCore/EXReactNativeEventEmitter.h>
 #import "ExpoModulesCore-Swift.h"
 
 static const NSString *exportedMethodsNamesKeyPath = @"exportedMethods";
