@@ -25,6 +25,7 @@
 #import <EXUpdates/EXUpdatesSelectionPolicy.h>
 #import <EXUpdates/EXUpdatesUtils.h>
 #import <EXManifests/EXManifestsManifestFactory.h>
+#import <EXManifests/EXManifestsLegacyManifest.h>
 #import <React/RCTUtils.h>
 #import <sys/utsname.h>
 
@@ -485,8 +486,15 @@ NS_ASSUME_NONNULL_BEGIN
 {
   @try {
     NSMutableDictionary *mutableManifest = [manifest.rawManifestJSON mutableCopy];
-    if (!mutableManifest[@"isVerified"] && ![EXKernelLinkingManager isExpoHostedUrl:_httpManifestUrl] && !EXEnvironment.sharedEnvironment.isDetached){
-      // the manifest id determines the namespace/experience id an app is sandboxed with
+    
+    // If legacy manifest is not yet verified, served by a third party, not standalone, and not an anonymous experience
+    // then scope it locally by using the manifest URL as a scopeKey (id) and consider it verified.
+    if (!mutableManifest[@"isVerified"] &&
+        !EXEnvironment.sharedEnvironment.isDetached &&
+        ![EXKernelLinkingManager isExpoHostedUrl:_httpManifestUrl] &&
+        ![EXAppLoaderExpoUpdates _isAnonymousExperience:manifest] &&
+        [manifest isKindOfClass:[EXManifestsLegacyManifest class]]) {
+      // the manifest id in a legacy manifest determines the namespace/experience id an app is sandboxed with
       // if manifest is hosted by third parties, we sandbox it with the hostname to avoid clobbering exp.host namespaces
       // for https urls, sandboxed id is of form quinlanj.github.io/myProj-myApp
       // for http urls, sandboxed id is of form UNVERIFIED-quinlanj.github.io/myProj-myApp
@@ -495,10 +503,14 @@ NS_ASSUME_NONNULL_BEGIN
       mutableManifest[@"id"] = [NSString stringWithFormat:@"%@%@%@%@", securityPrefix, _httpManifestUrl.host, _httpManifestUrl.path ?: @"", slugSuffix];
       mutableManifest[@"isVerified"] = @(YES);
     }
+    
+    // set verified to false by default
     if (!mutableManifest[@"isVerified"]) {
       mutableManifest[@"isVerified"] = @(NO);
     }
 
+    // if the app bypassed verification or the manifest is scoped to a random anonymous
+    // scope key, automatically verify it
     if (![mutableManifest[@"isVerified"] boolValue] && (EXEnvironment.sharedEnvironment.isManifestVerificationBypassed || [EXAppLoaderExpoUpdates _isAnonymousExperience:manifest])) {
       mutableManifest[@"isVerified"] = @(YES);
     }
@@ -521,7 +533,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (BOOL)_isAnonymousExperience:(EXManifestsManifest *)manifest
 {
-  return manifest.legacyId != nil && [manifest.legacyId hasPrefix:@"@anonymous/"];
+  return [manifest.scopeKey hasPrefix:@"@anonymous/"];
 }
 
 #pragma mark - headers
