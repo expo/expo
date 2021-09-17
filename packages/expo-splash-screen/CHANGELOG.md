@@ -12,6 +12,8 @@
 
 ### 💡 Others
 
+- Updated `@expo/configure-splash-screen`, `@expo/prebuild-config` ([#14443](https://github.com/expo/expo/pull/14443) by [@EvanBacon](https://github.com/EvanBacon))
+
 ## 0.12.0 — 2021-09-09
 
 ### 🎉 New features

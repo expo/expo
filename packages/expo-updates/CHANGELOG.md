@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Updated `@expo/config`, `@expo/webpack-config`, `@expo/metro-config` ([#14443](https://github.com/expo/expo/pull/14443) by [@EvanBacon](https://github.com/EvanBacon))
+
 ## 0.9.3 — 2021-09-16
 
 _This version does not introduce any user-facing changes._

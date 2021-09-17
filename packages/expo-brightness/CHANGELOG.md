@@ -17,6 +17,7 @@
 - Rewrite android code to Kotlin. ([#13993](https://github.com/expo/expo/pull/13993) by [@kkafar](https://github.com/kkafar))
 - Migrated from `@unimodules/core` to `expo-modules-core`. ([#13757](https://github.com/expo/expo/pull/13757) by [@tsapeta](https://github.com/tsapeta))
 - Export missing `PermissionExpiration` type. ([#14120](https://github.com/expo/expo/pull/14120) by [@simek](https://github.com/simek))
+- Updated `@expo/config-plugins` ([#14443](https://github.com/expo/expo/pull/14443) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 9.2.0 — 2021-06-16
 
