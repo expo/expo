@@ -423,7 +423,7 @@ A static convenience method to construct and start a recording is also provided:
 
   // Which is equivalent to the following:
   const recording = new Audio.Recording();
-  await recording.prepareAsync(options);
+  await recording.prepareToRecordAsync(options);
   recording.setOnRecordingStatusUpdate(onRecordingStatusUpdate);
   await recording.startAsync();
   ```
@@ -588,7 +588,7 @@ In order to define your own custom recording options, you must provide a diction
 
 - `isMeteringEnabled` : a boolean that determines whether audio level information will be part of the status object under the "metering" key.
 
-- `keepAudioActiveHint` : a boolean that hints to keep the audio active after `prepareAsync` completes. Setting this value can improve the speed at which the recording starts. Only set this value to `true` when you call `startAsync` immediately after `prepareAsync`. This value is automatically set when using `Audio.recording.createAsync()`.
+- `keepAudioActiveHint` : a boolean that hints to keep the audio active after `prepareToRecordAsync` completes. Setting this value can improve the speed at which the recording starts. Only set this value to `true` when you call `startAsync` immediately after `prepareToRecordAsync`. This value is automatically set when using `Audio.recording.createAsync()`.
 
 - `android` : a dictionary of key-value pairs for the Android platform. This key is required.
 

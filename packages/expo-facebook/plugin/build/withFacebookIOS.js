@@ -125,7 +125,7 @@ function setFacebookApplicationQuerySchemes(config, infoPlist) {
     const facebookAppId = getFacebookAppId(config);
     const existingSchemes = infoPlist.LSApplicationQueriesSchemes || [];
     if (facebookAppId && existingSchemes.includes('fbapi')) {
-        // already inlcuded, no need to add again
+        // already included, no need to add again
         return infoPlist;
     }
     else if (!facebookAppId && !existingSchemes.length) {

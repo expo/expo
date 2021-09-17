@@ -17,11 +17,11 @@
   },
   {
     "name": "lottie-ios",
-    "version": "~> 3.1.9"
+    "version": "~> 3.2.3"
   },
   {
-    "name": "JKBigInteger2",
-    "version": "0.0.5"
+    "name": "JKBigInteger",
+    "version": "0.0.6"
   },
   {
     "name": "MBProgressHUD",

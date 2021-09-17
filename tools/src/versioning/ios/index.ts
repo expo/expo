@@ -43,7 +43,7 @@ const EXTERNAL_REACT_ABI_DEPENDENCIES = [
   'GoogleMaps',
   'Google-Maps-iOS-Utils',
   'lottie-ios',
-  'JKBigInteger2',
+  'JKBigInteger',
   'Branch',
   'Google-Mobile-Ads-SDK',
   'RCT-Folly',

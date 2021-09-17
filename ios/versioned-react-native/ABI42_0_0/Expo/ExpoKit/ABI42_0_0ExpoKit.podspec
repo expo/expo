@@ -127,7 +127,7 @@ Pod::Spec.new do |s|
     ss.dependency         "GoogleMaps"
     ss.dependency         "Google-Maps-iOS-Utils"
     ss.dependency         "lottie-ios"
-    ss.dependency         "JKBigInteger2"
+    ss.dependency         "JKBigInteger"
     ss.dependency         "Branch"
     ss.dependency         "Google-Mobile-Ads-SDK"
     ss.dependency         "RCT-Folly"

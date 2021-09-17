@@ -234,7 +234,7 @@ PODS:
     - Google-Mobile-Ads-SDK
     - GoogleMaps
     - GoogleSignIn
-    - JKBigInteger2
+    - JKBigInteger
     - lottie-ios
     - RCT-Folly
   - ABI40_0_0ExpoKit/ExpoOptional (40.0.0):
@@ -806,7 +806,7 @@ PODS:
     - Google-Mobile-Ads-SDK
     - GoogleMaps
     - GoogleSignIn
-    - JKBigInteger2
+    - JKBigInteger
     - lottie-ios
     - RCT-Folly
   - ABI41_0_0ExpoKit/ExpoOptional (41.0.0):
@@ -1401,7 +1401,7 @@ PODS:
     - Google-Mobile-Ads-SDK
     - GoogleMaps
     - GoogleSignIn
-    - JKBigInteger2
+    - JKBigInteger
     - lottie-ios
     - RCT-Folly
   - ABI42_0_0ExpoKit/ExpoOptional (42.0.0):
@@ -1893,9 +1893,9 @@ PODS:
     - UMTaskManagerInterface
   - EXMailComposer (10.2.0):
     - ExpoModulesCore
-  - EXManifests (0.1.0):
+  - EXManifests (0.1.1):
     - EXJSONUtils
-  - EXManifests/Tests (0.1.0):
+  - EXManifests/Tests (0.1.1):
     - EXJSONUtils
   - EXMediaLibrary (12.1.0):
     - ExpoModulesCore
@@ -1951,19 +1951,19 @@ PODS:
     - UMTaskManagerInterface
   - EXTrackingTransparency (1.1.0):
     - ExpoModulesCore
-  - EXUpdates (0.9.1):
+  - EXUpdates (0.9.3):
     - EXManifests
     - ExpoModulesCore
     - EXStructuredHeaders
     - EXUpdatesInterface
     - React-Core
-  - EXUpdates/Tests (0.9.1):
+  - EXUpdates/Tests (0.9.3):
     - EXManifests
     - ExpoModulesCore
     - EXStructuredHeaders
     - EXUpdatesInterface
     - React-Core
-  - EXUpdatesInterface (0.3.0)
+  - EXUpdatesInterface (0.3.1)
   - EXVideoThumbnails (5.2.0):
     - ExpoModulesCore
   - EXWebBrowser (9.3.0):
@@ -2098,7 +2098,7 @@ PODS:
     - AppAuth/Core (~> 1.4)
     - GTMSessionFetcher/Core (~> 1.5)
   - GTMSessionFetcher/Core (1.5.0)
-  - JKBigInteger2 (0.0.5)
+  - JKBigInteger (0.0.6)
   - lottie-ios (3.2.3)
   - lottie-react-native (4.0.3):
     - lottie-ios (~> 3.2.3)
@@ -2431,7 +2431,7 @@ PODS:
   - Stripe (21.8.1):
     - Stripe/Stripe3DS2 (= 21.8.1)
     - StripeCore (= 21.8.1)
-  - stripe-react-native (0.2.1):
+  - stripe-react-native (0.2.2):
     - React
     - Stripe (~> 21.8.1)
   - Stripe/Stripe3DS2 (21.8.1):
@@ -2854,7 +2854,7 @@ DEPENDENCIES:
   - glog (from `../react-native-lab/react-native/third-party-podspecs/glog.podspec`)
   - Google-Maps-iOS-Utils (~> 2.1.0)
   - GoogleMaps (~> 3.6)
-  - JKBigInteger2 (= 0.0.5)
+  - JKBigInteger (from `vendored/common/JKBigInteger.podspec.json`)
   - lottie-react-native (from `./vendored/unversioned/lottie-react-native`)
   - MBProgressHUD (~> 1.2.0)
   - Nimble (from `./Nimble.podspec`)
@@ -2926,7 +2926,6 @@ SPEC REPOS:
     - GoogleUtilitiesComponents
     - GTMAppAuth
     - GTMSessionFetcher
-    - JKBigInteger2
     - lottie-ios
     - MBProgressHUD
     - MLKitCommon
@@ -3708,6 +3707,8 @@ EXTERNAL SOURCES:
     :path: "../react-native-lab/react-native/React/FBReactNativeSpec"
   glog:
     :podspec: "../react-native-lab/react-native/third-party-podspecs/glog.podspec"
+  JKBigInteger:
+    :podspec: vendored/common/JKBigInteger.podspec.json
   lottie-react-native:
     :path: "./vendored/unversioned/lottie-react-native"
   Nimble:
@@ -3833,7 +3834,7 @@ SPEC CHECKSUMS:
   ABI40_0_0EXNetwork: 3fde803c18582fb40eb74a6b7457bd2d873d71de
   ABI40_0_0EXNotifications: a768e9f838636410c2efb4f45294a25b1f67bdb5
   ABI40_0_0EXPermissions: 1f03cb4f28663d9889e7a7f4649a44b431d35bba
-  ABI40_0_0ExpoKit: c0e43ba3c45c0865e4de4ce8444155158dd15fd8
+  ABI40_0_0ExpoKit: cc35e53b5732abeacd3c0dd8ab826a900d435e87
   ABI40_0_0EXPrint: 28c0b0b1c7a5fcf7bb162402effd18bfc2609580
   ABI40_0_0EXRandom: 0a65d0035142a3f4546ec9a370f33689fea55960
   ABI40_0_0EXScreenCapture: 64f2e26f8f63d550eee5bed11a88e541a3874036
@@ -3935,7 +3936,7 @@ SPEC CHECKSUMS:
   ABI41_0_0EXNetwork: 7063020fbd68cbe249290a3ed20929874f59e3d6
   ABI41_0_0EXNotifications: c02652d5aa32c1de9f3aeff610e36a7825c46c8a
   ABI41_0_0EXPermissions: 7340fb1182368cf96296476dc7708c8f1398c656
-  ABI41_0_0ExpoKit: 5be6c62fb301b7e3bac49460b1b91c250bce9605
+  ABI41_0_0ExpoKit: 20db5aaeae24edf4b1d8df31b54c6215ec3b3128
   ABI41_0_0EXPrint: 7401d385395553865479f30cfbaf371340d776f4
   ABI41_0_0EXRandom: 457ad8c71b497fc4fda20d70152fbce8f7dc0919
   ABI41_0_0EXScreenCapture: 96a7760db8e34a62ad5bdeaf65e265defdb7dc79
@@ -4042,7 +4043,7 @@ SPEC CHECKSUMS:
   ABI42_0_0EXNetwork: 0176a370ca963ed0c9c7bec2d6938cff05e94a1e
   ABI42_0_0EXNotifications: 36428b03b301a9b51de900910313e12e150a07b0
   ABI42_0_0EXPermissions: 7f0f7a1334056db7f51c3563fd977d0a6393c998
-  ABI42_0_0ExpoKit: 05df697b069c3105eed5ff2b7d90d32e14f86745
+  ABI42_0_0ExpoKit: 314e91dcab92ec8a886d1fa5a9c3f8b457d24440
   ABI42_0_0ExpoModulesCore: 85d79294f8c6c297f1b1c1af7a5ef292dd21a643
   ABI42_0_0EXPrint: 104311da09fe260e5d21d83d235c0c557d826282
   ABI42_0_0EXRandom: e692f2004e285512b969c9a0ce488283b6149370
@@ -4146,7 +4147,7 @@ SPEC CHECKSUMS:
   EXLocalization: baeeda60ec3bf94c7d3f15bcbcebff0eda557b30
   EXLocation: eb11da50338f6e4750166d1faee540108736f5ab
   EXMailComposer: 4c710ebe2570d7243ffc907a3d92d4ad8db763dc
-  EXManifests: 5f5c6eed84611c4d11622ea8e3b473335ffe06bd
+  EXManifests: 1077398d87071ff8130d1db7890185552d6a4567
   EXMediaLibrary: 92ab16eed395d685a309543de92ca874f8327d0b
   EXNetwork: 58c5faaf0f7d5d6178906020314dd7b4b6ebcea4
   EXNotifications: 238aa36d5f5257cfa050f4879d522f01b6e7bed7
@@ -4169,8 +4170,8 @@ SPEC CHECKSUMS:
   EXStructuredHeaders: 65075e180f983a3bc6a625ac32175094bb0d1305
   EXTaskManager: 696c89798e26d2cd79f50721c94fd4849ff0a7a1
   EXTrackingTransparency: 770b8169bc72ee67d27d14a1e79974a6a3af2a35
-  EXUpdates: eb6d02f9030a37d638a772dbdccd7fe4aca37a9b
-  EXUpdatesInterface: 427b75e4f4e58b098df69c18209a6140b9439b97
+  EXUpdates: 5b978c8d8c4fca45b723491b39be8c67f9594e2c
+  EXUpdatesInterface: c8792fd80c61e297e40faafe2efcba74106a6ce5
   EXVideoThumbnails: 49cec6b4122a7d1778ffa12c91e3c2322cf0a3cb
   EXWebBrowser: 36fd0e3d0138743ae3e220c4647abb687cd6cbc0
   FacebookSDK: 4b9bb8e2824898b47f18c666dc145c09b40609e6
@@ -4197,7 +4198,7 @@ SPEC CHECKSUMS:
   GoogleUtilitiesComponents: a69c0b3b369ba443e988141e75ef49d9010b1c80
   GTMAppAuth: ad5c2b70b9a8689e1a04033c9369c4915bfcbe89
   GTMSessionFetcher: b3503b20a988c4e20cc189aa798fd18220133f52
-  JKBigInteger2: e91672035c42328c48b7dd015b66812ddf40ca9b
+  JKBigInteger: 5c72131974815e969c0782c41e3452f1bbe5619f
   lottie-ios: c058aeafa76daa4cf64d773554bccc8385d0150e
   lottie-react-native: abf7a5255678c0cbb3b418b9f2f403efe6f54561
   MBProgressHUD: 3ee5efcc380f6a79a7cc9b363dd669c5e1ae7406
@@ -4239,7 +4240,7 @@ SPEC CHECKSUMS:
   RNReanimated: 9c13c86454bfd54dab7505c1a054470bfecd2563
   RNScreens: 2a71d74b4e530f051f5684c8111d7591176722cf
   Stripe: 57c6997c64042a3f5aedae9b76e331942f8b75d2
-  stripe-react-native: b98c63486a0b24aa5ae278cf7ea87aa524651fea
+  stripe-react-native: ae53a97cc9ab084cc6228f2250da56b0e53da276
   StripeCore: a6e50d58119a0c7601773b56f274db2d394dcdac
   UMAppLoader: a2f89c43ef303ef25947497f2166463506758924
   UMCore: 7187af6e861d1e9983f3b83db7040320851b435a
@@ -4248,6 +4249,6 @@ SPEC CHECKSUMS:
   Yoga: 575c581c63e0d35c9a83f4b46d01d63abc1100ac
   ZXingObjC: fdbb269f25dd2032da343e06f10224d62f537bdb
 
-PODFILE CHECKSUM: 0a1030c468c8f7af9c070ac2aa393e6f1453bc50
+PODFILE CHECKSUM: 7c71ae606a1e83e2827e31f0cce4ef247399610e
 
 COCOAPODS: 1.11.0

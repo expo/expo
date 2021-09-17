@@ -15,6 +15,7 @@ import android.widget.FrameLayout
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.graphics.drawable.DrawableCompat
 import androidx.fragment.app.Fragment
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.stripe.android.paymentsheet.*
 import com.stripe.android.paymentsheet.model.PaymentOption
 import java.io.ByteArrayOutputStream
@@ -25,12 +26,14 @@ class PaymentSheetFragment : Fragment() {
   private var paymentIntentClientSecret: String? = null
   private var setupIntentClientSecret: String? = null
   private lateinit var paymentSheetConfiguration: PaymentSheet.Configuration
+  private lateinit var localBroadcastManager: LocalBroadcastManager
 
   override fun onCreateView(
     inflater: LayoutInflater,
     container: ViewGroup?,
     savedInstanceState: Bundle?
   ): View {
+    localBroadcastManager = LocalBroadcastManager.getInstance(requireContext())
     return FrameLayout(requireActivity()).also {
       it.visibility = View.GONE
     }
@@ -58,7 +61,7 @@ class PaymentSheetFragment : Fragment() {
           intent.putExtra("label", paymentOption.label)
           intent.putExtra("image", imageString)
         }
-        activity?.sendBroadcast(intent)
+        localBroadcastManager.sendBroadcast(intent)
       }
     }
 
@@ -67,7 +70,7 @@ class PaymentSheetFragment : Fragment() {
         val intent = Intent(ON_PAYMENT_RESULT_ACTION)
 
         intent.putExtra("paymentResult", paymentResult)
-        activity?.sendBroadcast(intent)
+        localBroadcastManager.sendBroadcast(intent)
       }
     }
 
@@ -89,11 +92,11 @@ class PaymentSheetFragment : Fragment() {
     } else {
       paymentSheet = PaymentSheet(this, paymentResultCallback)
       val intent = Intent(ON_INIT_PAYMENT_SHEET)
-      activity?.sendBroadcast(intent)
+      localBroadcastManager.sendBroadcast(intent)
     }
 
     val intent = Intent(ON_FRAGMENT_CREATED)
-    activity?.sendBroadcast(intent)
+    localBroadcastManager.sendBroadcast(intent)
   }
 
   fun present() {
@@ -125,7 +128,7 @@ class PaymentSheetFragment : Fragment() {
           intent.putExtra("label", paymentOption.label)
           intent.putExtra("image", imageString)
         }
-        activity?.sendBroadcast(intent)
+        localBroadcastManager.sendBroadcast(intent)
       }
     }
 

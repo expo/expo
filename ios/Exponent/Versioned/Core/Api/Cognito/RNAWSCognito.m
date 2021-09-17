@@ -9,6 +9,15 @@ static NSString* N_IN_HEX = @"FFFFFFFFFFFFFFFFC90FDAA22168C234C4C6628B80DC1CD129
 }
 RCT_EXPORT_MODULE()
 
+RCT_EXPORT_SYNCHRONOUS_TYPED_METHOD(NSString*, getRandomBase64:(NSUInteger)byteLength) {
+    NSMutableData *data = [NSMutableData dataWithLength:byteLength];
+    int result = SecRandomCopyBytes(kSecRandomDefault, byteLength, data.mutableBytes);
+    if (result != errSecSuccess) {
+        @throw([NSException exceptionWithName:@"NO_RANDOM_BYTES" reason:@"Failed to acquire secure random bytes" userInfo:nil]);
+    }
+    return [data base64EncodedStringWithOptions:0];
+}
+
 RCT_EXPORT_METHOD(computeModPow:(NSDictionary *)values
                   callback:(RCTResponseSenderBlock)callback) {
     JKBigInteger *target = [[JKBigInteger alloc] initWithString:values[@"target"] andRadix:16];
