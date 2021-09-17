@@ -13,8 +13,8 @@ import com.facebook.react.ReactPackage;
 import com.facebook.soloader.SoLoader;
 
 import expo.interfaces.devmenu.DevMenuSettingsInterface;
-import expo.modules.adapters.react.ApplicationLifecycleDispatcher;
-import expo.modules.adapters.react.ReactNativeHostWrapper;
+import expo.modules.ApplicationLifecycleDispatcher;
+import expo.modules.ReactNativeHostWrapper;
 import expo.modules.devlauncher.DevLauncherController;
 import expo.modules.devmenu.DevMenuDefaultSettings;
 import expo.modules.devmenu.DevMenuManager;
