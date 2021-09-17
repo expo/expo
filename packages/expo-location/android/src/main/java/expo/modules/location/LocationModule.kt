@@ -83,7 +83,7 @@ class LocationModule(
   private val locationCallbacks: MutableMap<Int, LocationCallback> = HashMap()
   private val locationRequests: MutableMap<Int, LocationRequest> = HashMap()
 
-  private val pendingLocationRequests: MutableList<LocationActivityResultListener> = ArrayList()
+  private val pendingLocationRequests: MutableList<(Int) -> Unit> = ArrayList()
 
   // modules
   private val eventEmitter: EventEmitter by moduleRegistry()
@@ -239,17 +239,14 @@ class LocationModule(
     } else {
       // Pending requests can ask the user to turn on improved accuracy mode in user's settings.
       addPendingLocationRequest(
-        locationRequest,
-        object : LocationActivityResultListener {
-          override fun onResult(resultCode: Int) {
-            if (resultCode == Activity.RESULT_OK) {
-              requestSingleLocation(this@LocationModule, locationRequest, promise)
-            } else {
-              promise.reject(LocationSettingsUnsatisfiedException())
-            }
-          }
+        locationRequest
+      ) { resultCode: Int ->
+        if (resultCode == Activity.RESULT_OK) {
+          requestSingleLocation(this@LocationModule, locationRequest, promise)
+        } else {
+          promise.reject(LocationSettingsUnsatisfiedException())
         }
-      )
+      }
     }
   }
 
@@ -292,17 +289,14 @@ class LocationModule(
     } else {
       // Pending requests can ask the user to turn on improved accuracy mode in user's settings.
       addPendingLocationRequest(
-        locationRequest,
-        object : LocationActivityResultListener {
-          override fun onResult(resultCode: Int) {
-            if (resultCode == Activity.RESULT_OK) {
-              requestContinuousUpdates(this@LocationModule, locationRequest, watchId, promise)
-            } else {
-              promise.reject(LocationSettingsUnsatisfiedException())
-            }
-          }
+        locationRequest
+      ) { resultCode: Int ->
+        if (resultCode == Activity.RESULT_OK) {
+          requestContinuousUpdates(this@LocationModule, locationRequest, watchId, promise)
+        } else {
+          promise.reject(LocationSettingsUnsatisfiedException())
         }
-      )
+      }
     }
   }
 
@@ -332,14 +326,17 @@ class LocationModule(
       promise.reject(LocationUnauthorizedException())
       return
     }
+    if (address == null) {
+      promise.reject("E_NO_ADDRESS", "Address is null.")
+      return
+    }
     if (Geocoder.isPresent()) {
       SmartLocation.with(context).geocoding()
-        .direct(address!!) { _, list: List<LocationAddress> ->
+        .direct(address) { _, list: List<LocationAddress> ->
           val results: MutableList<Bundle> = ArrayList(list.size)
           list.forEach { locationAddress ->
-            val coords = locationToCoordsBundle(locationAddress.location, Bundle::class.java)
-            if (coords != null) {
-              results.add(coords)
+            locationToCoordsBundle(locationAddress.location, Bundle::class.java)?.let {
+              results.add(it)
             }
           }
           SmartLocation.with(context).geocoding().stop()
@@ -360,9 +357,10 @@ class LocationModule(
       promise.reject(LocationUnauthorizedException())
       return
     }
-    val location = Location("")
-    location.latitude = locationMap["latitude"] as Double
-    location.longitude = locationMap["longitude"] as Double
+    val location = Location("").apply {
+      latitude = locationMap["latitude"] as Double
+      longitude = locationMap["longitude"] as Double
+    }
     if (Geocoder.isPresent()) {
       SmartLocation.with(context).geocoding()
         .reverse(location) { _, addresses: List<Address> ->
@@ -384,17 +382,14 @@ class LocationModule(
     }
     val locationRequest = prepareLocationRequest(HashMap())
     addPendingLocationRequest(
-      locationRequest,
-      object : LocationActivityResultListener {
-        override fun onResult(resultCode: Int) {
-          if (resultCode == Activity.RESULT_OK) {
-            promise.resolve(null)
-          } else {
-            promise.reject(LocationSettingsUnsatisfiedException())
-          }
-        }
+      locationRequest
+    ) { resultCode: Int ->
+      if (resultCode == Activity.RESULT_OK) {
+        promise.resolve(null)
+      } else {
+        promise.reject(LocationSettingsUnsatisfiedException())
       }
-    )
+    }
   }
 
   @ExpoMethod
@@ -545,7 +540,7 @@ class LocationModule(
     }
   }
 
-  private fun addPendingLocationRequest(locationRequest: LocationRequest, listener: LocationActivityResultListener) {
+  private fun addPendingLocationRequest(locationRequest: LocationRequest, listener: (Int) -> Unit) {
     // Add activity result listener to an array of pending requests.
     pendingLocationRequests.add(listener)
 
@@ -604,12 +599,13 @@ class LocationModule(
       val locationCallback = locationCallbacks[requestId]
       val locationRequest = locationRequests[requestId]
       val looper = Looper.myLooper()
-      if (locationCallback != null && locationRequest != null && looper != null) {
-        try {
-          locationClient.requestLocationUpdates(locationRequest, locationCallback, looper)
-        } catch (e: SecurityException) {
-          Log.e(TAG, "Error occurred while resuming location updates: $e")
-        }
+      if (locationCallback == null || locationRequest == null || looper == null) {
+        return
+      }
+      try {
+        locationClient.requestLocationUpdates(locationRequest, locationCallback, looper)
+      } catch (e: SecurityException) {
+        Log.e(TAG, "Error occurred while resuming location updates: $e")
       }
     }
   }
@@ -627,8 +623,8 @@ class LocationModule(
 
   private fun executePendingRequests(resultCode: Int) {
     // Propagate result to pending location requests.
-    pendingLocationRequests.forEach { listener ->
-      listener.onResult(resultCode)
+    pendingLocationRequests.forEach { callback ->
+      callback(resultCode)
     }
     pendingLocationRequests.clear()
   }
@@ -706,10 +702,8 @@ class LocationModule(
   }
 
   private fun stopHeadingWatch() {
-    if (sensorManager == null) {
-      return
-    }
-    sensorManager!!.unregisterListener(this)
+    val internalSensorManager = sensorManager ?: return
+    internalSensorManager.unregisterListener(this)
   }
 
   private fun destroyHeadingWatch() {
@@ -745,10 +739,8 @@ class LocationModule(
   }
 
   private fun handleForegroundLocationPermissions(result: Map<String, PermissionsResponse>): Bundle {
-    val accessFineLocation = result[Manifest.permission.ACCESS_FINE_LOCATION]
-    val accessCoarseLocation = result[Manifest.permission.ACCESS_COARSE_LOCATION]
-    accessFineLocation!!
-    accessCoarseLocation!!
+    val accessFineLocation = requireNotNull(result[Manifest.permission.ACCESS_FINE_LOCATION])
+    val accessCoarseLocation = requireNotNull(result[Manifest.permission.ACCESS_COARSE_LOCATION])
     var status = PermissionsStatus.UNDETERMINED
     var accuracy = "none"
     val canAskAgain = accessCoarseLocation.canAskAgain && accessFineLocation.canAskAgain
@@ -780,7 +772,7 @@ class LocationModule(
   @RequiresApi(Build.VERSION_CODES.Q)
   private fun handleBackgroundLocationPermissions(result: Map<String, PermissionsResponse>) =
     Bundle().apply {
-      val accessBackgroundLocation = result[Manifest.permission.ACCESS_BACKGROUND_LOCATION]!!
+      val accessBackgroundLocation = requireNotNull(result[Manifest.permission.ACCESS_BACKGROUND_LOCATION])
       val status = accessBackgroundLocation.status
       val canAskAgain = accessBackgroundLocation.canAskAgain
       putString(PermissionsResponse.STATUS_KEY, status.status)
@@ -791,9 +783,9 @@ class LocationModule(
 
   @RequiresApi(Build.VERSION_CODES.Q)
   private fun handleLegacyPermissions(result: Map<String, PermissionsResponse>): Bundle {
-    val accessFineLocation = result[Manifest.permission.ACCESS_FINE_LOCATION]!!
-    val accessCoarseLocation = result[Manifest.permission.ACCESS_COARSE_LOCATION]!!
-    val backgroundLocation = result[Manifest.permission.ACCESS_BACKGROUND_LOCATION]!!
+    val accessFineLocation = requireNotNull(result[Manifest.permission.ACCESS_FINE_LOCATION])
+    val accessCoarseLocation = requireNotNull(result[Manifest.permission.ACCESS_COARSE_LOCATION])
+    requireNotNull(result[Manifest.permission.ACCESS_BACKGROUND_LOCATION])
     var status = PermissionsStatus.UNDETERMINED
     var accuracy = "none"
     val canAskAgain = accessCoarseLocation.canAskAgain && accessFineLocation.canAskAgain
