@@ -2,6 +2,7 @@
 
 #import <EXBarCodeScanner/EXBarCodeScannerProvider.h>
 #import <EXBarCodeScanner/EXBarCodeScanner.h>
+#import <ExpoModulesCore/EXDefines.h>
 
 @implementation EXBarCodeScannerProvider
 
