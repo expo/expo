@@ -49,7 +49,7 @@ class ConstantsService(private val context: Context) : InternalModule, Constants
       "isDevice" to isDevice,
       "systemFonts" to systemFonts,
       "systemVersion" to systemVersion,
-      "installationId" to getOrCreateInstallationId,
+      "installationId" to getOrCreateInstallationId(),
       "manifest" to appConfig,
       "platform" to mapOf("android" to emptyMap<String, Any>())
     )
@@ -82,8 +82,7 @@ class ConstantsService(private val context: Context) : InternalModule, Constants
 
   override fun getSystemVersion(): String = Build.VERSION.RELEASE
 
-  val getOrCreateInstallationId: String
-    get() = exponentInstallationId.getOrCreateUUID
+  fun getOrCreateInstallationId(): String = exponentInstallationId.getOrCreateUUID()
 
   // From https://github.com/dabit3/react-native-fonts
   override fun getSystemFonts() = listOf(
