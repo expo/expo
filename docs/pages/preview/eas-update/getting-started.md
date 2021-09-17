@@ -93,9 +93,9 @@ Setting up EAS Update allows you to push critical bug fixes and improvements tha
    ```bash
    {
      "build": {
-       "release": {
-   			"channel": "production"
-       },
+        "release": {
+          "channel": "production"
+        },
        ...
      }
    }
