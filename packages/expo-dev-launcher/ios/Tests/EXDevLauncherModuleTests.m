@@ -6,13 +6,27 @@
 #import <EXDevLauncher/EXDevLauncher.h>
 #import <EXDevLauncher/EXDevLauncherController.h>
 
+@import EXDevLauncher;
+
 @interface EXDevLauncherController (EXDevLauncherModuleTests)
 
+- (EXDevLauncherManifest * _Nullable)mockAppManifest;
 - (NSURL *)mockAppManifestURL;
 
 @end
 
 @implementation EXDevLauncherController (EXDevLauncherModuleTests)
+
+- (EXDevLauncherManifest * _Nullable)mockAppManifest
+{
+  return [EXDevLauncherManifest fromJsonObject:@{
+    @"name": @"testproject",
+    @"slug": @"testproject",
+    @"version": @"1.0.0",
+    @"sdkVersion": @"42.0.0",
+    @"bundleUrl": @"http://test.io/bundle.js"
+  }];
+}
 
 - (NSURL *)mockAppManifestURL
 {
@@ -49,6 +63,31 @@
   } else {
     method_exchangeImplementations(originalMethod, swizzledMethod);
   }
+}
+
+- (void)testConstantsToExportManifest
+{
+  [self swizzleMethodForClass:[EXDevLauncherController class]
+             originalSelector:@selector(appManifest)
+             swizzledSelector:@selector(mockAppManifest)];
+
+  EXDevLauncher *module = [EXDevLauncher new];
+  NSDictionary *constants = [module constantsToExport];
+
+  NSDictionary *expected = @{
+    @"name": @"testproject",
+    @"slug": @"testproject",
+    @"version": @"1.0.0",
+    @"sdkVersion": @"42.0.0",
+    @"bundleUrl": @"http://test.io/bundle.js"
+  };
+  NSDictionary *actual = [NSJSONSerialization JSONObjectWithData:[constants[@"manifestString"] dataUsingEncoding:NSUTF8StringEncoding] options:kNilOptions error:NULL];
+  XCTAssertEqualObjects(expected, actual);
+
+  // clean up
+  [self swizzleMethodForClass:[EXDevLauncherController class]
+             originalSelector:@selector(appManifest)
+             swizzledSelector:@selector(mockAppManifest)];
 }
 
 - (void)testConstantsToExportManifestURL

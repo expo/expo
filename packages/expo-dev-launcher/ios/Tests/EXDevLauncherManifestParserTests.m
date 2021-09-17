@@ -5,6 +5,8 @@
 
 #import <EXDevLauncher/EXDevLauncherManifestParser.h>
 
+@import EXDevLauncher;
+
 @interface EXDevLauncherManifestParserTests : XCTestCase
 
 @end
@@ -113,6 +115,119 @@
     [expectation fulfill];
   }];
   
+  [self waitForExpectationsWithTimeout:5 handler:nil];
+}
+
+- (void)testParseManifest
+{
+  [HTTPStubs stubRequestsPassingTest:^BOOL(NSURLRequest * _Nonnull request) {
+    return [request.URL.host isEqualToString:@"ohhttpstubs"];
+  } withStubResponse:^HTTPStubsResponse * _Nonnull(NSURLRequest * _Nonnull request) {
+    NSString *manifestString = @"{\"name\":\"testproject\",\"slug\":\"testproject\",\"version\":\"1.0.0\",\"orientation\":\"portrait\",\"userInterfaceStyle\":\"light\",\"backgroundColor\":\"#c0ff33\",\"sdkVersion\":\"42.0.0\",\"bundleUrl\":\"http://test.io/bundle.js\"}";
+    NSData *jsonData = [manifestString dataUsingEncoding:NSUTF8StringEncoding];
+    return [HTTPStubsResponse responseWithData:jsonData statusCode:200 headers:nil];
+  }];
+
+  NSURL *url = [NSURL URLWithString:@"http://ohhttpstubs"];
+  EXDevLauncherManifestParser *parser = [[EXDevLauncherManifestParser alloc] initWithURL:url session:NSURLSession.sharedSession];
+
+  XCTestExpectation *expectation = [self expectationWithDescription:@"should parse manifest successfully"];
+
+  [parser tryToParseManifest:^(EXDevLauncherManifest * _Nonnull manifest) {
+    XCTAssertEqualObjects(@"testproject", manifest.name);
+    XCTAssertEqualObjects(@"testproject", manifest.slug);
+    XCTAssertEqualObjects(@"1.0.0", manifest.version);
+    XCTAssertEqual(UIInterfaceOrientationPortrait, manifest.orientation);
+    XCTAssertEqual(UIUserInterfaceStyleLight, manifest.userInterfaceStyle);
+    XCTAssertEqualObjects([UIColor colorWithRed:192.0/255.0 green:1.0 blue:51.0/255.0 alpha:1.0], manifest.backgroundColor);
+    XCTAssertEqualObjects(@"http://test.io/bundle.js", manifest.bundleUrl);
+    XCTAssertFalse(manifest.isUsingDeveloperTool);
+    [expectation fulfill];
+  } onError:^(NSError * _Nonnull error) {
+    XCTFail(@"Response should have been successful");
+    [expectation fulfill];
+  }];
+
+  [self waitForExpectationsWithTimeout:5 handler:nil];
+}
+
+- (void)testParseManifest_PlatformSpecificValues
+{
+  [HTTPStubs stubRequestsPassingTest:^BOOL(NSURLRequest * _Nonnull request) {
+    return [request.URL.host isEqualToString:@"ohhttpstubs"];
+  } withStubResponse:^HTTPStubsResponse * _Nonnull(NSURLRequest * _Nonnull request) {
+    NSString *manifestString = @"{\"name\":\"testproject\",\"slug\":\"testproject\",\"version\":\"1.0.0\",\"orientation\":\"portrait\",\"userInterfaceStyle\":\"light\",\"backgroundColor\":\"#c0ff33\",\"sdkVersion\":\"42.0.0\",\"bundleUrl\":\"http://test.io/bundle.js\",\"ios\":{\"orientation\":\"landscape\",\"userInterfaceStyle\":\"dark\",\"backgroundColor\":\"#e41c00\"}}";
+    NSData *jsonData = [manifestString dataUsingEncoding:NSUTF8StringEncoding];
+    return [HTTPStubsResponse responseWithData:jsonData statusCode:200 headers:nil];
+  }];
+
+  NSURL *url = [NSURL URLWithString:@"http://ohhttpstubs"];
+  EXDevLauncherManifestParser *parser = [[EXDevLauncherManifestParser alloc] initWithURL:url session:NSURLSession.sharedSession];
+
+  XCTestExpectation *expectation = [self expectationWithDescription:@"should parse manifest successfully"];
+
+  [parser tryToParseManifest:^(EXDevLauncherManifest * _Nonnull manifest) {
+    XCTAssertEqual(UIInterfaceOrientationLandscapeLeft, manifest.orientation);
+    XCTAssertEqual(UIUserInterfaceStyleDark, manifest.userInterfaceStyle);
+    XCTAssertEqualObjects([UIColor colorWithRed:228.0/255.0 green:28.0/255.0 blue:0.0 alpha:1.0], manifest.backgroundColor);
+    [expectation fulfill];
+  } onError:^(NSError * _Nonnull error) {
+    XCTFail(@"Response should have been successful");
+    [expectation fulfill];
+  }];
+
+  [self waitForExpectationsWithTimeout:5 handler:nil];
+}
+
+- (void)testParseManifest_DeveloperTool
+{
+  [HTTPStubs stubRequestsPassingTest:^BOOL(NSURLRequest * _Nonnull request) {
+    return [request.URL.host isEqualToString:@"ohhttpstubs"];
+  } withStubResponse:^HTTPStubsResponse * _Nonnull(NSURLRequest * _Nonnull request) {
+    NSString *manifestString = @"{\"name\":\"testproject\",\"slug\":\"testproject\",\"version\":\"1.0.0\",\"orientation\":\"portrait\",\"userInterfaceStyle\": \"light\",\"backgroundColor\": \"#c0ff33\",\"sdkVersion\":\"42.0.0\",\"bundleUrl\":\"http://test.io/bundle.js\",\"developer\":{\"tool\":\"expo-cli\"}}";
+    NSData *jsonData = [manifestString dataUsingEncoding:NSUTF8StringEncoding];
+    return [HTTPStubsResponse responseWithData:jsonData statusCode:200 headers:nil];
+  }];
+
+  NSURL *url = [NSURL URLWithString:@"http://ohhttpstubs"];
+  EXDevLauncherManifestParser *parser = [[EXDevLauncherManifestParser alloc] initWithURL:url session:NSURLSession.sharedSession];
+
+  XCTestExpectation *expectation = [self expectationWithDescription:@"should parse manifest successfully"];
+
+  [parser tryToParseManifest:^(EXDevLauncherManifest * _Nonnull manifest) {
+    XCTAssertTrue(manifest.isUsingDeveloperTool);
+    [expectation fulfill];
+  } onError:^(NSError * _Nonnull error) {
+    XCTFail(@"Response should have been successful");
+    [expectation fulfill];
+  }];
+
+  [self waitForExpectationsWithTimeout:5 handler:nil];
+}
+
+- (void)testParseManifest_InvalidJson
+{
+  [HTTPStubs stubRequestsPassingTest:^BOOL(NSURLRequest * _Nonnull request) {
+    return [request.URL.host isEqualToString:@"ohhttpstubs"];
+  } withStubResponse:^HTTPStubsResponse * _Nonnull(NSURLRequest * _Nonnull request) {
+    NSString *manifestString = @"{invalid json}";
+    NSData *jsonData = [manifestString dataUsingEncoding:NSUTF8StringEncoding];
+    return [HTTPStubsResponse responseWithData:jsonData statusCode:200 headers:nil];
+  }];
+
+  NSURL *url = [NSURL URLWithString:@"http://ohhttpstubs"];
+  EXDevLauncherManifestParser *parser = [[EXDevLauncherManifestParser alloc] initWithURL:url session:NSURLSession.sharedSession];
+
+  XCTestExpectation *expectation = [self expectationWithDescription:@"should fail to parse manifest"];
+
+  [parser tryToParseManifest:^(EXDevLauncherManifest * _Nonnull manifest) {
+    XCTFail(@"Parsing bad JSON should have been successful");
+    [expectation fulfill];
+  } onError:^(NSError * _Nonnull error) {
+    XCTAssertNotNil(error);
+    [expectation fulfill];
+  }];
+
   [self waitForExpectationsWithTimeout:5 handler:nil];
 }
 
