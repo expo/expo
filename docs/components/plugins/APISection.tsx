@@ -22,12 +22,14 @@ type Props = {
 
 const filterDataByKind = (
   entries: GeneratedData[],
-  kind: TypeDocKind,
+  kind: TypeDocKind | TypeDocKind[],
   additionalCondition: (entry: GeneratedData) => boolean = () => true
 ) =>
-  entries
-    ? entries.filter((entry: GeneratedData) => entry.kind === kind && additionalCondition(entry))
-    : [];
+  (entries || []).filter(
+    (entry: GeneratedData) =>
+      (Array.isArray(kind) ? kind.includes(entry.kind) : entry.kind === kind) &&
+      additionalCondition(entry)
+  );
 
 const isHook = ({ name }: GeneratedData) =>
   name.startsWith('use') &&
@@ -86,7 +88,7 @@ const renderAPI = (
       entry => entry.name === 'defaultProps'
     )[0];
 
-    const enums = filterDataByKind(data, TypeDocKind.Enum);
+    const enums = filterDataByKind(data, [TypeDocKind.Enum, TypeDocKind.LegacyEnum]);
     const interfaces = filterDataByKind(data, TypeDocKind.Interface);
     const constants = filterDataByKind(
       data,

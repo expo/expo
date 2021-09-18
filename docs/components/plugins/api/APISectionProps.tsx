@@ -15,7 +15,7 @@ import {
 } from '~/components/plugins/api/APIDataTypes';
 import {
   CommentTextBlock,
-  getCommentOrSignatureComment,
+  getCommentOrSignatureComment, getTagData,
   renderTypeOrSignatureType,
   resolveTypeName,
   STYLES_SECONDARY,
@@ -37,9 +37,9 @@ const extractDefaultPropValue = (
   { comment, name }: PropData,
   defaultProps?: DefaultPropsDefinitionData
 ): string | undefined => {
-  const annotationDefault = comment?.tags?.filter((tag: CommentTagData) => tag.tag === 'default');
-  if (annotationDefault?.length) {
-    return annotationDefault[0].text;
+  const annotationDefault = getTagData('default', comment);
+  if (annotationDefault) {
+    return annotationDefault.text;
   }
   return defaultProps?.type?.declaration?.children?.filter(
     (defaultProp: PropData) => defaultProp.name === name

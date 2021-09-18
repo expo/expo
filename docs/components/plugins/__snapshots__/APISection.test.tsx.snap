@@ -634,7 +634,6 @@ in here.
             <code
               class="inline css-nuv12a-STYLES_INLINE_CODE"
             >
-              
               getCredentialStateAsync(user)
             </code>
           </span>
@@ -928,7 +927,6 @@ value depending on the state of the credential.
             <code
               class="inline css-nuv12a-STYLES_INLINE_CODE"
             >
-              
               isAvailableAsync()
             </code>
           </span>
@@ -1090,7 +1088,6 @@ value depending on the state of the credential.
             <code
               class="inline css-nuv12a-STYLES_INLINE_CODE"
             >
-              
               refreshAsync(options)
             </code>
           </span>
@@ -1311,7 +1308,6 @@ value depending on the state of the credential.
             <code
               class="inline css-nuv12a-STYLES_INLINE_CODE"
             >
-              
               signInAsync(options)
             </code>
           </span>
@@ -1618,7 +1614,6 @@ sign-in operation.
             <code
               class="inline css-nuv12a-STYLES_INLINE_CODE"
             >
-              
               signOutAsync(options)
             </code>
           </span>
@@ -1889,7 +1884,6 @@ sign-in operation.
             <code
               class="inline css-nuv12a-STYLES_INLINE_CODE"
             >
-              
               addRevokeListener(listener)
             </code>
           </span>
@@ -4374,7 +4368,6 @@ exports[`APISection expo-pedometer 1`] = `
             <code
               class="inline css-nuv12a-STYLES_INLINE_CODE"
             >
-              
               getPermissionsAsync()
             </code>
           </span>
@@ -4517,7 +4510,6 @@ exports[`APISection expo-pedometer 1`] = `
             <code
               class="inline css-nuv12a-STYLES_INLINE_CODE"
             >
-              
               getStepCountAsync(start, end)
             </code>
           </span>
@@ -4842,7 +4834,6 @@ a start date that is more than seven days in the past returns only the available
             <code
               class="inline css-nuv12a-STYLES_INLINE_CODE"
             >
-              
               isAvailableAsync()
             </code>
           </span>
@@ -4999,7 +4990,6 @@ available on this device.
             <code
               class="inline css-nuv12a-STYLES_INLINE_CODE"
             >
-              
               requestPermissionsAsync()
             </code>
           </span>
@@ -5142,7 +5132,6 @@ available on this device.
             <code
               class="inline css-nuv12a-STYLES_INLINE_CODE"
             >
-              
               watchStepCount(callback)
             </code>
           </span>

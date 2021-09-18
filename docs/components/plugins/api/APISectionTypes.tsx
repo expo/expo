@@ -22,6 +22,7 @@ import {
   parseCommentContent,
   renderTypeOrSignatureType,
   getCommentOrSignatureComment,
+  getTagData,
 } from '~/components/plugins/api/APISectionUtils';
 
 export type APISectionTypesProps = {
@@ -64,9 +65,7 @@ const renderTypePropertyRow = ({
   defaultValue,
   signatures,
 }: PropData): JSX.Element => {
-  const initValue = parseCommentContent(
-    defaultValue || comment?.tags?.filter(tag => tag.tag === 'default')[0]?.text
-  );
+  const initValue = parseCommentContent(defaultValue || getTagData('default', comment)?.text);
   const commentData = getCommentOrSignatureComment(comment, signatures);
   return (
     <tr key={name}>

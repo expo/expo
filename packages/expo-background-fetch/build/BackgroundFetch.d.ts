@@ -22,7 +22,7 @@ export declare function setMinimumIntervalAsync(minimumInterval: number): Promis
  * for more details.
  * @param options An object containing the background fetch options.
  *
- * # Example
+ * @example
  * ```ts
  * import * as BackgroundFetch from 'expo-background-fetch';
  * import * as TaskManager from 'expo-task-manager';

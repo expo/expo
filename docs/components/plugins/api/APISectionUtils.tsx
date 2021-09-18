@@ -19,7 +19,8 @@ import {
 } from '~/components/plugins/api/APIDataTypes';
 
 export enum TypeDocKind {
-  Enum = 4,
+  LegacyEnum = 4,
+  Enum = 8,
   Variable = 32,
   Function = 64,
   Class = 128,
@@ -37,11 +38,9 @@ export const mdComponents: MDComponents = {
       {children.map(child => (child?.props?.node?.tagName === 'p' ? child?.props.children : child))}
     </Quote>
   ),
-  code: ({ children, node }) =>
+  code: ({ children, node, className }) =>
     Array.isArray(node.properties?.className) ? (
-      <Code className={node.properties?.className[0].toString() || 'language-unknown'}>
-        {children}
-      </Code>
+      <Code className={className || 'language-unknown'}>{children}</Code>
     ) : (
       <InlineCode>{children}</InlineCode>
     ),
@@ -306,6 +305,9 @@ export const getCommentOrSignatureComment = (
   signatures?: MethodSignatureData[]
 ) => comment || (signatures && signatures[0]?.comment);
 
+export const getTagData = (tagName: string, comment?: CommentData) =>
+  comment?.tags?.filter(tag => tag.tag === tagName)[0];
+
 export const CommentTextBlock: React.FC<CommentTextBlockProps> = ({
   comment,
   components = mdComponents,
@@ -323,16 +325,15 @@ export const CommentTextBlock: React.FC<CommentTextBlockProps> = ({
     </ReactMarkdown>
   ) : null;
 
-  const example = comment?.tags?.filter(tag => tag.tag === 'example')[0];
+  const example = getTagData('example', comment);
   const exampleText = example ? (
     <>
-      <br />
-      <br />
-      <ReactMarkdown components={components}>{`__Example:__ ${example.text}`}</ReactMarkdown>
+      <H4>Example</H4>
+      <ReactMarkdown components={components}>{example.text}</ReactMarkdown>
     </>
   ) : null;
 
-  const deprecation = comment?.tags?.filter(tag => tag.tag === 'deprecated')[0];
+  const deprecation = getTagData('deprecated', comment);
   const deprecationNote = deprecation ? (
     <Quote key="deprecation-note">
       {deprecation.text.trim().length ? (
@@ -347,7 +348,7 @@ export const CommentTextBlock: React.FC<CommentTextBlockProps> = ({
     <>
       {deprecationNote}
       {beforeContent}
-      {withDash && (shortText || text) ? ' - ' : null}
+      {withDash && (shortText || text) && ' - '}
       {shortText}
       {text}
       {exampleText}
