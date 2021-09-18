@@ -15,6 +15,7 @@
 #import "EXVersionManager.h"
 #import "EXVersions.h"
 #import "EXAppViewController.h"
+#import "EXJavaScriptCoreModule.h"
 #import <ExpoModulesCore/EXModuleRegistryProvider.h>
 #import <EXConstants/EXConstantsService.h>
 #import <EXSplashScreen/EXSplashScreenService.h>
@@ -421,12 +422,58 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
   });
 }
 
+/** Returns a value like `http://localhost:19000 — my-app` */
+- (NSString *)getBestContextName
+{
+  try {
+    NSURL *bundleUrl = [self bundleUrl];
+    NSURLComponents *urlComponents = [[NSURLComponents alloc] initWithURL:bundleUrl resolvingAgainstBaseURL:NO];
+    // Strip the extra components.
+    urlComponents.path = nil;
+    urlComponents.query = nil;
+    
+    
+    NSString *hostnameUrl = [urlComponents string];
+    
+    // Strip scheme to emulate Safari, NSURLComponents doesn't support this by default.
+    NSRange dividerRange = [hostnameUrl rangeOfString:@"://"];
+    NSUInteger divide = NSMaxRange(dividerRange);
+    hostnameUrl = [hostnameUrl substringFromIndex:divide];
+  
+    // Attempt to use the manifest name, otherwise fallback on the base URL.
+    // This closely emulates the browser, which uses the document.title when possible.
+    if (_appRecord.appLoader.manifest != nil) {
+      NSString *name = [_appRecord.appLoader.manifest name];
+      if (name != nil) {
+        // Like `http://localhost:19000 — my-app`
+        hostnameUrl = [hostnameUrl stringByAppendingString:[@" — " stringByAppendingString:name]];
+      }
+    }
+    return hostnameUrl;
+  } catch (NSException *ex) {
+    RCTLogWarn(@"Failed to fetch page name: %@", ex.reason);
+    return @"Cannot Open Page";
+  }
+}
+
+- (void)updateJavaScriptCoreContextName
+{
+  // Set the JSContext name to a more useful value, this makes debugging JavaScriptCore
+  // in Safari much easier.
+  EXJavaScriptCoreModule *jscModule = [_reactBridge moduleForName:@"ExpoJavaScriptCore"];
+  if (jscModule) {
+    [jscModule setContextName:[self getBestContextName]];
+  }
+}
+
 - (void)_handleJavaScriptLoadEvent:(NSNotification *)notification
 {
   if ([notification.name isEqualToString:[self versionedString:RCTJavaScriptDidLoadNotification]]) {
     _isBridgeRunning = YES;
     _hasBridgeEverLoaded = YES;
     [_versionManager bridgeFinishedLoading:_reactBridge];
+
+    [self updateJavaScriptCoreContextName];
     [self appStateDidBecomeActive];
 
     // TODO: temporary solution for hiding LoadingProgressWindow

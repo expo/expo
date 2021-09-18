@@ -5,7 +5,7 @@
 	};
 	objectVersion = 46;
 	objects = {
-		
+
 /* Begin PBXBuildFile section */
 		0726F0592007E438004992E7 /* EXKernelAppRecord.m in Sources */ = {isa = PBXBuildFile; fileRef = 0726F0582007E438004992E7 /* EXKernelAppRecord.m */; };
 		0726F05C2007E446004992E7 /* EXKernelAppRegistry.m in Sources */ = {isa = PBXBuildFile; fileRef = 0726F05B2007E446004992E7 /* EXKernelAppRegistry.m */; };
@@ -311,6 +311,8 @@
 		BE988DDEFEFD40FEA5C44BFE /* RNDateTimePickerManager.m in Sources */ = {isa = PBXBuildFile; fileRef = D86827B3D57944D8A25F37F8 /* RNDateTimePickerManager.m */; settings = {COMPILER_FLAGS = "-w"; }; };
 		C07CF8B597D24E3D9BAF4D31 /* AIRGoogleMapHeatmap.m in Sources */ = {isa = PBXBuildFile; fileRef = 65028F8B8C154DE59D8AC3E3 /* AIRGoogleMapHeatmap.m */; settings = {COMPILER_FLAGS = "-w"; }; };
 		C1A9EE2CB1DF4BD8936C3C7F /* RNSVGForeignObjectManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 8796D576855445C7AE7F4659 /* RNSVGForeignObjectManager.m */; settings = {COMPILER_FLAGS = "-w"; }; };
+		CD145C0426F54FE700D11019 /* EXJavaScriptCoreModule.m in Sources */ = {isa = PBXBuildFile; fileRef = CD145C0326F54FE700D11019 /* EXJavaScriptCoreModule.m */; };
+		CD145C0526F54FE700D11019 /* EXJavaScriptCoreModule.m in Sources */ = {isa = PBXBuildFile; fileRef = CD145C0326F54FE700D11019 /* EXJavaScriptCoreModule.m */; };
 		D0BF188CA1D140ACA64BB49D /* RNCMaskedViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 78EFF1819B1C44F2A92FC309 /* RNCMaskedViewManager.m */; settings = {COMPILER_FLAGS = "-w"; }; };
 		F108698B2448B11D00B7DC04 /* EXDevMenuMotionInterceptor.m in Sources */ = {isa = PBXBuildFile; fileRef = F108698A2448B11D00B7DC04 /* EXDevMenuMotionInterceptor.m */; };
 		F108698E2448C6B900B7DC04 /* EXDevMenuGestureInterceptor.m in Sources */ = {isa = PBXBuildFile; fileRef = F108698D2448C6B900B7DC04 /* EXDevMenuGestureInterceptor.m */; };
@@ -1293,6 +1295,8 @@
 		CC72501D815B491FBC42AACA /* RNSharedElementTypes.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; path = RNSharedElementTypes.h; sourceTree = "<group>"; };
 		CCE70ECFF37524D67FDFA2D6 /* Pods-ExponentIntegrationTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ExponentIntegrationTests.release.xcconfig"; path = "Target Support Files/Pods-ExponentIntegrationTests/Pods-ExponentIntegrationTests.release.xcconfig"; sourceTree = "<group>"; };
 		CCF7710E4F58478DA6A63F09 /* RNCSliderManager.m */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.objc; path = RNCSliderManager.m; sourceTree = "<group>"; };
+		CD145C0226F54FE700D11019 /* EXJavaScriptCoreModule.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXJavaScriptCoreModule.h; sourceTree = "<group>"; };
+		CD145C0326F54FE700D11019 /* EXJavaScriptCoreModule.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXJavaScriptCoreModule.m; sourceTree = "<group>"; };
 		D29BDFCEEA8F4701829ADCD1 /* RNSharedElementNode.m */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.objc; path = RNSharedElementNode.m; sourceTree = "<group>"; };
 		D47336D662754EDA8EA4BC55 /* RNDateTimePicker.m */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.objc; path = RNDateTimePicker.m; sourceTree = "<group>"; };
 		D86827B3D57944D8A25F37F8 /* RNDateTimePickerManager.m */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.objc; path = RNDateTimePickerManager.m; sourceTree = "<group>"; };
@@ -2469,6 +2473,8 @@
 				B5FB73FE1FF6DADB001C764B /* DevSupport */,
 				B5FB740B1FF6DADB001C764B /* EXAppState.h */,
 				B5FB740C1FF6DADB001C764B /* EXAppState.m */,
+				CD145C0226F54FE700D11019 /* EXJavaScriptCoreModule.h */,
+				CD145C0326F54FE700D11019 /* EXJavaScriptCoreModule.m */,
 				B5FB74111FF6DADB001C764B /* EXLinkingManager.h */,
 				B5FB74121FF6DADB001C764B /* EXLinkingManager.m */,
 				B5FB74131FF6DADB001C764B /* EXNativeModuleIntrospection.h */,
@@ -3023,7 +3029,7 @@
 			outputFileListPaths = (
 			);
 			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-ExponentIntegrationTests-checkManifestLockResult.txt",
+				"$(DERIVED_FILE_DIR)/Pods-Expo Go-Expo Go (unversioned)-checkManifestLockResult.txt",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -3045,7 +3051,7 @@
 			outputFileListPaths = (
 			);
 			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-Expo Go-Expo Go (unversioned)-checkManifestLockResult.txt",
+				"$(DERIVED_FILE_DIR)/Pods-ExponentIntegrationTests-checkManifestLockResult.txt",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -3323,6 +3329,7 @@
 				7043DFA02283303800272D74 /* RNSVGUse.m in Sources */,
 				31AD9A452285B53100F19090 /* AIRMapUrlTile.m in Sources */,
 				31AD9A402285B53100F19090 /* AIRMapCircle.m in Sources */,
+				CD145C0426F54FE700D11019 /* EXJavaScriptCoreModule.m in Sources */,
 				319C949F22F80DE100063194 /* EXScopedBranch.m in Sources */,
 				2519CCFC216B292600FA7C80 /* EXUserNotificationCenter.m in Sources */,
 				7043DF842283303800272D74 /* RNSVGDefsManager.m in Sources */,
@@ -3399,8 +3406,6 @@
 				8B1448C54DEB4CFDB79D7E45 /* RNCSafeAreaViewMode.m in Sources */,
 				6782D340A0024AF58B3805D0 /* RNSVGTopAlignedLabel.ios.m in Sources */,
 				827A699919CED163689E655D /* ExpoModulesProvider.swift in Sources */,
-				0201763D9B224172803E25CD /* RNCPicker.m in Sources */,
-				CC9061983DD142759AAF0D6E /* RNCPickerManager.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3647,6 +3652,7 @@
 				F14218B8262CB68600BB97E6 /* RNSVGUse.m in Sources */,
 				F14218B9262CB68600BB97E6 /* AIRMapUrlTile.m in Sources */,
 				F14218BA262CB68600BB97E6 /* AIRMapCircle.m in Sources */,
+				CD145C0526F54FE700D11019 /* EXJavaScriptCoreModule.m in Sources */,
 				F14218BB262CB68600BB97E6 /* EXScopedBranch.m in Sources */,
 				F14218BD262CB68600BB97E6 /* EXUserNotificationCenter.m in Sources */,
 				F14218BE262CB68600BB97E6 /* RNSVGDefsManager.m in Sources */,
