@@ -38,8 +38,8 @@ export const mdComponents: MDComponents = {
       {children.map(child => (child?.props?.node?.tagName === 'p' ? child?.props.children : child))}
     </Quote>
   ),
-  code: ({ children, node, className }) =>
-    Array.isArray(node.properties?.className) ? (
+  code: ({ children, className }) =>
+    className ? (
       <Code className={className || 'language-unknown'}>{children}</Code>
     ) : (
       <InlineCode>{children}</InlineCode>
