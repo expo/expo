@@ -7,7 +7,6 @@ import { LI, UL } from '~/components/base/list';
 import { P } from '~/components/base/paragraph';
 import { H2, H3, H3Code } from '~/components/plugins/Headings';
 import {
-  CommentTagData,
   DefaultPropsDefinitionData,
   PropData,
   PropsDefinitionData,
@@ -15,7 +14,8 @@ import {
 } from '~/components/plugins/api/APIDataTypes';
 import {
   CommentTextBlock,
-  getCommentOrSignatureComment, getTagData,
+  getCommentOrSignatureComment,
+  getTagData,
   renderTypeOrSignatureType,
   resolveTypeName,
   STYLES_SECONDARY,
