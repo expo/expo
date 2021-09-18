@@ -42,13 +42,7 @@ EX_EXPORT_METHOD_AS(hasHardwareAsync,
   NSError *error = nil;
 
   BOOL isSupported = [context canEvaluatePolicy:LAPolicyDeviceOwnerAuthenticationWithBiometrics error:&error];
-  BOOL isAvailable;
-
-  if (@available(iOS 11.0.1, *)) {
-    isAvailable = isSupported || error.code != LAErrorBiometryNotAvailable;
-  } else {
-    isAvailable = isSupported || error.code != LAErrorTouchIDNotAvailable;
-  }
+  BOOL isAvailable = isSupported || error.code != LAErrorBiometryNotAvailable;
 
   resolve(@(isAvailable));
 }
@@ -116,9 +110,7 @@ EX_EXPORT_METHOD_AS(authenticateAsync,
     context.localizedCancelTitle = cancelLabel;
   }
 
-  if (@available(iOS 11.0, *)) {
-    context.interactionNotAllowed = false;
-  }
+  context.interactionNotAllowed = false;
 
   if ([disableDeviceFallback boolValue]) {
     if (warningMessage) {
@@ -186,15 +178,13 @@ EX_EXPORT_METHOD_AS(authenticateAsync,
 {
   static BOOL isFaceIDDevice = NO;
 
-  if (@available(iOS 11.0.1, *)) {
-    static dispatch_once_t onceToken;
+  static dispatch_once_t onceToken;
 
-    dispatch_once(&onceToken, ^{
-      LAContext *context = [LAContext new];
-      [context canEvaluatePolicy:LAPolicyDeviceOwnerAuthenticationWithBiometrics error:nil];
-      isFaceIDDevice = context.biometryType == LABiometryTypeFaceID;
-    });
-  }
+  dispatch_once(&onceToken, ^{
+    LAContext *context = [LAContext new];
+    [context canEvaluatePolicy:LAPolicyDeviceOwnerAuthenticationWithBiometrics error:nil];
+    isFaceIDDevice = context.biometryType == LABiometryTypeFaceID;
+  });
 
   return isFaceIDDevice;
 }
@@ -207,11 +197,7 @@ EX_EXPORT_METHOD_AS(authenticateAsync,
   dispatch_once(&onceToken, ^{
     LAContext *context = [LAContext new];
     [context canEvaluatePolicy:LAPolicyDeviceOwnerAuthenticationWithBiometrics error:nil];
-    if (@available(iOS 11.0.1, *)) {
-      isTouchIDDevice = context.biometryType == LABiometryTypeTouchID;
-    } else {
-      isTouchIDDevice = true;
-    }
+    isTouchIDDevice = context.biometryType == LABiometryTypeTouchID;
   });
 
   return isTouchIDDevice;

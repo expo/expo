@@ -13,15 +13,15 @@
   "dependencies": {
     "expo": "~42.0.0-alpha.0",
     "expo-status-bar": "~1.0.4",
-    "react": "16.13.1",
-    "react-dom": "16.13.1",
-    "react-native": "https://github.com/expo/react-native/archive/sdk-41.0.0.tar.gz",
+    "react": "17.0.1",
+    "react-dom": "17.0.1",
+    "react-native": "0.64.2",
     "react-native-web": "~0.13.12"
   },
   "devDependencies": {
     "@babel/core": "^7.12.9",
-    "@types/react": "~16.9.35",
-    "@types/react-native": "~0.63.2",
+    "@types/react": "~17.0.21",
+    "@types/react-native": "~0.64.12",
     "typescript": "~4.3.5"
   }
 }

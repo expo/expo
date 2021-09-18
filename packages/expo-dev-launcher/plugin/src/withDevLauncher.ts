@@ -11,6 +11,7 @@ import fs from 'fs';
 import path from 'path';
 import semver from 'semver';
 
+import { InstallationPage } from './constants';
 import { resolveExpoUpdatesVersion } from './resolveExpoUpdatesVersion';
 import { withDevLauncherAppDelegate } from './withDevLauncherAppDelegate';
 
@@ -102,9 +103,10 @@ async function editMainApplication(
     const mainApplication = action(await readFileAsync(mainApplicationPath));
     return await saveFileAsync(mainApplicationPath, mainApplication);
   } catch (e) {
-    WarningAggregator.addWarningIOS(
+    WarningAggregator.addWarningAndroid(
       'expo-dev-launcher',
-      `Couldn't modify MainApplication.java - ${e}.`
+      `Couldn't modify MainApplication.java - ${e}.
+See the expo-dev-client installation instructions to modify your MainApplication.java manually: ${InstallationPage}`
     );
   }
 }
@@ -115,7 +117,11 @@ async function editPodfile(config: ExportedConfigWithProps, action: (podfile: st
     const podfile = action(await readFileAsync(podfilePath));
     return await saveFileAsync(podfilePath, podfile);
   } catch (e) {
-    WarningAggregator.addWarningIOS('expo-dev-launcher', `Couldn't modify AppDelegate.m - ${e}.`);
+    WarningAggregator.addWarningIOS(
+      'expo-dev-launcher',
+      `Couldn't modify AppDelegate.m - ${e}.
+See the expo-dev-client installation instructions to modify your AppDelegate.m manually: ${InstallationPage}`
+    );
   }
 }
 
@@ -125,7 +131,11 @@ async function editIndex(config: ExportedConfigWithProps, action: (index: string
     const index = action(await readFileAsync(indexPath));
     return await saveFileAsync(indexPath, index);
   } catch (e) {
-    WarningAggregator.addWarningIOS('expo-dev-launcher', `Couldn't modify index.js - ${e}.`);
+    WarningAggregator.addWarningIOS(
+      'expo-dev-launcher',
+      `Couldn't modify index.js - ${e}.
+See the expo-dev-client installation instructions to modify your index.js manually: ${InstallationPage}`
+    );
   }
 }
 
@@ -196,7 +206,8 @@ const withDevLauncherActivity: ConfigPlugin = (config) => {
     } else {
       WarningAggregator.addWarningAndroid(
         'expo-dev-launcher',
-        `Cannot automatically configure MainActivity if it's not java`
+        `Cannot automatically configure MainActivity if it's not java.
+See the expo-dev-client installation instructions to modify your MainActivity manually: ${InstallationPage}`
       );
     }
 

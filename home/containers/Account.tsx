@@ -1,10 +1,11 @@
+import { useQuery } from '@apollo/client';
 import { StackScreenProps } from '@react-navigation/stack';
 import * as React from 'react';
 
 import AccountView from '../components/AccountView';
 import { Project } from '../components/ProjectList';
 import { Snack } from '../components/SnackList';
-import { useHome_AccountDataQuery } from '../graphql/queries/AccountDataQuery.query.generated';
+import { Home_AccountDataDocument } from '../graphql/types';
 import { AllStackRoutes } from '../navigation/Navigation.types';
 
 const APP_LIMIT = 7;
@@ -27,7 +28,7 @@ export default function Account(
     accountName: string;
   } & StackScreenProps<AllStackRoutes, 'Account'>
 ) {
-  const query = useHome_AccountDataQuery({
+  const query = useQuery(Home_AccountDataDocument, {
     fetchPolicy: 'cache-and-network',
     variables: {
       accountName: props.accountName,

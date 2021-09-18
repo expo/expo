@@ -43,7 +43,7 @@ const EXTERNAL_REACT_ABI_DEPENDENCIES = [
   'GoogleMaps',
   'Google-Maps-iOS-Utils',
   'lottie-ios',
-  'JKBigInteger2',
+  'JKBigInteger',
   'Branch',
   'Google-Mobile-Ads-SDK',
   'RCT-Folly',
@@ -392,7 +392,6 @@ async function generateExpoKitPodspecAsync(
   const versionedReactPodName = getVersionedReactPodName(versionName);
   const versionedExpoKitPodName = getVersionedExpoKitPodName(versionName);
   const specFilename = path.join(specfilePath, 'ExpoKit.podspec');
-  const excludedPodNames = getExcludedPodNames();
 
   // rename spec to newPodName
   const sedPattern = `s/\\(s\\.name[[:space:]]*=[[:space:]]\\)"ExpoKit"/\\1"${versionedExpoKitPodName}"/g`;
@@ -407,8 +406,7 @@ async function generateExpoKitPodspecAsync(
       .filter(
         (pkg) =>
           pkg.isIncludedInExpoClientOnPlatform('ios') &&
-          pkg.podspecName &&
-          !excludedPodNames.includes(pkg.podspecName)
+          pkg.podspecName
       )
       .map(
         ({ podspecName }) =>
@@ -752,11 +750,10 @@ async function getVersionedUnimodulePodsAsync(
 ): Promise<{ [key: string]: string }> {
   const versionedUnimodulePods = {};
   const packages = await getListOfPackagesAsync();
-  const excludedPodNames = getExcludedPodNames();
 
   packages.forEach((pkg) => {
     const podName = pkg.podspecName;
-    if (podName && pkg.isVersionableOnPlatform('ios') && !excludedPodNames.includes(podName)) {
+    if (podName && pkg.isVersionableOnPlatform('ios')) {
       versionedUnimodulePods[podName] = `${versionName}${podName}`;
     }
   });
@@ -824,11 +821,6 @@ function getCppLibrariesToVersion() {
       libName: 'runtimeexecutor',
     },
   ];
-}
-
-function getExcludedPodNames() {
-  // we don't want Payments in Expo Client versions for now
-  return ['EXPaymentsStripe'];
 }
 
 export async function addVersionAsync(versionNumber: string, packages: Package[]) {

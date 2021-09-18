@@ -113,9 +113,18 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
 {
   EXAssertMainThread();
   NSAssert((_delegate != nil), @"Cannot init react app without EXReactAppManagerDelegate");
+
   [self _invalidateAndClearDelegate:NO];
   [self computeVersionSymbolPrefix];
 
+  // Assert early so we can catch the error before instantiating the bridge, otherwise we would be passing a
+  // nullish scope key to the scoped modules.
+  // Alternatively we could skip instantiating the scoped modules but then singletons like the one used in
+  // expo-updates would be loaded as bare modules. In the case of expo-updates, this would throw a fatal error
+  // because Expo.plist is not available in the Expo Go app.
+  NSAssert(_appRecord.scopeKey, @"Experience scope key should be nonnull when getting initial properties for root view. This can occur when the manifest JSON, loaded from the server, is missing keys.");
+
+  
   if ([self isReadyToLoad]) {
     Class versionManagerClass = [self versionedClassFromString:@"EXVersionManager"];
     Class bridgeClass = [self versionedClassFromString:@"RCTBridge"];

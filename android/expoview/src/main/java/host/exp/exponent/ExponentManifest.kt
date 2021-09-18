@@ -143,8 +143,7 @@ class ExponentManifest @Inject constructor(
 
   fun isAnonymousExperience(manifest: Manifest): Boolean {
     return try {
-      val id = manifest.getLegacyID()
-      id.startsWith(ANONYMOUS_EXPERIENCE_PREFIX)
+      manifest.getScopeKey().startsWith(ANONYMOUS_SCOPE_KEY_PREFIX)
     } catch (e: JSONException) {
       false
     }
@@ -261,7 +260,7 @@ class ExponentManifest @Inject constructor(
 
     private const val MAX_BITMAP_SIZE = 192
     private const val REDIRECT_SNIPPET = "exp.host/--/to-exp/"
-    private const val ANONYMOUS_EXPERIENCE_PREFIX = "@anonymous/"
+    private const val ANONYMOUS_SCOPE_KEY_PREFIX = "@anonymous/"
     private const val EMBEDDED_KERNEL_MANIFEST_ASSET = "kernel-manifest.json"
     private const val EXPONENT_SERVER_HEADER = "Exponent-Server"
 

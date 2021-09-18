@@ -26,7 +26,7 @@ class CryptoModuleTest {
     val encoding = "base64"
     for (algorithm in algorithms) {
       val promise = PromiseMock()
-      module.digestStringAsync(algorithm, testValue, hashMapOf("encoding" to "base64") as Map<String, Any>?, promise)
+      module.digestStringAsync(algorithm, testValue, mapOf("encoding" to "base64"), promise)
       assertEquals(expectedEncodingResults[encoding]!![algorithm], promise.resolveValue)
     }
   }
@@ -36,7 +36,7 @@ class CryptoModuleTest {
     val encoding = "hex"
     for (algorithm in algorithms) {
       val promise = PromiseMock()
-      module.digestStringAsync(algorithm, testValue, hashMapOf("encoding" to encoding) as Map<String, Any>?, promise)
+      module.digestStringAsync(algorithm, testValue, mapOf("encoding" to encoding), promise)
       assertEquals(expectedEncodingResults[encoding]!![algorithm], promise.resolveValue)
     }
   }
@@ -46,7 +46,7 @@ class CryptoModuleTest {
     val promise = PromiseMock()
     val encoding = "h333x"
     val algorithm = "SHA-1"
-    module.digestStringAsync(algorithm, testValue, hashMapOf("encoding" to encoding) as Map<String, Any>?, promise)
+    module.digestStringAsync(algorithm, testValue, mapOf("encoding" to encoding), promise)
     assertRejected(promise)
   }
 
@@ -55,7 +55,7 @@ class CryptoModuleTest {
     val promise = PromiseMock()
     val encoding = "hex"
     val algorithm = "MDWer4"
-    module.digestStringAsync(algorithm, testValue, hashMapOf("encoding" to encoding) as Map<String, Any>?, promise)
+    module.digestStringAsync(algorithm, testValue, mapOf("encoding" to encoding), promise)
     assertRejected(promise)
   }
 }

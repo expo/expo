@@ -8,7 +8,7 @@ module Expo
       # Find the targets that use expo modules and need the modules provider
       targets_with_modules_provider = targets.select do |target|
         autolinking_manager = target.target_definition.autolinking_manager
-        autolinking_manager.present? && autolinking_manager.needs_provider_generation?
+        autolinking_manager.present?
       end
 
       # Find existing PBXGroup for modules providers.

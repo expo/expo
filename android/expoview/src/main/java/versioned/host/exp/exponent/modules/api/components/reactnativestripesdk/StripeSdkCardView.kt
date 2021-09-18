@@ -1,13 +1,10 @@
 package versioned.host.exp.exponent.modules.api.components.reactnativestripesdk
 
-import android.content.Context
 import android.content.res.ColorStateList
 import android.graphics.Color
 import android.graphics.Typeface
 import android.text.Editable
 import android.text.TextWatcher
-import android.view.View
-import android.view.inputmethod.InputMethodManager
 import android.widget.FrameLayout
 import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.uimanager.ThemedReactContext
@@ -17,6 +14,7 @@ import com.google.android.material.shape.CornerFamily
 import com.google.android.material.shape.MaterialShapeDrawable
 import com.google.android.material.shape.ShapeAppearanceModel
 import com.stripe.android.databinding.CardInputWidgetBinding
+import com.stripe.android.model.Address
 import com.stripe.android.model.PaymentMethodCreateParams
 import com.stripe.android.view.CardInputListener
 import com.stripe.android.view.CardInputWidget
@@ -25,6 +23,7 @@ class StripeSdkCardView(private val context: ThemedReactContext) : FrameLayout(c
   private var mCardWidget: CardInputWidget
   val cardDetails: MutableMap<String, Any?> = mutableMapOf("brand" to "", "last4" to "", "expiryMonth" to null, "expiryYear" to null, "postalCode" to "")
   var cardParams: PaymentMethodCreateParams.Card? = null
+  var cardAddress: Address? = null
   private var mEventDispatcher: EventDispatcher?
   private var dangerouslyGetFullCardDetails: Boolean = false
 
@@ -48,6 +47,29 @@ class StripeSdkCardView(private val context: ThemedReactContext) : FrameLayout(c
       val binding = CardInputWidgetBinding.bind(mCardWidget)
       binding.cardNumberEditText.requestFocus()
       binding.cardNumberEditText.showSoftKeyboard()
+    }
+  }
+
+  fun requestFocusFromJS() {
+    val binding = CardInputWidgetBinding.bind(mCardWidget)
+    binding.cardNumberEditText.requestFocus()
+    binding.cardNumberEditText.showSoftKeyboard()
+  }
+
+  fun requestBlurFromJS() {
+    val binding = CardInputWidgetBinding.bind(mCardWidget)
+    binding.cardNumberEditText.hideSoftKeyboard()
+    binding.cardNumberEditText.clearFocus()
+    binding.container.requestFocus()
+  }
+
+  fun requestClearFromJS() {
+    val binding = CardInputWidgetBinding.bind(mCardWidget)
+    binding.cardNumberEditText.setText("")
+    binding.cvcEditText.setText("")
+    binding.expiryDateEditText.setText("")
+    if (mCardWidget.postalCodeEnabled) {
+      binding.postalCodeEditText.setText("")
     }
   }
 
@@ -150,9 +172,16 @@ class StripeSdkCardView(private val context: ThemedReactContext) : FrameLayout(c
   }
 
   fun onCardChanged() {
-    mCardWidget.paymentMethodCard?.let { cardParams = it } ?: run {
+    mCardWidget.paymentMethodCard?.let {
+      cardParams = it
+      cardAddress = Address.Builder()
+        .setPostalCode(cardDetails["postalCode"] as String?)
+        .build()
+    } ?: run {
       cardParams = null
+      cardAddress = null
     }
+
     mCardWidget.cardParams?.let {
       cardDetails["brand"] = mapCardBrand(it.brand)
       cardDetails["last4"] = it.last4
@@ -166,6 +195,12 @@ class StripeSdkCardView(private val context: ThemedReactContext) : FrameLayout(c
   }
 
   private fun setListeners() {
+    mCardWidget.setCardValidCallback { isValid, _ ->
+      if (isValid) {
+        onCardChanged()
+      }
+    }
+
     mCardWidget.setCardInputListener(object : CardInputListener {
       override fun onCardComplete() {}
       override fun onExpirationComplete() {}
@@ -235,14 +270,5 @@ class StripeSdkCardView(private val context: ThemedReactContext) : FrameLayout(c
       MeasureSpec.makeMeasureSpec(height, MeasureSpec.EXACTLY)
     )
     layout(left, top, right, bottom)
-  }
-}
-
-fun View.showSoftKeyboard() {
-  post {
-    if (this.requestFocus()) {
-      val imm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager?
-      imm?.showSoftInput(this, InputMethodManager.SHOW_IMPLICIT)
-    }
   }
 }

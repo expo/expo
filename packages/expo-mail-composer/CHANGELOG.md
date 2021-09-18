@@ -5,6 +5,7 @@
 ### 🛠 Breaking changes
 
 - Added `AndroidManifest.xml` queries for intent handling. ([#13388](https://github.com/expo/expo/pull/13388) by [@EvanBacon](https://github.com/EvanBacon))
+- Dropped support for iOS 11.0 ([#14383](https://github.com/expo/expo/pull/14383) by [@cruzach](https://github.com/cruzach))
 
 ### 🎉 New features
 
@@ -13,6 +14,7 @@
 ### 💡 Others
 
 - Migrated from `@unimodules/core` to `expo-modules-core`. ([#13757](https://github.com/expo/expo/pull/13757) by [@tsapeta](https://github.com/tsapeta))
+- Rewrote Android part from Java to Kotlin ([#14394](https://github.com/expo/expo/pull/14394) by [@m1st4ke](https://github.com/m1st4ke))
 
 ## 10.2.0 — 2021-06-16
 

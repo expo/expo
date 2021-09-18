@@ -414,7 +414,7 @@ previewPhotoSampleBuffer:(CMSampleBufferRef)previewPhotoSampleBuffer
   CFRelease(sourceCGIImageRef);
 }
 
-- (void)captureOutput:(AVCapturePhotoOutput *)output didFinishProcessingPhoto:(AVCapturePhoto *)photo error:(NSError *)error API_AVAILABLE(ios(11.0))
+- (void)captureOutput:(AVCapturePhotoOutput *)output didFinishProcessingPhoto:(AVCapturePhoto *)photo error:(NSError *)error 
 {
   NSDictionary *options = _photoCaptureOptions;
   EXPromiseRejectBlock reject = _photoCapturedReject;

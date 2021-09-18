@@ -34,8 +34,8 @@
     "preset": "expo-module-scripts/ios"
   },
   "dependencies": {
-    "expo-constants": "~11.0.0",
-    "expo-modules-core": "~0.3.0-alpha.0"
+    "expo-constants": "~11.1.0",
+    "expo-modules-core": "~0.3.2"
   },
   "devDependencies": {
     "expo-module-scripts": "^2.0.0"

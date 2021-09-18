@@ -6,12 +6,15 @@
 #import <React/RCTUIManager.h>
 #import <React/RCTComponentData.h>
 #import <React/RCTModuleData.h>
+#import <React/RCTEventDispatcherProtocol.h>
 
 #import <ExpoModulesCore/EXNativeModulesProxy.h>
 #import <ExpoModulesCore/EXEventEmitter.h>
 #import <ExpoModulesCore/EXViewManager.h>
 #import <ExpoModulesCore/EXViewManagerAdapter.h>
 #import <ExpoModulesCore/EXViewManagerAdapterClassesRegistry.h>
+#import <ExpoModulesCore/EXModuleRegistryProvider.h>
+#import <ExpoModulesCore/EXReactNativeEventEmitter.h>
 #import "ExpoModulesCore-Swift.h"
 
 static const NSString *exportedMethodsNamesKeyPath = @"exportedMethods";
@@ -25,6 +28,13 @@ static const NSString *methodInfoArgumentsCountKey = @"argumentsCount";
 @interface RCTBridge (RegisterAdditionalModuleClasses)
 
 - (void)registerAdditionalModuleClasses:(NSArray<Class> *)modules;
+
+@end
+
+@interface RCTComponentData (EXNativeModulesProxy)
+
+- (instancetype)initWithManagerClass:(Class)managerClass bridge:(RCTBridge *)bridge eventDispatcher:(id<RCTEventDispatcherProtocol>) eventDispatcher; // available in RN 0.65+
+- (instancetype)initWithManagerClass:(Class)managerClass bridge:(RCTBridge *)bridge;
 
 @end
 
@@ -52,7 +62,7 @@ RCT_EXPORT_MODULE(NativeUnimoduleProxy)
 {
   if (self = [super init]) {
     _exModuleRegistry = moduleRegistry != nil ? moduleRegistry : [[EXModuleRegistryProvider new] moduleRegistry];
-    _swiftInteropBridge = [[SwiftInteropBridge alloc] initWithModulesProvider:[NSClassFromString(@"ExpoModulesProvider") new] legacyModuleRegistry:_exModuleRegistry];
+    _swiftInteropBridge = [[SwiftInteropBridge alloc] initWithModulesProvider:[self getExpoModulesProvider] legacyModuleRegistry:_exModuleRegistry];
     _exportedMethodsKeys = [NSMutableDictionary dictionary];
     _exportedMethodsReverseKeys = [NSMutableDictionary dictionary];
     _ownsModuleRegistry = moduleRegistry == nil;
@@ -172,6 +182,17 @@ RCT_EXPORT_METHOD(callMethod:(NSString *)moduleName methodNameOrKey:(id)methodNa
 
 #pragma mark - Privates
 
+- (id<ModulesProviderObjCProtocol>)getExpoModulesProvider
+{
+  Class generatedExpoModulesProvider = NSClassFromString(@"ExpoModulesProvider");
+  // Checks if `ExpoModulesProvider` was generated
+  if (generatedExpoModulesProvider) {
+    return [generatedExpoModulesProvider new];
+  } else {
+    return [ModulesProvider new];
+  }
+}
+
 - (void)registerExpoModulesInBridge:(RCTBridge *)bridge
 {
   // Registering expo modules in bridge is needed only when the proxy module owns the registry
@@ -243,7 +264,16 @@ RCT_EXPORT_METHOD(callMethod:(NSString *)moduleName methodNameOrKey:(id)methodNa
     NSString *className = NSStringFromClass(moduleClass);
 
     if ([moduleClass isSubclassOfClass:[RCTViewManager class]] && !componentDataByName[className]) {
-      componentDataByName[className] = [[RCTComponentData alloc] initWithManagerClass:moduleClass bridge:bridge];
+      RCTComponentData *componentData = [RCTComponentData alloc];
+      if ([componentData respondsToSelector:@selector(initWithManagerClass:bridge:eventDispatcher:)]) {
+        // Init method was changed in RN 0.65
+        [componentData initWithManagerClass:moduleClass bridge:bridge eventDispatcher:bridge.eventDispatcher];
+      } else {
+        // fallback for older RNs
+        [componentData initWithManagerClass:moduleClass bridge:bridge];
+      }
+      
+      componentDataByName[className] = componentData;
     }
   }
 }

@@ -31,18 +31,11 @@ export async function reviewPullRequestAsync(prNumber: number) {
   await Git.fetchAsync({
     remote: 'origin',
     ref: pr.head.sha,
-    depth: 1,
-  });
-
-  logger.info('👾 Fetching base commit', chalk.yellow.bold(pr.base.sha));
-  await Git.fetchAsync({
-    remote: 'origin',
-    ref: pr.base.sha,
-    depth: 1,
+    depth: pr.commits + 1,
   });
 
   // Get the diff of the pull request.
-  const diff = await Git.getDiffAsync(pr.base.sha, pr.head.sha);
+  const diff = await GitHub.getPullRequestDiffAsync(prNumber);
 
   const input: ReviewInput = {
     pullRequest: pr,

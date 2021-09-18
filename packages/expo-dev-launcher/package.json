@@ -28,12 +28,12 @@
   "license": "MIT",
   "homepage": "https://docs.expo.io",
   "dependencies": {
-    "@expo/config-plugins": "^3.0.0",
+    "@expo/config-plugins": "^3.1.0",
     "resolve-from": "^5.0.0",
     "semver": "^7.3.5"
   },
   "devDependencies": {
-    "babel-preset-expo": "~8.4.0",
+    "babel-preset-expo": "~8.5.0",
     "expo-module-scripts": "^2.0.0",
     "react": "17.0.1",
     "react-native": "0.64.2"

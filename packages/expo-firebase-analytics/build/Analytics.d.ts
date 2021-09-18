@@ -2,36 +2,28 @@ export { default as FirebaseAnalyticsJS } from './FirebaseAnalyticsJS';
 /**
  * Logs an app event. The event can have up to 25 parameters. Events with the same name must have
  * the same parameters. Up to 500 event names are supported. Using predefined events and/or
- * parameters is recommended for optimal reporting.
+ * parameters is recommended for optimal reporting. See [the Google Analytics event reference](https://developers.google.com/gtagjs/reference/event)
+ * for a list of all predefined events.
  *
- * The following event names are reserved and cannot be used:
- * - `ad_activeview`
- * - `ad_click`
- * - `ad_exposure`
- * - `ad_impression`
- * - `ad_query`
- * - `adunit_exposure`
- * - `app_clear_data`
- * - `app_remove`
- * - `app_update`
- * - `error`
- * - `first_open`
- * - `in_app_purchase`
- * - `notification_dismiss`
- * - `notification_foreground`
- * - `notification_open`
- * - `notification_receive`
- * - `os_update`
- * - `screen_view`
- * - `session_start`
- * - `user_engagement`
+ * > The following event names are reserved for the native SDKs automatic collection and cannot be used: `ad_activeview, ad_click, ad_exposure, ad_query, ad_reward, adunit_exposure, app_background, app_clear_data, app_exception, app_remove, app_store_refund, app_store_subscription_cancel, ad_activeview, ad_click, ad_exposure, ad_query, ad_reward, adunit_exposure, app_background, app_clear_data, app_exception, app_remove, app_store_refund, app_store_subscription_cancel, app_store_subscription_convert, app_store_subscription_renew, app_update, app_upgrade, dynamic_link_app_open, dynamic_link_app_update, dynamic_link_first_open, error, firebase_campaign, first_open, first_visit, in_app_purchase, notification_dismiss, notification_foreground, notification_open, notification_receive, os_update, session_start, session_start_with_rollout, user_engagement`
  *
  * # Example
  * ```ts
- * await Analytics.logEvent('ButtonTapped', {
- *   name: 'settings',
- *   screen: 'profile',
- *   purpose: 'Opens the internal settings',
+ * await Analytics.logEvent('add_to_cart', {
+ *   currency: 'USD',
+ *   value: 29.98
+ *   items: [{
+ *     id: "P12345",
+ *     name: "Expo Warhol T-Shirt",
+ *     brand: "Expo",
+ *     category: "Apparel/T-Shirts",
+ *     coupon: "SUMMER_DISCOUNT",
+ *     list_name: "Search Results",
+ *     list_position: 1,
+ *     price: 14.99,
+ *     quantity: 2,
+ *     variant: "Blue"
+ *   }]
  * });
  * ```
  *
@@ -39,11 +31,11 @@ export { default as FirebaseAnalyticsJS } from './FirebaseAnalyticsJS';
  * The name must start with an alphabetic character. Some event names are  reserved. The `firebase_`,
  * `google_`, and `ga_` prefixes are reserved and should not be used. Note that event names are
  * case-sensitive and that logging two events whose names differ only in case will result in two
- * distinct events.
+ * distinct events. To manually log screen view events, use the `screen_view` event name.
  * @param properties The dictionary of event parameters. Passing `undefined` indicates that the
  * event has no parameters. Parameter names can be up to 40 characters long and must start with an
  * alphabetic character and contain only alphanumeric characters and underscores. Only `String` and
- * `Number` (signed 64-bit integer and 64-bit floating-point number) parameter types are supported.
+ * `Number` parameter types are supported; and `items` arrays containting dictionaries.
  * `String` parameter values can be up to 100 characters long. The `firebase_`,  `google_`, and
  * `ga_` prefixes are reserved and should not be used for parameter names.
  */

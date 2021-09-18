@@ -205,11 +205,23 @@ NSTimeInterval const EXUpdatesDefaultTimeoutInterval = 60;
   }
 
   NSError *error;
-  EXUpdatesUpdate *update = [EXUpdatesUpdate updateWithManifest:mutableManifest.copy
-                                                       response:response
-                                                         config:_config
-                                                       database:database
-                                                          error:&error];
+  EXUpdatesUpdate *update;
+  @try {
+    update = [EXUpdatesUpdate updateWithManifest:mutableManifest.copy
+                                                         response:response
+                                                           config:_config
+                                                         database:database
+                                                            error:&error];
+  }
+  @catch (NSException *exception) {
+    // Catch any assertions related to parsing the manifest JSON,
+    // this will ensure invalid manifests can be easily debugged.
+    // For example, this will catch nullish sdkVersion assertions.
+    error = [NSError errorWithDomain:EXUpdatesFileDownloaderErrorDomain
+                                code:1022
+                            userInfo:@{NSLocalizedDescriptionKey: [@"Failed to parse manifest: " stringByAppendingString:exception.reason] }];
+  }
+  
   if (error) {
     errorBlock(error, response);
     return;

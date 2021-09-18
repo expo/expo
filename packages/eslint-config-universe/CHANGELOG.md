@@ -4,6 +4,16 @@
 
 ### 🛠 Breaking changes
 
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 8.0.0 — 2021-09-08
+
+### 🛠 Breaking changes
+
 - Require ESLint 7+ and Prettier 2+. ([#13858](https://github.com/expo/expo/pull/13858) by [@Simek](https://github.com/Simek))
 - Update all the ESLint configs and plugins:
   - `@typescript-eslint/eslint-plugin` and `@typescript-eslint/eslint-parser` updated to 4.28.5,
@@ -12,10 +22,6 @@
   - `eslint-plugin-react` update to 7.24.0,
   - `eslint-plugin-react-hooks` updated to 4.2.0,
   - `eslint-plugin-import` update to 2.23.4. ([#13858](https://github.com/expo/expo/pull/13858) by [@Simek](https://github.com/Simek))
-
-### 🎉 New features
-
-### 🐛 Bug fixes
 
 ## 7.0.1 — 2021-01-15
 

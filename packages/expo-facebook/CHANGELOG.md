@@ -5,6 +5,7 @@
 ### 🛠 Breaking changes
 
 - [plugin] Removed swift noop file plugin. ([#13532](https://github.com/expo/expo/pull/13532) by [@EvanBacon](https://github.com/EvanBacon))
+- Dropped support for iOS 11.0 ([#14383](https://github.com/expo/expo/pull/14383) by [@cruzach](https://github.com/cruzach))
 
 ### 🎉 New features
 
@@ -19,6 +20,8 @@
 - More TypeScript doc blocks. ([#13657](https://github.com/expo/expo/pull/13657) by [@cruzach](https://github.com/cruzach))
 - Export `FacebookInitializationOptions`
 - Migrated from `@unimodules/core` to `expo-modules-core`. ([#13757](https://github.com/expo/expo/pull/13757) by [@tsapeta](https://github.com/tsapeta))
+- Add correct return types to the `withFacebookIOS` setters. ([#14423](https://github.com/expo/expo/pull/14423) by [@Simek](https://github.com/Simek))
+- Updated `@expo/config-plugins` ([#14443](https://github.com/expo/expo/pull/14443) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 11.2.0 — 2021-06-16
 
