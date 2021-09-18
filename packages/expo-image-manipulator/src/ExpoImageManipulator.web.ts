@@ -26,6 +26,7 @@ function getResults(canvas: HTMLCanvasElement, options?: SaveOptions): ImageResu
 function loadImageAsync(uri: string): Promise<HTMLCanvasElement> {
   return new Promise((resolve, reject) => {
     const imageSource = new Image();
+    imageSource.crossOrigin = '*';
     const canvas = document.createElement('canvas');
     imageSource.onload = () => {
       canvas.width = imageSource.naturalWidth;
