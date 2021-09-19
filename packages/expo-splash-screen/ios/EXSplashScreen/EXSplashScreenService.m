@@ -92,19 +92,8 @@ EX_REGISTER_SINGLETON_MODULE(SplashScreen);
   }
   [self removeRootViewControllerListener];
 
-  EXSplashScreenViewController *splashScreenViewController = [self.splashScreenControllers objectForKey:viewController];
-  EX_WEAKIFY(self);
-  return [splashScreenViewController
-      hideWithCallback:^(BOOL hasEffect) {
-        EX_ENSURE_STRONGIFY(self);
-        [self.splashScreenControllers removeObjectForKey:viewController];
-        successCallback(hasEffect);
-      }
-      failureCallback:^(NSString *message) {
-        EX_ENSURE_STRONGIFY(self);
-        [self.splashScreenControllers removeObjectForKey:viewController];
-        failureCallback(message);
-      }];
+  return [[self.splashScreenControllers objectForKey:viewController] hideWithCallback:successCallback
+                                                                      failureCallback:failureCallback];
 }
 
 - (void)onAppContentDidAppear:(UIViewController *)viewController
