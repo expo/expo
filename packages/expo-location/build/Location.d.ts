@@ -145,6 +145,16 @@ export declare function getBackgroundPermissionsAsync(): Promise<PermissionRespo
  */
 export declare function requestBackgroundPermissionsAsync(): Promise<PermissionResponse>;
 /**
+ * Check or request permissions for the foreground location.
+ * This uses both `requestBackgroundPermissionsAsync` and `getBackgroundPermissionsAsync` to interact with the permissions.
+ *
+ * @example
+ * ```ts
+ * const [status, requestPermission] = Location.useBackgroundPermissions();
+ * ```
+ */
+export declare const useBackgroundPermissions: any;
+/**
  * Checks whether location services are enabled by the user.
  * @returns A `Promise` resolving to `true` if location services are enabled
  * on the device, or `false` if not.
