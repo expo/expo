@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix template TS/Lint errors ([#14473](https://github.com/expo/expo/pull/14473) by [@mrousavy](https://github.com/mrousavy))
+
 ### 💡 Others
 
 ## 9.1.0 — 2021-06-16
