@@ -17,7 +17,7 @@
 
 ### 💡 Others
 
-- Rewrite Android code to Kotlin.
+- Rewrite Android code to Kotlin. ([#14479](https://github.com/expo/expo/pull/14479) by [@kkafar](https://github.com/kkafar))
 
 ## 9.1.0 — 2021-06-16
 
