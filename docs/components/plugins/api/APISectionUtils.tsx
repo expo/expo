@@ -39,11 +39,7 @@ export const mdComponents: MDComponents = {
     </Quote>
   ),
   code: ({ children, className }) =>
-    className ? (
-      <Code className={className || 'language-unknown'}>{children}</Code>
-    ) : (
-      <InlineCode>{children}</InlineCode>
-    ),
+    className ? <Code className={className}>{children}</Code> : <InlineCode>{children}</InlineCode>,
   h1: ({ children }) => <H4>{children}</H4>,
   ul: ({ children }) => <UL>{children}</UL>,
   li: ({ children }) => <LI>{children}</LI>,

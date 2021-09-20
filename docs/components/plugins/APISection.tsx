@@ -21,11 +21,11 @@ type Props = {
 };
 
 const filterDataByKind = (
-  entries: GeneratedData[],
+  entries: GeneratedData[] = [],
   kind: TypeDocKind | TypeDocKind[],
   additionalCondition: (entry: GeneratedData) => boolean = () => true
 ) =>
-  (entries || []).filter(
+  entries.filter(
     (entry: GeneratedData) =>
       (Array.isArray(kind) ? kind.includes(entry.kind) : entry.kind === kind) &&
       additionalCondition(entry)
