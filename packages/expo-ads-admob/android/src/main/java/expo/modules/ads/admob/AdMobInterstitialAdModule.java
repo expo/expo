@@ -75,11 +75,12 @@ public class AdMobInterstitialAdModule extends ExportedModule {
     new Handler(Looper.getMainLooper()).post(new Runnable() {
       @Override
       public void run() {
+        mRequestAdPromise = promise;
         recreateInterstitialAdWithAdUnitID(mAdUnitID);
+
         if (mInterstitialAd.isLoaded() || mInterstitialAd.isLoading()) {
           promise.reject("E_AD_ALREADY_LOADED", "Ad is already loaded.", null);
         } else {
-          mRequestAdPromise = promise;
           AdRequest.Builder adRequestBuilder =
               new AdRequest.Builder()
                   .addNetworkExtrasBundle(AdMobAdapter.class, additionalRequestParams.toBundle());
@@ -136,6 +137,15 @@ public class AdMobInterstitialAdModule extends ExportedModule {
   }
 
   private void recreateInterstitialAdWithAdUnitID(String adUnitID) {
+    if (mActivityProvider.getCurrentActivity() == null) {
+      if (mRequestAdPromise != null) {
+        mRequestAdPromise.reject("E_AD_INTERNAL_ERROR", "Currect activity is null.", null);
+        mRequestAdPromise = null;
+      }
+
+      return;
+    }
+
     if (mInterstitialAd != null) {
       mInterstitialAd = null;
     }
