@@ -82,8 +82,7 @@ class IntentLauncherModule(
     } else {
       if (params.containsKey(ATTR_DATA)) {
         intent.data = Uri.parse(params.getString(ATTR_DATA))
-      }
-      else if (params.containsKey(ATTR_TYPE)) {
+      } else if (params.containsKey(ATTR_TYPE)) {
         intent.type = params.getString(ATTR_TYPE)
       }
     }
