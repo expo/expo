@@ -102,6 +102,7 @@ async function action({packageName, version = 'unversioned'}: ActionOptions) {
     'expo-error-recovery': ['ErrorRecovery.ts'],
     'expo-face-detector': ['FaceDetector.ts'],
     'expo-firebase-analytics': ['Analytics.ts'],
+    'expo-firebase-core': ['FirebaseCore.ts'],
     'expo-facebook': [['Facebook.ts', 'Facebook.types.ts']],
     'expo-font': ['index.ts'],
     'expo-haptics': ['Haptics.ts'],

@@ -1,11 +1,11 @@
-import { DEFAULT_WEB_APP_OPTIONS, IFirebaseOptions } from 'expo-firebase-core';
+import { DEFAULT_WEB_APP_OPTIONS, FirebaseOptions } from 'expo-firebase-core';
 import { CodedError } from 'expo-modules-core';
 import * as React from 'react';
 
 import { WebView } from './WebView';
 
 interface Props extends React.ComponentProps<typeof WebView> {
-  firebaseConfig?: IFirebaseOptions;
+  firebaseConfig?: FirebaseOptions;
   firebaseVersion?: string;
   appVerificationDisabledForTesting?: boolean;
   languageCode?: string;
@@ -18,7 +18,7 @@ interface Props extends React.ComponentProps<typeof WebView> {
 }
 
 function getWebviewSource(
-  firebaseConfig: IFirebaseOptions,
+  firebaseConfig: FirebaseOptions,
   firebaseVersion?: string,
   appVerificationDisabledForTesting: boolean = false,
   languageCode?: string,
@@ -125,7 +125,7 @@ function getWebviewSource(
   };
 }
 
-function validateFirebaseConfig(firebaseConfig?: IFirebaseOptions) {
+function validateFirebaseConfig(firebaseConfig?: FirebaseOptions) {
   if (!firebaseConfig) {
     throw new CodedError(
       'ERR_FIREBASE_RECAPTCHA_CONFIG',

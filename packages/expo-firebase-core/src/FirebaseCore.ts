@@ -1,6 +1,6 @@
 import ExpoFirebaseCore from './ExpoFirebaseCore';
-import { IFirebaseOptions, getDefaultWebOptions } from './FirebaseOptions';
-export { IFirebaseOptions } from './FirebaseOptions';
+import { FirebaseOptions, getDefaultWebOptions } from './FirebaseOptions';
+export { FirebaseOptions } from './FirebaseOptions';
 
 if (!ExpoFirebaseCore) {
   console.warn(
@@ -8,28 +8,33 @@ if (!ExpoFirebaseCore) {
   );
 }
 
+// @needsAudit
 /**
  * Name of the default Firebase app (e.g. `[DEFAULT]`).
- * On the Expo Client a Firebase App is created for each project that is loaded, and a unique name for each project is returned.
+ *
+ * In Expo Go, a Firebase App is created for each project that is loaded, and a unique name for each
+ * project is returned.
  */
 export const DEFAULT_APP_NAME: string | void = ExpoFirebaseCore
   ? ExpoFirebaseCore.DEFAULT_APP_NAME
   : undefined;
 
+// @needsAudit
 /**
- * Firebase options with which the default app was initialized. If no Google services configuration was provided, `undefined` is returned.
+ * Firebase options with which the default app was initialized. If no Google services configuration
+ * was provided, `undefined` is returned.
  *
- * Depending on the platform, the options are read from the following files and app.json keys.
+ * Depending on the platform, the options are read from the following files and `app.json` keys.
  *
  * | Platform | File                       | App.json key                 |
  * | -------- | -------------------------- | ---------------------------- |
  * | iOS      | `GoogleService-Info.plist` | `ios.googleServicesFile`     |
  * | Android  | `google-services.json`     | `android.googleServicesFile` |
- * | Web      |                            | `web.config.firebase`        |
+ * | Web      | -                          | `web.config.firebase`        |
  *
- * **example**
+ * # Example
  *
- * ```javascript
+ * ```js
  * console.log(FirebaseCore.DEFAULT_APP_OPTIONS);
  * {
  *   appId: "1:1082251606918:ios:a2800bc715889446e24a07",
@@ -43,11 +48,12 @@ export const DEFAULT_APP_NAME: string | void = ExpoFirebaseCore
  * }
  * ```
  */
-export const DEFAULT_APP_OPTIONS: IFirebaseOptions | void = ExpoFirebaseCore
+export const DEFAULT_APP_OPTIONS: FirebaseOptions | void = ExpoFirebaseCore
   ? ExpoFirebaseCore.DEFAULT_APP_OPTIONS
   : undefined;
 
+// @needsAudit
 /**
  * The default Firebase options as defined in `web.config.firebase` in `app.json`.
  */
-export const DEFAULT_WEB_APP_OPTIONS: IFirebaseOptions | void = getDefaultWebOptions();
+export const DEFAULT_WEB_APP_OPTIONS: FirebaseOptions | void = getDefaultWebOptions();

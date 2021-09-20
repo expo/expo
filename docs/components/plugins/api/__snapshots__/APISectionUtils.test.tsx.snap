@@ -116,7 +116,13 @@ exports[`APISectionUtils.resolveTypeName custom type non-linkable array 1`] = `
 
 exports[`APISectionUtils.resolveTypeName custom type with single pick 1`] = `
 <div>
-  Pick
+  <a
+    class="css-12zqqiz-STYLES_EXTERNAL_LINK"
+    href="https://www.typescriptlang.org/docs/handbook/utility-types.html#picktype-keys"
+    rel="noopener noreferrer"
+  >
+    Pick
+  </a>
   &lt;
   <span>
     <a
@@ -284,7 +290,13 @@ exports[`APISectionUtils.resolveTypeName props with multiple omits 1`] = `
   StyleProp
   &lt;
   <span>
-    Omit
+    <a
+      class="css-12zqqiz-STYLES_EXTERNAL_LINK"
+      href="https://www.typescriptlang.org/docs/handbook/utility-types.html#omittype-keys"
+      rel="noopener noreferrer"
+    >
+      Omit
+    </a>
     &lt;
     <span>
       <a

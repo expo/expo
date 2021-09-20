@@ -5,6 +5,7 @@
 ### 🛠 Breaking changes
 
 - Dropped support for iOS 11.0 ([#14383](https://github.com/expo/expo/pull/14383) by [@cruzach](https://github.com/cruzach))
+- Rename `IFirebaseOptions` type to `FirebaseOptions`. ([#14342](https://github.com/expo/expo/pull/14342) by [@Simek](https://github.com/Simek))
 
 ### 🎉 New features
 

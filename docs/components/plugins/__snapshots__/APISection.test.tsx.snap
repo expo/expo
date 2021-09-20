@@ -441,7 +441,13 @@ not appear on the screen.
               StyleProp
               &lt;
               <span>
-                Omit
+                <a
+                  class="css-12zqqiz-STYLES_EXTERNAL_LINK"
+                  href="https://www.typescriptlang.org/docs/handbook/utility-types.html#omittype-keys"
+                  rel="noopener noreferrer"
+                >
+                  Omit
+                </a>
                 &lt;
                 <span>
                   <a
