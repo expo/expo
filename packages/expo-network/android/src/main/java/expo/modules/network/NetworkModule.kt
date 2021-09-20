@@ -54,14 +54,14 @@ class NetworkModule(private val appContext: Context) : ExportedModule(appContext
     }
 
   private fun getConnectionType(netInfo: NetworkInfo?): NetworkStateType = when (netInfo?.type) {
-      ConnectivityManager.TYPE_MOBILE, ConnectivityManager.TYPE_MOBILE_DUN -> NetworkStateType.CELLULAR
-      ConnectivityManager.TYPE_WIFI -> NetworkStateType.WIFI
-      ConnectivityManager.TYPE_BLUETOOTH -> NetworkStateType.BLUETOOTH
-      ConnectivityManager.TYPE_ETHERNET -> NetworkStateType.ETHERNET
-      ConnectivityManager.TYPE_WIMAX -> NetworkStateType.WIMAX
-      ConnectivityManager.TYPE_VPN -> NetworkStateType.VPN
-      else -> NetworkStateType.UNKNOWN
-    }
+    ConnectivityManager.TYPE_MOBILE, ConnectivityManager.TYPE_MOBILE_DUN -> NetworkStateType.CELLULAR
+    ConnectivityManager.TYPE_WIFI -> NetworkStateType.WIFI
+    ConnectivityManager.TYPE_BLUETOOTH -> NetworkStateType.BLUETOOTH
+    ConnectivityManager.TYPE_ETHERNET -> NetworkStateType.ETHERNET
+    ConnectivityManager.TYPE_WIMAX -> NetworkStateType.WIMAX
+    ConnectivityManager.TYPE_VPN -> NetworkStateType.VPN
+    else -> NetworkStateType.UNKNOWN
+  }
 
   private fun getConnectionType(netCapabilities: NetworkCapabilities?): NetworkStateType =
     if (netCapabilities == null) NetworkStateType.UNKNOWN
