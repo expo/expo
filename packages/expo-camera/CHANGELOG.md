@@ -22,6 +22,7 @@
 ### 💡 Others
 
 - Migrated from `@unimodules/core` to `expo-modules-core`. ([#13750](https://github.com/expo/expo/pull/13750) by [@tsapeta](https://github.com/tsapeta))
+- Updated `@expo/config-plugins` ([#14443](https://github.com/expo/expo/pull/14443) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 11.1.1 — 2021-06-16
 

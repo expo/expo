@@ -19,6 +19,8 @@
 
 ### 💡 Others
 
+- Updated `@expo/config-plugins`, `@expo/image-utils` ([#14443](https://github.com/expo/expo/pull/14443) by [@EvanBacon](https://github.com/EvanBacon))
+
 ## 0.12.0 — 2021-06-16
 
 ### 🎉 New features

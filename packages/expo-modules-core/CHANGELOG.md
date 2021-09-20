@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix imports that affect versioned code inside of Expo Go. ([#14436](https://github.com/expo/expo/pull/14436) by [@cruzach](https://github.com/cruzach))
+
 ### 💡 Others
 
 ## 0.3.2 — 2021-09-15

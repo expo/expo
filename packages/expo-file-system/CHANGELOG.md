@@ -10,7 +10,11 @@
 
 ### 🐛 Bug fixes
 
+- `getFreeDiskStorageAsync` now correctly reports free disk space on iOS. ([#14279](https://github.com/expo/expo/pull/14279) by [mickmaccallum](https://github.com/mickmaccallum))
+
 ### 💡 Others
+
+- Updated `@expo/config-plugins` ([#14443](https://github.com/expo/expo/pull/14443) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 12.0.0 — 2021-09-08
 

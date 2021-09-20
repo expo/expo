@@ -14,6 +14,8 @@
 
 ### 💡 Others
 
+- Updated `@expo/config-plugins` ([#14443](https://github.com/expo/expo/pull/14443) by [@EvanBacon](https://github.com/EvanBacon))
+
 ## 0.7.0 — 2021-09-02
 
 ### 🎉 New features

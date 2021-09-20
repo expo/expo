@@ -3,8 +3,10 @@
 #import <ExpoModulesCore/EXNativeModulesProxy.h>
 #import <ExpoModulesCore/EXViewManagerAdapter.h>
 #import <ExpoModulesCore/EXModuleRegistryAdapter.h>
+#import <ExpoModulesCore/EXModuleRegistryProvider.h>
 #import <ExpoModulesCore/EXViewManagerAdapterClassesRegistry.h>
 #import <ExpoModulesCore/EXModuleRegistryHolderReactModule.h>
+#import <ExpoModulesCore/EXReactNativeEventEmitter.h>
 #import "ExpoModulesCore-Swift.h"
 
 @interface EXModuleRegistryAdapter ()

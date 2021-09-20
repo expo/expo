@@ -25,7 +25,6 @@ Pod::Spec.new do |s|
     s.source_files = "#{s.name}/**/*.h"
     s.vendored_frameworks = "#{s.name}.xcframework"
   else
-    source_extensions = $ExpoUseSwiftModules != false ? 'h,m,swift' : 'h,m'
-    s.source_files = "#{s.name}/**/*.{#{source_extensions}}"
+    s.source_files = "#{s.name}/**/*.{h,m,swift}"
   end
 end

@@ -15,8 +15,8 @@
 #else
 #import <React/RCTUtils.h>
 #endif
-
-#import "JKBigInteger.h"
+// Must use brackets instead of quotes for importing JKBigInteger otherwise this is broken by versioning
+#import <JKBigInteger.h>
 
 @interface RNAWSCognito : NSObject <RCTBridgeModule>
 -(NSString*)getRandomBase64:(NSUInteger)byteLength;

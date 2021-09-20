@@ -16,7 +16,7 @@
 #import <ABI41_0_0React/ABI41_0_0RCTUtils.h>
 #endif
 
-#import "JKBigInteger.h"
+#import <JKBigInteger.h>
 
 @interface ABI41_0_0RNAWSCognito : NSObject <ABI41_0_0RCTBridgeModule>
 

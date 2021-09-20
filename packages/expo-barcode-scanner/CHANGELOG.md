@@ -16,6 +16,7 @@
 
 - Migrated from `@unimodules/core` to `expo-modules-core`. ([#13757](https://github.com/expo/expo/pull/13757) by [@tsapeta](https://github.com/tsapeta))
 - Migrated Android codebase from Java to Kotlin. ([#13914](https://github.com/expo/expo/pull/13914) by [@m1st4ke](https://github.com/m1st4ke))
+- Updated `@expo/config-plugins` ([#14443](https://github.com/expo/expo/pull/14443) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 10.2.0 — 2021-06-16
 
