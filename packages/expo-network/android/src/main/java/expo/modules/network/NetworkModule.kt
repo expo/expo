@@ -25,7 +25,7 @@ import java.net.UnknownHostException
 private const val NAME = "ExpoNetwork"
 private val TAG = NetworkModule::class.java.simpleName
 
-class NetworkModule(private val mContext: Context) : ExportedModule(mContext), RegistryLifecycleListener {
+class NetworkModule(private val appContext: Context) : ExportedModule(appContext), RegistryLifecycleListener {
 
   enum class NetworkStateType(val value: String) {
     NONE("NONE"),
@@ -38,25 +38,22 @@ class NetworkModule(private val mContext: Context) : ExportedModule(mContext), R
     VPN("VPN"),
     OTHER("OTHER");
 
-
-    fun equal(value: String): Boolean {
-      return this.value == value
-    }
+    val isNotUndefined: Boolean
+      get() = this.value != "NONE" && this.value != "UNKNOWN"
   }
 
   override fun getName() = NAME
 
   private val wifiInfo: WifiInfo
-    private get() = try {
-      val manager = mContext.applicationContext.getSystemService(Context.WIFI_SERVICE) as WifiManager
+    get() = try {
+      val manager = appContext.applicationContext.getSystemService(Context.WIFI_SERVICE) as WifiManager
       manager.connectionInfo
     } catch (e: Exception) {
-      Log.e(TAG, e.message!!)
+      Log.e(TAG, e.message ?: "No exception message")
       throw e
     }
 
-  private fun getConnectionType(netinfo: NetworkInfo?): NetworkStateType {
-    return when (netinfo!!.type) {
+  private fun getConnectionType(netInfo: NetworkInfo?): NetworkStateType = when (netInfo?.type) {
       ConnectivityManager.TYPE_MOBILE, ConnectivityManager.TYPE_MOBILE_DUN -> NetworkStateType.CELLULAR
       ConnectivityManager.TYPE_WIFI -> NetworkStateType.WIFI
       ConnectivityManager.TYPE_BLUETOOTH -> NetworkStateType.BLUETOOTH
@@ -65,26 +62,29 @@ class NetworkModule(private val mContext: Context) : ExportedModule(mContext), R
       ConnectivityManager.TYPE_VPN -> NetworkStateType.VPN
       else -> NetworkStateType.UNKNOWN
     }
-  }
 
-  private fun getConnectionType(nc: NetworkCapabilities?): NetworkStateType {
-    if (nc!!.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR)) return NetworkStateType.CELLULAR
-    if (nc.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) || nc.hasTransport(NetworkCapabilities.TRANSPORT_WIFI_AWARE)) return NetworkStateType.WIFI
-    if (nc.hasTransport(NetworkCapabilities.TRANSPORT_BLUETOOTH)) return NetworkStateType.BLUETOOTH
-    if (nc.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET)) return NetworkStateType.ETHERNET
-    return if (nc.hasTransport(NetworkCapabilities.TRANSPORT_VPN)) NetworkStateType.VPN else NetworkStateType.UNKNOWN
-  }
+  private fun getConnectionType(netCapabilities: NetworkCapabilities?): NetworkStateType =
+    if (netCapabilities == null) NetworkStateType.UNKNOWN
+    else if (netCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR)) NetworkStateType.CELLULAR
+    else if (netCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) || netCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI_AWARE)) NetworkStateType.WIFI
+    else if (netCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_BLUETOOTH)) NetworkStateType.BLUETOOTH
+    else if (netCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET)) NetworkStateType.ETHERNET
+    else if (netCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_VPN)) NetworkStateType.VPN
+    else NetworkStateType.UNKNOWN
 
   private fun rawIpToString(ip: Int): String {
     // Convert little-endian to big-endian if needed
-    var ip = ip
-    if (ByteOrder.nativeOrder() == ByteOrder.LITTLE_ENDIAN) {
-      ip = Integer.reverseBytes(ip)
+    val ip = if (ByteOrder.nativeOrder() == ByteOrder.LITTLE_ENDIAN) {
+      Integer.reverseBytes(ip)
+    } else {
+      ip
     }
+
     var ipByteArray = BigInteger.valueOf(ip.toLong()).toByteArray()
     if (ipByteArray.size < 4) {
       ipByteArray = frontPadWithZeros(ipByteArray)
     }
+
     return try {
       InetAddress.getByAddress(ipByteArray).hostAddress
     } catch (e: UnknownHostException) {
@@ -95,46 +95,45 @@ class NetworkModule(private val mContext: Context) : ExportedModule(mContext), R
   @ExpoMethod
   fun getNetworkStateAsync(promise: Promise) {
     val result = Bundle()
-    val cm = mContext.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-    //use getActiveNetworkInfo before api level 29
-    if (Build.VERSION.SDK_INT < 29) {
-      try {
-        val netInfo = cm.activeNetworkInfo
-        result.putBoolean("isInternetReachable", netInfo!!.isConnected)
-        val mConnectionType = getConnectionType(netInfo)
-        result.putString("type", mConnectionType.value)
-        result.putBoolean("isConnected", !mConnectionType.equal("NONE") && !mConnectionType.equal("UNKNOWN"))
-        promise.resolve(result)
-      } catch (e: Exception) {
-        promise.reject("ERR_NETWORK_NO_ACCESS_NETWORKINFO", "Unable to access network information", e)
-      }
-    } else {
-      try {
-        val network = cm.activeNetwork
-        val isInternetReachable = network != null
-        var connectionType: NetworkStateType? = null
-        if (isInternetReachable) {
-          val nc = cm.getNetworkCapabilities(network)
-          connectionType = getConnectionType(nc)
-          result.putString("type", connectionType.value)
-        } else {
-          result.putString("type", NetworkStateType.NONE.value)
+    val connectivityManager = appContext.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+
+    try {
+      if (Build.VERSION.SDK_INT < 29) { // use getActiveNetworkInfo before api level 29
+        val netInfo = connectivityManager.activeNetworkInfo
+        val connectionType = getConnectionType(netInfo)
+        result.apply {
+          putBoolean("isInternetReachable", netInfo!!.isConnected)
+          putString("type", connectionType.value)
+          putBoolean("isConnected", connectionType.isNotUndefined)
         }
-        result.putBoolean("isInternetReachable", isInternetReachable)
-        result.putBoolean("isConnected", connectionType != null && !connectionType.equal("NONE") && !connectionType.equal("UNKNOWN"))
         promise.resolve(result)
-      } catch (e: Exception) {
-        promise.reject("ERR_NETWORK_NO_ACCESS_NETWORKINFO", "Unable to access network information", e)
+      } else {
+        val network = connectivityManager.activeNetwork
+        val isInternetReachable = network != null
+
+        var connectionType: NetworkStateType? = if (isInternetReachable) {
+          val netCapabilities = connectivityManager.getNetworkCapabilities(network)
+          getConnectionType(netCapabilities)
+        } else {
+          null
+        }.also { connectionType ->
+          result.apply {
+            putString("type", connectionType?.value ?: NetworkStateType.NONE.value)
+            putBoolean("isInternetReachable", isInternetReachable)
+            putBoolean("isConnected", connectionType != null && connectionType.isNotUndefined)
+          }
+        }
+        promise.resolve(result)
       }
+    } catch (e: Exception) {
+      promise.reject("ERR_NETWORK_NO_ACCESS_NETWORKINFO", "Unable to access network information", e)
     }
   }
 
   @ExpoMethod
   fun getIpAddressAsync(promise: Promise) {
     try {
-      val ipAddress = wifiInfo.ipAddress
-      val ipAddressString = rawIpToString(ipAddress)
-      promise.resolve(ipAddressString)
+      promise.resolve(rawIpToString(wifiInfo.ipAddress))
     } catch (e: Exception) {
       Log.e(TAG, e.message!!)
       promise.reject("ERR_NETWORK_IP_ADDRESS", "Unknown Host Exception", e)
@@ -143,7 +142,7 @@ class NetworkModule(private val mContext: Context) : ExportedModule(mContext), R
 
   @ExpoMethod
   fun isAirplaneModeEnabledAsync(promise: Promise) {
-    val isAirPlaneMode = Settings.Global.getInt(mContext.contentResolver, Settings.Global.AIRPLANE_MODE_ON, 0) != 0
+    val isAirPlaneMode = Settings.Global.getInt(appContext.contentResolver, Settings.Global.AIRPLANE_MODE_ON, 0) != 0
     promise.resolve(isAirPlaneMode)
   }
 
