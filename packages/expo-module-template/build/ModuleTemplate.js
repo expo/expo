@@ -1,5 +1,5 @@
 import ExpoModuleTemplate from './ExpoModuleTemplate';
-export { default as ExpoModuleTemplateView } from './ExpoModuleTemplateView';
+export { default as ExpoModuleTemplateView, } from './ExpoModuleTemplateView';
 export * from './ModuleTemplate.types';
 /**
  * Great method that does a lot great stuff.
