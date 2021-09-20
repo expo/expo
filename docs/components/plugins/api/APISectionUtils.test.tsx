@@ -1,7 +1,7 @@
 import { render } from '@testing-library/react';
 import * as React from 'react';
 
-import { CommentTextBlock, resolveTypeName } from './APISectionUtils';
+import { CommentTextBlock, mdInlineComponents, resolveTypeName } from './APISectionUtils';
 
 describe('APISectionUtils.resolveTypeName', () => {
   test('void', () => {
@@ -422,21 +422,21 @@ describe('APISectionUtils.CommentTextBlock component', () => {
     expect(container).toMatchSnapshot();
   });
 
-  test('basic comment with dash', () => {
+  test('basic inline comment', () => {
     const comment = {
       shortText: 'This is the basic comment.',
     };
 
-    const { container } = render(<CommentTextBlock comment={comment} withDash />);
+    const { container } = render(
+      <CommentTextBlock comment={comment} components={mdInlineComponents} withDash />
+    );
     expect(container).toMatchSnapshot();
   });
 
-  test('comment with return description and example', () => {
+  test('comment with example', () => {
     const comment = {
       shortText:
         '**Android only.** Gets the referrer URL of the installed app with the [`Install Referrer API`](https://developer.android.com/google/play/installreferrer)\nfrom the Google Play Store. In practice, the referrer URL may not be a complete, absolute URL.',
-      returns:
-        'A `Promise` that fulfills with a `string` of the referrer URL of the installed app.',
       tags: [
         {
           tag: 'example',

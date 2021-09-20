@@ -11,19 +11,16 @@ exports[`APISectionUtils.CommentTextBlock component basic comment 1`] = `
 </div>
 `;
 
-exports[`APISectionUtils.CommentTextBlock component basic comment with dash 1`] = `
+exports[`APISectionUtils.CommentTextBlock component basic inline comment 1`] = `
 <div>
    - 
-  <p
-    class="css-1xnkoxs-paragraph-STYLES_PARAGRAPH"
-    data-text="true"
-  >
+  <span>
     This is the basic comment.
-  </p>
+  </span>
 </div>
 `;
 
-exports[`APISectionUtils.CommentTextBlock component comment with return description and example 1`] = `
+exports[`APISectionUtils.CommentTextBlock component comment with example 1`] = `
 <div>
   <p
     class="css-1xnkoxs-paragraph-STYLES_PARAGRAPH"
