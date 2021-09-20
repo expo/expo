@@ -49,23 +49,23 @@ Run `yarn introspect md` in expo-cli/packages/expo-cli then paste the results be
 </summary>
 <p>
 
-| Option                        | Description                                                            |
-| ----------------------------- | ---------------------------------------------------------------------- | ---------------------------- |
-| `--platform [all⎮android      | ios]`                                                                  | Platforms: android, ios, all |
-| `-p, --public-url [url]`      | The public url that will host the static files (required)              |
-| `-c, --clear`                 | Clear the Metro bundler cache                                          |
-| `--output-dir [dir]`          | The directory to export the static files to                            |
-| `-a, --asset-url [url]`       | The absolute or relative url that will host the asset files            |
-| `-d, --dump-assetmap`         | Dump the asset map for further processing                              |
-| `--dev`                       | Configure static files for developing locally using a non-https server |
-| `-s, --dump-sourcemap`        | Dump the source map for debugging the JS bundle                        |
-| `-q, --quiet`                 | Suppress verbose output                                                |
-| `-t, --target [managed⎮bare]` | Target environment for which this export is intended                   |
-| `--merge-src-dir [dir]`       | A repeatable source dir to merge in                                    |
-| `--merge-src-url [url]`       | A repeatable source tar.gz file URL to merge in                        |
-| `--max-workers [num]`         | Maximum number of tasks to allow Metro to spawn                        |
-| `--experimental-bundle`       | export bundles for use with EAS updates                                |
-| `--config [file]`             | Deprecated: Use app.config.js to switch config files instead.          |
+| Option                          | Description                                                            |
+| ------------------------------- | ---------------------------------------------------------------------- | 
+| `--platform [android⎮ios\|all]` | Platforms to sync: ios, android, all. Default: all                     | 
+| `-p, --public-url [url]`        | The public url that will host the static files (required)              |
+| `-c, --clear`                   | Clear the Metro bundler cache                                          |
+| `--output-dir [dir]`            | The directory to export the static files to                            |
+| `-a, --asset-url [url]`         | The absolute or relative url that will host the asset files            |
+| `-d, --dump-assetmap`           | Dump the asset map for further processing                              |
+| `--dev`                         | Configure static files for developing locally using a non-https server |
+| `-s, --dump-sourcemap`          | Dump the source map for debugging the JS bundle                        |
+| `-q, --quiet`                   | Suppress verbose output                                                |
+| `-t, --target [managed⎮bare]`   | Target environment for which this export is intended                   |
+| `--merge-src-dir [dir]`         | A repeatable source dir to merge in                                    |
+| `--merge-src-url [url]`         | A repeatable source tar.gz file URL to merge in                        |
+| `--max-workers [num]`           | Maximum number of tasks to allow Metro to spawn                        |
+| `--experimental-bundle`         | export bundles for use with EAS updates                                |
+| `--config [file]`               | Deprecated: Use app.config.js to switch config files instead.          |
 
 </p>
 </details>
@@ -935,12 +935,12 @@ Alias: `expo ui`
 </summary>
 <p>
 
-| Option                       | Description                                                           |
-| ---------------------------- | --------------------------------------------------------------------- | -------------------------------------------------- |
-| `--no-install`               | Skip installing npm packages and CocoaPods.                           |
-| `--npm`                      | Use npm to install dependencies. (default when Yarn is not installed) |
-| `-p, --platform [all⎮android | ios]`                                                                 | Platforms to sync: ios, android, all. Default: all |
-| `--config [file]`            | Deprecated: Use app.config.js to switch config files instead.         |
+| Option                          | Description                                                           |
+| ------------------------------- | --------------------------------------------------------------------- |
+| `--no-install`                  | Skip installing npm packages and CocoaPods.                           |
+| `--npm`                         | Use npm to install dependencies. (default when Yarn is not installed) |
+| `--platform [android⎮ios\|all]` | Platforms to sync: ios, android, all. Default: all                    | 
+| `--config [file]`               | Deprecated: Use app.config.js to switch config files instead.         |
 
 </p>
 </details>
@@ -953,12 +953,12 @@ Alias: `expo ui`
 <p>
 
 | Option                                    | Description                                                                             |
-| ----------------------------------------- | --------------------------------------------------------------------------------------- | -------------------------------------------------- |
+| ----------------------------------------- | --------------------------------------------------------------------------------------- |
 | `--no-install`                            | Skip installing npm packages and CocoaPods.                                             |
 | `--clean`                                 | Delete the native folders and regenerate them before applying changes                   |
 | `--npm`                                   | Use npm to install dependencies. (default when Yarn is not installed)                   |
 | `--template [template]`                   | Project template to clone from. File path pointing to a local tar file or a github repo |
-| `-p, --platform [all⎮android              | ios]`                                                                                   | Platforms to sync: ios, android, all. Default: all |
+| `--platform [android⎮ios\|all]`           | Platforms to sync: ios, android, all. Default: all                                      | 
 | `--skip-dependency-update [dependencies]` | Preserves versions of listed packages in package.json (comma separated list)            |
 | `--config [file]`                         | Deprecated: Use app.config.js to switch config files instead.                           |
 
