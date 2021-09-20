@@ -2,17 +2,6 @@
 
 set -eo pipefail
 
-if [[ "$SKIP_BUNDLING" ]]; then
-  echo "SKIP_BUNDLING enabled; skipping get-app-config-ios.sh."
-  exit 0;
-elif [[ "$CONFIGURATION" == *Debug* ]]; then
-  if [[ "$FORCE_BUNDLING" ]]; then
-    echo "FORCE_BUNDLING enabled; continuing get-app-config-ios.sh."
-  else
-    exit 0;
-  fi
-fi
-
 DEST="$CONFIGURATION_BUILD_DIR/$UNLOCALIZED_RESOURCES_FOLDER_PATH"
 NODE_BINARY=${NODE_BINARY:-node}
 
@@ -38,4 +27,5 @@ if [ "x$DIR_BASENAME" != "xPods" ]; then
   exit 0
 fi
 
-"$NODE_BINARY" "${EXPO_CONSTANTS_PACKAGE_DIR}/scripts/getAppConfig.js" "$PROJECT_ROOT/.." "$DEST/EXConstants.bundle"
+CONSTANTS_BUNDLE="EXConstants.bundle"
+"$NODE_BINARY" "${EXPO_CONSTANTS_PACKAGE_DIR}/scripts/getAppConfig.js" "$PROJECT_ROOT/.." "$DEST$CONSTANTS_BUNDLE"
