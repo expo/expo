@@ -65,6 +65,31 @@ public class ConcreteMethod<Args, ReturnType>: AnyMethod {
     }
   }
 
+  public func callSync(args: [Any?]) -> Any? {
+    if takesPromise {
+      var result: Any?
+      let semaphore = DispatchSemaphore(value: 0)
+
+      let promise = Promise {
+        result = $0
+        semaphore.signal()
+      } rejecter: { error in
+        semaphore.signal()
+      }
+      call(args: args, promise: promise)
+      semaphore.wait()
+      return result
+    } else {
+      do {
+        let finalArgs = try castArguments(args)
+        let tuple = try Conversions.toTuple(finalArgs) as! Args
+        return closure(tuple)
+      } catch let error {
+        return error
+      }
+    }
+  }
+
   public func runOnQueue(_ queue: DispatchQueue?) -> Self {
     self.queue = queue
     return self
