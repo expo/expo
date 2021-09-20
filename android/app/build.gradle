@@ -15,7 +15,6 @@ buildscript {
 }
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
-apply plugin: 'devicefarm'
 
 android {
   compileSdkVersion safeExtGet("compileSdkVersion", 30)
@@ -110,17 +109,6 @@ android {
     // TODO: Remove when we drop support for SDK 41
     pickFirst "lib/**/libhermes-inspector.so"
     pickFirst "lib/**/libfolly_futures.so"
-  }
-}
-
-devicefarm {
-  projectName System.getenv("DEVICEFARM_PROJECT_NAME")
-  devicePool System.getenv("DEVICEFARM_DEVICE_POOL")
-  executionTimeoutMinutes 40
-  authentication {
-
-    accessKey System.getenv("AWS_ACCESS_KEY_ID")
-    secretKey System.getenv("AWS_SECRET_ACCESS_KEY")
   }
 }
 
