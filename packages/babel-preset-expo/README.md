@@ -51,6 +51,17 @@ If the `bundler` is not defined, it will default to checking if a `babel-loader`
 
 This property is passed down to [`@babel/plugin-transform-react-jsx`](https://babeljs.io/docs/en/babel-plugin-transform-react-jsx). This flag does nothing when `native.useTransformReactJSXExperimental` is set to `true` because `@babel/plugin-transform-react-jsx` is omitted.
 
+### [`no-anonymous-default-export`](https://github.com/import-js/eslint-plugin-import/blob/main/docs/rules/no-anonymous-default-export.md)
+
+`false | undefined`, defaults to `undefined`
+
+- `false` disable the `no-anonymous-default-export` babel plugin.
+
+This property is used to configure or disable the Babel plugin [`no-anonymous-default-export`](./plugins/no-anonymous-default-export.js). This plugin warns the user to remove any anonymous functions as default exports (specifically as a React component). The transform helps to avoid the main pitfall of React Refresh (AKA Fast Refresh), which prevents the runtime from storing updates on anonymous functional components.
+
+This babel plugin will only be enabled with specific Metro transformers or Webpack `babel-loader`s, that add the `onWarning` Babel caller.
+Currently this is only done in `@expo/metro-config` when the experimental `EXPO_USE_EXOTIC` environment variable is enabled.
+
 ### [`lazyImports`](https://babeljs.io/docs/en/babel-plugin-transform-modules-commonjs#lazy)
 
 Changes Babel's compiled `import` statements to be lazily evaluated when their imported bindings are used for the first time.

@@ -102,6 +102,10 @@ module.exports = function (api, options = {}) {
       [require.resolve('@babel/plugin-proposal-decorators'), { legacy: true }],
       platform === 'web' && [require.resolve('babel-plugin-react-native-web')],
       isWebpack && platform !== 'web' && [require.resolve('./plugins/disable-ambiguous-requires')],
+      // Allow users to disable this plugin with [ 'no-anonymous-default-export': false ]
+      // by default the plugin won't be enabled unless the bundler provides `onWarning` in the caller.
+      options['no-anonymous-default-export'] !== false &&
+        require.resolve('./plugins/no-anonymous-default-export'),
     ].filter(Boolean),
   };
 };
