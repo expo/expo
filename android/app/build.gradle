@@ -18,8 +18,6 @@ apply plugin: 'kotlin-android'
 
 android {
   compileSdkVersion safeExtGet("compileSdkVersion", 30)
-  ndkVersion "23.0.7599858"
-
 
   compileOptions {
     sourceCompatibility JavaVersion.VERSION_1_8
