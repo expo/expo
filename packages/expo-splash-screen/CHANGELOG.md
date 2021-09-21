@@ -10,7 +10,7 @@
 
 ### 🐛 Bug fixes
 
-- Fix 'No native splash screen registered' wanring from reloading apps. ([#14467](https://github.com/expo/expo/pull/14467) by [@kudo](https://github.com/kudo))
+- Fix 'No native splash screen registered' warning from reloading apps. ([#14467](https://github.com/expo/expo/pull/14467) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others
 
