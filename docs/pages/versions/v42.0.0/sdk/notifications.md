@@ -729,6 +729,19 @@ Notifications.setNotificationHandler({
 
 > **Please note:** In order to handle notifications while the app is backgrounded on iOS, you _must_ add `remote-notification` to the `ios.infoPlist.UIBackgroundModes` key in your app.json, **and** add `"content-available": 1` to your push notification payload. Under normal circumstances, the “content-available” flag should launch your app if it isn’t running and wasn’t killed by the user, _however_, this is ultimately decided by the OS so it might not always happen.
 
+#### Examples
+
+UIBackgroundModes key expects an array value, supplying any other value type will lead to crashes on production application
+
+```ts
+"ios": {
+  ...
+  "infoPlist":{
+    "UIBackgroundModes":["remote-notification"]
+  }
+}
+```
+
 ### `registerTaskAsync(taskName: string): void`
 
 When a notification is received while the app is backgrounded, using this function you can set a callback that will be run in response to that notification. Under the hood, this function is run using `expo-task-manager`. You **must** define the task _first_, with [`TaskManager.defineTask`](./task-manager.md/#taskmanagerdefinetasktaskname-task). Make sure you define it in the global scope.
