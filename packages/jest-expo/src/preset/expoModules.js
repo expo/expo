@@ -324,6 +324,8 @@ module.exports = {
           { key: 2, argumentsCount: 0, name: 'getEnrolledLevelAsync' },
           { key: 3, argumentsCount: 0, name: 'hasHardwareAsync' },
           { key: 4, argumentsCount: 1, name: 'authenticateAsync' },
+          { key: 5, argumentsCount: 0, name: 'isDeviceAuthenticationWithBiometricsEnrolledAsync' },
+          { key: 6, argumentsCount: 0, name: 'isDeviceAuthenticationEnrolledAsync' },
         ],
         ExpoLocalization: [{ key: 0, argumentsCount: 0, name: 'getLocalizationAsync' }],
         ExpoLocation: [

@@ -8,6 +8,8 @@
 
 ### 🎉 New features
 
+- Added new functions allowing check if authentication is available ([#14411](https://github.com/expo/expo/pull/14411) by [@m1st4ke](https://github.com/m1st4ke))
+
 ### 🐛 Bug fixes
 
 - Added missing definition on type LocalAuthenticationResult. ([#13636](https://github.com/expo/expo/pull/13636) by [@mstach60161](https://github.com/mstach60161))

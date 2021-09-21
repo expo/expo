@@ -110,3 +110,35 @@ export async function cancelAuthenticate(): Promise<void> {
   }
   await ExpoLocalAuthentication.cancelAuthenticate();
 }
+
+// @needsAudit
+/**
+ * Determine whether the device has saved fingerprints or facial data to use for authentication.
+ * @return Returns a promise which fulfils to `boolean` value indicating whether the device has
+ * saved fingerprints or facial data for authentication.
+ */
+export async function isDeviceAuthenticationWithBiometricsEnrolledAsync(): Promise<boolean> {
+  if (!ExpoLocalAuthentication.isDeviceAuthenticationWithBiometricsEnrolledAsync) {
+    throw new UnavailabilityError(
+      'expo-local-authentication',
+      'isDeviceAuthenticationWithBiometricsEnrolledAsync'
+    );
+  }
+  return await ExpoLocalAuthentication.isDeviceAuthenticationWithBiometricsEnrolledAsync();
+}
+
+// @needsAudit
+/**
+ * Determine whether the device has saved any data to use for authentication.
+ * @return Returns a promise which fulfils to `boolean` value indicating whether the device has
+ * saved any data for authentication.
+ */
+export async function isDeviceAuthenticationEnrolledAsync(): Promise<boolean> {
+  if (!ExpoLocalAuthentication.isDeviceAuthenticationEnrolledAsync) {
+    throw new UnavailabilityError(
+      'expo-local-authentication',
+      'isDeviceAuthenticationEnrolledAsync'
+    );
+  }
+  return await ExpoLocalAuthentication.isDeviceAuthenticationEnrolledAsync();
+}

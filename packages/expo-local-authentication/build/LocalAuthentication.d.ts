@@ -42,3 +42,15 @@ export declare function authenticateAsync(options?: LocalAuthenticationOptions):
  * **(Android Only)** Cancels authentication flow.
  */
 export declare function cancelAuthenticate(): Promise<void>;
+/**
+ * Determine whether the device has saved fingerprints or facial data to use for authentication.
+ * @return Returns a promise which fulfils to `boolean` value indicating whether the device has
+ * saved fingerprints or facial data for authentication.
+ */
+export declare function isDeviceAuthenticationWithBiometricsEnrolledAsync(): Promise<boolean>;
+/**
+ * Determine whether the device has saved any data to use for authentication.
+ * @return Returns a promise which fulfils to `boolean` value indicating whether the device has
+ * saved any data for authentication.
+ */
+export declare function isDeviceAuthenticationEnrolledAsync(): Promise<boolean>;

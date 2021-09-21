@@ -128,8 +128,23 @@ class LocalAuthenticationModule(context: Context) : ExportedModule(context), Act
 
   @ExpoMethod
   fun isEnrolledAsync(promise: Promise) {
+    isDeviceAuthenticationWithBiometricsEnrolledAsync(promise)
+  }
+
+  @ExpoMethod
+  fun isDeviceAuthenticationWithBiometricsEnrolledAsync(promise: Promise) {
     val result = biometricManager.canAuthenticate(BiometricManager.Authenticators.BIOMETRIC_WEAK)
     promise.resolve(result == BiometricManager.BIOMETRIC_SUCCESS)
+  }
+
+  @ExpoMethod
+  fun isDeviceAuthenticationEnrolledAsync(promise: Promise) {
+    val biometricResult = biometricManager.canAuthenticate(BiometricManager.Authenticators.BIOMETRIC_WEAK)
+    val credentialResult = biometricManager.canAuthenticate(BiometricManager.Authenticators.DEVICE_CREDENTIAL)
+    promise.resolve(
+      biometricResult == BiometricManager.BIOMETRIC_SUCCESS ||
+        credentialResult == BiometricManager.BIOMETRIC_SUCCESS
+    )
   }
 
   @ExpoMethod
