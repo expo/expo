@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Added `version` getter to both platforms, and `hostUri` getter to Android, for compatibility with expo-dev-client. ([#14460](https://github.com/expo/expo/pull/14460) by [@esamelson](https://github.com/esamelson))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
