@@ -21,8 +21,8 @@ class ConstantsBinding(
   @Inject
   lateinit var exponentSharedPreferences: ExponentSharedPreferences
 
-  override fun getConstants(): Map<String, Any> {
-    return super.getConstants()!!.toMutableMap().apply {
+  override fun getConstants(): Map<String, Any?> {
+    return super.getConstants().toMutableMap().apply {
       this["expoVersion"] = ExpoViewKernel.instance.versionName
       this["manifest"] = manifest.toString()
       this["nativeAppVersion"] = ExpoViewKernel.instance.versionName
@@ -87,7 +87,7 @@ class ConstantsBinding(
   init {
     NativeModuleDepsProvider.instance.inject(ConstantsBinding::class.java, this)
     val resourceId = context.resources.getIdentifier("status_bar_height", "dimen", "android")
-    mStatusBarHeight = if (resourceId > 0) convertPixelsToDp(
+    statusBarHeightInternal = if (resourceId > 0) convertPixelsToDp(
       context.resources.getDimensionPixelSize(resourceId).toFloat(), context
     ) else 0
   }
