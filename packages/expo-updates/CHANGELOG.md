@@ -6,8 +6,6 @@
 
 ### 🎉 New features
 
-- Store assets with filename = key.fileExtension. ([#13801](https://github.com/expo/expo/pull/13801) by [@jkhales](https://github.com/jkhales))
-
 ### 🐛 Bug fixes
 
 ### 💡 Others

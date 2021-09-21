@@ -53,8 +53,7 @@ class NewManifest private constructor(
       assetList.add(
         AssetEntity(
           mLaunchAsset.getString("key"),
-          // the fileExtension is not necessary for the launch asset and EAS servers will not include it.
-          mLaunchAsset.optString("fileExtension")
+          mLaunchAsset.getString("contentType")
         ).apply {
           url = Uri.parse(mLaunchAsset.getString("url"))
           isLaunchAsset = true
@@ -67,15 +66,13 @@ class NewManifest private constructor(
       for (i in 0 until mAssets.length()) {
         try {
           val assetObject = mAssets.getJSONObject(i)
-          assetList.add(
-            AssetEntity(
-              assetObject.getString("key"),
-              assetObject.getString("fileExtension")
-            ).apply {
-              url = Uri.parse(assetObject.getString("url"))
-              embeddedAssetFilename = assetObject.optString("embeddedAssetFilename")
-            }
-          )
+          assetList.add(AssetEntity(
+            assetObject.getString("key"),
+            assetObject.getString("contentType")
+          ).apply {
+            url = Uri.parse(assetObject.getString("url"))
+            embeddedAssetFilename = assetObject.optString("embeddedAssetFilename")
+          })
         } catch (e: JSONException) {
           Log.e(TAG, "Could not read asset from manifest", e)
         }
