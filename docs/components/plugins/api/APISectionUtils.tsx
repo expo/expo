@@ -259,17 +259,17 @@ export const renderTypeOrSignatureType = (
   includeParamType: boolean = false
 ) => {
   if (type) {
-    return <InlineCode>{resolveTypeName(type)}</InlineCode>;
+    return <InlineCode key={`signature-type-${type.name}`}>{resolveTypeName(type)}</InlineCode>;
   } else if (signatures && signatures.length) {
     return signatures.map(({ name, type, parameters }) => (
       <InlineCode key={`signature-type-${name}`}>
         (
         {parameters && includeParamType
           ? parameters.map(param => (
-              <>
+              <span key={`signature-param-${param.name}`}>
                 {param.name}
                 {param.flags?.isOptional && '?'}: {resolveTypeName(param.type)}
-              </>
+              </span>
             ))
           : listParams(parameters)}
         ) =&gt; {resolveTypeName(type)}
@@ -305,12 +305,12 @@ export const getCommentOrSignatureComment = (
 export const getTagData = (tagName: string, comment?: CommentData) =>
   comment?.tags?.filter(tag => tag.tag === tagName)[0];
 
-export const CommentTextBlock: React.FC<CommentTextBlockProps> = ({
+export const CommentTextBlock = ({
   comment,
   components = mdComponents,
   withDash,
   beforeContent,
-}) => {
+}: CommentTextBlockProps) => {
   const shortText = comment?.shortText?.trim().length ? (
     <ReactMarkdown components={components} remarkPlugins={[remarkGfm]}>
       {parseCommentContent(comment.shortText)}
@@ -341,6 +341,14 @@ export const CommentTextBlock: React.FC<CommentTextBlockProps> = ({
     </Quote>
   ) : null;
 
+  const see = getTagData('see', comment);
+  const seeText = see ? (
+    <Quote>
+      <B>See: </B>
+      <ReactMarkdown components={mdInlineComponents}>{see.text}</ReactMarkdown>
+    </Quote>
+  ) : null;
+
   return (
     <>
       {deprecationNote}
@@ -348,6 +356,7 @@ export const CommentTextBlock: React.FC<CommentTextBlockProps> = ({
       {withDash && (shortText || text) && ' - '}
       {shortText}
       {text}
+      {seeText}
       {exampleText}
     </>
   );

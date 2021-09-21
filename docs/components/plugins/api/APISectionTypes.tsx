@@ -190,7 +190,7 @@ const renderType = ({ name, comment, type }: TypeGeneralData): JSX.Element | und
   return undefined;
 };
 
-const APISectionTypes: React.FC<APISectionTypesProps> = ({ data }) =>
+const APISectionTypes = ({ data }: APISectionTypesProps) =>
   data?.length ? (
     <>
       <H2 key="types-header">Types</H2>

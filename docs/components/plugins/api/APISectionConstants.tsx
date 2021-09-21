@@ -29,7 +29,7 @@ const renderConstant = (
   </div>
 );
 
-const APISectionConstants: React.FC<APISectionConstantsProps> = ({ data, apiName }) =>
+const APISectionConstants = ({ data, apiName }: APISectionConstantsProps) =>
   data?.length ? (
     <>
       <H2 key="constants-header">Constants</H2>

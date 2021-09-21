@@ -30,7 +30,7 @@ const renderComponent = (
   </div>
 );
 
-const APISectionComponents: React.FC<APISectionComponentsProps> = ({ data, componentsProps }) =>
+const APISectionComponents = ({ data, componentsProps }: APISectionComponentsProps) =>
   data?.length ? (
     <>
       <H2 key="components-header">Components</H2>

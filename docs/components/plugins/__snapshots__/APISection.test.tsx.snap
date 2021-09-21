@@ -232,6 +232,49 @@ button.
       Make sure to attach height and width via the style props as without these styles, the button will
 not appear on the screen.
     </p>
+    <blockquote
+      class="css-e76wiv-paragraph-STYLES_BLOCKQUOTE"
+      data-text="true"
+    >
+      <div>
+        <div
+          style="margin-top: 2px;"
+        >
+          <svg
+            aria-label="check"
+            fill="none"
+            height="16"
+            viewBox="0 0 24 24"
+            width="16"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12c6.628 0 12-5.373 12-12S18.628 0 12 0zm-.015 5.419c.269-.292.596-.44.973-.44.306 0 .575.11.776.317.203.207.306.472.306.786 0 .394-.137.745-.409 1.042-.279.306-.605.462-.968.462-.3 0-.566-.113-.768-.326-.201-.208-.304-.48-.304-.809 0-.401.133-.749.394-1.032zm1.999 11.305c-.995.936-1.705 1.52-2.17 1.784-.496.284-.905.423-1.25.423-.342 0-.621-.114-.83-.338-.202-.218-.305-.51-.305-.87 0-.92.521-3.058 1.595-6.534a1.47 1.47 0 00.042-.166c-.04.017-.087.041-.14.075-.088.055-.356.265-1.14 1.03a.334.334 0 01-.438.025l-.463-.358a.334.334 0 01-.043-.49c.722-.794 1.395-1.371 2.002-1.714.636-.358 1.173-.533 1.643-.533.303 0 .548.076.729.225.196.164.3.391.3.658 0 .175-.084.63-.697 2.686-.875 2.937-1.084 4.003-1.099 4.372.166-.098.558-.376 1.395-1.162a.334.334 0 01.462.003l.411.4a.334.334 0 01-.004.484z"
+              fill="var(--expo-theme-icon-default)"
+            />
+          </svg>
+        </div>
+      </div>
+      <div>
+        <strong
+          class="css-kkqcgt-paragraph-STYLES_BOLD_PARAGRAPH"
+        >
+          See: 
+        </strong>
+        <span>
+          <a
+            class="css-12zqqiz-STYLES_EXTERNAL_LINK"
+            href="https://developer.apple.com/documentation/authenticationservices/asauthorizationappleidbutton"
+            rel="noopener noreferrer"
+          >
+            Apple
+Documentation
+          </a>
+          
+for more details.
+        </span>
+      </div>
+    </blockquote>
     <h3
       class="css-icxoph-h3-h3-STYLES_H3"
       data-heading="true"
@@ -2222,6 +2265,49 @@ sign-in operation.
       
 which contains all of the pertinent user and credential information.
     </p>
+    <blockquote
+      class="css-e76wiv-paragraph-STYLES_BLOCKQUOTE"
+      data-text="true"
+    >
+      <div>
+        <div
+          style="margin-top: 2px;"
+        >
+          <svg
+            aria-label="check"
+            fill="none"
+            height="16"
+            viewBox="0 0 24 24"
+            width="16"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12c6.628 0 12-5.373 12-12S18.628 0 12 0zm-.015 5.419c.269-.292.596-.44.973-.44.306 0 .575.11.776.317.203.207.306.472.306.786 0 .394-.137.745-.409 1.042-.279.306-.605.462-.968.462-.3 0-.566-.113-.768-.326-.201-.208-.304-.48-.304-.809 0-.401.133-.749.394-1.032zm1.999 11.305c-.995.936-1.705 1.52-2.17 1.784-.496.284-.905.423-1.25.423-.342 0-.621-.114-.83-.338-.202-.218-.305-.51-.305-.87 0-.92.521-3.058 1.595-6.534a1.47 1.47 0 00.042-.166c-.04.017-.087.041-.14.075-.088.055-.356.265-1.14 1.03a.334.334 0 01-.438.025l-.463-.358a.334.334 0 01-.043-.49c.722-.794 1.395-1.371 2.002-1.714.636-.358 1.173-.533 1.643-.533.303 0 .548.076.729.225.196.164.3.391.3.658 0 .175-.084.63-.697 2.686-.875 2.937-1.084 4.003-1.099 4.372.166-.098.558-.376 1.395-1.162a.334.334 0 01.462.003l.411.4a.334.334 0 01-.004.484z"
+              fill="var(--expo-theme-icon-default)"
+            />
+          </svg>
+        </div>
+      </div>
+      <div>
+        <strong
+          class="css-kkqcgt-paragraph-STYLES_BOLD_PARAGRAPH"
+        >
+          See: 
+        </strong>
+        <span>
+          <a
+            class="css-12zqqiz-STYLES_EXTERNAL_LINK"
+            href="https://developer.apple.com/documentation/authenticationservices/asauthorizationappleidcredential"
+            rel="noopener noreferrer"
+          >
+            Apple
+Documentation
+          </a>
+          
+for more details.
+        </span>
+      </div>
+    </blockquote>
     <table>
       <thead>
         <tr>
@@ -2800,6 +2886,49 @@ may be
       .
 You must include the ID string of the user whose credentials you'd like to refresh.
     </p>
+    <blockquote
+      class="css-e76wiv-paragraph-STYLES_BLOCKQUOTE"
+      data-text="true"
+    >
+      <div>
+        <div
+          style="margin-top: 2px;"
+        >
+          <svg
+            aria-label="check"
+            fill="none"
+            height="16"
+            viewBox="0 0 24 24"
+            width="16"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12c6.628 0 12-5.373 12-12S18.628 0 12 0zm-.015 5.419c.269-.292.596-.44.973-.44.306 0 .575.11.776.317.203.207.306.472.306.786 0 .394-.137.745-.409 1.042-.279.306-.605.462-.968.462-.3 0-.566-.113-.768-.326-.201-.208-.304-.48-.304-.809 0-.401.133-.749.394-1.032zm1.999 11.305c-.995.936-1.705 1.52-2.17 1.784-.496.284-.905.423-1.25.423-.342 0-.621-.114-.83-.338-.202-.218-.305-.51-.305-.87 0-.92.521-3.058 1.595-6.534a1.47 1.47 0 00.042-.166c-.04.017-.087.041-.14.075-.088.055-.356.265-1.14 1.03a.334.334 0 01-.438.025l-.463-.358a.334.334 0 01-.043-.49c.722-.794 1.395-1.371 2.002-1.714.636-.358 1.173-.533 1.643-.533.303 0 .548.076.729.225.196.164.3.391.3.658 0 .175-.084.63-.697 2.686-.875 2.937-1.084 4.003-1.099 4.372.166-.098.558-.376 1.395-1.162a.334.334 0 01.462.003l.411.4a.334.334 0 01-.004.484z"
+              fill="var(--expo-theme-icon-default)"
+            />
+          </svg>
+        </div>
+      </div>
+      <div>
+        <strong
+          class="css-kkqcgt-paragraph-STYLES_BOLD_PARAGRAPH"
+        >
+          See: 
+        </strong>
+        <span>
+          <a
+            class="css-12zqqiz-STYLES_EXTERNAL_LINK"
+            href="https://developer.apple.com/documentation/authenticationservices/asauthorizationopenidrequest"
+            rel="noopener noreferrer"
+          >
+            Apple
+Documentation
+          </a>
+          
+for more details.
+        </span>
+      </div>
+    </blockquote>
     <table>
       <thead>
         <tr>
@@ -3005,6 +3134,49 @@ OAuth 2.0 protocol
       .
 None of these options are required.
     </p>
+    <blockquote
+      class="css-e76wiv-paragraph-STYLES_BLOCKQUOTE"
+      data-text="true"
+    >
+      <div>
+        <div
+          style="margin-top: 2px;"
+        >
+          <svg
+            aria-label="check"
+            fill="none"
+            height="16"
+            viewBox="0 0 24 24"
+            width="16"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12c6.628 0 12-5.373 12-12S18.628 0 12 0zm-.015 5.419c.269-.292.596-.44.973-.44.306 0 .575.11.776.317.203.207.306.472.306.786 0 .394-.137.745-.409 1.042-.279.306-.605.462-.968.462-.3 0-.566-.113-.768-.326-.201-.208-.304-.48-.304-.809 0-.401.133-.749.394-1.032zm1.999 11.305c-.995.936-1.705 1.52-2.17 1.784-.496.284-.905.423-1.25.423-.342 0-.621-.114-.83-.338-.202-.218-.305-.51-.305-.87 0-.92.521-3.058 1.595-6.534a1.47 1.47 0 00.042-.166c-.04.017-.087.041-.14.075-.088.055-.356.265-1.14 1.03a.334.334 0 01-.438.025l-.463-.358a.334.334 0 01-.043-.49c.722-.794 1.395-1.371 2.002-1.714.636-.358 1.173-.533 1.643-.533.303 0 .548.076.729.225.196.164.3.391.3.658 0 .175-.084.63-.697 2.686-.875 2.937-1.084 4.003-1.099 4.372.166-.098.558-.376 1.395-1.162a.334.334 0 01.462.003l.411.4a.334.334 0 01-.004.484z"
+              fill="var(--expo-theme-icon-default)"
+            />
+          </svg>
+        </div>
+      </div>
+      <div>
+        <strong
+          class="css-kkqcgt-paragraph-STYLES_BOLD_PARAGRAPH"
+        >
+          See: 
+        </strong>
+        <span>
+          <a
+            class="css-12zqqiz-STYLES_EXTERNAL_LINK"
+            href="https://developer.apple.com/documentation/authenticationservices/asauthorizationopenidrequest"
+            rel="noopener noreferrer"
+          >
+            Apple
+Documentation
+          </a>
+          
+for more details.
+        </span>
+      </div>
+    </blockquote>
     <table>
       <thead>
         <tr>
@@ -3227,6 +3399,49 @@ OAuth 2.0 protocol
       .
 You must include the ID string of the user to sign out.
     </p>
+    <blockquote
+      class="css-e76wiv-paragraph-STYLES_BLOCKQUOTE"
+      data-text="true"
+    >
+      <div>
+        <div
+          style="margin-top: 2px;"
+        >
+          <svg
+            aria-label="check"
+            fill="none"
+            height="16"
+            viewBox="0 0 24 24"
+            width="16"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12c6.628 0 12-5.373 12-12S18.628 0 12 0zm-.015 5.419c.269-.292.596-.44.973-.44.306 0 .575.11.776.317.203.207.306.472.306.786 0 .394-.137.745-.409 1.042-.279.306-.605.462-.968.462-.3 0-.566-.113-.768-.326-.201-.208-.304-.48-.304-.809 0-.401.133-.749.394-1.032zm1.999 11.305c-.995.936-1.705 1.52-2.17 1.784-.496.284-.905.423-1.25.423-.342 0-.621-.114-.83-.338-.202-.218-.305-.51-.305-.87 0-.92.521-3.058 1.595-6.534a1.47 1.47 0 00.042-.166c-.04.017-.087.041-.14.075-.088.055-.356.265-1.14 1.03a.334.334 0 01-.438.025l-.463-.358a.334.334 0 01-.043-.49c.722-.794 1.395-1.371 2.002-1.714.636-.358 1.173-.533 1.643-.533.303 0 .548.076.729.225.196.164.3.391.3.658 0 .175-.084.63-.697 2.686-.875 2.937-1.084 4.003-1.099 4.372.166-.098.558-.376 1.395-1.162a.334.334 0 01.462.003l.411.4a.334.334 0 01-.004.484z"
+              fill="var(--expo-theme-icon-default)"
+            />
+          </svg>
+        </div>
+      </div>
+      <div>
+        <strong
+          class="css-kkqcgt-paragraph-STYLES_BOLD_PARAGRAPH"
+        >
+          See: 
+        </strong>
+        <span>
+          <a
+            class="css-12zqqiz-STYLES_EXTERNAL_LINK"
+            href="https://developer.apple.com/documentation/authenticationservices/asauthorizationopenidrequest"
+            rel="noopener noreferrer"
+          >
+            Apple
+Documentation
+          </a>
+          
+for more details.
+        </span>
+      </div>
+    </blockquote>
     <table>
       <thead>
         <tr>
@@ -3812,6 +4027,49 @@ OAuth 2.0 protocol
       </a>
       .
     </p>
+    <blockquote
+      class="css-e76wiv-paragraph-STYLES_BLOCKQUOTE"
+      data-text="true"
+    >
+      <div>
+        <div
+          style="margin-top: 2px;"
+        >
+          <svg
+            aria-label="check"
+            fill="none"
+            height="16"
+            viewBox="0 0 24 24"
+            width="16"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12c6.628 0 12-5.373 12-12S18.628 0 12 0zm-.015 5.419c.269-.292.596-.44.973-.44.306 0 .575.11.776.317.203.207.306.472.306.786 0 .394-.137.745-.409 1.042-.279.306-.605.462-.968.462-.3 0-.566-.113-.768-.326-.201-.208-.304-.48-.304-.809 0-.401.133-.749.394-1.032zm1.999 11.305c-.995.936-1.705 1.52-2.17 1.784-.496.284-.905.423-1.25.423-.342 0-.621-.114-.83-.338-.202-.218-.305-.51-.305-.87 0-.92.521-3.058 1.595-6.534a1.47 1.47 0 00.042-.166c-.04.017-.087.041-.14.075-.088.055-.356.265-1.14 1.03a.334.334 0 01-.438.025l-.463-.358a.334.334 0 01-.043-.49c.722-.794 1.395-1.371 2.002-1.714.636-.358 1.173-.533 1.643-.533.303 0 .548.076.729.225.196.164.3.391.3.658 0 .175-.084.63-.697 2.686-.875 2.937-1.084 4.003-1.099 4.372.166-.098.558-.376 1.395-1.162a.334.334 0 01.462.003l.411.4a.334.334 0 01-.004.484z"
+              fill="var(--expo-theme-icon-default)"
+            />
+          </svg>
+        </div>
+      </div>
+      <div>
+        <strong
+          class="css-kkqcgt-paragraph-STYLES_BOLD_PARAGRAPH"
+        >
+          See: 
+        </strong>
+        <span>
+          <a
+            class="css-12zqqiz-STYLES_EXTERNAL_LINK"
+            href="https://developer.apple.com/documentation/authenticationservices/asauthorizationappleidprovidercredentialstate"
+            rel="noopener noreferrer"
+          >
+            Apple
+Documentation
+          </a>
+          
+for more details.
+        </span>
+      </div>
+    </blockquote>
     <ul
       class="css-1a9yu92-paragraph-STYLES_UNORDERED_LIST-UL"
       data-text="true"
@@ -4125,6 +4383,49 @@ You will still need to handle null values for any fields you request.
 
       </div>
     </blockquote>
+    <blockquote
+      class="css-e76wiv-paragraph-STYLES_BLOCKQUOTE"
+      data-text="true"
+    >
+      <div>
+        <div
+          style="margin-top: 2px;"
+        >
+          <svg
+            aria-label="check"
+            fill="none"
+            height="16"
+            viewBox="0 0 24 24"
+            width="16"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12c6.628 0 12-5.373 12-12S18.628 0 12 0zm-.015 5.419c.269-.292.596-.44.973-.44.306 0 .575.11.776.317.203.207.306.472.306.786 0 .394-.137.745-.409 1.042-.279.306-.605.462-.968.462-.3 0-.566-.113-.768-.326-.201-.208-.304-.48-.304-.809 0-.401.133-.749.394-1.032zm1.999 11.305c-.995.936-1.705 1.52-2.17 1.784-.496.284-.905.423-1.25.423-.342 0-.621-.114-.83-.338-.202-.218-.305-.51-.305-.87 0-.92.521-3.058 1.595-6.534a1.47 1.47 0 00.042-.166c-.04.017-.087.041-.14.075-.088.055-.356.265-1.14 1.03a.334.334 0 01-.438.025l-.463-.358a.334.334 0 01-.043-.49c.722-.794 1.395-1.371 2.002-1.714.636-.358 1.173-.533 1.643-.533.303 0 .548.076.729.225.196.164.3.391.3.658 0 .175-.084.63-.697 2.686-.875 2.937-1.084 4.003-1.099 4.372.166-.098.558-.376 1.395-1.162a.334.334 0 01.462.003l.411.4a.334.334 0 01-.004.484z"
+              fill="var(--expo-theme-icon-default)"
+            />
+          </svg>
+        </div>
+      </div>
+      <div>
+        <strong
+          class="css-kkqcgt-paragraph-STYLES_BOLD_PARAGRAPH"
+        >
+          See: 
+        </strong>
+        <span>
+          <a
+            class="css-12zqqiz-STYLES_EXTERNAL_LINK"
+            href="https://developer.apple.com/documentation/authenticationservices/asauthorizationscope"
+            rel="noopener noreferrer"
+          >
+            Apple
+Documentation
+          </a>
+          
+for more details.
+        </span>
+      </div>
+    </blockquote>
     <ul
       class="css-1a9yu92-paragraph-STYLES_UNORDERED_LIST-UL"
       data-text="true"
@@ -4227,6 +4528,49 @@ You will still need to handle null values for any fields you request.
     >
       An enum whose values specify the system's best guess for how likely the current user is a real person.
     </p>
+    <blockquote
+      class="css-e76wiv-paragraph-STYLES_BLOCKQUOTE"
+      data-text="true"
+    >
+      <div>
+        <div
+          style="margin-top: 2px;"
+        >
+          <svg
+            aria-label="check"
+            fill="none"
+            height="16"
+            viewBox="0 0 24 24"
+            width="16"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12c6.628 0 12-5.373 12-12S18.628 0 12 0zm-.015 5.419c.269-.292.596-.44.973-.44.306 0 .575.11.776.317.203.207.306.472.306.786 0 .394-.137.745-.409 1.042-.279.306-.605.462-.968.462-.3 0-.566-.113-.768-.326-.201-.208-.304-.48-.304-.809 0-.401.133-.749.394-1.032zm1.999 11.305c-.995.936-1.705 1.52-2.17 1.784-.496.284-.905.423-1.25.423-.342 0-.621-.114-.83-.338-.202-.218-.305-.51-.305-.87 0-.92.521-3.058 1.595-6.534a1.47 1.47 0 00.042-.166c-.04.017-.087.041-.14.075-.088.055-.356.265-1.14 1.03a.334.334 0 01-.438.025l-.463-.358a.334.334 0 01-.043-.49c.722-.794 1.395-1.371 2.002-1.714.636-.358 1.173-.533 1.643-.533.303 0 .548.076.729.225.196.164.3.391.3.658 0 .175-.084.63-.697 2.686-.875 2.937-1.084 4.003-1.099 4.372.166-.098.558-.376 1.395-1.162a.334.334 0 01.462.003l.411.4a.334.334 0 01-.004.484z"
+              fill="var(--expo-theme-icon-default)"
+            />
+          </svg>
+        </div>
+      </div>
+      <div>
+        <strong
+          class="css-kkqcgt-paragraph-STYLES_BOLD_PARAGRAPH"
+        >
+          See: 
+        </strong>
+        <span>
+          <a
+            class="css-12zqqiz-STYLES_EXTERNAL_LINK"
+            href="https://developer.apple.com/documentation/authenticationservices/asuserdetectionstatus"
+            rel="noopener noreferrer"
+          >
+            Apple
+Documentation
+          </a>
+          
+for more details.
+        </span>
+      </div>
+    </blockquote>
     <ul
       class="css-1a9yu92-paragraph-STYLES_UNORDERED_LIST-UL"
       data-text="true"

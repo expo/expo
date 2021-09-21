@@ -62,11 +62,7 @@ const renderMethod = (
     </div>
   ));
 
-const APISectionMethods: React.FC<APISectionMethodsProps> = ({
-  data,
-  apiName,
-  header = 'Methods',
-}) =>
+const APISectionMethods = ({ data, apiName, header = 'Methods' }: APISectionMethodsProps) =>
   data?.length ? (
     <>
       <H2 key="methods-header">{header}</H2>

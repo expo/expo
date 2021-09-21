@@ -133,7 +133,7 @@ const renderAPI = (
   }
 };
 
-const APISection: React.FC<Props> = ({ packageName, apiName, forceVersion }) => {
+const APISection = ({ packageName, apiName, forceVersion }: Props) => {
   const { version } = useContext(DocumentationPageContext);
   const resolvedVersion =
     forceVersion ||
