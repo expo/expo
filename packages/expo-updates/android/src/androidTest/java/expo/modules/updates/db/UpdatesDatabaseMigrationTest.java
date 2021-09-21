@@ -176,6 +176,48 @@ public class UpdatesDatabaseMigrationTest {
     Assert.assertEquals(0, cursorUpdatesAssetsOnDelete2.getCount());
   }
 
+  @Test
+  public void testMigrate6To7() throws IOException {
+    SupportSQLiteDatabase db = helper.createDatabase(TEST_DB, 6);
+    db.execSQL("PRAGMA foreign_keys=ON");
+
+    // db has schema version 6. insert some data using SQL queries.
+    db.execSQL("INSERT INTO \"assets\" (\"id\",\"url\",\"key\",\"headers\",\"type\",\"metadata\",\"download_time\",\"relative_path\",\"hash\",\"hash_type\",\"marked_for_deletion\") VALUES" +
+            " (1,'https://url.to/b56cf690e0afa93bd4dc7756d01edd3e','b56cf690e0afa93bd4dc7756d01edd3e.png',NULL,'image/png',NULL,1614137309295,'b56cf690e0afa93bd4dc7756d01edd3e.png',NULL,0,0),\n" +
+            " (2,'https://url.to/bundle-1614137308871','bundle-1614137308871',NULL,'application/javascript',NULL,1614137309513,'bundle-1614137308871',NULL,0,0),\n" +
+            " (3,NULL,NULL,NULL,'js',NULL,1614137406588,'bundle-1614137401950',NULL,0,0)");
+    db.execSQL("INSERT INTO \"updates\" (\"id\",\"scope_key\",\"commit_time\",\"runtime_version\",\"launch_asset_id\",\"manifest\",\"status\",\"keep\", \"last_accessed\") VALUES" +
+            " (X'8F06A50E5A68499F986CCA31EE159F81','https://exp.host/@esamelson/sdk41updates',1619133262732,'41.0.0',1,NULL,1,1,1619647642456)");
+
+    // Prepare for the next version.
+    db.close();
+
+    // Re-open the database with version 7 and provide
+    // MIGRATION_6_7 as the migration process.
+    db = helper.runMigrationsAndValidate(TEST_DB, 7, true, UpdatesDatabase.MIGRATION_6_7);
+
+    // Confirm that 'type' is now nullable.
+    db.execSQL("INSERT INTO \"assets\" (\"id\",\"url\",\"key\",\"headers\",\"type\",\"metadata\",\"download_time\",\"relative_path\",\"hash\",\"hash_type\",\"marked_for_deletion\") VALUES" +
+            " (4,NULL,NULL,NULL,'png',NULL,1,NULL,NULL,0,0),\n" +
+            " (5,NULL,NULL,NULL,NULL,NULL,1,NULL,NULL,0,0)");
+
+    db.execSQL("PRAGMA foreign_keys=ON");
+
+    Cursor allAssets = db.query("SELECT * FROM `assets`");
+    Assert.assertEquals(5, allAssets.getCount());
+
+    Cursor assetsWithNullType = db.query("SELECT * FROM `assets` WHERE `type` IS NULL");
+    Assert.assertEquals(1, assetsWithNullType.getCount());
+
+    Cursor assetsWithNonNullType = db.query("SELECT * FROM `assets` WHERE `type` IS NOT NULL");
+    Assert.assertEquals(4, assetsWithNonNullType.getCount());
+
+    // check updates with were not deleted by foreign key CASCADE policy.
+    Cursor allUpdates = db.query("SELECT * FROM `updates`");
+    Assert.assertEquals(1, allUpdates.getCount());
+  }
+
+
   private boolean execSQLExpectingException(SupportSQLiteDatabase db, String sql) {
     boolean fails;
     try {
