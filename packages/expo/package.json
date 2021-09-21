@@ -19,6 +19,7 @@
     "ios",
     "scripts",
     "tools",
+    "unstable",
     "AppEntry.js",
     "bundledNativeModules.json",
     "expo-module.config.json",

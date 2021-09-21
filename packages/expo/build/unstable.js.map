@@ -1,0 +1,1 @@
+{"version":3,"file":"unstable.js","sourceRoot":"","sources":["../src/unstable.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,iBAAiB,EAAE,MAAM,iCAAiC,CAAC","sourcesContent":["export { installDevLogging } from './environment/installDevLogging';\n"]}
