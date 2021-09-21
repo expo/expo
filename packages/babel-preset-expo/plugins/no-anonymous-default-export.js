@@ -46,7 +46,7 @@ function getLogger(caller) {
  *
  */
 module.exports = function ({ types, ...babel }) {
-  let onWarning = getLogger(babel.caller);
+  const onWarning = getLogger(babel.caller);
   if (typeof onWarning !== 'function') {
     return { visitor: {} };
   }
