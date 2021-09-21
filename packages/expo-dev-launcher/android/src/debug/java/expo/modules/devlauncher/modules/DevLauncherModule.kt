@@ -15,7 +15,7 @@ class DevLauncherModule(reactContext: ReactApplicationContext?) : ReactContextBa
 
   override fun getConstants(): Map<String, Any?> {
     val manifestString = try {
-      controller?.manifest?.rawData
+      controller?.manifest?.getRawJson()
     } catch (_: IllegalStateException) {
       null
     }
