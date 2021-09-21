@@ -4,6 +4,23 @@
 
 ### 🛠 Breaking changes
 
+- Added a native dependency on the `expo-manifests` package. ([#14461](https://github.com/expo/expo/pull/14461) by [@esamelson](https://github.com/esamelson))
+  - This is a breaking change for projects **without `react-native-unimodules` or `expo-modules-core` installed**. In order to upgrade from `expo-dev-client@0.5.1` or below to this version in such projects, the following changes must be made:
+    - In `ios/Podfile`, change the deployment target to `platform :ios, '12.0'` and add the following lines inside the main target:
+    ```ruby
+    pod 'EXJSONUtils', path: '../node_modules/expo-json-utils/ios', :configurations => :debug
+    pod 'EXManifests', path: '../node_modules/expo-manifests/ios', :configurations => :debug
+    ```
+    - In `android/settings.gradle`, add the following lines:
+    ```groovy
+    include ':expo-json-utils'
+    project(':expo-json-utils').projectDir = new File('../node_modules/expo-json-utils/android')
+
+    include ':expo-manifests'
+    project(':expo-manifests').projectDir = new File('../node_modules/expo-manifests/android')
+    ```
+  - No additional setup is necessary for projects already using `react-native-unimodules` or `expo-modules-core`.
+
 ### 🎉 New features
 
 - Suppress the `"main" has not been registered` exception if it was caused by a different error. ([#14363](https://github.com/expo/expo/pull/14363) by [@lukmccall](https://github.com/lukmccall))
