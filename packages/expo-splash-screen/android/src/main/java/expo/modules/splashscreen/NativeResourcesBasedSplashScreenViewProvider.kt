@@ -4,6 +4,9 @@ import android.content.Context
 import androidx.core.content.ContextCompat
 
 // this needs to stay for versioning to work
+import expo.modules.splashscreen.SplashScreenImageResizeMode
+import expo.modules.splashscreen.SplashScreenViewProvider
+// EXPO_VERSIONING_NEEDS_EXPOVIEW_R
 
 /**
  * Default implementation that uses native resources.

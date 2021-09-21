@@ -8,6 +8,10 @@ import com.facebook.react.ReactRootView
 import expo.modules.core.interfaces.ReactActivityLifecycleListener
 import expo.modules.splashscreen.singletons.SplashScreen
 
+// this needs to stay for versioning to work
+import expo.modules.splashscreen.SplashScreenImageResizeMode
+// EXPO_VERSIONING_NEEDS_EXPOVIEW_R
+
 class SplashScreenReactActivityLifecycleListener(activityContext: Context) : ReactActivityLifecycleListener {
   override fun onCreate(activity: Activity, savedInstanceState: Bundle?) {
     // To support backward compatible or SplashScreenImageResizeMode customization
