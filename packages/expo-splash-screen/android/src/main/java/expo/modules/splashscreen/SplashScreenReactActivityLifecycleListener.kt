@@ -9,8 +9,10 @@ import expo.modules.core.interfaces.ReactActivityLifecycleListener
 import expo.modules.splashscreen.singletons.SplashScreen
 
 // this needs to stay for versioning to work
+/* ktlint-disable no-unused-imports */
 import expo.modules.splashscreen.SplashScreenImageResizeMode
 // EXPO_VERSIONING_NEEDS_EXPOVIEW_R
+/* ktlint-enable no-unused-imports */
 
 class SplashScreenReactActivityLifecycleListener(activityContext: Context) : ReactActivityLifecycleListener {
   override fun onCreate(activity: Activity, savedInstanceState: Bundle?) {
