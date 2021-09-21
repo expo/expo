@@ -14385,7 +14385,7 @@ pretty-format@^26.0.0, pretty-format@^26.4.0, pretty-format@^26.5.2, pretty-form
     ansi-styles "^4.0.0"
     react-is "^17.0.1"
 
-pretty-format@^27.0.6, pretty-format@^27.2.0:
+pretty-format@^27.2.0:
   version "27.2.0"
   resolved "https://registry.yarnpkg.com/pretty-format/-/pretty-format-27.2.0.tgz#ee37a94ce2a79765791a8649ae374d468c18ef19"
   integrity sha512-KyJdmgBkMscLqo8A7K77omgLx5PWPiXJswtTtFV7XgVZv2+qPk6UivpXXO+5k6ZEbWIbLoKdx1pZ6ldINzbwTA==
