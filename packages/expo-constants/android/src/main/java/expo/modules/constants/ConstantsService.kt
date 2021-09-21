@@ -21,8 +21,8 @@ import java.util.*
 private val TAG = ConstantsService::class.java.simpleName
 private const val CONFIG_FILE_NAME = "app.config"
 
-class ConstantsService(private val context: Context) : InternalModule, ConstantsInterface {
-  private var statusBarHeight = context.resources.getIdentifier("status_bar_height", "dimen", "android")
+open class ConstantsService(private val context: Context) : InternalModule, ConstantsInterface {
+  var statusBarHeightInternal = context.resources.getIdentifier("status_bar_height", "dimen", "android")
     .takeIf { it > 0 }
     ?.let { (context.resources::getDimensionPixelSize)(it) }
     ?.let { pixels -> convertPixelsToDp(pixels.toFloat(), context) }
@@ -40,10 +40,10 @@ class ConstantsService(private val context: Context) : InternalModule, Constants
   override fun getExportedInterfaces(): List<Class<*>> = listOf(ConstantsInterface::class.java)
 
   override fun getConstants(): Map<String, Any?> {
-    val constants: MutableMap<String, Any?> = hashMapOf(
+    val constants = mutableMapOf(
       "sessionId" to sessionId,
       "executionEnvironment" to ExecutionEnvironment.BARE.string,
-      "statusBarHeight" to statusBarHeight,
+      "statusBarHeight" to statusBarHeightInternal,
       "deviceYearClass" to deviceYearClass,
       "deviceName" to deviceName,
       "isDevice" to isDevice,
@@ -68,7 +68,7 @@ class ConstantsService(private val context: Context) : InternalModule, Constants
   }
 
   // Just use package name in vanilla React Native apps.
-  override fun getAppScopeKey(): String = context.packageName
+  override fun getAppScopeKey(): String? = context.packageName
 
   override fun getAppOwnership() = "guest"
 
@@ -78,11 +78,11 @@ class ConstantsService(private val context: Context) : InternalModule, Constants
 
   override fun getIsDevice() = !isRunningOnGenymotion && !isRunningOnStockEmulator
 
-  override fun getStatusBarHeight() = statusBarHeight
+  override fun getStatusBarHeight() = statusBarHeightInternal
 
   override fun getSystemVersion(): String = Build.VERSION.RELEASE
 
-  fun getOrCreateInstallationId(): String = exponentInstallationId.getOrCreateUUID()
+  open fun getOrCreateInstallationId(): String = exponentInstallationId.getOrCreateUUID()
 
   // From https://github.com/dabit3/react-native-fonts
   override fun getSystemFonts() = listOf(
