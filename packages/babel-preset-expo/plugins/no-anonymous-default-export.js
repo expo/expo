@@ -30,7 +30,7 @@ function logLintWarning(log, title, before, after) {
 
 function getLogger(caller) {
   let onWarning;
-  caller((caller) => {
+  caller((caller = {}) => {
     onWarning = caller.onWarning;
     // Prevent updating the cache.
     return '';
