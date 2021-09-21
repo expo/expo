@@ -30,19 +30,19 @@ const renderMethod = (
     <div key={`method-signature-${name}-${parameters?.length || 0}`}>
       <H3Code>
         <InlineCode>
-          {apiName ? `${apiName}.` : ''}
+          {apiName && `${apiName}.`}
           {header !== 'Hooks' ? `${name}(${listParams(parameters)})` : name}
         </InlineCode>
       </H3Code>
       <CommentTextBlock
         comment={comment}
         beforeContent={
-          parameters ? (
+          parameters && (
             <>
               <H4>Arguments</H4>
               <UL>{parameters?.map(renderParam)}</UL>
             </>
-          ) : undefined
+          )
         }
       />
       {resolveTypeName(type) !== 'undefined' ? (
@@ -53,12 +53,12 @@ const renderMethod = (
               <InlineCode>{resolveTypeName(type)}</InlineCode>
             </LI>
           </UL>
-          {comment?.returns ? (
+          {comment?.returns && (
             <ReactMarkdown components={mdComponents}>{comment.returns}</ReactMarkdown>
-          ) : null}
+          )}
         </div>
       ) : null}
-      {index + 1 !== dataLength ? <hr /> : null}
+      {index + 1 !== dataLength && <hr />}
     </div>
   ));
 

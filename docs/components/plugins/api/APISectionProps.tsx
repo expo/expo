@@ -7,7 +7,6 @@ import { LI, UL } from '~/components/base/list';
 import { P } from '~/components/base/paragraph';
 import { H2, H3, H3Code } from '~/components/plugins/Headings';
 import {
-  CommentTagData,
   DefaultPropsDefinitionData,
   PropData,
   PropsDefinitionData,
@@ -16,6 +15,7 @@ import {
 import {
   CommentTextBlock,
   getCommentOrSignatureComment,
+  getTagData,
   renderTypeOrSignatureType,
   resolveTypeName,
   STYLES_SECONDARY,
@@ -37,9 +37,9 @@ const extractDefaultPropValue = (
   { comment, name }: PropData,
   defaultProps?: DefaultPropsDefinitionData
 ): string | undefined => {
-  const annotationDefault = comment?.tags?.filter((tag: CommentTagData) => tag.tag === 'default');
-  if (annotationDefault?.length) {
-    return annotationDefault[0].text;
+  const annotationDefault = getTagData('default', comment);
+  if (annotationDefault) {
+    return annotationDefault.text;
   }
   return defaultProps?.type?.declaration?.children?.filter(
     (defaultProp: PropData) => defaultProp.name === name

@@ -45,7 +45,7 @@ export async function connectAsync() {
  * @return Returns a Promise that resolves with an `IAPQueryResponse` containing `IAPItemDetails`
  * objects in the `results` array.
  *
- * # Example
+ * @example
  * ```ts
  * // These product IDs must match the item entries you created in the App Store Connect and Google Play Console.
  * // If you want to add more or edit their attributes you can do so there.
@@ -152,7 +152,7 @@ export async function purchaseItemAsync(itemId, oldPurchaseToken) {
  * handle in the response. Consumed items will not be returned however, so if you consume an item
  * that record will be gone and no longer appear in the results array when a new purchase is made.
  *
- * # Example
+ * @example
  * ```ts
  * // Set purchase listener
  *  setPurchaseListener(({ responseCode, results, errorCode }) => {
@@ -210,7 +210,7 @@ export function setPurchaseListener(callback) {
  * `transactionReceipt` with the App Store as described [here](https://developer.apple.com/library/archive/releasenotes/General/ValidateAppStoreReceipt/Chapters/ValidateRemotely.html).
  * On Android, you can verify your purchase using the Google Play Developer API as described [here](https://developer.android.com/google/play/billing/billing_best_practices#validating-purchase).
  *
- * # Example
+ * @example
  * ```ts
  * if (!purchase.acknowledged) {
  *   await finishTransactionAsync(purchase, false); // or true for consumables
@@ -247,7 +247,7 @@ export async function finishTransactionAsync(purchase, consumeItem) {
  *
  * @return Returns a Promise that fulfils with an number representing the `IAPResponseCode`.
  *
- * # Example
+ * @example
  * ```ts
  * const responseCode = await getBillingResponseCodeAsync();
  *  if (responseCode !== IAPResponseCode.OK) {

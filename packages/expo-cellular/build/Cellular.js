@@ -14,7 +14,7 @@ export { CellularGeneration };
  *
  * On web, this returns `null`.
  *
- * # Examples
+ * @example
  * ```ts
  * Cellular.allowsVoip; // true or false
  * ```
@@ -36,7 +36,7 @@ export const allowsVoip = ExpoCellular ? ExpoCellular.allowsVoip : null;
  *
  * On web, this returns `null`.
  *
- * # Examples
+ * @example
  * ```ts
  * Cellular.carrier; // "T-Mobile" or "Verizon"
  * ```
@@ -54,7 +54,7 @@ export const carrier = ExpoCellular ? ExpoCellular.carrier : null;
  *
  * On web, this returns `null`.
  *
- * # Examples
+ * @example
  * ```ts
  * Cellular.isoCountryCode; // "us" or "au"
  * ```
@@ -73,7 +73,7 @@ export const isoCountryCode = ExpoCellular ? ExpoCellular.isoCountryCode : null;
  *
  * On web, this returns `null`.
  *
- * # Examples
+ * @example
  * ```ts
  * Cellular.mobileCountryCode; // "310"
  * ```
@@ -93,7 +93,7 @@ export const mobileCountryCode = ExpoCellular
  *
  * On web, this returns `null`.
  *
- * # Examples
+ * @example
  * ```ts
  * Cellular.mobileNetworkCode; // "260"
  * ```
@@ -113,7 +113,7 @@ export const mobileNetworkCode = ExpoCellular
  * round-trip time and downlink values. See [here](https://developer.mozilla.org/en-US/docs/Web/API/Network_Information_API)
  * to view browser compatibility.
  *
- * # Example
+ * @example
  * ```ts
  * await Cellular.getCellularGenerationAsync();
  * // CellularGeneration.CELLULAR_4G
@@ -136,7 +136,7 @@ export async function getCellularGenerationAsync() {
  *
  * On web, this returns `null`.
  *
- * # Examples
+ * @example
  * ```ts
  * await Cellular.allowsVoipAsync(); // true or false
  * ```
@@ -157,7 +157,7 @@ export async function allowsVoipAsync() {
  *
  * On web, this returns `null`.
  *
- * # Examples
+ * @example
  * ```ts
  * await Cellular.getIsoCountryCodeAsync(); // "us" or "au"
  * ```
@@ -183,7 +183,7 @@ export async function getIsoCountryCodeAsync() {
  *
  * On web, this returns `null`.
  *
- * # Examples
+ * @example
  * ```ts
  * await Cellular.getCarrierNameAsync(); // "T-Mobile" or "Verizon"
  * ```
@@ -205,7 +205,7 @@ export async function getCarrierNameAsync() {
  *
  * On web, this returns `null`.
  *
- * # Examples
+ * @example
  * ```ts
  * await Cellular.getMobileCountryCodeAsync(); // "310"
  * ```
@@ -227,7 +227,7 @@ export async function getMobileCountryCodeAsync() {
  *
  * On web, this returns `null`.
  *
- * # Examples
+ * @example
  * ```ts
  * await Cellular.getMobileNetworkCodeAsync(); // "310"
  * ```
