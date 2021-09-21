@@ -3,6 +3,8 @@
 #import "EXDevLauncherManifestParser.h"
 #import <EXDevLauncher-Swift.h>
 
+#import <EXManifests/EXManifestsManifestFactory.h>
+
 typedef void (^CompletionHandler)(NSData *data, NSURLResponse *response);
 
 @interface EXDevLauncherManifestParser ()
@@ -63,13 +65,18 @@ typedef void (^CompletionHandler)(NSData *data, NSURLResponse *response);
         return;
       }
     }
-    EXDevLauncherManifest *manifest = [EXDevLauncherManifest fromJsonData:data];
-    if (!manifest) {
-      NSMutableDictionary* details = [NSMutableDictionary dictionary];
-      [details setValue:@"Couldn't parse the manifest." forKey:NSLocalizedDescriptionKey];
-      onError([[NSError alloc] initWithDomain:@"DevelopemntClient" code:1 userInfo:details]);
+    NSError *error;
+    NSDictionary *jsonObject = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:&error];
+    if (!jsonObject) {
+      NSMutableDictionary *details = [NSMutableDictionary dictionary];
+      details[NSLocalizedDescriptionKey] = [NSString stringWithFormat:@"Couldn't parse the manifest. %@", (error ? error.localizedDescription : @"")];
+      if (error) {
+        details[NSUnderlyingErrorKey] = error;
+      }
+      onError([[NSError alloc] initWithDomain:@"DevelopmentClient" code:1 userInfo:details]);
       return;
     }
+    EXManifestsManifest *manifest = [EXManifestsManifestFactory manifestForManifestJSON:jsonObject];
     onParsed(manifest);
   }];
 }

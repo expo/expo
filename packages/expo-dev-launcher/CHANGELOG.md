@@ -21,6 +21,7 @@
     ```
   - No additional setup is necessary for projects already using `react-native-unimodules` or `expo-modules-core`.
 - Replace Android DevLauncherManifest class with `expo-manifests`. ([#14462](https://github.com/expo/expo/pull/14462) by [@esamelson](https://github.com/esamelson))
+- Replace iOS EXDevLauncherManifest class with `expo-manifests`. ([#14463](https://github.com/expo/expo/pull/14463) by [@esamelson](https://github.com/esamelson))
 
 ### 🎉 New features
 
