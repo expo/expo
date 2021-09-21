@@ -48,6 +48,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (nullable NSString *)slug;
 - (nullable NSString *)appKey;
 - (nullable NSString *)name;
+- (nullable NSString *)version;
 - (nullable NSDictionary *)notificationPreferences;
 - (nullable NSDictionary *)updatesInfo;
 - (nullable NSDictionary *)iosConfig;
