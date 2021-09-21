@@ -4,7 +4,7 @@
 #import <EXSplashScreen/EXSplashScreenViewNativeProvider.h>
 #import <ExpoModulesCore/EXDefines.h>
 
-NSString * const kRootViewController = @"rootViewController";
+static const NSString *kRootViewController = @"rootViewController";
 
 @interface EXSplashScreenService ()
 
