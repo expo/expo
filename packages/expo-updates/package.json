@@ -35,7 +35,7 @@
   },
   "dependencies": {
     "@expo/metro-config": "^0.1.81",
-    "@expo/config-plugins": "^3.0.7",
+    "@expo/config-plugins": "^3.0.6",
     "@expo/config": "^5.0.6",
     "expo-structured-headers": "~1.1.1",
     "expo-updates-interface": "~0.2.2",
