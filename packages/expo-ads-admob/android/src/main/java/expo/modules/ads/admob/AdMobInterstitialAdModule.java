@@ -142,7 +142,6 @@ public class AdMobInterstitialAdModule extends ExportedModule {
         mRequestAdPromise.reject("ERR_NO_CURRENT_ACTIVITY", "Currect activity is null.", null);
         mRequestAdPromise = null;
       }
-
       return;
     }
 
