@@ -7,6 +7,7 @@ ${PODFILE_UNVERSIONED_RN_DEPENDENCY}
 ${PODFILE_VERSIONED_RN_DEPENDENCIES}
 
   # Install vendored pods.
+  pod 'JKBigInteger', :podspec => '../../../ios/vendored/common/JKBigInteger.podspec.json'
   require_relative '../../../ios/podfile_helpers.rb'
   excluded_pods = ['stripe-react-native']
   use_pods!('../../../ios/vendored/unversioned/**/*.podspec.json', nil, excluded_pods)
