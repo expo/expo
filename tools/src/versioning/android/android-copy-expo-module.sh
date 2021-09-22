@@ -43,6 +43,10 @@ do
   sed -i '' "s/temporarydonotversion.$PACKAGE/$PACKAGE/g" $UNIMODULE_MANIFEST_PATH
 done < $TOOLS_DIR/android-packages-to-keep.txt
 
+# Transform `// EXPO_VERSIONING_NEEDS_EXPOVIEW_R` comment as `import abiN_N_N.host.exp.expoview.R`
+find $VERSIONED_ABI_PATH/src/main/java/$ABI_VERSION -iname '*.java' -type f -print0 | xargs -0 sed -i '' "s/^\/\/ *EXPO_VERSIONING_NEEDS_EXPOVIEW_R/import $ABI_VERSION.host.exp.expoview.R;/g"
+find $VERSIONED_ABI_PATH/src/main/java/$ABI_VERSION -iname '*.kt' -type f -print0 | xargs -0 sed -i '' "s/^\/\/ *EXPO_VERSIONING_NEEDS_EXPOVIEW_R/import $ABI_VERSION.host.exp.expoview.R/g"
+
 java -jar $TOOLS_DIR/android-manifest-merger-3898d3a.jar \
      --main $VERSIONED_ABI_PATH/src/main/AndroidManifest.xml \
      --libs $UNIMODULE_MANIFEST_PATH \

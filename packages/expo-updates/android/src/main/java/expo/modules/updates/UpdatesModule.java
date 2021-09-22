@@ -25,7 +25,7 @@ import expo.modules.updates.loader.RemoteLoader;
 import expo.modules.updates.manifest.ManifestMetadata;
 
 // this unused import must stay because of versioning
-
+import expo.modules.updates.UpdatesConfiguration;
 
 public class UpdatesModule extends ExportedModule {
   private static final String NAME = "ExpoUpdates";
