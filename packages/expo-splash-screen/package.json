@@ -37,8 +37,8 @@
     "preset": "expo-module-scripts"
   },
   "dependencies": {
-    "@expo/configure-splash-screen": "^0.5.0",
-    "@expo/prebuild-config": "^2.1.0",
+    "@expo/configure-splash-screen": "^0.6.0",
+    "@expo/prebuild-config": "^3.0.0",
     "expo-modules-core": "~0.3.2"
   },
   "devDependencies": {
