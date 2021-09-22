@@ -17,6 +17,7 @@ import expo.modules.core.arguments.ReadableArguments;
 import expo.modules.core.interfaces.ActivityProvider;
 import expo.modules.core.interfaces.ExpoMethod;
 import expo.modules.core.interfaces.services.EventEmitter;
+import android.app.Activity;
 
 public class AdMobInterstitialAdModule extends ExportedModule {
   private InterstitialAd mInterstitialAd;
@@ -137,7 +138,9 @@ public class AdMobInterstitialAdModule extends ExportedModule {
   }
 
   private void recreateInterstitialAdWithAdUnitID(String adUnitID) {
-    if (mActivityProvider.getCurrentActivity() == null) {
+    Activity currentActivity = mActivityProvider.getCurrentActivity();
+
+    if (currentActivity == null) {
       if (mRequestAdPromise != null) {
         mRequestAdPromise.reject("E_AD_INTERNAL_ERROR", "Currect activity is null.", null);
         mRequestAdPromise = null;
@@ -150,7 +153,7 @@ public class AdMobInterstitialAdModule extends ExportedModule {
       mInterstitialAd = null;
     }
 
-    mInterstitialAd = new InterstitialAd(mActivityProvider.getCurrentActivity());
+    mInterstitialAd = new InterstitialAd(currentActivity);
     mInterstitialAd.setAdUnitId(adUnitID);
 
     new Handler(Looper.getMainLooper()).post(new Runnable() {
