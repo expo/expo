@@ -40,6 +40,8 @@ async function action(providedOptions: ActionOptions) {
   };
 
   if (options.action === 'build') {
+    // in building shell apps, `app.manifest` in expo-updates is not necessary.
+    process.env['SKIP_BUNDLING'] = '1';
     return await IosShellApp.buildAndCopyArtifactAsync(options);
   } else if (options.action === 'configure') {
     return await IosShellApp.configureAndCopyArchiveAsync(options);
