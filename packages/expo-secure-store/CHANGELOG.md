@@ -1,5 +1,9 @@
 # Changelog
 
+### 🎉 New features
+
+- Added option to use user authentication
+
 ## Unpublished
 
 ### 🛠 Breaking changes
