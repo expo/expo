@@ -100,13 +100,14 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
       }
     }
     
+    
+    // Call the original swizzled method
+    [self EX_handleKeyUIEventSwizzle:event];
+    
     if (firstResponder) {
       BOOL isTextField = [firstResponder isKindOfClass: [UITextField class]] || [firstResponder isKindOfClass: [UITextView class]];
       
-      if (isTextField) {
-        // Call the original swizzled method
-        [self EX_handleKeyUIEventSwizzle:event];
-      } else {
+      if (!isTextField) {
         [EXKernelDevKeyCommands handleKeyboardEvent:event];
       }
     }
@@ -183,6 +184,8 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
       if ([input isEqualToString: @"r"]) {
         [[EXKernel sharedInstance] reloadVisibleApp];
       }
+      
+      lastCommand = CACurrentMediaTime();
     }
   }
 }
