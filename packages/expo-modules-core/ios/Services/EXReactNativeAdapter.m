@@ -222,7 +222,9 @@ EX_REGISTER_MODULE();
       )
     ) {
     [self setAppStateToBackground];
-  } else if (!_isForegrounded && RCTSharedApplication().applicationState == UIApplicationStateActive) {
+  }
+  
+  if (!_isForegrounded && RCTSharedApplication().applicationState == UIApplicationStateActive) {
     [self setAppStateToForeground];
   }
 }
