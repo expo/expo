@@ -139,7 +139,7 @@ public class AdMobInterstitialAdModule extends ExportedModule {
   private void recreateInterstitialAdWithAdUnitID(String adUnitID) {
     if (mActivityProvider.getCurrentActivity() == null) {
       if (mRequestAdPromise != null) {
-        mRequestAdPromise.reject("E_AD_INTERNAL_ERROR", "Currect activity is null.", null);
+        mRequestAdPromise.reject("ERR_NO_CURRENT_ACTIVITY", "Currect activity is null.", null);
         mRequestAdPromise = null;
       }
 
