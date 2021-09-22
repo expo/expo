@@ -12,6 +12,8 @@
 
 ### 🐛 Bug fixes
 
+- Add null check for current activity in `recreateInterstitialAdWithAdUnitID` on Android to avoid crashes. ([#14477](https://github.com/expo/expo/pull/14477) by [@yaroslavnikiforov](https://github.com/yaroslavnikiforov))
+
 ### 💡 Others
 
 - Migrated from `@unimodules/core` to `expo-modules-core`. ([#13757](https://github.com/expo/expo/pull/13757) by [@tsapeta](https://github.com/tsapeta))
