@@ -1,5 +1,5 @@
 import { SampleOptions } from './ModuleTemplate.types';
-export { default as ExpoModuleTemplateView, ExpoModuleTemplateViewProps } from './ExpoModuleTemplateView';
+export { default as ExpoModuleTemplateView, ExpoModuleTemplateViewProps, } from './ExpoModuleTemplateView';
 export * from './ModuleTemplate.types';
 /**
  * Great method that does a lot great stuff.

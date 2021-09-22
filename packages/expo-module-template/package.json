@@ -5,7 +5,8 @@
   "main": "build/ModuleTemplate.js",
   "types": "build/ModuleTemplate.d.ts",
   "scripts": {
-    "build": "tsc"
+    "build": "tsc",
+    "lint": "eslint ."
   },
   "keywords": [
     "react-native",
