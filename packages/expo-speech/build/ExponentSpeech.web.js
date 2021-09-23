@@ -10,6 +10,7 @@ async function getVoices() {
             return;
         }
         // when a page loads it takes some amount of time to populate the voices list
+        // see https://stackoverflow.com/a/52005323/4337317
         window.speechSynthesis.onvoiceschanged = function () {
             const voices = window.speechSynthesis.getVoices();
             resolve(voices);
