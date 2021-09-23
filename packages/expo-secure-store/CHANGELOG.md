@@ -2,7 +2,7 @@
 
 ### 🎉 New features
 
-- Added option to use user authentication
+- Added option to use user authentication ([#14512](https://github.com/expo/expo/pull/14512) by [@j-piasecki](https://github.com/j-piasecki))
 
 ## Unpublished
 
