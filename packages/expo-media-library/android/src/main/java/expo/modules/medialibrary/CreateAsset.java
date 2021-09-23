@@ -4,35 +4,25 @@ import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
-import android.database.Cursor;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
-import android.os.Bundle;
-import android.os.ParcelFileDescriptor;
 import android.provider.MediaStore;
-
-import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
-import expo.modules.core.Promise;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.nio.channels.FileChannel;
-import java.util.ArrayList;
 
-import static expo.modules.medialibrary.MediaLibraryConstants.ASSET_PROJECTION;
+import androidx.annotation.RequiresApi;
+import expo.modules.core.Promise;
+
 import static expo.modules.medialibrary.MediaLibraryConstants.ERROR_IO_EXCEPTION;
 import static expo.modules.medialibrary.MediaLibraryConstants.ERROR_NO_FILE_EXTENSION;
-import static expo.modules.medialibrary.MediaLibraryConstants.ERROR_UNABLE_TO_LOAD;
 import static expo.modules.medialibrary.MediaLibraryConstants.ERROR_UNABLE_TO_LOAD_PERMISSION;
 import static expo.modules.medialibrary.MediaLibraryConstants.ERROR_UNABLE_TO_SAVE;
-import static expo.modules.medialibrary.MediaLibraryConstants.EXTERNAL_CONTENT;
 import static expo.modules.medialibrary.MediaLibraryUtils.getEnvDirectoryForAssetType;
 import static expo.modules.medialibrary.MediaLibraryUtils.mineTypeToExternalUri;
 import static expo.modules.medialibrary.MediaLibraryUtils.queryAssetInfo;
@@ -125,6 +115,7 @@ class CreateAsset extends AsyncTask<Void, Void, Void> {
       } else {
         mPromise.resolve(null);
       }
+      // no further operations required, skip by returning null
       return null;
     } else {
       File destDir = getEnvDirectoryForAssetType(
