@@ -72,6 +72,8 @@ jobs:
         uses: actions/checkout@v2
         with:
           submodules: true
+      - name: 🔨 Switch to Xcode 12.5.1
+        run: sudo xcode-select --switch /Applications/Xcode_12.5.1.app
       - name: 🍺 Install required tools
         run: |
           brew tap wix/brew
