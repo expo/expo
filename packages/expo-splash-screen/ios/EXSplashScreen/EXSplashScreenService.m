@@ -4,7 +4,7 @@
 #import <EXSplashScreen/EXSplashScreenViewNativeProvider.h>
 #import <ExpoModulesCore/EXDefines.h>
 
-static const NSString *kRootViewController = @"rootViewController";
+static const NSString *kView = @"view";
 
 @interface EXSplashScreenService ()
 
@@ -142,7 +142,7 @@ EX_REGISTER_SINGLETON_MODULE(SplashScreen);
 {
   NSAssert([NSThread isMainThread], @"Method must be called on main thread");
   if (!_isObservingRootViewController) {
-    [UIApplication.sharedApplication.keyWindow addObserver:self forKeyPath:kRootViewController options:NSKeyValueObservingOptionNew context:nil];
+    [UIApplication.sharedApplication.keyWindow.rootViewController addObserver:self forKeyPath:kView options:NSKeyValueObservingOptionNew context:nil];
     _isObservingRootViewController = YES;
   }
 }
@@ -151,17 +151,20 @@ EX_REGISTER_SINGLETON_MODULE(SplashScreen);
 {
   NSAssert([NSThread isMainThread], @"Method must be called on main thread");
   if (_isObservingRootViewController) {
-    [UIApplication.sharedApplication.keyWindow removeObserver:self forKeyPath:kRootViewController context:nil];
+    [UIApplication.sharedApplication.keyWindow.rootViewController removeObserver:self forKeyPath:kView context:nil];
     _isObservingRootViewController = NO;
   }
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSKeyValueChangeKey,id> *)change context:(void *)context
 {
-  if (object == UIApplication.sharedApplication.keyWindow && [keyPath isEqualToString:kRootViewController]) {
-    UIViewController *newRootViewController = change[@"new"];
-    if (newRootViewController != nil) {
-      [self showSplashScreenFor:newRootViewController];
+  if (object == UIApplication.sharedApplication.keyWindow.rootViewController && [keyPath isEqualToString:kView]) {
+    UIView *newView = change[@"new"];
+    if (newView != nil && [newView.nextResponder isKindOfClass:[UIViewController class]]) {
+      UIViewController *viewController = (UIViewController *)newView.nextResponder;
+      [self hideSplashScreenFor:viewController successCallback:^(BOOL hasEffect){} failureCallback:^(NSString *message){}];
+      [self.splashScreenControllers removeObjectForKey:viewController];
+      [self showSplashScreenFor:viewController];
     }
   }
 }
