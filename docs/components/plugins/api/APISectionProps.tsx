@@ -118,11 +118,7 @@ const renderProp = (
   </LI>
 );
 
-const APISectionProps: React.FC<APISectionPropsProps> = ({
-  data,
-  defaultProps,
-  header = 'Props',
-}) =>
+const APISectionProps = ({ data, defaultProps, header = 'Props' }: APISectionPropsProps) =>
   data?.length ? (
     <>
       {header === 'Props' ? (
