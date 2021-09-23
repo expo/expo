@@ -39,6 +39,7 @@ public abstract class UpdatesDatabase extends RoomDatabase {
     if (sInstance == null) {
       sInstance = Room.databaseBuilder(context, UpdatesDatabase.class, DB_NAME)
               .addMigrations(MIGRATION_4_5)
+              .addMigrations(MIGRATION_5_6)
               .addMigrations(MIGRATION_6_7)
               .fallbackToDestructiveMigration()
               .allowMainThreadQueries()
