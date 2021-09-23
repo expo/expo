@@ -23,26 +23,19 @@
       "expo-updates"
     ]
   },
-  "react-native-unimodules": {
-    "android": {
+  "expo": {
+    "autolinking": {
       "exclude": [
         "expo-module-template"
       ],
-      "modulesPaths": [
-        "../../../../packages"
-      ],
-      "configuration": "api",
-      "target": "react-native"
-    },
-    "ios": {
-      "exclude": [
-        "expo-module-template"
-      ],
-      "modules_paths": [
-        "../../../packages"
-      ],
-      "flags": {
-        "inhibit_warnings": false
+      "ios": {
+        "flags": {
+          "inhibit_warnings": false
+        }
+      },
+      "android": {
+        "configuration": "api",
+        "target": "react-native"
       }
     }
   },
