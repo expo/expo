@@ -122,27 +122,32 @@ PODS:
   - Expo (43.0.0-alpha.3):
     - ExpoModulesCore
   - expo-dev-client (0.5.1):
+    - EXManifests
     - expo-dev-launcher
     - expo-dev-menu
     - expo-dev-menu-interface
     - EXUpdatesInterface
   - expo-dev-launcher (0.7.0):
+    - EXManifests
     - expo-dev-launcher/Main (= 0.7.0)
     - expo-dev-menu-interface
     - EXUpdatesInterface
     - React-Core
   - expo-dev-launcher/Main (0.7.0):
+    - EXManifests
     - expo-dev-launcher/Unsafe
     - expo-dev-menu-interface
     - EXUpdatesInterface
     - React-Core
   - expo-dev-launcher/Tests (0.7.0):
+    - EXManifests
     - expo-dev-menu-interface
     - EXUpdatesInterface
     - OHHTTPStubs
     - React-Core
     - React-CoreModules
   - expo-dev-launcher/Unsafe (0.7.0):
+    - EXManifests
     - expo-dev-menu-interface
     - EXUpdatesInterface
     - React-Core
@@ -1242,14 +1247,14 @@ SPEC CHECKSUMS:
   EXLocalization: baeeda60ec3bf94c7d3f15bcbcebff0eda557b30
   EXLocation: eb11da50338f6e4750166d1faee540108736f5ab
   EXMailComposer: 4c710ebe2570d7243ffc907a3d92d4ad8db763dc
-  EXManifests: 1077398d87071ff8130d1db7890185552d6a4567
+  EXManifests: f8699c9c0eda90d77bdf10526fcd2a336f510041
   EXMediaLibrary: 92ab16eed395d685a309543de92ca874f8327d0b
   EXNetwork: 58c5faaf0f7d5d6178906020314dd7b4b6ebcea4
   EXNotifications: 238aa36d5f5257cfa050f4879d522f01b6e7bed7
   EXPermissions: ab620a6dfb5590800e573f790397c9c4dbc4f6f4
   Expo: 232b64d069e9605f39ae795fdf36a0c91ec151aa
-  expo-dev-client: 5d7dec0d6f961145dce1c86c40bd61bf39177881
-  expo-dev-launcher: c04b363ed79d77cee2c2c656e7c230669bb4bde0
+  expo-dev-client: 6eaa7750979b41dc13635b41a1480ece304e9441
+  expo-dev-launcher: 838bf7b7710764b08b8bc556065f25fe69d062e0
   expo-dev-menu: 2a8ba15595d6222d3b5e1c0a0e5c88f4c6d6f548
   expo-dev-menu-interface: cca641e9e52dfe688fd24c67795f14d6daea4bb9
   expo-image: 5c67622b3c7f5918978deb44d4c0642ffbc2a7cf
