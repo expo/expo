@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- [android] Make asset "type" key nullable ([#14499](https://github.com/expo/expo/pull/14499) by [@jkhales](https://github.com/jkhales))
+
 ### 🐛 Bug fixes
 
 - Fix building errors from use_frameworks! in Podfile. ([#14523](https://github.com/expo/expo/pull/14523) by [@kudo](https://github.com/kudo))

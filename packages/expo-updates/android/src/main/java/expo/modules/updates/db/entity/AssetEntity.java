@@ -29,8 +29,6 @@ public class AssetEntity {
 
   public JSONObject headers = null;
 
-//  @NonNull
-//  exp://192.168.1.110:19000/update-manifest-experimental?platform=android
   public String type;
 
   public JSONObject metadata = null;
