@@ -237,10 +237,6 @@ RCT_EXPORT_METHOD(callMethod:(NSString *)moduleName methodNameOrKey:(id)methodNa
     }
   }
 
-  // Let the modules consume the registry :)
-  // It calls `setModuleRegistry:` on all `EXModuleRegistryConsumer`s.
-  [_exModuleRegistry initialize];
-
   // Register the view managers as additional modules.
   [bridge registerAdditionalModuleClasses:additionalModuleClasses];
 
@@ -251,7 +247,10 @@ RCT_EXPORT_METHOD(callMethod:(NSString *)moduleName methodNameOrKey:(id)methodNa
   // Get the newly created instance of `EXReactEventEmitter` bridge module and register it in expo modules registry.
   EXReactNativeEventEmitter *eventEmitter = [bridge moduleForClass:[EXReactNativeEventEmitter class]];
   [_exModuleRegistry registerInternalModule:eventEmitter];
-  [eventEmitter setModuleRegistry:_exModuleRegistry];
+
+  // Let the modules consume the registry :)
+  // It calls `setModuleRegistry:` on all `EXModuleRegistryConsumer`s.
+  [_exModuleRegistry initialize];
 }
 
 - (void)registerComponentDataForModuleClasses:(NSArray<Class> *)moduleClasses inBridge:(RCTBridge *)bridge
