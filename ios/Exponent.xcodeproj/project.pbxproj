@@ -5,7 +5,7 @@
 	};
 	objectVersion = 46;
 	objects = {
-		
+
 /* Begin PBXBuildFile section */
 		0726F0592007E438004992E7 /* EXKernelAppRecord.m in Sources */ = {isa = PBXBuildFile; fileRef = 0726F0582007E438004992E7 /* EXKernelAppRecord.m */; };
 		0726F05C2007E446004992E7 /* EXKernelAppRegistry.m in Sources */ = {isa = PBXBuildFile; fileRef = 0726F05B2007E446004992E7 /* EXKernelAppRegistry.m */; };
@@ -3399,8 +3399,6 @@
 				8B1448C54DEB4CFDB79D7E45 /* RNCSafeAreaViewMode.m in Sources */,
 				6782D340A0024AF58B3805D0 /* RNSVGTopAlignedLabel.ios.m in Sources */,
 				827A699919CED163689E655D /* ExpoModulesProvider.swift in Sources */,
-				0201763D9B224172803E25CD /* RNCPicker.m in Sources */,
-				CC9061983DD142759AAF0D6E /* RNCPickerManager.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
