@@ -1,9 +1,9 @@
-import { Platform } from 'expo-modules-core';
+import { Platform, UnavailabilityError } from 'expo-modules-core';
 import { processColor } from 'react-native';
 import ExpoSystemUI from './ExpoSystemUI';
 const assertIsOnPlatform = (functionName, onlyAvailableOn) => {
     if (!onlyAvailableOn.includes(Platform.OS)) {
-        throw new Error(`"${functionName}" is only available on ${onlyAvailableOn.join(' or ')}! OS: ${Platform.OS}`);
+        throw new UnavailabilityError('ExpoSystemUI', functionName);
     }
 };
 /**
