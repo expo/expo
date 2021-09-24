@@ -56,23 +56,18 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
 
 public class SecureStoreModule extends ExportedModule {
-  private static final String TAG = "ExpoSecureStore";
+  static final String TAG = "ExpoSecureStore";
   private static final String SHARED_PREFERENCES_NAME = "SecureStore";
   private static final String KEYSTORE_PROVIDER = "AndroidKeyStore";
 
   private static final String ALIAS_PROPERTY = "keychainService";
 
   private static final String SCHEME_PROPERTY = "scheme";
-  private static final String REQUIRE_AUTHENTICATION_PROPERTY = "requireAuthentication";
-  private static final String AUTHENTICATION_PROMPT_PROPERTY = "authenticationPrompt";
-
-  private boolean mIsAuthenticating = false;
-  private ModuleRegistry mModuleRegistry;
-  private UIManager mUIManager;
 
   private KeyStore mKeyStore;
   private AESEncrypter mAESEncrypter;
   private HybridAESEncrypter mHybridAESEncrypter;
+  private AuthenticationHelper mAuthenticationHelper;
 
   public SecureStoreModule(Context context) {
     super(context);
@@ -82,8 +77,7 @@ public class SecureStoreModule extends ExportedModule {
 
   @Override
   public void onCreate(ModuleRegistry moduleRegistry) {
-    mModuleRegistry = moduleRegistry;
-    mUIManager = moduleRegistry.getModule(UIManager.class);
+    mAuthenticationHelper = new AuthenticationHelper(getContext(), moduleRegistry);
   }
 
   @Override
@@ -122,18 +116,6 @@ public class SecureStoreModule extends ExportedModule {
       return;
     }
 
-    AuthenticationCallback callback = new AuthenticationCallback() {
-      @Override
-      public void checkAuthentication(Promise promise, boolean requiresAuthentication, Cipher cipher, GCMParameterSpec gcmParameterSpec,
-                                      EncryptionCallback encryptionCallback, PostEncryptionCallback postEncryptionCallback) {
-        if (requiresAuthentication) {
-          openAuthenticationPrompt(promise, options, encryptionCallback, cipher, gcmParameterSpec, postEncryptionCallback);
-        } else {
-          handleEncryptionCallback(promise, encryptionCallback, cipher, gcmParameterSpec, postEncryptionCallback);
-        }
-      }
-    };
-
     JSONObject encryptedItem;
     try {
       KeyStore keyStore = getKeyStore();
@@ -144,7 +126,7 @@ public class SecureStoreModule extends ExportedModule {
       // back a value.
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
         KeyStore.SecretKeyEntry secretKeyEntry = getKeyEntry(KeyStore.SecretKeyEntry.class, mAESEncrypter, options);
-        mAESEncrypter.createEncryptedItem(promise, value, keyStore, secretKeyEntry, options, callback, new PostEncryptionCallback() {
+        mAESEncrypter.createEncryptedItem(promise, value, keyStore, secretKeyEntry, options, mAuthenticationHelper.getDefaultCallback(), new PostEncryptionCallback() {
           @Override
           public void run(Promise promise, Object result) throws JSONException {
             JSONObject obj = (JSONObject) result;
@@ -154,7 +136,7 @@ public class SecureStoreModule extends ExportedModule {
         });
       } else {
         KeyStore.PrivateKeyEntry privateKeyEntry = getKeyEntry(KeyStore.PrivateKeyEntry.class, mHybridAESEncrypter, options);
-        mHybridAESEncrypter.createEncryptedItem(promise, value, keyStore, privateKeyEntry, options, callback, new PostEncryptionCallback() {
+        mHybridAESEncrypter.createEncryptedItem(promise, value, keyStore, privateKeyEntry, options, mAuthenticationHelper.getDefaultCallback(), new PostEncryptionCallback() {
           @Override
           public void run(Promise promise, Object result) throws JSONException {
             JSONObject obj = (JSONObject) result;
@@ -233,27 +215,15 @@ public class SecureStoreModule extends ExportedModule {
       return;
     }
 
-    AuthenticationCallback callback = new AuthenticationCallback() {
-      @Override
-      public void checkAuthentication(Promise promise, boolean requiresAuthentication, Cipher cipher, GCMParameterSpec gcmParameterSpec,
-                                      EncryptionCallback encryptionCallback, PostEncryptionCallback postEncryptionCallback) {
-        if (requiresAuthentication) {
-          openAuthenticationPrompt(promise, options, encryptionCallback, cipher, gcmParameterSpec, postEncryptionCallback);
-        } else {
-          handleEncryptionCallback(promise, encryptionCallback, cipher, gcmParameterSpec, postEncryptionCallback);
-        }
-      }
-    };
-
     try {
       switch (scheme) {
         case AESEncrypter.NAME:
           KeyStore.SecretKeyEntry secretKeyEntry = getKeyEntry(KeyStore.SecretKeyEntry.class, mAESEncrypter, options);
-          mAESEncrypter.decryptItem(promise, encryptedItem, secretKeyEntry, callback);
+          mAESEncrypter.decryptItem(promise, encryptedItem, secretKeyEntry, options, mAuthenticationHelper.getDefaultCallback());
           break;
         case HybridAESEncrypter.NAME:
           KeyStore.PrivateKeyEntry privateKeyEntry = getKeyEntry(KeyStore.PrivateKeyEntry.class, mHybridAESEncrypter, options);
-          mHybridAESEncrypter.decryptItem(promise, encryptedItem, privateKeyEntry, callback);
+          mHybridAESEncrypter.decryptItem(promise, encryptedItem, privateKeyEntry, options, mAuthenticationHelper.getDefaultCallback());
           break;
         default:
           String message = String.format("The item for key \"%s\" in SecureStore has an unknown encoding scheme (%s)", key, scheme);
@@ -274,98 +244,6 @@ public class SecureStoreModule extends ExportedModule {
       promise.reject("E_SECURESTORE_DECODE_ERROR", "Could not decode the encrypted JSON item in SecureStore", e);
       return;
     }
-  }
-
-  private void handleEncryptionCallback(Promise promise, EncryptionCallback encryptionCallback, Cipher cipher,
-                                        GCMParameterSpec gcmParameterSpec, PostEncryptionCallback postEncryptionCallback) {
-    try {
-      encryptionCallback.run(promise, cipher, gcmParameterSpec, postEncryptionCallback);
-    } catch (GeneralSecurityException e) {
-      Log.w(TAG, e);
-      promise.reject("E_SECURESTORE_ENCRYPT_ERROR", "Could not encrypt/decrypt the value for SecureStore", e);
-    } catch (JSONException e) {
-      Log.w(TAG, e);
-      promise.reject("E_SECURESTORE_ENCODE_ERROR", "Could not create an encrypted JSON item for SecureStore", e);
-    }
-  }
-
-  private void openAuthenticationPrompt(Promise promise, ReadableArguments options, EncryptionCallback encryptionCallback,
-                                        Cipher cipher, GCMParameterSpec gcmParameterSpec, PostEncryptionCallback postEncryptionCallback) {
-    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-      promise.reject("E_SECURESTORE_AUTH_NOT_AVAILABLE_ERROR", "Biometric authentication requires Android API 23");
-      return;
-    }
-
-    if (mIsAuthenticating) {
-      promise.reject("E_SECURESTORE_AUTH_ERROR", "Authentication is already in progress");
-      return;
-    }
-
-    BiometricManager biometricManager = BiometricManager.from(getContext());
-
-    switch (biometricManager.canAuthenticate(BiometricManager.Authenticators.BIOMETRIC_STRONG)) {
-      case BiometricManager.BIOMETRIC_ERROR_HW_UNAVAILABLE: case BiometricManager.BIOMETRIC_ERROR_NO_HARDWARE:
-        promise.reject("E_SECURESTORE_AUTH_NOT_AVAILABLE_ERROR", "No hardware available for biometric authentication. Use expo-local-authentication to check if the device supports it.");
-        return;
-
-      case BiometricManager.BIOMETRIC_ERROR_NONE_ENROLLED:
-        promise.reject("E_SECURESTORE_AUTH_ERROR", "No biometrics are currently enrolled");
-        return;
-    }
-
-    String title = " ";
-    if (options.containsKey(AUTHENTICATION_PROMPT_PROPERTY)) {
-      title = (String) options.get(AUTHENTICATION_PROMPT_PROPERTY);
-    }
-
-    BiometricPrompt.PromptInfo promptInfo = new BiometricPrompt.PromptInfo.Builder()
-      .setTitle(title)
-      .setNegativeButtonText(getContext().getString(android.R.string.cancel))
-      .build();
-
-    final FragmentActivity fragmentActivity = (FragmentActivity) getCurrentActivity();
-    if (fragmentActivity == null) {
-      promise.reject("E_NOT_FOREGROUND", "Cannot display biometric prompt when the app is not in the foreground");
-      return;
-    }
-
-    mUIManager.runOnUiQueueThread(new Runnable() {
-      @Override
-      public void run() {
-        mIsAuthenticating = true;
-
-        new BiometricPrompt(fragmentActivity, ContextCompat.getMainExecutor(getContext()), new BiometricPrompt.AuthenticationCallback() {
-          @Override
-          public void onAuthenticationSucceeded(@NonNull BiometricPrompt.AuthenticationResult result) {
-            super.onAuthenticationSucceeded(result);
-            mIsAuthenticating = false;
-            Cipher cipher = result.getCryptoObject().getCipher();
-
-            handleEncryptionCallback(promise, encryptionCallback, cipher, gcmParameterSpec, new PostEncryptionCallback() {
-              @Override
-              public void run(Promise promise, Object result) throws JSONException, GeneralSecurityException {
-                JSONObject obj = (JSONObject) result;
-                obj.put(REQUIRE_AUTHENTICATION_PROPERTY, true);
-
-                postEncryptionCallback.run(promise, result);
-              }
-            });
-          }
-
-          @Override
-          public void onAuthenticationError(int errorCode, @NonNull CharSequence errString) {
-            super.onAuthenticationError(errorCode, errString);
-            mIsAuthenticating = false;
-
-            if (errorCode == BiometricPrompt.ERROR_USER_CANCELED || errorCode == BiometricPrompt.ERROR_NEGATIVE_BUTTON) {
-              promise.reject("E_SECURESTORE_AUTH_ERROR", "User canceled the authentication");
-            } else {
-              promise.reject("E_SECURESTORE_AUTH_ERROR", "Could not authenticate the user");
-            }
-          }
-        }).authenticate(promptInfo, new BiometricPrompt.CryptoObject(cipher));
-      }
-    });
   }
 
   private void readLegacySDK20Item(String key, ReadableArguments options, Promise promise) {
@@ -458,11 +336,6 @@ public class SecureStoreModule extends ExportedModule {
     return mKeyStore;
   }
 
-  private Activity getCurrentActivity() {
-    ActivityProvider activityProvider = mModuleRegistry.getModule(ActivityProvider.class);
-    return activityProvider != null ? activityProvider.getCurrentActivity() : null;
-  }
-
   private <E extends KeyStore.Entry> E getKeyEntry(Class<E> keyStoreEntryClass,
                                                    KeyBasedEncrypter<E> encrypter,
                                                    ReadableArguments options) throws IOException, GeneralSecurityException {
@@ -486,29 +359,6 @@ public class SecureStoreModule extends ExportedModule {
     return keyStoreEntry;
   }
 
-  // When item needs to be encrypted/decrypted new instance of Authentication callback is created
-  // containing logic required to authenticate user if necessary and is passed to the relevant method
-  // The method prepares the cipher and starts the authentication. When the user is authenticated
-  // the Encryption callback is ran with the unlocked cipher and does encryption/decryption
-  // Finally the PostEncryptionCallback may be ran with the object returned by previous callback
-
-  //Interface used to pass encryption/decryption logic
-  private interface EncryptionCallback {
-    Object run(Promise promise, Cipher cipher, GCMParameterSpec gcmParameterSpec, PostEncryptionCallback postEncryptionCallback) throws
-      GeneralSecurityException, JSONException;
-  }
-
-  //Interface used to pass logic that needs to happen after encryption/decryption
-  private interface PostEncryptionCallback {
-    void run(Promise promise, Object result) throws JSONException, GeneralSecurityException;
-  }
-
-  //Interface used to pass the authentication logic
-  private interface AuthenticationCallback {
-    void checkAuthentication(Promise promise, boolean requiresAuthentication, Cipher cipher, GCMParameterSpec gcmParameterSpec,
-                             EncryptionCallback encryptionCallback, PostEncryptionCallback postEncryptionCallback);
-  }
-
   private interface KeyBasedEncrypter<E extends KeyStore.Entry> {
     String getKeyStoreAlias(ReadableArguments options);
 
@@ -521,7 +371,7 @@ public class SecureStoreModule extends ExportedModule {
         GeneralSecurityException, JSONException;
 
     @SuppressWarnings("unused")
-    void decryptItem(Promise promise, JSONObject encryptedItem, E keyStoreEntry, AuthenticationCallback callback) throws
+    void decryptItem(Promise promise, JSONObject encryptedItem, E keyStoreEntry, ReadableArguments options, AuthenticationCallback callback) throws
         GeneralSecurityException, JSONException;
   }
 
@@ -560,7 +410,7 @@ public class SecureStoreModule extends ExportedModule {
           .setKeySize(AES_KEY_SIZE_BITS)
           .setBlockModes(KeyProperties.BLOCK_MODE_GCM)
           .setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_NONE)
-          .setUserAuthenticationRequired(options.getBoolean(REQUIRE_AUTHENTICATION_PROPERTY, false))
+          .setUserAuthenticationRequired(options.getBoolean(AuthenticationHelper.REQUIRE_AUTHENTICATION_PROPERTY, false))
           .build();
 
       KeyGenerator keyGenerator = KeyGenerator.getInstance(KeyProperties.KEY_ALGORITHM_AES, keyStore.getProvider());
@@ -586,7 +436,7 @@ public class SecureStoreModule extends ExportedModule {
       cipher.init(Cipher.ENCRYPT_MODE, secretKey);
       GCMParameterSpec gcmSpec = cipher.getParameters().getParameterSpec(GCMParameterSpec.class);
 
-      authenticationCallback.checkAuthentication(promise, options.getBoolean(REQUIRE_AUTHENTICATION_PROPERTY, false), cipher, gcmSpec, new EncryptionCallback() {
+      authenticationCallback.checkAuthentication(promise, cipher, gcmSpec, options, new EncryptionCallback() {
         @Override
         public Object run(Promise promise, Cipher cipher, GCMParameterSpec gcmParameterSpec, PostEncryptionCallback postEncryptionCallback) throws
           GeneralSecurityException, JSONException {
@@ -617,7 +467,7 @@ public class SecureStoreModule extends ExportedModule {
     }
 
     @Override
-    public void decryptItem(Promise promise, JSONObject encryptedItem, KeyStore.SecretKeyEntry secretKeyEntry,
+    public void decryptItem(Promise promise, JSONObject encryptedItem, KeyStore.SecretKeyEntry secretKeyEntry, ReadableArguments options,
                             AuthenticationCallback callback) throws
         GeneralSecurityException, JSONException {
 
@@ -631,7 +481,7 @@ public class SecureStoreModule extends ExportedModule {
       Cipher cipher = Cipher.getInstance(AES_CIPHER);
       cipher.init(Cipher.DECRYPT_MODE, secretKeyEntry.getSecretKey(), gcmSpec);
 
-      callback.checkAuthentication(promise, encryptedItem.optBoolean(REQUIRE_AUTHENTICATION_PROPERTY), cipher, gcmSpec, new EncryptionCallback() {
+      callback.checkAuthentication(promise, encryptedItem.optBoolean(AuthenticationHelper.REQUIRE_AUTHENTICATION_PROPERTY), cipher, gcmSpec, options, new EncryptionCallback() {
         @Override
         public Object run(Promise promise, Cipher cipher, GCMParameterSpec gcmParameterSpec, PostEncryptionCallback postEncryptionCallback) throws GeneralSecurityException {
           String result = new String(cipher.doFinal(ciphertextBytes), StandardCharsets.UTF_8);
@@ -747,7 +597,7 @@ public class SecureStoreModule extends ExportedModule {
         chosenSpec = gcmSpec;
       }
 
-      authenticationCallback.checkAuthentication(promise, options.getBoolean(REQUIRE_AUTHENTICATION_PROPERTY, false), aesCipher, chosenSpec, new EncryptionCallback() {
+      authenticationCallback.checkAuthentication(promise, aesCipher, chosenSpec, options, new EncryptionCallback() {
         @Override
         public Object run(Promise promise, Cipher cipher, GCMParameterSpec gcmParameterSpec, PostEncryptionCallback postEncryptionCallback) throws
           GeneralSecurityException, JSONException {
@@ -781,7 +631,7 @@ public class SecureStoreModule extends ExportedModule {
     }
 
     @Override
-    public void decryptItem(Promise promise, JSONObject encryptedItem, KeyStore.PrivateKeyEntry privateKeyEntry, AuthenticationCallback callback) throws
+    public void decryptItem(Promise promise, JSONObject encryptedItem, KeyStore.PrivateKeyEntry privateKeyEntry, ReadableArguments options, AuthenticationCallback callback) throws
         GeneralSecurityException, JSONException {
 
       // Decrypt the encrypted symmetric key
@@ -797,7 +647,7 @@ public class SecureStoreModule extends ExportedModule {
       // Decrypt the value with the symmetric key
       KeyStore.SecretKeyEntry secretKeyEntry = new KeyStore.SecretKeyEntry(secretKey);
 
-      mAESEncrypter.decryptItem(promise, encryptedItem, secretKeyEntry, callback);
+      mAESEncrypter.decryptItem(promise, encryptedItem, secretKeyEntry, options, callback);
     }
 
     private Cipher getRSACipher() throws NoSuchAlgorithmException, NoSuchProviderException, NoSuchPaddingException {
