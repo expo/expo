@@ -19,32 +19,29 @@ class ManagedAppSplashScreenViewController(
   private var mSnackbar: Snackbar? = null
   private var mRunnable: Runnable? = null
 
-  private fun startSplashScreenWarningTimer() {
-    mRunnable = Runnable {
-      mSnackbar = Snackbar.make(splashScreenView, "Stuck on splash screen?", Snackbar.LENGTH_LONG)
-      mSnackbar!!.setAction(
-        "Info",
-        View.OnClickListener { v ->
-          val url = "https://expo.fyi/splash-screen-hanging"
-          val webpage = Uri.parse(url)
-          val intent = Intent(Intent.ACTION_VIEW, webpage)
-          v.context.startActivity(intent)
-          mSnackbar!!.dismiss()
-        }
-      )
-      mSnackbar!!.show()
-    }
+  fun startSplashScreenWarningTimer() {
+    if (BuildConfig.DEBUG) {
+      mRunnable = Runnable {
+          mSnackbar = Snackbar.make(splashScreenView, "Stuck on splash screen?", Snackbar.LENGTH_LONG)
+          mSnackbar!!.setAction(
+            "Info",
+            View.OnClickListener { v ->
+              val url = "https://expo.fyi/splash-screen-hanging"
+              val webpage = Uri.parse(url)
+              val intent = Intent(Intent.ACTION_VIEW, webpage)
+              v.context.startActivity(intent)
+              mSnackbar!!.dismiss()
+            }
+          )
+        mSnackbar!!.show()
+      }
 
-    mWarningHandler.postDelayed(mRunnable!!, 20000)
+      mWarningHandler.postDelayed(mRunnable!!, 20000)
+    }
   }
 
   override fun showSplashScreen(successCallback: () -> Unit) {
     super.showSplashScreen {
-
-      if (BuildConfig.DEBUG) {
-        startSplashScreenWarningTimer()
-      }
-
       successCallback()
     }
   }
