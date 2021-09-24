@@ -245,7 +245,6 @@ public class SecureStoreModule extends ExportedModule {
       }
     };
 
-    String value;
     try {
       switch (scheme) {
         case AESEncrypter.NAME:
