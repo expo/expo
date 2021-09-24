@@ -16,4 +16,8 @@ Pod::Spec.new do |s|
   s.source_files   = 'EXUpdatesInterface/**/*.{h,m}'
   s.preserve_paths = 'EXUpdatesInterface/**/*.{h,m}'
   s.requires_arc   = true
+
+  s.pod_target_xcconfig = {
+    'DEFINES_MODULE' => 'YES',
+  }
 end
