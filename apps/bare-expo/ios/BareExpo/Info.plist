@@ -98,5 +98,20 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
+	<key>UIRequiresFullScreen</key>
+	<false/>
+	<key>LSApplicationQueriesSchemes</key>
+	<array>
+		<string>fbapi</string>
+		<string>fb-messenger-api</string>
+		<string>fbauth2</string>
+		<string>fbshareextension</string>
+	</array>
+	<key>CFBundleDisplayName</key>
+	<string>BareExpo</string>
+	<key>FacebookAppID</key>
+	<string>629712900716487</string>
+	<key>FacebookDisplayName</key>
+	<string>Expo APIs</string>
 </dict>
 </plist>
