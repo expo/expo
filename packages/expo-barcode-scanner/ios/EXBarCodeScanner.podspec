@@ -18,6 +18,11 @@ Pod::Spec.new do |s|
   s.dependency 'ZXingObjC/PDF417'
   s.dependency 'ZXingObjC/OneD'
 
+  s.xcconfig = {
+    # For use_frameworks! to have correct defines, please sync up with ZxingObjC dependencies above
+    'GCC_PREPROCESSOR_DEFINITIONS' => 'ZXINGOBJC_USE_SUBSPECS ZXINGOBJC_PDF417 ZXINGOBJC_ONED',
+  }
+
   if !$ExpoUseSources&.include?(package['name']) && ENV['EXPO_USE_SOURCE'].to_i == 0 && File.exist?("#{s.name}.xcframework") && Gem::Version.new(Pod::VERSION) >= Gem::Version.new('1.10.0')
     s.source_files = "#{s.name}/**/*.h"
     s.vendored_frameworks = "#{s.name}.xcframework"
