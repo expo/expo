@@ -1,6 +1,6 @@
 {
   "name": "react-native-unimodules",
-  "version": "0.14.9",
+  "version": "0.14.10",
   "description": "This library contains the core unimodule infrastructure and a collection of unimodules and interfaces that are commonly depended on by other unimodules.",
   "main": "build/index.js",
   "types": "build/index.d.ts",
