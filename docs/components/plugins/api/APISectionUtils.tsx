@@ -56,6 +56,7 @@ export const mdInlineComponents: MDComponents = {
 
 const nonLinkableTypes = [
   'ColorValue',
+  'Component',
   'E',
   'EventSubscription',
   'File',

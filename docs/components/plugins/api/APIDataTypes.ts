@@ -8,7 +8,8 @@ export type GeneratedData = EnumDefinitionData &
   DefaultPropsDefinitionData &
   TypeGeneralData &
   InterfaceDefinitionData &
-  ConstantDefinitionData;
+  ConstantDefinitionData &
+  ClassDefinitionData;
 
 // Shared data types
 
@@ -68,7 +69,16 @@ export type ConstantDefinitionData = {
   };
   comment?: CommentData;
   kind: TypeDocKind;
-  type: TypeDefinitionData;
+  type?: TypeDefinitionData;
+};
+
+// Class section
+
+export type ClassDefinitionData = {
+  name: string;
+  comment?: CommentData;
+  kind: TypeDocKind;
+  extendedTypes?: TypeDefinitionData[];
 };
 
 // Enums section
