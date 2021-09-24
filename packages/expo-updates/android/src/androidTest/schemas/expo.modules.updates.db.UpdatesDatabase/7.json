@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 7,
-    "identityHash": "11427ffec6234dd35c2840f1b89d2efb",
+    "identityHash": "d383592e8fae74bbc92690d51c8ec8cb",
     "entities": [
       {
         "tableName": "updates",
@@ -39,7 +39,7 @@
             "notNull": false
           },
           {
-            "fieldPath": "metadata",
+            "fieldPath": "manifest",
             "columnName": "manifest",
             "affinity": "TEXT",
             "notNull": false
@@ -307,7 +307,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '11427ffec6234dd35c2840f1b89d2efb')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'd383592e8fae74bbc92690d51c8ec8cb')"
     ]
   }
 }
