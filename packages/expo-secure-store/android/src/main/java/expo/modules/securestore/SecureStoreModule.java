@@ -2,7 +2,6 @@ package expo.modules.securestore;
 
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
-import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Build;
@@ -20,9 +19,7 @@ import expo.modules.core.ExportedModule;
 import expo.modules.core.ModuleRegistry;
 import expo.modules.core.Promise;
 import expo.modules.core.arguments.ReadableArguments;
-import expo.modules.core.interfaces.ActivityProvider;
 import expo.modules.core.interfaces.ExpoMethod;
-import expo.modules.core.interfaces.services.UIManager;
 
 import java.io.IOException;
 import java.math.BigInteger;
@@ -48,12 +45,6 @@ import javax.crypto.SecretKey;
 import javax.crypto.spec.GCMParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 import javax.security.auth.x500.X500Principal;
-
-import androidx.annotation.NonNull;
-import androidx.biometric.BiometricManager;
-import androidx.biometric.BiometricPrompt;
-import androidx.core.content.ContextCompat;
-import androidx.fragment.app.FragmentActivity;
 
 public class SecureStoreModule extends ExportedModule {
   static final String TAG = "ExpoSecureStore";
