@@ -13,6 +13,7 @@ const GROUPS = {
   'Distributing Your App': ['Distributing Your App'],
   'Expo Accounts': ['Expo Accounts'],
   'Regulatory Compliance': ['Regulatory Compliance'],
+  'Classic Services': ['Classic Services'],
   Deprecated: ['ExpoKit', 'Archived'],
   'Bare Workflow': ['Bare Workflow'],
   'Expo SDK': ['Expo SDK'],
@@ -152,7 +153,6 @@ const sections = [
     name: 'Distributing Your App',
     reference: [
       'Overview',
-      'Building Standalone Apps',
       'App Signing',
       'Deploying to App Stores',
       'Release Channels',
@@ -167,6 +167,7 @@ const sections = [
       'Data and Privacy Protection',
     ],
   },
+  { name: 'Classic Services', reference: ['Building Standalone Apps'] },
   {
     name: 'ExpoKit',
     reference: [
@@ -410,6 +411,7 @@ const ROOT = [
   'Expo Accounts',
   'Bare Workflow',
   'Push Notifications',
+  'Classic Services',
   'UI Programming',
   'Regulatory Compliance',
   'Configuration Files',

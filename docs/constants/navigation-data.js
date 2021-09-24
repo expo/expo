@@ -21,6 +21,7 @@ const DIR_MAPPING = {
   'next-steps': 'Next Steps',
   workflow: 'Fundamentals',
   distribution: 'Distributing Your App',
+  classic: 'Classic Services',
   expokit: 'ExpoKit',
   'ui-programming': 'UI Programming',
   'regulatory-compliance': 'Regulatory Compliance',
