@@ -22,7 +22,7 @@
     "react-native-screens": "~3.4.0",
     "react-native-unimodules": "~0.14.9",
     "react-native-web": "~0.13.7",
-    "@unimodules/react-native-adapter": "^6.3.8"
+    "@unimodules/react-native-adapter": "^6.3.9"
   },
   "devDependencies": {
     "@babel/core": "^7.0.0",

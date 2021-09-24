@@ -37,7 +37,7 @@
   },
   "dependencies": {
     "@unimodules/core": "~7.1.2",
-    "@unimodules/react-native-adapter": "~6.3.8",
+    "@unimodules/react-native-adapter": "~6.3.9",
     "chalk": "^2.4.2",
     "expo-asset": "~8.3.3",
     "expo-constants": "~11.0.2",

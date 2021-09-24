@@ -2957,7 +2957,7 @@ PODS:
   - Stripe/Stripe3DS2 (21.6.0)
   - UMAppLoader (2.2.0)
   - UMCore (7.1.2)
-  - UMReactNativeAdapter (6.3.8):
+  - UMReactNativeAdapter (6.3.9):
     - ExpoModulesCore
     - React-Core
     - UMCore
@@ -5101,7 +5101,7 @@ SPEC CHECKSUMS:
   stripe-react-native: 2598d45be4bad95f0c11a1dde7af185e8829bc67
   UMAppLoader: 21af63390e55c82e037fb9752d93114a80ecf16e
   UMCore: 573e838e2a2d5dfcb23506fd7d7db6dcc07c2fb3
-  UMReactNativeAdapter: 41cb8efcb2f9b90d22fa359863662910ca19687d
+  UMReactNativeAdapter: 42b3c2c40a9ca466d114188d69609e812ea28537
   UMTaskManagerInterface: 2be431101b73604e64fbfffcf759336f9d8fccbb
   Yoga: 7740b94929bbacbddda59bf115b5317e9a161598
   ZXingObjC: fdbb269f25dd2032da343e06f10224d62f537bdb

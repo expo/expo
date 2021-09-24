@@ -10,7 +10,7 @@
   "@react-native-picker/picker": "1.16.1",
   "@react-native-segmented-control/segmented-control": "2.3.0",
   "@unimodules/core": "~7.1.2",
-  "@unimodules/react-native-adapter": "~6.3.8",
+  "@unimodules/react-native-adapter": "~6.3.9",
   "expo-ads-admob": "~10.1.2",
   "expo-ads-facebook": "~10.1.2",
   "expo-analytics-amplitude": "~10.2.0",
