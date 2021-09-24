@@ -30,7 +30,7 @@
     "@react-navigation/stack": "~5.12.6",
     "dedent": "^0.7.0",
     "es6-error": "^4.0.1",
-    "expo": "~42.0.4",
+    "expo": "~42.0.5",
     "expo-analytics-amplitude": "~10.2.0",
     "expo-asset": "~8.3.3",
     "expo-barcode-scanner": "~10.2.2",
