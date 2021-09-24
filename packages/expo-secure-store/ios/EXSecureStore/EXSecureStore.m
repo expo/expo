@@ -84,8 +84,8 @@
   NSDictionary *updateDictionary = @{(__bridge id)kSecValueData:valueData};
   
   if ((NSString *) options[@"authenticationPrompt"]) {
-    NSString *promtText = options[@"authenticationPrompt"];
-    [searchDictionary setObject:promtText forKey:(__bridge id)kSecUseOperationPrompt];
+    NSString *promptText = options[@"authenticationPrompt"];
+    [searchDictionary setObject:promptText forKey:(__bridge id)kSecUseOperationPrompt];
   }
 
   OSStatus status = SecItemUpdate((__bridge CFDictionaryRef)searchDictionary,
@@ -108,8 +108,8 @@
   [searchDictionary setObject:(__bridge id)kCFBooleanTrue forKey:(__bridge id)kSecReturnData];
   
   if ((NSString *) options[@"authenticationPrompt"]) {
-    NSString *promtText = options[@"authenticationPrompt"];
-    [searchDictionary setObject:promtText forKey:(__bridge id)kSecUseOperationPrompt];
+    NSString *promptText = options[@"authenticationPrompt"];
+    [searchDictionary setObject:promptText forKey:(__bridge id)kSecUseOperationPrompt];
   }
 
   CFTypeRef foundDict = NULL;
