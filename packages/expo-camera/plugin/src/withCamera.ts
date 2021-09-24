@@ -21,7 +21,7 @@ const MICROPHONE_USAGE = 'Allow $(PRODUCT_NAME) to access your microphone';
 // the existing block to find the correct place to insert our camera maven.
 const gradleMaven = [
   `def mavenPath = new File(["node", "--print", "require.resolve('expo-camera/package.json')"].execute().text.trim(), "../android/maven")`,
-  `allprojects { repositories { maven { url($mavenPath.absolutePath) } } }`,
+  `allprojects { repositories { maven { url(mavenPath) } } }`,
 ].join('\n');
 
 const withAndroidCameraGradle: ConfigPlugin = (config) => {
