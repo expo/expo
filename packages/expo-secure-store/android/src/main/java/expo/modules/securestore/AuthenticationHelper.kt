@@ -21,8 +21,8 @@ import javax.crypto.Cipher
 import javax.crypto.spec.GCMParameterSpec
 
 class AuthenticationHelper(
-    private val context: Context,
-    private val moduleRegistry: ModuleRegistry
+  private val context: Context,
+  private val moduleRegistry: ModuleRegistry
 ) {
   companion object {
     private const val AUTHENTICATION_PROMPT_PROPERTY = "authenticationPrompt"
@@ -44,28 +44,28 @@ class AuthenticationHelper(
 
   val defaultCallback: AuthenticationCallback = object : AuthenticationCallback {
     override fun checkAuthentication(
-        promise: Promise,
-        cipher: Cipher,
-        gcmParameterSpec: GCMParameterSpec,
-        options: ReadableArguments,
-        encryptionCallback: EncryptionCallback,
-        postEncryptionCallback: PostEncryptionCallback?
+      promise: Promise,
+      cipher: Cipher,
+      gcmParameterSpec: GCMParameterSpec,
+      options: ReadableArguments,
+      encryptionCallback: EncryptionCallback,
+      postEncryptionCallback: PostEncryptionCallback?
     ) {
       val requiresAuthentication = options.getBoolean(REQUIRE_AUTHENTICATION_PROPERTY, false)
 
       checkAuthentication(
-          promise, requiresAuthentication, cipher, gcmParameterSpec, options, encryptionCallback, postEncryptionCallback
+        promise, requiresAuthentication, cipher, gcmParameterSpec, options, encryptionCallback, postEncryptionCallback
       )
     }
 
     override fun checkAuthentication(
-        promise: Promise,
-        requiresAuthentication: Boolean,
-        cipher: Cipher,
-        gcmParameterSpec: GCMParameterSpec,
-        options: ReadableArguments,
-        encryptionCallback: EncryptionCallback,
-        postEncryptionCallback: PostEncryptionCallback?
+      promise: Promise,
+      requiresAuthentication: Boolean,
+      cipher: Cipher,
+      gcmParameterSpec: GCMParameterSpec,
+      options: ReadableArguments,
+      encryptionCallback: EncryptionCallback,
+      postEncryptionCallback: PostEncryptionCallback?
     ) {
       if (requiresAuthentication) {
         openAuthenticationPrompt(promise, options, encryptionCallback, cipher, gcmParameterSpec, postEncryptionCallback)
@@ -76,50 +76,50 @@ class AuthenticationHelper(
   }
 
   fun handleEncryptionCallback(
-      promise: Promise,
-      encryptionCallback: EncryptionCallback,
-      cipher: Cipher,
-      gcmParameterSpec: GCMParameterSpec,
-      postEncryptionCallback: PostEncryptionCallback?
+    promise: Promise,
+    encryptionCallback: EncryptionCallback,
+    cipher: Cipher,
+    gcmParameterSpec: GCMParameterSpec,
+    postEncryptionCallback: PostEncryptionCallback?
   ) {
     try {
       encryptionCallback.run(promise, cipher, gcmParameterSpec, postEncryptionCallback)
     } catch (exception: GeneralSecurityException) {
       Log.w(SecureStoreModule.TAG, exception)
       promise.reject(
-          "E_SECURESTORE_ENCRYPT_ERROR",
-          "Could not encrypt/decrypt the value for SecureStore",
-          exception
+        "E_SECURESTORE_ENCRYPT_ERROR",
+        "Could not encrypt/decrypt the value for SecureStore",
+        exception
       )
     } catch (exception: JSONException) {
       Log.w(SecureStoreModule.TAG, exception)
       promise.reject(
-          "E_SECURESTORE_ENCODE_ERROR",
-          "Could not create an encrypted JSON item for SecureStore",
-          exception
+        "E_SECURESTORE_ENCODE_ERROR",
+        "Could not create an encrypted JSON item for SecureStore",
+        exception
       )
     }
   }
 
   private fun openAuthenticationPrompt(
-      promise: Promise,
-      options: ReadableArguments,
-      encryptionCallback: EncryptionCallback,
-      cipher: Cipher,
-      gcmParameterSpec: GCMParameterSpec,
-      postEncryptionCallback: PostEncryptionCallback?
+    promise: Promise,
+    options: ReadableArguments,
+    encryptionCallback: EncryptionCallback,
+    cipher: Cipher,
+    gcmParameterSpec: GCMParameterSpec,
+    postEncryptionCallback: PostEncryptionCallback?
   ) {
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
       promise.reject(
-          "E_SECURESTORE_AUTH_NOT_AVAILABLE_ERROR",
-          "Biometric authentication requires Android API 23"
+        "E_SECURESTORE_AUTH_NOT_AVAILABLE_ERROR",
+        "Biometric authentication requires Android API 23"
       )
       return
     }
     if (isAuthenticating) {
       promise.reject(
-          "E_SECURESTORE_AUTH_ERROR",
-          "Authentication is already in progress"
+        "E_SECURESTORE_AUTH_ERROR",
+        "Authentication is already in progress"
       )
       return
     }
@@ -128,15 +128,15 @@ class AuthenticationHelper(
     when (biometricManager.canAuthenticate(BiometricManager.Authenticators.BIOMETRIC_STRONG)) {
       BiometricManager.BIOMETRIC_ERROR_HW_UNAVAILABLE, BiometricManager.BIOMETRIC_ERROR_NO_HARDWARE -> {
         promise.reject(
-            "E_SECURESTORE_AUTH_NOT_AVAILABLE_ERROR",
-            "No hardware available for biometric authentication. Use expo-local-authentication to check if the device supports it."
+          "E_SECURESTORE_AUTH_NOT_AVAILABLE_ERROR",
+          "No hardware available for biometric authentication. Use expo-local-authentication to check if the device supports it."
         )
         return
       }
       BiometricManager.BIOMETRIC_ERROR_NONE_ENROLLED -> {
         promise.reject(
-            "E_SECURESTORE_AUTH_ERROR",
-            "No biometrics are currently enrolled"
+          "E_SECURESTORE_AUTH_ERROR",
+          "No biometrics are currently enrolled"
         )
         return
       }
@@ -145,22 +145,23 @@ class AuthenticationHelper(
     val title = options.getString(AUTHENTICATION_PROMPT_PROPERTY, " ")
 
     val promptInfo = PromptInfo.Builder()
-        .setTitle(title)
-        .setNegativeButtonText(context.getString(android.R.string.cancel))
-        .build()
+      .setTitle(title)
+      .setNegativeButtonText(context.getString(android.R.string.cancel))
+      .build()
     val fragmentActivity = getCurrentActivity() as FragmentActivity?
     if (fragmentActivity == null) {
       promise.reject(
-          "E_NOT_FOREGROUND",
-          "Cannot display biometric prompt when the app is not in the foreground"
+        "E_NOT_FOREGROUND",
+        "Cannot display biometric prompt when the app is not in the foreground"
       )
       return
     }
 
-    uiManager.runOnUiQueueThread(Runnable {
-      isAuthenticating = true
+    uiManager.runOnUiQueueThread(
+      Runnable {
+        isAuthenticating = true
 
-      BiometricPrompt(
+        BiometricPrompt(
           fragmentActivity,
           ContextCompat.getMainExecutor(context),
           object : BiometricPrompt.AuthenticationCallback() {
@@ -170,18 +171,18 @@ class AuthenticationHelper(
 
               val cipher = result.cryptoObject!!.cipher!!
               handleEncryptionCallback(
-                  promise,
-                  encryptionCallback,
-                  cipher,
-                  gcmParameterSpec,
-                  object : PostEncryptionCallback {
-                    @Throws(JSONException::class, GeneralSecurityException::class)
-                    override fun run(promise: Promise, result: Any) {
-                      val obj = result as JSONObject
-                      obj.put(REQUIRE_AUTHENTICATION_PROPERTY, true)
-                      postEncryptionCallback?.run(promise, result)
-                    }
+                promise,
+                encryptionCallback,
+                cipher,
+                gcmParameterSpec,
+                object : PostEncryptionCallback {
+                  @Throws(JSONException::class, GeneralSecurityException::class)
+                  override fun run(promise: Promise, result: Any) {
+                    val obj = result as JSONObject
+                    obj.put(REQUIRE_AUTHENTICATION_PROPERTY, true)
+                    postEncryptionCallback?.run(promise, result)
                   }
+                }
               )
             }
 
@@ -191,19 +192,20 @@ class AuthenticationHelper(
 
               if (errorCode == BiometricPrompt.ERROR_USER_CANCELED || errorCode == BiometricPrompt.ERROR_NEGATIVE_BUTTON) {
                 promise.reject(
-                    "E_SECURESTORE_AUTH_ERROR",
-                    "User canceled the authentication"
+                  "E_SECURESTORE_AUTH_ERROR",
+                  "User canceled the authentication"
                 )
               } else {
                 promise.reject(
-                    "E_SECURESTORE_AUTH_ERROR",
-                    "Could not authenticate the user"
+                  "E_SECURESTORE_AUTH_ERROR",
+                  "Could not authenticate the user"
                 )
               }
             }
           }
-      ).authenticate(promptInfo, BiometricPrompt.CryptoObject(cipher))
-    })
+        ).authenticate(promptInfo, BiometricPrompt.CryptoObject(cipher))
+      }
+    )
   }
 
   private fun getCurrentActivity(): Activity? {

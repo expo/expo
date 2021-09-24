@@ -10,9 +10,9 @@ import javax.crypto.spec.GCMParameterSpec
 interface EncryptionCallback {
   @Throws(GeneralSecurityException::class, JSONException::class)
   fun run(
-      promise: Promise,
-      cipher: Cipher,
-      gcmParameterSpec: GCMParameterSpec,
-      postEncryptionCallback: PostEncryptionCallback?
+    promise: Promise,
+    cipher: Cipher,
+    gcmParameterSpec: GCMParameterSpec,
+    postEncryptionCallback: PostEncryptionCallback?
   ): Any
 }

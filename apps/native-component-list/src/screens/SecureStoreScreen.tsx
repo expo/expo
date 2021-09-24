@@ -1,6 +1,7 @@
 import * as SecureStore from 'expo-secure-store';
 import * as React from 'react';
 import { Alert, Platform, ScrollView, Text, TextInput, View, Switch } from 'react-native';
+
 import ListButton from '../components/ListButton';
 import { useResolvedValue } from '../utilities/useResolvedValue';
 
@@ -35,12 +36,18 @@ function SecureStoreView() {
   const [service, setService] = React.useState<string | undefined>();
   const [requireAuth, setRequireAuth] = React.useState<boolean | undefined>();
 
-  const _toggleAuth = async () => { setRequireAuth(!requireAuth); };
+  const _toggleAuth = async () => {
+    setRequireAuth(!requireAuth);
+  };
 
   const _setValue = async (value: string, key: string) => {
     try {
       console.log('SecureStore: ' + SecureStore);
-      await SecureStore.setItemAsync(key, value, { keychainService: service, requireAuthentication: requireAuth, authenticationPrompt: "Authenticate" });
+      await SecureStore.setItemAsync(key, value, {
+        keychainService: service,
+        requireAuthentication: requireAuth,
+        authenticationPrompt: 'Authenticate',
+      });
       Alert.alert('Success!', 'Value: ' + value + ', stored successfully for key: ' + key, [
         { text: 'OK', onPress: () => {} },
       ]);
@@ -51,7 +58,11 @@ function SecureStoreView() {
 
   const _getValue = async (key: string) => {
     try {
-      const fetchedValue = await SecureStore.getItemAsync(key, { keychainService: service, requireAuthentication: requireAuth, authenticationPrompt: "Authenticate" });
+      const fetchedValue = await SecureStore.getItemAsync(key, {
+        keychainService: service,
+        requireAuthentication: requireAuth,
+        authenticationPrompt: 'Authenticate',
+      });
       Alert.alert('Success!', 'Fetched value: ' + fetchedValue, [
         { text: 'OK', onPress: () => {} },
       ]);
@@ -126,7 +137,7 @@ function SecureStoreView() {
         value={service}
         onChangeText={setService}
       />
-      <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
+      <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
         <Text>Requires authentication:</Text>
         <Switch value={requireAuth} onValueChange={_toggleAuth} />
       </View>
