@@ -3,7 +3,12 @@
 #import "EXDevLauncher.h"
 #import "EXDevLauncherController.h"
 
+#if __has_include(<EXDevLauncher/EXDevLauncher-Swift.h>)
+// For cocoapods framework, the generated swift header will be inside EXDevLauncher module
+#import <EXDevLauncher/EXDevLauncher-Swift.h>
+#else
 #import <EXDevLauncher-Swift.h>
+#endif
 
 @implementation EXDevLauncher
 
