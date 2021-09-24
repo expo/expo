@@ -5,7 +5,7 @@ import org.json.JSONException
 import java.security.GeneralSecurityException
 
 // Interface used to pass logic that needs to happen after encryption/decryption
-interface PostEncryptionCallback {
+fun interface PostEncryptionCallback {
   @Throws(JSONException::class, GeneralSecurityException::class)
   fun run(promise: Promise, result: Any)
 }

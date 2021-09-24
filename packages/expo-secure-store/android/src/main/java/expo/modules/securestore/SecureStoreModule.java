@@ -88,7 +88,6 @@ public class SecureStoreModule extends ExportedModule {
     }
   }
 
-  @SuppressWarnings("ConstantConditions")
   private void setItemImpl(String key, String value, ReadableArguments options, Promise promise) {
     if (key == null) {
       promise.reject("E_SECURESTORE_NULL_KEY", "SecureStore keys must not be null");
@@ -107,7 +106,6 @@ public class SecureStoreModule extends ExportedModule {
       return;
     }
 
-    JSONObject encryptedItem;
     try {
       KeyStore keyStore = getKeyStore();
 
@@ -117,23 +115,17 @@ public class SecureStoreModule extends ExportedModule {
       // back a value.
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
         KeyStore.SecretKeyEntry secretKeyEntry = getKeyEntry(KeyStore.SecretKeyEntry.class, mAESEncrypter, options);
-        mAESEncrypter.createEncryptedItem(promise, value, keyStore, secretKeyEntry, options, mAuthenticationHelper.getDefaultCallback(), new PostEncryptionCallback() {
-          @Override
-          public void run(Promise promise, Object result) throws JSONException {
-            JSONObject obj = (JSONObject) result;
-            obj.put(SCHEME_PROPERTY, AESEncrypter.NAME);
-            saveEncryptedItem(promise, obj, prefs, key);
-          }
+        mAESEncrypter.createEncryptedItem(promise, value, keyStore, secretKeyEntry, options, mAuthenticationHelper.getDefaultCallback(), (innerPromise, result) -> {
+          JSONObject obj = (JSONObject) result;
+          obj.put(SCHEME_PROPERTY, AESEncrypter.NAME);
+          saveEncryptedItem(innerPromise, obj, prefs, key);
         });
       } else {
         KeyStore.PrivateKeyEntry privateKeyEntry = getKeyEntry(KeyStore.PrivateKeyEntry.class, mHybridAESEncrypter, options);
-        mHybridAESEncrypter.createEncryptedItem(promise, value, keyStore, privateKeyEntry, options, mAuthenticationHelper.getDefaultCallback(), new PostEncryptionCallback() {
-          @Override
-          public void run(Promise promise, Object result) throws JSONException {
-            JSONObject obj = (JSONObject) result;
-            obj.put(SCHEME_PROPERTY, HybridAESEncrypter.NAME);
-            saveEncryptedItem(promise, obj, prefs, key);
-          }
+        mHybridAESEncrypter.createEncryptedItem(promise, value, keyStore, privateKeyEntry, options, mAuthenticationHelper.getDefaultCallback(), (innerPromise, result) -> {
+          JSONObject obj = (JSONObject) result;
+          obj.put(SCHEME_PROPERTY, HybridAESEncrypter.NAME);
+          saveEncryptedItem(innerPromise, obj, prefs, key);
         });
       }
     } catch (IOException e) {
@@ -427,13 +419,10 @@ public class SecureStoreModule extends ExportedModule {
       cipher.init(Cipher.ENCRYPT_MODE, secretKey);
       GCMParameterSpec gcmSpec = cipher.getParameters().getParameterSpec(GCMParameterSpec.class);
 
-      authenticationCallback.checkAuthentication(promise, cipher, gcmSpec, options, new EncryptionCallback() {
-        @Override
-        public Object run(Promise promise, Cipher cipher, GCMParameterSpec gcmParameterSpec, PostEncryptionCallback postEncryptionCallback) throws
-          GeneralSecurityException, JSONException {
-            return createEncryptedItem(promise, plaintextValue, cipher, gcmSpec, postEncryptionCallback);
-        }
-      }, postEncryptionCallback);
+      authenticationCallback.checkAuthentication(promise, cipher, gcmSpec, options,
+        (promise1, cipher1, gcmParameterSpec, postEncryptionCallback1) ->
+          createEncryptedItem(promise1, plaintextValue, cipher1, gcmSpec, postEncryptionCallback1), postEncryptionCallback
+      );
     }
 
     /* package */ JSONObject createEncryptedItem(Promise promise, String plaintextValue, Cipher cipher,
@@ -472,15 +461,14 @@ public class SecureStoreModule extends ExportedModule {
       Cipher cipher = Cipher.getInstance(AES_CIPHER);
       cipher.init(Cipher.DECRYPT_MODE, secretKeyEntry.getSecretKey(), gcmSpec);
 
-      callback.checkAuthentication(promise, encryptedItem.optBoolean(AuthenticationHelper.REQUIRE_AUTHENTICATION_PROPERTY), cipher, gcmSpec, options, new EncryptionCallback() {
-        @Override
-        public Object run(Promise promise, Cipher cipher, GCMParameterSpec gcmParameterSpec, PostEncryptionCallback postEncryptionCallback) throws GeneralSecurityException {
-          String result = new String(cipher.doFinal(ciphertextBytes), StandardCharsets.UTF_8);
-          promise.resolve(result);
+      callback.checkAuthentication(promise, encryptedItem.optBoolean(AuthenticationHelper.REQUIRE_AUTHENTICATION_PROPERTY), cipher, gcmSpec, options,
+        (promise1, cipher1, gcmParameterSpec, postEncryptionCallback) -> {
+          String result = new String(cipher1.doFinal(ciphertextBytes), StandardCharsets.UTF_8);
+          promise1.resolve(result);
           return result;
-        }
-      }, null);
-
+        },
+        null
+      );
     }
   }
 

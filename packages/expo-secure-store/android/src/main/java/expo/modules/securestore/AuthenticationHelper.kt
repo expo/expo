@@ -175,13 +175,10 @@ class AuthenticationHelper(
                 encryptionCallback,
                 cipher,
                 gcmParameterSpec,
-                object : PostEncryptionCallback {
-                  @Throws(JSONException::class, GeneralSecurityException::class)
-                  override fun run(promise: Promise, result: Any) {
-                    val obj = result as JSONObject
-                    obj.put(REQUIRE_AUTHENTICATION_PROPERTY, true)
-                    postEncryptionCallback?.run(promise, result)
-                  }
+                { promise, result ->
+                  val obj = result as JSONObject
+                  obj.put(REQUIRE_AUTHENTICATION_PROPERTY, true)
+                  postEncryptionCallback?.run(promise, result)
                 }
               )
             }

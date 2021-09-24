@@ -7,7 +7,7 @@ import javax.crypto.Cipher
 import javax.crypto.spec.GCMParameterSpec
 
 // Interface used to pass encryption/decryption logic
-interface EncryptionCallback {
+fun interface EncryptionCallback {
   @Throws(GeneralSecurityException::class, JSONException::class)
   fun run(
     promise: Promise,
