@@ -11,6 +11,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix building errors from use_frameworks! in Podfile. ([#14523](https://github.com/expo/expo/pull/14523) by [@kudo](https://github.com/kudo))
+
 ### 💡 Others
 
 - Added API test in BareExpo app ([#13774](https://github.com/expo/expo/pull/13774/) by [@kkafar](https://github.com/kkafar))

@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix building errors from use_frameworks! in Podfile. ([#14523](https://github.com/expo/expo/pull/14523) by [@kudo](https://github.com/kudo))
+
 ### 💡 Others
 
 ## 10.2.0-alpha.0 — 2021-08-17
