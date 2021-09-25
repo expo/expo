@@ -18,7 +18,7 @@ Pod::Spec.new do |s|
   s.dependency 'ZXingObjC/PDF417'
   s.dependency 'ZXingObjC/OneD'
 
-  s.xcconfig = {
+  s.pod_target_xcconfig = {
     # For use_frameworks! to have correct defines, please sync up with ZxingObjC dependencies above
     'GCC_PREPROCESSOR_DEFINITIONS' => 'ZXINGOBJC_USE_SUBSPECS ZXINGOBJC_PDF417 ZXINGOBJC_ONED',
   }
