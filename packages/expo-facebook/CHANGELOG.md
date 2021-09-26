@@ -15,6 +15,7 @@
 
 - `logPurchaseAsync` on iOS now accepts an `NSNumber` type, which has no user-facing impact besides fixing an error message in the App Events console. ([#13369](https://github.com/expo/expo/pull/13369) by [@cruzach](https://github.com/cruzach))
 - Update error handler for `logInWithReadPermissionsAsync` to handle empty userInfo in native exception. ([#14492](https://github.com/expo/expo/pull/14492) by [@ajsmth](https://github.com/ajsmth))
+- Fix building errors from use_frameworks! in Podfile. ([#14523](https://github.com/expo/expo/pull/14523) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others
 

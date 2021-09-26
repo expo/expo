@@ -1,6 +1,6 @@
 // Copyright 2020-present 650 Industries. All rights reserved.
 
-#import <expo-image/EXImageTypes.h>
+#import <EXImage/EXImageTypes.h>
 
 @implementation EXImageTypes
 
@@ -51,7 +51,7 @@
       // and always ensure that we have handled
       // all supported formats (by erroring compilation
       // otherwise). On the other hand, we do support
-      // overriding SDWebImage version, so expo-image
+      // overriding SDWebImage version, so EXImage
       // shouldn't fail to compile on SDWebImage versions
       // with
       return nil;

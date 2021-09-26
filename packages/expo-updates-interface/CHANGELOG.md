@@ -9,6 +9,7 @@
 ### 🐛 Bug fixes
 
 - Removed unnecessary gradle dependency on expo-modules-core. ([#14464](https://github.com/expo/expo/pull/14464) by [@esamelson](https://github.com/esamelson))
+- Fix building errors from use_frameworks! in Podfile. ([#14523](https://github.com/expo/expo/pull/14523) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others
 
