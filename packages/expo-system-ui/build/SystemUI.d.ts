@@ -11,28 +11,6 @@ export declare type StatusBarVisibility = 'visible' | 'hidden';
  * * "unspecified": Default
  */
 /**
- * Changes the Android Status Bar's background color.
- *
- * @platform android
- *
- * @example
- * ```typescript
- * SystemUI.setStatusBarBackgroundColor("white");
- * ```
- */
-export declare function setStatusBarBackgroundColor(color: ColorValue): Promise<void>;
-/**
- * Gets the Android Status Bar's background color.
- *
- * @platform android
- *
- * @example
- * ```typescript
- * const color = await SystemUI.getStatusBarBackgroundColor();
- * ```
- */
-export declare function getStatusBarBackgroundColor(): Promise<ColorValue>;
-/**
  * Changes the Android Navigation Bar's background color.
  *
  * @platform android
@@ -88,17 +66,6 @@ export declare function getNavigationBarDividerColor(): Promise<ColorValue>;
  */
 export declare function setNavigationBarVisibility(visibility: NavigationBarVisibility): Promise<void>;
 /**
- * Changes the Android Status Bar's visibility.
- *
- * @platform android
- *
- * @example
- * ```typescript
- * SystemUI.setStatusBarVisibility("hidden");
- * ```
- */
-export declare function setStatusBarVisibility(visibility: StatusBarVisibility): Promise<void>;
-/**
  * Changes the Android Navigation Bar's foreground style.
  *
  * @platform android
@@ -120,6 +87,39 @@ export declare function setNavigationBarForegroundStyle(style: NavigationBarFore
  * ```
  */
 export declare function getNavigationBarForegroundStyle(): Promise<NavigationBarForegroundStyle>;
+/**
+ * Changes the Android Status Bar's background color.
+ *
+ * @platform android
+ *
+ * @example
+ * ```typescript
+ * SystemUI.setStatusBarBackgroundColor("white");
+ * ```
+ */
+export declare function setStatusBarBackgroundColor(color: ColorValue): Promise<void>;
+/**
+ * Gets the Android Status Bar's background color.
+ *
+ * @platform android
+ *
+ * @example
+ * ```typescript
+ * const color = await SystemUI.getStatusBarBackgroundColor();
+ * ```
+ */
+export declare function getStatusBarBackgroundColor(): Promise<ColorValue>;
+/**
+ * Changes the Android Status Bar's visibility.
+ *
+ * @platform android
+ *
+ * @example
+ * ```typescript
+ * SystemUI.setStatusBarVisibility("hidden");
+ * ```
+ */
+export declare function setStatusBarVisibility(visibility: StatusBarVisibility): Promise<void>;
 /**
  * Changes the Android Status Bar's foreground style.
  *

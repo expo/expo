@@ -14,35 +14,6 @@ const assertIsOnPlatform = (functionName, onlyAvailableOn) => {
  */
 // export type Appearance = 'light' | 'dark' | 'auto' | 'default';
 /**
- * Changes the Android Status Bar's background color.
- *
- * @platform android
- *
- * @example
- * ```typescript
- * SystemUI.setStatusBarBackgroundColor("white");
- * ```
- */
-export function setStatusBarBackgroundColor(color) {
-    assertIsOnPlatform('setStatusBarBackgroundColor', ['android']);
-    const colorNumber = processColor(color);
-    return ExpoSystemUI.setStatusBarBackgroundColor(colorNumber);
-}
-/**
- * Gets the Android Status Bar's background color.
- *
- * @platform android
- *
- * @example
- * ```typescript
- * const color = await SystemUI.getStatusBarBackgroundColor();
- * ```
- */
-export function getStatusBarBackgroundColor() {
-    assertIsOnPlatform('getStatusBarBackgroundColor', ['android']);
-    return ExpoSystemUI.getStatusBarBackgroundColor();
-}
-/**
  * Changes the Android Navigation Bar's background color.
  *
  * @platform android
@@ -115,20 +86,6 @@ export function setNavigationBarVisibility(visibility) {
     return ExpoSystemUI.setNavigationBarVisibility(visibility);
 }
 /**
- * Changes the Android Status Bar's visibility.
- *
- * @platform android
- *
- * @example
- * ```typescript
- * SystemUI.setStatusBarVisibility("hidden");
- * ```
- */
-export function setStatusBarVisibility(visibility) {
-    assertIsOnPlatform('setStatusBarVisibility', ['android']);
-    return ExpoSystemUI.setStatusBarVisibility(visibility);
-}
-/**
  * Changes the Android Navigation Bar's foreground style.
  *
  * @platform android
@@ -155,6 +112,57 @@ export function setNavigationBarForegroundStyle(style) {
 export function getNavigationBarForegroundStyle() {
     assertIsOnPlatform('getNavigationBarForegroundStyle', ['android']);
     return ExpoSystemUI.getNavigationBarForegroundStyle();
+}
+/**
+ * Changes the Android Status Bar's background color.
+ *
+ * @platform android
+ *
+ * @example
+ * ```typescript
+ * SystemUI.setStatusBarBackgroundColor("white");
+ * ```
+ */
+export function setStatusBarBackgroundColor(color) {
+    if (Platform.OS === 'ios') {
+        // noop: iOS Status Bar cannot have a background color
+        return Promise.resolve();
+    }
+    assertIsOnPlatform('setStatusBarBackgroundColor', ['android']);
+    const colorNumber = processColor(color);
+    return ExpoSystemUI.setStatusBarBackgroundColor(colorNumber);
+}
+/**
+ * Gets the Android Status Bar's background color.
+ *
+ * @platform android
+ *
+ * @example
+ * ```typescript
+ * const color = await SystemUI.getStatusBarBackgroundColor();
+ * ```
+ */
+export function getStatusBarBackgroundColor() {
+    if (Platform.OS === 'ios') {
+        // iOS Status Bar is always transparent
+        return Promise.resolve('transparent');
+    }
+    assertIsOnPlatform('getStatusBarBackgroundColor', ['android']);
+    return ExpoSystemUI.getStatusBarBackgroundColor();
+}
+/**
+ * Changes the Android Status Bar's visibility.
+ *
+ * @platform android
+ *
+ * @example
+ * ```typescript
+ * SystemUI.setStatusBarVisibility("hidden");
+ * ```
+ */
+export function setStatusBarVisibility(visibility) {
+    assertIsOnPlatform('setStatusBarVisibility', ['android']);
+    return ExpoSystemUI.setStatusBarVisibility(visibility);
 }
 /**
  * Changes the Android Status Bar's foreground style.
