@@ -1,59 +1,27 @@
 // Copyright 2016-present 650 Industries. All rights reserved.
 
 #import <ExpoModulesCore/EXAppDefines.h>
+#import <React/RCTDefines.h>
+
+// Assuming ExpoModulesCore is not shipping as prebuilt xcframework,
+// so that `DEBUG` and other definitions are same as app building definitions.
+// Other prebuilt module can leverage these `APP_*` to get the app building definitions.
 
 @implementation EXAppDefines
 
-static BOOL _inited = NO;
-static BOOL _debug;
-static BOOL _rctDebug;
-static BOOL _rctDev;
-
 + (BOOL)APP_DEBUG
 {
-  [self throwIfNotInited];
-  return _debug;
+  return DEBUG;
 }
 
 + (BOOL)APP_RCT_DEBUG
 {
-  [self throwIfNotInited];
-  return _rctDebug;
+  return RCT_DEBUG;
 }
 
 + (BOOL)APP_RCT_DEV
 {
-  [self throwIfNotInited];
-  return _rctDev;
-}
-
-+ (void)initDefines:(BOOL)debug
-{
-  [self initDefines:debug rctDebug:debug rctDev:debug];
-}
-
-+ (void)initDefines:(BOOL)debug
-           rctDebug:(BOOL)rctDebug
-             rctDev:(BOOL)rctDev
-{
-  if (_inited) {
-    @throw [NSException exceptionWithName:NSInternalInconsistencyException
-                                   reason:@"EXAppDefines is already initialized"
-                                 userInfo:nil];
-  }
-  _inited = YES;
-  _debug = debug;
-  _rctDebug = rctDebug;
-  _rctDev = rctDev;
-}
-
-+ (void)throwIfNotInited
-{
-  if (!_inited) {
-    @throw [NSException exceptionWithName:NSInternalInconsistencyException
-                                   reason:@"EXAppDefines is not yet initialized. Check https://expo.fyi/expo-modules-migration for more information."
-                                 userInfo:nil];
-  }
+  return RCT_DEV;
 }
 
 @end

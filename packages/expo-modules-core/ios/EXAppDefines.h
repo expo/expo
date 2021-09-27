@@ -9,19 +9,11 @@ NS_ASSUME_NONNULL_BEGIN
 // Because the prebuilt modules are always built with Release configurations.
 // This class acts as a supporter to get app build time configurations.
 //
-// Note this class is not thread-safe, please make sure to intiailize
-// in `application(_:didFinishLaunchingWithOptions:)`
 @interface EXAppDefines : NSObject
 
 @property (class, nonatomic, assign, readonly) BOOL APP_DEBUG;
 @property (class, nonatomic, assign, readonly) BOOL APP_RCT_DEBUG;
 @property (class, nonatomic, assign, readonly) BOOL APP_RCT_DEV;
-
-+ (void)initDefines:(BOOL)debug;
-
-+ (void)initDefines:(BOOL)debug
-           rctDebug:(BOOL)rctDebug
-             rctDev:(BOOL)rctDev;
 
 @end
 
