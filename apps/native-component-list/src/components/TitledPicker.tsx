@@ -4,7 +4,7 @@ import React from 'react';
 import { StyleSheet, View, TextStyle, ViewStyle } from 'react-native';
 
 type Props = {
-  style: ViewStyle;
+  style?: ViewStyle;
   titleStyle?: TextStyle;
   title?: string;
   value: string;
