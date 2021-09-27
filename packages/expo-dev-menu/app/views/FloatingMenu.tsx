@@ -86,7 +86,7 @@ export default class FloatingMenu extends Component<Props> {
   }
 }
 
-type IconButtonProps = { icon: ImageSourcePropType; onPress: () => void };
+type IconButtonProps = { icon: ImageSourcePropType; onPress?: () => void };
 
 function IconButton(props: IconButtonProps) {
   return (
