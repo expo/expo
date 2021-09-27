@@ -8,10 +8,4 @@ We decided to publish some of our new features as a preview to get feedback from
 
 ### Features in preview
 
-- **Expo Application Services (EAS)**. [Learn more](/eas):
-
-  - **EAS Build**: Compile and sign Android/iOS apps with custom native code in the cloud. Easily distribute your apps to testers without waiting for TestFlight or Google Play. [Learn more](/build/introduction.md).
-
-  - **EAS Submit**: Upload your app to the Apple App Store or Google Play Store from the cloud with one CLI command. [Learn more](/submit/introduction.md).
-
 - **expo-dev-client**: When you need to customize your project beyond the standard runtime provided in Expo Go, you can create a custom development client for your application, install it on your phone, and continue developing. [Learn more](/clients/introduction.md).

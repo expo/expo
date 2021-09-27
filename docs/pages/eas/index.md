@@ -4,7 +4,7 @@ title: Expo Application Services
 
 Expo Application Services (EAS) is the next-generation of services that unlock new opportunities for improving your apps and development processes.
 
-There are two services currently available under "Feature Preview" to [EAS Priority plan subscribers](https://expo.dev/pricing):
+There are two services currently available:
 
 - **EAS Build**: Compile and sign Android/iOS apps with custom native code in the cloud. Easily distribute your apps to testers without waiting for TestFlight or Google Play. [Learn more](/build/introduction.md).
 

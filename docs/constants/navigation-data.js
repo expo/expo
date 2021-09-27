@@ -4,7 +4,7 @@ const fm = require('front-matter');
 const fs = require('fs-extra');
 const path = require('path');
 
-const { isEasInFeaturePreview, isDevClientInFeaturePreview } = require('./FeatureFlags');
+const { isDevClientInFeaturePreview } = require('./FeatureFlags');
 
 // TODO(brentvatne): move this to navigation.js so it's all in one place!
 // Map directories in a version directory to a section name
@@ -28,7 +28,7 @@ const DIR_MAPPING = {
   'push-notifications': 'Push Notifications',
   preview: 'Preview',
   build: 'Start Building',
-  eas: 'Feature Preview',
+  eas: 'Expo Application Services',
   'feature-preview': 'Feature Preview',
   'app-signing': 'App Signing',
   'build-reference': 'Reference',
@@ -140,12 +140,6 @@ const easDirectories = ['eas', 'build', 'app-signing', 'build-reference', 'submi
 let previewDirectories = ['preview']; // a private preview section which isn't linked in the documentation
 let featurePreviewDirectories = ['feature-preview']; // a public preview section which is linked under `Feature Preview`
 
-if (isEasInFeaturePreview) {
-  featurePreviewDirectories = [...featurePreviewDirectories, ...easDirectories];
-} else {
-  previewDirectories = [...previewDirectories, ...easDirectories];
-}
-
 if (isDevClientInFeaturePreview) {
   featurePreviewDirectories = [...featurePreviewDirectories, 'clients'];
 } else {
@@ -163,7 +157,12 @@ const generalDirectories = fs
     name =>
       name !== 'api' &&
       name !== 'versions' &&
-      ![...startingDirectories, ...previewDirectories, ...featurePreviewDirectories].includes(name)
+      ![
+        ...startingDirectories,
+        ...previewDirectories,
+        ...featurePreviewDirectories,
+        ...easDirectories,
+      ].includes(name)
   );
 
 module.exports = {
@@ -171,6 +170,7 @@ module.exports = {
   generalDirectories,
   previewDirectories,
   featurePreviewDirectories,
+  easDirectories,
   starting: startingDirectories.map(directory =>
     generateGeneralNavLinks(`${ROOT_PATH_PREFIX}/${directory}`)
   ),
@@ -180,6 +180,7 @@ module.exports = {
   preview: previewDirectories.map(directory =>
     generateGeneralNavLinks(`${ROOT_PATH_PREFIX}/${directory}`)
   ),
+  eas: easDirectories.map(directory => generateGeneralNavLinks(`${ROOT_PATH_PREFIX}/${directory}`)),
   featurePreview: featurePreviewDirectories.map(directory =>
     generateGeneralNavLinks(`${ROOT_PATH_PREFIX}/${directory}`)
   ),
