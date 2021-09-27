@@ -2,7 +2,7 @@
 title: Debugging updates
 ---
 
-It's incredibly important to be able to tell the current state of your app at any given time. EAS Update was built with this in mind. Once you know which updates are running on which builds, we can make changes so that our apps are in the state we expect and desire.
+It's important to be able to tell the current state of our app at any given time. EAS Update was built with this in mind. Once you know which updates are running on which builds, we can make changes so that our apps are in the state we expect and desire.
 
 ## Inspecting the state of deployments
 
@@ -10,11 +10,11 @@ We use the term _deployments_ to refer to the entire system of builds and their 
 
 ### Viewing deployments
 
-The Expo website has a graphical interface to display the current state of our apps. We can view it at /accounts/[account]/projects/[project]/deployments.
+The EAS website has a page that shows the current state of our apps. We can view it at [https://expo.dev/accounts/[account]/projects/[project]/deployments](https://expo.dev/accounts/[account]/projects/[project]/deployments).
 
 ### Inspecting builds
 
-We can see a list of builds on the Expo website at /accounts/[account]/projects/[project]/builds. Alternatively, run this eas-cli command:
+We can see a list of builds on the EAS website at [https://expo.dev/accounts/[account]/projects/[project]/builds](https://expo.dev/accounts/[account]/projects/[project]/builds). Alternatively, run this EAS CLI command:
 
 ```bash
 eas build:list
@@ -28,7 +28,7 @@ The output will contain information related to updates like the build's channel 
 
 ### Inspecting channels
 
-We can see a list of channels with eas-cli with the following commands:
+We can see a list of channels with EAS CLI with the following commands:
 
 ```bash
 eas channel:list
@@ -38,11 +38,11 @@ eas channel:list
 eas channel:view [channel-name]
 ```
 
-The output will show which branch the channel is currently linked to, and also if there are any current updates on the branch.
+The output will show which branch the channel is currently linked to, and which update that branch is running.
 
 ### Inspecting branches
 
-We can see a list of branches with eas-cli with the following commands:
+We can see a list of branches with EAS CLI with the following commands:
 
 ```bash
 eas branch:list
@@ -52,11 +52,11 @@ eas branch:list
 eas branch:view [branch-name]
 ```
 
-The output will show a branches and their list of updates. If the branch does not have any updates, the output will display "N/A".
+The output will show a branch and its updates.
 
 ### Inspecting updates
 
-We can view the attributes of an update with the following command:
+We can view the details of an update with the following command:
 
 ```bash
 eas update:view [update-group-id]
@@ -82,7 +82,7 @@ updates: [
 ]
 ```
 
-If "update 2" turned out to be a bad update, we can re-publish update 1 with a command like this:
+If "update 2" turned out to be a bad update, we can re-publish "update 1" with a command like this:
 
 ```bash
 eas branch:publish [branch-name] --republish --group [update-group-id]
@@ -104,4 +104,4 @@ updates: [
 
 Since "update 3" is now the most recent update on the "production" branch, all users who query for an update in the future will receive "update 3" instead of the bad update, "update 2".
 
-While this will prevent all new users from seeing the bad update, users who've already received the bad update will run it until they can download the latest update. Since mobile networks are not always able to download the most recent update, sometimes users may run a bad update for a long time. When viewing error logs for your app, it's normal to see a lingering long tail of errors as your users apps get the most recent update or build. You'll know you solved the bug when you see the error rate decline dramatically, however it likely will not disappear completely if you have a diverse user base across many locations and mobile networks.
+While this will prevent all new users from seeing the bad update, users who've already received the bad update will run it until they can download the latest update. Since mobile networks are not always able to download the most recent update, sometimes users may run a bad update for a long time. When viewing error logs for your app, it's normal to see a lingering long tail of errors as your users' apps get the most recent update or build. You'll know you solved the bug when you see the error rate decline dramatically; however, it likely will not disappear completely if you have a diverse user base across many locations and mobile networks.

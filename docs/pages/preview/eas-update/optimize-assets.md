@@ -2,15 +2,15 @@
 title: How to optimize assets for EAS Update
 ---
 
-When an app finds a new update, it downloads a manifest, then it will download any new or updated assets so that it can run the update. The process is as follows:
+When an app finds a new update, it downloads a manifest and then downloads any new or updated assets so that it can run the update. The process is as follows:
 
 ![Process](/static/images/eas-update/process.png)
 
-Many users running Android and iOS apps are using mobile connections that are not as consistent or fast as when they are using WiFi, so it's important that the assets shipped as a part of an update are as small as possible.
+Many users running Android and iOS apps are using mobile connections that are not as consistent or fast as when they are using Wi-Fi, so it's important that the assets shipped as a part of an update are as small as possible.
 
 ## **Code assets**
 
-When publishing an update, eas-cli runs expo-cli to bundle the project into an update. Part of the output of this process will appear like this:
+When publishing an update, EAS CLI runs Expo CLI to bundle the project into an update. Part of the output of this process will appear like this:
 
 ```bash
 [expo-cli]Bundle                     Size
@@ -18,7 +18,7 @@ When publishing an update, eas-cli runs expo-cli to bundle the project into an u
 [expo-cli]├ index.android.js       839 kB
 ```
 
-In this case, we can see the size of the **index.ios.js** and **index.android.js** files that will be downloaded on a user's device if they have an outdated version of these files on their device compared to the update. Making this size as small as possible is better for our users.
+In this case, we can see the size of the **index.ios.js** and **index.android.js** files that will be part of the iOS and Android updates, respectively. Note that these are uncompressed file sizes; EAS Update uses Brotli and gzip compression, which can significantly reduce download sizes. Nevertheless, these files will be downloaded to a user's device when getting the new update if the device has not downloaded them before. Making these file sizes as small as possible helps end users download updates quickly and use less data.
 
 ## **Image assets**
 
@@ -32,7 +32,7 @@ npx expo-optimize
 
 ## **Other assets**
 
-For assets like gifs or movies, or non-code and non-image assets, it's up to the developer to optimize and minify those assets.
+For assets like GIFs or movies, or non-code and non-image assets, it's up to the developer to optimize and minify those assets. (Note: GIFs are a very inefficient format. Modern video codecs can produce smaller file sizes by over an order of magnitude.)
 
 ## **Further considerations**
 

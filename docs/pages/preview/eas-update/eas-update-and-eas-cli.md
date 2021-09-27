@@ -1,14 +1,14 @@
 ---
-title: Using EAS Update with eas-cli
+title: Using EAS Update with EAS CLI
 ---
 
-EAS Update works by linking _branches_ to _channels_. Channels are specified at build time and exist inside a build's native code. Branches are created when publishing an update. With EAS Update, we can link any channel to any branch, allowing us to make different updates available to different builds.
+EAS Update works by linking _branches_ to _channels_. Channels are specified at build time and exist inside a build's native code. Branches are an ordered list of updates, similar to a Git branch, which is an ordered list of commits. With EAS Update, we can link any channel to any branch, allowing us to make different updates available to different builds.
 
-![Channel branch link initial](/static/images/eas-update/channel-branch-link.png)
+![Channel "production" linked to branch "version-1.0"](/static/images/eas-update/channel-branch-link.png)
 
-The diagram above visualizes this link. Here, we have the builds with channel "production" linked to the branch "version-1.0". When we're ready, we can adjust the channel-branch pointer. Imagine we have more fixes tested and ready on a branch named "version-2.0". We could update this link to make the branch "version-2.0" available to all builds with the channel "production".
+The diagram above visualizes this link. Here, we have the builds with the "production" channel linked to the branch named "version-1.0". When we're ready, we can adjust the channel–branch pointer. Imagine we have more fixes tested and ready on a branch named "version-2.0". We could update this link to make the "version-2.0" branch available to all builds with the "production" channel.
 
-![Channel branch link final](/static/images/eas-update/channel-branch-link-2.png)
+![Channel "production" linked to branch "version-2.0"](/static/images/eas-update/channel-branch-link-2.png)
 
 ## Inspecting the state of your project's updates
 
@@ -77,7 +77,7 @@ eas branch:publish [branch-name] --message "..."
 eas branch:publish version-1.0 --message "Fixes typo"
 ```
 
-If you're using git, we can use the `--auto` flag to auto fill the branch name and the message. This flag will use the current git branch as the branch name and the latest git commit message as the message.
+If you're using Git, we can use the `--auto` flag to auto-fill the branch name and the message. This flag will use the current Git branch as the branch name and the latest Git commit message as the message.
 
 ```bash
 eas branch:publish --auto
@@ -94,7 +94,7 @@ eas branch:delete version-1.0
 
 ### Rename a branch
 
-Renaming branches does not disconnect any channel-branch links. If you had a channel named "production" linked to a branch named "version-1.0", then you renamed the branch named "version-1.0" to "version-1.0-new", the channel production would be linked to the now renamed branch "version-1.0-new".
+Renaming branches does not disconnect any channel–branch links. If you had a channel named "production" linked to a branch named "version-1.0", and then you renamed the branch named "version-1.0" to "version-1.0-new", the "production" channel would be linked to the now-renamed branch "version-1.0-new".
 
 ```bash
 eas branch:rename --from [branch-name] --to [branch-name]
@@ -105,7 +105,9 @@ eas branch:rename --from version-1.0 --to version-1.0-new
 
 ### Republish a previous update within a branch
 
-We can make a previous update immediately available to all users. This command takes the previous update and publishes it again so that it becomes the most current update on the branch. As your users re-open their apps, they will see that the latest update is new, and they'll receive the re-published update.
+We can make a previous update immediately available to all users. This command takes the previous update and publishes it again so that it becomes the most current update on the branch. As your users re-open their apps, the apps will see the newly re-published update and will download it.
+
+> Republish is similar to a Git reversion, where the correct commit is placed on top of the Git history.
 
 ```bash
 eas branch:publish [branch-name] --republish --group [update-group-id]

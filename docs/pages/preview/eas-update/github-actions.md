@@ -9,50 +9,50 @@ We can configure GitHub Actions to run on any GitHub event. One of the most comm
 1. Create a file path named **.github/workflows/update.yml** at the root of your project.
 2. Inside **update.yml**, copy and paste this code:
 
-    ```yaml
-    name: update
-    on:
-      push:
-        branches: [main]
+   ```yaml
+   name: update
+   on:
+     push:
+       branches: [main]
 
-    jobs:
-      update:
-        name: EAS Update
-        runs-on: ubuntu-latest
-        steps:
-          - uses: actions/checkout@v2
-          - uses: actions/setup-node@v1
-            with:
-              node-version: 14.x
-          - uses: expo/expo-github-action@v6
-            with:
-              expo-version: latest
-              eas-version: latest
-              token: ${{ secrets.EXPO_TOKEN }}
-              expo-cache: true
-              eas-cache: true
-          - name: Find cache
-            id: yarn-cache-dir-path
-            run: echo "::set-output name=dir::$(yarn cache dir)"
-          - name: Restore cache
-            uses: actions/cache@v2
-            with:
-              path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
-              key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
-              restore-keys: |
-                ${{ runner.os }}-yarn-
-          - run: yarn install
-          - run: eas branch:publish $(echo ${{ github.ref }} | sed 's|refs/heads/||') --message "${{ github.event.head_commit.message }}"
-    ```
+   jobs:
+     update:
+       name: EAS Update
+       runs-on: ubuntu-latest
+       steps:
+         - uses: actions/checkout@v2
+         - uses: actions/setup-node@v1
+           with:
+             node-version: 16.x
+         - uses: expo/expo-github-action@v6
+           with:
+             expo-version: latest
+             eas-version: latest
+             token: ${{ secrets.EXPO_TOKEN }}
+             expo-cache: true
+             eas-cache: true
+         - name: Find cache
+           id: yarn-cache-dir-path
+           run: echo "::set-output name=dir::$(yarn cache dir)"
+         - name: Restore cache
+           uses: actions/cache@v2
+           with:
+             path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
+             key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+             restore-keys: |
+               ${{ runner.os }}-yarn-
+         - run: yarn install
+         - run: eas branch:publish $(echo ${{ github.ref }} | sed 's|refs/heads/||') --message "${{ github.event.head_commit.message }}"
+   ```
 
-    In the code above, we set the action to run every time code is pushed to the `main` branch. In the `update` job, we set up Node, in addition to Expo's GitHub Action: `expo-github-action`. We then add a couple steps to cache any dependencies installed from the last run to speed this script up on subsequent runs. Finally at the end, we install dependencies (`yarn install`), then create a branch on EAS, then publish the branch. The EAS branch will be named after the GitHub branch, and the message for the update will match the commit's message.
+   In the code above, we set the action to run every time code is pushed to the `main` branch. In the `update` job, we set up Node, in addition to Expo's GitHub Action: `expo-github-action`. We then add a couple steps to cache any dependencies installed from the last run to speed this script up on subsequent runs. Finally at the end, we install dependencies (`yarn install`), then create a branch on EAS, then publish the branch. The EAS branch will be named after the GitHub branch, and the message for the update will match the commit's message.
 
 3. Finally, we need to give the script above permission to run by providing an `EXPO_TOKEN` environment variable.
-    1. Navigate to [https://expo.dev/settings/access-tokens](https://expo.dev/settings/access-tokens).
-    2. Click "Create" to create a new access token.
-    3. Copy the token generated.
-    4. Navigate to https://github.com/your-username/your-repo-name/settings/secrets/actions, replacing "your-username" and "your-repo-name" with your projects data.
-    5. Click "New repository secret"
-    6. Make the secret's name "EXPO_TOKEN", then paste the access token in as the value.
+   1. Navigate to [https://expo.dev/settings/access-tokens](https://expo.dev/settings/access-tokens).
+   2. Click "Create" to create a new access token.
+   3. Copy the token generated.
+   4. Navigate to https://github.com/your-username/your-repo-name/settings/secrets/actions, replacing "your-username" and "your-repo-name" with your project's info.
+   5. Click "New repository secret"
+   6. Make the secret's name "EXPO_TOKEN", then paste the access token in as the value.
 
 Your GitHub Action should be set up now. Every time when someone merges code into the `main` branch, this action will build an update and publish it, making it available to all of our users with builds that have access to the `main` branch on EAS.
