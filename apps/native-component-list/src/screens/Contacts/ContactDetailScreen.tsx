@@ -6,7 +6,7 @@ import * as Linking from 'expo-linking';
 import * as React from 'react';
 import { Platform, RefreshControl, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-import HeaderIconButton, { HeaderContainerRight } from '../../components/HeaderIconButton';
+import { HeaderIconButton, HeaderContainerRight } from '../../components/HeaderIconButton';
 import Colors from '../../constants/Colors';
 import usePermissions from '../../utilities/usePermissions';
 import ContactDetailList, { DetailListItem } from './ContactDetailList';

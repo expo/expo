@@ -5,7 +5,7 @@ import { Platform } from 'expo-modules-core';
 import React from 'react';
 import { RefreshControl, StyleSheet, Text, View } from 'react-native';
 
-import HeaderIconButton, { HeaderContainerRight } from '../../components/HeaderIconButton';
+import { HeaderIconButton, HeaderContainerRight } from '../../components/HeaderIconButton';
 import usePermissions from '../../utilities/usePermissions';
 import { useResolvedValue } from '../../utilities/useResolvedValue';
 import * as ContactUtils from './ContactUtils';
