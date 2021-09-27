@@ -2,7 +2,7 @@
 title: How EAS Update works
 ---
 
-EAS Update is a service that allows you to deliver small bug fixes and updates to your users immediately as you work on your next app store release. Making an update available to builds involves create a link between a build and an update.
+EAS Update is a service that allows you to deliver small bug fixes and updates to your users immediately as you work on your next app store release. Making an update available to builds involves creating a link between a build and an update.
 
 To create a link between a build and an update, we have to make sure the update can run on the build. We also want to make sure we can create a deployment process, so that we can expose certain updates to certain builds when we're ready.
 
@@ -56,11 +56,11 @@ While this default will work in many cases, we can always change the mapping. Sa
 
 ## Practical overview
 
-Now that we're familiar with the core concepts of EAS Update, let's talk about how this process occurs. When an Expo project with the `expo-updates` library is built, we include native Android and iOS code that will check for new updates on launch. By the way, when the modules checks for and update and when it downloads it is [configurable](/config/app/#updates).
+Now that we're familiar with the core concepts of EAS Update, let's talk about how this process occurs. When an Expo project with the `expo-updates` library is built, we include native Android and iOS code that will check for new updates on launch. By the way, when the modules checks for an update and when it downloads it is [configurable](/config/app/#updates).
 
 By default, the app will check for an update when it's opened according to the [Expo Update Protocol](/technical-specs/expo-updates-0/). If the app finds an update that is newer than the current update inside the app, it will download it and run it. If the app does not find a newer update, it will instead run the update that was embedded inside the app at build time.
 
-The app downloads an update in two phases. First it downloads the most recent update _manifest_. A manifest contains information about the update, including a list of assets that are required to run the update. Assets are things like images, JavaScript, font files, etc...
+The app downloads an update in two phases. First, it downloads the most recent update _manifest_. A manifest contains information about the update, including a list of assets that are required to run the update. Assets are things like images, JavaScript, font files, etc...
 
 The second phase of the update is when the app downloads the assets needed to run the update. For instance, if your update contains a new image, the app will download the new image asset before running the update. To help users get updates quickly and reliably, it's important to keep our updates as small as possible.
 
@@ -72,4 +72,4 @@ If the app is able to download the manifest (phase 1) and all the required asset
 
 ## Wrap up
 
-With EAS Update, we can quickly deliver small, critical bug fixes to our users and give users the best experience possible. This is set up with a build's runtime version, platform, and channel. With these three constraints, we can make an update available to a specific group of builds. This allows us to test our changes before going to production within a deployment process. Depending on how we set up our deployment process, we can optimize for speed. We can also optimize our deployments to be as safe a bug-free as possible. The deployment possibilities are vast, and can match nearly any release process you prefer.
+With EAS Update, we can quickly deliver small, critical bug fixes to our users and give users the best experience possible. This is set up with a build's runtime version, platform, and channel. With these three constraints, we can make an update available to a specific group of builds. This allows us to test our changes before going to production within a deployment process. Depending on how we set up our deployment process, we can optimize for speed. We can also optimize our deployments to be as safe a bug-free as possible. The deployment possibilities are vast and can match nearly any release process you prefer.

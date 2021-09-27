@@ -20,11 +20,11 @@ There are three parts that make up a successful deployment process that we'll ne
    b. We can create update branches that are environment-based, like "production" and "staging".
    c. We can create update branches that are version-based, like `version-1.0`, which enables us to promote updates from one channel to another.
 
-We can mix-and-match the parts above to create to a process that is fast enough for our project, and safe enough for our users.
+We can mix and match the parts above to create a process that is fast enough for our project, and safe enough for our users.
 
 Another trade-off to consider is the amount of bookkeeping of versions/names/environments we'll have to do throughout the process. The less bookkeeping we have to do will make it easier to follow a consistent process. It'll also make it easier to communicate with our colleagues. If we need fine-grained control, bookkeeping will be required to get the exact process we want.
 
-Below, we've outlined four patterns on how to deploy a project with Expo and EAS. We found that successful Expo projects often use one of these patterns, or a variation of them.
+Below, we've outlined four patterns on how to deploy a project with Expo and EAS. We found that successful Expo projects often use one of these patterns or a variation of them.
 
 ## Two-command flow
 
@@ -98,7 +98,7 @@ Creating builds: (b) Create builds for production use and separate builds for te
 
 Testing changes: (a) Test changes on TestFlight and the Play Store Internal Track and/or (b) Test changes with internal distribution builds.
 
-Publishing updates: (c) create update branches that are environment based, like "staging" and "production".
+Publishing updates: (c) create update branches that are environment-based, like "staging" and "production".
 
 Diagram of flow:
 
@@ -114,7 +114,7 @@ Explanation of flow:
 
 Advantages of this flow:
 
-- This flow allows you to control the pace of deploying to production independent of the pace of development. This adds an extra chance to test your app and avoids yours user having to download a new update every time a PR is landed.
+- This flow allows you to control the pace of deploying to production independent of the pace of development. This adds an extra chance to test your app and avoids your user having to download a new update every time a PR is landed.
 - It's easy to communicate to your team, since deploying updates occurs when merging into GitHub branches named "staging" and "production".
 
 Disadvantages of this flow:
@@ -122,7 +122,7 @@ Disadvantages of this flow:
 - Checking out previous versions of your app is slightly more complex, since we'd need to check out an old commit instead of an old branch.
 - When merging to "production", the update would be re-built and re-published instead of moved from the builds with channel "staging" to the builds with channel "production".
 
-## Platform specific flow
+## Platform-specific flow
 
 This flow is for projects that need to build and update their Android and iOS apps separately all the time. It will result in separate commands for delivering updates to the Android and iOS apps. Here are the parts of the deployment process above that make up this flow:
 
@@ -130,7 +130,7 @@ Creating builds: (a) Create builds for production use only, or (b) create builds
 
 Testing changes: (a) Test changes on TestFlight and the Play Store Internal Track and/or (b) Test changes with internal distribution builds.
 
-Publishing updates: (c) create update branches that are environment and platform based, like `ios-staging`, `ios-production`, `android-staging`, and `android-production`.
+Publishing updates: (c) create update branches that are environment- and platform-based, like `ios-staging`, `ios-production`, `android-staging`, and `android-production`.
 
 Diagram of flow:
 
@@ -139,7 +139,7 @@ Diagram of flow:
 Explanation of flow:
 
 - Develop a project locally and test changes in Expo Go.
-- Create builds with channels named like like `ios-staging`, `ios-production`, `android-staging`, and `android-production`. Then put the `ios-staging` build on TestFlight and submit the `ios-production` build to the public App Store. Likewise, put the `android-staging` build on the Play Store Internal Track, and submit the `android-production` build to the public Play Store.
+- Create builds with channels named like `ios-staging`, `ios-production`, `android-staging`, and `android-production`. Then put the `ios-staging` build on TestFlight and submit the `ios-production` build to the public App Store. Likewise, put the `android-staging` build on the Play Store Internal Track, and submit the `android-production` build to the public Play Store.
 - Set up `expo-github-action` to publish updates to the required platforms when merging commits to branches.
 - Then, merge changes for the iOS app into the branch `ios-staging`, then when ready merge changes into the `ios-production` branch. Likewise, merge changes for the Android app into the branch `android-staging` and when ready, into the branch named `android-production`.
 

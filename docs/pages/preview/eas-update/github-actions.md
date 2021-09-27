@@ -45,7 +45,7 @@ We can configure GitHub Actions to run on any GitHub event. One of the most comm
          - run: eas branch:publish $(echo ${{ github.ref }} | sed 's|refs/heads/||') --message "${{ github.event.head_commit.message }}"
    ```
 
-   In the code above, we set the action to run every time code is pushed to the `main` branch. In the `update` job, we set up Node, in addition to Expo's GitHub Action: `expo-github-action`. We then add a couple steps to cache any dependencies installed from the last run to speed this script up on subsequent runs. Finally at the end, we install dependencies (`yarn install`), then create a branch on EAS, then publish the branch. The EAS branch will be named after the GitHub branch, and the message for the update will match the commit's message.
+   In the code above, we set the action to run every time code is pushed to the `main` branch. In the `update` job, we set up Node, in addition to Expo's GitHub Action: `expo-github-action`. We then add a couple steps to cache any dependencies installed from the last run to speed this script up on subsequent runs. At the end, we install dependencies (`yarn install`), then create a branch on EAS, then publish the branch. The EAS branch will be named after the GitHub branch, and the message for the update will match the commit's message.
 
 3. Finally, we need to give the script above permission to run by providing an `EXPO_TOKEN` environment variable.
    1. Navigate to [https://expo.dev/settings/access-tokens](https://expo.dev/settings/access-tokens).
