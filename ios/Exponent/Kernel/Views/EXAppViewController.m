@@ -461,11 +461,6 @@ NS_ASSUME_NONNULL_BEGIN
 {
   if (self->_appRecord.appManager.status != kEXReactAppManagerStatusRunning) {
     [self.appLoadingProgressWindowController updateStatusWithProgress:progress];
-    float progressPercent = ([progress.done floatValue] / [progress.total floatValue]);
-    
-    if (progressPercent == 1.0) {
-  
-    }
   }
 }
 
