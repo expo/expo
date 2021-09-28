@@ -1,4 +1,4 @@
-package expo.modules.medialibrary
+package expo.modules.medialibrary.albums.migration
 
 import expo.modules.medialibrary.MediaLibraryUtils.AssetFile
 import android.os.AsyncTask
@@ -9,14 +9,16 @@ import android.content.Context
 import android.os.Build
 import androidx.annotation.RequiresApi
 import expo.modules.core.Promise
+import expo.modules.medialibrary.MediaLibraryConstants
+import expo.modules.medialibrary.MediaLibraryUtils
 import java.io.File
 
 @RequiresApi(Build.VERSION_CODES.R)
 internal class MigrateAlbum(
-    private val context: Context,
-    private val assetFiles: List<AssetFile>,
-    private val albumDirName: String,
-    private val promise: Promise
+  private val context: Context,
+  private val assetFiles: List<AssetFile>,
+  private val albumDirName: String,
+  private val promise: Promise
 ) : AsyncTask<Void?, Void?, Void?>() {
   override fun doInBackground(vararg voids: Void?): Void? {
     // Previously, users were able to save different assets type in the same directory.
@@ -24,8 +26,8 @@ internal class MigrateAlbum(
     // If album contains movies or pictures, we can move it to Environment.DIRECTORY_PICTURES.
     // Otherwise, we reject.
     val assetsRelativePaths = assetFiles
-        .map { MediaLibraryUtils.getRelativePathForAssetType(it.mimeType, false) }
-        .toSet()
+      .map { MediaLibraryUtils.getRelativePathForAssetType(it.mimeType, false) }
+      .toSet()
     if (assetsRelativePaths.size > 1) {
       promise.reject(MediaLibraryConstants.ERROR_UNABLE_TO_MIGRATE, "The album contains incompatible file types.")
       return null
@@ -37,15 +39,15 @@ internal class MigrateAlbum(
     }
     assetFiles.forEach { assetFile ->
       context
-          .contentResolver
-          .update(
-              ContentUris.withAppendedId(
-                  MediaLibraryUtils.mineTypeToExternalUri(assetFile.mimeType),
-                  assetFile.assetId.toLong()
-              ),
-              values,
-              null
-          )
+        .contentResolver
+        .update(
+          ContentUris.withAppendedId(
+            MediaLibraryUtils.mineTypeToExternalUri(assetFile.mimeType),
+            assetFile.assetId.toLong()
+          ),
+          values,
+          null
+        )
     }
     promise.resolve(null)
     return null

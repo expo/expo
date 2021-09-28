@@ -1,4 +1,4 @@
-package expo.modules.medialibrary
+package expo.modules.medialibrary.albums.migration
 
 import android.content.Context
 import android.os.AsyncTask
@@ -10,9 +10,9 @@ import expo.modules.medialibrary.MediaLibraryConstants
 
 @RequiresApi(Build.VERSION_CODES.R)
 class CheckIfAlbumShouldBeMigrated(
-    private val context: Context,
-    private val albumId: String,
-    private val promise: Promise
+  private val context: Context,
+  private val albumId: String,
+  private val promise: Promise
 ) : AsyncTask<Void?, Void?, Void?>() {
   public override fun doInBackground(vararg voids: Void?): Void? {
     val albumDir = MediaLibraryUtils.getAlbumFile(context, albumId)
