@@ -11,7 +11,11 @@
 
 + (BOOL)APP_DEBUG
 {
-  return DEBUG;
+#if DEBUG
+  return YES;
+#else
+  return NO;
+#endif
 }
 
 + (BOOL)APP_RCT_DEBUG
