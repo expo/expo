@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- [android] Make asset "type" key nullable ([#14499](https://github.com/expo/expo/pull/14499) by [@jkhales](https://github.com/jkhales))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
