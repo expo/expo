@@ -1,9 +1,10 @@
-package expo.modules.medialibrary
+package expo.modules.medialibrary.albums
 
 import android.content.Context
 import android.os.AsyncTask
 import android.provider.MediaStore
 import expo.modules.core.Promise
+import expo.modules.medialibrary.MediaLibraryUtils
 import expo.modules.medialibrary.MediaLibraryUtils.getInPart
 
 internal class DeleteAlbums(

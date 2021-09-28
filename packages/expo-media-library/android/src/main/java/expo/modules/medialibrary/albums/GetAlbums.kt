@@ -1,4 +1,4 @@
-package expo.modules.medialibrary
+package expo.modules.medialibrary.albums
 
 import android.content.Context
 import android.database.Cursor.FIELD_TYPE_NULL
@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.provider.MediaStore
 import android.provider.MediaStore.Images.Media
 import expo.modules.core.Promise
+import expo.modules.medialibrary.MediaLibraryConstants
 
 internal open class GetAlbums(private val mContext: Context, private val mPromise: Promise) :
   AsyncTask<Void?, Void?, Void?>() {
@@ -20,7 +21,7 @@ internal open class GetAlbums(private val mContext: Context, private val mPromis
     try {
       mContext.contentResolver
         .query(
-          MediaLibraryConstants.EXTERNAL_CONTENT,
+            MediaLibraryConstants.EXTERNAL_CONTENT,
           projection,
           selection,
           null,
@@ -29,7 +30,7 @@ internal open class GetAlbums(private val mContext: Context, private val mPromis
         .use { asset ->
           if (asset == null) {
             mPromise.reject(
-              MediaLibraryConstants.ERROR_UNABLE_TO_LOAD,
+                MediaLibraryConstants.ERROR_UNABLE_TO_LOAD,
               "Could not get albums. Query returns null."
             )
             return@use
@@ -58,7 +59,7 @@ internal open class GetAlbums(private val mContext: Context, private val mPromis
         }
     } catch (e: SecurityException) {
       mPromise.reject(
-        MediaLibraryConstants.ERROR_UNABLE_TO_LOAD_PERMISSION,
+          MediaLibraryConstants.ERROR_UNABLE_TO_LOAD_PERMISSION,
         "Could not get albums: need READ_EXTERNAL_STORAGE permission.", e
       )
     } catch (e: RuntimeException) {

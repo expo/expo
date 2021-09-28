@@ -52,29 +52,8 @@ import static expo.modules.medialibrary.MediaLibraryConstants.MEDIA_TYPE_VIDEO;
 import static expo.modules.medialibrary.MediaLibraryConstants.SORT_KEYS;
 import static expo.modules.medialibrary.MediaLibraryConstants.exifTags;
 
-final class MediaLibraryUtils {
-
-  static final FileStrategy copyStrategy = (src, dir, context) -> safeCopyFile(src, dir);
-
-  static final FileStrategy moveStrategy = (src, dir, context) -> {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R && src instanceof AssetFile) {
-      String assetId = ((AssetFile) src).getAssetId();
-      Uri assetUri = ContentUris.withAppendedId(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, Long.parseLong(assetId));
-
-      File newFile = safeCopyFile(src, dir);
-      context.getContentResolver().delete(assetUri, null);
-      return newFile;
-    }
-
-    File newFile = safeMoveFile(src, dir);
-    context.getContentResolver().delete(
-      EXTERNAL_CONTENT,
-      MediaStore.MediaColumns.DATA + "=?",
-      new String[]{src.getPath()});
-    return newFile;
-  };
-
-  static class AssetFile extends File {
+public final class MediaLibraryUtils {
+  public static class AssetFile extends File {
     private final String mAssetId;
     private final String mMimeType;
 
@@ -102,13 +81,13 @@ final class MediaLibraryUtils {
     return new String[]{filename, extension};
   }
 
-  static File safeMoveFile(final File src, final File dir) throws IOException {
+  public static File safeMoveFile(final File src, final File dir) throws IOException {
     File copy = safeCopyFile(src, dir);
     src.delete();
     return copy;
   }
 
-  static File safeCopyFile(final File src, final File dir) throws IOException {
+  public static File safeCopyFile(final File src, final File dir) throws IOException {
     File newFile = new File(dir, src.getName());
     int suffix = 0;
     final String[] origName = getFileNameAndExtension(src.getName());
@@ -426,7 +405,7 @@ final class MediaLibraryUtils {
     asset.putParcelable("location", location);
   }
 
-  static void queryAlbum(Context context, final String selection, final String[] selectionArgs, Promise promise) {
+  public static void queryAlbum(Context context, final String selection, final String[] selectionArgs, Promise promise) {
     Bundle result = new Bundle();
     final String[] projection = {MediaStore.MediaColumns.BUCKET_ID, MediaStore.MediaColumns.BUCKET_DISPLAY_NAME};
     final String order = MediaStore.MediaColumns.BUCKET_DISPLAY_NAME;
@@ -461,7 +440,7 @@ final class MediaLibraryUtils {
     }
   }
 
-  static void deleteAssets(Context context, String selection, String[] selectionArgs, Promise promise) {
+  public static void deleteAssets(Context context, String selection, String[] selectionArgs, Promise promise) {
     final String[] projection = {MediaStore.MediaColumns._ID, MediaStore.MediaColumns.DATA};
     try (Cursor filesToDelete = context.getContentResolver().query(
       EXTERNAL_CONTENT,
@@ -502,14 +481,14 @@ final class MediaLibraryUtils {
     }
   }
 
-  static String getInPart(String[] assetsId) {
+  public static String getInPart(String[] assetsId) {
     int length = assetsId.length;
     String[] array = new String[length];
     Arrays.fill(array, "?");
     return TextUtils.join(",", array);
   }
 
-  static List<AssetFile> getAssetsById(Context context, Promise promise, String... assetsId) {
+  public static List<AssetFile> getAssetsById(Context context, Promise promise, String... assetsId) {
     if (promise == null) {
       promise = new Promise() {
         @Override

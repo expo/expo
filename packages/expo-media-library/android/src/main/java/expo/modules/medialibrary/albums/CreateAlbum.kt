@@ -1,13 +1,14 @@
-package expo.modules.medialibrary
+package expo.modules.medialibrary.albums
 
 import android.content.Context
 import android.os.AsyncTask
-import expo.modules.medialibrary.MediaLibraryUtils.FileStrategy
 import android.media.MediaScannerConnection
 import android.net.Uri
 import android.provider.MediaStore
 import expo.modules.core.Promise
 import expo.modules.medialibrary.MediaLibraryConstants.*
+import expo.modules.medialibrary.MediaLibraryUtils
+import expo.modules.medialibrary.ifNull
 import java.io.File
 import java.io.IOException
 
@@ -18,12 +19,10 @@ internal class CreateAlbum(
     copyAsset: Boolean,
     private val promise: Promise
 ) : AsyncTask<Void?, Void?, Void?>() {
-  private val mStrategy = if (copyAsset) MediaLibraryUtils.copyStrategy else MediaLibraryUtils.moveStrategy
+  private val mStrategy = if (copyAsset) AssetFileStrategy.copyStrategy else AssetFileStrategy.moveStrategy
 
   private fun createAlbum(mimeType: String): File? {
-    val albumDir = MediaLibraryUtils
-      // TODO: This uses deprecated method - investigate it more
-      .getEnvDirectoryForAssetType(mimeType, false)
+    val albumDir = MediaLibraryUtils.getEnvDirectoryForAssetType(mimeType, false)
       .ifNull {
         promise.reject(ERROR_NO_ALBUM, "Could not guess asset type.")
         return null

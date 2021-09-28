@@ -26,6 +26,12 @@ import expo.modules.core.interfaces.services.UIManager
 import expo.modules.interfaces.permissions.Permissions
 import expo.modules.medialibrary.MediaLibraryConstants.*
 import expo.modules.medialibrary.MediaLibraryModule.Action
+import expo.modules.medialibrary.albums.AddAssetsToAlbum
+import expo.modules.medialibrary.albums.CreateAlbum
+import expo.modules.medialibrary.albums.DeleteAlbums
+import expo.modules.medialibrary.albums.GetAlbum
+import expo.modules.medialibrary.albums.GetAlbums
+import expo.modules.medialibrary.albums.RemoveAssetsFromAlbum
 
 class MediaLibraryModule(
   context: Context,

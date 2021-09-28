@@ -1,4 +1,4 @@
-package expo.modules.medialibrary
+package expo.modules.medialibrary.albums
 
 import android.content.Context
 import android.os.AsyncTask
@@ -7,6 +7,7 @@ import android.media.MediaScannerConnection
 import android.os.Build
 import expo.modules.core.Promise
 import expo.modules.medialibrary.MediaLibraryConstants.*
+import expo.modules.medialibrary.MediaLibraryUtils
 import java.io.File
 import java.io.IOException
 import java.util.concurrent.atomic.AtomicInteger
@@ -18,7 +19,7 @@ internal class AddAssetsToAlbum(
     copyToAlbum: Boolean,
     private val promise: Promise
 ) : AsyncTask<Void?, Void?, Void?>() {
-  private val strategy = if (copyToAlbum) MediaLibraryUtils.copyStrategy else MediaLibraryUtils.moveStrategy
+  private val strategy = if (copyToAlbum) AssetFileStrategy.copyStrategy else AssetFileStrategy.moveStrategy
 
   // Media store table can be corrupted. Extra check won't harm anyone.
   private val album: File?

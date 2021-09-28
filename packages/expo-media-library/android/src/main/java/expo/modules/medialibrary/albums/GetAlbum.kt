@@ -1,4 +1,4 @@
-package expo.modules.medialibrary
+package expo.modules.medialibrary.albums
 
 import android.content.Context
 import android.os.AsyncTask
@@ -6,6 +6,7 @@ import android.provider.MediaStore.MediaColumns
 import android.provider.MediaStore.Files.FileColumns
 
 import expo.modules.core.Promise
+import expo.modules.medialibrary.MediaLibraryUtils
 
 internal class GetAlbum(
   private val context: Context,

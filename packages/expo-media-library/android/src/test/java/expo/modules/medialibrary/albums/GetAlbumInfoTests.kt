@@ -1,6 +1,13 @@
-package expo.modules.medialibrary
+package expo.modules.medialibrary.albums
 
 import android.provider.MediaStore
+import expo.modules.medialibrary.MediaLibraryConstants
+import expo.modules.medialibrary.MediaLibraryUtils
+import expo.modules.medialibrary.MockContext
+import expo.modules.medialibrary.MockData
+import expo.modules.medialibrary.mockContentResolver
+import expo.modules.medialibrary.mockCursor
+import expo.modules.medialibrary.throwableContentResolver
 import io.mockk.every
 import io.mockk.just
 import io.mockk.mockkStatic
@@ -39,10 +46,10 @@ internal class GetAlbumInfoTests {
     mockkStatic(MediaLibraryUtils::class)
     every {
       MediaLibraryUtils.queryAlbum(
-        context,
-        capture(selectionSlot),
-        capture(selectionArgsSlot),
-        promise
+          context,
+          capture(selectionSlot),
+          capture(selectionArgsSlot),
+          promise
       )
     } just runs
 
