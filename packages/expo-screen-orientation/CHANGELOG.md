@@ -12,6 +12,7 @@
 
 - Fixed an issue with building on Xcode 13. ([#13898](https://github.com/expo/expo/pull/13898) by [@cruzach](https://github.com/cruzach))
 - Fix building errors from use_frameworks! in Podfile. ([#14523](https://github.com/expo/expo/pull/14523) by [@kudo](https://github.com/kudo))
+- Fixed integration with the `react-native-screens` orientation prop.
 
 ### 💡 Others
 
