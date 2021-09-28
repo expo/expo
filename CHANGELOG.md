@@ -13,11 +13,10 @@ Package-specific changes not released in any SDK will be added here just before 
 - Updated `react-native-webview` from `11.6.2` to `11.13.0`. ([#14301](https://github.com/expo/expo/pull/14301) by [@kudo](https://github.com/kudo))
 - Updated `react-native-lottie` from `4.0.2` to `4.0.3`. ([#14331](https://github.com/expo/expo/pull/14331) by [@cruzach](https://github.com/cruzach))
 - Updated `@stripe/stripe-react-native` from `0.1.4` to `0.2.2`. ([#14357](https://github.com/expo/expo/pull/14357) & [#14452](https://github.com/expo/expo/pull/14452) by [@cruzach](https://github.com/cruzach))
-- Updated `react-native-screens` from `3.4.0` to `3.7.2`. ([#14330](https://github.com/expo/expo/pull/14330) by [@cruzach](https://github.com/cruzach))
 - Updated `react-native-safe-area-context` from `3.2.0` to `3.3.2`. ([#14303](https://github.com/expo/expo/pull/14303) by [@kudo](https://github.com/kudo))
 - Updated `@react-native-community/viewpager` from `5.0.11` to `react-native-pager-view@5.4.4`. ([#14348](https://github.com/expo/expo/pull/14348) by [@cruzach](https://github.com/cruzach))
 - Updated `@react-native-picker/picker` from `1.6.7` to `2.1.0`. ([#14358](https://github.com/expo/expo/pull/14358) by [@ajsmth](https://github.com/ajsmth))
-- Updated `react-native-screens` from `3.7.2` to `3.8.0`. ([#14544](https://github.com/expo/expo/pull/14544) by [@kudo](https://github.com/kudo))
+- Updated `react-native-screens` from `3.4.0` to `3.8.0`. ([#14330](https://github.com/expo/expo/pull/14330) by [@cruzach](https://github.com/cruzach)) ([#14544](https://github.com/expo/expo/pull/14544) by [@kudo](https://github.com/kudo))
 
 ### 🛠 Breaking changes
 
