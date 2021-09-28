@@ -11,7 +11,7 @@
 #include <OpenGLES/ES3/gl.h>
 #include <OpenGLES/ES3/glext.h>
 
-#define BLOCK_SAFE_RUN(block, ...) block ? block(__VA_ARGS__) : nil
+#define BLOCK_SAFE_RUN(block, ...) block ? block(__VA_ARGS__) : (void) nil
 
 @interface EXGLContext ()
 

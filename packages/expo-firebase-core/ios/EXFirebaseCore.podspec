@@ -17,6 +17,11 @@ Pod::Spec.new do |s|
   s.homepage       = package['homepage']
   s.platform       = :ios, '12.0'
   s.source         = { git: 'https://github.com/expo/expo.git' }
+  s.static_framework = true
+
+  s.pod_target_xcconfig = {
+    'DEFINES_MODULE' => 'YES',
+  }
 
   s.dependency 'ExpoModulesCore'
   s.dependency 'Firebase/Core', firebase_sdk_version

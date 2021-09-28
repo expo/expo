@@ -12,6 +12,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix building errors from use_frameworks! in Podfile. ([#14523](https://github.com/expo/expo/pull/14523) by [@kudo](https://github.com/kudo))
+
 ### 💡 Others
 
 - Rewrite android code to Kotlin. ([#13993](https://github.com/expo/expo/pull/13993) by [@kkafar](https://github.com/kkafar))

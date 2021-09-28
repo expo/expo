@@ -13,6 +13,7 @@ Pod::Spec.new do |s|
   s.platform       = :ios, '11.0'
   s.swift_version  = '5.2'
   s.source         = { git: 'https://github.com/expo/expo.git' }
+  s.static_framework = true
   s.source_files   = 'ios/**/*.{h,m,swift}'
   s.preserve_paths = 'ios/**/*.{h,m,swift}'
   s.exclude_files  = 'ios/*Tests/**'
