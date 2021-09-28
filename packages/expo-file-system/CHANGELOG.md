@@ -31,7 +31,7 @@ _This version does not introduce any user-facing changes._
 ### 💡 Others
 
 - Updated `@expo/config-plugins` ([#14443](https://github.com/expo/expo/pull/14443) by [@EvanBacon](https://github.com/EvanBacon))
-- Rewrited module to Kotlin. 
+- Rewritten module to Kotlin. 
 
 ## 12.0.0 — 2021-09-08
 
