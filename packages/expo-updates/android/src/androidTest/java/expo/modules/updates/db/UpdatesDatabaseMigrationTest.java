@@ -195,13 +195,13 @@ public class UpdatesDatabaseMigrationTest {
     // Re-open the database with version 7 and provide
     // MIGRATION_6_7 as the migration process.
     db = helper.runMigrationsAndValidate(TEST_DB, 7, true, UpdatesDatabase.MIGRATION_6_7);
+    db.execSQL("PRAGMA foreign_keys=ON");
 
     // Confirm that 'type' is now nullable.
     db.execSQL("INSERT INTO \"assets\" (\"id\",\"url\",\"key\",\"headers\",\"type\",\"metadata\",\"download_time\",\"relative_path\",\"hash\",\"hash_type\",\"marked_for_deletion\") VALUES" +
             " (4,NULL,NULL,NULL,'png',NULL,1,NULL,NULL,0,0),\n" +
             " (5,NULL,NULL,NULL,NULL,NULL,1,NULL,NULL,0,0)");
 
-    db.execSQL("PRAGMA foreign_keys=ON");
 
     Cursor allAssets = db.query("SELECT * FROM `assets`");
     Assert.assertEquals(5, allAssets.getCount());
