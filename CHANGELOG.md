@@ -17,7 +17,7 @@ Package-specific changes not released in any SDK will be added here just before 
 - Updated `react-native-safe-area-context` from `3.2.0` to `3.3.2`. ([#14303](https://github.com/expo/expo/pull/14303) by [@kudo](https://github.com/kudo))
 - Updated `@react-native-community/viewpager` from `5.0.11` to `react-native-pager-view@5.4.4`. ([#14348](https://github.com/expo/expo/pull/14348) by [@cruzach](https://github.com/cruzach))
 - Updated `@react-native-picker/picker` from `1.6.7` to `2.1.0`. ([#14358](https://github.com/expo/expo/pull/14358) by [@ajsmth](https://github.com/ajsmth))
-- Updated `react-native-screens` from `3.7.2` to `3.8.0`. ([#14542](https://github.com/expo/expo/pull/14542) by [@kudo](https://github.com/kudo))
+- Updated `react-native-screens` from `3.7.2` to `3.8.0`. ([#14544](https://github.com/expo/expo/pull/14544) by [@kudo](https://github.com/kudo))
 
 ### 🛠 Breaking changes
 
