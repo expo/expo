@@ -7,7 +7,7 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 
 @RunWith(RobolectricTestRunner::class)
-internal class GetQueryInfoTests {
+internal class GetAssetsQueryTests {
 
   @Test
   fun `test if proper values are handled properly`() {
@@ -40,7 +40,7 @@ internal class GetQueryInfoTests {
     val expectedOrder = MediaLibraryUtils.mapOrderDescriptor(sortBy)
 
     // act
-    val queryInfo = GetQueryInfo(inputMap).invoke()
+    val queryInfo = getQueryFromAssetOptions(inputMap)
 
     // assert
     assertEquals(limit.toInt(), queryInfo.limit)
@@ -55,7 +55,7 @@ internal class GetQueryInfoTests {
     val expectedSelection = "${MediaStore.Files.FileColumns.MEDIA_TYPE} != ${MediaStore.Files.FileColumns.MEDIA_TYPE_NONE}"
 
     // act
-    val queryInfo = GetQueryInfo(emptyMap()).invoke()
+    val queryInfo = getQueryFromAssetOptions(emptyMap())
 
     // assert
     assertEquals(20, queryInfo.limit)
@@ -75,7 +75,7 @@ internal class GetQueryInfoTests {
     )
 
     // act
-    val queryInfo = GetQueryInfo(inputMap).invoke()
+    val queryInfo = getQueryFromAssetOptions(inputMap)
 
     // assert
     assertEquals(limitOutOfRange.toInt(), queryInfo.limit)
@@ -88,7 +88,7 @@ internal class GetQueryInfoTests {
       "mediaType" to listOf("someRandomString")
     )
 
-    val queryInfo = GetQueryInfo(inputMap).invoke()
+    val queryInfo = getQueryFromAssetOptions(inputMap)
   }
 
   @Test(expected = IllegalArgumentException::class)
@@ -97,6 +97,6 @@ internal class GetQueryInfoTests {
       "sortBy" to listOf("invalid name")
     )
 
-    val queryInfo = GetQueryInfo(inputMap).invoke()
+    val queryInfo = getQueryFromAssetOptions(inputMap)
   }
 }

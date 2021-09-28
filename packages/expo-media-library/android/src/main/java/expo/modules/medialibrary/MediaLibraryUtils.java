@@ -226,14 +226,6 @@ public final class MediaLibraryUtils {
     }
   }
 
-  static Integer convertMediaType(String mediaType) throws IllegalArgumentException {
-    if (!MEDIA_TYPES.containsKey(mediaType)) {
-      String errorMessage = String.format("MediaType \"%s\" is not supported!", mediaType);
-      throw new IllegalArgumentException(errorMessage);
-    }
-    return MEDIA_TYPES.get(mediaType);
-  }
-
   static int[] getSizeFromCursor(ContentResolver contentResolver, ExifInterface exifInterface, Cursor cursor, int mediaType, int localUriIndex) throws IOException {
     final String uri = cursor.getString(localUriIndex);
 

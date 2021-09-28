@@ -4,11 +4,9 @@ import expo.modules.medialibrary.MediaLibraryConstants.ERROR_UNABLE_TO_LOAD
 import expo.modules.medialibrary.MediaLibraryConstants.ERROR_UNABLE_TO_LOAD_PERMISSION
 import io.mockk.every
 import io.mockk.just
-import io.mockk.mockk
-import io.mockk.mockkConstructor
 import io.mockk.mockkStatic
 import io.mockk.runs
-import io.mockk.unmockkConstructor
+import io.mockk.unmockkStatic
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Before
@@ -31,7 +29,8 @@ internal class GetAssetsTest {
     promise = PromiseMock()
     mockContext = MockContext()
 
-    mockGetQueryInfo(selection = "", order = "", limit = 10, offset = 0)
+    mockkStatic(::getQueryFromAssetOptions)
+    every { getQueryFromAssetOptions(any()) } returns GetAssetsQuery(selection = "", order = "", limit = 10, offset = 0)
 
     mockkStatic(MediaLibraryUtils::class)
     every { MediaLibraryUtils.putAssetsInfo(any(), any(), any(), any(), any(), any()) } just runs
@@ -39,7 +38,7 @@ internal class GetAssetsTest {
 
   @After
   fun tearDown() {
-    unmockkConstructor(GetQueryInfo::class)
+    unmockkStatic(::getQueryFromAssetOptions)
   }
 
   @Test
@@ -95,16 +94,5 @@ internal class GetAssetsTest {
 
     // assert
     assertRejectedWithCode(promise, ERROR_UNABLE_TO_LOAD)
-  }
-
-  private fun mockGetQueryInfo(selection: String, order: String, limit: Int, offset: Int) {
-    val mockQueryInfo = mockk<GetQueryInfo>()
-    every { mockQueryInfo.selection } returns selection
-    every { mockQueryInfo.order } returns order
-    every { mockQueryInfo.limit } returns limit
-    every { mockQueryInfo.offset } returns offset
-
-    mockkConstructor(GetQueryInfo::class)
-    every { anyConstructed<GetQueryInfo>().invoke() } returns mockQueryInfo
   }
 }
