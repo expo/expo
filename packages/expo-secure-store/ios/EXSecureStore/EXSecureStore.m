@@ -196,7 +196,7 @@
       return @"Unable to decode the provided data.";
 
     case errSecAuthFailed:
-      return @"Authentication failed. It is possible that the device has no screen lock.";
+      return @"Authentication failed. Provided passphrase/PIN is incorrect or there is no user authentication method configured for this device.";
 
     default:
       return error.localizedDescription;
