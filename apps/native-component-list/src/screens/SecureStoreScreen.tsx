@@ -1,6 +1,15 @@
 import * as SecureStore from 'expo-secure-store';
 import * as React from 'react';
-import { Alert, Platform, ScrollView, Text, TextInput, View, Switch } from 'react-native';
+import {
+  Alert,
+  Platform,
+  ScrollView,
+  Text,
+  TextInput,
+  View,
+  Switch,
+  StyleSheet,
+} from 'react-native';
 
 import ListButton from '../components/ListButton';
 import { useResolvedValue } from '../utilities/useResolvedValue';
@@ -81,63 +90,26 @@ function SecureStoreView() {
   };
 
   return (
-    <ScrollView
-      style={{
-        flex: 1,
-        padding: 10,
-      }}>
+    <ScrollView style={styles.container}>
       <TextInput
-        style={{
-          marginBottom: 10,
-          padding: 10,
-          height: 40,
-          ...Platform.select({
-            ios: {
-              borderColor: '#ccc',
-              borderWidth: 1,
-              borderRadius: 3,
-            },
-          }),
-        }}
+        style={styles.textInput}
         placeholder="Enter a value to store (ex. pw123!)"
         value={value}
         onChangeText={setValue}
       />
       <TextInput
-        style={{
-          marginBottom: 10,
-          padding: 10,
-          height: 40,
-          ...Platform.select({
-            ios: {
-              borderColor: '#ccc',
-              borderWidth: 1,
-              borderRadius: 3,
-            },
-          }),
-        }}
+        style={styles.textInput}
         placeholder="Enter a key for the value (ex. password)"
         value={key}
         onChangeText={setKey}
       />
       <TextInput
-        style={{
-          marginBottom: 10,
-          padding: 10,
-          height: 40,
-          ...Platform.select({
-            ios: {
-              borderColor: '#ccc',
-              borderWidth: 1,
-              borderRadius: 3,
-            },
-          }),
-        }}
+        style={styles.textInput}
         placeholder="Enter a service name (may be blank)"
         value={service}
         onChangeText={setService}
       />
-      <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+      <View style={styles.authToggleContainer}>
         <Text>Requires authentication:</Text>
         <Switch value={requireAuth} onValueChange={_toggleAuth} />
       </View>
@@ -153,3 +125,27 @@ function SecureStoreView() {
 SecureStoreScreen.navigationOptions = {
   title: 'SecureStore',
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    padding: 10,
+  },
+  textInput: {
+    marginBottom: 10,
+    padding: 10,
+    height: 40,
+    ...Platform.select({
+      ios: {
+        borderColor: '#ccc',
+        borderWidth: 1,
+        borderRadius: 3,
+      },
+    }),
+  },
+  authToggleContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+});
