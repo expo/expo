@@ -1,4 +1,3 @@
-/// <reference types="node" />
 import { Config } from '@jest/types';
 export default function withEnzyme(preset: Config.ProjectConfig): {
     setupFilesAfterEnv: string[];
@@ -18,7 +17,7 @@ export default function withEnzyme(preset: Config.ProjectConfig): {
     detectOpenHandles: boolean;
     displayName?: Config.DisplayName | undefined;
     errorOnDeprecated: boolean;
-    extraGlobals: (keyof NodeJS.Global)[];
+    extraGlobals: (string | number | symbol)[];
     filter?: string | undefined;
     forceCoverageMatch: string[];
     globalSetup?: string | undefined;
