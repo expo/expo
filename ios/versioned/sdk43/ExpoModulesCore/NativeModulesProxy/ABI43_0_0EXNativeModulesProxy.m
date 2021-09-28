@@ -189,7 +189,7 @@ ABI43_0_0RCT_EXPORT_METHOD(callMethod:(NSString *)moduleName methodNameOrKey:(id
 
 - (id<ModulesProviderObjCProtocol>)getExpoModulesProvider
 {
-  Class generatedExpoModulesProvider = NSClassFromString(@"ExpoModulesProvider");
+  Class generatedExpoModulesProvider = NSClassFromString(@"ABI43_0_0ExpoModulesProvider");
   // Checks if `ExpoModulesProvider` was generated
   if (generatedExpoModulesProvider) {
     return [generatedExpoModulesProvider new];
