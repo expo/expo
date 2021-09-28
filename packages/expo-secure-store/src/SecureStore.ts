@@ -73,7 +73,7 @@ export type SecureStoreOptions = {
    */
   requireAuthentication?: boolean;
   /**
-   * A message to display on the authentication prompt.
+   * Custom message displayed to the user while `requireAuthentication` option is turned on.
    */
   authenticationPrompt?: string;
   /**
