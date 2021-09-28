@@ -109,9 +109,7 @@ open class ExperienceActivity : BaseExperienceActivity(), StartReactInstanceDele
       override fun onSuccess() {
         UiThreadUtil.runOnUiThread {
           loadingProgressPopupController.hide()
-          if (managedAppSplashScreenViewController) {
-            managedAppSplashScreenViewController.startSplashScreenWarningTimer()
-          }
+          managedAppSplashScreenViewController?.startSplashScreenWarningTimer()
           finishLoading()
         }
       }
