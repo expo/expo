@@ -342,7 +342,6 @@ module.exports = {
           { key: 0, argumentsCount: 1, name: 'activate' },
           { key: 1, argumentsCount: 1, name: 'deactivate' },
         ],
-        ExpoLinearGradient: [],
         ExpoLinearGradientManager: [],
         ExpoLocalAuthentication: [
           { key: 0, argumentsCount: 0, name: 'supportedAuthenticationTypesAsync' },
@@ -1012,7 +1011,6 @@ module.exports = {
         'ExpoAppleAuthenticationButtonSignUpWhiteOutline',
         'ExpoBarCodeScannerView',
         'ExpoBlurView',
-        'ExpoLinearGradient',
         'ExpoLinearGradient',
         'ExpoVideoView',
         'ExponentCamera',
