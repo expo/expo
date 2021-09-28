@@ -144,7 +144,6 @@ NS_ASSUME_NONNULL_BEGIN
   if (self.isHomeApp) {
     EXHomeAppSplashScreenViewProvider *homeAppSplashScreenViewProvider = [EXHomeAppSplashScreenViewProvider new];
     [self _showSplashScreenWithProvider:homeAppSplashScreenViewProvider];
-    
   } else if (self.isStandalone) {
     [self _showSplashScreenWithProvider:[EXSplashScreenViewNativeProvider new]];
   }
