@@ -33,17 +33,17 @@ internal class AddAssetsToAlbum(
         selection,
         id,
         null
-      ).use { album ->
-        if (album == null) {
+      ).use { albumCursor ->
+        if (albumCursor == null) {
           promise.reject(ERROR_UNABLE_TO_LOAD, "Could not get album. Query returns null.")
           return null
-        } else if (album.count == 0) {
+        } else if (albumCursor.count == 0) {
           promise.reject(ERROR_NO_ALBUM, "No album with id: $albumId")
           return null
         }
-        album.moveToNext()
-        val filePathColumnIndex = album.getColumnIndex(MediaStore.Images.Media.DATA)
-        val fileInAlbum = File(album.getString(filePathColumnIndex))
+        albumCursor.moveToNext()
+        val filePathColumnIndex = albumCursor.getColumnIndex(MediaStore.Images.Media.DATA)
+        val fileInAlbum = File(albumCursor.getString(filePathColumnIndex))
 
         // Media store table can be corrupted. Extra check won't harm anyone.
         if (!fileInAlbum.isFile) {

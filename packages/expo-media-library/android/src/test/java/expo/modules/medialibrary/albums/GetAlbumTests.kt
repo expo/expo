@@ -5,15 +5,12 @@ import android.provider.MediaStore.Files.FileColumns
 import android.provider.MediaStore.MediaColumns
 import expo.modules.medialibrary.CursorResults
 import expo.modules.medialibrary.MediaLibraryConstants
-import expo.modules.medialibrary.MediaLibraryUtils
 import expo.modules.medialibrary.MockContext
 import expo.modules.medialibrary.MockData
 import expo.modules.medialibrary.mockContentResolver
 import expo.modules.medialibrary.throwableContentResolver
-import io.mockk.every
-import io.mockk.just
+import io.mockk.justRun
 import io.mockk.mockkStatic
-import io.mockk.runs
 import io.mockk.slot
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
@@ -51,15 +48,15 @@ internal class GetAlbumTests {
     val selectionSlot = slot<String>()
     val selectionArgsSlot = slot<Array<String>>()
 
-    mockkStatic(MediaLibraryUtils::class)
-    every {
-      MediaLibraryUtils.queryAlbum(
+    mockkStatic(::queryAlbum)
+    justRun {
+      queryAlbum(
         context,
         capture(selectionSlot),
         capture(selectionArgsSlot),
         promise
       )
-    } just runs
+    }
 
     val expectedSelection = ALBUM_SELECTION
     val albumName = "TestAlbum"
@@ -84,7 +81,7 @@ internal class GetAlbumTests {
     val selectionArgs = arrayOf(MockData.mockAlbum.name)
 
     // act
-    MediaLibraryUtils.queryAlbum(context, ALBUM_SELECTION, selectionArgs, promise)
+    queryAlbum(context, ALBUM_SELECTION, selectionArgs, promise)
 
     // assert
     promiseResolved(promise) {
@@ -100,7 +97,7 @@ internal class GetAlbumTests {
     val selectionArgs = arrayOf(MockData.mockAlbum.name)
 
     // act
-    MediaLibraryUtils.queryAlbum(context, ALBUM_SELECTION, selectionArgs, promise)
+    queryAlbum(context, ALBUM_SELECTION, selectionArgs, promise)
 
     // assert
     promiseResolvedWithType<Bundle?>(promise) { result ->
@@ -114,7 +111,7 @@ internal class GetAlbumTests {
     val context = mockContext with mockContentResolver(null)
 
     // act
-    MediaLibraryUtils.queryAlbum(context, "", emptyArray(), promise)
+    queryAlbum(context, "", emptyArray(), promise)
 
     // assert
     assertRejected(promise)
@@ -126,7 +123,7 @@ internal class GetAlbumTests {
     val context = mockContext with throwableContentResolver(SecurityException())
 
     // act
-    MediaLibraryUtils.queryAlbum(context, "", emptyArray(), promise)
+    queryAlbum(context, "", emptyArray(), promise)
 
     // assert
     assertRejectedWithCode(promise, MediaLibraryConstants.ERROR_UNABLE_TO_LOAD_PERMISSION)
@@ -138,7 +135,7 @@ internal class GetAlbumTests {
     val context = mockContext with throwableContentResolver(IllegalArgumentException())
 
     // act
-    MediaLibraryUtils.queryAlbum(context, "", emptyArray(), promise)
+    queryAlbum(context, "", emptyArray(), promise)
 
     // assert
     assertRejected(promise)

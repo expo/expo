@@ -54,7 +54,7 @@ internal class CreateAlbum(
         }
         val selection = "${MediaStore.Images.Media.DATA}=?"
         val args = arrayOf(path)
-        MediaLibraryUtils.queryAlbum(context, selection, args, promise)
+        queryAlbum(context, selection, args, promise)
       }
     } catch (e: SecurityException) {
       promise.reject(

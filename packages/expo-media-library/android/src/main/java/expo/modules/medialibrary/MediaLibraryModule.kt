@@ -32,6 +32,7 @@ import expo.modules.medialibrary.albums.DeleteAlbums
 import expo.modules.medialibrary.albums.GetAlbum
 import expo.modules.medialibrary.albums.GetAlbums
 import expo.modules.medialibrary.albums.RemoveAssetsFromAlbum
+import expo.modules.medialibrary.albums.getAssetsInAlbums
 
 class MediaLibraryModule(
   context: Context,
@@ -198,7 +199,11 @@ class MediaLibraryModule(
       DeleteAlbums(context, albumIds, promise)
         .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR)
     }
+<<<<<<< a71ca98f1db974e2c99d04c305c94ae6068ee6a9
     val assetIds = MediaLibraryUtils.getAssetsInAlbums(context, *albumIds.toTypedArray())
+=======
+    val assetIds = getAssetsInAlbums(mContext, *albumIds.toTypedArray())
+>>>>>>> Extract album utils, renames
     runActionWithPermissions(assetIds, action, promise)
   }
 
@@ -221,7 +226,7 @@ class MediaLibraryModule(
     val assets = MediaLibraryUtils.getAssetsById(
       context,
       null,
-      *MediaLibraryUtils.getAssetsInAlbums(context, albumId).toTypedArray()
+      *getAssetsInAlbums(context, albumId).toTypedArray()
     )
     if (assets == null) {
       promise.reject(ERROR_NO_ALBUM, "Couldn't find album.")

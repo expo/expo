@@ -14,8 +14,8 @@ internal fun interface AssetFileStrategy {
   fun apply(src: File, dir: File, context: Context): File
 
   companion object {
-    val copyStrategy = AssetFileStrategy { src: File, dir: File, _: Context -> MediaLibraryUtils.safeCopyFile(src, dir) }
-    val moveStrategy = AssetFileStrategy strategy@{ src: File, dir: File, context: Context ->
+    val copyStrategy = AssetFileStrategy { src, dir, _ -> MediaLibraryUtils.safeCopyFile(src, dir) }
+    val moveStrategy = AssetFileStrategy strategy@{ src, dir, context ->
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R && src is MediaLibraryUtils.AssetFile) {
         val assetId = src.assetId
         val assetUri = ContentUris.withAppendedId(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, assetId.toLong())

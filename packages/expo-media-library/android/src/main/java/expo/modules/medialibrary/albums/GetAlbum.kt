@@ -6,7 +6,6 @@ import android.provider.MediaStore.MediaColumns
 import android.provider.MediaStore.Files.FileColumns
 
 import expo.modules.core.Promise
-import expo.modules.medialibrary.MediaLibraryUtils
 
 internal class GetAlbum(
   private val context: Context,
@@ -18,7 +17,7 @@ internal class GetAlbum(
       " AND ${MediaColumns.BUCKET_DISPLAY_NAME}=?"
     val selectionArgs = arrayOf(albumName)
 
-    MediaLibraryUtils.queryAlbum(context, selection, selectionArgs, promise)
+    queryAlbum(context, selection, selectionArgs, promise)
     return null
   }
 }

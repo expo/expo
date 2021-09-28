@@ -25,7 +25,6 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URI;
 import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -405,40 +404,7 @@ public final class MediaLibraryUtils {
     asset.putParcelable("location", location);
   }
 
-  public static void queryAlbum(Context context, final String selection, final String[] selectionArgs, Promise promise) {
-    Bundle result = new Bundle();
-    final String[] projection = {MediaStore.MediaColumns.BUCKET_ID, MediaStore.MediaColumns.BUCKET_DISPLAY_NAME};
-    final String order = MediaStore.MediaColumns.BUCKET_DISPLAY_NAME;
 
-    try (Cursor albums = context.getContentResolver().query(
-      EXTERNAL_CONTENT,
-      projection,
-      selection,
-      selectionArgs,
-      order)) {
-
-      if (albums == null) {
-        promise.reject(ERROR_UNABLE_TO_LOAD, "Could not get album. Query is incorrect.");
-        return;
-      }
-      if (!albums.moveToNext()) {
-        promise.resolve(null);
-        return;
-      }
-      final int bucketIdIndex = albums.getColumnIndex(MediaStore.MediaColumns.BUCKET_ID);
-      final int bucketDisplayNameIndex = albums.getColumnIndex(MediaStore.MediaColumns.BUCKET_DISPLAY_NAME);
-
-      result.putString("id", albums.getString(bucketIdIndex));
-      result.putString("title", albums.getString(bucketDisplayNameIndex));
-      result.putInt("assetCount", albums.getCount());
-      promise.resolve(result);
-    } catch (SecurityException e) {
-      promise.reject(ERROR_UNABLE_TO_LOAD_PERMISSION,
-        "Could not get albums: need READ_EXTERNAL_STORAGE permission.", e);
-    } catch (IllegalArgumentException e) {
-      promise.reject(ERROR_UNABLE_TO_LOAD, "Could not get album.", e);
-    }
-  }
 
   public static void deleteAssets(Context context, String selection, String[] selectionArgs, Promise promise) {
     final String[] projection = {MediaStore.MediaColumns._ID, MediaStore.MediaColumns.DATA};
@@ -488,6 +454,7 @@ public final class MediaLibraryUtils {
     return TextUtils.join(",", array);
   }
 
+  // Used in albums and migrations only - consider moving it there
   public static List<AssetFile> getAssetsById(Context context, Promise promise, String... assetsId) {
     if (promise == null) {
       promise = new Promise() {
@@ -554,31 +521,6 @@ public final class MediaLibraryUtils {
       return getTypeFromFileUrl(uri.toString());
     }
     return type;
-  }
-
-  public static List<String> getAssetsInAlbums(Context context, String... albumIds) {
-    List<String> assetsId = new ArrayList<>();
-
-    final String selection = MediaStore.MediaColumns.BUCKET_ID + " IN (" + getInPart(albumIds) + " )";
-    final String[] projection = {MediaStore.MediaColumns._ID};
-
-    try (Cursor asset = context.getContentResolver().query(
-      EXTERNAL_CONTENT,
-      projection,
-      selection,
-      albumIds,
-      null)) {
-      if (asset == null) {
-        return assetsId;
-      }
-
-      while (asset.moveToNext()) {
-        String id = asset.getString(asset.getColumnIndex(MediaStore.Images.Media._ID));
-        assetsId.add(id);
-      }
-    }
-
-    return assetsId;
   }
 
   public static File getAlbumFile(Context context, String albumId) {
@@ -658,9 +600,5 @@ public final class MediaLibraryUtils {
 
   public static File getEnvDirectoryForAssetType(String mimeType, boolean useCameraDir) {
     return Environment.getExternalStoragePublicDirectory(getRelativePathForAssetType(mimeType, useCameraDir));
-  }
-
-  interface FileStrategy {
-    File apply(final File src, final File dir, Context context) throws IOException;
   }
 }
