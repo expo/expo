@@ -91,6 +91,7 @@ NS_ASSUME_NONNULL_BEGIN
  * See also EXHomeAppSplashScreenViewProvider in self.viewDidLoad
  */
 @property (nonatomic, strong, nullable) EXManagedAppSplashScreenViewProvider *managedAppSplashScreenViewProvider;
+@property (nonatomic, strong, nullable) EXManagedAppSplashScreenViewController *managedSplashScreenController;
 
 /*
  * This view is available in managed apps run in Expo Go only.
@@ -424,10 +425,10 @@ NS_ASSUME_NONNULL_BEGIN
 
     UIView *rootView = self.view;
     UIView *splashScreenView = [provider createSplashScreenView];
-    EXManagedAppSplashScreenViewController *controller = [[EXManagedAppSplashScreenViewController alloc] initWithRootView:rootView
+    self.managedSplashScreenController = [[EXManagedAppSplashScreenViewController alloc] initWithRootView:rootView
                                                                                                  splashScreenView:splashScreenView];
     [splashScreenService showSplashScreenFor:self
-                      splashScreenController:controller
+                      splashScreenController:self.managedSplashScreenController
                              successCallback:^{}
                              failureCallback:^(NSString *message){ EXLogWarn(@"%@", message); }];
   });
@@ -437,6 +438,9 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)hideLoadingProgressWindow
 {
   [self.appLoadingProgressWindowController hide];
+  if (self.managedSplashScreenController) {
+    [self.managedSplashScreenController startSplashScreenVisibleTimer];
+  }
 }
 
 #pragma mark - EXAppLoaderDelegate

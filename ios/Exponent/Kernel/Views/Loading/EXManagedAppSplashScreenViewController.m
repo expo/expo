@@ -24,7 +24,6 @@
 - (void)showWithCallback:(void (^)(void))successCallback failureCallback:(void (^)(NSString * _Nonnull))failureCallback
 {
   [super showWithCallback:^{
-    [self startSplashScreenVisibleTimer];
     if (successCallback) {
       successCallback();
     }
