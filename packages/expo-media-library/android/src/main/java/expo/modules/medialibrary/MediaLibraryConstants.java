@@ -82,7 +82,7 @@ public final class MediaLibraryConstants {
     MediaStore.Images.Media.BUCKET_ID,
   };
 
-  static final String[][] exifTags = new String[][]{
+  public static final String[][] exifTags = new String[][]{
     {"string", ExifInterface.TAG_ARTIST},
     {"int", ExifInterface.TAG_BITS_PER_SAMPLE},
     {"int", ExifInterface.TAG_COMPRESSION},

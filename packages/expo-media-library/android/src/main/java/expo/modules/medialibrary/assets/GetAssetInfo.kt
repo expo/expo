@@ -4,7 +4,6 @@ import android.content.Context
 import android.os.AsyncTask
 import android.provider.MediaStore
 import expo.modules.core.Promise
-import expo.modules.medialibrary.MediaLibraryUtils
 
 internal class GetAssetInfo(
   private val context: Context,

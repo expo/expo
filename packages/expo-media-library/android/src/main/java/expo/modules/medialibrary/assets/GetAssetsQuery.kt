@@ -6,10 +6,10 @@ import expo.modules.medialibrary.takeIfInstanceOf
 import java.util.ArrayList
 
 data class GetAssetsQuery(
-    val selection: String,
-    val order: String,
-    val limit: Int,
-    val offset: Int,
+  val selection: String,
+  val order: String,
+  val limit: Int,
+  val offset: Int,
 )
 
 @Throws(IllegalArgumentException::class)
@@ -18,10 +18,10 @@ internal fun getQueryFromOptions(input: Map<String, Any?>): GetAssetsQuery {
 
   // to maintain compatibility with iOS field `after` is string
   val offset = input["after"]
-        .takeIfInstanceOf<String>()
-        ?.runCatching { toInt() }   // NumberFormatException
-        ?.getOrNull()
-        ?: 0
+    .takeIfInstanceOf<String>()
+    ?.runCatching { toInt() } // NumberFormatException
+    ?.getOrNull()
+    ?: 0
 
   val selection = createSelectionString(input)
 
@@ -103,7 +103,7 @@ fun parseSortByKey(key: String): String {
 fun convertOrderDescriptors(orderDescriptor: List<*>): String {
   val results = ArrayList<String>(20)
   for (item in orderDescriptor) {
-    when(item) {
+    when (item) {
       is String -> {
         val key = parseSortByKey(item)
         results.add("$key DESC")

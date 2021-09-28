@@ -2,7 +2,6 @@ package expo.modules.medialibrary.assets
 
 import android.provider.MediaStore
 import expo.modules.medialibrary.MediaLibraryConstants
-import expo.modules.medialibrary.MediaLibraryUtils
 import io.mockk.clearAllMocks
 import io.mockk.every
 import io.mockk.mockkStatic
@@ -18,7 +17,6 @@ internal class GetAssetsQueryTests {
   fun tearDown() {
     clearAllMocks()
   }
-
 
   @Test
   fun `test if proper values are handled properly`() {
@@ -134,8 +132,8 @@ internal class GetAssetsQueryTests {
       every { parseSortByKey(any()) } returnsArgument 0
 
       val keys = listOf(
-          arrayListOf<Any>("key1", true),
-          arrayListOf<Any>("key2", false)
+        arrayListOf<Any>("key1", true),
+        arrayListOf<Any>("key2", false)
       )
 
       // act
@@ -160,8 +158,8 @@ internal class GetAssetsQueryTests {
     fun `convertOrderDescriptors throws when provided invalid layout`() {
       // arrange
       val keys = listOf(
-          arrayListOf<Any>("only1item"),
-          arrayListOf<Any>(3, "items", "here")
+        arrayListOf<Any>("only1item"),
+        arrayListOf<Any>(3, "items", "here")
       )
 
       // act

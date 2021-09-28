@@ -15,7 +15,6 @@ import io.mockk.just
 import io.mockk.mockkStatic
 import io.mockk.runs
 import io.mockk.slot
-import io.mockk.unmockkStatic
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Before
@@ -56,11 +55,11 @@ internal class GetAssetInfoTests {
     mockkStatic(::queryAssetInfo)
     every {
       queryAssetInfo(
-          context,
-          capture(selectionSlot),
-          capture(selectionArgsSlot),
-          true,
-          promise
+        context,
+        capture(selectionSlot),
+        capture(selectionArgsSlot),
+        true,
+        promise
       )
     } just runs
 

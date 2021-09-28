@@ -20,10 +20,10 @@ import java.io.IOException
 import java.lang.Exception
 
 class CreateAsset @JvmOverloads constructor(
-    private val context: Context,
-    uri: String,
-    private val promise: Promise,
-    private val resolveWithAdditionalData: Boolean = true
+  private val context: Context,
+  uri: String,
+  private val promise: Promise,
+  private val resolveWithAdditionalData: Boolean = true
 ) : AsyncTask<Void?, Void?, Void?>() {
   private val mUri = normalizeAssetUri(uri)
 
@@ -111,19 +111,19 @@ class CreateAsset @JvmOverloads constructor(
   private fun createAssetFileLegacy(): File? {
     val localFile = File(mUri.path!!)
 
-      val destDir = MediaLibraryUtils.getEnvDirectoryForAssetType(
-          MediaLibraryUtils.getType(context.contentResolver, mUri),
-          true
-      ).ifNull {
-        promise.reject(MediaLibraryConstants.ERROR_UNABLE_TO_SAVE, "Could not guess file type.")
-        return null
-      }
+    val destDir = MediaLibraryUtils.getEnvDirectoryForAssetType(
+      MediaLibraryUtils.getType(context.contentResolver, mUri),
+      true
+    ).ifNull {
+      promise.reject(MediaLibraryConstants.ERROR_UNABLE_TO_SAVE, "Could not guess file type.")
+      return null
+    }
 
-      val destFile = MediaLibraryUtils.safeCopyFile(localFile, destDir)
-      if (!destDir.exists() || !destFile.isFile) {
-        promise.reject(MediaLibraryConstants.ERROR_UNABLE_TO_SAVE, "Could not create asset record. Related file is not existing.")
-        return null
-      }
+    val destFile = MediaLibraryUtils.safeCopyFile(localFile, destDir)
+    if (!destDir.exists() || !destFile.isFile) {
+      promise.reject(MediaLibraryConstants.ERROR_UNABLE_TO_SAVE, "Could not create asset record. Related file is not existing.")
+      return null
+    }
     return destFile
   }
 
@@ -139,8 +139,9 @@ class CreateAsset @JvmOverloads constructor(
       }
 
       val asset = createAssetFileLegacy() ?: return null
-      MediaScannerConnection.scanFile(context, arrayOf(asset.path),
-          null
+      MediaScannerConnection.scanFile(
+        context, arrayOf(asset.path),
+        null
       ) { path: String, uri: Uri? ->
         if (uri == null) {
           promise.reject(MediaLibraryConstants.ERROR_UNABLE_TO_SAVE, "Could not add image to gallery.")
@@ -157,8 +158,10 @@ class CreateAsset @JvmOverloads constructor(
     } catch (e: IOException) {
       promise.reject(MediaLibraryConstants.ERROR_IO_EXCEPTION, "Unable to copy file into external storage.", e)
     } catch (e: SecurityException) {
-      promise.reject(MediaLibraryConstants.ERROR_UNABLE_TO_LOAD_PERMISSION,
-          "Could not get asset: need READ_EXTERNAL_STORAGE permission.", e)
+      promise.reject(
+        MediaLibraryConstants.ERROR_UNABLE_TO_LOAD_PERMISSION,
+        "Could not get asset: need READ_EXTERNAL_STORAGE permission.", e
+      )
     } catch (e: Exception) {
       promise.reject(MediaLibraryConstants.ERROR_UNABLE_TO_SAVE, "Could not create asset.", e)
     }

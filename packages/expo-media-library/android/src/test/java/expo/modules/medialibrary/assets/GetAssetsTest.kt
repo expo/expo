@@ -2,7 +2,6 @@ package expo.modules.medialibrary.assets
 
 import expo.modules.medialibrary.MediaLibraryConstants.ERROR_UNABLE_TO_LOAD
 import expo.modules.medialibrary.MediaLibraryConstants.ERROR_UNABLE_TO_LOAD_PERMISSION
-import expo.modules.medialibrary.MediaLibraryUtils
 import expo.modules.medialibrary.MockContext
 import expo.modules.medialibrary.MockData
 import expo.modules.medialibrary.mockContentResolver
@@ -13,7 +12,6 @@ import io.mockk.every
 import io.mockk.just
 import io.mockk.mockkStatic
 import io.mockk.runs
-import io.mockk.unmockkStatic
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Before
