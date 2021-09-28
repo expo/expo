@@ -53,6 +53,13 @@ const CGFloat kEXAutoReloadDebounceSeconds = 0.1;
 // and we want to make sure not to cover the error with a loading view or other chrome.
 const CGFloat kEXDevelopmentErrorCoolDownSeconds = 0.1;
 
+// copy of RNScreens protocol
+@protocol EXKernelRNSScreenWindowTraits
+
++ (BOOL)shouldAskScreensForScreenOrientationInViewController:(UIViewController *)vc;
+
+@end
+
 NS_ASSUME_NONNULL_BEGIN
 
 @interface EXAppViewController ()
@@ -549,6 +556,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (UIInterfaceOrientationMask)supportedInterfaceOrientations
 {
+  if ([self shouldUseRNScreenOrientation]) {
+    return [super supportedInterfaceOrientations];
+  }
+
 #if __has_include(<EXScreenOrientation/EXScreenOrientationRegistry.h>)
   EXScreenOrientationRegistry *screenOrientationRegistry = (EXScreenOrientationRegistry *)[EXModuleRegistryProvider getSingletonModuleForClass:[EXScreenOrientationRegistry class]];
   if (screenOrientationRegistry && [screenOrientationRegistry requiredOrientationMask] > 0) {
@@ -562,6 +573,16 @@ NS_ASSUME_NONNULL_BEGIN
   }
 
   return [self orientationMaskFromManifestOrDefault];
+}
+
+- (BOOL)shouldUseRNScreenOrientation
+{
+  Class screenWindowTraitsClass = [self->_appRecord.appManager versionedClassFromString:@"RNSScreenWindowTraits"];
+  if ([screenWindowTraitsClass respondsToSelector:@selector(shouldAskScreensForScreenOrientationInViewController:)]) {
+    id<EXKernelRNSScreenWindowTraits> screenWindowTraits = (id<EXKernelRNSScreenWindowTraits>)screenWindowTraitsClass;
+    return [screenWindowTraits shouldAskScreensForScreenOrientationInViewController:self];
+  }
+  return NO;
 }
 
 - (UIInterfaceOrientationMask)orientationMaskFromManifestOrDefault {
