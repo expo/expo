@@ -21,7 +21,7 @@ internal open class GetAlbums(private val mContext: Context, private val mPromis
     try {
       mContext.contentResolver
         .query(
-            MediaLibraryConstants.EXTERNAL_CONTENT,
+          MediaLibraryConstants.EXTERNAL_CONTENT,
           projection,
           selection,
           null,
@@ -30,7 +30,7 @@ internal open class GetAlbums(private val mContext: Context, private val mPromis
         .use { asset ->
           if (asset == null) {
             mPromise.reject(
-                MediaLibraryConstants.ERROR_UNABLE_TO_LOAD,
+              MediaLibraryConstants.ERROR_UNABLE_TO_LOAD,
               "Could not get albums. Query returns null."
             )
             return@use
@@ -59,7 +59,7 @@ internal open class GetAlbums(private val mContext: Context, private val mPromis
         }
     } catch (e: SecurityException) {
       mPromise.reject(
-          MediaLibraryConstants.ERROR_UNABLE_TO_LOAD_PERMISSION,
+        MediaLibraryConstants.ERROR_UNABLE_TO_LOAD_PERMISSION,
         "Could not get albums: need READ_EXTERNAL_STORAGE permission.", e
       )
     } catch (e: RuntimeException) {

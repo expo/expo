@@ -7,10 +7,10 @@ import expo.modules.core.Promise
 import expo.modules.medialibrary.MediaLibraryUtils
 
 internal class RemoveAssetsFromAlbum(
-    private val context: Context,
-    private val assetIds: Array<String>,
-    private val albumId: String,
-    private val promise: Promise
+  private val context: Context,
+  private val assetIds: Array<String>,
+  private val albumId: String,
+  private val promise: Promise
 ) : AsyncTask<Void?, Void?, Void?>() {
   override fun doInBackground(vararg params: Void?): Void? {
     val bucketSelection = "${Media.BUCKET_ID}=? AND ${Media._ID} IN (${assetIds.joinToString(",")} )"

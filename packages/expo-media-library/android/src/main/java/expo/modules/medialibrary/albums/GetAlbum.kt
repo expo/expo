@@ -15,7 +15,7 @@ internal class GetAlbum(
 ) : AsyncTask<Void?, Void?, Void?>() {
   public override fun doInBackground(vararg params: Void?): Void? {
     val selection = "${FileColumns.MEDIA_TYPE} != ${FileColumns.MEDIA_TYPE_NONE}" +
-        " AND ${MediaColumns.BUCKET_DISPLAY_NAME}=?"
+      " AND ${MediaColumns.BUCKET_DISPLAY_NAME}=?"
     val selectionArgs = arrayOf(albumName)
 
     MediaLibraryUtils.queryAlbum(context, selection, selectionArgs, promise)

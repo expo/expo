@@ -30,7 +30,7 @@ import org.unimodules.test.core.promiseResolvedWithType
 import java.lang.IllegalArgumentException
 
 private const val ALBUM_SELECTION = "${FileColumns.MEDIA_TYPE} != ${FileColumns.MEDIA_TYPE_NONE}" +
-    " AND ${MediaColumns.BUCKET_DISPLAY_NAME}=?"
+  " AND ${MediaColumns.BUCKET_DISPLAY_NAME}=?"
 
 @RunWith(RobolectricTestRunner::class)
 internal class GetAlbumTests {
@@ -54,10 +54,10 @@ internal class GetAlbumTests {
     mockkStatic(MediaLibraryUtils::class)
     every {
       MediaLibraryUtils.queryAlbum(
-          context,
-          capture(selectionSlot),
-          capture(selectionArgsSlot),
-          promise
+        context,
+        capture(selectionSlot),
+        capture(selectionArgsSlot),
+        promise
       )
     } just runs
 
@@ -102,7 +102,7 @@ internal class GetAlbumTests {
     // act
     MediaLibraryUtils.queryAlbum(context, ALBUM_SELECTION, selectionArgs, promise)
 
-    //assert
+    // assert
     promiseResolvedWithType<Bundle?>(promise) { result ->
       assertNull(result)
     }

@@ -13,11 +13,11 @@ import java.io.File
 import java.io.IOException
 
 internal class CreateAlbum(
-    private val context: Context,
-    private val albumName: String,
-    private val assetId: String,
-    copyAsset: Boolean,
-    private val promise: Promise
+  private val context: Context,
+  private val albumName: String,
+  private val assetId: String,
+  copyAsset: Boolean,
+  private val promise: Promise
 ) : AsyncTask<Void?, Void?, Void?>() {
   private val mStrategy = if (copyAsset) AssetFileStrategy.copyStrategy else AssetFileStrategy.moveStrategy
 
@@ -29,11 +29,11 @@ internal class CreateAlbum(
       }
 
     val album = File(albumDir.path, albumName)
-        .takeIf { it.exists() || it.mkdirs() }
-        .ifNull {
-          promise.reject(ERROR_NO_ALBUM, "Could not create album directory.")
-          return null
-        }
+      .takeIf { it.exists() || it.mkdirs() }
+      .ifNull {
+        promise.reject(ERROR_NO_ALBUM, "Could not create album directory.")
+        return null
+      }
     return album
   }
 
@@ -44,9 +44,9 @@ internal class CreateAlbum(
       val album = createAlbum(albumCreator.mimeType) ?: return null
       val newFile = mStrategy.apply(albumCreator, album, context)
       MediaScannerConnection.scanFile(
-          context,
-          arrayOf(newFile.path),
-          null
+        context,
+        arrayOf(newFile.path),
+        null
       ) { path: String, uri: Uri? ->
         if (uri == null) {
           promise.reject(ERROR_UNABLE_TO_SAVE, "Could not add image to album.")
@@ -57,8 +57,10 @@ internal class CreateAlbum(
         MediaLibraryUtils.queryAlbum(context, selection, args, promise)
       }
     } catch (e: SecurityException) {
-      promise.reject(ERROR_UNABLE_TO_LOAD_PERMISSION,
-          "Could not create album: need WRITE_EXTERNAL_STORAGE permission.", e)
+      promise.reject(
+        ERROR_UNABLE_TO_LOAD_PERMISSION,
+        "Could not create album: need WRITE_EXTERNAL_STORAGE permission.", e
+      )
     } catch (e: IOException) {
       promise.reject(ERROR_UNABLE_TO_LOAD, "Could not read file or parse EXIF tags", e)
     }

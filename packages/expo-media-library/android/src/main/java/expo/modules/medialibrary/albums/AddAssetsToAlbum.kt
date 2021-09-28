@@ -13,11 +13,11 @@ import java.io.IOException
 import java.util.concurrent.atomic.AtomicInteger
 
 internal class AddAssetsToAlbum(
-    private val context: Context,
-    private val assetIds: Array<String>,
-    private val albumId: String,
-    copyToAlbum: Boolean,
-    private val promise: Promise
+  private val context: Context,
+  private val assetIds: Array<String>,
+  private val albumId: String,
+  copyToAlbum: Boolean,
+  private val promise: Promise
 ) : AsyncTask<Void?, Void?, Void?>() {
   private val strategy = if (copyToAlbum) AssetFileStrategy.copyStrategy else AssetFileStrategy.moveStrategy
 
@@ -28,11 +28,11 @@ internal class AddAssetsToAlbum(
       val selection = "${MediaStore.MediaColumns.BUCKET_ID}=?"
       val id = arrayOf(albumId)
       context.contentResolver.query(
-          EXTERNAL_CONTENT,
-          path,
-          selection,
-          id,
-          null
+        EXTERNAL_CONTENT,
+        path,
+        selection,
+        id,
+        null
       ).use { album ->
         if (album == null) {
           promise.reject(ERROR_UNABLE_TO_LOAD, "Could not get album. Query returns null.")
@@ -61,8 +61,8 @@ internal class AddAssetsToAlbum(
 
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R && !album.canWrite()) {
         promise.reject(
-            ERROR_NO_PERMISSIONS,
-            "The application doesn't have permission to write to the album's directory. For more information, check out https://expo.fyi/android-r."
+          ERROR_NO_PERMISSIONS,
+          "The application doesn't have permission to write to the album's directory. For more information, check out https://expo.fyi/android-r."
         )
         return null
       }

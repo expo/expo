@@ -46,10 +46,10 @@ internal class GetAlbumInfoTests {
     mockkStatic(MediaLibraryUtils::class)
     every {
       MediaLibraryUtils.queryAlbum(
-          context,
-          capture(selectionSlot),
-          capture(selectionArgsSlot),
-          promise
+        context,
+        capture(selectionSlot),
+        capture(selectionArgsSlot),
+        promise
       )
     } just runs
 

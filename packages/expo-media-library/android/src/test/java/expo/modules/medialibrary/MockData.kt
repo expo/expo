@@ -28,7 +28,7 @@ internal data class MockAsset(
     orientation, duration,
     albumId
   )
-  }
+}
 
 /*
   Projection column order:
