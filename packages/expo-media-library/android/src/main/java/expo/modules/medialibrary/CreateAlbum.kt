@@ -22,6 +22,7 @@ internal class CreateAlbum(
 
   private fun createAlbum(mimeType: String): File? {
     val albumDir = MediaLibraryUtils
+      // TODO: This uses deprecated method - investigate it more
       .getEnvDirectoryForAssetType(mimeType, false)
       .ifNull {
         promise.reject(ERROR_NO_ALBUM, "Could not guess asset type.")
