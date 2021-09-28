@@ -87,14 +87,14 @@ class AuthenticationHelper(
     } catch (exception: GeneralSecurityException) {
       Log.w(SecureStoreModule.TAG, exception)
       promise.reject(
-        "E_SECURESTORE_ENCRYPT_ERROR",
+        "ERR_SECURESTORE_ENCRYPT_FAILURE,
         "Could not encrypt/decrypt the value for SecureStore",
         exception
       )
     } catch (exception: JSONException) {
       Log.w(SecureStoreModule.TAG, exception)
       promise.reject(
-        "E_SECURESTORE_ENCODE_ERROR",
+        "ERR_SECURESTORE_ENCODE_FAILURE",
         "Could not create an encrypted JSON item for SecureStore",
         exception
       )
@@ -111,14 +111,14 @@ class AuthenticationHelper(
   ) {
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
       promise.reject(
-        "E_SECURESTORE_AUTH_NOT_AVAILABLE_ERROR",
+        "ERR_SECURESTORE_AUTH_NOT_AVAILABLE",
         "Biometric authentication requires Android API 23"
       )
       return
     }
     if (isAuthenticating) {
       promise.reject(
-        "E_SECURESTORE_AUTH_ERROR",
+        "ERR_SECURESTORE_AUTH_IN_PROGRESS",
         "Authentication is already in progress"
       )
       return
@@ -128,14 +128,14 @@ class AuthenticationHelper(
     when (biometricManager.canAuthenticate(BiometricManager.Authenticators.BIOMETRIC_STRONG)) {
       BiometricManager.BIOMETRIC_ERROR_HW_UNAVAILABLE, BiometricManager.BIOMETRIC_ERROR_NO_HARDWARE -> {
         promise.reject(
-          "E_SECURESTORE_AUTH_NOT_AVAILABLE_ERROR",
+          "ERR_SECURESTORE_AUTH_NOT_AVAILABLE",
           "No hardware available for biometric authentication. Use expo-local-authentication to check if the device supports it."
         )
         return
       }
       BiometricManager.BIOMETRIC_ERROR_NONE_ENROLLED -> {
         promise.reject(
-          "E_SECURESTORE_AUTH_ERROR",
+          "ERR_SECURESTORE_AUTH_NOT_CONFIGURED",
           "No biometrics are currently enrolled"
         )
         return
@@ -151,7 +151,7 @@ class AuthenticationHelper(
     val fragmentActivity = getCurrentActivity() as FragmentActivity?
     if (fragmentActivity == null) {
       promise.reject(
-        "E_NOT_FOREGROUND",
+        "ERR_SECURESTORE_APP_BACKGROUNDED",
         "Cannot display biometric prompt when the app is not in the foreground"
       )
       return
@@ -189,12 +189,12 @@ class AuthenticationHelper(
 
               if (errorCode == BiometricPrompt.ERROR_USER_CANCELED || errorCode == BiometricPrompt.ERROR_NEGATIVE_BUTTON) {
                 promise.reject(
-                  "E_SECURESTORE_AUTH_ERROR",
+                  "ERR_SECURESTORE_AUTH_CANCELLED",
                   "User canceled the authentication"
                 )
               } else {
                 promise.reject(
-                  "E_SECURESTORE_AUTH_ERROR",
+                  "ERR_SECURESTORE_AUTH_FAILURE",
                   "Could not authenticate the user"
                 )
               }
