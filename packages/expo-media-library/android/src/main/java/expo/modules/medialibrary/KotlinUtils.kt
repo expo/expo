@@ -1,7 +1,5 @@
 package expo.modules.medialibrary
 
-// This will be moved to MediaLibraryUtils when it is kotlinized
-
 /**
  * Returns receiver, or block result if the receiver is `null`
  */
