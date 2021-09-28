@@ -101,9 +101,9 @@ Setting up EAS Update allows you to push critical bug fixes and improvements tha
    }
    ```
 
-   This `channel` property will allow you to point updates at builds with this channel. Later, if you set up a GitHub Action to publish changes on merge, it will make it so we can merge code into the `production` branch, then those commits will be published and made available to builds with the channel `"production"`.
+   This `channel` property will allow you to point updates at builds with this channel. Later, if you set up a GitHub Action to publish changes on merge, it will make it so we can merge code into the "production" branch, then those commits will be published and made available to builds with the channel "production".
 
-5. Finally, we need to create a `channel` and `branch` named `production` on EAS' servers. We can accomplish the creation of these with this command:
+5. Finally, we need to create a `channel` and `branch` both named "production" on EAS' servers. We can accomplish the creation of these with this command:
 
    ```xml
    eas channel:create production

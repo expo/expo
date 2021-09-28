@@ -18,7 +18,7 @@ There are three parts that make up a successful deployment process that we'll ne
 3. Publishing updates
    a. We can publish updates to a single branch.
    b. We can create update branches that are environment-based, like "production" and "staging".
-   c. We can create update branches that are version-based, like `version-1.0`, which enables us to promote updates from one channel to another.
+   c. We can create update branches that are version-based, like "version-1.0", which enables us to promote updates from one channel to another.
 
 We can mix and match the parts above to create a process that is fast enough for our project, and safe enough for our users.
 
@@ -42,9 +42,9 @@ Diagram of flow:
 
 Explanation of flow:
 
-- Develop a project locally and test changes in Expo Go.
-- Run `eas build` to create builds, then submit them to app stores. These builds are for public use, and should be submitted/reviewed, and released on the app stores.
-- When we have updates we'd like to deliver, run `eas branch:publish production` to deliver updates to our users immediately.
+1. Develop a project locally and test changes in Expo Go.
+2. Run `eas build` to create builds, then submit them to app stores. These builds are for public use, and should be submitted/reviewed, and released on the app stores.
+3. When we have updates we'd like to deliver, run `eas branch:publish production` to deliver updates to our users immediately.
 
 Advantages of this flow:
 
@@ -63,7 +63,7 @@ Creating builds: (b) Create builds for production use and separate builds for te
 
 Testing changes: (a) Test changes on TestFlight and the Play Store Internal Track and/or (b) Test changes with internal distribution builds.
 
-Publishing updates: (c) create update branches that are version based, like `version-1.0`.
+Publishing updates: (c) Create update branches that are version based, like "version-1.0".
 
 Diagram of flow:
 
@@ -71,20 +71,20 @@ Diagram of flow:
 
 Explanation of flow:
 
-- Develop a project locally and test changes in Expo Go.
-- Create builds with channels named "production" , which will eventually get reviewed and become available on app stores. Create another set of builds with channels named "staging", which will be used for testing on TestFlight and the Play Store Internal Track.
-- Set up `expo-github-action` to publish updates when merging commits to branches.
-- Merge changes into a branch named `version-1.0`.
-- Use the website or EAS CLI to point the "staging" channel at the EAS Update branch `version-1.0`. Test the update by opening the apps on TestFlight and the Play Store Internal Track.
-- When ready, use the website or EAS CLI to point the "production" channel at the EAS Update branch `version-1.0`.
-- Then, create another GitHub branch named `version-1.1`, and merge commits until the new features and fixes are ready. When they are, use the website UI or CLI to point the a "staging" channel at the EAS Update branch `version-1.1`.
-- When ready, use the website or EAS CLI to point the "production" channel at the EAS Update branch `version-1.1`.
+1. Develop a project locally and test changes in Expo Go.
+2. Create builds with channels named "production", which will eventually get reviewed and become available on app stores. Create another set of builds with channels named "staging", which will be used for testing on TestFlight and the Play Store Internal Track.
+3. Set up `expo-github-action` to publish updates when merging commits to branches.
+4. Merge changes into a branch named "version-1.0".
+5. Use the website or EAS CLI to point the "staging" channel at the EAS Update branch "version-1.0". Test the update by opening the apps on TestFlight and the Play Store Internal Track.
+6. When ready, use the website or EAS CLI to point the "production" channel at the EAS Update branch "version-1.0".
+7. Then, create another GitHub branch named "version-1.1", and merge commits until the new features and fixes are ready. When they are, use the website or EAS CLI to point the "staging" channel at the EAS Update branch "version-1.1".
+8. When ready, use the website or EAS CLI to point the "production" channel at the EAS Update branch "version-1.1".
 
 Advantages of this flow:
 
 - This flow is safer than the other flows. All updates are tested on test builds, and branches are moved between channels, so the exact artifact tested is the one deployed to production builds.
 - This flow creates a direct mapping between GitHub branches and EAS Update branches. It also creates a mapping between GitHub commits and EAS Update updates. If you're keeping track of GitHub branches, you can create EAS Update branches for each GitHub branch and link those branches to a build's channel. In practice, this makes it so you can push to GitHub, then select the same branch name on Expo to link to builds.
-- Previous versions of your deployments are always preserved on GitHub. Once the `version-1.0` branch is deployed, then another version is deployed after it (like `version-1.1`), the `version-1.0` branch is forever preserved, making it easy to checkout a previous version of your project.
+- Previous versions of your deployments are always preserved on GitHub. Once the "version-1.0" branch is deployed, then another version is deployed after it (like "version-1.1"), the "version-1.0" branch is forever preserved, making it easy to checkout a previous version of your project.
 
 Disadvantages of this flow:
 
@@ -92,13 +92,13 @@ Disadvantages of this flow:
 
 ## Persistent staging flow
 
-This flow is like an un-versioned variant of the "branch promotion flow". We do not track release versions with branches. Instead, we'll have persistent `staging` and `production` branches that we can merge into forever. Here are the parts of the deployment process above that make up this flow:
+This flow is like an un-versioned variant of the "branch promotion flow". We do not track release versions with branches. Instead, we'll have persistent "staging" and "production" branches that we can merge into forever. Here are the parts of the deployment process above that make up this flow:
 
 Creating builds: (b) Create builds for production use and separate builds for testing use.
 
 Testing changes: (a) Test changes on TestFlight and the Play Store Internal Track and/or (b) Test changes with internal distribution builds.
 
-Publishing updates: (c) create update branches that are environment-based, like "staging" and "production".
+Publishing updates: (c) Create update branches that are environment-based, like "staging" and "production".
 
 Diagram of flow:
 
@@ -106,11 +106,11 @@ Diagram of flow:
 
 Explanation of flow:
 
-- Develop a project locally and test changes in Expo Go.
-- Create builds with channels named "production", which will eventually get reviewed and become available on app stores. Create another set of builds with channels named "staging", which will be used for testing on TestFlight and the Play Store Internal Track.
-- Set up `expo-github-action` to publish updates when merging commits to branches.
-- Merge changes into a branch named "staging". The GitHub Action will publish an update and make it available on our test builds.
-- When ready, merge changes into the "production" branch to publish an update to our production builds.
+1. Develop a project locally and test changes in Expo Go.
+2. Create builds with channels named "production", which will eventually get reviewed and become available on app stores. Create another set of builds with channels named "staging", which will be used for testing on TestFlight and the Play Store Internal Track.
+3. Set up `expo-github-action` to publish updates when merging commits to branches.
+4. Merge changes into a branch named "staging". The GitHub Action will publish an update and make it available on our test builds.
+5. When ready, merge changes into the "production" branch to publish an update to our production builds.
 
 Advantages of this flow:
 
@@ -130,7 +130,7 @@ Creating builds: (a) Create builds for production use only, or (b) create builds
 
 Testing changes: (a) Test changes on TestFlight and the Play Store Internal Track and/or (b) Test changes with internal distribution builds.
 
-Publishing updates: (c) create update branches that are environment- and platform-based, like `ios-staging`, `ios-production`, `android-staging`, and `android-production`.
+Publishing updates: (c) Create update branches that are environment- and platform-based, like "ios-staging", "ios-production", "android-staging", and "android-production".
 
 Diagram of flow:
 
@@ -138,10 +138,10 @@ Diagram of flow:
 
 Explanation of flow:
 
-- Develop a project locally and test changes in Expo Go.
-- Create builds with channels named like `ios-staging`, `ios-production`, `android-staging`, and `android-production`. Then put the `ios-staging` build on TestFlight and submit the `ios-production` build to the public App Store. Likewise, put the `android-staging` build on the Play Store Internal Track, and submit the `android-production` build to the public Play Store.
-- Set up `expo-github-action` to publish updates to the required platforms when merging commits to branches.
-- Then, merge changes for the iOS app into the branch `ios-staging`, then when ready merge changes into the `ios-production` branch. Likewise, merge changes for the Android app into the branch `android-staging` and when ready, into the branch named `android-production`.
+1. Develop a project locally and test changes in Expo Go.
+2. Create builds with channels named like "ios-staging", "ios-production", "android-staging", and "android-production". Then put the "ios-staging" build on TestFlight and submit the "ios-production" build to the public App Store. Likewise, put the "android-staging" build on the Play Store Internal Track, and submit the "android-production" build to the public Play Store.
+3. Set up `expo-github-action` to publish updates to the required platforms when merging commits to branches.
+4. Then, merge changes for the iOS app into the branch "ios-staging", then when ready merge changes into the "ios-production" branch. Likewise, merge changes for the Android app into the branch "android-staging" and when ready, into the branch named "android-production".
 
 Advantages of this flow:
 
