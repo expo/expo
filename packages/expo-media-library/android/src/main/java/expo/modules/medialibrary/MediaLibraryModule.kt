@@ -357,7 +357,7 @@ class MediaLibraryModule(
     activity: Activity,
     requestCode: Int,
     resultCode: Int,
-    data: Intent
+    data: Intent?
   ) {
     if (requestCode == WRITE_REQUEST_CODE && mAction != null) {
       mAction!!.runWithPermissions(resultCode == Activity.RESULT_OK)
