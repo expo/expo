@@ -197,12 +197,11 @@ class DevLauncherController private constructor()
   }
 
   private fun handleExternalIntent(intent: Intent): Boolean {
-    if (mode == Mode.APP) {
-      return false
+    if (mode != Mode.APP && intent.action != Intent.ACTION_MAIN) {
+      pendingIntentRegistry.intent = intent
     }
 
-    pendingIntentRegistry.intent = intent
-    return true
+    return false
   }
 
   private fun ensureHostWasCleared(host: ReactNativeHost, activityToBeInvalidated: ReactActivity? = null) {
