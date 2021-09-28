@@ -48,7 +48,7 @@ it(`opens WebBrowser startAsync to the start URL`, async () => {
 
   const sessionUrlProvider = require('../SessionUrlProvider').default;
   expect(WebBrowser.openAuthSessionAsync).toHaveBeenCalledWith(
-    sessionUrlProvider.getStartUrl(authUrl, returnUrl),
+    sessionUrlProvider.getStartUrl(false, authUrl, returnUrl),
     returnUrl,
     { showInRecents: false }
   );

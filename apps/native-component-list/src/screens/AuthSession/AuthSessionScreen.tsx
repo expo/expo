@@ -25,7 +25,8 @@ const languages = [
   { key: 'fi', value: 'Finnish' },
 ];
 export default function AuthSessionScreen() {
-  const [useProxy, setProxy] = React.useState<boolean>(false);
+  const [useProxy, setProxy] = React.useState<boolean>(!!Constants.manifest2);
+  const [useEAS, setEAS] = React.useState<boolean>(!!Constants.manifest2);
   const [usePKCE, setPKCE] = React.useState<boolean>(true);
   const [prompt, setSwitch] = React.useState<undefined | AuthSession.Prompt>(undefined);
   const [language, setLanguage] = React.useState<any>(languages[0].key);
@@ -53,6 +54,12 @@ export default function AuthSessionScreen() {
             setValue={setProxy}
           />
           <TitledSwitch
+            title="Use EAS"
+            disabled={Platform.OS === 'web'}
+            value={useEAS}
+            setValue={setEAS}
+          />
+          <TitledSwitch
             title="Switch Accounts"
             value={!!prompt}
             setValue={(value) => setSwitch(value ? AuthSession.Prompt.SelectAccount : undefined)}
@@ -66,10 +73,14 @@ export default function AuthSessionScreen() {
           />
           <H4>
             ID:{' '}
-            {Constants.manifest?.originalFullName ||
-              Constants.manifest2?.extra?.expoClient?.originalFullName ||
-              Constants.manifest?.id ||
-              'unset'}
+            {!useEAS
+              ? Constants.manifest?.originalFullName ||
+                Constants.manifest2?.extra?.expoClient?.originalFullName ||
+                Constants.manifest?.id ||
+                'unset'
+              : Constants.manifest?.projectId ||
+                Constants.manifest2?.extra?.eas?.projectId ||
+                'EAS project ID not set'}
           </H4>
         </View>
         <H2>Services</H2>
@@ -78,6 +89,7 @@ export default function AuthSessionScreen() {
           usePKCE={usePKCE}
           useProxy={useProxy}
           language={language}
+          useEAS={useEAS}
         />
         <H2>Legacy</H2>
         <LegacyAuthSession />
@@ -95,13 +107,15 @@ function AuthSessionProviders(props: {
   usePKCE: boolean;
   prompt?: AuthSession.Prompt;
   language: string;
+  useEAS: boolean;
 }) {
-  const { useProxy, usePKCE, prompt, language } = props;
+  const { useProxy, usePKCE, prompt, language, useEAS } = props;
 
   const redirectUri = AuthSession.makeRedirectUri({
     path: 'redirect',
     preferLocalhost: Platform.select({ android: false, default: true }),
     useProxy,
+    useEASAuthSession: useEAS,
   });
 
   const options = {
@@ -110,6 +124,7 @@ function AuthSessionProviders(props: {
     prompt,
     redirectUri,
     language,
+    useEASAuthSession: useEAS,
   };
 
   const providers = [
@@ -140,7 +155,7 @@ function AuthSessionProviders(props: {
   );
 }
 
-function Google({ prompt, language, usePKCE }: any) {
+function Google({ prompt, language, usePKCE, useEASAuthSession }: any) {
   const [request, result, promptAsync] = GoogleAuthSession.useAuthRequest(
     {
       language,
@@ -152,6 +167,7 @@ function Google({ prompt, language, usePKCE }: any) {
     {
       path: 'redirect',
       preferLocalhost: true,
+      useEASAuthSession,
     }
   );
 
@@ -171,7 +187,7 @@ function Google({ prompt, language, usePKCE }: any) {
   );
 }
 
-function GoogleFirebase({ prompt, language, usePKCE }: any) {
+function GoogleFirebase({ prompt, language, usePKCE, useEASAuthSession }: any) {
   const [request, result, promptAsync] = GoogleAuthSession.useIdTokenAuthRequest(
     {
       language,
@@ -183,6 +199,7 @@ function GoogleFirebase({ prompt, language, usePKCE }: any) {
     {
       path: 'redirect',
       preferLocalhost: true,
+      useEASAuthSession,
     }
   );
 
@@ -247,7 +264,7 @@ function GoogleFirebase({ prompt, language, usePKCE }: any) {
 //   );
 // }
 
-function Okta({ redirectUri, usePKCE, useProxy }: any) {
+function Okta({ redirectUri, usePKCE, useProxy, useEASAuthSession }: any) {
   const discovery = AuthSession.useAutoDiscovery('https://dev-720924.okta.com/oauth2/default');
   const [request, result, promptAsync] = useAuthRequest(
     {
@@ -266,6 +283,7 @@ function Okta({ redirectUri, usePKCE, useProxy }: any) {
       result={result}
       promptAsync={promptAsync}
       useProxy={useProxy}
+      useEASAuthSession={useEASAuthSession}
     />
   );
 }
@@ -274,7 +292,7 @@ function Okta({ redirectUri, usePKCE, useProxy }: any) {
 // We'll only support bare, and proxy in this example
 // If the redirect is invalid with http instead of https on web, then the provider
 // will let you authenticate but it will redirect with no data and the page will appear broken.
-function Reddit({ redirectUri, prompt, usePKCE, useProxy }: any) {
+function Reddit({ redirectUri, prompt, usePKCE, useProxy, useEASAuthSession }: any) {
   let clientId: string;
 
   if (isInClient) {
@@ -319,13 +337,14 @@ function Reddit({ redirectUri, prompt, usePKCE, useProxy }: any) {
       result={result}
       promptAsync={promptAsync}
       useProxy={useProxy}
+      useEASAuthSession={useEASAuthSession}
     />
   );
 }
 
 // Imgur Docs https://api.imgur.com/oauth2
 // Create app https://api.imgur.com/oauth2/addclient
-function Imgur({ redirectUri, prompt, usePKCE, useProxy }: any) {
+function Imgur({ redirectUri, prompt, usePKCE, useProxy, useEASAuthSession }: any) {
   let clientId: string;
 
   if (isInClient) {
@@ -378,7 +397,7 @@ function Imgur({ redirectUri, prompt, usePKCE, useProxy }: any) {
 
 // TODO: Add button to test using an invalid redirect URI. This is a good example of AuthError.
 // Works for all platforms
-function Github({ redirectUri, prompt, usePKCE, useProxy }: any) {
+function Github({ redirectUri, prompt, usePKCE, useProxy, useEASAuthSession }: any) {
   let clientId: string;
 
   if (isInClient) {
@@ -428,7 +447,7 @@ function Github({ redirectUri, prompt, usePKCE, useProxy }: any) {
 
 // I couldn't get access to any scopes
 // This never returns to the app after authenticating
-function Uber({ redirectUri, prompt, usePKCE, useProxy }: any) {
+function Uber({ redirectUri, prompt, usePKCE, useProxy, useEASAuthSession }: any) {
   // https://developer.uber.com/docs/riders/guides/authentication/introduction
   const [request, result, promptAsync] = useAuthRequest(
     {
@@ -455,6 +474,7 @@ function Uber({ redirectUri, prompt, usePKCE, useProxy }: any) {
       result={result}
       promptAsync={promptAsync}
       useProxy={useProxy}
+      useEASAuthSession={useEASAuthSession}
     />
   );
 }
@@ -463,7 +483,7 @@ function Uber({ redirectUri, prompt, usePKCE, useProxy }: any) {
 // Easy to setup
 // Only allows one redirect URI per app (clientId)
 // Refresh doesn't seem to return a new access token :[
-function FitBit({ redirectUri, prompt, usePKCE, useProxy }: any) {
+function FitBit({ redirectUri, prompt, usePKCE, useProxy, useEASAuthSession }: any) {
   let clientId: string;
 
   if (isInClient) {
@@ -507,11 +527,12 @@ function FitBit({ redirectUri, prompt, usePKCE, useProxy }: any) {
       result={result}
       promptAsync={promptAsync}
       useProxy={useProxy}
+      useEASAuthSession={useEASAuthSession}
     />
   );
 }
 
-function Facebook({ usePKCE, useProxy, language }: any) {
+function Facebook({ usePKCE, useProxy, language, useEASAuthSession }: any) {
   const [request, result, promptAsync] = FacebookAuthSession.useAuthRequest(
     {
       clientId: '145668956753819',
@@ -523,6 +544,7 @@ function Facebook({ usePKCE, useProxy, language }: any) {
       path: 'redirect',
       preferLocalhost: true,
       useProxy,
+      useEASAuthSession,
     }
   );
   // Add fetch user example
@@ -537,7 +559,7 @@ function Facebook({ usePKCE, useProxy, language }: any) {
   );
 }
 
-function Slack({ redirectUri, prompt, usePKCE, useProxy }: any) {
+function Slack({ redirectUri, prompt, usePKCE, useProxy, useEASAuthSession }: any) {
   // https://api.slack.com/apps
   // After you created an app, navigate to [Features > OAuth & Permissions]
   // - Add a redirect URI Under [Redirect URLs]
@@ -567,12 +589,13 @@ function Slack({ redirectUri, prompt, usePKCE, useProxy }: any) {
       result={result}
       promptAsync={promptAsync}
       useProxy={useProxy}
+      useEASAuthSession={useEASAuthSession}
     />
   );
 }
 
 // Works on all platforms
-function Spotify({ redirectUri, prompt, usePKCE, useProxy }: any) {
+function Spotify({ redirectUri, prompt, usePKCE, useProxy, useEASAuthSession }: any) {
   const [request, result, promptAsync] = useAuthRequest(
     {
       clientId: 'a946eadd241244fd88d0a4f3d7dea22f',
@@ -598,11 +621,12 @@ function Spotify({ redirectUri, prompt, usePKCE, useProxy }: any) {
       result={result}
       promptAsync={promptAsync}
       useProxy={useProxy}
+      useEASAuthSession={useEASAuthSession}
     />
   );
 }
 
-function Strava({ redirectUri, prompt, usePKCE, useProxy }: any) {
+function Strava({ redirectUri, prompt, usePKCE, useProxy, useEASAuthSession }: any) {
   const discovery = {
     authorizationEndpoint: 'https://www.strava.com/oauth/mobile/authorize',
     tokenEndpoint: 'https://www.strava.com/oauth/token',
@@ -644,12 +668,13 @@ function Strava({ redirectUri, prompt, usePKCE, useProxy }: any) {
       result={result}
       promptAsync={promptAsync}
       useProxy={useProxy}
+      useEASAuthSession={useEASAuthSession}
     />
   );
 }
 
 // Works on all platforms
-function Identity({ redirectUri, prompt, useProxy }: any) {
+function Identity({ redirectUri, prompt, useProxy, useEASAuthSession }: any) {
   const discovery = AuthSession.useAutoDiscovery('https://demo.identityserver.io');
 
   const [request, result, promptAsync] = useAuthRequest(
@@ -669,12 +694,13 @@ function Identity({ redirectUri, prompt, useProxy }: any) {
       result={result}
       promptAsync={promptAsync}
       useProxy={useProxy}
+      useEASAuthSession={useEASAuthSession}
     />
   );
 }
 
 // Doesn't work with proxy
-function Coinbase({ redirectUri, prompt, usePKCE, useProxy }: any) {
+function Coinbase({ redirectUri, prompt, usePKCE, useProxy, useEASAuthSession }: any) {
   const [request, result, promptAsync] = useAuthRequest(
     {
       clientId: '13b2bc8d9114b1cb6d0132cf60c162bc9c2d5ec29c2599003556edf81cc5db4e',
@@ -699,11 +725,12 @@ function Coinbase({ redirectUri, prompt, usePKCE, useProxy }: any) {
       result={result}
       promptAsync={promptAsync}
       useProxy={useProxy}
+      useEASAuthSession={useEASAuthSession}
     />
   );
 }
 
-function Dropbox({ redirectUri, prompt, usePKCE, useProxy }: any) {
+function Dropbox({ redirectUri, prompt, usePKCE, useProxy, useEASAuthSession }: any) {
   const [request, result, promptAsync] = useAuthRequest(
     {
       clientId: 'pjvyj0c5kxxrsfs',
@@ -728,11 +755,12 @@ function Dropbox({ redirectUri, prompt, usePKCE, useProxy }: any) {
       result={result}
       promptAsync={promptAsync}
       useProxy={useProxy}
+      useEASAuthSession={useEASAuthSession}
     />
   );
 }
 
-function Twitch({ redirectUri, prompt, usePKCE, useProxy }: any) {
+function Twitch({ redirectUri, prompt, usePKCE, useProxy, useEASAuthSession }: any) {
   const [request, result, promptAsync] = useAuthRequest(
     {
       clientId: 'r7jomrc4hiz5wm1wgdzmwr1ccb454h',
@@ -756,6 +784,7 @@ function Twitch({ redirectUri, prompt, usePKCE, useProxy }: any) {
       result={result}
       promptAsync={promptAsync}
       useProxy={useProxy}
+      useEASAuthSession={useEASAuthSession}
     />
   );
 }

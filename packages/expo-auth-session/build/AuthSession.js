@@ -23,8 +23,11 @@ export async function startAsync(options) {
         }
         return { type: 'locked' };
     }
+    if (options.useEASAuthSession && !options.returnUrl) {
+        throw new Error('No returnUrl provided to AuthSession.startAsync. A returnUrl is required when using startAsync with useEASAuthSession = true.');
+    }
     const returnUrl = options.returnUrl || sessionUrlProvider.getDefaultReturnUrl();
-    const startUrl = sessionUrlProvider.getStartUrl(authUrl, returnUrl);
+    const startUrl = sessionUrlProvider.getStartUrl(!!options.useEASAuthSession, authUrl, returnUrl);
     const showInRecents = options.showInRecents || false;
     // About to start session, set lock
     _authLock = true;
@@ -67,7 +70,7 @@ export const getDefaultReturnUrl = sessionUrlProvider.getDefaultReturnUrl;
  * @param path
  */
 export function getRedirectUrl(path) {
-    return sessionUrlProvider.getRedirectUrl(path);
+    return sessionUrlProvider.getRedirectUrl(false, path);
 }
 /**
  * Create a redirect url for the current platform.
@@ -110,7 +113,7 @@ export function getRedirectUrl(path) {
  * // Web prod: https://yourwebsite.com
  * ```
  */
-export function makeRedirectUri({ native, scheme, isTripleSlashed, queryParams, path, preferLocalhost, useProxy, } = {}) {
+export function makeRedirectUri({ native, scheme, isTripleSlashed, queryParams, path, preferLocalhost, useProxy, useEASAuthSession, } = {}) {
     if (Platform.OS !== 'web' &&
         native &&
         [ExecutionEnvironment.Standalone, ExecutionEnvironment.Bare].includes(Constants.executionEnvironment)) {
@@ -134,7 +137,7 @@ export function makeRedirectUri({ native, scheme, isTripleSlashed, queryParams, 
         return url;
     }
     // Attempt to use the proxy
-    return sessionUrlProvider.getRedirectUrl(path);
+    return sessionUrlProvider.getRedirectUrl(!!useEASAuthSession, path);
 }
 /**
  * Build an `AuthRequest` and load it before returning.

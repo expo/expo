@@ -4,6 +4,7 @@ export declare type AuthSessionOptions = {
     authUrl: string;
     returnUrl?: string;
     showInRecents?: boolean;
+    useEASAuthSession?: boolean;
 };
 export declare type AuthSessionResult = {
     type: 'cancel' | 'dismiss' | 'locked';
@@ -67,4 +68,9 @@ export declare type AuthSessionRedirectUriOptions = {
      *
      */
     native?: string;
+    /**
+     * When `useProxy` is true, should the EAS auth session proxy be used.
+     * Default: `false`.
+     */
+    useEASAuthSession?: boolean;
 };

@@ -142,8 +142,15 @@ export class AuthRequest implements Omit<AuthRequestConfig, 'state'> {
     let startUrl: string = url!;
     let returnUrl: string = this.redirectUri;
     if (options.useProxy) {
-      returnUrl = sessionUrlProvider.getDefaultReturnUrl(proxyOptions?.path, proxyOptions);
-      startUrl = sessionUrlProvider.getStartUrl(url, returnUrl);
+      if (options.useEASAuthSessionProxy) {
+        invariant(
+          returnUrl,
+          'No redirectUri provided to AuthRequest. A redirectUri is required when using promptAsync with useEASAuthSessionProxy = true.'
+        );
+      } else {
+        returnUrl = sessionUrlProvider.getDefaultReturnUrl(proxyOptions?.path, proxyOptions);
+      }
+      startUrl = sessionUrlProvider.getStartUrl(!!options.useEASAuthSessionProxy, url, returnUrl);
     }
     // Prevent multiple sessions from running at the same time, WebBrowser doesn't
     // support it this makes the behavior predictable.

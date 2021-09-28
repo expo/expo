@@ -28,6 +28,7 @@ export function AuthSection({
   tokenResponse,
   promptAsync,
   useProxy,
+  useEASAuthSession,
   disabled,
 }: {
   title: string;
@@ -38,6 +39,7 @@ export function AuthSection({
     options?: AuthSession.AuthRequestPromptOptions
   ) => Promise<AuthSession.AuthSessionResult>;
   useProxy?: boolean;
+  useEASAuthSession?: boolean;
   disabled?: boolean;
 }) {
   // @ts-ignore
@@ -53,6 +55,7 @@ export function AuthSection({
         onPress={(color) =>
           promptAsync({
             useProxy,
+            useEASAuthSessionProxy: useEASAuthSession,
             // Tint the controller
             toolbarColor: color,
             // iOS -- unused, possibly should remove the types

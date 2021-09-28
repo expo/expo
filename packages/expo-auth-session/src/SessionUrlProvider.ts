@@ -24,7 +24,7 @@ export class SessionUrlProvider {
     });
   }
 
-  getStartUrl(authUrl: string, returnUrl: string): string {
+  getStartUrl(useEASAuthSession: boolean, authUrl: string, returnUrl: string): string {
     if (Platform.OS === 'web' && !Platform.isDOMAvailable) {
       // Return nothing in SSR envs
       return '';
@@ -34,10 +34,10 @@ export class SessionUrlProvider {
       returnUrl,
     });
 
-    return `${this.getRedirectUrl()}/start?${queryString}`;
+    return `${this.getRedirectUrl(useEASAuthSession)}/start?${queryString}`;
   }
 
-  getRedirectUrl(urlPath?: string): string {
+  getRedirectUrl(useEASAuthSession: boolean, urlPath?: string): string {
     if (Platform.OS === 'web') {
       if (Platform.isDOMAvailable) {
         return [window.location.origin, urlPath].filter(Boolean).join('/');
@@ -47,33 +47,54 @@ export class SessionUrlProvider {
       }
     }
 
-    const legacyExpoProjectId =
-      Constants.manifest?.originalFullName ||
-      Constants.manifest2?.extra?.expoClient?.originalFullName ||
-      Constants.manifest?.id;
-
-    if (!legacyExpoProjectId) {
-      let nextSteps = '';
-      if (__DEV__) {
-        if (Constants.executionEnvironment === ExecutionEnvironment.Bare) {
-          nextSteps =
-            ' Please ensure you have the latest version of expo-constants installed and rebuild your native app. You can verify that originalFullName is defined by running `expo config --type public` and inspecting the output.';
-        } else if (Constants.executionEnvironment === ExecutionEnvironment.StoreClient) {
-          nextSteps =
-            ' Please report this as a bug with the contents of `expo config --type public`.';
+    if (useEASAuthSession) {
+      const easProjectId =
+        Constants.manifest?.projectId || Constants.manifest2?.extra?.eas?.projectId;
+      if (!easProjectId) {
+        let nextSteps = '';
+        if (__DEV__) {
+          if (Constants.executionEnvironment === ExecutionEnvironment.Bare) {
+            nextSteps =
+              ' Please ensure you have the latest version of expo-constants installed and rebuild your native app.';
+          } else if (Constants.executionEnvironment === ExecutionEnvironment.StoreClient) {
+            nextSteps = ' Please report this as a bug.';
+          }
         }
+        throw new Error(
+          'Cannot use AuthSession proxy because the project ID is not defined.' + nextSteps
+        );
       }
-      throw new Error(
-        'Cannot use AuthSession proxy because the project ID is not defined.' + nextSteps
-      );
-    }
 
-    const redirectUrl = `${SessionUrlProvider.BASE_URL}/${legacyExpoProjectId}`;
-    if (__DEV__) {
-      SessionUrlProvider.warnIfAnonymous(legacyExpoProjectId, redirectUrl);
-      // TODO: Verify with the dev server that the manifest is up to date.
+      return `${SessionUrlProvider.BASE_URL}/eas/${easProjectId}`;
+    } else {
+      const legacyExpoProjectId =
+        Constants.manifest?.originalFullName ||
+        Constants.manifest2?.extra?.expoClient?.originalFullName ||
+        Constants.manifest?.id;
+
+      if (!legacyExpoProjectId) {
+        let nextSteps = '';
+        if (__DEV__) {
+          if (Constants.executionEnvironment === ExecutionEnvironment.Bare) {
+            nextSteps =
+              ' Please ensure you have the latest version of expo-constants installed and rebuild your native app. You can verify that originalFullName is defined by running `expo config --type public` and inspecting the output.';
+          } else if (Constants.executionEnvironment === ExecutionEnvironment.StoreClient) {
+            nextSteps =
+              ' Please report this as a bug with the contents of `expo config --type public`.';
+          }
+        }
+        throw new Error(
+          'Cannot use AuthSession proxy because the legacy project ID is not defined.' + nextSteps
+        );
+      }
+
+      const redirectUrl = `${SessionUrlProvider.BASE_URL}/${legacyExpoProjectId}`;
+      if (__DEV__) {
+        SessionUrlProvider.warnIfAnonymous(legacyExpoProjectId, redirectUrl);
+        // TODO: Verify with the dev server that the manifest is up to date.
+      }
+      return redirectUrl;
     }
-    return redirectUrl;
   }
 
   private static getHostAddressQueryParams(): ParsedQs | undefined {
@@ -104,7 +125,7 @@ export class SessionUrlProvider {
     return undefined;
   }
 
-  private static warnIfAnonymous(id, url): void {
+  private static warnIfAnonymous(id: string, url: string): void {
     if (id.startsWith('@anonymous/')) {
       console.warn(
         `You are not currently signed in to Expo on your development machine. As a result, the redirect URL for AuthSession will be "${url}". If you are using an OAuth provider that requires adding redirect URLs to an allow list, we recommend that you do not add this URL -- instead, you should sign in to Expo to acquire a unique redirect URL. Additionally, if you do decide to publish this app using Expo, you will need to register an account to do it.`

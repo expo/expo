@@ -78,6 +78,11 @@ export declare type AuthRequestPromptOptions = Omit<WebBrowserOpenOptions, 'wind
      */
     useProxy?: boolean;
     /**
+     * When `useProxy` is true, should the EAS auth session proxy be used.
+     * Default: `false`.
+     */
+    useEASAuthSessionProxy?: boolean;
+    /**
      * URL options to be used when creating the redirect URL for the auth proxy.
      */
     proxyOptions?: Omit<CreateURLOptions, 'queryParams'> & {

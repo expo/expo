@@ -54,7 +54,7 @@ export declare function getRedirectUrl(path?: string): string;
  * // Web prod: https://yourwebsite.com
  * ```
  */
-export declare function makeRedirectUri({ native, scheme, isTripleSlashed, queryParams, path, preferLocalhost, useProxy, }?: AuthSessionRedirectUriOptions): string;
+export declare function makeRedirectUri({ native, scheme, isTripleSlashed, queryParams, path, preferLocalhost, useProxy, useEASAuthSession, }?: AuthSessionRedirectUriOptions): string;
 /**
  * Build an `AuthRequest` and load it before returning.
  *

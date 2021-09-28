@@ -5,6 +5,7 @@ export type AuthSessionOptions = {
   authUrl: string;
   returnUrl?: string;
   showInRecents?: boolean;
+  useEASAuthSession?: boolean;
 };
 
 export type AuthSessionResult =
@@ -68,4 +69,9 @@ export type AuthSessionRedirectUriOptions = {
    *
    */
   native?: string;
+  /**
+   * When `useProxy` is true, should the EAS auth session proxy be used.
+   * Default: `false`.
+   */
+  useEASAuthSession?: boolean;
 };
