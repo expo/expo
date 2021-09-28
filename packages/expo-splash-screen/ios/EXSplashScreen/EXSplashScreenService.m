@@ -162,6 +162,8 @@ EX_REGISTER_SINGLETON_MODULE(SplashScreen);
     UIView *newView = change[@"new"];
     if (newView != nil && [newView.nextResponder isKindOfClass:[UIViewController class]]) {
       UIViewController *viewController = (UIViewController *)newView.nextResponder;
+      // To show splash screen as soon as possible, we do not wait for hiding callback and call showSplashScreen immediately.
+      // GCD main queue should keep the calls in sequence.
       [self hideSplashScreenFor:viewController successCallback:^(BOOL hasEffect){} failureCallback:^(NSString *message){}];
       [self.splashScreenControllers removeObjectForKey:viewController];
       [self showSplashScreenFor:viewController];
