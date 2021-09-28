@@ -58,6 +58,7 @@ import java.io.OutputStream
 import java.io.OutputStreamWriter
 import java.lang.ClassCastException
 import java.lang.Exception
+import java.lang.NullPointerException
 import java.math.BigInteger
 import java.net.CookieHandler
 import java.net.URLConnection
@@ -72,6 +73,7 @@ class FileSystemModule(
 
   private inline fun <reified T> moduleRegistry() =
       moduleRegistryDelegate.getFromModuleRegistry<T>()
+
   private val uIManager: UIManager by moduleRegistry()
   private var client: OkHttpClient? = null
   private var dirPermissionsRequest: Promise? = null
@@ -124,7 +126,7 @@ class FileSystemModule(
   private fun checkIfFileDirExists(uri: Uri) {
     val file = uriToFile(uri)
     val dir = file.parentFile
-    if (dir == null || dir.exists()) {
+    if (dir == null || !dir.exists()) {
       throw IOException("Directory for " + file.path + " doesn't exist. Please make sure directory '" + file.parent + "' exists before calling downloadAsync.")
     }
   }
@@ -137,7 +139,7 @@ class FileSystemModule(
   private fun permissionsForUri(uri: Uri): EnumSet<Permission>? {
     return if (isSAFUri(uri)) {
       permissionsForSAFUri(uri)
-    } else when(uri.scheme) {
+    } else when (uri.scheme) {
       "content" -> EnumSet.of(Permission.READ)
       "asset" -> EnumSet.of(Permission.READ)
       "file" -> permissionsForPath(uri.path)
@@ -211,55 +213,54 @@ class FileSystemModule(
       ensurePermission(absoluteUri, Permission.READ)
       if (uri.scheme == "file") {
         val file = uriToFile(absoluteUri)
-        val result = Bundle()
         if (file.exists()) {
           promise.resolve(
-            Bundle().apply {
-              putBoolean("exists", true)
-              putBoolean("isDirectory", file.isDirectory)
-              putString("uri", Uri.fromFile(file).toString())
-              putDouble("size", getFileSize(file).toDouble())
-              putDouble("modificationTime", 0.001 * file.lastModified())
-              if (options.containsKey("md5") && (options["md5"] == true)) {
-                putString("md5", md5(file))
+              Bundle().apply {
+                putBoolean("exists", true)
+                putBoolean("isDirectory", file.isDirectory)
+                putString("uri", Uri.fromFile(file).toString())
+                putDouble("size", getFileSize(file).toDouble())
+                putDouble("modificationTime", 0.001 * file.lastModified())
+                if (options.containsKey("md5") && (options["md5"] == true)) {
+                  putString("md5", md5(file))
+                }
               }
-            }
           )
         } else {
           promise.resolve(
-            Bundle().apply {
-              putBoolean("exists", false)
-              putBoolean("isDirectory", false)
-            }
+              Bundle().apply {
+                putBoolean("exists", false)
+                putBoolean("isDirectory", false)
+              }
           )
         }
       } else if (uri.scheme == "content" || uri.scheme == "asset" || uri.scheme == null) {
         try {
-          val `is`: InputStream = when(uri.scheme) {
+          val `is`: InputStream = when (uri.scheme) {
             "content" -> context.contentResolver.openInputStream(uri)
             "asset" -> openAssetInputStream(uri)
             else -> openResourceInputStream(uriStr)
           } ?: throw FileNotFoundException()
           promise.resolve(
-            Bundle().apply {
-              putBoolean("exists", true)
-              putBoolean("isDirectory", false)
-              putString("uri", uri.toString())
-              // NOTE: `.available()` is supposedly not a reliable source of size info, but it's been
-              //       more reliable than querying `OpenableColumns.SIZE` in practice in tests ¯\_(ツ)_/¯
-              putDouble("size", `is`.available().toDouble())
-              if (options.containsKey("md5") && options["md5"] == true) {
-                val md5bytes = DigestUtils.md5(`is`)
-                putString("md5", String(Hex.encodeHex(md5bytes)))
+              Bundle().apply {
+                putBoolean("exists", true)
+                putBoolean("isDirectory", false)
+                putString("uri", uri.toString())
+                // NOTE: `.available()` is supposedly not a reliable source of size info, but it's been
+                //       more reliable than querying `OpenableColumns.SIZE` in practice in tests ¯\_(ツ)_/¯
+                putDouble("size", `is`.available().toDouble())
+                if (options.containsKey("md5") && options["md5"] == true) {
+                  val md5bytes = DigestUtils.md5(`is`)
+                  putString("md5", String(Hex.encodeHex(md5bytes)))
+                }
               }
-            }
           )
         } catch (e: FileNotFoundException) {
           promise.resolve(
-            Bundle().apply {
-              putBoolean("exists", false)
-              putBoolean("isDirectory", false)
-            }
+              Bundle().apply {
+                putBoolean("exists", false)
+                putBoolean("isDirectory", false)
+              }
           )
         }
       } else {
@@ -299,17 +300,12 @@ class FileSystemModule(
           }
         }
       } else {
-        contents = when (uri.scheme) {
-          "file" -> IOUtils.toString(FileInputStream(uriToFile(uri)))
-          "asset" -> IOUtils.toString(openAssetInputStream(uri))
-          null -> IOUtils.toString(openResourceInputStream(uriStr))
-          else -> {
-            if (isSAFUri(uri)) {
-              IOUtils.toString(context.contentResolver.openInputStream(uri))
-            } else {
-              throw IOException("Unsupported scheme for location '$uri'.")
-            }
-          }
+        contents = when {
+          uri.scheme == "file" -> IOUtils.toString(FileInputStream(uriToFile(uri)))
+          uri.scheme == "asset" -> IOUtils.toString(openAssetInputStream(uri))
+          uri.scheme == null -> IOUtils.toString(openResourceInputStream(uriStr))
+          isSAFUri(uri) -> IOUtils.toString(context.contentResolver.openInputStream(uri))
+          else -> throw IOException("Unsupported scheme for location '$uri'.")
         }
       }
       promise.resolve(contents)
@@ -427,7 +423,7 @@ class FileSystemModule(
         throw IOException("Unsupported scheme for location '$fromUri'.")
       }
     } catch (e: Exception) {
-      Log.e(TAG, e.message!!)
+      e.message?.let { Log.e(TAG, it) }
       promise.reject(e)
     }
   }
@@ -507,23 +503,21 @@ class FileSystemModule(
     }
     if (documentFile.isDirectory) {
       for (file in documentFile.listFiles()) {
-        if (documentFile.name == null) {
-          continue
+        documentFile.name?.let {
+          transformFilesFromSAF(file, File(outputDir, it), copy)
         }
-        transformFilesFromSAF(file, File(outputDir, documentFile.name), copy)
       }
       if (!copy) {
         documentFile.delete()
       }
       return
     }
-    if (documentFile.name == null) {
-      return
-    }
-    val newFile = File(outputDir.path, documentFile.name)
-    context.contentResolver.openInputStream(documentFile.uri).use { `in` -> FileOutputStream(newFile).use { out -> IOUtils.copy(`in`, out) } }
-    if (!copy) {
-      documentFile.delete()
+    documentFile.name?.let {
+      val newFile = File(outputDir.path, it)
+      context.contentResolver.openInputStream(documentFile.uri).use { `in` -> FileOutputStream(newFile).use { out -> IOUtils.copy(`in`, out) } }
+      if (!copy) {
+        documentFile.delete()
+      }
     }
   }
 
@@ -834,6 +828,7 @@ class FileSystemModule(
           Log.e(TAG, e.message.toString())
           promise.reject(e)
         }
+
         override fun onResponse(call: Call, response: Response) {
           val result = Bundle().apply {
             putString("body", response.body()?.string())
@@ -845,7 +840,7 @@ class FileSystemModule(
         }
       })
     } ?: run {
-      promise.reject(Exception("okHttpClient is null"))
+      promise.reject(NullPointerException("okHttpClient is null"))
     }
   }
 
@@ -944,35 +939,32 @@ class FileSystemModule(
             return
           }
         }
-        okHttpClient?.let {
-          it.newCall(requestBuilder.build()).enqueue(object : Callback {
-            override fun onFailure(call: Call, e: IOException) {
-              Log.e(TAG, e.message.toString())
-              promise.reject(e)
-            }
+        okHttpClient?.newCall(requestBuilder.build())?.enqueue(object : Callback {
+          override fun onFailure(call: Call, e: IOException) {
+            Log.e(TAG, e.message.toString())
+            promise.reject(e)
+          }
 
-            @Throws(IOException::class)
-            override fun onResponse(call: Call, response: Response) {
-              val file = uriToFile(uri)
-              file.delete()
-              val sink = Okio.buffer(Okio.sink(file))
-              sink.writeAll(response.body()!!.source())
-              sink.close()
-              val result = Bundle()
-              result.putString("uri", Uri.fromFile(file).toString())
-              if (options != null && options.containsKey("md5") && (options["md5"] as Boolean)) {
-                result.putString("md5", md5(file))
-              }
-              result.putInt("status", response.code())
-              result.putBundle("headers", translateHeaders(response.headers()))
-              response.close()
-              promise.resolve(result)
+          @Throws(IOException::class)
+          override fun onResponse(call: Call, response: Response) {
+            val file = uriToFile(uri)
+            file.delete()
+            val sink = Okio.buffer(Okio.sink(file))
+            sink.writeAll(response.body()!!.source())
+            sink.close()
+            val result = Bundle()
+            result.putString("uri", Uri.fromFile(file).toString())
+            if (options != null && options.containsKey("md5") && (options["md5"] as Boolean)) {
+              result.putString("md5", md5(file))
             }
-          })
-        } ?: run {
-          promise.reject(Exception("okHttpClient is null"))
+            result.putInt("status", response.code())
+            result.putBundle("headers", translateHeaders(response.headers()))
+            response.close()
+            promise.resolve(result)
+          }
+        }) ?: run {
+          promise.reject(NullPointerException("okHttpClient is null"))
         }
-
       } else {
         throw IOException("Unsupported scheme for location '$uri'.")
       }
@@ -994,7 +986,7 @@ class FileSystemModule(
     try {
       val fileUri = Uri.parse(fileUriStr)
       checkIfFileDirExists(fileUri)
-      if ("file" != fileUri.scheme) {
+      if (fileUri.scheme != "file") {
         throw IOException("Unsupported scheme for location '$fileUri'.")
       }
       val progressListener: ProgressListener = object : ProgressListener {
@@ -1030,7 +1022,7 @@ class FileSystemModule(
           }
           ?.build()
       if (client == null) {
-        promise.reject(Exception("okHttpClient is null"))
+        promise.reject(NullPointerException("okHttpClient is null"))
         return
       }
       val requestBuilder = Request.Builder()
@@ -1130,15 +1122,13 @@ class FileSystemModule(
         while (input.read(data).also { count = it } != -1) {
           output.write(data, 0, count)
         }
-        val result = Bundle()
-        result.putString("uri", Uri.fromFile(file).toString())
-        if (options != null && options.containsKey("md5") && (options["md5"] as Boolean)) {
-          result.putString("md5", file?.let { md5(it) })
-        }
-
-        result.apply {
+        val result = Bundle().apply {
+          putString("uri", Uri.fromFile(file).toString())
           putInt("status", response.code())
           putBundle("headers", translateHeaders(response.headers()))
+          if (options != null && options.containsKey("md5") && (options["md5"] as Boolean)) {
+            putString("md5", file?.let { md5(it) })
+          }
         }
         response.close()
         promise?.resolve(result)
@@ -1178,12 +1168,14 @@ class FileSystemModule(
     private fun source(source: Source): Source {
       return object : ForwardingSource(source) {
         var totalBytesRead = 0L
+
         @Throws(IOException::class)
         override fun read(sink: Buffer, byteCount: Long): Long {
           val bytesRead = super.read(sink, byteCount)
           // read() returns the number of bytes read, or -1 if this source is exhausted.
           totalBytesRead += if (bytesRead != -1L) bytesRead else 0
-          progressListener.update(totalBytesRead, responseBody?.contentLength() ?: -1, bytesRead == -1L)
+          progressListener.update(totalBytesRead, responseBody?.contentLength()
+              ?: -1, bytesRead == -1L)
           return bytesRead
         }
       }
