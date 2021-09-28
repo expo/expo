@@ -3,8 +3,6 @@ package versioned.host.exp.exponent.modules.api.screens
 import android.content.Context
 import android.graphics.Canvas
 import android.view.View
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentTransaction
 import com.facebook.react.bridge.ReactContext
 import com.facebook.react.uimanager.UIManagerModule
@@ -13,7 +11,6 @@ import versioned.host.exp.exponent.modules.api.screens.events.StackFinishTransit
 import java.util.Collections
 import kotlin.collections.ArrayList
 import kotlin.collections.HashSet
-import host.exp.expoview.R
 
 class ScreenStack(context: Context?) : ScreenContainer<ScreenStackFragment>(context) {
   private val mStack = ArrayList<ScreenStackFragment>()
@@ -21,21 +18,6 @@ class ScreenStack(context: Context?) : ScreenContainer<ScreenStackFragment>(cont
   private val drawingOpPool: MutableList<DrawingOp> = ArrayList()
   private val drawingOps: MutableList<DrawingOp> = ArrayList()
   private var mTopScreen: ScreenStackFragment? = null
-  private val mBackStackListener = FragmentManager.OnBackStackChangedListener {
-    if (mFragmentManager?.backStackEntryCount == 0) {
-      // when back stack entry count hits 0 it means the user's navigated back using hw back
-      // button. As the "fake" transaction we installed on the back stack does nothing we need
-      // to handle back navigation on our own.
-      mTopScreen?.let { dismiss(it) }
-    }
-  }
-  private val mLifecycleCallbacks: FragmentManager.FragmentLifecycleCallbacks = object : FragmentManager.FragmentLifecycleCallbacks() {
-    override fun onFragmentResumed(fm: FragmentManager, f: Fragment) {
-      if (mTopScreen === f) {
-        setupBackHandlerIfNeeded(f)
-      }
-    }
-  }
   private var mRemovalTransitionStarted = false
   private var isDetachingCurrentScreen = false
   private var reverseLastTwoChildren = false
@@ -64,28 +46,6 @@ class ScreenStack(context: Context?) : ScreenContainer<ScreenStackFragment>(cont
 
   override fun adapt(screen: Screen): ScreenStackFragment {
     return ScreenStackFragment(screen)
-  }
-
-  override fun onDetachedFromWindow() {
-    mFragmentManager?.let {
-      it.removeOnBackStackChangedListener(mBackStackListener)
-      it.unregisterFragmentLifecycleCallbacks(mLifecycleCallbacks)
-      if (!it.isStateSaved && !it.isDestroyed) {
-        // State save means that the container where fragment manager was installed has been
-        // unmounted.
-        // This could happen as a result of dismissing nested stack. In such a case we don't need to
-        // reset back stack as it'd result in a crash caused by the fact the fragment manager is no
-        // longer attached.
-        it.popBackStack(BACK_STACK_TAG, FragmentManager.POP_BACK_STACK_INCLUSIVE)
-      }
-    }
-    super.onDetachedFromWindow()
-  }
-
-  override fun onAttachedToWindow() {
-    super.onAttachedToWindow()
-    val fragmentManager = requireNotNull(mFragmentManager, { "mFragmentManager is null when ScreenStack attached to window" })
-    fragmentManager.registerFragmentLifecycleCallbacks(mLifecycleCallbacks, false)
   }
 
   override fun startViewTransition(view: View) {
@@ -279,68 +239,12 @@ class ScreenStack(context: Context?) : ScreenContainer<ScreenStackFragment>(cont
       mStack.clear()
       mStack.addAll(mScreenFragments)
       it.commitNowAllowingStateLoss()
-      mTopScreen?.let { screen -> setupBackHandlerIfNeeded(screen) }
     }
   }
 
   override fun notifyContainerUpdate() {
     for (screen in mStack) {
       screen.onContainerUpdate()
-    }
-  }
-
-  /**
-   * The below method sets up fragment manager's back stack in a way that it'd trigger our back
-   * stack change listener when hw back button is clicked.
-   *
-   *
-   * Because back stack by default rolls back the transaction the stack entry is associated with
-   * we generate a "fake" transaction that hides and shows the top fragment. As a result when back
-   * stack entry is rolled back nothing happens and we are free to handle back navigation on our own
-   * in `mBackStackListener`.
-   *
-   *
-   * We pop that "fake" transaction each time we update stack and we add a new one in case the
-   * top screen is allowed to be dismissed using hw back button. This way in the listener we can
-   * tell if back button was pressed based on the count of the items on back stack. We expect 0
-   * items in case hw back is pressed because we try to keep the number of items at 1 by always
-   * resetting and adding new items. In case we don't add a new item to back stack we remove
-   * listener so that it does not get triggered.
-   *
-   *
-   * It is important that we don't install back handler when stack contains a single screen as in
-   * that case we want the parent navigator or activity handler to take over.
-   */
-  private fun setupBackHandlerIfNeeded(topScreen: ScreenStackFragment) {
-    if (mTopScreen?.isResumed != true) {
-      // if the top fragment is not in a resumed state, adding back stack transaction would throw.
-      // In such a case we skip installing back handler and use FragmentLifecycleCallbacks to get
-      // notified when it gets resumed so that we can install the handler.
-      return
-    }
-    mFragmentManager?.let {
-      it.removeOnBackStackChangedListener(mBackStackListener)
-      it.popBackStack(BACK_STACK_TAG, FragmentManager.POP_BACK_STACK_INCLUSIVE)
-      var firstScreen: ScreenStackFragment? = null
-      var i = 0
-      val size = mStack.size
-      while (i < size) {
-        val screen = mStack[i]
-        if (!mDismissed.contains(screen)) {
-          firstScreen = screen
-          break
-        }
-        i++
-      }
-      if (topScreen !== firstScreen && topScreen.isDismissible) {
-        it
-          .beginTransaction()
-          .show(topScreen)
-          .addToBackStack(BACK_STACK_TAG)
-          .setPrimaryNavigationFragment(topScreen)
-          .commitNowAllowingStateLoss()
-        it.addOnBackStackChangedListener(mBackStackListener)
-      }
     }
   }
 
@@ -419,7 +323,6 @@ class ScreenStack(context: Context?) : ScreenContainer<ScreenStackFragment>(cont
   }
 
   companion object {
-    private const val BACK_STACK_TAG = "RN_SCREEN_LAST"
     private fun isSystemAnimation(stackAnimation: StackAnimation): Boolean {
       return stackAnimation === StackAnimation.DEFAULT || stackAnimation === StackAnimation.FADE || stackAnimation === StackAnimation.NONE
     }
