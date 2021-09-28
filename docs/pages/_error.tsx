@@ -1,7 +1,13 @@
+import { css } from '@emotion/react';
+import { theme } from '@expo/styleguide';
 import * as Sentry from '@sentry/browser';
 import React from 'react';
 
 import { getRedirectPath } from '~/common/error-utilities';
+import Head from '~/components/Head';
+import { Button } from '~/ui/components/Button';
+import { H1, P } from '~/ui/components/Text';
+import { Navigation } from '~/ui/containers/Navigation';
 
 const REDIRECT_SUFFIX = '?redirected';
 
@@ -10,6 +16,7 @@ type State = {
   redirectPath?: string;
   redirectFailed: boolean;
 };
+
 export default class Error extends React.Component<object, State> {
   state: State = {
     notFound: false,
@@ -48,8 +55,6 @@ export default class Error extends React.Component<object, State> {
 
   componentDidUpdate(prevProps: object, prevState: State) {
     if (prevState.redirectPath !== this.state.redirectPath && typeof window !== 'undefined') {
-      // Let people actually read the carefully crafted message and absorb the
-      // cool emoji selection, they can just click through if they want speed
       setTimeout(() => {
         window.location.href = `${this.state.redirectPath}?redirected`;
       }, 1200);
@@ -58,73 +63,49 @@ export default class Error extends React.Component<object, State> {
 
   render() {
     return (
-      <div
-        style={{
-          display: 'flex',
-          flex: 1,
-          alignItems: 'center',
-          justifyContent: 'center',
-          height: '100vh',
-          flexDirection: 'column',
-        }}>
-        {this._renderContents()}
-      </div>
+      <>
+        <div css={styles.navigationContainer}>
+          <Navigation />
+        </div>
+        <div css={styles.container}>{this._renderContents()}</div>
+      </>
     );
   }
 
   _renderContents = () => {
-    const styles = {
-      description: {
-        textAlign: 'center' as const,
-        maxWidth: 450,
-        marginHorizontal: 30,
-        lineHeight: '1.7em',
-      },
-      link: {
-        textAlign: 'center' as const,
-        marginTop: 20,
-      },
-    };
-
     if (this.state.redirectPath) {
       return (
         <>
-          <h1>🕵️‍♀️️</h1>
-          <p style={styles.description}>
-            Hold tight, we are redirecting you to where we think this URL was intended to take you!
-          </p>
-          <p style={styles.link}>
-            <a id="redirect-link" href={this.state.redirectPath}>
-              Click here to possibly go there more quickly!
-            </a>
-          </p>
+          <img src="/static/images/redirect.svg" css={styles.image} alt="Redirect" />
+          <Head title="Redirecting" />
+          <H1 css={styles.header}>Redirecting</H1>
+          <P css={styles.description}>Just a moment…</P>
         </>
       );
     } else if (this.state.redirectFailed) {
       return (
         <>
-          <h1>🏳️</h1>
-          <p style={styles.description} id="__redirect_failed">
+          <img src="/static/images/404.svg" css={styles.image} alt="404" />
+          <Head title="Not Found" />
+          <H1 css={styles.header}>404: Not Found</H1>
+          <P css={styles.description} id="__redirect_failed">
             We took an educated guess and tried to direct you to the right page, but it seems that
             did not work out! Maybe it doesn't exist anymore! 😔
-          </p>
-          <p style={styles.link}>
-            <a href="/">Go to the Expo documentation, you can try searching there</a>
-          </p>
+          </P>
+          <Button href="/">Return Home</Button>
         </>
       );
     } else if (this.state.notFound) {
       return (
         <>
-          <h1>🤯</h1>
-          <p style={styles.description} id="__not_found">
-            <strong style={{ fontWeight: 'bold' }}>Uh oh, we couldn't find this page!</strong> We've
-            made note of this and will investigate, but it's possible that the page you're looking
-            for no longer exists!
-          </p>
-          <p style={styles.link}>
-            <a href="/">Go to the Expo documentation, you can try searching there</a>
-          </p>
+          <img src="/static/images/404.svg" css={styles.image} alt="404" />
+          <Head title="Not Found" />
+          <H1 css={styles.header}>404: Not Found</H1>
+          <P css={styles.description} id="__not_found">
+            We couldn't find the page you were looking for. Check the URL to make sure it's correct
+            and try again.
+          </P>
+          <Button href="/">Return Home</Button>
         </>
       );
     } else {
@@ -132,3 +113,40 @@ export default class Error extends React.Component<object, State> {
     }
   };
 }
+
+const styles = {
+  container: css({
+    display: 'flex',
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    height: '100vh',
+    flexDirection: 'column',
+    backgroundColor: theme.background.canvas,
+  }),
+  navigationContainer: css({
+    position: 'absolute',
+    width: '100vw',
+    boxSizing: 'border-box',
+    borderBottomWidth: 1,
+    borderBottomStyle: 'solid',
+    borderBottomColor: theme.border.default,
+  }),
+  header: css({
+    fontSize: 52,
+    fontWeight: 700,
+  }),
+  description: css({
+    textAlign: 'center',
+    maxWidth: 450,
+    marginTop: 24,
+    marginBottom: 32,
+    lineHeight: '1.7em',
+    color: theme.text.secondary,
+  }),
+  link: css({
+    textAlign: 'center',
+    marginTop: 20,
+  }),
+  image: css({ maxWidth: 209, marginBottom: 32 }),
+};
