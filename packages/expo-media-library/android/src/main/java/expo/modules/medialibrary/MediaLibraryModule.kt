@@ -370,22 +370,22 @@ class MediaLibraryModule(
 
   private val isMissingPermissions: Boolean
     get() = mPermissions
-        ?.hasGrantedPermissions(permission.READ_EXTERNAL_STORAGE, permission.WRITE_EXTERNAL_STORAGE)
-        ?.not() ?: false
+      ?.hasGrantedPermissions(permission.READ_EXTERNAL_STORAGE, permission.WRITE_EXTERNAL_STORAGE)
+      ?.not() ?: false
 
   private val isMissingWritePermission: Boolean
     get() = mPermissions
-        ?.hasGrantedPermissions(permission.WRITE_EXTERNAL_STORAGE)
-        ?.not() ?: false
+      ?.hasGrantedPermissions(permission.WRITE_EXTERNAL_STORAGE)
+      ?.not() ?: false
 
   private fun getManifestPermissions(writeOnly: Boolean): Array<String> {
     return if (writeOnly) {
       arrayOf(permission.WRITE_EXTERNAL_STORAGE, permission.ACCESS_MEDIA_LOCATION)
     } else {
       arrayOf(
-          permission.READ_EXTERNAL_STORAGE,
-          permission.WRITE_EXTERNAL_STORAGE,
-          permission.ACCESS_MEDIA_LOCATION
+        permission.READ_EXTERNAL_STORAGE,
+        permission.WRITE_EXTERNAL_STORAGE,
+        permission.ACCESS_MEDIA_LOCATION
       )
     }
   }
