@@ -10,7 +10,7 @@ import PossibleRedirectNotification from '~/components/plugins/PossibleRedirectN
 
 ```javascript
 {
-  "expo": {
+  "expo": { 
     "name": "My app",
     "slug": "my-app"
   }
