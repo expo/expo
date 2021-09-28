@@ -13,6 +13,8 @@
 
 @interface RNScreensViewController : UIViewController <RNScreensViewControllerDelegate>
 
+- (UIViewController *)findActiveChildVC;
+
 @end
 
 @interface RNSScreenContainerManager : RCTViewManager
