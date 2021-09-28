@@ -1906,7 +1906,7 @@ PODS:
     - ExpoModulesCore
   - EXPermissions (13.0.0):
     - ExpoModulesCore
-  - Expo (43.0.0-beta.0):
+  - Expo (43.0.0-beta.1):
     - ExpoModulesCore
   - ExpoModulesCore (0.4.0):
     - React-Core
@@ -1951,13 +1951,13 @@ PODS:
     - UMTaskManagerInterface
   - EXTrackingTransparency (2.0.0):
     - ExpoModulesCore
-  - EXUpdates (0.10.0):
+  - EXUpdates (0.10.1):
     - EXManifests
     - ExpoModulesCore
     - EXStructuredHeaders
     - EXUpdatesInterface
     - React-Core
-  - EXUpdates/Tests (0.10.0):
+  - EXUpdates/Tests (0.10.1):
     - EXManifests
     - ExpoModulesCore
     - EXStructuredHeaders
@@ -4152,7 +4152,7 @@ SPEC CHECKSUMS:
   EXNetwork: 115f291d54a726659e68c2ae68508a42bf1d2131
   EXNotifications: 1c497a4a6be535ba78d1ba5eaca56864b0d9dcb4
   EXPermissions: fa9b26c8a56e0be7c296965d6259d576a4fbb38d
-  Expo: 425ee11ea076298163526b4716b56ad02fc8644d
+  Expo: 1ef658fbff1757876c15726889b6913b15cd2b8f
   ExpoModulesCore: edf601205a340dd213f85fab52e4a0f6ffa0f463
   EXPrint: 0842d94f62a5ef9a3e597ab5dc46e3e03474e866
   EXRandom: 9ed4600d410cf2fe58d22b3121865624065a16e9
@@ -4170,7 +4170,7 @@ SPEC CHECKSUMS:
   EXStructuredHeaders: ba85104bb57e861129872a30e2cf7adaa348c4ac
   EXTaskManager: 7ed3661de993f9e30e3d34a40be3198afa0f2392
   EXTrackingTransparency: e09a5d21b6f320e97b0f70d6cc69258f33c91977
-  EXUpdates: b41563a1bd0ced5a630987603b5a90a3ed61b2de
+  EXUpdates: 53a9f6d3e40b1963cbbcd91f0b6a4bec33b65e7b
   EXUpdatesInterface: e1c01b4f5ec76bd1d6cc714938f9edf5ef6379b9
   EXVideoThumbnails: 63e22a05bcf95df6c71e042054e9c2cc4fe9b3df
   EXWebBrowser: 7feb52a803d161c7d14c61468e83d72fe4073cbc
