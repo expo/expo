@@ -1,7 +1,6 @@
-import { css } from '@emotion/react';
-import { theme } from '@expo/styleguide';
 import React from 'react';
 
+import { HeaderCell } from '~/ui/components/Table/HeaderCell';
 import { Row } from '~/ui/components/Table/Row';
 import { TextAlign } from '~/ui/components/Table/Table.shared';
 
@@ -14,21 +13,10 @@ export const TableHead = ({ headers, headersAlign }: TableHeadProps) => (
   <thead>
     <Row>
       {headers.map((header, i) => (
-        <th
-          key={header}
-          css={[
-            tableHeadersCellStyle,
-            headersAlign && { textAlign: headersAlign[i] || TextAlign.Left },
-          ]}>
+        <HeaderCell key={i} textAlign={(headersAlign && headersAlign[i]) || TextAlign.Left}>
           {header}
-        </th>
+        </HeaderCell>
       ))}
     </Row>
   </thead>
 );
-
-const tableHeadersCellStyle = css({
-  color: theme.text.secondary,
-  fontFamily: 'expo-brand-book',
-  verticalAlign: 'middle',
-});

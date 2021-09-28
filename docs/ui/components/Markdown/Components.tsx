@@ -5,6 +5,7 @@ import React from 'react';
 import { Blockquote } from './Blockquote';
 
 import { Code } from '~/ui/components/Snippet';
+import { Table, Row, Cell, HeaderCell } from '~/ui/components/Table';
 import { A, H1, H2, H3, H4, H5, CODE, P, BOLD, UL, LI } from '~/ui/components/Text';
 import { textStyles } from '~/ui/foundations/typography';
 
@@ -108,6 +109,18 @@ const markdownStyles: MarkdownConfigType = {
     style: {
       marginBottom: 16,
     },
+  },
+  table: {
+    Component: Table,
+  },
+  tr: {
+    Component: Row,
+  },
+  td: {
+    Component: Cell,
+  },
+  th: {
+    Component: HeaderCell,
   },
 };
 

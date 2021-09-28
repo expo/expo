@@ -1,12 +1,12 @@
 import { css } from '@emotion/react';
 import { theme } from '@expo/styleguide';
-import React from 'react';
+import React, { PropsWithChildren } from 'react';
 
-type RowProps = {
-  children: React.ReactNode;
-};
+type RowProps = object;
 
-export const Row = ({ children }: RowProps) => <tr css={tableRowStyle}>{children}</tr>;
+export const Row = ({ children }: PropsWithChildren<RowProps>) => (
+  <tr css={tableRowStyle}>{children}</tr>
+);
 
 const tableRowStyle = css({
   borderBottomWidth: 1,

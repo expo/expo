@@ -1,6 +1,6 @@
 import { css } from '@emotion/react';
 import { theme, borderRadius } from '@expo/styleguide';
-import React from 'react';
+import React, { PropsWithChildren } from 'react';
 
 import { TextAlign } from '~/ui/components/Table/Table.shared';
 import { TableHead } from '~/ui/components/Table/TableHead';
@@ -8,14 +8,23 @@ import { TableHead } from '~/ui/components/Table/TableHead';
 type TableProps = {
   headers?: string[];
   headersAlign?: TextAlign[];
-  children: React.ReactNode;
 };
 
-export const Table = ({ children, headers = [], headersAlign = [] }: TableProps) => (
+export const Table = ({
+  children,
+  headers = [],
+  headersAlign = [],
+}: PropsWithChildren<TableProps>) => (
   <div css={tableWrapperStyle}>
     <table css={tableStyle}>
-      {headers.length && <TableHead headers={headers} headersAlign={headersAlign} />}
-      <tbody>{children}</tbody>
+      {headers.length ? (
+        <>
+          <TableHead headers={headers} headersAlign={headersAlign} />
+          <tbody>{children}</tbody>
+        </>
+      ) : (
+        children
+      )}
     </table>
   </div>
 );
