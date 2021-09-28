@@ -11,6 +11,7 @@ import versioned.host.exp.exponent.modules.api.screens.events.StackFinishTransit
 import java.util.Collections
 import kotlin.collections.ArrayList
 import kotlin.collections.HashSet
+import host.exp.expoview.R
 
 class ScreenStack(context: Context?) : ScreenContainer<ScreenStackFragment>(context) {
   private val mStack = ArrayList<ScreenStackFragment>()
