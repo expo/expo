@@ -3,6 +3,7 @@ package expo.modules.medialibrary
 import io.mockk.clearAllMocks
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.mockkObject
 import io.mockk.mockkStatic
 import io.mockk.verifyOrder
 import org.junit.After
@@ -25,7 +26,7 @@ internal class MediaLibraryUtilsTests {
     val assetIds = arrayOf("aaa", "bbb", "ccc")
 
     // act
-    val result = MediaLibraryUtils.getInPart(assetIds)
+    val result = MediaLibraryUtils.queryPlaceholdersFor(assetIds)
 
     // assert
     assertEquals("?,?,?", result)
@@ -48,7 +49,7 @@ internal class MediaLibraryUtilsTests {
   @Test
   fun `safeMoveFile should copy and delete`() {
     // arrange
-    mockkStatic(MediaLibraryUtils::class)
+    mockkObject(MediaLibraryUtils)
     val src = mockk<File>(relaxed = true)
     val dir = mockk<File>(relaxed = true)
     every { MediaLibraryUtils.safeCopyFile(src, dir) } returns src

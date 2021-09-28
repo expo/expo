@@ -13,7 +13,7 @@ internal class DeleteAssets(
 ) : AsyncTask<Void?, Void?, Void?>() {
   override fun doInBackground(vararg params: Void?): Void? {
     val selection = "${MediaStore.Images.Media._ID} IN (${assetIds.joinToString(separator = ",")} )"
-    val selectionArgs: Array<String>? = null
+    val selectionArgs = null
 
     MediaLibraryUtils.deleteAssets(context, selection, selectionArgs, promise)
     return null

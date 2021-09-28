@@ -6,7 +6,7 @@ import android.provider.MediaStore
 import android.provider.MediaStore.MediaColumns
 import expo.modules.core.Promise
 import expo.modules.medialibrary.MediaLibraryConstants
-import expo.modules.medialibrary.MediaLibraryUtils
+import expo.modules.medialibrary.MediaLibraryUtils.queryPlaceholdersFor
 import java.lang.IllegalArgumentException
 
 /**
@@ -61,7 +61,7 @@ fun queryAlbum(
  */
 fun getAssetsInAlbums(context: Context, vararg albumIds: String?): List<String> {
   val assetIds = mutableListOf<String>()
-  val selection = "${MediaColumns.BUCKET_ID} IN (${MediaLibraryUtils.getInPart(albumIds)} )"
+  val selection = "${MediaColumns.BUCKET_ID} IN (${queryPlaceholdersFor(albumIds)} )"
   val projection = arrayOf(MediaColumns._ID)
   context.contentResolver.query(
     MediaLibraryConstants.EXTERNAL_CONTENT,

@@ -42,7 +42,7 @@ internal class MigrateAlbum(
         .contentResolver
         .update(
           ContentUris.withAppendedId(
-            MediaLibraryUtils.mineTypeToExternalUri(assetFile.mimeType),
+            MediaLibraryUtils.mimeTypeToExternalUri(assetFile.mimeType),
             assetFile.assetId.toLong()
           ),
           values,

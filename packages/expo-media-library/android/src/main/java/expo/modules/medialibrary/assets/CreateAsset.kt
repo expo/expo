@@ -45,11 +45,11 @@ class CreateAsset @JvmOverloads constructor(
   @RequiresApi(api = Build.VERSION_CODES.Q)
   private fun createContentResolverAssetEntry(): Uri? {
     val contentResolver = context.contentResolver
-    val mimeType = MediaLibraryUtils.getType(contentResolver, mUri)
+    val mimeType = MediaLibraryUtils.getMimeType(contentResolver, mUri)
     val filename = mUri.lastPathSegment
     val path = MediaLibraryUtils.getRelativePathForAssetType(mimeType, true)
 
-    val contentUri = MediaLibraryUtils.mineTypeToExternalUri(mimeType)
+    val contentUri = MediaLibraryUtils.mimeTypeToExternalUri(mimeType)
     val contentValues = ContentValues().apply {
       put(MediaStore.MediaColumns.DISPLAY_NAME, filename)
       put(MediaStore.MediaColumns.MIME_TYPE, mimeType)
@@ -112,7 +112,7 @@ class CreateAsset @JvmOverloads constructor(
     val localFile = File(mUri.path!!)
 
     val destDir = MediaLibraryUtils.getEnvDirectoryForAssetType(
-      MediaLibraryUtils.getType(context.contentResolver, mUri),
+      MediaLibraryUtils.getMimeType(context.contentResolver, mUri),
       true
     ).ifNull {
       promise.reject(MediaLibraryConstants.ERROR_UNABLE_TO_SAVE, "Could not guess file type.")
