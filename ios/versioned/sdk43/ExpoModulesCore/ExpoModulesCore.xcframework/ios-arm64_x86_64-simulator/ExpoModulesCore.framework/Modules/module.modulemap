@@ -1,0 +1,23 @@
+
+framework module ExpoModulesCore {
+  umbrella header "ExpoModulesCore.h"
+  export *
+  module * { export * }
+
+  module ABI43_0_0React {
+    umbrella "/Users/tomasz/Work/expo/ios/Pods/Headers/Public/ABI43_0_0React-Core"
+    export *
+    module * { export * }
+  }
+
+  module Yoga {
+    umbrella header "/Users/tomasz/Work/expo/ios/Pods/Headers/Public/Yoga/Yoga-umbrella.h"
+    export *
+    module * { export * }
+  }
+}
+
+module ExpoModulesCore.Swift {
+    header "ExpoModulesCore-Swift.h"
+    requires objc
+}

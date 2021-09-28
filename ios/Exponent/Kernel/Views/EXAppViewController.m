@@ -32,6 +32,9 @@
 #endif
 
 #import <React/RCTAppearance.h>
+#if defined(INCLUDES_VERSIONED_CODE) && __has_include(<ABI43_0_0React/ABI43_0_0RCTAppearance.h>)
+#import <ABI43_0_0React/ABI43_0_0RCTAppearance.h>
+#endif
 #if defined(INCLUDES_VERSIONED_CODE) && __has_include(<ABI42_0_0React/ABI42_0_0RCTAppearance.h>)
 #import <ABI42_0_0React/ABI42_0_0RCTAppearance.h>
 #endif
@@ -685,6 +688,9 @@ NS_ASSUME_NONNULL_BEGIN
     appearancePreference = nil;
   }
   RCTOverrideAppearancePreference(appearancePreference);
+#if defined(INCLUDES_VERSIONED_CODE) && __has_include(<ABI43_0_0React/ABI43_0_0RCTAppearance.h>)
+  ABI43_0_0RCTOverrideAppearancePreference(appearancePreference);
+#endif
 
 #if defined(INCLUDES_VERSIONED_CODE) && __has_include(<ABI42_0_0React/ABI42_0_0RCTAppearance.h>)
   ABI42_0_0RCTOverrideAppearancePreference(appearancePreference);
