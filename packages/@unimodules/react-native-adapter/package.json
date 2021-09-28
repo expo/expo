@@ -1,6 +1,6 @@
 {
   "name": "@unimodules/react-native-adapter",
-  "version": "6.5.0-alpha.0",
+  "version": "6.5.0",
   "description": "The adapter to use universal modules with the React Native bridge",
   "main": "build/index.js",
   "types": "build/index.d.ts",
@@ -34,8 +34,8 @@
     "preset": "expo-module-scripts"
   },
   "dependencies": {
-    "expo-modules-autolinking": "^0.3.1",
-    "expo-modules-core": "~0.3.2"
+    "expo-modules-autolinking": "^0.3.2",
+    "expo-modules-core": "~0.4.0"
   },
   "devDependencies": {
     "expo-module-scripts": "^2.0.0"

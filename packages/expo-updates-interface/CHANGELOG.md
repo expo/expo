@@ -8,10 +8,14 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 0.4.0 — 2021-09-28
+
+### 🐛 Bug fixes
+
 - Removed unnecessary gradle dependency on expo-modules-core. ([#14464](https://github.com/expo/expo/pull/14464) by [@esamelson](https://github.com/esamelson))
 - Fix building errors from use_frameworks! in Podfile. ([#14523](https://github.com/expo/expo/pull/14523) by [@kudo](https://github.com/kudo))
-
-### 💡 Others
 
 ## 0.3.1 — 2021-09-16
 

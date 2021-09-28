@@ -3,7 +3,7 @@ apply plugin: 'kotlin-android'
 apply plugin: 'maven'
 
 group = 'host.exp.exponent'
-version = '0.9.3'
+version = '0.10.0'
 
 apply from: "../scripts/create-manifest-android.gradle"
 
@@ -59,7 +59,7 @@ android {
     minSdkVersion safeExtGet("minSdkVersion", 21)
     targetSdkVersion safeExtGet("targetSdkVersion", 30)
     versionCode 31
-    versionName '0.9.3'
+    versionName '0.10.0'
     consumerProguardFiles("proguard-rules.pro")
     testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     // uncomment below to export the database schema when making changes

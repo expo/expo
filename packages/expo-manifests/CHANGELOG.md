@@ -6,13 +6,19 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 0.2.0 — 2021-09-28
+
+### 🎉 New features
+
 - Added `version` getter to both platforms, and `hostUri` getter to Android, for compatibility with expo-dev-client. ([#14460](https://github.com/expo/expo/pull/14460) by [@esamelson](https://github.com/esamelson))
 
 ### 🐛 Bug fixes
 
 - Fix building errors from use_frameworks! in Podfile. ([#14523](https://github.com/expo/expo/pull/14523) by [@kudo](https://github.com/kudo))
-
-### 💡 Others
 
 ## 0.1.1 — 2021-09-16
 
