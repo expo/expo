@@ -1,4 +1,4 @@
-package expo.modules.medialibrary
+package expo.modules.medialibrary.assets
 
 import android.os.AsyncTask
 import android.content.ContentValues
@@ -10,6 +10,9 @@ import android.net.Uri
 import android.os.Build
 import androidx.annotation.RequiresApi
 import expo.modules.core.Promise
+import expo.modules.medialibrary.MediaLibraryConstants
+import expo.modules.medialibrary.MediaLibraryUtils
+import expo.modules.medialibrary.ifNull
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
@@ -95,7 +98,7 @@ class CreateAsset @JvmOverloads constructor(
     if (resolveWithAdditionalData) {
       val selection = "${MediaStore.MediaColumns._ID}=?"
       val args = arrayOf(ContentUris.parseId(assetUri).toString())
-      MediaLibraryUtils.queryAssetInfo(context, selection, args, false, promise)
+      queryAssetInfo(context, selection, args, false, promise)
     } else {
       promise.resolve(null)
     }
@@ -146,7 +149,7 @@ class CreateAsset @JvmOverloads constructor(
         if (resolveWithAdditionalData) {
           val selection = MediaStore.Images.Media.DATA + "=?"
           val args = arrayOf(path)
-          MediaLibraryUtils.queryAssetInfo(context, selection, args, false, promise)
+          queryAssetInfo(context, selection, args, false, promise)
         } else {
           promise.resolve(null)
         }

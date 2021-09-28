@@ -1,4 +1,4 @@
-package expo.modules.medialibrary
+package expo.modules.medialibrary.assets
 
 import android.content.Context
 import android.os.AsyncTask
@@ -15,7 +15,7 @@ internal class GetAssetInfo(
     val selection = "${MediaStore.Images.Media._ID}=?"
     val selectionArgs = arrayOf(assetId)
 
-    MediaLibraryUtils.queryAssetInfo(context, selection, selectionArgs, true, promise)
+    queryAssetInfo(context, selection, selectionArgs, true, promise)
     return null
   }
 }

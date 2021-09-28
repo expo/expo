@@ -109,110 +109,7 @@ public final class MediaLibraryUtils {
     }
   }
 
-  static void queryAssetInfo(Context context, final String selection, final String[] selectionArgs, boolean fullInfo, Promise promise) {
-    ContentResolver contentResolver = context.getContentResolver();
-    try (Cursor asset = contentResolver.query(
-      EXTERNAL_CONTENT,
-      ASSET_PROJECTION,
-      selection,
-      selectionArgs,
-      null
-    )) {
-      if (asset == null) {
-        promise.reject(ERROR_UNABLE_TO_LOAD, "Could not get asset. Query returns null.");
-      } else {
-        if (asset.getCount() == 1) {
-          asset.moveToFirst();
-          ArrayList<Bundle> array = new ArrayList<>();
-          putAssetsInfo(contentResolver, asset, array, 1, 0, fullInfo);
-          // actually we want to return just the first item, but array.getMap returns ReadableMap
-          // which is not compatible with promise.resolve and there is no simple solution to convert
-          // ReadableMap to WritableMap so it's easier to return an array and pick the first item on JS side
-          promise.resolve(array);
-        } else {
-          promise.resolve(null);
-        }
-      }
-    } catch (SecurityException e) {
-      promise.reject(ERROR_UNABLE_TO_LOAD_PERMISSION,
-        "Could not get asset: need READ_EXTERNAL_STORAGE permission.", e);
-    } catch (IOException e) {
-      promise.reject(ERROR_IO_EXCEPTION, "Could not read file", e);
-    } catch (UnsupportedOperationException e)  {
-      e.printStackTrace();
-      promise.reject(ERROR_NO_PERMISSIONS, e.getMessage());
-    }
-  }
-
-  static void putAssetsInfo(ContentResolver contentResolver, Cursor cursor, ArrayList<Bundle> response, int limit, int offset, boolean fullInfo) throws IOException, UnsupportedOperationException {
-    final int idIndex = cursor.getColumnIndex(MediaStore.Images.Media._ID);
-    final int filenameIndex = cursor.getColumnIndex(MediaStore.Images.Media.DISPLAY_NAME);
-    final int mediaTypeIndex = cursor.getColumnIndex(Files.FileColumns.MEDIA_TYPE);
-    final int creationDateIndex = cursor.getColumnIndex(MediaStore.Images.Media.DATE_TAKEN);
-    final int modificationDateIndex = cursor.getColumnIndex(MediaStore.Images.Media.DATE_MODIFIED);
-    final int durationIndex = cursor.getColumnIndex(MediaStore.Video.VideoColumns.DURATION);
-    final int localUriIndex = cursor.getColumnIndex(MediaStore.Images.Media.DATA);
-    final int albumIdIndex = cursor.getColumnIndex(MediaStore.Images.Media.BUCKET_ID);
-
-    if (!cursor.moveToPosition(offset)) {
-      return;
-    }
-    for (int i = 0; i < limit && !cursor.isAfterLast(); i++) {
-      String path = cursor.getString(localUriIndex);
-      String localUri = "file://" + path;
-      int mediaType = cursor.getInt(mediaTypeIndex);
-
-      ExifInterface exifInterface = null;
-      if (mediaType == Files.FileColumns.MEDIA_TYPE_IMAGE) {
-        try {
-          exifInterface = new ExifInterface(path);
-        } catch (IOException e) {
-          Log.w("expo-media-library", "Could not parse EXIF tags for " + localUri);
-          e.printStackTrace();
-        }
-      }
-
-      int[] size = getSizeFromCursor(contentResolver, exifInterface, cursor, mediaType, localUriIndex);
-
-      Bundle asset = new Bundle();
-      asset.putString("id", cursor.getString(idIndex));
-      asset.putString("filename", cursor.getString(filenameIndex));
-      asset.putString("uri", localUri);
-      asset.putString("mediaType", exportMediaType(mediaType));
-      asset.putLong("width", size[0]);
-      asset.putLong("height", size[1]);
-      asset.putLong("creationTime", cursor.getLong(creationDateIndex));
-      asset.putDouble("modificationTime", cursor.getLong(modificationDateIndex) * 1000d);
-      asset.putDouble("duration", cursor.getInt(durationIndex) / 1000d);
-      asset.putString("albumId", cursor.getString(albumIdIndex));
-
-      if (fullInfo) {
-        if (exifInterface != null) {
-          if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            Uri photoUri = Uri.withAppendedPath(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, cursor.getString(idIndex));
-            getExifFullInfo(exifInterface, asset);
-            getExifLocationForUri(contentResolver, photoUri, asset);
-          } else {
-            getExifFullInfo(exifInterface, asset);
-            getExifLocation(exifInterface, asset);
-          }
-          asset.putString("localUri", localUri);
-        }
-      }
-      cursor.moveToNext();
-      response.add(asset);
-    }
-  }
-
-  static String convertSortByKey(String key) throws IllegalArgumentException {
-    if (!SORT_KEYS.containsKey(key)) {
-      String errorMessage = String.format("SortBy key \"%s\" is not supported!", key);
-      throw new IllegalArgumentException(errorMessage);
-    }
-    return SORT_KEYS.get(key);
-  }
-
-  static String exportMediaType(int mediaType) {
+  public static String exportMediaType(int mediaType) {
     switch (mediaType) {
       case Files.FileColumns.MEDIA_TYPE_IMAGE:
         return MEDIA_TYPE_PHOTO;
@@ -226,7 +123,7 @@ public final class MediaLibraryUtils {
     }
   }
 
-  static int[] getSizeFromCursor(ContentResolver contentResolver, ExifInterface exifInterface, Cursor cursor, int mediaType, int localUriIndex) throws IOException {
+  public static int[] getSizeFromCursor(ContentResolver contentResolver, ExifInterface exifInterface, Cursor cursor, int mediaType, int localUriIndex) throws IOException {
     final String uri = cursor.getString(localUriIndex);
 
     if (mediaType == Files.FileColumns.MEDIA_TYPE_VIDEO) {
@@ -301,29 +198,7 @@ public final class MediaLibraryUtils {
     }
   }
 
-  static String mapOrderDescriptor(List orderDescriptor) throws IllegalArgumentException {
-    List<String> result = new ArrayList<>(20);
-
-    for (Object item : orderDescriptor) {
-      if (item instanceof String) {
-        String key = convertSortByKey((String) item);
-        result.add(key + " DESC");
-      } else if (item instanceof ArrayList) {
-        ArrayList array = (ArrayList) item;
-        if (array.size() != 2) {
-          throw new IllegalArgumentException("Array sortBy in assetsOptions has invalid layout.");
-        }
-        String key = convertSortByKey((String) array.get(0));
-        boolean order = (boolean) array.get(1);
-        result.add(key + (order ? " ASC" : " DESC"));
-      } else {
-        throw new IllegalArgumentException("Array sortBy in assetsOptions contains invalid items.");
-      }
-    }
-    return TextUtils.join(",", result);
-  }
-
-  static void getExifFullInfo(ExifInterface exifInterface, Bundle response) {
+  public static void getExifFullInfo(ExifInterface exifInterface, Bundle response) {
     Bundle exifMap = new Bundle();
     for (String[] tagInfo : exifTags) {
       String name = tagInfo[1];
@@ -348,7 +223,7 @@ public final class MediaLibraryUtils {
   // API 29+ adds "scoped storage" which requires extra permissions (ACCESS_MEDIA_LOCATION) to access photo data
   // Reference: https://developer.android.com/training/data-storage/shared/media#location-info-photos
   @RequiresApi(api = Build.VERSION_CODES.Q)
-  static void getExifLocationForUri(ContentResolver contentResolver, Uri photoUri, Bundle asset) throws UnsupportedOperationException, IOException {
+  public static void getExifLocationForUri(ContentResolver contentResolver, Uri photoUri, Bundle asset) throws UnsupportedOperationException, IOException {
     InputStream stream;
 
     try {
@@ -381,7 +256,7 @@ public final class MediaLibraryUtils {
     }
   }
 
-  static void getExifLocation(ExifInterface exifInterface, Bundle asset) {
+  public static void getExifLocation(ExifInterface exifInterface, Bundle asset) {
 
     double[] latLong = exifInterface.getLatLong();
 

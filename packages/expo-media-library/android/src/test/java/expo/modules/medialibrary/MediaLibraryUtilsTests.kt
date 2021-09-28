@@ -3,12 +3,14 @@ package expo.modules.medialibrary
 import android.os.Bundle
 import androidx.exifinterface.media.ExifInterface
 import expo.modules.medialibrary.MediaLibraryConstants.exifTags
+import io.mockk.clearAllMocks
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkClass
 import io.mockk.mockkStatic
 import io.mockk.verify
 import io.mockk.verifyOrder
+import org.junit.After
 import org.junit.Assert.assertArrayEquals
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
@@ -20,40 +22,9 @@ import java.io.File
 
 @RunWith(RobolectricTestRunner::class)
 internal class MediaLibraryUtilsTests {
-
-  @Test
-  fun `putAssetsInfo returns correct response when fullInfo=false`() {
-    // arrange
-    val cursor = mockCursor(
-      arrayOf(
-        MockData.mockVideo.toColumnArray(),
-        MockData.mockAudio.toColumnArray()
-      )
-    )
-
-    val contentResolver = mockContentResolver(cursor)
-
-    mockkStatic(MediaLibraryUtils::class)
-    every {
-      MediaLibraryUtils.getSizeFromCursor(contentResolver, any(), cursor, any(), any())
-    } returns intArrayOf(0, 0) andThen intArrayOf(100, 200)
-
-    // act
-    val result = arrayListOf<Bundle>()
-    MediaLibraryUtils.putAssetsInfo(contentResolver, cursor, result, 5, 0, false)
-
-    // assert
-    verify(exactly = 0) {
-      MediaLibraryUtils.getExifLocation(any(), any())
-      MediaLibraryUtils.getExifLocation(any(), any())
-    }
-
-    assertEquals(2, result.size)
-
-    assertEquals(MockData.mockVideo.id.toString(), result[0].getString("id"))
-    assertEquals("file://${MockData.mockVideo.path}", result[0].getString("uri"))
-
-    assertNull(result[0].getString("localUri"))
+  @After
+  fun tearDown() {
+    clearAllMocks()
   }
 
   @Test
@@ -187,63 +158,5 @@ internal class MediaLibraryUtilsTests {
     assertArrayEquals(nonSwappedArray, rotated_180)
     assertArrayEquals(swappedArray, rotated_270)
     assertArrayEquals(swappedArray, rotated_m90)
-  }
-
-  @Test
-  fun `mapOrderDescriptor works with string keys`() {
-    // arrange
-    mockkStatic(MediaLibraryUtils::class)
-    every { MediaLibraryUtils.convertSortByKey(any()) } returnsArgument 0
-
-    val keys = listOf("key1", "key2")
-
-    // act
-    val result = MediaLibraryUtils.mapOrderDescriptor(keys)
-
-    // assert
-    assertEquals("key1 DESC,key2 DESC", result)
-  }
-
-  @Test
-  fun `mapOrderDescriptor works with array keys`() {
-    // arrange
-    mockkStatic(MediaLibraryUtils::class)
-    every { MediaLibraryUtils.convertSortByKey(any()) } returnsArgument 0
-
-    val keys = listOf(
-      arrayListOf<Any>("key1", true),
-      arrayListOf<Any>("key2", false)
-    )
-
-    // act
-    val result = MediaLibraryUtils.mapOrderDescriptor(keys)
-
-    // assert
-    assertEquals("key1 ASC,key2 DESC", result)
-  }
-
-  @Test(expected = IllegalArgumentException::class)
-  fun `mapOrderDescriptor throws when provided invalid types`() {
-    // arrange
-    val items = listOf<Any>(1, true, 3.14)
-
-    // act
-    MediaLibraryUtils.mapOrderDescriptor(items)
-
-    // assert throw
-  }
-
-  @Test(expected = IllegalArgumentException::class)
-  fun `mapOrderDescriptor throws when provided invalid layout`() {
-    // arrange
-    val keys = listOf(
-      arrayListOf<Any>("only1item"),
-      arrayListOf<Any>(3, "items", "here")
-    )
-
-    // act
-    MediaLibraryUtils.mapOrderDescriptor(keys)
-
-    // assert throw
   }
 }

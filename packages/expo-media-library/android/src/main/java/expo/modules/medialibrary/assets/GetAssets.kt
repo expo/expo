@@ -1,10 +1,11 @@
-package expo.modules.medialibrary
+package expo.modules.medialibrary.assets
 
 import android.os.AsyncTask
 import android.os.Bundle
 import android.content.Context
 import expo.modules.core.Promise
 import expo.modules.medialibrary.MediaLibraryConstants.*
+import expo.modules.medialibrary.MediaLibraryUtils
 import java.io.IOException
 import java.lang.IllegalArgumentException
 import java.util.ArrayList
@@ -17,7 +18,7 @@ internal class GetAssets(
   public override fun doInBackground(vararg params: Void?): Void? {
     val contentResolver = context.contentResolver
     try {
-      val (selection, order, limit, offset) = getQueryFromAssetOptions(assetOptions)
+      val (selection, order, limit, offset) = getQueryFromOptions(assetOptions)
       contentResolver.query(
           EXTERNAL_CONTENT,
           ASSET_PROJECTION,
@@ -31,14 +32,14 @@ internal class GetAssets(
         }
 
           val assetsInfo = ArrayList<Bundle>()
-          MediaLibraryUtils.putAssetsInfo(
-              contentResolver,
-              assetsCursor,
-              assetsInfo,
-              limit,
-              offset,
-              false
-          )
+        putAssetsInfo(
+            contentResolver,
+            assetsCursor,
+            assetsInfo,
+            limit,
+            offset,
+            false
+        )
           val response = Bundle().apply {
             putParcelableArrayList("assets", assetsInfo)
             putBoolean("hasNextPage", !assetsCursor.isAfterLast)

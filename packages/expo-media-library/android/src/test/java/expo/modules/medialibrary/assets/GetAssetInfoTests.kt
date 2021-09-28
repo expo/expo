@@ -1,12 +1,22 @@
-package expo.modules.medialibrary
+package expo.modules.medialibrary.assets
 
 import android.os.Bundle
 import android.provider.MediaStore
+import expo.modules.medialibrary.MediaLibraryConstants
+import expo.modules.medialibrary.MediaLibraryUtils
+import expo.modules.medialibrary.MockContext
+import expo.modules.medialibrary.MockData
+import expo.modules.medialibrary.mockContentResolver
+import expo.modules.medialibrary.mockContentResolverForResult
+import expo.modules.medialibrary.throwableContentResolver
+import io.mockk.clearAllMocks
 import io.mockk.every
 import io.mockk.just
 import io.mockk.mockkStatic
 import io.mockk.runs
 import io.mockk.slot
+import io.mockk.unmockkStatic
+import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
@@ -31,6 +41,11 @@ internal class GetAssetInfoTests {
     mockContext = MockContext()
   }
 
+  @After
+  fun tearDown() {
+    clearAllMocks()
+  }
+
   @Test
   fun `GetAssetInfo should call queryAssetInfo`() {
     // arrange
@@ -38,14 +53,14 @@ internal class GetAssetInfoTests {
     val selectionSlot = slot<String>()
     val selectionArgsSlot = slot<Array<String>>()
 
-    mockkStatic(MediaLibraryUtils::class)
+    mockkStatic(::queryAssetInfo)
     every {
-      MediaLibraryUtils.queryAssetInfo(
-        context,
-        capture(selectionSlot),
-        capture(selectionArgsSlot),
-        true,
-        promise
+      queryAssetInfo(
+          context,
+          capture(selectionSlot),
+          capture(selectionArgsSlot),
+          true,
+          promise
       )
     } just runs
 
@@ -72,14 +87,14 @@ internal class GetAssetInfoTests {
 
     mockkStatic(MediaLibraryUtils::class)
     every {
-      MediaLibraryUtils.putAssetsInfo(any(), any(), any(), any(), any(), any())
+      putAssetsInfo(any(), any(), any(), any(), any(), any())
     } just runs
 
     val selection = "${MediaStore.Images.Media._ID}=?"
     val selectionArgs = arrayOf(MockData.mockImage.id.toString())
 
     // act
-    MediaLibraryUtils.queryAssetInfo(context, selection, selectionArgs, false, promise)
+    queryAssetInfo(context, selection, selectionArgs, false, promise)
 
     // assert
     promiseResolvedWithType<ArrayList<Bundle>>(promise) {
@@ -93,7 +108,7 @@ internal class GetAssetInfoTests {
     val context = mockContext with mockContentResolver(null)
 
     // act
-    MediaLibraryUtils.queryAssetInfo(context, "", emptyArray(), false, promise)
+    queryAssetInfo(context, "", emptyArray(), false, promise)
 
     // assert
     assertRejected(promise)
@@ -105,7 +120,7 @@ internal class GetAssetInfoTests {
     val context = mockContext with throwableContentResolver(SecurityException())
 
     // act
-    MediaLibraryUtils.queryAssetInfo(context, "", emptyArray(), false, promise)
+    queryAssetInfo(context, "", emptyArray(), false, promise)
 
     // assert
     assertRejectedWithCode(promise, MediaLibraryConstants.ERROR_UNABLE_TO_LOAD_PERMISSION)
@@ -117,7 +132,7 @@ internal class GetAssetInfoTests {
     val context = mockContext with throwableContentResolver(IOException())
 
     // act
-    MediaLibraryUtils.queryAssetInfo(context, "", emptyArray(), false, promise)
+    queryAssetInfo(context, "", emptyArray(), false, promise)
 
     // assert
     assertRejectedWithCode(promise, MediaLibraryConstants.ERROR_IO_EXCEPTION)

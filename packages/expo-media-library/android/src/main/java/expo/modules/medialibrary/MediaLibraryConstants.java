@@ -29,23 +29,23 @@ public final class MediaLibraryConstants {
   public static final String ERROR_UNABLE_TO_ASK_FOR_PERMISSIONS_MESSAGE = "Unable to ask for permissions.";
   public static final String ERROR_NO_FILE_EXTENSION = "E_NO_FILE_EXTENSION";
 
-  static final String MEDIA_TYPE_AUDIO = "audio";
-  static final String MEDIA_TYPE_PHOTO = "photo";
-  static final String MEDIA_TYPE_VIDEO = "video";
-  static final String MEDIA_TYPE_UNKNOWN = "unknown";
-  static final String MEDIA_TYPE_ALL = "all";
+  public static final String MEDIA_TYPE_AUDIO = "audio";
+  public static final String MEDIA_TYPE_PHOTO = "photo";
+  public static final String MEDIA_TYPE_VIDEO = "video";
+  public static final String MEDIA_TYPE_UNKNOWN = "unknown";
+  public static final String MEDIA_TYPE_ALL = "all";
 
-  static final String SORT_BY_DEFAULT = "default";
-  static final String SORT_BY_CREATION_TIME = "creationTime";
-  static final String SORT_BY_MODIFICATION_TIME = "modificationTime";
-  static final String SORT_BY_MEDIA_TYPE = "mediaType";
-  static final String SORT_BY_WIDTH = "width";
-  static final String SORT_BY_HEIGHT = "height";
-  static final String SORT_BY_DURATION = "duration";
+  public static final String SORT_BY_DEFAULT = "default";
+  public static final String SORT_BY_CREATION_TIME = "creationTime";
+  public static final String SORT_BY_MODIFICATION_TIME = "modificationTime";
+  public static final String SORT_BY_MEDIA_TYPE = "mediaType";
+  public static final String SORT_BY_WIDTH = "width";
+  public static final String SORT_BY_HEIGHT = "height";
+  public static final String SORT_BY_DURATION = "duration";
 
   static final String LIBRARY_DID_CHANGE_EVENT = "mediaLibraryDidChange";
 
-  static final Map<String, Integer> MEDIA_TYPES = new HashMap<String, Integer>() {
+  public static final Map<String, Integer> MEDIA_TYPES = new HashMap<String, Integer>() {
     {
       put(MEDIA_TYPE_AUDIO, MediaStore.Files.FileColumns.MEDIA_TYPE_AUDIO);
       put(MEDIA_TYPE_PHOTO, MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE);
@@ -54,7 +54,7 @@ public final class MediaLibraryConstants {
     }
   };
 
-  static final Map<String, String> SORT_KEYS = new HashMap<String, String>() {
+  public static final Map<String, String> SORT_KEYS = new HashMap<String, String>() {
     {
       put(SORT_BY_DEFAULT, MediaStore.Images.Media._ID);
       put(SORT_BY_CREATION_TIME, MediaStore.Images.Media.DATE_TAKEN);
@@ -68,7 +68,7 @@ public final class MediaLibraryConstants {
 
   public static final Uri EXTERNAL_CONTENT = MediaStore.Files.getContentUri("external");
 
-  static final String[] ASSET_PROJECTION = {
+  public static final String[] ASSET_PROJECTION = {
     MediaStore.Images.Media._ID,
     MediaStore.Files.FileColumns.DISPLAY_NAME,
     MediaStore.Images.Media.DATA,

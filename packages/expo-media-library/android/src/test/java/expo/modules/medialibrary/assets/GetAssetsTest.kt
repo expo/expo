@@ -1,7 +1,14 @@
-package expo.modules.medialibrary
+package expo.modules.medialibrary.assets
 
 import expo.modules.medialibrary.MediaLibraryConstants.ERROR_UNABLE_TO_LOAD
 import expo.modules.medialibrary.MediaLibraryConstants.ERROR_UNABLE_TO_LOAD_PERMISSION
+import expo.modules.medialibrary.MediaLibraryUtils
+import expo.modules.medialibrary.MockContext
+import expo.modules.medialibrary.MockData
+import expo.modules.medialibrary.mockContentResolver
+import expo.modules.medialibrary.mockContentResolverForResult
+import expo.modules.medialibrary.throwableContentResolver
+import io.mockk.clearAllMocks
 import io.mockk.every
 import io.mockk.just
 import io.mockk.mockkStatic
@@ -29,16 +36,16 @@ internal class GetAssetsTest {
     promise = PromiseMock()
     mockContext = MockContext()
 
-    mockkStatic(::getQueryFromAssetOptions)
-    every { getQueryFromAssetOptions(any()) } returns GetAssetsQuery(selection = "", order = "", limit = 10, offset = 0)
+    mockkStatic(::getQueryFromOptions)
+    every { getQueryFromOptions(any()) } returns GetAssetsQuery(selection = "", order = "", limit = 10, offset = 0)
 
-    mockkStatic(MediaLibraryUtils::class)
-    every { MediaLibraryUtils.putAssetsInfo(any(), any(), any(), any(), any(), any()) } just runs
+    mockkStatic(::putAssetsInfo)
+    every { putAssetsInfo(any(), any(), any(), any(), any(), any()) } just runs
   }
 
   @After
   fun tearDown() {
-    unmockkStatic(::getQueryFromAssetOptions)
+    clearAllMocks()
   }
 
   @Test
