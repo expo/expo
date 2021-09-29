@@ -29,8 +29,8 @@ import java.math.BigDecimal
 import java.util.*
 
 class FacebookModule(
-    context: Context,
-    private val moduleRegistryDelegate: ModuleRegistryDelegate = ModuleRegistryDelegate()
+  context: Context,
+  private val moduleRegistryDelegate: ModuleRegistryDelegate = ModuleRegistryDelegate()
 ) : ExportedModule(context), ActivityEventListener {
   private val callbackManager: CallbackManager = CallbackManager.Factory.create()
   private var appEventLogger: AppEventsLogger? = null
@@ -105,7 +105,7 @@ class FacebookModule(
   }
 
   private fun accessTokenToBundle(accessToken: AccessToken?): Bundle? {
-    return if (accessToken != null)  {
+    return if (accessToken != null) {
       Bundle().apply {
         putString("token", accessToken.token)
         putString("userId", accessToken.userId)
@@ -170,8 +170,11 @@ class FacebookModule(
   @ExpoMethod
   fun logInWithReadPermissionsAsync(config: ReadableArguments, promise: Promise) {
     if (FacebookSdk.getApplicationId() == null) {
-      promise.reject(ERR_FACEBOOK_MISCONFIGURED, "No appId configured, required for initialization. " +
-          "Please ensure that you're either providing `appId` to `initializeAsync` as an argument or inside AndroidManifest.xml.")
+      promise.reject(
+        ERR_FACEBOOK_MISCONFIGURED,
+        "No appId configured, required for initialization. " +
+          "Please ensure that you're either providing `appId` to `initializeAsync` as an argument or inside AndroidManifest.xml."
+      )
     }
 
     // Log out
@@ -188,35 +191,38 @@ class FacebookModule(
       }
       LoginManager.getInstance().loginBehavior = behavior
     }
-    LoginManager.getInstance().registerCallback(callbackManager, object : FacebookCallback<LoginResult> {
-      override fun onSuccess(loginResult: LoginResult) {
-        LoginManager.getInstance().registerCallback(callbackManager, null)
+    LoginManager.getInstance().registerCallback(
+      callbackManager,
+      object : FacebookCallback<LoginResult> {
+        override fun onSuccess(loginResult: LoginResult) {
+          LoginManager.getInstance().registerCallback(callbackManager, null)
 
-        // This is the only route through which we send an access token back. Make sure the
-        // application ID is correct.
-        if (appId != loginResult.accessToken.applicationId) {
-          promise.reject(IllegalStateException("Logged into wrong app, try again?"))
-          return
-        }
-        val response = accessTokenToBundle(loginResult.accessToken)
-        response?.putString("type", "success")
-        promise.resolve(response)
-      }
-
-      override fun onCancel() {
-        LoginManager.getInstance().registerCallback(callbackManager, null)
-        promise.resolve(
-          Bundle().apply {
-            putString("type", "cancel")
+          // This is the only route through which we send an access token back. Make sure the
+          // application ID is correct.
+          if (appId != loginResult.accessToken.applicationId) {
+            promise.reject(IllegalStateException("Logged into wrong app, try again?"))
+            return
           }
-        )
-      }
+          val response = accessTokenToBundle(loginResult.accessToken)
+          response?.putString("type", "success")
+          promise.resolve(response)
+        }
 
-      override fun onError(error: FacebookException) {
-        LoginManager.getInstance().registerCallback(callbackManager, null)
-        promise.reject(ERR_FACEBOOK_LOGIN, "An error occurred while trying to log in to Facebook", error)
+        override fun onCancel() {
+          LoginManager.getInstance().registerCallback(callbackManager, null)
+          promise.resolve(
+            Bundle().apply {
+              putString("type", "cancel")
+            }
+          )
+        }
+
+        override fun onError(error: FacebookException) {
+          LoginManager.getInstance().registerCallback(callbackManager, null)
+          promise.reject(ERR_FACEBOOK_LOGIN, "An error occurred while trying to log in to Facebook", error)
+        }
       }
-    })
+    )
     try {
       val activityProvider: ActivityProvider by moduleRegistry()
       LoginManager.getInstance().logInWithReadPermissions(activityProvider.currentActivity, permissions)
@@ -239,16 +245,17 @@ class FacebookModule(
 
   @ExpoMethod
   fun logPurchaseAsync(
-      purchaseAmount: Double,
-      currencyCode: String?,
-      parameters: ReadableArguments?,
-      promise: Promise
+    purchaseAmount: Double,
+    currencyCode: String?,
+    parameters: ReadableArguments?,
+    promise: Promise
   ) {
     try {
       appEventLogger!!.logPurchase(
-          BigDecimal.valueOf(purchaseAmount),
-          Currency.getInstance(currencyCode),
-          bundleWithNullValuesAsStrings(parameters))
+        BigDecimal.valueOf(purchaseAmount),
+        Currency.getInstance(currencyCode),
+        bundleWithNullValuesAsStrings(parameters)
+      )
       promise.resolve(null)
     } catch (e: Exception) {
       promise.reject("ERR_FACEBOOK_APP_EVENT_LOGGER", "appEventLogger is not initialized", e)
@@ -309,16 +316,16 @@ class FacebookModule(
   @ExpoMethod
   fun setUserDataAsync(userData: ReadableArguments, promise: Promise) {
     AppEventsLogger.setUserData(
-        userData.getString("email"),
-        userData.getString("firstName"),
-        userData.getString("lastName"),
-        userData.getString("phone"),
-        userData.getString("dateOfBirth"),
-        userData.getString("gender"),
-        userData.getString("city"),
-        userData.getString("state"),
-        userData.getString("zip"),
-        userData.getString("country")
+      userData.getString("email"),
+      userData.getString("firstName"),
+      userData.getString("lastName"),
+      userData.getString("phone"),
+      userData.getString("dateOfBirth"),
+      userData.getString("gender"),
+      userData.getString("city"),
+      userData.getString("state"),
+      userData.getString("zip"),
+      userData.getString("country")
     )
     promise.resolve(null)
   }
