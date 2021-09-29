@@ -22,17 +22,17 @@ class ManagedAppSplashScreenViewController(
   fun startSplashScreenWarningTimer() {
     if (BuildConfig.DEBUG) {
       mRunnable = Runnable {
-          mSnackbar = Snackbar.make(splashScreenView, "Stuck on splash screen?", Snackbar.LENGTH_LONG)
-          mSnackbar!!.setAction(
-            "Info",
-            View.OnClickListener { v ->
-              val url = "https://expo.fyi/splash-screen-hanging"
-              val webpage = Uri.parse(url)
-              val intent = Intent(Intent.ACTION_VIEW, webpage)
-              v.context.startActivity(intent)
-              mSnackbar!!.dismiss()
-            }
-          )
+        mSnackbar = Snackbar.make(splashScreenView, "Stuck on splash screen?", Snackbar.LENGTH_LONG)
+        mSnackbar!!.setAction(
+          "Info",
+          View.OnClickListener { v ->
+            val url = "https://expo.fyi/splash-screen-hanging"
+            val webpage = Uri.parse(url)
+            val intent = Intent(Intent.ACTION_VIEW, webpage)
+            v.context.startActivity(intent)
+            mSnackbar!!.dismiss()
+          }
+        )
         mSnackbar!!.show()
       }
 
