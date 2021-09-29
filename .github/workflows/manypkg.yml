@@ -1,0 +1,36 @@
+name: Manypkg Check
+
+on:
+  workflow_dispatch: {}
+  push:
+    branches: [master]
+    paths:
+      - .github/workflows/manypkg.yml
+      - apps/**
+      - packages/**
+      - yarn.lock
+  pull_request:
+    paths:
+      - .github/workflows/manypkg.yml
+      - apps/**
+      - packages/**
+      - yarn.lock
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  docs:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install Node 14
+        uses: actions/setup-node@v2
+        with:
+          node-version: '14.17'
+      - name: Check out repository
+        uses: actions/checkout@v2
+        with:
+          submodules: true
+      - name: Manypkg Check
+        run: npx @manypkg/cli check
