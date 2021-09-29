@@ -7,12 +7,14 @@ on:
     paths:
       - .github/workflows/manypkg.yml
       - apps/**
+      - home/**
       - packages/**
       - yarn.lock
   pull_request:
     paths:
       - .github/workflows/manypkg.yml
       - apps/**
+      - home/**
       - packages/**
       - yarn.lock
 
