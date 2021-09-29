@@ -130,10 +130,21 @@ ABI43_0_0EX_REGISTER_MODULE();
   NSArray<NSString *> *familyNames = [UIFont familyNames];
   NSMutableArray<NSString *> *fontNames = [NSMutableArray array];
   for (NSString *familyName in familyNames) {
-    [fontNames addObject:familyName];
-    [fontNames addObjectsFromArray:[UIFont fontNamesForFamilyName:familyName]];
+    // "System Font" is added to [UIFont familyNames] in iOS 15, and the font names that
+    // correspond with it are dot prefixed .SFUI-* fonts which log the following warning
+    // when passed in to [UIFont fontNamesForFamilyName:name]:
+    // CoreText note: Client requested name “.SFUI-HeavyItalic”, it will get TimesNewRomanPSMT rather than the intended font.
+    // All system UI font access should be through proper APIs such as CTFontCreateUIFontForLanguage() or +[UIFont systemFontOfSize:]
+    //
+    if (![familyName isEqualToString:@"System Font"]) {
+      [fontNames addObject:familyName];
+      NSArray<NSString *> *names = [UIFont fontNamesForFamilyName:familyName];
+      [fontNames addObjectsFromArray:names];
+    }
   }
-  return [fontNames sortedArrayUsingSelector:@selector(caseInsensitiveCompare:)];
+
+  // Remove duplciates and sort alphabetically
+  return [[[NSSet setWithArray:fontNames] allObjects] sortedArrayUsingSelector:@selector(caseInsensitiveCompare:)];
 }
 
 # pragma mark - device info
