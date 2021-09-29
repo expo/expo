@@ -23,7 +23,7 @@
   "homepage": "https://github.com/expo/expo/tree/master/packages/expo-processing",
   "dependencies": {
     "expo-gl": "11.0.0",
-    "expo-modules-core": "~0.4.0"
+    "expo-modules-core": "~0.4.1"
   },
   "peerDependencies": {
     "processing-js": "^1.6.6"

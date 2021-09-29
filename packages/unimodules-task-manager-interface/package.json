@@ -21,6 +21,6 @@
   "license": "MIT",
   "homepage": "https://github.com/expo/expo/tree/master/packages/unimodules-task-manager-interface",
   "dependencies": {
-    "expo-modules-core": "~0.4.0"
+    "expo-modules-core": "~0.4.1"
   }
 }

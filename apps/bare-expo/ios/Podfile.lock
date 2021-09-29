@@ -178,7 +178,7 @@ PODS:
   - expo-dev-menu/Vendored (0.8.1):
     - expo-dev-menu-interface
     - React-Core
-  - ExpoModulesCore (0.4.0):
+  - ExpoModulesCore (0.4.1):
     - React-Core
   - EXPrint (11.0.0):
     - ExpoModulesCore
@@ -1258,7 +1258,7 @@ SPEC CHECKSUMS:
   expo-dev-launcher: fe293c35deefcb7bb2676e7f8c6457ebbd08a16c
   expo-dev-menu: ba37a9fcf1ccbbb06093300af0b80a5ad0cb73b1
   expo-dev-menu-interface: 05a7c463d925c88e97b38faa4d157bab97b7e8b8
-  ExpoModulesCore: edf601205a340dd213f85fab52e4a0f6ffa0f463
+  ExpoModulesCore: 8185e4de18e1e8bdf58e6387af51b7b1cb2ea1b7
   EXPrint: 0842d94f62a5ef9a3e597ab5dc46e3e03474e866
   EXRandom: 9ed4600d410cf2fe58d22b3121865624065a16e9
   EXScreenCapture: e7a0c89a099e83a172360625d98a92b4f8bb3d3e
