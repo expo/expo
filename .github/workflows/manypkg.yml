@@ -21,7 +21,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  docs:
+  manypkg:
     runs-on: ubuntu-latest
     steps:
       - name: Install Node 14
