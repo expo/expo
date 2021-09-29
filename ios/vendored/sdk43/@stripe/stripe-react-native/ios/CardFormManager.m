@@ -2,7 +2,7 @@
 #import <ABI43_0_0React/ABI43_0_0RCTBridgeModule.h>
 #import <ABI43_0_0React/ABI43_0_0RCTViewManager.h>
 
-@interface ABI43_0_0RCT_EXTERN_MODULE(CardFormManager, ABI43_0_0RCTViewManager)
+@interface ABI43_0_0RCT_EXTERN_REMAP_MODULE(CardFormManager, ABI43_0_0CardFormManager, ABI43_0_0RCTViewManager)
 ABI43_0_0RCT_EXPORT_VIEW_PROPERTY(onFormComplete, ABI43_0_0RCTDirectEventBlock)
 ABI43_0_0RCT_EXPORT_VIEW_PROPERTY(dangerouslyGetFullCardDetails, BOOL)
 ABI43_0_0RCT_EXPORT_VIEW_PROPERTY(autofocus, BOOL)

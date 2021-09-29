@@ -40,7 +40,7 @@ class CardFieldView: UIView, STPPaymentCardTextFieldDelegate {
     @objc var autofocus: Bool = false {
         didSet {
             if autofocus == true {
-                cardField.reactFocus()
+                cardField.abi43_0_0ReactFocus()
             }
         }
     }
