@@ -123,6 +123,7 @@ class SimpleExoPlayerData extends PlayerData
   public synchronized void release() {
     if (mSimpleExoPlayer != null) {
       mSimpleExoPlayer.release();
+      stopUpdatingProgressIfNecessary();
       mSimpleExoPlayer = null;
     }
   }
