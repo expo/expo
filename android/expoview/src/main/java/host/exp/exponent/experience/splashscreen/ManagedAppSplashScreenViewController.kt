@@ -22,18 +22,24 @@ class ManagedAppSplashScreenViewController(
   fun startSplashScreenWarningTimer() {
     if (BuildConfig.DEBUG) {
       mRunnable = Runnable {
-        mSnackbar = Snackbar.make(splashScreenView, "Stuck on splash screen?", Snackbar.LENGTH_LONG)
-        mSnackbar!!.setAction(
-          "Info",
-          View.OnClickListener { v ->
-            val url = "https://expo.fyi/splash-screen-hanging"
-            val webpage = Uri.parse(url)
-            val intent = Intent(Intent.ACTION_VIEW, webpage)
-            v.context.startActivity(intent)
-            mSnackbar!!.dismiss()
-          }
-        )
-        mSnackbar!!.show()
+        // this runnable is being executed after the parent view has been destroyed, causing a crash
+        // an easy way to trigger this is to toggle the debug JS option in the dev menu
+        // this causes the whole app to remount, I suspect this is why the timer isn't cleaned up
+        // TODO: cancel runnable when app is unmounted / reloaded
+        if (splashScreenView?.parent != null) {
+          mSnackbar = Snackbar.make(splashScreenView, "Stuck on splash screen?", Snackbar.LENGTH_LONG)
+          mSnackbar!!.setAction(
+            "Info",
+            View.OnClickListener { v ->
+              val url = "https://expo.fyi/splash-screen-hanging"
+              val webpage = Uri.parse(url)
+              val intent = Intent(Intent.ACTION_VIEW, webpage)
+              v.context.startActivity(intent)
+              mSnackbar!!.dismiss()
+            }
+          )
+          mSnackbar!!.show()
+        }
       }
 
       mWarningHandler.postDelayed(mRunnable!!, 20000)
