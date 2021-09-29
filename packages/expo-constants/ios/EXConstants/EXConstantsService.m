@@ -138,8 +138,7 @@ EX_REGISTER_MODULE();
     //
     if (![familyName isEqualToString:@"System Font"]) {
       [fontNames addObject:familyName];
-      NSArray<NSString *> *names = [UIFont fontNamesForFamilyName:familyName];
-      [fontNames addObjectsFromArray:names];
+      [fontNames addObjectsFromArray:[UIFont fontNamesForFamilyName:familyName]];
     }
   }
 
