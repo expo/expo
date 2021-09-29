@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Updated `@testing-library/react-hooks` to version `7.0.1`. ([#14552](https://github.com/expo/expo/pull/14552)) by [@Simek](https://github.com/Simek))
+
 ## 8.4.0 — 2021-09-08
 
 ### 🎉 New features

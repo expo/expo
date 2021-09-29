@@ -31,13 +31,13 @@
   "license": "MIT",
   "homepage": "https://docs.expo.dev/versions/latest/sdk/permissions/",
   "jest": {
-    "preset": "expo-module-scripts/ios"
+    "preset": "expo-module-scripts"
   },
   "dependencies": {
     "expo-modules-core": "~0.4.1"
   },
   "devDependencies": {
-    "@testing-library/react-hooks": "^3.3.0",
+    "@testing-library/react-hooks": "^7.0.1",
     "expo-module-scripts": "^2.0.0"
   }
 }
