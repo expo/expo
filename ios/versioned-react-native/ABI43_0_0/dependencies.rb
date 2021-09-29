@@ -9,4 +9,4 @@ pod 'ABI43_0_0ExpoKit',
   :project_name => 'ABI43_0_0',
   :subspecs => ['Expo', 'ExpoOptional']
 
-use_pods! '{versioned,vendored}/sdk43/*/*.podspec.json', 'ABI43_0_0'
+use_pods! '{versioned,vendored}/sdk43/**/*.podspec.json', 'ABI43_0_0'
