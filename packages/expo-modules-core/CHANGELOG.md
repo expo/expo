@@ -10,6 +10,12 @@
 
 ### 💡 Others
 
+## 0.4.1 — 2021-09-29
+
+### 🐛 Bug fixes
+
+- Removed accidentally published prebuilt binaries on iOS.
+
 ## 0.4.0 — 2021-09-28
 
 ### 🐛 Bug fixes

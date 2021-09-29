@@ -2493,9 +2493,9 @@ PODS:
     - ExpoModulesCore
   - Expo (43.0.0-beta.1):
     - ExpoModulesCore
-  - ExpoModulesCore (0.4.0):
+  - ExpoModulesCore (0.4.1):
     - React-Core
-  - ExpoModulesCore/Tests (0.4.0):
+  - ExpoModulesCore/Tests (0.4.1):
     - Nimble
     - Quick
     - React-Core
@@ -5153,7 +5153,7 @@ SPEC CHECKSUMS:
   EXNotifications: 1c497a4a6be535ba78d1ba5eaca56864b0d9dcb4
   EXPermissions: fa9b26c8a56e0be7c296965d6259d576a4fbb38d
   Expo: 1ef658fbff1757876c15726889b6913b15cd2b8f
-  ExpoModulesCore: edf601205a340dd213f85fab52e4a0f6ffa0f463
+  ExpoModulesCore: 8185e4de18e1e8bdf58e6387af51b7b1cb2ea1b7
   EXPrint: 0842d94f62a5ef9a3e597ab5dc46e3e03474e866
   EXRandom: 9ed4600d410cf2fe58d22b3121865624065a16e9
   EXScreenCapture: e7a0c89a099e83a172360625d98a92b4f8bb3d3e
