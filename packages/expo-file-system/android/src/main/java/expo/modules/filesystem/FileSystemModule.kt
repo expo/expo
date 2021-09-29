@@ -67,12 +67,12 @@ import java.util.concurrent.TimeUnit
 import kotlin.math.pow
 
 class FileSystemModule(
-    context: Context,
-    private val moduleRegistryDelegate: ModuleRegistryDelegate = ModuleRegistryDelegate()
+  context: Context,
+  private val moduleRegistryDelegate: ModuleRegistryDelegate = ModuleRegistryDelegate()
 ) : ExportedModule(context), ActivityEventListener {
 
   private inline fun <reified T> moduleRegistry() =
-      moduleRegistryDelegate.getFromModuleRegistry<T>()
+    moduleRegistryDelegate.getFromModuleRegistry<T>()
 
   private val uIManager: UIManager by moduleRegistry()
   private var client: OkHttpClient? = null
@@ -215,23 +215,23 @@ class FileSystemModule(
         val file = uriToFile(absoluteUri)
         if (file.exists()) {
           promise.resolve(
-              Bundle().apply {
-                putBoolean("exists", true)
-                putBoolean("isDirectory", file.isDirectory)
-                putString("uri", Uri.fromFile(file).toString())
-                putDouble("size", getFileSize(file).toDouble())
-                putDouble("modificationTime", 0.001 * file.lastModified())
-                if (options.containsKey("md5") && (options["md5"] == true)) {
-                  putString("md5", md5(file))
-                }
+            Bundle().apply {
+              putBoolean("exists", true)
+              putBoolean("isDirectory", file.isDirectory)
+              putString("uri", Uri.fromFile(file).toString())
+              putDouble("size", getFileSize(file).toDouble())
+              putDouble("modificationTime", 0.001 * file.lastModified())
+              if (options.containsKey("md5") && (options["md5"] == true)) {
+                putString("md5", md5(file))
               }
+            }
           )
         } else {
           promise.resolve(
-              Bundle().apply {
-                putBoolean("exists", false)
-                putBoolean("isDirectory", false)
-              }
+            Bundle().apply {
+              putBoolean("exists", false)
+              putBoolean("isDirectory", false)
+            }
           )
         }
       } else if (uri.scheme == "content" || uri.scheme == "asset" || uri.scheme == null) {
@@ -242,25 +242,25 @@ class FileSystemModule(
             else -> openResourceInputStream(uriStr)
           } ?: throw FileNotFoundException()
           promise.resolve(
-              Bundle().apply {
-                putBoolean("exists", true)
-                putBoolean("isDirectory", false)
-                putString("uri", uri.toString())
-                // NOTE: `.available()` is supposedly not a reliable source of size info, but it's been
-                //       more reliable than querying `OpenableColumns.SIZE` in practice in tests ¯\_(ツ)_/¯
-                putDouble("size", `is`.available().toDouble())
-                if (options.containsKey("md5") && options["md5"] == true) {
-                  val md5bytes = DigestUtils.md5(`is`)
-                  putString("md5", String(Hex.encodeHex(md5bytes)))
-                }
+            Bundle().apply {
+              putBoolean("exists", true)
+              putBoolean("isDirectory", false)
+              putString("uri", uri.toString())
+              // NOTE: `.available()` is supposedly not a reliable source of size info, but it's been
+              //       more reliable than querying `OpenableColumns.SIZE` in practice in tests ¯\_(ツ)_/¯
+              putDouble("size", `is`.available().toDouble())
+              if (options.containsKey("md5") && options["md5"] == true) {
+                val md5bytes = DigestUtils.md5(`is`)
+                putString("md5", String(Hex.encodeHex(md5bytes)))
               }
+            }
           )
         } catch (e: FileNotFoundException) {
           promise.resolve(
-              Bundle().apply {
-                putBoolean("exists", false)
-                putBoolean("isDirectory", false)
-              }
+            Bundle().apply {
+              putBoolean("exists", false)
+              putBoolean("isDirectory", false)
+            }
           )
         }
       } else {
@@ -360,8 +360,10 @@ class FileSystemModule(
           if (options.containsKey("idempotent") && options["idempotent"] as Boolean) {
             promise.resolve(null)
           } else {
-            promise.reject("ERR_FILESYSTEM_CANNOT_FIND_FILE",
-                "File '$uri' could not be deleted because it could not be found")
+            promise.reject(
+              "ERR_FILESYSTEM_CANNOT_FIND_FILE",
+              "File '$uri' could not be deleted because it could not be found"
+            )
           }
         }
       } else if (isSAFUri(uri)) {
@@ -373,8 +375,10 @@ class FileSystemModule(
           if (options.containsKey("idempotent") && options["idempotent"] as Boolean) {
             promise.resolve(null)
           } else {
-            promise.reject("ERR_FILESYSTEM_CANNOT_FIND_FILE",
-                "File '$uri' could not be deleted because it could not be found")
+            promise.reject(
+              "ERR_FILESYSTEM_CANNOT_FIND_FILE",
+              "File '$uri' could not be deleted because it could not be found"
+            )
           }
         }
       } else {
@@ -407,8 +411,10 @@ class FileSystemModule(
         if (from.renameTo(to)) {
           promise.resolve(null)
         } else {
-          promise.reject("ERR_FILESYSTEM_CANNOT_MOVE_FILE",
-              "File '$fromUri' could not be moved to '$toUri'")
+          promise.reject(
+            "ERR_FILESYSTEM_CANNOT_MOVE_FILE",
+            "File '$fromUri' could not be moved to '$toUri'"
+          )
         }
       } else if (isSAFUri(fromUri)) {
         val documentFile = getNearestSAFFile(fromUri)
@@ -534,8 +540,10 @@ class FileSystemModule(
         if (success || setIntermediates && previouslyCreated) {
           promise.resolve(null)
         } else {
-          promise.reject("ERR_FILESYSTEM_CANNOT_CREATE_DIRECTORY",
-              "Directory '$uri' could not be created or already exists.")
+          promise.reject(
+            "ERR_FILESYSTEM_CANNOT_CREATE_DIRECTORY",
+            "Directory '$uri' could not be created or already exists."
+          )
         }
       } else {
         throw IOException("Unsupported scheme for location '$uri'.")
@@ -561,12 +569,16 @@ class FileSystemModule(
           }
           promise.resolve(result)
         } else {
-          promise.reject("ERR_FILESYSTEM_CANNOT_READ_DIRECTORY",
-              "Directory '$uri' could not be read.")
+          promise.reject(
+            "ERR_FILESYSTEM_CANNOT_READ_DIRECTORY",
+            "Directory '$uri' could not be read."
+          )
         }
       } else if (isSAFUri(uri)) {
-        promise.reject("ERR_FILESYSTEM_UNSUPPORTED_SCHEME",
-            "Can't read Storage Access Framework directory, use StorageAccessFramework.readDirectoryAsync() instead.")
+        promise.reject(
+          "ERR_FILESYSTEM_UNSUPPORTED_SCHEME",
+          "Can't read Storage Access Framework directory, use StorageAccessFramework.readDirectoryAsync() instead."
+        )
       } else {
         throw IOException("Unsupported scheme for location '$uri'.")
       }
@@ -583,7 +595,7 @@ class FileSystemModule(
       val blockCount = root.blockCountLong
       val blockSize = root.blockSizeLong
       val capacity = BigInteger.valueOf(blockCount).multiply(BigInteger.valueOf(blockSize))
-      //cast down to avoid overflow
+      // cast down to avoid overflow
       val capacityDouble = Math.min(capacity.toDouble(), 2.0.pow(53.0) - 1)
       promise.resolve(capacityDouble)
     } catch (e: Exception) {
@@ -599,7 +611,7 @@ class FileSystemModule(
       val availableBlocks = external.availableBlocksLong
       val blockSize = external.blockSizeLong
       val storage = BigInteger.valueOf(availableBlocks).multiply(BigInteger.valueOf(blockSize))
-      //cast down to avoid overflow
+      // cast down to avoid overflow
       val storageDouble = Math.min(storage.toDouble(), 2.0.pow(53.0) - 1)
       promise.resolve(storageDouble)
     } catch (e: Exception) {
@@ -631,7 +643,7 @@ class FileSystemModule(
     return try {
       val activityProvider: ActivityProvider by moduleRegistry()
       val application = activityProvider.currentActivity.application
-      FileProvider.getUriForFile(application, application.packageName + ".FileSystemFileProvider", file);
+      FileProvider.getUriForFile(application, application.packageName + ".FileSystemFileProvider", file)
     } catch (e: Exception) {
       throw e
     }
@@ -645,8 +657,10 @@ class FileSystemModule(
       if (isSAFUri(uri)) {
         val file = DocumentFile.fromTreeUri(context, uri)
         if (file == null || !file.exists() || !file.isDirectory) {
-          promise.reject("ERR_FILESYSTEM_CANNOT_READ_DIRECTORY",
-              "Uri '$uri' doesn't exist or isn't a directory.")
+          promise.reject(
+            "ERR_FILESYSTEM_CANNOT_READ_DIRECTORY",
+            "Uri '$uri' doesn't exist or isn't a directory."
+          )
           return
         }
         val children = file.listFiles()
@@ -816,11 +830,14 @@ class FileSystemModule(
 
   @ExpoMethod
   fun uploadAsync(url: String, fileUriString: String, options: Map<String, Any>, promise: Promise) {
-    val request = createUploadRequest(url, fileUriString, options, promise, object : RequestBodyDecorator {
-      override fun decorate(requestBody: RequestBody): RequestBody {
-        return requestBody
+    val request = createUploadRequest(
+      url, fileUriString, options, promise,
+      object : RequestBodyDecorator {
+        override fun decorate(requestBody: RequestBody): RequestBody {
+          return requestBody
+        }
       }
-    }) ?: return
+    ) ?: return
 
     okHttpClient?.let {
       it.newCall(request).enqueue(object : Callback {
@@ -867,15 +884,15 @@ class FileSystemModule(
       }
     }
     val request = createUploadRequest(
-        url,
-        fileUriString,
-        options,
-        promise,
-        object : RequestBodyDecorator {
-          override fun decorate(requestBody: RequestBody): RequestBody {
-            return CountingRequestBody(requestBody, progressListener)
-          }
+      url,
+      fileUriString,
+      options,
+      promise,
+      object : RequestBodyDecorator {
+        override fun decorate(requestBody: RequestBody): RequestBody {
+          return CountingRequestBody(requestBody, progressListener)
         }
+      }
     ) ?: return
     val call = okHttpClient!!.newCall(request)
     taskHandlers[uuid] = TaskHandler(call)
@@ -1014,13 +1031,13 @@ class FileSystemModule(
         }
       }
       val client = okHttpClient?.newBuilder()
-          ?.addNetworkInterceptor { chain ->
-            val originalResponse = chain.proceed(chain.request())
-            originalResponse.newBuilder()
-                .body(ProgressResponseBody(originalResponse.body(), progressListener))
-                .build()
-          }
-          ?.build()
+        ?.addNetworkInterceptor { chain ->
+          val originalResponse = chain.proceed(chain.request())
+          originalResponse.newBuilder()
+            .body(ProgressResponseBody(originalResponse.body(), progressListener))
+            .build()
+        }
+        ?.build()
       if (client == null) {
         promise.reject(NullPointerException("okHttpClient is null"))
         return
@@ -1083,8 +1100,10 @@ class FileSystemModule(
       val result = Bundle()
       if (resultCode == Activity.RESULT_OK) {
         val treeUri = data.data
-        val takeFlags = (data.flags
-            and (Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION))
+        val takeFlags = (
+          data.flags
+            and (Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
+          )
         if (treeUri != null) {
           activity.contentResolver.takePersistableUriPermission(treeUri, takeFlags)
         }
@@ -1174,8 +1193,12 @@ class FileSystemModule(
           val bytesRead = super.read(sink, byteCount)
           // read() returns the number of bytes read, or -1 if this source is exhausted.
           totalBytesRead += if (bytesRead != -1L) bytesRead else 0
-          progressListener.update(totalBytesRead, responseBody?.contentLength()
-              ?: -1, bytesRead == -1L)
+          progressListener.update(
+            totalBytesRead,
+            responseBody?.contentLength()
+              ?: -1,
+            bytesRead == -1L
+          )
           return bytesRead
         }
       }
@@ -1191,9 +1214,9 @@ class FileSystemModule(
     get() {
       if (client == null) {
         val builder = OkHttpClient.Builder()
-            .connectTimeout(60, TimeUnit.SECONDS)
-            .readTimeout(60, TimeUnit.SECONDS)
-            .writeTimeout(60, TimeUnit.SECONDS)
+          .connectTimeout(60, TimeUnit.SECONDS)
+          .readTimeout(60, TimeUnit.SECONDS)
+          .writeTimeout(60, TimeUnit.SECONDS)
         val cookieHandler: CookieHandler by moduleRegistry()
         builder.cookieJar(JavaNetCookieJar(cookieHandler))
         client = builder.build()
@@ -1332,8 +1355,9 @@ class FileSystemModule(
         // multiple values for the same header
         if (responseHeaders[headerName] != null) {
           responseHeaders.putString(
-              headerName,
-              responseHeaders.getString(headerName) + ", " + headers.value(i))
+            headerName,
+            responseHeaders.getString(headerName) + ", " + headers.value(i)
+          )
         } else {
           responseHeaders.putString(headerName, headers.value(i))
         }

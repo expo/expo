@@ -52,8 +52,8 @@ class FilePermissionModule : FilePermissionModuleInterface, InternalModule {
   @Throws(IOException::class)
   private fun getInternalPaths(context: Context): List<String> {
     return listOf(
-        context.filesDir.canonicalPath,
-        context.cacheDir.canonicalPath
+      context.filesDir.canonicalPath,
+      context.cacheDir.canonicalPath
     )
   }
 }

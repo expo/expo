@@ -20,7 +20,7 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath("com.android.tools.build:gradle:${gradlePluginVersion}")
+        classpath("com.android.tools.build:gradle:$gradlePluginVersion")
 
         // Copied version from the Exponent Android project.
         // Newer versions suffer either from "play-services-basement was supposed to be 15.0.1,
