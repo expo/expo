@@ -48,5 +48,5 @@ jobs:
           key: ${{ runner.os }}-modules-${{ hashFiles('yarn.lock') }}
       - name: 🧶 Install node modules in root dir
         run: yarn install --frozen-lockfile
-      - name: ☔️ Manypkg check
+      - name: ☔️ Manypkg integrity check
         run: yarn integrity
