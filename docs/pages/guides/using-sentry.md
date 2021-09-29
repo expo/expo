@@ -48,7 +48,7 @@ In your project directory, run:
 
 `sentry-expo` also requires some additional dependencies, otherwise it won't work properly. To install them, run:
 
-<TerminalBlock cmd={['expo install expo-application expo-constants expo-device expo-updates']} />
+<TerminalBlock cmd={['expo install expo-application expo-constants expo-device expo-updates expo-modules-core']} />
 
 Then, add the following in your app's main file (usually `App.js`):
 
