@@ -63,12 +63,12 @@ class UpdatesBinding(context: Context, experienceProperties: Map<String, Any?>) 
     return true
   }
 
-  override fun getLaunchedUpdate(): UpdateEntity {
-    return appLoader!!.launcher.launchedUpdate!!
+  override fun getLaunchedUpdate(): UpdateEntity? {
+    return appLoader!!.launcher.launchedUpdate
   }
 
-  override fun getLocalAssetFiles(): Map<AssetEntity, String> {
-    return appLoader!!.launcher.localAssetFiles!!
+  override fun getLocalAssetFiles(): Map<AssetEntity, String>? {
+    return appLoader!!.launcher.localAssetFiles
   }
 
   override fun relaunchReactApplication(callback: LauncherCallback) {
