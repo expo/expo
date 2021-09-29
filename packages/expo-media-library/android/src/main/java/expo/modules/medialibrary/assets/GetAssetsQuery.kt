@@ -1,7 +1,9 @@
 package expo.modules.medialibrary.assets
 
 import android.provider.MediaStore
-import expo.modules.medialibrary.MediaLibraryConstants
+import expo.modules.medialibrary.MEDIA_TYPES
+import expo.modules.medialibrary.MEDIA_TYPE_ALL
+import expo.modules.medialibrary.SORT_KEYS
 import expo.modules.medialibrary.takeIfInstanceOf
 import java.util.ArrayList
 
@@ -45,7 +47,7 @@ private fun createSelectionString(input: Map<String, Any?>): String {
   }
 
   val mediaType = input["mediaType"] as? List<*>
-  if (mediaType != null && !mediaType.contains(MediaLibraryConstants.MEDIA_TYPE_ALL)) {
+  if (mediaType != null && !mediaType.contains(MEDIA_TYPE_ALL)) {
     val mediaTypeInts = mediaType.map { parseMediaType(it.toString()) }
     selectionBuilder.append(
       "${MediaStore.Files.FileColumns.MEDIA_TYPE} IN (${mediaTypeInts.joinToString(separator = ",")})"
@@ -72,7 +74,7 @@ private fun createSelectionString(input: Map<String, Any?>): String {
  */
 @Throws(IllegalArgumentException::class)
 private fun parseMediaType(mediaType: String): Int {
-  return MediaLibraryConstants.MEDIA_TYPES.getOrElse(mediaType) {
+  return MEDIA_TYPES.getOrElse(mediaType) {
     val errorMessage = "MediaType $mediaType is not supported!"
     throw IllegalArgumentException(errorMessage)
   }
@@ -84,7 +86,7 @@ private fun parseMediaType(mediaType: String): Int {
  */
 @Throws(IllegalArgumentException::class)
 fun parseSortByKey(key: String): String {
-  return MediaLibraryConstants.SORT_KEYS.getOrElse(key) {
+  return SORT_KEYS.getOrElse(key) {
     val errorMessage = "SortBy key $key is not supported!"
     throw IllegalArgumentException(errorMessage)
   }

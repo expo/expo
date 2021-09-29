@@ -24,7 +24,6 @@ import expo.modules.core.interfaces.ExpoMethod
 import expo.modules.core.interfaces.services.EventEmitter
 import expo.modules.core.interfaces.services.UIManager
 import expo.modules.interfaces.permissions.Permissions
-import expo.modules.medialibrary.MediaLibraryConstants.*
 import expo.modules.medialibrary.MediaLibraryModule.Action
 import expo.modules.medialibrary.albums.AddAssetsToAlbum
 import expo.modules.medialibrary.albums.CreateAlbum
@@ -450,7 +449,7 @@ class MediaLibraryModule(
 
     private fun getAssetsTotalCount(mediaType: Int): Int =
       context.contentResolver.query(
-        EXTERNAL_CONTENT,
+        EXTERNAL_CONTENT_URI,
         null,
         "${MediaStore.Files.FileColumns.MEDIA_TYPE} == $mediaType",
         null,

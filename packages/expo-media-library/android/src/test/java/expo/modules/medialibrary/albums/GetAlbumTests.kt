@@ -4,7 +4,7 @@ import android.os.Bundle
 import android.provider.MediaStore.Files.FileColumns
 import android.provider.MediaStore.MediaColumns
 import expo.modules.medialibrary.CursorResults
-import expo.modules.medialibrary.MediaLibraryConstants
+import expo.modules.medialibrary.ERROR_UNABLE_TO_LOAD_PERMISSION
 import expo.modules.medialibrary.MockContext
 import expo.modules.medialibrary.MockData
 import expo.modules.medialibrary.mockContentResolver
@@ -126,7 +126,7 @@ internal class GetAlbumTests {
     queryAlbum(context, "", emptyArray(), promise)
 
     // assert
-    assertRejectedWithCode(promise, MediaLibraryConstants.ERROR_UNABLE_TO_LOAD_PERMISSION)
+    assertRejectedWithCode(promise, ERROR_UNABLE_TO_LOAD_PERMISSION)
   }
 
   @Test

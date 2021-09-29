@@ -2,7 +2,8 @@ package expo.modules.medialibrary.assets
 
 import android.os.Bundle
 import android.provider.MediaStore
-import expo.modules.medialibrary.MediaLibraryConstants
+import expo.modules.medialibrary.ERROR_IO_EXCEPTION
+import expo.modules.medialibrary.ERROR_UNABLE_TO_LOAD_PERMISSION
 import expo.modules.medialibrary.MediaLibraryUtils
 import expo.modules.medialibrary.MockContext
 import expo.modules.medialibrary.MockData
@@ -122,7 +123,7 @@ internal class GetAssetInfoTests {
     queryAssetInfo(context, "", emptyArray(), false, promise)
 
     // assert
-    assertRejectedWithCode(promise, MediaLibraryConstants.ERROR_UNABLE_TO_LOAD_PERMISSION)
+    assertRejectedWithCode(promise, ERROR_UNABLE_TO_LOAD_PERMISSION)
   }
 
   @Test
@@ -134,6 +135,6 @@ internal class GetAssetInfoTests {
     queryAssetInfo(context, "", emptyArray(), false, promise)
 
     // assert
-    assertRejectedWithCode(promise, MediaLibraryConstants.ERROR_IO_EXCEPTION)
+    assertRejectedWithCode(promise, ERROR_IO_EXCEPTION)
   }
 }

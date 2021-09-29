@@ -13,7 +13,17 @@ import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.exifinterface.media.ExifInterface
 import expo.modules.core.Promise
-import expo.modules.medialibrary.MediaLibraryConstants
+import expo.modules.medialibrary.ASSET_PROJECTION
+import expo.modules.medialibrary.ERROR_IO_EXCEPTION
+import expo.modules.medialibrary.ERROR_NO_PERMISSIONS
+import expo.modules.medialibrary.ERROR_UNABLE_TO_LOAD
+import expo.modules.medialibrary.ERROR_UNABLE_TO_LOAD_PERMISSION
+import expo.modules.medialibrary.EXTERNAL_CONTENT_URI
+import expo.modules.medialibrary.MEDIA_TYPE_AUDIO
+import expo.modules.medialibrary.MEDIA_TYPE_PHOTO
+import expo.modules.medialibrary.MEDIA_TYPE_UNKNOWN
+import expo.modules.medialibrary.MEDIA_TYPE_VIDEO
+import expo.modules.medialibrary.EXIF_TAGS
 import java.io.FileNotFoundException
 import java.io.IOException
 import java.lang.NumberFormatException
@@ -34,14 +44,14 @@ fun queryAssetInfo(
   val contentResolver = context.contentResolver
   try {
     contentResolver.query(
-      MediaLibraryConstants.EXTERNAL_CONTENT,
-      MediaLibraryConstants.ASSET_PROJECTION,
+      EXTERNAL_CONTENT_URI,
+      ASSET_PROJECTION,
       selection,
       selectionArgs,
       null
     ).use { assetCursor ->
       if (assetCursor == null) {
-        promise.reject(MediaLibraryConstants.ERROR_UNABLE_TO_LOAD, "Could not get asset. Query returns null.")
+        promise.reject(ERROR_UNABLE_TO_LOAD, "Could not get asset. Query returns null.")
       } else {
         if (assetCursor.count == 1) {
           assetCursor.moveToFirst()
@@ -58,14 +68,14 @@ fun queryAssetInfo(
     }
   } catch (e: SecurityException) {
     promise.reject(
-      MediaLibraryConstants.ERROR_UNABLE_TO_LOAD_PERMISSION,
+      ERROR_UNABLE_TO_LOAD_PERMISSION,
       "Could not get asset: need READ_EXTERNAL_STORAGE permission.", e
     )
   } catch (e: IOException) {
-    promise.reject(MediaLibraryConstants.ERROR_IO_EXCEPTION, "Could not read file", e)
+    promise.reject(ERROR_IO_EXCEPTION, "Could not read file", e)
   } catch (e: UnsupportedOperationException) {
     e.printStackTrace()
-    promise.reject(MediaLibraryConstants.ERROR_NO_PERMISSIONS, e.message)
+    promise.reject(ERROR_NO_PERMISSIONS, e.message)
   }
 }
 
@@ -143,8 +153,8 @@ fun putAssetsInfo(
 
 fun getExifFullInfo(exifInterface: ExifInterface, response: Bundle) {
   val exifMap = Bundle()
-  for ((type, name) in MediaLibraryConstants.exifTags) {
-    if (exifInterface.getAttribute(name!!) != null) {
+  for ((type, name) in EXIF_TAGS) {
+    if (exifInterface.getAttribute(name) != null) {
       when (type) {
         "string" -> exifMap.putString(name, exifInterface.getAttribute(name))
         "int" -> exifMap.putInt(name, exifInterface.getAttributeInt(name, 0))
@@ -273,11 +283,11 @@ fun getAssetDimensionsFromCursor(
  */
 fun exportMediaType(mediaType: Int): String {
   return when (mediaType) {
-    MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE -> MediaLibraryConstants.MEDIA_TYPE_PHOTO
+    MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE -> MEDIA_TYPE_PHOTO
     MediaStore.Files.FileColumns.MEDIA_TYPE_AUDIO,
-    MediaStore.Files.FileColumns.MEDIA_TYPE_PLAYLIST -> MediaLibraryConstants.MEDIA_TYPE_AUDIO
-    MediaStore.Files.FileColumns.MEDIA_TYPE_VIDEO -> MediaLibraryConstants.MEDIA_TYPE_VIDEO
-    else -> MediaLibraryConstants.MEDIA_TYPE_UNKNOWN
+    MediaStore.Files.FileColumns.MEDIA_TYPE_PLAYLIST -> MEDIA_TYPE_AUDIO
+    MediaStore.Files.FileColumns.MEDIA_TYPE_VIDEO -> MEDIA_TYPE_VIDEO
+    else -> MEDIA_TYPE_UNKNOWN
   }
 }
 

@@ -5,13 +5,15 @@ import android.os.Bundle
 import android.provider.MediaStore
 import android.provider.MediaStore.MediaColumns
 import expo.modules.core.Promise
-import expo.modules.medialibrary.MediaLibraryConstants
+import expo.modules.medialibrary.ERROR_UNABLE_TO_LOAD
+import expo.modules.medialibrary.ERROR_UNABLE_TO_LOAD_PERMISSION
+import expo.modules.medialibrary.EXTERNAL_CONTENT_URI
 import expo.modules.medialibrary.MediaLibraryUtils.queryPlaceholdersFor
 import java.lang.IllegalArgumentException
 
 /**
  * Queries for assets filtered by given `selection`.
- * Resolves `promise` with `Bundle` of kind: `Array<{ id, title, assetCount }>`
+ * Resolves `promise` with [Bundle] of kind: `Array<{ id, title, assetCount }>`
  */
 fun queryAlbum(
   context: Context,
@@ -23,14 +25,14 @@ fun queryAlbum(
   val order = MediaColumns.BUCKET_DISPLAY_NAME
   try {
     context.contentResolver.query(
-      MediaLibraryConstants.EXTERNAL_CONTENT,
+      EXTERNAL_CONTENT_URI,
       projection,
       selection,
       selectionArgs,
       order
     ).use { albumsCursor ->
       if (albumsCursor == null) {
-        promise.reject(MediaLibraryConstants.ERROR_UNABLE_TO_LOAD, "Could not get album. Query is incorrect.")
+        promise.reject(ERROR_UNABLE_TO_LOAD, "Could not get album. Query is incorrect.")
         return
       }
       if (!albumsCursor.moveToNext()) {
@@ -48,11 +50,11 @@ fun queryAlbum(
     }
   } catch (e: SecurityException) {
     promise.reject(
-      MediaLibraryConstants.ERROR_UNABLE_TO_LOAD_PERMISSION,
+      ERROR_UNABLE_TO_LOAD_PERMISSION,
       "Could not get albums: need READ_EXTERNAL_STORAGE permission.", e
     )
   } catch (e: IllegalArgumentException) {
-    promise.reject(MediaLibraryConstants.ERROR_UNABLE_TO_LOAD, "Could not get album.", e)
+    promise.reject(ERROR_UNABLE_TO_LOAD, "Could not get album.", e)
   }
 }
 
@@ -64,7 +66,7 @@ fun getAssetsInAlbums(context: Context, vararg albumIds: String?): List<String> 
   val selection = "${MediaColumns.BUCKET_ID} IN (${queryPlaceholdersFor(albumIds)} )"
   val projection = arrayOf(MediaColumns._ID)
   context.contentResolver.query(
-    MediaLibraryConstants.EXTERNAL_CONTENT,
+    EXTERNAL_CONTENT_URI,
     projection,
     selection,
     albumIds,

@@ -2,8 +2,8 @@ package expo.modules.medialibrary.assets
 
 import android.os.Bundle
 import androidx.exifinterface.media.ExifInterface
-import expo.modules.medialibrary.MediaLibraryConstants
 import expo.modules.medialibrary.MockData
+import expo.modules.medialibrary.EXIF_TAGS
 import expo.modules.medialibrary.mockContentResolver
 import expo.modules.medialibrary.mockCursor
 import io.mockk.clearAllMocks
@@ -145,7 +145,7 @@ internal class AssetUtilsTests {
       getExifFullInfo(exifInterface, Bundle())
 
       // assert
-      verify(atLeast = MediaLibraryConstants.exifTags.size) { exifInterface.getAttribute(any()) }
+      verify(atLeast = EXIF_TAGS.size) { exifInterface.getAttribute(any()) }
     }
   }
 }
