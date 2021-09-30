@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix expo-screen-orientation breaking for expo-updates + expo-splash-screen integration. ([#14519](https://github.com/expo/expo/pull/14519) by [@kudo](https://github.com/kudo))
+
 ### 💡 Others
 
 ## 0.10.1 — 2021-09-28
