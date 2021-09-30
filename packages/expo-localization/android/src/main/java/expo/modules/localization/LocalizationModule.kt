@@ -18,13 +18,9 @@ class LocalizationModule(context: Context) : ExportedModule(context) {
   private val contextRef: WeakReference<Context> = WeakReference(context)
 
   private val applicationContext: Context?
-    get() {
-      return contextRef.get()?.applicationContext
-    }
+    get() = contextRef.get()?.applicationContext
 
-  override fun getName(): String {
-    return "ExpoLocalization"
-  }
+  override fun getName() = "ExpoLocalization"
 
   override fun getConstants(): Map<String, Any> {
     val constants = HashMap<String, Any>()
@@ -87,15 +83,9 @@ class LocalizationModule(context: Context) : ExportedModule(context) {
 
   companion object {
     private val USES_IMPERIAL = listOf("US", "LR", "MM")
-    private val iSOCurrencyCodes: ArrayList<String>
-      get() {
-        val locales = ArrayList<String>()
-        val availableCurrencies = Currency.getAvailableCurrencies()
-        for (handle in availableCurrencies) {
-          locales.add(handle.currencyCode)
-        }
-        return locales
-      }
+    private val iSOCurrencyCodes: List<String> by lazy {
+      Currency.getAvailableCurrencies().map { it.currencyCode }
+    }
 
     private fun getLocaleNames(locales: ArrayList<Locale>?): ArrayList<String> {
       val languages = ArrayList<String>()
@@ -116,13 +106,11 @@ class LocalizationModule(context: Context) : ExportedModule(context) {
     }
 
     private fun getSystemProperty(key: String): String {
-      return try {
+      return runCatching {
         val systemProperties = Class.forName("android.os.SystemProperties")
         val get = systemProperties.getMethod("get", String::class.java)
         get.invoke(systemProperties, key) as String
-      } catch (ignored: Exception) {
-        ""
-      }
+      }.getOrNull() ?: ""
     }
 
     private fun getCurrencyCode(locale: Locale): String? {

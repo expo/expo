@@ -10,7 +10,7 @@
 
 ### 💡 Others
 
-- Rewrite module to Kotlin.
+- Rewrite module to Kotlin. ([#14588](https://github.com/expo/expo/pull/14588) by [@mstach60161](https://github.com/mstach60161))
 
 ## 11.0.0 — 2021-09-28
 
