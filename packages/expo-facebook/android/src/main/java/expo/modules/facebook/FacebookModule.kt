@@ -32,19 +32,16 @@ class FacebookModule(
   context: Context,
   private val moduleRegistryDelegate: ModuleRegistryDelegate = ModuleRegistryDelegate()
 ) : ExportedModule(context), ActivityEventListener {
+  private val ERR_FACEBOOK_MISCONFIGURED = "ERR_FACEBOOK_MISCONFIGURED"
+  private val ERR_FACEBOOK_LOGIN = "ERR_FACEBOOK_LOGIN"
+  private val PUSH_PAYLOAD_KEY = "fb_push_payload"
+  private val PUSH_PAYLOAD_CAMPAIGN_KEY = "campaign"
   private val callbackManager: CallbackManager = CallbackManager.Factory.create()
   private var appEventLogger: AppEventsLogger? = null
   private var attributionIdentifiers: AttributionIdentifiers? = null
   private var appId: String? = null
   private var appName: String? = null
   private val uIManager: UIManager by moduleRegistry()
-
-  companion object {
-    private const val ERR_FACEBOOK_MISCONFIGURED = "ERR_FACEBOOK_MISCONFIGURED"
-    private const val ERR_FACEBOOK_LOGIN = "ERR_FACEBOOK_LOGIN"
-    private const val PUSH_PAYLOAD_KEY = "fb_push_payload"
-    private const val PUSH_PAYLOAD_CAMPAIGN_KEY = "campaign"
-  }
 
   private inline fun <reified T> moduleRegistry() = moduleRegistryDelegate.getFromModuleRegistry<T>()
 
@@ -55,13 +52,11 @@ class FacebookModule(
     uIManager.registerActivityEventListener(this)
   }
 
-  override fun onActivityResult(activity: Activity, requestCode: Int, resultCode: Int, data: Intent) {
+  override fun onActivityResult(activity: Activity, requestCode: Int, resultCode: Int, data: Intent?) {
     callbackManager.onActivityResult(requestCode, resultCode, data)
   }
 
-  override fun onNewIntent(intent: Intent) {
-    // do nothing
-  }
+  override fun onNewIntent(intent: Intent) = Unit
 
   private fun bundleWithNullValuesAsStrings(parameters: ReadableArguments?): Bundle {
     return Bundle().apply {
@@ -166,6 +161,7 @@ class FacebookModule(
         "No appId configured, required for initialization. " +
           "Please ensure that you're either providing `appId` to `initializeAsync` as an argument or inside AndroidManifest.xml."
       )
+      return
     }
 
     // Log out
@@ -231,7 +227,12 @@ class FacebookModule(
 
   @ExpoMethod
   fun logEventAsync(eventName: String?, valueToSum: Double, parameters: ReadableArguments?, promise: Promise) {
-    appEventLogger!!.logEvent(eventName, valueToSum, bundleWithNullValuesAsStrings(parameters))
+    try {
+      appEventLogger!!.logEvent(eventName, valueToSum, bundleWithNullValuesAsStrings(parameters))
+      promise.resolve(null)
+    } catch (e: Exception) {
+      promise.reject("ERR_FACEBOOK_APP_EVENT_LOGGER", "appEventLogger is not initialized", e)
+    }
     promise.resolve(null)
   }
 
