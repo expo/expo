@@ -19,8 +19,6 @@ const PODS_DIR = path.join(IOS_DIR, 'Pods');
 // We will be increasing this list slowly. Once all are enabled,
 // find a better way to ignore some packages that shouldn't be prebuilt (like interfaces).
 export const PACKAGES_TO_PREBUILD = [
-  // '@unimodules/core',
-  // '@unimodules/react-native-adapter',
   // 'expo-ads-admob',
   // 'expo-ads-facebook',
   // 'expo-analytics-amplitude',
