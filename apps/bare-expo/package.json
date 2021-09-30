@@ -85,7 +85,8 @@
       "expo-constants",
       "expo-camera",
       "expo-updates",
-      "detox"
+      "detox",
+      "react-native-reanimated"
     ]
   },
   "dependencies": {
