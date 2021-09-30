@@ -9,10 +9,10 @@ import android.os.Build.VERSION
 import android.os.Build.VERSION_CODES
 import android.view.View
 import expo.modules.core.Promise
-import java.lang.Exception
 import java.lang.ref.WeakReference
 import java.text.DecimalFormatSymbols
 import java.util.*
+import kotlin.collections.ArrayList
 
 class LocalizationModule(context: Context) : ExportedModule(context) {
   private val contextRef: WeakReference<Context> = WeakReference(context)
@@ -79,47 +79,5 @@ class LocalizationModule(context: Context) : ExportedModule(context) {
     return if (!TextUtils.isEmpty(miuiRegion)) {
       miuiRegion
     } else getCountryCode(locale)
-  }
-
-  companion object {
-    private val USES_IMPERIAL = listOf("US", "LR", "MM")
-    private val iSOCurrencyCodes: List<String> by lazy {
-      Currency.getAvailableCurrencies().map { it.currencyCode }
-    }
-
-    private fun getLocaleNames(locales: ArrayList<Locale>?): ArrayList<String> {
-      val languages = ArrayList<String>()
-      for (locale in locales!!) {
-        // https://stackoverflow.com/a/46652446/4047926
-        languages.add(locale.toLanguageTag())
-      }
-      return languages
-    }
-
-    private fun getCountryCode(locale: Locale): String? {
-      return try {
-        val country = locale.country
-        if (TextUtils.isEmpty(country)) null else country
-      } catch (ignored: Exception) {
-        null
-      }
-    }
-
-    private fun getSystemProperty(key: String): String {
-      return runCatching {
-        val systemProperties = Class.forName("android.os.SystemProperties")
-        val get = systemProperties.getMethod("get", String::class.java)
-        get.invoke(systemProperties, key) as String
-      }.getOrNull() ?: ""
-    }
-
-    private fun getCurrencyCode(locale: Locale): String? {
-      return try {
-        val currency = Currency.getInstance(locale)
-        currency?.currencyCode
-      } catch (ignored: Exception) {
-        null
-      }
-    }
   }
 }
