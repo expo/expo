@@ -146,27 +146,27 @@ static NSString * const EXUpdatesErrorEventName = @"error";
 
 - (void)startAndShowLaunchScreen:(UIWindow *)window
 {
+  UIView *view = nil;
   NSBundle *mainBundle = [NSBundle mainBundle];
-  UIViewController *rootViewController = [UIViewController new];
   NSString *launchScreen = (NSString *)[mainBundle objectForInfoDictionaryKey:@"UILaunchStoryboardName"] ?: @"LaunchScreen";
   
   if ([mainBundle pathForResource:launchScreen ofType:@"nib"] != nil) {
     NSArray *views = [mainBundle loadNibNamed:launchScreen owner:self options:nil];
-    rootViewController.view = views.firstObject;
-    rootViewController.view.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+    view = views.firstObject;
+    view.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
   } else if ([mainBundle pathForResource:launchScreen ofType:@"storyboard"] != nil ||
              [mainBundle pathForResource:launchScreen ofType:@"storyboardc"] != nil) {
     UIStoryboard *launchScreenStoryboard = [UIStoryboard storyboardWithName:launchScreen bundle:nil];
-    rootViewController = [launchScreenStoryboard instantiateInitialViewController];
+    UIViewController *viewController = [launchScreenStoryboard instantiateInitialViewController];
+    view = viewController.view;
+    viewController.view = nil;
   } else {
     NSLog(@"Launch screen could not be loaded from a .xib or .storyboard. Unexpected loading behavior may occur.");
-    UIView *view = [UIView new];
+    view = [UIView new];
     view.backgroundColor = [UIColor whiteColor];
-    rootViewController.view = view;
   }
   
-  window.rootViewController = rootViewController;
-  [window makeKeyAndVisible];
+  window.rootViewController.view = view;
 
   [self start];
 }
