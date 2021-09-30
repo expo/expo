@@ -41,6 +41,13 @@ const isListener = ({ name }: GeneratedData) =>
 
 const isProp = ({ name }: GeneratedData) => name.includes('Props') && name !== 'ErrorRecoveryProps';
 
+const isComponent = ({ type, extendedTypes }: GeneratedData) =>
+  type?.name === 'React.FC' ||
+  (extendedTypes && extendedTypes.length ? extendedTypes[0].name === 'Component' : false);
+
+const isConstant = ({ flags, name, type }: GeneratedData) =>
+  (flags?.isConst || false) && name !== 'default' && type?.name !== 'React.FC';
+
 const renderAPI = (
   packageName: string,
   version: string = 'unversioned',
@@ -90,19 +97,10 @@ const renderAPI = (
 
     const enums = filterDataByKind(data, [TypeDocKind.Enum, TypeDocKind.LegacyEnum]);
     const interfaces = filterDataByKind(data, TypeDocKind.Interface);
-    const constants = filterDataByKind(
-      data,
-      TypeDocKind.Variable,
-      entry =>
-        (entry?.flags?.isConst || false) &&
-        entry.name !== 'default' &&
-        entry?.type?.name !== 'React.FC'
-    );
+    const constants = filterDataByKind(data, TypeDocKind.Variable, entry => isConstant(entry));
 
-    const components = filterDataByKind(
-      data,
-      TypeDocKind.Variable,
-      entry => entry?.type?.name === 'React.FC'
+    const components = filterDataByKind(data, [TypeDocKind.Variable, TypeDocKind.Class], entry =>
+      isComponent(entry)
     );
     const componentsPropNames = components.map(component => `${component.name}Props`);
     const componentsProps = filterDataByKind(props, TypeDocKind.TypeAlias, entry =>

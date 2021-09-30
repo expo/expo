@@ -1,7 +1,12 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 #import "EXDevLauncherManifestParser.h"
+#if __has_include(<EXDevLauncher/EXDevLauncher-Swift.h>)
+// For cocoapods framework, the generated swift header will be inside EXDevLauncher module
+#import <EXDevLauncher/EXDevLauncher-Swift.h>
+#else
 #import <EXDevLauncher-Swift.h>
+#endif
 
 #import <EXManifests/EXManifestsManifestFactory.h>
 

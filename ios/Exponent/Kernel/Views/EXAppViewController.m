@@ -53,6 +53,13 @@ const CGFloat kEXAutoReloadDebounceSeconds = 0.1;
 // and we want to make sure not to cover the error with a loading view or other chrome.
 const CGFloat kEXDevelopmentErrorCoolDownSeconds = 0.1;
 
+// copy of RNScreens protocol
+@protocol EXKernelRNSScreenWindowTraits
+
++ (BOOL)shouldAskScreensForScreenOrientationInViewController:(UIViewController *)vc;
+
+@end
+
 NS_ASSUME_NONNULL_BEGIN
 
 @interface EXAppViewController ()
@@ -84,6 +91,7 @@ NS_ASSUME_NONNULL_BEGIN
  * See also EXHomeAppSplashScreenViewProvider in self.viewDidLoad
  */
 @property (nonatomic, strong, nullable) EXManagedAppSplashScreenViewProvider *managedAppSplashScreenViewProvider;
+@property (nonatomic, strong, nullable) EXManagedAppSplashScreenViewController *managedSplashScreenController;
 
 /*
  * This view is available in managed apps run in Expo Go only.
@@ -417,10 +425,10 @@ NS_ASSUME_NONNULL_BEGIN
 
     UIView *rootView = self.view;
     UIView *splashScreenView = [provider createSplashScreenView];
-    EXManagedAppSplashScreenViewController *controller = [[EXManagedAppSplashScreenViewController alloc] initWithRootView:rootView
+    self.managedSplashScreenController = [[EXManagedAppSplashScreenViewController alloc] initWithRootView:rootView
                                                                                                  splashScreenView:splashScreenView];
     [splashScreenService showSplashScreenFor:self
-                      splashScreenController:controller
+                      splashScreenController:self.managedSplashScreenController
                              successCallback:^{}
                              failureCallback:^(NSString *message){ EXLogWarn(@"%@", message); }];
   });
@@ -430,6 +438,9 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)hideLoadingProgressWindow
 {
   [self.appLoadingProgressWindowController hide];
+  if (self.managedSplashScreenController) {
+    [self.managedSplashScreenController startSplashScreenVisibleTimer];
+  }
 }
 
 #pragma mark - EXAppLoaderDelegate
@@ -549,6 +560,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (UIInterfaceOrientationMask)supportedInterfaceOrientations
 {
+  if ([self shouldUseRNScreenOrientation]) {
+    return [super supportedInterfaceOrientations];
+  }
+
 #if __has_include(<EXScreenOrientation/EXScreenOrientationRegistry.h>)
   EXScreenOrientationRegistry *screenOrientationRegistry = (EXScreenOrientationRegistry *)[EXModuleRegistryProvider getSingletonModuleForClass:[EXScreenOrientationRegistry class]];
   if (screenOrientationRegistry && [screenOrientationRegistry requiredOrientationMask] > 0) {
@@ -562,6 +577,16 @@ NS_ASSUME_NONNULL_BEGIN
   }
 
   return [self orientationMaskFromManifestOrDefault];
+}
+
+- (BOOL)shouldUseRNScreenOrientation
+{
+  Class screenWindowTraitsClass = [self->_appRecord.appManager versionedClassFromString:@"RNSScreenWindowTraits"];
+  if ([screenWindowTraitsClass respondsToSelector:@selector(shouldAskScreensForScreenOrientationInViewController:)]) {
+    id<EXKernelRNSScreenWindowTraits> screenWindowTraits = (id<EXKernelRNSScreenWindowTraits>)screenWindowTraitsClass;
+    return [screenWindowTraits shouldAskScreensForScreenOrientationInViewController:self];
+  }
+  return NO;
 }
 
 - (UIInterfaceOrientationMask)orientationMaskFromManifestOrDefault {

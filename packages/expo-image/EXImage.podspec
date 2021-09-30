@@ -20,7 +20,7 @@ if using_custom_sd_web_image_webp_coder_version
 end
 
 Pod::Spec.new do |s|
-  s.name           = 'expo-image'
+  s.name           = 'EXImage'
   s.version        = package['version']
   s.summary        = package['description']
   s.description    = package['description']
@@ -29,6 +29,7 @@ Pod::Spec.new do |s|
   s.homepage       = package['homepage']
   s.platform       = :ios, '12.0'
   s.source         = { git: 'https://github.com/expo/expo.git' }
+  s.static_framework = true
 
   s.source_files = "ios/**/*.{h,m}"
   s.requires_arc = true

@@ -86,6 +86,7 @@ open class ExperienceActivity : BaseExperienceActivity(), StartReactInstanceDele
    */
   lateinit var loadingProgressPopupController: LoadingProgressPopupController
   var managedAppSplashScreenViewProvider: ManagedAppSplashScreenViewProvider? = null
+  var managedAppSplashScreenViewController: ManagedAppSplashScreenViewController? = null
 
   @Inject
   lateinit var exponentManifest: ExponentManifest
@@ -108,6 +109,7 @@ open class ExperienceActivity : BaseExperienceActivity(), StartReactInstanceDele
       override fun onSuccess() {
         UiThreadUtil.runOnUiThread {
           loadingProgressPopupController.hide()
+          managedAppSplashScreenViewController?.startSplashScreenWarningTimer()
           finishLoading()
         }
       }
@@ -352,14 +354,14 @@ open class ExperienceActivity : BaseExperienceActivity(), StartReactInstanceDele
       )
       managedAppSplashScreenViewProvider = ManagedAppSplashScreenViewProvider(config)
       val splashScreenView = managedAppSplashScreenViewProvider!!.createSplashScreenView(this)
-      val controller = ManagedAppSplashScreenViewController(
+      managedAppSplashScreenViewController = ManagedAppSplashScreenViewController(
         this,
         getRootViewClass(
           manifest
         ),
         splashScreenView
       )
-      SplashScreen.show(this, controller, true)
+      SplashScreen.show(this, managedAppSplashScreenViewController!!, true)
     } else {
       managedAppSplashScreenViewProvider!!.updateSplashScreenViewWithManifest(this, manifest!!)
     }

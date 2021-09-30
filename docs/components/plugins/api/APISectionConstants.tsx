@@ -22,9 +22,11 @@ const renderConstant = (
         {name}
       </InlineCode>
     </H3Code>
-    <P>
-      <B>Type:</B> <InlineCode>{resolveTypeName(type)}</InlineCode>
-    </P>
+    {type && (
+      <P>
+        <B>Type:</B> <InlineCode>{resolveTypeName(type)}</InlineCode>
+      </P>
+    )}
     <CommentTextBlock comment={comment} />
   </div>
 );

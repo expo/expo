@@ -4,13 +4,24 @@
 
 ### 🛠 Breaking changes
 
-- Dropped support for iOS 11.0 ([#14383](https://github.com/expo/expo/pull/14383) by [@cruzach](https://github.com/cruzach))
-
 ### 🎉 New features
 
 ### 🐛 Bug fixes
 
+- Fix expo-screen-orientation breaking for expo-updates + expo-splash-screen integration. ([#14519](https://github.com/expo/expo/pull/14519) by [@kudo](https://github.com/kudo))
+
+### 💡 Others
+
+## 0.13.0 — 2021-09-28
+
+### 🛠 Breaking changes
+
+- Dropped support for iOS 11.0 ([#14383](https://github.com/expo/expo/pull/14383) by [@cruzach](https://github.com/cruzach))
+
+### 🐛 Bug fixes
+
 - Fix 'No native splash screen registered' warning from reloading apps. ([#14467](https://github.com/expo/expo/pull/14467) by [@kudo](https://github.com/kudo))
+- Fix building errors from use_frameworks! in Podfile. ([#14523](https://github.com/expo/expo/pull/14523) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others
 

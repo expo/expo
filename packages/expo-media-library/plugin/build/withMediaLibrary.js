@@ -20,7 +20,7 @@ const withMediaLibraryExternalStorage = (config) => {
         return config;
     });
 };
-const withMediaLibrary = (config, { photosPermission, savePhotosPermission } = {}) => {
+const withMediaLibrary = (config, { photosPermission, savePhotosPermission, isAccessMediaLocationEnabled } = {}) => {
     if (!config.ios)
         config.ios = {};
     if (!config.ios.infoPlist)
@@ -34,7 +34,11 @@ const withMediaLibrary = (config, { photosPermission, savePhotosPermission } = {
     return config_plugins_1.withPlugins(config, [
         [
             config_plugins_1.AndroidConfig.Permissions.withPermissions,
-            ['android.permission.READ_EXTERNAL_STORAGE', 'android.permission.WRITE_EXTERNAL_STORAGE'],
+            [
+                'android.permission.READ_EXTERNAL_STORAGE',
+                'android.permission.WRITE_EXTERNAL_STORAGE',
+                isAccessMediaLocationEnabled !== null && isAccessMediaLocationEnabled !== void 0 ? isAccessMediaLocationEnabled : 'android.permission.ACCESS_MEDIA_LOCATION',
+            ].filter(Boolean),
         ],
         withMediaLibraryExternalStorage,
     ]);

@@ -1,5 +1,7 @@
 #import "RNSScreenWindowTraits.h"
 #import "RNSScreen.h"
+#import "RNSScreenContainer.h"
+#import "RNSScreenStack.h"
 
 @implementation RNSScreenWindowTraits
 
@@ -10,11 +12,11 @@
   static bool viewControllerBasedAppearence;
   dispatch_once(&once, ^{
     viewControllerBasedAppearence =
-    [[[NSBundle mainBundle] objectForInfoDictionaryKey:@"UIViewControllerBasedStatusBarAppearance"] boolValue];
+        [[[NSBundle mainBundle] objectForInfoDictionaryKey:@"UIViewControllerBasedStatusBarAppearance"] boolValue];
   });
   if (!viewControllerBasedAppearence) {
     RCTLogError(@"If you want to change the appearance of status bar, you have to change \
-                UIViewControllerBasedStatusBarAppearance key in the Info.plist to YES");
+    UIViewControllerBasedStatusBarAppearance key in the Info.plist to YES");
   }
 }
 #endif
@@ -25,18 +27,18 @@
   [UIView animateWithDuration:0.4
                    animations:^{ // duration based on "Programming iOS 13" p. 311 implementation
 #if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && defined(__IPHONE_13_0) && \
-__IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_13_0
-    if (@available(iOS 13, *)) {
-      UIWindow *firstWindow = [[[UIApplication sharedApplication] windows] firstObject];
-      if (firstWindow != nil) {
-        [[firstWindow rootViewController] setNeedsStatusBarAppearanceUpdate];
-      }
-    } else
+    __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_13_0
+                     if (@available(iOS 13, *)) {
+                       UIWindow *firstWindow = [[[UIApplication sharedApplication] windows] firstObject];
+                       if (firstWindow != nil) {
+                         [[firstWindow rootViewController] setNeedsStatusBarAppearanceUpdate];
+                       }
+                     } else
 #endif
-    {
-      [UIApplication.sharedApplication.keyWindow.rootViewController setNeedsStatusBarAppearanceUpdate];
-    }
-  }];
+                     {
+                       [UIApplication.sharedApplication.keyWindow.rootViewController setNeedsStatusBarAppearanceUpdate];
+                     }
+                   }];
 #endif
 }
 
@@ -44,17 +46,17 @@ __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_13_0
 + (UIStatusBarStyle)statusBarStyleForRNSStatusBarStyle:(RNSStatusBarStyle)statusBarStyle
 {
 #if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && defined(__IPHONE_13_0) && \
-__IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_13_0
+    __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_13_0
   if (@available(iOS 13.0, *)) {
     switch (statusBarStyle) {
       case RNSStatusBarStyleAuto:
         return [UITraitCollection.currentTraitCollection userInterfaceStyle] == UIUserInterfaceStyleDark
-        ? UIStatusBarStyleLightContent
-        : UIStatusBarStyleDarkContent;
+            ? UIStatusBarStyleLightContent
+            : UIStatusBarStyleDarkContent;
       case RNSStatusBarStyleInverted:
         return [UITraitCollection.currentTraitCollection userInterfaceStyle] == UIUserInterfaceStyleDark
-        ? UIStatusBarStyleDarkContent
-        : UIStatusBarStyleLightContent;
+            ? UIStatusBarStyleDarkContent
+            : UIStatusBarStyleLightContent;
       case RNSStatusBarStyleLight:
         return UIStatusBarStyleLightContent;
       case RNSStatusBarStyleDark:
@@ -94,7 +96,7 @@ __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_13_0
       return UIInterfaceOrientationPortrait;
     case UIDeviceOrientationPortraitUpsideDown:
       return UIInterfaceOrientationPortraitUpsideDown;
-      // UIDevice and UIInterface landscape orientations are switched
+    // UIDevice and UIInterface landscape orientations are switched
     case UIDeviceOrientationLandscapeLeft:
       return UIInterfaceOrientationLandscapeRight;
     case UIDeviceOrientationLandscapeRight:
@@ -116,7 +118,7 @@ __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_13_0
   dispatch_async(dispatch_get_main_queue(), ^{
     UIInterfaceOrientationMask orientationMask = UIInterfaceOrientationMaskAllButUpsideDown;
 #if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && defined(__IPHONE_13_0) && \
-__IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_13_0
+    __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_13_0
     if (@available(iOS 13, *)) {
       UIWindow *firstWindow = [[[UIApplication sharedApplication] windows] firstObject];
       if (firstWindow != nil) {
@@ -128,7 +130,7 @@ __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_13_0
       orientationMask = UIApplication.sharedApplication.keyWindow.rootViewController.supportedInterfaceOrientations;
     }
     UIInterfaceOrientation currentDeviceOrientation =
-    [RNSScreenWindowTraits interfaceOrientationFromDeviceOrientation:[[UIDevice currentDevice] orientation]];
+        [RNSScreenWindowTraits interfaceOrientationFromDeviceOrientation:[[UIDevice currentDevice] orientation]];
     UIInterfaceOrientation currentInterfaceOrientation = [RNSScreenWindowTraits interfaceOrientation];
     UIInterfaceOrientation newOrientation = UIInterfaceOrientationUnknown;
     if ([RNSScreenWindowTraits maskFromOrientation:currentDeviceOrientation] & orientationMask) {
@@ -171,7 +173,7 @@ __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_13_0
 + (UIInterfaceOrientation)interfaceOrientation
 {
 #if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && defined(__IPHONE_13_0) && \
-__IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_13_0
+    __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_13_0
   if (@available(iOS 13.0, *)) {
     UIWindow *firstWindow = [[[UIApplication sharedApplication] windows] firstObject];
     if (firstWindow == nil) {
@@ -189,5 +191,32 @@ __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_13_0
   }
 }
 #endif
+
+// method to be used in Expo for checking if RNScreens have trait set
++ (BOOL)shouldAskScreensForTrait:(RNSWindowTrait)trait
+                 includingModals:(BOOL)includingModals
+                inViewController:(UIViewController *)vc
+{
+  UIViewController *lastViewController = [[vc childViewControllers] lastObject];
+  if ([lastViewController conformsToProtocol:@protocol(RNScreensViewControllerDelegate)]) {
+    UIViewController *vc = nil;
+    if ([lastViewController isKindOfClass:[RNScreensViewController class]]) {
+      vc = [(RNScreensViewController *)lastViewController findActiveChildVC];
+    } else if ([lastViewController isKindOfClass:[RNScreensNavigationController class]]) {
+      vc = [(RNScreensNavigationController *)lastViewController topViewController];
+    }
+    return [vc isKindOfClass:[RNSScreen class]] &&
+        [(RNSScreen *)vc findChildVCForConfigAndTrait:trait includingModals:includingModals] != nil;
+  }
+  return NO;
+}
+
+// same method as above, but directly for orientation
++ (BOOL)shouldAskScreensForScreenOrientationInViewController:(UIViewController *)vc
+{
+  return [RNSScreenWindowTraits shouldAskScreensForTrait:RNSWindowTraitOrientation
+                                         includingModals:YES
+                                        inViewController:vc];
+}
 
 @end

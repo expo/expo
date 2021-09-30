@@ -33,7 +33,7 @@
     _container = self.container;
     [self show];
   }
-  
+
   return self;
 }
 
@@ -53,7 +53,7 @@
   if (_container == nil) {
     _container = [[RNSFullWindowOverlayContainer alloc] initWithFrame:_reactFrame];
   }
-  
+
   return _container;
 }
 
@@ -68,7 +68,7 @@
   if (!_container) {
     return;
   }
-  
+
   [_container removeFromSuperview];
 }
 

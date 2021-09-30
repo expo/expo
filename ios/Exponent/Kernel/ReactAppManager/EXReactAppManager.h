@@ -36,6 +36,8 @@ typedef enum EXReactAppManagerStatus {
 - (void)appStateDidBecomeActive;
 - (void)appStateDidBecomeInactive;
 
+- (Class)versionedClassFromString:(NSString *)classString;
+
 @property (nonatomic, assign) BOOL isHeadless;
 @property (nonatomic, readonly) BOOL isBridgeRunning;
 @property (nonatomic, readonly) EXReactAppManagerStatus status;

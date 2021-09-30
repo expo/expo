@@ -30,6 +30,7 @@
 ### 🐛 Bug fixes
 
 - Fix intent that started activity isn't passed further. ([#14097](https://github.com/expo/expo/pull/14097) by [@lukmccall](https://github.com/lukmccall))
+- Fix building errors from use_frameworks! in Podfile. ([#14523](https://github.com/expo/expo/pull/14523) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others
 
