@@ -2,6 +2,8 @@
 title: App Signing
 ---
 
+> 🆕 Using [EAS Build](/build/introduction.md)? Check out [automatically managed credentials with EAS](/app-signing/managed-credentials.md).
+
 Expo automates the process of signing your app for iOS and Android, but in both cases you can choose to provide your own overrides. Both `expo build:ios` and
 `expo build:android` commands generate signed applications ready to be uploaded into respective stores.
 
