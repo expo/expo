@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- Changed the reload key command to `r` instead of `Cmd + r` on iOS.
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
