@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Don't include fonts from family "System Font" (introduced by iOS 15) ([#14577](https://github.com/expo/expo/pull/14577) by [@brentvatne](https://github.com/brentvatne))
+
 ### 💡 Others
 
 ## 12.0.0 — 2021-09-28
