@@ -83,14 +83,8 @@ class FileSystemModule(
     INVALID(-1), BINARY_CONTENT(0), MULTIPART(1);
 
     companion object {
-      fun fromInt(value: Int): UploadType {
-        for (method in values()) {
-          if (value == method.value) {
-            return method
-          }
-        }
-        return INVALID
-      }
+      fun fromInt(value: Int): UploadType =
+        values().find { it.value == value } ?: INVALID
     }
   }
 
@@ -98,16 +92,14 @@ class FileSystemModule(
     moduleRegistryDelegate.onCreate(moduleRegistry)
   }
 
-  override fun getName(): String {
-    return NAME
-  }
+  override fun getName() = NAME
 
   override fun getConstants(): Map<String, Any> {
-    val constants: MutableMap<String, Any> = HashMap()
-    constants["documentDirectory"] = Uri.fromFile(context.filesDir).toString() + "/"
-    constants["cacheDirectory"] = Uri.fromFile(context.cacheDir).toString() + "/"
-    constants["bundleDirectory"] = "asset:///"
-    return constants
+    return mapOf(
+      "documentDirectory" to Uri.fromFile(context.filesDir).toString() + "/",
+      "cacheDirectory" to Uri.fromFile(context.cacheDir).toString() + "/",
+      "bundleDirectory" to "asset:///",
+    )
   }
 
   private fun uriToFile(uri: Uri): File {
@@ -127,7 +119,7 @@ class FileSystemModule(
     val file = uriToFile(uri)
     val dir = file.parentFile
     if (dir == null || !dir.exists()) {
-      throw IOException("Directory for " + file.path + " doesn't exist. Please make sure directory '" + file.parent + "' exists before calling downloadAsync.")
+      throw IOException("Directory for ${file.path} doesn't exist. Please make sure directory '${file.parent}' exists before calling downloadAsync.")
     }
   }
 
@@ -177,7 +169,7 @@ class FileSystemModule(
     if (permission == Permission.WRITE) {
       ensurePermission(uri, permission, "Location '$uri' isn't writable.")
     }
-    ensurePermission(uri, permission, "Location '" + uri + "' doesn't have permission '" + permission.name + "'.")
+    ensurePermission(uri, permission, "Location '$uri' doesn't have permission '${permission.name}'.")
   }
 
   @Throws(IOException::class)
@@ -236,7 +228,7 @@ class FileSystemModule(
         }
       } else if (uri.scheme == "content" || uri.scheme == "asset" || uri.scheme == null) {
         try {
-          val `is`: InputStream = when (uri.scheme) {
+          val inputStream: InputStream = when (uri.scheme) {
             "content" -> context.contentResolver.openInputStream(uri)
             "asset" -> openAssetInputStream(uri)
             else -> openResourceInputStream(uriStr)
@@ -563,10 +555,7 @@ class FileSystemModule(
         val file = uriToFile(uri)
         val children = file.listFiles()
         if (children != null) {
-          val result: MutableList<String> = ArrayList()
-          for (child in children) {
-            result.add(child.name)
-          }
+          val result = children.map { it.name }
           promise.resolve(result)
         } else {
           promise.reject(
@@ -664,10 +653,7 @@ class FileSystemModule(
           return
         }
         val children = file.listFiles()
-        val result: MutableList<String> = ArrayList()
-        for (child in children) {
-          result.add(child.uri.toString())
-        }
+        val result = children.map { it.uri.toString() }
         promise.resolve(result)
       } else {
         throw IOException("The URI '$uri' is not a Storage Access Framework URI. Try using FileSystem.readDirectoryAsync instead.")
@@ -888,11 +874,7 @@ class FileSystemModule(
       fileUriString,
       options,
       promise,
-      object : RequestBodyDecorator {
-        override fun decorate(requestBody: RequestBody): RequestBody {
-          return CountingRequestBody(requestBody, progressListener)
-        }
-      }
+      { requestBody -> CountingRequestBody(requestBody, progressListener) }
     ) ?: return
     val call = okHttpClient!!.newCall(request)
     taskHandlers[uuid] = TaskHandler(call)
@@ -969,13 +951,14 @@ class FileSystemModule(
             val sink = Okio.buffer(Okio.sink(file))
             sink.writeAll(response.body()!!.source())
             sink.close()
-            val result = Bundle()
-            result.putString("uri", Uri.fromFile(file).toString())
-            if (options != null && options.containsKey("md5") && (options["md5"] as Boolean)) {
-              result.putString("md5", md5(file))
+            val result = Bundle().apply {
+              putString("uri", Uri.fromFile(file).toString())
+              putInt("status", response.code())
+              putBundle("headers", translateHeaders(response.headers()))
+              if (options?.get("md5") == true) {
+                putString("md5", md5(file))
+              }
             }
-            result.putInt("status", response.code())
-            result.putBundle("headers", translateHeaders(response.headers()))
             response.close()
             promise.resolve(result)
           }
@@ -1085,8 +1068,9 @@ class FileSystemModule(
     taskHandlers.remove(uuid)
     try {
       val file = uriToFile(taskHandler.fileUri)
-      val result = Bundle()
-      result.putString("resumeData", file.length().toString())
+      val result = Bundle().apply {
+       putString("resumeData", file.length().toString())
+      }
       promise.resolve(result)
     } catch (e: Exception) {
       e.message?.let { Log.e(TAG, it) }
@@ -1226,8 +1210,8 @@ class FileSystemModule(
 
   @Throws(IOException::class)
   private fun md5(file: File): String {
-    val `is`: InputStream = FileInputStream(file)
-    return `is`.use {
+    val inputStream: InputStream = FileInputStream(file)
+    return inputStream.use {
       val md5bytes = DigestUtils.md5(it)
       String(Hex.encodeHex(md5bytes))
     }
@@ -1273,10 +1257,7 @@ class FileSystemModule(
       return file.length()
     }
     val content = file.listFiles() ?: return 0
-    var size: Long = 0
-    for (item in content) {
-      size += getFileSize(item)
-    }
+    val size = content.map { getFileSize(it) }.reduceOrNull { total, itemSize -> total + itemSize } ?: 0
     return size
   }
 
