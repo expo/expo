@@ -39,7 +39,7 @@ if (NativeProxy) {
     });
 }
 else {
-    console.warn(`The "UMNativeModulesProxy" native module is not exported through NativeModules; verify that @unimodules/react-native-adapter's native code is linked properly`);
+    console.warn(`The "EXNativeModulesProxy" native module is not exported through NativeModules; verify that expo-modules-core's native code is linked properly`);
 }
 export default NativeModulesProxy;
 //# sourceMappingURL=NativeModulesProxy.native.js.map

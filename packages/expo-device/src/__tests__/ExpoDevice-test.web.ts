@@ -1,4 +1,4 @@
-import { Platform } from '@unimodules/react-native-adapter';
+import { Platform } from 'expo-modules-core';
 
 import ExpoDevice from '../ExpoDevice.web';
 

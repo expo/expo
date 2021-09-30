@@ -1807,6 +1807,7 @@ PODS:
     - ExpoModulesCore
     - UMTaskManagerInterface
   - EXBarCodeScanner (11.0.0):
+    - EXImageLoader
     - ExpoModulesCore
     - ZXingObjC/OneD
     - ZXingObjC/PDF417
@@ -1875,6 +1876,7 @@ PODS:
     - ExpoModulesCore
     - React-Core
   - EXImageManipulator (10.0.0):
+    - EXImageLoader
     - ExpoModulesCore
   - EXImagePicker (11.0.0):
     - ExpoModulesCore
@@ -2438,10 +2440,6 @@ PODS:
     - StripeCore (= 21.8.1)
   - StripeCore (21.8.1)
   - UMAppLoader (3.0.0)
-  - UMCore (7.2.0):
-    - ExpoModulesCore
-  - UMReactNativeAdapter (6.5.0):
-    - ExpoModulesCore
   - UMTaskManagerInterface (7.0.0):
     - ExpoModulesCore
   - Yoga (1.14.0)
@@ -2892,8 +2890,6 @@ DEPENDENCIES:
   - RNScreens (from `./vendored/unversioned/react-native-screens`)
   - "stripe-react-native (from `./vendored/unversioned/@stripe/stripe-react-native`)"
   - UMAppLoader (from `../packages/unimodules-app-loader/ios`)
-  - "UMCore (from `../packages/@unimodules/core/ios`)"
-  - "UMReactNativeAdapter (from `../packages/@unimodules/react-native-adapter/ios`)"
   - UMTaskManagerInterface (from `../packages/unimodules-task-manager-interface/ios`)
   - Yoga (from `../react-native-lab/react-native/ReactCommon/yoga`)
 
@@ -3777,10 +3773,6 @@ EXTERNAL SOURCES:
     :path: "./vendored/unversioned/@stripe/stripe-react-native"
   UMAppLoader:
     :path: "../packages/unimodules-app-loader/ios"
-  UMCore:
-    :path: "../packages/@unimodules/core/ios"
-  UMReactNativeAdapter:
-    :path: "../packages/@unimodules/react-native-adapter/ios"
   UMTaskManagerInterface:
     :path: "../packages/unimodules-task-manager-interface/ios"
   Yoga:
@@ -4112,7 +4104,7 @@ SPEC CHECKSUMS:
   EXApplication: 0e15240e4d125b62f1cae48759ffbbd32b9286a6
   EXAV: f6782471300d31045a0c537c18d792fb594bf32d
   EXBackgroundFetch: 37316d5c860a7243942ad7fe9940bac772016bbd
-  EXBarCodeScanner: 4cd847aeb39c124d051bc8bd269c8b8ffc1c1453
+  EXBarCodeScanner: 527e142aa7b55e90741a2ff60a31ba680be37561
   EXBattery: 611c004d55b61ca290461e836a72d43ff3da1dd3
   EXBlur: ac2c920ba21b8e2433553f713efc9ab47ca2fee1
   EXBranch: d7ace94f6e02acd207c6a903380488722b08cc5d
@@ -4138,7 +4130,7 @@ SPEC CHECKSUMS:
   EXGoogleSignIn: 17cb10e673bf1dc1fd42587de33824fa82e5f271
   EXHaptics: d53f81746a6da4a2fe4d240aaaf89e447b50dbc7
   EXImageLoader: 939451be6f7b731aaa6588920b90743f20121a4d
-  EXImageManipulator: b40ba978eac2ad3c77ad0d496ffd9869f9d80d07
+  EXImageManipulator: 521ddc7fe845d9921218ea4de2d70bbdf9ac3202
   EXImagePicker: 5d13e450556b3d7dd424480968dd3624b078f2f1
   EXJSONUtils: f515cf71710855d7ba5bfc6752af3b9a6f6aad01
   EXKeepAwake: 8aa32396a5972d26e75e538603aad0f032396503
@@ -4243,8 +4235,6 @@ SPEC CHECKSUMS:
   stripe-react-native: 48a10900a95709f7527fc712231fe1adc81735ca
   StripeCore: a6e50d58119a0c7601773b56f274db2d394dcdac
   UMAppLoader: 671576daa3fd3017d4879a5f23fc0dd3b36422a8
-  UMCore: 2aa664ed1a9c9e31c67450aa307e9db9f83d1eeb
-  UMReactNativeAdapter: 25564671c9715a34d9de0fbba4e857d0e88d96be
   UMTaskManagerInterface: ab9c907a9e0eccf6bd9e16245d30e456cfb0eb37
   Yoga: 575c581c63e0d35c9a83f4b46d01d63abc1100ac
   ZXingObjC: fdbb269f25dd2032da343e06f10224d62f537bdb

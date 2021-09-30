@@ -1,7 +1,7 @@
-import { Platform } from '@unimodules/react-native-adapter';
 import Constants, { ExecutionEnvironment } from 'expo-constants';
 import * as Linking from 'expo-linking';
 import { resolveScheme } from 'expo-linking/build/Schemes';
+import { Platform } from 'expo-modules-core';
 import qs from 'qs';
 export class SessionUrlProvider {
     static BASE_URL = `https://auth.expo.io`;

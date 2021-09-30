@@ -31,6 +31,7 @@
   "license": "MIT",
   "homepage": "https://docs.expo.dev/versions/latest/sdk/imagemanipulator/",
   "dependencies": {
+    "expo-image-loader": "~3.0.0",
     "expo-modules-core": "~0.4.1"
   },
   "devDependencies": {
