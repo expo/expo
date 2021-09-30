@@ -1,9 +1,123 @@
+import groovy.json.JsonSlurper
+import java.util.regex.Matcher
+import java.util.regex.Pattern
+
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply plugin: 'maven'
 
 group = 'host.exp.exponent'
 version = '0.8.2'
+
+// reanimated v2
+def reactNativeFilePath = ["node", "--print", "require.resolve('react-native/package.json')"].execute().text.trim()
+def inputFile = new File(reactNativeFilePath)
+def json = new JsonSlurper().parseText(inputFile.text)
+def reactNativeVersion = json.version as String
+def (major, minor, patch) = reactNativeVersion.tokenize('.')
+
+def engine = "jsc"
+
+// If the user has the reanimated 2.2.1 or above installed, we don't have to swap JNI implementation.
+def shouldSwapJNI() {
+  def reanimatedPackagePath = ["node", "--print", "require.resolve('react-native-reanimated/package.json')"].execute().text.trim()
+  if (!reanimatedPackagePath) {
+    return true
+  }
+
+  def inputFile = new File(reanimatedPackagePath)
+  def json = new JsonSlurper().parseText(inputFile.text)
+  def reanimatedVersion = json.version as String
+  def (int major, int minor, int path) = reanimatedVersion.tokenize('.').collect { it.toInteger() }
+
+  if (major < 2 || (major == 2 && minor <= 2 && path == 0)) {
+    return true
+  }
+
+  return !rootProject.findProject(":react-native-reanimated")
+}
+
+abstract class replaceSoTask extends DefaultTask {
+  public static String appName = ":app"
+  public static String buildDir = "../../../android/app/build"
+
+  @TaskAction
+  def run() {
+    for (def abiVersion in ["x86", "x86_64", "armeabi-v7a", "arm64-v8a"]) {
+      ant.sequential {
+        copy(
+            tofile: "${buildDir}/intermediates/merged_native_libs/debug/out/lib/${abiVersion}/libfbjni.so",
+            file: "../vendored/react-native-reanimated/libSo/fbjni/jni/${abiVersion}/libfbjni.so",
+            overwrite: true
+        )
+      }
+    }
+  }
+}
+
+def getCurrentFlavor() {
+  Gradle gradle = getGradle()
+  String taskRequestName = gradle.getStartParameter().getTaskRequests().toString()
+  Pattern pattern
+
+  if (taskRequestName.contains("assemble")) {
+    pattern = Pattern.compile("assemble(\\w+)(Release|Debug)")
+  } else {
+    pattern = Pattern.compile("generate(\\w+)(Release|Debug)")
+  }
+  Matcher matcher = pattern.matcher(taskRequestName)
+
+  if (matcher.find()) {
+    return matcher.group(1).toLowerCase()
+  }
+  return ""
+}
+
+def replaceSoTaskDebug
+def replaceSoTaskRelease
+
+if (Integer.parseInt(minor) < 65 && shouldSwapJNI()) {
+  println("DevMenu will replace JNI library.")
+
+  tasks.register("replaceSoTaskDebug", replaceSoTask)
+  tasks.register("replaceSoTaskRelease", replaceSoTask)
+  replaceSoTaskDebug = project.getTasks().getByPath(":expo-dev-menu:replaceSoTaskDebug")
+  replaceSoTaskRelease = project.getTasks().getByPath(":expo-dev-menu:replaceSoTaskRelease")
+}
+
+rootProject.getSubprojects().forEach({ project ->
+  if (project.plugins.hasPlugin("com.android.application")) {
+    if (project.ext.react.enableHermes) {
+      engine = "hermes"
+    }
+
+    if (project.getProperties().get("android") && Integer.parseInt(minor) < 65 && shouldSwapJNI()) {
+      def projectProperties = project.getProperties()
+      if (!projectProperties.get("reanimated")
+          || (projectProperties.get("reanimated") && projectProperties.get("reanimated").get("enablePackagingOptions"))
+      ) {
+        def flavorString = getCurrentFlavor()
+        replaceSoTask.appName = project.getProperties().path
+        replaceSoTask.buildDir = project.getProperties().buildDir
+        def appName = project.getProperties().path
+
+        replaceSoTaskDebug.dependsOn(
+            project.getTasks().getByPath("${appName}:merge${flavorString}DebugNativeLibs"),
+            project.getTasks().getByPath("${appName}:strip${flavorString}DebugDebugSymbols")
+        )
+        project.getTasks().getByPath("${appName}:package${flavorString}Debug").dependsOn(replaceSoTaskDebug)
+
+        replaceSoTaskRelease.dependsOn(
+            project.getTasks().getByPath("${appName}:merge${flavorString}ReleaseNativeLibs"),
+            project.getTasks().getByPath("${appName}:strip${flavorString}ReleaseDebugSymbols")
+        )
+        project.getTasks().getByPath("${appName}:package${flavorString}Release").dependsOn(replaceSoTaskRelease)
+      }
+    }
+  }
+})
+
+// end of reanimated v2
 
 buildscript {
   // Simple helper that allows the root project to override versions declared by this library.
@@ -73,7 +187,7 @@ android {
   sourceSets {
     main {
       java {
-        srcDirs += ['../vendored/react-native-reanimated/android/', '../vendored/react-native-gesture-handler/android/']
+        srcDirs += ['../vendored/react-native-gesture-handler/android/']
       }
     }
 
@@ -109,6 +223,8 @@ repositories {
 }
 
 dependencies {
+  implementation files("../vendored/react-native-reanimated/android/devmenu-react-native-reanimated-${minor}-${engine}.aar")
+
   implementation project(":expo-dev-menu-interface")
 
   implementation 'com.squareup.okhttp3:okhttp:3.14.9'

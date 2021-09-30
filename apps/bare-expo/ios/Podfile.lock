@@ -160,10 +160,9 @@ PODS:
     - EXUpdatesInterface
     - React-Core
   - expo-dev-menu (0.8.2):
-    - expo-dev-menu-interface
     - expo-dev-menu/Main (= 0.8.2)
-    - React-Core
   - expo-dev-menu-interface (0.4.1)
+  - expo-dev-menu/GestureHandler (0.8.2)
   - expo-dev-menu/Main (0.8.2):
     - expo-dev-menu-interface
     - expo-dev-menu/Vendored
@@ -173,15 +172,32 @@ PODS:
     - Nimble
     - Quick
     - React-Core
+    - React-Core/DevSupport
+    - React-Core/RCTWebSocket
+    - React-CoreModules
+    - React-cxxreact
+    - React-jsi
+    - React-jsiexecutor
+    - React-jsinspector
+    - React-RCTActionSheet
+    - React-RCTAnimation
+    - React-RCTBlob
+    - React-RCTImage
+    - React-RCTLinking
+    - React-RCTNetwork
+    - React-RCTSettings
+    - React-RCTText
+    - React-RCTVibration
+    - ReactCommon/turbomodule/core
+    - Yoga
+  - expo-dev-menu/Tests (0.8.2):
     - React-CoreModules
   - expo-dev-menu/UITests (0.8.2):
-    - expo-dev-menu-interface
     - React
-    - React-Core
     - React-CoreModules
   - expo-dev-menu/Vendored (0.8.2):
-    - expo-dev-menu-interface
-    - React-Core
+    - expo-dev-menu/GestureHandler
+    - expo-dev-menu/Reanimated
   - ExpoModulesCore (0.4.2):
     - React-Core
     - ReactCommon/turbomodule/core

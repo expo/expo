@@ -1,6 +1,7 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
-class DevMenuAppInstance: NSObject, RCTBridgeDelegate {
+@objc
+class DevMenuAppInstance: DevMenuBaseAppInstance, RCTBridgeDelegate {
   static private var CloseEventName = "closeDevMenu"
 
   private let manager: DevMenuManager

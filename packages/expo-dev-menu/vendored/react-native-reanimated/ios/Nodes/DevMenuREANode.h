@@ -3,7 +3,7 @@
 
 @class DevMenuREANodesManager;
 
-typedef NSNumber* DevMenuREANodeID;
+typedef NSObject<NSCopying>* DevMenuREANodeID;
 
 @protocol DevMenuREAFinalNode
 
@@ -35,5 +35,7 @@ typedef NSNumber* DevMenuREANodeID;
 
 - (void)dangerouslyRescheduleEvaluate;
 - (void)forceUpdateMemoizedValue:(id)value;
+
+- (void)onDrop;
 
 @end
