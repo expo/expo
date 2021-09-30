@@ -28,14 +28,15 @@ import java.lang.IllegalStateException
 import java.math.BigDecimal
 import java.util.*
 
+private const val ERR_FACEBOOK_MISCONFIGURED = "ERR_FACEBOOK_MISCONFIGURED"
+private const val ERR_FACEBOOK_LOGIN = "ERR_FACEBOOK_LOGIN"
+private const val PUSH_PAYLOAD_KEY = "fb_push_payload"
+private const val PUSH_PAYLOAD_CAMPAIGN_KEY = "campaign"
+
 class FacebookModule(
   context: Context,
   private val moduleRegistryDelegate: ModuleRegistryDelegate = ModuleRegistryDelegate()
 ) : ExportedModule(context), ActivityEventListener {
-  private val ERR_FACEBOOK_MISCONFIGURED = "ERR_FACEBOOK_MISCONFIGURED"
-  private val ERR_FACEBOOK_LOGIN = "ERR_FACEBOOK_LOGIN"
-  private val PUSH_PAYLOAD_KEY = "fb_push_payload"
-  private val PUSH_PAYLOAD_CAMPAIGN_KEY = "campaign"
   private val callbackManager: CallbackManager = CallbackManager.Factory.create()
   private var appEventLogger: AppEventsLogger? = null
   private var attributionIdentifiers: AttributionIdentifiers? = null
