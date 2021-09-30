@@ -28,6 +28,7 @@ import abi43_0_0.expo.modules.core.interfaces.services.EventEmitter;
 import abi43_0_0.expo.modules.core.interfaces.services.UIManager;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -451,17 +452,15 @@ public class MediaLibraryModule extends ExportedModule implements ActivityEventL
   }
 
   private String[] getManifestPermissions(boolean writeOnly) {
-    if (writeOnly) {
-      return new String[]{
-        WRITE_EXTERNAL_STORAGE,
-        ACCESS_MEDIA_LOCATION
-      };
+    final List<String> permissions = new ArrayList<>();
+    permissions.add(WRITE_EXTERNAL_STORAGE);
+    if (!writeOnly) {
+      permissions.add(READ_EXTERNAL_STORAGE);
     }
-    return new String[]{
-      READ_EXTERNAL_STORAGE,
-      WRITE_EXTERNAL_STORAGE,
-      ACCESS_MEDIA_LOCATION,
-    };
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+      permissions.add(ACCESS_MEDIA_LOCATION);
+    }
+    return permissions.toArray(new String[0]);
   }
 
   private void runActionWithPermissions(List<String> assetsId, Action action, Promise promise) {
