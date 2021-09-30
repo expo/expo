@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Added missing dependency on `expo-image-loader`. ([#14585](https://github.com/expo/expo/pull/14585) by [@tsapeta](https://github.com/tsapeta))
+
 ### 💡 Others
 
 ## 11.1.0 — 2021-10-01

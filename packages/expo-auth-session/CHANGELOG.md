@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed an import from deprecated `@unimodules/react-native-adapter` package. ([#14585](https://github.com/expo/expo/pull/14585) by [@tsapeta](https://github.com/tsapeta))
+
 ### 💡 Others
 
 ## 3.4.1 — 2021-10-01
