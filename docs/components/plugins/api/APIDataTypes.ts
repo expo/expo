@@ -79,6 +79,8 @@ export type ClassDefinitionData = {
   comment?: CommentData;
   kind: TypeDocKind;
   extendedTypes?: TypeDefinitionData[];
+  children?: MethodDefinitionData[];
+  type?: TypeDefinitionData;
 };
 
 // Enums section
@@ -116,6 +118,7 @@ export type InterfaceValueData = {
 // Methods section
 
 export type MethodDefinitionData = {
+  name: string;
   signatures: MethodSignatureData[];
   kind: TypeDocKind;
 };

@@ -3,7 +3,11 @@ import React from 'react';
 import { InlineCode } from '~/components/base/code';
 import { B, P } from '~/components/base/paragraph';
 import { H2, H3Code } from '~/components/plugins/Headings';
-import { GeneratedData, PropsDefinitionData } from '~/components/plugins/api/APIDataTypes';
+import {
+  GeneratedData,
+  MethodDefinitionData,
+  PropsDefinitionData,
+} from '~/components/plugins/api/APIDataTypes';
 import APISectionProps from '~/components/plugins/api/APISectionProps';
 import { CommentTextBlock, resolveTypeName } from '~/components/plugins/api/APISectionUtils';
 
@@ -12,24 +16,31 @@ export type APISectionComponentsProps = {
   componentsProps: PropsDefinitionData[];
 };
 
+const getComponentName = (name?: string, children: MethodDefinitionData[] = []) => {
+  if (name && name !== 'default') return name;
+  const ctor = children.filter((child: MethodDefinitionData) => child.name === 'constructor')[0];
+  return ctor.signatures[0]?.type?.name || 'default';
+};
+
 const renderComponent = (
-  { name, comment, type, extendedTypes }: GeneratedData,
+  { name, comment, type, extendedTypes, children }: GeneratedData,
   componentsProps?: PropsDefinitionData[]
 ): JSX.Element => {
-  const finalType = extendedTypes?.length ? extendedTypes[0] : type;
+  const resolvedType = extendedTypes?.length ? extendedTypes[0] : type;
+  const resolvedName = getComponentName(name, children);
   return (
-    <div key={`component-definition-${name}`}>
+    <div key={`component-definition-${resolvedName}`}>
       <H3Code>
-        <InlineCode>{name}</InlineCode>
+        <InlineCode>{resolvedName}</InlineCode>
       </H3Code>
-      {finalType && (
+      {resolvedType && (
         <P>
-          <B>Type:</B> <InlineCode>{resolveTypeName(finalType)}</InlineCode>
+          <B>Type:</B> <InlineCode>{resolveTypeName(resolvedType)}</InlineCode>
         </P>
       )}
       <CommentTextBlock comment={comment} />
       {componentsProps && componentsProps.length ? (
-        <APISectionProps data={componentsProps} header={`${name}Props`} />
+        <APISectionProps data={componentsProps} header={`${resolvedName}Props`} />
       ) : null}
     </div>
   );
