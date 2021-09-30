@@ -107,7 +107,7 @@ class CreateAsset extends AsyncTask<Void, Void, Void> {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
       Uri assetUri = createAssetWithContentResolver();
       if (assetUri == null) {
-        promise.reject(ERROR_UNABLE_TO_SAVE, "Could not create content entry.");
+        mPromise.reject(ERROR_UNABLE_TO_SAVE, "Could not create content entry.");
         return null;
       }
       writeFileContentsToAsset(localFile, assetUri);
