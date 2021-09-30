@@ -48,9 +48,7 @@ class FacebookModule(
 
   private inline fun <reified T> moduleRegistry() = moduleRegistryDelegate.getFromModuleRegistry<T>()
 
-  override fun getName(): String {
-    return "ExponentFacebook"
-  }
+  override fun getName() = "ExponentFacebook"
 
   override fun onCreate(moduleRegistry: ModuleRegistry) {
     moduleRegistryDelegate.onCreate(moduleRegistry)
@@ -70,16 +68,12 @@ class FacebookModule(
       if (parameters != null) {
         for (key in parameters.keys()) {
           val value = parameters[key]
-          if (value == null) {
-            putString(key, "null")
-          } else if (value is String) {
-            putString(key, value)
-          } else if (value is Int) {
-            putInt(key, value)
-          } else if (value is Double) {
-            putDouble(key, value)
-          } else if (value is Long) {
-            putLong(key, value)
+          when (value) {
+            null -> putString(key, "null")
+            is String -> putString(key, value)
+            is Int -> putInt(key, value)
+            is Double -> putDouble(key, value)
+            is Long -> putLong(key, value)
           }
         }
       }
@@ -105,21 +99,19 @@ class FacebookModule(
   }
 
   private fun accessTokenToBundle(accessToken: AccessToken?): Bundle? {
-    return if (accessToken != null) {
+    return accessToken?.let {
       Bundle().apply {
-        putString("token", accessToken.token)
-        putString("userId", accessToken.userId)
-        putString("appId", accessToken.applicationId)
-        putStringArrayList("permissions", ArrayList(accessToken.permissions))
-        putStringArrayList("declinedPermissions", ArrayList(accessToken.declinedPermissions))
-        putStringArrayList("expiredPermissions", ArrayList(accessToken.expiredPermissions))
-        putDouble("expirationDate", accessToken.expires.time.toDouble())
-        putDouble("dataAccessExpirationDate", accessToken.dataAccessExpirationTime.time.toDouble())
-        putDouble("refreshDate", accessToken.lastRefresh.time.toDouble())
-        putString("tokenSource", accessToken.source.name)
+        putString("token", it.token)
+        putString("userId", it.userId)
+        putString("appId", it.applicationId)
+        putStringArrayList("permissions", ArrayList(it.permissions))
+        putStringArrayList("declinedPermissions", ArrayList(it.declinedPermissions))
+        putStringArrayList("expiredPermissions", ArrayList(it.expiredPermissions))
+        putDouble("expirationDate", it.expires.time.toDouble())
+        putDouble("dataAccessExpirationDate", it.dataAccessExpirationTime.time.toDouble())
+        putDouble("refreshDate", it.lastRefresh.time.toDouble())
+        putString("tokenSource", it.source.name)
       }
-    } else {
-      null
     }
   }
 
@@ -128,24 +120,23 @@ class FacebookModule(
     try {
       options.getString("appId")?.let {
         appId = it
-        FacebookSdk.setApplicationId(it)
+        FacebookSdk.setApplicationId(appId)
       }
-      if (options.containsKey("appName")) {
-        appName = options.getString("appName")
-        FacebookSdk.setApplicationName(appName)
+      options.getString("appName")?.let {
+        appName = it
+        FacebookSdk.setApplicationId(appName)
       }
-      if (options.containsKey("version")) {
-        FacebookSdk.setGraphApiVersion(options.getString("version"))
+      options.getString("version")?.let {
+        FacebookSdk.setGraphApiVersion(it)
+      }
+      options.getString("domain")?.let {
+        FacebookSdk.setFacebookDomain(it)
       }
       if (options.containsKey("autoLogAppEvents")) {
-        val autoLogAppEvents = options.getBoolean("autoLogAppEvents")
-        FacebookSdk.setAutoLogAppEventsEnabled(autoLogAppEvents)
-      }
-      if (options.containsKey("domain")) {
-        FacebookSdk.setFacebookDomain(options.getString("domain"))
+        FacebookSdk.setAutoLogAppEventsEnabled(options.getBoolean("isDebugEnabled"))
       }
       if (options.containsKey("isDebugEnabled")) {
-        FacebookSdk.setIsDebugEnabled(options.getBoolean("isDebugEnabled"))
+        FacebookSdk.setAutoLogAppEventsEnabled(options.getBoolean("isDebugEnabled"))
       }
       FacebookSdk.sdkInitialize(context) {
         FacebookSdk.fullyInitialize()
@@ -184,10 +175,10 @@ class FacebookModule(
     // Convert permissions
     val permissions = config.getList("permissions", listOf("public_profile", "email")) as List<String?>
     if (config.containsKey("behavior")) {
-      var behavior = LoginBehavior.NATIVE_WITH_FALLBACK
-      when (config.getString("behavior")) {
-        "browser" -> behavior = LoginBehavior.WEB_ONLY
-        "web" -> behavior = LoginBehavior.WEB_VIEW_ONLY
+      val behavior = when (config.getString("behavior")) {
+        "browser" -> LoginBehavior.WEB_ONLY
+        "web" -> LoginBehavior.WEB_VIEW_ONLY
+        else -> LoginBehavior.NATIVE_WITH_FALLBACK
       }
       LoginManager.getInstance().loginBehavior = behavior
     }
@@ -203,8 +194,9 @@ class FacebookModule(
             promise.reject(IllegalStateException("Logged into wrong app, try again?"))
             return
           }
-          val response = accessTokenToBundle(loginResult.accessToken)
-          response?.putString("type", "success")
+          val response = accessTokenToBundle(loginResult.accessToken)?.apply {
+            putString("type", "success")
+          }
           promise.resolve(response)
         }
 
@@ -265,8 +257,9 @@ class FacebookModule(
   @ExpoMethod
   fun logPushNotificationOpenAsync(campaign: String?, promise: Promise) {
     // the Android FBSDK expects the fb_push_payload to be a JSON string
-    val payload = Bundle()
-    payload.putString(PUSH_PAYLOAD_KEY, String.format("{\"%s\" : \"%s\"}", PUSH_PAYLOAD_CAMPAIGN_KEY, campaign))
+    val payload = Bundle().apply {
+      putString(PUSH_PAYLOAD_KEY, String.format("{\"%s\" : \"%s\"}", PUSH_PAYLOAD_CAMPAIGN_KEY, campaign))
+    }
     try {
       appEventLogger!!.logPushNotificationOpen(payload)
       promise.resolve(null)
@@ -315,18 +308,20 @@ class FacebookModule(
 
   @ExpoMethod
   fun setUserDataAsync(userData: ReadableArguments, promise: Promise) {
-    AppEventsLogger.setUserData(
-      userData.getString("email"),
-      userData.getString("firstName"),
-      userData.getString("lastName"),
-      userData.getString("phone"),
-      userData.getString("dateOfBirth"),
-      userData.getString("gender"),
-      userData.getString("city"),
-      userData.getString("state"),
-      userData.getString("zip"),
-      userData.getString("country")
-    )
+    with(userData) {
+      AppEventsLogger.setUserData(
+        getString("email"),
+        getString("firstName"),
+        getString("lastName"),
+        getString("phone"),
+        getString("dateOfBirth"),
+        getString("gender"),
+        getString("city"),
+        getString("state"),
+        getString("zip"),
+        getString("country")
+      )
+    }
     promise.resolve(null)
   }
 
