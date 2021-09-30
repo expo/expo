@@ -7,7 +7,10 @@ on:
       - .github/workflows/ios-unit-tests.yml
       - ios/**
       - packages/**/ios/**
-      - tools/**
+      - tools/src/dynamic-macros/**
+      - tools/src/commands/IosGenerateDynamicMacros.ts
+      - tools/src/commands/IosNativeUnitTests.ts
+      - tools/src/commands/NativeUnitTests.ts
       - secrets/**
       - fastlane/**
       - Gemfile.lock
@@ -18,7 +21,10 @@ on:
       - .github/workflows/ios-unit-tests.yml
       - ios/**
       - packages/**/ios/**
-      - tools/**
+      - tools/src/dynamic-macros/**
+      - tools/src/commands/IosGenerateDynamicMacros.ts
+      - tools/src/commands/IosNativeUnitTests.ts
+      - tools/src/commands/NativeUnitTests.ts
       - secrets/**
       - fastlane/**
       - Gemfile.lock
