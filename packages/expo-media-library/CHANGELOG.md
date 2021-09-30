@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix permissions always returning denied on android api < 29. ([#14570](https://github.com/expo/expo/pull/14570) by [@kudo](https://github.com/kudo))
+
 ### 💡 Others
 
 ## 13.0.0 — 2021-09-28
