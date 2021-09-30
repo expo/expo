@@ -25,6 +25,7 @@ PODS:
     - ExpoModulesCore
     - UMTaskManagerInterface
   - EXBarCodeScanner (11.0.0):
+    - EXImageLoader
     - ExpoModulesCore
     - ZXingObjC/OneD
     - ZXingObjC/PDF417
@@ -95,6 +96,7 @@ PODS:
     - ExpoModulesCore
     - React-Core
   - EXImageManipulator (10.0.0):
+    - EXImageLoader
     - ExpoModulesCore
   - EXImagePicker (11.0.0):
     - ExpoModulesCore
@@ -1212,7 +1214,7 @@ SPEC CHECKSUMS:
   EXApplication: 0e15240e4d125b62f1cae48759ffbbd32b9286a6
   EXAV: f6782471300d31045a0c537c18d792fb594bf32d
   EXBackgroundFetch: 37316d5c860a7243942ad7fe9940bac772016bbd
-  EXBarCodeScanner: 4cd847aeb39c124d051bc8bd269c8b8ffc1c1453
+  EXBarCodeScanner: 527e142aa7b55e90741a2ff60a31ba680be37561
   EXBattery: 611c004d55b61ca290461e836a72d43ff3da1dd3
   EXBlur: ac2c920ba21b8e2433553f713efc9ab47ca2fee1
   EXBrightness: 7ac49e9cee9980f0a421e7be61fe083901189447
@@ -1238,7 +1240,7 @@ SPEC CHECKSUMS:
   EXHaptics: d53f81746a6da4a2fe4d240aaaf89e447b50dbc7
   EXImage: 414c2bc91c8d3ac36c168aab528509922d13cf1f
   EXImageLoader: 939451be6f7b731aaa6588920b90743f20121a4d
-  EXImageManipulator: b40ba978eac2ad3c77ad0d496ffd9869f9d80d07
+  EXImageManipulator: 521ddc7fe845d9921218ea4de2d70bbdf9ac3202
   EXImagePicker: 5d13e450556b3d7dd424480968dd3624b078f2f1
   EXInAppPurchases: a981bef8aea038e9c4b036f75a6aef73cc723eca
   EXJSONUtils: f515cf71710855d7ba5bfc6752af3b9a6f6aad01
