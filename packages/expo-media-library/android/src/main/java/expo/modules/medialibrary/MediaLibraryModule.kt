@@ -1,6 +1,6 @@
 package expo.modules.medialibrary
 
-import android.Manifest.permission
+import android.Manifest.permission.*
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
@@ -370,24 +370,20 @@ class MediaLibraryModule(
 
   private val isMissingPermissions: Boolean
     get() = mPermissions
-      ?.hasGrantedPermissions(permission.READ_EXTERNAL_STORAGE, permission.WRITE_EXTERNAL_STORAGE)
+      ?.hasGrantedPermissions(READ_EXTERNAL_STORAGE, WRITE_EXTERNAL_STORAGE)
       ?.not() ?: false
 
   private val isMissingWritePermission: Boolean
     get() = mPermissions
-      ?.hasGrantedPermissions(permission.WRITE_EXTERNAL_STORAGE)
+      ?.hasGrantedPermissions(WRITE_EXTERNAL_STORAGE)
       ?.not() ?: false
 
   private fun getManifestPermissions(writeOnly: Boolean): Array<String> {
-    return if (writeOnly) {
-      arrayOf(permission.WRITE_EXTERNAL_STORAGE, permission.ACCESS_MEDIA_LOCATION)
-    } else {
-      arrayOf(
-        permission.READ_EXTERNAL_STORAGE,
-        permission.WRITE_EXTERNAL_STORAGE,
-        permission.ACCESS_MEDIA_LOCATION
-      )
-    }
+    return listOfNotNull(
+      WRITE_EXTERNAL_STORAGE,
+      READ_EXTERNAL_STORAGE.takeIf { !writeOnly },
+      ACCESS_MEDIA_LOCATION.takeIf { Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q }
+    ).toTypedArray()
   }
 
   private fun runActionWithPermissions(assetsId: List<String>, action: Action, promise: Promise) {
