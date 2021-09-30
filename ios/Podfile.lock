@@ -2230,7 +2230,11 @@ PODS:
     - glog
     - RCT-Folly (= 2020.01.13.00)
   - ABI43_0_0React-jsinspector (0.64.2)
+  - ABI43_0_0react-native-netinfo (6.0.2):
+    - ABI43_0_0React-Core
   - ABI43_0_0react-native-pager-view (5.4.4):
+    - ABI43_0_0React-Core
+  - ABI43_0_0react-native-segmented-control (2.4.0):
     - ABI43_0_0React-Core
   - ABI43_0_0react-native-webview (11.13.0):
     - ABI43_0_0React-Core
@@ -2353,6 +2357,9 @@ PODS:
   - ABI43_0_0RNScreens (3.8.0):
     - ABI43_0_0React-Core
     - ABI43_0_0React-RCTImage
+  - ABI43_0_0stripe-react-native (0.2.2):
+    - ABI43_0_0React
+    - Stripe (~> 21.8.1)
   - ABI43_0_0UMAppLoader (3.0.0)
   - ABI43_0_0UMTaskManagerInterface (7.0.0):
     - ABI43_0_0ExpoModulesCore
@@ -3443,7 +3450,9 @@ DEPENDENCIES:
   - ABI43_0_0React-jsi (from `./versioned-react-native/ABI43_0_0/ReactNative/ReactCommon/jsi`)
   - ABI43_0_0React-jsiexecutor (from `./versioned-react-native/ABI43_0_0/ReactNative/ReactCommon/jsiexecutor`)
   - ABI43_0_0React-jsinspector (from `./versioned-react-native/ABI43_0_0/ReactNative/ReactCommon/jsinspector`)
+  - "ABI43_0_0react-native-netinfo (from `./vendored/sdk43/@react-native-community/netinfo`)"
   - ABI43_0_0react-native-pager-view (from `./vendored/sdk43/react-native-pager-view`)
+  - "ABI43_0_0react-native-segmented-control (from `./vendored/sdk43/@react-native-segmented-control/segmented-control`)"
   - ABI43_0_0react-native-webview (from `./vendored/sdk43/react-native-webview`)
   - ABI43_0_0React-perflogger (from `./versioned-react-native/ABI43_0_0/ReactNative/ReactCommon/reactperflogger`)
   - ABI43_0_0React-RCTActionSheet (from `./versioned-react-native/ABI43_0_0/ReactNative/Libraries/ActionSheetIOS`)
@@ -3459,6 +3468,7 @@ DEPENDENCIES:
   - ABI43_0_0ReactCommon/turbomodule/core (from `./versioned-react-native/ABI43_0_0/ReactNative/ReactCommon`)
   - ABI43_0_0RNReanimated (from `./vendored/sdk43/react-native-reanimated`)
   - ABI43_0_0RNScreens (from `./vendored/sdk43/react-native-screens`)
+  - "ABI43_0_0stripe-react-native (from `./vendored/sdk43/@stripe/stripe-react-native`)"
   - ABI43_0_0UMAppLoader (from `./versioned/sdk43/UMAppLoader`)
   - ABI43_0_0UMTaskManagerInterface (from `./versioned/sdk43/UMTaskManagerInterface`)
   - ABI43_0_0Yoga (from `./versioned-react-native/ABI43_0_0/ReactNative/ReactCommon/yoga`)
@@ -4418,8 +4428,12 @@ EXTERNAL SOURCES:
     :path: "./versioned-react-native/ABI43_0_0/ReactNative/ReactCommon/jsiexecutor"
   ABI43_0_0React-jsinspector:
     :path: "./versioned-react-native/ABI43_0_0/ReactNative/ReactCommon/jsinspector"
+  ABI43_0_0react-native-netinfo:
+    :path: "./vendored/sdk43/@react-native-community/netinfo"
   ABI43_0_0react-native-pager-view:
     :path: "./vendored/sdk43/react-native-pager-view"
+  ABI43_0_0react-native-segmented-control:
+    :path: "./vendored/sdk43/@react-native-segmented-control/segmented-control"
   ABI43_0_0react-native-webview:
     :path: "./vendored/sdk43/react-native-webview"
   ABI43_0_0React-perflogger:
@@ -4450,6 +4464,8 @@ EXTERNAL SOURCES:
     :path: "./vendored/sdk43/react-native-reanimated"
   ABI43_0_0RNScreens:
     :path: "./vendored/sdk43/react-native-screens"
+  ABI43_0_0stripe-react-native:
+    :path: "./vendored/sdk43/@stripe/stripe-react-native"
   ABI43_0_0UMAppLoader:
     :path: "./versioned/sdk43/UMAppLoader"
   ABI43_0_0UMTaskManagerInterface:
@@ -5078,7 +5094,9 @@ SPEC CHECKSUMS:
   ABI43_0_0React-jsi: e5af4075772c2ecc0b53ea84db4e2f8aa1d00aef
   ABI43_0_0React-jsiexecutor: 430d9a230eca9bd8ab1f88f9be4ce74ac6cb1477
   ABI43_0_0React-jsinspector: 63c34e4bade90e3b6464e628c07f037fb7ecde11
+  ABI43_0_0react-native-netinfo: a175663a23a03b61d8028abfaa7d30b2b0bb5576
   ABI43_0_0react-native-pager-view: b7e2fff9851925b25a02659785064966a1a3dffb
+  ABI43_0_0react-native-segmented-control: 6faef5ee3dd155c3d38710d5bf9ecc4d9d6c4cd8
   ABI43_0_0react-native-webview: 8a19e64ee814a441110d24ffe8d9165c9eaac949
   ABI43_0_0React-perflogger: 410b7b91906f50750d1084b00df2ab0992a9fcec
   ABI43_0_0React-RCTActionSheet: 6098d10838ce2698477044dbe219251d8c9ef0de
@@ -5094,6 +5112,7 @@ SPEC CHECKSUMS:
   ABI43_0_0ReactCommon: 49ce2bdd63efe5a1d61a9cd663de13baa64d983a
   ABI43_0_0RNReanimated: f7cd484a2e1b5112ea84d57381c5d7ab6ceeab74
   ABI43_0_0RNScreens: d8e359af1191871e37501d5efd6b72b38c573e90
+  ABI43_0_0stripe-react-native: 75ba35284358f29b10851bda97d576a787ade851
   ABI43_0_0UMAppLoader: ac4c403f59e691af683873f22b44a023155bac55
   ABI43_0_0UMTaskManagerInterface: af977f83f0ab2c68d8023174a7d542a8cf465351
   ABI43_0_0Yoga: b4a69fd97272b10eb433c11dd8bb2e571e311e36

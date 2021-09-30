@@ -9,7 +9,7 @@
 
 #import <ABI43_0_0React/ABI43_0_0RCTConvert.h>
 #import <ABI43_0_0React/ABI43_0_0RCTEventDispatcher.h>
-#import <ABI43_0_0React/UIView+ABI43_0_0React.h>
+#import <ABI43_0_0React/ABI43_0_0UIView+React.h>
 
 @implementation ABI43_0_0RNCSegmentedControl
 
