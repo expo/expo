@@ -2,10 +2,10 @@
 
 #import <ABI43_0_0EXNotifications/ABI43_0_0EXServerRegistrationModule.h>
 
-static NSString * const kEXDeviceInstallationUUIDKey = @"ABI43_0_0EXDeviceInstallationUUIDKey";
-static NSString * const kEXDeviceInstallationUUIDLegacyKey = @"ABI43_0_0EXDeviceInstallUUIDKey";
+static NSString * const kEXDeviceInstallationUUIDKey = @"EXDeviceInstallationUUIDKey";
+static NSString * const kEXDeviceInstallationUUIDLegacyKey = @"EXDeviceInstallUUIDKey";
 
-static NSString * const kEXRegistrationInfoKey = @"ABI43_0_0EXNotificationRegistrationInfoKey";
+static NSString * const kEXRegistrationInfoKey = @"EXNotificationRegistrationInfoKey";
 
 @implementation ABI43_0_0EXServerRegistrationModule
 
