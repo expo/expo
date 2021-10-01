@@ -28,6 +28,30 @@ NS_ASSUME_NONNULL_BEGIN
   return [launchedUpdate.commitTime compare:newUpdate.commitTime] == NSOrderedAscending;
 }
 
+- (NSArray<EXUpdatesUpdate *> *)outdatedUpdatesWithLaunchedUpdate:(EXUpdatesUpdate *)launchedUpdate updates:(NSArray<EXUpdatesUpdate *> *)updates filters:(nullable NSDictionary *)filters
+{
+  if (!launchedUpdate) {
+    return @[];
+  }
+
+  NSMutableArray<EXUpdatesUpdate *> *outdatedUpdates = [NSMutableArray new];
+  for (EXUpdatesUpdate *update in updates) {
+    // ignore any updates whose scopeKey doesn't match that of the launched update
+    if (![launchedUpdate.scopeKey isEqualToString:update.scopeKey]) {
+      continue;
+    }
+    // also ignore any updates that don't match the filters of the launched update
+    if (![EXUpdatesSelectionPolicies doesUpdate:update matchFilters:filters]) {
+      continue;
+    }
+    if ([launchedUpdate.commitTime compare:update.commitTime] == NSOrderedDescending) {
+      [outdatedUpdates addObject:update];
+    }
+  }
+
+  return outdatedUpdates;
+}
+
 @end
 
 NS_ASSUME_NONNULL_END
