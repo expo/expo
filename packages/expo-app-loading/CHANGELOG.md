@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Fix unintended `export` change of the `AppLoading` component. ([#14589](https://github.com/expo/expo/pull/14589) by [@Simek](https://github.com/Simek))
-
 ### 💡 Others
+
+## 1.1.4 — 2021-10-01
+
+### 🐛 Bug fixes
+
+- Fix unintended `export` change of the `AppLoading` component. ([#14589](https://github.com/expo/expo/pull/14589) by [@Simek](https://github.com/Simek))
 
 ## 1.1.3 — 2021-09-28
 
