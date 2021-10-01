@@ -44,9 +44,8 @@ export const isUsingEmbeddedAssets = ExpoUpdates.isUsingEmbeddedAssets || false;
  * In development mode, or any other environment in which `expo-updates` is disabled, this object is
  * empty.
  */
-export const manifest = ExpoUpdates.manifestString
-    ? JSON.parse(ExpoUpdates.manifestString)
-    : ExpoUpdates.manifest ?? {};
+export const manifest = (ExpoUpdates.manifestString ? JSON.parse(ExpoUpdates.manifestString) : ExpoUpdates.manifest) ??
+    {};
 const isUsingDeveloperTool = !!manifest.developer?.tool;
 const isUsingExpoDevelopmentClient = NativeModulesProxy.ExponentConstants?.appOwnership === 'expo';
 const manualUpdatesInstructions = isUsingExpoDevelopmentClient
