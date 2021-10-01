@@ -1,5 +1,8 @@
 platform :ios, '12.0'
 
+# Disable expo-updates auto create manifest in podspec script_phase
+$expo_updates_create_manifest = false
+
 target '${TARGET_NAME}' do
 ${EXPOKIT_DEPENDENCY}
 ${PODFILE_UNVERSIONED_EXPO_MODULES_DEPENDENCIES}
