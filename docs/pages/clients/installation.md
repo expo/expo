@@ -11,7 +11,9 @@ The installation steps on this page are only required to add expo-dev-client to 
 
 To initialize a new Bare project or to add a development client to an existing managed project, see our [Getting Started guide](getting-started.md).
 
-If you created your project with `expo init`, or already you have `react-native-unimodules` and/or other Expo modules up and running, use the tabs marked **With unimodules** (most projects will fall under this category).
+If you created your project with `expo init`, or already you have `expo` and/or other Expo modules up and running, use the tabs marked **With Expo modules** (most projects will fall under this category).
+
+If you created your project with `expo init` before SDK 43, or already you have `react-native-unimodules` up and running, use the tabs marked **With unimodules**.
 
 If you created your project with `npx react-native init` and do not have `react-native-unimodules` or any other Expo packages installed, use the tabs marked **Without unimodules**.
 
@@ -25,7 +27,7 @@ Add the `expo-dev-client` package to your package.json.
 
 Add the following lines to your `Podfile`:
 
-<Tabs tabs={["With unimodules", "Without unimodules"]}>
+<Tabs tabs={["With Expo modules/unimodules", "Without unimodules"]}>
 
 <Tab >
 <ConfigurationDiff source="/static/diffs/client/podfile.diff" />
@@ -59,7 +61,7 @@ To do that, you need to open Xcode, go to `Project settings` > `General` > `Depl
 
 ### 🤖 Android
 
-<Tabs tabs={["With unimodules", "Without unimodules"]}>
+<Tabs tabs={["With Expo modules/unimodules", "Without unimodules"]}>
 
 <Tab >
 
@@ -93,7 +95,11 @@ See the [uri-scheme package](https://www.npmjs.com/package/uri-scheme) for more 
 
 Make the following changes to allow the Development Client to control project initialization in the **DEBUG** mode.
 
-<Tabs tabs={["With unimodules", "Without unimodules"]}>
+<Tabs tabs={["With Expo modules", "With unimodules", "Without unimodules"]}>
+
+<Tab >
+<ConfigurationDiff source="/static/diffs/client/app-delegate-expo-modules.diff" />
+</Tab>
 
 <Tab >
 <ConfigurationDiff source="/static/diffs/client/app-delegate.diff" />
@@ -133,7 +139,7 @@ There are a few more changes you can make to get the best experience, but you [c
 
 ### Enable development with Expo CLI
 
-Expo CLI requires you to have the `expo` package installed so it can maintain consistent behavior in your project when new versions of the Expo SDK are released.  The package will not be used directly by your project unless you import it in your application code, which is not recommended.
+Expo CLI requires you to have the `expo` package installed so it can maintain consistent behavior in your project when new versions of the Expo SDK are released. The package will not be used directly by your project unless you import it in your application code, which is not recommended.
 
 <InstallSection packageName="expo" cmd={["npm install expo --save-dev"]} hideBareInstructions />
 
