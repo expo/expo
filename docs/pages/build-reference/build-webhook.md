@@ -2,7 +2,16 @@
 title: Build webhooks
 ---
 
+import { InlineCode } from '~/components/base/code';
+
 EAS can alert you as soon as your build has completed via a webhook. Webhooks need to be configured per-project, so if you want to be alerted about builds for both `@johndoe/awesomeApp` and `@johndoe/coolApp`, you need to run `eas webhook:create` in each directory.
+
+<details><summary><strong>Are you using the classic build system?</strong> (<InlineCode>expo build:[android|ios]</InlineCode>)</summary> <p>
+
+Learn about [Webhooks for Classic Builds](/classic/webhooks.md).
+
+</p>
+</details>
 
 After running the command, you'll have to provide the webhook URL (or specify it with the `--url` flag) that handles HTTP POST requests. Additionally, you'll have to input a webhook signing secret, if you have not already provided it with the `--secret` flag. It must be at least 16 characters long, and it will be used to calculate the signature of the request body which we send as the value of the `expo-signature` HTTP header. You can use the signature to verify a webhook request is genuine (example code below).
 

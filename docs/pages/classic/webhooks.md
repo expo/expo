@@ -2,6 +2,8 @@
 title: Build Webhooks
 ---
 
+> 🆕 Using [EAS Build](/build/introduction.md)? Check out [Build Webhooks with EAS](/build-reference/build-webhook.md).
+
 Expo can alert you as soon as your build has finished via a webhook. Webhooks need to be configured per-project, so if you want to be alerted about builds for both `@yourUsername/awesomeApp` and `@yourUsername/coolApp`, you need to run `expo webhooks:add --event build --url <webhook-url>` in each directory.
 
 After running that command, you'll be given a webhook signing secret, if you have not already provided your own with the `--secret` command line option. It must be at least 16 characters long, and it will be used to calculate the signature of the request body which we send as the value of the `expo-signature` HTTP header. You can use the signature to verify a webhook request is genuine (example code below). We promise that we keep your secret securely encrypted in our database.
