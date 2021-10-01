@@ -19,8 +19,8 @@ import android.provider.Settings
 import java.lang.Exception
 import java.math.BigInteger
 import java.net.InetAddress
-import java.nio.ByteOrder
 import java.net.UnknownHostException
+import java.nio.ByteOrder
 
 private const val NAME = "ExpoNetwork"
 private val TAG = NetworkModule::class.java.simpleName
@@ -38,7 +38,7 @@ class NetworkModule(private val appContext: Context) : ExportedModule(appContext
     VPN("VPN"),
     OTHER("OTHER");
 
-    val isNotUndefined: Boolean
+    val isDefined: Boolean
       get() = this.value != "NONE" && this.value != "UNKNOWN"
   }
 
@@ -49,7 +49,7 @@ class NetworkModule(private val appContext: Context) : ExportedModule(appContext
       val manager = appContext.applicationContext.getSystemService(Context.WIFI_SERVICE) as WifiManager
       manager.connectionInfo
     } catch (e: Exception) {
-      Log.e(TAG, e.message ?: "No exception message")
+      Log.e(TAG, e.message ?: "Wifi information could not be acquired")
       throw e
     }
 
@@ -101,11 +101,13 @@ class NetworkModule(private val appContext: Context) : ExportedModule(appContext
       if (Build.VERSION.SDK_INT < 29) { // use getActiveNetworkInfo before api level 29
         val netInfo = connectivityManager.activeNetworkInfo
         val connectionType = getConnectionType(netInfo)
+
         result.apply {
           putBoolean("isInternetReachable", netInfo!!.isConnected)
           putString("type", connectionType.value)
-          putBoolean("isConnected", connectionType.isNotUndefined)
+          putBoolean("isConnected", connectionType.isDefined)
         }
+
         promise.resolve(result)
       } else {
         val network = connectivityManager.activeNetwork
@@ -120,7 +122,7 @@ class NetworkModule(private val appContext: Context) : ExportedModule(appContext
           result.apply {
             putString("type", connectionType?.value ?: NetworkStateType.NONE.value)
             putBoolean("isInternetReachable", isInternetReachable)
-            putBoolean("isConnected", connectionType != null && connectionType.isNotUndefined)
+            putBoolean("isConnected", connectionType != null && connectionType.isDefined)
           }
         }
         promise.resolve(result)
@@ -135,7 +137,7 @@ class NetworkModule(private val appContext: Context) : ExportedModule(appContext
     try {
       promise.resolve(rawIpToString(wifiInfo.ipAddress))
     } catch (e: Exception) {
-      Log.e(TAG, e.message!!)
+      Log.e(TAG, e.message ?: "Could not get ip address")
       promise.reject("ERR_NETWORK_IP_ADDRESS", "Unknown Host Exception", e)
     }
   }
