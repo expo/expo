@@ -18,7 +18,9 @@ apply from: new File(["node", "--print", "require.resolve('expo/package.json')"]
 useExpoModules([
     exclude: [
         'expo-module-template',
-        'expo-in-app-purchases'
+        'expo-in-app-purchases',
+        '@unimodules/core',
+        '@unimodules/react-native-adapter',
     ],
     searchPaths: [
       'enabled-modules'
