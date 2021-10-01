@@ -1992,6 +1992,7 @@ PODS:
     - ExpoModulesCore
     - EXStructuredHeaders
     - EXUpdatesInterface
+    - OCMockito (~> 6.0)
     - React-Core
   - EXUpdatesInterface (0.4.0)
   - EXVideoThumbnails (6.0.1):
@@ -2158,6 +2159,9 @@ PODS:
   - nanopb/decode (2.30907.0)
   - nanopb/encode (2.30907.0)
   - Nimble (9.2.0)
+  - OCHamcrest (8.0.0)
+  - OCMockito (6.0.0):
+    - OCHamcrest (~> 8.0)
   - PromisesObjC (1.2.12)
   - Protobuf (3.14.0)
   - Quick (4.0.0)
@@ -2959,6 +2963,8 @@ SPEC REPOS:
     - MLKitFaceDetection
     - MLKitVision
     - nanopb
+    - OCHamcrest
+    - OCMockito
     - PromisesObjC
     - Protobuf
     - Stripe
@@ -4202,7 +4208,7 @@ SPEC CHECKSUMS:
   EXStructuredHeaders: ba85104bb57e861129872a30e2cf7adaa348c4ac
   EXTaskManager: 7e50f7dd4121d82f26ffcc11295d82c7be105101
   EXTrackingTransparency: c196e5ee0468c389dda6962a800f5501438e6a7a
-  EXUpdates: 6ecb609984681120661469f6f4b126cfce737836
+  EXUpdates: 484722c091293bfb951e21f427e173b7c412c5b1
   EXUpdatesInterface: e1c01b4f5ec76bd1d6cc714938f9edf5ef6379b9
   EXVideoThumbnails: 889ce82cc5d3d355fac0558b3dfbfac2f769c23c
   EXWebBrowser: a3c5694129ee18c4ff4f2269b7077b3fbaf8dc35
@@ -4239,6 +4245,8 @@ SPEC CHECKSUMS:
   MLKitVision: 51385878c9100024478971856510f9271ff555b5
   nanopb: 59221d7f958fb711001e6a449489542d92ae113e
   Nimble: 9ca39ec3cb156bbb8c27f4943fd4643d28729616
+  OCHamcrest: a613690381f1dac7637c18962c10dbe8feca4bb5
+  OCMockito: 780f04370226f81a9d972c97d1203864ef609f5b
   PromisesObjC: 3113f7f76903778cf4a0586bd1ab89329a0b7b97
   Protobuf: 0cde852566359049847168e51bd1c690e0f70056
   Quick: 5dc45f9bc11236594a7acc99f7bd85ecdc9a477d
