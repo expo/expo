@@ -37,6 +37,6 @@
     "expo-module-scripts": "^2.0.0"
   },
   "dependencies": {
-    "expo-app-auth": "~11.0.0"
+    "expo-app-auth": "~11.0.1"
   }
 }
