@@ -26,6 +26,7 @@ export default function SimpleActionDemo(props: SimpleActionDemoProps) {
       const value = await props.action(setValue);
       setValue(value);
     } catch (error) {
+      console.error(error);
       setValue(error);
     }
     setLoading(false);
