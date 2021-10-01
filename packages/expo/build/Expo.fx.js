@@ -19,21 +19,6 @@ const isManagedEnvironment = Constants.executionEnvironment === ExecutionEnviron
 if (StyleSheet.setStyleAttributePreprocessor) {
     StyleSheet.setStyleAttributePreprocessor('fontFamily', Font.processFontFamily);
 }
-// Add warning about removed navigator.geolocation polyfill.
-if (Platform.OS !== 'web' && !window.navigator?.geolocation) {
-    const logLocationPolyfillWarning = (method) => {
-        return () => {
-            console.warn(`window.navigator.geolocation.${method} is not available. Import and execute installWebGeolocationPolyfill() from expo-location to add it, or use the expo-location APIs instead.`);
-        };
-    };
-    // @ts-ignore
-    window.navigator.geolocation = {
-        getCurrentPosition: logLocationPolyfillWarning('getCurrentPosition'),
-        watchPosition: logLocationPolyfillWarning('watchPostion'),
-        clearWatch: () => { },
-        stopObserving: () => { },
-    };
-}
 // Asserts if bare workflow isn't setup correctly.
 if (NativeModulesProxy.ExpoUpdates?.isMissingRuntimeVersion) {
     const message = 'expo-updates is installed but there is no runtime or SDK version configured. ' +
