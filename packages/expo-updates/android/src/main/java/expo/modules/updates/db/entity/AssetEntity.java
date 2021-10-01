@@ -29,7 +29,6 @@ public class AssetEntity {
 
   public JSONObject headers = null;
 
-  @NonNull
   public String type;
 
   public JSONObject metadata = null;

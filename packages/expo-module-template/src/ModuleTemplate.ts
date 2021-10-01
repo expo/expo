@@ -1,7 +1,10 @@
 import ExpoModuleTemplate from './ExpoModuleTemplate';
 import { SampleOptions } from './ModuleTemplate.types';
 
-export { default as ExpoModuleTemplateView, ExpoModuleTemplateViewProps } from './ExpoModuleTemplateView';
+export {
+  default as ExpoModuleTemplateView,
+  ExpoModuleTemplateViewProps,
+} from './ExpoModuleTemplateView';
 
 export * from './ModuleTemplate.types';
 

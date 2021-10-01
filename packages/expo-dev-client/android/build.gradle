@@ -81,6 +81,7 @@ dependencies {
   androidTestImplementation project(":expo-updates-interface")
   androidTestImplementation project(":expo-dev-menu")
   androidTestImplementation project(":expo-dev-launcher")
+  androidTestImplementation project(":expo-manifests")
 
   //noinspection GradleDynamicVersion
   androidTestImplementation 'com.facebook.react:react-native:+'  // From node_modules

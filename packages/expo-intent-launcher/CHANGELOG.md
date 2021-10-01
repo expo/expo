@@ -4,13 +4,6 @@
 
 ### 🛠 Breaking changes
 
-- Replace the stand-alone action constant strings with String Enum named `ActivityAction`. ([#14070](https://github.com/expo/expo/pull/14070) by [@Simek](https://github.com/Simek))
-
-```diff
-- IntentLauncher.ACTION_* // ACTION_ACCESSIBILITY_SETTINGS
-+ IntentLauncher.ActivityAction.* // ActivityAction.ACCESSIBILITY_SETTINGS
-```
-
 ### 🎉 New features
 
 ### 🐛 Bug fixes
@@ -18,6 +11,17 @@
 ### 💡 Others
 
 - Rewrite Android code to Kotlin. ([#14479](https://github.com/expo/expo/pull/14479) by [@kkafar](https://github.com/kkafar))
+
+## 10.0.0 — 2021-09-28
+
+### 🛠 Breaking changes
+
+- Replace the stand-alone action constant strings with String Enum named `ActivityAction`. ([#14070](https://github.com/expo/expo/pull/14070) by [@Simek](https://github.com/Simek))
+
+```diff
+- IntentLauncher.ACTION_* // ACTION_ACCESSIBILITY_SETTINGS
++ IntentLauncher.ActivityAction.* // ActivityAction.ACCESSIBILITY_SETTINGS
+```
 
 ## 9.1.0 — 2021-06-16
 

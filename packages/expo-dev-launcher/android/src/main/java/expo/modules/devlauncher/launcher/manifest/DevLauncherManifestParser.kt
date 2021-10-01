@@ -3,7 +3,9 @@ package expo.modules.devlauncher.launcher.manifest
 import android.net.Uri
 import expo.modules.devlauncher.helpers.await
 import expo.modules.devlauncher.helpers.fetch
+import expo.modules.manifests.core.Manifest
 import okhttp3.OkHttpClient
+import org.json.JSONObject
 import java.io.Reader
 
 class DevLauncherManifestParser(
@@ -28,9 +30,9 @@ class DevLauncherManifestParser(
     return response.body()!!.charStream()
   }
 
-  suspend fun parseManifest(): DevLauncherManifest {
+  suspend fun parseManifest(): Manifest {
     downloadManifest().use {
-      return DevLauncherManifest.fromJson(it)
+      return Manifest.fromManifestJson(JSONObject(it.readText()))
     }
   }
 }

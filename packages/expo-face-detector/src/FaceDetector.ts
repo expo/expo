@@ -113,20 +113,20 @@ export type FaceFeatureBounds = {
 
 // @docsMissing
 export enum FaceDetectorMode {
-  fast = 'fast',
-  accurate = 'accurate',
+  fast = 1,
+  accurate = 2,
 }
 
 // @docsMissing
 export enum FaceDetectorLandmarks {
-  all = 'all',
-  none = 'none',
+  all = 1,
+  none = 2,
 }
 
 // @docsMissing
 export enum FaceDetectorClassifications {
-  all = 'all',
-  none = 'none',
+  all = 1,
+  none = 2,
 }
 
 // @needsAudit

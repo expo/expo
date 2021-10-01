@@ -8,9 +8,21 @@
 
 ### 🐛 Bug fixes
 
-- Fix imports that affect versioned code inside of Expo Go. ([#14436](https://github.com/expo/expo/pull/14436) by [@cruzach](https://github.com/cruzach))
-
 ### 💡 Others
+
+## 0.4.1 — 2021-09-29
+
+### 🐛 Bug fixes
+
+- Removed accidentally published prebuilt binaries on iOS.
+
+## 0.4.0 — 2021-09-28
+
+### 🐛 Bug fixes
+
+- Fix imports that affect versioned code inside of Expo Go. ([#14436](https://github.com/expo/expo/pull/14436) by [@cruzach](https://github.com/cruzach))
+- Fixed event emitter being registered after module registry initialization. ([#14502](https://github.com/expo/expo/pull/14502) by [@tsapeta](https://github.com/tsapeta))
+- Fix building errors from use_frameworks! in Podfile. ([#14523](https://github.com/expo/expo/pull/14523) by [@kudo](https://github.com/kudo))
 
 ## 0.3.2 — 2021-09-15
 

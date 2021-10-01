@@ -20,6 +20,9 @@ import expo.modules.core.ExportedModule;
 import expo.modules.core.interfaces.InternalModule;
 import expo.modules.core.interfaces.ReactNativeHostHandler;
 
+// these unused imports must stay because of versioning
+import expo.modules.updates.UpdatesController;
+
 public class UpdatesPackage extends BasePackage {
   private static final String TAG = UpdatesPackage.class.getSimpleName();
 

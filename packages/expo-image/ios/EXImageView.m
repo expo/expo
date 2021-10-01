@@ -1,8 +1,8 @@
 // Copyright 2020-present 650 Industries. All rights reserved.
 
-#import <expo-image/EXImageView.h>
-#import <expo-image/EXImageBorders.h>
-#import <expo-image/EXImageCornerRadii.h>
+#import <EXImage/EXImageView.h>
+#import <EXImage/EXImageBorders.h>
+#import <EXImage/EXImageCornerRadii.h>
 #import <React/RCTConvert.h>
 #import <React/RCTBridge.h>
 #import <React/RCTUIManager.h>

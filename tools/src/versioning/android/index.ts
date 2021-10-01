@@ -407,7 +407,7 @@ async function renameJniLibsAsync(version: string) {
   }
 }
 
-async function copyUnimodulesAsync(version: string) {
+async function copyExpoModulesAsync(version: string) {
   const packages = await getListOfPackagesAsync();
   for (const pkg of packages) {
     if (
@@ -416,7 +416,7 @@ async function copyUnimodulesAsync(version: string) {
       pkg.isVersionableOnPlatform('android')
     ) {
       await spawnAsync(
-        './android-copy-unimodule.sh',
+        './android-copy-expo-module.sh',
         [version, path.join(pkg.path, pkg.androidSubdirectory)],
         {
           shell: true,
@@ -473,11 +473,11 @@ async function cleanUpAsync(version: string) {
 
   let filesToDelete: string[] = [];
 
-  // delete PrintDocumentAdapter*Callback.java
+  // delete PrintDocumentAdapter*Callback.kt
   // their package is `android.print` and therefore they are not changed by the versioning script
   // so we will have duplicate classes
   const printCallbackFiles = await glob(
-    path.join(versionedAbiSrcPath, 'expo/modules/print/*Callback.java')
+    path.join(versionedAbiSrcPath, 'expo/modules/print/*Callback.kt')
   );
   for (const file of printCallbackFiles) {
     const contents = await fs.readFile(file, 'utf8');
@@ -501,7 +501,7 @@ async function cleanUpAsync(version: string) {
   // misc fixes for versioned code
   const versionedExponentPackagePath = path.join(
     versionedAbiSrcPath,
-    'host/exp/exponent/ExponentPackage.java'
+    'host/exp/exponent/ExponentPackage.kt'
   );
   await transformFileAsync(
     versionedExponentPackagePath,
@@ -515,7 +515,7 @@ async function cleanUpAsync(version: string) {
   );
 
   await transformFileAsync(
-    path.join(versionedAbiSrcPath, 'host/exp/exponent/VersionedUtils.java'),
+    path.join(versionedAbiSrcPath, 'host/exp/exponent/VersionedUtils.kt'),
     new RegExp('// DO NOT EDIT THIS COMMENT - used by versioning scripts[^,]+,[^,]+,'),
     'null, null,'
   );
@@ -608,6 +608,7 @@ export async function addVersionAsync(version: string) {
   console.log(' 🛠   1/11: Updating android/versioned-react-native...');
   await updateVersionedReactNativeAsync(
     Directories.getReactNativeSubmoduleDir(),
+    ANDROID_DIR,
     path.join(ANDROID_DIR, 'versioned-react-native')
   );
   console.log(' ✅  1/11: Finished\n\n');
@@ -644,8 +645,8 @@ export async function addVersionAsync(version: string) {
   await prepareReanimatedAsync(version);
   console.log(' ✅  7/11: Finished\n\n');
 
-  console.log(' 🛠   8/11: Creating versioned unimodule packages...');
-  await copyUnimodulesAsync(version);
+  console.log(' 🛠   8/11: Creating versioned expo-modules packages...');
+  await copyExpoModulesAsync(version);
   console.log(' ✅  8/11: Finished\n\n');
 
   console.log(' 🛠   9/11: Adding extra versioned activites to AndroidManifest...');

@@ -84,7 +84,7 @@ const renderInterface = ({
     </div>
   ) : null;
 
-const APISectionInterfaces: React.FC<APISectionInterfacesProps> = ({ data }) =>
+const APISectionInterfaces = ({ data }: APISectionInterfacesProps) =>
   data?.length ? (
     <>
       <H2 key="interfaces-header">Interfaces</H2>

@@ -15,7 +15,12 @@
 #import <ExpoModulesCore/EXViewManagerAdapterClassesRegistry.h>
 #import <ExpoModulesCore/EXModuleRegistryProvider.h>
 #import <ExpoModulesCore/EXReactNativeEventEmitter.h>
+#if __has_include(<ExpoModulesCore/ExpoModulesCore-Swift.h>)
+// For cocoapods framework, the generated swift header will be inside ExpoModulesCore module
+#import <ExpoModulesCore/ExpoModulesCore-Swift.h>
+#else
 #import "ExpoModulesCore-Swift.h"
+#endif
 
 static const NSString *exportedMethodsNamesKeyPath = @"exportedMethods";
 static const NSString *viewManagersNamesKeyPath = @"viewManagersNames";
@@ -184,6 +189,8 @@ RCT_EXPORT_METHOD(callMethod:(NSString *)moduleName methodNameOrKey:(id)methodNa
 
 - (id<ModulesProviderObjCProtocol>)getExpoModulesProvider
 {
+  // Dynamically gets the modules provider class.
+  // NOTE: This needs to be versioned in Expo Go.
   Class generatedExpoModulesProvider = NSClassFromString(@"ExpoModulesProvider");
   // Checks if `ExpoModulesProvider` was generated
   if (generatedExpoModulesProvider) {
@@ -237,10 +244,6 @@ RCT_EXPORT_METHOD(callMethod:(NSString *)moduleName methodNameOrKey:(id)methodNa
     }
   }
 
-  // Let the modules consume the registry :)
-  // It calls `setModuleRegistry:` on all `EXModuleRegistryConsumer`s.
-  [_exModuleRegistry initialize];
-
   // Register the view managers as additional modules.
   [bridge registerAdditionalModuleClasses:additionalModuleClasses];
 
@@ -251,7 +254,10 @@ RCT_EXPORT_METHOD(callMethod:(NSString *)moduleName methodNameOrKey:(id)methodNa
   // Get the newly created instance of `EXReactEventEmitter` bridge module and register it in expo modules registry.
   EXReactNativeEventEmitter *eventEmitter = [bridge moduleForClass:[EXReactNativeEventEmitter class]];
   [_exModuleRegistry registerInternalModule:eventEmitter];
-  [eventEmitter setModuleRegistry:_exModuleRegistry];
+
+  // Let the modules consume the registry :)
+  // It calls `setModuleRegistry:` on all `EXModuleRegistryConsumer`s.
+  [_exModuleRegistry initialize];
 }
 
 - (void)registerComponentDataForModuleClasses:(NSArray<Class> *)moduleClasses inBridge:(RCTBridge *)bridge

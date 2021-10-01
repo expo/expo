@@ -15,7 +15,6 @@ buildscript {
 }
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
-apply plugin: 'devicefarm'
 
 android {
   compileSdkVersion safeExtGet("compileSdkVersion", 30)
@@ -113,17 +112,6 @@ android {
   }
 }
 
-devicefarm {
-  projectName System.getenv("DEVICEFARM_PROJECT_NAME")
-  devicePool System.getenv("DEVICEFARM_DEVICE_POOL")
-  executionTimeoutMinutes 40
-  authentication {
-
-    accessKey System.getenv("AWS_ACCESS_KEY_ID")
-    secretKey System.getenv("AWS_SECRET_ACCESS_KEY")
-  }
-}
-
 configurations.all {
   resolutionStrategy {
     force 'org.webkit:android-jsc:r245459'
@@ -158,7 +146,7 @@ dependencies {
   implementation 'com.facebook.device.yearclass:yearclass:2.1.0'
   implementation 'commons-io:commons-io:1.4'
   implementation 'me.leolin:ShortcutBadger:1.1.4@aar'
-  implementation 'com.theartofdev.edmodo:android-image-cropper:2.7.0'
+  implementation 'com.theartofdev.edmodo:android-image-cropper:2.8.0'
   implementation 'commons-codec:commons-codec:1.10'
   implementation 'com.segment.analytics.android:analytics:4.3.0'
   implementation 'com.google.zxing:core:3.3.3'

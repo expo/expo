@@ -72,6 +72,80 @@ The easiest way to get started is to initialize your new project using a TypeScr
 
 When you create new source files in your project you should use the `.ts` extension or the `.tsx` if the file includes React components.
 
+## TypeScript for config files
+
+You may find that you want to use TypeScript for the config files in your project, like the `webpack.config.js`, `metro.config.js`, or `app.config.js`. These will require a little extra setup. You can utilize the [`ts-node` require hook](https://github.com/TypeStrong/ts-node#programmatic) to _import_ TypeScript files into your JS config file, meaning any import can be TypeScript, but the root file will still need to be JavaScript.
+
+<TerminalBlock cmd={['yarn add -D ts-node typescript']} />
+
+### webpack.config.js
+
+> You may need to install the `@expo/webpack-config` package.
+
+`webpack.config.js`
+
+```js
+require('ts-node/register');
+module.exports = require('./webpack.config.ts');
+```
+
+`webpack.config.ts`
+
+```ts
+import createExpoWebpackConfigAsync from '@expo/webpack-config/webpack';
+import { Arguments, Environment } from '@expo/webpack-config/webpack/types';
+
+module.exports = async function (env: Environment, argv: Arguments) {
+  const config = await createExpoWebpackConfigAsync(env, argv);
+  // Customize the config before returning it.
+  return config;
+};
+```
+
+### metro.config.js
+
+> Metro doesn't ship types or have a definitely typed package.
+
+`metro.config.js`
+
+```js
+require('ts-node/register');
+module.exports = require('./metro.config.ts');
+```
+
+`metro.config.ts`
+
+```ts
+import { getDefaultConfig } from '@expo/metro-config';
+
+const defaultConfig = getDefaultConfig(__dirname);
+
+module.exports = defaultConfig;
+```
+
+### app.config.js
+
+Technically `app.config.ts` is supported by default, but it doesn't support external TypeScript modules, or `tsconfig.json` customization. You can use the following approach to get a more comprehensive TypeScript setup.
+
+`app.config.js`
+
+```js
+require('ts-node/register');
+module.exports = require('./app.config.ts');
+```
+
+`app.config.ts`
+
+```ts
+import { ExpoConfig } from '@expo/config-types';
+
+const config: ExpoConfig = {
+  name: 'my-app',
+};
+
+export default config;
+```
+
 ## Learning how to use TypeScript
 
 A good place to start learning TypeScript is the official [TypeScript Handbook](https://www.typescriptlang.org/docs/handbook/basic-types.html).

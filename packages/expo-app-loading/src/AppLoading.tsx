@@ -3,7 +3,7 @@ import React from 'react';
 import { AppLoadingProps } from './AppLoading.types';
 import NativeAppLoading from './AppLoadingNativeWrapper';
 
-export default class AppLoading extends React.Component<AppLoadingProps> {
+class AppLoading extends React.Component<AppLoadingProps> {
   _isMounted: boolean = false;
 
   componentDidMount() {
@@ -51,3 +51,5 @@ export default class AppLoading extends React.Component<AppLoadingProps> {
     return <NativeAppLoading {...this.props} />;
   }
 }
+
+export default AppLoading;

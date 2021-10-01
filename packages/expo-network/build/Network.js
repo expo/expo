@@ -11,7 +11,7 @@ export { NetworkStateType };
  * `NetworkStateType.NONE`.
  * @return A `Promise` that fulfils with a `NetworkState` object.
  *
- * # Example
+ * @example
  * ```ts
  * await Network.getNetworkStateAsync();
  * // {
@@ -36,7 +36,7 @@ export async function getNetworkStateAsync() {
  * @return A `Promise` that fulfils with a `string` of the current IP address of the device's main
  * network interface. Can only be IPv4 address.
  *
- * # Example
+ * @example
  * ```ts
  * await Network.getIpAddressAsync();
  * // "92.168.32.44"
@@ -76,7 +76,7 @@ export async function getMacAddressAsync(interfaceName = null) {
  * @return Returns a `Promise` that fulfils with a `boolean` value for whether the device is in
  * airplane mode or not.
  *
- * # Example
+ * @example
  * ```ts
  * await Network.isAirplaneModeEnabledAsync();
  * // false

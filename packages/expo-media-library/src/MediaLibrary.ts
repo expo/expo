@@ -443,7 +443,7 @@ export async function presentPermissionsPickerAsync(): Promise<void> {
  * Creates an asset from existing file. The most common use case is to save a picture taken by [Camera](../camera).
  * This method requires `CAMERA_ROLL` permission.
  *
- * # Example
+ * @example
  * ```js
  * const { uri } = await Camera.takePictureAsync();
  * const asset = await MediaLibrary.createAssetAsync(uri);
