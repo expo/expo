@@ -1,21 +1,21 @@
 import * as FileSystem from 'expo-file-system';
-import { initializeApp } from 'firebase/app';
-import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
-import { getDatabase, ref, onValue } from 'firebase/database';
-import { getFirestore, query, collection, where, doc, getDocs, getDoc } from 'firebase/firestore';
-import { getFunctions, httpsCallable } from 'firebase/functions';
-import { getStorage, ref as storageRef, listAll, getDownloadURL } from 'firebase/storage';
+import firebase from 'firebase/compat';
+import 'firebase/compat/auth';
+import 'firebase/compat/database';
+import 'firebase/compat/firestore';
+import 'firebase/compat/functions';
+import 'firebase/compat/storage';
 
 // The modules below require browser features and are not compatible within the react-native context.
-// import {...} from "firebase/analytics";
-// import {...} from "firebase/remote-config";
-// import {...} from "firebase/messaging";
-// import {...} from "firebase/performance";
-// import {...} from "firebase/installations";
+// import "firebase/compat/analytics";
+// import "firebase/compat/remote-config";
+// import "firebase/compat/messaging";
+// import "firebase/compat/performance";
+// import "firebase/compat/installations";
 
 import { expectMethodToThrowAsync } from '../TestUtils';
 
-export const name = 'FirebaseJSSDKv9';
+export const name = 'FirebaseJSSDK (Compat)';
 
 const FIREBASE_CONFIG = {
   apiKey: 'AIzaSyD2gZuX5utrLBAdJoMrAdrMW7Sv9xQ5uBE',
@@ -31,42 +31,38 @@ const FIREBASE_CONFIG = {
 export async function test({ describe, it, expect, beforeAll }) {
   beforeAll(() => {
     try {
-      initializeApp(FIREBASE_CONFIG);
+      firebase.initializeApp(FIREBASE_CONFIG);
     } catch (err) {
       // nop
     }
   });
 
-  describe('FirebaseJSSDKv9', async () => {
+  describe('FirebaseJSSDK', async () => {
     describe('auth', async () => {
-      it(`calls getAuth() succesfully`, () => {
-        const auth = getAuth();
-        expect(auth).not.toBeNull();
+      it(`calls auth() succesfully`, () => {
+        firebase.auth();
       });
-
       it(`returns correct sign-in error`, async () => {
-        const auth = getAuth();
         const error = await expectMethodToThrowAsync(() =>
-          signInWithEmailAndPassword(auth, 'testuser@invaliddomain.com', '0')
+          firebase.auth().signInWithEmailAndPassword('testuser@invaliddomain.com', '0')
         );
         expect(error.code).toBe('auth/operation-not-allowed');
       });
     });
 
     describe('database', async () => {
-      it(`calls getDatabase() succesfully`, () => {
-        const db = getDatabase();
+      it(`calls database() succesfully`, () => {
+        const db = firebase.database();
         expect(db).not.toBeNull();
       });
-
       it(`reads data once`, async () => {
         let error = null;
         try {
-          const db = getDatabase();
-          const reference = ref(db, '/test1');
-          onValue(reference, (snapshot) => {
-            expect(snapshot.val()).toBe('foobar');
-          });
+          const snapshot = await firebase
+            .database()
+            .ref('/test1')
+            .once('value');
+          expect(snapshot.val()).toBe('foobar');
         } catch (e) {
           error = e;
         }
@@ -75,36 +71,31 @@ export async function test({ describe, it, expect, beforeAll }) {
     });
 
     describe('firestore', async () => {
-      it(`calls getFirestore() succesfully`, () => {
-        const firestore = getFirestore();
-        expect(firestore).not.toBeNull();
+      it(`calls firestore() succesfully`, () => {
+        const db = firebase.firestore();
+        expect(db).not.toBeNull();
       });
-
       it(`gets a collection`, async () => {
         let error = null;
         try {
-          const firestore = getFirestore();
-          const q = query(collection(firestore, 'tests'), where('foo', '==', 'bar'));
-          const querySnapshot = await getDocs(q);
-          expect(querySnapshot.size).toBe(1);
-          querySnapshot.forEach((doc) => {
-            expect(doc.data().foo).toBe('bar');
-          });
+          const { docs } = await firebase
+            .firestore()
+            .collection('tests')
+            .get();
+          expect(docs.length).toBeGreaterThan(0);
         } catch (e) {
           error = e;
         }
         expect(error).toBeNull();
       });
-
       it(`gets a document`, async () => {
         let error = null;
         try {
-          const firestore = getFirestore();
-          const q = query(doc(firestore, 'tests/doc1'));
-          const querySnapshot = await getDoc(q);
-          expect(querySnapshot).not.toBeNull();
-          const data = querySnapshot.data();
-          expect(data.foo).toBe('bar');
+          const snapshot = await firebase
+            .firestore()
+            .doc('tests/doc1')
+            .get();
+          expect(snapshot).not.toBeNull();
         } catch (e) {
           error = e;
         }
@@ -113,17 +104,15 @@ export async function test({ describe, it, expect, beforeAll }) {
     });
 
     describe('functions', async () => {
-      it(`calls getFunctions() succesfully`, () => {
-        const functions = getFunctions();
+      it(`calls functions() succesfully`, () => {
+        const functions = firebase.functions();
         expect(functions).not.toBeNull();
       });
-
       it(`calls the echo function`, async () => {
         let error = null;
         try {
-          const functions = getFunctions();
           const message = "I'm a unit test";
-          const echoMessage = httpsCallable(functions, 'echoMessage');
+          const echoMessage = firebase.functions().httpsCallable('echoMessage');
           const response = await echoMessage({ message });
           const responseMessage = response.data.message;
           expect(responseMessage).toBe(`Hi 👋, you said: ${message}`);
@@ -135,33 +124,33 @@ export async function test({ describe, it, expect, beforeAll }) {
     });
 
     describe('storage', () => {
-      it(`calls getStorage() succesfully`, () => {
-        const storage = getStorage();
+      it(`calls storage() succesfully`, () => {
+        const storage = firebase.storage();
         expect(storage).not.toBeNull();
       });
-
       it(`lists all files`, async () => {
         let error = null;
         try {
-          const storage = getStorage();
-          const publicRef = storageRef(storage, 'public');
-          const files = await listAll(publicRef);
+          const files = await firebase
+            .storage()
+            .ref('public')
+            .listAll();
           expect(files.items.length).toBeGreaterThan(0);
         } catch (e) {
           error = e;
         }
         expect(error).toBeNull();
       });
-
       it(`downloads a file`, async () => {
         let error = null;
         try {
-          const storage = getStorage();
-          const publicRef = storageRef(storage, 'public');
-          const files = await listAll(publicRef);
+          const files = await firebase
+            .storage()
+            .ref('public')
+            .listAll();
           expect(files.items.length).toBeGreaterThan(0);
           const file = files.items[0];
-          const downloadUrl = await getDownloadURL(file);
+          const downloadUrl = await file.getDownloadURL();
           expect(typeof downloadUrl).toBe('string');
           const startUrl = 'https://firebasestorage.googleapis.com';
           expect(downloadUrl.substring(0, startUrl.length)).toBe(startUrl);
@@ -176,6 +165,32 @@ export async function test({ describe, it, expect, beforeAll }) {
         }
         expect(error).toBeNull();
       });
+      /* it(`upload a file`, async () => {
+        let error = null;
+        try {
+          // REQUIRES AUTH
+          const currentUser = firebase.auth ? firebase.auth().currentUser : undefined;
+          // const suffix = new Date().toISOString().replace(/\D/g, '');
+          const fileContent = new ArrayBuffer(1000);
+          const ref = firebase
+            .storage()
+            .ref(`users/${currentUser.uid}`)
+            .child(`unittest`);
+          // @ts-ignore
+          const uploadTask = ref.put(fileContent);
+          await new Promise((resolve, reject) => {
+            uploadTask.on(
+              firebase.storage.TaskEvent.STATE_CHANGED,
+              snapshot => {},
+              reject,
+              resolve
+            );
+          });
+        } catch (e) {
+          error = e;
+        }
+        expect(error).toBeNull();
+      });*/
     });
   });
 }
