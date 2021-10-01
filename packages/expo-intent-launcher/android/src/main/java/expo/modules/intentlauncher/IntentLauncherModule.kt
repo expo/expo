@@ -4,6 +4,7 @@ import expo.modules.core.Promise
 import expo.modules.core.ExportedModule
 import expo.modules.core.ModuleRegistry
 import expo.modules.core.interfaces.ExpoMethod
+import expo.modules.core.ModuleRegistryDelegate
 import expo.modules.core.arguments.ReadableArguments
 import expo.modules.core.interfaces.ActivityProvider
 import expo.modules.core.interfaces.services.UIManager
@@ -19,7 +20,6 @@ import android.content.Intent
 import android.content.ComponentName
 import android.content.ActivityNotFoundException
 import android.content.Context
-import expo.modules.core.ModuleRegistryDelegate
 
 private const val NAME = "ExpoIntentLauncher"
 
@@ -112,13 +112,14 @@ class IntentLauncherModule(
   override fun onActivityResult(activity: Activity, requestCode: Int, resultCode: Int, intent: Intent?) {
     if (requestCode != REQUEST_CODE) return
 
-    val response = Bundle().apply { putInt("resultCode", resultCode) }
-
-    if (intent != null) {
-      val data = intent.data
-      val extras = intent.extras
-      if (data != null) response.putString(ATTR_DATA, data.toString())
-      if (extras != null) response.putBundle(ATTR_EXTRA, extras)
+    val response = Bundle().apply {
+      putInt("resultCode", resultCode)
+      if (intent != null) {
+        val data = intent.data
+        val extras = intent.extras
+        if (data != null) putString(ATTR_DATA, data.toString())
+        if (extras != null) putBundle(ATTR_EXTRA, extras)
+      }
     }
 
     pendingPromise?.resolve(response)
@@ -127,7 +128,7 @@ class IntentLauncherModule(
     uiManager?.unregisterActivityEventListener(this)
   }
 
-  override fun onNewIntent(intent: Intent) { }
+  override fun onNewIntent(intent: Intent) = Unit
 
   //endregion
 }
