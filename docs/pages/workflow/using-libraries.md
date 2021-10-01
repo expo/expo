@@ -98,7 +98,7 @@ Now check the following:
 
 If you answered yes to either of these questions and the library is not part of the Expo SDK, this library may not be supported in Expo Go. You can go ahead and try it in a new project to be sure! Run `expo init` and add the library to the new project and try to use it. This is a great way to experiment with a library before including it in your project in all circumstances.
 
-Many libraries you can use with Expo will not be compatible with Expo Go or `expo build:ios|android`. If you need any of them to build your app, you can create a [Custom Development Client](../clients/introduction.md) for your project using [EAS build](../build-reference/migrating.md) or [eject to the bare workflow](../workflow/customizing.md).
+Many libraries you can use with Expo and React Native will not be compatible with Expo Go or `expo build:ios|android`. If you need any of them to build your app, you can create a [Custom Development Client](../clients/introduction.md) for your project using [EAS Build](../build/introduction.md) or [eject to the bare workflow](../workflow/customizing.md).
 
 > 🙏 If you want some help determining library compatibility, [please create an issue on the React Native Directory repository](https://github.com/react-native-community/directory/issues/new/choose) and let us know. This will not just help you, it will help to ensure that other developers have an easy answer in the future!
 
