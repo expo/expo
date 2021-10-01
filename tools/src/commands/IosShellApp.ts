@@ -5,7 +5,11 @@ import sharp from 'sharp';
 
 import * as Directories from '../Directories';
 
-async function resizeIconWithSharpAsync(iconSizePx: number, iconFilename: string, destinationIconPath: string) {
+async function resizeIconWithSharpAsync(
+  iconSizePx: number,
+  iconFilename: string,
+  destinationIconPath: string
+) {
   const filename = path.join(destinationIconPath, iconFilename);
 
   // sharp can't have same input and output filename, so load to buffer then
