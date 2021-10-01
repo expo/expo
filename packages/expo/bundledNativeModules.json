@@ -84,7 +84,7 @@
   "expo-updates": "~0.10.1",
   "expo-video-thumbnails": "~6.0.0",
   "expo-web-browser": "~10.0.0",
-  "firebase": "9.0.2",
+  "firebase": "9.1.0",
   "lottie-react-native": "4.0.3",
   "react-native-appearance": "~0.3.3",
   "react-native-branch": "5.0.0",
