@@ -2,6 +2,8 @@
 title: Building Standalone Apps on Your CI
 ---
 
+> 🆕 Using [EAS Build](/build/introduction.md)? Check out [triggering builds from CI](/build/building-on-ci.md).
+
 > **NOTE:** macOS is required to build standalone iOS apps.
 
 This guide describes an advanced feature of Expo. In most cases you can build
