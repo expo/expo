@@ -31,6 +31,11 @@ static NSString * const EXUpdatesEmbeddedAppLoaderErrorDomain = @"EXUpdatesEmbed
       NSString *path = [bundle pathForResource:EXUpdatesEmbeddedManifestName ofType:EXUpdatesEmbeddedManifestType];
       NSData *manifestData = [NSData dataWithContentsOfFile:path];
       if (!manifestData) {
+        path = [[NSBundle mainBundle] pathForResource:EXUpdatesEmbeddedManifestName ofType:EXUpdatesEmbeddedManifestType];
+        manifestData = [NSData dataWithContentsOfFile:path];
+      }
+
+      if (!manifestData) {
         @throw [NSException exceptionWithName:NSInternalInconsistencyException
                                        reason:@"The embedded manifest is invalid or could not be read. Make sure you have configured expo-updates correctly in your Xcode Build Phases."
                                      userInfo:@{}];
