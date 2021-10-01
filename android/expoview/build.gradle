@@ -7,7 +7,7 @@ apply plugin: 'kotlin-kapt'
 // WHEN_VERSIONING_REMOVE_FROM_HERE
 //maven repository info
 group = 'host.exp.exponent'
-version = '42.0.0'
+version = '43.0.0'
 
 
 //Upload android library to maven with javadoc and android sources
@@ -272,7 +272,7 @@ dependencies {
   api 'org.webkit:android-jsc:r245459' // needs to be before react-native
 
   /* UNCOMMENT WHEN DISTRIBUTING
-  api 'com.facebook.react:react-native:42.0.0'
+  api 'com.facebook.react:react-native:43.0.0'
   compileOnly project(':expo')
   compileOnly project(':expo-random')
   END UNCOMMENT WHEN DISTRIBUTING */

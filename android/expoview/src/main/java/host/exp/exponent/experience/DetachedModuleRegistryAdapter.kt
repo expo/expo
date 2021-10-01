@@ -27,7 +27,7 @@ open class DetachedModuleRegistryAdapter(moduleRegistryProvider: ReactModuleRegi
     val reactApplicationContext = scopedContext.context as ReactApplicationContext
 
     // We only use React application context, because we're detached -- no scopes
-    val moduleRegistry = mModuleRegistryProvider[scopedContext]
+    val moduleRegistry = mModuleRegistryProvider[reactApplicationContext]
 
     moduleRegistry.registerInternalModule(
       ConstantsBinding(
