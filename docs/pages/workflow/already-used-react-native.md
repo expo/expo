@@ -2,6 +2,8 @@
 title: Already used React Native?
 ---
 
+import { InlineCode } from '~/components/base/code';
+
 This guide is intended to give developers who have already used React Native a quick outline on some of the key concepts, resources, and differences they will encounter when using Expo.
 
 You can use just about every part of the [Expo SDK](/versions/latest/) in any vanilla React Native app - we call using the Expo tools in this context the "bare" workflow. See more about that [here](../bare/hello-world.md). It's basically no different than using libraries in your React Native app, we just offer a lot of well-tested, consistent, and increasingly comprehensive libraries that give you access to the underlying native APIs.
@@ -48,9 +50,16 @@ Apps are served from Expo CLI through a tunnel service by default (we currently 
 
 ## Deploying to the App / Play Store
 
-When you're ready, you can run `expo build:ios` or `expo build:android` and Expo will build your app and output a link to the binary required for you to submit. Then you can use something like [Transporter](https://apps.apple.com/app/transporter/id1450874784) for iOS, or directly upload an APK for Android.
+When you're ready, you can run `eas build --auto-submit` using EAS CLI to both build your app and automatically upload the binary for distribution on the App Store and Google Play.
+
+<details><summary><strong>Are you using the classic build system?</strong> (<InlineCode>expo build:[android|ios]</InlineCode>)</summary> <p>
+
+If you are using the classic build system, you can run `expo build:ios` or `expo build:android` and Expo will build your app and output a link to the binary required for you to submit. Then you can use something like [Transporter](https://apps.apple.com/app/transporter/id1450874784) for iOS, or directly upload an APK for Android.
 
 If you prefer to build your app on your own machine, you can [follow these steps](https://github.com/expo/expo#standalone-apps).
+
+</p>
+</details>
 
 ## Helpful Tools & Resources
 
