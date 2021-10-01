@@ -25,11 +25,6 @@
   [given(_mockDatabase.databaseQueue) willReturn:_testQueue];
 }
 
-- (void)tearDown
-{
-  // Put teardown code here. This method is called after the invocation of each test method in the class.
-}
-
 - (void)testHandleError_NewWorkingUpdateAlreadyLoaded
 {
   id<EXUpdatesErrorRecoveryDelegate> mockDelegate = mockProtocol(@protocol(EXUpdatesErrorRecoveryDelegate));

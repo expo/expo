@@ -119,6 +119,8 @@ static NSInteger const EXUpdatesErrorRecoveryRemoteLoadTimeoutMs = 5000;
     case EXUpdatesErrorRecoveryTaskWaitForRemoteUpdate:
       [self _waitForRemoteLoaderToFinish];
       break;
+        // EXUpdatesErrorRecoveryTaskLaunchNew is called only after a new update is downloaded
+        // and added to the cache, so it equivalent to EXUpdatesErrorRecoveryTaskLaunchCached
     case EXUpdatesErrorRecoveryTaskLaunchNew:
     case EXUpdatesErrorRecoveryTaskLaunchCached:
       [self _tryRelaunchFromCache];
