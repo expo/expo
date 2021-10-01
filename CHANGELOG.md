@@ -21,6 +21,8 @@ Package-specific changes not released in any SDK will be added here just before 
 ### 🛠 Breaking changes
 
 - Removed `expo-payments-stripe`. Please use `@stripe/stripe-react-native` instead. ([#14382](https://github.com/expo/expo/pull/14382) by [@cruzach](https://github.com/cruzach))
+- `navigator.geolocation` is no longer defined automatically as a side effect of the `expo` package. It previously provided a warning that you needed to install `expo-location`. ([#14441](https://github.com/expo/expo/pull/14441) by [@brentvatne](https://github.com/brentvatne)
+- Updated firebase to version 9.0.2, including support for compat libraries and new modular style. ([#14616](https://github.com/expo/expo/pull/14616) by [@sebastianwilczek](https://github.com/sebastianwilczek))
 
 ### 🎉 New features
 
