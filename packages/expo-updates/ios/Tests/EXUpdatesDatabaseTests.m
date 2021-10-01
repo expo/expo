@@ -64,6 +64,7 @@
     NSError *updatesError;
     [_db addUpdate:update error:&updatesError];
     if (updatesError) {
+      XCTFail(@"%@", updatesError.localizedDescription);
       return;
     }
 

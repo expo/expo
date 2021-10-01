@@ -36,6 +36,9 @@ typedef NS_ENUM(NSInteger, EXUpdatesUpdateStatus) {
 
 @property (nonatomic, assign) EXUpdatesUpdateStatus status;
 @property (nonatomic, strong) NSDate *lastAccessed;
+@property (nonatomic, assign) NSInteger successfulLaunchCount;
+@property (nonatomic, assign) NSInteger failedLaunchCount;
+@property (nonatomic, assign) BOOL isOutdated;
 
 + (instancetype)updateWithId:(NSUUID *)updateId
                     scopeKey:(NSString *)scopeKey

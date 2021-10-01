@@ -32,6 +32,9 @@ NSString * const EXUpdatesUpdateErrorDomain = @"EXUpdatesUpdate";
     _scopeKey = config.scopeKey;
     _status = EXUpdatesUpdateStatusPending;
     _lastAccessed = [NSDate date];
+    _successfulLaunchCount = 0;
+    _failedLaunchCount = 0;
+    _isOutdated = NO;
     _isDevelopmentMode = NO;
   }
   return self;
