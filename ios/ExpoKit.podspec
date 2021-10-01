@@ -40,9 +40,7 @@ Pod::Spec.new do |s|
     ss.dependency 'ReactCommon' # needed for react-native-reanimated, see https://github.com/expo/expo/pull/11096#how
 
     # Universal modules required by ExpoKit so the code compiles
-    ss.dependency 'UMCore'
     ss.dependency 'ExpoModulesCore'
-    ss.dependency 'UMReactNativeAdapter'
   end
 
   s.subspec "FaceDetector" do |ss|

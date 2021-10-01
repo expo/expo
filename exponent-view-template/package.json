@@ -8,7 +8,10 @@
   },
   "author": "",
   "license": "MIT",
-  "dependencies": {},
+  "dependencies": {
+    "expo": "file:../../packages/expo",
+    "react-native": "file:../../react-native-lab/react-native"
+  },
   "devDependencies": {
     "expo-cli": "4.3.2"
   }
