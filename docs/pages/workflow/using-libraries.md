@@ -102,7 +102,7 @@ Many libraries you can use with Expo and React Native will not be compatible wit
 
 > 🙏 If you want some help determining library compatibility, [please create an issue on the React Native Directory repository](https://github.com/react-native-community/directory/issues/new/choose) and let us know. This will not just help you, it will help to ensure that other developers have an easy answer in the future!
 
-### Installing a Third-Party Library 
+### Installing a Third-Party Library
 
 > 💡 We recommend always using `expo install` instead of `npm install` or `yarn add` directly because it allows `expo-cli` to pick a compatible version of a library when possible and also warn you about known incompatibilities.
 
