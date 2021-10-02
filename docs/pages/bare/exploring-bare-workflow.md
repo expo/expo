@@ -61,9 +61,9 @@ Expo for web also works on bare projects. Here we will just import one simple co
 
 <Video file="exploring-bare/web.mp4" spaceAfter />
 
-## Releasing to App Store and Play Store
+## Releasing to the Apple App Store and Google Play Store
 
-This is entirely up to you! The Expo build service does not yet support builds for the bare workflow.
+With [Expo Application Services (EAS)](/eas/index.md), you can build and submit your app with just a single command `eas build --auto-submit` using `eas-cli`.
 
 ## That's it!
 
