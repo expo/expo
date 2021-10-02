@@ -361,7 +361,7 @@ open class ExperienceActivity : BaseExperienceActivity(), StartReactInstanceDele
         ),
         splashScreenView
       )
-      SplashScreen.show(this, controller, true)
+      SplashScreen.show(this, managedAppSplashScreenViewController!!, true)
     } else {
       managedAppSplashScreenViewProvider!!.updateSplashScreenViewWithManifest(this, manifest!!)
     }

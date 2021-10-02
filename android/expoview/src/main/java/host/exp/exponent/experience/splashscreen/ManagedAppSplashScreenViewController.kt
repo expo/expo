@@ -41,7 +41,6 @@ class ManagedAppSplashScreenViewController(
           mSnackbar!!.show()
         }
       }
-    }
 
       mWarningHandler.postDelayed(mRunnable!!, 20000)
     }
