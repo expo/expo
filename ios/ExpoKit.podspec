@@ -31,6 +31,12 @@ Pod::Spec.new do |s|
 
     ss.dependency 'Amplitude', '~> 6.0.0'
     ss.dependency 'CocoaLumberjack', '~> 3.5.3'
+    ss.dependency 'Crashlytics', '~> 3.13.4'
+    ss.dependency 'FBAudienceNetwork', '5.5.0'
+    ss.dependency 'FBSDKCoreKit', '~> 5.8.0'
+    ss.dependency 'FBSDKLoginKit', '~> 5.8.0'
+    ss.dependency 'Fabric', '~> 1.10.2'
+    ss.dependency 'GoogleSignIn', '~> 5.0'
     ss.dependency 'GoogleMaps', '~> 3.3'
     ss.dependency 'Google-Maps-iOS-Utils', '~> 2.1.0'
     ss.dependency 'lottie-ios', '~> 3.2.3'
