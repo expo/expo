@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "rimraf .next/preval && next dev -p 3002",
-    "build": "cross-env NODE_OPTIONS=--max-old-space-size=5120 next build",
+    "build": "next build",
     "export": "yarn run build && next export && yarn run export-issue-404",
     "export-issue-404": "echo \"🛠  Patching https://github.com/vercel/next.js/issues/16528\"; cp out/404/index.html out/404.html",
     "export-server": "http-server out -p 8000",
@@ -76,6 +76,7 @@
     "eslint-config-next": "^10.2.3",
     "eslint-config-universe": "^7.0.1",
     "eslint-plugin-lodash": "^7.2.0",
+    "front-matter": "^2.3.0",
     "http-server": "^0.12.3",
     "jest": "26.1.0",
     "js-yaml": "^4.1.0",
