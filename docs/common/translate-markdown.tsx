@@ -35,6 +35,10 @@ const createPermalinkedComponent = (
   };
 };
 
+// We need this to override the global provider's wrapper.
+// This is the document page layout, if we use nested markdown we don't want to wrap those in the full layout.
+export const wrapper = null;
+
 export const p = PDIV;
 export const strong = B;
 export const ul = UL;
