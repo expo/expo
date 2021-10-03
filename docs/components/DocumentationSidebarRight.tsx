@@ -1,10 +1,9 @@
 import { css } from '@emotion/react';
 import * as React from 'react';
 
-import { BASE_HEADING_LEVEL, Heading, HeadingManager } from '../common/headingManager';
+import { BASE_HEADING_LEVEL, Heading } from '../common/headingManager';
 import DocumentationSidebarRightLink from './DocumentationSidebarRightLink';
 
-import withHeadingManager from '~/components/page-higher-order/withHeadingManager';
 import * as Constants from '~/constants/theme';
 
 const STYLES_SIDEBAR = css`
@@ -37,9 +36,10 @@ type Props = {
   maxNestingDepth?: number;
   selfRef?: React.RefObject<any>;
   contentRef?: React.RefObject<any>;
+  headings: any[];
 };
 
-type PropsWithHM = Props & { headingManager: HeadingManager };
+type PropsWithHM = Props;
 
 type State = {
   activeSlug: string | null;
@@ -58,7 +58,7 @@ class DocumentationSidebarRight extends React.Component<PropsWithHM, State> {
   private activeItemRef = React.createRef<HTMLAnchorElement>();
 
   public handleContentScroll(contentScrollPosition: number) {
-    const { headings } = this.props.headingManager;
+    const { headings } = this.props;
 
     for (const { ref, slug } of headings) {
       if (!ref || !ref.current) {
@@ -82,7 +82,7 @@ class DocumentationSidebarRight extends React.Component<PropsWithHM, State> {
   }
 
   render() {
-    const { headings } = this.props.headingManager;
+    const { headings } = this.props;
 
     //filter out headings nested too much
     const displayedHeadings = headings.filter(
@@ -94,10 +94,10 @@ class DocumentationSidebarRight extends React.Component<PropsWithHM, State> {
     return (
       <nav css={STYLES_SIDEBAR} data-sidebar>
         {displayedHeadings.map(heading => {
-          const isActive = heading.slug === this.state.activeSlug;
+          const isActive = getSlug(heading) === this.state.activeSlug;
           return (
             <DocumentationSidebarRightLink
-              key={heading.slug}
+              key={getSlug(heading)}
               heading={heading}
               onClick={e => this.handleLinkClick(e, heading)}
               isActive={isActive}
@@ -151,19 +151,10 @@ class DocumentationSidebarRight extends React.Component<PropsWithHM, State> {
   };
 }
 
-const SidebarWithHeadingManager = withHeadingManager(function SidebarWithHeadingManager({
-  reactRef,
-  ...props
-}) {
-  return <DocumentationSidebarRight {...props} ref={reactRef} />;
-}) as React.FC<Props & { reactRef: React.Ref<DocumentationSidebarRight> }>;
-
-SidebarWithHeadingManager.displayName = 'SidebarRightRefWrapper';
-
-const SidebarForwardRef = React.forwardRef<DocumentationSidebarRight, Props>((props, ref) => (
-  <SidebarWithHeadingManager {...props} reactRef={ref} />
-));
+function getSlug(heading: any) {
+  return heading.data.id;
+}
 
 export type SidebarRightComponentType = DocumentationSidebarRight;
 
-export default SidebarForwardRef;
+export default DocumentationSidebarRight;

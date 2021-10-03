@@ -87,17 +87,17 @@ const Permalink: React.FC<EnhancedProps> = withHeadingManager(props => {
   let permalinkKey = props.id;
   let heading;
 
-  if (props.nestingLevel) {
-    heading = props.headingManager.addHeading(children, props.nestingLevel, props.additionalProps);
-  }
+  // if (props.nestingLevel) {
+  //   heading = props.headingManager.addHeading(children, props.nestingLevel, props.additionalProps);
+  // }
 
-  if (!permalinkKey && heading?.slug) {
-    permalinkKey = heading.slug;
-  }
+  // if (!permalinkKey && heading?.slug) {
+  //   permalinkKey = heading.slug;
+  // }
 
   return (
     <PermalinkBase component={component} data-components-heading>
-      <div css={STYLES_PERMALINK} ref={heading?.ref}>
+      <div css={STYLES_PERMALINK}>
         <span css={STYLES_PERMALINK_TARGET} id={permalinkKey} />
         <a css={STYLES_PERMALINK_LINK} href={'#' + permalinkKey}>
           <span css={STYLED_PERMALINK_CONTENT}>{children}</span>

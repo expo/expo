@@ -57,6 +57,8 @@ type Props = {
   tocVisible: boolean;
   /* If the page should not show up in the Algolia Docsearch results */
   hideFromSearch?: boolean;
+
+  headings: any[];
 };
 
 type State = {
@@ -260,7 +262,9 @@ export default class DocumentationPage extends React.Component<Props, State> {
       });
     };
 
-    const sidebarRight = <DocumentationSidebarRight ref={this.sidebarRightRef} />;
+    const sidebarRight = (
+      <DocumentationSidebarRight headings={this.props.headings} ref={this.sidebarRightRef} />
+    );
 
     const algoliaTag = this.getAlgoliaTag();
 
