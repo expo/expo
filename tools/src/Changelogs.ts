@@ -494,7 +494,11 @@ export function getChangeEntryLabel(entry: ChangelogEntry): string {
       .join(', ');
 
     const pullRequestInformations = `${pullRequestsStr} by ${authorsStr}`.trim();
-    return `${entry.message} (${pullRequestInformations})`;
+    if (entry.message.includes(pullRequestInformations)) {
+      return entry.message;
+    } else {
+      return `${entry.message} (${pullRequestInformations})`;
+    }
   }
   return entry.message;
 }

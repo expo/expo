@@ -6,11 +6,21 @@
 
 ### 🎉 New features
 
-- Update JS code to read manifest2 when manifest is not available. ([#13602](https://github.com/expo/expo/pull/13602) by [@wschurman](https://github.com/wschurman))
-
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 3.4.1 — 2021-10-01
+
+### 🐛 Bug fixes
+
+- Fixed an import from deprecated `@unimodules/react-native-adapter` package. ([#14585](https://github.com/expo/expo/pull/14585) by [@tsapeta](https://github.com/tsapeta))
+
+## 3.4.0 — 2021-09-28
+
+### 🎉 New features
+
+- Update JS code to read manifest2 when manifest is not available. ([#13602](https://github.com/expo/expo/pull/13602) by [@wschurman](https://github.com/wschurman))
 
 ## 3.3.0 — 2021-06-16
 

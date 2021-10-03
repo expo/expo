@@ -28,6 +28,7 @@ import expo.modules.core.interfaces.services.EventEmitter;
 import expo.modules.core.interfaces.services.UIManager;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -38,6 +39,7 @@ import expo.modules.interfaces.permissions.Permissions;
 
 import static android.Manifest.permission.READ_EXTERNAL_STORAGE;
 import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
+import static android.Manifest.permission.ACCESS_MEDIA_LOCATION;
 import static expo.modules.medialibrary.MediaLibraryConstants.ERROR_NO_ALBUM;
 import static expo.modules.medialibrary.MediaLibraryConstants.ERROR_NO_PERMISSIONS;
 import static expo.modules.medialibrary.MediaLibraryConstants.ERROR_NO_PERMISSIONS_MESSAGE;
@@ -450,15 +452,15 @@ public class MediaLibraryModule extends ExportedModule implements ActivityEventL
   }
 
   private String[] getManifestPermissions(boolean writeOnly) {
-    if (writeOnly) {
-      return new String[]{
-        WRITE_EXTERNAL_STORAGE
-      };
+    final List<String> permissions = new ArrayList<>();
+    permissions.add(WRITE_EXTERNAL_STORAGE);
+    if (!writeOnly) {
+      permissions.add(READ_EXTERNAL_STORAGE);
     }
-    return new String[]{
-      READ_EXTERNAL_STORAGE,
-      WRITE_EXTERNAL_STORAGE
-    };
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+      permissions.add(ACCESS_MEDIA_LOCATION);
+    }
+    return permissions.toArray(new String[0]);
   }
 
   private void runActionWithPermissions(List<String> assetsId, Action action, Promise promise) {

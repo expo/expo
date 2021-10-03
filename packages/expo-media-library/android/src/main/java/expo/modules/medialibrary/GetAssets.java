@@ -14,6 +14,7 @@ import java.util.Map;
 import expo.modules.core.Promise;
 
 import static expo.modules.medialibrary.MediaLibraryConstants.ASSET_PROJECTION;
+import static expo.modules.medialibrary.MediaLibraryConstants.ERROR_NO_PERMISSIONS;
 import static expo.modules.medialibrary.MediaLibraryConstants.ERROR_UNABLE_TO_LOAD;
 import static expo.modules.medialibrary.MediaLibraryConstants.ERROR_UNABLE_TO_LOAD_PERMISSION;
 import static expo.modules.medialibrary.MediaLibraryConstants.EXTERNAL_CONTENT;
@@ -61,6 +62,9 @@ class GetAssets extends AsyncTask<Void, Void, Void> {
           "Could not get asset: need READ_EXTERNAL_STORAGE permission.", e);
     } catch (IOException e) {
       mPromise.reject(ERROR_UNABLE_TO_LOAD, "Could not read file", e);
+    } catch (UnsupportedOperationException e) {
+      e.printStackTrace();
+      mPromise.reject(ERROR_NO_PERMISSIONS, e.getMessage());
     }
     return null;
   }

@@ -4,20 +4,26 @@
 
 ### 🛠 Breaking changes
 
-- Replace the stand-alone action constant strings with String Enum named `ActivityAction`. ([#14070](https://github.com/expo/expo/pull/14070) by [@Simek](https://github.com/Simek))
-
-```diff
-- IntentLauncher.ACTION_* // ACTION_ACCESSIBILITY_SETTINGS
-+ IntentLauncher.ActivityAction.* // ActivityAction.ACCESSIBILITY_SETTINGS
-```
-
 ### 🎉 New features
 
 ### 🐛 Bug fixes
 
 ### 💡 Others
 
-## 9.1.0 — 2021-06-16
+## 10.0.1 — 2021-10-01
+
+_This version does not introduce any user-facing changes._
+
+## 10.0.0 — 2021-09-28
+
+### 🛠 Breaking changes
+
+- Replace the stand-alone action constant strings with String Enum named `ActivityAction`. ([#14070](https://github.com/expo/expo/pull/14070) by [@Simek](https://github.com/Simek))
+
+```diff
+- IntentLauncher.ACTION_* // ACTION_ACCESSIBILITY_SETTINGS
++ IntentLauncher.ActivityAction.* // ActivityAction.ACCESSIBILITY_SETTINGS
+```## 9.1.0 — 2021-06-16
 
 ### 🐛 Bug fixes
 
@@ -53,3 +59,4 @@ _This version does not introduce any user-facing changes._
 ## 8.2.0 — 2020-05-27
 
 *This version does not introduce any user-facing changes.*
+```

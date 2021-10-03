@@ -1,6 +1,6 @@
 {
   "name": "expo-analytics-amplitude",
-  "version": "10.2.0",
+  "version": "11.0.1",
   "description": "Provides access to Amplitude (https://amplitude.com/) mobile analytics. This module wraps Amplitude-iOS (https://github.com/amplitude/Amplitude-iOS) and Android (https://github.com/amplitude/Amplitude-Android) SDKs.",
   "main": "build/Amplitude.js",
   "types": "build/Amplitude.d.ts",
@@ -34,7 +34,7 @@
   },
   "homepage": "https://docs.expo.dev/versions/latest/sdk/amplitude/",
   "dependencies": {
-    "expo-modules-core": "~0.3.2"
+    "expo-modules-core": "~0.4.2"
   },
   "devDependencies": {
     "expo-module-scripts": "^2.0.0"

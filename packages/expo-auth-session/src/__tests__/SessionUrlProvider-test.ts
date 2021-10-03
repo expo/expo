@@ -1,5 +1,5 @@
-import { Platform } from '@unimodules/react-native-adapter';
 import Constants, { ExecutionEnvironment } from 'expo-constants';
+import { Platform } from 'expo-modules-core';
 import { mockProperty, unmockAllProperties } from 'jest-expo';
 
 import { SessionUrlProvider } from '../SessionUrlProvider';

@@ -22,7 +22,7 @@
 {
   UIViewController *childVC = [self findChildRNScreensViewController];
   return childVC ? childVC.preferredStatusBarUpdateAnimation
-  : [self reactNativeScreensPreferredStatusBarUpdateAnimation];
+                 : [self reactNativeScreensPreferredStatusBarUpdateAnimation];
 }
 
 - (UIInterfaceOrientationMask)reactNativeScreensSupportedInterfaceOrientations
@@ -45,22 +45,22 @@
   static dispatch_once_t once_token;
   dispatch_once(&once_token, ^{
     Class uiVCClass = [UIViewController class];
-    
+
     method_exchangeImplementations(
-                                   class_getInstanceMethod(uiVCClass, @selector(childViewControllerForStatusBarStyle)),
-                                   class_getInstanceMethod(uiVCClass, @selector(reactNativeScreensChildViewControllerForStatusBarStyle)));
-    
+        class_getInstanceMethod(uiVCClass, @selector(childViewControllerForStatusBarStyle)),
+        class_getInstanceMethod(uiVCClass, @selector(reactNativeScreensChildViewControllerForStatusBarStyle)));
+
     method_exchangeImplementations(
-                                   class_getInstanceMethod(uiVCClass, @selector(childViewControllerForStatusBarHidden)),
-                                   class_getInstanceMethod(uiVCClass, @selector(reactNativeScreensChildViewControllerForStatusBarHidden)));
-    
+        class_getInstanceMethod(uiVCClass, @selector(childViewControllerForStatusBarHidden)),
+        class_getInstanceMethod(uiVCClass, @selector(reactNativeScreensChildViewControllerForStatusBarHidden)));
+
     method_exchangeImplementations(
-                                   class_getInstanceMethod(uiVCClass, @selector(preferredStatusBarUpdateAnimation)),
-                                   class_getInstanceMethod(uiVCClass, @selector(reactNativeScreensPreferredStatusBarUpdateAnimation)));
-    
+        class_getInstanceMethod(uiVCClass, @selector(preferredStatusBarUpdateAnimation)),
+        class_getInstanceMethod(uiVCClass, @selector(reactNativeScreensPreferredStatusBarUpdateAnimation)));
+
     method_exchangeImplementations(
-                                   class_getInstanceMethod(uiVCClass, @selector(supportedInterfaceOrientations)),
-                                   class_getInstanceMethod(uiVCClass, @selector(reactNativeScreensSupportedInterfaceOrientations)));
+        class_getInstanceMethod(uiVCClass, @selector(supportedInterfaceOrientations)),
+        class_getInstanceMethod(uiVCClass, @selector(reactNativeScreensSupportedInterfaceOrientations)));
   });
 }
 #endif

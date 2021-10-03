@@ -1,5 +1,6 @@
 import chalk from 'chalk';
 import fs from 'fs-extra';
+import glob from 'glob-promise';
 import path from 'path';
 
 import { IOS_DIR } from '../../Constants';
@@ -23,13 +24,12 @@ export async function versionVendoredModulesAsync(
   const baseTransforms = baseTransformsFactory(prefix);
   const unversionedDir = path.join(IOS_VENDORED_DIR, 'unversioned');
   const versionedDir = vendoredDirectoryForSDK(sdkNumber);
-  const sourceDirents = (await fs.readdir(unversionedDir, { withFileTypes: true })).filter(
-    (dirent) => {
-      return dirent.isDirectory() && (!filterModules || filterModules.includes(dirent.name));
-    }
-  );
+  let vendoredModuleNames = await getVendoredModuleNamesAsync(unversionedDir);
+  if (filterModules) {
+    vendoredModuleNames = vendoredModuleNames.filter((name) => filterModules.includes(name));
+  }
 
-  for (const { name } of sourceDirents) {
+  for (const name of vendoredModuleNames) {
     logger.info('🔃 Versioning vendored module %s', chalk.green(name));
 
     const moduleConfig = config[name];
@@ -51,6 +51,27 @@ export async function versionVendoredModulesAsync(
       });
     }
   }
+}
+
+/**
+ * Gets the library name of each vendored module in a specific directory.
+ */
+async function getVendoredModuleNamesAsync(directory: string): Promise<string[]> {
+  const vendoredPodspecPaths = await glob(`**/*.podspec.json`, {
+    cwd: directory,
+    nodir: true,
+    realpath: true,
+  });
+
+  const podspecPattern = new RegExp(`${directory}/(.*)/.*podspec.json`, 'i');
+
+  return vendoredPodspecPaths.reduce((result, podspecPath) => {
+    const moduleName = podspecPath.match(podspecPattern);
+    if (moduleName) {
+      result.push(moduleName[1]);
+    }
+    return result;
+  }, [] as string[]);
 }
 
 /**
