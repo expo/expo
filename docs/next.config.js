@@ -86,7 +86,7 @@ module.exports = {
       config.optimization.minimizer = [
         new ESBuildMinifyPlugin({
           target: 'es2015',
-        })
+        }),
       ];
     }
 

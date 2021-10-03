@@ -36,7 +36,7 @@ type Props = {
   maxNestingDepth?: number;
   selfRef?: React.RefObject<any>;
   contentRef?: React.RefObject<any>;
-  headings: any[];
+  headings?: any[];
 };
 
 type PropsWithHM = Props;
@@ -48,6 +48,7 @@ type State = {
 class DocumentationSidebarRight extends React.Component<PropsWithHM, State> {
   static defaultProps = {
     maxNestingDepth: 4,
+    headings: [],
   };
 
   state = {
@@ -60,7 +61,7 @@ class DocumentationSidebarRight extends React.Component<PropsWithHM, State> {
   public handleContentScroll(contentScrollPosition: number) {
     const { headings } = this.props;
 
-    for (const { ref, slug } of headings) {
+    for (const { ref, slug } of headings!) {
       if (!ref || !ref.current) {
         continue;
       }
@@ -85,7 +86,7 @@ class DocumentationSidebarRight extends React.Component<PropsWithHM, State> {
     const { headings } = this.props;
 
     //filter out headings nested too much
-    const displayedHeadings = headings.filter(
+    const displayedHeadings = headings!.filter(
       head =>
         head.level <= BASE_HEADING_LEVEL + this.props.maxNestingDepth! &&
         head.title.toLowerCase() !== 'see also'

@@ -3,7 +3,7 @@ const visit = require('unist-util-visit-parents');
 
 module.exports = function (options = { exportName: 'meta' }) {
   return tree => {
-    visit(tree, 'yaml', (node) => {
+    visit(tree, 'yaml', node => {
       const data = yaml.load(node.value);
 
       node.type = 'export';

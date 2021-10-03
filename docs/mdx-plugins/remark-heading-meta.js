@@ -1,6 +1,6 @@
 const visit = require('unist-util-visit');
 
-const EXPORT_CONST_META = 'export const meta = ';
+// const EXPORT_CONST_META = 'export const meta = ';
 
 /**
  * This MDX remark plugin extracts all `heading` node titles and levels from MDAST

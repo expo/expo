@@ -1,18 +1,19 @@
 import { ThemeProvider } from '@expo/styleguide';
+import { MDXProvider } from '@mdx-js/react';
 import * as Sentry from '@sentry/browser';
 import { AppProps, NextWebVitalsMetric } from 'next/app';
 import dynamic from 'next/dynamic';
 import Head from 'next/head';
 import React, { useState, useEffect } from 'react';
 
-import { TrackPageView } from '~/common/analytics';
-import { preprocessSentryError } from '~/common/sentry-utilities';
 import 'react-diff-view/style/index.css';
 import '@expo/styleguide/dist/expo-theme.css';
 import 'tippy.js/dist/tippy.css';
 import '../public/static/libs/algolia/algolia.css';
 import '../public/static/libs/algolia/algolia-mobile.css';
-import { MDXProvider } from '@mdx-js/react';
+
+import { TrackPageView } from '~/common/analytics';
+import { preprocessSentryError } from '~/common/sentry-utilities';
 import * as components from '~/common/translate-markdown';
 import DocumentationElements from '~/components/page-higher-order/DocumentationElements';
 

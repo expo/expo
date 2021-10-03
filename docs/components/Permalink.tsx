@@ -84,8 +84,8 @@ const Permalink: React.FC<EnhancedProps> = withHeadingManager(props => {
   const component = props.children as JSX.Element;
   const children = component.props.children || '';
 
-  let permalinkKey = props.id;
-  let heading;
+  const permalinkKey = props.id;
+  // let heading;
 
   // if (props.nestingLevel) {
   //   heading = props.headingManager.addHeading(children, props.nestingLevel, props.additionalProps);
