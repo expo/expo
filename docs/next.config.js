@@ -20,7 +20,7 @@ removeSync(latest);
 copySync(vLatest, latest);
 
 // Determine if we are using esbuild for MDX transpiling
-const enableEsbuild = false && !!process.env.USE_ESBUILD;
+const enableEsbuild = !!process.env.USE_ESBUILD;
 
 console.log(enableEsbuild ? 'Using esbuild for MDX files' : 'Using babel for MDX files');
 
