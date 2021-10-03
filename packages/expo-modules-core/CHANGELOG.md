@@ -8,6 +8,8 @@
 
 ### 🎉 New features
 
+- All method calls on iOS now go through the JSI instead of the bridge. ([#14626](https://github.com/expo/expo/pull/14626) by [@tsapeta](https://github.com/tsapeta))
+
 ### 🐛 Bug fixes
 
 - Fix UIManager has not setter or ivar error when reloading app. ([#14741](https://github.com/expo/expo/pull/14741) by [@kudo](https://github.com/kudo))
