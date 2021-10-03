@@ -76,6 +76,7 @@
     "eslint-config-next": "^10.2.3",
     "eslint-config-universe": "^7.0.1",
     "eslint-plugin-lodash": "^7.2.0",
+    "front-matter": "^2.3.0",
     "http-server": "^0.12.3",
     "jest": "26.1.0",
     "js-yaml": "^4.1.0",
