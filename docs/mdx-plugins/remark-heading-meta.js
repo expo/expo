@@ -26,16 +26,29 @@ module.exports = function () {
     visit(tree, 'heading', node => {
       if (node.children.length > 0) {
         const title = node.children.map(it => it.value).join(' ');
-        headings.push({ level: node.depth, title, type: node.children[0].type });
+        headings.push({
+          title,
+          level: node.depth,
+          type: node.children[0].type,
+          data: node.data,
+        });
       }
     });
 
-    visit(tree, 'export', node => {
-      if (node.value.startsWith(EXPORT_CONST_META)) {
-        const currentMeta = JSON.parse(node.value.substr(EXPORT_CONST_META.length));
-        const newMeta = { ...currentMeta, headings };
-        node.value = EXPORT_CONST_META + JSON.stringify(newMeta);
-      }
-    });
+    tree.children = [
+      {
+        type: 'export',
+        value: `export const headings = ${JSON.stringify(headings)};`,
+      },
+      ...tree.children,
+    ];
+
+    // visit(tree, 'export', node => {
+    //   if (node.value.startsWith(EXPORT_CONST_META)) {
+    //     const currentMeta = JSON.parse(node.value.substr(EXPORT_CONST_META.length));
+    //     const newMeta = { ...currentMeta, headings };
+    //     node.value = EXPORT_CONST_META + JSON.stringify(newMeta);
+    //   }
+    // });
   };
 };

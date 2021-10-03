@@ -3,7 +3,7 @@ const { copySync, removeSync } = require('fs-extra');
 const merge = require('lodash/merge');
 const { join } = require('path');
 const semver = require('semver');
-const { ESBuildPlugin } = require('esbuild-loader');
+const { ESBuildMinifyPlugin } = require('esbuild-loader');
 
 const navigation = require('./constants/navigation-data');
 const versions = require('./constants/versions');
@@ -64,12 +64,14 @@ module.exports = {
           loader: '@mdx-js/loader',
           options: {
             remarkPlugins: [
-              require('./mdx-plugins/remark-heading-meta'),
               require('./mdx-plugins/remark-link-rewrite'),
+              require('remark-slug'),
+              [require('remark-frontmatter'), ['yaml']],
+              require('./mdx-plugins/remark-export-yaml'),
+              require('./mdx-plugins/remark-heading-meta'),
             ],
           },
         },
-        join(__dirname, './common/md-loader'),
       ],
     });
 
@@ -81,7 +83,11 @@ module.exports = {
 
     // Add the esbuild plugin only when using esbuild
     if (enableEsbuild) {
-      config.plugins.push(new ESBuildPlugin());
+      config.optimization.minimizer = [
+        new ESBuildMinifyPlugin({
+          target: 'es2015',
+        })
+      ];
     }
 
     return config;
