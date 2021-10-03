@@ -12,6 +12,9 @@ import '@expo/styleguide/dist/expo-theme.css';
 import 'tippy.js/dist/tippy.css';
 import '../public/static/libs/algolia/algolia.css';
 import '../public/static/libs/algolia/algolia-mobile.css';
+import { MDXProvider } from '@mdx-js/react';
+import * as components from '~/common/translate-markdown';
+import DocumentationElements from '~/components/page-higher-order/DocumentationElements';
 
 Sentry.init({
   dsn: 'https://67e35a01698649d5aa33aaab61777851@sentry.io/1526800',
@@ -21,6 +24,8 @@ Sentry.init({
 const DynamicLoadAnalytics = dynamic<{ id: string }>(() =>
   import('~/common/analytics').then(mod => mod.LoadAnalytics)
 );
+
+const MarkdownComponents = { ...components, wrapper: DocumentationElements };
 
 export function reportWebVitals({ id, name, label, value }: NextWebVitalsMetric) {
   window?.gtag?.('event', name, {
@@ -64,7 +69,9 @@ function App({ Component, pageProps }: AppProps) {
       </Head>
       {shouldLoadAnalytics && <DynamicLoadAnalytics id={googleAnalyticsId} />}
       <ThemeProvider>
-        <Component {...pageProps} />
+        <MDXProvider components={MarkdownComponents}>
+          <Component {...pageProps} />
+        </MDXProvider>
       </ThemeProvider>
       <TrackPageView id={googleAnalyticsId} />
     </>
