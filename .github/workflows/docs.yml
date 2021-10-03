@@ -48,19 +48,19 @@ jobs:
       - run: yarn danger ci
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - name: Check if `docs/yarn.lock` has been changed
-        uses: dorny/paths-filter@v2
-        id: changes
-        with:
-          filters: |
-            lock:
-              - 'docs/yarn.lock'
-      - name: Cache Next folder
-        if: steps.changes.outputs.lock == 'false'
-        uses: actions/cache@v2
-        with:
-          path: docs/.next/cache
-          key: docs-next-${{ hashFiles('docs/yarn.lock') }}-next-${{ hashFiles('docs/next.config.js') }}
+      # - name: Check if `docs/yarn.lock` has been changed
+      #   uses: dorny/paths-filter@v2
+      #   id: changes
+      #   with:
+      #     filters: |
+      #       lock:
+      #         - 'docs/yarn.lock'
+      # - name: Cache Next folder
+      #   if: steps.changes.outputs.lock == 'false'
+      #   uses: actions/cache@v2
+      #   with:
+      #     path: docs/.next/cache
+      #     key: docs-next-${{ hashFiles('docs/yarn.lock') }}-next-${{ hashFiles('docs/next.config.js') }}
       - run: yarn export
         timeout-minutes: 20
         env:
