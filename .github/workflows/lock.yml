@@ -1,0 +1,26 @@
+# Configuration for Lock Threads - https://github.com/dessant/lock-threads
+
+name: 'Lock Threads'
+
+on:
+  schedule:
+    - cron: '0 0 * * MON' # 0:00 AM UTC time every Monday
+  workflow_dispatch: {}
+
+permissions:
+  issues: write
+
+concurrency:
+  group: lock
+
+jobs:
+  action:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: dessant/lock-threads@v3.0.0
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          issue-inactive-days: '180'
+          add-issue-labels: 'outdated'
+          exclude-any-issue-labels: 'help wanted'
+          process-only: 'issues'
