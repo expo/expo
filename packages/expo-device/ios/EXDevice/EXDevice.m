@@ -207,30 +207,30 @@ EX_EXPORT_METHOD_AS(isRootedExperimentalAsync,
   
   // TODO: Apple TV and Apple watch
   NSDictionary *mapping = @{
-    // iPhone 1
-    @"iPhone1,1": @2007,
+    // // iPhone 1
+    // @"iPhone1,1": @2007,
     
-    // iPhone 3G
-    @"iPhone1,2": @2008,
+    // // iPhone 3G
+    // @"iPhone1,2": @2008,
     
-    // iPhone 3GS
-    @"iPhone2,1": @2009,
+    // // iPhone 3GS
+    // @"iPhone2,1": @2009,
     
-    // iPhone 4
-    @"iPhone3,1": @2010,
-    @"iPhone3,2": @2010,
-    @"iPhone3,3": @2010,
+    // // iPhone 4
+    // @"iPhone3,1": @2010,
+    // @"iPhone3,2": @2010,
+    // @"iPhone3,3": @2010,
     
-    // iPhone 4S
-    @"iPhone4,1": @2011,
+    // // iPhone 4S
+    // @"iPhone4,1": @2011,
     
-    // iPhone 5
-    @"iPhone5,1": @2012,
-    @"iPhone5,2": @2012,
+    // // iPhone 5
+    // @"iPhone5,1": @2012,
+    // @"iPhone5,2": @2012,
     
-    // iPhone 5S and 5C
-    @"iPhone5,3": @2013,
-    @"iPhone5,4": @2013,
+    // // iPhone 5S and 5C
+    // @"iPhone5,3": @2013,
+    // @"iPhone5,4": @2013,
     @"iPhone6,1": @2013,
     @"iPhone6,2": @2013,
     
@@ -261,7 +261,11 @@ EX_EXPORT_METHOD_AS(isRootedExperimentalAsync,
     @"iPhone13,2": @2020, // iPhone 12
     @"iPhone13,3": @2020, // iPhone 12 Pro
     @"iPhone13,4": @2020, // iPhone 12 Pro Max
-    
+    @"iPhone14,2": @2021, // iPhone 13 Pro
+    @"iPhone14,3": @2021, // iPhone 13 Pro Max
+    @"iPhone14,4": @2021, // iPhone 13 Mini
+    @"iPhone14,5": @2021, // iPhone 13
+
     // iPod
     @"iPod1,1": @2007,
     @"iPod2,1": @2008,
