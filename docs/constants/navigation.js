@@ -52,6 +52,7 @@ const sections = [
   {
     name: 'App Signing',
     reference: [
+      'App credentials explained',
       'Using automatically managed credentials',
       'Using local credentials',
       'Using existing credentials',
@@ -153,7 +154,6 @@ const sections = [
     name: 'Distributing Your App',
     reference: [
       'Overview',
-      'App Signing',
       'Deploying to App Stores',
       'Release Channels',
       'Advanced Release Channels',
