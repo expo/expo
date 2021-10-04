@@ -66,6 +66,14 @@ import java.util.*
 import java.util.concurrent.TimeUnit
 import kotlin.math.pow
 
+private const val NAME = "ExponentFileSystem"
+private val TAG = FileSystemModule::class.java.simpleName
+private const val EXDownloadProgressEventName = "expo-file-system.downloadProgress"
+private const val EXUploadProgressEventName = "expo-file-system.uploadProgress"
+private const val MIN_EVENT_DT_MS: Long = 100
+private const val HEADER_KEY = "headers"
+private const val DIR_PERMISSIONS_REQUEST_CODE = 5394
+
 class FileSystemModule(
   context: Context,
   private val moduleRegistryDelegate: ModuleRegistryDelegate = ModuleRegistryDelegate()
@@ -129,13 +137,12 @@ class FileSystemModule(
   }
 
   private fun permissionsForUri(uri: Uri): EnumSet<Permission>? {
-    return if (isSAFUri(uri)) {
-      permissionsForSAFUri(uri)
-    } else when (uri.scheme) {
-      "content" -> EnumSet.of(Permission.READ)
-      "asset" -> EnumSet.of(Permission.READ)
-      "file" -> permissionsForPath(uri.path)
-      null -> EnumSet.of(Permission.READ)
+    return when {
+      isSAFUri(uri) -> permissionsForSAFUri(uri)
+      uri.scheme == "content" -> EnumSet.of(Permission.READ)
+      uri.scheme == "asset" -> EnumSet.of(Permission.READ)
+      uri.scheme == "file" -> permissionsForPath(uri.path)
+      uri.scheme == null -> EnumSet.of(Permission.READ)
       else -> EnumSet.noneOf(Permission::class.java)
     }
   }
@@ -240,9 +247,9 @@ class FileSystemModule(
               putString("uri", uri.toString())
               // NOTE: `.available()` is supposedly not a reliable source of size info, but it's been
               //       more reliable than querying `OpenableColumns.SIZE` in practice in tests ¯\_(ツ)_/¯
-              putDouble("size", `is`.available().toDouble())
+              putDouble("size", inputStream.available().toDouble())
               if (options.containsKey("md5") && options["md5"] == true) {
-                val md5bytes = DigestUtils.md5(`is`)
+                val md5bytes = DigestUtils.md5(inputStream)
                 putString("md5", String(Hex.encodeHex(md5bytes)))
               }
             }
@@ -629,13 +636,9 @@ class FileSystemModule(
   }
 
   private fun contentUriFromFile(file: File): Uri {
-    return try {
-      val activityProvider: ActivityProvider by moduleRegistry()
-      val application = activityProvider.currentActivity.application
-      FileProvider.getUriForFile(application, application.packageName + ".FileSystemFileProvider", file)
-    } catch (e: Exception) {
-      throw e
-    }
+    val activityProvider: ActivityProvider by moduleRegistry()
+    val application = activityProvider.currentActivity.application
+    return FileProvider.getUriForFile(application, application.packageName + ".FileSystemFileProvider", file)
   }
 
   @ExpoMethod
@@ -669,23 +672,22 @@ class FileSystemModule(
     try {
       val uri = Uri.parse(uriStr)
       ensurePermission(uri, Permission.WRITE)
-      if (isSAFUri(uri)) {
-        val dir = getNearestSAFFile(uri)
-        if (dir != null) {
-          if (!dir.isDirectory) {
-            promise.reject("ERR_FILESYSTEM_CANNOT_CREATE_DIRECTORY", "Provided uri '$uri' is not pointing to a directory.")
-            return
-          }
-        }
-        val newDir = dirName?.let { dir?.createDirectory(it) }
-        if (newDir == null) {
-          promise.reject("ERR_FILESYSTEM_CANNOT_CREATE_DIRECTORY", "Unknown error.")
-          return
-        }
-        promise.resolve(newDir.uri.toString())
-      } else {
+      if (!isSAFUri(uri)) {
         throw IOException("The URI '$uri' is not a Storage Access Framework URI. Try using FileSystem.makeDirectoryAsync instead.")
       }
+      val dir = getNearestSAFFile(uri)
+      if (dir != null) {
+        if (!dir.isDirectory) {
+          promise.reject("ERR_FILESYSTEM_CANNOT_CREATE_DIRECTORY", "Provided uri '$uri' is not pointing to a directory.")
+          return
+        }
+      }
+      val newDir = dirName?.let { dir?.createDirectory(it) }
+      if (newDir == null) {
+        promise.reject("ERR_FILESYSTEM_CANNOT_CREATE_DIRECTORY", "Unknown error.")
+        return
+      }
+      promise.resolve(newDir.uri.toString())
     } catch (e: Exception) {
       promise.reject(e)
     }
@@ -874,7 +876,11 @@ class FileSystemModule(
       fileUriString,
       options,
       promise,
-      { requestBody -> CountingRequestBody(requestBody, progressListener) }
+      object : RequestBodyDecorator {
+        override fun decorate(requestBody: RequestBody): RequestBody {
+          return CountingRequestBody(requestBody, progressListener)
+        }
+      }
     ) ?: return
     val call = okHttpClient!!.newCall(request)
     taskHandlers[uuid] = TaskHandler(call)
@@ -908,65 +914,67 @@ class FileSystemModule(
       val uri = Uri.parse(uriStr)
       ensurePermission(uri, Permission.WRITE)
       checkIfFileDirExists(uri)
-      if (!url.contains(":")) {
-        val context = context
-        val resources = context.resources
-        val packageName = context.packageName
-        val resourceId = resources.getIdentifier(url, "raw", packageName)
-        val bufferedSource = Okio.buffer(Okio.source(context.resources.openRawResource(resourceId)))
-        val file = uriToFile(uri)
-        file.delete()
-        val sink = Okio.buffer(Okio.sink(file))
-        sink.writeAll(bufferedSource)
-        sink.close()
-        val result = Bundle()
-        result.putString("uri", Uri.fromFile(file).toString())
-        if (options != null && options.containsKey("md5") && options["md5"] as Boolean) {
-          result.putString("md5", md5(file))
-        }
-        promise.resolve(result)
-      } else if ("file" == uri.scheme) {
-        val requestBuilder = Request.Builder().url(url)
-        if (options != null && options.containsKey(HEADER_KEY)) {
-          try {
-            val headers = options[HEADER_KEY] as Map<String, Any>?
-            headers?.keys?.forEach { key ->
-              requestBuilder.addHeader(key, headers[key] as String)
-            }
-          } catch (exception: ClassCastException) {
-            promise.reject("ERR_FILESYSTEM_INVALID_HEADERS", "Invalid headers dictionary. Keys and values should be strings.", exception)
-            return
+      when {
+        !url.contains(":") -> {
+          val context = context
+          val resources = context.resources
+          val packageName = context.packageName
+          val resourceId = resources.getIdentifier(url, "raw", packageName)
+          val bufferedSource = Okio.buffer(Okio.source(context.resources.openRawResource(resourceId)))
+          val file = uriToFile(uri)
+          file.delete()
+          val sink = Okio.buffer(Okio.sink(file))
+          sink.writeAll(bufferedSource)
+          sink.close()
+          val result = Bundle()
+          result.putString("uri", Uri.fromFile(file).toString())
+          if (options != null && options.containsKey("md5") && options["md5"] as Boolean) {
+            result.putString("md5", md5(file))
           }
+          promise.resolve(result)
         }
-        okHttpClient?.newCall(requestBuilder.build())?.enqueue(object : Callback {
-          override fun onFailure(call: Call, e: IOException) {
-            Log.e(TAG, e.message.toString())
-            promise.reject(e)
-          }
-
-          @Throws(IOException::class)
-          override fun onResponse(call: Call, response: Response) {
-            val file = uriToFile(uri)
-            file.delete()
-            val sink = Okio.buffer(Okio.sink(file))
-            sink.writeAll(response.body()!!.source())
-            sink.close()
-            val result = Bundle().apply {
-              putString("uri", Uri.fromFile(file).toString())
-              putInt("status", response.code())
-              putBundle("headers", translateHeaders(response.headers()))
-              if (options?.get("md5") == true) {
-                putString("md5", md5(file))
+        "file" == uri.scheme -> {
+          val requestBuilder = Request.Builder().url(url)
+          if (options != null && options.containsKey(HEADER_KEY)) {
+            try {
+              val headers = options[HEADER_KEY] as Map<String, Any>?
+              headers?.keys?.forEach { key ->
+                requestBuilder.addHeader(key, headers[key] as String)
               }
+            } catch (exception: ClassCastException) {
+              promise.reject("ERR_FILESYSTEM_INVALID_HEADERS", "Invalid headers dictionary. Keys and values should be strings.", exception)
+              return
             }
-            response.close()
-            promise.resolve(result)
           }
-        }) ?: run {
-          promise.reject(NullPointerException("okHttpClient is null"))
+          okHttpClient?.newCall(requestBuilder.build())?.enqueue(object : Callback {
+            override fun onFailure(call: Call, e: IOException) {
+              Log.e(TAG, e.message.toString())
+              promise.reject(e)
+            }
+
+            @Throws(IOException::class)
+            override fun onResponse(call: Call, response: Response) {
+              val file = uriToFile(uri)
+              file.delete()
+              val sink = Okio.buffer(Okio.sink(file))
+              sink.writeAll(response.body()!!.source())
+              sink.close()
+              val result = Bundle().apply {
+                putString("uri", Uri.fromFile(file).toString())
+                putInt("status", response.code())
+                putBundle("headers", translateHeaders(response.headers()))
+                if (options?.get("md5") == true) {
+                  putString("md5", md5(file))
+                }
+              }
+              response.close()
+              promise.resolve(result)
+            }
+          }) ?: run {
+            promise.reject(NullPointerException("okHttpClient is null"))
+          }
         }
-      } else {
-        throw IOException("Unsupported scheme for location '$uri'.")
+        else -> throw IOException("Unsupported scheme for location '$uri'.")
       }
     } catch (e: Exception) {
       e.message?.let { Log.e(TAG, it) }
@@ -1069,7 +1077,7 @@ class FileSystemModule(
     try {
       val file = uriToFile(taskHandler.fileUri)
       val result = Bundle().apply {
-       putString("resumeData", file.length().toString())
+        putString("resumeData", file.length().toString())
       }
       promise.resolve(result)
     } catch (e: Exception) {
@@ -1287,64 +1295,54 @@ class FileSystemModule(
     } else DocumentFile.fromTreeUri(context, uri)
   }
 
-  companion object {
-    private const val NAME = "ExponentFileSystem"
-    private val TAG = FileSystemModule::class.java.simpleName
-    private const val EXDownloadProgressEventName = "expo-file-system.downloadProgress"
-    private const val EXUploadProgressEventName = "expo-file-system.uploadProgress"
-    private const val MIN_EVENT_DT_MS: Long = 100
-    private const val HEADER_KEY = "headers"
-    private const val DIR_PERMISSIONS_REQUEST_CODE = 5394
+  /**
+   * Checks if the provided URI is compatible with the Storage Access Framework.
+   * For more information check out https://developer.android.com/guide/topics/providers/document-provider.
+   *
+   * @param uri
+   * @return whatever the provided URI is SAF URI
+   */
+  private fun isSAFUri(uri: Uri): Boolean {
+    return uri.scheme == "content" && uri.host?.startsWith("com.android.externalstorage") ?: false
+  }
 
-    /**
-     * Checks if the provided URI is compatible with the Storage Access Framework.
-     * For more information check out https://developer.android.com/guide/topics/providers/document-provider.
-     *
-     * @param uri
-     * @return whatever the provided URI is SAF URI
-     */
-    private fun isSAFUri(uri: Uri): Boolean {
-      return uri.scheme == "content" && uri.host?.startsWith("com.android.externalstorage") ?: false
-    }
-
-    @Throws(IOException::class)
-    private fun getInputStreamBytes(inputStream: InputStream): ByteArray {
-      val bytesResult: ByteArray
-      val byteBuffer = ByteArrayOutputStream()
-      val bufferSize = 1024
-      val buffer = ByteArray(bufferSize)
+  @Throws(IOException::class)
+  private fun getInputStreamBytes(inputStream: InputStream): ByteArray {
+    val bytesResult: ByteArray
+    val byteBuffer = ByteArrayOutputStream()
+    val bufferSize = 1024
+    val buffer = ByteArray(bufferSize)
+    try {
+      var len: Int
+      while (inputStream.read(buffer).also { len = it } != -1) {
+        byteBuffer.write(buffer, 0, len)
+      }
+      bytesResult = byteBuffer.toByteArray()
+    } finally {
       try {
-        var len: Int
-        while (inputStream.read(buffer).also { len = it } != -1) {
-          byteBuffer.write(buffer, 0, len)
-        }
-        bytesResult = byteBuffer.toByteArray()
-      } finally {
-        try {
-          byteBuffer.close()
-        } catch (ignored: IOException) {
-        }
+        byteBuffer.close()
+      } catch (ignored: IOException) {
       }
-      return bytesResult
     }
+    return bytesResult
+  }
 
-    // Copied out of React Native's `NetworkingModule.java`
-    private fun translateHeaders(headers: Headers): Bundle {
-      val responseHeaders = Bundle()
-      for (i in 0 until headers.size()) {
-        val headerName = headers.name(i)
-        // multiple values for the same header
-        if (responseHeaders[headerName] != null) {
-          responseHeaders.putString(
-            headerName,
-            responseHeaders.getString(headerName) + ", " + headers.value(i)
-          )
-        } else {
-          responseHeaders.putString(headerName, headers.value(i))
-        }
+  // Copied out of React Native's `NetworkingModule.java`
+  private fun translateHeaders(headers: Headers): Bundle {
+    val responseHeaders = Bundle()
+    for (i in 0 until headers.size()) {
+      val headerName = headers.name(i)
+      // multiple values for the same header
+      if (responseHeaders[headerName] != null) {
+        responseHeaders.putString(
+          headerName,
+          responseHeaders.getString(headerName) + ", " + headers.value(i)
+        )
+      } else {
+        responseHeaders.putString(headerName, headers.value(i))
       }
-      return responseHeaders
     }
+    return responseHeaders
   }
 
   init {
