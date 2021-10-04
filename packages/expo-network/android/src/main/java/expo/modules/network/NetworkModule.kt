@@ -25,7 +25,6 @@ import java.nio.ByteOrder
 private const val NAME = "ExpoNetwork"
 private val TAG = NetworkModule::class.java.simpleName
 
-
 class NetworkModule(private val appContext: Context) : ExportedModule(appContext), RegistryLifecycleListener {
 
   enum class NetworkStateType(val value: String) {
