@@ -64,13 +64,15 @@ class NetworkModule(private val appContext: Context) : ExportedModule(appContext
   }
 
   private fun getConnectionType(netCapabilities: NetworkCapabilities?): NetworkStateType =
-    if (netCapabilities == null) NetworkStateType.UNKNOWN
-    else if (netCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR)) NetworkStateType.CELLULAR
-    else if (netCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) || netCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI_AWARE)) NetworkStateType.WIFI
-    else if (netCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_BLUETOOTH)) NetworkStateType.BLUETOOTH
-    else if (netCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET)) NetworkStateType.ETHERNET
-    else if (netCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_VPN)) NetworkStateType.VPN
-    else NetworkStateType.UNKNOWN
+    when {
+      netCapabilities == null -> NetworkStateType.UNKNOWN
+      netCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) -> NetworkStateType.CELLULAR
+      netCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) || netCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI_AWARE) -> NetworkStateType.WIFI
+      netCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_BLUETOOTH) -> NetworkStateType.BLUETOOTH
+      netCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET) -> NetworkStateType.ETHERNET
+      netCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_VPN) -> NetworkStateType.VPN
+      else -> NetworkStateType.UNKNOWN
+    }
 
   private fun rawIpToString(ip: Int): String {
     // Convert little-endian to big-endian if needed
