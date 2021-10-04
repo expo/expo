@@ -1,28 +1,31 @@
 package expo.modules.facebook
 
-import expo.modules.core.ExportedModule
-import com.facebook.CallbackManager
-import expo.modules.core.ModuleRegistry
-import com.facebook.appevents.AppEventsLogger
-import com.facebook.internal.AttributionIdentifiers
-import expo.modules.core.interfaces.ExpoMethod
-import com.facebook.FacebookSdk
-import com.facebook.AccessToken
-import android.os.Bundle
-import expo.modules.core.arguments.ReadableArguments
-import com.facebook.login.LoginManager
-import com.facebook.login.LoginBehavior
-import com.facebook.FacebookCallback
-import com.facebook.login.LoginResult
-import com.facebook.FacebookException
-import android.app.Activity
-import android.content.Context
-import android.content.Intent
-import expo.modules.core.ModuleRegistryDelegate
 import expo.modules.core.Promise
+import expo.modules.core.ExportedModule
+import expo.modules.core.ModuleRegistry
+import expo.modules.core.interfaces.ExpoMethod
+import expo.modules.core.arguments.ReadableArguments
+import expo.modules.core.ModuleRegistryDelegate
 import expo.modules.core.interfaces.ActivityEventListener
 import expo.modules.core.interfaces.ActivityProvider
 import expo.modules.core.interfaces.services.UIManager
+
+import com.facebook.CallbackManager
+import com.facebook.FacebookSdk
+import com.facebook.AccessToken
+import com.facebook.FacebookCallback
+import com.facebook.FacebookException
+import com.facebook.appevents.AppEventsLogger
+import com.facebook.internal.AttributionIdentifiers
+import com.facebook.login.LoginManager
+import com.facebook.login.LoginBehavior
+import com.facebook.login.LoginResult
+
+import android.os.Bundle
+import android.app.Activity
+import android.content.Context
+import android.content.Intent
+
 import java.lang.Exception
 import java.lang.IllegalStateException
 import java.math.BigDecimal
