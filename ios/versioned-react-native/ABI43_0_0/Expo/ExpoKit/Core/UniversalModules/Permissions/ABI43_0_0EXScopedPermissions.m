@@ -1,6 +1,6 @@
 // Copyright 2016-present 650 Industries. All rights reserved.
 
-#if __has_include(<ExpoModulesCore/ABI43_0_0EXPermissionsService.h>)
+#if __has_include(<ABI43_0_0ExpoModulesCore/ABI43_0_0EXPermissionsService.h>)
 #import <ABI43_0_0ExpoModulesCore/ABI43_0_0EXUtilities.h>
 #import <ABI43_0_0ExpoModulesCore/ABI43_0_0EXDefines.h>
 
