@@ -1,5 +1,3 @@
-/packages/@unimodules/core                      @tsapeta
-/packages/@unimodules/react-native-adapter      @tsapeta
 /packages/babel-preset-expo                     @brentvatne
 /packages/expo-ads-admob                        @tsapeta
 /packages/expo-ads-facebook                     @tsapeta
@@ -69,7 +67,6 @@
 /packages/expo-sms                              @bbarthec
 /packages/expo-speech                           @bbarthec
 /packages/expo-splash-screen                    @bbarthec
-/packages/expo-splash-screen-command            @bbarthec
 /packages/expo-sqlite                           @bbarthec
 /packages/expo-store-review                     @EvanBacon
 /packages/expo-task-manager                     @tsapeta @bycedric
@@ -82,7 +79,6 @@
 /packages/jest-expo-enzyme                      @ide @EvanBacon
 /packages/jest-expo-puppeteer                   @ide @EvanBacon
 /packages/jest-expo                             @brentvatne
-/packages/react-native-unimodules               @tsapeta @bbarthec
 /packages/unimodules-task-manager-interface     @tsapeta @bycedric
 /tools                                          @tsapeta
 /.github/workflows                              @tsapeta

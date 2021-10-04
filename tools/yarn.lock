@@ -2611,10 +2611,10 @@
   resolved "https://registry.yarnpkg.com/@expo/xcodegen/-/xcodegen-2.18.0-patch.1.tgz#40514e973ee6769e5abd5d1c16d40dbe85c1d9aa"
   integrity sha512-Caz2ChzVe/U3GkaK+DKlXqYorARzLZ1yM6D03LHvasnyA4T+pW6DGXHPy7cfK5AlbsV6Fi5ZtZ9gqW4jGWIFwQ==
 
-"@expo/xdl@^59.1.3":
-  version "59.1.3"
-  resolved "https://registry.yarnpkg.com/@expo/xdl/-/xdl-59.1.3.tgz#e7670431b89013283ef60b9899b6b79453609502"
-  integrity sha512-H/7YpQwbAHXb1znj6YS0NtKbT0kfB7p2pjZzF9JFnlJz6Y0qapoke6pG7QSoALNlcOOFD4n9gXqlP3kZBN3B0A==
+"@expo/xdl@^59.1.7":
+  version "59.1.7"
+  resolved "https://registry.yarnpkg.com/@expo/xdl/-/xdl-59.1.7.tgz#b11463b1b72493e9608b5de7492e62cf855198a5"
+  integrity sha512-tOW95XRegMryP5QVu+UNIMcia1Sp/1Qb7ieMuB7QC4k6K5KkuIADtlbKD/SsrFFz+DBUorj9pZW+Cw+qUd89Vw==
   dependencies:
     "@expo/bunyan" "4.0.0"
     "@expo/config" "3.3.30"
@@ -11255,7 +11255,6 @@ minipass-fetch@^1.3.0, minipass-fetch@^1.3.2:
   resolved "https://registry.yarnpkg.com/minipass-fetch/-/minipass-fetch-1.3.3.tgz#34c7cea038c817a8658461bf35174551dce17a0a"
   integrity sha512-akCrLDWfbdAWkMLBxJEeWTdNsjML+dt5YgOI4gJ53vuO0vrmYQkUPxa6j6V65s9CcePIr2SSWqjT2EcrNseryQ==
   dependencies:
-    encoding "^0.1.12"
     minipass "^3.1.0"
     minipass-sized "^1.0.3"
     minizlib "^2.0.0"
