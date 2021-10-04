@@ -25,6 +25,7 @@ import java.nio.ByteOrder
 private const val NAME = "ExpoNetwork"
 private val TAG = NetworkModule::class.java.simpleName
 
+
 class NetworkModule(private val appContext: Context) : ExportedModule(appContext), RegistryLifecycleListener {
 
   enum class NetworkStateType(val value: String) {
@@ -115,18 +116,19 @@ class NetworkModule(private val appContext: Context) : ExportedModule(appContext
         val network = connectivityManager.activeNetwork
         val isInternetReachable = network != null
 
-        var connectionType: NetworkStateType? = if (isInternetReachable) {
+        val connectionType = if (isInternetReachable) {
           val netCapabilities = connectivityManager.getNetworkCapabilities(network)
           getConnectionType(netCapabilities)
         } else {
           null
-        }.also { connectionType ->
-          result.apply {
-            putString("type", connectionType?.value ?: NetworkStateType.NONE.value)
-            putBoolean("isInternetReachable", isInternetReachable)
-            putBoolean("isConnected", connectionType != null && connectionType.isDefined)
-          }
         }
+
+        result.apply {
+          putString("type", connectionType?.value ?: NetworkStateType.NONE.value)
+          putBoolean("isInternetReachable", isInternetReachable)
+          putBoolean("isConnected", connectionType != null && connectionType.isDefined)
+        }
+
         promise.resolve(result)
       }
     } catch (e: Exception) {
@@ -139,22 +141,14 @@ class NetworkModule(private val appContext: Context) : ExportedModule(appContext
     try {
       promise.resolve(rawIpToString(wifiInfo.ipAddress))
     } catch (e: Exception) {
-      Log.e(TAG, e.message ?: "Could not get ip address")
+      Log.e(TAG, e.message ?: "Could not get IP address")
       promise.reject("ERR_NETWORK_IP_ADDRESS", "Unknown Host Exception", e)
     }
   }
 
   @ExpoMethod
   fun isAirplaneModeEnabledAsync(promise: Promise) {
-    val isAirPlaneMode = Settings.Global.getInt(appContext.contentResolver, Settings.Global.AIRPLANE_MODE_ON, 0) != 0
-    promise.resolve(isAirPlaneMode)
-  }
-
-  companion object {
-    private fun frontPadWithZeros(inputArray: ByteArray): ByteArray {
-      val newByteArray = byteArrayOf(0, 0, 0, 0)
-      System.arraycopy(inputArray, 0, newByteArray, 4 - inputArray.size, inputArray.size)
-      return newByteArray
-    }
+    val isAirplaneMode = Settings.Global.getInt(appContext.contentResolver, Settings.Global.AIRPLANE_MODE_ON, 0) != 0
+    promise.resolve(isAirplaneMode)
   }
 }
