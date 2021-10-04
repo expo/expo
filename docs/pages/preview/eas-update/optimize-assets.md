@@ -2,9 +2,11 @@
 title: How to optimize assets for EAS Update
 ---
 
+import ImageSpotlight from '~/components/plugins/ImageSpotlight'
+
 When an app finds a new update, it downloads a manifest and then downloads any new or updated assets so that it can run the update. The process is as follows:
 
-![Process](/static/images/eas-update/process.png)
+<ImageSpotlight alt="Update download timeline" src="/static/images/eas-update/process.png" style={{maxWidth: 1200}} />
 
 Many users running Android and iOS apps are using mobile connections that are not as consistent or fast as when they are using Wi-Fi, so it's important that the assets shipped as a part of an update are as small as possible.
 

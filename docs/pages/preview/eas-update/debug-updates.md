@@ -2,6 +2,8 @@
 title: Debugging updates
 ---
 
+import ImageSpotlight from '~/components/plugins/ImageSpotlight'
+
 It's important to be able to tell the current state of our app at any given time. EAS Update was built with this in mind. Once you know which updates are running on which builds, we can make changes so that our apps are in the state we expect and desire.
 
 ## Inspecting the state of deployments
@@ -68,7 +70,7 @@ The output will display the message of the update, when it was created and by wh
 
 When we publish an update with EAS Update, it creates a **/dist** folder in the root of your project locally, which includes the assets that were uploaded as a part of the update.
 
-![Dist directory](/static/images/eas-update/dist.png)
+<ImageSpotlight alt="Dist directory" src="/static/images/eas-update/dist.png" />
 
 ## Undoing a bad publish
 
