@@ -38,4 +38,4 @@ module.exports = function remarkExportHeadings(options = {}) {
       value: `export const ${exportName} = ${JSON.stringify(headings)};`,
     });
   };
-};
+}
