@@ -49,7 +49,7 @@ class NetworkModule(private val appContext: Context) : ExportedModule(appContext
       val manager = appContext.applicationContext.getSystemService(Context.WIFI_SERVICE) as WifiManager
       manager.connectionInfo
     } catch (e: Exception) {
-      Log.e(TAG, e.message ?: "Wifi information could not be acquired")
+      Log.e(TAG, e.message ?: "Wi-Fi information could not be acquired")
       throw e
     }
 
