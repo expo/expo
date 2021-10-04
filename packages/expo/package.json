@@ -1,6 +1,6 @@
 {
   "name": "expo",
-  "version": "43.0.0-beta.2",
+  "version": "43.0.0-beta.3",
   "description": "The Expo SDK",
   "main": "build/Expo.js",
   "module": "build/Expo.js",
@@ -60,13 +60,13 @@
     "babel-preset-expo": "~8.5.1",
     "cross-spawn": "^6.0.5",
     "expo-application": "~4.0.0",
-    "expo-asset": "~8.4.0",
-    "expo-constants": "~12.0.0",
-    "expo-file-system": "~13.0.0",
-    "expo-font": "~10.0.0",
+    "expo-asset": "~8.4.1",
+    "expo-constants": "~12.1.0",
+    "expo-file-system": "~13.0.1",
+    "expo-font": "~10.0.1",
     "expo-keep-awake": "~10.0.0",
     "expo-modules-autolinking": "~0.3.2",
-    "expo-modules-core": "~0.4.1",
+    "expo-modules-core": "~0.4.2",
     "fbemitter": "^2.1.1",
     "invariant": "^2.2.2",
     "md5-file": "^3.2.3",
@@ -74,7 +74,7 @@
     "uuid": "^3.4.0"
   },
   "optionalDependencies": {
-    "expo-error-recovery": "~3.0.0"
+    "expo-error-recovery": "~3.0.1"
   },
   "devDependencies": {
     "@types/fbemitter": "^2.0.32",
@@ -83,7 +83,6 @@
     "@types/react-native": "~0.64.12",
     "@types/react-test-renderer": "^17.0.1",
     "@types/uuid": "^3.4.7",
-    "expo-location": "^13.0.0",
     "expo-module-scripts": "^2.0.0",
     "react": "17.0.1",
     "react-dom": "17.0.1",

@@ -184,7 +184,7 @@ dependencies {
   testImplementation 'org.mockito:mockito-core:1.10.19'
 
   /* UNCOMMENT WHEN DISTRIBUTING
-  implementation('host.exp.exponent:expoview:42.0.0@aar') {
+  implementation('host.exp.exponent:expoview:43.0.0@aar') {
     transitive = true
     exclude group: 'com.squareup.okhttp3', module: 'okhttp'
     exclude group: 'com.squareup.okhttp3', module: 'okhttp-urlconnection'
@@ -204,6 +204,11 @@ dependencies {
   // ADD_NEW_SDKS_HERE
 
 
+  // BEGIN_SDK_43
+  versionedImplementation(project(':expoview-abi43_0_0'))
+  // END_SDK_43
+
+
   // BEGIN_SDK_42
   versionedImplementation(project(':expoview-abi42_0_0'))
   // END_SDK_42
@@ -212,11 +217,6 @@ dependencies {
   // BEGIN_SDK_41
   versionedImplementation(project(':expoview-abi41_0_0'))
   // END_SDK_41
-
-
-  // BEGIN_SDK_40
-  versionedImplementation(project(':expoview-abi40_0_0'))
-  // END_SDK_40
 
   // This is not needed in shell apps, the Amplitude module will include this dep if installed
   implementation 'com.amplitude:android-sdk:2.23.2'
