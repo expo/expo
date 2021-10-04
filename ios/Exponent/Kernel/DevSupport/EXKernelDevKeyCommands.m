@@ -68,51 +68,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 @interface EXKernelDevKeyCommands ()
 
 @property (nonatomic, strong) NSMutableSet<EXKeyCommand *> *commands;
-+ (void)handleKeyboardEvent:(UIEvent *)event;
-
-@end
-
-@interface UIEvent (UIPhysicalKeyboardEvent)
-
-@property (nonatomic) NSString *_modifiedInput;
-@property (nonatomic) NSString *_unmodifiedInput;
-@property (nonatomic) UIKeyModifierFlags _modifierFlags;
-@property (nonatomic) BOOL _isKeyDown;
-@property (nonatomic) long _keyCode;
-
-@end
-
-
-@implementation UIApplication (EXKeyCommands)
-
-- (void)EX_handleKeyUIEventSwizzle:(UIEvent *)event
-{
-  BOOL interactionEnabled = !UIApplication.sharedApplication.isIgnoringInteractionEvents;
-  BOOL hasFirstResponder = NO;
-  
-  if (interactionEnabled) {
-    UIResponder *firstResponder = nil;
-    for (UIWindow *window in [self windows]) {
-      firstResponder = [window valueForKey:@"firstResponder"];
-      if (firstResponder) {
-        hasFirstResponder = YES;
-        break;
-      }
-    }
-    
-    
-    // Call the original swizzled method
-    [self EX_handleKeyUIEventSwizzle:event];
-    
-    if (firstResponder) {
-      BOOL isTextField = [firstResponder isKindOfClass: [UITextField class]] || [firstResponder isKindOfClass: [UITextView class]];
-      
-      if (!isTextField) {
-        [EXKernelDevKeyCommands handleKeyboardEvent:event];
-      }
-    }
-  }
-};
 
 @end
 
@@ -167,27 +122,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   RCTSwapInstanceMethods([UIResponder class],
                          @selector(keyCommands),
                          @selector(EX_keyCommands));
-
-  SEL originalKeyboardSelector = NSSelectorFromString(@"handleKeyUIEvent:");
-  RCTSwapInstanceMethods([UIApplication class],
-                         originalKeyboardSelector,
-                         @selector(EX_handleKeyUIEventSwizzle:));
-}
-
-+(void)handleKeyboardEvent:(UIEvent *)event
-{
-  static NSTimeInterval lastCommand = 0;
-
-  if (event._isKeyDown) {
-    if (CACurrentMediaTime() - lastCommand > 0.5) {
-      NSString *input = event._modifiedInput;
-      if ([input isEqualToString: @"r"]) {
-        [[EXKernel sharedInstance] reloadVisibleApp];
-      }
-      
-      lastCommand = CACurrentMediaTime();
-    }
-  }
 }
 
 - (instancetype)init
@@ -289,7 +223,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   UIKeyCommand *command = [UIKeyCommand keyCommandWithInput:input
                                               modifierFlags:flags
                                                      action:@selector(EX_handleKeyCommand:)];
-
+  
   EXKeyCommand *keyCommand = [[EXKeyCommand alloc] initWithKeyCommand:command block:block];
   [_commands removeObject:keyCommand];
   [_commands addObject:keyCommand];
