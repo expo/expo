@@ -28,17 +28,17 @@ import expo.modules.medialibrary.MediaLibraryConstants.*
 import expo.modules.medialibrary.MediaLibraryModule.Action
 
 class MediaLibraryModule(
-  private val mContext: Context,
+  context: Context,
   private val moduleRegistryDelegate: ModuleRegistryDelegate = ModuleRegistryDelegate(),
-) : ExportedModule(mContext), ActivityEventListener {
-  private val mUIManager: UIManager by moduleRegistry()
-  private val mPermissions: Permissions? by moduleRegistry()
-  private val mActivityProvider: ActivityProvider by moduleRegistry()
-  private val mEventEmitter: EventEmitter by moduleRegistry()
+) : ExportedModule(context), ActivityEventListener {
+  private val uiManager: UIManager by moduleRegistry()
+  private val permissions: Permissions? by moduleRegistry()
+  private val activityProvider: ActivityProvider by moduleRegistry()
+  private val eventEmitter: EventEmitter by moduleRegistry()
 
-  private var mImagesObserver: MediaStoreContentObserver? = null
-  private var mVideosObserver: MediaStoreContentObserver? = null
-  private var mAction: Action? = null
+  private var imagesObserver: MediaStoreContentObserver? = null
+  private var videosObserver: MediaStoreContentObserver? = null
+  private var awaitingAction: Action? = null
 
   override fun getName() = "ExponentMediaLibrary"
 
@@ -71,7 +71,7 @@ class MediaLibraryModule(
   @ExpoMethod
   fun requestPermissionsAsync(writeOnly: Boolean, promise: Promise) {
     Permissions.askForPermissionsWithPermissionsManager(
-      mPermissions,
+      permissions,
       promise,
       *getManifestPermissions(writeOnly)
     )
@@ -80,29 +80,27 @@ class MediaLibraryModule(
   @ExpoMethod
   fun getPermissionsAsync(writeOnly: Boolean, promise: Promise) {
     Permissions.getPermissionsWithPermissionsManager(
-      mPermissions,
+      permissions,
       promise,
       *getManifestPermissions(writeOnly)
     )
   }
 
   @ExpoMethod
-  fun saveToLibraryAsync(localUri: String, promise: Promise) {
-    if (isMissingWritePermission) {
-      promise.reject(ERROR_NO_PERMISSIONS, ERROR_NO_WRITE_PERMISSION_MESSAGE)
-      return
-    }
-    CreateAsset(mContext, localUri, promise, false)
+  fun saveToLibraryAsync(
+    localUri: String,
+    promise: Promise
+  ) = rejectUnlessPermissionsGranted(promise, writeOnly = true) {
+    CreateAsset(context, localUri, promise, false)
       .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR)
   }
 
   @ExpoMethod
-  fun createAssetAsync(localUri: String, promise: Promise) {
-    if (isMissingPermissions) {
-      promise.reject(ERROR_NO_PERMISSIONS, ERROR_NO_PERMISSIONS_MESSAGE)
-      return
-    }
-    CreateAsset(mContext, localUri, promise)
+  fun createAssetAsync(
+    localUri: String,
+    promise: Promise
+  ) = rejectUnlessPermissionsGranted(promise) {
+    CreateAsset(context, localUri, promise)
       .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR)
   }
 
@@ -112,51 +110,34 @@ class MediaLibraryModule(
     albumId: String,
     copyToAlbum: Boolean,
     promise: Promise
-  ) {
-    if (isMissingPermissions) {
-      promise.reject(ERROR_NO_PERMISSIONS, ERROR_NO_PERMISSIONS_MESSAGE)
-      return
-    }
-    val action = Action action@{ permissionsWereGranted ->
-      if (!permissionsWereGranted) {
-        promise.reject(ERROR_NO_PERMISSIONS, ERROR_USER_DID_NOT_GRANT_WRITE_PERMISSIONS_MESSAGE)
-        return@action
-      }
-      AddAssetsToAlbum(mContext, assetsId.toTypedArray(), albumId, copyToAlbum, promise)
+  ) = rejectUnlessPermissionsGranted(promise, writeOnly = false) {
+    val action = actionIfUserGrantedPermission(promise) {
+      AddAssetsToAlbum(context, assetsId.toTypedArray(), albumId, copyToAlbum, promise)
         .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR)
     }
     runActionWithPermissions(if (copyToAlbum) emptyList() else assetsId, action, promise)
   }
 
   @ExpoMethod
-  fun removeAssetsFromAlbumAsync(assetsId: List<String>, albumId: String, promise: Promise) {
-    if (isMissingPermissions) {
-      promise.reject(ERROR_NO_PERMISSIONS, ERROR_NO_PERMISSIONS_MESSAGE)
-      return
-    }
-    val action = Action action@{ permissionsWereGranted ->
-      if (!permissionsWereGranted) {
-        promise.reject(ERROR_NO_PERMISSIONS, ERROR_USER_DID_NOT_GRANT_WRITE_PERMISSIONS_MESSAGE)
-        return@action
-      }
-      RemoveAssetsFromAlbum(mContext, assetsId.toTypedArray(), albumId, promise)
+  fun removeAssetsFromAlbumAsync(
+    assetsId: List<String>,
+    albumId: String,
+    promise: Promise
+  ) = rejectUnlessPermissionsGranted(promise) {
+    val action = actionIfUserGrantedPermission(promise) {
+      RemoveAssetsFromAlbum(context, assetsId.toTypedArray(), albumId, promise)
         .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR)
     }
     runActionWithPermissions(assetsId, action, promise)
   }
 
   @ExpoMethod
-  fun deleteAssetsAsync(assetsId: List<String>, promise: Promise) {
-    if (isMissingPermissions) {
-      promise.reject(ERROR_NO_PERMISSIONS, ERROR_NO_PERMISSIONS_MESSAGE)
-      return
-    }
-    val action = Action action@{ permissionsWereGranted ->
-      if (!permissionsWereGranted) {
-        promise.reject(ERROR_NO_PERMISSIONS, ERROR_USER_DID_NOT_GRANT_WRITE_PERMISSIONS_MESSAGE)
-        return@action
-      }
-      DeleteAssets(mContext, assetsId.toTypedArray(), promise)
+  fun deleteAssetsAsync(
+    assetsId: List<String>,
+    promise: Promise
+  ) = rejectUnlessPermissionsGranted(promise) {
+    val action = actionIfUserGrantedPermission(promise) {
+      DeleteAssets(context, assetsId.toTypedArray(), promise)
         .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR)
     }
     runActionWithPermissions(assetsId, action, promise)
@@ -167,75 +148,60 @@ class MediaLibraryModule(
     assetId: String,
     options: Map<String, Any?>? /* unused on android atm */,
     promise: Promise
-  ) {
-    if (isMissingPermissions) {
-      promise.reject(ERROR_NO_PERMISSIONS, ERROR_NO_PERMISSIONS_MESSAGE)
-      return
-    }
-    GetAssetInfo(mContext, assetId, promise).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR)
+  ) = rejectUnlessPermissionsGranted(promise, writeOnly = false) {
+    GetAssetInfo(context, assetId, promise).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR)
   }
 
   @ExpoMethod
-  fun getAlbumsAsync(options: Map<String, Any?>? /* unused on android atm */, promise: Promise) {
-    if (isMissingPermissions) {
-      promise.reject(ERROR_NO_PERMISSIONS, ERROR_NO_PERMISSIONS_MESSAGE)
-      return
-    }
-    GetAlbums(mContext, promise).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR)
+  fun getAlbumsAsync(
+    options: Map<String, Any?>? /* unused on android atm */,
+    promise: Promise
+  ) = rejectUnlessPermissionsGranted(promise) {
+    GetAlbums(context, promise).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR)
   }
 
   @ExpoMethod
-  fun getAlbumAsync(albumName: String, promise: Promise) {
-    if (isMissingPermissions) {
-      promise.reject(ERROR_NO_PERMISSIONS, ERROR_NO_PERMISSIONS_MESSAGE)
-      return
-    }
-    GetAlbum(mContext, albumName, promise)
+  fun getAlbumAsync(
+    albumName: String,
+    promise: Promise
+  ) = rejectUnlessPermissionsGranted(promise) {
+    GetAlbum(context, albumName, promise)
       .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR)
   }
 
   @ExpoMethod
-  fun createAlbumAsync(albumName: String, assetId: String, copyAsset: Boolean, promise: Promise) {
-    if (isMissingPermissions) {
-      promise.reject(ERROR_NO_PERMISSIONS, ERROR_NO_PERMISSIONS_MESSAGE)
-      return
-    }
-    val action = Action action@{ permissionsWereGranted ->
-      if (!permissionsWereGranted) {
-        promise.reject(ERROR_NO_PERMISSIONS, ERROR_USER_DID_NOT_GRANT_WRITE_PERMISSIONS_MESSAGE)
-        return@action
-      }
-      CreateAlbum(mContext, albumName, assetId, copyAsset, promise)
+  fun createAlbumAsync(
+    albumName: String,
+    assetId: String,
+    copyAsset: Boolean,
+    promise: Promise
+  ) = rejectUnlessPermissionsGranted(promise) {
+    val action = actionIfUserGrantedPermission(promise) {
+      CreateAlbum(context, albumName, assetId, copyAsset, promise)
         .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR)
     }
     runActionWithPermissions(if (copyAsset) emptyList() else listOf(assetId), action, promise)
   }
 
   @ExpoMethod
-  fun deleteAlbumsAsync(albumIds: List<String>, promise: Promise) {
-    if (isMissingPermissions) {
-      promise.reject(ERROR_NO_PERMISSIONS, ERROR_NO_PERMISSIONS_MESSAGE)
-      return
-    }
-    val action = Action action@{ permissionsWereGranted ->
-      if (!permissionsWereGranted) {
-        promise.reject(ERROR_NO_PERMISSIONS, ERROR_USER_DID_NOT_GRANT_WRITE_PERMISSIONS_MESSAGE)
-        return@action
-      }
-      DeleteAlbums(mContext, albumIds, promise)
+  fun deleteAlbumsAsync(
+    albumIds: List<String>,
+    promise: Promise
+  ) = rejectUnlessPermissionsGranted(promise) {
+    val action = actionIfUserGrantedPermission(promise) {
+      DeleteAlbums(context, albumIds, promise)
         .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR)
     }
-    val assetIds = MediaLibraryUtils.getAssetsInAlbums(mContext, *albumIds.toTypedArray())
+    val assetIds = MediaLibraryUtils.getAssetsInAlbums(context, *albumIds.toTypedArray())
     runActionWithPermissions(assetIds, action, promise)
   }
 
   @ExpoMethod
-  fun getAssetsAsync(assetOptions: Map<String, Any?>, promise: Promise) {
-    if (isMissingPermissions) {
-      promise.reject(ERROR_NO_PERMISSIONS, ERROR_NO_PERMISSIONS_MESSAGE)
-      return
-    }
-    GetAssets(mContext, assetOptions, promise)
+  fun getAssetsAsync(
+    assetOptions: Map<String, Any?>,
+    promise: Promise
+  ) = rejectUnlessPermissionsGranted(promise) {
+    GetAssets(context, assetOptions, promise)
       .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR)
   }
 
@@ -247,9 +213,9 @@ class MediaLibraryModule(
     }
 
     val assets = MediaLibraryUtils.getAssetsById(
-      mContext,
+      context,
       null,
-      *MediaLibraryUtils.getAssetsInAlbums(mContext, albumId).toTypedArray()
+      *MediaLibraryUtils.getAssetsInAlbums(context, albumId).toTypedArray()
     )
     if (assets == null) {
       promise.reject(ERROR_NO_ALBUM, "Couldn't find album.")
@@ -283,7 +249,7 @@ class MediaLibraryModule(
         promise.reject(ERROR_NO_PERMISSIONS, ERROR_USER_DID_NOT_GRANT_WRITE_PERMISSIONS_MESSAGE)
         return@action
       }
-      MigrateAlbum(mContext, assets, albumDir.name, promise)
+      MigrateAlbum(context, assets, albumDir.name, promise)
         .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR)
     }
     val needsToCheckPermissions = assets.map { it.assetId }
@@ -291,13 +257,12 @@ class MediaLibraryModule(
   }
 
   @ExpoMethod
-  fun albumNeedsMigrationAsync(albumId: String, promise: Promise) {
-    if (isMissingPermissions) {
-      promise.reject(ERROR_NO_PERMISSIONS, ERROR_NO_PERMISSIONS_MESSAGE)
-      return
-    }
+  fun albumNeedsMigrationAsync(
+    albumId: String,
+    promise: Promise
+  ) = rejectUnlessPermissionsGranted(promise) {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-      CheckIfAlbumShouldBeMigrated(mContext, albumId, promise)
+      CheckIfAlbumShouldBeMigrated(context, albumId, promise)
         .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR)
       return
     }
@@ -307,7 +272,7 @@ class MediaLibraryModule(
   // Library change observer
   @ExpoMethod
   fun startObserving(promise: Promise) {
-    if (mImagesObserver != null) {
+    if (imagesObserver != null) {
       promise.resolve(null)
       return
     }
@@ -316,25 +281,25 @@ class MediaLibraryModule(
     // because it seems that observing a parent directory (EXTERNAL_CONTENT) doesn't work well,
     // whereas observing directory of images or videos works fine.
     val handler = Handler()
-    val contentResolver = mContext.contentResolver
+    val contentResolver = context.contentResolver
 
-    mImagesObserver =
+    imagesObserver =
       MediaStoreContentObserver(handler, MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE)
-        .also { imagesObserver ->
+        .also { imageObserver ->
           contentResolver.registerContentObserver(
             MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
             true,
-            imagesObserver
+            imageObserver
           )
         }
 
-    mVideosObserver =
+    videosObserver =
       MediaStoreContentObserver(handler, MediaStore.Files.FileColumns.MEDIA_TYPE_VIDEO)
-        .also { videosObserver ->
+        .also { videoObserver ->
           contentResolver.registerContentObserver(
             MediaStore.Video.Media.EXTERNAL_CONTENT_URI,
             true,
-            videosObserver
+            videoObserver
           )
         }
 
@@ -343,12 +308,14 @@ class MediaLibraryModule(
 
   @ExpoMethod
   fun stopObserving(promise: Promise) {
-    if (mImagesObserver != null) {
-      val contentResolver = mContext.contentResolver
-      contentResolver.unregisterContentObserver(mImagesObserver!!)
-      contentResolver.unregisterContentObserver(mVideosObserver!!)
-      mImagesObserver = null
-      mVideosObserver = null
+    val contentResolver = context.contentResolver
+    imagesObserver?.let {
+      contentResolver.unregisterContentObserver(it)
+      imagesObserver = null
+    }
+    videosObserver?.let {
+      contentResolver.unregisterContentObserver(it)
+      videosObserver = null
     }
     promise.resolve(null)
   }
@@ -359,22 +326,22 @@ class MediaLibraryModule(
     resultCode: Int,
     data: Intent?
   ) {
-    if (requestCode == WRITE_REQUEST_CODE && mAction != null) {
-      mAction!!.runWithPermissions(resultCode == Activity.RESULT_OK)
-      mAction = null
-      mUIManager.unregisterActivityEventListener(this)
+    awaitingAction?.takeIf { requestCode == WRITE_REQUEST_CODE }?.let {
+      it.runWithPermissions(resultCode == Activity.RESULT_OK)
+      awaitingAction = null
+      uiManager.unregisterActivityEventListener(this)
     }
   }
 
   override fun onNewIntent(intent: Intent) {}
 
   private val isMissingPermissions: Boolean
-    get() = mPermissions
+    get() = permissions
       ?.hasGrantedPermissions(READ_EXTERNAL_STORAGE, WRITE_EXTERNAL_STORAGE)
       ?.not() ?: false
 
   private val isMissingWritePermission: Boolean
-    get() = mPermissions
+    get() = permissions
       ?.hasGrantedPermissions(WRITE_EXTERNAL_STORAGE)
       ?.not() ?: false
 
@@ -386,12 +353,25 @@ class MediaLibraryModule(
     ).toTypedArray()
   }
 
+  private inline fun rejectUnlessPermissionsGranted(promise: Promise, writeOnly: Boolean = false, block: () -> Unit) {
+    val missingPermissionsCondition = if (writeOnly) isMissingWritePermission else isMissingPermissions
+    val missingPermissionsMessage = if (writeOnly) ERROR_NO_WRITE_PERMISSION_MESSAGE else ERROR_NO_PERMISSIONS_MESSAGE
+    if (missingPermissionsCondition) {
+      promise.reject(ERROR_NO_PERMISSIONS, missingPermissionsMessage)
+      return
+    }
+    block()
+  }
+
+  private fun interface Action {
+    fun runWithPermissions(permissionsWereGranted: Boolean)
+  }
+
   private fun runActionWithPermissions(assetsId: List<String>, action: Action, promise: Promise) {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-
-      val pathsWithoutPermissions = MediaLibraryUtils.getAssetsUris(mContext, assetsId)
+      val pathsWithoutPermissions = MediaLibraryUtils.getAssetsUris(context, assetsId)
         .filter { uri ->
-          mContext.checkUriPermission(
+          context.checkUriPermission(
             uri,
             Binder.getCallingPid(),
             Binder.getCallingUid(), Intent.FLAG_GRANT_WRITE_URI_PERMISSION
@@ -400,12 +380,12 @@ class MediaLibraryModule(
 
       if (pathsWithoutPermissions.isNotEmpty()) {
         val deleteRequest =
-          MediaStore.createWriteRequest(mContext.contentResolver, pathsWithoutPermissions)
-        val activity = mActivityProvider.currentActivity
+          MediaStore.createWriteRequest(context.contentResolver, pathsWithoutPermissions)
+        val activity = activityProvider.currentActivity
 
         try {
-          mUIManager.registerActivityEventListener(this)
-          mAction = action
+          uiManager.registerActivityEventListener(this)
+          awaitingAction = action
           activity.startIntentSenderForResult(
             deleteRequest.intentSender,
             WRITE_REQUEST_CODE,
@@ -416,7 +396,7 @@ class MediaLibraryModule(
           )
         } catch (e: SendIntentException) {
           promise.reject(ERROR_UNABLE_TO_ASK_FOR_PERMISSIONS, ERROR_UNABLE_TO_ASK_FOR_PERMISSIONS_MESSAGE)
-          mAction = null
+          awaitingAction = null
         }
         return
       }
@@ -424,8 +404,15 @@ class MediaLibraryModule(
     action.runWithPermissions(true)
   }
 
-  private fun interface Action {
-    fun runWithPermissions(permissionsWereGranted: Boolean)
+  private fun actionIfUserGrantedPermission(
+    promise: Promise,
+    block: () -> Unit
+  ) = Action { permissionsWereGranted ->
+    if (!permissionsWereGranted) {
+      promise.reject(ERROR_NO_PERMISSIONS, ERROR_USER_DID_NOT_GRANT_WRITE_PERMISSIONS_MESSAGE)
+      return@Action
+    }
+    block()
   }
 
   private inner class MediaStoreContentObserver(handler: Handler, private val mMediaType: Int) :
@@ -444,19 +431,18 @@ class MediaLibraryModule(
       // It's not perfect solution if someone adds and deletes the same number of assets in a short period of time, but I hope these events will not be batched.
       if (mAssetsTotalCount != newTotalCount) {
         mAssetsTotalCount = newTotalCount
-        mEventEmitter.emit(LIBRARY_DID_CHANGE_EVENT, Bundle())
+        eventEmitter.emit(LIBRARY_DID_CHANGE_EVENT, Bundle())
       }
     }
 
-    private fun getAssetsTotalCount(mediaType: Int): Int {
-      return mContext.contentResolver.query(
+    private fun getAssetsTotalCount(mediaType: Int): Int =
+      context.contentResolver.query(
         EXTERNAL_CONTENT,
         null,
         "${MediaStore.Files.FileColumns.MEDIA_TYPE} == $mediaType",
         null,
         null
       ).use { countCursor -> countCursor?.count ?: 0 }
-    }
   }
 
   private inline fun <reified T> moduleRegistry() = moduleRegistryDelegate.getFromModuleRegistry<T>()
