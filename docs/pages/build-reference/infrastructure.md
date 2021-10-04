@@ -46,10 +46,16 @@ When selecting an image for the build you can use the full name provided below o
   ```
 
 
+#### Image `ubuntu-20.04-android-30-ndk-r21e` (alias `latest`)
 
-#### Image `ubuntu-18.04-android-30-ndk-r19c` (alias `default`, `latest`)
+- Docker image: `ubuntu:focal-20210921`
+- NDK 21.4.7075529
+- Node.js 14.15.1
+- Yarn 1.22.10
 
-- Docker image: `ubuntu:bionic-20201119`
+#### Image `ubuntu-18.04-android-30-ndk-r19c` (alias `default`)
+
+- Docker image: `ubuntu:bionic-20210930`
 - NDK 19.2.5345600
 - Node.js 14.15.1
 - Yarn 1.22.10
@@ -83,7 +89,7 @@ When selecting an image for the build you can use the full name provided below o
 - Yarn 1.22.10
 - fastlane 2.185.1
 - CocoaPods 1.10.1
-- Ruby 2.7.0p0 (2019-12-25 revision 647ee6f091) [x86_64-darwin19]
+- Ruby 2.7
 
 #### Image `macos-big-sur-11.4-xcode-12.5` (alias `default`, `latest`)
 
@@ -93,7 +99,7 @@ When selecting an image for the build you can use the full name provided below o
 - Yarn 1.22.10
 - fastlane 2.185.1
 - CocoaPods 1.10.1
-- Ruby 2.7.0p0 (2019-12-25 revision 647ee6f091) [x86_64-darwin19]
+- Ruby 2.7
 
 #### Image `macos-catalina-10.15-xcode-12.4`
 
@@ -103,7 +109,7 @@ When selecting an image for the build you can use the full name provided below o
 - Yarn 1.22.10
 - fastlane 2.178.0
 - CocoaPods 1.10.1
-- Ruby 2.7.0p0 (2019-12-25 revision 647ee6f091) [x86_64-darwin19]
+- Ruby 2.7
 
 #### Image `macos-catalina-10.15-xcode-12.1`
 
@@ -113,4 +119,4 @@ When selecting an image for the build you can use the full name provided below o
 - Yarn 1.22.10
 - fastlane 2.170.0
 - CocoaPods 1.10.1
-- Ruby 2.6.3p62 (2019-04-16 revision 67580) [universal.x86_64-darwin19]
+- Ruby 2.6.3p62
