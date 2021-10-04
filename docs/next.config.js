@@ -64,7 +64,7 @@ module.exports = {
           loader: '@mdx-js/loader',
           options: {
             remarkPlugins: [
-              require('./mdx-plugins/remark-heading-meta'),
+              require('./mdx-plugins/remark-export-headings'),
               require('./mdx-plugins/remark-link-rewrite'),
             ],
           },

@@ -1,34 +1,41 @@
 import { MDXProvider } from '@mdx-js/react';
 import GithubSlugger from 'github-slugger';
-import { withRouter } from 'next/router';
-import * as React from 'react';
+import { useRouter } from 'next/router';
+import React, { PropsWithChildren } from 'react';
 
 import { HeadingManager } from '~/common/headingManager';
 import * as components from '~/common/translate-markdown';
 import DocumentationPage from '~/components/DocumentationPage';
 import { HeadingsContext } from '~/components/page-higher-order/withHeadingManager';
-import { PageMetadata } from '~/types/common';
+import { PageMetadata, RemarkHeading } from '~/types/common';
 
-const withDocumentationElements = (meta: PageMetadata) => {
-  const DocumentationElementsHOC = withRouter(props => {
-    const { router } = props;
+type DocumentationElementsProps = PropsWithChildren<{
+  meta: PageMetadata;
+  headings: RemarkHeading[];
+}>;
 
-    return (
-      <HeadingsContext.Provider value={new HeadingManager(new GithubSlugger(), meta)}>
-        <DocumentationPage
-          title={meta.title}
-          url={router}
-          asPath={router.asPath}
-          sourceCodeUrl={meta.sourceCodeUrl}
-          tocVisible={!meta.hideTOC}
-          hideFromSearch={meta.hideFromSearch}>
-          <MDXProvider components={components}>{props.children}</MDXProvider>
-        </DocumentationPage>
-      </HeadingsContext.Provider>
-    );
+function DocumentationElements(props: DocumentationElementsProps) {
+  const router = useRouter();
+  const manager = new HeadingManager(new GithubSlugger(), {
+    ...props.meta,
+    headings: props.headings,
   });
 
-  return DocumentationElementsHOC;
-};
+  return (
+    <HeadingsContext.Provider value={manager}>
+      <DocumentationPage
+        title={props.meta.title}
+        url={router}
+        asPath={router.asPath}
+        sourceCodeUrl={props.meta.sourceCodeUrl}
+        tocVisible={!props.meta.hideTOC}
+        hideFromSearch={props.meta.hideFromSearch}>
+        <MDXProvider components={components}>{props.children}</MDXProvider>
+      </DocumentationPage>
+    </HeadingsContext.Provider>
+  );
+}
+
+const withDocumentationElements = () => DocumentationElements;
 
 export default withDocumentationElements;
