@@ -8,7 +8,12 @@ EAS can alert you as soon as your build has completed via a webhook. Webhooks ne
 
 <details><summary><strong>Are you using the classic build system?</strong> (<InlineCode>expo build:[android|ios]</InlineCode>)</summary> <p>
 
-Learn about [Webhooks for Classic Builds](/classic/webhooks.md).
+Webhooks function almost exactly the same for both EAS Build and the classic `expo build` system, _except_ that for `expo build` webhooks, you'll use `expo-cli` to interact with them, and **not** `eas-cli`. For `expo build` webhooks, you'll use:
+
+- `expo webhooks [path]`: List all webhooks for a project
+- `expo webhooks:add [path]`: Add a webhook to a project
+- `expo webhooks:remove [path]`: Delete a webhook
+- `expo webhooks:update [path]`: Update an existing webhook
 
 </p>
 </details>
@@ -52,4 +57,4 @@ app.listen(8080, () => console.log('Listening on port 8080'));
 
 > If you want to test the above webhook locally, you have to use a service like [ngrok](https://ngrok.com/docs) to forward `localhost:8080` via a tunnel and make it publicly accessible to anyone with the URL `ngrok` gives you.
 
-You can always change your webhook URL and/or webhook secret using `eas webhook:update --id WEBHOOK_ID`. You can find the webhook ID by running `eas webhook:list`. If you would like us to stop sending requests to your webhook, run `expo webhook:delete` and choose the webhook from the list.
+You can always change your webhook URL and/or webhook secret using `eas webhook:update --id WEBHOOK_ID`. You can find the webhook ID by running `eas webhook:list`. If you would like us to stop sending requests to your webhook, run `eas webhook:delete` and choose the webhook from the list.
