@@ -3,6 +3,7 @@ const { copySync, removeSync } = require('fs-extra');
 const merge = require('lodash/merge');
 const { join } = require('path');
 const semver = require('semver');
+const { ESBuildMinifyPlugin } = require('esbuild-loader');
 
 const navigation = require('./constants/navigation-data');
 const versions = require('./constants/versions');
@@ -77,6 +78,12 @@ module.exports = {
     config.node = { fs: 'empty' };
     // Webpack 5
     // config.resolve.fallback = { fs: false, path: require.resolve('path-browserify') };
+
+    // Add the esbuild minify plugin only when using esbuild
+    if (enableEsbuild) {
+      config.optimization = config.optimization ?? {};
+      config.optimization.minimizer = [new ESBuildMinifyPlugin({ target: 'es2015' })];
+    }
 
     return config;
   },
