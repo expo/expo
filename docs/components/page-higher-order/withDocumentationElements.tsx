@@ -14,7 +14,7 @@ type DocumentationElementsProps = PropsWithChildren<{
   headings: RemarkHeading[];
 }>;
 
-function DocumentationElements(props: DocumentationElementsProps) {
+export default function DocumentationElements(props: DocumentationElementsProps) {
   const router = useRouter();
   const manager = new HeadingManager(new GithubSlugger(), {
     ...props.meta,
@@ -35,7 +35,3 @@ function DocumentationElements(props: DocumentationElementsProps) {
     </HeadingsContext.Provider>
   );
 }
-
-const withDocumentationElements = () => DocumentationElements;
-
-export default withDocumentationElements;
