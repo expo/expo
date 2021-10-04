@@ -93,7 +93,7 @@ const DEV_LAUNCHER_INIT_TO_REMOVE = `RCTBridge *bridge = [[RCTBridge alloc] init
   rootViewController.view = rootView;
   self.window.rootViewController = rootViewController;
   [self.window makeKeyAndVisible];`;
-const DEV_LAUNCHER_NEW_INIT = `self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds]
+const DEV_LAUNCHER_NEW_INIT = `self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
 #if defined(EX_DEV_LAUNCHER_ENABLED)
   EXDevLauncherController *controller = [EXDevLauncherController sharedInstance];
   [controller startWithWindow:self.window delegate:(id<EXDevLauncherControllerDelegate>)self launchOptions:launchOptions];
