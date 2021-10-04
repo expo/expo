@@ -199,11 +199,7 @@ class MediaLibraryModule(
       DeleteAlbums(context, albumIds, promise)
         .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR)
     }
-<<<<<<< a71ca98f1db974e2c99d04c305c94ae6068ee6a9
-    val assetIds = MediaLibraryUtils.getAssetsInAlbums(context, *albumIds.toTypedArray())
-=======
-    val assetIds = getAssetsInAlbums(mContext, *albumIds.toTypedArray())
->>>>>>> Extract album utils, renames
+    val assetIds = getAssetsInAlbums(context, *albumIds.toTypedArray())
     runActionWithPermissions(assetIds, action, promise)
   }
 
