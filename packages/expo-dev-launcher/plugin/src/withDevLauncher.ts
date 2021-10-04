@@ -197,7 +197,7 @@ const withDevLauncherActivity: ConfigPlugin = (config) => {
 
       if (!content.includes('DevLauncherController.wrapReactActivityDelegate')) {
         content = content.replace(
-          /(new ReactActivityDelegate(.*|\s)*});$/m,
+          /(new ReactActivityDelegate(Wrapper)?(.|\s)*\}\)?);$/mu,
           DEV_LAUNCHER_WRAPPED_ACTIVITY_DELEGATE
         );
       }

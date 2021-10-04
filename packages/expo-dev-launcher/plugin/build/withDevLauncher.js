@@ -142,7 +142,7 @@ const withDevLauncherActivity = (config) => {
                 content = lines.join('\n');
             }
             if (!content.includes('DevLauncherController.wrapReactActivityDelegate')) {
-                content = content.replace(/(new ReactActivityDelegate(.*|\s)*});$/m, DEV_LAUNCHER_WRAPPED_ACTIVITY_DELEGATE);
+                content = content.replace(/(new ReactActivityDelegate(Wrapper)?(.|\s)*\}\)?);$/mu, DEV_LAUNCHER_WRAPPED_ACTIVITY_DELEGATE);
             }
             config.modResults.contents = content;
         }
