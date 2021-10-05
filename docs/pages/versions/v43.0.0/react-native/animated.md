@@ -159,7 +159,7 @@ You can combine two animated values via addition, subtraction, multiplication, d
 
 The `interpolate()` function allows input ranges to map to different output ranges. By default, it will extrapolate the curve beyond the ranges given, but you can also have it clamp the output value. It uses linear interpolation by default but also supports easing functions.
 
-- [`interpolate()`](#interpolate)
+- [`interpolate()`](#interpolation)
 
 Read more about interpolation in the [Animation](https://reactnative.dev/docs/0.64/animations#interpolation) guide.
 
