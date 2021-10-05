@@ -56,7 +56,7 @@ static NSString * const EXUpdatesDatabaseServerDefinedHeadersKey = @"serverDefin
 
 - (void)addUpdate:(EXUpdatesUpdate *)update error:(NSError ** _Nullable)error
 {
-  NSString * const sql = @"INSERT INTO \"updates\" (\"id\", \"scope_key\", \"commit_time\", \"runtime_version\", \"manifest\", \"status\" , \"keep\", \"last_accessed\", \"successful_launch_count\", \"failed_launch_count\", \"is_outdated\")\
+  NSString * const sql = @"INSERT INTO \"updates\" (\"id\", \"scope_key\", \"commit_time\", \"runtime_version\", \"manifest\", \"status\" , \"keep\", \"last_accessed\", \"successful_launch_count\", \"failed_launch_count\")\
   VALUES (?1, ?2, ?3, ?4, ?5, ?6, 1, ?7, ?8, ?9, ?10);";
 
   [self _executeSql:sql
@@ -69,8 +69,7 @@ static NSString * const EXUpdatesDatabaseServerDefinedHeadersKey = @"serverDefin
                       @(update.status),
                       update.lastAccessed,
                       @(update.successfulLaunchCount),
-                      @(update.failedLaunchCount),
-                      @(update.isOutdated)
+                      @(update.failedLaunchCount)
                       ]
               error:error];
 }
@@ -227,21 +226,6 @@ static NSString * const EXUpdatesDatabaseServerDefinedHeadersKey = @"serverDefin
   [self _executeSql:updateSql withArgs:@[@(update.failedLaunchCount), update.updateId] error:error];
 }
 
-- (void)markUpdatesOutdated:(NSArray<EXUpdatesUpdate *> *)updates error:(NSError ** _Nullable)error
-{
-  sqlite3_exec(_db, "BEGIN;", NULL, NULL, NULL);
-
-  NSString * const sql = @"UPDATE updates SET is_outdated = 1 WHERE id = ?1;";
-  for (EXUpdatesUpdate *update in updates) {
-    if ([self _executeSql:sql withArgs:@[update.updateId] error:error] == nil) {
-      sqlite3_exec(_db, "ROLLBACK;", NULL, NULL, NULL);
-      return;
-    }
-  }
-
-  sqlite3_exec(_db, "COMMIT;", NULL, NULL, NULL);
-}
-
 - (void)setScopeKey:(NSString *)scopeKey onUpdate:(EXUpdatesUpdate *)update error:(NSError ** _Nullable)error
 {
   NSString * const updateSql = @"UPDATE updates SET scope_key = ?1 WHERE id = ?2;";
@@ -370,7 +354,6 @@ static NSString * const EXUpdatesDatabaseServerDefinedHeadersKey = @"serverDefin
   NSString *sql = [NSString stringWithFormat:@"SELECT *\
   FROM updates\
   WHERE scope_key = ?1\
-  AND is_outdated = 0\
   AND (successful_launch_count > 0 OR failed_launch_count < 1)\
   AND status IN (%li, %li, %li);", (long)EXUpdatesUpdateStatusReady, (long)EXUpdatesUpdateStatusEmbedded, (long)EXUpdatesUpdateStatusDevelopment];
 
@@ -582,7 +565,6 @@ static NSString * const EXUpdatesDatabaseServerDefinedHeadersKey = @"serverDefin
   update.lastAccessed = [EXUpdatesDatabaseUtils dateFromUnixTimeMilliseconds:(NSNumber *)row[@"last_accessed"]];
   update.successfulLaunchCount = [(NSNumber *)row[@"successful_launch_count"] integerValue];
   update.failedLaunchCount = [(NSNumber *)row[@"failed_launch_count"] integerValue];
-  update.isOutdated = [(NSNumber *)row[@"is_outdated"] boolValue];
   return update;
 }
 
