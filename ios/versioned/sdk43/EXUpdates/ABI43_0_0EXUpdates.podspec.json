@@ -25,9 +25,6 @@
     "GCC_TREAT_IMPLICIT_FUNCTION_DECLARATIONS_AS_ERRORS": "YES"
   },
   "source_files": "EXUpdates/**/*.{h,m}",
-  "resource_bundles": {
-    "EXUpdates": []
-  },
   "testspecs": [
     {
       "name": "Tests",
