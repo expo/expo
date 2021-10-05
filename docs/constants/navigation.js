@@ -1,515 +1,427 @@
-const packageVersion = require('../package.json').version;
-const prevaledNavigationData = require('./navigation-data');
+// @preval
 
-// Groups of sections: these groups are exclusively expressed below, there is no
-// representation of them in the filesystem!
-// Groups -> Sections -> Pages
-const GROUPS = {
-  'The Basics': ['Conceptual Overview', 'Get Started', 'Tutorial', 'Next Steps'],
-  Fundamentals: ['Fundamentals'],
-  'UI Programming': ['UI Programming'],
-  'Assorted Guides': ['Assorted Guides'],
-  'Push Notifications': ['Push Notifications'],
-  'Distributing Your App': ['Distributing Your App'],
-  'Expo Accounts': ['Expo Accounts'],
-  'Regulatory Compliance': ['Regulatory Compliance'],
-  Deprecated: ['ExpoKit', 'Archived'],
-  'Bare Workflow': ['Bare Workflow'],
-  'Expo SDK': ['Expo SDK'],
-  'Configuration Files': ['Configuration Files'],
-  'React Native': ['React Native'],
-  Preview: ['Preview'],
-  'EAS Build': ['Start Building', 'App Signing', 'Reference'],
-  'EAS Submit': ['EAS Submit'],
-  'Technical Specs': ['Technical Specs'],
-  'Development Clients': ['Development Clients'],
+const mdx = require('@mdx-js/mdx');
+const fs = require('fs-extra');
+const glob = require('glob');
+const yaml = require('js-yaml');
+const path = require('path');
+
+const { VERSIONS } = require('./versions');
+
+/**
+ * A simple reusable compiler to extract the frontmatter/yaml info.
+ */
+const mdxCompiler = mdx.createCompiler({
+  remarkPlugins: [[require('remark-frontmatter'), ['yaml']]],
+});
+
+const PAGES_PATH = './pages';
+
+module.exports = require('./old-navigation');
+
+// --- SETTINGS ---
+
+// --- NAVIGATION DATA ---
+
+/**
+ * In this file, we gather information from all pages and translate them to different types.
+ * The data structure uses three different types.
+ *   - Category, one or more sections to render in the sidebar
+ *   - Section, one or more pages to render in the sidebar under category
+ *   - Page, the information of a single page to render
+ *
+ * @typedef {import('~/common/navigation').Root} Root
+ * @typedef {import('~/common/navigation').Page} Page
+ */
+
+/** @type {import('~/common/navigation').Root} */
+const NAVIGATION = {
+  type: 'root',
+  children: [
+    {
+      type: 'category',
+      title: 'Get Started',
+      children: [
+        {
+          type: 'group',
+          title: 'The Basics',
+          open: true,
+          children: [
+            {
+              type: 'section',
+              title: 'Getting Started',
+              children: getPages([
+                'get-started/installation.md', // Installation
+                'get-started/create-a-new-app.md', // Create a new app
+                'get-started/errors.md', // Errors and debugging
+              ]),
+            },
+            {
+              type: 'section',
+              title: 'Tutorial',
+              children: getPages([
+                'tutorial/planning.md', // First steps
+                'tutorial/text.md', // Styling text
+                'tutorial/image.md', // Adding an image
+                'tutorial/button.md', // Creating a button
+                'tutorial/image-picker.md', // Picking an image
+                'tutorial/sharing.md', // Sharing the image
+                'tutorial/platform-differences.md', // Handling platform differences
+                'tutorial/configuration.md', // Configuring a splash screen and app icon
+                'tutorial/follow-up.md', // Learning more
+              ]),
+            },
+            {
+              type: 'section',
+              title: 'Conceptual Overview',
+              children: getPages([
+                'introduction/managed-vs-bare.md', // Workflows
+                'introduction/walkthrough.md', // Walkthrough
+                'introduction/why-not-expo.md', // Limitations
+                'introduction/faq.md', // Common questions
+              ]),
+            },
+            {
+              type: 'section',
+              title: 'Next Steps',
+              children: getPages([
+                'next-steps/using-the-documentation.md', // Using the documentation
+                'next-steps/community.md', // Join the community
+                'next-steps/additional-resources.md', // Additional resources
+              ]),
+            },
+          ],
+        },
+      ],
+    },
+    {
+      type: 'category',
+      title: 'Guides',
+      children: [
+        {
+          type: 'group',
+          title: 'Fundamentals',
+          open: true,
+          children: getPages([
+            'workflow/expo-cli.md', // Expo CLI
+            'workflow/using-libraries.md', // Using libraries
+            'workflow/logging.md', // Viewing logs
+            'workflow/development-mode.md', // Development and Production
+            'workflow/ios-simulator.md', // iOS Simulator
+            'workflow/android-studio-emulator.md', // Android Studio Emulator
+            'workflow/debugging.md', // Debugging
+            'workflow/configuration.md', // Configuration with app.json / app.config.js
+            'workflow/publishing.md', // Publishing updates
+            'workflow/upgrading-expo-sdk-walkthrough.md', // Upgrading Expo SDK
+            'workflow/web.md', // Developing for Web
+            'workflow/snack.md', // Snack: a playground in your browser
+            'workflow/customizing.md', // Adding custom native code
+            'workflow/glossary-of-terms.md', // Glossary of terms
+            'workflow/already-used-react-native.md', // Already used React Native?
+            'workflow/common-development-errors.md', // Common development errors
+          ]),
+        },
+        {
+          type: 'group',
+          title: 'Distributing Your App',
+          open: true,
+          children: getPages([
+            'distribution/introduction.md', // Overview
+            'distribution/building-standalone-apps.md', // Building Standalone Apps
+            'distribution/app-signing.md', // App Signing
+            'distribution/app-stores.md', // Deploying to App Stores
+            'distribution/release-channels.md', // Release Channels
+            'distribution/advanced-release-channels.md', // Advanced Release Channels
+            'distribution/runtime-versions.md', // Runtime Versions
+            'distribution/webhooks.md', // Build Webhooks
+            'distribution/hosting-your-app.md', // Hosting Updates on Your Servers
+            'distribution/turtle-cli.md', // Building Standalone Apps on Your CI
+            'distribution/uploading-apps.md', // Uploading Apps to the Apple App Store and Google Play
+            'distribution/app-transfers.md', // App Transfers
+            'distribution/security.md', // Security
+            'distribution/optimizing-updates.md', // Optimizing Updates
+            'distribution/publishing-websites.md', // Publishing Websites
+          ]),
+        },
+        {
+          type: 'group',
+          title: 'Assorted Guides',
+          open: true,
+          children: getPages(glob.sync('guides/*.{md,mdx}', { cwd: PAGES_PATH })),
+        },
+        {
+          type: 'group',
+          title: 'Bare Workflow',
+          open: true,
+          children: getPages([
+            'bare/hello-world.md', // Up and Running
+            'bare/existing-apps.md', // Existing Apps
+            'bare/installing-unimodules.md', // Installing react-native-unimodules
+            'bare/installing-updates.md', // Installing expo-updates
+            'bare/unimodules-full-list.md', // Supported Expo SDK APIs
+            'bare/migrating-from-expokit.md', // Migrating from ExpoKit
+            'bare/exploring-bare-workflow.md', // Bare Workflow Walkthrough
+            'bare/updating-your-app.md', // Updating your App Over-the-Air
+            'bare/using-expo-client.md', // Using Expo Go in Bare Workflow
+            'bare/using-libraries.md', // Using libraries
+            'bare/using-web.md', // Using Expo for web in Bare Workflow
+          ]),
+        },
+        {
+          type: 'group',
+          title: 'Push Notifications',
+          open: true,
+          children: getPages([
+            'push-notifications/overview.md', // Push Notifications Overview
+            'push-notifications/push-notifications-setup.md', // Push Notifications Setup
+            'push-notifications/sending-notifications.md', // Sending Notifications with Expo's Push API
+            'push-notifications/sending-notifications-custom.md', // Sending Notifications with APNs & FCM
+            'push-notifications/receiving-notifications.md', // Receiving Notifications
+            'push-notifications/using-fcm.md', // Using FCM for Push Notifications
+            'push-notifications/faq.md', // Push Notifications Troubleshooting & FAQ
+          ]),
+        },
+        {
+          type: 'group',
+          title: 'UI Programming',
+          open: false,
+          children: getPages([
+            'ui-programming/image-background.md', // Setting a component's background image
+            'ui-programming/implementing-a-checkbox.md', // Implementing a checkbox for Expo and React Native apps
+            'ui-programming/z-index.md', // Stacking overlapping views with zIndex in Expo and React Native apps
+            'ui-programming/using-svgs.md', // Using SVGs
+            'ui-programming/react-native-toast.md', // How to display a popup toast
+            'ui-programming/react-native-styling-buttons.md', // Styling a React Native button
+          ]),
+        },
+        {
+          type: 'group',
+          title: 'Regulatory Compliance',
+          open: false,
+          children: getPages([
+            'regulatory-compliance/data-and-privacy-protection.md', // Data and Privacy Protection
+            'regulatory-compliance/gdpr.md', // GDPR Compliance and Expo
+            'regulatory-compliance/hipaa.md', // HIPAA Compliance and Expo
+            'regulatory-compliance/privacy-shield.md', // Privacy Shield and Expo
+          ]),
+        },
+        {
+          type: 'group',
+          title: 'Technical Specs',
+          open: false,
+          children: getPages([
+            'technical-specs/expo-updates-0.md', // Expo Updates
+            'technical-specs/expo-sfv-0.md', // Expo Structured Field Values
+          ]),
+        },
+        {
+          type: 'group',
+          title: 'Deprecated',
+          open: false,
+          children: [
+            {
+              type: 'section',
+              title: 'ExpoKit',
+              children: getPages([
+                'expokit/overview.md', // Overview
+                'expokit/eject.md', // Ejecting to ExpoKit
+                'expokit/expokit.md', // Developing With ExpoKit
+                'expokit/advanced-expokit-topics.md', // Advanced ExpoKit Topics
+                'expokit/universal-modules-and-expokit.md', // Universal Modules and ExpoKit
+              ]),
+            },
+            {
+              type: 'section',
+              title: 'Archived',
+              children: getPages([
+                'archived/notification-channels.md', // Notification Channels
+              ]),
+            },
+          ],
+        },
+      ],
+    },
+    {
+      type: 'category',
+      title: 'Feature Preview',
+      children: [
+        {
+          type: 'group',
+          title: 'EAS Build',
+          children: [
+            {
+              type: 'section',
+              title: 'Start Building',
+              children: getPages([
+                'build/introduction.md', // EAS Build
+                'build/setup.md', // Creating your first build
+                'build/eas-json.md', // Configuring EAS Build with eas.json
+                'build/updates.md', // Over-the-air updates
+                'build/internal-distribution.md', // Internal distribution
+                'build/building-on-ci.md', // Triggering builds from CI
+              ]),
+            },
+            {
+              type: 'section',
+              title: 'App Signing',
+              children: getPages([
+                'app-signing/managed-credentials.md', // Using automatically managed credentials
+                'app-signing/local-credentials.md', // Using local credentials
+                'app-signing/existing-credentials.md', // Using existing credentials
+                'app-signing/syncing-credentials.md', // Syncing credentials between remote and local sources
+              ]),
+            },
+            {
+              type: 'section',
+              title: 'Reference',
+              children: getPages([
+                'build-reference/migrating.md', // Migrating from "expo build"
+                'build-reference/how-tos.md', // Integrating with third-party tooling
+                'build-reference/variables.md', // Environment variables and secrets
+                'build-reference/caching.md', // Caching dependencies
+                'build-reference/local-builds.md', // Running builds on your own infrastructure
+                'build-reference/build-webhook.md', // Build webhooks
+                'build-reference/apk.md', // Building APKs for Android emulators and devices
+                'build-reference/simulators.md', // Building for iOS simulators
+                'build-reference/android-builds.md', // Android build process
+                'build-reference/ios-builds.md', // iOS build process
+                'build-reference/limitations.md', // Limitations
+                'build-reference/build-configuration.md', // Build configuration process
+                'build-reference/infrastructure.md', // Build server infrastructure
+                'build-reference/ios-capabilities.md', // iOS Capabilities
+              ]),
+            },
+          ],
+        },
+        {
+          type: 'group',
+          title: 'EAS Submit',
+          children: getPages([
+            'submit/introduction.md', // EAS Submit
+            'submit/eas-json.md', // Configuring EAS Submit with eas.json
+            'submit/android.md', // Submitting to the Google Play Store
+            'submit/ios.md', // Submitting to the Apple App Store
+            'submit/classic-builds.md', // Using EAS Submit with "expo build"
+          ]),
+        },
+        {
+          type: 'group',
+          title: 'Development Clients',
+          children: getPages([
+            'clients/introduction.md', // Introduction
+            'clients/getting-started.md', // Getting Started
+            'clients/installation.md', // Installation in React Native and Bare workflow projects
+            'clients/eas-build.md', // Building with EAS
+            'clients/development-workflows.md', // Development Workflows
+            'clients/compatibility.md', // Compatibility
+            'clients/extending-the-dev-menu.md', // Extending the Dev Menu
+            'clients/troubleshooting.md', // Troubleshooting
+          ]),
+        },
+      ],
+    },
+    {
+      type: 'category',
+      title: 'Preview',
+      hidden: true,
+      children: [
+        {
+          type: 'group',
+          title: 'Preview',
+          children: getPages([
+            'preview/introduction.md', // Introduction
+            'preview/support.md', // Support and feedback
+          ]),
+        },
+      ],
+    },
+    {
+      type: 'api',
+      title: 'API Reference',
+      children: VERSIONS.map(sdkVersion => ({
+        type: 'api-version',
+        version: sdkVersion,
+        children: [
+          {
+            type: 'group',
+            title: 'Configuration Files',
+            open: true,
+            children: getPages([
+              `versions/${sdkVersion}/config/app.md`, // app.json / app.config.js
+              `versions/${sdkVersion}/config/metro.md`, // metro.config.js
+            ]),
+          },
+          {
+            type: 'group',
+            title: 'Expo SDK',
+            open: true,
+            children: sortPagesByTitle(
+              getPages(glob.sync(`versions/${sdkVersion}/sdk/*.{md,mdx}`, { cwd: PAGES_PATH }))
+            ),
+          },
+          {
+            type: 'group',
+            title: 'React Native',
+            open: true,
+            children: sortPagesByTitle(
+              getPages(
+                glob.sync(`versions/${sdkVersion}/react-native/*.{md,mdx}`, { cwd: PAGES_PATH })
+              )
+            ),
+          },
+        ],
+      })),
+    },
+  ],
 };
 
-// This array provides the **ordering** for pages within each section
-const sections = [
-  {
-    name: 'Preview',
-    reference: ['Introduction', 'Support and feedback'],
-  },
-  {
-    name: 'Start Building',
-    reference: [
-      'EAS Build',
-      'Creating your first build',
-      'Configuring EAS Build with eas.json',
-      'Over-the-air updates',
-      'Internal distribution',
-      'Triggering builds from CI',
-    ],
-  },
-  {
-    name: 'Archived',
-    reference: [
-      // Order doesn't matter probably, but put something here if you want to order it
-    ],
-  },
-  {
-    name: 'App Signing',
-    reference: [
-      'Using automatically managed credentials',
-      'Using local credentials',
-      'Using existing credentials',
-      'Syncing credentials between remote and local sources',
-    ],
-  },
-  {
-    name: 'Reference',
-    reference: [
-      'Migrating from "expo build"',
-      'Integrating with third-party tooling',
-      'Environment variables and secrets',
-      'Server infrastructure',
-      'Caching dependencies',
-      'Running builds on your own infrastructure',
-      'Build webhooks',
-      'Building APKs for Android emulators and devices',
-      'Building for iOS simulators',
-      'Configuration process',
-      'Android build process',
-      'iOS build process',
-      'Limitations',
-    ],
-  },
-  {
-    name: 'EAS Submit',
-    reference: [
-      'EAS Submit',
-      'Configuring EAS Submit with eas.json',
-      'Submitting to the Google Play Store',
-      'Submitting to the Apple App Store',
-    ],
-  },
-  {
-    name: 'Technical Specs',
-    reference: ['Expo Updates', 'Expo Structured Field Values'],
-  },
-  {
-    name: 'Development Clients',
-    reference: [
-      'Introduction',
-      'Getting Started',
-      'Installation in React Native and Bare workflow projects',
-      'Building with EAS',
-      'Development Workflows',
-      'Extending the Development Menu',
-    ],
-  },
-  {
-    name: 'Get Started',
-    reference: ['Installation', 'Create a new app', 'Errors and debugging'],
-  },
-  {
-    name: 'Conceptual Overview',
-    reference: [
-      'Workflows',
-      'Walkthrough',
-      'Limitations',
-      'Frequently asked questions',
-      'Common Questions',
-    ],
-  },
-  {
-    name: 'Tutorial',
-    reference: [
-      'First steps',
-      'Styling text',
-      'Adding an image',
-      'Creating a button',
-      'Picking an image',
-      'Sharing the image',
-      'Handling platform differences',
-      'Configuring a splash screen and app icon',
-      'Learning more',
-    ],
-  },
-  {
-    name: 'Next Steps',
-    reference: ['Using the documentation', 'Join the community', 'Additional resources'],
-  },
-  {
-    name: 'Expo Accounts',
-    reference: [
-      'Account Types',
-      'Two-Factor Authentication',
-      'Programmatic Access',
-      'Working Together',
-    ],
-  },
-  {
-    name: 'Regulatory Compliance',
-    reference: ['Data Privacy & Protection', 'Privacy Shield', 'HIPAA', 'GDPR'],
-  },
-  {
-    name: 'Distributing Your App',
-    reference: [
-      'Overview',
-      'Building Standalone Apps',
-      'App Signing',
-      'Deploying to App Stores',
-      'Release Channels',
-      'Advanced Release Channels',
-      'Runtime Versions',
-      'Build Webhooks',
-      'Hosting Updates on Your Servers',
-      'Building Standalone Apps on Your CI',
-      'Uploading Apps to the Apple App Store and Google Play',
-      'App Transfers',
-      'Security',
-      'Data and Privacy Protection',
-    ],
-  },
-  {
-    name: 'ExpoKit',
-    reference: [
-      'Overview',
-      'Detaching to ExpoKit',
-      'Ejecting to ExpoKit',
-      'Developing With ExpoKit',
-      'Advanced ExpoKit Topics',
-      'Universal Modules and ExpoKit',
-    ],
-  },
-  {
-    name: 'Fundamentals',
-    reference: [
-      'Expo CLI',
-      'Using libraries',
-      'Viewing logs',
-      'Development and Production Mode',
-      'iOS Simulator',
-      'Android Studio Emulator',
-      'Debugging',
-      'Common Development Errors',
-      'Configuration with app.json / app.config.js',
-      'Publishing updates',
-      'Upgrading Expo SDK',
-      'Developing for Web',
-      'Snack: a playground in your browser',
-      'Adding custom native code',
-      'Glossary of terms',
-    ],
-  },
-  {
-    name: 'UI Programming',
-    reference: [
-      'Styling a React Native Button',
-      "Setting a component's background image",
-      'Implementing a checkbox for Expo and React Native apps',
-      'Stacking overlapping views with zIndex in Expo and React Native apps',
-      'Using SVGs',
-      'How to display a popup toast',
-    ],
-  },
-  {
-    name: 'Assorted Guides',
-    reference: [
-      'Assets',
-      'Fonts',
-      'Icons',
-      'Routing & Navigation',
-      'Permissions',
-      'App Icons',
-      'Create a Splash Screen',
-      'Configuring the Status Bar',
-      'Light and Dark modes',
-      'TypeScript',
-      'Authentication',
-      'User Interface Component Libraries',
-      'Asset Caching',
-      'Environment variables in Expo',
-      'Configuring OTA Updates',
-      'Customizing Metro',
-      'Customizing Webpack',
-      'Offline Support',
-      'Progressive Web Apps',
-      'Web Performance',
-      'Notification Channels',
-      'Delaying Your Code To Run Later',
-      'Error Handling',
-      'Testing with Jest',
-      'Account Permissions',
-      'Crafting Educational Materials',
-      'How Expo Works',
-      'Linking',
-      'Running in the Browser',
-      'Setting up Continuous Integration',
-      'Native Firebase',
-      'Testing on physical devices',
-      'Troubleshooting Proxies',
-      'Custom Expo Go builds',
-      'Using Firebase',
-      'Using Sentry',
-      'Using Bugsnag',
-      'Using Modern JavaScript',
-      'Using ClojureScript',
-      'Using GraphQL',
-      'Using Electron',
-      'Using Gatsby',
-      'Using Next.js',
-      'Using Preact',
-      'Using Styled Components',
-    ],
-  },
-  {
-    name: 'Bare Workflow',
-    reference: [
-      'Walkthrough',
-      'Up and Running',
-      'Using Libraries',
-      'Existing Apps',
-      'Installing react-native-unimodules',
-      'Installing expo-updates',
-      'Supported Expo SDK APIs',
-      'Using Expo client',
-      'Using Expo for web',
-      'Ejecting from Managed Workflow',
-      'Migrating from ExpoKit',
-      'Updating your App',
-    ],
-  },
-  {
-    name: 'Push Notifications',
-    reference: [
-      'Push Notifications Overview',
-      'Push Notifications Setup',
-      "Sending Notifications with Expo's Push API",
-      'Sending Notifications with APNs & FCM',
-      'Receiving Notifications',
-      'Using FCM for Push Notifications',
-      'Troubleshooting and FAQ',
-    ],
-  },
-  {
-    name: 'Configuration Files',
-    reference: ['app.json / app.config.js', 'metro.config.js'],
-  },
-  {
-    name: 'React Native',
-    reference: [
-      'Learn the Basics',
-      'Props',
-      'State',
-      'Style',
-      'Height and Width',
-      'Layout with Flexbox',
-      'Handling Text Input',
-      'Handling Touches',
-      'Using a ScrollView',
-      'Using List Views',
-      'Networking',
-      'Platform Specific Code',
-      'Navigating Between Screens',
-      'Images',
-      'Animations',
-      'Accessibility',
-      'Timers',
-      'Performance',
-      'Gesture Responder System',
-      'JavaScript Environment',
-      'Direct Manipulation',
-      'Color Reference',
-      'ActivityIndicator',
-      'Button',
-      'DatePickerIOS',
-      'DrawerLayoutAndroid',
-      'FlatList',
-      'Image',
-      'InputAccessoryView',
-      'KeyboardAvoidingView',
-      'ListView',
-      'MaskedViewIOS',
-      'Modal',
-      'NavigatorIOS',
-      'Picker',
-      'PickerIOS',
-      'ProgressBarAndroid',
-      'ProgressViewIOS',
-      'RefreshControl',
-      'SafeAreaView',
-      'ScrollView',
-      'SectionList',
-      'SegmentedControl',
-      'SegmentedControlIOS',
-      'Slider',
-      'SnapshotViewIOS',
-      'StatusBar',
-      'Switch',
-      'TabBarIOS.Item',
-      'TabBarIOS',
-      'Text',
-      'TextInput',
-      'ToolbarAndroid',
-      'TouchableHighlight',
-      'TouchableNativeFeedback',
-      'TouchableOpacity',
-      'TouchableWithoutFeedback',
-      'View',
-      'ViewPagerAndroid',
-      'VirtualizedList',
-      'WebView',
-      'AccessibilityInfo',
-      'ActionSheetIOS',
-      'Alert',
-      'AlertIOS',
-      'Animated',
-      'AppState',
-      'AsyncStorage',
-      'BackAndroid',
-      'BackHandler',
-      'Clipboard',
-      'DatePickerAndroid',
-      'Dimensions',
-      'Easing',
-      'Image Style Props',
-      'ImageStore',
-      'InteractionManager',
-      'Keyboard',
-      'Layout Props',
-      'LayoutAnimation',
-      'ListViewDataSource',
-      'NetInfo',
-      'PanResponder',
-      'PixelRatio',
-      'Settings',
-      'Shadow Props',
-      'Share',
-      'StatusBarIOS',
-      'StyleSheet',
-      'Systrace',
-      'Text Style Props',
-      'TimePickerAndroid',
-      'ToastAndroid',
-      'Transforms',
-      'Vibration',
-      'VibrationIOS',
-      'View Style Props',
-    ],
-  },
-];
+// --- EXPORTS ---
 
-// Order of sections (mapped from directory names in navigation-data.js DIR_MAPPING)
-// TODO(brentvatne): this doesn't make too much sense because of higher level groupings, should
-// move this logic to GROUPS instead
-const ROOT = [
-  'Get Started',
-  'Tutorial',
-  'Conceptual Overview',
-  'Fundamentals',
-  'Distributing Your App',
-  'Assorted Guides',
-  'Expo Accounts',
-  'Bare Workflow',
-  'Push Notifications',
-  'UI Programming',
-  'Regulatory Compliance',
-  'Configuration Files',
-  'Expo SDK',
-  'React Native',
-  'Technical Specs',
-  'ExpoKit',
-];
+// module.exports = {
+//   startingDirectories: STARTING_DIRS,
+//   previewDirectories: PREVIEW_DIRS,
+//   featurePreviewDirectories: FEATURE_PREVIEW_DIRS,
+//   generalDirectories: GENERAL_DIRS,
+// };
 
-// These directories will not be placed in the sidebar, but will still be searchable
-const hiddenSections = ['FAQ', 'Troubleshooting'];
+// --- MDX HELPERS ---
 
-// These sections will NOT be expanded by default in the sidebar
-const collapsedSections = [
-  'Deprecated',
-  'Regulatory Compliance',
-  'UI Programming',
-  'Technical Specs',
-];
+/**
+ * Parse the MDX page and extract the frontmatter/yaml page information.
+ * This requires the `remark-frontmatter` MDX plugin.
+ *
+ * @param {string} filePath
+ * @return {Page}
+ */
+function getPage(filePath) {
+  const contents = fs.readFileSync(`${PAGES_PATH}/${filePath}`, 'utf-8');
+  /** @type {import('mdast').Root} */
+  const ast = mdxCompiler.parse({ contents, filepath: filePath });
+  const node = ast.children.find(node => node.type === 'yaml');
+  const data = node ? yaml.load(node.value) : { title: '' };
 
-const sortAccordingToReference = (arr, reference) => {
-  reference = Array.from(reference).reverse();
+  if (!node) {
+    console.error('Page does not have a starting YAML block:', filePath);
+  } else if (!data.title) {
+    console.error('Page does not have a `title`:', filePath);
+  }
 
-  const subSort = (arr, i) => arr.slice(0, i).concat(arr.slice(i).sort());
-
-  arr.forEach(category => {
-    category.weight = reference.indexOf(category.name) * -1;
-  });
-
-  const arrSortedByWeight = arr.sort((a, b) => a.weight - b.weight);
-  return subSort(
-    arrSortedByWeight,
-    arrSortedByWeight.findIndex(o => o.weight === 1)
-  );
-};
-
-const sortNav = nav => {
-  nav = sortAccordingToReference(nav, ROOT);
-
-  sections.forEach(({ name, reference }) => {
-    const section = nav.find(o => {
-      return o.name.toLowerCase() === name.toLowerCase();
-    });
-
-    if (section) {
-      section.posts = sortAccordingToReference(section.posts, reference);
-    }
-  });
-
-  return nav;
-};
-
-// Get the name of the group that a section belongs to
-function getGroupForSectionName(sectionName) {
-  return Object.keys(GROUPS).find(groupName => GROUPS[groupName].includes(sectionName));
+  return {
+    type: 'page',
+    file: filePath,
+    url: getUrl(filePath),
+    meta: data,
+  };
 }
 
-// Yikes, this groups together multiple sections under one heading
-const groupNav = nav => {
-  const sections = [];
-  const groupNameToSectionIndex = {};
-  nav.forEach(section => {
-    // If it's grouped then we add it
-    const groupName = getGroupForSectionName(section.name);
-    if (groupName) {
-      if (groupNameToSectionIndex.hasOwnProperty(groupName)) {
-        const existingSectionIndex = groupNameToSectionIndex[groupName];
-        sections[existingSectionIndex].children.push(section);
-      } else {
-        groupNameToSectionIndex[groupName] = sections.length;
-        sections.push({
-          name: groupName,
-          children: [section],
-        });
-      }
-      // If it's not grouped then it just gets added to the root
-    } else {
-      sections.push(section);
-    }
-  });
+function getUrl(filePath) {
+  return `/${filePath.replace('.md', '/')}`;
+}
 
-  return sections;
-};
+function getPages(filePaths) {
+  return filePaths.map(getPage);
+}
 
-const sortedReference = Object.assign(
-  ...Object.entries(prevaledNavigationData.reference).map(([version, versionNavigation]) => ({
-    [version]: groupNav(sortNav(versionNavigation)),
-  }))
-);
-
-const sortedGeneral = groupNav(sortNav(prevaledNavigationData.general));
-const sortedStarting = groupNav(sortNav(prevaledNavigationData.starting));
-const sortedPreview = groupNav(sortNav(prevaledNavigationData.preview));
-const sortedFeaturePreview = groupNav(sortNav(prevaledNavigationData.featurePreview));
-
-module.exports = {
-  generalDirectories: prevaledNavigationData.generalDirectories,
-  startingDirectories: prevaledNavigationData.startingDirectories,
-  previewDirectories: prevaledNavigationData.previewDirectories,
-  featurePreviewDirectories: prevaledNavigationData.featurePreviewDirectories,
-  starting: sortedStarting,
-  general: sortedGeneral,
-  preview: sortedPreview,
-  featurePreview: sortedFeaturePreview,
-  reference: { ...sortedReference, latest: sortedReference['v' + packageVersion] },
-  hiddenSections,
-  collapsedSections,
-};
+function sortPagesByTitle(pages) {
+  return pages.sort((a, b) => a.meta.title.localeCompare(b.meta.title));
+}

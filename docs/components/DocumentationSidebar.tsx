@@ -1,11 +1,11 @@
 import { css } from '@emotion/react';
 import * as React from 'react';
 
+import { isCategoryHidden } from '~/common/navigation';
 import DocumentationSidebarGroup from '~/components/DocumentationSidebarGroup';
 import DocumentationSidebarLink from '~/components/DocumentationSidebarLink';
 import DocumentationSidebarTitle from '~/components/DocumentationSidebarTitle';
 import VersionSelector from '~/components/VersionSelector';
-import { hiddenSections } from '~/constants/navigation';
 import * as Constants from '~/constants/theme';
 import { NavigationRoute, Url } from '~/types/common';
 
@@ -127,17 +127,10 @@ export default class DocumentationSidebar extends React.Component<Props> {
           <VersionSelector version={this.props.version} onSetVersion={this.props.onSetVersion} />
         )}
 
-        {this.props.routes.map(categoryInfo => {
-          if (categoryIsHidden(categoryInfo.name)) {
-            return null;
-          }
-          return this.renderCategoryElements(categoryInfo);
-        })}
+        {this.props.routes.map(categoryInfo =>
+          isCategoryHidden(categoryInfo.name) ? null : this.renderCategoryElements(categoryInfo)
+        )}
       </nav>
     );
   }
-}
-
-function categoryIsHidden(categoryName: string): boolean {
-  return hiddenSections.includes(categoryName);
 }

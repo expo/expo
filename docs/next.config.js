@@ -5,7 +5,7 @@ const { join } = require('path');
 const semver = require('semver');
 const { ESBuildMinifyPlugin } = require('esbuild-loader');
 
-const navigation = require('./constants/navigation-data');
+const navigation = require('./constants/old-navigation-data');
 const versions = require('./constants/versions');
 const { version, betaVersion } = require('./package.json');
 

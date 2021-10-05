@@ -4,7 +4,7 @@ const fm = require('front-matter');
 const fs = require('fs-extra');
 const path = require('path');
 
-const { isEasInFeaturePreview, isDevClientInFeaturePreview } = require('./FeatureFlags');
+const { isEasInFeaturePreview, isDevClientInFeaturePreview } = require('./feature-flags');
 
 // TODO(brentvatne): move this to navigation.js so it's all in one place!
 // Map directories in a version directory to a section name

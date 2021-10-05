@@ -19,7 +19,7 @@ import { X } from './icons/X';
 
 import { paragraph } from '~/components/base/typography';
 import AlgoliaSearch from '~/components/plugins/AlgoliaSearch';
-import { shouldShowFeaturePreviewLink } from '~/constants/FeatureFlags';
+import { shouldShowFeaturePreviewLink } from '~/constants/feature-flags';
 import * as Constants from '~/constants/theme';
 
 const STYLES_LOGO = css`

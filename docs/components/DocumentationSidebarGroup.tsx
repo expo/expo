@@ -2,10 +2,10 @@ import { css } from '@emotion/react';
 import { theme } from '@expo/styleguide';
 import * as React from 'react';
 
+import { isSectionCollapsed } from '~/common/navigation';
 import stripVersionFromPath from '~/common/stripVersionFromPath';
 import { paragraph } from '~/components/base/typography';
 import ChevronDown from '~/components/icons/ChevronDown';
-import { collapsedSections } from '~/constants/navigation';
 import * as Constants from '~/constants/theme';
 import { NavigationRoute, Url } from '~/types/common';
 
@@ -59,7 +59,7 @@ export default class DocumentationSidebarGroup extends React.Component<Props, { 
 
     // default to always open
     this.state = {
-      isOpen: collapsedSections.includes(props.info.name) ? isOpen : true,
+      isOpen: isSectionCollapsed(props.info.name) ? isOpen : true,
     };
   }
 
