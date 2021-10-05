@@ -9,7 +9,7 @@ title: Share
 import React from 'react';
 import { Share, View, Button } from 'react-native';
 
-export default function ShareExample() {
+const ShareExample = () => {
   const onShare = async () => {
     try {
       const result = await Share.share({
@@ -33,7 +33,9 @@ export default function ShareExample() {
       <Button onPress={onShare} title="Share" />
     </View>
   );
-}
+};
+
+export default ShareExample;
 ```
 
 # Reference
@@ -52,35 +54,18 @@ In iOS, returns a Promise which will be invoked with an object containing `actio
 
 In Android, returns a Promise which will always be resolved with action being `Share.sharedAction`.
 
-### Content
+**Properties:**
 
-- `message` - a message to share
-
-#### iOS
-
-- `url` - an URL to share
-
-At least one of URL and message is required.
-
-#### Android
-
-- `title` - title of the message
-
-### Options
-
-#### iOS
-
-- `subject` - a subject to share via email
-- `excludedActivityTypes`
-- `tintColor`
-
-#### Android
-
-- `dialogTitle`
+| Name                   | Type   | Description                                                                                                                                                               |
+| ---------------------- | ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| content **(Required)** | object | `message` - a message to share<br/>`url` - a URL to share **(iOS)**<br/>`title` - title of the message **(Android)**<hr/>At least one of `url` and `message` is required. |
+| options                | object | `dialogTitle` **(Android)**<br/>`excludedActivityTypes` **(iOS)**<br/>`subject` - a subject to share via email **(iOS)**<br/>`tintColor` **(iOS)**                        |
 
 ---
 
-### `sharedAction()`
+## Properties
+
+### `sharedAction`
 
 ```js
 static sharedAction
@@ -90,10 +75,10 @@ The content was successfully shared.
 
 ---
 
-### `dismissedAction()`
+### `dismissedAction` **(iOS)**
 
 ```js
 static dismissedAction
 ```
 
-_**iOS-only**_. The dialog has been dismissed.
+The dialog has been dismissed.

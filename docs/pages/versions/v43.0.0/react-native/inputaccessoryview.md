@@ -11,9 +11,9 @@ To use this component wrap your custom toolbar with the InputAccessoryView compo
 import React, { useState } from 'react';
 import { Button, InputAccessoryView, ScrollView, TextInput } from 'react-native';
 
-export default function App() {
+export default App = () => {
   const inputAccessoryViewID = 'uniqueID';
-  const initialText = 'Placeholder Text';
+  const initialText = '';
   const [text, setText] = useState(initialText);
 
   return (
@@ -25,19 +25,20 @@ export default function App() {
             marginTop: 50,
           }}
           inputAccessoryViewID={inputAccessoryViewID}
-          onChangeText={text => setText(text)}
+          onChangeText={setText}
           value={text}
+          placeholder={'Please type here…'}
         />
       </ScrollView>
       <InputAccessoryView nativeID={inputAccessoryViewID}>
-        <Button onPress={() => setText(initialText)} title="Reset Text" />
+        <Button onPress={() => setText(initialText)} title="Clear text" />
       </InputAccessoryView>
     </>
   );
-}
+};
 ```
 
-This component can also be used to create sticky text inputs (text inputs which are anchored to the top of the keyboard). To do this, wrap a `TextInput` with the `InputAccessoryView` component, and don't set a `nativeID`. For an example, look at [InputAccessoryViewExample.js](https://github.com/facebook/react-native/blob/master/RNTester/js/examples/InputAccessoryView/InputAccessoryViewExample.js).
+This component can also be used to create sticky text inputs (text inputs which are anchored to the top of the keyboard). To do this, wrap a `TextInput` with the `InputAccessoryView` component, and don't set a `nativeID`. For an example, look at [InputAccessoryViewExample.js](https://github.com/facebook/react-native/blob/master/packages/rn-tester/js/examples/InputAccessoryView/InputAccessoryViewExample.js).
 
 ---
 
@@ -47,9 +48,9 @@ This component can also be used to create sticky text inputs (text inputs which 
 
 ### `backgroundColor`
 
-| Type                                         | Required |
-| -------------------------------------------- | -------- |
-| [color](https://reactnative.dev/docs/colors) | No       |
+| Type                                              |
+| ------------------------------------------------- |
+| [color](https://reactnative.dev/docs/0.64/colors) |
 
 ---
 
@@ -57,17 +58,17 @@ This component can also be used to create sticky text inputs (text inputs which 
 
 An ID which is used to associate this `InputAccessoryView` to specified TextInput(s).
 
-| Type   | Required |
-| ------ | -------- |
-| string | No       |
+| Type   |
+| ------ |
+| string |
 
 ---
 
 ### `style`
 
-| Type                          | Required |
-| ----------------------------- | -------- |
-| [style](view-style-props.md) | No       |
+| Type                              |
+| --------------------------------- |
+| [View Style](view-style-props.md) |
 
 # Known issues
 
