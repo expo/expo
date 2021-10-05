@@ -79,6 +79,10 @@ public class AdMobInterstitialAdModule extends ExportedModule {
         mRequestAdPromise = promise;
         recreateInterstitialAdWithAdUnitID(mAdUnitID);
 
+        if (mInterstitialAd == null) {
+          return;
+        }
+
         if (mInterstitialAd.isLoaded() || mInterstitialAd.isLoading()) {
           promise.reject("E_AD_ALREADY_LOADED", "Ad is already loaded.", null);
         } else {
@@ -138,6 +142,10 @@ public class AdMobInterstitialAdModule extends ExportedModule {
   }
 
   private void recreateInterstitialAdWithAdUnitID(String adUnitID) {
+    if (mInterstitialAd != null) {
+      mInterstitialAd = null;
+    }
+
     Activity currentActivity = mActivityProvider.getCurrentActivity();
 
     if (currentActivity == null) {
@@ -146,10 +154,6 @@ public class AdMobInterstitialAdModule extends ExportedModule {
         mRequestAdPromise = null;
       }
       return;
-    }
-
-    if (mInterstitialAd != null) {
-      mInterstitialAd = null;
     }
 
     mInterstitialAd = new InterstitialAd(currentActivity);
