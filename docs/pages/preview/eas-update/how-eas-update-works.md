@@ -2,13 +2,15 @@
 title: How EAS Update works
 ---
 
+import ImageSpotlight from '~/components/plugins/ImageSpotlight'
+
 EAS Update is a service that allows you to deliver small bug fixes and updates to your users immediately as you work on your next app store release. Making an update available to builds involves creating a link between a build and an update.
 
 To create a link between a build and an update, we have to make sure the update can run on the build. We also want to make sure we can create a deployment process, so that we can expose certain updates to certain builds when we're ready.
 
 To illustrate how builds and updates interact, take a look at the following diagram:
 
-![Native and update layers diagram](/static/images/eas-update/layers.png)
+<ImageSpotlight alt="Native and update layers diagram" src="/static/images/eas-update/layers.png" />
 
 Builds can be thought of as two layers: a native layer that's built into the app's binary, and an update layer, that is swappable with other compatible updates. This separation allows us to ship bug fixes to builds as long as the update with the bug fix can run on the native layer inside the build.
 
@@ -26,7 +28,7 @@ When we're ready to create a build of our Expo project, we can run a command lik
 
 If we were to make two builds with the channel named "staging" and two builds with the channel named "production", we'd end up with something like this:
 
-![Build types diagram](/static/images/eas-update/builds.png)
+<ImageSpotlight alt="Build types diagram" src="/static/images/eas-update/builds.png" />
 
 This diagram is just an example of how you could create builds and name their channels, and where you could put those builds. Ultimately it's up to you which channel names you set and where you put those builds.
 
@@ -36,7 +38,7 @@ After we've created builds, we can change the update layer of our project and pu
 
 To publish an update, we can run `eas branch:publish --auto`. This command will create a local update bundle inside the **dist/** folder in our project. Once it's created an update bundle, it will upload that bundle to EAS' servers, in a database object named a _branch_. A branch has a name, and contains a list of updates, where the most recent update is the active update on the branch.
 
-![Branches with its most recent update pointed out as the active one](/static/images/eas-update/branch.png)
+<ImageSpotlight alt="Branches with its most recent update pointed out as the active one" src="/static/images/eas-update/branch.png" />
 
 **Matching updates and builds**
 
@@ -48,11 +50,11 @@ Like builds, every update on a branch includes a target runtime version and targ
 
 Let's focus on that last point. Every build has a channel, and we, as developers, can link that channel to any branch, which will make its most recent compatible update available on the channel. To simplify this linking, by default we'll auto-link a channel to a branch of the same name. For instance, if we created builds with the channel named "production", we could publish updates to a branch named "production" and our builds would get the updates on a matching branch named "production", even though we did not manually link anything.
 
-![Channel "production" linked to branch "production" by default](/static/images/eas-update/default-link.png)
+<ImageSpotlight alt={`Channel "production" linked to branch "production" by default`} src="/static/images/eas-update/default-link.png" />
 
 While this default will work in many cases, we can always change the mapping. Say we found a bug, found it, fixed it, and published it to a branch named "production-hotfix". We could then point our builds with the channel "production" at the branch "production-hotfix":
 
-![Channel "production" updated to be linked to branch "production-hotfix"](/static/images/eas-update/custom-link.png)
+<ImageSpotlight alt={`Channel "production" updated to be linked to branch "production-hotfix"`} src="/static/images/eas-update/custom-link.png" />
 
 ## Practical overview
 
@@ -68,7 +70,7 @@ To help in the second phase of this process, the `expo-updates` module will also
 
 If the app is able to download the manifest (phase 1) and all the required assets (phase 2) before the `fallbackToCacheTimeout` setting, then the app will run the new update immediately on launch. If the app is not able to get the manifest and assets in time, the app will continue to download the new update in the background. Then on the next launch of the app, assuming the update was fully downloaded successfully, the new update will run.
 
-![Update download timeline](/static/images/eas-update/process.png)
+<ImageSpotlight alt="Update download timeline" src="/static/images/eas-update/process.png" />
 
 ## Wrap up
 

@@ -4,11 +4,11 @@ module.exports = function (src) {
   const { body, attributes } = fm(src);
 
   return (
-    `import withDocumentationElements from '~/components/page-higher-order/withDocumentationElements';
+    `import DocumentationElements from '~/components/page-higher-order/DocumentationElements';
 
 export const meta = ${JSON.stringify(attributes)}
 
-export default withDocumentationElements(meta);
+export default DocumentationElements;
 
 ` + body
   );

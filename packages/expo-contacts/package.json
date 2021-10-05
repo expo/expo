@@ -1,6 +1,6 @@
 {
   "name": "expo-contacts",
-  "version": "10.0.0",
+  "version": "10.0.1",
   "description": "Provides access to the phone's system contacts.",
   "main": "build/Contacts.js",
   "types": "build/Contacts.d.ts",
@@ -35,7 +35,7 @@
   },
   "dependencies": {
     "@expo/config-plugins": "^3.1.0",
-    "expo-modules-core": "~0.4.1",
+    "expo-modules-core": "~0.4.2",
     "uuid": "^3.4.0"
   },
   "devDependencies": {

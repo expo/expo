@@ -1169,7 +1169,7 @@ function _getReactNativeTransformRules(versionPrefix, reactPodName) {
     },
     {
       flags: '-Ei',
-      pattern: `s/#import <(Expo|RNReanimated)/#import <${versionPrefix}\\1/g`,
+      pattern: `s/(#import |__has_include\\()<(Expo|RNReanimated)/#import <${versionPrefix}\\1/g`,
     },
   ];
 }

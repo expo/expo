@@ -100,9 +100,11 @@ async function generateVersionedPodspecAsync(
       });
   }
 
-  // Remove script phases.
-  // expo-constants has one, but the `scripts` folder isn't being copied and there is no need to have it in versioned code.
-  delete podspec['script_phases'];
+  if (['expo-updates', 'expo-constants'].includes(pkg.packageName)) {
+    // For expo-updates and expo-constants in Expo Go, we don't need app.config and app.manifest in versioned code.
+    delete podspec['script_phases'];
+    delete podspec['resource_bundles'];
+  }
 
   const targetPath = path.join(targetDirectory, `${prefix}${pkg.podspecName}.podspec.json`);
 

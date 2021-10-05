@@ -3,7 +3,7 @@
 
 Pod::Spec.new do |s|
   s.name = "ExpoKit"
-  s.version = "42.0.0"
+  s.version = "43.0.0"
   s.summary = 'ExpoKit'
   s.description = 'ExpoKit allows native projects to integrate with the Expo SDK.'
   s.homepage = 'http://docs.expo.io'
@@ -40,9 +40,7 @@ Pod::Spec.new do |s|
     ss.dependency 'ReactCommon' # needed for react-native-reanimated, see https://github.com/expo/expo/pull/11096#how
 
     # Universal modules required by ExpoKit so the code compiles
-    ss.dependency 'UMCore'
     ss.dependency 'ExpoModulesCore'
-    ss.dependency 'UMReactNativeAdapter'
   end
 
   s.subspec "FaceDetector" do |ss|

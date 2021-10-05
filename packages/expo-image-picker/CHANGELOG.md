@@ -18,6 +18,10 @@
 - extract cancelled request object to separate type - `ImagePickerCancelledResult`.
 - change `CameraPermissionResponse` type alias definition.
 
+## 11.0.1 — 2021-10-01
+
+_This version does not introduce any user-facing changes._
+
 ## 11.0.0 — 2021-09-28
 
 ### 🛠 Breaking changes

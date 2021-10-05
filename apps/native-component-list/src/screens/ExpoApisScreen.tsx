@@ -96,7 +96,6 @@ const screens = [
 
 if (Constants.executionEnvironment !== ExecutionEnvironment.StoreClient) {
   screens.push('InAppPurchases');
-  screens.push('Payments');
 }
 
 export const ScreenItems = screens.map((name) => ({

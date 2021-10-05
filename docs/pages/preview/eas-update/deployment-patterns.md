@@ -2,6 +2,8 @@
 title: Deployment patterns
 ---
 
+import ImageSpotlight from '~/components/plugins/ImageSpotlight'
+
 Once we've created features and fixed bugs, we want to get our changes out to our users as soon as we can, as safely as we can. Often "safe" and "fast" are opposing forces when delivering code to our users. We could push our code directly to production, which would be fast, but it would also be unsafe since we never tested our code. On the other hand, we could make test builds, share them with a QA team, and release periodically. That would be safer, but also slower to deliver changes to our users.
 
 Depending on your project, you'll have some tolerance for how "fast" and how "safe" you'll need to be when delivering updates to your users.
@@ -38,7 +40,7 @@ Publishing updates: (a) Publish to a single branch.
 
 Diagram of flow:
 
-![Two command deployment diagram](/static/images/eas-update/deployment-two-command.png)
+<ImageSpotlight alt="Two command deployment diagram" src="/static/images/eas-update/deployment-two-command.png" style={{maxWidth: 1200}} />
 
 Explanation of flow:
 
@@ -67,7 +69,7 @@ Publishing updates: (c) Create update branches that are version based, like "ver
 
 Diagram of flow:
 
-![Branch deployment diagram](/static/images/eas-update/deployment-branch.png)
+<ImageSpotlight alt="Branch deployment diagram" src="/static/images/eas-update/deployment-branch.png" style={{maxWidth: 1200}} />
 
 Explanation of flow:
 
@@ -102,7 +104,7 @@ Publishing updates: (c) Create update branches that are environment-based, like 
 
 Diagram of flow:
 
-![Staging deployment diagram](/static/images/eas-update/deployment-staging.png)
+<ImageSpotlight alt="Staging deployment diagram" src="/static/images/eas-update/deployment-staging.png" style={{maxWidth: 1200}} />
 
 Explanation of flow:
 
@@ -134,7 +136,7 @@ Publishing updates: (c) Create update branches that are environment- and platfor
 
 Diagram of flow:
 
-![Platform specific deployment diagram](/static/images/eas-update/deployment-platform-specific.png)
+<ImageSpotlight alt="Platform specific deployment diagram" src="/static/images/eas-update/deployment-platform-specific.png" style={{maxWidth: 1200}} />
 
 Explanation of flow:
 

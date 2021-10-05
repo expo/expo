@@ -1,0 +1,21 @@
+{
+  "name": "ABI43_0_0EXBackgroundFetch",
+  "version": "10.0.0",
+  "summary": "Expo universal module for BackgroundFetch API",
+  "description": "Expo universal module for BackgroundFetch API",
+  "license": "MIT",
+  "authors": "650 Industries, Inc.",
+  "homepage": "https://docs.expo.dev/versions/latest/sdk/background-fetch/",
+  "platforms": {
+    "ios": "12.0"
+  },
+  "source": {
+    "git": "https://github.com/expo/expo.git"
+  },
+  "static_framework": true,
+  "dependencies": {
+    "ABI43_0_0ExpoModulesCore": [],
+    "ABI43_0_0UMTaskManagerInterface": []
+  },
+  "source_files": "EXBackgroundFetch/**/*.{h,m}"
+}
