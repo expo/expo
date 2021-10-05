@@ -1,4 +1,4 @@
-export type SystemUIBehavior = 'overlay-swipe' | 'inset-swipe' | 'inset-touch';
-
-export type NavigationBarForegroundStyle = 'light' | 'dark';
-export type NavigationBarVisibility = 'visible' | 'hidden';
+export type Appearance = 'light' | 'dark';
+export type Visibility = 'visible' | 'hidden';
+export type Behavior = 'overlay-swipe' | 'inset-swipe' | 'inset-touch';
+export type Position = 'relative' | 'absolute';

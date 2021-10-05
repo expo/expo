@@ -1,0 +1,1 @@
+{"version":3,"file":"SystemNavigationBar.types.js","sourceRoot":"","sources":["../src/SystemNavigationBar.types.ts"],"names":[],"mappings":"","sourcesContent":["export type Appearance = 'light' | 'dark';\nexport type Visibility = 'visible' | 'hidden';\nexport type Behavior = 'overlay-swipe' | 'inset-swipe' | 'inset-touch';\nexport type Position = 'relative' | 'absolute';\n"]}

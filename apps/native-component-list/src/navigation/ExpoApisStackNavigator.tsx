@@ -414,6 +414,12 @@ export const Screens = [
   },
   {
     getComponent() {
+      return optionalRequire(() => require('../screens/SystemNavigationBarScreen'));
+    },
+    name: 'SystemNavigationBar',
+  },
+  {
+    getComponent() {
       return optionalRequire(() => require('../screens/SMSScreen'));
     },
     name: 'SMS',

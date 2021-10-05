@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Don't enforce a default background color -->
+    <string name="expo_system_navigation_bar_background_color" translatable="false"></string>
+
+    <string name="expo_system_navigation_bar_appearance" translatable="false"></string>
+
+    <string name="expo_system_navigation_bar_border_color" translatable="false"></string>
+
+    <string name="expo_system_navigation_bar_visibility" translatable="false"></string>
+
+    <string name="expo_system_navigation_bar_position" translatable="false"></string>
+
+    <string name="expo_system_navigation_bar_behavior" translatable="false"></string>
+
+    <string name="expo_system_navigation_bar_legacy_visible" translatable="false"></string>
+
+</resources>

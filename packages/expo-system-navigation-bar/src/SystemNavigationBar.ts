@@ -1,23 +1,19 @@
+import React, { useState } from 'react';
 import { EventEmitter, Platform, Subscription, UnavailabilityError } from 'expo-modules-core';
 import { ColorValue, processColor } from 'react-native';
 
 import ExpoSystemNavigationBar from './ExpoSystemNavigationBar';
-import {
-  NavigationBarForegroundStyle,
-  NavigationBarVisibility,
-  SystemUIBehavior,
-} from './SystemNavigationBar.types';
+import { Appearance, Visibility, Behavior, Position } from './SystemNavigationBar.types';
 
 const emitter = new EventEmitter(ExpoSystemNavigationBar);
 
 type VisibilityEvent = {
-  visibility: number;
-  statusBar: boolean;
-  navigationBar: boolean;
+  state: number;
+  visibility: 'visible' | 'hidden';
 };
 
 export function addVisibilityListener(listener: (event: VisibilityEvent) => void): Subscription {
-  return emitter.addListener('Expo.visibilityDidChange', listener);
+  return emitter.addListener('ExpoSystemNavigationBar.didChange', listener);
 }
 
 const assertIsOnPlatform = (functionName: string, onlyAvailableOn: typeof Platform['OS'][]) => {
@@ -27,13 +23,13 @@ const assertIsOnPlatform = (functionName: string, onlyAvailableOn: typeof Platfo
 };
 
 /**
- * Changes the Android Navigation Bar's background color.
+ * Changes the navigation bar's background color.
  *
  * @platform android
  *
  * @example
  * ```typescript
- * SystemUI.setBackgroundColorAsync("white");
+ * NavigationBar.setBackgroundColorAsync("white");
  * ```
  */
 export function setBackgroundColorAsync(color: ColorValue): Promise<void> {
@@ -42,13 +38,13 @@ export function setBackgroundColorAsync(color: ColorValue): Promise<void> {
   return ExpoSystemNavigationBar.setBackgroundColorAsync(colorNumber);
 }
 /**
- * Gets the Android Navigation Bar's background color.
+ * Gets the navigation bar's background color.
  *
  * @platform android
  *
  * @example
  * ```typescript
- * const color = await SystemUI.getBackgroundColorAsync();
+ * const color = await NavigationBar.getBackgroundColorAsync();
  * ```
  */
 export function getBackgroundColorAsync(): Promise<ColorValue> {
@@ -57,13 +53,13 @@ export function getBackgroundColorAsync(): Promise<ColorValue> {
 }
 
 /**
- * Changes the Android Navigation Bar's Divider color.
+ * Changes the navigation bar's border color.
  *
  * @platform android
  *
  * @example
  * ```typescript
- * SystemUI.setBorderColorAsync("red");
+ * NavigationBar.setBorderColorAsync("red");
  * ```
  */
 export function setBorderColorAsync(color: ColorValue): Promise<void> {
@@ -73,103 +69,116 @@ export function setBorderColorAsync(color: ColorValue): Promise<void> {
 }
 
 /**
- * Gets the Android Navigation Bar's Divider color.
+ * Gets the navigation bar's border color.
  *
  * @platform android
  *
  * @example
  * ```typescript
- * const color = await SystemUI.getBorderColorAsync();
+ * const color = await NavigationBar.getBorderColorAsync();
  * ```
  */
-export function getBorderColorAsync(): Promise<ColorValue> {
+export function getBorderColorAsync(): Promise<ColorValue | null> {
   assertIsOnPlatform('getBorderColorAsync', ['android']);
   return ExpoSystemNavigationBar.getBorderColorAsync();
 }
 
 /**
- * Changes the Android Navigation Bar's visibility.
+ * Set the navigation bar's visibility.
  *
  * @platform android
  *
  * @example
  * ```typescript
- * SystemUI.setVisibilityAsync("hidden");
+ * NavigationBar.setVisibilityAsync("hidden");
  * ```
  */
-export function setVisibilityAsync(visibility: NavigationBarVisibility): Promise<void> {
+export function setVisibilityAsync(visibility: Visibility): Promise<void> {
   assertIsOnPlatform('setVisibilityAsync', ['android']);
   return ExpoSystemNavigationBar.setVisibilityAsync(visibility);
 }
 
 /**
- * Changes the Android Navigation Bar's foreground style.
+ * Get the navigation bar's visibility.
  *
  * @platform android
  *
  * @example
  * ```typescript
- * SystemUI.setAppearanceAsync("light");
+ * NavigationBar.setVisibilityAsync("hidden");
  * ```
  */
-export function setAppearanceAsync(style: NavigationBarForegroundStyle): Promise<void> {
+export function getVisibilityAsync(): Promise<Visibility> {
+  assertIsOnPlatform('getVisibilityAsync', ['android']);
+  return ExpoSystemNavigationBar.getVisibilityAsync();
+}
+
+/**
+ * Changes the navigation bar's foreground style between white and a dark gray color.
+ *
+ * @platform android
+ *
+ * @example
+ * ```typescript
+ * NavigationBar.setAppearanceAsync("light");
+ * ```
+ */
+export function setAppearanceAsync(style: Appearance): Promise<void> {
   assertIsOnPlatform('setAppearanceAsync', ['android']);
   return ExpoSystemNavigationBar.setAppearanceAsync(style);
 }
 /**
- * Gets the Android Navigation Bar's foreground style.
+ * Gets the navigation bar's foreground style.
  *
  * @platform android
  *
  * @example
  * ```typescript
- * const style = await SystemUI.getAppearanceAsync();
+ * const style = await NavigationBar.getAppearanceAsync();
  * ```
  */
-export function getAppearanceAsync(): Promise<NavigationBarForegroundStyle> {
+export function getAppearanceAsync(): Promise<Appearance> {
   assertIsOnPlatform('getAppearanceAsync', ['android']);
   return ExpoSystemNavigationBar.getAppearanceAsync();
 }
 
 /**
- * Sets whether the App should draw behind the Status Bar and Navigation Bar.
+ * Sets positioning method used for the navigation bar (and status bar).
+ * Setting position `absolute` will float the navigation bar above the content,
+ * whereas position `relative` will shrink the screen to inline the navigation bar.
  *
- * When drawing behind the Status and Navigation Bar, make sure to adjust the Safe Area Insets accordingly.
- *
- * This is often used in conjunction with `setStatusBarBackgroundColor` and `setBackgroundColorAsync`
- * to enable an "edge-to-edge" mode by making the System UI transparent and letting your App draw beneath.
+ * When drawing behind the status and navigation bars, ensure the safe area insets are adjusted accordingly.
  *
  * @platform android
  *
  * @example
  * ```ts
  * // enables edge-to-edge mode
- * SystemUI.setPositionAsync('absolute')
+ * NavigationBar.setPositionAsync('absolute')
  * // transparent backgrounds to see through
- * SystemUI.setStatusBarBackgroundColor('#ffffff00')
- * SystemUI.setBackgroundColorAsync('#ffffff00')
+ * NavigationBar.setBackgroundColorAsync('#ffffff00')
  * ```
  */
-export function setPositionAsync(position: 'absolute' | 'relative'): Promise<void> {
+export function setPositionAsync(position: Position): Promise<void> {
   assertIsOnPlatform('setPositionAsync', ['android']);
   return ExpoSystemNavigationBar.setPositionAsync(position);
 }
 
 /**
- * Gets whether the App draws behind the Status Bar and Navigation Bar.
+ * Whether the navigation and status bars float above the app (absolute) or sit inline with it (relative).
  *
  * @platform android
  */
-export function getPositionAsync(): Promise<'absolute' | 'relative'> {
+export function getPositionAsync(): Promise<Position> {
   assertIsOnPlatform('getPositionAsync', ['android']);
   return ExpoSystemNavigationBar.getPositionAsync();
 }
 
 /**
- * Sets the behavior of the Status Bar and Navigation Bar when they are hidden and the user wants to reveal them.
+ * Sets the behavior of the status bar and navigation bar when they are hidden and the user wants to reveal them.
  *
- * For example, if the Navigation Bar is hidden (`setVisibilityAsync(false)`) and the System UI behavior
- * is `'overlay-swipe'`, the user can swipe from the bottom of the screen to temporarily reveal the Navigation Bar.
+ * For example, if the navigation bar is hidden (`setVisibilityAsync(false)`) and the behavior
+ * is `'overlay-swipe'`, the user can swipe from the bottom of the screen to temporarily reveal the navigation bar.
  *
  * * `'overlay-swipe'`: Temporarily reveals the System UI after a swipe gesture (bottom or top) without insetting your App's content.
  * * `'inset-swipe'`: Reveals the System UI after a swipe gesture (bottom or top) and insets your App's content (Safe Area). The System UI is visible until you explicitly hide it again.
@@ -177,19 +186,45 @@ export function getPositionAsync(): Promise<'absolute' | 'relative'> {
  *
  * @platform android
  */
-export function setBehaviorAsync(behavior: SystemUIBehavior): Promise<void> {
+export function setBehaviorAsync(behavior: Behavior): Promise<void> {
   assertIsOnPlatform('getBehaviorAsync', ['android']);
-  return ExpoSystemNavigationBar.getBehaviorAsync(behavior);
+  return ExpoSystemNavigationBar.setBehaviorAsync(behavior);
 }
 
 /**
- * Gets the behavior of the Status Bar and Navigation Bar when the user swipes or touches the screen.
+ * Gets the behavior of the status and navigation bars when the user swipes or touches the screen.
  *
  * @platform android
  */
-export function getBehaviorAsync(): Promise<SystemUIBehavior> {
+export function getBehaviorAsync(): Promise<Behavior> {
   assertIsOnPlatform('getBehaviorAsync', ['android']);
   return ExpoSystemNavigationBar.getBehaviorAsync();
 }
 
 export * from './SystemNavigationBar.types';
+
+export function useVisibility() {
+  const [visibility, setVisible] = useState<Visibility | null>(null);
+
+  React.useEffect(() => {
+    let isMounted = true;
+    getVisibilityAsync().then((visibility) => {
+      if (isMounted) {
+        setVisible(visibility);
+      }
+    });
+
+    const listener = addVisibilityListener(({ visibility }) => {
+      if (isMounted) {
+        setVisible(visibility);
+      }
+    });
+
+    return () => {
+      listener.remove();
+      isMounted = false;
+    };
+  }, []);
+
+  return visibility;
+}

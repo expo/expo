@@ -15,6 +15,8 @@ import java.util.List;
 import expo.modules.devlauncher.DevLauncherController;
 
 public class MainApplication extends Application implements ReactApplication {
+  static final boolean USE_DEV_CLIENT = false;
+  
   private final ReactNativeHost mReactNativeHost = new ReactNativeHost(this) {
     @Override
     public boolean getUseDeveloperSupport() {
