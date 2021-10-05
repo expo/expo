@@ -18,7 +18,7 @@ buildscript {
 }
 
 group = 'host.exp.exponent'
-version = '2.3.0-alpha.0'
+version = '3.0.0'
 
 // Upload android library to maven with javadoc and android sources
 configurations {
@@ -57,7 +57,7 @@ android {
     minSdkVersion safeExtGet("minSdkVersion", 21)
     targetSdkVersion safeExtGet("targetSdkVersion", 30)
     versionCode 8
-    versionName "2.3.0-alpha.0"
+    versionName "3.0.0"
   }
   lintOptions {
     abortOnError false

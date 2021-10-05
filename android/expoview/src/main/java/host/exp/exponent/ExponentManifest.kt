@@ -9,7 +9,6 @@ import android.net.Uri
 import android.os.AsyncTask
 import android.text.TextUtils
 import android.util.LruCache
-import expo.modules.updates.manifest.ManifestFactory
 import expo.modules.manifests.core.InternalJSONMutator
 import expo.modules.manifests.core.Manifest
 import host.exp.exponent.analytics.EXL
@@ -144,8 +143,7 @@ class ExponentManifest @Inject constructor(
 
   fun isAnonymousExperience(manifest: Manifest): Boolean {
     return try {
-      val id = manifest.getLegacyID()
-      id.startsWith(ANONYMOUS_EXPERIENCE_PREFIX)
+      manifest.getScopeKey().startsWith(ANONYMOUS_SCOPE_KEY_PREFIX)
     } catch (e: JSONException) {
       false
     }
@@ -154,7 +152,7 @@ class ExponentManifest @Inject constructor(
   private fun getLocalKernelManifest(): Manifest = try {
     val manifest = JSONObject(ExponentBuildConstants.BUILD_MACHINE_KERNEL_MANIFEST)
     manifest.put(MANIFEST_IS_VERIFIED_KEY, true)
-    ManifestFactory.getManifestFromManifestJson(manifest)
+    Manifest.fromManifestJson(manifest)
   } catch (e: JSONException) {
     throw RuntimeException("Can't get local manifest: $e")
   }
@@ -164,7 +162,7 @@ class ExponentManifest @Inject constructor(
     val jsonString = IOUtils.toString(inputStream)
     val manifest = JSONObject(jsonString)
     manifest.put(MANIFEST_IS_VERIFIED_KEY, true)
-    ManifestFactory.getManifestFromManifestJson(manifest)
+    Manifest.fromManifestJson(manifest)
   } catch (e: Exception) {
     KernelProvider.instance.handleError(e)
     null
@@ -262,7 +260,7 @@ class ExponentManifest @Inject constructor(
 
     private const val MAX_BITMAP_SIZE = 192
     private const val REDIRECT_SNIPPET = "exp.host/--/to-exp/"
-    private const val ANONYMOUS_EXPERIENCE_PREFIX = "@anonymous/"
+    private const val ANONYMOUS_SCOPE_KEY_PREFIX = "@anonymous/"
     private const val EMBEDDED_KERNEL_MANIFEST_ASSET = "kernel-manifest.json"
     private const val EXPONENT_SERVER_HEADER = "Exponent-Server"
 

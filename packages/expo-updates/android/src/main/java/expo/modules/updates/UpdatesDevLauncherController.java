@@ -21,6 +21,9 @@ import expo.modules.updates.selectionpolicy.ReaperSelectionPolicyDevelopmentClie
 import expo.modules.updates.selectionpolicy.SelectionPolicy;
 import expo.modules.updatesinterface.UpdatesInterface;
 
+// this unused import must stay because of versioning
+import expo.modules.updates.UpdatesConfiguration;
+
 public class UpdatesDevLauncherController implements UpdatesInterface {
 
   private static UpdatesDevLauncherController sInstance;
@@ -131,7 +134,7 @@ public class UpdatesDevLauncherController implements UpdatesInterface {
         callback.onSuccess(new Update() {
           @Override
           public JSONObject getManifest() {
-            Manifest manifest = ManifestFactory.INSTANCE.getManifestFromManifestJson(launcher.getLaunchedUpdate().manifest);
+            Manifest manifest = Manifest.fromManifestJson(launcher.getLaunchedUpdate().manifest);
             return manifest.getRawJson();
           }
 

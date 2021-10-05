@@ -1,8 +1,8 @@
-import { Platform } from '@unimodules/react-native-adapter';
 import Constants, { ExecutionEnvironment } from 'expo-constants';
 import * as Linking from 'expo-linking';
 import { CreateURLOptions } from 'expo-linking';
 import { resolveScheme } from 'expo-linking/build/Schemes';
+import { Platform } from 'expo-modules-core';
 import qs, { ParsedQs } from 'qs';
 
 export class SessionUrlProvider {

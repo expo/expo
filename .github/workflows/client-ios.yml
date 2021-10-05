@@ -12,7 +12,10 @@ on:
     paths:
       - .github/workflows/client-ios.yml
       - ios/**
-      - tools/**
+      - tools/src/dynamic-macros/**
+      - tools/src/commands/IosGenerateDynamicMacros.ts
+      - tools/src/client-build/**
+      - tools/src/commands/ClientBuild.ts
       - secrets/**
       - fastlane/**
       - Gemfile.lock
@@ -22,7 +25,10 @@ on:
     paths:
       - .github/workflows/client-ios.yml
       - ios/**
-      - tools/**
+      - tools/src/dynamic-macros/**
+      - tools/src/commands/IosGenerateDynamicMacros.ts
+      - tools/src/client-build/**
+      - tools/src/commands/ClientBuild.ts
       - secrets/**
       - fastlane/**
       - Gemfile.lock
@@ -40,8 +46,8 @@ jobs:
         uses: actions/checkout@v2
         with:
           submodules: true
-      - name: 🔨 Switch to Xcode 12.5.1
-        run: sudo xcode-select --switch /Applications/Xcode_12.5.1.app
+      - name: 🔨 Switch to Xcode 13.0
+        run: sudo xcode-select --switch /Applications/Xcode_13.0.app
       - name: 🍺 Setup Homebrew
         run: brew install git-crypt
       - name: 🔓 decrypt secrets if possible

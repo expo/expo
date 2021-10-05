@@ -4,7 +4,7 @@ import { InlineCode } from '~/components/base/code';
 import { LI, UL } from '~/components/base/list';
 import { H2, H3Code } from '~/components/plugins/Headings';
 import { EnumDefinitionData, EnumValueData } from '~/components/plugins/api/APIDataTypes';
-import { CommentTextBlock, mdInlineRenderers } from '~/components/plugins/api/APISectionUtils';
+import { CommentTextBlock, mdInlineComponents } from '~/components/plugins/api/APISectionUtils';
 
 export type APISectionEnumsProps = {
   data: EnumDefinitionData[];
@@ -39,14 +39,14 @@ const renderEnum = ({ name, children, comment }: EnumDefinitionData): JSX.Elemen
               <InlineCode>{enumValue?.defaultValue}</InlineCode>
             </>
           )}
-          <CommentTextBlock comment={enumValue.comment} renderers={mdInlineRenderers} withDash />
+          <CommentTextBlock comment={enumValue.comment} components={mdInlineComponents} withDash />
         </LI>
       ))}
     </UL>
   </div>
 );
 
-const APISectionEnums: React.FC<APISectionEnumsProps> = ({ data }) =>
+const APISectionEnums = ({ data }: APISectionEnumsProps) =>
   data?.length ? (
     <>
       <H2 key="enums-header">Enums</H2>

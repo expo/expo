@@ -68,7 +68,7 @@ async function askForCameraPermissionAsync() {
     return await askForMediaPermissionAsync({ video: true });
 }
 async function askForLocationPermissionAsync() {
-    return new Promise(resolve => {
+    return new Promise((resolve) => {
         navigator.geolocation.getCurrentPosition(() => resolve({
             status: PermissionStatus.GRANTED,
             expires: 'never',

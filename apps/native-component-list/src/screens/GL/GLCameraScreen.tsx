@@ -126,7 +126,7 @@ class GLCameraScreen extends React.Component<{}, State> {
   };
 
   toggleFacing = () => {
-    this.setState(state => ({
+    this.setState((state) => ({
       type:
         state.type === Camera.Constants.Type.back
           ? Camera.Constants.Type.front
@@ -135,13 +135,13 @@ class GLCameraScreen extends React.Component<{}, State> {
   };
 
   zoomOut = () => {
-    this.setState(state => ({
+    this.setState((state) => ({
       zoom: state.zoom - 0.1 < 0 ? 0 : state.zoom - 0.1,
     }));
   };
 
   zoomIn = () => {
-    this.setState(state => ({
+    this.setState((state) => ({
       zoom: state.zoom + 0.1 > 1 ? 1 : state.zoom + 0.1,
     }));
   };
@@ -153,12 +153,12 @@ class GLCameraScreen extends React.Component<{}, State> {
           style={StyleSheet.absoluteFill}
           type={this.state.type}
           zoom={this.state.zoom}
-          ref={ref => (this.camera = ref!)}
+          ref={(ref) => (this.camera = ref!)}
         />
         <GLView
           style={StyleSheet.absoluteFill}
           onContextCreate={this.onContextCreate}
-          ref={ref => (this.glView = ref!)}
+          ref={(ref) => (this.glView = ref!)}
         />
 
         <View style={styles.buttons}>

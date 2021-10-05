@@ -11,10 +11,10 @@ const customBlockObjc = `// [Custom]: Fixes \`Unable to find module for DevMenu\
 
 `;
 
-module.exports = config => {
+module.exports = (config) => {
   return withDangerousMod(config, [
     'ios',
-    async config => {
+    async (config) => {
       const fileInfo = IOSConfig.Paths.getAppDelegate(config.modRequest.projectRoot);
       let contents = await fs.readFile(fileInfo.path, 'utf-8');
       if (fileInfo.language === 'objc') {

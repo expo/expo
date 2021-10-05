@@ -8,7 +8,7 @@ module.exports = async function lintAsync(cliOptions, sourceFiles) {
     { cwd: path.resolve(__dirname, '../..') }
   );
   const childProcess = lintProcess.child;
-  childProcess.stderr.on('data', data => {
+  childProcess.stderr.on('data', (data) => {
     console.error(`[eslint]: ${data}`);
   });
   const result = await lintProcess;

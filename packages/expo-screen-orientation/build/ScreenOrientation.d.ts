@@ -14,7 +14,7 @@ export { Orientation, OrientationLock, PlatformOrientationInfo, OrientationChang
  *   orientation lock policy.
  * - `ERR_SCREEN_ORIENTATION_MISSING_ACTIVITY` - __Android Only.__ Could not get the current activity.
  *
- * # Example
+ * @example
  * ```ts
  * async function changeScreenOrientation() {
  *   await ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.LANDSCAPE_LEFT);

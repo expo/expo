@@ -10,8 +10,9 @@ Pod::Spec.new do |s|
   s.license        = package['license']
   s.author         = package['author']
   s.homepage       = package['homepage']
-  s.platform       = :ios, '11.0'
+  s.platform       = :ios, '12.0'
   s.source         = { git: 'https://github.com/expo/expo.git' }
+  s.static_framework = true
 
   s.dependency 'ExpoModulesCore'
   s.dependency 'React-Core'
@@ -29,6 +30,20 @@ Pod::Spec.new do |s|
     s.vendored_frameworks = "#{s.name}.xcframework"
   else
     s.source_files = "#{s.name}/**/*.{h,m}"
+  end
+
+  if $expo_updates_create_manifest != false
+    s.script_phase = {
+      :name => 'Generate app.manifest for expo-updates',
+      :script => 'bash -l -c "$PODS_TARGET_SRCROOT/../scripts/create-manifest-ios.sh"',
+      :execution_position => :before_compile
+    }
+
+    # Generate EXUpdates.bundle without existing resources
+    # `create-manifest-ios.sh` will generate app.manifest in EXUpdates.bundle
+    s.resource_bundles = {
+      'EXUpdates' => []
+    }
   end
 
   s.test_spec 'Tests' do |test_spec|

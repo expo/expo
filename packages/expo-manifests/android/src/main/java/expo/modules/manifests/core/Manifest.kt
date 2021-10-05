@@ -32,9 +32,8 @@ abstract class Manifest(protected val json: JSONObject) {
    * A best-effort immutable legacy ID for this experience. Stable through project transfers.
    * Should be used for calling Expo and EAS APIs during their transition to projectId.
    */
-  @Throws(JSONException::class)
   @Deprecated(message = "Prefer scopeKey or projectId depending on use case")
-  abstract fun getStableLegacyID(): String
+  abstract fun getStableLegacyID(): String?
 
   /**
    * A stable immutable scoping key for this experience. Should be used for scoping data on the
@@ -100,6 +99,7 @@ abstract class Manifest(protected val json: JSONObject) {
 
   fun getDebuggerHost(): String = getExpoGoConfigRootObject()!!.require("debuggerHost")
   fun getMainModuleName(): String = getExpoGoConfigRootObject()!!.require("mainModuleName")
+  fun getHostUri(): String? = getExpoGoConfigRootObject()?.getNullable("hostUri")
 
   fun isVerified(): Boolean = json.require("isVerified")
 
@@ -108,6 +108,11 @@ abstract class Manifest(protected val json: JSONObject) {
   fun getName(): String? {
     val expoClientConfig = getExpoClientConfigRootObject() ?: return null
     return expoClientConfig.getNullable("name")
+  }
+
+  fun getVersion(): String? {
+    val expoClientConfig = getExpoClientConfigRootObject() ?: return null
+    return expoClientConfig.getNullable("version")
   }
 
   fun getUpdatesInfo(): JSONObject? {
@@ -213,4 +218,20 @@ abstract class Manifest(protected val json: JSONObject) {
 
   @Throws(JSONException::class)
   fun getFacebookAutoInitEnabled(): Boolean = getExpoClientConfigRootObject()!!.require("facebookAutoInitEnabled")
+
+  companion object {
+    @JvmStatic fun fromManifestJson(manifestJson: JSONObject): Manifest {
+      return when {
+        manifestJson.has("releaseId") -> {
+          LegacyManifest(manifestJson)
+        }
+        manifestJson.has("metadata") -> {
+          NewManifest(manifestJson)
+        }
+        else -> {
+          BareManifest(manifestJson)
+        }
+      }
+    }
+  }
 }

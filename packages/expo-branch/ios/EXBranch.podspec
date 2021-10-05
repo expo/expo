@@ -10,8 +10,9 @@ Pod::Spec.new do |s|
   s.license        = package['license']
   s.author         = package['author']
   s.homepage       = package['homepage']
-  s.platform       = :ios, '11.0'
+  s.platform       = :ios, '12.0'
   s.source         = { git: 'https://github.com/expo/expo.git' }
+  s.static_framework = true
 
   s.compiler_flags = %[-DRNBRANCH_VERSION=@\\"#{package["dependencies"]["react-native-branch"]}\\"]
 

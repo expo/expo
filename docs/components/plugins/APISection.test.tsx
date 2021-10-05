@@ -49,6 +49,33 @@ describe('APISection', () => {
     expect(container).toMatchSnapshot();
   });
 
+  test('expo-barcode-scanner', () => {
+    const { container, queryByText, getAllByRole, queryAllByText, queryByDisplayValue } =
+      customRender(
+        <APISection
+          packageName="expo-barcode-scanner"
+          apiName="BarCodeScanner"
+          forceVersion="unversioned"
+        />
+      );
+
+    expect(getAllByRole('heading', { level: 2 })).toHaveLength(6);
+    expect(getAllByRole('heading', { level: 3 })).toHaveLength(16);
+
+    expect(queryByText('Components'));
+    expect(queryByText('Hooks'));
+
+    expect(queryByDisplayValue('BarCodeEvent'));
+    expect(queryByDisplayValue('BarCodeScannerProps'));
+    expect(queryByDisplayValue('Subscription'));
+    expect(queryByDisplayValue('usePermissions'));
+
+    expect(queryAllByText('Constants')).toHaveLength(0);
+    expect(queryAllByText('Props')).toHaveLength(0);
+
+    expect(container).toMatchSnapshot();
+  });
+
   test('expo-pedometer', () => {
     const { container, queryByText, getAllByRole, queryAllByText, queryByDisplayValue } =
       customRender(<APISection packageName="expo-pedometer" forceVersion="v42.0.0" />);

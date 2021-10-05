@@ -142,7 +142,7 @@ export default {
       }
     }
 
-    return new Promise(async resolve => {
+    return new Promise(async (resolve) => {
       // Create a listener for messages sent from the popup
       const listener = (event: MessageEvent) => {
         if (!event.isTrusted) return;

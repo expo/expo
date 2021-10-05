@@ -113,7 +113,7 @@ export default class GeofencingScreen extends React.Component<Props, State> {
         'You will be receiving notifications when the device enters or exits from selected regions.'
       );
     }
-    this.setState(state => ({ isGeofencing: !state.isGeofencing }));
+    this.setState((state) => ({ isGeofencing: !state.isGeofencing }));
   };
 
   shiftRegionRadius = () => {
@@ -139,7 +139,7 @@ export default class GeofencingScreen extends React.Component<Props, State> {
 
   onMapPress = ({ nativeEvent: { coordinate } }: MapEvent) => {
     this.setState(
-      state => ({
+      (state) => ({
         geofencingRegions: [
           ...state.geofencingRegions,
           {
@@ -162,7 +162,7 @@ export default class GeofencingScreen extends React.Component<Props, State> {
   renderRegions() {
     const { geofencingRegions } = this.state;
 
-    return geofencingRegions.map(region => {
+    return geofencingRegions.map((region) => {
       return (
         <Circle
           key={region.identifier}
@@ -258,12 +258,12 @@ if (Platform.OS !== 'android') {
   });
 }
 
-Notifications.addNotificationResponseReceivedListener(response => {
+Notifications.addNotificationResponseReceivedListener((response) => {
   if (response.notification.request.content.data?.notificationType === GEOFENCING_TASK) {
     alert(response.notification.request.content.data.notificationBody);
   }
 });
-Notifications.addNotificationReceivedListener(notification => {
+Notifications.addNotificationReceivedListener((notification) => {
   if (notification.request.content.data?.notificationType === GEOFENCING_TASK) {
     alert(notification.request.content.data.notificationBody);
   }

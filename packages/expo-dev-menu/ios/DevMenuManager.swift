@@ -63,6 +63,7 @@ open class DevMenuManager: NSObject, DevMenuManagerProtocol {
   var packagerConnectionHandler: DevMenuPackagerConnectionHandler?
   lazy var expoSessionDelegate: DevMenuExpoSessionDelegate = DevMenuExpoSessionDelegate(manager: self)
   lazy var extensionSettings: DevMenuExtensionSettingsProtocol = DevMenuExtensionDefaultSettings(manager: self)
+  var canLaunchDevMenuOnStart = true
   
   public var expoApiClient: DevMenuExpoApiClientProtocol = DevMenuExpoApiClient()
   
@@ -95,7 +96,7 @@ open class DevMenuManager: NSObject, DevMenuManagerProtocol {
   @objc
   public var delegate: DevMenuDelegateProtocol? {
     didSet {
-      guard DevMenuSettings.showsAtLaunch || !DevMenuSettings.isOnboardingFinished, let bridge = delegate?.appBridge?(forDevMenuManager: self) as? RCTBridge else {
+      guard self.canLaunchDevMenuOnStart && (DevMenuSettings.showsAtLaunch || !DevMenuSettings.isOnboardingFinished), let bridge = delegate?.appBridge?(forDevMenuManager: self) as? RCTBridge else {
         return
       }
       if bridge.isLoading {
@@ -130,6 +131,7 @@ open class DevMenuManager: NSObject, DevMenuManagerProtocol {
     self.packagerConnectionHandler = DevMenuPackagerConnectionHandler(manager: self)
     self.packagerConnectionHandler?.setup()
     DevMenuSettings.setup()
+    self.readAutoLaunchDisabledState()
     self.expoSessionDelegate.restoreSession()
   }
 
@@ -320,6 +322,16 @@ open class DevMenuManager: NSObject, DevMenuManagerProtocol {
    */
   func shouldShowOnboarding() -> Bool {
     return delegate?.shouldShowOnboarding?(manager: self) ?? !DevMenuSettings.isOnboardingFinished
+  }
+
+  func readAutoLaunchDisabledState() {
+    let userDefaultsValue = UserDefaults.standard.bool(forKey: "EXDevMenuDisableAutoLaunch")
+    if (userDefaultsValue) {
+      self.canLaunchDevMenuOnStart = false
+      UserDefaults.standard.removeObject(forKey: "EXDevMenuDisableAutoLaunch")
+    } else {
+      self.canLaunchDevMenuOnStart = true
+    }
   }
 
   @available(iOS 12.0, *)

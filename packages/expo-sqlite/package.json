@@ -1,6 +1,6 @@
 {
   "name": "expo-sqlite",
-  "version": "9.2.0",
+  "version": "10.0.1",
   "description": "Provides access to a database that can be queried through a WebSQL-like API (https://www.w3.org/TR/webdatabase/). The database is persisted across restarts of your app.",
   "main": "build/index.js",
   "types": "build/index.d.ts",
@@ -37,7 +37,7 @@
   },
   "dependencies": {
     "@expo/websql": "^1.0.1",
-    "expo-modules-core": "~0.3.0-alpha.0",
+    "expo-modules-core": "~0.4.2",
     "lodash": "^4.17.15"
   },
   "devDependencies": {

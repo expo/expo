@@ -213,7 +213,7 @@ export default {
             mediaRecorderDurationAlreadyRecorded = getAudioRecorderDurationMillis();
             mediaRecorderIsRecording = false;
             // Clears recording icon in Chrome tab
-            stream.getTracks().forEach(track => track.stop());
+            stream.getTracks().forEach((track) => track.stop());
         });
         const { uri, ...status } = await this.getAudioRecordingStatus();
         return { uri: null, status };
@@ -245,7 +245,7 @@ export default {
         if (mediaRecorder.state === 'inactive') {
             return this.getAudioRecordingStatus();
         }
-        const dataPromise = new Promise(resolve => mediaRecorder.addEventListener('dataavailable', e => resolve(e.data)));
+        const dataPromise = new Promise((resolve) => mediaRecorder.addEventListener('dataavailable', (e) => resolve(e.data)));
         mediaRecorder.stop();
         const data = await dataPromise;
         const url = URL.createObjectURL(data);
@@ -281,7 +281,7 @@ export default {
     async requestPermissionsAsync() {
         try {
             const stream = await getUserMedia({ audio: true });
-            stream.getTracks().forEach(track => track.stop());
+            stream.getTracks().forEach((track) => track.stop());
             return {
                 status: PermissionStatus.GRANTED,
                 expires: 'never',

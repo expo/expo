@@ -6,8 +6,7 @@
 #import <React/RCTComponent.h>
 #import <React/RCTUIManager.h>
 
-@implementation RNSSearchBar
-{
+@implementation RNSSearchBar {
   __weak RCTBridge *_bridge;
   UISearchController *_controller;
   UIColor *_textColor;
@@ -19,7 +18,7 @@
 {
   if (self = [super init]) {
     _bridge = bridge;
-    _controller = [UISearchController new];
+    _controller = [[UISearchController alloc] initWithSearchResultsController:nil];
     _controller.searchBar.delegate = self;
     _hideWhenScrolling = YES;
   }
@@ -56,7 +55,7 @@
 - (void)setBarTintColor:(UIColor *)barTintColor
 {
 #if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && defined(__IPHONE_13_0) && \
-    __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_13_0
+    __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_13_0 && !TARGET_OS_TV
   if (@available(iOS 13.0, *)) {
     [_controller.searchBar.searchTextField setBackgroundColor:barTintColor];
   }
@@ -66,10 +65,39 @@
 - (void)setTextColor:(UIColor *)textColor
 {
 #if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && defined(__IPHONE_13_0) && \
-    __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_13_0
+    __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_13_0 && !TARGET_OS_TV
   _textColor = textColor;
   if (@available(iOS 13.0, *)) {
     [_controller.searchBar.searchTextField setTextColor:_textColor];
+  }
+#endif
+}
+
+- (void)setCancelButtonText:(NSString *)text
+{
+  [_controller.searchBar setValue:text forKey:@"cancelButtonText"];
+}
+
+- (void)hideCancelButton
+{
+#if !TARGET_OS_TV
+  if (@available(iOS 13, *)) {
+    // On iOS 13+ UISearchController automatically shows/hides cancel button
+    // https://developer.apple.com/documentation/uikit/uisearchcontroller/3152926-automaticallyshowscancelbutton?language=objc
+  } else {
+    [_controller.searchBar setShowsCancelButton:NO animated:YES];
+  }
+#endif
+}
+
+- (void)showCancelButton
+{
+#if !TARGET_OS_TV
+  if (@available(iOS 13, *)) {
+    // On iOS 13+ UISearchController automatically shows/hides cancel button
+    // https://developer.apple.com/documentation/uikit/uisearchcontroller/3152926-automaticallyshowscancelbutton?language=objc
+  } else {
+    [_controller.searchBar setShowsCancelButton:YES animated:YES];
   }
 #endif
 }
@@ -79,17 +107,17 @@
 - (void)searchBarTextDidBeginEditing:(UISearchBar *)searchBar
 {
 #if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && defined(__IPHONE_13_0) && \
-    __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_13_0
+    __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_13_0 && !TARGET_OS_TV
   if (@available(iOS 13.0, *)) {
     // for some reason, the color does not change when set at the beginning,
     // so we apply it again here
-    if(_textColor != nil) {
+    if (_textColor != nil) {
       [_controller.searchBar.searchTextField setTextColor:_textColor];
     }
   }
 #endif
-  
-  [_controller.searchBar setShowsCancelButton:YES animated:YES];
+
+  [self showCancelButton];
   [self becomeFirstResponder];
 
   if (self.onFocus) {
@@ -102,13 +130,14 @@
   if (self.onBlur) {
     self.onBlur(@{});
   }
+  [self hideCancelButton];
 }
 
 - (void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText
 {
   if (self.onChangeText) {
     self.onChangeText(@{
-      @"text": _controller.searchBar.text,
+      @"text" : _controller.searchBar.text,
     });
   }
 }
@@ -117,7 +146,7 @@
 {
   if (self.onSearchButtonPress) {
     self.onSearchButtonPress(@{
-      @"text": _controller.searchBar.text,
+      @"text" : _controller.searchBar.text,
     });
   }
 }
@@ -127,14 +156,14 @@
 {
   _controller.searchBar.text = @"";
   [self resignFirstResponder];
-  [_controller.searchBar setShowsCancelButton:NO animated:YES];
-    
+  [self hideCancelButton];
+
   if (self.onCancelButtonPress) {
     self.onCancelButtonPress(@{});
   }
   if (self.onChangeText) {
     self.onChangeText(@{
-      @"text": _controller.searchBar.text,
+      @"text" : _controller.searchBar.text,
     });
   }
 }
@@ -148,7 +177,7 @@ RCT_EXPORT_MODULE()
 
 - (UIView *)view
 {
-    return [[RNSSearchBar alloc] initWithBridge:self.bridge];
+  return [[RNSSearchBar alloc] initWithBridge:self.bridge];
 }
 
 RCT_EXPORT_VIEW_PROPERTY(obscureBackground, BOOL)
@@ -158,6 +187,7 @@ RCT_EXPORT_VIEW_PROPERTY(autoCapitalize, UITextAutocapitalizationType)
 RCT_EXPORT_VIEW_PROPERTY(placeholder, NSString)
 RCT_EXPORT_VIEW_PROPERTY(barTintColor, UIColor)
 RCT_EXPORT_VIEW_PROPERTY(textColor, UIColor)
+RCT_EXPORT_VIEW_PROPERTY(cancelButtonText, NSString)
 
 RCT_EXPORT_VIEW_PROPERTY(onChangeText, RCTBubblingEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onCancelButtonPress, RCTBubblingEventBlock)

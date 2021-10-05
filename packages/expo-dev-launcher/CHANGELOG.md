@@ -4,9 +4,52 @@
 
 ### 🛠 Breaking changes
 
+- Added a native dependency on the `expo-manifests` package. ([#14461](https://github.com/expo/expo/pull/14461) by [@esamelson](https://github.com/esamelson))
+  - This is a breaking change for projects **without `react-native-unimodules` or `expo-modules-core` installed**. In order to upgrade from `expo-dev-client@0.5.1` or below to this version in such projects, the following changes must be made:
+    - In `ios/Podfile`, change the deployment target to `platform :ios, '12.0'` and add the following lines inside the main target:
+    ```ruby
+    pod 'EXJSONUtils', path: '../node_modules/expo-json-utils/ios', :configurations => :debug
+    pod 'EXManifests', path: '../node_modules/expo-manifests/ios', :configurations => :debug
+    ```
+    - In `android/settings.gradle`, add the following lines:
+    ```groovy
+    include ':expo-json-utils'
+    project(':expo-json-utils').projectDir = new File('../node_modules/expo-json-utils/android')
+
+    include ':expo-manifests'
+    project(':expo-manifests').projectDir = new File('../node_modules/expo-manifests/android')
+    ```
+  - No additional setup is necessary for projects already using `react-native-unimodules` or `expo-modules-core`.
+- Replace Android DevLauncherManifest class with `expo-manifests`. ([#14462](https://github.com/expo/expo/pull/14462) by [@esamelson](https://github.com/esamelson))
+- Replace iOS EXDevLauncherManifest class with `expo-manifests`. ([#14463](https://github.com/expo/expo/pull/14463) by [@esamelson](https://github.com/esamelson))
+
 ### 🎉 New features
 
+- Suppress the `"main" has not been registered` exception if it was caused by a different error. ([#14363](https://github.com/expo/expo/pull/14363) by [@lukmccall](https://github.com/lukmccall))
+
 ### 🐛 Bug fixes
+
+- Fix intent that started activity isn't passed further. ([#14097](https://github.com/expo/expo/pull/14097) by [@lukmccall](https://github.com/lukmccall))
+- Fix building errors from use_frameworks! in Podfile. ([#14523](https://github.com/expo/expo/pull/14523) by [@kudo](https://github.com/kudo))
+
+### 💡 Others
+
+- Updated `@expo/config-plugins` ([#14443](https://github.com/expo/expo/pull/14443) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 0.7.0 — 2021-09-02
+
+### 🎉 New features
+
+- Fix compatibility with RN 0.65. ([#14064](https://github.com/expo/expo/pull/14064) by [@lukmccall](https://github.com/lukmccall))
+- Add manifestURL to exported constants. ([#14195](https://github.com/expo/expo/pull/14195) by [@esamelson](https://github.com/esamelson))
+- Add flag to disable auto-launch of dev menu on start. ([#14196](https://github.com/expo/expo/pull/14196) by [@esamelson](https://github.com/esamelson))
+
+### 🐛 Bug fixes
+
+- Fixed crashes when the app doesn't have custom deep link scheme on iOS. ([#14026](https://github.com/expo/expo/pull/14026) by [@lukmccall](https://github.com/lukmccall))
+- Fix config plugin not idempotent. ([#14065](https://github.com/expo/expo/pull/14065) by [@lukmccall](https://github.com/lukmccall))
+- Fix React Native version checker in build.gradle. ([#14251](https://github.com/expo/expo/pull/14251) by [@esamelson](https://github.com/esamelson))
+- Fixed Cmd+D opening two dev menus. ([#14204](https://github.com/expo/expo/pull/14204) by [@fson](https://github.com/fson))
 
 ### 💡 Others
 
@@ -17,7 +60,6 @@
 ### 🐛 Bug fixes
 
 - Fixed issue with opening multiple different published apps. ([#13926](https://github.com/expo/expo/pull/13926) by [@esamelson](https://github.com/esamelson))
-- Fixed crashes when the app doesn't have custom deep link scheme on iOS. ([#14026](https://github.com/expo/expo/pull/14026) by [@lukmccall](https://github.com/lukmccall))
 
 ## 0.6.6 — 2021-08-04
 

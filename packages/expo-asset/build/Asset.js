@@ -47,7 +47,7 @@ export class Asset {
     }
     static loadAsync(moduleId) {
         const moduleIds = Array.isArray(moduleId) ? moduleId : [moduleId];
-        return Promise.all(moduleIds.map(moduleId => Asset.fromModule(moduleId).downloadAsync()));
+        return Promise.all(moduleIds.map((moduleId) => Asset.fromModule(moduleId).downloadAsync()));
     }
     static fromModule(virtualAssetModule) {
         if (typeof virtualAssetModule === 'string') {

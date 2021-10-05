@@ -10,7 +10,7 @@
 import React, { useCallback } from 'react';
 // @ts-ignore
 import { StyleSheet, View, unstable_createElement as createElement } from 'react-native';
-const ExpoCheckbox = props => {
+const ExpoCheckbox = (props) => {
     const { color, disabled, onChange, onValueChange, style, value, ...other } = props;
     const handleChange = useCallback((event) => {
         const value = event.nativeEvent.target.checked;

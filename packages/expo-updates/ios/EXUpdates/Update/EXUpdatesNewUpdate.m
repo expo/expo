@@ -39,6 +39,7 @@ NS_ASSUME_NONNULL_BEGIN
   NSMutableArray<EXUpdatesAsset *> *processedAssets = [NSMutableArray new];
 
   NSString *bundleKey = launchAsset[@"key"];
+  // TODO-JJ save launch assets with no file extension to match android
   EXUpdatesAsset *jsBundleAsset = [[EXUpdatesAsset alloc] initWithKey:bundleKey type:EXUpdatesEmbeddedBundleFileType];
   jsBundleAsset.url = bundleUrl;
   jsBundleAsset.isLaunchAsset = YES;

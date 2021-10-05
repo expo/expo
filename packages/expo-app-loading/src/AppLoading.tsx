@@ -3,13 +3,13 @@ import React from 'react';
 import { AppLoadingProps } from './AppLoading.types';
 import NativeAppLoading from './AppLoadingNativeWrapper';
 
-export default class AppLoading extends React.Component<AppLoadingProps> {
+class AppLoading extends React.Component<AppLoadingProps> {
   _isMounted: boolean = false;
 
   componentDidMount() {
     this._isMounted = true;
 
-    this.startLoadingAppResourcesAsync().catch(error => {
+    this.startLoadingAppResourcesAsync().catch((error) => {
       console.error(`AppLoading threw an unexpected error when loading:\n${error}`);
     });
   }
@@ -51,3 +51,5 @@ export default class AppLoading extends React.Component<AppLoadingProps> {
     return <NativeAppLoading {...this.props} />;
   }
 }
+
+export default AppLoading;

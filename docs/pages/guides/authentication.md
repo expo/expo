@@ -954,15 +954,14 @@ import * as React from 'react';
 import * as WebBrowser from 'expo-web-browser';
 import * as Facebook from 'expo-auth-session/providers/facebook';
 import { ResponseType } from 'expo-auth-session';
-import firebase from 'firebase';
+import { initializeApp } from 'firebase/app';
+import { getAuth, FacebookAuthProvider, signInWithCredential } from 'firebase/auth';
 import { Button } from 'react-native';
 
 // Initialize Firebase
-if (!firebase.apps.length) {
-  firebase.initializeApp({
-    /* Config */
-  });
-}
+initializeApp({
+  /* Config */
+});
 
 /* @info <strong>Web only:</strong> This method should be invoked on the page that the auth popup gets redirected to on web, it'll ensure that authentication is completed properly. On native this does nothing. */
 WebBrowser.maybeCompleteAuthSession();
@@ -983,10 +982,12 @@ export default function App() {
       /* @end */
 
       /* @info Create a Facebook credential with the <code>access_token</code> */
-      const credential = firebase.auth.FacebookAuthProvider.credential(access_token);
+      const auth = getAuth();
+      const provider = new FacebookAuthProvider();
+      const credential = provider.credential(access_token);
       /* @end */
       // Sign in with the credential from the Facebook user.
-      firebase.auth().signInWithCredential(credential);
+      signInWithCredential(auth, credential);
     }
   }, [response]);
 
@@ -1432,15 +1433,14 @@ import * as React from 'react';
 import * as WebBrowser from 'expo-web-browser';
 import { ResponseType } from 'expo-auth-session';
 import * as Google from 'expo-auth-session/providers/google';
-import firebase from 'firebase';
+import { initializeApp } from 'firebase/app';
+import { getAuth, GoogleAuthProvider, signInWithCredential } from 'firebase/auth';
 import { Button } from 'react-native';
 
 // Initialize Firebase
-if (!firebase.apps.length) {
-  firebase.initializeApp({
-    /* Config */
-  });
-}
+initializeApp({
+  /* Config */
+});
 
 /* @info <strong>Web only:</strong> This method should be invoked on the page that the auth popup gets redirected to on web, it'll ensure that authentication is completed properly. On native this does nothing. */
 WebBrowser.maybeCompleteAuthSession();
@@ -1463,9 +1463,11 @@ export default function App() {
       /* @end */
 
       /* @info Create a Google credential with the <code>id_token</code> */
-      const credential = firebase.auth.GoogleAuthProvider.credential(id_token);
+      const auth = getAuth();
+      const provider = new GoogleAuthProvider();
+      const credential = provider.credential(id_token);
       /* @end */
-      firebase.auth().signInWithCredential(credential);
+      signInWithCredential(auth, credential);
     }
   }, [response]);
 

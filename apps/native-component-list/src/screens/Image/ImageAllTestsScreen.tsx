@@ -10,7 +10,7 @@ import imageTests from './tests';
 import { ImageTest, Links } from './types';
 
 // @ts-ignore
-const flattenedTests = imageTests.tests.map(test => (test.tests ? test.tests : [test])).flat();
+const flattenedTests = imageTests.tests.map((test) => (test.tests ? test.tests : [test])).flat();
 
 type Props = StackScreenProps<Links, 'ImageTest'>;
 
@@ -62,7 +62,7 @@ export default function ImageAllTestsScreen({ navigation }: Props) {
     return item + index;
   };
 
-  const sections = imageTests.tests.map(test => ({
+  const sections = imageTests.tests.map((test) => ({
     title: test.name,
     // @ts-ignore
     data: test.tests,

@@ -226,7 +226,7 @@ export default class Video extends React.Component {
             'volume',
             'isMuted',
             'isLooping',
-        ].forEach(prop => {
+        ].forEach((prop) => {
             if (prop in this.props) {
                 status[prop] = this.props[prop];
             }

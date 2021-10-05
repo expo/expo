@@ -1,0 +1,23 @@
+{
+  "name": "stripe-react-native",
+  "version": "0.2.2",
+  "summary": "Stripe SDK for React Native",
+  "homepage": "https://github.com/stripe/stripe-react-native/#readme",
+  "license": "MIT",
+  "authors": "Stripe",
+  "platforms": {
+    "ios": "11.0"
+  },
+  "source": {
+    "git": "https://github.com/stripe/stripe-react-native.git",
+    "tag": "0.2.2"
+  },
+  "source_files": "ios/**/*.{h,m,mm,swift}",
+  "pod_target_xcconfig": {
+    "HEADER_SEARCH_PATHS": "\"${PODS_ROOT}/Stripe/Stripe3DS2\" \"${PODS_ROOT}/Headers/Public/Stripe\""
+  },
+  "dependencies": {
+    "React": [],
+    "Stripe": ["~> 21.8.1"]
+  }
+}

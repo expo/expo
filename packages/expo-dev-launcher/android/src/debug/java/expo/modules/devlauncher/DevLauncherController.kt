@@ -28,12 +28,12 @@ import expo.modules.devlauncher.launcher.DevLauncherLifecycle
 import expo.modules.devlauncher.launcher.DevLauncherReactActivityDelegateSupplier
 import expo.modules.devlauncher.launcher.DevLauncherRecentlyOpenedAppsRegistry
 import expo.modules.devlauncher.launcher.loaders.DevLauncherAppLoaderFactoryInterface
-import expo.modules.devlauncher.launcher.manifest.DevLauncherManifest
 import expo.modules.devlauncher.launcher.manifest.DevLauncherManifestParser
 import expo.modules.devlauncher.launcher.menu.DevLauncherMenuDelegate
 import expo.modules.devlauncher.react.activitydelegates.DevLauncherReactActivityNOPDelegate
 import expo.modules.devlauncher.react.activitydelegates.DevLauncherReactActivityRedirectDelegate
 import expo.modules.devlauncher.tests.DevLauncherTestInterceptor
+import expo.modules.manifests.core.Manifest
 import expo.modules.updatesinterface.UpdatesInterface
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -62,7 +62,7 @@ class DevLauncherController private constructor()
   private val lifecycle: DevLauncherLifecycle by inject()
   private val pendingIntentRegistry: DevLauncherIntentRegistryInterface by inject()
   val internalUpdatesInterface: UpdatesInterface? by optInject()
-  private var devMenuManager: DevMenuManagerInterface? = null
+  var devMenuManager: DevMenuManagerInterface? = null
   override var updatesInterface: UpdatesInterface?
     get() = internalUpdatesInterface
     set(value) = DevLauncherKoinContext.app.koin.loadModules(listOf(module {
@@ -72,10 +72,13 @@ class DevLauncherController private constructor()
   override val devClientHost = DevLauncherClientHost((context as Application), DEV_LAUNCHER_HOST)
 
   private val recentlyOpedAppsRegistry = DevLauncherRecentlyOpenedAppsRegistry(context)
-  override var manifest: DevLauncherManifest? = null
+  override var manifest: Manifest? = null
+    private set
+  override var manifestURL: Uri? = null
     private set
   override var latestLoadedApp: Uri? = null
   override var useDeveloperSupport = true
+  var canLaunchDevMenuOnStart = true
 
   enum class Mode {
     LAUNCHER, APP
@@ -105,6 +108,7 @@ class DevLauncherController private constructor()
       val appLoader = appLoaderFactory.createAppLoader(url, manifestParser)
       useDeveloperSupport = appLoaderFactory.shouldUseDeveloperSupport()
       manifest = appLoaderFactory.getManifest()
+      manifestURL = url
 
       val appLoaderListener = appLoader.createOnDelegateWillBeCreatedListener()
       lifecycle.addListener(appLoaderListener)
@@ -120,6 +124,7 @@ class DevLauncherController private constructor()
         // The app couldn't be loaded. For now, we just return to the launcher.
         mode = Mode.LAUNCHER
         manifest = null
+        manifestURL = null
       }
     } catch (e: Exception) {
       synchronized(this) {
@@ -154,6 +159,7 @@ class DevLauncherController private constructor()
 
     mode = Mode.LAUNCHER
     manifest = null
+    manifestURL = null
     context.applicationContext.startActivity(createLauncherIntent())
   }
 
@@ -161,6 +167,12 @@ class DevLauncherController private constructor()
     intent
       ?.data
       ?.let { uri ->
+        // used by appetize for snack
+        if (intent.getBooleanExtra("EXDevMenuDisableAutoLaunch", false)) {
+          canLaunchDevMenuOnStart = false
+          this.devMenuManager?.setCanLaunchDevMenuOnStart(canLaunchDevMenuOnStart)
+        }
+
         if (!isDevLauncherUrl(uri)) {
           return handleExternalIntent(intent)
         }
@@ -176,16 +188,20 @@ class DevLauncherController private constructor()
         }
         return true
       }
+
+    intent?.let {
+      return handleExternalIntent(it)
+    }
+
     return false
   }
 
   private fun handleExternalIntent(intent: Intent): Boolean {
-    if (mode == Mode.APP) {
-      return false
+    if (mode != Mode.APP && intent.action != Intent.ACTION_MAIN) {
+      pendingIntentRegistry.intent = intent
     }
 
-    pendingIntentRegistry.intent = intent
-    return true
+    return false
   }
 
   private fun ensureHostWasCleared(host: ReactNativeHost, activityToBeInvalidated: ReactActivity? = null) {
@@ -217,6 +233,7 @@ class DevLauncherController private constructor()
       } as? DevMenuManagerProviderInterface
 
     val devMenuManager = devMenuManagerProvider?.getDevMenuManager() ?: return
+    devMenuManager.setCanLaunchDevMenuOnStart(canLaunchDevMenuOnStart)
     devMenuManager.setDelegate(DevLauncherMenuDelegate(instance))
     this.devMenuManager = devMenuManager
   }

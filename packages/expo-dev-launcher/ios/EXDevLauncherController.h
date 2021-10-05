@@ -3,13 +3,13 @@
 
 #import <UIKit/UIKit.h>
 
+#import <EXManifests/EXManifestsManifest.h>
 #import <EXUpdatesInterface/EXUpdatesExternalInterface.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
 @class EXDevLauncherPendingDeepLinkRegistry;
 @class EXDevLauncherController;
-@class EXDevLauncherManifest;
 @class EXDevLauncherErrorManager;
 
 @protocol EXDevLauncherControllerDelegate <NSObject>
@@ -42,7 +42,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSDictionary<UIApplicationLaunchOptionsKey, NSObject*> *)getLaunchOptions;
 
-- (EXDevLauncherManifest * _Nullable)appManifest;
+- (EXManifestsManifest * _Nullable)appManifest;
+
+- (NSURL * _Nullable)appManifestURL;
 
 - (BOOL)isAppRunning;
 

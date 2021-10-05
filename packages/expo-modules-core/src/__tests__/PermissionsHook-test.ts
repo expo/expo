@@ -65,7 +65,7 @@ describe('product', () => {
   it('skips state update when unmounted', async () => {
     let resolve;
     const logError = jest.spyOn(console, 'error').mockImplementation();
-    const promise = new Promise<PermissionResponse>(resolvePromise => {
+    const promise = new Promise<PermissionResponse>((resolvePromise) => {
       resolve = resolvePromise;
       return permissionGranted;
     });

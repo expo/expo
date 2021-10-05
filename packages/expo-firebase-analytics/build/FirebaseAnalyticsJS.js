@@ -81,7 +81,7 @@ class FirebaseAnalyticsJS {
         const lastTime = this.lastTime;
         if (events.size > 1) {
             body = '';
-            events.forEach(event => {
+            events.forEach((event) => {
                 body += encodeQueryArgs(event, this.lastTime) + '\n';
                 this.lastTime = event._et;
             });
@@ -144,7 +144,7 @@ class FirebaseAnalyticsJS {
             return;
         const events = new Set(this.eventQueue);
         await this.send(events);
-        events.forEach(event => this.eventQueue.delete(event));
+        events.forEach((event) => this.eventQueue.delete(event));
     }
     /**
      * Clears any queued events and cancels the flush timer.
@@ -183,9 +183,28 @@ class FirebaseAnalyticsJS {
         };
         if (eventParams) {
             for (const key in eventParams) {
-                const paramKey = SHORT_EVENT_PARAMS[key] ||
-                    (typeof eventParams[key] === 'number' ? `epn.${key}` : `ep.${key}`);
-                params[paramKey] = eventParams[key];
+                if (key === 'items' && Array.isArray(eventParams[key])) {
+                    eventParams[key].forEach((item, index) => {
+                        const itemFields = [];
+                        let customItemFieldCount = 0;
+                        Object.keys(item).forEach((itemKey) => {
+                            if (SHORT_EVENT_ITEM_PARAMS[itemKey]) {
+                                itemFields.push(`${SHORT_EVENT_ITEM_PARAMS[itemKey]}${item[itemKey]}`);
+                            }
+                            else {
+                                itemFields.push(`k${customItemFieldCount}${itemKey}`);
+                                itemFields.push(`v${customItemFieldCount}${item[itemKey]}`);
+                                customItemFieldCount++;
+                            }
+                        });
+                        params[`pr${index + 1}`] = itemFields.join('~');
+                    });
+                }
+                else {
+                    const paramKey = SHORT_EVENT_PARAMS[key] ||
+                        (typeof eventParams[key] === 'number' ? `epn.${key}` : `ep.${key}`);
+                    params[paramKey] = eventParams[key];
+                }
             }
         }
         return params;
@@ -301,16 +320,33 @@ class FirebaseAnalyticsJS {
 function encodeQueryArgs(queryArgs, lastTime) {
     let keys = Object.keys(queryArgs);
     if (lastTime < 0) {
-        keys = keys.filter(key => key !== '_et');
+        keys = keys.filter((key) => key !== '_et');
     }
     return keys
-        .map(key => {
+        .map((key) => {
         return `${key}=${encodeURIComponent(key === '_et' ? Math.max(queryArgs[key] - lastTime, 0) : queryArgs[key])}`;
     })
         .join('&');
 }
 const SHORT_EVENT_PARAMS = {
     currency: 'cu',
+};
+// https://developers.google.com/gtagjs/reference/event
+const SHORT_EVENT_ITEM_PARAMS = {
+    id: 'id',
+    name: 'nm',
+    brand: 'br',
+    category: 'ca',
+    coupon: 'cp',
+    list: 'ln',
+    list_name: 'ln',
+    list_position: 'lp',
+    price: 'pr',
+    location_id: 'lo',
+    quantity: 'qt',
+    variant: 'va',
+    affiliation: 'af',
+    discount: 'ds',
 };
 export default FirebaseAnalyticsJS;
 //# sourceMappingURL=FirebaseAnalyticsJS.js.map

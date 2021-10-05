@@ -12,7 +12,7 @@ The most straightforward way to provide an icon for your app is to provide the [
 
 ### Design
 
-Create an app icon and splash image with the [Figma template](https://www.figma.com/file/ddc0glVeILssZl0Dcn1lSS/App-Icon-and-Splash?node-id=0%3A1) and video below:
+Create an app icon and splash image with the [Figma template](https://www.figma.com/community/file/1020369500490206655) and video below:
 
 <object width="100%" height="400">
   <param name="movie" value="https://youtube.com/embed/mVOFvLSiJ_s" />

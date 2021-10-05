@@ -37,7 +37,6 @@
     "autolinking": {
       "exclude": [
         "expo-branch",
-        "expo-payments-stripe",
         "expo-ads-facebook",
         "expo-ads-admob",
         "expo-apple-authentication",
@@ -57,13 +56,13 @@
         "binaryPath": "ios/build/Build/Products/Debug-iphonesimulator/BareExpoDetox.app",
         "build": "./scripts/build-detox-ios.sh Debug",
         "type": "ios.simulator",
-        "name": "iPhone 11"
+        "name": "iPhone 12"
       },
       "ios.sim.release": {
         "binaryPath": "ios/build/Build/Products/Release-iphonesimulator/BareExpoDetox.app",
         "build": "./scripts/build-detox-ios.sh Release YES",
         "type": "ios.simulator",
-        "name": "iPhone 11"
+        "name": "iPhone 12"
       },
       "android.emu.debug": {
         "binaryPath": "android/app/build/outputs/apk/debug/app-debug.apk",
@@ -86,28 +85,29 @@
       "expo-constants",
       "expo-camera",
       "expo-updates",
-      "detox"
+      "detox",
+      "react-native-reanimated"
     ]
   },
   "dependencies": {
     "@babel/runtime": "^7.5.5",
     "@react-native-async-storage/async-storage": "~1.15.0",
     "@react-native-community/datetimepicker": "3.5.2",
-    "@react-native-community/netinfo": "6.0.0",
-    "@react-native-community/slider": "3.0.3",
+    "@react-native-community/netinfo": "6.0.2",
+    "@react-native-community/slider": "4.1.4",
     "@react-native-community/viewpager": "5.0.11",
-    "@react-native-masked-view/masked-view": "0.2.4",
-    "@react-native-picker/picker": "1.16.1",
-    "@react-native-segmented-control/segmented-control": "2.3.0",
-    "expo-modules-core": "~0.3.0-alpha.0",
-    "expo": "~42.0.0-alpha.0",
-    "expo-camera": "~11.1.1",
-    "expo-dev-client": "~0.4.7",
-    "expo-face-detector": "~10.1.0",
-    "expo-image": "~1.0.0-alpha.1",
-    "expo-notifications": "~0.12.0",
-    "expo-random": "~11.2.0",
-    "expo-splash-screen": "~0.11.0",
+    "@react-native-masked-view/masked-view": "0.2.5",
+    "@react-native-picker/picker": "2.1.0",
+    "@react-native-segmented-control/segmented-control": "2.4.0",
+    "expo": "~43.0.0-beta.3",
+    "expo-camera": "~12.0.1",
+    "expo-dev-client": "~0.5.1",
+    "expo-error-recovery": "~3.0.1",
+    "expo-face-detector": "~11.0.1",
+    "expo-image": "~0.1.0",
+    "expo-notifications": "~0.13.1",
+    "expo-random": "~12.0.0",
+    "expo-splash-screen": "~0.13.1",
     "native-component-list": "*",
     "react": "17.0.1",
     "react-dom": "17.0.1",
@@ -115,26 +115,25 @@
     "react-native-appearance": "~0.3.4",
     "react-native-gesture-handler": "~1.10.2",
     "react-native-reanimated": "~2.2.0",
-    "react-native-safe-area-context": "3.2.0",
-    "react-native-screens": "~3.4.0",
-    "react-native-shared-element": "0.7.0",
+    "react-native-safe-area-context": "3.3.2",
+    "react-native-screens": "~3.8.0",
+    "react-native-shared-element": "0.8.2",
     "react-native-svg": "12.1.1",
-    "react-native-unimodules": "~0.15.0-alpha.0",
     "react-native-view-shot": "3.1.2",
-    "react-native-webview": "11.6.2",
+    "react-native-webview": "11.13.0",
     "test-suite": "*"
   },
   "devDependencies": {
     "@babel/core": "^7.12.9",
-    "@types/react": "~16.9.41",
+    "@types/react": "~17.0.21",
     "@types/react-native": "~0.64.12",
     "babel-plugin-module-resolver": "^4.1.0",
-    "babel-preset-expo": "~8.4.0",
+    "babel-preset-expo": "~8.5.1",
     "detox": "^18.20.1",
     "expo-module-scripts": "^2.0.0",
-    "expo-yarn-workspaces": "^1.5.2",
-    "jest-expo": "~42.0.0",
-    "jest-expo-puppeteer": "^1.1.0",
+    "expo-yarn-workspaces": "^1.6.0",
+    "jest-expo": "~43.0.0-beta.1",
+    "jest-expo-puppeteer": "^1.1.1",
     "puppeteer": "^2.1.1"
   }
 }

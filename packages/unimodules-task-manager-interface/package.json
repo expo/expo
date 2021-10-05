@@ -1,6 +1,6 @@
 {
   "name": "unimodules-task-manager-interface",
-  "version": "6.3.0-alpha.0",
+  "version": "7.0.1",
   "description": "Universal module interface package for TaskManager",
   "main": "index.js",
   "keywords": [
@@ -21,6 +21,6 @@
   "license": "MIT",
   "homepage": "https://github.com/expo/expo/tree/master/packages/unimodules-task-manager-interface",
   "dependencies": {
-    "expo-modules-core": "~0.3.0-alpha.0"
+    "expo-modules-core": "~0.4.2"
   }
 }

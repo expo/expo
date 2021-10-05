@@ -1,6 +1,6 @@
 {
   "name": "expo-image-manipulator",
-  "version": "9.2.0",
+  "version": "10.1.0",
   "description": "Provides functions that let you manipulation images on the local file system, eg: resize, crop.",
   "main": "build/ImageManipulator.js",
   "types": "build/ImageManipulator.d.ts",
@@ -31,7 +31,8 @@
   "license": "MIT",
   "homepage": "https://docs.expo.dev/versions/latest/sdk/imagemanipulator/",
   "dependencies": {
-    "expo-modules-core": "~0.3.0-alpha.0"
+    "expo-image-loader": "~3.0.0",
+    "expo-modules-core": "~0.4.2"
   },
   "devDependencies": {
     "expo-module-scripts": "^2.0.0"

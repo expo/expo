@@ -65,16 +65,6 @@ module Expo
       @packages.empty?
     end
 
-    # Bool that is true when Swift modules are enabled
-    public def uses_swift_modules?
-      $ExpoUseSwiftModules
-    end
-
-    # Returns whether there is at least one package that needs to be included in the generated modules provider.
-    public def needs_provider_generation?
-      uses_swift_modules? && @packages.find { |package| package.modules_class_names.any? }.present?
-    end
-
     # Filters only these packages that needs to be included in the generated modules provider.
     public def packages_to_generate
       @packages.select { |package| package.modules_class_names.any? }
@@ -82,7 +72,7 @@ module Expo
 
     # Returns the provider name which is also a name of the generated file
     public def modules_provider_name
-      @options.fetch(:provider_name, Constants::MODULES_PROVIDER_FILE_NAME)
+      @options.fetch(:providerName, Constants::MODULES_PROVIDER_FILE_NAME)
     end
 
     # privates

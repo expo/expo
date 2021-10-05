@@ -2,8 +2,8 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const config_plugins_1 = require("@expo/config-plugins");
 const pkg = require('expo-task-manager/package.json');
-const withTaskManager = config => {
-    config = config_plugins_1.withInfoPlist(config, config => {
+const withTaskManager = (config) => {
+    config = config_plugins_1.withInfoPlist(config, (config) => {
         if (!Array.isArray(config.modResults.UIBackgroundModes)) {
             config.modResults.UIBackgroundModes = [];
         }

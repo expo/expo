@@ -178,11 +178,21 @@ export function postTransforms(versionName: string): TransformPipeline {
         replace: /MessageHandlerName = @"ABI\d+_\d+_\d+ReactNativeWebView";/,
         with: `MessageHandlerName = @"ReactNativeWebView";`,
       },
+      {
+        paths: 'EXVersionManager.mm',
+        replace: /\[(RNCWebView)/,
+        with: `[${versionName}$1`,
+      },
 
       // react-native-reanimated
       {
         paths: 'EXVersionManager.mm',
         replace: /(_bridge_reanimated)/g,
+        with: `${versionName}$1`,
+      },
+      {
+        paths: 'EXVersionManager.mm',
+        replace: /\b(REA)/g,
         with: `${versionName}$1`,
       },
       {

@@ -27,6 +27,8 @@ export interface ImageProps extends AccessibilityProps {
   // or not.
   source?: ImageSourcePropType | null;
   style?: StyleProp<ImageStyle>;
+  defaultSource?: ImageSourcePropType | null;
+  loadingIndicatorSource?: ImageSourcePropType | null;
   resizeMode?: ImageResizeMode;
   /**
    * @Android only
@@ -50,7 +52,7 @@ export default class Image extends React.Component<ImageProps, ImageState> {
   static getDerivedStateFromProps(props: ImageProps) {
     return {
       onLoad: props.onLoadEnd
-        ? e => {
+        ? (e) => {
             if (props.onLoad) {
               props.onLoad(e);
             }
@@ -58,7 +60,7 @@ export default class Image extends React.Component<ImageProps, ImageState> {
           }
         : props.onLoad,
       onError: props.onLoadEnd
-        ? e => {
+        ? (e) => {
             if (props.onError) {
               props.onError(e);
             }

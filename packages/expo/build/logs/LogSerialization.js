@@ -58,7 +58,7 @@ async function serializeLogDataAsync(data, level) {
     };
 }
 function _stringifyLogData(data) {
-    return data.map(item => {
+    return data.map((item) => {
         // define the max length for log msg to be first 10000 characters
         const LOG_MESSAGE_MAX_LENGTH = 10000;
         const result = typeof item === 'string' ? item : prettyFormat(item, { plugins: [ReactNodeFormatter] });
@@ -106,7 +106,7 @@ async function _symbolicateErrorAsync(error) {
 }
 function _formatStack(stack) {
     return stack
-        .map(frame => {
+        .map((frame) => {
         let line = `${frame.file}:${frame.lineNumber}`;
         if (frame.column != null) {
             line += `:${frame.column}`;
@@ -157,7 +157,7 @@ function _captureConsoleStackTrace() {
     }
     catch (error) {
         let stackLines = error.stack.split('\n');
-        const consoleMethodIndex = stackLines.findIndex(frame => frame.includes(EXPO_CONSOLE_METHOD_NAME));
+        const consoleMethodIndex = stackLines.findIndex((frame) => frame.includes(EXPO_CONSOLE_METHOD_NAME));
         if (consoleMethodIndex !== -1) {
             stackLines = stackLines.slice(consoleMethodIndex + 1);
             error.stack = stackLines.join('\n');

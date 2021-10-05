@@ -1,5 +1,7 @@
 import { ConfigPlugin, WarningAggregator, withAppDelegate } from '@expo/config-plugins';
 
+import { InstallationPage } from './constants';
+
 const DEV_MENU_IOS_IMPORT = `
 #if defined(EX_DEV_MENU_ENABLED)
 @import EXDevMenu;
@@ -24,7 +26,7 @@ export function modifyAppDelegate(appDelegate: string) {
     if (!appDelegate.includes(DEV_MENU_IOS_INIT)) {
       const lines = appDelegate.split('\n');
 
-      const initializeReactNativeAppIndex = lines.findIndex(line =>
+      const initializeReactNativeAppIndex = lines.findIndex((line) =>
         line.includes('- (RCTBridge *)initializeReactNativeApp')
       );
 
@@ -45,14 +47,15 @@ export function modifyAppDelegate(appDelegate: string) {
   return appDelegate;
 }
 
-export const withDevMenuAppDelegate: ConfigPlugin = config => {
-  return withAppDelegate(config, config => {
+export const withDevMenuAppDelegate: ConfigPlugin = (config) => {
+  return withAppDelegate(config, (config) => {
     if (config.modResults.language === 'objc') {
       config.modResults.contents = modifyAppDelegate(config.modResults.contents);
     } else {
       WarningAggregator.addWarningIOS(
         'expo-dev-menu',
-        'Swift AppDelegate files are not supported yet.'
+        `Swift AppDelegate files are not supported yet.
+See the expo-dev-client installation instructions to modify your AppDelegate manually: ${InstallationPage}`
       );
     }
     return config;

@@ -6,3 +6,4 @@ declare global {
 export declare const isDOMAvailable: boolean;
 export declare const canUseEventListeners: boolean;
 export declare const canUseViewport: boolean;
+export declare const isAsyncDebugging = false;

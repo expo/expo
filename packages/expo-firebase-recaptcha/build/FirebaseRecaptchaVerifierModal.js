@@ -78,7 +78,7 @@ export default class FirebaseRecaptchaVerifierModal extends React.Component {
         if (resolve) {
             resolve(token);
         }
-        this.setState(state => ({
+        this.setState((state) => ({
             visible: false,
             invisibleVerify: false,
             invisibleLoaded: false,

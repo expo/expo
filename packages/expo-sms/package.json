@@ -1,6 +1,6 @@
 {
   "name": "expo-sms",
-  "version": "9.2.0",
+  "version": "10.0.1",
   "description": "Provides access to the system's UI/app for sending SMS messages.",
   "main": "build/SMS.js",
   "types": "build/SMS.d.ts",
@@ -34,7 +34,7 @@
     "preset": "expo-module-scripts/ios"
   },
   "dependencies": {
-    "expo-modules-core": "~0.3.0-alpha.0"
+    "expo-modules-core": "~0.4.2"
   },
   "devDependencies": {
     "expo-module-scripts": "^2.0.0"

@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const config_plugins_1 = require("@expo/config-plugins");
 const pkg = require('expo-cellular/package.json');
-const withCellular = config => {
+const withCellular = (config) => {
     config = config_plugins_1.AndroidConfig.Permissions.withPermissions(config, [
         // Required for TelephonyManager and `getNetworkType`
         'android.permission.READ_PHONE_STATE',

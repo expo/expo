@@ -27,14 +27,7 @@ export async function reviewPullRequestAsync(prNumber: number) {
   const pr = await GitHub.getPullRequestAsync(prNumber);
   const user = await GitHub.getAuthenticatedUserAsync();
 
-  // Fetch the base commit with a depth that is equal to the number of commits in the PR increased by one.
-  // The last one is a merge base.
-  logger.info(
-    '👾 Fetching base commit',
-    chalk.yellow.bold(pr.head.sha),
-    'with depth',
-    chalk.yellow((pr.commits + 1).toString())
-  );
+  logger.info('👾 Fetching head commit', chalk.yellow.bold(pr.head.sha));
   await Git.fetchAsync({
     remote: 'origin',
     ref: pr.head.sha,
@@ -42,7 +35,7 @@ export async function reviewPullRequestAsync(prNumber: number) {
   });
 
   // Get the diff of the pull request.
-  const diff = await Git.getDiffAsync(`${pr.head.sha}~${pr.commits}`, pr.head.sha);
+  const diff = await GitHub.getPullRequestDiffAsync(prNumber);
 
   const input: ReviewInput = {
     pullRequest: pr,

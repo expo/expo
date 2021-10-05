@@ -1,4 +1,7 @@
 import Constants from 'expo-constants';
+/**
+ * The types of update-related events.
+ */
 export declare enum UpdateEventType {
     /**
      * A new update has finished downloading to local storage. If you would like to start using this
@@ -7,7 +10,7 @@ export declare enum UpdateEventType {
      */
     UPDATE_AVAILABLE = "updateAvailable",
     /**
-     * No updates are available, and the most up-to-date bundle of this experience is already running.
+     * No updates are available, and the most up-to-date update is already running.
      */
     NO_UPDATE_AVAILABLE = "noUpdateAvailable",
     /**
@@ -23,29 +26,36 @@ export declare type ClassicManifest = typeof Constants.manifest;
  * @hidden
  */
 export declare type Manifest = ClassicManifest | typeof Constants.manifest2;
+/**
+ * The result of checking for a new update.
+ */
 export declare type UpdateCheckResult = {
     /**
-     * `true` if an update is available, `false` if you're already running the most up-to-date JS bundle.
+     * `true` if an update is available, `false` if the app is already running the latest available
+     * update.
      */
     isAvailable: boolean;
     /**
-     * If `isAvailable` is `true`, the manifest of the available update. Undefined otherwise.
-     */
-    manifest?: Manifest;
-};
-export declare type UpdateFetchResult = {
-    /**
-     * `true` if the fetched bundle is new (i.e. a different version than what's currently running),
-     * `false` otherwise.
-     */
-    isNew: boolean;
-    /**
-     * If `isNew` is `true`, the manifest of the newly downloaded update. Undefined otherwise.
+     * If `isAvailable` is `true`, the manifest of the available update, and `undefined` otherwise.
      */
     manifest?: Manifest;
 };
 /**
- * An object that is passed into each event listener when an auto-update check has occurred.
+ * The result of fetching a new update.
+ */
+export declare type UpdateFetchResult = {
+    /**
+     * `true` if the fetched bundle is new (that is, a different version than what's currently
+     * running), `false` otherwise.
+     */
+    isNew: boolean;
+    /**
+     * If `isNew` is `true`, the manifest of the newly downloaded update, and `undefined` otherwise.
+     */
+    manifest?: Manifest;
+};
+/**
+ * An object that is passed into each event listener when an auto-update check occurs.
  */
 export declare type UpdateEvent = {
     /**
@@ -53,12 +63,12 @@ export declare type UpdateEvent = {
      */
     type: UpdateEventType;
     /**
-     * If `type === Updates.UpdateEventType.UPDATE_AVAILABLE`, the manifest of the newly downloaded
-     * update. Undefined otherwise.
+     * If `type` is `Updates.UpdateEventType.UPDATE_AVAILABLE`, the manifest of the newly downloaded
+     * update, and `undefined` otherwise.
      */
     manifest?: Manifest;
     /**
-     * If `type === Updates.UpdateEventType.ERROR`, the error message. Undefined otherwise.
+     * If `type` is `Updates.UpdateEventType.ERROR`, the error message, and `undefined` otherwise.
      */
     message?: string;
 };

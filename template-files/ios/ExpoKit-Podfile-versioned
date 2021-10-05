@@ -1,4 +1,7 @@
-platform :ios, '11.0'
+platform :ios, '12.0'
+
+# Disable expo-updates auto create manifest in podspec script_phase
+$expo_updates_create_manifest = false
 
 target '${TARGET_NAME}' do
 ${EXPOKIT_DEPENDENCY}
@@ -7,6 +10,7 @@ ${PODFILE_UNVERSIONED_RN_DEPENDENCY}
 ${PODFILE_VERSIONED_RN_DEPENDENCIES}
 
   # Install vendored pods.
+  pod 'JKBigInteger', :podspec => '../../../ios/vendored/common/JKBigInteger.podspec.json'
   require_relative '../../../ios/podfile_helpers.rb'
   excluded_pods = ['stripe-react-native']
   use_pods!('../../../ios/vendored/unversioned/**/*.podspec.json', nil, excluded_pods)

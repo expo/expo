@@ -7,10 +7,10 @@ import android.util.Base64
 import android.util.Log
 import androidx.exifinterface.media.ExifInterface
 import expo.modules.core.Promise
+import expo.modules.core.errors.ModuleDestroyedException
 import expo.modules.imagepicker.ExifDataHandler
 import expo.modules.imagepicker.ImagePickerConstants
 import expo.modules.imagepicker.ImagePickerConstants.exifTags
-import expo.modules.imagepicker.ModuleDestroyedException
 import expo.modules.imagepicker.exporters.ImageExporter
 import expo.modules.imagepicker.exporters.ImageExporter.Listener
 import expo.modules.imagepicker.fileproviders.FileProvider

@@ -1,6 +1,6 @@
 {
   "name": "expo-sharing",
-  "version": "9.2.0",
+  "version": "10.0.1",
   "description": "ExpoSharing standalone module",
   "main": "build/Sharing.js",
   "types": "build/Sharing.d.ts",
@@ -31,7 +31,7 @@
   "license": "MIT",
   "homepage": "https://docs.expo.dev/versions/latest/sdk/sharing/",
   "dependencies": {
-    "expo-modules-core": "~0.3.0-alpha.0"
+    "expo-modules-core": "~0.4.2"
   },
   "devDependencies": {
     "expo-module-scripts": "^2.0.0"

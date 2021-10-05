@@ -1,8 +1,8 @@
 // Copyright 2020-present 650 Industries. All rights reserved.
 
 #import <SDWebImage/SDWebImage.h>
-#import <expo-image/EXImageView.h>
-#import <expo-image/EXImageTypes.h>
+#import <EXImage/EXImageView.h>
+#import <EXImage/EXImageTypes.h>
 #import <React/RCTComponent.h>
 #import <React/UIView+React.h>
 #import <React/RCTResizeMode.h>

@@ -195,18 +195,15 @@
     <activity android:name="com.facebook.react.devsupport.DevSettingsActivity"/>
     <!-- WHEN_PREPARING_SHELL_REMOVE_FROM_HERE -->
     <!-- ADD DEV SETTINGS HERE -->
+    <!-- BEGIN_SDK_43 -->
+    <activity android:name="abi43_0_0.com.facebook.react.devsupport.DevSettingsActivity"/>
+    <!-- END_SDK_43 -->
     <!-- BEGIN_SDK_42 -->
     <activity android:name="abi42_0_0.com.facebook.react.devsupport.DevSettingsActivity"/>
     <!-- END_SDK_42 -->
     <!-- BEGIN_SDK_41 -->
     <activity android:name="abi41_0_0.com.facebook.react.devsupport.DevSettingsActivity"/>
     <!-- END_SDK_41 -->
-    <!-- BEGIN_SDK_40 -->
-    <activity android:name="abi40_0_0.com.facebook.react.devsupport.DevSettingsActivity"/>
-    <!-- END_SDK_40 -->
-    <!-- BEGIN_SDK_39 -->
-    <activity android:name="abi39_0_0.com.facebook.react.devsupport.DevSettingsActivity"/>
-    <!-- END_SDK_39 -->
     <!-- WHEN_PREPARING_SHELL_REMOVE_TO_HERE -->
 
     <activity
@@ -219,78 +216,6 @@
         <data android:scheme="host.exp.exponent" android:path="oauthredirect"/>
       </intent-filter>
     </activity>
-
-    <!-- START OF STRIPE SCHEMES -->
-    <activity
-        android:exported="true"
-        android:launchMode="singleTask"
-        android:name="expo.modules.payments.stripe.RedirectUriReceiver"
-        android:theme="@android:style/Theme.Translucent.NoTitleBar.Fullscreen">
-        <intent-filter>
-            <action android:name="android.intent.action.VIEW" />
-            <category android:name="android.intent.category.DEFAULT" />
-            <category android:name="android.intent.category.BROWSABLE" />
-            <data android:scheme="expo.modules.payments.stripe" />
-        </intent-filter>
-    </activity>
-    <!-- Versioned Activity for Stripe -->
-    <!-- BEGIN_SDK_42 -->
-    <activity
-      android:exported="true"
-      android:launchMode="singleTask"
-      android:name="abi42_0_0.expo.modules.payments.stripe.RedirectUriReceiver"
-      android:theme="@android:style/Theme.Translucent.NoTitleBar.Fullscreen">
-      <intent-filter>
-        <action android:name="android.intent.action.VIEW" />
-        <category android:name="android.intent.category.DEFAULT" />
-        <category android:name="android.intent.category.BROWSABLE" />
-        <data android:scheme="abi42_0_0.expo.modules.payments.stripe" />
-      </intent-filter>
-    </activity>
-    <!-- END_SDK_42 -->
-    <!-- BEGIN_SDK_41 -->
-    <activity
-      android:exported="true"
-      android:launchMode="singleTask"
-      android:name="abi41_0_0.expo.modules.payments.stripe.RedirectUriReceiver"
-      android:theme="@android:style/Theme.Translucent.NoTitleBar.Fullscreen">
-      <intent-filter>
-        <action android:name="android.intent.action.VIEW" />
-        <category android:name="android.intent.category.DEFAULT" />
-        <category android:name="android.intent.category.BROWSABLE" />
-        <data android:scheme="abi41_0_0.expo.modules.payments.stripe" />
-      </intent-filter>
-    </activity>
-    <!-- END_SDK_41 -->
-    <!-- BEGIN_SDK_40 -->
-    <activity
-      android:exported="true"
-      android:launchMode="singleTask"
-      android:name="abi40_0_0.expo.modules.payments.stripe.RedirectUriReceiver"
-      android:theme="@android:style/Theme.Translucent.NoTitleBar.Fullscreen">
-      <intent-filter>
-        <action android:name="android.intent.action.VIEW" />
-        <category android:name="android.intent.category.DEFAULT" />
-        <category android:name="android.intent.category.BROWSABLE" />
-        <data android:scheme="abi40_0_0.expo.modules.payments.stripe" />
-      </intent-filter>
-    </activity>
-    <!-- END_SDK_40 -->
-    <!-- BEGIN_SDK_39 -->
-    <activity
-      android:exported="true"
-      android:launchMode="singleTask"
-      android:name="abi39_0_0.expo.modules.payments.stripe.RedirectUriReceiver"
-      android:theme="@android:style/Theme.Translucent.NoTitleBar.Fullscreen">
-      <intent-filter>
-        <action android:name="android.intent.action.VIEW" />
-        <category android:name="android.intent.category.DEFAULT" />
-        <category android:name="android.intent.category.BROWSABLE" />
-        <data android:scheme="abi39_0_0.expo.modules.payments.stripe" />
-      </intent-filter>
-    </activity>
-    <!-- END_SDK_39 -->
-    <!-- END OF STRIPE SCHEMES -->
 
     <activity
       android:name=".experience.ErrorActivity"
@@ -413,7 +338,6 @@
     <meta-data android:name="com.facebook.sdk.AutoInitEnabled" android:value="false"/>
     <meta-data android:name="com.facebook.sdk.AdvertiserIDCollectionEnabled" android:value="false"/>
 
-    <!-- ADD HERE STRIPE SCHEME META DATA -->
   </application>
 
 </manifest>

@@ -1,9 +1,9 @@
-#import <React/RCTViewManager.h>
 #import <React/RCTUIManagerObserverCoordinator.h>
+#import <React/RCTViewManager.h>
 
 #import "RNSScreenContainer.h"
 
-@interface RNScreensNavigationController: UINavigationController <RNScreensViewControllerDelegate>
+@interface RNScreensNavigationController : UINavigationController <RNScreensViewControllerDelegate>
 
 @end
 

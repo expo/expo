@@ -5,6 +5,7 @@
 
 #import "RNSharedElementStyle.h"
 #import <React/RCTView.h>
+#import <objc/runtime.h>
 
 @implementation RNSharedElementStyle
 
@@ -40,9 +41,15 @@
     if ([view isKindOfClass:[RCTView class]]) {
       RCTView* rctView = (RCTView*) view;
       _cornerRadii = [RNSharedElementStyle cornerRadiiFromRCTView: rctView];
-      _borderColor = rctView.borderColor ? [UIColor colorWithCGColor:rctView.borderColor] : [UIColor clearColor];
       _borderWidth = rctView.borderWidth >= 0.0f ? rctView.borderWidth : 0.0f;
       _backgroundColor = rctView.backgroundColor ? rctView.backgroundColor : [UIColor clearColor];
+      
+      // As of react-native 0.65, the borderColor type was changed from CGColorRef to UIColor*
+      objc_property_t propertyType = class_getProperty([RCTView class], "borderColor");
+      const char *propertyAttrs = property_getAttributes(propertyType);
+      BOOL isUIColor = [[NSString stringWithUTF8String:propertyAttrs] containsString:@"UIColor"];
+      _borderColor = rctView.borderColor ? (isUIColor ? (UIColor*) rctView.borderColor : [UIColor colorWithCGColor:(CGColorRef) rctView.borderColor]) : [UIColor clearColor];
+      
     } else {
       _cornerRadii = [RNSharedElementCornerRadii new];
       [_cornerRadii setRadius:layer.cornerRadius corner:RNSharedElementCornerAll];

@@ -16,29 +16,29 @@ import com.facebook.react.ReactActivity
 import expo.modules.devlauncher.helpers.RGBAtoARGB
 import expo.modules.devlauncher.helpers.isValidColor
 import expo.modules.devlauncher.launcher.manifest.DevLauncherOrientation
-import expo.modules.devlauncher.launcher.manifest.DevLauncherManifest
 import expo.modules.devlauncher.launcher.manifest.DevLauncherStatusBarStyle
+import expo.modules.manifests.core.Manifest
 
 class DevLauncherExpoActivityConfigurator(
-  private var manifest: DevLauncherManifest,
+  private var manifest: Manifest,
   private val context: Context
 ) {
   fun applyTaskDescription(activity: Activity) {
-    if (!isValidColor(manifest.primaryColor)) {
+    if (!isValidColor(manifest.getPrimaryColor())) {
       return
     }
-    val color = Color.parseColor(manifest.primaryColor)
+    val color = Color.parseColor(manifest.getPrimaryColor())
     val icon = BitmapFactory.decodeResource(context.resources, context.applicationInfo.icon)
 
     activity.setTaskDescription(ActivityManager.TaskDescription(
-      manifest.name,
+      manifest.getName(),
       icon,
       color
     ))
   }
 
   fun applyOrientation(activity: ReactActivity) {
-    when (manifest.orientation) {
+    when (manifest.getOrientation()) {
       DevLauncherOrientation.DEFAULT -> activity.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
       DevLauncherOrientation.PORTRAIT -> activity.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
       DevLauncherOrientation.LANDSCAPE -> activity.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
@@ -47,10 +47,11 @@ class DevLauncherExpoActivityConfigurator(
   }
 
   fun applyStatusBarConfiguration(activity: ReactActivity) {
-    val style = manifest.androidStatusBar?.barStyle
-    val backgroundColor = manifest.androidStatusBar?.backgroundColor
-    val translucent = manifest.androidStatusBar?.translucent ?: true
-    val hidden = manifest.androidStatusBar?.hidden ?: false
+    val statusBarOptions = manifest.getAndroidStatusBarOptions()
+    val style = statusBarOptions?.optString("barStyle")
+    val backgroundColor = statusBarOptions?.optString("backgroundColor")
+    val translucent = statusBarOptions == null || statusBarOptions.optBoolean("translucent", true)
+    val hidden = statusBarOptions != null && statusBarOptions.optBoolean("hidden", false)
 
     activity.runOnUiThread {
       // clear android:windowTranslucentStatus flag from Window as RN achieves translucency using WindowInsets
@@ -80,7 +81,7 @@ class DevLauncherExpoActivityConfigurator(
   }
 
   @UiThread
-  private fun setStyle(style: DevLauncherStatusBarStyle?, activity: Activity): DevLauncherStatusBarStyle {
+  private fun setStyle(style: String?, activity: Activity): String {
     var appliedStatusBarStyle = DevLauncherStatusBarStyle.LIGHT
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
       val decorView = activity.window.decorView

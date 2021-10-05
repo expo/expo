@@ -7,13 +7,16 @@ import com.facebook.react.PackageList;
 import com.facebook.react.ReactApplication;
 import com.facebook.react.ReactNativeHost;
 import com.facebook.react.ReactPackage;
+import com.facebook.react.bridge.JSIModulePackage;
 import com.facebook.soloader.SoLoader;
+import com.swmansion.reanimated.ReanimatedJSIModulePackage;
 
 import java.util.List;
 
 import androidx.annotation.NonNull;
-import expo.modules.adapters.react.ApplicationLifecycleDispatcher;
-import expo.modules.adapters.react.ReactNativeHostWrapper;
+import androidx.annotation.Nullable;
+import expo.modules.ReactNativeHostWrapper;
+import expo.modules.ApplicationLifecycleDispatcher;
 import expo.modules.devlauncher.DevLauncherController;
 
 public class MainApplication extends Application implements ReactApplication {
@@ -36,7 +39,13 @@ public class MainApplication extends Application implements ReactApplication {
     protected String getJSMainModuleName() {
       return "index";
     }
-  });
+
+    @Nullable
+    @Override
+    protected JSIModulePackage getJSIModulePackage() {
+      return new ReanimatedJSIModulePackage();
+    }
+    });
 
   @Override
   public ReactNativeHost getReactNativeHost() {

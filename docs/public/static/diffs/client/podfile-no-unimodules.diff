@@ -2,18 +2,20 @@ diff --git a/ios/Podfile b/ios/Podfile
 index 0de9cd2..64fd635 100644
 --- a/ios/Podfile
 +++ b/ios/Podfile
-@@ -1,13 +1,17 @@
+@@ -1,13 +1,19 @@
  require_relative '../node_modules/react-native/scripts/react_native_pods'
  require_relative '../node_modules/@react-native-community/cli-platform-ios/native_modules'
  
 -platform :ios, '10.0'
-+platform :ios, '11.0'
++platform :ios, '12.0'
  
  target 'AwesomeProject' do
    config = use_native_modules!
  
    use_react_native!(:path => config["reactNativePath"])
  
++  pod 'EXJSONUtils', path: '../node_modules/expo-json-utils/ios', :configurations => :debug
++  pod 'EXManifests', path: '../node_modules/expo-manifests/ios', :configurations => :debug
 +  pod 'EXUpdatesInterface', path: '../node_modules/expo-updates-interface/ios'
 +  pod 'expo-dev-launcher', path: '../node_modules/expo-dev-launcher', :configurations => :debug
 +  pod 'expo-dev-menu', path: '../node_modules/expo-dev-menu', :configurations => :debug

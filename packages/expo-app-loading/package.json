@@ -1,6 +1,6 @@
 {
   "name": "expo-app-loading",
-  "version": "1.1.0",
+  "version": "1.1.4",
   "description": "A React component that keeps the native splash screen visible.",
   "main": "build/index.js",
   "types": "build/index.d.ts",
@@ -31,7 +31,7 @@
   "license": "MIT",
   "homepage": "https://docs.expo.dev/versions/latest/sdk/app-loading",
   "dependencies": {
-    "expo-splash-screen": "~0.11.0"
+    "expo-splash-screen": "~0.13.1"
   },
   "devDependencies": {
     "expo-module-scripts": "^2.0.0"

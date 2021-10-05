@@ -28,10 +28,9 @@ class ExpoAutolinkingManager {
   private Map options
   private Object cachedResolvingResults
 
-  static String generatedPackageListNamespace = 'expo.modules.linker'
+  static String generatedPackageListNamespace = 'expo.modules'
   static String generatedPackageListFilename = 'ExpoModulesPackageList.java'
   static String generatedFilesSrcDir = 'generated/expo/src/main/java'
-  static String modulesLinkerName = 'expo-modules-linker'
 
   ExpoAutolinkingManager(File projectDir, Map options = [:]) {
     this.projectDir = projectDir
@@ -81,7 +80,7 @@ class ExpoAutolinkingManager {
 
     if (options == null) {
       // Options are provided only when settings.gradle was configured.
-      // If not, the generated list should be empty.
+      // If not or opted-out from autolinking, the generated list should be empty.
       args += '--empty'
     }
 
@@ -106,8 +105,9 @@ class ExpoAutolinkingManager {
       'android'
     ]
 
-    if (options?.searchPaths) {
-      args += options.searchPaths
+    def searchPaths = options?.get("searchPaths", options?.get("modulesPaths", null))
+    if (searchPaths) {
+      args += searchPaths
     }
 
     if (options?.ignorePaths) {
@@ -142,30 +142,23 @@ if (rootProject instanceof ProjectDescriptor) {
     for (module in modules) {
       include(":${module.projectName}")
       project(":${module.projectName}").projectDir = new File(module.sourceDir)
-
-      if (module.projectName == "expo-modules-core") {
-        String modulesLinkerPath = Paths.get(
-          module.sourceDir,
-          "..",
-          "android-linker"
-        ).toString()
-
-        include(":${ExpoAutolinkingManager.modulesLinkerName}")
-        project(":${ExpoAutolinkingManager.modulesLinkerName}").projectDir = new File(modulesLinkerPath)
-      }
     }
 
     // Save the manager in the shared context, so that we can later use it in `build.gradle`.
     gradle.ext.expoAutolinkingManager = manager
   }
 } else {
-  def addDependencies = { DependencyHandler handler, Closure<Project> projectNameResolver ->
-    // Return early if `useExpoModules` was not called in `settings.gradle`
-    if (!gradle.ext.has('expoAutolinkingManager')) {
-      // TODO(@tsapeta): Temporarily muted this error — uncomment it once we start migrating from autolinking v1 to v2
-      // logger.error('Autolinking is not set up in `settings.gradle`: expo modules won\'t be autolinked.')
-      return
+  def addModule = { DependencyHandler handler, String projectName, Boolean useAAR ->
+    Project dependency = rootProject.project(":${projectName}")
+
+    if (useAAR) {
+      handler.add('api', "${dependency.group}:${projectName}:${dependency.version}")
+    } else {
+      handler.add('api', dependency)
     }
+  }
+
+  def addDependencies = { DependencyHandler handler, Project project ->
     ExpoAutolinkingManager manager = gradle.ext.expoAutolinkingManager
     def modules = manager.getModules()
 
@@ -176,21 +169,15 @@ if (rootProject instanceof ProjectDescriptor) {
     println 'Using expo modules'
 
     for (module in modules) {
-      Project dependency = projectNameResolver(module)
-
-      // Don't link itself 
-      if (module.name == "expo-modules-core") {
+      // Don't link itself
+      if (module.name == project.name) {
         continue
       }
 
-      if (manager.shouldUseAAR()) {
-        handler.add('api', "${dependency.group}:${module.projectName}:${dependency.version}")
-      } else {
-        handler.add('api', dependency)
-      }
-      
+      addModule(handler, module.projectName, manager.shouldUseAAR())
+
       // Can remove this once we move all the interfaces into the core.
-      if (dependency.name.endsWith('-interface')) {
+      if (module.name.endsWith('-interface')) {
         continue
       }
 
@@ -198,51 +185,29 @@ if (rootProject instanceof ProjectDescriptor) {
     }
   }
 
-  def findAppProject = { Project project -> 
-    return project.rootProject.subprojects.find { 
-      it.plugins.find { it.class.name == "com.android.build.gradle.AppPlugin" } 
-    }
-  }
-
-  ext.addLinkerPackage = { Project project -> 
-    Map options = gradle.ext.has('expoAutolinkingManager') ? gradle.ext.expoAutolinkingManager.options : null
-    if (options == null) {
-      return
-    }
-    
-    if (options.autolink == false) {
-      return
-    }
-
-    Project appProject = findAppProject(project)  
-    if (appProject == null) {
-      logger.warn("Can't add `expo-modules-linker` automatically. The app android project wasn't found.")
-      return
-    }
-
-    Project linkerProject = rootProject.findProject(":${ExpoAutolinkingManager.modulesLinkerName}")
-    if (linkerProject == null) {
-      logger.warn("Can't find `expo-modules-linker` project. Please, make sure that `useExpoModules` was called in `settings.gradle`.")
-      return
-    }
-
-    if (appProject.configurations.findByName("implementation")) {
-      appProject.dependencies.add('implementation', linkerProject)
-    } else { 
-      logger.warn("Can't add `expo-modules-linker` automatically. Couldn't find configuration.")
-    }
-  }
-
   // Adding dependencies
   ext.addExpoModulesDependencies = { DependencyHandler handler, Project project ->
-    // `addExpoModulesDependencies` can't be called in `expo-modules-core`, because it would lead to the circular dependency.
-    // For some reason Gradle sometimes tries to call this function in `expo-modules-core` - maybe because `expo-modules-core` adds `expo-modules-linker`
-    // and Gradle tries to parse linker project with the wrong context. So for now, we're just ignoring that and waiting for the correct invocation. 
-    if (project.path == ":expo-modules-core" || project.path.startsWith("host.exp.exponent:expo-modules-core")) {
-      logger.warn("`addExpoModulesDependencies` was called with the `expo-modules-core` project.")
+    // Return early if `useExpoModules` was not called in `settings.gradle`
+    if (!gradle.ext.has('expoAutolinkingManager')) {
+      logger.error('Error: Autolinking is not set up in `settings.gradle`: expo modules won\'t be autolinked.')
       return
     }
-    addDependencies(handler) { module -> rootProject.project(":${module.projectName}") }
+
+    ExpoAutolinkingManager manager = gradle.ext.expoAutolinkingManager
+
+    if (rootProject.findProject(':expo-modules-core')) {
+      // `expo` requires `expo-modules-core` as a dependency, even if autolinking is turned off.
+      addModule(handler, 'expo-modules-core', manager.shouldUseAAR())
+    } else {
+      logger.error('Error: `expo-modules-core` project is not included by autolinking.')
+    }
+
+    // If opted-in not to autolink modules as dependencies
+    if (manager.options == null) {
+      return
+    }
+
+    addDependencies(handler, project)
   }
 
   // Generating the package list
@@ -272,7 +237,8 @@ if (rootProject instanceof ProjectDescriptor) {
         continue
       }
 
-      if (module.projectName == "expo-modules-core") {
+      // Prevent circular dependencies
+      if (module.projectName == project.name) {
         continue
       }
       

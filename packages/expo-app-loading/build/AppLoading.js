@@ -1,10 +1,10 @@
 import React from 'react';
 import NativeAppLoading from './AppLoadingNativeWrapper';
-export default class AppLoading extends React.Component {
+class AppLoading extends React.Component {
     _isMounted = false;
     componentDidMount() {
         this._isMounted = true;
-        this.startLoadingAppResourcesAsync().catch(error => {
+        this.startLoadingAppResourcesAsync().catch((error) => {
             console.error(`AppLoading threw an unexpected error when loading:\n${error}`);
         });
     }
@@ -42,4 +42,5 @@ export default class AppLoading extends React.Component {
         return React.createElement(NativeAppLoading, { ...this.props });
     }
 }
+export default AppLoading;
 //# sourceMappingURL=AppLoading.js.map

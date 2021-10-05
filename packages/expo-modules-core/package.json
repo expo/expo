@@ -1,6 +1,6 @@
 {
   "name": "expo-modules-core",
-  "version": "0.3.0-alpha.0",
+  "version": "0.4.2",
   "description": "The core of Expo Modules architecture",
   "main": "build/index.js",
   "types": "build/index.d.ts",
@@ -36,7 +36,6 @@
   },
   "dependencies": {
     "compare-versions": "^3.4.0",
-    "expo-modules-autolinking": "^0.3.0-alpha.0",
     "invariant": "^2.2.4"
   },
   "devDependencies": {

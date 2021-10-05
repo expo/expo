@@ -45,7 +45,7 @@ function usePedometerHistory({
   }, []);
 
   React.useEffect(() => {
-    Pedometer.getStepCountAsync(start, end).then(data => {
+    Pedometer.getStepCountAsync(start, end).then((data) => {
       if (isMounted.current) {
         setData(data);
       }

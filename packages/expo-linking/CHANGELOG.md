@@ -6,11 +6,19 @@
 
 ### 🎉 New features
 
-- Update JS code to read manifest2 when manifest is not available. ([#13602](https://github.com/expo/expo/pull/13602) by [@wschurman](https://github.com/wschurman))
-
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 2.4.1 — 2021-10-01
+
+_This version does not introduce any user-facing changes._
+
+## 2.4.0 — 2021-09-09
+
+### 🎉 New features
+
+- Update JS code to read manifest2 when manifest is not available. ([#13602](https://github.com/expo/expo/pull/13602) by [@wschurman](https://github.com/wschurman))
 
 ## 2.3.0 — 2021-06-16
 

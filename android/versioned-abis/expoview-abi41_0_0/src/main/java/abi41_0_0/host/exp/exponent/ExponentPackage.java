@@ -191,7 +191,7 @@ public class ExponentPackage implements ReactPackage {
         ExperienceKey experienceKey = ExperienceKey.fromManifest(mManifest);
         ScopedContext scopedContext = new ScopedContext(reactContext, experienceKey);
 
-        nativeModules.add(new NotificationsModule(reactContext, experienceKey, mManifest.getStableLegacyID(), mExperienceProperties));
+        nativeModules.add(new NotificationsModule(reactContext, experienceKey, mManifest.getStableLegacyID(), mManifest.getEASProjectID()));
         nativeModules.add(new RNViewShotModule(reactContext, scopedContext));
         nativeModules.add(new RandomModule(reactContext));
         nativeModules.add(new ExponentTestNativeModule(reactContext));
@@ -228,7 +228,7 @@ public class ExponentPackage implements ReactPackage {
         // Call to create native modules has to be at the bottom --
         // -- ExpoModuleRegistryAdapter uses the list of native modules
         // to create Bindings for internal modules.
-        nativeModules.addAll(mModuleRegistryAdapter.createNativeModules(scopedContext, experienceKey, mExperienceProperties, mManifest, mManifest.getStableLegacyID(), nativeModules));
+        nativeModules.addAll(mModuleRegistryAdapter.createNativeModules(scopedContext, experienceKey, mExperienceProperties, mManifest, nativeModules));
       } catch (JSONException | UnsupportedEncodingException e) {
         EXL.e(TAG, e.toString());
       }

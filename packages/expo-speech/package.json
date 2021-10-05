@@ -1,6 +1,6 @@
 {
   "name": "expo-speech",
-  "version": "9.2.0",
+  "version": "10.0.1",
   "description": "Provides text-to-speech functionality.",
   "main": "build/Speech.js",
   "types": "build/Speech.d.ts",
@@ -36,7 +36,7 @@
     "preset": "expo-module-scripts/ios"
   },
   "dependencies": {
-    "expo-modules-core": "~0.3.0-alpha.0"
+    "expo-modules-core": "~0.4.2"
   },
   "devDependencies": {
     "expo-module-scripts": "^2.0.0"

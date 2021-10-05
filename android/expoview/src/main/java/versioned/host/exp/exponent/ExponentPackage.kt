@@ -38,7 +38,7 @@ import versioned.host.exp.exponent.modules.api.components.sharedelement.RNShared
 import versioned.host.exp.exponent.modules.api.components.sharedelement.RNSharedElementPackage
 import versioned.host.exp.exponent.modules.api.components.slider.ReactSliderPackage
 import versioned.host.exp.exponent.modules.api.components.svg.SvgPackage
-import versioned.host.exp.exponent.modules.api.components.viewpager.RNCViewPagerPackage
+import versioned.host.exp.exponent.modules.api.components.pagerview.PagerViewPackage
 import versioned.host.exp.exponent.modules.api.components.webview.RNCWebViewModule
 import versioned.host.exp.exponent.modules.api.components.webview.RNCWebViewPackage
 import versioned.host.exp.exponent.modules.api.netinfo.NetInfoModule
@@ -125,7 +125,7 @@ class ExponentPackage : ReactPackage {
       try {
         val experienceKey = ExperienceKey.fromManifest(manifest)
         val scopedContext = ScopedContext(reactContext, experienceKey)
-        nativeModules.add(NotificationsModule(reactContext, experienceKey, manifest.getStableLegacyID(), experienceProperties))
+        nativeModules.add(NotificationsModule(reactContext, experienceKey, manifest.getStableLegacyID(), manifest.getEASProjectID()))
         nativeModules.add(RNViewShotModule(reactContext, scopedContext))
         nativeModules.add(RandomModule(reactContext))
         nativeModules.add(ExponentTestNativeModule(reactContext))
@@ -161,7 +161,6 @@ class ExponentPackage : ReactPackage {
             experienceKey,
             experienceProperties,
             manifest,
-            manifest.getStableLegacyID(),
             nativeModules
           )
         )
@@ -194,7 +193,7 @@ class ExponentPackage : ReactPackage {
         RNCMaskedViewPackage(),
         RNCPickerPackage(),
         ReactSliderPackage(),
-        RNCViewPagerPackage(),
+        PagerViewPackage(),
         ExpoAppearancePackage(),
         stripePackage
       )

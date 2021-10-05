@@ -1,17 +1,27 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as FileSystem from 'expo-file-system';
-import firebase from 'firebase';
-import 'firebase/auth';
-import 'firebase/database';
-import 'firebase/firestore';
-import 'firebase/functions';
-import 'firebase/storage';
+import { initializeApp, getApp } from 'firebase/app';
+import { initializeAuth, getAuth, signInWithEmailAndPassword } from 'firebase/auth';
+import { getDatabase, ref, onValue } from 'firebase/database';
+import {
+  initializeFirestore,
+  getFirestore,
+  query,
+  collection,
+  where,
+  doc,
+  getDocs,
+  getDoc,
+} from 'firebase/firestore';
+import { getFunctions, httpsCallable } from 'firebase/functions';
+import { getStorage, ref as storageRef, listAll, getDownloadURL } from 'firebase/storage';
 
 // The modules below require browser features and are not compatible within the react-native context.
-// import "firebase/analytics";
-// import "firebase/remote-config";
-// import "firebase/messaging";
-// import "firebase/performance";
-// import "firebase/installations";
+// import {...} from "firebase/analytics";
+// import {...} from "firebase/remote-config";
+// import {...} from "firebase/messaging";
+// import {...} from "firebase/performance";
+// import {...} from "firebase/installations";
 
 import { expectMethodToThrowAsync } from '../TestUtils';
 
@@ -29,40 +39,52 @@ const FIREBASE_CONFIG = {
 };
 
 export async function test({ describe, it, expect, beforeAll }) {
+  // Firebase can't reinitialize parts of their SDK, let's try and silently ignore if it fails.
   beforeAll(() => {
     try {
-      firebase.initializeApp(FIREBASE_CONFIG);
-    } catch (err) {
-      // nop
-    }
+      initializeApp(FIREBASE_CONFIG);
+    } catch {}
+
+    try {
+      // We need to use `@react-native-async-storage/async-storage` instead of `react-native`.
+      // See: https://github.com/firebase/firebase-js-sdk/issues/1847
+      initializeAuth(getApp(), { persistence: getReactNativePersistence(AsyncStorage) });
+    } catch {}
+
+    try {
+      // Without experimental force long polling, the SDK can't connect to the firestore server.
+      // See: https://github.com/firebase/firebase-js-sdk/issues/5504
+      initializeFirestore(getApp(), { experimentalForceLongPolling: true });
+    } catch {}
   });
 
   describe('FirebaseJSSDK', async () => {
     describe('auth', async () => {
-      it(`calls auth() succesfully`, () => {
-        firebase.auth();
+      it(`calls getAuth() succesfully`, () => {
+        expect(getAuth()).not.toBeNull();
       });
+
       it(`returns correct sign-in error`, async () => {
         const error = await expectMethodToThrowAsync(() =>
-          firebase.auth().signInWithEmailAndPassword('testuser@invaliddomain.com', '0')
+          signInWithEmailAndPassword(getAuth(), 'testuser@invaliddomain.com', '0')
         );
         expect(error.code).toBe('auth/operation-not-allowed');
       });
     });
 
     describe('database', async () => {
-      it(`calls database() succesfully`, () => {
-        const db = firebase.database();
-        expect(db).not.toBeNull();
+      it(`calls getDatabase() succesfully`, () => {
+        expect(getDatabase()).not.toBeNull();
       });
+
       it(`reads data once`, async () => {
         let error = null;
         try {
-          const snapshot = await firebase
-            .database()
-            .ref('/test1')
-            .once('value');
-          expect(snapshot.val()).toBe('foobar');
+          const db = getDatabase();
+          const reference = ref(db, '/test1');
+          onValue(reference, (snapshot) => {
+            expect(snapshot.val()).toBe('foobar');
+          });
         } catch (e) {
           error = e;
         }
@@ -71,31 +93,33 @@ export async function test({ describe, it, expect, beforeAll }) {
     });
 
     describe('firestore', async () => {
-      it(`calls firestore() succesfully`, () => {
-        const db = firebase.firestore();
-        expect(db).not.toBeNull();
+      it(`calls getFirestore() succesfully`, () => {
+        expect(getFirestore()).not.toBeNull();
       });
+
       it(`gets a collection`, async () => {
         let error = null;
         try {
-          const { docs } = await firebase
-            .firestore()
-            .collection('tests')
-            .get();
-          expect(docs.length).toBeGreaterThan(0);
+          const q = query(collection(getFirestore(), 'tests'), where('foo', '==', 'bar'));
+          const querySnapshot = await getDocs(q);
+          expect(querySnapshot.size).toBe(1);
+          querySnapshot.forEach((doc) => {
+            expect(doc.data().foo).toBe('bar');
+          });
         } catch (e) {
           error = e;
         }
         expect(error).toBeNull();
       });
+
       it(`gets a document`, async () => {
         let error = null;
         try {
-          const snapshot = await firebase
-            .firestore()
-            .doc('tests/doc1')
-            .get();
-          expect(snapshot).not.toBeNull();
+          const q = query(doc(getFirestore(), 'tests/doc1'));
+          const querySnapshot = await getDoc(q);
+          expect(querySnapshot).not.toBeNull();
+          const data = querySnapshot.data();
+          expect(data.foo).toBe('bar');
         } catch (e) {
           error = e;
         }
@@ -104,15 +128,16 @@ export async function test({ describe, it, expect, beforeAll }) {
     });
 
     describe('functions', async () => {
-      it(`calls functions() succesfully`, () => {
-        const functions = firebase.functions();
-        expect(functions).not.toBeNull();
+      it(`calls getFunctions() succesfully`, () => {
+        expect(getFunctions()).not.toBeNull();
       });
+
       it(`calls the echo function`, async () => {
         let error = null;
         try {
+          const functions = getFunctions();
           const message = "I'm a unit test";
-          const echoMessage = firebase.functions().httpsCallable('echoMessage');
+          const echoMessage = httpsCallable(functions, 'echoMessage');
           const response = await echoMessage({ message });
           const responseMessage = response.data.message;
           expect(responseMessage).toBe(`Hi 👋, you said: ${message}`);
@@ -124,33 +149,32 @@ export async function test({ describe, it, expect, beforeAll }) {
     });
 
     describe('storage', () => {
-      it(`calls storage() succesfully`, () => {
-        const storage = firebase.storage();
-        expect(storage).not.toBeNull();
+      it(`calls getStorage() succesfully`, () => {
+        expect(getStorage()).not.toBeNull();
       });
+
       it(`lists all files`, async () => {
         let error = null;
         try {
-          const files = await firebase
-            .storage()
-            .ref('public')
-            .listAll();
+          const storage = getStorage();
+          const publicRef = storageRef(storage, 'public');
+          const files = await listAll(publicRef);
           expect(files.items.length).toBeGreaterThan(0);
         } catch (e) {
           error = e;
         }
         expect(error).toBeNull();
       });
+
       it(`downloads a file`, async () => {
         let error = null;
         try {
-          const files = await firebase
-            .storage()
-            .ref('public')
-            .listAll();
+          const storage = getStorage();
+          const publicRef = storageRef(storage, 'public');
+          const files = await listAll(publicRef);
           expect(files.items.length).toBeGreaterThan(0);
           const file = files.items[0];
-          const downloadUrl = await file.getDownloadURL();
+          const downloadUrl = await getDownloadURL(file);
           expect(typeof downloadUrl).toBe('string');
           const startUrl = 'https://firebasestorage.googleapis.com';
           expect(downloadUrl.substring(0, startUrl.length)).toBe(startUrl);
@@ -165,32 +189,78 @@ export async function test({ describe, it, expect, beforeAll }) {
         }
         expect(error).toBeNull();
       });
-      /* it(`upload a file`, async () => {
-        let error = null;
-        try {
-          // REQUIRES AUTH
-          const currentUser = firebase.auth ? firebase.auth().currentUser : undefined;
-          // const suffix = new Date().toISOString().replace(/\D/g, '');
-          const fileContent = new ArrayBuffer(1000);
-          const ref = firebase
-            .storage()
-            .ref(`users/${currentUser.uid}`)
-            .child(`unittest`);
-          // @ts-ignore
-          const uploadTask = ref.put(fileContent);
-          await new Promise((resolve, reject) => {
-            uploadTask.on(
-              firebase.storage.TaskEvent.STATE_CHANGED,
-              snapshot => {},
-              reject,
-              resolve
-            );
-          });
-        } catch (e) {
-          error = e;
-        }
-        expect(error).toBeNull();
-      });*/
     });
   });
+}
+
+/**
+ * This is a replacement for the internal `getReactNativePersistence`.
+ * When this function is exposed, or if Firebase switches to the new AsyncStorage, we can remove this.
+ *
+ * @see https://github.com/firebase/firebase-js-sdk/blob/cdada6c68f9740d13dd6674bcb658e28e68253b6/packages/auth/src/platform_react_native/persistence/react_native.ts#L42-L85
+ * @see https://github.com/firebase/firebase-js-sdk/issues/1847#issuecomment-929482013
+ */
+function getReactNativePersistence(storage) {
+  return class PersistenceExpo {
+    type = 'LOCAL';
+
+    /** @return {Promise<boolean>} */
+    async _isAvailable() {
+      try {
+        if (!storage) {
+          return false;
+        }
+        await storage.setItem(STORAGE_AVAILABLE_KEY, '1');
+        await storage.removeItem(STORAGE_AVAILABLE_KEY);
+        return true;
+      } catch {
+        return false;
+      }
+    }
+
+    /**
+     * @param {string} key
+     * @param {Record<string, unknown>|string} value
+     * @return {Promise<void>}
+     */
+    _set(key, value) {
+      return storage.setItem(key, JSON.stringify(value));
+    }
+
+    /**
+     * @param {string} key
+     * @param {Record<string, unknown>|string} value
+     * @return {Promise<Record<string, unknown>|string|null>}
+     */
+    async _get(key) {
+      const json = await storage.getItem(key);
+      return json ? JSON.parse(json) : null;
+    }
+
+    /**
+     * @param {string} key
+     * @return {Promise<void>}
+     */
+    _remove(key) {
+      return storage.removeItem(key);
+    }
+
+    /**
+     * @param {string} key
+     * @param {(value: Record<string, unknown>|string|null) => void} _listener
+     * @return {void}
+     */
+    _addListener(_key, _listener) {
+      // Listeners are not supported for React Native storage.
+    }
+
+    /**
+     * @param {string} key
+     * @param {(value: Record<string, unknown>|string|null) => void} _listener
+     * @return {void}
+     */
+    _removeListener(_key, _listener) {
+      // Listeners are not supported for React Native storage.
+    }
+  };
 }

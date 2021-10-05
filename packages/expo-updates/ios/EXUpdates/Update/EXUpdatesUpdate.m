@@ -6,6 +6,7 @@
 #import <EXUpdates/EXUpdatesNewUpdate.h>
 #import <EXUpdates/EXUpdatesUpdate+Private.h>
 #import <EXManifests/EXManifestsBareManifest.h>
+#import <EXManifests/EXManifestsManifestFactory.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -46,7 +47,7 @@ NSString * const EXUpdatesUpdateErrorDomain = @"EXUpdatesUpdate";
                       config:(EXUpdatesConfig *)config
                     database:(EXUpdatesDatabase *)database
 {
-  EXUpdatesUpdate *update = [[self alloc] initWithManifest:[self manifestForManifestJSON:(manifest ?: @{})]
+  EXUpdatesUpdate *update = [[self alloc] initWithManifest:[EXManifestsManifestFactory manifestForManifestJSON:(manifest ?: @{})]
                                                        config:config
                                                      database:database];
   update.updateId = updateId;
@@ -122,18 +123,6 @@ NSString * const EXUpdatesUpdateErrorDomain = @"EXUpdatesUpdate";
     });
   }
   return _assets;
-}
-
-+ (nonnull EXManifestsManifest *)manifestForManifestJSON:(nonnull NSDictionary *)manifestJSON {
-  EXManifestsManifest *manifest;
-  if (manifestJSON[@"releaseId"]) {
-    manifest = [[EXManifestsLegacyManifest alloc] initWithRawManifestJSON:manifestJSON];
-  } else if (manifestJSON[@"metadata"]) {
-    manifest = [[EXManifestsNewManifest alloc] initWithRawManifestJSON:manifestJSON];
-  } else {
-    manifest = [[EXManifestsBareManifest alloc] initWithRawManifestJSON:manifestJSON];
-  }
-  return manifest;
 }
 
 @end

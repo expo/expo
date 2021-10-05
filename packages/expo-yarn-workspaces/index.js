@@ -6,10 +6,26 @@ const findYarnWorkspaceRoot = require('find-yarn-workspace-root');
 // TODO: Use the vendored metro config in a future version after SDK 41 is released
 // const { getDefaultConfig } = require('expo/metro-config');
 const { assetExts } = require('metro-config/src/defaults/defaults');
-const exclusionList = require('metro-config/src/defaults/exclusionList');
 const path = require('path');
 
 const getSymlinkedNodeModulesForDirectory = require('./common/get-symlinked-modules');
+
+let exclusionList;
+try {
+  // blacklist was removed in the metro-config version used by
+  // react-native@0.64, but the interface is the same as the replacement,
+  // exclusionList, so we can use blacklist if it's available and otherwise
+  // use exclusionList.
+  exclusionList = require('metro-config/src/defaults/blacklist');
+} catch (e) {
+  if (e.code !== 'MODULE_NOT_FOUND') {
+    throw e;
+  }
+
+  // Require exclusionList after attempting to load blacklist, so if an error is
+  // thrown then it is the same as if we only required exclusionList.
+  exclusionList = require('metro-config/src/defaults/exclusionList');
+}
 
 /**
  * Returns a configuration object in the format expected for "metro.config.js" files. The

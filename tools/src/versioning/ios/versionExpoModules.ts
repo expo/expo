@@ -14,9 +14,6 @@ import { getVersionPrefix, getVersionedDirectory } from './utils';
 // Label of the console's timer used during versioning
 const TIMER_LABEL = 'Versioning expo modules finished in';
 
-// List of pod names to exclude from versioning
-const EXCLUDED_POD_NAMES = ['EXPaymentsStripe'];
-
 // The pattern that matches the dependency pods that need to be renamed in `*.podspec.json`.
 const PODSPEC_DEPS_TO_RENAME_PATTERN = /^(Expo|EX(?!GL_CPP)|UM|React|RCT|Yoga)/;
 
@@ -34,10 +31,6 @@ export async function versionExpoModulesAsync(
 
   // Prepare versioning task (for single package).
   const versionPackageTask = taskQueue.wrap(async (pkg) => {
-    if (EXCLUDED_POD_NAMES.includes(pkg.podspecName)) {
-      return;
-    }
-
     logger.log(`- ${chalk.green(pkg.podspecName!)}`);
     const sourceDirectory = path.join(pkg.path, pkg.iosSubdirectory);
     const targetDirectory = path.join(versionedDirectory, pkg.podspecName!);
@@ -99,9 +92,7 @@ async function generateVersionedPodspecAsync(
   }
   if (podspec.dependencies) {
     Object.keys(podspec.dependencies)
-      .filter(
-        (key) => !EXCLUDED_POD_NAMES.includes(key) && PODSPEC_DEPS_TO_RENAME_PATTERN.test(key)
-      )
+      .filter((key) => PODSPEC_DEPS_TO_RENAME_PATTERN.test(key))
       .forEach((key) => {
         const newKey = `${prefix}${key}`;
         podspec.dependencies[newKey] = podspec.dependencies[key];
@@ -109,9 +100,11 @@ async function generateVersionedPodspecAsync(
       });
   }
 
-  // Remove script phases.
-  // expo-constants has one, but the `scripts` folder isn't being copied and there is no need to have it in versioned code.
-  delete podspec['script_phases'];
+  if (['expo-updates', 'expo-constants'].includes(pkg.packageName)) {
+    // For expo-updates and expo-constants in Expo Go, we don't need app.config and app.manifest in versioned code.
+    delete podspec['script_phases'];
+    delete podspec['resource_bundles'];
+  }
 
   const targetPath = path.join(targetDirectory, `${prefix}${pkg.podspecName}.podspec.json`);
 

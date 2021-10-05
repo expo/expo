@@ -9,7 +9,7 @@ import PlatformsSection from '~/components/plugins/PlatformsSection';
 
 **`expo-intent-launcher`** provides a way to launch Android intents. For example, you can use this API to open a specific settings screen.
 
-<PlatformsSection android emulator ios simulator />
+<PlatformsSection android emulator />
 
 ## Installation
 

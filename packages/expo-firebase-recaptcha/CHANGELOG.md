@@ -10,6 +10,16 @@
 
 ### 💡 Others
 
+## 2.0.0 — 2021-10-01
+
+### 🛠 Breaking changes
+
+- Using compat firebase libraries in version 9.0.2. ([#14400](https://github.com/expo/expo/pull/14400) by [@sebastianwilczek](https://github.com/sebastianwilczek))
+
+## 1.4.3 — 2021-09-28
+
+_This version does not introduce any user-facing changes._
+
 ## 1.4.2 — 2021-06-16
 
 _This version does not introduce any user-facing changes._

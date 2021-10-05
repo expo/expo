@@ -1,6 +1,7 @@
 package expo.modules.updates.manifest
 
 import android.util.Log
+import expo.modules.jsonutils.getNullable
 import expo.modules.updates.UpdatesConfiguration
 import expo.modules.updates.UpdatesUtils
 import expo.modules.updates.db.entity.AssetEntity
@@ -49,10 +50,10 @@ class BareUpdateManifest private constructor(
             assetObject.getString("packagerHash"),
             type
           ).apply {
-            resourcesFilename = assetObject.optString("resourcesFilename")
-            resourcesFolder = assetObject.optString("resourcesFolder")
+            resourcesFilename = assetObject.getNullable("resourcesFilename")
+            resourcesFolder = assetObject.getNullable("resourcesFolder")
           }
-          val scales = assetObject.optJSONArray("scales")
+          val scales = assetObject.getNullable<JSONArray>("scales")
           // if there's only one scale we don't to decide later on which one to copy
           // so we avoid this work now
           if (scales != null && scales.length() > 1) {

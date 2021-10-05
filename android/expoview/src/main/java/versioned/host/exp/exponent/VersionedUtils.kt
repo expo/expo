@@ -21,6 +21,7 @@ import com.facebook.react.modules.systeminfo.AndroidInfoHelpers
 import com.facebook.react.packagerconnection.NotificationOnlyHandler
 import com.facebook.react.packagerconnection.RequestHandler
 import com.facebook.react.shell.MainReactPackage
+import expo.modules.jsonutils.getNullable
 import host.exp.exponent.Constants
 import host.exp.exponent.RNObject
 import host.exp.exponent.experience.ExperienceActivity
@@ -40,7 +41,7 @@ object VersionedUtils {
   // Update this value when hermes-engine getting updated.
   // Currently there is no way to retrieve Hermes bytecode version from Java,
   // as an alternative, we maintain the version by hand.
-  private const val HERMES_BYTECODE_VERSION = 74
+  private const val HERMES_BYTECODE_VERSION = 76
 
   private fun toggleExpoDevMenu() {
     val currentActivity = Exponent.instance.currentActivity
@@ -145,11 +146,7 @@ object VersionedUtils {
     packagerCommandHandlers["sendDevCommand"] = object : NotificationOnlyHandler() {
       override fun onNotification(params: Any?) {
         if (params != null && params is JSONObject) {
-          val name = if (params.has("name")) {
-            params.optString("name")
-          } else null
-
-          when (name) {
+          when (params.getNullable<String>("name")) {
             "reload" -> reloadExpoApp()
             "toggleDevMenu" -> toggleExpoDevMenu()
             "toggleRemoteDebugging" -> {

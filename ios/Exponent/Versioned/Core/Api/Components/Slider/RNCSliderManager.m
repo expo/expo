@@ -13,6 +13,9 @@
 #import <React/UIView+React.h>
 
 @implementation RNCSliderManager
+{
+  BOOL _isSliding;
+}
 
 RCT_EXPORT_MODULE()
 
@@ -27,25 +30,86 @@ RCT_EXPORT_MODULE()
    forControlEvents:(UIControlEventTouchUpInside |
                      UIControlEventTouchUpOutside |
                      UIControlEventTouchCancel)];
+
+  UITapGestureRecognizer *tapGesturer;
+  tapGesturer = [[UITapGestureRecognizer alloc] initWithTarget: self action:@selector(tapHandler:)];
+  [tapGesturer setNumberOfTapsRequired: 1];
+  [slider addGestureRecognizer:tapGesturer];
+
   return slider;
+}
+
+- (void)tapHandler:(UITapGestureRecognizer *)gesture {
+  // Ignore this tap if in the middle of a slide.
+  if (_isSliding) {
+    return;
+  }
+
+  // Bail out if the source view of the gesture isn't an RNCSlider.
+  if ([gesture.view class] != [RNCSlider class]) {
+    return;
+  }
+  RNCSlider *slider = (RNCSlider *)gesture.view;
+
+  if (!slider.tapToSeek) {
+    return;
+  }
+
+  CGPoint touchPoint = [gesture locationInView:slider];
+  float rangeWidth = slider.maximumValue - slider.minimumValue;
+  float sliderPercent = touchPoint.x / slider.bounds.size.width;
+  float value = slider.minimumValue + (rangeWidth * sliderPercent);
+
+  [slider setValue:discreteValue(slider, value) animated: YES];
+  
+  // Trigger onValueChange to address https://github.com/react-native-community/react-native-slider/issues/212
+  if (slider.onRNCSliderValueChange) {
+    slider.onRNCSliderValueChange(@{
+      @"value": @(slider.value),
+    });
+  }
+
+  if (slider.onRNCSliderSlidingComplete) {
+    slider.onRNCSliderSlidingComplete(@{
+      @"value": @(slider.value),
+    });
+  }
+}
+
+static float discreteValue(RNCSlider *sender, float value) {
+  // If step is set and less than or equal to difference between max and min values,
+  // pick the closest discrete multiple of step to return.
+
+  if (sender.step > 0 && sender.step <= (sender.maximumValue - sender.minimumValue)) {
+    
+    // Round up when increase, round down when decrease.
+    double (^_round)(double) = ^(double x) {
+      if (!UIAccessibilityIsVoiceOverRunning()) {
+        return round(x);
+      } else if (sender.lastValue > value) {
+        return floor(x);
+      } else {
+        return ceil(x);
+      }
+    };
+
+    return
+      MAX(sender.minimumValue,
+        MIN(sender.maximumValue,
+            sender.minimumValue + _round((value - sender.minimumValue) / sender.step) * sender.step
+        )
+      );
+  }
+
+  // Otherwise, leave value unchanged.
+  return value;
 }
 
 static void RNCSendSliderEvent(RNCSlider *sender, BOOL continuous, BOOL isSlidingStart)
 {
-  float value = sender.value;
+  float value = discreteValue(sender, sender.value);
 
-  if (sender.step > 0 &&
-      sender.step <= (sender.maximumValue - sender.minimumValue)) {
-
-    value =
-      MAX(sender.minimumValue,
-        MIN(sender.maximumValue,
-          sender.minimumValue + round((sender.value - sender.minimumValue) / sender.step) * sender.step
-        )
-      );
-
-    [sender setValue:value animated:NO];
-  }
+  [sender setValue:value animated:NO];
 
   if (continuous) {
     if (sender.onRNCSliderValueChange && sender.lastValue != value) {
@@ -77,11 +141,13 @@ static void RNCSendSliderEvent(RNCSlider *sender, BOOL continuous, BOOL isSlidin
 - (void)sliderTouchStart:(RNCSlider *)sender
 {
   RNCSendSliderEvent(sender, NO, YES);
+  _isSliding = YES;
 }
 
 - (void)sliderTouchEnd:(RNCSlider *)sender
 {
   RNCSendSliderEvent(sender, NO, NO);
+  _isSliding = NO;
 }
 
 RCT_EXPORT_VIEW_PROPERTY(value, float);
@@ -99,6 +165,7 @@ RCT_EXPORT_VIEW_PROPERTY(onRNCSliderSlidingComplete, RCTBubblingEventBlock);
 RCT_EXPORT_VIEW_PROPERTY(thumbTintColor, UIColor);
 RCT_EXPORT_VIEW_PROPERTY(thumbImage, UIImage);
 RCT_EXPORT_VIEW_PROPERTY(inverted, BOOL);
+RCT_EXPORT_VIEW_PROPERTY(tapToSeek, BOOL);
 RCT_EXPORT_VIEW_PROPERTY(accessibilityUnits, NSString);
 RCT_EXPORT_VIEW_PROPERTY(accessibilityIncrements, NSArray);
 

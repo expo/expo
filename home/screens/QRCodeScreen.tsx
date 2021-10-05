@@ -77,7 +77,7 @@ export default function BarCodeScreen(
   }, []);
 
   const onFlashToggle = React.useCallback(() => {
-    setLit(isLit => !isLit);
+    setLit((isLit) => !isLit);
   }, []);
 
   const { top, bottom } = useSafeAreaInsets();

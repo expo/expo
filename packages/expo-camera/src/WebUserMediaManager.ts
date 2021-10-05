@@ -9,9 +9,9 @@ export const userMediaRequested: boolean = false;
 export const mountedInstances: any[] = [];
 
 async function requestLegacyUserMediaAsync(props): Promise<any[]> {
-  const optionalSource = id => ({ optional: [{ sourceId: id }] });
+  const optionalSource = (id) => ({ optional: [{ sourceId: id }] });
 
-  const constraintToSourceId = constraint => {
+  const constraintToSourceId = (constraint) => {
     const { deviceId } = constraint;
 
     if (typeof deviceId === 'string') {
@@ -29,15 +29,15 @@ async function requestLegacyUserMediaAsync(props): Promise<any[]> {
     return null;
   };
 
-  const sources: any[] = await new Promise(resolve =>
+  const sources: any[] = await new Promise((resolve) =>
     // @ts-ignore: https://caniuse.com/#search=getSources Chrome for Android (78) & Samsung Internet (10.1) use this
-    MediaStreamTrack.getSources(sources => resolve(sources))
+    MediaStreamTrack.getSources((sources) => resolve(sources))
   );
 
   let audioSource = null;
   let videoSource = null;
 
-  sources.forEach(source => {
+  sources.forEach((source) => {
     if (source.kind === 'audio') {
       audioSource = source.id;
     } else if (source.kind === 'video') {
@@ -151,11 +151,11 @@ async function supportsCameraType(
     }
     devices = await navigator.mediaDevices.enumerateDevices();
   }
-  const cameras = devices.filter(t => t.kind === 'videoinput');
-  const [hasCamera] = cameras.filter(camera =>
-    labels.some(label => camera.label.toLowerCase().includes(label))
+  const cameras = devices.filter((t) => t.kind === 'videoinput');
+  const [hasCamera] = cameras.filter((camera) =>
+    labels.some((label) => camera.label.toLowerCase().includes(label))
   );
-  const [isCapable] = cameras.filter(camera => {
+  const [isCapable] = cameras.filter((camera) => {
     if (!('getCapabilities' in camera)) {
       return null;
     }

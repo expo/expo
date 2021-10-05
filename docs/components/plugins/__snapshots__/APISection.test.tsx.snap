@@ -139,20 +139,16 @@ exports[`APISection expo-apple-authentication 1`] = `
       class="css-1xnkoxs-paragraph-STYLES_PARAGRAPH"
       data-text="true"
     >
-      <span>
-        This component displays the proprietary "Sign In with Apple" / "Continue with Apple" button on
+      This component displays the proprietary "Sign In with Apple" / "Continue with Apple" button on
 your screen. The App Store Guidelines require you to use this component to start the
 authentication process instead of a custom button. Limited customization of the button is
 available via the provided properties.
-      </span>
     </p>
     <p
       class="css-1xnkoxs-paragraph-STYLES_PARAGRAPH"
       data-text="true"
     >
-      <span>
-        You should only attempt to render this if 
-      </span>
+      You should only attempt to render this if 
       <a
         class="css-12zqqiz-STYLES_EXTERNAL_LINK"
         href="/#isavailableasync"
@@ -163,97 +159,122 @@ available via the provided properties.
           AppleAuthentication.isAvailableAsync()
         </code>
       </a>
-      <span>
-        
+      
 resolves to 
-      </span>
       <code
         class="inline css-nuv12a-STYLES_INLINE_CODE"
       >
         true
       </code>
-      <span>
-        . This component will render nothing if it is not available, and you will get
+      . This component will render nothing if it is not available, and you will get
 a warning in development mode (
-      </span>
       <code
         class="inline css-nuv12a-STYLES_INLINE_CODE"
       >
         __DEV__ === true
       </code>
-      <span>
-        ).
-      </span>
+      ).
     </p>
+    
+
     <p
       class="css-1xnkoxs-paragraph-STYLES_PARAGRAPH"
       data-text="true"
     >
-      <span>
-        The properties of this component extend from 
-      </span>
+      The properties of this component extend from 
       <code
         class="inline css-nuv12a-STYLES_INLINE_CODE"
       >
         View
       </code>
-      <span>
-        ; however, you should not attempt to set
+      ; however, you should not attempt to set
 
-      </span>
       <code
         class="inline css-nuv12a-STYLES_INLINE_CODE"
       >
         backgroundColor
       </code>
-      <span>
-         or 
-      </span>
+       or 
       <code
         class="inline css-nuv12a-STYLES_INLINE_CODE"
       >
         borderRadius
       </code>
-      <span>
-         with the 
-      </span>
+       with the 
       <code
         class="inline css-nuv12a-STYLES_INLINE_CODE"
       >
         style
       </code>
-      <span>
-         property. This will not work and is against
+       property. This will not work and is against
 the App Store Guidelines. Instead, you should use the 
-      </span>
       <code
         class="inline css-nuv12a-STYLES_INLINE_CODE"
       >
         buttonStyle
       </code>
-      <span>
-         property to choose one of the
+       property to choose one of the
 predefined color styles and the 
-      </span>
       <code
         class="inline css-nuv12a-STYLES_INLINE_CODE"
       >
         cornerRadius
       </code>
-      <span>
-         property to change the border radius of the
+       property to change the border radius of the
 button.
-      </span>
     </p>
+    
+
     <p
       class="css-1xnkoxs-paragraph-STYLES_PARAGRAPH"
       data-text="true"
     >
-      <span>
-        Make sure to attach height and width via the style props as without these styles, the button will
+      Make sure to attach height and width via the style props as without these styles, the button will
 not appear on the screen.
-      </span>
     </p>
+    <blockquote
+      class="css-e76wiv-paragraph-STYLES_BLOCKQUOTE"
+      data-text="true"
+    >
+      <div>
+        <div
+          style="margin-top: 2px;"
+        >
+          <svg
+            aria-label="check"
+            fill="none"
+            height="16"
+            viewBox="0 0 24 24"
+            width="16"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12c6.628 0 12-5.373 12-12S18.628 0 12 0zm-.015 5.419c.269-.292.596-.44.973-.44.306 0 .575.11.776.317.203.207.306.472.306.786 0 .394-.137.745-.409 1.042-.279.306-.605.462-.968.462-.3 0-.566-.113-.768-.326-.201-.208-.304-.48-.304-.809 0-.401.133-.749.394-1.032zm1.999 11.305c-.995.936-1.705 1.52-2.17 1.784-.496.284-.905.423-1.25.423-.342 0-.621-.114-.83-.338-.202-.218-.305-.51-.305-.87 0-.92.521-3.058 1.595-6.534a1.47 1.47 0 00.042-.166c-.04.017-.087.041-.14.075-.088.055-.356.265-1.14 1.03a.334.334 0 01-.438.025l-.463-.358a.334.334 0 01-.043-.49c.722-.794 1.395-1.371 2.002-1.714.636-.358 1.173-.533 1.643-.533.303 0 .548.076.729.225.196.164.3.391.3.658 0 .175-.084.63-.697 2.686-.875 2.937-1.084 4.003-1.099 4.372.166-.098.558-.376 1.395-1.162a.334.334 0 01.462.003l.411.4a.334.334 0 01-.004.484z"
+              fill="var(--expo-theme-icon-default)"
+            />
+          </svg>
+        </div>
+      </div>
+      <div>
+        <strong
+          class="css-kkqcgt-paragraph-STYLES_BOLD_PARAGRAPH"
+        >
+          See: 
+        </strong>
+        <span>
+          <a
+            class="css-12zqqiz-STYLES_EXTERNAL_LINK"
+            href="https://developer.apple.com/documentation/authenticationservices/asauthorizationappleidbutton"
+            rel="noopener noreferrer"
+          >
+            Apple
+Documentation
+          </a>
+          
+for more details.
+        </span>
+      </div>
+    </blockquote>
     <h3
       class="css-icxoph-h3-h3-STYLES_H3"
       data-heading="true"
@@ -349,9 +370,7 @@ not appear on the screen.
             class="css-1xnkoxs-paragraph-STYLES_PARAGRAPH"
             data-text="true"
           >
-            <span>
-              The Apple-defined color scheme to use to display the button.
-            </span>
+            The Apple-defined color scheme to use to display the button.
           </p>
         </li>
         <li
@@ -388,9 +407,7 @@ not appear on the screen.
             class="css-1xnkoxs-paragraph-STYLES_PARAGRAPH"
             data-text="true"
           >
-            <span>
-              The type of button text to display ("Sign In with Apple" vs. "Continue with Apple").
-            </span>
+            The type of button text to display ("Sign In with Apple" vs. "Continue with Apple").
           </p>
         </li>
         <li
@@ -427,18 +444,14 @@ not appear on the screen.
             class="css-1xnkoxs-paragraph-STYLES_PARAGRAPH"
             data-text="true"
           >
-            <span>
-              The border radius to use when rendering the button. This works similarly to
+            The border radius to use when rendering the button. This works similarly to
 
-            </span>
             <code
               class="inline css-nuv12a-STYLES_INLINE_CODE"
             >
               style.borderRadius
             </code>
-            <span>
-               in other Views.
-            </span>
+             in other Views.
           </p>
         </li>
         <li
@@ -471,7 +484,13 @@ not appear on the screen.
               StyleProp
               &lt;
               <span>
-                Omit
+                <a
+                  class="css-12zqqiz-STYLES_EXTERNAL_LINK"
+                  href="https://www.typescriptlang.org/docs/handbook/utility-types.html#omittype-keys"
+                  rel="noopener noreferrer"
+                >
+                  Omit
+                </a>
                 &lt;
                 <span>
                   <a
@@ -500,26 +519,20 @@ not appear on the screen.
             class="css-1xnkoxs-paragraph-STYLES_PARAGRAPH"
             data-text="true"
           >
-            <span>
-              The custom style to apply to the button. Should not include 
-            </span>
+            The custom style to apply to the button. Should not include 
             <code
               class="inline css-nuv12a-STYLES_INLINE_CODE"
             >
               backgroundColor
             </code>
-            <span>
-               or 
-            </span>
+             or 
             <code
               class="inline css-nuv12a-STYLES_INLINE_CODE"
             >
               borderRadius
             </code>
-            <span>
-              
+            
 properties.
-            </span>
           </p>
         </li>
         <li
@@ -554,9 +567,7 @@ properties.
             class="css-1xnkoxs-paragraph-STYLES_PARAGRAPH"
             data-text="true"
           >
-            <span>
-              The method to call when the user presses the button. You should call 
-            </span>
+            The method to call when the user presses the button. You should call 
             <a
               class="css-12zqqiz-STYLES_EXTERNAL_LINK"
               href="/#isavailableasync"
@@ -567,10 +578,8 @@ properties.
                 AppleAuthentication.signInAsync
               </code>
             </a>
-            <span>
-              
+            
 in here.
-            </span>
           </p>
         </li>
       </ul>
@@ -674,7 +683,6 @@ in here.
             <code
               class="inline css-nuv12a-STYLES_INLINE_CODE"
             >
-              
               getCredentialStateAsync(user)
             </code>
           </span>
@@ -782,10 +790,8 @@ in here.
         </strong>
          - 
         <span>
-          <span>
-            The unique identifier for the user whose credential state you'd like to check.
+          The unique identifier for the user whose credential state you'd like to check.
 This should come from the user field of an 
-          </span>
           <a
             class="css-12zqqiz-STYLES_EXTERNAL_LINK"
             href="/#appleauthenticationcredentialstate"
@@ -796,9 +802,7 @@ This should come from the user field of an
               AppleAuthenticationCredential
             </code>
           </a>
-          <span>
-             object.
-          </span>
+           object.
         </span>
       </li>
     </ul>
@@ -806,10 +810,10 @@ This should come from the user field of an
       class="css-1xnkoxs-paragraph-STYLES_PARAGRAPH"
       data-text="true"
     >
-      <span>
-        Queries the current state of a user credential, to determine if it is still valid or if it has been revoked.
-      </span>
+      Queries the current state of a user credential, to determine if it is still valid or if it has been revoked.
     </p>
+    
+
     <blockquote
       class="css-e76wiv-paragraph-STYLES_BLOCKQUOTE"
       data-text="true"
@@ -834,16 +838,16 @@ This should come from the user field of an
         </div>
       </div>
       <div>
+        
+
         <strong
           class="css-kkqcgt-paragraph-STYLES_BOLD_PARAGRAPH"
         >
-          <span>
-            Note:
-          </span>
+          Note:
         </strong>
-        <span>
-           This method must be tested on a real device. On the iOS simulator it always throws an error.
-        </span>
+         This method must be tested on a real device. On the iOS simulator it always throws an error.
+        
+
       </div>
     </blockquote>
     <div>
@@ -933,9 +937,7 @@ This should come from the user field of an
         class="css-1xnkoxs-paragraph-STYLES_PARAGRAPH"
         data-text="true"
       >
-        <span>
-          A promise that fulfills with an 
-        </span>
+        A promise that fulfills with an 
         <a
           class="css-12zqqiz-STYLES_EXTERNAL_LINK"
           href="/#appleauthenticationcredentialstate"
@@ -946,10 +948,8 @@ This should come from the user field of an
             AppleAuthenticationCredentialState
           </code>
         </a>
-        <span>
-          
+        
 value depending on the state of the credential.
-        </span>
       </p>
     </div>
     <hr />
@@ -976,7 +976,6 @@ value depending on the state of the credential.
             <code
               class="inline css-nuv12a-STYLES_INLINE_CODE"
             >
-              
               isAvailableAsync()
             </code>
           </span>
@@ -1015,9 +1014,7 @@ value depending on the state of the credential.
       class="css-1xnkoxs-paragraph-STYLES_PARAGRAPH"
       data-text="true"
     >
-      <span>
-        Determine if the current device's operating system supports Apple authentication.
-      </span>
+      Determine if the current device's operating system supports Apple authentication.
     </p>
     <div>
       <h4
@@ -1101,25 +1098,19 @@ value depending on the state of the credential.
         class="css-1xnkoxs-paragraph-STYLES_PARAGRAPH"
         data-text="true"
       >
-        <span>
-          A promise that fulfills with 
-        </span>
+        A promise that fulfills with 
         <code
           class="inline css-nuv12a-STYLES_INLINE_CODE"
         >
           true
         </code>
-        <span>
-           if the system supports Apple authentication, and 
-        </span>
+         if the system supports Apple authentication, and 
         <code
           class="inline css-nuv12a-STYLES_INLINE_CODE"
         >
           false
         </code>
-        <span>
-           otherwise.
-        </span>
+         otherwise.
       </p>
     </div>
     <hr />
@@ -1146,7 +1137,6 @@ value depending on the state of the credential.
             <code
               class="inline css-nuv12a-STYLES_INLINE_CODE"
             >
-              
               refreshAsync(options)
             </code>
           </span>
@@ -1367,7 +1357,6 @@ value depending on the state of the credential.
             <code
               class="inline css-nuv12a-STYLES_INLINE_CODE"
             >
-              
               signInAsync(options)
             </code>
           </span>
@@ -1481,9 +1470,7 @@ value depending on the state of the credential.
         </strong>
          - 
         <span>
-          <span>
-            An optional 
-          </span>
+          An optional 
           <a
             class="css-12zqqiz-STYLES_EXTERNAL_LINK"
             href="/#appleauthenticationsigninoptions"
@@ -1494,9 +1481,7 @@ value depending on the state of the credential.
               AppleAuthenticationSignInOptions
             </code>
           </a>
-          <span>
-             object
-          </span>
+           object
         </span>
       </li>
     </ul>
@@ -1504,42 +1489,34 @@ value depending on the state of the credential.
       class="css-1xnkoxs-paragraph-STYLES_PARAGRAPH"
       data-text="true"
     >
-      <span>
-        Sends a request to the operating system to initiate the Apple authentication flow, which will
+      Sends a request to the operating system to initiate the Apple authentication flow, which will
 present a modal to the user over your app and allow them to sign in.
-      </span>
     </p>
     <p
       class="css-1xnkoxs-paragraph-STYLES_PARAGRAPH"
       data-text="true"
     >
-      <span>
-        You can request access to the user's full name and email address in this method, which allows you
+      You can request access to the user's full name and email address in this method, which allows you
 to personalize your UI for signed in users. However, users can deny access to either or both
 of these options at runtime.
-      </span>
     </p>
+    
+
     <p
       class="css-1xnkoxs-paragraph-STYLES_PARAGRAPH"
       data-text="true"
     >
-      <span>
-        Additionally, you will only receive Apple Authentication Credentials the first time users sign
+      Additionally, you will only receive Apple Authentication Credentials the first time users sign
 into your app, so you must store it for later use. It's best to store this information either
 server-side, or using 
-      </span>
       <a
         class="css-12zqqiz-STYLES_EXTERNAL_LINK"
         href="/securestore"
       >
-        <span>
-          SecureStore
-        </span>
+        SecureStore
       </a>
-      <span>
-        , so that the data persists across app installs.
+      , so that the data persists across app installs.
 You can use 
-      </span>
       <a
         class="css-12zqqiz-STYLES_EXTERNAL_LINK"
         href="/#appleauthenticationcredential"
@@ -1550,10 +1527,8 @@ You can use
           AppleAuthenticationCredential.user
         </code>
       </a>
-      <span>
-         to identify
+       to identify
 the user, since this remains the same for apps released by the same developer.
-      </span>
     </p>
     <div>
       <h4
@@ -1642,9 +1617,7 @@ the user, since this remains the same for apps released by the same developer.
         class="css-1xnkoxs-paragraph-STYLES_PARAGRAPH"
         data-text="true"
       >
-        <span>
-          A promise that fulfills with an 
-        </span>
+        A promise that fulfills with an 
         <a
           class="css-12zqqiz-STYLES_EXTERNAL_LINK"
           href="/#appleauthenticationcredential"
@@ -1655,19 +1628,15 @@ the user, since this remains the same for apps released by the same developer.
             AppleAuthenticationCredential
           </code>
         </a>
-        <span>
-          
+        
 object after a successful authentication, and rejects with 
-        </span>
         <code
           class="inline css-nuv12a-STYLES_INLINE_CODE"
         >
           ERR_CANCELED
         </code>
-        <span>
-           if the user cancels the
+         if the user cancels the
 sign-in operation.
-        </span>
       </p>
     </div>
     <hr />
@@ -1694,7 +1663,6 @@ sign-in operation.
             <code
               class="inline css-nuv12a-STYLES_INLINE_CODE"
             >
-              
               signOutAsync(options)
             </code>
           </span>
@@ -1965,7 +1933,6 @@ sign-in operation.
             <code
               class="inline css-nuv12a-STYLES_INLINE_CODE"
             >
-              
               addRevokeListener(listener)
             </code>
           </span>
@@ -2261,9 +2228,7 @@ sign-in operation.
       class="css-1xnkoxs-paragraph-STYLES_PARAGRAPH"
       data-text="true"
     >
-      <span>
-        The object type returned from a successful call to 
-      </span>
+      The object type returned from a successful call to 
       <a
         class="css-12zqqiz-STYLES_EXTERNAL_LINK"
         href="/#appleauthenticationsigninasyncoptions"
@@ -2274,10 +2239,8 @@ sign-in operation.
           AppleAuthentication.signInAsync()
         </code>
       </a>
-      <span>
-        ,
+      ,
 
-      </span>
       <a
         class="css-12zqqiz-STYLES_EXTERNAL_LINK"
         href="/#appleauthenticationrefreshasyncoptions"
@@ -2288,9 +2251,7 @@ sign-in operation.
           AppleAuthentication.refreshAsync()
         </code>
       </a>
-      <span>
-        , or 
-      </span>
+      , or 
       <a
         class="css-12zqqiz-STYLES_EXTERNAL_LINK"
         href="/#appleauthenticationsignoutasyncoptions"
@@ -2301,11 +2262,52 @@ sign-in operation.
           AppleAuthentication.signOutAsync()
         </code>
       </a>
-      <span>
-        
+      
 which contains all of the pertinent user and credential information.
-      </span>
     </p>
+    <blockquote
+      class="css-e76wiv-paragraph-STYLES_BLOCKQUOTE"
+      data-text="true"
+    >
+      <div>
+        <div
+          style="margin-top: 2px;"
+        >
+          <svg
+            aria-label="check"
+            fill="none"
+            height="16"
+            viewBox="0 0 24 24"
+            width="16"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12c6.628 0 12-5.373 12-12S18.628 0 12 0zm-.015 5.419c.269-.292.596-.44.973-.44.306 0 .575.11.776.317.203.207.306.472.306.786 0 .394-.137.745-.409 1.042-.279.306-.605.462-.968.462-.3 0-.566-.113-.768-.326-.201-.208-.304-.48-.304-.809 0-.401.133-.749.394-1.032zm1.999 11.305c-.995.936-1.705 1.52-2.17 1.784-.496.284-.905.423-1.25.423-.342 0-.621-.114-.83-.338-.202-.218-.305-.51-.305-.87 0-.92.521-3.058 1.595-6.534a1.47 1.47 0 00.042-.166c-.04.017-.087.041-.14.075-.088.055-.356.265-1.14 1.03a.334.334 0 01-.438.025l-.463-.358a.334.334 0 01-.043-.49c.722-.794 1.395-1.371 2.002-1.714.636-.358 1.173-.533 1.643-.533.303 0 .548.076.729.225.196.164.3.391.3.658 0 .175-.084.63-.697 2.686-.875 2.937-1.084 4.003-1.099 4.372.166-.098.558-.376 1.395-1.162a.334.334 0 01.462.003l.411.4a.334.334 0 01-.004.484z"
+              fill="var(--expo-theme-icon-default)"
+            />
+          </svg>
+        </div>
+      </div>
+      <div>
+        <strong
+          class="css-kkqcgt-paragraph-STYLES_BOLD_PARAGRAPH"
+        >
+          See: 
+        </strong>
+        <span>
+          <a
+            class="css-12zqqiz-STYLES_EXTERNAL_LINK"
+            href="https://developer.apple.com/documentation/authenticationservices/asauthorizationappleidcredential"
+            rel="noopener noreferrer"
+          >
+            Apple
+Documentation
+          </a>
+          
+for more details.
+        </span>
+      </div>
+    </blockquote>
     <table>
       <thead>
         <tr>
@@ -2344,18 +2346,14 @@ which contains all of the pertinent user and credential information.
           </td>
           <td>
             <span>
-              <span>
-                A short-lived session token used by your app for proof of authorization when interacting with
+              A short-lived session token used by your app for proof of authorization when interacting with
 the app's server counterpart. Unlike 
-              </span>
               <code
                 class="inline css-nuv12a-STYLES_INLINE_CODE"
               >
                 user
               </code>
-              <span>
-                , this is ephemeral and will change each session.
-              </span>
+              , this is ephemeral and will change each session.
             </span>
           </td>
         </tr>
@@ -2382,20 +2380,16 @@ the app's server counterpart. Unlike
           </td>
           <td>
             <span>
-              <span>
-                The user's email address. Might not be present if you didn't request the 
-              </span>
+              The user's email address. Might not be present if you didn't request the 
               <code
                 class="inline css-nuv12a-STYLES_INLINE_CODE"
               >
                 EMAIL
               </code>
-              <span>
-                 scope. May
+               scope. May
 also be null if this is not the first time the user has signed into your app. If the user chose
 to withhold their email address, this field will instead contain an obscured email address with
 an Apple domain.
-              </span>
             </span>
           </td>
         </tr>
@@ -2427,35 +2421,27 @@ an Apple domain.
           </td>
           <td>
             <span>
-              <span>
-                The user's name. May be 
-              </span>
+              The user's name. May be 
               <code
                 class="inline css-nuv12a-STYLES_INLINE_CODE"
               >
                 null
               </code>
-              <span>
-                 or contain 
-              </span>
+               or contain 
               <code
                 class="inline css-nuv12a-STYLES_INLINE_CODE"
               >
                 null
               </code>
-              <span>
-                 values if you didn't request the 
-              </span>
+               values if you didn't request the 
               <code
                 class="inline css-nuv12a-STYLES_INLINE_CODE"
               >
                 FULL_NAME
               </code>
-              <span>
-                
+              
 scope, if the user denied access, or if this is not the first time the user has signed into
 your app.
-              </span>
             </span>
           </td>
         </tr>
@@ -2482,9 +2468,7 @@ your app.
           </td>
           <td>
             <span>
-              <span>
-                A JSON Web Token (JWT) that securely communicates information about the user to your app.
-              </span>
+              A JSON Web Token (JWT) that securely communicates information about the user to your app.
             </span>
           </td>
         </tr>
@@ -2510,9 +2494,7 @@ your app.
           </td>
           <td>
             <span>
-              <span>
-                A value that indicates whether the user appears to the system to be a real person.
-              </span>
+              A value that indicates whether the user appears to the system to be a real person.
             </span>
           </td>
         </tr>
@@ -2539,36 +2521,28 @@ your app.
           </td>
           <td>
             <span>
-              <span>
-                An arbitrary string that your app provided as 
-              </span>
+              An arbitrary string that your app provided as 
               <code
                 class="inline css-nuv12a-STYLES_INLINE_CODE"
               >
                 state
               </code>
-              <span>
-                 in the request that generated the
+               in the request that generated the
 credential. Used to verify that the response was from the request you made. Can be used to
 avoid replay attacks. If you did not provide 
-              </span>
               <code
                 class="inline css-nuv12a-STYLES_INLINE_CODE"
               >
                 state
               </code>
-              <span>
-                 when making the sign-in request, this field
+               when making the sign-in request, this field
 will be 
-              </span>
               <code
                 class="inline css-nuv12a-STYLES_INLINE_CODE"
               >
                 null
               </code>
-              <span>
-                .
-              </span>
+              .
             </span>
           </td>
         </tr>
@@ -2589,12 +2563,10 @@ will be
           </td>
           <td>
             <span>
-              <span>
-                An identifier associated with the authenticated user. You can use this to check if the user is
+              An identifier associated with the authenticated user. You can use this to check if the user is
 still authenticated later. This is stable and can be shared across apps released under the same
 development team. The same user will have a different identifier for apps released by other
 developers.
-              </span>
             </span>
           </td>
         </tr>
@@ -2662,18 +2634,14 @@ developers.
       class="css-1xnkoxs-paragraph-STYLES_PARAGRAPH"
       data-text="true"
     >
-      <span>
-        An object representing the tokenized portions of the user's full name. Any of all of the fields
+      An object representing the tokenized portions of the user's full name. Any of all of the fields
 may be 
-      </span>
       <code
         class="inline css-nuv12a-STYLES_INLINE_CODE"
       >
         null
       </code>
-      <span>
-        . Only applicable fields that the user has allowed your app to access will be nonnull.
-      </span>
+      . Only applicable fields that the user has allowed your app to access will be nonnull.
     </p>
     <table>
       <thead>
@@ -2904,9 +2872,7 @@ may be
       class="css-1xnkoxs-paragraph-STYLES_PARAGRAPH"
       data-text="true"
     >
-      <span>
-        The options you can supply when making a call to 
-      </span>
+      The options you can supply when making a call to 
       <a
         class="css-12zqqiz-STYLES_EXTERNAL_LINK"
         href="/#appleauthenticationrefreshasyncoptions"
@@ -2917,11 +2883,52 @@ may be
           AppleAuthentication.refreshAsync()
         </code>
       </a>
-      <span>
-        .
+      .
 You must include the ID string of the user whose credentials you'd like to refresh.
-      </span>
     </p>
+    <blockquote
+      class="css-e76wiv-paragraph-STYLES_BLOCKQUOTE"
+      data-text="true"
+    >
+      <div>
+        <div
+          style="margin-top: 2px;"
+        >
+          <svg
+            aria-label="check"
+            fill="none"
+            height="16"
+            viewBox="0 0 24 24"
+            width="16"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12c6.628 0 12-5.373 12-12S18.628 0 12 0zm-.015 5.419c.269-.292.596-.44.973-.44.306 0 .575.11.776.317.203.207.306.472.306.786 0 .394-.137.745-.409 1.042-.279.306-.605.462-.968.462-.3 0-.566-.113-.768-.326-.201-.208-.304-.48-.304-.809 0-.401.133-.749.394-1.032zm1.999 11.305c-.995.936-1.705 1.52-2.17 1.784-.496.284-.905.423-1.25.423-.342 0-.621-.114-.83-.338-.202-.218-.305-.51-.305-.87 0-.92.521-3.058 1.595-6.534a1.47 1.47 0 00.042-.166c-.04.017-.087.041-.14.075-.088.055-.356.265-1.14 1.03a.334.334 0 01-.438.025l-.463-.358a.334.334 0 01-.043-.49c.722-.794 1.395-1.371 2.002-1.714.636-.358 1.173-.533 1.643-.533.303 0 .548.076.729.225.196.164.3.391.3.658 0 .175-.084.63-.697 2.686-.875 2.937-1.084 4.003-1.099 4.372.166-.098.558-.376 1.395-1.162a.334.334 0 01.462.003l.411.4a.334.334 0 01-.004.484z"
+              fill="var(--expo-theme-icon-default)"
+            />
+          </svg>
+        </div>
+      </div>
+      <div>
+        <strong
+          class="css-kkqcgt-paragraph-STYLES_BOLD_PARAGRAPH"
+        >
+          See: 
+        </strong>
+        <span>
+          <a
+            class="css-12zqqiz-STYLES_EXTERNAL_LINK"
+            href="https://developer.apple.com/documentation/authenticationservices/asauthorizationopenidrequest"
+            rel="noopener noreferrer"
+          >
+            Apple
+Documentation
+          </a>
+          
+for more details.
+        </span>
+      </div>
+    </blockquote>
     <table>
       <thead>
         <tr>
@@ -2966,37 +2973,29 @@ You must include the ID string of the user whose credentials you'd like to refre
           </td>
           <td>
             <span>
-              <span>
-                Array of user information scopes to which your app is requesting access. Note that the user can
+              Array of user information scopes to which your app is requesting access. Note that the user can
 choose to deny your app access to any scope at the time of logging in. You will still need to
 handle 
-              </span>
               <code
                 class="inline css-nuv12a-STYLES_INLINE_CODE"
               >
                 null
               </code>
-              <span>
-                 values for any scopes you request. Additionally, note that the requested scopes
+               values for any scopes you request. Additionally, note that the requested scopes
 will only be provided to you the first time each user signs into your app; in subsequent
 requests they will be 
-              </span>
               <code
                 class="inline css-nuv12a-STYLES_INLINE_CODE"
               >
                 null
               </code>
-              <span>
-                . Defaults to 
-              </span>
+              . Defaults to 
               <code
                 class="inline css-nuv12a-STYLES_INLINE_CODE"
               >
                 []
               </code>
-              <span>
-                 (no scopes).
-              </span>
+               (no scopes).
             </span>
           </td>
         </tr>
@@ -3023,24 +3022,18 @@ requests they will be
           </td>
           <td>
             <span>
-              <span>
-                An arbitrary string that is returned unmodified in the corresponding credential after a
+              An arbitrary string that is returned unmodified in the corresponding credential after a
 successful authentication. This can be used to verify that the response was from the request
 you made and avoid replay attacks. More information on this property is available in the
 OAuth 2.0 protocol 
-              </span>
               <a
                 class="css-12zqqiz-STYLES_EXTERNAL_LINK"
                 href="https://tools.ietf.org/html/rfc6749#section-10.12"
                 rel="noopener noreferrer"
               >
-                <span>
-                  RFC6749
-                </span>
+                RFC6749
               </a>
-              <span>
-                .
-              </span>
+              .
             </span>
           </td>
         </tr>
@@ -3127,9 +3120,7 @@ OAuth 2.0 protocol
       class="css-1xnkoxs-paragraph-STYLES_PARAGRAPH"
       data-text="true"
     >
-      <span>
-        The options you can supply when making a call to 
-      </span>
+      The options you can supply when making a call to 
       <a
         class="css-12zqqiz-STYLES_EXTERNAL_LINK"
         href="/#appleauthenticationsigninasyncoptions"
@@ -3140,11 +3131,52 @@ OAuth 2.0 protocol
           AppleAuthentication.signInAsync()
         </code>
       </a>
-      <span>
-        .
+      .
 None of these options are required.
-      </span>
     </p>
+    <blockquote
+      class="css-e76wiv-paragraph-STYLES_BLOCKQUOTE"
+      data-text="true"
+    >
+      <div>
+        <div
+          style="margin-top: 2px;"
+        >
+          <svg
+            aria-label="check"
+            fill="none"
+            height="16"
+            viewBox="0 0 24 24"
+            width="16"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12c6.628 0 12-5.373 12-12S18.628 0 12 0zm-.015 5.419c.269-.292.596-.44.973-.44.306 0 .575.11.776.317.203.207.306.472.306.786 0 .394-.137.745-.409 1.042-.279.306-.605.462-.968.462-.3 0-.566-.113-.768-.326-.201-.208-.304-.48-.304-.809 0-.401.133-.749.394-1.032zm1.999 11.305c-.995.936-1.705 1.52-2.17 1.784-.496.284-.905.423-1.25.423-.342 0-.621-.114-.83-.338-.202-.218-.305-.51-.305-.87 0-.92.521-3.058 1.595-6.534a1.47 1.47 0 00.042-.166c-.04.017-.087.041-.14.075-.088.055-.356.265-1.14 1.03a.334.334 0 01-.438.025l-.463-.358a.334.334 0 01-.043-.49c.722-.794 1.395-1.371 2.002-1.714.636-.358 1.173-.533 1.643-.533.303 0 .548.076.729.225.196.164.3.391.3.658 0 .175-.084.63-.697 2.686-.875 2.937-1.084 4.003-1.099 4.372.166-.098.558-.376 1.395-1.162a.334.334 0 01.462.003l.411.4a.334.334 0 01-.004.484z"
+              fill="var(--expo-theme-icon-default)"
+            />
+          </svg>
+        </div>
+      </div>
+      <div>
+        <strong
+          class="css-kkqcgt-paragraph-STYLES_BOLD_PARAGRAPH"
+        >
+          See: 
+        </strong>
+        <span>
+          <a
+            class="css-12zqqiz-STYLES_EXTERNAL_LINK"
+            href="https://developer.apple.com/documentation/authenticationservices/asauthorizationopenidrequest"
+            rel="noopener noreferrer"
+          >
+            Apple
+Documentation
+          </a>
+          
+for more details.
+        </span>
+      </div>
+    </blockquote>
     <table>
       <thead>
         <tr>
@@ -3183,22 +3215,16 @@ None of these options are required.
           </td>
           <td>
             <span>
-              <span>
-                An arbitrary string that is used to prevent replay attacks. See more information on this in the
+              An arbitrary string that is used to prevent replay attacks. See more information on this in the
 
-              </span>
               <a
                 class="css-12zqqiz-STYLES_EXTERNAL_LINK"
                 href="https://openid.net/specs/openid-connect-core-1_0.html#CodeFlowSteps"
                 rel="noopener noreferrer"
               >
-                <span>
-                  OpenID Connect specification
-                </span>
+                OpenID Connect specification
               </a>
-              <span>
-                .
-              </span>
+              .
             </span>
           </td>
         </tr>
@@ -3231,37 +3257,29 @@ None of these options are required.
           </td>
           <td>
             <span>
-              <span>
-                Array of user information scopes to which your app is requesting access. Note that the user can
+              Array of user information scopes to which your app is requesting access. Note that the user can
 choose to deny your app access to any scope at the time of logging in. You will still need to
 handle 
-              </span>
               <code
                 class="inline css-nuv12a-STYLES_INLINE_CODE"
               >
                 null
               </code>
-              <span>
-                 values for any scopes you request. Additionally, note that the requested scopes
+               values for any scopes you request. Additionally, note that the requested scopes
 will only be provided to you the first time each user signs into your app; in subsequent
 requests they will be 
-              </span>
               <code
                 class="inline css-nuv12a-STYLES_INLINE_CODE"
               >
                 null
               </code>
-              <span>
-                . Defaults to 
-              </span>
+              . Defaults to 
               <code
                 class="inline css-nuv12a-STYLES_INLINE_CODE"
               >
                 []
               </code>
-              <span>
-                 (no scopes).
-              </span>
+               (no scopes).
             </span>
           </td>
         </tr>
@@ -3288,24 +3306,18 @@ requests they will be
           </td>
           <td>
             <span>
-              <span>
-                An arbitrary string that is returned unmodified in the corresponding credential after a
+              An arbitrary string that is returned unmodified in the corresponding credential after a
 successful authentication. This can be used to verify that the response was from the request
 you made and avoid replay attacks. More information on this property is available in the
 OAuth 2.0 protocol 
-              </span>
               <a
                 class="css-12zqqiz-STYLES_EXTERNAL_LINK"
                 href="https://tools.ietf.org/html/rfc6749#section-10.12"
                 rel="noopener noreferrer"
               >
-                <span>
-                  RFC6749
-                </span>
+                RFC6749
               </a>
-              <span>
-                .
-              </span>
+              .
             </span>
           </td>
         </tr>
@@ -3373,9 +3385,7 @@ OAuth 2.0 protocol
       class="css-1xnkoxs-paragraph-STYLES_PARAGRAPH"
       data-text="true"
     >
-      <span>
-        The options you can supply when making a call to 
-      </span>
+      The options you can supply when making a call to 
       <a
         class="css-12zqqiz-STYLES_EXTERNAL_LINK"
         href="/#appleauthenticationsignoutasyncoptions"
@@ -3386,11 +3396,52 @@ OAuth 2.0 protocol
           AppleAuthentication.signOutAsync()
         </code>
       </a>
-      <span>
-        .
+      .
 You must include the ID string of the user to sign out.
-      </span>
     </p>
+    <blockquote
+      class="css-e76wiv-paragraph-STYLES_BLOCKQUOTE"
+      data-text="true"
+    >
+      <div>
+        <div
+          style="margin-top: 2px;"
+        >
+          <svg
+            aria-label="check"
+            fill="none"
+            height="16"
+            viewBox="0 0 24 24"
+            width="16"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12c6.628 0 12-5.373 12-12S18.628 0 12 0zm-.015 5.419c.269-.292.596-.44.973-.44.306 0 .575.11.776.317.203.207.306.472.306.786 0 .394-.137.745-.409 1.042-.279.306-.605.462-.968.462-.3 0-.566-.113-.768-.326-.201-.208-.304-.48-.304-.809 0-.401.133-.749.394-1.032zm1.999 11.305c-.995.936-1.705 1.52-2.17 1.784-.496.284-.905.423-1.25.423-.342 0-.621-.114-.83-.338-.202-.218-.305-.51-.305-.87 0-.92.521-3.058 1.595-6.534a1.47 1.47 0 00.042-.166c-.04.017-.087.041-.14.075-.088.055-.356.265-1.14 1.03a.334.334 0 01-.438.025l-.463-.358a.334.334 0 01-.043-.49c.722-.794 1.395-1.371 2.002-1.714.636-.358 1.173-.533 1.643-.533.303 0 .548.076.729.225.196.164.3.391.3.658 0 .175-.084.63-.697 2.686-.875 2.937-1.084 4.003-1.099 4.372.166-.098.558-.376 1.395-1.162a.334.334 0 01.462.003l.411.4a.334.334 0 01-.004.484z"
+              fill="var(--expo-theme-icon-default)"
+            />
+          </svg>
+        </div>
+      </div>
+      <div>
+        <strong
+          class="css-kkqcgt-paragraph-STYLES_BOLD_PARAGRAPH"
+        >
+          See: 
+        </strong>
+        <span>
+          <a
+            class="css-12zqqiz-STYLES_EXTERNAL_LINK"
+            href="https://developer.apple.com/documentation/authenticationservices/asauthorizationopenidrequest"
+            rel="noopener noreferrer"
+          >
+            Apple
+Documentation
+          </a>
+          
+for more details.
+        </span>
+      </div>
+    </blockquote>
     <table>
       <thead>
         <tr>
@@ -3429,24 +3480,18 @@ You must include the ID string of the user to sign out.
           </td>
           <td>
             <span>
-              <span>
-                An arbitrary string that is returned unmodified in the corresponding credential after a
+              An arbitrary string that is returned unmodified in the corresponding credential after a
 successful authentication. This can be used to verify that the response was from the request
 you made and avoid replay attacks. More information on this property is available in the
 OAuth 2.0 protocol 
-              </span>
               <a
                 class="css-12zqqiz-STYLES_EXTERNAL_LINK"
                 href="https://tools.ietf.org/html/rfc6749#section-10.12"
                 rel="noopener noreferrer"
               >
-                <span>
-                  RFC6749
-                </span>
+                RFC6749
               </a>
-              <span>
-                .
-              </span>
+              .
             </span>
           </td>
         </tr>
@@ -3564,9 +3609,7 @@ OAuth 2.0 protocol
           </td>
           <td>
             <span>
-              <span>
-                A method to unsubscribe the listener.
-              </span>
+              A method to unsubscribe the listener.
             </span>
           </td>
         </tr>
@@ -3684,9 +3727,7 @@ OAuth 2.0 protocol
       class="css-1xnkoxs-paragraph-STYLES_PARAGRAPH"
       data-text="true"
     >
-      <span>
-        An enum whose values control which pre-defined color scheme to use when rendering an 
-      </span>
+      An enum whose values control which pre-defined color scheme to use when rendering an 
       <a
         class="css-12zqqiz-STYLES_EXTERNAL_LINK"
         href="/#appleauthenticationappleauthenticationbutton"
@@ -3697,9 +3738,7 @@ OAuth 2.0 protocol
           AppleAuthenticationButton
         </code>
       </a>
-      <span>
-        .
-      </span>
+      .
     </p>
     <ul
       class="css-1a9yu92-paragraph-STYLES_UNORDERED_LIST-UL"
@@ -3723,9 +3762,7 @@ OAuth 2.0 protocol
         </code>
          - 
         <span>
-          <span>
-            White button with black text.
-          </span>
+          White button with black text.
         </span>
       </li>
       <li
@@ -3746,9 +3783,7 @@ OAuth 2.0 protocol
         </code>
          - 
         <span>
-          <span>
-            White button with a black outline and black text.
-          </span>
+          White button with a black outline and black text.
         </span>
       </li>
       <li
@@ -3769,9 +3804,7 @@ OAuth 2.0 protocol
         </code>
          - 
         <span>
-          <span>
-            Black button with white text.
-          </span>
+          Black button with white text.
         </span>
       </li>
     </ul>
@@ -3836,9 +3869,7 @@ OAuth 2.0 protocol
       class="css-1xnkoxs-paragraph-STYLES_PARAGRAPH"
       data-text="true"
     >
-      <span>
-        An enum whose values control which pre-defined text to use when rendering an 
-      </span>
+      An enum whose values control which pre-defined text to use when rendering an 
       <a
         class="css-12zqqiz-STYLES_EXTERNAL_LINK"
         href="/#appleauthenticationappleauthenticationbutton"
@@ -3849,9 +3880,7 @@ OAuth 2.0 protocol
           AppleAuthenticationButton
         </code>
       </a>
-      <span>
-        .
-      </span>
+      .
     </p>
     <ul
       class="css-1a9yu92-paragraph-STYLES_UNORDERED_LIST-UL"
@@ -3875,9 +3904,7 @@ OAuth 2.0 protocol
         </code>
          - 
         <span>
-          <span>
-            "Sign in with Apple"
-          </span>
+          "Sign in with Apple"
         </span>
       </li>
       <li
@@ -3898,9 +3925,7 @@ OAuth 2.0 protocol
         </code>
          - 
         <span>
-          <span>
-            "Continue with Apple"
-          </span>
+          "Continue with Apple"
         </span>
       </li>
       <li
@@ -3921,13 +3946,9 @@ OAuth 2.0 protocol
         </code>
          - 
         <span>
-          <span>
-            "Sign up with Apple" 
-          </span>
+          "Sign up with Apple" 
           <em>
-            <span>
-              (requires iOS 13.2 or higher)
-            </span>
+            (requires iOS 13.2 or higher)
           </em>
         </span>
       </li>
@@ -3993,9 +4014,7 @@ OAuth 2.0 protocol
       class="css-1xnkoxs-paragraph-STYLES_PARAGRAPH"
       data-text="true"
     >
-      <span>
-        An enum whose values specify state of the credential when checked with 
-      </span>
+      An enum whose values specify state of the credential when checked with 
       <a
         class="css-12zqqiz-STYLES_EXTERNAL_LINK"
         href="/#appleauthenticationgetcredentialstateasyncuser"
@@ -4006,10 +4025,51 @@ OAuth 2.0 protocol
           AppleAuthentication.getCredentialStateAsync()
         </code>
       </a>
-      <span>
-        .
-      </span>
+      .
     </p>
+    <blockquote
+      class="css-e76wiv-paragraph-STYLES_BLOCKQUOTE"
+      data-text="true"
+    >
+      <div>
+        <div
+          style="margin-top: 2px;"
+        >
+          <svg
+            aria-label="check"
+            fill="none"
+            height="16"
+            viewBox="0 0 24 24"
+            width="16"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12c6.628 0 12-5.373 12-12S18.628 0 12 0zm-.015 5.419c.269-.292.596-.44.973-.44.306 0 .575.11.776.317.203.207.306.472.306.786 0 .394-.137.745-.409 1.042-.279.306-.605.462-.968.462-.3 0-.566-.113-.768-.326-.201-.208-.304-.48-.304-.809 0-.401.133-.749.394-1.032zm1.999 11.305c-.995.936-1.705 1.52-2.17 1.784-.496.284-.905.423-1.25.423-.342 0-.621-.114-.83-.338-.202-.218-.305-.51-.305-.87 0-.92.521-3.058 1.595-6.534a1.47 1.47 0 00.042-.166c-.04.017-.087.041-.14.075-.088.055-.356.265-1.14 1.03a.334.334 0 01-.438.025l-.463-.358a.334.334 0 01-.043-.49c.722-.794 1.395-1.371 2.002-1.714.636-.358 1.173-.533 1.643-.533.303 0 .548.076.729.225.196.164.3.391.3.658 0 .175-.084.63-.697 2.686-.875 2.937-1.084 4.003-1.099 4.372.166-.098.558-.376 1.395-1.162a.334.334 0 01.462.003l.411.4a.334.334 0 01-.004.484z"
+              fill="var(--expo-theme-icon-default)"
+            />
+          </svg>
+        </div>
+      </div>
+      <div>
+        <strong
+          class="css-kkqcgt-paragraph-STYLES_BOLD_PARAGRAPH"
+        >
+          See: 
+        </strong>
+        <span>
+          <a
+            class="css-12zqqiz-STYLES_EXTERNAL_LINK"
+            href="https://developer.apple.com/documentation/authenticationservices/asauthorizationappleidprovidercredentialstate"
+            rel="noopener noreferrer"
+          >
+            Apple
+Documentation
+          </a>
+          
+for more details.
+        </span>
+      </div>
+    </blockquote>
     <ul
       class="css-1a9yu92-paragraph-STYLES_UNORDERED_LIST-UL"
       data-text="true"
@@ -4162,9 +4222,7 @@ OAuth 2.0 protocol
         </code>
          - 
         <span>
-          <span>
-            An operation that depends on the particular kind of credential provider.
-          </span>
+          An operation that depends on the particular kind of credential provider.
         </span>
       </li>
       <li
@@ -4280,9 +4338,7 @@ OAuth 2.0 protocol
       class="css-1xnkoxs-paragraph-STYLES_PARAGRAPH"
       data-text="true"
     >
-      <span>
-        An enum whose values specify scopes you can request when calling 
-      </span>
+      An enum whose values specify scopes you can request when calling 
       <a
         class="css-12zqqiz-STYLES_EXTERNAL_LINK"
         href="/#appleauthenticationsigninasyncoptions"
@@ -4293,9 +4349,7 @@ OAuth 2.0 protocol
           AppleAuthentication.signInAsync()
         </code>
       </a>
-      <span>
-        .
-      </span>
+      .
     </p>
     <blockquote
       class="css-e76wiv-paragraph-STYLES_BLOCKQUOTE"
@@ -4321,9 +4375,54 @@ OAuth 2.0 protocol
         </div>
       </div>
       <div>
-        <span>
-          Note that it is possible that you will not be granted all of the scopes which you request.
+        
+
+        Note that it is possible that you will not be granted all of the scopes which you request.
 You will still need to handle null values for any fields you request.
+        
+
+      </div>
+    </blockquote>
+    <blockquote
+      class="css-e76wiv-paragraph-STYLES_BLOCKQUOTE"
+      data-text="true"
+    >
+      <div>
+        <div
+          style="margin-top: 2px;"
+        >
+          <svg
+            aria-label="check"
+            fill="none"
+            height="16"
+            viewBox="0 0 24 24"
+            width="16"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12c6.628 0 12-5.373 12-12S18.628 0 12 0zm-.015 5.419c.269-.292.596-.44.973-.44.306 0 .575.11.776.317.203.207.306.472.306.786 0 .394-.137.745-.409 1.042-.279.306-.605.462-.968.462-.3 0-.566-.113-.768-.326-.201-.208-.304-.48-.304-.809 0-.401.133-.749.394-1.032zm1.999 11.305c-.995.936-1.705 1.52-2.17 1.784-.496.284-.905.423-1.25.423-.342 0-.621-.114-.83-.338-.202-.218-.305-.51-.305-.87 0-.92.521-3.058 1.595-6.534a1.47 1.47 0 00.042-.166c-.04.017-.087.041-.14.075-.088.055-.356.265-1.14 1.03a.334.334 0 01-.438.025l-.463-.358a.334.334 0 01-.043-.49c.722-.794 1.395-1.371 2.002-1.714.636-.358 1.173-.533 1.643-.533.303 0 .548.076.729.225.196.164.3.391.3.658 0 .175-.084.63-.697 2.686-.875 2.937-1.084 4.003-1.099 4.372.166-.098.558-.376 1.395-1.162a.334.334 0 01.462.003l.411.4a.334.334 0 01-.004.484z"
+              fill="var(--expo-theme-icon-default)"
+            />
+          </svg>
+        </div>
+      </div>
+      <div>
+        <strong
+          class="css-kkqcgt-paragraph-STYLES_BOLD_PARAGRAPH"
+        >
+          See: 
+        </strong>
+        <span>
+          <a
+            class="css-12zqqiz-STYLES_EXTERNAL_LINK"
+            href="https://developer.apple.com/documentation/authenticationservices/asauthorizationscope"
+            rel="noopener noreferrer"
+          >
+            Apple
+Documentation
+          </a>
+          
+for more details.
         </span>
       </div>
     </blockquote>
@@ -4427,10 +4526,51 @@ You will still need to handle null values for any fields you request.
       class="css-1xnkoxs-paragraph-STYLES_PARAGRAPH"
       data-text="true"
     >
-      <span>
-        An enum whose values specify the system's best guess for how likely the current user is a real person.
-      </span>
+      An enum whose values specify the system's best guess for how likely the current user is a real person.
     </p>
+    <blockquote
+      class="css-e76wiv-paragraph-STYLES_BLOCKQUOTE"
+      data-text="true"
+    >
+      <div>
+        <div
+          style="margin-top: 2px;"
+        >
+          <svg
+            aria-label="check"
+            fill="none"
+            height="16"
+            viewBox="0 0 24 24"
+            width="16"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12c6.628 0 12-5.373 12-12S18.628 0 12 0zm-.015 5.419c.269-.292.596-.44.973-.44.306 0 .575.11.776.317.203.207.306.472.306.786 0 .394-.137.745-.409 1.042-.279.306-.605.462-.968.462-.3 0-.566-.113-.768-.326-.201-.208-.304-.48-.304-.809 0-.401.133-.749.394-1.032zm1.999 11.305c-.995.936-1.705 1.52-2.17 1.784-.496.284-.905.423-1.25.423-.342 0-.621-.114-.83-.338-.202-.218-.305-.51-.305-.87 0-.92.521-3.058 1.595-6.534a1.47 1.47 0 00.042-.166c-.04.017-.087.041-.14.075-.088.055-.356.265-1.14 1.03a.334.334 0 01-.438.025l-.463-.358a.334.334 0 01-.043-.49c.722-.794 1.395-1.371 2.002-1.714.636-.358 1.173-.533 1.643-.533.303 0 .548.076.729.225.196.164.3.391.3.658 0 .175-.084.63-.697 2.686-.875 2.937-1.084 4.003-1.099 4.372.166-.098.558-.376 1.395-1.162a.334.334 0 01.462.003l.411.4a.334.334 0 01-.004.484z"
+              fill="var(--expo-theme-icon-default)"
+            />
+          </svg>
+        </div>
+      </div>
+      <div>
+        <strong
+          class="css-kkqcgt-paragraph-STYLES_BOLD_PARAGRAPH"
+        >
+          See: 
+        </strong>
+        <span>
+          <a
+            class="css-12zqqiz-STYLES_EXTERNAL_LINK"
+            href="https://developer.apple.com/documentation/authenticationservices/asuserdetectionstatus"
+            rel="noopener noreferrer"
+          >
+            Apple
+Documentation
+          </a>
+          
+for more details.
+        </span>
+      </div>
+    </blockquote>
     <ul
       class="css-1a9yu92-paragraph-STYLES_UNORDERED_LIST-UL"
       data-text="true"
@@ -4453,9 +4593,7 @@ You will still need to handle null values for any fields you request.
         </code>
          - 
         <span>
-          <span>
-            The system does not support this determination and there is no data.
-          </span>
+          The system does not support this determination and there is no data.
         </span>
       </li>
       <li
@@ -4476,9 +4614,7 @@ You will still need to handle null values for any fields you request.
         </code>
          - 
         <span>
-          <span>
-            The system has not determined whether the user might be a real person.
-          </span>
+          The system has not determined whether the user might be a real person.
         </span>
       </li>
       <li
@@ -4499,10 +4635,2998 @@ You will still need to handle null values for any fields you request.
         </code>
          - 
         <span>
-          <span>
-            The user appears to be a real person.
-          </span>
+          The user appears to be a real person.
         </span>
+      </li>
+    </ul>
+  </div>
+</div>
+`;
+
+exports[`APISection expo-barcode-scanner 1`] = `
+<div>
+  <h2
+    class="css-1v5aebx-h2-h2-STYLES_H2"
+    data-heading="true"
+  >
+    <div
+      class="css-1rh3o5q-STYLES_PERMALINK"
+    >
+      <span
+        class="css-zonpcr-STYLES_PERMALINK_TARGET"
+        id="components"
+      />
+      <a
+        class="css-15lh5hg-STYLES_PERMALINK_LINK"
+        href="#components"
+      >
+        <span
+          class="css-1icvi79-STYLED_PERMALINK_CONTENT"
+        >
+          Components
+        </span>
+        <span
+          class="css-10vdcw8-STYLES_PERMALINK_ICON"
+        >
+          <svg
+            aria-label="permalink"
+            class="anchor-icon"
+            fill="none"
+            height="24"
+            viewBox="0 0 24 24"
+            width="24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+              stroke="#9B9B9B"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+            />
+            <path
+              d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+              stroke="#9B9B9B"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+            />
+          </svg>
+        </span>
+      </a>
+    </div>
+  </h2>
+  <div>
+    <h3
+      class="css-icxoph-h3-h3-STYLES_H3"
+      data-heading="true"
+    >
+      <div
+        class="css-1rh3o5q-STYLES_PERMALINK"
+      >
+        <span
+          class="css-zonpcr-STYLES_PERMALINK_TARGET"
+          id="barcodescanner"
+        />
+        <a
+          class="css-15lh5hg-STYLES_PERMALINK_LINK"
+          href="#barcodescanner"
+        >
+          <span
+            class="css-1icvi79-STYLED_PERMALINK_CONTENT"
+          >
+            <code
+              class="inline css-nuv12a-STYLES_INLINE_CODE"
+            >
+              BarCodeScanner
+            </code>
+          </span>
+          <span
+            class="css-10vdcw8-STYLES_PERMALINK_ICON"
+          >
+            <svg
+              aria-label="permalink"
+              class="anchor-icon"
+              fill="none"
+              height="24"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+              <path
+                d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+            </svg>
+          </span>
+        </a>
+      </div>
+    </h3>
+    <p
+      class="css-1xnkoxs-paragraph-STYLES_PARAGRAPH"
+      data-text="true"
+    >
+      <strong
+        class="css-kkqcgt-paragraph-STYLES_BOLD_PARAGRAPH"
+      >
+        Type:
+      </strong>
+       
+      <code
+        class="inline css-nuv12a-STYLES_INLINE_CODE"
+      >
+        Component
+        &lt;
+        <span>
+          <a
+            class="css-12zqqiz-STYLES_EXTERNAL_LINK"
+            href="/#barcodescannerprops"
+          >
+            BarCodeScannerProps
+          </a>
+        </span>
+        &gt;
+      </code>
+    </p>
+    <h3
+      class="css-icxoph-h3-h3-STYLES_H3"
+      data-heading="true"
+    >
+      <div
+        class="css-1rh3o5q-STYLES_PERMALINK"
+      >
+        <span
+          class="css-zonpcr-STYLES_PERMALINK_TARGET"
+          id="barcodescannerprops"
+        />
+        <a
+          class="css-15lh5hg-STYLES_PERMALINK_LINK"
+          href="#barcodescannerprops"
+        >
+          <span
+            class="css-1icvi79-STYLED_PERMALINK_CONTENT"
+          >
+            <code
+              class="inline css-nuv12a-STYLES_INLINE_CODE"
+            >
+              BarCodeScannerProps
+            </code>
+          </span>
+          <span
+            class="css-10vdcw8-STYLES_PERMALINK_ICON"
+          >
+            <svg
+              aria-label="permalink"
+              class="anchor-icon"
+              fill="none"
+              height="24"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+              <path
+                d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+            </svg>
+          </span>
+        </a>
+      </div>
+    </h3>
+    <br />
+    <div>
+      <ul
+        class="css-1a9yu92-paragraph-STYLES_UNORDERED_LIST-UL"
+        data-text="true"
+      >
+        <li
+          class="docs-list-item css-aulog8-STYLES_LIST_ITEM-LI"
+        >
+          <h4
+            class="css-1j2s5xo-h4-h4-STYLES_H4"
+            data-heading="true"
+          >
+            barCodeTypes
+          </h4>
+          <p
+            class="css-1xnkoxs-paragraph-STYLES_PARAGRAPH"
+            data-text="true"
+          >
+            <span
+              class="css-t865as-STYLES_SECONDARY"
+            >
+              Optional • 
+            </span>
+            <span
+              class="css-t865as-STYLES_SECONDARY"
+            >
+              Type:
+            </span>
+             
+            <code
+              class="inline css-nuv12a-STYLES_INLINE_CODE"
+            >
+              string[]
+            </code>
+          </p>
+          <p
+            class="css-1xnkoxs-paragraph-STYLES_PARAGRAPH"
+            data-text="true"
+          >
+            An array of bar code types. Usage: 
+            <code
+              class="inline css-nuv12a-STYLES_INLINE_CODE"
+            >
+              BarCodeScanner.Constants.BarCodeType.&lt;codeType&gt;
+            </code>
+             where
+
+            <code
+              class="inline css-nuv12a-STYLES_INLINE_CODE"
+            >
+              codeType
+            </code>
+             is one of these 
+            <a
+              class="css-12zqqiz-STYLES_EXTERNAL_LINK"
+              href="/#supported-formats"
+            >
+              listed above
+            </a>
+            . Defaults to all supported bar
+code types. It is recommended to provide only the bar code formats you expect to scan to
+minimize battery usage.
+          </p>
+          <p
+            class="css-1xnkoxs-paragraph-STYLES_PARAGRAPH"
+            data-text="true"
+          >
+            For example: 
+            <code
+              class="inline css-nuv12a-STYLES_INLINE_CODE"
+            >
+              barCodeTypes={[BarCodeScanner.Constants.BarCodeType.qr]}
+            </code>
+            .
+          </p>
+        </li>
+        <li
+          class="docs-list-item css-aulog8-STYLES_LIST_ITEM-LI"
+        >
+          <h4
+            class="css-1j2s5xo-h4-h4-STYLES_H4"
+            data-heading="true"
+          >
+            onBarCodeScanned
+          </h4>
+          <p
+            class="css-1xnkoxs-paragraph-STYLES_PARAGRAPH"
+            data-text="true"
+          >
+            <span
+              class="css-t865as-STYLES_SECONDARY"
+            >
+              Optional • 
+            </span>
+            <span
+              class="css-t865as-STYLES_SECONDARY"
+            >
+              Type:
+            </span>
+             
+            <code
+              class="inline css-nuv12a-STYLES_INLINE_CODE"
+            >
+              <a
+                class="css-12zqqiz-STYLES_EXTERNAL_LINK"
+                href="/#barcodescannedcallback"
+              >
+                BarCodeScannedCallback
+              </a>
+            </code>
+          </p>
+          <p
+            class="css-1xnkoxs-paragraph-STYLES_PARAGRAPH"
+            data-text="true"
+          >
+            A callback that is invoked when a bar code has been successfully scanned. The callback is
+provided with an 
+            <a
+              class="css-12zqqiz-STYLES_EXTERNAL_LINK"
+              href="/#barcodescannerresult"
+            >
+              BarCodeScannerResult
+            </a>
+            .
+          </p>
+          
+
+          <blockquote
+            class="css-e76wiv-paragraph-STYLES_BLOCKQUOTE"
+            data-text="true"
+          >
+            <div>
+              <div
+                style="margin-top: 2px;"
+              >
+                <svg
+                  aria-label="check"
+                  fill="none"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  width="16"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12c6.628 0 12-5.373 12-12S18.628 0 12 0zm-.015 5.419c.269-.292.596-.44.973-.44.306 0 .575.11.776.317.203.207.306.472.306.786 0 .394-.137.745-.409 1.042-.279.306-.605.462-.968.462-.3 0-.566-.113-.768-.326-.201-.208-.304-.48-.304-.809 0-.401.133-.749.394-1.032zm1.999 11.305c-.995.936-1.705 1.52-2.17 1.784-.496.284-.905.423-1.25.423-.342 0-.621-.114-.83-.338-.202-.218-.305-.51-.305-.87 0-.92.521-3.058 1.595-6.534a1.47 1.47 0 00.042-.166c-.04.017-.087.041-.14.075-.088.055-.356.265-1.14 1.03a.334.334 0 01-.438.025l-.463-.358a.334.334 0 01-.043-.49c.722-.794 1.395-1.371 2.002-1.714.636-.358 1.173-.533 1.643-.533.303 0 .548.076.729.225.196.164.3.391.3.658 0 .175-.084.63-.697 2.686-.875 2.937-1.084 4.003-1.099 4.372.166-.098.558-.376 1.395-1.162a.334.334 0 01.462.003l.411.4a.334.334 0 01-.004.484z"
+                    fill="var(--expo-theme-icon-default)"
+                  />
+                </svg>
+              </div>
+            </div>
+            <div>
+              
+
+              <strong
+                class="css-kkqcgt-paragraph-STYLES_BOLD_PARAGRAPH"
+              >
+                Note:
+              </strong>
+               Passing 
+              <code
+                class="inline css-nuv12a-STYLES_INLINE_CODE"
+              >
+                undefined
+              </code>
+               to the 
+              <code
+                class="inline css-nuv12a-STYLES_INLINE_CODE"
+              >
+                onBarCodeScanned
+              </code>
+               prop will result in no scanning. This
+can be used to effectively "pause" the scanner so that it doesn't continually scan even after
+data has been retrieved.
+              
+
+            </div>
+          </blockquote>
+        </li>
+        <li
+          class="docs-list-item css-aulog8-STYLES_LIST_ITEM-LI"
+        >
+          <h4
+            class="css-1j2s5xo-h4-h4-STYLES_H4"
+            data-heading="true"
+          >
+            type
+          </h4>
+          <p
+            class="css-1xnkoxs-paragraph-STYLES_PARAGRAPH"
+            data-text="true"
+          >
+            <span
+              class="css-t865as-STYLES_SECONDARY"
+            >
+              Optional • 
+            </span>
+            <span
+              class="css-t865as-STYLES_SECONDARY"
+            >
+              Type:
+            </span>
+             
+            <code
+              class="inline css-nuv12a-STYLES_INLINE_CODE"
+            >
+              <span>
+                'front'
+                 | 
+              </span>
+              <span>
+                'back'
+                 | 
+              </span>
+              <span>
+                number
+              </span>
+            </code>
+            <span>
+              <span
+                class="css-t865as-STYLES_SECONDARY"
+              >
+                 • Default:
+              </span>
+               
+              <code
+                class="inline css-nuv12a-STYLES_INLINE_CODE"
+              >
+                Type.back
+
+              </code>
+            </span>
+          </p>
+          <p
+            class="css-1xnkoxs-paragraph-STYLES_PARAGRAPH"
+            data-text="true"
+          >
+            Camera facing. Use one of 
+            <code
+              class="inline css-nuv12a-STYLES_INLINE_CODE"
+            >
+              BarCodeScanner.Constants.Type
+            </code>
+            . Use either 
+            <code
+              class="inline css-nuv12a-STYLES_INLINE_CODE"
+            >
+              Type.front
+            </code>
+             or 
+            <code
+              class="inline css-nuv12a-STYLES_INLINE_CODE"
+            >
+              Type.back
+            </code>
+            .
+Same as 
+            <code
+              class="inline css-nuv12a-STYLES_INLINE_CODE"
+            >
+              Camera.Constants.Type
+            </code>
+            .
+          </p>
+        </li>
+      </ul>
+      <h4
+        class="css-1j2s5xo-h4-h4-STYLES_H4"
+        data-heading="true"
+      >
+        Inherited Props
+      </h4>
+      <ul
+        class="css-1a9yu92-paragraph-STYLES_UNORDERED_LIST-UL"
+        data-text="true"
+      >
+        <li
+          class="docs-list-item css-aulog8-STYLES_LIST_ITEM-LI"
+        >
+          <code
+            class="inline css-nuv12a-STYLES_INLINE_CODE"
+          >
+            <a
+              class="css-12zqqiz-STYLES_EXTERNAL_LINK"
+              href="/react-native/view#props"
+            >
+              ViewProps
+            </a>
+          </code>
+        </li>
+      </ul>
+    </div>
+  </div>
+  <h2
+    class="css-1v5aebx-h2-h2-STYLES_H2"
+    data-heading="true"
+  >
+    <div
+      class="css-1rh3o5q-STYLES_PERMALINK"
+    >
+      <span
+        class="css-zonpcr-STYLES_PERMALINK_TARGET"
+        id="hooks"
+      />
+      <a
+        class="css-15lh5hg-STYLES_PERMALINK_LINK"
+        href="#hooks"
+      >
+        <span
+          class="css-1icvi79-STYLED_PERMALINK_CONTENT"
+        >
+          Hooks
+        </span>
+        <span
+          class="css-10vdcw8-STYLES_PERMALINK_ICON"
+        >
+          <svg
+            aria-label="permalink"
+            class="anchor-icon"
+            fill="none"
+            height="24"
+            viewBox="0 0 24 24"
+            width="24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+              stroke="#9B9B9B"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+            />
+            <path
+              d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+              stroke="#9B9B9B"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+            />
+          </svg>
+        </span>
+      </a>
+    </div>
+  </h2>
+  <div>
+    <h3
+      class="css-icxoph-h3-h3-STYLES_H3"
+      data-heading="true"
+    >
+      <div
+        class="css-1rh3o5q-STYLES_PERMALINK"
+      >
+        <span
+          class="css-zonpcr-STYLES_PERMALINK_TARGET"
+          id="usepermissions"
+        />
+        <a
+          class="css-15lh5hg-STYLES_PERMALINK_LINK"
+          href="#usepermissions"
+        >
+          <span
+            class="css-1icvi79-STYLED_PERMALINK_CONTENT"
+          >
+            <code
+              class="inline css-nuv12a-STYLES_INLINE_CODE"
+            >
+              usePermissions
+            </code>
+          </span>
+          <span
+            class="css-10vdcw8-STYLES_PERMALINK_ICON"
+          >
+            <svg
+              aria-label="permalink"
+              class="anchor-icon"
+              fill="none"
+              height="24"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+              <path
+                d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+            </svg>
+          </span>
+        </a>
+      </div>
+    </h3>
+    <h4
+      class="  css-1j2s5xo-h4-h4-STYLES_H4"
+      data-components-heading="true"
+      data-heading="true"
+    >
+      <div
+        class="css-1rh3o5q-STYLES_PERMALINK"
+      >
+        <span
+          class="css-zonpcr-STYLES_PERMALINK_TARGET"
+          id="arguments"
+        />
+        <a
+          class="css-15lh5hg-STYLES_PERMALINK_LINK"
+          href="#arguments"
+        >
+          <span
+            class="css-1icvi79-STYLED_PERMALINK_CONTENT"
+          >
+            Arguments
+          </span>
+          <span
+            class="css-10vdcw8-STYLES_PERMALINK_ICON"
+          >
+            <svg
+              aria-label="permalink"
+              class="anchor-icon"
+              fill="none"
+              height="24"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+              <path
+                d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+            </svg>
+          </span>
+        </a>
+      </div>
+    </h4>
+    <ul
+      class="css-1a9yu92-paragraph-STYLES_UNORDERED_LIST-UL"
+      data-text="true"
+    >
+      <li
+        class="docs-list-item css-aulog8-STYLES_LIST_ITEM-LI"
+      >
+        <strong
+          class="css-kkqcgt-paragraph-STYLES_BOLD_PARAGRAPH"
+        >
+          options
+          ?
+           (
+          <code
+            class="inline css-nuv12a-STYLES_INLINE_CODE"
+          >
+            <a
+              class="css-12zqqiz-STYLES_EXTERNAL_LINK"
+              href="/#permissionhookoptions"
+            >
+              PermissionHookOptions
+            </a>
+            &lt;
+            <span>
+              object
+            </span>
+            &gt;
+          </code>
+          )
+        </strong>
+      </li>
+    </ul>
+    <p
+      class="css-1xnkoxs-paragraph-STYLES_PARAGRAPH"
+      data-text="true"
+    >
+      Create a new permission hook with the permission methods built-in.
+This can be used to quickly create specific permission hooks in every module.
+    </p>
+    <div>
+      <h4
+        class="  css-1j2s5xo-h4-h4-STYLES_H4"
+        data-components-heading="true"
+        data-heading="true"
+      >
+        <div
+          class="css-1rh3o5q-STYLES_PERMALINK"
+        >
+          <span
+            class="css-zonpcr-STYLES_PERMALINK_TARGET"
+            id="returns"
+          />
+          <a
+            class="css-15lh5hg-STYLES_PERMALINK_LINK"
+            href="#returns"
+          >
+            <span
+              class="css-1icvi79-STYLED_PERMALINK_CONTENT"
+            >
+              Returns
+            </span>
+            <span
+              class="css-10vdcw8-STYLES_PERMALINK_ICON"
+            >
+              <svg
+                aria-label="permalink"
+                class="anchor-icon"
+                fill="none"
+                height="24"
+                viewBox="0 0 24 24"
+                width="24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+                  stroke="#9B9B9B"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                />
+                <path
+                  d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+                  stroke="#9B9B9B"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                />
+              </svg>
+            </span>
+          </a>
+        </div>
+      </h4>
+      <ul
+        class="css-1a9yu92-paragraph-STYLES_UNORDERED_LIST-UL"
+        data-text="true"
+      >
+        <li
+          class="docs-list-item css-npeppb-STYLES_LIST_ITEM-STYLE_RETURN_LIST-LI"
+        >
+          <code
+            class="inline css-nuv12a-STYLES_INLINE_CODE"
+          >
+            [
+            <span>
+              <span>
+                null
+                 | 
+              </span>
+              <span>
+                <a
+                  class="css-12zqqiz-STYLES_EXTERNAL_LINK"
+                  href="/#permissionresponse"
+                >
+                  PermissionResponse
+                </a>
+              </span>
+              , 
+            </span>
+            <span>
+              RequestPermissionMethod
+              &lt;
+              <span>
+                <a
+                  class="css-12zqqiz-STYLES_EXTERNAL_LINK"
+                  href="/#permissionresponse"
+                >
+                  PermissionResponse
+                </a>
+              </span>
+              &gt;
+              , 
+            </span>
+            <span>
+              GetPermissionMethod
+              &lt;
+              <span>
+                <a
+                  class="css-12zqqiz-STYLES_EXTERNAL_LINK"
+                  href="/#permissionresponse"
+                >
+                  PermissionResponse
+                </a>
+              </span>
+              &gt;
+            </span>
+            ]
+          </code>
+        </li>
+      </ul>
+    </div>
+  </div>
+  <h2
+    class="css-1v5aebx-h2-h2-STYLES_H2"
+    data-heading="true"
+  >
+    <div
+      class="css-1rh3o5q-STYLES_PERMALINK"
+    >
+      <span
+        class="css-zonpcr-STYLES_PERMALINK_TARGET"
+        id="methods"
+      />
+      <a
+        class="css-15lh5hg-STYLES_PERMALINK_LINK"
+        href="#methods"
+      >
+        <span
+          class="css-1icvi79-STYLED_PERMALINK_CONTENT"
+        >
+          Methods
+        </span>
+        <span
+          class="css-10vdcw8-STYLES_PERMALINK_ICON"
+        >
+          <svg
+            aria-label="permalink"
+            class="anchor-icon"
+            fill="none"
+            height="24"
+            viewBox="0 0 24 24"
+            width="24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+              stroke="#9B9B9B"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+            />
+            <path
+              d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+              stroke="#9B9B9B"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+            />
+          </svg>
+        </span>
+      </a>
+    </div>
+  </h2>
+  <div>
+    <h3
+      class="css-icxoph-h3-h3-STYLES_H3"
+      data-heading="true"
+    >
+      <div
+        class="css-1rh3o5q-STYLES_PERMALINK"
+      >
+        <span
+          class="css-zonpcr-STYLES_PERMALINK_TARGET"
+          id="barcodescannergetpermissionsasync"
+        />
+        <a
+          class="css-15lh5hg-STYLES_PERMALINK_LINK"
+          href="#barcodescannergetpermissionsasync"
+        >
+          <span
+            class="css-1icvi79-STYLED_PERMALINK_CONTENT"
+          >
+            <code
+              class="inline css-nuv12a-STYLES_INLINE_CODE"
+            >
+              BarCodeScanner.
+              getPermissionsAsync()
+            </code>
+          </span>
+          <span
+            class="css-10vdcw8-STYLES_PERMALINK_ICON"
+          >
+            <svg
+              aria-label="permalink"
+              class="anchor-icon"
+              fill="none"
+              height="24"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+              <path
+                d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+            </svg>
+          </span>
+        </a>
+      </div>
+    </h3>
+    <p
+      class="css-1xnkoxs-paragraph-STYLES_PARAGRAPH"
+      data-text="true"
+    >
+      Checks user's permissions for accessing the camera.
+    </p>
+    <div>
+      <h4
+        class="  css-1j2s5xo-h4-h4-STYLES_H4"
+        data-components-heading="true"
+        data-heading="true"
+      >
+        <div
+          class="css-1rh3o5q-STYLES_PERMALINK"
+        >
+          <span
+            class="css-zonpcr-STYLES_PERMALINK_TARGET"
+            id="returns-1"
+          />
+          <a
+            class="css-15lh5hg-STYLES_PERMALINK_LINK"
+            href="#returns-1"
+          >
+            <span
+              class="css-1icvi79-STYLED_PERMALINK_CONTENT"
+            >
+              Returns
+            </span>
+            <span
+              class="css-10vdcw8-STYLES_PERMALINK_ICON"
+            >
+              <svg
+                aria-label="permalink"
+                class="anchor-icon"
+                fill="none"
+                height="24"
+                viewBox="0 0 24 24"
+                width="24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+                  stroke="#9B9B9B"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                />
+                <path
+                  d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+                  stroke="#9B9B9B"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                />
+              </svg>
+            </span>
+          </a>
+        </div>
+      </h4>
+      <ul
+        class="css-1a9yu92-paragraph-STYLES_UNORDERED_LIST-UL"
+        data-text="true"
+      >
+        <li
+          class="docs-list-item css-npeppb-STYLES_LIST_ITEM-STYLE_RETURN_LIST-LI"
+        >
+          <code
+            class="inline css-nuv12a-STYLES_INLINE_CODE"
+          >
+            <a
+              class="css-12zqqiz-STYLES_EXTERNAL_LINK"
+              href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise"
+              rel="noopener noreferrer"
+            >
+              Promise
+            </a>
+            &lt;
+            <span>
+              <a
+                class="css-12zqqiz-STYLES_EXTERNAL_LINK"
+                href="/#permissionresponse"
+              >
+                PermissionResponse
+              </a>
+            </span>
+            &gt;
+          </code>
+        </li>
+      </ul>
+      <p
+        class="css-1xnkoxs-paragraph-STYLES_PARAGRAPH"
+        data-text="true"
+      >
+        Return a promise that fulfills to an object of type 
+        <a
+          class="css-12zqqiz-STYLES_EXTERNAL_LINK"
+          href="/#permissionresponse"
+        >
+          <code
+            class="inline css-nuv12a-STYLES_INLINE_CODE"
+          >
+            PermissionResponse
+          </code>
+        </a>
+        .
+      </p>
+    </div>
+    <hr />
+  </div>
+  <div>
+    <h3
+      class="css-icxoph-h3-h3-STYLES_H3"
+      data-heading="true"
+    >
+      <div
+        class="css-1rh3o5q-STYLES_PERMALINK"
+      >
+        <span
+          class="css-zonpcr-STYLES_PERMALINK_TARGET"
+          id="barcodescannerrequestpermissionsasync"
+        />
+        <a
+          class="css-15lh5hg-STYLES_PERMALINK_LINK"
+          href="#barcodescannerrequestpermissionsasync"
+        >
+          <span
+            class="css-1icvi79-STYLED_PERMALINK_CONTENT"
+          >
+            <code
+              class="inline css-nuv12a-STYLES_INLINE_CODE"
+            >
+              BarCodeScanner.
+              requestPermissionsAsync()
+            </code>
+          </span>
+          <span
+            class="css-10vdcw8-STYLES_PERMALINK_ICON"
+          >
+            <svg
+              aria-label="permalink"
+              class="anchor-icon"
+              fill="none"
+              height="24"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+              <path
+                d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+            </svg>
+          </span>
+        </a>
+      </div>
+    </h3>
+    <p
+      class="css-1xnkoxs-paragraph-STYLES_PARAGRAPH"
+      data-text="true"
+    >
+      Asks the user to grant permissions for accessing the camera.
+    </p>
+    <p
+      class="css-1xnkoxs-paragraph-STYLES_PARAGRAPH"
+      data-text="true"
+    >
+      On iOS this will require apps to specify the 
+      <code
+        class="inline css-nuv12a-STYLES_INLINE_CODE"
+      >
+        NSCameraUsageDescription
+      </code>
+       entry in the 
+      <code
+        class="inline css-nuv12a-STYLES_INLINE_CODE"
+      >
+        Info.plist
+      </code>
+      .
+    </p>
+    <div>
+      <h4
+        class="  css-1j2s5xo-h4-h4-STYLES_H4"
+        data-components-heading="true"
+        data-heading="true"
+      >
+        <div
+          class="css-1rh3o5q-STYLES_PERMALINK"
+        >
+          <span
+            class="css-zonpcr-STYLES_PERMALINK_TARGET"
+            id="returns-2"
+          />
+          <a
+            class="css-15lh5hg-STYLES_PERMALINK_LINK"
+            href="#returns-2"
+          >
+            <span
+              class="css-1icvi79-STYLED_PERMALINK_CONTENT"
+            >
+              Returns
+            </span>
+            <span
+              class="css-10vdcw8-STYLES_PERMALINK_ICON"
+            >
+              <svg
+                aria-label="permalink"
+                class="anchor-icon"
+                fill="none"
+                height="24"
+                viewBox="0 0 24 24"
+                width="24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+                  stroke="#9B9B9B"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                />
+                <path
+                  d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+                  stroke="#9B9B9B"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                />
+              </svg>
+            </span>
+          </a>
+        </div>
+      </h4>
+      <ul
+        class="css-1a9yu92-paragraph-STYLES_UNORDERED_LIST-UL"
+        data-text="true"
+      >
+        <li
+          class="docs-list-item css-npeppb-STYLES_LIST_ITEM-STYLE_RETURN_LIST-LI"
+        >
+          <code
+            class="inline css-nuv12a-STYLES_INLINE_CODE"
+          >
+            <a
+              class="css-12zqqiz-STYLES_EXTERNAL_LINK"
+              href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise"
+              rel="noopener noreferrer"
+            >
+              Promise
+            </a>
+            &lt;
+            <span>
+              <a
+                class="css-12zqqiz-STYLES_EXTERNAL_LINK"
+                href="/#permissionresponse"
+              >
+                PermissionResponse
+              </a>
+            </span>
+            &gt;
+          </code>
+        </li>
+      </ul>
+      <p
+        class="css-1xnkoxs-paragraph-STYLES_PARAGRAPH"
+        data-text="true"
+      >
+        Return a promise that fulfills to an object of type 
+        <a
+          class="css-12zqqiz-STYLES_EXTERNAL_LINK"
+          href="/#permissionresponse"
+        >
+          <code
+            class="inline css-nuv12a-STYLES_INLINE_CODE"
+          >
+            PermissionResponse
+          </code>
+        </a>
+        .
+      </p>
+    </div>
+    <hr />
+  </div>
+  <div>
+    <h3
+      class="css-icxoph-h3-h3-STYLES_H3"
+      data-heading="true"
+    >
+      <div
+        class="css-1rh3o5q-STYLES_PERMALINK"
+      >
+        <span
+          class="css-zonpcr-STYLES_PERMALINK_TARGET"
+          id="barcodescannerscanfromurlasyncurl-barcodetypes"
+        />
+        <a
+          class="css-15lh5hg-STYLES_PERMALINK_LINK"
+          href="#barcodescannerscanfromurlasyncurl-barcodetypes"
+        >
+          <span
+            class="css-1icvi79-STYLED_PERMALINK_CONTENT"
+          >
+            <code
+              class="inline css-nuv12a-STYLES_INLINE_CODE"
+            >
+              BarCodeScanner.
+              scanFromURLAsync(url, barCodeTypes)
+            </code>
+          </span>
+          <span
+            class="css-10vdcw8-STYLES_PERMALINK_ICON"
+          >
+            <svg
+              aria-label="permalink"
+              class="anchor-icon"
+              fill="none"
+              height="24"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+              <path
+                d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+            </svg>
+          </span>
+        </a>
+      </div>
+    </h3>
+    <h4
+      class="  css-1j2s5xo-h4-h4-STYLES_H4"
+      data-components-heading="true"
+      data-heading="true"
+    >
+      <div
+        class="css-1rh3o5q-STYLES_PERMALINK"
+      >
+        <span
+          class="css-zonpcr-STYLES_PERMALINK_TARGET"
+          id="arguments-1"
+        />
+        <a
+          class="css-15lh5hg-STYLES_PERMALINK_LINK"
+          href="#arguments-1"
+        >
+          <span
+            class="css-1icvi79-STYLED_PERMALINK_CONTENT"
+          >
+            Arguments
+          </span>
+          <span
+            class="css-10vdcw8-STYLES_PERMALINK_ICON"
+          >
+            <svg
+              aria-label="permalink"
+              class="anchor-icon"
+              fill="none"
+              height="24"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+              <path
+                d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+            </svg>
+          </span>
+        </a>
+      </div>
+    </h4>
+    <ul
+      class="css-1a9yu92-paragraph-STYLES_UNORDERED_LIST-UL"
+      data-text="true"
+    >
+      <li
+        class="docs-list-item css-aulog8-STYLES_LIST_ITEM-LI"
+      >
+        <strong
+          class="css-kkqcgt-paragraph-STYLES_BOLD_PARAGRAPH"
+        >
+          url
+           (
+          <code
+            class="inline css-nuv12a-STYLES_INLINE_CODE"
+          >
+            string
+          </code>
+          )
+        </strong>
+         - 
+        <span>
+          URL to get the image from.
+        </span>
+      </li>
+      <li
+        class="docs-list-item css-aulog8-STYLES_LIST_ITEM-LI"
+      >
+        <strong
+          class="css-kkqcgt-paragraph-STYLES_BOLD_PARAGRAPH"
+        >
+          barCodeTypes
+           (
+          <code
+            class="inline css-nuv12a-STYLES_INLINE_CODE"
+          >
+            string[]
+          </code>
+          )
+        </strong>
+         - 
+        <span>
+          An array of bar code types. Defaults to all supported bar code types on
+the platform.
+        </span>
+        
+
+        <blockquote
+          class="css-e76wiv-paragraph-STYLES_BLOCKQUOTE"
+          data-text="true"
+        >
+          <div>
+            <div
+              style="margin-top: 2px;"
+            >
+              <svg
+                aria-label="check"
+                fill="none"
+                height="16"
+                viewBox="0 0 24 24"
+                width="16"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12c6.628 0 12-5.373 12-12S18.628 0 12 0zm-.015 5.419c.269-.292.596-.44.973-.44.306 0 .575.11.776.317.203.207.306.472.306.786 0 .394-.137.745-.409 1.042-.279.306-.605.462-.968.462-.3 0-.566-.113-.768-.326-.201-.208-.304-.48-.304-.809 0-.401.133-.749.394-1.032zm1.999 11.305c-.995.936-1.705 1.52-2.17 1.784-.496.284-.905.423-1.25.423-.342 0-.621-.114-.83-.338-.202-.218-.305-.51-.305-.87 0-.92.521-3.058 1.595-6.534a1.47 1.47 0 00.042-.166c-.04.017-.087.041-.14.075-.088.055-.356.265-1.14 1.03a.334.334 0 01-.438.025l-.463-.358a.334.334 0 01-.043-.49c.722-.794 1.395-1.371 2.002-1.714.636-.358 1.173-.533 1.643-.533.303 0 .548.076.729.225.196.164.3.391.3.658 0 .175-.084.63-.697 2.686-.875 2.937-1.084 4.003-1.099 4.372.166-.098.558-.376 1.395-1.162a.334.334 0 01.462.003l.411.4a.334.334 0 01-.004.484z"
+                  fill="var(--expo-theme-icon-default)"
+                />
+              </svg>
+            </div>
+          </div>
+          <div>
+            
+
+            <strong
+              class="css-kkqcgt-paragraph-STYLES_BOLD_PARAGRAPH"
+            >
+              Note:
+            </strong>
+             Only QR codes are supported on iOS.
+            
+
+          </div>
+        </blockquote>
+      </li>
+    </ul>
+    <p
+      class="css-1xnkoxs-paragraph-STYLES_PARAGRAPH"
+      data-text="true"
+    >
+      Scan bar codes from the image given by the URL.
+    </p>
+    <div>
+      <h4
+        class="  css-1j2s5xo-h4-h4-STYLES_H4"
+        data-components-heading="true"
+        data-heading="true"
+      >
+        <div
+          class="css-1rh3o5q-STYLES_PERMALINK"
+        >
+          <span
+            class="css-zonpcr-STYLES_PERMALINK_TARGET"
+            id="returns-3"
+          />
+          <a
+            class="css-15lh5hg-STYLES_PERMALINK_LINK"
+            href="#returns-3"
+          >
+            <span
+              class="css-1icvi79-STYLED_PERMALINK_CONTENT"
+            >
+              Returns
+            </span>
+            <span
+              class="css-10vdcw8-STYLES_PERMALINK_ICON"
+            >
+              <svg
+                aria-label="permalink"
+                class="anchor-icon"
+                fill="none"
+                height="24"
+                viewBox="0 0 24 24"
+                width="24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+                  stroke="#9B9B9B"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                />
+                <path
+                  d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+                  stroke="#9B9B9B"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                />
+              </svg>
+            </span>
+          </a>
+        </div>
+      </h4>
+      <ul
+        class="css-1a9yu92-paragraph-STYLES_UNORDERED_LIST-UL"
+        data-text="true"
+      >
+        <li
+          class="docs-list-item css-npeppb-STYLES_LIST_ITEM-STYLE_RETURN_LIST-LI"
+        >
+          <code
+            class="inline css-nuv12a-STYLES_INLINE_CODE"
+          >
+            <a
+              class="css-12zqqiz-STYLES_EXTERNAL_LINK"
+              href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise"
+              rel="noopener noreferrer"
+            >
+              Promise
+            </a>
+            &lt;
+            <span>
+              <a
+                class="css-12zqqiz-STYLES_EXTERNAL_LINK"
+                href="/#barcodescannerresult"
+              >
+                BarCodeScannerResult
+                []
+              </a>
+            </span>
+            &gt;
+          </code>
+        </li>
+      </ul>
+      <p
+        class="css-1xnkoxs-paragraph-STYLES_PARAGRAPH"
+        data-text="true"
+      >
+        A possibly empty array of objects of the 
+        <code
+          class="inline css-nuv12a-STYLES_INLINE_CODE"
+        >
+          BarCodeScannerResult
+        </code>
+         shape, where the type
+refers to the bar code type that was scanned and the data is the information encoded in the bar
+code.
+      </p>
+    </div>
+  </div>
+  <h2
+    class="css-1v5aebx-h2-h2-STYLES_H2"
+    data-heading="true"
+  >
+    <div
+      class="css-1rh3o5q-STYLES_PERMALINK"
+    >
+      <span
+        class="css-zonpcr-STYLES_PERMALINK_TARGET"
+        id="types"
+      />
+      <a
+        class="css-15lh5hg-STYLES_PERMALINK_LINK"
+        href="#types"
+      >
+        <span
+          class="css-1icvi79-STYLED_PERMALINK_CONTENT"
+        >
+          Types
+        </span>
+        <span
+          class="css-10vdcw8-STYLES_PERMALINK_ICON"
+        >
+          <svg
+            aria-label="permalink"
+            class="anchor-icon"
+            fill="none"
+            height="24"
+            viewBox="0 0 24 24"
+            width="24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+              stroke="#9B9B9B"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+            />
+            <path
+              d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+              stroke="#9B9B9B"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+            />
+          </svg>
+        </span>
+      </a>
+    </div>
+  </h2>
+  <div>
+    <h3
+      class="css-icxoph-h3-h3-STYLES_H3"
+      data-heading="true"
+    >
+      <div
+        class="css-1rh3o5q-STYLES_PERMALINK"
+      >
+        <span
+          class="css-zonpcr-STYLES_PERMALINK_TARGET"
+          id="barcodebounds"
+        />
+        <a
+          class="css-15lh5hg-STYLES_PERMALINK_LINK"
+          href="#barcodebounds"
+        >
+          <span
+            class="css-1icvi79-STYLED_PERMALINK_CONTENT"
+          >
+            <code
+              class="inline css-nuv12a-STYLES_INLINE_CODE"
+            >
+              BarCodeBounds
+              
+            </code>
+          </span>
+          <span
+            class="css-10vdcw8-STYLES_PERMALINK_ICON"
+          >
+            <svg
+              aria-label="permalink"
+              class="anchor-icon"
+              fill="none"
+              height="24"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+              <path
+                d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+            </svg>
+          </span>
+        </a>
+      </div>
+    </h3>
+    <table>
+      <thead>
+        <tr>
+          <th>
+            Name
+          </th>
+          <th>
+            Type
+          </th>
+          <th>
+            Description
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>
+            <strong
+              class="css-kkqcgt-paragraph-STYLES_BOLD_PARAGRAPH"
+            >
+              origin
+            </strong>
+          </td>
+          <td>
+            <code
+              class="inline css-nuv12a-STYLES_INLINE_CODE"
+            >
+              <a
+                class="css-12zqqiz-STYLES_EXTERNAL_LINK"
+                href="/#barcodepoint"
+              >
+                BarCodePoint
+              </a>
+            </code>
+          </td>
+          <td>
+            <span>
+              The origin point of the bounding box.
+            </span>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <strong
+              class="css-kkqcgt-paragraph-STYLES_BOLD_PARAGRAPH"
+            >
+              size
+            </strong>
+          </td>
+          <td>
+            <code
+              class="inline css-nuv12a-STYLES_INLINE_CODE"
+            >
+              <a
+                class="css-12zqqiz-STYLES_EXTERNAL_LINK"
+                href="/#barcodesize"
+              >
+                BarCodeSize
+              </a>
+            </code>
+          </td>
+          <td>
+            <span>
+              The size of the bounding box.
+            </span>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div>
+    <h3
+      class="css-icxoph-h3-h3-STYLES_H3"
+      data-heading="true"
+    >
+      <div
+        class="css-1rh3o5q-STYLES_PERMALINK"
+      >
+        <span
+          class="css-zonpcr-STYLES_PERMALINK_TARGET"
+          id="barcodeevent"
+        />
+        <a
+          class="css-15lh5hg-STYLES_PERMALINK_LINK"
+          href="#barcodeevent"
+        >
+          <span
+            class="css-1icvi79-STYLED_PERMALINK_CONTENT"
+          >
+            <code
+              class="inline css-nuv12a-STYLES_INLINE_CODE"
+            >
+              BarCodeEvent
+            </code>
+          </span>
+          <span
+            class="css-10vdcw8-STYLES_PERMALINK_ICON"
+          >
+            <svg
+              aria-label="permalink"
+              class="anchor-icon"
+              fill="none"
+              height="24"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+              <path
+                d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+            </svg>
+          </span>
+        </a>
+      </div>
+    </h3>
+    <p
+      class="css-1xnkoxs-paragraph-STYLES_PARAGRAPH"
+      data-text="true"
+    >
+      <code
+        class="inline css-nuv12a-STYLES_INLINE_CODE"
+      >
+        <a
+          class="css-12zqqiz-STYLES_EXTERNAL_LINK"
+          href="/#barcodescannerresult"
+        >
+          BarCodeScannerResult
+        </a>
+      </code>
+       
+      extended by:
+    </p>
+    <table>
+      <thead>
+        <tr>
+          <th>
+            Name
+          </th>
+          <th>
+            Type
+          </th>
+          <th>
+            Description
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>
+            <strong
+              class="css-kkqcgt-paragraph-STYLES_BOLD_PARAGRAPH"
+            >
+              target
+            </strong>
+            <br />
+            <span
+              class="css-fbbx5x-STYLES_OPTIONAL"
+            >
+              (optional)
+            </span>
+          </td>
+          <td>
+            <code
+              class="inline css-nuv12a-STYLES_INLINE_CODE"
+            >
+              number
+            </code>
+          </td>
+          <td>
+            -
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div>
+    <h3
+      class="css-icxoph-h3-h3-STYLES_H3"
+      data-heading="true"
+    >
+      <div
+        class="css-1rh3o5q-STYLES_PERMALINK"
+      >
+        <span
+          class="css-zonpcr-STYLES_PERMALINK_TARGET"
+          id="barcodeeventcallbackarguments"
+        />
+        <a
+          class="css-15lh5hg-STYLES_PERMALINK_LINK"
+          href="#barcodeeventcallbackarguments"
+        >
+          <span
+            class="css-1icvi79-STYLED_PERMALINK_CONTENT"
+          >
+            <code
+              class="inline css-nuv12a-STYLES_INLINE_CODE"
+            >
+              BarCodeEventCallbackArguments
+              
+            </code>
+          </span>
+          <span
+            class="css-10vdcw8-STYLES_PERMALINK_ICON"
+          >
+            <svg
+              aria-label="permalink"
+              class="anchor-icon"
+              fill="none"
+              height="24"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+              <path
+                d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+            </svg>
+          </span>
+        </a>
+      </div>
+    </h3>
+    <table>
+      <thead>
+        <tr>
+          <th>
+            Name
+          </th>
+          <th>
+            Type
+          </th>
+          <th>
+            Description
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>
+            <strong
+              class="css-kkqcgt-paragraph-STYLES_BOLD_PARAGRAPH"
+            >
+              nativeEvent
+            </strong>
+          </td>
+          <td>
+            <code
+              class="inline css-nuv12a-STYLES_INLINE_CODE"
+            >
+              <a
+                class="css-12zqqiz-STYLES_EXTERNAL_LINK"
+                href="/#barcodeevent"
+              >
+                BarCodeEvent
+              </a>
+            </code>
+          </td>
+          <td>
+            -
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div>
+    <h3
+      class="css-icxoph-h3-h3-STYLES_H3"
+      data-heading="true"
+    >
+      <div
+        class="css-1rh3o5q-STYLES_PERMALINK"
+      >
+        <span
+          class="css-zonpcr-STYLES_PERMALINK_TARGET"
+          id="barcodepoint"
+        />
+        <a
+          class="css-15lh5hg-STYLES_PERMALINK_LINK"
+          href="#barcodepoint"
+        >
+          <span
+            class="css-1icvi79-STYLED_PERMALINK_CONTENT"
+          >
+            <code
+              class="inline css-nuv12a-STYLES_INLINE_CODE"
+            >
+              BarCodePoint
+              
+            </code>
+          </span>
+          <span
+            class="css-10vdcw8-STYLES_PERMALINK_ICON"
+          >
+            <svg
+              aria-label="permalink"
+              class="anchor-icon"
+              fill="none"
+              height="24"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+              <path
+                d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+            </svg>
+          </span>
+        </a>
+      </div>
+    </h3>
+    <p
+      class="css-1xnkoxs-paragraph-STYLES_PARAGRAPH"
+      data-text="true"
+    >
+      Those coordinates are represented in the coordinate space of the barcode source (e.g. when you
+are using the barcode scanner view, these values are adjusted to the dimensions of the view).
+    </p>
+    <table>
+      <thead>
+        <tr>
+          <th>
+            Name
+          </th>
+          <th>
+            Type
+          </th>
+          <th>
+            Description
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>
+            <strong
+              class="css-kkqcgt-paragraph-STYLES_BOLD_PARAGRAPH"
+            >
+              x
+            </strong>
+          </td>
+          <td>
+            <code
+              class="inline css-nuv12a-STYLES_INLINE_CODE"
+            >
+              number
+            </code>
+          </td>
+          <td>
+            <span>
+              The 
+              <code
+                class="inline css-nuv12a-STYLES_INLINE_CODE"
+              >
+                x
+              </code>
+               coordinate value.
+            </span>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <strong
+              class="css-kkqcgt-paragraph-STYLES_BOLD_PARAGRAPH"
+            >
+              y
+            </strong>
+          </td>
+          <td>
+            <code
+              class="inline css-nuv12a-STYLES_INLINE_CODE"
+            >
+              number
+            </code>
+          </td>
+          <td>
+            <span>
+              The 
+              <code
+                class="inline css-nuv12a-STYLES_INLINE_CODE"
+              >
+                y
+              </code>
+               coordinate value.
+            </span>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div>
+    <h3
+      class="css-icxoph-h3-h3-STYLES_H3"
+      data-heading="true"
+    >
+      <div
+        class="css-1rh3o5q-STYLES_PERMALINK"
+      >
+        <span
+          class="css-zonpcr-STYLES_PERMALINK_TARGET"
+          id="barcodescannedcallback"
+        />
+        <a
+          class="css-15lh5hg-STYLES_PERMALINK_LINK"
+          href="#barcodescannedcallback"
+        >
+          <span
+            class="css-1icvi79-STYLED_PERMALINK_CONTENT"
+          >
+            <code
+              class="inline css-nuv12a-STYLES_INLINE_CODE"
+            >
+              BarCodeScannedCallback
+              ()
+            </code>
+          </span>
+          <span
+            class="css-10vdcw8-STYLES_PERMALINK_ICON"
+          >
+            <svg
+              aria-label="permalink"
+              class="anchor-icon"
+              fill="none"
+              height="24"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+              <path
+                d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+            </svg>
+          </span>
+        </a>
+      </div>
+    </h3>
+    <div>
+      <h4
+        class="  css-1j2s5xo-h4-h4-STYLES_H4"
+        data-components-heading="true"
+        data-heading="true"
+      >
+        <div
+          class="css-1rh3o5q-STYLES_PERMALINK"
+        >
+          <span
+            class="css-zonpcr-STYLES_PERMALINK_TARGET"
+            id="arguments-2"
+          />
+          <a
+            class="css-15lh5hg-STYLES_PERMALINK_LINK"
+            href="#arguments-2"
+          >
+            <span
+              class="css-1icvi79-STYLED_PERMALINK_CONTENT"
+            >
+              Arguments
+            </span>
+            <span
+              class="css-10vdcw8-STYLES_PERMALINK_ICON"
+            >
+              <svg
+                aria-label="permalink"
+                class="anchor-icon"
+                fill="none"
+                height="24"
+                viewBox="0 0 24 24"
+                width="24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+                  stroke="#9B9B9B"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                />
+                <path
+                  d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+                  stroke="#9B9B9B"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                />
+              </svg>
+            </span>
+          </a>
+        </div>
+      </h4>
+      <ul
+        class="css-1a9yu92-paragraph-STYLES_UNORDERED_LIST-UL"
+        data-text="true"
+      >
+        <li
+          class="docs-list-item css-aulog8-STYLES_LIST_ITEM-LI"
+        >
+          <strong
+            class="css-kkqcgt-paragraph-STYLES_BOLD_PARAGRAPH"
+          >
+            params
+             (
+            <code
+              class="inline css-nuv12a-STYLES_INLINE_CODE"
+            >
+              <a
+                class="css-12zqqiz-STYLES_EXTERNAL_LINK"
+                href="/#barcodeevent"
+              >
+                BarCodeEvent
+              </a>
+            </code>
+            )
+          </strong>
+        </li>
+      </ul>
+    </div>
+  </div>
+  <div>
+    <h3
+      class="css-icxoph-h3-h3-STYLES_H3"
+      data-heading="true"
+    >
+      <div
+        class="css-1rh3o5q-STYLES_PERMALINK"
+      >
+        <span
+          class="css-zonpcr-STYLES_PERMALINK_TARGET"
+          id="barcodescannerresult"
+        />
+        <a
+          class="css-15lh5hg-STYLES_PERMALINK_LINK"
+          href="#barcodescannerresult"
+        >
+          <span
+            class="css-1icvi79-STYLED_PERMALINK_CONTENT"
+          >
+            <code
+              class="inline css-nuv12a-STYLES_INLINE_CODE"
+            >
+              BarCodeScannerResult
+              
+            </code>
+          </span>
+          <span
+            class="css-10vdcw8-STYLES_PERMALINK_ICON"
+          >
+            <svg
+              aria-label="permalink"
+              class="anchor-icon"
+              fill="none"
+              height="24"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+              <path
+                d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+            </svg>
+          </span>
+        </a>
+      </div>
+    </h3>
+    <blockquote
+      class="css-e76wiv-paragraph-STYLES_BLOCKQUOTE"
+      data-text="true"
+    >
+      <div>
+        <div
+          style="margin-top: 2px;"
+        >
+          <svg
+            aria-label="check"
+            fill="none"
+            height="16"
+            viewBox="0 0 24 24"
+            width="16"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12c6.628 0 12-5.373 12-12S18.628 0 12 0zm-.015 5.419c.269-.292.596-.44.973-.44.306 0 .575.11.776.317.203.207.306.472.306.786 0 .394-.137.745-.409 1.042-.279.306-.605.462-.968.462-.3 0-.566-.113-.768-.326-.201-.208-.304-.48-.304-.809 0-.401.133-.749.394-1.032zm1.999 11.305c-.995.936-1.705 1.52-2.17 1.784-.496.284-.905.423-1.25.423-.342 0-.621-.114-.83-.338-.202-.218-.305-.51-.305-.87 0-.92.521-3.058 1.595-6.534a1.47 1.47 0 00.042-.166c-.04.017-.087.041-.14.075-.088.055-.356.265-1.14 1.03a.334.334 0 01-.438.025l-.463-.358a.334.334 0 01-.043-.49c.722-.794 1.395-1.371 2.002-1.714.636-.358 1.173-.533 1.643-.533.303 0 .548.076.729.225.196.164.3.391.3.658 0 .175-.084.63-.697 2.686-.875 2.937-1.084 4.003-1.099 4.372.166-.098.558-.376 1.395-1.162a.334.334 0 01.462.003l.411.4a.334.334 0 01-.004.484z"
+              fill="var(--expo-theme-icon-default)"
+            />
+          </svg>
+        </div>
+      </div>
+      <div>
+        
+
+        <strong
+          class="css-kkqcgt-paragraph-STYLES_BOLD_PARAGRAPH"
+        >
+          Note:
+        </strong>
+         
+        <code
+          class="inline css-nuv12a-STYLES_INLINE_CODE"
+        >
+          bounds
+        </code>
+         and 
+        <code
+          class="inline css-nuv12a-STYLES_INLINE_CODE"
+        >
+          cornerPoints
+        </code>
+         are not always available. On iOS, for 
+        <code
+          class="inline css-nuv12a-STYLES_INLINE_CODE"
+        >
+          code39
+        </code>
+         and 
+        <code
+          class="inline css-nuv12a-STYLES_INLINE_CODE"
+        >
+          pdf417
+        </code>
+        
+you don't get those values. Moreover, on iOS, those values don't have to bounds the whole barcode.
+For some types, they will represent the area used by the scanner.
+        
+
+      </div>
+    </blockquote>
+    <table>
+      <thead>
+        <tr>
+          <th>
+            Name
+          </th>
+          <th>
+            Type
+          </th>
+          <th>
+            Description
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>
+            <strong
+              class="css-kkqcgt-paragraph-STYLES_BOLD_PARAGRAPH"
+            >
+              bounds
+            </strong>
+            <br />
+            <span
+              class="css-fbbx5x-STYLES_OPTIONAL"
+            >
+              (optional)
+            </span>
+          </td>
+          <td>
+            <code
+              class="inline css-nuv12a-STYLES_INLINE_CODE"
+            >
+              <a
+                class="css-12zqqiz-STYLES_EXTERNAL_LINK"
+                href="/#barcodebounds"
+              >
+                BarCodeBounds
+              </a>
+            </code>
+          </td>
+          <td>
+            <span>
+              The 
+              <a
+                class="css-12zqqiz-STYLES_EXTERNAL_LINK"
+                href="/#barcodebounds"
+              >
+                BarCodeBounds
+              </a>
+               object.
+            </span>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <strong
+              class="css-kkqcgt-paragraph-STYLES_BOLD_PARAGRAPH"
+            >
+              cornerPoints
+            </strong>
+            <br />
+            <span
+              class="css-fbbx5x-STYLES_OPTIONAL"
+            >
+              (optional)
+            </span>
+          </td>
+          <td>
+            <code
+              class="inline css-nuv12a-STYLES_INLINE_CODE"
+            >
+              <a
+                class="css-12zqqiz-STYLES_EXTERNAL_LINK"
+                href="/#barcodepoint"
+              >
+                BarCodePoint
+                []
+              </a>
+            </code>
+          </td>
+          <td>
+            <span>
+              Corner points of the bounding box.
+            </span>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <strong
+              class="css-kkqcgt-paragraph-STYLES_BOLD_PARAGRAPH"
+            >
+              data
+            </strong>
+          </td>
+          <td>
+            <code
+              class="inline css-nuv12a-STYLES_INLINE_CODE"
+            >
+              string
+            </code>
+          </td>
+          <td>
+            <span>
+              The information encoded in the bar code.
+            </span>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <strong
+              class="css-kkqcgt-paragraph-STYLES_BOLD_PARAGRAPH"
+            >
+              type
+            </strong>
+          </td>
+          <td>
+            <code
+              class="inline css-nuv12a-STYLES_INLINE_CODE"
+            >
+              string
+            </code>
+          </td>
+          <td>
+            <span>
+              The barcode type.
+            </span>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div>
+    <h3
+      class="css-icxoph-h3-h3-STYLES_H3"
+      data-heading="true"
+    >
+      <div
+        class="css-1rh3o5q-STYLES_PERMALINK"
+      >
+        <span
+          class="css-zonpcr-STYLES_PERMALINK_TARGET"
+          id="barcodesize"
+        />
+        <a
+          class="css-15lh5hg-STYLES_PERMALINK_LINK"
+          href="#barcodesize"
+        >
+          <span
+            class="css-1icvi79-STYLED_PERMALINK_CONTENT"
+          >
+            <code
+              class="inline css-nuv12a-STYLES_INLINE_CODE"
+            >
+              BarCodeSize
+              
+            </code>
+          </span>
+          <span
+            class="css-10vdcw8-STYLES_PERMALINK_ICON"
+          >
+            <svg
+              aria-label="permalink"
+              class="anchor-icon"
+              fill="none"
+              height="24"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+              <path
+                d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+            </svg>
+          </span>
+        </a>
+      </div>
+    </h3>
+    <table>
+      <thead>
+        <tr>
+          <th>
+            Name
+          </th>
+          <th>
+            Type
+          </th>
+          <th>
+            Description
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>
+            <strong
+              class="css-kkqcgt-paragraph-STYLES_BOLD_PARAGRAPH"
+            >
+              height
+            </strong>
+          </td>
+          <td>
+            <code
+              class="inline css-nuv12a-STYLES_INLINE_CODE"
+            >
+              number
+            </code>
+          </td>
+          <td>
+            <span>
+              The height value.
+            </span>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <strong
+              class="css-kkqcgt-paragraph-STYLES_BOLD_PARAGRAPH"
+            >
+              width
+            </strong>
+          </td>
+          <td>
+            <code
+              class="inline css-nuv12a-STYLES_INLINE_CODE"
+            >
+              number
+            </code>
+          </td>
+          <td>
+            <span>
+              The width value.
+            </span>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div>
+    <h3
+      class="css-icxoph-h3-h3-STYLES_H3"
+      data-heading="true"
+    >
+      <div
+        class="css-1rh3o5q-STYLES_PERMALINK"
+      >
+        <span
+          class="css-zonpcr-STYLES_PERMALINK_TARGET"
+          id="permissionhookoptions"
+        />
+        <a
+          class="css-15lh5hg-STYLES_PERMALINK_LINK"
+          href="#permissionhookoptions"
+        >
+          <span
+            class="css-1icvi79-STYLED_PERMALINK_CONTENT"
+          >
+            <code
+              class="inline css-nuv12a-STYLES_INLINE_CODE"
+            >
+              PermissionHookOptions
+            </code>
+          </span>
+          <span
+            class="css-10vdcw8-STYLES_PERMALINK_ICON"
+          >
+            <svg
+              aria-label="permalink"
+              class="anchor-icon"
+              fill="none"
+              height="24"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+              <path
+                d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+            </svg>
+          </span>
+        </a>
+      </div>
+    </h3>
+    <p
+      class="css-1xnkoxs-paragraph-STYLES_PARAGRAPH"
+      data-text="true"
+    >
+      Acceptable values are:
+       
+      <span>
+        <code
+          class="inline css-nuv12a-STYLES_INLINE_CODE"
+        >
+          PermissionHookBehavior
+        </code>
+        , 
+      </span>
+      <span>
+        <code
+          class="inline css-nuv12a-STYLES_INLINE_CODE"
+        >
+          Options
+        </code>
+        .
+      </span>
+    </p>
+  </div>
+  <h2
+    class="css-1v5aebx-h2-h2-STYLES_H2"
+    data-heading="true"
+  >
+    <div
+      class="css-1rh3o5q-STYLES_PERMALINK"
+    >
+      <span
+        class="css-zonpcr-STYLES_PERMALINK_TARGET"
+        id="interfaces"
+      />
+      <a
+        class="css-15lh5hg-STYLES_PERMALINK_LINK"
+        href="#interfaces"
+      >
+        <span
+          class="css-1icvi79-STYLED_PERMALINK_CONTENT"
+        >
+          Interfaces
+        </span>
+        <span
+          class="css-10vdcw8-STYLES_PERMALINK_ICON"
+        >
+          <svg
+            aria-label="permalink"
+            class="anchor-icon"
+            fill="none"
+            height="24"
+            viewBox="0 0 24 24"
+            width="24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+              stroke="#9B9B9B"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+            />
+            <path
+              d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+              stroke="#9B9B9B"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+            />
+          </svg>
+        </span>
+      </a>
+    </div>
+  </h2>
+  <div>
+    <h3
+      class="css-icxoph-h3-h3-STYLES_H3"
+      data-heading="true"
+    >
+      <div
+        class="css-1rh3o5q-STYLES_PERMALINK"
+      >
+        <span
+          class="css-zonpcr-STYLES_PERMALINK_TARGET"
+          id="permissionresponse"
+        />
+        <a
+          class="css-15lh5hg-STYLES_PERMALINK_LINK"
+          href="#permissionresponse"
+        >
+          <span
+            class="css-1icvi79-STYLED_PERMALINK_CONTENT"
+          >
+            <code
+              class="inline css-nuv12a-STYLES_INLINE_CODE"
+            >
+              PermissionResponse
+            </code>
+          </span>
+          <span
+            class="css-10vdcw8-STYLES_PERMALINK_ICON"
+          >
+            <svg
+              aria-label="permalink"
+              class="anchor-icon"
+              fill="none"
+              height="24"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+              <path
+                d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+            </svg>
+          </span>
+        </a>
+      </div>
+    </h3>
+    <table>
+      <thead>
+        <tr>
+          <th>
+            Name
+          </th>
+          <th>
+            Type
+          </th>
+          <th>
+            Description
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>
+            <strong
+              class="css-kkqcgt-paragraph-STYLES_BOLD_PARAGRAPH"
+            >
+              canAskAgain
+              
+            </strong>
+          </td>
+          <td>
+            <code
+              class="inline css-nuv12a-STYLES_INLINE_CODE"
+            >
+              boolean
+            </code>
+          </td>
+          <td>
+            -
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <strong
+              class="css-kkqcgt-paragraph-STYLES_BOLD_PARAGRAPH"
+            >
+              expires
+              
+            </strong>
+          </td>
+          <td>
+            <code
+              class="inline css-nuv12a-STYLES_INLINE_CODE"
+            >
+              <a
+                class="css-12zqqiz-STYLES_EXTERNAL_LINK"
+                href="/#permissionexpiration"
+              >
+                PermissionExpiration
+              </a>
+            </code>
+          </td>
+          <td>
+            -
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <strong
+              class="css-kkqcgt-paragraph-STYLES_BOLD_PARAGRAPH"
+            >
+              granted
+              
+            </strong>
+          </td>
+          <td>
+            <code
+              class="inline css-nuv12a-STYLES_INLINE_CODE"
+            >
+              boolean
+            </code>
+          </td>
+          <td>
+            -
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <strong
+              class="css-kkqcgt-paragraph-STYLES_BOLD_PARAGRAPH"
+            >
+              status
+              
+            </strong>
+          </td>
+          <td>
+            <code
+              class="inline css-nuv12a-STYLES_INLINE_CODE"
+            >
+              <a
+                class="css-12zqqiz-STYLES_EXTERNAL_LINK"
+                href="/#permissionstatus"
+              >
+                PermissionStatus
+              </a>
+            </code>
+          </td>
+          <td>
+            -
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <h2
+    class="css-1v5aebx-h2-h2-STYLES_H2"
+    data-heading="true"
+  >
+    <div
+      class="css-1rh3o5q-STYLES_PERMALINK"
+    >
+      <span
+        class="css-zonpcr-STYLES_PERMALINK_TARGET"
+        id="enums"
+      />
+      <a
+        class="css-15lh5hg-STYLES_PERMALINK_LINK"
+        href="#enums"
+      >
+        <span
+          class="css-1icvi79-STYLED_PERMALINK_CONTENT"
+        >
+          Enums
+        </span>
+        <span
+          class="css-10vdcw8-STYLES_PERMALINK_ICON"
+        >
+          <svg
+            aria-label="permalink"
+            class="anchor-icon"
+            fill="none"
+            height="24"
+            viewBox="0 0 24 24"
+            width="24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+              stroke="#9B9B9B"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+            />
+            <path
+              d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+              stroke="#9B9B9B"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+            />
+          </svg>
+        </span>
+      </a>
+    </div>
+  </h2>
+  <div>
+    <h3
+      class="css-icxoph-h3-h3-STYLES_H3"
+      data-heading="true"
+    >
+      <div
+        class="css-1rh3o5q-STYLES_PERMALINK"
+      >
+        <span
+          class="css-zonpcr-STYLES_PERMALINK_TARGET"
+          id="permissionstatus"
+        />
+        <a
+          class="css-15lh5hg-STYLES_PERMALINK_LINK"
+          href="#permissionstatus"
+        >
+          <span
+            class="css-1icvi79-STYLED_PERMALINK_CONTENT"
+          >
+            <code
+              class="inline css-nuv12a-STYLES_INLINE_CODE"
+            >
+              PermissionStatus
+            </code>
+          </span>
+          <span
+            class="css-10vdcw8-STYLES_PERMALINK_ICON"
+          >
+            <svg
+              aria-label="permalink"
+              class="anchor-icon"
+              fill="none"
+              height="24"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+              <path
+                d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+            </svg>
+          </span>
+        </a>
+      </div>
+    </h3>
+    <ul
+      class="css-1a9yu92-paragraph-STYLES_UNORDERED_LIST-UL"
+      data-text="true"
+    >
+      <li
+        class="docs-list-item css-aulog8-STYLES_LIST_ITEM-LI"
+      >
+        <code
+          class="inline css-nuv12a-STYLES_INLINE_CODE"
+        >
+          PermissionStatus
+          .
+          DENIED
+        </code>
+         : 
+        <code
+          class="inline css-nuv12a-STYLES_INLINE_CODE"
+        >
+          "denied"
+        </code>
+      </li>
+      <li
+        class="docs-list-item css-aulog8-STYLES_LIST_ITEM-LI"
+      >
+        <code
+          class="inline css-nuv12a-STYLES_INLINE_CODE"
+        >
+          PermissionStatus
+          .
+          GRANTED
+        </code>
+         : 
+        <code
+          class="inline css-nuv12a-STYLES_INLINE_CODE"
+        >
+          "granted"
+        </code>
+      </li>
+      <li
+        class="docs-list-item css-aulog8-STYLES_LIST_ITEM-LI"
+      >
+        <code
+          class="inline css-nuv12a-STYLES_INLINE_CODE"
+        >
+          PermissionStatus
+          .
+          UNDETERMINED
+        </code>
+         : 
+        <code
+          class="inline css-nuv12a-STYLES_INLINE_CODE"
+        >
+          "undetermined"
+        </code>
       </li>
     </ul>
   </div>
@@ -4584,7 +7708,6 @@ exports[`APISection expo-pedometer 1`] = `
             <code
               class="inline css-nuv12a-STYLES_INLINE_CODE"
             >
-              
               getPermissionsAsync()
             </code>
           </span>
@@ -4727,7 +7850,6 @@ exports[`APISection expo-pedometer 1`] = `
             <code
               class="inline css-nuv12a-STYLES_INLINE_CODE"
             >
-              
               getStepCountAsync(start, end)
             </code>
           </span>
@@ -4841,9 +7963,7 @@ exports[`APISection expo-pedometer 1`] = `
         </strong>
          - 
         <span>
-          <span>
-            A date indicating the start of the range over which to measure steps.
-          </span>
+          A date indicating the start of the range over which to measure steps.
         </span>
       </li>
       <li
@@ -4869,9 +7989,7 @@ exports[`APISection expo-pedometer 1`] = `
         </strong>
          - 
         <span>
-          <span>
-            A date indicating the end of the range over which to measure steps.
-          </span>
+          A date indicating the end of the range over which to measure steps.
         </span>
       </li>
     </ul>
@@ -4879,9 +7997,7 @@ exports[`APISection expo-pedometer 1`] = `
       class="css-1xnkoxs-paragraph-STYLES_PARAGRAPH"
       data-text="true"
     >
-      <span>
-        Get the step count between two dates.
-      </span>
+      Get the step count between two dates.
     </p>
     <div>
       <h4
@@ -4970,9 +8086,7 @@ exports[`APISection expo-pedometer 1`] = `
         class="css-1xnkoxs-paragraph-STYLES_PARAGRAPH"
         data-text="true"
       >
-        <span>
-          Returns a promise that fulfills with a 
-        </span>
+        Returns a promise that fulfills with a 
         <a
           class="css-12zqqiz-STYLES_EXTERNAL_LINK"
           href="/#pedometerresult"
@@ -4983,30 +8097,26 @@ exports[`APISection expo-pedometer 1`] = `
             PedometerResult
           </code>
         </a>
-        <span>
-          .
-        </span>
+        .
       </p>
+      
+
       <p
         class="css-1xnkoxs-paragraph-STYLES_PARAGRAPH"
         data-text="true"
       >
-        <span>
-          As 
-        </span>
+        As 
         <a
           class="css-12zqqiz-STYLES_EXTERNAL_LINK"
           href="https://developer.apple.com/documentation/coremotion/cmpedometer/1613946-querypedometerdatafromdate?language=objc"
           rel="noopener noreferrer"
         >
-          <span>
-            Apple documentation states
-          </span>
+          Apple documentation states
         </a>
-        <span>
-          :
-        </span>
+        :
       </p>
+      
+
       <blockquote
         class="css-e76wiv-paragraph-STYLES_BLOCKQUOTE"
         data-text="true"
@@ -5031,10 +8141,12 @@ exports[`APISection expo-pedometer 1`] = `
           </div>
         </div>
         <div>
-          <span>
-            Only the past seven days worth of data is stored and available for you to retrieve. Specifying
+          
+
+          Only the past seven days worth of data is stored and available for you to retrieve. Specifying
 a start date that is more than seven days in the past returns only the available data.
-          </span>
+          
+
         </div>
       </blockquote>
     </div>
@@ -5062,7 +8174,6 @@ a start date that is more than seven days in the past returns only the available
             <code
               class="inline css-nuv12a-STYLES_INLINE_CODE"
             >
-              
               isAvailableAsync()
             </code>
           </span>
@@ -5101,9 +8212,7 @@ a start date that is more than seven days in the past returns only the available
       class="css-1xnkoxs-paragraph-STYLES_PARAGRAPH"
       data-text="true"
     >
-      <span>
-        Returns whether the pedometer is enabled on the device.
-      </span>
+      Returns whether the pedometer is enabled on the device.
     </p>
     <div>
       <h4
@@ -5187,18 +8296,14 @@ a start date that is more than seven days in the past returns only the available
         class="css-1xnkoxs-paragraph-STYLES_PARAGRAPH"
         data-text="true"
       >
-        <span>
-          Returns a promise that fulfills with a 
-        </span>
+        Returns a promise that fulfills with a 
         <code
           class="inline css-nuv12a-STYLES_INLINE_CODE"
         >
           boolean
         </code>
-        <span>
-          , indicating whether the pedometer is
+        , indicating whether the pedometer is
 available on this device.
-        </span>
       </p>
     </div>
     <hr />
@@ -5225,7 +8330,6 @@ available on this device.
             <code
               class="inline css-nuv12a-STYLES_INLINE_CODE"
             >
-              
               requestPermissionsAsync()
             </code>
           </span>
@@ -5368,7 +8472,6 @@ available on this device.
             <code
               class="inline css-nuv12a-STYLES_INLINE_CODE"
             >
-              
               watchStepCount(callback)
             </code>
           </span>
@@ -5481,10 +8584,8 @@ available on this device.
         </strong>
          - 
         <span>
-          <span>
-            A callback that is invoked when new step count data is available. The callback is
+          A callback that is invoked when new step count data is available. The callback is
 provided with a single argument that is 
-          </span>
           <a
             class="css-12zqqiz-STYLES_EXTERNAL_LINK"
             href="/#pedometerresult"
@@ -5495,9 +8596,7 @@ provided with a single argument that is
               PedometerResult
             </code>
           </a>
-          <span>
-            .
-          </span>
+          .
         </span>
       </li>
     </ul>
@@ -5505,9 +8604,7 @@ provided with a single argument that is
       class="css-1xnkoxs-paragraph-STYLES_PARAGRAPH"
       data-text="true"
     >
-      <span>
-        Subscribe to pedometer updates.
-      </span>
+      Subscribe to pedometer updates.
     </p>
     <div>
       <h4
@@ -5585,9 +8682,7 @@ provided with a single argument that is
         class="css-1xnkoxs-paragraph-STYLES_PARAGRAPH"
         data-text="true"
       >
-        <span>
-          Returns a 
-        </span>
+        Returns a 
         <a
           class="css-12zqqiz-STYLES_EXTERNAL_LINK"
           href="/#subscription"
@@ -5598,18 +8693,14 @@ provided with a single argument that is
             Subscription
           </code>
         </a>
-        <span>
-           that enables you to call
+         that enables you to call
 
-        </span>
         <code
           class="inline css-nuv12a-STYLES_INLINE_CODE"
         >
           remove()
         </code>
-        <span>
-           when you would like to unsubscribe the listener.
-        </span>
+         when you would like to unsubscribe the listener.
       </p>
     </div>
   </div>
@@ -5753,9 +8844,7 @@ provided with a single argument that is
           </td>
           <td>
             <span>
-              <span>
-                Number of steps taken between the given dates.
-              </span>
+              Number of steps taken between the given dates.
             </span>
           </td>
         </tr>
@@ -6071,9 +9160,7 @@ provided with a single argument that is
           </td>
           <td>
             <span>
-              <span>
-                A method to unsubscribe the listener.
-              </span>
+              A method to unsubscribe the listener.
             </span>
           </td>
         </tr>

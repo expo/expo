@@ -7,7 +7,7 @@ import com.facebook.react.ReactActivityDelegate
 import com.facebook.react.ReactNativeHost
 import com.facebook.react.bridge.ReactContext
 import expo.modules.devlauncher.DevLauncherController
-import expo.modules.devlauncher.launcher.manifest.DevLauncherManifest
+import expo.modules.manifests.core.Manifest
 import expo.modules.updatesinterface.UpdatesInterface
 
 interface DevLauncherControllerInterface {
@@ -21,7 +21,8 @@ interface DevLauncherControllerInterface {
   fun getCurrentReactActivityDelegate(activity: ReactActivity, delegateSupplierDevLauncher: DevLauncherReactActivityDelegateSupplier): ReactActivityDelegate
   fun handleIntent(intent: Intent?, activityToBeInvalidated: ReactActivity?): Boolean
 
-  val manifest: DevLauncherManifest?
+  val manifest: Manifest?
+  val manifestURL: Uri?
   val devClientHost: DevLauncherClientHost
   val mode: DevLauncherController.Mode
   val appHost: ReactNativeHost

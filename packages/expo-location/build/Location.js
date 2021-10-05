@@ -53,7 +53,7 @@ export async function watchPositionAsync(options, callback) {
 export async function getHeadingAsync() {
     return new Promise(async (resolve) => {
         let tries = 0;
-        const subscription = await watchHeadingAsync(heading => {
+        const subscription = await watchHeadingAsync((heading) => {
             if (heading.accuracy > 1 || tries > 5) {
                 subscription.remove();
                 resolve(heading);

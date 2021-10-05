@@ -31,7 +31,7 @@ static NSString * const EXUpdatesExpoTestDomain = @"expo.test";
   } else {
     NSString *updateId = manifest.releaseID;
     update.updateId = [[NSUUID alloc] initWithUUIDString:(NSString *)updateId];
-    NSAssert(update.updateId, @"update ID should be a valid UUID");
+    NSAssert(update.updateId, @"updateId should be a valid UUID");
 
     NSString *commitTimeString = manifest.commitTime;
     update.commitTime = [RCTConvert NSDate:commitTimeString];
@@ -50,12 +50,12 @@ static NSString * const EXUpdatesExpoTestDomain = @"expo.test";
   if (manifest.runtimeVersion != nil) {
     update.runtimeVersion = manifest.runtimeVersion;
   } else {
-    NSAssert(manifest.sdkVersion != nil, @"sdkVersion should not be null");
+    NSAssert(manifest.sdkVersion != nil, @"Manifest JSON must have a valid sdkVersion property defined");
     update.runtimeVersion = manifest.sdkVersion;
   }
 
   NSURL *bundleUrl = [NSURL URLWithString:bundleUrlString];
-  NSAssert(bundleUrl, @"bundleUrl should be a valid URL");
+  NSAssert(bundleUrl, @"Manifest JSON must have a valid URL as the bundleUrl property");
 
   NSMutableArray<EXUpdatesAsset *> *processedAssets = [NSMutableArray new];
 
@@ -69,7 +69,7 @@ static NSString * const EXUpdatesExpoTestDomain = @"expo.test";
   NSURL *bundledAssetBaseUrl = [[self class] bundledAssetBaseUrlWithManifest:manifest config:config];
 
   for (NSString *bundledAsset in assets) {
-    NSAssert([bundledAsset isKindOfClass:[NSString class]], @"bundledAssets must be an array of strings");
+    NSAssert([bundledAsset isKindOfClass:[NSString class]], @"Manifest JSON bundledAssets property must be an array of strings, found unexpected value: %@", bundledAsset);
 
     NSRange extensionStartRange = [bundledAsset rangeOfString:@"." options:NSBackwardsSearch];
     NSUInteger prefixLength = [@"asset_" length];

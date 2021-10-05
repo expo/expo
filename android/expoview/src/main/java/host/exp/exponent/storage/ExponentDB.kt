@@ -6,7 +6,7 @@ import com.raizlabs.android.dbflow.annotation.Database
 import com.raizlabs.android.dbflow.config.FlowManager
 import com.raizlabs.android.dbflow.sql.language.SQLite
 import com.raizlabs.android.dbflow.structure.database.transaction.QueryTransaction
-import expo.modules.updates.manifest.ManifestFactory
+import expo.modules.manifests.core.Manifest
 import host.exp.exponent.analytics.EXL
 import org.json.JSONException
 import org.json.JSONObject
@@ -48,7 +48,7 @@ object ExponentDB {
             listener.onSuccess(
               ExponentDBObject(
                 experienceDBObject.manifestUrl!!,
-                ManifestFactory.getManifestFromManifestJson(JSONObject(experienceDBObject.manifest!!)),
+                Manifest.fromManifestJson(JSONObject(experienceDBObject.manifest!!)),
                 experienceDBObject.bundleUrl!!
               )
             )
@@ -68,7 +68,7 @@ object ExponentDB {
       .querySingle() ?: return null
     return ExponentDBObject(
       experienceDBObject.manifestUrl!!,
-      ManifestFactory.getManifestFromManifestJson(JSONObject(experienceDBObject.manifest!!)),
+      Manifest.fromManifestJson(JSONObject(experienceDBObject.manifest!!)),
       experienceDBObject.bundleUrl!!
     )
   }

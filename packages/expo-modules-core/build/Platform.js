@@ -1,5 +1,5 @@
 import { Platform as ReactNativePlatform } from 'react-native';
-import { isDOMAvailable, canUseEventListeners, canUseViewport } from './environment/browser';
+import { isDOMAvailable, canUseEventListeners, canUseViewport, isAsyncDebugging, } from './environment/browser';
 const Platform = {
     /**
      * Denotes the currently running platform.
@@ -32,6 +32,11 @@ const Platform = {
      * return false in native React runtimes and Node.js.
      */
     canUseViewport,
+    /**
+     * If the JavaScript is being executed in a remote JavaScript environment.
+     * When `true`, synchronous native invocations cannot be executed.
+     */
+    isAsyncDebugging,
 };
 export default Platform;
 //# sourceMappingURL=Platform.js.map

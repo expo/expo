@@ -1,11 +1,12 @@
 {
   "name": "expo-module-template",
-  "version": "9.1.0",
+  "version": "10.0.0",
   "description": "ExpoModuleTemplate standalone module",
   "main": "build/ModuleTemplate.js",
   "types": "build/ModuleTemplate.d.ts",
   "scripts": {
-    "build": "tsc"
+    "build": "tsc",
+    "lint": "eslint ."
   },
   "keywords": [
     "react-native",

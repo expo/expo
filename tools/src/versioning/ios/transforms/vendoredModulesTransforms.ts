@@ -6,11 +6,11 @@ type Config = {
 
 export default function vendoredModulesTransformsFactory(prefix: string): Config {
   return {
-    'stripe-react-native': {
+    '@stripe/stripe-react-native': {
       content: [
         {
           paths: '*.m',
-          find: /RCT_EXTERN_MODULE\((ApplePayButtonManager|CardFieldManager|AuBECSDebitFormManager|StripeSdk|StripeContainerManager)/,
+          find: /RCT_EXTERN_MODULE\((ApplePayButtonManager|CardFieldManager|AuBECSDebitFormManager|StripeSdk|StripeContainerManager|CardFormManager)/,
           replaceWith: `RCT_EXTERN_REMAP_MODULE($1, ${prefix}$1`,
         },
         {
@@ -101,6 +101,32 @@ export default function vendoredModulesTransformsFactory(prefix: string): Config
           paths: '*.{h,m}',
           find: /\bRN(\w+)(Handler|GestureRecognizer)\b/g,
           replaceWith: `${prefix}RN$1$2`,
+        },
+      ],
+    },
+    'react-native-pager-view': {
+      path: [
+        {
+          find: /(ReactNativePageView|ReactViewPagerManager)\.(h|m)/,
+          replaceWith: `${prefix}$1.$2`,
+        },
+      ],
+      content: [
+        {
+          find: `UIView+${prefix}React.h`,
+          replaceWith: `${prefix}UIView+React.h`,
+        },
+        {
+          find: `${prefix}JKBigInteger.h`,
+          replaceWith: `JKBigInteger.h`,
+        },
+      ],
+    },
+    '@react-native-segmented-control/segmented-control': {
+      content: [
+        {
+          find: `UIView+${prefix}React.h`,
+          replaceWith: `${prefix}UIView+React.h`,
         },
       ],
     },

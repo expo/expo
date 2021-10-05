@@ -106,16 +106,23 @@ Optionally you can set the project up manually (not recommended).
 
 - Update the Next.js `next.config.js` file to support loading React Native and Expo packages:
 
+  - yarn add -D next-compose-plugins next-transpile-modules
+
   - `touch next.config.js`
 
   `next.config.js`
 
   ```js
   const { withExpo } = require('@expo/next-adapter');
+  const withPlugins = require('next-compose-plugins');
+  const withTM = require('next-transpile-modules')(['react-native-web']);
 
-  module.exports = withExpo({
-    projectRoot: __dirname,
-  });
+  const nextConfig = {};
+
+  module.exports = withPlugins(
+    [withTM, [withExpo, { projectRoot: __dirname }]],
+    nextConfig
+  );
   ```
 
 - You can now start your Expo web + Next.js project with `yarn next dev` 🎉

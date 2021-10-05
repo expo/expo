@@ -7,10 +7,10 @@ import {
 
 const pkg = require('expo-background-fetch/package.json');
 
-const withBackgroundFetch: ConfigPlugin = config => {
+const withBackgroundFetch: ConfigPlugin = (config) => {
   // TODO: Maybe entitlements are needed
 
-  config = withInfoPlist(config, config => {
+  config = withInfoPlist(config, (config) => {
     if (!Array.isArray(config.modResults.UIBackgroundModes)) {
       config.modResults.UIBackgroundModes = [];
     }

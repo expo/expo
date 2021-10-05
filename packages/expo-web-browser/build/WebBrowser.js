@@ -287,7 +287,7 @@ function _onAppStateChangeAndroid(state) {
     }
 }
 async function _openBrowserAndWaitAndroidAsync(startUrl, browserParams = {}) {
-    const appStateChangedToActive = new Promise(resolve => {
+    const appStateChangedToActive = new Promise((resolve) => {
         _onWebBrowserCloseAndroid = resolve;
         AppState.addEventListener('change', _onAppStateChangeAndroid);
     });
@@ -347,7 +347,7 @@ function _stopWaitingForRedirect() {
     _redirectHandler = null;
 }
 function _waitForRedirectAsync(returnUrl) {
-    return new Promise(resolve => {
+    return new Promise((resolve) => {
         _redirectHandler = (event) => {
             if (event.url.startsWith(returnUrl)) {
                 resolve({ url: event.url, type: 'success' });

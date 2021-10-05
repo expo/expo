@@ -2,6 +2,7 @@ import { css } from '@emotion/react';
 import { theme } from '@expo/styleguide';
 import React from 'react';
 import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 
 import { Code, InlineCode } from '~/components/base/code';
 import { H4 } from '~/components/base/headings';
@@ -18,7 +19,8 @@ import {
 } from '~/components/plugins/api/APIDataTypes';
 
 export enum TypeDocKind {
-  Enum = 4,
+  LegacyEnum = 4,
+  Enum = 8,
   Variable = 32,
   Function = 64,
   Class = 128,
@@ -27,42 +29,40 @@ export enum TypeDocKind {
   TypeAlias = 4194304,
 }
 
-export type MDRenderers = React.ComponentProps<typeof ReactMarkdown>['renderers'];
+export type MDComponents = React.ComponentProps<typeof ReactMarkdown>['components'];
 
-export const mdRenderers: MDRenderers = {
+export const mdComponents: MDComponents = {
   blockquote: ({ children }) => (
     <Quote>
-      {React.Children.map(children, child =>
-        child.type.name === 'paragraph' ? child.props.children : child
-      )}
+      {/* @ts-ignore - current implementation produce type issues, this would be fixed in docs redesign */}
+      {children.map(child => (child?.props?.node?.tagName === 'p' ? child?.props.children : child))}
     </Quote>
   ),
-  code: ({ value, language }) => <Code className={`language-${language}`}>{value}</Code>,
-  heading: ({ children }) => <H4>{children}</H4>,
-  inlineCode: ({ value }) => <InlineCode>{value}</InlineCode>,
-  list: ({ children }) => <UL>{children}</UL>,
-  listItem: ({ children }) => <LI>{children}</LI>,
-  link: ({ href, children }) => <Link href={href}>{children}</Link>,
-  paragraph: ({ children }) => (children ? <P>{children}</P> : null),
+  code: ({ children, className }) =>
+    className ? <Code className={className}>{children}</Code> : <InlineCode>{children}</InlineCode>,
+  h1: ({ children }) => <H4>{children}</H4>,
+  ul: ({ children }) => <UL>{children}</UL>,
+  li: ({ children }) => <LI>{children}</LI>,
+  a: ({ href, children }) => <Link href={href}>{children}</Link>,
+  p: ({ children }) => (children ? <P>{children}</P> : null),
   strong: ({ children }) => <B>{children}</B>,
-  text: ({ value }) => (value ? <span>{value}</span> : null),
+  span: ({ children }) => (children ? <span>{children}</span> : null),
 };
 
-export const mdInlineRenderers: MDRenderers = {
-  ...mdRenderers,
-  paragraph: ({ children }) => (children ? <span>{children}</span> : null),
+export const mdInlineComponents: MDComponents = {
+  ...mdComponents,
+  p: ({ children }) => (children ? <span>{children}</span> : null),
 };
 
 const nonLinkableTypes = [
   'ColorValue',
+  'Component',
   'E',
   'EventSubscription',
   'File',
   'FileList',
   'Manifest',
   'NativeSyntheticEvent',
-  'Omit',
-  'Pick',
   'React.FC',
   'ServiceActionResult',
   'StyleProp',
@@ -79,6 +79,9 @@ const nonLinkableTypes = [
 const hardcodedTypeLinks: Record<string, string> = {
   Date: 'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date',
   Error: 'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error',
+  Omit: 'https://www.typescriptlang.org/docs/handbook/utility-types.html#omittype-keys',
+  Pick: 'https://www.typescriptlang.org/docs/handbook/utility-types.html#picktype-keys',
+  Partial: 'https://www.typescriptlang.org/docs/handbook/utility-types.html#partialtype',
   Promise:
     'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise',
   View: '../../react-native/view',
@@ -244,7 +247,7 @@ export const renderParam = ({ comment, name, type, flags }: MethodParamData): JS
       {parseParamName(name)}
       {flags?.isOptional && '?'} (<InlineCode>{resolveTypeName(type)}</InlineCode>)
     </B>
-    <CommentTextBlock comment={comment} renderers={mdInlineRenderers} withDash />
+    <CommentTextBlock comment={comment} components={mdInlineComponents} withDash />
   </LI>
 );
 
@@ -257,17 +260,17 @@ export const renderTypeOrSignatureType = (
   includeParamType: boolean = false
 ) => {
   if (type) {
-    return <InlineCode>{resolveTypeName(type)}</InlineCode>;
+    return <InlineCode key={`signature-type-${type.name}`}>{resolveTypeName(type)}</InlineCode>;
   } else if (signatures && signatures.length) {
     return signatures.map(({ name, type, parameters }) => (
       <InlineCode key={`signature-type-${name}`}>
         (
         {parameters && includeParamType
           ? parameters.map(param => (
-              <>
+              <span key={`signature-param-${param.name}`}>
                 {param.name}
                 {param.flags?.isOptional && '?'}: {resolveTypeName(param.type)}
-              </>
+              </span>
             ))
           : listParams(parameters)}
         ) =&gt; {resolveTypeName(type)}
@@ -287,45 +290,63 @@ export const renderFlags = (flags?: TypePropertyDataFlags) =>
 
 export type CommentTextBlockProps = {
   comment?: CommentData;
-  renderers?: MDRenderers;
+  components?: MDComponents;
   withDash?: boolean;
   beforeContent?: JSX.Element;
 };
 
 export const parseCommentContent = (content?: string): string =>
-  content && content.length ? content.replace(/&ast;/g, '*') : '';
+  content && content.length ? content.replace(/&ast;/g, '*').replace(/\t/g, '') : '';
 
 export const getCommentOrSignatureComment = (
   comment?: CommentData,
   signatures?: MethodSignatureData[]
 ) => comment || (signatures && signatures[0]?.comment);
 
-export const CommentTextBlock: React.FC<CommentTextBlockProps> = ({
+export const getTagData = (tagName: string, comment?: CommentData) =>
+  comment?.tags?.filter(tag => tag.tag === tagName)[0];
+
+export const CommentTextBlock = ({
   comment,
-  renderers = mdRenderers,
+  components = mdComponents,
   withDash,
   beforeContent,
-}) => {
+}: CommentTextBlockProps) => {
   const shortText = comment?.shortText?.trim().length ? (
-    <ReactMarkdown renderers={renderers}>{parseCommentContent(comment.shortText)}</ReactMarkdown>
+    <ReactMarkdown components={components} remarkPlugins={[remarkGfm]}>
+      {parseCommentContent(comment.shortText)}
+    </ReactMarkdown>
   ) : null;
   const text = comment?.text?.trim().length ? (
-    <ReactMarkdown renderers={renderers}>{parseCommentContent(comment.text)}</ReactMarkdown>
+    <ReactMarkdown components={components} remarkPlugins={[remarkGfm]}>
+      {parseCommentContent(comment.text)}
+    </ReactMarkdown>
   ) : null;
 
-  const example = comment?.tags?.filter(tag => tag.tag === 'example')[0];
+  const example = getTagData('example', comment);
   const exampleText = example ? (
-    <ReactMarkdown renderers={renderers}>{`__Example:__ ${example.text}`}</ReactMarkdown>
+    <>
+      <H4>Example</H4>
+      <ReactMarkdown components={components}>{example.text}</ReactMarkdown>
+    </>
   ) : null;
 
-  const deprecation = comment?.tags?.filter(tag => tag.tag === 'deprecated')[0];
+  const deprecation = getTagData('deprecated', comment);
   const deprecationNote = deprecation ? (
     <Quote key="deprecation-note">
       {deprecation.text.trim().length ? (
-        <ReactMarkdown renderers={mdInlineRenderers}>{deprecation.text}</ReactMarkdown>
+        <ReactMarkdown components={mdInlineComponents}>{deprecation.text}</ReactMarkdown>
       ) : (
         <B>Deprecated</B>
       )}
+    </Quote>
+  ) : null;
+
+  const see = getTagData('see', comment);
+  const seeText = see ? (
+    <Quote>
+      <B>See: </B>
+      <ReactMarkdown components={mdInlineComponents}>{see.text}</ReactMarkdown>
     </Quote>
   ) : null;
 
@@ -333,9 +354,10 @@ export const CommentTextBlock: React.FC<CommentTextBlockProps> = ({
     <>
       {deprecationNote}
       {beforeContent}
-      {withDash && (shortText || text) ? ' - ' : null}
+      {withDash && (shortText || text) && ' - '}
       {shortText}
       {text}
+      {seeText}
       {exampleText}
     </>
   );

@@ -1,2 +1,3 @@
-export { default as AppLoading } from './AppLoading';
+import AppLoading from './AppLoading';
+export default AppLoading;
 //# sourceMappingURL=index.js.map

@@ -135,7 +135,7 @@ export default class AmplitudeApiScreen extends React.Component<object, State> {
           style={styles.textInputForApiKey}
           placeholder="Provide Amplitude API key"
           value={this.state.clientAPIKey}
-          onChangeText={apiKey => {
+          onChangeText={(apiKey) => {
             this.setState({ clientAPIKey: apiKey });
           }}
         />

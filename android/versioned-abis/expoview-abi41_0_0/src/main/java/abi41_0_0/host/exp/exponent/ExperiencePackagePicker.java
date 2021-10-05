@@ -48,7 +48,6 @@ import abi41_0_0.expo.modules.location.LocationPackage;
 import abi41_0_0.expo.modules.mailcomposer.MailComposerPackage;
 import abi41_0_0.expo.modules.medialibrary.MediaLibraryPackage;
 import abi41_0_0.expo.modules.network.NetworkPackage;
-import abi41_0_0.expo.modules.payments.stripe.StripePackage;
 import abi41_0_0.expo.modules.permissions.PermissionsPackage;
 import abi41_0_0.expo.modules.print.PrintPackage;
 import abi41_0_0.expo.modules.screencapture.ScreenCapturePackage;
@@ -122,7 +121,6 @@ public class ExperiencePackagePicker {
       new SharingPackage(),
       new SpeechPackage(),
       new SplashScreenPackage(),
-      new StripePackage(),
       new TaskManagerPackage(),
       new UpdatesPackage(),
       new VideoThumbnailsPackage(),

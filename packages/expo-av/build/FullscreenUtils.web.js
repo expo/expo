@@ -88,11 +88,11 @@ export async function exitFullscreen(element) {
 export function addFullscreenListener(element, callback) {
     if (supportsFullscreenAPI(element)) {
         // Used by browsers that support the official spec
-        return addEventListener(element, 'fullscreenchange', event => callback(document.fullscreenElement === event.target));
+        return addEventListener(element, 'fullscreenchange', (event) => callback(document.fullscreenElement === event.target));
     }
     else if (supportsWebkitFullscreenAPI(element) && supportsWebkitFullscreenChangeEvent()) {
         // Used by Safari on macOS
-        return addEventListener(element, 'webkitfullscreenchange', event => callback(document['webkitFullscreenElement'] === event.target));
+        return addEventListener(element, 'webkitfullscreenchange', (event) => callback(document['webkitFullscreenElement'] === event.target));
     }
     else if (supportsWebkitFullscreenAPI(element)) {
         // Used by Safari on iOS
@@ -105,7 +105,7 @@ export function addFullscreenListener(element, callback) {
     }
     else if (supportsMsFullscreenAPI(element)) {
         // Used by IE11
-        return addEventListener(document, 'MSFullscreenChange', event => callback(document['msFullscreenElement'] === event.target));
+        return addEventListener(document, 'MSFullscreenChange', (event) => callback(document['msFullscreenElement'] === event.target));
     }
     else {
         return () => { };

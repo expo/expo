@@ -22,7 +22,12 @@ export const updateWorkspaceProjects = new Task<TaskArgs>(
     logger.info('\n📤 Updating workspace projects...');
 
     const workspaceInfo = await Workspace.getInfoAsync();
-    const dependenciesKeys = ['dependencies', 'devDependencies', 'peerDependencies'];
+    const dependenciesKeys = [
+      'dependencies',
+      'devDependencies',
+      'peerDependencies',
+      'optionalDependencies',
+    ];
 
     const parcelsObject = parcels.reduce((acc, parcel) => {
       acc[parcel.pkg.packageName] = parcel;

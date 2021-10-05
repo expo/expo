@@ -5,6 +5,8 @@ import android.content.Context
 import android.net.Uri
 import android.os.Build
 import android.util.Log
+import expo.modules.jsonutils.getNullable
+import expo.modules.manifests.core.LegacyManifest
 import expo.modules.updates.UpdatesConfiguration
 import expo.modules.updates.UpdatesUtils
 import expo.modules.updates.db.DatabaseHolder
@@ -17,7 +19,6 @@ import expo.modules.updates.loader.LoaderTask
 import expo.modules.updates.loader.LoaderTask.BackgroundUpdateStatus
 import expo.modules.updates.loader.LoaderTask.LoaderTaskCallback
 import expo.modules.updates.manifest.UpdateManifest
-import expo.modules.updates.manifest.ManifestFactory
 import expo.modules.manifests.core.Manifest
 import expo.modules.updates.selectionpolicy.LauncherSelectionPolicyFilterAware
 import expo.modules.updates.selectionpolicy.LoaderSelectionPolicyFilterAware
@@ -140,10 +141,9 @@ class ExpoUpdatesAppLoader @JvmOverloads constructor(
     configMap["expectsSignedManifest"] = true
     val configuration = UpdatesConfiguration().loadValuesFromMap(configMap)
     val sdkVersionsList = mutableListOf<String>().apply {
-      addAll(Constants.SDK_VERSIONS_LIST)
-      add(RNObject.UNVERSIONED)
-      for (sdkVersion in Constants.SDK_VERSIONS_LIST) {
-        add("exposdk:$sdkVersion")
+      (Constants.SDK_VERSIONS_LIST + listOf(RNObject.UNVERSIONED)).forEach {
+        add(it)
+        add("exposdk:$it")
       }
     }
     val selectionPolicy = SelectionPolicy(
@@ -201,7 +201,7 @@ class ExpoUpdatesAppLoader @JvmOverloads constructor(
         }
 
         override fun onCachedUpdateLoaded(update: UpdateEntity): Boolean {
-          val manifest = ManifestFactory.getManifestFromManifestJson(update.manifest)
+          val manifest = Manifest.fromManifestJson(update.manifest)
           setShouldShowAppLoaderStatus(manifest)
           if (manifest.isUsingDeveloperTool()) {
             return false
@@ -245,7 +245,7 @@ class ExpoUpdatesAppLoader @JvmOverloads constructor(
           this@ExpoUpdatesAppLoader.isUpToDate = isUpToDate
           try {
             val manifestJson = processManifestJson(launcher.launchedUpdate!!.manifest)
-            val manifest = ManifestFactory.getManifestFromManifestJson(manifestJson)
+            val manifest = Manifest.fromManifestJson(manifestJson)
             callback.onManifestCompleted(manifest)
 
             // ReactAndroid will load the bundle on its own in development mode
@@ -307,7 +307,7 @@ class ExpoUpdatesAppLoader @JvmOverloads constructor(
         e
       )
     }
-    callback.onManifestCompleted(ManifestFactory.getManifestFromManifestJson(manifestJson))
+    callback.onManifestCompleted(Manifest.fromManifestJson(manifestJson))
     var launchAssetFile = launcher.launchAssetFile
     if (launchAssetFile == null) {
       // ReactInstanceManagerBuilder accepts embedded assets as strings with "assets://" prefixed
@@ -319,35 +319,41 @@ class ExpoUpdatesAppLoader @JvmOverloads constructor(
   @Throws(JSONException::class)
   private fun processManifestJson(manifestJson: JSONObject): JSONObject {
     val parsedManifestUrl = Uri.parse(manifestUrl)
+
+    // If legacy manifest is not yet verified, served by a third party, not standalone, and not an anonymous experience
+    // then scope it locally by using the manifest URL as a scopeKey (id) and consider it verified.
     if (!manifestJson.optBoolean(ExponentManifest.MANIFEST_IS_VERIFIED_KEY, false) &&
       isThirdPartyHosted(parsedManifestUrl) &&
-      !Constants.isStandaloneApp()
+      !Constants.isStandaloneApp() &&
+      !exponentManifest.isAnonymousExperience(Manifest.fromManifestJson(manifestJson)) &&
+      Manifest.fromManifestJson(manifestJson) is LegacyManifest
     ) {
-      // Sandbox third party apps and consider them verified
       // for https urls, sandboxed id is of form quinlanj.github.io/myProj-myApp
       // for http urls, sandboxed id is of form UNVERIFIED-quinlanj.github.io/myProj-myApp
       val protocol = parsedManifestUrl.scheme
       val securityPrefix = if (protocol == "https" || protocol == "exps") "" else "UNVERIFIED-"
       val path = if (parsedManifestUrl.path != null) parsedManifestUrl.path else ""
-      val slug = if (manifestJson.has(ExponentManifest.MANIFEST_SLUG)) manifestJson.getString(
-        ExponentManifest.MANIFEST_SLUG
-      ) else ""
+      val slug = manifestJson.getNullable<String>(ExponentManifest.MANIFEST_SLUG) ?: ""
       val sandboxedId = securityPrefix + parsedManifestUrl.host + path + "-" + slug
       manifestJson.put(ExponentManifest.MANIFEST_ID_KEY, sandboxedId)
       manifestJson.put(ExponentManifest.MANIFEST_IS_VERIFIED_KEY, true)
     }
+
+    // all standalone apps are considered verified
     if (Constants.isStandaloneApp()) {
       manifestJson.put(ExponentManifest.MANIFEST_IS_VERIFIED_KEY, true)
     }
+
+    // if the manifest is scoped to a random anonymous scope key, automatically verify it
+    if (exponentManifest.isAnonymousExperience(Manifest.fromManifestJson(manifestJson))) {
+      manifestJson.put(ExponentManifest.MANIFEST_IS_VERIFIED_KEY, true)
+    }
+
+    // otherwise set verified to false
     if (!manifestJson.has(ExponentManifest.MANIFEST_IS_VERIFIED_KEY)) {
       manifestJson.put(ExponentManifest.MANIFEST_IS_VERIFIED_KEY, false)
     }
-    if (!manifestJson.optBoolean(ExponentManifest.MANIFEST_IS_VERIFIED_KEY, false) &&
-      exponentManifest.isAnonymousExperience(ManifestFactory.getManifestFromManifestJson(manifestJson))
-    ) {
-      // automatically verified
-      manifestJson.put(ExponentManifest.MANIFEST_IS_VERIFIED_KEY, true)
-    }
+
     return manifestJson
   }
 

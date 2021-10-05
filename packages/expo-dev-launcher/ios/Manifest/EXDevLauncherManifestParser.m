@@ -1,7 +1,14 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 #import "EXDevLauncherManifestParser.h"
+#if __has_include(<EXDevLauncher/EXDevLauncher-Swift.h>)
+// For cocoapods framework, the generated swift header will be inside EXDevLauncher module
+#import <EXDevLauncher/EXDevLauncher-Swift.h>
+#else
 #import <EXDevLauncher-Swift.h>
+#endif
+
+#import <EXManifests/EXManifestsManifestFactory.h>
 
 typedef void (^CompletionHandler)(NSData *data, NSURLResponse *response);
 
@@ -63,13 +70,18 @@ typedef void (^CompletionHandler)(NSData *data, NSURLResponse *response);
         return;
       }
     }
-    EXDevLauncherManifest *manifest = [EXDevLauncherManifest fromJsonData:data];
-    if (!manifest) {
-      NSMutableDictionary* details = [NSMutableDictionary dictionary];
-      [details setValue:@"Couldn't parse the manifest." forKey:NSLocalizedDescriptionKey];
-      onError([[NSError alloc] initWithDomain:@"DevelopemntClient" code:1 userInfo:details]);
+    NSError *error;
+    NSDictionary *jsonObject = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:&error];
+    if (!jsonObject) {
+      NSMutableDictionary *details = [NSMutableDictionary dictionary];
+      details[NSLocalizedDescriptionKey] = [NSString stringWithFormat:@"Couldn't parse the manifest. %@", (error ? error.localizedDescription : @"")];
+      if (error) {
+        details[NSUnderlyingErrorKey] = error;
+      }
+      onError([[NSError alloc] initWithDomain:@"DevelopmentClient" code:1 userInfo:details]);
       return;
     }
+    EXManifestsManifest *manifest = [EXManifestsManifestFactory manifestForManifestJSON:jsonObject];
     onParsed(manifest);
   }];
 }
