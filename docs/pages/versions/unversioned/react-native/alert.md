@@ -65,7 +65,7 @@ export default App;
 
 ## iOS
 
-On iOS you can specify any number of buttons. Each button can optionally specify a style, available options are represented by the [AlertButtonStyle](#alertbuttonstyle--ios) enum.
+On iOS you can specify any number of buttons. Each button can optionally specify a style, available options are represented by the [AlertButtonStyle](#alertbuttonstyle-ios) enum.
 
 ## Android
 
@@ -75,7 +75,7 @@ On Android at most three buttons can be specified. Android has a concept of a ne
 - Two buttons mean 'negative', 'positive' (such as 'Cancel', 'OK')
 - Three buttons mean 'neutral', 'negative', 'positive' (such as 'Later', 'Cancel', 'OK')
 
-Alerts on Android can be dismissed by tapping outside of the alert box. It is disabled by default and can be enabled by providing an optional [Options](#options--android) parameter with the cancelable property set to `true` i.e.<br/>`{ cancelable: true }`.
+Alerts on Android can be dismissed by tapping outside of the alert box. It is disabled by default and can be enabled by providing an optional [Options](#options-android) parameter with the cancelable property set to `true` i.e.<br/>`{ cancelable: true }`.
 
 The cancel event can be handled by providing an `onDismiss` callback property inside the `options` parameter.
 
@@ -158,7 +158,7 @@ Create and display a prompt to enter some text in form of Alert.
 | title **(Required)** | string                           | The dialog's title.                                                                                                                                                                                   |
 | message              | string                           | An optional message that appears above the text input.                                                                                                                                                |
 | callbackOrButtons    | function<hr/>[Buttons](#buttons) | If passed a function, it will be called with the prompt's value<br/>`(text: string) => void`, when the user taps 'OK'.<hr/>If passed an array, buttons will be configured based on the array content. |
-| type                 | [AlertType](#alerttype--ios)     | This configures the text input.                                                                                                                                                                       |
+| type                 | [AlertType](#alerttype-ios)      | This configures the text input.                                                                                                                                                                       |
 | defaultValue         | string                           | The default text in text input.                                                                                                                                                                       |
 | keyboardType         | string                           | The keyboard type of first text field (if exists). One of TextInput [keyboardTypes](textinput.md#keyboardtype).                                                                                       |
 
@@ -213,11 +213,11 @@ Array of objects containg Alert buttons configuration.
 
 **Objects properties:**
 
-| Name            | Type                                       | Description                                             |
-| --------------- | ------------------------------------------ | ------------------------------------------------------- |
-| text            | string                                     | Button label.                                           |
-| onPress         | function                                   | Callback function when button is pressed.               |
-| style **(iOS)** | [AlertButtonStyle](#alertbuttonstyle--ios) | Button style, on Android this property will be ignored. |
+| Name            | Type                                      | Description                                             |
+| --------------- | ----------------------------------------- | ------------------------------------------------------- |
+| text            | string                                    | Button label.                                           |
+| onPress         | function                                  | Callback function when button is pressed.               |
+| style **(iOS)** | [AlertButtonStyle](#alertbuttonstyle-ios) | Button style, on Android this property will be ignored. |
 
 ---
 

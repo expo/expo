@@ -105,7 +105,7 @@ export default App;
 
 Sets the drop shadow color.
 
-This property will only work on Android API 28 and above. For similar functionality on lower Android APIs, use the [`elevation` property](view-style-props.md#elevation).
+This property will only work on Android API 28 and above. For similar functionality on lower Android APIs, use the [`elevation` property](view-style-props.md#elevation-android).
 
 | Type                                              |
 | ------------------------------------------------- |

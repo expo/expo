@@ -507,9 +507,9 @@ The highlight color of the text.
 
 ### `style`
 
-| Type                                                                    |
-| ----------------------------------------------------------------------- |
-| [Text Style](text-style-props), [View Style Props](view-style-props.md) |
+| Type                                                                       |
+| -------------------------------------------------------------------------- |
+| [Text Style](text-style-props.md), [View Style Props](view-style-props.md) |
 
 ---
 

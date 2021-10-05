@@ -107,7 +107,7 @@ Color of the foreground switch grip. If this is set on iOS, the switch grip will
 
 Custom colors for the switch track.
 
-_iOS_: When the switch value is `false`, the track shrinks into the border. If you want to change the color of the background exposed by the shrunken track, use [`ios_backgroundColor`](#ios_backgroundColor).
+_iOS_: When the switch value is `false`, the track shrinks into the border. If you want to change the color of the background exposed by the shrunken track, use [`ios_backgroundColor`](#ios_backgroundColor-ios).
 
 | Type                                                                                                                          |
 | ----------------------------------------------------------------------------------------------------------------------------- |
