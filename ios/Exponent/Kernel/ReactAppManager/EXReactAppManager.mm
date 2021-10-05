@@ -24,8 +24,6 @@
 #import <React/JSCExecutorFactory.h>
 #import <React/RCTRootView.h>
 
-typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t sourceLength);
-
 /**
  * TODO: Remove once SDK 38 is phased out.
  */
@@ -318,12 +316,7 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
 {
   NSData *data = _appRecord.appLoader.bundle;
   if (_loadCallback) {
-    if ([self _compareVersionTo:22] == NSOrderedAscending) {
-      SDK21RCTSourceLoadBlock legacyLoadCallback = (SDK21RCTSourceLoadBlock)_loadCallback;
-      legacyLoadCallback(nil, data, data.length);
-    } else {
-      _loadCallback(nil, [[RCTSource alloc] initWithURL:[self bundleUrl] data:data]);
-    }
+    _loadCallback(nil, [[RCTSource alloc] initWithURL:[self bundleUrl] data:data]);
     _loadCallback = nil;
   }
 }
@@ -340,12 +333,7 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
   [[NSNotificationCenter defaultCenter] postNotificationName:[self versionedString:RCTJavaScriptDidFailToLoadNotification] object:error];
 
   if (_loadCallback) {
-    if ([self _compareVersionTo:22] == NSOrderedAscending) {
-      SDK21RCTSourceLoadBlock legacyLoadCallback = (SDK21RCTSourceLoadBlock)_loadCallback;
-      legacyLoadCallback(error, nil, 0);
-    } else {
-      _loadCallback(error, nil);
-    }
+    _loadCallback(error, nil);
     _loadCallback = nil;
   }
 }
