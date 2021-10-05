@@ -104,7 +104,7 @@ async function getOptions(input: Options): Promise<Options> {
   return {
     sdk: `v${answers.sdk || input.sdk}`,
     from: answers.from || input.from,
-    to: input.to || 'master',
+    to: input.to || 'main',
   };
 }
 
@@ -140,7 +140,7 @@ async function validateGitStatusAsync() {
 async function updateDocsAsync(options: Options) {
   logger.info(`📚 Updating ${chalk.cyan('react-native-website')} submodule...`);
 
-  await rnRepo.runAsync(['checkout', 'master']);
+  await rnRepo.runAsync(['checkout', 'main']);
   await rnRepo.pullAsync({});
 
   if (!(await rnRepo.tryAsync(['checkout', options.from]))) {
@@ -323,7 +323,7 @@ export default program => {
     .command('update-react-native-docs')
     .option('--sdk <string>', 'SDK version to merge with (e.g. `unversioned` or `37.0.0`)')
     .option('--from <commit>', 'React Native Docs commit to start from')
-    .option('--to <commit>', 'React Native Docs commit to end at (defaults to `master`)')
+    .option('--to <commit>', 'React Native Docs commit to end at (defaults to `main`)')
     .description(
       `Fetches the React Native Docs changes in the commit range and create diffs to manually merge it.`
     )

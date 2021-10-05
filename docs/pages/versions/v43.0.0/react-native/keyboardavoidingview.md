@@ -21,10 +21,10 @@ import {
   Keyboard,
 } from 'react-native';
 
-export default function KeyboardAvoidingComponent() {
+const KeyboardAvoidingComponent = () => {
   return (
     <KeyboardAvoidingView
-      behavior={Platform.OS == 'ios' ? 'padding' : 'height'}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       style={styles.container}>
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         <View style={styles.inner}>
@@ -37,7 +37,7 @@ export default function KeyboardAvoidingComponent() {
       </TouchableWithoutFeedback>
     </KeyboardAvoidingView>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -63,6 +63,8 @@ const styles = StyleSheet.create({
     marginTop: 12,
   },
 });
+
+export default KeyboardAvoidingComponent;
 ```
 
 ---
@@ -71,7 +73,11 @@ const styles = StyleSheet.create({
 
 ## Props
 
+### [View Props](view.md#props)
+
 Inherits [View Props](view.md#props).
+
+---
 
 ### `behavior`
 
@@ -79,36 +85,36 @@ Specify how to react to the presence of the keyboard.
 
 > Android and iOS both interact with this prop differently. On both iOS and Android, setting `behavior` is recommended.
 
-| Type                                  | Required |
-| ------------------------------------- | -------- |
-| enum('height', 'position', 'padding') | No       |
+| Type                                        |
+| ------------------------------------------- |
+| enum(`'height'`, `'position'`, `'padding'`) |
 
 ---
 
 ### `contentContainerStyle`
 
-The style of the content container(View) when behavior is 'position'.
+The style of the content container (View) when behavior is `'position'`.
 
-| Type       | Required |
-| ---------- | -------- |
-| View.style | No       |
+| Type                              |
+| --------------------------------- |
+| [View Style](view-style-props.md) |
 
 ---
 
 ### `enabled`
 
-Enabled or disabled KeyboardAvoidingView. The default is `true`.
+Enabled or disabled KeyboardAvoidingView.
 
-| Type    | Required |
-| ------- | -------- |
-| boolean | No       |
+| Type    | Default |
+| ------- | ------- |
+| boolean | `true`  |
 
 ---
 
 ### `keyboardVerticalOffset`
 
-This is the distance between the top of the user screen and the react native view, may be non-zero in some use cases. Defaults to 0.
+This is the distance between the top of the user screen and the react native view, may be non-zero in some use cases.
 
-| Type   | Required |
-| ------ | -------- |
-| number | No       |
+| Type   | Default |
+| ------ | ------- |
+| number | `0`     |

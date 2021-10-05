@@ -34,8 +34,7 @@ import {
 if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
   UIManager.setLayoutAnimationEnabledExperimental(true);
 }
-
-export default function App() {
+const App = () => {
   const [expanded, setExpanded] = useState(false);
 
   return (
@@ -54,11 +53,11 @@ export default function App() {
       )}
     </View>
   );
-}
+};
 
 const style = StyleSheet.create({
   tile: {
-    background: 'lightGrey',
+    backgroundColor: 'lightgrey',
     borderWidth: 0.5,
     borderColor: '#d6d7da',
   },
@@ -69,6 +68,8 @@ const style = StyleSheet.create({
     overflow: 'hidden',
   },
 });
+
+export default App;
 ```
 
 ---
@@ -80,17 +81,18 @@ const style = StyleSheet.create({
 ### `configureNext()`
 
 ```js
-static configureNext(config, onAnimationDidEnd?)
+static configureNext(config, onAnimationDidEnd?, onAnimationDidFail?)
 ```
 
 Schedules an animation to happen on the next layout.
 
 #### Parameters:
 
-| Name              | Type     | Required | Description                                                |
-| ----------------- | -------- | -------- | ---------------------------------------------------------- |
-| config            | object   | Yes      | See config description below.                              |
-| onAnimationDidEnd | function | No       | Called when the animation finished. Only supported on iOS. |
+| Name               | Type     | Required | Description                         |
+| ------------------ | -------- | -------- | ----------------------------------- |
+| config             | object   | Yes      | See config description below.       |
+| onAnimationDidEnd  | function | No       | Called when the animation finished. |
+| onAnimationDidFail | function | No       | Called when the animation failed.   |
 
 The `config` parameter is an object with the keys below. [`create`](layoutanimation.md#create) returns a valid object for `config`, and the [`Presets`](layoutanimation.md#presets) objects can also all be passed as the `config`.
 
@@ -118,7 +120,7 @@ static create(duration, type, creationProp)
 
 Helper that creates an object (with `create`, `update`, and `delete` fields) to pass into [`configureNext`](layoutanimation.md#configurenext). The `type` parameter is an [animation type](layoutanimation.md#types), and the `creationProp` parameter is a [layout property](layoutanimation.md#properties).
 
-Example usage:
+**Example:**
 
 ```js
 import React, { useState } from 'react';
@@ -128,7 +130,7 @@ if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental
   UIManager.setLayoutAnimationEnabledExperimental(true);
 }
 
-export default function App() {
+const App = () => {
   const [boxPosition, setBoxPosition] = useState('left');
 
   const toggleBox = () => {
@@ -146,7 +148,7 @@ export default function App() {
       <View style={[styles.box, boxPosition === 'left' ? null : styles.moveRight]} />
     </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -170,6 +172,8 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
   },
 });
+
+export default App;
 ```
 
 ## Properties
@@ -214,23 +218,23 @@ A set of predefined animation configs to pass into [`configureNext`](layoutanima
 
 ---
 
-### `easeInEaseOut()`
+### `easeInEaseOut`
 
 Calls `configureNext()` with `Presets.easeInEaseOut`.
 
 ---
 
-### `linear()`
+### `linear`
 
 Calls `configureNext()` with `Presets.linear`.
 
 ---
 
-### `spring()`
+### `spring`
 
 Calls `configureNext()` with `Presets.spring`.
 
-Example usage:
+**Example:**
 
 ```js
 import React, { useState } from 'react';
@@ -240,7 +244,7 @@ if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental
   UIManager.setLayoutAnimationEnabledExperimental(true);
 }
 
-export default function App() {
+const App = () => {
   const [firstBoxPosition, setFirstBoxPosition] = useState('left');
   const [secondBoxPosition, setSecondBoxPosition] = useState('left');
   const [thirdBoxPosition, setThirdBoxPosition] = useState('left');
@@ -276,7 +280,7 @@ export default function App() {
       <View style={[styles.box, thirdBoxPosition === 'left' ? null : styles.moveRight]} />
     </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -298,4 +302,6 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
   },
 });
+
+export default App;
 ```

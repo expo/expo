@@ -55,99 +55,99 @@ export default ViewStyleProps;
 
 ## Props
 
-### `borderRightColor`
+### `backfaceVisibility`
 
-| Type                                         | Required |
-| -------------------------------------------- | -------- |
-| [color](https://reactnative.dev/docs/colors) | No       |
+| Type                          |
+| ----------------------------- |
+| enum(`'visible'`, `'hidden'`) |
 
 ---
 
-### `backfaceVisibility`
+### `backgroundColor`
 
-| Type                      | Required |
-| ------------------------- | -------- |
-| enum('visible', 'hidden') | No       |
+| Type                                              |
+| ------------------------------------------------- |
+| [color](https://reactnative.dev/docs/0.64/colors) |
 
 ---
 
 ### `borderBottomColor`
 
-| Type                                         | Required |
-| -------------------------------------------- | -------- |
-| [color](https://reactnative.dev/docs/colors) | No       |
+| Type                                              |
+| ------------------------------------------------- |
+| [color](https://reactnative.dev/docs/0.64/colors) |
 
 ---
 
 ### `borderBottomEndRadius`
 
-| Type   | Required |
-| ------ | -------- |
-| number | No       |
+| Type   |
+| ------ |
+| number |
 
 ---
 
 ### `borderBottomLeftRadius`
 
-| Type   | Required |
-| ------ | -------- |
-| number | No       |
+| Type   |
+| ------ |
+| number |
 
 ---
 
 ### `borderBottomRightRadius`
 
-| Type   | Required |
-| ------ | -------- |
-| number | No       |
+| Type   |
+| ------ |
+| number |
 
 ---
 
 ### `borderBottomStartRadius`
 
-| Type   | Required |
-| ------ | -------- |
-| number | No       |
+| Type   |
+| ------ |
+| number |
 
 ---
 
 ### `borderBottomWidth`
 
-| Type   | Required |
-| ------ | -------- |
-| number | No       |
+| Type   |
+| ------ |
+| number |
 
 ---
 
 ### `borderColor`
 
-| Type                                         | Required |
-| -------------------------------------------- | -------- |
-| [color](https://reactnative.dev/docs/colors) | No       |
+| Type                                              |
+| ------------------------------------------------- |
+| [color](https://reactnative.dev/docs/0.64/colors) |
 
 ---
 
 ### `borderEndColor`
 
-| Type                                         | Required |
-| -------------------------------------------- | -------- |
-| [color](https://reactnative.dev/docs/colors) | No       |
+| Type                                              |
+| ------------------------------------------------- |
+| [color](https://reactnative.dev/docs/0.64/colors) |
 
 ---
 
 ### `borderLeftColor`
 
-| Type                                         | Required |
-| -------------------------------------------- | -------- |
-| [color](https://reactnative.dev/docs/colors) | No       |
+| Type                                              |
+| ------------------------------------------------- |
+| [color](https://reactnative.dev/docs/0.64/colors) |
 
 ---
 
 ### `borderLeftWidth`
 
-| Type   | Required |
-| ------ | -------- |
-| number | No       |
+| Type   |
+| ------ |
+| number |
 
 ---
 
@@ -155,112 +155,112 @@ export default ViewStyleProps;
 
 If the rounded border is not visible, try applying `overflow: 'hidden'` as well.
 
-| Type   | Required |
-| ------ | -------- |
-| number | No       |
+| Type   |
+| ------ |
+| number |
 
 ---
 
-### `backgroundColor`
+### `borderRightColor`
 
-| Type                                         | Required |
-| -------------------------------------------- | -------- |
-| [color](https://reactnative.dev/docs/colors) | No       |
+| Type                                              |
+| ------------------------------------------------- |
+| [color](https://reactnative.dev/docs/0.64/colors) |
 
 ---
 
 ### `borderRightWidth`
 
-| Type   | Required |
-| ------ | -------- |
-| number | No       |
+| Type   |
+| ------ |
+| number |
 
 ---
 
 ### `borderStartColor`
 
-| Type                                         | Required |
-| -------------------------------------------- | -------- |
-| [color](https://reactnative.dev/docs/colors) | No       |
+| Type                                              |
+| ------------------------------------------------- |
+| [color](https://reactnative.dev/docs/0.64/colors) |
 
 ---
 
 ### `borderStyle`
 
-| Type                              | Required |
-| --------------------------------- | -------- |
-| enum('solid', 'dotted', 'dashed') | No       |
+| Type                                    |
+| --------------------------------------- |
+| enum(`'solid'`, `'dotted'`, `'dashed'`) |
 
 ---
 
 ### `borderTopColor`
 
-| Type                                         | Required |
-| -------------------------------------------- | -------- |
-| [color](https://reactnative.dev/docs/colors) | No       |
+| Type                                              |
+| ------------------------------------------------- |
+| [color](https://reactnative.dev/docs/0.64/colors) |
 
 ---
 
 ### `borderTopEndRadius`
 
-| Type   | Required |
-| ------ | -------- |
-| number | No       |
+| Type   |
+| ------ |
+| number |
 
 ---
 
 ### `borderTopLeftRadius`
 
-| Type   | Required |
-| ------ | -------- |
-| number | No       |
+| Type   |
+| ------ |
+| number |
 
 ---
 
 ### `borderTopRightRadius`
 
-| Type   | Required |
-| ------ | -------- |
-| number | No       |
+| Type   |
+| ------ |
+| number |
 
 ---
 
 ### `borderTopStartRadius`
 
-| Type   | Required |
-| ------ | -------- |
-| number | No       |
+| Type   |
+| ------ |
+| number |
 
 ---
 
 ### `borderTopWidth`
 
-| Type   | Required |
-| ------ | -------- |
-| number | No       |
+| Type   |
+| ------ |
+| number |
 
 ---
 
 ### `borderWidth`
 
-| Type   | Required |
-| ------ | -------- |
-| number | No       |
+| Type   |
+| ------ |
+| number |
+
+---
+
+### `elevation` **(Android)**
+
+Sets the elevation of a view, using Android's underlying [elevation API](https://developer.android.com/training/material/shadows-clipping.html#Elevation). This adds a drop shadow to the item and affects z-order for overlapping views. Only supported on Android 5.0+, has no effect on earlier versions.
+
+| Type   |
+| ------ |
+| number |
 
 ---
 
 ### `opacity`
 
-| Type   | Required |
-| ------ | -------- |
-| number | No       |
-
----
-
-### `elevation`
-
-(Android-only) Sets the elevation of a view, using Android's underlying [elevation API](https://developer.android.com/training/material/shadows-clipping.html#Elevation). This adds a drop shadow to the item and affects z-order for overlapping views. Only supported on Android 5.0+, has no effect on earlier versions.
-
-| Type   | Required | Platform |
-| ------ | -------- | -------- |
-| number | No       | Android  |
+| Type   |
+| ------ |
+| number |

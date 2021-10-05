@@ -1,6 +1,6 @@
 ---
 id: pressevent
-title: PressEvent
+title: PressEvent Object Type
 ---
 
 `PressEvent` object is returned in the callback as a result of user press interaction, for example `onPress` in [Button](button.md) component.
@@ -9,15 +9,15 @@ title: PressEvent
 
 ```js
 {
-    changedTouches: [PressEvent],
-    identifier: 1,
-    locationX: 8,
-    locationY: 4.5,
-    pageX: 24,
-    pageY: 49.5,
-    target: 1127,
-    timestamp: 85131876.58868201,
-    touches: []
+  changedTouches: [PressEvent],
+  identifier: 1,
+  locationX: 8,
+  locationY: 4.5,
+  pageX: 24,
+  pageY: 49.5,
+  target: 1127,
+  timestamp: 85131876.58868201,
+  touches: []
 }
 ```
 
@@ -89,7 +89,7 @@ The node id of the element receiving the PressEvent.
 
 ### `timestamp`
 
-Timestamp value when a PressEvent occured. Value is represented in miliseconds.
+Timestamp value when a PressEvent occurred. Value is represented in milliseconds.
 
 | Type   | Optional |
 | ------ | -------- |

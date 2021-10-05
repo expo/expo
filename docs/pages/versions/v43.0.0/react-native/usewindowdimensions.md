@@ -17,8 +17,8 @@ const windowHeight = useWindowDimensions().height;
 ## Example
 
 ```js
-import React from "react";
-import { View, StyleSheet, Text, useWindowDimensions } from "react-native";
+import React from 'react';
+import { View, StyleSheet, Text, useWindowDimensions } from 'react-native';
 
 const App = () => {
   const window = useWindowDimensions();
@@ -27,13 +27,13 @@ const App = () => {
       <Text>{`Window Dimensions: height - ${window.height}, width - ${window.width}`}</Text>
     </View>
   );
-}
+};
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: "center",
-    alignItems: "center"
-  }
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
 });
 
 export default App;
@@ -46,34 +46,34 @@ export default App;
 
 ### `fontScale`
 
-The scale of the font currently used. Some operating systems allow users to scale their font sizes larger or smaller for reading comfort. This property will let you know what is in effect.
-
 ```js
 useWindowDimensions().fontScale;
 ```
 
-### `height`
+The scale of the font currently used. Some operating systems allow users to scale their font sizes larger or smaller for reading comfort. This property will let you know what is in effect.
 
-The height in pixels of the window or screen your app occupies.
+### `height`
 
 ```js
 useWindowDimensions().height;
 ```
 
-### `scale`
+The height in pixels of the window or screen your app occupies.
 
-The pixel ratio of the device your app is running on.
+### `scale`
 
 ```js
 useWindowDimensions().scale;
 ```
 
+The pixel ratio of the device your app is running on.
+
 > A value of `1` indicates PPI/DPI of 96 (76 on some platforms). `2` indicates a Retina or high DPI display.
 
 ### `width`
 
-The width in pixels of the window or screen your app occupies.
-
 ```js
 useWindowDimensions().width;
 ```
+
+The width in pixels of the window or screen your app occupies.
