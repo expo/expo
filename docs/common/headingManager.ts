@@ -112,7 +112,7 @@ export class HeadingManager {
     const { hideInSidebar, sidebarTitle, sidebarDepth, sidebarType } = additionalProps ?? {};
     const levelOverride = sidebarDepth != null ? BASE_HEADING_LEVEL + sidebarDepth : undefined;
 
-    const slug = id || Utilities.generateSlug(this.slugger, title);
+    const slug = id ?? Utilities.generateSlug(this.slugger, title);
     const realTitle = Utilities.toString(title);
     const meta = this.findMetaForTitle(realTitle);
     const level = levelOverride ?? nestingLevel ?? meta?.depth ?? BASE_HEADING_LEVEL;
