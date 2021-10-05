@@ -6,9 +6,6 @@ on:
       upload:
         description: 'type "upload" to confirm upload to S3'
         required: false
-      versioned:
-        description: 'Create shell workspace from newest SDK versioned environment'
-        required: false
   schedule:
     - cron: '20 5 * * 2,4,6'
   pull_request:
@@ -28,8 +25,8 @@ jobs:
       - uses: actions/checkout@v2
         with:
           submodules: true
-      - name: 🔨 Switch to Xcode 12.5.1
-        run: sudo xcode-select --switch /Applications/Xcode_12.5.1.app
+      - name: 🔨 Switch to Xcode 13.0
+        run: sudo xcode-select --switch /Applications/Xcode_13.0.app
       - name: 🍺 Setup
         run: |
           echo "$(pwd)/bin" >> $GITHUB_PATH
@@ -61,28 +58,14 @@ jobs:
           key: ${{ runner.os }}-modules-${{ hashFiles('tools/yarn.lock') }}
       - name: 🍏 Generate dynamic macros
         run: expotools ios-generate-dynamic-macros
-      - name: 📦 Build iOS shell app for real devices (versioned)
-        if: ${{ github.event.inputs.versioned == 'true' }}
+      - name: 📦 Build iOS shell app for real devices
         timeout-minutes: 30
         run: |
           expotools ios-shell-app --action build --type archive --verbose true --skipRepoUpdate --shellAppSdkVersion UNVERSIONED
-      - name: 📦 Build iOS shell app for simulators (versioned)
-        if: ${{ github.event.inputs.versioned == 'true' }}
+      - name: 📦 Build iOS shell app for simulators
         timeout-minutes: 30
         run: |
           expotools ios-shell-app --action build --type simulator --verbose true --skipRepoUpdate --shellAppSdkVersion UNVERSIONED
-      - name: 📦 Build iOS shell app for real devices (unversioned)
-        if: ${{ github.event.inputs.versioned != 'true' }}
-        timeout-minutes: 30
-        run: |
-          expotools ios-shell-app --action build --type archive --verbose true --skipRepoUpdate --shellAppSdkVersion UNVERSIONED \
-            --packagesToInstallWhenEjecting '{"react-native": "file:../../react-native-lab/react-native", "react-native-unimodules": "file:../../packages/react-native-unimodules"}'
-      - name: 📦 Build iOS shell app for simulators (unversioned)
-        if: ${{ github.event.inputs.versioned != 'true' }}
-        timeout-minutes: 30
-        run: |
-          expotools ios-shell-app --action build --type simulator --verbose true --skipRepoUpdate --shellAppSdkVersion UNVERSIONED \
-            --packagesToInstallWhenEjecting '{"react-native": "file:../../react-native-lab/react-native", "react-native-unimodules": "file:../../packages/react-native-unimodules"}'
       - name: ✏️ Set tarball name
         id: tarball
         run: echo "::set-output name=filename::ios-shell-builder-sdk-latest-${{ github.sha }}.tar.gz"

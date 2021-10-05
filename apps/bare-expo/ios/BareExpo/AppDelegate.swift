@@ -44,7 +44,7 @@ class AppDelegate: AppDelegateWrapper {
   func initializeReactNativeBridge(_ launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> RCTBridge? {
     if let bridge = RCTBridge(delegate: self, launchOptions: launchOptions) {
       let rootView = RCTRootView(bridge: bridge, moduleName: "main", initialProperties: nil)
-      let rootViewController = UIViewController()
+      let rootViewController = EXScreenOrientationViewController()!
       rootView.backgroundColor = UIColor.white
       rootViewController.view = rootView
 

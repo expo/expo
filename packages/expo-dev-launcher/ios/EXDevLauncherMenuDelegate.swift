@@ -48,10 +48,10 @@ private class AppDelegate : DevMenuDelegateProtocol {
     }
     
     return [
-      "appName": manifest.name,
-      "appVersion": manifest.version,
+      "appName": manifest.name(),
+      "appVersion": manifest.version(),
       "appIcon": NSNull(),
-      "hostUrl": manifest.bundleUrl,
+      "hostUrl": manifest.bundleUrl(),
     ]
   }
   

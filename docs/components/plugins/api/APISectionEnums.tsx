@@ -46,7 +46,7 @@ const renderEnum = ({ name, children, comment }: EnumDefinitionData): JSX.Elemen
   </div>
 );
 
-const APISectionEnums: React.FC<APISectionEnumsProps> = ({ data }) =>
+const APISectionEnums = ({ data }: APISectionEnumsProps) =>
   data?.length ? (
     <>
       <H2 key="enums-header">Enums</H2>

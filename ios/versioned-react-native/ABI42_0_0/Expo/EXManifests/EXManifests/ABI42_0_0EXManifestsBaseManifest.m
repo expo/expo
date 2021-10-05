@@ -55,6 +55,14 @@
   return [expoClientConfig nullableStringForKey:@"name"];
 }
 
+- (nullable NSString *)version {
+  NSDictionary *expoClientConfig = self.expoClientConfigRootObject;
+  if (!expoClientConfig) {
+    return nil;
+  }
+  return [expoClientConfig nullableStringForKey:@"version"];
+}
+
 - (nullable NSDictionary *)notificationPreferences {
   NSDictionary *expoClientConfig = self.expoClientConfigRootObject;
   if (!expoClientConfig) {

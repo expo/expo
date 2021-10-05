@@ -148,7 +148,7 @@
     screenRemoved = YES;
     [self detachScreen:screen];
   }
-  
+
   // detect if new screen is going to be activated
   BOOL screenAdded = NO;
   for (RNSScreenView *screen in _reactSubviews) {
@@ -156,7 +156,7 @@
       screenAdded = YES;
     }
   }
-  
+
   if (screenAdded) {
     // add new screens in order they are placed in subviews array
     NSInteger index = 0;
@@ -173,13 +173,13 @@
       }
     }
   }
-  
+
   for (RNSScreenView *screen in _reactSubviews) {
     if (screen.activityState == RNSActivityStateOnTop) {
       [screen notifyFinishTransitioning];
     }
   }
-  
+
   if (screenRemoved || screenAdded) {
     [self maybeDismissVC];
   }

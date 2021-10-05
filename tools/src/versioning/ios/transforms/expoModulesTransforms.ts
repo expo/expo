@@ -67,6 +67,12 @@ export function expoModulesTransforms(prefix: string): FileTransforms {
         find: new RegExp(`#import <${prefix}(EXGL_CPP)\\b`),
         replaceWith: '#import <$1',
       },
+      {
+        // Prefixes Objective-C name of the Swift modules provider.
+        paths: ['EXNativeModulesProxy.m'],
+        find: 'NSClassFromString(@"ExpoModulesProvider")',
+        replaceWith: `NSClassFromString(@"${prefix}ExpoModulesProvider")`
+      }
     ],
   };
 }

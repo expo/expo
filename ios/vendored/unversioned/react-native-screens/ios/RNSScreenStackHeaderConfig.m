@@ -64,7 +64,7 @@
 }
 
 #if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && defined(__IPHONE_14_0) && \
-__IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_14_0
+    __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_14_0
 - (void)setMenu:(UIMenu *)menu
 {
   if (@available(iOS 14.0, *)) {
@@ -130,7 +130,7 @@ __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_14_0
     // problem when config gets updated while the transition is ongoing.
     nextVC = nav.topViewController;
   }
-  
+
   BOOL isInFullScreenModal = nav == nil && _screenView.stackPresentation == RNSScreenStackPresentationFullScreenModal;
   // if nav is nil, it means we can be in a fullScreen modal, so there is no nextVC, but we still want to update
   if (vc != nil && (nextVC == vc || isInFullScreenModal)) {
@@ -159,7 +159,7 @@ __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_14_0
   // seems to load the custom back image so we change the tint color's alpha by a very small amount and then set it to
   // the one it should have.
 #if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && defined(__IPHONE_14_0) && \
-__IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_14_0
+    __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_14_0
   // it brakes the behavior of `headerRight` in iOS 14, where the bug desribed above seems to be fixed, so we do nothing
   // in iOS 14
   if (@available(iOS 14.0, *)) {
@@ -169,16 +169,16 @@ __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_14_0
     [navbar setTintColor:[config.color colorWithAlphaComponent:CGColorGetAlpha(config.color.CGColor) - 0.01]];
   }
   [navbar setTintColor:config.color];
-  
+
 #if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && defined(__IPHONE_13_0) && \
-__IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_13_0
+    __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_13_0
   if (@available(iOS 13.0, *)) {
     // font customized on the navigation item level, so nothing to do here
   } else
 #endif
   {
     BOOL hideShadow = config.hideShadow;
-    
+
     if (config.backgroundColor && CGColorGetAlpha(config.backgroundColor.CGColor) == 0.) {
       [navbar setBackgroundImage:[UIImage new] forBarMetrics:UIBarMetricsDefault];
       [navbar setBarTintColor:[UIColor clearColor]];
@@ -189,14 +189,14 @@ __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_13_0
     }
     [navbar setTranslucent:config.translucent];
     [navbar setValue:@(hideShadow ? YES : NO) forKey:@"hidesShadow"];
-    
+
     if (config.titleFontFamily || config.titleFontSize || config.titleFontWeight || config.titleColor) {
       NSMutableDictionary *attrs = [NSMutableDictionary new];
-      
+
       if (config.titleColor) {
         attrs[NSForegroundColorAttributeName] = config.titleColor;
       }
-      
+
       NSString *family = config.titleFontFamily ?: nil;
       NSNumber *size = config.titleFontSize ?: @17;
       NSString *weight = config.titleFontWeight ?: nil;
@@ -213,7 +213,7 @@ __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_13_0
       }
       [navbar setTitleTextAttributes:attrs];
     }
-    
+
 #if !TARGET_OS_TV
     if (@available(iOS 11.0, *)) {
       if (config.largeTitle &&
@@ -222,7 +222,7 @@ __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_13_0
         NSMutableDictionary *largeAttrs = [NSMutableDictionary new];
         if (config.largeTitleColor || config.titleColor) {
           largeAttrs[NSForegroundColorAttributeName] =
-          config.largeTitleColor ? config.largeTitleColor : config.titleColor;
+              config.largeTitleColor ? config.largeTitleColor : config.titleColor;
         }
         NSString *largeFamily = config.largeTitleFontFamily ?: nil;
         NSNumber *largeSize = config.largeTitleFontSize ?: @34;
@@ -271,10 +271,10 @@ __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_13_0
         // in order to trigger proper reload that'd update the image attribute.
         RCTImageSource *source = imageView.imageSources[0];
         [imageView reactSetFrame:CGRectMake(
-                                            imageView.frame.origin.x,
-                                            imageView.frame.origin.y,
-                                            source.size.width,
-                                            source.size.height)];
+                                     imageView.frame.origin.x,
+                                     imageView.frame.origin.y,
+                                     source.size.width,
+                                     source.size.height)];
       }
       UIImage *image = imageView.image;
       // IMPORTANT!!!
@@ -303,18 +303,18 @@ __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_13_0
         // image on load to trigger, but that would require even more private method hacking.
         if (vc.transitionCoordinator) {
           [vc.transitionCoordinator
-           animateAlongsideTransition:^(id<UIViewControllerTransitionCoordinatorContext> _Nonnull context) {
-            // nothing, we just want completion
-          }
-           completion:^(id<UIViewControllerTransitionCoordinatorContext> _Nonnull context) {
-            // in order for new back button image to be loaded we need to trigger another change
-            // in back button props that'd make UIKit redraw the button. Otherwise the changes are
-            // not reflected. Here we change back button visibility which is then immediately restored
+              animateAlongsideTransition:^(id<UIViewControllerTransitionCoordinatorContext> _Nonnull context) {
+                // nothing, we just want completion
+              }
+              completion:^(id<UIViewControllerTransitionCoordinatorContext> _Nonnull context) {
+          // in order for new back button image to be loaded we need to trigger another change
+          // in back button props that'd make UIKit redraw the button. Otherwise the changes are
+          // not reflected. Here we change back button visibility which is then immediately restored
 #if !TARGET_OS_TV
-            vc.navigationItem.hidesBackButton = YES;
+                vc.navigationItem.hidesBackButton = YES;
 #endif
-            [config updateViewControllerIfNeeded];
-          }];
+                [config updateViewControllerIfNeeded];
+              }];
         }
         return [UIImage new];
       } else {
@@ -333,39 +333,39 @@ __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_13_0
 }
 
 #if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && defined(__IPHONE_13_0) && \
-__IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_13_0
+    __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_13_0
 + (UINavigationBarAppearance *)buildAppearance:(UIViewController *)vc
                                     withConfig:(RNSScreenStackHeaderConfig *)config API_AVAILABLE(ios(13.0))
 {
   UINavigationBarAppearance *appearance = [UINavigationBarAppearance new];
-  
+
   if (config.backgroundColor && CGColorGetAlpha(config.backgroundColor.CGColor) == 0.) {
     // transparent background color
     [appearance configureWithTransparentBackground];
   } else {
     [appearance configureWithOpaqueBackground];
   }
-  
+
   // set background color if specified
   if (config.backgroundColor) {
     appearance.backgroundColor = config.backgroundColor;
   }
-  
+
   if (config.blurEffect) {
     appearance.backgroundEffect = [UIBlurEffect effectWithStyle:config.blurEffect];
   }
-  
+
   if (config.hideShadow) {
     appearance.shadowColor = nil;
   }
-  
+
   if (config.titleFontFamily || config.titleFontSize || config.titleFontWeight || config.titleColor) {
     NSMutableDictionary *attrs = [NSMutableDictionary new];
-    
+
     if (config.titleColor) {
       attrs[NSForegroundColorAttributeName] = config.titleColor;
     }
-    
+
     NSString *family = config.titleFontFamily ?: nil;
     NSNumber *size = config.titleFontSize ?: @17;
     NSString *weight = config.titleFontWeight ?: nil;
@@ -382,15 +382,15 @@ __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_13_0
     }
     appearance.titleTextAttributes = attrs;
   }
-  
+
   if (config.largeTitleFontFamily || config.largeTitleFontSize || config.largeTitleFontWeight ||
       config.largeTitleColor || config.titleColor) {
     NSMutableDictionary *largeAttrs = [NSMutableDictionary new];
-    
+
     if (config.largeTitleColor || config.titleColor) {
       largeAttrs[NSForegroundColorAttributeName] = config.largeTitleColor ? config.largeTitleColor : config.titleColor;
     }
-    
+
     NSString *largeFamily = config.largeTitleFontFamily ?: nil;
     NSNumber *largeSize = config.largeTitleFontSize ?: @34;
     NSString *largeWeight = config.largeTitleFontWeight ?: nil;
@@ -405,10 +405,10 @@ __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_13_0
     } else {
       largeAttrs[NSFontAttributeName] = [UIFont systemFontOfSize:[largeSize floatValue] weight:UIFontWeightBold];
     }
-    
+
     appearance.largeTitleTextAttributes = largeAttrs;
   }
-  
+
   UIImage *backButtonImage = [self loadBackButtonImageInViewController:vc withConfig:config];
   if (backButtonImage) {
     [appearance setBackIndicatorImage:backButtonImage transitionMaskImage:backButtonImage];
@@ -425,14 +425,14 @@ __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_13_0
 {
   UINavigationItem *navitem = vc.navigationItem;
   UINavigationController *navctr = (UINavigationController *)vc.parentViewController;
-  
+
   NSUInteger currentIndex = [navctr.viewControllers indexOfObject:vc];
   UINavigationItem *prevItem =
-  currentIndex > 0 ? [navctr.viewControllers objectAtIndex:currentIndex - 1].navigationItem : nil;
-  
+      currentIndex > 0 ? [navctr.viewControllers objectAtIndex:currentIndex - 1].navigationItem : nil;
+
   BOOL wasHidden = navctr.navigationBarHidden;
   BOOL shouldHide = config == nil || config.hide;
-  
+
   if (!shouldHide && !config.translucent) {
     // when nav bar is not translucent we chage edgesForExtendedLayout to avoid system laying out
     // the screen underneath navigation controllers
@@ -441,19 +441,21 @@ __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_13_0
     // system default is UIRectEdgeAll
     vc.edgesForExtendedLayout = UIRectEdgeAll;
   }
-  
+
   [navctr setNavigationBarHidden:shouldHide animated:animated];
-  
-  if (config.direction == UISemanticContentAttributeForceLeftToRight ||
-      config.direction == UISemanticContentAttributeForceRightToLeft) {
+
+  if ((config.direction == UISemanticContentAttributeForceLeftToRight ||
+       config.direction == UISemanticContentAttributeForceRightToLeft) &&
+      // iOS 12 cancels swipe gesture when direction is changed. See #1091
+      navctr.view.semanticContentAttribute != config.direction) {
     navctr.view.semanticContentAttribute = config.direction;
     navctr.navigationBar.semanticContentAttribute = config.direction;
   }
-  
+
   if (shouldHide) {
     return;
   }
-  
+
   navitem.title = config.title;
 #if !TARGET_OS_TV
   if (config.backTitle != nil || config.backTitleFontFamily || config.backTitleFontSize ||
@@ -462,9 +464,9 @@ __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_13_0
                                                                                 style:UIBarButtonItemStylePlain
                                                                                target:nil
                                                                                action:nil];
-    
+
     [backBarButtonItem setMenuHidden:config.disableBackButtonMenu];
-    
+
     prevItem.backBarButtonItem = backBarButtonItem;
     if (config.backTitleFontFamily || config.backTitleFontSize) {
       NSMutableDictionary *attrs = [NSMutableDictionary new];
@@ -485,25 +487,25 @@ __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_13_0
   } else {
     prevItem.backBarButtonItem = nil;
   }
-  
+
   if (@available(iOS 11.0, *)) {
     if (config.largeTitle) {
       navctr.navigationBar.prefersLargeTitles = YES;
     }
     navitem.largeTitleDisplayMode =
-    config.largeTitle ? UINavigationItemLargeTitleDisplayModeAlways : UINavigationItemLargeTitleDisplayModeNever;
+        config.largeTitle ? UINavigationItemLargeTitleDisplayModeAlways : UINavigationItemLargeTitleDisplayModeNever;
   }
 #endif
-  
+
 #if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && defined(__IPHONE_13_0) && \
-__IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_13_0
+    __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_13_0
   if (@available(iOS 13.0, tvOS 13.0, *)) {
     UINavigationBarAppearance *appearance = [self buildAppearance:vc withConfig:config];
     navitem.standardAppearance = appearance;
     navitem.compactAppearance = appearance;
-    
+
     UINavigationBarAppearance *scrollEdgeAppearance =
-    [[UINavigationBarAppearance alloc] initWithBarAppearance:appearance];
+        [[UINavigationBarAppearance alloc] initWithBarAppearance:appearance];
     if (config.largeTitleBackgroundColor != nil) {
       scrollEdgeAppearance.backgroundColor = config.largeTitleBackgroundColor;
     }
@@ -569,7 +571,7 @@ __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_13_0
       }
     }
   }
-  
+
   if (animated && vc.transitionCoordinator != nil &&
       vc.transitionCoordinator.presentationStyle == UIModalPresentationNone && !wasHidden) {
     // when there is an ongoing transition we may need to update navbar setting in animation block
@@ -580,22 +582,22 @@ __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_13_0
     // types of transitions there is no "shared" navigation bar that needs to be updated in an animated
     // way.
     [vc.transitionCoordinator
-     animateAlongsideTransition:^(id<UIViewControllerTransitionCoordinatorContext> _Nonnull context) {
-      [self setAnimatedConfig:vc withConfig:config];
-    }
-     completion:^(id<UIViewControllerTransitionCoordinatorContext> _Nonnull context) {
-      if ([context isCancelled]) {
-        UIViewController *fromVC = [context viewControllerForKey:UITransitionContextFromViewControllerKey];
-        RNSScreenStackHeaderConfig *config = nil;
-        for (UIView *subview in fromVC.view.reactSubviews) {
-          if ([subview isKindOfClass:[RNSScreenStackHeaderConfig class]]) {
-            config = (RNSScreenStackHeaderConfig *)subview;
-            break;
-          }
+        animateAlongsideTransition:^(id<UIViewControllerTransitionCoordinatorContext> _Nonnull context) {
+          [self setAnimatedConfig:vc withConfig:config];
         }
-        [self setAnimatedConfig:fromVC withConfig:config];
-      }
-    }];
+        completion:^(id<UIViewControllerTransitionCoordinatorContext> _Nonnull context) {
+          if ([context isCancelled]) {
+            UIViewController *fromVC = [context viewControllerForKey:UITransitionContextFromViewControllerKey];
+            RNSScreenStackHeaderConfig *config = nil;
+            for (UIView *subview in fromVC.view.reactSubviews) {
+              if ([subview isKindOfClass:[RNSScreenStackHeaderConfig class]]) {
+                config = (RNSScreenStackHeaderConfig *)subview;
+                break;
+              }
+            }
+            [self setAnimatedConfig:fromVC withConfig:config];
+          }
+        }];
   } else {
     [self setAnimatedConfig:vc withConfig:config];
   }
@@ -651,7 +653,7 @@ RCT_EXPORT_VIEW_PROPERTY(translucent, BOOL)
     @"light" : @(UIBlurEffectStyleLight),
     @"dark" : @(UIBlurEffectStyleDark),
   }];
-  
+
   if (@available(iOS 10.0, *)) {
     [blurEffects addEntriesFromDictionary:@{
       @"regular" : @(UIBlurEffectStyleRegular),
@@ -659,7 +661,7 @@ RCT_EXPORT_VIEW_PROPERTY(translucent, BOOL)
     }];
   }
 #if !TARGET_OS_TV && defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && defined(__IPHONE_13_0) && \
-__IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_13_0
+    __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_13_0
   if (@available(iOS 13.0, *)) {
     [blurEffects addEntriesFromDictionary:@{
       @"systemUltraThinMaterial" : @(UIBlurEffectStyleSystemUltraThinMaterial),
@@ -684,26 +686,26 @@ __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_13_0
 }
 
 RCT_ENUM_CONVERTER(
-                   RNSScreenStackHeaderSubviewType,
-                   (@{
-                     @"back" : @(RNSScreenStackHeaderSubviewTypeBackButton),
-                     @"left" : @(RNSScreenStackHeaderSubviewTypeLeft),
-                     @"right" : @(RNSScreenStackHeaderSubviewTypeRight),
-                     @"title" : @(RNSScreenStackHeaderSubviewTypeTitle),
-                     @"center" : @(RNSScreenStackHeaderSubviewTypeCenter),
-                     @"searchBar" : @(RNSScreenStackHeaderSubviewTypeSearchBar),
-                    }),
-                   RNSScreenStackHeaderSubviewTypeTitle,
-                   integerValue)
+    RNSScreenStackHeaderSubviewType,
+    (@{
+      @"back" : @(RNSScreenStackHeaderSubviewTypeBackButton),
+      @"left" : @(RNSScreenStackHeaderSubviewTypeLeft),
+      @"right" : @(RNSScreenStackHeaderSubviewTypeRight),
+      @"title" : @(RNSScreenStackHeaderSubviewTypeTitle),
+      @"center" : @(RNSScreenStackHeaderSubviewTypeCenter),
+      @"searchBar" : @(RNSScreenStackHeaderSubviewTypeSearchBar),
+    }),
+    RNSScreenStackHeaderSubviewTypeTitle,
+    integerValue)
 
 RCT_ENUM_CONVERTER(
-                   UISemanticContentAttribute,
-                   (@{
-                     @"ltr" : @(UISemanticContentAttributeForceLeftToRight),
-                     @"rtl" : @(UISemanticContentAttributeForceRightToLeft),
-                    }),
-                   UISemanticContentAttributeUnspecified,
-                   integerValue)
+    UISemanticContentAttribute,
+    (@{
+      @"ltr" : @(UISemanticContentAttributeForceLeftToRight),
+      @"rtl" : @(UISemanticContentAttributeForceRightToLeft),
+    }),
+    UISemanticContentAttributeUnspecified,
+    integerValue)
 
 RCT_ENUM_CONVERTER(UIBlurEffectStyle, ([self blurEffectsForIOSVersion]), UIBlurEffectStyleExtraLight, integerValue)
 

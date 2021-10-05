@@ -7,7 +7,7 @@ apply plugin: 'kotlin-kapt'
 // WHEN_VERSIONING_REMOVE_FROM_HERE
 //maven repository info
 group = 'host.exp.exponent'
-version = '42.0.0'
+version = '43.0.0'
 
 
 //Upload android library to maven with javadoc and android sources
@@ -272,7 +272,7 @@ dependencies {
   api 'org.webkit:android-jsc:r245459' // needs to be before react-native
 
   /* UNCOMMENT WHEN DISTRIBUTING
-  api 'com.facebook.react:react-native:42.0.0'
+  api 'com.facebook.react:react-native:43.0.0'
   compileOnly project(':expo')
   compileOnly project(':expo-random')
   END UNCOMMENT WHEN DISTRIBUTING */
@@ -293,15 +293,15 @@ dependencies {
   // Versioned react native
   // WHEN_PREPARING_SHELL_REMOVE_FROM_HERE
   // THIS COMMENT IS USED BY android-build-aar.sh DO NOT MODIFY
+  // BEGIN_SDK_43
+  versionedApi 'host.exp:reactandroid-abi43_0_0:1.0.0'
+  // END_SDK_43
   // BEGIN_SDK_42
   versionedApi 'host.exp:reactandroid-abi42_0_0:1.0.0'
   // END_SDK_42
   // BEGIN_SDK_41
   versionedApi 'host.exp:reactandroid-abi41_0_0:1.0.0'
   // END_SDK_41
-  // BEGIN_SDK_40
-  versionedApi 'host.exp:reactandroid-abi40_0_0:1.0.0'
-  // END_SDK_40
   // WHEN_PREPARING_SHELL_REMOVE_TO_HERE
   // WHEN_VERSIONING_REMOVE_TO_HERE
   // WHEN_DISTRIBUTING_REMOVE_TO_HERE
@@ -341,7 +341,7 @@ dependencies {
   releaseApi 'com.squareup.leakcanary:leakcanary-android-no-op:1.4-beta1'
   api 'commons-io:commons-io:2.6'
   api 'me.leolin:ShortcutBadger:1.1.4@aar'
-  api 'com.theartofdev.edmodo:android-image-cropper:2.7.0'
+  api 'com.theartofdev.edmodo:android-image-cropper:2.8.0'
   api 'commons-codec:commons-codec:1.10'
   api 'net.openid:appauth:0.7.1'
   api 'com.airbnb.android:lottie:3.4.0'

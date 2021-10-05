@@ -10,6 +10,9 @@ module.exports = {
   'expo-dev-menu-interface': {
     root: resolve('expo-dev-menu-interface'),
   },
+  'expo-manifests': {
+    root: resolve('expo-manifests'),
+  },
   'expo-updates-interface': {
     root: resolve('expo-updates-interface'),
   },

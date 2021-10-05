@@ -138,7 +138,7 @@ ABI42_0_0UM_REGISTER_SINGLETON_MODULE(ScreenOrientationRegistry)
 
 - (void)handleDeviceOrientationChange:(NSNotification *)notification
 {
-  UIInterfaceOrientation newScreenOrientation = [ABI42_0_0EXScreenOrientationUtilities interfaceOrientationFromDeviceOrientation:[notification.object orientation]];
+  UIInterfaceOrientation newScreenOrientation = [ABI42_0_0EXScreenOrientationUtilities interfaceOrientationFromDeviceOrientation:[[UIDevice currentDevice] orientation]];
   [self interfaceOrientationDidChange:newScreenOrientation];
 }
 

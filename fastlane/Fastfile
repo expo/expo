@@ -289,42 +289,6 @@ platform :android do
     adb(command: "shell am start -n host.exp.exponent/host.exp.exponent.LauncherActivity")
   end
 
-  def devicefarm_run(arn)
-    JSON.load(`aws devicefarm --region us-west-2 get-run --arn #{arn}`)
-  end
-
-  def devicefarm_follow_run(arn)
-    until (run = devicefarm_run(arn)["run"]) && run["result"]  != "PENDING"
-      UI.message("Run pending...")
-      sleep 60
-    end
-    UI.shell_error!("Run #{run["result"]}") unless run["result"] == "PASSED"
-    UI.success("Run successful")
-  end
-
-  lane :devicefarm do
-    commit_info = last_git_commit
-    channel = commit_info[:commit_hash]
-    ENV["TEST_SUITE_URI"] = "exp://exp.host/@exponent_ci_bot/test-suite/--/all?release-channel=#{channel}"
-    ENV["TEST_CONFIG"] = {
-      includeModules:  '.*',
-      includeSdkVersions: ['UNVERSIONED'],
-      includeTestTypes: ['test-suite'],
-      isInCI: true,
-    }.to_json
-    ENV["DEVICEFARM_PROJECT_NAME"] = "exponent"
-    ENV["DEVICEFARM_DEVICE_POOL"] = "android-test-device-pool"
-    ENV["AWS_ACCESS_KEY_ID"] ||= `aws configure get aws_access_key_id`.chomp
-    ENV["AWS_SECRET_ACCESS_KEY"] ||= `aws configure get aws_secret_access_key`.chomp
-    upload_result = gradle(
-      project_dir: "android",
-      task: "app:devicefarmUpload",
-    )
-    result_info = upload_result.match(/View the INSTRUMENTATION run.*\/projects\/(?<project_id>.*)\/runs\/(?<run_id>.*)$/)
-    UI.shell_error!("Apks not uploaded!") unless result_info
-    devicefarm_follow_run("arn:aws:devicefarm:us-west-2:274251141632:run:#{result_info[:project_id]}/#{result_info[:run_id]}")
-  end
-
   lane :build do |build_type: "Debug", flavor: "versioned", sign: true|
     ENV['ANDROID_UNSIGNED'] = '1' unless sign
     gradle(

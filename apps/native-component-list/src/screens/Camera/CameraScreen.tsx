@@ -112,7 +112,7 @@ export default class CameraScreen extends React.Component<{}, State> {
     if (Platform.OS !== 'web') {
       this.ensureDirectoryExistsAsync();
     }
-    Camera.requestPermissionsAsync().then(({ status }) => {
+    Camera.requestCameraPermissionsAsync().then(({ status }) => {
       this.setState({ permission: status, permissionsGranted: status === 'granted' });
     });
   }

@@ -32,7 +32,7 @@
 		<dict>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>fb629712900716487</string>
+				<string>fb1696089354000816</string>
 			</array>
 		</dict>
 	</array>
@@ -108,7 +108,7 @@
 	<key>CFBundleDisplayName</key>
 	<string>BareExpo</string>
 	<key>FacebookAppID</key>
-	<string>629712900716487</string>
+  	<string>1696089354000816</string>
 	<key>FacebookDisplayName</key>
 	<string>Expo APIs</string>
 </dict>

@@ -21,13 +21,15 @@ type Props = {
 };
 
 const filterDataByKind = (
-  entries: GeneratedData[],
-  kind: TypeDocKind,
+  entries: GeneratedData[] = [],
+  kind: TypeDocKind | TypeDocKind[],
   additionalCondition: (entry: GeneratedData) => boolean = () => true
 ) =>
-  entries
-    ? entries.filter((entry: GeneratedData) => entry.kind === kind && additionalCondition(entry))
-    : [];
+  entries.filter(
+    (entry: GeneratedData) =>
+      (Array.isArray(kind) ? kind.includes(entry.kind) : entry.kind === kind) &&
+      additionalCondition(entry)
+  );
 
 const isHook = ({ name }: GeneratedData) =>
   name.startsWith('use') &&
@@ -38,6 +40,13 @@ const isListener = ({ name }: GeneratedData) =>
   name.endsWith('Listener') || name.endsWith('Listeners');
 
 const isProp = ({ name }: GeneratedData) => name.includes('Props') && name !== 'ErrorRecoveryProps';
+
+const isComponent = ({ type, extendedTypes }: GeneratedData) =>
+  type?.name === 'React.FC' ||
+  (extendedTypes && extendedTypes.length ? extendedTypes[0].name === 'Component' : false);
+
+const isConstant = ({ flags, name, type }: GeneratedData) =>
+  (flags?.isConst || false) && name !== 'default' && type?.name !== 'React.FC';
 
 const renderAPI = (
   packageName: string,
@@ -86,21 +95,12 @@ const renderAPI = (
       entry => entry.name === 'defaultProps'
     )[0];
 
-    const enums = filterDataByKind(data, TypeDocKind.Enum);
+    const enums = filterDataByKind(data, [TypeDocKind.Enum, TypeDocKind.LegacyEnum]);
     const interfaces = filterDataByKind(data, TypeDocKind.Interface);
-    const constants = filterDataByKind(
-      data,
-      TypeDocKind.Variable,
-      entry =>
-        (entry?.flags?.isConst || false) &&
-        entry.name !== 'default' &&
-        entry?.type?.name !== 'React.FC'
-    );
+    const constants = filterDataByKind(data, TypeDocKind.Variable, entry => isConstant(entry));
 
-    const components = filterDataByKind(
-      data,
-      TypeDocKind.Variable,
-      entry => entry?.type?.name === 'React.FC'
+    const components = filterDataByKind(data, [TypeDocKind.Variable, TypeDocKind.Class], entry =>
+      isComponent(entry)
     );
     const componentsPropNames = components.map(component => `${component.name}Props`);
     const componentsProps = filterDataByKind(props, TypeDocKind.TypeAlias, entry =>
@@ -131,7 +131,7 @@ const renderAPI = (
   }
 };
 
-const APISection: React.FC<Props> = ({ packageName, apiName, forceVersion }) => {
+const APISection = ({ packageName, apiName, forceVersion }: Props) => {
   const { version } = useContext(DocumentationPageContext);
   const resolvedVersion =
     forceVersion ||

@@ -19,7 +19,8 @@ import {
 } from '~/components/plugins/api/APIDataTypes';
 
 export enum TypeDocKind {
-  Enum = 4,
+  LegacyEnum = 4,
+  Enum = 8,
   Variable = 32,
   Function = 64,
   Class = 128,
@@ -37,14 +38,8 @@ export const mdComponents: MDComponents = {
       {children.map(child => (child?.props?.node?.tagName === 'p' ? child?.props.children : child))}
     </Quote>
   ),
-  code: ({ children, node }) =>
-    Array.isArray(node.properties?.className) ? (
-      <Code className={node.properties?.className[0].toString() || 'language-unknown'}>
-        {children}
-      </Code>
-    ) : (
-      <InlineCode>{children}</InlineCode>
-    ),
+  code: ({ children, className }) =>
+    className ? <Code className={className}>{children}</Code> : <InlineCode>{children}</InlineCode>,
   h1: ({ children }) => <H4>{children}</H4>,
   ul: ({ children }) => <UL>{children}</UL>,
   li: ({ children }) => <LI>{children}</LI>,
@@ -61,6 +56,7 @@ export const mdInlineComponents: MDComponents = {
 
 const nonLinkableTypes = [
   'ColorValue',
+  'Component',
   'E',
   'EventSubscription',
   'File',
@@ -264,17 +260,17 @@ export const renderTypeOrSignatureType = (
   includeParamType: boolean = false
 ) => {
   if (type) {
-    return <InlineCode>{resolveTypeName(type)}</InlineCode>;
+    return <InlineCode key={`signature-type-${type.name}`}>{resolveTypeName(type)}</InlineCode>;
   } else if (signatures && signatures.length) {
     return signatures.map(({ name, type, parameters }) => (
       <InlineCode key={`signature-type-${name}`}>
         (
         {parameters && includeParamType
           ? parameters.map(param => (
-              <>
+              <span key={`signature-param-${param.name}`}>
                 {param.name}
                 {param.flags?.isOptional && '?'}: {resolveTypeName(param.type)}
-              </>
+              </span>
             ))
           : listParams(parameters)}
         ) =&gt; {resolveTypeName(type)}
@@ -307,12 +303,15 @@ export const getCommentOrSignatureComment = (
   signatures?: MethodSignatureData[]
 ) => comment || (signatures && signatures[0]?.comment);
 
-export const CommentTextBlock: React.FC<CommentTextBlockProps> = ({
+export const getTagData = (tagName: string, comment?: CommentData) =>
+  comment?.tags?.filter(tag => tag.tag === tagName)[0];
+
+export const CommentTextBlock = ({
   comment,
   components = mdComponents,
   withDash,
   beforeContent,
-}) => {
+}: CommentTextBlockProps) => {
   const shortText = comment?.shortText?.trim().length ? (
     <ReactMarkdown components={components} remarkPlugins={[remarkGfm]}>
       {parseCommentContent(comment.shortText)}
@@ -324,16 +323,15 @@ export const CommentTextBlock: React.FC<CommentTextBlockProps> = ({
     </ReactMarkdown>
   ) : null;
 
-  const example = comment?.tags?.filter(tag => tag.tag === 'example')[0];
+  const example = getTagData('example', comment);
   const exampleText = example ? (
     <>
-      <br />
-      <br />
-      <ReactMarkdown components={components}>{`__Example:__ ${example.text}`}</ReactMarkdown>
+      <H4>Example</H4>
+      <ReactMarkdown components={components}>{example.text}</ReactMarkdown>
     </>
   ) : null;
 
-  const deprecation = comment?.tags?.filter(tag => tag.tag === 'deprecated')[0];
+  const deprecation = getTagData('deprecated', comment);
   const deprecationNote = deprecation ? (
     <Quote key="deprecation-note">
       {deprecation.text.trim().length ? (
@@ -344,13 +342,22 @@ export const CommentTextBlock: React.FC<CommentTextBlockProps> = ({
     </Quote>
   ) : null;
 
+  const see = getTagData('see', comment);
+  const seeText = see ? (
+    <Quote>
+      <B>See: </B>
+      <ReactMarkdown components={mdInlineComponents}>{see.text}</ReactMarkdown>
+    </Quote>
+  ) : null;
+
   return (
     <>
       {deprecationNote}
       {beforeContent}
-      {withDash && (shortText || text) ? ' - ' : null}
+      {withDash && (shortText || text) && ' - '}
       {shortText}
       {text}
+      {seeText}
       {exampleText}
     </>
   );

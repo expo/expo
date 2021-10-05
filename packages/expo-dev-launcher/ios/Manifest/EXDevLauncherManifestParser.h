@@ -1,11 +1,11 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
+#import <EXManifests/EXManifestsManifest.h>
+
 NS_ASSUME_NONNULL_BEGIN
 
-@class EXDevLauncherManifest;
-
 typedef void (^IsManifestURL)(BOOL isManifestURL);
-typedef void (^OnManifestParsed)(EXDevLauncherManifest *manifest);
+typedef void (^OnManifestParsed)(EXManifestsManifest *manifest);
 typedef void (^OnManifestError)(NSError *error);
 
 @interface EXDevLauncherManifestParser : NSObject

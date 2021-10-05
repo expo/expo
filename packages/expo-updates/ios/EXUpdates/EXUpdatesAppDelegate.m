@@ -107,11 +107,8 @@ EX_REGISTER_SINGLETON_MODULE(EXUpdatesAppDelegate)
     rootView.backgroundColor = [UIColor whiteColor];
   }
 
-  UIViewController *rootViewController = [UIViewController new];
-  rootViewController.view = rootView;
   UIWindow *window = UIApplication.sharedApplication.delegate.window;
-  window.rootViewController = rootViewController;
-  [window makeKeyAndVisible];
+  window.rootViewController.view = rootView;
 
   return bridge;
  }

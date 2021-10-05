@@ -44,6 +44,10 @@ module.exports = {
           path: '../expo-dev-menu-interface',
         },
         {
+          name: 'expo-manifests',
+          path: '../expo-manifests',
+        },
+        {
           name: 'expo-updates-interface',
           path: '../expo-updates-interface',
         },

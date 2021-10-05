@@ -28,12 +28,12 @@ import expo.modules.devlauncher.launcher.DevLauncherLifecycle
 import expo.modules.devlauncher.launcher.DevLauncherReactActivityDelegateSupplier
 import expo.modules.devlauncher.launcher.DevLauncherRecentlyOpenedAppsRegistry
 import expo.modules.devlauncher.launcher.loaders.DevLauncherAppLoaderFactoryInterface
-import expo.modules.devlauncher.launcher.manifest.DevLauncherManifest
 import expo.modules.devlauncher.launcher.manifest.DevLauncherManifestParser
 import expo.modules.devlauncher.launcher.menu.DevLauncherMenuDelegate
 import expo.modules.devlauncher.react.activitydelegates.DevLauncherReactActivityNOPDelegate
 import expo.modules.devlauncher.react.activitydelegates.DevLauncherReactActivityRedirectDelegate
 import expo.modules.devlauncher.tests.DevLauncherTestInterceptor
+import expo.modules.manifests.core.Manifest
 import expo.modules.updatesinterface.UpdatesInterface
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -72,7 +72,7 @@ class DevLauncherController private constructor()
   override val devClientHost = DevLauncherClientHost((context as Application), DEV_LAUNCHER_HOST)
 
   private val recentlyOpedAppsRegistry = DevLauncherRecentlyOpenedAppsRegistry(context)
-  override var manifest: DevLauncherManifest? = null
+  override var manifest: Manifest? = null
     private set
   override var manifestURL: Uri? = null
     private set
@@ -197,12 +197,11 @@ class DevLauncherController private constructor()
   }
 
   private fun handleExternalIntent(intent: Intent): Boolean {
-    if (mode == Mode.APP) {
-      return false
+    if (mode != Mode.APP && intent.action != Intent.ACTION_MAIN) {
+      pendingIntentRegistry.intent = intent
     }
 
-    pendingIntentRegistry.intent = intent
-    return true
+    return false
   }
 
   private fun ensureHostWasCleared(host: ReactNativeHost, activityToBeInvalidated: ReactActivity? = null) {

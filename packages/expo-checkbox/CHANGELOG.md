@@ -4,11 +4,17 @@
 
 ### 🛠 Breaking changes
 
-- Remove `isAvailableAsync()` and reimplement module in javascript. ([#13510](https://github.com/expo/expo/pull/13510) by [@ajsmth](https://github.com/ajsmth))
-
 ### 🎉 New features
 
 ### 🐛 Bug fixes
+
+### 💡 Others
+
+## 2.0.0 — 2021-09-28
+
+### 🛠 Breaking changes
+
+- Remove `isAvailableAsync()` and reimplement module in javascript. ([#13510](https://github.com/expo/expo/pull/13510) by [@ajsmth](https://github.com/ajsmth))
 
 ## 1.0.3 — 2021-03-10
 

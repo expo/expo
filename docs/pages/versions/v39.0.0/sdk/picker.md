@@ -11,11 +11,11 @@ import Video from '~/components/plugins/Video'
 
 A component that provides access to the system UI for picking between several options.
 
-<PlatformsSection android emulator ios simulator />
+<PlatformsSection android emulator ios simulator web />
 
 ## Installation
 
-<InstallSection packageName="@react-native-community/picker" href="https://github.com/react-native-community/react-native-picker#getting-started" />
+<InstallSection packageName="@react-native-picker/picker" href="https://github.com/react-native-picker/picker#getting-started" />
 
 ## Usage
 
