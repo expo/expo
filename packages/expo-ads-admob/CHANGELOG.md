@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Add null check for current activity in `recreateInterstitialAdWithAdUnitID` on Android to avoid crashes. ([#14477](https://github.com/expo/expo/pull/14477) by [@yaroslavnikiforov](https://github.com/yaroslavnikiforov))
+
 ### 💡 Others
 
 ## 11.0.1 — 2021-10-01
@@ -27,7 +29,6 @@ _This version does not introduce any user-facing changes._
 ### 🐛 Bug fixes
 
 - Fix building errors from use_frameworks! in Podfile. ([#14523](https://github.com/expo/expo/pull/14523) by [@kudo](https://github.com/kudo))
-- Add null check for current activity in `recreateInterstitialAdWithAdUnitID` on Android to avoid crashes. ([#14477](https://github.com/expo/expo/pull/14477) by [@yaroslavnikiforov](https://github.com/yaroslavnikiforov))
 
 ### 💡 Others
 
