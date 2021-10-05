@@ -3,7 +3,6 @@ const { copySync, removeSync } = require('fs-extra');
 const merge = require('lodash/merge');
 const { join } = require('path');
 const semver = require('semver');
-const { ESBuildPlugin } = require('esbuild-loader');
 
 const navigation = require('./constants/navigation-data');
 const versions = require('./constants/versions');
@@ -64,7 +63,7 @@ module.exports = {
           loader: '@mdx-js/loader',
           options: {
             remarkPlugins: [
-              require('./mdx-plugins/remark-heading-meta'),
+              require('./mdx-plugins/remark-export-headings'),
               require('./mdx-plugins/remark-link-rewrite'),
             ],
           },
@@ -78,11 +77,6 @@ module.exports = {
     config.node = { fs: 'empty' };
     // Webpack 5
     // config.resolve.fallback = { fs: false, path: require.resolve('path-browserify') };
-
-    // Add the esbuild plugin only when using esbuild
-    if (enableEsbuild) {
-      config.plugins.push(new ESBuildPlugin());
-    }
 
     return config;
   },

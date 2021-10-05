@@ -1,7 +1,7 @@
 import GithubSlugger from 'github-slugger';
 import * as React from 'react';
 
-import { ElementType, PageMetadata } from '../types/common';
+import { ElementType, PageMetadata, RemarkHeading } from '../types/common';
 import * as Utilities from './utilities';
 
 /**
@@ -42,7 +42,7 @@ export type AdditionalProps = {
   sidebarType?: HeadingType;
 };
 
-type Metadata = Partial<PageMetadata> & Required<Pick<PageMetadata, 'headings'>>;
+type Metadata = Partial<PageMetadata> & { headings: (RemarkHeading & { _processed?: boolean })[] };
 
 /**
  * Single heading entry
@@ -83,9 +83,9 @@ export class HeadingManager {
    * @param slugger A _GithubSlugger_ instance
    * @param meta Document metadata gathered by `headingsMdPlugin`.
    */
-  constructor(slugger: GithubSlugger, meta: Partial<PageMetadata>) {
+  constructor(slugger: GithubSlugger, meta: Metadata) {
     this.slugger = slugger;
-    this._meta = { headings: meta.headings || [], ...meta };
+    this._meta = meta;
     this._headings = [];
 
     const maxHeadingDepth = meta.maxHeadingDepth ?? DEFAULT_NESTING_LIMIT;
@@ -102,7 +102,8 @@ export class HeadingManager {
   addHeading(
     title: string | object,
     nestingLevel?: number,
-    additionalProps?: AdditionalProps
+    additionalProps?: AdditionalProps,
+    id?: string
   ): Heading {
     // NOTE (barthap): workaround for complex titles containing both normal text and inline code
     // changing this needs also change in `headingsMdPlugin.js` to make metadata loading correctly
@@ -111,10 +112,10 @@ export class HeadingManager {
     const { hideInSidebar, sidebarTitle, sidebarDepth, sidebarType } = additionalProps ?? {};
     const levelOverride = sidebarDepth != null ? BASE_HEADING_LEVEL + sidebarDepth : undefined;
 
-    const slug = Utilities.generateSlug(this.slugger, title);
+    const slug = id ?? Utilities.generateSlug(this.slugger, title);
     const realTitle = Utilities.toString(title);
     const meta = this.findMetaForTitle(realTitle);
-    const level = levelOverride ?? nestingLevel ?? meta?.level ?? BASE_HEADING_LEVEL;
+    const level = levelOverride ?? nestingLevel ?? meta?.depth ?? BASE_HEADING_LEVEL;
     const type = sidebarType || (this.isCode(title) ? HeadingType.InlineCode : HeadingType.Text);
 
     const heading = {
