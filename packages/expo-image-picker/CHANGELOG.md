@@ -4,19 +4,19 @@
 
 ### 🛠 Breaking changes
 
-- remove typo workaround for `getMediaLibaryPermissionsAsync` method.
+- remove typo workaround for `getMediaLibaryPermissionsAsync` method. ([#14646](https://github.com/expo/expo/pull/14646) by [@Simek](https://github.com/Simek))
 
 ### 🎉 New features
 
 ### 🐛 Bug fixes
 
-- add missing `cancelled` values for the Web responses.
+- add missing `cancelled` values for the Web responses. ([#14646](https://github.com/expo/expo/pull/14646) by [@Simek](https://github.com/Simek))
 
 ### 💡 Others
 
-- export missing types: `ImageInfo`, `ImagePickerMultipleResult`, `OpenFileBrowserOptions`, `ExpandImagePickerResult`, `UIImagePickerControllerQualityType` and `UIImagePickerPresentationStyle`.
-- extract cancelled request object to separate type - `ImagePickerCancelledResult`.
-- change `CameraPermissionResponse` type alias definition.
+- export missing types: `ImageInfo`, `ImagePickerMultipleResult`, `OpenFileBrowserOptions`, `ExpandImagePickerResult`, `UIImagePickerControllerQualityType` and `UIImagePickerPresentationStyle`. ([#14646](https://github.com/expo/expo/pull/14646) by [@Simek](https://github.com/Simek))
+- extract cancelled request object to separate type - `ImagePickerCancelledResult`. ([#14646](https://github.com/expo/expo/pull/14646) by [@Simek](https://github.com/Simek))
+- change `CameraPermissionResponse` type alias definition. ([#14646](https://github.com/expo/expo/pull/14646) by [@Simek](https://github.com/Simek))
 
 ## 11.0.1 — 2021-10-01
 
