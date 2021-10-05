@@ -54,21 +54,6 @@
   }
 }
 
-- (BOOL)shouldAutorotate
-{
-  return YES;
-}
-
-- (UIInterfaceOrientationMask)supportedInterfaceOrientations
-{
-  const UIInterfaceOrientationMask visibleAppSupportedInterfaceOrientations =
-    [EXKernel sharedInstance]
-      .visibleApp
-      .viewController
-      .supportedInterfaceOrientations;
-  return visibleAppSupportedInterfaceOrientations;
-}
-
 - (void)presentViewController:(UIViewController *)viewControllerToPresent animated:(BOOL)flag completion:(void (^_Nullable)(void))completion
 {
   // @tsapeta: some RN's modules try to present modal view controllers on EXRootViewController
