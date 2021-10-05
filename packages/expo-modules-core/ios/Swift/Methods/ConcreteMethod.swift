@@ -19,22 +19,30 @@ public class ConcreteMethod<Args, ReturnType>: AnyMethod {
 
   let argTypes: [AnyArgumentType]
 
+  let detached: Bool
+
   init(
     _ name: String,
     argTypes: [AnyArgumentType],
-    _ closure: @escaping ClosureType
+    _ closure: @escaping ClosureType,
+    detached: Bool = false
   ) {
     self.name = name
     self.argTypes = argTypes
     self.closure = closure
+    self.detached = detached
   }
 
-  public func call(args: [Any?], promise: Promise) {
+  public func call(module: AnyModule, args: [Any?], promise: Promise) {
     let takesPromise = self.takesPromise
     let returnedValue: ReturnType?
 
     do {
       var finalArgs = try castArguments(args)
+
+      if !self.detached {
+        finalArgs.insert(module, at: 0)
+      }
 
       if takesPromise {
         finalArgs.append(promise)

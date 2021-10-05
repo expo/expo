@@ -2,7 +2,7 @@
 /**
  A protocol for any type-erased module that provides methods used by the core.
  */
-public protocol AnyModule: AnyObject {
+public protocol AnyModule: AnyObject, AnyMethodArgument {
   /**
    The default initializer. Must be public, but the module class does *not* need to
    define it as it is implemented in protocol composition, see `BaseModule` class.
@@ -16,7 +16,7 @@ public protocol AnyModule: AnyObject {
    # Example
 
    ```
-   public func definition() -> ModuleDefinition {
+   public static func definition() -> ModuleDefinition {
      name("MyModule")
      method("myMethod") { (a: String, b: String) in
        "\(a) \(b)"
@@ -47,8 +47,8 @@ public protocol AnyModule: AnyObject {
    */
   #if swift(>=5.4)
   @ModuleDefinitionBuilder
-  func definition() -> ModuleDefinition
+  static func definition() -> ModuleDefinition
   #else
-  func definition() -> ModuleDefinition
+  static func definition() -> ModuleDefinition
   #endif
 }

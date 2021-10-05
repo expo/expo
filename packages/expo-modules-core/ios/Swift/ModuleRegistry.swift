@@ -11,23 +11,28 @@ public class ModuleRegistry: Sequence {
   }
 
   /**
-   Registers a single module in the registry.
+   Registers a module by its definition.
    */
-  public func register(module: AnyModule) {
-    let holder = ModuleHolder(module: module)
-    registry[holder.name] = holder
+  public func register(definition: ModuleDefinition) {
+    guard let appContext = appContext else {
+      return
+    }
+    registry[definition.name] = ModuleHolder(appContext: appContext, definition: definition)
+  }
+
+  /**
+   Registers a module by its type.
+   */
+  public func register(moduleType: AnyModule.Type) {
+    register(definition: moduleType.definition().withType(moduleType))
   }
 
   /**
    Registers modules exported by given modules provider.
    */
   public func register(fromProvider provider: ModulesProviderProtocol) {
-    guard let appContext = appContext else {
-      // TODO: (@tsapeta) App context is deallocated, throw an error?
-      return
-    }
     provider.getModuleClasses().forEach { moduleType in
-      register(module: moduleType.init(appContext: appContext))
+      register(moduleType: moduleType)
     }
   }
 
@@ -40,6 +45,10 @@ public class ModuleRegistry: Sequence {
     }
   }
 
+  public func unregister(moduleName: String) {
+    registry.removeValue(forKey: moduleName)
+  }
+
   public func has(moduleWithName moduleName: String) -> Bool {
     return registry[moduleName] != nil
   }
@@ -48,8 +57,9 @@ public class ModuleRegistry: Sequence {
     return registry[moduleName]
   }
 
+  @discardableResult
   public func get(moduleWithName moduleName: String) -> AnyModule? {
-    return registry[moduleName]?.module
+    return try? registry[moduleName]?.getInstance()
   }
 
   public func makeIterator() -> IndexingIterator<[ModuleHolder]> {
