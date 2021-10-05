@@ -3,13 +3,15 @@ id: image-style-props
 title: Image Style Props
 ---
 
-### Examples
+## Examples
+
+### Image Resize Mode
 
 ```js
 import React from 'react';
 import { View, Image, Text, StyleSheet } from 'react-native';
 
-export default function DisplayAnImageWithStyle() {
+const DisplayAnImageWithStyle = () => {
   return (
     <View style={styles.container}>
       <View>
@@ -69,72 +71,7 @@ export default function DisplayAnImageWithStyle() {
       </View>
     </View>
   );
-}
-
-const styles = StyleSheet.create({
-  container: {
-    display: 'flex',
-    flexDirection: 'vertical',
-    justifyContent: 'space-around',
-    alignItems: 'center',
-    height: '100%',
-    textAlign: 'center',
-  },
-});
-```
-
-```js
-import React from 'react';
-import { View, Image, StyleSheet, Text } from 'react-native';
-
-const DisplayAnImageWithStyle = () => (
-  <View style={styles.container}>
-    <View>
-      <Image
-        style={{
-          borderTopRightRadius: 20,
-          height: 100,
-          width: 200,
-        }}
-        source={require('@expo/snack-static/react-native-logo.png')}
-      />
-      <Text>borderTopRightRadius</Text>
-    </View>
-    <View>
-      <Image
-        style={{
-          borderBottomRightRadius: 20,
-          height: 100,
-          width: 200,
-        }}
-        source={require('@expo/snack-static/react-native-logo.png')}
-      />
-      <Text>borderBottomRightRadius</Text>
-    </View>
-    <View>
-      <Image
-        style={{
-          borderBottomLeftRadius: 20,
-          height: 100,
-          width: 200,
-        }}
-        source={require('@expo/snack-static/react-native-logo.png')}
-      />
-      <Text>borderBottomLeftRadius</Text>
-    </View>
-    <View>
-      <Image
-        style={{
-          borderTopLeftRadius: 20,
-          height: 100,
-          width: 200,
-        }}
-        source={require('@expo/snack-static/react-native-logo.png')}
-      />
-      <Text>borderTopLeftRadius</Text>
-    </View>
-  </View>
-);
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -150,11 +87,13 @@ const styles = StyleSheet.create({
 export default DisplayAnImageWithStyle;
 ```
 
+### Image Border
+
 ```js
 import React from 'react';
 import { View, Image, StyleSheet, Text } from 'react-native';
 
-export function DisplayAnImageWithStyle() {
+const DisplayAnImageWithStyle = () => {
   return (
     <View style={styles.container}>
       <Image
@@ -166,12 +105,10 @@ export function DisplayAnImageWithStyle() {
         }}
         source={require('@expo/snack-static/react-native-logo.png')}
       />
-      <Text>
-        <Text>borderColor & borderWidth</Text>
-      </Text>
+      <Text>borderColor & borderWidth</Text>
     </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -183,13 +120,88 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
 });
+
+export default DisplayAnImageWithStyle;
 ```
+
+### Image Border Radius
 
 ```js
 import React from 'react';
 import { View, Image, StyleSheet, Text } from 'react-native';
 
-export default function DisplayAnImageWithStyle() {
+const DisplayAnImageWithStyle = () => {
+  return (
+    <View style={styles.container}>
+      <View>
+        <Image
+          style={{
+            borderTopRightRadius: 20,
+            height: 100,
+            width: 200,
+          }}
+          source={require('@expo/snack-static/react-native-logo.png')}
+        />
+        <Text>borderTopRightRadius</Text>
+      </View>
+      <View>
+        <Image
+          style={{
+            borderBottomRightRadius: 20,
+            height: 100,
+            width: 200,
+          }}
+          source={require('@expo/snack-static/react-native-logo.png')}
+        />
+        <Text>borderBottomRightRadius</Text>
+      </View>
+      <View>
+        <Image
+          style={{
+            borderBottomLeftRadius: 20,
+            height: 100,
+            width: 200,
+          }}
+          source={require('@expo/snack-static/react-native-logo.png')}
+        />
+        <Text>borderBottomLeftRadius</Text>
+      </View>
+      <View>
+        <Image
+          style={{
+            borderTopLeftRadius: 20,
+            height: 100,
+            width: 200,
+          }}
+          source={require('@expo/snack-static/react-native-logo.png')}
+        />
+        <Text>borderTopLeftRadius</Text>
+      </View>
+    </View>
+  );
+};
+
+const styles = StyleSheet.create({
+  container: {
+    display: 'flex',
+    flexDirection: 'vertical',
+    justifyContent: 'space-around',
+    alignItems: 'center',
+    height: '100%',
+    textAlign: 'center',
+  },
+});
+
+export default DisplayAnImageWithStyle;
+```
+
+### Image Tint
+
+```js
+import React from 'react';
+import { View, Image, StyleSheet, Text } from 'react-native';
+
+const DisplayAnImageWithStyle = () => {
   return (
     <View style={styles.container}>
       <Image
@@ -204,117 +216,140 @@ export default function DisplayAnImageWithStyle() {
       <Text>tintColor</Text>
     </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {
     display: 'flex',
     flexDirection: 'vertical',
-    justifyContent: 'space-around',
+    justifyContent: 'center',
     alignItems: 'center',
     height: '100%',
     textAlign: 'center',
   },
 });
+
+export default DisplayAnImageWithStyle;
 ```
 
 # Reference
 
 ## Props
 
-### `borderTopRightRadius`
-
-| Type   | Required |
-| ------ | -------- |
-| number | No       |
-
----
-
 ### `backfaceVisibility`
 
-| Type                      | Required |
-| ------------------------- | -------- |
-| enum('visible', 'hidden') | No       |
+The property defines whether or not the back face of a rotated image should be visible.
 
----
-
-### `borderBottomLeftRadius`
-
-| Type   | Required |
-| ------ | -------- |
-| number | No       |
-
----
-
-### `borderBottomRightRadius`
-
-| Type   | Required |
-| ------ | -------- |
-| number | No       |
-
----
-
-### `borderColor`
-
-| Type                                         | Required |
-| -------------------------------------------- | -------- |
-| [color](https://reactnative.dev/docs/colors) | No       |
-
----
-
-### `borderRadius`
-
-| Type   | Required |
-| ------ | -------- |
-| number | No       |
-
----
-
-### `borderTopLeftRadius`
-
-| Type   | Required |
-| ------ | -------- |
-| number | No       |
+| Type                          | Default     |
+| ----------------------------- | ----------- |
+| enum(`'visible'`, `'hidden'`) | `'visible'` |
 
 ---
 
 ### `backgroundColor`
 
-| Type                                         | Required |
-| -------------------------------------------- | -------- |
-| [color](https://reactnative.dev/docs/colors) | No       |
+| Type                                              |
+| ------------------------------------------------- |
+| [color](https://reactnative.dev/docs/0.64/colors) |
+
+---
+
+### `borderBottomLeftRadius`
+
+| Type   |
+| ------ |
+| number |
+
+---
+
+### `borderBottomRightRadius`
+
+| Type   |
+| ------ |
+| number |
+
+---
+
+### `borderColor`
+
+| Type                                              |
+| ------------------------------------------------- |
+| [color](https://reactnative.dev/docs/0.64/colors) |
+
+---
+
+### `borderRadius`
+
+| Type   |
+| ------ |
+| number |
+
+---
+
+### `borderTopLeftRadius`
+
+| Type   |
+| ------ |
+| number |
+
+---
+
+### `borderTopRightRadius`
+
+| Type   |
+| ------ |
+| number |
 
 ---
 
 ### `borderWidth`
 
-| Type   | Required |
-| ------ | -------- |
-| number | No       |
+| Type   |
+| ------ |
+| number |
 
 ---
 
 ### `opacity`
 
-| Type   | Required |
-| ------ | -------- |
-| number | No       |
+Set an opacity value for the image. The number should be in the range from `0.0` to `1.0`.
+
+| Type   | Default |
+| ------ | ------- |
+| number | `1.0`   |
 
 ---
 
 ### `overflow`
 
-| Type                      | Required |
-| ------------------------- | -------- |
-| enum('visible', 'hidden') | No       |
+| Type                          | Default     |
+| ----------------------------- | ----------- |
+| enum(`'visible'`, `'hidden'`) | `'visible'` |
+
+---
+
+### `overlayColor` **(Android)**
+
+When the image has rounded corners, specifying an overlayColor will cause the remaining space in the corners to be filled with a solid color. This is useful in cases which are not supported by the Android implementation of rounded corners:
+
+- Certain resize modes, such as `'contain'`
+- Animated GIFs
+
+A typical way to use this prop is with images displayed on a solid background and setting the `overlayColor` to the same color as the background.
+
+For details of how this works under the hood, see [Fresco documentation](https://frescolib.org/docs/rounded-corners-and-circles.html).
+
+| Type   |
+| ------ |
+| string |
 
 ---
 
 ### `resizeMode`
 
-| Type                                                    | Required |
-| ------------------------------------------------------- | -------- |
-| enum('cover', 'contain', 'stretch', 'repeat', 'center') | No       |
+| Type                                                              | Default   |
+| ----------------------------------------------------------------- | --------- |
+| enum(`'cover'`, `'contain'`, `'stretch'`, `'repeat'`, `'center'`) | `'cover'` |
 
 ---
 
@@ -322,23 +357,6 @@ const styles = StyleSheet.create({
 
 Changes the color of all the non-transparent pixels to the tintColor.
 
-| Type                                         | Required |
-| -------------------------------------------- | -------- |
-| [color](https://reactnative.dev/docs/colors) | No       |
-
----
-
-### `overlayColor`
-
-When the image has rounded corners, specifying an overlayColor will cause the remaining space in the corners to be filled with a solid color. This is useful in cases which are not supported by the Android implementation of rounded corners:
-
-- Certain resize modes, such as 'contain'
-- Animated GIFs
-
-A typical way to use this prop is with images displayed on a solid background and setting the `overlayColor` to the same color as the background.
-
-For details of how this works under the hood, see https://frescolib.org/docs/rounded-corners-and-circles.html
-
-| Type   | Required | Platform |
-| ------ | -------- | -------- |
-| string | No       | Android  |
+| Type                                              |
+| ------------------------------------------------- |
+| [color](https://reactnative.dev/docs/0.64/colors) |

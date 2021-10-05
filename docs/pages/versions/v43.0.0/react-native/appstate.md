@@ -38,11 +38,8 @@ const AppStateExample = () => {
     };
   }, []);
 
-  const _handleAppStateChange = (nextAppState) => {
-    if (
-      appState.current.match(/inactive|background/) &&
-      nextAppState === 'active'
-    ) {
+  const _handleAppStateChange = nextAppState => {
+    if (appState.current.match(/inactive|background/) && nextAppState === 'active') {
       console.log('App has come to the foreground!');
     }
 
@@ -81,19 +78,19 @@ This example will only ever appear to say "Current state is: active" because the
 
 ### `change`
 
-This event is received when the app state has changed. The listener is called with one of [the current app state values](appstate.md#app-states).
+This event is received when the app state has changed. The listener is called with one of [the current app state values](#app-states).
 
 ### `memoryWarning`
 
 This event is used in the need of throwing memory warning or releasing it.
 
-### `focus`
+### `focus` **(Android)**
 
-[Android only] Received when the app gains focus (the user is interacting with the app).
+Received when the app gains focus (the user is interacting with the app).
 
-### `blur`
+### `blur` **(Android)**
 
-[Android only] Received when the user is not actively interacting with the app. Useful in situations when the user pulls down the [notification drawer](https://developer.android.com/guide/topics/ui/notifiers/notifications#bar-and-drawer). `AppState` won't change but the `blur` event will get fired.
+Received when the user is not actively interacting with the app. Useful in situations when the user pulls down the [notification drawer](https://developer.android.com/guide/topics/ui/notifiers/notifications#bar-and-drawer). `AppState` won't change but the `blur` event will get fired.
 
 ## Methods
 

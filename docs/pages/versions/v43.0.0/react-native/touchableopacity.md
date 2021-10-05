@@ -12,8 +12,8 @@ Opacity is controlled by wrapping the children in an `Animated.View`, which is a
 ## Example
 
 ```js
-import React, { useState } from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import React, { useState } from "react";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 const App = () => {
   const [count, setCount] = useState(0);
@@ -24,7 +24,10 @@ const App = () => {
       <View style={styles.countContainer}>
         <Text>Count: {count}</Text>
       </View>
-      <TouchableOpacity style={styles.button} onPress={onPress}>
+      <TouchableOpacity
+        style={styles.button}
+        onPress={onPress}
+      >
         <Text>Press Here</Text>
       </TouchableOpacity>
     </View>
@@ -34,18 +37,18 @@ const App = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    paddingHorizontal: 10,
+    justifyContent: "center",
+    paddingHorizontal: 10
   },
   button: {
-    alignItems: 'center',
-    backgroundColor: '#DDDDDD',
-    padding: 10,
+    alignItems: "center",
+    backgroundColor: "#DDDDDD",
+    padding: 10
   },
   countContainer: {
-    alignItems: 'center',
-    padding: 10,
-  },
+    alignItems: "center",
+    padding: 10
+  }
 });
 
 export default App;
@@ -57,7 +60,11 @@ export default App;
 
 ## Props
 
+### [TouchableWithoutFeedback Props](touchablewithoutfeedback.md#props)
+
 Inherits [TouchableWithoutFeedback Props](touchablewithoutfeedback.md#props).
+
+---
 
 ### `style`
 
@@ -110,9 +117,9 @@ _(Apple TV only)_ TV preferred focus (see documentation for the View component).
 
 TV next focus down (see documentation for the View component).
 
-| Type | Required | Platform |
-| ---- | -------- | -------- |
-| bool | No       | Android  |
+| Type   | Required | Platform |
+| ------ | -------- | -------- |
+| number | No       | Android  |
 
 ---
 
@@ -120,9 +127,9 @@ TV next focus down (see documentation for the View component).
 
 TV next focus forward (see documentation for the View component).
 
-| Type | Required | Platform |
-| ---- | -------- | -------- |
-| bool | No       | Android  |
+| Type   | Required | Platform |
+| ------ | -------- | -------- |
+| number | No       | Android  |
 
 ---
 
@@ -130,9 +137,9 @@ TV next focus forward (see documentation for the View component).
 
 TV next focus left (see documentation for the View component).
 
-| Type | Required | Platform |
-| ---- | -------- | -------- |
-| bool | No       | Android  |
+| Type   | Required | Platform |
+| ------ | -------- | -------- |
+| number | No       | Android  |
 
 ---
 
@@ -140,9 +147,9 @@ TV next focus left (see documentation for the View component).
 
 TV next focus right (see documentation for the View component).
 
-| Type | Required | Platform |
-| ---- | -------- | -------- |
-| bool | No       | Android  |
+| Type   | Required | Platform |
+| ------ | -------- | -------- |
+| number | No       | Android  |
 
 ---
 
@@ -150,16 +157,6 @@ TV next focus right (see documentation for the View component).
 
 TV next focus up (see documentation for the View component).
 
-| Type | Required | Platform |
-| ---- | -------- | -------- |
-| bool | No       | Android  |
-
-## Methods
-
-### `setOpacityTo()`
-
-```js
-setOpacityTo((value: number), (duration: number));
-```
-
-Animate the touchable to a new opacity.
+| Type   | Required | Platform |
+| ------ | -------- | -------- |
+| number | No       | Android  |

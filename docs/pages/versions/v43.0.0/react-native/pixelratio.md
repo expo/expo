@@ -19,7 +19,7 @@ var image = getImage({
 
 ## Pixel grid snapping
 
-In iOS, you can specify positions and dimensions for elements with arbitrary precision, for example 29.674825. But, ultimately the physical display only have a fixed number of pixels, for example 640×960 for iPhone 4 or 750×1334 for iPhone 6. iOS tries to be as faithful as possible to the user value by spreading one original pixel into multiple ones to trick the eye. The downside of this technique is that it makes the resulting element look blurry.
+In iOS, you can specify positions and dimensions for elements with arbitrary precision, for example 29.674825. But, ultimately the physical display only have a fixed number of pixels, for example 640×1136 for iPhone SE (1st generation) or 828×1792 for iPhone 11. iOS tries to be as faithful as possible to the user value by spreading one original pixel into multiple ones to trick the eye. The downside of this technique is that it makes the resulting element look blurry.
 
 In practice, we found out that developers do not want this feature and they have to work around it by doing manual rounding in order to avoid having blurry elements. In React Native, we are rounding all the pixels automatically.
 
@@ -40,36 +40,34 @@ const cat = {
   height: size,
 };
 
-export default function App() {
-  return (
-    <ScrollView style={styles.scrollContainer}>
-      <View style={styles.container}>
-        <Text>Current Pixel Ratio is:</Text>
-        <Text style={styles.value}>{PixelRatio.get()}</Text>
-      </View>
-      <View style={styles.container}>
-        <Text>Current Font Scale is:</Text>
-        <Text style={styles.value}>{PixelRatio.getFontScale()}</Text>
-      </View>
-      <View style={styles.container}>
-        <Text>On this device images with a layout width of</Text>
-        <Text style={styles.value}>{size} px</Text>
-        <Image source={cat} />
-      </View>
-      <View style={styles.container}>
-        <Text>require images with a pixel width of</Text>
-        <Text style={styles.value}>{PixelRatio.getPixelSizeForLayoutSize(size)} px</Text>
-        <Image
-          source={cat}
-          style={{
-            width: PixelRatio.getPixelSizeForLayoutSize(size),
-            height: PixelRatio.getPixelSizeForLayoutSize(size),
-          }}
-        />
-      </View>
-    </ScrollView>
-  );
-}
+const App = () => (
+  <ScrollView style={styles.scrollContainer}>
+    <View style={styles.container}>
+      <Text>Current Pixel Ratio is:</Text>
+      <Text style={styles.value}>{PixelRatio.get()}</Text>
+    </View>
+    <View style={styles.container}>
+      <Text>Current Font Scale is:</Text>
+      <Text style={styles.value}>{PixelRatio.getFontScale()}</Text>
+    </View>
+    <View style={styles.container}>
+      <Text>On this device images with a layout width of</Text>
+      <Text style={styles.value}>{size} px</Text>
+      <Image source={cat} />
+    </View>
+    <View style={styles.container}>
+      <Text>require images with a pixel width of</Text>
+      <Text style={styles.value}>{PixelRatio.getPixelSizeForLayoutSize(size)} px</Text>
+      <Image
+        source={cat}
+        style={{
+          width: PixelRatio.getPixelSizeForLayoutSize(size),
+          height: PixelRatio.getPixelSizeForLayoutSize(size),
+        }}
+      />
+    </View>
+  </ScrollView>
+);
 
 const styles = StyleSheet.create({
   scrollContainer: {
@@ -87,6 +85,8 @@ const styles = StyleSheet.create({
     marginTop: 4,
   },
 });
+
+export default App;
 ```
 
 ---
@@ -134,7 +134,7 @@ static getFontScale(): number
 Returns the scaling factor for font sizes. This is the ratio that is used to calculate the absolute font size, so any elements that heavily depend on that should use this to do calculations.
 
 - on Android value reflects the user preference set in **Settings > Display > Font size**
-- on iOS value reflects the user preference set in **Settings > Display & Brightness > Text Size**, value can also be updated in **Settings > Accessibilty > Display & Test Size > Larger Text**
+- on iOS value reflects the user preference set in **Settings > Display & Brightness > Text Size**, value can also be updated in **Settings > Accessibility > Display & Text Size > Larger Text**
 
 If a font scale is not set, this returns the device pixel ratio.
 

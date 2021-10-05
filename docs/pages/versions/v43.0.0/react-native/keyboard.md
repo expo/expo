@@ -10,10 +10,10 @@ title: Keyboard
 The Keyboard module allows you to listen for native events and react to them, as well as make changes to the keyboard, like dismissing it.
 
 ```js
-import React, { useEffect } from 'react';
-import { Keyboard, TextInput, StyleSheet } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { Keyboard, Text, TextInput, StyleSheet, View } from 'react-native';
 
-export default function App() {
+const Example = () => {
   useEffect(() => {
     Keyboard.addListener('keyboardDidShow', _keyboardDidShow);
     Keyboard.addListener('keyboardDidHide', _keyboardDidHide);
@@ -25,32 +25,35 @@ export default function App() {
     };
   }, []);
 
-  const _keyboardDidShow = () => {
-    alert('Keyboard Shown');
-  };
-
-  const _keyboardDidHide = () => {
-    alert('Keyboard Hidden');
-  };
+  const [keyboardStatus, setKeyboardStatus] = useState(undefined);
+  const _keyboardDidShow = () => setKeyboardStatus('Keyboard Shown');
+  const _keyboardDidHide = () => setKeyboardStatus('Keyboard Hidden');
 
   return (
-    <TextInput
-      style={styles.input}
-      placeholder="Click here ..."
-      onSubmitEditing={Keyboard.dismiss}
-    />
+    <View style={style.container}>
+      <TextInput style={style.input} placeholder="Click here…" onSubmitEditing={Keyboard.dismiss} />
+      <Text style={style.status}>{keyboardStatus}</Text>
+    </View>
   );
-}
+};
 
-const styles = StyleSheet.create({
+const style = StyleSheet.create({
+  container: {
+    flex: 1,
+    padding: 36,
+  },
   input: {
-    margin: 60,
     padding: 10,
     borderWidth: 0.5,
     borderRadius: 4,
-    backgroundColor: '#fff',
+  },
+  status: {
+    padding: 10,
+    textAlign: 'center',
   },
 });
+
+export default Example;
 ```
 
 ---
@@ -71,14 +74,14 @@ This function then returns the reference to the listener.
 
 **Parameters:**
 
-| Name      | Type     | Required | Description                                                                               |
-| --------- | -------- | -------- | ----------------------------------------------------------------------------------------- |
-| eventName | string   | Yes      | The `nativeEvent` is the string that identifies the event you're listening for. See below |
-| callback  | function | Yes      | The function to be called when the event fires                                            |
+| Name                     | Type     | Description                                                                    |
+| ------------------------ | -------- | ------------------------------------------------------------------------------ |
+| eventName **(Required)** | string   | The string that identifies the event you're listening for. See the list below. |
+| callback **(Required)**  | function | The function to be called when the event fires                                 |
 
-**nativeEvent**
+**`eventName`**
 
-This can be any of the following
+This can be any of the following:
 
 - `keyboardWillShow`
 - `keyboardDidShow`
@@ -87,7 +90,7 @@ This can be any of the following
 - `keyboardWillChangeFrame`
 - `keyboardDidChangeFrame`
 
-Note that if you set `android:windowSoftInputMode` to `adjustResize` or `adjustPan`, only `keyboardDidShow` and `keyboardDidHide` events will be available on Android. If you set `android:windowSoftInputMode` to `adjustNothing`, no events will be available on Android. `keyboardWillShow` as well as `keyboardWillHide` are generally not available on Android since there is no native corresponding event.
+> Note that if you set `android:windowSoftInputMode` to `adjustResize` or `adjustPan`, only `keyboardDidShow` and `keyboardDidHide` events will be available on Android. If you set `android:windowSoftInputMode` to `adjustNothing`, no events will be available on Android. `keyboardWillShow` as well as `keyboardWillHide` are generally not available on Android since there is no native corresponding event.
 
 ---
 
