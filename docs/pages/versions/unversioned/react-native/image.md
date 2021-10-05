@@ -29,7 +29,7 @@ const styles = StyleSheet.create({
   },
 });
 
-export default function DisplayAnImage() {
+const DisplayAnImage = () => {
   return (
     <View style={styles.container}>
       <Image style={styles.tinyLogo} source={require('@expo/snack-static/react-native-logo.png')} />
@@ -42,13 +42,14 @@ export default function DisplayAnImage() {
       <Image
         style={styles.logo}
         source={{
-          uri:
-            'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADMAAAAzCAYAAAA6oTAqAAAAEXRFWHRTb2Z0d2FyZQBwbmdjcnVzaEB1SfMAAABQSURBVGje7dSxCQBACARB+2/ab8BEeQNhFi6WSYzYLYudDQYGBgYGBgYGBgYGBgYGBgZmcvDqYGBgmhivGQYGBgYGBgYGBgYGBgYGBgbmQw+P/eMrC5UTVAAAAABJRU5ErkJggg==',
+          uri: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADMAAAAzCAYAAAA6oTAqAAAAEXRFWHRTb2Z0d2FyZQBwbmdjcnVzaEB1SfMAAABQSURBVGje7dSxCQBACARB+2/ab8BEeQNhFi6WSYzYLYudDQYGBgYGBgYGBgYGBgYGBgZmcvDqYGBgmhivGQYGBgYGBgYGBgYGBgYGBgbmQw+P/eMrC5UTVAAAAABJRU5ErkJggg==',
         }}
       />
     </View>
   );
-}
+};
+
+export default DisplayAnImage;
 ```
 
 You can also add `style` to an image:
@@ -68,13 +69,15 @@ const styles = StyleSheet.create({
   },
 });
 
-export default function DisplayAnImageWithStyle() {
+const DisplayAnImageWithStyle = () => {
   return (
     <View style={styles.container}>
       <Image style={styles.stretch} source={require('@expo/snack-static/react-native-logo.png')} />
     </View>
   );
-}
+};
+
+export default DisplayAnImageWithStyle;
 ```
 
 ## GIF and WebP support on Android
@@ -83,7 +86,7 @@ When building your own native code, GIF and WebP are not supported by default on
 
 You will need to add some optional modules in `android/app/build.gradle`, depending on the needs of your app.
 
-```
+```groovy
 dependencies {
   // If your app supports Android versions before Ice Cream Sandwich (API level 14)
   implementation 'com.facebook.fresco:animated-base-support:1.3.0'
@@ -106,21 +109,9 @@ dependencies {
 
 ## Props
 
-### `style`
+### [View Props](view.md#props)
 
-`ImageResizeMode` is an `Enum` for different image resizing modes, set via the `resizeMode` style property on `Image` components. The values are `contain`, `cover`, `stretch`, `center`, `repeat`.
-
-| Type  | Required |
-| ----- | -------- |
-| style | No       |
-
-- [Image Style Props...](image-style-props.md#props)
-
-- [Layout Props...](layout-props.md#props)
-
-- [Shadow Props...](shadow-props.md#props)
-
-- [Transforms...](transforms.md#transform)
+Inherits [View Props](view.md#props).
 
 ---
 
@@ -128,9 +119,9 @@ dependencies {
 
 When true, indicates the image is an accessibility element.
 
-| Type | Required | Platform |
-| ---- | -------- | -------- |
-| bool | No       | iOS      |
+| Type | Default |
+| ---- | ------- |
+| bool | `false` |
 
 ---
 
@@ -138,31 +129,31 @@ When true, indicates the image is an accessibility element.
 
 The text that's read by the screen reader when the user interacts with the image.
 
-| Type   | Required | Platform |
-| ------ | -------- | -------- |
-| string | No       | iOS      |
+| Type   |
+| ------ |
+| string |
 
 ---
 
 ### `blurRadius`
 
-blurRadius: the blur radius of the blur filter added to the image
+blurRadius: the blur radius of the blur filter added to the image.
 
-| Type   | Required |
-| ------ | -------- |
-| number | No       |
+| Type   |
+| ------ |
+| number |
 
 > Tip : IOS you will need to increase `blurRadius` more than `5`
 
 ---
 
-### `capInsets`
+### `capInsets` **(iOS)**
 
 When the image is resized, the corners of the size specified by `capInsets` will stay a fixed size, but the center content and borders of the image will be stretched. This is useful for creating resizable rounded buttons, shadows, and other resizable assets. More info in the [official Apple documentation](https://developer.apple.com/library/ios/documentation/UIKit/Reference/UIImage_Class/index.html#//apple_ref/occ/instm/UIImage/resizableImageWithCapInsets).
 
-| Type                                      | Required | Platform |
-| ----------------------------------------- | -------- | -------- |
-| [Rect](https://reactnative.dev/docs/rect) | No       | iOS      |
+| Type            |
+| --------------- |
+| [Rect](rect.md) |
 
 ---
 
@@ -170,32 +161,21 @@ When the image is resized, the corners of the size specified by `capInsets` will
 
 A static image to display while loading the image source.
 
-| Type           | Required | Platform |
-| -------------- | -------- | -------- |
-| object, number | No       | iOS      |
-| number         | No       | Android  |
-
-If passing an object, the general shape is `{uri: string, width: number, height: number, scale: number}`:
-
-- `uri` - a string representing the resource identifier for the image, which should be either a local file path or the name of a static image resource (which should be wrapped in the `require('./path/to/image.png')` function).
-- `width`, `height` - can be specified if known at build time, in which case these will be used to set the default `<Image/>` component dimensions.
-- `scale` - used to indicate the scale factor of the image. Defaults to 1.0 if unspecified, meaning that one image pixel equates to one display point / DIP.
-
-If passing a number:
-
-- `number` - Opaque type returned by something like `require('./image.jpg')`.
+| Type                        |
+| --------------------------- |
+| [ImageSource](#imagesource) |
 
 > **Note:** On Android, the default source prop is ignored on debug builds.
 
 ---
 
-### `fadeDuration`
+### `fadeDuration` **(Android)**
 
-Android only. By default, it is 300ms.
+Fade animation duration in miliseconds.
 
-| Type   | Required | Platform |
-| ------ | -------- | -------- |
-| number | No       | Android  |
+| Type   | Default |
+| ------ | ------- |
+| number | `300`   |
 
 ---
 
@@ -203,31 +183,29 @@ Android only. By default, it is 300ms.
 
 Similarly to `source`, this property represents the resource used to render the loading indicator for the image, displayed until image is ready to be displayed, typically after when it got downloaded from network.
 
-| Type                                  | Required |
-| ------------------------------------- | -------- |
-| array of ImageSourcePropTypes, number | No       |
-
-> Can accept a number as returned by `require('./image.jpg')`
+| Type                                             |
+| ------------------------------------------------ |
+| [ImageSource](#imagesource) (`uri` only), number |
 
 ---
 
 ### `onError`
 
-Invoked on load error with `{nativeEvent: {error}}`.
+Invoked on load error.
 
-| Type     | Required |
-| -------- | -------- |
-| function | No       |
+| Type                                           |
+| ---------------------------------------------- |
+| function(`{ nativeEvent: { error } }`) => void |
 
 ---
 
 ### `onLayout`
 
-Invoked on mount and layout changes with `{nativeEvent: {layout: {x, y, width, height}}}`.
+Invoked on mount and on layout changes.
 
-| Type     | Required |
-| -------- | -------- |
-| function | No       |
+| Type                                         |
+| -------------------------------------------- |
+| function([LayoutEvent](layoutevent)) => void |
 
 ---
 
@@ -235,9 +213,9 @@ Invoked on mount and layout changes with `{nativeEvent: {layout: {x, y, width, h
 
 Invoked when load completes successfully.
 
-| Type     | Required |
-| -------- | -------- |
-| function | No       |
+| Type                                                |
+| --------------------------------------------------- |
+| function([ImageLoadEvent](#imageloadevent)) => void |
 
 ---
 
@@ -245,9 +223,9 @@ Invoked when load completes successfully.
 
 Invoked when load either succeeds or fails.
 
-| Type     | Required |
-| -------- | -------- |
-| function | No       |
+| Type               |
+| ------------------ |
+| function() => void |
 
 ---
 
@@ -255,45 +233,45 @@ Invoked when load either succeeds or fails.
 
 Invoked on load start.
 
-e.g., `onLoadStart={(e) => this.setState({loading: true})}`
+**Example:** `onLoadStart={() => this.setState({loading: true})}`
 
-| Type     | Required |
-| -------- | -------- |
-| function | No       |
+| Type               |
+| ------------------ |
+| function() => void |
 
 ---
 
-### `onPartialLoad`
+### `onPartialLoad` **(iOS)**
 
 Invoked when a partial load of the image is complete. The definition of what constitutes a "partial load" is loader specific though this is meant for progressive JPEG loads.
 
-| Type     | Required | Platform |
-| -------- | -------- | -------- |
-| function | No       | iOS      |
+| Type               |
+| ------------------ |
+| function() => void |
 
 ---
 
 ### `onProgress`
 
-Invoked on download progress with `{nativeEvent: {loaded, total}}`.
+Invoked on download progress.
 
-| Type     | Required | Platform |
-| -------- | -------- | -------- |
-| function | No       | iOS      |
-
----
-
-### `progressiveRenderingEnabled`
-
-Android only. When true, enables progressive jpeg streaming. https://frescolib.org/docs/progressive-jpegs.html
-
-| Type | Required | Platform |
-| ---- | -------- | -------- |
-| bool | No       | Android  |
+| Type                                                   |
+| ------------------------------------------------------ |
+| function(`{ nativeEvent: { loaded, total } }`) => void |
 
 ---
 
-### `resizeMethod`
+### `progressiveRenderingEnabled` **(Android)**
+
+When `true`, enables progressive jpeg streaming - https://frescolib.org/docs/progressive-jpegs.
+
+| Type | Default |
+| ---- | ------- |
+| bool | `false` |
+
+---
+
+### `resizeMethod` **(Android)**
 
 The mechanism that should be used to resize the image when the image's dimensions differ from the image view's dimensions. Defaults to `auto`.
 
@@ -303,11 +281,11 @@ The mechanism that should be used to resize the image when the image's dimension
 
 - `scale`: The image gets drawn downscaled or upscaled. Compared to `resize`, `scale` is faster (usually hardware accelerated) and produces higher quality images. This should be used if the image is smaller than the view. It should also be used if the image is slightly bigger than the view.
 
-More details about `resize` and `scale` can be found at http://frescolib.org/docs/resizing.html.
+More details about `resize` and `scale` can be found at http://frescolib.org/docs/resizing.
 
-| Type                            | Required | Platform |
-| ------------------------------- | -------- | -------- |
-| enum('auto', 'resize', 'scale') | No       | Android  |
+| Type                                  | Default  |
+| ------------------------------------- | -------- |
+| enum(`'auto'`, `'resize'`, `'scale'`) | `'auto'` |
 
 ---
 
@@ -325,9 +303,9 @@ Determines how to resize the image when the frame doesn't match the raw image di
 
 - `center`: Center the image in the view along both dimensions. If the image is larger than the view, scale it down uniformly so that it is contained in the view.
 
-| Type                                                    | Required |
-| ------------------------------------------------------- | -------- |
-| enum('cover', 'contain', 'stretch', 'repeat', 'center') | No       |
+| Type                                                              | Default   |
+| ----------------------------------------------------------------- | --------- |
+| enum(`'cover'`, `'contain'`, `'stretch'`, `'repeat'`, `'center'`) | `'cover'` |
 
 ---
 
@@ -335,13 +313,21 @@ Determines how to resize the image when the frame doesn't match the raw image di
 
 The image source (either a remote URL or a local file resource).
 
-This prop can also contain several remote URLs, specified together with their width and height and potentially with scale/other URI arguments. The native side will then choose the best `uri` to display based on the measured size of the image container. A `cache` property can be added to control how networked request interacts with the local cache. (For more information see [Cache Control for Images](https://reactnative.dev/docs/images/#cache-control-ios-only)).
+This prop can also contain several remote URLs, specified together with their width and height and potentially with scale/other URI arguments. The native side will then choose the best `uri` to display based on the measured size of the image container. A `cache` property can be added to control how networked request interacts with the local cache. (For more information see [Cache Control for Images](images#cache-control-ios-only)).
 
-The currently supported formats are `png`, `jpg`, `jpeg`, `bmp`, `gif`, `webp` (Android only), `psd` (iOS only). In addition, iOS supports several RAW image formats. Refer to Apple's documentation for the current list of supported camera models (for iOS 12, see https://support.apple.com/en-ca/HT208967).
+The currently supported formats are `png`, `jpg`, `jpeg`, `bmp`, `gif`, `webp`, `psd` (iOS only). In addition, iOS supports several RAW image formats. Refer to Apple's documentation for the current list of supported camera models (for iOS 12, see https://support.apple.com/en-ca/HT208967).
 
-| Type                | Required |
-| ------------------- | -------- |
-| ImageSourcePropType | No       |
+| Type                        |
+| --------------------------- |
+| [ImageSource](#imagesource) |
+
+---
+
+### `style`
+
+| Type                                                                                                                                                             |
+| ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [Image Style Props](image-style-props.md#props), [Layout Props](layout-props.md#props), [Shadow Props](shadow-props.md#props), [Transforms](transforms.md#props) |
 
 ---
 
@@ -349,15 +335,31 @@ The currently supported formats are `png`, `jpg`, `jpeg`, `bmp`, `gif`, `webp` (
 
 A unique identifier for this element to be used in UI Automation testing scripts.
 
-| Type   | Required |
-| ------ | -------- |
-| string | No       |
+| Type   |
+| ------ |
+| string |
 
 ## Methods
 
+### `abortPrefetch()` **(Android)**
+
+```js
+Image.abortPrefetch(requestId);
+```
+
+Abort prefetch request.
+
+**Parameters:**
+
+| Name                     | Type   | Description                             |
+| ------------------------ | ------ | --------------------------------------- |
+| requestId **(Required)** | number | Request id as returned by `prefetch()`. |
+
+---
+
 ### `getSize()`
 
-```jsx
+```js
 Image.getSize(uri, success, [failure]);
 ```
 
@@ -367,88 +369,71 @@ In order to retrieve the image dimensions, the image may first need to be loaded
 
 **Parameters:**
 
-| Name    | Type     | Required | Description                                                                                          |
-| ------- | -------- | -------- | ---------------------------------------------------------------------------------------------------- |
-| uri     | string   | Yes      | The location of the image.                                                                           |
-| success | function | Yes      | The function that will be called if the image was successfully found and width and height retrieved. |
-| failure | function | No       | The function that will be called if there was an error, such as failing to retrieve the image.       |
+| <div className="wideColumn">Name</div> | Type     | Description                                                                                          |
+| -------------------------------------- | -------- | ---------------------------------------------------------------------------------------------------- |
+| uri **(Required)**                     | string   | The location of the image.                                                                           |
+| success **(Required)**                 | function | The function that will be called if the image was successfully found and width and height retrieved. |
+| failure                                | function | The function that will be called if there was an error, such as failing to retrieve the image.       |
 
 ---
 
 ### `getSizeWithHeaders()`
 
-```jsx
+```js
 Image.getSizeWithHeaders(uri, headers, success, [failure]);
 ```
 
-Retrieve the width and height (in pixels) of an image prior to displaying it with the ability to provide the headers for the request. This method can fail if the image cannot be found, or fails to download.
+Retrieve the width and height (in pixels) of an image prior to displaying it with the ability to provide the headers for the request. This method can fail if the image cannot be found, or fails to download. It also does not work for static image resources.
 
 In order to retrieve the image dimensions, the image may first need to be loaded or downloaded, after which it will be cached. This means that in principle you could use this method to preload images, however it is not optimized for that purpose, and may in future be implemented in a way that does not fully load/download the image data. A proper, supported way to preload images will be provided as a separate API.
 
-Does not work for static image resources.
-
 **Parameters:**
 
-| Name    | Type     | Required | Description                                                                                          |
-| ------- | -------- | -------- | ---------------------------------------------------------------------------------------------------- |
-| uri     | string   | Yes      | The location of the image.                                                                           |
-| headers | object   | Yes      | The headers for the request.                                                                         |
-| success | function | Yes      | The function that will be called if the image was successfully found and width and height retrieved. |
-| failure | function | No       | The function that will be called if there was an error, such as failing toto retrieve the image.     |
+| <div className="wideColumn">Name</div> | Type     | Description                                                                                          |
+| -------------------------------------- | -------- | ---------------------------------------------------------------------------------------------------- |
+| uri **(Required)**                     | string   | The location of the image.                                                                           |
+| headers **(Required)**                 | object   | The headers for the request.                                                                         |
+| success **(Required)**                 | function | The function that will be called if the image was successfully found and width and height retrieved. |
+| failure                                | function | The function that will be called if there was an error, such as failing to retrieve the image.       |
 
 ---
 
 ### `prefetch()`
 
-```jsx
-Image.prefetch(url);
+```js
+await Image.prefetch(url);
 ```
 
-Prefetches a remote image for later use by downloading it to the disk cache
+Prefetches a remote image for later use by downloading it to the disk cache. Returns a promise which resolves to a boolean.
 
 **Parameters:**
 
-| Name | Type   | Required | Description                       |
-| ---- | ------ | -------- | --------------------------------- |
-| url  | string | Yes      | The remote location of the image. |
-
----
-
-### `abortPrefetch()`
-
-```jsx
-Image.abortPrefetch(requestId);
-```
-
-Abort prefetch request. Android-only.
-
-**Parameters:**
-
-| Name      | Type   | Required | Description                  |
-| --------- | ------ | -------- | ---------------------------- |
-| requestId | number | Yes      | Id as returned by prefetch() |
+| Name               | Type                   | Description                                            |
+| ------------------ | ---------------------- | ------------------------------------------------------ |
+| url **(Required)** | string                 | The remote location of the image.                      |
+| callback           | function **(Android)** | The function that will be called with the `requestId`. |
 
 ---
 
 ### `queryCache()`
 
-```jsx
-Image.queryCache(urls);
+```js
+await Image.queryCache(urls);
 ```
 
-Perform cache interrogation. Returns a mapping from URL to cache status, such as "disk" or "memory". If a requested URL is not in the mapping, it means it's not in the cache.
+Perform cache interrogation. Returns a promise which resolves to a mapping from URL to cache status, such as "disk", "memory" or "disk/memory". If a requested URL is not in the mapping, it means it's not in the cache.
 
 **Parameters:**
 
-| Name | Type  | Required | Description                                |
-| ---- | ----- | -------- | ------------------------------------------ |
-| urls | array | Yes      | List of image URLs to check the cache for. |
+| Name                | Type  | Description                                |
+| ------------------- | ----- | ------------------------------------------ |
+| urls **(Required)** | array | List of image URLs to check the cache for. |
 
 ---
 
 ### `resolveAssetSource()`
 
-```jsx
+```js
 Image.resolveAssetSource(source);
 ```
 
@@ -456,8 +441,61 @@ Resolves an asset reference into an object which has the properties `uri`, `widt
 
 **Parameters:**
 
-| Name   | Type           | Required | Description                                                                  |
-| ------ | -------------- | -------- | ---------------------------------------------------------------------------- |
-| source | number, object | Yes      | A number (opaque type returned by require('./foo.png')) or an `ImageSource`. |
+| <div className="wideColumn">Name</div> | Type                                | Description                                                                  |
+| -------------------------------------- | ----------------------------------- | ---------------------------------------------------------------------------- |
+| source **(Required)**                  | [ImageSource](#imagesource), number | A number (opaque type returned by `require('./foo.png')`) or an ImageSource. |
 
-> `ImageSource` is an object like `{ uri: '<http location || file path>' }`
+## Type Definitions
+
+### ImageCacheEnum **(iOS)**
+
+Enum which can be used to set the cache handling or stategy for the potentially cached responses.
+
+| Type                                                               | Default     |
+| ------------------------------------------------------------------ | ----------- |
+| enum(`'default'`, `'reload'`, `'force-cache'`, `'only-if-cached'`) | `'default'` |
+
+- `default`: Use the native platforms default strategy.
+- `reload`: The data for the URL will be loaded from the originating source. No existing cache data should be used to satisfy a URL load request.
+- `force-cache`: The existing cached data will be used to satisfy the request, regardless of its age or expiration date. If there is no existing data in the cache corresponding the request, the data is loaded from the originating source.
+- `only-if-cached`: The existing cache data will be used to satisfy a request, regardless of its age or expiration date. If there is no existing data in the cache corresponding to a URL load request, no attempt is made to load the data from the originating source, and the load is considered to have failed.
+
+### ImageLoadEvent
+
+Object returned in the `onLoad` callback.
+
+| Type   |
+| ------ |
+| object |
+
+**Properties:**
+
+| Name   | Type   | Description                                                  |
+| ------ | ------ | ------------------------------------------------------------ |
+| width  | number | The width of loaded image.                                   |
+| height | number | The height of loaded image.                                  |
+| uri    | string | A string representing the resource identifier for the image. |
+
+### ImageSource
+
+| Type                             |
+| -------------------------------- |
+| object, array of objects, number |
+
+**Properties (if passing as object or array of objects):**
+
+| <div className="wideColumn">Name</div> | Type                                  | Description                                                                                                                                                                          |
+| -------------------------------------- | ------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| uri                                    | string                                | A string representing the resource identifier for the image, which could be an http address, a local file path, or the name of a static image resource.                              |
+| width                                  | number                                | Can be specified if known at build time, in which case the value will be used to set the default `<Image/>` component dimension.                                                     |
+| height                                 | number                                | Can be specified if known at build time, in which case the value will be used to set the default `<Image/>` component dimension.                                                     |
+| scale                                  | number                                | Used to indicate the scale factor of the image. Defaults to `1.0` if unspecified, meaning that one image pixel equates to one display point / DIP.                                   |
+| bundle**(iOS)**                        | string                                | The iOS asset bundle which the image is included in. This will default to `[NSBundle mainBundle]` if not set.                                                                        |
+| method                                 | string                                | The HTTP Method to use. Defaults to `'GET'` if not specified.                                                                                                                        |
+| headers                                | object                                | An object representing the HTTP headers to send along with the request for a remote image.                                                                                           |
+| body                                   | string                                | The HTTP body to send with the request. This must be a valid UTF-8 string, and will be sent exactly as specified, with no additional encoding (e.g. URL-escaping or base64) applied. |
+| cache**(iOS)**                         | [ImageCacheEnum](#imagecacheenum-ios) | Determines how the requests handles potentially cached responses.                                                                                                                    |
+
+**If passing a number:**
+
+- `number` - opaque type returned by something like `require('./image.jpg')`.

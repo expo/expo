@@ -3,7 +3,7 @@ id: view
 title: View
 ---
 
-The most fundamental component for building a UI, `View` is a container that supports layout with [flexbox](https://reactnative.dev/docs/flexbox), [style](https://reactnative.dev/docs/style), [some touch handling](https://reactnative.dev/docs/handling-touches), and [accessibility](https://reactnative.dev/docs/accessibility) controls. `View` maps directly to the native view equivalent on whatever platform React Native is running on, whether that is a `UIView`, `<div>`, `android.view`, etc.
+The most fundamental component for building a UI, `View` is a container that supports layout with [flexbox](flexbox.md), [style](https://reactnative.dev/docs/0.64/style), [some touch handling](https://reactnative.dev/docs/0.64/handling-touches), and [accessibility](https://reactnative.dev/docs/0.64/accessibility) controls. `View` maps directly to the native view equivalent on whatever platform React Native is running on, whether that is a `UIView`, `<div>`, `android.view`, etc.
 
 `View` is designed to be nested inside other views and can have 0 to many children of any type.
 
@@ -31,11 +31,11 @@ const ViewBoxesWithColorAndText = () => {
 export default ViewBoxesWithColorAndText;
 ```
 
-> `View`s are designed to be used with [`StyleSheet`](https://reactnative.dev/docs/style.md) for clarity and performance, although inline styles are also supported.
+> `View`s are designed to be used with [`StyleSheet`](https://reactnative.dev/docs/0.64/style) for clarity and performance, although inline styles are also supported.
 
 ### Synthetic Touch Events
 
-For `View` responder props (e.g., `onResponderMove`), the synthetic touch event passed to them are in form of [PressEvent](https://reactnative.dev/docs/pressevent)tive.dev/docs/pressevent).
+For `View` responder props (e.g., `onResponderMove`), the synthetic touch event passed to them are in form of [PressEvent](pressevent.md).
 
 ---
 
@@ -47,7 +47,7 @@ For `View` responder props (e.g., `onResponderMove`), the synthetic touch event 
 
 Does this view want to become responder on the start of a touch?
 
-`View.props.onStartShouldSetResponder: (event) => [true | false]`, where `event` is a [PressEvent](https://reactnative.dev/docs/pressevent)tive.dev/docs/pressevent).
+`View.props.onStartShouldSetResponder: (event) => [true | false]`, where `event` is a [PressEvent](pressevent.md).
 
 | Type     | Required |
 | -------- | -------- |
@@ -129,7 +129,7 @@ An accessibility hint helps users understand what will happen when they perform 
 
 Describes the current state of a component to the user of an assistive technology.
 
-See the [Accessibility guide](https://reactnative.dev/docs/accessibility#accessibilitystate-ios-android) for more information.
+See the [Accessibility guide](https://reactnative.dev/docs/0.64/accessibility#accessibilitystate-ios-android) for more information.
 
 | Type                                                                                           | Required |
 | ---------------------------------------------------------------------------------------------- | -------- |
@@ -141,7 +141,7 @@ See the [Accessibility guide](https://reactnative.dev/docs/accessibility#accessi
 
 Represents the current value of a component. It can be a textual description of a component's value, or for range-based components, such as sliders and progress bars, it contains range information (minimum, current, and maximum).
 
-See the [Accessibility guide](https://reactnative.dev/docs/accessibility#accessibilityvalue-ios-android) for more information.
+See the [Accessibility guide](https://reactnative.dev/docs/0.64/accessibility#accessibilityvalue-ios-android) for more information.
 
 | Type                                                          | Required |
 | ------------------------------------------------------------- | -------- |
@@ -153,7 +153,7 @@ See the [Accessibility guide](https://reactnative.dev/docs/accessibility#accessi
 
 Accessibility actions allow an assistive technology to programmatically invoke the actions of a component. The `accessibilityActions` property should contain a list of action objects. Each action object should contain the field name and label.
 
-See the [Accessibility guide](https://reactnative.dev/docs/accessibility#accessibility-actions) for more information.
+See the [Accessibility guide](https://reactnative.dev/docs/0.64/accessibility#accessibility-actions) for more information.
 
 | Type  | Required |
 | ----- | -------- |
@@ -165,7 +165,7 @@ See the [Accessibility guide](https://reactnative.dev/docs/accessibility#accessi
 
 Invoked when the user performs the accessibility actions. The only argument to this function is an event containing the name of the action to perform.
 
-See the [Accessibility guide](https://reactnative.dev/docs/accessibility#accessibility-actions) for more information.
+See the [Accessibility guide](https://reactnative.dev/docs/0.64/accessibility#accessibility-actions) for more information.
 
 | Type     | Required |
 | -------- | -------- |
@@ -207,7 +207,7 @@ When `accessible` is `true`, the system will invoke this function when the user 
 
 A value indicating whether VoiceOver should ignore the elements within views that are siblings of the receiver. Default is `false`.
 
-See the [Accessibility guide](https://reactnative.dev/docs/accessibility#accessibilityviewismodal-ios) for more information.
+See the [Accessibility guide](https://reactnative.dev/docs/0.64/accessibility#accessibilityviewismodal-ios) for more information.
 
 | Type | Required | Platform |
 | ---- | -------- | -------- |
@@ -219,7 +219,7 @@ See the [Accessibility guide](https://reactnative.dev/docs/accessibility#accessi
 
 A value indicating whether the accessibility elements contained within this accessibility element are hidden. Default is `false`.
 
-See the [Accessibility guide](https://reactnative.dev/docs/accessibility#accessibilityelementshidden-ios) for more information.
+See the [Accessibility guide](https://reactnative.dev/docs/0.64/accessibility#accessibilityelementshidden-ios) for more information.
 
 | Type | Required | Platform |
 | ---- | -------- | -------- |
@@ -231,7 +231,7 @@ See the [Accessibility guide](https://reactnative.dev/docs/accessibility#accessi
 
 A value indicating this view should or should not be inverted when color inversion is turned on. A value of `true` will tell the view to not be inverted even if color inversion is turned on.
 
-See the [Accessibility guide](https://reactnative.dev/docs/accessibility#accessibilityignoresinvertcolors) for more information.
+See the [Accessibility guide](https://reactnative.dev/docs/0.64/accessibility#accessibilityignoresinvertcolors) for more information.
 
 | Type | Required | Platform |
 | ---- | -------- | -------- |
@@ -302,15 +302,13 @@ Used to locate this view from native classes.
 
 ### `onLayout`
 
-Invoked on mount and layout changes with:
-
-`{nativeEvent: { layout: {x, y, width, height}}}`
+Invoked on mount and on layout changes.
 
 This event is fired immediately once the layout has been calculated, but the new layout may not yet be reflected on the screen at the time the event is received, especially if a layout animation is in progress.
 
-| Type     | Required |
-| -------- | -------- |
-| function | No       |
+| Type                                    | Required |
+| --------------------------------------- | -------- |
+| ([LayoutEvent](layoutevent.md)) => void | No       |
 
 ---
 
@@ -318,7 +316,7 @@ This event is fired immediately once the layout has been calculated, but the new
 
 Does this view want to "claim" touch responsiveness? This is called for every touch move on the `View` when it is not the responder.
 
-`View.props.onMoveShouldSetResponder: (event) => [true | false]`, where `event` is a [PressEvent](https://reactnative.dev/docs/pressevent)tive.dev/docs/pressevent).
+`View.props.onMoveShouldSetResponder: (event) => [true | false]`, where `event` is a [PressEvent](pressevent.md).
 
 | Type     | Required |
 | -------- | -------- |
@@ -330,7 +328,7 @@ Does this view want to "claim" touch responsiveness? This is called for every to
 
 If a parent `View` wants to prevent a child `View` from becoming responder on a move, it should have this handler which returns `true`.
 
-`View.props.onMoveShouldSetResponderCapture: (event) => [true | false]`, where `event` is a [PressEvent](https://reactnative.dev/docs/pressevent).
+`View.props.onMoveShouldSetResponderCapture: (event) => [true | false]`, where `event` is a [PressEvent](pressevent.md).
 
 | Type     | Required |
 | -------- | -------- |
@@ -342,7 +340,7 @@ If a parent `View` wants to prevent a child `View` from becoming responder on a 
 
 The View is now responding for touch events. This is the time to highlight and show the user what is happening.
 
-`View.props.onResponderGrant: (event) => {}`, where `event` is a [PressEvent](https://reactnative.dev/docs/pressevent).
+`View.props.onResponderGrant: (event) => {}`, where `event` is a [PressEvent](pressevent.md).
 
 | Type     | Required |
 | -------- | -------- |
@@ -354,7 +352,7 @@ The View is now responding for touch events. This is the time to highlight and s
 
 The user is moving their finger.
 
-`View.props.onResponderMove: (event) => {}`, where `event` is a [PressEvent](https://reactnative.dev/docs/pressevent).
+`View.props.onResponderMove: (event) => {}`, where `event` is a [PressEvent](pressevent.md).
 
 | Type     | Required |
 | -------- | -------- |
@@ -366,7 +364,7 @@ The user is moving their finger.
 
 Another responder is already active and will not release it to that `View` asking to be the responder.
 
-`View.props.onResponderReject: (event) => {}`, where `event` is a [PressEvent](https://reactnative.dev/docs/pressevent)tive.dev/docs/pressevent).
+`View.props.onResponderReject: (event) => {}`, where `event` is a [PressEvent](pressevent.md).
 
 | Type     | Required |
 | -------- | -------- |
@@ -378,7 +376,7 @@ Another responder is already active and will not release it to that `View` askin
 
 Fired at the end of the touch.
 
-`View.props.onResponderRelease: (event) => {}`, where `event` is a [PressEvent](https://reactnative.dev/docs/pressevent).
+`View.props.onResponderRelease: (event) => {}`, where `event` is a [PressEvent](pressevent.md).
 
 | Type     | Required |
 | -------- | -------- |
@@ -390,7 +388,7 @@ Fired at the end of the touch.
 
 The responder has been taken from the `View`. Might be taken by other views after a call to `onResponderTerminationRequest`, or might be taken by the OS without asking (e.g., happens with control center/ notification center on iOS)
 
-`View.props.onResponderTerminate: (event) => {}`, where `event` is a [PressEvent](https://reactnative.dev/docs/pressevent)tive.dev/docs/pressevent).
+`View.props.onResponderTerminate: (event) => {}`, where `event` is a [PressEvent](pressevent.md).
 
 | Type     | Required |
 | -------- | -------- |
@@ -402,7 +400,7 @@ The responder has been taken from the `View`. Might be taken by other views afte
 
 Some other `View` wants to become responder and is asking this `View` to release its responder. Returning `true` allows its release.
 
-`View.props.onResponderTerminationRequest: (event) => {}`, where `event` is a [PressEvent](https://reactnative.dev/docs/pressevent).
+`View.props.onResponderTerminationRequest: (event) => {}`, where `event` is a [PressEvent](pressevent.md).
 
 | Type     | Required |
 | -------- | -------- |
@@ -414,7 +412,7 @@ Some other `View` wants to become responder and is asking this `View` to release
 
 If a parent `View` wants to prevent a child `View` from becoming responder on a touch start, it should have this handler which returns `true`.
 
-`View.props.onStartShouldSetResponderCapture: (event) => [true | false]`, where `event` is a [PressEvent](https://reactnative.dev/docs/pressevent).
+`View.props.onStartShouldSetResponderCapture: (event) => [true | false]`, where `event` is a [PressEvent](pressevent.md).
 
 | Type     | Required |
 | -------- | -------- |
@@ -430,23 +428,23 @@ Controls whether the `View` can be the target of touch events.
 - `'none'`: The View is never the target of touch events.
 - `'box-none'`: The View is never the target of touch events but its subviews can be. It behaves like if the view had the following classes in CSS:
 
-```css
+```
 .box-none {
-  pointer-events: none;
+     pointer-events: none;
 }
 .box-none * {
-  pointer-events: auto;
+     pointer-events: auto;
 }
 ```
 
 - `'box-only'`: The view can be the target of touch events but its subviews cannot be. It behaves like if the view had the following classes in CSS:
 
-```css
+```
 .box-only {
-  pointer-events: auto;
+     pointer-events: auto;
 }
 .box-only * {
-  pointer-events: none;
+     pointer-events: none;
 }
 ```
 
@@ -470,9 +468,9 @@ This is a reserved performance property exposed by `RCTView` and is useful for s
 
 ### `style`
 
-| Type                                | Required |
-| ----------------------------------- | -------- |
-| [view styles](view-style-props.md) | No       |
+| Type                              | Required |
+| --------------------------------- | -------- |
+| [View Style](view-style-props.md) | No       |
 
 ---
 

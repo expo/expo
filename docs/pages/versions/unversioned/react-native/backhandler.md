@@ -15,23 +15,22 @@ The event subscriptions are called in reverse order (i.e. the last registered su
 ## Pattern
 
 ```js
-BackHandler.addEventListener('hardwareBackPress', function() {
+BackHandler.addEventListener('hardwareBackPress', function () {
   /**
    * this.onMainScreen and this.goBack are just examples,
    * you need to use your own implementation here.
    *
    * Typically you would use the navigator here to go to the last state.
    */
+
   if (!this.onMainScreen()) {
     this.goBack();
-
     /**
      * When true is returned the event will not be bubbled up
      * & no other back action will execute
      */
     return true;
   }
-
   /**
    * Returning false will let the event to bubble up & let other event listeners
    * or the system's default back action to be executed.
@@ -48,7 +47,7 @@ The following example implements a scenario where you confirm if the user wants 
 import React, { useEffect } from 'react';
 import { Text, View, StyleSheet, BackHandler, Alert } from 'react-native';
 
-export default function App() {
+const App = () => {
   useEffect(() => {
     const backAction = () => {
       Alert.alert('Hold on!', 'Are you sure you want to go back?', [
@@ -72,7 +71,7 @@ export default function App() {
       <Text style={styles.text}>Click Back button!</Text>
     </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -85,6 +84,8 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
 });
+
+export default App;
 ```
 
 `BackHandler.addEventListener` creates an event listener & returns a `NativeEventSubscription` object which should be cleared using `NativeEventSubscription.remove` method.
@@ -95,23 +96,23 @@ Additionally `BackHandler.removeEventListener` can also be used to clear the eve
 import React, { useEffect } from 'react';
 import { Text, View, StyleSheet, BackHandler, Alert } from 'react-native';
 
-export default function App() {
+const App = () => {
+  const backAction = () => {
+    Alert.alert('Hold on!', 'Are you sure you want to go back?', [
+      {
+        text: 'Cancel',
+        onPress: () => null,
+        style: 'cancel',
+      },
+      { text: 'YES', onPress: () => BackHandler.exitApp() },
+    ]);
+    return true;
+  };
+
   useEffect(() => {
-    const backAction = () => {
-      Alert.alert('Hold on!', 'Are you sure you want to go back?', [
-        {
-          text: 'Cancel',
-          onPress: () => null,
-          style: 'cancel',
-        },
-        { text: 'YES', onPress: () => BackHandler.exitApp() },
-      ]);
-      return true;
-    };
+    BackHandler.addEventListener('hardwareBackPress', backAction);
 
-    const backHandler = BackHandler.addEventListener('hardwareBackPress', backAction);
-
-    return () => backHandler.remove();
+    return () => BackHandler.removeEventListener('hardwareBackPress', backAction);
   }, []);
 
   return (
@@ -119,7 +120,7 @@ export default function App() {
       <Text style={styles.text}>Click Back button!</Text>
     </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -132,6 +133,8 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
 });
+
+export default App;
 ```
 
 ## Usage with React Navigation
@@ -141,8 +144,6 @@ If you are using React Navigation to navigate across different screens, you can 
 ## Backhandler hook
 
 [React Native Hooks](https://github.com/react-native-community/hooks#usebackhandler) has a nice `useBackHandler` hook which will simplify the process of setting up event listeners.
-
----
 
 # Reference
 
@@ -154,15 +155,11 @@ If you are using React Navigation to navigate across different screens, you can 
 static addEventListener(eventName, handler)
 ```
 
----
-
 ### `exitApp()`
 
 ```js
 static exitApp()
 ```
-
----
 
 ### `removeEventListener()`
 

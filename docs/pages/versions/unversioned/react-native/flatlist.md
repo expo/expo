@@ -45,7 +45,7 @@ const Item = ({ title }) => (
   </View>
 );
 
-export default function App() {
+const App = () => {
   const renderItem = ({ item }) => <Item title={item.title} />;
 
   return (
@@ -53,7 +53,7 @@ export default function App() {
       <FlatList data={DATA} renderItem={renderItem} keyExtractor={item => item.id} />
     </SafeAreaView>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -70,13 +70,15 @@ const styles = StyleSheet.create({
     fontSize: 32,
   },
 });
+
+export default App;
 ```
 
-To render multiple columns, use the [`numColumns`](flatlist.md#numcolumns) prop. Using this approach instead of a `flexWrap` layout can prevent conflicts with the item height logic.
+To render multiple columns, use the [`numColumns`](#numcolumns) prop. Using this approach instead of a `flexWrap` layout can prevent conflicts with the item height logic.
 
-More complex, multi-select example demonstrating `` usage for perf optimization and avoiding bugs.
+More complex, selectable example below.
 
-- By passing `extraData={selected}` to `FlatList` we make sure `FlatList` itself will re-render when the state changes. Without setting this prop, `FlatList` would not know it needs to re-render any items because it is a `PureComponent` and the prop comparison will not show any changes.
+- By passing `extraData={selectedId}` to `FlatList` we make sure `FlatList` itself will re-render when the state changes. Without setting this prop, `FlatList` would not know it needs to re-render any items because it is a `PureComponent` and the prop comparison will not show any changes.
 - `keyExtractor` tells the list to use the `id`s for the react keys instead of the default `key` property.
 
 ```js
@@ -105,19 +107,27 @@ const DATA = [
   },
 ];
 
-const Item = ({ item, onPress, style }) => (
-  <TouchableOpacity onPress={onPress} style={[styles.item, style]}>
-    <Text style={styles.title}>{item.title}</Text>
+const Item = ({ item, onPress, backgroundColor, textColor }) => (
+  <TouchableOpacity onPress={onPress} style={[styles.item, backgroundColor]}>
+    <Text style={[styles.title, textColor]}>{item.title}</Text>
   </TouchableOpacity>
 );
 
-export default function App() {
+const App = () => {
   const [selectedId, setSelectedId] = useState(null);
 
   const renderItem = ({ item }) => {
     const backgroundColor = item.id === selectedId ? '#6e3b6e' : '#f9c2ff';
+    const color = item.id === selectedId ? 'white' : 'black';
 
-    return <Item item={item} onPress={() => setSelectedId(item.id)} style={{ backgroundColor }} />;
+    return (
+      <Item
+        item={item}
+        onPress={() => setSelectedId(item.id)}
+        backgroundColor={{ backgroundColor }}
+        textColor={{ color }}
+      />
+    );
   };
 
   return (
@@ -130,7 +140,7 @@ export default function App() {
       />
     </SafeAreaView>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -146,6 +156,8 @@ const styles = StyleSheet.create({
     fontSize: 32,
   },
 });
+
+export default App;
 ```
 
 This is a convenience wrapper around [`<VirtualizedList>`](virtualizedlist.md), and thus inherits its props (as well as those of [`<ScrollView>`](scrollview.md)) that aren't explicitly listed here, along with the following caveats:
@@ -161,6 +173,8 @@ This is a convenience wrapper around [`<VirtualizedList>`](virtualizedlist.md), 
 
 ## Props
 
+### [ScrollView Props](scrollview.md#props)
+
 Inherits [ScrollView Props](scrollview.md#props), unless it is nested in another FlatList of same orientation.
 
 ### `renderItem`
@@ -169,13 +183,13 @@ Inherits [ScrollView Props](scrollview.md#props), unless it is nested in another
 renderItem({ item, index, separators });
 ```
 
-Takes an item from `data` and renders it into the list.
+**Required** Takes an item from `data` and renders it into the list.
 
 Provides additional metadata like `index` if you need it, as well as a more generic `separators.updateProps` function which let you set whatever props you want to change the rendering of either the leading separator or trailing separator in case the more common `highlight` and `unhighlight` (which set the `highlighted: boolean` prop) are insufficient for your use case.
 
-| Type     | Required |
-| -------- | -------- |
-| function | Yes      |
+| Type     |
+| -------- |
+| function |
 
 - `item` (Object): The item from `data` being rendered.
 - `index` (number): The index corresponding to this item in the `data` array.
@@ -213,11 +227,11 @@ Example usage:
 
 ### `data`
 
-For simplicity, data is a plain array. If you want to use something else, like an immutable list, use the underlying [`VirtualizedList`](virtualizedlist.md) directly.
+**Required** For simplicity, data is a plain array. If you want to use something else, like an immutable list, use the underlying [`VirtualizedList`](virtualizedlist.md) directly.
 
-| Type  | Required |
-| ----- | -------- |
-| array | Yes      |
+| Type  |
+| ----- |
+| array |
 
 ---
 
@@ -225,59 +239,59 @@ For simplicity, data is a plain array. If you want to use something else, like a
 
 Rendered in between each item, but not at the top or bottom. By default, `highlighted` and `leadingItem` props are provided. `renderItem` provides `separators.highlight`/`unhighlight` which will update the `highlighted` prop, but you can also add custom props with `separators.updateProps`.
 
-| Type      | Required |
-| --------- | -------- |
-| component | No       |
+| Type      |
+| --------- |
+| component |
 
 ---
 
 ### `ListEmptyComponent`
 
-Rendered when the list is empty. Can be a React Component Class, a render function, or a rendered element.
+Rendered when the list is empty. Can be a React Component (e.g. `SomeComponent`), or a React element (e.g. `<SomeComponent />`).
 
-| Type                         | Required |
-| ---------------------------- | -------- |
-| component, function, element | No       |
+| Type               |
+| ------------------ |
+| component, element |
 
 ---
 
 ### `ListFooterComponent`
 
-Rendered at the bottom of all the items. Can be a React Component Class, a render function, or a rendered element.
+Rendered at the bottom of all the items. Can be a React Component (e.g. `SomeComponent`), or a React element (e.g. `<SomeComponent />`).
 
-| Type                         | Required |
-| ---------------------------- | -------- |
-| component, function, element | No       |
+| Type               |
+| ------------------ |
+| component, element |
 
 ---
 
 ### `ListFooterComponentStyle`
 
-Styling for internal View for ListFooterComponent
+Styling for internal View for `ListFooterComponent`.
 
-| Type         | Required |
-| ------------ | -------- |
-| style object | No       |
+| Type                              |
+| --------------------------------- |
+| [View Style](view-style-props.md) |
 
 ---
 
 ### `ListHeaderComponent`
 
-Rendered at the top of all the items. Can be a React Component Class, a render function, or a rendered element.
+Rendered at the top of all the items. Can be a React Component (e.g. `SomeComponent`), or a React element (e.g. `<SomeComponent />`).
 
-| Type                         | Required |
-| ---------------------------- | -------- |
-| component, function, element | No       |
+| Type               |
+| ------------------ |
+| component, element |
 
 ---
 
 ### `ListHeaderComponentStyle`
 
-Styling for internal View for ListHeaderComponent
+Styling for internal View for `ListHeaderComponent`.
 
-| Type         | Required |
-| ------------ | -------- |
-| style object | No       |
+| Type                              |
+| --------------------------------- |
+| [View Style](view-style-props.md) |
 
 ---
 
@@ -285,9 +299,9 @@ Styling for internal View for ListHeaderComponent
 
 Optional custom style for multi-item rows generated when `numColumns > 1`.
 
-| Type         | Required |
-| ------------ | -------- |
-| style object | No       |
+| Type                              |
+| --------------------------------- |
+| [View Style](view-style-props.md) |
 
 ---
 
@@ -295,9 +309,9 @@ Optional custom style for multi-item rows generated when `numColumns > 1`.
 
 A marker property for telling the list to re-render (since it implements `PureComponent`). If any of your `renderItem`, Header, Footer, etc. functions depend on anything outside of the `data` prop, stick it here and treat it immutably.
 
-| Type | Required |
-| ---- | -------- |
-| any  | No       |
+| Type |
+| ---- |
+| any  |
 
 ---
 
@@ -317,19 +331,19 @@ getItemLayout={(data, index) => (
 
 Adding `getItemLayout` can be a great performance boost for lists of several hundred items. Remember to include separator length (height or width) in your offset calculation if you specify `ItemSeparatorComponent`.
 
-| Type     | Required |
-| -------- | -------- |
-| function | No       |
+| Type     |
+| -------- |
+| function |
 
 ---
 
 ### `horizontal`
 
-If true, renders items next to each other horizontally instead of stacked vertically.
+If `true`, renders items next to each other horizontally instead of stacked vertically.
 
-| Type    | Required |
-| ------- | -------- |
-| boolean | No       |
+| Type    |
+| ------- |
+| boolean |
 
 ---
 
@@ -337,9 +351,9 @@ If true, renders items next to each other horizontally instead of stacked vertic
 
 How many items to render in the initial batch. This should be enough to fill the screen but not much more. Note these items will never be unmounted as part of the windowed rendering in order to improve perceived performance of scroll-to-top actions.
 
-| Type   | Required |
-| ------ | -------- |
-| number | No       |
+| Type   | Default |
+| ------ | ------- |
+| number | `10`    |
 
 ---
 
@@ -347,9 +361,9 @@ How many items to render in the initial batch. This should be enough to fill the
 
 Instead of starting at the top with the first item, start at `initialScrollIndex`. This disables the "scroll to top" optimization that keeps the first `initialNumToRender` items always rendered and immediately renders the items starting at this initial index. Requires `getItemLayout` to be implemented.
 
-| Type   | Required |
-| ------ | -------- |
-| number | No       |
+| Type   |
+| ------ |
+| number |
 
 ---
 
@@ -357,9 +371,9 @@ Instead of starting at the top with the first item, start at `initialScrollIndex
 
 Reverses the direction of scroll. Uses scale transforms of `-1`.
 
-| Type    | Required |
-| ------- | -------- |
-| boolean | No       |
+| Type    |
+| ------- |
+| boolean |
 
 ---
 
@@ -369,11 +383,11 @@ Reverses the direction of scroll. Uses scale transforms of `-1`.
 (item: object, index: number) => string;
 ```
 
-Used to extract a unique key for a given item at the specified index. Key is used for caching and as the react key to track item re-ordering. The default extractor checks `item.key`, then falls back to using the index, like React does.
+Used to extract a unique key for a given item at the specified index. Key is used for caching and as the react key to track item re-ordering. The default extractor checks `item.key`, then `item.id`, and then falls back to using the index, like React does.
 
-| Type     | Required |
-| -------- | -------- |
-| function | No       |
+| Type     |
+| -------- |
+| function |
 
 ---
 
@@ -381,9 +395,9 @@ Used to extract a unique key for a given item at the specified index. Key is use
 
 Multiple columns can only be rendered with `horizontal={false}` and will zig-zag like a `flexWrap` layout. Items should all be the same height - masonry layouts are not supported.
 
-| Type   | Required |
-| ------ | -------- |
-| number | No       |
+| Type   |
+| ------ |
+| number |
 
 ---
 
@@ -395,9 +409,9 @@ Multiple columns can only be rendered with `horizontal={false}` and will zig-zag
 
 Called once when the scroll position gets within `onEndReachedThreshold` of the rendered content.
 
-| Type     | Required |
-| -------- | -------- |
-| function | No       |
+| Type     |
+| -------- |
+| function |
 
 ---
 
@@ -405,9 +419,9 @@ Called once when the scroll position gets within `onEndReachedThreshold` of the 
 
 How far from the end (in units of visible length of the list) the bottom edge of the list must be from the end of the content to trigger the `onEndReached` callback. Thus a value of 0.5 will trigger `onEndReached` when the end of the content is within half the visible length of the list.
 
-| Type   | Required |
-| ------ | -------- |
-| number | No       |
+| Type   |
+| ------ |
+| number |
 
 ---
 
@@ -419,46 +433,29 @@ How far from the end (in units of visible length of the list) the bottom edge of
 
 If provided, a standard RefreshControl will be added for "Pull to Refresh" functionality. Make sure to also set the `refreshing` prop correctly.
 
-| Type     | Required |
-| -------- | -------- |
-| function | No       |
+| Type     |
+| -------- |
+| function |
 
 ---
 
 ### `onViewableItemsChanged`
 
-```js
-(info: {
-  viewableItems: array,
-  changed: array,
-}) => void
-```
-
 Called when the viewability of rows changes, as defined by the `viewabilityConfig` prop.
 
-| Type     | Required |
-| -------- | -------- |
-| function | No       |
+| Type                                                                                                                       |
+| -------------------------------------------------------------------------------------------------------------------------- |
+| (callback: { changed: array of [ViewToken](view-token.md)s, viewableItems: array of [ViewToken](view-token.md)s }) => void |
 
 ---
 
-### `progressViewOffset`
+### `progressViewOffset` **(Android)**
 
 Set this when offset is needed for the loading indicator to show correctly.
 
-| Type   | Required | Platform |
-| ------ | -------- | -------- |
-| number | No       | Android  |
-
----
-
-### `legacyImplementation`
-
-May not have full feature parity and is meant for debugging and performance comparison.
-
-| Type    | Required |
-| ------- | -------- |
-| boolean | No       |
+| Type   |
+| ------ |
+| number |
 
 ---
 
@@ -466,45 +463,45 @@ May not have full feature parity and is meant for debugging and performance comp
 
 Set this true while waiting for new data from a refresh.
 
-| Type    | Required |
-| ------- | -------- |
-| boolean | No       |
+| Type    |
+| ------- |
+| boolean |
 
 ---
 
 ### `removeClippedSubviews`
 
-This may improve scroll performance for large lists. On Android the default value is true
+This may improve scroll performance for large lists. On Android the default value is `true`.
 
 > Note: May have bugs (missing content) in some circumstances - use at your own risk.
 
-| Type    | Required |
-| ------- | -------- |
-| boolean | No       |
+| Type    |
+| ------- |
+| boolean |
 
 ---
 
 ### `viewabilityConfig`
 
-See `ViewabilityHelper.js` for flow type and further documentation.
+See [`ViewabilityHelper.js`](https://github.com/facebook/react-native/blob/master/Libraries/Lists/ViewabilityHelper.js) for flow type and further documentation.
 
-| Type              | Required |
-| ----------------- | -------- |
-| ViewabilityConfig | No       |
+| Type              |
+| ----------------- |
+| ViewabilityConfig |
 
 `viewabilityConfig` takes a type `ViewabilityConfig` an object with following properties
 
-| Property                         | Required | Type    |
-| -------------------------------- | -------- | ------- |
-| minimumViewTime                  | No       | number  |
-| viewAreaCoveragePercentThreshold | No       | number  |
-| itemVisiblePercentThreshold      | No       | number  |
-| waitForInteraction               | No       | boolean |
+| Property                         | Type    |
+| -------------------------------- | ------- |
+| minimumViewTime                  | number  |
+| viewAreaCoveragePercentThreshold | number  |
+| itemVisiblePercentThreshold      | number  |
+| waitForInteraction               | boolean |
 
 At least one of the `viewAreaCoveragePercentThreshold` or `itemVisiblePercentThreshold` is required. This needs to be done in the `constructor` to avoid following error ([ref](https://github.com/facebook/react-native/issues/17408)):
 
 ```
-  Error: Changing viewabilityConfig on the fly is not supported`
+  Error: Changing viewabilityConfig on the fly is not supported
 ```
 
 ```js
@@ -522,7 +519,6 @@ constructor(props) {
 <FlatList
   viewabilityConfig={this.viewabilityConfig}
   ...
-/>
 ```
 
 #### minimumViewTime
@@ -547,111 +543,11 @@ Nothing is considered viewable until the user scrolls or `recordInteraction` is 
 
 List of `ViewabilityConfig`/`onViewableItemsChanged` pairs. A specific `onViewableItemsChanged` will be called when its corresponding `ViewabilityConfig`'s conditions are met. See `ViewabilityHelper.js` for flow type and further documentation.
 
-| Type                                   | Required |
-| -------------------------------------- | -------- |
-| array of ViewabilityConfigCallbackPair | No       |
+| Type                                   |
+| -------------------------------------- |
+| array of ViewabilityConfigCallbackPair |
 
 ## Methods
-
-### `scrollToEnd()`
-
-```js
-scrollToEnd([params]);
-```
-
-Scrolls to the end of the content. May be janky without `getItemLayout` prop.
-
-**Parameters:**
-
-| Name   | Type   | Required | Description |
-| ------ | ------ | -------- | ----------- |
-| params | object | No       | See below.  |
-
-Valid `params` keys are:
-
-- 'animated' (boolean) - Whether the list should do an animation while scrolling. Defaults to `true`.
-
----
-
-### `scrollToIndex()`
-
-```js
-scrollToIndex(params);
-```
-
-Scrolls to the item at the specified index such that it is positioned in the viewable area such that `viewPosition` 0 places it at the top, 1 at the bottom, and 0.5 centered in the middle.
-
-> Note: Cannot scroll to locations outside the render window without specifying the `getItemLayout` prop.
-
-**Parameters:**
-
-| Name   | Type   | Required | Description |
-| ------ | ------ | -------- | ----------- |
-| params | object | Yes      | See below.  |
-
-Valid `params` keys are:
-
-- 'animated' (boolean) - Whether the list should do an animation while scrolling. Defaults to `true`.
-- 'index' (number) - The index to scroll to. Required.
-- 'viewOffset' (number) - A fixed number of pixels to offset the final target position.
-- 'viewPosition' (number) - A value of `0` places the item specified by index at the top, `1` at the bottom, and `0.5` centered in the middle.
-
----
-
-### `scrollToItem()`
-
-```js
-scrollToItem(params);
-```
-
-Requires linear scan through data - use `scrollToIndex` instead if possible.
-
-> Note: Cannot scroll to locations outside the render window without specifying the `getItemLayout` prop.
-
-**Parameters:**
-
-| Name   | Type   | Required | Description |
-| ------ | ------ | -------- | ----------- |
-| params | object | Yes      | See below.  |
-
-Valid `params` keys are:
-
-- 'animated' (boolean) - Whether the list should do an animation while scrolling. Defaults to `true`.
-- 'item' (object) - The item to scroll to. Required.
-- 'viewPosition' (number)
-
----
-
-### `scrollToOffset()`
-
-```js
-scrollToOffset(params);
-```
-
-Scroll to a specific content pixel offset in the list.
-
-**Parameters:**
-
-| Name   | Type   | Required | Description |
-| ------ | ------ | -------- | ----------- |
-| params | object | Yes      | See below.  |
-
-Valid `params` keys are:
-
-- 'offset' (number) - The offset to scroll to. In case of `horizontal` being true, the offset is the x-value, in any other case the offset is the y-value. Required.
-- 'animated' (boolean) - Whether the list should do an animation while scrolling. Defaults to `true`.
-
----
-
-### `recordInteraction()`
-
-```js
-recordInteraction();
-```
-
-Tells the list an interaction has occurred, which should trigger viewability calculations, e.g. if `waitForInteractions` is true and the user has not scrolled. This is typically called by taps on items or by navigation actions.
-
----
 
 ### `flashScrollIndicators()`
 
@@ -690,3 +586,103 @@ getScrollableNode();
 ```
 
 Provides a handle to the underlying scroll node.
+
+---
+
+### `recordInteraction()`
+
+```js
+recordInteraction();
+```
+
+Tells the list an interaction has occurred, which should trigger viewability calculations, e.g. if `waitForInteractions` is true and the user has not scrolled. This is typically called by taps on items or by navigation actions.
+
+---
+
+### `scrollToEnd()`
+
+```js
+scrollToEnd(params);
+```
+
+Scrolls to the end of the content. May be janky without `getItemLayout` prop.
+
+**Parameters:**
+
+| Name   | Type   |
+| ------ | ------ |
+| params | object |
+
+Valid `params` keys are:
+
+- 'animated' (boolean) - Whether the list should do an animation while scrolling. Defaults to `true`.
+
+---
+
+### `scrollToIndex()`
+
+```js
+scrollToIndex(params);
+```
+
+Scrolls to the item at the specified index such that it is positioned in the viewable area such that `viewPosition` 0 places it at the top, 1 at the bottom, and 0.5 centered in the middle.
+
+> Note: Cannot scroll to locations outside the render window without specifying the `getItemLayout` prop.
+
+**Parameters:**
+
+| Name                  | Type   |
+| --------------------- | ------ |
+| params **(Required)** | object |
+
+Valid `params` keys are:
+
+- 'animated' (boolean) - Whether the list should do an animation while scrolling. Defaults to `true`.
+- 'index' (number) - The index to scroll to. Required.
+- 'viewOffset' (number) - A fixed number of pixels to offset the final target position.
+- 'viewPosition' (number) - A value of `0` places the item specified by index at the top, `1` at the bottom, and `0.5` centered in the middle.
+
+---
+
+### `scrollToItem()`
+
+```js
+scrollToItem(params);
+```
+
+Requires linear scan through data - use `scrollToIndex` instead if possible.
+
+> Note: Cannot scroll to locations outside the render window without specifying the `getItemLayout` prop.
+
+**Parameters:**
+
+| Name                  | Type   |
+| --------------------- | ------ |
+| params **(Required)** | object |
+
+Valid `params` keys are:
+
+- 'animated' (boolean) - Whether the list should do an animation while scrolling. Defaults to `true`.
+- 'item' (object) - The item to scroll to. Required.
+- 'viewPosition' (number)
+
+---
+
+### `scrollToOffset()`
+
+```js
+scrollToOffset(params);
+```
+
+Scroll to a specific content pixel offset in the list.
+
+**Parameters:**
+
+| Name                  | Type   |
+| --------------------- | ------ |
+| params **(Required)** | object |
+
+Valid `params` keys are:
+
+- 'offset' (number) - The offset to scroll to. In case of `horizontal` being true, the offset is the x-value, in any other case the offset is the y-value. Required.
+- 'animated' (boolean) - Whether the list should do an animation while scrolling. Defaults to `true`.

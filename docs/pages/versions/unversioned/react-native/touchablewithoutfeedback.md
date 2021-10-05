@@ -11,7 +11,7 @@ Do not use unless you have a very good reason. All elements that respond to pres
 
 ## Usage Pattern
 
-```jsx
+```js
 function MyComponent(props) {
   return (
     <View {...props} style={{ flex: 1, backgroundColor: '#fff' }}>
@@ -163,7 +163,7 @@ An accessibility hint helps users understand what will happen when they perform 
 
 Describes the current state of a component to the user of an assistive technology.
 
-See the [Accessibility guide](https://reactnative.dev/docs/accessibility#accessibilitystate-ios-android) for more information.
+See the [Accessibility guide](https://reactnative.dev/docs/0.64/accessibility#accessibilitystate-ios-android) for more information.
 
 | Type                                                                                           | Required |
 | ---------------------------------------------------------------------------------------------- | -------- |
@@ -175,7 +175,7 @@ See the [Accessibility guide](https://reactnative.dev/docs/accessibility#accessi
 
 Accessibility actions allow an assistive technology to programmatically invoke the actions of a component. The `accessibilityActions` property should contain a list of action objects. Each action object should contain the field name and label.
 
-See the [Accessibility guide](https://reactnative.dev/docs/accessibility#accessibility-actions) for more information.
+See the [Accessibility guide](https://reactnative.dev/docs/0.64/accessibility#accessibility-actions) for more information.
 
 | Type  | Required |
 | ----- | -------- |
@@ -187,7 +187,7 @@ See the [Accessibility guide](https://reactnative.dev/docs/accessibility#accessi
 
 Invoked when the user performs the accessibility actions. The only argument to this function is an event containing the name of the action to perform.
 
-See the [Accessibility guide](https://reactnative.dev/docs/accessibility#accessibility-actions) for more information.
+See the [Accessibility guide](https://reactnative.dev/docs/0.64/accessibility#accessibility-actions) for more information.
 
 | Type     | Required |
 | -------- | -------- |
@@ -199,7 +199,7 @@ See the [Accessibility guide](https://reactnative.dev/docs/accessibility#accessi
 
 Represents the current value of a component. It can be a textual description of a component's value, or for range-based components, such as sliders and progress bars, it contains range information (minimum, current, and maximum).
 
-See the [Accessibility guide](https://reactnative.dev/docs/accessibility#accessibilityvalue-ios-android) for more information.
+See the [Accessibility guide](https://reactnative.dev/docs/0.64/accessibility#accessibilityvalue-ios-android) for more information.
 
 | Type                                                          | Required |
 | ------------------------------------------------------------- | -------- |
@@ -253,9 +253,9 @@ This defines how far your touch can start away from the button. This is added to
 
 > The touch area never extends past the parent view bounds and the Z-index of sibling views always takes precedence if a touch hits two overlapping views.
 
-| Type                                                | Required |
-| --------------------------------------------------- | -------- |
-| [Rect](https://reactnative.dev/docs/rect) or number | No       |
+| Type                      | Required |
+| ------------------------- | -------- |
+| [Rect](rect.md) or number | No       |
 
 ### `onBlur`
 
@@ -279,13 +279,11 @@ Invoked when the item receives focus.
 
 ### `onLayout`
 
-Invoked on mount and layout changes with
+Invoked on mount and on layout changes.
 
-`{nativeEvent: {layout: {x, y, width, height}}}`
-
-| Type     | Required |
-| -------- | -------- |
-| function | No       |
+| Type                                    | Required |
+| --------------------------------------- | -------- |
+| ([LayoutEvent](layoutevent.md)) => void | No       |
 
 ---
 
@@ -301,7 +299,7 @@ Called if the time after `onPressIn` lasts longer than 370 milliseconds. This ti
 
 ### `onPress`
 
-Called when the touch is released, but not if cancelled (e.g. by a scroll that steals the responder lock). The first function argument is an event in form of [PressEvent](https://reactnative.dev/docs/pressevent).
+Called when the touch is released, but not if cancelled (e.g. by a scroll that steals the responder lock). The first function argument is an event in form of [PressEvent](pressevent.md).
 
 | Type     | Required |
 | -------- | -------- |
@@ -311,7 +309,7 @@ Called when the touch is released, but not if cancelled (e.g. by a scroll that s
 
 ### `onPressIn`
 
-Called as soon as the touchable element is pressed and invoked even before onPress. This can be useful when making network requests. The first function argument is an event in form of [PressEvent](https://reactnative.dev/docs/pressevent)tive.dev/docs/pressevent).
+Called as soon as the touchable element is pressed and invoked even before onPress. This can be useful when making network requests. The first function argument is an event in form of [PressEvent](pressevent.md).
 
 | Type     | Required |
 | -------- | -------- |
@@ -321,7 +319,7 @@ Called as soon as the touchable element is pressed and invoked even before onPre
 
 ### `onPressOut`
 
-Called as soon as the touch is released even before onPress. The first function argument is an event in form of [PressEvent](https://reactnative.dev/docs/pressevent)tive.dev/docs/pressevent).
+Called as soon as the touch is released even before onPress. The first function argument is an event in form of [PressEvent](pressevent.md).
 
 | Type     | Required |
 | -------- | -------- |
@@ -333,9 +331,9 @@ Called as soon as the touch is released even before onPress. The first function 
 
 When the scroll view is disabled, this defines how far your touch may move off of the button, before deactivating the button. Once deactivated, try moving it back and you'll see that the button is once again reactivated! Move it back and forth several times while the scroll view is disabled. Ensure you pass in a constant to reduce memory allocations.
 
-| Type                                                | Required |
-| --------------------------------------------------- | -------- |
-| [Rect](https://reactnative.dev/docs/rect) or number | No       |
+| Type                      | Required |
+| ------------------------- | -------- |
+| [Rect](rect.md) or number | No       |
 
 ---
 
