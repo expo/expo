@@ -81,7 +81,6 @@ function openFileBrowserAsync({ mediaTypes, capture = false, allowsMultipleSelec
                 if (!allowsMultipleSelection) {
                     const img = await readFile(input.files[0], { base64 });
                     resolve({
-                        cancelled: false,
                         ...img,
                     });
                 }
@@ -111,14 +110,16 @@ function readFile(targetFile, options) {
                 uri,
                 width: 0,
                 height: 0,
+                cancelled: false,
             });
-            if (typeof target?.result === 'string') {
+            if (typeof uri === 'string') {
                 const image = new Image();
-                image.src = target.result;
+                image.src = uri;
                 image.onload = () => resolve({
                     uri,
                     width: image.naturalWidth ?? image.width,
                     height: image.naturalHeight ?? image.height,
+                    cancelled: false,
                     // The blob's result cannot be directly decoded as Base64 without
                     // first removing the Data-URL declaration preceding the
                     // Base64-encoded data. To retrieve only the Base64 encoded string,

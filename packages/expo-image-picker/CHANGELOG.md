@@ -4,11 +4,19 @@
 
 ### 🛠 Breaking changes
 
+- remove typo workaround for `getMediaLibaryPermissionsAsync` method.
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
 
+- add missing `cancelled` values for the Web responses.
+
 ### 💡 Others
+
+- export missing types: `ImageInfo`, `ImagePickerMultipleResult`, `OpenFileBrowserOptions`, `ExpandImagePickerResult`, `UIImagePickerControllerQualityType` and `UIImagePickerPresentationStyle`.
+- extract cancelled request object to separate type - `ImagePickerCancelledResult`.
+- change `CameraPermissionResponse` type alias definition.
 
 ## 11.0.0 — 2021-09-28
 
