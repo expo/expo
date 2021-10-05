@@ -248,7 +248,7 @@ export type ImagePickerOptions = {
    * Specify the quality of compression, from `0` to `1`. `0` means compress for small size,
    * `1` means compress for maximum quality.
    * > Note: If the selected image has been compressed before, the size of the output file may be
-   * bigger than the size of the original image.
+   * > bigger than the size of the original image.
    */
   quality?: number;
   /**
