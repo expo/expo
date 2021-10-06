@@ -265,18 +265,18 @@ public class VersionedUtils {
     }
 
     final Pair<Boolean, Integer> hermesBundlePair = parseHermesBundleHeader(instanceManagerBuilderProperties.getJsBundlePath());
-    if (hermesBundlePair.first) {
-      if (hermesBundlePair.second != HERMES_BYTECODE_VERSION) {
-        final String message = String.format(Locale.US,
-                "Unable to load unsupported Hermes bundle.\n\tsupportedBytecodeVersion: %d\n\ttargetBytecodeVersion: %d",
-                HERMES_BYTECODE_VERSION, hermesBundlePair.second);
-        KernelProvider.getInstance().handleError(new RuntimeException(message));
-        return null;
-      }
-      return new HermesExecutorFactory();
+    if (hermesBundlePair.first && hermesBundlePair.second != HERMES_BYTECODE_VERSION) {
+      final String message = String.format(Locale.US,
+              "Unable to load unsupported Hermes bundle.\n\tsupportedBytecodeVersion: %d\n\ttargetBytecodeVersion: %d",
+              HERMES_BYTECODE_VERSION, hermesBundlePair.second);
+      KernelProvider.getInstance().handleError(new RuntimeException(message));
+      return null;
     }
 
-    return new JSCExecutorFactory(appName, deviceName);
+    final String jsEngineFromManifest = instanceManagerBuilderProperties.getManifest().getAndroidJsEngine();
+    return (jsEngineFromManifest != null && jsEngineFromManifest.equals("hermes"))
+            ? new HermesExecutorFactory()
+            : new JSCExecutorFactory(appName, deviceName);
   }
 
   @NonNull
