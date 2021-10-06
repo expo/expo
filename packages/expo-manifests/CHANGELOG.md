@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Support platform shared jsEngine schema. ([#14654](https://github.com/expo/expo/pull/14654) by [@kudo](https://github.com/kudo))
+
 ### 💡 Others
 
 ## 0.2.0 — 2021-09-28
