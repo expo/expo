@@ -108,6 +108,7 @@ async function action({packageName, version = 'unversioned'}: ActionOptions) {
     'expo-font': ['index.ts'],
     'expo-haptics': ['Haptics.ts'],
     'expo-image-manipulator': ['ImageManipulator.ts'],
+    'expo-image-picker': ['ImagePicker.ts'],
     'expo-in-app-purchases': ['InAppPurchases.ts'],
     'expo-intent-launcher': ['IntentLauncher.ts'],
     'expo-keep-awake': ['index.ts'],

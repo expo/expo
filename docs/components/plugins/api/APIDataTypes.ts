@@ -34,17 +34,20 @@ export type TypeDefinitionData = {
     name?: string;
     type: string;
     types?: TypeDefinitionData[];
-    declaration?: {
-      name?: string;
-      kind?: TypeDocKind;
-      indexSignature?: TypeSignaturesData;
-    };
+    declaration?: TypeDeclarationContentData;
   };
   queryType?: {
     name: string;
     type: string;
   };
   typeArguments?: TypeDefinitionData[];
+  checkType?: TypeDefinitionData;
+  falseType?: TypeDefinitionData;
+  trueType?: TypeDefinitionData;
+  extendsType?: {
+    type: string;
+    declaration?: TypeDeclarationContentData;
+  };
   declaration?: TypeDeclarationContentData;
   value?: string | boolean | null;
 };
@@ -159,10 +162,14 @@ export type TypeGeneralData = {
   name: string;
   comment: CommentData;
   type: TypeDefinitionData;
+  typeParameter?: TypeGeneralData[];
   kind: TypeDocKind;
 };
 
 export type TypeDeclarationContentData = {
+  name?: string;
+  kind?: TypeDocKind;
+  indexSignature?: TypeSignaturesData;
   signatures?: TypeSignaturesData[];
   children?: PropData[];
 };

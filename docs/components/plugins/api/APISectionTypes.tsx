@@ -1,5 +1,4 @@
 import React from 'react';
-import ReactMarkdown from 'react-markdown';
 
 import { InlineCode } from '~/components/base/code';
 import { UL, LI } from '~/components/base/list';
@@ -14,7 +13,6 @@ import {
 } from '~/components/plugins/api/APIDataTypes';
 import {
   mdInlineComponents,
-  mdComponents,
   resolveTypeName,
   renderFlags,
   renderParam,
@@ -84,8 +82,8 @@ const renderTypePropertyRow = ({
           <>
             <br />
             <br />
-            <ReactMarkdown
-              components={mdInlineComponents}>{`__Default:__ ${initValue}`}</ReactMarkdown>
+            <B>Default: </B>
+            <InlineCode>{initValue}</InlineCode>
           </>
         ) : null}
       </td>
@@ -93,7 +91,12 @@ const renderTypePropertyRow = ({
   );
 };
 
-const renderType = ({ name, comment, type }: TypeGeneralData): JSX.Element | undefined => {
+const renderType = ({
+  name,
+  comment,
+  type,
+  typeParameter,
+}: TypeGeneralData): JSX.Element | undefined => {
   if (type.declaration) {
     // Object Types
     return (
@@ -183,7 +186,34 @@ const renderType = ({ name, comment, type }: TypeGeneralData): JSX.Element | und
           <InlineCode>{name}</InlineCode>
         </H3Code>
         <CommentTextBlock comment={comment} />
-        <ReactMarkdown components={mdComponents}>{'__Type:__ `' + type.name + '`'}</ReactMarkdown>
+        <B>Type: </B>
+        <InlineCode>{type.name}</InlineCode>
+      </div>
+    );
+  } else if (type.type === 'conditional' && type.checkType) {
+    return (
+      <div key={`conditional-type-definition-${name}`}>
+        <H3Code>
+          <InlineCode>
+            {name}&lt;{type.checkType.name}&gt;
+          </InlineCode>
+        </H3Code>
+        <CommentTextBlock comment={comment} />
+        <B>Generic: </B>
+        <InlineCode>
+          {type.checkType.name}
+          {typeParameter && <> extends {resolveTypeName(typeParameter[0].type)}</>}
+        </InlineCode>
+        <br />
+        <B>Type: </B>
+        <InlineCode>
+          {type.checkType.name}
+          {typeParameter && <> extends {type.extendsType && resolveTypeName(type.extendsType)}</>}
+          {' ? '}
+          {type.trueType && resolveTypeName(type.trueType)}
+          {' : '}
+          {type.falseType && resolveTypeName(type.falseType)}
+        </InlineCode>
       </div>
     );
   }
