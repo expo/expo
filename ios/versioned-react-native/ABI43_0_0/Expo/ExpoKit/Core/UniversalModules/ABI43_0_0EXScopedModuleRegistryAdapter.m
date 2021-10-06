@@ -111,7 +111,7 @@
   [moduleRegistry registerExportedModule:amplitudeModule];
 #endif
 
-#if __has_include(<ExpoModulesCore/ABI43_0_0EXPermissionsService.h>)
+#if __has_include(<ABI43_0_0ExpoModulesCore/ABI43_0_0EXPermissionsService.h>)
   ABI43_0_0EXScopedPermissions *permissionsModule = [[ABI43_0_0EXScopedPermissions alloc] initWithScopeKey:scopeKey andConstantsBinding:constantsBinding];
   [moduleRegistry registerExportedModule:permissionsModule];
   [moduleRegistry registerInternalModule:permissionsModule];

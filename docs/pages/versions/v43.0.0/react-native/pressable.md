@@ -3,7 +3,7 @@ id: pressable
 title: Pressable
 ---
 
-Pressable is a Core Component wrapper that can detect various stages of press interactions on any of it's defined children.
+Pressable is a Core Component wrapper that can detect various stages of press interactions on any of its defined children.
 
 ```js
 <Pressable onPress={onPressFunction}>
@@ -21,11 +21,11 @@ On an element wrapped by `Pressable`:
 After pressing [`onPressIn`](#onpressin), one of two things will happen:
 
 1. The person will remove their finger, triggering [`onPressOut`](#onpressout) followed by [`onPress`](#onpress).
-2. If the person leaves their finger longer than 370 milliseconds before removing it, [`onLongPress`](#onlongpress) is triggered. ([`onPressOut`](#onpressout) will still fire when they remove their finger.)
+2. If the person leaves their finger longer than 500 milliseconds before removing it, [`onLongPress`](#onlongpress) is triggered. ([`onPressOut`](#onpressout) will still fire when they remove their finger.)
 
 <img src="/static/images/d_pressable_pressing.svg" width="1000" alt="Diagram of the onPress events in sequence." />
 
-Fingers are not the most precise instruments, and it is common for users to accidentally activate the wrong element or miss the activation area. To help, `Pressable` has an optional `HitRect` you can use to define how far a touch can register away from the the wrapped element. Presses can start anywhere within a `HitRect`.
+Fingers are not the most precise instruments, and it is common for users to accidentally activate the wrong element or miss the activation area. To help, `Pressable` has an optional `HitRect` you can use to define how far a touch can register away from the wrapped element. Presses can start anywhere within a `HitRect`.
 
 `PressRect` allows presses to move beyond the element and its `HitRect` while maintaining activation and being eligible for a "press"—think of sliding your finger slowly away from a button you're pressing down on.
 
@@ -46,7 +46,7 @@ Fingers are not the most precise instruments, and it is common for users to acci
 import React, { useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
-export default function App() {
+const App = () => {
   const [timesPressed, setTimesPressed] = useState(0);
 
   let textLog = '';
@@ -57,7 +57,7 @@ export default function App() {
   }
 
   return (
-    <View>
+    <View style={styles.container}>
       <Pressable
         onPress={() => {
           setTimesPressed(current => current + 1);
@@ -75,9 +75,13 @@ export default function App() {
       </View>
     </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+  },
   text: {
     fontSize: 16,
   },
@@ -93,11 +97,13 @@ const styles = StyleSheet.create({
     backgroundColor: '#f9f9f9',
   },
 });
+
+export default App;
 ```
 
 ## Props
 
-### `android_disableSound` <div class="label android">Android</div>
+### `android_disableSound` **(Android)**
 
 If true, doesn't play Android system sound on press.
 
@@ -105,21 +111,29 @@ If true, doesn't play Android system sound on press.
 | ------- | -------- | ------- |
 | boolean | No       | `false` |
 
-### `android_ripple` <div class="label android">Android</div>
+### `android_ripple` **(Android)**
 
 Enables the Android ripple effect and configures its properties.
 
-| Type                                   | Required |
-| -------------------------------------- | -------- |
+| Type                          | Required |
+| ----------------------------- | -------- |
 | [RippleConfig](#rippleconfig) | No       |
 
 ### `children`
 
 Either children or a function that receives a boolean reflecting whether the component is currently pressed.
 
-| Type                                                  | Required |
-| ----------------------------------------------------- | -------- |
-| [React Node](https://reactnative.dev/docs/react-node) | No       |
+| Type                        | Required |
+| --------------------------- | -------- |
+| [React Node](react-node.md) | No       |
+
+### `unstable_pressDelay`
+
+Duration (in milliseconds) to wait after press down before calling `onPressIn`.
+
+| Type   | Required |
+| ------ | -------- |
+| number | No       |
 
 ### `delayLongPress`
 
@@ -127,7 +141,7 @@ Duration (in milliseconds) from `onPressIn` before `onLongPress` is called.
 
 | Type   | Required | Default |
 | ------ | -------- | ------- |
-| number | No       | 370     |
+| number | No       | `500`   |
 
 ### `disabled`
 
@@ -141,57 +155,57 @@ Whether the press behavior is disabled.
 
 Sets additional distance outside of element in which a press can be detected.
 
-| Type                                                | Required |
-| --------------------------------------------------- | -------- |
-| [Rect](https://reactnative.dev/docs/rect) or number | No       |
+| Type                      | Required |
+| ------------------------- | -------- |
+| [Rect](rect.md) or number | No       |
 
 ### `onLongPress`
 
-Called if the time after `onPressIn` lasts longer than 370 milliseconds. This time period can be customized with [`delayLongPress`](#delaylongpress).
+Called if the time after `onPressIn` lasts longer than 500 milliseconds. This time period can be customized with [`delayLongPress`](#delaylongpress).
 
-| Type                         | Required |
-| ---------------------------- | -------- |
-| [PressEvent](https://reactnative.dev/docs/pressevent) | No       |
+| Type                        | Required |
+| --------------------------- | -------- |
+| [PressEvent](pressevent.md) | No       |
 
 ### `onPress`
 
 Called after `onPressOut`.
 
-| Type                         | Required |
-| ---------------------------- | -------- |
-| [PressEvent](https://reactnative.dev/docs/pressevent) | No       |
+| Type                        | Required |
+| --------------------------- | -------- |
+| [PressEvent](pressevent.md) | No       |
 
 ### `onPressIn`
 
 Called immediately when a touch is engaged, before `onPressOut` and `onPress`.
 
-| Type                         | Required |
-| ---------------------------- | -------- |
-| [PressEvent](https://reactnative.dev/docs/pressevent) | No       |
+| Type                        | Required |
+| --------------------------- | -------- |
+| [PressEvent](pressevent.md) | No       |
 
 ### `onPressOut`
 
 Called when a touch is released.
 
-| Type                         | Required |
-| ---------------------------- | -------- |
-| [PressEvent](https://reactnative.dev/docs/pressevent) | No       |
+| Type                        | Required |
+| --------------------------- | -------- |
+| [PressEvent](pressevent.md) | No       |
 
 ### `pressRetentionOffset`
 
 Additional distance outside of this view in which a touch is considered a press before `onPressOut` is triggered.
 
-| Type                                                | Required | Default                                        |
-| --------------------------------------------------- | -------- | ---------------------------------------------- |
-| [Rect](https://reactnative.dev/docs/rect) or number | No       | `{ bottom: 30, left: 20, right: 20, top: 20 }` |
+| Type                      | Required | Default                                        |
+| ------------------------- | -------- | ---------------------------------------------- |
+| [Rect](rect.md) or number | No       | `{ bottom: 30, left: 20, right: 20, top: 20 }` |
 
 ### `style`
 
 Either view styles or a function that receives a boolean reflecting whether the component is currently pressed and returns view styles.
 
-| Type                                  | Required |
-| ------------------------------------- | -------- |
-| [ViewStyleProp](view-style-props.md) | No       |
+| Type                              | Required |
+| --------------------------------- | -------- |
+| [View Style](view-style-props.md) | No       |
 
 ### `testOnly_pressed`
 
@@ -213,8 +227,8 @@ Ripple effect configuration for the `android_ripple` property.
 
 **Properties:**
 
-| Name       | Type                                         | Required | Description                                         |
-| ---------- | -------------------------------------------- | -------- | --------------------------------------------------- |
-| color      | [color](https://reactnative.dev/docs/colors) | No       | Defines the color of the ripple effect.             |
-| borderless | boolean                                      | No       | Defines if ripple effect should not include border. |
-| radius     | number                                       | No       | Defines the radius of the ripple effect.            |
+| Name       | Type                                              | Required | Description                                         |
+| ---------- | ------------------------------------------------- | -------- | --------------------------------------------------- |
+| color      | [color](https://reactnative.dev/docs/0.64/colors) | No       | Defines the color of the ripple effect.             |
+| borderless | boolean                                           | No       | Defines if ripple effect should not include border. |
+| radius     | number                                            | No       | Defines the radius of the ripple effect.            |

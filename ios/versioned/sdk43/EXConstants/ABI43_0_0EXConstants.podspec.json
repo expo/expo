@@ -16,8 +16,5 @@
   "dependencies": {
     "ABI43_0_0ExpoModulesCore": []
   },
-  "source_files": "EXConstants/**/*.{h,m}",
-  "resource_bundles": {
-    "EXConstants": []
-  }
+  "source_files": "EXConstants/**/*.{h,m}"
 }

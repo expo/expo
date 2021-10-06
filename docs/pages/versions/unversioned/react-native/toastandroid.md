@@ -14,10 +14,9 @@ The 'showWithGravityAndOffset(message, duration, gravity, xOffset, yOffset)' met
 
 ```js
 import React from 'react';
-import { View, StyleSheet, ToastAndroid, Button } from 'react-native';
-import Constants from 'expo-constants';
+import { View, StyleSheet, ToastAndroid, Button, StatusBar } from 'react-native';
 
-export default function App() {
+const App = () => {
   const showToast = () => {
     ToastAndroid.show('A pikachu appeared nearby !', ToastAndroid.SHORT);
   };
@@ -50,13 +49,13 @@ export default function App() {
       />
     </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'center',
-    paddingTop: Constants.statusBarHeight,
+    paddingTop: StatusBar.currentHeight,
     backgroundColor: '#888888',
     padding: 8,
   },
@@ -71,8 +70,7 @@ The ToastAndroid API is imperative, but there is a way to expose a declarative c
 
 ```js
 import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, ToastAndroid, Button } from 'react-native';
-import Constants from 'expo-constants';
+import { View, StyleSheet, ToastAndroid, Button, StatusBar } from 'react-native';
 
 const Toast = ({ visible, message }) => {
   if (visible) {
@@ -82,7 +80,7 @@ const Toast = ({ visible, message }) => {
   return null;
 };
 
-export default function App() {
+const App = () => {
   const [visibleToast, setvisibleToast] = useState(false);
 
   useEffect(() => setvisibleToast(false), [visibleToast]);
@@ -97,13 +95,13 @@ export default function App() {
       <Button title="Toggle Toast" onPress={() => handleButtonPress()} />
     </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'center',
-    paddingTop: Constants.statusBarHeight,
+    paddingTop: StatusBar.currentHeight,
     backgroundColor: '#888888',
     padding: 8,
   },

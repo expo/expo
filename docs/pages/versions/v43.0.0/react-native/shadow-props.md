@@ -99,44 +99,44 @@ export default App;
 
 # Reference
 
-These properties are iOS only - for similar functionality on Android, use the [`elevation` property](view-style-props.md#elevation).
-
 ## Props
 
 ### `shadowColor`
 
-Sets the drop shadow color
+Sets the drop shadow color.
 
-| Type                                         | Required | Platform |
-| -------------------------------------------- | -------- | -------- |
-| [color](https://reactnative.dev/docs/colors) | No       | iOS      |
+This property will only work on Android API 28 and above. For similar functionality on lower Android APIs, use the [`elevation` property](view-style-props.md#elevation-android).
 
----
-
-### `shadowOffset`
-
-Sets the drop shadow offset
-
-| Type                                   | Required | Platform |
-| -------------------------------------- | -------- | -------- |
-| object: {width: number,height: number} | No       | iOS      |
+| Type                                              |
+| ------------------------------------------------- |
+| [color](https://reactnative.dev/docs/0.64/colors) |
 
 ---
 
-### `shadowOpacity`
+### `shadowOffset` **(iOS)**
 
-Sets the drop shadow opacity (multiplied by the color's alpha component)
+Sets the drop shadow offset.
 
-| Type   | Required | Platform |
-| ------ | -------- | -------- |
-| number | No       | iOS      |
+| Type                                   |
+| -------------------------------------- |
+| object: {width: number,height: number} |
 
 ---
 
-### `shadowRadius`
+### `shadowOpacity` **(iOS)**
 
-Sets the drop shadow blur radius
+Sets the drop shadow opacity (multiplied by the color's alpha component).
 
-| Type   | Required | Platform |
-| ------ | -------- | -------- |
-| number | No       | iOS      |
+| Type   |
+| ------ |
+| number |
+
+---
+
+### `shadowRadius` **(iOS)**
+
+Sets the drop shadow blur radius.
+
+| Type   |
+| ------ |
+| number |

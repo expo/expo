@@ -1,4 +1,4 @@
-package expo.modules.medialibrary
+package expo.modules.medialibrary.albums
 
 import android.content.Context
 import android.os.Bundle
@@ -11,6 +11,11 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import expo.modules.core.Promise
+import expo.modules.medialibrary.MockContext
+import expo.modules.medialibrary.MockData
+import expo.modules.medialibrary.mockContentResolver
+import expo.modules.medialibrary.mockCursor
+import expo.modules.medialibrary.throwableContentResolver
 import org.unimodules.test.core.PromiseMock
 import org.unimodules.test.core.assertRejectedWithCode
 import org.unimodules.test.core.promiseResolvedWithType

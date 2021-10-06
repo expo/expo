@@ -35,11 +35,6 @@ import Video from '~/components/plugins/Video'
 import * as Sharing from 'expo-sharing';
 ```
 
-**[Methods](#methods)**
-
-- [`Sharing.isAvailableAsync()`](#sharingisavailableasync)
-- [`Sharing.shareAsync(url, options)`](#sharingshareasyncurl-options)
-
 ## Methods
 
 ### `Sharing.isAvailableAsync()`

@@ -8,26 +8,26 @@ import java.util.Map;
 
 import androidx.exifinterface.media.ExifInterface;
 
-final class MediaLibraryConstants {
+public final class MediaLibraryConstants {
   public static final String TAG = "MediaLibraryModule";
 
-  static final String ERROR_UNABLE_TO_LOAD_PERMISSION = "E_UNABLE_TO_LOAD_PERMISSION";
-  static final String ERROR_UNABLE_TO_SAVE_PERMISSION = "E_UNABLE_TO_SAVE_PERMISSION";
-  static final String ERROR_UNABLE_TO_DELETE = "E_UNABLE_TO_DELETE";
-  static final String ERROR_UNABLE_TO_LOAD = "E_UNABLE_TO_LOAD";
-  static final String ERROR_UNABLE_TO_SAVE = "E_UNABLE_TO_SAVE";
-  static final String ERROR_NO_ALBUM = "E_NO_ALBUM";
-  static final String ERROR_UNABLE_TO_MIGRATE = "ERR_UNABLE_TO_MIGRATE";
-  static final String ERROR_MEDIA_LIBRARY_CORRUPTED = "E_MEDIA_LIBRARY_CORRUPTED";
-  static final String ERROR_NO_ASSET = "E_NO_ASSET";
-  static final String ERROR_IO_EXCEPTION = "E_IO_EXCEPTION";
-  static final String ERROR_NO_PERMISSIONS = "E_NO_PERMISSIONS";
-  static final String ERROR_UNABLE_TO_ASK_FOR_PERMISSIONS = "ERR_UNABLE_TO_ASK_FOR_PERMISSIONS";
-  static final String ERROR_NO_PERMISSIONS_MESSAGE = "Missing MEDIA_LIBRARY permissions.";
-  static final String ERROR_NO_WRITE_PERMISSION_MESSAGE = "Missing MEDIA_LIBRARY write permission.";
-  static final String ERROR_USER_DID_NOT_GRANT_WRITE_PERMISSIONS_MESSAGE = "User didn't grant write permission to requested files.";
-  static final String ERROR_UNABLE_TO_ASK_FOR_PERMISSIONS_MESSAGE = "Unable to ask for permissions.";
-  static final String ERROR_NO_FILE_EXTENSION = "E_NO_FILE_EXTENSION";
+  public static final String ERROR_UNABLE_TO_LOAD_PERMISSION = "E_UNABLE_TO_LOAD_PERMISSION";
+  public static final String ERROR_UNABLE_TO_SAVE_PERMISSION = "E_UNABLE_TO_SAVE_PERMISSION";
+  public static final String ERROR_UNABLE_TO_DELETE = "E_UNABLE_TO_DELETE";
+  public static final String ERROR_UNABLE_TO_LOAD = "E_UNABLE_TO_LOAD";
+  public static final String ERROR_UNABLE_TO_SAVE = "E_UNABLE_TO_SAVE";
+  public static final String ERROR_NO_ALBUM = "E_NO_ALBUM";
+  public static final String ERROR_UNABLE_TO_MIGRATE = "ERR_UNABLE_TO_MIGRATE";
+  public static final String ERROR_MEDIA_LIBRARY_CORRUPTED = "E_MEDIA_LIBRARY_CORRUPTED";
+  public static final String ERROR_NO_ASSET = "E_NO_ASSET";
+  public static final String ERROR_IO_EXCEPTION = "E_IO_EXCEPTION";
+  public static final String ERROR_NO_PERMISSIONS = "E_NO_PERMISSIONS";
+  public static final String ERROR_UNABLE_TO_ASK_FOR_PERMISSIONS = "ERR_UNABLE_TO_ASK_FOR_PERMISSIONS";
+  public static final String ERROR_NO_PERMISSIONS_MESSAGE = "Missing MEDIA_LIBRARY permissions.";
+  public static final String ERROR_NO_WRITE_PERMISSION_MESSAGE = "Missing MEDIA_LIBRARY write permission.";
+  public static final String ERROR_USER_DID_NOT_GRANT_WRITE_PERMISSIONS_MESSAGE = "User didn't grant write permission to requested files.";
+  public static final String ERROR_UNABLE_TO_ASK_FOR_PERMISSIONS_MESSAGE = "Unable to ask for permissions.";
+  public static final String ERROR_NO_FILE_EXTENSION = "E_NO_FILE_EXTENSION";
 
   static final String MEDIA_TYPE_AUDIO = "audio";
   static final String MEDIA_TYPE_PHOTO = "photo";
@@ -66,7 +66,7 @@ final class MediaLibraryConstants {
     }
   };
 
-  static final Uri EXTERNAL_CONTENT = MediaStore.Files.getContentUri("external");
+  public static final Uri EXTERNAL_CONTENT = MediaStore.Files.getContentUri("external");
 
   static final String[] ASSET_PROJECTION = {
     MediaStore.Images.Media._ID,

@@ -22,9 +22,6 @@ import * as Random from 'expo-random';
 
 ## Methods
 
-- [`Random.getRandomBytes(byteCount)`](#randomgetrandombytesbytecount)
-- [`Random.getRandomBytesAsync(byteCount)`](#networkgetipaddressasync)
-
 ### `Random.getRandomBytes(byteCount)`
 
 Generates completely random bytes using native implementations. The `byteCount` property is a `number` indicating the number of bytes to generate in the form of a `Uint8Array`.

@@ -7,46 +7,68 @@ title: PlatformColor
 PlatformColor(color1, [color2, ...colorN]);
 ```
 
-You can use the `PlatformColor` function to access native colors on the target platform by supplying the native color’s corresponding string value. You pass a string to the `PlatformColor` function, and provided it exists on that platform, that native color will be applied to the control or JavaScript component specified in your style. All native color logic also translates if applicable, meaning if the native color specified is themes and/or high contrast sensitive, that logic will also transfer to the JavaScript component being colored.
+You can use the `PlatformColor` function to access native colors on the target platform by supplying the native color’s corresponding string value. You pass a string to the `PlatformColor` function and, provided it exists on that platform, it will return the corresponding native color, which you can apply in any part of your application.
 
-## Developer notes
+If you pass more than one string value to the `PlatformColor` function, it will treat the first value as the default and the rest as fallback.
 
-> **Web**: If you’re familiar with design systems, another way of thinking about this is that `PlatformColor` lets you tap into the local design system's color tokens so your app can blend right in!
+```js
+PlatformColor('bogusName', 'linkColor');
+```
+
+Since native colors can be sensitive to themes and/or high contrast, this platform specific logic also translates inside your components.
+
+### Supported colors
 
 For a full list of the types of system colors supported, see:
 
 - Android:
   - [R.attr](https://developer.android.com/reference/android/R.attr) - `?attr` prefix
   - [R.color](https://developer.android.com/reference/android/R.color) - `@android:color` prefix
-- [iOS UIColor](https://developer.apple.com/documentation/uikit/uicolor/ui_element_colors)
+- iOS (Objective-C and Swift notations):
+  - [UIColor Standard Colors](https://developer.apple.com/documentation/uikit/uicolor/standard_colors)
+  - [UIColor UI Element Colors](https://developer.apple.com/documentation/uikit/uicolor/ui_element_colors)
+
+#### Developer notes
+
+> **Web**: If you’re familiar with design systems, another way of thinking about this is that `PlatformColor` lets you tap into the local design system's color tokens so your app can blend right in!
 
 ## Example
 
-```jsx
+```js
 import React from 'react';
 import { Platform, PlatformColor, StyleSheet, Text, View } from 'react-native';
 
-export default App = () => (
-  <View>
-    <Text style={styles.labelCell}>I am a special label color!</Text>
+const App = () => (
+  <View style={styles.container}>
+    <Text style={styles.label}>I am a special label color!</Text>
   </View>
 );
 
 const styles = StyleSheet.create({
-  labelCell: {
-    flex: 1,
-    alignItems: 'stretch',
+  label: {
+    padding: 16,
     ...Platform.select({
-      ios: { color: PlatformColor('label') },
+      ios: {
+        color: PlatformColor('label'),
+        backgroundColor: PlatformColor('systemTealColor'),
+      },
       android: {
-        color: PlatformColor('?attr/colorControlNormal'),
+        color: PlatformColor('?android:attr/textColor'),
+        backgroundColor: PlatformColor('@android:color/holo_blue_bright'),
       },
       default: { color: 'black' },
     }),
   },
+  container: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
 });
+
+export default App;
 ```
 
-The string value provided to the `PlatformColor` function must match and agree with the same string as it exists on the native platform the app is being run on. This means to avoid runtime errors the function should be wrapped in a platform check, either through a `Platform.OS === 'platform'` or a `Platform.Select()`.
+The string value provided to the `PlatformColor` function must match the string as it exists on the native platform where the app is running. In order to avoid runtime errors, the function should be wrapped in a platform check, either through a `Platform.OS === 'platform'` or a `Platform.select()`, as shown on the example above.
 
-> **Note:** You can find a complete example that demonstrates proper, intended use of `PlatformColor` in [PlatformColorExample.js](https://github.com/facebook/react-native/blob/master/RNTester/js/examples/PlatformColor/PlatformColorExample.js).
+> **Note:** You can find a complete example that demonstrates proper, intended use of `PlatformColor` in [PlatformColorExample.js](https://github.com/facebook/react-native/blob/master/packages/rn-tester/js/examples/PlatformColor/PlatformColorExample.js).

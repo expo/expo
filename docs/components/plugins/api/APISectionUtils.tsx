@@ -117,6 +117,8 @@ export const resolveTypeName = ({
   declaration,
   value,
   queryType,
+  checkType,
+  extendsType,
 }: TypeDefinitionData): string | JSX.Element | (string | JSX.Element)[] => {
   if (name) {
     if (type === 'reference') {

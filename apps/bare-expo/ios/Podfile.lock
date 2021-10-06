@@ -86,7 +86,7 @@ PODS:
     - GoogleSignIn (~> 5.0.2)
   - EXHaptics (11.0.1):
     - ExpoModulesCore
-  - EXImage (1.0.0-alpha.1):
+  - EXImage (0.1.0):
     - React-Core
     - SDWebImage (~> 5.0)
     - SDWebImageSVGKitPlugin (~> 1.3)
@@ -116,7 +116,7 @@ PODS:
     - UMTaskManagerInterface
   - EXMailComposer (11.0.1):
     - ExpoModulesCore
-  - EXManifests (0.2.0):
+  - EXManifests (0.2.1):
     - EXJSONUtils
   - EXMediaLibrary (13.0.1):
     - ExpoModulesCore
@@ -1238,7 +1238,7 @@ SPEC CHECKSUMS:
   EXGL_CPP: 75124cfe236f7a1f917150011c09625e24e31141
   EXGoogleSignIn: f5b6ed8ce036017c0364896469416e6fc6e0e777
   EXHaptics: cf406d6cf5bdf45403c2db356c40709d5bdf6466
-  EXImage: 414c2bc91c8d3ac36c168aab528509922d13cf1f
+  EXImage: 75d6c625fb8b8ce8ddc622e0dbcdfd0fb160c11e
   EXImageLoader: 939451be6f7b731aaa6588920b90743f20121a4d
   EXImageManipulator: f557dae83db7ebbc4fe999a582230c28ffc5e383
   EXImagePicker: cecd37aa68c3df69fc0599cae92523be84fe6a1d
@@ -1250,7 +1250,7 @@ SPEC CHECKSUMS:
   EXLocalization: bb38414618b30a177482c9a6f5594ec6eb0898c1
   EXLocation: 6d13fb1d4b65ed1b2d2bdd0b0f11417cc0a2656a
   EXMailComposer: 06e0c73da0105e124409cb27e04f881392b6f918
-  EXManifests: e762426c6d40bd09b8e9f0d2c7a1f14687c475a3
+  EXManifests: fdbb8a0c2cd5fc4acc1ae90b55ce91617aba9365
   EXMediaLibrary: 8eeff7fdfbd457a0fba3b7afb49e9e2d465b173a
   EXNetwork: a5caf9ca61924520ff395b4eac9d6909d97fbc4c
   EXNotifications: 24fb362f02a68d94ae7e5769aa9319be5096328c

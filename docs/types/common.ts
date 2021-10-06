@@ -5,12 +5,16 @@ export type PageMetadata = {
   /* If the page should not show up in the Algolia Docsearch results */
   hideFromSearch?: boolean;
   hideTOC?: boolean;
-  headings?: {
-    title?: string;
-    level?: number;
-    type?: string;
-    _processed?: boolean; // internal HeadingManager property
-  }[];
+};
+
+/**
+ * A single header from the `remark-export-headings` plugin.
+ */
+export type RemarkHeading = {
+  id?: string;
+  depth: number;
+  title: string;
+  type: string;
 };
 
 /**
