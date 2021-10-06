@@ -170,7 +170,7 @@ abstract class Manifest(protected val json: JSONObject) {
     val expoClientConfig = getExpoClientConfigRootObject() ?: return null
     val sharedJsEngine = expoClientConfig.getNullable<String>("jsEngine")
     val androidJsEngine = expoClientConfig
-            .getNullable<JSONObject>("android")?.getNullable<String>("jsEngine")
+      .getNullable<JSONObject>("android")?.getNullable<String>("jsEngine")
     return androidJsEngine ?: sharedJsEngine ?: null
   }
 
