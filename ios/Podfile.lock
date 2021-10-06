@@ -1668,7 +1668,7 @@ PODS:
   - ABI43_0_0React-jsinspector (0.64.2)
   - ABI43_0_0react-native-netinfo (6.0.2):
     - ABI43_0_0React-Core
-  - ABI43_0_0react-native-pager-view (5.4.4):
+  - ABI43_0_0react-native-pager-view (5.4.6):
     - ABI43_0_0React-Core
   - ABI43_0_0react-native-segmented-control (2.4.0):
     - ABI43_0_0React-Core
@@ -4108,7 +4108,7 @@ SPEC CHECKSUMS:
   ABI43_0_0React-jsiexecutor: 430d9a230eca9bd8ab1f88f9be4ce74ac6cb1477
   ABI43_0_0React-jsinspector: 63c34e4bade90e3b6464e628c07f037fb7ecde11
   ABI43_0_0react-native-netinfo: a175663a23a03b61d8028abfaa7d30b2b0bb5576
-  ABI43_0_0react-native-pager-view: b7e2fff9851925b25a02659785064966a1a3dffb
+  ABI43_0_0react-native-pager-view: f158cec39be2913340e88ec31cfe1b163f8577da
   ABI43_0_0react-native-segmented-control: 6faef5ee3dd155c3d38710d5bf9ecc4d9d6c4cd8
   ABI43_0_0react-native-webview: 8a19e64ee814a441110d24ffe8d9165c9eaac949
   ABI43_0_0React-perflogger: 410b7b91906f50750d1084b00df2ab0992a9fcec
