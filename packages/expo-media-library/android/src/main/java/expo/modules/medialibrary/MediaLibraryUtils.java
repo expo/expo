@@ -523,29 +523,6 @@ public final class MediaLibraryUtils {
     return type;
   }
 
-  public static File getAlbumFile(Context context, String albumId) {
-    final String selection = MediaStore.Files.FileColumns.MEDIA_TYPE + " != " + MediaStore.Files.FileColumns.MEDIA_TYPE_NONE +
-      " AND " + MediaStore.MediaColumns.BUCKET_ID + "=?";
-    final String[] selectionArgs = new String[]{albumId};
-    final String[] projection = {MediaStore.MediaColumns.DATA};
-
-    try (Cursor album = context.getContentResolver().query(
-      EXTERNAL_CONTENT,
-      projection,
-      selection,
-      selectionArgs,
-      null)) {
-      if (album != null && album.moveToNext()) {
-        File fileInAlbum = new File(album.getString(album.getColumnIndex(MediaStore.Images.Media.DATA)));
-        if (fileInAlbum.isFile()) {
-          return new File(fileInAlbum.getParent());
-        }
-      }
-    }
-
-    return null;
-  }
-
   public static List<Uri> getAssetsUris(Context context, List<String> assetsId) {
     List<Uri> result = new ArrayList<>();
 
