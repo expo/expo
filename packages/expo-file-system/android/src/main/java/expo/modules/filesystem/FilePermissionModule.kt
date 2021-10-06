@@ -10,16 +10,12 @@ import java.util.*
 
 class FilePermissionModule : FilePermissionModuleInterface, InternalModule {
   override fun getExportedInterfaces(): List<Class<*>> {
-    return listOf<Class<*>>(FilePermissionModuleInterface::class.java)
+    return listOf(FilePermissionModuleInterface::class.java)
   }
 
   override fun getPathPermissions(context: Context, path: String): EnumSet<Permission> {
-    var permissions = getInternalPathPermissions(path, context)
-    if (permissions == null) {
-      permissions = getExternalPathPermissions(path)
-    }
     // getExternalPathPermissions guarantees not to return null
-    return permissions
+    return getInternalPathPermissions(path, context) ?: getExternalPathPermissions(path)
   }
 
   private fun getInternalPathPermissions(path: String, context: Context): EnumSet<Permission>? {
@@ -38,15 +34,14 @@ class FilePermissionModule : FilePermissionModuleInterface, InternalModule {
 
   private fun getExternalPathPermissions(path: String): EnumSet<Permission> {
     val file = File(path)
-    if (file.canWrite() && file.canRead()) {
-      return EnumSet.of(Permission.READ, Permission.WRITE)
+    return EnumSet.noneOf(Permission::class.java).apply {
+      if (file.canRead()) {
+        add(Permission.READ)
+      }
+      if (file.canWrite()) {
+        add(Permission.WRITE)
+      }
     }
-    if (file.canWrite()) {
-      return EnumSet.of(Permission.WRITE)
-    }
-    return if (file.canRead()) {
-      EnumSet.of(Permission.READ)
-    } else EnumSet.noneOf(Permission::class.java)
   }
 
   @Throws(IOException::class)

@@ -87,15 +87,6 @@ class FileSystemModule(
   private var dirPermissionsRequest: Promise? = null
   private val taskHandlers: MutableMap<String, TaskHandler> = HashMap()
 
-  private enum class UploadType(private val value: Int) {
-    INVALID(-1), BINARY_CONTENT(0), MULTIPART(1);
-
-    companion object {
-      fun fromInt(value: Int): UploadType =
-        values().find { it.value == value } ?: INVALID
-    }
-  }
-
   override fun onCreate(moduleRegistry: ModuleRegistry) {
     moduleRegistryDelegate.onCreate(moduleRegistry)
   }
@@ -110,25 +101,25 @@ class FileSystemModule(
     )
   }
 
-  private fun uriToFile(uri: Uri): File {
-    return File(uri.path)
-  }
-
   @Throws(IOException::class)
-  private fun checkIfFileExists(uri: Uri) {
-    val file = uriToFile(uri)
+  private fun Uri.checkIfFileExists() {
+    val file = uriToFile(this)
     if (!file.exists()) {
       throw IOException("Directory for " + file.path + " doesn't exist.")
     }
   }
 
   @Throws(IOException::class)
-  private fun checkIfFileDirExists(uri: Uri) {
-    val file = uriToFile(uri)
+  private fun Uri.checkIfFileDirExists() {
+    val file = uriToFile(this)
     val dir = file.parentFile
     if (dir == null || !dir.exists()) {
       throw IOException("Directory for ${file.path} doesn't exist. Please make sure directory '${file.parent}' exists before calling downloadAsync.")
     }
+  }
+
+  private fun uriToFile(uri: Uri): File {
+    return File(uri.path)
   }
 
   private fun permissionsForPath(path: String?): EnumSet<Permission>? {
@@ -149,14 +140,16 @@ class FileSystemModule(
 
   private fun permissionsForSAFUri(uri: Uri): EnumSet<Permission> {
     val documentFile = getNearestSAFFile(uri)
-    val permissions = EnumSet.noneOf(Permission::class.java)
-    if (documentFile != null && documentFile.canRead()) {
-      permissions.add(Permission.READ)
+    return EnumSet.noneOf(Permission::class.java).apply {
+      if (documentFile != null) {
+        if (documentFile.canRead()) {
+          add(Permission.READ)
+        }
+        if (documentFile.canWrite()) {
+          add(Permission.WRITE)
+        }
+      }
     }
-    if (documentFile != null && documentFile.canWrite()) {
-      permissions.add(Permission.WRITE)
-    }
-    return permissions
   }
 
   // For now we only need to ensure one permission at a time, this allows easier error message strings,
@@ -182,7 +175,7 @@ class FileSystemModule(
   @Throws(IOException::class)
   private fun openAssetInputStream(uri: Uri): InputStream {
     // AssetManager expects no leading slash.
-    val asset = uri.path!!.substring(1)
+    val asset = requireNotNull(uri.path).substring(1)
     return context.assets.open(asset)
   }
 
@@ -206,7 +199,7 @@ class FileSystemModule(
       val uri = Uri.parse(uriStr)
       var absoluteUri = uri
       if (uri.scheme == "file") {
-        uriStr = uriStr.substring(uriStr.indexOf(':') + 3)
+        uriStr = parseFileUri(uriStr)
         absoluteUri = Uri.parse(uriStr)
       }
       ensurePermission(absoluteUri, Permission.READ)
@@ -278,11 +271,7 @@ class FileSystemModule(
       ensurePermission(uri, Permission.READ)
 
       // TODO:Bacon: Add more encoding types to match iOS
-      val encoding = if (options.containsKey("encoding") && options["encoding"] is String) {
-        (options["encoding"] as String).toLowerCase(Locale.ROOT)
-      } else {
-        "utf8"
-      }
+      val encoding = getEncodingFromOptions(options)
       var contents: String?
       if (encoding.equals("base64", ignoreCase = true)) {
         getInputStream(uri).use { inputStream ->
@@ -319,11 +308,7 @@ class FileSystemModule(
     try {
       val uri = Uri.parse(uriStr)
       ensurePermission(uri, Permission.WRITE)
-      val encoding = if (options.containsKey("encoding") && options["encoding"] is String) {
-        (options["encoding"] as String).toLowerCase(Locale.ROOT)
-      } else {
-        "utf8"
-      }
+      val encoding = getEncodingFromOptions(options)
       getOutputStream(uri).use { out ->
         if (encoding == "base64") {
           val bytes = Base64.decode(string, Base64.DEFAULT)
@@ -470,22 +455,22 @@ class FileSystemModule(
           promise.resolve(null)
         }
         fromUri.scheme == "content" -> {
-          val `in` = context.contentResolver.openInputStream(fromUri)
+          val inputStream = context.contentResolver.openInputStream(fromUri)
           val out: OutputStream = FileOutputStream(uriToFile(toUri))
-          IOUtils.copy(`in`, out)
+          IOUtils.copy(inputStream, out)
           promise.resolve(null)
         }
         fromUri.scheme == "asset" -> {
-          val `in` = openAssetInputStream(fromUri)
+          val inputStream = openAssetInputStream(fromUri)
           val out: OutputStream = FileOutputStream(uriToFile(toUri))
-          IOUtils.copy(`in`, out)
+          IOUtils.copy(inputStream, out)
           promise.resolve(null)
         }
         fromUri.scheme == null -> {
           // this is probably an asset embedded by the packager in resources
-          val `in` = openResourceInputStream(options["from"] as String?)
+          val inputStream = openResourceInputStream(options["from"] as String?)
           val out: OutputStream = FileOutputStream(uriToFile(toUri))
-          IOUtils.copy(`in`, out)
+          IOUtils.copy(inputStream, out)
           promise.resolve(null)
         }
         else -> {
@@ -622,7 +607,7 @@ class FileSystemModule(
       val fileUri = Uri.parse(uri)
       ensurePermission(fileUri, Permission.WRITE)
       ensurePermission(fileUri, Permission.READ)
-      checkIfFileDirExists(fileUri)
+      fileUri.checkIfFileDirExists()
       if (fileUri.scheme == "file") {
         val file = uriToFile(fileUri)
         promise.resolve(contentUriFromFile(file).toString())
@@ -755,7 +740,7 @@ class FileSystemModule(
     try {
       val fileUri = Uri.parse(fileUriString)
       ensurePermission(fileUri, Permission.READ)
-      checkIfFileExists(fileUri)
+      fileUri.checkIfFileExists()
       if (!options.containsKey("httpMethod")) {
         promise.reject("ERR_FILESYSTEM_MISSING_HTTP_METHOD", "Missing HTTP method.", null)
         return null
@@ -913,7 +898,7 @@ class FileSystemModule(
     try {
       val uri = Uri.parse(uriStr)
       ensurePermission(uri, Permission.WRITE)
-      checkIfFileDirExists(uri)
+      uri.checkIfFileDirExists()
       when {
         !url.contains(":") -> {
           val context = context
@@ -993,7 +978,7 @@ class FileSystemModule(
   fun downloadResumableStartAsync(url: String, fileUriStr: String, uuid: String, options: Map<String?, Any?>, resumeData: String?, promise: Promise) {
     try {
       val fileUri = Uri.parse(fileUriStr)
-      checkIfFileDirExists(fileUri)
+      fileUri.checkIfFileDirExists()
       if (fileUri.scheme != "file") {
         throw IOException("Unsupported scheme for location '$fileUri'.")
       }
@@ -1269,6 +1254,14 @@ class FileSystemModule(
     return size
   }
 
+  private fun getEncodingFromOptions(options: Map<String?, Any?>): String {
+    return if (options.containsKey("encoding") && options["encoding"] is String) {
+      (options["encoding"] as String).toLowerCase(Locale.ROOT)
+    } else {
+      "utf8"
+    }
+  }
+
   @Throws(IOException::class)
   private fun getInputStream(uri: Uri): InputStream {
     return when {
@@ -1305,6 +1298,8 @@ class FileSystemModule(
   private fun isSAFUri(uri: Uri): Boolean {
     return uri.scheme == "content" && uri.host?.startsWith("com.android.externalstorage") ?: false
   }
+
+  private fun parseFileUri(uriStr: String) = uriStr.substring(uriStr.indexOf(':') + 3)
 
   @Throws(IOException::class)
   private fun getInputStreamBytes(inputStream: InputStream): ByteArray {
