@@ -8,7 +8,6 @@ import expo.modules.core.ModuleRegistryDelegate
 import expo.modules.core.arguments.ReadableArguments
 import expo.modules.core.interfaces.ActivityProvider
 import expo.modules.core.interfaces.services.UIManager
-import expo.modules.core.errors.ModuleNotFoundException
 import expo.modules.core.interfaces.ActivityEventListener
 import expo.modules.core.errors.CurrentActivityNotFoundException
 import expo.modules.intentlauncher.exceptions.ActivityAlreadyStartedException
@@ -38,8 +37,8 @@ class IntentLauncherModule(
   private val moduleRegistryDelegate: ModuleRegistryDelegate = ModuleRegistryDelegate()
 ) : ExportedModule(context), ActivityEventListener {
   private var pendingPromise: Promise? = null
-  private val uiManager: UIManager? by moduleRegistry()
-  private val activityProvider: ActivityProvider? by moduleRegistry()
+  private val uiManager: UIManager by moduleRegistry()
+  private val activityProvider: ActivityProvider by moduleRegistry()
 
   private inline fun <reified T> moduleRegistry() = moduleRegistryDelegate.getFromModuleRegistry<T>()
 
@@ -56,24 +55,18 @@ class IntentLauncherModule(
       return
     }
 
-    val activity = activityProvider?.currentActivity
+    val activity = activityProvider.currentActivity
     if (activity == null) {
       promise.reject(CurrentActivityNotFoundException())
       return
     }
 
-    val uiManager = this.uiManager
-    if (uiManager == null) {
-      promise.reject(ModuleNotFoundException("UIManager"))
-      return
-    }
-
     val intent = Intent(activityAction)
+
     if (params.containsKey(ATTR_CLASS_NAME)) {
-      val componentName =
+      intent.component =
         if (params.containsKey(ATTR_PACKAGE_NAME)) ComponentName(params.getString(ATTR_PACKAGE_NAME), params.getString(ATTR_CLASS_NAME))
         else ComponentName(context, params.getString(ATTR_CLASS_NAME))
-      intent.component = componentName
     }
 
     // `setData` and `setType` are exclusive, so we need to use `setDateAndType` in that case.
@@ -86,15 +79,10 @@ class IntentLauncherModule(
         intent.type = params.getString(ATTR_TYPE)
       }
     }
-    if (params.containsKey(ATTR_EXTRA)) {
-      intent.putExtras(params.getArguments(ATTR_EXTRA).toBundle())
-    }
-    if (params.containsKey(ATTR_FLAGS)) {
-      intent.addFlags(params.getInt(ATTR_FLAGS))
-    }
-    if (params.containsKey(ATTR_CATEGORY)) {
-      intent.addCategory(params.getString(ATTR_CATEGORY))
-    }
+
+    params.getArguments(ATTR_EXTRA)?.let { intent.putExtras(it.toBundle()) }
+    params.getInt(ATTR_FLAGS)?.let { intent.addFlags(it) }
+    params.getString(ATTR_CATEGORY)?.let { intent.addCategory(it) }
 
     uiManager.registerActivityEventListener(this)
     pendingPromise = promise
@@ -115,17 +103,15 @@ class IntentLauncherModule(
     val response = Bundle().apply {
       putInt("resultCode", resultCode)
       if (intent != null) {
-        val data = intent.data
-        val extras = intent.extras
-        if (data != null) putString(ATTR_DATA, data.toString())
-        if (extras != null) putBundle(ATTR_EXTRA, extras)
+        intent.data?.let { putString(ATTR_DATA, it.toString()) }
+        intent.extras?.let { putBundle(ATTR_EXTRA, it) }
       }
     }
 
     pendingPromise?.resolve(response)
     pendingPromise = null
 
-    uiManager?.unregisterActivityEventListener(this)
+    uiManager.unregisterActivityEventListener(this)
   }
 
   override fun onNewIntent(intent: Intent) = Unit
