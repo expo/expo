@@ -207,30 +207,6 @@ EX_EXPORT_METHOD_AS(isRootedExperimentalAsync,
   
   // TODO: Apple TV and Apple watch
   NSDictionary *mapping = @{
-    // // iPhone 1
-    // @"iPhone1,1": @2007,
-    
-    // // iPhone 3G
-    // @"iPhone1,2": @2008,
-    
-    // // iPhone 3GS
-    // @"iPhone2,1": @2009,
-    
-    // // iPhone 4
-    // @"iPhone3,1": @2010,
-    // @"iPhone3,2": @2010,
-    // @"iPhone3,3": @2010,
-    
-    // // iPhone 4S
-    // @"iPhone4,1": @2011,
-    
-    // // iPhone 5
-    // @"iPhone5,1": @2012,
-    // @"iPhone5,2": @2012,
-    
-    // // iPhone 5S and 5C
-    // @"iPhone5,3": @2013,
-    // @"iPhone5,4": @2013,
     @"iPhone6,1": @2013,
     @"iPhone6,2": @2013,
     
@@ -341,6 +317,8 @@ EX_EXPORT_METHOD_AS(isRootedExperimentalAsync,
     @"iPad13,9": @2021, // iPad Pro 12.9-inch 5th Gen
     @"iPad13,10": @2021, // iPad Pro 12.9-inch 5th Gen
     @"iPad13,11": @2021, // iPad Pro 12.9-inch 5th Gen
+    @"iPad14,1": @2021, // iPad mini (6th generation) (WiFi)
+    @"iPad14,2": @2021 // iPad mini (6th generation) (WiFi + cellular)
   };
   
   NSNumber *deviceYear = mapping[platform];
