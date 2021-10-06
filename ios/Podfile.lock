@@ -2356,7 +2356,7 @@ PODS:
   - React-jsinspector (0.64.2)
   - react-native-netinfo (6.0.2):
     - React-Core
-  - react-native-pager-view (5.4.4):
+  - react-native-pager-view (5.4.6):
     - React-Core
   - react-native-segmented-control (2.4.0):
     - React-Core
@@ -4254,7 +4254,7 @@ SPEC CHECKSUMS:
   React-jsiexecutor: 80c46bd381fd06e418e0d4f53672dc1d1945c4c3
   React-jsinspector: cc614ec18a9ca96fd275100c16d74d62ee11f0ae
   react-native-netinfo: 92e6e4476eb8bf6fc2d7c0a6ca0a1406f663d73a
-  react-native-pager-view: 5ab4d0b4b44d89f77310cb3eb8129745f274ce55
+  react-native-pager-view: b90963d848e777def6714ab7fd40d02fa797e930
   react-native-segmented-control: 06607462630512ff8eef652ec560e6235a30cc3e
   react-native-webview: 133a6a5149f963259646e710b4545c67ef35d7c9
   React-perflogger: 25373e382fed75ce768a443822f07098a15ab737

@@ -7,6 +7,7 @@ import com.facebook.react.uimanager.events.RCTEventEmitter
 import java.lang.Float.isInfinite
 import java.lang.Float.isNaN
 
+
 /**
  * Event emitted by [ReactViewPager] when user scrolls between pages (or when animating
  * between pages).
@@ -43,3 +44,4 @@ class PageScrollEvent(viewTag: Int, private val mPosition: Int, offset: Float) :
     // folly::toJson default options don't support serialize NaN or Infinite value
   }
 }
+
