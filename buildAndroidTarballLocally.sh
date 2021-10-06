@@ -18,7 +18,7 @@ rm -rf $TEMP_DIR/android/versioned-abis
 
 # root package.json defines a dependency on react-native-unimodules,
 # which we require when building the shell app
-ln -s ${ROOT_DIR}/package.json $TEMP_DIR/package.json
+cp ${ROOT_DIR}/package.json $TEMP_DIR/package.json
 
 # packages are used by the optional-modules-linking-code in XDL
 # see xdl/AndroidShellApp.js
@@ -27,6 +27,14 @@ ln -s ${ROOT_DIR}/packages $TEMP_DIR/packages
 # generate dynamic macros (we can do it here, as the contents are already `ln -s`-ed)
 et android-generate-dynamic-macros --configuration release
 
+# go to temp dir
+cd $TEMP_DIR;
+
+# make some packages available for node modules resolution
+yarn add file:./packages/expo --ignore-workspace-root-check
+yarn add file:./packages/expo-modules-autolinking --ignore-workspace-root-check
+
 # build the artifact
-cd $TEMP_DIR; tar -czhf $ARTIFACTS_DIR/android-shell-builder.tar.gz .
+tar -czhf $ARTIFACTS_DIR/android-shell-builder.tar.gz .
+
 rm -rf $TEMP_DIR
