@@ -2,14 +2,6 @@ import u from 'unist-builder';
 
 import exportHeadings from './remark-export-headings';
 
-/**
- * See all MDAST types here https://github.com/syntax-tree/mdast#root.
- * All nodes are based on the Universal Syntax Tree (unist) system.
- *
- * @typedef {import('unist').Node} Node
- * @typedef {import('unist').Parent} Parent
- */
-
 describe('exports constant', () => {
   it('when no headers are found', () => {
     const { data } = transform(u('root', [u('text', 'lorem ipsum')]));
@@ -73,7 +65,7 @@ describe('header object', () => {
 /**
  * Helper function to run the MDAST transform, and find the added node.
  *
- * @param {Parent} tree
+ * @param {import('mdast').Root} tree
  * @param {object} [options]
  * @param {string} [options.exportName]
  */
