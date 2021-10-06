@@ -141,52 +141,6 @@ Notifications.scheduleNotificationAsync({
 import * as Notifications from 'expo-notifications';
 ```
 
-The following methods are exported by the `expo-notifications` module:
-
-- **fetching token for sending push notifications**
-  - [`getExpoPushTokenAsync`](#getexpopushtokenasyncoptions-expotokenoptions-expopushtoken) -- resolves with an Expo push token
-  - [`getDevicePushTokenAsync`](#getdevicepushtokenasync-devicepushtoken) -- resolves with a device push token
-  - [`addPushTokenListener`](#addpushtokenlistenerlistener-pushtokenlistener-subscription) -- adds a listener called when a new push token is issued
-  - [`removePushTokenSubscription`](#removepushtokensubscriptionsubscription-subscription-void) -- removes the listener registered with `addPushTokenListener`
-  - [`removeAllPushTokenListeners`](#removeallpushtokenlisteners-void) -- removes all listeners registered with `addPushTokenListener`
-- **listening to notification events**
-  - [`addNotificationReceivedListener`](#addnotificationreceivedlistenerlistener-event-notification--void-void) -- adds a listener called whenever a new notification is received
-  - [`addNotificationsDroppedListener`](#addnotificationsdroppedlistenerlistener---void-void) -- adds a listener called whenever some notifications have been dropped
-  - [`addNotificationResponseReceivedListener`](#addnotificationresponsereceivedlistenerlistener-event-notificationresponse--void-void) -- adds a listener called whenever user interacts with a notification
-  - [`removeNotificationSubscription`](#removenotificationsubscriptionsubscription-subscription-void) -- removes the listener registered with `addNotification*Listener()`
-  - [`removeAllNotificationListeners`](#removeallnotificationlisteners-void) -- removes all listeners registered with `addNotification*Listener()`
-- **handling incoming notifications when the app is in foreground**
-  - [`setNotificationHandler`](#setnotificationhandlerhandler-notificationhandler--null-void) -- sets the handler function responsible for deciding what to do with a notification that is received when the app is in foreground
-- **fetching permissions information**
-  - [`getPermissionsAsync`](#getpermissionsasync-promisenotificationpermissionsstatus) -- fetches current permission settings related to notifications
-  - [`requestPermissionsAsync`](#requestpermissionsasyncrequest-notificationpermissionsrequest-promisenotificationpermissionsstatus) -- requests permissions related to notifications
-- **managing application badge icon**
-  - [`getBadgeCountAsync`](#getbadgecountasync-promisenumber) -- fetches the application badge number value
-  - [`setBadgeCountAsync`](#setbadgecountasyncbadgecount-number-options-setbadgecountoptions-promiseboolean) -- sets the application badge number value
-- **scheduling notifications**
-  - [`getAllScheduledNotificationsAsync`](#getallschedulednotificationsasync-promisenotification) -- fetches information about all scheduled notifications
-  - [`presentNotificationAsync`](#presentnotificationasynccontent-notificationcontentinput-identifier-string-promisestring) -- schedules a notification for immediate trigger
-  - [`scheduleNotificationAsync`](#schedulenotificationasyncnotificationrequest-notificationrequestinput-promisestring) -- schedules a notification to be triggered in the future
-  - [`cancelScheduledNotificationAsync`](#cancelschedulednotificationasyncidentifier-string-promisevoid) -- removes a specific scheduled notification
-  - [`cancelAllScheduledNotificationsAsync`](#cancelallschedulednotificationsasync-promisevoid) -- removes all scheduled notifications
-- **dismissing notifications**
-  - [`getPresentedNotificationsAsync`](#getpresentednotificationsasync-promisenotification) -- fetches information about all notifications present in the notification tray (Notification Center)
-  - [`dismissNotificationAsync`](#dismissnotificationasyncidentifier-string-promisevoid) -- removes a specific notification from the notification tray
-  - [`dismissAllNotificationsAsync`](#dismissallnotificationsasync-promisevoid) -- removes all notifications from the notification tray
-- **managing notification channels (Android-specific)**
-  - [`getNotificationChannelsAsync`](#getnotificationchannelsasync-promisenotificationchannel) -- fetches information about all known notification channels
-  - [`getNotificationChannelAsync`](#getnotificationchannelasyncidentifier-string-promisenotificationchannel--null) -- fetches information about a specific notification channel
-  - [`setNotificationChannelAsync`](#setnotificationchannelasyncidentifier-string-channel-notificationchannelinput-promisenotificationchannel--null) -- saves a notification channel configuration
-  - [`deleteNotificationChannelAsync`](#deletenotificationchannelasyncidentifier-string-promisevoid) -- deletes a notification channel
-  - [`getNotificationChannelGroupsAsync`](#getnotificationchannelgroupsasync-promisenotificationchannelgroup) -- fetches information about all known notification channel groups
-  - [`getNotificationChannelGroupAsync`](#getnotificationchannelgroupasyncidentifier-string-promisenotificationchannelgroup--null) -- fetches information about a specific notification channel group
-  - [`setNotificationChannelGroupAsync`](#setnotificationchannelgroupasyncidentifier-string-channel-notificationchannelgroupinput-promisenotificationchannelgroup--null) -- saves a notification channel group configuration
-  - [`deleteNotificationChannelGroupAsync`](#deletenotificationchannelgroupasyncidentifier-string-promisevoid) -- deletes a notification channel group
-  - **managing notification categories (interactive notifications)**
-  - [`setNotificationCategoryAsync`](#setnotificationcategoryasyncidentifier-string-actions-notificationaction-options-categoryoptions-promisenotificationcategory) -- creates a new notification category for interactive notifications
-  - [`getNotificationCategoriesAsync`](#getnotificationcategoriesasync-promisenotificationcategory) -- fetches information about all active notification categories
-  - [`deleteNotificationCategoryAsync`](#deletenotificationcategoryasyncidentifier-string-promiseboolean) -- deletes a notification category
-
 Check out the Snack below to see Notifications in action, but be sure to use a physical device! Push notifications don't work on simulators/emulators.
 
 <SnackInline label='Push Notifications' dependencies={['expo-constants', 'expo-permissions', 'expo-notifications']}>

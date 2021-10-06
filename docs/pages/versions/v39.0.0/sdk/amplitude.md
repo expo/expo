@@ -22,16 +22,6 @@ import PlatformsSection from '~/components/plugins/PlatformsSection';
 import * as Amplitude from 'expo-analytics-amplitude';
 ```
 
-**[Methods](#methods)**
-
-- [`Amplitude.initialize(apiKey)`](#amplitudeinitializeapikey)
-- [`Amplitude.setUserId(userId)`](#amplitudesetuseriduserid)
-- [`Amplitude.setUserProperties(userProperties)`](#amplitudesetuserpropertiesuserproperties)
-- [`Amplitude.clearUserProperties()`](#amplitudeclearuserproperties)
-- [`Amplitude.logEvent(eventName)`](#amplitudelogeventeventname)
-- [`Amplitude.logEventWithProperties(eventName, properties)`](#amplitudelogeventwithpropertieseventname-properties)
-- [`Amplitude.setGroup(groupType, groupNames)`](#amplitudesetgroupgrouptype-groupnames)
-
 ## Methods
 
 ### `Amplitude.initialize(apiKey)`

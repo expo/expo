@@ -53,24 +53,6 @@ export default class App extends React.Component {
 import { StatusBar } from 'expo-status-bar';
 ```
 
-**[Components](#components)**
-
-- [`StatusBar`](#statusbar)
-
-**[Methods](#methods)**
-
-- [`setStatusBarBackgroundColor(backgroundColor, animated)`](#setstatusbarbackgroundcolorbackgroundcolor-animated)
-- [`setStatusBarHidden(hidden, animation)`](#setstatusbarhiddenhidden-animation)
-- [`setStatusBarNetworkActivityIndicatorVisible(visible)`](#setstatusbarnetworkactivityindicatorvisiblevisible)
-- [`setStatusBarStyle(style)`](#setstatusbarstylestyle)
-- [`setStatusBarTranslucent(translucent)`](#setstatusbartranslucenttranslucent)
-
-**[Types](#types)**
-
-- [`StatusBarAnimation`](#statusbaranimation)
-- [`StatusBarProps`](#statusbarprops)
-- [`StatusBarStyle`](#statusbarstyle)
-
 ## Components
 
 ### `StatusBar`
