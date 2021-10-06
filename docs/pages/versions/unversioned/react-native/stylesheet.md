@@ -5,8 +5,6 @@ title: StyleSheet
 
 A StyleSheet is an abstraction similar to CSS StyleSheets
 
-Creates a StyleSheet style reference from the given object:
-
 ```js
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
@@ -54,7 +52,7 @@ Code quality tips:
 ### `compose()`
 
 ```js
-static compose(style1: object, style2: object): object | object[]
+static compose(style1: object, style2: object): object | array<object>
 ```
 
 Combines two styles such that `style2` will override any styles in `style1`. If either style is falsy, the other one is returned without allocating an array, saving allocations and maintaining reference equality for PureComponent checks.

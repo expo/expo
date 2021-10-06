@@ -11,35 +11,35 @@ You can find a visualization of some common easing functions at http://easings.n
 
 The `Easing` module provides several predefined animations through the following methods:
 
-- [`back`](easing.md#back) provides a basic animation where the object goes slightly back before moving forward
-- [`bounce`](easing.md#bounce) provides a bouncing animation
-- [`ease`](easing.md#ease) provides a basic inertial animation
-- [`elastic`](easing.md#elastic) provides a basic spring interaction
+- [`back`](#back) provides a basic animation where the object goes slightly back before moving forward
+- [`bounce`](#bounce) provides a bouncing animation
+- [`ease`](#ease) provides a basic inertial animation
+- [`elastic`](#elastic) provides a basic spring interaction
 
 ### Standard functions
 
 Three standard easing functions are provided:
 
-- [`linear`](easing.md#linear)
-- [`quad`](easing.md#quad)
-- [`cubic`](easing.md#cubic)
+- [`linear`](#linear)
+- [`quad`](#quad)
+- [`cubic`](#cubic)
 
-The [`poly`](easing.md#poly) function can be used to implement quartic, quintic, and other higher power functions.
+The [`poly`](#poly) function can be used to implement quartic, quintic, and other higher power functions.
 
 ### Additional functions
 
 Additional mathematical functions are provided by the following methods:
 
-- [`bezier`](easing.md#bezier) provides a cubic bezier curve
-- [`circle`](easing.md#circle) provides a circular function
-- [`sin`](easing.md#sin) provides a sinusoidal function
-- [`exp`](easing.md#exp) provides an exponential function
+- [`bezier`](#bezier) provides a cubic bezier curve
+- [`circle`](#circle) provides a circular function
+- [`sin`](#sin) provides a sinusoidal function
+- [`exp`](#exp) provides an exponential function
 
 The following helpers are used to modify other easing functions.
 
-- [`in`](easing.md#in) runs an easing function forwards
-- [`inOut`](easing.md#inout) makes any easing function symmetrical
-- [`out`](easing.md#out) runs an easing function backwards
+- [`in`](#in) runs an easing function forwards
+- [`inOut`](#inout) makes any easing function symmetrical
+- [`out`](#out) runs an easing function backwards
 
 ## Example
 
@@ -56,7 +56,7 @@ import {
   View,
 } from 'react-native';
 
-export default function App() {
+const App = () => {
   let opacity = new Animated.Value(0);
 
   const animate = easing => {
@@ -104,7 +104,7 @@ export default function App() {
       />
     </View>
   );
-}
+};
 
 const SECTIONS = [
   {
@@ -188,6 +188,8 @@ const styles = StyleSheet.create({
     padding: 8,
   },
 });
+
+export default App;
 ```
 
 ---

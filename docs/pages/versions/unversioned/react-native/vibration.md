@@ -15,7 +15,7 @@ const Separator = () => {
   return <View style={Platform.OS === 'android' ? styles.separator : null} />;
 };
 
-export default function App() {
+const App = () => {
   const ONE_SECOND_IN_MS = 1000;
 
   const PATTERN = [1 * ONE_SECOND_IN_MS, 2 * ONE_SECOND_IN_MS, 3 * ONE_SECOND_IN_MS];
@@ -54,7 +54,7 @@ export default function App() {
       <Button title="Stop vibration pattern" onPress={() => Vibration.cancel()} color="#FF0000" />
     </SafeAreaView>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -78,6 +78,8 @@ const styles = StyleSheet.create({
     borderBottomWidth: StyleSheet.hairlineWidth,
   },
 });
+
+export default App;
 ```
 
 > Android apps should request the `android.permission.VIBRATE` permission by adding `<uses-permission android:name="android.permission.VIBRATE"/>` to `AndroidManifest.xml`.
@@ -90,10 +92,20 @@ const styles = StyleSheet.create({
 
 ## Methods
 
+### `cancel()`
+
+```js
+Vibration.cancel();
+```
+
+Call this to stop vibrating after having invoked `vibrate()` with repetition enabled.
+
+---
+
 ### `vibrate()`
 
 ```js
-Vibration.vibrate(?pattern: number | Array<number>, ?repeat: boolean)
+Vibration.vibrate(pattern, repeat);
 ```
 
 Triggers a vibration with a fixed duration.
@@ -106,18 +118,7 @@ The `vibrate()` method can take a `pattern` argument with an array of numbers th
 
 **Parameters:**
 
-| Name    | Type             | Required | Description                                                | Platform     |
-| ------- | ---------------- | -------- | ---------------------------------------------------------- | ------------ |
-| pattern | number           | No       | Vibration duration in milliseconds. Defaults to 400 ms.    | Android      |
-| pattern | Array of numbers | No       | Vibration pattern as an array of numbers in milliseconds.  | Android, iOS |
-| repeat  | boolean          | No       | Repeat vibration pattern until cancel(), default to false. | Android, iOS |
-
----
-
-### `cancel()`
-
-```jsx
-Vibration.cancel();
-```
-
-Call this to stop vibrating after having invoked `vibrate()` with repetition enabled.
+| Name    | Type                                       | Default | Description                                                                                       |
+| ------- | ------------------------------------------ | ------- | ------------------------------------------------------------------------------------------------- |
+| pattern | number **(Android)** <hr/>array of numbers | `400`   | Vibration duration in milliseconds.<hr/>Vibration pattern as an array of numbers in milliseconds. |
+| repeat  | boolean                                    | `false` | Repeat vibration pattern until `cancel()`.                                                        |

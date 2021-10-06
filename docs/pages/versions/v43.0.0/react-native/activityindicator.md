@@ -11,16 +11,14 @@ Displays a circular loading indicator.
 import React from 'react';
 import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
 
-export function App() {
-  return (
-    <View style={[styles.container, styles.horizontal]}>
-      <ActivityIndicator />
-      <ActivityIndicator size="large" />
-      <ActivityIndicator size="small" color="#0000ff" />
-      <ActivityIndicator size="large" color="#00ff00" />
-    </View>
-  );
-}
+const App = () => (
+  <View style={[styles.container, styles.horizontal]}>
+    <ActivityIndicator />
+    <ActivityIndicator size="large" />
+    <ActivityIndicator size="small" color="#0000ff" />
+    <ActivityIndicator size="large" color="#00ff00" />
+  </View>
+);
 
 const styles = StyleSheet.create({
   container: {
@@ -33,11 +31,15 @@ const styles = StyleSheet.create({
     padding: 10,
   },
 });
+
+export default App;
 ```
 
 # Reference
 
 ## Props
+
+### [View Props](view.md#props)
 
 Inherits [View Props](view.md#props).
 
@@ -47,9 +49,9 @@ Inherits [View Props](view.md#props).
 
 Whether to show the indicator (`true`) or hide it (`false`).
 
-| Type | Required | Default |
-| ---- | -------- | ------- |
-| bool | No       | `true`  |
+| Type | Default |
+| ---- | ------- |
+| bool | `true`  |
 
 ---
 
@@ -57,9 +59,9 @@ Whether to show the indicator (`true`) or hide it (`false`).
 
 The foreground color of the spinner.
 
-| Type                                         | Required | Default                                                                      |
-| -------------------------------------------- | -------- | ---------------------------------------------------------------------------- |
-| [color](https://reactnative.dev/docs/colors) | No       | `null` (system accent default color) **(Android)**<hr/>`'#999999'` **(iOS)** |
+| Type                                              | Default                                                                       |
+| ------------------------------------------------- | ----------------------------------------------------------------------------- |
+| [color](https://reactnative.dev/docs/0.64/colors) | `null` (system accent default color) **(Android)** <hr/>`'#999999'` **(iOS)** |
 
 ---
 
@@ -67,9 +69,9 @@ The foreground color of the spinner.
 
 Whether the indicator should hide when not animating.
 
-| Type | Required | Default |
-| ---- | -------- | ------- |
-| bool | No       | `true`  |
+| Type | Default |
+| ---- | ------- |
+| bool | `true`  |
 
 ---
 
@@ -77,6 +79,6 @@ Whether the indicator should hide when not animating.
 
 Size of the indicator.
 
-| Type                                                | Required | Default   |
-| --------------------------------------------------- | -------- | --------- |
-| `enum('small', 'large')`<hr/>`number` **(Android)** | No       | `'small'` |
+| Type                                                | Default   |
+| --------------------------------------------------- | --------- |
+| enum(`'small'`, `'large'`)<hr/>number **(Android)** | `'small'` |

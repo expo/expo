@@ -3,7 +3,7 @@ id: layout-props
 title: Layout Props
 ---
 
-> More detailed examples about those properties can be found on the [Layout with Flexbox](https://reactnative.dev/docs/flexbox) page.
+> More detailed examples about those properties can be found on the [Layout with Flexbox](https://reactnative.dev/docs/0.64/flexbox) page.
 
 ### Example
 
@@ -11,8 +11,7 @@ The following example shows how different properties can affect or shape a React
 
 ```js
 import React, { useState } from 'react';
-import { Button, ScrollView, StyleSheet, Text, View } from 'react-native';
-import Constants from 'expo-constants';
+import { Button, ScrollView, StatusBar, StyleSheet, Text, View } from 'react-native';
 
 const App = () => {
   const flexDirections = ['row', 'row-reverse', 'column', 'column-reverse'];
@@ -48,21 +47,10 @@ const App = () => {
     }
     setterFunction(value + 1);
   };
-
-  const Square = () => {
-    const sqStyle = {
-      width: 50,
-      height: 50,
-      backgroundColor: randomHexColor(),
-    };
-    return <View style={sqStyle} />;
-  };
-
-  const [squares, setSquares] = useState([Square(), Square(), Square()]);
-
+  const [squares, setSquares] = useState([<Square />, <Square />, <Square />]);
   return (
     <>
-      <View style={{ paddingTop: Constants.statusBarHeight }} />
+      <View style={{ paddingTop: StatusBar.currentHeight }} />
       <View style={[styles.container, styles.playingSpace, hookedStyles]}>
         {squares.map(elem => elem)}
       </View>
@@ -101,7 +89,7 @@ const App = () => {
             <Text style={styles.text}>{wraps[wrap]}</Text>
           </View>
           <View style={styles.buttonView}>
-            <Button title="Add Square" onPress={() => setSquares([...squares, Square()])} />
+            <Button title="Add Square" onPress={() => setSquares([...squares, <Square />])} />
           </View>
           <View style={styles.buttonView}>
             <Button
@@ -135,6 +123,16 @@ const styles = StyleSheet.create({
   },
   text: { textAlign: 'center' },
 });
+
+const Square = () => (
+  <View
+    style={{
+      width: 50,
+      height: 50,
+      backgroundColor: randomHexColor(),
+    }}
+  />
+);
 
 const randomHexColor = () => {
   return '#000000'.replace(/0/g, () => {
@@ -317,7 +315,7 @@ This style takes precedence over the `left` and `right` styles.
 
 ### `flex`
 
-In React Native `flex` does not work the same way that it does in CSS. `flex` is a number rather than a string, and it works according to the [Yoga](https://github.com/facebook/yoga).
+In React Native `flex` does not work the same way that it does in CSS. `flex` is a number rather than a string, and it works according to the [Yoga](https://github.com/facebook/yoga) layout engine.
 
 When `flex` is a positive number, it makes the component flexible, and it will be sized proportional to its flex value. So a component with `flex` set to 2 will take twice the space as a component with `flex` set to 1. `flex: <positive number>` equates to `flexGrow: <positive number>, flexShrink: 1, flexBasis: 0`.
 

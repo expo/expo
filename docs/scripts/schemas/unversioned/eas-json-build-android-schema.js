@@ -19,6 +19,18 @@ export default [
     description: [ 'Version of Android NDK.' ],
   },
   {
+    name: 'autoIncrement',
+    type: 'boolean | \"version\" | \"versionCode\"',
+    description: [
+      'Controls how EAS CLI bumps your application build version. Defaults to `false`',
+      ' - `"version"` - the patch of `expo.version` is bumped (e.g. `1.2.3` -> `1.2.4`).',
+      ' - `"versionCode"` (or `true`) - `expo.android.versionCode` is bumped (e.g. `3` -> `4`).',
+      ' - `false` - versions won\'t be bumped automatically',
+      '',
+      'In the case of a bare project, it also updates versions in native code. `expo.version` corresponds to `versionName` and `expo.android.versionCode` to `versionCode` in the `build.gradle`. Google Play uses these values to identify the app build, `versionName` is the version visible to users, whereas `versionCode` defines the version number. The combination of those needs to be unique, so you can bump either of them.',
+    ],
+  },
+  {
     name: 'buildType',
     enum: ['app-bundle', 'apk'],
     description: [

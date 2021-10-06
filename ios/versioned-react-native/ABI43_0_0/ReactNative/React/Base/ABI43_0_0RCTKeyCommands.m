@@ -9,38 +9,24 @@
 
 #import <UIKit/UIKit.h>
 
-#import <objc/message.h>
-#import <objc/runtime.h>
 #import "ABI43_0_0RCTDefines.h"
 #import "ABI43_0_0RCTUtils.h"
 
 #if ABI43_0_0RCT_DEV
 
-@interface UIEvent (UIPhysicalKeyboardEvent)
-
-@property (nonatomic) NSString *_modifiedInput;
-@property (nonatomic) NSString *_unmodifiedInput;
-@property (nonatomic) UIKeyModifierFlags _modifierFlags;
-@property (nonatomic) BOOL _isKeyDown;
-@property (nonatomic) long _keyCode;
-
-@end
-
 @interface ABI43_0_0RCTKeyCommand : NSObject <NSCopying>
 
-@property (nonatomic, copy, readonly) NSString *key;
-@property (nonatomic, readonly) UIKeyModifierFlags flags;
+@property (nonatomic, strong) UIKeyCommand *keyCommand;
 @property (nonatomic, copy) void (^block)(UIKeyCommand *);
 
 @end
 
 @implementation ABI43_0_0RCTKeyCommand
 
-- (instancetype)init:(NSString *)key flags:(UIKeyModifierFlags)flags block:(void (^)(UIKeyCommand *))block
+- (instancetype)initWithKeyCommand:(UIKeyCommand *)keyCommand block:(void (^)(UIKeyCommand *))block
 {
   if ((self = [super init])) {
-    _key = key;
-    _flags = flags;
+    _keyCommand = keyCommand;
     _block = block;
   }
   return self;
@@ -55,7 +41,7 @@ ABI43_0_0RCT_NOT_IMPLEMENTED(-(instancetype)init)
 
 - (NSUInteger)hash
 {
-  return _key.hash ^ _flags;
+  return _keyCommand.input.hash ^ _keyCommand.modifierFlags;
 }
 
 - (BOOL)isEqual:(ABI43_0_0RCTKeyCommand *)object
@@ -63,15 +49,12 @@ ABI43_0_0RCT_NOT_IMPLEMENTED(-(instancetype)init)
   if (![object isKindOfClass:[ABI43_0_0RCTKeyCommand class]]) {
     return NO;
   }
-  return [self matchesInput:object.key flags:object.flags];
+  return [self matchesInput:object.keyCommand.input flags:object.keyCommand.modifierFlags];
 }
 
 - (BOOL)matchesInput:(NSString *)input flags:(UIKeyModifierFlags)flags
 {
-  // We consider the key command a match if the modifier flags match
-  // exactly or is there are no modifier flags. This means that for
-  // `cmd + r`, we will match both `cmd + r` and `r` but not `opt + r`.
-  return [_key isEqual:input] && (_flags == flags || flags == 0);
+  return [_keyCommand.input isEqual:input] && _keyCommand.modifierFlags == flags;
 }
 
 - (NSString *)description
@@ -79,8 +62,8 @@ ABI43_0_0RCT_NOT_IMPLEMENTED(-(instancetype)init)
   return [NSString stringWithFormat:@"<%@:%p input=\"%@\" flags=%lld hasBlock=%@>",
                                     [self class],
                                     self,
-                                    _key,
-                                    (long long)_flags,
+                                    _keyCommand.input,
+                                    (long long)_keyCommand.modifierFlags,
                                     _block ? @"YES" : @"NO"];
 }
 
@@ -92,95 +75,62 @@ ABI43_0_0RCT_NOT_IMPLEMENTED(-(instancetype)init)
 
 @end
 
-@implementation ABI43_0_0RCTKeyCommands
+@implementation UIResponder (ABI43_0_0RCTKeyCommands)
 
-+ (void)initialize
++ (UIResponder *)ABI43_0_0RCT_getFirstResponder:(UIResponder *)view
 {
-  SEL originalKeyEventSelector = NSSelectorFromString(@"handleKeyUIEvent:");
-  SEL swizzledKeyEventSelector = NSSelectorFromString(
-      [NSString stringWithFormat:@"_rct_swizzle_%x_%@", arc4random(), NSStringFromSelector(originalKeyEventSelector)]);
+  UIResponder *firstResponder = nil;
 
-  void (^handleKeyUIEventSwizzleBlock)(UIApplication *, UIEvent *) = ^(UIApplication *slf, UIEvent *event) {
-    [[[self class] sharedInstance] handleKeyUIEventSwizzle:event];
-
-    ((void (*)(id, SEL, id))objc_msgSend)(slf, swizzledKeyEventSelector, event);
-  };
-
-  ABI43_0_0RCTSwapInstanceMethodWithBlock(
-      [UIApplication class], originalKeyEventSelector, handleKeyUIEventSwizzleBlock, swizzledKeyEventSelector);
-}
-
-- (void)handleKeyUIEventSwizzle:(UIEvent *)event
-{
-  NSString *modifiedInput = nil;
-  UIKeyModifierFlags modifierFlags = 0;
-  BOOL isKeyDown = NO;
-
-  if ([event respondsToSelector:@selector(_modifiedInput)]) {
-    modifiedInput = [event _modifiedInput];
-  }
-
-  if ([event respondsToSelector:@selector(_modifierFlags)]) {
-    modifierFlags = [event _modifierFlags];
-  }
-
-  if ([event respondsToSelector:@selector(_isKeyDown)]) {
-    isKeyDown = [event _isKeyDown];
-  }
-
-  BOOL interactionEnabled = !UIApplication.sharedApplication.isIgnoringInteractionEvents;
-  BOOL hasFirstResponder = NO;
-  if (isKeyDown && modifiedInput.length > 0 && interactionEnabled) {
-    UIResponder *firstResponder = nil;
-    for (UIWindow *window in [self allWindows]) {
-      firstResponder = [window valueForKey:@"firstResponder"];
+  if (view.isFirstResponder) {
+    return view;
+  } else if ([view isKindOfClass:[UIViewController class]]) {
+    if ([(UIViewController *)view parentViewController]) {
+      firstResponder = [UIResponder ABI43_0_0RCT_getFirstResponder:[(UIViewController *)view parentViewController]];
+    }
+    return firstResponder ? firstResponder : [UIResponder ABI43_0_0RCT_getFirstResponder:[(UIViewController *)view view]];
+  } else if ([view isKindOfClass:[UIView class]]) {
+    for (UIView *subview in [(UIView *)view subviews]) {
+      firstResponder = [UIResponder ABI43_0_0RCT_getFirstResponder:subview];
       if (firstResponder) {
-        hasFirstResponder = YES;
-        break;
+        return firstResponder;
       }
     }
-
-    // Ignore key commands (except escape) when there's an active responder
-    if (!firstResponder) {
-      [self ABI43_0_0RCT_handleKeyCommand:modifiedInput flags:modifierFlags];
-    }
   }
-};
 
-- (NSArray<UIWindow *> *)allWindows
-{
-  BOOL includeInternalWindows = YES;
-  BOOL onlyVisibleWindows = NO;
-
-  // Obfuscating selector allWindowsIncludingInternalWindows:onlyVisibleWindows:
-  NSArray<NSString *> *allWindowsComponents =
-      @[ @"al", @"lWindo", @"wsIncl", @"udingInt", @"ernalWin", @"dows:o", @"nlyVisi", @"bleWin", @"dows:" ];
-  SEL allWindowsSelector = NSSelectorFromString([allWindowsComponents componentsJoinedByString:@""]);
-
-  NSMethodSignature *methodSignature = [[UIWindow class] methodSignatureForSelector:allWindowsSelector];
-  NSInvocation *invocation = [NSInvocation invocationWithMethodSignature:methodSignature];
-
-  invocation.target = [UIWindow class];
-  invocation.selector = allWindowsSelector;
-  [invocation setArgument:&includeInternalWindows atIndex:2];
-  [invocation setArgument:&onlyVisibleWindows atIndex:3];
-  [invocation invoke];
-
-  __unsafe_unretained NSArray<UIWindow *> *windows = nil;
-  [invocation getReturnValue:&windows];
-  return windows;
+  return firstResponder;
 }
 
-- (void)ABI43_0_0RCT_handleKeyCommand:(NSString *)input flags:(UIKeyModifierFlags)modifierFlags
+- (NSArray<UIKeyCommand *> *)ABI43_0_0RCT_keyCommands
 {
-  for (ABI43_0_0RCTKeyCommand *command in [ABI43_0_0RCTKeyCommands sharedInstance].commands) {
-    if ([command matchesInput:input flags:modifierFlags]) {
-      if (command.block) {
-        command.block(nil);
+  NSSet<ABI43_0_0RCTKeyCommand *> *commands = [ABI43_0_0RCTKeyCommands sharedInstance].commands;
+  return [[commands valueForKeyPath:@"keyCommand"] allObjects];
+}
+
+/**
+ * Single Press Key Command Response
+ * Command + KeyEvent (Command + R/D, etc.)
+ */
+- (void)ABI43_0_0RCT_handleKeyCommand:(UIKeyCommand *)key
+{
+  // NOTE: throttle the key handler because on iOS 9 the handleKeyCommand:
+  // method gets called repeatedly if the command key is held down.
+  static NSTimeInterval lastCommand = 0;
+  if (CACurrentMediaTime() - lastCommand > 0.5) {
+    for (ABI43_0_0RCTKeyCommand *command in [ABI43_0_0RCTKeyCommands sharedInstance].commands) {
+      if ([command.keyCommand.input isEqualToString:key.input] &&
+          command.keyCommand.modifierFlags == key.modifierFlags) {
+        if (command.block) {
+          command.block(key);
+          lastCommand = CACurrentMediaTime();
+        }
       }
     }
   }
 }
+
+@end
+
+@implementation ABI43_0_0RCTKeyCommands
 
 + (instancetype)sharedInstance
 {
@@ -207,7 +157,11 @@ ABI43_0_0RCT_NOT_IMPLEMENTED(-(instancetype)init)
 {
   ABI43_0_0RCTAssertMainQueue();
 
-  ABI43_0_0RCTKeyCommand *keyCommand = [[ABI43_0_0RCTKeyCommand alloc] init:input flags:flags block:block];
+  UIKeyCommand *command = [UIKeyCommand keyCommandWithInput:input
+                                              modifierFlags:flags
+                                                     action:@selector(ABI43_0_0RCT_handleKeyCommand:)];
+
+  ABI43_0_0RCTKeyCommand *keyCommand = [[ABI43_0_0RCTKeyCommand alloc] initWithKeyCommand:command block:block];
   [_commands removeObject:keyCommand];
   [_commands addObject:keyCommand];
 }

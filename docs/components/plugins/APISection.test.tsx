@@ -8,7 +8,7 @@ import APISection from './APISection';
 import { HeadingManager } from '~/common/headingManager';
 
 const Wrapper: FC = ({ children }) => (
-  <HeadingsContext.Provider value={new HeadingManager(new GithubSlugger(), {})}>
+  <HeadingsContext.Provider value={new HeadingManager(new GithubSlugger(), { headings: [] })}>
     {children}
   </HeadingsContext.Provider>
 );
