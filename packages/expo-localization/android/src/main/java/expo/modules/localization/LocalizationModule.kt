@@ -1,18 +1,20 @@
 package expo.modules.localization
 
-import android.content.Context
-import expo.modules.core.ExportedModule
 import android.os.Bundle
-import expo.modules.core.interfaces.ExpoMethod
+import android.view.View
 import android.text.TextUtils
+import android.content.Context
 import android.os.Build.VERSION
 import android.os.Build.VERSION_CODES
-import android.view.View
+
 import expo.modules.core.Promise
+import expo.modules.core.ExportedModule
+import expo.modules.core.interfaces.ExpoMethod
+
+import kotlin.collections.ArrayList
 import java.lang.ref.WeakReference
 import java.text.DecimalFormatSymbols
 import java.util.*
-import kotlin.collections.ArrayList
 
 class LocalizationModule(context: Context) : ExportedModule(context) {
   private val contextRef: WeakReference<Context> = WeakReference(context)
@@ -58,20 +60,20 @@ class LocalizationModule(context: Context) : ExportedModule(context) {
         putString("timezone", TimeZone.getDefault().id)
       }
     }
-  private val locales: ArrayList<Locale>?
+
+  private val locales: ArrayList<Locale>
     get() {
-      val locales = ArrayList<Locale>()
-      val context = applicationContext ?: return null
+      val context = applicationContext ?: return ArrayList()
       val configuration = context.resources.configuration
-      if (VERSION.SDK_INT > VERSION_CODES.N) {
-        val localeList = configuration.locales
-        for (i in 0 until localeList.size()) {
-          locales.add(localeList[i])
+      return if (VERSION.SDK_INT > VERSION_CODES.N) {
+        val locales = ArrayList<Locale>()
+        for (i in 0 until configuration.locales.size()) {
+          locales.add(configuration.locales[i])
         }
+        locales
       } else {
-        locales.add(configuration.locale)
+        arrayListOf(configuration.locale)
       }
-      return locales
     }
 
   private fun getRegionCode(locale: Locale): String? {

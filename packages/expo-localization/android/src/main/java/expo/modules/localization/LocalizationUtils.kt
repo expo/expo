@@ -8,18 +8,16 @@ import kotlin.collections.ArrayList
 val USES_IMPERIAL = listOf("US", "LR", "MM")
 
 val iSOCurrencyCodes: ArrayList<String> by lazy {
-  Currency.getAvailableCurrencies().map { it.currencyCode } as ArrayList<String>
+  Currency.getAvailableCurrencies().map { it.currencyCode as String } as ArrayList<String>
 }
 
-fun getLocaleNames(locales: ArrayList<Locale>?) = locales?.map { it.toLanguageTag() } as ArrayList<String>
+fun getLocaleNames(locales: ArrayList<Locale>) = locales.map { it.toLanguageTag() } as ArrayList
 
 fun getCountryCode(locale: Locale): String? {
-  return try {
+  return runCatching {
     val country = locale.country
     if (TextUtils.isEmpty(country)) null else country
-  } catch (ignored: Exception) {
-    null
-  }
+  }.getOrNull()
 }
 
 fun getSystemProperty(key: String): String {
@@ -31,10 +29,8 @@ fun getSystemProperty(key: String): String {
 }
 
 fun getCurrencyCode(locale: Locale): String? {
-  return try {
+  return runCatching {
     val currency = Currency.getInstance(locale)
     currency?.currencyCode
-  } catch (ignored: Exception) {
-    null
-  }
+  }.getOrNull()
 }

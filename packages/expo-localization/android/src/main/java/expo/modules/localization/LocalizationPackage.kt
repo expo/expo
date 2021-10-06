@@ -6,5 +6,5 @@ import expo.modules.core.ExportedModule
 
 class LocalizationPackage : BasePackage() {
   override fun createExportedModules(context: Context): List<ExportedModule> =
-    listOf<ExportedModule>(LocalizationModule(context))
+    listOf(LocalizationModule(context))
 }
