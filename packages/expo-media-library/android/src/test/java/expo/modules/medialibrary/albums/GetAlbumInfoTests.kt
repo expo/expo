@@ -1,6 +1,12 @@
-package expo.modules.medialibrary
+package expo.modules.medialibrary.albums
 
 import android.provider.MediaStore
+import expo.modules.medialibrary.MediaLibraryConstants
+import expo.modules.medialibrary.MockContext
+import expo.modules.medialibrary.MockData
+import expo.modules.medialibrary.mockContentResolver
+import expo.modules.medialibrary.mockCursor
+import expo.modules.medialibrary.throwableContentResolver
 import io.mockk.every
 import io.mockk.just
 import io.mockk.mockkStatic
@@ -36,9 +42,9 @@ internal class GetAlbumInfoTests {
     val selectionSlot = slot<String>()
     val selectionArgsSlot = slot<Array<String>>()
 
-    mockkStatic(MediaLibraryUtils::class)
+    mockkStatic(::queryAlbum)
     every {
-      MediaLibraryUtils.queryAlbum(
+      queryAlbum(
         context,
         capture(selectionSlot),
         capture(selectionArgsSlot),
@@ -76,7 +82,7 @@ internal class GetAlbumInfoTests {
     val context = mockContext with mockContentResolver(cursor)
 
     // act
-    MediaLibraryUtils.queryAlbum(context, selection, selectionArgs, promise)
+    queryAlbum(context, selection, selectionArgs, promise)
 
     // assert
     promiseResolved(promise) {
@@ -92,7 +98,7 @@ internal class GetAlbumInfoTests {
     val context = mockContext with mockContentResolver(null)
 
     // act
-    MediaLibraryUtils.queryAlbum(context, "", emptyArray(), promise)
+    queryAlbum(context, "", emptyArray(), promise)
 
     // assert
     assertRejected(promise)
@@ -104,7 +110,7 @@ internal class GetAlbumInfoTests {
     val context = mockContext with throwableContentResolver(SecurityException())
 
     // act
-    MediaLibraryUtils.queryAlbum(context, "", emptyArray(), promise)
+    queryAlbum(context, "", emptyArray(), promise)
 
     // assert
     assertRejectedWithCode(promise, MediaLibraryConstants.ERROR_UNABLE_TO_LOAD_PERMISSION)
@@ -116,7 +122,7 @@ internal class GetAlbumInfoTests {
     val context = mockContext with throwableContentResolver(IllegalArgumentException())
 
     // act
-    MediaLibraryUtils.queryAlbum(context, "", emptyArray(), promise)
+    queryAlbum(context, "", emptyArray(), promise)
 
     // assert
     assertRejectedWithCode(promise, MediaLibraryConstants.ERROR_UNABLE_TO_LOAD)

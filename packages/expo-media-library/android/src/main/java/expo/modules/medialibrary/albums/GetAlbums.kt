@@ -1,4 +1,4 @@
-package expo.modules.medialibrary
+package expo.modules.medialibrary.albums
 
 import android.content.Context
 import android.database.Cursor.FIELD_TYPE_NULL
@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.provider.MediaStore
 import android.provider.MediaStore.Images.Media
 import expo.modules.core.Promise
+import expo.modules.medialibrary.MediaLibraryConstants
 
 internal open class GetAlbums(private val mContext: Context, private val mPromise: Promise) :
   AsyncTask<Void?, Void?, Void?>() {
@@ -26,27 +27,27 @@ internal open class GetAlbums(private val mContext: Context, private val mPromis
           null,
           Media.BUCKET_DISPLAY_NAME
         )
-        .use { asset ->
-          if (asset == null) {
+        .use { assetCursor ->
+          if (assetCursor == null) {
             mPromise.reject(
               MediaLibraryConstants.ERROR_UNABLE_TO_LOAD,
               "Could not get albums. Query returns null."
             )
             return@use
           }
-          val bucketIdIndex = asset.getColumnIndex(Media.BUCKET_ID)
-          val bucketDisplayNameIndex = asset.getColumnIndex(Media.BUCKET_DISPLAY_NAME)
+          val bucketIdIndex = assetCursor.getColumnIndex(Media.BUCKET_ID)
+          val bucketDisplayNameIndex = assetCursor.getColumnIndex(Media.BUCKET_DISPLAY_NAME)
 
-          while (asset.moveToNext()) {
-            val id = asset.getString(bucketIdIndex)
+          while (assetCursor.moveToNext()) {
+            val id = assetCursor.getString(bucketIdIndex)
 
-            if (asset.getType(bucketDisplayNameIndex) == FIELD_TYPE_NULL) {
+            if (assetCursor.getType(bucketDisplayNameIndex) == FIELD_TYPE_NULL) {
               continue
             }
 
             val album = albums[id] ?: Album(
               id = id,
-              title = asset.getString(bucketDisplayNameIndex)
+              title = assetCursor.getString(bucketDisplayNameIndex)
             ).also {
               albums[id] = it
             }
