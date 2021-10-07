@@ -158,9 +158,13 @@ static NSInteger const EXUpdatesErrorRecoveryRemoteLoadTimeoutMs = 5000;
     return;
   } else if (_delegate.remoteLoadStatus == EXUpdatesRemoteLoadStatusNewUpdateLoaded) {
     [self _runNextTask];
-  } else {
+  } else if (_delegate.config.checkOnLaunch != EXUpdatesCheckAutomaticallyConfigNever) {
     _isWaitingForRemoteUpdate = YES;
     [_delegate loadRemoteUpdate];
+  } else {
+    // there's no remote update, so move to the next step in the pipeline
+    [self->_pipeline removeObject:@(EXUpdatesErrorRecoveryTaskLaunchNew)];
+    [self _runNextTask];
   }
 }
 
