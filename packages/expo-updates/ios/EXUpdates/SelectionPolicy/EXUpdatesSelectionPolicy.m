@@ -41,11 +41,6 @@ NS_ASSUME_NONNULL_BEGIN
   return [_loaderSelectionPolicy shouldLoadNewUpdate:newUpdate withLaunchedUpdate:launchedUpdate filters:filters];
 }
 
-- (NSArray<EXUpdatesUpdate *> *)outdatedUpdatesWithLaunchedUpdate:(EXUpdatesUpdate *)launchedUpdate updates:(NSArray<EXUpdatesUpdate *> *)updates filters:(nullable NSDictionary *)filters
-{
-  return [_loaderSelectionPolicy outdatedUpdatesWithLaunchedUpdate:launchedUpdate updates:updates filters:filters];
-}
-
 @end
 
 NS_ASSUME_NONNULL_END

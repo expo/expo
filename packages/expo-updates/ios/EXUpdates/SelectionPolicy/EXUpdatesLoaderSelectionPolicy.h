@@ -12,7 +12,6 @@ NS_ASSUME_NONNULL_BEGIN
 @protocol EXUpdatesLoaderSelectionPolicy
 
 - (BOOL)shouldLoadNewUpdate:(nullable EXUpdatesUpdate *)newUpdate withLaunchedUpdate:(nullable EXUpdatesUpdate *)launchedUpdate filters:(nullable NSDictionary *)filters;
-- (NSArray<EXUpdatesUpdate *> *)outdatedUpdatesWithLaunchedUpdate:(EXUpdatesUpdate *)launchedUpdate updates:(NSArray<EXUpdatesUpdate *> *)updates filters:(nullable NSDictionary *)filters;
 
 @end
 

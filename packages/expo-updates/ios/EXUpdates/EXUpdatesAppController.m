@@ -389,28 +389,6 @@ static NSString * const EXUpdatesErrorEventName = @"error";
     [self->_database incrementSuccessfulLaunchCountForUpdate:launchedUpdate error:&error];
     if (error) {
       NSLog(@"Failed to increment successful launch count for update: %@", error.localizedDescription);
-      return;
-    }
-
-    NSError *selectAllUpdatesError;
-    NSArray<EXUpdatesUpdate *> *allUpdates = [self->_database allUpdatesWithConfig:self->_config error:&selectAllUpdatesError];
-    if (selectAllUpdatesError) {
-      NSLog(@"Failed to select updates to mark as outdated: %@", error.localizedDescription);
-      return;
-    }
-
-    NSError *manifestFiltersError;
-    NSDictionary *manifestFilters = [self->_database manifestFiltersWithScopeKey:self->_config.scopeKey error:&manifestFiltersError];
-    if (manifestFiltersError) {
-      NSLog(@"Error selecting manifest filters while marking updates as outdated: %@", error.localizedDescription);
-      return;
-    }
-
-    NSArray<EXUpdatesUpdate *> *outdatedUpdates = [self->_selectionPolicy outdatedUpdatesWithLaunchedUpdate:launchedUpdate updates:allUpdates filters:manifestFilters];
-    NSError *markUpdatesOutdatedError;
-    [self->_database markUpdatesOutdated:outdatedUpdates error:&markUpdatesOutdatedError];
-    if (markUpdatesOutdatedError) {
-      NSLog(@"Failed to mark updates as outdated: %@", error.localizedDescription);
     }
   });
 }
