@@ -35,6 +35,7 @@ async function openMenu(): Promise<void> {
 describe('DevLauncher', () => {
   beforeEach(async () => {
     await device.launchApp({ newInstance: true });
+    await device.disableSynchronization();
   });
 
   it('should render main screen', async () => {
