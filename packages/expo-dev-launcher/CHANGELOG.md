@@ -26,7 +26,7 @@
 ### 🎉 New features
 
 - Suppress the `"main" has not been registered` exception if it was caused by a different error. ([#14363](https://github.com/expo/expo/pull/14363) by [@lukmccall](https://github.com/lukmccall))
-
+- Added support for SDK 43. ([#14633](https://github.com/expo/expo/pull/14633) & [#14635](https://github.com/expo/expo/pull/14635) by [@lukmccall](https://github.com/lukmccall))
 ### 🐛 Bug fixes
 
 - Fix intent that started activity isn't passed further. ([#14097](https://github.com/expo/expo/pull/14097) by [@lukmccall](https://github.com/lukmccall))
