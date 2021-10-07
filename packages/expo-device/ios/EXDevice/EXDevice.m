@@ -202,7 +202,6 @@ EX_EXPORT_METHOD_AS(isRootedExperimentalAsync,
 #endif
 }
 
-
 + (NSDictionary *)getDeviceMap
 {
   return @{
@@ -316,7 +315,7 @@ EX_EXPORT_METHOD_AS(isRootedExperimentalAsync,
   };
 }
 
-+ (NSString *)modelName
++ (nullable NSString *)modelName
 {
   NSString *platform = [self devicePlatform];
   
