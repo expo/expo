@@ -27,9 +27,12 @@ buildscript {
   }
 }
 
+// WHEN_DISTRIBUTING_REMOVE_FROM_HERE
+// We don't need linter on turtle.
 plugins {
   id "com.diffplug.spotless" version "5.14.1"
 }
+// WHEN_DISTRIBUTING_REMOVE_TO_HERE
 
 allprojects {
   repositories {
@@ -99,6 +102,8 @@ allprojects {
   }
 }
 
+// WHEN_DISTRIBUTING_REMOVE_FROM_HERE
+// We don't need linter on turtle.
 subprojects {
   plugins.apply("com.diffplug.spotless")
   spotless {
@@ -126,3 +131,4 @@ subprojects {
     }
   }
 }
+// WHEN_DISTRIBUTING_REMOVE_TO_HERE
