@@ -105,6 +105,10 @@ allprojects {
   }
 }
 
+// This var needs to be defined outside any "remove_from_here" comment blocks
+// because the "*/" in there could affect the resulted code by closing the comment to early.
+def ktlintTarget = '**/*.kt'
+
 // WHEN_DISTRIBUTING_REMOVE_FROM_HERE
 // We don't need linter on turtle.
 subprojects {
@@ -117,7 +121,7 @@ subprojects {
       endWithNewline()
     }
     kotlin {
-      target '**/*.kt'
+      target(ktlintTarget)
       ktlint("0.41.0").userData([
         "disabled_rules"           : "no-wildcard-imports,import-ordering",
         "charset"                  : "utf-8",
