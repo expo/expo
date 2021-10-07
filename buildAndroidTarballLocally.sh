@@ -25,9 +25,11 @@ mkdir -p $TEMP_DIR/local_packages
 cp -r ${ROOT_DIR}/packages/expo $TEMP_DIR/local_packages/expo
 cp -r ${ROOT_DIR}/packages/expo-modules-autolinking $TEMP_DIR/local_packages/expo-modules-autolinking
 pushd $TEMP_DIR
-yarn add file:./local_packages/expo --ignore-workspace-root-check --no-lockfile
-yarn add file:./local_packages/expo-modules-autolinking --ignore-workspace-root-check --no-lockfile
-rm -rf node_modules # remove node_modules as local_packages are already version pinning and save tarball size
+yarn add file:./local_packages/expo --ignore-workspace-root-check
+yarn add file:./local_packages/expo-modules-autolinking --ignore-workspace-root-check 
+# remove unnecessary node_modules and yarn.lock because local_packages are already version pinning
+# these are just a cross-platform way to mutate package.json.
+rm -rf node_modules yarn.lock
 popd
 
 # packages are used by the optional-modules-linking-code in XDL
