@@ -249,53 +249,53 @@ EX_EXPORT_METHOD_AS(isRootedExperimentalAsync,
     @"iPhone14,5": @{ @"name": @"iPhone 13", @"year": @2021 },
 
     // -- 12 Start --
-    @"iPad4,1": @{ @"name": @"iPad Air", @"year": @2017 }, // 5th Generation iPad (iPad Air) - Wifi
-    @"iPad4,2": @{ @"name": @"iPad Air", @"year": @2017 }, // 5th Generation iPad (iPad Air) - Cellular
-    @"iPad4,3": @{ @"name": @"iPad Air", @"year": @2017 }, // 5th Generation iPad (iPad Air)
-    @"iPad4,4": @{ @"name": @"iPad mini 2", @"year": @2013 }, // (2nd Generation iPad mini - Wifi)
-    @"iPad4,5": @{ @"name": @"iPad mini 2", @"year": @2013 }, // (2nd Generation iPad mini - Cellular)
-    @"iPad4,6": @{ @"name": @"iPad mini 2", @"year": @2013 }, // (2nd Generation iPad mini - China)
-    @"iPad4,7": @{ @"name": @"iPad mini 3", @"year": @2014 }, // (3rd Generation iPad mini)
-    @"iPad4,8": @{ @"name": @"iPad mini 3", @"year": @2014 }, // (3rd Generation iPad mini)
-    @"iPad4,9": @{ @"name": @"iPad mini 3", @"year": @2014 }, // (3rd Generation iPad mini - China)
+    @"iPad4,1": @{ @"name": @"iPad Air (5th generation)", @"year": @2017 }, // Wifi
+    @"iPad4,2": @{ @"name": @"iPad Air (5th generation)", @"year": @2017 }, // Cellular
+    @"iPad4,3": @{ @"name": @"iPad Air (5th generation)", @"year": @2017 },
+    @"iPad4,4": @{ @"name": @"iPad mini (2nd generation)", @"year": @2013 }, // Wifi
+    @"iPad4,5": @{ @"name": @"iPad mini (2nd generation)", @"year": @2013 }, // Cellular
+    @"iPad4,6": @{ @"name": @"iPad mini (2nd generation)", @"year": @2013 }, // China
+    @"iPad4,7": @{ @"name": @"iPad mini (3rd generation)", @"year": @2014 }, 
+    @"iPad4,8": @{ @"name": @"iPad mini (3rd generation)", @"year": @2014 },
+    @"iPad4,9": @{ @"name": @"iPad mini (3rd generation)", @"year": @2014 }, // China
     // -- 12 End --
-    @"iPad5,1": @{ @"name": @"iPad mini 4", @"year": @2015 }, // (4th Generation iPad mini)
-    @"iPad5,2": @{ @"name": @"iPad mini 4", @"year": @2015 }, // (4th Generation iPad mini)
-    @"iPad5,3": @{ @"name": @"iPad Air 2", @"year": @2014 }, // 6th Generation iPad (iPad Air 2)
-    @"iPad5,4": @{ @"name": @"iPad Air 2", @"year": @2014 }, // 6th Generation iPad (iPad Air 2)
-    @"iPad6,3": @{ @"name": @"iPad Pro 9.7-inch", @"year": @2016 }, // iPad Pro 9.7-inch
-    @"iPad6,4": @{ @"name": @"iPad Pro 9.7-inch", @"year": @2016 }, // iPad Pro 9.7-inch
-    @"iPad6,7": @{ @"name": @"iPad Pro 12.9-inch", @"year": @2015 }, // iPad Pro 12.9-inch
-    @"iPad6,8": @{ @"name": @"iPad Pro 12.9-inch", @"year": @2015 }, // iPad Pro 12.9-inch
-    @"iPad7,1": @{ @"name": @"iPad Pro 12.9-inch", @"year": @2017 }, // 2nd Generation iPad Pro 12.5-inch - Wifi
-    @"iPad7,2": @{ @"name": @"iPad Pro 12.9-inch", @"year": @2017 }, // 2nd Generation iPad Pro 12.5-inch - Cellular
-    @"iPad7,3": @{ @"name": @"iPad Pro 10.5-inch", @"year": @2017 }, // iPad Pro 10.5-inch - Wifi
-    @"iPad7,4": @{ @"name": @"iPad Pro 10.5-inch", @"year": @2017 }, // iPad Pro 10.5-inch - Cellular
-    @"iPad7,5": @{ @"name": @"iPad 6", @"year": @2018 }, // iPad (6th generation) - Wifi
-    @"iPad7,6": @{ @"name": @"iPad 6", @"year": @2018 }, // iPad (6th generation) - Cellular
-    @"iPad7,11": @{ @"name": @"iPad 7", @"year": @2019 }, // iPad (7th generation) - WiFi
-    @"iPad7,12": @{ @"name": @"iPad 7", @"year": @2019 }, // iPad (7th generation) - WiFi + cellular
-    @"iPad8,1": @{ @"name": @"iPad Pro 11-inch 3", @"year": @2018 }, // iPad Pro 11 inch (3rd generation) - Wifi
-    @"iPad8,2": @{ @"name": @"iPad Pro 11-inch 3", @"year": @2018 }, // iPad Pro 11 inch (3rd generation) - 1TB - Wifi
-    @"iPad8,3": @{ @"name": @"iPad Pro 11-inch 3", @"year": @2018 }, // iPad Pro 11 inch (3rd generation) - Wifi + cellular
-    @"iPad8,4": @{ @"name": @"iPad Pro 11-inch 3", @"year": @2018 }, // iPad Pro 11 inch (3rd generation) - 1TB - Wifi + cellular
-    @"iPad8,5": @{ @"name": @"iPad Pro 12.9-inch 3", @"year": @2018 }, // iPad Pro 12.9 inch (3rd generation) - Wifi
-    @"iPad8,6": @{ @"name": @"iPad Pro 12.9-inch 3", @"year": @2018 }, // iPad Pro 12.9 inch (3rd generation) - 1TB - Wifi
-    @"iPad8,7": @{ @"name": @"iPad Pro 12.9-inch 3", @"year": @2018 }, // iPad Pro 12.9 inch (3rd generation) - Wifi + cellular
-    @"iPad8,8": @{ @"name": @"iPad Pro 12.9-inch 3", @"year": @2018 }, // iPad Pro 12.9 inch (3rd generation) - 1TB - Wifi + cellular
+    @"iPad5,1": @{ @"name": @"iPad mini (4th generation)", @"year": @2015 },
+    @"iPad5,2": @{ @"name": @"iPad mini (4th generation)", @"year": @2015 },
+    @"iPad5,3": @{ @"name": @"iPad Air 2 (6th generation)", @"year": @2014 },
+    @"iPad5,4": @{ @"name": @"iPad Air 2 (6th generation)", @"year": @2014 },
+    @"iPad6,3": @{ @"name": @"iPad Pro 9.7-inch", @"year": @2016 }, 
+    @"iPad6,4": @{ @"name": @"iPad Pro 9.7-inch", @"year": @2016 }, 
+    @"iPad6,7": @{ @"name": @"iPad Pro 12.9-inch", @"year": @2015 }, 
+    @"iPad6,8": @{ @"name": @"iPad Pro 12.9-inch", @"year": @2015 }, 
+    @"iPad7,1": @{ @"name": @"iPad Pro 12.9-inch (2nd generation)", @"year": @2017 }, // Wifi
+    @"iPad7,2": @{ @"name": @"iPad Pro 12.9-inch (2nd generation)", @"year": @2017 }, // Cellular
+    @"iPad7,3": @{ @"name": @"iPad Pro 10.5-inch", @"year": @2017 }, // Wifi
+    @"iPad7,4": @{ @"name": @"iPad Pro 10.5-inch", @"year": @2017 }, // Cellular
+    @"iPad7,5": @{ @"name": @"iPad (6th generation)", @"year": @2018 }, // Wifi
+    @"iPad7,6": @{ @"name": @"iPad (6th generation)", @"year": @2018 }, // Cellular
+    @"iPad7,11": @{ @"name": @"iPad (7th generation)", @"year": @2019 }, // WiFi
+    @"iPad7,12": @{ @"name": @"iPad (7th generation)", @"year": @2019 }, // WiFi + cellular
+    @"iPad8,1": @{ @"name": @"iPad Pro 11-inch (3rd generation)", @"year": @2018 }, // Wifi
+    @"iPad8,2": @{ @"name": @"iPad Pro 11-inch (3rd generation)", @"year": @2018 }, // 1TB - Wifi
+    @"iPad8,3": @{ @"name": @"iPad Pro 11-inch (3rd generation)", @"year": @2018 }, // Wifi + cellular
+    @"iPad8,4": @{ @"name": @"iPad Pro 11-inch (3rd generation)", @"year": @2018 }, // 1TB - Wifi + cellular
+    @"iPad8,5": @{ @"name": @"iPad Pro 12.9-inch (3rd generation)", @"year": @2018 }, // Wifi
+    @"iPad8,6": @{ @"name": @"iPad Pro 12.9-inch (3rd generation)", @"year": @2018 }, // 1TB - Wifi
+    @"iPad8,7": @{ @"name": @"iPad Pro 12.9-inch (3rd generation)", @"year": @2018 }, // Wifi + cellular
+    @"iPad8,8": @{ @"name": @"iPad Pro 12.9-inch (3rd generation)", @"year": @2018 }, // 1TB - Wifi + cellular
 
-    @"iPad8,9": @{ @"name": @"iPad Pro 11-inch 4", @"year": @2020 }, // iPad Pro 11 inch (4th generation) - Wifi
-    @"iPad8,10": @{ @"name": @"iPad Pro 11-inch 4", @"year": @2020 }, // iPad Pro 11 inch (4th generation) - Wifi + cellular
-    @"iPad8,11": @{ @"name": @"iPad Pro 12.9-inch 4", @"year": @2020 }, // iPad Pro 12.9 inch (4th generation) - Wifi
-    @"iPad8,12": @{ @"name": @"iPad Pro 12.9-inch 4", @"year": @2020 }, // iPad Pro 12.9 inch (4th generation) - Wifi + cellular
-    @"iPad11,1": @{ @"name": @"iPad mini 5", @"year": @2019 }, // iPad mini (5th generation) - WiFi
-    @"iPad11,2": @{ @"name": @"iPad mini 5", @"year": @2019 }, // iPad mini (5th generation) - WiFi + cellular
-    @"iPad11,3": @{ @"name": @"iPad Air 3", @"year": @2019 }, // iPad Air (3rd generation) - WiFi
-    @"iPad11,4": @{ @"name": @"iPad Air 3", @"year": @2019 }, // iPad Air (3rd generation) - WiFi + cellular
-    @"iPad11,6": @{ @"name": @"iPad 8", @"year": @2020 }, // iPad (8th generation) - WiFi
-    @"iPad11,7": @{ @"name": @"iPad 8", @"year": @2020 }, // iPad (8th generation) - WiFi + cellular
-    @"iPad13,1": @{ @"name": @"iPad Air 4", @"year": @2020 }, // iPad Air (4th generation) - WiFi
-    @"iPad13,2": @{ @"name": @"iPad Air 4", @"year": @2020 }, // iPad Air (4th generation) - WiFi + cellular
+    @"iPad8,9": @{ @"name": @"iPad Pro 11-inch (4th generation)", @"year": @2020 }, // Wifi
+    @"iPad8,10": @{ @"name": @"iPad Pro 11-inch (4th generation)", @"year": @2020 }, // Wifi + cellular
+    @"iPad8,11": @{ @"name": @"iPad Pro 12.9-inch (4th generation)", @"year": @2020 }, // Wifi
+    @"iPad8,12": @{ @"name": @"iPad Pro 12.9-inch (4th generation)", @"year": @2020 }, // Wifi + cellular
+    @"iPad11,1": @{ @"name": @"iPad mini (5th generation)", @"year": @2019 }, // WiFi
+    @"iPad11,2": @{ @"name": @"iPad mini (5th generation)", @"year": @2019 }, // WiFi + cellular
+    @"iPad11,3": @{ @"name": @"iPad Air (3rd generation)", @"year": @2019 }, // WiFi
+    @"iPad11,4": @{ @"name": @"iPad Air (3rd generation)", @"year": @2019 }, // WiFi + cellular
+    @"iPad11,6": @{ @"name": @"iPad (8th generation)", @"year": @2020 }, // WiFi
+    @"iPad11,7": @{ @"name": @"iPad (8th generation)", @"year": @2020 }, // WiFi + cellular
+    @"iPad13,1": @{ @"name": @"iPad Air (4th generation)", @"year": @2020 }, // WiFi
+    @"iPad13,2": @{ @"name": @"iPad Air (4th generation)", @"year": @2020 }, // WiFi + cellular
     @"iPad13,4": @{ @"name": @"iPad Pro 11-inch 3", @"year": @2021 }, // WiFi
     @"iPad13,5": @{ @"name": @"iPad Pro 11-inch 3", @"year": @2021 }, // WiFi
     @"iPad13,6": @{ @"name": @"iPad Pro 11-inch 3", @"year": @2021 }, // WiFi + cellular
@@ -307,11 +307,11 @@ EX_EXPORT_METHOD_AS(isRootedExperimentalAsync,
     @"iPad14,1": @{ @"name": @"iPad mini 6", @"year": @2021 }, // WiFi
     @"iPad14,2": @{ @"name": @"iPad mini 6", @"year": @2021 }, // WiFi + cellular
 
-    @"AppleTV2,1": @{ @"name": @"Apple TV", @"year": @2010 }, // Apple TV (2nd Generation)
-    @"AppleTV3,1": @{ @"name": @"Apple TV", @"year": @2012 }, // Apple TV (3rd Generation)
-    @"AppleTV3,2": @{ @"name": @"Apple TV", @"year": @2013 }, // Apple TV (3rd Generation - Rev A)
-    @"AppleTV5,3": @{ @"name": @"Apple TV", @"year": @2015 }, // Apple TV (4th Generation)
-    @"AppleTV6,2": @{ @"name": @"Apple TV 4K", @"year": @2021 } // Apple TV 4K
+    @"AppleTV2,1": @{ @"name": @"Apple TV (2nd generation)", @"year": @2010 }, 
+    @"AppleTV3,1": @{ @"name": @"Apple TV (3rd generation)", @"year": @2012 },
+    @"AppleTV3,2": @{ @"name": @"Apple TV (3rd generation - Rev A)", @"year": @2013 },
+    @"AppleTV5,3": @{ @"name": @"Apple TV (4th generation)", @"year": @2015 },
+    @"AppleTV6,2": @{ @"name": @"Apple TV 4K", @"year": @2021 }
   };
 }
 
