@@ -1,7 +1,7 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 #import "EXApiV2Client+EXRemoteNotifications.h"
-#import "EXKernel+DeviceInstallationUUID.h"
+#import "EXKernelUtil.h"
 #import "NSData+EXRemoteNotifications.h"
 #if __has_include(<EXApplication/EXProvisioningProfile.h>)
 #import <EXApplication/EXProvisioningProfile.h>
@@ -12,7 +12,6 @@
 - (NSURLSessionTask *)updateDeviceToken:(NSData *)deviceToken completionHandler:(void (^)(NSError * _Nullable))handler
 {
   NSMutableDictionary *arguments = [NSMutableDictionary dictionaryWithDictionary:@{
-    @"deviceId": [EXKernel deviceInstallationUUID],
     @"appId": NSBundle.mainBundle.bundleIdentifier,
     @"deviceToken": deviceToken.apnsTokenString,
     @"type": @"apns",
@@ -45,7 +44,6 @@
                     completionHandler:(void (^)(NSString * _Nullable, NSError * _Nullable))handler
 {
   NSMutableDictionary *arguments = [NSMutableDictionary dictionaryWithDictionary:@{
-    @"deviceId": [EXKernel deviceInstallationUUID],
     @"appId": NSBundle.mainBundle.bundleIdentifier,
     @"deviceToken": deviceToken.apnsTokenString,
     @"type": @"apns",
