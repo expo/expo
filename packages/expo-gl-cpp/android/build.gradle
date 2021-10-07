@@ -219,13 +219,15 @@ task prepareGlog(dependsOn: dependenciesPath ? [] : [downloadGlog], type: Copy) 
 }
 
 task prepareJSI() {
-  def hermesPackagePath = findNodeModulePath(projectDir, "hermes-engine")
-  if (!hermesPackagePath) {
-    throw new GradleScriptException("Could not find the hermes-engine npm package")
-  }
-  copy {
-    from("../../../android/ReactCommon/jsi")
-    into "$thirdPartyNdkDir/jsi"
+  doLast {
+    def hermesPackagePath = findNodeModulePath(projectDir, "hermes-engine")
+    if (!hermesPackagePath) {
+      throw new GradleScriptException("Could not find the hermes-engine npm package", null)
+    }
+    copy {
+      from("../../../android/ReactCommon/jsi")
+      into "$thirdPartyNdkDir/jsi"
+    }
   }
 }
 
