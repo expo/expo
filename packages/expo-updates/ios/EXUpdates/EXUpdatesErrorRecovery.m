@@ -152,7 +152,6 @@ static NSInteger const EXUpdatesErrorRecoveryRemoteLoadTimeoutMs = 5000;
   } else {
     _isWaitingForRemoteUpdate = YES;
     [_delegate loadRemoteUpdate];
-    [self _runNextTask];
   }
 }
 
