@@ -115,7 +115,11 @@ Make the following changes to allow the Development Client to control project in
 
 > **Note:** If you have a custom activity in your application already, or just want to understand what the `DevMenuAwareReactActivity` is doing, you can see [advanced instructions for Android here.](https://github.com/expo/expo/tree/master/packages/expo-dev-menu#-android)
 
-<Tabs tabs={["With unimodules", "Without unimodules"]}>
+<Tabs tabs={["With Expo modules", "With unimodules", "Without unimodules"]}>
+
+<Tab >
+<ConfigurationDiff source="/static/diffs/client/main-activity-and-application-expo-modules.diff" />
+</Tab>
 
 <Tab >
 <ConfigurationDiff source="/static/diffs/client/main-activity-and-application.diff" />
