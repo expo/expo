@@ -1,7 +1,6 @@
 package expo.modules.localization
 
 import android.text.TextUtils
-import java.lang.Exception
 import java.util.*
 import kotlin.collections.ArrayList
 
