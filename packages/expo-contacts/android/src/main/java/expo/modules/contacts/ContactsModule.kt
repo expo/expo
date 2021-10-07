@@ -1,20 +1,24 @@
 package expo.modules.contacts
 
 import android.Manifest
-import expo.modules.core.ExportedModule
-import expo.modules.contacts.ContactsModule.ContactsActivityEventListener
-import expo.modules.core.ModuleRegistry
-import expo.modules.core.interfaces.ExpoMethod
-import expo.modules.contacts.Contact
+import android.provider.ContactsContract.CommonDataKinds
+import android.app.Activity
+import android.content.Context
+import android.database.Cursor
+import android.net.Uri
 import android.os.Bundle
-import android.os.Parcelable
-import android.content.ContentProviderOperation
-import android.content.ContentProviderResult
 import android.provider.ContactsContract
 import android.content.Intent
-import expo.modules.contacts.ContactsModule
 import android.os.AsyncTask
 import android.content.ContentResolver
+
+import expo.modules.core.ExportedModule
+import expo.modules.core.ModuleRegistry
+import expo.modules.core.interfaces.ExpoMethod
+import expo.modules.core.Promise
+import expo.modules.core.interfaces.ActivityEventListener
+import expo.modules.core.interfaces.ActivityProvider
+import expo.modules.core.interfaces.services.UIManager
 import expo.modules.contacts.models.PostalAddressModel
 import expo.modules.contacts.models.PhoneNumberModel
 import expo.modules.contacts.models.EmailModel
@@ -23,42 +27,33 @@ import expo.modules.contacts.models.UrlAddressModel
 import expo.modules.contacts.models.ExtraNameModel
 import expo.modules.contacts.models.DateModel
 import expo.modules.contacts.models.RelationshipModel
-import android.provider.ContactsContract.CommonDataKinds
-import expo.modules.contacts.EXColumns
-import android.app.Activity
-import android.content.Context
-import android.database.Cursor
-import android.net.Uri
 import expo.modules.contacts.models.BaseModel
-import expo.modules.core.Promise
-import expo.modules.core.interfaces.ActivityEventListener
-import expo.modules.core.interfaces.ActivityProvider
-import expo.modules.core.interfaces.services.UIManager
+import expo.modules.core.ModuleRegistryDelegate
 import expo.modules.interfaces.permissions.Permissions
+
 import java.lang.Exception
 import java.util.*
 
-class ContactsModule(context: Context?) : ExportedModule(context) {
-  private val mActivityEventListener: ActivityEventListener = ContactsActivityEventListener()
-  private var mModuleRegistry: ModuleRegistry? = null
-  private var mPendingPromise: Promise? = null
-  override fun getName(): String {
-    return "ExpoContacts"
-  }
+class ContactsModule(
+  context: Context,
+  private val moduleRegistryDelegate: ModuleRegistryDelegate = ModuleRegistryDelegate()
+) : ExportedModule(context) {
+  private val activityEventListener = ContactsActivityEventListener()
+  private val permissionsManager: Permissions by moduleRegistry()
+  private var pendingPromise: Promise? = null
+
+  override fun getName() = "ExpoContacts"
+
+  private inline fun <reified T> moduleRegistry() = moduleRegistryDelegate.getFromModuleRegistry<T>()
 
   override fun onCreate(moduleRegistry: ModuleRegistry) {
-    mModuleRegistry = moduleRegistry
-    val uiManager = mModuleRegistry!!.getModule(UIManager::class.java)
-    uiManager.registerActivityEventListener(mActivityEventListener)
+    moduleRegistryDelegate.onCreate(moduleRegistry)
+    val uiManager: UIManager by moduleRegistry()
+    uiManager.registerActivityEventListener(activityEventListener)
   }
 
   @ExpoMethod
   fun requestPermissionsAsync(promise: Promise) {
-    val permissionsManager = mModuleRegistry!!.getModule(Permissions::class.java)
-    if (permissionsManager == null) {
-      promise.reject("E_NO_PERMISSIONS", "Permissions module is null. Are you sure all the installed Expo modules are properly linked?")
-      return
-    }
     if (permissionsManager.isPermissionPresentInManifest(Manifest.permission.WRITE_CONTACTS)) {
       permissionsManager.askForPermissionsWithPromise(promise, Manifest.permission.READ_CONTACTS, Manifest.permission.WRITE_CONTACTS)
     } else {
@@ -68,11 +63,6 @@ class ContactsModule(context: Context?) : ExportedModule(context) {
 
   @ExpoMethod
   fun getPermissionsAsync(promise: Promise) {
-    val permissionsManager = mModuleRegistry!!.getModule(Permissions::class.java)
-    if (permissionsManager == null) {
-      promise.reject("E_NO_PERMISSIONS", "Permissions module is null. Are you sure all the installed Expo modules are properly linked?")
-      return
-    }
     if (permissionsManager.isPermissionPresentInManifest(Manifest.permission.WRITE_CONTACTS)) {
       permissionsManager.getPermissionsWithPromise(promise, Manifest.permission.READ_CONTACTS, Manifest.permission.WRITE_CONTACTS)
     } else {
@@ -82,7 +72,7 @@ class ContactsModule(context: Context?) : ExportedModule(context) {
 
   // TODO: Evan: Test
   @ExpoMethod
-  fun getContactsAsync(options: Map<String?, Any?>, promise: Promise) {
+  fun getContactsAsync(options: Map<String, Any?>, promise: Promise) {
     if (isMissingReadPermission(promise)) return
     Thread(Runnable {
       var sortOrder: String? = null
@@ -247,7 +237,7 @@ class ContactsModule(context: Context?) : ExportedModule(context) {
     val intent = Intent(Intent.ACTION_EDIT)
     intent.setDataAndType(selectedContactUri, ContactsContract.Contacts.CONTENT_ITEM_TYPE)
     val activityProvider = mModuleRegistry!!.getModule(ActivityProvider::class.java)
-    mPendingPromise = promise
+    pendingPromise = promise
     activityProvider.currentActivity.startActivityForResult(intent, RC_EDIT_CONTACT)
   }
 
@@ -650,11 +640,6 @@ class ContactsModule(context: Context?) : ExportedModule(context) {
   }
 
   private fun isMissingReadPermission(promise: Promise): Boolean {
-    val permissionsManager = mModuleRegistry!!.getModule(Permissions::class.java)
-    if (permissionsManager == null) {
-      promise.reject("E_NO_PERMISSIONS", "Permissions module is null. Are you sure all the installed Expo modules are properly linked?")
-      return false
-    }
     val hasPermission = permissionsManager.hasGrantedPermissions(Manifest.permission.READ_CONTACTS)
     if (!hasPermission) {
       promise.reject("E_MISSING_PERMISSION", "Missing read contacts permission.")
@@ -663,11 +648,6 @@ class ContactsModule(context: Context?) : ExportedModule(context) {
   }
 
   private fun isMissingWritePermission(promise: Promise): Boolean {
-    val permissionsManager = mModuleRegistry!!.getModule(Permissions::class.java)
-    if (permissionsManager == null) {
-      promise.reject("E_NO_PERMISSIONS", "Permissions module is null. Are you sure all the installed Expo modules are properly linked?")
-      return false
-    }
     val hasPermission = permissionsManager.hasGrantedPermissions(Manifest.permission.WRITE_CONTACTS)
     if (!hasPermission) {
       promise.reject("E_MISSING_PERMISSION", "Missing write contacts permission.")
@@ -677,8 +657,8 @@ class ContactsModule(context: Context?) : ExportedModule(context) {
 
   private inner class ContactsActivityEventListener : ActivityEventListener {
     override fun onActivityResult(activity: Activity, requestCode: Int, resultCode: Int, intent: Intent?) {
-      if (requestCode == RC_EDIT_CONTACT && mPendingPromise != null) {
-        mPendingPromise!!.resolve(0)
+      if (requestCode == RC_EDIT_CONTACT && pendingPromise != null) {
+        pendingPromise!!.resolve(0)
       }
     }
 
