@@ -4,7 +4,7 @@
 
 ### 🛠 Breaking changes
 
-- Remove deprecated `setApiKey` method.
+- Remove deprecated `setApiKey` method. ([#14672](https://github.com/expo/expo/pull/14672) by [@Simek](https://github.com/Simek))
 
 ### 🎉 New features
 
@@ -12,7 +12,7 @@
 
 ### 💡 Others
 
-- Extract nested `foregroundService` object from `LocationTaskOptions` type to the separate type `LocationTaskServiceOptions`.
+- Extract nested `foregroundService` object from `LocationTaskOptions` type to the separate type `LocationTaskServiceOptions`. ([#14672](https://github.com/expo/expo/pull/14672) by [@Simek](https://github.com/Simek))
 
 ## 13.0.1 — 2021-10-01
 
