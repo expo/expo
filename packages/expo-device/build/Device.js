@@ -1,17 +1,12 @@
-import { Platform, UnavailabilityError } from 'expo-modules-core';
+import { UnavailabilityError } from 'expo-modules-core';
 import { DeviceType } from './Device.types';
 import ExpoDevice from './ExpoDevice';
-import { getIosModelName } from './ModelNames';
 export { DeviceType };
 export const isDevice = ExpoDevice ? ExpoDevice.isDevice : true;
 export const brand = ExpoDevice ? ExpoDevice.brand : null;
 export const manufacturer = ExpoDevice ? ExpoDevice.manufacturer : null;
 export const modelId = ExpoDevice ? ExpoDevice.modelId || null : null;
-export const modelName = ExpoDevice
-    ? Platform.OS === 'ios' && ExpoDevice.modelId
-        ? getIosModelName(ExpoDevice.modelId)
-        : ExpoDevice.modelName
-    : null;
+export const modelName = ExpoDevice ? ExpoDevice.modelName : null;
 export const designName = ExpoDevice ? ExpoDevice.designName || null : null;
 export const productName = ExpoDevice ? ExpoDevice.productName || null : null;
 export const deviceYearClass = ExpoDevice ? ExpoDevice.deviceYearClass : null;
