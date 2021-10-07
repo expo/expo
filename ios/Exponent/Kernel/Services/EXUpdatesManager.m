@@ -20,13 +20,6 @@ NSString * const EXUpdatesErrorEventType = @"error";
 NSString * const EXUpdatesUpdateAvailableEventType = @"updateAvailable";
 NSString * const EXUpdatesNotAvailableEventType = @"noUpdateAvailable";
 
-// legacy events
-// TODO: remove once SDK 38 is phased out
-NSString * const EXUpdatesEventNameLegacy = @"Exponent.nativeUpdatesEvent";
-NSString * const EXUpdatesDownloadStartEventType = @"downloadStart";
-NSString * const EXUpdatesDownloadProgressEventType = @"downloadProgress";
-NSString * const EXUpdatesDownloadFinishedEventType = @"downloadFinished";
-
 @interface EXUpdatesManager ()
 
 @property (nonatomic, strong) EXAppLoader *manifestAppLoader;
@@ -41,7 +34,6 @@ ofDownloadWithManifest:(EXManifestsManifest * _Nullable)manifest
             error:(NSError * _Nullable)error;
 {
   NSDictionary *body;
-  NSDictionary *bodyLegacy;
   if (error) {
     body = @{
              @"type": EXUpdatesErrorEventType,
@@ -50,10 +42,6 @@ ofDownloadWithManifest:(EXManifestsManifest * _Nullable)manifest
   } else if (isBundleNew) {
     // prevent a crash, but this shouldn't ever happen
     NSDictionary *rawManifestJSON = manifest ? manifest.rawManifestJSON : @{};
-    bodyLegacy = @{
-                   @"type": EXUpdatesDownloadFinishedEventType,
-                   @"manifest": rawManifestJSON
-                   };
     body = @{
              @"type": EXUpdatesUpdateAvailableEventType,
              @"manifest": rawManifestJSON
@@ -65,9 +53,6 @@ ofDownloadWithManifest:(EXManifestsManifest * _Nullable)manifest
   }
   RCTBridge *bridge = appRecord.appManager.reactBridge;
   if (appRecord.status == kEXKernelAppRecordStatusRunning) {
-    // for SDK 38 and below
-    [bridge enqueueJSCall:@"RCTDeviceEventEmitter.emit" args:@[EXUpdatesEventNameLegacy, bodyLegacy ?: body]];
-    // for SDK 39+
     [bridge enqueueJSCall:@"RCTDeviceEventEmitter.emit" args:@[EXUpdatesEventName, body]];
   }
 }
