@@ -156,11 +156,6 @@ NSString * const kEXReloadActiveAppRequest = @"EXReloadActiveAppRequest";
     id batchedBridge = [destinationBridge batchedBridge];
     id moduleData = [batchedBridge moduleDataForName:moduleName];
     
-    // React Native before SDK 11 didn't strip the "RCT" prefix from module names
-    if (!moduleData && ![moduleName hasPrefix:@"RCT"]) {
-      moduleData = [batchedBridge moduleDataForName:[@"RCT" stringByAppendingString:moduleName]];
-    }
-    
     if (moduleData) {
       return [moduleData instance];
     }
