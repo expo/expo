@@ -17,6 +17,8 @@ If you created your project with `expo init` before SDK 43, or you already have 
 
 If you created your project with `npx react-native init` and do not have `react-native-unimodules` or any other Expo packages installed, use the tabs marked **Without unimodules**.
 
+> **Note**: if you are using **SDK 43 or above**, you need to install **`expo-dev-client@0.6.0` or above**.
+
 ## 1. Installation
 
 Add the `expo-dev-client` package to your package.json.
