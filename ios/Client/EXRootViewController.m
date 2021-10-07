@@ -35,6 +35,28 @@ NS_ASSUME_NONNULL_BEGIN
   return self;
 }
 
+#pragma mark - Screen Orientation
+
+- (BOOL)shouldAutorotate
+{
+  return YES;
+}
+
+/**
+ * supportedInterfaceOrienation has to defined by the currently visible app (to support multiple apps with different settings),
+ * but according to the iOS docs 'Typically, the system calls this method only on the root view controller of the window',
+ * so we need to query the kernel about currently visible app and it's view controller settings
+ */
+- (UIInterfaceOrientationMask)supportedInterfaceOrientations
+{
+  const UIInterfaceOrientationMask visibleAppSupportedInterfaceOrientations =
+    [EXKernel sharedInstance]
+      .visibleApp
+      .viewController
+      .supportedInterfaceOrientations;
+  return visibleAppSupportedInterfaceOrientations;
+}
+
 #pragma mark - EXViewController
 
 - (void)createRootAppAndMakeVisible
