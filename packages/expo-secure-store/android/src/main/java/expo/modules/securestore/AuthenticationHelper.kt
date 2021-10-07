@@ -87,7 +87,7 @@ class AuthenticationHelper(
     } catch (exception: GeneralSecurityException) {
       Log.w(SecureStoreModule.TAG, exception)
       promise.reject(
-        "ERR_SECURESTORE_ENCRYPT_FAILURE,
+        "ERR_SECURESTORE_ENCRYPT_FAILURE",
         "Could not encrypt/decrypt the value for SecureStore",
         exception
       )
