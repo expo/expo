@@ -6,6 +6,8 @@ ROOT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 ARTIFACTS_DIR="$ROOT_DIR/artifacts"
 TEMP_DIR="/tmp/android-shell-app"
 
+[[ "$(command -v jq)" ]] || { echo "jq is not installed." ; exit 1; }
+
 mkdir -p $ARTIFACTS_DIR
 rm -rf $TEMP_DIR
 mkdir -p $TEMP_DIR
@@ -25,11 +27,8 @@ mkdir -p $TEMP_DIR/local_packages
 cp -r ${ROOT_DIR}/packages/expo $TEMP_DIR/local_packages/expo
 cp -r ${ROOT_DIR}/packages/expo-modules-autolinking $TEMP_DIR/local_packages/expo-modules-autolinking
 pushd $TEMP_DIR
-yarn add file:./local_packages/expo --ignore-workspace-root-check
-yarn add file:./local_packages/expo-modules-autolinking --ignore-workspace-root-check 
-# remove unnecessary node_modules and yarn.lock because local_packages are already version pinning
-# these are just a cross-platform way to mutate package.json.
-rm -rf node_modules yarn.lock
+jq '.dependencies += {"expo": "file:./local_packages/expo", "expo-modules-autolinking": "file:./local_packages/expo-modules-autolinking"}' package.json > package.json.tmp
+mv -f package.json.tmp package.json
 popd
 
 # packages are used by the optional-modules-linking-code in XDL
