@@ -198,7 +198,7 @@ export type LocationTaskServiceOptions = {
    * Color of the foreground service notification. Accepts `#RRGGBB` and `#AARRGGBB` hex formats.
    */
   notificationColor?: string;
-}
+};
 
 // @needsAudit
 /**
