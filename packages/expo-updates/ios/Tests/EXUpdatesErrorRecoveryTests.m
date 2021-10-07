@@ -11,7 +11,6 @@
 
 @property (nonatomic, strong) EXUpdatesErrorRecovery *errorRecovery;
 @property (nonatomic, strong) dispatch_queue_t testQueue;
-@property (nonatomic, strong) EXUpdatesDatabase *mockDatabase;
 
 @end
 
@@ -21,8 +20,6 @@
 {
   _testQueue = dispatch_queue_create("expo.errorRecoveryTestQueue", DISPATCH_QUEUE_SERIAL);
   _errorRecovery = [[EXUpdatesErrorRecovery alloc] initWithErrorRecoveryQueue:_testQueue remoteLoadTimeout:500];
-  _mockDatabase = mock([EXUpdatesDatabase class]);
-  [given(_mockDatabase.databaseQueue) willReturn:_testQueue];
 }
 
 - (void)testHandleError_NewWorkingUpdateAlreadyLoaded
@@ -202,6 +199,30 @@
   dispatch_sync(_testQueue, ^{}); // flush queue
 
   [verify(mockDelegate) markFailedLaunchForLaunchedUpdate];
+  // should try to load a remote update since we don't have one already
+  [verify(mockDelegate) loadRemoteUpdate];
+
+  // indicate there isn't a new update from the server
+  [_errorRecovery notifyNewRemoteLoadStatus:EXUpdatesRemoteLoadStatusIdle];
+  dispatch_sync(_testQueue, ^{}); // flush queue
+  [self verifySuccessfulRelaunchWithCompletion_WithMockDelegate:mockDelegate];
+}
+
+- (void)testHandleError_NoRemoteUpdate_RCTContentDidAppear
+{
+  id<EXUpdatesErrorRecoveryDelegate> mockDelegate = mockProtocol(@protocol(EXUpdatesErrorRecoveryDelegate));
+  _errorRecovery.delegate = mockDelegate;
+
+  [given(mockDelegate.remoteLoadStatus) willReturnInteger:EXUpdatesRemoteLoadStatusIdle];
+
+  [_errorRecovery startMonitoring];
+  [[NSNotificationCenter defaultCenter] postNotificationName:@"RCTContentDidAppearNotification" object:nil];
+  [verify(mockDelegate) markSuccessfulLaunchForLaunchedUpdate];
+
+  NSError *mockError = mock([NSError class]);
+  [_errorRecovery handleError:mockError];
+  dispatch_sync(_testQueue, ^{}); // flush queue
+
   // should try to load a remote update since we don't have one already
   [verify(mockDelegate) loadRemoteUpdate];
 
