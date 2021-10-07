@@ -54,8 +54,7 @@ const CUSTOM_WORKFLOWS = {
     name: 'iOS Shell App (with newest SDK version and Upload to S3)',
     baseWorkflowSlug: 'shell-app-ios',
     inputs: {
-      upload: 'upload',
-      versioned: 'true',
+      upload: 'upload'
     },
   },
   'sdk-all': {
