@@ -1,7 +1,7 @@
 #import <ExpoModulesCore/EXDefines.h>
 
+#import "Expo_Go-Swift.h"
 #import "EXAppLoadingProgressWindowController.h"
-#import "EXAppLoadingProgressWindowViewController.h"
 #import "EXUtil.h"
 
 @interface EXAppLoadingProgressWindowController ()
@@ -74,7 +74,7 @@
     EX_ENSURE_STRONGIFY(self);
     if (self.window) {
       self.window.hidden = YES;
-      // remove this window altogehter to hand over the command over StatusBar rotation
+      // remove this window altogther to hand over the command over StatusBar rotation
       self.window = nil;
     }
   });
