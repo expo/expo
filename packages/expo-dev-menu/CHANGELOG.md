@@ -4,9 +4,17 @@
 
 ### 🛠 Breaking changes
 
-- Changed the reload key command to `r` instead of `Cmd + r` on iOS. ([#14590](https://github.com/expo/expo/pull/14590) by [@lukmccall](https://github.com/lukmccall))
-
 ### 🎉 New features
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 0.8.2 — 2021-10-07
+
+### 🛠 Breaking changes
+
+- Changed the reload key command to `r` instead of `Cmd + r` on iOS. ([#14590](https://github.com/expo/expo/pull/14590) by [@lukmccall](https://github.com/lukmccall))
 
 ### 🐛 Bug fixes
 
