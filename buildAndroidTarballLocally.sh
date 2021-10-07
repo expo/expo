@@ -29,6 +29,8 @@ cp -r ${ROOT_DIR}/packages/expo-modules-autolinking $TEMP_DIR/local_packages/exp
 pushd $TEMP_DIR
 jq '.dependencies += {"expo": "file:./local_packages/expo", "expo-modules-autolinking": "file:./local_packages/expo-modules-autolinking"}' package.json > package.json.tmp
 mv -f package.json.tmp package.json
+rm -rf local_packages/expo/node_modules
+rm -rf local_packages/expo-modules-autolinking/node_modules
 popd
 
 # packages are used by the optional-modules-linking-code in XDL
