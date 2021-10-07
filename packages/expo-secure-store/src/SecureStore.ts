@@ -67,12 +67,12 @@ export type SecureStoreOptions = {
    */
   keychainService?: string;
   /**
-   * Option responsible for enabling the usage of the user authentication methods available on the device while 
+   * Option responsible for enabling the usage of the user authentication methods available on the device while
    * accessing data stored in SecureStore.
    *
    * - iOS: Equivalent to `kSecAccessControlUserPresence`
-   * - Android: Equivalent to `setUserAuthenticationRequired(true)` (requires API 23). Complete functionality 
-   * is unlocked only with a freshly generated key - this would not work in tandem with the `keychainService` 
+   * - Android: Equivalent to `setUserAuthenticationRequired(true)` (requires API 23). Complete functionality
+   * is unlocked only with a freshly generated key - this would not work in tandem with the `keychainService`
    * value used for the others non-authenticated operations.
    */
   requireAuthentication?: boolean;
