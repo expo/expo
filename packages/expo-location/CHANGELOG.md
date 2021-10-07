@@ -4,11 +4,15 @@
 
 ### 🛠 Breaking changes
 
+- Remove deprecated `setApiKey` method.
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+- Extract nested `foregroundService` object from `LocationTaskOptions` type to the separate type `LocationTaskServiceOptions`.
 
 ## 13.0.1 — 2021-10-01
 
