@@ -20,6 +20,16 @@ rm -rf $TEMP_DIR/android/versioned-abis
 # which we require when building the shell app
 cp ${ROOT_DIR}/package.json $TEMP_DIR/package.json
 
+# make some packages available for node modules resolution
+mkdir -p $TEMP_DIR/local_packages
+cp -r ${ROOT_DIR}/packages/expo $TEMP_DIR/local_packages/expo
+cp -r ${ROOT_DIR}/packages/expo-modules-autolinking $TEMP_DIR/local_packages/expo-modules-autolinking
+pushd $TEMP_DIR
+yarn add file:./local_packages/expo --ignore-workspace-root-check --no-lockfile
+yarn add file:./local_packages/expo-modules-autolinking --ignore-workspace-root-check --no-lockfile
+rm -rf node_modules # remove node_modules as local_packages are already version pinning and save tarball size
+popd
+
 # packages are used by the optional-modules-linking-code in XDL
 # see xdl/AndroidShellApp.js
 ln -s ${ROOT_DIR}/packages $TEMP_DIR/packages
@@ -27,14 +37,7 @@ ln -s ${ROOT_DIR}/packages $TEMP_DIR/packages
 # generate dynamic macros (we can do it here, as the contents are already `ln -s`-ed)
 et android-generate-dynamic-macros --configuration release
 
-# go to temp dir
-cd $TEMP_DIR;
-
-# make some packages available for node modules resolution
-yarn add file:./packages/expo --ignore-workspace-root-check
-yarn add file:./packages/expo-modules-autolinking --ignore-workspace-root-check
-
 # build the artifact
-tar -czhf $ARTIFACTS_DIR/android-shell-builder.tar.gz .
+cd $TEMP_DIR; tar -czhf $ARTIFACTS_DIR/android-shell-builder.tar.gz .
 
 rm -rf $TEMP_DIR
