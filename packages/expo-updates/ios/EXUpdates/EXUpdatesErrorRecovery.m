@@ -119,8 +119,8 @@ static NSInteger const EXUpdatesErrorRecoveryRemoteLoadTimeoutMs = 5000;
     case EXUpdatesErrorRecoveryTaskWaitForRemoteUpdate:
       [self _waitForRemoteLoaderToFinish];
       break;
-        // EXUpdatesErrorRecoveryTaskLaunchNew is called only after a new update is downloaded
-        // and added to the cache, so it equivalent to EXUpdatesErrorRecoveryTaskLaunchCached
+    // EXUpdatesErrorRecoveryTaskLaunchNew is called only after a new update is downloaded
+    // and added to the cache, so it is equivalent to EXUpdatesErrorRecoveryTaskLaunchCached
     case EXUpdatesErrorRecoveryTaskLaunchNew:
     case EXUpdatesErrorRecoveryTaskLaunchCached:
       [self _tryRelaunchFromCache];
@@ -241,7 +241,7 @@ static NSInteger const EXUpdatesErrorRecoveryRemoteLoadTimeoutMs = 5000;
   // wait 10s before unsetting error handlers; even though we won't try to
   // relaunch if our handlers are triggered after now, we still want to give
   // the EXUpdatesErrorRecoveryTaskWaitForRemoteUpdate task a reasonable
-  // amount of time to run and fetch a new update, in case there is one
+  // window of time to start and check for a new update is there is one
   dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 10 * NSEC_PER_SEC), _errorRecoveryQueue, ^{
     [self _unsetRCTErrorHandlers];
   });
