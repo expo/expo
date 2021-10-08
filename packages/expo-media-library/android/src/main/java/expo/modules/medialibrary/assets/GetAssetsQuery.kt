@@ -25,7 +25,7 @@ internal fun getQueryFromOptions(input: Map<String, Any?>): GetAssetsQuery {
 
   val selection = createSelectionString(input)
 
-  val sortBy = input["sortBy"].takeIfInstanceOf<List<*>>()
+  val sortBy = input["sortBy"] as? List<*>
   val order = if (sortBy != null && sortBy.isNotEmpty()) {
     convertOrderDescriptors(sortBy)
   } else {
@@ -44,13 +44,16 @@ private fun createSelectionString(input: Map<String, Any?>): String {
     selectionBuilder.append(" AND ")
   }
 
-  val mediaType = input["mediaType"].takeIfInstanceOf<List<*>>()
+  val mediaType = input["mediaType"] as? List<*>
   if (mediaType != null && !mediaType.contains(MediaLibraryConstants.MEDIA_TYPE_ALL)) {
-
     val mediaTypeInts = mediaType.map { parseMediaType(it.toString()) }
-    selectionBuilder.append("${MediaStore.Files.FileColumns.MEDIA_TYPE} IN (${mediaTypeInts.joinToString(",")})")
+    selectionBuilder.append(
+      "${MediaStore.Files.FileColumns.MEDIA_TYPE} IN (${mediaTypeInts.joinToString(separator = ",")})"
+    )
   } else {
-    selectionBuilder.append("${MediaStore.Files.FileColumns.MEDIA_TYPE} != ${MediaStore.Files.FileColumns.MEDIA_TYPE_NONE}")
+    selectionBuilder.append(
+      "${MediaStore.Files.FileColumns.MEDIA_TYPE} != ${MediaStore.Files.FileColumns.MEDIA_TYPE_NONE}"
+    )
   }
 
   input["createdAfter"].takeIfInstanceOf<Number>()?.let {

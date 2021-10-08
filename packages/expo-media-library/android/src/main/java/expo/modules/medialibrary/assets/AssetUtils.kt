@@ -19,7 +19,6 @@ import java.io.IOException
 import java.lang.NumberFormatException
 import java.lang.RuntimeException
 import java.lang.UnsupportedOperationException
-import java.util.ArrayList
 
 /**
  * Queries content resolver for a single asset.
@@ -46,7 +45,7 @@ fun queryAssetInfo(
       } else {
         if (assetCursor.count == 1) {
           assetCursor.moveToFirst()
-          val array = ArrayList<Bundle>()
+          val array = arrayListOf<Bundle>()
           putAssetsInfo(contentResolver, assetCursor, array, limit = 1, offset = 0, resolveWithFullInfo)
           // actually we want to return just the first item, but array.getMap returns ReadableMap
           // which is not compatible with promise.resolve and there is no simple solution to convert
@@ -169,8 +168,8 @@ fun getExifLocationForUri(contentResolver: ContentResolver, photoUri: Uri): Bund
     // Exception occurs here if ACCESS_MEDIA_LOCATION permission isn't granted
     val uri = MediaStore.setRequireOriginal(photoUri)
 
-    return contentResolver.openInputStream(uri).use { stream ->
-      ExifInterface(stream ?: return null)
+    return contentResolver.openInputStream(uri)?.use { stream ->
+      ExifInterface(stream)
         .latLong
         ?.let {
           Bundle().apply {
@@ -275,7 +274,8 @@ fun getAssetDimensionsFromCursor(
 fun exportMediaType(mediaType: Int): String {
   return when (mediaType) {
     MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE -> MediaLibraryConstants.MEDIA_TYPE_PHOTO
-    MediaStore.Files.FileColumns.MEDIA_TYPE_AUDIO, MediaStore.Files.FileColumns.MEDIA_TYPE_PLAYLIST -> MediaLibraryConstants.MEDIA_TYPE_AUDIO
+    MediaStore.Files.FileColumns.MEDIA_TYPE_AUDIO,
+    MediaStore.Files.FileColumns.MEDIA_TYPE_PLAYLIST -> MediaLibraryConstants.MEDIA_TYPE_AUDIO
     MediaStore.Files.FileColumns.MEDIA_TYPE_VIDEO -> MediaLibraryConstants.MEDIA_TYPE_VIDEO
     else -> MediaLibraryConstants.MEDIA_TYPE_UNKNOWN
   }

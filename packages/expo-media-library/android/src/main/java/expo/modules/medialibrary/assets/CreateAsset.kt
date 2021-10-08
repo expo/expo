@@ -66,10 +66,10 @@ class CreateAsset @JvmOverloads constructor(
   @Throws(IOException::class)
   private fun writeFileContentsToAsset(localFile: File, assetUri: Uri) {
     val contentResolver = context.contentResolver
-    FileInputStream(localFile).channel.use { `in` ->
-      (contentResolver.openOutputStream(assetUri) as FileOutputStream).channel.use { out ->
-        val transferred = `in`.transferTo(0, `in`.size(), out)
-        if (transferred != `in`.size()) {
+    FileInputStream(localFile).channel.use { input ->
+      (contentResolver.openOutputStream(assetUri) as FileOutputStream).channel.use { output ->
+        val transferred = input.transferTo(0, input.size(), output)
+        if (transferred != input.size()) {
           contentResolver.delete(assetUri, null, null)
           throw IOException("Could not save file to $assetUri Not enough space.")
         }
