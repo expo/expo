@@ -194,10 +194,7 @@ fun getExifLocationForUri(contentResolver: ContentResolver, photoUri: Uri): Bund
  * @returns [Bundle] with latitude and longitude or `null` if fail
  */
 fun getExifLocationLegacy(exifInterface: ExifInterface): Bundle? {
-  val latLong = exifInterface.latLong
-  if (latLong == null) {
-    return null
-  }
+  val latLong = exifInterface.latLong ?: return null
   return Bundle().apply {
     putDouble("latitude", latLong[0])
     putDouble("longitude", latLong[1])

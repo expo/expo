@@ -15,6 +15,7 @@ import io.mockk.verify
 import org.junit.After
 import org.junit.Assert
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -96,15 +97,12 @@ internal class AssetUtilsTests {
       val exifInterface = mockkClass(ExifInterface::class)
       every { exifInterface.latLong } returns doubleArrayOf(lat, lng)
 
-      val assetBundle = Bundle()
-
       // act
-      getExifLocationLegacy(exifInterface, assetBundle)
+      val locationBundle = getExifLocationLegacy(exifInterface)
 
       // assert
-      assertTrue("Result bundle is missing 'location' key", assetBundle.containsKey("location"))
-      val locationBundle = assetBundle.getParcelable<Bundle>("location")!!
-      assertTrue("Result is missing 'latitude' key", locationBundle.containsKey("latitude"))
+      assertNotNull(locationBundle)
+      assertTrue("Result is missing 'latitude' key", locationBundle!!.containsKey("latitude"))
       assertTrue("Result is missing 'latitude' key", locationBundle.containsKey("longitude"))
       assertEquals(lat, locationBundle.getDouble("latitude"), 0.001)
       assertEquals(lng, locationBundle.getDouble("longitude"), 0.001)
@@ -116,14 +114,11 @@ internal class AssetUtilsTests {
       val exifInterface = mockkClass(ExifInterface::class)
       every { exifInterface.latLong } returns null
 
-      val assetBundle = Bundle()
-
       // act
-      getExifLocationLegacy(exifInterface, assetBundle)
+      val locationBundle = getExifLocationLegacy(exifInterface)
 
       // assert
-      assertTrue(assetBundle.containsKey("location"))
-      assertNull(assetBundle.getParcelable("location"))
+      assertNull(locationBundle)
     }
 
     @Test
