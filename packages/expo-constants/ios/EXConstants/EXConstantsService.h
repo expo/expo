@@ -21,7 +21,7 @@ FOUNDATION_EXPORT NSString * const EXConstantsExecutionEnvironmentStoreClient;
 - (NSArray<NSString *> *)systemFontNames;
 
 + (NSString *)devicePlatform;
-+ (nullable NSString *)modelName;
++ (nullable NSString *)deviceModel;
 + (NSNumber *)deviceYear;
 + (NSString *)deviceName;
 
