@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- Swift's module definition is now a static function which also makes modules lazy by default. ([#14645](https://github.com/expo/expo/pull/14645) by [@tsapeta](https://github.com/tsapeta))
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
