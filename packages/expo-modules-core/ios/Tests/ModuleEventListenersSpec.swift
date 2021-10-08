@@ -27,7 +27,8 @@ class ModuleEventListenersSpec: QuickSpec {
           }
         }
         appContext.moduleRegistry.register(definition: definition)
-        appContext.moduleRegistry.get(moduleWithName: definition.name)
+        // `get(moduleWithName:)` automatically creates a module instance if needed.
+        let _ = appContext.moduleRegistry.get(moduleWithName: definition.name)
       }
     }
 

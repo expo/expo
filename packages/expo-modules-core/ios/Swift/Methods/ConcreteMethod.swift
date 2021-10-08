@@ -19,6 +19,9 @@ public class ConcreteMethod<Args, ReturnType>: AnyMethod {
 
   let argTypes: [AnyArgumentType]
 
+  /**
+   Determines whether the method should be called with the module instance.
+   */
   let detached: Bool
 
   init(
@@ -40,12 +43,12 @@ public class ConcreteMethod<Args, ReturnType>: AnyMethod {
     do {
       var finalArgs = try castArguments(args)
 
-      if !self.detached {
-        finalArgs.insert(module, at: 0)
-      }
-
       if takesPromise {
         finalArgs.append(promise)
+      }
+
+      if !self.detached {
+        finalArgs.insert(module, at: 0)
       }
 
       let tuple = try Conversions.toTuple(finalArgs) as! Args

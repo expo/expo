@@ -46,7 +46,7 @@ public class ModuleRegistry: Sequence {
   }
 
   public func unregister(moduleName: String) {
-    registry.removeValue(forKey: moduleName)
+    registry[moduleName] = nil
   }
 
   public func has(moduleWithName moduleName: String) -> Bool {
@@ -57,7 +57,6 @@ public class ModuleRegistry: Sequence {
     return registry[moduleName]
   }
 
-  @discardableResult
   public func get(moduleWithName moduleName: String) -> AnyModule? {
     return try? registry[moduleName]?.getInstance()
   }

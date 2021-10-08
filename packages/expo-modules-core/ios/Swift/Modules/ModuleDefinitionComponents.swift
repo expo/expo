@@ -7,6 +7,8 @@ import UIKit
  will be implemented in the future.
  */
 extension AnyModule {
+  // MARK: - Module name
+
   /**
    Sets the name of the module that is exported to the JavaScript world.
    */
@@ -14,12 +16,16 @@ extension AnyModule {
     return ModuleNameDefinition(name: name)
   }
 
+  // MARK: - Constants
+
   /**
    Definition function setting the module's constants to export.
    */
   public static func constants(_ closure: () -> [String : Any?]) -> AnyDefinition {
     return ConstantsDefinition(constants: closure())
   }
+
+  // MARK: - Methods
 
   /**
    Factory function for methods without the module instance and arguments.
@@ -162,15 +168,23 @@ extension AnyModule {
     )
   }
 
+  // MARK: - `onCreate`
+
   /**
    Creates module's lifecycle listener that is called right after module initialization.
    */
   public static func onCreate(_ closure: @escaping () -> Void) -> AnyDefinition {
     return EventListener(.moduleCreate, closure)
   }
+
+  /**
+   Creates module's lifecycle listener that is called right after module initialization.
+   */
   public static func onCreate(_ closure: @escaping (Self) -> Void) -> AnyDefinition {
     return EventListener(.moduleCreate, closure)
   }
+
+  // MARK: - `onDestroy`
 
   /**
    Creates module's lifecycle listener that is called when the module is about to be deallocated.
@@ -178,9 +192,15 @@ extension AnyModule {
   public static func onDestroy(_ closure: @escaping () -> Void) -> AnyDefinition {
     return EventListener(.moduleDestroy, closure)
   }
+
+  /**
+   Creates module's lifecycle listener that is called when the module is about to be deallocated.
+   */
   public static func onDestroy(_ closure: @escaping (Self) -> Void) -> AnyDefinition {
     return EventListener(.moduleDestroy, closure)
   }
+
+  // MARK: - `onAppContextDestroys`
 
   /**
    Creates module's lifecycle listener that is called when the app context owning the module is about to be deallocated.
@@ -188,9 +208,15 @@ extension AnyModule {
   public static func onAppContextDestroys(_ closure: @escaping () -> Void) -> AnyDefinition {
     return EventListener(.appContextDestroys, closure)
   }
+
+  /**
+   Creates module's lifecycle listener that is called when the app context owning the module is about to be deallocated.
+   */
   public static func onAppContextDestroys(_ closure: @escaping (Self) -> Void) -> AnyDefinition {
     return EventListener(.appContextDestroys, closure)
   }
+
+  // MARK: - `onAppEntersForeground`
 
   /**
    Creates a listener that is called when the app is about to enter the foreground mode.
@@ -198,9 +224,15 @@ extension AnyModule {
   public static func onAppEntersForeground(_ closure: @escaping () -> Void) -> AnyDefinition {
     return EventListener(.appEntersForeground, closure)
   }
+
+  /**
+   Creates a listener that is called when the app is about to enter the foreground mode.
+   */
   public static func onAppEntersForeground(_ closure: @escaping (Self) -> Void) -> AnyDefinition {
     return EventListener(.appEntersForeground, closure)
   }
+
+  // MARK: - `onAppBecomesActive`
 
   /**
    Creates a listener that is called when the app becomes active again.
@@ -208,9 +240,15 @@ extension AnyModule {
   public static func onAppBecomesActive(_ closure: @escaping () -> Void) -> AnyDefinition {
     return EventListener(.appBecomesActive, closure)
   }
+
+  /**
+   Creates a listener that is called when the app becomes active again.
+   */
   public static func onAppBecomesActive(_ closure: @escaping (Self) -> Void) -> AnyDefinition {
     return EventListener(.appBecomesActive, closure)
   }
+
+  // MARK: - `onAppEntersBackground`
 
   /**
    Creates a listener that is called when the app enters the background mode.
@@ -218,9 +256,15 @@ extension AnyModule {
   public static func onAppEntersBackground(_ closure: @escaping () -> Void) -> AnyDefinition {
     return EventListener(.appEntersBackground, closure)
   }
+
+  /**
+   Creates a listener that is called when the app enters the background mode.
+   */
   public static func onAppEntersBackground(_ closure: @escaping (Self) -> Void) -> AnyDefinition {
     return EventListener(.appEntersBackground, closure)
   }
+
+  // MARK: - View Manager
 
   /**
    Creates the view manager definition that scopes other view-related definitions.
