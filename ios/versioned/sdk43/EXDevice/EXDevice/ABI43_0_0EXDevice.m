@@ -187,6 +187,21 @@ ABI43_0_0EX_EXPORT_METHOD_AS(isRootedExperimentalAsync,
 #endif
 }
 
++ (nullable NSString *)osBuildId
+{
+#if TARGET_OS_TV
+  return nil;
+#else
+  size_t bufferSize = 64;
+  NSMutableData *buffer = [[NSMutableData alloc] initWithLength:bufferSize];
+  int status = sysctlbyname("kern.osversion", buffer.mutableBytes, &bufferSize, NULL, 0);
+  if (status != 0) {
+    return nil;
+  }
+  return [[NSString alloc] initWithCString:buffer.mutableBytes encoding:NSUTF8StringEncoding];
+#endif
+}
+
 + (NSDictionary *)getDeviceMap
 {
   return @{
@@ -302,9 +317,12 @@ ABI43_0_0EX_EXPORT_METHOD_AS(isRootedExperimentalAsync,
 
 + (nullable NSString *)modelName
 {
-  NSString *platform = [self devicePlatform];
+  NSString *platform = [self modelId];
   
-  // TODO: Apple TV and Apple watch
+  if (platform == nil) {
+    return [NSNull null];
+  }
+  
   NSDictionary *mapping = [self getDeviceMap];
     
   if (mapping[platform]) {
@@ -333,13 +351,14 @@ ABI43_0_0EX_EXPORT_METHOD_AS(isRootedExperimentalAsync,
 
 + (NSNumber *)deviceYear
 {
-  NSString *platform = [self devicePlatform];
+  NSString *platform = [self modelId];
   
-  // TODO: Apple TV and Apple watch
-  NSDictionary *mapping = [self getDeviceMap];
+  if (platform != nil) {
+    NSDictionary *mapping = [self getDeviceMap];
     
-  if (mapping[platform]) {
-    return mapping[platform][@"year"];
+    if (mapping[platform]) {
+      return mapping[platform][@"year"];
+    }
   }
   
   // Simulator or unknown - assume this is the newest device
@@ -350,18 +369,6 @@ ABI43_0_0EX_EXPORT_METHOD_AS(isRootedExperimentalAsync,
   return @([yearString intValue]);
 }
 
-+ (NSString *)devicePlatform
-{
-  // https://gist.github.com/Jaybles/1323251
-  // https://www.theiphonewiki.com/wiki/Models
-  size_t size;
-  sysctlbyname("hw.machine", NULL, &size, NULL, 0);
-  char *machine = malloc(size);
-  sysctlbyname("hw.machine", machine, &size, NULL, 0);
-  NSString *platform = [NSString stringWithUTF8String:machine];
-  free(machine);
-  return platform;
-}
 
 @end
 
