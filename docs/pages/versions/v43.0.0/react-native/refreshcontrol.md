@@ -9,21 +9,17 @@ This component is used inside a ScrollView or ListView to add pull to refresh fu
 
 ```js
 import React from 'react';
-import { ScrollView, RefreshControl, StyleSheet, Text, SafeAreaView } from 'react-native';
-import Constants from 'expo-constants';
+import { RefreshControl, SafeAreaView, ScrollView, StyleSheet, Text } from 'react-native';
 
 const wait = timeout => {
-  return new Promise(resolve => {
-    setTimeout(resolve, timeout);
-  });
+  return new Promise(resolve => setTimeout(resolve, timeout));
 };
 
-export function App() {
+const App = () => {
   const [refreshing, setRefreshing] = React.useState(false);
 
   const onRefresh = React.useCallback(() => {
     setRefreshing(true);
-
     wait(2000).then(() => setRefreshing(false));
   }, []);
 
@@ -36,12 +32,11 @@ export function App() {
       </ScrollView>
     </SafeAreaView>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    marginTop: Constants.statusBarHeight,
   },
   scrollView: {
     flex: 1,
@@ -50,9 +45,11 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
 });
+
+export default App;
 ```
 
-**Note:** `refreshing` is a controlled prop, this is why it needs to be set to true in the `onRefresh` function otherwise the refresh indicator will stop immediately.
+> Note: `refreshing` is a controlled prop, this is why it needs to be set to `true` in the `onRefresh` function otherwise the refresh indicator will stop immediately.
 
 ---
 
@@ -60,15 +57,39 @@ const styles = StyleSheet.create({
 
 ## Props
 
+### [View Props](view.md#props)
+
 Inherits [View Props](view.md#props).
+
+---
 
 ### `refreshing`
 
-Whether the view should be indicating an active refresh.
+**Required** Whether the view should be indicating an active refresh.
 
-| Type | Required |
-| ---- | -------- |
-| bool | Yes      |
+| Type    |
+| ------- |
+| boolean |
+
+---
+
+### `colors` **(Android)**
+
+The colors (at least one) that will be used to draw the refresh indicator.
+
+| Type                                                        |
+| ----------------------------------------------------------- |
+| array of [colors](https://reactnative.dev/docs/0.64/colors) |
+
+---
+
+### `enabled` **(Android)**
+
+Whether the pull to refresh functionality is enabled.
+
+| Type    | Default |
+| ------- | ------- |
+| boolean | `true`  |
 
 ---
 
@@ -76,86 +97,83 @@ Whether the view should be indicating an active refresh.
 
 Called when the view starts refreshing.
 
-| Type     | Required |
-| -------- | -------- |
-| function | No       |
+| Type     |
+| -------- |
+| function |
 
 ---
 
-### `colors`
-
-The colors (at least one) that will be used to draw the refresh indicator.
-
-| Type                                                  | Required | Platform |
-| ----------------------------------------------------- | -------- | -------- |
-| array of [color](https://reactnative.dev/docs/colors) | No       | Android  |
-
----
-
-### `enabled`
-
-Whether the pull to refresh functionality is enabled.
-
-| Type | Required | Platform |
-| ---- | -------- | -------- |
-| bool | No       | Android  |
-
----
-
-### `progressBackgroundColor`
+### `progressBackgroundColor` **(Android)**
 
 The background color of the refresh indicator.
 
-| Type                                         | Required | Platform |
-| -------------------------------------------- | -------- | -------- |
-| [color](https://reactnative.dev/docs/colors) | No       | Android  |
+| Type                                              |
+| ------------------------------------------------- |
+| [color](https://reactnative.dev/docs/0.64/colors) |
 
 ---
 
-### `progressViewOffset`
+### `progressViewOffset` **(Android)**
 
-Progress view top offset
+Progress view top offset.
 
-| Type   | Required | Platform |
-| ------ | -------- | -------- |
-| number | No       | Android  |
-
----
-
-### `size`
-
-Size of the refresh indicator, see RefreshControl.SIZE.
-
-| Type                                                                   | Required | Platform |
-| ---------------------------------------------------------------------- | -------- | -------- |
-| enum(RefreshLayoutConsts.SIZE.DEFAULT, RefreshLayoutConsts.SIZE.LARGE) | No       | Android  |
+| Type   | Default |
+| ------ | ------- |
+| number | `0`     |
 
 ---
 
-### `tintColor`
+### `size` **(Android)**
+
+Size of the refresh indicator.
+
+| Type                                            | Default                          |
+| ----------------------------------------------- | -------------------------------- |
+| [RefreshControl.SIZE](#refreshlayoutconstssize) | RefreshLayoutConsts.SIZE.DEFAULT |
+
+---
+
+### `tintColor` **(iOS)**
 
 The color of the refresh indicator.
 
-| Type                                         | Required | Platform |
-| -------------------------------------------- | -------- | -------- |
-| [color](https://reactnative.dev/docs/colors) | No       | iOS      |
+| Type                                              |
+| ------------------------------------------------- |
+| [color](https://reactnative.dev/docs/0.64/colors) |
 
 ---
 
-### `title`
+### `title` **(iOS)**
 
 The title displayed under the refresh indicator.
 
-| Type   | Required | Platform |
-| ------ | -------- | -------- |
-| string | No       | iOS      |
+| Type   |
+| ------ |
+| string |
 
 ---
 
-### `titleColor`
+### `titleColor` **(iOS)**
 
-Title color.
+The color of the refresh indicator title.
 
-| Type                                         | Required | Platform |
-| -------------------------------------------- | -------- | -------- |
-| [color](https://reactnative.dev/docs/colors) | No       | iOS      |
+| Type                                              |
+| ------------------------------------------------- |
+| [color](https://reactnative.dev/docs/0.64/colors) |
+
+## Type Definitions
+
+### RefreshLayoutConsts.SIZE
+
+The SwipeRefreshLayout Android component constants. The actual component size may vary between devices. You can read more about the native component in the [Android documentation](https://developer.android.com/reference/androidx/swiperefreshlayout/widget/SwipeRefreshLayout).
+
+| Type |
+| ---- |
+| enum |
+
+**Constants:**
+
+| Name    | Type | Value | Description                 |
+| ------- | ---- | ----- | --------------------------- |
+| DEFAULT | int  | `1`   | Default RefreshControl size |
+| LARGE   | int  | `0`   | Large RefreshControl size   |

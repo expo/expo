@@ -7,7 +7,7 @@ index 55100df..375d171 100644
  require_relative '../node_modules/@react-native-community/cli-platform-ios/native_modules'
  
 -platform :ios, '10.0'
-+platform :ios, '11.0'
++platform :ios, '12.0'
  
  target 'devclient201227' do
    use_unimodules!

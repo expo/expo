@@ -1668,7 +1668,7 @@ PODS:
   - ABI43_0_0React-jsinspector (0.64.2)
   - ABI43_0_0react-native-netinfo (6.0.2):
     - ABI43_0_0React-Core
-  - ABI43_0_0react-native-pager-view (5.4.4):
+  - ABI43_0_0react-native-pager-view (5.4.6):
     - ABI43_0_0React-Core
   - ABI43_0_0react-native-segmented-control (2.4.0):
     - ABI43_0_0React-Core
@@ -1923,9 +1923,9 @@ PODS:
     - UMTaskManagerInterface
   - EXMailComposer (11.0.1):
     - ExpoModulesCore
-  - EXManifests (0.2.0):
+  - EXManifests (0.2.1):
     - EXJSONUtils
-  - EXManifests/Tests (0.2.0):
+  - EXManifests/Tests (0.2.1):
     - EXJSONUtils
   - EXMediaLibrary (13.0.1):
     - ExpoModulesCore
@@ -2356,7 +2356,7 @@ PODS:
   - React-jsinspector (0.64.2)
   - react-native-netinfo (6.0.2):
     - React-Core
-  - react-native-pager-view (5.4.4):
+  - react-native-pager-view (5.4.6):
     - React-Core
   - react-native-segmented-control (2.4.0):
     - React-Core
@@ -4108,7 +4108,7 @@ SPEC CHECKSUMS:
   ABI43_0_0React-jsiexecutor: 430d9a230eca9bd8ab1f88f9be4ce74ac6cb1477
   ABI43_0_0React-jsinspector: 63c34e4bade90e3b6464e628c07f037fb7ecde11
   ABI43_0_0react-native-netinfo: a175663a23a03b61d8028abfaa7d30b2b0bb5576
-  ABI43_0_0react-native-pager-view: b7e2fff9851925b25a02659785064966a1a3dffb
+  ABI43_0_0react-native-pager-view: f158cec39be2913340e88ec31cfe1b163f8577da
   ABI43_0_0react-native-segmented-control: 6faef5ee3dd155c3d38710d5bf9ecc4d9d6c4cd8
   ABI43_0_0react-native-webview: 8a19e64ee814a441110d24ffe8d9165c9eaac949
   ABI43_0_0React-perflogger: 410b7b91906f50750d1084b00df2ab0992a9fcec
@@ -4179,7 +4179,7 @@ SPEC CHECKSUMS:
   EXLocalization: bb38414618b30a177482c9a6f5594ec6eb0898c1
   EXLocation: 6d13fb1d4b65ed1b2d2bdd0b0f11417cc0a2656a
   EXMailComposer: 06e0c73da0105e124409cb27e04f881392b6f918
-  EXManifests: e762426c6d40bd09b8e9f0d2c7a1f14687c475a3
+  EXManifests: fdbb8a0c2cd5fc4acc1ae90b55ce91617aba9365
   EXMediaLibrary: 8eeff7fdfbd457a0fba3b7afb49e9e2d465b173a
   EXNetwork: a5caf9ca61924520ff395b4eac9d6909d97fbc4c
   EXNotifications: 24fb362f02a68d94ae7e5769aa9319be5096328c
@@ -4254,7 +4254,7 @@ SPEC CHECKSUMS:
   React-jsiexecutor: 80c46bd381fd06e418e0d4f53672dc1d1945c4c3
   React-jsinspector: cc614ec18a9ca96fd275100c16d74d62ee11f0ae
   react-native-netinfo: 92e6e4476eb8bf6fc2d7c0a6ca0a1406f663d73a
-  react-native-pager-view: 5ab4d0b4b44d89f77310cb3eb8129745f274ce55
+  react-native-pager-view: b90963d848e777def6714ab7fd40d02fa797e930
   react-native-segmented-control: 06607462630512ff8eef652ec560e6235a30cc3e
   react-native-webview: 133a6a5149f963259646e710b4545c67ef35d7c9
   React-perflogger: 25373e382fed75ce768a443822f07098a15ab737

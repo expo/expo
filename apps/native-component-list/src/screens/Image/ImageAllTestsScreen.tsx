@@ -2,7 +2,8 @@ import { StackScreenProps } from '@react-navigation/stack';
 import * as React from 'react';
 import { SectionList, StyleSheet, Text, View } from 'react-native';
 
-import HeaderIconButton, { HeaderContainerRight } from '../../components/HeaderIconButton';
+import HeaderContainerRight from '../../components/HeaderContainerRight';
+import HeaderIconButton from '../../components/HeaderIconButton';
 import Colors from '../../constants/Colors';
 import { addSelectedComponentChangeListener } from './ImageComponents';
 import ImageTestListItem from './ImageTestListItem';

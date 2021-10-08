@@ -54,9 +54,8 @@ import {
 } from 'react-native';
 
 const instructions = Platform.select({
-  ios: 'Press Cmd+R to reload,\\n' + 'Cmd+D or shake for dev menu',
-  android:
-    'Double tap R on your keyboard to reload,\\n' + 'Shake or press menu button for dev menu',
+  ios: 'Press Cmd+R to reload,\n' + 'Cmd+D or shake for dev menu',
+  android: 'Double tap R on your keyboard to reload,\n' + 'Shake or press menu button for dev menu',
 });
 
 const useMount = func => useEffect(() => func(), []);
@@ -126,9 +125,8 @@ import {
 } from 'react-native';
 
 const instructions = Platform.select({
-  ios: 'Press Cmd+R to reload,\\n' + 'Cmd+D or shake for dev menu',
-  android:
-    'Double tap R on your keyboard to reload,\\n' + 'Shake or press menu button for dev menu',
+  ios: 'Press Cmd+R to reload,\n' + 'Cmd+D or shake for dev menu',
+  android: 'Double tap R on your keyboard to reload,\n' + 'Shake or press menu button for dev menu',
 });
 
 const useMount = func => useEffect(() => func(), []);
@@ -221,7 +219,3 @@ static setDeadline(deadline)
 ```
 
 A positive number will use setTimeout to schedule any tasks after the eventLoopRunningTime hits the deadline value, otherwise all tasks will be executed in one setImmediate batch (default).
-
-## Properties
-
----

@@ -9,6 +9,7 @@ const path_1 = __importDefault(require("path"));
 const semver_1 = __importDefault(require("semver"));
 const constants_1 = require("./constants");
 const resolveExpoUpdatesVersion_1 = require("./resolveExpoUpdatesVersion");
+const utils_1 = require("./utils");
 const withDevLauncherAppDelegate_1 = require("./withDevLauncherAppDelegate");
 const pkg = require('expo-dev-launcher/package.json');
 const DEV_LAUNCHER_ANDROID_IMPORT = 'expo.modules.devlauncher.DevLauncherController';
@@ -35,25 +36,6 @@ async function readFileAsync(path) {
 }
 async function saveFileAsync(path, content) {
     return fs_1.default.promises.writeFile(path, content, 'utf8');
-}
-function addLines(content, find, offset, toAdd) {
-    const lines = content.split('\n');
-    let lineIndex = lines.findIndex((line) => line.match(find));
-    for (const newLine of toAdd) {
-        if (!content.includes(newLine)) {
-            lines.splice(lineIndex + offset, 0, newLine);
-            lineIndex++;
-        }
-    }
-    return lines.join('\n');
-}
-function replaceLine(content, find, replace) {
-    const lines = content.split('\n');
-    if (!content.includes(replace)) {
-        const lineIndex = lines.findIndex((line) => line.match(find));
-        lines.splice(lineIndex, 1, replace);
-    }
-    return lines.join('\n');
 }
 function addJavaImports(javaSource, javaImports) {
     const lines = javaSource.split('\n');
@@ -105,7 +87,7 @@ const withDevLauncherApplication = (config) => {
         async (config) => {
             await editMainApplication(config, (mainApplication) => {
                 mainApplication = addJavaImports(mainApplication, [DEV_LAUNCHER_ANDROID_IMPORT]);
-                mainApplication = addLines(mainApplication, 'initializeFlipper\\(this', 0, [
+                mainApplication = utils_1.addLines(mainApplication, 'initializeFlipper\\(this', 0, [
                     `    ${DEV_LAUNCHER_ANDROID_INIT}`,
                 ]);
                 let expoUpdatesVersion;
@@ -117,10 +99,10 @@ const withDevLauncherApplication = (config) => {
                 }
                 if (expoUpdatesVersion && semver_1.default.gt(expoUpdatesVersion, '0.6.0')) {
                     mainApplication = addJavaImports(mainApplication, [DEV_LAUNCHER_UPDATES_ANDROID_IMPORT]);
-                    mainApplication = addLines(mainApplication, 'initializeFlipper\\(this', 0, [
+                    mainApplication = utils_1.addLines(mainApplication, 'initializeFlipper\\(this', 0, [
                         `    ${DEV_LAUNCHER_UPDATES_ANDROID_INIT}`,
                     ]);
-                    mainApplication = replaceLine(mainApplication, 'return BuildConfig.DEBUG;', `      ${DEV_LAUNCHER_UPDATES_DEVELOPER_SUPPORT}`);
+                    mainApplication = utils_1.replaceLine(mainApplication, 'return BuildConfig.DEBUG;', `      ${DEV_LAUNCHER_UPDATES_DEVELOPER_SUPPORT}`);
                 }
                 return mainApplication;
             });
@@ -142,7 +124,7 @@ const withDevLauncherActivity = (config) => {
                 content = lines.join('\n');
             }
             if (!content.includes('DevLauncherController.wrapReactActivityDelegate')) {
-                content = content.replace(/(new ReactActivityDelegate(.*|\s)*});$/m, DEV_LAUNCHER_WRAPPED_ACTIVITY_DELEGATE);
+                content = content.replace(/(new ReactActivityDelegate(Wrapper)?(.|\s)*\}\)?);$/mu, DEV_LAUNCHER_WRAPPED_ACTIVITY_DELEGATE);
             }
             config.modResults.contents = content;
         }
@@ -158,14 +140,15 @@ const withDevLauncherPodfile = (config) => {
         'ios',
         async (config) => {
             await editPodfile(config, (podfile) => {
-                podfile = podfile.replace("platform :ios, '10.0'", "platform :ios, '11.0'");
+                // replace all iOS versions below 12
+                podfile = podfile.replace(/platform :ios, '((\d\.0)|(1[0-1].0))'/, "platform :ios, '12.0'");
                 // Match both variations of Ruby config:
                 // unknown: pod 'expo-dev-launcher', path: '../node_modules/expo-dev-launcher', :configurations => :debug
                 // Rubocop: pod 'expo-dev-launcher', path: '../node_modules/expo-dev-launcher', configurations: :debug
                 if (!podfile.match(/pod ['"]expo-dev-launcher['"],\s?path: ['"][^'"]*node_modules\/expo-dev-launcher['"],\s?:?configurations:?\s(?:=>\s)?:debug/)) {
                     const packagePath = path_1.default.dirname(require.resolve('expo-dev-launcher/package.json'));
                     const relativePath = path_1.default.relative(config.modRequest.platformProjectRoot, packagePath);
-                    podfile = addLines(podfile, 'use_react_native', 0, [
+                    podfile = utils_1.addLines(podfile, 'use_react_native', 0, [
                         `  pod 'expo-dev-launcher', path: '${relativePath}', :configurations => :debug`,
                     ]);
                 }

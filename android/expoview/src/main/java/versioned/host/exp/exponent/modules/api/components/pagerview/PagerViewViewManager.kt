@@ -147,8 +147,13 @@ class PagerViewViewManager : ViewGroupManager<NestedScrollableHost>() {
   @ReactProp(name = "initialPage", defaultInt = 0)
   fun setInitialPage(host: NestedScrollableHost, value: Int) {
     val view = getViewPager(host)
-    view.post {
-      setCurrentItem(view, value, false)
+    // https://github.com/callstack/react-native-pager-view/issues/456
+    // Initial index should be set only once.
+    if (host.initialIndex === null) {
+      view.post {
+        setCurrentItem(view, value, false)
+        host.initialIndex = value
+      }
     }
   }
 

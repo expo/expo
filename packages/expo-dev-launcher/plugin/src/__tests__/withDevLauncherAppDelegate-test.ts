@@ -1,34 +1,80 @@
 import fs from 'fs';
 import path from 'path';
 
-import { modifyAppDelegate } from '../withDevLauncherAppDelegate';
+import { modifyLegacyAppDelegate, modifyAppDelegate } from '../withDevLauncherAppDelegate';
+
+describe('legacy', () => {
+  describe(modifyLegacyAppDelegate, () => {
+    it(`modifies the AppDelegate file for dev-lanuncher`, () => {
+      const fixture = fs.readFileSync(
+        path.join(__dirname, 'fixtures', 'AppDelegate-unimodules.m'),
+        'utf8'
+      );
+      expect(modifyLegacyAppDelegate(fixture, null)).toMatchSnapshot();
+    });
+
+    it(`modifies the AppDelegate file for dev-launcher with incompatible updates`, () => {
+      const fixture = fs.readFileSync(
+        path.join(__dirname, 'fixtures', 'AppDelegate-unimodules.m'),
+        'utf8'
+      );
+      expect(modifyLegacyAppDelegate(fixture, '0.5.4')).toMatchSnapshot();
+    });
+
+    it(`modifies the AppDelegate file for dev-launcher with compatible updates`, () => {
+      const fixture = fs.readFileSync(
+        path.join(__dirname, 'fixtures', 'AppDelegate-unimodules.m'),
+        'utf8'
+      );
+      expect(modifyLegacyAppDelegate(fixture, '0.7.0')).toMatchSnapshot();
+    });
+
+    it(`modifies the AppDelegate twice shouldn't change content`, () => {
+      const firstModification = fs.readFileSync(
+        path.join(__dirname, 'fixtures', 'AppDelegate-unimodules.m'),
+        'utf8'
+      );
+      modifyLegacyAppDelegate(firstModification, '0.7.0');
+      const secondModification = `${firstModification}`;
+      modifyLegacyAppDelegate(secondModification, '0.7.0');
+      expect(secondModification).toBe(firstModification);
+    });
+  });
+});
 
 describe(modifyAppDelegate, () => {
   it(`modifies the AppDelegate file for dev-lanuncher`, () => {
     const fixture = fs.readFileSync(
-      path.join(__dirname, 'fixtures', 'AppDelegate-unimodules.m'),
+      path.join(__dirname, 'fixtures', 'AppDelegate-expo-modules.m'),
       'utf8'
     );
     expect(modifyAppDelegate(fixture, null)).toMatchSnapshot();
   });
-});
 
-describe(modifyAppDelegate, () => {
   it(`modifies the AppDelegate file for dev-launcher with incompatible updates`, () => {
     const fixture = fs.readFileSync(
-      path.join(__dirname, 'fixtures', 'AppDelegate-unimodules.m'),
+      path.join(__dirname, 'fixtures', 'AppDelegate-expo-modules.m'),
       'utf8'
     );
     expect(modifyAppDelegate(fixture, '0.5.4')).toMatchSnapshot();
   });
-});
 
-describe(modifyAppDelegate, () => {
   it(`modifies the AppDelegate file for dev-launcher with compatible updates`, () => {
     const fixture = fs.readFileSync(
-      path.join(__dirname, 'fixtures', 'AppDelegate-unimodules.m'),
+      path.join(__dirname, 'fixtures', 'AppDelegate-expo-modules.m'),
       'utf8'
     );
     expect(modifyAppDelegate(fixture, '0.7.0')).toMatchSnapshot();
+  });
+
+  it(`modifies the AppDelegate twice shouldn't change content`, () => {
+    const firstModification = fs.readFileSync(
+      path.join(__dirname, 'fixtures', 'AppDelegate-expo-modules.m'),
+      'utf8'
+    );
+    modifyAppDelegate(firstModification, '0.7.0');
+    const secondModification = `${firstModification}`;
+    modifyAppDelegate(secondModification, '0.7.0');
+    expect(secondModification).toBe(firstModification);
   });
 });

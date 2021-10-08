@@ -23,7 +23,7 @@ declare class Subscriber<CallbackType extends LocationCallback | LocationHeading
 export declare const LocationSubscriber: Subscriber<LocationCallback>;
 export declare const HeadingSubscriber: Subscriber<LocationHeadingCallback>;
 /**
- * Necessary for some unit tests.
+ * @private Necessary for some unit tests.
  */
 export declare function _getCurrentWatchId(): number;
 export {};

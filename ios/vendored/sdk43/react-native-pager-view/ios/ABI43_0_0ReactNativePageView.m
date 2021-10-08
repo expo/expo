@@ -159,14 +159,16 @@
         [self setABI43_0_0ReactViewControllers:self.initialPage
                                  with:initialController
                             direction:UIPageViewControllerNavigationDirectionForward
-                             animated:YES];
+                             animated:YES
+             shouldCallOnPageSelected:YES];
     }
 }
 
 - (void)setABI43_0_0ReactViewControllers:(NSInteger)index
                            with:(UIViewController *)controller
                       direction:(UIPageViewControllerNavigationDirection)direction
-                       animated:(BOOL)animated {
+                       animated:(BOOL)animated
+                       shouldCallOnPageSelected:(BOOL)shouldCallOnPageSelected {
     if (self.reactPageViewController == nil) {
         return;
     }
@@ -183,7 +185,9 @@
         
         if (strongSelf.eventDispatcher) {
             if (strongSelf.lastReportedIndex != strongSelf.currentIndex) {
-                [strongSelf.eventDispatcher sendEvent:[[ABI43_0_0RCTOnPageSelected alloc] initWithABI43_0_0ReactTag:strongSelf.ABI43_0_0ReactTag position:@(index) coalescingKey:coalescingKey]];
+                if (shouldCallOnPageSelected) {
+                    [strongSelf.eventDispatcher sendEvent:[[ABI43_0_0RCTOnPageSelected alloc] initWithABI43_0_0ReactTag:strongSelf.ABI43_0_0ReactTag position:@(index) coalescingKey:coalescingKey]];
+                }
                 strongSelf.lastReportedIndex = strongSelf.currentIndex;
             }
         }
@@ -236,33 +240,39 @@
     long diff = labs(index - _currentIndex);
     
     if (isForward && diff > 0) {
-        for (NSInteger i=_currentIndex+1; i<=index; i++) {
-            [self goToViewController:i direction:direction animated:animated];
+        for (NSInteger i=_currentIndex; i<=index; i++) {
+            if (i == _currentIndex) {
+                continue;
+            }
+            [self goToViewController:i direction:direction animated:animated shouldCallOnPageSelected: i == index];
         }
     }
     
     if (!isForward && diff > 0) {
-        for (NSInteger i=_currentIndex-1; i>=index; i--) {
-            if (i >=0) {
-                [self goToViewController:i direction:direction animated:animated];
+        for (NSInteger i=_currentIndex; i>=index; i--) {
+            if (index == _currentIndex) {
+                continue;
             }
+            [self goToViewController:i direction:direction animated:animated shouldCallOnPageSelected: i == index];
         }
     }
     
     if (diff == 0) {
-        [self goToViewController:index direction:direction animated:animated];
+        [self goToViewController:index direction:direction animated:animated shouldCallOnPageSelected:YES];
     }
 }
 
 - (void)goToViewController:(NSInteger)index
                             direction:(UIPageViewControllerNavigationDirection)direction
-                            animated:(BOOL)animated {
+                            animated:(BOOL)animated
+                            shouldCallOnPageSelected:(BOOL)shouldCallOnPageSelected {
     UIView *viewToDisplay = self.ABI43_0_0ReactSubviews[index];
     UIViewController *controllerToDisplay = [self findAndCacheControllerForView:viewToDisplay];
     [self setABI43_0_0ReactViewControllers:index
                              with:controllerToDisplay
                         direction:direction
-                         animated:animated];
+                         animated:animated
+                        shouldCallOnPageSelected:shouldCallOnPageSelected];
 }
     
 - (UIViewController *)findAndCacheControllerForView:(UIView *)viewToDisplay {
@@ -320,7 +330,6 @@
         self.currentIndex = currentIndex;
         self.currentView = currentVC.view;
         self.reactPageIndicatorView.currentPage = currentIndex;
-        
         [self.eventDispatcher sendEvent:[[ABI43_0_0RCTOnPageSelected alloc] initWithABI43_0_0ReactTag:self.ABI43_0_0ReactTag position:@(currentIndex) coalescingKey:_coalescingKey++]];
         [self.eventDispatcher sendEvent:[[ABI43_0_0RCTOnPageScrollEvent alloc] initWithABI43_0_0ReactTag:self.ABI43_0_0ReactTag position:@(currentIndex) offset:@(0.0)]];
         self.lastReportedIndex = currentIndex;

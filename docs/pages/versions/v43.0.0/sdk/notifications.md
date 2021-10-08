@@ -85,7 +85,7 @@ If you are not using [Expo's push notification service](../../../push-notificati
 
 > This is not necessarily an error condition. The system may not have Internet connectivity at all because it is out of range of any cell towers or Wi-Fi access points, or it may be in airplane mode. Instead of treating this as an error, your app should continue normally, disabling only that functionality that relies on push notifications.
 
-As mentioned, the most common reasons for this this are either an invalid Internet connection (fetching a push token requires an Internet connection to register the device with the service provider) or an invalid configuration of your App ID or Provisioning Profile.
+As mentioned, the most common reasons for this issue are either an invalid Internet connection (fetching a push token requires an Internet connection to register the device with the service provider) or an invalid configuration of your App ID or Provisioning Profile.
 
 Here are a few ways people claim to have solved this problem, maybe one of these will help you solve it, too!
 

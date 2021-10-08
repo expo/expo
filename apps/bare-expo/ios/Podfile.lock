@@ -86,7 +86,7 @@ PODS:
     - GoogleSignIn (~> 5.0.2)
   - EXHaptics (11.0.1):
     - ExpoModulesCore
-  - EXImage (1.0.0-alpha.1):
+  - EXImage (0.1.0):
     - React-Core
     - SDWebImage (~> 5.0)
     - SDWebImageSVGKitPlugin (~> 1.3)
@@ -116,7 +116,7 @@ PODS:
     - UMTaskManagerInterface
   - EXMailComposer (11.0.1):
     - ExpoModulesCore
-  - EXManifests (0.2.0):
+  - EXManifests (0.2.1):
     - EXJSONUtils
   - EXMediaLibrary (13.0.1):
     - ExpoModulesCore
@@ -129,55 +129,55 @@ PODS:
     - ExpoModulesCore
   - Expo (43.0.0-beta.3):
     - ExpoModulesCore
-  - expo-dev-client (0.5.1):
+  - expo-dev-client (0.6.0):
     - EXManifests
     - expo-dev-launcher
     - expo-dev-menu
     - expo-dev-menu-interface
     - EXUpdatesInterface
-  - expo-dev-launcher (0.7.0):
+  - expo-dev-launcher (0.8.1):
     - EXManifests
-    - expo-dev-launcher/Main (= 0.7.0)
+    - expo-dev-launcher/Main (= 0.8.1)
     - expo-dev-menu-interface
     - EXUpdatesInterface
     - React-Core
-  - expo-dev-launcher/Main (0.7.0):
+  - expo-dev-launcher/Main (0.8.1):
     - EXManifests
     - expo-dev-launcher/Unsafe
     - expo-dev-menu-interface
     - EXUpdatesInterface
     - React-Core
-  - expo-dev-launcher/Tests (0.7.0):
+  - expo-dev-launcher/Tests (0.8.1):
     - EXManifests
     - expo-dev-menu-interface
     - EXUpdatesInterface
     - OHHTTPStubs
     - React-Core
     - React-CoreModules
-  - expo-dev-launcher/Unsafe (0.7.0):
+  - expo-dev-launcher/Unsafe (0.8.1):
     - EXManifests
     - expo-dev-menu-interface
     - EXUpdatesInterface
     - React-Core
-  - expo-dev-menu (0.8.1):
+  - expo-dev-menu (0.8.2):
     - expo-dev-menu-interface
-    - expo-dev-menu/Main (= 0.8.1)
+    - expo-dev-menu/Main (= 0.8.2)
     - React-Core
-  - expo-dev-menu-interface (0.4.0)
-  - expo-dev-menu/Main (0.8.1):
+  - expo-dev-menu-interface (0.4.1)
+  - expo-dev-menu/Main (0.8.2):
     - expo-dev-menu-interface
     - expo-dev-menu/Vendored
     - React-Core
-  - expo-dev-menu/Tests (0.8.1):
+  - expo-dev-menu/Tests (0.8.2):
     - expo-dev-menu-interface
     - React-Core
     - React-CoreModules
-  - expo-dev-menu/UITests (0.8.1):
+  - expo-dev-menu/UITests (0.8.2):
     - expo-dev-menu-interface
     - React
     - React-Core
     - React-CoreModules
-  - expo-dev-menu/Vendored (0.8.1):
+  - expo-dev-menu/Vendored (0.8.2):
     - expo-dev-menu-interface
     - React-Core
   - ExpoModulesCore (0.4.2):
@@ -1238,7 +1238,7 @@ SPEC CHECKSUMS:
   EXGL_CPP: 75124cfe236f7a1f917150011c09625e24e31141
   EXGoogleSignIn: f5b6ed8ce036017c0364896469416e6fc6e0e777
   EXHaptics: cf406d6cf5bdf45403c2db356c40709d5bdf6466
-  EXImage: 414c2bc91c8d3ac36c168aab528509922d13cf1f
+  EXImage: 75d6c625fb8b8ce8ddc622e0dbcdfd0fb160c11e
   EXImageLoader: 939451be6f7b731aaa6588920b90743f20121a4d
   EXImageManipulator: f557dae83db7ebbc4fe999a582230c28ffc5e383
   EXImagePicker: cecd37aa68c3df69fc0599cae92523be84fe6a1d
@@ -1250,16 +1250,16 @@ SPEC CHECKSUMS:
   EXLocalization: bb38414618b30a177482c9a6f5594ec6eb0898c1
   EXLocation: 6d13fb1d4b65ed1b2d2bdd0b0f11417cc0a2656a
   EXMailComposer: 06e0c73da0105e124409cb27e04f881392b6f918
-  EXManifests: e762426c6d40bd09b8e9f0d2c7a1f14687c475a3
+  EXManifests: fdbb8a0c2cd5fc4acc1ae90b55ce91617aba9365
   EXMediaLibrary: 8eeff7fdfbd457a0fba3b7afb49e9e2d465b173a
   EXNetwork: a5caf9ca61924520ff395b4eac9d6909d97fbc4c
   EXNotifications: 24fb362f02a68d94ae7e5769aa9319be5096328c
   EXPermissions: 08ccf78a0eb404c28df6d226fcc8fcf2e558b421
   Expo: 23ed30f225511b93fa6a0c14d9a3208d6b749060
-  expo-dev-client: 2b255870d45bab70916e1674d49bb7f341e53cf4
-  expo-dev-launcher: fe293c35deefcb7bb2676e7f8c6457ebbd08a16c
-  expo-dev-menu: ba37a9fcf1ccbbb06093300af0b80a5ad0cb73b1
-  expo-dev-menu-interface: 05a7c463d925c88e97b38faa4d157bab97b7e8b8
+  expo-dev-client: 97a9589d2ea0325a8dd4dff284fe3a4b9166bbce
+  expo-dev-launcher: 7a90ad1519263eda3e8675bf6712f2f89f8fe2a9
+  expo-dev-menu: 5b0593d3ad5f32e92e363f4cc061fe70666da31f
+  expo-dev-menu-interface: 508467f2ba2aedda7a44e5080cc1e9a43ab7375e
   ExpoModulesCore: 39fb1eacac048e4acbad9661b82512aaf1c6729e
   EXPrint: a224501bbb89072567c58a5127f2d125b8776ea2
   EXRandom: 9ed4600d410cf2fe58d22b3121865624065a16e9

@@ -68,9 +68,9 @@
     "expo-modules-autolinking": "~0.3.2",
     "expo-modules-core": "~0.4.2",
     "fbemitter": "^2.1.1",
-    "invariant": "^2.2.2",
+    "invariant": "^2.2.4",
     "md5-file": "^3.2.3",
-    "pretty-format": "^26.4.0",
+    "pretty-format": "^26.5.2",
     "uuid": "^3.4.0"
   },
   "optionalDependencies": {
@@ -78,8 +78,8 @@
   },
   "devDependencies": {
     "@types/fbemitter": "^2.0.32",
-    "@types/invariant": "^2.2.29",
-    "@types/react": "^17.0.18",
+    "@types/invariant": "^2.2.33",
+    "@types/react": "~17.0.21",
     "@types/react-native": "~0.64.12",
     "@types/react-test-renderer": "^17.0.1",
     "@types/uuid": "^3.4.7",

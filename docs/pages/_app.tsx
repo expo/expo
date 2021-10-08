@@ -1,4 +1,5 @@
 import { ThemeProvider } from '@expo/styleguide';
+import { MDXProvider } from '@mdx-js/react';
 import * as Sentry from '@sentry/browser';
 import { AppProps, NextWebVitalsMetric } from 'next/app';
 import dynamic from 'next/dynamic';
@@ -7,6 +8,9 @@ import React, { useState, useEffect } from 'react';
 
 import { TrackPageView } from '~/common/analytics';
 import { preprocessSentryError } from '~/common/sentry-utilities';
+import * as markdown from '~/common/translate-markdown';
+import DocumentationElements from '~/components/page-higher-order/DocumentationElements';
+
 import 'react-diff-view/style/index.css';
 import '@expo/styleguide/dist/expo-theme.css';
 import 'tippy.js/dist/tippy.css';
@@ -21,6 +25,11 @@ Sentry.init({
 const DynamicLoadAnalytics = dynamic<{ id: string }>(() =>
   import('~/common/analytics').then(mod => mod.LoadAnalytics)
 );
+
+const markdownComponents = {
+  ...markdown,
+  wrapper: DocumentationElements,
+};
 
 export function reportWebVitals({ id, name, label, value }: NextWebVitalsMetric) {
   window?.gtag?.('event', name, {
@@ -64,7 +73,9 @@ function App({ Component, pageProps }: AppProps) {
       </Head>
       {shouldLoadAnalytics && <DynamicLoadAnalytics id={googleAnalyticsId} />}
       <ThemeProvider>
-        <Component {...pageProps} />
+        <MDXProvider components={markdownComponents}>
+          <Component {...pageProps} />
+        </MDXProvider>
       </ThemeProvider>
       <TrackPageView id={googleAnalyticsId} />
     </>

@@ -17,32 +17,33 @@ import { ImageBackground, StyleSheet, Text, View } from 'react-native';
 
 const image = { uri: 'https://reactjs.org/logo-og.png' };
 
-export default function App() {
-  return (
-    <View style={styles.container}>
-      <ImageBackground source={image} style={styles.image}>
-        <Text style={styles.text}>Inside</Text>
-      </ImageBackground>
-    </View>
-  );
-}
+const App = () => (
+  <View style={styles.container}>
+    <ImageBackground source={image} resizeMode="cover" style={styles.image}>
+      <Text style={styles.text}>Inside</Text>
+    </ImageBackground>
+  </View>
+);
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    flexDirection: 'column',
   },
   image: {
     flex: 1,
-    resizeMode: 'cover',
     justifyContent: 'center',
   },
   text: {
-    color: 'grey',
-    fontSize: 30,
+    color: 'white',
+    fontSize: 42,
+    lineHeight: 84,
     fontWeight: 'bold',
+    textAlign: 'center',
+    backgroundColor: '#000000c0',
   },
 });
+
+export default App;
 ```
 
 ---
@@ -51,24 +52,32 @@ const styles = StyleSheet.create({
 
 ## Props
 
+### [Image Props](image.md#props)
+
 Inherits [Image Props](image.md#props).
 
-### `style`
-
-| Type                                | Required |
-| ----------------------------------- | -------- |
-| [view styles](view-style-props.md) | No       |
+---
 
 ### `imageStyle`
 
-| Type                                  | Required |
-| ------------------------------------- | -------- |
-| [image styles](image-style-props.md) | No       |
+| Type                                |
+| ----------------------------------- |
+| [Image Style](image-style-props.md) |
+
+---
 
 ### `imageRef`
 
 Allows to set a reference to the inner `Image` component
 
-| Type                                                  | Required |
-| ----------------------------------------------------- | -------- |
-| [Ref](https://reactjs.org/docs/refs-and-the-dom.html) | No       |
+| Type                                                  |
+| ----------------------------------------------------- |
+| [Ref](https://reactjs.org/docs/refs-and-the-dom.html) |
+
+---
+
+### `style`
+
+| Type                              |
+| --------------------------------- |
+| [View Style](view-style-props.md) |

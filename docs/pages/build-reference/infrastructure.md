@@ -81,7 +81,7 @@ When selecting an image for the build you can use the full name provided below o
   npmRegistryServer: "registry=http://10.254.24.8:4873"
   ```
 
-#### Image `macos-big-sur-11.4-xcode-13.0`
+#### Image `macos-big-sur-11.4-xcode-13.0` (alias `default`, `latest`)
 
 - macOS Big Sur 11.4
 - Xcode 13.0 (13A233)
@@ -91,7 +91,7 @@ When selecting an image for the build you can use the full name provided below o
 - CocoaPods 1.10.1
 - Ruby 2.7
 
-#### Image `macos-big-sur-11.4-xcode-12.5` (alias `default`, `latest`)
+#### Image `macos-big-sur-11.4-xcode-12.5`
 
 - macOS Big Sur 11.4
 - Xcode 12.5 (12E5244e)

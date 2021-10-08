@@ -2,7 +2,8 @@ import { StackScreenProps } from '@react-navigation/stack';
 import * as React from 'react';
 import { Animated, StyleSheet, View, Button, Text } from 'react-native';
 
-import HeaderIconButton, { HeaderContainerRight } from '../../components/HeaderIconButton';
+import HeaderContainerRight from '../../components/HeaderContainerRight';
+import HeaderIconButton from '../../components/HeaderIconButton';
 import AnimationBar from './AnimationBar';
 import CompareBar from './CompareBar';
 import {

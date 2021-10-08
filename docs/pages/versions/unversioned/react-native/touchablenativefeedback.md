@@ -15,14 +15,7 @@ Background drawable of native feedback touchable can be customized with `backgro
 
 ```js
 import React, { useState } from 'react';
-import { Text, View, StyleSheet, TouchableNativeFeedback } from 'react-native';
-import Constants from 'expo-constants';
-
-const randomHexColor = () => {
-  return '#000000'.replace(/0/g, function() {
-    return (~~(Math.random() * 16)).toString(16);
-  });
-};
+import { Text, View, StyleSheet, TouchableNativeFeedback, StatusBar } from 'react-native';
 
 const App = () => {
   const [rippleColor, setRippleColor] = useState(randomHexColor());
@@ -43,11 +36,17 @@ const App = () => {
   );
 };
 
+const randomHexColor = () => {
+  return '#000000'.replace(/0/g, function () {
+    return (~~(Math.random() * 16)).toString(16);
+  });
+};
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'center',
-    paddingTop: Constants.statusBarHeight,
+    paddingTop: StatusBar.currentHeight,
     backgroundColor: '#ecf0f1',
     padding: 8,
   },
@@ -64,7 +63,11 @@ export default App;
 
 ## Props
 
+### [TouchableWithoutFeedback Props](touchablewithoutfeedback.md#props)
+
 Inherits [TouchableWithoutFeedback Props](touchablewithoutfeedback.md#props).
+
+---
 
 ### `background`
 
@@ -102,9 +105,9 @@ TV preferred focus (see documentation for the View component).
 
 TV next focus down (see documentation for the View component).
 
-| Type | Required | Platform |
-| ---- | -------- | -------- |
-| bool | No       | Android  |
+| Type   | Required | Platform |
+| ------ | -------- | -------- |
+| number | No       | Android  |
 
 ---
 
@@ -112,9 +115,9 @@ TV next focus down (see documentation for the View component).
 
 TV next focus forward (see documentation for the View component).
 
-| Type | Required | Platform |
-| ---- | -------- | -------- |
-| bool | No       | Android  |
+| Type   | Required | Platform |
+| ------ | -------- | -------- |
+| number | No       | Android  |
 
 ---
 
@@ -122,9 +125,9 @@ TV next focus forward (see documentation for the View component).
 
 TV next focus left (see documentation for the View component).
 
-| Type | Required | Platform |
-| ---- | -------- | -------- |
-| bool | No       | Android  |
+| Type   | Required | Platform |
+| ------ | -------- | -------- |
+| number | No       | Android  |
 
 ---
 
@@ -132,9 +135,9 @@ TV next focus left (see documentation for the View component).
 
 TV next focus right (see documentation for the View component).
 
-| Type | Required | Platform |
-| ---- | -------- | -------- |
-| bool | No       | Android  |
+| Type   | Required | Platform |
+| ------ | -------- | -------- |
+| number | No       | Android  |
 
 ---
 
@@ -142,9 +145,9 @@ TV next focus right (see documentation for the View component).
 
 TV next focus up (see documentation for the View component).
 
-| Type | Required | Platform |
-| ---- | -------- | -------- |
-| bool | No       | Android  |
+| Type   | Required | Platform |
+| ------ | -------- | -------- |
+| number | No       | Android  |
 
 ## Methods
 
@@ -182,7 +185,7 @@ Creates an object that represents ripple drawable with specified color (as a str
 | ------------ | ------- | -------- | ------------------------------------------- |
 | color        | string  | Yes      | The ripple color                            |
 | borderless   | boolean | Yes      | If the ripple can render outside its bounds |
-| rippleRadius | number? | No       | controls the radius of the ripple effect    |
+| rippleRadius | ?number | No       | controls the radius of the ripple effect    |
 
 ---
 
