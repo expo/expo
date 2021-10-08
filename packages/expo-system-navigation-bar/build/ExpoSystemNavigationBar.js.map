@@ -1,1 +1,0 @@
-{"version":3,"file":"ExpoSystemNavigationBar.js","sourceRoot":"","sources":["../src/ExpoSystemNavigationBar.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,kBAAkB,EAAE,MAAM,mBAAmB,CAAC;AAEvD,eAAe,kBAAkB,CAAC,uBAAuB,IAAI,EAAE,CAAC","sourcesContent":["import { NativeModulesProxy } from 'expo-modules-core';\n\nexport default NativeModulesProxy.ExpoSystemNavigationBar ?? {};\n"]}

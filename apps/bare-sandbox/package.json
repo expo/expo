@@ -14,7 +14,6 @@
     "expo-dev-client": "~0.6.0",
     "expo-splash-screen": "~0.13.1",
     "expo-status-bar": "~1.1.0",
-    "expo-system-navigation-bar": "~1.0.0",
     "react": "17.0.1",
     "react-dom": "17.0.1",
     "react-native": "0.64.2",

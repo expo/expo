@@ -414,9 +414,9 @@ export const Screens = [
   },
   {
     getComponent() {
-      return optionalRequire(() => require('../screens/SystemNavigationBarScreen'));
+      return optionalRequire(() => require('../screens/NavigationBarScreen'));
     },
-    name: 'SystemNavigationBar',
+    name: 'NavigationBar',
   },
   {
     getComponent() {
