@@ -94,7 +94,7 @@ is downloaded in the background. The second time they open the app they'll get
 the new version. On iOS, updates are downloaded synchronously, so users will
 get the new version the first time they open your app after an update.
 
-> **Note:** To package your app for deployment on the Apple App Store or Google Play Store, see [Building Standalone Apps](../distribution/building-standalone-apps.md). Each time you update the SDK version you will need to rebuild your binary.
+> **Note:** To package your app for deployment on the Apple App Store or Google Play Store, see [Creating your first build](/build/setup.md). Each time you update the SDK version you will need to rebuild your binary.
 
 ## SDK Versions
 
@@ -122,4 +122,4 @@ If you build a standalone app with Expo, that standalone binary will also ship w
 
 You can also package your Expo app into a standalone binary for submission to the Apple iTunes Store or Google Play.
 
-Under the hood, it's a modified version of the Expo Go app which is designed only to load a single URL (the one for your app) and which will never show the Expo home screen or brand. For more information, see [Building Standalone Apps](../distribution/building-standalone-apps.md).
+Under the hood, it's a modified version of the Expo Go app which is designed only to load a single URL (the one for your app) and which will never show the Expo home screen or brand. For more information, see [Creating your first build](/build/setup.md).
