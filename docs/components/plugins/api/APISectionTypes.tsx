@@ -110,8 +110,9 @@ const renderType = ({
         <CommentTextBlock comment={comment} />
         {type.declaration.children && renderTypeDeclarationTable(type.declaration)}
         {type.declaration.signatures
-          ? type.declaration.signatures.map(({ parameters }: TypeSignaturesData) => (
+          ? type.declaration.signatures.map(({ parameters, comment }: TypeSignaturesData) => (
               <div key={`type-definition-signature-${name}`}>
+                <CommentTextBlock comment={comment} />
                 {parameters ? <H4>Arguments</H4> : null}
                 {parameters ? <UL>{parameters?.map(renderParam)}</UL> : null}
               </div>
@@ -130,6 +131,7 @@ const renderType = ({
           <H3Code>
             <InlineCode>{name}</InlineCode>
           </H3Code>
+          <CommentTextBlock comment={comment} />
           {type.type === 'intersection' ? (
             <P>
               <InlineCode>
@@ -138,7 +140,6 @@ const renderType = ({
               extended by:
             </P>
           ) : null}
-          <CommentTextBlock comment={comment} />
           {propTypes.map(
             propType =>
               propType?.declaration?.children && renderTypeDeclarationTable(propType.declaration)

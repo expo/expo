@@ -176,6 +176,7 @@ export type TypeDeclarationContentData = {
 
 export type TypeSignaturesData = {
   name?: string;
+  comment?: CommentData;
   parameters?: MethodParamData[];
   type: TypeDefinitionData;
   kind?: TypeDocKind;
