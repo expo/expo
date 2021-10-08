@@ -317,9 +317,12 @@ EX_EXPORT_METHOD_AS(isRootedExperimentalAsync,
 
 + (nullable NSString *)modelName
 {
-  NSString *platform = [self devicePlatform];
+  NSString *platform = [self modelId];
   
-  // TODO: Apple TV and Apple watch
+  if (platform == nil) {
+    return [NSNull null];
+  }
+  
   NSDictionary *mapping = [self getDeviceMap];
     
   if (mapping[platform]) {
@@ -348,13 +351,14 @@ EX_EXPORT_METHOD_AS(isRootedExperimentalAsync,
 
 + (NSNumber *)deviceYear
 {
-  NSString *platform = [self devicePlatform];
+  NSString *platform = [self modelId];
   
-  // TODO: Apple TV and Apple watch
-  NSDictionary *mapping = [self getDeviceMap];
+  if (platform != nil) {
+    NSDictionary *mapping = [self getDeviceMap];
     
-  if (mapping[platform]) {
-    return mapping[platform][@"year"];
+    if (mapping[platform]) {
+      return mapping[platform][@"year"];
+    }
   }
   
   // Simulator or unknown - assume this is the newest device
@@ -363,19 +367,6 @@ EX_EXPORT_METHOD_AS(isRootedExperimentalAsync,
   NSString *yearString = [formatter stringFromDate:[NSDate date]];
   
   return @([yearString intValue]);
-}
-
-+ (NSString *)devicePlatform
-{
-  // https://gist.github.com/Jaybles/1323251
-  // https://www.theiphonewiki.com/wiki/Models
-  size_t size;
-  sysctlbyname("hw.machine", NULL, &size, NULL, 0);
-  char *machine = malloc(size);
-  sysctlbyname("hw.machine", machine, &size, NULL, 0);
-  NSString *platform = [NSString stringWithUTF8String:machine];
-  free(machine);
-  return platform;
 }
 
 @end
