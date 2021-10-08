@@ -7,11 +7,11 @@ sidebar_title: Using Hermes
 
 [Hermes](https://hermesengine.dev/) is a JavaScript engine optimized for React Native. By compiling JavaScript into bytecode ahead of time, Hermes can improve your app start-up time. The binary size of Hermes is also smaller than other JavaScript engines, such as JavaScriptCore (JSC). It also uses less memory at runtime, which is particularly valuable on lower-end Android devices.
 
-A limitation with JavaScriptCore is that the debugger does not work with modules built on top of [JSI](https://github.com/react-native-community/discussions-and-proposals/issues/91). It means if your app uses [react-native-reanimated](https://github.com/software-mansion/react-native-reanimated) version 2, for example, [remote JS debugging will not work](https://docs.swmansion.com/react-native-reanimated/docs/#known-problems-and-limitations). Hermes makes it possible to debug your app even when using JSI modules.
+A limitation with JavaScriptCore is that the debugger does not work with modules built on top of [JSI](https://github.com/react-native-community/discussions-and-proposals/issues/91). If your app uses [react-native-reanimated](https://github.com/software-mansion/react-native-reanimated) version 2, for example, [remote JS debugging will not work](https://docs.swmansion.com/react-native-reanimated/docs/#known-problems-and-limitations). Hermes makes it possible to debug your app even when using JSI modules.
 
 ## Android setup
 
-> Hermes for Android is supported from SDK 42 or above. For bare apps created or ejected before SDK 42, [follow these instructions to update your project configuration](https://expo.fyi/hermes-android-config).
+> Hermes for Android is supported from SDK 42 and above. For bare apps created before SDK 42, [follow these instructions to update your project configuration](https://expo.fyi/hermes-android-config).
 
 To get started, open your `app.json` and add `jsEngine` field:
 
@@ -19,7 +19,7 @@ To get started, open your `app.json` and add `jsEngine` field:
 ```json
 {
   "expo": {
-    /* @info Add jsEngine field here. Supported values are hermes or jsc */
+    /* @info Add the "jsEngine" field here. Supported values are "hermes" or "jsc" */
     "jsEngine": "hermes"
   /* @end */
   }
@@ -30,7 +30,7 @@ Now you can build an APK or AAB through `eas build` and your app will run with H
 
 ## iOS setup
 
-> Hermes for iOS is supported from SDK 43 or above. For bare apps created or ejected before SDK 43, [follow these instructions to update your project configuration](https://expo.fyi/hermes-ios-config).
+> Hermes for iOS is supported from SDK 43 and above. For bare apps created before SDK 43, [follow these instructions to update your project configuration](https://expo.fyi/hermes-ios-config).
 
 To get started, open your `app.json` and add `jsEngine` field:
 
@@ -38,7 +38,7 @@ To get started, open your `app.json` and add `jsEngine` field:
 ```json
 {
   "expo": {
-    /* @info Add jsEngine field here. Supported values are hermes or jsc */
+    /* @info Add the "jsEngine" field here. Supported values are "hermes" or "jsc" */
     "jsEngine": "hermes"
   /* @end */
   }
@@ -49,9 +49,9 @@ Now you can build your app through `eas build` and your app will run with Hermes
 
 ## Advanced setup
 
-### Use different JavaScript engines on platforms
+### Switch JavaScript engine on a specific platform
 
-In case you want to use different JavaScript engines on platforms. For example, to use Hermes on all platforms but leave JavaScriptCore on iOS. We also support this use case:
+You may want to use Hermes on one platform and JSC on another. One way to do this is to set the `"jsEngine"` to `"hermes"` at the top level and then override it with `"jsc"` under the `"ios"` key. You may alternatively prefer to explicitly set `"hermes"` on just the `"android"` key in this case.
 
 <!-- prettier-ignore -->
 ```json
