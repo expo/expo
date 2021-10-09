@@ -1,7 +1,6 @@
 import { resolveProps, setStrings } from '../withNavigationBar';
 
 describe(resolveProps, () => {
- 
   it(`resolves no props`, () => {
     expect(resolveProps({ slug: '', name: '' })).toStrictEqual({
       appearance: undefined,
@@ -87,7 +86,12 @@ describe(setStrings, () => {
     );
   }
   it(`asserts an invalid color`, () => {
-    expect(() => setStrings({ resources: {} }, resolveProps({ slug: '', name: '' }, { backgroundColor: '-bacon-' }))).toThrow(/Invalid color value: -bacon-/)
+    expect(() =>
+      setStrings(
+        { resources: {} },
+        resolveProps({ slug: '', name: '' }, { backgroundColor: '-bacon-' })
+      )
+    ).toThrow(/Invalid color value: -bacon-/);
   });
 
   it(`sets all strings`, () => {
