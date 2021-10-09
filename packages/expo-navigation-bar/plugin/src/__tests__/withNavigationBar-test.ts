@@ -180,13 +180,13 @@ describe(setStrings, () => {
   });
   it(`redefines duplicates`, () => {
     // Set all strings
-    const strings = setStrings({ resources: {} }, { backgroundColor: 'green' });
+    const strings = setStrings({ resources: {} }, { backgroundColor: '#4630EB' });
 
     expect(strings.resources.string).toStrictEqual([
       {
         $: { name: 'expo_navigation_bar_background_color', translatable: 'false' },
         // Test an initial value
-        _: '4278222848',
+        _: '-12177173',
       },
     ]);
     expect(
@@ -196,7 +196,7 @@ describe(setStrings, () => {
       {
         $: { name: 'expo_navigation_bar_background_color', translatable: 'false' },
         // Test a redefined value
-        _: '4280193279',
+        _: '-14774017',
       },
     ]);
   });

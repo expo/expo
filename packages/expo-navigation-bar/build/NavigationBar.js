@@ -39,6 +39,7 @@ const assertIsOnPlatform = (functionName, onlyAvailableOn) => {
 export async function setBackgroundColorAsync(color) {
     assertIsOnPlatform('setBackgroundColorAsync', ['android']);
     const colorNumber = processColor(color);
+    console.log('COOR:', colorNumber);
     return await ExpoNavigationBar.setBackgroundColorAsync(colorNumber);
 }
 /**
