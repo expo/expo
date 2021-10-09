@@ -1,7 +1,7 @@
 import ExpoModulesCore
 
 public class LinearGradientModule: Module {
-  public func definition() -> ModuleDefinition {
+  public static func definition() -> ModuleDefinition {
     name("ExpoLinearGradient")
 
     viewManager {

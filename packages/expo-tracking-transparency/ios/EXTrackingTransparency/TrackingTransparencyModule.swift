@@ -1,25 +1,25 @@
 import ExpoModulesCore
 
 public class TrackingTransparencyModule: Module {
-  public func definition() -> ModuleDefinition {
+  public static func definition() -> ModuleDefinition {
     name("ExpoTrackingTransparency")
 
-    onCreate {
-      EXPermissionsMethodsDelegate.register([EXTrackingPermissionRequester()], withPermissionsManager: self.appContext?.permissions)
+    onCreate { module in
+      EXPermissionsMethodsDelegate.register([EXTrackingPermissionRequester()], withPermissionsManager: module.appContext?.permissions)
     }
 
-    method("getPermissionsAsync") { (promise: Promise) in
+    method("getPermissionsAsync") { (module, promise: Promise) in
       EXPermissionsMethodsDelegate.getPermissionWithPermissionsManager(
-        self.appContext?.permissions,
+        module.appContext?.permissions,
         withRequester: EXTrackingPermissionRequester.self,
         resolve: promise.resolver,
         reject: promise.legacyRejecter
       )
     }
 
-    method("requestPermissionsAsync") { (promise: Promise) in
+    method("requestPermissionsAsync") { (module, promise: Promise) in
       EXPermissionsMethodsDelegate.askForPermission(
-        withPermissionsManager: self.appContext?.permissions,
+        withPermissionsManager: module.appContext?.permissions,
         withRequester: EXTrackingPermissionRequester.self,
         resolve: promise.resolver,
         reject: promise.legacyRejecter

@@ -20,9 +20,9 @@ public protocol AnyMethod: AnyDefinition {
   var queue: DispatchQueue? { get }
 
   /**
-   Calls the method with given arguments and a promise.
+   Calls the method on given module with arguments and a promise.
    */
-  func call(args: [Any?], promise: Promise) -> Void
+  func call(module: AnyModule, args: [Any?], promise: Promise) -> Void
 
   /**
    Specifies on which queue the method should run.
