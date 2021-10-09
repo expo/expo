@@ -96,9 +96,10 @@ Choose `web-build` as the path to deploy.
 
 With this setup Netlify will build and deploy when you push to git or open a new pull request:
 
-1. [Start a new Netlify project](https://app.netlify.com/signup)
-2. Pick your Git hosting service and select your repository
-3. Click `Build your site`
+1. Install the `expo-cli` as a dev dependency in your project
+2. [Start a new Netlify project](https://app.netlify.com/signup)
+3. Pick your Git hosting service and select your repository
+4. Click `Build your site`
 
 ## [GitHub Pages](https://pages.github.com/)
 
