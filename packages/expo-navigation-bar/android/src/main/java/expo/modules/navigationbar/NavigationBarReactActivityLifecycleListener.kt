@@ -3,7 +3,6 @@ package expo.modules.navigationbar
 import android.app.Activity
 import android.content.Context
 import android.os.Bundle
-import android.os.Handler
 import android.util.Log
 import expo.modules.core.interfaces.ReactActivityLifecycleListener
 
@@ -12,41 +11,41 @@ class NavigationBarReactActivityLifecycleListener(activityContext: Context) : Re
     // Execute static tasks before the JS engine starts.
     // These values are defined via config plugins.
 
-      var borderColor = getBorderColor(activity)
-      if (borderColor != null) {
-        NavigationBar.setBorderColor(activity, borderColor)
-      }
+    var borderColor = getBorderColor(activity)
+    if (borderColor != null) {
+      NavigationBar.setBorderColor(activity, borderColor)
+    }
 
-      var visibility = getVisibility(activity)
-      if (visibility != "") {
-        NavigationBar.setVisibility(activity, visibility)
-      }
+    var visibility = getVisibility(activity)
+    if (visibility != "") {
+      NavigationBar.setVisibility(activity, visibility)
+    }
 
-      var position = getPosition(activity)
-      if (position != "") {
-        NavigationBar.setPosition(activity, position)
-      }
+    var position = getPosition(activity)
+    if (position != "") {
+      NavigationBar.setPosition(activity, position)
+    }
 
-      var behavior = getBehavior(activity)
-      if (behavior != "") {
-        NavigationBar.setBehavior(activity, behavior)
-      }
+    var behavior = getBehavior(activity)
+    if (behavior != "") {
+      NavigationBar.setBehavior(activity, behavior)
+    }
 
-      var legacyVisible = getLegacyVisible(activity)
-      if (legacyVisible != "") {
-        NavigationBar.setLegacyVisible(activity, legacyVisible)
-      }
+    var legacyVisible = getLegacyVisible(activity)
+    if (legacyVisible != "") {
+      NavigationBar.setLegacyVisible(activity, legacyVisible)
+    }
   }
 
-    private fun getBorderColor(context: Context): Int? {
-        var value = context.getString(R.string.expo_navigation_bar_border_color);
+  private fun getBorderColor(context: Context): Int? {
+    var value = context.getString(R.string.expo_navigation_bar_border_color)
 
-        var parsed = value.toIntOrNull();
-        if (value != null && parsed == null) {
-            Log.e(ERROR_TAG, "Invalid XML value \"$value\" for string \"expo_navigation_bar_border_color\". Expected a valid color int like \"-12177173\". Ensure the value of \"borderColor\" in the \"expo-navigation-bar\" config plugin is a valid CSS color. Skipping initial border color.")
-        }
-        return parsed
+    var parsed = value.toIntOrNull()
+    if (value != null && parsed == null) {
+      Log.e(ERROR_TAG, "Invalid XML value \"$value\" for string \"expo_navigation_bar_border_color\". Expected a valid color int like \"-12177173\". Ensure the value of \"borderColor\" in the \"expo-navigation-bar\" config plugin is a valid CSS color. Skipping initial border color.")
     }
+    return parsed
+  }
 
   private fun getVisibility(context: Context): String = context.getString(R.string.expo_navigation_bar_visibility).toLowerCase()
 
@@ -56,7 +55,7 @@ class NavigationBarReactActivityLifecycleListener(activityContext: Context) : Re
 
   private fun getLegacyVisible(context: Context): String = context.getString(R.string.expo_navigation_bar_legacy_visible).toLowerCase()
 
-    companion object {
-        private const val ERROR_TAG = "ERR_NAVIGATION_BAR"
-    }
+  companion object {
+    private const val ERROR_TAG = "ERR_NAVIGATION_BAR"
+  }
 }
