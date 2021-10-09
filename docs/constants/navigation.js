@@ -23,7 +23,7 @@ const GROUPS = {
   'EAS Build': ['Start Building', 'App Signing', 'Reference'],
   'EAS Submit': ['EAS Submit'],
   'Technical Specs': ['Technical Specs'],
-  'Development Clients': ['Development Clients'],
+  'Development Builds': ['Development Builds'],
 };
 
 // This array provides the **ordering** for pages within each section
@@ -110,7 +110,7 @@ const sections = [
     reference: ['Expo Updates', 'Expo Structured Field Values'],
   },
   {
-    name: 'Development Clients',
+    name: 'Development Builds',
     reference: [
       'Introduction',
       'Getting Started',
