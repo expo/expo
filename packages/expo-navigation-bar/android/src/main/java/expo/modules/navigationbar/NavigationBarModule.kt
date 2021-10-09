@@ -116,7 +116,7 @@ class NavigationBarModule(context: Context) : ExportedModule(context) {
         promise.resolve(visibility)
       } else {
         // TODO: Verify this works
-        val visibility = if ((View.SYSTEM_UI_FLAG_HIDE_NAVIGATION and it.window.decorView.systemUiVisibility) == 0) "visible" else "hidden"
+        @Suppress("DEPRECATION") val visibility = if ((View.SYSTEM_UI_FLAG_HIDE_NAVIGATION and it.window.decorView.systemUiVisibility) == 0) "visible" else "hidden"
         promise.resolve(visibility)
       }
     }
@@ -166,6 +166,7 @@ class NavigationBarModule(context: Context) : ExportedModule(context) {
   fun startObserving(promise: Promise) {
     safeRunOnUiThread(promise) {
       val decorView = it.window.decorView
+      @Suppress("DEPRECATION")
       decorView.setOnSystemUiVisibilityChangeListener { visibility: Int ->
         var isNavigationBarVisible = (visibility and View.SYSTEM_UI_FLAG_HIDE_NAVIGATION) == 0
         var stringVisibility = if (isNavigationBarVisible) "visible" else "hidden"
@@ -185,6 +186,7 @@ class NavigationBarModule(context: Context) : ExportedModule(context) {
   fun stopObserving(promise: Promise) {
     safeRunOnUiThread(promise) {
       val decorView = it.window.decorView
+      @Suppress("DEPRECATION")
       decorView.setOnSystemUiVisibilityChangeListener(null)
       promise.resolve(null)
     }

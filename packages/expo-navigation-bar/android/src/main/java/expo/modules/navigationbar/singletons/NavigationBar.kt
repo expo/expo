@@ -163,6 +163,7 @@ object NavigationBar : SingletonModule {
     setBehavior(activity, behavior, {}, { m -> Log.e(TAG, m) })
   }
 
+  @Suppress("DEPRECATION")
   fun setLegacyVisible(
     activity: Activity,
     visible: String,
