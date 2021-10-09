@@ -12,16 +12,6 @@ class NavigationBarReactActivityLifecycleListener(activityContext: Context) : Re
     // Execute static tasks before the JS engine starts.
     // These values are defined via config plugins.
 
-     var appearance = getAppearance(activity)
-     if (appearance != "") {
-       NavigationBar.setAppearance(activity, appearance)
-     }
-
-     var backgroundColor = getBackgroundColor(activity)
-     if (backgroundColor != null) {
-       NavigationBar.setBackgroundColor(activity, backgroundColor)
-     }
-
       var borderColor = getBorderColor(activity)
       if (borderColor != null) {
         NavigationBar.setBorderColor(activity, borderColor)
@@ -48,17 +38,6 @@ class NavigationBarReactActivityLifecycleListener(activityContext: Context) : Re
       }
   }
 
-  private fun getBackgroundColor(context: Context): Int? {
-      var value = context.getString(R.string.expo_navigation_bar_background_color);
-
-    var parsed = value.toIntOrNull();
-     if (value != null && parsed == null) {
-         // TODO: Maybe throw in development mode?
-         Log.e(ERROR_TAG, "Invalid XML value \"$value\" for string \"expo_navigation_bar_background_color\". Expected a valid color int like \"-12177173\". Ensure the value of \"backgroundColor\" in the \"expo-navigation-bar\" config plugin is a valid CSS color. Skipping initial background color.")
-     }
-     return parsed
- }
-
     private fun getBorderColor(context: Context): Int? {
         var value = context.getString(R.string.expo_navigation_bar_border_color);
 
@@ -68,8 +47,6 @@ class NavigationBarReactActivityLifecycleListener(activityContext: Context) : Re
         }
         return parsed
     }
-
- private fun getAppearance(context: Context): String = context.getString(R.string.expo_navigation_bar_appearance).toLowerCase()
 
   private fun getVisibility(context: Context): String = context.getString(R.string.expo_navigation_bar_visibility).toLowerCase()
 

@@ -1,4 +1,19 @@
-import { resolveProps, setStrings } from '../withNavigationBar';
+import { AndroidConfig, WarningAggregator } from '@expo/config-plugins';
+
+import {
+  resolveProps,
+  setNavigationBarColors,
+  setNavigationBarStyles,
+  setStrings,
+} from '../withNavigationBar';
+
+jest.mock('@expo/config-plugins', () => {
+  const plugins = jest.requireActual('@expo/config-plugins');
+  return {
+    ...plugins,
+    WarningAggregator: { addWarningAndroid: jest.fn() },
+  };
+});
 
 describe(resolveProps, () => {
   it(`resolves no props`, () => {
@@ -9,6 +24,8 @@ describe(resolveProps, () => {
     });
   });
   it(`resolves legacy props`, () => {
+    // @ts-ignore: jest
+    WarningAggregator.addWarningAndroid.mockImplementationOnce();
     expect(
       resolveProps({
         slug: '',
@@ -20,12 +37,15 @@ describe(resolveProps, () => {
         },
       })
     ).toStrictEqual({
-      appearance: 'light',
+      appearance: 'dark',
       backgroundColor: '#fff000',
       legacyVisible: 'leanback',
     });
+    expect(WarningAggregator.addWarningAndroid).toHaveBeenCalledTimes(1);
   });
   it(`skips legacy props if any config plugin props are provided`, () => {
+    // @ts-ignore: jest
+    WarningAggregator.addWarningAndroid.mockImplementationOnce();
     expect(
       resolveProps(
         {
@@ -41,6 +61,7 @@ describe(resolveProps, () => {
         {}
       )
     ).toStrictEqual({});
+    expect(WarningAggregator.addWarningAndroid).toHaveBeenCalledTimes(0);
   });
   it(`resolves config plugin props`, () => {
     expect(
@@ -85,11 +106,12 @@ describe(setStrings, () => {
       }
     );
   }
+  // TODO: Should we do validation on backgroundColor just for convenience?
   it(`asserts an invalid color`, () => {
     expect(() =>
       setStrings(
         { resources: {} },
-        resolveProps({ slug: '', name: '' }, { backgroundColor: '-bacon-' })
+        resolveProps({ slug: '', name: '' }, { borderColor: '-bacon-' })
       )
     ).toThrow(/Invalid color value: -bacon-/);
   });
@@ -100,24 +122,10 @@ describe(setStrings, () => {
         string: [
           {
             $: {
-              name: 'expo_navigation_bar_background_color',
-              translatable: 'false',
-            },
-            _: '4278190335',
-          },
-          {
-            $: {
               name: 'expo_navigation_bar_border_color',
               translatable: 'false',
             },
-            _: '4278222848',
-          },
-          {
-            $: {
-              name: 'expo_navigation_bar_appearance',
-              translatable: 'false',
-            },
-            _: 'dark',
+            _: '-16744448',
           },
           {
             $: {
@@ -180,24 +188,51 @@ describe(setStrings, () => {
   });
   it(`redefines duplicates`, () => {
     // Set all strings
-    const strings = setStrings({ resources: {} }, { backgroundColor: '#4630EB' });
+    const strings = setStrings({ resources: {} }, { borderColor: '#4630EB' });
 
     expect(strings.resources.string).toStrictEqual([
       {
-        $: { name: 'expo_navigation_bar_background_color', translatable: 'false' },
+        $: { name: 'expo_navigation_bar_border_color', translatable: 'false' },
         // Test an initial value
         _: '-12177173',
       },
     ]);
     expect(
-      setStrings(strings, resolveProps({ name: '', slug: '' }, { backgroundColor: 'dodgerblue' }))
+      setStrings(strings, resolveProps({ name: '', slug: '' }, { borderColor: 'dodgerblue' }))
         .resources.string
     ).toStrictEqual([
       {
-        $: { name: 'expo_navigation_bar_background_color', translatable: 'false' },
+        $: { name: 'expo_navigation_bar_border_color', translatable: 'false' },
         // Test a redefined value
         _: '-14774017',
       },
     ]);
   });
+});
+
+describe('e2e: write navigation color and style to files correctly', () => {
+  it(`sets the navigationBarColor item in styles.xml. sets windowLightNavigation bar true`, async () => {
+    const stylesJSON = await setNavigationBarStyles(
+      { backgroundColor: '#111111', appearance: 'light' },
+      { resources: {} }
+    );
+
+    const group = AndroidConfig.Styles.getStylesGroupAsObject(
+      stylesJSON,
+      AndroidConfig.Styles.getAppThemeLightNoActionBarGroup()
+    );
+    expect(group?.['android:navigationBarColor']).toBe('@color/navigationBarColor');
+    expect(group?.['android:windowLightNavigationBar']).toBe('true');
+  });
+
+  it(`sets the navigationBarColor item in styles.xml and adds color to colors.xml if 'androidNavigationBar.backgroundColor' is given. sets windowLightNavigation bar true`, async () => {
+    const colorsJSON = await setNavigationBarColors(
+      { backgroundColor: '#111111', appearance: 'light' },
+      { resources: {} }
+    );
+
+    expect(AndroidConfig.Colors.getColorsAsObject(colorsJSON)?.navigationBarColor).toBe('#111111');
+  });
+
+  // TODO: Test redefined and unset
 });
