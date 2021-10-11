@@ -33,7 +33,7 @@ public protocol AnyMethod: AnyDefinition {
    Synchronously calls the method with given arguments. If the method takes a promise,
    the current thread will be locked until the promise rejects or resolves with the return value.
    */
-  func callSync(args: [Any?]) -> Any?
+  func callSync(module: AnyModule, args: [Any?]) -> Any?
 
   /**
    Specifies on which queue the method should run.

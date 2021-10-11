@@ -65,7 +65,7 @@ public class ConcreteMethod<Args, ReturnType>: AnyMethod {
     }
   }
 
-  public func callSync(args: [Any?]) -> Any? {
+  public func callSync(module: AnyModule, args: [Any?]) -> Any? {
     if takesPromise {
       var result: Any?
       let semaphore = DispatchSemaphore(value: 0)
@@ -76,7 +76,7 @@ public class ConcreteMethod<Args, ReturnType>: AnyMethod {
       } rejecter: { error in
         semaphore.signal()
       }
-      call(args: args, promise: promise)
+      call(module: module, args: args, promise: promise)
       semaphore.wait()
       return result
     } else {

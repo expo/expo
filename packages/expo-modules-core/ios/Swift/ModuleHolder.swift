@@ -82,8 +82,11 @@ public class ModuleHolder {
   }
 
   func callSync(method methodName: String, args: [Any?]) -> Any? {
+    guard let module = try? getInstance() else {
+      return nil
+    }
     if let method = definition.methods[methodName] {
-      return method.callSync(args: args)
+      return method.callSync(module: module, args: args)
     }
     return nil
   }
