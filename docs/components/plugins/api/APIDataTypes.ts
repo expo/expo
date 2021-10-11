@@ -138,6 +138,7 @@ export type PropData = {
   flags?: TypePropertyDataFlags;
   defaultValue?: string;
   signatures?: MethodSignatureData[];
+  overwrites?: TypeDefinitionData;
 };
 
 export type DefaultPropsDefinitionData = {

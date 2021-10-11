@@ -49,7 +49,7 @@ const renderPropertyComment = (comment?: CommentData, signatures?: MethodSignatu
 };
 
 const renderProperty = ({ name, signatures, flags, type, comment }: PropData) => (
-  <LI customCss={css({ marginBottom: 6 })}>
+  <LI customCss={css({ marginBottom: 6 })} key={`class-property-${name}`}>
     <B>
       {name}
       {signatures && signatures.length ? `(${listParams(signatures[0].parameters)})` : null}
@@ -68,8 +68,10 @@ const renderClass = ({
   extendedTypes,
   children,
 }: ClassDefinitionData): JSX.Element => {
-  const properties = children?.filter(child => child.kind === TypeDocKind.Property);
-  const methods = children?.filter(child => child.kind === TypeDocKind.Method);
+  const properties = children?.filter(
+    child => child.kind === TypeDocKind.Property && !child.overwrites
+  );
+  const methods = children?.filter(child => child.kind === TypeDocKind.Method && !child.overwrites);
   return (
     <div key={`class-definition-${name}`}>
       <H3Code>
