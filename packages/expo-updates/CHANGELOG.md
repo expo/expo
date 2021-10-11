@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix `Updates.reloadAsync` behavior in bare apps when a new update is available (downloaded).
+
 ### 💡 Others
 
 ## 0.10.2 — 2021-10-01

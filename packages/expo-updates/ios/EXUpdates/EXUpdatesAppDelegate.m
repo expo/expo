@@ -21,6 +21,7 @@
 @interface EXUpdatesAppDelegate() <EXUpdatesAppControllerDelegate>
 
 @property (nonatomic, strong) NSDictionary *launchOptions;
+@property (nonatomic, strong) EXUpdatesBridgeDelegateInterceptor *bridgeDelegate;
 
 @end
 
@@ -95,10 +96,10 @@ EX_REGISTER_SINGLETON_MODULE(EXUpdatesAppDelegate)
   if (![UIApplication.sharedApplication.delegate conformsToProtocol:@protocol(RCTBridgeDelegate)]) {
     [NSException raise:NSInvalidArgumentException format:@"AppDelegate does not conforms to RCTBridgeDelegate"];
   }
-  EXUpdatesBridgeDelegateInterceptor* bridgeDelegate = [[EXUpdatesBridgeDelegateInterceptor alloc]
-                                                        initWithBridgeDelegate:(id<RCTBridgeDelegate>)UIApplication.sharedApplication.delegate];
+  self.bridgeDelegate = [[EXUpdatesBridgeDelegateInterceptor alloc]
+                         initWithBridgeDelegate:(id<RCTBridgeDelegate>)UIApplication.sharedApplication.delegate];
 
-  RCTBridge *bridge = [[RCTBridge alloc] initWithDelegate:bridgeDelegate launchOptions:self.launchOptions];
+  RCTBridge *bridge = [[RCTBridge alloc] initWithDelegate:self.bridgeDelegate launchOptions:self.launchOptions];
   RCTRootView *rootView = [[RCTRootView alloc] initWithBridge:bridge moduleName:@"main" initialProperties:nil];
   id rootViewBackgroundColor = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"RCTRootViewBackgroundColor"];
   if (rootViewBackgroundColor != nil) {
