@@ -3,6 +3,7 @@ import React, { useContext } from 'react';
 import DocumentationPageContext from '~/components/DocumentationPageContext';
 import { P } from '~/components/base/paragraph';
 import { GeneratedData } from '~/components/plugins/api/APIDataTypes';
+import APISectionClasses from '~/components/plugins/api/APISectionClasses';
 import APISectionComponents from '~/components/plugins/api/APISectionComponents';
 import APISectionConstants from '~/components/plugins/api/APISectionConstants';
 import APISectionEnums from '~/components/plugins/api/APISectionEnums';
@@ -107,9 +108,12 @@ const renderAPI = (
       componentsPropNames.includes(entry.name)
     );
 
+    const classes = filterDataByKind(data, TypeDocKind.Class, entry => !isComponent(entry));
+
     return (
       <>
         <APISectionComponents data={components} componentsProps={componentsProps} />
+        <APISectionClasses data={classes} />
         <APISectionConstants data={constants} apiName={apiName} />
         <APISectionMethods data={hooks} header="Hooks" />
         <APISectionMethods data={methods} apiName={apiName} />
