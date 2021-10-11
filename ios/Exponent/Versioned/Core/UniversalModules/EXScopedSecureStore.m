@@ -45,7 +45,7 @@
 // found in SDK 41 and up. This override can be removed in SDK 45.
 - (NSString *)_getValueWithKey:(NSString *)key
                    withOptions:(NSDictionary *)options
-                         error:(NSError **)error __deprecated_msg("To be removed once SDK 45 is phased out")
+                         error:(NSError **)error __deprecated_msg("To be removed once SDK 41 is phased out")
 {
   NSError *searchError;
   NSData *data = [self _searchKeychainWithKey:key
