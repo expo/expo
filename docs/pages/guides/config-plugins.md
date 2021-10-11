@@ -240,22 +240,23 @@ module.exports = {
 
 The following default mods are provided by the mod compiler for common file manipulation:
 
-- `mods.ios.appDelegate` -- Modify the `ios/<name>/AppDelegate.m` as a string.
-- `mods.ios.infoPlist` -- Modify the `ios/<name>/Info.plist` as JSON (parsed with [`@expo/plist`](https://www.npmjs.com/package/@expo/plist)).
-- `mods.ios.entitlements` -- Modify the `ios/<name>/<product-name>.entitlements` as JSON (parsed with [`@expo/plist`](https://www.npmjs.com/package/@expo/plist)).
-- `mods.ios.expoPlist` -- Modify the `ios/<name>/Expo.plist` as JSON (Expo updates config for iOS) (parsed with [`@expo/plist`](https://www.npmjs.com/package/@expo/plist)).
+- `mods.ios.infoPlist` -- Modify the `ios/<name>/Info.plist` as JSON (parsed with [`@expo/plist`][expo-plist]).
+- `mods.ios.entitlements` -- Modify the `ios/<name>/<product-name>.entitlements` as JSON (parsed with [`@expo/plist`][expo-plist]).
+- `mods.ios.expoPlist` -- Modify the `ios/<name>/Expo.plist` as JSON (Expo updates config for iOS) (parsed with [`@expo/plist`][expo-plist]).
 - `mods.ios.xcodeproj` -- Modify the `ios/<name>.xcodeproj` as an `XcodeProject` object (parsed with [`xcode`](https://www.npmjs.com/package/xcode)).
 - `mods.ios.podfileProperties` -- Modify the `ios/Podfile.properties.json` as JSON.
+- `mods.ios.appDelegate` -- Modify the `ios/<name>/AppDelegate.m` as a string (Dangerous).
 
 - `mods.android.manifest` -- Modify the `android/app/src/main/AndroidManifest.xml` as JSON (parsed with [`xml2js`][xml2js]).
 - `mods.android.strings` -- Modify the `android/app/src/main/res/values/strings.xml` as JSON (parsed with [`xml2js`][xml2js]).
 - `mods.android.colors` -- Modify the `android/app/src/main/res/values/colors.xml` as JSON (parsed with [`xml2js`][xml2js]).
+- `mods.android.colorsNight` -- Modify the `android/app/src/main/res/values-night/colors.xml` as JSON (parsed with [`xml2js`][xml2js]).
 - `mods.android.styles` -- Modify the `android/app/src/main/res/values/styles.xml` as JSON (parsed with [`xml2js`][xml2js]).
-- `mods.android.mainActivity` -- Modify the `android/app/src/main/<package>/MainActivity.java` as a string.
-- `mods.android.appBuildGradle` -- Modify the `android/app/build.gradle` as a string.
-- `mods.android.projectBuildGradle` -- Modify the `android/build.gradle` as a string.
-- `mods.android.settingsGradle` -- Modify the `android/settings.gradle` as a string.
 - `mods.android.gradleProperties` -- Modify the `android/gradle.properties` as a `Properties.PropertiesItem[]`.
+- `mods.android.mainActivity` -- Modify the `android/app/src/main/<package>/MainActivity.java` as a string (Dangerous).
+- `mods.android.appBuildGradle` -- Modify the `android/app/build.gradle` as a string (Dangerous).
+- `mods.android.projectBuildGradle` -- Modify the `android/build.gradle` as a string (Dangerous).
+- `mods.android.settingsGradle` -- Modify the `android/settings.gradle` as a string (Dangerous).
 
 After the mods are resolved, the contents of each mod will be written to disk. Custom default mods can be added to support new native files.
 For example, you can create a mod to support the `GoogleServices-Info.plist`, and pass it to other mods.
@@ -268,22 +269,25 @@ If you're developing a feature that requires mods, it's best not to interact wit
 Instead you should use the helper mods provided by `@expo/config-plugins`:
 
 - iOS
-  - `withAppDelegate`
   - `withInfoPlist`
   - `withEntitlementsPlist`
   - `withExpoPlist`
   - `withXcodeProject`
   - `withPodfileProperties`
+  - `withAppDelegate` (Dangerous)
 - Android
   - `withAndroidManifest`
   - `withStringsXml`
   - `withAndroidColors`
+  - `withAndroidColorsNight`
   - `withAndroidStyles`
-  - `withMainActivity`
-  - `withProjectBuildGradle`
-  - `withAppBuildGradle`
-  - `withSettingsGradle`
   - `withGradleProperties`
+  - `withMainActivity` (Dangerous)
+  - `withProjectBuildGradle` (Dangerous)
+  - `withAppBuildGradle` (Dangerous)
+  - `withSettingsGradle` (Dangerous)
+
+> Dangerous modifications rely on regular expressions (regex) to modify application code, which may cause the build to break. Regex mods are also difficult to version, and therefore should be used sparingly. Always opt towards using application code to modify application code, i.e. [Expo Modules][emc] native API.
 
 A mod plugin gets passed a `config` object with additional properties `modResults` and `modRequest` added to it.
 
@@ -697,11 +701,15 @@ Introspection only supports a subset of modifiers:
 - `ios.infoPlist`
 - `ios.entitlements`
 - `ios.expoPlist`
+- `ios.podfileProperties`
 - `android.manifest`
 - `android.gradleProperties`
 - `android.strings`
 - `android.colors`
+- `android.colorsNight`
 - `android.styles`
+
+> Introspection only works on safe modifiers (static files like JSON, XML, plist, properties), with the exception of `ios.xcodeproj` which often requires file system changes, making it non idempotent.
 
 Introspection works by creating custom base mods that work like the default base mods, except they don't write the `modResults` to disk at the end. Instead of persisting, they save the results to the Expo config under `_internal.modResults`, followed by the name of the mod i.e. the `ios.infoPlist` mod saves to `_internal.modResults.ios.infoPlist: {}`.
 
@@ -854,7 +862,9 @@ Please add the following to your Expo config
 [vscode-expo]: https://marketplace.visualstudio.com/items?itemName=byCedric.vscode-expo
 [ems-plugin]: https://github.com/expo/expo/tree/master/packages/expo-module-scripts#-config-plugin
 [xml2js]: https://www.npmjs.com/package/xml2js
+[expo-plist]: https://www.npmjs.com/package/@expo/plist
 [memfs]: https://www.npmjs.com/package/memfs
+[emc]: https://github.com/expo/expo/tree/master/packages/expo-modules-core
 
 <!-- TODO: Better link for Expo autolinking docs -->
 
