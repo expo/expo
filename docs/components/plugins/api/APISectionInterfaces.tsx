@@ -6,8 +6,8 @@ import { H2, H3Code } from '~/components/plugins/Headings';
 import {
   CommentData,
   InterfaceDefinitionData,
-  InterfaceValueData,
   MethodSignatureData,
+  PropData,
 } from '~/components/plugins/api/APIDataTypes';
 import {
   CommentTextBlock,
@@ -46,7 +46,7 @@ const renderInterfacePropertyRow = ({
   type,
   comment,
   signatures,
-}: InterfaceValueData): JSX.Element => (
+}: PropData): JSX.Element => (
   <tr key={name}>
     <td>
       <B>

@@ -5,7 +5,7 @@ import { B, P } from '~/components/base/paragraph';
 import { H2, H3Code } from '~/components/plugins/Headings';
 import {
   GeneratedData,
-  MethodDefinitionData,
+  PropData,
   PropsDefinitionData,
 } from '~/components/plugins/api/APIDataTypes';
 import APISectionProps from '~/components/plugins/api/APISectionProps';
@@ -16,10 +16,10 @@ export type APISectionComponentsProps = {
   componentsProps: PropsDefinitionData[];
 };
 
-const getComponentName = (name?: string, children: MethodDefinitionData[] = []) => {
+const getComponentName = (name?: string, children: PropData[] = []) => {
   if (name && name !== 'default') return name;
-  const ctor = children.filter((child: MethodDefinitionData) => child.name === 'constructor')[0];
-  return ctor.signatures[0]?.type?.name || 'default';
+  const ctor = children.filter((child: PropData) => child.name === 'constructor')[0];
+  return ctor && ctor?.signatures?.length ? ctor?.signatures[0]?.type?.name : 'default';
 };
 
 const renderComponent = (

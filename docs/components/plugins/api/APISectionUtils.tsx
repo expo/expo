@@ -26,6 +26,7 @@ export enum TypeDocKind {
   Class = 128,
   Interface = 256,
   Property = 1024,
+  Method = 2048,
   TypeAlias = 4194304,
 }
 
@@ -117,8 +118,6 @@ export const resolveTypeName = ({
   declaration,
   value,
   queryType,
-  checkType,
-  extendsType,
 }: TypeDefinitionData): string | JSX.Element | (string | JSX.Element)[] => {
   try {
     if (name) {
