@@ -679,6 +679,134 @@ Static properties are required because the Expo config must be serializable to J
 
 If possible, attempt to make your plugin work without props, this will help resolution tooling like [`expo install`][#expo-install] or [vscode expo][vscode-expo] work better. Remember that every property you add increases complexity, making it harder to change in the future and increase the amount of features you'll need to test. Good default values are preferred over mandatory configuration when feasible.
 
+### Configuring Android App Startup
+
+You may find that your project requires configuration to be setup before the JS engine has started. For example, in `expo-splash-screen` on Android, we need to specify the resize mode in the `MainActivity.java`'s `onCreate` method. Instead of attempting to dangerously regex these changes into the `MainActivity` via a dangerous mod, we use a system of lifecycle hooks and static settings to safely ensure the feature works across all supported Android languages (Java, Kotlin), versions of Expo, and combination of config plugins.
+
+This system is made up of three components:
+
+- `ReactActivityLifecycleListeners`: An interface exposed by `expo-modules-core` to get a native callback when the project `ReactActivity`'s `onCreate` method is invoked.
+- `withStringsXml`: A mod exposed by `@expo/config-plugins` which writes a property to the Android `strings.xml` file, the library can safely read the strings.xml value and do initial setup. The string XML values follow a designated format for consistency.
+- `SingletonModule` (optional): An interface exposed by `expo-modules-core` to create a shared interface between native modules and `ReactActivityLifecycleListeners`.
+
+Consider this example: We want to set a custom "value" string to a property on the Android `Activity`, directly after the `onCreate` method was invoked.
+We can do this safely by creating a node module `expo-custom`, implementing `expo-modules-core`, and Expo config plugins:
+
+First, we register the `ReactActivity` listener in our Android native module, this will only be invoked if the user has `expo-modules-core` support, setup in their project (default in projects bootstrapped with Expo CLI, Create React Native App, Ignite CLI, and Expo prebuilding).
+
+`expo-custom/android/src/main/java/expo/modules/custom/CustomPackage.kt`
+
+```kotlin
+package expo.modules.custom
+
+import android.content.Context
+import expo.modules.core.BasePackage
+import expo.modules.core.interfaces.ReactActivityLifecycleListener
+
+class NavigationBarPackage : BasePackage() {
+  override fun createReactActivityLifecycleListeners(activityContext: Context): List<ReactActivityLifecycleListener> {
+    return listOf(CustomReactActivityLifecycleListener(activityContext))
+  }
+
+  // ...
+}
+```
+
+Next we implement the `ReactActivity` listener, this is passed the `Context` and is capable of reading from the project `strings.xml` file.
+
+`expo-custom/android/src/main/java/expo/modules/custom/CustomReactActivityLifecycleListener.kt`
+
+```kotlin
+package expo.modules.custom
+
+import android.app.Activity
+import android.content.Context
+import android.os.Bundle
+import android.util.Log
+import expo.modules.core.interfaces.ReactActivityLifecycleListener
+
+class CustomReactActivityLifecycleListener(activityContext: Context) : ReactActivityLifecycleListener {
+  override fun onCreate(activity: Activity, savedInstanceState: Bundle?) {
+    // Execute static tasks before the JS engine starts.
+    // These values are defined via config plugins.
+
+    var value = getValue(activity)
+    if (value != "") {
+      // Do something to the Activity that requires the static value...
+    }
+  }
+
+  // Naming is node module name (`expo-custom`) plus value name (`value`) using underscores as a delimiter
+  // i.e. `expo_custom_value`
+  // `@expo/vector-icons` + `iconName` -> `expo__vector_icons_icon_name`
+  private fun getValue(context: Context): String = context.getString(R.string.expo_custom_value).toLowerCase()
+}
+```
+
+We must define default `string.xml` values which the user will overwrite locally by using the same `name` property in their `strings.xml` file.
+`expo-custom/android/src/main/res/values/strings.xml`
+
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="expo_custom_value" translatable="false"></string>
+</resources>
+```
+
+At this point, bare users can configure this value by creating a string in their local `strings.xml` file (assuming they also have `expo-modules-core` support setup):
+
+`./android/app/src/main/res/values/strings.xml`
+
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="expo_custom_value" translatable="false">I Love Expo</string>
+</resources>
+```
+
+For managed users, we can expose this functionality (safely!) via an Expo config plugin:
+
+`expo-custom/app.plugin.js`
+
+```js
+const { AndroidConfig, withStringsXml } = require('@expo/config-plugin');
+
+function withCustom(config, value) {
+  return withStringsXml(config, config => {
+    config.modResults = setStrings(config.modResults, value);
+    return config;
+  });
+}
+
+function setStrings(strings, value) {
+  // Helper to add string.xml JSON items or overwrite existing items with the same name.
+  return AndroidConfig.Strings.setStringItem(
+    [
+      // XML represented as JSON
+      // <string name="expo_custom_value" translatable="false">value</string>
+      { $: { name: 'expo_custom_value', translatable: 'false' }, _: value },
+    ],
+    strings
+  );
+}
+```
+
+Managed Expo users can now interact with this API like so:
+
+`app.json`
+
+```json
+{
+  "expo": {
+    "plugins": [["expo-custom", "I Love Expo"]]
+  }
+}
+```
+
+By re-running `expo prebuild -p` (`eas build -p android`, or `expo run:ios`) the user can now see the changes, safely applied in their managed project!
+
+As you can see from the example, we rely heavily on application code (expo-modules-core) to interact with application code (the native project). This ensures that our config plugins are safe and reliable, hopefully for a very long time!
+
 ## Debugging
 
 You can debug config plugins by running `EXPO_DEBUG=1 expo prebuild`. If `EXPO_DEBUG` is enabled, the plugin stack logs will be printed, these are useful for viewing which mods ran, and in what order they ran in. To view all static plugin resolution errors, enable `EXPO_CONFIG_PLUGIN_VERBOSE_ERRORS`, this should only be needed for plugin authors.
