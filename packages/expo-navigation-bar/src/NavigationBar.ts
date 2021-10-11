@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { ColorValue, processColor } from 'react-native';
 
 import ExpoNavigationBar from './ExpoNavigationBar';
-import { Appearance, Behavior, Position, Visibility, VisibilityEvent } from './NavigationBar.types';
+import { BarStyle, Behavior, Position, Visibility, VisibilityEvent } from './NavigationBar.types';
 
 const emitter = new EventEmitter(ExpoNavigationBar);
 
@@ -128,37 +128,37 @@ export async function getVisibilityAsync(): Promise<Visibility> {
 }
 
 /**
- * Changes the navigation bar's foreground style between white and a dark gray color.
+ * Changes the navigation bar's button colors between white (`light`) and a dark gray color (`dark`).
  *
  * @example
  * ```ts
- * NavigationBar.setAppearanceAsync("light");
+ * NavigationBar.setBarStyleAsync("light");
  * ```
  * @param style `light|dark` dictates the color of the foreground element color.
  */
-export async function setAppearanceAsync(style: Appearance): Promise<void> {
+export async function setBarStyleAsync(style: BarStyle): Promise<void> {
   if (Platform.OS !== 'android') {
-    console.warn('`setAppearanceAsync` is only available on Android');
+    console.warn('`setBarStyleAsync` is only available on Android');
     return;
   }
-  await ExpoNavigationBar.setAppearanceAsync(style);
+  await ExpoNavigationBar.setBarStyleAsync(style);
 }
 
 /**
- * Gets the navigation bar's foreground style.
+ * Gets the navigation bar's button color styles.
  *
  * @example
  * ```ts
- * const appearance = await NavigationBar.getAppearanceAsync();
+ * const style = await NavigationBar.getBarStyleAsync();
  * ```
  * @returns Navigation bar foreground element color settings. Returns `light` on unsupported platforms (iOS, web).
  */
-export async function getAppearanceAsync(): Promise<Appearance> {
+export async function getBarStyleAsync(): Promise<BarStyle> {
   if (Platform.OS !== 'android') {
-    console.warn('`getAppearanceAsync` is only available on Android');
+    console.warn('`getBarStyleAsync` is only available on Android');
     return 'light';
   }
-  return await ExpoNavigationBar.getAppearanceAsync();
+  return await ExpoNavigationBar.getBarStyleAsync();
 }
 
 /**

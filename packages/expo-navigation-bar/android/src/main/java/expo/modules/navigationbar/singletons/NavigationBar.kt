@@ -31,20 +31,20 @@ object NavigationBar : SingletonModule {
     setBackgroundColor(activity, color, {}, { m -> Log.e(TAG, m) })
   }
 
-  fun setAppearance(
+  fun setBarStyle(
     activity: Activity,
-    appearance: String,
+    barStyle: String,
     successCallback: () -> Unit,
     failureCallback: (reason: String) -> Unit
   ) {
     WindowInsetsControllerCompat(activity.window, activity.window.decorView).let { controller ->
-      when (appearance) {
+      when (barStyle) {
         // TODO: force dark mode
         // TODO: Maybe use auto instead of dark
-        "dark" -> controller.isAppearanceLightNavigationBars = false
-        "light" -> controller.isAppearanceLightNavigationBars = true
+        "light" -> controller.isAppearanceLightNavigationBars = false
+        "dark" -> controller.isAppearanceLightNavigationBars = true
         else -> {
-          failureCallback("Invalid appearance: \"$appearance\"")
+          failureCallback("Invalid style: \"$barStyle\"")
           return@let
         }
       }
@@ -53,8 +53,8 @@ object NavigationBar : SingletonModule {
   }
 
   @JvmStatic
-  fun setAppearance(activity: Activity, appearance: String) {
-    setAppearance(activity, appearance, {}, { m -> Log.e(TAG, m) })
+  fun setBarStyle(activity: Activity, barStyle: String) {
+    setBarStyle(activity, barStyle, {}, { m -> Log.e(TAG, m) })
   }
 
   fun setBorderColor(

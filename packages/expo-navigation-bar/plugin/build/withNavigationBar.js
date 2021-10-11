@@ -3,13 +3,14 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.setNavigationBarStyles = exports.setNavigationBarColors = exports.setStrings = exports.resolveProps = void 0;
+exports.setNavigationBarStyles = exports.setNavigationBarColors = exports.setStrings = exports.withAndroidNavigationBarExpoGoManifest = exports.resolveProps = void 0;
 const config_plugins_1 = require("@expo/config-plugins");
 // @ts-ignore: uses flow
 const normalize_color_1 = __importDefault(require("@react-native/normalize-color"));
 const debug_1 = __importDefault(require("debug"));
 const debug = debug_1.default('expo:system-navigation-bar:plugin');
 const pkg = require('expo-navigation-bar/package.json');
+// strings.xml keys, this should not change.
 const BORDER_COLOR_KEY = 'expo_navigation_bar_border_color';
 const VISIBILITY_KEY = 'expo_navigation_bar_visibility';
 const POSITION_KEY = 'expo_navigation_bar_position';
@@ -18,9 +19,9 @@ const LEGACY_VISIBLE_KEY = 'expo_navigation_bar_legacy_visible';
 // styles.xml value
 const NAVIGATION_BAR_COLOR = 'navigationBarColor';
 const LEGACY_BAR_STYLE_MAP = {
-    // These are flipped in the expo-cli config plugin
-    'light-content': 'dark',
-    'dark-content': 'light',
+    // Match expo-status-bar
+    'dark-content': 'dark',
+    'light-content': 'light',
 };
 function convertColorAndroid(input) {
     let color = normalize_color_1.default(input);
@@ -40,7 +41,7 @@ function resolveProps(config, _props) {
     if (!_props) {
         props = {
             backgroundColor: (_a = config.androidNavigationBar) === null || _a === void 0 ? void 0 : _a.backgroundColor,
-            appearance: ((_b = config.androidNavigationBar) === null || _b === void 0 ? void 0 : _b.barStyle)
+            barStyle: ((_b = config.androidNavigationBar) === null || _b === void 0 ? void 0 : _b.barStyle)
                 ? LEGACY_BAR_STYLE_MAP[(_c = config.androidNavigationBar) === null || _c === void 0 ? void 0 : _c.barStyle]
                 : undefined,
             // Resources for:
@@ -62,8 +63,26 @@ function resolveProps(config, _props) {
     return props;
 }
 exports.resolveProps = resolveProps;
+/**
+ * Ensure the Expo Go manifest is updated when the project is using config plugin properties instead
+ * of the static values that Expo Go reads from (`androidNavigationBar`).
+ */
+const withAndroidNavigationBarExpoGoManifest = (config, props) => {
+    var _a, _b;
+    if (!config.androidNavigationBar) {
+        // Remap the config plugin props so Expo Go knows how to apply them.
+        config.androidNavigationBar = {
+            backgroundColor: (_a = props.backgroundColor) !== null && _a !== void 0 ? _a : undefined,
+            barStyle: (_b = Object.entries(LEGACY_BAR_STYLE_MAP).find(([, v]) => v === props.barStyle)) === null || _b === void 0 ? void 0 : _b[0],
+            visible: props.legacyVisible,
+        };
+    }
+    return config;
+};
+exports.withAndroidNavigationBarExpoGoManifest = withAndroidNavigationBarExpoGoManifest;
 const withNavigationBar = (config, _props) => {
     const props = resolveProps(config, _props);
+    config = exports.withAndroidNavigationBarExpoGoManifest(config, props);
     debug('Props:', props);
     // TODO: Add this to expo/config-plugins
     // Elevate props to a static value on extra so Expo Go can read it.
@@ -126,7 +145,7 @@ function setNavigationBarColors({ backgroundColor }, colors) {
     return colors;
 }
 exports.setNavigationBarColors = setNavigationBarColors;
-function setNavigationBarStyles({ backgroundColor, appearance }, styles) {
+function setNavigationBarStyles({ backgroundColor, barStyle }, styles) {
     styles = config_plugins_1.AndroidConfig.Styles.assignStylesValue(styles, {
         add: !!backgroundColor,
         parent: config_plugins_1.AndroidConfig.Styles.getAppThemeLightNoActionBarGroup(),
@@ -135,8 +154,8 @@ function setNavigationBarStyles({ backgroundColor, appearance }, styles) {
     });
     styles = config_plugins_1.AndroidConfig.Styles.assignStylesValue(styles, {
         // Adding means the buttons will be darker to account for a light background color.
-        // `setAppearanceAsync('light')` should do the same thing.
-        add: appearance === 'light',
+        // `setBarStyleAsync('dark')` should do the same thing.
+        add: barStyle === 'dark',
         parent: config_plugins_1.AndroidConfig.Styles.getAppThemeLightNoActionBarGroup(),
         name: 'android:windowLightNavigationBar',
         value: 'true',

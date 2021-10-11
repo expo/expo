@@ -1,10 +1,10 @@
 /**
  * Appearance of the foreground elements in the navigation bar, i.e. the color of the menu, back, home button icons.
  *
- * - `light` makes buttons **darker** to adjust for a mostly light nav bar.
- * - `dark` makes buttons **lighter** to adjust for a mostly dark nav bar.
+ * - `dark` makes buttons **darker** to adjust for a mostly light nav bar.
+ * - `light` makes buttons **lighter** to adjust for a mostly dark nav bar.
  */
-export type Appearance = 'light' | 'dark';
+export type BarStyle = 'light' | 'dark';
 
 /**
  * Visibility of the navigation bar.
