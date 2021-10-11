@@ -146,9 +146,7 @@ module.exports = function withPrefixedName(config, prefix) {
 ```json
 {
   "name": "my-app",
-  "plugins": [
-    ["./my-plugin", "custom"]
-  ]
+  "plugins": [["./my-plugin", "custom"]]
 }
 ```
 
@@ -159,9 +157,7 @@ module.exports = function withPrefixedName(config, prefix) {
 ```json
 {
   "name": "custom-my-app",
-  "plugins": [
-    ["./my-plugin", "custom"]
-  ]
+  "plugins": [["./my-plugin", "custom"]]
 }
 ```
 
@@ -249,6 +245,7 @@ The following default mods are provided by the mod compiler for common file mani
 - `mods.ios.entitlements` -- Modify the `ios/<name>/<product-name>.entitlements` as JSON (parsed with [`@expo/plist`](https://www.npmjs.com/package/@expo/plist)).
 - `mods.ios.expoPlist` -- Modify the `ios/<name>/Expo.plist` as JSON (Expo updates config for iOS) (parsed with [`@expo/plist`](https://www.npmjs.com/package/@expo/plist)).
 - `mods.ios.xcodeproj` -- Modify the `ios/<name>.xcodeproj` as an `XcodeProject` object (parsed with [`xcode`](https://www.npmjs.com/package/xcode)).
+- `mods.ios.podfileProperties` -- Modify the `ios/Podfile.properties.json` as JSON.
 
 - `mods.android.manifest` -- Modify the `android/app/src/main/AndroidManifest.xml` as JSON (parsed with [`xml2js`][xml2js]).
 - `mods.android.strings` -- Modify the `android/app/src/main/res/values/strings.xml` as JSON (parsed with [`xml2js`][xml2js]).
@@ -276,6 +273,7 @@ Instead you should use the helper mods provided by `@expo/config-plugins`:
   - `withEntitlementsPlist`
   - `withExpoPlist`
   - `withXcodeProject`
+  - `withPodfileProperties`
 - Android
   - `withAndroidManifest`
   - `withStringsXml`
@@ -576,6 +574,40 @@ export const withCustomConfig: ConfigPlugin<string> = (config, id) => {
   });
 };
 ```
+
+### Modifying the iOS Podfile
+
+The iOS Podfile is the config file for CocoaPods, the dependency manager on iOS. Think of Podfile like package.json but for iOS. The Podfile is a ruby file (application code), which means you **cannot** safely modify it from Expo config plugins, and should opt towards another approach, like Expo Autolinking hooks (citation needed).
+
+Currently, we do have configuration that interacts with the CocoaPods file though.
+
+Podfile configuration is often done with environment variables:
+
+- `process.env.EXPO_USE_SOURCE` when set to `1`, Expo modules will install source code instead of xcframeworks.
+- `process.env.CI` in some projects, when set to `0`, Flipper installation will be skipped.
+
+We do expose one mechanism for safely interacting with the Podfile, but it's very limited. The versioned [template Podfile](https://github.com/expo/expo/blob/master/templates/expo-template-bare-minimum/ios/Podfile) is hard coded to read from a static JSON file `Podfile.properties.json`, we expose a mod (`ios.podfileProperties`, `withPodfileProperties`) to safely read and write from this file.
+
+In Expo SDK 43, the `Podfile.properties.json` only supports the following configuration:
+
+```json
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "properties": {
+    "expo": {
+      "type": "object",
+      "properties": {
+        "jsEngine": {
+          "enum": ["jsc", "hermes"]
+        }
+      }
+    }
+  }
+}
+```
+
+We may extend this schema in the future to fit more needs.
 
 ### Adding plugins to pluginHistory
 
