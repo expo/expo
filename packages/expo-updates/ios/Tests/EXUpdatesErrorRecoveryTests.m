@@ -281,6 +281,45 @@
   [verify(mockDelegate) throwException:anything()];
 }
 
+- (void)testHandleError_CheckAutomaticallyNever
+{
+  id<EXUpdatesErrorRecoveryDelegate> mockDelegate = mockProtocol(@protocol(EXUpdatesErrorRecoveryDelegate));
+  _errorRecovery.delegate = mockDelegate;
+
+  EXUpdatesConfig *mockConfig = mock([EXUpdatesConfig class]);
+  [given(mockConfig.checkOnLaunch) willReturnInteger:EXUpdatesCheckAutomaticallyConfigNever];
+  [given(mockDelegate.config) willReturn:mockConfig];
+  [given(mockDelegate.remoteLoadStatus) willReturnInteger:EXUpdatesRemoteLoadStatusIdle];
+
+  NSError *mockError = mock([NSError class]);
+  [_errorRecovery handleError:mockError];
+  dispatch_sync(_testQueue, ^{}); // flush queue
+
+  [verify(mockDelegate) markFailedLaunchForLaunchedUpdate];
+  [self verifySuccessfulRelaunchWithCompletion_WithMockDelegate:mockDelegate];
+}
+
+- (void)testHandleError_CheckAutomaticallyNever_RCTContentDidAppear
+{
+  id<EXUpdatesErrorRecoveryDelegate> mockDelegate = mockProtocol(@protocol(EXUpdatesErrorRecoveryDelegate));
+  _errorRecovery.delegate = mockDelegate;
+
+  EXUpdatesConfig *mockConfig = mock([EXUpdatesConfig class]);
+  [given(mockConfig.checkOnLaunch) willReturnInteger:EXUpdatesCheckAutomaticallyConfigNever];
+  [given(mockDelegate.config) willReturn:mockConfig];
+  [given(mockDelegate.remoteLoadStatus) willReturnInteger:EXUpdatesRemoteLoadStatusIdle];
+
+  [_errorRecovery startMonitoring];
+  [[NSNotificationCenter defaultCenter] postNotificationName:@"RCTContentDidAppearNotification" object:nil];
+  [verify(mockDelegate) markSuccessfulLaunchForLaunchedUpdate];
+
+  NSError *mockError = mock([NSError class]);
+  [_errorRecovery handleError:mockError];
+  dispatch_sync(_testQueue, ^{}); // flush queue
+
+  [verify(mockDelegate) throwException:anything()];
+}
+
 - (void)testHandleTwoErrors
 {
   id<EXUpdatesErrorRecoveryDelegate> mockDelegate = mockProtocol(@protocol(EXUpdatesErrorRecoveryDelegate));

@@ -2,8 +2,6 @@
 
 #import <EXUpdates/EXUpdatesAppLauncher.h>
 #import <EXUpdates/EXUpdatesConfig.h>
-#import <EXUpdates/EXUpdatesDatabase.h>
-#import <EXUpdates/EXUpdatesSelectionPolicy.h>
 #import <EXUpdates/EXUpdatesUpdate.h>
 #import <Foundation/Foundation.h>
 
@@ -17,6 +15,7 @@ typedef NS_ENUM(NSInteger, EXUpdatesRemoteLoadStatus) {
 
 @protocol EXUpdatesErrorRecoveryDelegate <NSObject>
 
+@property (nonatomic, readonly, strong) EXUpdatesConfig *config;
 @property (nonatomic, readonly, strong) EXUpdatesUpdate *launchedUpdate;
 @property (nonatomic, readonly, assign) EXUpdatesRemoteLoadStatus remoteLoadStatus;
 
