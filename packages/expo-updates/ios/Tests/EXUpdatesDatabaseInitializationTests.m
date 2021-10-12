@@ -97,6 +97,51 @@ CREATE INDEX \"index_updates_launch_asset_id\" ON \"updates\" (\"launch_asset_id
 CREATE INDEX \"index_json_data_scope_key\" ON \"json_data\" (\"scope_key\")\
 ";
 
+static NSString * const EXUpdatesDatabaseV6Schema = @"\
+CREATE TABLE \"updates\" (\
+\"id\"  BLOB UNIQUE,\
+\"scope_key\"  TEXT NOT NULL,\
+\"commit_time\"  INTEGER NOT NULL,\
+\"runtime_version\"  TEXT NOT NULL,\
+\"launch_asset_id\" INTEGER,\
+\"manifest\"  TEXT,\
+\"status\"  INTEGER NOT NULL,\
+\"keep\"  INTEGER NOT NULL,\
+\"last_accessed\"  INTEGER NOT NULL,\
+PRIMARY KEY(\"id\"),\
+FOREIGN KEY(\"launch_asset_id\") REFERENCES \"assets\"(\"id\") ON DELETE CASCADE\
+);\
+CREATE TABLE \"assets\" (\
+\"id\"  INTEGER PRIMARY KEY AUTOINCREMENT,\
+\"url\"  TEXT,\
+\"key\"  TEXT UNIQUE,\
+\"headers\"  TEXT,\
+\"type\"  TEXT NOT NULL,\
+\"metadata\"  TEXT,\
+\"download_time\"  INTEGER NOT NULL,\
+\"relative_path\"  TEXT NOT NULL,\
+\"hash\"  BLOB NOT NULL,\
+\"hash_type\"  INTEGER NOT NULL,\
+\"marked_for_deletion\"  INTEGER NOT NULL\
+);\
+CREATE TABLE \"updates_assets\" (\
+\"update_id\"  BLOB NOT NULL,\
+\"asset_id\" INTEGER NOT NULL,\
+FOREIGN KEY(\"update_id\") REFERENCES \"updates\"(\"id\") ON DELETE CASCADE,\
+FOREIGN KEY(\"asset_id\") REFERENCES \"assets\"(\"id\") ON DELETE CASCADE\
+);\
+CREATE TABLE \"json_data\" (\
+\"id\" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,\
+\"key\" TEXT NOT NULL,\
+\"value\" TEXT NOT NULL,\
+\"last_updated\" INTEGER NOT NULL,\
+\"scope_key\" TEXT NOT NULL\
+);\
+CREATE UNIQUE INDEX \"index_updates_scope_key_commit_time\" ON \"updates\" (\"scope_key\", \"commit_time\");\
+CREATE INDEX \"index_updates_launch_asset_id\" ON \"updates\" (\"launch_asset_id\");\
+CREATE INDEX \"index_json_data_scope_key\" ON \"json_data\" (\"scope_key\")\
+";
+
 @interface EXUpdatesDatabaseInitializationTests : XCTestCase
 
 @property (nonatomic, strong) NSURL *testDatabaseDir;
