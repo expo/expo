@@ -19,7 +19,6 @@ const isDOMAvailable =
   Platform.OS === 'web' &&
   typeof window !== 'undefined' &&
   !!window.document?.createElement &&
-  // eslint-disable-next-line no-undef
   typeof URL !== 'undefined';
 
 export async function requestAsync<T>(requestUrl: string, fetchRequest: FetchRequest): Promise<T> {
@@ -27,7 +26,6 @@ export async function requestAsync<T>(requestUrl: string, fetchRequest: FetchReq
     // @ts-ignore
     return;
   }
-  // eslint-disable-next-line no-undef
   const url = new URL(requestUrl);
 
   const request: Omit<RequestInit, 'headers'> & { headers: HeadersInit } = {

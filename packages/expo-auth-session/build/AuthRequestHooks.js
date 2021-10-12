@@ -31,7 +31,6 @@ export function useLoadedAuthRequest(config, discovery, AuthRequestInstance) {
             const request = new AuthRequestInstance(config);
             request.makeAuthUrlAsync(discovery).then(() => {
                 if (isMounted) {
-                    // @ts-ignore
                     setRequest(request);
                 }
             });

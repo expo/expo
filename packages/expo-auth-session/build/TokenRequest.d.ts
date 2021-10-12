@@ -27,7 +27,7 @@ export declare class TokenResponse implements TokenResponseConfig {
      *
      * @param params
      */
-    static fromQueryParams(params: Record<string, string>): TokenResponse;
+    static fromQueryParams(params: Record<string, any>): TokenResponse;
     accessToken: string;
     tokenType: TokenType;
     expiresIn?: number;
