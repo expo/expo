@@ -56,22 +56,8 @@ class MediaLibraryModule(
 
   override fun getConstants(): Map<String, Any> {
     return mapOf(
-      "MediaType" to mapOf<String, Any>(
-        "audio" to MEDIA_TYPE_AUDIO,
-        "photo" to MEDIA_TYPE_PHOTO,
-        "video" to MEDIA_TYPE_VIDEO,
-        "unknown" to MEDIA_TYPE_UNKNOWN,
-        "all" to MEDIA_TYPE_ALL,
-      ),
-      "SortBy" to mapOf<String, Any>(
-        "default" to SORT_BY_DEFAULT,
-        "creationTime" to SORT_BY_CREATION_TIME,
-        "modificationTime" to SORT_BY_MODIFICATION_TIME,
-        "mediaType" to SORT_BY_MEDIA_TYPE,
-        "width" to SORT_BY_WIDTH,
-        "height" to SORT_BY_HEIGHT,
-        "duration" to SORT_BY_DURATION,
-      ),
+      "MediaType" to MediaType.getConstants(),
+      "SortBy" to SortBy.getConstants(),
       "CHANGE_LISTENER_NAME" to LIBRARY_DID_CHANGE_EVENT,
     )
   }

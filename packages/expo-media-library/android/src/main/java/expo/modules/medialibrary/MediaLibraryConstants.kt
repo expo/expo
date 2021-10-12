@@ -24,38 +24,10 @@ const val ERROR_USER_DID_NOT_GRANT_WRITE_PERMISSIONS_MESSAGE = "User didn't gran
 const val ERROR_UNABLE_TO_ASK_FOR_PERMISSIONS_MESSAGE = "Unable to ask for permissions."
 const val ERROR_NO_FILE_EXTENSION = "E_NO_FILE_EXTENSION"
 
-const val MEDIA_TYPE_AUDIO = "audio"
-const val MEDIA_TYPE_PHOTO = "photo"
-const val MEDIA_TYPE_VIDEO = "video"
-const val MEDIA_TYPE_UNKNOWN = "unknown"
-const val MEDIA_TYPE_ALL = "all"
-
-const val SORT_BY_DEFAULT = "default"
-const val SORT_BY_CREATION_TIME = "creationTime"
-const val SORT_BY_MODIFICATION_TIME = "modificationTime"
-const val SORT_BY_MEDIA_TYPE = "mediaType"
-const val SORT_BY_WIDTH = "width"
-const val SORT_BY_HEIGHT = "height"
-const val SORT_BY_DURATION = "duration"
-
 const val LIBRARY_DID_CHANGE_EVENT = "mediaLibraryDidChange"
 
-val MEDIA_TYPES = mapOf(
-  MEDIA_TYPE_AUDIO to MediaStore.Files.FileColumns.MEDIA_TYPE_AUDIO,
-  MEDIA_TYPE_PHOTO to MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE,
-  MEDIA_TYPE_VIDEO to MediaStore.Files.FileColumns.MEDIA_TYPE_VIDEO,
-  MEDIA_TYPE_UNKNOWN to MediaStore.Files.FileColumns.MEDIA_TYPE_NONE,
-)
-val SORT_KEYS = mapOf(
-  SORT_BY_DEFAULT to MediaStore.Images.Media._ID,
-  SORT_BY_CREATION_TIME to MediaStore.Images.Media.DATE_TAKEN,
-  SORT_BY_MODIFICATION_TIME to MediaStore.Images.Media.DATE_MODIFIED,
-  SORT_BY_MEDIA_TYPE to MediaStore.Files.FileColumns.MEDIA_TYPE,
-  SORT_BY_WIDTH to MediaStore.MediaColumns.WIDTH,
-  SORT_BY_HEIGHT to MediaStore.MediaColumns.HEIGHT,
-  SORT_BY_DURATION to MediaStore.Video.VideoColumns.DURATION,
-)
 val EXTERNAL_CONTENT_URI: Uri = MediaStore.Files.getContentUri("external")
+
 val ASSET_PROJECTION = arrayOf(
   MediaStore.Images.Media._ID,
   MediaStore.Files.FileColumns.DISPLAY_NAME,

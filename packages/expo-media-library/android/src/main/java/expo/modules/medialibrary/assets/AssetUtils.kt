@@ -19,11 +19,8 @@ import expo.modules.medialibrary.ERROR_NO_PERMISSIONS
 import expo.modules.medialibrary.ERROR_UNABLE_TO_LOAD
 import expo.modules.medialibrary.ERROR_UNABLE_TO_LOAD_PERMISSION
 import expo.modules.medialibrary.EXTERNAL_CONTENT_URI
-import expo.modules.medialibrary.MEDIA_TYPE_AUDIO
-import expo.modules.medialibrary.MEDIA_TYPE_PHOTO
-import expo.modules.medialibrary.MEDIA_TYPE_UNKNOWN
-import expo.modules.medialibrary.MEDIA_TYPE_VIDEO
 import expo.modules.medialibrary.EXIF_TAGS
+import expo.modules.medialibrary.MediaType
 import java.io.FileNotFoundException
 import java.io.IOException
 import java.lang.NumberFormatException
@@ -279,17 +276,15 @@ fun getAssetDimensionsFromCursor(
 }
 
 /**
- * Converts [MediaStore] media type into MediaLibrary media type constants
+ * Converts [MediaStore] media type into MediaLibrary [MediaType] api constant
  */
-fun exportMediaType(mediaType: Int): String {
-  return when (mediaType) {
-    MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE -> MEDIA_TYPE_PHOTO
+fun exportMediaType(mediaType: Int) = when (mediaType) {
+    MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE -> MediaType.PHOTO
     MediaStore.Files.FileColumns.MEDIA_TYPE_AUDIO,
-    MediaStore.Files.FileColumns.MEDIA_TYPE_PLAYLIST -> MEDIA_TYPE_AUDIO
-    MediaStore.Files.FileColumns.MEDIA_TYPE_VIDEO -> MEDIA_TYPE_VIDEO
-    else -> MEDIA_TYPE_UNKNOWN
-  }
-}
+    MediaStore.Files.FileColumns.MEDIA_TYPE_PLAYLIST -> MediaType.AUDIO
+    MediaStore.Files.FileColumns.MEDIA_TYPE_VIDEO -> MediaType.VIDEO
+    else -> MediaType.UNKNOWN
+  }.apiName
 
 /**
  * Swaps `width` and `height` if the `orientation` is `90` or `-90`

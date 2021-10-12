@@ -2,8 +2,8 @@ package expo.modules.medialibrary.assets
 
 import android.provider.MediaStore
 import expo.modules.medialibrary.GET_ASSETS_DEFAULT_LIMIT
-import expo.modules.medialibrary.MEDIA_TYPE_PHOTO
-import expo.modules.medialibrary.SORT_BY_DEFAULT
+import expo.modules.medialibrary.MediaType
+import expo.modules.medialibrary.SortBy
 import io.mockk.clearAllMocks
 import io.mockk.every
 import io.mockk.mockkStatic
@@ -26,11 +26,11 @@ internal class GetAssetsQueryTests {
     val limit = 21.0
     val offset = "37"
     val album = "sampleAlbumId"
-    val mediaTypes = listOf(MEDIA_TYPE_PHOTO)
+    val mediaTypes = listOf(MediaType.PHOTO.apiName)
     val createdBefore = 6789.0
     val createdAfter = 2345.0
     val sortBy = listOf(
-      ArrayList(listOf(SORT_BY_DEFAULT, true))
+      ArrayList(listOf(SortBy.DEFAULT.keyName, true))
     )
 
     val inputMap = mapOf(
