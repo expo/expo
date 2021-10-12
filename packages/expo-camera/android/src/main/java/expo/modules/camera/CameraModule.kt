@@ -17,22 +17,14 @@ import expo.modules.interfaces.permissions.Permissions
 
 import java.lang.Exception
 
-private const val TAG = "ExponentCameraModule"
-private const val ERROR_TAG = "E_CAMERA"
-const val VIDEO_2160P = 0
-const val VIDEO_1080P = 1
-const val VIDEO_720P = 2
-const val VIDEO_480P = 3
-const val VIDEO_4x3 = 4
-
 class CameraModule(
   context: Context,
   private val moduleRegistryDelegate: ModuleRegistryDelegate = ModuleRegistryDelegate()
 ) : ExportedModule(context) {
 
+  private inline fun <reified T> moduleRegistry() = moduleRegistryDelegate.getFromModuleRegistry<T>()
   private val permissionsManager: Permissions by moduleRegistry()
   private val uIManager: UIManager by moduleRegistry()
-  private inline fun <reified T> moduleRegistry() = moduleRegistryDelegate.getFromModuleRegistry<T>()
 
   override fun onCreate(moduleRegistry: ModuleRegistry) {
     moduleRegistryDelegate.onCreate(moduleRegistry)

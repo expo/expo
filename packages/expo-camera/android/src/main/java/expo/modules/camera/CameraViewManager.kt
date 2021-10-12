@@ -6,13 +6,11 @@ import com.google.android.cameraview.AspectRatio
 import com.google.android.cameraview.Size
 
 import expo.modules.core.interfaces.ExpoProp
+import expo.modules.core.interfaces.services.UIManager
 import expo.modules.core.ModuleRegistry
 import expo.modules.core.ModuleRegistryDelegate
 import expo.modules.core.ViewManager
-import expo.modules.core.interfaces.services.UIManager
 import expo.modules.interfaces.barcodescanner.BarCodeScannerSettings
-
-private const val REACT_CLASS = "ExponentCamera"
 
 class CameraViewManager(
   private val moduleRegistryDelegate: ModuleRegistryDelegate = ModuleRegistryDelegate()

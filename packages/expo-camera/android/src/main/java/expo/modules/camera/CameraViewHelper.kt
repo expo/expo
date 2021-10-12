@@ -129,12 +129,14 @@ object CameraViewHelper {
   fun generateSimulatorPhoto(width: Int, height: Int): Bitmap {
     val fakePhoto = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
     val canvas = Canvas(fakePhoto)
-    val background = Paint()
-    background.color = Color.BLACK
+    val background = Paint().apply {
+      color = Color.BLACK
+    }
     canvas.drawRect(0f, 0f, width.toFloat(), height.toFloat(), background)
-    val textPaint = Paint()
-    textPaint.color = Color.YELLOW
-    textPaint.textSize = 35f
+    val textPaint = Paint().apply {
+      color = Color.YELLOW
+      textSize = 35f
+    }
     val calendar = Calendar.getInstance()
     val simpleDateFormat = SimpleDateFormat("dd.MM.yy HH:mm:ss", Locale.US)
     canvas.drawText(simpleDateFormat.format(calendar.time), width * 0.1f, height * 0.9f, textPaint)

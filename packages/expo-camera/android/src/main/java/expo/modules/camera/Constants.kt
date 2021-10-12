@@ -3,6 +3,16 @@ package expo.modules.camera
 import androidx.exifinterface.media.ExifInterface
 import com.google.android.cameraview.Constants
 
+const val REACT_CLASS = "ExponentCamera"
+const val TAG = "ExponentCameraModule"
+const val ERROR_TAG = "E_CAMERA"
+
+const val VIDEO_2160P = 0
+const val VIDEO_1080P = 1
+const val VIDEO_720P = 2
+const val VIDEO_480P = 3
+const val VIDEO_4x3 = 4
+
 val typeConstants = hashMapOf(
   "front" to Constants.FACING_FRONT,
   "back" to Constants.FACING_BACK

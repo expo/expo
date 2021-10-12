@@ -64,6 +64,7 @@ class ExpoCameraView(
   FaceDetectorAsyncTaskDelegate,
   PictureSavedDelegate,
   CameraViewInterface {
+
   private inline fun <reified T> moduleRegistry() = moduleRegistryDelegate.getFromModuleRegistry<T>()
   private val pictureTakenPromises: Queue<Promise> = ConcurrentLinkedQueue()
   private val pictureTakenOptions: MutableMap<Promise, Map<String, Any>> = ConcurrentHashMap()
@@ -86,6 +87,7 @@ class ExpoCameraView(
   private var pendingFaceDetectorSettings: Map<String, Any>? = null
   private var shouldDetectFaces = false
   private var mShouldScanBarCodes = false
+
   override fun onLayout(changed: Boolean, left: Int, top: Int, right: Int, bottom: Int) {
     val preview = view ?: return
     setBackgroundColor(Color.BLACK)
@@ -144,20 +146,23 @@ class ExpoCameraView(
   fun record(options: Map<String?, Any?>, promise: Promise, cacheDirectory: File?) {
     try {
       val path = FileSystemUtils.generateOutputPath(cacheDirectory, "Camera", ".mp4")
-      var maxDuration = -1.0
-      if (options[MAX_DURATION_KEY] != null) {
-        maxDuration = options[MAX_DURATION_KEY] as Double
+      val maxDuration = if (options[MAX_DURATION_KEY] != null) {
+        options[MAX_DURATION_KEY] as Double
+      } else {
+        -1.0
       }
-      var maxFileSize = -1.0
-      if (options[MAX_FILE_SIZE_KEY] != null) {
-        maxFileSize = options[MAX_FILE_SIZE_KEY] as Double
+      val maxFileSize = if (options[MAX_FILE_SIZE_KEY] != null) {
+        options[MAX_FILE_SIZE_KEY] as Double
+      } else {
+        -1.0
       }
-      var profile = CamcorderProfile.get(cameraId, CamcorderProfile.QUALITY_HIGH)
-      if (options[QUALITY_KEY] != null) {
-        profile = getCamcorderProfile(cameraId, (options[QUALITY_KEY] as Double?)!!.toInt())
+      val profile = if (options[QUALITY_KEY] != null) {
+        getCamcorderProfile(cameraId, (options[QUALITY_KEY] as Double).toInt())
+      } else {
+        CamcorderProfile.get(cameraId, CamcorderProfile.QUALITY_HIGH)
       }
-      if (options[VIDEO_BITRATE_KEY] != null) {
-        profile.videoBitRate = (options[VIDEO_BITRATE_KEY] as Double?)!!.toInt()
+      options[VIDEO_BITRATE_KEY]?.let {
+        profile.videoBitRate = (options[VIDEO_BITRATE_KEY] as Double).toInt()
       }
       val muteValue = options[MUTE_KEY] as Boolean?
       val recordAudio = muteValue == null || !muteValue
@@ -186,17 +191,14 @@ class ExpoCameraView(
     scanning = mShouldScanBarCodes || shouldDetectFaces
   }
 
-  fun setBarCodeScannerSettings(settings: BarCodeScannerSettings?) {
-    if (barCodeScanner != null) {
-      barCodeScanner!!.setSettings(settings)
-    }
+  fun setBarCodeScannerSettings(settings: BarCodeScannerSettings) {
+    barCodeScanner?.setSettings(settings)
   }
 
   override fun onBarCodeScanned(barCode: BarCodeScannerResult) {
-    if (!mShouldScanBarCodes) {
-      return
+    if (mShouldScanBarCodes) {
+      emitBarCodeReadEvent(eventEmitter, this, barCode)
     }
-    emitBarCodeReadEvent(eventEmitter, this, barCode)
   }
 
   override fun onBarCodeScanningTaskCompleted() {
