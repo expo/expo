@@ -1,10 +1,11 @@
 import * as React from 'react';
-import { View } from 'react-native';
+import { ViewProps } from 'react-native';
 import createElement from 'react-native-web/dist/exports/createElement';
 
 import { AVPlaybackNativeSource, AVPlaybackStatus, AVPlaybackStatusToSet } from './AV';
 import ExponentAV from './ExponentAV';
 import { addFullscreenListener } from './FullscreenUtils.web';
+import { VideoFullscreenUpdateEvent, VideoReadyForDisplayEvent } from './Video.types';
 
 type ExponentVideoProps = {
   source: AVPlaybackNativeSource | null;
@@ -12,8 +13,8 @@ type ExponentVideoProps = {
   status?: AVPlaybackStatusToSet;
   useNativeControls?: boolean;
   onStatusUpdate?: (event: { nativeEvent: AVPlaybackStatus }) => void;
-  onReadyForDisplay?: (event: { nativeEvent: object }) => void;
-  onFullscreenUpdate?: (event: { nativeEvent: object }) => void;
+  onReadyForDisplay?: (event: { nativeEvent: VideoReadyForDisplayEvent }) => void;
+  onFullscreenUpdate?: (event: { nativeEvent: VideoFullscreenUpdateEvent }) => void;
   onLoadStart: () => void;
   onLoad: (event: { nativeEvent: AVPlaybackStatus }) => void;
   onError: (event: { nativeEvent: { error: string } }) => void;
@@ -23,7 +24,7 @@ type ExponentVideoProps = {
   translateX?: number;
   translateY?: number;
   rotation?: number;
-} & React.ComponentProps<typeof View>;
+} & ViewProps;
 
 export type NaturalSize = {
   width: number;

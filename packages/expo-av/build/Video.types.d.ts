@@ -13,11 +13,11 @@ export declare enum ResizeMode {
 }
 export declare type VideoReadyForDisplayEvent = {
     naturalSize: VideoNaturalSize;
-    status: AVPlaybackStatus;
+    status?: AVPlaybackStatus;
 };
 export declare type VideoFullscreenUpdateEvent = {
     fullscreenUpdate: 0 | 1 | 2 | 3;
-    status: AVPlaybackStatus;
+    status?: AVPlaybackStatus;
 };
 export declare type VideoProps = {
     source?: AVPlaybackSource;

@@ -8,7 +8,12 @@
 
 ### 🐛 Bug fixes
 
+- On Web, fix `TypeError` related to fullscreen `supports*` helper functions.
+
 ### 💡 Others
+
+- On Web, update `ExponentVideoProps` type extension and event types.
+- Mark `status` as an optional field in `VideoFullscreenUpdateEvent` and `VideoReadyForDisplayEvent` types, becouse Web implementation do not return `status` in those events.
 
 ## 10.1.0 — 2021-10-01
 

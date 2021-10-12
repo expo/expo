@@ -22,12 +22,12 @@ export enum ResizeMode {
 
 export type VideoReadyForDisplayEvent = {
   naturalSize: VideoNaturalSize;
-  status: AVPlaybackStatus;
+  status?: AVPlaybackStatus;
 };
 
 export type VideoFullscreenUpdateEvent = {
   fullscreenUpdate: 0 | 1 | 2 | 3;
-  status: AVPlaybackStatus;
+  status?: AVPlaybackStatus;
 };
 
 export type VideoProps = {
