@@ -15,7 +15,7 @@ import PlatformsSection from '~/components/plugins/PlatformsSection';
 
 <InstallSection packageName="expo-asset" />
 
-# API
+## API
 
 ```js
 import { Asset } from 'expo-asset';
