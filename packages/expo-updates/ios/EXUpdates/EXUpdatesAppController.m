@@ -365,6 +365,9 @@ static NSString * const EXUpdatesErrorEventName = @"error";
 
 - (void)markFailedLaunchForLaunchedUpdate
 {
+  if (_isEmergencyLaunch) {
+    return;
+  }
   dispatch_async(_database.databaseQueue, ^{
     EXUpdatesUpdate *launchedUpdate = self.launchedUpdate;
     if (!launchedUpdate) {
@@ -380,6 +383,9 @@ static NSString * const EXUpdatesErrorEventName = @"error";
 
 - (void)markSuccessfulLaunchForLaunchedUpdate
 {
+  if (_isEmergencyLaunch) {
+    return;
+  }
   dispatch_async(_database.databaseQueue, ^{
     EXUpdatesUpdate *launchedUpdate = self.launchedUpdate;
     if (!launchedUpdate) {
