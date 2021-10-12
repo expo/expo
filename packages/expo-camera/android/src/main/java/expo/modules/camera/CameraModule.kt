@@ -30,7 +30,7 @@ class CameraModule(
   private val moduleRegistryDelegate: ModuleRegistryDelegate = ModuleRegistryDelegate()
 ) : ExportedModule(context) {
 
-  private val permissionsManager:Permissions by moduleRegistry()
+  private val permissionsManager: Permissions by moduleRegistry()
   private val uIManager: UIManager by moduleRegistry()
   private inline fun <reified T> moduleRegistry() = moduleRegistryDelegate.getFromModuleRegistry<T>()
 
@@ -51,82 +51,94 @@ class CameraModule(
 
   @ExpoMethod
   fun pausePreview(viewTag: Int, promise: Promise) {
-    addUIBlock(viewTag, object : UIManager.UIBlock<ExpoCameraView> {
-      override fun resolve(view: ExpoCameraView) {
-        try {
-          if (view.isCameraOpened) {
-            view.pausePreview()
-          }
-        } catch (e: Exception) {
-          promise.reject(ERROR_TAG, "pausePreview -- exception occurred -- " + e.message, e)
-        }
-      }
-
-      override fun reject(throwable: Throwable) {
-        promise.reject(ERROR_TAG, throwable)
-      }
-    })
-  }
-
-  @ExpoMethod
-  fun resumePreview(viewTag: Int, promise: Promise) {
-    addUIBlock(viewTag, object : UIManager.UIBlock<ExpoCameraView> {
-      override fun resolve(view: ExpoCameraView) {
-        try {
-          if (view.isCameraOpened) {
-            view.resumePreview()
-          }
-        } catch (e: Exception) {
-          promise.reject(ERROR_TAG, "resumePreview -- exception occurred -- " + e.message, e)
-        }
-      }
-
-      override fun reject(throwable: Throwable) {
-        promise.reject(ERROR_TAG, throwable)
-      }
-    })
-  }
-
-  @ExpoMethod
-  fun takePicture(options: Map<String, Any>, viewTag: Int, promise: Promise) {
-    val cacheDirectory = context.cacheDir
-    addUIBlock(viewTag, object : UIManager.UIBlock<ExpoCameraView> {
-      override fun resolve(view: ExpoCameraView) {
-        if (!Build.FINGERPRINT.contains("generic")) {
-          if (view.isCameraOpened) {
-            view.takePicture(options, promise, cacheDirectory)
-          } else {
-            promise.reject("E_CAMERA_UNAVAILABLE", "Camera is not running")
-          }
-        } else {
-          val image = CameraViewHelper.generateSimulatorPhoto(view.width, view.height)
-          ResolveTakenPictureAsyncTask(image, promise, options, cacheDirectory, view).execute()
-        }
-      }
-
-      override fun reject(throwable: Throwable) {
-        promise.reject(ERROR_TAG, throwable)
-      }
-    })
-  }
-
-  @ExpoMethod
-  fun record(options: Map<String?, Any?>, viewTag: Int, promise: Promise) {
-    if (permissionsManager.hasGrantedPermissions(Manifest.permission.RECORD_AUDIO)) {
-      val cacheDirectory = context.cacheDir
-      addUIBlock(viewTag, object : UIManager.UIBlock<ExpoCameraView> {
+    addUIBlock(
+      viewTag,
+      object : UIManager.UIBlock<ExpoCameraView> {
         override fun resolve(view: ExpoCameraView) {
-          if (view.isCameraOpened) {
-            view.record(options, promise, cacheDirectory)
-          } else {
-            promise.reject("E_CAMERA_UNAVAILABLE", "Camera is not running")
+          try {
+            if (view.isCameraOpened) {
+              view.pausePreview()
+            }
+          } catch (e: Exception) {
+            promise.reject(ERROR_TAG, "pausePreview -- exception occurred -- " + e.message, e)
           }
         }
 
         override fun reject(throwable: Throwable) {
           promise.reject(ERROR_TAG, throwable)
         }
-      })
+      }
+    )
+  }
+
+  @ExpoMethod
+  fun resumePreview(viewTag: Int, promise: Promise) {
+    addUIBlock(
+      viewTag,
+      object : UIManager.UIBlock<ExpoCameraView> {
+        override fun resolve(view: ExpoCameraView) {
+          try {
+            if (view.isCameraOpened) {
+              view.resumePreview()
+            }
+          } catch (e: Exception) {
+            promise.reject(ERROR_TAG, "resumePreview -- exception occurred -- " + e.message, e)
+          }
+        }
+
+        override fun reject(throwable: Throwable) {
+          promise.reject(ERROR_TAG, throwable)
+        }
+      }
+    )
+  }
+
+  @ExpoMethod
+  fun takePicture(options: Map<String, Any>, viewTag: Int, promise: Promise) {
+    val cacheDirectory = context.cacheDir
+    addUIBlock(
+      viewTag,
+      object : UIManager.UIBlock<ExpoCameraView> {
+        override fun resolve(view: ExpoCameraView) {
+          if (!Build.FINGERPRINT.contains("generic")) {
+            if (view.isCameraOpened) {
+              view.takePicture(options, promise, cacheDirectory)
+            } else {
+              promise.reject("E_CAMERA_UNAVAILABLE", "Camera is not running")
+            }
+          } else {
+            val image = CameraViewHelper.generateSimulatorPhoto(view.width, view.height)
+            ResolveTakenPictureAsyncTask(image, promise, options, cacheDirectory, view).execute()
+          }
+        }
+
+        override fun reject(throwable: Throwable) {
+          promise.reject(ERROR_TAG, throwable)
+        }
+      }
+    )
+  }
+
+  @ExpoMethod
+  fun record(options: Map<String?, Any?>, viewTag: Int, promise: Promise) {
+    if (permissionsManager.hasGrantedPermissions(Manifest.permission.RECORD_AUDIO)) {
+      val cacheDirectory = context.cacheDir
+      addUIBlock(
+        viewTag,
+        object : UIManager.UIBlock<ExpoCameraView> {
+          override fun resolve(view: ExpoCameraView) {
+            if (view.isCameraOpened) {
+              view.record(options, promise, cacheDirectory)
+            } else {
+              promise.reject("E_CAMERA_UNAVAILABLE", "Camera is not running")
+            }
+          }
+
+          override fun reject(throwable: Throwable) {
+            promise.reject(ERROR_TAG, throwable)
+          }
+        }
+      )
     } else {
       promise.reject(SecurityException("User rejected audio permissions"))
     }
@@ -134,66 +146,75 @@ class CameraModule(
 
   @ExpoMethod
   fun stopRecording(viewTag: Int, promise: Promise) {
-    addUIBlock(viewTag, object : UIManager.UIBlock<ExpoCameraView> {
-      override fun resolve(view: ExpoCameraView) {
-        if (view.isCameraOpened) {
-          view.stopRecording()
-          promise.resolve(true)
-        } else {
-          promise.reject(ERROR_TAG, "Camera is not open")
+    addUIBlock(
+      viewTag,
+      object : UIManager.UIBlock<ExpoCameraView> {
+        override fun resolve(view: ExpoCameraView) {
+          if (view.isCameraOpened) {
+            view.stopRecording()
+            promise.resolve(true)
+          } else {
+            promise.reject(ERROR_TAG, "Camera is not open")
+          }
+        }
+
+        override fun reject(throwable: Throwable) {
+          promise.reject(ERROR_TAG, throwable)
         }
       }
-
-      override fun reject(throwable: Throwable) {
-        promise.reject(ERROR_TAG, throwable)
-      }
-    })
+    )
   }
 
   @ExpoMethod
   fun getSupportedRatios(viewTag: Int, promise: Promise) {
-    addUIBlock(viewTag, object : UIManager.UIBlock<ExpoCameraView> {
-      override fun resolve(view: ExpoCameraView) {
-        if (view.isCameraOpened) {
-          promise.resolve(
-            view.supportedAspectRatios.map {
-              it.toString()
-            }
-          )
-        } else {
-          promise.reject(ERROR_TAG, "Camera is not running")
+    addUIBlock(
+      viewTag,
+      object : UIManager.UIBlock<ExpoCameraView> {
+        override fun resolve(view: ExpoCameraView) {
+          if (view.isCameraOpened) {
+            promise.resolve(
+              view.supportedAspectRatios.map {
+                it.toString()
+              }
+            )
+          } else {
+            promise.reject(ERROR_TAG, "Camera is not running")
+          }
+        }
+
+        override fun reject(throwable: Throwable) {
+          promise.reject(ERROR_TAG, throwable)
         }
       }
-
-      override fun reject(throwable: Throwable) {
-        promise.reject(ERROR_TAG, throwable)
-      }
-    })
+    )
   }
 
   @ExpoMethod
   fun getAvailablePictureSizes(ratio: String?, viewTag: Int, promise: Promise) {
-    addUIBlock(viewTag, object : UIManager.UIBlock<ExpoCameraView> {
-      override fun resolve(view: ExpoCameraView) {
-        if (view.isCameraOpened) {
-          try {
-            val sizes = view.getAvailablePictureSizes(AspectRatio.parse(ratio))
-            promise.resolve(
-              sizes.map {
-                it.toString()
-              }
-            )
-          } catch (e: Exception) {
-            promise.reject(ERROR_TAG, "getAvailablePictureSizes -- unexpected error -- " + e.message, e)
+    addUIBlock(
+      viewTag,
+      object : UIManager.UIBlock<ExpoCameraView> {
+        override fun resolve(view: ExpoCameraView) {
+          if (view.isCameraOpened) {
+            try {
+              val sizes = view.getAvailablePictureSizes(AspectRatio.parse(ratio))
+              promise.resolve(
+                sizes.map {
+                  it.toString()
+                }
+              )
+            } catch (e: Exception) {
+              promise.reject(ERROR_TAG, "getAvailablePictureSizes -- unexpected error -- " + e.message, e)
+            }
+          } else {
+            promise.reject(ERROR_TAG, "Camera is not running")
           }
-        } else {
-          promise.reject(ERROR_TAG, "Camera is not running")
+        }
+        override fun reject(throwable: Throwable) {
+          promise.reject(ERROR_TAG, throwable)
         }
       }
-      override fun reject(throwable: Throwable) {
-        promise.reject(ERROR_TAG, throwable)
-      }
-    })
+    )
   }
 
   private fun addUIBlock(viewTag: Int, block: UIManager.UIBlock<ExpoCameraView>) {

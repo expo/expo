@@ -15,7 +15,7 @@ import expo.modules.interfaces.barcodescanner.BarCodeScannerSettings
 private const val REACT_CLASS = "ExponentCamera"
 
 class CameraViewManager(
-    private val moduleRegistryDelegate: ModuleRegistryDelegate = ModuleRegistryDelegate()
+  private val moduleRegistryDelegate: ModuleRegistryDelegate = ModuleRegistryDelegate()
 ) : ViewManager<ExpoCameraView>() {
 
   private inline fun <reified T> moduleRegistry() = moduleRegistryDelegate.getFromModuleRegistry<T>()
@@ -44,8 +44,8 @@ class CameraViewManager(
 
   override fun getViewManagerType() = ViewManagerType.GROUP
 
-  override fun createViewInstance(context: Context)
-    = ExpoCameraView(context, moduleRegistryDelegate)
+  override fun createViewInstance(context: Context) =
+    ExpoCameraView(context, moduleRegistryDelegate)
 
   override fun getExportedEventNames() = Events.values().map {
     it.toString()

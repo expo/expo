@@ -59,10 +59,11 @@ class ExpoCameraView(
   themedReactContext: Context,
   private val moduleRegistryDelegate: ModuleRegistryDelegate = ModuleRegistryDelegate()
 ) : CameraView(themedReactContext, true),
-    LifecycleEventListener, BarCodeScannerAsyncTaskDelegate,
-    FaceDetectorAsyncTaskDelegate,
-    PictureSavedDelegate,
-    CameraViewInterface {
+  LifecycleEventListener,
+  BarCodeScannerAsyncTaskDelegate,
+  FaceDetectorAsyncTaskDelegate,
+  PictureSavedDelegate,
+  CameraViewInterface {
   private inline fun <reified T> moduleRegistry() = moduleRegistryDelegate.getFromModuleRegistry<T>()
   private val pictureTakenPromises: Queue<Promise> = ConcurrentLinkedQueue()
   private val pictureTakenOptions: MutableMap<Promise, Map<String, Any>> = ConcurrentHashMap()
@@ -70,7 +71,7 @@ class ExpoCameraView(
   private var videoRecordedPromise: Promise? = null
   private var isPaused = false
   private var isNew = true
-  private val eventEmitter:EventEmitter by moduleRegistry()
+  private val eventEmitter: EventEmitter by moduleRegistry()
 
   // Concurrency lock for scanners to avoid flooding the runtime
   @Volatile
@@ -176,7 +177,7 @@ class ExpoCameraView(
    * Additionally supports [codabar, code128, maxicode, rss14, rssexpanded, upc_a, upc_ean]
    */
   private fun initBarCodeScanner() {
-    val barCodeScannerProvider : BarCodeScannerProviderInterface by moduleRegistry()
+    val barCodeScannerProvider: BarCodeScannerProviderInterface by moduleRegistry()
     barCodeScanner = barCodeScannerProvider.createBarCodeDetectorWithContext(context)
   }
 
@@ -214,7 +215,7 @@ class ExpoCameraView(
         isNew = false
         if (!Build.FINGERPRINT.contains("generic")) {
           start()
-          val faceDetectorProvider : FaceDetectorProviderInterface by moduleRegistry()
+          val faceDetectorProvider: FaceDetectorProviderInterface by moduleRegistry()
           faceDetector = faceDetectorProvider.createFaceDetectorWithContext(context)
           pendingFaceDetectorSettings.let {
             faceDetector?.setSettings(it)
@@ -241,7 +242,7 @@ class ExpoCameraView(
   }
 
   private fun hasCameraPermissions(): Boolean {
-    val permissionsManager:Permissions by moduleRegistry()
+    val permissionsManager: Permissions by moduleRegistry()
     return permissionsManager.hasGrantedPermissions(Manifest.permission.CAMERA)
   }
 
@@ -276,7 +277,7 @@ class ExpoCameraView(
   init {
     initBarCodeScanner()
     isChildrenDrawingOrderEnabled = true
-    val uIManager:UIManager by moduleRegistry()
+    val uIManager: UIManager by moduleRegistry()
     uIManager.registerLifecycleEventListener(this)
     addCallback(object : Callback() {
       override fun onCameraOpened(cameraView: CameraView) {
