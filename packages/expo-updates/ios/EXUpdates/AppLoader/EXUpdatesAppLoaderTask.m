@@ -25,6 +25,7 @@ static NSString * const EXUpdatesAppLoaderTaskErrorDomain = @"EXUpdatesAppLoader
 @property (nonatomic, strong) EXUpdatesRemoteAppLoader *remoteAppLoader;
 
 @property (nonatomic, strong) NSTimer *timer;
+@property (nonatomic, assign) BOOL isRunning;
 @property (nonatomic, assign) BOOL isReadyToLaunch;
 @property (nonatomic, assign) BOOL isTimerFinished;
 @property (nonatomic, assign) BOOL hasLaunched;
@@ -47,6 +48,7 @@ static NSString * const EXUpdatesAppLoaderTaskErrorDomain = @"EXUpdatesAppLoader
     _database = database;
     _directory = directory;
     _selectionPolicy = selectionPolicy;
+    _isRunning = NO;
     _isUpToDate = NO;
     _delegateQueue = delegateQueue;
     _loaderTaskQueue = dispatch_queue_create("expo.loader.LoaderTaskQueue", DISPATCH_QUEUE_SERIAL);
@@ -86,6 +88,8 @@ static NSString * const EXUpdatesAppLoaderTaskErrorDomain = @"EXUpdatesAppLoader
     return;
   }
 
+  _isRunning = YES;
+
   __block BOOL shouldCheckForUpdate = [EXUpdatesUtils shouldCheckForUpdateWithConfig:_config];
   NSNumber *launchWaitMs = _config.launchWaitMs;
   if ([launchWaitMs isEqualToNumber:@(0)] || !shouldCheckForUpdate) {
@@ -99,7 +103,7 @@ static NSString * const EXUpdatesAppLoaderTaskErrorDomain = @"EXUpdatesAppLoader
   [self _loadEmbeddedUpdateWithCompletion:^{
     [self _launchWithCompletion:^(NSError * _Nullable error, BOOL success) {
       if (!success) {
-        if (!shouldCheckForUpdate){
+        if (!shouldCheckForUpdate) {
           [self _finishWithError:error];
         }
         NSLog(@"Failed to launch embedded or launchable update: %@", error.localizedDescription);
@@ -121,6 +125,7 @@ static NSString * const EXUpdatesAppLoaderTaskErrorDomain = @"EXUpdatesAppLoader
           [self _handleRemoteUpdateLoaded:update error:error];
         }];
       } else {
+        self->_isRunning = NO;
         [self _runReaper];
       }
     }];
@@ -280,10 +285,12 @@ static NSString * const EXUpdatesAppLoaderTaskErrorDomain = @"EXUpdatesAppLoader
             [self _finishWithError:error];
             NSLog(@"Downloaded update but failed to relaunch: %@", error.localizedDescription);
           }
+          self->_isRunning = NO;
           [self _runReaper];
         }];
       } else {
         [self _didFinishBackgroundUpdateWithStatus:EXUpdatesBackgroundUpdateStatusUpdateAvailable manifest:update error:nil];
+        self->_isRunning = NO;
         [self _runReaper];
       }
     } else {
@@ -294,6 +301,7 @@ static NSString * const EXUpdatesAppLoaderTaskErrorDomain = @"EXUpdatesAppLoader
       } else {
         [self _didFinishBackgroundUpdateWithStatus:EXUpdatesBackgroundUpdateStatusNoUpdateAvailable manifest:nil error:nil];
       }
+      self->_isRunning = NO;
       [self _runReaper];
     }
   });
