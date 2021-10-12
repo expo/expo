@@ -6,6 +6,7 @@ import URL from 'url-parse';
 import AssetSourceResolver from './AssetSourceResolver';
 import { manifestBaseUrl, getManifest } from './PlatformUtils';
 
+// @docsMissing
 export type AssetMetadata = {
   hash: string;
   name: string;

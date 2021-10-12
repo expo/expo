@@ -91,6 +91,7 @@ async function action({packageName, version = 'unversioned'}: ActionOptions) {
     'expo-app-loading': ['index.ts'],
     'expo-apple-authentication': ['index.ts'],
     'expo-application': ['Application.ts'],
+    'expo-asset': [['Asset.ts', 'AssetHooks.ts']],
     'expo-background-fetch': ['BackgroundFetch.ts'],
     'expo-battery': ['Battery.ts'],
     'expo-barcode-scanner': ['BarCodeScanner.tsx'],
