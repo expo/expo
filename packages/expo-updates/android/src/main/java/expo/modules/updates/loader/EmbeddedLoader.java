@@ -12,6 +12,21 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Date;
 
+/**
+ * Subclass of {@link Loader} which handles copying the embedded update's assets into the
+ * expo-updates cache location.
+ *
+ * Rather than launching the embedded update directly from its location in the app bundle/apk, we
+ * first try to read it into the expo-updates cache and database and launch it like any other
+ * update. The benefits of this include (a) a single code path for launching most updates and (b)
+ * assets included in embedded updates and copied into the cache in this way do not need to be
+ * redownloaded if included in future updates.
+ *
+ * However, if a visual asset is included at multiple scales in an embedded update, we don't have
+ * access to and must skip copying scales that don't match the resolution of the current device. In
+ * this case, we cannot fully copy the embedded update, and instead launch it from the original
+ * location. We still copy the assets we can so they don't need to be redownloaded in the future.
+ */
 public class EmbeddedLoader extends Loader {
 
   private static final String TAG = EmbeddedLoader.class.getSimpleName();

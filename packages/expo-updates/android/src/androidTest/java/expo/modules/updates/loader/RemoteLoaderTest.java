@@ -101,7 +101,7 @@ public class RemoteLoaderTest {
   }
 
   @Test
-  public void testRemoteLoader_FailureCase() {
+  public void testRemoteLoader_FailureToDownloadAssets() {
     doAnswer((Answer<Void>) invocation -> {
       AssetEntity asset = invocation.getArgument(0);
       FileDownloader.AssetDownloadCallback callback = invocation.getArgument(3);

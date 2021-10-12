@@ -214,7 +214,10 @@ public abstract class Loader {
       loadAsset(assetEntity, mUpdatesDirectory, mConfiguration, new FileDownloader.AssetDownloadCallback() {
         @Override
         public void onFailure(Exception e, AssetEntity assetEntity) {
-          Log.e(TAG, "Failed to download asset with key " + assetEntity.key, e);
+          String identifier = assetEntity.hash != null
+                  ? "hash " + UpdatesUtils.bytesToHex(assetEntity.hash)
+                  : "key " + assetEntity.key;
+          Log.e(TAG, "Failed to download asset with " + identifier, e);
           handleAssetDownloadCompleted(assetEntity, AssetLoadResult.ERRORED);
         }
 
@@ -240,6 +243,8 @@ public abstract class Loader {
       case SKIPPED:
         mSkippedAssetList.add(assetEntity);
         break;
+      default:
+        throw new AssertionError("Missing implementation for AssetLoadResult value");
     }
 
     mCallback.onAssetLoaded(assetEntity, mFinishedAssetList.size() + mExistingAssetList.size(), mErroredAssetList.size(), mAssetTotal);

@@ -89,7 +89,7 @@ public class EmbeddedLoaderTest {
   }
 
   @Test
-  public void testEmbeddedLoader_FailureCase() throws IOException, NoSuchAlgorithmException {
+  public void testEmbeddedLoader_FailureToCopyAssets() throws IOException, NoSuchAlgorithmException {
     when(mockLoaderFiles.copyAssetAndGetHash(any(), any(), any())).thenThrow(new IOException("mock failed to copy asset"));
 
     loader.start(mockCallback);
