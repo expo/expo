@@ -40,6 +40,26 @@
   [verifyCount(mockDelegate, never()) throwException:anything()];
 }
 
+- (void)testHandleError_NewWorkingUpdateAlreadyLoaded_RCTContentDidAppear
+{
+  id<EXUpdatesErrorRecoveryDelegate> mockDelegate = mockProtocol(@protocol(EXUpdatesErrorRecoveryDelegate));
+  _errorRecovery.delegate = mockDelegate;
+
+  [given(mockDelegate.remoteLoadStatus) willReturnInteger:EXUpdatesRemoteLoadStatusNewUpdateLoaded];
+
+  [_errorRecovery startMonitoring];
+  [[NSNotificationCenter defaultCenter] postNotificationName:@"RCTContentDidAppearNotification" object:nil];
+  [verify(mockDelegate) markSuccessfulLaunchForLaunchedUpdate];
+
+  NSError *mockError = mock([NSError class]);
+  [_errorRecovery handleError:mockError];
+  dispatch_sync(_testQueue, ^{}); // flush queue
+
+  [verifyCount(mockDelegate, never()) relaunchWithCompletion:(id)anything()];
+  [verifyCount(mockDelegate, never()) loadRemoteUpdate];
+  [verify(mockDelegate) throwException:anything()];
+}
+
 - (void)testHandleError_NewWorkingUpdateLoading
 {
   id<EXUpdatesErrorRecoveryDelegate> mockDelegate = mockProtocol(@protocol(EXUpdatesErrorRecoveryDelegate));
@@ -59,6 +79,35 @@
   [verifyCount(mockDelegate, never()) relaunchWithCompletion:(id)anything()];
   [verifyCount(mockDelegate, never()) loadRemoteUpdate];
   [verifyCount(mockDelegate, never()) throwException:anything()];
+}
+
+- (void)testHandleError_NewWorkingUpdateLoading_RCTContentDidAppear
+{
+  // should wait a short window for new update to load, then crash
+  id<EXUpdatesErrorRecoveryDelegate> mockDelegate = mockProtocol(@protocol(EXUpdatesErrorRecoveryDelegate));
+  _errorRecovery.delegate = mockDelegate;
+
+  [given(mockDelegate.remoteLoadStatus) willReturnInteger:EXUpdatesRemoteLoadStatusLoading];
+
+  [_errorRecovery startMonitoring];
+  [[NSNotificationCenter defaultCenter] postNotificationName:@"RCTContentDidAppearNotification" object:nil];
+  [verify(mockDelegate) markSuccessfulLaunchForLaunchedUpdate];
+
+  NSError *mockError = mock([NSError class]);
+  [_errorRecovery handleError:mockError];
+
+  // make sure we're waiting
+  [NSThread sleepForTimeInterval:0.2f];
+  dispatch_sync(_testQueue, ^{}); // flush queue
+  // don't throw yet!
+  [verifyCount(mockDelegate, never()) throwException:anything()];
+
+  [given(mockDelegate.remoteLoadStatus) willReturnInteger:EXUpdatesRemoteLoadStatusNewUpdateLoaded];
+  [_errorRecovery notifyNewRemoteLoadStatus:EXUpdatesRemoteLoadStatusNewUpdateLoaded];
+  dispatch_sync(_testQueue, ^{}); // flush queue
+
+  [verifyCount(mockDelegate, never()) relaunchWithCompletion:(id)anything()];
+  [verify(mockDelegate) throwException:anything()];
 }
 
 - (void)testHandleError_NewBrokenUpdateLoaded_WorkingUpdateCached

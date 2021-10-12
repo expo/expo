@@ -46,8 +46,10 @@ static NSInteger const EXUpdatesErrorRecoveryRemoteLoadTimeoutMs = 5000;
                          remoteLoadTimeout:(NSInteger)remoteLoadTimeout
 {
   if (self = [super init]) {
+    // tasks should never be added to the pipeline after this point, only removed
     _pipeline = @[
       @(EXUpdatesErrorRecoveryTaskWaitForRemoteUpdate),
+      @(EXUpdatesErrorRecoveryTaskLaunchNew),
       @(EXUpdatesErrorRecoveryTaskLaunchCached),
       @(EXUpdatesErrorRecoveryTaskCrash)
     ].mutableCopy;
@@ -83,8 +85,8 @@ static NSInteger const EXUpdatesErrorRecoveryRemoteLoadTimeoutMs = 5000;
       return;
     }
     self->_isWaitingForRemoteUpdate = NO;
-    if (newStatus == EXUpdatesRemoteLoadStatusNewUpdateLoaded) {
-      [self->_pipeline insertObject:@(EXUpdatesErrorRecoveryTaskLaunchNew) atIndex:0];
+    if (newStatus != EXUpdatesRemoteLoadStatusNewUpdateLoaded) {
+      [self->_pipeline removeObject:@(EXUpdatesErrorRecoveryTaskLaunchNew)];
     }
     [self _runNextTask];
   });
@@ -143,11 +145,11 @@ static NSInteger const EXUpdatesErrorRecoveryRemoteLoadTimeoutMs = 5000;
         return;
       }
       self->_isWaitingForRemoteUpdate = NO;
+      [self->_pipeline removeObject:@(EXUpdatesErrorRecoveryTaskLaunchNew)];
       [self _runNextTask];
     });
     return;
   } else if (_delegate.remoteLoadStatus == EXUpdatesRemoteLoadStatusNewUpdateLoaded) {
-    [_pipeline insertObject:@(EXUpdatesErrorRecoveryTaskLaunchNew) atIndex:0];
     [self _runNextTask];
   } else {
     _isWaitingForRemoteUpdate = YES;
@@ -164,6 +166,7 @@ static NSInteger const EXUpdatesErrorRecoveryRemoteLoadTimeoutMs = 5000;
         if (error) {
           [self->_encounteredErrors addObject:error];
         }
+        [self->_pipeline removeObject:@(EXUpdatesErrorRecoveryTaskLaunchNew)];
         [self->_pipeline removeObject:@(EXUpdatesErrorRecoveryTaskLaunchCached)];
         [self _runNextTask];
       } else {
