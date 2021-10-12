@@ -122,4 +122,7 @@ If you build a standalone app with Expo, that standalone binary will also ship w
 
 You can also package your Expo app into a standalone binary for submission to the Apple iTunes Store or Google Play.
 
-Under the hood, it's a modified version of the Expo Go app which is designed only to load a single URL (the one for your app) and which will never show the Expo home screen or brand. For more information, see [Creating your first build](/build/setup.md).
+There are two options to choose from when it comes to building your Expo app:
+
+- (**Recommended**) The new EAS Build system, which has support for any 3rd party library. For more information, see [Creating your first build](/build/setup.md).
+- The classic `expo build` system, which only supports native libraries included in the Expo SDK. For more information on classic builds, see [here](/classic/building-standalone-apps.md).
