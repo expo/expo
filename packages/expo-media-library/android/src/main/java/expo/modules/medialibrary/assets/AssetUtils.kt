@@ -279,12 +279,12 @@ fun getAssetDimensionsFromCursor(
  * Converts [MediaStore] media type into MediaLibrary [MediaType] api constant
  */
 fun exportMediaType(mediaType: Int) = when (mediaType) {
-    MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE -> MediaType.PHOTO
-    MediaStore.Files.FileColumns.MEDIA_TYPE_AUDIO,
-    MediaStore.Files.FileColumns.MEDIA_TYPE_PLAYLIST -> MediaType.AUDIO
-    MediaStore.Files.FileColumns.MEDIA_TYPE_VIDEO -> MediaType.VIDEO
-    else -> MediaType.UNKNOWN
-  }.apiName
+  MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE -> MediaType.PHOTO
+  MediaStore.Files.FileColumns.MEDIA_TYPE_AUDIO,
+  MediaStore.Files.FileColumns.MEDIA_TYPE_PLAYLIST -> MediaType.AUDIO
+  MediaStore.Files.FileColumns.MEDIA_TYPE_VIDEO -> MediaType.VIDEO
+  else -> MediaType.UNKNOWN
+}.apiName
 
 /**
  * Swaps `width` and `height` if the `orientation` is `90` or `-90`

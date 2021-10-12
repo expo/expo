@@ -54,10 +54,10 @@ object MediaLibraryUtils {
   fun safeCopyFile(src: File, destDir: File): File {
     var newFile = File(destDir, src.name)
     var suffix = 0
-    val origName = getFileNameAndExtension(src.name)
+    val (filename, extension) = getFileNameAndExtension(src.name)
     val suffixLimit = Short.MAX_VALUE.toInt()
     while (newFile.exists()) {
-      newFile = File(destDir, origName[0] + "_" + suffix + origName[1])
+      newFile = File(destDir, filename + "_" + suffix + extension)
       suffix++
       if (suffix > suffixLimit) {
         throw IOException("File name suffix limit reached ($suffixLimit)")

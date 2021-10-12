@@ -2,7 +2,6 @@ package expo.modules.medialibrary
 
 import android.provider.MediaStore
 
-
 enum class MediaType(val apiName: String, val mediaColumn: Int?) {
   AUDIO("audio", MediaStore.Files.FileColumns.MEDIA_TYPE_AUDIO),
   PHOTO("photo", MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE),

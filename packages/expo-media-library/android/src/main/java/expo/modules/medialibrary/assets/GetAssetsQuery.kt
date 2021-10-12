@@ -86,7 +86,7 @@ private fun parseMediaType(mediaTypeName: String): Int =
  */
 @Throws(IllegalArgumentException::class)
 fun parseSortByKey(key: String): String =
-   SortBy.fromKeyName(key)?.mediaColumnName.ifNull {
+  SortBy.fromKeyName(key)?.mediaColumnName.ifNull {
     val errorMessage = "SortBy key $key is not supported!"
     throw IllegalArgumentException(errorMessage)
   }
