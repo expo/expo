@@ -32,15 +32,15 @@ That's it! Now we can start writing Jest tests!
 
 ## Jest Configuration
 
-Jest comes with a lot of configuration options, for more details read [Configuring Jest](https://jestjs.io/docs/en/configuration.html).
+Jest comes with a lot of configuration options, for more details read [Configuring Jest](https://jestjs.io/docs/configuration).
 
-We would like to point out [transformIgnorePatterns](https://jestjs.io/docs/en/configuration.html#transformignorepatterns-array-string). Below is a great starting point to make sure any modules you may be using within `/node_modules/` are transpiled when running jest. This should cover the majority of your needs but you can always add to this pattern list as you see fit.
+We would like to point out [transformIgnorePatterns](https://jestjs.io/docs/configuration#transformignorepatterns-arraystring). Below is a great starting point to make sure any modules you may be using within `/node_modules/` are transpiled when running jest. This should cover the majority of your needs but you can always add to this pattern list as you see fit.
 
-```js
+```json
 "jest": {
   "preset": "jest-expo",
   "transformIgnorePatterns": [
-    "node_modules/(?!(jest-)?react-native|react-clone-referenced-element|@react-native-community|expo(nent)?|@expo(nent)?/.*|react-navigation|@react-navigation/.*|@unimodules/.*|unimodules|sentry-expo|native-base|@sentry/.*)"
+    "node_modules/(?!((jest-)?react-native|@react-native(-community)?)|expo(nent)?|@expo(nent)?/.*|react-navigation|@react-navigation/.*|@unimodules/.*|unimodules|sentry-expo|native-base|react-native-svg)",
   ]
 }
 ```
