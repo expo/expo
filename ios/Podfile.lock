@@ -1981,13 +1981,13 @@ PODS:
     - UMTaskManagerInterface
   - EXTrackingTransparency (2.0.1):
     - ExpoModulesCore
-  - EXUpdates (0.10.2):
+  - EXUpdates (0.10.3):
     - EXManifests
     - ExpoModulesCore
     - EXStructuredHeaders
     - EXUpdatesInterface
     - React-Core
-  - EXUpdates/Tests (0.10.2):
+  - EXUpdates/Tests (0.10.3):
     - EXManifests
     - ExpoModulesCore
     - EXStructuredHeaders
@@ -4135,7 +4135,7 @@ SPEC CHECKSUMS:
   boost-for-react-native: 39c7adb57c4e60d6c5479dd8623128eb5b3f0f2c
   Branch: 9a37f707974a128c37829033c49018b79c7e7a2d
   CocoaLumberjack: 2f44e60eb91c176d471fdba43b9e3eae6a721947
-  DoubleConversion: cf9b38bf0b2d048436d9a82ad2abe1404f11e7de
+  DoubleConversion: cde416483dac037923206447da6e1454df403714
   EXAdsAdMob: c9bf6e8871bd7f448a8429b45171e853b7eec4d1
   EXAdsFacebook: 8e038da5defd2b34107a805f97bbc95dca28b3b7
   EXAmplitude: 77d94990cf6f75f38aab65dee80ed032f683d707
@@ -4202,7 +4202,7 @@ SPEC CHECKSUMS:
   EXStructuredHeaders: ba85104bb57e861129872a30e2cf7adaa348c4ac
   EXTaskManager: 7e50f7dd4121d82f26ffcc11295d82c7be105101
   EXTrackingTransparency: c196e5ee0468c389dda6962a800f5501438e6a7a
-  EXUpdates: 2afef51b5e0a4d64834fa93647b65f2111bfa27d
+  EXUpdates: 6ecb609984681120661469f6f4b126cfce737836
   EXUpdatesInterface: e1c01b4f5ec76bd1d6cc714938f9edf5ef6379b9
   EXVideoThumbnails: 889ce82cc5d3d355fac0558b3dfbfac2f769c23c
   EXWebBrowser: a3c5694129ee18c4ff4f2269b7077b3fbaf8dc35
@@ -4216,7 +4216,7 @@ SPEC CHECKSUMS:
   FirebaseCore: ac35d680a0bf32319a59966a1478e0741536b97b
   FirebaseCoreDiagnostics: 3d36e05da74cb8b7ce30e6594a8f201b982c725c
   FirebaseInstallations: a58d4f72ec5861840b84df489f2668d970df558a
-  glog: 73c2498ac6884b13ede40eda8228cb1eee9d9d62
+  glog: 40a13f7840415b9a77023fbcae0f1e6f43192af3
   Google-Maps-iOS-Utils: c32891ff472eaaa1fca032beedafa1a013af7875
   Google-Mobile-Ads-SDK: 2f288748a42920d1c744946a460896a95b0e9110
   GoogleAppMeasurement: 0c3b134b2c0a90c4c24833873894bfe0e42a0384
