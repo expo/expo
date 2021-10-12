@@ -17,7 +17,7 @@ import expo.modules.contacts.EXColumns;
 public class BaseModel implements CommonProvider {
   protected final Bundle map;
 
-  static public ArrayList decodeList(List input, Class clazz)
+  static public ArrayList<BaseModel> decodeList(List input, Class clazz)
     throws IllegalAccessException, InstantiationException {
     if (input == null)
       return null;
