@@ -13,7 +13,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface EXWKPDFRenderer : NSObject
 
-- (void)PDFWithHtml:(NSString *)htmlString pageSize:(CGSize)pageSize completionHandler:(void(^_Nullable)(NSError * _Nullable, NSData * _Nullable, int))handler;
+- (void)PDFWithHtml:(NSString *)htmlString pageSize:(CGSize)pageSize pageMargins:(UIEdgeInsets)pageMargins completionHandler:(void(^_Nullable)(NSError * _Nullable, NSData * _Nullable, int))handler;
 
 @end
 
