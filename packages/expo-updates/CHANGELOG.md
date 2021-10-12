@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix `Updates.reloadAsync` behavior in bare apps when a new update is available (downloaded). ([#14706](https://github.com/expo/expo/pull/14706) by [@esamelson](https://github.com/esamelson))
+
 ### 💡 Others
 
 ## 0.10.2 — 2021-10-01
