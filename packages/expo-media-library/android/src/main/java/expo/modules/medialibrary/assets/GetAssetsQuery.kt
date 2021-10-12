@@ -16,7 +16,7 @@ data class GetAssetsQuery(
 
 @Throws(IllegalArgumentException::class)
 internal fun getQueryFromOptions(input: Map<String, Any?>): GetAssetsQuery {
-  val limit = input["first"].takeIfInstanceOf<Number>()?.toInt() ?: 20
+  val limit = input["first"].takeIfInstanceOf<Number>()?.toInt() ?: GET_ASSETS_DEFAULT_LIMIT
 
   // to maintain compatibility with iOS field `after` is string
   val offset = input["after"]

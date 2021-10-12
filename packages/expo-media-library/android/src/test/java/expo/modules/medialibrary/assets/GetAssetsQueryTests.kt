@@ -1,6 +1,7 @@
 package expo.modules.medialibrary.assets
 
 import android.provider.MediaStore
+import expo.modules.medialibrary.GET_ASSETS_DEFAULT_LIMIT
 import expo.modules.medialibrary.MEDIA_TYPE_PHOTO
 import expo.modules.medialibrary.SORT_BY_DEFAULT
 import io.mockk.clearAllMocks
@@ -68,7 +69,7 @@ internal class GetAssetsQueryTests {
     val queryInfo = getQueryFromOptions(emptyMap())
 
     // assert
-    assertEquals(20, queryInfo.limit)
+    assertEquals(GET_ASSETS_DEFAULT_LIMIT, queryInfo.limit)
     assertEquals(0, queryInfo.offset)
     assertEquals(expectedSelection, queryInfo.selection)
     assertEquals(MediaStore.Images.Media.DEFAULT_SORT_ORDER, queryInfo.order)
