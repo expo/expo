@@ -1,7 +1,7 @@
 import { Platform } from 'expo-modules-core';
 
 import { getAssetByID } from './AssetRegistry';
-import { AssetMetadata, AssetSource, selectAssetSource } from './AssetSources';
+import { AssetMetadata, selectAssetSource } from './AssetSources';
 import * as AssetUris from './AssetUris';
 import * as ImageAssets from './ImageAssets';
 import { getLocalAssetUri } from './LocalAssets';

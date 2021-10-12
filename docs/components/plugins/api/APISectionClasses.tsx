@@ -25,13 +25,10 @@ const renderProperty = (prop: PropData) => {
   return prop.signatures?.length ? renderMethod(prop) : renderProp(prop, prop?.defaultValue, true);
 };
 
-const renderClass = ({
-  name,
-  comment,
-  type,
-  extendedTypes,
-  children,
-}: ClassDefinitionData, classCount: number): JSX.Element => {
+const renderClass = (
+  { name, comment, type, extendedTypes, children }: ClassDefinitionData,
+  classCount: number
+): JSX.Element => {
   const properties = children?.filter(
     child => child.kind === TypeDocKind.Property && !child.overwrites
   );
