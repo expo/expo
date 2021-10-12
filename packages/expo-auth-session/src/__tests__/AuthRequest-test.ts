@@ -25,13 +25,13 @@ it(`does not allow plain code challenge method`, () => {
       new AuthRequest({
         redirectUri: 'com://auth',
         codeChallengeMethod: CodeChallengeMethod.Plain,
-        clientId: undefined,
+        clientId: '',
       })
   ).toThrow(/does not support `CodeChallengeMethod.Plain`/);
 });
 
 it(`does not allow an empty redirectUri`, () => {
-  expect(() => new AuthRequest({ redirectUri: '', clientId: undefined })).toThrow(
+  expect(() => new AuthRequest({ redirectUri: '', clientId: '' })).toThrow(
     /requires a valid `redirectUri`/
   );
 });
