@@ -9,6 +9,7 @@
 ### 🎉 New features
 
 - Add error recovery manager on iOS. ([#14397](https://github.com/expo/expo/pull/14397) by [@esamelson](https://github.com/esamelson))
+- Hook up error recovery manager to rest of module on iOS. ([#14398](https://github.com/expo/expo/pull/14398) by [@esamelson](https://github.com/esamelson))
 
 ### 🐛 Bug fixes
 
