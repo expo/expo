@@ -17,6 +17,7 @@
 #import <EXUpdates/EXUpdatesAppLoaderTask.h>
 #import <EXUpdates/EXUpdatesConfig.h>
 #import <EXUpdates/EXUpdatesDatabase.h>
+#import <EXUpdates/EXUpdatesErrorRecovery.h>
 #import <EXUpdates/EXUpdatesFileDownloader.h>
 #import <EXUpdates/EXUpdatesLauncherSelectionPolicyFilterAware.h>
 #import <EXUpdates/EXUpdatesLoaderSelectionPolicyFilterAware.h>
@@ -391,7 +392,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)_launchWithNoDatabaseAndError:(nullable NSError *)error
 {
   EXUpdatesAppLauncherNoDatabase *appLauncher = [[EXUpdatesAppLauncherNoDatabase alloc] init];
-  [appLauncher launchUpdateWithConfig:_config fatalError:error];
+  [appLauncher launchUpdateWithConfig:_config];
 
   _confirmedManifest = [self _processManifest:appLauncher.launchedUpdate.manifest];
   if (_confirmedManifest == nil) {
@@ -404,6 +405,8 @@ NS_ASSUME_NONNULL_BEGIN
     [self.delegate appLoader:self didLoadOptimisticManifest:_confirmedManifest];
     [self.delegate appLoader:self didFinishLoadingManifest:_confirmedManifest bundle:_bundle];
   }
+
+  [[EXUpdatesErrorRecovery new] writeErrorOrExceptionToLog:error];
 }
 
 - (void)_runReaper
