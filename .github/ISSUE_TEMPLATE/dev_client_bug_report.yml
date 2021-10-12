@@ -7,7 +7,7 @@ body:
       value: Thanks for taking the time to file a bug report! Please fill out this form as completely as possible so we have the information we need to help.
   - type: markdown
     attributes:
-      value: If you leave out sections there is a high likelihood your issue will be closed. If you have a question, not a bug report, please post it on our [forums](https://forums.expo.io/) instead.
+      value: If you leave out sections there is a high likelihood your issue will be closed. If you have a question, not a bug report, please post it on our [forums](https://forums.expo.dev/) instead.
   - type: markdown
     attributes:
       value: 'IMPORTANT: Before filling out this template further, ensure you have the latest version of the `expo-dev-client` package, `expo-cli`, and (if applicable) `eas-cli`. If not, try upgrading first and see if that fixes your issue.'
