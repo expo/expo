@@ -32,7 +32,7 @@ The recommended way is to add the `NPM_TOKEN` secret to your account or project'
 
 <ImageSpotlight alt="Secret creation UI filled" src="/static/images/eas-build/environment-secrets/secrets-create-filled.png" />
 
-When EAS Build worker detects that `NPM_TOKEN` is accessible for a build, it creates the following `.npmrc` in your project root directory:
+When EAS detects that the `NPM_TOKEN` environment variable is available during a build, it automatically creates the following `.npmrc`:
 
 ```
 //registry.npmjs.org/:_authToken=${NPM_TOKEN}
