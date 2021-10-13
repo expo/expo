@@ -254,6 +254,7 @@ The following default mods are provided by the mod compiler for common file mani
 - `mods.android.styles` -- Modify the `android/app/src/main/res/values/styles.xml` as JSON (parsed with [`xml2js`][xml2js]).
 - `mods.android.gradleProperties` -- Modify the `android/gradle.properties` as a `Properties.PropertiesItem[]`.
 - `mods.android.mainActivity` -- Modify the `android/app/src/main/<package>/MainActivity.java` as a string (Dangerous).
+- `mods.android.mainApplication` -- Modify the `android/app/src/main/<package>/MainApplication.java` as a string (Dangerous).
 - `mods.android.appBuildGradle` -- Modify the `android/app/build.gradle` as a string (Dangerous).
 - `mods.android.projectBuildGradle` -- Modify the `android/build.gradle` as a string (Dangerous).
 - `mods.android.settingsGradle` -- Modify the `android/settings.gradle` as a string (Dangerous).
@@ -283,6 +284,7 @@ Instead you should use the helper mods provided by `@expo/config-plugins`:
   - `withAndroidStyles`
   - `withGradleProperties`
   - `withMainActivity` (Dangerous)
+  - `withMainApplication` (Dangerous)
   - `withProjectBuildGradle` (Dangerous)
   - `withAppBuildGradle` (Dangerous)
   - `withSettingsGradle` (Dangerous)
