@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Fix buffer usage for compatibility with RN 0.65.1
+- Fix buffer usage for compatibility with RN 0.65.1 ([#14714](https://github.com/expo/expo/pull/14714) by [@hannojg](https://github.com/hannojg))
 
 ### 💡 Others
 
