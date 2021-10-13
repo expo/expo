@@ -1055,7 +1055,7 @@ There are 4 different types of client IDs you can provide:
 - `androidClientId`: Android native client ID for use in standalone, bare workflow.
 - `webClientId`: Expo web client ID for use in the browser.
 
-To create a client ID, go to the [Credentials Page][c-google]:
+To create a client ID (You may ignore this if you're integrating with firebase and have alredy activated the google auth. See firebase tab below to edit existing credential), go to the [Credentials Page][c-google]: 
 
 - Create an app for your project if you haven't already.
 - Once that's done, click "Create Credentials" and then "OAuth client ID." You will be prompted to set the product name on the consent screen, go ahead and do that.
