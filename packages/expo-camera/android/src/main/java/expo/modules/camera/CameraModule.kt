@@ -55,10 +55,7 @@ class CameraModule(
             promise.reject(ERROR_TAG, "pausePreview -- exception occurred -- " + e.message, e)
           }
         }
-
-        override fun reject(throwable: Throwable) {
-          promise.reject(ERROR_TAG, throwable)
-        }
+        override fun reject(throwable: Throwable) = promise.reject(ERROR_TAG, throwable)
       }
     )
   }
@@ -77,10 +74,7 @@ class CameraModule(
             promise.reject(ERROR_TAG, "resumePreview -- exception occurred -- " + e.message, e)
           }
         }
-
-        override fun reject(throwable: Throwable) {
-          promise.reject(ERROR_TAG, throwable)
-        }
+        override fun reject(throwable: Throwable) = promise.reject(ERROR_TAG, throwable)
       }
     )
   }
@@ -103,10 +97,7 @@ class CameraModule(
             ResolveTakenPictureAsyncTask(image, promise, options, cacheDirectory, view).execute()
           }
         }
-
-        override fun reject(throwable: Throwable) {
-          promise.reject(ERROR_TAG, throwable)
-        }
+        override fun reject(throwable: Throwable) = promise.reject(ERROR_TAG, throwable)
       }
     )
   }
@@ -125,10 +116,7 @@ class CameraModule(
               promise.reject("E_CAMERA_UNAVAILABLE", "Camera is not running")
             }
           }
-
-          override fun reject(throwable: Throwable) {
-            promise.reject(ERROR_TAG, throwable)
-          }
+          override fun reject(throwable: Throwable) = promise.reject(ERROR_TAG, throwable)
         }
       )
     } else {
@@ -149,10 +137,7 @@ class CameraModule(
             promise.reject(ERROR_TAG, "Camera is not open")
           }
         }
-
-        override fun reject(throwable: Throwable) {
-          promise.reject(ERROR_TAG, throwable)
-        }
+        override fun reject(throwable: Throwable) = promise.reject(ERROR_TAG, throwable)
       }
     )
   }
@@ -164,19 +149,12 @@ class CameraModule(
       object : UIManager.UIBlock<ExpoCameraView> {
         override fun resolve(view: ExpoCameraView) {
           if (view.isCameraOpened) {
-            promise.resolve(
-              view.supportedAspectRatios.map {
-                it.toString()
-              }
-            )
+            promise.resolve(view.supportedAspectRatios.map { it.toString() })
           } else {
             promise.reject(ERROR_TAG, "Camera is not running")
           }
         }
-
-        override fun reject(throwable: Throwable) {
-          promise.reject(ERROR_TAG, throwable)
-        }
+        override fun reject(throwable: Throwable) = promise.reject(ERROR_TAG, throwable)
       }
     )
   }
@@ -190,11 +168,7 @@ class CameraModule(
           if (view.isCameraOpened) {
             try {
               val sizes = view.getAvailablePictureSizes(AspectRatio.parse(ratio))
-              promise.resolve(
-                sizes.map {
-                  it.toString()
-                }
-              )
+              promise.resolve(sizes.map { it.toString() })
             } catch (e: Exception) {
               promise.reject(ERROR_TAG, "getAvailablePictureSizes -- unexpected error -- " + e.message, e)
             }
@@ -202,9 +176,7 @@ class CameraModule(
             promise.reject(ERROR_TAG, "Camera is not running")
           }
         }
-        override fun reject(throwable: Throwable) {
-          promise.reject(ERROR_TAG, throwable)
-        }
+        override fun reject(throwable: Throwable) = promise.reject(ERROR_TAG, throwable)
       }
     )
   }

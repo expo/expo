@@ -107,7 +107,7 @@ class ExpoCameraView(
     }
 
     // bring to front all non-preview children
-    val childrenToBeReordered: MutableList<View> = ArrayList()
+    val childrenToBeReordered = mutableListOf<View>()
     for (i in 0 until this.childCount) {
       val childView = getChildAt(i)
       if (i == 0 && childView === this.view) {
@@ -146,26 +146,16 @@ class ExpoCameraView(
   fun record(options: Map<String?, Any?>, promise: Promise, cacheDirectory: File?) {
     try {
       val path = FileSystemUtils.generateOutputPath(cacheDirectory, "Camera", ".mp4")
-      val maxDuration = if (options[MAX_DURATION_KEY] != null) {
-        options[MAX_DURATION_KEY] as Double
-      } else {
-        -1.0
-      }
-      val maxFileSize = if (options[MAX_FILE_SIZE_KEY] != null) {
-        options[MAX_FILE_SIZE_KEY] as Double
-      } else {
-        -1.0
-      }
+      val maxDuration = options[MAX_DURATION_KEY]?.let { it as Double } ?: -1.0
+      val maxFileSize = options[MAX_FILE_SIZE_KEY]?.let { it as Double } ?: -1.0
       val profile = if (options[QUALITY_KEY] != null) {
         getCamcorderProfile(cameraId, (options[QUALITY_KEY] as Double).toInt())
       } else {
         CamcorderProfile.get(cameraId, CamcorderProfile.QUALITY_HIGH)
       }
-      options[VIDEO_BITRATE_KEY]?.let {
-        profile.videoBitRate = (options[VIDEO_BITRATE_KEY] as Double).toInt()
-      }
+      options[VIDEO_BITRATE_KEY]?.let { profile.videoBitRate = (it as Double).toInt() }
       val muteValue = options[MUTE_KEY] as Boolean?
-      val recordAudio = muteValue == null || !muteValue
+      val recordAudio = muteValue != true
       if (super.record(path, maxDuration.toInt() * 1000, maxFileSize.toInt(), recordAudio, profile)) {
         videoRecordedPromise = promise
       } else {
@@ -206,7 +196,6 @@ class ExpoCameraView(
   }
 
   override fun getPreviewSizeAsArray(): IntArray {
-    val previewSize = previewSize
     return intArrayOf(previewSize.width, previewSize.height)
   }
 

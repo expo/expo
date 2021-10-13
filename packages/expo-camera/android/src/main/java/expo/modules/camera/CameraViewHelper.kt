@@ -95,10 +95,8 @@ object CameraViewHelper {
   @JvmStatic
   fun getExifData(exifInterface: ExifInterface): Bundle {
     val exifMap = Bundle()
-    for (tagInfo in exifTags) {
-      val name = tagInfo[1]
+    for ((type, name) in exifTags) {
       if (exifInterface.getAttribute(name) != null) {
-        val type = tagInfo[0]
         when (type) {
           "string" -> exifMap.putString(name, exifInterface.getAttribute(name))
           "int" -> exifMap.putInt(name, exifInterface.getAttributeInt(name, 0))
