@@ -1187,7 +1187,7 @@ export default function App() {
   - Save "Web client ID" you'll need it later
   - Press Save
 - Replace `YOUR_GUID` with your "Web client ID" and open this link:
-  - https://console.developers.google.com/apis/credentials/oauthclient/YOUR_GUID.apps.googleusercontent.com
+  - https://console.developers.google.com/apis/credentials/oauthclient/YOUR_GUID
 - Under "URIs" add your hosts URLs
   - Web dev: https://localhost:19006
   - Expo Go Proxy: https://auth.expo.io
