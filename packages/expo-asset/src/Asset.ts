@@ -31,9 +31,13 @@ export { AssetMetadata };
  * name and type) and provides facilities to load the asset data.
  */
 export class Asset {
-  // @docsMissing
+  /**
+   * @private
+   */
   static byHash = {};
-  // @docsMissing
+  /**
+   * @private
+   */
   static byUri = {};
 
   /**

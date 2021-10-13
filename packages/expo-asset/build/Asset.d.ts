@@ -17,7 +17,13 @@ export { AssetMetadata };
  * name and type) and provides facilities to load the asset data.
  */
 export declare class Asset {
+    /**
+     * @private
+     */
     static byHash: {};
+    /**
+     * @private
+     */
     static byUri: {};
     /**
      * The name of the asset file without the extension. Also without the part from `@` onward in the

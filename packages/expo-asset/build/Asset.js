@@ -12,9 +12,13 @@ import resolveAssetSource from './resolveAssetSource';
  * name and type) and provides facilities to load the asset data.
  */
 export class Asset {
-    // @docsMissing
+    /**
+     * @private
+     */
     static byHash = {};
-    // @docsMissing
+    /**
+     * @private
+     */
     static byUri = {};
     /**
      * The name of the asset file without the extension. Also without the part from `@` onward in the
