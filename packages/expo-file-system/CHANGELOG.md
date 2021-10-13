@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix buffer usage for compatibility with RN 0.65.1
+
 ### 💡 Others
 
 ## 13.0.1 — 2021-10-01
