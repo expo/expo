@@ -24,16 +24,6 @@
 #import <React/JSCExecutorFactory.h>
 #import <React/RCTRootView.h>
 
-@interface EXVersionManager (Legacy)
-// TODO: remove after non-unimodules SDK versions are dropped
-
-- (void)bridgeDidForeground;
-- (void)bridgeDidBackground;
-
-@end
-
-typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t sourceLength);
-
 /**
  * TODO: Remove once SDK 38 is phased out.
  */
@@ -124,7 +114,7 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
   // because Expo.plist is not available in the Expo Go app.
   NSAssert(_appRecord.scopeKey, @"Experience scope key should be nonnull when getting initial properties for root view. This can occur when the manifest JSON, loaded from the server, is missing keys.");
 
-  
+
   if ([self isReadyToLoad]) {
     Class versionManagerClass = [self versionedClassFromString:@"EXVersionManager"];
     Class bridgeClass = [self versionedClassFromString:@"RCTBridge"];
@@ -266,21 +256,6 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
   return [EXApiUtil bundleUrlFromManifest:_appRecord.appLoader.manifest];
 }
 
-- (void)appStateDidBecomeActive
-{
-  if ([_versionManager respondsToSelector:@selector(bridgeDidForeground)]) {
-    // supported before SDK 29 / unimodules
-    [_versionManager bridgeDidForeground];
-  }
-}
-
-- (void)appStateDidBecomeInactive
-{
-  if ([_versionManager respondsToSelector:@selector(bridgeDidBackground)]) {
-    [_versionManager bridgeDidBackground];
-  }
-}
-
 #pragma mark - EXAppFetcherDataSource
 
 - (NSString *)bundleResourceNameForAppFetcher:(EXAppFetcher *)appFetcher withManifest:(nonnull EXManifestsManifest *)manifest
@@ -341,12 +316,7 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
 {
   NSData *data = _appRecord.appLoader.bundle;
   if (_loadCallback) {
-    if ([self _compareVersionTo:22] == NSOrderedAscending) {
-      SDK21RCTSourceLoadBlock legacyLoadCallback = (SDK21RCTSourceLoadBlock)_loadCallback;
-      legacyLoadCallback(nil, data, data.length);
-    } else {
-      _loadCallback(nil, [[RCTSource alloc] initWithURL:[self bundleUrl] data:data]);
-    }
+    _loadCallback(nil, [[RCTSource alloc] initWithURL:[self bundleUrl] data:data]);
     _loadCallback = nil;
   }
 }
@@ -363,12 +333,7 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
   [[NSNotificationCenter defaultCenter] postNotificationName:[self versionedString:RCTJavaScriptDidFailToLoadNotification] object:error];
 
   if (_loadCallback) {
-    if ([self _compareVersionTo:22] == NSOrderedAscending) {
-      SDK21RCTSourceLoadBlock legacyLoadCallback = (SDK21RCTSourceLoadBlock)_loadCallback;
-      legacyLoadCallback(error, nil, 0);
-    } else {
-      _loadCallback(error, nil);
-    }
+    _loadCallback(error, nil);
     _loadCallback = nil;
   }
 }
@@ -427,7 +392,6 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
     _isBridgeRunning = YES;
     _hasBridgeEverLoaded = YES;
     [_versionManager bridgeFinishedLoading:_reactBridge];
-    [self appStateDidBecomeActive];
 
     // TODO: temporary solution for hiding LoadingProgressWindow
     if (_appRecord.viewController) {
