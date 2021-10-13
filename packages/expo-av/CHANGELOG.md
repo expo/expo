@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- On Web, fix `TypeError` related to fullscreen `supports*` helper functions. ([#14713](https://github.com/expo/expo/pull/14713) by [@Simek](https://github.com/Simek))
+- On Web, do not try to attach fullscreen listener, when component `ref` is `null`. ([#14713](https://github.com/expo/expo/pull/14713) by [@Simek](https://github.com/Simek))
 
 ### 💡 Others
 
