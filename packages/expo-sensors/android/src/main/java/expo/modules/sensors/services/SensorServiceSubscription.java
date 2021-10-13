@@ -19,7 +19,9 @@ public class SensorServiceSubscription implements SensorServiceSubscriptionInter
   }
 
   public void start() {
-    assertSubscriptionIsAlive();
+    if (mHasBeenReleased) {
+      return;
+    }
     if (!mIsEnabled) {
       mIsEnabled = true;
       mSubscribableSensorService.onSubscriptionEnabledChanged(this);
@@ -39,7 +41,9 @@ public class SensorServiceSubscription implements SensorServiceSubscriptionInter
   }
 
   public void setUpdateInterval(long updateInterval) {
-    assertSubscriptionIsAlive();
+    if (mHasBeenReleased) {
+      return;
+    }
     mUpdateInterval = updateInterval;
   }
 
@@ -54,12 +58,6 @@ public class SensorServiceSubscription implements SensorServiceSubscriptionInter
     if (!mHasBeenReleased) {
       mSubscribableSensorService.removeSubscription(this);
       mHasBeenReleased = true;
-    }
-  }
-
-  private void assertSubscriptionIsAlive() {
-    if (mHasBeenReleased) {
-      throw new IllegalStateException("Subscription has been released, cannot call methods on a released subscription.");
     }
   }
 }
