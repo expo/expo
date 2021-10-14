@@ -163,8 +163,8 @@ fun getExifFullInfo(exifInterface: ExifInterface, response: Bundle) {
 }
 
 /**
- * API 29+ adds "scoped storage" which requires extra permissions (ACCESS_MEDIA_LOCATION) to access photo data
- * Reference: https://developer.android.com/training/data-storage/shared/media#location-info-photos
+ * API 29+ adds "scoped storage" which requires extra permissions (`ACCESS_MEDIA_LOCATION`) to access photo data.
+ * Reference: [Android docs](https://developer.android.com/training/data-storage/shared/media#location-info-photos)
  * @returns [Bundle] with latitude and longitude or `null` if fail
  * @throws UnsupportedOperationException when `ACCESS_MEDIA_LOCATION` permission isn't granted
  */
@@ -178,10 +178,10 @@ fun getExifLocationForUri(contentResolver: ContentResolver, photoUri: Uri): Bund
     return contentResolver.openInputStream(uri)?.use { stream ->
       ExifInterface(stream)
         .latLong
-        ?.let {
+        ?.let { (lat, lng) ->
           Bundle().apply {
-            putDouble("latitude", it[0])
-            putDouble("longitude", it[1])
+            putDouble("latitude", lat)
+            putDouble("longitude", lng)
           }
         }
     }

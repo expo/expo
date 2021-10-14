@@ -40,11 +40,8 @@ object MediaLibraryUtils {
    * If the filename already exists at destination, a suffix is added to the copied filename.
    */
   @Throws(IOException::class)
-  fun safeMoveFile(src: File, destDir: File): File {
-    return safeCopyFile(src, destDir).also {
-      src.delete()
-    }
-  }
+  fun safeMoveFile(src: File, destDir: File): File =
+    safeCopyFile(src, destDir).also { src.delete() }
 
   /**
    * Copies the [src] file into [destDir] directory. Ensures that destination is NOT overwritten.
@@ -63,10 +60,10 @@ object MediaLibraryUtils {
         throw IOException("File name suffix limit reached ($suffixLimit)")
       }
     }
-    FileInputStream(src).channel.use { `in` ->
-      FileOutputStream(newFile).channel.use { out ->
-        val transferred = `in`.transferTo(0, `in`.size(), out)
-        if (transferred != `in`.size()) {
+    FileInputStream(src).channel.use { input ->
+      FileOutputStream(newFile).channel.use { output ->
+        val transferred = input.transferTo(0, input.size(), output)
+        if (transferred != input.size()) {
           newFile.delete()
           throw IOException("Could not save file to $destDir Not enough space.")
         }
@@ -129,11 +126,10 @@ object MediaLibraryUtils {
    * queryPlaceholdersFor(arrayOf("John, 24")) // returns "?,?"
    * ```
    */
-  fun queryPlaceholdersFor(assetIds: Array<out String?>): String {
-    return arrayOfNulls<String>(assetIds.size)
+  fun queryPlaceholdersFor(assetIds: Array<out String?>): String =
+    arrayOfNulls<String>(assetIds.size)
       .apply { fill("?") }
       .joinToString(separator = ",")
-  }
 
   // Used in albums and migrations only - consider moving it there
   fun getAssetsById(context: Context, promise: Promise?, vararg assetsId: String?): List<AssetFile>? {
@@ -165,7 +161,7 @@ object MediaLibraryUtils {
         maybePromise.reject(ERROR_NO_ASSET, "Could not get all of the requested assets")
         return null
       }
-      val assetFiles: MutableList<AssetFile> = ArrayList()
+      val assetFiles = mutableListOf<AssetFile>()
       while (assets.moveToNext()) {
         val assetPath = assets.getString(assets.getColumnIndex(MediaStore.Images.Media.DATA))
         val asset = AssetFile(
@@ -188,10 +184,8 @@ object MediaLibraryUtils {
     return MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension)
   }
 
-  fun getMimeType(contentResolver: ContentResolver, uri: Uri): String? {
-    return contentResolver.getType(uri)
-      ?: return getMimeTypeFromFileUrl(uri.toString())
-  }
+  fun getMimeType(contentResolver: ContentResolver, uri: Uri): String? =
+    contentResolver.getType(uri) ?: getMimeTypeFromFileUrl(uri.toString())
 
   fun getAssetsUris(context: Context, assetsId: List<String?>?): List<Uri> {
     val result = mutableListOf<Uri>()
@@ -215,15 +209,13 @@ object MediaLibraryUtils {
     return result
   }
 
-  fun mimeTypeToExternalUri(mimeType: String?): Uri {
-    return when {
-      mimeType == null -> MediaStore.Images.Media.EXTERNAL_CONTENT_URI
-      mimeType.contains("image") -> MediaStore.Images.Media.EXTERNAL_CONTENT_URI
-      mimeType.contains("video") -> MediaStore.Video.Media.EXTERNAL_CONTENT_URI
-      mimeType.contains("audio") -> MediaStore.Audio.Media.EXTERNAL_CONTENT_URI
-      // For backward compatibility
-      else -> EXTERNAL_CONTENT_URI
-    }
+  fun mimeTypeToExternalUri(mimeType: String?): Uri = when {
+    mimeType == null -> MediaStore.Images.Media.EXTERNAL_CONTENT_URI
+    mimeType.contains("image") -> MediaStore.Images.Media.EXTERNAL_CONTENT_URI
+    mimeType.contains("video") -> MediaStore.Video.Media.EXTERNAL_CONTENT_URI
+    mimeType.contains("audio") -> MediaStore.Audio.Media.EXTERNAL_CONTENT_URI
+    // For backward compatibility
+    else -> EXTERNAL_CONTENT_URI
   }
 
   fun getRelativePathForAssetType(mimeType: String?, useCameraDir: Boolean): String {
@@ -238,7 +230,6 @@ object MediaLibraryUtils {
   }
 
   @Deprecated("It uses deprecated Android method under the hood. See implementation for details.")
-  fun getEnvDirectoryForAssetType(mimeType: String?, useCameraDir: Boolean): File {
-    return Environment.getExternalStoragePublicDirectory(getRelativePathForAssetType(mimeType, useCameraDir))
-  }
+  fun getEnvDirectoryForAssetType(mimeType: String?, useCameraDir: Boolean): File =
+    Environment.getExternalStoragePublicDirectory(getRelativePathForAssetType(mimeType, useCameraDir))
 }
