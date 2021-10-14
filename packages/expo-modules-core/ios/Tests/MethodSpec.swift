@@ -10,13 +10,12 @@ class MethodSpec: QuickSpec {
 
     func testMethodReturning<T: Equatable>(value returnValue: T) {
       waitUntil { done in
-        let module = CustomModule(appContext: appContext) {
+        mockModuleHolder(appContext) {
           $0.method(methodName) {
             return returnValue
           }
         }
-
-        ModuleHolder(module: module).call(method: methodName, args: []) { value, error in
+        .call(method: methodName, args: []) { value, error in
           expect(value).notTo(beNil())
           expect(value).to(beAKindOf(T.self))
           expect(value as? T).to(equal(returnValue))
@@ -27,12 +26,12 @@ class MethodSpec: QuickSpec {
 
     it("is called") {
       waitUntil { done in
-        let module = CustomModule(appContext: appContext) {
+        mockModuleHolder(appContext) {
           $0.method(methodName) {
             done()
           }
         }
-        ModuleHolder(module: module).call(method: methodName, args: [])
+        .call(method: methodName, args: [])
       }
     }
 
@@ -69,14 +68,13 @@ class MethodSpec: QuickSpec {
       ]
 
       it("converts to simple record when passed as an argument") {
-        let module = CustomModule(appContext: appContext) {
-          $0.method(methodName) { (a: TestRecord) in
-            return a.property
-          }
-        }
-
         waitUntil { done in
-          ModuleHolder(module: module).call(method: methodName, args: [dict]) { value, error in
+          mockModuleHolder(appContext) {
+            $0.method(methodName) { (module, a: TestRecord) in
+              return a.property
+            }
+          }
+          .call(method: methodName, args: [dict]) { value, error in
             expect(value).notTo(beNil())
             expect(value).to(beAKindOf(String.self))
             expect(value).to(be(dict["property"]))
@@ -86,14 +84,13 @@ class MethodSpec: QuickSpec {
       }
 
       it("converts to record with custom key") {
-        let module = CustomModule(appContext: appContext) {
-          $0.method(methodName) { (a: TestRecord) in
-            return a.customKeyProperty
-          }
-        }
-
         waitUntil { done in
-          ModuleHolder(module: module).call(method: methodName, args: [dict]) { value, error in
+          mockModuleHolder(appContext) {
+            $0.method(methodName) { (module, a: TestRecord) in
+              return a.customKeyProperty
+            }
+          }
+          .call(method: methodName, args: [dict]) { value, error in
             expect(value).notTo(beNil())
             expect(value).to(beAKindOf(String.self))
             expect(value).to(be(dict["propertyWithCustomKey"]))
@@ -103,14 +100,13 @@ class MethodSpec: QuickSpec {
       }
 
       it("returns the record back") {
-        let module = CustomModule(appContext: appContext) {
-          $0.method(methodName) { (a: TestRecord) in
-            return a.toDictionary()
-          }
-        }
-
         waitUntil { done in
-          ModuleHolder(module: module).call(method: methodName, args: [dict]) { value, error in
+          mockModuleHolder(appContext) {
+            $0.method(methodName) { (module, a: TestRecord) in
+              return a.toDictionary()
+            }
+          }
+          .call(method: methodName, args: [dict]) { value, error in
             expect(value).notTo(beNil())
             expect(value).to(beAKindOf(Record.Dict.self))
 
@@ -126,14 +122,13 @@ class MethodSpec: QuickSpec {
 
     it("throws when called with more arguments than expected") {
       waitUntil { done in
-        let module = CustomModule(appContext: appContext) {
-          $0.method(methodName) { (a: Int) in
+        mockModuleHolder(appContext) {
+          $0.method(methodName) { (module, a: Int) in
             return "something"
           }
         }
-
         // Method expects one argument, let's give it more.
-        ModuleHolder(module: module).call(method: methodName, args: [1, 2]) { value, error in
+        .call(method: methodName, args: [1, 2]) { value, error in
           expect(error).notTo(beNil())
           expect(error).to(beAKindOf(InvalidArgsNumberError.self))
           expect(error?.code).to(equal("ERR_INVALID_ARGS_NUMBER"))
@@ -145,14 +140,13 @@ class MethodSpec: QuickSpec {
 
     it("throws when called with arguments of incompatible types") {
       waitUntil { done in
-        let module = CustomModule(appContext: appContext) {
-          $0.method(methodName) { (a: String) in
+        mockModuleHolder(appContext) {
+          $0.method(methodName) { (module, a: String) in
             return "something"
           }
         }
-
         // Method expects a string, let's give it a number.
-        ModuleHolder(module: module).call(method: methodName, args: [1]) { value, error in
+        .call(method: methodName, args: [1]) { value, error in
           expect(error).notTo(beNil())
           expect(error).to(beAKindOf(IncompatibleArgTypeError<Any?>.self))
           expect(error?.code).to(equal("ERR_INCOMPATIBLE_ARG_TYPE"))

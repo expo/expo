@@ -4,7 +4,11 @@ import ReactMarkdown from 'react-markdown';
 import { InlineCode } from '~/components/base/code';
 import { LI, UL } from '~/components/base/list';
 import { H2, H3Code, H4 } from '~/components/plugins/Headings';
-import { MethodDefinitionData, MethodSignatureData } from '~/components/plugins/api/APIDataTypes';
+import {
+  MethodDefinitionData,
+  MethodSignatureData,
+  PropData,
+} from '~/components/plugins/api/APIDataTypes';
 import {
   CommentTextBlock,
   listParams,
@@ -19,9 +23,9 @@ export type APISectionMethodsProps = {
   header?: string;
 };
 
-const renderMethod = (
-  { signatures }: MethodDefinitionData,
-  index: number,
+export const renderMethod = (
+  { signatures = [] }: MethodDefinitionData | PropData,
+  index?: number,
   dataLength?: number,
   apiName?: string,
   header?: string
@@ -58,7 +62,7 @@ const renderMethod = (
           )}
         </div>
       ) : null}
-      {index + 1 !== dataLength && <hr />}
+      {index !== undefined ? index + 1 !== dataLength && <hr /> : null}
     </div>
   ));
 

@@ -78,6 +78,9 @@ static NSString * const EXUpdatesUtilsErrorDomain = @"EXUpdatesUtils";
   switch (config.checkOnLaunch) {
     case EXUpdatesCheckAutomaticallyConfigNever:
       return NO;
+    case EXUpdatesCheckAutomaticallyConfigErrorRecoveryOnly:
+      // check will happen later on if there's an error
+      return NO;
     case EXUpdatesCheckAutomaticallyConfigWifiOnly: {
       struct sockaddr_in zeroAddress;
       bzero(&zeroAddress, sizeof(zeroAddress));

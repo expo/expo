@@ -49,11 +49,8 @@ export class TokenResponse {
             scope: params.scope,
             state: params.state,
             idToken: params.id_token,
-            // @ts-ignore: Expected specific string
             tokenType: params.token_type,
-            // @ts-ignore: Expected number
             expiresIn: params.expires_in,
-            // @ts-ignore: Expected number
             issuedAt: params.issued_at,
         });
     }

@@ -58,18 +58,15 @@ export class TokenResponse implements TokenResponseConfig {
    *
    * @param params
    */
-  static fromQueryParams(params: Record<string, string>): TokenResponse {
+  static fromQueryParams(params: Record<string, any>): TokenResponse {
     return new TokenResponse({
       accessToken: params.access_token,
       refreshToken: params.refresh_token,
       scope: params.scope,
       state: params.state,
       idToken: params.id_token,
-      // @ts-ignore: Expected specific string
       tokenType: params.token_type,
-      // @ts-ignore: Expected number
       expiresIn: params.expires_in,
-      // @ts-ignore: Expected number
       issuedAt: params.issued_at,
     });
   }

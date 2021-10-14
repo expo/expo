@@ -94,9 +94,12 @@ const sections = [
       'Introduction',
       'Getting Started',
       'Installation in React Native and Bare workflow projects',
+      'Upgrading',
       'Building with EAS',
       'Development Workflows',
-      'Extending the Development Menu',
+      'Extending the Dev Menu',
+      'Compatibility',
+      'Troubleshooting',
     ],
   },
   {

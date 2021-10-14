@@ -1,26 +1,31 @@
-import ExpoModulesCore
+@testable import ExpoModulesCore
 
 class UnnamedModule: Module {
-  func definition() -> ModuleDefinition {}
+  static func definition() -> ModuleDefinition {}
 }
 
 class NamedModule: Module {
   static let namedModuleName = "MyModule"
 
-  func definition() -> ModuleDefinition {
-    name(Self.namedModuleName)
+  static func definition() -> ModuleDefinition {
+    name(namedModuleName)
   }
 }
 
 class CustomModule: Module {
-  var customDefinition: ((CustomModule) -> ModuleDefinition)!
+  static func definition() -> ModuleDefinition {}
+}
 
-  convenience init(appContext: AppContext, @ModuleDefinitionBuilder _ customDefinition: @escaping (CustomModule) -> ModuleDefinition) {
-    self.init(appContext: appContext)
-    self.customDefinition = customDefinition
-  }
+typealias MockedDefinitionFunc = (CustomModule.Type) -> ModuleDefinition
 
-  func definition() -> ModuleDefinition {
-    return customDefinition(self)
-  }
+func mockDefinition(@ModuleDefinitionBuilder _ definition: @escaping () -> ModuleDefinition) -> ModuleDefinition {
+  return definition().withType(CustomModule.self)
+}
+
+func mockDefinition(@ModuleDefinitionBuilder _ definition: @escaping MockedDefinitionFunc) -> ModuleDefinition {
+  return definition(CustomModule.self).withType(CustomModule.self)
+}
+
+func mockModuleHolder(_ appContext: AppContext, @ModuleDefinitionBuilder _ definition: @escaping MockedDefinitionFunc) -> ModuleHolder {
+  return ModuleHolder(appContext: appContext, definition: mockDefinition(definition))
 }

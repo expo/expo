@@ -108,4 +108,10 @@ public class AppContext {
     NotificationCenter.default.removeObserver(self)
     moduleRegistry.post(event: .appContextDestroys)
   }
+
+  // MARK: Errors
+
+  struct DeallocatedAppContextError: CodedError {
+    var description: String = "The app context has been deallocated."
+  }
 }

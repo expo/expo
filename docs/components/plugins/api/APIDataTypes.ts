@@ -75,17 +75,6 @@ export type ConstantDefinitionData = {
   type?: TypeDefinitionData;
 };
 
-// Class section
-
-export type ClassDefinitionData = {
-  name: string;
-  comment?: CommentData;
-  kind: TypeDocKind;
-  extendedTypes?: TypeDefinitionData[];
-  children?: MethodDefinitionData[];
-  type?: TypeDefinitionData;
-};
-
 // Enums section
 
 export type EnumDefinitionData = {
@@ -106,17 +95,17 @@ export type EnumValueData = {
 
 export type InterfaceDefinitionData = {
   name: string;
-  children: InterfaceValueData[];
+  children: PropData[];
   comment?: CommentData;
   kind: TypeDocKind;
 };
 
-export type InterfaceValueData = {
-  name: string;
+// Classes section
+
+export type ClassDefinitionData = InterfaceDefinitionData & {
+  extendedTypes?: TypeDefinitionData[];
   type?: TypeDefinitionData;
-  flags?: TypePropertyDataFlags;
-  comment?: CommentData;
-} & MethodDefinitionData;
+};
 
 // Methods section
 
@@ -133,7 +122,7 @@ export type MethodSignatureData = {
   type: TypeDefinitionData;
 };
 
-// Props section
+// Properties section
 
 export type PropsDefinitionData = {
   name: string;
@@ -143,11 +132,13 @@ export type PropsDefinitionData = {
 
 export type PropData = {
   name: string;
+  kind?: TypeDocKind;
   comment?: CommentData;
   type: TypeDefinitionData;
   flags?: TypePropertyDataFlags;
   defaultValue?: string;
   signatures?: MethodSignatureData[];
+  overwrites?: TypeDefinitionData;
 };
 
 export type DefaultPropsDefinitionData = {

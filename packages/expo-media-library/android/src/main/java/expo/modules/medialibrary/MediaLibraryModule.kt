@@ -35,6 +35,10 @@ import expo.modules.medialibrary.albums.RemoveAssetsFromAlbum
 import expo.modules.medialibrary.albums.getAssetsInAlbums
 import expo.modules.medialibrary.albums.migration.CheckIfAlbumShouldBeMigrated
 import expo.modules.medialibrary.albums.migration.MigrateAlbum
+import expo.modules.medialibrary.assets.CreateAsset
+import expo.modules.medialibrary.assets.DeleteAssets
+import expo.modules.medialibrary.assets.GetAssetInfo
+import expo.modules.medialibrary.assets.GetAssets
 
 class MediaLibraryModule(
   context: Context,

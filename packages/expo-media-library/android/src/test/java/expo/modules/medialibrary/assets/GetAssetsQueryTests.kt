@@ -1,13 +1,22 @@
-package expo.modules.medialibrary
+package expo.modules.medialibrary.assets
 
 import android.provider.MediaStore
+import expo.modules.medialibrary.MediaLibraryConstants
+import io.mockk.clearAllMocks
+import io.mockk.every
+import io.mockk.mockkStatic
+import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 
 @RunWith(RobolectricTestRunner::class)
-internal class GetQueryInfoTests {
+internal class GetAssetsQueryTests {
+  @After
+  fun tearDown() {
+    clearAllMocks()
+  }
 
   @Test
   fun `test if proper values are handled properly`() {
@@ -37,10 +46,10 @@ internal class GetQueryInfoTests {
       " AND ${MediaStore.Images.Media.DATE_TAKEN} > ${createdAfter.toLong()}" +
       " AND ${MediaStore.Images.Media.DATE_TAKEN} < ${createdBefore.toLong()}"
 
-    val expectedOrder = MediaLibraryUtils.mapOrderDescriptor(sortBy)
+    val expectedOrder = convertOrderDescriptors(sortBy)
 
     // act
-    val queryInfo = GetQueryInfo(inputMap).invoke()
+    val queryInfo = getQueryFromOptions(inputMap)
 
     // assert
     assertEquals(limit.toInt(), queryInfo.limit)
@@ -55,7 +64,7 @@ internal class GetQueryInfoTests {
     val expectedSelection = "${MediaStore.Files.FileColumns.MEDIA_TYPE} != ${MediaStore.Files.FileColumns.MEDIA_TYPE_NONE}"
 
     // act
-    val queryInfo = GetQueryInfo(emptyMap()).invoke()
+    val queryInfo = getQueryFromOptions(emptyMap())
 
     // assert
     assertEquals(20, queryInfo.limit)
@@ -75,7 +84,7 @@ internal class GetQueryInfoTests {
     )
 
     // act
-    val queryInfo = GetQueryInfo(inputMap).invoke()
+    val queryInfo = getQueryFromOptions(inputMap)
 
     // assert
     assertEquals(limitOutOfRange.toInt(), queryInfo.limit)
@@ -88,7 +97,7 @@ internal class GetQueryInfoTests {
       "mediaType" to listOf("someRandomString")
     )
 
-    val queryInfo = GetQueryInfo(inputMap).invoke()
+    val queryInfo = getQueryFromOptions(inputMap)
   }
 
   @Test(expected = IllegalArgumentException::class)
@@ -97,6 +106,66 @@ internal class GetQueryInfoTests {
       "sortBy" to listOf("invalid name")
     )
 
-    val queryInfo = GetQueryInfo(inputMap).invoke()
+    val queryInfo = getQueryFromOptions(inputMap)
+  }
+
+  class ConvertOrderDescriptorTests {
+    @Test
+    fun `convertOrderDescriptors works with string keys`() {
+      // arrange
+      mockkStatic(::parseSortByKey)
+      every { parseSortByKey(any()) } returnsArgument 0
+
+      val keys = listOf("key1", "key2")
+
+      // act
+      val result = convertOrderDescriptors(keys)
+
+      // assert
+      assertEquals("key1 DESC,key2 DESC", result)
+    }
+
+    @Test
+    fun `convertOrderDescriptors works with array keys`() {
+      // arrange
+      mockkStatic(::parseSortByKey)
+      every { parseSortByKey(any()) } returnsArgument 0
+
+      val keys = listOf(
+        arrayListOf<Any>("key1", true),
+        arrayListOf<Any>("key2", false)
+      )
+
+      // act
+      val result = convertOrderDescriptors(keys)
+
+      // assert
+      assertEquals("key1 ASC,key2 DESC", result)
+    }
+
+    @Test(expected = IllegalArgumentException::class)
+    fun `convertOrderDescriptors throws when provided invalid types`() {
+      // arrange
+      val items = listOf<Any>(1, true, 3.14)
+
+      // act
+      convertOrderDescriptors(items)
+
+      // assert throw
+    }
+
+    @Test(expected = IllegalArgumentException::class)
+    fun `convertOrderDescriptors throws when provided invalid layout`() {
+      // arrange
+      val keys = listOf(
+        arrayListOf<Any>("only1item"),
+        arrayListOf<Any>(3, "items", "here")
+      )
+
+      // act
+      convertOrderDescriptors(keys)
+
+      // assert throw
+    }
   }
 }

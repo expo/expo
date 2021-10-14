@@ -4,9 +4,13 @@
 
 ### 🛠 Breaking changes
 
+- Swift's module definition is now a static function which also makes modules lazy by default. ([#14645](https://github.com/expo/expo/pull/14645) by [@tsapeta](https://github.com/tsapeta))
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
+
+- Fix UIManager has not setter or ivar error when reloading app. ([#14741](https://github.com/expo/expo/pull/14741) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others
 

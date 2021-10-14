@@ -269,12 +269,10 @@ NS_ASSUME_NONNULL_BEGIN
     // Reset the root view background color and window color if we switch between Expo home and project
     [self _setBackgroundColor:self.view];
   });
-  [_appRecord.appManager appStateDidBecomeActive];
 }
 
 - (void)appStateDidBecomeInactive
 {
-  [_appRecord.appManager appStateDidBecomeInactive];
 }
 
 - (void)_rebuildBridge
