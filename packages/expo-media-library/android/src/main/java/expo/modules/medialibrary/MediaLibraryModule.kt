@@ -242,11 +242,7 @@ class MediaLibraryModule(
       return
     }
 
-    val action = Action action@{ permissionsWereGranted: Boolean ->
-      if (!permissionsWereGranted) {
-        promise.reject(ERROR_NO_PERMISSIONS, ERROR_USER_DID_NOT_GRANT_WRITE_PERMISSIONS_MESSAGE)
-        return@action
-      }
+    val action = actionIfUserGrantedPermission(promise) {
       MigrateAlbum(context, assets, albumDir.name, promise)
         .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR)
     }

@@ -26,10 +26,11 @@ import java.io.IOException
 import java.lang.NumberFormatException
 import java.lang.RuntimeException
 import java.lang.UnsupportedOperationException
+import kotlin.math.abs
 
 /**
  * Queries content resolver for a single asset.
- * Resolves `promise` with a single-element array of [Bundle]
+ * Resolves [promise] with a single-element array of [Bundle]
  */
 fun queryAssetInfo(
   context: Context,
@@ -79,7 +80,7 @@ fun queryAssetInfo(
 /**
  * Reads given `cursor` and saves the data to `response` param.
  * Reads `limit` rows, starting by `offset`.
- * Cursor must be a result of query with [MediaLibraryConstants.ASSET_PROJECTION] projection
+ * Cursor must be a result of query with [ASSET_PROJECTION] projection
  */
 @Throws(IOException::class, UnsupportedOperationException::class)
 fun putAssetsInfo(
@@ -103,6 +104,7 @@ fun putAssetsInfo(
   }
   var i = 0
   while (i < limit && !cursor.isAfterLast) {
+    val assetId = cursor.getString(idIndex)
     val path = cursor.getString(localUriIndex)
     val localUri = "file://$path"
     val mediaType = cursor.getInt(mediaTypeIndex)
@@ -115,32 +117,31 @@ fun putAssetsInfo(
         e.printStackTrace()
       }
     }
-    val size = getAssetDimensionsFromCursor(contentResolver, exifInterface, cursor, mediaType, localUriIndex)
+    val (width, height) =
+      getAssetDimensionsFromCursor(contentResolver, exifInterface, cursor, mediaType, localUriIndex)
     val asset = Bundle().apply {
-      putString("id", cursor.getString(idIndex))
+      putString("id", assetId)
       putString("filename", cursor.getString(filenameIndex))
       putString("uri", localUri)
       putString("mediaType", exportMediaType(mediaType))
-      putLong("width", size[0].toLong())
-      putLong("height", size[1].toLong())
+      putLong("width", width.toLong())
+      putLong("height", height.toLong())
       putLong("creationTime", cursor.getLong(creationDateIndex))
       putDouble("modificationTime", cursor.getLong(modificationDateIndex) * 1000.0)
       putDouble("duration", cursor.getInt(durationIndex) / 1000.0)
       putString("albumId", cursor.getString(albumIdIndex))
     }
-    if (resolveWithFullInfo) {
-      if (exifInterface != null) {
-        getExifFullInfo(exifInterface, asset)
+    if (resolveWithFullInfo && exifInterface != null) {
+      getExifFullInfo(exifInterface, asset)
 
-        val location = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-          val photoUri = Uri.withAppendedPath(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, cursor.getString(idIndex))
-          getExifLocationForUri(contentResolver, photoUri)
-        } else {
-          getExifLocationLegacy(exifInterface)
-        }
-        asset.putParcelable("location", location)
-        asset.putString("localUri", localUri)
+      val location = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+        val photoUri = Uri.withAppendedPath(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, assetId)
+        getExifLocationForUri(contentResolver, photoUri)
+      } else {
+        getExifLocationLegacy(exifInterface)
       }
+      asset.putParcelable("location", location)
+      asset.putString("localUri", localUri)
     }
     cursor.moveToNext()
     response.add(asset)
@@ -209,7 +210,7 @@ fun getExifLocationLegacy(exifInterface: ExifInterface): Bundle? {
 
 /**
  * Gets image/video dimensions
- * @return array of 2 integers: width and height, respectively
+ * @return Pair of integers: width and height, respectively
  */
 @Throws(IOException::class)
 fun getAssetDimensionsFromCursor(
@@ -218,7 +219,7 @@ fun getAssetDimensionsFromCursor(
   cursor: Cursor,
   mediaType: Int,
   localUriColumnIndex: Int
-): IntArray {
+): Pair<Int, Int> {
   val uri = cursor.getString(localUriColumnIndex)
   if (mediaType == MediaStore.Files.FileColumns.MEDIA_TYPE_VIDEO) {
     val videoUri = Uri.parse("file://$uri")
@@ -288,12 +289,13 @@ fun exportMediaType(mediaType: Int) = when (mediaType) {
 
 /**
  * Swaps `width` and `height` if the `orientation` is `90` or `-90`
+ * @return Pair of integers: width and height, respectively
  */
-fun maybeRotateAssetSize(width: Int, height: Int, orientation: Int): IntArray {
+fun maybeRotateAssetSize(width: Int, height: Int, orientation: Int): Pair<Int, Int> {
   // given width and height might need to be swapped if the orientation is -90 or 90
-  return if (Math.abs(orientation) % 180 == 90) {
-    intArrayOf(height, width)
+  return if (abs(orientation) % 180 == 90) {
+    Pair(height, width)
   } else {
-    intArrayOf(width, height)
+    Pair(width, height)
   }
 }

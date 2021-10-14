@@ -27,12 +27,14 @@ object MediaLibraryUtils {
    * getFileNameAndExtension("foo.jpg") // returns arrayOf("foo", "jpg")
    * getFileNameAndExtension("bar") // returns arrayOf("bar", "")
    * ```
+   *
+   * @return Pair of strings: first is filename, second is extension
    */
-  fun getFileNameAndExtension(name: String): Array<String> {
+  fun getFileNameAndExtension(name: String): Pair<String, String> {
     val dotIdx = name.lastIndexOf(".").takeIf { it != -1 } ?: name.length
     val extension = name.substring(startIndex = dotIdx)
     val filename = name.substring(0, dotIdx)
-    return arrayOf(filename, extension)
+    return Pair(filename, extension)
   }
 
   /**

@@ -40,9 +40,8 @@ internal class MediaLibraryUtilsTests {
     val result = MediaLibraryUtils.getFileNameAndExtension(filename)
 
     // assert
-    assertEquals(2, result.size)
-    assertEquals("example", result[0])
-    assertEquals(".dat", result[1])
+    assertEquals("example", result.first)
+    assertEquals(".dat", result.second)
   }
 
   @Test
