@@ -10,6 +10,15 @@ static NSString * const kView = @"view";
 @interface EXSplashScreenService ()
 
 @property (nonatomic, strong) NSMapTable<UIViewController *, EXSplashScreenViewController *> *splashScreenControllers;
+/**
+ * This module holds a reference to rootViewController acting as a flag to indicate KVO is enabled.
+ * When KVO is enabled, actually we are observing two targets and re-show splash screen if targets changed:
+ *   - `keyWindow.rootViewController`: it is for expo-dev-client which replaced it in startup.
+ *   - `rootViewController.rootView`: it is for expo-updates which replaced it in startup.
+ *
+ * If `rootViewController` is changed, we also need the old `rootViewController` to unregister rootView KVO.
+ * That's why we keep a weak reference here but not a boolean flag.
+ */
 @property (nonatomic, weak) UIViewController *observingRootViewController;
 
 @end
@@ -144,13 +153,11 @@ EX_REGISTER_SINGLETON_MODULE(SplashScreen);
   if (self.observingRootViewController == nil) {
     UIViewController *rootViewController = UIApplication.sharedApplication.keyWindow.rootViewController;
 
-    // `rootViewController` KVO is for expo-dev-launcher which replaced `rootViewController` in startup.
     [UIApplication.sharedApplication.keyWindow addObserver:self
                                                 forKeyPath:kRootViewController
                                                    options:NSKeyValueObservingOptionNew
                                                    context:nil];
 
-    // `rootView` KVO is for expo-updates which replaced `rootView` in startup.
     [rootViewController addObserver:self forKeyPath:kView options:NSKeyValueObservingOptionNew context:nil];
     self.observingRootViewController = rootViewController;
   }
