@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`legacy modifyLegacyAppDelegate modifies the AppDelegate file for dev-lanuncher 1`] = `
+exports[`legacy modifyLegacyAppDelegate modifies the AppDelegate file for dev-launcher 1`] = `
 "// Keep in sync with: \`expo/templates/expo-template-bare-minimum/ios/HelloWorld/AppDelegate.m\`
 
 #if defined(EX_DEV_LAUNCHER_ENABLED)
@@ -464,7 +464,7 @@ static void InitializeFlipper(UIApplication *application) {
 "
 `;
 
-exports[`modifyAppDelegate expo-screen-orientation compatibility modifies the AppDelegate file for dev-lanuncher 1`] = `
+exports[`modifyAppDelegate expo-screen-orientation compatibility modifies the AppDelegate file for dev-launcher 1`] = `
 "#import \\"AppDelegate.h\\"
 
 #if defined(EX_DEV_LAUNCHER_ENABLED)
@@ -838,7 +838,7 @@ static void InitializeFlipper(UIApplication *application) {
 "
 `;
 
-exports[`modifyAppDelegate modifies the AppDelegate file for dev-lanuncher 1`] = `
+exports[`modifyAppDelegate modifies the AppDelegate file for dev-launcher 1`] = `
 "#import \\"AppDelegate.h\\"
 
 #if defined(EX_DEV_LAUNCHER_ENABLED)
