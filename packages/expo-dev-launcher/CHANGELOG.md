@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix config plugin compatibility with expo-screen-orientation. ([#14752](https://github.com/expo/expo/pull/14752) by [@esamelson](https://github.com/esamelson))
+
 ### 💡 Others
 
 ## 0.8.1 — 2021-10-07
