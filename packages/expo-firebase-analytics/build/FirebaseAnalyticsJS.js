@@ -268,6 +268,12 @@ class FirebaseAnalyticsJS {
         }
     }
     /**
+     * Not supported, this method is a no-op
+     */
+    async setSessionTimeoutDuration(_sessionTimeoutInterval) {
+        // no-op
+    }
+    /**
      * https://firebase.google.com/docs/reference/js/firebase.analytics.Analytics#set-user-id
      */
     async setUserId(userId) {

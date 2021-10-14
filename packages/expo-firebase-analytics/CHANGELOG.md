@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add support for `setSessionTimeoutDuration` on iOS. ([#14364](https://github.com/expo/expo/pull/14364) by [@IjzerenHein](https://github.com/IjzerenHein))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
