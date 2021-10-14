@@ -1,6 +1,5 @@
 package dev.expo.baresandbox;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
@@ -13,7 +12,6 @@ import expo.modules.devlauncher.DevLauncherController;
 import expo.modules.devmenu.react.DevMenuAwareReactActivity;
 import expo.modules.splashscreen.SplashScreenImageResizeMode;
 import expo.modules.splashscreen.singletons.SplashScreen;
-import expo.modules.ReactActivityDelegateWrapper;
 
 
 public class MainActivity extends DevMenuAwareReactActivity {
@@ -46,9 +44,7 @@ public class MainActivity extends DevMenuAwareReactActivity {
 
   @Override
   protected ReactActivityDelegate createReactActivityDelegate() {
-    Activity activity = this;
-    ReactActivityDelegate delegate = new ReactActivityDelegateWrapper(this,
-      new ReactActivityDelegate(this, getMainComponentName()) {
+    return DevLauncherController.wrapReactActivityDelegate(this, () -> new ReactActivityDelegate(this, getMainComponentName()) {
       @Override
       protected ReactRootView createRootView() {
         return new RNGestureHandlerEnabledRootView(MainActivity.this);
@@ -56,15 +52,11 @@ public class MainActivity extends DevMenuAwareReactActivity {
 
       @Override
       protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+        super.onCreate(null);
+        // SplashScreen.show(...) has to be called after super.onCreate(...)
+        // Below line is handled by '@expo/configure-splash-screen' command and it's discouraged to modify it manually
+        SplashScreen.show(getPlainActivity(), SplashScreenImageResizeMode.CONTAIN, ReactRootView.class, false);
       }
     });
-
-    if (MainApplication.USE_DEV_CLIENT) {
-      return DevLauncherController.wrapReactActivityDelegate(this, () -> delegate);
-    }
-
-    return delegate;
   }
-  
 }
