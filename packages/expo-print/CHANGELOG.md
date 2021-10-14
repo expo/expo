@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Support loading local fonts on iOS ([#14742](https://github.com/expo/expo/pull/14742) by [@IjzerenHein](https://github.com/IjzerenHein))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
