@@ -24,7 +24,7 @@ function getResults(canvas, options) {
 function loadImageAsync(uri) {
     return new Promise((resolve, reject) => {
         const imageSource = new Image();
-        imageSource.crossOrigin = '*';
+        imageSource.crossOrigin = 'anonymous';
         const canvas = document.createElement('canvas');
         imageSource.onload = () => {
             canvas.width = imageSource.naturalWidth;
