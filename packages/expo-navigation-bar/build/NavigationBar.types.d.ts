@@ -4,27 +4,27 @@
  * - `dark` makes buttons **darker** to adjust for a mostly light nav bar.
  * - `light` makes buttons **lighter** to adjust for a mostly dark nav bar.
  */
-export declare type BarStyle = 'light' | 'dark';
+export declare type NavigationBarButtonStyle = 'light' | 'dark';
 /**
  * Visibility of the navigation bar.
  */
-export declare type Visibility = 'visible' | 'hidden';
+export declare type NavigationBarVisibility = 'visible' | 'hidden';
 /**
  * Interaction behavior for the system navigation bar.
  */
-export declare type Behavior = 'overlay-swipe' | 'inset-swipe' | 'inset-touch';
+export declare type NavigationBarBehavior = 'overlay-swipe' | 'inset-swipe' | 'inset-touch';
 /**
  * Navigation bar positional mode.
  */
-export declare type Position = 'relative' | 'absolute';
+export declare type NavigationBarPosition = 'relative' | 'absolute';
 /**
  * Current system UI visibility state. Due to platform constraints, this will return when the status bar visibility changes as well as the navigation bar.
  */
-export declare type VisibilityEvent = {
+export declare type NavigationBarVisibilityEvent = {
     /**
      * Current navigation bar visibility.
      */
-    visibility: Visibility;
+    visibility: NavigationBarVisibility;
     /**
      * Native Android system UI visibility state, returned from the native Android `setOnSystemUiVisibilityChangeListener` API.
      */

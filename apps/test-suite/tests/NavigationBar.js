@@ -21,11 +21,11 @@ export async function test(t) {
     t.expect(mutated).toBe(nextValue);
   }
 
-  t.describe(`NavigationBar.setBarStyleAsync()`, () => {
+  t.describe(`NavigationBar.setButtonStyleAsync()`, () => {
     t.it(`flips a value`, async () => {
       await flipValueAsync({
-        getAsync: NavigationBar.setBarStyleAsync,
-        setAsync: NavigationBar.setBarStyleAsync,
+        getAsync: NavigationBar.getButtonStyleAsync,
+        setAsync: NavigationBar.setButtonStyleAsync,
         values: ['light', 'dark'],
       });
     });

@@ -90,7 +90,7 @@ export async function getBorderColorAsync() {
  * ```ts
  * NavigationBar.setVisibilityAsync("hidden");
  * ```
- * @param color `visible|hidden` based on CSS visibility property.
+ * @param color Based on CSS visibility property.
  */
 export async function setVisibilityAsync(visibility) {
     if (Platform.OS !== 'android') {
@@ -120,32 +120,32 @@ export async function getVisibilityAsync() {
  *
  * @example
  * ```ts
- * NavigationBar.setBarStyleAsync("light");
+ * NavigationBar.setButtonStyleAsync("light");
  * ```
- * @param style `light|dark` dictates the color of the foreground element color.
+ * @param style Dictates the color of the foreground element color.
  */
-export async function setBarStyleAsync(style) {
+export async function setButtonStyleAsync(style) {
     if (Platform.OS !== 'android') {
-        console.warn('`setBarStyleAsync` is only available on Android');
+        console.warn('`setButtonStyleAsync` is only available on Android');
         return;
     }
-    await ExpoNavigationBar.setBarStyleAsync(style);
+    await ExpoNavigationBar.setButtonStyleAsync(style);
 }
 /**
  * Gets the navigation bar's button color styles.
  *
  * @example
  * ```ts
- * const style = await NavigationBar.getBarStyleAsync();
+ * const style = await NavigationBar.getButtonStyleAsync();
  * ```
  * @returns Navigation bar foreground element color settings. Returns `light` on unsupported platforms (iOS, web).
  */
-export async function getBarStyleAsync() {
+export async function getButtonStyleAsync() {
     if (Platform.OS !== 'android') {
-        console.warn('`getBarStyleAsync` is only available on Android');
+        console.warn('`getButtonStyleAsync` is only available on Android');
         return 'light';
     }
-    return await ExpoNavigationBar.getBarStyleAsync();
+    return await ExpoNavigationBar.getButtonStyleAsync();
 }
 /**
  * Sets positioning method used for the navigation bar (and status bar).
@@ -161,7 +161,7 @@ export async function getBarStyleAsync() {
  * // transparent backgrounds to see through
  * await NavigationBar.setBackgroundColorAsync('#ffffff00')
  * ```
- * @param position `absolute|relative` based on CSS position property.
+ * @param position Based on CSS position property.
  */
 export async function setPositionAsync(position) {
     if (Platform.OS !== 'android') {
@@ -201,7 +201,7 @@ export async function getPositionAsync() {
  * ```ts
  * await NavigationBar.setBehaviorAsync('overlay-swipe')
  * ```
- * @param behavior `overlay-swipe|inset-swipe|inset-touch` dictates the interaction behavior of the navigation bar.
+ * @param behavior Dictates the interaction behavior of the navigation bar.
  */
 export async function setBehaviorAsync(behavior) {
     if (Platform.OS !== 'android') {

@@ -6,10 +6,10 @@ import { Page, Section } from '../components/Page';
 import { getRandomColor } from '../utilities/getRandomColor';
 
 function usePosition(): [
-  NavigationBar.Position | null,
-  (position: NavigationBar.Position) => void
+  NavigationBar.NavigationBarPosition | null,
+  (position: NavigationBar.NavigationBarPosition) => void
 ] {
-  const [position, setPosition] = React.useState<NavigationBar.Position | null>(null);
+  const [position, setPosition] = React.useState<NavigationBar.NavigationBarPosition | null>(null);
 
   React.useEffect(() => {
     let isMounted = true;
@@ -25,7 +25,7 @@ function usePosition(): [
   }, []);
 
   const setNewPosition = React.useCallback(
-    (position: NavigationBar.Position) => {
+    (position: NavigationBar.NavigationBarPosition) => {
       NavigationBar.setPositionAsync(position);
       setPosition(position);
     },
@@ -42,7 +42,7 @@ export default function NavigationBarScreen() {
         <VisibilityExample />
       </Section>
       <Section title="Appearance">
-        <BarStyleExample />
+        <ButtonStyleExample />
       </Section>
       <Section title="Background Color">
         <BackgroundColorExample />
@@ -95,13 +95,13 @@ function BorderColorExample() {
   );
 }
 
-function BarStyleExample() {
-  const [style, setStyle] = React.useState<NavigationBar.BarStyle>('light');
+function ButtonStyleExample() {
+  const [style, setStyle] = React.useState<NavigationBar.NavigationBarButtonStyle>('light');
   const nextStyle = style === 'light' ? 'dark' : 'light';
   return (
     <Button
       onPress={() => {
-        NavigationBar.setBarStyleAsync(nextStyle);
+        NavigationBar.setButtonStyleAsync(nextStyle);
         setStyle(nextStyle);
       }}
       title={`Toggle bar style: ${nextStyle}`}
@@ -109,7 +109,7 @@ function BarStyleExample() {
   );
 }
 
-const NavigationBarBehaviors: NavigationBar.Behavior[] = [
+const NavigationBarBehaviors: NavigationBar.NavigationBarBehavior[] = [
   'inset-swipe',
   'inset-touch',
   'overlay-swipe',
@@ -127,7 +127,7 @@ function PositionExample() {
 }
 
 function BehaviorExample() {
-  const [behavior, setBehavior] = React.useState<NavigationBar.Behavior>('inset-swipe');
+  const [behavior, setBehavior] = React.useState<NavigationBar.NavigationBarBehavior>('inset-swipe');
 
   const nextNavigationBarBehavior = React.useMemo(() => {
     const index = NavigationBarBehaviors.indexOf(behavior);

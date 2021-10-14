@@ -3,7 +3,13 @@ import { useEffect, useState } from 'react';
 import { ColorValue, processColor } from 'react-native';
 
 import ExpoNavigationBar from './ExpoNavigationBar';
-import { BarStyle, Behavior, Position, Visibility, VisibilityEvent } from './NavigationBar.types';
+import {
+  NavigationBarButtonStyle,
+  NavigationBarBehavior,
+  NavigationBarPosition,
+  NavigationBarVisibility,
+  NavigationBarVisibilityEvent,
+} from './NavigationBar.types';
 
 const emitter = new EventEmitter(ExpoNavigationBar);
 
@@ -18,7 +24,9 @@ const emitter = new EventEmitter(ExpoNavigationBar);
  * });
  * ```
  */
-export function addVisibilityListener(listener: (event: VisibilityEvent) => void): Subscription {
+export function addVisibilityListener(
+  listener: (event: NavigationBarVisibilityEvent) => void
+): Subscription {
   return emitter.addListener('ExpoNavigationBar.didChange', listener);
 }
 
@@ -100,9 +108,9 @@ export async function getBorderColorAsync(): Promise<ColorValue> {
  * ```ts
  * NavigationBar.setVisibilityAsync("hidden");
  * ```
- * @param color `visible|hidden` based on CSS visibility property.
+ * @param color Based on CSS visibility property.
  */
-export async function setVisibilityAsync(visibility: Visibility): Promise<void> {
+export async function setVisibilityAsync(visibility: NavigationBarVisibility): Promise<void> {
   if (Platform.OS !== 'android') {
     console.warn('`setVisibilityAsync` is only available on Android');
     return;
@@ -119,7 +127,7 @@ export async function setVisibilityAsync(visibility: Visibility): Promise<void> 
  * ```
  * @returns Navigation bar's current visibility status. Returns `hidden` on unsupported platforms (iOS, web).
  */
-export async function getVisibilityAsync(): Promise<Visibility> {
+export async function getVisibilityAsync(): Promise<NavigationBarVisibility> {
   if (Platform.OS !== 'android') {
     console.warn('`getVisibilityAsync` is only available on Android');
     return 'hidden';
@@ -132,16 +140,16 @@ export async function getVisibilityAsync(): Promise<Visibility> {
  *
  * @example
  * ```ts
- * NavigationBar.setBarStyleAsync("light");
+ * NavigationBar.setButtonStyleAsync("light");
  * ```
- * @param style `light|dark` dictates the color of the foreground element color.
+ * @param style Dictates the color of the foreground element color.
  */
-export async function setBarStyleAsync(style: BarStyle): Promise<void> {
+export async function setButtonStyleAsync(style: NavigationBarButtonStyle): Promise<void> {
   if (Platform.OS !== 'android') {
-    console.warn('`setBarStyleAsync` is only available on Android');
+    console.warn('`setButtonStyleAsync` is only available on Android');
     return;
   }
-  await ExpoNavigationBar.setBarStyleAsync(style);
+  await ExpoNavigationBar.setButtonStyleAsync(style);
 }
 
 /**
@@ -149,16 +157,16 @@ export async function setBarStyleAsync(style: BarStyle): Promise<void> {
  *
  * @example
  * ```ts
- * const style = await NavigationBar.getBarStyleAsync();
+ * const style = await NavigationBar.getButtonStyleAsync();
  * ```
  * @returns Navigation bar foreground element color settings. Returns `light` on unsupported platforms (iOS, web).
  */
-export async function getBarStyleAsync(): Promise<BarStyle> {
+export async function getButtonStyleAsync(): Promise<NavigationBarButtonStyle> {
   if (Platform.OS !== 'android') {
-    console.warn('`getBarStyleAsync` is only available on Android');
+    console.warn('`getButtonStyleAsync` is only available on Android');
     return 'light';
   }
-  return await ExpoNavigationBar.getBarStyleAsync();
+  return await ExpoNavigationBar.getButtonStyleAsync();
 }
 
 /**
@@ -175,9 +183,9 @@ export async function getBarStyleAsync(): Promise<BarStyle> {
  * // transparent backgrounds to see through
  * await NavigationBar.setBackgroundColorAsync('#ffffff00')
  * ```
- * @param position `absolute|relative` based on CSS position property.
+ * @param position Based on CSS position property.
  */
-export async function setPositionAsync(position: Position): Promise<void> {
+export async function setPositionAsync(position: NavigationBarPosition): Promise<void> {
   if (Platform.OS !== 'android') {
     console.warn('`setPositionAsync` is only available on Android');
     return;
@@ -195,7 +203,7 @@ export async function setPositionAsync(position: Position): Promise<void> {
  * ```
  * @returns Navigation bar positional rendering mode. Returns `relative` on unsupported platforms (iOS, web).
  */
-export async function getPositionAsync(): Promise<Position> {
+export async function getPositionAsync(): Promise<NavigationBarPosition> {
   if (Platform.OS !== 'android') {
     console.warn('`setPositionAsync` is only available on Android');
     return 'relative';
@@ -217,9 +225,9 @@ export async function getPositionAsync(): Promise<Position> {
  * ```ts
  * await NavigationBar.setBehaviorAsync('overlay-swipe')
  * ```
- * @param behavior `overlay-swipe|inset-swipe|inset-touch` dictates the interaction behavior of the navigation bar.
+ * @param behavior Dictates the interaction behavior of the navigation bar.
  */
-export async function setBehaviorAsync(behavior: Behavior): Promise<void> {
+export async function setBehaviorAsync(behavior: NavigationBarBehavior): Promise<void> {
   if (Platform.OS !== 'android') {
     console.warn('`setBehaviorAsync` is only available on Android');
     return;
@@ -236,7 +244,7 @@ export async function setBehaviorAsync(behavior: Behavior): Promise<void> {
  * ```
  * @returns Navigation bar interaction behavior. Returns `inset-touch` on unsupported platforms (iOS, web).
  */
-export async function getBehaviorAsync(): Promise<Behavior> {
+export async function getBehaviorAsync(): Promise<NavigationBarBehavior> {
   if (Platform.OS !== 'android') {
     console.warn('`getBehaviorAsync` is only available on Android');
     return 'inset-touch';
@@ -256,8 +264,8 @@ export async function getBehaviorAsync(): Promise<Behavior> {
  * ```
  * @returns Visibility of the navigation bar, `null` during async initialization.
  */
-export function useVisibility(): Visibility | null {
-  const [visibility, setVisible] = useState<Visibility | null>(null);
+export function useVisibility(): NavigationBarVisibility | null {
+  const [visibility, setVisible] = useState<NavigationBarVisibility | null>(null);
 
   useEffect(() => {
     let isMounted = true;

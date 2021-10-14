@@ -1,6 +1,6 @@
 import { Subscription } from 'expo-modules-core';
 import { ColorValue } from 'react-native';
-import { BarStyle, Behavior, Position, Visibility, VisibilityEvent } from './NavigationBar.types';
+import { NavigationBarButtonStyle, NavigationBarBehavior, NavigationBarPosition, NavigationBarVisibility, NavigationBarVisibilityEvent } from './NavigationBar.types';
 /**
  * Observe changes to the system navigation bar.
  * Due to platform constraints, this callback will also be triggered when the status bar visibility changes.
@@ -12,7 +12,7 @@ import { BarStyle, Behavior, Position, Visibility, VisibilityEvent } from './Nav
  * });
  * ```
  */
-export declare function addVisibilityListener(listener: (event: VisibilityEvent) => void): Subscription;
+export declare function addVisibilityListener(listener: (event: NavigationBarVisibilityEvent) => void): Subscription;
 /**
  * Changes the navigation bar's background color.
  *
@@ -60,9 +60,9 @@ export declare function getBorderColorAsync(): Promise<ColorValue>;
  * ```ts
  * NavigationBar.setVisibilityAsync("hidden");
  * ```
- * @param color `visible|hidden` based on CSS visibility property.
+ * @param color Based on CSS visibility property.
  */
-export declare function setVisibilityAsync(visibility: Visibility): Promise<void>;
+export declare function setVisibilityAsync(visibility: NavigationBarVisibility): Promise<void>;
 /**
  * Get the navigation bar's visibility.
  *
@@ -72,27 +72,27 @@ export declare function setVisibilityAsync(visibility: Visibility): Promise<void
  * ```
  * @returns Navigation bar's current visibility status. Returns `hidden` on unsupported platforms (iOS, web).
  */
-export declare function getVisibilityAsync(): Promise<Visibility>;
+export declare function getVisibilityAsync(): Promise<NavigationBarVisibility>;
 /**
  * Changes the navigation bar's button colors between white (`light`) and a dark gray color (`dark`).
  *
  * @example
  * ```ts
- * NavigationBar.setBarStyleAsync("light");
+ * NavigationBar.setButtonStyleAsync("light");
  * ```
- * @param style `light|dark` dictates the color of the foreground element color.
+ * @param style Dictates the color of the foreground element color.
  */
-export declare function setBarStyleAsync(style: BarStyle): Promise<void>;
+export declare function setButtonStyleAsync(style: NavigationBarButtonStyle): Promise<void>;
 /**
  * Gets the navigation bar's button color styles.
  *
  * @example
  * ```ts
- * const style = await NavigationBar.getBarStyleAsync();
+ * const style = await NavigationBar.getButtonStyleAsync();
  * ```
  * @returns Navigation bar foreground element color settings. Returns `light` on unsupported platforms (iOS, web).
  */
-export declare function getBarStyleAsync(): Promise<BarStyle>;
+export declare function getButtonStyleAsync(): Promise<NavigationBarButtonStyle>;
 /**
  * Sets positioning method used for the navigation bar (and status bar).
  * Setting position `absolute` will float the navigation bar above the content,
@@ -107,9 +107,9 @@ export declare function getBarStyleAsync(): Promise<BarStyle>;
  * // transparent backgrounds to see through
  * await NavigationBar.setBackgroundColorAsync('#ffffff00')
  * ```
- * @param position `absolute|relative` based on CSS position property.
+ * @param position Based on CSS position property.
  */
-export declare function setPositionAsync(position: Position): Promise<void>;
+export declare function setPositionAsync(position: NavigationBarPosition): Promise<void>;
 /**
  * Whether the navigation and status bars float above the app (absolute) or sit inline with it (relative).
  * This value can be incorrect if `androidNavigationBar.visible` is used instead of the config plugin `position` property.
@@ -120,7 +120,7 @@ export declare function setPositionAsync(position: Position): Promise<void>;
  * ```
  * @returns Navigation bar positional rendering mode. Returns `relative` on unsupported platforms (iOS, web).
  */
-export declare function getPositionAsync(): Promise<Position>;
+export declare function getPositionAsync(): Promise<NavigationBarPosition>;
 /**
  * Sets the behavior of the status bar and navigation bar when they are hidden and the user wants to reveal them.
  *
@@ -135,9 +135,9 @@ export declare function getPositionAsync(): Promise<Position>;
  * ```ts
  * await NavigationBar.setBehaviorAsync('overlay-swipe')
  * ```
- * @param behavior `overlay-swipe|inset-swipe|inset-touch` dictates the interaction behavior of the navigation bar.
+ * @param behavior Dictates the interaction behavior of the navigation bar.
  */
-export declare function setBehaviorAsync(behavior: Behavior): Promise<void>;
+export declare function setBehaviorAsync(behavior: NavigationBarBehavior): Promise<void>;
 /**
  * Gets the behavior of the status and navigation bars when the user swipes or touches the screen.
  *
@@ -147,7 +147,7 @@ export declare function setBehaviorAsync(behavior: Behavior): Promise<void>;
  * ```
  * @returns Navigation bar interaction behavior. Returns `inset-touch` on unsupported platforms (iOS, web).
  */
-export declare function getBehaviorAsync(): Promise<Behavior>;
+export declare function getBehaviorAsync(): Promise<NavigationBarBehavior>;
 /**
  * React hook that statefully updates with the visibility of the system navigation bar.
  *
@@ -160,5 +160,5 @@ export declare function getBehaviorAsync(): Promise<Behavior>;
  * ```
  * @returns Visibility of the navigation bar, `null` during async initialization.
  */
-export declare function useVisibility(): Visibility | null;
+export declare function useVisibility(): NavigationBarVisibility | null;
 export * from './NavigationBar.types';

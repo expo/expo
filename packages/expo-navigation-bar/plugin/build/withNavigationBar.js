@@ -154,7 +154,7 @@ function setNavigationBarStyles({ backgroundColor, barStyle }, styles) {
     });
     styles = config_plugins_1.AndroidConfig.Styles.assignStylesValue(styles, {
         // Adding means the buttons will be darker to account for a light background color.
-        // `setBarStyleAsync('dark')` should do the same thing.
+        // `setButtonStyleAsync('dark')` should do the same thing.
         add: barStyle === 'dark',
         parent: config_plugins_1.AndroidConfig.Styles.getAppThemeLightNoActionBarGroup(),
         name: 'android:windowLightNavigationBar',

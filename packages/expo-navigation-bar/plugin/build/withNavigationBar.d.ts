@@ -1,13 +1,13 @@
 import { ConfigPlugin, AndroidConfig } from '@expo/config-plugins';
 import { ExpoConfig } from '@expo/config-types';
-import { Visibility, Behavior, Position, BarStyle } from 'expo-navigation-bar';
+import { NavigationBarVisibility, NavigationBarBehavior, NavigationBarPosition, NavigationBarButtonStyle } from 'expo-navigation-bar';
 export declare type Props = {
     borderColor?: string;
     backgroundColor?: string | null;
-    barStyle?: BarStyle | null;
-    visibility?: Visibility;
-    behavior?: Behavior;
-    position?: Position;
+    barStyle?: NavigationBarButtonStyle | null;
+    visibility?: NavigationBarVisibility;
+    behavior?: NavigationBarBehavior;
+    position?: NavigationBarPosition;
     legacyVisible?: NonNullable<NonNullable<ExpoConfig['androidNavigationBar']>['visible']>;
 };
 export declare function resolveProps(config: Pick<ExpoConfig, 'androidNavigationBar'>, _props: Props | void): Props;

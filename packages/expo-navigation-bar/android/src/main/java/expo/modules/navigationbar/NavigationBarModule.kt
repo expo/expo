@@ -79,10 +79,10 @@ class NavigationBarModule(context: Context) : ExportedModule(context) {
   }
 
   @ExpoMethod
-  fun setBarStyleAsync(barStyle: String, promise: Promise) {
+  fun setButtonStyleAsync(buttonStyle: String, promise: Promise) {
     safeRunOnUiThread(promise) {
       NavigationBar.setBarStyle(
-        it, barStyle,
+        it, buttonStyle,
         {
           promise.resolve(null)
         },
@@ -92,7 +92,7 @@ class NavigationBarModule(context: Context) : ExportedModule(context) {
   }
 
   @ExpoMethod
-  fun getBarStyleAsync(promise: Promise) {
+  fun getButtonStyleAsync(promise: Promise) {
     safeRunOnUiThread(promise) {
       WindowInsetsControllerCompat(it.window, it.window.decorView).let { controller ->
         val style = if (controller.isAppearanceLightNavigationBars) "dark" else "light"
