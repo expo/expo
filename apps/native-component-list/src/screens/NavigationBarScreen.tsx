@@ -127,7 +127,8 @@ function PositionExample() {
 }
 
 function BehaviorExample() {
-  const [behavior, setBehavior] = React.useState<NavigationBar.NavigationBarBehavior>('inset-swipe');
+  const [behavior, setBehavior] =
+    React.useState<NavigationBar.NavigationBarBehavior>('inset-swipe');
 
   const nextNavigationBarBehavior = React.useMemo(() => {
     const index = NavigationBarBehaviors.indexOf(behavior);
