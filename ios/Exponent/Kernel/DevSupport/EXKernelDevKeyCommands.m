@@ -72,6 +72,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
 @end
 
+#if TARGET_IPHONE_SIMULATOR
 @interface UIEvent (UIPhysicalKeyboardEvent)
 
 @property (nonatomic) NSString *_modifiedInput;
@@ -81,7 +82,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 @property (nonatomic) long _keyCode;
 
 @end
-
 
 @implementation UIApplication (EXKeyCommands)
 
@@ -115,6 +115,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 };
 
 @end
+#endif
 
 @implementation UIResponder (EXKeyCommands)
 
@@ -168,12 +169,15 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
                          @selector(keyCommands),
                          @selector(EX_keyCommands));
 
+#if TARGET_IPHONE_SIMULATOR
   SEL originalKeyboardSelector = NSSelectorFromString(@"handleKeyUIEvent:");
   RCTSwapInstanceMethods([UIApplication class],
                          originalKeyboardSelector,
                          @selector(EX_handleKeyUIEventSwizzle:));
+#endif
 }
 
+#if TARGET_IPHONE_SIMULATOR
 +(void)handleKeyboardEvent:(UIEvent *)event
 {
   static NSTimeInterval lastCommand = 0;
@@ -189,6 +193,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
     }
   }
 }
+#endif
 
 - (instancetype)init
 {
