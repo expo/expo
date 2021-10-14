@@ -1,6 +1,6 @@
 import * as ServiceConfig from './Discovery';
 import { Headers } from './Fetch';
-import { AccessTokenRequestConfig, GrantType, RefreshTokenRequestConfig, RevokeTokenRequestConfig, TokenRequestConfig, TokenResponseConfig, TokenType, TokenTypeHint } from './TokenRequest.types';
+import { AccessTokenRequestConfig, GrantType, RefreshTokenRequestConfig, RevokeTokenRequestConfig, ServerTokenResponseConfig, TokenRequestConfig, TokenResponseConfig, TokenType, TokenTypeHint } from './TokenRequest.types';
 /**
  * Returns the current time in seconds.
  */
@@ -27,7 +27,7 @@ export declare class TokenResponse implements TokenResponseConfig {
      *
      * @param params
      */
-    static fromQueryParams(params: Record<string, any>): TokenResponse;
+    static fromQueryParams(params: ServerTokenResponseConfig): TokenResponse;
     accessToken: string;
     tokenType: TokenType;
     expiresIn?: number;

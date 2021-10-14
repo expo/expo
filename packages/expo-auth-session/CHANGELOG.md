@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Use `ServerTokenResponseConfig` type for parameters type in `fromQueryParams` instead of more generic Record.
+
 ## 3.4.1 — 2021-10-01
 
 ### 🐛 Bug fixes

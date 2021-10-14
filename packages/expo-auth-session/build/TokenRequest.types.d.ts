@@ -138,6 +138,7 @@ export interface ServerTokenResponseConfig {
     expires_in?: number;
     refresh_token?: string;
     scope?: string;
+    state?: string;
     id_token?: string;
     issued_at?: number;
 }

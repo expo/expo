@@ -196,7 +196,10 @@ export class AuthRequest implements Omit<AuthRequestConfig, 'state'> {
       parsedError = new AuthError({ error, ...params });
     }
     if (params.access_token) {
-      authentication = TokenResponse.fromQueryParams(params);
+      authentication = TokenResponse.fromQueryParams({
+        ...params,
+        access_token: params.access_token,
+      });
     }
 
     return {

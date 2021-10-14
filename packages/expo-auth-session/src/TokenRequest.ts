@@ -58,7 +58,7 @@ export class TokenResponse implements TokenResponseConfig {
    *
    * @param params
    */
-  static fromQueryParams(params: Record<string, any>): TokenResponse {
+  static fromQueryParams(params: ServerTokenResponseConfig): TokenResponse {
     return new TokenResponse({
       accessToken: params.access_token,
       refreshToken: params.refresh_token,
