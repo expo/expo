@@ -97,13 +97,19 @@ const renderProps = (
   );
 };
 
-const renderProp = (
+export const renderProp = (
   { comment, name, type, flags, signatures }: PropData,
   defaultValue?: string,
   exposeInSidebar?: boolean
 ) => (
   <LI key={`prop-entry-${name}`} customCss={exposeInSidebar ? PROP_LIST_ELEMENT_STYLE : undefined}>
-    {exposeInSidebar ? <H3>{name}</H3> : <H4>{name}</H4>}
+    {exposeInSidebar ? (
+      <H3Code>
+        <InlineCode>{name}</InlineCode>
+      </H3Code>
+    ) : (
+      <H4>{name}</H4>
+    )}
     <P>
       {flags?.isOptional && <span css={STYLES_SECONDARY}>Optional&emsp;&bull;&emsp;</span>}
       <span css={STYLES_SECONDARY}>Type:</span> {renderTypeOrSignatureType(type, signatures, true)}
