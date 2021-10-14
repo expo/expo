@@ -703,7 +703,7 @@ import android.content.Context
 import expo.modules.core.BasePackage
 import expo.modules.core.interfaces.ReactActivityLifecycleListener
 
-class NavigationBarPackage : BasePackage() {
+class CustomPackage : BasePackage() {
   override fun createReactActivityLifecycleListeners(activityContext: Context): List<ReactActivityLifecycleListener> {
     return listOf(CustomReactActivityLifecycleListener(activityContext))
   }
