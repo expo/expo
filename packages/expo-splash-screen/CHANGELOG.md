@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix 'No native splash screen registered for given view controller' error when integrated dev-client. ([#14745](https://github.com/expo/expo/pull/14745) by [@kudo](https://github.com/kudo))
+
 ### 💡 Others
 
 ## 0.13.1 — 2021-10-01
