@@ -6,20 +6,26 @@ export const name = 'NavigationBar';
 export async function test(t) {
   if (Platform.OS !== 'android') return;
   async function flipValueAsync({ getAsync, setAsync, values }) {
+    // Set initial value to adjust for any state.
+    await setAsync(values[0]);
+
+    // Get the newly set value.
     const value = await getAsync();
     t.expect(value).toBeDefined();
-    t.expect(values.includes(value)).toBe(true);
+    t.expect(value).toBe(values[0]);
+
+    // Toggle value again and ensure it's different.
     const nextValue = value === values[0] ? values[1] : values[0];
     await setAsync(nextValue);
     const mutated = await getAsync();
     t.expect(mutated).toBe(nextValue);
   }
 
-  t.describe(`NavigationBar.setAppearanceAsync()`, () => {
+  t.describe(`NavigationBar.setBarStyleAsync()`, () => {
     t.it(`flips a value`, async () => {
       await flipValueAsync({
-        getAsync: NavigationBar.getAppearanceAsync,
-        setAsync: NavigationBar.setAppearanceAsync,
+        getAsync: NavigationBar.setBarStyleAsync,
+        setAsync: NavigationBar.setBarStyleAsync,
         values: ['light', 'dark'],
       });
     });

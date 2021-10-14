@@ -42,7 +42,7 @@ export default function NavigationBarScreen() {
         <VisibilityExample />
       </Section>
       <Section title="Appearance">
-        <AppearanceExample />
+        <BarStyleExample />
       </Section>
       <Section title="Background Color">
         <BackgroundColorExample />
@@ -95,16 +95,16 @@ function BorderColorExample() {
   );
 }
 
-function AppearanceExample() {
-  const [style, setStyle] = React.useState<NavigationBar.Appearance>('light');
+function BarStyleExample() {
+  const [style, setStyle] = React.useState<NavigationBar.BarStyle>('light');
   const nextStyle = style === 'light' ? 'dark' : 'light';
   return (
     <Button
       onPress={() => {
-        NavigationBar.setAppearanceAsync(nextStyle);
+        NavigationBar.setBarStyleAsync(nextStyle);
         setStyle(nextStyle);
       }}
-      title={`Toggle appearance: ${nextStyle}`}
+      title={`Toggle bar style: ${nextStyle}`}
     />
   );
 }

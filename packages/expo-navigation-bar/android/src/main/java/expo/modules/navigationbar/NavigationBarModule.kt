@@ -174,7 +174,7 @@ class NavigationBarModule(context: Context) : ExportedModule(context) {
           VISIBILITY_EVENT_NAME,
           Bundle().apply {
             putString("visibility", stringVisibility)
-            putInt("androidState", visibility)
+            putInt("rawVisibility", visibility)
           }
         )
       }

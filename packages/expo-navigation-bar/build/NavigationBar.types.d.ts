@@ -28,5 +28,5 @@ export declare type VisibilityEvent = {
     /**
      * Native Android system UI visibility state, returned from the native Android `setOnSystemUiVisibilityChangeListener` API.
      */
-    androidState: number;
+    rawVisibility: number;
 };

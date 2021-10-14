@@ -26,11 +26,6 @@ object NavigationBar : SingletonModule {
     successCallback()
   }
 
-  @JvmStatic
-  fun setBackgroundColor(activity: Activity, color: Int) {
-    setBackgroundColor(activity, color, {}, { m -> Log.e(TAG, m) })
-  }
-
   fun setBarStyle(
     activity: Activity,
     barStyle: String,
