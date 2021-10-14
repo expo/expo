@@ -244,6 +244,11 @@ RCT_EXPORT_METHOD(callMethod:(NSString *)moduleName methodNameOrKey:(id)methodNa
     }
   }
 
+  // `registerAdditionalModuleClasses:` call below is not thread-safe if RCTUIManager is not initialized.
+  // The case happens especially with reanimated which access `bridge.uiManager` and intialize bridge in js thread.
+  // Accessing uiManager here, we try to make sure RCTUIManager is initiailized.
+  [bridge uiManager];
+
   // Register the view managers as additional modules.
   [bridge registerAdditionalModuleClasses:additionalModuleClasses];
 
