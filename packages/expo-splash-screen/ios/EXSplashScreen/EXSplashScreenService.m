@@ -4,12 +4,13 @@
 #import <EXSplashScreen/EXSplashScreenViewNativeProvider.h>
 #import <ExpoModulesCore/EXDefines.h>
 
-static const NSString *kView = @"view";
+static NSString * const kRootViewController = @"rootViewController";
+static NSString * const kView = @"view";
 
 @interface EXSplashScreenService ()
 
 @property (nonatomic, strong) NSMapTable<UIViewController *, EXSplashScreenViewController *> *splashScreenControllers;
-@property (nonatomic, assign) BOOL isObservingRootViewController;
+@property (nonatomic, weak) UIViewController *observingRootViewController;
 
 @end
 
@@ -21,7 +22,6 @@ EX_REGISTER_SINGLETON_MODULE(SplashScreen);
 {
   if (self = [super init]) {
     _splashScreenControllers = [NSMapTable weakToStrongObjectsMapTable];
-    _isObservingRootViewController = NO;
   }
   return self;
 }
@@ -141,23 +141,41 @@ EX_REGISTER_SINGLETON_MODULE(SplashScreen);
 - (void)addRootViewControllerListener
 {
   NSAssert([NSThread isMainThread], @"Method must be called on main thread");
-  if (!_isObservingRootViewController) {
-    [UIApplication.sharedApplication.keyWindow.rootViewController addObserver:self forKeyPath:kView options:NSKeyValueObservingOptionNew context:nil];
-    _isObservingRootViewController = YES;
+  if (self.observingRootViewController == nil) {
+    UIViewController *rootViewController = UIApplication.sharedApplication.keyWindow.rootViewController;
+
+    // `rootViewController` KVO is for expo-dev-launcher which replaced `rootViewController` in startup.
+    [UIApplication.sharedApplication.keyWindow addObserver:self
+                                                forKeyPath:kRootViewController
+                                                   options:NSKeyValueObservingOptionNew
+                                                   context:nil];
+
+    // `rootView` KVO is for expo-updates which replaced `rootView` in startup.
+    [rootViewController addObserver:self forKeyPath:kView options:NSKeyValueObservingOptionNew context:nil];
+    self.observingRootViewController = rootViewController;
   }
 }
 
 - (void)removeRootViewControllerListener
 {
   NSAssert([NSThread isMainThread], @"Method must be called on main thread");
-  if (_isObservingRootViewController) {
-    [UIApplication.sharedApplication.keyWindow.rootViewController removeObserver:self forKeyPath:kView context:nil];
-    _isObservingRootViewController = NO;
+  if (self.observingRootViewController != nil) {
+    [UIApplication.sharedApplication.keyWindow removeObserver:self forKeyPath:kRootViewController context:nil];
+    [self.observingRootViewController removeObserver:self forKeyPath:kView context:nil];
+    self.observingRootViewController = nil;
   }
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSKeyValueChangeKey,id> *)change context:(void *)context
 {
+  if (object == UIApplication.sharedApplication.keyWindow && [keyPath isEqualToString:kRootViewController]) {
+    UIViewController *newRootViewController = change[@"new"];
+    if (newRootViewController != nil) {
+      [self removeRootViewControllerListener];
+      [self showSplashScreenFor:newRootViewController];
+      [self addRootViewControllerListener];
+    }
+  }
   if (object == UIApplication.sharedApplication.keyWindow.rootViewController && [keyPath isEqualToString:kView]) {
     UIView *newView = change[@"new"];
     if (newView != nil && [newView.nextResponder isKindOfClass:[UIViewController class]]) {
