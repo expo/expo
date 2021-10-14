@@ -15,6 +15,10 @@ declare const _default: {
      */
     setCurrentScreen(screenName?: string | undefined, screenClassOverride?: string | undefined): Promise<void>;
     /**
+     * Not supported on web, this method is a no-op
+     */
+    setSessionTimeoutDuration(_sessionTimeoutInterval: number): Promise<void>;
+    /**
      * https://firebase.google.com/docs/reference/js/firebase.analytics.Analytics#set-user-id
      */
     setUserId(userId: string | null): Promise<void>;
