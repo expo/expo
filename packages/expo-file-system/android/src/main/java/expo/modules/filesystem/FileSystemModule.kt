@@ -1,51 +1,34 @@
 package expo.modules.filesystem
 
 import android.annotation.SuppressLint
-import expo.modules.core.ExportedModule
-import expo.modules.core.ModuleRegistry
-import expo.modules.interfaces.filesystem.FilePermissionModuleInterface
-import androidx.documentfile.provider.DocumentFile
-import expo.modules.core.interfaces.ExpoMethod
-import android.os.Bundle
-import android.os.StatFs
-import android.content.Intent
-import android.provider.DocumentsContract
 import android.app.Activity
 import android.content.Context
+import android.content.Intent
 import android.net.Uri
-import expo.modules.core.interfaces.services.EventEmitter
 import android.os.AsyncTask
 import android.os.Build
+import android.os.Bundle
 import android.os.Environment
+import android.os.StatFs
+import android.provider.DocumentsContract
 import android.util.Base64
 import android.util.Log
+
 import androidx.core.content.FileProvider
+import androidx.documentfile.provider.DocumentFile
+
+import expo.modules.core.ExportedModule
+import expo.modules.core.ModuleRegistry
 import expo.modules.core.ModuleRegistryDelegate
 import expo.modules.core.Promise
 import expo.modules.core.interfaces.ActivityEventListener
 import expo.modules.core.interfaces.ActivityProvider
+import expo.modules.core.interfaces.ExpoMethod
+import expo.modules.core.interfaces.services.EventEmitter
 import expo.modules.core.interfaces.services.UIManager
+import expo.modules.interfaces.filesystem.FilePermissionModuleInterface
 import expo.modules.interfaces.filesystem.Permission
-import okhttp3.Call
-import okhttp3.Callback
-import okhttp3.Headers
-import okhttp3.JavaNetCookieJar
-import okhttp3.MediaType
-import okhttp3.MultipartBody
-import okhttp3.OkHttpClient
-import okhttp3.Request
-import okhttp3.RequestBody
-import okhttp3.Response
-import okhttp3.ResponseBody
-import okio.Buffer
-import okio.BufferedSource
-import okio.ForwardingSource
-import okio.Okio
-import okio.Source
-import org.apache.commons.codec.binary.Hex
-import org.apache.commons.codec.digest.DigestUtils
-import org.apache.commons.io.FileUtils
-import org.apache.commons.io.IOUtils
+
 import java.io.BufferedInputStream
 import java.io.ByteArrayOutputStream
 import java.io.File
@@ -64,7 +47,31 @@ import java.net.CookieHandler
 import java.net.URLConnection
 import java.util.*
 import java.util.concurrent.TimeUnit
+
 import kotlin.math.pow
+
+import okhttp3.Call
+import okhttp3.Callback
+import okhttp3.Headers
+import okhttp3.JavaNetCookieJar
+import okhttp3.MediaType
+import okhttp3.MultipartBody
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import okhttp3.RequestBody
+import okhttp3.Response
+import okhttp3.ResponseBody
+
+import okio.Buffer
+import okio.BufferedSource
+import okio.ForwardingSource
+import okio.Okio
+import okio.Source
+
+import org.apache.commons.codec.binary.Hex
+import org.apache.commons.codec.digest.DigestUtils
+import org.apache.commons.io.FileUtils
+import org.apache.commons.io.IOUtils
 
 private const val NAME = "ExponentFileSystem"
 private val TAG = FileSystemModule::class.java.simpleName
@@ -78,6 +85,15 @@ class FileSystemModule(
   context: Context,
   private val moduleRegistryDelegate: ModuleRegistryDelegate = ModuleRegistryDelegate()
 ) : ExportedModule(context), ActivityEventListener {
+
+  init {
+    try {
+      ensureDirExists(getContext().filesDir)
+      ensureDirExists(getContext().cacheDir)
+    } catch (e: IOException) {
+      e.printStackTrace()
+    }
+  }
 
   private inline fun <reified T> moduleRegistry() =
     moduleRegistryDelegate.getFromModuleRegistry<T>()
@@ -1338,14 +1354,5 @@ class FileSystemModule(
       }
     }
     return responseHeaders
-  }
-
-  init {
-    try {
-      ensureDirExists(getContext().filesDir)
-      ensureDirExists(getContext().cacheDir)
-    } catch (e: IOException) {
-      e.printStackTrace()
-    }
   }
 }
