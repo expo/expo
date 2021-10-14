@@ -231,13 +231,12 @@ class FacebookModule(
 
   @ExpoMethod
   fun logEventAsync(eventName: String?, valueToSum: Double, parameters: ReadableArguments?, promise: Promise) {
-    try {
-      appEventLogger!!.logEvent(eventName, valueToSum, bundleWithNullValuesAsStrings(parameters))
+    appEventLogger?.let {
+      it.logEvent(eventName, valueToSum, bundleWithNullValuesAsStrings(parameters))
       promise.resolve(null)
-    } catch (e: Exception) {
-      promise.reject("ERR_FACEBOOK_APP_EVENT_LOGGER", "appEventLogger is not initialized", e)
+    } ?: run {
+      promise.reject("ERR_FACEBOOK_APP_EVENT_LOGGER", "appEventLogger is not initialized")
     }
-    promise.resolve(null)
   }
 
   @ExpoMethod
@@ -247,15 +246,15 @@ class FacebookModule(
     parameters: ReadableArguments?,
     promise: Promise
   ) {
-    try {
-      appEventLogger!!.logPurchase(
+    appEventLogger?.let {
+      it.logPurchase(
         BigDecimal.valueOf(purchaseAmount),
         Currency.getInstance(currencyCode),
         bundleWithNullValuesAsStrings(parameters)
       )
       promise.resolve(null)
-    } catch (e: Exception) {
-      promise.reject("ERR_FACEBOOK_APP_EVENT_LOGGER", "appEventLogger is not initialized", e)
+    } ?: run {
+      promise.reject("ERR_FACEBOOK_APP_EVENT_LOGGER", "appEventLogger is not initialized")
     }
   }
 
@@ -265,11 +264,11 @@ class FacebookModule(
     val payload = Bundle().apply {
       putString(PUSH_PAYLOAD_KEY, String.format("{\"%s\" : \"%s\"}", PUSH_PAYLOAD_CAMPAIGN_KEY, campaign))
     }
-    try {
-      appEventLogger!!.logPushNotificationOpen(payload)
+    appEventLogger?.let {
+      it.logPushNotificationOpen(payload)
       promise.resolve(null)
-    } catch (e: Exception) {
-      promise.reject("ERR_FACEBOOK_APP_EVENT_LOGGER", "appEventLogger is not initialized", e)
+    } ?: run {
+      promise.reject("ERR_FACEBOOK_APP_EVENT_LOGGER", "appEventLogger is not initialized")
     }
   }
 
@@ -295,19 +294,19 @@ class FacebookModule(
 
   @ExpoMethod
   fun getAdvertiserIDAsync(promise: Promise) {
-    try {
-      promise.resolve(attributionIdentifiers!!.androidAdvertiserId)
-    } catch (e: Exception) {
-      promise.reject("ERR_FACEBOOK_ADVERTISER_ID", "Can not get advertiserID", e)
+    attributionIdentifiers?.let {
+      promise.resolve(it.androidAdvertiserId)
+    } ?: run {
+      promise.reject("ERR_FACEBOOK_ADVERTISER_ID", "Can not get advertiserID")
     }
   }
 
   @ExpoMethod
   fun getAttributionIDAsync(promise: Promise) {
-    try {
-      promise.resolve(attributionIdentifiers!!.attributionId)
-    } catch (e: Exception) {
-      promise.reject("ERR_FACEBOOK_ADVERTISER_ID", "Can not get attributionID", e)
+    attributionIdentifiers?.let {
+      promise.resolve(it.attributionId)
+    } ?: run {
+      promise.reject("ERR_FACEBOOK_ADVERTISER_ID", "Can not get attributionID")
     }
   }
 
@@ -332,11 +331,11 @@ class FacebookModule(
 
   @ExpoMethod
   fun flushAsync(promise: Promise) {
-    try {
-      appEventLogger!!.flush()
+    appEventLogger?.let {
+      it.flush()
       promise.resolve(null)
-    } catch (e: Exception) {
-      promise.reject("ERR_FACEBOOK_APP_EVENT_LOGGER", "appEventLogger is not initialized", e)
+    } ?: kotlin.run {
+      promise.reject("ERR_FACEBOOK_APP_EVENT_LOGGER", "appEventLogger is not initialized")
     }
   }
 }
