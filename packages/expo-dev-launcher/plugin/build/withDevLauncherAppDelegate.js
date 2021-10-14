@@ -9,6 +9,9 @@ const semver_1 = __importDefault(require("semver"));
 const constants_1 = require("./constants");
 const resolveExpoUpdatesVersion_1 = require("./resolveExpoUpdatesVersion");
 const utils_1 = require("./utils");
+function escapeRegExpCharacters(string) {
+    return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
 const INITIALIZE_REACT_NATIVE_APP_FUNCTION = `- (RCTBridge *)initializeReactNativeApp`;
 const NEW_INITIALIZE_REACT_NATIVE_APP_FUNCTION = `- (RCTBridge *)initializeReactNativeApp:(NSDictionary *)launchOptions`;
 const DEV_LAUNCHER_APP_DELEGATE_SOURCE_FOR_URL = `  #if defined(EX_DEV_LAUNCHER_ENABLED)
@@ -79,7 +82,7 @@ const DEV_MENU_IOS_INIT = `
 #if defined(EX_DEV_MENU_ENABLED)
   [DevMenuManager configureWithBridge:bridge];
 #endif`;
-const DEV_LAUNCHER_INIT_TO_REMOVE = `RCTBridge *bridge = [[RCTBridge alloc] initWithDelegate:self launchOptions:launchOptions];
+const DEV_LAUNCHER_INIT_TO_REMOVE = new RegExp(escapeRegExpCharacters(`RCTBridge *bridge = [[RCTBridge alloc] initWithDelegate:self launchOptions:launchOptions];
   RCTRootView *rootView = [[RCTRootView alloc] initWithBridge:bridge moduleName:@"main" initialProperties:nil];
   id rootViewBackgroundColor = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"RCTRootViewBackgroundColor"];
   if (rootViewBackgroundColor != nil) {
@@ -89,10 +92,12 @@ const DEV_LAUNCHER_INIT_TO_REMOVE = `RCTBridge *bridge = [[RCTBridge alloc] init
   }
 
   self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
-  UIViewController *rootViewController = [UIViewController new];
+  UIViewController *rootViewController = `) +
+    `([^;]+)` +
+    escapeRegExpCharacters(`;
   rootViewController.view = rootView;
   self.window.rootViewController = rootViewController;
-  [self.window makeKeyAndVisible];`;
+  [self.window makeKeyAndVisible];`), 'm');
 const DEV_LAUNCHER_NEW_INIT = `self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
 #if defined(EX_DEV_LAUNCHER_ENABLED)
   EXDevLauncherController *controller = [EXDevLauncherController sharedInstance];
@@ -100,7 +105,7 @@ const DEV_LAUNCHER_NEW_INIT = `self.window = [[UIWindow alloc] initWithFrame:[UI
 #else
   [self initializeReactNativeApp:launchOptions];
 #endif`;
-const DEV_LAUNCHER_INITIALIZE_REACT_NATIVE_APP_FUNCTION_DEFINITION = `
+const DEV_LAUNCHER_INITIALIZE_REACT_NATIVE_APP_FUNCTION_DEFINITION_REGEX = new RegExp(escapeRegExpCharacters(`
 - (RCTBridge *)initializeReactNativeApp:(NSDictionary *)launchOptions
 {
   RCTBridge *bridge = [[RCTBridge alloc] initWithDelegate:self launchOptions:launchOptions];
@@ -112,7 +117,29 @@ const DEV_LAUNCHER_INITIALIZE_REACT_NATIVE_APP_FUNCTION_DEFINITION = `
     rootView.backgroundColor = [UIColor whiteColor];
   }
 
-  UIViewController *rootViewController = [UIViewController new];
+  UIViewController *rootViewController = `) +
+    `[^;]+` +
+    escapeRegExpCharacters(`;
+  rootViewController.view = rootView;
+  self.window.rootViewController = rootViewController;
+  [self.window makeKeyAndVisible];
+
+  return bridge;
+}
+`), 'm');
+const DEV_LAUNCHER_INITIALIZE_REACT_NATIVE_APP_FUNCTION_DEFINITION = (viewControllerInit) => `
+- (RCTBridge *)initializeReactNativeApp:(NSDictionary *)launchOptions
+{
+  RCTBridge *bridge = [[RCTBridge alloc] initWithDelegate:self launchOptions:launchOptions];
+  RCTRootView *rootView = [[RCTRootView alloc] initWithBridge:bridge moduleName:@"main" initialProperties:nil];
+  id rootViewBackgroundColor = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"RCTRootViewBackgroundColor"];
+  if (rootViewBackgroundColor != nil) {
+    rootView.backgroundColor = [RCTConvert UIColor:rootViewBackgroundColor];
+  } else {
+    rootView.backgroundColor = [UIColor whiteColor];
+  }
+
+  UIViewController *rootViewController = ${viewControllerInit !== null && viewControllerInit !== void 0 ? viewControllerInit : '[UIViewController new]'};
   rootViewController.view = rootView;
   self.window.rootViewController = rootViewController;
   [self.window makeKeyAndVisible];
@@ -175,11 +202,17 @@ function modifyLegacyAppDelegate(appDelegate, expoUpdatesVersion = null) {
 exports.modifyLegacyAppDelegate = modifyLegacyAppDelegate;
 function modifyAppDelegate(appDelegate, expoUpdatesVersion = null) {
     const shouldAddUpdatesIntegration = expoUpdatesVersion != null && semver_1.default.gt(expoUpdatesVersion, '0.6.0');
-    if (!appDelegate.includes(DEV_LAUNCHER_INITIALIZE_REACT_NATIVE_APP_FUNCTION_DEFINITION)) {
-        if (appDelegate.includes(DEV_LAUNCHER_INIT_TO_REMOVE)) {
-            appDelegate = appDelegate.replace(DEV_LAUNCHER_INIT_TO_REMOVE, DEV_LAUNCHER_NEW_INIT);
+    if (!DEV_LAUNCHER_INITIALIZE_REACT_NATIVE_APP_FUNCTION_DEFINITION_REGEX.test(appDelegate)) {
+        if (DEV_LAUNCHER_INIT_TO_REMOVE.test(appDelegate)) {
+            // UIViewController can be initialized differently depending on whether expo-screen-orientation is installed,
+            // so we need to preserve whatever is there already.
+            let viewControllerInit;
+            appDelegate = appDelegate.replace(DEV_LAUNCHER_INIT_TO_REMOVE, (match, p1) => {
+                viewControllerInit = p1;
+                return DEV_LAUNCHER_NEW_INIT;
+            });
             appDelegate = utils_1.addLines(appDelegate, '@implementation AppDelegate', 1, [
-                DEV_LAUNCHER_INITIALIZE_REACT_NATIVE_APP_FUNCTION_DEFINITION,
+                DEV_LAUNCHER_INITIALIZE_REACT_NATIVE_APP_FUNCTION_DEFINITION(viewControllerInit),
             ]);
         }
         else {
