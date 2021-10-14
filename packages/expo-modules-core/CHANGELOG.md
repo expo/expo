@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix UIManager has not setter or ivar error when reloading app. ([#14741](https://github.com/expo/expo/pull/14741) by [@kudo](https://github.com/kudo))
+
 ### 💡 Others
 
 ## 0.4.3 — 2021-10-15
