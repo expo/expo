@@ -18,7 +18,6 @@ declare class FirebaseAnalyticsJS {
     readonly config: FirebaseAnalyticsJSConfig;
     private userId?;
     private userProperties?;
-    private screenName?;
     private eventQueue;
     private options;
     private flushEventsPromise;
@@ -68,10 +67,6 @@ declare class FirebaseAnalyticsJS {
      * https://firebase.google.com/docs/reference/js/firebase.analytics.Analytics#set-analytics-collection-enabled
      */
     setAnalyticsCollectionEnabled(isEnabled: boolean): Promise<void>;
-    /**
-     * https://firebase.google.com/docs/reference/js/firebase.analytics.Analytics#set-current-screen
-     */
-    setCurrentScreen(screenName?: string, screenClassOverride?: string): Promise<void>;
     /**
      * Not supported, this method is a no-op
      */

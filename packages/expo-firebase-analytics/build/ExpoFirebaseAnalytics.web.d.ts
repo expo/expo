@@ -11,10 +11,6 @@ declare const _default: {
      */
     setAnalyticsCollectionEnabled(isEnabled: boolean): Promise<void>;
     /**
-     * https://firebase.google.com/docs/reference/js/firebase.analytics.Analytics#set-current-screen
-     */
-    setCurrentScreen(screenName?: string | undefined, screenClassOverride?: string | undefined): Promise<void>;
-    /**
      * Not supported on web, this method is a no-op
      */
     setSessionTimeoutDuration(_sessionTimeoutInterval: number): Promise<void>;
