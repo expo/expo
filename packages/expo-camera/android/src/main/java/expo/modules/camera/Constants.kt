@@ -13,24 +13,24 @@ const val VIDEO_720P = 2
 const val VIDEO_480P = 3
 const val VIDEO_4x3 = 4
 
-val typeConstants = hashMapOf(
+val typeConstants = mapOf(
   "front" to Constants.FACING_FRONT,
   "back" to Constants.FACING_BACK
 )
 
-val flashModeConstants = hashMapOf(
+val flashModeConstants = mapOf(
   "off" to Constants.FLASH_OFF,
   "on" to Constants.FLASH_ON,
   "auto" to Constants.FLASH_AUTO,
   "torch" to Constants.FLASH_TORCH
 )
 
-val autoFocusConstants = hashMapOf(
+val autoFocusConstants = mapOf(
   "on" to true,
   "off" to false
 )
 
-val whiteBalanceConstants = hashMapOf(
+val whiteBalanceConstants = mapOf(
   "auto" to Constants.WB_AUTO,
   "cloudy" to Constants.WB_CLOUDY,
   "sunny" to Constants.WB_SUNNY,
@@ -39,7 +39,7 @@ val whiteBalanceConstants = hashMapOf(
   "incandescent" to Constants.WB_INCANDESCENT
 )
 
-val videoQualityConstants = hashMapOf(
+val videoQualityConstants = mapOf(
   "2160p" to VIDEO_2160P,
   "1080p" to VIDEO_1080P,
   "720p" to VIDEO_720P,

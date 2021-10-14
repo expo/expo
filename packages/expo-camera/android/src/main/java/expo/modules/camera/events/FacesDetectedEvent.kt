@@ -20,15 +20,12 @@ class FacesDetectedEvent private constructor() : BaseEvent() {
    * Should events about detected faces coalesce, the best strategy will be
    * to ensure that events with different faces count are always being transmitted.
    */
-  override fun getCoalescingKey(): Short {
-    return if (faces.size > Short.MAX_VALUE) {
-      Short.MAX_VALUE
-    } else faces.size.toShort()
-  }
+  override fun getCoalescingKey() =
+    if (faces.size > Short.MAX_VALUE) Short.MAX_VALUE
+    else faces.size.toShort()
 
-  override fun getEventName(): String {
-    return CameraViewManager.Events.EVENT_ON_FACES_DETECTED.toString()
-  }
+
+  override fun getEventName() = CameraViewManager.Events.EVENT_ON_FACES_DETECTED.toString()
 
   override fun getEventBody() = Bundle().apply {
     putString("type", "face")

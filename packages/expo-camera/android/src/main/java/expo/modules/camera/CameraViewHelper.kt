@@ -27,7 +27,7 @@ import java.util.*
 object CameraViewHelper {
   // Mount error event
   @JvmStatic
-  fun emitMountErrorEvent(emitter: EventEmitter, view: ViewGroup, message: String?) {
+  fun emitMountErrorEvent(emitter: EventEmitter, view: ViewGroup, message: String) {
     val event = CameraMountErrorEvent.obtain(message)
     emitter.emit(view.id, event)
   }
@@ -41,40 +41,36 @@ object CameraViewHelper {
 
   // Bar code read event
   @JvmStatic
-  fun emitBarCodeReadEvent(emitter: EventEmitter, view: ViewGroup, barCode: BarCodeScannerResult?) {
+  fun emitBarCodeReadEvent(emitter: EventEmitter, view: ViewGroup, barCode: BarCodeScannerResult) {
     val event = BarCodeScannedEvent.obtain(view.id, barCode)
     emitter.emit(view.id, event)
   }
 
   // Face detection events
   @JvmStatic
-  fun emitFacesDetectedEvent(emitter: EventEmitter, view: ViewGroup, faces: List<Bundle?>?) {
+  fun emitFacesDetectedEvent(emitter: EventEmitter, view: ViewGroup, faces: List<Bundle>) {
     val event = FacesDetectedEvent.obtain(view.id, faces)
     emitter.emit(view.id, event)
   }
 
   @JvmStatic
-  fun emitFaceDetectionErrorEvent(emitter: EventEmitter, view: ViewGroup, faceDetector: FaceDetectorInterface?) {
+  fun emitFaceDetectionErrorEvent(emitter: EventEmitter, view: ViewGroup, faceDetector: FaceDetectorInterface) {
     val event = FaceDetectionErrorEvent.obtain(faceDetector)
     emitter.emit(view.id, event)
   }
 
   // Picture saved
   @JvmStatic
-  fun emitPictureSavedEvent(emitter: EventEmitter, view: ViewGroup, info: Bundle?) {
+  fun emitPictureSavedEvent(emitter: EventEmitter, view: ViewGroup, info: Bundle) {
     val event = PictureSavedEvent.obtain(info)
     emitter.emit(view.id, event)
   }
 
   // Utilities
   @JvmStatic
-  fun getCorrectCameraRotation(rotation: Int, facing: Int): Int {
-    return if (facing == CameraView.FACING_FRONT) {
-      (rotation - 90 + 360) % 360
-    } else {
-      (-rotation + 90 + 360) % 360
-    }
-  }
+  fun getCorrectCameraRotation(rotation: Int, facing: Int) =
+    if (facing == CameraView.FACING_FRONT) (rotation - 90 + 360) % 360
+    else (-rotation + 90 + 360) % 360
 
   @JvmStatic
   fun getCamcorderProfile(cameraId: Int, quality: Int): CamcorderProfile {

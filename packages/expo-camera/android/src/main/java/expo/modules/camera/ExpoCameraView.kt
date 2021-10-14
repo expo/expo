@@ -195,9 +195,7 @@ class ExpoCameraView(
     barCodeScannerTaskLock = false
   }
 
-  override fun getPreviewSizeAsArray(): IntArray {
-    return intArrayOf(previewSize.width, previewSize.height)
-  }
+  override fun getPreviewSizeAsArray() = intArrayOf(previewSize.width, previewSize.height)
 
   override fun onHostResume() {
     if (hasCameraPermissions()) {
@@ -248,9 +246,9 @@ class ExpoCameraView(
     }
   }
 
-  override fun onFacesDetected(facesReported: List<Bundle>) {
+  override fun onFacesDetected(faces: List<Bundle>) {
     if (shouldDetectFaces) {
-      emitFacesDetectedEvent(eventEmitter, this, facesReported)
+      emitFacesDetectedEvent(eventEmitter, this, faces)
     }
   }
 
@@ -282,8 +280,8 @@ class ExpoCameraView(
       override fun onPictureTaken(cameraView: CameraView, data: ByteArray) {
         val promise = pictureTakenPromises.poll()
         val cacheDirectory = pictureTakenDirectories.remove(promise)
-        val options = pictureTakenOptions.remove(promise)
-        if (options?.containsKey(FAST_MODE_KEY) == true && (options[FAST_MODE_KEY] as Boolean)) {
+        val options = pictureTakenOptions.remove(promise) as MutableMap
+        if (options.containsKey(FAST_MODE_KEY) && options[FAST_MODE_KEY] as Boolean) {
           promise.resolve(null)
         }
         ResolveTakenPictureAsyncTask(data, promise, options, cacheDirectory, this@ExpoCameraView).execute()
@@ -305,7 +303,7 @@ class ExpoCameraView(
         if (mShouldScanBarCodes && !barCodeScannerTaskLock && cameraView is BarCodeScannerAsyncTaskDelegate) {
           barCodeScannerTaskLock = true
           val delegate = cameraView as BarCodeScannerAsyncTaskDelegate
-          BarCodeScannerAsyncTask(delegate, barCodeScanner, data, width, height, rotation).execute()
+          barCodeScanner?.let { BarCodeScannerAsyncTask(delegate, it, data, width, height, rotation).execute() }
         }
         if (shouldDetectFaces && !faceDetectorTaskLock && cameraView is FaceDetectorAsyncTaskDelegate) {
           faceDetectorTaskLock = true
@@ -314,8 +312,8 @@ class ExpoCameraView(
           val scaleX = cameraView.width.toDouble() / (dimensions.width * density)
           val scaleY = cameraView.height.toDouble() / (dimensions.height * density)
           val delegate = cameraView as FaceDetectorAsyncTaskDelegate
-          val task = FaceDetectorTask(delegate, faceDetector, data, width, height, correctRotation, facing == FACING_FRONT, scaleX, scaleY)
-          task.execute()
+          val task = faceDetector?.let { FaceDetectorTask(delegate, it, data, width, height, correctRotation, facing == FACING_FRONT, scaleX, scaleY) }
+          task?.execute()
         }
       }
     })

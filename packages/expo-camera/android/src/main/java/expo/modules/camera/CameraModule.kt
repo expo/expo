@@ -32,7 +32,7 @@ class CameraModule(
 
   override fun getName() = TAG
 
-  override fun getConstants() = hashMapOf(
+  override fun getConstants() = mapOf(
     "Type" to typeConstants,
     "FlashMode" to flashModeConstants,
     "AutoFocus" to autoFocusConstants,
