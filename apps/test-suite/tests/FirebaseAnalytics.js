@@ -126,8 +126,6 @@ export async function test({ describe, beforeAll, afterAll, it, xit, expect }) {
         } else {
           expect(error).toBeNull();
         }
-
-        expect(error).not.toBeNull();
       });
     });
     describe('setUserId()', async () => {
