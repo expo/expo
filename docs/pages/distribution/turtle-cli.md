@@ -89,8 +89,7 @@ Before starting the build, prepare the following things:
 - Keystore alias
 - Keystore password and key password
 
-To learn how to generate those, see the guide on [Building Standalone Apps](building-standalone-apps.md)
-first.
+You can obtain these values from Expo servers by running `expo fetch:android:keystore` in your Expo project's directory.
 
 Set the `EXPO_ANDROID_KEYSTORE_PASSWORD` and `EXPO_ANDROID_KEY_PASSWORD`
 environment variables with the values of the keystore password and key password,
@@ -118,8 +117,7 @@ Prepare the following unless you're building only for the iOS simulator:
 - Distribution Certificate .p12 file _(+ password)_
 - Provisioning Profile
 
-To learn how to generate those, see the guide
-on [Building Standalone Apps](building-standalone-apps.md) first.
+You can obtain these values from Expo servers by running `expo fetch:ios:certs` in your Expo project's directory.
 
 Set the `EXPO_IOS_DIST_P12_PASSWORD` environment variable with the value of
 the Distribution Certificate password.
