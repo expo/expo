@@ -12,23 +12,23 @@ import android.content.Intent
 import android.os.AsyncTask
 import android.content.ContentResolver
 
+import expo.modules.core.Promise
 import expo.modules.core.ExportedModule
 import expo.modules.core.ModuleRegistry
 import expo.modules.core.interfaces.ExpoMethod
-import expo.modules.core.Promise
-import expo.modules.core.interfaces.ActivityEventListener
+import expo.modules.core.ModuleRegistryDelegate
 import expo.modules.core.interfaces.ActivityProvider
 import expo.modules.core.interfaces.services.UIManager
-import expo.modules.contacts.models.PostalAddressModel
-import expo.modules.contacts.models.PhoneNumberModel
+import expo.modules.core.interfaces.ActivityEventListener
+import expo.modules.contacts.models.DateModel
+import expo.modules.contacts.models.BaseModel
 import expo.modules.contacts.models.EmailModel
 import expo.modules.contacts.models.ImAddressModel
-import expo.modules.contacts.models.UrlAddressModel
 import expo.modules.contacts.models.ExtraNameModel
-import expo.modules.contacts.models.DateModel
+import expo.modules.contacts.models.UrlAddressModel
+import expo.modules.contacts.models.PhoneNumberModel
 import expo.modules.contacts.models.RelationshipModel
-import expo.modules.contacts.models.BaseModel
-import expo.modules.core.ModuleRegistryDelegate
+import expo.modules.contacts.models.PostalAddressModel
 import expo.modules.interfaces.permissions.Permissions
 
 import java.lang.Exception
@@ -249,7 +249,7 @@ class ContactsModule(
 
   private fun presentForm(contact: Contact) {
     val intent = Intent(Intent.ACTION_INSERT, ContactsContract.Contacts.CONTENT_URI).apply {
-      putExtra(ContactsContract.Intents.Insert.NAME, contact.getDisplayName())
+      putExtra(ContactsContract.Intents.Insert.NAME, contact.displayName())
       putParcelableArrayListExtra(ContactsContract.Intents.Insert.DATA, contact.contentValues)
       flags = Intent.FLAG_ACTIVITY_NEW_TASK
     }
@@ -656,11 +656,11 @@ class ContactsModule(
   private fun sortContactsBy(input: ArrayList<Contact>, sortOrder: String?): ArrayList<Contact> {
     return if (sortOrder == null) input else when (sortOrder) {
       "firstName" -> {
-        input.sortWith(Comparator { p1, p2 -> p1.getFirstName().compareTo(p2.getFirstName(), ignoreCase = true) })
+        input.sortWith(Comparator { p1, p2 -> p1.firstName().compareTo(p2.firstName(), ignoreCase = true) })
         input
       }
       "lastName" -> {
-        input.sortWith(Comparator { p1, p2 -> p1.getLastName().compareTo(p2.getLastName(), ignoreCase = true) })
+        input.sortWith(Comparator { p1, p2 -> p1.lastName().compareTo(p2.lastName(), ignoreCase = true) })
         input
       }
       else -> input
