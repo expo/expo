@@ -1,6 +1,6 @@
 {
   "name": "expo-dev-client",
-  "version": "0.6.0",
+  "version": "0.6.1",
   "description": "Expo Development Client",
   "main": "build/DevClient.js",
   "types": "build/DevClient.d.ts",
@@ -32,8 +32,8 @@
   "homepage": "https://docs.expo.dev/clients/introduction/",
   "dependencies": {
     "@expo/config-plugins": "^3.1.0",
-    "expo-dev-launcher": "0.8.1",
-    "expo-dev-menu": "0.8.2",
+    "expo-dev-launcher": "0.8.2",
+    "expo-dev-menu": "0.8.3",
     "expo-dev-menu-interface": "0.4.1",
     "expo-manifests": "~0.2.2",
     "expo-updates-interface": "~0.4.0"

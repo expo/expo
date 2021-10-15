@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 0.6.1 — 2021-10-15
+
+_This version does not introduce any user-facing changes._
+
 ## 0.6.0 — 2021-10-07
 
 ### 🛠 Breaking changes
@@ -27,7 +31,7 @@
       project(':expo-json-utils').projectDir = new File('../node_modules/expo-json-utils/android')
       
       ```
-    include ':expo-manifests'
+      include ':expo-manifests'
 project(':expo-manifests').projectDir = new File('../node_modules/expo-manifests/android')
 ```
   - No additional setup is necessary for projects already using `react-native-unimodules` or `expo-modules-core`.

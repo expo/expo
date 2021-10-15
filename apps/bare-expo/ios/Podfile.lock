@@ -129,58 +129,58 @@ PODS:
     - ExpoModulesCore
   - Expo (43.0.0-beta.4):
     - ExpoModulesCore
-  - expo-dev-client (0.6.0):
+  - expo-dev-client (0.6.1):
     - EXManifests
     - expo-dev-launcher
     - expo-dev-menu
     - expo-dev-menu-interface
     - EXUpdatesInterface
-  - expo-dev-launcher (0.8.1):
+  - expo-dev-launcher (0.8.2):
     - EXManifests
-    - expo-dev-launcher/Main (= 0.8.1)
+    - expo-dev-launcher/Main (= 0.8.2)
     - expo-dev-menu-interface
     - EXUpdatesInterface
     - React-Core
-  - expo-dev-launcher/Main (0.8.1):
+  - expo-dev-launcher/Main (0.8.2):
     - EXManifests
     - expo-dev-launcher/Unsafe
     - expo-dev-menu-interface
     - EXUpdatesInterface
     - React-Core
-  - expo-dev-launcher/Tests (0.8.1):
+  - expo-dev-launcher/Tests (0.8.2):
     - EXManifests
     - expo-dev-menu-interface
     - EXUpdatesInterface
     - OHHTTPStubs
     - React-Core
     - React-CoreModules
-  - expo-dev-launcher/Unsafe (0.8.1):
+  - expo-dev-launcher/Unsafe (0.8.2):
     - EXManifests
     - expo-dev-menu-interface
     - EXUpdatesInterface
     - React-Core
-  - expo-dev-menu (0.8.2):
+  - expo-dev-menu (0.8.3):
     - expo-dev-menu-interface
-    - expo-dev-menu/Main (= 0.8.2)
+    - expo-dev-menu/Main (= 0.8.3)
     - React-Core
   - expo-dev-menu-interface (0.4.1)
-  - expo-dev-menu/Main (0.8.2):
+  - expo-dev-menu/Main (0.8.3):
     - expo-dev-menu-interface
     - expo-dev-menu/Vendored
     - React-Core
-  - expo-dev-menu/Tests (0.8.2):
+  - expo-dev-menu/Tests (0.8.3):
     - expo-dev-menu-interface
     - React-Core
     - React-CoreModules
-  - expo-dev-menu/UITests (0.8.2):
+  - expo-dev-menu/UITests (0.8.3):
     - expo-dev-menu-interface
     - React
     - React-Core
     - React-CoreModules
-  - expo-dev-menu/Vendored (0.8.2):
+  - expo-dev-menu/Vendored (0.8.3):
     - expo-dev-menu-interface
     - React-Core
-  - ExpoModulesCore (0.4.3):
+  - ExpoModulesCore (0.4.4):
     - React-Core
   - EXPrint (11.0.2):
     - ExpoModulesCore
@@ -204,7 +204,7 @@ PODS:
     - ExpoModulesCore
   - EXSpeech (10.0.2):
     - ExpoModulesCore
-  - EXSplashScreen (0.13.2):
+  - EXSplashScreen (0.13.3):
     - ExpoModulesCore
     - React-Core
   - EXSQLite (10.0.2):
@@ -1256,11 +1256,11 @@ SPEC CHECKSUMS:
   EXNotifications: d38efbe3a25b7e62829613efdba085736f81a3fb
   EXPermissions: 6f319c44fc64949f3af29c1997445f49649d1f81
   Expo: 248a601d15a8fe9ec16499299482c4faab87d82c
-  expo-dev-client: 97a9589d2ea0325a8dd4dff284fe3a4b9166bbce
-  expo-dev-launcher: 7a90ad1519263eda3e8675bf6712f2f89f8fe2a9
-  expo-dev-menu: 5b0593d3ad5f32e92e363f4cc061fe70666da31f
+  expo-dev-client: 8363efbe442469cbebf2809789197c82a583f0e4
+  expo-dev-launcher: 5eac05bfd5e5b634e8236adab0028d11e3341813
+  expo-dev-menu: 27969edef4397f78e6a950e1c26624ab18e92a33
   expo-dev-menu-interface: 508467f2ba2aedda7a44e5080cc1e9a43ab7375e
-  ExpoModulesCore: 3a1784eff4ea06d19f7150b2efc2baa651cdb6bf
+  ExpoModulesCore: 47b403a33ad73770c49d7559615b3ea121a36116
   EXPrint: 5eb9b5ef999c1134577179dec93ca23556685484
   EXRandom: 9ed4600d410cf2fe58d22b3121865624065a16e9
   EXScreenCapture: eaa713dba94f7ce3ae97122b88e8579567bedb28
@@ -1271,7 +1271,7 @@ SPEC CHECKSUMS:
   EXSharing: a02386e9ecbb40a0184652faebee9a01bbd67113
   EXSMS: e21935ff16fba29560664123192bf9bafd8f6382
   EXSpeech: 1715c1d7f5efa121cc84eabd3f73c74041a354f3
-  EXSplashScreen: c6f0f9ce480d7cac949e887263663e3f33d3bb77
+  EXSplashScreen: d5267009e24e220fc8e1c7f0ee1578038e624533
   EXSQLite: adaade0a40cffa2ddfe02a2e7a95f4302e192f24
   EXStoreReview: 83b45675b335761a32229169dd4415884db2dbaa
   EXStructuredHeaders: ba85104bb57e861129872a30e2cf7adaa348c4ac

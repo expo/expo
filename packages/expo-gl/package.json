@@ -38,7 +38,7 @@
   },
   "dependencies": {
     "expo-gl-cpp": "~11.0.1",
-    "expo-modules-core": "~0.4.3",
+    "expo-modules-core": "~0.4.4",
     "invariant": "^2.2.4"
   },
   "devDependencies": {

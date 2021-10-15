@@ -2502,9 +2502,9 @@ PODS:
     - ExpoModulesCore
   - Expo (43.0.0-beta.4):
     - ExpoModulesCore
-  - ExpoModulesCore (0.4.3):
+  - ExpoModulesCore (0.4.4):
     - React-Core
-  - ExpoModulesCore/Tests (0.4.3):
+  - ExpoModulesCore/Tests (0.4.4):
     - Nimble
     - Quick
     - React-Core
@@ -2530,7 +2530,7 @@ PODS:
     - ExpoModulesCore
   - EXSpeech (10.0.2):
     - ExpoModulesCore
-  - EXSplashScreen (0.13.2):
+  - EXSplashScreen (0.13.3):
     - ExpoModulesCore
     - React-Core
   - EXSQLite (10.0.2):
@@ -5164,7 +5164,7 @@ SPEC CHECKSUMS:
   EXNotifications: d38efbe3a25b7e62829613efdba085736f81a3fb
   EXPermissions: 6f319c44fc64949f3af29c1997445f49649d1f81
   Expo: 248a601d15a8fe9ec16499299482c4faab87d82c
-  ExpoModulesCore: 3a1784eff4ea06d19f7150b2efc2baa651cdb6bf
+  ExpoModulesCore: 47b403a33ad73770c49d7559615b3ea121a36116
   EXPrint: 5eb9b5ef999c1134577179dec93ca23556685484
   EXRandom: 9ed4600d410cf2fe58d22b3121865624065a16e9
   EXScreenCapture: eaa713dba94f7ce3ae97122b88e8579567bedb28
@@ -5175,7 +5175,7 @@ SPEC CHECKSUMS:
   EXSharing: a02386e9ecbb40a0184652faebee9a01bbd67113
   EXSMS: e21935ff16fba29560664123192bf9bafd8f6382
   EXSpeech: 1715c1d7f5efa121cc84eabd3f73c74041a354f3
-  EXSplashScreen: c6f0f9ce480d7cac949e887263663e3f33d3bb77
+  EXSplashScreen: d5267009e24e220fc8e1c7f0ee1578038e624533
   EXSQLite: adaade0a40cffa2ddfe02a2e7a95f4302e192f24
   EXStoreReview: 83b45675b335761a32229169dd4415884db2dbaa
   EXStructuredHeaders: ba85104bb57e861129872a30e2cf7adaa348c4ac

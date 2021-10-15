@@ -120,7 +120,7 @@
     "expo-sharing": "~10.0.2",
     "expo-sms": "~10.0.2",
     "expo-speech": "~10.0.2",
-    "expo-splash-screen": "^0.13.2",
+    "expo-splash-screen": "^0.13.3",
     "expo-status-bar": "^1.1.0",
     "expo-store-review": "~5.0.2",
     "expo-task-manager": "~10.0.2",

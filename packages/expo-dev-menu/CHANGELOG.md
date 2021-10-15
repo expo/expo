@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Fix hermes inspector opening wrong target. ([#14684](https://github.com/expo/expo/pull/14684) by [@kudo](https://github.com/kudo))
-
 ### 💡 Others
+
+## 0.8.3 — 2021-10-15
+
+### 🐛 Bug fixes
+
+- Fix hermes inspector opening wrong target. ([#14684](https://github.com/expo/expo/pull/14684) by [@kudo](https://github.com/kudo))
 
 ## 0.8.2 — 2021-10-07
 

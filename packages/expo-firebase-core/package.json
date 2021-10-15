@@ -35,7 +35,7 @@
   },
   "dependencies": {
     "expo-constants": "~12.1.1",
-    "expo-modules-core": "~0.4.3"
+    "expo-modules-core": "~0.4.4"
   },
   "devDependencies": {
     "expo-module-scripts": "^2.0.0"
