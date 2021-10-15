@@ -6,7 +6,13 @@ import android.provider.MediaStore
 import android.media.MediaScannerConnection
 import android.os.Build
 import expo.modules.core.Promise
-import expo.modules.medialibrary.MediaLibraryConstants.*
+import expo.modules.medialibrary.ERROR_IO_EXCEPTION
+import expo.modules.medialibrary.ERROR_MEDIA_LIBRARY_CORRUPTED
+import expo.modules.medialibrary.ERROR_NO_ALBUM
+import expo.modules.medialibrary.ERROR_NO_PERMISSIONS
+import expo.modules.medialibrary.ERROR_UNABLE_TO_LOAD
+import expo.modules.medialibrary.ERROR_UNABLE_TO_SAVE_PERMISSION
+import expo.modules.medialibrary.EXTERNAL_CONTENT_URI
 import expo.modules.medialibrary.MediaLibraryUtils
 import java.io.File
 import java.io.IOException
@@ -28,7 +34,7 @@ internal class AddAssetsToAlbum(
       val selection = "${MediaStore.MediaColumns.BUCKET_ID}=?"
       val id = arrayOf(albumId)
       context.contentResolver.query(
-        EXTERNAL_CONTENT,
+        EXTERNAL_CONTENT_URI,
         path,
         selection,
         id,

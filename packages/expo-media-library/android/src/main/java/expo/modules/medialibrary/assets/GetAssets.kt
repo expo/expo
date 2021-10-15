@@ -4,7 +4,11 @@ import android.os.AsyncTask
 import android.os.Bundle
 import android.content.Context
 import expo.modules.core.Promise
-import expo.modules.medialibrary.MediaLibraryConstants.*
+import expo.modules.medialibrary.ASSET_PROJECTION
+import expo.modules.medialibrary.ERROR_NO_PERMISSIONS
+import expo.modules.medialibrary.ERROR_UNABLE_TO_LOAD
+import expo.modules.medialibrary.ERROR_UNABLE_TO_LOAD_PERMISSION
+import expo.modules.medialibrary.EXTERNAL_CONTENT_URI
 import java.io.IOException
 import java.lang.IllegalArgumentException
 import java.util.ArrayList
@@ -19,7 +23,7 @@ internal class GetAssets(
     try {
       val (selection, order, limit, offset) = getQueryFromOptions(assetOptions)
       contentResolver.query(
-        EXTERNAL_CONTENT,
+        EXTERNAL_CONTENT_URI,
         ASSET_PROJECTION,
         selection,
         null,

@@ -3,6 +3,8 @@ title: Notifications
 sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-43/packages/expo-notifications'
 ---
 
+import { ConfigClassic, ConfigReactNative, ConfigPluginExample, ConfigPluginProperties } from '~/components/plugins/ConfigSection';
+import { AndroidPermissions } from '~/components/plugins/permissions';
 import SnackInline from '~/components/plugins/SnackInline';
 import ImageSpotlight from '~/components/plugins/ImageSpotlight'
 import InstallSection from '~/components/plugins/InstallSection';
@@ -34,44 +36,69 @@ The **`expo-notifications`** provides an API to fetch push notification tokens a
 
 <InstallSection packageName="expo-notifications" />
 
-### Config plugin setup (optional)
+## Configuration in app.json / app.config.js
 
-If you're using EAS Build, you can set your Android notification icon and color tint, add custom push notification sounds, and set your iOS notification environment using the `expo-notifications` config plugin ([what's a config plugin?](/guides/config-plugins.md)). To setup, just add the config plugin to the `plugins` array of your `app.json` or `app.config.js` as shown below, then rebuild the app.
+You can configure `expo-notifications` using its built-in [config plugin](../../../guides/config-plugins.md) if you use config plugins in your project ([EAS Build](../../../build/introduction.md) or `expo run:[android|ios]`). The plugin allows you to configure various properties that cannot be set at runtime and require building a new app binary to take effect.
+
+<ConfigClassic>
+
+Learn how to configure the native projects in the [installation instructions in the `expo-notifications` repository](https://github.com/expo/expo/tree/master/packages/expo-notifications#installation-in-bare-react-native-projects).
+
+</ConfigClassic>
+
+<ConfigReactNative>
+
+Learn how to configure the native projects in the [installation instructions in the `expo-notifications` repository](https://github.com/expo/expo/tree/master/packages/expo-notifications#installation-in-bare-react-native-projects).
+
+</ConfigReactNative>
+
+<ConfigPluginExample>
 
 ```json
 {
   "expo": {
-    ...
     "plugins": [
-      [
-        "expo-notifications",
-        {
-          "icon": "./local/path/to/myNotificationIcon.png",
-          "color": "#ffffff",
-          "sounds": ["./local/path/to/mySound.wav", "./local/path/to/myOtherSound.wav"],
-          "mode": "production"
-        }
-      ]
-    ],
+      ["expo-notifications", {
+        "icon": "./local/assets/notification-icon.png",
+        "color": "#ffffff",
+        "sounds": ["./local/assets/notification-sound.wav", "./local/assets/notification-sound-other.wav"],
+        "mode": "production"
+      }]
+    ]
   }
 }
 ```
 
-<details><summary><strong>Expand to view property descriptions and default values</strong></summary> <p>
+</ConfigPluginExample>
 
-- **icon**: Android only. Local path to an image to use as the icon for push notifications. 96x96 all-white png with transparency.
-- **color**: Android only. Tint color for the push notification image when it appears in the notification tray. Default: "#ffffff".
-- **sounds**: Array of local paths to sound files (.wav recommended) that can be used as custom notification sounds.
-- **mode**: iOS only. Environment of the app: either 'development' or 'production'. Default: 'development'.
+<ConfigPluginProperties properties={[
+  { name: 'icon', platform: 'android', description: 'Local path to an image to use as the icon for push notifications. 96x96 all-white png with transparency.' },
+  { name: 'color', default: '#ffffff', platform: 'android', description: 'Tint color for the push notification image when it appears in the notification tray.' },
+  { name: 'sounds', description: 'Array of local paths to sound files (.wav recommended) that can be used as custom notification sounds.' },
+  { name: 'mode', default: 'development', platform: 'ios', description: `Environment of the app: either 'development' or 'production'.` },
+]} />
 
-</p>
-</details>
+## Credentials configuration
 
 ### Android
 
-On Android, this module requires permission to subscribe to device boot. It's used to setup the scheduled notifications right after the device (re)starts. The `RECEIVE_BOOT_COMPLETED` permission is added automatically.
+Firebase Cloud Messaging credentials are required for all Android apps, except in Expo Go. To set up your Android app to receive push notifications using your own FCM credentials, [carefully follow this guide](../../../push-notifications/using-fcm.md).
 
-Unless you're still running your project in the Expo Go app, Firebase Cloud Messaging is required for all [managed](../../../push-notifications/sending-notifications.md) and [bare workflow](../../../push-notifications/sending-notifications-custom.md) Android apps made with Expo. To set up your Expo Android app to get push notifications using your own FCM credentials, [follow this guide closely](../../../push-notifications/using-fcm.md).
+### iOS
+
+Learn how push notification credentials can be automatically generated or uploaded [in the push notifications setup guide](../../../push-notifications/push-notifications-setup.md#credentials).
+
+## Permissions
+
+### Android
+
+On Android, this module requires permission to subscribe to device boot. It's used to setup scheduled notifications when the device (re)starts. The `RECEIVE_BOOT_COMPLETED` permission is added automatically through the library `AndroidManifest.xml`.
+
+<AndroidPermissions permissions={['RECEIVE_BOOT_COMPLETED']} />
+
+### iOS
+
+_No usage description required, see [notification-related permissions](#fetching-information-about-notifications-related-permissions)._
 
 ## Common gotchas / known issues
 
@@ -857,7 +884,7 @@ It returns a `Promise` resolving to a number representing current badge of the a
 
 ### `setBadgeCountAsync(badgeCount: number, options?: SetBadgeCountOptions): Promise<boolean>`
 
-Sets the badge of the app's icon to the specified number. Setting to `0` clears the badge.
+Sets the badge of the app's icon to the specified number. Setting to `0` clears the badge. On iOS, this method requires that you have requested the user's permission for `allowBadge` via [`requestPermissionsAsync`](#requestpermissionsasyncrequest-notificationpermissionsrequest-promisenotificationpermissionsstatus), otherwise it will automatically return `false`.
 
 > **Note:** Not all Android launchers support application badges. If the launcher does not support icon badges, the method will resolve to `false`.
 

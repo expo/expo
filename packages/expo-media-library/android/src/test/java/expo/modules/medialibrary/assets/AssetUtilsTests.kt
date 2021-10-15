@@ -2,8 +2,8 @@ package expo.modules.medialibrary.assets
 
 import android.os.Bundle
 import androidx.exifinterface.media.ExifInterface
-import expo.modules.medialibrary.MediaLibraryConstants
 import expo.modules.medialibrary.MockData
+import expo.modules.medialibrary.EXIF_TAGS
 import expo.modules.medialibrary.mockContentResolver
 import expo.modules.medialibrary.mockCursor
 import io.mockk.clearAllMocks
@@ -13,7 +13,6 @@ import io.mockk.mockkClass
 import io.mockk.mockkStatic
 import io.mockk.verify
 import org.junit.After
-import org.junit.Assert
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull
@@ -44,7 +43,7 @@ internal class AssetUtilsTests {
     mockkStatic(::getAssetDimensionsFromCursor)
     every {
       getAssetDimensionsFromCursor(contentResolver, any(), cursor, any(), any())
-    } returns intArrayOf(0, 0) andThen intArrayOf(100, 200)
+    } returns Pair(0, 0) andThen Pair(100, 200)
 
     // act
     val result = mutableListOf<Bundle>()
@@ -68,8 +67,8 @@ internal class AssetUtilsTests {
     // arrange
     val width = 100
     val height = 200
-    val nonSwappedArray = intArrayOf(width, height)
-    val swappedArray = intArrayOf(height, width)
+    val nonSwappedDimensions = Pair(width, height)
+    val swappedDimensions = Pair(height, width)
 
     // act
     val rotated_0 = maybeRotateAssetSize(width, height, orientation = 0)
@@ -79,11 +78,11 @@ internal class AssetUtilsTests {
     val rotated_m90 = maybeRotateAssetSize(width, height, orientation = -90)
 
     // assert
-    Assert.assertArrayEquals(nonSwappedArray, rotated_0)
-    Assert.assertArrayEquals(swappedArray, rotated_90)
-    Assert.assertArrayEquals(nonSwappedArray, rotated_180)
-    Assert.assertArrayEquals(swappedArray, rotated_270)
-    Assert.assertArrayEquals(swappedArray, rotated_m90)
+    assertEquals(nonSwappedDimensions, rotated_0)
+    assertEquals(swappedDimensions, rotated_90)
+    assertEquals(nonSwappedDimensions, rotated_180)
+    assertEquals(swappedDimensions, rotated_270)
+    assertEquals(swappedDimensions, rotated_m90)
   }
 
   @RunWith(RobolectricTestRunner::class)
@@ -145,7 +144,7 @@ internal class AssetUtilsTests {
       getExifFullInfo(exifInterface, Bundle())
 
       // assert
-      verify(atLeast = MediaLibraryConstants.exifTags.size) { exifInterface.getAttribute(any()) }
+      verify(atLeast = EXIF_TAGS.size) { exifInterface.getAttribute(any()) }
     }
   }
 }

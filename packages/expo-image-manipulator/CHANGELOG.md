@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix `Tainted canvases may not be exported` CORS error on web. ([#14739](https://github.com/expo/expo/pull/14739) by [@IjzerenHein](https://github.com/IjzerenHein))
+
 ### 💡 Others
 
 ## 10.1.0 — 2021-10-01

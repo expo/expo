@@ -5,7 +5,7 @@ import expo.modules.core.errors.CodedException;
 
 public class LocationUnavailableException extends CodedException implements CodedThrowable {
   public LocationUnavailableException() {
-    super("Location provider is unavailable. Make sure that location services are enabled.");
+    super("Location is unavailable. Make sure that location services are enabled.");
   }
 
   @Override

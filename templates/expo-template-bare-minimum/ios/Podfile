@@ -12,7 +12,7 @@ target 'HelloWorld' do
   config = use_native_modules!
 
   use_react_native!(
-    :path => config["reactNativePath"],
+    :path => config[:reactNativePath],
     :hermes_enabled => podfile_properties['expo.jsEngine'] == 'hermes'
   )
 
