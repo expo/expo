@@ -49,7 +49,7 @@ To use Hermes inspector for JavaScript debugging, we recommend following [the in
 
 ### iOS apps are not supported
 
-iOS is not supported yet — Hermes support was added to React Native for iOS in `react-native@0.64` and will likely to be added to Expo projects when it has been used successfully in production more broadly.
+iOS is not supported yet — Hermes support was added to React Native for iOS in `react-native@0.64` and will likely be added to Expo projects when it has been used successfully in production more broadly.
 
 ### Standalone apps created with `expo build` are not supported
 

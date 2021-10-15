@@ -1,0 +1,278 @@
+// swift-interface-format-version: 1.0
+// swift-compiler-version: Apple Swift version 5.5 (swiftlang-1300.0.29.102 clang-1300.0.28.1)
+// swift-module-flags: -target arm64-apple-ios11.0-simulator -enable-objc-interop -enable-library-evolution -swift-version 5 -enforce-exclusivity=checked -O -module-name ExpoModulesCore
+import Dispatch
+@_exported import ExpoModulesCore
+import Foundation
+import ObjectiveC
+import Swift
+import UIKit
+import _Concurrency
+public protocol AnyField {
+  func get() -> Any
+}
+public protocol AnyMethod : ExpoModulesCore.AnyDefinition {
+  var name: Swift.String { get }
+  var argumentsCount: Swift.Int { get }
+  var queue: Dispatch.DispatchQueue? { get }
+  func call(args: [Any?], promise: ExpoModulesCore.Promise)
+  func runOnQueue(_ queue: Dispatch.DispatchQueue?) -> Self
+}
+public protocol AnyMethodArgument {
+}
+extension Swift.Bool : ExpoModulesCore.AnyMethodArgument {
+}
+extension Swift.Int : ExpoModulesCore.AnyMethodArgument {
+}
+extension Swift.Double : ExpoModulesCore.AnyMethodArgument {
+}
+extension Swift.String : ExpoModulesCore.AnyMethodArgument {
+}
+extension Swift.Array : ExpoModulesCore.AnyMethodArgument {
+}
+extension Swift.Dictionary : ExpoModulesCore.AnyMethodArgument {
+}
+public protocol AnyModule : AnyObject {
+  init(appContext: ExpoModulesCore.AppContext)
+  @ExpoModulesCore.ModuleDefinitionBuilder func definition() -> ExpoModulesCore.ModuleDefinition
+}
+public protocol AnyViewProp : ExpoModulesCore.AnyDefinition {
+  var name: Swift.String { get }
+  func set(value: Any?, onView: UIKit.UIView)
+}
+public class AppContext {
+  public var moduleRegistry: ExpoModulesCore.ModuleRegistry {
+    get
+  }
+  public var legacyModuleRegistry: ExpoModulesCore.ABI43_0_0EXModuleRegistry? {
+    get
+  }
+  public init()
+  convenience public init(withModulesProvider provider: ExpoModulesCore.ModulesProviderProtocol, legacyModuleRegistry: ExpoModulesCore.ABI43_0_0EXModuleRegistry?)
+  public func legacyModule<ModuleProtocol>(implementing moduleProtocol: ObjectiveC.`Protocol`) -> ModuleProtocol?
+  public var constants: ExpoModulesCore.ABI43_0_0EXConstantsInterface? {
+    get
+  }
+  public var fileSystem: ExpoModulesCore.ABI43_0_0EXFileSystemInterface? {
+    get
+  }
+  public var permissions: ExpoModulesCore.ABI43_0_0EXPermissionsInterface? {
+    get
+  }
+  public var imageLoader: ExpoModulesCore.ABI43_0_0EXImageLoaderInterface? {
+    get
+  }
+  public var utilities: ExpoModulesCore.ABI43_0_0EXUtilitiesInterface? {
+    get
+  }
+  @objc deinit
+}
+public protocol CodedError : Swift.Error {
+  var code: Swift.String { get }
+  var description: Swift.String { get }
+}
+extension ExpoModulesCore.CodedError {
+  public var code: Swift.String {
+    get
+  }
+  public var description: Swift.String {
+    get
+  }
+}
+public struct SimpleCodedError : ExpoModulesCore.CodedError {
+  public var code: Swift.String
+  public var description: Swift.String
+}
+public struct UnexpectedError : ExpoModulesCore.CodedError {
+  public let description: Swift.String
+}
+@_hasMissingDesignatedInitializers public class ConcreteMethod<Args, ReturnType> : ExpoModulesCore.AnyMethod {
+  public typealias ClosureType = (Args) -> ReturnType
+  final public let name: Swift.String
+  public var takesPromise: Swift.Bool {
+    get
+  }
+  public var argumentsCount: Swift.Int {
+    get
+  }
+  public var queue: Dispatch.DispatchQueue?
+  public func call(args: [Any?], promise: ExpoModulesCore.Promise)
+  public func runOnQueue(_ queue: Dispatch.DispatchQueue?) -> Self
+  @objc deinit
+}
+@_hasMissingDesignatedInitializers public class ConcreteViewProp<ViewType, PropType> : ExpoModulesCore.AnyViewProp where ViewType : UIKit.UIView {
+  public typealias SetterType = (ViewType, PropType) -> Swift.Void
+  final public let name: Swift.String
+  public func set(value: Any?, onView view: UIKit.UIView)
+  @objc deinit
+}
+@propertyWrapper public class Field<Type> {
+  public var wrappedValue: Type
+  public init(wrappedValue: Type, _ options: ExpoModulesCore.FieldOption...)
+  public init(wrappedValue: Type, _ options: [ExpoModulesCore.FieldOption])
+  public init(wrappedValue: Type = nil) where Type : Swift.ExpressibleByNilLiteral
+  public init(wrappedValue: Type = nil, _ options: ExpoModulesCore.FieldOption...) where Type : Swift.ExpressibleByNilLiteral
+  public func get() -> Any
+  @objc deinit
+}
+extension ExpoModulesCore.Field where Type == Swift.Int {
+  convenience public init(wrappedValue: Type = 0)
+  convenience public init(wrappedValue: Type = 0, _ options: ExpoModulesCore.FieldOption...)
+}
+extension ExpoModulesCore.Field where Type == Swift.Double {
+  convenience public init(wrappedValue: Type = 0.0)
+  convenience public init(wrappedValue: Type = 0.0, _ options: ExpoModulesCore.FieldOption...)
+}
+extension ExpoModulesCore.Field where Type == Swift.Bool {
+  convenience public init(wrappedValue: Type = false)
+  convenience public init(wrappedValue: Type = false, _ options: ExpoModulesCore.FieldOption...)
+}
+extension ExpoModulesCore.Field where Type == Swift.String {
+  convenience public init(wrappedValue: Type = "")
+  convenience public init(wrappedValue: Type = "", _ options: ExpoModulesCore.FieldOption...)
+}
+extension ExpoModulesCore.Field where Type : Swift.ExpressibleByArrayLiteral {
+  convenience public init(wrappedValue: Type = [])
+  convenience public init(wrappedValue: Type = [], _ options: ExpoModulesCore.FieldOption...)
+}
+extension ExpoModulesCore.Field where Type : Swift.ExpressibleByDictionaryLiteral {
+  convenience public init(wrappedValue: Type = [:])
+  convenience public init(wrappedValue: Type = [:], _ options: ExpoModulesCore.FieldOption...)
+}
+extension ExpoModulesCore.Field where Type : ExpoModulesCore.Record {
+  convenience public init(wrappedValue: Type = Type.init())
+  convenience public init(wrappedValue: Type = Type.init(), _ options: ExpoModulesCore.FieldOption...)
+}
+public struct FieldOption : Swift.Equatable, Swift.Hashable, Swift.ExpressibleByIntegerLiteral, Swift.ExpressibleByStringLiteral {
+  public let rawValue: Swift.Int
+  public var key: Swift.String?
+  public init(_ rawValue: Swift.Int)
+  public static func == (lhs: ExpoModulesCore.FieldOption, rhs: ExpoModulesCore.FieldOption) -> Swift.Bool
+  public func hash(into hasher: inout Swift.Hasher)
+  public init(integerLiteral value: Swift.Int)
+  public init(stringLiteral value: Swift.String)
+  public typealias ExtendedGraphemeClusterLiteralType = Swift.String
+  public typealias IntegerLiteralType = Swift.Int
+  public typealias StringLiteralType = Swift.String
+  public typealias UnicodeScalarLiteralType = Swift.String
+  public var hashValue: Swift.Int {
+    get
+  }
+}
+extension ExpoModulesCore.FieldOption {
+  public static func keyed(_ key: Swift.String) -> ExpoModulesCore.FieldOption
+  public static let required: ExpoModulesCore.FieldOption
+}
+open class BaseModule {
+  weak public var appContext: ExpoModulesCore.AppContext? {
+    get
+  }
+  required public init(appContext: ExpoModulesCore.AppContext)
+  @objc deinit
+}
+public typealias Module = ExpoModulesCore.BaseModule & ExpoModulesCore.AnyModule
+public protocol AnyDefinition {
+}
+public struct ModuleDefinition : ExpoModulesCore.AnyDefinition {
+}
+@_functionBuilder public struct ModuleDefinitionBuilder {
+  public static func buildBlock(_ definitions: ExpoModulesCore.AnyDefinition...) -> ExpoModulesCore.ModuleDefinition
+}
+extension ExpoModulesCore.AnyModule {
+  public func name(_ name: Swift.String) -> ExpoModulesCore.AnyDefinition
+  public func constants(_ closure: () -> [Swift.String : Any?]) -> ExpoModulesCore.AnyDefinition
+  public func method<R>(_ name: Swift.String, _ closure: @escaping () -> R) -> ExpoModulesCore.AnyMethod
+  public func method<R, A0>(_ name: Swift.String, _ closure: @escaping (A0) -> R) -> ExpoModulesCore.AnyMethod where A0 : ExpoModulesCore.AnyMethodArgument
+  public func method<R, A0, A1>(_ name: Swift.String, _ closure: @escaping (A0, A1) -> R) -> ExpoModulesCore.AnyMethod where A0 : ExpoModulesCore.AnyMethodArgument, A1 : ExpoModulesCore.AnyMethodArgument
+  public func method<R, A0, A1, A2>(_ name: Swift.String, _ closure: @escaping (A0, A1, A2) -> R) -> ExpoModulesCore.AnyMethod where A0 : ExpoModulesCore.AnyMethodArgument, A1 : ExpoModulesCore.AnyMethodArgument, A2 : ExpoModulesCore.AnyMethodArgument
+  public func method<R, A0, A1, A2, A3>(_ name: Swift.String, _ closure: @escaping (A0, A1, A2, A3) -> R) -> ExpoModulesCore.AnyMethod where A0 : ExpoModulesCore.AnyMethodArgument, A1 : ExpoModulesCore.AnyMethodArgument, A2 : ExpoModulesCore.AnyMethodArgument, A3 : ExpoModulesCore.AnyMethodArgument
+  public func method<R, A0, A1, A2, A3, A4>(_ name: Swift.String, _ closure: @escaping (A0, A1, A2, A3, A4) -> R) -> ExpoModulesCore.AnyMethod where A0 : ExpoModulesCore.AnyMethodArgument, A1 : ExpoModulesCore.AnyMethodArgument, A2 : ExpoModulesCore.AnyMethodArgument, A3 : ExpoModulesCore.AnyMethodArgument, A4 : ExpoModulesCore.AnyMethodArgument
+  public func method<R, A0, A1, A2, A3, A4, A5>(_ name: Swift.String, _ closure: @escaping (A0, A1, A2, A3, A4, A5) -> R) -> ExpoModulesCore.AnyMethod where A0 : ExpoModulesCore.AnyMethodArgument, A1 : ExpoModulesCore.AnyMethodArgument, A2 : ExpoModulesCore.AnyMethodArgument, A3 : ExpoModulesCore.AnyMethodArgument, A4 : ExpoModulesCore.AnyMethodArgument, A5 : ExpoModulesCore.AnyMethodArgument
+  public func method<R, A0, A1, A2, A3, A4, A5, A6>(_ name: Swift.String, _ closure: @escaping (A0, A1, A2, A3, A4, A5, A6) -> R) -> ExpoModulesCore.AnyMethod where A0 : ExpoModulesCore.AnyMethodArgument, A1 : ExpoModulesCore.AnyMethodArgument, A2 : ExpoModulesCore.AnyMethodArgument, A3 : ExpoModulesCore.AnyMethodArgument, A4 : ExpoModulesCore.AnyMethodArgument, A5 : ExpoModulesCore.AnyMethodArgument, A6 : ExpoModulesCore.AnyMethodArgument
+  public func method<R, A0, A1, A2, A3, A4, A5, A6, A7>(_ name: Swift.String, _ closure: @escaping (A0, A1, A2, A3, A4, A5, A6, A7) -> R) -> ExpoModulesCore.AnyMethod where A0 : ExpoModulesCore.AnyMethodArgument, A1 : ExpoModulesCore.AnyMethodArgument, A2 : ExpoModulesCore.AnyMethodArgument, A3 : ExpoModulesCore.AnyMethodArgument, A4 : ExpoModulesCore.AnyMethodArgument, A5 : ExpoModulesCore.AnyMethodArgument, A6 : ExpoModulesCore.AnyMethodArgument, A7 : ExpoModulesCore.AnyMethodArgument
+  public func onCreate(_ closure: @escaping () -> Swift.Void) -> ExpoModulesCore.AnyDefinition
+  public func onDestroy(_ closure: @escaping () -> Swift.Void) -> ExpoModulesCore.AnyDefinition
+  public func onAppContextDestroys(_ closure: @escaping () -> Swift.Void) -> ExpoModulesCore.AnyDefinition
+  public func onAppEntersForeground(_ closure: @escaping () -> Swift.Void) -> ExpoModulesCore.AnyDefinition
+  public func onAppBecomesActive(_ closure: @escaping () -> Swift.Void) -> ExpoModulesCore.AnyDefinition
+  public func onAppEntersBackground(_ closure: @escaping () -> Swift.Void) -> ExpoModulesCore.AnyDefinition
+}
+public func viewManager(@ExpoModulesCore.ViewManagerDefinitionBuilder _ closure: @escaping () -> ExpoModulesCore.ViewManagerDefinition) -> ExpoModulesCore.AnyDefinition
+public func view(_ closure: @escaping () -> UIKit.UIView) -> ExpoModulesCore.AnyDefinition
+public func prop<ViewType, PropType>(_ name: Swift.String, _ setter: @escaping (ViewType, PropType) -> Swift.Void) -> ExpoModulesCore.AnyDefinition where ViewType : UIKit.UIView
+@_hasMissingDesignatedInitializers public class ModuleHolder {
+  @objc deinit
+}
+@_hasMissingDesignatedInitializers public class ModuleRegistry : Swift.Sequence {
+  public typealias Element = ExpoModulesCore.ModuleHolder
+  public func register(module: ExpoModulesCore.AnyModule)
+  public func register(fromProvider provider: ExpoModulesCore.ModulesProviderProtocol)
+  public func unregister(module: ExpoModulesCore.AnyModule)
+  public func has(moduleWithName moduleName: Swift.String) -> Swift.Bool
+  public func get(moduleHolderForName moduleName: Swift.String) -> ExpoModulesCore.ModuleHolder?
+  public func get(moduleWithName moduleName: Swift.String) -> ExpoModulesCore.AnyModule?
+  public func makeIterator() -> Swift.IndexingIterator<[ExpoModulesCore.ModuleHolder]>
+  public typealias Iterator = Swift.IndexingIterator<[ExpoModulesCore.ModuleHolder]>
+  @objc deinit
+}
+@objc public protocol ModulesProviderObjCProtocol {
+}
+public protocol ModulesProviderProtocol : ExpoModulesCore.ModulesProviderObjCProtocol {
+  func exportedModules() -> [ExpoModulesCore.AnyModule.Type]
+}
+@_inheritsConvenienceInitializers @objc open class ModulesProvider : ObjectiveC.NSObject, ExpoModulesCore.ModulesProviderProtocol, ExpoModulesCore.ModulesProviderObjCProtocol {
+  open func exportedModules() -> [ExpoModulesCore.AnyModule.Type]
+  @objc override dynamic public init()
+  @objc deinit
+}
+public struct Promise : ExpoModulesCore.AnyMethodArgument {
+  public typealias ResolveClosure = (Any?) -> Swift.Void
+  public typealias RejectClosure = (ExpoModulesCore.CodedError) -> Swift.Void
+  public var resolver: ExpoModulesCore.Promise.ResolveClosure
+  public var rejecter: ExpoModulesCore.Promise.RejectClosure
+  public var legacyRejecter: ExpoModulesCore.ABI43_0_0EXPromiseRejectBlock {
+    get
+  }
+  public func resolve(_ value: Any? = nil)
+  public func reject(_ error: ExpoModulesCore.CodedError)
+  public func reject(_ code: Swift.String, _ description: Swift.String)
+}
+public protocol Record : ExpoModulesCore.AnyMethodArgument {
+  typealias Dict = [Swift.String : Any]
+  init()
+  init(from: Self.Dict) throws
+  func toDictionary() -> Self.Dict
+}
+extension ExpoModulesCore.Record {
+  public init(from dict: Self.Dict) throws
+  public func toDictionary() -> Self.Dict
+}
+@objc public class SwiftInteropBridge : ObjectiveC.NSObject {
+  @objc public init(modulesProvider: ExpoModulesCore.ModulesProviderObjCProtocol, legacyModuleRegistry: ExpoModulesCore.ABI43_0_0EXModuleRegistry)
+  @objc public func hasModule(_ moduleName: Swift.String) -> Swift.Bool
+  @objc public func callMethod(_ methodName: Swift.String, onModule moduleName: Swift.String, withArgs args: [Any], resolve: @escaping ExpoModulesCore.ABI43_0_0EXPromiseResolveBlock, reject: @escaping ExpoModulesCore.ABI43_0_0EXPromiseRejectBlock)
+  @objc public func exportedMethodNames() -> [Swift.String : [[Swift.String : Any]]]
+  @objc public func exportedModulesConstants() -> [Swift.String : Any]
+  @objc public func exportedViewManagersNames() -> [Swift.String]
+  @objc public func getViewManagers() -> [ExpoModulesCore.ViewModuleWrapper]
+  @objc deinit
+}
+public struct ViewManagerDefinition : ExpoModulesCore.AnyDefinition {
+}
+@_functionBuilder public struct ViewManagerDefinitionBuilder {
+  public static func buildBlock(_ definitions: ExpoModulesCore.AnyDefinition...) -> ExpoModulesCore.ViewManagerDefinition
+}
+@_inheritsConvenienceInitializers @objc public class ViewModuleWrapper : ExpoModulesCore.ABI43_0_0RCTViewManager {
+  public init(_ wrappedModuleHolder: ExpoModulesCore.ModuleHolder)
+  @objc override dynamic public init()
+  @objc public init(dummy: Any?)
+  @objc public func name() -> Swift.String
+  @objc override dynamic public class func moduleName() -> Swift.String
+  @objc override dynamic public class func requiresMainQueueSetup() -> Swift.Bool
+  @objc override dynamic public func view() -> UIKit.UIView!
+  @objc public class func propConfig_proxiedProperties() -> [Swift.String]
+  @objc public func set_proxiedProperties(_ json: Any?, forView view: UIKit.UIView, withDefaultView defaultView: UIKit.UIView)
+  @objc public static func createViewModuleWrapperClass(module: ExpoModulesCore.ViewModuleWrapper) -> ExpoModulesCore.ViewModuleWrapper.Type?
+  @objc deinit
+}
+extension ExpoModulesCore.Field : ExpoModulesCore.AnyField {}

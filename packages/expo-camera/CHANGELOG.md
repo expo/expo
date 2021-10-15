@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 12.0.1 — 2021-10-01
+
+_This version does not introduce any user-facing changes._
+
 ## 12.0.0 — 2021-09-28
 
 ### 🛠 Breaking changes
@@ -20,6 +24,7 @@
 ### 🎉 New features
 
 - Add `useCameraPermissions` and `useMicrophonePermissions` hooks from modules factory. ([#13855](https://github.com/expo/expo/pull/13855) by [@bycedric](https://github.com/bycedric))
+- [plugin] Add monorepo support to Android config plugin for Gradle import. ([#14521](https://github.com/expo/expo/pull/14521) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 🐛 Bug fixes
 

@@ -12,7 +12,10 @@ on:
     paths:
       - .github/workflows/client-ios.yml
       - ios/**
-      - tools/**
+      - tools/src/dynamic-macros/**
+      - tools/src/commands/IosGenerateDynamicMacros.ts
+      - tools/src/client-build/**
+      - tools/src/commands/ClientBuild.ts
       - secrets/**
       - fastlane/**
       - Gemfile.lock
@@ -22,7 +25,10 @@ on:
     paths:
       - .github/workflows/client-ios.yml
       - ios/**
-      - tools/**
+      - tools/src/dynamic-macros/**
+      - tools/src/commands/IosGenerateDynamicMacros.ts
+      - tools/src/client-build/**
+      - tools/src/commands/ClientBuild.ts
       - secrets/**
       - fastlane/**
       - Gemfile.lock

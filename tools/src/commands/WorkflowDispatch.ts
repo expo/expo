@@ -50,13 +50,6 @@ const CUSTOM_WORKFLOWS = {
       releaseSimulator: 'release-simulator',
     },
   },
-  'shell-app-ios-versioned': {
-    name: 'iOS Shell App (with newest SDK version)',
-    baseWorkflowSlug: 'shell-app-ios',
-    inputs: {
-      versioned: 'true',
-    },
-  },
   'shell-app-ios-upload': {
     name: 'iOS Shell App (with newest SDK version and Upload to S3)',
     baseWorkflowSlug: 'shell-app-ios',

@@ -403,11 +403,7 @@ async function generateExpoKitPodspecAsync(
     // `universalModulesPodNames` contains only versioned unimodules,
     // so we fall back to the original name if the module is not there
     const universalModulesDependencies = (await getListOfPackagesAsync())
-      .filter(
-        (pkg) =>
-          pkg.isIncludedInExpoClientOnPlatform('ios') &&
-          pkg.podspecName
-      )
+      .filter((pkg) => pkg.isIncludedInExpoClientOnPlatform('ios') && pkg.podspecName)
       .map(
         ({ podspecName }) =>
           `ss.dependency         "${universalModulesPodNames[podspecName!] || podspecName}"`
@@ -582,7 +578,7 @@ pod '${getVersionedExpoKitPodName(versionName)}',
 
 use_pods! '{versioned,vendored}/sdk${semver.major(
     versionNumber
-  )}/*/*.podspec.json', '${versionName}'
+  )}/**/*.podspec.json', '${versionName}'
 `;
 
   await fs.writeFile(path.join(versionedReactPodPath, 'dependencies.rb'), dependenciesContent);
@@ -824,12 +820,8 @@ function getCppLibrariesToVersion() {
 }
 
 export async function addVersionAsync(versionNumber: string, packages: Package[]) {
-  const {
-    sdkNumber,
-    versionName,
-    newVersionPath,
-    versionedPodNames,
-  } = await getConfigsFromArguments(versionNumber);
+  const { sdkNumber, versionName, newVersionPath, versionedPodNames } =
+    await getConfigsFromArguments(versionNumber);
 
   // Validate the directories we need before doing anything
   console.log(`Validating root directory ${chalk.magenta(EXPO_DIR)} ...`);
@@ -946,12 +938,8 @@ export async function reinstallPodsAsync(force?: boolean, preventReinstall?: boo
 }
 
 export async function removeVersionAsync(versionNumber: string) {
-  const {
-    sdkNumber,
-    newVersionPath,
-    versionedPodNames,
-    versionName,
-  } = await getConfigsFromArguments(versionNumber);
+  const { sdkNumber, newVersionPath, versionedPodNames, versionName } =
+    await getConfigsFromArguments(versionNumber);
 
   console.log(
     `Removing SDK version ${chalk.cyan(versionNumber)} from ${chalk.magenta(
