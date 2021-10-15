@@ -11,6 +11,7 @@ type Props = PropsWithChildren<{
 const platformNames: Record<Exclude<PluginProperty['platform'], undefined>, string> = {
   android: 'Android',
   ios: 'iOS',
+  web: 'Web',
 };
 
 export const ConfigPluginProperties = ({ children, properties }: Props) => (
@@ -47,5 +48,5 @@ export type PluginProperty = {
   name: string;
   description: string;
   default?: string;
-  platform?: 'android' | 'ios';
+  platform?: 'android' | 'ios' | 'web';
 };
