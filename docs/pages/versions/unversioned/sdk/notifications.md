@@ -1,7 +1,8 @@
 ---
 title: Notifications
-sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-notifications'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-43/packages/expo-notifications'
 ---
+
 import { ConfigClassic, ConfigReactNative, ConfigPluginExample, ConfigPluginProperties } from '~/components/plugins/ConfigSection';
 import { AndroidPermissions } from '~/components/plugins/permissions';
 import SnackInline from '~/components/plugins/SnackInline';
@@ -35,7 +36,7 @@ The **`expo-notifications`** provides an API to fetch push notification tokens a
 
 <InstallSection packageName="expo-notifications" />
 
-## Configuraiton in app.json / app.config.js
+## Configuration in app.json / app.config.js
 
 You can configure `expo-notifications` using its built-in [config plugin](../../../guides/config-plugins.md) if you use config plugins in your project ([EAS Build](/build/introduction.md) or `expo run:[android|ios]`). The plugin allows you to configure various properties that cannot be set at runtime and require building a new app binary to take effect.
 
@@ -48,7 +49,7 @@ Learn how to configure the native projects in the [installation instructions in 
 <ConfigReactNative>
 
 Learn how to configure the native projects in the [installation instructions in the `expo-notifications` repository](https://github.com/expo/expo/tree/master/packages/expo-notifications#installation-in-bare-react-native-projects).
-  
+
 </ConfigReactNative>
 
 <ConfigPluginExample>
