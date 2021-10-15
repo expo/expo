@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix Android crash caused by `assertSubscriptionAlive` method ([#14720](https://github.com/expo/expo/pull/14720) by [@zakharchenkoAndrii](https://github.com/zakharchenkoAndrii))
+
 ### 💡 Others
 
 ## 11.0.1 — 2021-10-01
