@@ -158,7 +158,7 @@ export default class ExponentVideo extends React.Component<ExponentVideoProps> {
         onLoadedMetadata={this.onLoadedMetadata}
         onCanPlay={this.onCanPlay}
         onStalled={this.onStalled}
-        src={source || undefined}
+        src={source?.uri || undefined}
         muted={status.isMuted}
         loop={status.isLooping}
         autoPlay={status.shouldPlay}
