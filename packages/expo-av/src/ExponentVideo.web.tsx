@@ -42,7 +42,9 @@ export const IOS_FULLSCREEN_UPDATE_PLAYER_DID_PRESENT = FULLSCREEN_UPDATE_PLAYER
 export const IOS_FULLSCREEN_UPDATE_PLAYER_WILL_DISMISS = FULLSCREEN_UPDATE_PLAYER_WILL_DISMISS;
 export const IOS_FULLSCREEN_UPDATE_PLAYER_DID_DISMISS = FULLSCREEN_UPDATE_PLAYER_DID_DISMISS;
 
-const Video: any = React.forwardRef((props, ref) => createElement('video', { ...props, ref }));
+const Video: any = React.forwardRef<HTMLVideoElement, ExponentVideoProps>((props, ref) =>
+  createElement('video', { ...props, ref })
+);
 
 export default class ExponentVideo extends React.Component<ExponentVideoProps> {
   _video?: HTMLVideoElement;
@@ -156,7 +158,7 @@ export default class ExponentVideo extends React.Component<ExponentVideoProps> {
         onLoadedMetadata={this.onLoadedMetadata}
         onCanPlay={this.onCanPlay}
         onStalled={this.onStalled}
-        src={(source || { uri: undefined }).uri}
+        src={source || undefined}
         muted={status.isMuted}
         loop={status.isLooping}
         autoPlay={status.shouldPlay}
