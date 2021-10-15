@@ -3205,22 +3205,22 @@ expo-modules-autolinking@~0.3.2:
     find-up "~5.0.0"
     fs-extra "^9.1.0"
 
-expo-modules-core@~0.4.3:
-  version "0.4.3"
-  resolved "https://registry.yarnpkg.com/expo-modules-core/-/expo-modules-core-0.4.3.tgz#5d8dea31711de51d47f74b762532755ab546f858"
-  integrity sha512-wnQrtS239Y4rCOSTzguhytktJgr8rnCo+UehFeuILUpTU+SNRNJZsGWM0X4JmxsSM6UViOXEN0aK1/y7c8r9QQ==
+expo-modules-core@~0.4.3, expo-modules-core@~0.4.4:
+  version "0.4.4"
+  resolved "https://registry.yarnpkg.com/expo-modules-core/-/expo-modules-core-0.4.4.tgz#0b6fe50495789f07742a601d5cfd7806dc786060"
+  integrity sha512-/pvI235uApWp156SP8Ve4a/adz2zx/41hppa0Q/XpRe9WPqHoOilOsgcqXuzjZhwyQwzeyBIPEYuqBMO+Vn41g==
   dependencies:
     compare-versions "^3.4.0"
     invariant "^2.2.4"
 
-expo-splash-screen@~0.13.2:
-  version "0.13.2"
-  resolved "https://registry.yarnpkg.com/expo-splash-screen/-/expo-splash-screen-0.13.2.tgz#71a2123a01550b8db113d58245a40cb5c5d92a45"
-  integrity sha512-y+Ns1eG6APd2RdO0pfqL9Y38m/Kqf+iZt6i0M3z1RpoYPYNrT0Uh7xSDYUZV2zs32taH6uWIFffXK8+8cIEYzw==
+expo-splash-screen@~0.13.3:
+  version "0.13.3"
+  resolved "https://registry.yarnpkg.com/expo-splash-screen/-/expo-splash-screen-0.13.3.tgz#9dea843f480e2bb2c4ba6029d7a7c529c209d19e"
+  integrity sha512-dT9j5RTzKHEIftQdRbSYjc66WFqBjqDCdCCJUPfWvOmB3TqXcWbUz1DdlfvZ3IkV5ENRhUOMAKrKC0Byx8PuZg==
   dependencies:
     "@expo/configure-splash-screen" "^0.6.0"
     "@expo/prebuild-config" "^3.0.0"
-    expo-modules-core "~0.4.3"
+    expo-modules-core "~0.4.4"
 
 expo-status-bar@~1.1.0:
   version "1.1.0"

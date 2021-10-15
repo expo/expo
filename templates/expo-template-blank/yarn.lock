@@ -2378,9 +2378,9 @@ expo-modules-autolinking@~0.3.2:
     fs-extra "^9.1.0"
 
 expo-modules-core@~0.4.3:
-  version "0.4.3"
-  resolved "https://registry.yarnpkg.com/expo-modules-core/-/expo-modules-core-0.4.3.tgz#5d8dea31711de51d47f74b762532755ab546f858"
-  integrity sha512-wnQrtS239Y4rCOSTzguhytktJgr8rnCo+UehFeuILUpTU+SNRNJZsGWM0X4JmxsSM6UViOXEN0aK1/y7c8r9QQ==
+  version "0.4.4"
+  resolved "https://registry.yarnpkg.com/expo-modules-core/-/expo-modules-core-0.4.4.tgz#0b6fe50495789f07742a601d5cfd7806dc786060"
+  integrity sha512-/pvI235uApWp156SP8Ve4a/adz2zx/41hppa0Q/XpRe9WPqHoOilOsgcqXuzjZhwyQwzeyBIPEYuqBMO+Vn41g==
   dependencies:
     compare-versions "^3.4.0"
     invariant "^2.2.4"
