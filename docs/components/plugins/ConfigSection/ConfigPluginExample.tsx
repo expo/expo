@@ -19,4 +19,4 @@ export const ConfigPluginExample = ({ children }: Props) => {
       {children}
     </>
   );
-}
+};
