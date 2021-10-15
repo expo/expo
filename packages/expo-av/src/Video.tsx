@@ -313,7 +313,6 @@ export default class Video extends React.Component<VideoProps, VideoState> imple
 
   _renderPoster = () =>
     this.props.usePoster && this.state.showPoster ? (
-      // @ts-ignore: the react-native type declarations are overly restrictive
       <Image style={[_STYLES.poster, this.props.posterStyle]} source={this.props.posterSource!} />
     ) : null;
 
@@ -350,7 +349,6 @@ export default class Video extends React.Component<VideoProps, VideoState> imple
     });
 
     // Replace selected native props
-    // @ts-ignore: TypeScript thinks "children" is not in the list of props
     const nativeProps: VideoNativeProps = {
       ...omit(this.props, [
         'source',
