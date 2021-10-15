@@ -6,9 +6,13 @@
 
 ### 🎉 New features
 
+- [iOS] Firebase native app will automatically be initialized without any extra native changes ([#14750](https://github.com/expo/expo/pull/14750) by [@EvanBacon](https://github.com/EvanBacon))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+- [plugin] Native regular expressions have been removed in favor Expo modules AppDelegate proxy ([#14750](https://github.com/expo/expo/pull/14750) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 4.0.1 — 2021-10-01
 
