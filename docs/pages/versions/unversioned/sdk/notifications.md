@@ -56,7 +56,7 @@ Learn how to configure the native projects in the [installation instructions in 
 
 ```json
 {
-  "expo" {
+  "expo": {
     "plugins": [
       ["expo-notifications", {
         "icon": "./local/assets/notification-icon.png",
