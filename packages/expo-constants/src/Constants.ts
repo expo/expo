@@ -71,6 +71,8 @@ if (!rawManifest && ExponentConstants && ExponentConstants.manifest) {
 
 const { name, appOwnership, ...nativeConstants } = (ExponentConstants || {}) as any;
 
+let warnedAboutDeviceYearClass = false;
+let warnedAboutIosModel = false;
 let warnedAboutInstallationId = false;
 let warnedAboutDeviceId = false;
 let warnedAboutLinkingUrl = false;
@@ -79,6 +81,16 @@ const constants = {
   ...nativeConstants,
   // Ensure this is null in bare workflow
   appOwnership: appOwnership ?? null,
+  // Deprecated fields
+  get deviceYearClass() {
+    if (!warnedAboutDeviceYearClass) {
+      console.warn(
+        `Constants.deviceYearClass has been deprecated in favor of expo-device's Device.deviceYearClass property. This API will be removed in SDK 45.`
+      );
+      warnedAboutDeviceYearClass = true;
+    }
+    return nativeConstants.deviceYearClass;
+  },
   // Deprecated fields
   get installationId() {
     if (!warnedAboutInstallationId) {
@@ -149,6 +161,24 @@ const constants = {
     rawManifest = value;
   },
 } as Constants;
+
+// Add deprecation warning for `platform.ios.model`
+if (constants?.platform?.ios) {
+  const originalModel = nativeConstants.platform.ios.model;
+  Object.defineProperty(constants.platform.ios, 'model', {
+    get() {
+      if (!warnedAboutIosModel) {
+        console.warn(
+          `Constants.platform.ios.model has been deprecated in favor of expo-device's Device.modelName property. This API will be removed in SDK 45.`
+        );
+        warnedAboutIosModel = true;
+      }
+      return originalModel;
+    },
+    // Prevent the warning from being thrown, or the value from being used when the user interacts with the entire object.
+    enumerable: false,
+  });
+}
 
 function isAppManifest(manifest: AppManifest | Manifest): manifest is AppManifest {
   return !isManifest(manifest);
