@@ -80,10 +80,8 @@ public class AdMobInterstitialAdModule extends ExportedModule {
         recreateInterstitialAdWithAdUnitID(mAdUnitID);
 
         if (mInterstitialAd == null) {
-          return;
-        }
-
-        if (mInterstitialAd.isLoaded() || mInterstitialAd.isLoading()) {
+          promise.reject("ERR_NO_CURRENT_ACTIVITY", "Currect activity is null.", null);
+        } else if (mInterstitialAd.isLoaded() || mInterstitialAd.isLoading()) {
           promise.reject("E_AD_ALREADY_LOADED", "Ad is already loaded.", null);
         } else {
           AdRequest.Builder adRequestBuilder =
@@ -124,6 +122,10 @@ public class AdMobInterstitialAdModule extends ExportedModule {
           mShowAdPromise = promise;
 
           recreateInterstitialAdWithAdUnitID(mAdUnitID);
+
+          if (mInterstitialAd == null) {
+            promise.reject("ERR_NO_CURRENT_ACTIVITY", "Currect activity is null.", null);
+          }
         } else {
           promise.reject("E_AD_NOT_READY", "Ad is not ready", null);
         }
@@ -149,10 +151,6 @@ public class AdMobInterstitialAdModule extends ExportedModule {
     Activity currentActivity = mActivityProvider.getCurrentActivity();
 
     if (currentActivity == null) {
-      if (mRequestAdPromise != null) {
-        mRequestAdPromise.reject("ERR_NO_CURRENT_ACTIVITY", "Currect activity is null.", null);
-        mRequestAdPromise = null;
-      }
       return;
     }
 
