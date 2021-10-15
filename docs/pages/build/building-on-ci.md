@@ -14,7 +14,7 @@ To trigger EAS builds from a CI environment, we first need to configure our app 
 
 If you have run `eas build -p [all|ios|android]` successfully before, then you can continue.
 
-If you haven't done this yet, please refer to the ["Creating your first build"](setup.md) guide and return here when you're ready.
+If you haven't done this yet, please refer to the [Creating your first build](setup.md) guide and return here when you're ready.
 
 ## Configure your app for CI
 
@@ -147,7 +147,7 @@ version: 2.1
 executors:
   default:
     docker:
-      - image: circleci/node:10
+      - image: circleci/node:16
     working_directory: ~/my-app
 
 commands:
@@ -207,12 +207,12 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v1
         with:
-          node-version: 10.x
+          node-version: 16.x
 
       - name: Setup Expo
         uses: expo/expo-github-action@v5
         with:
-          expo-version: 3.x
+          expo-version: 4.x
           expo-token: ${{ secrets.EXPO_TOKEN }}
           expo-cache: true
 

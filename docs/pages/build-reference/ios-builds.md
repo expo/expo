@@ -30,9 +30,11 @@ In this next phase, this is what happens when EAS Build picks up your request:
    - Every build gets its own fresh macOS VM with all build tools installed there (Xcode, Fastlane, and so on).
 
 1. Download the project tarball from a private AWS S3 bucket and unpack it.
+1. Create `.npmrc` if `NPM_TOKEN` is set. ([Learn more](/build-reference/private-npm-packages).)
 1. Run the `eas-build-pre-install` script from package.json if defined.
 1. Run `yarn install` in the project root (or `npm install` if `yarn.lock` does not exist).
 1. Restore the credentials
+
    - Create a new keychain.
    - Import the Distribution Certificate into the keychain.
    - Write the Provisioning Profile to the `~/Library/MobileDevice/Provisioning Profiles` directory.
@@ -46,11 +48,10 @@ In this next phase, this is what happens when EAS Build picks up your request:
 1. Create `Gymfile` in the `ios` directory if it does **not** already exist (check out the [Default Gymfile](#default-gymfile) section).
 1. Run `fastlane gym` in the `ios` directory.
 1. Run the `eas-build-pre-upload-artifacts` script from package.json if defined.
+1. Store a cache of files and directories defined in the build profile. `Podfile.lock` is cached by default. Subsequent builds will restore this cache. ([Learn more](../build/eas-json/).)
 1. Upload the build artifact to a private AWS S3 bucket.
 
    - The artifact path can be configured in `eas.json` at `builds.ios.PROFILE_NAME.artifactPath`. It defaults to `ios/build/App.ipa`. You can specify a glob-like pattern for `artifactPath`. We're using the [fast-glob](https://github.com/mrmlnc/fast-glob#pattern-syntax) package under the hood.
-
-1. Store a cache of files and directories defined in the build profile. `Podfile.lock` is cached by default. Subsequent builds will restore this cache. ([Learn more](../build/eas-json/).)
 
 ## Building iOS Projects With Fastlane
 
