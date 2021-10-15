@@ -8,6 +8,7 @@
 
 ### 🐛 Bug fixes
 
+- Fix config plugin compatibility with expo-screen-orientation. ([#14752](https://github.com/expo/expo/pull/14752) by [@esamelson](https://github.com/esamelson))
 - Fix `No native splash screen registered for given view controller` error happening when project is using both `expo-dev-client` and `expo-splash-screen` packages. ([#14745](https://github.com/expo/expo/pull/14745) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others
