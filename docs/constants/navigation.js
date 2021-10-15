@@ -62,6 +62,7 @@ const sections = [
     reference: [
       'Migrating from "expo build"',
       'Integrating with third-party tooling',
+      'Using private npm packages',
       'Environment variables and secrets',
       'Server infrastructure',
       'Caching dependencies',
