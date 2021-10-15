@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Fix okio build error for react-native 0.65 or above. ([#14761](https://github.com/expo/expo/pull/14761) by [@kudo](https://github.com/kudo))
+- Fix `okio` library build error for `react-native@0.65` or above. ([#14761](https://github.com/expo/expo/pull/14761) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others
 
