@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 8.4.2 — 2021-10-15
+
+_This version does not introduce any user-facing changes._
+
 ## 8.4.1 — 2021-10-01
 
 ### 💡 Others

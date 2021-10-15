@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Fix auto setup `EXUpdatesAppDelegate` breaking reanimated installation. ([#14755](https://github.com/expo/expo/pull/14755) by [@kudo](https://github.com/kudo))
-
 ### 💡 Others
+
+## 0.10.4 — 2021-10-15
+
+### 🐛 Bug fixes
+
+- Fix auto setup `EXUpdatesAppDelegate` breaking reanimated installation. ([#14755](https://github.com/expo/expo/pull/14755) by [@kudo](https://github.com/kudo))
 
 ## 0.10.3 — 2021-10-12
 
