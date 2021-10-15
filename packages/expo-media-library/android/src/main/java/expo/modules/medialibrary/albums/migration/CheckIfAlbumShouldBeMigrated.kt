@@ -6,7 +6,8 @@ import android.os.Build
 import android.provider.MediaStore
 import androidx.annotation.RequiresApi
 import expo.modules.core.Promise
-import expo.modules.medialibrary.MediaLibraryConstants
+import expo.modules.medialibrary.ERROR_NO_ALBUM
+import expo.modules.medialibrary.EXTERNAL_CONTENT_URI
 import java.io.File
 
 @RequiresApi(Build.VERSION_CODES.R)
@@ -18,7 +19,7 @@ class CheckIfAlbumShouldBeMigrated(
   public override fun doInBackground(vararg voids: Void?): Void? {
     val albumDir = getAlbumDirectory(context, albumId)
     if (albumDir == null) {
-      promise.reject(MediaLibraryConstants.ERROR_NO_ALBUM, "Couldn't find album")
+      promise.reject(ERROR_NO_ALBUM, "Couldn't find album")
     } else {
       promise.resolve(!albumDir.canWrite())
     }
@@ -36,7 +37,7 @@ private fun getAlbumDirectory(context: Context, albumId: String): File? {
   val selectionArgs = arrayOf(albumId)
   val projection = arrayOf(MediaStore.MediaColumns.DATA)
   context.contentResolver.query(
-    MediaLibraryConstants.EXTERNAL_CONTENT,
+    EXTERNAL_CONTENT_URI,
     projection,
     selection,
     selectionArgs,

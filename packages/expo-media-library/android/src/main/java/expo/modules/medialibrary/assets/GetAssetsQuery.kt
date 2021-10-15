@@ -1,7 +1,10 @@
 package expo.modules.medialibrary.assets
 
 import android.provider.MediaStore
-import expo.modules.medialibrary.MediaLibraryConstants
+import expo.modules.medialibrary.GET_ASSETS_DEFAULT_LIMIT
+import expo.modules.medialibrary.MediaType
+import expo.modules.medialibrary.SortBy
+import expo.modules.medialibrary.ifNull
 import expo.modules.medialibrary.takeIfInstanceOf
 import java.util.ArrayList
 
@@ -14,7 +17,7 @@ data class GetAssetsQuery(
 
 @Throws(IllegalArgumentException::class)
 internal fun getQueryFromOptions(input: Map<String, Any?>): GetAssetsQuery {
-  val limit = input["first"].takeIfInstanceOf<Number>()?.toInt() ?: 20
+  val limit = input["first"].takeIfInstanceOf<Number>()?.toInt() ?: GET_ASSETS_DEFAULT_LIMIT
 
   // to maintain compatibility with iOS field `after` is string
   val offset = input["after"]
@@ -45,7 +48,7 @@ private fun createSelectionString(input: Map<String, Any?>): String {
   }
 
   val mediaType = input["mediaType"] as? List<*>
-  if (mediaType != null && !mediaType.contains(MediaLibraryConstants.MEDIA_TYPE_ALL)) {
+  if (mediaType != null && !mediaType.contains(MediaType.ALL.apiName)) {
     val mediaTypeInts = mediaType.map { parseMediaType(it.toString()) }
     selectionBuilder.append(
       "${MediaStore.Files.FileColumns.MEDIA_TYPE} IN (${mediaTypeInts.joinToString(separator = ",")})"
@@ -67,28 +70,26 @@ private fun createSelectionString(input: Map<String, Any?>): String {
 }
 
 /**
- * Converts media type string to value defined in [MediaLibraryConstants.MEDIA_TYPES]
+ * Converts media type constant string to media column defined in [MediaType]
  * @throws IllegalArgumentException if the value is not defined there
  */
 @Throws(IllegalArgumentException::class)
-private fun parseMediaType(mediaType: String): Int {
-  return MediaLibraryConstants.MEDIA_TYPES.getOrElse(mediaType) {
-    val errorMessage = "MediaType $mediaType is not supported!"
+private fun parseMediaType(mediaTypeName: String): Int =
+  MediaType.fromApiName(mediaTypeName)?.mediaColumn.ifNull {
+    val errorMessage = "MediaType $mediaTypeName is not supported!"
     throw IllegalArgumentException(errorMessage)
   }
-}
 
 /**
- * Converts sorting key string to value defined in [MediaLibraryConstants.SORT_KEYS]
+ * Converts sorting key string to column value defined in [SortBy]
  * @throws IllegalArgumentException if the value is not defined there
  */
 @Throws(IllegalArgumentException::class)
-fun parseSortByKey(key: String): String {
-  return MediaLibraryConstants.SORT_KEYS.getOrElse(key) {
+fun parseSortByKey(key: String): String =
+  SortBy.fromKeyName(key)?.mediaColumnName.ifNull {
     val errorMessage = "SortBy key $key is not supported!"
     throw IllegalArgumentException(errorMessage)
   }
-}
 
 /**
  * Converts orderBy options to a value accepted as `order` parameter of
