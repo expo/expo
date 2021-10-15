@@ -1,6 +1,6 @@
 ---
 title: Notifications
-sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-43/packages/expo-notifications'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-notifications'
 ---
 
 import { ConfigClassic, ConfigReactNative, ConfigPluginExample, ConfigPluginProperties } from '~/components/plugins/ConfigSection';
