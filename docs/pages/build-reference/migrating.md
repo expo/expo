@@ -43,13 +43,12 @@ With classic builds, `assetBundlePatterns` serves two purposes:
 
 Only the second purpose applies with the new build system. All assets referenced in your app source code are bundled into your app binary at build time, the same as in a default React Native app &mdash; `assetBundlePatterns` is not used to determine what assets to bundle in the binary, it's only used for update bundles.
 
-### Custom `"main"` entry points in `package.json` is not yet supported
+### Custom `"main"` entry point in `package.json` is not yet supported
 
 If your app depends on a custom `"main"` entry point, you will need to remove that field from `package.json` and then create `index.js` in the root of your project and use [registerRootComponent](/versions/latest/sdk/register-root-component/) to register your root component. For example, if your app root component lives in `src/App.tsx`, your `index.js` should look like the following:
 
 ```
 import { registerRootComponent } from 'expo';
-
 import App from './src/App';
 
 registerRootComponent(App);
