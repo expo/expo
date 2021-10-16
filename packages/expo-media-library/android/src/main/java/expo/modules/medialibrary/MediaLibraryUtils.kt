@@ -10,11 +10,11 @@ import android.provider.MediaStore
 import android.text.TextUtils
 import android.webkit.MimeTypeMap
 import expo.modules.core.Promise
+import expo.modules.core.utilities.ifNull
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
 import java.io.IOException
-import java.util.*
 
 object MediaLibraryUtils {
   class AssetFile(pathname: String, val assetId: String, val mimeType: String) : File(pathname)

@@ -1,11 +1,11 @@
 package expo.modules.medialibrary.assets
 
 import android.provider.MediaStore
+import expo.modules.core.utilities.ifNull
+import expo.modules.core.utilities.takeIfInstanceOf
 import expo.modules.medialibrary.GET_ASSETS_DEFAULT_LIMIT
 import expo.modules.medialibrary.MediaType
 import expo.modules.medialibrary.SortBy
-import expo.modules.medialibrary.ifNull
-import expo.modules.medialibrary.takeIfInstanceOf
 import java.util.ArrayList
 
 data class GetAssetsQuery(
