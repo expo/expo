@@ -43,6 +43,20 @@ With classic builds, `assetBundlePatterns` serves two purposes:
 
 Only the second purpose applies with the new build system. All assets referenced in your app source code are bundled into your app binary at build time, the same as in a default React Native app &mdash; `assetBundlePatterns` is not used to determine what assets to bundle in the binary, it's only used for update bundles.
 
+### Custom `"main"` entry points in `package.json` is not yet supported
+
+If your app depends on a custom `"main"` entry point, you will need to remove that field from `package.json` and then create `index.js` in the root of your project and use [registerRootComponent](/versions/latest/sdk/register-root-component/) to register your root component. For example, if your app root component lives in `src/App.tsx`, your `index.js` should look like the following:
+
+```
+import { registerRootComponent } from 'expo';
+
+import App from './src/App';
+
+registerRootComponent(App);
+```
+
+Support for custom entry points is in progress and is coming soon.
+
 ### Monorepos may require additional setup
 
 Classic builds had no knowledge of your repository set up, you could use a monorepo or birepo or trirepo, the service was entirely indifferent. As long as you were able to publish a bundle, that's all that was needed. EAS Build needs to be able to install all of your project dependencies and essentially set up your development environment inside of a worker, so in some cases that will require some additional configuration. Learn more: ["How to set up EAS Build with a monorepo"](/build-reference/how-tos.md#how-to-set-up-eas-build-with).
