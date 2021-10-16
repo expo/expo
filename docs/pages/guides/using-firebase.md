@@ -215,7 +215,7 @@ Here's is an example of storing a document named "mario" inside of a collection 
 
 ```javascript
 import { initializeApp } from 'firebase/app';
-import { getFirestore, setDoc, doc } from 'firebase/firestore';
+import { getFirestore } from 'firebase/firestore';
 
 const firebaseConfig = { ... }  // apiKey, authDomain, etc. (see above)
 
@@ -223,14 +223,12 @@ initializeApp(firebaseConfig);
 
 const firestore = getFirestore();
 
-await setDoc(doc(firestore, "characters", "mario"), {
+await firestore.collection("characters").doc("mario").set({
   employment: "plumber",
   outfitColor: "red",
   specialAttack: "fireball"
 });
 ```
-
-This sample was borrowed and edited from [this forum post](https://forums.expo.dev/t/open-when-an-expo-firebase-firestore-platform/4126/29).
 
 ## Recording events with Analytics
 
