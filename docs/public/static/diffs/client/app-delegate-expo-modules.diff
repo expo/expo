@@ -2,6 +2,21 @@ diff --git a/ios/expodevexample/AppDelegate.m b/ios/expodevexample/AppDelegate.m
 index 837259e..7e619d8 100644
 --- a/ios/expodevexample/AppDelegate.m
 +++ b/ios/expodevexample/AppDelegate.m
+@@ -11,6 +11,14 @@
+ #import <EXSplashScreen/EXSplashScreenService.h>
+ #import <UMCore/UMModuleRegistryProvider.h>
+ 
++#if defined(EX_DEV_MENU_ENABLED)
++@import EXDevMenu;
++#endif
++
++#if defined(EX_DEV_LAUNCHER_ENABLED)
++#include <EXDevLauncher/EXDevLauncherController.h>
++#endif
++
+ #if defined(FB_SONARKIT_ENABLED) && __has_include(<FlipperKit/FlipperClient.h>)
+ #import <FlipperKit/FlipperClient.h>
+ #import <FlipperKitLayoutPlugin/FlipperKitLayoutPlugin.h>
 @@ -40,7 +40,23 @@ - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(
  #if defined(FB_SONARKIT_ENABLED) && __has_include(<FlipperKit/FlipperClient.h>)
    InitializeFlipper(application);
