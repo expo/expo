@@ -47,7 +47,7 @@ export default [
     name: 'ascApiKeyPath',
     type: 'string',
     description: [
-      'The path to your App Store Connect Api Key .p8 file. [Learn more](https://expo.fyi/creating-asc-api-key.md).',
+      'The path to your App Store Connect Api Key .p8 file. [Learn more](https://expo.fyi/creating-asc-api-key).',
     ],
   },
   {
