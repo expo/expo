@@ -17,6 +17,9 @@ export declare enum UserInterfaceIdiom {
 export interface IOSManifest {
     buildNumber: string;
     platform: string;
+    /**
+     * @deprecated Moved to `expo-device` - `Device.modelName`
+     */
     model: string | null;
     userInterfaceIdiom: UserInterfaceIdiom;
     systemVersion: string;
@@ -133,6 +136,9 @@ export interface NativeConstants {
     appOwnership: AppOwnership | null;
     debugMode: boolean;
     deviceName?: string;
+    /**
+     * @deprecated Moved to `expo-device` - `Device.deviceYearClass`
+     */
     deviceYearClass: number | null;
     executionEnvironment: ExecutionEnvironment;
     experienceUrl: string;

@@ -67,6 +67,7 @@ export default function DeviceScreen() {
   return (
     <ScrollView style={{ flex: 1 }} contentContainerStyle={{ padding: 12 }}>
       <DeviceConstants name="Device Brand" value={Device.brand} />
+      <DeviceConstants name="Device Year" value={Device.deviceYearClass} />
       <DeviceConstants name="Device manufacturer" value={Device.manufacturer} />
       <DeviceConstants name="Device modelName" value={Device.modelName} />
       <DeviceConstants name="Device os name" value={Device.osName} />

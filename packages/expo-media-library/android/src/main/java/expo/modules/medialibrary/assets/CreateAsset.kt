@@ -10,9 +10,12 @@ import android.net.Uri
 import android.os.Build
 import androidx.annotation.RequiresApi
 import expo.modules.core.Promise
-import expo.modules.medialibrary.MediaLibraryConstants
+import expo.modules.core.utilities.ifNull
+import expo.modules.medialibrary.ERROR_IO_EXCEPTION
+import expo.modules.medialibrary.ERROR_NO_FILE_EXTENSION
+import expo.modules.medialibrary.ERROR_UNABLE_TO_LOAD_PERMISSION
+import expo.modules.medialibrary.ERROR_UNABLE_TO_SAVE
 import expo.modules.medialibrary.MediaLibraryUtils
-import expo.modules.medialibrary.ifNull
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
@@ -45,11 +48,11 @@ class CreateAsset @JvmOverloads constructor(
   @RequiresApi(api = Build.VERSION_CODES.Q)
   private fun createContentResolverAssetEntry(): Uri? {
     val contentResolver = context.contentResolver
-    val mimeType = MediaLibraryUtils.getType(contentResolver, mUri)
+    val mimeType = MediaLibraryUtils.getMimeType(contentResolver, mUri)
     val filename = mUri.lastPathSegment
     val path = MediaLibraryUtils.getRelativePathForAssetType(mimeType, true)
 
-    val contentUri = MediaLibraryUtils.mineTypeToExternalUri(mimeType)
+    val contentUri = MediaLibraryUtils.mimeTypeToExternalUri(mimeType)
     val contentValues = ContentValues().apply {
       put(MediaStore.MediaColumns.DISPLAY_NAME, filename)
       put(MediaStore.MediaColumns.MIME_TYPE, mimeType)
@@ -90,7 +93,7 @@ class CreateAsset @JvmOverloads constructor(
   @Throws(IOException::class)
   private fun createAssetUsingContentResolver() {
     val assetUri = createContentResolverAssetEntry().ifNull {
-      promise.reject(MediaLibraryConstants.ERROR_UNABLE_TO_SAVE, "Could not create content entry.")
+      promise.reject(ERROR_UNABLE_TO_SAVE, "Could not create content entry.")
       return
     }
     writeFileContentsToAsset(File(mUri.path!!), assetUri)
@@ -112,16 +115,16 @@ class CreateAsset @JvmOverloads constructor(
     val localFile = File(mUri.path!!)
 
     val destDir = MediaLibraryUtils.getEnvDirectoryForAssetType(
-      MediaLibraryUtils.getType(context.contentResolver, mUri),
+      MediaLibraryUtils.getMimeType(context.contentResolver, mUri),
       true
     ).ifNull {
-      promise.reject(MediaLibraryConstants.ERROR_UNABLE_TO_SAVE, "Could not guess file type.")
+      promise.reject(ERROR_UNABLE_TO_SAVE, "Could not guess file type.")
       return null
     }
 
     val destFile = MediaLibraryUtils.safeCopyFile(localFile, destDir)
     if (!destDir.exists() || !destFile.isFile) {
-      promise.reject(MediaLibraryConstants.ERROR_UNABLE_TO_SAVE, "Could not create asset record. Related file is not existing.")
+      promise.reject(ERROR_UNABLE_TO_SAVE, "Could not create asset record. Related file is not existing.")
       return null
     }
     return destFile
@@ -129,7 +132,7 @@ class CreateAsset @JvmOverloads constructor(
 
   override fun doInBackground(vararg params: Void?): Void? {
     if (!isFileExtensionPresent) {
-      promise.reject(MediaLibraryConstants.ERROR_NO_FILE_EXTENSION, "Could not get the file's extension.")
+      promise.reject(ERROR_NO_FILE_EXTENSION, "Could not get the file's extension.")
       return null
     }
     try {
@@ -144,7 +147,7 @@ class CreateAsset @JvmOverloads constructor(
         null
       ) { path: String, uri: Uri? ->
         if (uri == null) {
-          promise.reject(MediaLibraryConstants.ERROR_UNABLE_TO_SAVE, "Could not add image to gallery.")
+          promise.reject(ERROR_UNABLE_TO_SAVE, "Could not add image to gallery.")
           return@scanFile
         }
         if (resolveWithAdditionalData) {
@@ -156,14 +159,14 @@ class CreateAsset @JvmOverloads constructor(
         }
       }
     } catch (e: IOException) {
-      promise.reject(MediaLibraryConstants.ERROR_IO_EXCEPTION, "Unable to copy file into external storage.", e)
+      promise.reject(ERROR_IO_EXCEPTION, "Unable to copy file into external storage.", e)
     } catch (e: SecurityException) {
       promise.reject(
-        MediaLibraryConstants.ERROR_UNABLE_TO_LOAD_PERMISSION,
+        ERROR_UNABLE_TO_LOAD_PERMISSION,
         "Could not get asset: need READ_EXTERNAL_STORAGE permission.", e
       )
     } catch (e: Exception) {
-      promise.reject(MediaLibraryConstants.ERROR_UNABLE_TO_SAVE, "Could not create asset.", e)
+      promise.reject(ERROR_UNABLE_TO_SAVE, "Could not create asset.", e)
     }
     return null
   }

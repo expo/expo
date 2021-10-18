@@ -21,16 +21,6 @@ import PlatformsSection from '~/components/plugins/PlatformsSection';
 
 - Android does not recognize faces that aren't aligned with the interface (top of the interface matches top of the head).
 
-### Comprehensive Example
-
-Check out a full example at [expo/camerja](https://github.com/expo/camerja). You can try it with Expo at [@documentation/camerja](https://expo.dev/@documentation/camerja).
-
-`FaceDetector` is used in Gallery screen — it should detect faces on saved photos and show the probability that the face is smiling.
-
-### Intermodule interface
-
-Other modules, like eg. [Camera](camera.md) are able to use this `FaceDetector`.
-
 ### Settings
 
 In order to configure detector's behavior modules pass a [`DetectionOptions`](#detectionoptions) object which is then interpreted by this module.

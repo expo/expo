@@ -13,16 +13,24 @@ import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.exifinterface.media.ExifInterface
 import expo.modules.core.Promise
-import expo.modules.medialibrary.MediaLibraryConstants
+import expo.modules.medialibrary.ASSET_PROJECTION
+import expo.modules.medialibrary.ERROR_IO_EXCEPTION
+import expo.modules.medialibrary.ERROR_NO_PERMISSIONS
+import expo.modules.medialibrary.ERROR_UNABLE_TO_LOAD
+import expo.modules.medialibrary.ERROR_UNABLE_TO_LOAD_PERMISSION
+import expo.modules.medialibrary.EXTERNAL_CONTENT_URI
+import expo.modules.medialibrary.EXIF_TAGS
+import expo.modules.medialibrary.MediaType
 import java.io.FileNotFoundException
 import java.io.IOException
 import java.lang.NumberFormatException
 import java.lang.RuntimeException
 import java.lang.UnsupportedOperationException
+import kotlin.math.abs
 
 /**
  * Queries content resolver for a single asset.
- * Resolves `promise` with a single-element array of [Bundle]
+ * Resolves [promise] with a single-element array of [Bundle]
  */
 fun queryAssetInfo(
   context: Context,
@@ -34,14 +42,14 @@ fun queryAssetInfo(
   val contentResolver = context.contentResolver
   try {
     contentResolver.query(
-      MediaLibraryConstants.EXTERNAL_CONTENT,
-      MediaLibraryConstants.ASSET_PROJECTION,
+      EXTERNAL_CONTENT_URI,
+      ASSET_PROJECTION,
       selection,
       selectionArgs,
       null
     ).use { assetCursor ->
       if (assetCursor == null) {
-        promise.reject(MediaLibraryConstants.ERROR_UNABLE_TO_LOAD, "Could not get asset. Query returns null.")
+        promise.reject(ERROR_UNABLE_TO_LOAD, "Could not get asset. Query returns null.")
       } else {
         if (assetCursor.count == 1) {
           assetCursor.moveToFirst()
@@ -58,21 +66,21 @@ fun queryAssetInfo(
     }
   } catch (e: SecurityException) {
     promise.reject(
-      MediaLibraryConstants.ERROR_UNABLE_TO_LOAD_PERMISSION,
+      ERROR_UNABLE_TO_LOAD_PERMISSION,
       "Could not get asset: need READ_EXTERNAL_STORAGE permission.", e
     )
   } catch (e: IOException) {
-    promise.reject(MediaLibraryConstants.ERROR_IO_EXCEPTION, "Could not read file", e)
+    promise.reject(ERROR_IO_EXCEPTION, "Could not read file", e)
   } catch (e: UnsupportedOperationException) {
     e.printStackTrace()
-    promise.reject(MediaLibraryConstants.ERROR_NO_PERMISSIONS, e.message)
+    promise.reject(ERROR_NO_PERMISSIONS, e.message)
   }
 }
 
 /**
  * Reads given `cursor` and saves the data to `response` param.
  * Reads `limit` rows, starting by `offset`.
- * Cursor must be a result of query with [MediaLibraryConstants.ASSET_PROJECTION] projection
+ * Cursor must be a result of query with [ASSET_PROJECTION] projection
  */
 @Throws(IOException::class, UnsupportedOperationException::class)
 fun putAssetsInfo(
@@ -96,6 +104,7 @@ fun putAssetsInfo(
   }
   var i = 0
   while (i < limit && !cursor.isAfterLast) {
+    val assetId = cursor.getString(idIndex)
     val path = cursor.getString(localUriIndex)
     val localUri = "file://$path"
     val mediaType = cursor.getInt(mediaTypeIndex)
@@ -108,32 +117,31 @@ fun putAssetsInfo(
         e.printStackTrace()
       }
     }
-    val size = getAssetDimensionsFromCursor(contentResolver, exifInterface, cursor, mediaType, localUriIndex)
+    val (width, height) =
+      getAssetDimensionsFromCursor(contentResolver, exifInterface, cursor, mediaType, localUriIndex)
     val asset = Bundle().apply {
-      putString("id", cursor.getString(idIndex))
+      putString("id", assetId)
       putString("filename", cursor.getString(filenameIndex))
       putString("uri", localUri)
       putString("mediaType", exportMediaType(mediaType))
-      putLong("width", size[0].toLong())
-      putLong("height", size[1].toLong())
+      putLong("width", width.toLong())
+      putLong("height", height.toLong())
       putLong("creationTime", cursor.getLong(creationDateIndex))
       putDouble("modificationTime", cursor.getLong(modificationDateIndex) * 1000.0)
       putDouble("duration", cursor.getInt(durationIndex) / 1000.0)
       putString("albumId", cursor.getString(albumIdIndex))
     }
-    if (resolveWithFullInfo) {
-      if (exifInterface != null) {
-        getExifFullInfo(exifInterface, asset)
+    if (resolveWithFullInfo && exifInterface != null) {
+      getExifFullInfo(exifInterface, asset)
 
-        val location = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-          val photoUri = Uri.withAppendedPath(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, cursor.getString(idIndex))
-          getExifLocationForUri(contentResolver, photoUri)
-        } else {
-          getExifLocationLegacy(exifInterface)
-        }
-        asset.putParcelable("location", location)
-        asset.putString("localUri", localUri)
+      val location = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+        val photoUri = Uri.withAppendedPath(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, assetId)
+        getExifLocationForUri(contentResolver, photoUri)
+      } else {
+        getExifLocationLegacy(exifInterface)
       }
+      asset.putParcelable("location", location)
+      asset.putString("localUri", localUri)
     }
     cursor.moveToNext()
     response.add(asset)
@@ -143,8 +151,8 @@ fun putAssetsInfo(
 
 fun getExifFullInfo(exifInterface: ExifInterface, response: Bundle) {
   val exifMap = Bundle()
-  for ((type, name) in MediaLibraryConstants.exifTags) {
-    if (exifInterface.getAttribute(name!!) != null) {
+  for ((type, name) in EXIF_TAGS) {
+    if (exifInterface.getAttribute(name) != null) {
       when (type) {
         "string" -> exifMap.putString(name, exifInterface.getAttribute(name))
         "int" -> exifMap.putInt(name, exifInterface.getAttributeInt(name, 0))
@@ -156,8 +164,8 @@ fun getExifFullInfo(exifInterface: ExifInterface, response: Bundle) {
 }
 
 /**
- * API 29+ adds "scoped storage" which requires extra permissions (ACCESS_MEDIA_LOCATION) to access photo data
- * Reference: https://developer.android.com/training/data-storage/shared/media#location-info-photos
+ * API 29+ adds "scoped storage" which requires extra permissions (`ACCESS_MEDIA_LOCATION`) to access photo data.
+ * Reference: [Android docs](https://developer.android.com/training/data-storage/shared/media#location-info-photos)
  * @returns [Bundle] with latitude and longitude or `null` if fail
  * @throws UnsupportedOperationException when `ACCESS_MEDIA_LOCATION` permission isn't granted
  */
@@ -171,10 +179,10 @@ fun getExifLocationForUri(contentResolver: ContentResolver, photoUri: Uri): Bund
     return contentResolver.openInputStream(uri)?.use { stream ->
       ExifInterface(stream)
         .latLong
-        ?.let {
+        ?.let { (lat, lng) ->
           Bundle().apply {
-            putDouble("latitude", it[0])
-            putDouble("longitude", it[1])
+            putDouble("latitude", lat)
+            putDouble("longitude", lng)
           }
         }
     }
@@ -202,7 +210,7 @@ fun getExifLocationLegacy(exifInterface: ExifInterface): Bundle? {
 
 /**
  * Gets image/video dimensions
- * @return array of 2 integers: width and height, respectively
+ * @return Pair of integers: width and height, respectively
  */
 @Throws(IOException::class)
 fun getAssetDimensionsFromCursor(
@@ -211,7 +219,7 @@ fun getAssetDimensionsFromCursor(
   cursor: Cursor,
   mediaType: Int,
   localUriColumnIndex: Int
-): IntArray {
+): Pair<Int, Int> {
   val uri = cursor.getString(localUriColumnIndex)
   if (mediaType == MediaStore.Files.FileColumns.MEDIA_TYPE_VIDEO) {
     val videoUri = Uri.parse("file://$uri")
@@ -269,26 +277,25 @@ fun getAssetDimensionsFromCursor(
 }
 
 /**
- * Converts [MediaStore] media type into MediaLibrary media type constants
+ * Converts [MediaStore] media type into MediaLibrary [MediaType] api constant
  */
-fun exportMediaType(mediaType: Int): String {
-  return when (mediaType) {
-    MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE -> MediaLibraryConstants.MEDIA_TYPE_PHOTO
-    MediaStore.Files.FileColumns.MEDIA_TYPE_AUDIO,
-    MediaStore.Files.FileColumns.MEDIA_TYPE_PLAYLIST -> MediaLibraryConstants.MEDIA_TYPE_AUDIO
-    MediaStore.Files.FileColumns.MEDIA_TYPE_VIDEO -> MediaLibraryConstants.MEDIA_TYPE_VIDEO
-    else -> MediaLibraryConstants.MEDIA_TYPE_UNKNOWN
-  }
-}
+fun exportMediaType(mediaType: Int) = when (mediaType) {
+  MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE -> MediaType.PHOTO
+  MediaStore.Files.FileColumns.MEDIA_TYPE_AUDIO,
+  MediaStore.Files.FileColumns.MEDIA_TYPE_PLAYLIST -> MediaType.AUDIO
+  MediaStore.Files.FileColumns.MEDIA_TYPE_VIDEO -> MediaType.VIDEO
+  else -> MediaType.UNKNOWN
+}.apiName
 
 /**
  * Swaps `width` and `height` if the `orientation` is `90` or `-90`
+ * @return Pair of integers: width and height, respectively
  */
-fun maybeRotateAssetSize(width: Int, height: Int, orientation: Int): IntArray {
+fun maybeRotateAssetSize(width: Int, height: Int, orientation: Int): Pair<Int, Int> {
   // given width and height might need to be swapped if the orientation is -90 or 90
-  return if (Math.abs(orientation) % 180 == 90) {
-    intArrayOf(height, width)
+  return if (abs(orientation) % 180 == 90) {
+    Pair(height, width)
   } else {
-    intArrayOf(width, height)
+    Pair(width, height)
   }
 }

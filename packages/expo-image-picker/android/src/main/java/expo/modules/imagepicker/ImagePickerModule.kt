@@ -22,6 +22,7 @@ import expo.modules.core.interfaces.ExpoMethod
 import expo.modules.core.interfaces.LifecycleEventListener
 import expo.modules.core.interfaces.services.UIManager
 import expo.modules.core.utilities.FileUtilities.generateOutputPath
+import expo.modules.core.utilities.ifNull
 import expo.modules.imagepicker.ImagePickerOptions.Companion.optionsFromMap
 import expo.modules.imagepicker.exporters.CompressionImageExporter
 import expo.modules.imagepicker.exporters.CropImageExporter

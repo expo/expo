@@ -6,7 +6,7 @@ If you use automatically managed credentials, your credentials will be hosted re
 
 ## Downloading credentials
 
-To download your automatically managed credentials, run `eas credentials` in the root of your project, pick a platform, and then choose `"Update credentials.json with values from Expo servers"`. Run the command again to download the credentials for another platform, if needed.
+To download your automatically managed credentials, run `eas credentials` in the root of your project, pick a platform, choose `"Credentials.json: Upload/Download credentials between EAS servers and your local json"`, and then `"Download credentials from EAS to credentials.json"`. Run the command again to download the credentials for another platform, if needed.
 
 Android credentials will be ready to use immediately because your project will read the credentials from `credentials.json`.
 
@@ -14,6 +14,4 @@ iOS credentials requires two steps to set up locally. You will first need to ins
 
 ## Uploading credentials
 
-To upload your credentials from `credentials.json` to be managed by EAS, run `eas credentials` in the root of your project, pick a platform, and then choose `"Update credentials on Expo servers with values from credentials.json"`. Run the command again to upload the credentials for another platform, if needed.
-
-<br />
+To upload your credentials from `credentials.json` to be managed by EAS, run `eas credentials` in the root of your project, pick a platform, choose `"Credentials.json: Upload/Download credentials between EAS servers and your local json"`, and then `"Upload credentials from credentials.json to EAS"`. Run the command again to upload the credentials for another platform, if needed.

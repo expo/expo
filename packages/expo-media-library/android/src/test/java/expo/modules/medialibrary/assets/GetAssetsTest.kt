@@ -1,7 +1,7 @@
 package expo.modules.medialibrary.assets
 
-import expo.modules.medialibrary.MediaLibraryConstants.ERROR_UNABLE_TO_LOAD
-import expo.modules.medialibrary.MediaLibraryConstants.ERROR_UNABLE_TO_LOAD_PERMISSION
+import expo.modules.medialibrary.ERROR_UNABLE_TO_LOAD
+import expo.modules.medialibrary.ERROR_UNABLE_TO_LOAD_PERMISSION
 import expo.modules.medialibrary.MockContext
 import expo.modules.medialibrary.MockData
 import expo.modules.medialibrary.mockContentResolver

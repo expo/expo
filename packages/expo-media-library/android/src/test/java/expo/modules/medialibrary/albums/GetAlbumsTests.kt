@@ -3,8 +3,8 @@ package expo.modules.medialibrary.albums
 import android.content.Context
 import android.os.Bundle
 import android.provider.MediaStore.Images.Media
-import expo.modules.medialibrary.MediaLibraryConstants.ERROR_UNABLE_TO_LOAD
-import expo.modules.medialibrary.MediaLibraryConstants.ERROR_UNABLE_TO_LOAD_PERMISSION
+import expo.modules.medialibrary.ERROR_UNABLE_TO_LOAD
+import expo.modules.medialibrary.ERROR_UNABLE_TO_LOAD_PERMISSION
 import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test

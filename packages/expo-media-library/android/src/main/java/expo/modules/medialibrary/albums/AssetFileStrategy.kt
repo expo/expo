@@ -4,7 +4,7 @@ import android.content.ContentUris
 import android.content.Context
 import android.os.Build
 import android.provider.MediaStore
-import expo.modules.medialibrary.MediaLibraryConstants
+import expo.modules.medialibrary.EXTERNAL_CONTENT_URI
 import expo.modules.medialibrary.MediaLibraryUtils
 import java.io.File
 import java.io.IOException
@@ -25,7 +25,7 @@ internal fun interface AssetFileStrategy {
       }
       val newFile = MediaLibraryUtils.safeMoveFile(src, dir)
       context.contentResolver.delete(
-        MediaLibraryConstants.EXTERNAL_CONTENT,
+        EXTERNAL_CONTENT_URI,
         "${MediaStore.MediaColumns.DATA}=?", arrayOf(src.path)
       )
       newFile

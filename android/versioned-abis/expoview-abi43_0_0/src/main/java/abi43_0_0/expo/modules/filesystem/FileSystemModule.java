@@ -807,7 +807,6 @@ public class FileSystemModule extends ExportedModule implements ActivityEventLis
         promise.reject("ERR_FILESYSTEM_MISSING_UPLOAD_TYPE", "Missing upload type.", null);
         return null;
       }
-      UploadType uploadType = UploadType.fromInt(((Double) options.get("uploadType")).intValue());
 
       Request.Builder requestBuilder = new Request.Builder().url(url);
       if (options.containsKey(HEADER_KEY)) {
@@ -817,45 +816,48 @@ public class FileSystemModule extends ExportedModule implements ActivityEventLis
         }
       }
 
-      File file = uriToFile(fileUri);
-      if (uploadType == UploadType.BINARY_CONTENT) {
-        RequestBody body = decorator.decorate(RequestBody.create(null, file));
-        requestBuilder.method(method, body);
-      } else if (uploadType == UploadType.MULTIPART) {
-        MultipartBody.Builder bodyBuilder = new MultipartBody.Builder().setType(MultipartBody.FORM);
-
-        if (options.containsKey("parameters")) {
-          Map<String, Object> parametersMap = (Map<String, Object>) options.get("parameters");
-          for (String key : parametersMap.keySet()) {
-            bodyBuilder.addFormDataPart(key, String.valueOf(parametersMap.get(key)));
-          }
-        }
-
-        String mimeType;
-        if (options.containsKey("mimeType")) {
-          mimeType = (String) options.get("mimeType");
-        } else {
-          mimeType = URLConnection.guessContentTypeFromName(file.getName());
-        }
-
-        String fieldName = file.getName();
-        if (options.containsKey("fieldName")) {
-          fieldName = (String) options.get("fieldName");
-        }
-
-        bodyBuilder.addFormDataPart(fieldName, file.getName(), decorator.decorate(RequestBody.create(mimeType != null ? MediaType.parse(mimeType) : null, file)));
-        requestBuilder.method(method, bodyBuilder.build());
-        return requestBuilder.build();
-      } else {
-        promise.reject("ERR_FILESYSTEM_INVALID_UPLOAD_TYPE", String.format("Invalid upload type: %s.", options.get("uploadType")), null);
-        return null;
-      }
+      RequestBody body = this.createRequestBody(options, decorator, uriToFile(fileUri));
+      return requestBuilder.method(method, body).build();
     } catch (Exception e) {
       Log.e(TAG, e.getMessage());
       promise.reject(e);
     }
 
     return null;
+  }
+
+  private RequestBody createRequestBody(final Map<String, Object> options, final RequestBodyDecorator decorator, final File file) {
+    UploadType uploadType = UploadType.fromInt(((Double) options.get("uploadType")).intValue());
+
+    if (uploadType == UploadType.BINARY_CONTENT) {
+      return decorator.decorate(RequestBody.create(null, file));
+    } else if (uploadType == UploadType.MULTIPART) {
+      MultipartBody.Builder bodyBuilder = new MultipartBody.Builder().setType(MultipartBody.FORM);
+
+      if (options.containsKey("parameters")) {
+        Map<String, Object> parametersMap = (Map<String, Object>) options.get("parameters");
+        for (String key : parametersMap.keySet()) {
+          bodyBuilder.addFormDataPart(key, String.valueOf(parametersMap.get(key)));
+        }
+      }
+
+      String mimeType;
+      if (options.containsKey("mimeType")) {
+        mimeType = (String) options.get("mimeType");
+      } else {
+        mimeType = URLConnection.guessContentTypeFromName(file.getName());
+      }
+
+      String fieldName = file.getName();
+      if (options.containsKey("fieldName")) {
+        fieldName = (String) options.get("fieldName");
+      }
+
+      bodyBuilder.addFormDataPart(fieldName, file.getName(), decorator.decorate(RequestBody.create(mimeType != null ? MediaType.parse(mimeType) : null, file)));
+      return bodyBuilder.build();
+    } else {
+      throw new IllegalArgumentException("ERR_FILESYSTEM_INVALID_UPLOAD_TYPE. " + String.format("Invalid upload type: %s.", options.get("uploadType")));
+    }
   }
 
   @ExpoMethod

@@ -1,7 +1,9 @@
 package expo.modules.medialibrary.assets
 
 import android.provider.MediaStore
-import expo.modules.medialibrary.MediaLibraryConstants
+import expo.modules.medialibrary.GET_ASSETS_DEFAULT_LIMIT
+import expo.modules.medialibrary.MediaType
+import expo.modules.medialibrary.SortBy
 import io.mockk.clearAllMocks
 import io.mockk.every
 import io.mockk.mockkStatic
@@ -24,11 +26,11 @@ internal class GetAssetsQueryTests {
     val limit = 21.0
     val offset = "37"
     val album = "sampleAlbumId"
-    val mediaTypes = listOf(MediaLibraryConstants.MEDIA_TYPE_PHOTO)
+    val mediaTypes = listOf(MediaType.PHOTO.apiName)
     val createdBefore = 6789.0
     val createdAfter = 2345.0
     val sortBy = listOf(
-      ArrayList(listOf(MediaLibraryConstants.SORT_BY_DEFAULT, true))
+      ArrayList(listOf(SortBy.DEFAULT.keyName, true))
     )
 
     val inputMap = mapOf(
@@ -67,7 +69,7 @@ internal class GetAssetsQueryTests {
     val queryInfo = getQueryFromOptions(emptyMap())
 
     // assert
-    assertEquals(20, queryInfo.limit)
+    assertEquals(GET_ASSETS_DEFAULT_LIMIT, queryInfo.limit)
     assertEquals(0, queryInfo.offset)
     assertEquals(expectedSelection, queryInfo.selection)
     assertEquals(MediaStore.Images.Media.DEFAULT_SORT_ORDER, queryInfo.order)
