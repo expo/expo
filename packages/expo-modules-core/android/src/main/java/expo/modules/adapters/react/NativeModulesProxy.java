@@ -14,6 +14,8 @@ import expo.modules.core.ExportedModule;
 import expo.modules.core.ModuleRegistry;
 import expo.modules.core.ViewManager;
 import expo.modules.core.interfaces.ExpoMethod;
+import expo.modules.kotlin.ExpoModulesHelper;
+import expo.modules.kotlin.KotlinInteropModuleRegistry;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -21,6 +23,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import javax.annotation.Nullable;
 
@@ -45,12 +48,19 @@ public class NativeModulesProxy extends ReactContextBaseJavaModule {
   private ModuleRegistry mModuleRegistry;
   private Map<String, Map<String, Integer>> mExportedMethodsKeys;
   private Map<String, SparseArray<String>> mExportedMethodsReverseKeys;
+  private KotlinInteropModuleRegistry mKotlinInteropModuleRegistry;
 
   public NativeModulesProxy(ReactApplicationContext context, ModuleRegistry moduleRegistry) {
     super(context);
     mModuleRegistry = moduleRegistry;
     mExportedMethodsKeys = new HashMap<>();
     mExportedMethodsReverseKeys = new HashMap<>();
+
+
+    mKotlinInteropModuleRegistry = new KotlinInteropModuleRegistry(
+      Objects.requireNonNull(ExpoModulesHelper.Companion.getModulesProvider()),
+      moduleRegistry
+    );
   }
 
   @Override
@@ -78,6 +88,12 @@ public class NativeModulesProxy extends ReactContextBaseJavaModule {
 
       exportedMethodsMap.put(moduleName, exportedMethods);
     }
+
+    modulesConstants.putAll(mKotlinInteropModuleRegistry.exportedModulesConstants());
+    exportedMethodsMap.putAll(mKotlinInteropModuleRegistry.exportMethods((name, info) -> {
+      assignExportedMethodsKeys(name, (List<Map<String, Object>>) info);
+      return null;
+    }));
 
     for (ViewManager viewManager : viewManagers) {
       viewManagersNames.add(viewManager.getName());
@@ -107,6 +123,11 @@ public class NativeModulesProxy extends ReactContextBaseJavaModule {
       methodName = mExportedMethodsReverseKeys.get(moduleName).get(methodKeyOrName.asInt());
     } else {
       promise.reject(UNEXPECTED_ERROR, "Method key is neither a String nor an Integer -- don't know how to map it to method name.");
+      return;
+    }
+
+    if (mKotlinInteropModuleRegistry.hasModule(moduleName)) {
+      mKotlinInteropModuleRegistry.callMethod(moduleName, methodName, arguments, new PromiseWrapper(promise));
       return;
     }
 
