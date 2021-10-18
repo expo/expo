@@ -24,7 +24,7 @@ class TypeMapperTest {
 
     val casted = TypeMapper.cast(dynamic, TypeInformation(Int::class.java, true))
 
-    Truth.assertThat(casted).isEqualTo(20)
+    Truth.assertThat(casted).isEqualTo(null)
   }
 
   @Test
