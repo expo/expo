@@ -287,6 +287,9 @@ public class UpdatesController {
       mIsEmergencyLaunch = true;
     }
 
+    ErrorRecovery errorRecovery = new ErrorRecovery();
+    errorRecovery.registerObservers(mReactNativeHost.get());
+
     new LoaderTask(mUpdatesConfiguration, mDatabaseHolder, mUpdatesDirectory, mFileDownloader, getSelectionPolicy(), new LoaderTask.LoaderTaskCallback() {
       @Override
       public void onFailure(Exception e) {
