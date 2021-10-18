@@ -816,7 +816,7 @@ public class FileSystemModule extends ExportedModule implements ActivityEventLis
         }
       }
 
-      RequestBody body = this.createRequestBody(requestBuilder, decorator, uriToFile(fileUri), options);
+      RequestBody body = this.createRequestBody(options, decorator, uriToFile(fileUri));
       return requestBuilder.method(method, body).build();
     } catch (Exception e) {
       Log.e(TAG, e.getMessage());
@@ -826,7 +826,7 @@ public class FileSystemModule extends ExportedModule implements ActivityEventLis
     return null;
   }
 
-  private RequestBody createRequestBody(Request.Builder requestBuilder, RequestBodyDecorator decorator, File file, Map<String, Object> options) {
+  private RequestBody createRequestBody(final Map<String, Object> options, final RequestBodyDecorator decorator, final File file) {
     UploadType uploadType = UploadType.fromInt(((Double) options.get("uploadType")).intValue());
 
     if (uploadType == UploadType.BINARY_CONTENT) {
