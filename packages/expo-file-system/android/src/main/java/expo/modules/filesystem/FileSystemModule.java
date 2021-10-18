@@ -395,7 +395,7 @@ public class FileSystemModule extends ExportedModule implements ActivityEventLis
             promise.resolve(null);
           } else {
             promise.reject("ERR_FILESYSTEM_CANNOT_FIND_FILE",
-                    "File '" + uri + "' could not be deleted because it could not be found");
+              "File '" + uri + "' could not be deleted because it could not be found");
           }
         }
       } else if (isSAFUri(uri)) {
@@ -408,7 +408,7 @@ public class FileSystemModule extends ExportedModule implements ActivityEventLis
             promise.resolve(null);
           } else {
             promise.reject("ERR_FILESYSTEM_CANNOT_FIND_FILE",
-                    "File '" + uri + "' could not be deleted because it could not be found");
+              "File '" + uri + "' could not be deleted because it could not be found");
           }
         }
       } else {
@@ -443,7 +443,7 @@ public class FileSystemModule extends ExportedModule implements ActivityEventLis
           promise.resolve(null);
         } else {
           promise.reject("ERR_FILESYSTEM_CANNOT_MOVE_FILE",
-                  "File '" + fromUri + "' could not be moved to '" + toUri + "'");
+            "File '" + fromUri + "' could not be moved to '" + toUri + "'");
         }
       } else if (isSAFUri(fromUri)) {
         DocumentFile documentFile = getNearestSAFFile(fromUri);
@@ -575,7 +575,7 @@ public class FileSystemModule extends ExportedModule implements ActivityEventLis
           promise.resolve(null);
         } else {
           promise.reject("ERR_FILESYSTEM_CANNOT_CREATE_DIRECTORY",
-                  "Directory '" + uri + "' could not be created or already exists.");
+            "Directory '" + uri + "' could not be created or already exists.");
         }
       } else {
         throw new IOException("Unsupported scheme for location '" + uri + "'.");
@@ -602,11 +602,11 @@ public class FileSystemModule extends ExportedModule implements ActivityEventLis
           promise.resolve(result);
         } else {
           promise.reject("ERR_FILESYSTEM_CANNOT_READ_DIRECTORY",
-                  "Directory '" + uri + "' could not be read.");
+            "Directory '" + uri + "' could not be read.");
         }
       } else if (isSAFUri(uri)) {
         promise.reject("ERR_FILESYSTEM_UNSUPPORTED_SCHEME",
-                "Can't read Storage Access Framework directory, use StorageAccessFramework.readDirectoryAsync() instead.");
+          "Can't read Storage Access Framework directory, use StorageAccessFramework.readDirectoryAsync() instead.");
       } else {
         throw new IOException("Unsupported scheme for location '" + uri + "'.");
       }
@@ -686,7 +686,7 @@ public class FileSystemModule extends ExportedModule implements ActivityEventLis
         DocumentFile file = DocumentFile.fromTreeUri(getContext(), uri);
         if (file == null || !file.exists() || !file.isDirectory()) {
           promise.reject("ERR_FILESYSTEM_CANNOT_READ_DIRECTORY",
-                  "Uri '" + uri + "' doesn't exist or isn't a directory.");
+            "Uri '" + uri + "' doesn't exist or isn't a directory.");
           return;
         }
         DocumentFile[] children = file.listFiles();
@@ -816,7 +816,7 @@ public class FileSystemModule extends ExportedModule implements ActivityEventLis
         }
       }
 
-      RequestBody body = this.createRequestBody(options, decorator, uriToFile(fileUri));
+      RequestBody body = this.createRequestBody(requestBuilder, decorator, uriToFile(fileUri), options);
       return requestBuilder.method(method, body).build();
     } catch (Exception e) {
       Log.e(TAG, e.getMessage());
@@ -826,7 +826,7 @@ public class FileSystemModule extends ExportedModule implements ActivityEventLis
     return null;
   }
 
-  private RequestBody createRequestBody(final Map<String, Object> options, final RequestBodyDecorator decorator, final File file) {
+  private RequestBody createRequestBody(Request.Builder requestBuilder, RequestBodyDecorator decorator, File file, Map<String, Object> options) {
     UploadType uploadType = UploadType.fromInt(((Double) options.get("uploadType")).intValue());
 
     if (uploadType == UploadType.BINARY_CONTENT) {
@@ -924,11 +924,11 @@ public class FileSystemModule extends ExportedModule implements ActivityEventLis
     };
 
     Request request = createUploadRequest(
-            url,
-            fileUriString,
-            options,
-            promise,
-            requestBody -> new CountingRequestBody(requestBody, progressListener)
+      url,
+      fileUriString,
+      options,
+      promise,
+      requestBody -> new CountingRequestBody(requestBody, progressListener)
     );
     if (request == null) {
       return;
@@ -1092,17 +1092,17 @@ public class FileSystemModule extends ExportedModule implements ActivityEventLis
       };
 
       OkHttpClient client =
-              getOkHttpClient().newBuilder()
-                      .addNetworkInterceptor(new Interceptor() {
-                        @Override
-                        public Response intercept(Chain chain) throws IOException {
-                          Response originalResponse = chain.proceed(chain.request());
-                          return originalResponse.newBuilder()
-                                  .body(new ProgressResponseBody(originalResponse.body(), progressListener))
-                                  .build();
-                        }
-                      })
-                      .build();
+        getOkHttpClient().newBuilder()
+          .addNetworkInterceptor(new Interceptor() {
+            @Override
+            public Response intercept(Chain chain) throws IOException {
+              Response originalResponse = chain.proceed(chain.request());
+              return originalResponse.newBuilder()
+                .body(new ProgressResponseBody(originalResponse.body(), progressListener))
+                .build();
+            }
+          })
+          .build();
 
       Request.Builder requestBuilder = new Request.Builder();
       if (isResume) {
@@ -1169,7 +1169,7 @@ public class FileSystemModule extends ExportedModule implements ActivityEventLis
         Uri treeUri = data.getData();
 
         final int takeFlags = data.getFlags()
-                & (Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+          & (Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
         activity.getContentResolver().takePersistableUriPermission(treeUri, takeFlags);
 
         result.putBoolean("granted", true);
@@ -1294,8 +1294,8 @@ public class FileSystemModule extends ExportedModule implements ActivityEventLis
       // multiple values for the same header
       if (responseHeaders.get(headerName) != null) {
         responseHeaders.putString(
-                headerName,
-                responseHeaders.getString(headerName) + ", " + headers.value(i));
+          headerName,
+          responseHeaders.getString(headerName) + ", " + headers.value(i));
       } else {
         responseHeaders.putString(headerName, headers.value(i));
       }
@@ -1373,10 +1373,10 @@ public class FileSystemModule extends ExportedModule implements ActivityEventLis
   private synchronized OkHttpClient getOkHttpClient() {
     if (mClient == null) {
       OkHttpClient.Builder builder =
-              new OkHttpClient.Builder()
-                      .connectTimeout(60, TimeUnit.SECONDS)
-                      .readTimeout(60, TimeUnit.SECONDS)
-                      .writeTimeout(60, TimeUnit.SECONDS);
+        new OkHttpClient.Builder()
+          .connectTimeout(60, TimeUnit.SECONDS)
+          .readTimeout(60, TimeUnit.SECONDS)
+          .writeTimeout(60, TimeUnit.SECONDS);
 
       CookieHandler cookieHandler = mModuleRegistry.getModule(CookieHandler.class);
       if (cookieHandler != null) {
