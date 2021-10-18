@@ -2,22 +2,15 @@ package expo.modules.kotlin.methods
 
 import com.facebook.react.bridge.ReadableArray
 import expo.modules.core.Promise
-import expo.modules.kotlin.modules.Module
 
 class Method(
   name: String,
   argsType: Array<TypeInformation<*>>,
   private val body: (args: Array<out Any?>) -> Any
 ) : AnyMethod(name, argsType) {
-  constructor(
-    name: String,
-    argsType: Array<Class<*>>,
-    body: (args: Array<out Any?>) -> Any
-  ) : this(name, argsType.map { TypeInformation(it, false) }.toTypedArray(), body)
-
-  override fun call(module: Module, args: ReadableArray, promise: Promise) {
+  override fun call(args: ReadableArray, promise: Promise) {
     try {
-      promise.resolve(body(castArguments(module, args)))
+      promise.resolve(body(castArguments(args)))
     } catch (e: Throwable) {
       promise.reject("ExpoModuleCore", e.message, e)
     }

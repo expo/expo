@@ -3,13 +3,9 @@ package expo.modules.kotlin
 import com.facebook.react.bridge.ReadableArray
 import expo.modules.core.Promise
 import expo.modules.kotlin.modules.Module
-import expo.modules.kotlin.modules.ModuleDefinition
 
-class ModuleHolder(val definition: ModuleDefinition) {
-  val module by lazy<Module> {
-    definition.type.newInstance()
-  }
-
+class ModuleHolder(val module: Module) {
+  val definition = module.definition()
   val name get() = definition.name
 
   fun call(methodName: String, args: ReadableArray, promise: Promise) {
@@ -19,6 +15,6 @@ class ModuleHolder(val definition: ModuleDefinition) {
       return
     }
 
-    method.call(module, args, promise)
+    method.call(args, promise)
   }
 }

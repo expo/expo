@@ -3,21 +3,18 @@ package expo.modules.kotlin
 import com.google.common.truth.Truth
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.module
+import org.junit.Assert
 import org.junit.Test
 
 class M1 : Module() {
-  companion object : ModuleDefinitionProvider {
-    override fun definition() = module {
-      name("m1")
-    }
+  override fun definition() = module {
+    name("m1")
   }
 }
 
 class M2 : Module() {
-  companion object : ModuleDefinitionProvider {
-    override fun definition() = module {
-      name("m2")
-    }
+  override fun definition() = module {
+    name("m2")
   }
 }
 
@@ -44,8 +41,10 @@ class ModuleRegistryTest {
   }
 
   @Test
-  fun `should ignore incorrect definition`() {
-    class IncorrectModule : Module()
+  fun `should throw on incorrect definition`() {
+    class IncorrectModule : Module() {
+      override fun definition() = module { }
+    }
 
     val provider = object : ModulesProvider {
       override fun getModulesList(): List<Class<out Module>> {
@@ -54,8 +53,10 @@ class ModuleRegistryTest {
     }
     val moduleRegistry = ModuleRegistry()
 
-    moduleRegistry.register(provider)
-
-    Truth.assertThat(moduleRegistry.toList()).isEmpty()
+    try {
+      moduleRegistry.register(provider)
+      Assert.fail("Module registry should throw.")
+    } catch (e: Exception) {
+    }
   }
 }
