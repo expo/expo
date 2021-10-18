@@ -1,9 +1,6 @@
 package expo.modules.kotlin.modules
 
 import com.google.common.truth.Truth
-import com.google.gson.Gson
-import com.google.gson.internal.`$Gson$Types`
-import com.google.gson.reflect.TypeToken
 import expo.modules.core.Promise
 import org.junit.Assert
 import org.junit.Test
@@ -41,18 +38,5 @@ class ModuleDefinitionBuilderTest {
     Truth.assertThat(moduleDefinition.constantsProvider()).isSameInstanceAs(moduleConstants)
     Truth.assertThat(moduleDefinition.methods).containsKey("m1")
     Truth.assertThat(moduleDefinition.methods).containsKey("m2")
-  }
-
-  @Test
-  fun `can interfere complex type`() {
-    val typeToken = object : TypeToken<Array<String>>() {}
-    typeToken.type
-    val elementType = `$Gson$Types`.getCollectionElementType(typeToken.type, typeToken.rawType)
-
-
-    val list = Gson().fromJson<List<String>>("""
-      ["123", "3123", "312"]
-    """.trimIndent(), object : TypeToken<List<String>>() {}.type)
-
   }
 }

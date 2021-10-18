@@ -56,7 +56,6 @@ public class NativeModulesProxy extends ReactContextBaseJavaModule {
     mExportedMethodsKeys = new HashMap<>();
     mExportedMethodsReverseKeys = new HashMap<>();
 
-
     mKotlinInteropModuleRegistry = new KotlinInteropModuleRegistry(
       Objects.requireNonNull(ExpoModulesHelper.Companion.getModulesProvider()),
       moduleRegistry
