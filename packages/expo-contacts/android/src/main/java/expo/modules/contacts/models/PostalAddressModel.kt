@@ -53,16 +53,13 @@ class PostalAddressModel : BaseModel() {
       .build()
   }
 
-  override val contentValues: ContentValues
-    get() {
-      val values = super.contentValues
-      values.put(ContactsContract.CommonDataKinds.StructuredPostal.STREET, getString("street"))
-      values.put(ContactsContract.CommonDataKinds.StructuredPostal.CITY, getString("city"))
-      values.put(ContactsContract.CommonDataKinds.StructuredPostal.REGION, getString("region"))
-      values.put(ContactsContract.CommonDataKinds.StructuredPostal.COUNTRY, getString("country"))
-      values.put(ContactsContract.CommonDataKinds.StructuredPostal.POSTCODE, getString("postalCode"))
-      return values
-    }
+  override val contentValues = super.contentValues.apply {
+    put(ContactsContract.CommonDataKinds.StructuredPostal.STREET, getString("street"))
+    put(ContactsContract.CommonDataKinds.StructuredPostal.CITY, getString("city"))
+    put(ContactsContract.CommonDataKinds.StructuredPostal.REGION, getString("region"))
+    put(ContactsContract.CommonDataKinds.StructuredPostal.COUNTRY, getString("country"))
+    put(ContactsContract.CommonDataKinds.StructuredPostal.POSTCODE, getString("postalCode"))
+  }
 
   override fun getLabelFromCursor(cursor: Cursor) = super.getLabelFromCursor(cursor)
     ?: when (cursor.getInt(cursor.getColumnIndex(EXColumns.TYPE))) {
