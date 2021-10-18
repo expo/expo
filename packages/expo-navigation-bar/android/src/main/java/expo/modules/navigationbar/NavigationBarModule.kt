@@ -81,7 +81,7 @@ class NavigationBarModule(context: Context) : ExportedModule(context) {
   @ExpoMethod
   fun setButtonStyleAsync(buttonStyle: String, promise: Promise) {
     safeRunOnUiThread(promise) {
-      NavigationBar.setBarStyle(
+      NavigationBar.setButtonStyle(
         it, buttonStyle,
         {
           promise.resolve(null)
