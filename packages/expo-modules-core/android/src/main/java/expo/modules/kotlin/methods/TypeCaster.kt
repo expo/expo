@@ -4,8 +4,8 @@ import com.facebook.react.bridge.Dynamic
 import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.bridge.ReadableMap
 
-interface TypeCaster<To> {
-  fun cast(value: Dynamic): To
+interface TypeCaster<CastedType> {
+  fun cast(value: Dynamic): CastedType
 }
 
 class IntCaster : TypeCaster<Int> {
