@@ -1,33 +1,21 @@
 package expo.modules.contacts.models
 
-import expo.modules.contacts.models.BaseModel.fromCursor
-import expo.modules.contacts.models.BaseModel.putString
-import expo.modules.contacts.models.BaseModel.fromMap
-import expo.modules.contacts.models.BaseModel.mapValue
-import expo.modules.contacts.models.BaseModel.type
-import expo.modules.contacts.models.BaseModel.getString
-import expo.modules.contacts.models.BaseModel.contentValues
-import expo.modules.contacts.models.BaseModel.getLabelFromCursor
-import android.provider.ContactsContract
-import android.content.ContentProviderOperation
-import expo.modules.contacts.EXColumns
-import android.content.ContentValues
 import android.database.Cursor
+import android.provider.ContactsContract
+import android.content.ContentValues
+import android.content.ContentProviderOperation
+
+import expo.modules.contacts.EXColumns
 
 class PostalAddressModel : BaseModel() {
-  override val contentType: String
-    get() = ContactsContract.CommonDataKinds.StructuredPostal.CONTENT_ITEM_TYPE
-  override val dataAlias: String
-    get() = "formattedAddress"
+  override val contentType = ContactsContract.CommonDataKinds.StructuredPostal.CONTENT_ITEM_TYPE
 
-  override fun mapStringToType(label: String?): Int {
-    val postalAddressType: Int
-    postalAddressType = when (label) {
-      "home" -> ContactsContract.CommonDataKinds.StructuredPostal.TYPE_HOME
-      "work" -> ContactsContract.CommonDataKinds.StructuredPostal.TYPE_WORK
-      else -> ContactsContract.CommonDataKinds.StructuredPostal.TYPE_OTHER
-    }
-    return postalAddressType
+  override val dataAlias = "formattedAddress"
+
+  override fun mapStringToType(label: String?) = when (label) {
+    "home" -> ContactsContract.CommonDataKinds.StructuredPostal.TYPE_HOME
+    "work" -> ContactsContract.CommonDataKinds.StructuredPostal.TYPE_WORK
+    else -> ContactsContract.CommonDataKinds.StructuredPostal.TYPE_OTHER
   }
 
   override fun fromCursor(cursor: Cursor) {
@@ -56,13 +44,13 @@ class PostalAddressModel : BaseModel() {
       op.withValue(ContactsContract.Data.RAW_CONTACT_ID, rawId)
     }
     return op.withValue(EXColumns.MIMETYPE, contentType)
-        .withValue(ContactsContract.CommonDataKinds.StructuredPostal.TYPE, type)
-        .withValue(ContactsContract.CommonDataKinds.StructuredPostal.STREET, getString("street"))
-        .withValue(ContactsContract.CommonDataKinds.StructuredPostal.CITY, getString("city"))
-        .withValue(ContactsContract.CommonDataKinds.StructuredPostal.REGION, getString("region"))
-        .withValue(ContactsContract.CommonDataKinds.StructuredPostal.POSTCODE, getString("postalCode"))
-        .withValue(ContactsContract.CommonDataKinds.StructuredPostal.COUNTRY, getString("country"))
-        .build()
+      .withValue(ContactsContract.CommonDataKinds.StructuredPostal.TYPE, type)
+      .withValue(ContactsContract.CommonDataKinds.StructuredPostal.STREET, getString("street"))
+      .withValue(ContactsContract.CommonDataKinds.StructuredPostal.CITY, getString("city"))
+      .withValue(ContactsContract.CommonDataKinds.StructuredPostal.REGION, getString("region"))
+      .withValue(ContactsContract.CommonDataKinds.StructuredPostal.POSTCODE, getString("postalCode"))
+      .withValue(ContactsContract.CommonDataKinds.StructuredPostal.COUNTRY, getString("country"))
+      .build()
   }
 
   override val contentValues: ContentValues
@@ -76,14 +64,11 @@ class PostalAddressModel : BaseModel() {
       return values
     }
 
-  override fun getLabelFromCursor(cursor: Cursor): String? {
-    val label = super.getLabelFromCursor(cursor)
-    return label
-        ?: when (cursor.getInt(cursor.getColumnIndex(EXColumns.TYPE))) {
-          ContactsContract.CommonDataKinds.StructuredPostal.TYPE_HOME -> "home"
-          ContactsContract.CommonDataKinds.StructuredPostal.TYPE_WORK -> "work"
-          ContactsContract.CommonDataKinds.StructuredPostal.TYPE_OTHER -> "other"
-          else -> "unknown"
-        }
-  }
+  override fun getLabelFromCursor(cursor: Cursor) = super.getLabelFromCursor(cursor)
+    ?: when (cursor.getInt(cursor.getColumnIndex(EXColumns.TYPE))) {
+      ContactsContract.CommonDataKinds.StructuredPostal.TYPE_HOME -> "home"
+      ContactsContract.CommonDataKinds.StructuredPostal.TYPE_WORK -> "work"
+      ContactsContract.CommonDataKinds.StructuredPostal.TYPE_OTHER -> "other"
+      else -> "unknown"
+    }
 }
