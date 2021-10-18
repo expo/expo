@@ -11,9 +11,6 @@ Package-specific changes not released in any SDK will be added here just before 
 
 ### 🎉 New features
 
-- **`expo-updates`**
-  - Updated `config-plugins` from `3.1.0` to `4.0.2`. ([#`4788](https://github.com/expo/expo/pull/14788) by [@jkhales](https://github.com/jkhales))
-
 ### 🐛 Bug fixes
 
 ## 43.0.0 — 2021-10-01
