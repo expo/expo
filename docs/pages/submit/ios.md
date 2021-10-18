@@ -55,7 +55,10 @@ The command will perform the following steps:
 
 The `eas submit` command is able to perform submissions from a CI environment. All you have to do is ensure that all required information is provided with `eas.json` and environment variables. Mainly, providing the archive source (`--latest`, `--id`, `--path`, or `--url`) is essential. Also, make sure that the iOS Bundle Identifier is present in your [app config file](/workflow/configuration.md).
 
-For iOS submissions, you must provide `EXPO_APPLE_APP_SPECIFIC_PASSWORD` environment variable along with Apple ID and ASC App ID (`appleId` and `ascAppId` in `eas.json`). The ASC App ID is required to skip the Apple developer log-in process, which will likely not be possible on CI due to the 2FA prompt.
+For iOS submissions, you must provide either:
+
+- `EXPO_APPLE_APP_SPECIFIC_PASSWORD` environment variable along with Apple ID and ASC App ID (`appleId` and `ascAppId` in `eas.json`). The ASC App ID is required to skip the Apple developer log-in process, which will likely not be possible on CI due to the 2FA prompt.
+- Your App Store Connect Api Key with the `ascApiKeyPath`, `ascApiKeyIssuerId`, and `ascApiKeyId` fields set in `eas.json`.
 
 Example usage:
 
