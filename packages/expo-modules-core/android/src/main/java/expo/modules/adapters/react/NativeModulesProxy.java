@@ -83,7 +83,7 @@ public class NativeModulesProxy extends ReactContextBaseJavaModule {
       viewManagersNames.add(viewManager.getName());
     }
 
-    Map<String, Object> constants = new HashMap<>(2);
+    Map<String, Object> constants = new HashMap<>(3);
     constants.put(MODULES_CONSTANTS_KEY, modulesConstants);
     constants.put(EXPORTED_METHODS_KEY, exportedMethodsMap);
     constants.put(VIEW_MANAGERS_NAMES_KEY, viewManagersNames);
@@ -157,7 +157,7 @@ public class NativeModulesProxy extends ReactContextBaseJavaModule {
    * Returns methodInfo Map (a Map containing a value for key argumentsCount).
    */
   private Map<String, Object> getMethodInfo(String name, Method method) {
-    Map<String, Object> info = new HashMap<>(1);
+    Map<String, Object> info = new HashMap<>(2);
     info.put(METHOD_INFO_NAME, name);
     info.put(METHOD_INFO_ARGUMENTS_COUNT, method.getParameterTypes().length - 1); // - 1 is for the Promise
     return info;
