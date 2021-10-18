@@ -2,7 +2,6 @@ package expo.modules.contacts.models
 
 import android.database.Cursor
 import android.provider.ContactsContract
-import android.content.ContentValues
 import android.content.ContentProviderOperation
 
 import expo.modules.contacts.EXColumns

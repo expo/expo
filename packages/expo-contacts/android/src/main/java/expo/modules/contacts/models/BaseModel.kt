@@ -46,20 +46,22 @@ open class BaseModel internal constructor() : CommonProvider {
       op.withValue(ContactsContract.Data.RAW_CONTACT_ID, rawId)
     }
     return op.withValue(EXColumns.MIMETYPE, contentType)
-        .withValue(EXColumns.TYPE, mapStringToType(label))
-        .withValue(EXColumns.DATA, data)
-        .withValue(EXColumns.ID, id)
-        .build()
+      .withValue(EXColumns.TYPE, mapStringToType(label))
+      .withValue(EXColumns.DATA, data)
+      .withValue(EXColumns.ID, id)
+      .build()
   }
 
   fun getDeleteOperation(rawId: String?) =
     ContentProviderOperation.newDelete(ContactsContract.Data.CONTENT_URI)
-    .withSelection(
-        String.format("%s=? AND %s=?",
-            ContactsContract.Data.MIMETYPE,
-            ContactsContract.Data.RAW_CONTACT_ID),
+      .withSelection(
+        String.format(
+          "%s=? AND %s=?",
+          ContactsContract.Data.MIMETYPE,
+          ContactsContract.Data.RAW_CONTACT_ID
+        ),
         arrayOf(contentType, rawId)
-    ).build()
+      ).build()
 
   val id: String?
     get() = getString(idAlias)
@@ -76,7 +78,7 @@ open class BaseModel internal constructor() : CommonProvider {
     if (map.containsKey(key)) map.getString(key) else null
 
   open fun fromMap(readableMap: Map<String, Any?>) {
-    readableMap.keys.forEach {key -> mapValue(readableMap, key) }
+    readableMap.keys.forEach { key -> mapValue(readableMap, key) }
   }
 
   protected open fun getLabelFromCursor(cursor: Cursor): String? =
@@ -88,7 +90,7 @@ open class BaseModel internal constructor() : CommonProvider {
   protected fun putString(cursor: Cursor, key: String?, androidKey: String?) {
     val index = cursor.getColumnIndex(androidKey)
     if (index == -1) {
-      //TODO:Bacon: Log instances
+      // TODO:Bacon: Log instances
       return
     }
     val value = cursor.getString(index)
@@ -98,7 +100,7 @@ open class BaseModel internal constructor() : CommonProvider {
   protected fun putInt(cursor: Cursor, key: String?, androidKey: String?) {
     val index = cursor.getColumnIndex(androidKey)
     if (index == -1) {
-      //TODO:Bacon: Log instances
+      // TODO:Bacon: Log instances
       return
     }
     val value = cursor.getInt(index)

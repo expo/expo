@@ -177,36 +177,36 @@ class Contact(internal var contactId: String) {
   fun toInsertOperationList(): ArrayList<ContentProviderOperation> {
     val ops = ArrayList<ContentProviderOperation>()
     var op = ContentProviderOperation.newInsert(RawContacts.CONTENT_URI)
-        .withValue(RawContacts.ACCOUNT_TYPE, null)
-        .withValue(RawContacts.ACCOUNT_NAME, null)
+      .withValue(RawContacts.ACCOUNT_TYPE, null)
+      .withValue(RawContacts.ACCOUNT_NAME, null)
     ops.add(op.build())
 
     op = ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
-        .withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, 0)
-        .withValue(ContactsContract.Data.MIMETYPE, StructuredName.CONTENT_ITEM_TYPE)
-        .withValue(StructuredName.DISPLAY_NAME, displayName)
-        .withValue(StructuredName.GIVEN_NAME, firstName)
-        .withValue(StructuredName.MIDDLE_NAME, middleName)
-        .withValue(StructuredName.FAMILY_NAME, lastName)
-        .withValue(StructuredName.PHONETIC_GIVEN_NAME, phoneticFirstName)
-        .withValue(StructuredName.PHONETIC_MIDDLE_NAME, phoneticMiddleName)
-        .withValue(StructuredName.PHONETIC_FAMILY_NAME, phoneticLastName)
-        .withValue(StructuredName.PREFIX, prefix)
-        .withValue(StructuredName.SUFFIX, suffix)
+      .withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, 0)
+      .withValue(ContactsContract.Data.MIMETYPE, StructuredName.CONTENT_ITEM_TYPE)
+      .withValue(StructuredName.DISPLAY_NAME, displayName)
+      .withValue(StructuredName.GIVEN_NAME, firstName)
+      .withValue(StructuredName.MIDDLE_NAME, middleName)
+      .withValue(StructuredName.FAMILY_NAME, lastName)
+      .withValue(StructuredName.PHONETIC_GIVEN_NAME, phoneticFirstName)
+      .withValue(StructuredName.PHONETIC_MIDDLE_NAME, phoneticMiddleName)
+      .withValue(StructuredName.PHONETIC_FAMILY_NAME, phoneticLastName)
+      .withValue(StructuredName.PREFIX, prefix)
+      .withValue(StructuredName.SUFFIX, suffix)
     ops.add(op.build())
 
     op = ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
-        .withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, 0)
-        .withValue(EXColumns.MIMETYPE, CommonDataKinds.Organization.CONTENT_ITEM_TYPE)
-        .withValue(CommonDataKinds.Organization.COMPANY, company)
-        .withValue(CommonDataKinds.Organization.TITLE, jobTitle)
-        .withValue(CommonDataKinds.Organization.DEPARTMENT, department)
+      .withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, 0)
+      .withValue(EXColumns.MIMETYPE, CommonDataKinds.Organization.CONTENT_ITEM_TYPE)
+      .withValue(CommonDataKinds.Organization.COMPANY, company)
+      .withValue(CommonDataKinds.Organization.TITLE, jobTitle)
+      .withValue(CommonDataKinds.Organization.DEPARTMENT, department)
     ops.add(op.build())
 
     op = ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
-        .withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, 0)
-        .withValue(EXColumns.MIMETYPE, CommonDataKinds.Note.CONTENT_ITEM_TYPE)
-        .withValue(CommonDataKinds.Note.NOTE, note)
+      .withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, 0)
+      .withValue(EXColumns.MIMETYPE, CommonDataKinds.Note.CONTENT_ITEM_TYPE)
+      .withValue(CommonDataKinds.Note.NOTE, note)
     ops.add(op.build())
 
     op.withYieldAllowed(true)
@@ -214,21 +214,23 @@ class Contact(internal var contactId: String) {
     if (!TextUtils.isEmpty(photoUri) || !TextUtils.isEmpty(rawPhotoUri)) {
       val photo = getThumbnailBitmap(if (TextUtils.isEmpty(rawPhotoUri)) photoUri else rawPhotoUri)
       if (photo != null) {
-        ops.add(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
+        ops.add(
+          ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
             .withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, 0)
             .withValue(EXColumns.MIMETYPE, CommonDataKinds.Photo.CONTENT_ITEM_TYPE)
             .withValue(CommonDataKinds.Photo.PHOTO, toByteArray(photo))
-            .build())
+            .build()
+        )
       }
     }
     // TODO: `addAll` or refractor this somehow
     baseModels
-        .filterNotNull()
-        .forEach { map ->
-          map.forEach { item ->
-            ops.add(item.insertOperation)
-          }
+      .filterNotNull()
+      .forEach { map ->
+        map.forEach { item ->
+          ops.add(item.insertOperation)
         }
+      }
     return ops
   }
 
@@ -238,27 +240,27 @@ class Contact(internal var contactId: String) {
     val ops = arrayListOf<ContentProviderOperation?>()
     var op: ContentProviderOperation.Builder
     op = ContentProviderOperation.newUpdate(ContactsContract.Data.CONTENT_URI)
-        .withSelection(selection, selectionArgs)
-        .withValue(StructuredName.DISPLAY_NAME, displayName)
-        .withValue(StructuredName.GIVEN_NAME, firstName)
-        .withValue(StructuredName.MIDDLE_NAME, middleName)
-        .withValue(StructuredName.FAMILY_NAME, lastName)
-        .withValue(StructuredName.PHONETIC_GIVEN_NAME, phoneticFirstName)
-        .withValue(StructuredName.PHONETIC_MIDDLE_NAME, phoneticMiddleName)
-        .withValue(StructuredName.PHONETIC_FAMILY_NAME, phoneticLastName)
-        .withValue(StructuredName.PREFIX, prefix).withValue(StructuredName.SUFFIX, suffix)
+      .withSelection(selection, selectionArgs)
+      .withValue(StructuredName.DISPLAY_NAME, displayName)
+      .withValue(StructuredName.GIVEN_NAME, firstName)
+      .withValue(StructuredName.MIDDLE_NAME, middleName)
+      .withValue(StructuredName.FAMILY_NAME, lastName)
+      .withValue(StructuredName.PHONETIC_GIVEN_NAME, phoneticFirstName)
+      .withValue(StructuredName.PHONETIC_MIDDLE_NAME, phoneticMiddleName)
+      .withValue(StructuredName.PHONETIC_FAMILY_NAME, phoneticLastName)
+      .withValue(StructuredName.PREFIX, prefix).withValue(StructuredName.SUFFIX, suffix)
     ops.add(op.build())
 
     op = ContentProviderOperation.newUpdate(ContactsContract.Data.CONTENT_URI)
-        .withSelection(selection, selectionArgs)
-        .withValue(CommonDataKinds.Organization.COMPANY, company)
-        .withValue(CommonDataKinds.Organization.TITLE, jobTitle)
-        .withValue(CommonDataKinds.Organization.DEPARTMENT, department)
+      .withSelection(selection, selectionArgs)
+      .withValue(CommonDataKinds.Organization.COMPANY, company)
+      .withValue(CommonDataKinds.Organization.TITLE, jobTitle)
+      .withValue(CommonDataKinds.Organization.DEPARTMENT, department)
     ops.add(op.build())
 
     op = ContentProviderOperation.newUpdate(ContactsContract.Data.CONTENT_URI)
-        .withSelection(selection, arrayOf(contactId, CommonDataKinds.Note.CONTENT_ITEM_TYPE))
-        .withValue(CommonDataKinds.Note.NOTE, note)
+      .withSelection(selection, arrayOf(contactId, CommonDataKinds.Note.CONTENT_ITEM_TYPE))
+      .withValue(CommonDataKinds.Note.NOTE, note)
     ops.add(op.build())
 
     op.withYieldAllowed(true)
@@ -266,26 +268,30 @@ class Contact(internal var contactId: String) {
     if (!TextUtils.isEmpty(photoUri) || !TextUtils.isEmpty(rawPhotoUri)) {
       val photo = getThumbnailBitmap(if (TextUtils.isEmpty(rawPhotoUri)) photoUri else rawPhotoUri)
       if (photo != null) {
-        ops.add(ContentProviderOperation.newDelete(ContactsContract.Data.CONTENT_URI)
+        ops.add(
+          ContentProviderOperation.newDelete(ContactsContract.Data.CONTENT_URI)
             .withSelection(selection, arrayOf(rawContactId, CommonDataKinds.Photo.CONTENT_ITEM_TYPE))
-            .build())
-        ops.add(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
+            .build()
+        )
+        ops.add(
+          ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
             .withValue(ContactsContract.Data.RAW_CONTACT_ID, rawContactId)
             .withValue(EXColumns.MIMETYPE, CommonDataKinds.Photo.CONTENT_ITEM_TYPE)
             .withValue(CommonDataKinds.Photo.PHOTO, toByteArray(photo))
-            .build())
+            .build()
+        )
       }
     }
 
     // TODO: refractor this (maybe for-loop looks better)
     baseModels
-        .filterNotNull()
-        .forEach { map ->
-          map.forEach { item ->
-            ops.add(item.getDeleteOperation(rawContactId))
-            ops.add(item.getInsertOperation(rawContactId))
-          }
+      .filterNotNull()
+      .forEach { map ->
+        map.forEach { item ->
+          ops.add(item.getDeleteOperation(rawContactId))
+          ops.add(item.getInsertOperation(rawContactId))
         }
+      }
 //    for (map in baseModels) {
 //      if (map != null) {
 //        for (item in map) {

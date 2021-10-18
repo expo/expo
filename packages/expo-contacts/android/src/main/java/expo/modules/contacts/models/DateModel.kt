@@ -48,11 +48,11 @@ class DateModel : BaseModel() {
   protected override fun getLabelFromCursor(cursor: Cursor): String {
     val label = super.getLabelFromCursor(cursor)
     return label
-        ?: when (cursor.getInt(cursor.getColumnIndex(EXColumns.TYPE))) {
-          CommonDataKinds.Event.TYPE_ANNIVERSARY -> "anniversary"
-          CommonDataKinds.Event.TYPE_BIRTHDAY -> "birthday"
-          CommonDataKinds.Event.TYPE_OTHER -> "other"
-          else -> "unknown"
-        }
+      ?: when (cursor.getInt(cursor.getColumnIndex(EXColumns.TYPE))) {
+        CommonDataKinds.Event.TYPE_ANNIVERSARY -> "anniversary"
+        CommonDataKinds.Event.TYPE_BIRTHDAY -> "birthday"
+        CommonDataKinds.Event.TYPE_OTHER -> "other"
+        else -> "unknown"
+      }
   }
 }
