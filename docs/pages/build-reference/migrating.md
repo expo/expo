@@ -2,7 +2,7 @@
 title: Migrating from "expo build"
 ---
 
-The purpose of this reference page is to call out some of the practical differences that you may need to account for when migrating your Expo managed app from `expo build` ("classic build") to EAS Build. If this is your first time using EAS Build, you can use this page as a companion to ["Creating your first build"](/build/setup.md).
+The purpose of this reference page is to call out some of the practical differences that you may need to account for when migrating your Expo managed app from `expo build` ("classic builds") to EAS Build. If this is your first time using EAS Build, you can use this page as a companion to ["Creating your first build"](/build/setup.md).
 
 One of the goals with EAS Build is to make it as easy as possible to migrate from `expo build`; for example, your app signing credentials will be automatically re-used, and the Expo SDK and your `app.json` configuration will all work the same as before. That said, there are some differences in the build process that may require additional configuration or small code changes.
 
@@ -68,11 +68,11 @@ If you use environment variables in your `app.config.js` or in your app source c
 
 ### Additional configuration is required to access private npm packages
 
-Learn more about how to securely store your `NPM_TOKEN` on EAS Build: ["How to use private package repositories"](/build-reference/how-tos.md#how-to-use-private-package-repositories).
+Learn more about how to securely store your `NPM_TOKEN` on EAS Build: ["Using private npm packages"](/build-reference/private-npm-packages).
 
 ### `expo-branch` is not supported on EAS Build
 
-You will need to remove `expo-branch` from your app to build it with EAS Build. The plan is to add support to [react-native-branch](https://www.npmjs.com/package/react-native-branch), the library maintained by engineers at [Branch](https://branch.io/). If Branch support is a blocker for you, you can try to build your own [config plugin](https://docs.expo.dev/guides/config-plugins/) to add react-native-branch to your app today.
+You will need to remove `expo-branch` from your app to build it with EAS Build. The plan is to add support to [react-native-branch](https://www.npmjs.com/package/react-native-branch), the library maintained by engineers at [Branch](https://branch.io/). If Branch support is a blocker for you, you can try to build your own [config plugin](https://docs.expo.dev/guides/config-plugins/) to add `react-native-branch` to your app today.
 
 ### `metro.config.js` must export the entire default config from `@expo/metro-config`
 

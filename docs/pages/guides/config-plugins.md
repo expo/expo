@@ -146,9 +146,7 @@ module.exports = function withPrefixedName(config, prefix) {
 ```json
 {
   "name": "my-app",
-  "plugins": [
-    ["./my-plugin", "custom"]
-  ]
+  "plugins": [["./my-plugin", "custom"]]
 }
 ```
 
@@ -159,9 +157,7 @@ module.exports = function withPrefixedName(config, prefix) {
 ```json
 {
   "name": "custom-my-app",
-  "plugins": [
-    ["./my-plugin", "custom"]
-  ]
+  "plugins": [["./my-plugin", "custom"]]
 }
 ```
 
@@ -673,7 +669,7 @@ Introspection only supports a subset of modifiers:
 
 Introspection works by creating custom base mods that work like the default base mods, except they don't write the `modResults` to disk at the end. Instead of persisting, they save the results to the Expo config under `_internal.modResults`, followed by the name of the mod i.e. the `ios.infoPlist` mod saves to `_internal.modResults.ios.infoPlist: {}`.
 
-As a real-world example, introspection is used by `eas-cli` to determine what the final iOS entitlements will be in a managed app, so it can sync them with the Apple developer portal before building. Introspection can also be used as a handy debugging and development tool.
+As a real-world example, introspection is used by `eas-cli` to determine what the final iOS entitlements will be in a managed app, so it can sync them with the Apple Developer Portal before building. Introspection can also be used as a handy debugging and development tool.
 
 <!-- TODO: Link to Vscode extension after preview feature lands -->
 

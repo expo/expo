@@ -6,7 +6,7 @@ import ImageSpotlight from '~/components/plugins/ImageSpotlight'
 
 You can usually get away with not being a code signing expert by [letting EAS handle it for you](managed-credentials.md). However, there are cases where some users might want to manage their project keystore, certificates and profiles on their own.
 
-If you would like to manage your own app signing credentials, you can use `credentials.json` to give EAS Build relative paths to the credentials on your local filesystem and their associated passwords in order to use them to sign your builds.
+If you would like to manage your own app signing credentials, you can use `credentials.json` to give EAS Build relative paths to the credentials on your local file system and their associated passwords in order to use them to sign your builds.
 
 ## credentials.json
 
@@ -28,9 +28,6 @@ If you opt in to local credentials configuration, you'll need to create a `crede
       "path": "ios/certs/dist-cert.p12",
       "password": "iex3shi9Lohl"
     }
-  },
-  "experimental": {
-    "npmToken": "VALUE"
   }
 }
 ```
@@ -55,7 +52,7 @@ keytool \\
  -dname "CN=com.expo.your.android.package,OU=,O=,L=,S=,C=US"
 ```
 
-Once you have the keystore file on your computer, you should move it to the appropriate directory. We recommend you keep your keystores in the `android/keystores` directory. **Remember to gitignore all your release keystores!** If you've run the above keytool command and placed the keystore at `android/keystores/release.keystore`, you can ignore that file by adding the following line to `.gitignore`:
+Once you have the keystore file on your computer, you should move it to the appropriate directory. We recommend you keep your keystores in the `android/keystores` directory. **Remember to git-ignore all your release keystores!** If you've run the above keytool command and placed the keystore at `android/keystores/release.keystore`, you can ignore that file by adding the following line to `.gitignore`:
 
 ```
 android/keystores/release.keystore
@@ -83,9 +80,9 @@ Create `credentials.json` and configure it with the credentials:
 
 ### iOS Credentials
 
-There are a few more prerequisites for building the iOS app binary. You need a paid Apple Developer Account, and then you'll need to generate the Distribution Certificate and Provisioning Profile for your application, which can be done via the [Apple Developer portal](https://developer.apple.com/account/resources/certificates/list).
+There are a few more prerequisites for building the iOS app binary. You need a paid Apple Developer Account, and then you'll need to generate the Distribution Certificate and Provisioning Profile for your application, which can be done via the [Apple Developer Portal](https://developer.apple.com/account/resources/certificates/list).
 
-Once you have the Distribution Certificate and Provisioning Profile on your computer, you should move them to the appropriate directory. We recommend you keep them in the `ios/certs` directory. In the rest of this document we assume that they are named `dist.p12` and `profile.mobileprovision` respectively. **Remember to gitignore all files in the directory!** If you've placed the credentials in the suggested directory, you can ignore those files by adding the following line to `.gitignore`:
+Once you have the Distribution Certificate and Provisioning Profile on your computer, you should move them to the appropriate directory. We recommend you keep them in the `ios/certs` directory. In the rest of this document we assume that they are named `dist.p12` and `profile.mobileprovision` respectively. **Remember to git-ignore all files in the directory!** If you've placed the credentials in the suggested directory, you can ignore those files by adding the following line to `.gitignore`:
 
 ```
 ios/certs/*
@@ -173,7 +170,7 @@ If you do not set any option, `"credentialsSource"` will default to `"remote"`.
 
 Before you start setting up your CI job, make sure you have your `credentials.json` and `eas.json` files configured [as described above](#credentialsjson).
 
-We are going to pass in `credentials.json` as a secret, and developers tend to provide CI jobs with secrets by using environment variables. One of the challenges with this approach is that the `credentials.json` file contains a JSON object and it might be difficult to escape it properly, so you could assign it to an environment variable. One possible solution to this problem is to convert the file to a base64-encoded string, set an environment variable to that value, and later decode it and restore the file on the CI.
+Developers tend to provide CI jobs with secrets by using environment variables. One of the challenges with this approach is that the `credentials.json` file contains a JSON object and it might be difficult to escape it properly, so you could assign it to an environment variable. One possible solution to this problem is to convert the file to a base64-encoded string, set an environment variable to that value, and later decode it and restore the file on the CI.
 
 Consider the following steps:
 
