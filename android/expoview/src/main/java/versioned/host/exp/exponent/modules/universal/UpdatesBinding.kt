@@ -31,45 +31,36 @@ class UpdatesBinding(context: Context, experienceProperties: Map<String, Any?>) 
     return listOf(UpdatesInterface::class.java as Class<*>)
   }
 
-  override fun getConfiguration(): UpdatesConfiguration {
-    return appLoader!!.updatesConfiguration
-  }
+  override val configuration: UpdatesConfiguration
+    get() = appLoader!!.updatesConfiguration
 
-  override fun getSelectionPolicy(): SelectionPolicy {
-    return appLoader!!.selectionPolicy
-  }
+  override val selectionPolicy: SelectionPolicy
+    get() = appLoader!!.selectionPolicy
 
-  override fun getDirectory(): File {
-    return appLoader!!.updatesDirectory
-  }
+  override val directory: File
+    get() = appLoader!!.updatesDirectory
 
-  override fun getFileDownloader(): FileDownloader {
-    return appLoader!!.fileDownloader
-  }
+  override val fileDownloader: FileDownloader
+    get() = appLoader!!.fileDownloader
 
-  override fun getDatabaseHolder(): DatabaseHolder {
-    return databaseHolderInternal
-  }
+  override val databaseHolder: DatabaseHolder
+    get() = databaseHolderInternal
 
-  override fun isEmergencyLaunch(): Boolean {
-    return appLoader!!.isEmergencyLaunch
-  }
+  override val isEmergencyLaunch: Boolean
+    get() = appLoader!!.isEmergencyLaunch
 
-  override fun isUsingEmbeddedAssets(): Boolean {
-    return false
-  }
+  override val isUsingEmbeddedAssets: Boolean
+    get() = false
 
   override fun canRelaunch(): Boolean {
     return true
   }
 
-  override fun getLaunchedUpdate(): UpdateEntity? {
-    return appLoader!!.launcher.launchedUpdate
-  }
+  override val launchedUpdate: UpdateEntity?
+    get() = appLoader!!.launcher.launchedUpdate
 
-  override fun getLocalAssetFiles(): Map<AssetEntity, String>? {
-    return appLoader!!.launcher.localAssetFiles
-  }
+  override val localAssetFiles: Map<AssetEntity, String>?
+    get() = appLoader!!.launcher.localAssetFiles
 
   override fun relaunchReactApplication(callback: LauncherCallback) {
     KernelProvider.instance.reloadVisibleExperience(manifestUrl!!, true)

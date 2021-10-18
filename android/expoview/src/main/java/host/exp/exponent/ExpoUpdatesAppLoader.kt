@@ -201,7 +201,7 @@ class ExpoUpdatesAppLoader @JvmOverloads constructor(
         }
 
         override fun onCachedUpdateLoaded(update: UpdateEntity): Boolean {
-          val manifest = Manifest.fromManifestJson(update.manifest)
+          val manifest = Manifest.fromManifestJson(update.manifest!!)
           setShouldShowAppLoaderStatus(manifest)
           if (manifest.isUsingDeveloperTool()) {
             return false
@@ -244,7 +244,7 @@ class ExpoUpdatesAppLoader @JvmOverloads constructor(
           this@ExpoUpdatesAppLoader.launcher = launcher
           this@ExpoUpdatesAppLoader.isUpToDate = isUpToDate
           try {
-            val manifestJson = processManifestJson(launcher.launchedUpdate!!.manifest)
+            val manifestJson = processManifestJson(launcher.launchedUpdate!!.manifest!!)
             val manifest = Manifest.fromManifestJson(manifestJson)
             callback.onManifestCompleted(manifest)
 

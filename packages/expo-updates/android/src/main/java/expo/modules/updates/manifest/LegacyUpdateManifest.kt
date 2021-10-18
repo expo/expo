@@ -22,7 +22,7 @@ class LegacyUpdateManifest private constructor(
   private val mId: UUID,
   private val mScopeKey: String,
   private val mCommitTime: Date,
-  private val mRuntimeVersion: String?,
+  private val mRuntimeVersion: String,
   private val mBundleUrl: Uri,
   private val mAssets: JSONArray?
 ) : UpdateManifest {
@@ -116,9 +116,9 @@ class LegacyUpdateManifest private constructor(
       val bundledAssets = manifest.getBundledAssets()
       return LegacyUpdateManifest(
         manifest,
-        configuration.updateUrl,
+        configuration.updateUrl!!,
         id,
-        configuration.scopeKey,
+        configuration.scopeKey!!,
         commitTime,
         runtimeVersion,
         bundleUrl,
