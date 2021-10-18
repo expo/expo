@@ -6,12 +6,12 @@ import android.media.MediaScannerConnection
 import android.net.Uri
 import android.provider.MediaStore
 import expo.modules.core.Promise
+import expo.modules.core.utilities.ifNull
 import expo.modules.medialibrary.ERROR_NO_ALBUM
 import expo.modules.medialibrary.ERROR_UNABLE_TO_LOAD
 import expo.modules.medialibrary.ERROR_UNABLE_TO_LOAD_PERMISSION
 import expo.modules.medialibrary.ERROR_UNABLE_TO_SAVE
 import expo.modules.medialibrary.MediaLibraryUtils
-import expo.modules.medialibrary.ifNull
 import java.io.File
 import java.io.IOException
 
