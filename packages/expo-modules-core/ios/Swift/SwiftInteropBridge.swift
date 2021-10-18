@@ -44,10 +44,7 @@ public class SwiftInteropBridge: NSObject {
     var constants = [String: [[String: Any]]]()
 
     for holder in registry {
-      var index = -1
-
       constants[holder.name] = holder.definition.methods.map({ (methodName, method) in
-        index += 1
         return [
           "name": methodName,
           "argumentsCount": method.argumentsCount,
