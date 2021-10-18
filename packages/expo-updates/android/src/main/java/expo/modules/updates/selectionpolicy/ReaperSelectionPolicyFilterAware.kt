@@ -1,11 +1,7 @@
-package expo.modules.updates.selectionpolicy;
+package expo.modules.updates.selectionpolicy
 
-import org.json.JSONObject;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import expo.modules.updates.db.entity.UpdateEntity;
+import expo.modules.updates.db.entity.UpdateEntity
+import org.json.JSONObject
 
 /**
  * ReaperSelectionPolicy which chooses which updates to delete taking into account manifest filters
@@ -15,42 +11,43 @@ import expo.modules.updates.db.entity.UpdateEntity;
  *
  * Chooses only to delete updates whose scope matches that of `launchedUpdate`.
  */
-public class ReaperSelectionPolicyFilterAware implements ReaperSelectionPolicy {
-
-  @Override
-  public List<UpdateEntity> selectUpdatesToDelete(List<UpdateEntity> updates, UpdateEntity launchedUpdate, JSONObject filters) {
+class ReaperSelectionPolicyFilterAware : ReaperSelectionPolicy {
+  override fun selectUpdatesToDelete(
+    updates: List<UpdateEntity>,
+    launchedUpdate: UpdateEntity?,
+    filters: JSONObject?
+  ): List<UpdateEntity> {
     if (launchedUpdate == null) {
-      return new ArrayList<>();
+      return listOf()
     }
-
-    List<UpdateEntity> updatesToDelete = new ArrayList<>();
+    val updatesToDelete = mutableListOf<UpdateEntity>()
     // keep the launched update and one other, to be safe and make rollbacks faster
     // keep the next newest update that matches all the manifest filters, unless no other updates do
     // in which case, keep the next newest across all updates
-    UpdateEntity nextNewestUpdate = null;
-    UpdateEntity nextNewestUpdateMatchingFilters = null;
-    for (UpdateEntity update : updates) {
+    var nextNewestUpdate: UpdateEntity? = null
+    var nextNewestUpdateMatchingFilters: UpdateEntity? = null
+    for (update in updates) {
       // ignore any updates whose scopeKey doesn't match that of the launched update
-      if (!update.scopeKey.equals(launchedUpdate.scopeKey)) {
-        continue;
+      if (update.scopeKey != launchedUpdate.scopeKey) {
+        continue
       }
       if (update.commitTime.before(launchedUpdate.commitTime)) {
-        updatesToDelete.add(update);
+        updatesToDelete.add(update)
         if (nextNewestUpdate == null || nextNewestUpdate.commitTime.before(update.commitTime)) {
-          nextNewestUpdate = update;
+          nextNewestUpdate = update
         }
         if (SelectionPolicies.matchesFilters(update, filters) &&
-                (nextNewestUpdateMatchingFilters == null ||  nextNewestUpdateMatchingFilters.commitTime.before(update.commitTime))) {
-          nextNewestUpdateMatchingFilters = update;
+          (nextNewestUpdateMatchingFilters == null || nextNewestUpdateMatchingFilters.commitTime.before(update.commitTime))
+        ) {
+          nextNewestUpdateMatchingFilters = update
         }
       }
     }
-
     if (nextNewestUpdateMatchingFilters != null) {
-      updatesToDelete.remove(nextNewestUpdateMatchingFilters);
+      updatesToDelete.remove(nextNewestUpdateMatchingFilters)
     } else if (nextNewestUpdate != null) {
-      updatesToDelete.remove(nextNewestUpdate);
+      updatesToDelete.remove(nextNewestUpdate)
     }
-    return updatesToDelete;
+    return updatesToDelete
   }
 }
