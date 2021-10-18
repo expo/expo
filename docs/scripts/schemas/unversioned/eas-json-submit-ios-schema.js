@@ -54,7 +54,7 @@ export default [
     name: 'ascApiKeyIssuerId',
     type: 'string',
     description: [
-      'The Issuer ID of your App Store Connect Api Key. [Learn more](https://expo.fyi/creating-asc-api-key.md).',
+      'The Issuer ID of your App Store Connect Api Key. [Learn more](https://expo.fyi/creating-asc-api-key).',
     ],
   },
   {
