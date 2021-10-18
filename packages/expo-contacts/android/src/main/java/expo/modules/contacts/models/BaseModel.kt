@@ -79,7 +79,7 @@ open class BaseModel internal constructor() : CommonProvider {
     readableMap.keys.forEach {key -> mapValue(readableMap, key) }
   }
 
-  open fun getLabelFromCursor(cursor: Cursor): String? =
+  protected open fun getLabelFromCursor(cursor: Cursor): String? =
     when (cursor.getInt(cursor.getColumnIndex(EXColumns.TYPE))) {
       EXColumns.TYPE_CUSTOM -> cursor.getString(cursor.getColumnIndex(EXColumns.LABEL)) ?: "unknown"
       else -> null
