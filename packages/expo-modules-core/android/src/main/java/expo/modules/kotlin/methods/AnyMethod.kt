@@ -18,10 +18,6 @@ abstract class AnyMethod(
     desiredArgsTypes
       .withIndex()
       .forEach { (index, type) ->
-        if (finalArgs[index] != null) {
-          return@forEach
-        }
-
         val dynamic = argIterator.next()
         val castedValue = TypeMapper.cast(dynamic, type)
 

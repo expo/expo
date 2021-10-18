@@ -23,7 +23,5 @@ class ModuleRegistry : Iterable<ModuleHolder> {
 
   fun getModuleHolder(name: String): ModuleHolder? = registry[name]
 
-  override fun iterator(): Iterator<ModuleHolder> {
-    return this.registry.values.iterator()
-  }
+  override fun iterator(): Iterator<ModuleHolder> = registry.values.iterator()
 }

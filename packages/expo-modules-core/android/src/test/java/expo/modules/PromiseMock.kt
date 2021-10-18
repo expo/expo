@@ -78,7 +78,9 @@ class PromiseMock : Promise {
 
   private fun assertNotResolvedNorRejected() {
     when (state) {
-      PromiseState.RESOLVED, PromiseState.REJECTED, PromiseState.ILLEGAL -> {
+      PromiseState.RESOLVED,
+      PromiseState.REJECTED,
+      PromiseState.ILLEGAL -> {
         state = PromiseState.ILLEGAL
         throw IllegalStateException("Cannot resolve same promise twice!")
       }
