@@ -20,7 +20,7 @@ To submit the binary to the App Store, run `eas submit -p ios` from inside your 
 
 > Although it's possible to upload any binary to the store, each submission is associated with an Expo project. That's why it's important to start a submission from inside your project's directory - that's where your [app configuration](../workflow/configuration.md) is defined.
 
-**Important**: You'll have to generate an [Apple app-specific password](https://expo.fyi/apple-app-specific-password) before submitting an app with EAS CLI.
+**Important**: You'll have to generate an [Apple app-specific password](https://expo.fyi/apple-app-specific-password) or an [App Store Connect Api Key](https://expo.fyi/creating-asc-api-key) before submitting an app with EAS CLI.
 
 To upload your iOS app to the Apple App Store, run `eas submit --platform ios` and follow the instructions on the screen.
 
@@ -29,7 +29,8 @@ The command will perform the following steps:
 - Log in to your Expo account and ensure that your app project exists on EAS servers.
 - Ensure that your app exists on App Store Connect and its [Bundle Identifier](https://expo.fyi/bundle-identifier) is registered on Apple Developer Portal:
 
-  - You will be asked to log in to your Apple Developer account and select your team. You can also provide this information in `eas.json` by setting `appleId` and `appleTeamId` in the submit profile. The Apple ID password has to be set with the `EXPO_APPLE_PASSWORD` environment variable.
+  - You will be asked to log in to your Apple Developer account and select your team. You can also provide this information in `eas.json` by setting `appleId` and `appleTeamId` in the submit profile.
+  - The App Specific Password has to be set with the `EXPO_APPLE_PASSWORD` environment variable. If you are using an App Store Connect Api Key, set the `ascApiKeyPath`, `ascApiKeyIssuerId`, and `ascApiKeyId` fields in `eas.json`
   - The command will look for `ios.bundleIdentifier` in the app config.
   - If you are submitting your app for the first time, it will be automatically created.
     Unless `expo.name` in your app configuration is found or `appName` is provided in `eas.json`, you will be prompted for the app name.
