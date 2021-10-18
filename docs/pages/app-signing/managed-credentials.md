@@ -22,15 +22,15 @@ Generating your iOS credentials (distribution certificate, provisioning profile,
 
 If you haven't set up your Push Notifictions key yet, EAS CLI will ask you to set it up during the next `eas build` run.
 
-If you're building an app that was previously built with classic builds, then you already have iOS push notification credentials configured on Expo's servers, so there's nothing you need to do.
+If you're building an app that was previously built with classic builds (`expo build:ios`), then you already have iOS push notification credentials configured on Expo's servers, so there's nothing you need to do.
 
 You can also set up the Push Notifications key with the `eas credentials` command. Run it, select `iOS`, then `Push Notifications: Manage your Apple Push Notifications Key`, and then choose the appropriate option to set up the key.
 
 #### Android
 
-The Android push notification credentials setup for EAS Build is identical to the setup you might've used for classic builds. If you've already configured your app with FCM, there's nothing else you need to do.
+The Android push notification credentials setup for EAS Build is identical to the setup you might've used for classic builds (`expo build:android`). If you've already configured your app with FCM, there's nothing else you need to do.
 
-If you haven't, please run `eas credentials`, select `Android`, then `Push Notifications: Manage your Apple Push Notifications Key`, and then choose the appropriate option to set up the key.
+If you haven't, please run `eas credentials`, select `Android`, then `Push Notifications: Manage your FCM Api Key`, and then choose the appropriate option to set up the key.
 
 ## Sharing credentials with your team
 
