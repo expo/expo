@@ -45,19 +45,19 @@ class TypeMapperTest {
   @Test
   fun `cast dynamic to list`() {
     val dynamicSeeder = listOf(
-        JavaOnlyArray().apply {
-          pushDouble(10.0)
-          pushDouble(20.0)
-          pushDouble(30.0)
-        },
-        JavaOnlyArray().apply {
-          pushNull()
-          pushString("string")
-        }
+      JavaOnlyArray().apply {
+        pushDouble(10.0)
+        pushDouble(20.0)
+        pushDouble(30.0)
+      },
+      JavaOnlyArray().apply {
+        pushNull()
+        pushString("string")
+      }
     )
     val expected = listOf(
-        listOf(10.0, 20.0, 30.0),
-        listOf(null, "string")
+      listOf(10.0, 20.0, 30.0),
+      listOf(null, "string")
     )
     val typesSeeder = listOf(List::class.java, List::class.java)
     val types = typesSeeder.map { TypeInformation(it, false) }

@@ -16,8 +16,8 @@ class MethodTest {
     val module = MyModule()
     val promise = PromiseMock()
     val method = Method(
-        "method",
-        arrayOf(MyModule::class.java, Int::class.java)
+      "method",
+      arrayOf(MyModule::class.java, Int::class.java)
     ) { args ->
       Truth.assertThat(args[0]).isSameInstanceAs(module)
       Truth.assertThat(args[1]).isEqualTo(10)
@@ -37,8 +37,8 @@ class MethodTest {
     val module = MyModule()
     val promise = PromiseMock()
     val method = Method(
-        "method",
-        arrayOf(MyModule::class.java)
+      "method",
+      arrayOf(MyModule::class.java)
     ) { args ->
       Truth.assertThat(args[0]).isSameInstanceAs(module)
       return@Method -1

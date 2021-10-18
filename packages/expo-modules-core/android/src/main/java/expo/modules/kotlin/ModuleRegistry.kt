@@ -7,7 +7,6 @@ import kotlin.reflect.full.companionObject
 import kotlin.reflect.full.companionObjectInstance
 import kotlin.reflect.full.isSubclassOf
 
-
 class ModuleRegistry : Iterable<ModuleHolder> {
   private val registry = mutableMapOf<String, ModuleHolder>()
 
@@ -19,8 +18,8 @@ class ModuleRegistry : Iterable<ModuleHolder> {
     provider.getModulesList().forEach { type ->
       val definitionProvider = getModuleDefinitionProvider(type) ?: return@forEach
       val definition = definitionProvider
-          .definition()
-          .associateWithType(type)
+        .definition()
+        .associateWithType(type)
       register(definition)
     }
   }

@@ -7,8 +7,8 @@ import expo.modules.kotlin.modules.Module
 import kotlin.reflect.full.isSubclassOf
 
 abstract class AnyMethod(
-    protected val name: String,
-    private val desireArgsTypes: Array<TypeInformation<*>>
+  protected val name: String,
+  private val desireArgsTypes: Array<TypeInformation<*>>
 ) {
   private val moduleArgIndex = desireArgsTypes.map { it.type }.indexOfFirst { it.kotlin.isSubclassOf(Module::class) }
 
@@ -24,25 +24,25 @@ abstract class AnyMethod(
 
     val argIterator = args.iterator()
     desireArgsTypes
-        .withIndex()
-        .forEach { (index, type) ->
-          if (finalArgs[index] != null) {
-            return@forEach
-          }
-
-          val dynamic = argIterator.next()
-          val castedValue = TypeMapper.cast(dynamic, type)
-
-          finalArgs[index] = castedValue
+      .withIndex()
+      .forEach { (index, type) ->
+        if (finalArgs[index] != null) {
+          return@forEach
         }
+
+        val dynamic = argIterator.next()
+        val castedValue = TypeMapper.cast(dynamic, type)
+
+        finalArgs[index] = castedValue
+      }
     return finalArgs
   }
 }
 
 class PromiseMethod(
-    name: String,
-    argsType: Array<TypeInformation<*>>,
-    private val body: (args: Array<out Any?>, promise: Promise) -> Any
+  name: String,
+  argsType: Array<TypeInformation<*>>,
+  private val body: (args: Array<out Any?>, promise: Promise) -> Any
 ) : AnyMethod(name, argsType) {
 
   override fun call(module: Module, args: ReadableArray, promise: Promise) {
@@ -51,14 +51,14 @@ class PromiseMethod(
 }
 
 class Method(
-    name: String,
-    argsType: Array<TypeInformation<*>>,
-    private val body: (args: Array<out Any?>) -> Any
+  name: String,
+  argsType: Array<TypeInformation<*>>,
+  private val body: (args: Array<out Any?>) -> Any
 ) : AnyMethod(name, argsType) {
   constructor(
-      name: String,
-      argsType: Array<Class<*>>,
-      body: (args: Array<out Any?>) -> Any
+    name: String,
+    argsType: Array<Class<*>>,
+    body: (args: Array<out Any?>) -> Any
   ) : this(name, argsType.map { TypeInformation(it, false) }.toTypedArray(), body)
 
   override fun call(module: Module, args: ReadableArray, promise: Promise) {

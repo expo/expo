@@ -8,8 +8,8 @@ private typealias ModuleConstants = Map<String, Any?>
 private typealias ModuleMethodInfo = Map<String, Any?>
 
 class KotlinInteropModuleRegistry(
-    modulesProvider: ModulesProvider,
-    legacyModuleRegistry: expo.modules.core.ModuleRegistry
+  modulesProvider: ModulesProvider,
+  legacyModuleRegistry: expo.modules.core.ModuleRegistry
 ) {
   private val appContext = AppContext(modulesProvider, legacyModuleRegistry)
 
@@ -21,32 +21,32 @@ class KotlinInteropModuleRegistry(
 
   fun callMethod(moduleName: String, method: String, arguments: ReadableArray, promise: Promise) {
     registry
-        .getModuleHolder(moduleName)
-        ?.call(method, arguments, promise)
+      .getModuleHolder(moduleName)
+      ?.call(method, arguments, promise)
   }
 
   fun exportedModulesConstants(): Map<ModuleName, ModuleConstants> {
     return registry
-        .fold(HashMap()) { acc, holder ->
-          acc.apply {
-            put(holder.name, holder.definition.constantsProvider())
-          }
+      .fold(HashMap()) { acc, holder ->
+        acc.apply {
+          put(holder.name, holder.definition.constantsProvider())
         }
+      }
   }
 
   fun exportMethods(exportKey: (String, List<ModuleMethodInfo>) -> Unit = { _, _ -> }): Map<ModuleName, List<ModuleMethodInfo>> {
     return registry
-        .fold(HashMap()) { acc, holder ->
-          acc.apply {
-            val methodsInfo = holder.definition.methods.map { (name, method) ->
-              mapOf(
-                  "name" to name,
-                  "argumentsCount" to method.argsCount
-              )
-            }
-            exportKey(holder.name, methodsInfo)
-            put(holder.name, methodsInfo)
+      .fold(HashMap()) { acc, holder ->
+        acc.apply {
+          val methodsInfo = holder.definition.methods.map { (name, method) ->
+            mapOf(
+              "name" to name,
+              "argumentsCount" to method.argsCount
+            )
           }
+          exportKey(holder.name, methodsInfo)
+          put(holder.name, methodsInfo)
         }
+      }
   }
 }

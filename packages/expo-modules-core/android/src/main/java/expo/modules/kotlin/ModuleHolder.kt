@@ -15,7 +15,7 @@ class ModuleHolder(val definition: ModuleDefinition) {
   fun call(methodName: String, args: ReadableArray, promise: Promise) {
     val method = definition.methods[methodName]
     if (method == null) {
-      promise.reject("ExpoModuleCore", "Cannot find method '${methodName}' in module '${definition.name}'")
+      promise.reject("ExpoModuleCore", "Cannot find method '$methodName' in module '${definition.name}'")
       return
     }
 
