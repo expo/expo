@@ -17,6 +17,8 @@
 
 ### 💡 Others
 
+- Update `@expo/config` dependency. ([#14801](https://github.com/expo/expo/pull/14801) by [@Simek](https://github.com/Simek))
+
 ## 12.1.0 — 2021-10-01
 
 ### 🐛 Bug fixes

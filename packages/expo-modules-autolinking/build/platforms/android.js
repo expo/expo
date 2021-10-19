@@ -17,6 +17,7 @@ async function generatePackageListAsync(modules, targetPath, namespace) {
 exports.generatePackageListAsync = generatePackageListAsync;
 async function resolveModuleAsync(packageName, revision) {
     // TODO: Relative source dir should be configurable through the module config.
+    var _a;
     // Don't link itself... :D
     if (packageName === '@unimodules/react-native-adapter') {
         return null;
@@ -33,6 +34,7 @@ async function resolveModuleAsync(packageName, revision) {
     return {
         projectName: convertPackageNameToProjectName(packageName),
         sourceDir,
+        modulesClassNames: (_a = revision.config) === null || _a === void 0 ? void 0 : _a.androidModulesClassNames(),
     };
 }
 exports.resolveModuleAsync = resolveModuleAsync;
@@ -42,24 +44,41 @@ exports.resolveModuleAsync = resolveModuleAsync;
 async function generatePackageListFileContentAsync(modules, namespace) {
     // TODO: Instead of ignoring `expo` here, make the package class paths configurable from `expo-module.config.json`.
     const packagesClasses = await findAndroidPackagesAsync(modules.filter((module) => module.packageName !== 'expo'));
+    const modulesClasses = await findAndroidModules(modules);
     return `package ${namespace};
 
 import java.util.Arrays;
 import java.util.List;
 import expo.modules.core.interfaces.Package;
+import expo.modules.kotlin.modules.Module;
+import expo.modules.kotlin.ModulesProvider;
 
-public class ExpoModulesPackageList {
+public class ExpoModulesPackageList implements ModulesProvider {
   private static class LazyHolder {
     static final List<Package> packagesList = Arrays.<Package>asList(
 ${packagesClasses.map((packageClass) => `      new ${packageClass}()`).join(',\n')}
+    );
+
+    static final List<Class<? extends Module>> modulesList = Arrays.<Class<? extends Module>>asList(
+      ${modulesClasses.map((moduleClass) => `      ${moduleClass}.class`).join(',\n')}
     );
   }
 
   public static List<Package> getPackageList() {
     return LazyHolder.packagesList;
   }
+
+  @Override
+  public List<Class<? extends Module>> getModulesList() {
+    return LazyHolder.modulesList;
+  }
 }
 `;
+}
+function findAndroidModules(modules) {
+    const modulesToProvide = modules.filter((module) => module.modulesClassNames.length > 0);
+    const classNames = [].concat(...modulesToProvide.map((module) => module.modulesClassNames));
+    return classNames;
 }
 async function findAndroidPackagesAsync(modules) {
     const classes = [];

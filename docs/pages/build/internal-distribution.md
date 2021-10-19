@@ -33,6 +33,7 @@ Open up `eas.json` and add a new build profile for iOS and/or Android.
       "ios": {
         /* @info valid values: universal, adhoc */
         "enterpriseProvisioning": "universal" /* @end */
+
       }
     }
   }

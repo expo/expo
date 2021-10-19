@@ -21,6 +21,13 @@ export class ExpoModuleConfig {
   }
 
   /**
+   * Returns a list of names of Kotlin native modules classes to put to the generated package provider file.
+   */
+  androidModulesClassNames() {
+    return this.rawConfig.android?.modulesClassNames ?? [];
+  }
+
+  /**
    * Returns serializable raw config.
    */
   toJSON(): RawExpoModuleConfig {

@@ -34,9 +34,9 @@
     "preset": "expo-module-scripts"
   },
   "dependencies": {
-    "@expo/config": "^5.0.9",
+    "@expo/config": "^6.0.2",
     "@expo/config-plugins": "^4.0.2",
-    "@expo/metro-config": "~0.1.84",
+    "@expo/metro-config": "~0.2.2",
     "expo-manifests": "~0.2.1",
     "expo-modules-core": "~0.4.2",
     "expo-structured-headers": "~2.0.0",

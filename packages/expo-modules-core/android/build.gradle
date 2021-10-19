@@ -69,6 +69,7 @@ android {
 
 dependencies {
   implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${safeExtGet('kotlinVersion', '1.4.21')}"
+  implementation "org.jetbrains.kotlin:kotlin-reflect:${safeExtGet('kotlinVersion', '1.4.21')}"
   implementation 'androidx.annotation:annotation:1.2.0'
 
   // used only in `expo.modules.core.errors.ModuleDestroyedException` for API export
@@ -76,4 +77,9 @@ dependencies {
 
   //noinspection GradleDynamicVersion
   implementation 'com.facebook.react:react-native:+'
+
+  testImplementation 'androidx.test:core:1.4.0'
+  testImplementation 'junit:junit:4.13.1'
+  testImplementation 'io.mockk:mockk:1.10.6'
+  testImplementation "com.google.truth:truth:1.1.2"
 }
