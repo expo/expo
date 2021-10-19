@@ -29,8 +29,7 @@ The command will perform the following steps:
 - Log in to your Expo account and ensure that your app project exists on EAS servers.
 - Ensure that your app exists on App Store Connect and its [Bundle Identifier](https://expo.fyi/bundle-identifier) is registered on Apple Developer Portal:
 
-  - You will be asked to log in to your Apple Developer account and select your team. You can also provide this information in `eas.json` by setting `appleId` and `appleTeamId` in the submit profile.
-  - The App Specific Password has to be set with the `EXPO_APPLE_PASSWORD` environment variable. If you are using an App Store Connect Api Key, set the `ascApiKeyPath`, `ascApiKeyIssuerId`, and `ascApiKeyId` fields in `eas.json`
+  - You will be asked to log in to your Apple Developer account and select your team. You can also provide this information in `eas.json` by setting `appleId` and `appleTeamId` in the submit profile. The Apple ID password has to be set with the `EXPO_APPLE_PASSWORD` environment variable.
   - The command will look for `ios.bundleIdentifier` in the app config.
   - If you are submitting your app for the first time, it will be automatically created.
     Unless `expo.name` in your app configuration is found or `appName` is provided in `eas.json`, you will be prompted for the app name.
@@ -38,7 +37,7 @@ The command will perform the following steps:
 
   > If you already have an App Store Connect app, this step can be skipped by providing the `ascAppId` in the submit profile. The [ASC App ID](https://expo.fyi/asc-app-id) can be found either on App Store Connect, or later during this command in the _Submission Summary_ table.
 
-- Ask for your Apple ID (if not provided earlier) and for your Apple app-specific password. They can be also provided using `--apple-id` param and `EXPO_APPLE_APP_SPECIFIC_PASSWORD` environment variable, respectively.
+- Ask for your Apple ID (if not provided earlier) and for your Apple app-specific password. They can be also provided using `--apple-id` param and `EXPO_APPLE_APP_SPECIFIC_PASSWORD` environment variable, respectively. Alternatively, you can provide an App Store Connect Api Key instead, setting the `ascApiKeyPath`, `ascApiKeyIssuerId`, and `ascApiKeyId` fields in `eas.json`.
 - Ask for which binary to submit. You can select one of the following:
 
   - The latest successful iOS build for the project on EAS servers.
