@@ -363,8 +363,8 @@ EX_EXPORT_METHOD_AS(printToFileAsync,
 {
   UIEdgeInsets pageMargins = UIEdgeInsetsZero;
 
-  if (options[@"padding"]) {
-    NSDictionary* margins = options[@"padding"];
+  if (options[@"margins"]) {
+    NSDictionary* margins = options[@"margins"];
     pageMargins.left = [margins[@"left"] floatValue];
     pageMargins.top = [margins[@"top"] floatValue];
     pageMargins.bottom = [margins[@"bottom"] floatValue];
