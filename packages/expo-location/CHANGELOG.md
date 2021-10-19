@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- Call `jobService.jobFinished` for the finished geofencing jobs. ([#14786](https://github.com/expo/expo/pull/14786) by [@mdmitry01](https://github.com/mdmitry01))
+
 ### 💡 Others
 
 - Extract nested `foregroundService` object from `LocationTaskOptions` type to the separate type `LocationTaskServiceOptions`. ([#14672](https://github.com/expo/expo/pull/14672) by [@Simek](https://github.com/Simek))
