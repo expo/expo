@@ -146,6 +146,12 @@ export default class PrintScreen extends React.Component<{}, State> {
               <img
                 src="https://d30j33t1r58ioz.cloudfront.net/static/guides/sdk.png"
                 style="width: 90vw;" />
+              ${new Array(10)
+                .fill(0)
+                .map(
+                  () =>
+                    `<h2 style="font-size: 50px; break-inside: avoid;">This wraps to the next line when it's too long</h2>`
+                )}
             </body>
           </html>
         `,
