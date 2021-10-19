@@ -39,6 +39,10 @@ export declare type PrintOptions = {
      * or `Print.Orientation.landscape`.
      */
     orientation?: OrientationType['portrait'] | OrientationType['landscape'];
+    /**
+     * **Available on iOS only.** Page margins for the printed document.
+     */
+    margins?: PageMargins;
 };
 export declare type Printer = {
     /**
@@ -57,6 +61,12 @@ export interface OrientationType {
     portrait: string;
     landscape: string;
 }
+export declare type PageMargins = {
+    top: number;
+    right: number;
+    bottom: number;
+    left: number;
+};
 export declare type FilePrintOptions = {
     /**
      * HTML string to print into PDF file.
@@ -78,19 +88,13 @@ export declare type FilePrintOptions = {
      */
     height?: number;
     /**
-     * Padding for the printed document.
+     * **Available on iOS only.** Page margins for the printed document.
      */
-    padding?: FilePrintPadding;
+    margins?: PageMargins;
     /**
      * Whether to include base64 encoded string of the file in the returned object.
      */
     base64?: boolean;
-};
-export declare type FilePrintPadding = {
-    top: number;
-    right: number;
-    bottom: number;
-    left: number;
 };
 export declare type FilePrintResult = {
     /**
