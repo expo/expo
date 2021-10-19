@@ -211,7 +211,7 @@ export async function unstable_getPositionAsync(): Promise<NavigationBarPosition
     console.warn('`unstable_getPositionAsync` is only available on Android');
     return 'relative';
   }
-  return await ExpoNavigationBar.getPositionAsync();
+  return await ExpoNavigationBar.unstable_getPositionAsync();
 }
 
 /**

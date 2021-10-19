@@ -188,7 +188,7 @@ export async function unstable_getPositionAsync() {
         console.warn('`unstable_getPositionAsync` is only available on Android');
         return 'relative';
     }
-    return await ExpoNavigationBar.getPositionAsync();
+    return await ExpoNavigationBar.unstable_getPositionAsync();
 }
 /**
  * Sets the behavior of the status bar and navigation bar when they are hidden and the user wants to reveal them.
