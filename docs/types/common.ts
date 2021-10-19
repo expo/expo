@@ -27,11 +27,12 @@ export type Url = {
 };
 
 export type NavigationRoute = {
-  name: string;
-  href: string;
   as?: string;
-  weight?: number;
+  hidden: boolean;
+  href: string;
+  name: string;
   sidebarTitle?: string;
+  weight?: number;
   children?: NavigationRoute[];
   posts?: NavigationRoute[];
 };
