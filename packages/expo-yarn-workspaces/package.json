@@ -20,7 +20,7 @@
     "test": "jest ."
   },
   "dependencies": {
-    "@expo/metro-config": "~0.1.84",
+    "@expo/metro-config": "~0.2.2",
     "@expo/webpack-config": "~0.15.0",
     "debug": "^4.1.1",
     "find-yarn-workspace-root": "^2.0.0",
