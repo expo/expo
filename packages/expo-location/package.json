@@ -42,7 +42,7 @@
     "expo-module-scripts": "^2.0.0"
   },
   "dependencies": {
-    "@expo/config-plugins": "^3.1.0",
+    "@expo/config-plugins": "^4.0.2",
     "expo-modules-core": "~0.4.2"
   }
 }
