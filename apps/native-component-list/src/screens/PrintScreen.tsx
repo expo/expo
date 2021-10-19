@@ -138,9 +138,14 @@ export default class PrintScreen extends React.Component<{}, State> {
           <html>
             <head>
               <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no" />
+              @font-face {
+                font-family: SpaceMono;
+                font-weight: normal;
+                src: url(fonts/SpaceMono-Regular.ttf);
+              }
             </head>
             <body style="text-align: center;">
-              <h1 style="font-size: 50px; font-family: Helvetica Neue; font-weight: normal;">
+              <h1 style="font-size: 50px; font-family: SpaceMono; font-weight: normal;">
                 Hello Expo!
               </h1>
               <img

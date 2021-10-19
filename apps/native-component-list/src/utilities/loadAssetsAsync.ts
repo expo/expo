@@ -6,13 +6,19 @@ import * as Font from 'expo-font';
 import { Platform } from 'react-native';
 
 async function loadAssetsAsync() {
+  const promise = Font.loadAsync({
+    'space-mono': require('../../assets/fonts/SpaceMono-Regular.ttf'),
+  });
+  promise.then((value) => {
+    const asset = Asset.fromModule(require('../../assets/fonts/SpaceMono-Regular.ttf'));
+    console.log('FONT LOADED: ', asset);
+  });
+
   const assetPromises: Promise<any>[] = [
     Asset.loadAsync(StackAssets),
     Font.loadAsync(Ionicons.font),
     Font.loadAsync(MaterialIcons.font),
-    Font.loadAsync({
-      'space-mono': require('../../assets/fonts/SpaceMono-Regular.ttf'),
-    }),
+    promise,
   ];
   if (Platform.OS !== 'web') {
     assetPromises.push(
