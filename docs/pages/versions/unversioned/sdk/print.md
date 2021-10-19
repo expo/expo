@@ -25,7 +25,21 @@ import * as Print from 'expo-print';
 
 ## Page margins
 
-If you're using `html` option in `printAsync` or `printToFileAsync`, the resulting print might contain page margins (it depends on WebView engine).
+**On iOS** you can set the page margins using the `margins` option:
+
+```js
+const { uri } = await Print.printToFileAsync({
+  html: 'This page is printed with margins',
+  margins: {
+    left: 20,
+    top: 50,
+    right: 20,
+    bottom: 100
+  }
+});
+```
+
+**On Android**, if you're using `html` option in `printAsync` or `printToFileAsync`, the resulting print might contain page margins (it depends on the WebView engine).
 They are set by `@page` style block and you can override them in your HTML code:
 
 ```html
