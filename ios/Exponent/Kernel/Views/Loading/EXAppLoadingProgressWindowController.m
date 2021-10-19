@@ -1,6 +1,11 @@
 #import <ExpoModulesCore/EXDefines.h>
 
+#if __has_include("Expo_Go-Swift.h")
 #import "Expo_Go-Swift.h"
+#else
+#import "ExpoKitApp-Swift.h"
+#endif
+
 #import "EXAppLoadingProgressWindowController.h"
 #import "EXUtil.h"
 
