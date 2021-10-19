@@ -19,6 +19,8 @@
 
 ### 💡 Others
 
+- Update `@expo/config` and `@expo/metro-config` dependencies. ([#14801](https://github.com/expo/expo/pull/14801) by [@Simek](https://github.com/Simek))
+
 ## 0.10.3 — 2021-10-12
 
 ### 🐛 Bug fixes
