@@ -72,7 +72,7 @@ RCT_EXPORT_MODULE(NativeUnimoduleProxy)
 {
   if (self = [super init]) {
     _exModuleRegistry = moduleRegistry != nil ? moduleRegistry : [[EXModuleRegistryProvider new] moduleRegistry];
-    _swiftInteropBridge = [[SwiftInteropBridge alloc] initWithModulesProvider:[self getExpoModulesProvider] legacyModuleRegistry:_exModuleRegistry];
+    _swiftInteropBridge = [[SwiftInteropBridge alloc] initWithModulesProvider:[EXNativeModulesProxy getExpoModulesProvider] legacyModuleRegistry:_exModuleRegistry];
     _exportedMethodsKeys = [NSMutableDictionary dictionary];
     _exportedMethodsReverseKeys = [NSMutableDictionary dictionary];
     _ownsModuleRegistry = moduleRegistry == nil;
@@ -201,9 +201,9 @@ RCT_EXPORT_METHOD(callMethod:(NSString *)moduleName methodNameOrKey:(id)methodNa
   return (id)kCFNull;
 }
 
-#pragma mark - Privates
+#pragma mark - Statics
 
-- (id<ModulesProviderObjCProtocol>)getExpoModulesProvider
++ (id<ModulesProviderObjCProtocol>)getExpoModulesProvider
 {
   // Dynamically gets the modules provider class.
   // NOTE: This needs to be versioned in Expo Go.
@@ -215,6 +215,8 @@ RCT_EXPORT_METHOD(callMethod:(NSString *)moduleName methodNameOrKey:(id)methodNa
     return [ModulesProvider new];
   }
 }
+
+#pragma mark - Privates
 
 - (void)registerExpoModulesInBridge:(RCTBridge *)bridge
 {

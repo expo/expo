@@ -2,7 +2,6 @@
 
 #import <EXUpdates/EXUpdatesAppDelegate.h>
 
-#import <ExpoModulesCore/EXAppDelegateWrapper.h>
 #import <ExpoModulesCore/EXDefines.h>
 #import <EXUpdates/EXUpdatesConfig.h>
 #import <EXUpdates/EXUpdatesAppController.h>

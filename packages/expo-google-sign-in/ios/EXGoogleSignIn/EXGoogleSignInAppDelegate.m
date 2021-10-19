@@ -1,7 +1,6 @@
 // Copyright 2016-present 650 Industries. All rights reserved.
 
 #import <GoogleSignIn/GIDSignIn.h>
-#import <ExpoModulesCore/EXAppDelegateWrapper.h>
 #import <EXGoogleSignIn/EXGoogleSignInAppDelegate.h>
 #import <ExpoModulesCore/EXModuleRegistryConsumer.h>
 

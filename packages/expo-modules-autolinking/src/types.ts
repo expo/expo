@@ -54,6 +54,11 @@ export interface RawExpoModuleConfig {
      * Names of Swift native modules classes to put to the generated modules provider file.
      */
     modulesClassNames?: string[];
+
+    /**
+     * Names of Swift classes that hooks into `AppDelegateWrapper` and receives AppDelegate life-cycle events.
+     */
+    appDelegateSubcontractors?: string[];
   };
 
   /**

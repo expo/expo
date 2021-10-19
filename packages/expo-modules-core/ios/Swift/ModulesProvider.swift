@@ -13,6 +13,11 @@ public protocol ModulesProviderObjCProtocol {}
  */
 public protocol ModulesProviderProtocol: ModulesProviderObjCProtocol {
   func getModuleClasses() -> [AnyModule.Type]
+
+  /**
+   Returns an array of classes that hooks into `AppDelegateWrapper` to receive app delegate events.
+   */
+  func getAppDelegateSubcontractors() -> [AppDelegateSubcontractor.Type]
 }
 
 /**
@@ -22,6 +27,10 @@ public protocol ModulesProviderProtocol: ModulesProviderObjCProtocol {
 @objc
 open class ModulesProvider: NSObject, ModulesProviderProtocol, ModulesProviderObjCProtocol {
   open func getModuleClasses() -> [AnyModule.Type] {
+    return []
+  }
+
+  open func getAppDelegateSubcontractors() -> [AppDelegateSubcontractor.Type] {
     return []
   }
 }
