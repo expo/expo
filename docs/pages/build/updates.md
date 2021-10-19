@@ -10,12 +10,12 @@ EAS Build includes some special affordances for Expo's over-the-air updates libr
 
 Each [build profile](./eas-json.md#build-profiles) can be assigned to a release channel, so updates for builds produced for a given profile will pull only those releases that are published to its release channel. If a release channel is not specified, the value will be `"default"`.
 
-The following example demonstrates how you might use the `"production"` release channel for release builds, and the `"staging"` release channel for test builds distributed with [internal distribution](internal-distribution.md).
+The following example demonstrates how you might use the `"production"` release channel for production builds, and the `"staging"` release channel for test builds distributed with [internal distribution](internal-distribution.md).
 
 ```json
 {
   "build": {
-    "release": {
+    "production": {
       "releaseChannel": "production"
     },
     "team": {

@@ -15,7 +15,7 @@ import submitIosSchema from '~/scripts/schemas/unversioned/eas-json-submit-ios-s
 ```json
 {
   "submit": {
-    "release": {
+    "production": {
       "android": {
         "serviceAccountKeyPath": "../path/to/api-xxx-yyy-zzz.json",
         "track": "internal"
@@ -30,7 +30,7 @@ import submitIosSchema from '~/scripts/schemas/unversioned/eas-json-submit-ios-s
 }
 ```
 
-The JSON object under the `submit` key can contain multiple submit profiles. Every submit profile can have an arbitrary name. If you run `eas submit` without a profile name specified and you have the `release` profile defined in `eas.json`, it'll be used to configure your submission. If you'd like EAS CLI to pick up another submit profile, you need to specify it with a parameter, e.g. `eas submit --platform ios --profile foobar`.
+The JSON object under the `submit` key can contain multiple submit profiles. Every submit profile can have an arbitrary name. If you run `eas submit` without a profile name specified and you have the `production` profile defined in `eas.json`, it'll be used to configure your submission. If you'd like EAS CLI to pick up another submit profile, you need to specify it with a parameter, e.g. `eas submit --platform ios --profile foobar`.
 
 The schema of this file looks like this:
 

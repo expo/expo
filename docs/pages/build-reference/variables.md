@@ -17,7 +17,7 @@ You can specify environment variables for specific build jobs using `eas.json`:
 ```json
 {
   "build": {
-    "release": {
+    "production": {
       "env": {
         "API_URL": "https://api.production.com"
       }
@@ -31,14 +31,14 @@ You can access these variables in your application using the techniques describe
 ```json
 {
   "build": {
-    "release": {
+    "production": {
       "env": {
         "API_URL": "https://api.production.com"
       }
     },
     "test": {
       "distribution": "internal",
-      "extends": "release"
+      "extends": "production"
     }
   }
 }
@@ -141,7 +141,7 @@ The following environment variables are exposed to each build job:
 - `CI=1` - indicates this is a CI environment
 - `EAS_BUILD=true` - indicates this is an EAS Build environment
 - `EAS_BUILD_ID` - the build ID, e.g. `f51831f0-ea30-406a-8c5f-f8e1cc57d39c`
-- `EAS_BUILD_PROFILE` - the name of the build profile from `eas.json`, e.g. `release`
+- `EAS_BUILD_PROFILE` - the name of the build profile from `eas.json`, e.g. `production`
 - `EAS_BUILD_GIT_COMMIT_HASH` - the hash of the Git commit, e.g. `88f28ab5ea39108ade978de2d0d1adeedf0ece76`
 - `EAS_BUILD_NPM_CACHE_URL` - the URL of the npm cache ([learn more](/build-reference/private-npm-packages))
 - `EAS_BUILD_USERNAME` - the username of the user initiating the build (it's undefined for bot users)

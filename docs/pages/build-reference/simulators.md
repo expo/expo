@@ -11,12 +11,12 @@ To build your app for installation into an iOS simulator, you can create a new p
 ```json
 {
   "build": {
-    "release": {},
     "preview": {
       "ios": {
         "simulator": true
       }
-    }
+    },
+    "production": {}
   }
 }
 ```
