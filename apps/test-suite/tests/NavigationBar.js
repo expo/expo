@@ -34,7 +34,7 @@ export async function test(t) {
   t.describe(`NavigationBar.setPositionAsync()`, () => {
     t.it(`flips a value`, async () => {
       await flipValueAsync({
-        getAsync: NavigationBar.getPositionAsync,
+        getAsync: NavigationBar.unstable_getPositionAsync,
         setAsync: NavigationBar.setPositionAsync,
         values: ['absolute', 'relative'],
       });

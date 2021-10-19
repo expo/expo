@@ -10,6 +10,7 @@ import {
 import { ExpoConfig } from '@expo/config-types';
 // @ts-ignore: uses flow
 import normalizeColor from '@react-native/normalize-color';
+// @ts-ignore
 import Debug from 'debug';
 import {
   NavigationBarVisibility,

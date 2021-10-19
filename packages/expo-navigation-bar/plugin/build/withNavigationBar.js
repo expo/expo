@@ -7,6 +7,7 @@ exports.setNavigationBarStyles = exports.setNavigationBarColors = exports.setStr
 const config_plugins_1 = require("@expo/config-plugins");
 // @ts-ignore: uses flow
 const normalize_color_1 = __importDefault(require("@react-native/normalize-color"));
+// @ts-ignore
 const debug_1 = __importDefault(require("debug"));
 const debug = debug_1.default('expo:system-navigation-bar:plugin');
 const pkg = require('expo-navigation-bar/package.json');

@@ -130,7 +130,7 @@ class NavigationBarModule(context: Context) : ExportedModule(context) {
   }
 
   @ExpoMethod
-  fun getPositionAsync(promise: Promise) {
+  fun unstable_getPositionAsync(promise: Promise) {
     safeRunOnUiThread(promise) {
       val position = if (ViewCompat.getFitsSystemWindows(it.window.decorView)) "relative" else "absolute"
       promise.resolve(position)

@@ -114,13 +114,16 @@ export declare function setPositionAsync(position: NavigationBarPosition): Promi
  * Whether the navigation and status bars float above the app (absolute) or sit inline with it (relative).
  * This value can be incorrect if `androidNavigationBar.visible` is used instead of the config plugin `position` property.
  *
+ * This method is unstable because the position can be set via another native module and get out of sync.
+ * Alternatively, you can get the position by measuring the insets returned by `react-native-safe-area-context`.
+ *
  * @example
  * ```ts
- * await NavigationBar.getPositionAsync()
+ * await NavigationBar.unstable_getPositionAsync()
  * ```
  * @returns Navigation bar positional rendering mode. Returns `relative` on unsupported platforms (iOS, web).
  */
-export declare function getPositionAsync(): Promise<NavigationBarPosition>;
+export declare function unstable_getPositionAsync(): Promise<NavigationBarPosition>;
 /**
  * Sets the behavior of the status bar and navigation bar when they are hidden and the user wants to reveal them.
  *

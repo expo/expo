@@ -111,7 +111,7 @@ object NavigationBar : SingletonModule {
 
     WindowCompat.setDecorFitsSystemWindows(activity.window, fits)
 
-    // This is a bit of a hack to ensure that we can read the property later with `getPositionAsync`
+    // This is a bit of a hack to ensure that we can read the property later with `unstable_getPositionAsync`
     if (Build.VERSION.SDK_INT >= 16) {
       activity.window.decorView.fitsSystemWindows = fits
     }

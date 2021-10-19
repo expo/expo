@@ -1,5 +1,8 @@
 import * as NavigationBar from 'expo-navigation-bar';
 import * as React from 'react';
+import { useSafeAreaFrame, useSafeAreaInsets } from 'react-native-safe-area-context';
+
+import { ScrollView, Text } from 'react-native';
 
 import Button from '../components/Button';
 import { Page, Section } from '../components/Page';
@@ -11,9 +14,11 @@ function usePosition(): [
 ] {
   const [position, setPosition] = React.useState<NavigationBar.NavigationBarPosition | null>(null);
 
+
+
   React.useEffect(() => {
     let isMounted = true;
-    NavigationBar.getPositionAsync().then((position) => {
+    NavigationBar.unstable_getPositionAsync().then((position) => {
       if (isMounted) {
         setPosition(position);
       }
@@ -37,26 +42,28 @@ function usePosition(): [
 
 export default function NavigationBarScreen() {
   return (
-    <Page>
-      <Section title="Visibility">
-        <VisibilityExample />
-      </Section>
-      <Section title="Appearance">
-        <ButtonStyleExample />
-      </Section>
-      <Section title="Background Color">
-        <BackgroundColorExample />
-      </Section>
-      <Section title="Border Color">
-        <BorderColorExample />
-      </Section>
-      <Section title="Position">
-        <PositionExample />
-      </Section>
-      <Section title="Behavior">
-        <BehaviorExample />
-      </Section>
-    </Page>
+    <ScrollView>
+      <Page>
+        <Section title="Visibility">
+          <VisibilityExample />
+        </Section>
+        <Section title="Appearance">
+          <ButtonStyleExample />
+        </Section>
+        <Section title="Background Color">
+          <BackgroundColorExample />
+        </Section>
+        <Section title="Border Color">
+          <BorderColorExample />
+        </Section>
+        <Section title="Position">
+          <PositionExample />
+        </Section>
+        <Section title="Behavior">
+          <BehaviorExample />
+        </Section>
+      </Page>
+    </ScrollView>
   );
 }
 
@@ -118,11 +125,18 @@ const NavigationBarBehaviors: NavigationBar.NavigationBarBehavior[] = [
 function PositionExample() {
   const [position, setPosition] = usePosition();
 
+  const insets = useSafeAreaInsets()
+  const frame = useSafeAreaFrame()
+
   return (
-    <Button
-      onPress={() => setPosition(position === 'absolute' ? 'relative' : 'absolute')}
-      title={`Position: ${position === 'absolute' ? 'relative' : 'absolute'}`}
-    />
+    <>
+      <Button
+        onPress={() => setPosition(position === 'absolute' ? 'relative' : 'absolute')}
+        title={`Position: ${position === 'absolute' ? 'relative' : 'absolute'}`}
+      />
+      <Text>insets: {JSON.stringify(insets)}</Text>
+      <Text>frame: {JSON.stringify(frame)}</Text>
+    </>
   );
 }
 
