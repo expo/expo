@@ -24,9 +24,7 @@
   _onRenderingFinished = handler;
   _webView = [self createWebView];
   _renderer = [[EXWKViewPrintPDFRenderer alloc] initWithPageSize:pageSize pageMargins:pageMargins];
-  // https://stackoverflow.com/questions/47166517/use-custom-local-font-in-wkwebview
-  NSURL* baseURL = [[NSURL alloc]initFileURLWithPath:[[NSBundle mainBundle] resourcePath]];
-  _htmlNavigation = [_webView loadHTMLString:htmlString baseURL:baseURL];
+  _htmlNavigation = [_webView loadHTMLString:htmlString baseURL:[[NSBundle mainBundle] resourceURL]];
 }
 
 #pragma mark - UIWebViewDelegate
