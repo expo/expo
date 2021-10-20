@@ -17,6 +17,8 @@
 
 ### 💡 Others
 
+- Refactor and unify Loader classes on Android. ([#14334](https://github.com/expo/expo/pull/14334) by [@esamelson](https://github.com/esamelson))
+
 ## 0.10.3 — 2021-10-12
 
 ### 🐛 Bug fixes
