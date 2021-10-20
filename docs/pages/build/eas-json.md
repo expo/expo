@@ -14,11 +14,14 @@ import iosSchema from '~/scripts/schemas/unversioned/eas-json-build-ios-schema.j
 ```json
 {
   "build": {
-    "release": {},
     "development": {
       "developmentClient": true,
       "distribution": "internal"
-    }
+    },
+    "preview": {
+      "distribution": "internal"
+    },
+    "production": {}
   }
 }
 ```
@@ -28,7 +31,6 @@ or
 ```json
 {
   "build": {
-    "release": {},
     "development": {
       "distribution": "internal",
       "android": {
@@ -37,12 +39,16 @@ or
       "ios": {
         "buildConfiguration": "Debug"
       }
-    }
+    },
+    "preview": {
+      "distribution": "internal"
+    },
+    "production": {}
   }
 }
 ```
 
-The JSON object under the `build` key can contain multiple build profiles. Every build profile can have an arbitrary name. The default profile that is expected by EAS CLI to exist is `release` (if you'd like to build your app using another build profile you need to specify it with a parameter - `eas build --platform android --profile foobar`). In the example, there are two build profiles (`release` and `development`), however they could be named `foo` or `bar` or whatever you'd like. Inside each build profile you can specify `android` and `ios` fields that contain platform-specific configuration for the build, any common options can be also stored there or in the root of the build profile.
+The JSON object under the `build` key can contain multiple build profiles. Every build profile can have an arbitrary name. The default profile that is expected by EAS CLI to exist is `production` (if you'd like to build your app using another build profile you need to specify it with a parameter - `eas build --platform android --profile foobar`). In the example, there are three build profiles (`development`, `preview`, and `production`), however they could be named `foo` or `bar` or whatever you'd like. Inside each build profile you can specify `android` and `ios` fields that contain platform-specific configuration for the build, any common options can be also stored there or in the root of the build profile.
 
 Generally, the schema of this file looks like this:
 
@@ -103,22 +109,6 @@ If you're also using EAS Submit, [see how to use `eas.json` to configure your su
         }
       }
     },
-    "release": {
-      "extends": "base",
-      "env": {
-        "ENVIRONMENT": "production"
-      }
-    },
-    "staging": {
-      "extends": "base",
-      "env": {
-        "ENVIRONMENT": "staging"
-      },
-      "distribution": "internal",
-      "android": {
-        "buildType": "apk"
-      }
-    },
     "development": {
       "extends": "base",
       "developmentClient": true,
@@ -131,6 +121,22 @@ If you're also using EAS Submit, [see how to use `eas.json` to configure your su
       },
       "ios": {
         "simulator": true
+      }
+    },
+    "staging": {
+      "extends": "base",
+      "env": {
+        "ENVIRONMENT": "staging"
+      },
+      "distribution": "internal",
+      "android": {
+        "buildType": "apk"
+      }
+    },
+    "production": {
+      "extends": "base",
+      "env": {
+        "ENVIRONMENT": "production"
       }
     }
   }
@@ -159,22 +165,6 @@ If you're also using EAS Submit, [see how to use `eas.json` to configure your su
         "yarn": "1.22.5"
       }
     },
-    "release": {
-      "extends": "base",
-      "env": {
-        "ENVIRONMENT": "production"
-      }
-    },
-    "staging": {
-      "extends": "base",
-      "env": {
-        "ENVIRONMENT": "staging"
-      },
-      "distribution": "internal",
-      "android": {
-        "gradleCommand": ":app:assembleRelease"
-      }
-    },
     "development": {
       "extends": "base",
       "env": {
@@ -188,6 +178,22 @@ If you're also using EAS Submit, [see how to use `eas.json` to configure your su
       "ios": {
         "simulator": true,
         "buildConfiguration": "Debug"
+      }
+    },
+    "staging": {
+      "extends": "base",
+      "env": {
+        "ENVIRONMENT": "staging"
+      },
+      "distribution": "internal",
+      "android": {
+        "gradleCommand": ":app:assembleRelease"
+      }
+    },
+    "production": {
+      "extends": "base",
+      "env": {
+        "ENVIRONMENT": "production"
       }
     }
   }

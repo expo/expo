@@ -19,22 +19,24 @@ If you only want to use EAS Build for a single platform, that's fine. If you cha
 
 The command will create an `eas.json` file in the root directory with the default configuration. It looks something like this:
 
-
 ```json
 {
   "build": {
-    "release": {},
     "development": {
       "developmentClient": true,
       "distribution": "internal"
-    }
+    },
+    "preview": {
+      "distribution": "internal"
+    },
+    "production": {}
   }
 }
 ```
 
 If you have a bare project, it will look a bit different.
 
-This is your EAS Build configuration. It defines two build profiles named `release` and `development` (you can have multiple build profiles like `release`, `debug`, `testing`, etc.) for each platform. If you want to learn more about `eas.json` see the [Configuration with eas.json](/build/eas-json.md) page.
+This is your EAS Build configuration. It defines three build profiles named `development`, `preview`, and `production` (you can have multiple build profiles like `production`, `debug`, `testing`, etc.) for each platform. If you want to learn more about `eas.json` see the [Configuration with eas.json](/build/eas-json.md) page.
 
 #### 3. Configure the project
 

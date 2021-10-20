@@ -88,12 +88,12 @@ Setting up EAS Update allows you to push critical bug fixes and improvements tha
 
    Then follow the prompts.
 
-   This will create a file named **eas.json**. Inside the `release` profile, add the `channel` property with a value of `"production"`:
+   This will create a file named **eas.json**. Inside the `production` profile, add the `channel` property with a value of `"production"`:
 
    ```bash
    {
      "build": {
-        "release": {
+        "production": {
           "channel": "production"
         },
        ...
