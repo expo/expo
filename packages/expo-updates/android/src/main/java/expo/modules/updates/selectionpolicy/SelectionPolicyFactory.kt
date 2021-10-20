@@ -9,7 +9,7 @@ object SelectionPolicyFactory {
     )
   }
 
-  fun createFilterAwarePolicy(runtimeVersion: String): SelectionPolicy {
+  @JvmStatic fun createFilterAwarePolicy(runtimeVersion: String): SelectionPolicy {
     return SelectionPolicy(
       LauncherSelectionPolicyFilterAware(runtimeVersion),
       LoaderSelectionPolicyFilterAware(),
