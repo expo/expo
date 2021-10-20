@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix crash on launch in iOS classic builds where `GoogleService-Info.plist` is not configured. ([#14811](https://github.com/expo/expo/pull/14811) by [@kudo](https://github.com/kudo))
+
 ### 💡 Others
 
 ## 4.0.2 — 2021-10-15
