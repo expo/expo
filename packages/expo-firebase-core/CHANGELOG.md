@@ -6,9 +6,21 @@
 
 ### 🎉 New features
 
-- [iOS] Firebase native app will automatically be initialized without any extra native changes ([#14750](https://github.com/expo/expo/pull/14750) by [@EvanBacon](https://github.com/EvanBacon))
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 4.0.3 — 2021-10-20
 
 ### 🐛 Bug fixes
+
+- Fix crash on launch in iOS classic builds where `GoogleService-Info.plist` is not configured. ([#14811](https://github.com/expo/expo/pull/14811) by [@kudo](https://github.com/kudo))
+
+## 4.0.2 — 2021-10-15
+
+### 🎉 New features
+
+- [iOS] Firebase native app will automatically be initialized without any extra native changes ([#14750](https://github.com/expo/expo/pull/14750) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 💡 Others
 

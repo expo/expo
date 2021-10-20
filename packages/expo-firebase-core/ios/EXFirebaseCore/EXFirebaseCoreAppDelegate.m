@@ -16,7 +16,10 @@ EX_REGISTER_SINGLETON_MODULE(EXFirebaseCoreAppDelegate)
   // Instead, the user should expect the default app to use a `GoogleService-Info.plist` file,
   // alternatively they can also setup the default app first.
   if ([FIRApp defaultApp] == nil) {
-    [FIRApp configure];
+    NSString *plistFile = [[NSBundle mainBundle] pathForResource:@"GoogleService-Info" ofType:@"plist"];
+    if (plistFile) {
+      [FIRApp configure];
+    }
   }
   return YES;
 }
