@@ -1,8 +1,7 @@
 import * as NavigationBar from 'expo-navigation-bar';
 import * as React from 'react';
-import { useSafeAreaFrame, useSafeAreaInsets } from 'react-native-safe-area-context';
-
 import { ScrollView, Text } from 'react-native';
+import { useSafeAreaFrame, useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import Button from '../components/Button';
 import { Page, Section } from '../components/Page';
@@ -13,8 +12,6 @@ function usePosition(): [
   (position: NavigationBar.NavigationBarPosition) => void
 ] {
   const [position, setPosition] = React.useState<NavigationBar.NavigationBarPosition | null>(null);
-
-
 
   React.useEffect(() => {
     let isMounted = true;
@@ -125,8 +122,8 @@ const NavigationBarBehaviors: NavigationBar.NavigationBarBehavior[] = [
 function PositionExample() {
   const [position, setPosition] = usePosition();
 
-  const insets = useSafeAreaInsets()
-  const frame = useSafeAreaFrame()
+  const insets = useSafeAreaInsets();
+  const frame = useSafeAreaFrame();
 
   return (
     <>
