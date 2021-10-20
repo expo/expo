@@ -268,8 +268,8 @@ CREATE INDEX \"index_json_data_scope_key\" ON \"json_data\" (\"scope_key\")\
   XCTAssertEqual(1, [EXUpdatesDatabaseUtils executeSql:updatesAssetsSql3 withArgs:nil onDatabase:migratedDb error:nil].count);
 
   // make sure multiple migrations are running
-  NSString * const lastAccessedSql1 = @"SELECT DISTINCT `last_accessed` FROM `updates` WHERE `last_accessed` IS NOT NULL";
-  XCTAssertEqual(1, [EXUpdatesDatabaseUtils executeSql:lastAccessedSql1 withArgs:nil onDatabase:migratedDb error:nil].count);
+  NSString * const lastAccessedSql = @"SELECT DISTINCT `last_accessed` FROM `updates` WHERE `last_accessed` IS NOT NULL";
+  XCTAssertEqual(1, [EXUpdatesDatabaseUtils executeSql:lastAccessedSql withArgs:nil onDatabase:migratedDb error:nil].count);
   NSString * const successfulLaunchCountSql = @"SELECT * FROM `updates` WHERE `successful_launch_count` = 1";
   XCTAssertEqual(2, [EXUpdatesDatabaseUtils executeSql:successfulLaunchCountSql withArgs:nil onDatabase:migratedDb error:nil].count);
 }
