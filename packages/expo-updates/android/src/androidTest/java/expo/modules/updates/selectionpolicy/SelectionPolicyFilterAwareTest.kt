@@ -2,10 +2,12 @@ package expo.modules.updates.selectionpolicy
 
 import android.net.Uri
 import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner
+import expo.modules.manifests.core.LegacyManifest
 import expo.modules.updates.UpdatesConfiguration
 import expo.modules.updates.db.entity.UpdateEntity
 import expo.modules.updates.manifest.NewUpdateManifest
 import expo.modules.manifests.core.NewManifest
+import expo.modules.updates.manifest.LegacyUpdateManifest
 import org.json.JSONException
 import org.json.JSONObject
 import org.junit.Assert
@@ -25,6 +27,8 @@ class SelectionPolicyFilterAwareTest {
   var updateRollout2: UpdateEntity? = null
   var updateMultipleFilters: UpdateEntity? = null
   var updateNoMetadata: UpdateEntity? = null
+  var legacyUpdate: UpdateEntity? = null
+//  var legacyUpdateProductionReleaseChannel: UpdateEntity? = null
 
   @Before
   @Throws(JSONException::class)
@@ -48,6 +52,8 @@ class SelectionPolicyFilterAwareTest {
     updateMultipleFilters = NewUpdateManifest.fromNewManifest(manifestJsonMultipleFilters, null, config).updateEntity
     val manifestJsonNoMetadata = NewManifest(JSONObject("{\"id\":\"079cde35-8433-4c17-81c8-7117c1513e72\",\"createdAt\":\"2021-01-11T19:39:22.480Z\",\"runtimeVersion\":\"1.0\",\"launchAsset\":{\"hash\":\"DW5MBgKq155wnX8rCP1lnsW6BsTbfKLXxGXRQx1RcOA\",\"key\":\"0436e5821bff7b95a84c21f22a43cb96.bundle\",\"contentType\":\"application/javascript\",\"url\":\"https://url.to/bundle\"},\"assets\":[{\"hash\":\"JSeRsPNKzhVdHP1OEsDVsLH500Zfe4j1O7xWfa14oBo\",\"key\":\"3261e570d51777be1e99116562280926.png\",\"contentType\":\"image/png\",\"url\":\"https://url.to/asset\"}]}"))
     updateNoMetadata = NewUpdateManifest.fromNewManifest(manifestJsonNoMetadata, null, config).updateEntity
+    val legacyManifest = LegacyManifest(JSONObject("{\"sdkVersion\":\"39.0.0\",\"releaseId\":\"0eef8214-4833-4089-9dff-b4138a14f196\",\"commitTime\":\"2020-11-11T00:17:54.797Z\",\"bundleUrl\":\"https://url.to/bundle.js\",\"releaseChannel\":\"default\"}"))
+    legacyUpdate = LegacyUpdateManifest.fromLegacyManifest(legacyManifest,config).updateEntity
   }
 
   @Test
@@ -133,5 +139,13 @@ class SelectionPolicyFilterAwareTest {
     // null filters or null metadata (i.e. bare or legacy manifests) is counted as a match
     Assert.assertTrue(SelectionPolicies.matchesFilters(updateDefault1, null))
     Assert.assertTrue(SelectionPolicies.matchesFilters(updateNoMetadata, manifestFilters))
+  }
+
+  @Test
+  @Throws(JSONException::class)
+  fun testMatchesFilters_Legacy() {
+    Assert.assertTrue(SelectionPolicies.matchesFilters(legacyUpdate, JSONObject("{\"releaseChannel\": \"default\"}")))
+    Assert.assertFalse(SelectionPolicies.matchesFilters(legacyUpdate, JSONObject("{\"releaseChannel\": \"production\"}")))
+    Assert.assertFalse(SelectionPolicies.matchesFilters(legacyUpdate, JSONObject()))
   }
 }

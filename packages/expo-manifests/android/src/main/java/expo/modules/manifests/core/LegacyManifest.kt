@@ -15,6 +15,8 @@ open class LegacyManifest(json: JSONObject) : BaseLegacyManifest(json) {
 
   fun getRuntimeVersion(): String? = json.getNullable("runtimeVersion")
 
+  fun getReleaseChannel(): String = json.getString("releaseChannel") ?: "default"
+
   @Throws(JSONException::class)
   fun getBundledAssets(): JSONArray? = json.getNullable("bundledAssets")
 

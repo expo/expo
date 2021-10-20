@@ -28,7 +28,15 @@ class LegacyUpdateManifest private constructor(
 ) : UpdateManifest {
   override val serverDefinedHeaders: JSONObject? = null
 
-  override val manifestFilters: JSONObject? = null
+//  override val manifestFilters: JSONObject? = null
+  override val manifestFilters: JSONObject? by lazy {
+    if (manifest == null) {
+      null
+    } else {
+      val releaseChannel = manifest.getReleaseChannel()
+      return@lazy JSONObject("{\"releaseChannel\": \"$releaseChannel\"}")
+    }
+  }
 
   override val updateEntity: UpdateEntity by lazy {
     UpdateEntity(mId, mCommitTime, mRuntimeVersion, mScopeKey).apply {
