@@ -5,6 +5,7 @@
 ### 🛠 Breaking changes
 
 - Add local SQLite fields for error recovery manager on iOS. ([#14610](https://github.com/expo/expo/pull/14610) by [@esamelson](https://github.com/esamelson))
+- Add DB migration for above. ([#14718](https://github.com/expo/expo/pull/14718) by [@esamelson](https://github.com/esamelson))
 
 ### 🎉 New features
 
