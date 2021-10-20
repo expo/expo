@@ -5,17 +5,22 @@ import expo.modules.kotlin.methods.AnyMethod
 import expo.modules.kotlin.methods.Method
 import expo.modules.kotlin.methods.PromiseMethod
 import expo.modules.kotlin.methods.TypeInformation
+import expo.modules.kotlin.views.ViewManagerDefinition
+import expo.modules.kotlin.views.ViewManagerDefinitionBuilder
 
 class ModuleDefinitionBuilder {
   private var name: String? = null
   private var constantsProvider = { emptyMap<String, Any?>() }
-  var methods = mutableMapOf<String, AnyMethod>()
+  @PublishedApi
+  internal var methods = mutableMapOf<String, AnyMethod>()
+  private var viewManagerDefinition: ViewManagerDefinition? = null
 
   fun build(): ModuleDefinition {
     return ModuleDefinition(
       requireNotNull(name),
       constantsProvider,
-      methods
+      methods,
+      viewManagerDefinition
     )
   }
 
@@ -31,7 +36,7 @@ class ModuleDefinitionBuilder {
     name: String,
     crossinline body: () -> R
   ) {
-    methods[name] = Method(name, arrayOf<TypeInformation<*>>()) { body() }
+    methods[name] = Method(name, arrayOf()) { body() }
   }
 
   @JvmName("methodWithPromise")
@@ -72,5 +77,13 @@ class ModuleDefinitionBuilder {
     crossinline body: (p0: P0, p1: P1, p2: Promise) -> Unit
   ) {
     methods[name] = PromiseMethod(name, arrayOf(TypeInformation(P0::class.java, null is P0), TypeInformation(P1::class.java, null is P1))) { args, promise -> body(args[0] as P0, args[1] as P1, promise) }
+  }
+
+  fun viewManger(body: ViewManagerDefinitionBuilder.() -> Unit) {
+    require(viewManagerDefinition == null) { "The module definition may have exported only one view manager." }
+
+    val viewManagerDefinitionBuilder = ViewManagerDefinitionBuilder()
+    body.invoke(viewManagerDefinitionBuilder)
+    viewManagerDefinition = viewManagerDefinitionBuilder.build()
   }
 }

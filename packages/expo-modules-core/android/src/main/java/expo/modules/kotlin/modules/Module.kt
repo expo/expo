@@ -4,6 +4,6 @@ abstract class Module {
   abstract fun definition(): ModuleDefinition
 }
 
-fun module(block: ModuleDefinitionBuilder.() -> Unit): ModuleDefinition {
+inline fun module(block: ModuleDefinitionBuilder.() -> Unit): ModuleDefinition {
   return ModuleDefinitionBuilder().also(block).build()
 }
