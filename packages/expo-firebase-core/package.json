@@ -1,6 +1,6 @@
 {
   "name": "expo-firebase-core",
-  "version": "4.0.2",
+  "version": "4.0.3",
   "description": "Core support for Google Firebase",
   "main": "build/FirebaseCore.js",
   "types": "build/FirebaseCore.d.ts",

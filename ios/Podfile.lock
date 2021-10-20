@@ -2449,7 +2449,7 @@ PODS:
     - EXFirebaseCore
     - ExpoModulesCore
     - Firebase/Core (= 7.7.0)
-  - EXFirebaseCore (4.0.2):
+  - EXFirebaseCore (4.0.3):
     - ExpoModulesCore
     - Firebase/Core (= 7.7.0)
   - EXFont (10.0.2):
@@ -5142,7 +5142,7 @@ SPEC CHECKSUMS:
   EXFaceDetector: 3b27e9b2944f4855952cf8c46dc051c451ad8a1c
   EXFileSystem: 549909295f8cfe3ffab972944aeda71773147cf4
   EXFirebaseAnalytics: da81a1ce6340e5fd7e1e7280e7e71daa51f8ec60
-  EXFirebaseCore: e632eae3f2ef5b07dea1b24520f738b5434b1ca6
+  EXFirebaseCore: 2d0e5aac214f977dfbb72379509e6a11481b1400
   EXFont: 2d9909ab984b260638801e0dcfed63e2fdaf603a
   EXGL: c1791d90caaa65c1f0dc8ef080adf458f64bf9e8
   EXGL_CPP: c50907a8993d96800cdd8bc2ea576d2a709c8864

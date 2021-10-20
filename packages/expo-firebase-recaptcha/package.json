@@ -36,7 +36,7 @@
     "expo-module-scripts": "^2.0.0"
   },
   "dependencies": {
-    "expo-firebase-core": "~4.0.2"
+    "expo-firebase-core": "~4.0.3"
   },
   "peerDependencies": {
     "react-native-webview": "*"

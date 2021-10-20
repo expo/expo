@@ -89,7 +89,7 @@
     "expo-facebook": "~12.0.2",
     "expo-file-system": "~13.0.2",
     "expo-firebase-analytics": "~5.0.2",
-    "expo-firebase-core": "~4.0.2",
+    "expo-firebase-core": "~4.0.3",
     "expo-font": "~10.0.2",
     "expo-gl": "~11.0.2",
     "expo-google-app-auth": "~8.2.4",

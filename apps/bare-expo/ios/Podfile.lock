@@ -71,7 +71,7 @@ PODS:
     - EXFirebaseCore
     - ExpoModulesCore
     - Firebase/Core (= 7.7.0)
-  - EXFirebaseCore (4.0.2):
+  - EXFirebaseCore (4.0.3):
     - ExpoModulesCore
     - Firebase/Core (= 7.7.0)
   - EXFont (10.0.2):
@@ -129,32 +129,32 @@ PODS:
     - ExpoModulesCore
   - Expo (43.0.0-beta.4):
     - ExpoModulesCore
-  - expo-dev-client (0.6.1):
+  - expo-dev-client (0.6.2):
     - EXManifests
     - expo-dev-launcher
     - expo-dev-menu
     - expo-dev-menu-interface
     - EXUpdatesInterface
-  - expo-dev-launcher (0.8.2):
+  - expo-dev-launcher (0.8.3):
     - EXManifests
-    - expo-dev-launcher/Main (= 0.8.2)
+    - expo-dev-launcher/Main (= 0.8.3)
     - expo-dev-menu-interface
     - EXUpdatesInterface
     - React-Core
-  - expo-dev-launcher/Main (0.8.2):
+  - expo-dev-launcher/Main (0.8.3):
     - EXManifests
     - expo-dev-launcher/Unsafe
     - expo-dev-menu-interface
     - EXUpdatesInterface
     - React-Core
-  - expo-dev-launcher/Tests (0.8.2):
+  - expo-dev-launcher/Tests (0.8.3):
     - EXManifests
     - expo-dev-menu-interface
     - EXUpdatesInterface
     - OHHTTPStubs
     - React-Core
     - React-CoreModules
-  - expo-dev-launcher/Unsafe (0.8.2):
+  - expo-dev-launcher/Unsafe (0.8.3):
     - EXManifests
     - expo-dev-menu-interface
     - EXUpdatesInterface
@@ -1232,7 +1232,7 @@ SPEC CHECKSUMS:
   EXFaceDetector: 3b27e9b2944f4855952cf8c46dc051c451ad8a1c
   EXFileSystem: 549909295f8cfe3ffab972944aeda71773147cf4
   EXFirebaseAnalytics: da81a1ce6340e5fd7e1e7280e7e71daa51f8ec60
-  EXFirebaseCore: e632eae3f2ef5b07dea1b24520f738b5434b1ca6
+  EXFirebaseCore: 2d0e5aac214f977dfbb72379509e6a11481b1400
   EXFont: 2d9909ab984b260638801e0dcfed63e2fdaf603a
   EXGL: c1791d90caaa65c1f0dc8ef080adf458f64bf9e8
   EXGL_CPP: c50907a8993d96800cdd8bc2ea576d2a709c8864
@@ -1256,8 +1256,8 @@ SPEC CHECKSUMS:
   EXNotifications: d38efbe3a25b7e62829613efdba085736f81a3fb
   EXPermissions: 6f319c44fc64949f3af29c1997445f49649d1f81
   Expo: 248a601d15a8fe9ec16499299482c4faab87d82c
-  expo-dev-client: 8363efbe442469cbebf2809789197c82a583f0e4
-  expo-dev-launcher: 5eac05bfd5e5b634e8236adab0028d11e3341813
+  expo-dev-client: 278157fa90af7bb7508874b37e615b6d97f6e3ee
+  expo-dev-launcher: c0014ba11186eac6636633fb88197e0042117fdf
   expo-dev-menu: 27969edef4397f78e6a950e1c26624ab18e92a33
   expo-dev-menu-interface: 508467f2ba2aedda7a44e5080cc1e9a43ab7375e
   ExpoModulesCore: 47b403a33ad73770c49d7559615b3ea121a36116
