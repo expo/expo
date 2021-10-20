@@ -88,7 +88,7 @@ export function resolveProps(
       // https://developer.android.com/reference/androidx/core/view/WindowCompat#setDecorFitsSystemWindows(android.view.Window,%20boolean)
       WarningAggregator.addWarningAndroid(
         'androidNavigationBar.visible',
-        'visible property is deprecated in Android 30',
+        'property is deprecated in Android 11 (API 30) and will be removed from Expo SDK',
         'https://expo.fyi/android-navigation-bar-visible-deprecated'
       );
     }

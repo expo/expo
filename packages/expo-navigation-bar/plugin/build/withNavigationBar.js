@@ -54,7 +54,7 @@ function resolveProps(config, _props) {
         if (props.legacyVisible) {
             // Using legacyVisible can break the setPositionAsync method:
             // https://developer.android.com/reference/androidx/core/view/WindowCompat#setDecorFitsSystemWindows(android.view.Window,%20boolean)
-            config_plugins_1.WarningAggregator.addWarningAndroid('androidNavigationBar.visible', 'visible property is deprecated in Android 30', 'https://expo.fyi/android-navigation-bar-visible-deprecated');
+            config_plugins_1.WarningAggregator.addWarningAndroid('androidNavigationBar.visible', 'property is deprecated in Android 11 (API 30) and will be removed from Expo SDK', 'https://expo.fyi/android-navigation-bar-visible-deprecated');
         }
     }
     else {
