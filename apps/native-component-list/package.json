@@ -109,6 +109,7 @@
     "expo-location": "~13.0.1",
     "expo-mail-composer": "~11.0.1",
     "expo-media-library": "~13.0.1",
+    "expo-navigation-bar": "~1.0.0",
     "expo-network": "~4.0.1",
     "expo-notifications": "~0.13.1",
     "expo-permissions": "~13.0.1",
