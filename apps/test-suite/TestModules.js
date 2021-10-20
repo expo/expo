@@ -130,7 +130,8 @@ export function getTestModules() {
     optionalRequire(() => require('./tests/AdMobInterstitial')),
     optionalRequire(() => require('./tests/AdMobRewarded')),
     optionalRequire(() => require('./tests/FBBannerAd')),
-    optionalRequire(() => require('./tests/Notifications'))
+    optionalRequire(() => require('./tests/Notifications')),
+    optionalRequire(() => require('./tests/NavigationBar'))
   );
 
   if (!isDeviceFarm()) {

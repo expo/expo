@@ -42,4 +42,13 @@ export interface RawExpoModuleConfig {
          */
         modulesClassNames?: string[];
     };
+    /**
+     * Android-specific config.
+     */
+    android?: {
+        /**
+         * Full names (package + class name) of Kotlin native modules classes to put to the generated package provider file.
+         */
+        modulesClassNames?: string[];
+    };
 }

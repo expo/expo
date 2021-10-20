@@ -23,7 +23,7 @@ class ExpoModulesPackage : ReactPackage {
         val getPackageList = expoModules.getMethod("getPackageList")
         getPackageList.invoke(null) as List<Package>
       } catch (e: Exception) {
-        Log.e("ExpoModulesPackage", "Couldn't get expo modules list.", e)
+        Log.e("ExpoModulesPackage", "Couldn't get expo package list.", e)
         emptyList()
       }
     }

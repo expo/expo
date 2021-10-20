@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- Call `jobService.jobFinished` for the finished geofencing jobs. ([#14786](https://github.com/expo/expo/pull/14786) by [@mdmitry01](https://github.com/mdmitry01))
+
 ### 💡 Others
 
 - Extract nested `foregroundService` object from `LocationTaskOptions` type to the separate type `LocationTaskServiceOptions`. ([#14672](https://github.com/expo/expo/pull/14672) by [@Simek](https://github.com/Simek))
@@ -34,6 +36,7 @@ _This version does not introduce any user-facing changes._
 
 - Fixed `Location.getCurrentPositionAsync` throwing `Location provider is unavailable.` error. ([#14281](https://github.com/expo/expo/pull/14281) by [@m1st4ke](https://github.com/m1st4ke))
 - Fix building errors from use_frameworks! in Podfile. ([#14523](https://github.com/expo/expo/pull/14523) by [@kudo](https://github.com/kudo))
+- Update error message for `LocationUnavailableException` on Android. ([#14539](https://github.com/expo/expo/pull/14539) by [@kylerjensen](https://github.com/kylerjensen))
 
 ### 💡 Others
 

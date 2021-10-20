@@ -1,25 +1,19 @@
-import { css } from '@emotion/react';
 import React from 'react';
 
 import { InlineCode } from '~/components/base/code';
-import { UL, LI } from '~/components/base/list';
+import { UL } from '~/components/base/list';
 import { B, P } from '~/components/base/paragraph';
-import { H2, H4, H3Code } from '~/components/plugins/Headings';
+import { H2, H4 } from '~/components/plugins/Headings';
 import {
   ClassDefinitionData,
-  CommentData,
   GeneratedData,
-  MethodSignatureData,
   PropData,
 } from '~/components/plugins/api/APIDataTypes';
+import { renderMethod } from '~/components/plugins/api/APISectionMethods';
+import { renderProp } from '~/components/plugins/api/APISectionProps';
 import {
   CommentTextBlock,
-  listParams,
-  mdInlineComponents,
-  renderParam,
-  renderTypeOrSignatureType,
   resolveTypeName,
-  STYLES_OPTIONAL,
   TypeDocKind,
 } from '~/components/plugins/api/APISectionUtils';
 
@@ -27,56 +21,21 @@ export type APISectionClassesProps = {
   data: GeneratedData[];
 };
 
-const renderPropertyComment = (comment?: CommentData, signatures?: MethodSignatureData[]) => {
-  if (signatures && signatures.length) {
-    const { type, parameters, comment: signatureComment } = signatures[0];
-    return (
-      <>
-        <UL>
-          {parameters?.map(param => renderParam(param))}
-          <LI returnType>
-            <InlineCode>{resolveTypeName(type)}</InlineCode>
-          </LI>
-        </UL>
-        {signatureComment && (
-          <CommentTextBlock comment={signatureComment} components={mdInlineComponents} />
-        )}
-      </>
-    );
-  } else {
-    return comment ? <CommentTextBlock comment={comment} components={mdInlineComponents} /> : null;
-  }
+const renderProperty = (prop: PropData) => {
+  return prop.signatures?.length ? renderMethod(prop) : renderProp(prop, prop?.defaultValue, true);
 };
 
-const renderProperty = ({ name, signatures, flags, type, comment }: PropData) => (
-  <LI customCss={css({ marginBottom: 6 })} key={`class-property-${name}`}>
-    <B>
-      {name}
-      {signatures && signatures.length ? `(${listParams(signatures[0].parameters)})` : null}
-    </B>
-    {!signatures ? <>&emsp;{renderTypeOrSignatureType(type, signatures)}</> : null}
-    {flags?.isOptional ? <span css={STYLES_OPTIONAL}>&emsp;&bull;&emsp;optional</span> : null}
-    {!signatures ? <br /> : null}
-    {renderPropertyComment(comment, signatures)}
-  </LI>
-);
-
-const renderClass = ({
-  name,
-  comment,
-  type,
-  extendedTypes,
-  children,
-}: ClassDefinitionData): JSX.Element => {
+const renderClass = (
+  { name, comment, type, extendedTypes, children }: ClassDefinitionData,
+  classCount: number
+): JSX.Element => {
   const properties = children?.filter(
     child => child.kind === TypeDocKind.Property && !child.overwrites
   );
   const methods = children?.filter(child => child.kind === TypeDocKind.Method && !child.overwrites);
   return (
     <div key={`class-definition-${name}`}>
-      <H3Code>
-        <InlineCode>{name}</InlineCode>
-      </H3Code>
+      <H2>{name}</H2>
       {extendedTypes?.length && (
         <P>
           <B>Type: </B>
@@ -88,14 +47,14 @@ const renderClass = ({
       <CommentTextBlock comment={comment} />
       {properties?.length ? (
         <>
-          <H4>Properties:</H4>
-          <UL>{properties.map(child => renderProperty(child))}</UL>
+          {classCount === 1 ? <H2>{name} Properties</H2> : <H4>{name} Properties</H4>}
+          <UL>{properties.map(renderProperty)}</UL>
         </>
       ) : null}
       {methods?.length ? (
         <>
-          <H4>Methods:</H4>
-          <UL>{methods.map(child => renderProperty(child))}</UL>
+          {classCount === 1 ? <H2>{name} Methods</H2> : <H4>{name} Methods</H4>}
+          <>{methods.map(renderProperty)}</>
         </>
       ) : null}
     </div>
@@ -103,11 +62,6 @@ const renderClass = ({
 };
 
 const APISectionClasses = ({ data }: APISectionClassesProps) =>
-  data?.length ? (
-    <>
-      <H2 key="classes-header">Classes</H2>
-      {data.map(cls => renderClass(cls))}
-    </>
-  ) : null;
+  data?.length ? <>{data.map(cls => renderClass(cls, data?.length))}</> : null;
 
 export default APISectionClasses;

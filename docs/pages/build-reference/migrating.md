@@ -2,7 +2,7 @@
 title: Migrating from "expo build"
 ---
 
-The purpose of this reference page is to call out some of the practical differences that you may need to account for when migrating your Expo managed app from `expo build` ("classic build") to EAS Build. If this is your first time using EAS Build, you can use this page as a companion to ["Creating your first build"](/build/setup.md).
+The purpose of this reference page is to call out some of the practical differences that you may need to account for when migrating your Expo managed app from `expo build` ("classic builds") to EAS Build. If this is your first time using EAS Build, you can use this page as a companion to ["Creating your first build"](/build/setup.md).
 
 One of the goals with EAS Build is to make it as easy as possible to migrate from `expo build`; for example, your app signing credentials will be automatically re-used, and the Expo SDK and your `app.json` configuration will all work the same as before. That said, there are some differences in the build process that may require additional configuration or small code changes.
 
@@ -43,6 +43,19 @@ With classic builds, `assetBundlePatterns` serves two purposes:
 
 Only the second purpose applies with the new build system. All assets referenced in your app source code are bundled into your app binary at build time, the same as in a default React Native app &mdash; `assetBundlePatterns` is not used to determine what assets to bundle in the binary, it's only used for update bundles.
 
+### Custom `"main"` entry point in `package.json` is not yet supported
+
+If your app depends on a custom `"main"` entry point, you will need to remove that field from `package.json` and then create `index.js` in the root of your project and use [registerRootComponent](/versions/latest/sdk/register-root-component/) to register your root component. For example, if your app root component lives in `src/App.tsx`, your `index.js` should look like the following:
+
+```
+import { registerRootComponent } from 'expo';
+import App from './src/App';
+
+registerRootComponent(App);
+```
+
+Support for custom entry points is in progress and is coming soon.
+
 ### Monorepos may require additional setup
 
 Classic builds had no knowledge of your repository set up, you could use a monorepo or birepo or trirepo, the service was entirely indifferent. As long as you were able to publish a bundle, that's all that was needed. EAS Build needs to be able to install all of your project dependencies and essentially set up your development environment inside of a worker, so in some cases that will require some additional configuration. Learn more: ["How to set up EAS Build with a monorepo"](/build-reference/how-tos.md#how-to-set-up-eas-build-with).
@@ -55,11 +68,11 @@ If you use environment variables in your `app.config.js` or in your app source c
 
 ### Additional configuration is required to access private npm packages
 
-Learn more about how to securely store your `NPM_TOKEN` on EAS Build: ["How to use private package repositories"](/build-reference/how-tos.md#how-to-use-private-package-repositories).
+Learn more about how to securely store your `NPM_TOKEN` on EAS Build: ["Using private npm packages"](/build-reference/private-npm-packages).
 
 ### `expo-branch` is not supported on EAS Build
 
-You will need to remove `expo-branch` from your app to build it with EAS Build. The plan is to add support to [react-native-branch](https://www.npmjs.com/package/react-native-branch), the library maintained by engineers at [Branch](https://branch.io/). If Branch support is a blocker for you, you can try to build your own [config plugin](https://docs.expo.dev/guides/config-plugins/) to add react-native-branch to your app today.
+You will need to remove `expo-branch` from your app to build it with EAS Build. The plan is to add support to [react-native-branch](https://www.npmjs.com/package/react-native-branch), the library maintained by engineers at [Branch](https://branch.io/). If Branch support is a blocker for you, you can try to build your own [config plugin](https://docs.expo.dev/guides/config-plugins/) to add `react-native-branch` to your app today.
 
 ### `metro.config.js` must export the entire default config from `@expo/metro-config`
 

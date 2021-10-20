@@ -146,9 +146,7 @@ module.exports = function withPrefixedName(config, prefix) {
 ```json
 {
   "name": "my-app",
-  "plugins": [
-    ["./my-plugin", "custom"]
-  ]
+  "plugins": [["./my-plugin", "custom"]]
 }
 ```
 
@@ -159,9 +157,7 @@ module.exports = function withPrefixedName(config, prefix) {
 ```json
 {
   "name": "custom-my-app",
-  "plugins": [
-    ["./my-plugin", "custom"]
-  ]
+  "plugins": [["./my-plugin", "custom"]]
 }
 ```
 
@@ -244,21 +240,23 @@ module.exports = {
 
 The following default mods are provided by the mod compiler for common file manipulation:
 
-- `mods.ios.appDelegate` -- Modify the `ios/<name>/AppDelegate.m` as a string.
-- `mods.ios.infoPlist` -- Modify the `ios/<name>/Info.plist` as JSON (parsed with [`@expo/plist`](https://www.npmjs.com/package/@expo/plist)).
-- `mods.ios.entitlements` -- Modify the `ios/<name>/<product-name>.entitlements` as JSON (parsed with [`@expo/plist`](https://www.npmjs.com/package/@expo/plist)).
-- `mods.ios.expoPlist` -- Modify the `ios/<name>/Expo.plist` as JSON (Expo updates config for iOS) (parsed with [`@expo/plist`](https://www.npmjs.com/package/@expo/plist)).
+- `mods.ios.infoPlist` -- Modify the `ios/<name>/Info.plist` as JSON (parsed with [`@expo/plist`][expo-plist]).
+- `mods.ios.entitlements` -- Modify the `ios/<name>/<product-name>.entitlements` as JSON (parsed with [`@expo/plist`][expo-plist]).
+- `mods.ios.expoPlist` -- Modify the `ios/<name>/Expo.plist` as JSON (Expo updates config for iOS) (parsed with [`@expo/plist`][expo-plist]).
 - `mods.ios.xcodeproj` -- Modify the `ios/<name>.xcodeproj` as an `XcodeProject` object (parsed with [`xcode`](https://www.npmjs.com/package/xcode)).
+- `mods.ios.podfileProperties` -- Modify the `ios/Podfile.properties.json` as JSON.
+- `mods.ios.appDelegate` -- Modify the `ios/<name>/AppDelegate.m` as a string (Dangerous).
 
 - `mods.android.manifest` -- Modify the `android/app/src/main/AndroidManifest.xml` as JSON (parsed with [`xml2js`][xml2js]).
 - `mods.android.strings` -- Modify the `android/app/src/main/res/values/strings.xml` as JSON (parsed with [`xml2js`][xml2js]).
 - `mods.android.colors` -- Modify the `android/app/src/main/res/values/colors.xml` as JSON (parsed with [`xml2js`][xml2js]).
+- `mods.android.colorsNight` -- Modify the `android/app/src/main/res/values-night/colors.xml` as JSON (parsed with [`xml2js`][xml2js]).
 - `mods.android.styles` -- Modify the `android/app/src/main/res/values/styles.xml` as JSON (parsed with [`xml2js`][xml2js]).
-- `mods.android.mainActivity` -- Modify the `android/app/src/main/<package>/MainActivity.java` as a string.
-- `mods.android.appBuildGradle` -- Modify the `android/app/build.gradle` as a string.
-- `mods.android.projectBuildGradle` -- Modify the `android/build.gradle` as a string.
-- `mods.android.settingsGradle` -- Modify the `android/settings.gradle` as a string.
 - `mods.android.gradleProperties` -- Modify the `android/gradle.properties` as a `Properties.PropertiesItem[]`.
+- `mods.android.mainActivity` -- Modify the `android/app/src/main/<package>/MainActivity.java` as a string (Dangerous).
+- `mods.android.appBuildGradle` -- Modify the `android/app/build.gradle` as a string (Dangerous).
+- `mods.android.projectBuildGradle` -- Modify the `android/build.gradle` as a string (Dangerous).
+- `mods.android.settingsGradle` -- Modify the `android/settings.gradle` as a string (Dangerous).
 
 After the mods are resolved, the contents of each mod will be written to disk. Custom default mods can be added to support new native files.
 For example, you can create a mod to support the `GoogleServices-Info.plist`, and pass it to other mods.
@@ -271,21 +269,25 @@ If you're developing a feature that requires mods, it's best not to interact wit
 Instead you should use the helper mods provided by `@expo/config-plugins`:
 
 - iOS
-  - `withAppDelegate`
   - `withInfoPlist`
   - `withEntitlementsPlist`
   - `withExpoPlist`
   - `withXcodeProject`
+  - `withPodfileProperties`
+  - `withAppDelegate` (Dangerous)
 - Android
   - `withAndroidManifest`
   - `withStringsXml`
   - `withAndroidColors`
+  - `withAndroidColorsNight`
   - `withAndroidStyles`
-  - `withMainActivity`
-  - `withProjectBuildGradle`
-  - `withAppBuildGradle`
-  - `withSettingsGradle`
   - `withGradleProperties`
+  - `withMainActivity` (Dangerous)
+  - `withProjectBuildGradle` (Dangerous)
+  - `withAppBuildGradle` (Dangerous)
+  - `withSettingsGradle` (Dangerous)
+
+> Dangerous modifications rely on regular expressions (regex) to modify application code, which may cause the build to break. Regex mods are also difficult to version, and therefore should be used sparingly. Always opt towards using application code to modify application code, i.e. [Expo Modules][emc] native API.
 
 A mod plugin gets passed a `config` object with additional properties `modResults` and `modRequest` added to it.
 
@@ -577,6 +579,40 @@ export const withCustomConfig: ConfigPlugin<string> = (config, id) => {
 };
 ```
 
+### Modifying the iOS Podfile
+
+The iOS Podfile is the config file for CocoaPods, the dependency manager on iOS. Think of Podfile like package.json but for iOS. The Podfile is a ruby file (application code), which means you **cannot** safely modify it from Expo config plugins, and should opt towards another approach, like Expo Autolinking hooks (citation needed).
+
+Currently, we do have configuration that interacts with the CocoaPods file though.
+
+Podfile configuration is often done with environment variables:
+
+- `process.env.EXPO_USE_SOURCE` when set to `1`, Expo modules will install source code instead of xcframeworks.
+- `process.env.CI` in some projects, when set to `0`, Flipper installation will be skipped.
+
+We do expose one mechanism for safely interacting with the Podfile, but it's very limited. The versioned [template Podfile](https://github.com/expo/expo/blob/master/templates/expo-template-bare-minimum/ios/Podfile) is hard coded to read from a static JSON file `Podfile.properties.json`, we expose a mod (`ios.podfileProperties`, `withPodfileProperties`) to safely read and write from this file.
+
+In Expo SDK 43, the `Podfile.properties.json` only supports the following configuration:
+
+```json
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "properties": {
+    "expo": {
+      "type": "object",
+      "properties": {
+        "jsEngine": {
+          "enum": ["jsc", "hermes"]
+        }
+      }
+    }
+  }
+}
+```
+
+We may extend this schema in the future to fit more needs.
+
 ### Adding plugins to pluginHistory
 
 `_internal.pluginHistory` was created to prevent duplicate plugins from running while migrating from legacy UNVERSIONED plugins to versioned plugins.
@@ -643,6 +679,134 @@ Static properties are required because the Expo config must be serializable to J
 
 If possible, attempt to make your plugin work without props, this will help resolution tooling like [`expo install`][#expo-install] or [vscode expo][vscode-expo] work better. Remember that every property you add increases complexity, making it harder to change in the future and increase the amount of features you'll need to test. Good default values are preferred over mandatory configuration when feasible.
 
+### Configuring Android App Startup
+
+You may find that your project requires configuration to be setup before the JS engine has started. For example, in `expo-splash-screen` on Android, we need to specify the resize mode in the `MainActivity.java`'s `onCreate` method. Instead of attempting to dangerously regex these changes into the `MainActivity` via a dangerous mod, we use a system of lifecycle hooks and static settings to safely ensure the feature works across all supported Android languages (Java, Kotlin), versions of Expo, and combination of config plugins.
+
+This system is made up of three components:
+
+- `ReactActivityLifecycleListeners`: An interface exposed by `expo-modules-core` to get a native callback when the project `ReactActivity`'s `onCreate` method is invoked.
+- `withStringsXml`: A mod exposed by `@expo/config-plugins` which writes a property to the Android `strings.xml` file, the library can safely read the strings.xml value and do initial setup. The string XML values follow a designated format for consistency.
+- `SingletonModule` (optional): An interface exposed by `expo-modules-core` to create a shared interface between native modules and `ReactActivityLifecycleListeners`.
+
+Consider this example: We want to set a custom "value" string to a property on the Android `Activity`, directly after the `onCreate` method was invoked.
+We can do this safely by creating a node module `expo-custom`, implementing `expo-modules-core`, and Expo config plugins:
+
+First, we register the `ReactActivity` listener in our Android native module, this will only be invoked if the user has `expo-modules-core` support, setup in their project (default in projects bootstrapped with Expo CLI, Create React Native App, Ignite CLI, and Expo prebuilding).
+
+`expo-custom/android/src/main/java/expo/modules/custom/CustomPackage.kt`
+
+```kotlin
+package expo.modules.custom
+
+import android.content.Context
+import expo.modules.core.BasePackage
+import expo.modules.core.interfaces.ReactActivityLifecycleListener
+
+class CustomPackage : BasePackage() {
+  override fun createReactActivityLifecycleListeners(activityContext: Context): List<ReactActivityLifecycleListener> {
+    return listOf(CustomReactActivityLifecycleListener(activityContext))
+  }
+
+  // ...
+}
+```
+
+Next we implement the `ReactActivity` listener, this is passed the `Context` and is capable of reading from the project `strings.xml` file.
+
+`expo-custom/android/src/main/java/expo/modules/custom/CustomReactActivityLifecycleListener.kt`
+
+```kotlin
+package expo.modules.custom
+
+import android.app.Activity
+import android.content.Context
+import android.os.Bundle
+import android.util.Log
+import expo.modules.core.interfaces.ReactActivityLifecycleListener
+
+class CustomReactActivityLifecycleListener(activityContext: Context) : ReactActivityLifecycleListener {
+  override fun onCreate(activity: Activity, savedInstanceState: Bundle?) {
+    // Execute static tasks before the JS engine starts.
+    // These values are defined via config plugins.
+
+    var value = getValue(activity)
+    if (value != "") {
+      // Do something to the Activity that requires the static value...
+    }
+  }
+
+  // Naming is node module name (`expo-custom`) plus value name (`value`) using underscores as a delimiter
+  // i.e. `expo_custom_value`
+  // `@expo/vector-icons` + `iconName` -> `expo__vector_icons_icon_name`
+  private fun getValue(context: Context): String = context.getString(R.string.expo_custom_value).toLowerCase()
+}
+```
+
+We must define default `string.xml` values which the user will overwrite locally by using the same `name` property in their `strings.xml` file.
+`expo-custom/android/src/main/res/values/strings.xml`
+
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="expo_custom_value" translatable="false"></string>
+</resources>
+```
+
+At this point, bare users can configure this value by creating a string in their local `strings.xml` file (assuming they also have `expo-modules-core` support setup):
+
+`./android/app/src/main/res/values/strings.xml`
+
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="expo_custom_value" translatable="false">I Love Expo</string>
+</resources>
+```
+
+For managed users, we can expose this functionality (safely!) via an Expo config plugin:
+
+`expo-custom/app.plugin.js`
+
+```js
+const { AndroidConfig, withStringsXml } = require('@expo/config-plugin');
+
+function withCustom(config, value) {
+  return withStringsXml(config, config => {
+    config.modResults = setStrings(config.modResults, value);
+    return config;
+  });
+}
+
+function setStrings(strings, value) {
+  // Helper to add string.xml JSON items or overwrite existing items with the same name.
+  return AndroidConfig.Strings.setStringItem(
+    [
+      // XML represented as JSON
+      // <string name="expo_custom_value" translatable="false">value</string>
+      { $: { name: 'expo_custom_value', translatable: 'false' }, _: value },
+    ],
+    strings
+  );
+}
+```
+
+Managed Expo users can now interact with this API like so:
+
+`app.json`
+
+```json
+{
+  "expo": {
+    "plugins": [["expo-custom", "I Love Expo"]]
+  }
+}
+```
+
+By re-running `expo prebuild -p` (`eas build -p android`, or `expo run:ios`) the user can now see the changes, safely applied in their managed project!
+
+As you can see from the example, we rely heavily on application code (expo-modules-core) to interact with application code (the native project). This ensures that our config plugins are safe and reliable, hopefully for a very long time!
+
 ## Debugging
 
 You can debug config plugins by running `EXPO_DEBUG=1 expo prebuild`. If `EXPO_DEBUG` is enabled, the plugin stack logs will be printed, these are useful for viewing which mods ran, and in what order they ran in. To view all static plugin resolution errors, enable `EXPO_CONFIG_PLUGIN_VERBOSE_ERRORS`, this should only be needed for plugin authors.
@@ -665,15 +829,19 @@ Introspection only supports a subset of modifiers:
 - `ios.infoPlist`
 - `ios.entitlements`
 - `ios.expoPlist`
+- `ios.podfileProperties`
 - `android.manifest`
 - `android.gradleProperties`
 - `android.strings`
 - `android.colors`
+- `android.colorsNight`
 - `android.styles`
+
+> Introspection only works on safe modifiers (static files like JSON, XML, plist, properties), with the exception of `ios.xcodeproj` which often requires file system changes, making it non idempotent.
 
 Introspection works by creating custom base mods that work like the default base mods, except they don't write the `modResults` to disk at the end. Instead of persisting, they save the results to the Expo config under `_internal.modResults`, followed by the name of the mod i.e. the `ios.infoPlist` mod saves to `_internal.modResults.ios.infoPlist: {}`.
 
-As a real-world example, introspection is used by `eas-cli` to determine what the final iOS entitlements will be in a managed app, so it can sync them with the Apple developer portal before building. Introspection can also be used as a handy debugging and development tool.
+As a real-world example, introspection is used by `eas-cli` to determine what the final iOS entitlements will be in a managed app, so it can sync them with the Apple Developer Portal before building. Introspection can also be used as a handy debugging and development tool.
 
 <!-- TODO: Link to Vscode extension after preview feature lands -->
 
@@ -822,7 +990,9 @@ Please add the following to your Expo config
 [vscode-expo]: https://marketplace.visualstudio.com/items?itemName=byCedric.vscode-expo
 [ems-plugin]: https://github.com/expo/expo/tree/master/packages/expo-module-scripts#-config-plugin
 [xml2js]: https://www.npmjs.com/package/xml2js
+[expo-plist]: https://www.npmjs.com/package/@expo/plist
 [memfs]: https://www.npmjs.com/package/memfs
+[emc]: https://github.com/expo/expo/tree/master/packages/expo-modules-core
 
 <!-- TODO: Better link for Expo autolinking docs -->
 

@@ -26,6 +26,7 @@ import java.util.UUID;
 import org.unimodules.interfaces.taskManager.TaskConsumer;
 import org.unimodules.interfaces.taskManager.TaskManagerUtilsInterface;
 import org.unimodules.interfaces.taskManager.TaskConsumerInterface;
+import org.unimodules.interfaces.taskManager.TaskExecutionCallback;
 import org.unimodules.interfaces.taskManager.TaskInterface;
 import expo.modules.location.LocationHelpers;
 import expo.modules.location.LocationModule;
@@ -135,8 +136,16 @@ public class GeofencingTaskConsumer extends TaskConsumer implements TaskConsumer
       if (mTask == null) {
         return false;
       }
-      mTask.execute(bundle, null);
+      mTask.execute(bundle, null, new TaskExecutionCallback() {
+        @Override
+        public void onFinished(Map<String, Object> response) {
+          jobService.jobFinished(params, false);
+        }
+      });
     }
+
+    // Returning `true` indicates that the job is still running, but in async mode.
+    // In that case we're obligated to call `jobService.jobFinished` as soon as the async block finishes.
     return true;
   }
 

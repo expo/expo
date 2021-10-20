@@ -126,6 +126,11 @@ EX_REGISTER_SINGLETON_MODULE(EXUpdatesAppDelegate)
   return self;
 }
 
+- (BOOL)conformsToProtocol:(Protocol *)protocol
+{
+  return [self.bridgeDelegate conformsToProtocol:protocol];
+}
+
 - (id)forwardingTargetForSelector:(SEL)selector {
   if ([self isInterceptedSelector:selector]) {
     return self;

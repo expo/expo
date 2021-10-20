@@ -70,7 +70,7 @@ Additional configuration may be required for some scenarios:
 - Are you migrating an Expo managed app from `"expo build"`? [Learn about the differences](/build-reference/migrating.md).
 - Does your app code depend on environment variables? [Add them to your build configuration](/build-reference/variables.md).
 - Is your project inside of a monorepo? [Follow these instructions](/build-reference/how-tos.md#how-to-set-up-eas-build-with).
-- Do you use private npm packages? [Add your npm token](/build-reference/how-tos.md#how-to-use-private-package-repositories).
+- Do you use private npm packages? [Add your npm token](/build-reference/private-npm-packages).
 
 ## 4. Run a build
 
@@ -124,7 +124,7 @@ Before the build can start, we'll need to generate or provide app signing creden
 
 ## 5. Wait for the build to complete
 
-By default, the `eas build` command will wait for your build to complete. However, if you interrupt this command and monitor the progress of your builds by either visiting [the EAS Build dashboard](https://expo.dev/builds?type=eas) or running the `eas build:list` command.
+By default, the `eas build` command will wait for your build to complete. However, if you interrupt this command, you can monitor the progress of your builds by either visiting [the EAS Build dashboard](https://expo.dev/builds?type=eas) or running the `eas build:list` command.
 
 ## 6. Next steps
 

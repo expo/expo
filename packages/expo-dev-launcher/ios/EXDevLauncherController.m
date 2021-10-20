@@ -154,6 +154,9 @@ NSString *fakeLauncherBundleUrl = @"embedded://EXDevLauncher/dummy";
 
   if (!launchOptions[UIApplicationLaunchOptionsURLKey]) {
     [self navigateToLauncher];
+  } else {
+    // For deeplink launch, we need the keyWindow for expo-splash-screen to setup correctly.
+    [_window makeKeyWindow];
   }
 }
 

@@ -9,7 +9,7 @@ import android.content.Context
 import android.os.Build
 import androidx.annotation.RequiresApi
 import expo.modules.core.Promise
-import expo.modules.medialibrary.MediaLibraryConstants
+import expo.modules.medialibrary.ERROR_UNABLE_TO_MIGRATE
 import expo.modules.medialibrary.MediaLibraryUtils
 import java.io.File
 
@@ -29,7 +29,7 @@ internal class MigrateAlbum(
       .map { MediaLibraryUtils.getRelativePathForAssetType(it.mimeType, false) }
       .toSet()
     if (assetsRelativePaths.size > 1) {
-      promise.reject(MediaLibraryConstants.ERROR_UNABLE_TO_MIGRATE, "The album contains incompatible file types.")
+      promise.reject(ERROR_UNABLE_TO_MIGRATE, "The album contains incompatible file types.")
       return null
     }
 
@@ -42,7 +42,7 @@ internal class MigrateAlbum(
         .contentResolver
         .update(
           ContentUris.withAppendedId(
-            MediaLibraryUtils.mineTypeToExternalUri(assetFile.mimeType),
+            MediaLibraryUtils.mimeTypeToExternalUri(assetFile.mimeType),
             assetFile.assetId.toLong()
           ),
           values,

@@ -113,9 +113,9 @@ const renderAPI = (
     return (
       <>
         <APISectionComponents data={components} componentsProps={componentsProps} />
-        <APISectionClasses data={classes} />
         <APISectionConstants data={constants} apiName={apiName} />
         <APISectionMethods data={hooks} header="Hooks" />
+        <APISectionClasses data={classes} />
         <APISectionMethods data={methods} apiName={apiName} />
         <APISectionMethods
           data={eventSubscriptions}

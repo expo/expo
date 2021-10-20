@@ -34,6 +34,7 @@ Next, this is what happens when EAS Build picks up your request:
    - Every build gets its own fresh container with all build tools installed there (Java JDK, Android SDK, NDK, and so on).
 
 1. Download the project tarball from a private AWS S3 bucket and unpack it.
+1. Create `.npmrc` if `NPM_TOKEN` is set. ([Learn more](/build-reference/private-npm-packages).)
 1. Run the `eas-build-pre-install` script from package.json if defined.
 1. Run `yarn install` in the project root (or `npm install` if `yarn.lock` does not exist).
 1. Additional steps for **managed** projects:
@@ -43,14 +44,14 @@ Next, this is what happens when EAS Build picks up your request:
 1. Run the `eas-build-post-install` script from package.json if defined.
 1. Restore the keystore (if it was included in the build request).
 1. Run `./gradlew COMMAND` in the `android` directory inside your project.
+
    - `COMMAND` is the command defined in your `eas.json` at `builds.android.PROFILE_NAME.gradleCommand`. It defaults to `:app:bundleRelease` which produces the AAB (Android App Bundle).
 
 1. Run the `eas-build-pre-upload-artifacts` script from package.json if defined.
+1. Store a cache of files and directories defined in the build profile. Subsequent builds will restore this cache. ([Learn more](../build/eas-json/).)
 1. Upload the build artifact to AWS S3.
 
    - The artifact path can be configured in `eas.json` at `builds.android.PROFILE_NAME.artifactPath`. It defaults to `android/app/build/outputs/**/*.{apk,aab}`. We're using the [fast-glob](https://github.com/mrmlnc/fast-glob#pattern-syntax) package for pattern matching.
-
-1. Store a cache of files and directories defined in the build profile. `Podfile.lock` is cached by default. Subsequent builds will restore this cache. ([Learn more](../build/eas-json/).)
 
 ## Project Auto-Configuration
 
