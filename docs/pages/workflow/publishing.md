@@ -62,8 +62,7 @@ Store and the Google Play Store. See [Distributing Your App](../distribution/int
 
 The standalone app knows to look for updates at your app's published
 url, and if you publish an update then the next time a user opens your
-app they will automatically download the new version. These are
-commonly referred to as "Over the Air" (OTA) updates, the functionality
+app they will automatically download the new version. The functionality
 is similar to [CodePush](https://microsoft.github.io/code-push/), but it
 is built into Expo so you don't need to install anything.
 

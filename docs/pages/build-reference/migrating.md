@@ -12,7 +12,7 @@ EAS Build only supports SDK 41+ managed projects. You must upgrade your project 
 
 ### Only libraries included in your package.json are included in the resulting standalone app
 
-This often results in massive reductions in app size; managed apps built with EAS Build can be in the order of 10x smaller than the same app built with `expo build` ([learn why](https://blog.expo.dev/expo-managed-workflow-in-2021-5b887bbf7dbb)). The tradeoff here is that you need to be careful when publishing over-the-air updates in order to avoid publishing an incompatible JavaScript bundle. Learn more in ["Over-the-air updates"](/build/updates.md).
+This often results in massive reductions in app size; managed apps built with EAS Build can be in the order of 10x smaller than the same app built with `expo build` ([learn why](https://blog.expo.dev/expo-managed-workflow-in-2021-5b887bbf7dbb)). The tradeoff here is that you need to be careful when publishing updates in order to avoid publishing an incompatible JavaScript bundle. Learn more in [updates](/build/updates.md).
 
 ### The `--config` flag is not supported
 
@@ -20,7 +20,7 @@ You may be using `expo build:[ios|android] --config app.production.json` to swit
 
 ### No more automatic publishing before building
 
-With classic builds, the default behavior is to automatically publish your app bundle prior to running a build. This had some unintended consequences; for example, sometimes developers would run a build and be surprised to learn that their existing app was updated over-the-air as a side effect.
+With classic builds, the default behavior is to automatically publish your app bundle as an update prior to running a build. This had some unintended consequences; for example, sometimes developers would run a build and be surprised to learn that their existing app was updated as a side effect.
 
 With EAS Build, `expo publish` is not run as part of the build process. Instead, the JavaScript bundle is generated locally on EAS Build at build time and directly embedded in the app.
 
@@ -28,7 +28,7 @@ Because we no longer publish at build time, `postPublish` hooks in `app.json` wi
 
 ### `Constants.manifest` does not include update related fields until updated
 
-Given that we no longer publish the app prior to builds, there is no update manifest available until the app has download an over-the-air update. Usually this means that at least for the first launch of the app you won't have some fields available. If you are using `Constants.manifest` to access update fields, in particular `Constants.manifest.releaseChannel`, you should switch to `Updates.releaseChannel` instead.
+Given that we no longer publish the app prior to builds, there is no update manifest available until the app has download an update. Usually this means that at least for the first launch of the app you won't have some fields available. If you are using `Constants.manifest` to access update fields, in particular `Constants.manifest.releaseChannel`, you should switch to `Updates.releaseChannel` instead.
 
 ### `Constants.appOwnership` will be `null` in the resulting standalone app
 
@@ -39,7 +39,7 @@ The `Constants.appOwnership` field no longer exists in standalone apps produced 
 With classic builds, `assetBundlePatterns` serves two purposes:
 
 1. Assets that match the given patterns are bundled in the binary at build time.
-2. Assets that match the given patterns determine the contents of an "atomic" over-the-air update bundle. All of the files matching `assetBundlePatterns` need to be downloaded before an update is considered ready to launch.
+2. Assets that match the given patterns determine the contents of an "atomic" update bundle. All of the files matching `assetBundlePatterns` need to be downloaded before an update is considered ready to launch.
 
 Only the second purpose applies with the new build system. All assets referenced in your app source code are bundled into your app binary at build time, the same as in a default React Native app &mdash; `assetBundlePatterns` is not used to determine what assets to bundle in the binary, it's only used for update bundles.
 

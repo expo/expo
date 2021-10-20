@@ -15,7 +15,7 @@ Not all Expo SDK modules are Universal Modules. Right now, only a small part of 
 
 When you [create an ExpoKit project](eject.md), we automatically add most of the same native APIs that are available in the Expo Go app. Each of these APIs is supported by some native code which increases the size of your native binary.
 
-You can remove any Expo Universal Module from your ExpoKit project if you don't think you need it. This means it will no longer be available in your native binary; if you write some JS which tries to import this API, you might cause a fatal error in your app. If you send an [OTA update](../guides/configuring-ota-updates.md) to your app which contains API calls that aren't present in your native binary, you might cause a fatal error.
+You can remove any Expo Universal Module from your ExpoKit project if you don't think you need it. This means it will no longer be available in your native binary; if you write some JS which tries to import this API, you might cause a fatal error in your app. If you send an [update](../guides/configuring-updates.md) to your app which contains API calls that aren't present in your native binary, you might cause a fatal error.
 
 Omitting Universal Modules is currently supported on iOS but not Android.
 

@@ -23,7 +23,7 @@ You can now use your project like a normal Expo project (with no ExpoKit).
 
 ## Verifying Bundles (iOS only)
 
-When we serve your JS over-the-air to your ExpoKit project, we include a signature so that
+When we serve updates to your ExpoKit project, we include a signature so that
 your project can verify that the JS actually came from our servers.
 
 By default, projects that use ExpoKit have this feature disabled on iOS and enabled on

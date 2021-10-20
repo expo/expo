@@ -60,7 +60,7 @@ You can test it to ensure it works like this:
 }
 ```
 
-In order to be able to deep link back into your app, you will need to set a `scheme` in your project `app.config.js`, or `app.json`, and then build your standalone app (it can't be updated with an OTA update). If you do not include a scheme, the authentication flow will complete but it will be unable to pass the information back into your application and the user will have to manually exit the authentication modal (resulting in a cancelled event).
+In order to be able to deep link back into your app, you will need to set a `scheme` in your project `app.config.js`, or `app.json`, and then build your standalone app (it can't be updated with an update). If you do not include a scheme, the authentication flow will complete but it will be unable to pass the information back into your application and the user will have to manually exit the authentication modal (resulting in a cancelled event).
 
 ## Guides
 
@@ -433,11 +433,11 @@ A hint about the type of the token submitted for revocation. If not included the
 Shared properties for token requests (refresh, exchange, revoke).
 
 | Name         | Type                      | Description                                             | Spec |
-| ------------ | ------------------------- | ------------------------------------------------------- | ---- |
-| clientId     | `string`                  | Unique ID representing the info provided by the client  |      | [Section 2.2][s22] |
+| ------------ | ------------------------- | ------------------------------------------------------- | ---- | --------------------- |
+| clientId     | `string`                  | Unique ID representing the info provided by the client  |      | [Section 2.2][s22]    |
 | clientSecret | `?string`                 | Client secret supplied by an auth provider              |      | [Section 2.3.1][s231] |
-| extraParams  | `?Record<string, string>` | Extra query params that'll be added to the query string |      | `N/A` |
-| scopes       | `?string[]`               | List of strings to request access to                    |      | [Section 3.3][s33] |
+| extraParams  | `?Record<string, string>` | Extra query params that'll be added to the query string |      | `N/A`                 |
+| scopes       | `?string[]`               | List of strings to request access to                    |      | [Section 3.3][s33]    |
 
 ### `AccessTokenRequestConfig`
 

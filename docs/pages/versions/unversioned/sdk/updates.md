@@ -7,7 +7,7 @@ import APISection from '~/components/plugins/APISection';
 import InstallSection from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 
-The `Updates` API from **`expo`** allows you to programmatically control and respond to over-the-air updates to your app.
+The `expo-updates` library by Expo allows you to programmatically control and respond to new updates made available to your app.
 
 <PlatformsSection android emulator ios simulator />
 

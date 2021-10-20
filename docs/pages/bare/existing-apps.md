@@ -19,4 +19,4 @@ The longer, more detailed version: check out [Install an Expo SDK package](hello
 
 ## That's it!
 
-You're ready to go. You may also want to install expo-updates in your app to add support for over-the-air-updates. If so, follow the [installing expo-updates guide](../bare/installing-updates.md) guide once you have installed `expo`.
+You're ready to go. You may also want to install `expo-updates` in your project to add support for updates. If so, follow the [installing `expo-updates` guide](../bare/installing-updates.md) guide once you have installed `expo`.
