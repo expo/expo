@@ -84,13 +84,12 @@ export function resolveProps(
       legacyVisible: config.androidNavigationBar?.visible,
     };
     if (props.legacyVisible) {
-      // TODO: Add an FYI that uses the new properties
       // Using legacyVisible can break the setPositionAsync method:
       // https://developer.android.com/reference/androidx/core/view/WindowCompat#setDecorFitsSystemWindows(android.view.Window,%20boolean)
       WarningAggregator.addWarningAndroid(
         'androidNavigationBar.visible',
         'visible property is deprecated in Android 30',
-        'https://developer.android.com/reference/android/view/View.html#setSystemUiVisibility(int)'
+        'https://expo.fyi/android-navigation-bar-visible-deprecated'
       );
     }
   } else {
