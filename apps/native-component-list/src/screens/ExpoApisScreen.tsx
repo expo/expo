@@ -79,6 +79,7 @@ const screens = [
   'Random',
   'Recording',
   'SMS',
+  'NavigationBar',
   'SafeAreaContext',
   'ScreenOrientation',
   'SecureStore',

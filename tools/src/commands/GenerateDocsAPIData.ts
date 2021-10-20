@@ -116,6 +116,7 @@ async function action({packageName, version = 'unversioned'}: ActionOptions) {
     'expo-localization': ['Localization.ts'],
     'expo-mail-composer': ['MailComposer.ts'],
     'expo-media-library': ['MediaLibrary.ts'],
+    'expo-navigation-bar': ['NavigationBar.ts'],
     'expo-network': ['Network.ts'],
     'expo-pedometer': ['Pedometer.ts', 'expo-sensors'],
     'expo-print': ['Print.ts'],
