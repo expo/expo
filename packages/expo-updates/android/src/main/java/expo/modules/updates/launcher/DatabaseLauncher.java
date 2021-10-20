@@ -19,8 +19,10 @@ import expo.modules.updates.db.UpdatesDatabase;
 import expo.modules.updates.db.entity.AssetEntity;
 import expo.modules.updates.db.entity.UpdateEntity;
 import expo.modules.updates.db.enums.UpdateStatus;
+import expo.modules.updates.loader.LoaderFiles;
 import expo.modules.updates.loader.EmbeddedLoader;
 import expo.modules.updates.loader.FileDownloader;
+import expo.modules.updates.manifest.EmbeddedManifest;
 import expo.modules.updates.manifest.UpdateManifest;
 import expo.modules.updates.manifest.ManifestMetadata;
 import expo.modules.updates.selectionpolicy.SelectionPolicy;
@@ -33,6 +35,8 @@ public class DatabaseLauncher implements Launcher {
   private File mUpdatesDirectory;
   private FileDownloader mFileDownloader;
   private SelectionPolicy mSelectionPolicy;
+
+  private LoaderFiles mLoaderFiles;
 
   private UpdateEntity mLaunchedUpdate = null;
   private String mLaunchAssetFile = null;
@@ -50,6 +54,7 @@ public class DatabaseLauncher implements Launcher {
     mUpdatesDirectory = updatesDirectory;
     mFileDownloader = fileDownloader;
     mSelectionPolicy = selectionPolicy;
+    mLoaderFiles = new LoaderFiles();
   }
 
   public @Nullable UpdateEntity getLaunchedUpdate() {
@@ -141,7 +146,7 @@ public class DatabaseLauncher implements Launcher {
     // We can only run an update marked as embedded if it's actually the update embedded in the
     // current binary. We might have an older update from a previous binary still listed as
     // "EMBEDDED" in the database so we need to do this check.
-    UpdateManifest embeddedUpdateManifest = EmbeddedLoader.readEmbeddedManifest(context, mConfiguration);
+    UpdateManifest embeddedUpdateManifest = EmbeddedManifest.get(context, mConfiguration);
     ArrayList<UpdateEntity> filteredLaunchableUpdates = new ArrayList<>();
     for (UpdateEntity update : launchableUpdates) {
       if (update.status == UpdateStatus.EMBEDDED) {
@@ -162,7 +167,7 @@ public class DatabaseLauncher implements Launcher {
     if (!assetFileExists) {
       // something has gone wrong, we're missing this asset
       // first we check to see if a copy is embedded in the binary
-      UpdateManifest embeddedUpdateManifest = EmbeddedLoader.readEmbeddedManifest(context, mConfiguration);
+      UpdateManifest embeddedUpdateManifest = EmbeddedManifest.get(context, mConfiguration);
       if (embeddedUpdateManifest != null) {
         List<AssetEntity> embeddedAssets = embeddedUpdateManifest.getAssetEntityList();
         AssetEntity matchingEmbeddedAsset = null;
@@ -175,7 +180,7 @@ public class DatabaseLauncher implements Launcher {
 
         if (matchingEmbeddedAsset != null) {
           try {
-            byte[] hash = EmbeddedLoader.copyAssetAndGetHash(matchingEmbeddedAsset, assetFile, context);
+            byte[] hash = mLoaderFiles.copyAssetAndGetHash(matchingEmbeddedAsset, assetFile, context);
             if (hash != null && Arrays.equals(hash, asset.hash)) {
               assetFileExists = true;
             }

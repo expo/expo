@@ -13,13 +13,13 @@ import expo.modules.updates.db.DatabaseHolder
 import expo.modules.updates.db.entity.UpdateEntity
 import expo.modules.updates.launcher.Launcher
 import expo.modules.updates.launcher.NoDatabaseLauncher
-import expo.modules.updates.loader.EmbeddedLoader
 import expo.modules.updates.loader.FileDownloader
 import expo.modules.updates.loader.LoaderTask
 import expo.modules.updates.loader.LoaderTask.BackgroundUpdateStatus
 import expo.modules.updates.loader.LoaderTask.LoaderTaskCallback
 import expo.modules.updates.manifest.UpdateManifest
 import expo.modules.manifests.core.Manifest
+import expo.modules.updates.manifest.EmbeddedManifest
 import expo.modules.updates.selectionpolicy.LauncherSelectionPolicyFilterAware
 import expo.modules.updates.selectionpolicy.LoaderSelectionPolicyFilterAware
 import expo.modules.updates.selectionpolicy.ReaperSelectionPolicyDevelopmentClient
@@ -297,7 +297,7 @@ class ExpoUpdatesAppLoader @JvmOverloads constructor(
 
   private fun launchWithNoDatabase(context: Context, e: Exception?) {
     this.launcher = NoDatabaseLauncher(context, updatesConfiguration, e)
-    var manifestJson = EmbeddedLoader.readEmbeddedManifest(context, updatesConfiguration)!!.manifest.getRawJson()
+    var manifestJson = EmbeddedManifest.get(context, updatesConfiguration)!!.manifest.getRawJson()
     try {
       manifestJson = processManifestJson(manifestJson)
     } catch (ex: Exception) {
