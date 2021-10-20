@@ -27,7 +27,6 @@ class DummyModule_2 : Module() {
   }
 }
 
-
 val provider = object : ModulesProvider {
   override fun getModulesList(): List<Class<out Module>> {
     return listOf(
