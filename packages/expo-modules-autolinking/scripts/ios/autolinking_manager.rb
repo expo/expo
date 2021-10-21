@@ -57,7 +57,7 @@ module Expo
 
     # Spawns `expo-module-autolinking generate-package-list` command.
     public def generate_package_list(target_name, target_path)
-      IO.popen(generate_package_list_command_args(target_path))
+      Process.wait IO.popen(generate_package_list_command_args(target_path)).pid
     end
 
     # If there is any package to autolink.
