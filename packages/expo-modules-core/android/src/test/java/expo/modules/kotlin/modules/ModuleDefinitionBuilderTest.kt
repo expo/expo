@@ -47,7 +47,7 @@ class ModuleDefinitionBuilderTest {
 
     val moduleDefinition = module {
       name(moduleName)
-      viewManger {
+      viewManager {
         view { mockk() }
       }
     }

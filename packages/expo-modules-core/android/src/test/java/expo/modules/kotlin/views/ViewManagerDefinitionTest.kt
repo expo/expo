@@ -10,15 +10,15 @@ import expo.modules.core.ViewManager
 class ViewManagerDefinitionTest {
 
   @Test
-  fun `definition should deduce type of view manger`() {
+  fun `definition should deduce type of view manager`() {
     val simpleViewManagerDefinition = ViewManagerDefinition(
-      { _ -> mockk<TextView>() },
+      { mockk<TextView>() },
       TextView::class.java,
       emptyMap()
     )
 
     val groupViewManagerDefinition = ViewManagerDefinition(
-      { _ -> mockk<ListView>() },
+      { mockk<ListView>() },
       ListView::class.java,
       emptyMap()
     )

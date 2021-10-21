@@ -21,7 +21,7 @@ class DummyModule_1 : Module() {
 class DummyModule_2 : Module() {
   override fun definition() = module {
     name("dummy-2")
-    viewManger {
+    viewManager {
       view { mockk() }
     }
   }

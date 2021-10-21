@@ -15,11 +15,11 @@ class ViewManagerDefinition(
   fun createView(context: Context): View = viewFactory(context)
 
   fun getViewManagerType(): ViewManager.ViewManagerType {
-    if (ViewGroup::class.java.isAssignableFrom(viewType)) {
-      return ViewManager.ViewManagerType.GROUP
+    return if (ViewGroup::class.java.isAssignableFrom(viewType)) {
+      ViewManager.ViewManagerType.GROUP
+    } else {
+      ViewManager.ViewManagerType.SIMPLE
     }
-
-    return ViewManager.ViewManagerType.SIMPLE
   }
 
   fun setProps(propsToSet: ReadableMap, onView: View) {

@@ -79,7 +79,7 @@ class ModuleDefinitionBuilder {
     methods[name] = PromiseMethod(name, arrayOf(TypeInformation(P0::class.java, null is P0), TypeInformation(P1::class.java, null is P1))) { args, promise -> body(args[0] as P0, args[1] as P1, promise) }
   }
 
-  fun viewManger(body: ViewManagerDefinitionBuilder.() -> Unit) {
+  fun viewManager(body: ViewManagerDefinitionBuilder.() -> Unit) {
     require(viewManagerDefinition == null) { "The module definition may have exported only one view manager." }
 
     val viewManagerDefinitionBuilder = ViewManagerDefinitionBuilder()
