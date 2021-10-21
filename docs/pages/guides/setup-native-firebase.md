@@ -128,22 +128,6 @@ You are free to use any native Firebase packages such as [react-native-firebase]
 After following the iOS and Android setup, you can optionally configure your project to work with `react-native-firebase` version 6 as well.
 
 - Install the `react-native-firebase` packages (e.g. `yarn add @react-native-firebase/app @react-native-firebase/auth etc..`)
-- On iOS, Ensure your `ios/Podfile` has the following lines:
-
-```rb
-  # At the top of the file
-  require File.join(File.dirname(`node --print "require.resolve('@react-native-community/cli-platform-ios/package.json')"`), "native_modules")
-  require File.join(File.dirname(`node --print "require.resolve('react-native-unimodules/package.json')"`), "cocoapods.rb")
-
-  # ...
-
-  # Automatically detect installed unimodules
-  use_unimodules!
-
-  # The community version of use_unimodules (used for react-native-firebase)
-  use_native_modules!
-```
-
 - Install the pods on iOS
 
 Continue further on the [react-native-firebase](https://rnfirebase.io/) website.

@@ -30,7 +30,7 @@ export default function App() {
 
 ## Using Expo SDK Libraries
 
-> 💡 If you initialized your app using @react-native-community/cli and you don't have `react-native-unimodules` installed in it yet, please refer to the guide for [using the Expo SDK in existing apps](../bare/existing-apps.md).
+> 💡 If you initialized your app using @react-native-community/cli and you don't have the `expo` package installed in it yet, please refer to the guide for [using the Expo SDK in existing apps](../bare/existing-apps.md).
 
 The Expo SDK picks up where the React Native core libraries end - it provides access to a lot of useful device and system functionality like audio, barcode scanning, camera, calendar, contacts, video, and so on. It also adds other powerful libraries like over-the-air updates, maps, OAuth authentication tools, and more.
 

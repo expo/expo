@@ -13,7 +13,7 @@ To initialize a new Bare project or to add a development client to an existing m
 
 If you created your project with `expo init`, or you already have `expo` and/or other Expo modules up and running, use the tabs marked **With Expo modules** (most projects will fall under this category).
 
-If you created your project with `expo init` before SDK 43, or you already have `react-native-unimodules` up and running, use the tabs marked **With unimodules**.
+If you created your project with `expo init` before SDK 43 and have `react-native-unimodules` up and running, use the tabs marked **With Expo modules/unimodules**.
 
 If you created your project with `npx react-native init` and do not have `react-native-unimodules` or any other Expo packages installed, use the tabs marked **Without unimodules**.
 

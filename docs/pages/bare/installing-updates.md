@@ -12,7 +12,7 @@ expo-updates fetches and manages updates to your app stored on a remote server.
 
 ## Installation
 
-Like most Expo modules, **this package requires that you have already [installed and configured react-native-unimodules](/bare/installing-unimodules/). Be sure to install it before continuing.**
+Like most Expo modules, **this package requires that you have already [installed and configured Expo modules](/bare/installing-expo-modules.md). Be sure to install it before continuing.**
 
 <InstallSection packageName="expo-updates" cmd={["npm install expo-updates", "npx pod-install"]} hideBareInstructions />
 
