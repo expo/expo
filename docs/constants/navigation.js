@@ -266,6 +266,7 @@ const sections = [
       'Up and Running',
       'Using Libraries',
       'Existing Apps',
+      'Installing Expo modules',
       'Installing react-native-unimodules',
       'Installing expo-updates',
       'Supported Expo SDK APIs',
