@@ -1,6 +1,6 @@
 {
   "name": "expo-screen-capture",
-  "version": "4.0.2",
+  "version": "4.0.3",
   "description": "ExpoScreenCapture standalone module",
   "main": "build/ScreenCapture.js",
   "types": "build/ScreenCapture.d.ts",

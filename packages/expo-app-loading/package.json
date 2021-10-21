@@ -1,6 +1,6 @@
 {
   "name": "expo-app-loading",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "A React component that keeps the native splash screen visible.",
   "main": "build/index.js",
   "types": "build/index.d.ts",

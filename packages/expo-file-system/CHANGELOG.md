@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Fixed `uploadAsync` failing to resolve when using `BINARY_CONTENT`. ([#14764](https://github.com/expo/expo/pull/14764) by [@cruzach](https://github.com/cruzach))
-
 ### 💡 Others
+
+## 13.0.3 — 2021-10-21
+
+### 🐛 Bug fixes
+
+- Fixed `uploadAsync` failing to resolve when using `BINARY_CONTENT`. ([#14764](https://github.com/expo/expo/pull/14764) by [@cruzach](https://github.com/cruzach))
 
 ## 13.0.2 — 2021-10-15
 
