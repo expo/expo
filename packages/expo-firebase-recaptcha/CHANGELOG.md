@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Fix firebase imports for web.
+- Fix firebase imports for web. ([#14829](https://github.com/expo/expo/pull/14829) by [@JJK801](https://github.com/JJK801))
 
 ### 💡 Others
 
