@@ -16,7 +16,7 @@ public class SelectionPolicies {
     if (manifestFilters == null){
       return true;
     }
-    if (update.manifest.has("releaseChannel")) {
+    if (update.manifest != null && update.manifest.has("releaseChannel")) {
       // legacy update
       return manifestFilters.optString("releaseChannel").equals(update.manifest.optString("releaseChannel")) ;
     }
