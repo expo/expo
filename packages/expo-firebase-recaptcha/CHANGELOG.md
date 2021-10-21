@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix firebase imports for web.
+
 ### 💡 Others
 
 ## 2.0.0 — 2021-10-01
