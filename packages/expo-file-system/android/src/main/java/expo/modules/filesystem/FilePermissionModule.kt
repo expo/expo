@@ -9,27 +9,21 @@ import java.io.IOException
 import java.util.*
 
 class FilePermissionModule : FilePermissionModuleInterface, InternalModule {
-  override fun getExportedInterfaces(): List<Class<*>> {
-    return listOf(FilePermissionModuleInterface::class.java)
-  }
+  override fun getExportedInterfaces(): List<Class<*>> =
+    listOf(FilePermissionModuleInterface::class.java)
 
-  override fun getPathPermissions(context: Context, path: String): EnumSet<Permission> {
-    // getExternalPathPermissions guarantees not to return null
-    return getInternalPathPermissions(path, context) ?: getExternalPathPermissions(path)
-  }
+  override fun getPathPermissions(context: Context, path: String): EnumSet<Permission> =
+    getInternalPathPermissions(path, context) ?: getExternalPathPermissions(path)
 
   private fun getInternalPathPermissions(path: String, context: Context): EnumSet<Permission>? {
-    try {
+    return try {
       val canonicalPath = File(path).canonicalPath
-      for (dir in getInternalPaths(context)) {
-        if (canonicalPath.startsWith("$dir/") || dir == canonicalPath) {
-          return EnumSet.of(Permission.READ, Permission.WRITE)
-        }
-      }
+      getInternalPaths(context)
+        .firstOrNull { dir -> canonicalPath.startsWith("$dir/") || dir == canonicalPath }
+        ?.let { EnumSet.of(Permission.READ, Permission.WRITE) }
     } catch (e: IOException) {
-      return EnumSet.noneOf(Permission::class.java)
+      EnumSet.noneOf(Permission::class.java)
     }
-    return null
   }
 
   private fun getExternalPathPermissions(path: String): EnumSet<Permission> {
@@ -45,10 +39,9 @@ class FilePermissionModule : FilePermissionModuleInterface, InternalModule {
   }
 
   @Throws(IOException::class)
-  private fun getInternalPaths(context: Context): List<String> {
-    return listOf(
+  private fun getInternalPaths(context: Context): List<String> =
+    listOf(
       context.filesDir.canonicalPath,
       context.cacheDir.canonicalPath
     )
-  }
 }

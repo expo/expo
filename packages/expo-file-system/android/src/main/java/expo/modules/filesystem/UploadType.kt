@@ -6,13 +6,6 @@ enum class UploadType(private val value: Int) {
   MULTIPART(1);
 
   companion object {
-    fun fromInt(value: Int): UploadType {
-      for (method in values()) {
-        if (value == method.value) {
-          return method
-        }
-      }
-      return INVALID
-    }
+    fun fromInt(value: Int): UploadType = values().find { value == it.value } ?: INVALID
   }
 }

@@ -41,6 +41,7 @@ import java.io.OutputStream
 import java.io.OutputStreamWriter
 import java.lang.ClassCastException
 import java.lang.Exception
+import java.lang.IllegalArgumentException
 import java.lang.NullPointerException
 import java.math.BigInteger
 import java.net.CookieHandler
@@ -119,7 +120,7 @@ class FileSystemModule(
 
   @Throws(IOException::class)
   private fun Uri.checkIfFileExists() {
-    val file = uriToFile(this)
+    val file = this.toFile()
     if (!file.exists()) {
       throw IOException("Directory for " + file.path + " doesn't exist.")
     }
@@ -127,15 +128,11 @@ class FileSystemModule(
 
   @Throws(IOException::class)
   private fun Uri.checkIfFileDirExists() {
-    val file = uriToFile(this)
+    val file = this.toFile()
     val dir = file.parentFile
     if (dir == null || !dir.exists()) {
       throw IOException("Directory for ${file.path} doesn't exist. Please make sure directory '${file.parent}' exists before calling downloadAsync.")
     }
-  }
-
-  private fun uriToFile(uri: Uri): File {
-    return File(uri.path)
   }
 
   private fun permissionsForPath(path: String?): EnumSet<Permission>? {
@@ -143,15 +140,13 @@ class FileSystemModule(
     return filePermissionModule.getPathPermissions(context, path)
   }
 
-  private fun permissionsForUri(uri: Uri): EnumSet<Permission>? {
-    return when {
-      isSAFUri(uri) -> permissionsForSAFUri(uri)
-      uri.scheme == "content" -> EnumSet.of(Permission.READ)
-      uri.scheme == "asset" -> EnumSet.of(Permission.READ)
-      uri.scheme == "file" -> permissionsForPath(uri.path)
-      uri.scheme == null -> EnumSet.of(Permission.READ)
-      else -> EnumSet.noneOf(Permission::class.java)
-    }
+  private fun permissionsForUri(uri: Uri) = when {
+    uri.isSAFUri -> permissionsForSAFUri(uri)
+    uri.scheme == "content" -> EnumSet.of(Permission.READ)
+    uri.scheme == "asset" -> EnumSet.of(Permission.READ)
+    uri.scheme == "file" -> permissionsForPath(uri.path)
+    uri.scheme == null -> EnumSet.of(Permission.READ)
+    else -> EnumSet.noneOf(Permission::class.java)
   }
 
   private fun permissionsForSAFUri(uri: Uri): EnumSet<Permission> {
@@ -220,7 +215,7 @@ class FileSystemModule(
       }
       ensurePermission(absoluteUri, Permission.READ)
       if (uri.scheme == "file") {
-        val file = uriToFile(absoluteUri)
+        val file = absoluteUri.toFile()
         if (file.exists()) {
           promise.resolve(
             Bundle().apply {
@@ -229,9 +224,7 @@ class FileSystemModule(
               putString("uri", Uri.fromFile(file).toString())
               putDouble("size", getFileSize(file).toDouble())
               putDouble("modificationTime", 0.001 * file.lastModified())
-              if (options.containsKey("md5") && (options["md5"] == true)) {
-                putString("md5", md5(file))
-              }
+              options["md5"].takeIf { it == true }?.let { putString("md5", md5(file)) }
             }
           )
         } else {
@@ -305,10 +298,10 @@ class FileSystemModule(
         }
       } else {
         contents = when {
-          uri.scheme == "file" -> IOUtils.toString(FileInputStream(uriToFile(uri)))
+          uri.scheme == "file" -> IOUtils.toString(FileInputStream(uri.toFile()))
           uri.scheme == "asset" -> IOUtils.toString(openAssetInputStream(uri))
           uri.scheme == null -> IOUtils.toString(openResourceInputStream(uriStr))
-          isSAFUri(uri) -> IOUtils.toString(context.contentResolver.openInputStream(uri))
+          uri.isSAFUri -> IOUtils.toString(context.contentResolver.openInputStream(uri))
           else -> throw IOException("Unsupported scheme for location '$uri'.")
         }
       }
@@ -347,7 +340,7 @@ class FileSystemModule(
       val appendedUri = Uri.withAppendedPath(uri, "..")
       ensurePermission(appendedUri, Permission.WRITE, "Location '$uri' isn't deletable.")
       if (uri.scheme == "file") {
-        val file = uriToFile(uri)
+        val file = uri.toFile()
         if (file.exists()) {
           if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             FileUtils.forceDelete(file)
@@ -366,7 +359,7 @@ class FileSystemModule(
             )
           }
         }
-      } else if (isSAFUri(uri)) {
+      } else if (uri.isSAFUri) {
         val file = getNearestSAFFile(uri)
         if (file != null && file.exists()) {
           file.delete()
@@ -406,8 +399,8 @@ class FileSystemModule(
       val toUri = Uri.parse(options["to"] as String?)
       ensurePermission(toUri, Permission.WRITE)
       if (fromUri.scheme == "file") {
-        val from = uriToFile(fromUri)
-        val to = uriToFile(toUri)
+        val from = fromUri.toFile()
+        val to = toUri.toFile()
         if (from.renameTo(to)) {
           promise.resolve(null)
         } else {
@@ -416,7 +409,7 @@ class FileSystemModule(
             "File '$fromUri' could not be moved to '$toUri'"
           )
         }
-      } else if (isSAFUri(fromUri)) {
+      } else if (fromUri.isSAFUri) {
         val documentFile = getNearestSAFFile(fromUri)
         if (documentFile == null || !documentFile.exists()) {
           promise.reject("ERR_FILESYSTEM_CANNOT_MOVE_FILE", "File '$fromUri' could not be moved to '$toUri'")
@@ -451,8 +444,8 @@ class FileSystemModule(
       ensurePermission(toUri, Permission.WRITE)
       when {
         fromUri.scheme == "file" -> {
-          val from = uriToFile(fromUri)
-          val to = uriToFile(toUri)
+          val from = fromUri.toFile()
+          val to = toUri.toFile()
           if (from.isDirectory) {
             FileUtils.copyDirectory(from, to)
           } else {
@@ -460,7 +453,7 @@ class FileSystemModule(
           }
           promise.resolve(null)
         }
-        isSAFUri(fromUri) -> {
+        fromUri.isSAFUri -> {
           val documentFile = getNearestSAFFile(fromUri)
           if (documentFile == null || !documentFile.exists()) {
             promise.reject("ERR_FILESYSTEM_CANNOT_FIND_FILE", "File '$fromUri' could not be copied because it could not be found")
@@ -472,20 +465,20 @@ class FileSystemModule(
         }
         fromUri.scheme == "content" -> {
           val inputStream = context.contentResolver.openInputStream(fromUri)
-          val out: OutputStream = FileOutputStream(uriToFile(toUri))
+          val out: OutputStream = FileOutputStream(toUri.toFile())
           IOUtils.copy(inputStream, out)
           promise.resolve(null)
         }
         fromUri.scheme == "asset" -> {
           val inputStream = openAssetInputStream(fromUri)
-          val out: OutputStream = FileOutputStream(uriToFile(toUri))
+          val out: OutputStream = FileOutputStream(toUri.toFile())
           IOUtils.copy(inputStream, out)
           promise.resolve(null)
         }
         fromUri.scheme == null -> {
           // this is probably an asset embedded by the packager in resources
           val inputStream = openResourceInputStream(options["from"] as String?)
-          val out: OutputStream = FileOutputStream(uriToFile(toUri))
+          val out: OutputStream = FileOutputStream(toUri.toFile())
           IOUtils.copy(inputStream, out)
           promise.resolve(null)
         }
@@ -533,7 +526,7 @@ class FileSystemModule(
       val uri = Uri.parse(uriStr)
       ensurePermission(uri, Permission.WRITE)
       if (uri.scheme == "file") {
-        val file = uriToFile(uri)
+        val file = uri.toFile()
         val previouslyCreated = file.isDirectory
         val setIntermediates = options.containsKey("intermediates") && options["intermediates"] as Boolean
         val success = if (setIntermediates) file.mkdirs() else file.mkdir()
@@ -560,7 +553,7 @@ class FileSystemModule(
       val uri = Uri.parse(uriStr)
       ensurePermission(uri, Permission.READ)
       if (uri.scheme == "file") {
-        val file = uriToFile(uri)
+        val file = uri.toFile()
         val children = file.listFiles()
         if (children != null) {
           val result = children.map { it.name }
@@ -571,7 +564,7 @@ class FileSystemModule(
             "Directory '$uri' could not be read."
           )
         }
-      } else if (isSAFUri(uri)) {
+      } else if (uri.isSAFUri) {
         promise.reject(
           "ERR_FILESYSTEM_UNSUPPORTED_SCHEME",
           "Can't read Storage Access Framework directory, use StorageAccessFramework.readDirectoryAsync() instead."
@@ -625,7 +618,7 @@ class FileSystemModule(
       ensurePermission(fileUri, Permission.READ)
       fileUri.checkIfFileDirExists()
       if (fileUri.scheme == "file") {
-        val file = uriToFile(fileUri)
+        val file = fileUri.toFile()
         promise.resolve(contentUriFromFile(file).toString())
       } else {
         promise.reject("ERR_FILESYSTEM_CANNOT_READ_DIRECTORY", "No readable files with the uri: $uri. Please use other uri.")
@@ -647,7 +640,7 @@ class FileSystemModule(
     try {
       val uri = Uri.parse(uriStr)
       ensurePermission(uri, Permission.READ)
-      if (isSAFUri(uri)) {
+      if (uri.isSAFUri) {
         val file = DocumentFile.fromTreeUri(context, uri)
         if (file == null || !file.exists() || !file.isDirectory) {
           promise.reject(
@@ -673,7 +666,7 @@ class FileSystemModule(
     try {
       val uri = Uri.parse(uriStr)
       ensurePermission(uri, Permission.WRITE)
-      if (!isSAFUri(uri)) {
+      if (!uri.isSAFUri) {
         throw IOException("The URI '$uri' is not a Storage Access Framework URI. Try using FileSystem.makeDirectoryAsync instead.")
       }
       val dir = getNearestSAFFile(uri)
@@ -699,7 +692,7 @@ class FileSystemModule(
     try {
       val uri = Uri.parse(uriStr)
       ensurePermission(uri, Permission.WRITE)
-      if (isSAFUri(uri)) {
+      if (uri.isSAFUri) {
         val dir = getNearestSAFFile(uri)
         if (dir == null || !dir.isDirectory) {
           promise.reject("ERR_FILESYSTEM_CANNOT_CREATE_FILE", "Provided uri '$uri' is not pointing to a directory.")
@@ -732,10 +725,9 @@ class FileSystemModule(
     try {
       val intent = Intent(Intent.ACTION_OPEN_DOCUMENT_TREE)
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-        val fileUri = if (initialFileUrl == null) null else Uri.parse(initialFileUrl)
-        if (fileUri != null) {
-          intent.putExtra(DocumentsContract.EXTRA_INITIAL_URI, fileUri)
-        }
+        initialFileUrl
+          ?.let { Uri.parse(it) }
+          ?.let { intent.putExtra(DocumentsContract.EXTRA_INITIAL_URI, it) }
       }
       val activityProvider: ActivityProvider by moduleRegistry()
       val activity = activityProvider.currentActivity
@@ -766,50 +758,14 @@ class FileSystemModule(
         promise.reject("ERR_FILESYSTEM_MISSING_UPLOAD_TYPE", "Missing upload type.", null)
         return null
       }
-      val uploadType = UploadType.fromInt((options["uploadType"] as Double).toInt())
       val requestBuilder = Request.Builder().url(url)
       if (options.containsKey(HEADER_KEY)) {
         val headers = options[HEADER_KEY] as Map<String, Any>?
-        if (headers != null) {
-          for (key in headers.keys) {
-            requestBuilder.addHeader(key, headers[key].toString())
-          }
-        }
+        headers?.forEach { (key, value) -> requestBuilder.addHeader(key, value.toString()) }
       }
-      val file = uriToFile(fileUri)
-      when (uploadType) {
-        UploadType.BINARY_CONTENT -> {
-          val body = decorator.decorate(RequestBody.create(null, file))
-          requestBuilder.method(method, body)
-        }
-        UploadType.MULTIPART -> {
-          val bodyBuilder = MultipartBody.Builder().setType(MultipartBody.FORM)
-          if (options.containsKey("parameters")) {
-            val parametersMap = options["parameters"] as Map<String, Any>?
-            if (parametersMap != null) {
-              for (key in parametersMap.keys) {
-                bodyBuilder.addFormDataPart(key, parametersMap[key].toString())
-              }
-            }
-          }
-          val mimeType: String? = if (options.containsKey("mimeType")) {
-            options["mimeType"] as String?
-          } else {
-            URLConnection.guessContentTypeFromName(file.name)
-          }
-          var fieldName = file.name
-          if (options.containsKey("fieldName")) {
-            fieldName = options["fieldName"] as String
-          }
-          bodyBuilder.addFormDataPart(fieldName, file.name, decorator.decorate(RequestBody.create(if (mimeType != null) MediaType.parse(mimeType) else null, file)))
-          requestBuilder.method(method, bodyBuilder.build())
-          return requestBuilder.build()
-        }
-        else -> {
-          promise.reject("ERR_FILESYSTEM_INVALID_UPLOAD_TYPE", String.format("Invalid upload type: %s.", options["uploadType"]), null)
-          return null
-        }
-      }
+
+      val body = createRequestBody(options, decorator, fileUri.toFile())
+      return requestBuilder.method(method, body).build()
     } catch (e: Exception) {
       e.message?.let { Log.e(TAG, it) }
       promise.reject(e)
@@ -817,15 +773,41 @@ class FileSystemModule(
     return null
   }
 
+  private fun createRequestBody(options: Map<String, Any>, decorator: RequestBodyDecorator, file: File): RequestBody? {
+    val uploadType = UploadType.fromInt((options["uploadType"] as Double).toInt())
+    return when {
+      uploadType === UploadType.BINARY_CONTENT -> {
+        decorator.decorate(RequestBody.create(null, file))
+      }
+      uploadType === UploadType.MULTIPART -> {
+        val bodyBuilder = MultipartBody.Builder().setType(MultipartBody.FORM)
+        options["parameters"]?.let {
+          it as Map<String, Any>
+          it.forEach { (key, value) -> bodyBuilder.addFormDataPart(key, value.toString()) }
+        }
+        val mimeType: String? = if (options.containsKey("mimeType")) {
+          options["mimeType"] as String?
+        } else {
+          URLConnection.guessContentTypeFromName(file.name)
+        }
+        var fieldName = file.name
+        if (options.containsKey("fieldName")) {
+          fieldName = options["fieldName"] as String?
+        }
+        bodyBuilder.addFormDataPart(fieldName, file.name, decorator.decorate(RequestBody.create(if (mimeType != null) MediaType.parse(mimeType) else null, file)))
+        bodyBuilder.build()
+      }
+      else -> {
+        throw IllegalArgumentException("ERR_FILESYSTEM_INVALID_UPLOAD_TYPE. " + String.format("Invalid upload type: %s.", options["uploadType"]))
+      }
+    }
+  }
+
   @ExpoMethod
   fun uploadAsync(url: String, fileUriString: String, options: Map<String, Any>, promise: Promise) {
     val request = createUploadRequest(
       url, fileUriString, options, promise,
-      object : RequestBodyDecorator {
-        override fun decorate(requestBody: RequestBody): RequestBody {
-          return requestBody
-        }
-      }
+      RequestBodyDecorator { requestBody -> requestBody }
     ) ?: return
 
     okHttpClient?.let {
@@ -916,22 +898,20 @@ class FileSystemModule(
       ensurePermission(uri, Permission.WRITE)
       uri.checkIfFileDirExists()
       when {
-        !url.contains(":") -> {
+        url.contains(":").not() -> {
           val context = context
           val resources = context.resources
           val packageName = context.packageName
           val resourceId = resources.getIdentifier(url, "raw", packageName)
           val bufferedSource = Okio.buffer(Okio.source(context.resources.openRawResource(resourceId)))
-          val file = uriToFile(uri)
+          val file = uri.toFile()
           file.delete()
           val sink = Okio.buffer(Okio.sink(file))
           sink.writeAll(bufferedSource)
           sink.close()
           val result = Bundle()
           result.putString("uri", Uri.fromFile(file).toString())
-          if (options != null && options.containsKey("md5") && options["md5"] as Boolean) {
-            result.putString("md5", md5(file))
-          }
+          options?.get("md5").takeIf { it == true }?.let { result.putString("md5", md5(file)) }
           promise.resolve(result)
         }
         "file" == uri.scheme -> {
@@ -939,8 +919,8 @@ class FileSystemModule(
           if (options != null && options.containsKey(HEADER_KEY)) {
             try {
               val headers = options[HEADER_KEY] as Map<String, Any>?
-              headers?.keys?.forEach { key ->
-                requestBuilder.addHeader(key, headers[key] as String)
+              headers?.forEach { (key, value) ->
+                requestBuilder.addHeader(key, value.toString())
               }
             } catch (exception: ClassCastException) {
               promise.reject("ERR_FILESYSTEM_INVALID_HEADERS", "Invalid headers dictionary. Keys and values should be strings.", exception)
@@ -955,7 +935,7 @@ class FileSystemModule(
 
             @Throws(IOException::class)
             override fun onResponse(call: Call, response: Response) {
-              val file = uriToFile(uri)
+              val file = uri.toFile()
               file.delete()
               val sink = Okio.buffer(Okio.sink(file))
               sink.writeAll(response.body()!!.source())
@@ -1040,20 +1020,19 @@ class FileSystemModule(
       }
       if (options.containsKey(HEADER_KEY)) {
         val headers = options[HEADER_KEY] as Map<String, Any>?
-        if (headers != null) {
-          for (key in headers.keys) {
-            requestBuilder.addHeader(key, headers[key].toString())
-          }
+        headers?.forEach { (key, value) ->
+          requestBuilder.addHeader(key, value.toString())
         }
       }
-      val request = requestBuilder.url(url).build()
-      val call = client.newCall(request)
-      val taskHandler: TaskHandler = DownloadTaskHandler(fileUri, call)
-      taskHandlers[uuid] = taskHandler
-      val file = uriToFile(fileUri)
-      val params = DownloadResumableTaskParams(options, call, file, resumeData != null, promise)
-      val task = DownloadResumableTask()
-      task.execute(params)
+      DownloadResumableTask().apply {
+        val request = requestBuilder.url(url).build()
+        val call = client.newCall(request)
+        taskHandlers[uuid] = DownloadTaskHandler(fileUri, call)
+        val params = DownloadResumableTaskParams(
+          options, call, fileUri.toFile(), resumeData != null, promise
+        )
+        execute(params)
+      }
     } catch (e: Exception) {
       e.message?.let { Log.e(TAG, it) }
       promise.reject(e)
@@ -1076,7 +1055,7 @@ class FileSystemModule(
     taskHandler.call.cancel()
     taskHandlers.remove(uuid)
     try {
-      val file = uriToFile(taskHandler.fileUri)
+      val file = taskHandler.fileUri.toFile()
       val result = Bundle().apply {
         putString("resumeData", file.length().toString())
       }
@@ -1111,7 +1090,7 @@ class FileSystemModule(
     }
   }
 
-  override fun onNewIntent(intent: Intent) {}
+  override fun onNewIntent(intent: Intent) = Unit
   private class DownloadResumableTaskParams internal constructor(var options: Map<String?, Any?>?, var call: Call, var file: File, var isResume: Boolean, var promise: Promise)
   private inner class DownloadResumableTask : AsyncTask<DownloadResumableTaskParams?, Void?, Void?>() {
     override fun doInBackground(vararg params: DownloadResumableTaskParams?): Void? {
@@ -1124,11 +1103,7 @@ class FileSystemModule(
         val response = call!!.execute()
         val responseBody = response.body()
         val input = BufferedInputStream(responseBody!!.byteStream())
-        val output: OutputStream = if (isResume == true) {
-          FileOutputStream(file, true)
-        } else {
-          FileOutputStream(file, false)
-        }
+        val output = FileOutputStream(file, isResume == true)
         val data = ByteArray(1024)
         var count = 0
         while (input.read(data).also { count = it } != -1) {
@@ -1138,19 +1113,15 @@ class FileSystemModule(
           putString("uri", Uri.fromFile(file).toString())
           putInt("status", response.code())
           putBundle("headers", translateHeaders(response.headers()))
-          if (options != null && options.containsKey("md5") && (options["md5"] as Boolean)) {
-            putString("md5", file?.let { md5(it) })
-          }
+          options?.get("md5").takeIf { it == true }?.let { putString("md5", file?.let { md5(it) }) }
         }
         response.close()
         promise?.resolve(result)
         null
       } catch (e: Exception) {
-        if (call != null) {
-          if (call.isCanceled) {
-            promise?.resolve(null)
-            return null
-          }
+        if (call?.isCanceled == true) {
+          promise?.resolve(null)
+          return null
         }
         e.message?.let { Log.e(TAG, it) }
         promise?.reject(e)
@@ -1165,17 +1136,13 @@ class FileSystemModule(
   // https://github.com/square/okhttp/blob/master/samples/guide/src/main/java/okhttp3/recipes/Progress.java
   private class ProgressResponseBody internal constructor(private val responseBody: ResponseBody?, private val progressListener: ProgressListener) : ResponseBody() {
     private var bufferedSource: BufferedSource? = null
-    override fun contentType(): MediaType? {
-      return responseBody?.contentType()
-    }
 
-    override fun contentLength(): Long {
-      return responseBody?.contentLength() ?: -1
-    }
+    override fun contentType(): MediaType? = responseBody?.contentType()
 
-    override fun source(): BufferedSource {
-      return bufferedSource ?: Okio.buffer(source(responseBody!!.source()))
-    }
+    override fun contentLength(): Long = responseBody?.contentLength() ?: -1
+
+    override fun source(): BufferedSource =
+      bufferedSource ?: Okio.buffer(source(responseBody!!.source()))
 
     private fun source(source: Source): Source {
       return object : ForwardingSource(source) {
@@ -1198,7 +1165,7 @@ class FileSystemModule(
     }
   }
 
-  internal interface ProgressListener {
+  internal fun interface ProgressListener {
     fun update(bytesRead: Long, contentLength: Long, done: Boolean)
   }
 
@@ -1279,22 +1246,18 @@ class FileSystemModule(
   }
 
   @Throws(IOException::class)
-  private fun getInputStream(uri: Uri): InputStream {
-    return when {
-      uri.scheme == "file" -> FileInputStream(uriToFile(uri))
-      uri.scheme == "asset" -> openAssetInputStream(uri)
-      isSAFUri(uri) -> context.contentResolver.openInputStream(uri)!!
-      else -> throw IOException("Unsupported scheme for location '$uri'.")
-    }
+  private fun getInputStream(uri: Uri) = when {
+    uri.scheme == "file" -> FileInputStream(uri.toFile())
+    uri.scheme == "asset" -> openAssetInputStream(uri)
+    uri.isSAFUri -> context.contentResolver.openInputStream(uri)!!
+    else -> throw IOException("Unsupported scheme for location '$uri'.")
   }
 
   @Throws(IOException::class)
-  private fun getOutputStream(uri: Uri): OutputStream {
-    return when {
-      uri.scheme == "file" -> FileOutputStream(uriToFile(uri))
-      isSAFUri(uri) -> context.contentResolver.openOutputStream(uri)!!
-      else -> throw IOException("Unsupported scheme for location '$uri'.")
-    }
+  private fun getOutputStream(uri: Uri) = when {
+    uri.scheme == "file" -> FileOutputStream(uri.toFile())
+    uri.isSAFUri -> context.contentResolver.openOutputStream(uri)!!
+    else -> throw IOException("Unsupported scheme for location '$uri'.")
   }
 
   private fun getNearestSAFFile(uri: Uri): DocumentFile? {
@@ -1311,9 +1274,12 @@ class FileSystemModule(
    * @param uri
    * @return whatever the provided URI is SAF URI
    */
-  private fun isSAFUri(uri: Uri): Boolean {
-    return uri.scheme == "content" && uri.host?.startsWith("com.android.externalstorage") ?: false
-  }
+
+  // extension functions of Uri class
+  private fun Uri.toFile() = File(this.path)
+
+  private val Uri.isSAFUri: Boolean
+    get() = scheme == "content" && host?.startsWith("com.android.externalstorage") ?: false
 
   private fun parseFileUri(uriStr: String) = uriStr.substring(uriStr.indexOf(':') + 3)
 
