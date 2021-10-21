@@ -14,7 +14,7 @@ object FileSystemUtils {
   }
 
   @Throws(IOException::class)
-  fun generateOutputPath(internalDirectory: File?, dirName: String, extension: String): String {
+  fun generateOutputPath(internalDirectory: File, dirName: String, extension: String): String {
     val directory = File(internalDirectory.toString() + File.separator + dirName)
     ensureDirExists(directory)
     val filename = UUID.randomUUID().toString()

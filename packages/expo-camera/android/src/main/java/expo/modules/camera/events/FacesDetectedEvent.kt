@@ -24,7 +24,6 @@ class FacesDetectedEvent private constructor() : BaseEvent() {
     if (faces.size > Short.MAX_VALUE) Short.MAX_VALUE
     else faces.size.toShort()
 
-
   override fun getEventName() = CameraViewManager.Events.EVENT_ON_FACES_DETECTED.toString()
 
   override fun getEventBody() = Bundle().apply {

@@ -43,19 +43,19 @@ private const val DEFAULT_QUALITY = 1
 class ResolveTakenPictureAsyncTask(
     private var promise: Promise,
     private var options: Map<String, Any>,
-    private var directory: File?,
+    private val directory: File,
     private var pictureSavedDelegate: PictureSavedDelegate
 ) : AsyncTask<Void?, Void?, Bundle?>() {
   private var imageData: ByteArray? = null
   private var bitmap: Bitmap? = null
 
-  constructor(imageData: ByteArray?, promise: Promise, options: Map<String, Any>, directory: File?, delegate: PictureSavedDelegate) : this(
+  constructor(imageData: ByteArray?, promise: Promise, options: Map<String, Any>, directory: File, delegate: PictureSavedDelegate) : this(
     promise, options, directory, delegate
   ) {
     this.imageData = imageData
   }
 
-  constructor(bitmap: Bitmap?, promise: Promise, options: Map<String, Any>, directory: File?, delegate: PictureSavedDelegate) : this(
+  constructor(bitmap: Bitmap?, promise: Promise, options: Map<String, Any>, directory: File, delegate: PictureSavedDelegate) : this(
     promise, options, directory, delegate
   ) {
     this.bitmap = bitmap
@@ -65,7 +65,7 @@ class ResolveTakenPictureAsyncTask(
     get() = options[QUALITY_KEY]?.let {
       val requestedQuality = (it as Number).toDouble()
       (requestedQuality * 100).toInt()
-    } ?:DEFAULT_QUALITY * 100
+    } ?: DEFAULT_QUALITY * 100
 
   override fun doInBackground(vararg params: Void?): Bundle? {
     // handle SkipProcessing
@@ -88,7 +88,9 @@ class ResolveTakenPictureAsyncTask(
 
         // Rotate the bitmap to the proper orientation if needed
         if (orientation != ExifInterface.ORIENTATION_UNDEFINED) {
-          bitmap = rotateBitmap(bitmap, getImageRotation(orientation))
+          bitmap = bitmap?.let {
+            rotateBitmap(it, getImageRotation(orientation))
+          }
         }
 
         // Write Exif data to the response if requested
@@ -211,10 +213,10 @@ class ResolveTakenPictureAsyncTask(
     return null
   }
 
-  private fun rotateBitmap(source: Bitmap?, angle: Int): Bitmap {
+  private fun rotateBitmap(source: Bitmap, angle: Int): Bitmap {
     val matrix = Matrix()
     matrix.postRotate(angle.toFloat())
-    return Bitmap.createBitmap(source!!, 0, 0, source.width, source.height, matrix, true)
+    return Bitmap.createBitmap(source, 0, 0, source.width, source.height, matrix, true)
   }
 
   // Get rotation degrees from Exif orientation enum

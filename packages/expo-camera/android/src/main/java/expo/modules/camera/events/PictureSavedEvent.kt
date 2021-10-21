@@ -15,10 +15,10 @@ class PictureSavedEvent private constructor() : BaseEvent() {
 
   override fun getCoalescingKey(): Short {
     val fallback: Short = -1
-    val data = response.getBundle("data")
-    if (data == null || !data.containsKey("uri")) {
-      return fallback
-    }
+    val data = response
+        .getBundle("data")
+        ?.takeIf { it.containsKey("uri") }
+        ?: return fallback
     val uri = data.getString("uri") ?: return fallback
     return (uri.hashCode() % Short.MAX_VALUE).toShort()
   }

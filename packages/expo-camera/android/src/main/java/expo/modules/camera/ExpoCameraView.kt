@@ -143,7 +143,7 @@ class ExpoCameraView(
     emitPictureSavedEvent(eventEmitter, this, response)
   }
 
-  fun record(options: Map<String?, Any?>, promise: Promise, cacheDirectory: File?) {
+  fun record(options: Map<String?, Any?>, promise: Promise, cacheDirectory: File) {
     try {
       val path = FileSystemUtils.generateOutputPath(cacheDirectory, "Camera", ".mp4")
       val maxDuration = options[MAX_DURATION_KEY]?.let { it as Double } ?: -1.0
@@ -284,7 +284,9 @@ class ExpoCameraView(
         if (options.containsKey(FAST_MODE_KEY) && options[FAST_MODE_KEY] as Boolean) {
           promise.resolve(null)
         }
-        ResolveTakenPictureAsyncTask(data, promise, options, cacheDirectory, this@ExpoCameraView).execute()
+        cacheDirectory?.let {
+          ResolveTakenPictureAsyncTask(data, promise, options, it, this@ExpoCameraView).execute()
+        }
       }
 
       override fun onVideoRecorded(cameraView: CameraView, path: String) {
