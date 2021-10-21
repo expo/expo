@@ -8,11 +8,13 @@
 #import <ExpoModulesCore/EXFileSystemInterface.h>
 #import <ExpoModulesCore/EXPermissionsInterface.h>
 #import <ExpoModulesCore/EXPermissionsMethodsDelegate.h>
+#import <ExpoModulesCore/EXJavaScriptContextProvider.h>
 
 #import <EXAV/EXAV.h>
 #import <EXAV/EXAVPlayerData.h>
 #import <EXAV/EXVideoView.h>
 #import <EXAV/EXAudioRecordingPermissionRequester.h>
+#import <EXAV+AudioSampleCallback.h>
 
 NSString *const EXAudioRecordingOptionsIsMeteringEnabledKey = @"isMeteringEnabled";
 NSString *const EXAudioRecordingOptionsKeepAudioActiveHintKey = @"keepAudioActiveHint";
@@ -100,8 +102,22 @@ EX_EXPORT_MODULE(ExponentAV);
   return @[@protocol(EXAVInterface)];
 }
 
+- (void)installJsiBindings
+{
+  id<EXJavaScriptContextProvider> jsContextProvider = [_moduleRegistry getModuleImplementingProtocol:@protocol(EXJavaScriptContextProvider)];
+  void *jsRuntimePtr = [jsContextProvider javaScriptRuntimePointer];
+  if (jsRuntimePtr) {
+    [self installJSIBindingsForRuntime:jsRuntimePtr withSoundDictionary:_soundDictionary];
+  } else {
+    EXLogWarn(@"EXAV: Cannot install Audio Sample Buffer callback. Do you have 'Remote Debugging' enabled in your app's Developer Menu (https://docs.expo.dev/workflow/debugging)? Audio Sample Buffer callbacks are not supported while using Remote Debugging, you will need to disable it to use them.");
+  }
+}
+
 - (NSDictionary *)constantsToExport
 {
+  // install JSI bindings here because `constantsToExport` is called when the JS runtime has been created
+  [self installJsiBindings];
+  
   return @{
     @"Qualities": @{
         @"Low": AVAudioTimePitchAlgorithmLowQualityZeroLatency,
