@@ -22,7 +22,8 @@
     ]
   },
   "resolutions": {
-    "react-native": "0.64.2"
+    "react-native": "0.64.2",
+    "@react-native/normalize-color": "2.0.0"
   },
   "dependencies": {
     "@expo/config-types": "^43.0.0",
