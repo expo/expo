@@ -83,7 +83,7 @@
     "@types/react-native": "~0.64.12",
     "@types/react-test-renderer": "^17.0.1",
     "@types/uuid": "^3.4.7",
-    "expo-location": "^13.0.3",
+    "expo-location": "^13.0.4",
     "expo-module-scripts": "^2.0.0",
     "react": "17.0.1",
     "react-dom": "17.0.1",

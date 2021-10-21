@@ -35,7 +35,7 @@
     "expo-image-manipulator": "~10.1.2",
     "expo-keep-awake": "~10.0.0",
     "expo-localization": "~11.0.0",
-    "expo-location": "~13.0.3",
+    "expo-location": "~13.0.4",
     "expo-media-library": "~13.0.3",
     "expo-network": "~4.0.3",
     "expo-notifications": "~0.13.3",

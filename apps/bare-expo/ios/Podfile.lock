@@ -111,7 +111,7 @@ PODS:
     - ExpoModulesCore
   - EXLocalization (11.0.0):
     - ExpoModulesCore
-  - EXLocation (13.0.3):
+  - EXLocation (13.0.4):
     - ExpoModulesCore
     - UMTaskManagerInterface
   - EXMailComposer (11.0.3):
@@ -1248,7 +1248,7 @@ SPEC CHECKSUMS:
   EXLinearGradient: 4d727eacb53d19ef25b02dd810e0199b453489ce
   EXLocalAuthentication: c0ec9379a81c3c823a362382b6a2145e880d9840
   EXLocalization: bb38414618b30a177482c9a6f5594ec6eb0898c1
-  EXLocation: e0b7db3e270fe305b254e59d9025ab8f79ef8b46
+  EXLocation: 9f4034d3f43d6b7581416243ac839d57afc02c61
   EXMailComposer: 2a4ef087e055e3a9a1d138c300c5ae48a3978d0d
   EXManifests: 50e42e01335df4e54109dee7be5a91bfd37347db
   EXMediaLibrary: 49ae8bc83bf10d08134dfd38a4b0ba3116483a60
