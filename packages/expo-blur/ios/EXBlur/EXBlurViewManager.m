@@ -1,8 +1,8 @@
 // Copyright 2016-present 650 Industries. All rights reserved.
 
-#import <EXBlur/EXBlurView.h>
 #import <EXBlur/EXBlurViewManager.h>
 #import <ExpoModulesCore/EXUIManager.h>
+#import "EXBlur-Swift.h"
 
 @interface EXBlurViewManager ()
 
@@ -35,7 +35,7 @@ EX_VIEW_PROPERTY(tint, NSString *, EXBlurView)
 
 EX_VIEW_PROPERTY(intensity, NSNumber *, EXBlurView)
 {
-  [view setIntensity:value];
+  [view setIntensity:[value intValue]];
 }
 
 @end
