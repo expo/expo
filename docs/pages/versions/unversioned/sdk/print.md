@@ -115,6 +115,37 @@ import * as Print from 'expo-print';
 
 <APISection packageName="expo-print" apiName="Print" />
 
+## Local images
+
+On iOS, printing from HTML source doesn't support local asset URLs (due to WKWebView limitations). Instead, images need to be converted to base64 and inlined into the HTML.
+
+```js
+import { Asset } from 'expo-asset';
+import { printAsync } from 'expo-print';
+import { manipulateAsync } from 'expo-image-manipulator';
+
+async function generateHTML() {
+  const asset = Asset.fromModule(require('../../assets/logo.png'));
+  const image = await manipulateAsync(
+    asset.localUri ?? asset.uri,
+    [],
+    { base64: true }
+  );
+  return `
+    <html>
+      <img
+        src="data:image/jpeg;base64,${image.base64}"
+        style="width: 90vw;" />
+    </html>
+  `;
+}
+
+async function print() {
+  const html = await generateHTML();
+  await printAsync({ html });
+}
+```
+
 ## Page margins
 
 If you're using `html` option in `printAsync` or `printToFileAsync`, the resulting print might contain page margins (it depends on WebView engine).
