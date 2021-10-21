@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Fix firebase imports for web. ([#14829](https://github.com/expo/expo/pull/14829) by [@JJK801](https://github.com/JJK801))
+- Update firebase imports for web to support the v9 firebase JS sdk. ([#14829](https://github.com/expo/expo/pull/14829) by [@JJK801](https://github.com/JJK801))
 
 ### 💡 Others
 
