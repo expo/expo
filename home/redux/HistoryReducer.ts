@@ -45,6 +45,7 @@ export default (state: HistoryType, action: HistoryActions): HistoryType => {
         ? List(history.map((item) => new HistoryItem(item)))
         : List();
       return state.merge({
+        // @ts-ignore
         history: immutableHistoryList,
       });
     }

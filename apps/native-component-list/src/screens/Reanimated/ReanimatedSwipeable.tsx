@@ -56,9 +56,9 @@ const data: Data[] = [
 ];
 
 function SwipableList(): React.ReactElement {
-  function onRemove() {
+  const onRemove = () => {
     Alert.alert('Removed');
-  }
+  };
 
   return (
     <View style={s.container}>
