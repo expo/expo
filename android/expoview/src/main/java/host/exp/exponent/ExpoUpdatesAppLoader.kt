@@ -76,7 +76,7 @@ class ExpoUpdatesAppLoader @JvmOverloads constructor(
   interface AppLoaderCallback {
     fun onOptimisticManifest(optimisticManifest: Manifest)
     fun onManifestCompleted(manifest: Manifest)
-    fun onBundleCompleted(localBundlePath: String?)
+    fun onBundleCompleted(localBundlePath: String)
     fun emitEvent(params: JSONObject)
     fun updateStatus(status: AppLoaderStatus)
     fun onError(e: Exception)
@@ -250,7 +250,7 @@ class ExpoUpdatesAppLoader @JvmOverloads constructor(
 
             // ReactAndroid will load the bundle on its own in development mode
             if (!manifest.isDevelopmentMode()) {
-              callback.onBundleCompleted(launcher.launchAssetFile)
+              callback.onBundleCompleted(launcher.launchAssetFile!!)
             }
           } catch (e: Exception) {
             callback.onError(e)
@@ -308,11 +308,8 @@ class ExpoUpdatesAppLoader @JvmOverloads constructor(
       )
     }
     callback.onManifestCompleted(Manifest.fromManifestJson(manifestJson))
-    var launchAssetFile = launcher.launchAssetFile
-    if (launchAssetFile == null) {
-      // ReactInstanceManagerBuilder accepts embedded assets as strings with "assets://" prefixed
-      launchAssetFile = "assets://" + launcher.bundleAssetName
-    }
+    // ReactInstanceManagerBuilder accepts embedded assets as strings with "assets://" prefixed
+    val launchAssetFile = launcher.launchAssetFile ?: "assets://" + launcher.bundleAssetName
     callback.onBundleCompleted(launchAssetFile)
   }
 

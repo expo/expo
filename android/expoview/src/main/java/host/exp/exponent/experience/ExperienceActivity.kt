@@ -188,7 +188,7 @@ open class ExperienceActivity : BaseExperienceActivity(), StartReactInstanceDele
             }
           }
 
-          override fun onBundleCompleted(localBundlePath: String?) {
+          override fun onBundleCompleted(localBundlePath: String) {
             Exponent.instance.runOnUiThread { setBundle(localBundlePath) }
           }
 
@@ -542,7 +542,7 @@ open class ExperienceActivity : BaseExperienceActivity(), StartReactInstanceDele
     }
   }
 
-  fun setBundle(localBundlePath: String?) {
+  fun setBundle(localBundlePath: String) {
     // by this point, setManifest should have also been called, so prevent
     // setOptimisticManifest from showing a rogue splash screen
     shouldShowLoadingViewWithOptimisticManifest = false
