@@ -3,6 +3,9 @@ package expo.modules.kotlin.methods
 import com.facebook.react.bridge.Dynamic
 import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.bridge.ReadableMap
+import com.facebook.react.bridge.ReadableType
+import expo.modules.kotlin.records.Record
+import expo.modules.kotlin.records.RecordCaster
 
 object TypeMapper {
   private val typeMap = mapOf<Class<*>, TypeCaster<*>>(
@@ -22,9 +25,11 @@ object TypeMapper {
     Array<Int>::class.java to IntArrayCaster(),
     Array<String>::class.java to StringArrayCaster()
   )
+  private val recordCaster = RecordCaster()
 
-  fun <T> cast(value: Dynamic, toClass: TypeInformation<T>): T? {
-    if (value.isNull) {
+  @Suppress("UNCHECKED_CAST")
+  fun <T> cast(jsValue: Dynamic, toClass: TypeInformation<T>): T? {
+    if (jsValue.isNull) {
       if (!toClass.isNullable) {
         throw IllegalArgumentException("Cannot assign null to not nullable type.")
       }
@@ -32,9 +37,18 @@ object TypeMapper {
       return null
     }
 
-    @Suppress("UNCHECKED_CAST")
-    val caster = typeMap[toClass.type] as TypeCaster<T>
+    val type = toClass.type
 
-    return caster.cast(value)
+    // TODO(@lukmccall): handel collection
+    val caster = typeMap[type] as? TypeCaster<T>
+    if (caster != null) {
+      return caster.cast(jsValue)
+    }
+
+    if (Record::class.java.isAssignableFrom(type) && jsValue.type == ReadableType.Map) {
+      return recordCaster.cast(jsValue.asMap(), type as Class<Record>) as T
+    }
+
+    throw java.lang.IllegalArgumentException("Cannot converted JavaScript object into $type")
   }
 }
