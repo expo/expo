@@ -782,19 +782,15 @@ class FileSystemModule(
       uploadType === UploadType.MULTIPART -> {
         val bodyBuilder = MultipartBody.Builder().setType(MultipartBody.FORM)
         options["parameters"]?.let {
-          it as Map<String, Any>
-          it.forEach { (key, value) -> bodyBuilder.addFormDataPart(key, value.toString()) }
+          (it as Map<String, Any>)
+            .forEach { (key, value) -> bodyBuilder.addFormDataPart(key, value.toString()) }
         }
-        val mimeType: String? = if (options.containsKey("mimeType")) {
-          options["mimeType"] as String?
-        } else {
-          URLConnection.guessContentTypeFromName(file.name)
-        }
-        var fieldName = file.name
-        if (options.containsKey("fieldName")) {
-          fieldName = options["fieldName"] as String?
-        }
-        bodyBuilder.addFormDataPart(fieldName, file.name, decorator.decorate(RequestBody.create(if (mimeType != null) MediaType.parse(mimeType) else null, file)))
+        val mimeType: String = options["mimeType"]?.let {
+          it as String
+        } ?: URLConnection.guessContentTypeFromName(file.name)
+
+        val fieldName = options["fieldName"]?.let { it as String } ?: file.name
+        bodyBuilder.addFormDataPart(fieldName, file.name, decorator.decorate(RequestBody.create(MediaType.parse(mimeType), file)))
         bodyBuilder.build()
       }
       else -> {
