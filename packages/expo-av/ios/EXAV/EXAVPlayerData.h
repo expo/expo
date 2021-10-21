@@ -30,4 +30,9 @@
                 resolver:(EXPromiseResolveBlock)resolve
                 rejecter:(EXPromiseRejectBlock)reject;
 
+typedef void (^SampleBufferCallback)(AudioBuffer *buffer, double timestamp);
+
+- (void)addSampleBufferCallback:(SampleBufferCallback)callback;
+- (void)removeSampleBufferCallback;
+
 @end

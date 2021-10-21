@@ -1,0 +1,14 @@
+// Copyright 2021-present 650 Industries, Inc. (aka Expo)
+
+#pragma once
+
+#import <Foundation/Foundation.h>
+#import "EXAV.h"
+#import <EXAV/EXAVPlayerData.h>
+
+@interface EXAV (AudioSampleCallback)
+
+- (void) installJSIBindingsForRuntime:(void *)jsRuntimePtr
+                  withSoundDictionary:(NSMutableDictionary<NSNumber*, EXAVPlayerData*>*)soundDictionary;
+
+@end
