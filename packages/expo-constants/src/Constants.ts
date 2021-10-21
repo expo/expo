@@ -77,12 +77,15 @@ let warnedAboutInstallationId = false;
 let warnedAboutDeviceId = false;
 let warnedAboutLinkingUrl = false;
 
-const constants = {
+const constants: Constants = {
   ...nativeConstants,
   // Ensure this is null in bare workflow
   appOwnership: appOwnership ?? null,
+};
+
+const constantsPropertiesGetter: AccessorProps = {
   // Deprecated fields
-  get deviceYearClass() {
+  deviceYearClass() {
     if (!warnedAboutDeviceYearClass) {
       console.warn(
         `Constants.deviceYearClass has been deprecated in favor of expo-device's Device.deviceYearClass property. This API will be removed in SDK 45.`
@@ -92,7 +95,7 @@ const constants = {
     return nativeConstants.deviceYearClass;
   },
   // Deprecated fields
-  get installationId() {
+  installationId() {
     if (!warnedAboutInstallationId) {
       console.warn(
         `Constants.installationId has been deprecated in favor of generating and storing your own ID. Implement it using expo-application's androidId on Android and a storage API such as expo-secure-store on iOS and localStorage on the web. This API will be removed in SDK 44.`
@@ -102,7 +105,7 @@ const constants = {
     return nativeConstants.installationId;
   },
   // Legacy aliases
-  get deviceId() {
+  deviceId() {
     if (!warnedAboutDeviceId) {
       console.warn(
         `Constants.deviceId has been deprecated in favor of generating and storing your own ID. This API will be removed in SDK 44.`
@@ -111,7 +114,7 @@ const constants = {
     }
     return nativeConstants.installationId;
   },
-  get linkingUrl() {
+  linkingUrl() {
     if (!warnedAboutLinkingUrl) {
       console.warn(
         `Constants.linkingUrl has been renamed to Constants.linkingUri. Consider using the Linking API directly. Constants.linkingUrl will be removed in SDK 44.`
@@ -120,14 +123,14 @@ const constants = {
     }
     return nativeConstants.linkingUri;
   },
-  get manifest(): AppManifest | null {
+  manifest(): AppManifest | null {
     const maybeManifest = getManifest();
     if (!maybeManifest || !isAppManifest(maybeManifest)) {
       return null;
     }
     return maybeManifest;
   },
-  get manifest2(): Manifest | null {
+  manifest2(): Manifest | null {
     const maybeManifest = getManifest();
     if (!maybeManifest || !isManifest(maybeManifest)) {
       return null;
@@ -140,33 +143,39 @@ const constants = {
    * It behaves similarly to the original one, but suppresses warning upon no manifest available.
    * `expo-asset` uses it to prevent users from seeing mentioned warning.
    */
-  get __unsafeNoWarnManifest(): AppManifest | Manifest | null {
+  __unsafeNoWarnManifest(): AppManifest | Manifest | null {
     const maybeManifest = getManifest(true);
     if (!maybeManifest || !isAppManifest(maybeManifest)) {
       return null;
     }
     return maybeManifest;
   },
-  get __unsafeNoWarnManifest2(): Manifest | Manifest | null {
+  __unsafeNoWarnManifest2(): Manifest | Manifest | null {
     const maybeManifest = getManifest(true);
     if (!maybeManifest || !isManifest(maybeManifest)) {
       return null;
     }
     return maybeManifest;
   },
-  get __rawManifest_TEST(): AppManifest | Manifest | null {
+};
+definePropertiesGetter(constants, constantsPropertiesGetter);
+
+Object.defineProperty(constants, '__rawManifest_TEST', {
+  get(): AppManifest | Manifest | null {
     return rawManifest;
   },
-  set __rawManifest_TEST(value: AppManifest | Manifest | null) {
+  set(value: AppManifest | Manifest | null) {
     rawManifest = value;
   },
-} as Constants;
+  // Prevent the warning from being thrown, or the value from being used when the user interacts with the entire object.
+  enumerable: false,
+});
 
 // Add deprecation warning for `platform.ios.model`
 if (constants?.platform?.ios) {
   const originalModel = nativeConstants.platform.ios.model;
-  Object.defineProperty(constants.platform.ios, 'model', {
-    get() {
+  definePropertiesGetter(constants.platform.ios, {
+    model() {
       if (!warnedAboutIosModel) {
         console.warn(
           `Constants.platform.ios.model has been deprecated in favor of expo-device's Device.modelName property. This API will be removed in SDK 45.`
@@ -175,9 +184,18 @@ if (constants?.platform?.ios) {
       }
       return originalModel;
     },
-    // Prevent the warning from being thrown, or the value from being used when the user interacts with the entire object.
-    enumerable: false,
   });
+}
+
+type AccessorProps = Record<string, () => any>;
+function definePropertiesGetter(target: object, props: AccessorProps) {
+  for (const [name, func] of Object.entries(props)) {
+    Object.defineProperty(target, name, {
+      get: func,
+      // Prevent the warning from being thrown, or the value from being used when the user interacts with the entire object.
+      enumerable: false,
+    });
+  }
 }
 
 function isAppManifest(manifest: AppManifest | Manifest): manifest is AppManifest {
