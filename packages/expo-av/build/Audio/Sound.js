@@ -1,4 +1,4 @@
-import { EventEmitter } from 'expo-modules-core';
+import { EventEmitter, Platform, UnavailabilityError } from 'expo-modules-core';
 import { PlaybackMixin, assertStatusValuesInBounds, getNativeSourceAndFullInitialStatusForLoadAsync, getUnloadedStatus, } from '../AV';
 import ExponentAV from '../ExponentAV';
 import { throwIfAudioIsDisabled } from './AudioAvailability';
@@ -13,6 +13,7 @@ export class Sound {
     _coalesceStatusUpdatesInMillis = 100;
     _onPlaybackStatusUpdate = null;
     _onMetadataUpdate = null;
+    _onAudioSampleReceived = null;
     /** @deprecated Use `Sound.createAsync()` instead */
     static create = async (source, initialStatus = {}, onPlaybackStatusUpdate = null, downloadFirst = true) => {
         console.warn(`Sound.create is deprecated in favor of Sound.createAsync with the same API except for the new method name`);
@@ -45,6 +46,24 @@ export class Sound {
         else {
             throw new Error('Cannot complete operation because sound is not loaded.');
         }
+    }
+    _updateAudioSampleReceivedCallback() {
+        if (global.__EXAV_setOnAudioSampleReceivedCallback == null) {
+            if (Platform.OS === 'ios') {
+                throw new Error('Failed to set Audio Sample Buffer callback! The JSI function seems to not be installed correctly.');
+            }
+            else {
+                throw new UnavailabilityError('expo-av', 'setOnAudioSampleReceived');
+            }
+        }
+        if (this._key == null) {
+            throw new Error('Cannot set Audio Sample Buffer callback when the Sound instance has not been successfully loaded/initialized!');
+        }
+        if (typeof this._key !== 'number') {
+            throw new Error(`Cannot set Audio Sample Buffer callback when Sound instance key is of type ${typeof this
+                ._key}! (expected: number)`);
+        }
+        global.__EXAV_setOnAudioSampleReceivedCallback(this._key, this._onAudioSampleReceived);
     }
     _internalStatusUpdateCallback = ({ key, status, }) => {
         if (this._key === key) {
@@ -96,6 +115,12 @@ export class Sound {
     setOnMetadataUpdate(onMetadataUpdate) {
         this._onMetadataUpdate = onMetadataUpdate;
     }
+    setOnAudioSampleReceived(callback) {
+        this._onAudioSampleReceived = callback;
+        if (this._key != null) {
+            this._updateAudioSampleReceivedCallback();
+        }
+    }
     // Loading / unloading API
     async loadAsync(source, initialStatus = {}, downloadFirst = true) {
         throwIfAudioIsDisabled();
@@ -114,6 +139,7 @@ export class Sound {
                     this._loading = false;
                     this._subscribeToNativeEvents();
                     this._callOnPlaybackStatusUpdateForNewStatus(status);
+                    this._updateAudioSampleReceivedCallback();
                     resolve(status);
                 };
                 const loadError = (error) => {
