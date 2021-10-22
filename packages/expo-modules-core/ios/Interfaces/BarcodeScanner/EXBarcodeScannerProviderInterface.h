@@ -1,6 +1,6 @@
 // Copyright 2016-present 650 Industries. All rights reserved.
 
-#import <ExpoModulesCore/EXBarCodeScannerInterface.h>
+#import <ExpoModulesCore/EXBarcodeScannerInterface.h>
 
 @protocol EXBarCodeScannerProviderInterface
 
