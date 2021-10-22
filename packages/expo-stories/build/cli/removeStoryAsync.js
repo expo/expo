@@ -51,17 +51,17 @@ function removeStoryAsync(relPath, config) {
             switch (_a.label) {
                 case 0:
                     watchRoot = config.watchRoot, projectRoot = config.projectRoot;
-                    storyManifest = shared_1.getStoryManifest(projectRoot);
+                    storyManifest = (0, shared_1.getStoryManifest)(projectRoot);
                     fullPath = path_1.default.resolve(watchRoot, relPath);
-                    id = shared_1.hashPath(fullPath);
+                    id = (0, shared_1.hashPath)(fullPath);
                     delete storyManifest.files[id];
                     // 3. save updated manifest file to disk
-                    return [4 /*yield*/, saveManifestAsync_1.saveManifestAsync(storyManifest, config)];
+                    return [4 /*yield*/, (0, saveManifestAsync_1.saveManifestAsync)(storyManifest, config)];
                 case 1:
                     // 3. save updated manifest file to disk
                     _a.sent();
                     // 4. write js file based on updated manifest
-                    return [4 /*yield*/, writeStoriesAsync_1.writeStoriesAsync(config)];
+                    return [4 /*yield*/, (0, writeStoriesAsync_1.writeStoriesAsync)(config)];
                 case 2:
                     // 4. write js file based on updated manifest
                     _a.sent();

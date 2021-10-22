@@ -15,7 +15,7 @@ function modifyAndroidManifest(manifest) {
 }
 exports.modifyAndroidManifest = modifyAndroidManifest;
 const withMediaLibraryExternalStorage = (config) => {
-    return config_plugins_1.withAndroidManifest(config, async (config) => {
+    return (0, config_plugins_1.withAndroidManifest)(config, async (config) => {
         config.modResults = modifyAndroidManifest(config.modResults);
         return config;
     });
@@ -31,7 +31,7 @@ const withMediaLibrary = (config, { photosPermission, savePhotosPermission, isAc
         savePhotosPermission ||
             config.ios.infoPlist.NSPhotoLibraryAddUsageDescription ||
             WRITE_PHOTOS_USAGE;
-    return config_plugins_1.withPlugins(config, [
+    return (0, config_plugins_1.withPlugins)(config, [
         [
             config_plugins_1.AndroidConfig.Permissions.withPermissions,
             [
@@ -43,4 +43,4 @@ const withMediaLibrary = (config, { photosPermission, savePhotosPermission, isAc
         withMediaLibraryExternalStorage,
     ]);
 };
-exports.default = config_plugins_1.createRunOncePlugin(withMediaLibrary, pkg.name, pkg.version);
+exports.default = (0, config_plugins_1.createRunOncePlugin)(withMediaLibrary, pkg.name, pkg.version);

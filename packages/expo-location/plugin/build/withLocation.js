@@ -4,7 +4,7 @@ const config_plugins_1 = require("@expo/config-plugins");
 const pkg = require('expo-location/package.json');
 const LOCATION_USAGE = 'Allow $(PRODUCT_NAME) to access your location';
 const withBackgroundLocation = (config) => {
-    return config_plugins_1.withInfoPlist(config, (config) => {
+    return (0, config_plugins_1.withInfoPlist)(config, (config) => {
         if (!Array.isArray(config.modResults.UIBackgroundModes)) {
             config.modResults.UIBackgroundModes = [];
         }
@@ -18,7 +18,7 @@ const withLocation = (config, { locationAlwaysAndWhenInUsePermission, locationAl
     if (isIosBackgroundLocationEnabled) {
         config = withBackgroundLocation(config);
     }
-    config = config_plugins_1.withInfoPlist(config, (config) => {
+    config = (0, config_plugins_1.withInfoPlist)(config, (config) => {
         config.modResults.NSLocationAlwaysAndWhenInUseUsageDescription =
             locationAlwaysAndWhenInUsePermission ||
                 config.modResults.NSLocationAlwaysAndWhenInUseUsageDescription ||
@@ -41,4 +41,4 @@ const withLocation = (config, { locationAlwaysAndWhenInUsePermission, locationAl
         isAndroidBackgroundLocationEnabled && 'android.permission.ACCESS_BACKGROUND_LOCATION',
     ].filter(Boolean));
 };
-exports.default = config_plugins_1.createRunOncePlugin(withLocation, pkg.name, pkg.version);
+exports.default = (0, config_plugins_1.createRunOncePlugin)(withLocation, pkg.name, pkg.version);

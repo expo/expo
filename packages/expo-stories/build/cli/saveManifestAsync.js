@@ -48,7 +48,7 @@ function saveManifestAsync(storyManifest, config) {
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
-                    manifestFilePath = shared_1.getManifestFilePath(config.projectRoot);
+                    manifestFilePath = (0, shared_1.getManifestFilePath)(config.projectRoot);
                     storyManifestAsString = JSON.stringify(storyManifest, null, '\t');
                     return [4 /*yield*/, fs_extra_1.default.writeFile(manifestFilePath, storyManifestAsString, {
                             encoding: 'utf-8',

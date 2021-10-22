@@ -48,7 +48,7 @@ function watchAsync(config) {
         var watchRoot, watcher;
         return __generator(this, function (_a) {
             watchRoot = config.watchRoot;
-            watcher = sane_1.default(watchRoot, {
+            watcher = (0, sane_1.default)(watchRoot, {
                 glob: ['**/*.stories.tsx', '**/*.stories.js', '**/*.stories.ts', '**/*.stories.jsx'],
                 ignored: ['node_modules'],
                 watchman: true,
@@ -61,7 +61,7 @@ function watchAsync(config) {
                 return __awaiter(this, void 0, void 0, function () {
                     return __generator(this, function (_a) {
                         switch (_a.label) {
-                            case 0: return [4 /*yield*/, addStoriesAsync_1.addStoriesAsync([relPath], config)];
+                            case 0: return [4 /*yield*/, (0, addStoriesAsync_1.addStoriesAsync)([relPath], config)];
                             case 1:
                                 _a.sent();
                                 console.log("Added " + relPath + " file to stories");
@@ -74,7 +74,7 @@ function watchAsync(config) {
                 return __awaiter(this, void 0, void 0, function () {
                     return __generator(this, function (_a) {
                         switch (_a.label) {
-                            case 0: return [4 /*yield*/, removeStoryAsync_1.removeStoryAsync(relPath, config)];
+                            case 0: return [4 /*yield*/, (0, removeStoryAsync_1.removeStoryAsync)(relPath, config)];
                             case 1:
                                 _a.sent();
                                 console.log("Removed " + relPath + " file from stories");

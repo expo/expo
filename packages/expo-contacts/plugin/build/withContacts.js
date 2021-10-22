@@ -15,4 +15,4 @@ const withContacts = (config, { contactsPermission } = {}) => {
         'android.permission.WRITE_CONTACTS',
     ]);
 };
-exports.default = config_plugins_1.createRunOncePlugin(withContacts, pkg.name, pkg.version);
+exports.default = (0, config_plugins_1.createRunOncePlugin)(withContacts, pkg.name, pkg.version);

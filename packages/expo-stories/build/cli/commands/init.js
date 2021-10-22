@@ -50,7 +50,7 @@ function initAsync(config) {
             switch (_a.label) {
                 case 0:
                     projectRoot = config.projectRoot, watchRoot = config.watchRoot;
-                    pathToStories = shared_1.getStoriesDir(config);
+                    pathToStories = (0, shared_1.getStoriesDir)(config);
                     if (!!fs_extra_1.default.existsSync(pathToStories)) return [3 /*break*/, 2];
                     return [4 /*yield*/, fs_extra_1.default.mkdir(pathToStories, { recursive: true })];
                 case 1:

@@ -211,7 +211,7 @@ function modifyAppDelegate(appDelegate, expoUpdatesVersion = null) {
                 viewControllerInit = p1;
                 return DEV_LAUNCHER_NEW_INIT;
             });
-            appDelegate = utils_1.addLines(appDelegate, '@implementation AppDelegate', 1, [
+            appDelegate = (0, utils_1.addLines)(appDelegate, '@implementation AppDelegate', 1, [
                 DEV_LAUNCHER_INITIALIZE_REACT_NATIVE_APP_FUNCTION_DEFINITION(viewControllerInit),
             ]);
         }
@@ -237,11 +237,11 @@ See the expo-dev-client installation instructions to modify your AppDelegate man
 }
 exports.modifyAppDelegate = modifyAppDelegate;
 const withDevLauncherAppDelegate = (config) => {
-    return config_plugins_1.withAppDelegate(config, (config) => {
+    return (0, config_plugins_1.withAppDelegate)(config, (config) => {
         if (config.modResults.language === 'objc') {
             let expoUpdatesVersion;
             try {
-                expoUpdatesVersion = resolveExpoUpdatesVersion_1.resolveExpoUpdatesVersion(config.modRequest.projectRoot);
+                expoUpdatesVersion = (0, resolveExpoUpdatesVersion_1.resolveExpoUpdatesVersion)(config.modRequest.projectRoot);
             }
             catch (e) {
                 config_plugins_1.WarningAggregator.addWarningIOS('expo-dev-launcher', `Failed to check compatibility with expo-updates - ${e}`);

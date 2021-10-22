@@ -79,14 +79,14 @@ initCommand
                 }
                 config = __assign(__assign({}, shared_1.defaultConfig), options);
                 config.watchRoot = path_1.default.resolve(process.cwd(), config.watchRoot);
-                return [4 /*yield*/, init_1.initAsync(config)];
+                return [4 /*yield*/, (0, init_1.initAsync)(config)];
             case 1:
                 _a.sent();
-                return [4 /*yield*/, build_1.buildAsync(config)];
+                return [4 /*yield*/, (0, build_1.buildAsync)(config)];
             case 2:
                 _a.sent();
                 if (!options.watch) return [3 /*break*/, 4];
-                return [4 /*yield*/, watch_1.watchAsync(config)];
+                return [4 /*yield*/, (0, watch_1.watchAsync)(config)];
             case 3:
                 _a.sent();
                 _a.label = 4;
