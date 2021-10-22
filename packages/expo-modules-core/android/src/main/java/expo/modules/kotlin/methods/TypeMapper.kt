@@ -39,7 +39,7 @@ object TypeMapper {
 
     val type = toClass.type
 
-    // TODO(@lukmccall): handel collection
+    // TODO(@lukmccall): handle collection
     val caster = typeMap[type] as? TypeCaster<T>
     if (caster != null) {
       return caster.cast(jsValue)
@@ -49,6 +49,6 @@ object TypeMapper {
       return recordCaster.cast(jsValue.asMap(), type as Class<Record>) as T
     }
 
-    throw java.lang.IllegalArgumentException("Cannot converted JavaScript object into $type")
+    throw java.lang.IllegalArgumentException("Cannot convert JavaScript object into $type")
   }
 }

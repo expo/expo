@@ -5,7 +5,6 @@ import com.facebook.react.bridge.JavaOnlyMap
 import com.google.common.truth.Truth
 import org.junit.Test
 
-
 class RecordCasterTest {
   private val caster = RecordCaster()
 
@@ -31,7 +30,7 @@ class RecordCasterTest {
   }
 
   @Test
-  fun `should convert map to not mutable record`() {
+  fun `should convert map to immutable record`() {
     class MyRecord : Record {
       @Field
       val int: Int = 0
@@ -66,7 +65,6 @@ class RecordCasterTest {
 
     Truth.assertThat(myRecord.string).isEqualTo("expo")
   }
-
 
   @Test
   fun `should convert map to mixed record`() {
@@ -175,14 +173,20 @@ class RecordCasterTest {
     }
 
     val map = JavaOnlyMap().apply {
-      putArray("points", JavaOnlyArray().apply {
-        pushDouble(1.0)
-        pushDouble(2.0)
-        pushDouble(3.0)
-      })
-      putMap("innerRecord", JavaOnlyMap().apply {
-        putString("name", "value")
-      })
+      putArray(
+        "points",
+        JavaOnlyArray().apply {
+          pushDouble(1.0)
+          pushDouble(2.0)
+          pushDouble(3.0)
+        }
+      )
+      putMap(
+        "innerRecord",
+        JavaOnlyMap().apply {
+          putString("name", "value")
+        }
+      )
     }
 
     val myRecord = caster.cast(map, MyRecord::class.java)

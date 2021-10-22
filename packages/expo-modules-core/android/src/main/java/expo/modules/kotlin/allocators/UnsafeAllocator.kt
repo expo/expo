@@ -42,7 +42,7 @@ fun interface UnsafeAllocator<T> {
       }
 
       return UnsafeAllocator {
-        throw IllegalArgumentException("Can't allocate $clazz")
+        throw IllegalArgumentException("Cannot allocate $clazz")
       }
     }
   }
