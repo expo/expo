@@ -233,7 +233,7 @@ Refer to [the SplashScreen section of the Expo documentation](https://docs.expo.
 
 ## 🖥 Installation in bare React Native projects
 
-For bare React Native projects, you must ensure that you have [installed and configured the `react-native-unimodules` package](https://github.com/expo/expo/tree/master/packages/react-native-unimodules) before continuing.
+For bare React Native projects, you must ensure that you have [installed and configured the `expo` package](https://docs.expo.dev/bare/installing-expo-modules/) before continuing.
 
 ## Add the package to your dependencies
 
