@@ -4,7 +4,7 @@ const config_plugins_1 = require("@expo/config-plugins");
 const pkg = require('expo-background-fetch/package.json');
 const withBackgroundFetch = (config) => {
     // TODO: Maybe entitlements are needed
-    config = config_plugins_1.withInfoPlist(config, (config) => {
+    config = (0, config_plugins_1.withInfoPlist)(config, (config) => {
         if (!Array.isArray(config.modResults.UIBackgroundModes)) {
             config.modResults.UIBackgroundModes = [];
         }
@@ -18,4 +18,4 @@ const withBackgroundFetch = (config) => {
         'android.permission.WAKE_LOCK',
     ]);
 };
-exports.default = config_plugins_1.createRunOncePlugin(withBackgroundFetch, pkg.name, pkg.version);
+exports.default = (0, config_plugins_1.createRunOncePlugin)(withBackgroundFetch, pkg.name, pkg.version);

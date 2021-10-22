@@ -82,27 +82,27 @@ See the expo-dev-client installation instructions to modify your index.js manual
     }
 }
 const withDevLauncherApplication = (config) => {
-    return config_plugins_1.withDangerousMod(config, [
+    return (0, config_plugins_1.withDangerousMod)(config, [
         'android',
         async (config) => {
             await editMainApplication(config, (mainApplication) => {
                 mainApplication = addJavaImports(mainApplication, [DEV_LAUNCHER_ANDROID_IMPORT]);
-                mainApplication = utils_1.addLines(mainApplication, 'initializeFlipper\\(this', 0, [
+                mainApplication = (0, utils_1.addLines)(mainApplication, 'initializeFlipper\\(this', 0, [
                     `    ${DEV_LAUNCHER_ANDROID_INIT}`,
                 ]);
                 let expoUpdatesVersion;
                 try {
-                    expoUpdatesVersion = resolveExpoUpdatesVersion_1.resolveExpoUpdatesVersion(config.modRequest.projectRoot);
+                    expoUpdatesVersion = (0, resolveExpoUpdatesVersion_1.resolveExpoUpdatesVersion)(config.modRequest.projectRoot);
                 }
                 catch (e) {
                     config_plugins_1.WarningAggregator.addWarningAndroid('expo-dev-launcher', `Failed to check compatibility with expo-updates - ${e}`);
                 }
                 if (expoUpdatesVersion && semver_1.default.gt(expoUpdatesVersion, '0.6.0')) {
                     mainApplication = addJavaImports(mainApplication, [DEV_LAUNCHER_UPDATES_ANDROID_IMPORT]);
-                    mainApplication = utils_1.addLines(mainApplication, 'initializeFlipper\\(this', 0, [
+                    mainApplication = (0, utils_1.addLines)(mainApplication, 'initializeFlipper\\(this', 0, [
                         `    ${DEV_LAUNCHER_UPDATES_ANDROID_INIT}`,
                     ]);
-                    mainApplication = utils_1.replaceLine(mainApplication, 'return BuildConfig.DEBUG;', `      ${DEV_LAUNCHER_UPDATES_DEVELOPER_SUPPORT}`);
+                    mainApplication = (0, utils_1.replaceLine)(mainApplication, 'return BuildConfig.DEBUG;', `      ${DEV_LAUNCHER_UPDATES_DEVELOPER_SUPPORT}`);
                 }
                 return mainApplication;
             });
@@ -111,7 +111,7 @@ const withDevLauncherApplication = (config) => {
     ]);
 };
 const withDevLauncherActivity = (config) => {
-    return config_plugins_1.withMainActivity(config, (config) => {
+    return (0, config_plugins_1.withMainActivity)(config, (config) => {
         if (config.modResults.language === 'java') {
             let content = addJavaImports(config.modResults.contents, [
                 DEV_LAUNCHER_ANDROID_IMPORT,
@@ -136,7 +136,7 @@ See the expo-dev-client installation instructions to modify your MainActivity ma
     });
 };
 const withDevLauncherPodfile = (config) => {
-    return config_plugins_1.withDangerousMod(config, [
+    return (0, config_plugins_1.withDangerousMod)(config, [
         'ios',
         async (config) => {
             await editPodfile(config, (podfile) => {
@@ -148,7 +148,7 @@ const withDevLauncherPodfile = (config) => {
                 if (!podfile.match(/pod ['"]expo-dev-launcher['"],\s?path: ['"][^'"]*node_modules\/expo-dev-launcher['"],\s?:?configurations:?\s(?:=>\s)?:debug/)) {
                     const packagePath = path_1.default.dirname(require.resolve('expo-dev-launcher/package.json'));
                     const relativePath = path_1.default.relative(config.modRequest.platformProjectRoot, packagePath);
-                    podfile = utils_1.addLines(podfile, 'use_react_native', 0, [
+                    podfile = (0, utils_1.addLines)(podfile, 'use_react_native', 0, [
                         `  pod 'expo-dev-launcher', path: '${relativePath}', :configurations => :debug`,
                     ]);
                 }
@@ -172,16 +172,16 @@ const withErrorHandling = (config) => {
     // We need to run the same task twice to ensure it will work on both platforms,
     // because if someone runs `expo run:ios`, it will trigger only dangerous mode for that specific platform.
     // Note: after the first execution, the second one won't change anything.
-    config = config_plugins_1.withDangerousMod(config, ['android', injectErrorHandlers]);
-    config = config_plugins_1.withDangerousMod(config, ['ios', injectErrorHandlers]);
+    config = (0, config_plugins_1.withDangerousMod)(config, ['android', injectErrorHandlers]);
+    config = (0, config_plugins_1.withDangerousMod)(config, ['ios', injectErrorHandlers]);
     return config;
 };
 const withDevLauncher = (config) => {
     config = withDevLauncherActivity(config);
     config = withDevLauncherApplication(config);
     config = withDevLauncherPodfile(config);
-    config = withDevLauncherAppDelegate_1.withDevLauncherAppDelegate(config);
+    config = (0, withDevLauncherAppDelegate_1.withDevLauncherAppDelegate)(config);
     config = withErrorHandling(config);
     return config;
 };
-exports.default = config_plugins_1.createRunOncePlugin(withDevLauncher, pkg.name, pkg.version);
+exports.default = (0, config_plugins_1.createRunOncePlugin)(withDevLauncher, pkg.name, pkg.version);

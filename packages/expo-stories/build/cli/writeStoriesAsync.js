@@ -49,7 +49,7 @@ function writeStoriesAsync(config) {
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
-                    storyManifest = shared_1.getStoryManifest(config.projectRoot);
+                    storyManifest = (0, shared_1.getStoryManifest)(config.projectRoot);
                     stories = Object.keys(storyManifest.files).map(function (id) { return storyManifest.files[id]; });
                     template = "\n      const storiesToExport = {}\n      " + stories.map(function (story) { return generateTemplateForStory(story); }).join('') + "\n      module.exports = storiesToExport\n    ";
                     if (!process.env.EXPO_DEBUG) {
@@ -57,7 +57,7 @@ function writeStoriesAsync(config) {
                             minify: true,
                         }).code;
                     }
-                    storiesDir = shared_1.getStoriesDir(config);
+                    storiesDir = (0, shared_1.getStoriesDir)(config);
                     writeRequiresPath = path_1.default.resolve(storiesDir, 'stories.js');
                     return [4 /*yield*/, fs_extra_1.default.writeFile(writeRequiresPath, template, { encoding: 'utf-8' })];
                 case 1:

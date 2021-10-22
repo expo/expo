@@ -7,4 +7,4 @@ const withFirebaseAppDelegate = (config) => {
     // the unversioned plugin already does that.
     return config;
 };
-exports.default = config_plugins_1.createRunOncePlugin(withFirebaseAppDelegate, pkg.name, pkg.version);
+exports.default = (0, config_plugins_1.createRunOncePlugin)(withFirebaseAppDelegate, pkg.name, pkg.version);

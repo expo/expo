@@ -7,7 +7,7 @@ const { appendScheme } = Scheme;
 const fbSchemes = ['fbapi', 'fb-messenger-api', 'fbauth2', 'fbshareextension'];
 const USER_TRACKING = 'This identifier will be used to deliver personalized ads to you.';
 const withFacebookIOS = (config) => {
-    return config_plugins_1.withInfoPlist(config, (config) => {
+    return (0, config_plugins_1.withInfoPlist)(config, (config) => {
         config.modResults = setFacebookConfig(config, config.modResults);
         return config;
     });

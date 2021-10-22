@@ -5,8 +5,8 @@ const withNotificationsAndroid_1 = require("./withNotificationsAndroid");
 const withNotificationsIOS_1 = require("./withNotificationsIOS");
 const pkg = require('expo-notifications/package.json');
 const withNotifications = (config, props) => {
-    config = withNotificationsAndroid_1.withNotificationsAndroid(config, props || {});
-    config = withNotificationsIOS_1.withNotificationsIOS(config, props || {});
+    config = (0, withNotificationsAndroid_1.withNotificationsAndroid)(config, props || {});
+    config = (0, withNotificationsIOS_1.withNotificationsIOS)(config, props || {});
     return config;
 };
-exports.default = config_plugins_1.createRunOncePlugin(withNotifications, pkg.name, pkg.version);
+exports.default = (0, config_plugins_1.createRunOncePlugin)(withNotifications, pkg.name, pkg.version);

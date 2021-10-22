@@ -20,7 +20,7 @@ const fs_1 = __importDefault(require("fs"));
 const getenv_1 = require("getenv");
 const path_1 = __importDefault(require("path"));
 function getPuppeteerOptions() {
-    if (getenv_1.boolish('CI', false)) {
+    if ((0, getenv_1.boolish)('CI', false)) {
         return {
             args: ['--ignore-certificate-errors', '--no-sandbox', '--disable-setuid-sandbox'],
             ignoreHTTPSErrors: true,
@@ -49,8 +49,8 @@ function withExpoPuppeteer(config = {}) {
     process.env.WEB_PORT = serverPort;
     if (mode === 'production') {
         defaultURL = `http://localhost:${serverPort}`;
-        const { exp } = config_1.getConfig(projectPath, { skipSDKVersionRequirement: true });
-        const outputBuildPath = config_1.getWebOutputPath(exp);
+        const { exp } = (0, config_1.getConfig)(projectPath, { skipSDKVersionRequirement: true });
+        const outputBuildPath = (0, config_1.getWebOutputPath)(exp);
         const buildFolder = path_1.default.resolve(projectPath, outputBuildPath);
         const serveCommand = `serve ${buildFolder}`;
         const commands = [serveCommand];

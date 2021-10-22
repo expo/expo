@@ -12,7 +12,7 @@ const path_1 = __importDefault(require("path"));
  */
 async function resolveModuleAsync(packageName, revision, options) {
     var _a;
-    const [podspecFile] = await fast_glob_1.default('*/*.podspec', {
+    const [podspecFile] = await (0, fast_glob_1.default)('*/*.podspec', {
         cwd: revision.path,
         ignore: ['**/node_modules/**'],
     });

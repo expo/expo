@@ -9,4 +9,4 @@ const withFileSystem = (config) => {
         'android.permission.INTERNET',
     ]);
 };
-exports.default = config_plugins_1.createRunOncePlugin(withFileSystem, pkg.name, pkg.version);
+exports.default = (0, config_plugins_1.createRunOncePlugin)(withFileSystem, pkg.name, pkg.version);

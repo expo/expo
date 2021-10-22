@@ -32,8 +32,8 @@ function modifyObjcAppDelegate(contents, mask) {
 }
 exports.modifyObjcAppDelegate = modifyObjcAppDelegate;
 const withScreenOrientationViewController = (config, { initialOrientation = 'DEFAULT' } = {}) => {
-    assert_1.default(initialOrientation in OrientationLock, `Invalid initial orientation "${initialOrientation}" expected one of: ${Object.keys(OrientationLock).join(', ')}`);
-    return config_plugins_1.withDangerousMod(config, [
+    (0, assert_1.default)(initialOrientation in OrientationLock, `Invalid initial orientation "${initialOrientation}" expected one of: ${Object.keys(OrientationLock).join(', ')}`);
+    return (0, config_plugins_1.withDangerousMod)(config, [
         'ios',
         async (config) => {
             const fileInfo = config_plugins_1.IOSConfig.Paths.getAppDelegate(config.modRequest.projectRoot);
@@ -50,4 +50,4 @@ const withScreenOrientationViewController = (config, { initialOrientation = 'DEF
         },
     ]);
 };
-exports.default = config_plugins_1.createRunOncePlugin(withScreenOrientationViewController, pkg.name, pkg.version);
+exports.default = (0, config_plugins_1.createRunOncePlugin)(withScreenOrientationViewController, pkg.name, pkg.version);

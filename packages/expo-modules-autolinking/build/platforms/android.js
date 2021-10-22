@@ -22,7 +22,7 @@ async function resolveModuleAsync(packageName, revision) {
     if (packageName === '@unimodules/react-native-adapter') {
         return null;
     }
-    const [buildGradleFile] = await fast_glob_1.default('*/build.gradle', {
+    const [buildGradleFile] = await (0, fast_glob_1.default)('*/build.gradle', {
         cwd: revision.path,
         ignore: ['**/node_modules/**'],
     });
@@ -83,7 +83,7 @@ function findAndroidModules(modules) {
 async function findAndroidPackagesAsync(modules) {
     const classes = [];
     await Promise.all(modules.map(async (module) => {
-        const files = await fast_glob_1.default('src/**/*Package.{java,kt}', {
+        const files = await (0, fast_glob_1.default)('src/**/*Package.{java,kt}', {
             cwd: module.sourceDir,
         });
         for (const file of files) {
