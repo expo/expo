@@ -61,7 +61,7 @@
     "cross-spawn": "^6.0.5",
     "expo-application": "~4.0.0",
     "expo-asset": "~8.4.3",
-    "expo-constants": "~12.1.2",
+    "expo-constants": "~12.1.3",
     "expo-file-system": "~13.0.3",
     "expo-font": "~10.0.3",
     "expo-keep-awake": "~10.0.0",

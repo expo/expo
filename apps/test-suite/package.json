@@ -24,7 +24,7 @@
     "expo-calendar": "~10.0.3",
     "expo-camera": "~12.0.3",
     "expo-cellular": "~4.0.0",
-    "expo-constants": "~12.1.2",
+    "expo-constants": "~12.1.3",
     "expo-contacts": "~10.0.3",
     "expo-crypto": "~10.0.3",
     "expo-device": "~4.0.3",

@@ -3,7 +3,7 @@ apply plugin: 'kotlin-android'
 apply plugin: 'maven'
 
 group = 'host.exp.exponent'
-version = '12.1.2'
+version = '12.1.3'
 
 apply from: "../scripts/get-app-config-android.gradle"
 
@@ -63,7 +63,7 @@ android {
     minSdkVersion safeExtGet("minSdkVersion", 21)
     targetSdkVersion safeExtGet("targetSdkVersion", 30)
     versionCode 33
-    versionName "12.1.2"
+    versionName "12.1.3"
   }
   lintOptions {
     abortOnError false

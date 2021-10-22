@@ -43,7 +43,7 @@ PODS:
     - ExpoModulesCore
   - EXClipboard (2.0.3):
     - ExpoModulesCore
-  - EXConstants (12.1.2):
+  - EXConstants (12.1.3):
     - ExpoModulesCore
   - EXContacts (10.0.3):
     - ExpoModulesCore
@@ -204,7 +204,7 @@ PODS:
     - ExpoModulesCore
   - EXSpeech (10.0.3):
     - ExpoModulesCore
-  - EXSplashScreen (0.13.3):
+  - EXSplashScreen (0.13.4):
     - ExpoModulesCore
     - React-Core
   - EXSQLite (10.0.3):
@@ -1222,7 +1222,7 @@ SPEC CHECKSUMS:
   EXCamera: 4ec2373cb832b3390748160ef26f406efed193cd
   EXCellular: 5f6ab81a85bc20f2cfa7db3b80bcea5ceed322ef
   EXClipboard: ead52260683fc856e58f5cc70f5ea5999bb9c049
-  EXConstants: 7fb41a4f287d223a18d485f24eefe64534accb05
+  EXConstants: 6d585d93723b18d7a8c283591a335609e3bc153e
   EXContacts: 4387cc81a4427421bf4c2db3abc62f394b2da940
   EXCrypto: 7bcda085ffaccdaf3a252c20774a08be4277b8e3
   EXDevice: d19bbef7ab8ee4669ef1d6424c538f8d8fe7d6e9
@@ -1271,7 +1271,7 @@ SPEC CHECKSUMS:
   EXSharing: 9c58d207a43c2661b2f5b78a644d9c7642f19de9
   EXSMS: 08db0b52fb83f2e8d40a03561d07e183b0f0df1d
   EXSpeech: a79ffa930ef957d222ac697810d0282028deb74f
-  EXSplashScreen: d5267009e24e220fc8e1c7f0ee1578038e624533
+  EXSplashScreen: 870db5fcc05212b3fab4ccfe96653cc276153fa2
   EXSQLite: c92069495c1c84a27e9d681ddff826dea3314482
   EXStoreReview: ba32e9ebdab47176fe263db022982e4b8a580c28
   EXStructuredHeaders: ba85104bb57e861129872a30e2cf7adaa348c4ac
