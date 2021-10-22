@@ -54,14 +54,14 @@ class Contact(internal var contactId: String) {
   internal var department = ""
   internal var jobTitle = ""
   internal var note: String? = null
-  internal var dates: MutableList<BaseModel> = ArrayList()
-  internal var emails: MutableList<BaseModel> = ArrayList()
-  internal var imAddresses: MutableList<BaseModel> = ArrayList()
-  internal var phones: MutableList<BaseModel> = ArrayList()
-  internal var addresses: MutableList<BaseModel> = ArrayList()
-  internal var relationships: MutableList<BaseModel> = ArrayList()
-  internal var urlAddresses: MutableList<BaseModel> = ArrayList()
-  internal var extraNames: MutableList<BaseModel> = ArrayList()
+  internal var dates: MutableList<BaseModel> = arrayListOf()
+  internal var emails: MutableList<BaseModel> = arrayListOf()
+  internal var imAddresses: MutableList<BaseModel> = arrayListOf()
+  internal var phones: MutableList<BaseModel> = arrayListOf()
+  internal var addresses: MutableList<BaseModel> = arrayListOf()
+  internal var relationships: MutableList<BaseModel> = arrayListOf()
+  internal var urlAddresses: MutableList<BaseModel> = arrayListOf()
+  internal var extraNames: MutableList<BaseModel> = arrayListOf()
 
   fun fromCursor(cursor: Cursor) {
     rawContactId = cursor.getString(cursor.getColumnIndex(ContactsContract.Data.RAW_CONTACT_ID))
@@ -90,23 +90,29 @@ class Contact(internal var contactId: String) {
 
     when (mimeType) {
       StructuredName.CONTENT_ITEM_TYPE -> {
-        lookupKey = cursor.getString(cursor.getColumnIndex(StructuredName.LOOKUP_KEY))
-        firstName = cursor.getString(cursor.getColumnIndex(StructuredName.GIVEN_NAME))
-        middleName = cursor.getString(cursor.getColumnIndex(StructuredName.MIDDLE_NAME))
-        lastName = cursor.getString(cursor.getColumnIndex(StructuredName.FAMILY_NAME))
-        prefix = cursor.getString(cursor.getColumnIndex(StructuredName.PREFIX))
-        suffix = cursor.getString(cursor.getColumnIndex(StructuredName.SUFFIX))
-        phoneticFirstName = cursor.getString(cursor.getColumnIndex(StructuredName.PHONETIC_GIVEN_NAME))
-        phoneticMiddleName = cursor.getString(cursor.getColumnIndex(StructuredName.PHONETIC_MIDDLE_NAME))
-        phoneticLastName = cursor.getString(cursor.getColumnIndex(StructuredName.PHONETIC_FAMILY_NAME))
+        with(cursor) {
+          lookupKey = getString(getColumnIndex(StructuredName.LOOKUP_KEY))
+          firstName = getString(getColumnIndex(StructuredName.GIVEN_NAME))
+          middleName = getString(getColumnIndex(StructuredName.MIDDLE_NAME))
+          lastName = getString(getColumnIndex(StructuredName.FAMILY_NAME))
+          prefix = getString(getColumnIndex(StructuredName.PREFIX))
+          suffix = getString(getColumnIndex(StructuredName.SUFFIX))
+          phoneticFirstName = getString(getColumnIndex(StructuredName.PHONETIC_GIVEN_NAME))
+          phoneticMiddleName = getString(getColumnIndex(StructuredName.PHONETIC_MIDDLE_NAME))
+          phoneticLastName = getString(getColumnIndex(StructuredName.PHONETIC_FAMILY_NAME))
+        }
       }
       CommonDataKinds.Organization.CONTENT_ITEM_TYPE -> {
-        company = cursor.getString(cursor.getColumnIndex(CommonDataKinds.Organization.COMPANY))
-        jobTitle = cursor.getString(cursor.getColumnIndex(CommonDataKinds.Organization.TITLE))
-        department = cursor.getString(cursor.getColumnIndex(CommonDataKinds.Organization.DEPARTMENT))
+        with(cursor) {
+          company = getString(getColumnIndex(CommonDataKinds.Organization.COMPANY))
+          jobTitle = getString(getColumnIndex(CommonDataKinds.Organization.TITLE))
+          department = getString(getColumnIndex(CommonDataKinds.Organization.DEPARTMENT))
+        }
       }
       CommonDataKinds.Note.CONTENT_ITEM_TYPE -> {
-        note = cursor.getString(cursor.getColumnIndex(CommonDataKinds.Note.NOTE))
+        with(cursor) {
+          note = getString(getColumnIndex(CommonDataKinds.Note.NOTE))
+        }
       }
       CommonDataKinds.Event.CONTENT_ITEM_TYPE -> {
         val item: BaseModel = DateModel().also { fromCursor(cursor) }
@@ -142,13 +148,8 @@ class Contact(internal var contactId: String) {
       }
     }
 
-    val hasCompanyName = company != null && company != ""
-
-    contactType = if (hasCompanyName) {
-      val hasFirstName = firstName != null && firstName != ""
-      val hasMiddleName = middleName != null && middleName != ""
-      val hasLastName = lastName != null && lastName != ""
-      if (!hasFirstName && !hasMiddleName && !hasLastName) {
+    contactType = if (!company.isNullOrEmpty()) {
+      if (firstName.isNullOrEmpty() && middleName.isNullOrEmpty() && lastName.isNullOrEmpty()) {
         "company"
       } else {
         "person"
@@ -239,6 +240,7 @@ class Contact(internal var contactId: String) {
     val selectionArgs = arrayOf(contactId, StructuredName.CONTENT_ITEM_TYPE)
     val ops = arrayListOf<ContentProviderOperation?>()
     var op: ContentProviderOperation.Builder
+
     op = ContentProviderOperation.newUpdate(ContactsContract.Data.CONTENT_URI)
       .withSelection(selection, selectionArgs)
       .withValue(StructuredName.DISPLAY_NAME, displayName)
@@ -265,7 +267,7 @@ class Contact(internal var contactId: String) {
 
     op.withYieldAllowed(true)
 
-    if (!TextUtils.isEmpty(photoUri) || !TextUtils.isEmpty(rawPhotoUri)) {
+    if (!photoUri.isNullOrEmpty() || !rawPhotoUri.isNullOrEmpty()) {
       val photo = getThumbnailBitmap(if (TextUtils.isEmpty(rawPhotoUri)) photoUri else rawPhotoUri)
       if (photo != null) {
         ops.add(
@@ -283,28 +285,17 @@ class Contact(internal var contactId: String) {
       }
     }
 
-    // TODO: refractor this (maybe for-loop looks better)
-    baseModels
-      .filterNotNull()
-      .forEach { map ->
-        map.forEach { item ->
-          ops.add(item.getDeleteOperation(rawContactId))
-          ops.add(item.getInsertOperation(rawContactId))
-        }
+    baseModels.forEach { map ->
+      map?.forEach { item ->
+        ops.add(item.getDeleteOperation(rawContactId))
+        ops.add(item.getInsertOperation(rawContactId))
       }
-//    for (map in baseModels) {
-//      if (map != null) {
-//        for (item in map) {
-//          ops.add(item.getDeleteOperation(rawContactId))
-//          ops.add(item.getInsertOperation(rawContactId))
-//        }
-//      }
-//    }
+    }
     return ops
   }
 
-  val baseModels: List<MutableList<BaseModel>>
-    get() = listOf(dates, emails, imAddresses, phones, addresses, relationships, urlAddresses, extraNames)
+  internal val baseModels: List<MutableList<BaseModel>> =
+    listOf(dates, emails, imAddresses, phones, addresses, relationships, urlAddresses, extraNames)
 
   // convert to react native object
   @Throws(ParseException::class)
@@ -317,17 +308,17 @@ class Contact(internal var contactId: String) {
       putString("contactType", contactType)
     }
 
-    if (!TextUtils.isEmpty(firstName)) contact.putString("firstName", firstName)
-    if (!TextUtils.isEmpty(middleName)) contact.putString("middleName", middleName)
-    if (!TextUtils.isEmpty(lastName)) contact.putString("lastName", lastName)
-    if (!TextUtils.isEmpty(suffix)) contact.putString("nameSuffix", suffix)
-    if (!TextUtils.isEmpty(prefix)) contact.putString("namePrefix", prefix)
-    if (!TextUtils.isEmpty(phoneticFirstName)) contact.putString("phoneticFirstName", phoneticFirstName)
-    if (!TextUtils.isEmpty(phoneticLastName)) contact.putString("phoneticLastName", phoneticLastName)
-    if (!TextUtils.isEmpty(phoneticMiddleName)) contact.putString("phoneticMiddleName", phoneticMiddleName)
-    if (!TextUtils.isEmpty(company)) contact.putString("company", company)
-    if (!TextUtils.isEmpty(jobTitle)) contact.putString("jobTitle", jobTitle)
-    if (!TextUtils.isEmpty(department)) contact.putString("department", department)
+    if (!firstName.isNullOrEmpty()) contact.putString("firstName", firstName)
+    if (!middleName.isNullOrEmpty()) contact.putString("middleName", middleName)
+    if (!lastName.isNullOrEmpty()) contact.putString("lastName", lastName)
+    if (!company.isNullOrEmpty()) contact.putString("company", company)
+    if (suffix.isNotEmpty()) contact.putString("nameSuffix", suffix)
+    if (prefix.isNotEmpty()) contact.putString("namePrefix", prefix)
+    if (phoneticFirstName.isNotEmpty()) contact.putString("phoneticFirstName", phoneticFirstName)
+    if (phoneticLastName.isNotEmpty()) contact.putString("phoneticLastName", phoneticLastName)
+    if (phoneticMiddleName.isNotEmpty()) contact.putString("phoneticMiddleName", phoneticMiddleName)
+    if (jobTitle.isNotEmpty()) contact.putString("jobTitle", jobTitle)
+    if (department.isNotEmpty()) contact.putString("department", department)
 
     if ("image" in fieldSet && photoUri != null) {
       val image = Bundle().apply { putString("uri", photoUri) }
@@ -337,7 +328,9 @@ class Contact(internal var contactId: String) {
       val image = Bundle().apply { putString("uri", rawPhotoUri) }
       contact.putBundle("image", image)
     }
-    if ("note" in fieldSet && !TextUtils.isEmpty(note)) contact.putString("note", note)
+    if ("note" in fieldSet && !TextUtils.isEmpty(note)) {
+      contact.putString("note", note)
+    }
     if ("phoneNumbers" in fieldSet && phones.isNotEmpty()) {
       val items = arrayListOf<Bundle?>()
       for (item in phones) items.add(item.map)
@@ -405,7 +398,7 @@ class Contact(internal var contactId: String) {
         }
         rawDatesArray.add(rawDate)
         try {
-          hasYear = !dateString.startsWith("--")
+          hasYear = !dateString!!.startsWith("--")
           if (hasYear) {
             calendar.time = datePattern.parse(dateString) as Date
           } else {
@@ -455,6 +448,7 @@ class Contact(internal var contactId: String) {
         put(StructuredName.PHONETIC_FAMILY_NAME, phoneticLastName)
       }
       contactData.add(name)
+
       val organization = ContentValues().apply {
         put(ContactsContract.Data.MIMETYPE, CommonDataKinds.Organization.CONTENT_ITEM_TYPE)
         put(CommonDataKinds.Organization.COMPANY, company)
@@ -462,36 +456,45 @@ class Contact(internal var contactId: String) {
         put(CommonDataKinds.Organization.DEPARTMENT, department)
       }
       contactData.add(organization)
+
       val notes = ContentValues().apply {
         put(ContactsContract.Data.MIMETYPE, CommonDataKinds.Note.CONTENT_ITEM_TYPE)
         put(CommonDataKinds.Note.NOTE, note)
       }
       contactData.add(notes)
-      if (photoUri != null && photoUri!!.isNotEmpty()) {
-        val photo = getThumbnailBitmap(Uri.parse(photoUri).path)
-        if (photo != null) {
-          val image = ContentValues().apply {
-            put(EXColumns.MIMETYPE, CommonDataKinds.Photo.CONTENT_ITEM_TYPE)
-            put(CommonDataKinds.Photo.PHOTO, toByteArray(photo))
+
+      photoUri?.let { photoUri ->
+        if (photoUri.isNotEmpty()) {
+          val photo = getThumbnailBitmap(Uri.parse(photoUri).path)
+          if (photo != null) {
+            val image = ContentValues().apply {
+              put(EXColumns.MIMETYPE, CommonDataKinds.Photo.CONTENT_ITEM_TYPE)
+              put(CommonDataKinds.Photo.PHOTO, toByteArray(photo))
+            }
+            contactData.add(image)
           }
-          contactData.add(image)
         }
       }
-      if (rawPhotoUri != null && rawPhotoUri!!.isNotEmpty()) {
-        val photo = getThumbnailBitmap(rawPhotoUri)
-        if (photo != null) {
-          val image = ContentValues().apply {
-            put(EXColumns.MIMETYPE, CommonDataKinds.Photo.CONTENT_ITEM_TYPE)
-            put(CommonDataKinds.Photo.PHOTO, toByteArray(photo))
+
+      rawPhotoUri?.let { rawPhotoUri ->
+        if (rawPhotoUri.isNotEmpty()) {
+          val photo = getThumbnailBitmap(rawPhotoUri)
+          if (photo != null) {
+            val image = ContentValues().apply {
+              put(EXColumns.MIMETYPE, CommonDataKinds.Photo.CONTENT_ITEM_TYPE)
+              put(CommonDataKinds.Photo.PHOTO, toByteArray(photo))
+            }
+            contactData.add(image)
           }
-          contactData.add(image)
         }
       }
-      baseModels.filterNotNull().forEach { map ->
-        map.forEach { item ->
+
+      baseModels.forEach { map ->
+        map?.forEach { item ->
           contactData.add(item.contentValues)
         }
       }
+
       return contactData
     }
 
