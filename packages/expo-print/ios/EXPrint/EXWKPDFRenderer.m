@@ -2,11 +2,12 @@
 
 #import <EXPrint/EXWKPDFRenderer.h>
 #import <ExpoModulesCore/EXDefines.h>
-#import <EXPrint/EXWKSnapshotPDFRenderer.h>
+#import <EXPrint/EXWKViewPrintPDFRenderer.h>
 
 @interface EXWKPDFRenderer () <WKNavigationDelegate>
 
 @property (nonatomic, assign) CGSize pageSize;
+@property (nonatomic, assign) UIEdgeInsets pageMargins;
 @property (nonatomic, strong) WKWebView *webView;
 @property (nonatomic, strong) id<EXPDFRenderer> renderer;
 @property (nonatomic, strong) WKNavigation *htmlNavigation;
@@ -16,13 +17,14 @@
 
 @implementation EXWKPDFRenderer
 
-- (void)PDFWithHtml:(NSString *)htmlString pageSize:(CGSize)pageSize completionHandler:(void (^)(NSError * _Nullable, NSData * _Nullable, int))handler
+- (void)PDFWithHtml:(NSString *)htmlString pageSize:(CGSize)pageSize pageMargins:(UIEdgeInsets)pageMargins completionHandler:(void (^)(NSError * _Nullable, NSData * _Nullable, int))handler
 {
   _pageSize = pageSize;
+  _pageMargins = pageMargins;
   _onRenderingFinished = handler;
   _webView = [self createWebView];
-  _renderer = [[EXWKSnapshotPDFRenderer alloc] init];
-  _htmlNavigation = [_webView loadHTMLString:htmlString baseURL:nil];
+  _renderer = [[EXWKViewPrintPDFRenderer alloc] initWithPageSize:pageSize pageMargins:pageMargins];
+  _htmlNavigation = [_webView loadHTMLString:htmlString baseURL:[[NSBundle mainBundle] resourceURL]];
 }
 
 #pragma mark - UIWebViewDelegate
