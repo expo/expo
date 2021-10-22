@@ -47,6 +47,53 @@ To get started, open your `app.json` and add `jsEngine` field:
 
 Now you can build your app through `eas build` and your app will run with Hermes instead of JavaScriptCore.
 
+<details><summary><h4>Are you using an M1 Mac?</h4></summary>
+<p>
+
+If you encounter a simulator building error like this:
+
+> ❌ `ld: building for iOS Simulator, but linking in dylib built for iOS, file '/path/to/projectName/ios/Pods/hermes-engine/destroot/Library/Frameworks/iphoneos/hermes.framework/hermes' for architecture arm64`
+
+It is [a known issue for React Native 0.64](https://github.com/facebook/hermes/issues/468). To workaround this, you can add the following patch to `ios/Podfile`:
+
+```diff
+--- a/ios/Podfile
++++ b/ios/Podfile
+@@ -25,6 +25,22 @@ target 'HelloWorld' do
+   post_install do |installer|
+     react_native_post_install(installer)
+
++    # Workaround simulator build error for hermes with react-native 0.64 on mac m1 devices
++    arm_value = `/usr/sbin/sysctl -n hw.optional.arm64 2>&1`.to_i
++    has_hermes = has_pod(installer, 'hermes-engine')
++    if arm_value == 1 && has_hermes
++      projects = installer.aggregate_targets
++        .map{ |t| t.user_project }
++        .uniq{ |p| p.path }
++        .push(installer.pods_project)
++      projects.each do |project|
++        project.build_configurations.each do |config|
++          config.build_settings["EXCLUDED_ARCHS[sdk=iphonesimulator*]"] = config.build_settings["EXCLUDED_ARCHS[sdk=iphonesimulator*]"] + ' arm64'
++        end
++        project.save()
++      end
++    end
++
+     # Workaround `Cycle inside FBReactNativeSpec` error for react-native 0.64
+     # Reference: https://github.com/software-mansion/react-native-screens/issues/842#issuecomment-812543933
+     installer.pods_project.targets.each do |target|
+```
+
+Reinstall Pods and clean Xcode build cache:
+
+```
+$ npx pod-install
+$ xcodebuild clean -workspace ios/{projectName}.xcworkspace -scheme {projectName}
+```
+
+</p>
+</details>
+
 ## Advanced setup
 
 ### Switch JavaScript engine on a specific platform
