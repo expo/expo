@@ -27,7 +27,7 @@ You can load your application on a device that has a compatible build of your cu
 
 | parameter | value |
 | --------------- | ----------------------- |
-| `scheme`         | URL-encoded deeplinking scheme of your client (defaults to `exp+{slug}` where slug is the value set in your app.json)       |
+| `scheme`         | URL scheme of your client (defaults to `exp+{slug}` where slug is the value set in your app.json)       |
 | `url`         | URL of a update manifest to load  (e.g. as provided by `expo publish`)     |
 
 
