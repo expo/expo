@@ -19,7 +19,7 @@ import java.util.*
 @Database(
   entities = [UpdateEntity::class, UpdateAssetEntity::class, AssetEntity::class, JSONDataEntity::class],
   exportSchema = false,
-  version = 7
+  version = 8
 )
 @TypeConverters(Converters::class)
 abstract class UpdatesDatabase : RoomDatabase() {
@@ -40,6 +40,7 @@ abstract class UpdatesDatabase : RoomDatabase() {
           .addMigrations(MIGRATION_4_5)
           .addMigrations(MIGRATION_5_6)
           .addMigrations(MIGRATION_6_7)
+          .addMigrations(MIGRATION_7_8)
           .fallbackToDestructiveMigration()
           .allowMainThreadQueries()
           .build()
@@ -126,6 +127,12 @@ abstract class UpdatesDatabase : RoomDatabase() {
         } finally {
           database.execSQL("PRAGMA foreign_keys=ON")
         }
+      }
+    }
+
+    val MIGRATION_7_8: Migration = object : Migration(7, 8) {
+      override fun migrate(database: SupportSQLiteDatabase) {
+        database.execSQL("ALTER TABLE `assets` ADD COLUMN `signature` TEXT")
       }
     }
   }

@@ -31,6 +31,8 @@ class UpdatesConfiguration {
   var hasEmbeddedUpdate = true
   var requestHeaders = mapOf<String, String>()
     private set
+  var codeSigningCertificate: String? = null
+    private set
 
   val isMissingRuntimeVersion: Boolean
     get() = (runtimeVersion == null || runtimeVersion!!.isEmpty()) &&
@@ -47,6 +49,7 @@ class UpdatesConfiguration {
       releaseChannel = ai.metaData.getString("expo.modules.updates.EXPO_RELEASE_CHANNEL", "default")
       launchWaitMs = ai.metaData.getInt("expo.modules.updates.EXPO_UPDATES_LAUNCH_WAIT_MS", 0)
       runtimeVersion = ai.metaData["expo.modules.updates.EXPO_RUNTIME_VERSION"]?.toString()?.replaceFirst("^string:".toRegex(), "")
+      codeSigningCertificate = ai.metaData["expo.modules.updates.CODE_SIGNING_CERTIFICATE"]?.toString()
 
       val checkOnLaunchString = ai.metaData.getString("expo.modules.updates.EXPO_UPDATES_CHECK_ON_LAUNCH", "ALWAYS")
       checkOnLaunch = try {
@@ -80,7 +83,7 @@ class UpdatesConfiguration {
       isEnabled = isEnabledFromMap
     }
 
-    expectsSignedManifest = map.readValueCheckingType("expectsSignedManifest") ?: false
+    expectsSignedManifest = map.readValueCheckingType(UPDATES_CONFIGURATION_EXPECTS_EXPO_SIGNED_MANIFEST) ?: false
 
     val updateUrlFromMap = map.readValueCheckingType<Uri>(UPDATES_CONFIGURATION_UPDATE_URL_KEY)
     if (updateUrlFromMap != null) {
@@ -132,6 +135,11 @@ class UpdatesConfiguration {
       hasEmbeddedUpdate = hasEmbeddedUpdateFromMap
     }
 
+    val codeSigningCertificateFromMap = map.readValueCheckingType<String>(UPDATES_CONFIGURATION_CODE_SIGNING_CERTIFICATE)
+    if (codeSigningCertificateFromMap != null) {
+      codeSigningCertificate = codeSigningCertificateFromMap;
+    }
+
     return this
   }
 
@@ -169,6 +177,9 @@ class UpdatesConfiguration {
     const val UPDATES_CONFIGURATION_CHECK_ON_LAUNCH_KEY = "checkOnLaunch"
     const val UPDATES_CONFIGURATION_LAUNCH_WAIT_MS_KEY = "launchWaitMs"
     const val UPDATES_CONFIGURATION_HAS_EMBEDDED_UPDATE_KEY = "hasEmbeddedUpdate"
+    const val UPDATES_CONFIGURATION_EXPECTS_EXPO_SIGNED_MANIFEST = "expectsSignedManifest"
+    const val UPDATES_CONFIGURATION_CODE_SIGNING_CERTIFICATE = "codeSigningCertificate"
+
     private const val UPDATES_CONFIGURATION_RELEASE_CHANNEL_DEFAULT_VALUE = "default"
     private const val UPDATES_CONFIGURATION_LAUNCH_WAIT_MS_DEFAULT_VALUE = 0
 

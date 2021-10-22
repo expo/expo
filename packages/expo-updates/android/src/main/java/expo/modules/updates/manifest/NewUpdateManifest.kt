@@ -3,6 +3,7 @@ package expo.modules.updates.manifest
 import android.net.Uri
 import android.util.Log
 import expo.modules.jsonutils.getNullable
+import expo.modules.jsonutils.require
 import expo.modules.structuredheaders.BooleanItem
 import expo.modules.structuredheaders.NumberItem
 import expo.modules.structuredheaders.Parser
@@ -27,6 +28,7 @@ class NewUpdateManifest private constructor(
   private val mRuntimeVersion: String,
   private val mLaunchAsset: JSONObject,
   private val mAssets: JSONArray?,
+  private val mAssetHMACs: JSONObject?,
   private val mServerDefinedHeaders: String?,
   private val mManifestFilters: String?
 ) : UpdateManifest {
@@ -48,6 +50,10 @@ class NewUpdateManifest private constructor(
     }
   }
 
+  private val assetHeaders: Map<String, JSONObject> by lazy {
+    (mAssetHMACs ?: JSONObject()).let { it.keys().asSequence().associateWith { key -> it.require(key) } }
+  }
+
   override val assetEntityList: List<AssetEntity> by lazy {
     val assetList = mutableListOf<AssetEntity>()
     try {
@@ -58,8 +64,10 @@ class NewUpdateManifest private constructor(
           mLaunchAsset.getNullable("fileExtension")
         ).apply {
           url = Uri.parse(mLaunchAsset.getString("url"))
+          headers = assetHeaders[mLaunchAsset.getString("key")]
           isLaunchAsset = true
           embeddedAssetFilename = EmbeddedLoader.BUNDLE_FILENAME
+          signature = mLaunchAsset.getNullable("signature")
         }
       )
     } catch (e: JSONException) {
@@ -75,7 +83,9 @@ class NewUpdateManifest private constructor(
               assetObject.getString("fileExtension")
             ).apply {
               url = Uri.parse(assetObject.getString("url"))
+              headers = assetHeaders[assetObject.getString("key")]
               embeddedAssetFilename = assetObject.getNullable("embeddedAssetFilename")
+              signature = assetObject.getNullable("signature")
             }
           )
         } catch (e: JSONException) {
@@ -109,6 +119,8 @@ class NewUpdateManifest private constructor(
       }
       val serverDefinedHeaders = httpResponse?.header("expo-server-defined-headers")
       val manifestFilters = httpResponse?.header("expo-manifest-filters")
+      val assetHMACs = httpResponse?.header("expo-asset-headers")?.let { JSONObject(it) }
+
       return NewUpdateManifest(
         manifest,
         id,
@@ -117,6 +129,7 @@ class NewUpdateManifest private constructor(
         runtimeVersion,
         launchAsset,
         assets,
+        assetHMACs,
         serverDefinedHeaders,
         manifestFilters
       )

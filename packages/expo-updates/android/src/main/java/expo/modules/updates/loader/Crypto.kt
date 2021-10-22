@@ -3,28 +3,35 @@ package expo.modules.updates.loader
 import android.annotation.SuppressLint
 import android.security.keystore.KeyProperties
 import android.util.Base64
+import android.util.Log
 import okhttp3.*
 import java.io.IOException
 import java.security.*
+import java.security.cert.CertificateException
+import java.security.cert.CertificateFactory
+import java.security.cert.X509Certificate
 import java.security.spec.InvalidKeySpecException
 import java.security.spec.X509EncodedKeySpec
 
 object Crypto {
-  private const val PUBLIC_KEY_URL = "https://exp.host/--/manifest-public-key"
+  private const val EXPO_PUBLIC_KEY_URL = "https://exp.host/--/manifest-public-key"
 
-  fun verifyPublicRSASignature(
-    plainText: String,
-    cipherText: String,
+  // ASN.1 path to the extended key usage info within a CERT
+  private const val CODE_SIGNING_OID = "1.3.6.1.5.5.7.3.3"
+
+  fun verifyExpoPublicRSASignature(
     fileDownloader: FileDownloader,
+    data: String,
+    signature: String,
     listener: RSASignatureListener
   ) {
-    fetchPublicKeyAndVerifyPublicRSASignature(true, plainText, cipherText, fileDownloader, listener)
+    fetchExpoPublicKeyAndVerifyPublicRSASignature(true, data, signature, fileDownloader, listener)
   }
 
   // On first attempt use cache. If verification fails try a second attempt without
   // cache in case the keys were actually rotated.
   // On second attempt reject promise if it fails.
-  private fun fetchPublicKeyAndVerifyPublicRSASignature(
+  private fun fetchExpoPublicKeyAndVerifyPublicRSASignature(
     isFirstAttempt: Boolean,
     plainText: String,
     cipherText: String,
@@ -33,7 +40,7 @@ object Crypto {
   ) {
     val cacheControl = if (isFirstAttempt) CacheControl.FORCE_CACHE else CacheControl.FORCE_NETWORK
     val request = Request.Builder()
-      .url(PUBLIC_KEY_URL)
+      .url(EXPO_PUBLIC_KEY_URL)
       .cacheControl(cacheControl)
       .build()
     fileDownloader.downloadData(
@@ -46,16 +53,14 @@ object Crypto {
         @Throws(IOException::class)
         override fun onResponse(call: Call, response: Response) {
           val exception: Exception = try {
-            val isValid = verifyPublicRSASignature(
-              response.body()!!.string(), plainText, cipherText
-            )
+            val isValid = verifyPublicRSASignature(response.body()!!.string(), plainText, cipherText)
             listener.onCompleted(isValid)
             return
           } catch (e: Exception) {
             e
           }
           if (isFirstAttempt) {
-            fetchPublicKeyAndVerifyPublicRSASignature(
+            fetchExpoPublicKeyAndVerifyPublicRSASignature(
               false,
               plainText,
               cipherText,
@@ -76,7 +81,7 @@ object Crypto {
     InvalidKeyException::class,
     SignatureException::class
   )
-  private fun verifyPublicRSASignature(
+  fun verifyPublicRSASignature(
     publicKey: String,
     plainText: String,
     cipherText: String
@@ -100,8 +105,41 @@ object Crypto {
     return signature.verify(Base64.decode(cipherText, Base64.DEFAULT))
   }
 
+
+
   interface RSASignatureListener {
     fun onError(exception: Exception, isNetworkError: Boolean)
     fun onCompleted(isValid: Boolean)
+  }
+
+  data class CodeSigningCertificate(private val certificateString: String) {
+    val publicKey: PublicKey by lazy {
+      val certificateFactory = CertificateFactory.getInstance("X.509")
+      val certificate = certificateFactory.generateCertificate(certificateString.byteInputStream()) as X509Certificate
+      certificate.checkValidity()
+
+      val keyUsage = certificate.keyUsage
+      if (keyUsage.isEmpty() || !keyUsage[0]) {
+        throw CertificateException("X509v3 Key Usage: Digital Signature not present")
+      }
+
+      val extendedKeyUsage = certificate.extendedKeyUsage
+      if (!extendedKeyUsage.contains(CODE_SIGNING_OID)) {
+        throw CertificateException("X509v3 Extended Key Usage: Code Signing not present")
+      }
+
+      certificate.publicKey
+    }
+  }
+
+  data class CodeSigningSignature(val signature: String)
+
+  data class CodeSigningConfiguration(private val certificate: CodeSigningCertificate, private val signature: CodeSigningSignature) {
+    fun verify(bytes: ByteArray): Boolean {
+      return Signature.getInstance("SHA256withRSA").apply {
+        initVerify(certificate.publicKey)
+        update(bytes)
+      }.verify(Base64.decode(signature.signature, Base64.DEFAULT))
+    }
   }
 }
