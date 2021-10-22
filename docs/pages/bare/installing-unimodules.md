@@ -8,7 +8,7 @@ import ConfigurationDiff from '~/components/plugins/ConfigurationDiff';
 
 > 🚨 **This library is deprecated!**
 >
-> As of Expo SDK 43, [react-native-unimodules is deprecated in favor of the expo package](https://blog.expo.dev/whats-new-in-expo-modules-infrastructure-7a7cdda81ebc). Please refer to the [Installing Expo modules guide](../installing-expo-modules.md).
+> As of Expo SDK 43, [react-native-unimodules is deprecated in favor of the expo package](https://blog.expo.dev/whats-new-in-expo-modules-infrastructure-7a7cdda81ebc). Please refer to the [Installing Expo modules guide](../bare/installing-expo-modules.md).
 
 This library contains infrastructure and a small set of foundational libraries and interfaces that are commonly depended on by other modules. You can install react-native-unimodules in any react-native app, and once it is installed you can use most of the libraries from the Expo SDK, like expo-camera, expo-media-library and many more.
 
