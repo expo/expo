@@ -23,7 +23,7 @@ To get a tunneled URL, pass the `--tunnel` flag to `expo start` from the command
 
 ### Deep linking URLs
 
-You can load you application on a device that has a compatible build of your custom client by opening a URL of the form `{scheme}://expo-development-client/?url={manifestUrl}` where
+You can load your application on a device that has a compatible build of your custom client by opening a URL of the form `{scheme}://expo-development-client/?url={manifestUrl}` where
 
 | parameter | value |
 | --------------- | ----------------------- |
