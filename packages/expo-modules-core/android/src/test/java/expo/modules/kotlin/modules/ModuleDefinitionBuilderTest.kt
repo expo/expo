@@ -2,6 +2,7 @@ package expo.modules.kotlin.modules
 
 import com.google.common.truth.Truth
 import expo.modules.core.Promise
+import io.mockk.mockk
 import org.junit.Assert
 import org.junit.Test
 
@@ -38,5 +39,20 @@ class ModuleDefinitionBuilderTest {
     Truth.assertThat(moduleDefinition.constantsProvider()).isSameInstanceAs(moduleConstants)
     Truth.assertThat(moduleDefinition.methods).containsKey("m1")
     Truth.assertThat(moduleDefinition.methods).containsKey("m2")
+  }
+
+  @Test
+  fun `builder should allow adding view manager`() {
+    val moduleName = "Module"
+
+    val moduleDefinition = module {
+      name(moduleName)
+      viewManager {
+        view { mockk() }
+      }
+    }
+
+    Truth.assertThat(moduleDefinition.name).isEqualTo(moduleName)
+    Truth.assertThat(moduleDefinition.viewManagerDefinition).isNotNull()
   }
 }

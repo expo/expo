@@ -62,6 +62,10 @@ public class NativeModulesProxy extends ReactContextBaseJavaModule {
     );
   }
 
+  public KotlinInteropModuleRegistry getKotlinInteropModuleRegistry() {
+    return mKotlinInteropModuleRegistry;
+  }
+
   @Override
   public String getName() {
     return NAME;
@@ -97,6 +101,8 @@ public class NativeModulesProxy extends ReactContextBaseJavaModule {
     for (ViewManager viewManager : viewManagers) {
       viewManagersNames.add(viewManager.getName());
     }
+
+    viewManagersNames.addAll(mKotlinInteropModuleRegistry.exportedViewManagersNames());
 
     Map<String, Object> constants = new HashMap<>(3);
     constants.put(MODULES_CONSTANTS_KEY, modulesConstants);
@@ -141,9 +147,9 @@ public class NativeModulesProxy extends ReactContextBaseJavaModule {
       promise.reject(UNEXPECTED_ERROR, "Encountered an exception while calling native method: " + e.getMessage(), e);
     } catch (NoSuchMethodException e) {
       promise.reject(
-          UNDEFINED_METHOD_ERROR,
-          "Method " + methodName + " of Java module " + moduleName + " is undefined.",
-          e
+        UNDEFINED_METHOD_ERROR,
+        "Method " + methodName + " of Java module " + moduleName + " is undefined.",
+        e
       );
     }
   }
