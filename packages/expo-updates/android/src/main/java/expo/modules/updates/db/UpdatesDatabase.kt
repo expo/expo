@@ -18,8 +18,8 @@ import java.util.*
 
 @Database(
   entities = [UpdateEntity::class, UpdateAssetEntity::class, AssetEntity::class, JSONDataEntity::class],
-  exportSchema = false,
-  version = 9
+  exportSchema = true,
+  version = 10
 )
 @TypeConverters(Converters::class)
 abstract class UpdatesDatabase : RoomDatabase() {
@@ -42,6 +42,7 @@ abstract class UpdatesDatabase : RoomDatabase() {
           .addMigrations(MIGRATION_6_7)
           .addMigrations(MIGRATION_7_8)
           .addMigrations(MIGRATION_8_9)
+          .addMigrations(MIGRATION_9_10)
           .fallbackToDestructiveMigration()
           .allowMainThreadQueries()
           .build()
@@ -171,6 +172,24 @@ abstract class UpdatesDatabase : RoomDatabase() {
           database.beginTransaction()
           try {
             database.execSQL("ALTER TABLE `assets` ADD COLUMN `extra_request_headers` TEXT")
+            database.setTransactionSuccessful()
+          } finally {
+            database.endTransaction()
+          }
+        } finally {
+          database.execSQL("PRAGMA foreign_keys=ON")
+        }
+      }
+    }
+
+    val MIGRATION_9_10: Migration = object : Migration(9, 10) {
+      override fun migrate(database: SupportSQLiteDatabase) {
+        // https://www.sqlite.org/lang_altertable.html#otheralter
+        try {
+          database.execSQL("PRAGMA foreign_keys=OFF")
+          database.beginTransaction()
+          try {
+            database.execSQL("ALTER TABLE `assets` ADD COLUMN `expected_hash` TEXT")
             database.setTransactionSuccessful()
           } finally {
             database.endTransaction()

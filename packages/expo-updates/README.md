@@ -87,6 +87,13 @@ The condition under which `expo-updates` should automatically check for (and dow
 
 The number of milliseconds `expo-updates` should delay the app launch and stay on the splash screen while trying to download an update, before falling back to a previously downloaded version. Setting this to `0` will cause the app to always launch with a previously downloaded update and will result in the fastest app launch possible.
 
+| iOS plist/dictionary key | Android Map key          | Android meta-data name                             | Default | Required? |
+| ------------------------ | ------------------------ | -------------------------------------------------- | ------- | --------- |
+| TBD                      | `codeSigningCertificate` | `expo.modules.updates.CODE_SIGNING_CERTIFICATE`    | (none)  | ❌        |
+| TBD                      | `codeSigningMetadata`    | `expo.modules.updates.CODE_SIGNING_METADATA`       | (none)  | ❌        |
+
+If `codeSigningCertificate` present, enforce manifest code signing using the certificate.
+
 ## Customizing automatic setup
 
 In `expo-updates@0.9.0` and above, we support automatic installation of the module in the iOS AppDelegate.m and Android MainApplication.java classes. If you want to customize the installation, e.g. to enable updates only in some build variants, you can add custom logic in AppDelegate/MainApplication and set the following keys to `false` in order to disable the automatic setup.

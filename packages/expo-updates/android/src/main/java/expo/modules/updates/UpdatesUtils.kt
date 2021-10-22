@@ -34,7 +34,7 @@ object UpdatesUtils {
   private const val UPDATES_EVENT_NAME = "Expo.nativeUpdatesEvent"
 
   @Throws(Exception::class)
-  fun getHeadersMapFromJSONString(stringifiedJSON: String): Map<String, String> {
+  fun getMapFromJSONString(stringifiedJSON: String): Map<String, String> {
     val jsonObject = JSONObject(stringifiedJSON)
     val keys = jsonObject.keys()
     val newMap = mutableMapOf<String, String>()
@@ -104,7 +104,7 @@ object UpdatesUtils {
   }
 
   @Throws(NoSuchAlgorithmException::class, IOException::class)
-  fun sha256AndWriteToFile(inputStream: InputStream?, destination: File): ByteArray {
+  fun sha256AndWriteToFile(inputStream: InputStream, destination: File): ByteArray {
     DigestInputStream(inputStream, MessageDigest.getInstance("SHA-256")).use { digestInputStream ->
       // write file atomically by writing it to a temporary path and then renaming
       // this protects us against partially written files if the process is interrupted

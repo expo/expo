@@ -31,6 +31,9 @@ class AssetEntity(@field:ColumnInfo(name = "key") var key: String?, var type: St
   @ColumnInfo(name = "hash_type")
   var hashType = HashType.SHA256
 
+  @ColumnInfo(name = "expected_hash")
+  var expectedHash: String? = null
+
   @ColumnInfo(name = "marked_for_deletion")
   var markedForDeletion = false
 
