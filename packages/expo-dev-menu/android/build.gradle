@@ -28,9 +28,9 @@ def shouldSwapJNI() {
   def inputFile = new File(reanimatedPackagePath)
   def json = new JsonSlurper().parseText(inputFile.text)
   def reanimatedVersion = json.version as String
-  def (int major, int minor, int path) = reanimatedVersion.tokenize('.').collect { it.toInteger() }
+  def (int major, int minor, int patch) = reanimatedVersion.tokenize('.').collect { it.toInteger() }
 
-  if (major < 2 || (major == 2 && minor <= 2 && path == 0)) {
+  if (major < 2 || (major == 2 && minor <= 1) || (major == 2 && minor == 2 && patch == 0)) {
     return true
   }
 
@@ -223,7 +223,18 @@ repositories {
 }
 
 dependencies {
-  implementation files("../vendored/react-native-reanimated/android/devmenu-react-native-reanimated-${minor}-${engine}.aar")
+  def reanimatedPath = "../vendored/react-native-reanimated/android"
+  def minorCopy = Integer.parseInt(minor)
+  def aar = file("${reanimatedPath}/devmenu-react-native-reanimated-${minorCopy}-${engine}.aar")
+  while (!aar.exists()) {
+    minorCopy -= 1
+    aar = file("${reanimatedPath}/devmenu-react-native-reanimated-${minorCopy}-${engine}.aar")
+    if (minorCopy < 62) {
+      throw new GradleException('No aar for react-native-reanimated found.')
+    }
+  }
+
+  implementation files("${reanimatedPath}/devmenu-react-native-reanimated-${minorCopy}-${engine}.aar")
 
   implementation project(":expo-dev-menu-interface")
 
