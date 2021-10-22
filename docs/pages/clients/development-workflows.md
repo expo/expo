@@ -21,6 +21,16 @@ To get a tunneled URL, pass the `--tunnel` flag to `expo start` from the command
 
 [`expo publish`](../workflow/publishing.md) packages the current state of your JavaScript and asset files into an optimized "update" stored on a free hosting service provided by Expo.  Published updates can be loaded in Expo Clients without needing to check out a particular commit or leave a development machine running.
 
+### Deep linking URLs
+
+You can load your application on a device that has a compatible build of your custom client by opening a URL of the form `{scheme}://expo-development-client/?url={manifestUrl}` where
+
+| parameter | value |
+| --------------- | ----------------------- |
+| `scheme`         | URL scheme of your client (defaults to `exp+{slug}` where slug is the value set in your app.json)       |
+| `url`         | URL-encoded URL of a update manifest to load  (e.g. as provided by `expo publish`)     |
+
+
 ### QR Codes
 
 You can use our endpoint to generate a QR code that can be easily loaded by a build of your custom development client.
@@ -42,6 +52,26 @@ These are a few examples of workflows to help your team get the most out of your
 ### Development Builds
 
 Developers on your team with expertise working with Xcode and Android Studio can update, review, and test changes to the native portion of your application and release them to your team periodically. The rest of your team can install these builds on their devices and simulators and quickly iterate on the JavaScript portion of your application without needing to understand and maintain the tooling required to create a new build.
+
+### Side by side installation
+
+If you need to look at release builds of your project, it is convenient to not overwrite the development version of your app every time you do so.  You can accomplish this by using [app.config.js](../workflow/configuration.md) to set the bundle identifier or package name based on an environment variable.  When changing the ID of your project, be aware that some modules will expect you to perform installation steps for each bundle identifier or package name you use.
+
+```js
+module.exports = () => {
+  if (process.env.MY_ENVIRONMENT === 'production') {
+    return {
+      ios: { bundleIdentifier: "dev.expo.example"},
+      android: { package: "dev.expo.example"}
+    };
+  } else {
+    return {
+      ios: { bundleIdentifier: "dev.expo.example.dev"},
+      android: { package: "dev.expo.example.dev"}
+    };
+  }
+};
+```
 
 ### PR Previews
 
