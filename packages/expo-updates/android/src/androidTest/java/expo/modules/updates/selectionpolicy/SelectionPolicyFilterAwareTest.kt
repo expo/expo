@@ -28,7 +28,6 @@ class SelectionPolicyFilterAwareTest {
   var updateMultipleFilters: UpdateEntity? = null
   var updateNoMetadata: UpdateEntity? = null
   var legacyUpdate: UpdateEntity? = null
-//  var legacyUpdateProductionReleaseChannel: UpdateEntity? = null
 
   @Before
   @Throws(JSONException::class)
