@@ -72,7 +72,7 @@ The following Expo modules are brought in as dependencies of the `expo` package:
 - [expo-constants](/versions/latest/sdk/constants.md) - Provides access to the manifest.
 - [expo-file-system](/versions/latest/sdk/filesystem.md) - Interact with the device file system. Used by `expo-asset` and many other Expo modules. Commonly used directly by developers in application code.
 - [expo-font](/versions/latest/sdk/font.md) - Load fonts at runtime. This module is optional and can be safely removed, however; it is recommended if you use `expo-dev-client` for development and it is required by `@expo/vector-icons`.
-- [expo-keep-wake](/versions/latest/sdk/keep-awake.md) - Prevents your device from going to sleep while developing your app. This module is optional and can be safely removed.
+- [expo-keep-awake](/versions/latest/sdk/keep-awake.md) - Prevents your device from going to sleep while developing your app. This module is optional and can be safely removed.
 
 To exclude any of these modules, refer to the following guide on [excluding modules from autolinking](#excluding-specific-modules-from-autolinking).
 
