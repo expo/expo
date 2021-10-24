@@ -4,7 +4,7 @@ import Foundation
 
 var subcontractors = [AppDelegateSubcontractorProtocol]()
 
-@objc(EXAppDelegateWrapper)
+@objc(EXSwiftAppDelegateWrapper)
 open class AppDelegateWrapper: UIResponder, UIApplicationDelegate {
   open var window: UIWindow?
 

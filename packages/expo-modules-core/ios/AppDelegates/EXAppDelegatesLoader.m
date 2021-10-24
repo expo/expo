@@ -20,8 +20,8 @@
 + (void)load
 {
   id<ModulesProviderObjCProtocol> modulesProvider = [EXNativeModulesProxy getExpoModulesProvider];
-  [EXAppDelegateWrapper registerSubcontractor:[[EXLegacyAppDelegateWrapper alloc] init]];
-  [EXAppDelegateWrapper registerSubcontractorsFromModulesProvider:modulesProvider];
+  [EXSwiftAppDelegateWrapper registerSubcontractor:[[EXLegacyAppDelegateWrapper alloc] init]];
+  [EXSwiftAppDelegateWrapper registerSubcontractorsFromModulesProvider:modulesProvider];
 }
 
 @end
