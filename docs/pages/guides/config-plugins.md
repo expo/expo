@@ -961,6 +961,102 @@ end
 
 Generally, you should only interact with the Podfile via Expo [Autolinking][autolinking], this provides a programmatic interface with the project files.
 
+### Custom Base Modifiers
+
+The Expo CLI `expo prebuild` command uses [`@expo/prebuild-config`][prebuild-config] to get the default base modifiers. These defaults only manage a subset of common files, if you want to manage custom files you can do that locally by adding new base modifiers.
+
+For example, say you wanted to add support for managing the `ios/*/AppDelegate.h` file, you could do this by adding a `ios.appDelegateHeader` modifier.
+
+> This example uses `ts-node` for simple local TypeScript support, this isn't strictly necessary. [Learn more](https://docs.expo.dev/guides/typescript/#appconfigjs).
+
+`withAppDelegateHeaderBaseMod.ts`
+
+```ts
+import { ConfigPlugin, IOSConfig, Mod, withMod, BaseMods } from '@expo/config-plugins';
+import fs from 'fs';
+
+/**
+ * A plugin which adds new base modifiers to the prebuild config.
+ */
+export function withAppDelegateHeaderBaseMod(config) {
+  return BaseMods.withGeneratedBaseMods<'appDelegateHeader'>(config, {
+    platform: 'ios',
+    providers: {
+      // Append a custom rule to supply AppDelegate header data to mods on `mods.ios.appDelegateHeader`
+      appDelegateHeader: BaseMods.provider<IOSConfig.Paths.AppDelegateProjectFile>({
+        // Get the local filepath that should be passed to the `read` method.
+        getFilePath({ modRequest: { projectRoot } }) {
+          const filePath = IOSConfig.Paths.getAppDelegateFilePath(projectRoot);
+          // Replace the .m with a .h
+          if (filePath.endsWith('.m')) {
+            return filePath.substr(0, filePath.lastIndexOf('.')) + '.h';
+          }
+          // Possibly a Swift project...
+          throw new Error(`Could not locate a valid AppDelegate.h at root: "${projectRoot}"`);
+        },
+        // Read the input file from the filesystem.
+        async read(filePath) {
+          return IOSConfig.Paths.getFileInfo(filePath);
+        },
+        // Write the resulting output to the filesystem.
+        async write(filePath: string, { modResults: { contents } }) {
+          await fs.promises.writeFile(filePath, contents);
+        },
+      }),
+    },
+  });
+}
+
+/**
+ * (Utility) Provides the AppDelegate header file for modification.
+ */
+export const withAppDelegateHeader: ConfigPlugin<Mod<IOSConfig.Paths.AppDelegateProjectFile>> = (
+  config,
+  action
+) => {
+  return withMod(config, {
+    platform: 'ios',
+    mod: 'appDelegateHeader',
+    action,
+  });
+};
+
+// (Example) Log the contents of the modifier.
+export const withSimpleAppDelegateHeaderMod = config => {
+  return withAppDelegateHeader(config, config => {
+    console.log('modify header:', config.modResults);
+    return config;
+  });
+};
+```
+
+To use this new base mod, add it to the plugins array. The base mod **MUST** be added last after all other plugins that use the mod, this is because it must write the results to disk at the end of the process.
+
+`app.config.js`
+
+```js
+// Required for external files using TS
+require('ts-node/register');
+
+import {
+  withAppDelegateHeaderBaseMod,
+  withSimpleAppDelegateHeaderMod,
+} from './withAppDelegateHeaderBaseMod.ts';
+
+export default ({ config }) => {
+  if (!config.plugins) config.plugins = [];
+  config.plugins.push(
+    withSimpleAppDelegateHeaderMod,
+
+    // Base mods MUST be last
+    withAppDelegateHeaderBaseMod
+  );
+  return config;
+};
+```
+
+For more info, see [the PR that adds support](https://github.com/expo/expo-cli/pull/3852) for this feature.
+
 ## expo install
 
 Node modules with config plugins can be added to the project's Expo config automatically by using the `expo install` command. [Related PR](https://github.com/expo/expo-cli/pull/3437).
@@ -985,6 +1081,7 @@ Please add the following to your Expo config
 ```
 
 [config-docs]: https://docs.expo.dev/versions/latest/config/app/
+[prebuild-config]: https://github.com/expo/expo-cli/tree/master/packages/prebuild-config#readme
 [cli-prebuild]: https://docs.expo.dev/workflow/expo-cli/#eject
 [configplugin]: https://github.com/expo/expo-cli/blob/3a0ef962a27525a0fe4b7e5567fb7b3fb18ec786/packages/config-plugins/src/Plugin.types.ts#L76
 [source-template]: https://github.com/expo/expo/tree/master/templates/expo-template-bare-minimum
