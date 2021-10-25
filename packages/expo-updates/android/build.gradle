@@ -1,5 +1,6 @@
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-kapt'
 apply plugin: 'maven'
 
 group = 'host.exp.exponent'
@@ -55,6 +56,10 @@ android {
     targetCompatibility JavaVersion.VERSION_1_8
   }
 
+  kotlinOptions {
+    jvmTarget = JavaVersion.VERSION_1_8
+  }
+
   defaultConfig {
     minSdkVersion safeExtGet("minSdkVersion", 21)
     targetSdkVersion safeExtGet("targetSdkVersion", 30)
@@ -93,7 +98,7 @@ dependencies {
   def room_version = "2.1.0"
 
   implementation "androidx.room:room-runtime:$room_version"
-  annotationProcessor "androidx.room:room-compiler:$room_version"
+  kapt "androidx.room:room-compiler:$room_version"
 
   implementation("com.squareup.okhttp3:okhttp:3.12.1")
   implementation("com.squareup.okhttp3:okhttp-urlconnection:3.12.1")

@@ -12,7 +12,7 @@ object ManifestFactory {
 
   @Throws(Exception::class)
   fun getManifest(manifestJson: JSONObject, httpResponse: ManifestResponse, configuration: UpdatesConfiguration?): UpdateManifest {
-    val expoProtocolVersion = httpResponse.header("expo-protocol-version", null)
+    val expoProtocolVersion = httpResponse.header("expo-protocol-version")
     return when {
       expoProtocolVersion == null -> {
         LegacyUpdateManifest.fromLegacyManifest(LegacyManifest(manifestJson), configuration!!)

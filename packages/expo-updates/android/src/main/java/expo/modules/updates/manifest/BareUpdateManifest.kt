@@ -58,10 +58,11 @@ class BareUpdateManifest private constructor(
           // so we avoid this work now
           if (scales != null && scales.length() > 1) {
             assetEntity.scale = assetObject.optDouble("scale").toFloat()
-            assetEntity.scales = arrayOfNulls(scales.length())
+            val scalesTemp = Array(scales.length()) { 0f }
             for (j in 0 until scales.length()) {
-              assetEntity.scales[j] = scales.getDouble(j).toFloat()
+              scalesTemp[j] = scales.getDouble(j).toFloat()
             }
+            assetEntity.scales = scalesTemp
           }
           assetList.add(assetEntity)
         } catch (e: JSONException) {
@@ -92,7 +93,7 @@ class BareUpdateManifest private constructor(
       return BareUpdateManifest(
         manifest,
         id,
-        configuration.scopeKey,
+        configuration.scopeKey!!,
         commitTime,
         runtimeVersion,
         assets
