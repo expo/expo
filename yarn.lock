@@ -1421,12 +1421,23 @@
     json5 "^1.0.1"
     write-file-atomic "^2.3.0"
 
-"@expo/metro-config@0.2.3", "@expo/metro-config@~0.2.2":
+"@expo/metro-config@0.2.3":
   version "0.2.3"
   resolved "https://registry.yarnpkg.com/@expo/metro-config/-/metro-config-0.2.3.tgz#f9e376422d87053589360222553a168f40ce84cc"
   integrity sha512-LlMNm56ab45VufRrjcN0sxfJpGLJzSNjMobPpvB9pbJ4/Yhap5lYuPGnYZ0sKyUA4VAiSyoY1VLWC0VncZG/Pw==
   dependencies:
     "@expo/config" "6.0.3"
+    chalk "^4.1.0"
+    debug "^4.3.2"
+    getenv "^1.0.0"
+    sucrase "^3.20.0"
+
+"@expo/metro-config@~0.2.6":
+  version "0.2.6"
+  resolved "https://registry.yarnpkg.com/@expo/metro-config/-/metro-config-0.2.6.tgz#f380038958667696f3d5796936cd25288b06b669"
+  integrity sha512-pqbfA+sZbBYlWe3F1egynpTulyO+U9yHZ+6ucNxZtQZal1gCMtjvfAjgyMUC696kADQ94k/cCcl/PJSOUHG+Nw==
+  dependencies:
+    "@expo/config" "6.0.6"
     chalk "^4.1.0"
     debug "^4.3.2"
     getenv "^1.0.0"
