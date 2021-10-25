@@ -35,7 +35,7 @@ open class BaseModel internal constructor() : CommonProvider {
     putInt(cursor, isPrimaryAlias, EXColumns.IS_PRIMARY)
   }
 
-  val insertOperation: ContentProviderOperation
+  val insertOperation
     get() = getInsertOperation(null)
 
   open fun getInsertOperation(rawId: String?): ContentProviderOperation {
@@ -107,35 +107,26 @@ open class BaseModel internal constructor() : CommonProvider {
     map.putInt(key, value)
   }
 
-  open val contentValues: ContentValues
-    get() {
-      val values = ContentValues()
-      values.put(EXColumns.MIMETYPE, contentType)
-      values.put(EXColumns.DATA, data)
-      values.put(EXColumns.TYPE, type)
-      values.put(EXColumns.LABEL, label)
-      values.put(EXColumns.ID, id)
-      values.put(EXColumns.IS_PRIMARY, isPrimary)
-      return values
-    }
+  open val contentValues = ContentValues().apply {
+    put(EXColumns.MIMETYPE, contentType)
+    put(EXColumns.DATA, data)
+    put(EXColumns.TYPE, type)
+    put(EXColumns.LABEL, label)
+    put(EXColumns.ID, id)
+    put(EXColumns.IS_PRIMARY, isPrimary)
+  }
 
-  override val contentType: String?
-    get() = null
+  override val contentType: String? = null
 
-  override val labelAlias: String
-    get() = "label"
+  override val labelAlias: String = "label"
 
-  override val dataAlias: String
-    get() = EXColumns.DATA
+  override val dataAlias: String = EXColumns.DATA
 
-  override val idAlias: String
-    get() = "id"
+  override val idAlias: String = "id"
 
-  val isPrimaryAlias: String
-    get() = "isPrimary"
+  val isPrimaryAlias: String = "isPrimary"
 
-  val typeAlias: String
-    get() = "type"
+  val typeAlias: String = "type"
 
   companion object {
     @Throws(IllegalAccessException::class, InstantiationException::class)
