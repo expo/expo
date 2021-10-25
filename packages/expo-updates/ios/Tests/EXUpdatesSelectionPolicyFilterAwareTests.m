@@ -5,6 +5,7 @@
 #import <EXUpdates/EXUpdatesConfig.h>
 #import <EXUpdates/EXUpdatesDatabase.h>
 #import <EXUpdates/EXUpdatesNewUpdate.h>
+#import <EXUpdates/EXUpdatesLegacyUpdate.h>
 #import <EXUpdates/EXUpdatesSelectionPolicyFactory.h>
 #import <EXUpdates/EXUpdatesSelectionPolicies.h>
 #import <EXUpdates/EXUpdatesUpdate.h>
@@ -18,6 +19,7 @@
 @property (nonatomic, strong) EXUpdatesUpdate *updateRollout2;
 @property (nonatomic, strong) EXUpdatesUpdate *updateMultipleFilters;
 @property (nonatomic, strong) EXUpdatesUpdate *updateNoMetadata;
+@property (nonatomic, strong) EXUpdatesUpdate *updateLegacy;
 @property (nonatomic, strong) EXUpdatesSelectionPolicy *selectionPolicy;
 @property (nonatomic, strong) NSDictionary *manifestFilters;
 
@@ -112,7 +114,15 @@
     @"launchAsset": launchAsset,
     @"assets": @[imageAsset]
   }] response:nil config:config database:database];
-
+  
+  _updateLegacy = [EXUpdatesLegacyUpdate updateWithLegacyManifest:[[EXManifestsLegacyManifest alloc] initWithRawManifestJSON:@{
+    @"releaseID": @"0eef8214-4833-4089-9dff-b4138a14f196",
+    @"commitTime": @"020-11-11T00:17:54.797Z",
+    @"runtimeVersion": @"39.0.0",
+    @"bundleUrl": @"https://url.to/bundle.js",
+    @"releaseChannel": @"default"
+  }] config:config database:database];
+  
   _selectionPolicy = [EXUpdatesSelectionPolicyFactory filterAwarePolicyWithRuntimeVersion:runtimeVersion];
   _manifestFilters = @{@"branchname": @"rollout"};
 }
@@ -198,6 +208,13 @@
   // null filters or null metadata (i.e. bare or legacy manifests) is counted as a match
   XCTAssertTrue([EXUpdatesSelectionPolicies doesUpdate:_updateDefault1 matchFilters:nil]);
   XCTAssertTrue([EXUpdatesSelectionPolicies doesUpdate:_updateNoMetadata matchFilters:_manifestFilters]);
+}
+
+- (void)testDoesUpdateMatchFilters_Legacy
+{
+  XCTAssertTrue([EXUpdatesSelectionPolicies doesUpdate:_updateLegacy matchFilters:@{@"field-that-update-doesnt-have": @"default"}]);
+  XCTAssertFalse([EXUpdatesSelectionPolicies doesUpdate:_updateLegacy matchFilters:@{@"field-that-update-doesnt-have": @"production"}]);
+  XCTAssertFalse([EXUpdatesSelectionPolicies doesUpdate:_updateLegacy matchFilters:@{}]);
 }
 
 @end
