@@ -5,6 +5,7 @@ export interface SearchOptions {
     ignorePaths?: string[] | null;
     exclude?: string[] | null;
     platform: SupportedPlatform;
+    silent?: boolean;
     flags?: Record<string, any>;
 }
 export interface ResolveOptions extends SearchOptions {
