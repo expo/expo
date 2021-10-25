@@ -370,7 +370,9 @@ export interface FirebaseData {
 
 ### `getExpoPushTokenAsync(options: ExpoTokenOptions): ExpoPushToken`
 
-Returns an Expo token that can be used to send a push notification to this device using Expo push notifications service. [Read more in the Push Notifications guide](../../../push-notifications/overview.md).
+Returns an Expo token that can be used to send a push notification to the device using Expo's push notifications service. [Read more in the Push Notifications guide](../../../push-notifications/overview.md).
+
+This method makes a request to Expo's servers, so it can reject in cases where the request itself fails (like due to the device being offline, experiencing a network timeout, or other HTTPS request failures). To provide offline support to your users, you should `try/catch` this method and implement retry logic to attempt to get the push token later, once the device is back online.
 
 > **Note:** For Expo's backend to be able to send notifications to your app, you will need to provide it with push notification keys. This can be done using `expo-cli` (`expo credentials:manager`). [Read more in the “Upload notifications credentials” guide](../../../push-notifications/push-notifications-setup.md#credentials).
 
