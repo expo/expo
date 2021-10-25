@@ -2,7 +2,7 @@
 title: Compatibility
 ---
 
-Expo Development Client is only compatible with specific versions of certain Expo and React Native modules. If you find another incompatible module that isn't on this list, please [open an issue](https://github.com/expo/expo/issues/new?assignees=&labels=needs+review&template=dev_client_bug_report.yml) and let us know.
+Expo Development Client is only compatible with specific versions of certain Expo and React Native modules. If you find another incompatible module that isn't on this list, please [open an issue](https://github.com/expo/expo/issues/new?assignees=&labels=needs+review&template=development_build_bug_report.yml) and let us know.
 
 You do not need to use any of these packages in your project in order to use `expo-dev-client`, but if you do, you must use a compatible version.
 
