@@ -65,7 +65,7 @@
   "expo-mail-composer": "~11.0.3",
   "expo-media-library": "~13.0.3",
   "expo-module-template": "~10.0.0",
-  "expo-modules-core": "~0.4.4",
+  "expo-modules-core": "~0.4.5",
   "expo-network": "~4.0.3",
   "expo-notifications": "~0.13.3",
   "expo-permissions": "~13.0.3",

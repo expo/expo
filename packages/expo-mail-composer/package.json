@@ -35,7 +35,7 @@
     "preset": "expo-module-scripts/ios"
   },
   "dependencies": {
-    "expo-modules-core": "~0.4.4",
+    "expo-modules-core": "~0.4.5",
     "query-string": "^6.2.0"
   },
   "devDependencies": {

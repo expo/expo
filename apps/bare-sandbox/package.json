@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "@babel/runtime": "^7.5.5",
-    "expo": "~43.0.0",
+    "expo": "~43.0.1",
     "expo-dev-client": "~0.6.3",
     "expo-splash-screen": "~0.13.4",
     "expo-status-bar": "~1.1.0",

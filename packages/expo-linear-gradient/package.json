@@ -34,7 +34,7 @@
   "license": "MIT",
   "homepage": "https://docs.expo.dev/versions/latest/sdk/linear-gradient/",
   "dependencies": {
-    "expo-modules-core": "~0.4.4"
+    "expo-modules-core": "~0.4.5"
   },
   "devDependencies": {
     "expo-module-scripts": "^2.0.0"

@@ -38,7 +38,7 @@
     "@expo/config-plugins": "^4.0.2",
     "@expo/metro-config": "~0.1.84",
     "expo-manifests": "~0.2.2",
-    "expo-modules-core": "~0.4.4",
+    "expo-modules-core": "~0.4.5",
     "expo-structured-headers": "~2.0.0",
     "expo-updates-interface": "~0.4.0",
     "fbemitter": "^2.1.1",
