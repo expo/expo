@@ -8,6 +8,7 @@ import android.view.KeyEvent
 import androidx.collection.ArrayMap
 import com.facebook.react.ReactActivity
 import com.facebook.react.ReactActivityDelegate
+import com.facebook.react.ReactDelegate
 import com.facebook.react.ReactInstanceManager
 import com.facebook.react.ReactNativeHost
 import com.facebook.react.ReactRootView
@@ -19,6 +20,7 @@ class ReactActivityDelegateWrapper(
   private val delegate: ReactActivityDelegate
 ) : ReactActivityDelegate(activity, null) {
   private val reactActivityLifecycleListeners = ExpoModulesPackage.packageList
+    .sortedByDescending { it.packagePriority }
     .flatMap { it.createReactActivityLifecycleListeners(activity) }
   private val methodMap: ArrayMap<String, Method> = ArrayMap()
 
@@ -29,7 +31,9 @@ class ReactActivityDelegateWrapper(
   }
 
   override fun createRootView(): ReactRootView {
-    return invokeDelegateMethod("createRootView")
+    return reactActivityLifecycleListeners.asSequence()
+            .map { it.createReactRootView(activity) }
+            .firstOrNull() ?: invokeDelegateMethod("createRootView")
   }
 
   override fun getReactNativeHost(): ReactNativeHost {
@@ -49,7 +53,23 @@ class ReactActivityDelegateWrapper(
   }
 
   override fun onCreate(savedInstanceState: Bundle?) {
-    invokeDelegateMethod<Unit, Bundle?>("onCreate", arrayOf(Bundle::class.java), arrayOf(savedInstanceState))
+    // Since we just wrap `ReactActivityDelegate` but not inherit it, in its `onCreate`,
+    // the calls to `createRootView()` or `getMainComponentName()` have no chances to be our wrapped methods.
+    // Instead we intercept `ReactActivityDelegate.onCreate` and replace the `mReactDelegate` with our version.
+    // That's not ideal but works.
+    val reactDelegate = object : ReactDelegate(
+            plainActivity, reactNativeHost, mainComponentName, launchOptions) {
+      override fun createRootView(): ReactRootView {
+        return this@ReactActivityDelegateWrapper.createRootView()
+      }
+    }
+    val mReactDelegate = ReactActivityDelegate::class.java.getDeclaredField("mReactDelegate")
+    mReactDelegate.isAccessible = true
+    mReactDelegate.set(delegate, reactDelegate)
+    if (mainComponentName != null) {
+      loadApp(mainComponentName)
+    }
+
     reactActivityLifecycleListeners.forEach { listener ->
       listener.onCreate(activity, savedInstanceState)
     }

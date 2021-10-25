@@ -37,6 +37,8 @@ interface ReactNativeHostHandler {
     return null
   }
 
+  //region event listeners
+
   /**
    * Given chance for JSI modules to register, e.g. for react-native-reanimated
    *
@@ -48,4 +50,16 @@ interface ReactNativeHostHandler {
     useDeveloperSupport: Boolean
   ) {
   }
+
+  /**
+   * Callback before {@link ReactInstanceManager} creation
+   */
+  fun onBeforeCreateReactInstanceManager(useDeveloperSupport: Boolean) {}
+
+  /**
+   * Callback after {@link ReactInstanceManager} creation
+   */
+  fun onDidCreateReactInstanceManager(useDeveloperSupport: Boolean) {}
+
+  //endregion
 }

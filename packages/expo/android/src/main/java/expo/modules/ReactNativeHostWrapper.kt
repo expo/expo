@@ -20,15 +20,25 @@ class ReactNativeHostWrapper(
   private val host: ReactNativeHost
 ) : ReactNativeHost(application) {
   private val reactNativeHostHandlers = ExpoModulesPackage.packageList
+    .sortedByDescending { it.packagePriority }
     .flatMap { it.createReactNativeHostHandlers(application) }
   private val methodMap: ArrayMap<String, Method> = ArrayMap()
 
   override fun createReactInstanceManager(): ReactInstanceManager {
-    // map() without asSequence() gives a chance for handlers
-    // to get noticed before createReactInstanceManager()
-    return reactNativeHostHandlers
-      .map { it.createReactInstanceManager(useDeveloperSupport) }
+    val developerSupport = useDeveloperSupport
+    reactNativeHostHandlers.forEach { handler ->
+      handler.onBeforeCreateReactInstanceManager(developerSupport)
+    }
+
+    val result = reactNativeHostHandlers.asSequence()
+      .map { it.createReactInstanceManager(developerSupport) }
       .firstOrNull() ?: super.createReactInstanceManager()
+
+    reactNativeHostHandlers.forEach { handler ->
+      handler.onDidCreateReactInstanceManager(developerSupport)
+    }
+
+    return result
   }
 
   override fun getRedBoxHandler(): RedBoxHandler? {

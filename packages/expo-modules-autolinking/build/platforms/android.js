@@ -83,7 +83,7 @@ function findAndroidModules(modules) {
 async function findAndroidPackagesAsync(modules) {
     const classes = [];
     await Promise.all(modules.map(async (module) => {
-        const files = await (0, fast_glob_1.default)('src/**/*Package.{java,kt}', {
+        const files = await (0, fast_glob_1.default)('**/*Package.{java,kt}', {
             cwd: module.sourceDir,
         });
         for (const file of files) {

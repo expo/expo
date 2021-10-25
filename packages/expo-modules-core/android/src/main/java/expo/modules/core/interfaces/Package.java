@@ -32,6 +32,14 @@ public interface Package {
     return Collections.emptyList();
   }
 
+  /**
+   * Define priority between all expo modules. Will handle module with higher priority value first.
+   * @return priority value
+   */
+  default int getPackagePriority() {
+    return 0;
+  }
+
   default List<? extends ApplicationLifecycleListener> createApplicationLifecycleListeners(Context context) {
     return Collections.emptyList();
   }
