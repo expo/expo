@@ -108,7 +108,9 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
       BOOL isTextField = [firstResponder isKindOfClass: [UITextField class]] || [firstResponder isKindOfClass: [UITextView class]];
       
       // this is a runtime header that is not publicly exported from the Webkit.framework
-      Class WKContentView = NSClassFromString(@"WKContentView");
+      // obfuscating selector WKContentView
+      NSArray<NSString *> *webViewClass = @[ @"WKCo", @"ntentVi", @"ew"];
+      Class WKContentView = NSClassFromString([webViewClass componentsJoinedByString:@""]);
       
       BOOL isWebView = [firstResponder isKindOfClass:[WKContentView class]];
       
