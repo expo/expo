@@ -61,8 +61,4 @@ abstract_target 'BareExpoMain' do
 
   target 'BareExpoDetox' do
   end
-
-  target 'BareExpoTests' do
-    inherit! :search_paths
-  end
 end
