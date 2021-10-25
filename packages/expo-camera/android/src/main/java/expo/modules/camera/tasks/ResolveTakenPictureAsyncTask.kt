@@ -41,10 +41,10 @@ private const val ID_KEY = "id"
 private const val DEFAULT_QUALITY = 1
 
 class ResolveTakenPictureAsyncTask(
-    private var promise: Promise,
-    private var options: Map<String, Any>,
-    private val directory: File,
-    private var pictureSavedDelegate: PictureSavedDelegate
+  private var promise: Promise,
+  private var options: Map<String, Any>,
+  private val directory: File,
+  private var pictureSavedDelegate: PictureSavedDelegate
 ) : AsyncTask<Void?, Void?, Bundle?>() {
   private var imageData: ByteArray? = null
   private var bitmap: Bitmap? = null
@@ -82,8 +82,8 @@ class ResolveTakenPictureAsyncTask(
         val exifInterface = ExifInterface(inputStream)
         // Get orientation of the image from mImageData via inputStream
         val orientation = exifInterface.getAttributeInt(
-            ExifInterface.TAG_ORIENTATION,
-            ExifInterface.ORIENTATION_UNDEFINED
+          ExifInterface.TAG_ORIENTATION,
+          ExifInterface.ORIENTATION_UNDEFINED
         )
 
         // Rotate the bitmap to the proper orientation if needed

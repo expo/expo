@@ -1,5 +1,6 @@
 package expo.modules.camera
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Color
 import android.Manifest
@@ -94,6 +95,11 @@ class ExpoCameraView(
     val width = right - left
     val height = bottom - top
     preview.layout(0, 0, width, height)
+  }
+
+  @SuppressLint("MissingSuperCall")
+  override fun requestLayout() {
+    // React handles this for us, so we don't need to call super.requestLayout();
   }
 
   override fun onViewAdded(child: View) {

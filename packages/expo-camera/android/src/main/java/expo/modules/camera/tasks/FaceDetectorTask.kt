@@ -14,16 +14,21 @@ class FaceDetectorTask(
   private val mScaleY: Double
 ) {
   fun execute() {
-    mFaceDetector.detectFaces(mImageData, mWidth, mHeight, mRotation, mMirrored, mScaleX, mScaleY, { result ->
-      result?.let {
-        mDelegate.onFacesDetected(result)
-      } ?: run {
+    mFaceDetector.detectFaces(
+      mImageData, mWidth, mHeight, mRotation, mMirrored, mScaleX, mScaleY,
+      { result ->
+        result?.let {
+          mDelegate.onFacesDetected(result)
+        } ?: run {
+          mDelegate.onFaceDetectionError(mFaceDetector)
+        }
+        mDelegate.onFaceDetectingTaskCompleted()
+      },
+      { error ->
         mDelegate.onFaceDetectionError(mFaceDetector)
-      }
-      mDelegate.onFaceDetectingTaskCompleted()
-    }, { error ->
-      mDelegate.onFaceDetectionError(mFaceDetector)
-      mDelegate.onFaceDetectingTaskCompleted()
-    }, { skippedReason -> mDelegate.onFaceDetectingTaskCompleted()})
+        mDelegate.onFaceDetectingTaskCompleted()
+      },
+      { skippedReason -> mDelegate.onFaceDetectingTaskCompleted() }
+    )
   }
 }
