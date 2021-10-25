@@ -1940,10 +1940,12 @@ PODS:
     - ExpoModulesCore
   - ExpoModulesCore (0.4.2):
     - React-Core
+    - ReactCommon/turbomodule/core
   - ExpoModulesCore/Tests (0.4.2):
     - Nimble
     - Quick
     - React-Core
+    - ReactCommon/turbomodule/core
   - EXPrint (11.0.1):
     - ExpoModulesCore
   - EXRandom (12.0.0):
@@ -4191,7 +4193,7 @@ SPEC CHECKSUMS:
   EXNotifications: 24fb362f02a68d94ae7e5769aa9319be5096328c
   EXPermissions: 08ccf78a0eb404c28df6d226fcc8fcf2e558b421
   Expo: 23ed30f225511b93fa6a0c14d9a3208d6b749060
-  ExpoModulesCore: 39fb1eacac048e4acbad9661b82512aaf1c6729e
+  ExpoModulesCore: 870583ae7dd009e02ebf5ff875823099dea254e8
   EXPrint: a224501bbb89072567c58a5127f2d125b8776ea2
   EXRandom: 9ed4600d410cf2fe58d22b3121865624065a16e9
   EXScreenCapture: 76fcc1bad122d1b5d98f85ec44c6d38f18f99a6a

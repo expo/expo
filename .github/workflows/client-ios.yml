@@ -92,8 +92,8 @@ jobs:
         with:
           path: 'ios/Pods'
           key: ${{ runner.os }}-pods-${{ hashFiles('ios/Podfile.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-pods-
+          # restore-keys: |
+          #   ${{ runner.os }}-pods-
       - name: 🥥 Install CocoaPods in `ios`
         run: pod install
         working-directory: ios

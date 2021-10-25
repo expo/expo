@@ -182,6 +182,7 @@ PODS:
     - React-Core
   - ExpoModulesCore (0.4.2):
     - React-Core
+    - ReactCommon/turbomodule/core
   - EXPrint (11.0.1):
     - ExpoModulesCore
   - EXRandom (12.0.0):
@@ -1260,7 +1261,7 @@ SPEC CHECKSUMS:
   expo-dev-launcher: 7a90ad1519263eda3e8675bf6712f2f89f8fe2a9
   expo-dev-menu: 5b0593d3ad5f32e92e363f4cc061fe70666da31f
   expo-dev-menu-interface: 508467f2ba2aedda7a44e5080cc1e9a43ab7375e
-  ExpoModulesCore: 39fb1eacac048e4acbad9661b82512aaf1c6729e
+  ExpoModulesCore: 870583ae7dd009e02ebf5ff875823099dea254e8
   EXPrint: a224501bbb89072567c58a5127f2d125b8776ea2
   EXRandom: 9ed4600d410cf2fe58d22b3121865624065a16e9
   EXScreenCapture: 76fcc1bad122d1b5d98f85ec44c6d38f18f99a6a

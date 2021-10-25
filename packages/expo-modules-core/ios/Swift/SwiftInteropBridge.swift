@@ -40,6 +40,15 @@ public class SwiftInteropBridge: NSObject {
   }
 
   @objc
+  public func callMethodSync(_ methodName: String,
+                             onModule moduleName: String,
+                             withArgs args: [Any]) -> Any? {
+    return registry
+      .get(moduleHolderForName: moduleName)?
+      .callSync(method: methodName, args: args)
+  }
+
+  @objc
   public func exportedMethodNames() -> [String: [[String: Any]]] {
     var constants = [String: [[String: Any]]]()
 

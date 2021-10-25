@@ -8,6 +8,8 @@
 #import <React/RCTModuleData.h>
 #import <React/RCTEventDispatcherProtocol.h>
 
+#import <jsi/jsi.h>
+
 #import <ExpoModulesCore/EXNativeModulesProxy.h>
 #import <ExpoModulesCore/EXEventEmitter.h>
 #import <ExpoModulesCore/EXViewManager.h>
@@ -15,6 +17,8 @@
 #import <ExpoModulesCore/EXViewManagerAdapterClassesRegistry.h>
 #import <ExpoModulesCore/EXModuleRegistryProvider.h>
 #import <ExpoModulesCore/EXReactNativeEventEmitter.h>
+#import <ExpoModulesCore/JSIInstaller.h>
+
 #if __has_include(<ExpoModulesCore/ExpoModulesCore-Swift.h>)
 // For cocoapods framework, the generated swift header will be inside ExpoModulesCore module
 #import <ExpoModulesCore/ExpoModulesCore-Swift.h>
@@ -33,6 +37,12 @@ static const NSString *methodInfoArgumentsCountKey = @"argumentsCount";
 @interface RCTBridge (RegisterAdditionalModuleClasses)
 
 - (void)registerAdditionalModuleClasses:(NSArray<Class> *)modules;
+
+@end
+
+@interface RCTBridge (JSIRuntime)
+
+- (void *)runtime;
 
 @end
 
@@ -92,6 +102,9 @@ RCT_EXPORT_MODULE(NativeUnimoduleProxy)
 
 - (NSDictionary *)constantsToExport
 {
+  // Install the TurboModule implementation of the proxy.
+  [self installExpoTurboModules];
+
   NSMutableDictionary <NSString *, id> *exportedModulesConstants = [NSMutableDictionary dictionary];
   // Grab all the constants exported by modules
   for (EXExportedModule *exportedModule in [_exModuleRegistry getAllExportedModules]) {
@@ -183,6 +196,14 @@ RCT_EXPORT_METHOD(callMethod:(NSString *)moduleName methodNameOrKey:(id)methodNa
       reject(@"E_EXC", message, nil);
     }
   });
+}
+
+- (id)callMethodSync:(NSString *)moduleName methodName:(NSString *)methodName arguments:(NSArray *)arguments
+{
+  if ([_swiftInteropBridge hasModule:moduleName]) {
+    return [_swiftInteropBridge callMethodSync:methodName onModule:moduleName withArgs:arguments];
+  }
+  return (id)kCFNull;
 }
 
 #pragma mark - Privates
@@ -317,6 +338,18 @@ RCT_EXPORT_METHOD(callMethod:(NSString *)moduleName methodNameOrKey:(id)methodNa
       _exportedMethodsKeys[moduleName][methodName] = newKey;
       _exportedMethodsReverseKeys[moduleName][newKey] = methodName;
     }
+  }
+}
+
+/**
+ Installs expo modules in JSI runtime.
+ */
+- (void)installExpoTurboModules
+{
+  facebook::jsi::Runtime *runtime = [_bridge respondsToSelector:@selector(runtime)] ? reinterpret_cast<facebook::jsi::Runtime *>(_bridge.runtime) : NULL;
+
+  if (runtime) {
+    expo::installRuntimeObjects(*runtime, _bridge.jsCallInvoker, self);
   }
 }
 

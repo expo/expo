@@ -81,6 +81,16 @@ public class ModuleHolder {
     call(method: methodName, args: args, promise: promise)
   }
 
+  func callSync(method methodName: String, args: [Any?]) -> Any? {
+    guard let module = try? getInstance() else {
+      return nil
+    }
+    if let method = definition.methods[methodName] {
+      return method.callSync(module: module, args: args)
+    }
+    return nil
+  }
+
   // MARK: Listening to events
 
   func listeners(forEvent event: EventName) -> [EventListener] {
