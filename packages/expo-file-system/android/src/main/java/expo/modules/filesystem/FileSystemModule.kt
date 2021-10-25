@@ -122,7 +122,7 @@ class FileSystemModule(
   private fun Uri.checkIfFileExists() {
     val file = this.toFile()
     if (!file.exists()) {
-      throw IOException("Directory for " + file.path + " doesn't exist.")
+      throw IOException("Directory for '${file.path}' doesn't exist.")
     }
   }
 
@@ -131,7 +131,7 @@ class FileSystemModule(
     val file = this.toFile()
     val dir = file.parentFile
     if (dir == null || !dir.exists()) {
-      throw IOException("Directory for ${file.path} doesn't exist. Please make sure directory '${file.parent}' exists before calling downloadAsync.")
+      throw IOException("Directory for '${file.path}' doesn't exist. Please make sure directory '${file.parent}' exists before calling downloadAsync.")
     }
   }
 
@@ -197,7 +197,7 @@ class FileSystemModule(
       // this resource doesn't exist in the raw folder, so try drawable
       resourceId = context.resources.getIdentifier(resourceName, "drawable", context.packageName)
       if (resourceId == 0) {
-        throw FileNotFoundException("No resource found with the name $resourceName")
+        throw FileNotFoundException("No resource found with the name '$resourceName'")
       }
     }
     return context.resources.openRawResource(resourceId)
@@ -621,7 +621,7 @@ class FileSystemModule(
         val file = fileUri.toFile()
         promise.resolve(contentUriFromFile(file).toString())
       } else {
-        promise.reject("ERR_FILESYSTEM_CANNOT_READ_DIRECTORY", "No readable files with the uri: $uri. Please use other uri.")
+        promise.reject("ERR_FILESYSTEM_CANNOT_READ_DIRECTORY", "No readable files with the uri '$uri'. Please use other uri.")
       }
     } catch (e: Exception) {
       e.message?.let { Log.e(TAG, it) }
@@ -632,7 +632,7 @@ class FileSystemModule(
   private fun contentUriFromFile(file: File): Uri {
     val activityProvider: ActivityProvider by moduleRegistry()
     val application = activityProvider.currentActivity.application
-    return FileProvider.getUriForFile(application, application.packageName + ".FileSystemFileProvider", file)
+    return FileProvider.getUriForFile(application, "${application.packageName}.FileSystemFileProvider", file)
   }
 
   @ExpoMethod
