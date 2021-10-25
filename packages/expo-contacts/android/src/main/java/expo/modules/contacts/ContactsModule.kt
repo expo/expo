@@ -124,13 +124,13 @@ class ContactsModule(
           promise.resolve(output)
         } else if (options.containsKey("name") && options["name"] is String) {
           val predicateMatchingName = "%" + options["name"] as String + "%"
-          val contactData = getContactByName(predicateMatchingName, keysToFetch, sortOrder, promise)
-          val contacts = contactData!!["data"] as Collection<Contact>? // TODO
+          val contactData = getContactByName(predicateMatchingName, keysToFetch, sortOrder, promise)!!
+          val contacts = contactData["data"] as Collection<Contact>?
           val data = serializeContacts(contacts, keysToFetch, promise) ?: return@Runnable
           val output = Bundle().apply {
             putParcelableArrayList("data", data)
-            putBoolean("hasNextPage", (contactData["hasNextPage"] as Boolean?)!!) // TODO
-            putBoolean("hasPreviousPage", (contactData["hasPreviousPage"] as Boolean?)!!) // TODO
+            putBoolean("hasNextPage", (contactData["hasNextPage"] as Boolean))
+            putBoolean("hasPreviousPage", (contactData["hasPreviousPage"] as Boolean))
           }
           promise.resolve(output)
         } else {
@@ -168,7 +168,7 @@ class ContactsModule(
   @ExpoMethod
   fun updateContactAsync(contact: Map<String, Any>, promise: Promise) {
     if (isMissingReadPermission(promise) || isMissingWritePermission(promise)) return
-    val id = if (contact.containsKey("id")) contact["id"] as String? else null
+    val id = if (contact.containsKey("id")) contact["id"] as? String else null
     val keysToFetch = getFieldsSet(null)
     var targetContact = getContactById(id, keysToFetch, promise)
     if (targetContact != null) {
