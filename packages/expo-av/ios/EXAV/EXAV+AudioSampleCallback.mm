@@ -12,16 +12,16 @@
 namespace jsi = facebook::jsi;
 using CallbackWrapper = facebook::react::CallbackWrapper;
 
+static constexpr auto globalJsFuncName = "__EXAV_setOnAudioSampleReceivedCallback";
+
 @implementation EXAV (AudioSampleCallback)
 
 - (void) installJSIBindingsForRuntime:(void *)jsRuntimePtr
                   withSoundDictionary:(NSMutableDictionary <NSNumber *, EXAVPlayerData *> *)soundDictionary
 {
-  auto& runtime = *static_cast<jsi::Runtime*>(jsRuntimePtr);
-  
   __weak auto weakCallInvoker = self.bridge.jsCallInvoker;
-
   __weak auto weakSoundDictionary = soundDictionary;
+  
   auto setAudioSampleCallback = [weakCallInvoker, weakSoundDictionary](jsi::Runtime &runtime,
                                                       const jsi::Value &thisValue,
                                                       const jsi::Value *args,
@@ -47,21 +47,18 @@ using CallbackWrapper = facebook::react::CallbackWrapper;
 
     if (argsCount > 1 && args[1].isObject()) {
       // second parameter received, it's the callback function.
-      
-      // Inspired by https://github.com/facebook/react-native/blob/main/ReactCommon/react/nativemodule/core/platform/ios/RCTTurboModule.mm#L187
       auto callback = args[1].asObject(runtime).asFunction(runtime);
-      auto weakWrapper =
-        CallbackWrapper::createWeak(callback.getFunction(runtime),
-                                    runtime,
-                                    strongCallInvoker);
+      auto weakWrapper = CallbackWrapper::createWeak(callback.getFunction(runtime),
+                                                     runtime,
+                                                     strongCallInvoker);
 
       [sound addSampleBufferCallback:^(AudioBuffer *buffer, double timestamp) {
-        
         auto strongWrapper = weakWrapper.lock();
-           if (!strongWrapper) {
-             return;
-           }
+        if (!strongWrapper) {
+          return;
+        }
         
+        // We need to invoke the callback from the JS thread, otherwise Hermes complains
         strongWrapper->jsInvoker().invokeAsync([buffer, weakWrapper, timestamp]{
           auto callbackWrapper = weakWrapper.lock();
           if (!callbackWrapper) {
@@ -87,7 +84,7 @@ using CallbackWrapper = facebook::react::CallbackWrapper;
                  frameIndex < framesCount;
                  frameIndex += channelsCount, arrayIndex++)
             {
-              double frame = (double) data[frameIndex];
+              double frame = static_cast<double>(data[frameIndex]);
               frames.setValueAtIndex(rt, arrayIndex, jsi::Value(frame));
             }
 
@@ -110,14 +107,15 @@ using CallbackWrapper = facebook::react::CallbackWrapper;
     return jsi::Value::undefined();
   };
 
+  auto& runtime = *static_cast<jsi::Runtime*>(jsRuntimePtr);
   runtime
     .global()
     .setProperty(runtime,
-                 "__EXAV_setOnAudioSampleReceivedCallback",
-                jsi::Function::createFromHostFunction(runtime,
-                                                      jsi::PropNameID::forUtf8(runtime, "__EXAV_setOnAudioSampleReceivedCallback"),
-                                                      2, // two parameters: AV-Instance ID, Callback
-                                                      std::move(setAudioSampleCallback)));
+                 globalJsFuncName,
+                 jsi::Function::createFromHostFunction(runtime,
+                                                       jsi::PropNameID::forUtf8(runtime, globalJsFuncName),
+                                                       2, // two parameters: AV-Instance ID, Callback
+                                                       std::move(setAudioSampleCallback)));
 }
 
 @end
