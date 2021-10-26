@@ -1063,17 +1063,17 @@ class FileSystemModule(
   }
 
   @SuppressLint("WrongConstant")
-  override fun onActivityResult(activity: Activity, requestCode: Int, resultCode: Int, data: Intent) {
+  override fun onActivityResult(activity: Activity, requestCode: Int, resultCode: Int, data: Intent?) {
     if (requestCode == DIR_PERMISSIONS_REQUEST_CODE && dirPermissionsRequest != null) {
       val result = Bundle()
-      if (resultCode == Activity.RESULT_OK) {
+      if (resultCode == Activity.RESULT_OK && data != null) {
         val treeUri = data.data
         val takeFlags = (
           data.flags
             and (Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
           )
-        if (treeUri != null) {
-          activity.contentResolver.takePersistableUriPermission(treeUri, takeFlags)
+        treeUri?.let {
+          activity.contentResolver.takePersistableUriPermission(it, takeFlags)
         }
         result.putBoolean("granted", true)
         result.putString("directoryUri", treeUri.toString())
