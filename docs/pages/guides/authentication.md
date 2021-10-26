@@ -2413,7 +2413,7 @@ Here is an example of logging into Spotify without using a client secret.
 ```tsx
 import * as React from 'react';
 import * as WebBrowser from 'expo-web-browser';
-import { useAuthRequest, ResponseType } from 'expo-auth-session';
+import { makeRedirectUri, useAuthRequest, ResponseType } from 'expo-auth-session';
 
 /* @info <strong>Web only:</strong> This method should be invoked on the page that the auth popup gets redirected to on web, it'll ensure that authentication is completed properly. On native this does nothing. */
 WebBrowser.maybeCompleteAuthSession();
