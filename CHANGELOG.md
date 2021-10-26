@@ -12,6 +12,7 @@ Package-specific changes not released in any SDK will be added here just before 
 ### 🎉 New features
 
 ### 🐛 Bug fixes
+- Fix NODE_BINARY not found build error when using nvm via zsh ([#14895](https://github.com/expo/expo/pull/14895) by [@filipengberg](https://github.com/filipengberg))
 
 ## 43.0.0 — 2021-10-01
 
