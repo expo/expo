@@ -22,7 +22,7 @@ class FilePermissionModule : FilePermissionModuleInterface, InternalModule {
     return permissions
   }
 
-  private fun getInternalPathPermissions(path: String?, context: Context): EnumSet<Permission>? {
+  private fun getInternalPathPermissions(path: String, context: Context): EnumSet<Permission>? {
     try {
       val canonicalPath = File(path).canonicalPath
       for (dir in getInternalPaths(context)) {
@@ -36,7 +36,7 @@ class FilePermissionModule : FilePermissionModuleInterface, InternalModule {
     return null
   }
 
-  private fun getExternalPathPermissions(path: String?): EnumSet<Permission> {
+  private fun getExternalPathPermissions(path: String): EnumSet<Permission> {
     val file = File(path)
     if (file.canWrite() && file.canRead()) {
       return EnumSet.of(Permission.READ, Permission.WRITE)
@@ -51,7 +51,7 @@ class FilePermissionModule : FilePermissionModuleInterface, InternalModule {
 
   @Throws(IOException::class)
   private fun getInternalPaths(context: Context): List<String> {
-    return Arrays.asList(
+    return listOf(
         context.filesDir.canonicalPath,
         context.cacheDir.canonicalPath
     )

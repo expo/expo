@@ -63,6 +63,7 @@ import java.net.CookieHandler
 import java.net.URLConnection
 import java.util.*
 import java.util.concurrent.TimeUnit
+import kotlin.math.pow
 
 class FileSystemModule(
     context: Context,
@@ -134,22 +135,15 @@ class FileSystemModule(
   }
 
   private fun permissionsForUri(uri: Uri): EnumSet<Permission>? {
-    if (isSAFUri(uri)) {
-      return permissionsForSAFUri(uri)
+    return if (isSAFUri(uri)) {
+      permissionsForSAFUri(uri)
+    } else when(uri.scheme) {
+      "content" -> EnumSet.of(Permission.READ)
+      "asset" -> EnumSet.of(Permission.READ)
+      "file" -> permissionsForPath(uri.path)
+      null -> EnumSet.of(Permission.READ)
+      else -> EnumSet.noneOf(Permission::class.java)
     }
-    if ("content" == uri.scheme) {
-      return EnumSet.of(Permission.READ)
-    }
-    if ("asset" == uri.scheme) {
-      return EnumSet.of(Permission.READ)
-    }
-    if ("file" == uri.scheme) {
-      return permissionsForPath(uri.path)
-    }
-    return if (uri.scheme == null) {
-      // this is probably an asset embedded by the packager in resources
-      EnumSet.of(Permission.READ)
-    } else EnumSet.noneOf(Permission::class.java)
   }
 
   private fun permissionsForSAFUri(uri: Uri): EnumSet<Permission> {
@@ -205,62 +199,68 @@ class FileSystemModule(
   }
 
   @ExpoMethod
-  fun getInfoAsync(uriStr: String, options: Map<String?, Any?>, promise: Promise) {
-    var uriStr = uriStr
+  fun getInfoAsync(_uriStr: String, options: Map<String?, Any?>, promise: Promise) {
+    var uriStr = _uriStr
     try {
       val uri = Uri.parse(uriStr)
       var absoluteUri = uri
-      if ("file" == uri.scheme) {
+      if (uri.scheme == "file") {
         uriStr = uriStr.substring(uriStr.indexOf(':') + 3)
         absoluteUri = Uri.parse(uriStr)
       }
       ensurePermission(absoluteUri, Permission.READ)
-      if ("file" == uri.scheme) {
+      if (uri.scheme == "file") {
         val file = uriToFile(absoluteUri)
         val result = Bundle()
         if (file.exists()) {
-          result.putBoolean("exists", true)
-          result.putBoolean("isDirectory", file.isDirectory)
-          result.putString("uri", Uri.fromFile(file).toString())
-          if (options.containsKey("md5") && (options["md5"] == true)) {
-            result.putString("md5", md5(file))
-          }
-          result.putDouble("size", getFileSize(file).toDouble())
-          result.putDouble("modificationTime", 0.001 * file.lastModified())
-          promise.resolve(result)
+          promise.resolve(
+            Bundle().apply {
+              putBoolean("exists", true)
+              putBoolean("isDirectory", file.isDirectory)
+              putString("uri", Uri.fromFile(file).toString())
+              putDouble("size", getFileSize(file).toDouble())
+              putDouble("modificationTime", 0.001 * file.lastModified())
+              if (options.containsKey("md5") && (options["md5"] == true)) {
+                putString("md5", md5(file))
+              }
+            }
+          )
         } else {
-          result.putBoolean("exists", false)
-          result.putBoolean("isDirectory", false)
-          promise.resolve(result)
+          promise.resolve(
+            Bundle().apply {
+              putBoolean("exists", false)
+              putBoolean("isDirectory", false)
+            }
+          )
         }
-      } else if ("content" == uri.scheme || "asset" == uri.scheme || uri.scheme == null) {
-        val result = Bundle()
+      } else if (uri.scheme == "content" || uri.scheme == "asset" || uri.scheme == null) {
         try {
-          val `is`: InputStream? = if ("content" == uri.scheme) {
-            context.contentResolver.openInputStream(uri)
-          } else if ("asset" == uri.scheme) {
-            openAssetInputStream(uri)
-          } else {
-            openResourceInputStream(uriStr)
-          }
-          if (`is` == null) {
-            throw FileNotFoundException()
-          }
-          result.putBoolean("exists", true)
-          result.putBoolean("isDirectory", false)
-          result.putString("uri", uri.toString())
-          // NOTE: `.available()` is supposedly not a reliable source of size info, but it's been
-          //       more reliable than querying `OpenableColumns.SIZE` in practice in tests ¯\_(ツ)_/¯
-          result.putDouble("size", `is`.available().toDouble())
-          if (options.containsKey("md5") && options["md5"] == true) {
-            val md5bytes = DigestUtils.md5(`is`)
-            result.putString("md5", String(Hex.encodeHex(md5bytes)))
-          }
-          promise.resolve(result)
+          val `is`: InputStream = when(uri.scheme) {
+            "content" -> context.contentResolver.openInputStream(uri)
+            "asset" -> openAssetInputStream(uri)
+            else -> openResourceInputStream(uriStr)
+          } ?: throw FileNotFoundException()
+          promise.resolve(
+            Bundle().apply {
+              putBoolean("exists", true)
+              putBoolean("isDirectory", false)
+              putString("uri", uri.toString())
+              // NOTE: `.available()` is supposedly not a reliable source of size info, but it's been
+              //       more reliable than querying `OpenableColumns.SIZE` in practice in tests ¯\_(ツ)_/¯
+              putDouble("size", `is`.available().toDouble())
+              if (options.containsKey("md5") && options["md5"] == true) {
+                val md5bytes = DigestUtils.md5(`is`)
+                putString("md5", String(Hex.encodeHex(md5bytes)))
+              }
+            }
+          )
         } catch (e: FileNotFoundException) {
-          result.putBoolean("exists", false)
-          result.putBoolean("isDirectory", false)
-          promise.resolve(result)
+          promise.resolve(
+            Bundle().apply {
+              putBoolean("exists", false)
+              putBoolean("isDirectory", false)
+            }
+          )
         }
       } else {
         throw IOException("Unsupported scheme for location '$uri'.")
@@ -278,9 +278,10 @@ class FileSystemModule(
       ensurePermission(uri, Permission.READ)
 
       // TODO:Bacon: Add more encoding types to match iOS
-      var encoding = "utf8"
-      if (options.containsKey("encoding") && options["encoding"] is String) {
-        encoding = (options["encoding"] as String).toLowerCase()
+      val encoding = if (options.containsKey("encoding") && options["encoding"] is String) {
+        (options["encoding"] as String).toLowerCase(Locale.ROOT)
+      } else {
+        "utf8"
       }
       var contents: String?
       if (encoding.equals("base64", ignoreCase = true)) {
@@ -298,17 +299,17 @@ class FileSystemModule(
           }
         }
       } else {
-        contents = if ("file" == uri.scheme) {
-          IOUtils.toString(FileInputStream(uriToFile(uri)))
-        } else if ("asset" == uri.scheme) {
-          IOUtils.toString(openAssetInputStream(uri))
-        } else if (uri.scheme == null) {
-          // this is probably an asset embedded by the packager in resources
-          IOUtils.toString(openResourceInputStream(uriStr))
-        } else if (isSAFUri(uri)) {
-          IOUtils.toString(context.contentResolver.openInputStream(uri))
-        } else {
-          throw IOException("Unsupported scheme for location '$uri'.")
+        contents = when (uri.scheme) {
+          "file" -> IOUtils.toString(FileInputStream(uriToFile(uri)))
+          "asset" -> IOUtils.toString(openAssetInputStream(uri))
+          null -> IOUtils.toString(openResourceInputStream(uriStr))
+          else -> {
+            if (isSAFUri(uri)) {
+              IOUtils.toString(context.contentResolver.openInputStream(uri))
+            } else {
+              throw IOException("Unsupported scheme for location '$uri'.")
+            }
+          }
         }
       }
       promise.resolve(contents)
@@ -323,9 +324,10 @@ class FileSystemModule(
     try {
       val uri = Uri.parse(uriStr)
       ensurePermission(uri, Permission.WRITE)
-      var encoding = "utf8"
-      if (options.containsKey("encoding") && options["encoding"] is String) {
-        encoding = (options["encoding"] as String).toLowerCase()
+      val encoding = if (options.containsKey("encoding") && options["encoding"] is String) {
+        (options["encoding"] as String).toLowerCase(Locale.ROOT)
+      } else {
+        "utf8"
       }
       getOutputStream(uri).use { out ->
         if (encoding == "base64") {
@@ -337,7 +339,7 @@ class FileSystemModule(
       }
       promise.resolve(null)
     } catch (e: Exception) {
-      Log.e(TAG, e.message!!)
+      e.message?.let { Log.e(TAG, it) }
       promise.reject(e)
     }
   }
@@ -348,7 +350,7 @@ class FileSystemModule(
       val uri = Uri.parse(uriStr)
       val appendedUri = Uri.withAppendedPath(uri, "..")
       ensurePermission(appendedUri, Permission.WRITE, "Location '$uri' isn't deletable.")
-      if ("file" == uri.scheme) {
+      if (uri.scheme == "file") {
         val file = uriToFile(uri)
         if (file.exists()) {
           if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -403,7 +405,7 @@ class FileSystemModule(
       }
       val toUri = Uri.parse(options["to"] as String?)
       ensurePermission(toUri, Permission.WRITE)
-      if ("file" == fromUri.scheme) {
+      if (fromUri.scheme == "file") {
         val from = uriToFile(fromUri)
         val to = uriToFile(toUri)
         if (from.renameTo(to)) {
@@ -446,7 +448,7 @@ class FileSystemModule(
       val toUri = Uri.parse(options["to"] as String?)
       ensurePermission(toUri, Permission.WRITE)
       when {
-        "file" == fromUri.scheme -> {
+        fromUri.scheme == "file" -> {
           val from = uriToFile(fromUri)
           val to = uriToFile(toUri)
           if (from.isDirectory) {
@@ -458,7 +460,7 @@ class FileSystemModule(
         }
         isSAFUri(fromUri) -> {
           val documentFile = getNearestSAFFile(fromUri)
-          if (!documentFile!!.exists()) {
+          if (documentFile == null || !documentFile.exists()) {
             promise.reject("ERR_FILESYSTEM_CANNOT_FIND_FILE", "File '$fromUri' could not be copied because it could not be found")
             return
           }
@@ -466,13 +468,13 @@ class FileSystemModule(
           transformFilesFromSAF(documentFile, output, true)
           promise.resolve(null)
         }
-        "content" == fromUri.scheme -> {
+        fromUri.scheme == "content" -> {
           val `in` = context.contentResolver.openInputStream(fromUri)
           val out: OutputStream = FileOutputStream(uriToFile(toUri))
           IOUtils.copy(`in`, out)
           promise.resolve(null)
         }
-        "asset" == fromUri.scheme -> {
+        fromUri.scheme == "asset" -> {
           val `in` = openAssetInputStream(fromUri)
           val out: OutputStream = FileOutputStream(uriToFile(toUri))
           IOUtils.copy(`in`, out)
@@ -490,7 +492,7 @@ class FileSystemModule(
         }
       }
     } catch (e: Exception) {
-      Log.e(TAG, e.message!!)
+      e.message?.let { Log.e(TAG, it) }
       promise.reject(e)
     }
   }
@@ -530,7 +532,7 @@ class FileSystemModule(
     try {
       val uri = Uri.parse(uriStr)
       ensurePermission(uri, Permission.WRITE)
-      if ("file" == uri.scheme) {
+      if (uri.scheme == "file") {
         val file = uriToFile(uri)
         val previouslyCreated = file.isDirectory
         val setIntermediates = options.containsKey("intermediates") && options["intermediates"] as Boolean
@@ -555,7 +557,7 @@ class FileSystemModule(
     try {
       val uri = Uri.parse(uriStr)
       ensurePermission(uri, Permission.READ)
-      if ("file" == uri.scheme) {
+      if (uri.scheme == "file") {
         val file = uriToFile(uri)
         val children = file.listFiles()
         if (children != null) {
@@ -588,7 +590,7 @@ class FileSystemModule(
       val blockSize = root.blockSizeLong
       val capacity = BigInteger.valueOf(blockCount).multiply(BigInteger.valueOf(blockSize))
       //cast down to avoid overflow
-      val capacityDouble = Math.min(capacity.toDouble(), Math.pow(2.0, 53.0) - 1)
+      val capacityDouble = Math.min(capacity.toDouble(), 2.0.pow(53.0) - 1)
       promise.resolve(capacityDouble)
     } catch (e: Exception) {
       e.message?.let { Log.e(TAG, it) }
@@ -604,7 +606,7 @@ class FileSystemModule(
       val blockSize = external.blockSizeLong
       val storage = BigInteger.valueOf(availableBlocks).multiply(BigInteger.valueOf(blockSize))
       //cast down to avoid overflow
-      val storageDouble = Math.min(storage.toDouble(), Math.pow(2.0, 53.0) - 1)
+      val storageDouble = Math.min(storage.toDouble(), 2.0.pow(53.0) - 1)
       promise.resolve(storageDouble)
     } catch (e: Exception) {
       e.message?.let { Log.e(TAG, it) }
@@ -619,7 +621,7 @@ class FileSystemModule(
       ensurePermission(fileUri, Permission.WRITE)
       ensurePermission(fileUri, Permission.READ)
       checkIfFileDirExists(fileUri)
-      if ("file" == fileUri.scheme) {
+      if (fileUri.scheme == "file") {
         val file = uriToFile(fileUri)
         promise.resolve(contentUriFromFile(file).toString())
       } else {
@@ -767,7 +769,7 @@ class FileSystemModule(
         promise.reject("ERR_FILESYSTEM_MISSING_UPLOAD_TYPE", "Missing upload type.", null)
         return null
       }
-      val uploadType = UploadType.fromInt((options["uploadType"] as Double?)!!.toInt())
+      val uploadType = UploadType.fromInt((options["uploadType"] as Double).toInt())
       val requestBuilder = Request.Builder().url(url)
       if (options.containsKey(HEADER_KEY)) {
         val headers = options[HEADER_KEY] as Map<String, Any>?
@@ -778,38 +780,41 @@ class FileSystemModule(
         }
       }
       val file = uriToFile(fileUri)
-      if (uploadType == UploadType.BINARY_CONTENT) {
-        val body = decorator.decorate(RequestBody.create(null, file))
-        requestBuilder.method(method, body)
-      } else if (uploadType == UploadType.MULTIPART) {
-        val bodyBuilder = MultipartBody.Builder().setType(MultipartBody.FORM)
-        if (options.containsKey("parameters")) {
-          val parametersMap = options["parameters"] as Map<String, Any>?
-          if (parametersMap != null) {
-            for (key in parametersMap.keys) {
-              bodyBuilder.addFormDataPart(key, parametersMap[key].toString())
+      when (uploadType) {
+        UploadType.BINARY_CONTENT -> {
+          val body = decorator.decorate(RequestBody.create(null, file))
+          requestBuilder.method(method, body)
+        }
+        UploadType.MULTIPART -> {
+          val bodyBuilder = MultipartBody.Builder().setType(MultipartBody.FORM)
+          if (options.containsKey("parameters")) {
+            val parametersMap = options["parameters"] as Map<String, Any>?
+            if (parametersMap != null) {
+              for (key in parametersMap.keys) {
+                bodyBuilder.addFormDataPart(key, parametersMap[key].toString())
+              }
             }
           }
+          val mimeType: String? = if (options.containsKey("mimeType")) {
+            options["mimeType"] as String?
+          } else {
+            URLConnection.guessContentTypeFromName(file.name)
+          }
+          var fieldName = file.name
+          if (options.containsKey("fieldName")) {
+            fieldName = options["fieldName"] as String
+          }
+          bodyBuilder.addFormDataPart(fieldName, file.name, decorator.decorate(RequestBody.create(if (mimeType != null) MediaType.parse(mimeType) else null, file)))
+          requestBuilder.method(method, bodyBuilder.build())
+          return requestBuilder.build()
         }
-        val mimeType: String?
-        mimeType = if (options.containsKey("mimeType")) {
-          options["mimeType"] as String?
-        } else {
-          URLConnection.guessContentTypeFromName(file.name)
+        else -> {
+          promise.reject("ERR_FILESYSTEM_INVALID_UPLOAD_TYPE", String.format("Invalid upload type: %s.", options["uploadType"]), null)
+          return null
         }
-        var fieldName = file.name
-        if (options.containsKey("fieldName")) {
-          fieldName = options["fieldName"] as String?
-        }
-        bodyBuilder.addFormDataPart(fieldName, file.name, decorator.decorate(RequestBody.create(if (mimeType != null) MediaType.parse(mimeType) else null, file)))
-        requestBuilder.method(method, bodyBuilder.build())
-        return requestBuilder.build()
-      } else {
-        promise.reject("ERR_FILESYSTEM_INVALID_UPLOAD_TYPE", String.format("Invalid upload type: %s.", options["uploadType"]), null)
-        return null
       }
     } catch (e: Exception) {
-      Log.e(TAG, e.message!!)
+      e.message?.let { Log.e(TAG, it) }
       promise.reject(e)
     }
     return null
@@ -821,32 +826,27 @@ class FileSystemModule(
       override fun decorate(requestBody: RequestBody): RequestBody {
         return requestBody
       }
-    })
-        ?: return
-    okHttpClient!!.newCall(request).enqueue(object : Callback {
-      override fun onFailure(call: Call, e: IOException) {
-        Log.e(TAG, e.message.toString())
-        promise.reject(e)
-      }
+    }) ?: return
 
-      override fun onResponse(call: Call, response: Response) {
-        val result = Bundle()
-        try {
-          if (response.body() != null) {
-            result.putString("body", response.body()!!.string())
-          } else {
-            result.putString("body", null)
-          }
-        } catch (exception: IOException) {
-          promise.reject(exception)
-          return
+    okHttpClient?.let {
+      it.newCall(request).enqueue(object : Callback {
+        override fun onFailure(call: Call, e: IOException) {
+          Log.e(TAG, e.message.toString())
+          promise.reject(e)
         }
-        result.putInt("status", response.code())
-        result.putBundle("headers", translateHeaders(response.headers()))
-        response.close()
-        promise.resolve(result)
-      }
-    })
+        override fun onResponse(call: Call, response: Response) {
+          val result = Bundle().apply {
+            putString("body", response.body()?.string())
+            putInt("status", response.code())
+            putBundle("headers", translateHeaders(response.headers()))
+          }
+          response.close()
+          promise.resolve(result)
+        }
+      })
+    } ?: run {
+      promise.reject(Exception("okHttpClient is null"))
+    }
   }
 
   @ExpoMethod
@@ -896,19 +896,12 @@ class FileSystemModule(
 
       override fun onResponse(call: Call, response: Response) {
         val result = Bundle()
-        try {
-          val body = response.body()
-          if (body != null) {
-            result.putString("body", body.string())
-          } else {
-            result.putString("body", null)
-          }
-        } catch (exception: IOException) {
-          promise.reject(exception)
-          return
+        val body = response.body()
+        result.apply {
+          putString("body", body?.string())
+          putInt("status", response.code())
+          putBundle("headers", translateHeaders(response.headers()))
         }
-        result.putInt("status", response.code())
-        result.putBundle("headers", translateHeaders(response.headers()))
         response.close()
         promise.resolve(result)
       }
@@ -951,35 +944,40 @@ class FileSystemModule(
             return
           }
         }
-        okHttpClient!!.newCall(requestBuilder.build()).enqueue(object : Callback {
-          override fun onFailure(call: Call, e: IOException) {
-            Log.e(TAG, e.message.toString())
-            promise.reject(e)
-          }
-
-          @Throws(IOException::class)
-          override fun onResponse(call: Call, response: Response) {
-            val file = uriToFile(uri)
-            file.delete()
-            val sink = Okio.buffer(Okio.sink(file))
-            sink.writeAll(response.body()!!.source())
-            sink.close()
-            val result = Bundle()
-            result.putString("uri", Uri.fromFile(file).toString())
-            if (options != null && options.containsKey("md5") && (options["md5"] as Boolean?)!!) {
-              result.putString("md5", md5(file))
+        okHttpClient?.let {
+          it.newCall(requestBuilder.build()).enqueue(object : Callback {
+            override fun onFailure(call: Call, e: IOException) {
+              Log.e(TAG, e.message.toString())
+              promise.reject(e)
             }
-            result.putInt("status", response.code())
-            result.putBundle("headers", translateHeaders(response.headers()))
-            response.close()
-            promise.resolve(result)
-          }
-        })
+
+            @Throws(IOException::class)
+            override fun onResponse(call: Call, response: Response) {
+              val file = uriToFile(uri)
+              file.delete()
+              val sink = Okio.buffer(Okio.sink(file))
+              sink.writeAll(response.body()!!.source())
+              sink.close()
+              val result = Bundle()
+              result.putString("uri", Uri.fromFile(file).toString())
+              if (options != null && options.containsKey("md5") && (options["md5"] as Boolean)) {
+                result.putString("md5", md5(file))
+              }
+              result.putInt("status", response.code())
+              result.putBundle("headers", translateHeaders(response.headers()))
+              response.close()
+              promise.resolve(result)
+            }
+          })
+        } ?: run {
+          promise.reject(Exception("okHttpClient is null"))
+        }
+
       } else {
         throw IOException("Unsupported scheme for location '$uri'.")
       }
     } catch (e: Exception) {
-      Log.e(TAG, e.message)
+      e.message?.let { Log.e(TAG, it) }
       promise.reject(e)
     }
   }
@@ -999,7 +997,6 @@ class FileSystemModule(
       if ("file" != fileUri.scheme) {
         throw IOException("Unsupported scheme for location '$fileUri'.")
       }
-      val isResume = resumeData != null
       val progressListener: ProgressListener = object : ProgressListener {
         var mLastUpdate: Long = -1
         override fun update(bytesRead: Long, contentLength: Long, done: Boolean) {
@@ -1007,8 +1004,8 @@ class FileSystemModule(
           if (eventEmitter != null) {
             val downloadProgress = Bundle()
             val downloadProgressData = Bundle()
-            val totalBytesWritten = if (isResume) bytesRead + resumeData.toLong() else bytesRead
-            val totalBytesExpectedToWrite = if (isResume) contentLength + resumeData.toLong() else contentLength
+            val totalBytesWritten = bytesRead + (resumeData?.toLong() ?: 0)
+            val totalBytesExpectedToWrite = contentLength + (resumeData?.toLong() ?: 0)
             val currentTime = System.currentTimeMillis()
 
             // Throttle events. Sending too many events will block the JS event loop.
@@ -1024,22 +1021,28 @@ class FileSystemModule(
           }
         }
       }
-      val client = okHttpClient!!.newBuilder()
-          .addNetworkInterceptor { chain ->
+      val client = okHttpClient?.newBuilder()
+          ?.addNetworkInterceptor { chain ->
             val originalResponse = chain.proceed(chain.request())
             originalResponse.newBuilder()
                 .body(ProgressResponseBody(originalResponse.body(), progressListener))
                 .build()
           }
-          .build()
-      val requestBuilder = Request.Builder()
-      if (isResume) {
-        requestBuilder.addHeader("Range", "bytes=$resumeData-")
+          ?.build()
+      if (client == null) {
+        promise.reject(Exception("okHttpClient is null"))
+        return
       }
-      if (options != null && options.containsKey(HEADER_KEY)) {
+      val requestBuilder = Request.Builder()
+      resumeData.let {
+        requestBuilder.addHeader("Range", "bytes=$it-")
+      }
+      if (options.containsKey(HEADER_KEY)) {
         val headers = options[HEADER_KEY] as Map<String, Any>?
-        for (key in headers!!.keys) {
-          requestBuilder.addHeader(key, headers[key].toString())
+        if (headers != null) {
+          for (key in headers.keys) {
+            requestBuilder.addHeader(key, headers[key].toString())
+          }
         }
       }
       val request = requestBuilder.url(url).build()
@@ -1047,11 +1050,11 @@ class FileSystemModule(
       val taskHandler: TaskHandler = DownloadTaskHandler(fileUri, call)
       taskHandlers[uuid] = taskHandler
       val file = uriToFile(fileUri)
-      val params = DownloadResumableTaskParams(options, call, file, isResume, promise)
+      val params = DownloadResumableTaskParams(options, call, file, resumeData != null, promise)
       val task = DownloadResumableTask()
       task.execute(params)
     } catch (e: Exception) {
-      Log.e(TAG, e.message!!)
+      e.message?.let { Log.e(TAG, it) }
       promise.reject(e)
     }
   }
@@ -1061,7 +1064,7 @@ class FileSystemModule(
     val taskHandler = taskHandlers[uuid]
     if (taskHandler == null) {
       val e: Exception = IOException("No download object available")
-      Log.e(TAG, e.message!!)
+      e.message?.let { Log.e(TAG, it) }
       promise.reject(e)
       return
     }
@@ -1077,7 +1080,7 @@ class FileSystemModule(
       result.putString("resumeData", file.length().toString())
       promise.resolve(result)
     } catch (e: Exception) {
-      Log.e(TAG, e.message!!)
+      e.message?.let { Log.e(TAG, it) }
       promise.reject(e)
     }
   }
@@ -1090,13 +1093,15 @@ class FileSystemModule(
         val treeUri = data.data
         val takeFlags = (data.flags
             and (Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION))
-        activity.contentResolver.takePersistableUriPermission(treeUri!!, takeFlags)
+        if (treeUri != null) {
+          activity.contentResolver.takePersistableUriPermission(treeUri, takeFlags)
+        }
         result.putBoolean("granted", true)
         result.putString("directoryUri", treeUri.toString())
       } else {
         result.putBoolean("granted", false)
       }
-      dirPermissionsRequest!!.resolve(result)
+      dirPermissionsRequest?.resolve(result)
       uIManager.unregisterActivityEventListener(this)
       dirPermissionsRequest = null
     }
@@ -1112,8 +1117,8 @@ class FileSystemModule(
       val isResume = params[0]?.isResume
       val options = params[0]?.options
       return try {
-        val response = call?.execute()
-        val responseBody = response?.body()
+        val response = call!!.execute()
+        val responseBody = response.body()
         val input = BufferedInputStream(responseBody!!.byteStream())
         val output: OutputStream = if (isResume == true) {
           FileOutputStream(file, true)
@@ -1127,11 +1132,14 @@ class FileSystemModule(
         }
         val result = Bundle()
         result.putString("uri", Uri.fromFile(file).toString())
-        if (options != null && options.containsKey("md5") && (options["md5"] as Boolean?)!!) {
+        if (options != null && options.containsKey("md5") && (options["md5"] as Boolean)) {
           result.putString("md5", file?.let { md5(it) })
         }
-        result.putInt("status", response.code())
-        result.putBundle("headers", translateHeaders(response.headers()))
+
+        result.apply {
+          putInt("status", response.code())
+          putBundle("headers", translateHeaders(response.headers()))
+        }
         response.close()
         promise?.resolve(result)
         null
@@ -1142,7 +1150,7 @@ class FileSystemModule(
             return null
           }
         }
-        Log.e(TAG, e.message!!)
+        e.message?.let { Log.e(TAG, it) }
         promise?.reject(e)
         null
       }
@@ -1156,18 +1164,15 @@ class FileSystemModule(
   private class ProgressResponseBody internal constructor(private val responseBody: ResponseBody?, private val progressListener: ProgressListener) : ResponseBody() {
     private var bufferedSource: BufferedSource? = null
     override fun contentType(): MediaType? {
-      return responseBody!!.contentType()
+      return responseBody?.contentType()
     }
 
     override fun contentLength(): Long {
-      return responseBody!!.contentLength()
+      return responseBody?.contentLength() ?: -1
     }
 
     override fun source(): BufferedSource {
-      if (bufferedSource == null) {
-        bufferedSource = Okio.buffer(source(responseBody!!.source()))
-      }
-      return bufferedSource!!
+      return bufferedSource ?: Okio.buffer(source(responseBody!!.source()))
     }
 
     private fun source(source: Source): Source {
@@ -1178,7 +1183,7 @@ class FileSystemModule(
           val bytesRead = super.read(sink, byteCount)
           // read() returns the number of bytes read, or -1 if this source is exhausted.
           totalBytesRead += if (bytesRead != -1L) bytesRead else 0
-          progressListener.update(totalBytesRead, responseBody!!.contentLength(), bytesRead == -1L)
+          progressListener.update(totalBytesRead, responseBody?.contentLength() ?: -1, bytesRead == -1L)
           return bytesRead
         }
       }
@@ -1191,7 +1196,7 @@ class FileSystemModule(
 
   @get:Synchronized
   private val okHttpClient: OkHttpClient?
-    private get() {
+    get() {
       if (client == null) {
         val builder = OkHttpClient.Builder()
             .connectTimeout(60, TimeUnit.SECONDS)
@@ -1207,11 +1212,9 @@ class FileSystemModule(
   @Throws(IOException::class)
   private fun md5(file: File): String {
     val `is`: InputStream = FileInputStream(file)
-    return try {
-      val md5bytes = DigestUtils.md5(`is`)
+    return `is`.use {
+      val md5bytes = DigestUtils.md5(it)
       String(Hex.encodeHex(md5bytes))
-    } finally {
-      `is`.close()
     }
   }
 
@@ -1264,25 +1267,21 @@ class FileSystemModule(
 
   @Throws(IOException::class)
   private fun getInputStream(uri: Uri): InputStream {
-    if (uri.scheme == "file") {
-      return FileInputStream(uriToFile(uri))
-    } else if (uri.scheme == "asset") {
-      return openAssetInputStream(uri)
-    } else if (isSAFUri(uri)) {
-      return context.contentResolver.openInputStream(uri)!!
+    return when {
+      uri.scheme == "file" -> FileInputStream(uriToFile(uri))
+      uri.scheme == "asset" -> openAssetInputStream(uri)
+      isSAFUri(uri) -> context.contentResolver.openInputStream(uri)!!
+      else -> throw IOException("Unsupported scheme for location '$uri'.")
     }
-    throw IOException("Unsupported scheme for location '$uri'.")
   }
 
   @Throws(IOException::class)
   private fun getOutputStream(uri: Uri): OutputStream {
-    if ("file" == uri.scheme) {
-      return FileOutputStream(uriToFile(uri))
+    return when {
+      uri.scheme == "file" -> FileOutputStream(uriToFile(uri))
+      isSAFUri(uri) -> context.contentResolver.openOutputStream(uri)!!
+      else -> throw IOException("Unsupported scheme for location '$uri'.")
     }
-    if (isSAFUri(uri)) {
-      return context.contentResolver.openOutputStream(uri)!!
-    }
-    throw IOException("Unsupported scheme for location '$uri'.")
   }
 
   private fun getNearestSAFFile(uri: Uri): DocumentFile? {
@@ -1309,7 +1308,7 @@ class FileSystemModule(
      * @return whatever the provided URI is SAF URI
      */
     private fun isSAFUri(uri: Uri): Boolean {
-      return "content" == uri.scheme && uri.host?.startsWith("com.android.externalstorage") ?: false
+      return uri.scheme == "content" && uri.host?.startsWith("com.android.externalstorage") ?: false
     }
 
     @Throws(IOException::class)
