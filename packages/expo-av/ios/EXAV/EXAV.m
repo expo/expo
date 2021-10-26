@@ -37,6 +37,8 @@ NSString *const EXDidUpdateMetadataEventName = @"didUpdateMetadata";
 
 @interface EXAV ()
 
+@property (weak, nonatomic) RCTBridge *bridge;
+
 @property (nonatomic, weak) id kernelAudioSessionManagerDelegate;
 @property (nonatomic, weak) id kernelPermissionsServiceDelegate;
 
@@ -95,6 +97,11 @@ EX_EXPORT_MODULE(ExponentAV);
     _audioRecorderDurationMillis = 0;
   }
   return self;
+}
+
+- (void)setBridge:(RCTBridge *)bridge
+{
+  _bridge = bridge;
 }
 
 + (const NSArray<Protocol *> *)exportedInterfaces
