@@ -4,6 +4,7 @@ import org.json.JSONObject;
 
 import java.util.List;
 
+import expo.modules.updates.UpdatesConfiguration;
 import expo.modules.updates.db.entity.UpdateEntity;
 
 public class SelectionPolicy {
@@ -32,15 +33,15 @@ public class SelectionPolicy {
     return mReaperSelectionPolicy;
   }
 
-  public UpdateEntity selectUpdateToLaunch(List<UpdateEntity> updates, JSONObject filters) {
-    return mLauncherSelectionPolicy.selectUpdateToLaunch(updates, filters);
+  public UpdateEntity selectUpdateToLaunch(List<UpdateEntity> updates, JSONObject filters, UpdatesConfiguration configuration) {
+    return mLauncherSelectionPolicy.selectUpdateToLaunch(updates, filters, configuration);
   }
 
-  public List<UpdateEntity> selectUpdatesToDelete(List<UpdateEntity> updates, UpdateEntity launchedUpdate, JSONObject filters) {
-    return mReaperSelectionPolicy.selectUpdatesToDelete(updates, launchedUpdate, filters);
+  public List<UpdateEntity> selectUpdatesToDelete(List<UpdateEntity> updates, UpdateEntity launchedUpdate, JSONObject filters, UpdatesConfiguration configuration) {
+    return mReaperSelectionPolicy.selectUpdatesToDelete(updates, launchedUpdate, filters, configuration);
   }
 
-  public boolean shouldLoadNewUpdate(UpdateEntity newUpdate, UpdateEntity launchedUpdate, JSONObject filters) {
-    return mLoaderSelectionPolicy.shouldLoadNewUpdate(newUpdate, launchedUpdate, filters);
+  public boolean shouldLoadNewUpdate(UpdateEntity newUpdate, UpdateEntity launchedUpdate, JSONObject filters, UpdatesConfiguration configuration) {
+    return mLoaderSelectionPolicy.shouldLoadNewUpdate(newUpdate, launchedUpdate, filters,configuration);
   }
 }

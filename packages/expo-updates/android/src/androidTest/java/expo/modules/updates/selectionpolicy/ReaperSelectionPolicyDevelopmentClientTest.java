@@ -11,6 +11,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
+import expo.modules.updates.UpdatesConfiguration;
 import expo.modules.updates.db.entity.UpdateEntity;
 
 @RunWith(AndroidJUnit4ClassRunner.class)
@@ -40,7 +41,7 @@ public class ReaperSelectionPolicyDevelopmentClientTest {
             // the order of the list shouldn't matter
             Arrays.asList(update2, update5, update4, update1, update3),
             update5,
-            null);
+            null,new UpdatesConfiguration());
 
     Assert.assertEquals(2, updatesToDelete.size());
     Assert.assertTrue(updatesToDelete.contains(update1));
@@ -59,7 +60,7 @@ public class ReaperSelectionPolicyDevelopmentClientTest {
     List<UpdateEntity> updatesToDelete = selectionPolicy.selectUpdatesToDelete(
             Arrays.asList(update3, update4, update1, update2),
             update4,
-            null);
+            null,new UpdatesConfiguration());
 
     Assert.assertEquals(1, updatesToDelete.size());
     Assert.assertTrue(updatesToDelete.contains(update1));
@@ -77,7 +78,7 @@ public class ReaperSelectionPolicyDevelopmentClientTest {
     List<UpdateEntity> updatesToDelete = selectionPolicy.selectUpdatesToDelete(
             Arrays.asList(update1, update2, update3, update4),
             update1,
-            null);
+            null,new UpdatesConfiguration());
 
     Assert.assertEquals(1, updatesToDelete.size());
     Assert.assertTrue(updatesToDelete.contains(update2));
@@ -89,7 +90,7 @@ public class ReaperSelectionPolicyDevelopmentClientTest {
     List<UpdateEntity> updatesToDelete = selectionPolicy.selectUpdatesToDelete(
             Arrays.asList(update1, update2, update3, update4),
             null,
-            null);
+            null,new UpdatesConfiguration());
     Assert.assertEquals(0, updatesToDelete.size());
   }
 
@@ -99,10 +100,10 @@ public class ReaperSelectionPolicyDevelopmentClientTest {
     Assert.assertEquals(0, selectionPolicy.selectUpdatesToDelete(
             Arrays.asList(update1, update2),
             update2,
-            null).size());
+            null,new UpdatesConfiguration()).size());
     Assert.assertEquals(0, selectionPolicy.selectUpdatesToDelete(
             Arrays.asList(update1, update2, update3),
             update3,
-            null).size());
+            null,new UpdatesConfiguration()).size());
   }
 }

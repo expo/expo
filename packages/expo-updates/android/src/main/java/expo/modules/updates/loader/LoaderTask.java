@@ -247,7 +247,7 @@ public class LoaderTask {
       UpdateEntity embeddedUpdate = EmbeddedManifest.get(context, mConfiguration).getUpdateEntity();
       UpdateEntity launchableUpdate = launcher.getLaunchableUpdate(database, context);
       JSONObject manifestFilters = ManifestMetadata.getManifestFilters(database, mConfiguration);
-      if (mSelectionPolicy.shouldLoadNewUpdate(embeddedUpdate, launchableUpdate, manifestFilters)) {
+      if (mSelectionPolicy.shouldLoadNewUpdate(embeddedUpdate, launchableUpdate, manifestFilters,mConfiguration)) {
         new EmbeddedLoader(context, mConfiguration, database, mDirectory).start(new Loader.LoaderCallback() {
           @Override
           public void onFailure(Exception e) {
@@ -300,7 +300,9 @@ public class LoaderTask {
             if (mSelectionPolicy.shouldLoadNewUpdate(
                   updateManifest.getUpdateEntity(),
                   mCandidateLauncher == null ? null : mCandidateLauncher.getLaunchedUpdate(),
-                  updateManifest.getManifestFilters())) {
+                  updateManifest.getManifestFilters(),
+                  mConfiguration
+            )) {
               mIsUpToDate = false;
               mCallback.onRemoteUpdateManifestLoaded(updateManifest);
               return true;

@@ -6,19 +6,21 @@ import org.json.JSONObject;
 
 import java.util.Iterator;
 
+import expo.modules.updates.UpdatesConfiguration;
+import expo.modules.updates.UpdatesModule;
 import expo.modules.updates.db.entity.UpdateEntity;
 
 public class SelectionPolicies {
 
   public static final String TAG = SelectionPolicies.class.getSimpleName();
 
-  public static boolean matchesFilters(UpdateEntity update, JSONObject manifestFilters) {
+  public static boolean matchesFilters(UpdateEntity update, JSONObject manifestFilters, UpdatesConfiguration configuration) {
     if (manifestFilters == null || update.manifest == null){
       return true;
     }
     if (update.manifest.has("releaseChannel")) {
       // legacy update
-      return manifestFilters.optString("releaseChannel").equals(update.manifest.optString("releaseChannel")) ;
+      return update.manifest.optString("releaseChannel").equals(configuration.getReleaseChannel());
     }
     if (!update.manifest.has("metadata")) {
       // empty matches all

@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import expo.modules.updates.UpdatesConfiguration;
 import expo.modules.updates.db.entity.UpdateEntity;
 
 /**
@@ -31,7 +32,7 @@ public class ReaperSelectionPolicyDevelopmentClient implements ReaperSelectionPo
   }
 
   @Override
-  public List<UpdateEntity> selectUpdatesToDelete(List<UpdateEntity> updates, UpdateEntity launchedUpdate, JSONObject filters) {
+  public List<UpdateEntity> selectUpdatesToDelete(List<UpdateEntity> updates, UpdateEntity launchedUpdate, JSONObject filters, UpdatesConfiguration configuration) {
     if (launchedUpdate == null || updates.size() <= mMaxUpdatesToKeep) {
       return new ArrayList<>();
     }

@@ -158,7 +158,7 @@ public class DatabaseLauncher implements Launcher {
     }
 
     JSONObject manifestFilters = ManifestMetadata.getManifestFilters(database, mConfiguration);
-    return mSelectionPolicy.selectUpdateToLaunch(filteredLaunchableUpdates, manifestFilters);
+    return mSelectionPolicy.selectUpdateToLaunch(filteredLaunchableUpdates, manifestFilters, mConfiguration);
   }
 
   /* package */ File ensureAssetExists(AssetEntity asset, UpdatesDatabase database, Context context) {

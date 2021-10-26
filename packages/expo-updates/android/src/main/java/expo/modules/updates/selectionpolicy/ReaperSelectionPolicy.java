@@ -4,6 +4,7 @@ import org.json.JSONObject;
 
 import java.util.List;
 
+import expo.modules.updates.UpdatesConfiguration;
 import expo.modules.updates.db.entity.UpdateEntity;
 
 /**
@@ -11,5 +12,5 @@ import expo.modules.updates.db.entity.UpdateEntity;
  * automatically delete from disk and which ones to keep.
  */
 public interface ReaperSelectionPolicy {
-  List<UpdateEntity> selectUpdatesToDelete(List<UpdateEntity> updates, UpdateEntity launchedUpdate, JSONObject filters);
+  List<UpdateEntity> selectUpdatesToDelete(List<UpdateEntity> updates, UpdateEntity launchedUpdate, JSONObject filters, UpdatesConfiguration configuration);
 }

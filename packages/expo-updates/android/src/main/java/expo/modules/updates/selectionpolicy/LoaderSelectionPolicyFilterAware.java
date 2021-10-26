@@ -2,6 +2,7 @@ package expo.modules.updates.selectionpolicy;
 
 import org.json.JSONObject;
 
+import expo.modules.updates.UpdatesConfiguration;
 import expo.modules.updates.db.entity.UpdateEntity;
 
 /**
@@ -12,12 +13,12 @@ import expo.modules.updates.db.entity.UpdateEntity;
 public class LoaderSelectionPolicyFilterAware implements LoaderSelectionPolicy {
 
   @Override
-  public boolean shouldLoadNewUpdate(UpdateEntity newUpdate, UpdateEntity launchedUpdate, JSONObject filters) {
+  public boolean shouldLoadNewUpdate(UpdateEntity newUpdate, UpdateEntity launchedUpdate, JSONObject filters, UpdatesConfiguration configuration) {
     if (newUpdate == null) {
       return false;
     }
     // if the new update doesn't pass its own manifest filters, we shouldn't load it
-    if (!SelectionPolicies.matchesFilters(newUpdate, filters)) {
+    if (!SelectionPolicies.matchesFilters(newUpdate, filters,configuration)) {
       return false;
     }
 
@@ -26,7 +27,7 @@ public class LoaderSelectionPolicyFilterAware implements LoaderSelectionPolicy {
     }
     // if the current update doesn't pass the manifest filters
     // we should load the new update no matter the commitTime
-    if (!SelectionPolicies.matchesFilters(launchedUpdate, filters)) {
+    if (!SelectionPolicies.matchesFilters(launchedUpdate, filters,configuration)) {
       return true;
     }
     return newUpdate.commitTime.after(launchedUpdate.commitTime);

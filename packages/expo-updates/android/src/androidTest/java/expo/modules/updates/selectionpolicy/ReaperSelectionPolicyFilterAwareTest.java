@@ -12,6 +12,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
+import expo.modules.updates.UpdatesConfiguration;
 import expo.modules.updates.db.entity.UpdateEntity;
 
 @RunWith(AndroidJUnit4ClassRunner.class)
@@ -27,7 +28,7 @@ public class ReaperSelectionPolicyFilterAwareTest {
 
   @Test
   public void testSelectUpdatesToDelete_onlyOneUpdate() {
-    List<UpdateEntity> updatesToDelete = selectionPolicy.selectUpdatesToDelete(Collections.singletonList(update1), update1, null);
+    List<UpdateEntity> updatesToDelete = selectionPolicy.selectUpdatesToDelete(Collections.singletonList(update1), update1, null,new UpdatesConfiguration());
 
     Assert.assertEquals(0, updatesToDelete.size());
   }
@@ -37,7 +38,7 @@ public class ReaperSelectionPolicyFilterAwareTest {
     List<UpdateEntity> updatesToDelete = selectionPolicy.selectUpdatesToDelete(
             Arrays.asList(update1, update2, update3),
             update3,
-            null);
+            null,new UpdatesConfiguration());
 
     Assert.assertEquals(1, updatesToDelete.size());
     Assert.assertTrue(updatesToDelete.contains(update1));
@@ -50,7 +51,7 @@ public class ReaperSelectionPolicyFilterAwareTest {
     List<UpdateEntity> updatesToDelete = selectionPolicy.selectUpdatesToDelete(
             Arrays.asList(update1, update2),
             update1,
-            null);
+            null,new UpdatesConfiguration());
 
     Assert.assertEquals(0, updatesToDelete.size());
   }
@@ -60,7 +61,7 @@ public class ReaperSelectionPolicyFilterAwareTest {
     List<UpdateEntity> updatesToDelete = selectionPolicy.selectUpdatesToDelete(
             Arrays.asList(update1, update2, update3, update4, update5),
             update4,
-            null);
+            null,new UpdatesConfiguration());
 
     Assert.assertEquals(2, updatesToDelete.size());
     Assert.assertTrue(updatesToDelete.contains(update1));
@@ -76,7 +77,7 @@ public class ReaperSelectionPolicyFilterAwareTest {
     List<UpdateEntity> updatesToDelete = selectionPolicy.selectUpdatesToDelete(
             Arrays.asList(update1, update2, update3, update4DifferentScope),
             update4DifferentScope,
-            null);
+            null,new UpdatesConfiguration());
 
     // shouldn't delete any updates whose scope key doesn't match that of `launchedUpdate`
     Assert.assertEquals(0, updatesToDelete.size());

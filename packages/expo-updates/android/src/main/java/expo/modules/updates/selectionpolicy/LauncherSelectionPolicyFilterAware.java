@@ -5,6 +5,7 @@ import org.json.JSONObject;
 import java.util.Collections;
 import java.util.List;
 
+import expo.modules.updates.UpdatesConfiguration;
 import expo.modules.updates.db.entity.UpdateEntity;
 
 /**
@@ -25,10 +26,10 @@ public class LauncherSelectionPolicyFilterAware implements LauncherSelectionPoli
   }
 
   @Override
-  public UpdateEntity selectUpdateToLaunch(List<UpdateEntity> updates, JSONObject filters) {
+  public UpdateEntity selectUpdateToLaunch(List<UpdateEntity> updates, JSONObject filters, UpdatesConfiguration configuration) {
     UpdateEntity updateToLaunch = null;
     for (UpdateEntity update : updates) {
-      if (!mRuntimeVersions.contains(update.runtimeVersion) || !SelectionPolicies.matchesFilters(update, filters)) {
+      if (!mRuntimeVersions.contains(update.runtimeVersion) || !SelectionPolicies.matchesFilters(update, filters, configuration)) {
         continue;
       }
       if (updateToLaunch == null || updateToLaunch.commitTime.before(update.commitTime)) {

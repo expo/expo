@@ -160,7 +160,7 @@ public class UpdatesModule extends ExportedModule {
             return;
           }
 
-          if (updatesService.getSelectionPolicy().shouldLoadNewUpdate(updateManifest.getUpdateEntity(), launchedUpdate, updateManifest.getManifestFilters())) {
+          if (updatesService.getSelectionPolicy().shouldLoadNewUpdate(updateManifest.getUpdateEntity(), launchedUpdate, updateManifest.getManifestFilters(), updatesService.getConfiguration())) {
             updateInfo.putBoolean("isAvailable", true);
             updateInfo.putString("manifestString", updateManifest.getManifest().toString());
             promise.resolve(updateInfo);
@@ -207,7 +207,8 @@ public class UpdatesModule extends ExportedModule {
                 return updatesService.getSelectionPolicy().shouldLoadNewUpdate(
                   updateManifest.getUpdateEntity(),
                   updatesService.getLaunchedUpdate(),
-                  updateManifest.getManifestFilters());
+                  updateManifest.getManifestFilters(),
+                  updatesService.getConfiguration());
               }
 
               @Override

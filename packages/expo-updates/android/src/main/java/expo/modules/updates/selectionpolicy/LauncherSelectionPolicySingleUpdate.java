@@ -5,6 +5,7 @@ import org.json.JSONObject;
 import java.util.List;
 import java.util.UUID;
 
+import expo.modules.updates.UpdatesConfiguration;
 import expo.modules.updates.db.entity.UpdateEntity;
 
 /**
@@ -19,7 +20,7 @@ public class LauncherSelectionPolicySingleUpdate implements LauncherSelectionPol
   }
 
   @Override
-  public UpdateEntity selectUpdateToLaunch(List<UpdateEntity> updates, JSONObject filters) {
+  public UpdateEntity selectUpdateToLaunch(List<UpdateEntity> updates, JSONObject filters, UpdatesConfiguration configuration) {
     for (UpdateEntity update : updates) {
       if (update.id.equals(mUpdateID)) {
         return update;

@@ -1,6 +1,10 @@
 package expo.modules.updates.selectionpolicy
 
+import android.content.Context
+import android.content.pm.ApplicationInfo
+import android.content.pm.PackageManager
 import android.net.Uri
+import android.os.Bundle
 import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner
 import expo.modules.manifests.core.LegacyManifest
 import expo.modules.updates.UpdatesConfiguration
@@ -14,6 +18,7 @@ import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.mockito.Mockito
 import java.util.*
 
 @RunWith(AndroidJUnit4ClassRunner::class)
@@ -28,6 +33,8 @@ class SelectionPolicyFilterAwareTest {
   var updateMultipleFilters: UpdateEntity? = null
   var updateNoMetadata: UpdateEntity? = null
   var legacyUpdate: UpdateEntity? = null
+  var legacyUpdateNonExistentReleaseChannel: UpdateEntity? = null
+  private var config:  UpdatesConfiguration = UpdatesConfiguration()
 
   @Before
   @Throws(JSONException::class)
@@ -36,7 +43,8 @@ class SelectionPolicyFilterAwareTest {
     selectionPolicy = SelectionPolicyFactory.createFilterAwarePolicy("1.0")
     val configMap = HashMap<String, Any>()
     configMap["updateUrl"] = Uri.parse("https://exp.host/@test/test")
-    val config = UpdatesConfiguration().loadValuesFromMap(configMap)
+    configMap["releaseChannel"] = "test"
+    config.loadValuesFromMap(configMap)
     val manifestJsonRollout0 = NewManifest(JSONObject("{\"id\":\"079cde35-8433-4c17-81c8-7117c1513e71\",\"createdAt\":\"2021-01-10T19:39:22.480Z\",\"runtimeVersion\":\"1.0\",\"launchAsset\":{\"hash\":\"DW5MBgKq155wnX8rCP1lnsW6BsTbfKLXxGXRQx1RcOA\",\"key\":\"0436e5821bff7b95a84c21f22a43cb96.bundle\",\"contentType\":\"application/javascript\",\"url\":\"https://url.to/bundle\"},\"assets\":[{\"hash\":\"JSeRsPNKzhVdHP1OEsDVsLH500Zfe4j1O7xWfa14oBo\",\"key\":\"3261e570d51777be1e99116562280926.png\",\"contentType\":\"image/png\",\"url\":\"https://url.to/asset\"}],\"metadata\":{\"branchName\":\"rollout\"}}"))
     updateRollout0 = NewUpdateManifest.fromNewManifest(manifestJsonRollout0, null, config).updateEntity
     val manifestJsonDefault1 = NewManifest(JSONObject("{\"id\":\"079cde35-8433-4c17-81c8-7117c1513e72\",\"createdAt\":\"2021-01-11T19:39:22.480Z\",\"runtimeVersion\":\"1.0\",\"launchAsset\":{\"hash\":\"DW5MBgKq155wnX8rCP1lnsW6BsTbfKLXxGXRQx1RcOA\",\"key\":\"0436e5821bff7b95a84c21f22a43cb96.bundle\",\"contentType\":\"application/javascript\",\"url\":\"https://url.to/bundle\"},\"assets\":[{\"hash\":\"JSeRsPNKzhVdHP1OEsDVsLH500Zfe4j1O7xWfa14oBo\",\"key\":\"3261e570d51777be1e99116562280926.png\",\"contentType\":\"image/png\",\"url\":\"https://url.to/asset\"}],\"metadata\":{\"branchName\":\"default\"}}"))
@@ -51,22 +59,24 @@ class SelectionPolicyFilterAwareTest {
     updateMultipleFilters = NewUpdateManifest.fromNewManifest(manifestJsonMultipleFilters, null, config).updateEntity
     val manifestJsonNoMetadata = NewManifest(JSONObject("{\"id\":\"079cde35-8433-4c17-81c8-7117c1513e72\",\"createdAt\":\"2021-01-11T19:39:22.480Z\",\"runtimeVersion\":\"1.0\",\"launchAsset\":{\"hash\":\"DW5MBgKq155wnX8rCP1lnsW6BsTbfKLXxGXRQx1RcOA\",\"key\":\"0436e5821bff7b95a84c21f22a43cb96.bundle\",\"contentType\":\"application/javascript\",\"url\":\"https://url.to/bundle\"},\"assets\":[{\"hash\":\"JSeRsPNKzhVdHP1OEsDVsLH500Zfe4j1O7xWfa14oBo\",\"key\":\"3261e570d51777be1e99116562280926.png\",\"contentType\":\"image/png\",\"url\":\"https://url.to/asset\"}]}"))
     updateNoMetadata = NewUpdateManifest.fromNewManifest(manifestJsonNoMetadata, null, config).updateEntity
-    val legacyManifest = LegacyManifest(JSONObject("{\"sdkVersion\":\"39.0.0\",\"releaseId\":\"0eef8214-4833-4089-9dff-b4138a14f196\",\"commitTime\":\"2020-11-11T00:17:54.797Z\",\"bundleUrl\":\"https://url.to/bundle.js\",\"releaseChannel\":\"default\"}"))
+    val legacyManifest = LegacyManifest(JSONObject("{\"sdkVersion\":\"39.0.0\",\"releaseId\":\"0eef8214-4833-4089-9dff-b4138a14f196\",\"commitTime\":\"2020-11-11T00:17:54.797Z\",\"bundleUrl\":\"https://url.to/bundle.js\",\"releaseChannel\":\"test\"}"))
     legacyUpdate = LegacyUpdateManifest.fromLegacyManifest(legacyManifest,config).updateEntity
+    val legacyManifestNonExistentReleaseChannel = LegacyManifest(JSONObject("{\"sdkVersion\":\"39.0.0\",\"releaseId\":\"0eef8214-4833-4089-9dff-b4138a14f196\",\"commitTime\":\"2020-11-11T00:17:54.797Z\",\"bundleUrl\":\"https://url.to/bundle.js\",\"releaseChannel\":\"does-not-exist\"}"))
+    legacyUpdateNonExistentReleaseChannel = LegacyUpdateManifest.fromLegacyManifest(legacyManifestNonExistentReleaseChannel,config).updateEntity
   }
 
   @Test
   fun testSelectUpdateToLaunch() {
     // should pick the newest update that matches the manifest filters
     val expected = updateRollout1
-    val actual = selectionPolicy!!.selectUpdateToLaunch(Arrays.asList(updateDefault1, expected, updateDefault2), manifestFilters)
+    val actual = selectionPolicy!!.selectUpdateToLaunch(Arrays.asList(updateDefault1, expected, updateDefault2), manifestFilters,config)
     Assert.assertEquals(expected, actual)
   }
 
   @Test
   fun testSelectUpdatesToDelete_SecondNewestMatching() {
     // if there is an older update that matches the manifest filters, keep that one over any newer ones that don't match
-    val updatesToDelete = selectionPolicy!!.selectUpdatesToDelete(Arrays.asList(updateRollout0, updateDefault1, updateRollout1, updateDefault2, updateRollout2), updateRollout2, manifestFilters)
+    val updatesToDelete = selectionPolicy!!.selectUpdatesToDelete(Arrays.asList(updateRollout0, updateDefault1, updateRollout1, updateDefault2, updateRollout2), updateRollout2, manifestFilters,config)
     Assert.assertEquals(3, updatesToDelete.size.toLong())
     Assert.assertTrue(updatesToDelete.contains(updateRollout0))
     Assert.assertTrue(updatesToDelete.contains(updateDefault1))
@@ -78,7 +88,7 @@ class SelectionPolicyFilterAwareTest {
   @Test
   fun testSelectUpdatesToDelete_NoneOlderMatching() {
     // if there is no older update that matches the manifest filters, just keep the next newest one
-    val updatesToDelete = selectionPolicy!!.selectUpdatesToDelete(Arrays.asList(updateDefault1, updateDefault2, updateRollout2), updateRollout2, manifestFilters)
+    val updatesToDelete = selectionPolicy!!.selectUpdatesToDelete(Arrays.asList(updateDefault1, updateDefault2, updateRollout2), updateRollout2, manifestFilters,config)
     Assert.assertEquals(1, updatesToDelete.size.toLong())
     Assert.assertTrue(updatesToDelete.contains(updateDefault1))
     Assert.assertFalse(updatesToDelete.contains(updateDefault2))
@@ -87,33 +97,33 @@ class SelectionPolicyFilterAwareTest {
 
   @Test
   fun testShouldLoadNewUpdate_NormalCase_NewUpdate() {
-    val actual = selectionPolicy!!.shouldLoadNewUpdate(updateRollout2, updateRollout1, manifestFilters)
+    val actual = selectionPolicy!!.shouldLoadNewUpdate(updateRollout2, updateRollout1, manifestFilters,config)
     Assert.assertTrue(actual)
   }
 
   @Test
   fun testShouldLoadNewUpdate_NormalCase_NoUpdate() {
-    val actual = selectionPolicy!!.shouldLoadNewUpdate(updateRollout1, updateRollout1, manifestFilters)
+    val actual = selectionPolicy!!.shouldLoadNewUpdate(updateRollout1, updateRollout1, manifestFilters,config)
     Assert.assertFalse(actual)
   }
 
   @Test
   fun testShouldLoadNewUpdate_NoneMatchingFilters() {
     // should choose to load an older update if the current update doesn't match the manifest filters
-    val actual = selectionPolicy!!.shouldLoadNewUpdate(updateRollout1, updateDefault2, manifestFilters)
+    val actual = selectionPolicy!!.shouldLoadNewUpdate(updateRollout1, updateDefault2, manifestFilters,config)
     Assert.assertTrue(actual)
   }
 
   @Test
   fun testShouldLoadNewUpdate_NewerExists() {
-    val actual = selectionPolicy!!.shouldLoadNewUpdate(updateRollout1, updateRollout2, manifestFilters)
+    val actual = selectionPolicy!!.shouldLoadNewUpdate(updateRollout1, updateRollout2, manifestFilters,config)
     Assert.assertFalse(actual)
   }
 
   @Test
   fun testShouldLoadNewUpdate_DoesntMatch() {
     // should never choose to load an update that doesn't match its own filters
-    val actual = selectionPolicy!!.shouldLoadNewUpdate(updateDefault2, null, manifestFilters)
+    val actual = selectionPolicy!!.shouldLoadNewUpdate(updateDefault2, null, manifestFilters,config)
     Assert.assertFalse(actual)
   }
 
@@ -121,30 +131,30 @@ class SelectionPolicyFilterAwareTest {
   @Throws(JSONException::class)
   fun testMatchesFilters_MultipleFilters() {
     // if there are multiple filters, a manifest must match them all to pass
-    Assert.assertFalse(SelectionPolicies.matchesFilters(updateMultipleFilters, JSONObject("{\"firstkey\": \"value1\", \"secondkey\": \"wrong-value\"}")))
-    Assert.assertTrue(SelectionPolicies.matchesFilters(updateMultipleFilters, JSONObject("{\"firstkey\": \"value1\", \"secondkey\": \"value2\"}")))
+    Assert.assertFalse(SelectionPolicies.matchesFilters(updateMultipleFilters, JSONObject("{\"firstkey\": \"value1\", \"secondkey\": \"wrong-value\"}"),config))
+    Assert.assertTrue(SelectionPolicies.matchesFilters(updateMultipleFilters, JSONObject("{\"firstkey\": \"value1\", \"secondkey\": \"value2\"}"),config))
   }
 
   @Test
   @Throws(JSONException::class)
   fun testMatchesFilters_EmptyMatchesAll() {
     // no field is counted as a match
-    Assert.assertTrue(SelectionPolicies.matchesFilters(updateDefault1, JSONObject("{\"field-that-update-doesnt-have\": \"value\"}")))
+    Assert.assertTrue(SelectionPolicies.matchesFilters(updateDefault1, JSONObject("{\"field-that-update-doesnt-have\": \"value\"}"),config))
   }
 
   @Test
   @Throws(JSONException::class)
   fun testMatchesFilters_Null() {
     // null filters or null metadata (i.e. bare or legacy manifests) is counted as a match
-    Assert.assertTrue(SelectionPolicies.matchesFilters(updateDefault1, null))
-    Assert.assertTrue(SelectionPolicies.matchesFilters(updateNoMetadata, manifestFilters))
+    Assert.assertTrue(SelectionPolicies.matchesFilters(updateDefault1, null,config))
+    Assert.assertTrue(SelectionPolicies.matchesFilters(updateNoMetadata, manifestFilters,config))
   }
 
   @Test
   @Throws(JSONException::class)
   fun testMatchesFilters_Legacy() {
-    Assert.assertTrue(SelectionPolicies.matchesFilters(legacyUpdate, JSONObject("{\"releaseChannel\": \"default\"}")))
-    Assert.assertFalse(SelectionPolicies.matchesFilters(legacyUpdate, JSONObject("{\"releaseChannel\": \"production\"}")))
-    Assert.assertFalse(SelectionPolicies.matchesFilters(legacyUpdate, JSONObject()))
+    Assert.assertTrue(SelectionPolicies.matchesFilters(legacyUpdate, JSONObject(),config))
+    Assert.assertFalse(SelectionPolicies.matchesFilters(legacyUpdateNonExistentReleaseChannel, JSONObject(),config))
+    Assert.assertFalse(SelectionPolicies.matchesFilters(legacyUpdate, JSONObject(),UpdatesConfiguration()))
   }
 }

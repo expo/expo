@@ -2,6 +2,7 @@ package expo.modules.updates.selectionpolicy;
 
 import org.json.JSONObject;
 
+import expo.modules.updates.UpdatesConfiguration;
 import expo.modules.updates.db.entity.UpdateEntity;
 
 /**
@@ -10,5 +11,5 @@ import expo.modules.updates.db.entity.UpdateEntity;
  * running.
  */
 public interface LoaderSelectionPolicy {
-    boolean shouldLoadNewUpdate(UpdateEntity newUpdate, UpdateEntity launchedUpdate, JSONObject filters);
+    boolean shouldLoadNewUpdate(UpdateEntity newUpdate, UpdateEntity launchedUpdate, JSONObject filters, UpdatesConfiguration configuration);
 }

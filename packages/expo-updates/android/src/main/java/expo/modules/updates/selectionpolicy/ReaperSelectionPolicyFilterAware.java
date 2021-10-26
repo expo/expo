@@ -5,6 +5,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
+import expo.modules.updates.UpdatesConfiguration;
 import expo.modules.updates.db.entity.UpdateEntity;
 
 /**
@@ -18,7 +19,7 @@ import expo.modules.updates.db.entity.UpdateEntity;
 public class ReaperSelectionPolicyFilterAware implements ReaperSelectionPolicy {
 
   @Override
-  public List<UpdateEntity> selectUpdatesToDelete(List<UpdateEntity> updates, UpdateEntity launchedUpdate, JSONObject filters) {
+  public List<UpdateEntity> selectUpdatesToDelete(List<UpdateEntity> updates, UpdateEntity launchedUpdate, JSONObject filters, UpdatesConfiguration configuration) {
     if (launchedUpdate == null) {
       return new ArrayList<>();
     }
@@ -39,7 +40,7 @@ public class ReaperSelectionPolicyFilterAware implements ReaperSelectionPolicy {
         if (nextNewestUpdate == null || nextNewestUpdate.commitTime.before(update.commitTime)) {
           nextNewestUpdate = update;
         }
-        if (SelectionPolicies.matchesFilters(update, filters) &&
+        if (SelectionPolicies.matchesFilters(update, filters, configuration) &&
                 (nextNewestUpdateMatchingFilters == null ||  nextNewestUpdateMatchingFilters.commitTime.before(update.commitTime))) {
           nextNewestUpdateMatchingFilters = update;
         }
