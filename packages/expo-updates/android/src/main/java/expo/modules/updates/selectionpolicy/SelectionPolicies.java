@@ -15,14 +15,14 @@ public class SelectionPolicies {
   public static final String TAG = SelectionPolicies.class.getSimpleName();
 
   public static boolean matchesFilters(UpdateEntity update, JSONObject manifestFilters, UpdatesConfiguration configuration) {
-    if (manifestFilters == null || update.manifest == null){
+    if (update.manifest == null){
       return true;
     }
     if (update.manifest.has("releaseChannel")) {
       // legacy update
       return update.manifest.optString("releaseChannel").equals(configuration.getReleaseChannel());
     }
-    if (!update.manifest.has("metadata")) {
+    if (manifestFilters == null || !update.manifest.has("metadata")) {
       // empty matches all
       return true;
     }
