@@ -75,7 +75,7 @@ The `Info.plist` value for `CFBundleVersion` on iOS (set with `ios.buildNumber` 
     The build number specified in the embedded `Info.plist` value for `CFBundleVersion` in this app.
     In a standalone app, you can set this with the `ios.buildNumber` value in `app.json`. This
     may differ from the value in `Constants.manifest.ios.buildNumber` because the manifest
-    can be updated over the air, whereas this value will never change for a given native binary.
+    can be updated, whereas this value will never change for a given native binary.
     The value is set to `null` in case you run your app in Expo client.
 
   - `platform`

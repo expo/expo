@@ -38,7 +38,6 @@ Let's scroll through the [API Reference](/versions/latest/) to find packages tha
 
 Let's say we had mockups for our app that look like the following:
 
-
 <ImageSpotlight alt="Mockups of app screens" src="/static/images/exploring-managed/mockups.png" />
 
 > _Note: These are actually screenshots from [Sindre Sorhus'](https://github.com/sindresorhus) open source app [Blear](https://sindresorhus.com/blear), but let's pretend they are mockups for the sake of demonstration._
@@ -117,7 +116,7 @@ Run `expo build:web` then upload the `web-build` directory to any host capable o
 
 <Video file="exploring-managed/buildweb.mp4" spaceAfter />
 
-## Updating the app over the air
+## Updating the app
 
 Once your app is out for testing or on the stores you probably don’t want to have to repeat the process again to make some small changes. In this case, we noticed that we weren’t asking for camera roll permissions before saving the image, so if you tried to save an image before picking one from the camera roll then it wouldn’t work. To ship an update, we just need to run `expo publish` again.
 
@@ -127,7 +126,7 @@ When we built our Android app bundle above, we told it to point to a specific An
 
 <Video file="exploring-managed/updatechannel.mp4" />
 
-To determine the rules for when apps will download and apply these updates, [read about configuring OTA updates](../guides/configuring-ota-updates.md).
+To determine the rules for when apps will download and apply these updates, [read about configuring updates](../guides/configuring-updates.md).
 
 We frequently release updates to the [Expo SDK](/versions/latest/). If you decide to update your app to a newer version of our SDK, copies of the older version will continue to work fine. Users will download the newest copy that their client supports.
 

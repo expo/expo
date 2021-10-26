@@ -67,7 +67,7 @@ You may want to use Hermes on one platform and JSC on another. One way to do thi
 }
 ```
 
-## Publish Over-the-Air updates
+## Publish updates
 
 Publishing updates with `expo publish` and `expo export` will generate Hermes bytecode bundles and their source maps.
 
