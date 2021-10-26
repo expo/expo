@@ -7,7 +7,7 @@ import { InlineCode } from '~/components/base/code';
 
 Your success will be limited if you don't know the limitations of your tools. A good software engineer strives to understand the tradeoffs in the decisions they make.
 
-## Recent changes to the managed workflow
+<details><summary><h4>Used Expo before? Here are some recent changes to the managed workflow you should be aware of...</h4></summary> <p>
 
 With the release of Expo Application Services, the managed workflow has far fewer limitations, and can be used for any project no matter the complexity:
 
@@ -18,6 +18,9 @@ With the release of Expo Application Services, the managed workflow has far fewe
 - Apps built with EAS Build can target children under 13 years old
 
 These changes mean Expo can fit many more use cases than before.
+
+</p>
+</details>
 
 ## Limitations of Expo Go and the classic `expo build` system
 
