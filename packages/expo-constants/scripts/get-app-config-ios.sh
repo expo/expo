@@ -4,6 +4,14 @@ set -eo pipefail
 
 DEST="$CONFIGURATION_BUILD_DIR"
 RESOURCE_BUNDLE_NAME="EXConstants.bundle"
+
+# Fix for machines using nvm
+if [[ -s "$HOME/.nvm/nvm.sh" ]]; then
+. "$HOME/.nvm/nvm.sh"
+elif [[ -x "$(command -v brew)" && -s "$(brew --prefix nvm)/nvm.sh" ]]; then
+. "$(brew --prefix nvm)/nvm.sh"
+fi
+
 NODE_BINARY=${NODE_BINARY:-node}
 
 if ! [ -x "$(command -v "$NODE_BINARY")" ]; then
