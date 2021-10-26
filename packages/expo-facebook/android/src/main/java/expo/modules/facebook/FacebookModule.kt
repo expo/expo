@@ -36,15 +36,17 @@ private const val ERR_FACEBOOK_LOGIN = "ERR_FACEBOOK_LOGIN"
 private const val PUSH_PAYLOAD_KEY = "fb_push_payload"
 private const val PUSH_PAYLOAD_CAMPAIGN_KEY = "campaign"
 
-class FacebookModule(
+open class FacebookModule(
   context: Context,
   private val moduleRegistryDelegate: ModuleRegistryDelegate = ModuleRegistryDelegate()
 ) : ExportedModule(context), ActivityEventListener {
   private val callbackManager: CallbackManager = CallbackManager.Factory.create()
   private var appEventLogger: AppEventsLogger? = null
   private var attributionIdentifiers: AttributionIdentifiers? = null
-  private var appId: String? = null
-  private var appName: String? = null
+  protected var appId: String? = null
+    private set
+  protected var appName: String? = null
+    private set
   private val uIManager: UIManager by moduleRegistry()
 
   private inline fun <reified T> moduleRegistry() = moduleRegistryDelegate.getFromModuleRegistry<T>()
@@ -92,7 +94,7 @@ class FacebookModule(
   }
 
   @ExpoMethod
-  fun getAuthenticationCredentialAsync(promise: Promise) {
+  open fun getAuthenticationCredentialAsync(promise: Promise) {
     val accessToken = AccessToken.getCurrentAccessToken()
     promise.resolve(accessTokenToBundle(accessToken))
   }
@@ -115,7 +117,7 @@ class FacebookModule(
   }
 
   @ExpoMethod
-  fun initializeAsync(options: ReadableArguments, promise: Promise) {
+  open fun initializeAsync(options: ReadableArguments, promise: Promise) {
     try {
       options.getString("appId")?.let {
         appId = it
@@ -151,14 +153,14 @@ class FacebookModule(
   }
 
   @ExpoMethod
-  fun logOutAsync(promise: Promise) {
+  open fun logOutAsync(promise: Promise) {
     AccessToken.setCurrentAccessToken(null)
     LoginManager.getInstance().logOut()
     promise.resolve(null)
   }
 
   @ExpoMethod
-  fun logInWithReadPermissionsAsync(config: ReadableArguments, promise: Promise) {
+  open fun logInWithReadPermissionsAsync(config: ReadableArguments, promise: Promise) {
     if (FacebookSdk.getApplicationId() == null) {
       promise.reject(
         ERR_FACEBOOK_MISCONFIGURED,
