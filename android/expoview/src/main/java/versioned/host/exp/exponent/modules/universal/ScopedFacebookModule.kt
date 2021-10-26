@@ -13,11 +13,11 @@ class ScopedFacebookModule(context: Context) : FacebookModule(context), Lifecycl
   private var isInitialized = false
 
   override fun onHostResume() {
-    if (mAppId != null) {
-      FacebookSdk.setApplicationId(mAppId)
+    if (appId != null) {
+      FacebookSdk.setApplicationId(appId)
     }
-    if (mAppName != null) {
-      FacebookSdk.setApplicationName(mAppName)
+    if (appName != null) {
+      FacebookSdk.setApplicationName(appName)
     }
   }
 
