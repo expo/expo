@@ -9,8 +9,8 @@ import {
   getNativeFontName,
 } from './FontLoader';
 
-const loaded: { [name: string]: boolean } = {};
-const loadPromises: { [name: string]: Promise<void> } = {};
+const loaded: { [name: string]: boolean | undefined } = {};
+const loadPromises: { [name: string]: Promise<void> | undefined } = {};
 
 // @needsAudit
 // note(brentvatne): at some point we may want to warn if this is called outside of a managed app.
