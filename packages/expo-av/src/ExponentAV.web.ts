@@ -5,7 +5,7 @@ import type { RecordingStatus } from './Audio/Recording.types';
 import { RECORDING_OPTIONS_PRESET_HIGH_QUALITY } from './Audio/RecordingConstants';
 
 async function getPermissionWithQueryAsync(
-  name: PermissionNameWithDeprecatedValues
+  name: PermissionNameWithAdditionalValues
 ): Promise<PermissionStatus | null> {
   if (!navigator || !navigator.permissions || !navigator.permissions.query) return null;
 

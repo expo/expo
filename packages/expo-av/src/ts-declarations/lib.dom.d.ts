@@ -20,15 +20,15 @@ declare global {
     mozGetUserMedia?: GetUserMediaFunctionType;
   }
 
-  type PermissionNameWithDeprecatedValues = PermissionName | 'microphone';
+  type PermissionNameWithAdditionalValues = PermissionName | 'microphone';
 
   // TODO: remove once "microphone" name is added to the PermissionName union type exposed by the main lib.dom.d.ts file.
   interface Permissions {
     // Replace original PermissionDescriptor with our own that includes missing permission names (e.g. "microphone")
-    query(permissionDesc: PermissionDescriptorWithDeprecatedValues): Promise<PermissionStatus>;
+    query(permissionDesc: PermissionDescriptorWithAdditionalValues): Promise<PermissionStatus>;
   }
 
-  interface PermissionDescriptorWithDeprecatedValues {
-    name: PermissionNameWithDeprecatedValues;
+  interface PermissionDescriptorWithAdditionalValues {
+    name: PermissionNameWithAdditionalValues;
   }
 }
