@@ -2,12 +2,12 @@ package host.exp.exponent.taskManager
 
 import android.content.Context
 import android.util.Log
-import com.facebook.proguard.annotations.DoNotStrip
 import expo.modules.adapters.react.apploader.HeadlessAppLoaderNotifier
 import expo.modules.apploader.AppLoaderProvider
 import expo.modules.apploader.HeadlessAppLoader
 import expo.modules.apploader.HeadlessAppLoader.AppConfigurationError
 import expo.modules.core.interfaces.Consumer
+import expo.modules.core.interfaces.DoNotStrip
 import host.exp.exponent.headless.InternalHeadlessAppLoader
 import java.util.*
 
