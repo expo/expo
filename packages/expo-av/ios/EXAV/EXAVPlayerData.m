@@ -40,7 +40,6 @@ NSString *const EXAVPlayerDataObserverMetadataKeyPath = @"timedMetadata";
 @interface EXAVPlayerData ()
 
 @property (nonatomic, weak) EXAV *exAV;
-@property (nonatomic, strong) SampleBufferCallback audioSampleBufferCallback;
 
 @property (nonatomic, assign) BOOL isLoaded;
 @property (nonatomic, strong) void (^loadFinishBlock)(BOOL success, NSDictionary *successStatus, NSString *error);
@@ -68,6 +67,9 @@ NSString *const EXAVPlayerDataObserverMetadataKeyPath = @"timedMetadata";
 @end
 
 @implementation EXAVPlayerData
+{
+  EXAudioSampleCallback* _audioSampleBufferCallback;
+}
 
 #pragma mark - Static methods
 
@@ -793,7 +795,7 @@ NSString *const EXAVPlayerDataObserverMetadataKeyPath = @"timedMetadata";
             [strongSelf.player insertItem:removedPlayerItem afterItem:nil];
           }
           
-          if (self.audioSampleBufferCallback != nil) {
+          if (self.sampleBufferCallback != nil) {
             // Tap is installed per item, so we re-install for the new item.
             [self installTap];
           }
@@ -846,16 +848,20 @@ NSString *const EXAVPlayerDataObserverMetadataKeyPath = @"timedMetadata";
 
 #pragma mark - Sample Buffer Callbacks & AudioMix Tap
 
-- (void)addSampleBufferCallback:(SampleBufferCallback)callback
+- (void)setSampleBufferCallback:(EXAudioSampleCallback *)sampleBufferCallback
 {
-  self.audioSampleBufferCallback = callback;
-  [self installTap];
+  _audioSampleBufferCallback = sampleBufferCallback;
+  
+  if (sampleBufferCallback) {
+    [self installTap];
+  } else {
+    [self uninstallTap];
+  }
 }
 
-- (void)removeSampleBufferCallback
+- (EXAudioSampleCallback *)sampleBufferCallback
 {
-  self.audioSampleBufferCallback = nil;
-  [self uninstallTap];
+  return _audioSampleBufferCallback;
 }
 
 - (void)installTap
@@ -971,7 +977,7 @@ void tapProcess(MTAudioProcessingTapRef tap, CMItemCount numberFrames, MTAudioPr
 
   EXAVPlayerData *self = ((__bridge EXAVPlayerData *)context->self);
 
-  if (!self.audioSampleBufferCallback)
+  if (!self.sampleBufferCallback)
   {
     return;
   }
@@ -985,7 +991,7 @@ void tapProcess(MTAudioProcessingTapRef tap, CMItemCount numberFrames, MTAudioPr
   }
 
   double seconds = [self getCurrentPositionPrecise];
-  self.audioSampleBufferCallback(&bufferListInOut->mBuffers[0], seconds);
+  [self.sampleBufferCallback callWithAudioBuffer:&bufferListInOut->mBuffers[0] andTimestamp:seconds];
 }
 
 #pragma mark - EXAVObject

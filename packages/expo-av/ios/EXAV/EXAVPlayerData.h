@@ -4,11 +4,18 @@
 
 #import <EXAV/EXAV.h>
 
+
+// Objective-C wrapper for a C++ callback class
+@interface EXAudioSampleCallback : NSObject
+-(void)callWithAudioBuffer:(AudioBuffer*)buffer andTimestamp:(double)timestamp;
+@end
+
 @interface EXAVPlayerData : NSObject <EXAVObject>
 
 @property (nonatomic, strong) AVQueuePlayer *player;
 @property (nonatomic, strong) NSURL *url;
 @property (nonatomic, strong) NSDictionary *headers;
+@property (nonatomic, strong) EXAudioSampleCallback *sampleBufferCallback;
 @property (nonatomic, strong) void (^statusUpdateCallback)(NSDictionary *);
 @property (nonatomic, strong) void (^metadataUpdateCallback)(NSDictionary *);
 @property (nonatomic, strong) void (^errorCallback)(NSString *);
@@ -29,10 +36,5 @@
 - (void)replayWithStatus:(NSDictionary *)status
                 resolver:(EXPromiseResolveBlock)resolve
                 rejecter:(EXPromiseRejectBlock)reject;
-
-typedef void (^SampleBufferCallback)(AudioBuffer *buffer, double timestamp);
-
-- (void)addSampleBufferCallback:(SampleBufferCallback)callback;
-- (void)removeSampleBufferCallback;
 
 @end

@@ -11,8 +11,107 @@
 
 namespace jsi = facebook::jsi;
 using CallbackWrapper = facebook::react::CallbackWrapper;
+using CallInvoker = facebook::react::CallInvoker;
 
 static constexpr auto globalJsFuncName = "__EXAV_setOnAudioSampleReceivedCallback";
+
+class AudioSampleCallbackWrapper
+{
+  std::weak_ptr<CallbackWrapper> weakWrapper;
+public:
+  AudioSampleCallbackWrapper(jsi::Function &&callback,
+                             jsi::Runtime &runtime,
+                             std::shared_ptr<CallInvoker> jsInvoker)
+  : weakWrapper(CallbackWrapper::createWeak(std::move(callback), runtime, jsInvoker))
+  {}
+  
+  ~AudioSampleCallbackWrapper() {
+    auto strongWrapper = weakWrapper.lock();
+    if (strongWrapper) {
+      strongWrapper->destroy();
+    }
+  }
+  
+  void call(AudioBuffer* buffer, double timestamp);
+};
+
+void AudioSampleCallbackWrapper::call(AudioBuffer* buffer, double timestamp)
+{
+  auto strongWrapper = this->weakWrapper.lock();
+  if (!strongWrapper) {
+    return;
+  }
+  
+  // We need to invoke the callback from the JS thread, otherwise Hermes complains
+  strongWrapper->jsInvoker().invokeAsync([buffer, this, timestamp]{
+    auto callbackWrapper = this->weakWrapper.lock();
+    if (!callbackWrapper) {
+      return;
+    }
+    
+    auto &rt = callbackWrapper->runtime();
+    
+    auto channelsCount = (size_t) buffer->mNumberChannels;
+    auto framesCount = buffer->mDataByteSize / sizeof(float);
+    float *data = (float *) buffer->mData;
+    if (!data) {
+      return;
+    }
+
+    auto channels = jsi::Array(rt, channelsCount);
+    
+    // Channels in AudioBuffer are interleaved, so for 2 channels we do steps of 2:
+    // [0, 2, 4, 6, ...] and [1, 3, 5, 7, ...]
+    for (auto channelIndex = 0; channelIndex < channelsCount; channelIndex++)
+    {
+      auto channel = jsi::Object(rt);
+      auto frames = jsi::Array(rt, static_cast<int>(framesCount / channelsCount));
+      
+      for (int frameIndex = channelIndex, arrayIndex = 0;
+           frameIndex < framesCount;
+           frameIndex += channelsCount, arrayIndex++)
+      {
+        double frame = static_cast<double>(data[frameIndex]);
+        frames.setValueAtIndex(rt, arrayIndex, jsi::Value(frame));
+      }
+
+      channel.setProperty(rt, "frames", frames);
+      channels.setValueAtIndex(rt, channelIndex, channel);
+    }
+
+    auto sample = jsi::Object(rt);
+    sample.setProperty(rt, "channels", channels);
+    sample.setProperty(rt, "timestamp", jsi::Value(timestamp));
+
+    callbackWrapper->callback().call(rt, sample);
+  });
+}
+
+@implementation EXAudioSampleCallback
+{
+  AudioSampleCallbackWrapper * _cb;
+}
+
+-(id)initWithWrapper:(AudioSampleCallbackWrapper*)wrapper {
+  self = [super init];
+  _cb = wrapper;
+  return self;
+}
+
+-(void)dealloc {
+  delete _cb;
+}
+
+-(void)callWithAudioBuffer:(AudioBuffer*)buffer andTimestamp:(double)timestamp
+{
+  if (_cb != NULL)
+  {
+    _cb->call(buffer, timestamp);
+  }
+}
+
+@end
+
 
 @implementation EXAV (AudioSampleCallback)
 
@@ -48,63 +147,13 @@ static constexpr auto globalJsFuncName = "__EXAV_setOnAudioSampleReceivedCallbac
     if (argsCount > 1 && args[1].isObject()) {
       // second parameter received, it's the callback function.
       auto callback = args[1].asObject(runtime).asFunction(runtime);
-      auto weakWrapper = CallbackWrapper::createWeak(callback.getFunction(runtime),
-                                                     runtime,
-                                                     strongCallInvoker);
-
-      [sound addSampleBufferCallback:^(AudioBuffer *buffer, double timestamp) {
-        auto strongWrapper = weakWrapper.lock();
-        if (!strongWrapper) {
-          return;
-        }
-        
-        // We need to invoke the callback from the JS thread, otherwise Hermes complains
-        strongWrapper->jsInvoker().invokeAsync([buffer, weakWrapper, timestamp]{
-          auto callbackWrapper = weakWrapper.lock();
-          if (!callbackWrapper) {
-            return;
-          }
-          
-          auto &rt = callbackWrapper->runtime();
-          
-          auto channelsCount = (size_t) buffer->mNumberChannels;
-          auto framesCount = buffer->mDataByteSize / sizeof(float);
-          float *data = (float *) buffer->mData;
-          if (!data) {
-            return;
-          }
-
-          auto channels = jsi::Array(rt, channelsCount);
-          
-          // Channels in AudioBuffer are interleaved, so for 2 channels we do steps of 2:
-          // [0, 2, 4, 6, ...] and [1, 3, 5, 7, ...]
-          for (auto channelIndex = 0; channelIndex < channelsCount; channelIndex++)
-          {
-            auto channel = jsi::Object(rt);
-            auto frames = jsi::Array(rt, static_cast<int>(framesCount / channelsCount));
-            
-            for (int frameIndex = channelIndex, arrayIndex = 0;
-                 frameIndex < framesCount;
-                 frameIndex += channelsCount, arrayIndex++)
-            {
-              double frame = static_cast<double>(data[frameIndex]);
-              frames.setValueAtIndex(rt, arrayIndex, jsi::Value(frame));
-            }
-
-            channel.setProperty(rt, "frames", frames);
-            channels.setValueAtIndex(rt, channelIndex, channel);
-          }
-
-          auto sample = jsi::Object(rt);
-          sample.setProperty(rt, "channels", channels);
-          sample.setProperty(rt, "timestamp", jsi::Value(timestamp));
-
-          callbackWrapper->callback().call(rt, sample);
-        });
-      }];
+      
+      auto wrapper = new AudioSampleCallbackWrapper(callback.getFunction(runtime), runtime, strongCallInvoker);
+      EXAudioSampleCallback* objcWrapper = [[EXAudioSampleCallback alloc] initWithWrapper:wrapper];
+      [sound setSampleBufferCallback:objcWrapper];
     } else {
       // second parameter omitted or undefined, so remove callback
-      [sound removeSampleBufferCallback];
+      [sound setSampleBufferCallback:nil];
     }
 
     return jsi::Value::undefined();
