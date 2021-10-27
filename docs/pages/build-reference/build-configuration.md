@@ -45,7 +45,7 @@ This step varies depending on the project type you have.
 #### 3.1. Bare project
 
 If you choose to configure the Android project, EAS CLI will update your Gradle project so we can build it on our servers.
-This step patches `build.gradle` and includes our custom signing configuration. The configuration itself is saved to a separate file: `eas-build.gradle`.
+This step patches **build.gradle** and includes our custom signing configuration. The configuration itself is saved to a separate file: **eas-build.gradle**.
 
 If you also choose to configure the iOS project, there are no additional steps.
 

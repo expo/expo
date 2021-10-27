@@ -79,7 +79,7 @@ When asked about the project path, make sure to specify the `web-build` folder, 
 project path: /path/to/expo-project/web-build
 ```
 
-> To support routers that use the HTML 5 `pushState` API, you'll need to rename the `web-build/index.html` to **web/200.html** before deploying.
+> To support routers that use the HTML 5 `pushState` API, you'll need to rename the **web-build/index.html** to **web/200.html** before deploying.
 
 ## [Netlify](https://www.netlify.com/)
 

@@ -73,7 +73,7 @@ If your project is set up with unimodules, no additional changes are needed to i
 
 <Tab >
 
-Add the following lines to your `settings.gradle`:
+Add the following lines to your **settings.gradle**:
 
 <ConfigurationDiff source="/static/diffs/client/settings-gradle-no-unimodules.diff" />
 
