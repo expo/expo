@@ -66,7 +66,7 @@ public class ${className}: ModulesProvider {
     return ${formatArrayOfClassNames(modulesClassNames)}
   }
 
-  public override func getAppDelegateSubcontractors() -> [AppDelegateSubcontractor.Type] {
+  public override func getAppDelegateSubcontractors() -> [ExpoAppDelegateSubcontractor.Type] {
     return ${formatArrayOfClassNames(appDelegateSubcontractors)}
   }
 }

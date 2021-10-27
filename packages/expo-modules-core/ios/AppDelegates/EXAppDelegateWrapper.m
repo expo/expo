@@ -10,28 +10,33 @@
 #endif
 
 @implementation EXAppDelegateWrapper {
-  EXSwiftAppDelegateWrapper *_swiftAppDelegate;
+  EXExpoAppDelegate *_expoAppDelegate;
 }
 
+// Synthesize window, so the AppDelegate can synthesize it too.
 @synthesize window = _window;
 
 - (instancetype)init
 {
   if (self = [super init]) {
-    _swiftAppDelegate = [[EXSwiftAppDelegateWrapper alloc] init];
+    _expoAppDelegate = [[EXExpoAppDelegate alloc] init];
   }
   return self;
 }
 
-- (void)forwardInvocation:(NSInvocation *)invocation
+// This needs to be implemented, otherwise forwarding won't be called.
+// When the app starts, `UIApplication` uses it to check beforehand
+// which `UIApplicationDelegate` selectors are implemented.
+- (BOOL)respondsToSelector:(SEL)selector
 {
-  SEL selector = [invocation selector];
+  return [super respondsToSelector:selector]
+    || [_expoAppDelegate respondsToSelector:selector];
+}
 
-  if ([_swiftAppDelegate respondsToSelector:selector]) {
-    [invocation invokeWithTarget:_swiftAppDelegate];
-  } else {
-    [super forwardInvocation:invocation];
-  }
+// Forwards all invocations to the new app delegate wrapper.
+- (id)forwardingTargetForSelector:(SEL)selector
+{
+  return _expoAppDelegate;
 }
 
 @end

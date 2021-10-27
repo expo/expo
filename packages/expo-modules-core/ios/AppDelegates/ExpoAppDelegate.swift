@@ -2,10 +2,10 @@ import UIKit
 import Dispatch
 import Foundation
 
-var subcontractors = [AppDelegateSubcontractorProtocol]()
+var subcontractors = [ExpoAppDelegateSubcontractorProtocol]()
 
-@objc(EXSwiftAppDelegateWrapper)
-open class AppDelegateWrapper: UIResponder, UIApplicationDelegate {
+@objc(EXExpoAppDelegate)
+open class ExpoAppDelegate: UIResponder, UIApplicationDelegate {
   open var window: UIWindow?
 
   // MARK: - Initializing the App
@@ -26,14 +26,17 @@ open class AppDelegateWrapper: UIResponder, UIApplicationDelegate {
 
   // MARK: - Responding to App Life-Cycle Events
 
+  @objc
   open func applicationDidBecomeActive(_ application: UIApplication) {
     subcontractors.forEach { $0.applicationDidBecomeActive?(application) }
   }
 
+  @objc
   open func applicationWillResignActive(_ application: UIApplication) {
     subcontractors.forEach { $0.applicationWillResignActive?(application) }
   }
 
+  @objc
   open func applicationDidEnterBackground(_ application: UIApplication) {
     subcontractors.forEach { $0.applicationDidEnterBackground?(application) }
   }
@@ -241,7 +244,7 @@ open class AppDelegateWrapper: UIResponder, UIApplicationDelegate {
   }
 
   @objc
-  public static func registerSubcontractor(_ subcontractor: AppDelegateSubcontractorProtocol) {
+  public static func registerSubcontractor(_ subcontractor: ExpoAppDelegateSubcontractorProtocol) {
     if subcontractors.contains(where: { $0 === subcontractor }) {
       fatalError("Given app delegate subcontractor `\(String(describing: subcontractor))` is already registered.")
     }
@@ -249,7 +252,7 @@ open class AppDelegateWrapper: UIResponder, UIApplicationDelegate {
   }
 
   @objc
-  public static func getSubcontractor(_ name: String) -> AppDelegateSubcontractorProtocol? {
+  public static func getSubcontractor(_ name: String) -> ExpoAppDelegateSubcontractorProtocol? {
     return subcontractors.first { String(describing: $0) == name }
   }
 }

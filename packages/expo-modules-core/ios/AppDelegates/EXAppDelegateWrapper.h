@@ -5,9 +5,9 @@
 NS_ASSUME_NONNULL_BEGIN
 
 /**
- Provides backwards compatibility for existing projects with `AppDelegate` written in Objective-C
- and that already inherits from `EXAppDelegateWrapper` (prev. `EXLegacyAppDelegateWrapper`).
- If your `AppDelegate` is written in Swift, you should use `AppDelegateWrapper` class instead.
+ Provides backwards compatibility for existing projects with `AppDelegate`
+ written in Objective-C and that forwards all messages to the new `ExpoAppDelegate`.
+ If your `AppDelegate` is in Swift, it should inherit from `ExpoAppDelegate` class instead.
  */
 @interface EXAppDelegateWrapper : UIResponder <UIApplicationDelegate>
 

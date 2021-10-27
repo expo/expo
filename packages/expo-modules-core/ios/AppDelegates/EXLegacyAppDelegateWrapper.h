@@ -6,8 +6,8 @@
 NS_ASSUME_NONNULL_BEGIN
 
 /**
- This legacy wrapper is still used to forward app delegate calls to singleton modules.
- See `EXAppDelegatesLoader.m` which registers this class as a subcontractor.
+ The legacy wrapper is still used to forward app delegate calls to singleton modules.
+ See `EXAppDelegatesLoader.m` which registers this class as a subcontractor of `ExpoAppDelegate`.
  */
 @interface EXLegacyAppDelegateWrapper : UIResponder <UIApplicationDelegate>
 

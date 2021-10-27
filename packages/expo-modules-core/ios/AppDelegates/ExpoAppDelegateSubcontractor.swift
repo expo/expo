@@ -7,7 +7,7 @@ import UIKit
  inherits from `UIResponder` and has `required init()` initializer.
  */
 @objc(EXBaseAppDelegateSubcontractor)
-open class BaseAppDelegateSubcontractor: UIResponder {
+open class BaseExpoAppDelegateSubcontractor: UIResponder {
   public override required init() {}
 }
 
@@ -16,9 +16,9 @@ open class BaseAppDelegateSubcontractor: UIResponder {
  Might be useful for compatibility reasons if we decide to add more things here.
  */
 @objc(EXAppDelegateSubcontractorProtocol)
-public protocol AppDelegateSubcontractorProtocol: UIApplicationDelegate {}
+public protocol ExpoAppDelegateSubcontractorProtocol: UIApplicationDelegate {}
 
 /**
  Typealias merging the base class for app delegate subcontractors and protocol inheritance to `UIApplicationDelegate`.
  */
-public typealias AppDelegateSubcontractor = BaseAppDelegateSubcontractor & AppDelegateSubcontractorProtocol
+public typealias ExpoAppDelegateSubcontractor = BaseExpoAppDelegateSubcontractor & ExpoAppDelegateSubcontractorProtocol

@@ -15,9 +15,9 @@ public protocol ModulesProviderProtocol: ModulesProviderObjCProtocol {
   func getModuleClasses() -> [AnyModule.Type]
 
   /**
-   Returns an array of classes that hooks into `AppDelegateWrapper` to receive app delegate events.
+   Returns an array of classes that hooks into `ExpoAppDelegate` to receive app delegate events.
    */
-  func getAppDelegateSubcontractors() -> [AppDelegateSubcontractor.Type]
+  func getAppDelegateSubcontractors() -> [ExpoAppDelegateSubcontractor.Type]
 }
 
 /**
@@ -30,7 +30,7 @@ open class ModulesProvider: NSObject, ModulesProviderProtocol, ModulesProviderOb
     return []
   }
 
-  open func getAppDelegateSubcontractors() -> [AppDelegateSubcontractor.Type] {
+  open func getAppDelegateSubcontractors() -> [ExpoAppDelegateSubcontractor.Type] {
     return []
   }
 }
