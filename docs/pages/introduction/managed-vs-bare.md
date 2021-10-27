@@ -38,7 +38,7 @@ In the bare workflow the developer has complete control, along with the complexi
 | Use Expo build service to create your iOS and Android builds | ✅               | ✅ ([with EAS Build](/build/introduction.md))                      |
 | Use Expo's push notification service                         | ✅               | ✅                                                                 |
 | Use Expo's updates features                                  | ✅               | ✅                                                                 |
-| Develop with the Expo Go app                                 | ✅               | ✅ (if you follow [these guidlines](../bare/using-expo-client.md)) |
+| Develop with the Expo Go app                                 | ✅               | ✅ (if you follow [these guidelines](../bare/using-expo-client.md)) |
 | Access to Expo SDK                                           | ✅               | ✅                                                                 |
 | Add custom native code and manage native dependencies        |                  | ✅                                                                 |
 | Develop in Xcode and Android Studio                          |                  | ✅                                                                 |
