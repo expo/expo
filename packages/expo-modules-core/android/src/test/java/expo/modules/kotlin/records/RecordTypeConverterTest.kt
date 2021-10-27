@@ -1,12 +1,17 @@
+@file:OptIn(ExperimentalStdlibApi::class)
+
 package expo.modules.kotlin.records
 
+import expo.modules.kotlin.types.KClassTypeWrapper
+import com.facebook.react.bridge.DynamicFromObject
 import com.facebook.react.bridge.JavaOnlyArray
 import com.facebook.react.bridge.JavaOnlyMap
 import com.google.common.truth.Truth
 import org.junit.Test
+import kotlin.reflect.typeOf
 
-class RecordCasterTest {
-  private val caster = RecordCaster()
+class RecordTypeConverterTest {
+  private val converter = RecordTypeConverter()
 
   @Test
   fun `should convert map to mutable record`() {
@@ -18,12 +23,12 @@ class RecordCasterTest {
       var string: String = ""
     }
 
-    val map = JavaOnlyMap().apply {
+    val map = DynamicFromObject(JavaOnlyMap().apply {
       putInt("int", 10)
       putString("string", "expo")
-    }
+    })
 
-    val myRecord = caster.cast(map, MyRecord::class.java)
+    val myRecord = converter.convert(map, KClassTypeWrapper(typeOf<MyRecord>())) as MyRecord
 
     Truth.assertThat(myRecord.int).isEqualTo(10)
     Truth.assertThat(myRecord.string).isEqualTo("expo")
@@ -39,12 +44,12 @@ class RecordCasterTest {
       val string: String = ""
     }
 
-    val map = JavaOnlyMap().apply {
+    val map = DynamicFromObject(JavaOnlyMap().apply {
       putInt("int", 10)
       putString("string", "expo")
-    }
+    })
 
-    val myRecord = caster.cast(map, MyRecord::class.java)
+    val myRecord = converter.convert(map, KClassTypeWrapper(typeOf<MyRecord>())) as MyRecord
 
     Truth.assertThat(myRecord.int).isEqualTo(10)
     Truth.assertThat(myRecord.string).isEqualTo("expo")
@@ -57,11 +62,11 @@ class RecordCasterTest {
       lateinit var string: String
     }
 
-    val map = JavaOnlyMap().apply {
+    val map = DynamicFromObject(JavaOnlyMap().apply {
       putString("string", "expo")
-    }
+    })
 
-    val myRecord = caster.cast(map, MyRecord::class.java)
+    val myRecord = converter.convert(map, KClassTypeWrapper(typeOf<MyRecord>())) as MyRecord
 
     Truth.assertThat(myRecord.string).isEqualTo("expo")
   }
@@ -79,13 +84,13 @@ class RecordCasterTest {
       lateinit var string: String
     }
 
-    val map = JavaOnlyMap().apply {
+    val map = DynamicFromObject(JavaOnlyMap().apply {
       putInt("int", 10)
       putInt("int2", 20)
       putString("string", "expo")
-    }
+    })
 
-    val myRecord = caster.cast(map, MyRecord::class.java)
+    val myRecord = converter.convert(map, KClassTypeWrapper(typeOf<MyRecord>())) as MyRecord
 
     Truth.assertThat(myRecord.int).isEqualTo(10)
     Truth.assertThat(myRecord.int2).isEqualTo(20)
@@ -105,13 +110,13 @@ class RecordCasterTest {
       lateinit var string: String
     }
 
-    val map = JavaOnlyMap().apply {
+    val map = DynamicFromObject(JavaOnlyMap().apply {
       putInt("point1", 10)
       putInt("point2", 20)
       putString("str", "expo")
-    }
+    })
 
-    val myRecord = caster.cast(map, MyRecord::class.java)
+    val myRecord = converter.convert(map, KClassTypeWrapper(typeOf<MyRecord>())) as MyRecord
 
     Truth.assertThat(myRecord.int).isEqualTo(10)
     Truth.assertThat(myRecord.int2).isEqualTo(20)
@@ -131,11 +136,11 @@ class RecordCasterTest {
       val string: String? = null
     }
 
-    val map = JavaOnlyMap().apply {
+    val map = DynamicFromObject(JavaOnlyMap().apply {
       putInt("required", 2137)
-    }
+    })
 
-    val myRecord = caster.cast(map, MyRecord::class.java)
+    val myRecord = converter.convert(map, KClassTypeWrapper(typeOf<MyRecord>())) as MyRecord
 
     Truth.assertThat(myRecord.required).isEqualTo(2137)
     Truth.assertThat(myRecord.int).isEqualTo(20)
@@ -172,7 +177,7 @@ class RecordCasterTest {
       lateinit var innerRecord: InnerRecord
     }
 
-    val map = JavaOnlyMap().apply {
+    val map = DynamicFromObject(JavaOnlyMap().apply {
       putArray(
         "points",
         JavaOnlyArray().apply {
@@ -187,9 +192,9 @@ class RecordCasterTest {
           putString("name", "value")
         }
       )
-    }
+    })
 
-    val myRecord = caster.cast(map, MyRecord::class.java)
+    val myRecord = converter.convert(map, KClassTypeWrapper(typeOf<MyRecord>())) as MyRecord
 
     Truth.assertThat(myRecord.innerRecord).isEqualTo(InnerRecord().apply { name = "value" })
     Truth.assertThat(myRecord.points).isEqualTo(listOf(1.0, 2.0, 3.0))

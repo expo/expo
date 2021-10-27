@@ -83,3 +83,7 @@ dependencies {
   testImplementation 'io.mockk:mockk:1.10.6'
   testImplementation "com.google.truth:truth:1.1.2"
 }
+
+tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
+  kotlinOptions.freeCompilerArgs += "-Xopt-in=kotlin.RequiresOptIn"
+}
