@@ -110,7 +110,7 @@ Async `boolean`, indicating whether the AdMob API is available on the current de
 
 Asks for permissions to use data for tracking the user or the device.
 
-> iOS: it requires the `NSUserTrackingUsageDescription` message added to the `info.plist`.
+> iOS: it requires the `NSUserTrackingUsageDescription` message added to the **info.plist**.
 
 #### Returns
 
@@ -120,7 +120,7 @@ A promise that resolves to an object of type [PermissionResponse](permissions.md
 
 Checks application's permissions for using data for tracking the user or the device.
 
-> iOS: it requires the `NSUserTrackingUsageDescription` message added to the `info.plist`.
+> iOS: it requires the `NSUserTrackingUsageDescription` message added to the **info.plist**.
 
 #### Returns
 

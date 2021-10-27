@@ -44,7 +44,7 @@ Ensure that the `uiMode` flag is present on your `MainActivity` (and any other a
 android:configChanges="keyboard|keyboardHidden|orientation|screenSize|uiMode">
 ```
 
-Implement the `onConfigurationChanged` method in `MainActivity.java`:
+Implement the `onConfigurationChanged` method in **MainActivity.java**:
 
 ```java
 import android.content.Intent; // <--- import

@@ -99,7 +99,7 @@ Note that in order to use `expo-asset` successfully, you must use the `--assetPl
 
 Some build-time configuration options are available to control various behaviors of the `expo-updates` library. You can set the URL where your app is hosted, set compatibility/version information, and choose whether your app should update automatically on launch.
 
-On iOS, these properties are set as keys in `Expo.plist` and on Android as `meta-data` tags in **AndroidManifest.xml**, adjacent to the tags added during installation.
+On iOS, these properties are set as keys in **Expo.plist** and on Android as `meta-data` tags in **AndroidManifest.xml**, adjacent to the tags added during installation.
 
 On Android, you may also define these properties at runtime by passing a `Map` as the second parameter of `UpdatesController.initialize()`. If provided, the values in this Map will override any values specified in **AndroidManifest.xml**. On iOS, you may set these properties at runtime by calling `[UpdatesController.sharedInstance setConfiguration:]` at any point _before_ calling `start` or `startAndShowLaunchScreen`, and the values in this dictionary will override Expo.plist.
 

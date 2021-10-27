@@ -303,7 +303,7 @@ Redirect scheme used to assemble the `redirectUrl` prop. In standalone apps, thi
 
 > iOS only
 
-A list of URL Schemes from the `info.plist`
+A list of URL Schemes from the **info.plist**
 
 ## Types
 

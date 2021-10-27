@@ -43,9 +43,9 @@ To enable code verification in your native project with ExpoKit:
 
 ## Configuring the JS URL
 
-In development, your ExpoKit project will request your local build from Expo CLI. You can see this configuration in `EXBuildConstants.plist` (iOS) or `ExponentBuildConstants` (Android). You shouldn't need to edit it, because it's written automatically when you serve the project.
+In development, your ExpoKit project will request your local build from Expo CLI. You can see this configuration in **EXBuildConstants.plist** (iOS) or `ExponentBuildConstants` (Android). You shouldn't need to edit it, because it's written automatically when you serve the project.
 
-In production, your ExpoKit project will request your published JS bundle. This is configured in `EXShell.plist` (iOS) and `MainActivity.java` (Android). If you want to specify custom behavior in iOS, you can also set the `[ExpoKit sharedInstance].publishedManifestUrlOverride` property.
+In production, your ExpoKit project will request your published JS bundle. This is configured in **EXShell.plist** (iOS) and **MainActivity.java** (Android). If you want to specify custom behavior in iOS, you can also set the `[ExpoKit sharedInstance].publishedManifestUrlOverride` property.
 
 ## Changing the Deep Link Scheme
 

@@ -683,7 +683,7 @@ If possible, attempt to make your plugin work without props, this will help reso
 
 ### Configuring Android App Startup
 
-You may find that your project requires configuration to be setup before the JS engine has started. For example, in `expo-splash-screen` on Android, we need to specify the resize mode in the `MainActivity.java`'s `onCreate` method. Instead of attempting to dangerously regex these changes into the `MainActivity` via a dangerous mod, we use a system of lifecycle hooks and static settings to safely ensure the feature works across all supported Android languages (Java, Kotlin), versions of Expo, and combination of config plugins.
+You may find that your project requires configuration to be setup before the JS engine has started. For example, in `expo-splash-screen` on Android, we need to specify the resize mode in the **MainActivity.java**'s `onCreate` method. Instead of attempting to dangerously regex these changes into the `MainActivity` via a dangerous mod, we use a system of lifecycle hooks and static settings to safely ensure the feature works across all supported Android languages (Java, Kotlin), versions of Expo, and combination of config plugins.
 
 This system is made up of three components:
 
@@ -925,11 +925,11 @@ Some modules may need to add delegate methods to the project AppDelegate, this c
 
 Here are some examples of the AppDelegate proxy in action:
 
-- `expo-app-auth` -- [`EXAppAuthAppDelegate.m`](https://github.com/expo/expo/blob/bd7bc03ee10d89487eac25351a455bd9db155b8c/packages/expo-app-auth/ios/EXAppAuth/EXAppAuthAppDelegate.m) (openURL)
-- `expo-branch` -- [`EXBranchManager.m`](https://github.com/expo/expo/blob/636b55ab767f502f29c922a34821434efff04034/packages/expo-branch/ios/EXBranch/EXBranchManager.m) (didFinishLaunchingWithOptions, continueUserActivity, openURL)
-- `expo-notifications` -- [`EXPushTokenManager.m`](https://github.com/expo/expo/blob/bd469e421856f348d539b1b57325890147935dbc/packages/expo-notifications/ios/EXNotifications/PushToken/EXPushTokenManager.m) (didRegisterForRemoteNotificationsWithDeviceToken, didFailToRegisterForRemoteNotificationsWithError)
-- `expo-facebook` -- [`EXFacebookAppDelegate.m`](https://github.com/expo/expo/blob/e0bb254c889734f2ec6c7b688167f013587ed201/packages/expo-facebook/ios/EXFacebook/EXFacebookAppDelegate.m) (openURL)
-- `expo-file-system` -- [`EXSessionHandler.m`](https://github.com/expo/expo/blob/e0bb254c889734f2ec6c7b688167f013587ed201/packages/expo-file-system/ios/EXFileSystem/EXSessionTasks/EXSessionHandler.m) (handleEventsForBackgroundURLSession)
+- `expo-app-auth` -- [**EXAppAuthAppDelegate.m**](https://github.com/expo/expo/blob/bd7bc03ee10d89487eac25351a455bd9db155b8c/packages/expo-app-auth/ios/EXAppAuth/EXAppAuthAppDelegate.m) (openURL)
+- `expo-branch` -- [**EXBranchManager.m**](https://github.com/expo/expo/blob/636b55ab767f502f29c922a34821434efff04034/packages/expo-branch/ios/EXBranch/EXBranchManager.m) (didFinishLaunchingWithOptions, continueUserActivity, openURL)
+- `expo-notifications` -- [**EXPushTokenManager.m**](https://github.com/expo/expo/blob/bd469e421856f348d539b1b57325890147935dbc/packages/expo-notifications/ios/EXNotifications/PushToken/EXPushTokenManager.m) (didRegisterForRemoteNotificationsWithDeviceToken, didFailToRegisterForRemoteNotificationsWithError)
+- `expo-facebook` -- [**EXFacebookAppDelegate.m**](https://github.com/expo/expo/blob/e0bb254c889734f2ec6c7b688167f013587ed201/packages/expo-facebook/ios/EXFacebook/EXFacebookAppDelegate.m) (openURL)
+- `expo-file-system` -- [**EXSessionHandler.m**](https://github.com/expo/expo/blob/e0bb254c889734f2ec6c7b688167f013587ed201/packages/expo-file-system/ios/EXFileSystem/EXSessionTasks/EXSessionHandler.m) (handleEventsForBackgroundURLSession)
 
 Currently, the only known way to add support for the AppDelegate proxy to a native module, without converting that module to a unimodule, is to create a wrapper package: [example](https://github.com/expo/expo/pull/5165).
 

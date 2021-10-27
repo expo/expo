@@ -194,7 +194,7 @@ If upgrading from SDK 30 or below, you'll also need to change `platform :ios, '9
 
 - Go to https://expo.dev/--/api/v2/versions and find the `expokitNpmPackage` key under `sdkVersions.[NEW SDK VERSION]`.
 - Update your version of expokit in **package.json** to the version in `expokitNpmPackage` and yarn/npm install.
-- If upgrading to SDK 31 or below, go to `MainActivity.java` and replace `Arrays.asList("[OLD SDK VERSION]")` with `Arrays.asList("[NEW SDK VERSION]")`. If upgrading to SDK 32 or above, simply remove the entire `public List<String> sdkVersions()` method from `MainActivity.java`.
+- If upgrading to SDK 31 or below, go to **MainActivity.java** and replace `Arrays.asList("[OLD SDK VERSION]")` with `Arrays.asList("[NEW SDK VERSION]")`. If upgrading to SDK 32 or above, simply remove the entire `public List<String> sdkVersions()` method from **MainActivity.java**.
 - Go to `android/app/build.gradle` and replace `compile('host.exp.exponent:expoview:[OLD SDK VERSION]@aar') {` with `compile('host.exp.exponent:expoview:[NEW SDK VERSION]@aar') {`.
 - Go to `android/app/build.gradle` (same file) and replace `api 'com.facebook.react:react-native:[OLD SDK VERSION]'` with `api 'com.facebook.react:react-native:[NEW SDK VERSION]'`.
 - Go to `android/app/build.gradle` (same file) and upgrade JSC version by replacing `api 'org.webkit:android-jsc:[OLD JSC VERSION]'` with `api 'org.webkit:android-jsc:r245459'` and `force 'org.webkit:android-jsc:[OLD JSC VERSION]'` with `force 'org.webkit:android-jsc:r245459'`.
@@ -371,14 +371,14 @@ If upgrading from SDK31 or below:
    api 'host.exp.exponent:expo-background-fetch:+'
    ```
 
-2. Ensure that in `MainActivity.java`, `expoPackages` method looks like this:
+2. Ensure that in **MainActivity.java**, `expoPackages` method looks like this:
    ```java
    @Override
    public List<Package> expoPackages() {
      return ((MainApplication) getApplication()).getExpoPackages();
    }
    ```
-3. In `MainApplication.java`, replace
+3. In **MainApplication.java**, replace
    ```java
    public class MainApplication extends ExpoApplication {
    ```
@@ -386,7 +386,7 @@ If upgrading from SDK31 or below:
    ```java
    public class MainApplication extends ExpoApplication implements AppLoaderPackagesProviderInterface<ReactPackage> {
    ```
-4. Add the following lines in `MainApplication.java`:
+4. Add the following lines in **MainApplication.java**:
 
    ```java
    import org.unimodules.core.interfaces.Package;

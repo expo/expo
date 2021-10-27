@@ -38,9 +38,9 @@ If you are using the [managed workflow](../introduction/managed-vs-bare/#managed
 
 ### Configuration for the bare workflow
 
-If you are using the [bare workflow](/introduction/managed-vs-bare.md#bare-workflow), set the runtime version in `Expo.plist` on iOS and **AndroidManifest.xml** on Android.
+If you are using the [bare workflow](/introduction/managed-vs-bare.md#bare-workflow), set the runtime version in **Expo.plist** on iOS and **AndroidManifest.xml** on Android.
 
-For an iOS build, add an entry to the `Expo.plist` with the key `EXUpdatesRuntimeVersion`. The value is a string that represents the runtime version.
+For an iOS build, add an entry to the **Expo.plist** with the key `EXUpdatesRuntimeVersion`. The value is a string that represents the runtime version.
 
 ```diff
 + <key>EXUpdatesRuntimeVersion</key>

@@ -51,13 +51,13 @@ function registerRootComponent(component) {
 }
 ```
 
-And on the native side, in `AppDelegate.m` you should see:
+And on the native side, in **AppDelegate.m** you should see:
 
 ```objectivec
 RCTRootView *rootView = [[RCTRootView alloc] initWithBridge:bridge moduleName:@"main" initialProperties:nil];
 ```
 
-and in `MainActivity.java`:
+and in **MainActivity.java**:
 
 ```java
 @Override
