@@ -112,7 +112,7 @@
     "expo-print": "~11.0.3",
     "expo-processing": "2.0.6",
     "expo-progress": "^0.0.2",
-    "expo-random": "^12.0.0",
+    "expo-random": "^12.0.1",
     "expo-screen-capture": "~4.0.3",
     "expo-screen-orientation": "~4.0.3",
     "expo-secure-store": "~11.0.3",

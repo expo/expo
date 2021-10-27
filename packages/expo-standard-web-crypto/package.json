@@ -31,10 +31,10 @@
   "license": "MIT",
   "devDependencies": {
     "expo-module-scripts": "^2.0.0",
-    "expo-random": "~12.0.0"
+    "expo-random": "~12.0.1"
   },
   "peerDependencies": {
-    "expo-random": "12.0.0"
+    "expo-random": "12.0.1"
   },
   "peerDependenciesMeta": {
     "expo-random": {

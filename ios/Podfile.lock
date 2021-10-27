@@ -2502,15 +2502,15 @@ PODS:
     - ExpoModulesCore
   - Expo (43.0.1):
     - ExpoModulesCore
-  - ExpoModulesCore (0.4.5):
+  - ExpoModulesCore (0.4.6):
     - React-Core
-  - ExpoModulesCore/Tests (0.4.5):
+  - ExpoModulesCore/Tests (0.4.6):
     - Nimble
     - Quick
     - React-Core
   - EXPrint (11.0.3):
     - ExpoModulesCore
-  - EXRandom (12.0.0):
+  - EXRandom (12.0.1):
     - React-Core
   - EXScreenCapture (4.0.3):
     - ExpoModulesCore
@@ -5164,9 +5164,9 @@ SPEC CHECKSUMS:
   EXNotifications: b03a992d3c103a888899a550353d78578338282a
   EXPermissions: 7696f4c16e89981f84c04d96327f7e1e592373c0
   Expo: cb542da0f7c8565a58231488066262f079eb1831
-  ExpoModulesCore: 5b6115660c3400f019f75093c061ae0d8c690f8a
+  ExpoModulesCore: eea3472f70e921feb4dd24387662cbe0b67c9f8d
   EXPrint: 7aaa30abc8d245516fb50964c73b66e16dbf94af
-  EXRandom: 9ed4600d410cf2fe58d22b3121865624065a16e9
+  EXRandom: 64c954ae24619b8d0c18ff46aa96401e98efc977
   EXScreenCapture: aa7292f963ccfde7aed4ba6bb6e822e95ef5153e
   EXScreenOrientation: 80c8c07ab3f2beb8e83ba94ab6ee4fb7a6bf01a6
   EXSecureStore: 919bf7c28472862020d2cd7b59b69aae160b5d40

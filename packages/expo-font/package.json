@@ -34,7 +34,7 @@
     "preset": "expo-module-scripts"
   },
   "dependencies": {
-    "expo-modules-core": "~0.4.5",
+    "expo-modules-core": "~0.4.6",
     "fontfaceobserver": "^2.1.0"
   },
   "devDependencies": {
