@@ -203,7 +203,7 @@ An App Store app gets re-signed with an Apple certificate when it goes on the st
 
 ### Uploading existing certificate
 
-If you have a password-protected certificate, you can provide the path to your `.p12` file as well as your password for upload. We recommend following [this excellent guide on making a P12 file](https://calvium.com/how-to-make-a-p12-file/) for making your own certificates.
+If you have a password-protected certificate, you can provide the path to your **.p12** file as well as your password for upload. We recommend following [this excellent guide on making a P12 file](https://calvium.com/how-to-make-a-p12-file/) for making your own certificates.
 
 **Note:** this guide recommends leaving the P12's password blank, but a **P12 password is required** to upload your own certificate to Expo's service. Please enter a password when prompted.
 

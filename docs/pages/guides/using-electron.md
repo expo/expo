@@ -64,7 +64,7 @@ To simplify this we created the package `@expo/electron-adapter` which wraps [`e
 
 ## 🧸 Behavior
 
-- Webpack now resolves files with `.electron.js` & `.web.js` extensions in that order. If you want to use `electron` features then put them in a file like **foo.electron.js**.
+- Webpack now resolves files with **.electron.js** & **.web.js** extensions in that order. If you want to use `electron` features then put them in a file like **foo.electron.js**.
 - Every universal package you have installed will be transpiled automatically, this includes packages that start with the name: `expo`, `@expo`, `@unimodules`, `@react-navigation`, `react-navigation`, `react-native`. You can add more by appending them to the array for key `expo.web.build.babel.include` in your **app.json** (this feature is experimental and subject to change).
 
 ## Contributing

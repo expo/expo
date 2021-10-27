@@ -167,7 +167,7 @@ If your app is ejected, note that like some other parts of **app.json**, changin
 
 - `scheme` in **app.json**
 - Under the first occurrence of `CFBundleURLSchemes` in `ios/<your-project-name>/Info.plist`
-- In the `data android:scheme` tag in `android/app/src/main/AndroidManifest.xml`
+- In the `data android:scheme` tag in **android/app/src/main/AndroidManifest.xml**
 
 ### `Linking` module
 

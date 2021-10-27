@@ -42,7 +42,7 @@ The command will perform the following steps:
 
   - The latest finished Android build for the project on EAS servers.
   - Specific build ID. It can be found on the [builds dashboard](https://expo.dev/builds).
-  - Path to an `.apk` or `.aab` archive on your local filesystem.
+  - Path to an **.apk** or **.aab** archive on your local filesystem.
   - URL to the app archive.
 
   > This step can be skipped if one of the following CLI parameters is provided: `--latest`, `--id`, `--path`, or `--url`.

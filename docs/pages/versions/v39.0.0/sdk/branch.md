@@ -17,7 +17,7 @@ For [managed](../../../introduction/managed-vs-bare.md#managed-workflow) apps, y
 
 - Add the **Branch Key** to your **app.json** in the section `android.config.branch.apiKey` and `ios.config.branch.apiKey`. You can find your key on [this page](https://dashboard.branch.io/account-settings/app) of the Branch Dashboard.
 - Add a **linking scheme** to your **app.json** in the `scheme` section if you don't already have one.
-- On iOS, the `Branch` module will automatically be bundled with your `.ipa`. For Android, `expo-branch` must be present in your dependencies in **package.json** at the time `expo build:android` is run in order for the module to be bundled with your `.apk`.
+- On iOS, the `Branch` module will automatically be bundled with your **.ipa**. For Android, `expo-branch` must be present in your dependencies in **package.json** at the time `expo build:android` is run in order for the module to be bundled with your **.apk**.
 
 ### Enable Branch support for Universal Links (iOS only)
 

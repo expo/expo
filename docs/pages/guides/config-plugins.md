@@ -247,11 +247,11 @@ The following default mods are provided by the mod compiler for common file mani
 - `mods.ios.podfileProperties` -- Modify the **ios/Podfile.properties.json** as JSON.
 - `mods.ios.appDelegate` -- Modify the `ios/<name>/AppDelegate.m` as a string (Dangerous).
 
-- `mods.android.manifest` -- Modify the `android/app/src/main/AndroidManifest.xml` as JSON (parsed with [`xml2js`][xml2js]).
-- `mods.android.strings` -- Modify the `android/app/src/main/res/values/strings.xml` as JSON (parsed with [`xml2js`][xml2js]).
-- `mods.android.colors` -- Modify the `android/app/src/main/res/values/colors.xml` as JSON (parsed with [`xml2js`][xml2js]).
+- `mods.android.manifest` -- Modify the **android/app/src/main/AndroidManifest.xml** as JSON (parsed with [`xml2js`][xml2js]).
+- `mods.android.strings` -- Modify the **android/app/src/main/res/values/strings.xml** as JSON (parsed with [`xml2js`][xml2js]).
+- `mods.android.colors` -- Modify the **android/app/src/main/res/values/colors.xml** as JSON (parsed with [`xml2js`][xml2js]).
 - `mods.android.colorsNight` -- Modify the `android/app/src/main/res/values-night/colors.xml` as JSON (parsed with [`xml2js`][xml2js]).
-- `mods.android.styles` -- Modify the `android/app/src/main/res/values/styles.xml` as JSON (parsed with [`xml2js`][xml2js]).
+- `mods.android.styles` -- Modify the **android/app/src/main/res/values/styles.xml** as JSON (parsed with [`xml2js`][xml2js]).
 - `mods.android.gradleProperties` -- Modify the `android/gradle.properties` as a `Properties.PropertiesItem[]`.
 - `mods.android.mainActivity` -- Modify the `android/app/src/main/<package>/MainActivity.java` as a string (Dangerous).
 - `mods.android.mainApplication` -- Modify the `android/app/src/main/<package>/MainApplication.java` as a string (Dangerous).

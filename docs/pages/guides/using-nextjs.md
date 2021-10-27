@@ -300,7 +300,7 @@ The adapter provides a Babel config [`@expo/next-adapter/babel`](https://github.
 
 Wraps your [**next.config.js**](https://nextjs.org/docs#custom-configuration) and adds universal platform support.
 
-- Defines a custom `pageExtensions` which makes Webpack resolve `.web.js` before `.js`, we call this feature "platform extensions".
+- Defines a custom `pageExtensions` which makes Webpack resolve **.web.js** before **.js**, we call this feature "platform extensions".
 - Wraps the Webpack config in `withUnimodules` from `@expo/webpack-config`
   - Makes Babel target all Expo, and React Native packages that you've installed
   - Aliases `react-native` to `react-native-web` in the browser

@@ -104,7 +104,7 @@ one of those formats.
 
 These are the only font formats that work consistently in Expo across web, Android, and iOS.
 
-If you have both OTF and TTF versions of a font, prefer OTF. OTF is a newer format and `.otf` files are often smaller than `.ttf` files and sometimes OTF files will render slightly better in certain contexts. In general, both formats are very similar and perfectly acceptable.
+If you have both OTF and TTF versions of a font, prefer OTF. OTF is a newer format and **.otf** files are often smaller than **.ttf** files and sometimes OTF files will render slightly better in certain contexts. In general, both formats are very similar and perfectly acceptable.
 
 ### Beyond OTF and TTF
 

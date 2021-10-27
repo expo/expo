@@ -14,7 +14,7 @@ To get started, create a **tsconfig.json** in your project root:
 
 Running `expo start` will prompt you to install the required dependencies (`typescript`, `@types/react`, `@types/react-native`), and automatically configure your **tsconfig.json**.
 
-Rename files to convert them to TypeScript. For example, you would rename **App.js** to **App.tsx**. Use the `.tsx` extension if the file includes React components (JSX). If the file did not include any JSX, you can use the `.ts` file extension.
+Rename files to convert them to TypeScript. For example, you would rename **App.js** to **App.tsx**. Use the **.tsx** extension if the file includes React components (JSX). If the file did not include any JSX, you can use the **.ts** file extension.
 
 <TerminalBlock cmd={['mv App.js App.tsx']} />
 
@@ -39,7 +39,7 @@ An Expo app's **tsconfig.json** should extend the `expo/tsconfig.base` by defaul
 - `"noEmit"`: `true`
   - Only use the TypeScript compiler (TSC) to check the code. The Metro bundler is responsible for compiling TypeScript to JavaScript.
 - `"resolveJsonModule"`: `true`
-  - Enables importing `.json` files. Metro's default behavior is to allow importing json files as JS objects.
+  - Enables importing **.json** files. Metro's default behavior is to allow importing json files as JS objects.
 - `"skipLibCheck"`: `true`
   - Skip type checking of all declaration files (`*.d.ts`).
 - `"target"`: `"ESNext"`
@@ -70,7 +70,7 @@ Certain language features may require additional configuration, for example if y
 
 The easiest way to get started is to initialize your new project using a TypeScript template. When you run `expo init` choose one of the templates with TypeScript in the name and then run `yarn tsc` or `npx tsc` to typecheck the project.
 
-When you create new source files in your project you should use the `.ts` extension or the `.tsx` if the file includes React components.
+When you create new source files in your project you should use the **.ts** extension or the **.tsx** if the file includes React components.
 
 ## TypeScript for config files
 

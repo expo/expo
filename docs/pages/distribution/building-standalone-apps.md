@@ -149,7 +149,7 @@ to start the build with `--clear-push-cert`. We will remove the legacy certifica
 
 ## 4. Wait for it to finish building
 
-When one of our building machines is free, it'll start building your app. You can check how long you'll wait on the [Turtle status](https://expo.dev/turtle-status) site. We'll print a url you can visit (such as `expo.dev/builds/some-unique-id`) to watch your build progress and access the build logs. Alternatively, you can check up on it by running `expo build:status`. When it's done, you'll see the url to your app file - an `.apk`, `.aab` (both Android), or `.ipa` (iOS) file. Copy and paste the link into your browser to download the file.
+When one of our building machines is free, it'll start building your app. You can check how long you'll wait on the [Turtle status](https://expo.dev/turtle-status) site. We'll print a url you can visit (such as `expo.dev/builds/some-unique-id`) to watch your build progress and access the build logs. Alternatively, you can check up on it by running `expo build:status`. When it's done, you'll see the url to your app file - an **.apk**, **.aab** (both Android), or **.ipa** (iOS) file. Copy and paste the link into your browser to download the file.
 
 > Want to be notified programmatically as soon as your build is done? [Here's how you can set that up with webhooks](webhooks.md).
 
@@ -157,14 +157,14 @@ When one of our building machines is free, it'll start building your app. You ca
 
 ### Android
 
-- **To run it on your Android emulator**, first build your project with the apk flag by running `expo build:android -t apk`, and you can drag and drop the `.apk` into the emulator.
+- **To run it on your Android emulator**, first build your project with the apk flag by running `expo build:android -t apk`, and you can drag and drop the **.apk** into the emulator.
 - **To run it on your Android device**, make sure you have the Android platform tools installed along with `adb`, then just run `adb install app-filename.apk` with [USB debugging enabled on your device](https://developer.android.com/studio/run/device.html#device-developer-options) and the device plugged in.
 
 ### iOS
 
 - **To run it on your iOS simulator**, first build your project with the simulator flag by running `expo build:ios -t simulator`, then download the artifact with the link printed when your build completes. To install the resulting **tar.gz** file, unzip it and drag-and-drop it into your iOS simulator. If you'd like to install it from the command line, run `tar -xvzf your-app.tar.gz` to unpack the file, open a simulator, then run `xcrun simctl install booted <path to .app>`.
 
-- **To test a device build with Apple TestFlight**, download the `.ipa` file to your local machine. Within [App Store Connect](https://appstoreconnect.apple.com/apps), click the plus icon and create a New App. Make sure your `bundleIdentifier` matches what you've placed in **app.json**. Now, you need to use Xcode or [Transporter](https://apps.apple.com/app/transporter/id1450874784) (previously known as Application Loader) to upload the `.ipa` you got from `expo build:ios`. Once you do that, you can check the status of your build under `Activity`. Processing an app can take 10-15 minutes before it shows up under available builds.
+- **To test a device build with Apple TestFlight**, download the **.ipa** file to your local machine. Within [App Store Connect](https://appstoreconnect.apple.com/apps), click the plus icon and create a New App. Make sure your `bundleIdentifier` matches what you've placed in **app.json**. Now, you need to use Xcode or [Transporter](https://apps.apple.com/app/transporter/id1450874784) (previously known as Application Loader) to upload the **.ipa** you got from `expo build:ios`. Once you do that, you can check the status of your build under `Activity`. Processing an app can take 10-15 minutes before it shows up under available builds.
 
 ## 6. Submit it to the appropriate store
 

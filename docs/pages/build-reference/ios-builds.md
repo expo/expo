@@ -51,7 +51,7 @@ In this next phase, this is what happens when EAS Build picks up your request:
 1. Store a cache of files and directories defined in the build profile. `Podfile.lock` is cached by default. Subsequent builds will restore this cache. ([Learn more](../build/eas-json/).)
 1. Upload the build artifact to a private AWS S3 bucket.
 
-   - The artifact path can be configured in **eas.json** at `builds.ios.PROFILE_NAME.artifactPath`. It defaults to `ios/build/App.ipa`. You can specify a glob-like pattern for `artifactPath`. We're using the [fast-glob](https://github.com/mrmlnc/fast-glob#pattern-syntax) package under the hood.
+   - The artifact path can be configured in **eas.json** at `builds.ios.PROFILE_NAME.artifactPath`. It defaults to **ios/build/App.ipa**. You can specify a glob-like pattern for `artifactPath`. We're using the [fast-glob](https://github.com/mrmlnc/fast-glob#pattern-syntax) package under the hood.
 
 ## Building iOS Projects With Fastlane
 

@@ -104,7 +104,7 @@ Android builds follow a similar process to iOS builds, but we are going to restr
 
 <Video file="exploring-managed/package.mp4" />
 
-We’ll build an [Android App Bundle (`.aab`)](https://developer.android.com/platform/technology/app-bundle) here because we want a more lean binary for the Play Store, but if you want to install the binary on a local device for testing, leave out the `--app-bundle` flag and you’ll get a `.apk` file instead.
+We’ll build an [Android App Bundle (**.aab**)](https://developer.android.com/platform/technology/app-bundle) here because we want a more lean binary for the Play Store, but if you want to install the binary on a local device for testing, leave out the `--app-bundle` flag and you’ll get a **.apk** file instead.
 
 <Video file="exploring-managed/buildandroid.mp4" />
 

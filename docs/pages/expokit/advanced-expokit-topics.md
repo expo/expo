@@ -53,7 +53,7 @@ If you do not have a `scheme` specified in app.json at the time of ejecting, Exp
 
 1.  **app.json** (the `"scheme"` field)
 2.  `ios/<your-project-name>/Supporting/Info.plist` (under the first occurrence of`CFBundleURLSchemes`)
-3.  `android/app/src/main/AndroidManifest.xml` (in a line that looks like `<data android:scheme="<your-scheme-here>"/>`, under `MainActivity`, or `LauncherActivity` for older projects)
+3.  **android/app/src/main/AndroidManifest.xml** (in a line that looks like `<data android:scheme="<your-scheme-here>"/>`, under `MainActivity`, or `LauncherActivity` for older projects)
 4.  `android/app/src/main/java/host/exp/exponent/generated/AppConstants.java` (the `SHELL_APP_SCHEME` variable)
 
 ## Enabling Optional Expo Modules on iOS
