@@ -50,11 +50,11 @@ Now you can build your app through `eas build` and your app will run with Hermes
 <details><summary><h4>Are you using an M1 Mac?</h4></summary>
 <p>
 
-If you encounter a simulator building error like this:
+When using Hermes for iOS, you may encounter the following error when building for the simulator:
 
 > ❌ `ld: building for iOS Simulator, but linking in dylib built for iOS, file '/path/to/projectName/ios/Pods/hermes-engine/destroot/Library/Frameworks/iphoneos/hermes.framework/hermes' for architecture arm64`
 
-It is [a known issue for React Native 0.64](https://github.com/facebook/hermes/issues/468). To workaround this, you can add the following patch to `ios/Podfile`:
+This is [a known issue for React Native 0.64](https://github.com/facebook/hermes/issues/468); to workaround it, you can add the following patch to your `ios/Podfile`:
 
 ```diff
 --- a/ios/Podfile
@@ -122,11 +122,10 @@ Please note that the Hermes bytecode format may change between different version
 
 ## JavaScript inspector for Hermes
 
-To use inspector for JavaScript debugging, you can start your project with `expo start` then press `j` to open the inspector in Google Chrome or Microsoft Edge.
+To use inspector for JavaScript debugging, you can start your project with `expo start` then press `j` to open the inspector in Google Chrome or Microsoft Edge. _This is only supported for debug builds._
 
-_This is only supported on a debug build app._
 
-Other than that, traditional ways to open Hermes inspector are still available:
+Alternatively, you can use Hermes inspector with the following tools:
 
 - [Open Google Chrome DevTools manually](https://reactnative.dev/docs/hermes#debugging-js-on-hermes-using-google-chromes-devtools)
 - [Flipper](https://fbflipper.com/)
