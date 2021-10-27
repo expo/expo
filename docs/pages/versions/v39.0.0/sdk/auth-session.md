@@ -512,7 +512,7 @@ This service is responsible for:
 - redirecting traffic from your application to the authentication service
 - redirecting response from the auth service to your application using a deep link
 
-To better understand how it works, check out this implementation in **node.js**:
+To better understand how it works, check out this implementation in Node.js:
 
 ```js
 const http = require('http');
