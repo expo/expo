@@ -70,6 +70,9 @@ static constexpr auto globalJsFuncName = "__EXAV_setOnAudioSampleReceivedCallbac
           auto channelsCount = (size_t) buffer->mNumberChannels;
           auto framesCount = buffer->mDataByteSize / sizeof(float);
           float *data = (float *) buffer->mData;
+          if (!data) {
+            return;
+          }
 
           auto channels = jsi::Array(rt, channelsCount);
           

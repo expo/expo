@@ -980,7 +980,7 @@ void tapProcess(MTAudioProcessingTapRef tap, CMItemCount numberFrames, MTAudioPr
   OSStatus status = MTAudioProcessingTapGetSourceAudio(tap, numberFrames, bufferListInOut, flagsOut, NULL, numberFramesOut);
   if (noErr != status)
   {
-    NSLog(@"MTAudioProcessingTapGetSourceAudio: %d", (int)status);
+    EXLogWarn(@"MTAudioProcessingTapGetSourceAudio: %d", (int)status);
     return;
   }
 
