@@ -15,7 +15,7 @@ For [managed](../../../introduction/managed-vs-bare.md#managed-workflow) apps, y
 
 ## Configuration
 
-1. Go to your `app.json` and make sure you define your `ios.bundleIdentifier` and the `android.package` you want to use.
+1. Go to your **app.json** and make sure you define your `ios.bundleIdentifier` and the `android.package` you want to use.
 2. For iOS, also set `expo.ios.config.googleSignIn.reservedClientId` to your reversed client ID.
 
 ### Usage with Firebase
@@ -27,7 +27,7 @@ When using Firebase, also configure the Google-services configuration files:
 3. (**Android only**) Go to your Firebase project's settings, scroll down to "Your apps" and select your Android app. Under `SHA certificate fingerprints`, click `Add fingerprint`, and paste the value of you get for `Google Certificate Fingerprint` when running `expo fetch:android:hashes`.
    > If you haven't already run `expo build:android` for this project, you'll need to do that first before getting the Google Certificate Fingerprint.
 4. Download the `GoogleService-Info.plist` (iOS) & the `google-services.json` (Android) from your Firebase project settings page. Move them to your Expo project.
-5. Modify `app.json`:
+5. Modify **app.json**:
    - For iOS
      - Set your `expo.ios.config.googleSignIn.reservedClientId` to the value of `REVERSED_CLIENT_ID` in the `GoogleService-Info.plist`.
      - Set `expo.ios.googleServicesFile` to the relative path of your `GoogleService-Info.plist`. Make sure the file is located somewhere in your Expo project.

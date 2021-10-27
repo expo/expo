@@ -89,7 +89,7 @@ import * as SplashScreen from 'expo-splash-screen';
 
 ### `SplashScreen.preventAutoHideAsync()`
 
-Makes the native splash screen (configured in `app.json`) remain visible until `hideAsync` is called.
+Makes the native splash screen (configured in **app.json**) remain visible until `hideAsync` is called.
 
 ### `SplashScreen.hideAsync()`
 

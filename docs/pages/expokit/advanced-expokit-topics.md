@@ -17,7 +17,7 @@ It is possible to manually "un-eject" your project, for example if you want to r
 To un-eject:
 
 - Delete the `ios` and `android` directories from your project.
-- Delete the `isDetached` and `detach` keys from your project's `app.json`.
+- Delete the `isDetached` and `detach` keys from your project's **app.json**.
 
 You can now use your project like a normal Expo project (with no ExpoKit).
 
@@ -51,7 +51,7 @@ In production, your ExpoKit project will request your published JS bundle. This 
 
 If you do not have a `scheme` specified in app.json at the time of ejecting, Expo will automatically generate a random one for you. If you'd like to switch to a different scheme after ejecting, there are a few places where you need to find an occurrence of your old scheme and replace it with the new one:
 
-1.  `app.json` (the `"scheme"` field)
+1.  **app.json** (the `"scheme"` field)
 2.  `ios/<your-project-name>/Supporting/Info.plist` (under the first occurrence of`CFBundleURLSchemes`)
 3.  `android/app/src/main/AndroidManifest.xml` (in a line that looks like `<data android:scheme="<your-scheme-here>"/>`, under `MainActivity`, or `LauncherActivity` for older projects)
 4.  `android/app/src/main/java/host/exp/exponent/generated/AppConstants.java` (the `SHELL_APP_SCHEME` variable)

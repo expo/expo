@@ -24,13 +24,13 @@ There's no need to re-build or redeploy your app to the App and Play store. It's
 
 Expo offers a shared configuration file we call a _manifest_.
 
-- Configuration that you would typically do inside of your Xcode / plist files or Android studio / xml files is handled through `app.json`. For example, if you want to lock the orientation, change your icon, customize your splash screen, add/remove permissions and entitlements (in standalone apps), configure keys for Google Maps and other services, you set this in `app.json` and it will apply to both iOS and Android. [See the guide here](/workflow/configuration.md).
+- Configuration that you would typically do inside of your Xcode / plist files or Android studio / xml files is handled through **app.json**. For example, if you want to lock the orientation, change your icon, customize your splash screen, add/remove permissions and entitlements (in standalone apps), configure keys for Google Maps and other services, you set this in **app.json** and it will apply to both iOS and Android. [See the guide here](/workflow/configuration.md).
 
 In the managed workflow, you can share your app with anyone, anywhere in the world while you're working through the Expo Go app [(available on the App / Play Store)](https://expo.dev). Scan a QR code, or enter in a phone number and we'll send you a link that will instantly load your app on your device.
 
 - Instead of having to sign up several external testers through App Store Connect, you can easily have them download the Expo Go app and immediately have a working version on their phone.
 
-We talk about permissions we set within `app.json`, but there's also the [Permissions API](../versions/latest/sdk/permissions.md). Permissions inside `app.json` are meant to be used by Android standalone apps for things like camera access, geolocation, fingerprint, etc. The Permissions API on the other hand, is used to request and verify access at runtime. It offers an easy API for asking your users for push notifications, location, camera, audio recording and contacts.
+We talk about permissions we set within **app.json**, but there's also the [Permissions API](../versions/latest/sdk/permissions.md). Permissions inside **app.json** are meant to be used by Android standalone apps for things like camera access, geolocation, fingerprint, etc. The Permissions API on the other hand, is used to request and verify access at runtime. It offers an easy API for asking your users for push notifications, location, camera, audio recording and contacts.
 
 ## How does Expo work?
 

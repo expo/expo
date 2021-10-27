@@ -20,7 +20,7 @@ An [example to do list app](https://github.com/expo/examples/tree/master/with-sq
 In order to open a new SQLite database using an existing `.db` file you already have, you need to do three things:
 
 - `expo install expo-file-system expo-asset`
-- create a `metro.config.js` file in the root of your project with the following contents ([curious why? read here](../../../guides/customizing-metro.md#adding-more-file-extensions-to--assetexts)):
+- create a **metro.config.js** file in the root of your project with the following contents ([curious why? read here](../../../guides/customizing-metro.md#adding-more-file-extensions-to--assetexts)):
 
 ```ts
 const { getDefaultConfig } = require('expo/metro-config');

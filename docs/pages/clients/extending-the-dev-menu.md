@@ -81,7 +81,7 @@ One of the main purposes of this package was to provide an easy way to create ex
    }
    ```
 
-3. Go to `MainApplication` (`MainApplication.java` or `MainApplication.kt`) and register created package.
+3. Go to `MainApplication` (`MainApplication.java` or **MainApplication.kt**) and register created package.
 
    ```java
    // MainApplication.java

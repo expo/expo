@@ -76,7 +76,7 @@ In order for assets to be uploaded to the CDN, they must be explicitly required 
 
 ### Some native configuration can't be updated by publishing
 
-If you make any of the following changes in `app.json`, you will need to
+If you make any of the following changes in **app.json**, you will need to
 re-build the binaries for your app for the change to take effect:
 
 - Increment the Expo SDK Version
@@ -102,7 +102,7 @@ more widely.
 
 ## Privacy
 
-You can set the privacy of your project in your `app.json` configuration
+You can set the privacy of your project in your **app.json** configuration
 file by setting the key “privacy” to either `“public”` or `“unlisted”`.
 
 These options work similarly to the way they do on YouTube. Unlisted

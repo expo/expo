@@ -49,7 +49,7 @@ to launch Ubuntu at least once. After that, use an Admin powershell to run:
 - `slug` is the url name that your app's JavaScript is published to. For example: `expo.dev/@community/native-component-list`, where `community` is my username and `native-component-list` is the slug.
 - The `ios.buildNumber` and `android.versionCode` distinguish different binaries of your app. Make sure to increment these for each build you upload to the App Store or Google Play Store.
 
-There are other options you might want to add to `app.json`. We have only covered what is
+There are other options you might want to add to **app.json**. We have only covered what is
 required. For example, some people like to configure their own build number, linking scheme, and
 more. We highly recommend you read through [Configuration with app.json / app.config.js](../workflow/configuration.md) for the
 full spec. This is also your last chance to double check our [recommendations](app-stores.md)
@@ -162,9 +162,9 @@ When one of our building machines is free, it'll start building your app. You ca
 
 ### iOS
 
-- **To run it on your iOS simulator**, first build your project with the simulator flag by running `expo build:ios -t simulator`, then download the artifact with the link printed when your build completes. To install the resulting `tar.gz` file, unzip it and drag-and-drop it into your iOS simulator. If you'd like to install it from the command line, run `tar -xvzf your-app.tar.gz` to unpack the file, open a simulator, then run `xcrun simctl install booted <path to .app>`.
+- **To run it on your iOS simulator**, first build your project with the simulator flag by running `expo build:ios -t simulator`, then download the artifact with the link printed when your build completes. To install the resulting **tar.gz** file, unzip it and drag-and-drop it into your iOS simulator. If you'd like to install it from the command line, run `tar -xvzf your-app.tar.gz` to unpack the file, open a simulator, then run `xcrun simctl install booted <path to .app>`.
 
-- **To test a device build with Apple TestFlight**, download the `.ipa` file to your local machine. Within [App Store Connect](https://appstoreconnect.apple.com/apps), click the plus icon and create a New App. Make sure your `bundleIdentifier` matches what you've placed in `app.json`. Now, you need to use Xcode or [Transporter](https://apps.apple.com/app/transporter/id1450874784) (previously known as Application Loader) to upload the `.ipa` you got from `expo build:ios`. Once you do that, you can check the status of your build under `Activity`. Processing an app can take 10-15 minutes before it shows up under available builds.
+- **To test a device build with Apple TestFlight**, download the `.ipa` file to your local machine. Within [App Store Connect](https://appstoreconnect.apple.com/apps), click the plus icon and create a New App. Make sure your `bundleIdentifier` matches what you've placed in **app.json**. Now, you need to use Xcode or [Transporter](https://apps.apple.com/app/transporter/id1450874784) (previously known as Application Loader) to upload the `.ipa` you got from `expo build:ios`. Once you do that, you can check the status of your build under `Activity`. Processing an app can take 10-15 minutes before it shows up under available builds.
 
 ## 6. Submit it to the appropriate store
 

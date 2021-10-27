@@ -42,7 +42,7 @@ The human-readable version of the native application that may be displayed in th
 
 ### `Application.nativeBuildVersion`
 
-The internal build version of the native application that the app store may use to distinguish between different binaries. This is the `Info.plist` value for `CFBundleVersion` on iOS (set with `ios.buildNumber` value in `app.json` in a standalone app) and the version code set by `android.versionCode` in app.json on Android at the time the native app was built. On web, this value is `null`. The return type on Android and iOS is `string`.
+The internal build version of the native application that the app store may use to distinguish between different binaries. This is the `Info.plist` value for `CFBundleVersion` on iOS (set with `ios.buildNumber` value in **app.json** in a standalone app) and the version code set by `android.versionCode` in app.json on Android at the time the native app was built. On web, this value is `null`. The return type on Android and iOS is `string`.
 
 - E.g., iOS: `"2.11.0"`, Android: `"114"`
 

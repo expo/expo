@@ -13,7 +13,7 @@ A limitation with JavaScriptCore is that the debugger does not work with modules
 
 > Hermes for Android is supported from SDK 42 and above. For bare apps created before SDK 42, [follow these instructions to update your project configuration](https://expo.fyi/hermes-android-config).
 
-To get started, open your `app.json` and add `jsEngine` field:
+To get started, open your **app.json** and add `jsEngine` field:
 
 <!-- prettier-ignore -->
 ```json
@@ -32,7 +32,7 @@ Now you can build an APK or AAB through `eas build` and your app will run with H
 
 > Hermes for iOS is supported from SDK 43 and above. For bare apps created before SDK 43, [follow these instructions to update your project configuration](https://expo.fyi/hermes-ios-config).
 
-To get started, open your `app.json` and add `jsEngine` field:
+To get started, open your **app.json** and add `jsEngine` field:
 
 <!-- prettier-ignore -->
 ```json
@@ -71,7 +71,7 @@ You may want to use Hermes on one platform and JSC on another. One way to do thi
 
 Publishing updates with `expo publish` and `expo export` will generate Hermes bytecode bundles and their source maps.
 
-Please note that the Hermes bytecode format may change between different versions of `hermes-engine` — an update produced for a specific version of Hermes will not run on a different version of Hermes. Updating the Hermes version can be thought of in the same way as updating any other native module, and so if you update the `hermes-engine` version you should also update the `runtimeVersion` in `app.json`. If you don't do this, your app may crash on launch because the update may be loaded by an existing binary that uses an older version of `hermes-engine` that is incompatible with the updated bytecode format. See ["Update Compatibility"](https://docs.expo.dev/bare/updating-your-app/#update-compatibility) for more information.
+Please note that the Hermes bytecode format may change between different versions of `hermes-engine` — an update produced for a specific version of Hermes will not run on a different version of Hermes. Updating the Hermes version can be thought of in the same way as updating any other native module, and so if you update the `hermes-engine` version you should also update the `runtimeVersion` in **app.json**. If you don't do this, your app may crash on launch because the update may be loaded by an existing binary that uses an older version of `hermes-engine` that is incompatible with the updated bytecode format. See ["Update Compatibility"](https://docs.expo.dev/bare/updating-your-app/#update-compatibility) for more information.
 
 ## JavaScript debugger for Hermes
 

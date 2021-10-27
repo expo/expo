@@ -31,7 +31,7 @@ If you encounter build failures on EAS servers and you're unable to determine th
 Some of the options available for cloud builds are not available locally. Limitations you should be aware of:
 
 - You can only build for a specific platform (option `all` is disabled).
-- Customizing versions of software is not supported, fields `node`, `yarn`, `fastlane`, `cocoapods`, `ndk`, `image` in `eas.json` are ignored.
+- Customizing versions of software is not supported, fields `node`, `yarn`, `fastlane`, `cocoapods`, `ndk`, `image` in **eas.json** are ignored.
 - Caching is not supported.
 - EAS Secrets are not supported (set them in your environment locally instead).
 - You are responsible for making sure that the environment have all necessary tools installed:

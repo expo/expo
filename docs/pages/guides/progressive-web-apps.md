@@ -12,11 +12,11 @@ You can test your PWA in an Emulator and Simulator by running `expo start:web --
 
 Expo web projects generate PWA assets and manifests by default, you only need to [add offline web support](https://expo.fyi/enabling-web-service-workers) to get a full PWA. You can disable asset and manifest generation by passing the `--no-pwa` to `expo build:web`, this won't effect favicon generation.
 
-When you run `expo build:web` the Webpack config reads your `app.config.js` (or `app.json`) and generates a PWA from it.
+When you run `expo build:web` the Webpack config reads your **app.config.js** (or **app.json**) and generates a PWA from it.
 
 The following properties can be used to customize your PWA:
 
-| `app.config.js`                                             | `manifest.json`               | `index.html`                                            |
+| **app.config.js**                                             | **manifest.json**               | **index.html**                                            |
 | ----------------------------------------------------------- | ----------------------------- | ------------------------------------------------------- |
 | `web.backgroundColor`                                       | `background_color`            |                                                         |
 | <InlineCode>web.description \| description</InlineCode>     | `description`                 | `<meta name="description" />`                           |
@@ -38,7 +38,7 @@ The following properties can be used to customize your PWA:
 | `web.barStyle`                                              |                               | `<meta name="apple-mobile-web-app-status-bar-style" />` |
 | <InlineCode>web.splash \| ios.splash \| splash</InlineCode> |                               | `<link rel="apple-touch-startup-image" >`               |
 
-If you need finer control on how the PWA is generated, you should eject the `web/index.html` and add it there.
+If you need finer control on how the PWA is generated, you should eject the **web/index.html** and add it there.
 
 ### Icons
 
@@ -48,21 +48,21 @@ Icons are generated in Webpack using the [`expo-pwa`][expo-pwa] CLI. You can cus
 
 ### Chrome
 
-Chrome PWAs use the `manifest.json` and various meta tags in the `<head />` element of the website's `index.html`. Chrome PWAs are far more robust than iOS/Safari PWAs so you may find that certain features don't line up as well as they do natively.
+Chrome PWAs use the **manifest.json** and various meta tags in the `<head />` element of the website's **index.html**. Chrome PWAs are far more robust than iOS/Safari PWAs so you may find that certain features don't line up as well as they do natively.
 
 ### Safari
 
-Safari PWAs do not use the `manifest.json`, instead they rely on meta tags in the `<head/>` element of a website's `index.html`. Expo unifies values as much as possible to simplify this.
+Safari PWAs do not use the **manifest.json**, instead they rely on meta tags in the `<head/>` element of a website's **index.html**. Expo unifies values as much as possible to simplify this.
 
 - Safari icons are resolved with: `ios.icon | icon`.
-  - All icons can be individually overwritten with `<link rel="apple-touch-icon" />` in the `web/index.html`
+  - All icons can be individually overwritten with `<link rel="apple-touch-icon" />` in the **web/index.html**
 - Splash screens are resolved with: `web.splash | ios.splash | splash`.
-  - All splash screens can be individually overwritten with `<link rel="apple-touch-startup-image" />` in the `web/index.html`
+  - All splash screens can be individually overwritten with `<link rel="apple-touch-startup-image" />` in the **web/index.html**
 - Status Bar Style is resolved with: `web.meta.apple.barStyle | web.barStyle`.
   - The default status bar style is `black-translucent` (the only full screen setting).
-  - This can be overwritten with `<meta name="apple-mobile-web-app-status-bar-style" />` in the `web/index.html`
+  - This can be overwritten with `<meta name="apple-mobile-web-app-status-bar-style" />` in the **web/index.html**
 - The home screen name is resolved with: `web.shortName | web.name | name`.
-  - This can be overwritten with `<meta name="apple-mobile-web-app-title" />` in the `web/index.html`
+  - This can be overwritten with `<meta name="apple-mobile-web-app-title" />` in the **web/index.html**
 
 ### Offline
 
@@ -72,7 +72,7 @@ In order to add offline support, you'll need to add service workers to your proj
 
 [Related applications](https://developer.mozilla.org/en-US/docs/Web/Manifest#related_applications) are a way of telling your website which apps it should install in favor of a PWA, Expo websites try to recommend the native app when possible.
 
-Related applications can be inferred automatically from the following native `app.config.js` properties:
+Related applications can be inferred automatically from the following native **app.config.js** properties:
 
 ```js
 // app.config.js
@@ -115,17 +115,17 @@ export default {
 
 Under the hood `@expo/webpack-config` uses a CLI called `expo-pwa`. If you want more control on how PWAs are generated, you can use the `expo-pwa` CLI directly.
 
-Firstly, you'll need to eject the `web/index.html` with `expo customize:web`. Now you can generate custom files and link them in the `web/index.html`. `@expo/webpack-config` will check to see if assets are linked first before attempting to generate new ones.
+Firstly, you'll need to eject the **web/index.html** with `expo customize:web`. Now you can generate custom files and link them in the **web/index.html**. `@expo/webpack-config` will check to see if assets are linked first before attempting to generate new ones.
 
 #### manifest.json
 
 - `touch web/manifest.json` or `expo-pwa manifest`
-- Add the following line to the `<head/>` element of your `web/index.html`:
+- Add the following line to the `<head/>` element of your **web/index.html**:
 
 ```html
 <link rel="manifest" href="/manifest.json" />
 ```
 
-Now `expo build:web` will copy the `web/manifest.json` file into the build folder and skip converting the `app.config.js` or `app.json` into a `manifest.json`.
+Now `expo build:web` will copy the **web/manifest.json** file into the build folder and skip converting the **app.config.js** or **app.json** into a **manifest.json**.
 
-Note that if the `icons` property is not defined then the build step will still attempt to generate and append Chrome icons to your `manifest.json`.
+Note that if the `icons` property is not defined then the build step will still attempt to generate and append Chrome icons to your **manifest.json**.

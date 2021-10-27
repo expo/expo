@@ -45,7 +45,7 @@ bugsnag-expo-cli init
 
 Note: [`npx`](https://www.npmjs.com/package/npx) (included with npm 5.2+) is a tool that lets you invoke command line tools from npm without installing them first.
 
-This will install the [`@bugsnag/expo`](https://www.npmjs.com/package/@bugsnag/expo) notifier, add some configuration to `app.json` and initialize Bugsnag in your application.
+This will install the [`@bugsnag/expo`](https://www.npmjs.com/package/@bugsnag/expo) notifier, add some configuration to **app.json** and initialize Bugsnag in your application.
 
 #### Capturing React render errors
 

@@ -16,7 +16,7 @@ Expo includes support for the [Google AdMob SDK](https://www.google.com/admob/) 
 
 ## Configuration
 
-For the module to attribute interactions with ads to your AdMob app properly you will need to add a `googleMobileAdsAppId` property to `app.json` under `[platform].config`. More info on where to find the app ID can be found in [this Google Support answer](https://support.google.com/admob/answer/6232340). A sample valid `app.json` would look like:
+For the module to attribute interactions with ads to your AdMob app properly you will need to add a `googleMobileAdsAppId` property to **app.json** under `[platform].config`. More info on where to find the app ID can be found in [this Google Support answer](https://support.google.com/admob/answer/6232340). A sample valid **app.json** would look like:
 
 ```json
 {

@@ -14,11 +14,11 @@ Both managed and bare projects for iOS and Android require additional configurat
 
 ### Managed projects
 
-Configure your supported appearance styles in `app.json` / `app.config.js` with the `userInterfaceStyle` key. You can also configure specific platform to support different appearance styles by setting either `android.userInterfaceStyle` or `ios.userInterfaceStyle` to preferred value.
+Configure your supported appearance styles in **app.json** / **app.config.js** with the `userInterfaceStyle` key. You can also configure specific platform to support different appearance styles by setting either `android.userInterfaceStyle` or `ios.userInterfaceStyle` to preferred value.
 
 The available options are: `automatic` (follow system appearance settings and notify about any change user makes), `light` (restrict app to support light theme only), and `dark` (restrict app to support dark theme only). If this key is absent, the app will default to the `light` style.
 
-Example `app.json` configuration:
+Example **app.json** configuration:
 
 ```json
 {
@@ -36,7 +36,7 @@ You can configure supported styles with the [UIUserInterfaceStyle](https://devel
 
 #### Android configuration
 
-Ensure that the `uiMode` flag is present on your `MainActivity` (and any other activities where this behavior is desired) in `AndroidManifest.xml`:
+Ensure that the `uiMode` flag is present on your `MainActivity` (and any other activities where this behavior is desired) in **AndroidManifest.xml**:
 
 ```xml
 <activity

@@ -12,7 +12,7 @@ The runtime version string must conform to [this format](/versions/latest/config
 
 ## Setting the runtime version for an update
 
-[Updates](/workflow/publishing.md#how-to-publish) published with the runtime version set in `app.json` will be delivered to builds running the same runtime version, and only to those builds.
+[Updates](/workflow/publishing.md#how-to-publish) published with the runtime version set in **app.json** will be delivered to builds running the same runtime version, and only to those builds.
 
 ```json
 {
@@ -26,7 +26,7 @@ The runtime version string must conform to [this format](/versions/latest/config
 
 ### Configuration for the managed workflow
 
-If you are using the [managed workflow](../introduction/managed-vs-bare/#managed-workflow), `runtimeVersion` is specified in `app.json`:
+If you are using the [managed workflow](../introduction/managed-vs-bare/#managed-workflow), `runtimeVersion` is specified in **app.json**:
 
 ```json
 {
@@ -38,7 +38,7 @@ If you are using the [managed workflow](../introduction/managed-vs-bare/#managed
 
 ### Configuration for the bare workflow
 
-If you are using the [bare workflow](/introduction/managed-vs-bare.md#bare-workflow), set the runtime version in `Expo.plist` on iOS and `AndroidManifest.xml` on Android.
+If you are using the [bare workflow](/introduction/managed-vs-bare.md#bare-workflow), set the runtime version in `Expo.plist` on iOS and **AndroidManifest.xml** on Android.
 
 For an iOS build, add an entry to the `Expo.plist` with the key `EXUpdatesRuntimeVersion`. The value is a string that represents the runtime version.
 
@@ -47,7 +47,7 @@ For an iOS build, add an entry to the `Expo.plist` with the key `EXUpdatesRuntim
 + <string>2.718</string>
 ```
 
-For an Android build, add a `<meta-data>` element to the `AndroidManifest.xml` whose `android:name` attribute is `expo.modules.updates.EXPO_RUNTIME_VERSION` and `android:value` attribute is a string that represents the desired runtime version.
+For an Android build, add a `<meta-data>` element to the **AndroidManifest.xml** whose `android:name` attribute is `expo.modules.updates.EXPO_RUNTIME_VERSION` and `android:value` attribute is a string that represents the desired runtime version.
 
 ```diff
 + <meta-data android:name="expo.modules.updates.EXPO_RUNTIME_VERSION" android:value="2.718"/>

@@ -22,7 +22,7 @@ The second major version of this library offers a much easier API, along with si
 
 > ⏩ If you want to play with v2-alpha in a new project before adding it to an existing project, run `npx crna --template with-reanimated2` to create a project with it configured and ready to use.
 
-To opt in to using TurboModules for react-native-reanimated, add the `experiments.turboModules` key to your `app.json`:
+To opt in to using TurboModules for react-native-reanimated, add the `experiments.turboModules` key to your **app.json**:
 
 ```json
 {
@@ -41,7 +41,7 @@ You also need to install the library directly with npm or yarn rather than using
 npm install react-native-reanimated@2.0.0-alpha.6.1
 ```
 
-Finally, you'll need to add the babel plugin to `babel.config.js`:
+Finally, you'll need to add the babel plugin to **babel.config.js**:
 
 ```jsx
 module.exports = function(api) {

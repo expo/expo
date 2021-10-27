@@ -15,7 +15,7 @@ The first phase happens on your computer. EAS CLI is in charge of completing the
 1. Check if the git index is clean - this means if there aren't any uncommitted changes. If it's not clean an error is thrown.
 2. Prepare the credentials needed for the build.
 
-   - Depending on the value of `builds.ios.PROFILE_NAME.credentialsSource`, the credentials are obtained from either the local `credentials.json` file or from the EAS servers. If the `remote` mode is selected but no credentials exist yet, you're offered to generate them.
+   - Depending on the value of `builds.ios.PROFILE_NAME.credentialsSource`, the credentials are obtained from either the local **credentials.json** file or from the EAS servers. If the `remote` mode is selected but no credentials exist yet, you're offered to generate them.
 
 3. **Bare** projects require an additional step: check whether the Xcode project is configured to be buildable on the EAS servers (i.e. ensure the correct bundle identifier and Apple Team ID are set).
 4. Create the tarball containing a shallow clone of your local repository (`git clone --depth 1 ...`).
@@ -51,7 +51,7 @@ In this next phase, this is what happens when EAS Build picks up your request:
 1. Store a cache of files and directories defined in the build profile. `Podfile.lock` is cached by default. Subsequent builds will restore this cache. ([Learn more](../build/eas-json/).)
 1. Upload the build artifact to a private AWS S3 bucket.
 
-   - The artifact path can be configured in `eas.json` at `builds.ios.PROFILE_NAME.artifactPath`. It defaults to `ios/build/App.ipa`. You can specify a glob-like pattern for `artifactPath`. We're using the [fast-glob](https://github.com/mrmlnc/fast-glob#pattern-syntax) package under the hood.
+   - The artifact path can be configured in **eas.json** at `builds.ios.PROFILE_NAME.artifactPath`. It defaults to `ios/build/App.ipa`. You can specify a glob-like pattern for `artifactPath`. We're using the [fast-glob](https://github.com/mrmlnc/fast-glob#pattern-syntax) package under the hood.
 
 ## Building iOS Projects With Fastlane
 

@@ -56,7 +56,7 @@ If you want to use any of these modules in your Expo iOS app, you need to eject 
 
 To add FaceDetector:
 
-1.  Add `expo-face-detector` to `package.json` and install JS dependencies.
+1.  Add `expo-face-detector` to **package.json** and install JS dependencies.
 2.  Add `pod 'EXFaceDetector', path: '../node_modules/expo-face-detector/ios'` to your `Podfile`.
 3.  Re-run `npx pod-install`.
 

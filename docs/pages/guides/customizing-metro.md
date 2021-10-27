@@ -2,9 +2,9 @@
 title: Customizing Metro
 ---
 
-When you run `expo start`, the CLI uses [Metro](https://facebook.github.io/metro/) to bundle JavaScript for Android and iOS platforms. By default Expo CLI will use the Metro configuration defined in the [`@expo/metro-config`](https://github.com/expo/expo-cli/tree/master/packages/metro-config) package (re-exported from `expo` as `expo/metro-config` in SDK 41 and greater). You can add custom options for Metro by creating a file named `metro.config.js` in the project root directory.
+When you run `expo start`, the CLI uses [Metro](https://facebook.github.io/metro/) to bundle JavaScript for Android and iOS platforms. By default Expo CLI will use the Metro configuration defined in the [`@expo/metro-config`](https://github.com/expo/expo-cli/tree/master/packages/metro-config) package (re-exported from `expo` as `expo/metro-config` in SDK 41 and greater). You can add custom options for Metro by creating a file named **metro.config.js** in the project root directory.
 
-The `metro.config.js` file looks like this:
+The **metro.config.js** file looks like this:
 
 ```js
 module.exports = {
@@ -30,7 +30,7 @@ To add to a value, such as an array of file extensions, defined in the default c
 
 ### Adding more file extensions to `assetExts`
 
-One use case for custom `metro.config.js` is adding more file extensions that are considered to be an [asset](assets.md). Many image, video, audio and font formats (e.g. `jpg`, `png`, `mp4`, `mp3` and `ttf`) are included by default. To add more asset file extensions, create a `metro.config.js` file in the project root. In the file add the file extension (without a leading `.`) to `assetExts`:
+One use case for custom **metro.config.js** is adding more file extensions that are considered to be an [asset](assets.md). Many image, video, audio and font formats (e.g. `jpg`, `png`, `mp4`, `mp3` and `ttf`) are included by default. To add more asset file extensions, create a **metro.config.js** file in the project root. In the file add the file extension (without a leading `.`) to `assetExts`:
 
 ```js
 const { getDefaultConfig } = require('@expo/metro-config');
@@ -48,7 +48,7 @@ module.exports = defaultConfig;
 
 By default, Metro uses [`uglify-es`](https://github.com/mishoo/UglifyJS) to minify and compress your code. You can customize uglify by passing [options](https://github.com/mishoo/UglifyJS#compress-options) to `transformer.minifierConfig`. For example, if you wanted to remove all console logs from your app in production, you can do the following:
 
-`metro.config.js`
+**metro.config.js**
 
 ```js
 const { getDefaultConfig } = require('expo/metro-config');
@@ -71,7 +71,7 @@ First, install terser in your project with `yarn add --dev metro-minify-terser`.
 
 Now set terser with `transformer.minifierPath`, and pass in [`terser` options](https://github.com/terser/terser#compress-options) via `transformer.minifierConfig`.
 
-`metro.config.js`
+**metro.config.js**
 
 ```js
 const { getDefaultConfig } = require('expo/metro-config');

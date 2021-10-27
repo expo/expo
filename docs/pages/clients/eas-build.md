@@ -11,7 +11,7 @@ You can set up your project to use EAS by running `eas build:configure`. If you 
 
 ### Modifying an existing eas.json
 
-If you have already have an `eas.json` file in your project, you'll need to update your config to create builds of your custom client.
+If you have already have an **eas.json** file in your project, you'll need to update your config to create builds of your custom client.
 
 To create a custom development client instead of a production build, set the `developmentClient` value to `true`.
 To create the build that can be installed on a physical device, set the `distribution` value to [`internal`](/build/internal-distribution.md).
