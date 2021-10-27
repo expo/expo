@@ -28,7 +28,7 @@ The Expo Unimodules and dev-tools are highly composable and can be used in _any_
 
 ## Tree-Shaking
 
-The package `babel-preset-expo` extends `@babel/preset-env` on web and is used to configure your project for Unimodules. The core feature is that it won't compile your modules to ****core.js**** when targeting web, this means that you get optimal tree-shaking and dead-code-elimination.
+The package `babel-preset-expo` extends `@babel/preset-env` on web and is used to configure your project for Unimodules. The core feature is that it won't compile your modules to **core.js** when targeting web, this means that you get optimal tree-shaking and dead-code-elimination.
 This step is optional with the React Native CLI but you'll get a much smaller bundle size and faster website if you do choose to use it. This is because `module:metro-react-native-babel-preset` is made for usage with the Metro bundler and not Webpack.
 
 > `babel-preset-expo` is required for usage with Create React App, optional but recommended for all React Native projects using Unimodules.

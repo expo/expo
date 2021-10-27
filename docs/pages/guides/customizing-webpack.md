@@ -15,7 +15,7 @@ If you create a new Webpack config or make any changes to it you'll need to rest
 
 ## Example
 
-****webpack.config.js****
+**webpack.config.js**
 
 ```ts
 const createExpoWebpackConfigAsync = require('@expo/webpack-config');
