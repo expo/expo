@@ -122,7 +122,7 @@ Please note that the Hermes bytecode format may change between different version
 
 ## JavaScript inspector for Hermes
 
-To use inspector for JavaScript debugging, you can start your project with `expo start` then press `j` to open the inspector in Google Chrome or Microsoft Edge. _This is only supported for debug builds._
+To debug JavaScript code running with Hermes, you can start your project with `expo start` then press `j` to open the inspector in Google Chrome or Microsoft Edge. _This is only supported for debug builds._
 
 
 Alternatively, you can use Hermes inspector with the following tools:
