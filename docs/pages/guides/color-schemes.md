@@ -32,7 +32,7 @@ Example **app.json** configuration:
 
 #### iOS configuration
 
-You can configure supported styles with the [UIUserInterfaceStyle](https://developer.apple.com/documentation/bundleresources/information_property_list/uiuserinterfacestyle) key in your app `Info.plist`. Use `Automatic` to support both light and dark modes.
+You can configure supported styles with the [UIUserInterfaceStyle](https://developer.apple.com/documentation/bundleresources/information_property_list/uiuserinterfacestyle) key in your app **Info.plist**. Use `Automatic` to support both light and dark modes.
 
 #### Android configuration
 

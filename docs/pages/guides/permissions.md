@@ -18,7 +18,7 @@ You can find the full list of available properties in [Apple's InfoPlistKeyRefer
 
 ### Bare workflow
 
-To request permissions on iOS, you have to describe why the permissions are requested and install the library that requests and uses the permission. When using the bare workflow, you have to edit the project `Info.plist`.
+To request permissions on iOS, you have to describe why the permissions are requested and install the library that requests and uses the permission. When using the bare workflow, you have to edit the project **Info.plist**.
 
 You can find the full list of available properties in [Apple's InfoPlistKeyReference](https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CocoaKeys.html#//apple_ref/doc/uid/TP40009251-SW1). Apple also documents the basic guidelines for the structure of the message in the [Human Interface Guidelines](https://developer.apple.com/design/human-interface-guidelines/ios/app-architecture/requesting-permission/).
 

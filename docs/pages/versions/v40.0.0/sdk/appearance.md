@@ -38,7 +38,7 @@ Example **app.json** configuration:
 
 In bare apps:
 
-- **iOS**: you can configure supported styles with the [UIUserInterfaceStyle](https://developer.apple.com/documentation/bundleresources/information_property_list/uiuserinterfacestyle) key in your app `Info.plist`.
+- **iOS**: you can configure supported styles with the [UIUserInterfaceStyle](https://developer.apple.com/documentation/bundleresources/information_property_list/uiuserinterfacestyle) key in your app **Info.plist**.
 - **Android**: please follow steps from the [`react-native-appearance` repo](https://github.com/expo/react-native-appearance#configuration).
 
 ## API

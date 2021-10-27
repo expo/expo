@@ -54,7 +54,7 @@ For Android, add the following code to your **AndroidManifest.xml**, replacing `
       ...
 ```
 
-Remember to use the same scheme as the one which was set in `Info.plist` file (only if you are also developing app for iOS).
+Remember to use the same scheme as the one which was set in **Info.plist** file (only if you are also developing app for iOS).
 
 ## Importing Payments
 

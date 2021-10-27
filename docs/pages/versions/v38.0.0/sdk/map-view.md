@@ -107,7 +107,7 @@ If you want to add MapView with Google Maps to an [ExpoKit](../../../expokit/ove
 [GMSServices provideApiKey:@"your api key"]
 ```
 
-Alternatively, you can provide the `GMSApiKey` key in your app's `Info.plist` and ExpoKit will pick it up automatically. If you ejected after already configuring Google Maps, the eject step may have already provided this for you.
+Alternatively, you can provide the `GMSApiKey` key in your app's **Info.plist** and ExpoKit will pick it up automatically. If you ejected after already configuring Google Maps, the eject step may have already provided this for you.
 
 ### Web Setup
 

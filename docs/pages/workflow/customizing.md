@@ -25,13 +25,13 @@ Using the run commands will initially [prebuild](https://expo.fyi/prebuilding) y
 
 Your app can still run in Expo Go, but any custom native code won't be accessible if it's not already present in the Expo Go app. [Learn more](./using-expo-client).
 
-If you install a package with a Expo [**config plugin**](../guides/config-plugins), you'll need to add the plugin to your **app.json**s [`plugins`](../versions/latest/config/app/#plugins) array, then re-run `expo prebuild` to sync the changes before rebuilding the native app. Often this does things like adding required permissions to the `Info.plist` or **AndroidManifest.xml**. You may need to run `expo prebuild --clean` depending on how complex the plugin is; this will delete and re-generate the native project files from scratch.
+If you install a package with a Expo [**config plugin**](../guides/config-plugins), you'll need to add the plugin to your **app.json**s [`plugins`](../versions/latest/config/app/#plugins) array, then re-run `expo prebuild` to sync the changes before rebuilding the native app. Often this does things like adding required permissions to the **Info.plist** or **AndroidManifest.xml**. You may need to run `expo prebuild --clean` depending on how complex the plugin is; this will delete and re-generate the native project files from scratch.
 
 ## Manually changing the native project files
 
 If you've made manual modifications to your `ios/` or `android/` folder, you'll need to manually setup new packages because running `expo prebuild` may not work as expected with an unpredictable project state (think of this like running `yarn` after manually modifying your `node_modules/` folder).
 
-If you want to make static changes to your native project files like the iOS `Info.plist`, or **AndroidManifest.xml** and still have access to prebuilding, check out the [config plugins guide](../guides/config-plugins/#creating-a-plugin) to see how you can hook into the prebuild process to make those changes.
+If you want to make static changes to your native project files like the iOS **Info.plist**, or **AndroidManifest.xml** and still have access to prebuilding, check out the [config plugins guide](../guides/config-plugins/#creating-a-plugin) to see how you can hook into the prebuild process to make those changes.
 
 ## Reverting changes from `expo run`
 

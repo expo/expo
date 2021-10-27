@@ -543,7 +543,7 @@ Consider using the [`expo-facebook`](/versions/latest/sdk/facebook) module for n
 
 - The custom scheme provided by Facebook is `fb` followed by the **project ID** (ex: `fb145668956753819`):
 - Add `facebookScheme: 'fb<YOUR FBID>'` to your **app.config.js** or **app.json**. Example: `{ facebookScheme: "fb145668956753819" }` (notice the `fb` prefix).
-- You'll need to make a new native build to add this redirect URI into your app's **AndroidManifest.xml** and `Info.plist`:
+- You'll need to make a new native build to add this redirect URI into your app's **AndroidManifest.xml** and **Info.plist**:
   - iOS: `eas build` or `expo build:ios`.
   - Android: `eas build` or `expo build:android`.
 - **Bare:**

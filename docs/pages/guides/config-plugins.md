@@ -6,7 +6,7 @@ title: Config Plugins
 
 When adding a native module to your project, most of the setup can be done automatically by installing the module in your project, but some modules require more complex setup. For instance, say you installed `expo-camera` in your bare project, you now need to configure the native app to enable camera permissions — this is where config plugins come in. Config plugins are a system for extending the Expo config and customizing the prebuild phase of managed builds.
 
-Internally Expo CLI uses config plugins to generate and configure all the native code for a managed project. Plugins do things like generate app icons, set the app name, and configure the `Info.plist`, **AndroidManifest.xml**, etc.
+Internally Expo CLI uses config plugins to generate and configure all the native code for a managed project. Plugins do things like generate app icons, set the app name, and configure the **Info.plist**, **AndroidManifest.xml**, etc.
 
 You can think of plugins like a bundler for native projects, and running `expo prebuild` as a way to bundle the projects by evaluating all the project plugins. Doing so will generate `ios` and `android` directories. These directories can be modified manually after being generated, but then they can no longer be safely regenerated without potentially overwriting manual modifications.
 
@@ -24,7 +24,7 @@ You can think of plugins like a bundler for native projects, and running `expo p
 
 Expo config plugins mostly come from Node modules, you can install them just like other packages in your project.
 
-For instance, `expo-camera` has a plugin that adds camera permissions to the `Info.plist` and **AndroidManifest.xml**.
+For instance, `expo-camera` has a plugin that adds camera permissions to the **Info.plist** and **AndroidManifest.xml**.
 
 Install it in your project:
 
@@ -83,7 +83,7 @@ Here is an example of the most basic config plugin:
 const withNothing = config => config;
 ```
 
-Say you wanted to create a plugin which added custom values to `Info.plist` in an iOS project:
+Say you wanted to create a plugin which added custom values to **Info.plist** in an iOS project:
 
 ```ts
 const withMySDK = (config, { apiKey }) => {
@@ -206,7 +206,7 @@ A modifier (mod for short) is an async function which accepts a config and a dat
 Mods are added to the `mods` object of the Expo config. The `mods` object is different to the rest of the Expo config because it doesn't get serialized after the initial reading, this means you can use it to perform actions _during_ code generation. If possible, you should attempt to use basic plugins instead of mods as they're simpler to work with.
 
 - `mods` are omitted from the manifest and **cannot** be accessed via `Updates.manifest`. Mods exist for the sole purpose of modifying native project files during code generation!
-- `mods` can be used to read and write files safely during the `expo prebuild` command. This is how Expo CLI modifies the `Info.plist`, entitlements, xcproj, etc...
+- `mods` can be used to read and write files safely during the `expo prebuild` command. This is how Expo CLI modifies the **Info.plist**, entitlements, xcproj, etc...
 - `mods` are platform specific and should always be added to a platform specific object:
 
 **app.config.js**
@@ -230,7 +230,7 @@ module.exports = {
 - The config is read using [`getPrebuildConfig`](https://github.com/expo/expo-cli/blob/43a6162edd646b550c1b7eae6039daf1aaec4fb0/packages/prebuild-config/src/getPrebuildConfig.ts#L12) from `@expo/prebuild-config`.
 - All of the core functionality supported by Expo is added via plugins in `withIosExpoPlugins`. This is stuff like name, version, icons, locales, etc.
 - The config is passed to the compiler `compileModsAsync`
-- The compiler adds base mods which are responsible for reading data (like `Info.plist`), executing a named mod (like `mods.ios.infoPlist`), then writing the results to the file system.
+- The compiler adds base mods which are responsible for reading data (like **Info.plist**), executing a named mod (like `mods.ios.infoPlist`), then writing the results to the file system.
 - The compiler iterates over all of the mods and asynchronously evaluates them, providing some base props like the `projectRoot`.
   - After each mod, error handling asserts if the mod chain was corrupted by an invalid mod.
 
@@ -566,7 +566,7 @@ async function setCustomConfigAsync(
 
 Using the `withInfoPlist` is a bit safer than statically modifying the `expo.ios.infoPlist` object in the **app.json** because it reads the contents of the Info.plist and merges it with the `expo.ios.infoPlist`, this means you can attempt to keep your changes from being overwritten.
 
-Here's an example of adding a `GADApplicationIdentifier` to the `Info.plist`:
+Here's an example of adding a `GADApplicationIdentifier` to the **Info.plist**:
 
 ```ts
 import { ConfigPlugin, InfoPlist, withInfoPlist } from '@expo/config-plugins';
