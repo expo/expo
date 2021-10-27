@@ -64,7 +64,7 @@ const CanvasWrapper: React.FunctionComponent<
     return { width, height };
   }
 
-  function onLayout(event: LayoutChangeEvent): void {
+  const onLayout = (event: LayoutChangeEvent) => {
     const {
       nativeEvent: {
         layout: { width, height },
@@ -78,7 +78,7 @@ const CanvasWrapper: React.FunctionComponent<
         props.onLayout(event);
       }
     }
-  }
+  };
 
   React.useEffect(() => {
     if (ref.current != null) {

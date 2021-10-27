@@ -37,7 +37,7 @@ const addReactNativeConfigAsync: Mod = async (config) => {
         `Could not add expo-dev-client dependencies to existing file ${filename}. See expo-dev-client installation instructions to add them manually: ${InstallationPage}`
       );
     }
-  } catch (error) {
+  } catch (error: any) {
     if (error.code === 'ENOENT') {
       // The file doesn't exist, so we create it.
       fs.writeFileSync(filename, REACT_NATIVE_CONFIG_JS);

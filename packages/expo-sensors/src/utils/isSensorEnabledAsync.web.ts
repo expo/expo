@@ -62,12 +62,16 @@ async function askSensorPermissionAsync(): Promise<PermissionStatus> {
  * - https://github.com/microsoft/TypeScript/blob/01de6ff2ecdc6175727f7f999b887519d40ca115/lib/lib.dom.d.ts#L4241.
  */
 declare let DeviceMotionEvent: {
+  prototype: DeviceMotionEvent;
+  new (type: string, eventInitDict?: DeviceMotionEventInit): DeviceMotionEvent;
   requestPermission?: () => Promise<PermissionState>;
 };
 /**
  * See `DeviceMotionEvent` description a few lines above.
  */
 declare let DeviceOrientationEvent: {
+  prototype: DeviceOrientationEvent;
+  new (type: string, eventInitDict?: DeviceOrientationEventInit): DeviceOrientationEvent;
   requestPermission?: () => Promise<PermissionState>;
 };
 

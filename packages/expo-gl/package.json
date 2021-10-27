@@ -43,6 +43,7 @@
   },
   "devDependencies": {
     "@types/invariant": "^2.2.33",
+    "@types/offscreencanvas": "2019.6.4",
     "expo-module-scripts": "^2.0.0",
     "react-test-renderer": "~17.0.1"
   }
