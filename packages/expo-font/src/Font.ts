@@ -9,8 +9,8 @@ import {
   getNativeFontName,
 } from './FontLoader';
 
-const loaded: { [name: string]: boolean | undefined } = {};
-const loadPromises: { [name: string]: Promise<void> | undefined } = {};
+const loaded: { [name: string]: boolean } = {};
+const loadPromises: { [name: string]: Promise<void> } = {};
 
 // @needsAudit
 // note(brentvatne): at some point we may want to warn if this is called outside of a managed app.
@@ -118,7 +118,7 @@ async function loadFontInNamespaceAsync(
     return;
   }
 
-  if (loadPromises[fontFamily]) {
+  if (loadPromises.hasOwnProperty(fontFamily)) {
     return loadPromises[fontFamily];
   }
 
