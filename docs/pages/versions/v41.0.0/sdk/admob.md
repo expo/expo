@@ -16,7 +16,7 @@ Expo includes support for the [Google AdMob SDK](https://www.google.com/admob/) 
 
 ## Configuration
 
-For the module to attribute interactions with ads to your AdMob app properly you will need to add a `googleMobileAdsAppId` property to `app.json` under `[platform].config`. More info on where to find the app ID can be found in [this Google Support answer](https://support.google.com/admob/answer/6232340). A sample valid `app.json` would look like:
+For the module to attribute interactions with ads to your AdMob app properly you will need to add a `googleMobileAdsAppId` property to **app.json** under `[platform].config`. More info on where to find the app ID can be found in [this Google Support answer](https://support.google.com/admob/answer/6232340). A sample valid **app.json** would look like:
 
 ```json
 {
@@ -110,7 +110,7 @@ Async `boolean`, indicating whether the AdMob API is available on the current de
 
 Asks for permissions to use data for tracking the user or the device.
 
-> iOS: it requires the `NSUserTrackingUsageDescription` message added to the `info.plist`.
+> iOS: it requires the `NSUserTrackingUsageDescription` message added to the **Info.plist**.
 
 #### Returns
 
@@ -120,7 +120,7 @@ A promise that resolves to an object of type [PermissionResponse](permissions.md
 
 Checks application's permissions for using data for tracking the user or the device.
 
-> iOS: it requires the `NSUserTrackingUsageDescription` message added to the `info.plist`.
+> iOS: it requires the `NSUserTrackingUsageDescription` message added to the **Info.plist**.
 
 #### Returns
 
@@ -224,22 +224,22 @@ Opens a rewarded AdMob ad.
 
 #### Methods
 
-| Name                            | Description                                    |
-| ------------------------------- | ---------------------------------------------- |
-| `setAdUnitID(adUnitID: string)` | sets the AdUnit ID for all future ad requests. |
-| `requestAdAsync(options)` | (async) requests a rewarded ad. An optional `options` object argument may specify `servePersonalizedAds: true` value — then ad will be personalized. |
-| `showAdAsync()` | (async) shows a rewarded if it is ready (async) |
+| Name                            | Description                                                                                                                                          |
+| ------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `setAdUnitID(adUnitID: string)` | sets the AdUnit ID for all future ad requests.                                                                                                       |
+| `requestAdAsync(options)`       | (async) requests a rewarded ad. An optional `options` object argument may specify `servePersonalizedAds: true` value — then ad will be personalized. |
+| `showAdAsync()`                 | (async) shows a rewarded if it is ready (async)                                                                                                      |
 
 #### Events
 
 | Events are based on native ad lifecycle |
-| -------------------------------- |
-| `rewardedVideoUserDidEarnReward` |
-| `rewardedVideoDidLoad`           |
-| `rewardedVideoDidFailToLoad`     |
-| `rewardedVideoDidPresent`        |
-| `rewardedVideoDidFailToPresent`  |
-| `rewardedVideoDidDismiss`        |
+| --------------------------------------- |
+| `rewardedVideoUserDidEarnReward`        |
+| `rewardedVideoDidLoad`                  |
+| `rewardedVideoDidFailToLoad`            |
+| `rewardedVideoDidPresent`               |
+| `rewardedVideoDidFailToPresent`         |
+| `rewardedVideoDidDismiss`               |
 
 #### Test ID
 

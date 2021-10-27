@@ -63,7 +63,7 @@ An object representing an [asset](#asset).
 
 Saves the file at given `localUri` to the user's media library. Unlike [`createAssetAsync()`](#medialibrarycreateassetasynclocaluri), this method doesn't return created asset.
 
-On **iOS 11+**, it's possible to use this method without asking for `CAMERA_ROLL` permission, however then yours `Info.plist` should have `NSPhotoLibraryAddUsageDescription` key.
+On **iOS 11+**, it's possible to use this method without asking for `CAMERA_ROLL` permission, however then yours **Info.plist** should have `NSPhotoLibraryAddUsageDescription` key.
 
 #### Arguments
 

@@ -71,7 +71,7 @@ Expo maintains ~6 months of backwards compatibility. Once an SDK version has bee
 
 #### Upgrade from SDK 32
 
-- `app.json`, change `sdkVersion` to `"33.0.0"`,
+- **app.json**, change `sdkVersion` to `"33.0.0"`,
 - In package.json, change these dependencies:
 
 ```json
@@ -95,7 +95,7 @@ Expo maintains ~6 months of backwards compatibility. Once an SDK version has bee
 
 #### Upgrade from SDK 31
 
-- `app.json`, change `sdkVersion` to `"32.0.0"`,
+- **app.json**, change `sdkVersion` to `"32.0.0"`,
 - In package.json, change these dependencies:
 
 ```json
@@ -106,7 +106,7 @@ Expo maintains ~6 months of backwards compatibility. Once an SDK version has bee
 }
 ```
 
-- If using the default `.babelrc`, change it to `babel.config.js`:
+- If using the default `.babelrc`, change it to **babel.config.js**:
 
 ```javascript
 module.exports = function (api) {
@@ -129,7 +129,7 @@ module.exports = function (api) {
 
 #### Upgrade from SDK 30
 
-- `app.json`, change `sdkVersion` to `"31.0.0"`,
+- **app.json**, change `sdkVersion` to `"31.0.0"`,
 - In package.json, change these dependencies:
 
 ```json
@@ -152,7 +152,7 @@ module.exports = function (api) {
 
 #### Upgrade from SDK 29
 
-- `app.json`, change `sdkVersion` to `"30.0.0"`,
+- **app.json**, change `sdkVersion` to `"30.0.0"`,
 - In package.json, change these dependencies:
 
 ```json
@@ -175,7 +175,7 @@ module.exports = function (api) {
 
 #### Upgrade from SDK 28
 
-- `app.json`, change `sdkVersion` to `"29.0.0"`,
+- **app.json**, change `sdkVersion` to `"29.0.0"`,
 - In package.json, change these dependencies:
 
 ```json
@@ -198,7 +198,7 @@ module.exports = function (api) {
 
 #### Upgrade from SDK 27
 
-- `app.json`, change `sdkVersion` to `"28.0.0"`,
+- **app.json**, change `sdkVersion` to `"28.0.0"`,
 - In package.json, change these dependencies:
 
 ```json

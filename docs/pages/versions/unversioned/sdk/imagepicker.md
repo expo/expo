@@ -154,7 +154,7 @@ import * as ImagePicker from 'expo-image-picker';
 
 <!-- look in the library AndroidManifest.xml and the config plugin to see which permissions are added -->
 
-The following permissions are added automatically through the library `AndroidManifest.xml`.
+The following permissions are added automatically through the library **AndroidManifest.xml**.
 
 <AndroidPermissions permissions={['CAMERA', 'READ_EXTERNAL_STORAGE', 'WRITE_EXTERNAL_STORAGE']} />
 

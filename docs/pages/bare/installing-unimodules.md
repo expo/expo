@@ -29,7 +29,7 @@ Once installation is complete, apply the changes from the following diffs to con
 <details><summary><h4>💡 Need to customize node_modules path?</h4></summary>
 <p>
 
-If you need to customize the path to node_modules, for example because you are using yarn workspaces, then you can pass in a param for this: `use_unimodules!(modules_paths: ['./path/to/node_modules'])`. Alternatively, you can configure this in `package.json`:
+If you need to customize the path to node_modules, for example because you are using yarn workspaces, then you can pass in a param for this: `use_unimodules!(modules_paths: ['./path/to/node_modules'])`. Alternatively, you can configure this in **package.json**:
 
 
 ```json
@@ -54,7 +54,7 @@ If you need to customize the path to node_modules, for example because you are u
 <details><summary><h4>💡 Need to exclude some unimodules that are being automatically linked?</h4></summary>
 <p>
 
-If you need to exclude some of the unimodules that you are not using but they got installed by your other dependencies (like `expo`), then you can pass in `exclude` param for this. For example, if you want to exclude `expo-face-detector`, you may want to use this: `use_unimodules!(exclude: ['expo-face-detector'])`. Alternatively, you can configure this in `package.json`:
+If you need to exclude some of the unimodules that you are not using but they got installed by your other dependencies (like `expo`), then you can pass in `exclude` param for this. For example, if you want to exclude `expo-face-detector`, you may want to use this: `use_unimodules!(exclude: ['expo-face-detector'])`. Alternatively, you can configure this in **package.json**:
 
 ```json
 {
@@ -88,7 +88,7 @@ Save all of your changes. In Xcode, update the iOS Deployment Target under `Targ
 <details><summary><h4>💡 Need to customize node_modules path?</h4></summary>
 <p>
 
-If you need to customize the path to node_modules, for example because you are using yarn workspaces, then you can pass in a param `modulesPaths` for both of these functions: `includeUnimodulesProjects([modulesPaths: ['./path/to/node_modules']])`, `addUnimodulesDependencies([modulesPaths: ['./path/to/node_modules']])`. Alternatively, you can configure this in `package.json`:
+If you need to customize the path to node_modules, for example because you are using yarn workspaces, then you can pass in a param `modulesPaths` for both of these functions: `includeUnimodulesProjects([modulesPaths: ['./path/to/node_modules']])`, `addUnimodulesDependencies([modulesPaths: ['./path/to/node_modules']])`. Alternatively, you can configure this in **package.json**:
 
 ```json
 {
@@ -112,7 +112,7 @@ If you need to customize the path to node_modules, for example because you are u
 <details><summary><h4>💡 Need to exclude some unimodules that are being automatically linked?</h4></summary>
 <p>
 
-If you need to exclude some of the unimodules that you are not using but they got installed by your other dependencies (like `expo`), then you can pass in `exclude` param for this. For example, if you want to exclude `expo-face-detector`, you may want to use this: `addUnimodulesDependencies([exclude: ['expo-face-detector']])` and `includeUnimodulesDependencies([exclude: ['expo-face-detector']])`. Alternatively, you can configure this in `package.json`:
+If you need to exclude some of the unimodules that you are not using but they got installed by your other dependencies (like `expo`), then you can pass in `exclude` param for this. For example, if you want to exclude `expo-face-detector`, you may want to use this: `addUnimodulesDependencies([exclude: ['expo-face-detector']])` and `includeUnimodulesDependencies([exclude: ['expo-face-detector']])`. Alternatively, you can configure this in **package.json**:
 
 ```json
 {
@@ -136,7 +136,7 @@ If you need to exclude some of the unimodules that you are not using but they go
 <details><summary><h4>💡 Need to customize configuration of unimodule dependencies?</h4></summary>
 <p>
 
-You can also customize the configuration of the unimodules dependencies (the default is `implementation`, if you're using Gradle older than 3.0, you will need to set `configuration: "compile"` in `addUnimodulesDependencies`, like: `addUnimodulesDependencies([configuration: "compile"])`). Alternatively, you can configure this in `package.json`:
+You can also customize the configuration of the unimodules dependencies (the default is `implementation`, if you're using Gradle older than 3.0, you will need to set `configuration: "compile"` in `addUnimodulesDependencies`, like: `addUnimodulesDependencies([configuration: "compile"])`). Alternatively, you can configure this in **package.json**:
 
 ```json
 {

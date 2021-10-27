@@ -98,7 +98,7 @@ Learn how push notification credentials can be automatically generated or upload
 
 ### Android
 
-On Android, this module requires permission to subscribe to device boot. It's used to setup scheduled notifications when the device (re)starts. The `RECEIVE_BOOT_COMPLETED` permission is added automatically through the library `AndroidManifest.xml`.
+On Android, this module requires permission to subscribe to device boot. It's used to setup scheduled notifications when the device (re)starts. The `RECEIVE_BOOT_COMPLETED` permission is added automatically through the library **AndroidManifest.xml**.
 
 <AndroidPermissions permissions={['RECEIVE_BOOT_COMPLETED']} />
 
@@ -279,9 +279,9 @@ async function registerForPushNotificationsAsync() {
 
 ## Custom notification icon and colors (Android only)
 
-In the managed workflow, set your [`notification.icon`](../config/app.md#notification) and [`notification.color`](../config/app.md#notification) keys in `app.json`, rebuild your app, and you're good to go!
+In the managed workflow, set your [`notification.icon`](../config/app.md#notification) and [`notification.color`](../config/app.md#notification) keys in **app.json**, rebuild your app, and you're good to go!
 
-For bare workflow **and EAS Build users**, the configuration is also done in `app.json`, but you'll use the [`expo-notifications` config plugin instead](#optional-setup).
+For bare workflow **and EAS Build users**, the configuration is also done in **app.json**, but you'll use the [`expo-notifications` config plugin instead](#optional-setup).
 
 For your notification icon, make sure you follow [Google's design guidelines](https://material.io/design/iconography/product-icons.html#design-principles) (the icon must be all white with a transparent background) or else it may not be displayed as intended.
 
@@ -291,7 +291,7 @@ In both the managed and bare workflow, you can also set a custom notification co
 
 Custom notification sounds are only supported when using [EAS Build](/build/introduction.md), or in the bare workflow.
 
-To add custom push notification sounds to your app, add the `expo-notifications` plugin to your `app.json` file:
+To add custom push notification sounds to your app, add the `expo-notifications` plugin to your **app.json** file:
 
 ```json
 {
@@ -413,7 +413,7 @@ This method makes a request to Expo's servers, so it can reject in cases where t
 
 This function accepts an optional object allowing you to pass in configuration, consisting of fields (all are optional, but some may have to be defined if configuration cannot be inferred):
 
-- **experienceId (_string_)** -- **Although this is optional, we recommend explicitly passing it in**. The ID of the experience to which the token should be attributed. Defaults to [`Constants.manifest.id`](https://docs.expo.dev/versions/latest/sdk/constants/#constantsmanifest) exposed by `expo-constants`. When building with EAS Build, or in the bare workflow, **this is required** and you must provide a value which takes the shape `@username/projectSlug`, where `username` is the Expo account that the project is associated with, and `projectSlug` is your [`slug` from `app.json`](../config/app.md#slug).
+- **experienceId (_string_)** -- **Although this is optional, we recommend explicitly passing it in**. The ID of the experience to which the token should be attributed. Defaults to [`Constants.manifest.id`](https://docs.expo.dev/versions/latest/sdk/constants/#constantsmanifest) exposed by `expo-constants`. When building with EAS Build, or in the bare workflow, **this is required** and you must provide a value which takes the shape `@username/projectSlug`, where `username` is the Expo account that the project is associated with, and `projectSlug` is your [`slug` from **app.json**](../config/app.md#slug).
 - **devicePushToken ([_DevicePushToken_](#devicepushtoken))** -- The device push token with which to register at the backend. Defaults to a token fetched with [`getDevicePushTokenAsync()`](#getdevicepushtokenasync-devicepushtoken).
 - **applicationId (_string_)** -- The ID of the application to which the token should be attributed. Defaults to [`Application.applicationId`](https://docs.expo.dev/versions/latest/sdk/application/#applicationapplicationid) exposed by `expo-application`.
 - **development (_boolean_)** -- Makes sense only on iOS, where there are two push notification services: sandbox and production. This defines whether the push token is supposed to be used with the sandbox platform notification service. Defaults to [`Application.getIosPushNotificationServiceEnvironmentAsync()`](https://docs.expo.dev/versions/latest/sdk/application/#applicationgetiospushnotificationserviceenvironmentasync) exposed by `expo-application` or `false`. Most probably you won't need to customize that. You may want to customize that if you don't want to install `expo-application` and still use the sandbox APNS.

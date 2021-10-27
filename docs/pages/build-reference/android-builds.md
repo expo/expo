@@ -15,7 +15,7 @@ The first phase happens on your computer. EAS CLI is in charge of completing the
 1. Check if the git index is clean - this means that there aren't any uncommitted changes. If it's not clean, an error is thrown. We use git to prepare a tarball of your project to upload to the build service.
 1. Prepare the credentials needed for the build unless `builds.android.PROFILE_NAME.withoutCredentials` is set to `true`.
 
-   - Depending on the value of `builds.android.PROFILE_NAME.credentialsSource`, the credentials are obtained from either the local `credentials.json` file or from the EAS servers. If the `remote` mode is selected but no credentials exist yet, you're prompted to generate a new keystore.
+   - Depending on the value of `builds.android.PROFILE_NAME.credentialsSource`, the credentials are obtained from either the local **credentials.json** file or from the EAS servers. If the `remote` mode is selected but no credentials exist yet, you're prompted to generate a new keystore.
 
 1. Additional step for **bare** projects: Check if the Android project is configured to be buildable on the EAS servers.
 
@@ -43,15 +43,15 @@ Next, this is what happens when EAS Build picks up your request:
 1. Restore a previously saved cache identified by the `cache.key` value in the build profile. ([Learn more](../build/eas-json/).)
 1. Run the `eas-build-post-install` script from package.json if defined.
 1. Restore the keystore (if it was included in the build request).
-1. Run `./gradlew COMMAND` in the `android` directory inside your project.
+1. Run `./gradlew COMMAND` in the **android** directory inside your project.
 
-   - `COMMAND` is the command defined in your `eas.json` at `builds.android.PROFILE_NAME.gradleCommand`. It defaults to `:app:bundleRelease` which produces the AAB (Android App Bundle).
+   - `COMMAND` is the command defined in your **eas.json** at `builds.android.PROFILE_NAME.gradleCommand`. It defaults to `:app:bundleRelease` which produces the AAB (Android App Bundle).
 
 1. Run the `eas-build-pre-upload-artifacts` script from package.json if defined.
 1. Store a cache of files and directories defined in the build profile. Subsequent builds will restore this cache. ([Learn more](../build/eas-json/).)
 1. Upload the build artifact to AWS S3.
 
-   - The artifact path can be configured in `eas.json` at `builds.android.PROFILE_NAME.artifactPath`. It defaults to `android/app/build/outputs/**/*.{apk,aab}`. We're using the [fast-glob](https://github.com/mrmlnc/fast-glob#pattern-syntax) package for pattern matching.
+   - The artifact path can be configured in **eas.json** at `builds.android.PROFILE_NAME.artifactPath`. It defaults to `android/app/build/outputs/**/*.{apk,aab}`. We're using the [fast-glob](https://github.com/mrmlnc/fast-glob#pattern-syntax) package for pattern matching.
 
 ## Project Auto-Configuration
 
@@ -151,7 +151,7 @@ tasks.whenTaskAdded {
 }
 ```
 
-The most important part is the `release` signing config. It's configured to read the keystore and passwords from the `credentials.json` file at the project root. Even though you're not required to create this file on your own, it's created and populated with your credentials by EAS Build before running the build.
+The most important part is the `release` signing config. It's configured to read the keystore and passwords from the **credentials.json** file at the project root. Even though you're not required to create this file on your own, it's created and populated with your credentials by EAS Build before running the build.
 
 This file is imported in `android/app/build.gradle` like this:
 

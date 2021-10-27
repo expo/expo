@@ -48,7 +48,7 @@ You can test it to ensure it works like this:
 
 ### Usage in standalone apps
 
-`app.json`
+**app.json**
 
 ```json
 {
@@ -58,7 +58,7 @@ You can test it to ensure it works like this:
 }
 ```
 
-In order to be able to deep link back into your app, you will need to set a `scheme` in your project `app.config.js`, or `app.json`, and then build your standalone app (it can't be updated with an update). If you do not include a scheme, the authentication flow will complete but it will be unable to pass the information back into your application and the user will have to manually exit the authentication modal (resulting in a cancelled event).
+In order to be able to deep link back into your app, you will need to set a `scheme` in your project **app.config.js**, or **app.json**, and then build your standalone app (it can't be updated with an update). If you do not include a scheme, the authentication flow will complete but it will be unable to pass the information back into your application and the user will have to manually exit the authentication modal (resulting in a cancelled event).
 
 ## Guides
 
@@ -152,7 +152,7 @@ Given an OpenID Connect issuer URL, this will fetch and return the [`DiscoveryDo
 Create a redirect url for the current platform and environment. You need to manually define the redirect that will be used in a bare workflow React Native app, or an Expo standalone app, this is because it cannot be inferred automatically.
 
 - **Web:** Generates a path based on the current `window.location`. For production web apps, you should hard code the URL as well.
-- **Managed, and Custom workflow:** Uses the `scheme` property of your `app.config.js` or `app.json`.
+- **Managed, and Custom workflow:** Uses the `scheme` property of your **app.config.js** or **app.json**.
   - **Proxy:** Uses auth.expo.io as the base URL for the path. This only works in Expo client and standalone environments.
 - **Bare workflow:** Will fallback to using the `native` option for bare workflow React Native apps.
 
@@ -512,7 +512,7 @@ This service is responsible for:
 - redirecting traffic from your application to the authentication service
 - redirecting response from the auth service to your application using a deep link
 
-To better understand how it works, check out this implementation in `node.js`:
+To better understand how it works, check out this implementation in Node.js:
 
 ```js
 const http = require('http');

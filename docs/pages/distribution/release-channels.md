@@ -47,7 +47,7 @@ You can continue updating v1 of your app with `expo publish --release-channel pr
 
 ## Using Release Channels in the bare workflow
 
-You can edit the native project's release channel by modifying the `EXUpdatesReleaseChannel` key in `Expo.plist` (iOS) or the `releaseChannel` meta-data tag value in `AndroidManifest.xml` (Android). [Read this guide](/bare/updating-your-app.md) for more information on configuring updates in a bare app.
+You can edit the native project's release channel by modifying the `EXUpdatesReleaseChannel` key in **Expo.plist** (iOS) or the `releaseChannel` meta-data tag value in **AndroidManifest.xml** (Android). [Read this guide](/bare/updating-your-app.md) for more information on configuring updates in a bare app.
 
 ## Using Release Channels for Environment Variable Configuration
 

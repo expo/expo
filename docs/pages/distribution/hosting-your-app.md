@@ -42,7 +42,7 @@ To setup a QR code to view your hosted update, or if you want to host your files
 
 On some hosting services such as [AWS](https://aws.amazon.com/) and [Firebase](http://firebase.google.com/), you'll need to explicitly set the header `"Content-Type"` of JavaScript files as `"application/javascript"` so that [updates](https://docs.expo.dev/guides/configuring-updates/) work correctly. Otherwise [Updates.checkForUpdateAsync()](https://docs.expo.dev/versions/latest/sdk/updates/#updatescheckforupdateasync) will fail with the error _"Failed to fetch new update"_.
 
-Here's an example of `firebase.json` configuration, with a [deploy target](https://firebase.google.com/docs/cli/targets) named "native".
+Here's an example of **firebase.json** configuration, with a [deploy target](https://firebase.google.com/docs/cli/targets) named "native".
 
 ```diff
 {
@@ -76,7 +76,7 @@ firebase deploy --only hosting:native -m "Deploy my app"`
 
 ## Building the standalone app
 
-To configure your standalone binary to pull updates from your server, you’ll need to define the URL where you will host your `index.json` file. Pass the URL to your hosted `index.json` file to the `expo build` command.
+To configure your standalone binary to pull updates from your server, you’ll need to define the URL where you will host your **index.json** file. Pass the URL to your hosted **index.json** file to the `expo build` command.
 
 For iOS builds, run the following commands from your terminal:
 `expo build:ios --public-url <path-to-ios-index.json>`, where the `public-url` option will be something like https://expo.github.io/self-hosting-example/ios-index.json
@@ -132,9 +132,9 @@ Here is an example URL from localhost: `http://localhost:8000/android-index.json
 
 When Expo CLI bundles your update, minification is always enabled. In order to see the original source code of your update for debugging purposes, you can generate source maps. Here is an example workflow:
 
-1. Run `expo export --dump-sourcemap --public-url <your-url>`. This will also export your bundle sourcemaps in the `bundles` directory.
-2. A `debug.html` file will also be created at the root of your output directory.
-3. In Chrome, open up `debug.html` and navigate to the `Source` tab. In the left tab there should be a resource explorer with a red folder containing the reconstructed source code from your bundle.
+1. Run `expo export --dump-sourcemap --public-url <your-url>`. This will also export your bundle sourcemaps in the **bundles** directory.
+2. A **debug.html** file will also be created at the root of your output directory.
+3. In Chrome, open up **debug.html** and navigate to the `Source` tab. In the left tab there should be a resource explorer with a red folder containing the reconstructed source code from your bundle.
 
 ![Debugging Source Code](/static/images/host-your-app-debug.png)
 
@@ -147,7 +147,7 @@ Here is an example workflow:
 
 1. Release your update with previous Expo SDKs. For example, when you released SDK 29, you can run `expo export --output-dir sdk29 --public-url <your-public-url>`. This exports the current version of the update (SDK 29) to a directory named `sdk29`.
 
-2. Update your app and include previous Expo SDK versions. For example, if you've previously released SDK 28 and 29 versions of your app, you can include them when you release an SDK 30 version by running `expo export --merge-src-dir sdk29 --merge-src-dir sdk28 --public-url <your-url>`. Alternatively, you could also compress and host the directories and run `expo export --merge-src-url https://examplesite.com/sdk29.tar.gz --merge-src-url https://examplesite.com/sdk28.tar.gz --public-url <your-url>`. This creates a multiversion update in the `dist` output directory. The `asset` and `bundle` folders contain everything that the source directories had, and the `index.json` file contains an array of the individual `index.json` files found in the source directories.
+2. Update your app and include previous Expo SDK versions. For example, if you've previously released SDK 28 and 29 versions of your app, you can include them when you release an SDK 30 version by running `expo export --merge-src-dir sdk29 --merge-src-dir sdk28 --public-url <your-url>`. Alternatively, you could also compress and host the directories and run `expo export --merge-src-url https://examplesite.com/sdk29.tar.gz --merge-src-url https://examplesite.com/sdk28.tar.gz --public-url <your-url>`. This creates a multiversion update in the `dist` output directory. The **asset** and **bundle** folders contain everything that the source directories had, and the **index.json** file contains an array of the individual **index.json** files found in the source directories.
 
 ### Asset Hosting
 
@@ -155,7 +155,7 @@ By default, all assets are hosted from an `assets` path resolving from your `pub
 
 ### Special fields
 
-Most of the fields in the `index.json` files are the same as in `app.json`. Here are some fields that are notable in `index.json`:
+Most of the fields in the **index.json** files are the same as in **app.json**. Here are some fields that are notable in **index.json**:
 
 - `revisionId`, `commitTime`, `publishedTime`: These fields are generated by `expo export` and used to determine whether or not an update should occur.
 - `bundleUrl`: This points to the path where the app's bundles are hosted. They are also used to determined whether or not an update should occur.
