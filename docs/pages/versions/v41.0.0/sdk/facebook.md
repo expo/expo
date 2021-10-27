@@ -88,7 +88,7 @@ A map of options:
 
 Asks for permissions to use data for tracking the user or the device.
 
-> iOS: it requires the `NSUserTrackingUsageDescription` message added to the **info.plist**.
+> iOS: it requires the `NSUserTrackingUsageDescription` message added to the **Info.plist**.
 
 #### Returns
 
@@ -98,7 +98,7 @@ A promise that resolves to an object of type [PermissionResponse](permissions.md
 
 Checks application's permissions for using data for tracking the user or the device.
 
-> iOS: it requires the `NSUserTrackingUsageDescription` message added to the **info.plist**.
+> iOS: it requires the `NSUserTrackingUsageDescription` message added to the **Info.plist**.
 
 #### Returns
 
@@ -152,15 +152,10 @@ async function logIn() {
     await Facebook.initializeAsync({
       appId: '<APP_ID>',
     });
-    const {
-      type,
-      token,
-      expirationDate,
-      permissions,
-      declinedPermissions,
-    } = await Facebook.logInWithReadPermissionsAsync({
-      permissions: ['public_profile'],
-    });
+    const { type, token, expirationDate, permissions, declinedPermissions } =
+      await Facebook.logInWithReadPermissionsAsync({
+        permissions: ['public_profile'],
+      });
     if (type === 'success') {
       // Get the user's name using Facebook's Graph API
       const response = await fetch(`https://graph.facebook.com/me?access_token=${token}`);
