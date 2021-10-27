@@ -83,7 +83,7 @@ const constants: Constants = {
   appOwnership: appOwnership ?? null,
 };
 
-const constantsPropertiesGetter: AccessorProps = {
+const nonEnumerableConstantsPropertiesGetter: AccessorProps = {
   // Deprecated fields
   deviceYearClass() {
     if (!warnedAboutDeviceYearClass) {
@@ -123,20 +123,6 @@ const constantsPropertiesGetter: AccessorProps = {
     }
     return nativeConstants.linkingUri;
   },
-  manifest(): AppManifest | null {
-    const maybeManifest = getManifest();
-    if (!maybeManifest || !isAppManifest(maybeManifest)) {
-      return null;
-    }
-    return maybeManifest;
-  },
-  manifest2(): Manifest | null {
-    const maybeManifest = getManifest();
-    if (!maybeManifest || !isManifest(maybeManifest)) {
-      return null;
-    }
-    return maybeManifest;
-  },
   /**
    * Use `manifest` property by default.
    * This property is only used for internal purposes.
@@ -158,7 +144,26 @@ const constantsPropertiesGetter: AccessorProps = {
     return maybeManifest;
   },
 };
-definePropertiesGetter(constants, constantsPropertiesGetter);
+
+const enumerableConstantsPropertiesGetter: AccessorProps = {
+  manifest(): AppManifest | null {
+    const maybeManifest = getManifest();
+    if (!maybeManifest || !isAppManifest(maybeManifest)) {
+      return null;
+    }
+    return maybeManifest;
+  },
+  manifest2(): Manifest | null {
+    const maybeManifest = getManifest();
+    if (!maybeManifest || !isManifest(maybeManifest)) {
+      return null;
+    }
+    return maybeManifest;
+  },
+};
+
+definePropertiesGetter(constants, nonEnumerableConstantsPropertiesGetter, false);
+definePropertiesGetter(constants, enumerableConstantsPropertiesGetter, true);
 
 Object.defineProperty(constants, '__rawManifest_TEST', {
   get(): AppManifest | Manifest | null {
@@ -174,26 +179,30 @@ Object.defineProperty(constants, '__rawManifest_TEST', {
 // Add deprecation warning for `platform.ios.model`
 if (constants?.platform?.ios) {
   const originalModel = nativeConstants.platform.ios.model;
-  definePropertiesGetter(constants.platform.ios, {
-    model() {
-      if (!warnedAboutIosModel) {
-        console.warn(
-          `Constants.platform.ios.model has been deprecated in favor of expo-device's Device.modelName property. This API will be removed in SDK 45.`
-        );
-        warnedAboutIosModel = true;
-      }
-      return originalModel;
+  definePropertiesGetter(
+    constants.platform.ios,
+    {
+      model() {
+        if (!warnedAboutIosModel) {
+          console.warn(
+            `Constants.platform.ios.model has been deprecated in favor of expo-device's Device.modelName property. This API will be removed in SDK 45.`
+          );
+          warnedAboutIosModel = true;
+        }
+        return originalModel;
+      },
     },
-  });
+    false
+  );
 }
 
 type AccessorProps = Record<string, () => any>;
-function definePropertiesGetter(target: object, props: AccessorProps) {
+function definePropertiesGetter(target: object, props: AccessorProps, enumerable: boolean) {
   for (const [name, func] of Object.entries(props)) {
     Object.defineProperty(target, name, {
       get: func,
       // Prevent the warning from being thrown, or the value from being used when the user interacts with the entire object.
-      enumerable: false,
+      enumerable,
     });
   }
 }

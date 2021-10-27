@@ -49,7 +49,7 @@ const constants = {
     // Ensure this is null in bare workflow
     appOwnership: appOwnership ?? null,
 };
-const constantsPropertiesGetter = {
+const nonEnumerableConstantsPropertiesGetter = {
     // Deprecated fields
     deviceYearClass() {
         if (!warnedAboutDeviceYearClass) {
@@ -81,20 +81,6 @@ const constantsPropertiesGetter = {
         }
         return nativeConstants.linkingUri;
     },
-    manifest() {
-        const maybeManifest = getManifest();
-        if (!maybeManifest || !isAppManifest(maybeManifest)) {
-            return null;
-        }
-        return maybeManifest;
-    },
-    manifest2() {
-        const maybeManifest = getManifest();
-        if (!maybeManifest || !isManifest(maybeManifest)) {
-            return null;
-        }
-        return maybeManifest;
-    },
     /**
      * Use `manifest` property by default.
      * This property is only used for internal purposes.
@@ -116,7 +102,24 @@ const constantsPropertiesGetter = {
         return maybeManifest;
     },
 };
-definePropertiesGetter(constants, constantsPropertiesGetter);
+const enumerableConstantsPropertiesGetter = {
+    manifest() {
+        const maybeManifest = getManifest();
+        if (!maybeManifest || !isAppManifest(maybeManifest)) {
+            return null;
+        }
+        return maybeManifest;
+    },
+    manifest2() {
+        const maybeManifest = getManifest();
+        if (!maybeManifest || !isManifest(maybeManifest)) {
+            return null;
+        }
+        return maybeManifest;
+    },
+};
+definePropertiesGetter(constants, nonEnumerableConstantsPropertiesGetter, false);
+definePropertiesGetter(constants, enumerableConstantsPropertiesGetter, true);
 Object.defineProperty(constants, '__rawManifest_TEST', {
     get() {
         return rawManifest;
@@ -138,14 +141,14 @@ if (constants?.platform?.ios) {
             }
             return originalModel;
         },
-    });
+    }, false);
 }
-function definePropertiesGetter(target, props) {
+function definePropertiesGetter(target, props, enumerable) {
     for (const [name, func] of Object.entries(props)) {
         Object.defineProperty(target, name, {
             get: func,
             // Prevent the warning from being thrown, or the value from being used when the user interacts with the entire object.
-            enumerable: false,
+            enumerable,
         });
     }
 }
