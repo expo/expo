@@ -357,7 +357,7 @@ export default {
 /**
  * Temporary solution until `tslib.d.ts` is updated to include the new DeviceMotion API.
  * `typescript@4.4.4` is missing `requestPermission` described in https://w3c.github.io/deviceorientation/#devicemotion
- * MDN docs does not describe this property as well https://developer.mozilla.org/en-US/docs/Web/API/DeviceMotionEvent
+ * MDN docs do not describe this property as well https://developer.mozilla.org/en-US/docs/Web/API/DeviceMotionEvent
  */
 declare let DeviceMotionEvent: {
   prototype: DeviceMotionEvent;
