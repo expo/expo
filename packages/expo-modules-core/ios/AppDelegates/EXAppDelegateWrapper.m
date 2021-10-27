@@ -33,7 +33,7 @@
     || [_expoAppDelegate respondsToSelector:selector];
 }
 
-// Forwards all invocations to the new app delegate wrapper.
+// Forwards all invocations to `ExpoAppDelegate` object.
 - (id)forwardingTargetForSelector:(SEL)selector
 {
   return _expoAppDelegate;

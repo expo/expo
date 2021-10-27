@@ -29,7 +29,7 @@ export async function resolveModuleAsync(
     podspecDir,
     flags: options.flags,
     modulesClassNames: revision.config?.iosModulesClassNames(),
-    appDelegateSubcontractors: revision.config?.iosAppDelegateSubcontractors(),
+    appDelegateSubscribers: revision.config?.iosAppDelegateSubscribers(),
   };
 }
 
@@ -54,7 +54,7 @@ async function generatePackageListFileContentAsync(
   className: string
 ): Promise<string> {
   const modulesToImport = modules.filter(
-    (module) => module.modulesClassNames.length + module.appDelegateSubcontractors.length > 0
+    (module) => module.modulesClassNames.length + module.appDelegateSubscribers.length > 0
   );
   const pods = modulesToImport.map((module) => module.podName);
 
@@ -62,8 +62,8 @@ async function generatePackageListFileContentAsync(
     .concat(...modulesToImport.map((module) => module.modulesClassNames))
     .filter(Boolean);
 
-  const appDelegateSubcontractors = []
-    .concat(...modulesToImport.map((module) => module.appDelegateSubcontractors))
+  const appDelegateSubscribers = []
+    .concat(...modulesToImport.map((module) => module.appDelegateSubscribers))
     .filter(Boolean);
 
   return `/**
@@ -81,8 +81,8 @@ public class ${className}: ModulesProvider {
     return ${formatArrayOfClassNames(modulesClassNames)}
   }
 
-  public override func getAppDelegateSubcontractors() -> [ExpoAppDelegateSubcontractor.Type] {
-    return ${formatArrayOfClassNames(appDelegateSubcontractors)}
+  public override func getAppDelegateSubscribers() -> [ExpoAppDelegateSubscriber.Type] {
+    return ${formatArrayOfClassNames(appDelegateSubscribers)}
   }
 }
 `;

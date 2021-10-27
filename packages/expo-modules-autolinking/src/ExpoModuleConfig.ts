@@ -21,10 +21,10 @@ export class ExpoModuleConfig {
   }
 
   /**
-   * Returns a list of names of Swift classes receives AppDelegate life-cycle events.
+   * Returns a list of names of Swift classes that receives AppDelegate life-cycle events.
    */
-  iosAppDelegateSubcontractors(): string[] {
-    return this.rawConfig.ios?.appDelegateSubcontractors ?? [];
+  iosAppDelegateSubscribers(): string[] {
+    return this.rawConfig.ios?.appDelegateSubscribers ?? [];
   }
 
   /**

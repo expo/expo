@@ -5,7 +5,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 /**
- Loads `ExpoAppDelegate` subcontractors based on
+ Loads `ExpoAppDelegate` subscribers based on
  the list from the generated `ExpoModulesProvider`.
  */
 @interface EXAppDelegatesLoader : NSObject

@@ -18,7 +18,7 @@ import FlipperKit
 #endif
 
 @UIApplicationMain
-class AppDelegate: AppDelegateWrapper {
+class AppDelegate: ExpoAppDelegate {
   var bridge: RCTBridge?
   var launchOptions: [UIApplication.LaunchOptionsKey: Any]?
 

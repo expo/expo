@@ -56,9 +56,9 @@ export interface RawExpoModuleConfig {
     modulesClassNames?: string[];
 
     /**
-     * Names of Swift classes that hooks into `AppDelegateWrapper` and receives AppDelegate life-cycle events.
+     * Names of Swift classes that hooks into `ExpoAppDelegate` to receive AppDelegate life-cycle events.
      */
-    appDelegateSubcontractors?: string[];
+    appDelegateSubscribers?: string[];
   };
 
   /**

@@ -14,9 +14,9 @@ export declare class ExpoModuleConfig {
      */
     iosModulesClassNames(): string[];
     /**
-     * Returns a list of names of Swift classes receives AppDelegate life-cycle events.
+     * Returns a list of names of Swift classes that receives AppDelegate life-cycle events.
      */
-    iosAppDelegateSubcontractors(): string[];
+    iosAppDelegateSubscribers(): string[];
     /**
      * Returns a list of names of Kotlin native modules classes to put to the generated package provider file.
      */

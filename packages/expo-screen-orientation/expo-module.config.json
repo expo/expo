@@ -2,6 +2,6 @@
   "name": "expo-screen-orientation",
   "platforms": ["ios", "android"],
   "ios": {
-    "appDelegateSubcontractors": ["ScreenOrientationAppDelegate"]
+    "appDelegateSubscribers": ["ScreenOrientationAppDelegate"]
   }
 }

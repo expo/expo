@@ -10,8 +10,8 @@
 #import "ExpoModulesCore-Swift.h"
 #endif
 
-// Make the legacy wrapper conform to the protocol accepted for subcontractors.
-@interface EXLegacyAppDelegateWrapper () <EXAppDelegateSubcontractorProtocol>
+// Make the legacy wrapper conform to the protocol for subscribers.
+@interface EXLegacyAppDelegateWrapper () <EXAppDelegateSubscriberProtocol>
 @end
 
 @implementation EXAppDelegatesLoader
@@ -22,8 +22,8 @@
 + (void)load
 {
   id<ModulesProviderObjCProtocol> modulesProvider = [EXNativeModulesProxy getExpoModulesProvider];
-  [EXExpoAppDelegate registerSubcontractor:[[EXLegacyAppDelegateWrapper alloc] init]];
-  [EXExpoAppDelegate registerSubcontractorsFromModulesProvider:modulesProvider];
+  [EXExpoAppDelegate registerSubscriber:[[EXLegacyAppDelegateWrapper alloc] init]];
+  [EXExpoAppDelegate registerSubscribersFromModulesProvider:modulesProvider];
 }
 
 @end

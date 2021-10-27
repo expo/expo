@@ -2,8 +2,14 @@ import UIKit
 import Dispatch
 import Foundation
 
-var subcontractors = [ExpoAppDelegateSubcontractorProtocol]()
+var subscribers = [ExpoAppDelegateSubscriberProtocol]()
 
+/**
+ Allows classes extending `ExpoAppDelegateSubscriber` to hook into project's app delegate
+ by forwarding `UIApplicationDelegate` events to the subscribers.
+
+ Keep functions and markers in sync with https://developer.apple.com/documentation/uikit/uiapplicationdelegate
+ */
 @objc(EXExpoAppDelegate)
 open class ExpoAppDelegate: UIResponder, UIApplicationDelegate {
   open var window: UIWindow?
@@ -11,14 +17,14 @@ open class ExpoAppDelegate: UIResponder, UIApplicationDelegate {
   // MARK: - Initializing the App
 
   open func application(_ application: UIApplication, willFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
-    return subcontractors.reduce(false) { result, subcontractor in
-      return subcontractor.application?(application, willFinishLaunchingWithOptions: launchOptions) ?? false || result
+    return subscribers.reduce(false) { result, subscriber in
+      return subscriber.application?(application, willFinishLaunchingWithOptions: launchOptions) ?? false || result
     }
   }
 
   open func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
-    return subcontractors.reduce(false) { result, subcontractor in
-      return subcontractor.application?(application, didFinishLaunchingWithOptions: launchOptions) ?? false || result
+    return subscribers.reduce(false) { result, subscriber in
+      return subscriber.application?(application, didFinishLaunchingWithOptions: launchOptions) ?? false || result
     }
   }
 
@@ -28,25 +34,25 @@ open class ExpoAppDelegate: UIResponder, UIApplicationDelegate {
 
   @objc
   open func applicationDidBecomeActive(_ application: UIApplication) {
-    subcontractors.forEach { $0.applicationDidBecomeActive?(application) }
+    subscribers.forEach { $0.applicationDidBecomeActive?(application) }
   }
 
   @objc
   open func applicationWillResignActive(_ application: UIApplication) {
-    subcontractors.forEach { $0.applicationWillResignActive?(application) }
+    subscribers.forEach { $0.applicationWillResignActive?(application) }
   }
 
   @objc
   open func applicationDidEnterBackground(_ application: UIApplication) {
-    subcontractors.forEach { $0.applicationDidEnterBackground?(application) }
+    subscribers.forEach { $0.applicationDidEnterBackground?(application) }
   }
 
   open func applicationWillEnterForeground(_ application: UIApplication) {
-    subcontractors.forEach { $0.applicationWillEnterForeground?(application) }
+    subscribers.forEach { $0.applicationWillEnterForeground?(application) }
   }
 
   open func applicationWillTerminate(_ application: UIApplication) {
-    subcontractors.forEach { $0.applicationWillTerminate?(application) }
+    subscribers.forEach { $0.applicationWillTerminate?(application) }
   }
 
   // TODO: - Responding to Environment Changes
@@ -57,15 +63,15 @@ open class ExpoAppDelegate: UIResponder, UIApplicationDelegate {
 
   open func application(_ application: UIApplication, handleEventsForBackgroundURLSession identifier: String, completionHandler: @escaping () -> Void) {
     let selector = #selector(application(_:handleEventsForBackgroundURLSession:completionHandler:))
-    let subs = subcontractors.filter { $0.responds(to: selector) }
-    var subcontractorsLeft = subs.count
+    let subs = subscribers.filter { $0.responds(to: selector) }
+    var subscribersLeft = subs.count
     let dispatchQueue = DispatchQueue(label: "expo.application.handleBackgroundEvents")
 
     let handler = {
       dispatchQueue.sync {
-        subcontractorsLeft -= 1
+        subscribersLeft -= 1
 
-        if subcontractorsLeft == 0 {
+        if subscribersLeft == 0 {
           completionHandler()
         }
       }
@@ -79,17 +85,17 @@ open class ExpoAppDelegate: UIResponder, UIApplicationDelegate {
   // MARK: - Handling Remote Notification Registration
 
   open func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
-    subcontractors.forEach { $0.application?(application, didRegisterForRemoteNotificationsWithDeviceToken: deviceToken) }
+    subscribers.forEach { $0.application?(application, didRegisterForRemoteNotificationsWithDeviceToken: deviceToken) }
   }
 
   open func application(_ application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: Error) {
-    subcontractors.forEach { $0.application?(application, didFailToRegisterForRemoteNotificationsWithError: error) }
+    subscribers.forEach { $0.application?(application, didFailToRegisterForRemoteNotificationsWithError: error) }
   }
 
   open func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable : Any], fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
     let selector = #selector(application(_:didReceiveRemoteNotification:fetchCompletionHandler:))
-    let subs = subcontractors.filter { $0.responds(to: selector) }
-    var subcontractorsLeft = subs.count
+    let subs = subscribers.filter { $0.responds(to: selector) }
+    var subscribersLeft = subs.count
     var fetchResult: UIBackgroundFetchResult = .noData
     let dispatchQueue = DispatchQueue(label: "expo.application.remoteNotification", qos: .userInteractive)
 
@@ -101,31 +107,31 @@ open class ExpoAppDelegate: UIResponder, UIApplicationDelegate {
           fetchResult = .newData
         }
 
-        subcontractorsLeft -= 1
+        subscribersLeft -= 1
 
-        if subcontractorsLeft == 0 {
+        if subscribersLeft == 0 {
           completionHandler(fetchResult)
         }
       }
     }
 
-    subs.forEach { subcontractor in
-      subcontractor.application?(application, didReceiveRemoteNotification: userInfo, fetchCompletionHandler: handler)
+    subs.forEach { subscriber in
+      subscriber.application?(application, didReceiveRemoteNotification: userInfo, fetchCompletionHandler: handler)
     }
   }
 
   // MARK: - Continuing User Activity and Handling Quick Actions
 
   open func application(_ application: UIApplication, willContinueUserActivityWithType userActivityType: String) -> Bool {
-    return subcontractors.reduce(false) { result, subcontractor in
-      return subcontractor.application?(application, willContinueUserActivityWithType: userActivityType) ?? false || result
+    return subscribers.reduce(false) { result, subscriber in
+      return subscriber.application?(application, willContinueUserActivityWithType: userActivityType) ?? false || result
     }
   }
 
   open func application(_ application: UIApplication, continue userActivity: NSUserActivity, restorationHandler: @escaping ([UIUserActivityRestoring]?) -> Void) -> Bool {
     let selector = #selector(application(_:continue:restorationHandler:))
-    let subs = subcontractors.filter { $0.responds(to: selector) }
-    var subcontractorsLeft = subs.count
+    let subs = subscribers.filter { $0.responds(to: selector) }
+    var subscribersLeft = subs.count
     let dispatchQueue = DispatchQueue(label: "expo.application.continueUserActivity", qos: .userInteractive)
     var allRestorableObjects = [UIUserActivityRestoring]()
 
@@ -135,49 +141,49 @@ open class ExpoAppDelegate: UIResponder, UIApplicationDelegate {
           allRestorableObjects.append(contentsOf: restorableObjects)
         }
 
-        subcontractorsLeft -= 1
+        subscribersLeft -= 1
 
-        if subcontractorsLeft == 0 {
+        if subscribersLeft == 0 {
           restorationHandler(allRestorableObjects)
         }
       }
     }
 
-    return subcontractors.reduce(false) { result, subcontractor in
-      return subcontractor.application?(application, continue: userActivity, restorationHandler: handler) ?? false || result
+    return subs.reduce(false) { result, subscriber in
+      return subscriber.application?(application, continue: userActivity, restorationHandler: handler) ?? false || result
     }
   }
 
   open func application(_ application: UIApplication, didUpdate userActivity: NSUserActivity) {
-    return subcontractors.forEach { $0.application?(application, didUpdate: userActivity) }
+    return subscribers.forEach { $0.application?(application, didUpdate: userActivity) }
   }
 
   open func application(_ application: UIApplication, didFailToContinueUserActivityWithType userActivityType: String, error: Error) {
-    return subcontractors.forEach {
+    return subscribers.forEach {
       $0.application?(application, didFailToContinueUserActivityWithType: userActivityType, error: error)
     }
   }
 
   open func application(_ application: UIApplication, performActionFor shortcutItem: UIApplicationShortcutItem, completionHandler: @escaping (Bool) -> Void) {
     let selector = #selector(application(_:performActionFor:completionHandler:))
-    let subs = subcontractors.filter { $0.responds(to: selector) }
-    var subcontractorsLeft = subs.count
+    let subs = subscribers.filter { $0.responds(to: selector) }
+    var subscribersLeft = subs.count
     var result: Bool = false
     let dispatchQueue = DispatchQueue(label: "expo.application.performAction", qos: .userInteractive)
 
     let handler = { (succeeded: Bool) in
       dispatchQueue.sync {
         result = result || succeeded
-        subcontractorsLeft -= 1
+        subscribersLeft -= 1
 
-        if subcontractorsLeft == 0 {
+        if subscribersLeft == 0 {
           completionHandler(result)
         }
       }
     }
 
-    subs.forEach { subcontractor in
-      subcontractor.application?(application, performActionFor: shortcutItem, completionHandler: handler)
+    subs.forEach { subscriber in
+      subscriber.application?(application, performActionFor: shortcutItem, completionHandler: handler)
     }
   }
 
@@ -185,8 +191,8 @@ open class ExpoAppDelegate: UIResponder, UIApplicationDelegate {
 
   open func application(_ application: UIApplication, performFetchWithCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
     let selector = #selector(application(_:performFetchWithCompletionHandler:))
-    let subs = subcontractors.filter { $0.responds(to: selector) }
-    var subcontractorsLeft = subs.count
+    let subs = subscribers.filter { $0.responds(to: selector) }
+    var subscribersLeft = subs.count
     var fetchResult: UIBackgroundFetchResult = .noData
     let dispatchQueue = DispatchQueue(label: "expo.application.performFetch", qos: .userInteractive)
 
@@ -198,16 +204,16 @@ open class ExpoAppDelegate: UIResponder, UIApplicationDelegate {
           fetchResult = .newData
         }
 
-        subcontractorsLeft -= 1
+        subscribersLeft -= 1
 
-        if subcontractorsLeft == 0 {
+        if subscribersLeft == 0 {
           completionHandler(fetchResult)
         }
       }
     }
 
-    subs.forEach { subcontractor in
-      subcontractor.application?(application, performFetchWithCompletionHandler: handler)
+    subs.forEach { subscriber in
+      subscriber.application?(application, performFetchWithCompletionHandler: handler)
     }
   }
 
@@ -218,8 +224,8 @@ open class ExpoAppDelegate: UIResponder, UIApplicationDelegate {
   // MARK: - Opening a URL-Specified Resource
 
   open func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
-    return subcontractors.contains { subcontractor in
-      return subcontractor.application?(app, open: url, options: options) ?? false
+    return subscribers.contains { subscriber in
+      return subscriber.application?(app, open: url, options: options) ?? false
     }
   }
 
@@ -234,25 +240,25 @@ open class ExpoAppDelegate: UIResponder, UIApplicationDelegate {
   // MARK: - Statics
 
   @objc
-  public static func registerSubcontractorsFrom(modulesProvider: ModulesProviderObjCProtocol) {
+  public static func registerSubscribersFrom(modulesProvider: ModulesProviderObjCProtocol) {
     guard let provider = modulesProvider as? ModulesProviderProtocol else {
       fatalError("Expo modules provider must implement `ModulesProviderProtocol`.")
     }
-    provider.getAppDelegateSubcontractors().forEach { subcontractorType in
-      registerSubcontractor(subcontractorType.init())
+    provider.getAppDelegateSubscribers().forEach { subscriberType in
+      registerSubscriber(subscriberType.init())
     }
   }
 
   @objc
-  public static func registerSubcontractor(_ subcontractor: ExpoAppDelegateSubcontractorProtocol) {
-    if subcontractors.contains(where: { $0 === subcontractor }) {
-      fatalError("Given app delegate subcontractor `\(String(describing: subcontractor))` is already registered.")
+  public static func registerSubscriber(_ subscriber: ExpoAppDelegateSubscriberProtocol) {
+    if subscribers.contains(where: { $0 === subscriber }) {
+      fatalError("Given app delegate subscriber `\(String(describing: subscriber))` is already registered.")
     }
-    subcontractors.append(subcontractor)
+    subscribers.append(subscriber)
   }
 
   @objc
-  public static func getSubcontractor(_ name: String) -> ExpoAppDelegateSubcontractorProtocol? {
-    return subcontractors.first { String(describing: $0) == name }
+  public static func getSubscriber(_ name: String) -> ExpoAppDelegateSubscriberProtocol? {
+    return subscribers.first { String(describing: $0) == name }
   }
 }
