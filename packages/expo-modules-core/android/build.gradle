@@ -65,6 +65,18 @@ android {
   kotlinOptions {
     jvmTarget = JavaVersion.VERSION_1_8
   }
+
+  testOptions {
+    unitTests.all {
+      testLogging {
+        outputs.upToDateWhen { false }
+        events "passed", "failed", "skipped", "standardError"
+        showCauses true
+        showExceptions true
+        showStandardStreams true
+      }
+    }
+  }
 }
 
 dependencies {

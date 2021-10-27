@@ -16,6 +16,7 @@ import expo.modules.core.ViewManager;
 import expo.modules.core.interfaces.ExpoMethod;
 import expo.modules.kotlin.ExpoModulesHelper;
 import expo.modules.kotlin.KotlinInteropModuleRegistry;
+import expo.modules.kotlin.ModulesProvider;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -58,6 +59,18 @@ public class NativeModulesProxy extends ReactContextBaseJavaModule {
 
     mKotlinInteropModuleRegistry = new KotlinInteropModuleRegistry(
       Objects.requireNonNull(ExpoModulesHelper.Companion.getModulesProvider()),
+      moduleRegistry
+    );
+  }
+
+  public NativeModulesProxy(ReactApplicationContext context, ModuleRegistry moduleRegistry, ModulesProvider modulesProvider) {
+    super(context);
+    mModuleRegistry = moduleRegistry;
+    mExportedMethodsKeys = new HashMap<>();
+    mExportedMethodsReverseKeys = new HashMap<>();
+
+    mKotlinInteropModuleRegistry = new KotlinInteropModuleRegistry(
+      Objects.requireNonNull(modulesProvider),
       moduleRegistry
     );
   }
