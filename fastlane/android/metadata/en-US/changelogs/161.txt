@@ -1,0 +1,1 @@
+Fixed proguard issue causing some background tasks to crash
