@@ -42,11 +42,11 @@ In this next phase, this is what happens when EAS Build picks up your request:
 
 1. **Managed** projects require an additional step: Run `expo prebuild` to convert the project to a bare one.
 1. Restore a previously saved cache identified by the `cache.key` value in the build profile. ([Learn more](../build/eas-json/).)
-1. Run `pod install` in the `ios` directory inside your project.
+1. Run `pod install` in the **ios** directory inside your project.
 1. Run the `eas-build-post-install` script from package.json if defined.
 1. Update the Xcode project with the ID of the Provisioning Profile.
-1. Create `Gymfile` in the `ios` directory if it does **not** already exist (check out the [Default Gymfile](#default-gymfile) section).
-1. Run `fastlane gym` in the `ios` directory.
+1. Create **Gymfile** in the **ios** directory if it does **not** already exist (check out the [Default Gymfile](#default-gymfile) section).
+1. Run `fastlane gym` in the **ios** directory.
 1. Run the `eas-build-pre-upload-artifacts` script from package.json if defined.
 1. Store a cache of files and directories defined in the build profile. `Podfile.lock` is cached by default. Subsequent builds will restore this cache. ([Learn more](../build/eas-json/).)
 1. Upload the build artifact to a private AWS S3 bucket.
@@ -55,9 +55,9 @@ In this next phase, this is what happens when EAS Build picks up your request:
 
 ## Building iOS Projects With Fastlane
 
-We're using [Fastlane](https://fastlane.tools/) for building iOS projects. To be more precise, we're using the `fastlane gym` command ([see the Fastlane docs to learn more](https://docs.fastlane.tools/actions/gym/)). This command allows you to declare the build configuration in `Gymfile`.
+We're using [Fastlane](https://fastlane.tools/) for building iOS projects. To be more precise, we're using the `fastlane gym` command ([see the Fastlane docs to learn more](https://docs.fastlane.tools/actions/gym/)). This command allows you to declare the build configuration in **Gymfile**.
 
-EAS Build can use your own `Gymfile`. All you need to do is to place this file in the `ios` directory.
+EAS Build can use your own **Gymfile**. All you need to do is to place this file in the **ios** directory.
 
 ### Default Gymfile
 

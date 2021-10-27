@@ -140,7 +140,7 @@ It's usually easiest to test your standalone app on a simulator with the `expo b
 
 Once Expo finishes your build, you can install it onto your device via Xcode by opening the `Devices & Simulators` window, selecting your connected device, and under `Installed Apps`, click the `+` and then select the IPA Expo generated for you.
 
-> **Note:** We enable bitcode for iOS, so the `.ipa` files for iOS are much larger than the eventual App Store download available to your users. For more information, see [App Thinning](https://developer.apple.com/library/content/documentation/IDEs/Conceptual/AppDistributionGuide/AppThinning/AppThinning.html).
+> **Note:** We enable bitcode for iOS, so the **.ipa** files for iOS are much larger than the eventual App Store download available to your users. For more information, see [App Thinning](https://developer.apple.com/library/content/documentation/IDEs/Conceptual/AppDistributionGuide/AppThinning/AppThinning.html).
 
 ### Switch to Push Notification Key on iOS
 

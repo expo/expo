@@ -132,7 +132,7 @@ Here is an example URL from localhost: `http://localhost:8000/android-index.json
 
 When Expo CLI bundles your update, minification is always enabled. In order to see the original source code of your update for debugging purposes, you can generate source maps. Here is an example workflow:
 
-1. Run `expo export --dump-sourcemap --public-url <your-url>`. This will also export your bundle sourcemaps in the `bundles` directory.
+1. Run `expo export --dump-sourcemap --public-url <your-url>`. This will also export your bundle sourcemaps in the **bundles** directory.
 2. A **debug.html** file will also be created at the root of your output directory.
 3. In Chrome, open up **debug.html** and navigate to the `Source` tab. In the left tab there should be a resource explorer with a red folder containing the reconstructed source code from your bundle.
 
@@ -147,7 +147,7 @@ Here is an example workflow:
 
 1. Release your update with previous Expo SDKs. For example, when you released SDK 29, you can run `expo export --output-dir sdk29 --public-url <your-public-url>`. This exports the current version of the update (SDK 29) to a directory named `sdk29`.
 
-2. Update your app and include previous Expo SDK versions. For example, if you've previously released SDK 28 and 29 versions of your app, you can include them when you release an SDK 30 version by running `expo export --merge-src-dir sdk29 --merge-src-dir sdk28 --public-url <your-url>`. Alternatively, you could also compress and host the directories and run `expo export --merge-src-url https://examplesite.com/sdk29.tar.gz --merge-src-url https://examplesite.com/sdk28.tar.gz --public-url <your-url>`. This creates a multiversion update in the `dist` output directory. The `asset` and `bundle` folders contain everything that the source directories had, and the **index.json** file contains an array of the individual **index.json** files found in the source directories.
+2. Update your app and include previous Expo SDK versions. For example, if you've previously released SDK 28 and 29 versions of your app, you can include them when you release an SDK 30 version by running `expo export --merge-src-dir sdk29 --merge-src-dir sdk28 --public-url <your-url>`. Alternatively, you could also compress and host the directories and run `expo export --merge-src-url https://examplesite.com/sdk29.tar.gz --merge-src-url https://examplesite.com/sdk28.tar.gz --public-url <your-url>`. This creates a multiversion update in the `dist` output directory. The **asset** and **bundle** folders contain everything that the source directories had, and the **index.json** file contains an array of the individual **index.json** files found in the source directories.
 
 ### Asset Hosting
 

@@ -28,7 +28,7 @@ You can work off of [this Sketch template](https://github.com/expo/files/blob/b2
 
 ![](/static/images/splash-example.png)
 
-Export the image as a PNG and put it in your project directory. I'll assume it's in the `assets` directory and named **splash.png**.
+Export the image as a PNG and put it in your project directory. I'll assume it's in the **assets** directory and named **splash.png**.
 
 ### `splash.image`
 

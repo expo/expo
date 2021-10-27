@@ -46,11 +46,11 @@ Once it's running, the iOS app should automatically request your JS bundle from 
 
 ### 4. Android: Build and run
 
-Open the `android` directory in Android Studio, then build and run the project on an Android device or emulator.
+Open the **android** directory in Android Studio, then build and run the project on an Android device or emulator.
 
 When opening the project, Android Studio may prompt you to upgrade the version of Gradle or other build tools, but don't do this as you may get unexpected results. ExpoKit always ships with the latest supported versions of all build tools.
 
-If you prefer to use the command line, you can run `./gradlew installDebug` from inside the `android` directory to build the project and install it on the running device/emulator.
+If you prefer to use the command line, you can run `./gradlew installDebug` from inside the **android** directory to build the project and install it on the running device/emulator.
 
 Once the Android project is running, it should automatically request your development url from Expo CLI. You can develop your project normally from here.
 

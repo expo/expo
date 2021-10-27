@@ -18,7 +18,7 @@ After telling our designers that we need a 1242px width by 2436px height splash 
 
 > 🐜 **What is this? A splash screen for ants?!** No, it's just scaled down here to fit more easily on this page 😅
 
-Save this image to the `assets` directory inside of your project and call it **splash.png** &mdash; replace the existing file. Reload your app and you should see something like this:
+Save this image to the **assets** directory inside of your project and call it **splash.png** &mdash; replace the existing file. Reload your app and you should see something like this:
 
 <Video file={"tutorial/splash-bad-color.mp4"} />
 
@@ -75,7 +75,7 @@ Our designer provided us with this 1024px width x 1024px height app icon:
 
 <ImageSpotlight src="/static/images/tutorial/icon.png" style={{ maxWidth: 150 }} />
 
-Save this image to the `assets` directory inside of your project and call it **icon.png** &mdash; replace the existing file. Reload the app. That's all you need to do! You will see the icon in various places in Expo Go, and when you do a standalone app build for submission to the stores it will be used as the icon on the users' home screens.
+Save this image to the **assets** directory inside of your project and call it **icon.png** &mdash; replace the existing file. Reload the app. That's all you need to do! You will see the icon in various places in Expo Go, and when you do a standalone app build for submission to the stores it will be used as the icon on the users' home screens.
 
 ## We have completed our app!
 

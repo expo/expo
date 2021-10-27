@@ -35,7 +35,7 @@ If you want to make static changes to your native project files like the iOS `In
 
 ## Reverting changes from `expo run`
 
-If you've decided that you want to roll your app back to being fully managed (no iOS and Android projects in your project directory), you can checkout your most recent commit before executing `expo run:[ios|android]`, then run `npm install` again to restore the state of your `node_modules` directory.
+If you've decided that you want to roll your app back to being fully managed (no iOS and Android projects in your project directory), you can checkout your most recent commit before executing `expo run:[ios|android]`, then run `npm install` again to restore the state of your **node_modules** directory.
 
 ## Developing apps with custom native code
 
