@@ -7,6 +7,7 @@
 
 #include "LongLivedObject.h"
 
+namespace exav {
 namespace facebook {
 namespace react {
 
@@ -51,3 +52,4 @@ void LongLivedObject::allowRelease() {
 
 } // namespace react
 } // namespace facebook
+}

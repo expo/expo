@@ -104,22 +104,6 @@ EX_EXPORT_MODULE(ExponentAV);
   _bridge = bridge;
 }
 
-- (void)invalidate
-{
-  NSLog(@"Invalidate");
-}
-
-- (void)onAppContentWillReload
-{
-  NSLog(@"Will Reload");
-  for (NSNumber *key in [_soundDictionary allKeys]) {
-    EXAVPlayerData *data = _soundDictionary[key];
-    if (data) {
-      [data setSampleBufferCallback:nil];
-    }
-  }
-}
-
 + (const NSArray<Protocol *> *)exportedInterfaces
 {
   return @[@protocol(EXAVInterface)];

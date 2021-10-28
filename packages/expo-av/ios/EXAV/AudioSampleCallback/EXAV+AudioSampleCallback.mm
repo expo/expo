@@ -15,6 +15,23 @@ namespace jsi = facebook::jsi;
 using CallInvoker = facebook::react::CallInvoker;
 
 static constexpr auto globalJsFuncName = "__EXAV_setOnAudioSampleReceivedCallback";
+static constexpr auto globalDestroyHostObjectName = "__EXAV_onDestroyHostObject";
+
+
+class InvalidateOnDestroyHostObject : public jsi::HostObject {
+ public:
+  InvalidateOnDestroyHostObject() {}
+  virtual ~InvalidateOnDestroyHostObject() {
+    AudioSampleCallbackWrapper::removeAllCallbacks();
+  }
+  virtual jsi::Value get(jsi::Runtime &, const jsi::PropNameID &name) {
+    return jsi::Value::undefined();
+  }
+  virtual void set(jsi::Runtime &, const jsi::PropNameID &name, const jsi::Value &value) {}
+  virtual std::vector<jsi::PropNameID> getPropertyNames(jsi::Runtime &rt) {
+    return {};
+  }
+};
 
 @implementation EXAV (AudioSampleCallback)
 
@@ -73,6 +90,14 @@ static constexpr auto globalJsFuncName = "__EXAV_setOnAudioSampleReceivedCallbac
                                                        jsi::PropNameID::forUtf8(runtime, globalJsFuncName),
                                                        2, // two parameters: AV-Instance ID, Callback
                                                        std::move(setAudioSampleCallback)));
+  
+  // Property `__EXAV_onDestroyHostObject` of the global object will be released when entire `jsi::Runtime`
+  // is being destroyed and that will trigger destructor of `InvalidateOnDestroyHostObject` class which
+  // will invalidate all JSI callbacks.
+  runtime.global().setProperty(
+           runtime,
+           globalDestroyHostObjectName,
+           jsi::Object::createFromHostObject(runtime, std::make_shared<InvalidateOnDestroyHostObject>()));
 }
 
 @end

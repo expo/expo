@@ -11,6 +11,7 @@
 #include <mutex>
 #include <unordered_set>
 
+namespace exav {
 namespace facebook {
 namespace react {
 
@@ -55,3 +56,4 @@ class LongLivedObjectCollection {
 
 } // namespace react
 } // namespace facebook
+}

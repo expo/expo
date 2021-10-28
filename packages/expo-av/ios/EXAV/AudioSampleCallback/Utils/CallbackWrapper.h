@@ -17,7 +17,9 @@
 #include "LongLivedObject.h"
 
 using namespace facebook;
+using CallInvoker = facebook::react::CallInvoker;
 
+namespace exav {
 namespace facebook {
 namespace react {
 
@@ -103,3 +105,4 @@ class CallbackWrapper : public LongLivedObject {
 
 } // namespace react
 } // namespace facebook
+}

@@ -1074,7 +1074,6 @@ void tapProcess(MTAudioProcessingTapRef tap, CMItemCount numberFrames, MTAudioPr
 
 - (void)dealloc
 {
-  [self setSampleBufferCallback:nil];
   [self _removeTimeObserver];
   [self _removeObservers];
 }

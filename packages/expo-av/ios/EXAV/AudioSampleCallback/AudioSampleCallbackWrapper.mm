@@ -2,6 +2,14 @@
 
 #include "AudioSampleCallbackWrapper.h"
 
+std::shared_ptr<LongLivedObjectCollection> AudioSampleCallbackWrapper::callbackCollection =
+  std::make_shared<LongLivedObjectCollection>();
+
+AudioSampleCallbackWrapper::AudioSampleCallbackWrapper(jsi::Function &&callback,
+                           jsi::Runtime &runtime,
+                           std::shared_ptr<CallInvoker> jsInvoker)
+: weakWrapper(CallbackWrapper::createWeak(callbackCollection, std::move(callback), runtime, jsInvoker)) {}
+
 void AudioSampleCallbackWrapper::call(AudioBuffer* buffer, double timestamp)
 {
   auto strongWrapper = this->weakWrapper.lock();
