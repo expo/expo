@@ -28,6 +28,8 @@ class SplashScreenReactActivityLifecycleListener(activityContext: Context) : Rea
         getStatusBarTranslucent(activity)
       )
     }
+
+    SplashScreen.setUserInterfaceStyle(activity, getUserInterfaceStyle(activity));
   }
 
   private fun getResizeMode(context: Context): SplashScreenImageResizeMode =
@@ -38,4 +40,7 @@ class SplashScreenReactActivityLifecycleListener(activityContext: Context) : Rea
 
   private fun getStatusBarTranslucent(context: Context): Boolean =
     context.getString(R.string.expo_splash_screen_status_bar_translucent).toBoolean()
+
+  private fun getUserInterfaceStyle(context: Context): String =
+    context.getString(R.string.expo_splash_screen_user_interface_style).toLowerCase()
 }
