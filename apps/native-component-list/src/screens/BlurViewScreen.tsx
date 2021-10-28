@@ -50,6 +50,9 @@ const BlurViewWithControls = (props: { tint: BlurTint; intensity: Animated.Value
     props.intensity.addListener(({ value }) => {
       setAnimatedIntensity(value);
     });
+    return () => {
+      props.intensity.removeAllListeners();
+    };
   }, [props.intensity]);
 
   React.useEffect(() => {
@@ -66,19 +69,12 @@ const BlurViewWithControls = (props: { tint: BlurTint; intensity: Animated.Value
   const onSliderChange = React.useCallback((value: number) => {
     setManualIntensityIsActive(true);
     setManualIntensity(value);
-    console.log(value);
   }, []);
 
   return (
     <View style={styles.itemContainer}>
       <View style={styles.innerItemContainer}>
-        <Image
-          style={styles.image}
-          source={{ uri: 'https://source.unsplash.com/300x300' }}
-          defaultSource={{
-            uri: 'https://s3.amazonaws.com/exp-brand-assets/ExponentEmptyManifest_192.png',
-          }}
-        />
+        <Image style={styles.image} source={{ uri: 'https://source.unsplash.com/300x300' }} />
         <Text style={styles.blurredText}>This text is blurred</Text>
         <AnimatedBlurView
           style={styles.blurView}
