@@ -1,4 +1,4 @@
-package expo.modules.splashscreen
+package expo.modules.splashscreen.helpers
 
 import java.lang.reflect.Field
 import java.lang.reflect.Modifier

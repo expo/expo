@@ -29,7 +29,7 @@ class SplashScreenReactActivityLifecycleListener(activityContext: Context) : Rea
       )
     }
 
-    SplashScreen.setUserInterfaceStyle(activity, getUserInterfaceStyle(activity));
+    SplashScreen.setUserInterfaceStyle(getUserInterfaceStyle(activity));
   }
 
   private fun getResizeMode(context: Context): SplashScreenImageResizeMode =

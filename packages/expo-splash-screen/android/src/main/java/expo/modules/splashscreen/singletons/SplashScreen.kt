@@ -1,8 +1,10 @@
 package expo.modules.splashscreen.singletons
 
 import android.app.Activity
+import android.os.Build
 import android.util.Log
 import android.view.ViewGroup
+import androidx.appcompat.app.AppCompatDelegate
 import expo.modules.splashscreen.*
 import expo.modules.core.interfaces.SingletonModule
 import java.util.*
@@ -149,5 +151,29 @@ object SplashScreen : SingletonModule {
   @JvmStatic
   fun hide(activity: Activity) {
     hide(activity, {}, {})
+  }
+
+
+  fun setUserInterfaceStyle(
+                            style: String,
+                            successCallback: () -> Unit,
+                            failureCallback: (reason: String) -> Unit) {
+    var mode = when (style) {
+      // Empty string (undefined) defaults to 'light'.
+      "", "light" -> AppCompatDelegate.MODE_NIGHT_NO
+      "dark" -> AppCompatDelegate.MODE_NIGHT_YES
+      "automatic" -> if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) AppCompatDelegate.MODE_NIGHT_AUTO_BATTERY else AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
+      else -> {
+        return failureCallback("Invalid user interface style: '$style'. Expected one of: 'light', 'dark', 'automatic'")
+      }
+    }
+
+    AppCompatDelegate.setDefaultNightMode(mode)
+    successCallback()
+  }
+
+  @JvmStatic
+  fun setUserInterfaceStyle(style: String) {
+    setUserInterfaceStyle(style, {}, { m -> Log.e(TAG, m) })
   }
 }
