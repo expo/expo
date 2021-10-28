@@ -47,6 +47,8 @@ Pod::Spec.new do |s|
   s.test_spec 'Tests' do |test_spec|
     test_spec.requires_app_host = false
     test_spec.source_files = 'ios/Tests/**'
+    test_spec.dependency 'Quick'
+    test_spec.dependency 'Nimble'
     test_spec.dependency 'React-CoreModules'
     test_spec.platform = :ios, '12.0'
   end
