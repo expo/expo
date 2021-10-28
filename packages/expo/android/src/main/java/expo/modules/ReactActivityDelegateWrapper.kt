@@ -147,6 +147,7 @@ class ReactActivityDelegateWrapper(
 
   //region Internals
 
+  @Suppress("UNCHECKED_CAST")
   private fun <T> invokeDelegateMethod(name: String): T {
     var method = methodMap[name]
     if (method == null) {
@@ -157,6 +158,7 @@ class ReactActivityDelegateWrapper(
     return method!!.invoke(delegate) as T
   }
 
+  @Suppress("UNCHECKED_CAST")
   private fun <T, A> invokeDelegateMethod(
     name: String,
     argTypes: Array<Class<*>>,

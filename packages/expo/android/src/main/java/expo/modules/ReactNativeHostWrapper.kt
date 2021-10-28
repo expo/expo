@@ -12,7 +12,6 @@ import com.facebook.react.bridge.JavaScriptContextHolder
 import com.facebook.react.bridge.JavaScriptExecutorFactory
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.devsupport.RedBoxHandler
-import com.facebook.react.uimanager.UIImplementationProvider
 import java.lang.reflect.Method
 
 class ReactNativeHostWrapper(
@@ -49,7 +48,8 @@ class ReactNativeHostWrapper(
     return invokeDelegateMethod("getJavaScriptExecutorFactory")
   }
 
-  override fun getUIImplementationProvider(): UIImplementationProvider {
+  @Suppress("DEPRECATION")
+  override fun getUIImplementationProvider(): com.facebook.react.uimanager.UIImplementationProvider {
     return invokeDelegateMethod("getUIImplementationProvider")
   }
 
@@ -100,6 +100,7 @@ class ReactNativeHostWrapper(
     }
   }
 
+  @Suppress("UNCHECKED_CAST")
   private fun <T> invokeDelegateMethod(name: String): T {
     var method = methodMap[name]
     if (method == null) {
