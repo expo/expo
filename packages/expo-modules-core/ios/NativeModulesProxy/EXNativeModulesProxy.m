@@ -32,6 +32,7 @@ static const NSString *methodInfoArgumentsCountKey = @"argumentsCount";
 
 @interface RCTBridge (RegisterAdditionalModuleClasses)
 
+- (NSArray<RCTModuleData *> *)registerModulesForClasses:(NSArray<Class> *)moduleClasses;
 - (void)registerAdditionalModuleClasses:(NSArray<Class> *)modules;
 
 @end
@@ -248,7 +249,7 @@ RCT_EXPORT_METHOD(callMethod:(NSString *)moduleName methodNameOrKey:(id)methodNa
   [bridge uiManager];
 
   // Register the view managers as additional modules.
-  [bridge registerAdditionalModuleClasses:additionalModuleClasses];
+  [self registerAdditionalModuleClasses:additionalModuleClasses inBridge:bridge];
 
   // Bridge's `registerAdditionalModuleClasses:` method doesn't register
   // components in UIManager — we need to register them on our own.
@@ -261,6 +262,32 @@ RCT_EXPORT_METHOD(callMethod:(NSString *)moduleName methodNameOrKey:(id)methodNa
   // Let the modules consume the registry :)
   // It calls `setModuleRegistry:` on all `EXModuleRegistryConsumer`s.
   [_exModuleRegistry initialize];
+}
+
+- (void)registerAdditionalModuleClasses:(NSArray<Class> *)moduleClasses inBridge:(RCTBridge *)bridge
+{
+  // In remote debugging mode, i.e. executorClass is `RCTWebSocketExecutor`,
+  // there is a deadlock issue in `registerAdditionalModuleClasses:` and causes app freezed.
+  //   - The JS thread acquired the `RCTCxxBridge._moduleRegistryLock` lock in `RCTCxxBridge._initializeBridgeLocked`
+  //      = it further goes into RCTObjcExecutor and tries to get module config from main thread
+  //   - The main thread is pending in `RCTCxxBridge.registerAdditionalModuleClasses` where trying to acquire the same lock.
+  // To workaround the deadlock, we tend to use the non-locked registration and mutate the bridge internal module data.
+  // Since JS thread in this situation is waiting for main thread, it's safe to mutate module data without lock.
+  // The only risk should be the internal `_moduleRegistryCreated` flag without lock protection.
+  // As we just workaround in `RCTWebSocketExecutor` case, the risk of `_moduleRegistryCreated` race condition should be lower.
+  //
+  // Learn more about the non-locked initialization:
+  // https://github.com/facebook/react-native/blob/757bb75fbf837714725d7b2af62149e8e2a7ee51/React/CxxBridge/RCTCxxBridge.mm#L922-L935
+  // See the `_moduleRegistryCreated` false case
+  if ([NSStringFromClass([bridge executorClass]) isEqualToString:@"RCTWebSocketExecutor"]) {
+    NSNumber *moduleRegistryCreated = [bridge valueForKey:@"_moduleRegistryCreated"];
+    if (![moduleRegistryCreated boolValue]) {
+      [bridge registerModulesForClasses:moduleClasses];
+      return;
+    }
+  }
+
+  [bridge registerAdditionalModuleClasses:moduleClasses];
 }
 
 - (void)registerComponentDataForModuleClasses:(NSArray<Class> *)moduleClasses inBridge:(RCTBridge *)bridge
