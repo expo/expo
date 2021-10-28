@@ -169,6 +169,7 @@ Object.defineProperties(constants, {
       }
       return maybeManifest;
     },
+    enumerable: true,
   },
   manifest2: {
     get(): Manifest | null {
@@ -178,6 +179,7 @@ Object.defineProperties(constants, {
       }
       return maybeManifest;
     },
+    enumerable: true,
   },
   __rawManifest_TEST: {
     get(): AppManifest | Manifest | null {

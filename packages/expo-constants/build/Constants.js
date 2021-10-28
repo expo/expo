@@ -127,6 +127,7 @@ Object.defineProperties(constants, {
             }
             return maybeManifest;
         },
+        enumerable: true,
     },
     manifest2: {
         get() {
@@ -136,6 +137,7 @@ Object.defineProperties(constants, {
             }
             return maybeManifest;
         },
+        enumerable: true,
     },
     __rawManifest_TEST: {
         get() {
