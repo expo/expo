@@ -89,7 +89,7 @@
     "expo-file-system": "~11.1.3",
     "expo-font": "~9.2.1",
     "expo-gl": "~10.4.2",
-    "expo-google-app-auth": "~8.2.2",
+    "expo-google-app-auth": "~8.2.5",
     "expo-google-sign-in": "~9.2.1",
     "expo-haptics": "~10.1.0",
     "expo-image": "~1.0.0-alpha.1",
