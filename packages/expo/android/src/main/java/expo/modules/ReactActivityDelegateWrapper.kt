@@ -22,6 +22,9 @@ class ReactActivityDelegateWrapper(
   private val reactActivityLifecycleListeners = ExpoModulesPackage.packageList
     .sortedByDescending { it.packagePriority }
     .flatMap { it.createReactActivityLifecycleListeners(activity) }
+  private val reactActivityHandlers = ExpoModulesPackage.packageList
+    .sortedByDescending { it.packagePriority }
+    .flatMap { it.createReactActivityHandlers(activity) }
   private val methodMap: ArrayMap<String, Method> = ArrayMap()
 
   //region ReactActivityDelegate
@@ -31,7 +34,7 @@ class ReactActivityDelegateWrapper(
   }
 
   override fun createRootView(): ReactRootView {
-    return reactActivityLifecycleListeners.asSequence()
+    return reactActivityHandlers.asSequence()
             .map { it.createReactRootView(activity) }
             .firstOrNull() ?: invokeDelegateMethod("createRootView")
   }
