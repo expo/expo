@@ -19,24 +19,17 @@ public class ConcreteMethod<Args, ReturnType>: AnyMethod {
 
   let argTypes: [AnyArgumentType]
 
-  /**
-   Determines whether the method should be called with the module instance.
-   */
-  let detached: Bool
-
   init(
     _ name: String,
     argTypes: [AnyArgumentType],
-    _ closure: @escaping ClosureType,
-    detached: Bool = false
+    _ closure: @escaping ClosureType
   ) {
     self.name = name
     self.argTypes = argTypes
     self.closure = closure
-    self.detached = detached
   }
 
-  public func call(module: AnyModule, args: [Any?], promise: Promise) {
+  public func call(args: [Any?], promise: Promise) {
     let takesPromise = self.takesPromise
     let returnedValue: ReturnType?
 
@@ -45,10 +38,6 @@ public class ConcreteMethod<Args, ReturnType>: AnyMethod {
 
       if takesPromise {
         finalArgs.append(promise)
-      }
-
-      if !self.detached {
-        finalArgs.insert(module, at: 0)
       }
 
       let tuple = try Conversions.toTuple(finalArgs) as! Args
@@ -65,7 +54,7 @@ public class ConcreteMethod<Args, ReturnType>: AnyMethod {
     }
   }
 
-  public func callSync(module: AnyModule, args: [Any?]) -> Any? {
+  public func callSync(args: [Any?]) -> Any? {
     if takesPromise {
       var result: Any?
       let semaphore = DispatchSemaphore(value: 0)
@@ -76,7 +65,7 @@ public class ConcreteMethod<Args, ReturnType>: AnyMethod {
       } rejecter: { error in
         semaphore.signal()
       }
-      call(module: module, args: args, promise: promise)
+      call(args: args, promise: promise)
       semaphore.wait()
       return result
     } else {
