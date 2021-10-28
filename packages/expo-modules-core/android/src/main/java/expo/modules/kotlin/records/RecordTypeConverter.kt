@@ -1,38 +1,44 @@
 package expo.modules.kotlin.records
 
-import com.facebook.react.bridge.ReadableMap
-import expo.modules.kotlin.methods.TypeInformation
-import expo.modules.kotlin.methods.TypeMapper
+import com.facebook.react.bridge.Dynamic
 import expo.modules.kotlin.allocators.ObjectConstructor
 import expo.modules.kotlin.allocators.ObjectConstructorFactory
+import expo.modules.kotlin.types.KClassTypeWrapper
+import expo.modules.kotlin.types.TypeConverter
+import expo.modules.kotlin.types.TypeConverterHelper
 import kotlin.reflect.full.findAnnotation
+import kotlin.reflect.full.isSuperclassOf
 import kotlin.reflect.full.memberProperties
 import kotlin.reflect.jvm.javaField
 
-class RecordCaster {
+class RecordTypeConverter : TypeConverter {
   private val objectConstructorFactory = ObjectConstructorFactory()
 
-  fun <T : Record> cast(jsValue: ReadableMap, toClass: Class<T>): T {
-    val instance = getObjectConstructor(toClass).construct()
+  override fun canHandleConversion(toType: KClassTypeWrapper): Boolean =
+    Record::class.isSuperclassOf(toType.classifier)
 
-    toClass.kotlin
+  override fun convert(jsValue: Dynamic, toType: KClassTypeWrapper): Any {
+    val jsMap = jsValue.asMap()
+
+    val instance = getObjectConstructor(toType.classifier.java).construct()
+
+    toType.classifier
       .memberProperties
       .map { property ->
         val filedInformation = property.findAnnotation<Field>() ?: return@map
         val jsKey = filedInformation.key.takeUnless { it == "" } ?: property.name
 
-        if (!jsValue.hasKey(jsKey)) {
+        if (!jsMap.hasKey(jsKey)) {
           // TODO(@lukmccall): handle required keys
           return@map
         }
 
-        val value = jsValue.getDynamic(jsKey)
-
+        val value = jsMap.getDynamic(jsKey)
         val javaField = property.javaField!!
 
-        val casted = TypeMapper.cast(
+        val casted = TypeConverterHelper.convert(
           value,
-          TypeInformation(javaField.type, property.returnType.isMarkedNullable)
+          property.returnType
         )
 
         javaField.isAccessible = true

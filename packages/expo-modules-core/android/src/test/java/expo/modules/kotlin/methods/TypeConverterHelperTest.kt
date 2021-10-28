@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalStdlibApi::class)
+
 package expo.modules.kotlin.methods
 
 import com.facebook.react.bridge.DynamicFromObject
@@ -6,14 +8,16 @@ import com.facebook.react.bridge.JavaOnlyMap
 import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.bridge.ReadableMap
 import com.google.common.truth.Truth
+import expo.modules.kotlin.types.TypeConverterHelper
 import org.junit.Test
+import kotlin.reflect.typeOf
 
-class TypeMapperTest {
+class TypeConverterHelperTest {
   @Test
   fun `cast dynamic to Int`() {
     val dynamic = DynamicFromObject(20.0)
 
-    val casted = TypeMapper.cast(dynamic, TypeInformation(Int::class.java, false))
+    val casted = TypeConverterHelper.convert(dynamic, typeOf<Int>())
 
     Truth.assertThat(casted).isEqualTo(20)
   }
@@ -22,7 +26,7 @@ class TypeMapperTest {
   fun `cast null to nullable Int`() {
     val dynamic = DynamicFromObject(null)
 
-    val casted = TypeMapper.cast(dynamic, TypeInformation(Int::class.java, true))
+    val casted = TypeConverterHelper.convert(dynamic, typeOf<Int?>())
 
     Truth.assertThat(casted).isEqualTo(null)
   }
@@ -30,13 +34,12 @@ class TypeMapperTest {
   @Test
   fun `cast dynamic to basic types`() {
     val dynamicSeeder = listOf(10, 20.0, "string", true, JavaOnlyArray(), JavaOnlyMap())
-    val typesSeeder = dynamicSeeder.map(this::getCastableTypeFromObject)
-    val types = typesSeeder.map { TypeInformation(it, false) }
+    val types = listOf(typeOf<Int>(), typeOf<Double>(), typeOf<String>(), typeOf<Boolean>(), typeOf<ReadableArray>(), typeOf<ReadableMap>())
     val dynamics = JavaOnlyArray.from(dynamicSeeder)
 
     val casted = types.withIndex().map { (index, type) ->
       val dynamic = dynamics.getDynamic(index)
-      TypeMapper.cast(dynamic, type)
+      TypeConverterHelper.convert(dynamic, type)
     }
 
     Truth.assertThat(casted).isEqualTo(dynamicSeeder)
@@ -56,16 +59,15 @@ class TypeMapperTest {
       }
     )
     val expected = listOf(
-      listOf(10.0, 20.0, 30.0),
+      listOf(10, 20, 30),
       listOf(null, "string")
     )
-    val typesSeeder = listOf(List::class.java, List::class.java)
-    val types = typesSeeder.map { TypeInformation(it, false) }
+    val types = listOf(typeOf<List<Int>>(), typeOf<List<String?>>())
     val dynamics = JavaOnlyArray.from(dynamicSeeder)
 
     val casted = types.withIndex().map { (index, type) ->
       val dynamic = dynamics.getDynamic(index)
-      TypeMapper.cast(dynamic, type)
+      TypeConverterHelper.convert(dynamic, type)
     }
 
     Truth.assertThat(casted).isEqualTo(expected)
@@ -81,13 +83,13 @@ class TypeMapperTest {
     val expected = intArrayOf(10, 20, 30)
     val dynamic = DynamicFromObject(dynamicSeeder)
 
-    val casted = TypeMapper.cast(dynamic, TypeInformation(IntArray::class.java, false))
+    val casted = TypeConverterHelper.convert(dynamic, typeOf<IntArray>())
 
     Truth.assertThat(casted).isEqualTo(expected)
   }
 
   @Test
-  fun `cast dynamic to int array`() {
+  fun `cast dynamic to nullable int array`() {
     val dynamicSeeder = JavaOnlyArray().apply {
       pushDouble(10.0)
       pushNull()
@@ -97,7 +99,7 @@ class TypeMapperTest {
     val expected = arrayOf(10, null, 20, 30)
     val dynamic = DynamicFromObject(dynamicSeeder)
 
-    val casted = TypeMapper.cast(dynamic, TypeInformation(Array<Int?>::class.java, false))
+    val casted = TypeConverterHelper.convert(dynamic, typeOf<Array<Int?>>())
 
     Truth.assertThat(casted).isEqualTo(expected)
   }
@@ -112,22 +114,8 @@ class TypeMapperTest {
     val expected = arrayOf("string", null, "string2")
     val dynamic = DynamicFromObject(dynamicSeeder)
 
-    val casted = TypeMapper.cast(dynamic, TypeInformation(Array<String?>::class.java, false))
+    val casted = TypeConverterHelper.convert(dynamic, typeOf<Array<String?>>())
 
     Truth.assertThat(casted).isEqualTo(expected)
-  }
-
-  private fun getCastableTypeFromObject(obj: Any): Class<*> {
-    return when (obj) {
-      is ReadableMap -> {
-        ReadableMap::class.java
-      }
-      is ReadableArray -> {
-        ReadableArray::class.java
-      }
-      else -> {
-        obj::class.java
-      }
-    }
   }
 }
