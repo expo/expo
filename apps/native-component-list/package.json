@@ -92,7 +92,7 @@
     "expo-firebase-core": "~4.0.3",
     "expo-font": "~10.0.3",
     "expo-gl": "~11.0.3",
-    "expo-google-app-auth": "~8.2.4",
+    "expo-google-app-auth": "~9.0.0",
     "expo-google-sign-in": "~10.0.3",
     "expo-haptics": "~11.0.3",
     "expo-image": "~1.0.0-alpha.1",
