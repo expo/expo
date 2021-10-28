@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Rewritten module to Kotlin.
+
 ## 11.0.1 — 2021-10-01
 
 _This version does not introduce any user-facing changes._

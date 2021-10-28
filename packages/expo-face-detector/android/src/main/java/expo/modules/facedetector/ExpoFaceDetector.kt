@@ -38,7 +38,7 @@ private const val MODE_KEY = "mode"
 private const val RUN_CLASSIFICATIONS_KEY = "runClassifications"
 private const val TRACKING_KEY = "tracking"
 
-private val ORIENTATIONS = SparseIntArray().apply { // CHECK IT
+private val ORIENTATIONS = SparseIntArray().apply {
   append(Surface.ROTATION_0, 90)
   append(Surface.ROTATION_90, 0)
   append(Surface.ROTATION_180, 270)
