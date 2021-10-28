@@ -20,6 +20,7 @@ on:
       - fastlane/**
       - Gemfile.lock
       - .ruby-version
+      - yarn.lock
   push:
     branches: [master, sdk-*]
     paths:
@@ -33,6 +34,7 @@ on:
       - fastlane/**
       - Gemfile.lock
       - .ruby-version
+      - yarn.lock
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
