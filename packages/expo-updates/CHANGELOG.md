@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix Android app.manifest not generated when in OneSignal gradle plugin integration. ([#14938](https://github.com/expo/expo/pull/14938) by [@kudo](https://github.com/kudo))
+
 ### 💡 Others
 
 ## 0.10.5 — 2021-10-21
