@@ -48,6 +48,7 @@
   "expo-font": "~9.2.1",
   "expo-gl": "~10.4.2",
   "expo-gl-cpp": "~10.4.1",
+  "expo-google-app-auth": "~8.2.5",
   "expo-google-sign-in": "~9.2.1",
   "expo-haptics": "~10.1.0",
   "expo-image-loader": "~2.2.0",
