@@ -23,10 +23,12 @@ class RecordTypeConverterTest {
       var string: String = ""
     }
 
-    val map = DynamicFromObject(JavaOnlyMap().apply {
-      putInt("int", 10)
-      putString("string", "expo")
-    })
+    val map = DynamicFromObject(
+      JavaOnlyMap().apply {
+        putInt("int", 10)
+        putString("string", "expo")
+      }
+    )
 
     val myRecord = converter.convert(map, KClassTypeWrapper(typeOf<MyRecord>())) as MyRecord
 
@@ -44,10 +46,12 @@ class RecordTypeConverterTest {
       val string: String = ""
     }
 
-    val map = DynamicFromObject(JavaOnlyMap().apply {
-      putInt("int", 10)
-      putString("string", "expo")
-    })
+    val map = DynamicFromObject(
+      JavaOnlyMap().apply {
+        putInt("int", 10)
+        putString("string", "expo")
+      }
+    )
 
     val myRecord = converter.convert(map, KClassTypeWrapper(typeOf<MyRecord>())) as MyRecord
 
@@ -62,9 +66,11 @@ class RecordTypeConverterTest {
       lateinit var string: String
     }
 
-    val map = DynamicFromObject(JavaOnlyMap().apply {
-      putString("string", "expo")
-    })
+    val map = DynamicFromObject(
+      JavaOnlyMap().apply {
+        putString("string", "expo")
+      }
+    )
 
     val myRecord = converter.convert(map, KClassTypeWrapper(typeOf<MyRecord>())) as MyRecord
 
@@ -84,11 +90,13 @@ class RecordTypeConverterTest {
       lateinit var string: String
     }
 
-    val map = DynamicFromObject(JavaOnlyMap().apply {
-      putInt("int", 10)
-      putInt("int2", 20)
-      putString("string", "expo")
-    })
+    val map = DynamicFromObject(
+      JavaOnlyMap().apply {
+        putInt("int", 10)
+        putInt("int2", 20)
+        putString("string", "expo")
+      }
+    )
 
     val myRecord = converter.convert(map, KClassTypeWrapper(typeOf<MyRecord>())) as MyRecord
 
@@ -110,11 +118,13 @@ class RecordTypeConverterTest {
       lateinit var string: String
     }
 
-    val map = DynamicFromObject(JavaOnlyMap().apply {
-      putInt("point1", 10)
-      putInt("point2", 20)
-      putString("str", "expo")
-    })
+    val map = DynamicFromObject(
+      JavaOnlyMap().apply {
+        putInt("point1", 10)
+        putInt("point2", 20)
+        putString("str", "expo")
+      }
+    )
 
     val myRecord = converter.convert(map, KClassTypeWrapper(typeOf<MyRecord>())) as MyRecord
 
@@ -136,9 +146,11 @@ class RecordTypeConverterTest {
       val string: String? = null
     }
 
-    val map = DynamicFromObject(JavaOnlyMap().apply {
-      putInt("required", 2137)
-    })
+    val map = DynamicFromObject(
+      JavaOnlyMap().apply {
+        putInt("required", 2137)
+      }
+    )
 
     val myRecord = converter.convert(map, KClassTypeWrapper(typeOf<MyRecord>())) as MyRecord
 
@@ -177,22 +189,24 @@ class RecordTypeConverterTest {
       lateinit var innerRecord: InnerRecord
     }
 
-    val map = DynamicFromObject(JavaOnlyMap().apply {
-      putArray(
-        "points",
-        JavaOnlyArray().apply {
-          pushDouble(1.0)
-          pushDouble(2.0)
-          pushDouble(3.0)
-        }
-      )
-      putMap(
-        "innerRecord",
-        JavaOnlyMap().apply {
-          putString("name", "value")
-        }
-      )
-    })
+    val map = DynamicFromObject(
+      JavaOnlyMap().apply {
+        putArray(
+          "points",
+          JavaOnlyArray().apply {
+            pushDouble(1.0)
+            pushDouble(2.0)
+            pushDouble(3.0)
+          }
+        )
+        putMap(
+          "innerRecord",
+          JavaOnlyMap().apply {
+            putString("name", "value")
+          }
+        )
+      }
+    )
 
     val myRecord = converter.convert(map, KClassTypeWrapper(typeOf<MyRecord>())) as MyRecord
 
