@@ -290,7 +290,7 @@ RCT_EXPORT_METHOD(callMethod:(NSString *)moduleName methodNameOrKey:(id)methodNa
 - (void)registerAdditionalModuleClasses:(NSArray<Class> *)moduleClasses inBridge:(RCTBridge *)bridge
 {
   // In remote debugging mode, i.e. executorClass is `RCTWebSocketExecutor`,
-  // there is a deadlock issue in `registerAdditionalModuleClasses:` and causes app hanging.
+  // there is a deadlock issue in `registerAdditionalModuleClasses:` and causes app freezed.
   //   - The JS thread acquired the `RCTCxxBridge._moduleRegistryLock` lock in `RCTCxxBridge._initializeBridgeLocked`
   //      = it further goes into RCTObjcExecutor and tries to get module config from main thread
   //   - The main thread is pending in `RCTCxxBridge.registerAdditionalModuleClasses` where trying to acquire the same lock.

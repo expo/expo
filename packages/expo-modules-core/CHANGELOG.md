@@ -12,7 +12,7 @@
 
 ### 🐛 Bug fixes
 
-- Fix ios app hanging in remote debugging mode. ([#14922](https://github.com/expo/expo/pull/14922) by [@kudo](https://github.com/kudo))
+- Fix iOS app freezing in remote debugging mode. ([#14922](https://github.com/expo/expo/pull/14922) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others
 
