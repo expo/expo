@@ -43,6 +43,6 @@
   },
   "dependencies": {
     "base64-js": "^1.3.0",
-    "expo-modules-core": "~0.4.6"
+    "expo-modules-core": "~0.4.7"
   }
 }
