@@ -9,7 +9,7 @@ extension UIBlurEffect {
 
   private static func blurEffectStyleFrom(_ tint: String) -> UIBlurEffect.Style {
     switch (tint) {
-    case "light": return .light
+    case "light": return .extraLight
     case "dark": return .dark
     case "default": return .light
     default: return .dark
