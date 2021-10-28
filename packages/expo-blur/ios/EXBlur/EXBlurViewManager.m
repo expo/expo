@@ -35,7 +35,7 @@ EX_VIEW_PROPERTY(tint, NSString *, EXBlurView)
 
 EX_VIEW_PROPERTY(intensity, NSNumber *, EXBlurView)
 {
-  [view setIntensity:[value intValue]];
+  [view setIntensity:[value floatValue] / 100];
 }
 
 @end
