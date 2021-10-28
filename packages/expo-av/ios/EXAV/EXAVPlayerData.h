@@ -3,12 +3,7 @@
 #import <AVFoundation/AVFoundation.h>
 
 #import <EXAV/EXAV.h>
-
-
-// Objective-C wrapper for a C++ callback class
-@interface EXAudioSampleCallback : NSObject
--(void)callWithAudioBuffer:(AudioBuffer*)buffer andTimestamp:(double)timestamp;
-@end
+#import "AudioSampleCallback/EXAudioSampleCallback.h"
 
 @interface EXAVPlayerData : NSObject <EXAVObject>
 

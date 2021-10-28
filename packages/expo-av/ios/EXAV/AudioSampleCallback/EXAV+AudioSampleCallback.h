@@ -3,7 +3,7 @@
 #pragma once
 
 #import <Foundation/Foundation.h>
-#import "EXAV.h"
+#import <EXAV/EXAV.h>
 #import <EXAV/EXAVPlayerData.h>
 
 @interface EXAV (AudioSampleCallback)
