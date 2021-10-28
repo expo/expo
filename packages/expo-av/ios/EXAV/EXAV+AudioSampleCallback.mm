@@ -18,11 +18,17 @@ static constexpr auto globalJsFuncName = "__EXAV_setOnAudioSampleReceivedCallbac
 class AudioSampleCallbackWrapper
 {
   std::weak_ptr<CallbackWrapper> weakWrapper;
+//  jsi::Function callback_;
+//  jsi::Runtime &runtime_;
+//  std::shared_ptr<CallInvoker> jsInvoker_;
 public:
   AudioSampleCallbackWrapper(jsi::Function &&callback,
                              jsi::Runtime &runtime,
                              std::shared_ptr<CallInvoker> jsInvoker)
   : weakWrapper(CallbackWrapper::createWeak(std::move(callback), runtime, jsInvoker))
+//  : callback_(std::move(callback)),
+//    runtime_(runtime),
+//    jsInvoker_(std::move(jsInvoker))
   {}
   
   ~AudioSampleCallbackWrapper() {
@@ -41,7 +47,7 @@ void AudioSampleCallbackWrapper::call(AudioBuffer* buffer, double timestamp)
   if (!strongWrapper) {
     return;
   }
-  
+
   // We need to invoke the callback from the JS thread, otherwise Hermes complains
   strongWrapper->jsInvoker().invokeAsync([buffer, this, timestamp]{
     auto callbackWrapper = this->weakWrapper.lock();
@@ -75,15 +81,15 @@ void AudioSampleCallbackWrapper::call(AudioBuffer* buffer, double timestamp)
         frames.setValueAtIndex(rt, arrayIndex, jsi::Value(frame));
       }
 
-      channel.setProperty(rt, "frames", frames);
-      channels.setValueAtIndex(rt, channelIndex, channel);
+      channel.setProperty(rt, "frames", std::move(frames));
+      channels.setValueAtIndex(rt, channelIndex, std::move(channel));
     }
 
     auto sample = jsi::Object(rt);
-    sample.setProperty(rt, "channels", channels);
+    sample.setProperty(rt, "channels", std::move(channels));
     sample.setProperty(rt, "timestamp", jsi::Value(timestamp));
 
-    callbackWrapper->callback().call(rt, sample);
+    callbackWrapper->callback().call(rt, std::move(sample));
   });
 }
 
@@ -100,12 +106,12 @@ void AudioSampleCallbackWrapper::call(AudioBuffer* buffer, double timestamp)
 
 -(void)dealloc {
   delete _cb;
+  _cb = nullptr;
 }
 
 -(void)callWithAudioBuffer:(AudioBuffer*)buffer andTimestamp:(double)timestamp
 {
-  if (_cb != NULL)
-  {
+  if (_cb != nullptr) {
     _cb->call(buffer, timestamp);
   }
 }
@@ -148,18 +154,20 @@ void AudioSampleCallbackWrapper::call(AudioBuffer* buffer, double timestamp)
       // second parameter received, it's the callback function.
       auto callback = args[1].asObject(runtime).asFunction(runtime);
       
-      auto wrapper = new AudioSampleCallbackWrapper(callback.getFunction(runtime), runtime, strongCallInvoker);
+      auto wrapper = new AudioSampleCallbackWrapper(std::move(callback), runtime, strongCallInvoker);
       EXAudioSampleCallback* objcWrapper = [[EXAudioSampleCallback alloc] initWithWrapper:wrapper];
       [sound setSampleBufferCallback:objcWrapper];
+      NSLog(@"Callback set");
     } else {
       // second parameter omitted or undefined, so remove callback
       [sound setSampleBufferCallback:nil];
+      NSLog(@"Callback unset");
     }
 
     return jsi::Value::undefined();
   };
 
-  auto& runtime = *static_cast<jsi::Runtime*>(jsRuntimePtr);
+  auto& runtime = *reinterpret_cast<jsi::Runtime*>(jsRuntimePtr);
   runtime
     .global()
     .setProperty(runtime,

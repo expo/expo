@@ -9,6 +9,7 @@
 #import <ExpoModulesCore/EXEventEmitter.h>
 #import <EXAV/EXAVObject.h>
 #import <React/RCTBridgeModule.h>
+#import <React/RCTInvalidating.h>
 
 typedef NS_OPTIONS(NSUInteger, EXAudioInterruptionMode)
 {

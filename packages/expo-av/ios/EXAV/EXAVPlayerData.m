@@ -850,13 +850,13 @@ NSString *const EXAVPlayerDataObserverMetadataKeyPath = @"timedMetadata";
 
 - (void)setSampleBufferCallback:(EXAudioSampleCallback *)sampleBufferCallback
 {
-  _audioSampleBufferCallback = sampleBufferCallback;
-  
   if (sampleBufferCallback) {
     [self installTap];
   } else {
     [self uninstallTap];
   }
+  
+  _audioSampleBufferCallback = sampleBufferCallback;
 }
 
 - (EXAudioSampleCallback *)sampleBufferCallback
@@ -1074,6 +1074,7 @@ void tapProcess(MTAudioProcessingTapRef tap, CMItemCount numberFrames, MTAudioPr
 
 - (void)dealloc
 {
+  [self setSampleBufferCallback:nil];
   [self _removeTimeObserver];
   [self _removeObservers];
 }
