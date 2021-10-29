@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 0.10.7 — 2021-10-29
+
+_This version does not introduce any user-facing changes._
+
 ## 0.10.6 — 2021-10-28
 
 ### 🐛 Bug fixes
