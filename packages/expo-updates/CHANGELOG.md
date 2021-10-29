@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Fix Android app.manifest not generated from [#14938](https://github.com/expo/expo/pull/14938) regression. ([#14953](https://github.com/expo/expo/pull/14953) by [@kudo](https://github.com/kudo))
-
 ### 💡 Others
+
+## 0.10.8 — 2021-10-29
+
+### 🐛 Bug fixes
+
+- Fix Android app.manifest not generated from [#14938](https://github.com/expo/expo/pull/14938) regression. ([#14953](https://github.com/expo/expo/pull/14953) by [@kudo](https://github.com/kudo))
 
 ## 0.10.7 — 2021-10-29
 
