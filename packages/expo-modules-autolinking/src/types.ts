@@ -8,6 +8,7 @@ export interface SearchOptions {
   ignorePaths?: string[] | null;
   exclude?: string[] | null;
   platform: SupportedPlatform;
+  silent?: boolean;
 
   // Scratched from project's config
   flags?: Record<string, any>;
