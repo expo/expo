@@ -5,11 +5,23 @@ import org.gradle.util.GradleVersion
 
 def expoUpdatesDir = ["node", "-e", "console.log(require('path').dirname(require.resolve('expo-updates/package.json')));"].execute([], projectDir).text.trim()
 
-afterEvaluate {
-  // From a library project role to reference app project settings such as `targetName.toLowerCase().contains("release")`,
-  // we extract the `appProject` from all projects here.
-  // things like `config`, `buildDir`, and `applicationVariants`, we will reference from appProject.
-  def appProject = rootProject.allprojects.find { it.plugins.hasPlugin('com.android.application') }
+// From a library project role to reference app project settings such as `targetName.toLowerCase().contains("release")`,
+// we extract the `appProject` from all projects here.
+// things like `config`, `buildDir`, and `applicationVariants`, we will reference from appProject.
+def appProject = rootProject.allprojects.find { it.plugins.hasPlugin('com.android.application') }
+if (!appProject) {
+  // For instrumented test, the appProject will be null.
+  return;
+}
+if (!android.hasProperty('libraryVariants')) {
+  // For traditional application level integration, will be no-op to prevent duplicated app.manifest creation.
+  return;
+}
+if (findProperty('expo.updates.createManifest') == 'false') {
+  return;
+}
+
+def setupClosure = {
   def config = appProject.hasProperty("react") ? appProject.react : [];
   def nodeExecutableAndArgs = config.nodeExecutableAndArgs ?: ["node"]
   def entryFile = config.entryFile ?: "index.js"
@@ -17,18 +29,6 @@ afterEvaluate {
 
   def projectRoot = file("${rootProject.projectDir}")
   def inputExcludes = ["android/**", "ios/**"]
-
-  if (!android.hasProperty('libraryVariants')) {
-    // For traditional application level integration, will be no-op to prevent duplicated app.config creation.
-    return;
-  }
-  if (!appProject) {
-    // For instrumented test, the appProject will be null.
-    return;
-  }
-  if (findProperty('expo.updates.createManifest') == 'false') {
-    return;
-  }
 
   appProject.android.applicationVariants.each { variant ->
     def targetName = variant.name.capitalize()
@@ -94,5 +94,18 @@ afterEvaluate {
     if (dependentTask != null) {
       dependentTask.dependsOn currentAssetsCopyTask
     }
+  }
+}
+
+// The `appProject` may either be evaluated or not. We should check project state and setup for both cases.
+//   - If project is evaluated, we just call setupClosure and get the correct applicationVariants.
+//   - If project is not evaluated yet, we should just wait for afterEvaluate().
+// The `hasCompleted()` is actually gradle internal method as ProjectState does not provide enough state information.
+// https://github.com/gradle/gradle/blob/958d5b0f8a/subprojects/core/src/main/java/org/gradle/api/internal/project/ProjectStateInternal.java#L64-L66
+if (appProject.state.hasCompleted()) {
+  setupClosure.call()
+} else {
+  appProject.afterEvaluate {
+    setupClosure.call()
   }
 }
