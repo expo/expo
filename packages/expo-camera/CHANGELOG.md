@@ -11,6 +11,7 @@
 ### 💡 Others
 
 - Rewrite module to Kotlin. ([#14717](https://github.com/expo/expo/pull/14717) by [@mstach60161](https://github.com/mstach60161))
+- [plugin] Use more specific gradle variable name. ([#14966](https://github.com/expo/expo/pull/14966) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 12.0.1 — 2021-10-01
 
