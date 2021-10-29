@@ -1,6 +1,6 @@
 import { StackScreenProps } from '@react-navigation/stack';
 import * as React from 'react';
-import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, StyleSheet, View } from 'react-native';
 
 import ProfileUnauthenticated from '../components/ProfileUnauthenticated';
 import Colors from '../constants/Colors';
