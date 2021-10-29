@@ -62,8 +62,7 @@ Store and the Google Play Store. See [Distributing Your App](../distribution/int
 
 The standalone app knows to look for updates at your app's published
 url, and if you publish an update then the next time a user opens your
-app they will automatically download the new version. These are
-commonly referred to as "Over the Air" (OTA) updates, the functionality
+app they will automatically download the new version. The functionality
 is similar to [CodePush](https://microsoft.github.io/code-push/), but it
 is built into Expo so you don't need to install anything.
 
@@ -77,7 +76,7 @@ In order for assets to be uploaded to the CDN, they must be explicitly required 
 
 ### Some native configuration can't be updated by publishing
 
-If you make any of the following changes in `app.json`, you will need to
+If you make any of the following changes in **app.json**, you will need to
 re-build the binaries for your app for the change to take effect:
 
 - Increment the Expo SDK Version
@@ -103,7 +102,7 @@ more widely.
 
 ## Privacy
 
-You can set the privacy of your project in your `app.json` configuration
+You can set the privacy of your project in your **app.json** configuration
 file by setting the key “privacy” to either `“public”` or `“unlisted”`.
 
 These options work similarly to the way they do on YouTube. Unlisted

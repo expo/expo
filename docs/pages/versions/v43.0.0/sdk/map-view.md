@@ -76,13 +76,13 @@ No additional configuration is necessary to use `react-native-maps` in Expo Go. 
 - In the modal, click **Restrict Key**.
 - Under **Key restrictions** → **Application restrictions**, ensure that the **Android apps** radio button is chosen.
 - Click the **+ Add package name and fingerprint** button.
-- Add your Android package name from `app.json` to the package name field.
+- Add your Android package name from **app.json** to the package name field.
 - Add or replace the **SHA-1 certificate fingerprint** with the value from step 2.
 - Click **Done** and then click **Save**
 
 #### 4. Add the API key to your project
 
-- Copy your **API Key** into your `app.json` under the `android.config.googleMaps.apiKey` field.
+- Copy your **API Key** into your **app.json** under the `android.config.googleMaps.apiKey` field.
 - Rebuild the app binary and re-submit to Google Play or sideload it (depending on how you configured your API key) to test that the configuration was successful.
 
 ## Deploying Google Maps to an iOS standalone app
@@ -100,12 +100,12 @@ No additional configuration is necessary to use `react-native-maps` in Expo Go. 
 - In the modal, click **Restrict Key**.
 - Choose the **iOS apps** radio button under **Key restriction**.
 - Under **Accept requests from an iOS application with one of these bundle identifiers**, click the **Add an item** button.
-- Add your `ios.bundleIdentifier` from `app.json` eg: `com.company.myapp`) to the bundle ID field.
+- Add your `ios.bundleIdentifier` from **app.json** eg: `com.company.myapp`) to the bundle ID field.
 - Click **Done** and then click **Save**
 
 #### 3. Add the API key to your project
 
-- Copy your API key into `app.json` under the `ios.config.googleMapsApiKey` field.
+- Copy your API key into **app.json** under the `ios.config.googleMapsApiKey` field.
 - In your code, import `{ PROVIDER_GOOGLE }` from `react-native-maps` and add the property `provider=PROVIDER_GOOGLE` to your `<MapView>`. This property works on both iOS and Android.
 - Rebuild the app binary. An easy way to test that the configuration was successful is to do a simulator build.
 
@@ -113,7 +113,7 @@ No additional configuration is necessary to use `react-native-maps` in Expo Go. 
 
 > Web is experimental! We do not recommend using this library on web yet.
 
-To use this in web, add the following script to your `web/index.html`. This script may already be present, if this is the case, just replace the `API_KEY` with your Google Maps API key which you can obtain here: [Google Maps: Get API key](https://developers.google.com/maps/documentation/javascript/get-api-key)
+To use this in web, add the following script to your **web/index.html**. This script may already be present, if this is the case, just replace the `API_KEY` with your Google Maps API key which you can obtain here: [Google Maps: Get API key](https://developers.google.com/maps/documentation/javascript/get-api-key)
 
 ```html
 <!DOCTYPE html>

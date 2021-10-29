@@ -483,7 +483,7 @@ This may improve scroll performance for large lists. On Android the default valu
 
 ### `viewabilityConfig`
 
-See [`ViewabilityHelper.js`](https://github.com/facebook/react-native/blob/master/Libraries/Lists/ViewabilityHelper.js) for flow type and further documentation.
+See [**ViewabilityHelper.js**](https://github.com/facebook/react-native/blob/master/Libraries/Lists/ViewabilityHelper.js) for flow type and further documentation.
 
 | Type              |
 | ----------------- |
@@ -541,7 +541,7 @@ Nothing is considered viewable until the user scrolls or `recordInteraction` is 
 
 ### `viewabilityConfigCallbackPairs`
 
-List of `ViewabilityConfig`/`onViewableItemsChanged` pairs. A specific `onViewableItemsChanged` will be called when its corresponding `ViewabilityConfig`'s conditions are met. See `ViewabilityHelper.js` for flow type and further documentation.
+List of `ViewabilityConfig`/`onViewableItemsChanged` pairs. A specific `onViewableItemsChanged` will be called when its corresponding `ViewabilityConfig`'s conditions are met. See **ViewabilityHelper.js** for flow type and further documentation.
 
 | Type                                   |
 | -------------------------------------- |

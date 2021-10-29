@@ -22,7 +22,7 @@ Once installation is complete, apply the changes from the following diffs to con
 
 ## Configuration in JavaScript and JSON
 
-We need to modify `index.js` to import `expo-asset` early in your app, in order to be able to update assets over-the-air. We'll also need to update `metro.config.js` for the same reason. And we'll need to add some Expo-specific configuration to `app.json`.
+We need to modify **index.js** to import `expo-asset` early in your app, in order to be able to update assets with updates. We'll also need to update **metro.config.js** for the same reason. And we'll need to add some Expo-specific configuration to **app.json**.
 
 <ConfigurationDiff source="/static/diffs/expo-updates-js.diff" />
 

@@ -5,11 +5,11 @@ import org.gradle.util.GradleVersion
 
 def expoUpdatesDir = ["node", "-e", "console.log(require('path').dirname(require.resolve('expo-updates/package.json')));"].execute([], projectDir).text.trim()
 
-afterEvaluate {
   // From a library project role to reference app project settings such as `targetName.toLowerCase().contains("release")`,
   // we extract the `appProject` from all projects here.
   // things like `config`, `buildDir`, and `applicationVariants`, we will reference from appProject.
-  def appProject = rootProject.allprojects.find { it.plugins.hasPlugin('com.android.application') }
+def appProject = rootProject.allprojects.find { it.plugins.hasPlugin('com.android.application') }
+appProject.afterEvaluate {
   def config = appProject.hasProperty("react") ? appProject.react : [];
   def nodeExecutableAndArgs = config.nodeExecutableAndArgs ?: ["node"]
   def entryFile = config.entryFile ?: "index.js"

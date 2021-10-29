@@ -85,7 +85,7 @@ async function loadFontInNamespaceAsync(fontFamily, source) {
     if (loaded[fontFamily]) {
         return;
     }
-    if (loadPromises[fontFamily]) {
+    if (loadPromises.hasOwnProperty(fontFamily)) {
         return loadPromises[fontFamily];
     }
     // Important: we want all callers that concurrently try to load the same font to await the same

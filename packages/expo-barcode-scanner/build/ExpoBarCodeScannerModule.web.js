@@ -7,7 +7,9 @@ function getUserMedia(constraints) {
     // with getUserMedia as it would overwrite existing properties.
     // Here, we will just add the getUserMedia property if it's missing.
     // First get ahold of the legacy getUserMedia, if present
-    const getUserMedia = navigator.getUserMedia ||
+    const getUserMedia = 
+    // TODO: this method is deprecated, migrate to https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/getUserMedia
+    navigator.getUserMedia ||
         navigator.webkitGetUserMedia ||
         navigator.mozGetUserMedia ||
         function () {

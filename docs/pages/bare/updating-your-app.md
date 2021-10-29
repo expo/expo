@@ -1,15 +1,15 @@
 ---
-title: Updating your App Over-the-Air
+title: Updating your App
 sidebar_title: Updating your App
 ---
 
-The `expo-updates` unimodule provides a client-side implementation for loading over-the-air (OTA) updates in bare workflow apps. Updates allow you to deploy new JavaScript and assets to existing builds of your app without building a new binary.
+The `expo-updates` unimodule provides a client-side implementation for loading updates in bare workflow apps. Updates allow you to deploy new JavaScript and assets to existing builds of your app without building a new binary.
 
-In this guide, an **update** refers to a single, atomic OTA update, which may consist of a JavaScript bundle, other assets (such as images or fonts), and metadata about the update.
+In this guide, an **update** refers to a single, atomic update, which may consist of a JavaScript bundle, other assets (such as images or fonts), and metadata about the update.
 
 ## Setup
 
-If possible, we highly recommend starting with a boilerplate project that has `expo-updates` already installed. Running `expo init` and choosing either of the bare workflow templates will give you such a template.
+If possible, we highly recommend starting with a boilerplate project that has the `expo-updates` library already installed. Running `expo init` and choosing either of the bare workflow templates will give you such a template.
 
 To install the `expo-updates` module in an existing bare workflow app, follow the [installation instructions in the package README](https://github.com/expo/expo/blob/master/packages/expo-updates/README.md#installation).
 
@@ -77,13 +77,13 @@ Since headers sent in requests by `expo-updates` do not affect statically hosted
 
 In addition to loading updates from remote servers, apps with `expo-updates` installed also include the necessary capability to load updates embedded in the app binary. This is critical to ensure that your app can launch offline for all users immediately upon installation, without needing an internet connection.
 
-When you make a release build of your app, the build process will bundle your JavaScript source code into a minifed bundle and embed this in the binary, along with any other assets your app imports (with `require` or `import` or used in `app.json`). `expo-updates` includes an extra script on each platform to embed some additional metadata about the embedded assets -- namely, a minimal manifest JSON object for the update.
+When you make a release build of your app, the build process will bundle your JavaScript source code into a minifed bundle and embed this in the binary, along with any other assets your app imports (with `require` or `import` or used in **app.json**). `expo-updates` includes an extra script on each platform to embed some additional metadata about the embedded assets -- namely, a minimal manifest JSON object for the update.
 
 ## Including Assets in Updates
 
 Assets that you import in your JavaScript source can also be atomically downloaded as part of a published update. `expo-updates` will not consider an update "ready" and will not launch the update unless it has downloaded all required assets.
 
-If you use `expo-asset` in your project (included by default if you have the `expo` package installed), you can control which imported assets will be included as part of this atomic update by using the [assetBundlePatterns](../workflow/configuration.md) key in `app.json` to provide a list of paths in your project directory:
+If you use `expo-asset` in your project (included by default if you have the `expo` package installed), you can control which imported assets will be included as part of this atomic update by using the [assetBundlePatterns](../workflow/configuration.md) key in **app.json** to provide a list of paths in your project directory:
 
 ```
 "assetBundlePatterns": [
@@ -99,9 +99,9 @@ Note that in order to use `expo-asset` successfully, you must use the `--assetPl
 
 Some build-time configuration options are available to control various behaviors of the `expo-updates` library. You can set the URL where your app is hosted, set compatibility/version information, and choose whether your app should update automatically on launch.
 
-On iOS, these properties are set as keys in `Expo.plist` and on Android as `meta-data` tags in `AndroidManifest.xml`, adjacent to the tags added during installation.
+On iOS, these properties are set as keys in **Expo.plist** and on Android as `meta-data` tags in **AndroidManifest.xml**, adjacent to the tags added during installation.
 
-On Android, you may also define these properties at runtime by passing a `Map` as the second parameter of `UpdatesController.initialize()`. If provided, the values in this Map will override any values specified in `AndroidManifest.xml`. On iOS, you may set these properties at runtime by calling `[UpdatesController.sharedInstance setConfiguration:]` at any point _before_ calling `start` or `startAndShowLaunchScreen`, and the values in this dictionary will override Expo.plist.
+On Android, you may also define these properties at runtime by passing a `Map` as the second parameter of `UpdatesController.initialize()`. If provided, the values in this Map will override any values specified in **AndroidManifest.xml**. On iOS, you may set these properties at runtime by calling `[UpdatesController.sharedInstance setConfiguration:]` at any point _before_ calling `start` or `startAndShowLaunchScreen`, and the values in this dictionary will override Expo.plist.
 
 | iOS plist/dictionary key | Android Map key | Android meta-data name         | Default | Required? |
 | ------------------------ | --------------- | ------------------------------ | ------- | --------- |

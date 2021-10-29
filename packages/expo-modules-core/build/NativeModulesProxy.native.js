@@ -3,7 +3,8 @@ const NativeProxy = NativeModules.NativeUnimoduleProxy;
 const modulesConstantsKey = 'modulesConstants';
 const exportedMethodsKey = 'exportedMethods';
 const NativeModulesProxy = {};
-let canUseExpoTurboModules = true;
+// Keep it opt-in for now. It's too risky without proper and thorough testing.
+let canUseExpoTurboModules = false;
 /**
  * Sets whether to use a TurboModule version of the proxy.
  */

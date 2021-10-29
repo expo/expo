@@ -62,7 +62,7 @@ This section covers user interface topics such as:
 
 This section contains guides on various topics, like:
 
-- [Configuring Over-the-Air Updates](guides/configuring-ota-updates.md)
+- [Configuring Updates](guides/configuring-updates.md)
 - [Setting up Routing and Navigation](guides/routing-and-navigation.md)
 - [App Permissions](guides/permissions.md)
 

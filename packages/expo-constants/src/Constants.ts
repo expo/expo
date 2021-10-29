@@ -83,59 +83,57 @@ const constants: Constants = {
   appOwnership: appOwnership ?? null,
 };
 
-const constantsPropertiesGetter: AccessorProps = {
+Object.defineProperties(constants, {
   // Deprecated fields
-  deviceYearClass() {
-    if (!warnedAboutDeviceYearClass) {
-      console.warn(
-        `Constants.deviceYearClass has been deprecated in favor of expo-device's Device.deviceYearClass property. This API will be removed in SDK 45.`
-      );
-      warnedAboutDeviceYearClass = true;
-    }
-    return nativeConstants.deviceYearClass;
+  deviceYearClass: {
+    get() {
+      if (!warnedAboutDeviceYearClass) {
+        console.warn(
+          `Constants.deviceYearClass has been deprecated in favor of expo-device's Device.deviceYearClass property. This API will be removed in SDK 45.`
+        );
+        warnedAboutDeviceYearClass = true;
+      }
+      return nativeConstants.deviceYearClass;
+    },
+    enumerable: false,
   },
   // Deprecated fields
-  installationId() {
-    if (!warnedAboutInstallationId) {
-      console.warn(
-        `Constants.installationId has been deprecated in favor of generating and storing your own ID. Implement it using expo-application's androidId on Android and a storage API such as expo-secure-store on iOS and localStorage on the web. This API will be removed in SDK 44.`
-      );
-      warnedAboutInstallationId = true;
-    }
-    return nativeConstants.installationId;
+  installationId: {
+    get() {
+      if (!warnedAboutInstallationId) {
+        console.warn(
+          `Constants.installationId has been deprecated in favor of generating and storing your own ID. Implement it using expo-application's androidId on Android and a storage API such as expo-secure-store on iOS and localStorage on the web. This API will be removed in SDK 44.`
+        );
+        warnedAboutInstallationId = true;
+      }
+      return nativeConstants.installationId;
+    },
+    enumerable: false,
   },
   // Legacy aliases
-  deviceId() {
-    if (!warnedAboutDeviceId) {
-      console.warn(
-        `Constants.deviceId has been deprecated in favor of generating and storing your own ID. This API will be removed in SDK 44.`
-      );
-      warnedAboutDeviceId = true;
-    }
-    return nativeConstants.installationId;
+  deviceId: {
+    get() {
+      if (!warnedAboutDeviceId) {
+        console.warn(
+          `Constants.deviceId has been deprecated in favor of generating and storing your own ID. This API will be removed in SDK 44.`
+        );
+        warnedAboutDeviceId = true;
+      }
+      return nativeConstants.installationId;
+    },
+    enumerable: false,
   },
-  linkingUrl() {
-    if (!warnedAboutLinkingUrl) {
-      console.warn(
-        `Constants.linkingUrl has been renamed to Constants.linkingUri. Consider using the Linking API directly. Constants.linkingUrl will be removed in SDK 44.`
-      );
-      warnedAboutLinkingUrl = true;
-    }
-    return nativeConstants.linkingUri;
-  },
-  manifest(): AppManifest | null {
-    const maybeManifest = getManifest();
-    if (!maybeManifest || !isAppManifest(maybeManifest)) {
-      return null;
-    }
-    return maybeManifest;
-  },
-  manifest2(): Manifest | null {
-    const maybeManifest = getManifest();
-    if (!maybeManifest || !isManifest(maybeManifest)) {
-      return null;
-    }
-    return maybeManifest;
+  linkingUrl: {
+    get() {
+      if (!warnedAboutLinkingUrl) {
+        console.warn(
+          `Constants.linkingUrl has been renamed to Constants.linkingUri. Consider using the Linking API directly. Constants.linkingUrl will be removed in SDK 44.`
+        );
+        warnedAboutLinkingUrl = true;
+      }
+      return nativeConstants.linkingUri;
+    },
+    enumerable: false,
   },
   /**
    * Use `manifest` property by default.
@@ -143,39 +141,62 @@ const constantsPropertiesGetter: AccessorProps = {
    * It behaves similarly to the original one, but suppresses warning upon no manifest available.
    * `expo-asset` uses it to prevent users from seeing mentioned warning.
    */
-  __unsafeNoWarnManifest(): AppManifest | Manifest | null {
-    const maybeManifest = getManifest(true);
-    if (!maybeManifest || !isAppManifest(maybeManifest)) {
-      return null;
-    }
-    return maybeManifest;
+  __unsafeNoWarnManifest: {
+    get(): AppManifest | Manifest | null {
+      const maybeManifest = getManifest(true);
+      if (!maybeManifest || !isAppManifest(maybeManifest)) {
+        return null;
+      }
+      return maybeManifest;
+    },
+    enumerable: false,
   },
-  __unsafeNoWarnManifest2(): Manifest | Manifest | null {
-    const maybeManifest = getManifest(true);
-    if (!maybeManifest || !isManifest(maybeManifest)) {
-      return null;
-    }
-    return maybeManifest;
+  __unsafeNoWarnManifest2: {
+    get(): Manifest | Manifest | null {
+      const maybeManifest = getManifest(true);
+      if (!maybeManifest || !isManifest(maybeManifest)) {
+        return null;
+      }
+      return maybeManifest;
+    },
+    enumerable: false,
   },
-};
-definePropertiesGetter(constants, constantsPropertiesGetter);
-
-Object.defineProperty(constants, '__rawManifest_TEST', {
-  get(): AppManifest | Manifest | null {
-    return rawManifest;
+  manifest: {
+    get(): AppManifest | null {
+      const maybeManifest = getManifest();
+      if (!maybeManifest || !isAppManifest(maybeManifest)) {
+        return null;
+      }
+      return maybeManifest;
+    },
+    enumerable: true,
   },
-  set(value: AppManifest | Manifest | null) {
-    rawManifest = value;
+  manifest2: {
+    get(): Manifest | null {
+      const maybeManifest = getManifest();
+      if (!maybeManifest || !isManifest(maybeManifest)) {
+        return null;
+      }
+      return maybeManifest;
+    },
+    enumerable: true,
   },
-  // Prevent the warning from being thrown, or the value from being used when the user interacts with the entire object.
-  enumerable: false,
+  __rawManifest_TEST: {
+    get(): AppManifest | Manifest | null {
+      return rawManifest;
+    },
+    set(value: AppManifest | Manifest | null) {
+      rawManifest = value;
+    },
+    enumerable: false,
+  },
 });
 
 // Add deprecation warning for `platform.ios.model`
 if (constants?.platform?.ios) {
   const originalModel = nativeConstants.platform.ios.model;
-  definePropertiesGetter(constants.platform.ios, {
-    model() {
+  Object.defineProperty(constants.platform.ios, 'model', {
+    get() {
       if (!warnedAboutIosModel) {
         console.warn(
           `Constants.platform.ios.model has been deprecated in favor of expo-device's Device.modelName property. This API will be removed in SDK 45.`
@@ -184,18 +205,8 @@ if (constants?.platform?.ios) {
       }
       return originalModel;
     },
+    enumerable: false,
   });
-}
-
-type AccessorProps = Record<string, () => any>;
-function definePropertiesGetter(target: object, props: AccessorProps) {
-  for (const [name, func] of Object.entries(props)) {
-    Object.defineProperty(target, name, {
-      get: func,
-      // Prevent the warning from being thrown, or the value from being used when the user interacts with the entire object.
-      enumerable: false,
-    });
-  }
 }
 
 function isAppManifest(manifest: AppManifest | Manifest): manifest is AppManifest {

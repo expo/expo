@@ -57,7 +57,7 @@ Now when we go to the screen where you would expect to see the `AttractionList`,
 
 ## Open the app in your web browser
 
-Expo for web also works on bare projects. Here we will just import one simple component into `App.web.js` to demonstrate it, and run `expo start --web`.
+Expo for web also works on bare projects. Here we will just import one simple component into **App.web.js** to demonstrate it, and run `expo start --web`.
 
 <Video file="exploring-bare/web.mp4" spaceAfter />
 

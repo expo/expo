@@ -18,7 +18,7 @@ An API for handling complex gestures. From the project's README:
 
 ## API
 
-Add this import to the top of your app entry file, such as `App.js`:
+Add this import to the top of your app entry file, such as **App.js**:
 
 ```js
 import 'react-native-gesture-handler';

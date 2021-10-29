@@ -36,7 +36,7 @@ The **`expo-notifications`** provides an API to fetch push notification tokens a
 
 ### Android
 
-Open your `app.json` and add the following inside of the "expo" field:
+Open your **app.json** and add the following inside of the "expo" field:
 
 ```
 {
@@ -282,11 +282,11 @@ async function registerForPushNotificationsAsync() {
 
 </SnackInline>
 
-> **Note** this demo will not work with **remote** notifications (sent via the Expo Notifications service) on Android when you run it from the snack, because `app.json` needs to contain the `useNextNotificationsApi` flag. Unfortunately, Snack doesn't support custom `app.json` files.
+> **Note** this demo will not work with **remote** notifications (sent via the Expo Notifications service) on Android when you run it from the snack, because **app.json** needs to contain the `useNextNotificationsApi` flag. Unfortunately, Snack doesn't support custom **app.json** files.
 
 ## Custom notification icon and colors (Android only)
 
-Setting a default icon and color for all of your app's notifications is almost too easy. In the managed workflow, just set your [`notification.icon`](../config/app.md#notification) and [`notification.color`](../config/app.md#notification) keys in `app.json`, and rebuild your app! In the bare workflow, you'll need to follow [these instructions](https://github.com/expo/expo/tree/master/packages/expo-notifications#configure-for-android).
+Setting a default icon and color for all of your app's notifications is almost too easy. In the managed workflow, just set your [`notification.icon`](../config/app.md#notification) and [`notification.color`](../config/app.md#notification) keys in **app.json**, and rebuild your app! In the bare workflow, you'll need to follow [these instructions](https://github.com/expo/expo/tree/master/packages/expo-notifications#configure-for-android).
 
 For your notification icon, make sure you follow [Google's design guidelines](https://material.io/design/iconography/product-icons.html#design-principles) (the icon must be all white with a transparent background) or else it may not be displayed as intended.
 
@@ -320,7 +320,7 @@ Returns an Expo token that can be used to send a push notification to this devic
 
 This function accepts an optional object allowing you to pass in configuration, consisting of fields (all are optional, but some may have to be defined if configuration cannot be inferred):
 
-- **experienceId (_string_)** -- The ID of the experience to which the token should be attributed. Defaults to [`Constants.manifest.id`](https://docs.expo.dev/versions/latest/sdk/constants/#constantsmanifest) exposed by `expo-constants`. In the bare workflow, you must provide a value which takes the shape `@username/projectSlug`, where `username` is the Expo account that the project is associated with, and `projectSlug` is your [`slug` from `app.json`](../config/app.md#slug).
+- **experienceId (_string_)** -- The ID of the experience to which the token should be attributed. Defaults to [`Constants.manifest.id`](https://docs.expo.dev/versions/latest/sdk/constants/#constantsmanifest) exposed by `expo-constants`. In the bare workflow, you must provide a value which takes the shape `@username/projectSlug`, where `username` is the Expo account that the project is associated with, and `projectSlug` is your [`slug` from **app.json**](../config/app.md#slug).
 - **devicePushToken ([_DevicePushToken_](#devicepushtoken))** -- The device push token with which to register at the backend. Defaults to a token fetched with [`getDevicePushTokenAsync()`](#getdevicepushtokenasync-devicepushtoken).
 - **applicationId (_string_)** -- The ID of the application to which the token should be attributed. Defaults to [`Application.applicationId`](https://docs.expo.dev/versions/latest/sdk/application/#applicationapplicationid) exposed by `expo-application`.
 - **development (_boolean_)** -- Makes sense only on iOS, where there are two push notification services: sandbox and production. This defines whether the push token is supposed to be used with the sandbox platform notification service. Defaults to [`Application.getIosPushNotificationServiceEnvironmentAsync()`](https://docs.expo.dev/versions/latest/sdk/application/#applicationgetiospushnotificationserviceenvironmentasync) exposed by `expo-application` or `false`. Most probably you won't need to customize that. You may want to customize that if you don't want to install `expo-application` and still use the sandbox APNS.

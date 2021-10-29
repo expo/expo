@@ -45,4 +45,4 @@ const styles = StyleSheet.create({
 export default App;
 ```
 
-You can find a complete example that demonstrates the use of this hook alongside a React context to add support for light and dark themes to your application in [`AppearanceExample.js`](https://github.com/facebook/react-native/blob/master/packages/rn-tester/js/examples/Appearance/AppearanceExample.js).
+You can find a complete example that demonstrates the use of this hook alongside a React context to add support for light and dark themes to your application in [**AppearanceExample.js**](https://github.com/facebook/react-native/blob/master/packages/rn-tester/js/examples/Appearance/AppearanceExample.js).

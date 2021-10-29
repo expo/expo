@@ -17,7 +17,7 @@ If you only want to use EAS Build for a single platform, that's fine. If you cha
 
 #### 2. Create eas.json
 
-The command will create an `eas.json` file in the root directory with the default configuration. It looks something like this:
+The command will create an **eas.json** file in the root directory with the default configuration. It looks something like this:
 
 ```json
 {
@@ -36,7 +36,7 @@ The command will create an `eas.json` file in the root directory with the defaul
 
 If you have a bare project, it will look a bit different.
 
-This is your EAS Build configuration. It defines three build profiles named `development`, `preview`, and `production` (you can have multiple build profiles like `production`, `debug`, `testing`, etc.) for each platform. If you want to learn more about `eas.json` see the [Configuration with eas.json](/build/eas-json.md) page.
+This is your EAS Build configuration. It defines three build profiles named `development`, `preview`, and `production` (you can have multiple build profiles like `production`, `debug`, `testing`, etc.) for each platform. If you want to learn more about **eas.json** see the [Configuration with eas.json](/build/eas-json.md) page.
 
 #### 3. Configure the project
 
@@ -45,13 +45,13 @@ This step varies depending on the project type you have.
 #### 3.1. Bare project
 
 If you choose to configure the Android project, EAS CLI will update your Gradle project so we can build it on our servers.
-This step patches `build.gradle` and includes our custom signing configuration. The configuration itself is saved to a separate file: `eas-build.gradle`.
+This step patches **build.gradle** and includes our custom signing configuration. The configuration itself is saved to a separate file: **eas-build.gradle**.
 
 If you also choose to configure the iOS project, there are no additional steps.
 
 #### 3.2. Managed project
 
-If you haven't configured your `app.json` with `android.package` and/or `ios.bundleIdentifier` yet, EAS CLI will prompt you to specify them.
+If you haven't configured your **app.json** with `android.package` and/or `ios.bundleIdentifier` yet, EAS CLI will prompt you to specify them.
 
 - `android.package` will be used as the Android application id which is used to identify your app on the Google Play Store
 - `ios.bundleIdentifier` will be used to identify you app on the Apple App Store

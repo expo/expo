@@ -16,7 +16,7 @@ You can also create warnings and errors on your own with `console.warn("Warning 
 
 When you encounter an error during development, you will be shown the error message, as well as the "stacktrace," which is a report of the recent calls your application made or was making when it crashed. This stacktrace is shown both in your terminal and in the Expo Go app.
 
-This stacktrace is **extremely valuable** since it gives you the location the error comes from. For example, in the following clip we know that the error came from the file `LinksScreen.js` on line 10 and column (character) 15.
+This stacktrace is **extremely valuable** since it gives you the location the error comes from. For example, in the following clip we know that the error came from the file **LinksScreen.js** on line 10 and column (character) 15.
 
 <Video file="debugging/stacktrace.mp4" />
 

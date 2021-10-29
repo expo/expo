@@ -10,7 +10,7 @@ Let's imagine that our designer has provided us with a beautiful logo:
 
 <ImageSpotlight alt="A pretty bad logo with the text 'Image Share' and the emoji of the sun behind mountains" src="/static/images/tutorial/logo.png" style={{maxWidth: 305, maxHeight: 159}} />
 
-Save this image to the `assets` directory inside of your project and call it `logo.png`.
+Save this image to the **assets** directory inside of your project and call it **logo.png**.
 
 > 💡 An "asset" is any file that your project uses that is not code. Images, videos, sounds, and fonts are all considered to be assets.
 

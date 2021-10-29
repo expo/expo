@@ -77,7 +77,7 @@ yarn lint
 
 ### Server-side redirects
 
-These redirects are limited in their expressiveness - you can map a path to another path, but no regular expressions or anything are supported. See client-side redirects for more of that. Server-side redirects are re-created on each run of `deploy.sh`.
+These redirects are limited in their expressiveness - you can map a path to another path, but no regular expressions or anything are supported. See client-side redirects for more of that. Server-side redirects are re-created on each run of **deploy.sh**.
 
 We currently do two client-side redirects, using meta tags with `http-equiv="refresh"`:
 
@@ -116,7 +116,7 @@ Version names correspond to directory names under `versions`.
 
 `unversioned` is a special version for the next SDK release. It is not included in production output. Additionally, any versions greater than the package.json `version` number are not included in production output, so that it's possible to generate, test, and make changes to new SDK version docs during the release process.
 
-`latest` is an untracked folder which duplicates the contents of the folder matching the version number in `package.json`.
+`latest` is an untracked folder which duplicates the contents of the folder matching the version number in **package.json**.
 
 Sometimes you want to make an edit in version `X` and have that edit also
 be applied in versions `Y, Z, ...` (say, when you're fixing documentation for an
@@ -143,19 +143,19 @@ If you need to link from one MDX file to another, please use the path-reference 
 This allows us to automatically validate these links and see if the file and/or headers still exists.
 
 - from: `tutorial/button.md`, to: `/workflow/guides/` -> `../workflow/guides.md`
-- from: `index.md`, to: `/guides/errors/#tracking-js-errors` -> `./guides/errors.md#tracking-js-errors` (or without `./`)
+- from: **index.md**, to: `/guides/errors/#tracking-js-errors` -> `./guides/errors.md#tracking-js-errors` (or without `./`)
 
 You can validate all current links by running `yarn lint-links`.
 
 ### Updating latest version of docs
 
-When we release a new SDK, we copy the `unversioned` directory, and rename it to the new version. Latest version of docs is read from `package.json` so make sure to update the `version` key there as well. However, if you update the `version` key there, you need to `rm -rf node_modules/.cache/` before the change is picked up (why? [read this](https://github.com/vercel/next.js/blob/4.0.0/examples/with-universal-configuration/README.md#caveats)).
+When we release a new SDK, we copy the `unversioned` directory, and rename it to the new version. Latest version of docs is read from **package.json** so make sure to update the `version` key there as well. However, if you update the `version` key there, you need to `rm -rf node_modules/.cache/` before the change is picked up (why? [read this](https://github.com/vercel/next.js/blob/4.0.0/examples/with-universal-configuration/README.md#caveats)).
 
 Make sure to also grab the upgrade instructions from the release notes blog post and put them in `upgrading-expo-sdk-walkthrough.md`.
 
 That's all you need to do. The `versions` directory is listed on server start to find all available versions. The routes and navbar contents are automatically inferred from the directory structure within `versions`.
 
-Because the navbar is automatically generated from the directory structure, the default ordering of the links under each section is alphabetical. However, for many sections, this is not ideal UX. So, if you wish to override the alphabetical ordering, manipulate page titles in `navigation.js`.
+Because the navbar is automatically generated from the directory structure, the default ordering of the links under each section is alphabetical. However, for many sections, this is not ideal UX. So, if you wish to override the alphabetical ordering, manipulate page titles in **navigation.js**.
 
 ### Syncing app.json / app.config.js with the schema
 
@@ -259,11 +259,11 @@ n.b. The components should not be indented or they will not be parsed correctly.
 
 To ignore a page from the search result, use `hideFromSearch: true` on that page. This removes the `<meta name="docsearch:version">` tag from that page and filters it from our facet-based search.
 
-Please note that `hideFromSearch` only prevents the page from showing up in the internal docs search (Algolia). The page will still show up in search engine results like Google. For a page to be hidden even from search engine results, you need to edit the sitemap that is generated via our Next.js config (`next.config.js`).
+Please note that `hideFromSearch` only prevents the page from showing up in the internal docs search (Algolia). The page will still show up in search engine results like Google. For a page to be hidden even from search engine results, you need to edit the sitemap that is generated via our Next.js config (**config.js**).
 
 ### Excluding directories from the sidebar
 
-Certain directories are excluded from the sidebar in order to prevent it from getting too long and unnavigable. You can find a list of these directories, and add new ones, in `navigation.js` under `hiddenSections`.
+Certain directories are excluded from the sidebar in order to prevent it from getting too long and unnavigable. You can find a list of these directories, and add new ones, in **navigation.js** under `hiddenSections`.
 
 If you just want to hide a single page from the sidebar, set `hideInSidebar: true` in the page metadata.
 
