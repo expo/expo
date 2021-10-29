@@ -10,6 +10,7 @@ import com.facebook.react.ReactApplication
 import com.facebook.react.ReactNativeHost
 import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.JSBundleLoader
+import expo.modules.updates.db.BuildData
 import expo.modules.updates.db.DatabaseHolder
 import expo.modules.updates.db.Reaper
 import expo.modules.updates.db.UpdatesDatabase
@@ -171,6 +172,10 @@ class UpdatesController private constructor(
       launcher = NoDatabaseLauncher(context, updatesConfiguration, updatesDirectoryException)
       isEmergencyLaunch = true
     }
+
+    val databaseLocal = database
+    BuildData.ensureBuildDataIsConsistent(updatesConfiguration, databaseLocal)
+    releaseDatabase()
 
     LoaderTask(
       updatesConfiguration,

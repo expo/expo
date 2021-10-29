@@ -9,6 +9,7 @@
 #import <EXUpdates/EXUpdatesRemoteAppLoader.h>
 #import <EXUpdates/EXUpdatesSelectionPolicyFactory.h>
 #import <EXUpdates/EXUpdatesUtils.h>
+#import <EXUpdates/EXUpdatesBuildData.h>
 #import <React/RCTReloadCommand.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -144,8 +145,17 @@ static NSString * const EXUpdatesErrorEventName = @"error";
     return;
   }
 
+  NSError *buildDataError;
+  [EXUpdatesBuildData ensureBuildDataIsConsistent:_database config:_config error:&buildDataError];
+  if (buildDataError) {
+    @throw [NSException exceptionWithName:NSInternalInconsistencyException
+                                   reason:buildDataError.localizedDescription
+                                 userInfo:buildDataError.userInfo];
+  }
+  
   [_errorRecovery startMonitoring];
 
+  
   _loaderTask = [[EXUpdatesAppLoaderTask alloc] initWithConfig:_config
                                                       database:_database
                                                      directory:_updatesDirectory
