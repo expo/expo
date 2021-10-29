@@ -16,7 +16,7 @@ public protocol AnyModule: AnyObject, AnyMethodArgument {
    # Example
 
    ```
-   public static func definition() -> ModuleDefinition {
+   public func definition() -> ModuleDefinition {
      name("MyModule")
      method("myMethod") { (a: String, b: String) in
        "\(a) \(b)"
@@ -47,8 +47,8 @@ public protocol AnyModule: AnyObject, AnyMethodArgument {
    */
   #if swift(>=5.4)
   @ModuleDefinitionBuilder
-  static func definition() -> ModuleDefinition
+  func definition() -> ModuleDefinition
   #else
-  static func definition() -> ModuleDefinition
+  func definition() -> ModuleDefinition
   #endif
 }

@@ -4,8 +4,6 @@
 
 ### 🛠 Breaking changes
 
-- Swift's module definition is now a static function which also makes modules lazy by default. ([#14645](https://github.com/expo/expo/pull/14645) by [@tsapeta](https://github.com/tsapeta))
-
 ### 🎉 New features
 
 - Method calls on iOS now can go through the JSI instead of the bridge (opt-in feature). ([#14626](https://github.com/expo/expo/pull/14626) by [@tsapeta](https://github.com/tsapeta))

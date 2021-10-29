@@ -27,13 +27,13 @@ public protocol AnyMethod: AnyDefinition {
   /**
    Calls the method on given module with arguments and a promise.
    */
-  func call(module: AnyModule, args: [Any?], promise: Promise) -> Void
+  func call(args: [Any?], promise: Promise) -> Void
 
   /**
    Synchronously calls the method with given arguments. If the method takes a promise,
    the current thread will be locked until the promise rejects or resolves with the return value.
    */
-  func callSync(module: AnyModule, args: [Any?]) -> Any?
+  func callSync(args: [Any?]) -> Any?
 
   /**
    Specifies on which queue the method should run.
