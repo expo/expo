@@ -37,11 +37,13 @@ if [ "x$PROJECT_DIR_BASENAME" != "xPods" ]; then
 fi
 
 # ref: https://github.com/facebook/react-native/blob/c974cbff04a8d90ac0f856dbada3fc5a75c75b49/scripts/react-native-xcode.sh#L59-L65
-EXPO_UPDATES_PACKAGE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+EXPO_UPDATES_PACKAGE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd -P)"
 # If PROJECT_ROOT is not specified, fallback to use Xcode PROJECT_DIR
 PROJECT_ROOT=${PROJECT_ROOT:-"$PROJECT_DIR/../.."}
 PROJECT_ROOT=${PROJECT_ROOT:-"$EXPO_UPDATES_PACKAGE_DIR/../.."}
 
 cd "$PROJECT_ROOT" || exit
+# We should get the physical path (/var/folders -> /private/var/folders) for metro to resolve correct files
+PROJECT_ROOT="$(pwd -P)"
 
 "$NODE_BINARY" "${EXPO_UPDATES_PACKAGE_DIR}/scripts/createManifest.js" ios "$PROJECT_ROOT" "$DEST/$RESOURCE_BUNDLE_NAME"
