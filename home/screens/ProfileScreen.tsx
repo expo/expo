@@ -1,10 +1,11 @@
 import { StackScreenProps } from '@react-navigation/stack';
-import { AllStackRoutes } from 'navigation/Navigation.types';
 import * as React from 'react';
-import { StyleSheet, View } from 'react-native';
+import { ActivityIndicator, StyleSheet, View } from 'react-native';
 
 import ProfileUnauthenticated from '../components/ProfileUnauthenticated';
+import Colors from '../constants/Colors';
 import Profile from '../containers/Profile';
+import { AllStackRoutes } from '../navigation/Navigation.types';
 import { useSelector } from '../redux/Hooks';
 import getViewerUsernameAsync from '../utils/getViewerUsernameAsync';
 import isUserAuthenticated from '../utils/isUserAuthenticated';
@@ -53,7 +54,11 @@ function ProfileView(
   }, [props.isAuthenticated]);
 
   if (viewerUsername === undefined) {
-    return <View style={styles.loadingContainer} />;
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator color={Colors.light.tintColor} />
+      </View>
+    );
   }
 
   if (!props.isAuthenticated || !viewerUsername) {
@@ -66,5 +71,7 @@ function ProfileView(
 const styles = StyleSheet.create({
   loadingContainer: {
     flex: 1,
+    padding: 30,
+    alignItems: 'center',
   },
 });
