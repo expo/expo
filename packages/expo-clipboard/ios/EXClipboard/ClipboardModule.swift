@@ -19,6 +19,7 @@ public class ClipboardModule: Module {
     events(onClipboardChanged)
 
     onStartObserving {
+      NotificationCenter.default.removeObserver(self, name: UIPasteboard.changedNotification, object: nil)
       NotificationCenter.default.addObserver(
         self,
         selector: #selector(self.clipboardChangedListener),
