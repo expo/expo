@@ -1,11 +1,13 @@
 package expo.modules.kotlin
 
+import com.facebook.react.bridge.ReactContext
 import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.uimanager.ViewManager
 import expo.modules.core.Promise
 import expo.modules.kotlin.views.GroupViewManagerWrapper
 import expo.modules.kotlin.views.SimpleViewManagerWrapper
 import expo.modules.kotlin.views.ViewManagerWrapperDelegate
+import java.lang.ref.WeakReference
 
 private typealias ModuleName = String
 private typealias ModuleConstants = Map<String, Any?>
@@ -13,9 +15,10 @@ private typealias ModuleMethodInfo = Map<String, Any?>
 
 class KotlinInteropModuleRegistry(
   modulesProvider: ModulesProvider,
-  legacyModuleRegistry: expo.modules.core.ModuleRegistry
+  legacyModuleRegistry: expo.modules.core.ModuleRegistry,
+  reactContext: WeakReference<ReactContext>
 ) {
-  private val appContext = AppContext(modulesProvider, legacyModuleRegistry)
+  private val appContext = AppContext(modulesProvider, legacyModuleRegistry, reactContext)
   private val exportedViewManagerNames = mutableListOf<String>()
 
   private val registry: ModuleRegistry
@@ -66,6 +69,10 @@ class KotlinInteropModuleRegistry(
   }
 
   fun exportedViewManagersNames(): List<String> = exportedViewManagerNames
+
+  fun onDestroy() {
+    appContext.onDestroy()
+  }
 
   private fun registerViewManagerWrapperDelegate(viewManagerWrapperDelegate: ViewManagerWrapperDelegate) {
     exportedViewManagerNames.add(viewManagerWrapperDelegate.name)

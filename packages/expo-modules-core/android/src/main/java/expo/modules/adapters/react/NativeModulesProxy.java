@@ -5,6 +5,7 @@ import android.util.SparseArray;
 import com.facebook.react.bridge.Dynamic;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableArray;
@@ -18,6 +19,7 @@ import expo.modules.kotlin.ExpoModulesHelper;
 import expo.modules.kotlin.KotlinInteropModuleRegistry;
 import expo.modules.kotlin.ModulesProvider;
 
+import java.lang.ref.WeakReference;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -59,7 +61,8 @@ public class NativeModulesProxy extends ReactContextBaseJavaModule {
 
     mKotlinInteropModuleRegistry = new KotlinInteropModuleRegistry(
       Objects.requireNonNull(ExpoModulesHelper.Companion.getModulesProvider()),
-      moduleRegistry
+      moduleRegistry,
+      new WeakReference<>(context)
     );
   }
 
@@ -71,7 +74,8 @@ public class NativeModulesProxy extends ReactContextBaseJavaModule {
 
     mKotlinInteropModuleRegistry = new KotlinInteropModuleRegistry(
       Objects.requireNonNull(modulesProvider),
-      moduleRegistry
+      moduleRegistry,
+      new WeakReference<>(context)
     );
   }
 
@@ -239,5 +243,6 @@ public class NativeModulesProxy extends ReactContextBaseJavaModule {
   @Override
   public void onCatalystInstanceDestroy() {
     mModuleRegistry.onDestroy();
+    mKotlinInteropModuleRegistry.onDestroy();
   }
 }

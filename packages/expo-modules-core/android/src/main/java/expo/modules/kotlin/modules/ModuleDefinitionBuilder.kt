@@ -14,6 +14,9 @@
 package expo.modules.kotlin.modules
 
 import expo.modules.core.Promise
+import expo.modules.kotlin.events.BasicEventListener
+import expo.modules.kotlin.events.EventListener
+import expo.modules.kotlin.events.EventName
 import expo.modules.kotlin.methods.AnyMethod
 import expo.modules.kotlin.methods.Method
 import expo.modules.kotlin.methods.PromiseMethod
@@ -24,16 +27,23 @@ import kotlin.reflect.typeOf
 class ModuleDefinitionBuilder {
   private var name: String? = null
   private var constantsProvider = { emptyMap<String, Any?>() }
+
   @PublishedApi
   internal var methods = mutableMapOf<String, AnyMethod>()
-  private var viewManagerDefinition: ViewManagerDefinition? = null
+
+  @PublishedApi
+  internal var viewManagerDefinition: ViewManagerDefinition? = null
+
+  @PublishedApi
+  internal val eventListeners = mutableMapOf<EventName, EventListener>()
 
   fun build(): ModuleDefinition {
     return ModuleDefinition(
       requireNotNull(name),
       constantsProvider,
       methods,
-      viewManagerDefinition
+      viewManagerDefinition,
+      eventListeners
     )
   }
 
@@ -92,11 +102,31 @@ class ModuleDefinitionBuilder {
     methods[name] = PromiseMethod(name, arrayOf(typeOf<P0>(), typeOf<P1>())) { args, promise -> body(args[0] as P0, args[1] as P1, promise) }
   }
 
-  fun viewManager(body: ViewManagerDefinitionBuilder.() -> Unit) {
+  inline fun viewManager(body: ViewManagerDefinitionBuilder.() -> Unit) {
     require(viewManagerDefinition == null) { "The module definition may have exported only one view manager." }
 
     val viewManagerDefinitionBuilder = ViewManagerDefinitionBuilder()
     body.invoke(viewManagerDefinitionBuilder)
     viewManagerDefinition = viewManagerDefinitionBuilder.build()
+  }
+
+  inline fun onCreate(crossinline body: () -> Unit) {
+    eventListeners[EventName.MODULE_CREATE] = BasicEventListener(EventName.MODULE_CREATE) { body() }
+  }
+
+  inline fun onDestroy(crossinline body: () -> Unit) {
+    eventListeners[EventName.MODULE_DESTROY] = BasicEventListener(EventName.MODULE_DESTROY) { body() }
+  }
+
+  inline fun onAppEntersForeground(crossinline body: () -> Unit) {
+    eventListeners[EventName.APP_ENTERS_FOREGROUND] = BasicEventListener(EventName.APP_ENTERS_FOREGROUND) { body() }
+  }
+
+  inline fun onAppEntersBackground(crossinline body: () -> Unit) {
+    eventListeners[EventName.APP_ENTERS_BACKGROUND] = BasicEventListener(EventName.APP_ENTERS_BACKGROUND) { body() }
+  }
+
+  inline fun onActivityDestroy(crossinline body: () -> Unit) {
+    eventListeners[EventName.ACTIVITY_DESTROY] = BasicEventListener(EventName.ACTIVITY_DESTROY) { body() }
   }
 }

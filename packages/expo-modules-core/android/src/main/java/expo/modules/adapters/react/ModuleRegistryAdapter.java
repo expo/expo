@@ -12,7 +12,6 @@ import expo.modules.core.interfaces.InternalModule;
 import expo.modules.core.interfaces.Package;
 import expo.modules.kotlin.KotlinInteropModuleRegistry;
 
-import java.lang.annotation.Native;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
