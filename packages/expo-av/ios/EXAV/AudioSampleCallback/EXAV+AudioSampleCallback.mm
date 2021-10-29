@@ -1,27 +1,26 @@
 // Copyright 2021-present 650 Industries, Inc. (aka Expo)
 
 #import <Foundation/Foundation.h>
-#import <EXAV/EXAV.h>
-#import <EXAV/EXAVPlayerData.h>
-
-#import <ReactCommon/RCTTurboModuleManager.h>
 
 #import <jsi/jsi.h>
+#import <ReactCommon/RCTTurboModuleManager.h>
 
-#import "EXAudioSampleCallback.h"
-#import "AudioSampleCallbackWrapper.h"
+#import <EXAV/EXAV.h>
+#import <EXAV/EXAVPlayerData.h>
+#import <EXAV/EXAudioSampleCallback.h>
+#import <EXAV/AudioSampleCallbackWrapper.h>
 
 namespace jsi = facebook::jsi;
 using CallInvoker = facebook::react::CallInvoker;
+using namespace expo::av;
 
 static constexpr auto globalJsFuncName = "__EXAV_setOnAudioSampleReceivedCallback";
 static constexpr auto globalDestroyHostObjectName = "__EXAV_onDestroyHostObject";
 
-
-class InvalidateOnDestroyHostObject : public jsi::HostObject {
+class CleanupOnDestroyHostObject : public jsi::HostObject {
  public:
-  InvalidateOnDestroyHostObject() {}
-  virtual ~InvalidateOnDestroyHostObject() {
+  CleanupOnDestroyHostObject() {}
+  virtual ~CleanupOnDestroyHostObject() {
     AudioSampleCallbackWrapper::removeAllCallbacks();
   }
   virtual jsi::Value get(jsi::Runtime &, const jsi::PropNameID &name) {
@@ -35,8 +34,8 @@ class InvalidateOnDestroyHostObject : public jsi::HostObject {
 
 @implementation EXAV (AudioSampleCallback)
 
-- (void) installJSIBindingsForRuntime:(void *)jsRuntimePtr
-                  withSoundDictionary:(NSMutableDictionary <NSNumber *, EXAVPlayerData *> *)soundDictionary
+- (void)installJSIBindingsForRuntime:(void *)jsRuntimePtr
+                 withSoundDictionary:(NSMutableDictionary <NSNumber *, EXAVPlayerData *> *)soundDictionary
 {
   __weak auto weakCallInvoker = self.bridge.jsCallInvoker;
   __weak auto weakSoundDictionary = soundDictionary;
@@ -69,13 +68,11 @@ class InvalidateOnDestroyHostObject : public jsi::HostObject {
       auto callback = args[1].asObject(runtime).asFunction(runtime);
       
       auto wrapper = new AudioSampleCallbackWrapper(std::move(callback), runtime, strongCallInvoker);
-      EXAudioSampleCallback* objcWrapper = [[EXAudioSampleCallback alloc] initWithWrapper:wrapper];
+      EXAudioSampleCallback* objcWrapper = [[EXAudioSampleCallback alloc] initWithCallbackWrapper:wrapper];
       [sound setSampleBufferCallback:objcWrapper];
-      NSLog(@"Callback set");
     } else {
       // second parameter omitted or undefined, so remove callback
       [sound setSampleBufferCallback:nil];
-      NSLog(@"Callback unset");
     }
 
     return jsi::Value::undefined();
@@ -92,12 +89,12 @@ class InvalidateOnDestroyHostObject : public jsi::HostObject {
                                                        std::move(setAudioSampleCallback)));
   
   // Property `__EXAV_onDestroyHostObject` of the global object will be released when entire `jsi::Runtime`
-  // is being destroyed and that will trigger destructor of `InvalidateOnDestroyHostObject` class which
-  // will invalidate all JSI callbacks.
+  // is being destroyed and that will trigger destructor of `CleanupOnDestroyHostObject` class which
+  // will clean up all JSI callbacks.
   runtime.global().setProperty(
            runtime,
            globalDestroyHostObjectName,
-           jsi::Object::createFromHostObject(runtime, std::make_shared<InvalidateOnDestroyHostObject>()));
+           jsi::Object::createFromHostObject(runtime, std::make_shared<CleanupOnDestroyHostObject>()));
 }
 
 @end

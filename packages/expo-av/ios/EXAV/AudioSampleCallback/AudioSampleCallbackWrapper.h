@@ -3,35 +3,44 @@
 
 #import <AVFoundation/AVFoundation.h>
 
-#import "Utils/CallbackWrapper.h"
-
 #import <jsi/jsi.h>
+
+// TODO: Replace this with <ReactCommon/TurboModuleUtils.h> after we upgrade to RN 0.66
+#import <EXAV/ReactCallbackWrapper.h>
 
 namespace jsi = facebook::jsi;
 using CallInvoker = facebook::react::CallInvoker;
-using CallbackWrapper = exav::facebook::react::CallbackWrapper;
-using LongLivedObjectCollection = exav::facebook::react::LongLivedObjectCollection;
 
+// TODO: Replace this with just facebook::react namespace after we upgrade to RN 0.66
+using JsiCallbackWrapper = expo::facebook::react::CallbackWrapper;
+using LongLivedObjectCollection = expo::facebook::react::LongLivedObjectCollection;
+
+namespace expo {
+namespace av {
+
+// A class managing lifecycle of audio sample buffer callbacks
 class AudioSampleCallbackWrapper
 {
-  static std::shared_ptr<LongLivedObjectCollection> callbackCollection;
-  
-  std::weak_ptr<CallbackWrapper> weakWrapper;
+  std::weak_ptr<JsiCallbackWrapper> weakWrapper;
 public:
   AudioSampleCallbackWrapper(jsi::Function &&callback,
                              jsi::Runtime &runtime,
                              std::shared_ptr<CallInvoker> jsInvoker);
   
-  ~AudioSampleCallbackWrapper() {
-    auto strongWrapper = weakWrapper.lock();
-    if (strongWrapper) {
-      strongWrapper->destroy();
-    }
-  }
+  ~AudioSampleCallbackWrapper();
   
   void call(AudioBuffer* buffer, double timestamp);
   
+  // static members
+public:
+  // called when JS VM is destroyed to remove all JSI callback objects
   static void removeAllCallbacks() {
     callbackCollection->clear();
   }
+  
+private:
+  static std::shared_ptr<LongLivedObjectCollection> callbackCollection;
 };
+
+} // namespace av
+} // namespace expo

@@ -37,7 +37,7 @@ NSString *const EXDidUpdateMetadataEventName = @"didUpdateMetadata";
 
 @interface EXAV ()
 
-@property (weak, nonatomic) RCTBridge *bridge;
+@property (nonatomic, weak) RCTBridge *bridge;
 
 @property (nonatomic, weak) id kernelAudioSessionManagerDelegate;
 @property (nonatomic, weak) id kernelPermissionsServiceDelegate;

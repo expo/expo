@@ -3,13 +3,14 @@
 
 #import <AVFoundation/AVFoundation.h>
 
+#import <React/RCTBridgeModule.h>
+#import <React/RCTInvalidating.h>
+
 #import <ExpoModulesCore/EXModuleRegistryConsumer.h>
 #import <ExpoModulesCore/EXAppLifecycleListener.h>
 #import <ExpoModulesCore/EXExportedModule.h>
 #import <ExpoModulesCore/EXEventEmitter.h>
 #import <EXAV/EXAVObject.h>
-#import <React/RCTBridgeModule.h>
-#import <React/RCTInvalidating.h>
 
 typedef NS_OPTIONS(NSUInteger, EXAudioInterruptionMode)
 {

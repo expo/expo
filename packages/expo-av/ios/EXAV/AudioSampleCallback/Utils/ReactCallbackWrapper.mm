@@ -1,13 +1,21 @@
-/*
- * Copyright (c) Facebook, Inc. and its affiliates.
+//
+//  ReactCallbackWrapper.m
+//  EXAV
+//
+//  Created by Bartłomiej Klocek on 29/10/2021.
+//
+
+#import <EXAV/ReactCallbackWrapper.h>
+
+/**
+ * NOTE: This file is a copy of ReactCommon/LongLivedObject.cpp
+ * Copying it here is needed until we upgrade RN to 0.66 that includes this commit:
+ * https://github.com/facebook/react-native/commit/32bfd7a857c23dd417f940d0c09843de257f6c61
+ * After that we can just use <ReactCommon/TurboModuleUtils.h>
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ * We need to wrap it in another napespace, because it would conflict with existing RN implementation
  */
-
-#include "LongLivedObject.h"
-
-namespace exav {
+namespace expo {
 namespace facebook {
 namespace react {
 
@@ -16,8 +24,6 @@ LongLivedObjectCollection &LongLivedObjectCollection::get() {
   static LongLivedObjectCollection instance;
   return instance;
 }
-
-LongLivedObjectCollection::LongLivedObjectCollection() {}
 
 void LongLivedObjectCollection::add(std::shared_ptr<LongLivedObject> so) const {
   std::lock_guard<std::mutex> lock(collectionMutex_);
@@ -43,9 +49,6 @@ void LongLivedObjectCollection::clear() const {
 }
 
 // LongLivedObject
-LongLivedObject::LongLivedObject() {}
-LongLivedObject::~LongLivedObject() {}
-
 void LongLivedObject::allowRelease() {
   LongLivedObjectCollection::get().remove(this);
 }
@@ -53,3 +56,4 @@ void LongLivedObject::allowRelease() {
 } // namespace react
 } // namespace facebook
 }
+

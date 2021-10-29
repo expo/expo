@@ -5,16 +5,16 @@
 #import <AVFoundation/AVFoundation.h>
 
 #ifdef __cplusplus
-#import "AudioSampleCallbackWrapper.h"
+#import <EXAV/AudioSampleCallbackWrapper.h>
 #endif
 
-// Objective-C wrapper for a C++ callback class
+// Objective-C holder for a C++ callback class
 @interface EXAudioSampleCallback : NSObject
 
 #ifdef __cplusplus
--(id)initWithWrapper:(AudioSampleCallbackWrapper*)wrapper;
+- (id)initWithCallbackWrapper:(expo::av::AudioSampleCallbackWrapper*)wrapper;
 #endif
 
--(void)callWithAudioBuffer:(AudioBuffer*)buffer andTimestamp:(double)timestamp;
+- (void)callWithAudioBuffer:(AudioBuffer*)buffer andTimestamp:(double)timestamp;
 @end
 

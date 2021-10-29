@@ -1,6 +1,9 @@
 // Copyright 2017-present 650 Industries. All rights reserved.
 
-#include "AudioSampleCallbackWrapper.h"
+#import <EXAV/AudioSampleCallbackWrapper.h>
+
+namespace expo {
+namespace av {
 
 std::shared_ptr<LongLivedObjectCollection> AudioSampleCallbackWrapper::callbackCollection =
   std::make_shared<LongLivedObjectCollection>();
@@ -8,7 +11,14 @@ std::shared_ptr<LongLivedObjectCollection> AudioSampleCallbackWrapper::callbackC
 AudioSampleCallbackWrapper::AudioSampleCallbackWrapper(jsi::Function &&callback,
                            jsi::Runtime &runtime,
                            std::shared_ptr<CallInvoker> jsInvoker)
-: weakWrapper(CallbackWrapper::createWeak(callbackCollection, std::move(callback), runtime, jsInvoker)) {}
+: weakWrapper(JsiCallbackWrapper::createWeak(callbackCollection, std::move(callback), runtime, jsInvoker)) {}
+
+AudioSampleCallbackWrapper::~AudioSampleCallbackWrapper() {
+  auto strongWrapper = weakWrapper.lock();
+  if (strongWrapper) {
+    strongWrapper->destroy();
+  }
+}
 
 void AudioSampleCallbackWrapper::call(AudioBuffer* buffer, double timestamp)
 {
@@ -19,16 +29,16 @@ void AudioSampleCallbackWrapper::call(AudioBuffer* buffer, double timestamp)
 
   // We need to invoke the callback from the JS thread, otherwise Hermes complains
   strongWrapper->jsInvoker().invokeAsync([buffer, this, timestamp]{
-    auto callbackWrapper = this->weakWrapper.lock();
-    if (!callbackWrapper) {
+    auto jsiCallbackWrapper = this->weakWrapper.lock();
+    if (!jsiCallbackWrapper || !buffer) {
       return;
     }
     
-    auto &rt = callbackWrapper->runtime();
+    auto &rt = jsiCallbackWrapper->runtime();
     
     auto channelsCount = (size_t) buffer->mNumberChannels;
     auto framesCount = buffer->mDataByteSize / sizeof(float);
-    float *data = (float *) buffer->mData;
+    float *data = reinterpret_cast<float *>(buffer->mData);
     if (!data) {
       return;
     }
@@ -58,6 +68,9 @@ void AudioSampleCallbackWrapper::call(AudioBuffer* buffer, double timestamp)
     sample.setProperty(rt, "channels", std::move(channels));
     sample.setProperty(rt, "timestamp", jsi::Value(timestamp));
 
-    callbackWrapper->callback().call(rt, std::move(sample));
+    jsiCallbackWrapper->callback().call(rt, std::move(sample));
   });
 }
+
+} // namespace av
+} // namespace expo

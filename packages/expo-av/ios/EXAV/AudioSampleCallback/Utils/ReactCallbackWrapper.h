@@ -9,19 +9,66 @@
 
 #include <cassert>
 #include <string>
+#include <memory>
+#include <mutex>
+#include <unordered_set>
 
-#include <jsi/jsi.h>
-
-#include <ReactCommon/CallInvoker.h>
-
-#include "LongLivedObject.h"
+#import <jsi/jsi.h>
+#import <ReactCommon/CallInvoker.h>
 
 using namespace facebook;
 using CallInvoker = facebook::react::CallInvoker;
 
-namespace exav {
+/**
+ * NOTE: This file is a mix of ReactCommon/TurboModuleUtils.h and ReactCommon/LongLivedObject.h
+ * Copying it here is needed until we upgrade RN to 0.66 that includes this commit:
+ * https://github.com/facebook/react-native/commit/32bfd7a857c23dd417f940d0c09843de257f6c61
+ * After that we can just use <ReactCommon/TurboModuleUtils.h>
+ *
+ * We need to wrap it in another napespace, because it would conflict with existing RN implementation
+ */
+namespace expo {
 namespace facebook {
 namespace react {
+
+/**
+ * A simple wrapper class that can be registered to a collection that  keep it
+ * alive for extended period of time. This object can be removed from the
+ * collection when needed.
+ *
+ * The subclass of this class must be created using std::make_shared<T>().
+ * After creation, add it to the `LongLivedObjectCollection`.
+ * When done with the object, call `allowRelease()` to allow the OS to release
+ * it.
+ */
+class LongLivedObject {
+ public:
+  virtual void allowRelease();
+  
+ protected:
+  LongLivedObject() {}
+  virtual ~LongLivedObject() {}
+};
+
+/**
+ * A singleton, thread-safe, write-only collection for the `LongLivedObject`s.
+ */
+class LongLivedObjectCollection {
+ public:
+  static LongLivedObjectCollection &get();
+
+  LongLivedObjectCollection() {}
+  LongLivedObjectCollection(LongLivedObjectCollection const &) = delete;
+  void operator=(LongLivedObjectCollection const &) = delete;
+
+  void add(std::shared_ptr<LongLivedObject> o) const;
+  void remove(const LongLivedObject *o) const;
+  void clear() const;
+
+ private:
+  mutable std::unordered_set<std::shared_ptr<LongLivedObject>> collection_;
+  mutable std::mutex collectionMutex_;
+};
 
 // Helper for passing jsi::Function arg to other methods.
 class CallbackWrapper : public LongLivedObject {
