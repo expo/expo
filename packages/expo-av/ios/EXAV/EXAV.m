@@ -176,6 +176,15 @@ EX_EXPORT_MODULE(ExponentAV);
   }
 }
 
+- (void)onAppContentWillReload
+{
+  // We need to clear audio tap before sound gets destroyed to avoid
+  // using pointer to deallocated EXAVPlayerData in MTAudioTap process callback
+  for (NSNumber *key in [_soundDictionary allKeys]) {
+    [self _removeAudioCallbackForKey:key];
+  }
+}
+
 #pragma mark - RCTEventEmitter
 
 - (void)startObserving
@@ -429,6 +438,14 @@ EX_EXPORT_MODULE(ExponentAV);
     [data pauseImmediately];
     _soundDictionary[key] = nil;
     [self demoteAudioSessionIfPossible];
+  }
+}
+
+- (void)_removeAudioCallbackForKey:(NSNumber *)key
+{
+  EXAVPlayerData *data = _soundDictionary[key];
+  if (data) {
+    [data setSampleBufferCallback:nil];
   }
 }
 

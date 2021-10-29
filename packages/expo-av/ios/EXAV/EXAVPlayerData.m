@@ -940,19 +940,16 @@ void tapPrepare(MTAudioProcessingTapRef tap, CMItemCount maxFrames, const AudioS
 
   context->supportedTapProcessingFormat = true;
 
-  if (processingFormat->mFormatID != kAudioFormatLinearPCM)
-  {
+  if (processingFormat->mFormatID != kAudioFormatLinearPCM) {
     EXLogInfo(@"Audio Format ID for audioProcessingTap: LinearPCM");
     // TODO(barthap): Does LinearPCM work with the audio sample buffer callback?
   }
-  if (!(processingFormat->mFormatFlags & kAudioFormatFlagIsFloat))
-  {
+  if (!(processingFormat->mFormatFlags & kAudioFormatFlagIsFloat)) {
     EXLogInfo(@"Audio Format ID for audioProcessingTap: Float only");
     // TODO(barthap): Does Float work with the audio sample buffer callback?
   }
 
-  if (processingFormat->mFormatFlags & kAudioFormatFlagIsNonInterleaved)
-  {
+  if (processingFormat->mFormatFlags & kAudioFormatFlagIsNonInterleaved) {
     context->isNonInterleaved = true;
   }
 }
@@ -969,29 +966,26 @@ void tapProcess(MTAudioProcessingTapRef tap, CMItemCount numberFrames, MTAudioPr
   AVAudioTapProcessorContext *context =
     (AVAudioTapProcessorContext *)MTAudioProcessingTapGetStorage(tap);
 
-  if (!context->self)
-  {
+  if (!context->self) {
     EXLogWarn(@"Audio Processing Tap has been destroyed!");
     return;
   }
 
-  EXAVPlayerData *self = ((__bridge EXAVPlayerData *)context->self);
+  EXAVPlayerData *_self = ((__bridge EXAVPlayerData *)context->self);
 
-  if (!self.sampleBufferCallback)
-  {
+  if (!_self.sampleBufferCallback) {
     return;
   }
 
   // Get actual audio buffers from MTAudioProcessingTap
   OSStatus status = MTAudioProcessingTapGetSourceAudio(tap, numberFrames, bufferListInOut, flagsOut, NULL, numberFramesOut);
-  if (noErr != status)
-  {
+  if (noErr != status) {
     EXLogWarn(@"MTAudioProcessingTapGetSourceAudio: %d", (int)status);
     return;
   }
 
-  double seconds = [self getCurrentPositionPrecise];
-  [self.sampleBufferCallback callWithAudioBuffer:&bufferListInOut->mBuffers[0] andTimestamp:seconds];
+  double seconds = [_self getCurrentPositionPrecise];
+  [_self.sampleBufferCallback callWithAudioBuffer:&bufferListInOut->mBuffers[0] andTimestamp:seconds];
 }
 
 #pragma mark - EXAVObject
@@ -1074,6 +1068,8 @@ void tapProcess(MTAudioProcessingTapRef tap, CMItemCount numberFrames, MTAudioPr
 
 - (void)dealloc
 {
+  // this triggers the audio tap removal
+  [self setSampleBufferCallback:nil];
   [self _removeTimeObserver];
   [self _removeObservers];
 }
