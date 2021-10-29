@@ -91,4 +91,27 @@ public class SwiftInteropBridge: NSObject {
       }
     }
   }
+
+  // MARK: - Events
+
+  /**
+   Returns an array of event names supported by all Swift modules.
+   */
+  @objc
+  public func getSupportedEvents() -> [String] {
+    return registry.reduce(into: [String]()) { events, holder in
+      events.append(contentsOf: holder.definition.eventNames)
+    }
+  }
+
+  /**
+   Modifies listeners count for module with given name. Depending on the listeners count,
+   `onStartObserving` and `onStopObserving` are called.
+   */
+  @objc
+  public func modifyEventListenersCount(_ moduleName: String, count: Int) {
+    registry
+      .get(moduleHolderForName: moduleName)?
+      .modifyListenersCount(count)
+  }
 }

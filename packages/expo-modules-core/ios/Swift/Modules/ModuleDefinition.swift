@@ -26,6 +26,11 @@ public class ModuleDefinition: AnyDefinition {
   let viewManager: ViewManagerDefinition?
 
   /**
+   Names of the events that the module can send to JavaScript.
+   */
+  let eventNames: [String]
+
+  /**
    Initializer that is called by the `ModuleDefinitionBuilder` results builder.
    */
   init(definitions: [AnyDefinition]) {
@@ -51,6 +56,12 @@ public class ModuleDefinition: AnyDefinition {
     self.viewManager = definitions
       .compactMap { $0 as? ViewManagerDefinition }
       .last
+
+    self.eventNames = Array(
+      definitions
+        .compactMap { ($0 as? EventsDefinition)?.names }
+        .joined()
+    )
   }
 
   /**
@@ -80,4 +91,11 @@ internal struct ModuleNameDefinition: AnyDefinition {
  */
 internal struct ConstantsDefinition: AnyDefinition {
   let constants: [String : Any?]
+}
+
+/**
+ A definition for module's events that can be sent to JavaScript.
+ */
+internal struct EventsDefinition: AnyDefinition {
+  let names: [String]
 }
