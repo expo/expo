@@ -25,12 +25,10 @@
   return nil;
 }
 
-- (NSArray<RCTModuleData *> *)_initializeModules:(NSArray<Class> *)modules
-                               withDispatchGroup:(dispatch_group_t)dispatchGroup
-                                lazilyDiscovered:(BOOL)lazilyDiscovered
+- (NSArray<Class> *)filterModuleList:(NSArray<Class> *)modules
 {
   NSArray<NSString *> *allowedModules = @[@"RCT"];
-  NSArray<Class> *filtredModuleList = [modules filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(id  _Nullable clazz, NSDictionary<NSString *,id> * _Nullable bindings) {
+  NSArray<Class> *filteredModuleList = [modules filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(id  _Nullable clazz, NSDictionary<NSString *,id> * _Nullable bindings) {
     NSString* clazzName = NSStringFromClass(clazz);
     for (NSString *allowedModule in allowedModules) {
       if ([clazzName hasPrefix:allowedModule]) {
@@ -40,7 +38,15 @@
     return false;
   }]];
   
-  return [super _initializeModules:filtredModuleList withDispatchGroup:dispatchGroup lazilyDiscovered:lazilyDiscovered];
+  return filteredModuleList;
+}
+
+- (NSArray<RCTModuleData *> *)_initializeModules:(NSArray<Class> *)modules
+                               withDispatchGroup:(dispatch_group_t)dispatchGroup
+                                lazilyDiscovered:(BOOL)lazilyDiscovered
+{
+  NSArray<Class> *filteredModuleList = [self filterModuleList: modules];
+  return [super _initializeModules:filteredModuleList withDispatchGroup:dispatchGroup lazilyDiscovered:lazilyDiscovered];
 }
 
 @end
