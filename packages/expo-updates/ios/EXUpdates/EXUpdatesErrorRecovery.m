@@ -253,10 +253,9 @@ static NSInteger const EXUpdatesErrorRecoveryRemoteLoadTimeoutMs = 5000;
       return obj.integerValue == EXUpdatesErrorRecoveryTaskWaitForRemoteUpdate || obj.integerValue == EXUpdatesErrorRecoveryTaskCrash;
     }]].mutableCopy;
   });
-  // wait 10s before unsetting error handlers; even though we won't try to
-  // relaunch if our handlers are triggered after now, we still want to give
-  // the EXUpdatesErrorRecoveryTaskWaitForRemoteUpdate task a reasonable
-  // window of time to start and check for a new update is there is one
+  // wait 10s before unsetting error handlers; even though we won't try to relaunch if our handlers
+  // are triggered after now, we still want to give the app a reasonable window of time to start the
+  // EXUpdatesErrorRecoveryTaskWaitForRemoteUpdate task and check for a new update is there is one
   dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 10 * NSEC_PER_SEC), _errorRecoveryQueue, ^{
     [self _unsetRCTErrorHandlers];
   });
