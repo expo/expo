@@ -1,6 +1,6 @@
-name: 'Development Build Bug Report'
+name: '\U0001F6E0 Development Client Bug Report'
 description: 'Report a reproducible issue with a development build'
-labels: ['Development Build', 'needs review']
+labels: ['Development Client', 'needs review']
 body:
   - type: markdown
     attributes:
