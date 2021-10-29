@@ -14,7 +14,7 @@
 #import <EXAV/EXAVPlayerData.h>
 #import <EXAV/EXVideoView.h>
 #import <EXAV/EXAudioRecordingPermissionRequester.h>
-#import <EXAV+AudioSampleCallback.h>
+#import <EXAV/EXAV+AudioSampleCallback.h>
 
 NSString *const EXAudioRecordingOptionsIsMeteringEnabledKey = @"isMeteringEnabled";
 NSString *const EXAudioRecordingOptionsKeepAudioActiveHintKey = @"keepAudioActiveHint";

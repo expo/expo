@@ -3,7 +3,7 @@
 #import <AVFoundation/AVFoundation.h>
 
 #import <EXAV/EXAV.h>
-#import "AudioSampleCallback/EXAudioSampleCallback.h"
+#import <EXAV/EXAudioSampleCallback.h>
 
 @interface EXAVPlayerData : NSObject <EXAVObject>
 
