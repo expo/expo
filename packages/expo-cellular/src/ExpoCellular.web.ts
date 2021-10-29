@@ -18,10 +18,7 @@ export default {
   },
   async getCellularGenerationAsync(): Promise<CellularGeneration> {
     const connection =
-      navigator['connection'] ||
-      navigator['mozConnection'] ||
-      navigator['webkitConnection'] ||
-      null;
+      navigator.connection || navigator.mozConnection || navigator.webkitConnection || null;
     if (connection !== null) {
       switch (connection.effectiveType) {
         case 'slow-2g':

@@ -14,11 +14,11 @@ Both managed and bare projects for iOS and Android require additional configurat
 
 ### Managed projects
 
-Configure your supported appearance styles in `app.json` / `app.config.js` with the `userInterfaceStyle` key. You can also configure specific platform to support different appearance styles by setting either `android.userInterfaceStyle` or `ios.userInterfaceStyle` to preferred value.
+Configure your supported appearance styles in **app.json** / **app.config.js** with the `userInterfaceStyle` key. You can also configure specific platform to support different appearance styles by setting either `android.userInterfaceStyle` or `ios.userInterfaceStyle` to preferred value.
 
 The available options are: `automatic` (follow system appearance settings and notify about any change user makes), `light` (restrict app to support light theme only), and `dark` (restrict app to support dark theme only). If this key is absent, the app will default to the `light` style.
 
-Example `app.json` configuration:
+Example **app.json** configuration:
 
 ```json
 {
@@ -32,11 +32,11 @@ Example `app.json` configuration:
 
 #### iOS configuration
 
-You can configure supported styles with the [UIUserInterfaceStyle](https://developer.apple.com/documentation/bundleresources/information_property_list/uiuserinterfacestyle) key in your app `Info.plist`. Use `Automatic` to support both light and dark modes.
+You can configure supported styles with the [UIUserInterfaceStyle](https://developer.apple.com/documentation/bundleresources/information_property_list/uiuserinterfacestyle) key in your app **Info.plist**. Use `Automatic` to support both light and dark modes.
 
 #### Android configuration
 
-Ensure that the `uiMode` flag is present on your `MainActivity` (and any other activities where this behavior is desired) in `AndroidManifest.xml`:
+Ensure that the `uiMode` flag is present on your `MainActivity` (and any other activities where this behavior is desired) in **AndroidManifest.xml**:
 
 ```xml
 <activity
@@ -44,7 +44,7 @@ Ensure that the `uiMode` flag is present on your `MainActivity` (and any other a
 android:configChanges="keyboard|keyboardHidden|orientation|screenSize|uiMode">
 ```
 
-Implement the `onConfigurationChanged` method in `MainActivity.java`:
+Implement the `onConfigurationChanged` method in **MainActivity.java**:
 
 ```java
 import android.content.Intent; // <--- import

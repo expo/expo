@@ -8,7 +8,7 @@ import PlatformsSection from '~/components/plugins/PlatformsSection';
 
 **`expo-store-review`** provides access to the `SKStoreReviewController` API in iOS 10.3+ devices, allowing you to ask the user to rate your app without ever having to leave the app itself.
 
-> If this is used in Android the device will attempt to link to the Play Store using `ReactNative.Linking` and the `android.playStoreUrl` from the `app.json` instead.
+> If this is used in Android the device will attempt to link to the Play Store using `ReactNative.Linking` and the `android.playStoreUrl` from the **app.json** instead.
 
 <PlatformsSection android emulator ios simulator />
 
@@ -57,7 +57,7 @@ const url = StoreReview.storeUrl();
 
 ### `StoreReview.hasAction()`
 
-This returns a promise that resolves to a boolean that let's you know if the module can perform any action. This is used for cases where the `app.json` doesn't have the proper fields, and `StoreReview.isAvailableAsync()` returns false.
+This returns a promise that resolves to a boolean that let's you know if the module can perform any action. This is used for cases where the **app.json** doesn't have the proper fields, and `StoreReview.isAvailableAsync()` returns false.
 
 #### Example
 

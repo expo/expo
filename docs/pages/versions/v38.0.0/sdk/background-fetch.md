@@ -19,7 +19,7 @@ For [managed](../../../introduction/managed-vs-bare.md#managed-workflow) apps, y
 
 ## Configuration
 
-In order to use `BackgroundFetch` API in standalone, detached and bare apps on iOS, your app has to include background mode in the `Info.plist` file. See [background tasks configuration guide](task-manager.md#configuration-for-standalone-apps) for more details.
+In order to use `BackgroundFetch` API in standalone, detached and bare apps on iOS, your app has to include background mode in the **Info.plist** file. See [background tasks configuration guide](task-manager.md#configuration-for-standalone-apps) for more details.
 
 ## API
 

@@ -6,7 +6,7 @@ A splash screen, also known as a launch screen, is the first screen that a user 
 
 ## Customize the splash screen for your app
 
-The default splash screen is a blank white screen. This might work for you, if it does, you're in luck! If not, you're also in luck because it's quite easy to customize using `app.json` and the `splash` key. Let's walk through it.
+The default splash screen is a blank white screen. This might work for you, if it does, you're in luck! If not, you're also in luck because it's quite easy to customize using **app.json** and the `splash` key. Let's walk through it.
 
 ### Video walkthrough
 
@@ -28,11 +28,11 @@ You can work off of [this Sketch template](https://github.com/expo/files/blob/b2
 
 ![](/static/images/splash-example.png)
 
-Export the image as a PNG and put it in your project directory. I'll assume it's in the `assets` directory and named `splash.png`.
+Export the image as a PNG and put it in your project directory. I'll assume it's in the **assets** directory and named **splash.png**.
 
 ### `splash.image`
 
-Open your `app.json` and add the following inside of the `"expo"` field:
+Open your **app.json** and add the following inside of the `"expo"` field:
 
 ```
 "splash": {
@@ -78,7 +78,7 @@ Notice that in the last example, we stretched the image to fill the entire width
 
 ### Customizing the configuration for iOS and Android
 
-Any of the splash options can be configured on a per-platform basis by nesting the configuration under the `android` or `ios` keys within `app.json` (the same as how you would customize an icon for either platform). In addition to this, certain configuration options are only available on iOS or Android.
+Any of the splash options can be configured on a per-platform basis by nesting the configuration under the `android` or `ios` keys within **app.json** (the same as how you would customize an icon for either platform). In addition to this, certain configuration options are only available on iOS or Android.
 
 - On iOS, you can set [ios.splash.tabletImage](../workflow/configuration.md#tabletimage) if you would like to have a different splash image on iPads.
 - On Android, you can set splash images for [different device DPIs](../workflow/configuration.md#android), from `mdpi` to `xxxhdpi`.
@@ -101,7 +101,7 @@ Your app can be opened from the Expo Go app or in a standalone app, and it can b
 
 ### Using a `.xib` file as the launch screen for the standalone iOS app
 
-For iOS, you can also choose to use a `.xib` interface builder document as the splash screen of the standalone iOS app. Simply set `ios.splash.xib` in `app.json` to the path to your `.xib` file.
+For iOS, you can also choose to use a `.xib` interface builder document as the splash screen of the standalone iOS app. Simply set `ios.splash.xib` in **app.json** to the path to your `.xib` file.
 
 > **Note**: `.xib` file will only be used in the standalone app. The splash image will continue to be used in the Expo Go app.
 
@@ -110,7 +110,7 @@ For iOS, you can also choose to use a `.xib` interface builder document as the s
 Splash screen behaves in most cases exactly the same as in iOS case.
 
 There is a slight difference when it comes down to **standalone Android applications**.
-In this scenario extra attention should be paid to [`android.splash` section](../workflow/configuration.md#android) configuration inside [`app.json`](../workflow/configuration.md#android).
+In this scenario extra attention should be paid to [`android.splash` section](../workflow/configuration.md#android) configuration inside [**app.json**](../workflow/configuration.md#android).
 
 Depending on the `resizeMode` you will get the following behavior:
 

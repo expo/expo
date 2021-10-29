@@ -29,7 +29,7 @@ Background execution is the ability to run code when the app is not foregrounded
 <details><summary><h4>If you need to keep your app size extremely lean, the managed workflow may not be the best choice</h4></summary>
 <p>
 
-The size for a managed Expo app on iOS is approximately 20mb (download), and Android is about 15mb. This is because "managed" includes a bunch of APIs regardless of whether or not you are using them &mdash; this lets you push over-the-air updates to use new APIs, but comes at the cost of binary size. Some of the APIs that are included are tied to services that you may not be using, for example the Facebook Mobile SDK is included to support Facebook Login and Facebook Ads, along with the Google Mobile SDK for similar reasons. We will make this customizable in the future, so you can trim down the size of your binaries. [Read more about managing your app size here](https://expo.fyi/managed-app-size).
+The size for a managed Expo app on iOS is approximately 20mb (download), and Android is about 15mb. This is because "managed" includes a bunch of APIs regardless of whether or not you are using them &mdash; this lets you publish updates that use new APIs, but comes at the cost of binary size. Some of the APIs that are included are tied to services that you may not be using, for example the Facebook Mobile SDK is included to support Facebook Login and Facebook Ads, along with the Google Mobile SDK for similar reasons. We will make this customizable in the future, so you can trim down the size of your binaries. [Read more about managing your app size here](https://expo.fyi/managed-app-size).
 
 > 💡 Work is progress on resolving this! In the near future, you will be able to build managed apps with [EAS Build](/build/introduction.md) without adding any additional size to your binary ([in some cases, more than 10x reduction in binary size](https://twitter.com/Baconbrix/status/1338910158399782912)).
 
@@ -70,10 +70,10 @@ You can easily build your app for submission to stores without even installing X
 </p>
 </details>
 
-<details><summary><h4>Updates (JS and assets) for OTA updates and builds are size-limited</h4></summary>
+<details><summary><h4>Updates (JS and assets) for updates and builds are size-limited</h4></summary>
 <p>
 
-Expo's current update service supports updates around 50 MiB. Updates are published both for OTA updates and to build standalone apps, which embed updates. See more about [optimizing updates](../distribution/optimizing-updates.md).
+Expo's current update service supports updates around 50 MiB. Updates are published both for updates and to build standalone apps, which embed updates. See more about [optimizing updates](../distribution/optimizing-updates.md).
 
 You also can use the [bare workflow](../bare/exploring-bare-workflow.md) with the [`expo-updates`](../versions/latest/sdk/updates.md) library, which supports arbitrarily large updates that are self-hosted or embedded in apps compiled on your own computer.
 

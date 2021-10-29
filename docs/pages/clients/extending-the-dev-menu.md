@@ -81,7 +81,7 @@ One of the main purposes of this package was to provide an easy way to create ex
    }
    ```
 
-3. Go to `MainApplication` (`MainApplication.java` or `MainApplication.kt`) and register created package.
+3. Go to `MainApplication` (**MainApplication.java** or **MainApplication.kt**) and register created package.
 
    ```java
    // MainApplication.java
@@ -145,7 +145,7 @@ One of the main purposes of this package was to provide an easy way to create ex
 
    > **Note:** if you don't use Swift in your project earlier, you need to create bridging header. For more information, checks [importing objective-c into swift](https://developer.apple.com/documentation/swift/imported_c_and_objective-c_apis/importing_objective-c_into_swift).
 
-2. Create a `.m` file to integrate Swift class with react native and add the following lines.
+2. Create a **.m** file to integrate Swift class with react native and add the following lines.
 
    ```objc
    // CustomDevMenuExtension.m

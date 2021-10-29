@@ -32,7 +32,7 @@ You will want to decide on a URI scheme for your app, this will correspond to th
 
 The scheme only applies to standalone apps and you need to re-build the standalone app for the change to take effect. In the Expo client app you can deep link using `exp://ADDRESS:PORT` where `ADDRESS` is often `127.0.0.1` and `PORT` is often `19000` - the URL is printed when you run `expo start`.
 
-If you want to test with your custom scheme you will need to run `expo build:ios -t simulator` or `expo build:android` and install the resulting binaries in your emulators. You can register for a scheme in your `app.json` by adding a string under the scheme key:
+If you want to test with your custom scheme you will need to run `expo build:ios -t simulator` or `expo build:android` and install the resulting binaries in your emulators. You can register for a scheme in your **app.json** by adding a string under the scheme key:
 
 ```json
 {
@@ -297,13 +297,13 @@ await AppAuth.revokeAsync(config, options);
 
 ### `AppAuth.OAuthRedirect`
 
-Redirect scheme used to assemble the `redirectUrl` prop. In standalone apps, this is either the `android.package` (for Android) or `ios.bundleIdentifier` (for iOS) value from your `app.json`. However, for apps running in the Expo client, `AppAuth.OAuthRedirect` is `host.exp.exponent`.
+Redirect scheme used to assemble the `redirectUrl` prop. In standalone apps, this is either the `android.package` (for Android) or `ios.bundleIdentifier` (for iOS) value from your **app.json**. However, for apps running in the Expo client, `AppAuth.OAuthRedirect` is `host.exp.exponent`.
 
 ### `AppAuth.URLSchemes`
 
 > iOS only
 
-A list of URL Schemes from the `info.plist`
+A list of URL Schemes from the **Info.plist**
 
 ## Types
 

@@ -30,7 +30,7 @@ If you haven't done payments with Stripe before, create an account with [Stripe]
 
 For iOS, follow [Stripe instructions](https://stripe.com/docs/mobile/ios/sources#redirecting-your-customer).
 
-For Android, add the following code to your `AndroidManifest.xml`, replacing `your_scheme` with the URI scheme you're going to use when specifying return URL for payment process.
+For Android, add the following code to your **AndroidManifest.xml**, replacing `your_scheme` with the URI scheme you're going to use when specifying return URL for payment process.
 
 > 💡 If you are using Expo client then the setup has already been done for you.
 
@@ -52,7 +52,7 @@ For Android, add the following code to your `AndroidManifest.xml`, replacing `yo
       ...
 ```
 
-Remember to use the same scheme as the one which was set in `Info.plist` file (only if you are also developing app for iOS).
+Remember to use the same scheme as the one which was set in **Info.plist** file (only if you are also developing app for iOS).
 
 ## Importing Payments
 
@@ -205,7 +205,7 @@ const token = await stripe.paymentRequestWithCardFormAsync(options);
 
 Creates source object based on params. Sources are used to create payments for a variety of [payment methods](https://stripe.com/docs/sources)
 
-_NOTE_: For sources that require redirecting your customer to authorize the payment, you need to specify a return URL when you create the source. This allows your customer to be redirected back to your app after they authorize the payment. The prefix before ':' in your return URL should be the same as the scheme in your `info.plist` and `AndroidManifest.xml`. If You are not sure about this step look at above sections "Register hook in order to Stripe could process source authorization".
+_NOTE_: For sources that require redirecting your customer to authorize the payment, you need to specify a return URL when you create the source. This allows your customer to be redirected back to your app after they authorize the payment. The prefix before ':' in your return URL should be the same as the scheme in your **Info.plist** and **AndroidManifest.xml**. If You are not sure about this step look at above sections "Register hook in order to Stripe could process source authorization".
 
 _NOTE_: If you are using Expo client or an ejected Expo application, do not specify `returnURL`.
 
@@ -429,7 +429,7 @@ try {
 
 ## AndroidPay
 
-Android Pay (also known as Google Pay) is currently only supported in the bare workflow. To add it to your app, add the following lines to your `AndroidManifest.xml` file, inside of the `<application>....</applicaton>` tags:
+Android Pay (also known as Google Pay) is currently only supported in the bare workflow. To add it to your app, add the following lines to your **AndroidManifest.xml** file, inside of the `<application>....</applicaton>` tags:
 
 ```xml
 <meta-data

@@ -76,7 +76,7 @@ import { getDatabase, ref, onValue } from 'firebase/database';
 function storeHighScore(userId, score) {
   const db = getDatabase();
   const reference = ref(db, 'users/' + userId);
-  set(ref(db, 'users/' + userId), {
+  set(reference, {
     highscore: score,
   });
 }

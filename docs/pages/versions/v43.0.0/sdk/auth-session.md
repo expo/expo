@@ -50,7 +50,7 @@ You can test it to ensure it works like this:
 
 ### Usage in standalone apps
 
-`app.json`
+**app.json**
 
 ```json
 {
@@ -60,7 +60,7 @@ You can test it to ensure it works like this:
 }
 ```
 
-In order to be able to deep link back into your app, you will need to set a `scheme` in your project `app.config.js`, or `app.json`, and then build your standalone app (it can't be updated with an OTA update). If you do not include a scheme, the authentication flow will complete but it will be unable to pass the information back into your application and the user will have to manually exit the authentication modal (resulting in a cancelled event).
+In order to be able to deep link back into your app, you will need to set a `scheme` in your project **app.config.js**, or **app.json**, and then build your standalone app (it can't be updated with an update). If you do not include a scheme, the authentication flow will complete but it will be unable to pass the information back into your application and the user will have to manually exit the authentication modal (resulting in a cancelled event).
 
 ## Guides
 
@@ -154,7 +154,7 @@ Given an OpenID Connect issuer URL, this will fetch and return the [`DiscoveryDo
 Create a redirect url for the current platform and environment. You need to manually define the redirect that will be used in a bare workflow React Native app, or an Expo standalone app, this is because it cannot be inferred automatically.
 
 - **Web:** Generates a path based on the current `window.location`. For production web apps, you should hard code the URL as well.
-- **Managed workflow:** Uses the `scheme` property of your `app.config.js` or `app.json`.
+- **Managed workflow:** Uses the `scheme` property of your **app.config.js** or **app.json**.
   - **Proxy:** Uses auth.expo.io as the base URL for the path. This only works in Expo Go and standalone environments.
 - **Bare workflow:** Will fallback to using the `native` option for bare workflow React Native apps.
 
@@ -433,11 +433,11 @@ A hint about the type of the token submitted for revocation. If not included the
 Shared properties for token requests (refresh, exchange, revoke).
 
 | Name         | Type                      | Description                                             | Spec |
-| ------------ | ------------------------- | ------------------------------------------------------- | ---- |
-| clientId     | `string`                  | Unique ID representing the info provided by the client  |      | [Section 2.2][s22] |
+| ------------ | ------------------------- | ------------------------------------------------------- | ---- | --------------------- |
+| clientId     | `string`                  | Unique ID representing the info provided by the client  |      | [Section 2.2][s22]    |
 | clientSecret | `?string`                 | Client secret supplied by an auth provider              |      | [Section 2.3.1][s231] |
-| extraParams  | `?Record<string, string>` | Extra query params that'll be added to the query string |      | `N/A` |
-| scopes       | `?string[]`               | List of strings to request access to                    |      | [Section 3.3][s33] |
+| extraParams  | `?Record<string, string>` | Extra query params that'll be added to the query string |      | `N/A`                 |
+| scopes       | `?string[]`               | List of strings to request access to                    |      | [Section 3.3][s33]    |
 
 ### `AccessTokenRequestConfig`
 
@@ -568,7 +568,7 @@ import * as Facebook from 'expo-auth-session/providers/facebook';
 - Enforces minimum scopes to `['public_profile', 'email']` for optimal usage with services like Firebase and Auth0.
 - Uses `display=popup` for better UI results.
 - Automatically uses the proxy in Expo Go because native auth is not supported due to custom build time configuration.
-- The URI redirect must be added to your `app.config.js` or `app.json` as `facebookScheme: 'fb<YOUR FBID>'`.
+- The URI redirect must be added to your **app.config.js** or **app.json** as `facebookScheme: 'fb<YOUR FBID>'`.
 - Disables PKCE for implicit auth response.
 - On web, the popup is presented with the dimensions `{ width: 700, height: 600 }`
 
@@ -602,7 +602,7 @@ This service is responsible for:
 - redirecting traffic from your application to the authentication service
 - redirecting response from the auth service to your application using a deep link
 
-To better understand how it works, check out this implementation in `node.js`:
+To better understand how it works, check out this implementation in Node.js:
 
 ```js
 const http = require('http');

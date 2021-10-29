@@ -32,7 +32,7 @@ We're going to install [`expo-web-browser`](https://github.com/expo/expo/tree/ma
 expo install expo-web-browser
 ```
 
-Open up `App.js` and add a button that, when pressed, opens up a web browser. Here's some code for you.
+Open up **App.js** and add a button that, when pressed, opens up a web browser. Here's some code for you.
 
 ```tsx
 import * as React from 'react';
@@ -59,7 +59,7 @@ This will not yet work because we haven't linked the native code that powers it.
 
 <TerminalBlock cmd={['# Build your native iOS project', 'expo run:ios']} />
 
-You may need to run `npx pod-install` to link the native iOS packages using [CocoaPods](https://cocoapods.org/), this is like running `yarn` or `npm install` in an Expo project. `expo run:ios` does this automatically when the `package.json` changes.
+You may need to run `npx pod-install` to link the native iOS packages using [CocoaPods](https://cocoapods.org/), this is like running `yarn` or `npm install` in an Expo project. `expo run:ios` does this automatically when the **package.json** changes.
 
 ### Android configuration
 

@@ -26,11 +26,11 @@ Push Notifications are currently unavailable with ad hoc clients until we comple
 
 #### Google Maps
 
-You will need to run `expo client:ios` in a project directory with a valid `app.json`, or pass in the flag to your custom configuration file with `--config <path-to-file.json>`. Make sure you set your Google API key in `ios.config.googleMapsApiKey` as described [here](../versions/latest/sdk/map-view.md#deploying-google-maps-to-a-standalone-app).
+You will need to run `expo client:ios` in a project directory with a valid **app.json**, or pass in the flag to your custom configuration file with `--config <path-to-file.json>`. Make sure you set your Google API key in `ios.config.googleMapsApiKey` as described [here](../versions/latest/sdk/map-view.md#deploying-google-maps-to-a-standalone-app).
 
 #### Facebook
 
-Add the following fields to your `app.json` file:
+Add the following fields to your **app.json** file:
 
 - `facebookScheme` set to your Facebook login redirect URL scheme found [here](https://developers.facebook.com/docs/facebook-login/ios) under "_4. Configure Your info.plist_." It should look like `"fb123456"`. If you do not do this, Facebook will not be able to redirect to your app after logging in.
 
@@ -203,7 +203,7 @@ An App Store app gets re-signed with an Apple certificate when it goes on the st
 
 ### Uploading existing certificate
 
-If you have a password-protected certificate, you can provide the path to your `.p12` file as well as your password for upload. We recommend following [this excellent guide on making a P12 file](https://calvium.com/how-to-make-a-p12-file/) for making your own certificates.
+If you have a password-protected certificate, you can provide the path to your **.p12** file as well as your password for upload. We recommend following [this excellent guide on making a P12 file](https://calvium.com/how-to-make-a-p12-file/) for making your own certificates.
 
 **Note:** this guide recommends leaving the P12's password blank, but a **P12 password is required** to upload your own certificate to Expo's service. Please enter a password when prompted.
 

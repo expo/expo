@@ -31,7 +31,7 @@ To inspect bundle sizes, you can use a Webpack plugin called [_Webpack Bundle An
 ### Using Bundle Analyzer
 
 1. Install the bundle analyzer: `yarn add -D webpack-bundle-analyzer`
-2. Reveal the Webpack Config: `expo customize:web` and select `webpack.config.js`.
+2. Reveal the Webpack Config: `expo customize:web` and select **webpack.config.js**.
 3. Customize the config to generate a web report:
 
 ```js

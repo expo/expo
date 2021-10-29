@@ -30,7 +30,7 @@ export default function App() {
 
 ## Using Expo SDK Libraries
 
-The Expo SDK picks up where the React Native core libraries end - it provides access to a lot of useful device and system functionality like audio, barcode scanning, camera, calendar, contacts, video, and so on. It also adds other powerful libraries like over-the-air updates, maps, OAuth authentication tools, and more. For details on how we decide what goes into the Expo SDK, [read here](https://expo.fyi/whats-in-the-sdk).
+The Expo SDK picks up where the React Native core libraries end - it provides access to a lot of useful device and system functionality like audio, barcode scanning, camera, calendar, contacts, video, and so on. It also adds other powerful libraries like updates, maps, OAuth authentication tools, and more. For details on how we decide what goes into the Expo SDK, [read here](https://expo.fyi/whats-in-the-sdk).
 
 To use a library from the Expo SDK, find the one you are looking for in the [API Reference](https://docs.expo.dev/versions/latest/) or through the documentation Search bar.
 
@@ -118,8 +118,9 @@ Be sure to follow the project website or README for any additional configuration
 npx npm-home @react-navigation/native
 ```
 
-If the module needs additional native configuration, you can do so using [config plugins](../guides/config-plugins.md). 
+If the module needs additional native configuration, you can do so using [config plugins](../guides/config-plugins.md).
 
 If the module is not supported in Expo Go, at this point you should:
+
 - Build your project [locally](../build-reference/local-builds.md) or with [EAS Build](../build/introduction.md)
 - Create [a custom client](../clients/introduction.md) to develop against

@@ -59,6 +59,11 @@ android {
     versionCode 32
     versionName "12.0.1"
   }
+
+  kotlinOptions {
+    jvmTarget = JavaVersion.VERSION_1_8
+  }
+
   lintOptions {
     abortOnError false
   }

@@ -5,7 +5,7 @@ sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-40/packages/expo-google-si
 
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 
-**`expo-google-sign-in`** provides native Google authentication for **standalone** Expo apps or bare React Native apps. It cannot be used in the Expo Go as the native `GoogleSignIn` library expects your `REVERSED_CLIENT_ID` in the `info.plist` at build-time. To use Google authentication in the Expo Go, check out [`expo-google-app-auth`](google.md) or [expo-app-auth](app-auth.md).
+`expo-google-sign-in` provides native Google authentication for **standalone** Expo apps or bare React Native apps. It cannot be used in the Expo Go as the native `GoogleSignIn` library expects your `REVERSED_CLIENT_ID` in the **Info.plist** at build-time. To use Google authentication in the Expo Go, check out [`expo-google-app-auth`](google.md) or [expo-app-auth](app-auth.md).
 
 <PlatformsSection android emulator ios simulator />
 
@@ -15,8 +15,8 @@ For [managed](../../../introduction/managed-vs-bare.md#managed-workflow) apps, y
 
 ## Configuration
 
-1. Go to your `app.json` and make sure you define your `ios.bundleIdentifier` and the `android.package` you want to use.
-2. In `app.json`, set `expo.ios.config.googleSignIn.reservedClientId` to your reversed client ID.
+1. Go to your **app.json** and make sure you define your `ios.bundleIdentifier` and the `android.package` you want to use.
+2. In **app.json**, set `expo.ios.config.googleSignIn.reservedClientId` to your reversed client ID.
 
 ### Usage with Firebase
 
@@ -27,9 +27,9 @@ When using Firebase, also configure the Google-services configuration files:
 3. (**Android only**) Go to your Firebase project's settings, scroll down to "Your apps" and select your Android app. Under `SHA certificate fingerprints`, click `Add fingerprint`, and paste the value of you get for `Google Certificate Fingerprint` when running `expo fetch:android:hashes`.
    > If you haven't already run `expo build:android` for this project, you'll need to do that first before getting the Google Certificate Fingerprint.
 4. Download the `GoogleService-Info.plist` (iOS) & the `google-services.json` (Android) from your Firebase project settings page. Move them to your Expo project.
-5. In `app.json`, set your `expo.ios.config.googleSignIn.reservedClientId` to the value of `REVERSED_CLIENT_ID` in the `GoogleService-Info.plist`.
-6. Also in `app.json`, set `expo.ios.googleServicesFile` to the relative path of your `GoogleService-Info.plist`. Make sure the file is located somewhere in your Expo project.
-7. And also in `app.json`, set `expo.android.googleServicesFile` to the relative path of your `google-services.json`. Make sure the file is located somewhere in your Expo project.
+5. In **app.json**, set your `expo.ios.config.googleSignIn.reservedClientId` to the value of `REVERSED_CLIENT_ID` in the `GoogleService-Info.plist`.
+6. Also in **app.json**, set `expo.ios.googleServicesFile` to the relative path of your `GoogleService-Info.plist`. Make sure the file is located somewhere in your Expo project.
+7. And also in **app.json**, set `expo.android.googleServicesFile` to the relative path of your `google-services.json`. Make sure the file is located somewhere in your Expo project.
 
 ```js
  // app.json

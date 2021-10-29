@@ -42,20 +42,20 @@ The command will perform the following steps:
 
   - The latest finished Android build for the project on EAS servers.
   - Specific build ID. It can be found on the [builds dashboard](https://expo.dev/builds).
-  - Path to an `.apk` or `.aab` archive on your local filesystem.
+  - Path to an **.apk** or **.aab** archive on your local filesystem.
   - URL to the app archive.
 
   > This step can be skipped if one of the following CLI parameters is provided: `--latest`, `--id`, `--path`, or `--url`.
 
-- Unless `serviceAccountKeyPath` is provided in `eas.json`, you will be prompted for the path to your Google Services JSON key.
+- Unless `serviceAccountKeyPath` is provided in **eas.json**, you will be prompted for the path to your Google Services JSON key.
 - The summary of provided configuration is displayed and the submission process begins. The submission progress is displayed on the screen.
 - Your build should now be visible on Google Play Console. If something goes wrong, an appropriate message is displayed on the screen.
 
 ## Submitting your app using CI
 
-The `eas submit` command is able to perform submissions from a CI environment. All you have to do is ensure that all required information is provided with `eas.json` and environment variables. Mainly, providing the archive source (`--latest`, `--id`, `--path`, or `--url`) is essential. Also, make sure that the Android package name is present in your [app config file](/workflow/configuration.md).
+The `eas submit` command is able to perform submissions from a CI environment. All you have to do is ensure that all required information is provided with **eas.json** and environment variables. Mainly, providing the archive source (`--latest`, `--id`, `--path`, or `--url`) is essential. Also, make sure that the Android package name is present in your [app config file](/workflow/configuration.md).
 
-For Android submissions, you must provide the path to your Google Services JSON key using the `serviceAccountKeyPath` key in `eas.json`. You may also find the `track` and `releaseStatus` parameters useful.
+For Android submissions, you must provide the path to your Google Services JSON key using the `serviceAccountKeyPath` key in **eas.json**. You may also find the `track` and `releaseStatus` parameters useful.
 
 Example usage:
 
