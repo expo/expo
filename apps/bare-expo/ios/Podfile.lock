@@ -151,9 +151,7 @@ PODS:
     - EXManifests
     - expo-dev-menu-interface
     - EXUpdatesInterface
-    - Nimble
     - OHHTTPStubs
-    - Quick
     - React-Core
     - React-CoreModules
   - expo-dev-launcher/Unsafe (0.8.1):
@@ -1270,7 +1268,7 @@ SPEC CHECKSUMS:
   EXPermissions: 08ccf78a0eb404c28df6d226fcc8fcf2e558b421
   Expo: 23ed30f225511b93fa6a0c14d9a3208d6b749060
   expo-dev-client: 97a9589d2ea0325a8dd4dff284fe3a4b9166bbce
-  expo-dev-launcher: e76a3b8cca8f61c32c80a8dcd894c631f09329e6
+  expo-dev-launcher: 7a90ad1519263eda3e8675bf6712f2f89f8fe2a9
   expo-dev-menu: 2128d93f91fd340bd7f3c6c6a2ece2076d7526ae
   expo-dev-menu-interface: 508467f2ba2aedda7a44e5080cc1e9a43ab7375e
   ExpoModulesCore: 5bf01ec7e83f3fa3c052eb0d0ed3d14df4145641
