@@ -14,11 +14,6 @@ export default function SystemUIScreen() {
         <Section title="Background Color">
           <BackgroundColorExample />
         </Section>
-        {Platform.OS === 'android' && (
-          <Section title="User Interface Style">
-            <UserInterfaceStyleExample />
-          </Section>
-        )}
       </Page>
     </ScrollView>
   );
@@ -41,35 +36,6 @@ function BackgroundColorExample() {
         onPress={async () => setColor(await SystemUI.getBackgroundColorAsync())}
         title={`Get background color to random color: ${color?.toString()}`}
       />
-    </>
-  );
-}
-
-const SystemUIUserInterfaceStyles: SystemUI.SystemUIUserInterfaceStyle[] = [
-  'light',
-  'dark',
-  'automatic',
-];
-
-function UserInterfaceStyleExample() {
-  const scheme = useColorScheme();
-  const [style, setStyle] = React.useState<SystemUI.SystemUIUserInterfaceStyle>('light');
-
-  const nextStyle = React.useMemo(() => {
-    const index = SystemUIUserInterfaceStyles.indexOf(style);
-    const newIndex = (index + 1) % SystemUIUserInterfaceStyles.length;
-    return SystemUIUserInterfaceStyles[newIndex];
-  }, [style]);
-
-  const onPress = React.useCallback(() => {
-    SystemUI.setUserInterfaceStyleAsync(nextStyle);
-    setStyle(nextStyle);
-  }, [nextStyle]);
-
-  return (
-    <>
-      <Button onPress={onPress} title={`User Interface Style: ${nextStyle}`} />
-      <Text>Current: {scheme}</Text>
     </>
   );
 }

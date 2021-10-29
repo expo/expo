@@ -66,15 +66,6 @@ class SystemUIModule(context: Context) : ExportedModule(context) {
     }
   }
 
-  @ExpoMethod
-  fun setUserInterfaceStyleAsync(style: String, promise: Promise) {
-    safeRunOnUiThread(promise) {
-      SystemUI.setUserInterfaceStyle(style, {
-        promise.resolve(null)
-      }, { m -> promise.reject(ERROR_TAG, m) })
-    }
-  }
-
   companion object {
     private const val NAME = "ExpoSystemUI"
     private const val ERROR_TAG = "ERR_SYSTEM_UI"
