@@ -224,6 +224,7 @@ async function generatePackageListAsync(modules, options) {
     }
     catch (e) {
         console.error(chalk_1.default.red(`Generating package list is not available for platform: ${options.platform}`));
+        throw e;
     }
 }
 exports.generatePackageListAsync = generatePackageListAsync;

@@ -3,7 +3,6 @@
 #import <EXFacebook/EXFacebookAppDelegate.h>
 #import <EXFacebook/EXFacebook.h>
 #import <FBSDKCoreKit/FBSDKCoreKit.h>
-#import <ExpoModulesCore/EXAppDelegateWrapper.h>
 #import <objc/runtime.h>
 
 @implementation EXFacebookAppDelegate

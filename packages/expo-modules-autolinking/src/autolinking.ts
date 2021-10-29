@@ -288,6 +288,7 @@ export async function generatePackageListAsync(
     console.error(
       chalk.red(`Generating package list is not available for platform: ${options.platform}`)
     );
+    throw e;
   }
 }
 
