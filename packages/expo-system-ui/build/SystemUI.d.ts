@@ -19,3 +19,12 @@ export declare function setBackgroundColorAsync(color: ColorValue): Promise<void
  * @returns Current root view background color in hex format.
  */
 export declare function getBackgroundColorAsync(): Promise<ColorValue>;
+/**
+ * Sets the app-wide user interface style.
+ *
+ * @example
+ * ```ts
+ * await SystemUI.setUserInterfaceStyleAsync('automatic');
+ * ```
+ */
+export declare function setUserInterfaceStyleAsync(style: 'light' | 'dark' | 'automatic'): Promise<void>;

@@ -70,8 +70,6 @@ android {
 
 dependencies {
   implementation project(':expo-modules-core')
-  implementation project(":expo-manifests")
-  implementation project(':expo-json-utils')
 
   //noinspection GradleDynamicVersion
   implementation 'com.facebook.react:react-native:+'

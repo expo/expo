@@ -1,3 +1,4 @@
+import { UnavailabilityError } from 'expo-modules-core';
 import { ColorValue, processColor } from 'react-native';
 
 import ExpoSystemUI from './ExpoSystemUI';
@@ -27,4 +28,21 @@ export async function setBackgroundColorAsync(color: ColorValue): Promise<void> 
  */
 export async function getBackgroundColorAsync(): Promise<ColorValue> {
   return await ExpoSystemUI.getBackgroundColorAsync();
+}
+
+/**
+ * Sets the app-wide user interface style.
+ *
+ * @example
+ * ```ts
+ * await SystemUI.setUserInterfaceStyleAsync('automatic');
+ * ```
+ */
+export async function setUserInterfaceStyleAsync(
+  style: 'light' | 'dark' | 'automatic'
+): Promise<void> {
+  if (!ExpoSystemUI.setUserInterfaceStyleAsync) {
+    throw new UnavailabilityError('SystemUI', 'setUserInterfaceStyleAsync');
+  }
+  return await ExpoSystemUI.setUserInterfaceStyleAsync(style);
 }

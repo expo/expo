@@ -17,27 +17,24 @@ object SystemUI : SingletonModule {
     return "SystemUI"
   }
 
-  private fun nightModeFromString(userInterfaceStyle: String?): Int {
-    return if (userInterfaceStyle == null) {
+  fun setUserInterfaceStyle(
+    style: String,
+    successCallback: () -> Unit,
+    failureCallback: (reason: String) -> Unit) {
+
+    val mode = if (style == null) {
       AppCompatDelegate.MODE_NIGHT_NO
-    } else when (userInterfaceStyle) {
+    } else when (style) {
       "automatic" -> {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) {
           AppCompatDelegate.MODE_NIGHT_AUTO_BATTERY
         } else AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
       }
       "dark" -> AppCompatDelegate.MODE_NIGHT_YES
-      "light" -> AppCompatDelegate.MODE_NIGHT_NO
-      else -> AppCompatDelegate.MODE_NIGHT_NO
+      "", "light" -> AppCompatDelegate.MODE_NIGHT_NO
+      else -> return failureCallback("Invalid user interface style: \"$style\"")
     }
-  }
-
-  fun setUserInterfaceStyle(
-    style: String,
-    successCallback: () -> Unit,
-    failureCallback: (reason: String) -> Unit) {
-
-    AppCompatDelegate.setDefaultNightMode(nightModeFromString(style))
+    AppCompatDelegate.setDefaultNightMode(mode)
     successCallback()
   }
 
@@ -45,5 +42,4 @@ object SystemUI : SingletonModule {
   fun setUserInterfaceStyle(style: String) {
     setUserInterfaceStyle(style, {}, { m -> Log.e(TAG, m) })
   }
-
 }
