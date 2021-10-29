@@ -6,9 +6,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface EXDevLauncherRCTCxxBridge : RCTCxxBridge
 
+- (NSArray<Class> *)filterModuleList:(NSArray<Class> *)modules;
+
 @end
 
 @interface EXDevLauncherRCTBridge : RCTBridge
+
+- (Class)bridgeClass;
 
 @end
 

@@ -50,4 +50,8 @@ public class EXDevLauncherRecentlyOpenedAppsRegistry : NSObject {
   func getCurrentTimestamp() -> Int64 {
     return Int64(Date().timeIntervalSince1970 * 1000);
   }
+
+  func resetStorage() {
+    UserDefaults.standard.removeObject(forKey: RECENTLY_OPENED_APPS_REGISTRY_KEY)
+  }
 }
