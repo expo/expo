@@ -1,4 +1,5 @@
 import { ColorValue } from 'react-native';
+import { SystemUIUserInterfaceStyle } from './SystemUI.types';
 /**
  * Changes the root view background color.
  *
@@ -27,4 +28,5 @@ export declare function getBackgroundColorAsync(): Promise<ColorValue>;
  * await SystemUI.setUserInterfaceStyleAsync('automatic');
  * ```
  */
-export declare function setUserInterfaceStyleAsync(style: 'light' | 'dark' | 'automatic'): Promise<void>;
+export declare function setUserInterfaceStyleAsync(style: SystemUIUserInterfaceStyle): Promise<void>;
+export * from './SystemUI.types';

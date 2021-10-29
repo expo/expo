@@ -2,6 +2,7 @@ import { UnavailabilityError } from 'expo-modules-core';
 import { ColorValue, processColor } from 'react-native';
 
 import ExpoSystemUI from './ExpoSystemUI';
+import { SystemUIUserInterfaceStyle } from './SystemUI.types';
 
 /**
  * Changes the root view background color.
@@ -38,11 +39,11 @@ export async function getBackgroundColorAsync(): Promise<ColorValue> {
  * await SystemUI.setUserInterfaceStyleAsync('automatic');
  * ```
  */
-export async function setUserInterfaceStyleAsync(
-  style: 'light' | 'dark' | 'automatic'
-): Promise<void> {
+export async function setUserInterfaceStyleAsync(style: SystemUIUserInterfaceStyle): Promise<void> {
   if (!ExpoSystemUI.setUserInterfaceStyleAsync) {
     throw new UnavailabilityError('SystemUI', 'setUserInterfaceStyleAsync');
   }
   return await ExpoSystemUI.setUserInterfaceStyleAsync(style);
 }
+
+export * from './SystemUI.types';

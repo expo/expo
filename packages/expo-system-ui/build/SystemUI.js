@@ -40,4 +40,5 @@ export async function setUserInterfaceStyleAsync(style) {
     }
     return await ExpoSystemUI.setUserInterfaceStyleAsync(style);
 }
+export * from './SystemUI.types';
 //# sourceMappingURL=SystemUI.js.map

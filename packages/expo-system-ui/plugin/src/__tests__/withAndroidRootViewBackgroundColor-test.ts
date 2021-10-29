@@ -11,7 +11,14 @@ const { parseXMLAsync } = XML;
 const { getColorsAsObject, getObjectAsColorsXml } = AndroidConfig.Colors;
 const { getAppThemeLightNoActionBarGroup, getStylesGroupAsObject } = AndroidConfig.Styles;
 
-jest.mock('../../plugins/android-plugins');
+jest.mock('@expo/config-plugins', () => {
+  const plugins = jest.requireActual('@expo/config-plugins');
+  return {
+    ...plugins,
+    withAndroidColors: jest.fn(),
+    withAndroidStyles: jest.fn(),
+  };
+});
 
 describe(getRootViewBackgroundColor, () => {
   it(`returns null if no backgroundColor is provided`, () => {
