@@ -5,9 +5,9 @@ import Dispatch
  */
 public class ModuleHolder {
   /**
-   Lazy-loaded instance of the module. Created from module's definition.
+   Instance of the module.
    */
-  private(set) var module: AnyModule?
+  private(set) var module: AnyModule
 
   /**
    A weak reference to the app context.
@@ -20,50 +20,30 @@ public class ModuleHolder {
   let definition: ModuleDefinition
 
   /**
-   Shorthand form of `definition.name`.
+   Returns `definition.name` if not empty, otherwise falls back to the module type name.
    */
-  var name: String { definition.name }
+  var name: String {
+    return definition.name.isEmpty ? String(describing: type(of: module)) : definition.name
+  }
 
-  init(appContext: AppContext, definition: ModuleDefinition) {
+  init(appContext: AppContext, module: AnyModule) {
     self.appContext = appContext
-    self.definition = definition
-  }
-
-  /**
-   Creates (if needed) and returns the module based on associated definition and then returns it.
-   */
-  func getInstance() throws -> AnyModule? {
-    guard let appContext = appContext else {
-      throw AppContext.DeallocatedAppContextError()
-    }
-    if module == nil, let moduleType = definition.type {
-      module = moduleType.init(appContext: appContext)
-      post(event: .moduleCreate)
-    }
-    return module
-  }
-
-  /**
-   Whether held module is or would be (instance may not be created yet) of given type.
-   */
-  func isOfType<ModuleType>(_ type: ModuleType.Type) -> Bool {
-    return definition.type is ModuleType.Type
+    self.module = module
+    self.definition = module.definition()
+    post(event: .moduleCreate)
   }
 
   // MARK: Calling methods
 
   func call(method methodName: String, args: [Any?], promise: Promise) {
     do {
-      guard let module = try getInstance() else {
-        throw ModuleNotFoundError(moduleName: self.name)
-      }
       guard let method = definition.methods[methodName] else {
         throw MethodNotFoundError(methodName: methodName, moduleName: self.name)
       }
       let queue = method.queue ?? DispatchQueue.global(qos: .default)
 
       queue.async {
-        method.call(module: module, args: args, promise: promise)
+        method.call(args: args, promise: promise)
       }
     } catch let error as CodedError {
       promise.reject(error)
@@ -82,11 +62,8 @@ public class ModuleHolder {
   }
 
   func callSync(method methodName: String, args: [Any?]) -> Any? {
-    guard let module = try? getInstance() else {
-      return nil
-    }
     if let method = definition.methods[methodName] {
-      return method.callSync(module: module, args: args)
+      return method.callSync(args: args)
     }
     return nil
   }

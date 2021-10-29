@@ -21,7 +21,6 @@ class ModuleRegistrySpec: QuickSpec {
       moduleRegistry.register(moduleType: moduleType)
 
       expect(moduleRegistry.has(moduleWithName: name)).to(beTrue())
-      expect(moduleRegistry.contains { $0.isOfType(ModuleType.self) }).to(beTrue())
     }
   }
 }

@@ -41,7 +41,7 @@ class NavigationBarReactActivityLifecycleListener(activityContext: Context) : Re
     var value = context.getString(R.string.expo_navigation_bar_border_color)
 
     var parsed = value.toIntOrNull()
-    if (value != null && parsed == null) {
+    if (value != null && value != "" && parsed == null) {
       Log.e(ERROR_TAG, "Invalid XML value \"$value\" for string \"expo_navigation_bar_border_color\". Expected a valid color int like \"-12177173\". Ensure the value of \"borderColor\" in the \"expo-navigation-bar\" config plugin is a valid CSS color. Skipping initial border color.")
     }
     return parsed

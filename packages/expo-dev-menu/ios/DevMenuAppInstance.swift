@@ -13,7 +13,19 @@ class DevMenuAppInstance: NSObject, RCTBridgeDelegate {
     super.init()
 
     self.bridge = DevMenuRCTBridge.init(delegate: self, launchOptions: nil)
+    fixChromeDevTools()
+  }
+  
+  init(manager: DevMenuManager, bridge: RCTBridge) {
+    self.manager = manager
 
+    super.init()
+
+    self.bridge = bridge
+    fixChromeDevTools()
+  }
+
+  private func fixChromeDevTools() {
     // Hermes inspector will use latest executed script for Chrome DevTools Protocol.
     // It will be EXDevMenuApp.ios.js in our case.
     // To let Hermes aware target bundle, we try to reload here as a workaround solution.

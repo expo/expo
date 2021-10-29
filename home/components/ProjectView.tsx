@@ -246,7 +246,11 @@ function NewLaunchSection({ app }: { app: ProjectDataProject }) {
     return null;
   }
 
-  const branchManifests = app.updateBranches.map((branch) => ({
+  const branchesToRender = app.updateBranches.filter(
+    (updateBranch) => updateBranch.updates.length > 0
+  );
+
+  const branchManifests = branchesToRender.map((branch) => ({
     branchName: branch.name,
     manifestUrl: branch.updates[0].manifestPermalink,
     sdkVersion: getSDKMajorVersionForEASUpdateBranch(branch),

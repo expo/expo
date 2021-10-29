@@ -2,35 +2,35 @@ import CoreTelephony
 import ExpoModulesCore
 
 public class CellularModule: Module {
-  public static func definition() -> ModuleDefinition {
+  public func definition() -> ModuleDefinition {
     name("ExpoCellular")
 
     constants {
-      getCurrentCellularInfo()
+      Self.getCurrentCellularInfo()
     }
 
     method("getCellularGenerationAsync") { () -> Int in
-      currentCellularGeneration().rawValue
+      Self.currentCellularGeneration().rawValue
     }
 
     method("allowsVoipAsync") { () -> Bool? in
-      currentCarrier()?.allowsVOIP
+      Self.currentCarrier()?.allowsVOIP
     }
 
     method("getIsoCountryCodeAsync") { () -> String? in
-      currentCarrier()?.isoCountryCode
+      Self.currentCarrier()?.isoCountryCode
     }
 
     method("getCarrierNameAsync") { () -> String? in
-      currentCarrier()?.carrierName
+      Self.currentCarrier()?.carrierName
     }
 
     method("getMobileCountryCodeAsync") { () -> String? in
-      currentCarrier()?.mobileCountryCode
+      Self.currentCarrier()?.mobileCountryCode
     }
 
     method("getMobileNetworkCodeAsync") { () -> String? in
-      currentCarrier()?.mobileNetworkCode
+      Self.currentCarrier()?.mobileNetworkCode
     }
   }
 
