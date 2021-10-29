@@ -35,8 +35,8 @@ class ReactActivityDelegateWrapper(
 
   override fun createRootView(): ReactRootView {
     return reactActivityHandlers.asSequence()
-            .map { it.createReactRootView(activity) }
-            .firstOrNull() ?: invokeDelegateMethod("createRootView")
+      .map { it.createReactRootView(activity) }
+      .firstOrNull() ?: invokeDelegateMethod("createRootView")
   }
 
   override fun getReactNativeHost(): ReactNativeHost {
@@ -61,7 +61,8 @@ class ReactActivityDelegateWrapper(
     // Instead we intercept `ReactActivityDelegate.onCreate` and replace the `mReactDelegate` with our version.
     // That's not ideal but works.
     val reactDelegate = object : ReactDelegate(
-            plainActivity, reactNativeHost, mainComponentName, launchOptions) {
+      plainActivity, reactNativeHost, mainComponentName, launchOptions
+    ) {
       override fun createRootView(): ReactRootView {
         return this@ReactActivityDelegateWrapper.createRootView()
       }

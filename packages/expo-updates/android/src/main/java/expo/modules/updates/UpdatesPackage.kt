@@ -4,9 +4,6 @@ import android.content.Context
 import android.content.pm.PackageManager
 import android.util.Log
 import androidx.annotation.UiThread
-import com.facebook.react.ReactInstanceManager
-import com.facebook.react.bridge.JavaScriptContextHolder
-import com.facebook.react.bridge.ReactApplicationContext
 import expo.modules.core.ExportedModule
 import expo.modules.core.interfaces.Package
 import expo.modules.core.interfaces.InternalModule
