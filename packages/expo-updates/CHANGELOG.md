@@ -20,6 +20,7 @@
 - Fix support for `react.entryFile` gradle config. ([#14934](https://github.com/expo/expo/pull/14934) by [@EvanBacon](https://github.com/EvanBacon))
 - Fix Android app.manifest not generated when in OneSignal gradle plugin integration. ([#14938](https://github.com/expo/expo/pull/14938) by [@kudo](https://github.com/kudo))
 - Fix Android app.manifest not generated from [#14938](https://github.com/expo/expo/pull/14938) regression. ([#14953](https://github.com/expo/expo/pull/14953) by [@kudo](https://github.com/kudo))
+- Fix iOS app.manifest generation error in `eas build --local` mode. ([#14956](https://github.com/expo/expo/pull/14956) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others
 
