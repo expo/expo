@@ -72,6 +72,9 @@ public class ${className}: ModulesProvider {
 }
 `;
 }
+/**
+ * Formats an array of class names to Swift's array containing these classes.
+ */
 function formatArrayOfClassNames(classNames) {
     const indent = '  ';
     return `[${classNames.map((className) => `\n${indent.repeat(3)}${className}.self`).join(',')}
