@@ -55,9 +55,12 @@ class LegacyArchitectureBenchmark {
       emptyList()
     )
 
-    proxy = NativeModulesProxy(null, legacyModuleRegister, object : ModulesProvider {
-      override fun getModulesList(): List<Class<out Module>> = emptyList()
-    })
+    proxy = NativeModulesProxy(
+      null, legacyModuleRegister,
+      object : ModulesProvider {
+        override fun getModulesList(): List<Class<out Module>> = emptyList()
+      }
+    )
   }
 
   @Ignore("It's a benchmark")
