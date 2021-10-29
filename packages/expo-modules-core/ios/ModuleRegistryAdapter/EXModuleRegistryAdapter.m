@@ -7,12 +7,7 @@
 #import <ExpoModulesCore/EXViewManagerAdapterClassesRegistry.h>
 #import <ExpoModulesCore/EXModuleRegistryHolderReactModule.h>
 #import <ExpoModulesCore/EXReactNativeEventEmitter.h>
-#if __has_include(<ExpoModulesCore/ExpoModulesCore-Swift.h>)
-// For cocoapods framework, the generated swift header will be inside ExpoModulesCore module
-#import <ExpoModulesCore/ExpoModulesCore-Swift.h>
-#else
-#import "ExpoModulesCore-Swift.h"
-#endif
+#import <ExpoModulesCore/Swift.h>
 
 @interface EXModuleRegistryAdapter ()
 

@@ -12,6 +12,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix iOS app freezing in remote debugging mode. ([#14922](https://github.com/expo/expo/pull/14922) by [@kudo](https://github.com/kudo))
+
 ### 💡 Others
 
 ## 0.4.5 — 2021-10-25

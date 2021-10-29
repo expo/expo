@@ -34,6 +34,7 @@ Pod::Spec.new do |s|
   end
 
   s.exclude_files = 'Tests/'
+  s.private_header_files = '**/Swift.h'
 
   s.test_spec 'Tests' do |test_spec|
     test_spec.dependency 'Quick'

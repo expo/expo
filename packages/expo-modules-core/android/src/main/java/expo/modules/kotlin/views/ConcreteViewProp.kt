@@ -9,7 +9,7 @@ class ConcreteViewProp<ViewType : View, PropType>(
 
   @Suppress("UNCHECKED_CAST")
   override fun set(prop: Any?, onView: View) {
-    // TODO(@lukmccall): use TypeMapper to convert types
+    // TODO(@lukmccall): use TypeConverterHelper to convert types
     setter(onView as ViewType, prop as PropType)
   }
 }
