@@ -10,7 +10,7 @@
 
 ### 💡 Others
 
-- Use `ServerTokenResponseConfig` type for parameters type in `fromQueryParams` instead of more generic Record. ([#14738](https://github.com/expo/expo/pull/14738) by [@Simek](https://github.com/Simek))
+- Use `ServerTokenResponseConfig` type for parameters type in `fromQueryParams` method instead of more generic `Record` type. ([#14738](https://github.com/expo/expo/pull/14738) by [@Simek](https://github.com/Simek))
 
 ## 3.4.1 — 2021-10-01
 
