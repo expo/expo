@@ -3,13 +3,13 @@
 #import <Foundation/FoundationErrors.h>
 
 #import <ExpoModulesCore/EXModuleRegistryProvider.h>
-#import <ExpoModulesCore/EXAppDelegateWrapper.h>
+#import <ExpoModulesCore/EXLegacyAppDelegateWrapper.h>
 
 static NSMutableArray<id<UIApplicationDelegate>> *subcontractors;
 static NSMutableDictionary<NSString *,NSArray<id<UIApplicationDelegate>> *> *subcontractorsForSelector;
 static dispatch_once_t onceToken;
 
-@implementation EXAppDelegateWrapper
+@implementation EXLegacyAppDelegateWrapper
 
 @synthesize window = _window;
 

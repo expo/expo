@@ -42,9 +42,9 @@ EX_REGISTER_SINGLETON_MODULE(ScreenOrientationRegistry)
   return self;
 }
 
-- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary<UIApplicationLaunchOptionsKey,id> *)launchOptions
+- (void)updateCurrentScreenOrientation
 {
-  // application:didFinishLaunchingWithOptions should be executed on the main thread.
+  // This should already be executed on the main thread.
   // However, it's safer to ensure that we are on a good thread.
   EX_WEAKIFY(self);
   [EXUtilities performSynchronouslyOnMainThread:^{
@@ -59,8 +59,6 @@ EX_REGISTER_SINGLETON_MODULE(ScreenOrientationRegistry)
       self.currentScreenOrientation = UIApplication.sharedApplication.statusBarOrientation;
     }
   }];
-  
-  return YES;
 }
 
 - (void)dealloc

@@ -1,7 +1,6 @@
 // Copyright 2016-present 650 Industries. All rights reserved.
 
 #import <EXAppAuth/EXAppAuthAppDelegate.h>
-#import <ExpoModulesCore/EXAppDelegateWrapper.h>
 #import <EXAppAuth/EXAppAuthSessionsManager.h>
 #import <ExpoModulesCore/EXModuleRegistryProvider.h>
 

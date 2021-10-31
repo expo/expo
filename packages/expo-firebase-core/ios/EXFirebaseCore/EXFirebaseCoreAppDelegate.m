@@ -1,7 +1,6 @@
 // Copyright 2021-present 650 Industries. All rights reserved.
 
 #import <EXFirebaseCore/EXFirebaseCoreAppDelegate.h>
-#import <ExpoModulesCore/EXAppDelegateWrapper.h>
 #import <ExpoModulesCore/EXModuleRegistryProvider.h>
 #import <Firebase/Firebase.h>
 
