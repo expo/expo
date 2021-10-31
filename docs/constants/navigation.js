@@ -40,6 +40,7 @@ const sections = [
       'Configuring EAS Build with eas.json',
       'Updates',
       'Internal distribution',
+      'Automating submissions',
       'Triggering builds from CI',
     ],
   },

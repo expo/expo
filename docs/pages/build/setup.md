@@ -3,17 +3,16 @@ title: Creating your first build
 ---
 
 import ImageSpotlight from '~/components/plugins/ImageSpotlight'
-import { InlineCode } from '~/components/base/code';
 
 In this guide, you'll learn how to build a ready-to-submit binary for the Apple App Store and Google Play Store using EAS Build.
 
-Alternatively, if you prefer to sideload the app to your Android device / emulator or install it in the iOS simulator, we'll point you towards resources that explain how to do that.
+Alternatively, if you prefer to install the app directly to your Android device / emulator or install it in the iOS simulator, we'll point you towards resources that explain how to do that.
 
-For a simple app, you should expect to have kicked off your builds for Android and iOS within a few minutes.
+For a small app, you should expect to have kicked off your builds for Android and iOS within a few minutes. If you encounter any issues along the way, you can reach out on the [Expo forums](https://forums.expo.dev/) or [Discord](https://chat.expo.dev/).
 
 ## Prerequisites
 
-EAS Build is a brand new and rapidly evolving service. It can't do everything yet, so before you set out to create a build for your project we recommend consulting the [limitations](/build-reference/limitations.md) page and the other prerequisites below.
+EAS Build is a new and rapidly evolving service; before you set out to create a build for your project we recommend consulting the [limitations](/build-reference/limitations.md) page and the other prerequisites below.
 
 <details><summary><h4>📦 A React Native iOS and/or Android project that you want to build.</h4></summary>
 <p>
@@ -31,39 +30,26 @@ Don't have a project yet? No problem: it's quick and easy to create a "Hello wor
 </p>
 </details>
 
-> 🆕 Support for Expo managed projects is available as of SDK 41! You need to upgrade your project if you are using a lower SDK version.
-
-<details><summary><h4>💡 An Expo account with an EAS Priority Plan subscription.</h4></summary>
+<details><summary><h4>🙋 An Expo user account.</h4></summary>
 <p>
 
-- You can sign up for an Expo account at [https://expo.dev/signup](https://expo.dev/signup).
-- Learn more about the EAS Priority Plan and sign up for a free month at [https://expo.dev/pricing](https://expo.dev/pricing).
+<!-- TODO: DELETE-FOR-GA -->
+You can sign up at [https://expo.dev/signup](https://expo.dev/signup).
+
+<!-- TODO: ADD-FOR_GA -->
+<!-- EAS Build is available to everybody with an Expo account; you can sign up at [https://expo.dev/signup](https://expo.dev/signup). You can use EAS Build for free, and paid subscriptions provide service quality improvements such as additional build concurrencies, priority access to minimize time your builds spend queueing, and increased limits on build timeouts. [Read more](https://expo.dev/pricing). -->
 
 </p>
 </details>
 
+<!-- TODO: DELETE-FOR-GA -->
 > While EAS Build is in preview, it is available only to EAS Priority Plan subscribers. Once it graduates from preview it will become more broadly available. The first month of the Priority Plan is free, and you can cancel any time.
-
-<details><summary><strong>Are you using the classic build system?</strong> (<InlineCode>expo build:[android|ios]</InlineCode>)</summary> <p>
-
-Learn how to [build with our classic build service](/classic/building-standalone-apps.md).
-
-</p>
-</details>
-
-<!-- <details><summary><h4>🤖 If you want to build for the Play Store: Google Play Developer membership.</h4></summary>
-<p>
-
-- If you are going to use EAS Build to create release builds for the Google Play Store, this requries access to an account with a one-time $25 USD.
-
-</p>
-</details>
-
-> There are other ways to distribute Android applications than Google Play, such as sharing an `apk` file directly with the user, and so this is not strictly required to use EAS Build for Android apps. -->
 
 ## 1. Install the latest EAS CLI
 
-Install EAS CLI by running `npm install -g eas-cli`. It will notify you when a new version is available (we encourage you to always stay up to date with the latest version).
+EAS CLI is the program that you will use to interact with EAS services from your terminal. Install EAS CLI by running `npm install -g eas-cli`. It will notify you when a new version is available (we encourage you to always stay up to date with the latest version).
+
+> We recommend using `npm` instead of `yarn` for global package installations. You may alternatively use `npx eas-cli`, just remember to use that instead of `eas` whenever it's called for in the documentation.
 
 ## 2. Log in to your Expo account
 
@@ -77,8 +63,9 @@ Additional configuration may be required for some scenarios:
 
 - Are you migrating an Expo managed app from `"expo build"`? [Learn about the differences](/build-reference/migrating.md).
 - Does your app code depend on environment variables? [Add them to your build configuration](/build-reference/variables.md).
-- Is your project inside of a monorepo? [Follow these instructions](/build-reference/how-tos.md#how-to-set-up-eas-build-with).
+- Is your project inside of a monorepo? [Follow these instructions](/build-reference/how-tos.md#how-to-set-up-eas-build-with). 
 - Do you use private npm packages? [Add your npm token](/build-reference/private-npm-packages).
+- Does your app depend on specific versions of tools like Node, Yarn, npm, Cocoapods, or Xcode? [Specify these versions in your build configuration](/build/eas-json.md).
 
 ## 4. Run a build
 
@@ -121,29 +108,37 @@ Before the build can start, we'll need to generate or provide app signing creden
 #### Android app signing credentials
 
 - If you have not yet generated a keystore for your app, you can let EAS CLI take care of that for you by selecting `Generate new keystore`, and then you're done. The keystore will be stored securely on EAS servers.
-- If you have previously built your app in the managed workflow with `expo build:android` (using the same `slug`), then the same credentials will be used here.
+- If you have previously built your app with `expo build:android`, then the same credentials will be used here.
 - If you would rather manually generate your keystore, please see the [manual Android credentials guide](/app-signing/local-credentials.md#android-credentials) for more information.
 
 #### iOS app signing credentials
 
 - If you have not generated a provisioning profile and/or distribution certificate yet, you can let EAS CLI take care of that for you by signing into your Apple Developer Program account and following the prompts.
-- If you have already built your app in the managed workflow with `expo build:ios` (using the same `slug`), then the same credentials will be used here.
+- If you have already built your app with `expo build:ios`, then the same credentials will be used here.
 - If you would rather manually generate your credentials, refer to the [manual iOS credentials guide](/app-signing/local-credentials.md#ios-credentials) for more information.
 
 ## 5. Wait for the build to complete
 
-By default, the `eas build` command will wait for your build to complete. However, if you interrupt this command, you can monitor the progress of your builds by either visiting [the EAS Build dashboard](https://expo.dev/builds?type=eas) or running the `eas build:list` command.
+By default, the `eas build` command will wait for your build to complete; but, you can interrupt it if you prefer not to wait. Monitor the progress and read the logs by following the link to the build details page. You can also find this page by visting [your build dashboard](https://expo.dev/builds) or running the `eas build:list` command. If your build is on behalf of an organization that you are a member of, you will find the build details on [the build dashboard for that account](https://expo.dev/accounts/[account]/builds).
 
-## 6. Next steps
+## 6. Deploy the build
 
-### Distribute your app
+If you have made it to this step, congratulations! Depending on which path you chose, you now either have a build that is ready to upload to an app store, or you have a build that you can install directly to an Android device / iOS simulator.
 
-- Ship your app! If you created a build for a store, [learn how to submit your app to app stores with EAS Submit](/submit/introduction.md).
-- Want to distribute your apps to internal testers? [Learn about internal distribution](internal-distribution.md).
-  <!-- - Add new build profiles, such as simulator builds or build specific for certain release environments. -->
+### Distribute your app to an app store
 
-### Get a deeper understanding
+You will only be able to install the submit to an app store if you built specifically for this purpose. If you created a build for a store, [learn how to submit your app to app stores with EAS Submit](/submit/introduction.md).
 
-- If you want to learn more about how of Android and iOS build jobs are performed, check out our [Android build process](/build-reference/android-builds.md) and [iOS build process](/build-reference/ios-builds.md) pages.
-- Learn about the hardware infrastructure that the builds are run on and the software environment that they execute in on the [build server infrastructure reference](/build-reference/infrastructure.md)
-- Learn about [caching dependencies](/build-reference/caching.md), [environment variables](/build-reference/variables.md), and [limitations of EAS Build](/build-reference/limitations.md).
+### Install and run the app
+
+You will only be able to install the app directly to your Android device / iOS simulator if you explicitly built it for purpose; if you built for app store distribution, you will need to upload to an app store and then install it from there (for example, from Apple's TestFlight app).
+
+To learn how to install the app directly to your Android device / iOS simulator, navigate to your build details page from [your build dashboard](https://expo.dev/accounts/[account]/builds) and click the "Install" button.
+
+## Next steps
+
+In this guide we walked through the steps for creating your first build with EAS Build, without going into too much depth on any particular part of the process.
+
+When you are ready to learn more, we recommend proceeding through the "Start Building" section of this documentation to learn about topics like [configuration with eas.json](../eas-json.md), [internal distribution](../internal-distribution.md), [updates](../updates.md), [automating submissions](../automating-submissions.md), and [triggering builds from CI](../building-on-ci.md).
+
+You may also want to dig through the reference section to learn more about the topics that interest you most, such as [build webhooks](/build-reference/build-webhooks.md), [build server infrastructure](/build-reference/infrastructure.md), and how the [Android](/build-reference/android-builds.md) and [iOS](/build-reference/ios-builds.md) build processes work. Enjoy!
