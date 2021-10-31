@@ -9,4 +9,4 @@ const withCellular = (config) => {
     ]);
     return config;
 };
-exports.default = config_plugins_1.createRunOncePlugin(withCellular, pkg.name, pkg.version);
+exports.default = (0, config_plugins_1.createRunOncePlugin)(withCellular, pkg.name, pkg.version);
