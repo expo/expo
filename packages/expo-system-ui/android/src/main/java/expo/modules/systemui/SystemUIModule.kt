@@ -57,11 +57,11 @@ class SystemUIModule(context: Context) : ExportedModule(context) {
   @ExpoMethod
   fun getBackgroundColorAsync(promise: Promise) {
     safeRunOnUiThread(promise) {
-      var mBackground = it.window.decorView.background;
+      var mBackground = it.window.decorView.background
       if (mBackground is ColorDrawable) {
         promise.resolve(colorToHex((mBackground.mutate() as ColorDrawable).color))
       } else {
-        promise.resolve(null);
+        promise.resolve(null)
       }
     }
   }

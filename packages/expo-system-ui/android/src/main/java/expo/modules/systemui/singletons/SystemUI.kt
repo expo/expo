@@ -1,13 +1,8 @@
 package expo.modules.systemui
 
-import android.app.Activity
 import android.os.Build
 import android.util.Log
-import android.view.View
 import androidx.appcompat.app.AppCompatDelegate
-import androidx.core.view.WindowCompat
-import androidx.core.view.WindowInsetsCompat
-import androidx.core.view.WindowInsetsControllerCompat
 import expo.modules.core.interfaces.SingletonModule
 
 object SystemUI : SingletonModule {
@@ -20,7 +15,8 @@ object SystemUI : SingletonModule {
   fun setUserInterfaceStyle(
     style: String,
     successCallback: () -> Unit,
-    failureCallback: (reason: String) -> Unit) {
+    failureCallback: (reason: String) -> Unit
+  ) {
 
     val mode = if (style == null) {
       AppCompatDelegate.MODE_NIGHT_NO
