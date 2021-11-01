@@ -117,6 +117,18 @@ rootProject.getSubprojects().forEach({ project ->
   }
 })
 
+def reanimatedPath = "../vendored/react-native-reanimated/android"
+def minorCopy = Integer.parseInt(minor)
+def reanimatedFolder = file("${reanimatedPath}/${minorCopy}-${engine}")
+while (!reanimatedFolder.exists()) {
+  minorCopy -= 1
+  reanimatedFolder = file("${reanimatedPath}/${minorCopy}-${engine}")
+  if (minorCopy < 62) {
+    throw new GradleException('No matching aar for react-native-reanimated found. Upgrade react-native to 0.63.x or later in order to use the expo-dev-menu package.')
+  }
+}
+def reanimatedVersion = minorCopy
+
 // end of reanimated v2
 
 buildscript {
@@ -186,6 +198,7 @@ android {
 
   sourceSets {
     main {
+      jniLibs.srcDir "$reanimatedPath/$reanimatedVersion-$engine/jni"
       java {
         srcDirs += ['../vendored/react-native-gesture-handler/android/']
       }
@@ -223,18 +236,7 @@ repositories {
 }
 
 dependencies {
-  def reanimatedPath = "../vendored/react-native-reanimated/android"
-  def minorCopy = Integer.parseInt(minor)
-  def aar = file("${reanimatedPath}/devmenu-react-native-reanimated-${minorCopy}-${engine}.aar")
-  while (!aar.exists()) {
-    minorCopy -= 1
-    aar = file("${reanimatedPath}/devmenu-react-native-reanimated-${minorCopy}-${engine}.aar")
-    if (minorCopy < 62) {
-      throw new GradleException('No matching aar for react-native-reanimated found. Upgrade react-native to 0.63.x or later in order to use the expo-dev-menu package.')
-    }
-  }
-
-  implementation files("${reanimatedPath}/devmenu-react-native-reanimated-${minorCopy}-${engine}.aar")
+  implementation files("${reanimatedPath}/${minorCopy}-${engine}/classes.jar")
 
   implementation project(":expo-dev-menu-interface")
 
