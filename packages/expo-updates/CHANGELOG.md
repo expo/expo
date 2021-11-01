@@ -28,6 +28,37 @@
 - Refactor and unify Loader classes on Android. ([#14334](https://github.com/expo/expo/pull/14334) by [@esamelson](https://github.com/esamelson))
 - Kotlinize expo-updates. ([#14818](https://github.com/expo/expo/pull/14334) by [@wschurman](https://github.com/wschurman))
 
+## 0.10.9 — 2021-10-29
+
+_This version does not introduce any user-facing changes._
+
+## 0.10.8 — 2021-10-29
+
+### 🐛 Bug fixes
+
+- Fix Android app.manifest not generated from [#14938](https://github.com/expo/expo/pull/14938) regression. ([#14953](https://github.com/expo/expo/pull/14953) by [@kudo](https://github.com/kudo))
+- Fix iOS app.manifest generation error in `eas build --local` mode. ([#14956](https://github.com/expo/expo/pull/14956) by [@kudo](https://github.com/kudo))
+
+## 0.10.7 — 2021-10-29
+
+_This version does not introduce any user-facing changes._
+
+## 0.10.6 — 2021-10-28
+
+### 🐛 Bug fixes
+
+- Fix Android app.manifest not generated when in OneSignal gradle plugin integration. ([#14938](https://github.com/expo/expo/pull/14938) by [@kudo](https://github.com/kudo))
+
+## 0.10.5 — 2021-10-21
+
+_This version does not introduce any user-facing changes._
+
+## 0.10.4 — 2021-10-15
+
+### 🐛 Bug fixes
+
+- Fix auto setup `EXUpdatesAppDelegate` breaking reanimated installation. ([#14755](https://github.com/expo/expo/pull/14755) by [@kudo](https://github.com/kudo))
+
 ## 0.10.3 — 2021-10-12
 
 ### 🐛 Bug fixes
