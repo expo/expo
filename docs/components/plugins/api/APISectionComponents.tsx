@@ -4,7 +4,9 @@ import { InlineCode } from '~/components/base/code';
 import { B, P } from '~/components/base/paragraph';
 import { H2, H3Code } from '~/components/plugins/Headings';
 import {
+  CommentData,
   GeneratedData,
+  MethodSignatureData,
   PropData,
   PropsDefinitionData,
 } from '~/components/plugins/api/APIDataTypes';
@@ -22,8 +24,11 @@ const getComponentName = (name?: string, children: PropData[] = []) => {
   return ctor && ctor?.signatures?.length ? ctor?.signatures[0]?.type?.name : 'default';
 };
 
+const getComponentComment = (comment: CommentData, signatures: MethodSignatureData[]) =>
+  comment || (signatures && signatures[0] ? signatures[0].comment : undefined);
+
 const renderComponent = (
-  { name, comment, type, extendedTypes, children }: GeneratedData,
+  { name, comment, type, extendedTypes, children, signatures }: GeneratedData,
   componentsProps?: PropsDefinitionData[]
 ): JSX.Element => {
   const resolvedType = extendedTypes?.length ? extendedTypes[0] : type;
@@ -38,7 +43,7 @@ const renderComponent = (
           <B>Type:</B> <InlineCode>{resolveTypeName(resolvedType)}</InlineCode>
         </P>
       )}
-      <CommentTextBlock comment={comment} />
+      <CommentTextBlock comment={getComponentComment(comment, signatures)} />
       {componentsProps && componentsProps.length ? (
         <APISectionProps data={componentsProps} header={`${resolvedName}Props`} />
       ) : null}
