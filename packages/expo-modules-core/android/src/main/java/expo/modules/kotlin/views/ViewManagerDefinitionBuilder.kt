@@ -1,7 +1,10 @@
+@file:OptIn(ExperimentalStdlibApi::class)
+
 package expo.modules.kotlin.views
 
 import android.content.Context
 import android.view.View
+import kotlin.reflect.typeOf
 
 class ViewManagerDefinitionBuilder {
   @PublishedApi
@@ -29,6 +32,7 @@ class ViewManagerDefinitionBuilder {
   ) {
     props[name] = ConcreteViewProp(
       name,
+      typeOf<PropType>(),
       body
     )
   }
