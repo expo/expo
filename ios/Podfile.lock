@@ -2393,7 +2393,7 @@ PODS:
     - ExpoModulesCore
   - EXApplication (4.0.0):
     - ExpoModulesCore
-  - EXAV (10.1.2):
+  - EXAV (10.1.3):
     - ExpoModulesCore
   - EXBackgroundFetch (10.0.3):
     - ExpoModulesCore
@@ -5121,7 +5121,7 @@ SPEC CHECKSUMS:
   EXAppAuth: 6ed48674e328cfe551a23928c264fcde969625ad
   EXAppleAuthentication: 1852eb070102106305516dea9bd82811e8d5f6e5
   EXApplication: 0e15240e4d125b62f1cae48759ffbbd32b9286a6
-  EXAV: 6fc0e332d82f8f39b9b4cf89e0432686c32420c6
+  EXAV: 25b3a49e2ba150367089137b7e396b98df3c44da
   EXBackgroundFetch: 93e9759b7d6f0d1fa2ffcec2dec4b7283660b7cd
   EXBarCodeScanner: 59be63d8d607d03ff69dc15a2c51b079437deffa
   EXBattery: 5d4f207a0f97d7d5bc789a30af3c27627306a7c7
