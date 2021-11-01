@@ -24,6 +24,22 @@ For more information on Apple's new App Tracking Transparency framework, please 
 
 You can configure `expo-tracking-transparency` using its built-in [config plugin](../../../guides/config-plugins.md) if you use config plugins in your project ([EAS Build](../../../build/introduction.md) or `expo run:[android|ios]`). The plugin allows you to configure various properties that cannot be set at runtime and require building a new app binary to take effect.
 
+<ConfigClassic>
+
+On iOS, this library requires the `NSUserTrackingUsageDescription` key. To configure this, add the following to **app.json** (the value should be a string that describes why your app tracks the user or the device):
+
+```json
+{
+  "expo": {
+    "infoPlist": {
+      "NSUserTrackingUsageDescription": "This identifier will be used to deliver personalized ads to you."
+    }
+  }
+}
+```
+
+</ConfigClassic>
+
 <ConfigReactNative>
 
 Learn how to configure the native projects in the [installation instructions in the `expo-tracking-transparency` repository](https://github.com/expo/expo/tree/master/packages/expo-tracking-transparency#installation-in-bare-react-native-projects).

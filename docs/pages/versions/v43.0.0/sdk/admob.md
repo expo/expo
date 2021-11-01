@@ -3,7 +3,7 @@ title: Admob
 sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-43/packages/expo-ads-admob'
 ---
 
-import { ConfigReactNative, ConfigPluginExample, ConfigPluginProperties } from '~/components/plugins/ConfigSection';
+import { ConfigClassic, ConfigReactNative, ConfigPluginExample, ConfigPluginProperties } from '~/components/plugins/ConfigSection';
 import { AndroidPermissions, IOSPermissions } from '~/components/plugins/permissions';
 import APISection from '~/components/plugins/APISection';
 import InstallSection from '~/components/plugins/InstallSection';
@@ -45,6 +45,22 @@ For the module to attribute interactions with ads to your AdMob app properly you
   }
 }
 ```
+
+<ConfigClassic>
+
+On iOS, this library requires the `NSUserTrackingUsageDescription` key. To configure this, add the following to **app.json** (the value should be a string that describes why your app tracks the user or the device):
+
+```json
+{
+  "expo": {
+    "infoPlist": {
+      "NSUserTrackingUsageDescription": "This identifier will be used to deliver personalized ads to you."
+    }
+  }
+}
+```
+
+</ConfigClassic>
 
 <ConfigReactNative>
 

@@ -34,6 +34,22 @@ In your project's [app.json](../../../workflow/configuration.md), add your [Face
 - In the Expo Go app, all of your Facebook API calls will be made with Expo's Facebook App ID. This means you will not see any related ad info in your Facebook developer page while running your project in Expo Go.
 - To use your app's own Facebook App ID (and thus see any related ad info in your Facebook developer page), you'll need to [build a standalone app](../../../distribution/building-standalone-apps.md).
 
+<ConfigClassic>
+
+On iOS, this library requires the `NSUserTrackingUsageDescription` key. To configure this, add the following to **app.json** (the value should be a string that describes why your app tracks the user or the device):
+
+```json
+{
+  "expo": {
+    "infoPlist": {
+      "NSUserTrackingUsageDescription": "This identifier will be used to deliver personalized ads to you."
+    }
+  }
+}
+```
+
+</ConfigClassic>
+
 <ConfigReactNative>
 
 Learn how to configure the native projects in the [installation instructions in the `expo-ads-facebook` repository](https://github.com/expo/expo/tree/master/packages/expo-ads-facebook#installation-in-bare-react-native-projects).
