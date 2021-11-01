@@ -109,6 +109,11 @@ public class ConcreteMethod<Args, ReturnType>: AnyMethod {
         return try dt.init(from: arg)
       }
 
+      // Handle convertible types (e.g. CGPoint, CGRect, UIColor, ...)
+      if let dt = desiredType.castWrappedType(ConvertibleArgument.Type.self) {
+        return try dt.convert(from: arg)
+      }
+
       // TODO: (@tsapeta) Handle convertible arrays
       throw IncompatibleArgTypeError(
         argument: arg,

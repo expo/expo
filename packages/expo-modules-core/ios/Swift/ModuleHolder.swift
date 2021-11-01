@@ -66,6 +66,7 @@ public class ModuleHolder {
     call(method: methodName, args: args, promise: promise)
   }
 
+  @discardableResult
   func callSync(method methodName: String, args: [Any?]) -> Any? {
     if let method = definition.methods[methodName] {
       return method.callSync(args: args)
