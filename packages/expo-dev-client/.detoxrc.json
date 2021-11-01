@@ -12,8 +12,7 @@
     "simulator": {
       "type": "ios.simulator",
       "device": {
-        "type": "iPhone 8",
-        "os": "iOS 14.5"
+        "type": "iPhone 8"
       }
     }
   },
