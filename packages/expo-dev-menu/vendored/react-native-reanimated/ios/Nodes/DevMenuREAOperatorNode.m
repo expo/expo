@@ -88,7 +88,7 @@ return @(OP); \
             @"greaterThan": DevMenuREA_INFIX(a > b),
             @"lessOrEq": DevMenuREA_INFIX(a <= b),
             @"greaterOrEq": DevMenuREA_INFIX(a >= b),
-            @"neq": DevMenuREA_INFIX(a != b),
+             @"neq": DevMenuREA_INFIX(a != b),
             };
   });
   if ((self = [super initWithID:nodeID config:config])) {

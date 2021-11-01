@@ -101,6 +101,9 @@ let NATIVE_THREAD_PROPS_WHITELIST = {
   writingDirection: true,
   /* text color */
   color: true,
+  tintColor: true,
+  shadowColor: true,
+  placeholderTextColor: true,
 };
 
 function configureProps() {
@@ -111,16 +114,50 @@ function configureProps() {
 }
 
 export function addWhitelistedNativeProps(props) {
+  const oldSize = Object.keys(NATIVE_THREAD_PROPS_WHITELIST).length;
   NATIVE_THREAD_PROPS_WHITELIST = {
     ...NATIVE_THREAD_PROPS_WHITELIST,
     ...props,
   };
-  configureProps();
+  if (oldSize !== Object.keys(NATIVE_THREAD_PROPS_WHITELIST).length) {
+    configureProps();
+  }
 }
 
 export function addWhitelistedUIProps(props) {
+  const oldSize = Object.keys(UI_THREAD_PROPS_WHITELIST).length;
   UI_THREAD_PROPS_WHITELIST = { ...UI_THREAD_PROPS_WHITELIST, ...props };
-  configureProps();
+  if (oldSize !== Object.keys(UI_THREAD_PROPS_WHITELIST).length) {
+    configureProps();
+  }
+}
+
+const PROCESSED_VIEW_NAMES = new Set();
+/**
+ * updates UI props whitelist for given view host instance
+ * this will work just once for every view name
+ */
+export function adaptViewConfig(viewConfig) {
+  const viewName = viewConfig.uiViewClassName;
+  const props = viewConfig.validAttributes;
+
+  // update whitelist of UI props for this view name only once
+  if (!PROCESSED_VIEW_NAMES.has(viewName)) {
+    const propsToAdd = {};
+    Object.keys(props).forEach((key) => {
+      // we don't want to add native props as they affect layout
+      // we also skip props which repeat here
+      if (
+        !(key in NATIVE_THREAD_PROPS_WHITELIST) &&
+        !(key in UI_THREAD_PROPS_WHITELIST)
+      ) {
+        propsToAdd[key] = true;
+      }
+    });
+    addWhitelistedUIProps(propsToAdd);
+
+    PROCESSED_VIEW_NAMES.add(viewName);
+  }
 }
 
 configureProps();

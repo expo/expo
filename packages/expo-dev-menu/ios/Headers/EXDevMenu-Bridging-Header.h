@@ -22,3 +22,4 @@
 
 // Private
 #import "RCTPerfMonitor+Private.h"
+#import "DevMenuBaseAppInstance.h"

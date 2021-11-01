@@ -7,7 +7,7 @@ function tryResolveModule(module) {
   }
 }
 
-module.exports = function(api) {
+module.exports = function (api) {
   api.cache(true);
 
   const gestureHandler = tryResolveModule('./vendored/react-native-gesture-handler/src/index.js');
@@ -28,6 +28,9 @@ module.exports = function(api) {
 
   return {
     presets: ['babel-preset-expo'],
-    plugins: [['babel-plugin-module-resolver', moduleResolverConfig]],
+    plugins: [
+      ['babel-plugin-module-resolver', moduleResolverConfig],
+      './vendored/react-native-reanimated/plugin.js',
+    ],
   };
 };
