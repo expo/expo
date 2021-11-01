@@ -36,17 +36,7 @@ In your project's [app.json](../../../workflow/configuration.md), add your [Face
 
 <ConfigClassic>
 
-On iOS, this library requires the `NSUserTrackingUsageDescription` key. To configure this, add the following to **app.json** (the value should be a string that describes why your app tracks the user or the device):
-
-```json
-{
-  "expo": {
-    "infoPlist": {
-      "NSUserTrackingUsageDescription": "This identifier will be used to deliver personalized ads to you."
-    }
-  }
-}
-```
+You can configure [the permissions for this library](#permissions) using [`ios.infoPlist`](../config/app.md#infoplist) and [`android.permissions`](../config/app.md#permissions).
 
 </ConfigClassic>
 
