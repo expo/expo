@@ -167,10 +167,15 @@ PODS:
     - expo-dev-menu-interface
     - expo-dev-menu/Vendored
     - React-Core
-  - expo-dev-menu/Tests (0.8.2):
-    - expo-dev-menu-interface
-    - Nimble
-    - Quick
+  - expo-dev-menu/Reanimated (0.8.2):
+    - DoubleConversion
+    - FBLazyVector
+    - FBReactNativeSpec
+    - glog
+    - RCT-Folly
+    - RCTRequired
+    - RCTTypeSafety
+    - React-callinvoker
     - React-Core
     - React-Core/DevSupport
     - React-Core/RCTWebSocket
@@ -191,6 +196,8 @@ PODS:
     - ReactCommon/turbomodule/core
     - Yoga
   - expo-dev-menu/Tests (0.8.2):
+    - Nimble
+    - Quick
     - React-CoreModules
   - expo-dev-menu/UITests (0.8.2):
     - React
@@ -1285,7 +1292,7 @@ SPEC CHECKSUMS:
   Expo: 23ed30f225511b93fa6a0c14d9a3208d6b749060
   expo-dev-client: 97a9589d2ea0325a8dd4dff284fe3a4b9166bbce
   expo-dev-launcher: 7a90ad1519263eda3e8675bf6712f2f89f8fe2a9
-  expo-dev-menu: 2128d93f91fd340bd7f3c6c6a2ece2076d7526ae
+  expo-dev-menu: ec566cc2bc8e783b9874afb81ea92a90d6069f01
   expo-dev-menu-interface: 508467f2ba2aedda7a44e5080cc1e9a43ab7375e
   ExpoModulesCore: 5bf01ec7e83f3fa3c052eb0d0ed3d14df4145641
   EXPrint: a224501bbb89072567c58a5127f2d125b8776ea2

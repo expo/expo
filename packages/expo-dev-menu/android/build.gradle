@@ -20,14 +20,10 @@ def engine = "jsc"
 
 // If the user has the reanimated 2.2.1 or above installed, we don't have to swap JNI implementation.
 def shouldSwapJNI() {
-  def reanimatedPackagePath = ["node", "--print", "require.resolve('react-native-reanimated/package.json')"].execute().text.trim()
-  if (!reanimatedPackagePath) {
+  def reanimatedVersion = ["node", "--print", "require('react-native-reanimated/package.json').version"].execute().text.trim()
+  if (reanimatedVersion == "undefined") {
     return true
   }
-
-  def inputFile = new File(reanimatedPackagePath)
-  def json = new JsonSlurper().parseText(inputFile.text)
-  def reanimatedVersion = json.version as String
   def (int major, int minor, int patch) = reanimatedVersion.tokenize('.').collect { it.toInteger() }
 
   if (major < 2 || (major == 2 && minor <= 1) || (major == 2 && minor == 2 && patch == 0)) {
@@ -230,7 +226,7 @@ dependencies {
     minorCopy -= 1
     aar = file("${reanimatedPath}/devmenu-react-native-reanimated-${minorCopy}-${engine}.aar")
     if (minorCopy < 62) {
-      throw new GradleException('No aar for react-native-reanimated found.')
+      throw new GradleException('No matching aar for react-native-reanimated found. Upgrade react-native to 0.63.x or later in order to use the expo-dev-menu package.')
     }
   }
 

@@ -5,7 +5,7 @@ require 'json'
 reactVersion = '0.0.0'
 
 begin
-  reactVersion = JSON.parse(File.read(File.join(File.dirname(`node --print "require.resolve('react-native/package.json')"`), "package.json")))["version"]
+  reactVersion = `node --print "require('react-native/package.json').version"`
 rescue
   reactVersion = '0.66.0'
 end
