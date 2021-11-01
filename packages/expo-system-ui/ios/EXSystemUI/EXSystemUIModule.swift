@@ -3,22 +3,22 @@
 import ExpoModulesCore
 
 public class SystemUIModule: Module {
-  public static func definition() -> ModuleDefinition {
+  public func definition() -> ModuleDefinition {
     name("ExpoSystemUI")
 
-    method("getBackgroundColorAsync") { (module) -> String? in
+    method("getBackgroundColorAsync") { () -> String? in
       var color: String? = nil
       EXUtilities.performSynchronously {
-        if let backgroundColor = module.appContext?.utilities?.currentViewController()?.view.backgroundColor?.cgColor {
+        if let backgroundColor = self.appContext?.utilities?.currentViewController()?.view.backgroundColor?.cgColor {
           color = EXUtilities.hexString(with: backgroundColor)
         }
       }
       return color
     }
 
-    method("setBackgroundColorAsync") { (module, color: Int) in
+    method("setBackgroundColorAsync") { (color: Int) in
       EXUtilities.performSynchronously {
-        module.appContext?.utilities?.currentViewController()?.view.backgroundColor = EXUtilities.uiColor(color)
+        self.appContext?.utilities?.currentViewController()?.view.backgroundColor = EXUtilities.uiColor(color)
       }
     }
   }
