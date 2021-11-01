@@ -87,7 +87,7 @@ if (Integer.parseInt(minor) < 65 && shouldSwapJNI()) {
 
 rootProject.getSubprojects().forEach({ project ->
   if (project.plugins.hasPlugin("com.android.application")) {
-    if (project.ext.react.enableHermes) {
+    if (project.ext.has("react") && project.ext.react.enableHermes) {
       engine = "hermes"
     }
 
