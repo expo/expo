@@ -3,6 +3,9 @@ title: Admob
 sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-ads-admob'
 ---
 
+import { ConfigClassic, ConfigReactNative, ConfigPluginExample, ConfigPluginProperties } from '~/components/plugins/ConfigSection';
+import { AndroidPermissions, IOSPermissions } from '~/components/plugins/permissions';
+import APISection from '~/components/plugins/APISection';
 import InstallSection from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 
@@ -14,7 +17,9 @@ Expo includes support for the [Google AdMob SDK](https://www.google.com/admob/) 
 
 <InstallSection packageName="expo-ads-admob" />
 
-## Configuration
+## Configuration in app.json / app.config.js
+
+You can configure `expo-ads-admob` using its built-in [config plugin](../../../guides/config-plugins.md) if you use config plugins in your project ([EAS Build](../../../build/introduction.md) or `expo run:[android|ios]`). The plugin allows you to configure various properties that cannot be set at runtime and require building a new app binary to take effect.
 
 For the module to attribute interactions with ads to your AdMob app properly you will need to add a `googleMobileAdsAppId` property to **app.json** under `[platform].config`. More info on where to find the app ID can be found in [this Google Support answer](https://support.google.com/admob/answer/6232340). A sample valid **app.json** would look like:
 
@@ -40,6 +45,41 @@ For the module to attribute interactions with ads to your AdMob app properly you
   }
 }
 ```
+
+<ConfigClassic>
+
+You can configure [the permissions for this library](#permissions) using [`ios.infoPlist`](../config/app.md#infoplist) and [`android.permissions`](../config/app.md#permissions).
+
+</ConfigClassic>
+
+<ConfigReactNative>
+
+Learn how to configure the native projects in the [installation instructions in the `expo-ads-admob` repository](https://github.com/expo/expo/tree/master/packages/expo-ads-admob#installation-in-bare-react-native-projects).
+
+</ConfigReactNative>
+
+<ConfigPluginExample>
+
+```json
+{
+  "expo": {
+    "plugins": [
+      [
+        "expo-ads-admob",
+        {
+          "userTrackingPermission": "This identifier will be used to deliver personalized ads to you."
+        }
+      ]
+    ]
+  }
+}
+```
+
+</ConfigPluginExample>
+
+<ConfigPluginProperties properties={[
+{ name: 'userTrackingPermission', platform: 'ios', description: 'Sets the iOS `NSUserTrackingUsageDescription` permission message in Info.plist.', default: '"This identifier will be used to deliver personalized ads to you."' },
+]} />
 
 ## Usage
 
@@ -251,3 +291,17 @@ const adUnitID = Platform.select({
   android: 'ca-app-pub-3940256099942544/5224354917',
 });
 ```
+
+## Permissions
+
+### Android
+
+The following permissions are added automatically through this library's `AndroidManifest.xml`.
+
+<AndroidPermissions permissions={['INTERNET']} />
+
+### iOS
+
+The following usage description keys are used by this library:
+
+<IOSPermissions permissions={[ 'NSUserTrackingUsageDescription' ]} />
