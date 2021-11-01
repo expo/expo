@@ -20,17 +20,21 @@ def engine = "jsc"
 
 // If the user has the reanimated 2.2.1 or above installed, we don't have to swap JNI implementation.
 def shouldSwapJNI() {
-  def reanimatedVersion = ["node", "--print", "require('react-native-reanimated/package.json').version"].execute().text.trim()
-  if (reanimatedVersion == "undefined") {
+  try {
+    def reanimatedVersion = ["node", "--print", "require('react-native-reanimated/package.json').version"].execute().text.trim()
+    if (reanimatedVersion == "undefined") {
+      return true
+    }
+    def (int major, int minor, int patch) = reanimatedVersion.tokenize('.').collect { it.toInteger() }
+
+    if (major < 2 || (major == 2 && minor <= 1) || (major == 2 && minor == 2 && patch == 0)) {
+      return true
+    }
+
+    return !rootProject.findProject(":react-native-reanimated")
+  } catch (ignored) {
     return true
   }
-  def (int major, int minor, int patch) = reanimatedVersion.tokenize('.').collect { it.toInteger() }
-
-  if (major < 2 || (major == 2 && minor <= 1) || (major == 2 && minor == 2 && patch == 0)) {
-    return true
-  }
-
-  return !rootProject.findProject(":react-native-reanimated")
 }
 
 abstract class replaceSoTask extends DefaultTask {
