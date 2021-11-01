@@ -13,6 +13,11 @@ public protocol ModulesProviderObjCProtocol {}
  */
 public protocol ModulesProviderProtocol: ModulesProviderObjCProtocol {
   func getModuleClasses() -> [AnyModule.Type]
+
+  /**
+   Returns an array of classes that hooks into `ExpoAppDelegate` to receive app delegate events.
+   */
+  func getAppDelegateSubscribers() -> [ExpoAppDelegateSubscriber.Type]
 }
 
 /**
@@ -22,6 +27,10 @@ public protocol ModulesProviderProtocol: ModulesProviderObjCProtocol {
 @objc
 open class ModulesProvider: NSObject, ModulesProviderProtocol, ModulesProviderObjCProtocol {
   open func getModuleClasses() -> [AnyModule.Type] {
+    return []
+  }
+
+  open func getAppDelegateSubscribers() -> [ExpoAppDelegateSubscriber.Type] {
     return []
   }
 }

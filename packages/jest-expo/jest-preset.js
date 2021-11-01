@@ -38,7 +38,7 @@ if (!Array.isArray(jestPreset.transformIgnorePatterns)) {
 
 // Also please keep `testing-with-jest.md` file up to date
 jestPreset.transformIgnorePatterns = [
-  'node_modules/(?!((jest-)?react-native|@react-native(-community)?)|expo(nent)?|@expo(nent)?/.*|react-navigation|@react-navigation/.*|@unimodules/.*|unimodules|sentry-expo|native-base|react-native-svg)',
+  'node_modules/(?!((jest-)?react-native|@react-native(-community)?)|expo(nent)?|@expo(nent)?/.*|@expo-google-fonts/.*|react-navigation|@react-navigation/.*|@unimodules/.*|unimodules|sentry-expo|native-base|react-native-svg)',
 ];
 
 // setupFiles

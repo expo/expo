@@ -4,17 +4,24 @@
 
 ### 🛠 Breaking changes
 
-- Swift's module definition is now a static function which also makes modules lazy by default. ([#14645](https://github.com/expo/expo/pull/14645) by [@tsapeta](https://github.com/tsapeta))
-
 ### 🎉 New features
 
 - Method calls on iOS now can go through the JSI instead of the bridge (opt-in feature). ([#14626](https://github.com/expo/expo/pull/14626) by [@tsapeta](https://github.com/tsapeta))
+- `AppDelegateWrapper` is now written in Swift and is independent of the singleton modules. ([#14867](https://github.com/expo/expo/pull/14867) by [@tsapeta](https://github.com/tsapeta))
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 0.4.7 — 2021-10-28
 
 ### 🐛 Bug fixes
 
 - Fix iOS app freezing in remote debugging mode. ([#14922](https://github.com/expo/expo/pull/14922) by [@kudo](https://github.com/kudo))
 
-### 💡 Others
+## 0.4.6 — 2021-10-27
+
+_This version does not introduce any user-facing changes._
 
 ## 0.4.5 — 2021-10-25
 

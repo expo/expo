@@ -23,9 +23,11 @@ class ViewManagerDefinition(
   }
 
   fun setProps(propsToSet: ReadableMap, onView: View) {
-    for ((propName, prop) in propsToSet.entryIterator) {
-      val propDelegate = props[propName] ?: continue
-      propDelegate.set(prop, onView)
+    val iterator = propsToSet.keySetIterator()
+    while (iterator.hasNextKey()) {
+      val key = iterator.nextKey()
+      val propDelegate = props[key] ?: continue
+      propDelegate.set(propsToSet.getDynamic(key), onView)
     }
   }
 }

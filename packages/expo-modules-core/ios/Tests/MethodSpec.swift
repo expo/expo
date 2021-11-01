@@ -70,7 +70,7 @@ class MethodSpec: QuickSpec {
       it("converts to simple record when passed as an argument") {
         waitUntil { done in
           mockModuleHolder(appContext) {
-            $0.method(methodName) { (module, a: TestRecord) in
+            $0.method(methodName) { (a: TestRecord) in
               return a.property
             }
           }
@@ -86,7 +86,7 @@ class MethodSpec: QuickSpec {
       it("converts to record with custom key") {
         waitUntil { done in
           mockModuleHolder(appContext) {
-            $0.method(methodName) { (module, a: TestRecord) in
+            $0.method(methodName) { (a: TestRecord) in
               return a.customKeyProperty
             }
           }
@@ -102,7 +102,7 @@ class MethodSpec: QuickSpec {
       it("returns the record back") {
         waitUntil { done in
           mockModuleHolder(appContext) {
-            $0.method(methodName) { (module, a: TestRecord) in
+            $0.method(methodName) { (a: TestRecord) in
               return a.toDictionary()
             }
           }
@@ -123,7 +123,7 @@ class MethodSpec: QuickSpec {
     it("throws when called with more arguments than expected") {
       waitUntil { done in
         mockModuleHolder(appContext) {
-          $0.method(methodName) { (module, a: Int) in
+          $0.method(methodName) { (a: Int) in
             return "something"
           }
         }
@@ -141,7 +141,7 @@ class MethodSpec: QuickSpec {
     it("throws when called with arguments of incompatible types") {
       waitUntil { done in
         mockModuleHolder(appContext) {
-          $0.method(methodName) { (module, a: String) in
+          $0.method(methodName) { (a: String) in
             return "something"
           }
         }

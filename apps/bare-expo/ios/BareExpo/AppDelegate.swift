@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import ExpoModulesCore
 import EXDevMenuInterface
 #if EX_DEV_MENU_ENABLED
 import EXDevMenu
@@ -17,7 +18,7 @@ import FlipperKit
 #endif
 
 @UIApplicationMain
-class AppDelegate: AppDelegateWrapper {
+class AppDelegate: ExpoAppDelegate {
   var bridge: RCTBridge?
   var launchOptions: [UIApplication.LaunchOptionsKey: Any]?
 

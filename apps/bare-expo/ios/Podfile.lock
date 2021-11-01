@@ -160,26 +160,51 @@ PODS:
     - EXUpdatesInterface
     - React-Core
   - expo-dev-menu (0.8.2):
-    - expo-dev-menu-interface
     - expo-dev-menu/Main (= 0.8.2)
-    - React-Core
   - expo-dev-menu-interface (0.4.1)
+  - expo-dev-menu/GestureHandler (0.8.2)
   - expo-dev-menu/Main (0.8.2):
     - expo-dev-menu-interface
     - expo-dev-menu/Vendored
     - React-Core
-  - expo-dev-menu/Tests (0.8.2):
-    - expo-dev-menu-interface
+  - expo-dev-menu/Reanimated (0.8.2):
+    - DoubleConversion
+    - FBLazyVector
+    - FBReactNativeSpec
+    - glog
+    - RCT-Folly
+    - RCTRequired
+    - RCTTypeSafety
+    - React-callinvoker
     - React-Core
+    - React-Core/DevSupport
+    - React-Core/RCTWebSocket
+    - React-CoreModules
+    - React-cxxreact
+    - React-jsi
+    - React-jsiexecutor
+    - React-jsinspector
+    - React-RCTActionSheet
+    - React-RCTAnimation
+    - React-RCTBlob
+    - React-RCTImage
+    - React-RCTLinking
+    - React-RCTNetwork
+    - React-RCTSettings
+    - React-RCTText
+    - React-RCTVibration
+    - ReactCommon/turbomodule/core
+    - Yoga
+  - expo-dev-menu/Tests (0.8.2):
+    - Nimble
+    - Quick
     - React-CoreModules
   - expo-dev-menu/UITests (0.8.2):
-    - expo-dev-menu-interface
     - React
-    - React-Core
     - React-CoreModules
   - expo-dev-menu/Vendored (0.8.2):
-    - expo-dev-menu-interface
-    - React-Core
+    - expo-dev-menu/GestureHandler
+    - expo-dev-menu/Reanimated
   - ExpoModulesCore (0.4.2):
     - React-Core
     - ReactCommon/turbomodule/core
@@ -361,6 +386,7 @@ PODS:
     - nanopb/encode (= 2.30907.0)
   - nanopb/decode (2.30907.0)
   - nanopb/encode (2.30907.0)
+  - Nimble (9.2.0)
   - OHHTTPStubs (9.1.0):
     - OHHTTPStubs/Default (= 9.1.0)
   - OHHTTPStubs/Core (9.1.0)
@@ -376,6 +402,7 @@ PODS:
   - OHHTTPStubs/OHPathHelpers (9.1.0)
   - PromisesObjC (1.2.12)
   - Protobuf (3.15.8)
+  - Quick (4.0.0)
   - RCT-Folly (2020.01.13.00):
     - boost-for-react-native
     - DoubleConversion
@@ -812,6 +839,8 @@ DEPENDENCIES:
   - glog (from `../../../react-native-lab/react-native/third-party-podspecs/glog.podspec`)
   - hermes-engine (~> 0.7.2)
   - libevent (~> 2.1.12)
+  - Nimble (from `./../../../ios/Nimble.podspec`)
+  - Quick (from `./../../../ios/Quick.podspec`)
   - RCT-Folly (from `../../../react-native-lab/react-native/third-party-podspecs/RCT-Folly.podspec`)
   - RCTRequired (from `../../../react-native-lab/react-native/Libraries/RCTRequired`)
   - RCTTypeSafety (from `../../../react-native-lab/react-native/Libraries/TypeSafety`)
@@ -1114,6 +1143,10 @@ EXTERNAL SOURCES:
     :path: "../../../react-native-lab/react-native/React/FBReactNativeSpec"
   glog:
     :podspec: "../../../react-native-lab/react-native/third-party-podspecs/glog.podspec"
+  Nimble:
+    :podspec: "./../../../ios/Nimble.podspec"
+  Quick:
+    :podspec: "./../../../ios/Quick.podspec"
   RCT-Folly:
     :podspec: "../../../react-native-lab/react-native/third-party-podspecs/RCT-Folly.podspec"
   RCTRequired:
@@ -1259,13 +1292,13 @@ SPEC CHECKSUMS:
   Expo: 23ed30f225511b93fa6a0c14d9a3208d6b749060
   expo-dev-client: 97a9589d2ea0325a8dd4dff284fe3a4b9166bbce
   expo-dev-launcher: 7a90ad1519263eda3e8675bf6712f2f89f8fe2a9
-  expo-dev-menu: 5b0593d3ad5f32e92e363f4cc061fe70666da31f
+  expo-dev-menu: ec566cc2bc8e783b9874afb81ea92a90d6069f01
   expo-dev-menu-interface: 508467f2ba2aedda7a44e5080cc1e9a43ab7375e
   ExpoModulesCore: 5bf01ec7e83f3fa3c052eb0d0ed3d14df4145641
   EXPrint: a224501bbb89072567c58a5127f2d125b8776ea2
   EXRandom: 9ed4600d410cf2fe58d22b3121865624065a16e9
   EXScreenCapture: 76fcc1bad122d1b5d98f85ec44c6d38f18f99a6a
-  EXScreenOrientation: 000362511da958a34e3a02dcdc333dc48d5bb70a
+  EXScreenOrientation: 5ca6a883ea71d05ae08fe2917c07c66b5c3899d9
   EXSecureStore: ea9d8a22a2966572e7f09bf6f9fb9c0b1178e184
   EXSegment: 70f3e038f7e2c6bd0b5c8e5ea65e5720d20e1a83
   EXSensors: ba01fa295725ca7c4b9cfe933fe925fe173c1189
@@ -1307,9 +1340,11 @@ SPEC CHECKSUMS:
   MLKitFaceDetection: 5b92261dd6e4205e3dab0df62537ac3f4e90e5db
   MLKitVision: 51385878c9100024478971856510f9271ff555b5
   nanopb: 59221d7f958fb711001e6a449489542d92ae113e
+  Nimble: 9ca39ec3cb156bbb8c27f4943fd4643d28729616
   OHHTTPStubs: 90eac6d8f2c18317baeca36698523dc67c513831
   PromisesObjC: 3113f7f76903778cf4a0586bd1ab89329a0b7b97
   Protobuf: adb85cd18a15bd1a777c158af9fd6e612a0e6d69
+  Quick: 5dc45f9bc11236594a7acc99f7bd85ecdc9a477d
   RCT-Folly: ec7a233ccc97cc556cf7237f0db1ff65b986f27c
   RCTRequired: 6d3e854f0e7260a648badd0d44fc364bc9da9728
   RCTTypeSafety: c1f31d19349c6b53085766359caac425926fafaa
@@ -1359,6 +1394,6 @@ SPEC CHECKSUMS:
   Yoga: 575c581c63e0d35c9a83f4b46d01d63abc1100ac
   ZXingObjC: fdbb269f25dd2032da343e06f10224d62f537bdb
 
-PODFILE CHECKSUM: 9b253679919324e830a08a5c75c290f91f3ef5e7
+PODFILE CHECKSUM: 23849a00b5d5d5db84060e757ab5beac52e7ecb1
 
 COCOAPODS: 1.11.0

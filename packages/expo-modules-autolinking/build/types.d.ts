@@ -5,6 +5,7 @@ export interface SearchOptions {
     ignorePaths?: string[] | null;
     exclude?: string[] | null;
     platform: SupportedPlatform;
+    silent?: boolean;
     flags?: Record<string, any>;
 }
 export interface ResolveOptions extends SearchOptions {
@@ -41,6 +42,10 @@ export interface RawExpoModuleConfig {
          * Names of Swift native modules classes to put to the generated modules provider file.
          */
         modulesClassNames?: string[];
+        /**
+         * Names of Swift classes that hooks into `ExpoAppDelegate` to receive AppDelegate life-cycle events.
+         */
+        appDelegateSubscribers?: string[];
     };
     /**
      * Android-specific config.

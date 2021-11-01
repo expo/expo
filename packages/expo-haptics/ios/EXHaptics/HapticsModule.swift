@@ -1,10 +1,10 @@
 import ExpoModulesCore
 
 public class HapticsModule: Module {
-  public static func definition() -> ModuleDefinition {
+  public func definition() -> ModuleDefinition {
     name("ExpoHaptics")
 
-    method("notificationAsync") { (_, notificationType: String, promise: Promise) in
+    method("notificationAsync") { (notificationType: String, promise: Promise) in
       guard let feedbackType = NotificationType(rawValue: notificationType)?.toFeedbackType() else {
         promise.reject("E_HAPTICS_INVALID_ARG", "Notification type must be one of: 'success', 'warning', 'error'. Obtained '\(notificationType)'")
         return
@@ -15,7 +15,7 @@ public class HapticsModule: Module {
       promise.resolve()
     }
 
-    method("impactAsync") { (_, style: String, promise: Promise) in
+    method("impactAsync") { (style: String, promise: Promise) in
       guard let feedbackStyle = ImpactStyle(rawValue: style)?.toFeedbackStyle() else {
         promise.reject("E_HAPTICS_INVALID_ARG", "Impact style must be one of: 'light', 'medium', 'heavy'. Obtained '\(style)'")
         return
