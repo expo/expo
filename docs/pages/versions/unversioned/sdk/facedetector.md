@@ -34,9 +34,9 @@ import * as FaceDetector from 'expo-face-detector';
   // ... other props
   onFacesDetected={this.handleFacesDetected}
   faceDetectorSettings={{
-    mode: FaceDetectorMode.fast,
-    detectLandmarks: FaceDetectorLandmarks.none,
-    runClassifications: FaceDetectorClassifications.none,
+    mode: FaceDetector.FaceDetectorMode.fast,
+    detectLandmarks: FaceDetector.FaceDetectorLandmarks.none,
+    runClassifications: FaceDetector.FaceDetectorClassifications.none,
     minDetectionInterval: 100,
     tracking: true,
   }}
