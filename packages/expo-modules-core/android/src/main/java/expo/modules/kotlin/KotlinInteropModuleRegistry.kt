@@ -1,6 +1,6 @@
 package expo.modules.kotlin
 
-import com.facebook.react.bridge.ReactContext
+import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.uimanager.ViewManager
 import expo.modules.core.Promise
@@ -16,7 +16,7 @@ private typealias ModuleMethodInfo = Map<String, Any?>
 class KotlinInteropModuleRegistry(
   modulesProvider: ModulesProvider,
   legacyModuleRegistry: expo.modules.core.ModuleRegistry,
-  reactContext: WeakReference<ReactContext>
+  reactContext: WeakReference<ReactApplicationContext>
 ) {
   private val appContext = AppContext(modulesProvider, legacyModuleRegistry, reactContext)
   private val exportedViewManagerNames = mutableListOf<String>()
