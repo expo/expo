@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Fix handling of unexpectedly missing assets on iOS. ([#15008](https://github.com/expo/expo/pull/15008) by [@esamelson](https://github.com/esamelson))
-
 ### 💡 Others
+
+## 0.10.11 — 2021-11-02
+
+### 🐛 Bug fixes
+
+- Fix handling of unexpectedly missing assets on iOS. ([#15008](https://github.com/expo/expo/pull/15008) by [@esamelson](https://github.com/esamelson))
 
 ## 0.10.10 — 2021-11-02
 
