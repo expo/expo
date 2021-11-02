@@ -22,7 +22,7 @@ If a capability is enabled for your app remotely, but not present in the native 
 
 ## Supported Capabilities
 
-EAS Build will only enable capabilities that it has built-in support for, any unsupported entitlements must be manually enabled via [Apple developer portal][apple-dev-portal].
+EAS Build will only enable capabilities that it has built-in support for, any unsupported entitlements must be manually enabled via [Apple Developer Portal][apple-dev-portal].
 
 | Capability                       | Supported |
 | -------------------------------- | --------- |

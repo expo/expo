@@ -50,8 +50,8 @@ To simplify this we created the package `@expo/electron-adapter` which wraps [`e
 ### Customizing the main process
 
 - To reveal the main process (highly recommended) run - `yarn expo-electron customize`
-  - This will generate the `electron/main/` and `electron/webpack.config.js` files for you to customize.
-  - Everything running in the `electron/main/` folder is on a different process to the rest of your app. Think of this like the native code in the Expo Go app (but not really because it's JavaScript and simple).
+  - This will generate the **electron/main/** and **electron/webpack.config.js** files for you to customize.
+  - Everything running in the **electron/main/** folder is on a different process to the rest of your app. Think of this like the native code in the Expo Go app (but not really because it's JavaScript and simple).
 - To revert back to the default main process or reset to the latest default template simply delete the `electron/` folder and the adapter will go back to using the hidden version.
 
 ### Building your project
@@ -64,8 +64,8 @@ To simplify this we created the package `@expo/electron-adapter` which wraps [`e
 
 ## 🧸 Behavior
 
-- Webpack now resolves files with `.electron.js` & `.web.js` extensions in that order. If you want to use `electron` features then put them in a file like `foo.electron.js`.
-- Every universal package you have installed will be transpiled automatically, this includes packages that start with the name: `expo`, `@expo`, `@unimodules`, `@react-navigation`, `react-navigation`, `react-native`. You can add more by appending them to the array for key `expo.web.build.babel.include` in your `app.json` (this feature is experimental and subject to change).
+- Webpack now resolves files with **.electron.js** & **.web.js** extensions in that order. If you want to use `electron` features then put them in a file like **foo.electron.js**.
+- Every universal package you have installed will be transpiled automatically, this includes packages that start with the name: `expo`, `@expo`, `@unimodules`, `@react-navigation`, `react-navigation`, `react-native`. You can add more by appending them to the array for key `expo.web.build.babel.include` in your **app.json** (this feature is experimental and subject to change).
 
 ## Contributing
 

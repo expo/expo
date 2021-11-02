@@ -1,0 +1,43 @@
+diff --git a/ios/MyApp/AppDelegate.h b/ios/MyApp/AppDelegate.h
+index ef1de86..d3d75b0 100644
+--- a/ios/MyApp/AppDelegate.h
++++ b/ios/MyApp/AppDelegate.h
+@@ -1,7 +1,8 @@
+ #import <React/RCTBridgeDelegate.h>
++#import <Expo/Expo.h>
+ #import <UIKit/UIKit.h>
+ 
+-@interface AppDelegate : UIResponder <UIApplicationDelegate, RCTBridgeDelegate>
++@interface AppDelegate : EXAppDelegateWrapper <UIApplicationDelegate, RCTBridgeDelegate>
+ 
+ @property (nonatomic, strong) UIWindow *window;
+ 
+diff --git a/ios/MyApp/AppDelegate.m b/ios/MyApp/AppDelegate.m
+index 785ed86..9ea037f 100644
+--- a/ios/MyApp/AppDelegate.m
++++ b/ios/MyApp/AppDelegate.m
+@@ -47,6 +47,7 @@ - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(
+   rootViewController.view = rootView;
+   self.window.rootViewController = rootViewController;
+   [self.window makeKeyAndVisible];
++  [super application:application didFinishLaunchingWithOptions:launchOptions];
+   return YES;
+ }
+ 
+diff --git a/ios/Podfile b/ios/Podfile
+index 8ad9250..e95b97b 100644
+--- a/ios/Podfile
++++ b/ios/Podfile
+@@ -1,9 +1,11 @@
++require File.join(File.dirname(`node --print "require.resolve('expo/package.json')"`), "scripts/autolinking")
+ require_relative '../node_modules/react-native/scripts/react_native_pods'
+ require_relative '../node_modules/@react-native-community/cli-platform-ios/native_modules'
+ 
+-platform :ios, '11.0'
++platform :ios, '12.0'
+ 
+ target 'MyApp' do
++  use_expo_modules!
+   config = use_native_modules!
+ 
+   use_react_native!(

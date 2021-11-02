@@ -112,7 +112,7 @@ class NewUpdateManifest private constructor(
       return NewUpdateManifest(
         manifest,
         id,
-        configuration.scopeKey,
+        configuration.scopeKey!!,
         commitTime,
         runtimeVersion,
         launchAsset,

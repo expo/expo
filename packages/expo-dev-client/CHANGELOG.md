@@ -4,25 +4,18 @@
 
 ### 🛠 Breaking changes
 
-- Added a native dependency on the `expo-manifests` package. ([#14461](https://github.com/expo/expo/pull/14461) by [@esamelson](https://github.com/esamelson))
-  - This is a breaking change for projects **without `react-native-unimodules` or `expo-modules-core` installed**. In order to upgrade from `expo-dev-client@0.5.1` or below to this version in such projects, the following changes must be made:
-    - In `ios/Podfile`, change the deployment target to `platform :ios, '12.0'` and add the following lines inside the main target:
-    ```ruby
-    pod 'EXJSONUtils', path: '../node_modules/expo-json-utils/ios', :configurations => :debug
-    pod 'EXManifests', path: '../node_modules/expo-manifests/ios', :configurations => :debug
-    ```
-    - In `android/settings.gradle`, add the following lines:
-    ```groovy
-    include ':expo-json-utils'
-    project(':expo-json-utils').projectDir = new File('../node_modules/expo-json-utils/android')
-
-    include ':expo-manifests'
-    project(':expo-manifests').projectDir = new File('../node_modules/expo-manifests/android')
-    ```
-  - No additional setup is necessary for projects already using `react-native-unimodules` or `expo-modules-core`.
-- Replace Android DevLauncherManifest class with `expo-manifests`. ([#14462](https://github.com/expo/expo/pull/14462) by [@esamelson](https://github.com/esamelson))
-
 ### 🎉 New features
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 0.6.0 — 2021-10-07
+
+### 🛠 Breaking changes
+
+- Added a native dependency on the `expo-manifests` package. **Projects without `react-native-unimodules` or `expo-modules-core` installed will need to follow the upgrade guide [here](https://docs.expo.dev/clients/upgrading/) when upgrading from an older version of this package.** ([#14461](https://github.com/expo/expo/pull/14461) by [@esamelson](https://github.com/esamelson))
+- Replace Android DevLauncherManifest class with `expo-manifests`. ([#14462](https://github.com/expo/expo/pull/14462) by [@esamelson](https://github.com/esamelson))
 
 ### 🐛 Bug fixes
 

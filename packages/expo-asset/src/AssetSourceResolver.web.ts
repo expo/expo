@@ -37,7 +37,7 @@ function getScaledAssetPath(asset): string {
   const scale = AssetSourceResolver.pickScale(asset.scales, getScale());
   const scaleSuffix = scale === 1 ? '' : '@' + scale + 'x';
   const assetDir = getBasePath(asset);
-  return assetDir + '/' + asset.name + scaleSuffix + '.' + asset.type;
+  return assetDir + '/' + asset.name + scaleSuffix + (asset.type ? `.${asset.type}` : '');
 }
 
 export default class AssetSourceResolver {
@@ -84,7 +84,7 @@ export default class AssetSourceResolver {
     return this.fromSource(getScaledAssetPath(this.asset));
   }
   scaledAssetURLNearBundle(): ResolvedAssetSource {
-    const path = this.jsbundleUrl || 'file://';
+    const path = this.jsbundleUrl || '';
     return this.fromSource(path + getScaledAssetPath(this.asset));
   }
   resourceIdentifierWithoutScale(): ResolvedAssetSource {

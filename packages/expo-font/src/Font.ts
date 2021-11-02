@@ -118,7 +118,7 @@ async function loadFontInNamespaceAsync(
     return;
   }
 
-  if (loadPromises[fontFamily]) {
+  if (loadPromises.hasOwnProperty(fontFamily)) {
     return loadPromises[fontFamily];
   }
 

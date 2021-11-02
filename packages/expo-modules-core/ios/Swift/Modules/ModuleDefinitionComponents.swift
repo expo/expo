@@ -7,6 +7,8 @@ import UIKit
  will be implemented in the future.
  */
 extension AnyModule {
+  // MARK: - Module name
+
   /**
    Sets the name of the module that is exported to the JavaScript world.
    */
@@ -14,12 +16,16 @@ extension AnyModule {
     return ModuleNameDefinition(name: name)
   }
 
+  // MARK: - Constants
+
   /**
    Definition function setting the module's constants to export.
    */
   public func constants(_ closure: () -> [String : Any?]) -> AnyDefinition {
     return ConstantsDefinition(constants: closure())
   }
+
+  // MARK: - Methods
 
   /**
    Factory function for methods without arguments.
@@ -147,6 +153,8 @@ extension AnyModule {
     )
   }
 
+  // MARK: - Module's lifecycle
+
   /**
    Creates module's lifecycle listener that is called right after module initialization.
    */
@@ -188,13 +196,15 @@ extension AnyModule {
   public func onAppEntersBackground(_ closure: @escaping () -> Void) -> AnyDefinition {
     return EventListener(.appEntersBackground, closure)
   }
-}
 
-/**
- Creates the view manager definition that scopes other view-related definitions.
- */
-public func viewManager(@ViewManagerDefinitionBuilder _ closure: @escaping () -> ViewManagerDefinition) -> AnyDefinition {
-  return closure()
+  // MARK: - View Manager
+
+  /**
+   Creates the view manager definition that scopes other view-related definitions.
+   */
+  public func viewManager(@ViewManagerDefinitionBuilder _ closure: @escaping () -> ViewManagerDefinition) -> AnyDefinition {
+    return closure()
+  }
 }
 
 /**

@@ -53,7 +53,7 @@ function buildAsync(config) {
                         cwd: watchRoot,
                         ignore: ['**/node_modules/**', '**/ios/**', '**/android/**'],
                     });
-                    return [4 /*yield*/, addStoriesAsync_1.addStoriesAsync(relPaths, config)];
+                    return [4 /*yield*/, (0, addStoriesAsync_1.addStoriesAsync)(relPaths, config)];
                 case 1:
                     _a.sent();
                     return [2 /*return*/];

@@ -2,10 +2,13 @@
 
 #import <EXNotifications/EXServerRegistrationModule.h>
 
-static NSString * const kEXDeviceInstallationUUIDKey = @"EXDeviceInstallationUUIDKey";
-static NSString * const kEXDeviceInstallationUUIDLegacyKey = @"EXDeviceInstallUUIDKey";
+// noop (used by code transform to ensure the versioning isn't applied)
+#define EX_UNVERSIONED(symbol) symbol
 
-static NSString * const kEXRegistrationInfoKey = @"EXNotificationRegistrationInfoKey";
+static NSString * const kEXDeviceInstallationUUIDKey = EX_UNVERSIONED(@"EXDeviceInstallationUUIDKey");
+static NSString * const kEXDeviceInstallationUUIDLegacyKey = EX_UNVERSIONED(@"EXDeviceInstallUUIDKey");
+
+static NSString * const kEXRegistrationInfoKey = EX_UNVERSIONED(@"EXNotificationRegistrationInfoKey");
 
 @implementation EXServerRegistrationModule
 

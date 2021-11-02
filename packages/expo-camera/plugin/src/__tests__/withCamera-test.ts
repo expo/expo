@@ -1,4 +1,4 @@
-import { setGradleMaven } from '../withCamera';
+import { addCameraImport } from '../withCamera';
 
 const buildGradleFixture = `
 buildscript {
@@ -32,8 +32,8 @@ allprojects {
     }
 }
 `;
-describe(setGradleMaven, () => {
+describe(addCameraImport, () => {
   it(`modifies the build.gradle`, () => {
-    expect(setGradleMaven(buildGradleFixture)).toMatchSnapshot();
+    expect(addCameraImport(buildGradleFixture).contents).toMatchSnapshot();
   });
 });

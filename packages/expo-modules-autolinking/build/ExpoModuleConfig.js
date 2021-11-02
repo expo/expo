@@ -23,6 +23,20 @@ class ExpoModuleConfig {
         return (_b = (_a = this.rawConfig.ios) === null || _a === void 0 ? void 0 : _a.modulesClassNames) !== null && _b !== void 0 ? _b : [];
     }
     /**
+     * Returns a list of names of Swift classes that receives AppDelegate life-cycle events.
+     */
+    iosAppDelegateSubscribers() {
+        var _a, _b;
+        return (_b = (_a = this.rawConfig.ios) === null || _a === void 0 ? void 0 : _a.appDelegateSubscribers) !== null && _b !== void 0 ? _b : [];
+    }
+    /**
+     * Returns a list of names of Kotlin native modules classes to put to the generated package provider file.
+     */
+    androidModulesClassNames() {
+        var _a, _b;
+        return (_b = (_a = this.rawConfig.android) === null || _a === void 0 ? void 0 : _a.modulesClassNames) !== null && _b !== void 0 ? _b : [];
+    }
+    /**
      * Returns serializable raw config.
      */
     toJSON() {

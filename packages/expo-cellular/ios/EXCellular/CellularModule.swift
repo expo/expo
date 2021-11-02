@@ -4,24 +4,31 @@ import ExpoModulesCore
 public class CellularModule: Module {
   public func definition() -> ModuleDefinition {
     name("ExpoCellular")
+
     constants {
       Self.getCurrentCellularInfo()
     }
+
     method("getCellularGenerationAsync") { () -> Int in
       Self.currentCellularGeneration().rawValue
     }
+
     method("allowsVoipAsync") { () -> Bool? in
       Self.currentCarrier()?.allowsVOIP
     }
+
     method("getIsoCountryCodeAsync") { () -> String? in
       Self.currentCarrier()?.isoCountryCode
     }
+
     method("getCarrierNameAsync") { () -> String? in
       Self.currentCarrier()?.carrierName
     }
+
     method("getMobileCountryCodeAsync") { () -> String? in
       Self.currentCarrier()?.mobileCountryCode
     }
+
     method("getMobileNetworkCodeAsync") { () -> String? in
       Self.currentCarrier()?.mobileNetworkCode
     }

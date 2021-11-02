@@ -1,27 +1,29 @@
 import { Code } from '@expo/html-elements';
-import React from 'react';
-import { StyleSheet, View, StyleProp, ViewStyle, TextStyle } from 'react-native';
+import React, { PropsWithChildren } from 'react';
+import { StyleSheet, View, ViewStyle, TextStyle } from 'react-native';
 
-const MonoText: React.FunctionComponent<{
-  containerStyle?: StyleProp<ViewStyle>;
-  textStyle?: StyleProp<TextStyle>;
-}> = ({ children, containerStyle, textStyle }) => (
+type Props = PropsWithChildren<{
+  containerStyle?: ViewStyle;
+  textStyle?: TextStyle;
+}>;
+
+const MonoText = ({ children, containerStyle, textStyle }: Props) => (
   <View style={[styles.container, containerStyle]}>
     <Code style={[styles.monoText, textStyle]}>{children}</Code>
   </View>
 );
 
-export default MonoText;
-
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#ffffff',
+    backgroundColor: '#fff',
     padding: 6,
     marginVertical: 8,
     borderWidth: 1,
-    borderColor: '#666666',
+    borderColor: '#666',
   },
   monoText: {
     fontSize: 10,
   },
 });
+
+export default MonoText;

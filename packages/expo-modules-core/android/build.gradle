@@ -3,7 +3,7 @@ apply plugin: 'kotlin-android'
 apply plugin: 'maven'
 
 group = 'host.exp.exponent'
-version = '0.4.0'
+version = '0.4.2'
 
 buildscript {
   // Simple helper that allows the root project to override versions declared by this library.
@@ -56,8 +56,9 @@ android {
   defaultConfig {
     minSdkVersion safeExtGet("minSdkVersion", 21)
     targetSdkVersion safeExtGet("targetSdkVersion", 30)
+    consumerProguardFiles 'proguard-rules.pro'
     versionCode 1
-    versionName "0.4.0"
+    versionName "0.4.2"
   }
   lintOptions {
     abortOnError false
@@ -65,10 +66,23 @@ android {
   kotlinOptions {
     jvmTarget = JavaVersion.VERSION_1_8
   }
+
+  testOptions {
+    unitTests.all {
+      testLogging {
+        outputs.upToDateWhen { false }
+        events "passed", "failed", "skipped", "standardError"
+        showCauses true
+        showExceptions true
+        showStandardStreams true
+      }
+    }
+  }
 }
 
 dependencies {
   implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${safeExtGet('kotlinVersion', '1.4.21')}"
+  implementation "org.jetbrains.kotlin:kotlin-reflect:${safeExtGet('kotlinVersion', '1.4.21')}"
   implementation 'androidx.annotation:annotation:1.2.0'
 
   // used only in `expo.modules.core.errors.ModuleDestroyedException` for API export
@@ -76,4 +90,19 @@ dependencies {
 
   //noinspection GradleDynamicVersion
   implementation 'com.facebook.react:react-native:+'
+
+  testImplementation 'androidx.test:core:1.4.0'
+  testImplementation 'junit:junit:4.13.1'
+  testImplementation 'io.mockk:mockk:1.10.6'
+  testImplementation "com.google.truth:truth:1.1.2"
+}
+
+/**
+ * To make the users of annotations @OptIn and @RequiresOptIn aware of their experimental status,
+ * the compiler raises warnings when compiling the code with these annotations:
+ * This class can only be used with the compiler argument '-Xopt-in=kotlin.RequiresOptIn'
+ * To remove the warnings, we add the compiler argument -Xopt-in=kotlin.RequiresOptIn.
+ */
+tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
+  kotlinOptions.freeCompilerArgs += "-Xopt-in=kotlin.RequiresOptIn"
 }

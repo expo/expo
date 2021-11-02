@@ -51,7 +51,7 @@ See the expo-dev-client installation instructions to modify your AppDelegate man
     }
 }
 const withDevMenuActivity = (config) => {
-    return config_plugins_1.withMainActivity(config, (config) => {
+    return (0, config_plugins_1.withMainActivity)(config, (config) => {
         if (config.modResults.language === 'java') {
             let content = config.modResults.contents;
             content = addJavaImports(content, [DEV_MENU_ANDROID_IMPORT]);
@@ -66,7 +66,7 @@ See the expo-dev-client installation instructions to modify your MainActivity ma
     });
 };
 const withDevMenuPodfile = (config) => {
-    return config_plugins_1.withDangerousMod(config, [
+    return (0, config_plugins_1.withDangerousMod)(config, [
         'ios',
         async (config) => {
             await editPodfile(config, (podfile) => {
@@ -90,7 +90,7 @@ const withDevMenuPodfile = (config) => {
 const withDevMenu = (config) => {
     config = withDevMenuActivity(config);
     config = withDevMenuPodfile(config);
-    config = withDevMenuAppDelegate_1.withDevMenuAppDelegate(config);
+    config = (0, withDevMenuAppDelegate_1.withDevMenuAppDelegate)(config);
     return config;
 };
-exports.default = config_plugins_1.createRunOncePlugin(withDevMenu, pkg.name, pkg.version);
+exports.default = (0, config_plugins_1.createRunOncePlugin)(withDevMenu, pkg.name, pkg.version);

@@ -5,9 +5,9 @@ const withFacebookAdsIOS_1 = require("./withFacebookAdsIOS");
 const withSKAdNetworkIdentifiers_1 = require("./withSKAdNetworkIdentifiers");
 const pkg = require('expo-ads-facebook/package.json');
 const withFacebookAds = (config, props) => {
-    config = withFacebookAdsIOS_1.withUserTrackingPermission(config, props);
+    config = (0, withFacebookAdsIOS_1.withUserTrackingPermission)(config, props);
     // https://developers.facebook.com/docs/SKAdNetwork
-    config = withSKAdNetworkIdentifiers_1.withSKAdNetworkIdentifiers(config, ['v9wttpbfk9.skadnetwork', 'n38lu8286q.skadnetwork']);
+    config = (0, withSKAdNetworkIdentifiers_1.withSKAdNetworkIdentifiers)(config, ['v9wttpbfk9.skadnetwork', 'n38lu8286q.skadnetwork']);
     return config;
 };
-exports.default = config_plugins_1.createRunOncePlugin(withFacebookAds, pkg.name, pkg.version);
+exports.default = (0, config_plugins_1.createRunOncePlugin)(withFacebookAds, pkg.name, pkg.version);

@@ -7,7 +7,7 @@ import org.json.JSONObject
 
 interface UpdateManifest {
   val updateEntity: UpdateEntity?
-  val assetEntityList: List<AssetEntity?>?
+  val assetEntityList: List<AssetEntity>
   val manifest: Manifest
   val serverDefinedHeaders: JSONObject?
   val manifestFilters: JSONObject?

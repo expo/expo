@@ -122,6 +122,14 @@ export default function vendoredModulesTransformsFactory(prefix: string): Config
         },
       ],
     },
+    '@react-native-segmented-control/segmented-control': {
+      content: [
+        {
+          find: `UIView+${prefix}React.h`,
+          replaceWith: `${prefix}UIView+React.h`,
+        },
+      ],
+    },
     'react-native-screens': {
       content: [],
     },

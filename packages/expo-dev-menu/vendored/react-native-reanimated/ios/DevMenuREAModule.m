@@ -2,12 +2,14 @@
 
 #import "DevMenuREANodesManager.h"
 #import "Transitioning/DevMenuREATransitionManager.h"
+#import "native/NativeProxy.h"
 
 typedef void (^AnimatedOperation)(DevMenuREANodesManager *nodesManager);
 
+RCTBridge *_devmenu_bridge_reanimated = nil;
+
 @implementation DevMenuREAModule
 {
-  DevMenuREANodesManager *_nodesManager;
   NSMutableArray<AnimatedOperation> *_operations;
   DevMenuREATransitionManager *_transitionManager;
 }
@@ -16,9 +18,9 @@ typedef void (^AnimatedOperation)(DevMenuREANodesManager *nodesManager);
 
 - (void)invalidate
 {
+  _devmenu_bridge_reanimated = nil;
   _transitionManager = nil;
   [_nodesManager invalidate];
-  [self.bridge.eventDispatcher removeDispatchObserver:self];
   [self.bridge.uiManager.observerCoordinator removeObserver:self];
 }
 
@@ -40,7 +42,6 @@ typedef void (^AnimatedOperation)(DevMenuREANodesManager *nodesManager);
 
   _transitionManager = [[DevMenuREATransitionManager alloc] initWithUIManager:self.bridge.uiManager];
 
-  [bridge.eventDispatcher addDispatchObserver:self];
   [bridge.uiManager.observerCoordinator addObserver:self];
 }
 
@@ -140,6 +141,13 @@ RCT_EXPORT_METHOD(setValue:(nonnull NSNumber *)nodeID
 {
   [self addOperationBlock:^(DevMenuREANodesManager *nodesManager) {
     [nodesManager setValueForNodeID:nodeID value:newValue];
+  }];
+}
+
+RCT_EXPORT_METHOD(triggerRender)
+{
+  [self addOperationBlock:^(DevMenuREANodesManager *nodesManager) {
+    [nodesManager postRunUpdatesAfterAnimation];
   }];
 }
 

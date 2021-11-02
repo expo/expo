@@ -1,4 +1,4 @@
-import ExpoModulesCore
+@testable import ExpoModulesCore
 
 class UnnamedModule: Module {
   func definition() -> ModuleDefinition {}
@@ -13,14 +13,28 @@ class NamedModule: Module {
 }
 
 class CustomModule: Module {
-  var customDefinition: ((CustomModule) -> ModuleDefinition)!
-
-  convenience init(appContext: AppContext, @ModuleDefinitionBuilder _ customDefinition: @escaping (CustomModule) -> ModuleDefinition) {
-    self.init(appContext: appContext)
-    self.customDefinition = customDefinition
-  }
+  let body: MockedDefinitionFunc
 
   func definition() -> ModuleDefinition {
-    return customDefinition(self)
+    return body(self)
   }
+
+  init(appContext: AppContext, _ body: @escaping MockedDefinitionFunc) {
+    self.body = body
+    super.init(appContext: appContext)
+  }
+
+  required init(appContext: AppContext) {
+    fatalError("`init(appContext:)` is unavailable in mocked module class.")
+  }
+}
+
+typealias MockedDefinitionFunc = (CustomModule) -> ModuleDefinition
+
+func mockModuleHolder(_ appContext: AppContext, @ModuleDefinitionBuilder _ definitionBody: @escaping () -> ModuleDefinition) -> ModuleHolder {
+  return ModuleHolder(appContext: appContext, module: CustomModule(appContext: appContext, { module in definitionBody() }))
+}
+
+func mockModuleHolder(_ appContext: AppContext, @ModuleDefinitionBuilder _ definitionBody: @escaping (CustomModule) -> ModuleDefinition) -> ModuleHolder {
+  return ModuleHolder(appContext: appContext, module: CustomModule(appContext: appContext, { module in definitionBody(module) }))
 }

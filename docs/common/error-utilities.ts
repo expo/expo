@@ -213,4 +213,7 @@ const RENAMED_PAGES: Record<string, string> = {
   '/versions/v40.0.0/sdk/permissions/': '/guides/permissions/',
   '/versions/v41.0.0/sdk/permissions/': '/guides/permissions/',
   '/versions/v42.0.0/sdk/permissions/': '/guides/permissions/',
+
+  // updates
+  '/guides/configuring-ota-updates/': '/guides/configuring-updates/',
 };

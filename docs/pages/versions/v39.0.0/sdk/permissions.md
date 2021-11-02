@@ -18,7 +18,7 @@ Please read the [permissions on iOS](#permissions-on-ios) and [permissions on An
 
 ### Permissions on iOS
 
-To request permissions on iOS, you have to describe why the permissions are requested and [install the library](#permissions-and-required-packages-on-ios) that can request this permission. In the managed workflow, you can do that by customizing the `ios.infoPlist` property in your [`app.json` file](../../../workflow/configuration.md#ios). When using the bare workflow, you have to edit the `info.plist` file directly.
+To request permissions on iOS, you have to describe why the permissions are requested and [install the library](#permissions-and-required-packages-on-ios) that can request this permission. In the managed workflow, you can do that by customizing the `ios.infoPlist` property in your [**app.json** file](../../../workflow/configuration.md#ios). When using the bare workflow, you have to edit the **Info.plist** file directly.
 
 See the [`Permission types`](#permission-types) below to learn about what `infoPlist` property you need for each permission. You can find the full list of available properties in [Apple's InfoPlistKeyReference](https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CocoaKeys.html#//apple_ref/doc/uid/TP40009251-SW1). Apple also documents the basic guidelines for the structure of the message in the [Human Interface Guidelines](https://developer.apple.com/design/human-interface-guidelines/ios/app-architecture/requesting-permission/).
 
@@ -26,11 +26,11 @@ See the [`Permission types`](#permission-types) below to learn about what `infoP
 
 ### Permissions on Android
 
-On Android, permissions are little bit simpler than iOS. In the managed workflow, permissions are controlled via the `android.permissions` property in your [`app.json` file](../../../workflow/configuration.md#android). In the bare workflow, they have to be defined in your `AndroidManifest.xml`.
+On Android, permissions are little bit simpler than iOS. In the managed workflow, permissions are controlled via the `android.permissions` property in your [**app.json** file](../../../workflow/configuration.md#android). In the bare workflow, they have to be defined in your **AndroidManifest.xml**.
 
 > Some Expo and React Native modules include permissions by default. If you use `expo-location`, for example, both the `ACCESS_COARSE_LOCATION` and `ACCESS_FINE_LOCATION` are implied and added to your app's permissions automatically.
 
-To limit the permissions your managed workflow app requires, set the `android.permissions` property in your [`app.json` file](../../../workflow/configuration.md#android) to list only the permissions you need, and Expo will also include the minimum permissions it requires to run. If you leave this property out, all permissions will be included in your app. When using the bare workflow, you have to [blacklist permissions in your `AndroidManifest.xml`](#excluding-android-permissions-in-bare-workflow) manually.
+To limit the permissions your managed workflow app requires, set the `android.permissions` property in your [**app.json** file](../../../workflow/configuration.md#android) to list only the permissions you need, and Expo will also include the minimum permissions it requires to run. If you leave this property out, all permissions will be included in your app. When using the bare workflow, you have to [blacklist permissions in your **AndroidManifest.xml**](#excluding-android-permissions-in-bare-workflow) manually.
 
 See the [`Permission types`](#permission-types) below to learn about which Android permissions are added. You can find a full list of all available permissions in the [Android Manifest.permissions reference](https://developer.android.com/reference/android/Manifest.permission).
 
@@ -38,7 +38,7 @@ See the [`Permission types`](#permission-types) below to learn about which Andro
 
 > **Note:** apps using dangerous or signature permissions without valid reasons _may be rejected by Google_. Make sure you follow the [Android permissions best practices](https://developer.android.com/training/permissions/usage-notes) when submitting your app.
 
-> **Note:** by default, the permissions implied by the modules you installed are added to the `AndroidManifest.xml`. To exclude permissions, you have to define the `android.permissions` manifest property or [blacklist them in the bare workflow](#excluding-android-permissions-in-bare-workflow).
+> **Note:** by default, the permissions implied by the modules you installed are added to the **AndroidManifest.xml**. To exclude permissions, you have to define the `android.permissions` manifest property or [blacklist them in the bare workflow](#excluding-android-permissions-in-bare-workflow).
 
 ### Permissions on Web
 
@@ -74,7 +74,7 @@ The following table shows you which permissions correspond to which packages.
 
 When adding Expo and other React Native modules to your project, certain Android permissions might be implied automatically. The modules should only add relevant permissions **required** to use the module, however, sometimes you may want to remove some of these permissions.
 
-Since the `android.permissions` manifest property doesn't work in the bare workflow- when you want to exclude specific permissions from the build, you have to "blacklist" them in your `AndroidManifest.xml`. You can do that with the `tools:node="remove"` attribute on the `<use-permission>` tag.
+Since the `android.permissions` manifest property doesn't work in the bare workflow- when you want to exclude specific permissions from the build, you have to "blacklist" them in your **AndroidManifest.xml**. You can do that with the `tools:node="remove"` attribute on the `<use-permission>` tag.
 
 ```xml
 <manifest xmlns:tools="http://schemas.android.com/tools">
@@ -320,7 +320,7 @@ The permission type for location access. It contains additional field when retur
 
 > **Note (iOS):** In Expo client on iOS this permission will always ask the user for permission to access location data while the app is in use.
 
-> If you would like to access location data in a standalone app, note that you'll need to provide location usage descriptions in `app.json`. For more information see [Deploying to App Stores guide](../../../distribution/app-stores.md#system-permissions-dialogs-on-ios).
+> If you would like to access location data in a standalone app, note that you'll need to provide location usage descriptions in **app.json**. For more information see [Deploying to App Stores guide](../../../distribution/app-stores.md#system-permissions-dialogs-on-ios).
 
 #### `scope`
 

@@ -10,6 +10,15 @@
 
 ### 💡 Others
 
+- Rewritten Android module to Kotlin. ([#14562](https://github.com/expo/expo/pull/14562), [#14563](https://github.com/expo/expo/pull/14563), [#14564](https://github.com/expo/expo/pull/14564), [#14565](https://github.com/expo/expo/pull/14565), [#14566](https://github.com/expo/expo/pull/14566) by [@barthap](https://github.com/barthap))
+
+## 13.0.1 — 2021-10-01
+
+### 🐛 Bug fixes
+
+- Fix permissions always returning denied on android api < 29. ([#14570](https://github.com/expo/expo/pull/14570) by [@kudo](https://github.com/kudo))
+- Fix unhandled rejection when asset creation fails on Android. ([#14583](https://github.com/expo/expo/pull/14583) by [@barthap](https://github.com/barthap))
+
 ## 13.0.0 — 2021-09-28
 
 ### 🛠 Breaking changes

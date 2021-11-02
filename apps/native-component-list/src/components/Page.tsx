@@ -1,29 +1,41 @@
 import { H4 } from '@expo/html-elements';
 import * as React from 'react';
+import { PropsWithChildren } from 'react';
 import { StyleSheet, View, ScrollView } from 'react-native';
 
-export function Page({ children }: { children: any }) {
-  return <View style={{ paddingHorizontal: 12, paddingBottom: 12 }}>{children}</View>;
-}
+const Page = ({ children }: PropsWithChildren<object>) => (
+  <View style={styles.page}>{children}</View>
+);
 
-export function ScrollPage({ children }: { children: any }) {
-  return (
-    <ScrollView style={{ flex: 1, paddingHorizontal: 12, paddingBottom: 12 }}>
-      {children}
-    </ScrollView>
-  );
-}
+const ScrollPage = ({ children }: PropsWithChildren<object>) => (
+  <ScrollView style={[styles.page, styles.scrollPage]}>{children}</ScrollView>
+);
 
-export function Section({ title, children, row }: { title: string; children: any; row?: boolean }) {
-  return (
-    <View
-      style={{
-        borderBottomColor: 'rgba(0,0,0,0.1)',
-        borderBottomWidth: StyleSheet.hairlineWidth,
-        paddingBottom: 8,
-      }}>
-      <H4 style={{ marginTop: 8 }}>{title}</H4>
-      <View style={{ flexDirection: row ? 'row' : 'column' }}>{children}</View>
-    </View>
-  );
-}
+type SectionProps = PropsWithChildren<{ title: string; row?: boolean }>;
+
+const Section = ({ title, children, row }: SectionProps) => (
+  <View style={styles.section}>
+    <H4 style={styles.sectionHeader}>{title}</H4>
+    <View style={{ flexDirection: row ? 'row' : 'column' }}>{children}</View>
+  </View>
+);
+
+const styles = StyleSheet.create({
+  page: {
+    paddingHorizontal: 12,
+    paddingBottom: 12,
+  },
+  scrollPage: {
+    flex: 1,
+  },
+  section: {
+    borderBottomColor: 'rgba(0,0,0,0.1)',
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    paddingBottom: 8,
+  },
+  sectionHeader: {
+    marginTop: 8,
+  },
+});
+
+export { Page, ScrollPage, Section };

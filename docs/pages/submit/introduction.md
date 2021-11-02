@@ -10,4 +10,4 @@ sidebar_title: Introduction
 - [Submitting to the Apple App Store](ios.md): Learn how to submit an iOS/iPadOS app to the Apple App Store from any operating system.
 - [Submitting to the Google Play Store](android.md): Learn how to submit an Android app to the Google Play Store.
 - [Learn how to use EAS Submit with "expo build"](classic-builds.md): EAS Submit works with EAS Build projects by default, but it's easy to use EAS Submit to submit apps built with `expo build:[ios|android]` too.
-- [Configuration with eas.json](eas-json.md): See how to configure your submissions with `eas.json`.
+- [Configuration with eas.json](eas-json.md): See how to configure your submissions with **eas.json**.

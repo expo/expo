@@ -260,8 +260,12 @@ static NSString * const EXUpdatesAppLauncherErrorDomain = @"AppLauncher";
     }
 
     if (matchingAsset && matchingAsset.mainBundleFilename) {
+      NSString *bundlePath = [[NSBundle mainBundle] pathForResource:matchingAsset.mainBundleFilename ofType:matchingAsset.type];
+      if (bundlePath == nil) {
+        completion(NO, nil);
+        return;
+      }
       dispatch_async([EXUpdatesFileDownloader assetFilesQueue], ^{
-        NSString *bundlePath = [[NSBundle mainBundle] pathForResource:matchingAsset.mainBundleFilename ofType:matchingAsset.type];
         NSError *error;
         BOOL success = [NSFileManager.defaultManager copyItemAtPath:bundlePath toPath:[assetLocalUrl path] error:&error];
         dispatch_async(self->_launcherQueue, ^{

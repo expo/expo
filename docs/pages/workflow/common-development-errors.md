@@ -38,7 +38,7 @@ Here you will find a list of errors that are commonly encountered by developers 
 
 - The development server running in your terminal is bundling a different version of React Native than the app in your device or simulator.
 
-- [Align your versions of react-native](../troubleshooting/react-native-version-mismatch) by checking the versions in your `app.json` and `package.json`
+- [Align your versions of react-native](../troubleshooting/react-native-version-mismatch) by checking the versions in your **app.json** and **package.json**
 
 ### Application has not been registered
 

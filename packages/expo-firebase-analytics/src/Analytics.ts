@@ -97,6 +97,9 @@ export async function setCurrentScreen(
  * Sets the interval of inactivity in seconds that terminates the current session. The default
  * value is 1800000 milliseconds (30 minutes).
  *
+ * > Setting the session timeout only applies to the native iOS and Android SDKs. Calling this
+ * > method does nothing on Expo Go or web.
+ *
  * @param sessionTimeoutInterval The custom time of inactivity in milliseconds before the current
  * session terminates.
  */

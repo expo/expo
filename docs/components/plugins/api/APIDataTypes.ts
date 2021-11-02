@@ -34,17 +34,20 @@ export type TypeDefinitionData = {
     name?: string;
     type: string;
     types?: TypeDefinitionData[];
-    declaration?: {
-      name?: string;
-      kind?: TypeDocKind;
-      indexSignature?: TypeSignaturesData;
-    };
+    declaration?: TypeDeclarationContentData;
   };
   queryType?: {
     name: string;
     type: string;
   };
   typeArguments?: TypeDefinitionData[];
+  checkType?: TypeDefinitionData;
+  falseType?: TypeDefinitionData;
+  trueType?: TypeDefinitionData;
+  extendsType?: {
+    type: string;
+    declaration?: TypeDeclarationContentData;
+  };
   declaration?: TypeDeclarationContentData;
   value?: string | boolean | null;
 };
@@ -72,15 +75,6 @@ export type ConstantDefinitionData = {
   type?: TypeDefinitionData;
 };
 
-// Class section
-
-export type ClassDefinitionData = {
-  name: string;
-  comment?: CommentData;
-  kind: TypeDocKind;
-  extendedTypes?: TypeDefinitionData[];
-};
-
 // Enums section
 
 export type EnumDefinitionData = {
@@ -101,21 +95,22 @@ export type EnumValueData = {
 
 export type InterfaceDefinitionData = {
   name: string;
-  children: InterfaceValueData[];
+  children: PropData[];
   comment?: CommentData;
   kind: TypeDocKind;
 };
 
-export type InterfaceValueData = {
-  name: string;
+// Classes section
+
+export type ClassDefinitionData = InterfaceDefinitionData & {
+  extendedTypes?: TypeDefinitionData[];
   type?: TypeDefinitionData;
-  flags?: TypePropertyDataFlags;
-  comment?: CommentData;
-} & MethodDefinitionData;
+};
 
 // Methods section
 
 export type MethodDefinitionData = {
+  name: string;
   signatures: MethodSignatureData[];
   kind: TypeDocKind;
 };
@@ -127,7 +122,7 @@ export type MethodSignatureData = {
   type: TypeDefinitionData;
 };
 
-// Props section
+// Properties section
 
 export type PropsDefinitionData = {
   name: string;
@@ -137,11 +132,13 @@ export type PropsDefinitionData = {
 
 export type PropData = {
   name: string;
+  kind?: TypeDocKind;
   comment?: CommentData;
   type: TypeDefinitionData;
   flags?: TypePropertyDataFlags;
   defaultValue?: string;
   signatures?: MethodSignatureData[];
+  overwrites?: TypeDefinitionData;
 };
 
 export type DefaultPropsDefinitionData = {
@@ -156,16 +153,21 @@ export type TypeGeneralData = {
   name: string;
   comment: CommentData;
   type: TypeDefinitionData;
+  typeParameter?: TypeGeneralData[];
   kind: TypeDocKind;
 };
 
 export type TypeDeclarationContentData = {
+  name?: string;
+  kind?: TypeDocKind;
+  indexSignature?: TypeSignaturesData;
   signatures?: TypeSignaturesData[];
   children?: PropData[];
 };
 
 export type TypeSignaturesData = {
   name?: string;
+  comment?: CommentData;
   parameters?: MethodParamData[];
   type: TypeDefinitionData;
   kind?: TypeDocKind;

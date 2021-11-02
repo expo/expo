@@ -66,11 +66,14 @@ const generateGeneralNavLinks = (path_, arr = null) => {
     // Only process markdown files that are not index pages
     if (ext === '.md' && name !== 'index') {
       try {
-        const title = fm(fs.readFileSync(filePath, 'utf8')).attributes.title;
-        const sidebarTitle = fm(fs.readFileSync(filePath, 'utf8')).attributes.sidebar_title;
+        const attributes = fm(fs.readFileSync(filePath, 'utf8')).attributes;
+        const title = attributes.title;
+        const hidden = !!attributes.hidden;
+        const sidebarTitle = attributes.sidebar_title;
         const obj = {
           name: title,
           sidebarTitle,
+          hidden,
           href: processUrl(filePath),
         };
         arr.push(obj);

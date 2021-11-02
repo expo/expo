@@ -4,11 +4,72 @@
 
 ### 🛠 Breaking changes
 
+- Add local SQLite fields for error recovery manager on iOS. ([#14610](https://github.com/expo/expo/pull/14610) by [@esamelson](https://github.com/esamelson))
+- Add DB migration for above. ([#14718](https://github.com/expo/expo/pull/14718) by [@esamelson](https://github.com/esamelson))
+
 ### 🎉 New features
+
+- Add error recovery manager on iOS. ([#14397](https://github.com/expo/expo/pull/14397) by [@esamelson](https://github.com/esamelson))
+- Hook up error recovery manager to rest of module on iOS. ([#14398](https://github.com/expo/expo/pull/14398) by [@esamelson](https://github.com/esamelson))
+- Move persisted error log to EXUpdatesErrorRecovery on iOS. ([#14399](https://github.com/expo/expo/pull/14399) by [@esamelson](https://github.com/esamelson))
+- Add native EXUpdatesCheckOnLaunch: ERROR_RECOVERY_ONLY setting on iOS. ([#14673](https://github.com/expo/expo/pull/14673) by [@esamelson](https://github.com/esamelson))
 
 ### 🐛 Bug fixes
 
+- Fix auto setup `EXUpdatesAppDelegate` breaking reanimated installation. ([#14755](https://github.com/expo/expo/pull/14755) by [@kudo](https://github.com/kudo))
+- Fix support for `react.entryFile` gradle config. ([#14934](https://github.com/expo/expo/pull/14934) by [@EvanBacon](https://github.com/EvanBacon))
+- Fix Android app.manifest not generated when in OneSignal gradle plugin integration. ([#14938](https://github.com/expo/expo/pull/14938) by [@kudo](https://github.com/kudo))
+- Fix Android app.manifest not generated from [#14938](https://github.com/expo/expo/pull/14938) regression. ([#14953](https://github.com/expo/expo/pull/14953) by [@kudo](https://github.com/kudo))
+- Fix iOS app.manifest generation error in `eas build --local` mode. ([#14956](https://github.com/expo/expo/pull/14956) by [@kudo](https://github.com/kudo))
+
 ### 💡 Others
+
+- Update `@expo/config` and `@expo/metro-config` dependencies. ([#14801](https://github.com/expo/expo/pull/14801) by [@Simek](https://github.com/Simek))
+- Refactor and unify Loader classes on Android. ([#14334](https://github.com/expo/expo/pull/14334) by [@esamelson](https://github.com/esamelson))
+- Kotlinize expo-updates. ([#14818](https://github.com/expo/expo/pull/14334) by [@wschurman](https://github.com/wschurman))
+
+## 0.10.9 — 2021-10-29
+
+_This version does not introduce any user-facing changes._
+
+## 0.10.8 — 2021-10-29
+
+### 🐛 Bug fixes
+
+- Fix Android app.manifest not generated from [#14938](https://github.com/expo/expo/pull/14938) regression. ([#14953](https://github.com/expo/expo/pull/14953) by [@kudo](https://github.com/kudo))
+- Fix iOS app.manifest generation error in `eas build --local` mode. ([#14956](https://github.com/expo/expo/pull/14956) by [@kudo](https://github.com/kudo))
+
+## 0.10.7 — 2021-10-29
+
+_This version does not introduce any user-facing changes._
+
+## 0.10.6 — 2021-10-28
+
+### 🐛 Bug fixes
+
+- Fix Android app.manifest not generated when in OneSignal gradle plugin integration. ([#14938](https://github.com/expo/expo/pull/14938) by [@kudo](https://github.com/kudo))
+
+## 0.10.5 — 2021-10-21
+
+_This version does not introduce any user-facing changes._
+
+## 0.10.4 — 2021-10-15
+
+### 🐛 Bug fixes
+
+- Fix auto setup `EXUpdatesAppDelegate` breaking reanimated installation. ([#14755](https://github.com/expo/expo/pull/14755) by [@kudo](https://github.com/kudo))
+
+## 0.10.3 — 2021-10-12
+
+### 🐛 Bug fixes
+
+- Fix `Updates.reloadAsync` behavior in bare apps when a new update is available (downloaded). ([#14706](https://github.com/expo/expo/pull/14706) by [@esamelson](https://github.com/esamelson))
+
+## 0.10.2 — 2021-10-01
+
+### 🐛 Bug fixes
+
+- Fix expo-screen-orientation breaking for expo-updates + expo-splash-screen integration. ([#14519](https://github.com/expo/expo/pull/14519) by [@kudo](https://github.com/kudo))
 
 ## 0.10.1 — 2021-09-28
 
@@ -48,6 +109,7 @@ _This version does not introduce any user-facing changes._
 
 ### 🎉 New features
 
+- Updated `config-plugins` from `3.1.0` to `4.0.2` ([#14788](https://github.com/expo/expo/pull/14788) by [@jkhales](https://github.com/jkhales))
 - Version expo-updates plugin by importing from @expo/config-plugins@3.0.7. This allows the update url to be defined in app.confg ([#13981](https://github.com/expo/expo/pull/13981) by [@jkhales](https://github.com/jkhales))
 - Store assets with filename = key.fileExtension. ([#13801](https://github.com/expo/expo/pull/13801) by [@jkhales](https://github.com/jkhales))
 - Use stable manifest ID where applicable. ([#12964](https://github.com/expo/expo/pull/12964) by [@wschurman](https://github.com/wschurman))

@@ -10,6 +10,26 @@
 
 ### 💡 Others
 
+## 0.13.4 — 2021-10-22
+
+_This version does not introduce any user-facing changes._
+
+## 0.13.3 — 2021-10-15
+
+### 🐛 Bug fixes
+
+- Fix `No native splash screen registered for given view controller` error happening when project is using both `expo-dev-client` and `expo-splash-screen` packages. ([#14745](https://github.com/expo/expo/pull/14745) by [@kudo](https://github.com/kudo))
+
+## 0.13.2 — 2021-10-15
+
+_This version does not introduce any user-facing changes._
+
+## 0.13.1 — 2021-10-01
+
+### 🐛 Bug fixes
+
+- Fix expo-screen-orientation breaking for expo-updates + expo-splash-screen integration. ([#14519](https://github.com/expo/expo/pull/14519) by [@kudo](https://github.com/kudo))
+
 ## 0.13.0 — 2021-09-28
 
 ### 🛠 Breaking changes

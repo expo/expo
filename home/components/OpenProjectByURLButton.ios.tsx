@@ -14,7 +14,7 @@ export default function OpenProjectByURLButton() {
         onPress: (text) => {
           if (text) {
             const url = UrlUtils.normalizeUrl(text);
-            Linking.canOpenURL(url) && Linking.openURL(url);
+            Linking.openURL(url);
           }
         },
       },

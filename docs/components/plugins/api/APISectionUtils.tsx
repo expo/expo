@@ -26,6 +26,7 @@ export enum TypeDocKind {
   Class = 128,
   Interface = 256,
   Property = 1024,
+  Method = 2048,
   TypeAlias = 4194304,
 }
 
@@ -118,125 +119,130 @@ export const resolveTypeName = ({
   value,
   queryType,
 }: TypeDefinitionData): string | JSX.Element | (string | JSX.Element)[] => {
-  if (name) {
-    if (type === 'reference') {
-      if (typeArguments) {
-        if (name === 'Record' || name === 'React.ComponentProps') {
-          return (
-            <>
-              {name}&lt;
-              {typeArguments.map((type, index) => (
-                <span key={`record-type-${index}`}>
-                  {resolveTypeName(type)}
-                  {index !== typeArguments.length - 1 ? ', ' : null}
-                </span>
-              ))}
-              &gt;
-            </>
-          );
+  try {
+    if (name) {
+      if (type === 'reference') {
+        if (typeArguments) {
+          if (name === 'Record' || name === 'React.ComponentProps') {
+            return (
+              <>
+                {name}&lt;
+                {typeArguments.map((type, index) => (
+                  <span key={`record-type-${index}`}>
+                    {resolveTypeName(type)}
+                    {index !== typeArguments.length - 1 ? ', ' : null}
+                  </span>
+                ))}
+                &gt;
+              </>
+            );
+          } else {
+            return (
+              <>
+                {renderWithLink(name)}
+                &lt;
+                {typeArguments.map((type, index) => (
+                  <span key={`${name}-nested-type-${index}`}>
+                    {resolveTypeName(type)}
+                    {index !== typeArguments.length - 1 ? ', ' : null}
+                  </span>
+                ))}
+                &gt;
+              </>
+            );
+          }
         } else {
-          return (
-            <>
-              {renderWithLink(name)}
-              &lt;
-              {typeArguments.map((type, index) => (
-                <span key={`${name}-nested-type-${index}`}>
-                  {resolveTypeName(type)}
-                  {index !== typeArguments.length - 1 ? ', ' : null}
-                </span>
-              ))}
-              &gt;
-            </>
-          );
+          return renderWithLink(name);
         }
       } else {
-        return renderWithLink(name);
+        return name;
       }
-    } else {
-      return name;
-    }
-  } else if (elementType?.name) {
-    if (elementType.type === 'reference') {
-      return renderWithLink(elementType.name, type);
-    } else if (type === 'array') {
-      return elementType.name + '[]';
-    }
-    return elementType.name + type;
-  } else if (elementType?.declaration) {
-    if (type === 'array') {
-      const { parameters, type: paramType } = elementType.declaration.indexSignature || {};
-      if (parameters && paramType) {
-        return `{ [${listParams(parameters)}]: ${resolveTypeName(paramType)} }`;
+    } else if (elementType?.name) {
+      if (elementType.type === 'reference') {
+        return renderWithLink(elementType.name, type);
+      } else if (type === 'array') {
+        return elementType.name + '[]';
       }
-    }
-    return elementType.name + type;
-  } else if (type === 'union' && types?.length) {
-    return renderUnion(types);
-  } else if (elementType && elementType.type === 'union' && elementType?.types?.length) {
-    const unionTypes = elementType?.types || [];
-    return (
-      <>
-        ({renderUnion(unionTypes)}){type === 'array' && '[]'}
-      </>
-    );
-  } else if (declaration?.signatures) {
-    const baseSignature = declaration.signatures[0];
-    if (baseSignature?.parameters?.length) {
+      return elementType.name + type;
+    } else if (elementType?.declaration) {
+      if (type === 'array') {
+        const { parameters, type: paramType } = elementType.declaration.indexSignature || {};
+        if (parameters && paramType) {
+          return `{ [${listParams(parameters)}]: ${resolveTypeName(paramType)} }`;
+        }
+      }
+      return elementType.name + type;
+    } else if (type === 'union' && types?.length) {
+      return renderUnion(types);
+    } else if (elementType && elementType.type === 'union' && elementType?.types?.length) {
+      const unionTypes = elementType?.types || [];
       return (
         <>
-          (
-          {baseSignature.parameters?.map((param, index) => (
-            <span key={`param-${index}-${param.name}`}>
-              {param.name}: {resolveTypeName(param.type)}
-              {index + 1 !== baseSignature.parameters?.length && ', '}
+          ({renderUnion(unionTypes)}){type === 'array' && '[]'}
+        </>
+      );
+    } else if (declaration?.signatures) {
+      const baseSignature = declaration.signatures[0];
+      if (baseSignature?.parameters?.length) {
+        return (
+          <>
+            (
+            {baseSignature.parameters?.map((param, index) => (
+              <span key={`param-${index}-${param.name}`}>
+                {param.name}: {resolveTypeName(param.type)}
+                {index + 1 !== baseSignature.parameters?.length && ', '}
+              </span>
+            ))}
+            ) {'=>'} {resolveTypeName(baseSignature.type)}
+          </>
+        );
+      } else {
+        return (
+          <>
+            {'() =>'} {resolveTypeName(baseSignature.type)}
+          </>
+        );
+      }
+    } else if (type === 'reflection' && declaration?.children) {
+      return (
+        <>
+          {'{ '}
+          {declaration?.children.map((child: PropData, i) => (
+            <span key={`reflection-${name}-${i}`}>
+              {child.name + ': ' + resolveTypeName(child.type)}
+              {i + 1 !== declaration?.children?.length ? ', ' : null}
             </span>
           ))}
-          ) {'=>'} {resolveTypeName(baseSignature.type)}
+          {' }'}
         </>
       );
-    } else {
+    } else if (type === 'tuple' && elements) {
       return (
         <>
-          {'() =>'} {resolveTypeName(baseSignature.type)}
+          [
+          {elements.map((elem, i) => (
+            <span key={`tuple-${name}-${i}`}>
+              {resolveTypeName(elem)}
+              {i + 1 !== elements.length ? ', ' : null}
+            </span>
+          ))}
+          ]
         </>
       );
+    } else if (type === 'query' && queryType) {
+      return queryType.name;
+    } else if (type === 'literal' && typeof value === 'boolean') {
+      return `${value}`;
+    } else if (type === 'literal' && value) {
+      return `'${value}'`;
+    } else if (value === null) {
+      return 'null';
     }
-  } else if (type === 'reflection' && declaration?.children) {
-    return (
-      <>
-        {'{ '}
-        {declaration?.children.map((child: PropData, i) => (
-          <span key={`reflection-${name}-${i}`}>
-            {child.name + ': ' + resolveTypeName(child.type)}
-            {i + 1 !== declaration?.children?.length ? ', ' : null}
-          </span>
-        ))}
-        {' }'}
-      </>
-    );
-  } else if (type === 'tuple' && elements) {
-    return (
-      <>
-        [
-        {elements.map((elem, i) => (
-          <span key={`tuple-${name}-${i}`}>
-            {resolveTypeName(elem)}
-            {i + 1 !== elements.length ? ', ' : null}
-          </span>
-        ))}
-        ]
-      </>
-    );
-  } else if (type === 'query' && queryType) {
-    return queryType.name;
-  } else if (type === 'literal' && typeof value === 'boolean') {
-    return `${value}`;
-  } else if (type === 'literal' && value) {
-    return `'${value}'`;
-  } else if (value === null) {
-    return 'null';
+    return 'undefined';
+  } catch (e) {
+    console.warn('Type resolve has failed!', e);
+    return 'undefined';
   }
-  return 'undefined';
 };
 
 export const parseParamName = (name: string) => (name.startsWith('__') ? name.substr(2) : name);

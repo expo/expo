@@ -15,4 +15,4 @@ const withLocalAuthentication = (config, { faceIDPermission } = {}) => {
         'android.permission.USE_FINGERPRINT',
     ]);
 };
-exports.default = config_plugins_1.createRunOncePlugin(withLocalAuthentication, pkg.name, pkg.version);
+exports.default = (0, config_plugins_1.createRunOncePlugin)(withLocalAuthentication, pkg.name, pkg.version);

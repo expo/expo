@@ -10,6 +10,13 @@
 
 ### 💡 Others
 
+- [plugin] Added SDK 43 tests for new AppDelegate template ([#14763](https://github.com/expo/expo/pull/14763) by [@EvanBacon](https://github.com/EvanBacon))
+- The app delegate subscriber on iOS has been separated from the singleton module to hook into the new implementation of `ExpoAppDelegate`. ([#14867](https://github.com/expo/expo/pull/14867) by [@tsapeta](https://github.com/tsapeta))
+
+## 4.0.1 — 2021-10-01
+
+_This version does not introduce any user-facing changes._
+
 ## 4.0.0 — 2021-09-28
 
 ### 🛠 Breaking changes

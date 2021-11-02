@@ -6,9 +6,15 @@
 
 ### 🎉 New features
 
+- [plugin] Added `iCloudContainerEnvironment` prop for setting the `com.apple.developer.icloud-container-environment` entitlement ([#14885](https://github.com/expo/expo/pull/14885) by [@EvanBacon](https://github.com/EvanBacon))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 10.0.1 — 2021-10-01
+
+_This version does not introduce any user-facing changes._
 
 ## 10.0.0 — 2021-09-28
 

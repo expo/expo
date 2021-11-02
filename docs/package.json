@@ -1,6 +1,6 @@
 {
   "name": "expo-docs",
-  "version": "42.0.0",
+  "version": "43.0.0",
   "private": true,
   "scripts": {
     "dev": "rimraf .next/preval && next dev -p 3002",
@@ -79,13 +79,16 @@
     "eslint-plugin-lodash": "^7.2.0",
     "http-server": "^0.12.3",
     "jest": "26.1.0",
+    "js-yaml": "^4.1.0",
     "prettier": "^2.3.1",
     "puppeteer": "^10.2.0",
     "remark-cli": "^9.0.0",
+    "remark-frontmatter": "^2.0.0",
     "remark-validate-links": "^10.0.4",
     "rimraf": "^3.0.2",
     "semver": "^7.3.5",
     "sitemap": "^6.3.0",
-    "typescript": "^4.0.3"
+    "typescript": "^4.0.3",
+    "unist-builder": "^2.0.0"
   }
 }

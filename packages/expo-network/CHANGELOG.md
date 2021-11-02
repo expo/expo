@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 4.0.1 — 2021-10-01
+
+_This version does not introduce any user-facing changes._
+
 ## 4.0.0 — 2021-09-28
 
 ### 🛠 Breaking changes
@@ -23,6 +27,7 @@
 ### 💡 Others
 
 - Migrated from `@unimodules/core` to `expo-modules-core`. ([#13757](https://github.com/expo/expo/pull/13757) by [@tsapeta](https://github.com/tsapeta))
+- Rewrite Android code to Kotlin. ([#14474](https://github.com/expo/expo/pull/14474) by [@kkafar](https://github.com/kkafar))
 
 ## 3.2.0 — 2021-06-16
 

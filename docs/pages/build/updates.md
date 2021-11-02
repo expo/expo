@@ -1,21 +1,21 @@
 ---
-title: Over-the-air updates
+title: Updates
 ---
 
 > We're currently working on EAS Update, a service that integrates deeply with other EAS services and builds on top of `expo-updates` to provide more power, flexibility, and tools to help you work better with your team.
 
-EAS Build includes some special affordances for Expo's over-the-air updates library, [`expo-updates`](/versions/latest/sdk/updates.md). In particular, you can configure the release channel in `eas.json` and EAS Build will take care of updating it in your native project at build time. Not sure what a release channel is? [Learn more about release channels](/distribution/release-channels.md).
+EAS Build includes some special affordances for Expo's [`expo-updates`](/versions/latest/sdk/updates.md) library. In particular, you can configure the release channel in **eas.json** and EAS Build will take care of updating it in your native project at build time. Not sure what a release channel is? [Learn more about release channels](/distribution/release-channels.md).
 
 ## Setting the release channel for a build profile
 
 Each [build profile](./eas-json.md#build-profiles) can be assigned to a release channel, so updates for builds produced for a given profile will pull only those releases that are published to its release channel. If a release channel is not specified, the value will be `"default"`.
 
-The following example demonstrates how you might use the `"production"` release channel for release builds, and the `"staging"` release channel for test builds distributed with [internal distribution](internal-distribution.md).
+The following example demonstrates how you might use the `"production"` release channel for production builds, and the `"staging"` release channel for test builds distributed with [internal distribution](internal-distribution.md).
 
 ```json
 {
   "build": {
-    "release": {
+    "production": {
       "releaseChannel": "production"
     },
     "team": {

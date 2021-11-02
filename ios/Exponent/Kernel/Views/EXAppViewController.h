@@ -20,11 +20,6 @@
  */
 - (void)hideLoadingProgressWindow;
 
-/**
- *  Settable by the app's screen orientation API via the orientation kernel service.
- */
-- (void)setSupportedInterfaceOrientations:(UIInterfaceOrientationMask)supportedInterfaceOrientations;
-
 - (void)appStateDidBecomeActive;
 - (void)appStateDidBecomeInactive;
 

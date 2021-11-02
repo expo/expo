@@ -6,7 +6,6 @@ You can run the same build process as we run on the EAS Build servers directly o
 
 `eas build --platform android --local` or `eas build --platform ios --local`
 
-
 ## Prerequisites
 
 - You need to be authenticated (either via regular login or `EXPO_TOKEN`).
@@ -31,12 +30,12 @@ If you encounter build failures on EAS servers and you're unable to determine th
 
 Some of the options available for cloud builds are not available locally. Limitations you should be aware of:
 
-- You can only build for a specific platform (option `'all'` is disabled).
-- Customizing versions of software is not supported, fields `node`, `yarn`, `fastlane`, `cocoapods`, `ndk`, `image` in `eas.json` are ignored.
+- You can only build for a specific platform (option `all` is disabled).
+- Customizing versions of software is not supported, fields `node`, `yarn`, `fastlane`, `cocoapods`, `ndk`, `image` in **eas.json** are ignored.
 - Caching is not supported.
 - EAS Secrets are not supported (set them in your environment locally instead).
 - You are responsible for making sure that the environment have all necessary tools installed:
-    - Node.js/yarn/npm
-    - fastlane (iOS only)
-    - CocoaPods (iOS only)
-    - Android SDK and NDK
+  - Node.js/yarn/npm
+  - fastlane (iOS only)
+  - CocoaPods (iOS only)
+  - Android SDK and NDK

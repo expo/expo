@@ -33,6 +33,7 @@ function registerSearchCommand<OptionsType extends SearchOptions>(
       'The platform that the resulting modules must support. Available options: "ios", "android"',
       'ios'
     )
+    .option('--silent', 'Silence resolution warnings')
     .action(async (searchPaths, providedOptions) => {
       const options = await mergeLinkingOptionsAsync<OptionsType>({
         ...providedOptions,

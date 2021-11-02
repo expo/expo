@@ -3,7 +3,8 @@
 //
 
 #import "ExpoKit.h"
+#import "EXKernel.h"
 #import "EXRootViewController.h"
+#import "EXAppViewController.h"
 
-#import <ExpoModulesCore/EXAppDelegateWrapper.h>
 #import <ExpoModulesCore/EXModuleRegistryProvider.h>

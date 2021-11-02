@@ -4,16 +4,15 @@ title: Using Firebase
 
 [Firebase](https://firebase.google.com/) gives you functionality like analytics, databases, messaging and crash reporting so you can move quickly and focus on your users. Firebase is built on Google infrastructure and scales automatically, for even the largest apps.
 
+> This guide uses `firebase@9.1.0`. As of SDK 43, the Expo SDK no longer enforces or recommends any specific version of Firebase to use in your app. If you are using an older version of the `firebase` library in your project you may have to adapt the code examples below to match the version that you are using, with the help of the [Firebase JS SDK documentation](https://github.com/firebase/firebase-js-sdk).
+
 ## Usage with Expo
 
 If you'd like to use Firebase in the Expo Go app with the managed workflow, we'd recommend using the [Firebase JS SDK](https://github.com/firebase/firebase-js-sdk). It supports Authentication, Firestore & Realtime databases, Storage, and Functions on React Native. Other modules like Analytics are [not supported through the Firebase JS SDK](https://firebase.google.com/support/guides/environments_js-sdk), but you can use [expo-firebase-analytics](/versions/latest/sdk/firebase-analytics) for that.
-If you'd like access to the full suite of native firebase tools, we recommend using the bare workflow and [react-native-firebase](https://github.com/invertase/react-native-firebase), because we cannot support this in the Expo Go app currently.
 
-Luckily, the Firebase JavaScript SDK starting from version 3.1+ has almost full support for React Native, so adding it to our Expo app is super easy. The one caveat covered later in this guide is that the user login components typically provided by the Firebase SDKs will **not** work for React Native, and thus we will have to work around it.
+If you'd like access to the full suite of native firebase tools, we recommend using the [react-native-firebase](https://github.com/invertase/react-native-firebase), which is supported in [custom development clients](/clients/introduction.md) using a built-in [config plugin].
 
-See the [official Firebase blog post announcing React Native compatibility](https://firebase.googleblog.com/2016/07/firebase-react-native.html).
-
-> **Note:** This guide mostly covers Firebase Realtime Database (and some Firestore as well). For more background on why some Firebase services are not supported, please read [Brent Vatne's response on Canny](https://expo.canny.io/feature-requests/p/full-native-firebase-integration).
+> **Note:** This guide mostly covers Firebase Realtime Database (and some Firestore as well). For more background on why some Firebase services are not supported, please refer to the ["What goes into the Expo SDK?" FYI page](https://expo.fyi/whats-in-the-sdk).
 
 ## Firebase SDK Setup
 
@@ -24,14 +23,14 @@ First we need to setup a Firebase Account and create a new project. We will be u
 [Firebase Console](http://console.firebase.google.com/) provides you with an API key, and other identifiers for your project needed for initialization. [firebase-web-start](https://firebase.google.com/docs/database/web/start) has a detailed description of what each field means and where to find them in your console.
 
 ```javascript
-import firebase from 'firebase/app'
+import { initializeApp } from 'firebase/app';
 
 // Optionally import the services that you want to use
-//import "firebase/auth";
-//import "firebase/database";
-//import "firebase/firestore";
-//import "firebase/functions";
-//import "firebase/storage";
+//import {...} from "firebase/auth";
+//import {...} from "firebase/database";
+//import {...} from "firebase/firestore";
+//import {...} from "firebase/functions";
+//import {...} from "firebase/storage";
 
 // Initialize Firebase
 const firebaseConfig = {
@@ -45,7 +44,7 @@ const firebaseConfig = {
   measurementId: 'G-measurement-id',
 };
 
-firebase.initializeApp(firebaseConfig);
+initializeApp(firebaseConfig);
 ```
 
 ### Temporarily Bypass Default Security Rules
@@ -72,21 +71,25 @@ Go into Firebase Console >> _Realtime Database_, and under the Rules tab you sho
 Storing data through Firebase RTDB is pretty simple. Imagine we're creating a game where highscores are stored in RTDB for everyone to see. We could create a `users` bucket that is referenced by each user. Setting their highscore is straightforward:
 
 ```javascript
+import { getDatabase, ref, onValue } from 'firebase/database';
+
 function storeHighScore(userId, score) {
-  firebase
-    .database()
-    .ref('users/' + userId)
-    .set({
-      highscore: score,
-    });
+  const db = getDatabase();
+  const reference = ref(db, 'users/' + userId);
+  set(reference, {
+    highscore: score,
+  });
 }
 ```
 
 Now let's say we want another client to listen to updates to the high score of a specific user. Firebase allows us to set a listener on a specific data reference and get notified each time there is an update to the data. In the example below, every time a highscore is updated for the given user, it will print it to console.
 
 ```javascript
-setupHighscoreListener(userId) {
-  firebase.database().ref('users/' + userId).on('value', (snapshot) => {
+import { getDatabase, ref, onValue } from 'firebase/database';
+
+setupHighscoreListener(userId) {const db = getDatabase();
+  const reference = ref(db, 'users/' + userId);
+  onValue(reference, (snapshot) => {
     const highscore = snapshot.val().highscore;
     console.log("New high score: " + highscore);
   });
@@ -145,10 +148,15 @@ For our example, let's say we want everyone to be able to read the high score fo
 We are now ready to connect the Facebook login code in our app with our Firebase Realtime Database implementation.
 
 ```javascript
-firebase.initializeApp(config);
+import { initializeApp } from 'firebase/app';
+import { getAuth, onAuthStateChanged, FacebookAuthProvider, signInWithCredential } from 'firebase/auth';
+
+initializeApp(config);
+
+const auth = getAuth();
 
 // Listen for authentication state to change.
-firebase.auth().onAuthStateChanged(user => {
+onAuthStateChanged(auth, (user) => {
   if (user != null) {
     console.log('We are authenticated now!');
   }
@@ -165,12 +173,11 @@ async function loginWithFacebook() {
 
   if (type === 'success') {
     // Build Firebase credential with the Facebook access token.
-    const credential = firebase.auth.FacebookAuthProvider.credential(token);
+    const facebookAuthProvider = new FacebookAuthProvider();
+    const credential = facebookAuthProvider.credential(token);
 
     // Sign in with credential from the Facebook user.
-    firebase
-      .auth()
-      .signInWithCredential(credential)
+    signInWithCredential(auth, credential)
       .catch(error => {
         // Handle Errors here.
       });
@@ -178,23 +185,23 @@ async function loginWithFacebook() {
 }
 ```
 
-The Facebook login method is similar to what you see in the Facebook login guide, however, the token we receive from a successful login can be passed to the Firebase SDK to provide us with a Firebase credential via `firebase.auth.FacebookAuthProvider.credential`. We can then sign-in with this credential via `firebase.auth().signInWithCredential`.
+The Facebook login method is similar to what you see in the Facebook login guide, however, the token we receive from a successful login can be passed to the Firebase SDK to provide us with a Firebase credential via `FacebookAuthProvider.credential`. We can then sign-in with this credential via `signInWithCredential`.
 
-The `firebase.auth().onAuthStateChanged` event allows us to set a listener when the authentication state has changed, so in our case, when the Facebook credential is used to successfully sign in to Firebase, we are given a user object that can be used for authenticated data access.
+The `onAuthStateChanged` event allows us to set a listener when the authentication state has changed, so in our case, when the Facebook credential is used to successfully sign in to Firebase, we are given a user object that can be used for authenticated data access.
 
 ### Authenticated Data Updates with Firebase Realtime Database
 
 Now that we have a user object for our authenticated user, we can adapt our previous `storeHighScore()` method to use the uid of the user object as our user reference. Since the `user.uid`'s are generated by Firebase automatically for authenticated users, this is a good way to reference our users bucket.
 
 ```javascript
+import { getDatabase, ref, set } from 'firebase/database';
+
 function storeHighScore(user, score) {
   if (user != null) {
-    firebase
-      .database()
-      .ref('users/' + user.uid)
-      .set({
-        highscore: score,
-      });
+    const database = getDatabase();
+    set(ref(db, 'users/' + user.uid), {
+      highscore: score,
+    });
   }
 }
 ```
@@ -206,23 +213,23 @@ function storeHighScore(user, score) {
 Here's is an example of storing a document named "mario" inside of a collection named "characters" in Firestore:
 
 ```javascript
-import * as firebase from 'firebase'
-import 'firebase/firestore';
+import { initializeApp } from 'firebase/app';
+import { getFirestore, setDoc, doc } from 'firebase/firestore';
 
 const firebaseConfig = { ... }  // apiKey, authDomain, etc. (see above)
 
-firebase.initializeApp(firebaseConfig);
+initializeApp(firebaseConfig);
 
-const dbh = firebase.firestore();
+const firestore = getFirestore();
 
-dbh.collection("characters").doc("mario").set({
+await setDoc(doc(firestore, "characters", "mario"), {
   employment: "plumber",
   outfitColor: "red",
   specialAttack: "fireball"
-})
+});
 ```
 
-This sample was borrowed from [this forum post](https://forums.expo.dev/t/open-when-an-expo-firebase-firestore-platform/4126/29).
+This sample was borrowed and edited from [this forum post](https://forums.expo.dev/t/open-when-an-expo-firebase-firestore-platform/4126/29).
 
 ## Recording events with Analytics
 

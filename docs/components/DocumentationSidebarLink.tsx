@@ -101,7 +101,15 @@ export default class DocumentationSidebarLink extends React.Component<Props> {
     return false;
   }
 
+  isHidden() {
+    return this.props.info.hidden;
+  }
+
   render() {
+    if (this.isHidden()) {
+      return null;
+    }
+
     const customDataAttributes = this.isSelected()
       ? {
           'data-sidebar-anchor-selected': true,

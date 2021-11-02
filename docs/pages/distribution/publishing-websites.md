@@ -15,7 +15,7 @@ title: Publishing Websites
 
 **Tips**
 
-- Serving your site in a subfolder? Add the path to your `package.json`:
+- Serving your site in a subfolder? Add the path to your **package.json**:
 
 ```js
 /* package.json */
@@ -46,7 +46,7 @@ The AWS Amplify Console provides a Git-based workflow for continuously deploying
 
 3. Login to the [Amplify Console](https://console.aws.amazon.com/amplify/home) and choose **Get started** under **Deploy**. Grant Amplify permission to read from your GitHub account or organization that owns your repo.
 
-4. The Amplify Console will detect that the `amplify.yml` file is in your repo. Choose **Next**.
+4. The Amplify Console will detect that the **amplify.yml** file is in your repo. Choose **Next**.
 
 5. Review your settings and choose **Save and deploy**. Your app will now be deployed to a `https://branchname.xxxxxx.amplifyapp.com` URL.
 
@@ -79,7 +79,7 @@ When asked about the project path, make sure to specify the `web-build` folder, 
 project path: /path/to/expo-project/web-build
 ```
 
-> To support routers that use the HTML 5 `pushState` API, you'll need to rename the `web-build/index.html` to `web/200.html` before deploying.
+> To support routers that use the HTML 5 `pushState` API, you'll need to rename the **web-build/index.html** to **web/200.html** before deploying.
 
 ## [Netlify](https://www.netlify.com/)
 
@@ -116,7 +116,7 @@ git remote add origin <YOUR_GITHUB_PAGES_URL>
 yarn add -D gh-pages
 ```
 
-Add the following to your `package.json`:
+Add the following to your **package.json**:
 
 ```js
 /* package.json */
@@ -163,7 +163,7 @@ Here are the formal instructions for deploying to GitHub Pages:
    yarn add -D gh-pages
    ```
 
-4. **Configure your `package.json` for web hosting**
+4. **Configure your **package.json** for web hosting**
 
    - At the top level, add a `homepage` property. Set it's value to the string `http://{username on github, without the curly brackets}.github.io/{repo-name}`. For example: If my GitHub name is `evanbacon` and my GitHub repository is `expo-gh-pages`, I'll asign the following:
 
@@ -190,7 +190,7 @@ Here are the formal instructions for deploying to GitHub Pages:
    $ yarn deploy
    ```
 
-   - Your web app is now available at the URL you set as `homepage` in your `package.json`.
+   - Your web app is now available at the URL you set as `homepage` in your **package.json**.
 
    > When you publish code to `gh-pages`, it will create and push the code to a branch in your repo called `gh-pages`. This branch will have your built code but not your development source code.
 

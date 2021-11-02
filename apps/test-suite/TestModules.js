@@ -70,6 +70,7 @@ export function getTestModules() {
     require('./tests/FirebaseCore'),
     require('./tests/FirebaseAnalytics'),
     require('./tests/FirebaseRecaptcha'),
+    require('./tests/FirebaseJSSDKCompat'),
     require('./tests/FirebaseJSSDK'),
     require('./tests/ImageManipulator'),
     optionalRequire(() => require('./tests/SQLite'))
@@ -129,7 +130,8 @@ export function getTestModules() {
     optionalRequire(() => require('./tests/AdMobInterstitial')),
     optionalRequire(() => require('./tests/AdMobRewarded')),
     optionalRequire(() => require('./tests/FBBannerAd')),
-    optionalRequire(() => require('./tests/Notifications'))
+    optionalRequire(() => require('./tests/Notifications')),
+    optionalRequire(() => require('./tests/NavigationBar'))
   );
 
   if (!isDeviceFarm()) {

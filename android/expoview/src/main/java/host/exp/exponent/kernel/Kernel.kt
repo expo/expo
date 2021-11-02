@@ -694,7 +694,7 @@ class Kernel : KernelInterface() {
             }
           }
 
-          override fun onBundleCompleted(localBundlePath: String?) {
+          override fun onBundleCompleted(localBundlePath: String) {
             Exponent.instance.runOnUiThread { sendBundleToExperienceActivity(localBundlePath) }
           }
 
@@ -813,7 +813,7 @@ class Kernel : KernelInterface() {
     )
   }
 
-  fun sendBundleToExperienceActivity(localBundlePath: String?) {
+  private fun sendBundleToExperienceActivity(localBundlePath: String) {
     AsyncCondition.wait(
       KernelConstants.LOAD_BUNDLE_FOR_EXPERIENCE_ACTIVITY_KEY,
       object : AsyncConditionListener {

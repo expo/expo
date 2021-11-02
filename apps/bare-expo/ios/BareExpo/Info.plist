@@ -59,6 +59,8 @@
 	<string>Allow bare-expo to use the camera</string>
 	<key>NSContactsUsageDescription</key>
 	<string>Allow bare-expo experiences to access your contacts</string>
+	<key>NSFaceIDUsageDescription</key>
+	<string>Allow bare-expo to use Face ID</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
 	<string>Allow bare-expo to use your location</string>
 	<key>NSLocationAlwaysUsageDescription</key>

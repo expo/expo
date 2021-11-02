@@ -18,4 +18,4 @@ const withCalendar = (config, { calendarPermission, remindersPermission } = {}) 
         'android.permission.WRITE_CALENDAR',
     ]);
 };
-exports.default = config_plugins_1.createRunOncePlugin(withCalendar, pkg.name, pkg.version);
+exports.default = (0, config_plugins_1.createRunOncePlugin)(withCalendar, pkg.name, pkg.version);

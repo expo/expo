@@ -32,7 +32,7 @@ The use of Native Firebase Analytics requires that the google-services configura
 
 Instead, the standard Expo client relies on a JavaScript-based implementation of Firebase Analytics to log events. This means that certain native life-cycle events are not recorded in the standard client, but you can still use `logEvent` to record events.
 
-You may want to use Firebase Analytics in Expo client to verify that you are logging events at the time you intend to and with the data that you want to attach without having to do a standalone app build. To set this up, ensure that the Firebase web configuration is set in `app.json` and that `measurementId` exists in your firebase config. If `measurementId` doesn't exist, then you need to enable or update Google Analytics in your Firebase project.
+You may want to use Firebase Analytics in Expo client to verify that you are logging events at the time you intend to and with the data that you want to attach without having to do a standalone app build. To set this up, ensure that the Firebase web configuration is set in **app.json** and that `measurementId` exists in your firebase config. If `measurementId` doesn't exist, then you need to enable or update Google Analytics in your Firebase project.
 
 **app.json**
 

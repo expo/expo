@@ -14,7 +14,7 @@ import PlatformsSection from '~/components/plugins/PlatformsSection';
 
 <InstallSection packageName="react-native-reanimated" href="https://docs.swmansion.com/react-native-reanimated/docs/installation" />
 
-After the installation completed, add the Babel plugin to `babel.config.js`:
+After the installation completed, add the Babel plugin to **babel.config.js**:
 
 ```jsx
 module.exports = function(api) {
@@ -25,6 +25,9 @@ module.exports = function(api) {
   };
 };
 ```
+
+After you add the Babel plugin, restart your development server and clear the bundler cache: `expo start --clear`.
+
 > Note: If you load other Babel plugins, the Reanimated plugin has to be the last item in the plugins array.
 
 > 🚨 **The new APIs in `react-native-reanimated@2` use React Native APIs that are incompatible with Remote JS Debugging**. Consequently, you can only debug apps using these APIs using Flipper, which is not yet available in the Expo managed workflow. **You will be unable to use Remote JS Debugging if you use the new APIs from Reanimated 2**. Remote JS Debugging will continue to work if you only use the APIs that were also available in Reanimated 1.

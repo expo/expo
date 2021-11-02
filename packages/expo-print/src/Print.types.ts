@@ -40,6 +40,10 @@ export type PrintOptions = {
    * or `Print.Orientation.landscape`.
    */
   orientation?: OrientationType['portrait'] | OrientationType['landscape'];
+  /**
+   * **Available on iOS only.** Page margins for the printed document.
+   */
+  margins?: PageMargins;
 };
 
 // @needsAudit
@@ -63,6 +67,14 @@ export interface OrientationType {
   landscape: string;
 }
 
+// @needsAudit
+export type PageMargins = {
+  top: number;
+  right: number;
+  bottom: number;
+  left: number;
+};
+
 // @docsMissing
 export type FilePrintOptions = {
   /**
@@ -85,21 +97,13 @@ export type FilePrintOptions = {
    */
   height?: number;
   /**
-   * Padding for the printed document.
+   * **Available on iOS only.** Page margins for the printed document.
    */
-  padding?: FilePrintPadding;
+  margins?: PageMargins;
   /**
    * Whether to include base64 encoded string of the file in the returned object.
    */
   base64?: boolean;
-};
-
-// @needsAudit
-export type FilePrintPadding = {
-  top: number;
-  right: number;
-  bottom: number;
-  left: number;
 };
 
 // @needsAudit

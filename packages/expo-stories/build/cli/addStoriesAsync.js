@@ -64,7 +64,7 @@ function addStoriesAsync(relPaths, config) {
             switch (_a.label) {
                 case 0:
                     watchRoot = config.watchRoot, projectRoot = config.projectRoot;
-                    storyManifest = shared_1.getStoryManifest(projectRoot);
+                    storyManifest = (0, shared_1.getStoryManifest)(projectRoot);
                     // 2. update story manifest with new files
                     return [4 /*yield*/, Promise.all(relPaths.map(function (relativePath) { return __awaiter(_this, void 0, void 0, function () {
                             var fullPath, id, defaultTitle, story;
@@ -73,7 +73,7 @@ function addStoriesAsync(relPaths, config) {
                                 switch (_b.label) {
                                     case 0:
                                         fullPath = path_1.default.resolve(watchRoot, relativePath);
-                                        id = shared_1.hashPath(fullPath);
+                                        id = (0, shared_1.hashPath)(fullPath);
                                         defaultTitle = (_a = relativePath.split('/').pop()) === null || _a === void 0 ? void 0 : _a.replace('.stories.tsx', '');
                                         return [4 /*yield*/, parseStoryConfigAsync({
                                                 id: id,
@@ -93,12 +93,12 @@ function addStoriesAsync(relPaths, config) {
                     // 2. update story manifest with new files
                     _a.sent();
                     // 3. save updated manifest to disk
-                    return [4 /*yield*/, saveManifestAsync_1.saveManifestAsync(storyManifest, config)];
+                    return [4 /*yield*/, (0, saveManifestAsync_1.saveManifestAsync)(storyManifest, config)];
                 case 2:
                     // 3. save updated manifest to disk
                     _a.sent();
                     // 4. write js file based on updated manifest
-                    return [4 /*yield*/, writeStoriesAsync_1.writeStoriesAsync(config)];
+                    return [4 /*yield*/, (0, writeStoriesAsync_1.writeStoriesAsync)(config)];
                 case 3:
                     // 4. write js file based on updated manifest
                     _a.sent();

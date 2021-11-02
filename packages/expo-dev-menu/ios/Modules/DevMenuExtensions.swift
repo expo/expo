@@ -74,7 +74,7 @@ open class DevMenuExtensions: NSObject, DevMenuExtensionProtocol {
     reload.label = { "Reload" }
     reload.glyphName = { "reload" }
     reload.importance = DevMenuScreenItem.ImportanceHighest
-    reload.registerKeyCommand(input: "r", modifiers: .command)
+    reload.registerKeyCommand(input: "r", modifiers: []) // "r" without modifiers
     return reload
   }
 

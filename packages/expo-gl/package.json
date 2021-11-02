@@ -1,6 +1,6 @@
 {
   "name": "expo-gl",
-  "version": "11.0.0",
+  "version": "11.0.1",
   "description": "Provides GLView that acts as OpenGL ES render target and gives GL context object implementing WebGL 2.0 specification.",
   "main": "build/index.js",
   "types": "build/index.d.ts",
@@ -38,11 +38,12 @@
   },
   "dependencies": {
     "expo-gl-cpp": "~11.0.0",
-    "expo-modules-core": "~0.4.0",
+    "expo-modules-core": "~0.4.2",
     "invariant": "^2.2.4"
   },
   "devDependencies": {
     "@types/invariant": "^2.2.33",
+    "@types/offscreencanvas": "2019.6.4",
     "expo-module-scripts": "^2.0.0",
     "react-test-renderer": "~17.0.1"
   }

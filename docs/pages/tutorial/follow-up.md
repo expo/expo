@@ -46,7 +46,7 @@ We covered the basic minimal configuration, but you learn more about customizing
 
 ### How to verify your Learning
 
-- You will typically be referred back to `app.json` as part of guides that explain how to accomplish specific tasks, as such there isn't much you need to learn beyond its existence and how to use specific properties as the need arises.
+- You will typically be referred back to **app.json** as part of guides that explain how to accomplish specific tasks, as such there isn't much you need to learn beyond its existence and how to use specific properties as the need arises.
 
 <br />
 

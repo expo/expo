@@ -10,6 +10,26 @@
 
 ### 💡 Others
 
+## 4.0.3 — 2021-10-20
+
+### 🐛 Bug fixes
+
+- Fix crash on launch in iOS classic builds where `GoogleService-Info.plist` is not configured. ([#14811](https://github.com/expo/expo/pull/14811) by [@kudo](https://github.com/kudo))
+
+## 4.0.2 — 2021-10-15
+
+### 🎉 New features
+
+- [iOS] Firebase native app will automatically be initialized without any extra native changes ([#14750](https://github.com/expo/expo/pull/14750) by [@EvanBacon](https://github.com/EvanBacon))
+
+### 💡 Others
+
+- [plugin] Native regular expressions have been removed in favor Expo modules AppDelegate proxy ([#14750](https://github.com/expo/expo/pull/14750) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 4.0.1 — 2021-10-01
+
+_This version does not introduce any user-facing changes._
+
 ## 4.0.0 — 2021-09-28
 
 ### 🛠 Breaking changes

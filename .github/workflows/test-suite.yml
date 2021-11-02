@@ -72,8 +72,8 @@ jobs:
         uses: actions/checkout@v2
         with:
           submodules: true
-      - name: 🔨 Switch to Xcode 12.5.1
-        run: sudo xcode-select --switch /Applications/Xcode_12.5.1.app
+      - name: 🔨 Switch to Xcode 13.0
+        run: sudo xcode-select --switch /Applications/Xcode_13.0.app
       - name: 🍺 Install required tools
         run: |
           brew tap wix/brew
@@ -106,8 +106,8 @@ jobs:
         with:
           path: 'apps/bare-expo/ios/Pods'
           key: ${{ runner.os }}-bare-expo-pods-${{ hashFiles('apps/bare-expo/ios/Podfile.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-bare-expo-pods-
+          # restore-keys: |
+          #   ${{ runner.os }}-bare-expo-pods-
       - name: 🕵️ Debug CocoaPods lockfiles
         run: git diff Podfile.lock Pods/Manifest.lock
         working-directory: apps/bare-expo/ios

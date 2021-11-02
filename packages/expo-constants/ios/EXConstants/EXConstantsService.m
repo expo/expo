@@ -130,10 +130,20 @@ EX_REGISTER_MODULE();
   NSArray<NSString *> *familyNames = [UIFont familyNames];
   NSMutableArray<NSString *> *fontNames = [NSMutableArray array];
   for (NSString *familyName in familyNames) {
-    [fontNames addObject:familyName];
-    [fontNames addObjectsFromArray:[UIFont fontNamesForFamilyName:familyName]];
+    // "System Font" is added to [UIFont familyNames] in iOS 15, and the font names that
+    // correspond with it are dot prefixed .SFUI-* fonts which log the following warning
+    // when passed in to [UIFont fontNamesForFamilyName:name]:
+    // CoreText note: Client requested name “.SFUI-HeavyItalic”, it will get TimesNewRomanPSMT rather than the intended font.
+    // All system UI font access should be through proper APIs such as CTFontCreateUIFontForLanguage() or +[UIFont systemFontOfSize:]
+    //
+    if (![familyName isEqualToString:@"System Font"]) {
+      [fontNames addObject:familyName];
+      [fontNames addObjectsFromArray:[UIFont fontNamesForFamilyName:familyName]];
+    }
   }
-  return [fontNames sortedArrayUsingSelector:@selector(caseInsensitiveCompare:)];
+
+  // Remove duplciates and sort alphabetically
+  return [[[NSSet setWithArray:fontNames] allObjects] sortedArrayUsingSelector:@selector(caseInsensitiveCompare:)];
 }
 
 # pragma mark - device info
@@ -187,21 +197,13 @@ EX_REGISTER_MODULE();
                             @"Watch6,4": @"Apple Watch Series 6",
 
                             // iPhone
-                            @"iPhone1,1": @"iPhone",
-                            @"iPhone1,2": @"iPhone 3G",
-                            @"iPhone2,1": @"iPhone 3GS",
-                            @"iPhone3,1": @"iPhone 4",
-                            @"iPhone3,2": @"iPhone 4",
-                            @"iPhone3,3": @"iPhone 4 (CDMA)",
-                            @"iPhone4,1": @"iPhone 4S",
-                            @"iPhone5,1": @"iPhone 5 (GSM)",
-                            @"iPhone5,2": @"iPhone 5 (GSM+CDMA)",
-                            @"iPhone5,3": @"iPhone 5C (GSM)",
-                            @"iPhone5,4": @"iPhone 5C (GSM+CDMA)",
+                            // iOS 12+
                             @"iPhone6,1": @"iPhone 5S (GSM)",
                             @"iPhone6,2": @"iPhone 5S (GSM+CDMA)",
                             @"iPhone7,1": @"iPhone 6 Plus",
                             @"iPhone7,2": @"iPhone 6",
+                            
+                            // iOS 13+
                             @"iPhone8,1": @"iPhone 6s",
                             @"iPhone8,2": @"iPhone 6s Plus",
                             @"iPhone8,4": @"iPhone SE",
@@ -227,6 +229,11 @@ EX_REGISTER_MODULE();
                             @"iPhone13,2": @"iPhone 12",
                             @"iPhone13,3": @"iPhone 12 Pro",
                             @"iPhone13,4": @"iPhone 12 Pro Max",
+
+                            @"iPhone14,2": @"iPhone 13 Pro",
+                            @"iPhone14,3": @"iPhone 13 Pro Max",
+                            @"iPhone14,4": @"iPhone 13 Mini",
+                            @"iPhone14,5": @"iPhone 13",
 
                             // iPod
                             @"iPod1,1": @"iPod Touch",
@@ -287,11 +294,25 @@ EX_REGISTER_MODULE();
                             @"iPad8,6": @"iPad Pro 12.9-inch (3rd generation)",
                             @"iPad8,7": @"iPad Pro 12.9-inch (3rd generation)",
                             @"iPad8,8": @"iPad Pro 12.9-inch (3rd generation)",
-                            @"iPad11,1": @"iPad Mini 5",
-                            @"iPad11,2": @"iPad Mini 5",
-                            @"iPad11,3": @"iPad Air (3rd generation)",
+                            @"iPad11,1": @"iPad Mini (5th generation) (WiFi)",
+                            @"iPad11,2": @"iPad Mini (5th generation)",
+                            @"iPad11,3": @"iPad Air (3rd generation) (WiFi)",
                             @"iPad11,4": @"iPad Air (3rd generation)",
 
+                            @"iPad11,6": @"iPad (8th generation)",
+                            @"iPad11,7": @"iPad (8th generation)",
+                            @"iPad13,1": @"iPad Air (4th generation) (WiFi)",
+                            @"iPad13,2": @"iPad Air (4th generation) (WiFi+Cellular)",
+                            @"iPad13,4": @"iPad Pro 11 inch (3th generation)",
+                            @"iPad13,5": @"iPad Pro 11 inch (3th generation)",
+                            @"iPad13,6": @"iPad Pro 11 inch (3th generation)",
+                            @"iPad13,7": @"iPad Pro 11 inch (3th generation)",    
+                            @"iPad13,8": @"iPad Pro 12.9 inch (5th generation)",
+                            @"iPad13,9": @"iPad Pro 12.9 inch (5th generation)",
+                            @"iPad13,10": @"iPad Pro 12.9 inch (5th generation)",
+                            @"iPad13,11": @"iPad Pro 12.9 inch (5th generation)",
+                            @"iPad14,1": @"iPad Mini (6th generation) (WiFi)",
+                            @"iPad14,2": @"iPad Mini (6th generation) (WiFi+Cellular)",
                             // Simulator
                             @"i386": @"Simulator",
                             @"arm64": @"Simulator",
@@ -322,30 +343,6 @@ EX_REGISTER_MODULE();
 
   // TODO: apple TV and apple watch
   NSDictionary *mapping = @{
-    // iPhone 1
-    @"iPhone1,1": @2007,
-    
-    // iPhone 3G
-    @"iPhone1,2": @2008,
-    
-    // iPhone 3GS
-    @"iPhone2,1": @2009,
-    
-    // iPhone 4
-    @"iPhone3,1": @2010,
-    @"iPhone3,2": @2010,
-    @"iPhone3,3": @2010,
-    
-    // iPhone 4S
-    @"iPhone4,1": @2011,
-    
-    // iPhone 5
-    @"iPhone5,1": @2012,
-    @"iPhone5,2": @2012,
-    
-    // iPhone 5S and 5C
-    @"iPhone5,3": @2013,
-    @"iPhone5,4": @2013,
     @"iPhone6,1": @2013,
     @"iPhone6,2": @2013,
     
@@ -371,7 +368,16 @@ EX_REGISTER_MODULE();
     @"iPhone12,1": @2019, // iPhone 11
     @"iPhone12,3": @2019, // iPhone 11 Pro
     @"iPhone12,5": @2019, // iPhone 11 Pro Max
-    
+    @"iPhone12,8": @2020, // iPhone SE 2nd Gen
+    @"iPhone13,1": @2020, // iPhone 12 mini
+    @"iPhone13,2": @2020, // iPhone 12
+    @"iPhone13,3": @2020, // iPhone 12 Pro
+    @"iPhone13,4": @2020, // iPhone 12 Pro Max
+    @"iPhone14,2": @2021, // iPhone 13 Pro
+    @"iPhone14,3": @2021, // iPhone 13 Pro Max
+    @"iPhone14,4": @2021, // iPhone 13 Mini
+    @"iPhone14,5": @2021, // iPhone 13
+
     // iPod
     @"iPod1,1": @2007,
     @"iPod2,1": @2008,
@@ -435,6 +441,20 @@ EX_REGISTER_MODULE();
     @"iPad11,2": @2019, // iPad Mini 5th Gen
     @"iPad11,3": @2019, // iPad Air 3rd Gen (WiFi)
     @"iPad11,4": @2019, // iPad Air 3rd Gen
+    @"iPad11,6": @2020, // iPad 8th Gen
+    @"iPad11,7": @2020, // iPad 8th Gen
+    @"iPad13,1": @2020, // iPad Air 4th Gen (WiFi)
+    @"iPad13,2": @2020, // iPad Air 4th Gen (WiFi+Cellular)
+    @"iPad13,4": @2021, // iPad Pro 11-inch 3rd Gen
+    @"iPad13,5": @2021, // iPad Pro 11-inch 3rd Gen
+    @"iPad13,6": @2021, // iPad Pro 11-inch 3rd Gen
+    @"iPad13,7": @2021, // iPad Pro 11-inch 3rd Gen
+    @"iPad13,8": @2021, // iPad Pro 12.9-inch 5th Gen
+    @"iPad13,9": @2021, // iPad Pro 12.9-inch 5th Gen
+    @"iPad13,10": @2021, // iPad Pro 12.9-inch 5th Gen
+    @"iPad13,11": @2021, // iPad Pro 12.9-inch 5th Gen
+    @"iPad14,1": @2021, // iPad mini (6th generation) (WiFi)
+    @"iPad14,2": @2021 // iPad mini (6th generation) (WiFi + cellular)
   };
 
   NSNumber *deviceYear = mapping[platform];

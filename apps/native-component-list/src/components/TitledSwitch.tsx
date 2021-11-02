@@ -2,21 +2,16 @@ import { B } from '@expo/html-elements';
 import React from 'react';
 import { StyleSheet, Switch, View, TextStyle, ViewStyle } from 'react-native';
 
-export default function TitleSwitch({
-  style,
-  titleStyle,
-  title,
-  value,
-  setValue,
-  disabled,
-}: {
+type Props = {
   style?: ViewStyle;
   titleStyle?: TextStyle;
   title?: string;
   value: boolean;
   disabled?: boolean;
   setValue: (value: boolean) => void;
-}) {
+};
+
+const TitleSwitch = ({ style, titleStyle, title, value, setValue, disabled }: Props) => {
   const outputTitle = disabled ? `${title} (Disabled)` : title;
   return (
     <View style={[styles.container, style]}>
@@ -24,7 +19,7 @@ export default function TitleSwitch({
       <Switch disabled={disabled} value={value} onValueChange={(value) => setValue(value)} />
     </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -42,3 +37,5 @@ const styles = StyleSheet.create({
     marginHorizontal: 10,
   },
 });
+
+export default TitleSwitch;

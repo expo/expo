@@ -169,7 +169,7 @@ The permission type for location access.
 > **Note (iOS):** In Expo client this permission will always ask the user for permission to access location data while the app is in use.
 
 > **Note (iOS):** iOS provides more detailed permissions, returning `{ status, permissions: { location: { ios } } }` where `ios` which is an object containing: `{ scope: 'whenInUse' | 'always' | 'none' }`
-> If you would like to access location data in a standalone app, note that you'll need to provide location usage descriptions in `app.json`. For more information see [Deploying to App Stores guide](../../../distribution/app-stores.md#system-permissions-dialogs-on-ios).
+> If you would like to access location data in a standalone app, note that you'll need to provide location usage descriptions in **app.json**. For more information see [Deploying to App Stores guide](../../../distribution/app-stores.md#system-permissions-dialogs-on-ios).
 >
 > **What location usage descriptions should I provide?** Due to the design of the location permission API on iOS we aren't able to provide you with methods for asking for `whenInUse` or `always` location usage permission specifically. However, you can customize the behavior by providing the following sets of usage descriptions:
 >
@@ -210,9 +210,9 @@ The permissions type for changing brightness of the screen
 
 The permission for accessing `DeviceMotion` and `DeviceOrientation` in the web browser. This can only be requested from a website using HTTPS (`expo web --https`). This permission cannot be silently retrieved, you can only request it. This permission can only be requested with a user interaction i.e. a button press.
 
-## Android: permissions equivalents inside `app.json`
+## Android: permissions equivalents inside **app.json**
 
-In order to request permissions in a standalone Android app (Managed Workflow only), you need to specify the corresponding native permission types in the `android.permissions` key inside `app.json` ([read more about configuration](../../../workflow/configuration.md#android)). The mapping between `Permissions` values and native permission types is as follows:
+In order to request permissions in a standalone Android app (Managed Workflow only), you need to specify the corresponding native permission types in the `android.permissions` key inside **app.json** ([read more about configuration](../../../workflow/configuration.md#android)). The mapping between `Permissions` values and native permission types is as follows:
 
 | Expo            | Android                                       |
 | --------------- | --------------------------------------------- |
@@ -223,9 +223,9 @@ In order to request permissions in a standalone Android app (Managed Workflow on
 | CAMERA_ROLL     | READ_EXTERNAL_STORAGE, WRITE_EXTERNAL_STORAGE |
 | CALENDAR        | READ_CALENDAR, WRITE_CALENDAR                 |
 
-For example, if your app asks for `AUDIO_RECORDING` permission at runtime but no other permissions, you should set `android.permissions` to `["RECORD_AUDIO"]` in `app.json`.
+For example, if your app asks for `AUDIO_RECORDING` permission at runtime but no other permissions, you should set `android.permissions` to `["RECORD_AUDIO"]` in **app.json**.
 
-> **Note:** If you don't specify `android.permissions` inside your `app.json`, by default your standalone Android app will require all of the permissions listed above.
+> **Note:** If you don't specify `android.permissions` inside your **app.json**, by default your standalone Android app will require all of the permissions listed above.
 
 ## Types
 

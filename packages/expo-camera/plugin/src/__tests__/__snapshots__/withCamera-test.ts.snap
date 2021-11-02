@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`setGradleMaven modifies the build.gradle 1`] = `
+exports[`addCameraImport modifies the build.gradle 1`] = `
 "
 buildscript {
     ext {
@@ -32,7 +32,8 @@ allprojects {
         maven { url 'https://www.jitpack.io' }
     }
 }
-
-allprojects { repositories { maven { url \\"$rootDir/../node_modules/expo-camera/android/maven\\" } } }
-"
+// @generated begin expo-camera-import - expo prebuild (DO NOT MODIFY) sync-3759ae8612e1220a5ed4b916e93faa7a72d11968
+def expoCameraMavenPath = new File([\\"node\\", \\"--print\\", \\"require.resolve('expo-camera/package.json')\\"].execute().text.trim(), \\"../android/maven\\")
+allprojects { repositories { maven { url(expoCameraMavenPath) } } }
+// @generated end expo-camera-import"
 `;

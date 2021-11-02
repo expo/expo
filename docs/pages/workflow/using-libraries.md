@@ -30,7 +30,7 @@ export default function App() {
 
 ## Using Expo SDK Libraries
 
-The Expo SDK picks up where the React Native core libraries end - it provides access to a lot of useful device and system functionality like audio, barcode scanning, camera, calendar, contacts, video, and so on. It also adds other powerful libraries like over-the-air updates, maps, OAuth authentication tools, and more. For details on how we decide what goes into the Expo SDK, [read here](https://expo.fyi/whats-in-the-sdk).
+The Expo SDK picks up where the React Native core libraries end - it provides access to a lot of useful device and system functionality like audio, barcode scanning, camera, calendar, contacts, video, and so on. It also adds other powerful libraries like updates, maps, OAuth authentication tools, and more. For details on how we decide what goes into the Expo SDK, [read here](https://expo.fyi/whats-in-the-sdk).
 
 To use a library from the Expo SDK, find the one you are looking for in the [API Reference](https://docs.expo.dev/versions/latest/) or through the documentation Search bar.
 
@@ -78,7 +78,7 @@ export default function App() {
 
 [React Native Directory](https://reactnative.directory) is a searchable database of libraries built specifically for React Native. If the library that you are looking for is not provided by React Native or Expo then this is the best place to look first when trying to find a library for your app.
 
-After React Native Directory, the [npm registry](https://www.npmjs.com/) is the next best place. The npm registry is the definitive source for JavaScript libraries, but the libraries that it lists may not all be compatible with React Native. React Native is one of many JavaScript programming environments, including Node.js, web browsers, Electron, and more, and npm includes libraries that work for all of these environments. Other libraries may be compatible with React Native, but not compatible with the Expo managed workflow. How do you figure this out?
+After React Native Directory, the [npm registry](https://www.npmjs.com/) is the next best place. The npm registry is the definitive source for JavaScript libraries, but the libraries that it lists may not all be compatible with React Native. React Native is one of many JavaScript programming environments, including Node.js, web browsers, Electron, and more, and npm includes libraries that work for all of these environments. Other libraries may be compatible with React Native, but not compatible with the Expo Go development client. How do you figure this out?
 
 ### Determining Third-Party Library Compatibility
 
@@ -92,13 +92,13 @@ npx npm-home --github react-native-localize
 
 Now check the following:
 
-- Does it include an `ios` and/or `android` directory?
+- Does it include an `ios` and/or `android/` directory?
 - Does the README mention linking?
 - Is it built specifically for Node.js, the web, electron, or another platform?
 
-If you answered yes to either of these questions and the library is not part of the Expo SDK, this library may not be supported in the managed workflow. You can go ahead and try it in a new project to be sure! Run `expo init` and add the library to the new project and try to use it. This is a great way to experiment with a library before including it in your project in all circumstances.
+If you answered yes to either of these questions and the library is not part of the Expo SDK, this library may not be supported in Expo Go. You can go ahead and try it in a new project to be sure! Run `expo init` and add the library to the new project and try to use it. This is a great way to experiment with a library before including it in your project in all circumstances.
 
-If the library is not compatible with the managed workflow and you need it to build your app, you may want to [eject to the bare workflow](../workflow/customizing.md).
+Many libraries you can use with Expo and React Native will not be compatible with Expo Go or `expo build:ios|android`. If you need any of them to build your app, you can create a [Custom Development Client](../clients/introduction.md) for your project using [EAS Build](../build/introduction.md) or [eject to the bare workflow](../workflow/customizing.md).
 
 > 🙏 If you want some help determining library compatibility, [please create an issue on the React Native Directory repository](https://github.com/react-native-community/directory/issues/new/choose) and let us know. This will not just help you, it will help to ensure that other developers have an easy answer in the future!
 
@@ -117,3 +117,10 @@ Be sure to follow the project website or README for any additional configuration
 ```bash
 npx npm-home @react-navigation/native
 ```
+
+If the module needs additional native configuration, you can do so using [config plugins](../guides/config-plugins.md).
+
+If the module is not supported in Expo Go, at this point you should:
+
+- Build your project [locally](../build-reference/local-builds.md) or with [EAS Build](../build/introduction.md)
+- Create [a custom client](../clients/introduction.md) to develop against

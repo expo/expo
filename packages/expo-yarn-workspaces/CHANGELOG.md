@@ -18,6 +18,7 @@
 
 ### 💡 Others
 
+- Update `@expo/metro-config` dependency. ([#14801](https://github.com/expo/expo/pull/14801) by [@Simek](https://github.com/Simek))
 - Updated `@expo/metro-config`, `@expo/webpack-config` ([#14443](https://github.com/expo/expo/pull/14443) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 1.5.2 — 2021-06-16

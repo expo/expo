@@ -1,8 +1,8 @@
 import { element, expect, waitFor, by, device } from 'detox';
 
-const MenuTimeout = 50000;
-const LauncherMainScreenTimeout = 30000;
-const LocalAppTimeout = 60000;
+const MenuTimeout = 70 * 1000;
+const LauncherMainScreenTimeout = 50 * 1000;
+const LocalAppTimeout = 80 * 1000;
 
 function getInvocationManager() {
   // @ts-ignore
@@ -35,6 +35,7 @@ async function openMenu(): Promise<void> {
 describe('DevLauncher', () => {
   beforeEach(async () => {
     await device.launchApp({ newInstance: true });
+    await device.disableSynchronization();
   });
 
   it('should render main screen', async () => {
@@ -92,9 +93,7 @@ describe('DevLauncher', () => {
 
     const backToLauncher = element(by.text('Back to Launcher'));
 
-    await waitFor(backToLauncher)
-      .toBeVisible()
-      .withTimeout(MenuTimeout);
+    await waitFor(backToLauncher).toBeVisible().withTimeout(MenuTimeout);
     await backToLauncher.tap();
 
     await waitFor(element(by.id('DevLauncherMainScreen')))
