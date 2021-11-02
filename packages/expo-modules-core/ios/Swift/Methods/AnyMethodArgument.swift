@@ -4,10 +4,14 @@
  */
 public protocol AnyMethodArgument {}
 
+public protocol JavaScriptPrimitive: AnyMethodArgument {}
+
 // Extend the primitive types — these may come from React Native bridge.
-extension Bool: AnyMethodArgument {}
-extension Int: AnyMethodArgument {}
-extension Double: AnyMethodArgument {}
-extension String: AnyMethodArgument {}
-extension Array: AnyMethodArgument {}
-extension Dictionary: AnyMethodArgument {}
+extension Bool: JavaScriptPrimitive {}
+extension Int: JavaScriptPrimitive {}
+extension Double: JavaScriptPrimitive {}
+extension String: JavaScriptPrimitive {}
+
+// Extend object types.
+extension Dictionary: AnyMethodArgument where Value: AnyMethodArgument {}
+extension Array: AnyMethodArgument where Element: AnyMethodArgument {}

@@ -40,7 +40,7 @@ public final class ModuleHolder {
 
   // MARK: Calling methods
 
-  func call(method methodName: String, args: [Any?], promise: Promise) {
+  func call(method methodName: String, args: [Any], promise: Promise) {
     do {
       guard let method = definition.methods[methodName] else {
         throw MethodNotFoundError(methodName: methodName, moduleName: self.name)
@@ -57,7 +57,7 @@ public final class ModuleHolder {
     }
   }
 
-  func call(method methodName: String, args: [Any?], _ callback: @escaping (Any?, CodedError?) -> Void = { _, _ in }) {
+  func call(method methodName: String, args: [Any], _ callback: @escaping (Any?, CodedError?) -> Void = { _, _ in }) {
     let promise = Promise {
       callback($0, nil)
     } rejecter: {
@@ -67,7 +67,7 @@ public final class ModuleHolder {
   }
 
   @discardableResult
-  func callSync(method methodName: String, args: [Any?]) -> Any? {
+  func callSync(method methodName: String, args: [Any]) -> Any? {
     if let method = definition.methods[methodName] {
       return method.callSync(args: args)
     }

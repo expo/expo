@@ -50,7 +50,7 @@ extension AnyModule {
   ) -> AnyMethod {
     return ConcreteMethod(
       name,
-      argTypes: [AnyArgumentType(A0.self)],
+      argTypes: [ArgumentType(A0.self)],
       closure
     )
   }
@@ -64,7 +64,7 @@ extension AnyModule {
   ) -> AnyMethod {
     return ConcreteMethod(
       name,
-      argTypes: [AnyArgumentType(A0.self), AnyArgumentType(A1.self)],
+      argTypes: [ArgumentType(A0.self), ArgumentType(A1.self)],
       closure
     )
   }
@@ -78,7 +78,7 @@ extension AnyModule {
   ) -> AnyMethod {
     return ConcreteMethod(
       name,
-      argTypes: [AnyArgumentType(A0.self), AnyArgumentType(A1.self), AnyArgumentType(A2.self)],
+      argTypes: [ArgumentType(A0.self), ArgumentType(A1.self), ArgumentType(A2.self)],
       closure
     )
   }
@@ -92,7 +92,7 @@ extension AnyModule {
   ) -> AnyMethod {
     return ConcreteMethod(
       name,
-      argTypes: [AnyArgumentType(A0.self), AnyArgumentType(A1.self), AnyArgumentType(A2.self), AnyArgumentType(A3.self)],
+      argTypes: [ArgumentType(A0.self), ArgumentType(A1.self), ArgumentType(A2.self), ArgumentType(A3.self)],
       closure
     )
   }
@@ -106,7 +106,7 @@ extension AnyModule {
   ) -> AnyMethod {
     return ConcreteMethod(
       name,
-      argTypes: [AnyArgumentType(A0.self), AnyArgumentType(A1.self), AnyArgumentType(A2.self), AnyArgumentType(A3.self), AnyArgumentType(A4.self)],
+      argTypes: [ArgumentType(A0.self), ArgumentType(A1.self), ArgumentType(A2.self), ArgumentType(A3.self), ArgumentType(A4.self)],
       closure
     )
   }
@@ -120,7 +120,7 @@ extension AnyModule {
   ) -> AnyMethod {
     return ConcreteMethod(
       name,
-      argTypes: [AnyArgumentType(A0.self), AnyArgumentType(A1.self), AnyArgumentType(A2.self), AnyArgumentType(A3.self), AnyArgumentType(A4.self), AnyArgumentType(A5.self)],
+      argTypes: [ArgumentType(A0.self), ArgumentType(A1.self), ArgumentType(A2.self), ArgumentType(A3.self), ArgumentType(A4.self), ArgumentType(A5.self)],
       closure
     )
   }
@@ -134,7 +134,7 @@ extension AnyModule {
   ) -> AnyMethod {
     return ConcreteMethod(
       name,
-      argTypes: [AnyArgumentType(A0.self), AnyArgumentType(A1.self), AnyArgumentType(A2.self), AnyArgumentType(A3.self), AnyArgumentType(A4.self), AnyArgumentType(A5.self), AnyArgumentType(A6.self)],
+      argTypes: [ArgumentType(A0.self), ArgumentType(A1.self), ArgumentType(A2.self), ArgumentType(A3.self), ArgumentType(A4.self), ArgumentType(A5.self), ArgumentType(A6.self)],
       closure
     )
   }
@@ -148,7 +148,7 @@ extension AnyModule {
   ) -> AnyMethod {
     return ConcreteMethod(
       name,
-      argTypes: [AnyArgumentType(A0.self), AnyArgumentType(A1.self), AnyArgumentType(A2.self), AnyArgumentType(A3.self), AnyArgumentType(A4.self), AnyArgumentType(A5.self), AnyArgumentType(A6.self), AnyArgumentType(A7.self)],
+      argTypes: [ArgumentType(A0.self), ArgumentType(A1.self), ArgumentType(A2.self), ArgumentType(A3.self), ArgumentType(A4.self), ArgumentType(A5.self), ArgumentType(A6.self), ArgumentType(A7.self)],
       closure
     )
   }

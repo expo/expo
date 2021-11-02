@@ -148,10 +148,9 @@ class MethodSpec: QuickSpec {
         // Method expects a string, let's give it a number.
         .call(method: methodName, args: [1]) { value, error in
           expect(error).notTo(beNil())
-          expect(error).to(beAKindOf(IncompatibleArgTypeError<Any?>.self))
-          expect(error?.code).to(equal("ERR_INCOMPATIBLE_ARG_TYPE"))
-          // TODO: (@tsapeta) The descriptions may not equal yet, due to internal type-erasing. Fix it and uncomment this test.
-          // expect(error?.description).to(equal(IncompatibleArgTypeError(argument: 1, atIndex: 0, desiredType: String.self).description))
+          expect(error).to(beAKindOf(Conversions.CastingError<String>.self))
+          expect(error?.code).to(equal("ERR_CASTING_FAILED"))
+          expect(error?.description).to(equal(Conversions.CastingError<String>(value: 1).description))
           done()
         }
       }

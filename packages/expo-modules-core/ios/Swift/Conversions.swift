@@ -151,6 +151,17 @@ internal final class Conversions {
     let value: Any?
     var code: String = "ERR_CONVERTING_FAILED"
     var description: String {
+      "Cannot convert `\(String(describing: value))` to `\(TargetType.self)`"
+    }
+  }
+
+  /**
+   An error that is thrown when given value cannot be casted.
+   */
+  internal struct CastingError<TargetType>: CodedError {
+    let value: Any
+    var code: String = "ERR_CASTING_FAILED"
+    var description: String {
       "Cannot cast `\(String(describing: value))` to `\(TargetType.self)`"
     }
   }
