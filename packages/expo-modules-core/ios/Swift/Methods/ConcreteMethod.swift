@@ -93,27 +93,30 @@ public class ConcreteMethod<Args, ReturnType>: AnyMethod {
       throw InvalidArgsNumberError(received: args.count, expected: argumentsCount)
     }
     return try args.enumerated().map { (index, arg) in
-      guard let desiredType = argumentType(atIndex: index) else {
+      guard let expectedType = argumentType(atIndex: index) else {
         return nil
       }
 
-      // If the type of argument matches the desired type, just cast and return it.
+      // If the type of argument matches the expected type, just cast and return it.
       // This usually covers all cases for primitive types or plain dicts and arrays.
-      if desiredType.canCast(arg) {
-        return desiredType.cast(arg)
+      if expectedType.canCast(arg) {
+        return expectedType.cast(arg)
       }
 
-      // TODO: (@tsapeta) Handle structs convertible to dictionary
       // If we get here, the argument can be converted (not casted!) to the desired type.
-      if let arg = arg as? Record.Dict, let dt = desiredType.castWrappedType(Record.Type.self) {
+      if let arg = arg as? Record.Dict, let dt = expectedType.castWrappedType(Record.Type.self) {
         return try dt.init(from: arg)
+      }
+
+      // Handle convertible types (e.g. CGPoint, CGRect, UIColor, ...)
+      if let dt = expectedType.castWrappedType(ConvertibleArgument.Type.self) {
+        return try dt.convert(from: arg)
       }
 
       // TODO: (@tsapeta) Handle convertible arrays
       throw IncompatibleArgTypeError(
         argument: arg,
-        atIndex: index,
-        desiredType: desiredType
+        expectedType: expectedType
       )
     }
   }
@@ -127,11 +130,13 @@ internal struct InvalidArgsNumberError: CodedError {
   }
 }
 
+/**
+ Thrown when the value cannot be casted nor converted to given type.
+ */
 internal struct IncompatibleArgTypeError<ArgumentType>: CodedError {
   let argument: ArgumentType
-  let atIndex: Int
-  let desiredType: AnyArgumentType
+  let expectedType: AnyArgumentType
   var description: String {
-    "Type `\(type(of: argument))` of argument at index `\(atIndex)` is not compatible with expected type `\(desiredType.typeName)`."
+    "Argument `\(argument)` is not compatible with expected type `\(expectedType.typeName)`"
   }
 }
