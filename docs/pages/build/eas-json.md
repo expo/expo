@@ -13,6 +13,9 @@ import iosSchema from '~/scripts/schemas/unversioned/eas-json-build-ios-schema.j
 
 ```json
 {
+  "cli": {
+    "version": ">= 0.34.0"
+  },
   "build": {
     "development": {
       "developmentClient": true,
@@ -30,6 +33,9 @@ or
 
 ```json
 {
+  "cli": {
+    "version": ">= 0.34.0"
+  },
   "build": {
     "development": {
       "distribution": "internal",
@@ -55,6 +61,11 @@ Generally, the schema of this file looks like this:
 <!-- prettier-ignore -->
 ```json
 {
+  "cli": {
+    "version": /* @info semver version range compatible with the 'semver' package */"SEMVER_RANGE"/* @end */,
+    "requireCommit": /* @info If true, ensures that all changes are commited before a build. Defults to false. */boolean/* @end */
+
+  },
   "build": {
     /* @info any arbitrary name - used as an identifier */"BUILD_PROFILE_NAME_1"/* @end */: {
       /* @info options common for both platforms*/...COMMON_OPTIONS/* @end */

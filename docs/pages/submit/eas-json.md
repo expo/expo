@@ -14,6 +14,9 @@ import submitIosSchema from '~/scripts/schemas/unversioned/eas-json-submit-ios-s
 
 ```json
 {
+  "cli": {
+    "version": ">= 0.34.0"
+  },
   "submit": {
     "production": {
       "android": {
@@ -37,6 +40,11 @@ The schema of this file looks like this:
 <!-- prettier-ignore -->
 ```json
 {
+  "cli": {
+    "version": /* @info semver version range compatible with the 'semver' package */"SEMVER_RANGE"/* @end */,
+    "requireCommit": /* @info If true, ensures that all changes are commited before a build. Defults to false. */boolean/* @end */
+
+  },
   "build": {
     // EAS Build configuration
     ...
