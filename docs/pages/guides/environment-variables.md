@@ -3,7 +3,7 @@ title: Environment variables in Expo
 sidebar_title: Environment variables
 ---
 
-> Are you using [EAS Build](/build/introduction/)? Make sure to check out our [Secrets documentation](/build-reference/variables.md), which lines out the best ways to integrate values that are too sensitive to include in your source code and git repository.
+> Are you using [EAS Build](/build/introduction/)? The [documentation about build secrets](/build-reference/variables.md) explains how to work with sensitive values that you would not include in your source code and Git repository.
 
 Environment variables are global values that are defined in your system. Without these variables, your operating system wouldn't know what to do when you execute a command like `expo start`. Under the hood, it uses the [`PATH`](http://www.linfo.org/path_env_var.html) variable to fetch a list of directories to search for the `expo` executable.
 

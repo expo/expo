@@ -2,7 +2,7 @@
 title: Building Standalone Apps on Your CI
 ---
 
-> 🆕 Using [EAS Build](/build/introduction.md)? Check out [triggering builds from CI](/build/building-on-ci.md).
+> 🆕 Using [EAS Build](/build/introduction.md)? Check out ["Running builds on your own infrastructure"](/build-reference/local-builds.md) and ["Triggering builds from CI"](/build/building-on-ci.md).
 
 > **NOTE:** macOS is required to build standalone iOS apps.
 

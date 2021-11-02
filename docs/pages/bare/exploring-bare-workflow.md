@@ -63,7 +63,7 @@ Expo for web also works on bare projects. Here we will just import one simple co
 
 ## Releasing to the Apple App Store and Google Play Store
 
-With [Expo Application Services (EAS)](/eas/index.md), you can build and submit your app with just a single command `eas build --auto-submit` using `eas-cli`.
+With [Expo Application Services (EAS)](/eas/index.md), you can build and submit your app with a single command `eas build --auto-submit` using `eas-cli`.
 
 ## That's it!
 

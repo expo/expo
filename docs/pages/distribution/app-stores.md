@@ -2,7 +2,7 @@
 title: Deploying to App Stores
 ---
 
-This guide offers best practices around submitting your Expo app to the Apple iTunes Store and Google Play Store. To learn how to generate native binaries for submission, see [Creating your first build](/build/setup.md).
+This guide offers best practices around submitting your Expo app to the Apple iTunes Store and Google Play Store. To learn how to generate native binaries for submission, refer to ["Creating your first build"](/build/setup.md).
 
 Although you can share your published project through the Expo Go app and on your [expo.dev](https://expo.dev) profile, submitting a standalone app to the Apple and Google stores is necessary to have a dedicated piece of real estate on your users' devices. Submitting to these stores carries stronger requirements and quality standards than sharing a toy project with a few friends, because it makes your app available through a much wider distribution platform.
 

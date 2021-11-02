@@ -2,7 +2,7 @@
 title: Building Standalone Apps
 ---
 
-> 🆕 Try [creating your build](/build/setup.md) with EAS Build our new and improved build service.
+> 🆕  [Try creating your build with EAS Build](/build/setup.md), our new and improved build service.
 
 The purpose of this guide is to help you create standalone binaries of your Expo app for iOS and
 Android which can be submitted to the Apple App Store and Google Play Store.

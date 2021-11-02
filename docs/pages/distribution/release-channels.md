@@ -33,11 +33,7 @@ with the Expo CLI. Your users can see this release in the Expo Go app with a par
 }
 ```
 
-Then, build your standalone app by running
-
-`eas build --profile <your-build-profile>`
-
-with the EAS CLI. The binary produced will only pull releases published under the specified channel. If you do not specify a channel, your binary will pull releases from the `default` channel.
+Then, build your standalone app by running `eas build --profile <your-build-profile>` with the EAS CLI. The binary produced will only pull releases published under the specified channel. If you do not specify a channel, your binary will pull releases from the `default` channel.
 
 <details><summary><strong>Are you using the classic build system?</strong> (<InlineCode>expo build:[android|ios]</InlineCode>)</summary> <p>
 

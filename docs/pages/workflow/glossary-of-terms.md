@@ -16,7 +16,7 @@ The term "detach" was previously used in Expo to mean [ejecting](#eject) your ap
 
 ### EAS
 
-[Expo Application Services (EAS)](/eas/index.md) is a set of hosted services that unlock new opportunities for improving your apps and development processes.
+[Expo Application Services (EAS)](/eas/index.md) are deeply-integrated cloud services for Expo and React Native apps, such as [EAS Build](/build/introduction.md) and [EAS Submit](/submit/introduction.md).
 
 ### EAS CLI
 

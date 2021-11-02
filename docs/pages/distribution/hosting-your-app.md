@@ -8,6 +8,8 @@ Normally, when updates are enabled, your app will fetch updates comprising JavaS
 
 For simplicity, the rest of this article will refer to hosting an update for the Android platform, but you could swap out Android for iOS at any point and everything would still be true.
 
+> Self-hosting is not yet available for managed apps built with [EAS Build](/builds/introduction.md).
+
 ## Exporting the update
 
 First, you’ll need to export all the static files of your update so they can be served from your CDN. To do this, run `expo export --public-url <server-endpoint>` in your project directory and it will output all your app’s static files to a directory named `dist`. In this guide, we will use `https://expo.github.io/self-hosting-example` as our example server endpoint. Asset and bundle files are named by the MD5 hash of their content. Your output directory should look something like this now:
