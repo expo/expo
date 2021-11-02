@@ -118,12 +118,12 @@ class ModuleDefinitionBuilder {
     eventListeners[EventName.MODULE_DESTROY] = BasicEventListener(EventName.MODULE_DESTROY) { body() }
   }
 
-  inline fun onAppEntersForeground(crossinline body: () -> Unit) {
-    eventListeners[EventName.APP_ENTERS_FOREGROUND] = BasicEventListener(EventName.APP_ENTERS_FOREGROUND) { body() }
+  inline fun onActivityEntersForeground(crossinline body: () -> Unit) {
+    eventListeners[EventName.ACTIVITY_ENTERS_FOREGROUND] = BasicEventListener(EventName.ACTIVITY_ENTERS_FOREGROUND) { body() }
   }
 
-  inline fun onAppEntersBackground(crossinline body: () -> Unit) {
-    eventListeners[EventName.APP_ENTERS_BACKGROUND] = BasicEventListener(EventName.APP_ENTERS_BACKGROUND) { body() }
+  inline fun onActivityEntersBackground(crossinline body: () -> Unit) {
+    eventListeners[EventName.ACTIVITY_ENTERS_BACKGROUND] = BasicEventListener(EventName.ACTIVITY_ENTERS_BACKGROUND) { body() }
   }
 
   inline fun onActivityDestroy(crossinline body: () -> Unit) {

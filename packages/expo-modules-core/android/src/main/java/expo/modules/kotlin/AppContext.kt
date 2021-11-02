@@ -105,11 +105,11 @@ class AppContext(
   }
 
   override fun onHostResume() {
-    registry.post(EventName.APP_ENTERS_FOREGROUND)
+    registry.post(EventName.ACTIVITY_ENTERS_FOREGROUND)
   }
 
   override fun onHostPause() {
-    registry.post(EventName.APP_ENTERS_BACKGROUND)
+    registry.post(EventName.ACTIVITY_ENTERS_BACKGROUND)
   }
 
   override fun onHostDestroy() {

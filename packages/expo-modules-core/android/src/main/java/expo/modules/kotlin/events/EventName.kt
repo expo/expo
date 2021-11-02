@@ -7,12 +7,12 @@ enum class EventName {
   /**
    * Called when the host activity receives a resume event (e.g. Activity.onResume)
    */
-  APP_ENTERS_FOREGROUND,
+  ACTIVITY_ENTERS_FOREGROUND,
 
   /**
    * Called when host activity receives pause event (e.g. Activity.onPause)
    */
-  APP_ENTERS_BACKGROUND,
+  ACTIVITY_ENTERS_BACKGROUND,
 
   /**
    * Called when host activity receives destroy event (e.g. Activity.onDestroy)
