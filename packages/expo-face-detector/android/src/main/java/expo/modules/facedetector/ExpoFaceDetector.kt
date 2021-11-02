@@ -3,8 +3,6 @@ package expo.modules.facedetector
 import android.content.Context
 import android.net.Uri
 import android.os.Bundle
-import android.util.SparseIntArray
-import android.view.Surface
 import androidx.arch.core.util.Function
 
 import com.google.android.gms.tasks.OnCompleteListener
