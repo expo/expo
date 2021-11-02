@@ -59,6 +59,11 @@ android {
     versionCode 29
     versionName "11.0.1"
   }
+
+  kotlinOptions {
+    jvmTarget = JavaVersion.VERSION_1_8
+  }
+
   lintOptions {
     abortOnError false
   }
