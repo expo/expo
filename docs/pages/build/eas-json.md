@@ -62,8 +62,8 @@ Generally, the schema of this file looks like this:
 ```json
 {
   "cli": {
-    "version": /* @info semver version range compatible with the 'semver' package */"SEMVER_RANGE"/* @end */,
-    "requireCommit": /* @info If true, ensures that all changes are commited before a build. Defults to false. */boolean/* @end */
+    "version": /* @info Required EAS CLI version range. */"SEMVER_RANGE"/* @end */,
+    "requireCommit": /* @info If true, ensures that all changes are committed before a build. Defults to false. */boolean/* @end */
 
   },
   "build": {
