@@ -31,5 +31,6 @@ class ModuleHolderTest {
 
     holder.call("not existing method", JavaOnlyArray(), promise)
     Truth.assertThat(promise.state).isEqualTo(PromiseState.REJECTED)
+    Truth.assertThat(promise.rejectCode).isEqualTo("ERR_METHOD_NOT_FOUND")
   }
 }

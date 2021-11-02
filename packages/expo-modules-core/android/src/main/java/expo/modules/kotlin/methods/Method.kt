@@ -1,7 +1,6 @@
 package expo.modules.kotlin.methods
 
-import com.facebook.react.bridge.ReadableArray
-import expo.modules.core.Promise
+import expo.modules.kotlin.Promise
 import kotlin.reflect.KType
 
 class Method(
@@ -9,11 +8,7 @@ class Method(
   argsType: Array<KType>,
   private val body: (args: Array<out Any?>) -> Any?
 ) : AnyMethod(name, argsType) {
-  override fun call(args: ReadableArray, promise: Promise) {
-    try {
-      promise.resolve(body(castArguments(args)))
-    } catch (e: Throwable) {
-      promise.reject("ExpoModuleCore", e.message, e)
-    }
+  override fun callUserImplementation(args: Array<out Any?>, promise: Promise) {
+    promise.resolve(body(args))
   }
 }

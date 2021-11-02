@@ -27,6 +27,7 @@ import expo.modules.core.ViewManager;
 import expo.modules.core.interfaces.ExpoMethod;
 import expo.modules.kotlin.ExpoModulesHelper;
 import expo.modules.kotlin.KotlinInteropModuleRegistry;
+import expo.modules.kotlin.KotlinPromiseWrapper;
 import expo.modules.kotlin.ModulesProvider;
 
 /**
@@ -148,7 +149,7 @@ public class NativeModulesProxy extends ReactContextBaseJavaModule {
     }
 
     if (mKotlinInteropModuleRegistry.hasModule(moduleName)) {
-      mKotlinInteropModuleRegistry.callMethod(moduleName, methodName, arguments, new PromiseWrapper(promise));
+      mKotlinInteropModuleRegistry.callMethod(moduleName, methodName, arguments, new KotlinPromiseWrapper(promise));
       return;
     }
 
