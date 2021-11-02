@@ -37,11 +37,6 @@ public class BasePackage implements Package {
   }
 
   @Override
-  public int getPackagePriority() {
-    return 0;
-  }
-
-  @Override
   public List<ApplicationLifecycleListener> createApplicationLifecycleListeners(Context context) {
     return Collections.emptyList();
   }
