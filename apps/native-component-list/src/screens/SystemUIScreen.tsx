@@ -1,7 +1,6 @@
-import { Platform } from 'expo-modules-core';
 import * as SystemUI from 'expo-system-ui';
 import * as React from 'react';
-import { ColorValue, Text, useColorScheme, ScrollView } from 'react-native';
+import { ColorValue, ScrollView } from 'react-native';
 
 import Button from '../components/Button';
 import { Page, Section } from '../components/Page';
