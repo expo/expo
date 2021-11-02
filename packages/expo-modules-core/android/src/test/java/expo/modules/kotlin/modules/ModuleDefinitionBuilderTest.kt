@@ -65,7 +65,7 @@ class ModuleDefinitionBuilderTest {
       name(moduleName)
       onCreate { }
       onDestroy { }
-      onActivityDestroy { }
+      onActivityDestroys { }
       onActivityEntersForeground { }
       onActivityEntersBackground { }
     }
@@ -75,6 +75,6 @@ class ModuleDefinitionBuilderTest {
     Truth.assertThat(moduleDefinition.eventListeners[EventName.MODULE_DESTROY]).isNotNull()
     Truth.assertThat(moduleDefinition.eventListeners[EventName.ACTIVITY_ENTERS_FOREGROUND]).isNotNull()
     Truth.assertThat(moduleDefinition.eventListeners[EventName.ACTIVITY_ENTERS_BACKGROUND]).isNotNull()
-    Truth.assertThat(moduleDefinition.eventListeners[EventName.ACTIVITY_DESTROY]).isNotNull()
+    Truth.assertThat(moduleDefinition.eventListeners[EventName.ACTIVITY_DESTROYS]).isNotNull()
   }
 }

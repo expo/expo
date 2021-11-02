@@ -126,7 +126,7 @@ class ModuleDefinitionBuilder {
     eventListeners[EventName.ACTIVITY_ENTERS_BACKGROUND] = BasicEventListener(EventName.ACTIVITY_ENTERS_BACKGROUND) { body() }
   }
 
-  inline fun onActivityDestroy(crossinline body: () -> Unit) {
-    eventListeners[EventName.ACTIVITY_DESTROY] = BasicEventListener(EventName.ACTIVITY_DESTROY) { body() }
+  inline fun onActivityDestroys(crossinline body: () -> Unit) {
+    eventListeners[EventName.ACTIVITY_DESTROYS] = BasicEventListener(EventName.ACTIVITY_DESTROYS) { body() }
   }
 }

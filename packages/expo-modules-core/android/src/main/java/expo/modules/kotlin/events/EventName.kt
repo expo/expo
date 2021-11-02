@@ -17,5 +17,5 @@ enum class EventName {
   /**
    * Called when host activity receives destroy event (e.g. Activity.onDestroy)
    */
-  ACTIVITY_DESTROY
+  ACTIVITY_DESTROYS
 }

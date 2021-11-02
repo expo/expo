@@ -113,6 +113,6 @@ class AppContext(
   }
 
   override fun onHostDestroy() {
-    registry.post(EventName.ACTIVITY_DESTROY)
+    registry.post(EventName.ACTIVITY_DESTROYS)
   }
 }
