@@ -72,6 +72,13 @@ public class AppContext {
   }
 
   /**
+   Provides access to the event emitter from legacy module registry.
+   */
+  public var eventEmitter: EXEventEmitterService? {
+    return legacyModule(implementing: EXEventEmitterService.self)
+  }
+
+  /**
    Starts listening to `UIApplication` notifications.
    */
   private func listenToClientAppNotifications() {

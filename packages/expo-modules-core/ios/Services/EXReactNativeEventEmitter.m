@@ -4,6 +4,7 @@
 #import <ExpoModulesCore/EXEventEmitter.h>
 #import <ExpoModulesCore/EXExportedModule.h>
 #import <ExpoModulesCore/EXModuleRegistry.h>
+#import <ExpoModulesCore/Swift.h>
 
 @interface EXReactNativeEventEmitter ()
 
@@ -42,6 +43,10 @@
 - (NSArray<NSString *> *)supportedEvents
 {
   NSMutableSet<NSString *> *eventsAccumulator = [NSMutableSet set];
+
+  if (_swiftInteropBridge) {
+    [eventsAccumulator addObjectsFromArray:[_swiftInteropBridge getSupportedEvents]];
+  }
   for (EXExportedModule *exportedModule in [_exModuleRegistry getAllExportedModules]) {
     if ([exportedModule conformsToProtocol:@protocol(EXEventEmitter)]) {
       id<EXEventEmitter> eventEmitter = (id<EXEventEmitter>)exportedModule;
@@ -54,6 +59,11 @@
 RCT_EXPORT_METHOD(addProxiedListener:(NSString *)moduleName eventName:(NSString *)eventName)
 {
   [self addListener:eventName];
+
+  if ([_swiftInteropBridge hasModule:moduleName]) {
+    [_swiftInteropBridge modifyEventListenersCount:moduleName count:1];
+    return;
+  }
   // Validate module
   EXExportedModule *module = [_exModuleRegistry getExportedModuleForName:moduleName];
 
@@ -90,6 +100,11 @@ RCT_EXPORT_METHOD(addProxiedListener:(NSString *)moduleName eventName:(NSString 
 RCT_EXPORT_METHOD(removeProxiedListeners:(NSString *)moduleName count:(double)count)
 {
   [self removeListeners:count];
+
+  if ([_swiftInteropBridge hasModule:moduleName]) {
+    [_swiftInteropBridge modifyEventListenersCount:moduleName count:-count];
+    return;
+  }
   // Validate module
   EXExportedModule *module = [_exModuleRegistry getExportedModuleForName:moduleName];
 
