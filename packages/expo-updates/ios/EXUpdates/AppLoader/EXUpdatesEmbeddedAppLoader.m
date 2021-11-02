@@ -2,6 +2,7 @@
 
 #import <EXUpdates/EXUpdatesFileDownloader.h>
 #import <EXUpdates/EXUpdatesEmbeddedAppLoader.h>
+#import <EXUpdates/EXUpdatesUtils.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -101,9 +102,7 @@ static NSString * const EXUpdatesEmbeddedAppLoaderErrorDomain = @"EXUpdatesEmbed
       });
     } else {
       NSAssert(asset.mainBundleFilename, @"embedded asset mainBundleFilename must be nonnull");
-      NSString *bundlePath = asset.mainBundleDir
-        ? [[NSBundle mainBundle] pathForResource:asset.mainBundleFilename ofType:asset.type inDirectory:asset.mainBundleDir]
-        : [[NSBundle mainBundle] pathForResource:asset.mainBundleFilename ofType:asset.type];
+      NSString *bundlePath = [EXUpdatesUtils pathForBundledAsset:asset];
       NSAssert(bundlePath, @"NSBundle must contain the expected assets");
 
       if (!bundlePath) {

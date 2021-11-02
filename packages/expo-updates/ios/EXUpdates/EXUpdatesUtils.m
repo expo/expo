@@ -104,6 +104,20 @@ static NSString * const EXUpdatesUtilsErrorDomain = @"EXUpdatesUtils";
   return config.runtimeVersion ?: config.sdkVersion ?: @"1";
 }
 
++ (NSURL *)urlForBundledAsset:(EXUpdatesAsset *)asset
+{
+  return asset.mainBundleDir
+    ? [[NSBundle mainBundle] URLForResource:asset.mainBundleFilename withExtension:asset.type subdirectory:asset.mainBundleDir]
+    : [[NSBundle mainBundle] URLForResource:asset.mainBundleFilename withExtension:asset.type];
+}
+
++ (NSString *)pathForBundledAsset:(EXUpdatesAsset *)asset
+{
+  return asset.mainBundleDir
+    ? [[NSBundle mainBundle] pathForResource:asset.mainBundleFilename ofType:asset.type inDirectory:asset.mainBundleDir]
+    : [[NSBundle mainBundle] pathForResource:asset.mainBundleFilename ofType:asset.type];
+}
+
 @end
 
 NS_ASSUME_NONNULL_END
