@@ -15,7 +15,7 @@ class EXDevLauncherRecentlyOpenedAppsRegistryTest: QuickSpec {
       expect(appsRegistry.recentlyOpenedApps().count).to(equal(0))
     }
     
-    it("registry should be empty on start") {
+    it("registry should update when apps are opened") {
       appsRegistry.appWasOpened("http://localhost:1234", name: "app1")
       appsRegistry.appWasOpened("http://localhost:9876", name: "app2")
       

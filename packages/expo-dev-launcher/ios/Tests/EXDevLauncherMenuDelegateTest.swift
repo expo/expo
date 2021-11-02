@@ -19,7 +19,7 @@ class EXDevLauncherMenuDelegateTest: QuickSpec {
     func queryUpdateBranches(appId: String, completionHandler: @escaping ([DevMenuEASUpdates.Branch]?, URLResponse?, Error?) -> Void, branchesOptions: DevMenuGraphQLOptions, updatesOptions: DevMenuGraphQLOptions) {}
   }
   
-  class MockedMene: DevMenuManagerProtocol {
+  class MockedMenu: DevMenuManagerProtocol {
     var isVisible: Bool = false
     
     var delegate: DevMenuDelegateProtocol?
@@ -51,7 +51,7 @@ class EXDevLauncherMenuDelegateTest: QuickSpec {
     it("LauncherDelegate should serialize to the correct scheme") {
       let delegate = LauncherDelegate(withController: EXDevLauncherController.sharedInstance())
       
-      let appInfo = delegate.appInfo(forDevMenuManager: MockedMene())!
+      let appInfo = delegate.appInfo(forDevMenuManager: MockedMenu())!
 
       expect(appInfo["appName"] as? String).to(equal("Development Client"))
       expect(appInfo["appVersion"] as? String).to(equal(EXDevLauncherController.version()))
@@ -70,7 +70,7 @@ class EXDevLauncherMenuDelegateTest: QuickSpec {
     it("AppDelegate should serialize to the correct scheme") {
       let delegate = AppDelegate(withController: EXDevLauncherController.sharedInstance())
       
-      let appInfo = delegate.appInfo(forDevMenuManager: MockedMene())!
+      let appInfo = delegate.appInfo(forDevMenuManager: MockedMenu())!
 
       expect(appInfo["appName"] as? String).to(equal("Development Client - App"))
       expect(appInfo["appVersion"]).to(be(NSNull()))
@@ -78,7 +78,7 @@ class EXDevLauncherMenuDelegateTest: QuickSpec {
       expect(appInfo["hostUrl"]).to(be(NSNull()))
     }
    
-    it("LauncherDelegate should support developement tools") {
+    it("AppDelegate should support development tools") {
       let delegate = AppDelegate(withController: EXDevLauncherController.sharedInstance())
       
       let supportsDevelopment = delegate.supportsDevelopment()
