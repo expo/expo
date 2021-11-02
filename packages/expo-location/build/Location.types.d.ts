@@ -364,7 +364,11 @@ export declare type LocationGeocodedAddress = {
      */
     district: string | null;
     /**
-     * Street name of the address.
+     * Street number of the address.
+     */
+    streetNumber: string | null;
+    /**
+       * Street name of the address.
      */
     street: string | null;
     /**
