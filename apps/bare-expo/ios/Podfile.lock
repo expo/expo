@@ -162,6 +162,9 @@ PODS:
   - expo-dev-menu (0.8.2):
     - expo-dev-menu/Main (= 0.8.2)
   - expo-dev-menu-interface (0.4.1)
+  - expo-dev-menu-interface/Tests (0.4.1):
+    - Nimble
+    - Quick
   - expo-dev-menu/GestureHandler (0.8.2)
   - expo-dev-menu/Main (0.8.2):
     - expo-dev-menu-interface
@@ -812,6 +815,7 @@ DEPENDENCIES:
   - expo-dev-launcher/Tests (from `../../../packages/expo-dev-launcher`)
   - expo-dev-menu (from `../../../packages/expo-dev-menu`)
   - expo-dev-menu-interface (from `../../../packages/expo-dev-menu-interface`)
+  - expo-dev-menu-interface/Tests (from `../../../packages/expo-dev-menu-interface`)
   - expo-dev-menu/Tests (from `../../../packages/expo-dev-menu`)
   - expo-dev-menu/UITests (from `../../../packages/expo-dev-menu`)
   - ExpoModulesCore (from `../../../packages/expo-modules-core/ios`)
@@ -1293,7 +1297,7 @@ SPEC CHECKSUMS:
   expo-dev-client: 97a9589d2ea0325a8dd4dff284fe3a4b9166bbce
   expo-dev-launcher: 7a90ad1519263eda3e8675bf6712f2f89f8fe2a9
   expo-dev-menu: ec566cc2bc8e783b9874afb81ea92a90d6069f01
-  expo-dev-menu-interface: 508467f2ba2aedda7a44e5080cc1e9a43ab7375e
+  expo-dev-menu-interface: 273c68c2c30ecbc70af2903dfb3821f567ef9d78
   ExpoModulesCore: 5bf01ec7e83f3fa3c052eb0d0ed3d14df4145641
   EXPrint: a224501bbb89072567c58a5127f2d125b8776ea2
   EXRandom: 9ed4600d410cf2fe58d22b3121865624065a16e9
@@ -1394,6 +1398,6 @@ SPEC CHECKSUMS:
   Yoga: 575c581c63e0d35c9a83f4b46d01d63abc1100ac
   ZXingObjC: fdbb269f25dd2032da343e06f10224d62f537bdb
 
-PODFILE CHECKSUM: 23849a00b5d5d5db84060e757ab5beac52e7ecb1
+PODFILE CHECKSUM: d69986b307473a8a425d0e3a6a79a770265f8914
 
 COCOAPODS: 1.11.0
