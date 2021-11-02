@@ -106,8 +106,8 @@ jobs:
         with:
           path: 'apps/bare-expo/ios/Pods'
           key: ${{ runner.os }}-bare-expo-pods-${{ hashFiles('apps/bare-expo/ios/Podfile.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-bare-expo-pods-
+          # restore-keys: |
+          #   ${{ runner.os }}-bare-expo-pods-
       - name: 🕵️ Debug CocoaPods lockfiles
         run: git diff Podfile.lock Pods/Manifest.lock
         working-directory: apps/bare-expo/ios
