@@ -12,14 +12,14 @@ Let's take a closer look at the steps for building iOS projects with EAS Build. 
 
 The first phase happens on your computer. EAS CLI is in charge of completing the following steps:
 
-1. Check if the git index is clean - this means if there aren't any uncommitted changes. If it's not clean an error is thrown.
-2. Prepare the credentials needed for the build.
+1. If `cli.requireCommit` is set to `true` in `eas.json`, check if the git index is clean - this means that there aren't any uncommitted changes. If it's not clean, EAS CLI will provide an option to commit local changes for you or abort the build process.
+1. Prepare the credentials needed for the build.
 
    - Depending on the value of `builds.ios.PROFILE_NAME.credentialsSource`, the credentials are obtained from either the local **credentials.json** file or from the EAS servers. If the `remote` mode is selected but no credentials exist yet, you're offered to generate them.
 
-3. **Bare** projects require an additional step: check whether the Xcode project is configured to be buildable on the EAS servers (i.e. ensure the correct bundle identifier and Apple Team ID are set).
-4. Create the tarball containing a shallow clone of your local repository (`git clone --depth 1 ...`).
-5. Upload the project tarball to a private AWS S3 bucket and send the build request to EAS Build.
+1. **Bare** projects require an additional step: check whether the Xcode project is configured to be buildable on the EAS servers (i.e. ensure the correct bundle identifier and Apple Team ID are set).
+1. Create the tarball containing a copy of the repository. Actual behavior depends on the VCS workflow you are using. [Learn more here](https://expo.fyi/eas-vcs-workflow).
+1. Upload the project tarball to a private AWS S3 bucket and send the build request to EAS Build.
 
 ### Remote Steps
 
