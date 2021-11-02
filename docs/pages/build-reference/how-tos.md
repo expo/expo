@@ -80,6 +80,9 @@ e.g.
 
 ## How to use git submodules
 
+If you are using default VCS workflow, the content of your working directory will be uploaded to EAS as it is, including the content of your submodules. If you are building on CI you will need to initialize them, otherwise empty directories will be uploaded.
+
+If you have `cli.requireCommit` set to `true` in `eas.json` you will need to initialize your submodules on EAS Build worker.
 First, create a [secret](/build-reference/variables/#using-secrets-in-environment-variables) with a base64 encoded private SSH key that has permission to access submodule repositories. Next, add an `eas-build-pre-install` npm hook to check out those submodules, for example:
 
 ```bash
