@@ -3,6 +3,7 @@
 #import <EXUpdates/EXUpdatesAsset.h>
 #import <EXUpdates/EXUpdatesAppLauncherNoDatabase.h>
 #import <EXUpdates/EXUpdatesEmbeddedAppLoader.h>
+#import <EXUpdates/EXUpdatesUtils.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -30,7 +31,7 @@ static NSString * const EXUpdatesErrorLogFile = @"expo-error.log";
 
       NSMutableDictionary *assetFilesMap = [NSMutableDictionary new];
       for (EXUpdatesAsset *asset in _launchedUpdate.assets) {
-        NSURL *localUrl = [[NSBundle mainBundle] URLForResource:asset.mainBundleFilename withExtension:asset.type];
+        NSURL *localUrl = [EXUpdatesUtils urlForBundledAsset:asset];
         if (localUrl && asset.key) {
           assetFilesMap[asset.key] = localUrl.absoluteString;
         }
