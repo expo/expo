@@ -208,6 +208,8 @@ PODS:
   - ExpoModulesCore (0.4.2):
     - React-Core
     - ReactCommon/turbomodule/core
+  - ExpoSystemUI (1.0.0):
+    - ExpoModulesCore
   - EXPrint (11.0.1):
     - ExpoModulesCore
   - EXRandom (12.0.0):
@@ -238,8 +240,6 @@ PODS:
   - EXStoreReview (5.0.1):
     - ExpoModulesCore
   - EXStructuredHeaders (2.0.0)
-  - EXSystemUI (1.0.0):
-    - ExpoModulesCore
   - EXTaskManager (10.0.1):
     - ExpoModulesCore
     - UMAppLoader
@@ -817,6 +817,7 @@ DEPENDENCIES:
   - expo-dev-menu/Tests (from `../../../packages/expo-dev-menu`)
   - expo-dev-menu/UITests (from `../../../packages/expo-dev-menu`)
   - ExpoModulesCore (from `../../../packages/expo-modules-core/ios`)
+  - ExpoSystemUI (from `../../../packages/expo-system-ui/ios`)
   - EXPrint (from `../../../packages/expo-print/ios`)
   - EXRandom (from `../../../packages/expo-random/ios`)
   - EXScreenCapture (from `../../../packages/expo-screen-capture/ios`)
@@ -831,7 +832,6 @@ DEPENDENCIES:
   - EXSQLite (from `../../../packages/expo-sqlite/ios`)
   - EXStoreReview (from `../../../packages/expo-store-review/ios`)
   - EXStructuredHeaders (from `../../../packages/expo-structured-headers/ios`)
-  - EXSystemUI (from `../../../packages/expo-system-ui/ios`)
   - EXTaskManager (from `../../../packages/expo-task-manager/ios`)
   - EXTrackingTransparency (from `../../../packages/expo-tracking-transparency/ios`)
   - EXUpdatesInterface (from `../../../packages/expo-updates-interface/ios`)
@@ -1084,6 +1084,9 @@ EXTERNAL SOURCES:
   ExpoModulesCore:
     inhibit_warnings: false
     :path: "../../../packages/expo-modules-core/ios"
+  ExpoSystemUI:
+    inhibit_warnings: false
+    :path: "../../../packages/expo-system-ui/ios"
   EXPrint:
     inhibit_warnings: false
     :path: "../../../packages/expo-print/ios"
@@ -1125,9 +1128,6 @@ EXTERNAL SOURCES:
   EXStructuredHeaders:
     inhibit_warnings: false
     :path: "../../../packages/expo-structured-headers/ios"
-  EXSystemUI:
-    inhibit_warnings: false
-    :path: "../../../packages/expo-system-ui/ios"
   EXTaskManager:
     inhibit_warnings: false
     :path: "../../../packages/expo-task-manager/ios"
@@ -1301,6 +1301,7 @@ SPEC CHECKSUMS:
   expo-dev-menu: ec566cc2bc8e783b9874afb81ea92a90d6069f01
   expo-dev-menu-interface: 508467f2ba2aedda7a44e5080cc1e9a43ab7375e
   ExpoModulesCore: 5bf01ec7e83f3fa3c052eb0d0ed3d14df4145641
+  ExpoSystemUI: 3c969e3db290fcd5edb9c466d585f183d934b421
   EXPrint: a224501bbb89072567c58a5127f2d125b8776ea2
   EXRandom: 9ed4600d410cf2fe58d22b3121865624065a16e9
   EXScreenCapture: 76fcc1bad122d1b5d98f85ec44c6d38f18f99a6a
@@ -1315,7 +1316,6 @@ SPEC CHECKSUMS:
   EXSQLite: e2843263c20824b01deab1dfa5a6f00fd055d7d0
   EXStoreReview: e7db9db568c43bf3758d6ae2a93738e1291822b9
   EXStructuredHeaders: ba85104bb57e861129872a30e2cf7adaa348c4ac
-  EXSystemUI: 1506578ad8bdb2e4593c447decfef8e02120af86
   EXTaskManager: 7e50f7dd4121d82f26ffcc11295d82c7be105101
   EXTrackingTransparency: c196e5ee0468c389dda6962a800f5501438e6a7a
   EXUpdatesInterface: e1c01b4f5ec76bd1d6cc714938f9edf5ef6379b9

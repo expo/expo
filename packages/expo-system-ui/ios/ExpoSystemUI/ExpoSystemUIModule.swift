@@ -2,7 +2,7 @@
 
 import ExpoModulesCore
 
-public class SystemUIModule: Module {
+public class ExpoSystemUIModule: Module {
   public func definition() -> ModuleDefinition {
     name("ExpoSystemUI")
 

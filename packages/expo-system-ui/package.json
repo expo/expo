@@ -15,7 +15,10 @@
   },
   "keywords": [
     "react-native",
-    "expo"
+    "expo",
+    "background-color",
+    "user-interface",
+    "appearance"
   ],
   "repository": {
     "type": "git",
@@ -31,6 +34,7 @@
   "dependencies": {
     "@expo/config-plugins": "^4.0.2",
     "@react-native/normalize-color": "^2.0.0",
+    "expo-modules-core": "~0.4.2",
     "debug": "^4.3.2"
   },
   "jest": {
