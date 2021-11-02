@@ -1,4 +1,4 @@
-import { requireNativeViewManager } from '@unimodules/core';
+import { requireNativeViewManager } from 'expo-modules-core';
 import React from 'react';
 import { View } from 'react-native';
 

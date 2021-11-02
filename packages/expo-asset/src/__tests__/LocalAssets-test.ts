@@ -18,8 +18,8 @@ jest.mock('expo-file-system', () => {
   };
 });
 
-jest.mock('@unimodules/core', () => {
-  const UnimodulesCore = jest.requireActual('@unimodules/core');
+jest.mock('expo-modules-core', () => {
+  const UnimodulesCore = jest.requireActual('expo-modules-core');
   return {
     ...UnimodulesCore,
     NativeModulesProxy: {

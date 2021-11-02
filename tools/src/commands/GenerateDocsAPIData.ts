@@ -72,8 +72,7 @@ const executeCommand = async (
 
     if (MINIFY_JSON) {
       const minifiedJson = recursiveOmitBy(output, ({key, node}) =>
-        key === 'id' ||
-        key === 'groups' ||
+        ['id', 'groups', 'target'].includes(key) ||
         (key === 'flags' && !Object.keys(node).length)
       );
       await fs.writeFile(jsonOutputPath, JSON.stringify(minifiedJson, null, 0));
@@ -87,33 +86,56 @@ const executeCommand = async (
 
 async function action({packageName, version = 'unversioned'}: ActionOptions) {
   const packagesMapping: Record<string, CommandAdditionalParams> = {
+    'expo-analytics-amplitude': ['Amplitude.ts'],
     'expo-analytics-segment': ['Segment.ts'],
     'expo-app-loading': ['index.ts'],
-    'expo-apple-authentication': [['AppleAuthentication.ts', 'AppleAuthentication.types.ts']],
+    'expo-apple-authentication': ['index.ts'],
     'expo-application': ['Application.ts'],
+    'expo-asset': [['Asset.ts', 'AssetHooks.ts']],
     'expo-background-fetch': ['BackgroundFetch.ts'],
     'expo-battery': ['Battery.ts'],
+    'expo-barcode-scanner': ['BarCodeScanner.tsx'],
     'expo-blur': ['index.ts'],
+    'expo-brightness': ['Brightness.ts'],
     'expo-cellular': ['Cellular.ts'],
+    'expo-checkbox': ['Checkbox.ts'],
     'expo-clipboard': ['Clipboard.ts'],
+    'expo-document-picker': ['index.ts'],
+    'expo-error-recovery': ['ErrorRecovery.ts'],
+    'expo-face-detector': ['FaceDetector.ts'],
+    'expo-firebase-analytics': ['Analytics.ts'],
+    'expo-firebase-core': ['FirebaseCore.ts'],
+    'expo-facebook': [['Facebook.ts', 'Facebook.types.ts']],
+    'expo-font': ['index.ts'],
     'expo-haptics': ['Haptics.ts'],
+    'expo-image-manipulator': ['ImageManipulator.ts'],
+    'expo-image-picker': ['ImagePicker.ts'],
+    'expo-in-app-purchases': ['InAppPurchases.ts'],
+    'expo-intent-launcher': ['IntentLauncher.ts'],
     'expo-keep-awake': ['index.ts'],
     'expo-linear-gradient': ['LinearGradient.tsx'],
+    'expo-local-authentication': ['LocalAuthentication.ts'],
     'expo-localization': ['Localization.ts'],
+    'expo-location': ['Location.ts'],
     'expo-mail-composer': ['MailComposer.ts'],
+    'expo-media-library': ['MediaLibrary.ts'],
+    'expo-navigation-bar': ['NavigationBar.ts'],
     'expo-network': ['Network.ts'],
     'expo-pedometer': ['Pedometer.ts', 'expo-sensors'],
     'expo-print': ['Print.ts'],
     'expo-random': ['Random.ts'],
+    'expo-screen-capture': ['ScreenCapture.ts'],
+    'expo-screen-orientation': ['ScreenOrientation.ts'],
     'expo-secure-store': ['SecureStore.ts'],
     'expo-sharing': ['Sharing.ts'],
-    'expo-speech': ['Speech/Speech.ts'],
-    'expo-screen-capture': ['ScreenCapture.ts'],
-    'expo-splash-screen': ['SplashScreen.ts'],
     'expo-sms': ['SMS.ts'],
+    'expo-speech': ['Speech/Speech.ts'],
+    'expo-splash-screen': ['SplashScreen.ts'],
+    'expo-sqlite': ['index.ts'],
     'expo-store-review': ['StoreReview.ts'],
     'expo-task-manager': ['TaskManager.ts'],
     'expo-tracking-transparency': ['TrackingTransparency.ts'],
+    'expo-updates': ['index.ts'],
     'expo-video-thumbnails': ['VideoThumbnails.ts'],
     'expo-web-browser': ['WebBrowser.ts'],
   };

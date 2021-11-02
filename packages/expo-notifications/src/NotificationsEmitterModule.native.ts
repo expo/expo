@@ -1,5 +1,5 @@
-import { NativeModulesProxy } from '@unimodules/core';
+import { NativeModulesProxy } from 'expo-modules-core';
 
 import { NotificationsEmitterModule } from './NotificationsEmitterModule.types';
 
-export default (NativeModulesProxy.ExpoNotificationsEmitter as any) as NotificationsEmitterModule;
+export default NativeModulesProxy.ExpoNotificationsEmitter as any as NotificationsEmitterModule;

@@ -1,5 +1,17 @@
 // Copyright © 2018 650 Industries. All rights reserved.
 
+#if defined(__cplusplus)
+#define EX_EXTERN extern "C" __attribute__((visibility("default")))
+#define EX_EXTERN_C_BEGIN extern "C" {
+#define EX_EXTERN_C_END }
+#else
+#define EX_EXTERN extern __attribute__((visibility("default")))
+#define EX_EXTERN_C_BEGIN
+#define EX_EXTERN_C_END
+#endif
+
+EX_EXTERN_C_BEGIN
+
 #define EX_EXPORTED_METHODS_PREFIX __ex_export__
 #define EX_PROPSETTERS_PREFIX __ex_set__
 
@@ -20,7 +32,7 @@
   - (void)EX_CONCAT(EX_PROPSETTERS_PREFIX, external_name):(type)value view:(viewClass *)view
 
 #define _EX_DEFINE_CUSTOM_LOAD(_custom_load_code) \
-  extern void EXRegisterModule(Class); \
+  EX_EXTERN void EXRegisterModule(Class); \
   + (void)load { \
     EXRegisterModule(self); \
     _custom_load_code \
@@ -37,7 +49,7 @@
   _EX_DEFINE_CUSTOM_LOAD(_custom_load_code)
 
 #define EX_REGISTER_SINGLETON_MODULE_WITH_CUSTOM_LOAD(singleton_name, _custom_load_code) \
-  extern void EXRegisterSingletonModule(Class); \
+  EX_EXTERN void EXRegisterSingletonModule(Class); \
   + (const NSString *)name { \
     return @#singleton_name; \
   } \
@@ -86,9 +98,11 @@ typedef void (^EXPromiseRejectBlock)(NSString *code, NSString *message, NSError 
 #pragma mark - Externs
 
 // These should be defined by the concrete platform adapter
-extern void EXLogInfo(NSString *format, ...);
-extern void EXLogWarn(NSString *format, ...);
-extern void EXLogError(NSString *format, ...);
-extern void EXFatal(NSError *);
-extern NSError * EXErrorWithMessage(NSString *);
-extern UIApplication *EXSharedApplication(void);
+EX_EXTERN void EXLogInfo(NSString *format, ...);
+EX_EXTERN void EXLogWarn(NSString *format, ...);
+EX_EXTERN void EXLogError(NSString *format, ...);
+EX_EXTERN void EXFatal(NSError *);
+EX_EXTERN NSError * EXErrorWithMessage(NSString *);
+EX_EXTERN UIApplication *EXSharedApplication(void);
+
+EX_EXTERN_C_END

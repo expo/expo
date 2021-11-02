@@ -4,7 +4,6 @@
   <application>
     <activity
       android:name=".DevMenuActivity"
-      android:screenOrientation="portrait"
       android:theme="@style/Theme.AppCompat.Transparent.NoActionBar"
       android:launchMode="singleTask">
     <intent-filter>

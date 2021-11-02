@@ -2,12 +2,12 @@
 /**
  A protocol for any type-erased module that provides methods used by the core.
  */
-public protocol AnyModule: AnyObject {
+public protocol AnyModule: AnyObject, AnyMethodArgument {
   /**
    The default initializer. Must be public, but the module class does *not* need to
    define it as it is implemented in protocol composition, see `BaseModule` class.
    */
-  init()
+  init(appContext: AppContext)
 
   /**
    A DSL-like function that returns a `ModuleDefinition` which can be built up from module's name, constants or methods.

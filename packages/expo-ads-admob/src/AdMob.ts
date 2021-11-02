@@ -1,10 +1,16 @@
-import { UnavailabilityError } from '@unimodules/core';
-import { PermissionResponse, PermissionStatus, PermissionExpiration } from 'expo-modules-core';
+import {
+  PermissionResponse,
+  PermissionStatus,
+  PermissionExpiration,
+  PermissionHookOptions,
+  createPermissionHook,
+  UnavailabilityError,
+} from 'expo-modules-core';
 import { Platform } from 'react-native';
 
 import ExpoAdsAdMob from './ExpoAdsAdMob';
 
-export { PermissionResponse, PermissionStatus, PermissionExpiration };
+export { PermissionResponse, PermissionStatus, PermissionExpiration, PermissionHookOptions };
 
 const androidPermissionsResponse: PermissionResponse = {
   granted: true,
@@ -34,6 +40,21 @@ export async function getPermissionsAsync(): Promise<PermissionResponse> {
   }
   return await ExpoAdsAdMob.getPermissionsAsync();
 }
+
+// @needsAudit
+/**
+ * Check or request permissions for adsmob.
+ * This uses both `requestPermissionAsync` and `getPermissionsAsync` to interact with the permissions.
+ *
+ * @example
+ * ```ts
+ * const [status, requestPermission] = AdsAdMob.usePermission();
+ * ```
+ */
+export const usePermissions = createPermissionHook({
+  getMethod: getPermissionsAsync,
+  requestMethod: requestPermissionsAsync,
+});
 
 /**
  * Returns whether the AdMob API is enabled on the current device. This does not check the native configuration.

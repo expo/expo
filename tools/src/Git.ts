@@ -1,6 +1,6 @@
 import fs from 'fs-extra';
 import parseDiff from 'parse-diff';
-import path from 'path';
+import { join } from 'path';
 
 import { spawnAsync, SpawnResult, SpawnOptions } from './Utils';
 import { EXPO_DIR } from './Constants';
@@ -106,7 +106,7 @@ export class GitDirectory {
    * Initializes git repository in the directory.
    */
   async initAsync() {
-    const dotGitPath = path.join(this.path, '.git');
+    const dotGitPath = join(this.path, '.git');
     if (!(await fs.pathExists(dotGitPath))) {
       await this.runAsync(['init']);
     }
@@ -282,7 +282,7 @@ export class GitDirectory {
 
         return {
           relativePath: newPath,
-          path: path.join(this.path, newPath),
+          path: join(this.path, newPath),
           // `R` status also has a number, but we take care of only the first character.
           status: GitFileStatus[status[0]] ?? status,
         };
@@ -381,7 +381,7 @@ export class GitDirectory {
 
       return {
         ...entry,
-        path: path.join(this.path, finalPath!),
+        path: join(this.path, finalPath!),
       };
     });
   }

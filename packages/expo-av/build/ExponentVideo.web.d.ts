@@ -1,6 +1,7 @@
 import * as React from 'react';
-import { View } from 'react-native';
+import { ViewProps } from 'react-native';
 import { AVPlaybackNativeSource, AVPlaybackStatus, AVPlaybackStatusToSet } from './AV';
+import { VideoFullscreenUpdateEvent, VideoReadyForDisplayEvent } from './Video.types';
 declare type ExponentVideoProps = {
     source: AVPlaybackNativeSource | null;
     resizeMode?: object;
@@ -10,10 +11,10 @@ declare type ExponentVideoProps = {
         nativeEvent: AVPlaybackStatus;
     }) => void;
     onReadyForDisplay?: (event: {
-        nativeEvent: object;
+        nativeEvent: VideoReadyForDisplayEvent;
     }) => void;
     onFullscreenUpdate?: (event: {
-        nativeEvent: object;
+        nativeEvent: VideoFullscreenUpdateEvent;
     }) => void;
     onLoadStart: () => void;
     onLoad: (event: {
@@ -29,7 +30,7 @@ declare type ExponentVideoProps = {
     translateX?: number;
     translateY?: number;
     rotation?: number;
-} & React.ComponentProps<typeof View>;
+} & ViewProps;
 export declare type NaturalSize = {
     width: number;
     height: number;
@@ -58,7 +59,7 @@ export default class ExponentVideo extends React.Component<ExponentVideoProps> {
     onLoadedMetadata: () => void;
     onCanPlay: (event: any) => void;
     onStalled: () => void;
-    onRef: (ref: HTMLVideoElement) => void;
+    onRef: (ref: HTMLVideoElement | null) => void;
     render(): JSX.Element;
 }
 export {};

@@ -38,7 +38,7 @@ it(`lints with the Node config`, async () => {
 }, 20000);
 
 it(`doesn't conflict with Prettier`, async () => {
-  const { success, message } = await checkPrettierRulesAsync(configFile);
+  const { success, message } = await checkPrettierRulesAsync(configFile, 'node');
   expect(success).toMatchSnapshot('success');
   expect(message).toMatchSnapshot('message');
 }, 10000);

@@ -1,6 +1,7 @@
 import { getSDKVersionFromRuntimeVersion } from '@expo/sdk-runtime-versions';
 import { StackScreenProps } from '@react-navigation/stack';
 import dedent from 'dedent';
+import * as WebBrowser from 'expo-web-browser';
 import * as React from 'react';
 import {
   ActivityIndicator,
@@ -15,6 +16,7 @@ import {
 import FadeIn from 'react-native-fade-in-image';
 import semver from 'semver';
 
+import { Ionicons } from '../components/Icons';
 import ListItem from '../components/ListItem';
 import SectionHeader from '../components/SectionHeader';
 import ShareProjectButton from '../components/ShareProjectButton';
@@ -95,7 +97,7 @@ function getSDKMajorVersionForEASUpdateBranch(branch: ProjectUpdateBranch): numb
 
   return (
     updates
-      .map(update => {
+      .map((update) => {
         const potentialSDKVersion = getSDKVersionFromRuntimeVersion(update.runtimeVersion);
         return potentialSDKVersion ? semver.major(potentialSDKVersion) : null;
       })
@@ -109,7 +111,7 @@ function appHasLegacyUpdate(app: ProjectDataProject): boolean {
 }
 
 function appHasEASUpdates(app: ProjectDataProject): boolean {
-  return app.updateBranches.some(branch => branch.updates.length > 0);
+  return app.updateBranches.some((branch) => branch.updates.length > 0);
 }
 
 function ProjectContents({ app }: { app: ProjectDataProject }) {
@@ -147,6 +149,42 @@ function ProjectHeader(props: { app: ProjectDataProject }) {
   );
 }
 
+function WarningBox({
+  title,
+  message,
+  showLearnMore,
+  onLearnMorePress,
+}: {
+  title: string;
+  message: string;
+  showLearnMore?: boolean;
+  onLearnMorePress?: () => void;
+}) {
+  const learnMoreButton = showLearnMore ? (
+    <StyledText
+      onPress={onLearnMorePress}
+      style={[styles.warningMessage, styles.warningLearnMoreButton]}>
+      Learn more
+    </StyledText>
+  ) : null;
+  return (
+    <View style={styles.warningContainer}>
+      <View style={styles.warningHeaderContainer}>
+        <Ionicons
+          name={Platform.select({ ios: 'ios-warning', default: 'md-warning' })}
+          size={18}
+          lightColor="#735C0F"
+          darkColor="#735C0F"
+          style={styles.warningHeaderIcon}
+        />
+        <StyledText style={styles.warningTitle}>{title}</StyledText>
+      </View>
+      <StyledText style={styles.warningMessage}>{message}</StyledText>
+      {learnMoreButton}
+    </View>
+  );
+}
+
 function LegacyLaunchSection({ app }: { app: ProjectDataProject }) {
   if (!appHasLegacyUpdate(app)) {
     return null;
@@ -156,29 +194,49 @@ function LegacyLaunchSection({ app }: { app: ProjectDataProject }) {
   const isLatestLegacyPublishDeprecated =
     legacyUpdatesSDKMajorVersion !== null &&
     legacyUpdatesSDKMajorVersion < Environment.lowestSupportedSdkVersion;
+  const doesLatestLegacyPublishHaveRuntimeVersion =
+    app.latestReleaseForReleaseChannel?.runtimeVersion !== null;
 
   const moreLegacyBranchesText =
     Platform.OS === 'ios'
       ? 'To launch from another classic release channel, follow the instructions on the project webpage.'
       : 'To launch from another classic release channel, scan the QR code on the project webpage.';
 
+  let warning: JSX.Element | null = null;
+  if (doesLatestLegacyPublishHaveRuntimeVersion) {
+    warning = (
+      <WarningBox
+        title="Incompatible update"
+        message="The latest update uses a runtime version that is not compatible with Expo Go. To continue, create a custom dev client."
+        showLearnMore
+        onLearnMorePress={() => {
+          WebBrowser.openBrowserAsync('https://docs.expo.dev/clients/getting-started/');
+        }}
+      />
+    );
+  } else if (isLatestLegacyPublishDeprecated) {
+    warning = (
+      <WarningBox
+        title="Unsupported SDK version"
+        message={`This project's SDK version (${legacyUpdatesSDKMajorVersion}) is no longer supported.`}
+        showLearnMore={false}
+      />
+    );
+  }
+
   return (
     <View>
       <SectionHeader title="Classic release channels" />
       <ListItem
         title="default"
+        disabled={warning !== null}
         onPress={() => {
-          if (isLatestLegacyPublishDeprecated) {
-            Alert.alert(
-              `This project's SDK version (${legacyUpdatesSDKMajorVersion}) is no longer supported.`
-            );
-          } else {
-            Linking.openURL(UrlUtils.normalizeUrl(app.fullName));
-          }
+          Linking.openURL(UrlUtils.normalizeUrl(app.fullName));
         }}
         last
       />
       <Text style={styles.moreLegacyBranchesText}>{moreLegacyBranchesText}</Text>
+      {warning}
     </View>
   );
 }
@@ -188,7 +246,11 @@ function NewLaunchSection({ app }: { app: ProjectDataProject }) {
     return null;
   }
 
-  const branchManifests = app.updateBranches.map(branch => ({
+  const branchesToRender = app.updateBranches.filter(
+    (updateBranch) => updateBranch.updates.length > 0
+  );
+
+  const branchManifests = branchesToRender.map((branch) => ({
     branchName: branch.name,
     manifestUrl: branch.updates[0].manifestPermalink,
     sdkVersion: getSDKMajorVersionForEASUpdateBranch(branch),
@@ -282,5 +344,35 @@ const styles = StyleSheet.create({
     color: Colors.light.greyText,
     marginBottom: 20,
     marginHorizontal: 16,
+  },
+  warningContainer: {
+    borderRadius: 4,
+    padding: 16,
+    backgroundColor: '#FFFBDD',
+    borderColor: '#FFEA7F',
+    borderWidth: 1,
+    marginBottom: 20,
+    marginHorizontal: 16,
+  },
+  warningHeaderContainer: {
+    flexDirection: 'row',
+  },
+  warningHeaderIcon: {
+    marginRight: 4,
+  },
+  warningTitle: {
+    color: '#735C0F',
+    fontWeight: '600',
+    fontSize: 15,
+    marginBottom: 6,
+    lineHeight: 22,
+  },
+  warningMessage: {
+    color: '#1B1F23',
+    fontSize: 16,
+    lineHeight: 24,
+  },
+  warningLearnMoreButton: {
+    textDecorationLine: 'underline',
   },
 });

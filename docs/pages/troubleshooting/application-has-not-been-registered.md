@@ -33,9 +33,9 @@ Look at your logs prior to this error message to see what may have caused it. A 
 
 Another possibility is that there is a mismatch between the `AppKey` being provided to [`AppRegistry.registerComponent`](https://reactnative.dev/docs/appregistry#registercomponent), and the `AppKey` being registered on the native iOS or Android side.
 
-In managed projects, the default behavior is to use "main" as the `AppKey`. This is handled for your automatically, and as long as you don't change the `"main"` field in your `package.json` from the default value then this will just work. If you want to customize the app entry point, please refer to the [registerRootComponent](/versions/latest/sdk/register-root-component.md) API reference.
+In managed projects, the default behavior is to use "main" as the `AppKey`. This is handled for your automatically, and as long as you don't change the `"main"` field in your **package.json** from the default value then this will just work. If you want to customize the app entry point, please refer to the [registerRootComponent](/versions/latest/sdk/register-root-component.md) API reference.
 
-In projects with native code, you will see something like this in your `index.js` by default:
+In projects with native code, you will see something like this in your **index.js** by default:
 
 ```js
 import { registerRootComponent } from 'expo';
@@ -51,13 +51,13 @@ function registerRootComponent(component) {
 }
 ```
 
-And on the native side, in `AppDelegate.m` you should see:
+And on the native side, in **AppDelegate.m** you should see:
 
 ```objectivec
 RCTRootView *rootView = [[RCTRootView alloc] initWithBridge:bridge moduleName:@"main" initialProperties:nil];
 ```
 
-and in `MainActivity.java`:
+and in **MainActivity.java**:
 
 ```java
 @Override

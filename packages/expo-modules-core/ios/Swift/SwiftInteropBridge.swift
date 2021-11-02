@@ -3,11 +3,15 @@ import Foundation
 
 @objc
 public class SwiftInteropBridge: NSObject {
-  let registry: ModuleRegistry
+  let appContext: AppContext
+
+  var registry: ModuleRegistry {
+    appContext.moduleRegistry
+  }
 
   @objc
-  public init(modulesProvider: ModulesProviderObjCProtocol) {
-    self.registry = ModuleRegistry(withProvider: modulesProvider as! ModulesProviderProtocol)
+  public init(modulesProvider: ModulesProviderObjCProtocol, legacyModuleRegistry: EXModuleRegistry) {
+    self.appContext = AppContext(withModulesProvider: modulesProvider as! ModulesProviderProtocol, legacyModuleRegistry: legacyModuleRegistry)
     super.init()
   }
 
@@ -22,10 +26,26 @@ public class SwiftInteropBridge: NSObject {
                          withArgs args: [Any],
                          resolve: @escaping EXPromiseResolveBlock,
                          reject: @escaping EXPromiseRejectBlock) {
-    let promise = Promise(resolve: resolve, reject: reject)
     registry
       .get(moduleHolderForName: moduleName)?
-      .call(method: methodName, args: args, promise: promise)
+      .call(method: methodName, args: args) { value, error in
+        if let error = error as? CodedError {
+          reject(error.code, error.description, error)
+        } else if let error = error {
+          reject("ERR_UNKNOWN_ERROR", error.localizedDescription, error)
+        } else {
+          resolve(value)
+        }
+      }
+  }
+
+  @objc
+  public func callMethodSync(_ methodName: String,
+                             onModule moduleName: String,
+                             withArgs args: [Any]) -> Any? {
+    return registry
+      .get(moduleHolderForName: moduleName)?
+      .callSync(method: methodName, args: args)
   }
 
   @objc
@@ -33,10 +53,7 @@ public class SwiftInteropBridge: NSObject {
     var constants = [String: [[String: Any]]]()
 
     for holder in registry {
-      var index = -1
-
       constants[holder.name] = holder.definition.methods.map({ (methodName, method) in
-        index += 1
         return [
           "name": methodName,
           "argumentsCount": method.argumentsCount,
@@ -51,6 +68,27 @@ public class SwiftInteropBridge: NSObject {
   public func exportedModulesConstants() -> [String: Any] {
     return registry.reduce(into: [String: Any]()) { acc, holder in
       acc[holder.name] = holder.definition.constants
+    }
+  }
+
+  @objc
+  public func exportedViewManagersNames() -> [String] {
+    return registry.compactMap { holder in
+      return holder.definition.viewManager != nil ? holder.name : nil
+    }
+  }
+
+  /**
+   Returns view modules wrapped by the base `ViewModuleWrapper` class.
+   */
+  @objc
+  public func getViewManagers() -> [ViewModuleWrapper] {
+    return registry.compactMap { holder in
+      if holder.definition.viewManager != nil {
+        return ViewModuleWrapper(holder)
+      } else {
+        return nil
+      }
     }
   }
 }

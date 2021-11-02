@@ -12,20 +12,20 @@
 
 @implementation EXBackgroundNotificationTasksModule
 
-UM_EXPORT_MODULE(ExpoBackgroundNotificationTasksModule);
+EX_EXPORT_MODULE(ExpoBackgroundNotificationTasksModule);
 
-# pragma mark - UMModuleRegistryConsumer
+# pragma mark - EXModuleRegistryConsumer
 
-- (void)setModuleRegistry:(UMModuleRegistry *)moduleRegistry
+- (void)setModuleRegistry:(EXModuleRegistry *)moduleRegistry
 {
   _taskManager = [moduleRegistry getModuleImplementingProtocol:@protocol(UMTaskManagerInterface)];
 }
 # pragma mark - Exported methods
 
-UM_EXPORT_METHOD_AS(registerTaskAsync,
+EX_EXPORT_METHOD_AS(registerTaskAsync,
                     registerTaskWithName:(nonnull NSString *)taskName
-                    resolve:(UMPromiseResolveBlock)resolve
-                    reject:(UMPromiseRejectBlock)reject)
+                    resolve:(EXPromiseResolveBlock)resolve
+                    reject:(EXPromiseRejectBlock)reject)
 {
   if (![_taskManager hasBackgroundModeEnabled:@"remote-notification"]) {
     return reject(
@@ -46,10 +46,10 @@ UM_EXPORT_METHOD_AS(registerTaskAsync,
   resolve(nil);
 }
 
-UM_EXPORT_METHOD_AS(unregisterTaskAsync,
+EX_EXPORT_METHOD_AS(unregisterTaskAsync,
                     unregisterTaskWithName:(nonnull NSString *)taskName
-                    resolve:(UMPromiseResolveBlock)resolve
-                    reject:(UMPromiseRejectBlock)reject)
+                    resolve:(EXPromiseResolveBlock)resolve
+                    reject:(EXPromiseRejectBlock)reject)
 {
   @try {
     [_taskManager unregisterTaskWithName:taskName consumerClass:[EXBackgroundRemoteNotificationConsumer class]];

@@ -23,17 +23,17 @@ static NSString *const FBSDKAppEventsPushPayloadCampaignKey = @"campaign";
 
 @implementation EXFacebook
 
-UM_EXPORT_MODULE(ExponentFacebook)
+EX_EXPORT_MODULE(ExponentFacebook)
 
-- (void)setModuleRegistry:(UMModuleRegistry *)moduleRegistry
+- (void)setModuleRegistry:(EXModuleRegistry *)moduleRegistry
 {
   _permissionsManager = [moduleRegistry getModuleImplementingProtocol:@protocol(EXPermissionsInterface)];
   [EXPermissionsMethodsDelegate registerRequesters:@[[EXFacebookAppTrackingPermissionRequester new]] withPermissionsManager:_permissionsManager];
 }
 
-UM_EXPORT_METHOD_AS(getPermissionsAsync,
-                    getPermissionsAsync:(UMPromiseResolveBlock)resolve
-                    rejecter:(UMPromiseRejectBlock)reject)
+EX_EXPORT_METHOD_AS(getPermissionsAsync,
+                    getPermissionsAsync:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
 {
   [EXPermissionsMethodsDelegate getPermissionWithPermissionsManager:_permissionsManager
                                                       withRequester:[EXFacebookAppTrackingPermissionRequester class]
@@ -41,9 +41,9 @@ UM_EXPORT_METHOD_AS(getPermissionsAsync,
                                                              reject:reject];
 }
 
-UM_EXPORT_METHOD_AS(requestPermissionsAsync,
-                    requestPermissionsAsync:(UMPromiseResolveBlock)resolve
-                    rejecter:(UMPromiseRejectBlock)reject)
+EX_EXPORT_METHOD_AS(requestPermissionsAsync,
+                    requestPermissionsAsync:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
 {
   [EXPermissionsMethodsDelegate askForPermissionWithPermissionsManager:_permissionsManager
                                                          withRequester:[EXFacebookAppTrackingPermissionRequester class]
@@ -51,28 +51,28 @@ UM_EXPORT_METHOD_AS(requestPermissionsAsync,
                                                                 reject:reject];
 }
 
-UM_EXPORT_METHOD_AS(setAdvertiserTrackingEnabledAsync,
+EX_EXPORT_METHOD_AS(setAdvertiserTrackingEnabledAsync,
                     setAdvertiserTrackingEnabled:(BOOL)enabled
-                    resolver:(UMPromiseResolveBlock)resolve
-                    rejecter:(UMPromiseRejectBlock)reject)
+                    resolver:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
 {
   BOOL result = [FBSDKSettings setAdvertiserTrackingEnabled:enabled];
   resolve(@(result));
 }
 
-UM_EXPORT_METHOD_AS(setAutoLogAppEventsEnabledAsync,
+EX_EXPORT_METHOD_AS(setAutoLogAppEventsEnabledAsync,
                     setAutoLogAppEventsEnabled:(BOOL)enabled
-                    resolver:(UMPromiseResolveBlock)resolve
-                    rejecter:(UMPromiseRejectBlock)reject)
+                    resolver:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
 {
   [FBSDKSettings setAutoLogAppEventsEnabled:enabled];
   resolve(nil);
 }
 
-UM_EXPORT_METHOD_AS(initializeAsync,
+EX_EXPORT_METHOD_AS(initializeAsync,
                     initializeAsync:(NSDictionary *)options
-                    resolver:(UMPromiseResolveBlock)resolve
-                    rejecter:(UMPromiseRejectBlock)reject)
+                    resolver:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
 {
   // Caller overrides buildtime settings
   if (options[@"appId"]) {
@@ -97,37 +97,37 @@ UM_EXPORT_METHOD_AS(initializeAsync,
   resolve(nil);
 }
 
-UM_EXPORT_METHOD_AS(setAdvertiserIDCollectionEnabledAsync,
+EX_EXPORT_METHOD_AS(setAdvertiserIDCollectionEnabledAsync,
                     setAdvertiserIDCollectionEnabled:(BOOL)enabled
-                    resolver:(UMPromiseResolveBlock)resolve
-                    rejecter:(UMPromiseRejectBlock)reject)
+                    resolver:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
 {
   // Caller overrides buildtime settings
   [FBSDKSettings setAdvertiserIDCollectionEnabled:enabled];
   resolve(nil);
 }
 
-UM_EXPORT_METHOD_AS(logOutAsync,
-                    logOutAsync:(UMPromiseResolveBlock)resolve
-                    rejecter:(UMPromiseRejectBlock)reject)
+EX_EXPORT_METHOD_AS(logOutAsync,
+                    logOutAsync:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
 {
   FBSDKLoginManager *loginManager = [[FBSDKLoginManager alloc] init];
   [loginManager logOut];
   resolve(nil);
 }
 
-UM_EXPORT_METHOD_AS(getAuthenticationCredentialAsync,
-                    getAuthenticationCredentialAsync:(UMPromiseResolveBlock)resolve
-                    rejecter:(UMPromiseRejectBlock)reject)
+EX_EXPORT_METHOD_AS(getAuthenticationCredentialAsync,
+                    getAuthenticationCredentialAsync:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
 {
   FBSDKAccessToken *currentAccessToken = [FBSDKAccessToken currentAccessToken];
-  resolve(UMNullIfNil([EXFacebook accessTokenNativeToJSON:currentAccessToken]));
+  resolve(EXNullIfNil([EXFacebook accessTokenNativeToJSON:currentAccessToken]));
 }
 
-UM_EXPORT_METHOD_AS(logInWithReadPermissionsAsync,
+EX_EXPORT_METHOD_AS(logInWithReadPermissionsAsync,
                     logInWithReadPermissionsWithConfig:(NSDictionary *)config
-                    resolver:(UMPromiseResolveBlock)resolve
-                    rejecter:(UMPromiseRejectBlock)reject)
+                    resolver:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
 {
   if (![FBSDKSettings appID]) {
     reject(EXFacebookMisconfiguredErrorDomain, @"No appId configured, required for initialization. Please ensure that you're either providing `appId` to `initializeAsync` as an argument or inside Info.plist.", nil);
@@ -161,12 +161,11 @@ UM_EXPORT_METHOD_AS(logInWithReadPermissionsAsync,
         accessToken[@"type"] = @"success";
         resolve(accessToken);
       }];
-    }
-    @catch (NSException *exception) {
+    } @catch (NSException *exception) {
       NSError *error = [[NSError alloc] initWithDomain:EXFacebookLoginErrorDomain code:650 userInfo:@{
         NSLocalizedDescriptionKey: exception.description,
         NSLocalizedFailureReasonErrorKey: exception.reason,
-        @"ExceptionUserInfo": exception.userInfo,
+        @"ExceptionUserInfo": exception.userInfo ?: @{},
         @"ExceptionCallStackSymbols": exception.callStackSymbols,
         @"ExceptionCallStackReturnAddresses": exception.callStackReturnAddresses,
         @"ExceptionName": exception.name
@@ -197,12 +196,12 @@ UM_EXPORT_METHOD_AS(logInWithReadPermissionsAsync,
   };
 }
 
-UM_EXPORT_METHOD_AS(logEventAsync,
+EX_EXPORT_METHOD_AS(logEventAsync,
                     logEvent:(NSString *)eventName
                     valueToSum:(nonnull NSNumber *)valueToSum
                     parameters:(NSDictionary *)parameters
-                    resolver:(UMPromiseResolveBlock)resolve
-                    rejecter:(UMPromiseRejectBlock)reject)
+                    resolver:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
 {
   parameters = dictionaryWithNullValuesAsStrings(parameters);
   
@@ -213,12 +212,12 @@ UM_EXPORT_METHOD_AS(logEventAsync,
   resolve(nil);
 }
 
-UM_EXPORT_METHOD_AS(logPurchaseAsync,
+EX_EXPORT_METHOD_AS(logPurchaseAsync,
                     logPurchase:(NSNumber *)purchaseAmount
                     currency:(NSString *)currency
                     parameters:(NSDictionary *)parameters
-                    resolver:(UMPromiseResolveBlock)resolve
-                    rejecter:(UMPromiseRejectBlock)reject)
+                    resolver:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
 {
   parameters = dictionaryWithNullValuesAsStrings(parameters);
   
@@ -229,10 +228,10 @@ UM_EXPORT_METHOD_AS(logPurchaseAsync,
   resolve(nil);
 }
 
-UM_EXPORT_METHOD_AS(logPushNotificationOpenAsync,
+EX_EXPORT_METHOD_AS(logPushNotificationOpenAsync,
                     logPushNotificationOpen:(NSString *)campaign
-                    resolver:(UMPromiseResolveBlock)resolve
-                    rejecter:(UMPromiseRejectBlock)reject)
+                    resolver:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
 {
   NSDictionary *payload = @{
     FBSDKAppEventsPushPayloadKey: @{
@@ -243,25 +242,25 @@ UM_EXPORT_METHOD_AS(logPushNotificationOpenAsync,
   resolve(nil);
 }
 
-UM_EXPORT_METHOD_AS(setUserIDAsync,
+EX_EXPORT_METHOD_AS(setUserIDAsync,
                     setUserID:(NSString *)userID
-                    resolver:(UMPromiseResolveBlock)resolve
-                    rejecter:(UMPromiseRejectBlock)reject)
+                    resolver:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
 {
   [FBSDKAppEvents setUserID:userID];
   resolve(nil);
 }
 
-UM_EXPORT_METHOD_AS(getUserIDAsync,
-                    getUserID:(UMPromiseResolveBlock)resolve
-                    rejecter:(UMPromiseRejectBlock)reject)
+EX_EXPORT_METHOD_AS(getUserIDAsync,
+                    getUserID:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
 {
   resolve([FBSDKAppEvents userID]);
 }
 
-UM_EXPORT_METHOD_AS(getAnonymousIDAsync,
-                    getAnonymousID:(UMPromiseResolveBlock)resolve
-                    rejecter:(UMPromiseRejectBlock)reject)
+EX_EXPORT_METHOD_AS(getAnonymousIDAsync,
+                    getAnonymousID:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
 {
   @try {
     NSString *anonymousID = [FBSDKAppEvents anonymousID];
@@ -272,9 +271,9 @@ UM_EXPORT_METHOD_AS(getAnonymousIDAsync,
   }
 }
 
-UM_EXPORT_METHOD_AS(getAdvertiserIDAsync,
-                    getAdvertiserID:(UMPromiseResolveBlock)resolve
-                    rejecter:(UMPromiseRejectBlock)reject)
+EX_EXPORT_METHOD_AS(getAdvertiserIDAsync,
+                    getAdvertiserID:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
 {
   @try {
     NSString *advertiserID = [FBSDKAppEventsUtility advertiserID];
@@ -285,10 +284,10 @@ UM_EXPORT_METHOD_AS(getAdvertiserIDAsync,
   }
 }
 
-UM_EXPORT_METHOD_AS(setUserDataAsync,
+EX_EXPORT_METHOD_AS(setUserDataAsync,
                     setUserData:(NSDictionary *)userData
-                    resolver:(UMPromiseResolveBlock)resolve
-                    rejecter:(UMPromiseRejectBlock)reject)
+                    resolver:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
 {
   userData = dictionaryWithNullValuesAsStrings(userData);
   
@@ -305,18 +304,18 @@ UM_EXPORT_METHOD_AS(setUserDataAsync,
   resolve(nil);
 }
 
-UM_EXPORT_METHOD_AS(setFlushBehaviorAsync,
+EX_EXPORT_METHOD_AS(setFlushBehaviorAsync,
                     setFlushBehavior:(FBSDKAppEventsFlushBehavior)flushBehavior
-                    resolver:(UMPromiseResolveBlock)resolve
-                    rejecter:(UMPromiseRejectBlock)reject)
+                    resolver:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
 {
   [FBSDKAppEvents setFlushBehavior:flushBehavior];
   resolve(nil);
 }
 
-UM_EXPORT_METHOD_AS(flushAsync,
-                    flush:(UMPromiseResolveBlock)resolve
-                    rejecter:(UMPromiseRejectBlock)reject)
+EX_EXPORT_METHOD_AS(flushAsync,
+                    flush:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
 {
   [FBSDKAppEvents flush];
   resolve(nil);

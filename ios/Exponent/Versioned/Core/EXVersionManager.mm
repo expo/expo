@@ -31,13 +31,14 @@
 #import <React/RCTGIFImageDecoder.h>
 #import <React/RCTImageLoader.h>
 #import <React/RCTAsyncLocalStorage.h>
+#import <React/RCTJSIExecutorRuntimeInstaller.h>
 
 #import <objc/message.h>
 
 #import <ExpoModulesCore/EXDefines.h>
 #import <ExpoModulesCore/EXModuleRegistry.h>
 #import <ExpoModulesCore/EXModuleRegistryDelegate.h>
-#import <UMReactNativeAdapter/UMNativeModulesProxy.h>
+#import <ExpoModulesCore/EXNativeModulesProxy.h>
 #import <EXMediaLibrary/EXMediaLibraryImageLoader.h>
 #import <EXFileSystem/EXFileSystem.h>
 #import "EXScopedModuleRegistry.h"
@@ -86,7 +87,7 @@ RCT_EXTERN void EXRegisterScopedModule(Class, ...);
 // is this the first time this ABI has been touched at runtime?
 @property (nonatomic, assign) BOOL isFirstLoad;
 @property (nonatomic, strong) NSDictionary *params;
-@property (nonatomic, strong) EXUpdatesRawManifest *manifest;
+@property (nonatomic, strong) EXManifestsManifest *manifest;
 @property (nonatomic, strong) RCTTurboModuleManager *turboModuleManager;
 
 @end
@@ -108,7 +109,7 @@ RCT_EXTERN void EXRegisterScopedModule(Class, ...);
  *    id exceptionsManagerDelegate
  */
 - (instancetype)initWithParams:(NSDictionary *)params
-                      manifest:(EXUpdatesRawManifest *)manifest
+                      manifest:(EXManifestsManifest *)manifest
                   fatalHandler:(void (^)(NSError *))fatalHandler
                    logFunction:(RCTLogFunction)logFunction
                   logThreshold:(NSInteger)threshold
@@ -347,7 +348,8 @@ RCT_EXTERN void EXRegisterScopedModule(Class, ...);
   if (params[@"browserModuleClass"]) {
     Class browserModuleClass = params[@"browserModuleClass"];
     id homeModule = [[browserModuleClass alloc] initWithExperienceStableLegacyId:self.manifest.stableLegacyId
-                                                              scopeKey:self.manifest.scopeKey
+                                                                        scopeKey:self.manifest.scopeKey
+                                                                    easProjectId:self.manifest.easProjectId
                                                            kernelServiceDelegate:services[EX_UNVERSIONED(@"EXHomeModuleManager")]
                                                                           params:params];
     [extraModules addObject:homeModule];
@@ -363,7 +365,11 @@ RCT_EXTERN void EXRegisterScopedModule(Class, ...);
   id<EXModuleRegistryDelegate> moduleRegistryDelegate = [[resolverClass alloc] initWithParams:params];
   [moduleRegistryProvider setModuleRegistryDelegate:moduleRegistryDelegate];
 
-  EXScopedModuleRegistryAdapter *moduleRegistryAdapter = [[EXScopedModuleRegistryAdapter alloc] initWithModuleRegistryProvider:moduleRegistryProvider swiftModulesProviderClass:NSClassFromString(@"ExpoModulesProvider")];
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+  EXScopedModuleRegistryAdapter *moduleRegistryAdapter = [[EXScopedModuleRegistryAdapter alloc] initWithModuleRegistryProvider:moduleRegistryProvider];
+#pragma clang diagnostic pop
+
   EXModuleRegistry *moduleRegistry = [moduleRegistryAdapter moduleRegistryForParams:params
                                                         forExperienceStableLegacyId:self.manifest.stableLegacyId
                                                                            scopeKey:self.manifest.scopeKey
@@ -403,17 +409,20 @@ RCT_EXTERN void EXRegisterScopedModule(Class, ...);
       Class scopedModuleClass = NSClassFromString(scopedModuleClassName);
       if (moduleServices.count > 1) {
         scopedModule = [[scopedModuleClass alloc] initWithExperienceStableLegacyId:self.manifest.stableLegacyId
-                                                                scopeKey:self.manifest.scopeKey
+                                                                          scopeKey:self.manifest.scopeKey
+                                                                      easProjectId:self.manifest.easProjectId
                                                             kernelServiceDelegates:moduleServices
                                                                             params:params];
       } else if (moduleServices.count == 0) {
         scopedModule = [[scopedModuleClass alloc] initWithExperienceStableLegacyId:self.manifest.stableLegacyId
-                                                                scopeKey:self.manifest.scopeKey
+                                                                          scopeKey:self.manifest.scopeKey
+                                                                      easProjectId:self.manifest.easProjectId
                                                              kernelServiceDelegate:nil
                                                                             params:params];
       } else {
         scopedModule = [[scopedModuleClass alloc] initWithExperienceStableLegacyId:self.manifest.stableLegacyId
-                                                                scopeKey:self.manifest.scopeKey
+                                                                          scopeKey:self.manifest.scopeKey
+                                                                      easProjectId:self.manifest.easProjectId
                                                              kernelServiceDelegate:moduleServices[[moduleServices allKeys][0]]
                                                                             params:params];
       }
@@ -502,10 +511,7 @@ RCT_EXTERN void EXRegisterScopedModule(Class, ...);
 }
 
 - (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:(const std::string &)name
-                                                       instance:(id<RCTTurboModule>)instance
-                                                      jsInvoker:(std::shared_ptr<facebook::react::CallInvoker>)jsInvoker
-                                                  nativeInvoker:(std::shared_ptr<facebook::react::CallInvoker>)nativeInvoker
-                                                     perfLogger:(id<RCTTurboModulePerformanceLogger>)perfLogger
+                                                     initParams:(const facebook::react::ObjCTurboModule::InitParams &)params
 {
   // TODO: ADD
   return nullptr;
@@ -525,22 +531,17 @@ RCT_EXTERN void EXRegisterScopedModule(Class, ...);
   _bridge_reanimated = bridge;
 
   EX_WEAKIFY(self);
-  return new facebook::react::JSCExecutorFactory([EXWeak_self, bridge](facebook::jsi::Runtime &runtime) {
+  const auto executor = [EXWeak_self, bridge](facebook::jsi::Runtime &runtime) {
     if (!bridge) {
       return;
     }
     EX_ENSURE_STRONGIFY(self);
-    self->_turboModuleManager = [[RCTTurboModuleManager alloc] initWithBridge:bridge
-                                                                     delegate:self
-                                                                    jsInvoker:bridge.jsCallInvoker];
-    [self->_turboModuleManager installJSBindingWithRuntime:&runtime];
-
     auto reanimatedModule = reanimated::createReanimatedModule(bridge.jsCallInvoker);
     runtime.global().setProperty(runtime,
                                  jsi::PropNameID::forAscii(runtime, "__reanimatedModuleProxy"),
-                                 jsi::Object::createFromHostObject(runtime, reanimatedModule)
-    );
-  });
+                                 jsi::Object::createFromHostObject(runtime, reanimatedModule));
+  };
+  return new facebook::react::JSCExecutorFactory(RCTJSIExecutorRuntimeInstaller(executor));
 }
 
 @end

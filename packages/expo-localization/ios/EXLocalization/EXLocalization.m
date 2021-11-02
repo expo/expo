@@ -4,16 +4,16 @@
 
 @implementation EXLocalization
 
-UM_EXPORT_MODULE(ExpoLocalization)
+EX_EXPORT_MODULE(ExpoLocalization)
 
 /* 
  * Thanks to RNLocalize
  * https://github.com/react-native-community/react-native-localize
  */
 
-UM_EXPORT_METHOD_AS(getLocalizationAsync,
-                    getLocalizationAsync:(UMPromiseResolveBlock)resolve
-                    rejecter:(UMPromiseRejectBlock)reject)
+EX_EXPORT_METHOD_AS(getLocalizationAsync,
+                    getLocalizationAsync:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
 {
   resolve([self constantsToExport]);
 }

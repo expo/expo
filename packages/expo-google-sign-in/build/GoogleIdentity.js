@@ -1,5 +1,11 @@
 import GoogleAuthData from './GoogleAuthData';
 class GoogleIdentity extends GoogleAuthData {
+    uid;
+    email;
+    displayName;
+    photoURL;
+    firstName;
+    lastName;
     constructor(options) {
         super(options);
         const { uid, email, displayName, photoURL, firstName, lastName } = options;

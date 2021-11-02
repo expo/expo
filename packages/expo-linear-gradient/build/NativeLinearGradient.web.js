@@ -48,11 +48,11 @@ export default function NativeLinearGradient({ colors, locations, startPoint, en
     const backgroundImage = `linear-gradient(${pseudoAngle}deg, ${colorStyle})`;
     // TODO(Bacon): In the future we could consider adding `backgroundRepeat: "no-repeat"`. For more
     // browser support.
-    return (React.createElement(View, Object.assign({}, props, { style: [
+    return (React.createElement(View, { ...props, style: [
             props.style,
             // @ts-ignore: [ts] Property 'backgroundImage' does not exist on type 'ViewStyle'.
             { backgroundImage },
-        ], onLayout: event => {
+        ], onLayout: (event) => {
             const { x, y, width, height } = event.nativeEvent.layout;
             const oldLayout = layout ?? { x: 0, y: 0, width: 1, height: 1 };
             // don't set new layout state unless the layout has actually changed
@@ -65,6 +65,6 @@ export default function NativeLinearGradient({ colors, locations, startPoint, en
             if (props.onLayout) {
                 props.onLayout(event);
             }
-        } })));
+        } }));
 }
 //# sourceMappingURL=NativeLinearGradient.web.js.map

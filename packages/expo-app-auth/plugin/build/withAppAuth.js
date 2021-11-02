@@ -18,7 +18,7 @@ function setGradlePlaceholders(buildGradle, placeholder) {
 }
 exports.setGradlePlaceholders = setGradlePlaceholders;
 const withAppAuthGradleManifestPlaceholder = (config, { placeholder = config_plugins_1.AndroidConfig.Scheme.getScheme(config)[0] || 'dev.expo.app' } = {}) => {
-    return config_plugins_1.withAppBuildGradle(config, config => {
+    return (0, config_plugins_1.withAppBuildGradle)(config, (config) => {
         if (config.modResults.language === 'groovy') {
             config.modResults.contents = setGradlePlaceholders(config.modResults.contents, placeholder);
         }
@@ -29,7 +29,7 @@ const withAppAuthGradleManifestPlaceholder = (config, { placeholder = config_plu
     });
 };
 const withAppAuthInfoPlist = (config, OAuthRedirect) => {
-    return config_plugins_1.withInfoPlist(config, config => {
+    return (0, config_plugins_1.withInfoPlist)(config, (config) => {
         var _a;
         if (!Array.isArray(config.modResults.CFBundleURLTypes)) {
             config.modResults.CFBundleURLTypes = [];
@@ -52,4 +52,4 @@ const withAppAuth = (config, props) => {
     config = withAppAuthInfoPlist(config);
     return config;
 };
-exports.default = config_plugins_1.createRunOncePlugin(withAppAuth, pkg.name, pkg.version);
+exports.default = (0, config_plugins_1.createRunOncePlugin)(withAppAuth, pkg.name, pkg.version);

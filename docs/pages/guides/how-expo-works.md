@@ -25,7 +25,7 @@ This server is the endpoint that you hit first when you type the URL into the Ex
 
 #### `Expo Manifest`
 
-The following is an example of a manifest being served through Expo CLI. The first thing that you should notice is there are a lot of identical fields to `app.json` (see the [Configuration with app.json / app.config.js](configuration.md#exp) section if you haven't read it yet). These fields are taken directly from that file -- this is how the Expo app accesses your configuration.
+The following is an example of a manifest being served through Expo CLI. The first thing that you should notice is there are a lot of identical fields to **app.json** (see the [Configuration with app.json / app.config.js](configuration.md#exp) section if you haven't read it yet). These fields are taken directly from that file -- this is how the Expo app accesses your configuration.
 
 ```javascript
 {
@@ -65,7 +65,7 @@ The following is an example of a manifest being served through Expo CLI. The fir
 }
 ```
 
-Every field in the manifest is some configuration option that tells Expo what it needs to know to run your app. The app fetches the manifest first and uses it to show your app's loading icon that you specified in `app.json`, then proceeds to fetch your app's JavaScript at the given `bundleUrl` -- this URL points to a local development server which you can use to interact with the Metro bundler.
+Every field in the manifest is some configuration option that tells Expo what it needs to know to run your app. The app fetches the manifest first and uses it to show your app's loading icon that you specified in **app.json**, then proceeds to fetch your app's JavaScript at the given `bundleUrl` -- this URL points to a local development server which you can use to interact with the Metro bundler.
 
 In order to stream logs to Expo CLI, the Expo SDK intercepts calls to `console.log`, `console.warn`, etc. and posts them to the `logUrl` specified in the manifest. This endpoint is on the Expo Development Server.
 
@@ -73,7 +73,7 @@ In order to stream logs to Expo CLI, the Expo SDK intercepts calls to `console.l
 
 If you use React Native without Expo, you would start the Metro bundler server by running `react-native start` in your project directory. Expo starts this up for you and configures it using [@expo/metro-config](../../guides/customizing-metro.md). This server has two purposes.
 
-The first is to serve your app JavaScript compiled into a single file and translating any JavaScript code that you wrote which isn't compatible with your phone's JavaScript engine. JSX, for example, is not valid JavaScript -- it is a language extension that makes working with React components more pleasant and it compiles down into plain function calls -- so `<HelloWorld />` would become `React.createElement(HelloWorld, {}, null)` (see [JSX in Depth](https://facebook.github.io/react/docs/jsx-in-depth.html) for more information). Other language features like [async/await](https://blog.expo.io/react-native-meets-async-functions-3e6f81111173#.4c2517o5m) are not yet available in most engines and so they need to be compiled down into JavaScript code that will run on your phone's JavaScript engine, JavaScriptCore.
+The first is to serve your app JavaScript compiled into a single file and translating any JavaScript code that you wrote which isn't compatible with your phone's JavaScript engine. JSX, for example, is not valid JavaScript -- it is a language extension that makes working with React components more pleasant and it compiles down into plain function calls -- so `<HelloWorld />` would become `React.createElement(HelloWorld, {}, null)` (see [JSX in Depth](https://facebook.github.io/react/docs/jsx-in-depth.html) for more information). Other language features like [async/await](https://blog.expo.dev/react-native-meets-async-functions-3e6f81111173#.4c2517o5m) are not yet available in most engines and so they need to be compiled down into JavaScript code that will run on your phone's JavaScript engine, JavaScriptCore.
 
 The second purpose is to serve assets. When you include an image in your app, you will use syntax like `<Image source={require('./assets/example.png')} />`, and unless you have already cached that asset the app the import will be resolved to a URL that points to your Metro server.
 
@@ -81,11 +81,11 @@ The second purpose is to serve assets. When you include an image in your app, yo
 
 ## Publishing/Deploying an Expo app in Production
 
-When you publish an Expo app, we compile it into a JavaScript bundle with production flags enabled. That is, we minify the source and we tell Metro to build in production mode (which in turn sets [`__DEV__`](https://reactnative.dev/docs/javascript-environment.html#polyfills) to `false` amongst other things). After compilation, we upload that bundle, along with any assets that it requires (see [Assets](../guides/assets.md)) to CloudFront. We also upload your [Manifest](#expo-manifest) (including most of your `app.json` configuration) to our server. This manifest will include a `revisionId` key which is a unique string (generated by Expo) you can use to identify a specific release of your app, just in case you didn't increment your app's `version` key. When publishing is complete, we'll give you a URL to your app which you can send to anybody who has the Expo Go app.
+When you publish an Expo app, we compile it into a JavaScript bundle with production flags enabled. That is, we minify the source and we tell Metro to build in production mode (which in turn sets [`__DEV__`](https://reactnative.dev/docs/javascript-environment.html#polyfills) to `false` amongst other things). After compilation, we upload that bundle, along with any assets that it requires (see [Assets](../guides/assets.md)) to CloudFront. We also upload your [Manifest](#expo-manifest) (including most of your **app.json** configuration) to our server. This manifest will include a `revisionId` key which is a unique string (generated by Expo) you can use to identify a specific release of your app, just in case you didn't increment your app's `version` key. When publishing is complete, we'll give you a URL to your app which you can send to anybody who has the Expo Go app.
 
 > **Note:** By default, all Expo projects are `unlisted`, which means that publishing does not make it publicly searchable or discoverable anywhere. It is up to you to share the link. You can change this setting in [app.json](configuration.md).
 
-As soon as the publish is complete, the new version of your code is available to all your existing users. They'll download the updated version next time they open the app or refresh it, provided that they have a version of the Expo Go app that supports the `sdkVersion` specified in your `app.json`.
+As soon as the publish is complete, the new version of your code is available to all your existing users. They'll download the updated version next time they open the app or refresh it, provided that they have a version of the Expo Go app that supports the `sdkVersion` specified in your **app.json**.
 
 Updates are handled differently on iOS and Android. On Android, updates
 are downloaded in the background. This means that the first time a user opens

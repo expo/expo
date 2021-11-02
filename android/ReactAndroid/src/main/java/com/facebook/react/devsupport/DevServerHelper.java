@@ -6,10 +6,12 @@
  */
 package com.facebook.react.devsupport;
 
+import android.content.Context;
 import android.os.AsyncTask;
 import androidx.annotation.Nullable;
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
+import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.R;
 import com.facebook.react.bridge.UiThreadUtil;
@@ -24,6 +26,7 @@ import com.facebook.react.packagerconnection.ReconnectingWebSocket.ConnectionCal
 import com.facebook.react.packagerconnection.RequestHandler;
 import com.facebook.react.packagerconnection.RequestOnlyHandler;
 import com.facebook.react.packagerconnection.Responder;
+import com.facebook.react.util.RNLog;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
@@ -263,6 +266,38 @@ public class DevServerHelper {
         }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
+    public void openUrl(final ReactContext context, final String url, final String errorMessage) {
+        new AsyncTask<Void, String, Boolean>() {
+
+            @Override
+            protected Boolean doInBackground(Void... ignore) {
+                return doSync();
+            }
+
+            public boolean doSync() {
+                try {
+                    String openUrlEndpoint = getOpenUrlEndpoint(context);
+                    String jsonString = new JSONObject().put("url", url).toString();
+                    RequestBody body = RequestBody.create(MediaType.parse("application/json"), jsonString);
+                    Request request = new Request.Builder().url(openUrlEndpoint).post(body).build();
+                    OkHttpClient client = new OkHttpClient();
+                    client.newCall(request).execute();
+                    return true;
+                } catch (JSONException | IOException e) {
+                    FLog.e(ReactConstants.TAG, "Failed to open URL" + url, e);
+                    return false;
+                }
+            }
+
+            @Override
+            protected void onPostExecute(Boolean result) {
+                if (!result) {
+                    RNLog.w(context, errorMessage);
+                }
+            }
+        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+    }
+
     public void symbolicateStackTrace(Iterable<StackFrame> stackFrames, final SymbolicationListener listener) {
         try {
             final String symbolicateURL = createSymbolicateURL(mSettings.getPackagerConnectionSettings().getDebugServerHost());
@@ -324,6 +359,10 @@ public class DevServerHelper {
         mBundleDownloader.downloadBundleFromURL(callback, outputFile, bundleURL, bundleInfo);
     }
 
+    private String getOpenUrlEndpoint(Context context) {
+        return String.format(Locale.US, "http://%s/open-url", AndroidInfoHelpers.getServerHost(context));
+    }
+
     public void downloadBundleFromURL(DevBundleDownloadListener callback, File outputFile, String bundleURL, BundleDownloader.BundleInfo bundleInfo, Request.Builder requestBuilder) {
         mBundleDownloader.downloadBundleFromURL(callback, outputFile, bundleURL, bundleInfo, requestBuilder);
     }
@@ -352,7 +391,20 @@ public class DevServerHelper {
 
     private String createBundleURL(String mainModuleID, BundleType type, String host) {
         try {
-            return (String) Class.forName("host.exp.exponent.ReactNativeStaticHelpers").getMethod("getBundleUrlForActivityId", int.class, String.class, String.class, String.class, boolean.class, boolean.class).invoke(null, mSettings.exponentActivityId, mainModuleID, type.typeID(), host, getDevMode(), getJSMinifyMode());
+            return (String) Class.forName("host.exp.exponent.ReactNativeStaticHelpers").getMethod("getBundleUrlForActivityId", int.class, String.class, String.class, String.class, boolean.class, boolean.class).invoke(null, mSettings.exponentActivityId, host, mainModuleID, type.typeID(), getDevMode(), getJSMinifyMode());
+        } catch (Exception expoHandleErrorException) {
+            expoHandleErrorException.printStackTrace();
+            return null;
+        }
+    }
+
+    private String createSplitBundleURL(String mainModuleID, String host) {
+        return createBundleURL(mainModuleID, BundleType.BUNDLE, host, true, false);
+    }
+
+    private String createBundleURL(String mainModuleID, BundleType type, String host, boolean modulesOnly, boolean runModule) {
+        try {
+            return (String) Class.forName("host.exp.exponent.ReactNativeStaticHelpers").getMethod("getBundleUrlForActivityId", int.class, String.class, String.class, String.class, boolean.class, boolean.class).invoke(null, mSettings.exponentActivityId, host, mainModuleID, type.typeID(), getDevMode(), getJSMinifyMode());
         } catch (Exception expoHandleErrorException) {
             expoHandleErrorException.printStackTrace();
             return null;
@@ -377,6 +429,10 @@ public class DevServerHelper {
 
     public String getDevServerBundleURL(final String jsModulePath) {
         return createBundleURL(jsModulePath, BundleType.BUNDLE, mSettings.getPackagerConnectionSettings().getDebugServerHost());
+    }
+
+    public String getDevServerSplitBundleURL(String jsModulePath) {
+        return createSplitBundleURL(jsModulePath, mSettings.getPackagerConnectionSettings().getDebugServerHost());
     }
 
     public void isPackagerRunning(final PackagerStatusCallback callback) {

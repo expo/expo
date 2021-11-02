@@ -10,7 +10,7 @@ import PlatformsSection from '~/components/plugins/PlatformsSection';
 
 Note that audio automatically stops if headphones / bluetooth audio devices are disconnected.
 
-Try the [playlist example app](https://expo.io/@documentation/playlist-example) (source code is [on GitHub](https://github.com/expo/playlist-example)) to see an example usage of the media playback API, and the [recording example app](https://expo.io/@documentation/record) (source code is [on GitHub](https://github.com/expo/audio-recording-example)) to see an example usage of the recording API.
+Try the [playlist example app](https://expo.dev/@documentation/playlist-example) (source code is [on GitHub](https://github.com/expo/playlist-example)) to see an example usage of the media playback API, and the [recording example app](https://expo.dev/@documentation/record) (source code is [on GitHub](https://github.com/expo/audio-recording-example)) to see an example usage of the recording API.
 
 <PlatformsSection android emulator ios simulator web />
 
@@ -100,9 +100,9 @@ A `Promise` that will reject if the audio mode could not be enabled for the devi
 
 #### Playing or recording audio in background (iOS)
 
-On iOS, audio playback and recording in background is only available in standalone apps, and it requires some extra configuration. On iOS, each background feature requires a special key in `UIBackgroundModes` array in your `Info.plist` file. In standalone apps this array is empty by default, so in order to use background features you will need to add appropriate keys to your `app.json` configuration.
+On iOS, audio playback and recording in background is only available in standalone apps, and it requires some extra configuration. On iOS, each background feature requires a special key in `UIBackgroundModes` array in your **Info.plist** file. In standalone apps this array is empty by default, so in order to use background features you will need to add appropriate keys to your **app.json** configuration.
 
-See an example of `app.json` that enables audio playback in background:
+See an example of **app.json** that enables audio playback in background:
 
 ```json
 {

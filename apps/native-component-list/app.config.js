@@ -1,8 +1,18 @@
+// To prebuild:
+// 1. `npm pack` in `../../templates/expo-template-bare-minimum`
+// 2. `EXPO_SDK_VERSION=43.0.0 expo prebuild --clean --template --no-install ../../templates/expo-template-bare-minimum/expo-template-bare-minimum-42.0.0.tgz`
+//   - This can be debugged with `EXPO_DEBUG=1` and `DEBUG=expo:*`
+// 3. `pod install` in the ios folder. Do this in its own step since direnv may break your cocoapods install.
+// 4. `EXPO_SDK_VERSION=43.0.0 expo run:ios --no-install`
+//   - This can be debugged with `EXPO_DEBUG=1` and `DEBUG=expo:*`
+// 5. `EXPO_SDK_VERSION=43.0.0 expo run:android`
 export default ({ config }) => {
-  config.version = '41.0.0';
+  config.version = '43.0.0';
   // app.json defines the sdkVersion as UNVERSIONED, we can override it here dynamically if we need to,
   // for example with an environment variable.
-  // config.sdkVersion = '41.0.0';
+  if (process.env.EXPO_SDK_VERSION) {
+    config.sdkVersion = process.env.EXPO_SDK_VERSION;
+  }
   config.plugins = [
     // iOS plugins
     // Add a plugin to modify the AppDelegate.
@@ -11,8 +21,8 @@ export default ({ config }) => {
     './plugins/withDevMenu',
     // Add AsyncStorage
     './plugins/withExpoAsyncStorage',
-    // Set the minimum version to 11 for Google Sign-In support -- TODO: Maybe this belongs in expo-google-sign-in?
-    ['./plugins/withPodfileMinVersion', '11.0'],
+    // Set the minimum version to 12 for Amplitude support
+    ['./plugins/withPodfileMinVersion', '12.0'],
 
     // Android plugins
 
@@ -36,19 +46,6 @@ export default ({ config }) => {
     ],
   ];
 
-  // NOTE(brentvatne):
-  // This adds an ios.scheme property to manifest, which does not validate
-  // against our schema but works with config plugins. Comment this plugin
-  // out if you need to publish.
-  //
-  config.plugins.push([
-    'expo-payments-stripe',
-    {
-      scheme: 'ncl-payments',
-      merchantId: 'merchant.com.example.development',
-    },
-  ]);
-
   config.plugins.push([
     'expo-document-picker',
     {
@@ -64,6 +61,14 @@ export default ({ config }) => {
       sounds: ['./assets/sounds/cat.wav'],
     },
   ]);
+
+  // The dev client plugins shouldn't be installed
+  config._internal.pluginHistory = {
+    // expo-dev-launcher causes prebuild to freeze on a find/replace.
+    'expo-dev-launcher': {},
+    'expo-dev-menu': {},
+    'expo-dev-client': {},
+  };
 
   return config;
 };

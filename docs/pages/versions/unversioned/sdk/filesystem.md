@@ -4,6 +4,9 @@ sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-file-syst
 ---
 
 import ImageSpotlight from '~/components/plugins/ImageSpotlight'
+import { ConfigClassic, ConfigReactNative } from '~/components/plugins/ConfigSection';
+import { AndroidPermissions, IOSPermissions } from '~/components/plugins/permissions';
+import APISection from '~/components/plugins/APISection';
 import InstallSection from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 
@@ -12,6 +15,7 @@ import SnackInline from '~/components/plugins/SnackInline';
 **`expo-file-system`** provides access to a file system stored locally on the device. Within Expo Go, each project has a separate file system and has no access to the file system of other Expo projects. However, it can save content shared by other projects to the local filesystem, as well as share local files with other projects. It is also capable of uploading and downloading files from network URLs.
 
 <!-- TODO: update this image so we don't have to force a white background on it -->
+
 <ImageSpotlight alt="Diagram of the various pieces of expo-file-system and how they interact with different resources" src="/static/images/sdk/file-system/file-system-diagram.png" style={{ maxWidth: 850, maxHeight: 600 }} containerStyle={{ backgroundColor: "#fff" }} />
 
 <PlatformsSection android emulator ios simulator />
@@ -20,9 +24,19 @@ import SnackInline from '~/components/plugins/SnackInline';
 
 <InstallSection packageName="expo-file-system" />
 
-## Configuration
+## Configuration in app.json / app.config.js
 
-On Android, this module requires permissions to interact with the filesystem and create resumable downloads. The `READ_EXTERNAL_STORAGE`, `WRITE_EXTERNAL_STORAGE` and `INTERNET` permissions are automatically added.
+<ConfigClassic>
+
+You can configure [the permissions for this library](#permissions) using [`ios.infoPlist`](../config/app.md#infoplist) and [`android.permissions`](../config/app.md#permissions).
+
+</ConfigClassic>
+
+<ConfigReactNative>
+
+Learn how to configure the native projects in the [installation instructions in the `expo-file-system` repository](https://github.com/expo/expo/tree/master/packages/expo-file-system#installation-in-bare-react-native-projects).
+
+</ConfigReactNative>
 
 ## Usage
 
@@ -201,11 +215,11 @@ These values can be used to define how sessions work on iOS.
 
 - **FileSystem.FileSystemSessionType.FOREGROUND** -- Using this mode means that downloading/uploading session on the native side will be terminated once the application becomes inactive (e.g. when it goes to background). Bringing the application to foreground again would trigger Promise rejection.
 
-### `FileSystem.FileSystemUploadOptions`
+### `FileSystem.FileSystemUploadType`
 
-- **FileSystem.FileSystemUploadOptions.BINARY_CONTENT** -- The file will be sent as a request's body. The request can't contain additional data.
+- **FileSystem.FileSystemUploadType.BINARY_CONTENT** -- The file will be sent as a request's body. The request can't contain additional data.
 
-- **FileSystem.FileSystemUploadOptions.MULTIPART** -- An [RFC 2387-compliant](https://www.ietf.org/rfc/rfc2387.txt) request body. The provided file will be encoded into HTTP request. This request can contain additional data.
+- **FileSystem.FileSystemUploadType.MULTIPART** -- An [RFC 2387-compliant](https://www.ietf.org/rfc/rfc2387.txt) request body. The provided file will be encoded into HTTP request. This request can contain additional data.
 
 #### How to handle such requests?
 
@@ -425,7 +439,7 @@ Upload the contents of the file pointed by `fileUri` to the remote url.
 
   - **sessionType (_FileSystemSessionType_)** -- (iOS only) A session type. Determines if tasks can be handled in the background. On Android, sessions always work in the background and you can't change it. Defaults to `FileSystemSessionType.BACKGROUND`.
 
-  - **uploadType (_FileSystemUploadOptions_)** -- Upload type determines how the file will be sent to the server. Default to `FileSystemUploadType.BINARY_CONTENT`.
+  - **uploadType (_FileSystemUploadType_)** -- Upload type determines how the file will be sent to the server. Default to `FileSystemUploadType.BINARY_CONTENT`.
 
   If `uploadType` is equal `FileSystemUploadType.MULTIPART`, more options are available:
 
@@ -783,7 +797,7 @@ Alias to [FileSystem.copyAsync(options)](#filesystemcopyasyncoptions)
 In this table, you can see what type of URI can be handled by each method. For example, if you have an URI, which begins with `content://`, you cannot use `FileSystem.readAsStringAsync()`, but you can use `FileSystem.copyAsync()` which supports this scheme.
 
 | Method name               | Android                                                                                                                                   | iOS                                                                                             |
-| ------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------- |
+| ------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------- | --- |
 | `getInfoAsync`            | `file://`,<br/>`content://`,<br/>`asset://`,<br/>no scheme**\***                                                                          | `file://`,<br/>`ph://`,<br/>`assets-library://`                                                 |
 | `readAsStringAsync`       | `file://`,<br/>`asset://`,<br/>[SAF URI](#saf-uri)                                                                                        | `file://`                                                                                       |
 | `writeAsStringAsync`      | `file://`,<br/>[SAF URI](#saf-uri)                                                                                                        | `file://`                                                                                       |
@@ -794,6 +808,18 @@ In this table, you can see what type of URI can be handled by each method. For e
 | `readDirectoryAsync`      | `file://`                                                                                                                                 | `file://`                                                                                       |
 | `downloadAsync`           | Source:<br/>`http://`,<br/>`https://`<br/><br/>Destination:<br/>`file://`                                                                 | Source:<br/>`http://`,<br/>`https://`<br/><br/>Destination:<br/>`file://`                       |
 | `uploadAsync`             | Source:<br/>`file://`<br/><br/>Destination:<br/>`http://`<br/>`https://`                                                                  | Source:<br/>`file://`<br/><br/>Destination:<br/>`http://`<br/>`https://`                        |
-| `createDownloadResumable` | Source:<br/>`http://`,<br/>`https://`<br/><br/>Destination:<br/>`file://`                                                                 | Source:<br/>`http://`,<br/>`https://`<br/><br/>Destination:<br/>`file://`                       |  |
+| `createDownloadResumable` | Source:<br/>`http://`,<br/>`https://`<br/><br/>Destination:<br/>`file://`                                                                 | Source:<br/>`http://`,<br/>`https://`<br/><br/>Destination:<br/>`file://`                       |     |
 
 **\***On Android _no scheme_ defaults to a bundled resource.
+
+## Permissions
+
+### Android
+
+The following permissions are added automatically through this library's `AndroidManifest.xml`.
+
+<AndroidPermissions permissions={['READ_EXTERNAL_STORAGE', 'WRITE_EXTERNAL_STORAGE', 'INTERNET']} />
+
+### iOS
+
+_No permissions required_.

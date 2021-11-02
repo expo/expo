@@ -3,8 +3,8 @@
 #import <EXSplashScreen/EXSplashScreenModule.h>
 #import <EXSplashScreen/EXSplashScreenService.h>
 #import <React/RCTRootView.h>
-#import <UMCore/UMAppLifecycleService.h>
-#import <UMCore/UMUtilities.h>
+#import <ExpoModulesCore/EXAppLifecycleService.h>
+#import <ExpoModulesCore/EXUtilities.h>
 
 @protocol EXSplashScreenUtilService
 
@@ -14,29 +14,29 @@
 
 @interface EXSplashScreenModule ()
 
-@property (nonatomic, weak) UMModuleRegistry *moduleRegistry;
-@property (nonatomic, weak) id<UMUtilitiesInterface> utilities;
+@property (nonatomic, weak) EXModuleRegistry *moduleRegistry;
+@property (nonatomic, weak) id<EXUtilitiesInterface> utilities;
 
 @end
 
 @implementation EXSplashScreenModule
 
-UM_EXPORT_MODULE(ExpoSplashScreen);
+EX_EXPORT_MODULE(ExpoSplashScreen);
 
-- (void)setModuleRegistry:(UMModuleRegistry *)moduleRegistry
+- (void)setModuleRegistry:(EXModuleRegistry *)moduleRegistry
 {
   _moduleRegistry = moduleRegistry;
-  _utilities = [moduleRegistry getModuleImplementingProtocol:@protocol(UMUtilitiesInterface)];
-  [[moduleRegistry getModuleImplementingProtocol:@protocol(UMAppLifecycleService)] registerAppLifecycleListener:self];
+  _utilities = [moduleRegistry getModuleImplementingProtocol:@protocol(EXUtilitiesInterface)];
+  [[moduleRegistry getModuleImplementingProtocol:@protocol(EXAppLifecycleService)] registerAppLifecycleListener:self];
 }
 
-UM_EXPORT_METHOD_AS(hideAsync,
-                    hideWithResolve:(UMPromiseResolveBlock)resolve
-                    reject:(UMPromiseRejectBlock)reject)
+EX_EXPORT_METHOD_AS(hideAsync,
+                    hideWithResolve:(EXPromiseResolveBlock)resolve
+                    reject:(EXPromiseRejectBlock)reject)
 {
-  UM_WEAKIFY(self);
+  EX_WEAKIFY(self);
   dispatch_async(dispatch_get_main_queue(), ^{
-    UM_ENSURE_STRONGIFY(self);
+    EX_ENSURE_STRONGIFY(self);
     UIViewController *currentViewController = [self reactViewController];
     [[self splashScreenService] hideSplashScreenFor:currentViewController
                                     successCallback:^(BOOL hasEffect){ resolve(@(hasEffect)); }
@@ -44,13 +44,13 @@ UM_EXPORT_METHOD_AS(hideAsync,
   });
 }
 
-UM_EXPORT_METHOD_AS(preventAutoHideAsync,
-                    preventAutoHideWithResolve:(UMPromiseResolveBlock)resolve
-                    reject:(UMPromiseRejectBlock)reject)
+EX_EXPORT_METHOD_AS(preventAutoHideAsync,
+                    preventAutoHideWithResolve:(EXPromiseResolveBlock)resolve
+                    reject:(EXPromiseRejectBlock)reject)
 {
-  UM_WEAKIFY(self);
+  EX_WEAKIFY(self);
   dispatch_async(dispatch_get_main_queue(), ^{
-    UM_ENSURE_STRONGIFY(self);
+    EX_ENSURE_STRONGIFY(self);
     UIViewController *currentViewController = [self reactViewController];
     [[self splashScreenService] preventSplashScreenAutoHideFor:currentViewController
                                                successCallback:^(BOOL hasEffect){ resolve(@(hasEffect)); }
@@ -58,7 +58,7 @@ UM_EXPORT_METHOD_AS(preventAutoHideAsync,
   });
 }
 
-# pragma mark - UMAppLifecycleListener
+# pragma mark - EXAppLifecycleListener
 
 - (void)onAppBackgrounded {}
 
@@ -66,9 +66,9 @@ UM_EXPORT_METHOD_AS(preventAutoHideAsync,
 
 - (void)onAppContentDidAppear
 {
-  UM_WEAKIFY(self);
+  EX_WEAKIFY(self);
   dispatch_async(dispatch_get_main_queue(), ^{
-    UM_ENSURE_STRONGIFY(self);
+    EX_ENSURE_STRONGIFY(self);
     UIViewController* currentViewController = [self reactViewController];
     [[self splashScreenService] onAppContentDidAppear:currentViewController];
   });
@@ -76,9 +76,9 @@ UM_EXPORT_METHOD_AS(preventAutoHideAsync,
 
 - (void)onAppContentWillReload
 {
-  UM_WEAKIFY(self);
+  EX_WEAKIFY(self);
   dispatch_async(dispatch_get_main_queue(), ^{
-    UM_ENSURE_STRONGIFY(self);
+    EX_ENSURE_STRONGIFY(self);
     UIViewController* currentViewController = [self reactViewController];
     [[self splashScreenService] onAppContentWillReload:currentViewController];
   });
@@ -114,11 +114,18 @@ UM_EXPORT_METHOD_AS(preventAutoHideAsync,
   UIViewController *controller = [self viewControllerContainingRCTRootView];
   if (!controller) {
     // no RCTRootView was found, so just fall back to the key window's root view controller
-    return self.utilities.currentViewController;
+    controller = self.utilities.currentViewController;
+    while ([controller isKindOfClass:[UIAlertController class]] &&
+           controller.presentingViewController != nil) {
+      controller = controller.presentingViewController;
+    }
+    return controller;
   }
 
   UIViewController *presentedController = controller.presentedViewController;
-  while (presentedController && ![presentedController isBeingDismissed]) {
+  while (presentedController &&
+         ![presentedController isBeingDismissed] &&
+         ![presentedController isKindOfClass:[UIAlertController class]]) {
     controller = presentedController;
     presentedController = controller.presentedViewController;
   }

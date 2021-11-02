@@ -9,16 +9,30 @@ public protocol AnyDefinition {}
  of the module and what it exports to the JavaScript world.
  See `ModuleDefinitionBuilder` for more details on how to create it.
  */
-public struct ModuleDefinition: AnyDefinition {
-  let name: String?
+public class ModuleDefinition: AnyDefinition {
+  /**
+   The module's type associated with the definition. It's used to create the module instance.
+   */
+  var type: AnyModule.Type?
+
+  /**
+   Name of the defined module. Falls back to the type name if not provided in the definition.
+   */
+  var name: String
+
   let methods: [String : AnyMethod]
   let constants: [String : Any?]
+  let eventListeners: [EventListener]
+  let viewManager: ViewManagerDefinition?
 
+  /**
+   Initializer that is called by the `ModuleDefinitionBuilder` results builder.
+   */
   init(definitions: [AnyDefinition]) {
     self.name = definitions
       .compactMap { $0 as? ModuleNameDefinition }
       .last?
-      .name
+      .name ?? ""
 
     self.methods = definitions
       .compactMap { $0 as? AnyMethod }
@@ -31,6 +45,26 @@ public struct ModuleDefinition: AnyDefinition {
       .reduce(into: [String : Any?]()) { dict, definition in
         dict.merge(definition.constants) { $1 }
       }
+
+    self.eventListeners = definitions.compactMap { $0 as? EventListener }
+
+    self.viewManager = definitions
+      .compactMap { $0 as? ViewManagerDefinition }
+      .last
+  }
+
+  /**
+   Sets the module type that the definition is associated with. We can't pass this in the initializer
+   as it's called by the results builder that doesn't have access to the type.
+   */
+  func withType(_ type: AnyModule.Type) -> Self {
+    self.type = type
+
+    // Use the type name if the name is not in the definition or was defined empty.
+    if name.isEmpty {
+      name = String(describing: type)
+    }
+    return self
   }
 }
 

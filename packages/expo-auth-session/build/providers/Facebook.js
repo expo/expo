@@ -14,6 +14,7 @@ export const discovery = {
     tokenEndpoint: 'https://graph.facebook.com/v6.0/oauth/access_token',
 };
 class FacebookAuthRequest extends AuthRequest {
+    nonce;
     constructor({ language, 
     // Account selection cannot be reliably emulated on Facebook.
     extraParams = {}, clientSecret, ...config }) {

@@ -15,11 +15,11 @@ static NSString * const ABI41_0_0EXUpdatesExpoTestDomain = @"expo.test";
 
 @implementation ABI41_0_0EXUpdatesLegacyUpdate
 
-+ (ABI41_0_0EXUpdatesUpdate *)updateWithLegacyManifest:(ABI41_0_0EXUpdatesLegacyRawManifest *)manifest
++ (ABI41_0_0EXUpdatesUpdate *)updateWithLegacyManifest:(ABI41_0_0EXManifestsLegacyManifest *)manifest
                                        config:(ABI41_0_0EXUpdatesConfig *)config
                                      database:(ABI41_0_0EXUpdatesDatabase *)database
 {
-  ABI41_0_0EXUpdatesUpdate *update = [[ABI41_0_0EXUpdatesUpdate alloc] initWithRawManifest:manifest
+  ABI41_0_0EXUpdatesUpdate *update = [[ABI41_0_0EXUpdatesUpdate alloc] initWithManifest:manifest
                                                                   config:config
                                                                 database:database];
 
@@ -47,17 +47,11 @@ static NSString * const ABI41_0_0EXUpdatesExpoTestDomain = @"expo.test";
   NSString *bundleUrlString = manifest.bundleUrl;
   NSArray *assets = manifest.bundledAssets ?: @[];
 
-  id runtimeVersion = manifest.runtimeVersion;
-  if (runtimeVersion && [runtimeVersion isKindOfClass:[NSDictionary class]]) {
-    id runtimeVersionIos = ((NSDictionary *)runtimeVersion)[@"ios"];
-    NSAssert([runtimeVersionIos isKindOfClass:[NSString class]], @"runtimeVersion['ios'] should be a string");
-    update.runtimeVersion = (NSString *)runtimeVersionIos;
-  } else if (runtimeVersion && [runtimeVersion isKindOfClass:[NSString class]]) {
-    update.runtimeVersion = (NSString *)runtimeVersion;
+  if (manifest.runtimeVersion != nil) {
+    update.runtimeVersion = manifest.runtimeVersion;
   } else {
-    NSString *sdkVersion = manifest.sdkVersion;
-    NSAssert(sdkVersion != nil, @"sdkVersion should not be null");
-    update.runtimeVersion = sdkVersion;
+    NSAssert(manifest.sdkVersion != nil, @"sdkVersion should not be null");
+    update.runtimeVersion = manifest.sdkVersion;
   }
 
   NSURL *bundleUrl = [NSURL URLWithString:bundleUrlString];
@@ -71,7 +65,7 @@ static NSString * const ABI41_0_0EXUpdatesExpoTestDomain = @"expo.test";
   jsBundleAsset.isLaunchAsset = YES;
   jsBundleAsset.mainBundleFilename = ABI41_0_0EXUpdatesEmbeddedBundleFilename;
   [processedAssets addObject:jsBundleAsset];
-  
+
   NSURL *bundledAssetBaseUrl = [[self class] bundledAssetBaseUrlWithManifest:manifest config:config];
 
   for (NSString *bundledAsset in assets) {
@@ -103,7 +97,7 @@ static NSString * const ABI41_0_0EXUpdatesExpoTestDomain = @"expo.test";
     [processedAssets addObject:asset];
   }
 
-  update.manifest = manifest.rawManifestJSON;
+  update.manifestJSON = manifest.rawManifestJSON;
   update.keep = YES;
   update.bundleUrl = bundleUrl;
   update.assets = processedAssets;
@@ -111,7 +105,7 @@ static NSString * const ABI41_0_0EXUpdatesExpoTestDomain = @"expo.test";
   return update;
 }
 
-+ (NSURL *)bundledAssetBaseUrlWithManifest:(ABI41_0_0EXUpdatesLegacyRawManifest *)manifest config:(ABI41_0_0EXUpdatesConfig *)config
++ (NSURL *)bundledAssetBaseUrlWithManifest:(ABI41_0_0EXManifestsLegacyManifest *)manifest config:(ABI41_0_0EXUpdatesConfig *)config
 {
   NSURL *manifestUrl = config.updateUrl;
   NSString *host = manifestUrl.host;

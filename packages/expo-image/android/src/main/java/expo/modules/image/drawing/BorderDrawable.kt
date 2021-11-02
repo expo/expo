@@ -17,7 +17,6 @@ import android.graphics.Path
 import android.graphics.Rect
 import android.graphics.Region
 import android.graphics.drawable.Drawable
-import android.os.Build
 import android.view.View
 import com.facebook.react.common.annotations.VisibleForTesting
 import com.facebook.react.uimanager.FloatUtil
@@ -106,7 +105,7 @@ class BorderDrawable(private val mContext: Context) : Drawable() {
     }
     if (mBorderCornerRadii != null) {
       for (borderRadii in mBorderCornerRadii!!) {
-        if (isYogaPositive(mBorderRadius)) {
+        if (isYogaPositive(borderRadii)) {
           return true
         }
       }
@@ -230,7 +229,9 @@ class BorderDrawable(private val mContext: Context) : Drawable() {
   }
 
   private fun getBorderRadiusOrDefaultTo(
-    defaultValue: Float, location: BorderRadiusLocation): Float {
+    defaultValue: Float,
+    location: BorderRadiusLocation
+  ): Float {
     if (mBorderCornerRadii == null) {
       return defaultValue
     }
@@ -459,56 +460,56 @@ class BorderDrawable(private val mContext: Context) : Drawable() {
     val innerBottomLeftRadiusX = Math.max(bottomLeftRadius - borderWidth.left, 0f)
     val innerBottomLeftRadiusY = Math.max(bottomLeftRadius - borderWidth.bottom, 0f)
     mInnerClipPathForBorderRadius!!.addRoundRect(
-      mInnerClipTempRectForBorderRadius!!, floatArrayOf(
-      innerTopLeftRadiusX,
-      innerTopLeftRadiusY,
-      innerTopRightRadiusX,
-      innerTopRightRadiusY,
-      innerBottomRightRadiusX,
-      innerBottomRightRadiusY,
-      innerBottomLeftRadiusX,
-      innerBottomLeftRadiusY),
-      Path.Direction.CW)
+        mInnerClipTempRectForBorderRadius!!, floatArrayOf(
+        innerTopLeftRadiusX,
+        innerTopLeftRadiusY,
+        innerTopRightRadiusX,
+        innerTopRightRadiusY,
+        innerBottomRightRadiusX,
+        innerBottomRightRadiusY,
+        innerBottomLeftRadiusX,
+        innerBottomLeftRadiusY),
+        Path.Direction.CW)
     mOuterClipPathForBorderRadius!!.addRoundRect(
-      mOuterClipTempRectForBorderRadius!!, floatArrayOf(
-      topLeftRadius,
-      topLeftRadius,
-      topRightRadius,
-      topRightRadius,
-      bottomRightRadius,
-      bottomRightRadius,
-      bottomLeftRadius,
-      bottomLeftRadius
+        mOuterClipTempRectForBorderRadius!!, floatArrayOf(
+        topLeftRadius,
+        topLeftRadius,
+        topRightRadius,
+        topRightRadius,
+        bottomRightRadius,
+        bottomRightRadius,
+        bottomLeftRadius,
+        bottomLeftRadius
     ),
-      Path.Direction.CW)
+        Path.Direction.CW)
     var extraRadiusForOutline = 0f
     if (mBorderWidth != null) {
       extraRadiusForOutline = mBorderWidth!![Spacing.ALL] / 2f
     }
     mPathForBorderRadiusOutline!!.addRoundRect(
-      mOuterClipTempRectForBorderRadius!!, floatArrayOf(
-      topLeftRadius + extraRadiusForOutline,
-      topLeftRadius + extraRadiusForOutline,
-      topRightRadius + extraRadiusForOutline,
-      topRightRadius + extraRadiusForOutline,
-      bottomRightRadius + extraRadiusForOutline,
-      bottomRightRadius + extraRadiusForOutline,
-      bottomLeftRadius + extraRadiusForOutline,
-      bottomLeftRadius + extraRadiusForOutline
+        mOuterClipTempRectForBorderRadius!!, floatArrayOf(
+        topLeftRadius + extraRadiusForOutline,
+        topLeftRadius + extraRadiusForOutline,
+        topRightRadius + extraRadiusForOutline,
+        topRightRadius + extraRadiusForOutline,
+        bottomRightRadius + extraRadiusForOutline,
+        bottomRightRadius + extraRadiusForOutline,
+        bottomLeftRadius + extraRadiusForOutline,
+        bottomLeftRadius + extraRadiusForOutline
     ),
-      Path.Direction.CW)
+        Path.Direction.CW)
     mCenterDrawPath!!.addRoundRect(
-      mTempRectForCenterDrawPath!!, floatArrayOf(
-      max(topLeftRadius - borderWidth.left * 0.5f, 0f),
-      max(topLeftRadius - borderWidth.top * 0.5f, 0f),
-      max(topRightRadius - borderWidth.right * 0.5f, 0f),
-      max(topRightRadius - borderWidth.top * 0.5f, 0f),
-      max(bottomRightRadius - borderWidth.right * 0.5f, 0f),
-      max(bottomRightRadius - borderWidth.bottom * 0.5f, 0f),
-      max(bottomLeftRadius - borderWidth.left * 0.5f, 0f),
-      max(bottomLeftRadius - borderWidth.bottom * 0.5f, 0f)
+        mTempRectForCenterDrawPath!!, floatArrayOf(
+        max(topLeftRadius - borderWidth.left * 0.5f, 0f),
+        max(topLeftRadius - borderWidth.top * 0.5f, 0f),
+        max(topRightRadius - borderWidth.right * 0.5f, 0f),
+        max(topRightRadius - borderWidth.top * 0.5f, 0f),
+        max(bottomRightRadius - borderWidth.right * 0.5f, 0f),
+        max(bottomRightRadius - borderWidth.bottom * 0.5f, 0f),
+        max(bottomLeftRadius - borderWidth.left * 0.5f, 0f),
+        max(bottomLeftRadius - borderWidth.bottom * 0.5f, 0f)
     ),
-      Path.Direction.CW)
+        Path.Direction.CW)
     /**
      * Rounded Multi-Colored Border Algorithm:
      *
@@ -634,64 +635,68 @@ class BorderDrawable(private val mContext: Context) : Drawable() {
     /** Compute mInnerTopLeftCorner  */
     mInnerTopLeftCorner!!.x = mInnerClipTempRectForBorderRadius!!.left
     mInnerTopLeftCorner!!.y = mInnerClipTempRectForBorderRadius!!.top
-    getEllipseIntersectionWithLine( // Ellipse Bounds
-      mInnerClipTempRectForBorderRadius!!.left.toDouble(),
-      mInnerClipTempRectForBorderRadius!!.top.toDouble(), (
-      mInnerClipTempRectForBorderRadius!!.left + 2 * innerTopLeftRadiusX).toDouble(), (
-      mInnerClipTempRectForBorderRadius!!.top + 2 * innerTopLeftRadiusY).toDouble(),  // Line Start
-      mOuterClipTempRectForBorderRadius!!.left.toDouble(),
-      mOuterClipTempRectForBorderRadius!!.top.toDouble(),  // Line End
-      mInnerClipTempRectForBorderRadius!!.left.toDouble(),
-      mInnerClipTempRectForBorderRadius!!.top.toDouble(),  // Result
-      mInnerTopLeftCorner!!)
+    getEllipseIntersectionWithLine(
+        // Ellipse Bounds
+        mInnerClipTempRectForBorderRadius!!.left.toDouble(),
+        mInnerClipTempRectForBorderRadius!!.top.toDouble(), (
+        mInnerClipTempRectForBorderRadius!!.left + 2 * innerTopLeftRadiusX).toDouble(), (
+        mInnerClipTempRectForBorderRadius!!.top + 2 * innerTopLeftRadiusY).toDouble(), // Line Start
+        mOuterClipTempRectForBorderRadius!!.left.toDouble(),
+        mOuterClipTempRectForBorderRadius!!.top.toDouble(), // Line End
+        mInnerClipTempRectForBorderRadius!!.left.toDouble(), //
+        mInnerClipTempRectForBorderRadius!!.top.toDouble(), // Result
+        mInnerTopLeftCorner!!)
     /** Compute mInnerBottomLeftCorner  */
     if (mInnerBottomLeftCorner == null) {
       mInnerBottomLeftCorner = PointF()
     }
     mInnerBottomLeftCorner!!.x = mInnerClipTempRectForBorderRadius!!.left
     mInnerBottomLeftCorner!!.y = mInnerClipTempRectForBorderRadius!!.bottom
-    getEllipseIntersectionWithLine( // Ellipse Bounds
-      mInnerClipTempRectForBorderRadius!!.left.toDouble(), (
-      mInnerClipTempRectForBorderRadius!!.bottom - 2 * innerBottomLeftRadiusY).toDouble(), (
-      mInnerClipTempRectForBorderRadius!!.left + 2 * innerBottomLeftRadiusX).toDouble(),
-      mInnerClipTempRectForBorderRadius!!.bottom.toDouble(),  // Line Start
-      mOuterClipTempRectForBorderRadius!!.left.toDouble(),
-      mOuterClipTempRectForBorderRadius!!.bottom.toDouble(),  // Line End
-      mInnerClipTempRectForBorderRadius!!.left.toDouble(),
-      mInnerClipTempRectForBorderRadius!!.bottom.toDouble(),  // Result
-      mInnerBottomLeftCorner!!)
+    getEllipseIntersectionWithLine(
+        // Ellipse Bounds
+        mInnerClipTempRectForBorderRadius!!.left.toDouble(), (
+        mInnerClipTempRectForBorderRadius!!.bottom - 2 * innerBottomLeftRadiusY).toDouble(), (
+        mInnerClipTempRectForBorderRadius!!.left + 2 * innerBottomLeftRadiusX).toDouble(),
+        mInnerClipTempRectForBorderRadius!!.bottom.toDouble(), // Line Start
+        mOuterClipTempRectForBorderRadius!!.left.toDouble(),
+        mOuterClipTempRectForBorderRadius!!.bottom.toDouble(), // Line End
+        mInnerClipTempRectForBorderRadius!!.left.toDouble(),
+        mInnerClipTempRectForBorderRadius!!.bottom.toDouble(), // Result
+        mInnerBottomLeftCorner!!)
     /** Compute mInnerTopRightCorner  */
     if (mInnerTopRightCorner == null) {
       mInnerTopRightCorner = PointF()
     }
     mInnerTopRightCorner!!.x = mInnerClipTempRectForBorderRadius!!.right
     mInnerTopRightCorner!!.y = mInnerClipTempRectForBorderRadius!!.top
-    getEllipseIntersectionWithLine(( // Ellipse Bounds
-      mInnerClipTempRectForBorderRadius!!.right - 2 * innerTopRightRadiusX).toDouble(),
-      mInnerClipTempRectForBorderRadius!!.top.toDouble(),
-      mInnerClipTempRectForBorderRadius!!.right.toDouble(), (
-      mInnerClipTempRectForBorderRadius!!.top + 2 * innerTopRightRadiusY).toDouble(),  // Line Start
-      mOuterClipTempRectForBorderRadius!!.right.toDouble(),
-      mOuterClipTempRectForBorderRadius!!.top.toDouble(),  // Line End
-      mInnerClipTempRectForBorderRadius!!.right.toDouble(),
-      mInnerClipTempRectForBorderRadius!!.top.toDouble(),  // Result
-      mInnerTopRightCorner!!)
+    getEllipseIntersectionWithLine((
+        // Ellipse Bounds
+        mInnerClipTempRectForBorderRadius!!.right - 2 * innerTopRightRadiusX).toDouble(),
+        mInnerClipTempRectForBorderRadius!!.top.toDouble(),
+        mInnerClipTempRectForBorderRadius!!.right.toDouble(), (
+        mInnerClipTempRectForBorderRadius!!.top + 2 * innerTopRightRadiusY).toDouble(), // Line Start
+        mOuterClipTempRectForBorderRadius!!.right.toDouble(),
+        mOuterClipTempRectForBorderRadius!!.top.toDouble(), // Line End
+        mInnerClipTempRectForBorderRadius!!.right.toDouble(),
+        mInnerClipTempRectForBorderRadius!!.top.toDouble(), // Result
+        mInnerTopRightCorner!!)
     /** Compute mInnerBottomRightCorner  */
     if (mInnerBottomRightCorner == null) {
       mInnerBottomRightCorner = PointF()
     }
     mInnerBottomRightCorner!!.x = mInnerClipTempRectForBorderRadius!!.right
     mInnerBottomRightCorner!!.y = mInnerClipTempRectForBorderRadius!!.bottom
-    getEllipseIntersectionWithLine(( // Ellipse Bounds
-      mInnerClipTempRectForBorderRadius!!.right - 2 * innerBottomRightRadiusX).toDouble(), (
-      mInnerClipTempRectForBorderRadius!!.bottom - 2 * innerBottomRightRadiusY).toDouble(),
-      mInnerClipTempRectForBorderRadius!!.right.toDouble(),
-      mInnerClipTempRectForBorderRadius!!.bottom.toDouble(),  // Line Start
-      mOuterClipTempRectForBorderRadius!!.right.toDouble(),
-      mOuterClipTempRectForBorderRadius!!.bottom.toDouble(),  // Line End
-      mInnerClipTempRectForBorderRadius!!.right.toDouble(),
-      mInnerClipTempRectForBorderRadius!!.bottom.toDouble(),  // Result
-      mInnerBottomRightCorner!!)
+    getEllipseIntersectionWithLine((
+        // Ellipse Bounds
+        mInnerClipTempRectForBorderRadius!!.right - 2 * innerBottomRightRadiusX).toDouble(), (
+        mInnerClipTempRectForBorderRadius!!.bottom - 2 * innerBottomRightRadiusY).toDouble(),
+        mInnerClipTempRectForBorderRadius!!.right.toDouble(),
+        mInnerClipTempRectForBorderRadius!!.bottom.toDouble(), // Line Start
+        mOuterClipTempRectForBorderRadius!!.right.toDouble(),
+        mOuterClipTempRectForBorderRadius!!.bottom.toDouble(), // Line End
+        mInnerClipTempRectForBorderRadius!!.right.toDouble(),
+        mInnerClipTempRectForBorderRadius!!.bottom.toDouble(), // Result
+        mInnerBottomRightCorner!!)
   }
 
   private fun getBorderWidthOrDefaultTo(defaultValue: Float, spacingType: Int): Float {
@@ -769,14 +774,14 @@ class BorderDrawable(private val mContext: Context) : Drawable() {
 
       // Check for fast path to border drawing.
       val fastBorderColor = fastBorderCompatibleColorOrZero(
-        borderLeft,
-        borderTop,
-        borderRight,
-        borderBottom,
-        colorLeft,
-        colorTop,
-        colorRight,
-        colorBottom)
+          borderLeft,
+          borderTop,
+          borderRight,
+          borderBottom,
+          colorLeft,
+          colorTop,
+          colorRight,
+          colorBottom)
       if (fastBorderColor != 0) {
         if (Color.alpha(fastBorderColor) != 0) {
           // Border color is not transparent.
@@ -870,7 +875,8 @@ class BorderDrawable(private val mContext: Context) : Drawable() {
     x3: Float,
     y3: Float,
     x4: Float,
-    y4: Float) {
+    y4: Float
+  ) {
     if (fillColor == Color.TRANSPARENT) {
       return
     }
@@ -955,7 +961,8 @@ class BorderDrawable(private val mContext: Context) : Drawable() {
       lineStartY: Double,
       lineEndX: Double,
       lineEndY: Double,
-      result: PointF) {
+      result: PointF
+    ) {
       var lineStartX = lineStartX
       var lineStartY = lineStartY
       var lineEndX = lineEndX
@@ -1043,15 +1050,16 @@ class BorderDrawable(private val mContext: Context) : Drawable() {
       colorLeft: Int,
       colorTop: Int,
       colorRight: Int,
-      colorBottom: Int): Int {
+      colorBottom: Int
+    ): Int {
       val andSmear = ((if (borderLeft > 0) colorLeft else ALL_BITS_SET)
-        and (if (borderTop > 0) colorTop else ALL_BITS_SET)
-        and (if (borderRight > 0) colorRight else ALL_BITS_SET)
-        and if (borderBottom > 0) colorBottom else ALL_BITS_SET)
+          and (if (borderTop > 0) colorTop else ALL_BITS_SET)
+          and (if (borderRight > 0) colorRight else ALL_BITS_SET)
+          and if (borderBottom > 0) colorBottom else ALL_BITS_SET)
       val orSmear = ((if (borderLeft > 0) colorLeft else ALL_BITS_UNSET)
-        or (if (borderTop > 0) colorTop else ALL_BITS_UNSET)
-        or (if (borderRight > 0) colorRight else ALL_BITS_UNSET)
-        or if (borderBottom > 0) colorBottom else ALL_BITS_UNSET)
+          or (if (borderTop > 0) colorTop else ALL_BITS_UNSET)
+          or (if (borderRight > 0) colorRight else ALL_BITS_UNSET)
+          or if (borderBottom > 0) colorBottom else ALL_BITS_UNSET)
       return if (andSmear == orSmear) andSmear else 0
     }
 

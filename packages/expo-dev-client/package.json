@@ -1,6 +1,6 @@
 {
   "name": "expo-dev-client",
-  "version": "0.3.0",
+  "version": "0.6.0",
   "description": "Expo Development Client",
   "main": "build/DevClient.js",
   "types": "build/DevClient.d.ts",
@@ -11,7 +11,8 @@
     "test": "expo-module test",
     "prepare": "expo-module prepare",
     "prepublishOnly": "expo-module prepublishOnly",
-    "expo-module": "expo-module"
+    "expo-module": "expo-module",
+    "e2e": "expo-test-runner run-test -t e2e"
   },
   "keywords": [
     "react-native",
@@ -28,16 +29,18 @@
   },
   "author": "650 Industries, Inc.",
   "license": "MIT",
-  "homepage": "https://docs.expo.io/clients/introduction/",
+  "homepage": "https://docs.expo.dev/clients/introduction/",
   "dependencies": {
-    "@expo/config-plugins": "^3.0.0",
-    "expo-dev-launcher": "0.5.1",
-    "expo-dev-menu": "0.7.0",
-    "expo-dev-menu-interface": "0.3.1",
-    "expo-updates-interface": "~0.1.0"
+    "@expo/config-plugins": "^4.0.2",
+    "expo-dev-launcher": "0.8.1",
+    "expo-dev-menu": "0.8.2",
+    "expo-dev-menu-interface": "0.4.1",
+    "expo-manifests": "~0.2.1",
+    "expo-updates-interface": "~0.4.0"
   },
   "devDependencies": {
-    "expo-module-scripts": "^2.0.0"
+    "expo-module-scripts": "^2.0.0",
+    "expo-test-runner": "0.0.6"
   },
   "jest": {
     "preset": "expo-module-scripts/ios"

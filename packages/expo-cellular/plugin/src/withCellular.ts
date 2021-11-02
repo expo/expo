@@ -2,7 +2,7 @@ import { AndroidConfig, ConfigPlugin, createRunOncePlugin } from '@expo/config-p
 
 const pkg = require('expo-cellular/package.json');
 
-const withCellular: ConfigPlugin = config => {
+const withCellular: ConfigPlugin = (config) => {
   config = AndroidConfig.Permissions.withPermissions(config, [
     // Required for TelephonyManager and `getNetworkType`
     'android.permission.READ_PHONE_STATE',

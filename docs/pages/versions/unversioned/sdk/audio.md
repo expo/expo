@@ -11,7 +11,7 @@ import SnackInline from '~/components/plugins/SnackInline';
 
 Note that audio automatically stops if headphones / bluetooth audio devices are disconnected.
 
-Try the [playlist example app](https://expo.io/@documentation/playlist-example) (source code is [on GitHub](https://github.com/expo/playlist-example)) to see an example usage of the media playback API, and the [recording example app](https://expo.io/@documentation/record) (source code is [on GitHub](https://github.com/expo/audio-recording-example)) to see an example usage of the recording API.
+Try the [playlist example app](https://expo.dev/@documentation/playlist-example) (source code is [on GitHub](https://github.com/expo/playlist-example)) to see an example usage of the media playback API, and the [recording example app](https://expo.dev/@documentation/record) (source code is [on GitHub](https://github.com/expo/audio-recording-example)) to see an example usage of the recording API.
 
 <PlatformsSection android emulator ios simulator web={{ pending: 'https://github.com/expo/expo/issues/8721' }} />
 
@@ -226,9 +226,9 @@ A `Promise` that will reject if the audio mode could not be enabled for the devi
 
 #### Playing or recording audio in background (iOS)
 
-On iOS, audio playback and recording in background is only available in standalone apps, and it requires some extra configuration. On iOS, each background feature requires a special key in `UIBackgroundModes` array in your `Info.plist` file. In standalone apps this array is empty by default, so in order to use background features you will need to add appropriate keys to your `app.json` configuration.
+On iOS, audio playback and recording in background is only available in standalone apps, and it requires some extra configuration. On iOS, each background feature requires a special key in `UIBackgroundModes` array in your **Info.plist** file. In standalone apps this array is empty by default, so in order to use background features you will need to add appropriate keys to your **app.json** configuration.
 
-See an example of `app.json` that enables audio playback in background:
+See an example of **app.json** that enables audio playback in background:
 
 ```json
 {
@@ -330,6 +330,15 @@ A static convenience method to construct and load a sound is also provided:
   }
   ```
 
+On the `soundObject` reference, the following API is provided:
+
+- `soundObject.setOnMetadataUpdate(onMetadataUpdate)` _[iOS only]_ 
+Sets a function to be called whenever the metadata (of type `AVMetadata`, details below) of the sound object, if any, changes.
+
+  #### Parameters
+
+  - **onMetadataUpdate (_function_)** -- A function taking a single object of type `AVMetadata` (described below) as a parameter.
+
 The rest of the API for `Audio.Sound` is the same as the imperative playback API for `Video`-- see the [AV documentation](av.md) for further information:
 
 - `soundObject.loadAsync(source, initialStatus = {}, downloadFirst = true)`
@@ -361,6 +370,12 @@ The rest of the API for `Audio.Sound` is the same as the imperative playback API
 - `soundObject.setIsLoopingAsync(value)`
 
 - `soundObject.setProgressUpdateIntervalAsync(millis)`
+
+## `AVMetadata`
+
+Object passed to the `onMetadataUpdate` function. It has the following keys:
+
+- `title`: a string with the title of the sound object. This key is optional.
 
 ## Recording sounds
 
@@ -408,7 +423,7 @@ A static convenience method to construct and start a recording is also provided:
 
   // Which is equivalent to the following:
   const recording = new Audio.Recording();
-  await recording.prepareAsync(options);
+  await recording.prepareToRecordAsync(options);
   recording.setOnRecordingStatusUpdate(onRecordingStatusUpdate);
   await recording.startAsync();
   ```
@@ -573,7 +588,7 @@ In order to define your own custom recording options, you must provide a diction
 
 - `isMeteringEnabled` : a boolean that determines whether audio level information will be part of the status object under the "metering" key.
 
-- `keepAudioActiveHint` : a boolean that hints to keep the audio active after `prepareAsync` completes. Setting this value can improve the speed at which the recording starts. Only set this value to `true` when you call `startAsync` immediately after `prepareAsync`. This value is automatically set when using `Audio.recording.createAsync()`.
+- `keepAudioActiveHint` : a boolean that hints to keep the audio active after `prepareToRecordAsync` completes. Setting this value can improve the speed at which the recording starts. Only set this value to `true` when you call `startAsync` immediately after `prepareToRecordAsync`. This value is automatically set when using `Audio.recording.createAsync()`.
 
 - `android` : a dictionary of key-value pairs for the Android platform. This key is required.
 

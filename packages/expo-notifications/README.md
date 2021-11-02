@@ -22,7 +22,7 @@ Please refer to the [installation instructions in the Expo documentation](https:
 
 # Installation in bare React Native projects
 
-For bare React Native projects, you must ensure that you have [installed and configured the `react-native-unimodules` package](https://github.com/expo/expo/tree/master/packages/react-native-unimodules) before continuing.
+For bare React Native projects, you must ensure that you have [installed and configured the `expo` package](https://docs.expo.dev/bare/installing-expo-modules/) before continuing.
 
 ### Add the package to your npm dependencies
 
@@ -47,9 +47,77 @@ In order to be able to receive push notifications on the device ensure that your
 
 This module requires permission to subscribe to device boot. It's used to setup the scheduled notifications right after the device (re)starts. The `RECEIVE_BOOT_COMPLETED` permission is added automatically.
 
-### Optional setup for notification icon, tint color, and custom sounds
+<details><summary><strong>Expand to view how the notification icon and the default color can be customized in a plain React Native app</strong></summary> <p>
 
-If you're using EAS Build or the bare workflow, you can set your Android notification icon and color tint, add custom push notification sounds, and set your iOS notification environment using the `expo-notifications` config plugin ([what's a config plugin?](http://docs.expo.io/guides/config-plugins/)). To setup, just add the config plugin to the `plugins` array of your `app.json` or `app.config.js`:
+- **To customize the icon**:
+
+  You can customize two icons: the default and the large one. See [the Android documentation](https://developer.android.com/guide/topics/ui/notifiers/notifications#Templates) for more details. The steps for them are very similar. The only difference is the tag in the second step.
+
+  1. You will need to ensure that the icon is properly set up and added the project. To read more on how to create a notification icon and add it to the project check out the [“Create notification icon” section](https://developer.android.com/studio/write/image-asset-studio#create-notification) at the official Android guide. Remember the name you use for the icon asset, you will need it later!
+  2. Then head over to `android/app/src/main/AndroidManifest.xml` and add a `<meta-data>` tag of `android:name="expo.modules.notifications.default_notification_icon"` (or `android:name="expo.modules.notifications.large_notification_icon"` if you are changing the large icon) inside the `<application>` node referencing the custom icon with `@drawable/<notification_icon_name_you_used_in_step_1>`, like [here](https://github.com/expo/expo/blob/335e67a1a3a91598c02061f3318a881541d0d57a/apps/bare-expo/android/app/src/main/AndroidManifest.xml#L44-L46).
+  3. In the end your `AndroidManifest.xml` should look more or less like this:
+
+  ```xml
+  <manifest xmlns:android="http://schemas.android.com/apk/res/android" ...>
+    ...
+    <application ...>
+      ...
+      <meta-data
+        android:name="expo.modules.notifications.default_notification_icon"
+        android:resource="@drawable/ic_stat_notifications" /> <!-- @drawable/<insert_notification_icon_name> -->
+      ...
+    </application>
+  </manifest>
+  ```
+
+- **To customize the default color of the notification**:
+  1. you will need a color resource added to the native project's resources. Some information on how to do this can be found in [the official Android guide](https://developer.android.com/guide/topics/resources/more-resources#Color). The most simple and fail-safe instructions would be to:
+     1. ensure that there is a file under `android/app/src/main/res/values/colors.xml` (if there is none, create it)
+     2. ensure that it's a valid resources XML file (it should start with a `<?xml version="1.0" encoding="utf-8"?>` declaration and have a root node of `<resources>`)
+     3. inside the `<resources>` node add a `<color>` node with an arbitrary name (like `notification_icon_color`) containing the color in HEX format inside, like [here](https://github.com/expo/expo/blob/335e67a1a3a91598c02061f3318a881541d0d57a/apps/bare-expo/android/app/src/main/res/values/colors.xml#L3).
+     4. in the end your `colors.xml` should look more or less like this:
+        ```java
+        <?xml version="1.0" encoding="utf-8"?>
+        <resources>
+          <color name="notification_icon_color">#4630EB</color>
+        </resources>
+        ```
+  2. now, when the color is added to the project, we need to configure `expo-notifications` to use it when it displays a notification — head over to `android/app/src/main/AndroidManifest.xml` and add a `<meta-data>` tag of `android:name="expo.modules.notifications.default_notification_color"` inside the `<application>` node referencing the custom icon with `@color/<notification_icon_color_name>`, like [here](https://github.com/expo/expo/blob/335e67a1a3a91598c02061f3318a881541d0d57a/apps/bare-expo/android/app/src/main/AndroidManifest.xml#L47-L49).
+  3. In the end your `AndroidManifest.xml` should look more or less like this:
+  ```xml
+  <manifest xmlns:android="http://schemas.android.com/apk/res/android" ...>
+    ...
+    <application ...>
+      ...
+      <meta-data
+        android:name="expo.modules.notifications.default_notification_color"
+        android:resource="@color/notification_icon_color" /> <!-- @color/<insert_notification_icon_color_name> -->
+      ...
+    </application>
+  </manifest>
+  ```
+- An `AndroidManifest.xml` with both color (of name `notification_icon_color`) and an icon (of name `ic_stat_notifications`) name would look like this:
+  ```xml
+  <manifest xmlns:android="http://schemas.android.com/apk/res/android" ...>
+    <application ...>
+      ...
+      <meta-data
+        android:name="expo.modules.notifications.default_notification_icon"
+        android:resource="@drawable/ic_stat_notifications" />
+      <meta-data
+        android:name="expo.modules.notifications.default_notification_color"
+        android:resource="@color/notification_icon_color" />
+      ...
+    </application>
+  </manifest>
+  ```
+
+</p>
+</details>
+
+### Config plugin setup (optional)
+
+If you're using EAS Build, you can set your Android notification icon and color tint, add custom push notification sounds, and set your iOS notification environment using the expo-notifications config plugin ([what's a config plugin?](http://docs.expo.io/guides/config-plugins/)). To setup, just add the config plugin to the plugins array of your `app.json` or `app.config.js` as shown below, then rebuild the app.
 
 ```json
 {
@@ -79,8 +147,6 @@ If you're using EAS Build or the bare workflow, you can set your Android notific
 
 </p>
 </details>
-
-Then rebuild the app. If you're using the bare workflow, make sure to run `expo prebuild` first (this will apply the config plugin using [prebuilding](https://expo.fyi/prebuilding)).
 
 ### Add your project's credentials to Expo server (optional)
 

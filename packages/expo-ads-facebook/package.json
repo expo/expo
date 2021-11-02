@@ -1,6 +1,6 @@
 {
   "name": "expo-ads-facebook",
-  "version": "10.1.0",
+  "version": "11.0.1",
   "description": "Facebook Audience SDK integration",
   "main": "build/index.js",
   "types": "build/index.d.ts",
@@ -29,10 +29,10 @@
   },
   "author": "650 Industries, Inc.",
   "license": "MIT",
-  "homepage": "https://docs.expo.io/versions/latest/sdk/facebook-ads/",
+  "homepage": "https://docs.expo.dev/versions/latest/sdk/facebook-ads/",
   "dependencies": {
-    "@expo/config-plugins": "^3.0.0",
-    "expo-modules-core": "~0.1.1",
+    "@expo/config-plugins": "^4.0.2",
+    "expo-modules-core": "~0.4.2",
     "fbemitter": "^2.1.1",
     "nullthrows": "^1.1.0"
   },

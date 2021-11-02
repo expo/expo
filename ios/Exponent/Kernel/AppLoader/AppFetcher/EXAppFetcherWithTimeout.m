@@ -42,7 +42,7 @@ NS_ASSUME_NONNULL_BEGIN
     [self _finishWithError:nil];
   }
 
-  [self.appLoader fetchManifestWithCacheBehavior:EXManifestPrepareToCache success:^(EXUpdatesRawManifest * _Nonnull manifest) {
+  [self.appLoader fetchManifestWithCacheBehavior:EXManifestPrepareToCache success:^(EXManifestsManifest * _Nonnull manifest) {
     self.manifest = manifest;
     if (manifest.isUsingDeveloperTool && self.timer) {
       // make sure we never time out in dev mode
@@ -98,7 +98,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)_finishWithError:(NSError * _Nullable)err
 {
   [self _stopTimer];
-  
+
   if (_hasFinished && self.manifest) {
     // AppFetcher has already "finished" but a new bundle was resolved
     // so we should notify the delegate so it can send an event to the running app
@@ -108,7 +108,7 @@ NS_ASSUME_NONNULL_BEGIN
                                    error:err];
   }
   _hasFinished = YES;
-  
+
   if (self.bundle) {
     // we have everything
     [self.delegate appFetcher:self didFinishLoadingManifest:self.manifest bundle:self.bundle];

@@ -11,7 +11,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong, readwrite) NSString *scopeKey;
 @property (nonatomic, strong, readwrite) NSDate *commitTime;
 @property (nonatomic, strong, readwrite) NSString *runtimeVersion;
-@property (nonatomic, strong, readwrite, nullable) NSDictionary *manifest;
+@property (nonatomic, strong, readwrite, nullable) NSDictionary *manifestJSON;
 @property (nonatomic, assign, readwrite) BOOL keep;
 @property (nonatomic, strong, readwrite) NSURL *bundleUrl;
 @property (nonatomic, strong, readwrite) NSArray<ABI42_0_0EXUpdatesAsset *> *assets;
@@ -23,7 +23,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong) ABI42_0_0EXUpdatesConfig *config;
 @property (nonatomic, strong, nullable) ABI42_0_0EXUpdatesDatabase *database;
 
-- (instancetype)initWithRawManifest:(ABI42_0_0EXUpdatesRawManifest *)manifest
+- (instancetype)initWithManifest:(ABI42_0_0EXManifestsManifest *)manifest
                              config:(ABI42_0_0EXUpdatesConfig *)config
                            database:(nullable ABI42_0_0EXUpdatesDatabase *)database;
 

@@ -170,12 +170,12 @@ export default class DocumentationPage extends React.Component<Props, State> {
 
   private getCanonicalUrl = () => {
     if (this.isReferencePath()) {
-      return `https://docs.expo.io${Utilities.replaceVersionInUrl(
+      return `https://docs.expo.dev${Utilities.replaceVersionInUrl(
         this.props.url.pathname,
         'latest'
       )}`;
     } else {
-      return `https://docs.expo.io/${this.props.url.pathname}`;
+      return `https://docs.expo.dev${this.props.url.pathname}`;
     }
   };
 
@@ -279,11 +279,11 @@ export default class DocumentationPage extends React.Component<Props, State> {
           {algoliaTag !== null && <meta name="docsearch:version" content={algoliaTag} />}
           <meta property="og:title" content={`${this.props.title} - Expo Documentation`} />
           <meta property="og:type" content="website" />
-          <meta property="og:image" content="https://docs.expo.io/static/images/og.png" />
-          <meta property="og:image:url" content="https://docs.expo.io/static/images/og.png" />
+          <meta property="og:image" content="https://docs.expo.dev/static/images/og.png" />
+          <meta property="og:image:url" content="https://docs.expo.dev/static/images/og.png" />
           <meta
             property="og:image:secure_url"
-            content="https://docs.expo.io/static/images/og.png"
+            content="https://docs.expo.dev/static/images/og.png"
           />
           <meta property="og:locale" content="en_US" />
           <meta property="og:site_name" content="Expo Documentation" />
@@ -299,7 +299,10 @@ export default class DocumentationPage extends React.Component<Props, State> {
             name="twitter:description"
             content="Expo is an open-source platform for making universal native apps for Android, iOS, and the web with JavaScript and React."
           />
-          <meta property="twitter:image" content="https://docs.expo.io/static/images/twitter.png" />
+          <meta
+            property="twitter:image"
+            content="https://docs.expo.dev/static/images/twitter.png"
+          />
 
           {(version === 'unversioned' || this.isPreviewPath()) && (
             <meta name="robots" content="noindex" />

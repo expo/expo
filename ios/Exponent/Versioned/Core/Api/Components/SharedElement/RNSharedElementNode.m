@@ -308,34 +308,21 @@ NSArray* _imageResolvers;
   
   // If the content could not be obtained, then try again later
   if (content == nil || content.data == nil) {
-    if (_displayLink == nil) {
-      _displayLink = [CADisplayLink displayLinkWithTarget:self selector:@selector(onDisplayLinkUpdate:)];
-      [_displayLink addToRunLoop:[NSRunLoop mainRunLoop] forMode:NSDefaultRunLoopMode];
-    }
-    return;
+    return [self updateRetryLoop];
   }
-  //NSLog(@"Content fetched: %@, contentType: %d, size: %@", content, contentType, NSStringFromCGSize(bounds.size));
+  // NSLog(@"Content fetched: %@, size: %@", content, NSStringFromCGSize(bounds.size));
   
   _contentCache = content;
   _contentCacheTimeInterval = CACurrentMediaTime();
   
   NSArray* delegates = _contentRequests;
   _contentRequests = nil;
-  if (_displayLink != nil) {
-    [_displayLink removeFromRunLoop:[NSRunLoop mainRunLoop] forMode:NSDefaultRunLoopMode];
-    _displayLink = nil;
-  }
+  [self updateRetryLoop];
   for (__weak id <RNSharedElementDelegate> delegate in delegates) {
     if (delegate != nil) {
       [delegate didLoadContent:content node:self];
     }
   }
-}
-
-- (void)onDisplayLinkUpdate:(CADisplayLink *)sender
-{
-  // NSLog(@"onDisplayLinkUpdate");
-  [self updateContent];
 }
 
 - (void) requestStyle:(__weak id <RNSharedElementDelegate>) delegate
@@ -360,6 +347,11 @@ NSArray* _imageResolvers;
   if (_styleRequests == nil) return;
   if (view == nil) return;
   
+  // If the window could not be obtained, then try again later
+  if (view.window == nil) {
+    return [self updateRetryLoop];
+  }
+  
   // Get absolute layout
   CGRect layout = [view convertRect:view.bounds toView:nil];
   if (CGRectIsEmpty(layout)) return;
@@ -373,15 +365,14 @@ NSArray* _imageResolvers;
   } else {
     style.contentMode = view.contentMode;
   }
-  /*if (_isParent) {
-   NSLog(@"Style fetched: %@, realSize: %@, opacity: %lf, transform: %@, borderWidth: %lf, contentMode: %ld", NSStringFromCGRect(layout), NSStringFromCGSize(style.size), style.opacity, [RNSharedElementStyle stringFromTransform:style.transform], style.borderWidth, style.contentMode);
-   }*/
+  /* NSLog(@"Style fetched, window: %@, alpha: %f, hidden: %@, parent: %@, layout: %@, realSize: %@, opacity: %lf, transform: %@, borderWidth: %lf, contentMode: %ld", view.window, view.alpha, @(view.hidden), @(_isParent), NSStringFromCGRect(layout), NSStringFromCGSize(style.size), style.opacity, [RNSharedElementStyle stringFromTransform:style.transform], style.borderWidth, style.contentMode); */
   
   _styleCache = style;
   _styleCacheTimeInterval = CACurrentMediaTime();
   
   NSArray* delegates = _styleRequests;
   _styleRequests = nil;
+  [self updateRetryLoop];
   for (__weak id <RNSharedElementDelegate> delegate in delegates) {
     if (delegate != nil) {
       [delegate didLoadStyle:style node:self];
@@ -393,6 +384,25 @@ NSArray* _imageResolvers;
 {
   if (_styleRequests != nil) [_styleRequests removeObject:delegate];
   if (_contentRequests != nil) [_contentRequests removeObject:delegate];
+}
+
+- (void)updateRetryLoop
+{
+  BOOL shouldRun = _styleRequests != nil || _contentRequests != nil;
+  if (shouldRun && _displayLink == nil) {
+    _displayLink = [CADisplayLink displayLinkWithTarget:self selector:@selector(onDisplayLinkUpdate:)];
+    [_displayLink addToRunLoop:[NSRunLoop mainRunLoop] forMode:NSDefaultRunLoopMode];
+  } else if (!shouldRun && _displayLink != nil) {
+    [_displayLink removeFromRunLoop:[NSRunLoop mainRunLoop] forMode:NSDefaultRunLoopMode];
+    _displayLink = nil;
+  }
+}
+
+- (void)onDisplayLinkUpdate:(CADisplayLink *)sender
+{
+  // NSLog(@"onDisplayLinkUpdate");
+  if (_styleRequests != nil) [self updateStyle];
+  if (_contentRequests != nil) [self updateContent];
 }
 
 @end

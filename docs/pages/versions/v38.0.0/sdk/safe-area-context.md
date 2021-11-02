@@ -126,7 +126,7 @@ If you are doing server side rendering on the web, you can use `initialSafeAreaI
 
 In a web-only app, you would use CSS environment variables to get the size of the screen's safe area insets.
 
-`styles.css`
+**styles.css**
 
 ```css
 div {
@@ -141,7 +141,7 @@ div {
 
 Universally, the hook `useSafeAreaInsets()` can provide access to this information.
 
-`App.js`
+**App.js**
 
 ```jsx
 import { useSafeAreaInsets } from 'react-native-safe-area-context';

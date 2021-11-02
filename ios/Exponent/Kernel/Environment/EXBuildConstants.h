@@ -6,6 +6,7 @@ typedef enum EXKernelDevManifestSource {
   kEXKernelDevManifestSourceNone,
   kEXKernelDevManifestSourceLocal,
   kEXKernelDevManifestSourcePublished,
+  kEXKernelDevManifestSourceDogfooding,
 } EXKernelDevManifestSource;
 
 @interface EXBuildConstants : NSObject

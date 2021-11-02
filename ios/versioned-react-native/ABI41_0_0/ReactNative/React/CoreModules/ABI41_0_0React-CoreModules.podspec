@@ -32,7 +32,7 @@ Pod::Spec.new do |s|
                              }
 
   s.dependency "ABI41_0_0FBReactNativeSpec", version
-  s.dependency "Folly", folly_version
+  s.dependency "RCT-Folly", folly_version
   s.dependency "ABI41_0_0RCTTypeSafety", version
   s.dependency "ABI41_0_0React-Core/CoreModulesHeaders", version
   s.dependency "ABI41_0_0React-RCTImage", version

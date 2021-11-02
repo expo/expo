@@ -17,8 +17,8 @@ import expo.modules.devmenu.DevMenuManager
 import expo.modules.devmenu.devtools.DevMenuDevToolsDelegate
 import kotlinx.coroutines.runBlocking
 
-class DevMenuExtension(reactContext: ReactApplicationContext)
-  : ReactContextBaseJavaModule(reactContext), DevMenuExtensionInterface {
+class DevMenuExtension(reactContext: ReactApplicationContext) :
+  ReactContextBaseJavaModule(reactContext), DevMenuExtensionInterface {
   override fun getName() = "ExpoDevMenuExtensions"
 
   override fun devMenuItems(settings: DevMenuExtensionSettingsInterface) = DevMenuItemsContainer.export {

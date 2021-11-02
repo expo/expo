@@ -14,7 +14,7 @@ import com.google.firebase.ml.vision.face.FirebaseVisionFace;
 import com.google.firebase.ml.vision.face.FirebaseVisionFaceDetector;
 import com.google.firebase.ml.vision.face.FirebaseVisionFaceDetectorOptions;
 
-import org.unimodules.core.interfaces.Function;
+import expo.modules.core.interfaces.Function;
 
 import java.io.IOException;
 import java.util.ArrayList;

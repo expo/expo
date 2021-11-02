@@ -16,6 +16,7 @@ type Props = {
   imageSize?: number;
   onPress?: () => any;
   onLongPress?: () => any;
+  disabled?: boolean;
   title?: string;
   subtitle?: string;
   onPressSubtitle?: () => any;
@@ -43,13 +44,20 @@ export default class ListItem extends React.PureComponent<Props> {
       margins,
       title,
       subtitle,
+      disabled,
     } = this.props;
     return (
       <View style={last && margins !== false ? styles.marginBottomLast : undefined}>
         <StyledButton
           onPress={onPress}
           onLongPress={onLongPress}
-          style={[styles.container, last && styles.containerLast, style]}>
+          style={[
+            styles.container,
+            last && styles.containerLast,
+            style,
+            disabled && styles.disabled,
+          ]}
+          disabled={disabled}>
           {this.renderImage()}
           <StyledView style={[styles.contentContainer, !last && styles.contentContainerNotLast]}>
             <View
@@ -117,9 +125,7 @@ export default class ListItem extends React.PureComponent<Props> {
           {title}
         </StyledText>
       </View>
-    ) : (
-      undefined
-    );
+    ) : undefined;
   }
 
   private renderSubtitle() {
@@ -137,9 +143,7 @@ export default class ListItem extends React.PureComponent<Props> {
         numberOfLines={title ? 1 : 2}>
         {subtitle}
       </Text>
-    ) : (
-      undefined
-    );
+    ) : undefined;
   }
 
   private renderCheck() {
@@ -174,6 +178,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     minHeight: 44,
     paddingStart: 15,
+  },
+  disabled: {
+    opacity: 0.5,
   },
   containerLast: {
     borderBottomWidth: StyleSheet.hairlineWidth * 2,

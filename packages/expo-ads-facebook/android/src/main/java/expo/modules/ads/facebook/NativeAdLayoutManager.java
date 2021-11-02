@@ -2,7 +2,7 @@ package expo.modules.ads.facebook;
 
 import android.content.Context;
 
-import org.unimodules.core.ViewManager;
+import expo.modules.core.ViewManager;
 
 public class NativeAdLayoutManager extends ViewManager<NativeAdLayout>  {
   private static String NAME = "NativeAdLayout";

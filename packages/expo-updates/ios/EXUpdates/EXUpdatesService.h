@@ -4,7 +4,7 @@
 #import <EXUpdates/EXUpdatesDatabase.h>
 #import <EXUpdates/EXUpdatesSelectionPolicy.h>
 #import <EXUpdates/EXUpdatesUpdate.h>
-#import <UMCore/UMInternalModule.h>
+#import <ExpoModulesCore/EXInternalModule.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -29,7 +29,7 @@ typedef void (^EXUpdatesAppRelaunchCompletionBlock)(BOOL success);
 
 @end
 
-@interface EXUpdatesService : NSObject <UMInternalModule, EXUpdatesModuleInterface>
+@interface EXUpdatesService : NSObject <EXInternalModule, EXUpdatesModuleInterface>
 
 @end
 

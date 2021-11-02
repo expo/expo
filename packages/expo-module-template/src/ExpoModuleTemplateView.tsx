@@ -6,9 +6,7 @@ export interface ExpoModuleTemplateViewProps {
   greatProp: string;
 }
 
-interface ExpoModuleTemplateViewState {
-
-}
+interface ExpoModuleTemplateViewState {}
 
 /**
  * Great view that would suit your needs!
@@ -20,10 +18,11 @@ interface ExpoModuleTemplateViewState {
  * />
  * ```
  */
-export default class ExpoModuleTemplateView extends React.Component<ExpoModuleTemplateViewProps, ExpoModuleTemplateViewState> {
+export default class ExpoModuleTemplateView extends React.Component<
+  ExpoModuleTemplateViewProps,
+  ExpoModuleTemplateViewState
+> {
   render() {
-    return (
-      <NativeView />
-    );
+    return <NativeView />;
   }
 }

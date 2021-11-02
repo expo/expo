@@ -15,10 +15,10 @@ import expo.modules.permissions.requesters.NotificationRequester
 import expo.modules.permissions.requesters.PermissionRequester
 import expo.modules.permissions.requesters.RemindersRequester
 import expo.modules.permissions.requesters.SimpleRequester
-import org.unimodules.core.ExportedModule
-import org.unimodules.core.ModuleRegistry
-import org.unimodules.core.Promise
-import org.unimodules.core.interfaces.ExpoMethod
+import expo.modules.core.ExportedModule
+import expo.modules.core.ModuleRegistry
+import expo.modules.core.Promise
+import expo.modules.core.interfaces.ExpoMethod
 
 internal const val ERROR_TAG = "ERR_PERMISSIONS"
 
@@ -39,11 +39,13 @@ class PermissionsModule(context: Context) : ExportedModule(context) {
     }
     mRequesters = mapOf(
       // Legacy requester
-      PermissionsTypes.LOCATION.type to LegacyLocationRequester(if (android.os.Build.VERSION.SDK_INT == android.os.Build.VERSION_CODES.Q) {
-        mPermissions.isPermissionPresentInManifest(Manifest.permission.ACCESS_BACKGROUND_LOCATION)
-      } else {
-        false
-      }),
+      PermissionsTypes.LOCATION.type to LegacyLocationRequester(
+        if (android.os.Build.VERSION.SDK_INT == android.os.Build.VERSION_CODES.Q) {
+          mPermissions.isPermissionPresentInManifest(Manifest.permission.ACCESS_BACKGROUND_LOCATION)
+        } else {
+          false
+        }
+      ),
       PermissionsTypes.LOCATION_FOREGROUND.type to ForegroundLocationRequester(),
       PermissionsTypes.LOCATION_BACKGROUND.type to BackgroundLocationRequester(),
       PermissionsTypes.CAMERA.type to SimpleRequester(Manifest.permission.CAMERA),

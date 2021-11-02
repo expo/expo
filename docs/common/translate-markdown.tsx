@@ -35,6 +35,10 @@ const createPermalinkedComponent = (
   };
 };
 
+// When using inline markdown, we need to remove the document layout wrapper.
+// Always set this to `null` to overwrite the global MDX provider.
+export const wrapper = null;
+
 export const p = PDIV;
 export const strong = B;
 export const ul = UL;

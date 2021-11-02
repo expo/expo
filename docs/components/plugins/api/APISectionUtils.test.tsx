@@ -1,7 +1,7 @@
 import { render } from '@testing-library/react';
 import * as React from 'react';
 
-import { resolveTypeName } from './APISectionUtils';
+import { CommentTextBlock, mdInlineComponents, resolveTypeName } from './APISectionUtils';
 
 describe('APISectionUtils.resolveTypeName', () => {
   test('void', () => {
@@ -100,6 +100,28 @@ describe('APISectionUtils.resolveTypeName', () => {
     expect(container).toMatchSnapshot();
   });
 
+  test('alternative generic object notation', () => {
+    const { container } = render(
+      <>
+        {resolveTypeName({
+          type: 'array',
+          elementType: {
+            type: 'reflection',
+            declaration: {
+              name: '__type',
+              indexSignature: {
+                name: '__index',
+                parameters: [{ name: 'column', type: { type: 'intrinsic', name: 'string' } }],
+                type: { type: 'intrinsic', name: 'any' },
+              },
+            },
+          },
+        })}
+      </>
+    );
+    expect(container).toMatchSnapshot();
+  });
+
   test('Record with union', () => {
     const { container } = render(
       <>
@@ -162,6 +184,24 @@ describe('APISectionUtils.resolveTypeName', () => {
             { type: 'array', elementType: { type: 'reference', name: 'AssetRef' } },
             { type: 'reference', name: 'AssetRef' },
           ],
+        })}
+      </>
+    );
+    expect(container).toMatchSnapshot();
+  });
+
+  test('union of array values', () => {
+    const { container } = render(
+      <>
+        {resolveTypeName({
+          type: 'array',
+          elementType: {
+            type: 'union',
+            types: [
+              { type: 'reference', name: 'ResultSetError' },
+              { type: 'reference', name: 'ResultSet' },
+            ],
+          },
         })}
       </>
     );
@@ -293,6 +333,119 @@ describe('APISectionUtils.resolveTypeName', () => {
         })}
       </>
     );
+    expect(container).toMatchSnapshot();
+  });
+
+  test('object reflection', () => {
+    const { container } = render(
+      <>
+        {resolveTypeName({
+          type: 'reflection',
+          declaration: {
+            children: [
+              {
+                name: 'target',
+                type: { type: 'intrinsic', name: 'number' },
+              },
+              {
+                name: 'value',
+                type: { type: 'intrinsic', name: 'boolean' },
+              },
+            ],
+          },
+        })}
+      </>
+    );
+    expect(container).toMatchSnapshot();
+  });
+
+  test('custom type with single pick', () => {
+    const { container } = render(
+      <>
+        {resolveTypeName({
+          type: 'reference',
+          typeArguments: [
+            { type: 'reference', name: 'FontResource' },
+            { type: 'literal', value: 'display' },
+          ],
+          name: 'Pick',
+        })}
+      </>
+    );
+    expect(container).toMatchSnapshot();
+  });
+
+  test('props with multiple omits', () => {
+    const { container } = render(
+      <>
+        {resolveTypeName({
+          type: 'reference',
+          typeArguments: [
+            {
+              type: 'reference',
+              typeArguments: [
+                { type: 'reference', name: 'ViewStyle' },
+                {
+                  type: 'union',
+                  types: [
+                    { type: 'literal', value: 'backgroundColor' },
+                    {
+                      type: 'literal',
+                      value: 'borderRadius',
+                    },
+                  ],
+                },
+              ],
+              name: 'Omit',
+            },
+          ],
+          name: 'StyleProp',
+        })}
+      </>
+    );
+    expect(container).toMatchSnapshot();
+  });
+});
+
+describe('APISectionUtils.CommentTextBlock component', () => {
+  test('no comment', () => {
+    const { container } = render(<CommentTextBlock comment={undefined} />);
+    expect(container).toMatchSnapshot();
+  });
+
+  test('basic comment', () => {
+    const comment = {
+      text: 'This is the basic comment.',
+    };
+
+    const { container } = render(<CommentTextBlock comment={comment} />);
+    expect(container).toMatchSnapshot();
+  });
+
+  test('basic inline comment', () => {
+    const comment = {
+      shortText: 'This is the basic comment.',
+    };
+
+    const { container } = render(
+      <CommentTextBlock comment={comment} components={mdInlineComponents} withDash />
+    );
+    expect(container).toMatchSnapshot();
+  });
+
+  test('comment with example', () => {
+    const comment = {
+      shortText:
+        '**Android only.** Gets the referrer URL of the installed app with the [`Install Referrer API`](https://developer.android.com/google/play/installreferrer)\nfrom the Google Play Store. In practice, the referrer URL may not be a complete, absolute URL.',
+      tags: [
+        {
+          tag: 'example',
+          text: '\n```ts\nawait Application.getInstallReferrerAsync();\n// "utm_source=google-play&utm_medium=organic"\n```\n',
+        },
+      ],
+    };
+
+    const { container } = render(<CommentTextBlock comment={comment} />);
     expect(container).toMatchSnapshot();
   });
 });

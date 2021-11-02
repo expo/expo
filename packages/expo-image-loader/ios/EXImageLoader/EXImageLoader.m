@@ -2,6 +2,7 @@
 
 #import <EXImageLoader/EXImageLoader.h>
 #import <React/RCTImageLoaderProtocol.h>
+#import <ExpoModulesCore/EXUtilities.h>
 
 @interface EXImageLoader ()
 
@@ -11,7 +12,7 @@
 
 @implementation EXImageLoader
 
-UM_REGISTER_MODULE();
+EX_REGISTER_MODULE();
 
 + (NSString *)moduleName
 {

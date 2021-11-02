@@ -35,7 +35,7 @@ Pod::Spec.new do |s|
     ss.dependency "ABI42_0_0React-Core", version
     ss.dependency "ABI42_0_0React-cxxreact", version
     ss.dependency "ABI42_0_0React-jsi", version
-    ss.dependency "Folly", folly_version
+    ss.dependency "RCT-Folly", folly_version
     ss.dependency "DoubleConversion"
     ss.dependency "glog"
 

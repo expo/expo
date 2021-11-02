@@ -6,7 +6,8 @@ import * as Linking from 'expo-linking';
 import * as React from 'react';
 import { Platform, RefreshControl, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-import HeaderIconButton, { HeaderContainerRight } from '../../components/HeaderIconButton';
+import HeaderContainerRight from '../../components/HeaderContainerRight';
+import HeaderIconButton from '../../components/HeaderIconButton';
 import Colors from '../../constants/Colors';
 import usePermissions from '../../utilities/usePermissions';
 import ContactDetailList, { DetailListItem } from './ContactDetailList';
@@ -34,6 +35,14 @@ export default function ContactDetailScreen(props: any) {
             name="md-share"
             onPress={async () => {
               Contacts.shareContactAsync(props.route.params.id, 'Call me :]');
+            }}
+          />
+          <HeaderIconButton
+            name="md-open"
+            onPress={async () => {
+              await Contacts.presentFormAsync(props.route.params.id);
+              // tslint:disable-next-line no-console
+              console.log('the native contact form has been closed');
             }}
           />
           {isIos && (
@@ -137,7 +146,7 @@ function ContactDetailView({
     for (const key of Object.keys(contact)) {
       const value = (contact as any)[key];
       if (Array.isArray(value) && value.length > 0) {
-        const data = value.map(item => {
+        const data = value.map((item) => {
           let transform: Partial<DetailListItem> = {};
           switch (key) {
             case Contacts.Fields.Relationships:

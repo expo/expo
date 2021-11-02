@@ -4,7 +4,7 @@ import { withIosSplashScreen } from '@expo/prebuild-config/build/plugins/unversi
 
 const pkg = require('expo-splash-screen/package.json');
 
-const withSplashScreen: ConfigPlugin = config => {
+const withSplashScreen: ConfigPlugin = (config) => {
   // For simplicity, we'll version the unversioned code in expo-splash-screen.
   // This adds more JS to the package overall, but the trade-off is less copying between expo-cli/expo.
   config = withAndroidSplashScreen(config);

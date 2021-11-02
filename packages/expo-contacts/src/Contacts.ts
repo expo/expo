@@ -1,5 +1,4 @@
-import { UnavailabilityError } from '@unimodules/core';
-import { PermissionResponse, PermissionStatus } from 'expo-modules-core';
+import { PermissionResponse, PermissionStatus, UnavailabilityError } from 'expo-modules-core';
 import { Platform, Share } from 'react-native';
 import { v4 as uuidv4 } from 'uuid';
 

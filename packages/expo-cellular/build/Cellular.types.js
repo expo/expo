@@ -21,5 +21,9 @@ export var CellularGeneration;
      * Currently connected to a 4G cellular network. Includes HSPAP and LTE type connections.
      */
     CellularGeneration[CellularGeneration["CELLULAR_4G"] = 3] = "CELLULAR_4G";
+    /**
+     * Currently connected to a 5G cellular network. Includes NR and NRNSA type connections.
+     */
+    CellularGeneration[CellularGeneration["CELLULAR_5G"] = 4] = "CELLULAR_5G";
 })(CellularGeneration || (CellularGeneration = {}));
 //# sourceMappingURL=Cellular.types.js.map

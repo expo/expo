@@ -21,7 +21,6 @@ import com.stripe.android.model.PaymentMethodCreateParams
 import com.stripe.android.view.CardInputListener
 import com.stripe.android.view.CardInputWidget
 
-
 class StripeSdkCardView(private val context: ThemedReactContext) : FrameLayout(context) {
   private var mCardWidget: CardInputWidget
   val cardDetails: MutableMap<String, Any?> = mutableMapOf("brand" to "", "last4" to "", "expiryMonth" to null, "expiryYear" to null, "postalCode" to "")
@@ -30,7 +29,7 @@ class StripeSdkCardView(private val context: ThemedReactContext) : FrameLayout(c
   private var dangerouslyGetFullCardDetails: Boolean = false
 
   init {
-    mCardWidget = CardInputWidget(context);
+    mCardWidget = CardInputWidget(context)
     mEventDispatcher = context.getNativeModule(UIManagerModule::class.java)?.eventDispatcher
 
     val binding = CardInputWidgetBinding.bind(mCardWidget)
@@ -51,7 +50,6 @@ class StripeSdkCardView(private val context: ThemedReactContext) : FrameLayout(c
       binding.cardNumberEditText.showSoftKeyboard()
     }
   }
-
 
   fun setCardStyle(value: ReadableMap) {
     val binding = CardInputWidgetBinding.bind(mCardWidget)
@@ -163,7 +161,8 @@ class StripeSdkCardView(private val context: ThemedReactContext) : FrameLayout(c
       cardDetails["last4"] = null
     }
     mEventDispatcher?.dispatchEvent(
-      CardChangedEvent(id, cardDetails, mCardWidget.postalCodeEnabled, cardParams != null, dangerouslyGetFullCardDetails))
+      CardChangedEvent(id, cardDetails, mCardWidget.postalCodeEnabled, cardParams != null, dangerouslyGetFullCardDetails)
+    )
   }
 
   private fun setListeners() {
@@ -175,7 +174,8 @@ class StripeSdkCardView(private val context: ThemedReactContext) : FrameLayout(c
       override fun onFocusChange(focusField: CardInputListener.FocusField) {
         if (mEventDispatcher != null) {
           mEventDispatcher?.dispatchEvent(
-            CardFocusEvent(id, focusField.name))
+            CardFocusEvent(id, focusField.name)
+          )
         }
       }
     })
@@ -232,7 +232,8 @@ class StripeSdkCardView(private val context: ThemedReactContext) : FrameLayout(c
   private val mLayoutRunnable = Runnable {
     measure(
       MeasureSpec.makeMeasureSpec(width, MeasureSpec.EXACTLY),
-      MeasureSpec.makeMeasureSpec(height, MeasureSpec.EXACTLY))
+      MeasureSpec.makeMeasureSpec(height, MeasureSpec.EXACTLY)
+    )
     layout(left, top, right, bottom)
   }
 }

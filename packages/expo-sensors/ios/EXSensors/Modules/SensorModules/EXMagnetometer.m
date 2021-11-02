@@ -5,14 +5,14 @@
 
 @implementation EXMagnetometer
 
-UM_EXPORT_MODULE(ExponentMagnetometer);
+EX_EXPORT_MODULE(ExponentMagnetometer);
 
 - (const NSString *)updateEventName
 {
   return @"magnetometerDidUpdate";
 }
 
-- (id)getSensorServiceFromModuleRegistry:(UMModuleRegistry *)moduleRegistry
+- (id)getSensorServiceFromModuleRegistry:(EXModuleRegistry *)moduleRegistry
 {
   return [moduleRegistry getModuleImplementingProtocol:@protocol(EXMagnetometerInterface)];
 }

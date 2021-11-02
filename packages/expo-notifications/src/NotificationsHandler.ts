@@ -1,4 +1,4 @@
-import { EventEmitter, Subscription, CodedError, UnavailabilityError } from '@unimodules/core';
+import { EventEmitter, Subscription, CodedError, UnavailabilityError } from 'expo-modules-core';
 
 import { Notification, NotificationBehavior } from './Notifications.types';
 import NotificationsHandlerModule from './NotificationsHandlerModule';

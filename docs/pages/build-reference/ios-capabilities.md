@@ -22,7 +22,7 @@ If a capability is enabled for your app remotely, but not present in the native 
 
 ## Supported Capabilities
 
-EAS Build will only enable capabilities that it has built-in support for, any unsupported entitlements must be manually enabled via [Apple developer portal][apple-dev-portal].
+EAS Build will only enable capabilities that it has built-in support for, any unsupported entitlements must be manually enabled via [Apple Developer Portal][apple-dev-portal].
 
 | Capability                       | Supported |
 | -------------------------------- | --------- |
@@ -48,6 +48,10 @@ EAS Build will only enable capabilities that it has built-in support for, any un
 | Sign In with Apple               | ✅        |
 | Fonts                            | ✅        |
 | In-App Purchase                  | ✅        |
+| Communication Notifications      | ✅        |
+| Time Sensitive Notifications     | ✅        |
+| Group Activities                 | ✅        |
+| Family Controls                  | ✅        |
 | Apple Pay Payment Processing     | Partial   |
 | iCloud                           | Partial   |
 | App Groups                       | Partial   |
@@ -56,6 +60,7 @@ EAS Build will only enable capabilities that it has built-in support for, any un
 | HLS Interstitial Previews        | ❌        |
 | Low Latency HLS                  | ❌        |
 | MDM Managed Associated Domains   | ❌        |
+| HealthKit Estimate Recalibration | ❌        |
 
 The unsupported capabilities either don't support iOS, or they don't have a corresponding entitlement value.
 

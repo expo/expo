@@ -1,4 +1,4 @@
-import { NativeModulesProxy, requireNativeViewManager } from '@unimodules/core';
+import { NativeModulesProxy, requireNativeViewManager } from 'expo-modules-core';
 import * as React from 'react';
 import { findNodeHandle, View, StyleSheet } from 'react-native';
 
@@ -16,7 +16,7 @@ export default class BlurView extends React.Component<BlurProps> {
     this._root = ref;
   };
 
-  setNativeProps = nativeProps => {
+  setNativeProps = (nativeProps) => {
     if (this._root) {
       NativeModulesProxy.ExpoBlurViewManager.updateProps(nativeProps, findNodeHandle(this._root));
     }

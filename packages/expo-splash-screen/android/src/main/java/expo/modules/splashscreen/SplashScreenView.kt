@@ -6,6 +6,11 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.RelativeLayout
 
+// this needs to stay for versioning to work
+/* ktlint-disable no-unused-imports */
+import expo.modules.splashscreen.SplashScreenImageResizeMode
+/* ktlint-enable no-unused-imports */
+
 @SuppressLint("ViewConstructor")
 class SplashScreenView(
   context: Context

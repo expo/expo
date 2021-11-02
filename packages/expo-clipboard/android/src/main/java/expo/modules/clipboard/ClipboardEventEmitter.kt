@@ -5,10 +5,10 @@ import android.content.ClipboardManager
 import android.os.Bundle
 import android.util.Log
 
-import org.unimodules.core.ModuleRegistry
-import org.unimodules.core.interfaces.LifecycleEventListener
-import org.unimodules.core.interfaces.services.EventEmitter
-import org.unimodules.core.interfaces.services.UIManager
+import expo.modules.core.ModuleRegistry
+import expo.modules.core.interfaces.LifecycleEventListener
+import expo.modules.core.interfaces.services.EventEmitter
+import expo.modules.core.interfaces.services.UIManager
 
 class ClipboardEventEmitter(context: Context, moduleRegistry: ModuleRegistry) : LifecycleEventListener {
   private val onClipboardEventName = "onClipboardChanged"
@@ -25,9 +25,12 @@ class ClipboardEventEmitter(context: Context, moduleRegistry: ModuleRegistry) : 
         if (isListening) {
           val clip = clipboard.primaryClip
           if (clip != null && clip.itemCount >= 1) {
-            eventEmitter.emit(onClipboardEventName, Bundle().apply {
-              putString("content", clip.getItemAt(0).text.toString())
-            })
+            eventEmitter.emit(
+              onClipboardEventName,
+              Bundle().apply {
+                putString("content", clip.getItemAt(0).text.toString())
+              }
+            )
           }
         }
       }

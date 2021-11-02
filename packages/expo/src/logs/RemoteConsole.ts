@@ -113,7 +113,7 @@ export function createRemoteConsole(originalConsole: Console): Console {
     data: unknown[]
   ): void {
     RemoteLogging.enqueueRemoteLogAsync(level, { groupDepth, ...additionalFields }, data).catch(
-      error => {
+      (error) => {
         originalConsole.error(
           `There was a problem sending log messages to your development environment`,
           error

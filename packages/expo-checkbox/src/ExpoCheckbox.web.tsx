@@ -14,12 +14,12 @@ import { StyleSheet, View, unstable_createElement as createElement } from 'react
 
 import { CheckboxComponent, CheckboxEvent } from './Checkbox.types';
 
-const ExpoCheckbox: CheckboxComponent = props => {
+const ExpoCheckbox: CheckboxComponent = (props) => {
   const { color, disabled, onChange, onValueChange, style, value, ...other } = props;
 
   const handleChange = useCallback(
     (event: CheckboxEvent) => {
-      const value = ((event.nativeEvent.target as unknown) as HTMLInputElement).checked;
+      const value = (event.nativeEvent.target as unknown as HTMLInputElement).checked;
       event.nativeEvent.value = value;
       onChange && onChange(event);
       onValueChange && onValueChange(value);
@@ -29,6 +29,7 @@ const ExpoCheckbox: CheckboxComponent = props => {
 
   const fakeControl = (
     <View
+      pointerEvents="none"
       style={[
         styles.fakeControl,
         value && styles.fakeControlChecked,
@@ -41,6 +42,7 @@ const ExpoCheckbox: CheckboxComponent = props => {
   );
 
   const nativeControl = createElement('input', {
+    accessibilityState: { disabled, checked: value },
     checked: value,
     disabled,
     onChange: handleChange,
@@ -50,14 +52,13 @@ const ExpoCheckbox: CheckboxComponent = props => {
 
   return (
     <View {...other} style={[styles.root, style, disabled && styles.cursorDefault]}>
-      {fakeControl}
       {nativeControl}
+      {fakeControl}
     </View>
   );
 };
 
 ExpoCheckbox.displayName = 'Checkbox';
-ExpoCheckbox.isAvailableAsync = async () => true;
 
 const styles = StyleSheet.create({
   root: {
@@ -71,11 +72,13 @@ const styles = StyleSheet.create({
     // @ts-ignore
     cursor: 'default',
   },
+
   cursorInherit: {
     // @ts-ignore
     cursor: 'inherit',
   },
   fakeControl: {
+    ...StyleSheet.absoluteFillObject,
     alignItems: 'center',
     backgroundColor: '#fff',
     borderColor: '#657786',
@@ -105,12 +108,18 @@ const styles = StyleSheet.create({
     ...StyleSheet.absoluteFillObject,
     height: '100%',
     margin: 0,
-    opacity: 0,
     padding: 0,
     width: '100%',
+    // @ts-ignore
+    WebkitAppearance: 'none',
   },
 });
 
 export default ExpoCheckbox;
+
+ExpoCheckbox.isAvailableAsync = () => {
+  console.warn('Checkbox.isAvailableAsync() is deprecated and will be removed in future releases');
+  return Promise.resolve(true);
+};
 
 export const name = 'ExpoCheckbox';

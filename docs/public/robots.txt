@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://docs.expo.dev/sitemap.xml

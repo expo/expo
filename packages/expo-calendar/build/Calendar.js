@@ -1,5 +1,4 @@
-import { UnavailabilityError } from '@unimodules/core';
-import { PermissionStatus } from 'expo-modules-core';
+import { PermissionStatus, createPermissionHook, UnavailabilityError, } from 'expo-modules-core';
 import { Platform, processColor } from 'react-native';
 import ExpoCalendar from './ExpoCalendar';
 export var DayOfTheWeek;
@@ -345,6 +344,34 @@ export async function requestRemindersPermissionsAsync() {
     }
     return await ExpoCalendar.requestRemindersPermissionsAsync();
 }
+// @needsAudit
+/**
+ * Check or request permissions to access the calendar.
+ * This uses both `getCalendarPermissionsAsync` and `requestCalendarPermissionsAsync` to interact with the permissions.
+ *
+ * @example
+ * ```ts
+ * const [status, requestPermission] = Calendar.useCalendarPermissions();
+ * ```
+ */
+export const useCalendarPermissions = createPermissionHook({
+    getMethod: getCalendarPermissionsAsync,
+    requestMethod: requestCalendarPermissionsAsync,
+});
+// @needsAudit
+/**
+ * Check or request permissions to access reminders.
+ * This uses both `getRemindersPermissionsAsync` and `requestRemindersPermissionsAsync` to interact with the permissions.
+ *
+ * @example
+ * ```ts
+ * const [status, requestPermission] = Calendar.useRemindersPermissions();
+ * ```
+ */
+export const useRemindersPermissions = createPermissionHook({
+    getMethod: getRemindersPermissionsAsync,
+    requestMethod: requestRemindersPermissionsAsync,
+});
 export const EntityTypes = {
     EVENT: 'event',
     REMINDER: 'reminder',
@@ -360,7 +387,7 @@ export const Availability = {
     BUSY: 'busy',
     FREE: 'free',
     TENTATIVE: 'tentative',
-    UNAVAILABLE: 'unavailable',
+    UNAVAILABLE: 'unavailable', // iOS
 };
 export const CalendarType = {
     LOCAL: 'local',
@@ -394,7 +421,7 @@ export const AttendeeRole = {
     ORGANIZER: 'organizer',
     PERFORMER: 'performer',
     SPEAKER: 'speaker',
-    NONE: 'none',
+    NONE: 'none', // Android
 };
 export const AttendeeStatus = {
     UNKNOWN: 'unknown',
@@ -406,7 +433,7 @@ export const AttendeeStatus = {
     COMPLETED: 'completed',
     IN_PROCESS: 'inProcess',
     INVITED: 'invited',
-    NONE: 'none',
+    NONE: 'none', // Android
 };
 export const AttendeeType = {
     UNKNOWN: 'unknown',
@@ -416,7 +443,7 @@ export const AttendeeType = {
     RESOURCE: 'resource',
     OPTIONAL: 'optional',
     REQUIRED: 'required',
-    NONE: 'none',
+    NONE: 'none', // Android
 };
 export const AlarmMethod = {
     ALARM: 'alarm',

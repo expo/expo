@@ -46,6 +46,4 @@ class DevLauncherSplashScreenProvider {
       Color.WHITE
     }
   }
-
-
 }

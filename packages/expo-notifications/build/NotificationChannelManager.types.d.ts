@@ -1,4 +1,4 @@
-import { ProxyNativeModule } from '@unimodules/core';
+import { ProxyNativeModule } from 'expo-modules-core';
 export declare enum AndroidNotificationVisibility {
     UNKNOWN = 0,
     PUBLIC = 1,

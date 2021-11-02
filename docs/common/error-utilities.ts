@@ -13,7 +13,7 @@ export function getRedirectPath(redirectPath: string): string {
 
   // Unsure why this is happening, but sometimes URLs end up with /null in
   // the last path part
-  // https://docs.expo.io/versions/latest/sdk/overview/null
+  // https://docs.expo.dev/versions/latest/sdk/overview/null
   if (endsInNull(redirectPath)) {
     redirectPath = redirectPath.replace(/null$/, '');
   }
@@ -208,4 +208,12 @@ const RENAMED_PAGES: Record<string, string> = {
   '/faq/clear-cache-macos-linux/': '/troubleshooting/clear-cache-macos-linux/',
   '/faq/application-has-not-been-registered/':
     '/troubleshooting/application-has-not-been-registered/',
+
+  // Permissions API is moved to guide
+  '/versions/v40.0.0/sdk/permissions/': '/guides/permissions/',
+  '/versions/v41.0.0/sdk/permissions/': '/guides/permissions/',
+  '/versions/v42.0.0/sdk/permissions/': '/guides/permissions/',
+
+  // updates
+  '/guides/configuring-ota-updates/': '/guides/configuring-updates/',
 };

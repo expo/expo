@@ -10,10 +10,10 @@ Pod::Spec.new do |s|
   s.license        = package['license']
   s.author         = package['author']
   s.homepage       = package['homepage']
-  s.platform       = :ios, '11.0'
+  s.platform       = :ios, '12.0'
   s.source         = { git: 'https://github.com/expo/expo.git' }
+  s.static_framework = true
 
-  s.dependency 'UMCore'
   s.dependency 'ExpoModulesCore'
   s.dependency 'FacebookSDK/CoreKit', $FacebookSDKVersion || '9.2.0'
   s.dependency 'FacebookSDK/LoginKit', $FacebookSDKVersion || '9.2.0'

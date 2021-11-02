@@ -4,23 +4,15 @@
 
 @interface EXViewManagerAdapter ()
 
-@property EXViewManager *viewManager;
+- (EXViewManager *)viewManager;
 
 @end
 
 @implementation EXViewManagerAdapter
 
-- (instancetype)initWithViewManager:(EXViewManager *)viewManager
-{
-  if (self = [super init]) {
-    _viewManager = viewManager;
-  }
-  return self;
-}
-
 - (NSArray<NSString *> *)supportedEvents
 {
-  return [_viewManager supportedEvents];
+  return [[self viewManager] supportedEvents];
 }
 
 // This class is not used directly --- usually it's subclassed
@@ -36,7 +28,7 @@
 
 - (UIView *)view
 {
-  return [_viewManager view];
+  return [[self viewManager] view];
 }
 
 // The adapter multiplexes custom view properties in one "big object prop" that is passed here.

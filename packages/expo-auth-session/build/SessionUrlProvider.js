@@ -1,10 +1,11 @@
-import { Platform } from '@unimodules/react-native-adapter';
 import Constants, { ExecutionEnvironment } from 'expo-constants';
 import * as Linking from 'expo-linking';
 import { resolveScheme } from 'expo-linking/build/Schemes';
+import { Platform } from 'expo-modules-core';
 import qs from 'qs';
-const { manifest } = Constants;
 export class SessionUrlProvider {
+    static BASE_URL = `https://auth.expo.io`;
+    static SESSION_PATH = 'expo-auth-session';
     getDefaultReturnUrl(urlPath, options) {
         const queryParams = SessionUrlProvider.getHostAddressQueryParams();
         let path = SessionUrlProvider.SESSION_PATH;
@@ -39,7 +40,9 @@ export class SessionUrlProvider {
                 return '';
             }
         }
-        const legacyExpoProjectId = manifest?.originalFullName || manifest?.id;
+        const legacyExpoProjectId = Constants.manifest?.originalFullName ||
+            Constants.manifest2?.extra?.expoClient?.originalFullName ||
+            Constants.manifest?.id;
         if (!legacyExpoProjectId) {
             let nextSteps = '';
             if (__DEV__) {
@@ -62,7 +65,7 @@ export class SessionUrlProvider {
         return redirectUrl;
     }
     static getHostAddressQueryParams() {
-        let hostUri = Constants.manifest?.hostUri;
+        let hostUri = Constants.manifest?.hostUri ?? Constants.manifest2?.extra?.expoClient?.hostUri;
         if (!hostUri &&
             (ExecutionEnvironment.StoreClient === Constants.executionEnvironment || resolveScheme({}))) {
             if (!Constants.linkingUri) {
@@ -73,6 +76,9 @@ export class SessionUrlProvider {
                 // we have to remove the /--/ on the end since this will be inserted again later
                 hostUri = SessionUrlProvider.removeScheme(Constants.linkingUri).replace(/\/--(\/.*)?$/, '');
             }
+        }
+        if (!hostUri) {
+            return undefined;
         }
         const uriParts = hostUri?.split('?');
         try {
@@ -93,7 +99,5 @@ export class SessionUrlProvider {
         return url.replace(/^\//, '');
     }
 }
-SessionUrlProvider.BASE_URL = `https://auth.expo.io`;
-SessionUrlProvider.SESSION_PATH = 'expo-auth-session';
 export default new SessionUrlProvider();
 //# sourceMappingURL=SessionUrlProvider.js.map

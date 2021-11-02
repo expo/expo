@@ -4,9 +4,9 @@ import './environment/logging.fx';
 import './environment/react-native-logs.fx';
 // load expo-asset immediately to set a custom `source` transformer in React Native
 import 'expo-asset';
-import { NativeModulesProxy, Platform } from '@unimodules/core';
 import Constants, { ExecutionEnvironment } from 'expo-constants';
 import * as Font from 'expo-font';
+import { NativeModulesProxy, Platform } from 'expo-modules-core';
 import React from 'react';
 import { AppRegistry, StyleSheet } from 'react-native';
 import DevAppContainer from './environment/DevAppContainer';
@@ -18,21 +18,6 @@ const isManagedEnvironment = Constants.executionEnvironment === ExecutionEnviron
 // If expo-font is installed and the style preprocessor is available, use it to parse fonts.
 if (StyleSheet.setStyleAttributePreprocessor) {
     StyleSheet.setStyleAttributePreprocessor('fontFamily', Font.processFontFamily);
-}
-// Add warning about removed navigator.geolocation polyfill.
-if (Platform.OS !== 'web' && !window.navigator?.geolocation) {
-    const logLocationPolyfillWarning = (method) => {
-        return () => {
-            console.warn(`window.navigator.geolocation.${method} is not available. Import and execute installWebGeolocationPolyfill() from expo-location to add it, or use the expo-location APIs instead.`);
-        };
-    };
-    // @ts-ignore
-    window.navigator.geolocation = {
-        getCurrentPosition: logLocationPolyfillWarning('getCurrentPosition'),
-        watchPosition: logLocationPolyfillWarning('watchPostion'),
-        clearWatch: () => { },
-        stopObserving: () => { },
-    };
 }
 // Asserts if bare workflow isn't setup correctly.
 if (NativeModulesProxy.ExpoUpdates?.isMissingRuntimeVersion) {
@@ -57,11 +42,11 @@ if (__DEV__) {
         // @ts-ignore
         const originalSetWrapperComponentProvider = AppRegistry.setWrapperComponentProvider;
         // @ts-ignore
-        AppRegistry.setWrapperComponentProvider = provider => {
+        AppRegistry.setWrapperComponentProvider = (provider) => {
             function PatchedProviderComponent(props) {
                 const ProviderComponent = provider();
                 return (React.createElement(DevAppContainer, null,
-                    React.createElement(ProviderComponent, Object.assign({}, props))));
+                    React.createElement(ProviderComponent, { ...props })));
             }
             originalSetWrapperComponentProvider(() => PatchedProviderComponent);
         };

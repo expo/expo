@@ -7,8 +7,8 @@ import com.facebook.react.bridge.Promise
 import com.facebook.react.bridge.ReactApplicationContext
 import expo.modules.devmenu.modules.DevMenuInternalWebBrowserModuleInterface
 
-class DevMenuInternalWebBrowserModule(private val reactContext: ReactApplicationContext)
-  : DevMenuInternalWebBrowserModuleInterface {
+class DevMenuInternalWebBrowserModule(private val reactContext: ReactApplicationContext) :
+  DevMenuInternalWebBrowserModuleInterface {
   override fun openWebBrowserAsync(startUrl: String?, promise: Promise) {
     requireNotNull(startUrl)
 

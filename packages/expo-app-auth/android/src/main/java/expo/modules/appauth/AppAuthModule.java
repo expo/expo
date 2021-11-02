@@ -27,12 +27,12 @@ import java.util.Map;
 import de.greenrobot.event.EventBus;
 import expo.modules.interfaces.constants.ConstantsInterface;
 
-import org.unimodules.core.ExportedModule;
-import org.unimodules.core.ModuleRegistry;
-import org.unimodules.core.Promise;
-import org.unimodules.core.interfaces.ActivityProvider;
-import org.unimodules.core.interfaces.ExpoMethod;
-import org.unimodules.core.interfaces.services.UIManager;
+import expo.modules.core.ExportedModule;
+import expo.modules.core.ModuleRegistry;
+import expo.modules.core.Promise;
+import expo.modules.core.interfaces.ActivityProvider;
+import expo.modules.core.interfaces.ExpoMethod;
+import expo.modules.core.interfaces.services.UIManager;
 
 public class AppAuthModule extends ExportedModule {
   private static final String TAG = "ExpoAppAuth";

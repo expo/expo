@@ -5,7 +5,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation EXNativeMediaViewManager
 
-UM_EXPORT_MODULE(MediaViewManager)
+EX_EXPORT_MODULE(MediaViewManager)
 
 - (NSString *)viewName
 {

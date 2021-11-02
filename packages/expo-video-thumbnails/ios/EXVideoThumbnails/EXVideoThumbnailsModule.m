@@ -11,19 +11,19 @@ static NSString* const OPTIONS_KEY_HEADERS = @"headers";
 
 @implementation EXVideoThumbnailsModule
 
-UM_EXPORT_MODULE(ExpoVideoThumbnails);
+EX_EXPORT_MODULE(ExpoVideoThumbnails);
 
-- (void)setModuleRegistry:(UMModuleRegistry *)moduleRegistry
+- (void)setModuleRegistry:(EXModuleRegistry *)moduleRegistry
 {
   _moduleRegistry = moduleRegistry;
   _fileSystem = [moduleRegistry getModuleImplementingProtocol:@protocol(EXFileSystemInterface)];
 }
 
-UM_EXPORT_METHOD_AS(getThumbnail,
+EX_EXPORT_METHOD_AS(getThumbnail,
                     sourceFilename:(NSString *)source
                     options:(NSDictionary *)options
-                    resolve:(UMPromiseResolveBlock)resolve
-                    reject:(UMPromiseRejectBlock)reject)
+                    resolve:(EXPromiseResolveBlock)resolve
+                    reject:(EXPromiseRejectBlock)reject)
 {
   NSURL *url = [NSURL URLWithString:source];
   if ([url isFileURL]) {
@@ -42,6 +42,8 @@ UM_EXPORT_METHOD_AS(getThumbnail,
   AVURLAsset *asset = [[AVURLAsset alloc] initWithURL:url options:@{@"AVURLAssetHTTPHeaderFieldsKey": headers}];
   AVAssetImageGenerator *generator = [[AVAssetImageGenerator alloc] initWithAsset:asset];
   generator.appliesPreferredTrackTransform = YES;
+  generator.requestedTimeToleranceBefore = kCMTimeZero;
+  generator.requestedTimeToleranceAfter = kCMTimeZero;
 
   NSError *err = NULL;
   CMTime time = CMTimeMake(timeInMs, 1000);

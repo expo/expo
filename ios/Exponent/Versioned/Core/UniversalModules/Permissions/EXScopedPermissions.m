@@ -1,6 +1,6 @@
 // Copyright 2016-present 650 Industries. All rights reserved.
 
-#if __has_include(<UMReactNativeAdapter/EXPermissionsService.h>)
+#if __has_include(<ExpoModulesCore/EXPermissionsService.h>)
 #import <ExpoModulesCore/EXUtilities.h>
 #import <ExpoModulesCore/EXDefines.h>
 

@@ -1,6 +1,6 @@
 package expo.modules.interfaces.permissions;
 
-import org.unimodules.core.Promise;
+import expo.modules.core.Promise;
 
 public interface Permissions {
 

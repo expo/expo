@@ -1,4 +1,4 @@
-import { Subscription } from '@unimodules/core';
+import { Subscription } from 'expo-modules-core';
 import { Notification, NotificationResponse } from './Notifications.types';
 export declare const DEFAULT_ACTION_IDENTIFIER = "expo.modules.notifications.actions.DEFAULT";
 export declare function addNotificationReceivedListener(listener: (event: Notification) => void): Subscription;

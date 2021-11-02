@@ -28,9 +28,12 @@ class ForegroundLocationRequester : PermissionRequester {
         }
       }
 
-      putBundle("android", Bundle().apply {
-        putString("accuracy", accuracy)
-      })
+      putBundle(
+        "android",
+        Bundle().apply {
+          putString("accuracy", accuracy)
+        }
+      )
     }
   }
 }

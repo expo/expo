@@ -17,13 +17,13 @@ import com.google.android.gms.ads.rewarded.RewardedAd;
 import com.google.android.gms.ads.rewarded.RewardedAdCallback;
 import com.google.android.gms.ads.rewarded.RewardedAdLoadCallback;
 
-import org.unimodules.core.ExportedModule;
-import org.unimodules.core.ModuleRegistry;
-import org.unimodules.core.Promise;
-import org.unimodules.core.arguments.ReadableArguments;
-import org.unimodules.core.interfaces.ActivityProvider;
-import org.unimodules.core.interfaces.ExpoMethod;
-import org.unimodules.core.interfaces.services.EventEmitter;
+import expo.modules.core.ExportedModule;
+import expo.modules.core.ModuleRegistry;
+import expo.modules.core.Promise;
+import expo.modules.core.arguments.ReadableArguments;
+import expo.modules.core.interfaces.ActivityProvider;
+import expo.modules.core.interfaces.ExpoMethod;
+import expo.modules.core.interfaces.services.EventEmitter;
 
 import java.util.ArrayList;
 import java.util.Collections;

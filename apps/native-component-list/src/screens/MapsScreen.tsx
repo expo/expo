@@ -38,7 +38,7 @@ export default class MapsScreen extends React.Component<{}, State> {
     return (
       <ScrollView style={StyleSheet.absoluteFill}>
         <MapView
-          ref={ref => {
+          ref={(ref) => {
             this._mapView = ref;
           }}
           style={{ width: Layout.window.width, height: 300 }}
@@ -64,7 +64,7 @@ export default class MapsScreen extends React.Component<{}, State> {
         }}>
         <Switch
           style={{ marginHorizontal: 10 }}
-          onValueChange={isGoogleMap => {
+          onValueChange={(isGoogleMap) => {
             this.setState({ isGoogleMap });
           }}
           value={this.state.isGoogleMap}

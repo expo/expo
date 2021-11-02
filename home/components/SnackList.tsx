@@ -52,7 +52,7 @@ function SnackList({ data, loadMoreAsync }: Props) {
 
   const theme = useTheme();
 
-  const extractKey = React.useCallback(item => item.slug, []);
+  const extractKey = React.useCallback((item) => item.slug, []);
 
   const handleLoadMoreAsync = async () => {
     if (isLoading.current) return;
@@ -106,7 +106,7 @@ function SnackList({ data, loadMoreAsync }: Props) {
         renderItem={renderItem}
         // @ts-expect-error typescript cannot infer that props should include infinite-scroll-view props
         renderLoadingIndicator={() => <View />}
-        renderScrollComponent={props => <InfiniteScrollView {...props} />}
+        renderScrollComponent={(props) => <InfiniteScrollView {...props} />}
         style={style}
         canLoadMore={canLoadMore()}
         onLoadMoreAsync={handleLoadMoreAsync}

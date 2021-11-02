@@ -7,7 +7,7 @@ body:
       value: Thanks for taking the time to file a bug report! Please fill out this form as completely as possible.
   - type: markdown
     attributes:
-      value: If you leave out sections there is a high likelihood your issue will be closed. If you have a question, not a bug report, please post it on our [forums](https://forums.expo.io/) instead.
+      value: If you leave out sections there is a high likelihood your issue will be closed. If you have a question, not a bug report, please post it on our [forums](https://forums.expo.dev/) instead.
   - type: textarea
     attributes:
       label: Summary
@@ -46,7 +46,7 @@ body:
   - type: textarea
     attributes:
       label: Reproducible demo or steps to reproduce from a blank project
-      description: 'This should include as little code as possible, do not simply link your entire project. Sharing a link to a [Snack](https://snack.expo.io/) is a GREAT way to provide a reproducible demo :) If a reproducible demo, or a complete list of steps from blank project to bug, are not provided, it is very likely your issue will be closed. Read [here more guidance](https://stackoverflow.com/help/mcve).'
+      description: 'This should include as little code as possible, do not simply link your entire project. Sharing a link to a [Snack](https://snack.expo.dev/) is a GREAT way to provide a reproducible demo :) If a reproducible demo, or a complete list of steps from blank project to bug, are not provided, it is very likely your issue will be closed. Read [here more guidance](https://stackoverflow.com/help/mcve).'
     validations:
       required: true
   - type: markdown

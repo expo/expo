@@ -32,12 +32,14 @@
     @"hash": @"DW5MBgKq155wnX8rCP1lnsW6BsTbfKLXxGXRQx1RcOA",
     @"key": @"0436e5821bff7b95a84c21f22a43cb96.bundle",
     @"contentType": @"application/javascript",
+    @"fileExtension": @".js",
     @"url": @"https://url.to/bundle"
   };
   NSDictionary *imageAsset = @{
     @"hash": @"JSeRsPNKzhVdHP1OEsDVsLH500Zfe4j1O7xWfa14oBo",
     @"key": @"3261e570d51777be1e99116562280926.png",
     @"contentType": @"image/png",
+    @"fileExtension": @".png",
     @"url": @"https://url.to/asset"
   };
 
@@ -49,7 +51,7 @@
   }];
   EXUpdatesDatabase *database = [EXUpdatesDatabase new];
 
-  _updateRollout0 = [EXUpdatesNewUpdate updateWithNewManifest:[[EXUpdatesNewRawManifest alloc] initWithRawManifestJSON:@{
+  _updateRollout0 = [EXUpdatesNewUpdate updateWithNewManifest:[[EXManifestsNewManifest alloc] initWithRawManifestJSON:@{
     @"id": @"079cde35-8433-4c17-81c8-7117c1513e71",
     @"createdAt": @"2021-01-10T19:39:22.480Z",
     @"runtimeVersion": @"1.0",
@@ -58,7 +60,7 @@
     @"metadata": @{@"branchName": @"rollout"}
   }] response:nil config:config database:database];
 
-  _updateDefault1 = [EXUpdatesNewUpdate updateWithNewManifest:[[EXUpdatesNewRawManifest alloc] initWithRawManifestJSON:@{
+  _updateDefault1 = [EXUpdatesNewUpdate updateWithNewManifest:[[EXManifestsNewManifest alloc] initWithRawManifestJSON:@{
     @"id": @"079cde35-8433-4c17-81c8-7117c1513e72",
     @"createdAt": @"2021-01-11T19:39:22.480Z",
     @"runtimeVersion": @"1.0",
@@ -67,7 +69,7 @@
     @"metadata": @{@"branchName": @"default"}
   }] response:nil config:config database:database];
 
-  _updateRollout1 = [EXUpdatesNewUpdate updateWithNewManifest:[[EXUpdatesNewRawManifest alloc] initWithRawManifestJSON:@{
+  _updateRollout1 = [EXUpdatesNewUpdate updateWithNewManifest:[[EXManifestsNewManifest alloc] initWithRawManifestJSON:@{
     @"id": @"079cde35-8433-4c17-81c8-7117c1513e73",
     @"createdAt": @"2021-01-12T19:39:22.480Z",
     @"runtimeVersion": @"1.0",
@@ -76,7 +78,7 @@
     @"metadata": @{@"branchName": @"rollout"}
   }] response:nil config:config database:database];
 
-  _updateDefault2 = [EXUpdatesNewUpdate updateWithNewManifest:[[EXUpdatesNewRawManifest alloc] initWithRawManifestJSON:@{
+  _updateDefault2 = [EXUpdatesNewUpdate updateWithNewManifest:[[EXManifestsNewManifest alloc] initWithRawManifestJSON:@{
     @"id": @"079cde35-8433-4c17-81c8-7117c1513e74",
     @"createdAt": @"2021-01-13T19:39:22.480Z",
     @"runtimeVersion": @"1.0",
@@ -85,7 +87,7 @@
     @"metadata": @{@"branchName": @"default"}
   }] response:nil config:config database:database];
 
-  _updateRollout2 = [EXUpdatesNewUpdate updateWithNewManifest:[[EXUpdatesNewRawManifest alloc] initWithRawManifestJSON:@{
+  _updateRollout2 = [EXUpdatesNewUpdate updateWithNewManifest:[[EXManifestsNewManifest alloc] initWithRawManifestJSON:@{
     @"id": @"079cde35-8433-4c17-81c8-7117c1513e75",
     @"createdAt": @"2021-01-14T19:39:22.480Z",
     @"runtimeVersion": @"1.0",
@@ -94,7 +96,7 @@
     @"metadata": @{@"branchName": @"rollout"}
   }] response:nil config:config database:database];
 
-  _updateMultipleFilters = [EXUpdatesNewUpdate updateWithNewManifest:[[EXUpdatesNewRawManifest alloc] initWithRawManifestJSON:@{
+  _updateMultipleFilters = [EXUpdatesNewUpdate updateWithNewManifest:[[EXManifestsNewManifest alloc] initWithRawManifestJSON:@{
     @"id": @"079cde35-8433-4c17-81c8-7117c1513e72",
     @"createdAt": @"2021-01-11T19:39:22.480Z",
     @"runtimeVersion": @"1.0",
@@ -103,7 +105,7 @@
     @"metadata": @{@"firstKey": @"value1", @"secondKey": @"value2"}
   }] response:nil config:config database:database];
 
-  _updateNoMetadata = [EXUpdatesNewUpdate updateWithNewManifest:[[EXUpdatesNewRawManifest alloc] initWithRawManifestJSON:@{
+  _updateNoMetadata = [EXUpdatesNewUpdate updateWithNewManifest:[[EXManifestsNewManifest alloc] initWithRawManifestJSON:@{
     @"id": @"079cde35-8433-4c17-81c8-7117c1513e72",
     @"createdAt": @"2021-01-11T19:39:22.480Z",
     @"runtimeVersion": @"1.0",

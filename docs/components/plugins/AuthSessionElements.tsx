@@ -77,6 +77,7 @@ export const SocialGridItem: React.FC<{
         height: 56,
         marginBottom: '1.2em',
       }}
+      alt={title}
       src={image}
     />
     <p

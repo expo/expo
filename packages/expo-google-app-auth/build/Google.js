@@ -1,6 +1,6 @@
-import { CodedError } from '@unimodules/core';
 import * as AppAuth from 'expo-app-auth';
 import Constants from 'expo-constants';
+import { CodedError } from 'expo-modules-core';
 import { Platform } from 'react-native';
 const isInExpo = Constants.appOwnership === 'expo';
 export function getPlatformGUID(config) {
@@ -51,7 +51,7 @@ function isValidGUID(guid) {
     return { isValid: true };
 }
 function guidFromClientId(clientId) {
-    const clientIdComponents = clientId.split('.').filter(component => component.includes('-'));
+    const clientIdComponents = clientId.split('.').filter((component) => component.includes('-'));
     const guid = clientIdComponents[0];
     const { isValid, reason } = isValidGUID(guid);
     if (!isValid) {

@@ -7,20 +7,5 @@ generates:
   graphql/types.ts:
     plugins:
       - typescript
-  graphql/:
-    preset: near-operation-file
-    presetConfig:
-      baseTypesPath: types.ts
-    config:
-      withHooks: true
-      withComponent: false
-      withHOC: false
-      withMutationFn: false
-      withRefetchFn: true
-      addDocBlocks: false
-      reactApolloVersion: 3
-      preResolveTypes: true
-      dedupeOperationSuffix: true
-    plugins:
       - typescript-operations
-      - typescript-react-apollo
+      - typed-document-node

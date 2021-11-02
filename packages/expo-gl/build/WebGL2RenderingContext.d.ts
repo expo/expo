@@ -1,3 +1,4 @@
+import { WebGLObject } from './types';
 export default interface WebGL2RenderingCOntext extends WebGLRenderingContext {
     readonly READ_BUFFER: number;
     readonly UNPACK_ROW_LENGTH: number;

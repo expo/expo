@@ -33,16 +33,6 @@ Currently `expo-sharing` only supports sharing *from your app to other apps* and
 import * as Sharing from 'expo-sharing';
 ```
 
-**[Methods](#methods)**
-
-- [Installation](#installation)
-- [API](#api)
-- [Methods](#methods)
-  - [`Sharing.isAvailableAsync()`](#sharingisavailableasync)
-    - [Returns](#returns)
-  - [`Sharing.shareAsync(url, options)`](#sharingshareasyncurl-options)
-    - [Arguments](#arguments)
-
 ## Methods
 
 ### `Sharing.isAvailableAsync()`

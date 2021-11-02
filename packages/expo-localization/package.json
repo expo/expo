@@ -1,6 +1,6 @@
 {
   "name": "expo-localization",
-  "version": "10.2.0",
+  "version": "11.0.0",
   "description": "Provides an interface for native user localization information.",
   "main": "build/Localization.js",
   "types": "build/Localization.d.ts",
@@ -34,7 +34,7 @@
   ],
   "author": "650 Industries, Inc.",
   "license": "MIT",
-  "homepage": "https://docs.expo.io/versions/latest/sdk/localization/",
+  "homepage": "https://docs.expo.dev/versions/latest/sdk/localization/",
   "jest": {
     "preset": "expo-module-scripts"
   },

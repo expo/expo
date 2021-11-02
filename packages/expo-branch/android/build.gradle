@@ -3,7 +3,7 @@ apply plugin: 'kotlin-android'
 apply plugin: 'maven'
 
 group = 'host.exp.exponent'
-version = '4.2.0'
+version = '5.0.1'
 
 import groovy.json.JsonSlurper
 
@@ -68,7 +68,7 @@ android {
     minSdkVersion safeExtGet("minSdkVersion", 21)
     targetSdkVersion safeExtGet("targetSdkVersion", 30)
     versionCode 12
-    versionName '4.2.0'
+    versionName '5.0.1'
 
     buildConfigField("String", "RNBRANCH_VERSION", "\"${getNpmVersion()}\"")
   }
@@ -77,16 +77,8 @@ android {
   }
 }
 
-if (new File(rootProject.projectDir.parentFile, 'package.json').exists()) {
-  apply from: project(":unimodules-core").file("../unimodules-core.gradle")
-} else {
-  throw new GradleException(
-      '\'unimodules-core.gradle\' was not found in the usual React Native dependency location. ' +
-          'This package can only be used in such projects. Are you sure you\'ve installed the dependencies properly?')
-}
-
 dependencies {
-  unimodule 'unimodules-core'
+  implementation project(':expo-modules-core')
   //noinspection GradleDynamicVersion
   implementation 'com.facebook.react:react-native:+'
   api 'io.branch.sdk.android:library:5.0.3'

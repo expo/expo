@@ -32,7 +32,7 @@ Pod::Spec.new do |s|
                                "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)/Libraries/ABI41_0_0FBReactNativeSpec\" \"$(PODS_ROOT)/Folly\""
                              }
 
-  s.dependency "Folly", folly_version
+  s.dependency "RCT-Folly", folly_version
   s.dependency "ABI41_0_0RCTRequired", version
   s.dependency "ABI41_0_0RCTTypeSafety", version
   s.dependency "ABI41_0_0React-Core", version

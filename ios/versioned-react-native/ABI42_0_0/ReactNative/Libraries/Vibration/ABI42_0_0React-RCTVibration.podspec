@@ -34,7 +34,7 @@ Pod::Spec.new do |s|
                              }
   s.frameworks             = "AudioToolbox"
 
-  s.dependency "Folly", folly_version
+  s.dependency "RCT-Folly", folly_version
   s.dependency "ABI42_0_0FBReactNativeSpec", version
   s.dependency "ABI42_0_0ReactCommon/turbomodule/core", version
   s.dependency "ABI42_0_0React-jsi", version

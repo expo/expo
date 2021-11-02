@@ -1,6 +1,6 @@
-#import <UMCore/UMViewManager.h>
+#import <ExpoModulesCore/EXViewManager.h>
 #import <FBAudienceNetwork/FBAudienceNetwork.h>
 #import <UIKit/UIKit.h>
 
-@interface EXAdIconViewManager : UMViewManager
+@interface EXAdIconViewManager : EXViewManager
 @end

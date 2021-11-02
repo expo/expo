@@ -25,6 +25,8 @@ concurrency:
 jobs:
   test:
     runs-on: macos-11
+    env:
+      NDK_ABI_FILTERS: x86_64
     steps:
       - name: 👀 Check out repository
         uses: actions/checkout@v2
@@ -58,8 +60,12 @@ jobs:
           key: ${{ runner.os }}-gradle-${{ hashFiles('android/*.gradle*') }}
           restore-keys: |
             ${{ runner.os }}-gradle-
+      - name: 💿 Patch react-native to support single abi
+        run: sed -i '' 's/^APP_ABI := .*$/APP_ABI := $(if $(NDK_ABI_FILTERS),$(NDK_ABI_FILTERS),$(armeabi-v7a x86 arm64-v8a x86_64))/g' ReactAndroid/src/main/jni/Application.mk
+        working-directory: react-native-lab/react-native
       - name: 🎸 Run instrumented unit tests
         uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: 29
+          arch: x86_64
           script: bin/expotools android-native-unit-tests --type instrumented

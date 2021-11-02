@@ -9,7 +9,7 @@ Expo CLI is a command line app that is the main interface between a developer an
 
 - Creating new projects
 - Developing your app: running the project server, viewing logs, opening your app in a simulator
-- [Publishing](publishing.md) your app JavaScript and other assets and managing releasing them over the air
+- [Publishing](publishing.md) your app JavaScript and other assets and managing releasing them as updates
 - [Building binaries](../distribution/building-standalone-apps.md) (`apk` and `ipa` files) to be [uploaded to the App Store and Play Store](../distribution/uploading-apps.md)
 - Managing Apple Credentials and Google Keystores
 
@@ -29,63 +29,14 @@ The commands listed below are derived from the latest version of Expo CLI. You c
 
 <TerminalBlock cmd={[`# Usage: expo [command] [options]`]} />
 
-### Auth
+<!--
+Generation script can be found https://github.com/expo/expo-cli/blob/master/packages/expo-cli/scripts/introspect.ts
+Run `yarn introspect md` in expo-cli/packages/expo-cli then paste the results below.
+ -->
 
-<details>
-<summary>
-<h4>expo login</h4>
-<p>Login to an Expo account</p>
-</summary>
-<p>
+<!-- BEGIN GENERATED BLOCK. DO NOT MODIFY MANUALLY. https://github.com/expo/expo-cli/blob/master/packages/expo-cli/scripts/introspect.ts -->
 
-Alias: `expo signin`
-
-| Option                    | Description                            |
-| ------------------------- | -------------------------------------- |
-| `-u, --username [string]` | Username                               |
-| `-p, --password [string]` | Password                               |
-| `--otp [string]`          | One-time password from your 2FA device |
-
-</p>
-</details>
-
-<details>
-<summary>
-<h4>expo logout</h4>
-<p>Logout of an Expo account</p>
-</summary>
-<p>
-
-This command does not take any options.
-
-</p>
-</details>
-
-<details>
-<summary>
-<h4>expo register</h4>
-<p>Sign up for a new Expo account</p>
-</summary>
-<p>
-
-This command does not take any options.
-
-</p>
-</details>
-
-<details>
-<summary>
-<h4>expo whoami</h4>
-<p>Return the currently authenticated account</p>
-</summary>
-<p>
-
-Alias: `expo w`
-
-This command does not take any options.
-
-</p>
-</details>
+> Based on `expo-cli` v4.11.0
 
 ---
 
@@ -98,22 +49,23 @@ This command does not take any options.
 </summary>
 <p>
 
-| Option                   | Description                                                                                                                        |
-| ------------------------ | ---------------------------------------------------------------------------------------------------------------------------------- |
-| `-p, --public-url [url]` | The public url that will host the static files. (Required)                                                                         |
-| `-c, --clear`            | Clear the Metro bundler cache                                                                                                      |
-| `--output-dir [dir]`     | The directory to export the static files to. Default directory is `dist`                                                           |
-| `-a, --asset-url [url]`  | The absolute or relative url that will host the asset files. Default is './assets', which will be resolved against the public-url. |
-| `-d, --dump-assetmap`    | Dump the asset map for further processing.                                                                                         |
-| `--dev`                  | Configure static files for developing locally using a non-https server                                                             |
-| `-s, --dump-sourcemap`   | Dump the source map for debugging the JS bundle.                                                                                   |
-| `-q, --quiet`            | Suppress verbose output.                                                                                                           |
-| `-t, --target [env]`     | Target environment for which this export is intended. Options are `managed` or `bare`.                                             |
-| `--merge-src-dir [dir]`  | A repeatable source dir to merge in.                                                                                               |
-| `--merge-src-url [url]`  | A repeatable source tar.gz file URL to merge in.                                                                                   |
-| `--max-workers [num]`    | Maximum number of tasks to allow Metro to spawn.                                                                                   |
-| `--experimental-bundle`  | export bundles for use with EAS updates.                                                                                           |
-| `--config [file]`        | Deprecated: Use app.config.js to switch config files instead.                                                                      |
+| Option                        | Description                                                            |
+| ----------------------------- | ---------------------------------------------------------------------- | ---------------------------- |
+| `--platform [all⎮android      | ios]`                                                                  | Platforms: android, ios, all |
+| `-p, --public-url [url]`      | The public url that will host the static files (required)              |
+| `-c, --clear`                 | Clear the Metro bundler cache                                          |
+| `--output-dir [dir]`          | The directory to export the static files to                            |
+| `-a, --asset-url [url]`       | The absolute or relative url that will host the asset files            |
+| `-d, --dump-assetmap`         | Dump the asset map for further processing                              |
+| `--dev`                       | Configure static files for developing locally using a non-https server |
+| `-s, --dump-sourcemap`        | Dump the source map for debugging the JS bundle                        |
+| `-q, --quiet`                 | Suppress verbose output                                                |
+| `-t, --target [managed⎮bare]` | Target environment for which this export is intended                   |
+| `--merge-src-dir [dir]`       | A repeatable source dir to merge in                                    |
+| `--merge-src-url [url]`       | A repeatable source tar.gz file URL to merge in                        |
+| `--max-workers [num]`         | Maximum number of tasks to allow Metro to spawn                        |
+| `--experimental-bundle`       | export bundles for use with EAS updates                                |
+| `--config [file]`             | Deprecated: Use app.config.js to switch config files instead.          |
 
 </p>
 </details>
@@ -127,14 +79,14 @@ This command does not take any options.
 
 Alias: `expo i`
 
-| Option                  | Description                                                                                                                                                                         |
-| ----------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `-t, --template [name]` | Specify which template to use. Valid options are "blank", "tabs", "bare-minimum" or a package on npm (e.g. "expo-template-bare-typescript") that includes an Expo project template. |
-| `--npm`                 | Use npm to install dependencies. (default when Yarn is not installed)                                                                                                               |
-| `--yarn`                | Use Yarn to install dependencies. (default when Yarn is installed)                                                                                                                  |
-| `--no-install`          | Skip installing npm packages or CocoaPods.                                                                                                                                          |
-| `--name [name]`         | The name of your app visible on the home screen.                                                                                                                                    |
-| `--yes`                 | Use default options. Same as "expo init . --template blank                                                                                                                          |
+| Option                  | Description                                                                                                                                                                      |
+| ----------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `-t, --template [name]` | Specify which template to use. Valid options are "blank", "tabs", "bare-minimum" or a package on npm (e.g. "expo-template-bare-minimum") that includes an Expo project template. |
+| `--npm`                 | Use npm to install dependencies. (default when Yarn is not installed)                                                                                                            |
+| `--yarn`                | Use Yarn to install dependencies. (default when Yarn is installed)                                                                                                               |
+| `--no-install`          | Skip installing npm packages or CocoaPods.                                                                                                                                       |
+| `--name [name]`         | The name of your app visible on the home screen.                                                                                                                                 |
+| `--yes`                 | Use default options. Same as "expo init . --template blank                                                                                                                       |
 
 </p>
 </details>
@@ -165,15 +117,15 @@ Alias: `expo add`
 
 Alias: `expo p`
 
-| Option                                | Description                                                                             |
-| ------------------------------------- | --------------------------------------------------------------------------------------- |
-| `-q, --quiet`                         | Suppress verbose output from the Metro bundler.                                         |
-| `-s, --send-to [dest]`                | A phone number or email address to send a link to                                       |
-| `-c, --clear`                         | Clear the Metro bundler cache                                                           |
-| `-t, --target [env]`                  | Target environment for which this publish is intended. Options are `managed` or `bare`. |
-| `--max-workers [num]`                 | Maximum number of tasks to allow Metro to spawn.                                        |
-| `--release-channel [release channel]` | The release channel to publish to. Default is 'default'.                                |
-| `--config [file]`                     | Deprecated: Use app.config.js to switch config files instead.                           |
+| Option                        | Description                                                                             |
+| ----------------------------- | --------------------------------------------------------------------------------------- |
+| `-q, --quiet`                 | Suppress verbose output from the Metro bundler.                                         |
+| `-s, --send-to [dest]`        | A phone number or email address to send a link to                                       |
+| `-c, --clear`                 | Clear the Metro bundler cache                                                           |
+| `-t, --target [managed⎮bare]` | Target environment for which this publish is intended. Options are `managed` or `bare`. |
+| `--max-workers [num]`         | Maximum number of tasks to allow Metro to spawn.                                        |
+| `--release-channel [name]`    | The release channel to publish to. Default is 'default'.                                |
+| `--config [file]`             | Deprecated: Use app.config.js to switch config files instead.                           |
 
 </p>
 </details>
@@ -258,6 +210,7 @@ Alias: `expo r`
 | `--minify`             | Minify code                                                                                                    |
 | `--no-minify`          | Do not minify code                                                                                             |
 | `--https`              | To start webpack with https protocol                                                                           |
+| `-p, --port [port]`    | Port to start the native Metro bundler on (does not apply to web or tunnel). Default: 19000                    |
 | `--no-https`           | To start webpack with http protocol                                                                            |
 | `--dev-client`         | Experimental: Starts the bundler for use with the expo-development-client                                      |
 | `--scheme [scheme]`    | Custom URI protocol to use with a dev client                                                                   |
@@ -291,6 +244,7 @@ Alias: `expo web`
 | `--no-minify`          | Do not minify code                                                                                             |
 | `--https`              | To start webpack with https protocol                                                                           |
 | `--no-https`           | To start webpack with http protocol                                                                            |
+| `-p, --port [port]`    | Port to start the Webpack bundler on. Default: 19006                                                           |
 | `-s, --send-to [dest]` | An email address to send a link to                                                                             |
 | `--dev-client`         | Experimental: Starts the bundler for use with the expo-development-client                                      |
 | `--scheme [scheme]`    | Custom URI protocol to use with a dev client                                                                   |
@@ -303,6 +257,66 @@ Alias: `expo web`
 | `--localhost`          | Same as --host localhost                                                                                       |
 | `--offline`            | Allows this command to run while offline                                                                       |
 | `--config [file]`      | Deprecated: Use app.config.js to switch config files instead.                                                  |
+
+</p>
+</details>
+
+---
+
+### Auth
+
+<details>
+<summary>
+<h4>expo login</h4>
+<p>Login to an Expo account</p>
+</summary>
+<p>
+
+Alias: `expo signin`
+
+| Option                    | Description                            |
+| ------------------------- | -------------------------------------- |
+| `-u, --username [string]` | Username                               |
+| `-p, --password [string]` | Password                               |
+| `--otp [string]`          | One-time password from your 2FA device |
+
+</p>
+</details>
+
+<details>
+<summary>
+<h4>expo logout</h4>
+<p>Logout of an Expo account</p>
+</summary>
+<p>
+
+This command does not take any options.
+
+</p>
+</details>
+
+<details>
+<summary>
+<h4>expo register</h4>
+<p>Sign up for a new Expo account</p>
+</summary>
+<p>
+
+This command does not take any options.
+
+</p>
+</details>
+
+<details>
+<summary>
+<h4>expo whoami</h4>
+<p>Return the currently authenticated account</p>
+</summary>
+<p>
+
+Alias: `expo w`
+
+This command does not take any options.
 
 </p>
 </details>
@@ -332,9 +346,10 @@ Alias: `expo web`
 </summary>
 <p>
 
-| Option     | Description                                                                |
-| ---------- | -------------------------------------------------------------------------- |
-| `--latest` | Install the latest version of Expo Go, ignore the current project version. |
+| Option                  | Description                                                                |
+| ----------------------- | -------------------------------------------------------------------------- |
+| `-d, --device [device]` | Device name to install the client on                                       |
+| `--latest`              | Install the latest version of Expo Go, ignore the current project version. |
 
 </p>
 </details>
@@ -350,11 +365,11 @@ Alias: `expo web`
 </summary>
 <p>
 
-| Option              | Description                                                   |
-| ------------------- | ------------------------------------------------------------- |
-| `-t, --type [type]` | Type of config to show. Options: public, prebuild, introspect |
-| `--full`            | Include all project config data                               |
-| `--config [file]`   | Deprecated: Use app.config.js to switch config files instead. |
+| Option                       | Description                                                   |
+| ---------------------------- | ------------------------------------------------------------- | ----------------------- |
+| `-t, --type [public⎮prebuild | introspect]`                                                  | Type of config to show. |
+| `--full`                     | Include all project config data                               |
+| `--config [file]`            | Deprecated: Use app.config.js to switch config files instead. |
 
 </p>
 </details>
@@ -366,7 +381,9 @@ Alias: `expo web`
 </summary>
 <p>
 
-This command does not take any options.
+| Option            | Description                                                   |
+| ----------------- | ------------------------------------------------------------- |
+| `--config [file]` | Deprecated: Use app.config.js to switch config files instead. |
 
 </p>
 </details>
@@ -408,6 +425,44 @@ Alias: `expo update`
 
 <details>
 <summary>
+<h4>expo publish:set</h4>
+<p>Specify the channel to serve a published release</p>
+</summary>
+<p>
+
+Alias: `expo ps`
+
+| Option                          | Description                                                           |
+| ------------------------------- | --------------------------------------------------------------------- |
+| `-c, --release-channel [name]`  | The channel to set the published release. (Required)                  |
+| `-p, --publish-id [publish-id]` | The id of the published release to serve from the channel. (Required) |
+| `--config [file]`               | Deprecated: Use app.config.js to switch config files instead.         |
+
+</p>
+</details>
+
+<details>
+<summary>
+<h4>expo publish:rollback</h4>
+<p>Undo an update to a channel</p>
+</summary>
+<p>
+
+Alias: `expo pr`
+
+| Option                         | Description                                                   |
+| ------------------------------ | ------------------------------------------------------------- |
+| `--channel-id [channel-id]`    | This flag is deprecated.                                      |
+| `-c, --release-channel [name]` | The channel to rollback from. (Required)                      |
+| `-s, --sdk-version [version]`  | The sdk version to rollback. (Required)                       |
+| `-p, --platform [android⎮ios]` | The platform to rollback.                                     |
+| `--config [file]`              | Deprecated: Use app.config.js to switch config files instead. |
+
+</p>
+</details>
+
+<details>
+<summary>
 <h4>expo publish:history</h4>
 <p>Log the project's releases</p>
 </summary>
@@ -415,14 +470,14 @@ Alias: `expo update`
 
 Alias: `expo ph`
 
-| Option                                 | Description                                                                                          |
-| -------------------------------------- | ---------------------------------------------------------------------------------------------------- |
-| `-c, --release-channel [channel-name]` | Filter by release channel. If this flag is not included, the most recent publications will be shown. |
-| `--count [number-of-logs]`             | Number of logs to view, maximum 100, default 5.                                                      |
-| `-p, --platform [ios⎮android]`         | Filter by platform, android or ios. Defaults to both platforms.                                      |
-| `-s, --sdk-version [version]`          | Filter by SDK version e.g. 35.0.0                                                                    |
-| `-r, --raw`                            | Produce some raw output.                                                                             |
-| `--config [file]`                      | Deprecated: Use app.config.js to switch config files instead.                                        |
+| Option                         | Description                                                                                          |
+| ------------------------------ | ---------------------------------------------------------------------------------------------------- |
+| `-c, --release-channel [name]` | Filter by release channel. If this flag is not included, the most recent publications will be shown. |
+| `--count [number-of-logs]`     | Number of logs to view, maximum 100, default 5.                                                      |
+| `-p, --platform [android⎮ios]` | Filter by platform, android or ios. Defaults to both platforms.                                      |
+| `-s, --sdk-version [version]`  | Filter by SDK version e.g. 35.0.0                                                                    |
+| `-r, --raw`                    | Produce some raw output.                                                                             |
+| `--config [file]`              | Deprecated: Use app.config.js to switch config files instead.                                        |
 
 </p>
 </details>
@@ -445,44 +500,6 @@ Alias: `expo pd`
 </p>
 </details>
 
-<details>
-<summary>
-<h4>expo publish:set</h4>
-<p>Specify the channel to serve a published release</p>
-</summary>
-<p>
-
-Alias: `expo ps`
-
-| Option                                 | Description                                                           |
-| -------------------------------------- | --------------------------------------------------------------------- |
-| `-c, --release-channel [channel-name]` | The channel to set the published release. (Required)                  |
-| `-p, --publish-id [publish-id]`        | The id of the published release to serve from the channel. (Required) |
-| `--config [file]`                      | Deprecated: Use app.config.js to switch config files instead.         |
-
-</p>
-</details>
-
-<details>
-<summary>
-<h4>expo publish:rollback</h4>
-<p>Undo an update to a channel</p>
-</summary>
-<p>
-
-Alias: `expo pr`
-
-| Option                                 | Description                                                   |
-| -------------------------------------- | ------------------------------------------------------------- |
-| `--channel-id [channel-id]`            | This flag is deprecated.                                      |
-| `-c, --release-channel [channel-name]` | The channel to rollback from. (Required)                      |
-| `-s, --sdk-version [version]`          | The sdk version to rollback. (Required)                       |
-| `-p, --platform [ios⎮android]`         | The platform to rollback.                                     |
-| `--config [file]`                      | Deprecated: Use app.config.js to switch config files instead. |
-
-</p>
-</details>
-
 ---
 
 ### Build
@@ -496,28 +513,28 @@ Alias: `expo pr`
 
 Alias: `expo bi`
 
-| Option                                           | Description                                                                                                         |
-| ------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------- | ----------- |
-| `-c, --clear-credentials`                        | Clear all credentials stored on Expo servers.                                                                       |
-| `--clear-dist-cert`                              | Remove Distribution Certificate stored on Expo servers.                                                             |
-| `--clear-push-key`                               | Remove Push Notifications Key stored on Expo servers.                                                               |
-| `--clear-push-cert`                              | Remove Push Notifications Certificate stored on Expo servers. Use of Push Notifications Certificates is deprecated. |
-| `--clear-provisioning-profile`                   | Remove Provisioning Profile stored on Expo servers.                                                                 |
-| `-r --revoke-credentials`                        | Revoke credentials on developer.apple.com, select appropriate using --clear-\* options.                             |
-| `--apple-id [login]`                             | Apple ID username (please also set the Apple ID password as EXPO_APPLE_PASSWORD environment variable).              |
-| `-t --type [build]`                              | Type of build: [archive                                                                                             | simulator]. |
-| `--release-channel [channel-name]`               | Pull from specified release channel.                                                                                |
-| `--no-publish`                                   | Disable automatic publishing before building.                                                                       |
-| `--no-wait`                                      | Exit immediately after scheduling build.                                                                            |
-| `--team-id [apple-teamId]`                       | Apple Team ID.                                                                                                      |
-| `--dist-p12-path [dist.p12]`                     | Path to your Distribution Certificate P12 (set password as EXPO_IOS_DIST_P12_PASSWORD environment variable).        |
-| `--push-id [push-id]`                            | Push Key ID (ex: 123AB4C56D).                                                                                       |
-| `--push-p8-path [push.p8]`                       | Path to your Push Key .p8 file.                                                                                     |
-| `--provisioning-profile-path [.mobileprovision]` | Path to your Provisioning Profile.                                                                                  |
-| `--public-url [url]`                             | The URL of an externally hosted manifest (for self-hosted apps).                                                    |
-| `--skip-credentials-check`                       | Skip checking credentials.                                                                                          |
-| `--skip-workflow-check`                          | Skip warning about build service bare workflow limitations.                                                         |
-| `--config [file]`                                | Deprecated: Use app.config.js to switch config files instead.                                                       |
+| Option                               | Description                                                                                                         |
+| ------------------------------------ | ------------------------------------------------------------------------------------------------------------------- |
+| `-c, --clear-credentials`            | Clear all credentials stored on Expo servers.                                                                       |
+| `--clear-dist-cert`                  | Remove Distribution Certificate stored on Expo servers.                                                             |
+| `--clear-push-key`                   | Remove Push Notifications Key stored on Expo servers.                                                               |
+| `--clear-push-cert`                  | Remove Push Notifications Certificate stored on Expo servers. Use of Push Notifications Certificates is deprecated. |
+| `--clear-provisioning-profile`       | Remove Provisioning Profile stored on Expo servers.                                                                 |
+| `-r --revoke-credentials`            | Revoke credentials on developer.apple.com, select appropriate using --clear-\* options.                             |
+| `--apple-id [login]`                 | Apple ID username (please also set the Apple ID password as EXPO_APPLE_PASSWORD environment variable).              |
+| `-t --type [archive⎮simulator]`      | Type of build: [archive⎮simulator].                                                                                 |
+| `--release-channel [name]`           | Pull from specified release channel.                                                                                |
+| `--no-publish`                       | Disable automatic publishing before building.                                                                       |
+| `--no-wait`                          | Exit immediately after scheduling build.                                                                            |
+| `--team-id [apple-teamId]`           | Apple Team ID.                                                                                                      |
+| `--dist-p12-path [path]`             | Path to your Distribution Certificate P12 (set password as EXPO_IOS_DIST_P12_PASSWORD environment variable).        |
+| `--push-id [push-id]`                | Push Key ID (ex: 123AB4C56D).                                                                                       |
+| `--push-p8-path [path]`              | Path to your Push Key .p8 file.                                                                                     |
+| `--provisioning-profile-path [path]` | Path to your Provisioning Profile.                                                                                  |
+| `--public-url [url]`                 | The URL of an externally hosted manifest (for self-hosted apps).                                                    |
+| `--skip-credentials-check`           | Skip checking credentials.                                                                                          |
+| `--skip-workflow-check`              | Skip warning about build service bare workflow limitations.                                                         |
+| `--config [file]`                    | Deprecated: Use app.config.js to switch config files instead.                                                       |
 
 </p>
 </details>
@@ -531,19 +548,19 @@ Alias: `expo bi`
 
 Alias: `expo ba`
 
-| Option                             | Description                                                     |
-| ---------------------------------- | --------------------------------------------------------------- | ----- |
-| `-c, --clear-credentials`          | Clear stored credentials.                                       |
-| `--release-channel [channel-name]` | Pull from specified release channel.                            |
-| `--no-publish`                     | Disable automatic publishing before building.                   |
-| `--no-wait`                        | Exit immediately after triggering build.                        |
-| `--keystore-path [app.jks]`        | Path to your Keystore.                                          |
-| `--keystore-alias [alias]`         | Keystore Alias                                                  |
-| `--generate-keystore`              | [deprecated] Generate Keystore if one does not exist            |
-| `--public-url [url]`               | The URL of an externally hosted manifest (for self-hosted apps) |
-| `--skip-workflow-check`            | Skip warning about build service bare workflow limitations.     |
-| `-t --type [build]`                | Type of build: [app-bundle                                      | apk]. |
-| `--config [file]`                  | Deprecated: Use app.config.js to switch config files instead.   |
+| Option                       | Description                                                     |
+| ---------------------------- | --------------------------------------------------------------- |
+| `-c, --clear-credentials`    | Clear stored credentials.                                       |
+| `--release-channel [name]`   | Pull from specified release channel.                            |
+| `--no-publish`               | Disable automatic publishing before building.                   |
+| `--no-wait`                  | Exit immediately after triggering build.                        |
+| `--keystore-path [path]`     | Path to your Keystore: \*.jks.                                  |
+| `--keystore-alias [alias]`   | Keystore Alias                                                  |
+| `--generate-keystore`        | [deprecated] Generate Keystore if one does not exist            |
+| `--public-url [url]`         | The URL of an externally hosted manifest (for self-hosted apps) |
+| `--skip-workflow-check`      | Skip warning about build service bare workflow limitations.     |
+| `-t --type [app-bundle⎮apk]` | Type of build: [app-bundle⎮apk].                                |
+| `--config [file]`            | Deprecated: Use app.config.js to switch config files instead.   |
 
 </p>
 </details>
@@ -593,10 +610,10 @@ Alias: `expo bs`
 </summary>
 <p>
 
-| Option                     | Description                                                   |
-| -------------------------- | ------------------------------------------------------------- | ---- |
-| `-p --platform [platform]` | Platform: [android                                            | ios] |
-| `--config [file]`          | Deprecated: Use app.config.js to switch config files instead. |
+| Option                        | Description                                                   |
+| ----------------------------- | ------------------------------------------------------------- |
+| `-p --platform [android⎮ios]` | Platform: [android⎮ios]                                       |
+| `--config [file]`             | Deprecated: Use app.config.js to switch config files instead. |
 
 </p>
 </details>
@@ -719,7 +736,6 @@ Alias: `expo u`
 
 | Option              | Description                                                                                                    |
 | ------------------- | -------------------------------------------------------------------------------------------------------------- |
-| `-w, --web`         | Return the URL of the web app                                                                                  |
 | `--dev-client`      | Experimental: Starts the bundler for use with the expo-development-client                                      |
 | `--scheme [scheme]` | Custom URI protocol to use with a dev client                                                                   |
 | `-a, --android`     | Opens your app in Expo Go on a connected Android device                                                        |
@@ -903,10 +919,11 @@ Alias: `expo ui`
 </summary>
 <p>
 
-| Option        | Description                              |
-| ------------- | ---------------------------------------- |
-| `-f, --force` | Allows replacing existing files          |
-| `--offline`   | Allows this command to run while offline |
+| Option            | Description                                                   |
+| ----------------- | ------------------------------------------------------------- |
+| `-f, --force`     | Allows replacing existing files                               |
+| `--offline`       | Allows this command to run while offline                      |
+| `--config [file]` | Deprecated: Use app.config.js to switch config files instead. |
 
 </p>
 </details>
@@ -914,16 +931,16 @@ Alias: `expo ui`
 <details>
 <summary>
 <h4>expo eject</h4>
-<p>Create native iOS and Android project files. Learn more: https://docs.expo.io/workflow/customizing/</p>
+<p>Create native iOS and Android project files. Learn more: https://docs.expo.dev/workflow/customizing/</p>
 </summary>
 <p>
 
-| Option                      | Description                                                           |
-| --------------------------- | --------------------------------------------------------------------- |
-| `--no-install`              | Skip installing npm packages and CocoaPods.                           |
-| `--npm`                     | Use npm to install dependencies. (default when Yarn is not installed) |
-| `-p, --platform [platform]` | Platforms to sync: ios, android, all. Default: all                    |
-| `--config [file]`           | Deprecated: Use app.config.js to switch config files instead.         |
+| Option                       | Description                                                           |
+| ---------------------------- | --------------------------------------------------------------------- | -------------------------------------------------- |
+| `--no-install`               | Skip installing npm packages and CocoaPods.                           |
+| `--npm`                      | Use npm to install dependencies. (default when Yarn is not installed) |
+| `-p, --platform [all⎮android | ios]`                                                                 | Platforms to sync: ios, android, all. Default: all |
+| `--config [file]`            | Deprecated: Use app.config.js to switch config files instead.         |
 
 </p>
 </details>
@@ -931,17 +948,17 @@ Alias: `expo ui`
 <details>
 <summary>
 <h4>expo prebuild</h4>
-<p>Experimental: Create native iOS and Android project files before building natively. Learn more: https://docs.expo.io/workflow/customizing/</p>
+<p>Experimental: Create native iOS and Android project files before building natively. Learn more: https://docs.expo.dev/workflow/customizing/</p>
 </summary>
 <p>
 
 | Option                                    | Description                                                                             |
-| ----------------------------------------- | --------------------------------------------------------------------------------------- |
+| ----------------------------------------- | --------------------------------------------------------------------------------------- | -------------------------------------------------- |
 | `--no-install`                            | Skip installing npm packages and CocoaPods.                                             |
 | `--clean`                                 | Delete the native folders and regenerate them before applying changes                   |
 | `--npm`                                   | Use npm to install dependencies. (default when Yarn is not installed)                   |
 | `--template [template]`                   | Project template to clone from. File path pointing to a local tar file or a github repo |
-| `-p, --platform [platform]`               | Platforms to sync: ios, android, all. Default: all                                      |
+| `-p, --platform [all⎮android              | ios]`                                                                                   | Platforms to sync: ios, android, all. Default: all |
 | `--skip-dependency-update [dependencies]` | Preserves versions of listed packages in package.json (comma separated list)            |
 | `--config [file]`                         | Deprecated: Use app.config.js to switch config files instead.                           |
 
@@ -966,3 +983,5 @@ Alias: `expo ui`
 
 </p>
 </details>
+
+<!-- END GENERATED BLOCK. DO NOT MODIFY MANUALLY. -->

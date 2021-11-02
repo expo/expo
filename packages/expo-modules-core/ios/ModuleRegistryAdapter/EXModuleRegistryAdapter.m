@@ -3,14 +3,17 @@
 #import <ExpoModulesCore/EXNativeModulesProxy.h>
 #import <ExpoModulesCore/EXViewManagerAdapter.h>
 #import <ExpoModulesCore/EXModuleRegistryAdapter.h>
+#import <ExpoModulesCore/EXModuleRegistryProvider.h>
 #import <ExpoModulesCore/EXViewManagerAdapterClassesRegistry.h>
 #import <ExpoModulesCore/EXModuleRegistryHolderReactModule.h>
+#import <ExpoModulesCore/EXReactNativeEventEmitter.h>
+#import <ExpoModulesCore/Swift.h>
 
 @interface EXModuleRegistryAdapter ()
 
 @property (nonatomic, strong) EXModuleRegistryProvider *moduleRegistryProvider;
 @property (nonatomic, strong) EXViewManagerAdapterClassesRegistry *viewManagersClassesRegistry;
-@property (nonatomic, strong, nullable) Class swiftModulesProviderClass;
+@property (nonatomic, strong, nullable) id<ModulesProviderObjCProtocol> swiftModulesProvider;
 
 @end
 
@@ -28,7 +31,9 @@
 - (instancetype)initWithModuleRegistryProvider:(EXModuleRegistryProvider *)moduleRegistryProvider swiftModulesProviderClass:(nullable Class)swiftModulesProviderClass
 {
   if (self = [self initWithModuleRegistryProvider:moduleRegistryProvider]) {
-    _swiftModulesProviderClass = swiftModulesProviderClass;
+    if ([swiftModulesProviderClass conformsToProtocol:@protocol(ModulesProviderObjCProtocol)]) {
+      _swiftModulesProvider = [swiftModulesProviderClass new];
+    }
   }
   return self;
 }
@@ -42,13 +47,26 @@
 {
   NSMutableArray<id<RCTBridgeModule>> *extraModules = [NSMutableArray array];
 
-  EXNativeModulesProxy *nativeModulesProxy = [[EXNativeModulesProxy alloc] initWithModuleRegistry:moduleRegistry swiftModulesProviderClass:_swiftModulesProviderClass];
-
+  EXNativeModulesProxy *nativeModulesProxy = [[EXNativeModulesProxy alloc] initWithModuleRegistry:moduleRegistry];
   [extraModules addObject:nativeModulesProxy];
 
+  // Event emitter is not automatically registered — we add it to the module registry here.
+  // It will be added to the bridge later in this method, as it conforms to `RCTBridgeModule`.
+  EXReactNativeEventEmitter *eventEmitter = [EXReactNativeEventEmitter new];
+  [moduleRegistry registerInternalModule:eventEmitter];
+
+  NSMutableSet *exportedSwiftViewModuleNames = [NSMutableSet new];
+
+  for (ViewModuleWrapper *swiftViewModule in [nativeModulesProxy.swiftInteropBridge getViewManagers]) {
+    Class wrappedViewModuleClass = [ViewModuleWrapper createViewModuleWrapperClassWithModule:swiftViewModule];
+    [extraModules addObject:[[wrappedViewModuleClass alloc] init]];
+    [exportedSwiftViewModuleNames addObject:swiftViewModule.name];
+  }
   for (EXViewManager *viewManager in [moduleRegistry getAllViewManagers]) {
-    Class viewManagerAdapterClass = [_viewManagersClassesRegistry viewManagerAdapterClassForViewManager:viewManager];
-    [extraModules addObject:[[viewManagerAdapterClass alloc] initWithViewManager:viewManager]];
+    if (![exportedSwiftViewModuleNames containsObject:viewManager.viewName]) {
+      Class viewManagerAdapterClass = [EXViewManagerAdapterClassesRegistry createViewManagerAdapterClassForViewManager:viewManager];
+      [extraModules addObject:[[viewManagerAdapterClass alloc] init]];
+    }
   }
 
   // Silence React Native warning `Base module "%s" does not exist`
@@ -57,6 +75,7 @@
   // subclass EXViewManagerAdapter, so RN expects to find EXViewManagerAdapter
   // exported.
   [extraModules addObject:[[EXViewManagerAdapter alloc] init]];
+  [extraModules addObject:[[ViewModuleWrapper alloc] initWithDummy:nil]];
 
   // It is possible that among internal modules there are some RCTBridgeModules --
   // let's add them to extraModules here.
@@ -74,6 +93,15 @@
   // Here is our last call for finalizing initialization.
   [moduleRegistry initialize];
   return extraModules;
+}
+
+- (nullable SwiftInteropBridge *)swiftInteropBridgeModulesRegistry:(EXModuleRegistry *)moduleRegistry
+{
+  if (_swiftModulesProvider) {
+    return [[SwiftInteropBridge alloc] initWithModulesProvider:_swiftModulesProvider legacyModuleRegistry:moduleRegistry];
+  } else {
+    return nil;
+  }
 }
 
 @end

@@ -1,6 +1,6 @@
 // Copyright 2020-present 650 Industries. All rights reserved.
 
-#import <expo-image/EXImageCornerRadii.h>
+#import <EXImage/EXImageCornerRadii.h>
 #import <React/RCTUtils.h>
 #import <React/RCTI18nUtil.h>
 

@@ -16,7 +16,7 @@ export const withNotificationsIOS: ConfigPlugin<NotificationsPluginProps> = (
   config,
   { mode = 'development', sounds = [] }
 ) => {
-  config = withEntitlementsPlist(config, config => {
+  config = withEntitlementsPlist(config, (config) => {
     config.modResults['aps-environment'] = mode;
     return config;
   });
@@ -25,7 +25,7 @@ export const withNotificationsIOS: ConfigPlugin<NotificationsPluginProps> = (
 };
 
 export const withNotificationSounds: ConfigPlugin<{ sounds: string[] }> = (config, { sounds }) => {
-  return withXcodeProject(config, config => {
+  return withXcodeProject(config, (config) => {
     setNotificationSounds(config.modRequest.projectRoot, {
       sounds,
       project: config.modResults,

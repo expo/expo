@@ -1,13 +1,12 @@
 // Copyright 2016-present 650 Industries. All rights reserved.
 
 #import <GoogleSignIn/GIDSignIn.h>
-#import <UMCore/UMAppDelegateWrapper.h>
 #import <EXGoogleSignIn/EXGoogleSignInAppDelegate.h>
-#import <UMCore/UMModuleRegistryConsumer.h>
+#import <ExpoModulesCore/EXModuleRegistryConsumer.h>
 
 @implementation EXGoogleSignInAppDelegate
 
-UM_REGISTER_SINGLETON_MODULE(EXGoogleSignInDelegate)
+EX_REGISTER_SINGLETON_MODULE(EXGoogleSignInDelegate)
 
 - (BOOL)application:(UIApplication *)app openURL:(NSURL *)url options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options
 {

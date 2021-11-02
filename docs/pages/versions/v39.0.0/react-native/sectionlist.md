@@ -254,7 +254,7 @@ The function will be passed an object with the following keys:
 - 'viewableItems' (array of `ViewToken`s)
 - 'changed' (array of `ViewToken`s)
 
-The `ViewToken` type is exported by `ViewabilityHelper.js`:
+The `ViewToken` type is exported by **ViewabilityHelper.js**:
 
 | Name       | Type    | Required |
 | ---------- | ------- | -------- |

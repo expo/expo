@@ -1,4 +1,4 @@
-import { EventEmitter, Subscription, UnavailabilityError } from '@unimodules/core';
+import { EventEmitter, Subscription, UnavailabilityError } from 'expo-modules-core';
 import { useEffect } from 'react';
 
 import ExpoScreenCapture from './ExpoScreenCapture';

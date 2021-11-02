@@ -2,10 +2,10 @@ package expo.modules.notifications.notifications.background;
 
 import android.content.Context;
 
-import org.unimodules.core.ExportedModule;
-import org.unimodules.core.ModuleRegistry;
-import org.unimodules.core.Promise;
-import org.unimodules.core.interfaces.ExpoMethod;
+import expo.modules.core.ExportedModule;
+import expo.modules.core.ModuleRegistry;
+import expo.modules.core.Promise;
+import expo.modules.core.interfaces.ExpoMethod;
 import org.unimodules.interfaces.taskManager.TaskManagerInterface;
 
 import java.util.Collections;

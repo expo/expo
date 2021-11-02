@@ -54,9 +54,12 @@ class LegacyLocationRequester(private val includeBackgroundPermission: Boolean =
         }
 
       putString(SCOPE_KEY, scope)
-      putBundle("android", Bundle().apply {
-        putString("accuracy", accuracy)
-      })
+      putBundle(
+        "android",
+        Bundle().apply {
+          putString("accuracy", accuracy)
+        }
+      )
     }
   }
 }

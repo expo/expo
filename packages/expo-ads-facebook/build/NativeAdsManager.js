@@ -1,10 +1,24 @@
-import { EventEmitter as NativeEventEmitter, NativeModulesProxy } from '@unimodules/core';
+import { EventEmitter as NativeEventEmitter, NativeModulesProxy } from 'expo-modules-core';
 import { EventEmitter } from 'fbemitter';
 const { CTKNativeAdManager } = NativeModulesProxy;
 const nativeAdEmitter = new NativeEventEmitter(CTKNativeAdManager);
 const EVENT_DID_BECOME_VALID = 'AdsManagerDidBecomeValid';
 const EVENT_DID_ERROR = 'AdsManagerDidError';
 class NativeAdsManager {
+    /** {@string} with placement id of ads **/
+    placementId;
+    /** {@number} of ads to request at once **/
+    adsToRequest;
+    /** {@boolean} indicating whether AdsManager is ready to serve ads **/
+    isValid = false;
+    /** {@EventEmitter} used for sending out updates **/
+    eventEmitter = new EventEmitter();
+    static async registerViewsForInteractionAsync(nativeAdViewTag, mediaViewTag, adIconViewTag, clickable) {
+        return await CTKNativeAdManager.registerViewsForInteraction(nativeAdViewTag, mediaViewTag, adIconViewTag, clickable);
+    }
+    static triggerEvent(nativeAdViewTag) {
+        return CTKNativeAdManager.triggerEvent(nativeAdViewTag);
+    }
     /**
      * Creates an instance of AdsManager with a given placementId and adsToRequest.
      * Default number of ads to request is `10`.
@@ -12,20 +26,10 @@ class NativeAdsManager {
      * AdsManager will become loading ads immediately
      */
     constructor(placementId, adsToRequest = 10) {
-        /** {@boolean} indicating whether AdsManager is ready to serve ads **/
-        this.isValid = false;
-        /** {@EventEmitter} used for sending out updates **/
-        this.eventEmitter = new EventEmitter();
         this.placementId = placementId;
         this.adsToRequest = adsToRequest;
         this._listenForStateChanges();
         CTKNativeAdManager.init(placementId, adsToRequest);
-    }
-    static async registerViewsForInteractionAsync(nativeAdViewTag, mediaViewTag, adIconViewTag, clickable) {
-        return await CTKNativeAdManager.registerViewsForInteraction(nativeAdViewTag, mediaViewTag, adIconViewTag, clickable);
-    }
-    static triggerEvent(nativeAdViewTag) {
-        return CTKNativeAdManager.triggerEvent(nativeAdViewTag);
     }
     /**
      * Listens for AdManager state changes and updates internal state. When it changes,

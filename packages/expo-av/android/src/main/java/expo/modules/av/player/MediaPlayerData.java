@@ -11,7 +11,7 @@ import android.util.Log;
 import android.util.Pair;
 import android.view.Surface;
 
-import org.unimodules.core.ModuleRegistry;
+import expo.modules.core.ModuleRegistry;
 
 import java.io.IOException;
 import java.net.CookieHandler;

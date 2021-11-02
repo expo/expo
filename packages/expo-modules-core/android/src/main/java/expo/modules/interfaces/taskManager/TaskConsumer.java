@@ -8,7 +8,7 @@ import android.content.Intent;
 import java.lang.ref.WeakReference;
 import java.util.Map;
 
-import org.unimodules.core.interfaces.DoNotStrip;
+import expo.modules.core.interfaces.DoNotStrip;
 
 public abstract class TaskConsumer implements TaskConsumerInterface {
   /**

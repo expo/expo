@@ -10,7 +10,7 @@
 
 @property (nonatomic, strong) EXUpdatesDatabase *db;
 @property (nonatomic, strong) NSURL *testDatabaseDir;
-@property (nonatomic, strong) EXUpdatesNewRawManifest *manifest;
+@property (nonatomic, strong) EXManifestsNewManifest *manifest;
 @property (nonatomic, strong) EXUpdatesConfig *config;
 
 @end
@@ -34,7 +34,7 @@
     XCTAssertNil(dbOpenError);
   });
 
-  _manifest = [[EXUpdatesNewRawManifest alloc] initWithRawManifestJSON:@{
+  _manifest = [[EXManifestsNewManifest alloc] initWithRawManifestJSON:@{
     @"runtimeVersion": @"1",
     @"id": @"0eef8214-4833-4089-9dff-b4138a14f196",
     @"createdAt": @"2020-11-11T00:17:54.797Z",
@@ -64,6 +64,7 @@
     NSError *updatesError;
     [_db addUpdate:update error:&updatesError];
     if (updatesError) {
+      XCTFail(@"%@", updatesError.localizedDescription);
       return;
     }
 
@@ -119,7 +120,7 @@
     [_db setMetadataWithManifest:update1 error:&error1];
   });
   XCTAssertNil(error1);
-  
+
   NSHTTPURLResponse *response2 = [[NSHTTPURLResponse alloc] initWithURL:[NSURL URLWithString:@"https://exp.host/"] statusCode:200 HTTPVersion:@"HTTP/2" headerFields:@{
     @"expo-manifest-filters": @""
   }];
@@ -129,7 +130,7 @@
     [_db setMetadataWithManifest:update2 error:&error2];
   });
   XCTAssertNil(error2);
-  
+
   NSDictionary *expected = @{};
   __block NSDictionary *actual;
   __block NSError *readError;
@@ -152,7 +153,7 @@
     [_db setMetadataWithManifest:update1 error:&error1];
   });
   XCTAssertNil(error1);
-  
+
   NSHTTPURLResponse *response2 = [[NSHTTPURLResponse alloc] initWithURL:[NSURL URLWithString:@"https://exp.host/"] statusCode:200 HTTPVersion:@"HTTP/2" headerFields:@{}];
   EXUpdatesUpdate *update2 = [EXUpdatesNewUpdate updateWithNewManifest:_manifest response:response2 config:_config database:_db];
   __block NSError *error2;
@@ -160,7 +161,7 @@
     [_db setMetadataWithManifest:update2 error:&error2];
   });
   XCTAssertNil(error2);
-  
+
   NSDictionary *expected = @{@"branch-name": @"rollout-1"};
   __block NSDictionary *actual;
   __block NSError *readError;

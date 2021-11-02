@@ -8,7 +8,7 @@ const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
 const resolve_from_1 = __importDefault(require("resolve-from"));
 function resolveExpoUpdatesVersion(projectRoot) {
-    const expoUpdatesBuildPath = resolve_from_1.default(projectRoot, 'expo-updates');
+    const expoUpdatesBuildPath = (0, resolve_from_1.default)(projectRoot, 'expo-updates');
     if (!expoUpdatesBuildPath) {
         return null;
     }

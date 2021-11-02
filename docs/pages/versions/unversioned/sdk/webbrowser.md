@@ -32,7 +32,7 @@ export default function App() {
   const [result, setResult] = useState(null);
 
   const _handlePressButtonAsync = async () => {
-    let result = await WebBrowser.openBrowserAsync('https://expo.io');
+    let result = await WebBrowser.openBrowserAsync('https://expo.dev');
     setResult(result);
   };
   return (

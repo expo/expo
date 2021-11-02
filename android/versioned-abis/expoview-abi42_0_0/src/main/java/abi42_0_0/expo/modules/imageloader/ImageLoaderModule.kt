@@ -29,11 +29,14 @@ class ImageLoaderModule(val context: Context) : InternalModule, ImageLoaderInter
 
   override fun loadImageForDisplayFromURL(url: String): Future<Bitmap> {
     val future = SimpleSettableFuture<Bitmap>()
-    loadImageForDisplayFromURL(url, object : ImageLoaderInterface.ResultListener {
-      override fun onSuccess(bitmap: Bitmap) = future.set(bitmap)
+    loadImageForDisplayFromURL(
+      url,
+      object : ImageLoaderInterface.ResultListener {
+        override fun onSuccess(bitmap: Bitmap) = future.set(bitmap)
 
-      override fun onFailure(@Nullable cause: Throwable?) = future.setException(ExecutionException(cause))
-    })
+        override fun onFailure(@Nullable cause: Throwable?) = future.setException(ExecutionException(cause))
+      }
+    )
     return future
   }
 
@@ -63,11 +66,14 @@ class ImageLoaderModule(val context: Context) : InternalModule, ImageLoaderInter
 
   override fun loadImageForManipulationFromURL(@NonNull url: String): Future<Bitmap> {
     val future = SimpleSettableFuture<Bitmap>()
-    loadImageForManipulationFromURL(url, object : ImageLoaderInterface.ResultListener {
-      override fun onSuccess(bitmap: Bitmap) = future.set(bitmap)
+    loadImageForManipulationFromURL(
+      url,
+      object : ImageLoaderInterface.ResultListener {
+        override fun onSuccess(bitmap: Bitmap) = future.set(bitmap)
 
-      override fun onFailure(@NonNull cause: Throwable?) = future.setException(ExecutionException(cause))
-    })
+        override fun onFailure(@NonNull cause: Throwable?) = future.setException(ExecutionException(cause))
+      }
+    )
     return future
   }
 

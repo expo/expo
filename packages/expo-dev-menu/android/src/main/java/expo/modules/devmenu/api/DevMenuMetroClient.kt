@@ -2,11 +2,9 @@ package expo.modules.devmenu.api
 
 import android.net.Uri
 import expo.modules.devmenu.helpers.await
-import expo.modules.devmenu.helpers.fetch
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody
-
 
 class DevMenuMetroClient {
   private val httpClient = OkHttpClient()

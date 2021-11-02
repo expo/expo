@@ -14,7 +14,7 @@ function OptionsButton({ showActionSheetWithOptions }: ActionSheetProps) {
         options,
         cancelButtonIndex,
       },
-      async buttonIndex => {
+      async (buttonIndex) => {
         if (buttonIndex === 0) {
           Alert.alert(
             'Thank you for your report',

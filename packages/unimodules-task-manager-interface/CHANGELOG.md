@@ -6,11 +6,29 @@
 
 ### 🎉 New features
 
-- Use stable manifest ID where applicable. ([#12964](https://github.com/expo/expo/pull/12964) by [@wschurman](https://github.com/wschurman))
-
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 7.0.1 — 2021-10-01
+
+_This version does not introduce any user-facing changes._
+
+## 7.0.0 — 2021-09-28
+
+### 🛠 Breaking changes
+
+- Dropped support for iOS 11.0 ([#14383](https://github.com/expo/expo/pull/14383) by [@cruzach](https://github.com/cruzach))
+
+### 🐛 Bug fixes
+
+- Fix building errors from use_frameworks! in Podfile. ([#14523](https://github.com/expo/expo/pull/14523) by [@kudo](https://github.com/kudo))
+
+## 6.3.0-alpha.0 — 2021-08-17
+
+### 🎉 New features
+
+- Use stable manifest ID where applicable. ([#12964](https://github.com/expo/expo/pull/12964) by [@wschurman](https://github.com/wschurman))
 
 ## 6.2.0 — 2021-06-16
 

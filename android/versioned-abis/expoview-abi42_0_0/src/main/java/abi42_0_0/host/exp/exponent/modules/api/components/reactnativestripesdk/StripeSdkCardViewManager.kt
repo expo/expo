@@ -16,32 +16,33 @@ class StripeSdkCardViewManager : SimpleViewManager<StripeSdkCardView>() {
   override fun getExportedCustomDirectEventTypeConstants(): MutableMap<String, Any> {
     return MapBuilder.of(
       CardFocusEvent.EVENT_NAME, MapBuilder.of("registrationName", "onFocusChange"),
-      CardChangedEvent.EVENT_NAME, MapBuilder.of("registrationName", "onCardChange"))
+      CardChangedEvent.EVENT_NAME, MapBuilder.of("registrationName", "onCardChange")
+    )
   }
 
   @ReactProp(name = "dangerouslyGetFullCardDetails")
   fun setDangerouslyGetFullCardDetails(view: StripeSdkCardView, dangerouslyGetFullCardDetails: Boolean = false) {
-    view.setDangerouslyGetFullCardDetails(dangerouslyGetFullCardDetails);
+    view.setDangerouslyGetFullCardDetails(dangerouslyGetFullCardDetails)
   }
 
   @ReactProp(name = "postalCodeEnabled")
   fun setPostalCodeEnabled(view: StripeSdkCardView, postalCodeEnabled: Boolean = true) {
-    view.setPostalCodeEnabled(postalCodeEnabled);
+    view.setPostalCodeEnabled(postalCodeEnabled)
   }
 
   @ReactProp(name = "autofocus")
   fun setAutofocus(view: StripeSdkCardView, autofocus: Boolean = false) {
-    view.setAutofocus(autofocus);
+    view.setAutofocus(autofocus)
   }
 
   @ReactProp(name = "cardStyle")
   fun setCardStyle(view: StripeSdkCardView, cardStyle: ReadableMap) {
-    view.setCardStyle(cardStyle);
+    view.setCardStyle(cardStyle)
   }
 
   @ReactProp(name = "placeholder")
   fun setPlaceHolders(view: StripeSdkCardView, placeholder: ReadableMap) {
-    view.setPlaceHolders(placeholder);
+    view.setPlaceHolders(placeholder)
   }
 
   override fun createViewInstance(reactContext: ThemedReactContext): StripeSdkCardView {

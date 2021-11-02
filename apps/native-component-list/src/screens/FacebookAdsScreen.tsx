@@ -70,7 +70,7 @@ class ChangingFullAd extends React.Component<
           </Text>
           <Switch
             value={this.state.expanded}
-            onValueChange={() => this.setState(state => ({ expanded: !state.expanded }))}
+            onValueChange={() => this.setState((state) => ({ expanded: !state.expanded }))}
           />
         </View>
         <AdOptionsView
@@ -132,10 +132,10 @@ export default class App extends React.Component<any, { showNativeAd: boolean }>
 
   showFullScreenAd = () => {
     InterstitialAdManager.showAd(DEMO_INTERSTITIAL_AD_ID)
-      .then(didClick => {
+      .then((didClick) => {
         console.log(didClick);
       })
-      .catch(err => {
+      .catch((err) => {
         console.log(err);
       });
   };
@@ -171,7 +171,7 @@ export default class App extends React.Component<any, { showNativeAd: boolean }>
           <Text style={[styles.description, { flex: 1 }]}>Show native ad</Text>
           <Switch
             value={this.state.showNativeAd}
-            onValueChange={() => this.setState(state => ({ showNativeAd: !state.showNativeAd }))}
+            onValueChange={() => this.setState((state) => ({ showNativeAd: !state.showNativeAd }))}
           />
         </View>
         {this.state.showNativeAd && adsManager && (

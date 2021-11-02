@@ -2,7 +2,6 @@ package expo.modules.devlauncher.launcher.loaders
 
 import android.content.Context
 import android.graphics.Color
-import android.net.Uri
 import android.util.Log
 import android.view.View
 import com.facebook.react.ReactActivity
@@ -11,17 +10,19 @@ import com.facebook.react.bridge.ReactContext
 import com.facebook.react.modules.appearance.AppearanceModule
 import expo.modules.devlauncher.helpers.isValidColor
 import expo.modules.devlauncher.helpers.setProtectedDeclaredField
+import expo.modules.devlauncher.launcher.DevLauncherControllerInterface
 import expo.modules.devlauncher.launcher.configurators.DevLauncherExpoActivityConfigurator
 import expo.modules.devlauncher.launcher.manifest.DevLauncherUserInterface
-import expo.modules.devlauncher.launcher.manifest.DevLauncherManifest
+import expo.modules.manifests.core.Manifest
 
 abstract class DevLauncherExpoAppLoader(
-  private val manifest: DevLauncherManifest,
+  private val manifest: Manifest,
   appHost: ReactNativeHost,
   context: Context,
+  controller: DevLauncherControllerInterface,
   private val activityConfigurator: DevLauncherExpoActivityConfigurator =
     DevLauncherExpoActivityConfigurator(manifest, context)
-) : DevLauncherAppLoader(appHost, context) {
+) : DevLauncherAppLoader(appHost, context, controller) {
   override fun onCreate(activity: ReactActivity) = with(activityConfigurator) {
     applyOrientation(activity)
     applyStatusBarConfiguration(activity)
@@ -38,7 +39,7 @@ abstract class DevLauncherExpoAppLoader(
   }
 
   private fun applyUserInterfaceStyle(context: ReactContext) {
-    val userInterfaceStyle = when (manifest.userInterfaceStyle) {
+    val userInterfaceStyle = when (manifest.getAndroidUserInterfaceStyle()) {
       DevLauncherUserInterface.DARK -> "dark"
       DevLauncherUserInterface.LIGHT -> "light"
       else -> return
@@ -69,7 +70,7 @@ abstract class DevLauncherExpoAppLoader(
   }
 
   private fun applyBackgroundColor(view: View) {
-    val backgroundColor = manifest.backgroundColor ?: return
+    val backgroundColor = manifest.getAndroidBackgroundColor() ?: return
     if (!isValidColor(backgroundColor)) {
       return
     }
@@ -77,6 +78,6 @@ abstract class DevLauncherExpoAppLoader(
   }
 
   override fun getAppName(): String? {
-    return manifest.name
+    return manifest.getName()
   }
 }

@@ -1,4 +1,4 @@
-import { UnavailabilityError } from '@unimodules/core';
+import { UnavailabilityError } from 'expo-modules-core';
 export default function AdMediaView() {
     throw new UnavailabilityError('expo-ads-facebook', 'AdMediaView');
 }

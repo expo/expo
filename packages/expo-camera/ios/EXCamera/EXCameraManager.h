@@ -1,9 +1,9 @@
 #import <AVFoundation/AVFoundation.h>
-#import <UMCore/UMViewManager.h>
-#import <UMCore/UMExportedModule.h>
-#import <UMCore/UMModuleRegistryConsumer.h>
+#import <ExpoModulesCore/EXViewManager.h>
+#import <ExpoModulesCore/EXExportedModule.h>
+#import <ExpoModulesCore/EXModuleRegistryConsumer.h>
 #import <EXCamera/EXCamera.h>
 
-@interface EXCameraManager : UMViewManager <UMModuleRegistryConsumer>
+@interface EXCameraManager : EXViewManager <EXModuleRegistryConsumer>
 
 @end

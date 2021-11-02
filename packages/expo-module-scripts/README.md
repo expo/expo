@@ -65,8 +65,6 @@ Running `yarn` will now run the `prepare` script, which generates any missing fi
   - Try and incorporate a table of contents (TOC).
 - [`tsconfig.json`](./templates/tsconfig.json) ([docs](https://www.typescriptlang.org/docs/handbook/tsconfig-json.html)) extends [`tsconfig.base.json`](./tsconfig.base.json) this is important for ensuring all Unimodules use the same version of TypeScript.
 
-You should also add the following fields to your `package.json`:
-
 ### 🔌 Config Plugin
 
 To create a [config plugin](https://github.com/expo/expo-cli/blob/master/packages/config-plugins/README.md) that automatically configures your native code, you have two options:
@@ -149,7 +147,7 @@ The Jest preset extends [`jest-expo`](https://github.com/expo/expo/tree/master/p
 ```json
 {
   "jest": {
-    "preset": "expo-module-scripts/universal"
+    "preset": "expo-module-scripts"
   }
 }
 ```

@@ -46,7 +46,7 @@ class PaymentSheetFragment : Fragment() {
     paymentIntentClientSecret = arguments?.getString("paymentIntentClientSecret").orEmpty()
     setupIntentClientSecret = arguments?.getString("setupIntentClientSecret").orEmpty()
 
-    val paymentOptionCallback = object: PaymentOptionCallback {
+    val paymentOptionCallback = object : PaymentOptionCallback {
       override fun onPaymentOption(paymentOption: PaymentOption?) {
         val intent = Intent(ON_PAYMENT_OPTION_ACTION)
 
@@ -66,7 +66,7 @@ class PaymentSheetFragment : Fragment() {
         val intent = Intent(ON_PAYMENT_RESULT_ACTION)
 
         intent.putExtra("paymentResult", paymentResult)
-          activity?.sendBroadcast(intent)
+        activity?.sendBroadcast(intent)
       }
     }
 
@@ -151,18 +151,19 @@ fun getBitmapFromVectorDrawable(context: Context?, drawableId: Int): Bitmap? {
 
   drawable = DrawableCompat.wrap(drawable).mutate()
   val bitmap = Bitmap.createBitmap(drawable.intrinsicWidth, drawable.intrinsicHeight, Bitmap.Config.ARGB_8888)
-  bitmap.eraseColor(Color.WHITE);
+  bitmap.eraseColor(Color.WHITE)
   val canvas = Canvas(bitmap)
   drawable.setBounds(0, 0, canvas.width, canvas.height)
   drawable.draw(canvas)
   return bitmap
 }
- fun getBase64FromBitmap(bitmap: Bitmap?): String? {
-   if (bitmap == null) {
-     return null
-   }
-   val baos = ByteArrayOutputStream()
-   bitmap.compress(Bitmap.CompressFormat.PNG, 100, baos)
-   val imageBytes: ByteArray = baos.toByteArray()
-   return Base64.encodeToString(imageBytes, Base64.DEFAULT)
- }
+
+fun getBase64FromBitmap(bitmap: Bitmap?): String? {
+  if (bitmap == null) {
+    return null
+  }
+  val baos = ByteArrayOutputStream()
+  bitmap.compress(Bitmap.CompressFormat.PNG, 100, baos)
+  val imageBytes: ByteArray = baos.toByteArray()
+  return Base64.encodeToString(imageBytes, Base64.DEFAULT)
+}

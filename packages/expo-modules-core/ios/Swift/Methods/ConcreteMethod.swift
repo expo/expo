@@ -1,11 +1,12 @@
+import Dispatch
 
-public struct ConcreteMethod<Args, ReturnType>: AnyMethod {
+public class ConcreteMethod<Args, ReturnType>: AnyMethod {
   public typealias ClosureType = (Args) -> ReturnType
 
   public let name: String
 
   public var takesPromise: Bool {
-    return argTypes.last?.canCast(Promise.self) ?? false
+    return argTypes.last?.canCastToType(Promise.self) ?? false
   }
 
   public var argumentsCount: Int {
@@ -21,12 +22,10 @@ public struct ConcreteMethod<Args, ReturnType>: AnyMethod {
   init(
     _ name: String,
     argTypes: [AnyArgumentType],
-    queue: DispatchQueue? = nil,
     _ closure: @escaping ClosureType
   ) {
     self.name = name
     self.argTypes = argTypes
-    self.queue = queue
     self.closure = closure
   }
 
@@ -43,8 +42,11 @@ public struct ConcreteMethod<Args, ReturnType>: AnyMethod {
 
       let tuple = try Conversions.toTuple(finalArgs) as! Args
       returnedValue = closure(tuple)
-    } catch let error {
+    } catch let error as CodedError {
       promise.reject(error)
+      return
+    } catch let error {
+      promise.reject(UnexpectedError(error))
       return
     }
     if !takesPromise {
@@ -52,11 +54,44 @@ public struct ConcreteMethod<Args, ReturnType>: AnyMethod {
     }
   }
 
+  public func callSync(args: [Any?]) -> Any? {
+    if takesPromise {
+      var result: Any?
+      let semaphore = DispatchSemaphore(value: 0)
+
+      let promise = Promise {
+        result = $0
+        semaphore.signal()
+      } rejecter: { error in
+        semaphore.signal()
+      }
+      call(args: args, promise: promise)
+      semaphore.wait()
+      return result
+    } else {
+      do {
+        let finalArgs = try castArguments(args)
+        let tuple = try Conversions.toTuple(finalArgs) as! Args
+        return closure(tuple)
+      } catch let error {
+        return error
+      }
+    }
+  }
+
+  public func runOnQueue(_ queue: DispatchQueue?) -> Self {
+    self.queue = queue
+    return self
+  }
+
   private func argumentType(atIndex index: Int) -> AnyArgumentType? {
     return (0..<argTypes.count).contains(index) ? argTypes[index] : nil
   }
 
   private func castArguments(_ args: [Any?]) throws -> [AnyMethodArgument?] {
+    if args.count != argumentsCount {
+      throw InvalidArgsNumberError(received: args.count, expected: argumentsCount)
+    }
     return try args.enumerated().map { (index, arg) in
       guard let desiredType = argumentType(atIndex: index) else {
         return nil
@@ -69,17 +104,34 @@ public struct ConcreteMethod<Args, ReturnType>: AnyMethod {
       }
 
       // TODO: (@tsapeta) Handle structs convertible to dictionary
-//      // If we get here, the argument can be converted (not casted!) to the desired type.
-//      if let arg = arg as? [AnyHashable : Any?], let dt = desiredType.castWrappedType(ConvertibleFromDictionary.Type.self) {
-//        return dt.init(dictionary: arg)
-//      }
+      // If we get here, the argument can be converted (not casted!) to the desired type.
+      if let arg = arg as? Record.Dict, let dt = desiredType.castWrappedType(Record.Type.self) {
+        return try dt.init(from: arg)
+      }
 
       // TODO: (@tsapeta) Handle convertible arrays
-      throw Errors.IncompatibleArgumentType(
+      throw IncompatibleArgTypeError(
         argument: arg,
         atIndex: index,
-        desiredType: type(of: desiredType)
+        desiredType: desiredType
       )
     }
+  }
+}
+
+internal struct InvalidArgsNumberError: CodedError {
+  let received: Int
+  let expected: Int
+  var description: String {
+    "Received \(received) arguments, but \(expected) was expected."
+  }
+}
+
+internal struct IncompatibleArgTypeError<ArgumentType>: CodedError {
+  let argument: ArgumentType
+  let atIndex: Int
+  let desiredType: AnyArgumentType
+  var description: String {
+    "Type `\(type(of: argument))` of argument at index `\(atIndex)` is not compatible with expected type `\(desiredType.typeName)`."
   }
 }

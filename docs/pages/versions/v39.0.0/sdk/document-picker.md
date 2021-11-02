@@ -21,7 +21,7 @@ Provides access to the system's UI for selecting documents from the available pr
 
 ### Managed workflow
 
-For iOS, outside of the Expo client, the DocumentPicker module requires the iCloud entitlement to work properly. You need to set the `usesIcloudStorage` key to `true` in your `app.json` file as specified [here](../../../workflow/configuration.md#ios).
+For iOS, outside of the Expo client, the DocumentPicker module requires the iCloud entitlement to work properly. You need to set the `usesIcloudStorage` key to `true` in your **app.json** file as specified [here](../../../workflow/configuration.md#ios).
 
 In addition, you'll also need to enable the iCloud Application Service in your App identifier. This can be done in the detail of your [App ID in the Apple developer interface](https://developer.apple.com/account/ios/identifier/bundle).
 

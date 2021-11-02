@@ -1,5 +1,4 @@
-import { UnavailabilityError } from '@unimodules/core';
-import { PermissionResponse, PermissionStatus } from 'expo-modules-core';
+import { PermissionResponse, PermissionStatus, UnavailabilityError } from 'expo-modules-core';
 
 function getUserMedia(constraints: MediaStreamConstraints): Promise<MediaStream> {
   if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
@@ -12,10 +11,11 @@ function getUserMedia(constraints: MediaStreamConstraints): Promise<MediaStream>
 
   // First get ahold of the legacy getUserMedia, if present
   const getUserMedia =
+    // TODO: this method is deprecated, migrate to https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/getUserMedia
     navigator.getUserMedia ||
-    (navigator as any).webkitGetUserMedia ||
-    (navigator as any).mozGetUserMedia ||
-    function() {
+    navigator.webkitGetUserMedia ||
+    navigator.mozGetUserMedia ||
+    function () {
       const error: any = new Error('Permission unimplemented');
       error.code = 0;
       error.name = 'NotAllowedError';

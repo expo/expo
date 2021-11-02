@@ -5,7 +5,12 @@ import { Platform, ScrollView, StyleSheet, Text, View } from 'react-native';
 import SimpleActionDemo from '../../components/SimpleActionDemo';
 import TitleSwitch from '../../components/TitledSwitch';
 import usePermissions from '../../utilities/usePermissions';
-// Location.setGoogleApiKey('<PROVIDE_YOUR_OWN_API_KEY HERE>');
+
+const GOOGLE_MAPS_API_KEY = null; // Provide your own Google Maps API Key here
+
+if (GOOGLE_MAPS_API_KEY) {
+  Location.setGoogleApiKey(GOOGLE_MAPS_API_KEY);
+}
 
 const forwardGeocodingAddresses = [
   '1 Hacker Way, CA',
@@ -28,7 +33,15 @@ export default function GeocodingScreen() {
 
   const [useGoogleMaps, setGoogleMaps] = React.useState(false);
 
-  const toggleGoogleMaps = () => setGoogleMaps(value => !value);
+  const toggleGoogleMaps = () => {
+    if (!GOOGLE_MAPS_API_KEY) {
+      throw new Error(
+        'Must supply GOOGLE_MAPS_API_KEY in GeocodingScreen.tsx to use Google Maps API'
+      );
+    } else {
+      setGoogleMaps((value) => !value);
+    }
+  };
 
   return (
     <ScrollView style={styles.container}>

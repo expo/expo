@@ -4,10 +4,15 @@ import ReactMarkdown from 'react-markdown';
 import { InlineCode } from '~/components/base/code';
 import { LI, UL } from '~/components/base/list';
 import { H2, H3Code, H4 } from '~/components/plugins/Headings';
-import { MethodDefinitionData, MethodSignatureData } from '~/components/plugins/api/APIDataTypes';
+import {
+  MethodDefinitionData,
+  MethodSignatureData,
+  PropData,
+} from '~/components/plugins/api/APIDataTypes';
 import {
   CommentTextBlock,
-  mdRenderers,
+  listParams,
+  mdComponents,
   renderParam,
   resolveTypeName,
 } from '~/components/plugins/api/APISectionUtils';
@@ -18,29 +23,30 @@ export type APISectionMethodsProps = {
   header?: string;
 };
 
-const renderMethod = (
-  { signatures }: MethodDefinitionData,
-  index: number,
+export const renderMethod = (
+  { signatures = [] }: MethodDefinitionData | PropData,
+  index?: number,
   dataLength?: number,
-  apiName?: string
+  apiName?: string,
+  header?: string
 ): JSX.Element[] =>
   signatures.map(({ name, parameters, comment, type }: MethodSignatureData) => (
     <div key={`method-signature-${name}-${parameters?.length || 0}`}>
       <H3Code>
         <InlineCode>
-          {apiName ? `${apiName}.` : ''}
-          {name}({parameters?.map(param => param.name).join(', ')})
+          {apiName && `${apiName}.`}
+          {header !== 'Hooks' ? `${name}(${listParams(parameters)})` : name}
         </InlineCode>
       </H3Code>
       <CommentTextBlock
         comment={comment}
         beforeContent={
-          parameters ? (
+          parameters && (
             <>
               <H4>Arguments</H4>
               <UL>{parameters?.map(renderParam)}</UL>
             </>
-          ) : undefined
+          )
         }
       />
       {resolveTypeName(type) !== 'undefined' ? (
@@ -51,24 +57,20 @@ const renderMethod = (
               <InlineCode>{resolveTypeName(type)}</InlineCode>
             </LI>
           </UL>
-          {comment?.returns ? (
-            <ReactMarkdown renderers={mdRenderers}>{comment.returns}</ReactMarkdown>
-          ) : null}
+          {comment?.returns && (
+            <ReactMarkdown components={mdComponents}>{comment.returns}</ReactMarkdown>
+          )}
         </div>
       ) : null}
-      {index + 1 !== dataLength ? <hr /> : null}
+      {index !== undefined ? index + 1 !== dataLength && <hr /> : null}
     </div>
   ));
 
-const APISectionMethods: React.FC<APISectionMethodsProps> = ({
-  data,
-  apiName,
-  header = 'Methods',
-}) =>
+const APISectionMethods = ({ data, apiName, header = 'Methods' }: APISectionMethodsProps) =>
   data?.length ? (
     <>
       <H2 key="methods-header">{header}</H2>
-      {data.map((method, index) => renderMethod(method, index, data.length, apiName))}
+      {data.map((method, index) => renderMethod(method, index, data.length, apiName, header))}
     </>
   ) : null;
 

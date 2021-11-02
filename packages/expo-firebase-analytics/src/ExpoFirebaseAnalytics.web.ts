@@ -1,9 +1,9 @@
-import { CodedError } from '@unimodules/core';
 import { DEFAULT_APP_OPTIONS } from 'expo-firebase-core';
+import { CodedError } from 'expo-modules-core';
 
 function getFirebaseModule() {
   try {
-    const firebaseModule = require('firebase/app');
+    const firebaseModule = require('firebase/compat/app');
     const firebase = firebaseModule.initializeApp ? firebaseModule : firebaseModule.default;
     if (DEFAULT_APP_OPTIONS && !firebase.apps.length) {
       firebase.initializeApp(DEFAULT_APP_OPTIONS);
@@ -16,7 +16,7 @@ function getFirebaseModule() {
 function getAnalyticsModule() {
   try {
     const firebase = getFirebaseModule();
-    require('firebase/analytics');
+    require('firebase/compat/analytics');
     return firebase.analytics();
   } catch ({ message }) {
     throw new Error('Firebase JS Analytics SDK is not available: ' + message);
@@ -53,6 +53,12 @@ export default {
         screen_name: screenName,
       });
     }
+  },
+  /**
+   * Not supported on web, this method is a no-op
+   */
+  async setSessionTimeoutDuration(_sessionTimeoutInterval: number): Promise<void> {
+    // no-op
   },
   /**
    * https://firebase.google.com/docs/reference/js/firebase.analytics.Analytics#set-user-id

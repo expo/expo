@@ -1,8 +1,127 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`APISectionUtils.CommentTextBlock component basic comment 1`] = `
+<div>
+  <p
+    class="css-1xnkoxs-paragraph-STYLES_PARAGRAPH"
+    data-text="true"
+  >
+    This is the basic comment.
+  </p>
+</div>
+`;
+
+exports[`APISectionUtils.CommentTextBlock component basic inline comment 1`] = `
+<div>
+   - 
+  <span>
+    This is the basic comment.
+  </span>
+</div>
+`;
+
+exports[`APISectionUtils.CommentTextBlock component comment with example 1`] = `
+<div>
+  <p
+    class="css-1xnkoxs-paragraph-STYLES_PARAGRAPH"
+    data-text="true"
+  >
+    <strong
+      class="css-kkqcgt-paragraph-STYLES_BOLD_PARAGRAPH"
+    >
+      Android only.
+    </strong>
+     Gets the referrer URL of the installed app with the 
+    <a
+      class="css-12zqqiz-STYLES_EXTERNAL_LINK"
+      href="https://developer.android.com/google/play/installreferrer"
+      rel="noopener noreferrer"
+    >
+      <code
+        class="inline css-nuv12a-STYLES_INLINE_CODE"
+      >
+        Install Referrer API
+      </code>
+    </a>
+    
+from the Google Play Store. In practice, the referrer URL may not be a complete, absolute URL.
+  </p>
+  <h4
+    class="css-1j2s5xo-h4-h4-STYLES_H4"
+    data-heading="true"
+  >
+    Example
+  </h4>
+  <pre>
+    <pre
+      class="css-mv7gwa-STYLES_CODE_CONTAINER"
+      data-text="true"
+    >
+      <code
+        class="css-13ek3hw-STYLES_CODE_BLOCK"
+      >
+        <span
+          class="token keyword"
+        >
+          await
+        </span>
+         
+        <span
+          class="token maybe-class-name"
+        >
+          Application
+        </span>
+        <span
+          class="token punctuation"
+        >
+          .
+        </span>
+        <span
+          class="token method function property-access"
+        >
+          getInstallReferrerAsync
+        </span>
+        <span
+          class="token punctuation"
+        >
+          (
+        </span>
+        <span
+          class="token punctuation"
+        >
+          )
+        </span>
+        <span
+          class="token punctuation"
+        >
+          ;
+        </span>
+        
+
+        <span
+          class="token comment"
+        >
+          // "utm_source=google-play&utm_medium=organic"
+        </span>
+        
+
+      </code>
+    </pre>
+  </pre>
+</div>
+`;
+
+exports[`APISectionUtils.CommentTextBlock component no comment 1`] = `<div />`;
+
 exports[`APISectionUtils.resolveTypeName Promise 1`] = `
 <div>
-  Promise
+  <a
+    class="css-12zqqiz-STYLES_EXTERNAL_LINK"
+    href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise"
+    rel="noopener noreferrer"
+  >
+    Promise
+  </a>
   &lt;
   <span>
     void
@@ -13,7 +132,13 @@ exports[`APISectionUtils.resolveTypeName Promise 1`] = `
 
 exports[`APISectionUtils.resolveTypeName Promise with custom type 1`] = `
 <div>
-  Promise
+  <a
+    class="css-12zqqiz-STYLES_EXTERNAL_LINK"
+    href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise"
+    rel="noopener noreferrer"
+  >
+    Promise
+  </a>
   &lt;
   <span>
     <a
@@ -37,7 +162,6 @@ exports[`APISectionUtils.resolveTypeName Record 1`] = `
   </span>
   <span>
     any
-    
   </span>
   &gt;
 </div>
@@ -63,9 +187,14 @@ exports[`APISectionUtils.resolveTypeName Record with union 1`] = `
     <span>
       string
     </span>
-    
   </span>
   &gt;
+</div>
+`;
+
+exports[`APISectionUtils.resolveTypeName alternative generic object notation 1`] = `
+<div>
+  { [column]: any }
 </div>
 `;
 
@@ -98,6 +227,32 @@ exports[`APISectionUtils.resolveTypeName custom type non-linkable array 1`] = `
 </div>
 `;
 
+exports[`APISectionUtils.resolveTypeName custom type with single pick 1`] = `
+<div>
+  <a
+    class="css-12zqqiz-STYLES_EXTERNAL_LINK"
+    href="https://www.typescriptlang.org/docs/handbook/utility-types.html#picktype-keys"
+    rel="noopener noreferrer"
+  >
+    Pick
+  </a>
+  &lt;
+  <span>
+    <a
+      class="css-12zqqiz-STYLES_EXTERNAL_LINK"
+      href="/#fontresource"
+    >
+      FontResource
+    </a>
+    , 
+  </span>
+  <span>
+    'display'
+  </span>
+  &gt;
+</div>
+`;
+
 exports[`APISectionUtils.resolveTypeName function 1`] = `
 <div>
   () =&gt;
@@ -123,7 +278,13 @@ exports[`APISectionUtils.resolveTypeName function with arguments 1`] = `
   <span>
     error
     : 
-    Error
+    <a
+      class="css-12zqqiz-STYLES_EXTERNAL_LINK"
+      href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error"
+      rel="noopener noreferrer"
+    >
+      Error
+    </a>
   </span>
   ) 
   =&gt;
@@ -149,7 +310,13 @@ exports[`APISectionUtils.resolveTypeName function with non-linkable custom type 
   <span>
     error
     : 
-    Error
+    <a
+      class="css-12zqqiz-STYLES_EXTERNAL_LINK"
+      href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error"
+      rel="noopener noreferrer"
+    >
+      Error
+    </a>
   </span>
   ) 
   =&gt;
@@ -187,7 +354,13 @@ exports[`APISectionUtils.resolveTypeName generic type 2`] = `
 
 exports[`APISectionUtils.resolveTypeName generic type in Promise 1`] = `
 <div>
-  Promise
+  <a
+    class="css-12zqqiz-STYLES_EXTERNAL_LINK"
+    href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise"
+    rel="noopener noreferrer"
+  >
+    Promise
+  </a>
   &lt;
   <span>
     <a
@@ -211,13 +384,63 @@ exports[`APISectionUtils.resolveTypeName generic type in Promise 1`] = `
 </div>
 `;
 
+exports[`APISectionUtils.resolveTypeName object reflection 1`] = `
+<div>
+  { 
+  <span>
+    target: number
+    , 
+  </span>
+  <span>
+    value: boolean
+  </span>
+   }
+</div>
+`;
+
+exports[`APISectionUtils.resolveTypeName props with multiple omits 1`] = `
+<div>
+  StyleProp
+  &lt;
+  <span>
+    <a
+      class="css-12zqqiz-STYLES_EXTERNAL_LINK"
+      href="https://www.typescriptlang.org/docs/handbook/utility-types.html#omittype-keys"
+      rel="noopener noreferrer"
+    >
+      Omit
+    </a>
+    &lt;
+    <span>
+      <a
+        class="css-12zqqiz-STYLES_EXTERNAL_LINK"
+        href="/react-native/view-style-props"
+      >
+        ViewStyle
+      </a>
+      , 
+    </span>
+    <span>
+      <span>
+        'backgroundColor'
+         | 
+      </span>
+      <span>
+        'borderRadius'
+      </span>
+    </span>
+    &gt;
+  </span>
+  &gt;
+</div>
+`;
+
 exports[`APISectionUtils.resolveTypeName query type 1`] = `
 <div>
   React.ComponentProps
   &lt;
   <span>
     View
-    
   </span>
   &gt;
 </div>
@@ -237,7 +460,6 @@ exports[`APISectionUtils.resolveTypeName tuple type 1`] = `
   </span>
   <span>
     boolean
-    
   </span>
   ]
 </div>
@@ -257,6 +479,31 @@ exports[`APISectionUtils.resolveTypeName union 1`] = `
   <span>
     null
   </span>
+</div>
+`;
+
+exports[`APISectionUtils.resolveTypeName union of array values 1`] = `
+<div>
+  (
+  <span>
+    <a
+      class="css-12zqqiz-STYLES_EXTERNAL_LINK"
+      href="/#resultseterror"
+    >
+      ResultSetError
+    </a>
+     | 
+  </span>
+  <span>
+    <a
+      class="css-12zqqiz-STYLES_EXTERNAL_LINK"
+      href="/#resultset"
+    >
+      ResultSet
+    </a>
+  </span>
+  )
+  []
 </div>
 `;
 

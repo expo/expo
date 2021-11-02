@@ -90,7 +90,8 @@ class OutlineProvider(private val mContext: Context) : ViewOutlineProvider() {
     startPosition: BorderRadiusConfig,
     endPosition: BorderRadiusConfig,
     isRTL: Boolean,
-    isRTLSwap: Boolean) {
+    isRTLSwap: Boolean
+  ) {
     var radius = borderRadiiConfig[inputPosition.ordinal]
     if (isRTL) {
       if (isRTLSwap) {
@@ -157,10 +158,10 @@ class OutlineProvider(private val mContext: Context) : ViewOutlineProvider() {
     val top = 0
     val right = view.width
     val bottom = view.height
-    if (mBounds.left != left.toFloat()
-      || mBounds.top != top.toFloat()
-      || mBounds.right != right.toFloat()
-      || mBounds.bottom != bottom.toFloat()) {
+    if (mBounds.left != left.toFloat() ||
+      mBounds.top != top.toFloat() ||
+      mBounds.right != right.toFloat() ||
+      mBounds.bottom != bottom.toFloat()) {
       mBounds[left.toFloat(), top.toFloat(), right.toFloat()] = bottom.toFloat()
       mCornerRadiiInvalidated = true
     }

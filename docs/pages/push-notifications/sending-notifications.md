@@ -6,7 +6,7 @@ sidebar_title: Sending Notifications with Expo's Push API
 import ImageSpotlight from '~/components/plugins/ImageSpotlight'
 import { InlineCode } from '~/components/base/code';
 
-> If you're just getting started and want to focus on the front-end for now, you can skip this step and just use [Expo's push notification tool](https://expo.io/notifications) to send notifications with the click of a button.
+> If you're just getting started and want to focus on the front-end for now, you can skip this step and just use [Expo's push notification tool](https://expo.dev/notifications) to send notifications with the click of a button.
 
 Along with the [`expo-notifications`](../versions/latest/sdk/notifications.md) module, which provides all the client-side functionality for push notifications, Expo can also handle sending these notifications off to APNs and FCM for you! All you need to do is send the request to our servers with the ExpoPushToken you grabbed in the last step.
 
@@ -21,7 +21,7 @@ When you're ready to send a push notification, take the Expo push token from you
 - [expo-server-sdk-ruby](https://github.com/expo/expo-server-sdk-ruby) for Ruby. Maintained by community developers.
 - [expo-server-sdk-rust](https://github.com/expo/expo-server-sdk-rust) for Rust. Maintained by community developers.
 - [ExpoNotificationsBundle](https://github.com/solvecrew/ExpoNotificationsBundle) for Symfony. Maintained by SolveCrew.
-- [exponent-server-sdk-php](https://github.com/Alymosul/exponent-server-sdk-php) for PHP. Maintained by community developers.
+- [exponent-server-sdk-php](https://github.com/Alymosul/exponent-server-sdk-php) or [expo-server-sdk-php](https://github.com/ctwillie/expo-server-sdk-php) for PHP. Maintained by community developers.
 - [exponent-server-sdk-golang](https://github.com/oliveroneill/exponent-server-sdk-golang) for Golang. Maintained by community developers.
 - [exponent-server-sdk-elixir](https://github.com/rdrop/exponent-server-sdk-elixir) for Elixir. Maintained by community developers.
 - [expo-server-sdk-dotnet](https://github.com/glyphard/expo-server-sdk-dotnet) for dotnet. Maintained by community developers.
@@ -229,7 +229,7 @@ If there's an error with the entire request for either push tickets or push rece
 
 ## Additional Security
 
-You can require any push requests to be sent with a valid [access token](/accounts/programmatic-access.md) before we will deliver them to your users. You can enable this enhanced push security from your [Expo Dashboard](https://expo.io/settings/access-tokens).
+You can require any push requests to be sent with a valid [access token](/accounts/programmatic-access.md) before we will deliver them to your users. You can enable this enhanced push security from your [Expo Dashboard](https://expo.dev/settings/access-tokens).
 
 By default, you can send a notification to your users by sending their Expo Push Token and any text or additional data needed for the message. This is easy to set up, but **if the tokens are leaked, a malicious user would be able to impersonate your app and send their own message to your users.** We have never had an instance of this reported; however, to follow best security practices, we offer the use of an access token alongside the push token as an additional layer of security.
 

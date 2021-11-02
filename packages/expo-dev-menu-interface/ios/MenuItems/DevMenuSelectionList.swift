@@ -1,5 +1,7 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
+import Foundation
+
 @objc
 public class DevMenuSelectionList: DevMenuScreenItem, DevMenuCallableProvider {
   @objc

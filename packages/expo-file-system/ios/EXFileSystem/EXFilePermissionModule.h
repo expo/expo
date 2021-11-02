@@ -2,12 +2,12 @@
 
 #import <Foundation/Foundation.h>
 #import <ExpoModulesCore/EXFilePermissionModuleInterface.h>
-#import <UMCore/UMInternalModule.h>
-#import <UMCore/UMModuleRegistryConsumer.h>
+#import <ExpoModulesCore/EXInternalModule.h>
+#import <ExpoModulesCore/EXModuleRegistryConsumer.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface EXFilePermissionModule : NSObject <UMInternalModule, EXFilePermissionModuleInterface, UMModuleRegistryConsumer>
+@interface EXFilePermissionModule : NSObject <EXInternalModule, EXFilePermissionModuleInterface, EXModuleRegistryConsumer>
 
 - (EXFileSystemPermissionFlags)getPathPermissions:(NSString *)path;
 

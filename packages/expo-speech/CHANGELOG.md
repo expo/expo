@@ -10,6 +10,27 @@
 
 ### 💡 Others
 
+## 10.0.1 — 2021-10-01
+
+_This version does not introduce any user-facing changes._
+
+## 10.0.0 — 2021-09-28
+
+### 🛠 Breaking changes
+
+- Dropped support for iOS 11.0 ([#14383](https://github.com/expo/expo/pull/14383) by [@cruzach](https://github.com/cruzach))
+
+### 🐛 Bug fixes
+
+- Fix setting speaking listener for projects with `react-native@>0.64.0`. ([#13654](https://github.com/expo/expo/pull/13654) by [@dsokal](https://github.com/dsokal))
+- Fix empty voices list on web and allow to change voice when using `speak`. ([#4516](https://github.com/expo/expo/pull/14516) by [@Federkun](https://github.com/Federkun))
+- Fix building errors from use_frameworks! in Podfile. ([#14523](https://github.com/expo/expo/pull/14523) by [@kudo](https://github.com/kudo))
+
+### 💡 Others
+
+- Migrated from `@unimodules/core` to `expo-modules-core`. ([#13757](https://github.com/expo/expo/pull/13757) by [@tsapeta](https://github.com/tsapeta))
+- Rewritten Android code to Kotlin. ([#14008](https://github.com/expo/expo/pull/14008) by [@barthap](https://github.com/barthap))
+
 ## 9.2.0 — 2021-06-16
 
 ### 🐛 Bug fixes

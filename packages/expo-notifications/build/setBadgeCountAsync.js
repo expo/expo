@@ -1,4 +1,4 @@
-import { UnavailabilityError, Platform } from '@unimodules/core';
+import { UnavailabilityError, Platform } from 'expo-modules-core';
 import BadgeModule from './BadgeModule';
 export default async function setBadgeCountAsync(badgeCount, options) {
     if (!BadgeModule.setBadgeCountAsync) {

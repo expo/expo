@@ -8,7 +8,7 @@ export const A = forwardRef(({ href, target, ...props }, ref) => {
             target,
         },
         default: {
-            onPress: event => {
+            onPress: (event) => {
                 props.onPress && props.onPress(event);
                 if (Platform.OS !== 'web' && href !== undefined) {
                     Linking.openURL(href);
@@ -16,6 +16,6 @@ export const A = forwardRef(({ href, target, ...props }, ref) => {
             },
         },
     });
-    return React.createElement(Text, Object.assign({ accessibilityRole: "link" }, props, nativeProps, { ref: ref }));
+    return React.createElement(Text, { accessibilityRole: "link", ...props, ...nativeProps, ref: ref });
 });
 //# sourceMappingURL=Anchor.js.map

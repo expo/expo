@@ -23,7 +23,6 @@
 #import <ExpoModulesCore/EXModuleRegistry.h>
 #import <ExpoModulesCore/EXNativeModulesProxy.h>
 #import <ExpoModulesCore/EXModuleRegistryAdapter.h>
-#import <ExpoModulesCore/EXAppDelegateWrapper.h>
 
 // OTA Updates
 
@@ -32,3 +31,4 @@
 // Dev Client
 
 #import <EXDevLauncher/EXDevLauncherController.h>
+#import <EXScreenOrientation/EXScreenOrientationViewController.h>

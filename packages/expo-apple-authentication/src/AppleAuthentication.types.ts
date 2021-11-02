@@ -1,14 +1,30 @@
-import { StyleProp, ViewStyle } from 'react-native';
+import { StyleProp, ViewStyle, ViewProps } from 'react-native';
 
-/**
- * @hidden
- */
-export type AppleAuthenticationButtonProps = {
+// @needsAudit
+export declare type AppleAuthenticationButtonProps = ViewProps & {
+  /**
+   * The method to call when the user presses the button. You should call [`AppleAuthentication.signInAsync`](#isavailableasync)
+   * in here.
+   */
   onPress: () => void;
+  /**
+   * The type of button text to display ("Sign In with Apple" vs. "Continue with Apple").
+   */
   buttonType: AppleAuthenticationButtonType;
+  /**
+   * The Apple-defined color scheme to use to display the button.
+   */
   buttonStyle: AppleAuthenticationButtonStyle;
+  /**
+   * The border radius to use when rendering the button. This works similarly to
+   * `style.borderRadius` in other Views.
+   */
   cornerRadius?: number;
-  style?: StyleProp<ViewStyle>;
+  /**
+   * The custom style to apply to the button. Should not include `backgroundColor` or `borderRadius`
+   * properties.
+   */
+  style?: StyleProp<Omit<ViewStyle, 'backgroundColor' | 'borderRadius'>>;
 };
 
 // @needsAudit
@@ -174,7 +190,7 @@ export type AppleAuthenticationFullName = {
  * An enum whose values specify scopes you can request when calling [`AppleAuthentication.signInAsync()`](#appleauthenticationsigninasyncoptions).
  *
  * > Note that it is possible that you will not be granted all of the scopes which you request.
- * You will still need to handle null values for any fields you request.
+ * > You will still need to handle null values for any fields you request.
  *
  * @see [Apple
  * Documentation](https://developer.apple.com/documentation/authenticationservices/asauthorizationscope)

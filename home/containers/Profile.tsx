@@ -1,10 +1,11 @@
+import { useQuery } from '@apollo/client';
 import { StackScreenProps } from '@react-navigation/stack';
 import * as React from 'react';
 
 import ProfileView from '../components/ProfileView';
 import { Project } from '../components/ProjectList';
 import { Snack } from '../components/SnackList';
-import { useHome_ProfileData2Query } from '../graphql/queries/ProfileDataQuery.query.generated';
+import { Home_ProfileData2Document } from '../graphql/types';
 import { AllStackRoutes } from '../navigation/Navigation.types';
 import { useDispatch } from '../redux/Hooks';
 import SessionActions from '../redux/SessionActions';
@@ -31,7 +32,7 @@ export interface ProfileData {
 
 export default function Profile(props: StackScreenProps<AllStackRoutes, 'Profile'>) {
   const dispatch = useDispatch();
-  const query = useHome_ProfileData2Query({
+  const query = useQuery(Home_ProfileData2Document, {
     fetchPolicy: 'cache-and-network',
     variables: {
       appLimit: APP_LIMIT,

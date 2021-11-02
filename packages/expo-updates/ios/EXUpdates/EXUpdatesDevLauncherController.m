@@ -22,6 +22,12 @@ typedef NS_ENUM(NSInteger, EXUpdatesDevLauncherErrorCode) {
   EXUpdatesDevLauncherErrorCodeUpdateLaunchFailed,
 };
 
+@interface EXUpdatesDevLauncherController ()
+
+@property (nonatomic, strong) EXUpdatesConfig *tempConfig;
+
+@end
+
 @implementation EXUpdatesDevLauncherController
 
 @synthesize bridge = _bridge;
@@ -82,11 +88,15 @@ typedef NS_ENUM(NSInteger, EXUpdatesDevLauncherErrorCode) {
     return;
   }
 
+  // since controller is a singleton, save its config so we can reset to it if our request fails
+  _tempConfig = controller.config;
+
   [self _setDevelopmentSelectionPolicy];
+  [controller setConfigurationInternal:updatesConfiguration];
 
   EXUpdatesRemoteAppLoader *loader = [[EXUpdatesRemoteAppLoader alloc] initWithConfig:updatesConfiguration database:controller.database directory:controller.updatesDirectory completionQueue:controller.controllerQueue];
   [loader loadUpdateFromUrl:updatesConfiguration.updateUrl onManifest:^BOOL(EXUpdatesUpdate * _Nonnull update) {
-    return manifestBlock(update.rawManifest.rawManifestJSON);
+    return manifestBlock(update.manifest.rawManifestJSON);
   } asset:^(EXUpdatesAsset * _Nonnull asset, NSUInteger successfulAssetCount, NSUInteger failedAssetCount, NSUInteger totalAssetCount) {
     progressBlock(successfulAssetCount, failedAssetCount, totalAssetCount);
   } success:^(EXUpdatesUpdate * _Nullable update) {
@@ -119,13 +129,14 @@ typedef NS_ENUM(NSInteger, EXUpdatesDevLauncherErrorCode) {
   [launcher launchUpdateWithSelectionPolicy:controller.selectionPolicy completion:^(NSError * _Nullable error, BOOL success) {
     if (!success) {
       errorBlock(error ?: [NSError errorWithDomain:EXUpdatesDevLauncherControllerErrorDomain code:EXUpdatesDevLauncherErrorCodeUpdateLaunchFailed userInfo:@{NSLocalizedDescriptionKey: @"Failed to launch update with an unknown error"}]);
+      // reset controller's configuration to what it was before this request
+      [controller setConfigurationInternal:self->_tempConfig];
       return;
     }
 
     [controller setIsStarted:YES];
-    [controller setConfigurationInternal:configuration];
     [controller setLauncher:launcher];
-    successBlock(launcher.launchedUpdate.rawManifest.rawManifestJSON);
+    successBlock(launcher.launchedUpdate.manifest.rawManifestJSON);
     [controller runReaper];
   }];
 }

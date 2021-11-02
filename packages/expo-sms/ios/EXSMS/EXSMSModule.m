@@ -2,7 +2,7 @@
 
 #import <MessageUI/MessageUI.h>
 #import <EXSMS/EXSMSModule.h>
-#import <UMCore/UMUtilities.h>
+#import <ExpoModulesCore/EXUtilities.h>
 #if SD_MAC
 #import <CoreServices/CoreServices.h>
 #else
@@ -11,15 +11,15 @@
 
 @interface EXSMSModule () <MFMessageComposeViewControllerDelegate>
 
-@property (nonatomic, weak) id<UMUtilitiesInterface> utils;
-@property (nonatomic, strong) UMPromiseResolveBlock resolve;
-@property (nonatomic, strong) UMPromiseRejectBlock reject;
+@property (nonatomic, weak) id<EXUtilitiesInterface> utils;
+@property (nonatomic, strong) EXPromiseResolveBlock resolve;
+@property (nonatomic, strong) EXPromiseRejectBlock reject;
 
 @end
 
 @implementation EXSMSModule
 
-UM_EXPORT_MODULE(ExpoSMS);
+EX_EXPORT_MODULE(ExpoSMS);
 
 - (dispatch_queue_t)methodQueue
 {
@@ -28,24 +28,24 @@ UM_EXPORT_MODULE(ExpoSMS);
   return dispatch_get_main_queue();
 }
 
-- (void)setModuleRegistry:(UMModuleRegistry *)moduleRegistry
+- (void)setModuleRegistry:(EXModuleRegistry *)moduleRegistry
 {
-  _utils = [moduleRegistry getModuleImplementingProtocol:@protocol(UMUtilitiesInterface)];
+  _utils = [moduleRegistry getModuleImplementingProtocol:@protocol(EXUtilitiesInterface)];
 }
 
-UM_EXPORT_METHOD_AS(isAvailableAsync,
-                    isAvailable:(UMPromiseResolveBlock)resolve
-                    rejecter:(UMPromiseRejectBlock)reject)
+EX_EXPORT_METHOD_AS(isAvailableAsync,
+                    isAvailable:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
 {
   resolve(@([MFMessageComposeViewController canSendText]));
 }
 
-UM_EXPORT_METHOD_AS(sendSMSAsync,
+EX_EXPORT_METHOD_AS(sendSMSAsync,
                     sendSMS:(NSArray<NSString *> *)addresses
                     message:(NSString *)message
                     options:(NSDictionary *)options
-                    resolver:(UMPromiseResolveBlock)resolve
-                    rejecter:(UMPromiseRejectBlock)reject)
+                    resolver:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
 {
   if (![MFMessageComposeViewController canSendText]) {
     reject(@"E_SMS_UNAVAILABLE", @"SMS service not available", nil);
@@ -116,9 +116,9 @@ UM_EXPORT_METHOD_AS(sendSMSAsync,
       rejectMessage = @"SMS message sending failed with unknown error";
       break;
   }
-  UM_WEAKIFY(self);
+  EX_WEAKIFY(self);
   [controller dismissViewControllerAnimated:YES completion:^{
-    UM_ENSURE_STRONGIFY(self);
+    EX_ENSURE_STRONGIFY(self);
     if (rejectMessage) {
       self->_reject(@"E_SMS_SENDING_FAILED", rejectMessage, nil);
     } else {

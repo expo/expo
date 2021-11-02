@@ -16,7 +16,7 @@ static const NSString *kImageResizeModeCover = @"cover";
 
 @implementation EXManagedAppSplashScreenConfigurationBuilder
 
-+ (EXManagedAppSplashScreenConfiguration *)parseManifest:(EXUpdatesRawManifest *)manifest
++ (EXManagedAppSplashScreenConfiguration *)parseManifest:(EXManifestsManifest *)manifest
 {
   UIColor *backgroundColor = [[self class] parseBackgroundColor:manifest];
   NSString *imageUrl = [[self class] parseImageUrl:manifest];
@@ -26,7 +26,7 @@ static const NSString *kImageResizeModeCover = @"cover";
                                                                 imageResizeMode:imageResizeMode];
 }
 
-+ (UIColor * _Nonnull)parseBackgroundColor:(EXUpdatesRawManifest *)manifest
++ (UIColor * _Nonnull)parseBackgroundColor:(EXManifestsManifest *)manifest
 {
   // TODO: (@bbarthec) backgroundColor is recommended to be in HEX format for now, but it should be any css-valid format
   NSString *hexString = manifest.iosSplashBackgroundColor;
@@ -34,16 +34,16 @@ static const NSString *kImageResizeModeCover = @"cover";
   if (color) {
     return color;
   }
-  
+
   return [UIColor whiteColor];
 }
 
-+ (NSString * _Nullable)parseImageUrl:(EXUpdatesRawManifest *)manifest
++ (NSString * _Nullable)parseImageUrl:(EXManifestsManifest *)manifest
 {
   return manifest.iosSplashImageUrl;
 }
 
-+ (EXSplashScreenImageResizeMode)parseImageResizeMode:(EXUpdatesRawManifest *)manifest
++ (EXSplashScreenImageResizeMode)parseImageResizeMode:(EXManifestsManifest *)manifest
 {
   NSString *resizeMode = manifest.iosSplashImageResizeMode;
   if ([kImageResizeModeCover isEqualToString:resizeMode]) {

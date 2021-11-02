@@ -4,7 +4,6 @@ import abi41_0_0.com.facebook.react.bridge.*
 import com.stripe.android.PaymentAuthConfig
 import com.stripe.android.model.*
 
-
 internal fun mapIntentStatus(status: StripeIntent.Status?): String {
   return when (status) {
     StripeIntent.Status.Succeeded -> "Succeeded"
@@ -17,7 +16,6 @@ internal fun mapIntentStatus(status: StripeIntent.Status?): String {
     else -> "Unknown"
   }
 }
-
 
 internal fun mapCaptureMethod(captureMethod: PaymentIntent.CaptureMethod?): String {
   return when (captureMethod) {
@@ -342,35 +340,35 @@ fun mapToUICustomization(params: ReadableMap): PaymentAuthConfig.Stripe3ds2UiCus
   val textBoxCustomizationBuilder = PaymentAuthConfig.Stripe3ds2TextBoxCustomization.Builder()
   val buttonCustomizationBuilder = PaymentAuthConfig.Stripe3ds2ButtonCustomization.Builder()
 
-  getStringOrNull(labelCustomization,"headingTextColor")?.let {
+  getStringOrNull(labelCustomization, "headingTextColor")?.let {
     labelCustomizationBuilder.setHeadingTextColor(it)
   }
-  getStringOrNull(labelCustomization,"textColor")?.let {
+  getStringOrNull(labelCustomization, "textColor")?.let {
     labelCustomizationBuilder.setTextColor(it)
   }
-  getIntOrNull(labelCustomization,"headingFontSize")?.let {
+  getIntOrNull(labelCustomization, "headingFontSize")?.let {
     labelCustomizationBuilder.setHeadingTextFontSize(it)
   }
-  getIntOrNull(labelCustomization,"textFontSize")?.let {
+  getIntOrNull(labelCustomization, "textFontSize")?.let {
     labelCustomizationBuilder.setTextFontSize(it)
   }
 
-  getStringOrNull(navigationBarCustomization,"headerText")?.let {
+  getStringOrNull(navigationBarCustomization, "headerText")?.let {
     toolbarCustomizationBuilder.setHeaderText(it)
   }
-  getStringOrNull(navigationBarCustomization,"buttonText")?.let {
+  getStringOrNull(navigationBarCustomization, "buttonText")?.let {
     toolbarCustomizationBuilder.setButtonText(it)
   }
-  getStringOrNull(navigationBarCustomization,"textColor")?.let {
+  getStringOrNull(navigationBarCustomization, "textColor")?.let {
     toolbarCustomizationBuilder.setTextColor(it)
   }
-  getStringOrNull(navigationBarCustomization,"statusBarColor")?.let {
+  getStringOrNull(navigationBarCustomization, "statusBarColor")?.let {
     toolbarCustomizationBuilder.setStatusBarColor(it)
   }
-  getStringOrNull(navigationBarCustomization,"backgroundColor")?.let {
+  getStringOrNull(navigationBarCustomization, "backgroundColor")?.let {
     toolbarCustomizationBuilder.setBackgroundColor(it)
   }
-  getIntOrNull(navigationBarCustomization,"textFontSize")?.let {
+  getIntOrNull(navigationBarCustomization, "textFontSize")?.let {
     toolbarCustomizationBuilder.setTextFontSize(it)
   }
 
@@ -402,7 +400,6 @@ fun mapToUICustomization(params: ReadableMap): PaymentAuthConfig.Stripe3ds2UiCus
   getIntOrNull(buttonCustomization, "textFontSize")?.let {
     buttonCustomizationBuilder.setTextFontSize(it)
   }
-
 
   val uiCustomization = PaymentAuthConfig.Stripe3ds2UiCustomization.Builder()
     .setLabelCustomization(
@@ -439,7 +436,7 @@ internal fun mapFromSetupIntentResult(setupIntent: SetupIntent): WritableMap {
   map.putString("paymentMethodId", setupIntent.paymentMethodId)
   map.putString("usage", mapSetupIntentUsage(setupIntent.usage))
 
-  if(setupIntent.created != null) {
+  if (setupIntent.created != null) {
     map.putInt("created", convertToUnixTimestamp(setupIntent.created))
   }
 
@@ -476,8 +473,8 @@ internal fun mapSetupIntentUsage(type: StripeIntent.Usage?): String {
 
 fun mapToPaymentIntentFutureUsage(type: String?): ConfirmPaymentIntentParams.SetupFutureUsage? {
   return when (type) {
-    "OffSession" ->  ConfirmPaymentIntentParams.SetupFutureUsage.OffSession
-    "OnSession" ->  ConfirmPaymentIntentParams.SetupFutureUsage.OnSession
-    else ->  null
+    "OffSession" -> ConfirmPaymentIntentParams.SetupFutureUsage.OffSession
+    "OnSession" -> ConfirmPaymentIntentParams.SetupFutureUsage.OnSession
+    else -> null
   }
 }

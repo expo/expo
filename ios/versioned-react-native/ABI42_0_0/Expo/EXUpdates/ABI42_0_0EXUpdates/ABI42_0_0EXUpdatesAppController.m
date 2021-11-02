@@ -7,6 +7,7 @@
 #import <ABI42_0_0EXUpdates/ABI42_0_0EXUpdatesReaper.h>
 #import <ABI42_0_0EXUpdates/ABI42_0_0EXUpdatesSelectionPolicyFactory.h>
 #import <ABI42_0_0EXUpdates/ABI42_0_0EXUpdatesUtils.h>
+#import <ABI42_0_0React/ABI42_0_0RCTReloadCommand.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -19,7 +20,7 @@ static NSString * const ABI42_0_0EXUpdatesErrorEventName = @"error";
 @interface ABI42_0_0EXUpdatesAppController ()
 
 @property (nonatomic, readwrite, strong) ABI42_0_0EXUpdatesConfig *config;
-@property (nonatomic, readwrite, strong) id<ABI42_0_0EXUpdatesAppLauncher> launcher;
+@property (nonatomic, readwrite, strong, nullable) id<ABI42_0_0EXUpdatesAppLauncher> launcher;
 @property (nonatomic, readwrite, strong) ABI42_0_0EXUpdatesDatabase *database;
 @property (nonatomic, readwrite, strong) ABI42_0_0EXUpdatesSelectionPolicy *selectionPolicy;
 @property (nonatomic, readwrite, strong) ABI42_0_0EXUpdatesSelectionPolicy *defaultSelectionPolicy;
@@ -113,6 +114,11 @@ static NSString * const ABI42_0_0EXUpdatesErrorEventName = @"error";
                                    reason:@"expo-updates is enabled, but no valid URL is configured under ABI42_0_0EXUpdatesURL. If you are making a release build for the first time, make sure you have run `expo publish` at least once."
                                  userInfo:@{}];
   }
+  if (!_config.scopeKey) {
+    @throw [NSException exceptionWithName:NSInternalInconsistencyException
+                                   reason:@"expo-updates was configured with no scope key. Make sure a valid URL is configured under ABI42_0_0EXUpdatesURL."
+                                 userInfo:@{}];
+  }
 
   _isStarted = YES;
 
@@ -167,24 +173,20 @@ static NSString * const ABI42_0_0EXUpdatesErrorEventName = @"error";
 
 - (void)requestRelaunchWithCompletion:(ABI42_0_0EXUpdatesAppRelaunchCompletionBlock)completion
 {
-  if (_bridge) {
-    ABI42_0_0EXUpdatesAppLauncherWithDatabase *launcher = [[ABI42_0_0EXUpdatesAppLauncherWithDatabase alloc] initWithConfig:_config database:_database directory:_updatesDirectory completionQueue:_controllerQueue];
-    _candidateLauncher = launcher;
-    [launcher launchUpdateWithSelectionPolicy:self.selectionPolicy completion:^(NSError * _Nullable error, BOOL success) {
-      if (success) {
-        self->_launcher = self->_candidateLauncher;
-        completion(YES);
-        [self->_bridge reload];
-        [self runReaper];
-      } else {
-        NSLog(@"Failed to relaunch: %@", error.localizedDescription);
-        completion(NO);
-      }
-    }];
-  } else {
-    NSLog(@"ABI42_0_0EXUpdatesAppController: Failed to reload because bridge was nil. Did you set the bridge property on the controller singleton?");
-    completion(NO);
-  }
+  ABI42_0_0EXUpdatesAppLauncherWithDatabase *launcher = [[ABI42_0_0EXUpdatesAppLauncherWithDatabase alloc] initWithConfig:_config database:_database directory:_updatesDirectory completionQueue:_controllerQueue];
+  _candidateLauncher = launcher;
+  [launcher launchUpdateWithSelectionPolicy:self.selectionPolicy completion:^(NSError * _Nullable error, BOOL success) {
+    if (success) {
+      self->_launcher = self->_candidateLauncher;
+      completion(YES);
+      ABI42_0_0RCTReloadCommandSetBundleURL(launcher.launchAssetUrl);
+      ABI42_0_0RCTTriggerReloadCommandListeners(@"Requested by JavaScript - Updates.reloadAsync()");
+      [self runReaper];
+    } else {
+      NSLog(@"Failed to relaunch: %@", error.localizedDescription);
+      completion(NO);
+    }
+  }];
 }
 
 - (nullable ABI42_0_0EXUpdatesUpdate *)launchedUpdate
@@ -244,7 +246,7 @@ static NSString * const ABI42_0_0EXUpdatesErrorEventName = @"error";
     [ABI42_0_0EXUpdatesUtils sendEventToBridge:_bridge withType:ABI42_0_0EXUpdatesErrorEventName body:@{@"message": error.localizedDescription}];
   } else if (status == ABI42_0_0EXUpdatesBackgroundUpdateStatusUpdateAvailable) {
     NSAssert(update != nil, @"Background update with error status must have a nonnull update object");
-    [ABI42_0_0EXUpdatesUtils sendEventToBridge:_bridge withType:ABI42_0_0EXUpdatesUpdateAvailableEventName body:@{@"manifest": update.rawManifest.rawManifestJSON}];
+    [ABI42_0_0EXUpdatesUtils sendEventToBridge:_bridge withType:ABI42_0_0EXUpdatesUpdateAvailableEventName body:@{@"manifest": update.manifest.rawManifestJSON}];
   } else if (status == ABI42_0_0EXUpdatesBackgroundUpdateStatusNoUpdateAvailable) {
     [ABI42_0_0EXUpdatesUtils sendEventToBridge:_bridge withType:ABI42_0_0EXUpdatesNoUpdateAvailableEventName body:@{}];
   }
@@ -279,7 +281,7 @@ static NSString * const ABI42_0_0EXUpdatesErrorEventName = @"error";
   _defaultSelectionPolicy = selectionPolicy;
 }
 
-- (void)setLauncher:(id<ABI42_0_0EXUpdatesAppLauncher>)launcher
+- (void)setLauncher:(nullable id<ABI42_0_0EXUpdatesAppLauncher>)launcher
 {
   _launcher = launcher;
 }

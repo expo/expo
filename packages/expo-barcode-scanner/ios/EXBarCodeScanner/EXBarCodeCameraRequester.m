@@ -1,7 +1,7 @@
 // Copyright 2016-present 650 Industries. All rights reserved.
 
 #import <EXBarCodeScanner/EXBarCodeCameraRequester.h>
-#import <UMCore/UMDefines.h>
+#import <ExpoModulesCore/EXDefines.h>
 #import <ExpoModulesCore/EXPermissionsInterface.h>
 
 #import <AVFoundation/AVFoundation.h>
@@ -19,7 +19,7 @@
   EXPermissionStatus status;
   NSString *cameraUsageDescription = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"NSCameraUsageDescription"];
   if (!cameraUsageDescription) {
-    UMFatal(UMErrorWithMessage(@"This app is missing 'NSCameraUsageDescription', so video services will fail. Add this entry to your bundle's Info.plist."));
+    EXFatal(EXErrorWithMessage(@"This app is missing 'NSCameraUsageDescription', so video services will fail. Add this entry to your bundle's Info.plist."));
     systemStatus = AVAuthorizationStatusDenied;
   } else {
     systemStatus = [AVCaptureDevice authorizationStatusForMediaType:AVMediaTypeVideo];
@@ -41,11 +41,11 @@
   };
 }
 
-- (void)requestPermissionsWithResolver:(UMPromiseResolveBlock)resolve rejecter:(UMPromiseRejectBlock)reject
+- (void)requestPermissionsWithResolver:(EXPromiseResolveBlock)resolve rejecter:(EXPromiseRejectBlock)reject
 {
-  UM_WEAKIFY(self)
+  EX_WEAKIFY(self)
   [AVCaptureDevice requestAccessForMediaType:AVMediaTypeVideo completionHandler:^(BOOL granted) {
-    UM_STRONGIFY(self)
+    EX_STRONGIFY(self)
     resolve([self getPermissions]);
   }];
 }

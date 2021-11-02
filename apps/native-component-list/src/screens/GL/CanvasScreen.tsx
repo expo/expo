@@ -2,7 +2,7 @@ import Expo2DContext from 'expo-2d-context';
 
 import GLWrap from './GLWrap';
 
-export default GLWrap('Canvas example - expo-2d-context', async gl => {
+export default GLWrap('Canvas example - expo-2d-context', async (gl) => {
   const ctx = new Expo2DContext(gl);
   ctx.translate(50, 200);
   ctx.scale(4, 4);

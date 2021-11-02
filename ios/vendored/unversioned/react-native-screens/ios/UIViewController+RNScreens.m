@@ -1,5 +1,5 @@
-#import "UIViewController+RNScreens.h"
 #import "RNSScreenContainer.h"
+#import "UIViewController+RNScreens.h"
 
 #import <objc/runtime.h>
 
@@ -21,7 +21,8 @@
 - (UIStatusBarAnimation)reactNativeScreensPreferredStatusBarUpdateAnimation
 {
   UIViewController *childVC = [self findChildRNScreensViewController];
-  return childVC ? childVC.preferredStatusBarUpdateAnimation : [self reactNativeScreensPreferredStatusBarUpdateAnimation];
+  return childVC ? childVC.preferredStatusBarUpdateAnimation
+                 : [self reactNativeScreensPreferredStatusBarUpdateAnimation];
 }
 
 - (UIInterfaceOrientationMask)reactNativeScreensSupportedInterfaceOrientations
@@ -42,20 +43,24 @@
 + (void)load
 {
   static dispatch_once_t once_token;
-  dispatch_once(&once_token,  ^{
-   Class uiVCClass = [UIViewController class];
-   
-   method_exchangeImplementations(class_getInstanceMethod(uiVCClass, @selector(childViewControllerForStatusBarStyle)),
-                                  class_getInstanceMethod(uiVCClass, @selector(reactNativeScreensChildViewControllerForStatusBarStyle)));
+  dispatch_once(&once_token, ^{
+    Class uiVCClass = [UIViewController class];
 
-   method_exchangeImplementations(class_getInstanceMethod(uiVCClass, @selector(childViewControllerForStatusBarHidden)),
-                                  class_getInstanceMethod(uiVCClass, @selector(reactNativeScreensChildViewControllerForStatusBarHidden)));
-   
-   method_exchangeImplementations(class_getInstanceMethod(uiVCClass, @selector(preferredStatusBarUpdateAnimation)),
-                                  class_getInstanceMethod(uiVCClass, @selector(reactNativeScreensPreferredStatusBarUpdateAnimation)));
+    method_exchangeImplementations(
+        class_getInstanceMethod(uiVCClass, @selector(childViewControllerForStatusBarStyle)),
+        class_getInstanceMethod(uiVCClass, @selector(reactNativeScreensChildViewControllerForStatusBarStyle)));
 
-   method_exchangeImplementations(class_getInstanceMethod(uiVCClass, @selector(supportedInterfaceOrientations)),
-                                  class_getInstanceMethod(uiVCClass, @selector(reactNativeScreensSupportedInterfaceOrientations)));
+    method_exchangeImplementations(
+        class_getInstanceMethod(uiVCClass, @selector(childViewControllerForStatusBarHidden)),
+        class_getInstanceMethod(uiVCClass, @selector(reactNativeScreensChildViewControllerForStatusBarHidden)));
+
+    method_exchangeImplementations(
+        class_getInstanceMethod(uiVCClass, @selector(preferredStatusBarUpdateAnimation)),
+        class_getInstanceMethod(uiVCClass, @selector(reactNativeScreensPreferredStatusBarUpdateAnimation)));
+
+    method_exchangeImplementations(
+        class_getInstanceMethod(uiVCClass, @selector(supportedInterfaceOrientations)),
+        class_getInstanceMethod(uiVCClass, @selector(reactNativeScreensSupportedInterfaceOrientations)));
   });
 }
 #endif

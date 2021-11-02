@@ -44,7 +44,7 @@ static NSString *AUTO_INIT_KEY = @"autoInitEnabled";
 
 @implementation ABI41_0_0EXScopedFacebook : ABI41_0_0EXFacebook
 
-- (instancetype)initWithScopeKey:(NSString *)scopeKey manifest:(ABI41_0_0EXUpdatesRawManifest *)manifest;
+- (instancetype)initWithScopeKey:(NSString *)scopeKey manifest:(ABI41_0_0EXManifestsManifest *)manifest;
 {
   if (self = [super init]) {
     NSString *suiteName = [NSString stringWithFormat:@"%@#%@", NSStringFromClass(self.class), scopeKey];

@@ -61,7 +61,7 @@ class DetailsScreen extends React.Component<Props, { count: number; text: string
         <TextInput
           placeholder="Hello"
           style={styles.textInput}
-          onChangeText={text => this.setState({ text })}
+          onChangeText={(text) => this.setState({ text })}
           value={this.state.text}
         />
         <Animated.View
@@ -92,7 +92,7 @@ const App = () => (
       component={DetailsScreen}
       options={({ route }) => {
         return {
-          title: 'Details screen #' + (route.params as any)?.index ?? '0',
+          title: 'Details screen #' + ((route.params as any)?.index ?? '0'),
         };
       }}
     />

@@ -2,26 +2,17 @@ package versioned.host.exp.exponent.modules.api.components.reactnativestripesdk
 
 import android.content.res.ColorStateList
 import android.graphics.Color
-import android.text.Editable
-import android.text.TextWatcher
-import android.view.View
-import android.view.ViewGroup
 import android.widget.FrameLayout
 import com.facebook.react.bridge.ReadableMap
-import com.facebook.react.bridge.WritableMap
-import com.facebook.react.bridge.WritableNativeMap
 import com.facebook.react.uimanager.ThemedReactContext
 import com.facebook.react.uimanager.UIManagerModule
 import com.facebook.react.uimanager.events.EventDispatcher
-import com.stripe.android.databinding.CardInputWidgetBinding
 import com.google.android.material.shape.CornerFamily
 import com.google.android.material.shape.MaterialShapeDrawable
 import com.google.android.material.shape.ShapeAppearanceModel
 import com.stripe.android.databinding.BecsDebitWidgetBinding
 import com.stripe.android.model.PaymentMethodCreateParams
 import com.stripe.android.view.BecsDebitWidget
-import com.stripe.android.view.CardInputListener
-import com.stripe.android.view.CardInputWidget
 import com.stripe.android.view.StripeEditText
 
 class AuBECSDebitFormView(private val context: ThemedReactContext) : FrameLayout(context) {
@@ -30,7 +21,7 @@ class AuBECSDebitFormView(private val context: ThemedReactContext) : FrameLayout
   private var formStyle: ReadableMap? = null
 
   fun setCompanyName(name: String?) {
-    becsDebitWidget = BecsDebitWidget(context = context, companyName = name as String);
+    becsDebitWidget = BecsDebitWidget(context = context, companyName = name as String)
 
     setFormStyle(this.formStyle)
     addView(becsDebitWidget)
@@ -101,7 +92,6 @@ class AuBECSDebitFormView(private val context: ThemedReactContext) : FrameLayout
     }
   }
 
-
   fun onFormChanged(params: PaymentMethodCreateParams) {
     val billingDetails = params.toParamMap()["billing_details"] as HashMap<*, *>
     val auBecsDebit = params.toParamMap()["au_becs_debit"] as HashMap<*, *>
@@ -114,7 +104,8 @@ class AuBECSDebitFormView(private val context: ThemedReactContext) : FrameLayout
     )
 
     mEventDispatcher?.dispatchEvent(
-      FormCompleteEvent(id, formDetails))
+      FormCompleteEvent(id, formDetails)
+    )
   }
 
   private fun setListeners() {

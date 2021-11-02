@@ -2,60 +2,81 @@ package expo.modules.devlauncher
 
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import com.facebook.react.ReactActivity
 import com.facebook.react.ReactActivityDelegate
 import com.facebook.react.ReactNativeHost
 import com.facebook.react.bridge.ReactContext
 import expo.modules.devlauncher.launcher.DevLauncherClientHost
+import expo.modules.devlauncher.launcher.DevLauncherControllerInterface
 import expo.modules.devlauncher.launcher.DevLauncherReactActivityDelegateSupplier
-import expo.modules.devlauncher.launcher.manifest.DevLauncherManifest
+import expo.modules.manifests.core.Manifest
 import expo.modules.updatesinterface.UpdatesInterface
 
 const val DEV_LAUNCHER_IS_NOT_AVAILABLE = "DevLauncher isn't available in release builds"
 
-class DevLauncherController private constructor() {
-  internal enum class Mode {
+class DevLauncherController private constructor() : DevLauncherControllerInterface {
+  enum class Mode {
     LAUNCHER, APP
   }
 
-  val latestLoadedApp: String? = null
+  override val latestLoadedApp: Uri? = null
 
-  internal val mode: Mode
+  override val mode: Mode
     get() = throw IllegalStateException(DEV_LAUNCHER_IS_NOT_AVAILABLE)
 
-  val devClientHost: DevLauncherClientHost
+  override val devClientHost: DevLauncherClientHost
     get() = throw IllegalStateException(DEV_LAUNCHER_IS_NOT_AVAILABLE)
 
-  val manifest: DevLauncherManifest
+  override val manifest: Manifest
     get() = throw IllegalStateException(DEV_LAUNCHER_IS_NOT_AVAILABLE)
 
-  val appHost: ReactNativeHost
+  override val manifestURL: Uri
     get() = throw IllegalStateException(DEV_LAUNCHER_IS_NOT_AVAILABLE)
 
-  var updatesInterface: UpdatesInterface?
+  override val appHost: ReactNativeHost
     get() = throw IllegalStateException(DEV_LAUNCHER_IS_NOT_AVAILABLE)
-    set(updatesInterface) {}
 
-  val useDeveloperSupport = false
+  override var updatesInterface: UpdatesInterface?
+    get() = throw IllegalStateException(DEV_LAUNCHER_IS_NOT_AVAILABLE)
+    set(_) {}
 
-  fun maybeInitDevMenuDelegate(context: ReactContext) {
+  override val useDeveloperSupport = false
+
+  override fun maybeInitDevMenuDelegate(context: ReactContext) {
     throw IllegalStateException(DEV_LAUNCHER_IS_NOT_AVAILABLE)
   }
 
-  fun navigateToLauncher() {
+  override fun getCurrentReactActivityDelegate(activity: ReactActivity, delegateSupplierDevLauncher: DevLauncherReactActivityDelegateSupplier): ReactActivityDelegate {
     throw IllegalStateException(DEV_LAUNCHER_IS_NOT_AVAILABLE)
   }
 
-  suspend fun loadApp(appUrl: String, reactActivity: ReactActivity?) {
+  override fun handleIntent(intent: Intent?, activityToBeInvalidated: ReactActivity?): Boolean {
     throw IllegalStateException(DEV_LAUNCHER_IS_NOT_AVAILABLE)
   }
 
-  fun onAppLoaded(context: ReactContext) {
-    throw IllegalStateException(DEV_LAUNCHER_IS_NOT_AVAILABLE) 
+  override fun navigateToLauncher() {
+    throw IllegalStateException(DEV_LAUNCHER_IS_NOT_AVAILABLE)
   }
 
-  fun onAppLoadedWithError() {
-    throw IllegalStateException(DEV_LAUNCHER_IS_NOT_AVAILABLE) 
+  override fun maybeSynchronizeDevMenuDelegate() {
+    throw IllegalStateException(DEV_LAUNCHER_IS_NOT_AVAILABLE)
+  }
+
+  override suspend fun loadApp(url: Uri, mainActivity: ReactActivity?) {
+    throw IllegalStateException(DEV_LAUNCHER_IS_NOT_AVAILABLE)
+  }
+
+  override fun onAppLoaded(context: ReactContext) {
+    throw IllegalStateException(DEV_LAUNCHER_IS_NOT_AVAILABLE)
+  }
+
+  override fun onAppLoadedWithError() {
+    throw IllegalStateException(DEV_LAUNCHER_IS_NOT_AVAILABLE)
+  }
+
+  override fun getRecentlyOpenedApps(): Map<String, String?> {
+    throw IllegalStateException(DEV_LAUNCHER_IS_NOT_AVAILABLE)
   }
 
   companion object {

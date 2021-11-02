@@ -51,10 +51,7 @@ export function getRandomValuesInsecure(values) {
     return values;
 }
 class QuotaExceededError extends Error {
-    constructor() {
-        super(...arguments);
-        this.name = 'QuotaExceededError';
-        this.code = 22; // QUOTA_EXCEEDED_ERR
-    }
+    name = 'QuotaExceededError';
+    code = 22; // QUOTA_EXCEEDED_ERR
 }
 //# sourceMappingURL=getRandomValues.js.map

@@ -24,7 +24,7 @@ import { WebView } from 'react-native-webview';
 
 export default class App extends React.Component {
   render() {
-    return <WebView source={{ uri: 'https://expo.io' }} style={{ marginTop: 20 }} />;
+    return <WebView source={{ uri: 'https://expo.dev' }} style={{ marginTop: 20 }} />;
   }
 }
 ```

@@ -1,6 +1,6 @@
 {
   "name": "expo-mail-composer",
-  "version": "10.2.0",
+  "version": "11.0.1",
   "description": "Provides an API to compose mails using OS specific UI",
   "main": "build/MailComposer.js",
   "types": "build/MailComposer.d.ts",
@@ -30,15 +30,12 @@
   },
   "author": "650 Industries, Inc.",
   "license": "MIT",
-  "homepage": "https://docs.expo.io/versions/latest/sdk/mail-composer/",
+  "homepage": "https://docs.expo.dev/versions/latest/sdk/mail-composer/",
   "jest": {
     "preset": "expo-module-scripts/ios"
   },
-  "unimodulePeerDependencies": {
-    "@unimodules/core": "*"
-  },
   "dependencies": {
-    "expo-modules-core": "~0.1.1",
+    "expo-modules-core": "~0.4.2",
     "query-string": "^6.2.0"
   },
   "devDependencies": {

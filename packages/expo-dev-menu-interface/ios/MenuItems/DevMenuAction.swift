@@ -1,5 +1,8 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
+import Foundation
+import UIKit
+
 @objc
 open class DevMenuAction: DevMenuScreenItem, DevMenuCallableProvider {
   @objc
@@ -43,6 +46,11 @@ open class DevMenuAction: DevMenuScreenItem, DevMenuCallableProvider {
   public convenience init(withId id: String, action: @escaping () -> ()) {
     self.init(withId: id)
     self.callable.action = action
+  }
+  
+  @objc
+  public convenience init(withId id: String, _ action: @escaping () -> ()) {
+    self.init(withId: id, action: action)
   }
   
   public func registerCallable() -> DevMenuExportedCallable? {

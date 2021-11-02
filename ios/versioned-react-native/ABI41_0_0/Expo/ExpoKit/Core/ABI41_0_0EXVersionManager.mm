@@ -87,7 +87,7 @@ ABI41_0_0RCT_EXTERN void ABI41_0_0EXRegisterScopedModule(Class, ...);
 // is this the first time this ABI has been touched at runtime?
 @property (nonatomic, assign) BOOL isFirstLoad;
 @property (nonatomic, strong) NSDictionary *params;
-@property (nonatomic, strong) ABI41_0_0EXUpdatesRawManifest *manifest;
+@property (nonatomic, strong) ABI41_0_0EXManifestsManifest *manifest;
 @property (nonatomic, strong) ABI41_0_0RCTTurboModuleManager *turboModuleManager;
 
 @end
@@ -109,7 +109,7 @@ ABI41_0_0RCT_EXTERN void ABI41_0_0EXRegisterScopedModule(Class, ...);
  *    id exceptionsManagerDelegate
  */
 - (instancetype)initWithParams:(NSDictionary *)params
-                      manifest:(ABI41_0_0EXUpdatesRawManifest *)manifest
+                      manifest:(ABI41_0_0EXManifestsManifest *)manifest
                   fatalHandler:(void (^)(NSError *))fatalHandler
                    logFunction:(ABI41_0_0RCTLogFunction)logFunction
                   logThreshold:(NSInteger)threshold
@@ -348,9 +348,10 @@ ABI41_0_0RCT_EXTERN void ABI41_0_0EXRegisterScopedModule(Class, ...);
   if (params[@"browserModuleClass"]) {
     Class browserModuleClass = params[@"browserModuleClass"];
     id homeModule = [[browserModuleClass alloc] initWithExperienceStableLegacyId:self.manifest.stableLegacyId
-                                                              scopeKey:self.manifest.scopeKey
+                                                                        scopeKey:self.manifest.scopeKey
+                                                                    easProjectId:self.manifest.easProjectId
                                                            kernelServiceDelegate:services[@"EXHomeModuleManager"]
-                                                                   params:params];
+                                                                          params:params];
     [extraModules addObject:homeModule];
   }
 
@@ -404,17 +405,20 @@ ABI41_0_0RCT_EXTERN void ABI41_0_0EXRegisterScopedModule(Class, ...);
       Class scopedModuleClass = NSClassFromString(scopedModuleClassName);
       if (moduleServices.count > 1) {
         scopedModule = [[scopedModuleClass alloc] initWithExperienceStableLegacyId:self.manifest.stableLegacyId
-                                                                scopeKey:self.manifest.scopeKey
+                                                                          scopeKey:self.manifest.scopeKey
+                                                                      easProjectId:self.manifest.easProjectId
                                                             kernelServiceDelegates:moduleServices
                                                                             params:params];
       } else if (moduleServices.count == 0) {
         scopedModule = [[scopedModuleClass alloc] initWithExperienceStableLegacyId:self.manifest.stableLegacyId
-                                                                scopeKey:self.manifest.scopeKey
+                                                                          scopeKey:self.manifest.scopeKey
+                                                                      easProjectId:self.manifest.easProjectId
                                                              kernelServiceDelegate:nil
                                                                             params:params];
       } else {
         scopedModule = [[scopedModuleClass alloc] initWithExperienceStableLegacyId:self.manifest.stableLegacyId
-                                                                scopeKey:self.manifest.scopeKey
+                                                                          scopeKey:self.manifest.scopeKey
+                                                                      easProjectId:self.manifest.easProjectId
                                                              kernelServiceDelegate:moduleServices[[moduleServices allKeys][0]]
                                                                             params:params];
       }

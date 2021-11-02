@@ -1,10 +1,11 @@
+import { useQuery } from '@apollo/client';
 import * as React from 'react';
 
 import SnackList from '../components/SnackList';
-import { useHome_AccountSnacksQuery } from '../graphql/queries/SnacksListQuery.query.generated';
+import { Home_AccountSnacksDocument } from '../graphql/types';
 
 function useSnacksQuery({ accountName }: { accountName: string }) {
-  const { data, fetchMore } = useHome_AccountSnacksQuery({
+  const { data, fetchMore } = useQuery(Home_AccountSnacksDocument, {
     variables: {
       accountName,
       limit: 15,

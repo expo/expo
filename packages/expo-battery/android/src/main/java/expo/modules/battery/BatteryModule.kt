@@ -6,12 +6,12 @@ import android.content.IntentFilter
 import android.os.BatteryManager
 import android.os.Build
 import android.os.PowerManager
-import org.unimodules.core.ExportedModule
-import org.unimodules.core.ModuleRegistry
-import org.unimodules.core.Promise
-import org.unimodules.core.interfaces.ExpoMethod
-import org.unimodules.core.interfaces.RegistryLifecycleListener
-import org.unimodules.core.interfaces.services.EventEmitter
+import expo.modules.core.ExportedModule
+import expo.modules.core.ModuleRegistry
+import expo.modules.core.Promise
+import expo.modules.core.interfaces.ExpoMethod
+import expo.modules.core.interfaces.RegistryLifecycleListener
+import expo.modules.core.interfaces.services.EventEmitter
 
 class BatteryModule(context: Context) : ExportedModule(context), RegistryLifecycleListener {
   private val NAME = "ExpoBattery"
@@ -41,8 +41,10 @@ class BatteryModule(context: Context) : ExportedModule(context), RegistryLifecyc
 
   @ExpoMethod
   fun getBatteryLevelAsync(promise: Promise) {
-    val batteryIntent: Intent? = context.applicationContext.registerReceiver(null,
-      IntentFilter(Intent.ACTION_BATTERY_CHANGED))
+    val batteryIntent: Intent? = context.applicationContext.registerReceiver(
+      null,
+      IntentFilter(Intent.ACTION_BATTERY_CHANGED)
+    )
     if (batteryIntent == null) {
       promise.resolve(-1)
       return
@@ -59,8 +61,10 @@ class BatteryModule(context: Context) : ExportedModule(context), RegistryLifecyc
 
   @ExpoMethod
   fun getBatteryStateAsync(promise: Promise) {
-    val batteryIntent: Intent? = context.applicationContext.registerReceiver(null,
-      IntentFilter(Intent.ACTION_BATTERY_CHANGED))
+    val batteryIntent: Intent? = context.applicationContext.registerReceiver(
+      null,
+      IntentFilter(Intent.ACTION_BATTERY_CHANGED)
+    )
     if (batteryIntent == null) {
       promise.resolve(BatteryState.UNKNOWN.value)
       return
@@ -91,10 +95,9 @@ class BatteryModule(context: Context) : ExportedModule(context), RegistryLifecyc
   // implemented yet
   private val isLowPowerModeEnabled: Boolean
     get() {
-      val powerManager = context.applicationContext.getSystemService(Context.POWER_SERVICE) as PowerManager
-        ?: // We default to false on web and any future platforms that haven't been
+      val powerManager = context.applicationContext.getSystemService(Context.POWER_SERVICE) as PowerManager // We default to false on web and any future platforms that haven't been
         // implemented yet
-        return false
+        ?: return false
       return powerManager.isPowerSaveMode
     }
 }

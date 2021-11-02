@@ -1,3 +1,5 @@
+import groovy.json.JsonSlurper
+
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply plugin: 'maven'
@@ -23,14 +25,20 @@ android {
     minSdkVersion safeExtGet('minSdkVersion', 21)
     targetSdkVersion safeExtGet('targetSdkVersion', 30)
     versionCode 9
-    versionName "0.5.1"
+    versionName "0.8.1"
   }
+
   lintOptions {
     abortOnError false
   }
+
   compileOptions {
     sourceCompatibility JavaVersion.VERSION_1_8
     targetCompatibility JavaVersion.VERSION_1_8
+  }
+
+  kotlinOptions {
+    jvmTarget = "1.8"
   }
 
   buildTypes {
@@ -45,6 +53,17 @@ android {
   }
 
   sourceSets {
+    main {
+      java {
+        def rnVersion = getRNVersion()
+
+        if (rnVersion >= versionToNumber(0, 65, 0)) {
+          srcDirs += "src/react-native-65"
+        } else {
+          srcDirs += 'src/react-native-64'
+        }
+      }
+    }
     releaseWithDevLauncher {
       setRoot 'src/debug'
     }
@@ -72,6 +91,7 @@ repositories {
 
 dependencies {
   implementation project(":expo-dev-menu-interface")
+  implementation project(":expo-manifests")
   implementation project(":expo-updates-interface")
 
   //noinspection GradleDynamicVersion
@@ -93,9 +113,45 @@ dependencies {
   implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.4.1")
   implementation "org.jetbrains.kotlin:kotlin-reflect:${safeExtGet('kotlinVersion', '1.4.21')}"
 
+  api "io.insert-koin:koin-core:3.1.2"
+
+  testImplementation 'androidx.test:core:1.4.0'
+  testImplementation 'androidx.test:core-ktx:1.4.0'
   testImplementation "com.google.truth:truth:1.1.2"
-  testImplementation "org.robolectric:robolectric:4.3.1"
-  testImplementation 'io.mockk:mockk:1.9.3'
   testImplementation 'com.squareup.okhttp3:mockwebserver:4.3.1'
+  testImplementation "io.insert-koin:koin-test:3.1.2"
+  testImplementation "io.insert-koin:koin-test-junit4:3.1.2"
+  testImplementation 'io.mockk:mockk:1.9.3'
+  testImplementation "org.robolectric:robolectric:4.3.1"
 }
 
+// Koin uses a different version of Kotlin under the hood.
+configurations.all {
+  resolutionStrategy.eachDependency { DependencyResolveDetails details ->
+    def requested = details.requested
+    if (requested.group == 'org.jetbrains.kotlin') {
+      details.useVersion safeExtGet('kotlinVersion', '1.4.21')
+    }
+  }
+}
+
+def versionToNumber(major, minor, patch) {
+  return patch * 100 + minor * 10000 + major * 1000000
+}
+
+def getRNVersion() {
+  def reactNativePackageJsonPath = ["node", "-e", "console.log(require.resolve('react-native/package.json'));"].execute([], projectDir).text.trim()
+  def packageJsonFile = new File(reactNativePackageJsonPath)
+  def packageJson = new JsonSlurper().parseText(packageJsonFile.text)
+  def version = safeExtGet("reactNativeVersion", packageJson.version)
+
+  def coreVersion = version.split("-")[0]
+
+  def (major, minor, patch) = coreVersion.tokenize('.').collect { it.toInteger() }
+
+  return versionToNumber(
+      major,
+      minor,
+      patch
+  )
+}

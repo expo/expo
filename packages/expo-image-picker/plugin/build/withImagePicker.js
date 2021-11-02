@@ -22,9 +22,9 @@ function setImagePickerManifestActivity(androidManifest) {
     return androidManifest;
 }
 exports.setImagePickerManifestActivity = setImagePickerManifestActivity;
-const withImagePickerManifestActivity = config => {
+const withImagePickerManifestActivity = (config) => {
     // This plugin has no ability to remove the activity that it adds.
-    return config_plugins_1.withAndroidManifest(config, async (config) => {
+    return (0, config_plugins_1.withAndroidManifest)(config, async (config) => {
         config.modResults = setImagePickerManifestActivity(config.modResults);
         return config;
     });
@@ -40,7 +40,7 @@ const withImagePicker = (config, { photosPermission, cameraPermission, microphon
         cameraPermission || config.ios.infoPlist.NSCameraUsageDescription || CAMERA_USAGE;
     config.ios.infoPlist.NSMicrophoneUsageDescription =
         microphonePermission || config.ios.infoPlist.NSMicrophoneUsageDescription || MICROPHONE_USAGE;
-    return config_plugins_1.withPlugins(config, [
+    return (0, config_plugins_1.withPlugins)(config, [
         [
             config_plugins_1.AndroidConfig.Permissions.withPermissions,
             [
@@ -53,4 +53,4 @@ const withImagePicker = (config, { photosPermission, cameraPermission, microphon
         withImagePickerManifestActivity,
     ]);
 };
-exports.default = config_plugins_1.createRunOncePlugin(withImagePicker, pkg.name, pkg.version);
+exports.default = (0, config_plugins_1.createRunOncePlugin)(withImagePicker, pkg.name, pkg.version);

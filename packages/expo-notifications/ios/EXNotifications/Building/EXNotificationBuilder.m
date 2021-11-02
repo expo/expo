@@ -1,11 +1,12 @@
 // Copyright 2018-present 650 Industries. All rights reserved.
 
+#import <ExpoModulesCore/EXDefines.h>
 #import <EXNotifications/EXNotificationBuilder.h>
 #import <EXNotifications/NSDictionary+EXNotificationsVerifyingClass.h>
 
 @implementation EXNotificationBuilder
 
-UM_REGISTER_MODULE();
+EX_REGISTER_MODULE();
 
 + (const NSArray<Protocol *> *)exportedInterfaces
 {
@@ -56,7 +57,7 @@ UM_REGISTER_MODULE();
   NSError *error = nil;
   UNNotificationAttachment *attachment = [UNNotificationAttachment attachmentWithIdentifier:identifier URL:uri options:[self attachmentOptionsFromRequest:request] error:&error];
   if (error) {
-    UMLogWarn(@"[expo-notifications] Could not have created a notification attachment out of request: %@. Error: %@.", [request description], [error description]);
+    EXLogWarn(@"[expo-notifications] Could not have created a notification attachment out of request: %@. Error: %@.", [request description], [error description]);
     return nil;
   }
   return attachment;

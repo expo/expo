@@ -1,13 +1,28 @@
 import { ConfigPlugin, WarningAggregator, withEntitlementsPlist } from '@expo/config-plugins';
 import { ExpoConfig } from '@expo/config-types';
 
-export const withDocumentPickerIOS: ConfigPlugin<{ appleTeamId?: string }> = (
+export type IosProps = {
+  appleTeamId?: string;
+  /**
+   * Sets the `com.apple.developer.icloud-container-environment` entitlement which is read by EAS CLI to set
+   * the `iCloudContainerEnvironment` in the `xcodebuild` `exportOptionsPlist`.
+   *
+   * Available options: https://developer.apple.com/documentation/bundleresources/entitlements/com_apple_developer_icloud-container-environment
+   */
+  iCloudContainerEnvironment?: 'Development' | 'Production';
+};
+
+export const withDocumentPickerIOS: ConfigPlugin<IosProps> = (
   config,
-  { appleTeamId }
+  { appleTeamId, iCloudContainerEnvironment }
 ) => {
-  return withEntitlementsPlist(config, config => {
+  return withEntitlementsPlist(config, (config) => {
     if (appleTeamId) {
-      config.modResults = setICloudEntitlments(config, appleTeamId, config.modResults);
+      config.modResults = setICloudEntitlements(
+        config,
+        { appleTeamId, iCloudContainerEnvironment },
+        config.modResults
+      );
     } else {
       WarningAggregator.addWarningIOS(
         'expo-document-picker',
@@ -18,12 +33,16 @@ export const withDocumentPickerIOS: ConfigPlugin<{ appleTeamId?: string }> = (
   });
 };
 
-export function setICloudEntitlments(
+export function setICloudEntitlements(
   config: Pick<ExpoConfig, 'ios'>,
-  appleTeamId: string,
-  entitlements: Record<string, any>
+  { appleTeamId, iCloudContainerEnvironment }: IosProps,
+  { 'com.apple.developer.icloud-container-environment': _env, ...entitlements }: Record<string, any>
 ): Record<string, any> {
   if (config.ios?.usesIcloudStorage) {
+    // Used for AdHoc iOS builds: https://github.com/expo/eas-cli/issues/693
+    // https://developer.apple.com/documentation/bundleresources/entitlements/com_apple_developer_icloud-container-environment
+    entitlements['com.apple.developer.icloud-container-environment'] = iCloudContainerEnvironment;
+
     entitlements['com.apple.developer.icloud-container-identifiers'] = [
       'iCloud.' + config.ios.bundleIdentifier,
     ];

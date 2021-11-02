@@ -8,9 +8,8 @@
 package versioned.host.exp.exponent.modules.api.components.picker;
 
 import android.content.Context;
-import android.graphics.PorterDuff;
+import android.graphics.Color;
 import android.graphics.Typeface;
-import android.os.Build;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -33,6 +32,7 @@ import com.facebook.react.uimanager.events.EventDispatcher;
 import java.util.Map;
 
 import javax.annotation.Nullable;
+import host.exp.expoview.R;
 
 /**
  * {@link ViewManager} for the {@link ReactPicker} view. This is abstract because the
@@ -111,9 +111,20 @@ public abstract class ReactPickerManager extends BaseViewManager<ReactPicker, Re
     view.setStagedSelection(selected);
   }
 
+  @ReactProp(name = ViewProps.BACKGROUND_COLOR)
+  @Override
+  public void setBackgroundColor(ReactPicker view, @Nullable int color) {
+    view.setBackgroundColor(color);
+  }
+
   @ReactProp(name = "dropdownIconColor")
   public void setDropdownIconColor(ReactPicker view, @Nullable int color) {
-    view.getBackground().setColorFilter(color, PorterDuff.Mode.SRC_ATOP);
+    view.setDropdownIconColor(color);
+  }
+
+  @ReactProp(name = "dropdownIconRippleColor")
+  public void setDropdownIconRippleColor(ReactPicker view, @Nullable int color) {
+    view.setDropdownIconRippleColor(color);
   }
 
   @ReactProp(name = ViewProps.NUMBER_OF_LINES, defaultInt = 1)
@@ -241,8 +252,8 @@ public abstract class ReactPickerManager extends BaseViewManager<ReactPicker, Re
 
       if (convertView == null) {
         int layoutResId = isDropdown
-              ? android.R.layout.simple_spinner_dropdown_item
-              : android.R.layout.simple_spinner_item;
+              ? R.layout.simple_spinner_dropdown_item
+              : R.layout.simple_spinner_item;
         convertView = mInflater.inflate(layoutResId, parent, false);
       }
 
@@ -261,6 +272,8 @@ public abstract class ReactPickerManager extends BaseViewManager<ReactPicker, Re
       if (style != null) {
         if (style.hasKey("backgroundColor") && !style.isNull("backgroundColor")) {
           convertView.setBackgroundColor(style.getInt("backgroundColor"));
+        } else {
+          convertView.setBackgroundColor(Color.TRANSPARENT);
         }
         
         if (style.hasKey("color") && !style.isNull("color")) {
@@ -285,19 +298,16 @@ public abstract class ReactPickerManager extends BaseViewManager<ReactPicker, Re
 
       if (item.hasKey("fontFamily") && !item.isNull("fontFamily")) {
         Typeface face = Typeface.create(item.getString("fontFamily"), Typeface.NORMAL);
-        // Typeface face = Typeface.create("MuseoSans-500", Typeface.NORMAL);
         textView.setTypeface(face);
       }
 
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-        boolean isRTL = I18nUtil.getInstance().isRTL(convertView.getContext());
-        if (isRTL) {
-          convertView.setLayoutDirection(View.LAYOUT_DIRECTION_RTL);
-          convertView.setTextDirection(View.TEXT_DIRECTION_RTL);
-        } else {
-          convertView.setLayoutDirection(View.LAYOUT_DIRECTION_LTR);
-          convertView.setTextDirection(View.TEXT_DIRECTION_LTR);
-        }
+      boolean isRTL = I18nUtil.getInstance().isRTL(convertView.getContext());
+      if (isRTL) {
+        convertView.setLayoutDirection(View.LAYOUT_DIRECTION_RTL);
+        convertView.setTextDirection(View.TEXT_DIRECTION_RTL);
+      } else {
+        convertView.setLayoutDirection(View.LAYOUT_DIRECTION_LTR);
+        convertView.setTextDirection(View.TEXT_DIRECTION_LTR);
       }
 
       return convertView;

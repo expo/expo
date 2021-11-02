@@ -18,8 +18,8 @@ const fbSchemes = ['fbapi', 'fb-messenger-api', 'fbauth2', 'fbshareextension'];
 
 const USER_TRACKING = 'This identifier will be used to deliver personalized ads to you.';
 
-export const withFacebookIOS: ConfigPlugin = config => {
-  return withInfoPlist(config, config => {
+export const withFacebookIOS: ConfigPlugin = (config) => {
+  return withInfoPlist(config, (config) => {
     config.modResults = setFacebookConfig(config, config.modResults);
     return config;
   });
@@ -77,7 +77,7 @@ export function setFacebookScheme(config: ExpoConfigFacebook, infoPlist: InfoPli
 export function setFacebookAutoInitEnabled(
   config: ExpoConfigFacebook,
   { FacebookAutoInitEnabled, ...infoPlist }: InfoPlist
-) {
+): InfoPlist {
   const facebookAutoInitEnabled = getFacebookAutoInitEnabled(config);
 
   if (facebookAutoInitEnabled === null) {
@@ -93,7 +93,7 @@ export function setFacebookAutoInitEnabled(
 export function setFacebookAutoLogAppEventsEnabled(
   config: ExpoConfigFacebook,
   { FacebookAutoLogAppEventsEnabled, ...infoPlist }: InfoPlist
-) {
+): InfoPlist {
   const facebookAutoLogAppEventsEnabled = getFacebookAutoLogAppEvents(config);
 
   if (facebookAutoLogAppEventsEnabled === null) {
@@ -109,7 +109,7 @@ export function setFacebookAutoLogAppEventsEnabled(
 export function setFacebookAdvertiserIDCollectionEnabled(
   config: ExpoConfigFacebook,
   { FacebookAdvertiserIDCollectionEnabled, ...infoPlist }: InfoPlist
-) {
+): InfoPlist {
   const facebookAdvertiserIDCollectionEnabled = getFacebookAdvertiserIDCollection(config);
 
   if (facebookAdvertiserIDCollectionEnabled === null) {
@@ -125,7 +125,7 @@ export function setFacebookAdvertiserIDCollectionEnabled(
 export function setFacebookAppId(
   config: Pick<ExpoConfigFacebook, 'facebookAppId'>,
   { FacebookAppID, ...infoPlist }: InfoPlist
-) {
+): InfoPlist {
   const facebookAppId = getFacebookAppId(config);
   if (facebookAppId) {
     return {
@@ -140,7 +140,7 @@ export function setFacebookAppId(
 export function setFacebookDisplayName(
   config: ExpoConfigFacebook,
   { FacebookDisplayName, ...infoPlist }: InfoPlist
-) {
+): InfoPlist {
   const facebookDisplayName = getFacebookDisplayName(config);
 
   if (facebookDisplayName) {
@@ -162,7 +162,7 @@ export function setFacebookApplicationQuerySchemes(
   const existingSchemes = infoPlist.LSApplicationQueriesSchemes || [];
 
   if (facebookAppId && existingSchemes.includes('fbapi')) {
-    // already inlcuded, no need to add again
+    // already included, no need to add again
     return infoPlist;
   } else if (!facebookAppId && !existingSchemes.length) {
     // already removed, no need to strip again
@@ -177,7 +177,7 @@ export function setFacebookApplicationQuerySchemes(
 
   // Remove all schemes
   for (const scheme of fbSchemes) {
-    const index = existingSchemes.findIndex(s => s === scheme);
+    const index = existingSchemes.findIndex((s) => s === scheme);
     if (index > -1) {
       existingSchemes.splice(index, 1);
     }

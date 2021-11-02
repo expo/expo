@@ -5,13 +5,13 @@
 
 @interface EXBarCodeScannerViewManager ()
 
-@property (nonatomic, weak) UMModuleRegistry *moduleRegistry;
+@property (nonatomic, weak) EXModuleRegistry *moduleRegistry;
 
 @end
 
 @implementation EXBarCodeScannerViewManager
 
-UM_REGISTER_MODULE();
+EX_REGISTER_MODULE();
 
 + (const NSString *)exportedModuleName
 {
@@ -23,7 +23,7 @@ UM_REGISTER_MODULE();
   return @"ExpoBarCodeScannerView";
 }
 
-- (void)setModuleRegistry:(UMModuleRegistry *)moduleRegistry
+- (void)setModuleRegistry:(EXModuleRegistry *)moduleRegistry
 {
   _moduleRegistry = moduleRegistry;
 }
@@ -40,12 +40,12 @@ UM_REGISTER_MODULE();
            ];
 }
 
-UM_VIEW_PROPERTY(type, NSNumber *, EXBarCodeScannerView)
+EX_VIEW_PROPERTY(type, NSNumber *, EXBarCodeScannerView)
 {
   [view setPresetCamera:[value integerValue]];
 }
 
-UM_VIEW_PROPERTY(barCodeTypes, NSArray *, EXBarCodeScannerView)
+EX_VIEW_PROPERTY(barCodeTypes, NSArray *, EXBarCodeScannerView)
 {
   [view setBarCodeTypes:value];
 }

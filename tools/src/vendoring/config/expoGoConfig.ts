@@ -12,7 +12,7 @@ const config: VendoringTargetConfig = {
     },
   },
   modules: {
-    'stripe-react-native': {
+    '@stripe/stripe-react-native': {
       source: 'https://github.com/stripe/stripe-react-native.git',
       ios: {},
       // android: {
@@ -37,29 +37,18 @@ const config: VendoringTargetConfig = {
       source: 'https://github.com/software-mansion/react-native-reanimated.git',
       semverPrefix: '~',
       ios: {
-        // TODO: The podspec checks RN version to choose between Folly and RCT-Folly dependency,
-        // however we don't have RN's package.json in the place where it looks for and the fallback
-        // is set to `0.64.0` that we don't support yet.
-        // You can remove these mutations once we update RN to 0.64 or higher.
         mutatePodspec(podspec: Podspec) {
-          // Depend on Folly instead of RCT-Folly
-          delete podspec.dependencies['RCT-Folly'];
-          podspec.dependencies.Folly = [];
-
-          // Overwrite search paths for Folly
-          [podspec.pod_target_xcconfig, podspec.xcconfig].forEach((xcconfig) => {
-            xcconfig.HEADER_SEARCH_PATHS = xcconfig.HEADER_SEARCH_PATHS.replace(
-              '/RCT-Folly',
-              '/Folly'
-            );
-          });
-
+          // TODO: The podspec checks RN version from package.json.
+          // however we don't have RN's package.json in the place where it looks for and the fallback
+          // is set to `0.64.0`. we should manually transform to the exact RN version.
+          // currently both expo go and reanimated latest RN version is `0.64` that we don't need to transform.
+          // keep the code here in case reanimated upgrade and fallback default RN version as `0.65.0`.
           // Fix compiler flags
-          podspec.compiler_flags = podspec.compiler_flags.replace('RNVERSION=64', 'RNVERSION=63');
-          podspec.xcconfig.OTHER_CFLAGS = podspec.xcconfig.OTHER_CFLAGS.replace(
-            'RNVERSION=64',
-            'RNVERSION=63'
-          );
+          // podspec.compiler_flags = podspec.compiler_flags.replace('RNVERSION=64', 'RNVERSION=63');
+          // podspec.xcconfig.OTHER_CFLAGS = podspec.xcconfig.OTHER_CFLAGS.replace(
+          //   'RNVERSION=64',
+          //   'RNVERSION=63'
+          // );
         },
       },
     },
@@ -99,8 +88,7 @@ const config: VendoringTargetConfig = {
             {
               paths: 'RNCWKProcessPoolManager.h',
               find: '- (WKProcessPool *)sharedProcessPool;',
-              replaceWith:
-                '- (WKProcessPool *)sharedProcessPoolForExperienceScopeKey:(NSString *)experienceScopeKey;',
+              replaceWith: '- (WKProcessPool *)sharedProcessPoolForScopeKey:(NSString *)scopeKey;',
             },
             {
               paths: 'RNCWKProcessPoolManager.m',
@@ -121,48 +109,49 @@ const config: VendoringTargetConfig = {
   return self;
 }
 
-- (WKProcessPool *)sharedProcessPoolForExperienceScopeKey:(NSString *)experienceScopeKey
+- (WKProcessPool *)sharedProcessPoolForScopeKey:(NSString *)scopeKey
 {
-  if (!experienceScopeKey) {
+  if (!scopeKey) {
     return [self sharedProcessPool];
   }
-  if (!_pools[experienceScopeKey]) {
-    _pools[experienceScopeKey] = [[WKProcessPool alloc] init];
+  if (!_pools[scopeKey]) {
+    _pools[scopeKey] = [[WKProcessPool alloc] init];
   }
-  return _pools[experienceScopeKey];
+  return _pools[scopeKey];
 }
 `,
             },
             {
               paths: 'RNCWebView.h',
               find: /@interface RNCWebView : RCTView/,
-              replaceWith: '$&\n@property (nonatomic, strong) NSString *experienceScopeKey;',
+              replaceWith: '$&\n@property (nonatomic, strong) NSString *scopeKey;',
             },
             {
               paths: 'RNCWebView.m',
               find: /(\[\[RNCWKProcessPoolManager sharedManager\] sharedProcessPool)]/,
-              replaceWith: '$1ForExperienceScopeKey:self.experienceScopeKey]',
+              replaceWith: '$1ForScopeKey:self.scopeKey]',
             },
             {
               paths: 'RNCWebViewManager.m',
               find: /@implementation RNCWebViewManager\s*{/,
-              replaceWith: '$&\n  NSString *_experienceScopeKey;',
+              replaceWith: '$&\n  NSString *_scopeKey;',
             },
             {
               paths: 'RNCWebViewManager.m',
               find: '*webView = [RNCWebView new];',
-              replaceWith:
-                '*webView = [RNCWebView new];\n  webView.experienceScopeKey = _experienceScopeKey;',
+              replaceWith: '*webView = [RNCWebView new];\n  webView.scopeKey = _scopeKey;',
             },
             {
               paths: 'RNCWebViewManager.m',
               find: /RCT_EXPORT_MODULE\(\)/,
-              replaceWith: `- (instancetype)initWithExperienceScopeKey:(NSString *)experienceScopeKey
-               kernelServiceDelegate:(id)kernelServiceInstance
-                              params:(NSDictionary *)params
+              replaceWith: `- (instancetype)initWithExperienceStableLegacyId:(NSString *)experienceStableLegacyId
+                                        scopeKey:(NSString *)scopeKey
+                                    easProjectId:(NSString *)easProjectId
+                           kernelServiceDelegate:(id)kernelServiceInstance
+                                          params:(NSDictionary *)params
 {
   if (self = [super init]) {
-    _experienceScopeKey = experienceScopeKey;
+    _scopeKey = scopeKey;
   }
   return self;
 }`,
@@ -210,7 +199,7 @@ const config: VendoringTargetConfig = {
     '@react-native-masked-view/masked-view': {
       source: 'https://github.com/react-native-masked-view/masked-view',
     },
-    '@react-native-community/viewpager': {
+    'react-native-pager-view': {
       source: 'https://github.com/callstack/react-native-viewpager',
       ios: {},
     },

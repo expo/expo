@@ -26,10 +26,7 @@ function convertBufferToString(buffer: Uint8Array): string {
 }
 
 function convertToUrlSafeString(b64: string): string {
-  return b64
-    .replace(/\+/g, '-')
-    .replace(/\//g, '_')
-    .replace(/=/g, '');
+  return b64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
 }
 
 export function generateRandom(size: number): string {

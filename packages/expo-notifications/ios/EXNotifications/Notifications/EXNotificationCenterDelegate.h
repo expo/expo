@@ -2,7 +2,7 @@
 
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
-#import <UMCore/UMSingletonModule.h>
+#import <ExpoModulesCore/EXSingletonModule.h>
 #import <UserNotifications/UserNotifications.h>
 #import <EXNotifications/EXNotificationsDelegate.h>
 
@@ -15,7 +15,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
-@interface EXNotificationCenterDelegate : UMSingletonModule <UIApplicationDelegate, UNUserNotificationCenterDelegate, EXNotificationCenterDelegate>
+@interface EXNotificationCenterDelegate : EXSingletonModule <UIApplicationDelegate, UNUserNotificationCenterDelegate, EXNotificationCenterDelegate>
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(nullable NSDictionary<UIApplicationLaunchOptionsKey,id> *)launchOptions;
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler;

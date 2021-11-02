@@ -1,6 +1,6 @@
 {
   "name": "expo-google-sign-in",
-  "version": "9.2.0",
+  "version": "10.0.1",
   "description": "Enables native Google authentication features in your app!",
   "main": "build/GoogleSignIn.js",
   "types": "build/GoogleSignIn.d.ts",
@@ -36,12 +36,12 @@
   ],
   "author": "650 Industries, Inc.",
   "license": "MIT",
-  "homepage": "https://docs.expo.io/versions/latest/sdk/google-sign-in/",
+  "homepage": "https://docs.expo.dev/versions/latest/sdk/google-sign-in/",
   "jest": {
     "preset": "expo-module-scripts/ios"
   },
   "dependencies": {
-    "expo-modules-core": "~0.1.1",
+    "expo-modules-core": "~0.4.2",
     "invariant": "^2.2.4"
   },
   "devDependencies": {

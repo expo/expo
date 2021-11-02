@@ -89,7 +89,7 @@ Please refer to the [with-aws-storage-upload example](https://github.com/expo/ex
 
 ## Using ImagePicker with Firebase
 
-Please refer to the [with-firebase-storage-upload example](https://github.com/expo/examples/tree/master/with-firebase-storage-upload). Make sure you follow the ["Using Firebase"](/guides/guides/using-firebase.md) docs to set your project up correctly.
+Please refer to the [with-firebase-storage-upload example](https://github.com/expo/examples/tree/master/with-firebase-storage-upload). Make sure you follow the ["Using Firebase"](/guides/using-firebase/) docs to set your project up correctly.
 
 ## API
 

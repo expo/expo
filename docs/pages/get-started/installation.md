@@ -23,7 +23,7 @@ Expo CLI is a command line app that is the main interface between a developer an
 ### Recommended Tools
 
 - [VSCode Editor](https://code.visualstudio.com/download)
-  - [VSCode Expo Extension](https://marketplace.visualstudio.com/items?itemName=byCedric.vscode-expo) for `app.json` debugging and autocomplete.
+  - [VSCode Expo Extension](https://marketplace.visualstudio.com/items?itemName=byCedric.vscode-expo) for **app.json** debugging and autocomplete.
 - [Yarn](https://classic.yarnpkg.com/en/docs/install)
 - Windows users: [PowerShell](https://docs.microsoft.com/en-us/powershell/scripting/install/installing-powershell-core-on-windows), Bash via WSL, or the VSCode terminal.
 
@@ -33,7 +33,7 @@ Expo CLI is a command line app that is the main interface between a developer an
 
 Verify that the installation was successful by running `expo whoami`. You're not logged in yet, so you will see "Not logged in". You can create an account by running `expo register` if you like, or if you have one already run `expo login`, but you also don't need an account to get started.
 
-> 😳 **Need help?** Try searching the [forums](https://forums.expo.io) &mdash; which are a great resource for troubleshooting.
+> 😳 **Need help?** Try searching the [forums](https://forums.expo.dev) &mdash; which are a great resource for troubleshooting.
 
 ## 2. Expo Go app for iOS and Android
 

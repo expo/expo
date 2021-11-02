@@ -1,5 +1,5 @@
-import { Platform } from '@unimodules/core';
 import Constants, { ExecutionEnvironment } from 'expo-constants';
+import { Platform } from 'expo-modules-core';
 const LINKING_GUIDE_URL = `https://docs.expo.io/guides/linking/`;
 export function hasCustomScheme() {
     if (Constants.executionEnvironment === ExecutionEnvironment.Bare) {
@@ -56,14 +56,17 @@ export function collectManifestSchemes() {
     // They'll be added when we drop support for `expo build` or decide
     // to have them only work with `eas build`.
     const platformManifest = Platform.select({
-        ios: Constants.manifest?.ios,
-        android: Constants.manifest?.android,
+        ios: Constants.manifest?.ios ?? Constants.manifest2?.extra?.expoClient?.ios,
+        android: Constants.manifest?.android ?? Constants.manifest2?.extra?.expoClient?.android,
         web: {},
     }) ?? {};
-    const schemes = getSchemes(Constants.manifest);
+    const schemes = getSchemes(Constants.manifest ?? Constants.manifest2?.extra?.expoClient);
     // Add the detached scheme after the manifest scheme for legacy ExpoKit support.
     if (Constants.manifest?.detach?.scheme) {
         schemes.push(Constants.manifest.detach.scheme);
+    }
+    if (Constants.manifest2?.extra?.expoClient?.detach?.scheme) {
+        schemes.push(Constants.manifest2.extra.expoClient.detach.scheme);
     }
     // Add the unimplemented platform schemes last.
     schemes.push(...getSchemes(platformManifest));
@@ -73,9 +76,11 @@ function getNativeAppIdScheme() {
     // Add the native application identifier to the list of schemes for parity with `expo build`.
     // The native app id has been added to builds for a long time to support Google Sign-In.
     return (Platform.select({
-        ios: Constants.manifest?.ios?.bundleIdentifier,
+        ios: Constants.manifest?.ios?.bundleIdentifier ??
+            Constants.manifest2?.extra?.expoClient?.ios?.bundleIdentifier,
         // TODO: This may change to android.applicationId in the future.
-        android: Constants.manifest?.android?.package,
+        android: Constants.manifest?.android?.package ??
+            Constants.manifest2?.extra?.expoClient?.android?.package,
     }) ?? null);
 }
 export function hasConstantsManifest() {
@@ -120,7 +125,7 @@ export function resolveScheme(props) {
                 // TODO: Will this cause issues for things like Facebook or Google that use `reversed-client-id://` or `fb<FBID>:/`?
                 // Traditionally these APIs don't use the Linking API directly.
                 console.warn(`The provided Linking scheme '${props.scheme}' does not appear in the list of possible URI schemes in your Expo config. Expected one of: ${schemes
-                    .map(scheme => `'${scheme}'`)
+                    .map((scheme) => `'${scheme}'`)
                     .join(', ')}`);
             }
         }

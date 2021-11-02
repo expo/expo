@@ -2,57 +2,40 @@
 title: Building APKs for Android emulators and devices
 ---
 
-The default file format used when building Android apps with EAS Build is an [Android App Bundle](https://developer.android.com/platform/technology/app-bundle) (AAB / `.aab`). This format is optimized for distributing to the Google Play Store, but AABs can't be installed directly to your device. To install a build directly to your Android device or emulator, you need to build an [Android Package](https://en.wikipedia.org/wiki/Android_application_package) (APK / `.apk`) instead.
+The default file format used when building Android apps with EAS Build is an [Android App Bundle](https://developer.android.com/platform/technology/app-bundle) (AAB / **.aab**). This format is optimized for distributing to the Google Play Store, but AABs can't be installed directly to your device. To install a build directly to your Android device or emulator, you need to build an [Android Package](https://en.wikipedia.org/wiki/Android_application_package) (APK / **.apk**) instead.
 
 ## Configuring a profile to build APKs
 
 ### Managed projects
 
-Build profiles where your `workflow` is `managed` have a field called `buildType` which defaults to `app-bundle`, and we'll change it to `apk` in order to produce APKs.
+By default, EAS Build produces Android App Bundle, you can change it by:
+
+- setting `buildType` to `apk`
+- setting `developmentClient` to true
+- setting `gradleCommand` to `:app:assembleRelease`, `:app:assembleDebug` or any other gradle command that produces APK
 
 ```json
 {
-  "builds": {
-    "android": {
-      "release": {
-        "workflow": "managed"
-      },
-      "preview": {
-        "workflow": "managed",
+  "build": {
+    "preview": {
+      "android": {
         "buildType": "apk"
       }
-    }
+    },
+    "preview2": {
+      "android": {
+        "gradleCommand": ":app:assembleRelease"
+      }
+    },
+    "preview3": {
+      "developmentClient": true
+    },
+    "production": {}
   }
 }
 ```
 
 Now, to run your build run `eas build -p android --profile preview`. Remember that you can name the profile whatever you like; we named the profile "preview", but you could call it "local" or "simulator", whatever makes most sense for you.
-
-> `buildType` will default to `apk` if you set `distribution` to `internal`. Learn more in ["Internal distribution"](/build/internal-distribution.md).
-
-### Generic projects
-
-Build profiles where your `workflow` is `generic` have a field called `gradleCommand` which defaults to `:app:bundleRelease`, and we'll change it to `:app:assembleRelease` in order to produce APKs.
-
-```json
-{
-  "builds": {
-    "android": {
-      "release": {
-        "workflow": "generic"
-      },
-      "preview": {
-        "workflow": "generic",
-        "gradleCommand": ":app:assembleRelease"
-      }
-    }
-  }
-}
-```
-
-Now, to run your build run `eas build -p android --profile preview`. Remember that you can name the profile whatever you like; we named the profile "preview", but you could call it "local" or "simulador", whatever makes most sense for you.
-
-> `gradleCommand` will default to `:app:assembleRelease` if you set `distribution` to `internal`. Learn more in ["Internal distribution"](/build/internal-distribution.md).
 
 ## Installing your build
 

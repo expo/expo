@@ -1,9 +1,9 @@
 'use strict';
 
-import { Platform } from '@unimodules/core';
 import Constants from 'expo-constants';
 import * as Device from 'expo-device';
 import * as FileSystem from 'expo-file-system';
+import { Platform } from 'expo-modules-core';
 import * as Notifications from 'expo-notifications';
 import { Alert, AppState } from 'react-native';
 

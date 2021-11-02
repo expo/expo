@@ -10,8 +10,8 @@ const {
 const META_APPLICATION_ID = 'com.google.android.gms.ads.APPLICATION_ID';
 const META_DELAY_APP_MEASUREMENT_INIT = 'com.google.android.gms.ads.DELAY_APP_MEASUREMENT_INIT';
 
-export const withAdMobAndroid: ConfigPlugin = config => {
-  return withAndroidManifest(config, config => {
+export const withAdMobAndroid: ConfigPlugin = (config) => {
+  return withAndroidManifest(config, (config) => {
     config.modResults = setAdMobConfig(config, config.modResults);
     return config;
   });

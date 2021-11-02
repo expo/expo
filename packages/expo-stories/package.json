@@ -1,0 +1,40 @@
+{
+  "name": "expo-stories",
+  "version": "1.0.0",
+  "bin": "bin/index.js",
+  "types": "build/types/index.d.ts",
+  "license": "MIT",
+  "files": [
+    "types/*",
+    "metro-config.js",
+    "webpack-config"
+  ],
+  "scripts": {
+    "build": "expo-module build",
+    "clean": "expo-module clean",
+    "lint": "expo-module lint",
+    "test": "expo-module test",
+    "prepare": "expo-module prepare",
+    "prepublishOnly": "expo-module prepublishOnly",
+    "expo-module": "expo-module"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.12.9",
+    "expo-module-scripts": "^2.0.0",
+    "typescript": "^4.3.5"
+  },
+  "dependencies": {
+    "@expo/styleguide-native": "^0.4.0",
+    "@react-navigation/native": "^6.0.1",
+    "@react-navigation/stack": "^6.0.1",
+    "acorn-loose": "^8.1.0",
+    "commander": "^8.0.0",
+    "esbuild": "^0.12.15",
+    "fs-extra": "^9.1.0",
+    "glob": "^7.1.7",
+    "react-native-safe-area-context": "3.3.2",
+    "react-native-screens": "~3.8.0",
+    "react-native-svg": "^12.1.1",
+    "sane": "^5.0.1"
+  }
+}

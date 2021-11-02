@@ -9,7 +9,7 @@
 
 @interface EXBarCodeScannerModule ()
 
-@property (nonatomic, weak) UMModuleRegistry *moduleRegistry;
+@property (nonatomic, weak) EXModuleRegistry *moduleRegistry;
 @property (nonatomic, weak) id<EXImageLoaderInterface> imageLoader;
 @property (nonatomic, weak) id<EXPermissionsInterface> permissionsManager;
 
@@ -17,9 +17,9 @@
 
 @implementation EXBarCodeScannerModule
 
-UM_EXPORT_MODULE(ExpoBarCodeScannerModule);
+EX_EXPORT_MODULE(ExpoBarCodeScannerModule);
 
-- (void)setModuleRegistry:(UMModuleRegistry *)moduleRegistry
+- (void)setModuleRegistry:(EXModuleRegistry *)moduleRegistry
 {
   _moduleRegistry = moduleRegistry;
   _imageLoader = [moduleRegistry getModuleImplementingProtocol:@protocol(EXImageLoaderInterface)];
@@ -38,9 +38,9 @@ UM_EXPORT_MODULE(ExpoBarCodeScannerModule);
            };
 }
 
-UM_EXPORT_METHOD_AS(getPermissionsAsync,
-                    getPermissionsAsync:(UMPromiseResolveBlock)resolve
-                    rejecter:(UMPromiseRejectBlock)reject)
+EX_EXPORT_METHOD_AS(getPermissionsAsync,
+                    getPermissionsAsync:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
 {
   [EXPermissionsMethodsDelegate getPermissionWithPermissionsManager:_permissionsManager
                                                       withRequester:[EXBareCodeCameraRequester class]
@@ -48,9 +48,9 @@ UM_EXPORT_METHOD_AS(getPermissionsAsync,
                                                              reject:reject];
 }
 
-UM_EXPORT_METHOD_AS(requestPermissionsAsync,
-                    requestPermissionsAsync:(UMPromiseResolveBlock)resolve
-                    rejecter:(UMPromiseRejectBlock)reject)
+EX_EXPORT_METHOD_AS(requestPermissionsAsync,
+                    requestPermissionsAsync:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
 {
   [EXPermissionsMethodsDelegate askForPermissionWithPermissionsManager:_permissionsManager
                                                          withRequester:[EXBareCodeCameraRequester class]
@@ -58,11 +58,11 @@ UM_EXPORT_METHOD_AS(requestPermissionsAsync,
                                                                 reject:reject];
 }
 
-UM_EXPORT_METHOD_AS(scanFromURLAsync,
+EX_EXPORT_METHOD_AS(scanFromURLAsync,
                     scanFromURLAsync:(NSString *)url
                     barCodeTypes:(NSArray *)barCodeTypes
-                    resolver:(UMPromiseResolveBlock)resolve
-                    rejecter:(UMPromiseRejectBlock)reject)
+                    resolver:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
 {
   // We only support QR codes, so barCodeTypes is ignored
   NSURL *imageURL = [NSURL URLWithString:url];

@@ -8,13 +8,76 @@
 
 ### 🐛 Bug fixes
 
-- [plugin] Use Node module resolution to find package paths for Podfile ([#13382](https://github.com/expo/expo/pull/13382) by [@fson](https://github.com/fson))
-- Fixed WebSocket handlers weren't registered properly on iOS. ([#13403](https://github.com/expo/expo/pull/13403) by [@lukmccall](https://github.com/lukmccall))
-- Fix crash from inspector request failures. ([#13393](https://github.com/expo/expo/pull/13393) by [@kudo](https://github.com/kudo))
-- Order dev menu items consistently across platforms. ([#13449](https://github.com/expo/expo/pull/13449) by [@lukmccall](https://github.com/lukmccall))
-- Fixed web compatibility. ([#13535](https://github.com/expo/expo/pull/13535) by [@lukmccall](https://github.com/lukmccall))
+- Fix hermes inspector opening wrong target. ([#14684](https://github.com/expo/expo/pull/14684) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others
+
+## 0.8.2 — 2021-10-07
+
+### 🛠 Breaking changes
+
+- Changed the reload key command to `r` instead of `Cmd + r` on iOS. ([#14590](https://github.com/expo/expo/pull/14590) by [@lukmccall](https://github.com/lukmccall))
+
+### 🐛 Bug fixes
+
+- Fix building errors from use_frameworks! in Podfile. ([#14523](https://github.com/expo/expo/pull/14523) by [@kudo](https://github.com/kudo))
+
+### 💡 Others
+
+- Updated `@expo/config-plugins` ([#14443](https://github.com/expo/expo/pull/14443) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 0.8.1 — 2021-09-03
+
+### 🐛 Bug fixes
+
+- Add missing override to release DevMenuManager.
+
+## 0.8.0 — 2021-09-02
+
+### 🎉 New features
+
+- Fix compatibility with RN 0.65. ([#14064](https://github.com/expo/expo/pull/14064) by [@lukmccall](https://github.com/lukmccall))
+- Add flag to disable auto-launch of dev menu on start. ([#14196](https://github.com/expo/expo/pull/14196) by [@esamelson](https://github.com/esamelson))
+
+### 🐛 Bug fixes
+
+- Fix only fullscreen opaque activities can request orientation. ([#14066](https://github.com/expo/expo/pull/14066) by [@lukmccall](https://github.com/lukmccall))
+- Fix keyboard commands getting ignored after dev menu is shown. ([#14266](https://github.com/expo/expo/pull/14266) by [@fson](https://github.com/fson))
+
+## 0.7.7 — 2021-08-06
+
+### 🐛 Bug fixes
+
+- Fixed menu binds to all keyboard shortcuts on Android. ([#13794](https://github.com/expo/expo/pull/13794) by [@lukmccall](https://github.com/lukmccall))
+
+## 0.7.6 — 2021-08-04
+
+_This version does not introduce any user-facing changes._
+
+## 0.7.5 — 2021-07-08
+
+### 🐛 Bug fixes
+
+- Fixed web compatibility. ([#13535](https://github.com/expo/expo/pull/13535) by [@lukmccall](https://github.com/lukmccall))
+
+## 0.7.4 — 2021-06-30
+
+### 🐛 Bug fixes
+
+- Order dev menu items consistently across platforms. ([#13449](https://github.com/expo/expo/pull/13449) by [@lukmccall](https://github.com/lukmccall))
+
+## 0.7.3 — 2021-06-28
+
+### 🐛 Bug fixes
+
+- Fixed WebSocket handlers weren't registered properly on iOS. ([#13403](https://github.com/expo/expo/pull/13403) by [@lukmccall](https://github.com/lukmccall))
+- Fix crash from inspector request failures. ([#13393](https://github.com/expo/expo/pull/13393) by [@kudo](https://github.com/kudo))
+
+## 0.7.2 — 2021-06-24
+
+### 🐛 Bug fixes
+
+- [plugin] Use Node module resolution to find package paths for Podfile ([#13382](https://github.com/expo/expo/pull/13382) by [@fson](https://github.com/fson))
 
 ## 0.7.0 — 2021-06-10
 

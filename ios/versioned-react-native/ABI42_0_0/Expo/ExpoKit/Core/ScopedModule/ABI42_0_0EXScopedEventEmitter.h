@@ -10,13 +10,15 @@
 
 - (instancetype)initWithExperienceStableLegacyId:(NSString *)experienceStableLegacyId
                                         scopeKey:(NSString *)scopeKey
-                                     kernelServiceDelegate:(id)kernelServiceInstance
-                                                    params:(NSDictionary *)params NS_DESIGNATED_INITIALIZER;
+                                    easProjectId:(NSString *)easProjectId
+                           kernelServiceDelegate:(id)kernelServiceInstance
+                                          params:(NSDictionary *)params NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithExperienceStableLegacyId:(NSString *)experienceStableLegacyId
                                         scopeKey:(NSString *)scopeKey
-                                    kernelServiceDelegates:(NSDictionary *)kernelServiceInstances
-                                                    params:(NSDictionary *)params NS_DESIGNATED_INITIALIZER;
+                                    easProjectId:(NSString *)easProjectId
+                          kernelServiceDelegates:(NSDictionary *)kernelServiceInstances
+                                          params:(NSDictionary *)params NS_DESIGNATED_INITIALIZER;
 
 @property (nonatomic, readonly) NSString *scopeKey;
 

@@ -2,15 +2,7 @@
 
 exports[`renders Caption 1`] = `
 <caption
-  style={
-    Object {
-      "fontFamily": "-apple-system,BlinkMacSystemFont,\\"Segoe UI\\",Roboto,Helvetica,Arial,sans-serif",
-      "paddingBottom": "0px",
-      "paddingLeft": "0px",
-      "paddingRight": "0px",
-      "paddingTop": "0px",
-    }
-  }
+  className="css-view-1dbjc4n"
 >
   Caption
 </caption>
@@ -18,29 +10,13 @@ exports[`renders Caption 1`] = `
 
 exports[`renders TBody 1`] = `
 <tbody
-  style={
-    Object {
-      "fontFamily": "-apple-system,BlinkMacSystemFont,\\"Segoe UI\\",Roboto,Helvetica,Arial,sans-serif",
-      "paddingBottom": "0px",
-      "paddingLeft": "0px",
-      "paddingRight": "0px",
-      "paddingTop": "0px",
-    }
-  }
+  className="css-view-1dbjc4n"
 />
 `;
 
 exports[`renders TD 1`] = `
 <td
-  style={
-    Object {
-      "fontFamily": "-apple-system,BlinkMacSystemFont,\\"Segoe UI\\",Roboto,Helvetica,Arial,sans-serif",
-      "paddingBottom": "0px",
-      "paddingLeft": "0px",
-      "paddingRight": "0px",
-      "paddingTop": "0px",
-    }
-  }
+  className="css-view-1dbjc4n"
 >
   Column
 </td>
@@ -48,29 +24,13 @@ exports[`renders TD 1`] = `
 
 exports[`renders TFoot 1`] = `
 <tfoot
-  style={
-    Object {
-      "fontFamily": "-apple-system,BlinkMacSystemFont,\\"Segoe UI\\",Roboto,Helvetica,Arial,sans-serif",
-      "paddingBottom": "0px",
-      "paddingLeft": "0px",
-      "paddingRight": "0px",
-      "paddingTop": "0px",
-    }
-  }
+  className="css-view-1dbjc4n"
 />
 `;
 
 exports[`renders TH 1`] = `
 <th
-  style={
-    Object {
-      "fontFamily": "-apple-system,BlinkMacSystemFont,\\"Segoe UI\\",Roboto,Helvetica,Arial,sans-serif",
-      "paddingBottom": "0px",
-      "paddingLeft": "0px",
-      "paddingRight": "0px",
-      "paddingTop": "0px",
-    }
-  }
+  className="css-view-1dbjc4n"
 >
   Header
 </th>
@@ -78,42 +38,18 @@ exports[`renders TH 1`] = `
 
 exports[`renders THead 1`] = `
 <thead
-  style={
-    Object {
-      "fontFamily": "-apple-system,BlinkMacSystemFont,\\"Segoe UI\\",Roboto,Helvetica,Arial,sans-serif",
-      "paddingBottom": "0px",
-      "paddingLeft": "0px",
-      "paddingRight": "0px",
-      "paddingTop": "0px",
-    }
-  }
+  className="css-view-1dbjc4n"
 />
 `;
 
 exports[`renders TR 1`] = `
 <tr
-  style={
-    Object {
-      "fontFamily": "-apple-system,BlinkMacSystemFont,\\"Segoe UI\\",Roboto,Helvetica,Arial,sans-serif",
-      "paddingBottom": "0px",
-      "paddingLeft": "0px",
-      "paddingRight": "0px",
-      "paddingTop": "0px",
-    }
-  }
+  className="css-view-1dbjc4n"
 />
 `;
 
 exports[`renders Table 1`] = `
 <table
-  style={
-    Object {
-      "fontFamily": "-apple-system,BlinkMacSystemFont,\\"Segoe UI\\",Roboto,Helvetica,Arial,sans-serif",
-      "paddingBottom": "0px",
-      "paddingLeft": "0px",
-      "paddingRight": "0px",
-      "paddingTop": "0px",
-    }
-  }
+  className="css-view-1dbjc4n"
 />
 `;

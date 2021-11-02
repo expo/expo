@@ -40,7 +40,7 @@
 - (ABI41_0_0UMModuleRegistry *)moduleRegistryForParams:(NSDictionary *)params
                            forExperienceStableLegacyId:(NSString *)experienceStableLegacyId
                                               scopeKey:(NSString *)scopeKey
-                                              manifest:(ABI41_0_0EXUpdatesRawManifest *)manifest
+                                              manifest:(ABI41_0_0EXManifestsManifest *)manifest
                                     withKernelServices:(NSDictionary *)kernelServices
 {
   ABI41_0_0UMModuleRegistry *moduleRegistry = [self.moduleRegistryProvider moduleRegistry];
@@ -106,7 +106,7 @@
 #endif
 
 #if __has_include(<ABI41_0_0EXAmplitude/ABI41_0_0EXAmplitude.h>)
-  ABI41_0_0EXScopedAmplitude *amplitudeModule = [[ABI41_0_0EXScopedAmplitude alloc] initWithExperienceStableLegacyId:experienceStableLegacyId];
+  ABI41_0_0EXScopedAmplitude *amplitudeModule = [[ABI41_0_0EXScopedAmplitude alloc] initWithScopeKey:scopeKey];
   [moduleRegistry registerExportedModule:amplitudeModule];
 #endif
 

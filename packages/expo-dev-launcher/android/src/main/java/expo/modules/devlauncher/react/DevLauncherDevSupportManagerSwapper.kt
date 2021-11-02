@@ -8,13 +8,14 @@ import com.facebook.react.devsupport.DisabledDevSupportManager
 import com.facebook.react.packagerconnection.JSPackagerClient
 import expo.modules.devlauncher.helpers.getProtectedFieldValue
 import expo.modules.devlauncher.helpers.setProtectedDeclaredField
+import expo.modules.devlauncher.rncompatibility.DevLauncherDevSupportManager
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 class DevLauncherDevSupportManagerSwapper {
   fun swapDevSupportManagerImpl(
-    reactInstanceManager: ReactInstanceManager,
+    reactInstanceManager: ReactInstanceManager
   ) {
     val currentDevSupportManager = reactInstanceManager.devSupportManager
     if (currentDevSupportManager is DisabledDevSupportManager) {
@@ -25,7 +26,7 @@ class DevLauncherDevSupportManagerSwapper {
       val devManagerClass = DevSupportManagerBase::class.java
       val newDevSupportManager = DevLauncherDevSupportManager(
         applicationContext = devManagerClass.getProtectedFieldValue(currentDevSupportManager, "mApplicationContext"),
-        reactInstanceManagerHelper = devManagerClass.getProtectedFieldValue(currentDevSupportManager, "mReactInstanceManagerHelper"),
+        reactInstanceManagerHelper = devManagerClass.getProtectedFieldValue(currentDevSupportManager, DevLauncherDevSupportManager.getDevHelperInternalFieldName()),
         packagerPathForJSBundleName = devManagerClass.getProtectedFieldValue(currentDevSupportManager, "mJSAppBundleName"),
         enableOnCreate = true,
         redBoxHandler = devManagerClass.getProtectedFieldValue(currentDevSupportManager, "mRedBoxHandler"),
@@ -79,7 +80,6 @@ class DevLauncherDevSupportManagerSwapper {
           Log.w("DevLauncher", "Couldn't close the packager connection: ${e.message}", e)
         }
       }
-
     } catch (e: Exception) {
       Log.i("DevLauncher", "Couldn't inject `DevLauncherDevSupportManager`.", e)
     }

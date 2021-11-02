@@ -23,7 +23,7 @@ describe(`manifest`, () => {
 
   afterEach(() => {
     jest.dontMock('../ExponentConstants');
-    jest.dontMock('@unimodules/core');
+    jest.dontMock('expo-modules-core');
   });
 
   // mock console.warn
@@ -44,8 +44,8 @@ describe(`manifest`, () => {
   }
 
   function mockNativeModulesProxy(mockValues: object) {
-    jest.doMock('@unimodules/core', () => {
-      const UnimodulesCore = jest.requireActual('@unimodules/core');
+    jest.doMock('expo-modules-core', () => {
+      const UnimodulesCore = jest.requireActual('expo-modules-core');
       return {
         ...UnimodulesCore,
         NativeModulesProxy: {
@@ -57,8 +57,8 @@ describe(`manifest`, () => {
   }
 
   function mockExpoUpdates(mockValues: object) {
-    jest.doMock('@unimodules/core', () => {
-      const UnimodulesCore = jest.requireActual('@unimodules/core');
+    jest.doMock('expo-modules-core', () => {
+      const UnimodulesCore = jest.requireActual('expo-modules-core');
       return {
         ...UnimodulesCore,
         NativeModulesProxy: {
@@ -166,7 +166,7 @@ describe(`manifest`, () => {
 
   // web will only ever be in bare environment
   if (Platform.OS !== 'web') {
-    [ExecutionEnvironment.Standalone, ExecutionEnvironment.StoreClient].forEach(env => {
+    [ExecutionEnvironment.Standalone, ExecutionEnvironment.StoreClient].forEach((env) => {
       it(`throws an error if manifest is falsey when Constants.executionEnvironment is ${env}`, () => {
         mockExponentConstants({
           manifest: null,

@@ -2,11 +2,11 @@
 title: Two-Factor Authentication
 ---
 
-Two-factor authentication provides an extra layer of security when logging in to expo.io, the Expo Go app, and command line tools.  With two-factor authentication enabled, you will need to provide a short-lived code in addition to your username and password to access your account.
+Two-factor authentication provides an extra layer of security when logging in to expo.dev, the Expo Go app, and command line tools.  With two-factor authentication enabled, you will need to provide a short-lived code in addition to your username and password to access your account.
 
 ## Enabling Two-Factor Authentication (2FA)
 
-You can enable two-factor authentication from your [personal account settings](https://expo.io/settings).
+You can enable two-factor authentication from your [personal account settings](https://expo.dev/settings).
 
 ## Two-Factor Authentication Methods
 
@@ -40,7 +40,7 @@ If you chose to download your recovery codes when they were generated, they will
 
 ## Changing Your Two-Factor Settings
 
-You can make changes to your two-factor settings from your [personal account settings](https://expo.io/settings).  You can:
+You can make changes to your two-factor settings from your [personal account settings](https://expo.dev/settings).  You can:
 
 - add or remove authentication methods
 - set your default method
@@ -53,7 +53,7 @@ You will need to provide a one-time password to make any changes to your 2FA set
 
 ### Recovery Codes
 
-When you set up your account to use 2FA, Expo provides you with a list of recovery codes. In the event you lose your device(s), a recovery code may be used in place of a one-time password. Each of these codes may only be used once. You may regenerate your recovery codes, which will invalidate any existing codes, from your [personal account settings](https://expo.io/settings/).
+When you set up your account to use 2FA, Expo provides you with a list of recovery codes. In the event you lose your device(s), a recovery code may be used in place of a one-time password. Each of these codes may only be used once. You may regenerate your recovery codes, which will invalidate any existing codes, from your [personal account settings](https://expo.dev/settings/).
 
 ### Secondary 2FA Methods
 

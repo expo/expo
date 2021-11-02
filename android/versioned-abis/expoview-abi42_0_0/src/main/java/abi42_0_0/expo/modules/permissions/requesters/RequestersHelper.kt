@@ -12,20 +12,23 @@ fun parseBasicLocationPermissions(permissionsResponse: Map<String, PermissionsRe
     val canAskAgain = accessFineLocation.canAskAgain && accessCoarseLocation.canAskAgain
     val isGranted = accessCoarseLocation.status == PermissionsStatus.GRANTED || accessFineLocation.status == PermissionsStatus.GRANTED
 
-    putString(PermissionsResponse.STATUS_KEY, when {
-      accessFineLocation.status == PermissionsStatus.GRANTED -> {
-        PermissionsStatus.GRANTED.status
+    putString(
+      PermissionsResponse.STATUS_KEY,
+      when {
+        accessFineLocation.status == PermissionsStatus.GRANTED -> {
+          PermissionsStatus.GRANTED.status
+        }
+        accessCoarseLocation.status == PermissionsStatus.GRANTED -> {
+          PermissionsStatus.GRANTED.status
+        }
+        accessFineLocation.status == PermissionsStatus.DENIED && accessCoarseLocation.status == PermissionsStatus.DENIED -> {
+          PermissionsStatus.DENIED.status
+        }
+        else -> {
+          PermissionsStatus.UNDETERMINED.status
+        }
       }
-      accessCoarseLocation.status == PermissionsStatus.GRANTED -> {
-        PermissionsStatus.GRANTED.status
-      }
-      accessFineLocation.status == PermissionsStatus.DENIED && accessCoarseLocation.status == PermissionsStatus.DENIED -> {
-        PermissionsStatus.DENIED.status
-      }
-      else -> {
-        PermissionsStatus.UNDETERMINED.status
-      }
-    })
+    )
 
     putString(PermissionsResponse.EXPIRES_KEY, PermissionsResponse.PERMISSION_EXPIRES_NEVER)
     putBoolean(PermissionsResponse.CAN_ASK_AGAIN_KEY, canAskAgain)

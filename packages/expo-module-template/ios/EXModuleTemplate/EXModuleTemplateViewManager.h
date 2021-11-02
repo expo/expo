@@ -1,8 +1,8 @@
 // Copyright 2016-present 650 Industries. All rights reserved.
 
-#import <UMCore/UMViewManager.h>
-#import <UMCore/UMModuleRegistryConsumer.h>
+#import <ExpoModulesCore/EXViewManager.h>
+#import <ExpoModulesCore/EXModuleRegistryConsumer.h>
 
-@interface EXModuleTemplateViewManager : UMViewManager <UMModuleRegistryConsumer>
+@interface EXModuleTemplateViewManager : EXViewManager <EXModuleRegistryConsumer>
 
 @end

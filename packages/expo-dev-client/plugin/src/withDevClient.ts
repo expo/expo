@@ -7,6 +7,7 @@ import withDevMenu from 'expo-dev-menu/app.plugin';
 import fs from 'fs';
 import path from 'path';
 
+import { InstallationPage } from './constants';
 import withGeneratedAndroidScheme from './withGeneratedAndroidScheme';
 import withGeneratedIosScheme from './withGeneratedIosScheme';
 
@@ -27,16 +28,16 @@ function withReactNativeConfigJs(config: ExpoConfig): ExpoConfig {
   return config;
 }
 
-const addReactNativeConfigAsync: Mod = async config => {
+const addReactNativeConfigAsync: Mod = async (config) => {
   const filename = path.join(config.modRequest.projectRoot, 'react-native.config.js');
   try {
     const config = fs.readFileSync(filename, 'utf8');
     if (!config.includes('expo-dev-client/dependencies')) {
       throw new Error(
-        `Could not add expo-dev-client dependencies to existing file ${filename}. See expo-dev-client installation instructions to add them manually.`
+        `Could not add expo-dev-client dependencies to existing file ${filename}. See expo-dev-client installation instructions to add them manually: ${InstallationPage}`
       );
     }
-  } catch (error) {
+  } catch (error: any) {
     if (error.code === 'ENOENT') {
       // The file doesn't exist, so we create it.
       fs.writeFileSync(filename, REACT_NATIVE_CONFIG_JS);

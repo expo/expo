@@ -27,21 +27,4 @@
         <item name="android:datePickerMode">calendar</item>
     </style>
 
-
-    <style name="ReactAndroidClockTimePickerDialog" parent="Theme.AppCompat.Light.Dialog" tools:targetApi="lollipop">
-      <item name="android:timePickerStyle">@style/ReactAndroidClockTimePickerStyle</item>
-    </style>
-
-    <style name="ReactAndroidClockTimePickerStyle" parent="android:Widget.Material.Light.TimePicker" tools:targetApi="lollipop">
-      <item name="android:timePickerMode">clock</item>
-    </style>
-
-    <style name="ReactAndroidSpinnerTimePickerDialog" parent="Theme.AppCompat.Light.Dialog" tools:targetApi="lollipop">
-      <item name="android:timePickerStyle">@style/ReactAndroidSpinnerTimePickerStyle</item>
-    </style>
-
-    <style name="ReactAndroidSpinnerTimePickerStyle" parent="android:Widget.Material.Light.TimePicker" tools:targetApi="lollipop">
-      <item name="android:timePickerMode">spinner</item>
-    </style>
-
 </resources>

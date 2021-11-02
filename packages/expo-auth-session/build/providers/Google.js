@@ -20,6 +20,7 @@ export const discovery = {
     userInfoEndpoint: 'https://openidconnect.googleapis.com/v1/userinfo',
 };
 class GoogleAuthRequest extends AuthRequest {
+    nonce;
     constructor({ language, loginHint, selectAccount, extraParams = {}, clientSecret, ...config }) {
         const inputParams = {
             ...extraParams,
@@ -148,6 +149,7 @@ export function useAuthRequest(config = {}, redirectUriOptions = {}) {
             native: `${Application.applicationId}:/oauthredirect`,
             useProxy,
             ...redirectUriOptions,
+            // native: `com.googleusercontent.apps.${guid}:/oauthredirect`,
         });
     }, [useProxy, config.redirectUri, redirectUriOptions]);
     const extraParams = useMemo(() => {
@@ -181,8 +183,7 @@ export function useAuthRequest(config = {}, redirectUriOptions = {}) {
             return config.shouldAutoExchangeCode;
         }
         // has a code to exchange and doesn't have an authentication yet.
-        const couldAutoExchange = result?.type === 'success' && result.params.code && !result.authentication;
-        return couldAutoExchange;
+        return result?.type === 'success' && result.params.code && !result.authentication;
     }, [config.shouldAutoExchangeCode, result?.type]);
     useEffect(() => {
         let isMounted = true;
@@ -194,17 +195,15 @@ export function useAuthRequest(config = {}, redirectUriOptions = {}) {
                 scopes: config.scopes,
                 code: result.params.code,
                 extraParams: {
-                    // @ts-ignore: allow for instances where PKCE is disabled
-                    code_verifier: request.codeVerifier,
+                    code_verifier: request?.codeVerifier || '',
                 },
             });
-            exchangeRequest.performAsync(discovery).then(authentication => {
+            exchangeRequest.performAsync(discovery).then((authentication) => {
                 if (isMounted) {
                     setFullResult({
                         ...result,
                         params: {
-                            // @ts-ignore: provide a singular interface for getting the id_token across all workflows that request it.
-                            id_token: authentication.idToken,
+                            id_token: authentication?.idToken || '',
                             access_token: authentication.accessToken,
                             ...result.params,
                         },

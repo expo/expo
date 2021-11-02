@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-expressions */
-import { UnavailabilityError, Platform } from '@unimodules/core';
+import { UnavailabilityError, Platform } from 'expo-modules-core';
 
 import ExpoSMS from './ExpoSMS';
 import { SMSAttachment, SMSResponse, SMSOptions } from './SMS.types';
@@ -42,7 +42,7 @@ function processAttachments(
  * > Note: The only feedback collected by this module is whether any message has been sent. That
  * means we do not check actual content of message nor recipients list.
  *
- * # Example
+ * @example
  * ```ts
  * const { result } = await SMS.sendSMSAsync(
  *   ['0123456789', '9876543210'],
@@ -66,6 +66,11 @@ export async function sendSMSAsync(
     throw new UnavailabilityError('expo-sms', 'sendSMSAsync');
   }
   const finalAddresses = Array.isArray(addresses) ? addresses : [addresses];
+  finalAddresses.forEach((address) => {
+    if (address === null || address === undefined) {
+      throw new TypeError('undefined or null address');
+    }
+  });
   const finalOptions = {
     ...options,
   } as SMSOptions;
@@ -81,7 +86,7 @@ export async function sendSMSAsync(
  *
  * @return Returns a promise that fulfils with a `boolean`, indicating whether SMS is available on this device.
  *
- * # Example
+ * @example
  * ```ts
  * const isAvailable = await SMS.isAvailableAsync();
  * if (isAvailable) {

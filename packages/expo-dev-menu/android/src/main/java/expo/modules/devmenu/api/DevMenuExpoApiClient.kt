@@ -44,10 +44,10 @@ class DevMenuExpoApiClient : DevMenuExpoApiClientInterface {
     return fetchGraphQL(
       GraphQLEndpoint,
       """
-      query DevMenu_Projects { 
+      query DevMenu_Projects {
         me {
-         apps(limit: ${options.limit}, offset: ${options.offset}) { 
-            id 
+         apps(limit: ${options.limit}, offset: ${options.offset}) {
+            id
           }
         }
       }
@@ -55,7 +55,6 @@ class DevMenuExpoApiClient : DevMenuExpoApiClientInterface {
       AuthHeader to secret
     ).await(httpClient)
   }
-
 
   override suspend fun queryUpdateChannels(appId: String, options: DevMenuGraphQLOptions): Response<List<DevMenuEASUpdates.Channel>> {
     val secret = ensureUserIsSignIn()
@@ -80,7 +79,7 @@ class DevMenuExpoApiClient : DevMenuExpoApiClientInterface {
     ).await(httpClient)
 
     return Response(
-      status = okHttpResponse.code(),
+      status = @Suppress("DEPRECATION_ERROR") okHttpResponse.code(),
       data = parseGraphQLResponse(okHttpResponse, "data", "app", "byId", "updateChannels")
     )
   }
@@ -113,7 +112,7 @@ class DevMenuExpoApiClient : DevMenuExpoApiClientInterface {
     ).await(httpClient)
 
     return Response(
-      status = okHttpResponse.code(),
+      status = @Suppress("DEPRECATION_ERROR") okHttpResponse.code(),
       data = parseGraphQLResponse(okHttpResponse, "data", "app", "byId", "updateBranches")
     )
   }
@@ -126,12 +125,12 @@ class DevMenuExpoApiClient : DevMenuExpoApiClientInterface {
     if (!okHttpResponse.isSuccessful) {
       return null
     }
-
+    @Suppress("DEPRECATION_ERROR")
     val bodyReader = okHttpResponse.body()?.charStream()?.readText() ?: return null
     val gson = Gson()
     var json: JsonElement = gson.fromJson(bodyReader, JsonObject::class.java)
     for (path in dataPath) {
-      val next = (json as JsonObject?)?.get(path)  ?: return null
+      val next = (json as JsonObject?)?.get(path) ?: return null
       json = next
     }
 

@@ -29,7 +29,7 @@ NS_ASSUME_NONNULL_BEGIN
   @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"Should not call EXAppFetcher#start -- use a subclass instead" userInfo:nil];
 }
 
-- (void)fetchJSBundleWithManifest:(EXUpdatesRawManifest *)manifest
+- (void)fetchJSBundleWithManifest:(EXManifestsManifest *)manifest
                     cacheBehavior:(EXCachedResourceBehavior)cacheBehavior
                   timeoutInterval:(NSTimeInterval)timeoutInterval
                          progress:(void (^ _Nullable )(EXLoadingProgress *))progressBlock
@@ -55,7 +55,7 @@ NS_ASSUME_NONNULL_BEGIN
   [jsResource loadResourceWithBehavior:cacheBehavior progressBlock:progressBlock successBlock:successBlock errorBlock:errorBlock];
 }
 
-+ (EXCachedResourceBehavior)cacheBehaviorForJSWithManifest:(EXUpdatesRawManifest * _Nonnull)manifest
++ (EXCachedResourceBehavior)cacheBehaviorForJSWithManifest:(EXManifestsManifest * _Nonnull)manifest
 {
   if ([[EXKernel sharedInstance].serviceRegistry.errorRecoveryManager scopeKeyIsRecoveringFromError:manifest.scopeKey]) {
     // if this experience id encountered a loading error before, discard any cache we might have

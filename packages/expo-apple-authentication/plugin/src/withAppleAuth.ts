@@ -4,7 +4,7 @@ import { withAppleAuthIOS } from './withAppleAuthIOS';
 
 const pkg = require('expo-apple-authentication/package.json');
 
-const withAppleAuth: ConfigPlugin = config => {
+const withAppleAuth: ConfigPlugin = (config) => {
   config = withAppleAuthIOS(config);
   return config;
 };

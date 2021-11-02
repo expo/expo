@@ -2,7 +2,7 @@
 
 #import <UIKit/UIKit.h>
 #import <Foundation/Foundation.h>
-#import <UMCore/UMSingletonModule.h>
+#import <ExpoModulesCore/EXSingletonModule.h>
 #import <EXSplashScreen/EXSplashScreenViewController.h>
 #import <EXSplashScreen/EXSplashScreenViewProvider.h>
 
@@ -65,7 +65,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
-@interface EXSplashScreenService : UMSingletonModule <EXSplashScreenService, UIApplicationDelegate>
+@interface EXSplashScreenService : EXSingletonModule <EXSplashScreenService, UIApplicationDelegate>
 @end
 
 NS_ASSUME_NONNULL_END

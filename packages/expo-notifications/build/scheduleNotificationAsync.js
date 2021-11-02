@@ -1,4 +1,4 @@
-import { Platform, UnavailabilityError } from '@unimodules/core';
+import { Platform, UnavailabilityError } from 'expo-modules-core';
 import { v4 as uuidv4 } from 'uuid';
 import NotificationScheduler from './NotificationScheduler';
 export default async function scheduleNotificationAsync(request) {
@@ -111,7 +111,7 @@ function isDailyTriggerInput(trigger) {
     const { channelId, ...triggerWithoutChannelId } = trigger;
     return (Object.keys(triggerWithoutChannelId).length ===
         DAILY_TRIGGER_EXPECTED_DATE_COMPONENTS.length + 1 &&
-        DAILY_TRIGGER_EXPECTED_DATE_COMPONENTS.every(component => component in triggerWithoutChannelId) &&
+        DAILY_TRIGGER_EXPECTED_DATE_COMPONENTS.every((component) => component in triggerWithoutChannelId) &&
         'repeats' in triggerWithoutChannelId &&
         triggerWithoutChannelId.repeats === true);
 }
@@ -121,7 +121,7 @@ function isWeeklyTriggerInput(trigger) {
     const { channelId, ...triggerWithoutChannelId } = trigger;
     return (Object.keys(triggerWithoutChannelId).length ===
         WEEKLY_TRIGGER_EXPECTED_DATE_COMPONENTS.length + 1 &&
-        WEEKLY_TRIGGER_EXPECTED_DATE_COMPONENTS.every(component => component in triggerWithoutChannelId) &&
+        WEEKLY_TRIGGER_EXPECTED_DATE_COMPONENTS.every((component) => component in triggerWithoutChannelId) &&
         'repeats' in triggerWithoutChannelId &&
         triggerWithoutChannelId.repeats === true);
 }
@@ -131,7 +131,7 @@ function isYearlyTriggerInput(trigger) {
     const { channelId, ...triggerWithoutChannelId } = trigger;
     return (Object.keys(triggerWithoutChannelId).length ===
         YEARLY_TRIGGER_EXPECTED_DATE_COMPONENTS.length + 1 &&
-        YEARLY_TRIGGER_EXPECTED_DATE_COMPONENTS.every(component => component in triggerWithoutChannelId) &&
+        YEARLY_TRIGGER_EXPECTED_DATE_COMPONENTS.every((component) => component in triggerWithoutChannelId) &&
         'repeats' in triggerWithoutChannelId &&
         triggerWithoutChannelId.repeats === true);
 }
@@ -149,7 +149,7 @@ function isSecondsPropertyMisusedInCalendarTriggerInput(trigger) {
 }
 function validateDateComponentsInTrigger(trigger, components) {
     const anyTriggerType = trigger;
-    components.forEach(component => {
+    components.forEach((component) => {
         if (!(component in anyTriggerType)) {
             throw new TypeError(`The ${component} parameter needs to be present`);
         }

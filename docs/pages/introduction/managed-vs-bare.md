@@ -14,7 +14,7 @@ The two approaches to building applications with Expo tools are called the "mana
 
 The managed workflow is kind of like [Rails](https://rubyonrails.org/) and [Create React App](https://github.com/facebook/create-react-app), but for React Native.
 
-Apps are built with the managed workflow using the [expo-cli](../workflow/expo-cli.md), the Expo Go app on your mobile device, and our various services: [push notifications](../push-notifications/overview.md), the [build service](../distribution/building-standalone-apps.md), and [over-the-air (OTA) updates](../guides/configuring-ota-updates.md). **Expo tries to manage as much of the complexity of building apps for you as we can, which is why we call it the managed workflow**. A developer using the managed workflow doesn't use Xcode or Android Studio, they just write JavaScript code and manage configuration for things like the app icon and splash screen through [app.json](../workflow/configuration.md). The Expo SDK exposes an increasingly comprehensive set of APIs that give you the power to access device capabilities like the camera, biometric authentication, file system, haptics, and so on.
+Apps are built with the managed workflow using the [expo-cli](../workflow/expo-cli.md), the Expo Go app on your mobile device, and our various services: [push notifications](../push-notifications/overview.md), the [build service](../distribution/building-standalone-apps.md), and [updates](../guides/configuring-updates.md). **Expo tries to manage as much of the complexity of building apps for you as we can, which is why we call it the managed workflow**. A developer using the managed workflow doesn't use Xcode or Android Studio, they just write JavaScript code and manage configuration for things like the app icon and splash screen through [app.json](../workflow/configuration.md). The Expo SDK exposes an increasingly comprehensive set of APIs that give you the power to access device capabilities like the camera, biometric authentication, file system, haptics, and so on.
 
 While you can do a lot with the managed workflow, you can't do _everything_ with it, so what are your options when you encounter a [limitation](../introduction/why-not-expo.md)?
 
@@ -37,8 +37,8 @@ In the bare workflow the developer has complete control, along with the complexi
 | Develop apps with **only** JavaScript/TypeScript             | ✅               |                                                                    |
 | Use Expo build service to create your iOS and Android builds | ✅               | ✅ ([with EAS Build](/build/introduction.md))                      |
 | Use Expo's push notification service                         | ✅               | ✅                                                                 |
-| Use Expo's over the air updates features                     | ✅               | ✅                                                                 |
-| Develop with the Expo Go app                                 | ✅               | ✅ (if you follow [these guidlines](../bare/using-expo-client.md)) |
+| Use Expo's updates features                                  | ✅               | ✅                                                                 |
+| Develop with the Expo Go app                                 | ✅               | ✅ (if you follow [these guidelines](../bare/using-expo-client.md)) |
 | Access to Expo SDK                                           | ✅               | ✅                                                                 |
 | Add custom native code and manage native dependencies        |                  | ✅                                                                 |
 | Develop in Xcode and Android Studio                          |                  | ✅                                                                 |

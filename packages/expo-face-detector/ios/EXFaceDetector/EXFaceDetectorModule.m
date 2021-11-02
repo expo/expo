@@ -10,13 +10,13 @@
 #import <EXFaceDetector/EXFaceDetector.h>
 #import <ExpoModulesCore/EXFileSystemInterface.h>
 #import <EXFaceDetector/EXFaceDetectorUtils.h>
-#import <UMCore/UMModuleRegistry.h>
+#import <ExpoModulesCore/EXModuleRegistry.h>
 #import <EXFaceDetector/EXFaceEncoder.h>
 #import <EXFaceDetector/EXCSBufferOrientationCalculator.h>
 
 @interface EXFaceDetectorModule ()
 
-@property (nonatomic, weak) UMModuleRegistry *moduleRegistry;
+@property (nonatomic, weak) EXModuleRegistry *moduleRegistry;
 
 @end
 
@@ -25,7 +25,7 @@
 static NSFileManager *fileManager = nil;
 static NSDictionary *defaultDetectorOptions = nil;
 
-- (instancetype)initWithModuleRegistry:(UMModuleRegistry *)moduleRegistry
+- (instancetype)initWithModuleRegistry:(EXModuleRegistry *)moduleRegistry
 {
   self = [super init];
   if (self) {
@@ -35,19 +35,19 @@ static NSDictionary *defaultDetectorOptions = nil;
   return self;
 }
 
-UM_EXPORT_MODULE(ExpoFaceDetector);
+EX_EXPORT_MODULE(ExpoFaceDetector);
 
 - (NSDictionary *)constantsToExport
 {
   return [EXFaceDetectorUtils constantsToExport];
 }
 
-- (void)setModuleRegistry:(UMModuleRegistry *)moduleRegistry
+- (void)setModuleRegistry:(EXModuleRegistry *)moduleRegistry
 {
   _moduleRegistry = moduleRegistry;
 }
 
-UM_EXPORT_METHOD_AS(detectFaces, detectFaces:(nonnull NSDictionary *)options resolver:(UMPromiseResolveBlock)resolve rejecter:(UMPromiseRejectBlock)reject)
+EX_EXPORT_METHOD_AS(detectFaces, detectFaces:(nonnull NSDictionary *)options resolver:(EXPromiseResolveBlock)resolve rejecter:(EXPromiseRejectBlock)reject)
 {
   NSString *uri = options[@"uri"];
   if (uri == nil) {

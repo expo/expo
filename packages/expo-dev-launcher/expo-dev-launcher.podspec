@@ -13,9 +13,10 @@ Pod::Spec.new do |s|
   s.platform       = :ios, '11.0'
   s.swift_version  = '5.2'
   s.source         = { :git => 'https://github.com/github_account/expo-development-client.git', :tag => "#{s.version}" }
+  s.static_framework = true
   s.source_files   = 'ios/**/*.{h,m,swift,cpp}'
   s.preserve_paths = 'ios/**/*.{h,m,swift}'
-  s.exclude_files  = 'ios/Unsafe/**/*.{h,m,mm,swift,cpp}'
+  s.exclude_files  = ['ios/Unsafe/**/*.{h,m,mm,swift,cpp}', 'ios/Tests/**/*.{h,m,swift}']
   s.requires_arc   = true
   s.header_dir     = 'EXDevLauncher'
 
@@ -35,8 +36,9 @@ Pod::Spec.new do |s|
   # Swift/Objective-C compatibility
   s.pod_target_xcconfig = { "DEFINES_MODULE" => "YES" }
   
-  s.dependency "React"
+  s.dependency "React-Core"
   s.dependency "expo-dev-menu-interface"
+  s.dependency "EXManifests"
   s.dependency "EXUpdatesInterface"
   
   s.subspec 'Unsafe' do |unsafe|
@@ -46,6 +48,13 @@ Pod::Spec.new do |s|
   
   s.subspec 'Main' do |main|
     main.dependency "expo-dev-launcher/Unsafe"
+  end
+
+  s.test_spec 'Tests' do |test_spec|
+    test_spec.platform     = :ios, '12.0'
+    test_spec.source_files = 'ios/Tests/**/*.{h,m,swift}'
+    test_spec.dependency "React-CoreModules"
+    test_spec.dependency "OHHTTPStubs"
   end
   
   s.default_subspec = 'Main'

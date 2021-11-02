@@ -21,6 +21,9 @@ export enum UserInterfaceIdiom {
 export interface IOSManifest {
   buildNumber: string;
   platform: string;
+  /**
+   * @deprecated Moved to `expo-device` - `Device.modelName`
+   */
   model: string | null;
   userInterfaceIdiom: UserInterfaceIdiom;
   systemVersion: string;
@@ -43,23 +46,44 @@ export interface ManifestAsset {
 /**
  * A modern manifest.
  */
-export interface Manifest {
+export type Manifest = {
   id: string;
   createdAt: string;
   runtimeVersion: string;
   launchAsset: ManifestAsset;
   assets: ManifestAsset[];
   metadata: object;
-}
+  extra?: ClientScopingConfig & {
+    expoClient?: ExpoClientConfig;
+    expoGo?: ExpoGoConfig;
+    eas?: EASConfig;
+  };
+};
 
-/**
- * A classic manifest https://docs.expo.io/guides/how-expo-works/#expo-manifest
- */
-export interface AppManifest extends ExpoConfig {
-  /** Published Apps Only */
-  releaseId?: string;
-  revisionId?: string;
-  releaseChannel?: string;
+export type EASConfig = {
+  /**
+   * The ID for this project if it's using EAS. UUID. This value will not change when a project is transferred
+   * between accounts or renamed.
+   */
+  projectId?: string;
+};
+
+export type ClientScopingConfig = {
+  /**
+   * An opaque unique string for scoping client-side data to this project. This value
+   * will not change when a project is transferred between accounts or renamed.
+   */
+  scopeKey?: string;
+};
+
+export type ExpoGoConfig = {
+  mainModuleName?: string;
+  debuggerHost?: string;
+  logUrl?: string;
+  developer?: {
+    tool?: string;
+    [key: string]: any;
+  };
   packagerOpts?: {
     hostType?: string;
     dev?: boolean;
@@ -70,14 +94,16 @@ export interface AppManifest extends ExpoConfig {
     lanType?: string;
     [key: string]: any;
   };
-  developer?: {
-    tool?: string;
-    [key: string]: any;
-  };
+};
+
+export type ExpoClientConfig = ExpoConfig & {
+  /** Published Apps Only */
+  releaseId?: string;
+  revisionId?: string;
+  releaseChannel?: string;
   bundleUrl: string;
-  debuggerHost?: string;
-  mainModuleName?: string;
-  logUrl?: string;
+  hostUri?: string;
+  publishedTime?: string;
 
   /**
    * The Expo account name and slug for this project.
@@ -99,21 +125,17 @@ export interface AppManifest extends ExpoConfig {
    * may change when a project is transferred between accounts or renamed.
    */
   currentFullName?: string;
+};
 
-  /**
-   * An opaque unique string for scoping client-side data to this project. This value
-   * will not change when a project is transferred between accounts or renamed.
-   */
-  scopeKey?: string;
-
-  /**
-   * The ID for this project. UUID. This value will not change when a project is transferred
-   * between accounts or renamed.
-   */
-  projectId?: string;
-
-  [key: string]: any;
-}
+/**
+ * A classic manifest https://docs.expo.io/guides/how-expo-works/#expo-manifest
+ */
+export type AppManifest = ExpoClientConfig &
+  ExpoGoConfig &
+  EASConfig &
+  ClientScopingConfig & {
+    [key: string]: any;
+  };
 
 export interface PlatformManifest {
   ios?: IOSManifest;
@@ -135,6 +157,9 @@ export interface NativeConstants {
   appOwnership: AppOwnership | null;
   debugMode: boolean;
   deviceName?: string;
+  /**
+   * @deprecated Moved to `expo-device` - `Device.deviceYearClass`
+   */
   deviceYearClass: number | null;
   executionEnvironment: ExecutionEnvironment;
   experienceUrl: string;
@@ -195,4 +220,11 @@ export interface Constants extends NativeConstants {
    * suppresses important warning about missing manifest.
    */
   __unsafeNoWarnManifest?: AppManifest;
+  /**
+   * @warning do not use this property. Use `manifest2` by default.
+   *
+   * In certain cases accessing manifest via this property
+   * suppresses important warning about missing manifest.
+   */
+  __unsafeNoWarnManifest2?: Manifest;
 }

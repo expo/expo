@@ -10,7 +10,7 @@ Before we can consider our app truly complete we need to add a splash screen and
 
 ## Splash screen
 
-After telling our designer that we need a 1242px width by 2436px height splash screen image (more about this in [the splash screen guide](../guides/splash-screens.md)), she gave us the following file:
+After telling our designers that we need a 1242px width by 2436px height splash screen image (more about this in [the splash screen guide](../guides/splash-screens.md)), they gave us the following file:
 
 <ImageSpotlight src="/static/images/tutorial/splash.png" style={{ maxWidth: 150 }} containerStyle={{ marginBottom: 0 }} />
 
@@ -18,7 +18,7 @@ After telling our designer that we need a 1242px width by 2436px height splash s
 
 > 🐜 **What is this? A splash screen for ants?!** No, it's just scaled down here to fit more easily on this page 😅
 
-Save this image to the `assets` directory inside of your project and call it `splash.png` &mdash; replace the existing file. Reload your app and you should see something like this:
+Save this image to the **assets** directory inside of your project and call it **splash.png** &mdash; replace the existing file. Reload your app and you should see something like this:
 
 <Video file={"tutorial/splash-bad-color.mp4"} />
 
@@ -50,9 +50,9 @@ That was pretty easy but we aren't done here yet. Notice that there is a white b
 
 ### Configuring the splash screen background color
 
-So far we have been making all of our changes to `App.js`. There are some aspects of our app that we want to configure without running our app JavaScript code and the splash screen is one of these &mdash; it is visible before the app has had a chance to load and it is hidden once the app is ready for use (unless otherwise specified).
+So far we have been making all of our changes to **App.js**. There are some aspects of our app that we want to configure without running our app JavaScript code and the splash screen is one of these &mdash; it is visible before the app has had a chance to load and it is hidden once the app is ready for use (unless otherwise specified).
 
-Open up `app.json` from your project directory in your code editor and make the following change in the `splash` section:
+Open up **app.json** from your project directory in your code editor and make the following change in the `splash` section:
 
 <!-- prettier-ignore -->
 ```js
@@ -75,7 +75,7 @@ Our designer provided us with this 1024px width x 1024px height app icon:
 
 <ImageSpotlight src="/static/images/tutorial/icon.png" style={{ maxWidth: 150 }} />
 
-Save this image to the `assets` directory inside of your project and call it `icon.png` &mdash; replace the existing file. Reload the app. That's all you need to do! You will see the icon in various places in Expo Go, and when you do a standalone app build for submission to the stores it will be used as the icon on the users' home screens.
+Save this image to the **assets** directory inside of your project and call it **icon.png** &mdash; replace the existing file. Reload the app. That's all you need to do! You will see the icon in various places in Expo Go, and when you do a standalone app build for submission to the stores it will be used as the icon on the users' home screens.
 
 ## We have completed our app!
 

@@ -5,6 +5,7 @@
 static NSString * const kEXDeviceInstallationUUIDKey = @"EXDeviceInstallationUUIDKey";
 static NSString * const kEXDeviceInstallationUUIDLegacyKey = @"EXDeviceInstallUUIDKey";
 
+// this constant value being versioned is incorrect and is fixed in SDK >=43
 static NSString * const kEXRegistrationInfoKey = @"ABI41_0_0EXNotificationRegistrationInfoKey";
 
 @implementation ABI41_0_0EXServerRegistrationModule

@@ -1,13 +1,13 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 #import <EXPrint/EXWKPDFRenderer.h>
-#import <UMCore/UMDefines.h>
-#import <EXPrint/EXWKSnapshotPDFRenderer.h>
-#import <EXPrint/EXWKViewPDFRenderer.h>
+#import <ExpoModulesCore/EXDefines.h>
+#import <EXPrint/EXWKViewPrintPDFRenderer.h>
 
 @interface EXWKPDFRenderer () <WKNavigationDelegate>
 
 @property (nonatomic, assign) CGSize pageSize;
+@property (nonatomic, assign) UIEdgeInsets pageMargins;
 @property (nonatomic, strong) WKWebView *webView;
 @property (nonatomic, strong) id<EXPDFRenderer> renderer;
 @property (nonatomic, strong) WKNavigation *htmlNavigation;
@@ -17,17 +17,14 @@
 
 @implementation EXWKPDFRenderer
 
-- (void)PDFWithHtml:(NSString *)htmlString pageSize:(CGSize)pageSize completionHandler:(void (^)(NSError * _Nullable, NSData * _Nullable, int))handler
+- (void)PDFWithHtml:(NSString *)htmlString pageSize:(CGSize)pageSize pageMargins:(UIEdgeInsets)pageMargins completionHandler:(void (^)(NSError * _Nullable, NSData * _Nullable, int))handler
 {
   _pageSize = pageSize;
+  _pageMargins = pageMargins;
   _onRenderingFinished = handler;
   _webView = [self createWebView];
-  if (@available(iOS 11.0, *)) {
-    _renderer = [[EXWKSnapshotPDFRenderer alloc] init];
-  } else {
-    _renderer = [[EXWKViewPDFRenderer alloc] init];
-  }
-  _htmlNavigation = [_webView loadHTMLString:htmlString baseURL:nil];
+  _renderer = [[EXWKViewPrintPDFRenderer alloc] initWithPageSize:pageSize pageMargins:pageMargins];
+  _htmlNavigation = [_webView loadHTMLString:htmlString baseURL:[[NSBundle mainBundle] resourceURL]];
 }
 
 #pragma mark - UIWebViewDelegate
@@ -38,9 +35,9 @@
     return;
   }
 
-  UM_WEAKIFY(self);
+  EX_WEAKIFY(self);
   [_renderer PDFFromWebView:webView completionHandler:^(NSError * _Nullable error, NSData * _Nullable data, int pagesCount) {
-    UM_ENSURE_STRONGIFY(self);
+    EX_ENSURE_STRONGIFY(self);
     self.onRenderingFinished(error, data, pagesCount);
   }];
 }

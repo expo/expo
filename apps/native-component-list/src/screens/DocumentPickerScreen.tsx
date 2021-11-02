@@ -50,7 +50,9 @@ export default function DocumentPickerScreen() {
           <Text>
             {document.name} ({document.size! / 1000} KB)
           </Text>
-          <Text>URI: {document.uri}</Text>
+          <Text>
+            URI: {document.uri} MimeType: {document.mimeType}
+          </Text>
         </View>
       )}
     </View>

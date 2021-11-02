@@ -8,15 +8,15 @@
 
 @interface EXCellularModule ()
 
-@property (nonatomic, weak) UMModuleRegistry *moduleRegistry;
+@property (nonatomic, weak) EXModuleRegistry *moduleRegistry;
 
 @end
 
 @implementation EXCellularModule
 
-UM_EXPORT_MODULE(ExpoCellular);
+EX_EXPORT_MODULE(ExpoCellular);
 
-- (void)setModuleRegistry:(UMModuleRegistry *)moduleRegistry
+- (void)setModuleRegistry:(EXModuleRegistry *)moduleRegistry
 {
   _moduleRegistry = moduleRegistry;
 }
@@ -25,18 +25,37 @@ UM_EXPORT_MODULE(ExpoCellular);
 {
   CTCarrier *carrier = [self carrier];
 
-  return @{
-           @"allowsVoip": @(carrier.allowsVOIP),
-           @"carrier": UMNullIfNil(carrier.carrierName),
-           @"isoCountryCode": UMNullIfNil(carrier.isoCountryCode),
-           @"mobileCountryCode": UMNullIfNil(carrier.mobileCountryCode),
-           @"mobileNetworkCode": UMNullIfNil(carrier.mobileNetworkCode),
-           };
+  return [self getCurrentCellularInfo];
 }
 
-UM_EXPORT_METHOD_AS(getCellularGenerationAsync, getCellularGenerationAsyncWithResolver:(UMPromiseResolveBlock)resolve rejecter:(UMPromiseRejectBlock)reject)
+EX_EXPORT_METHOD_AS(getCellularGenerationAsync, getCellularGenerationAsyncWithResolver:(EXPromiseResolveBlock)resolve rejecter:(EXPromiseRejectBlock)reject)
 {
   resolve(@([[self class] getCellularGeneration]));
+}
+
+EX_EXPORT_METHOD_AS(allowsVoipAsync, allowsVoipAsyncWithResolver:(EXPromiseResolveBlock)resolve rejecter:(EXPromiseRejectBlock)reject)
+{
+  resolve(@([self allowsVoip]));
+}
+
+EX_EXPORT_METHOD_AS(getIsoCountryCodeAsync, getIsoCountryCodeAsyncWithResolver:(EXPromiseResolveBlock)resolve rejecter:(EXPromiseRejectBlock)reject)
+{
+  resolve([self getIsoCountryCode]);
+}
+
+EX_EXPORT_METHOD_AS(getCarrierNameAsync, getCarrierNameAsyncWithResolver:(EXPromiseResolveBlock)resolve rejecter:(EXPromiseRejectBlock)reject)
+{
+  resolve([self getCarrierName]);
+}
+
+EX_EXPORT_METHOD_AS(getMobileCountryCodeAsync, getMobileCountryCodeAsyncWithResolver:(EXPromiseResolveBlock)resolve rejecter:(EXPromiseRejectBlock)reject)
+{
+  resolve([self getMobileCountryCode]);
+}
+
+EX_EXPORT_METHOD_AS(getMobileNetworkCodeAsync, getMobileNetworkCodeAsyncWithResolver:(EXPromiseResolveBlock)resolve rejecter:(EXPromiseRejectBlock)reject)
+{
+  resolve([self getMobileNetworkCode]);
 }
 
 + (EXCellularGeneration)getCellularGeneration
@@ -65,6 +84,10 @@ UM_EXPORT_METHOD_AS(getCellularGenerationAsync, getCellularGenerationAsyncWithRe
       return EXCellularGeneration3G;
     } else if ([serviceCurrentRadioAccessTechnology isEqualToString:CTRadioAccessTechnologyLTE]) {
       return EXCellularGeneration4G;
+    } else if (@available(iOS 14.1, *) &&
+               ([serviceCurrentRadioAccessTechnology isEqualToString:CTRadioAccessTechnologyNRNSA] ||
+                [serviceCurrentRadioAccessTechnology isEqualToString:CTRadioAccessTechnologyNR])) {
+      return EXCellularGeneration5G;
     }
   }
   return EXCellularGenerationUnknown;
@@ -87,6 +110,44 @@ UM_EXPORT_METHOD_AS(getCellularGenerationAsync, getCellularGenerationAsyncWithRe
   }
 
   return netinfo.subscriberCellularProvider;
+}
+
+- (NSDictionary *)getCurrentCellularInfo
+{
+  CTCarrier *carrier = [self carrier];
+
+  return @{
+    @"allowsVoip": @(carrier.allowsVOIP),
+    @"carrier": EXNullIfNil(carrier.carrierName),
+    @"isoCountryCode": EXNullIfNil(carrier.isoCountryCode),
+    @"mobileCountryCode": EXNullIfNil(carrier.mobileCountryCode),
+    @"mobileNetworkCode": EXNullIfNil(carrier.mobileNetworkCode),
+  };
+}
+
+- (BOOL)allowsVoip
+{
+  return [self carrier].allowsVOIP;
+}
+
+- (NSString *)getIsoCountryCode
+{
+  return [self carrier].isoCountryCode;
+}
+
+- (NSString *)getCarrierName
+{
+  return [self carrier].carrierName;
+}
+
+- (NSString *)getMobileCountryCode
+{
+  return [self carrier].mobileCountryCode;
+}
+
+- (NSString *)getMobileNetworkCode
+{
+  return [self carrier].mobileNetworkCode;
 }
 
 @end

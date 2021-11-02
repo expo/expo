@@ -1,4 +1,5 @@
 import { css } from '@emotion/react';
+import { SerializedStyles } from '@emotion/serialize';
 import { theme } from '@expo/styleguide';
 import * as React from 'react';
 
@@ -74,11 +75,14 @@ const STYLE_RETURN_LIST = css`
 
 type LIProps = {
   returnType?: boolean;
+  customCss?: SerializedStyles | undefined;
 };
 
-export const LI: React.FC<LIProps> = ({ children, returnType }) => {
+export const LI: React.FC<LIProps> = ({ children, returnType, customCss }) => {
   return (
-    <li css={[STYLES_LIST_ITEM, returnType && STYLE_RETURN_LIST]} className="docs-list-item">
+    <li
+      css={[STYLES_LIST_ITEM, returnType && STYLE_RETURN_LIST, customCss]}
+      className="docs-list-item">
       {children}
     </li>
   );

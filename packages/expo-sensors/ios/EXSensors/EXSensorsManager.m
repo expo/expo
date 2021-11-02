@@ -1,7 +1,10 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
-#import <EXSensors/EXSensorsManager.h>
+#import <UIKit/UIKit.h>
 #import <CoreMotion/CoreMotion.h>
+
+#import <ExpoModulesCore/EXDefines.h>
+#import <EXSensors/EXSensorsManager.h>
 
 @interface EXSensorsManager ()
 
@@ -18,7 +21,7 @@
 
 @implementation EXSensorsManager
 
-UM_REGISTER_MODULE();
+EX_REGISTER_MODULE();
 
 + (const NSArray<Protocol *> *)exportedInterfaces
 {

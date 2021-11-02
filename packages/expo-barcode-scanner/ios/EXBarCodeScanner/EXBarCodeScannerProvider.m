@@ -2,10 +2,11 @@
 
 #import <EXBarCodeScanner/EXBarCodeScannerProvider.h>
 #import <EXBarCodeScanner/EXBarCodeScanner.h>
+#import <ExpoModulesCore/EXDefines.h>
 
 @implementation EXBarCodeScannerProvider
 
-UM_REGISTER_MODULE();
+EX_REGISTER_MODULE();
 
 + (const NSArray<Protocol *> *)exportedInterfaces
 {

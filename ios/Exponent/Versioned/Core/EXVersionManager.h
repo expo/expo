@@ -2,13 +2,13 @@
 
 #import <Foundation/Foundation.h>
 #import <React/RCTLog.h>
-#import <EXUpdates/EXUpdatesRawManifest.h>
+#import <EXManifests/EXManifestsManifest.h>
 
 @interface EXVersionManager : NSObject
 
 // Uses a params dict since the internal workings may change over time, but we want to keep the interface the same.
 - (instancetype)initWithParams:(NSDictionary *)params
-                      manifest:(EXUpdatesRawManifest *)manifest
+                      manifest:(EXManifestsManifest *)manifest
                   fatalHandler:(void (^)(NSError *))fatalHandler
                    logFunction:(RCTLogFunction)logFunction
                   logThreshold:(NSInteger)threshold;

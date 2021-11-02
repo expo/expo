@@ -45,17 +45,17 @@ static NSString * const calendarNotificationTriggerTimezoneKey = @"timezone";
 
 @implementation EXNotificationSchedulerModule
 
-UM_EXPORT_MODULE(ExpoNotificationScheduler);
+EX_EXPORT_MODULE(ExpoNotificationScheduler);
 
-- (void)setModuleRegistry:(UMModuleRegistry *)moduleRegistry
+- (void)setModuleRegistry:(EXModuleRegistry *)moduleRegistry
 {
   _builder = [moduleRegistry getModuleImplementingProtocol:@protocol(EXNotificationBuilder)];
 }
 
 # pragma mark - Exported methods
 
-UM_EXPORT_METHOD_AS(getAllScheduledNotificationsAsync,
-                    getAllScheduledNotifications:(UMPromiseResolveBlock)resolve reject:(UMPromiseRejectBlock)reject
+EX_EXPORT_METHOD_AS(getAllScheduledNotificationsAsync,
+                    getAllScheduledNotifications:(EXPromiseResolveBlock)resolve reject:(EXPromiseRejectBlock)reject
                     )
 {
   [[UNUserNotificationCenter currentNotificationCenter] getPendingNotificationRequestsWithCompletionHandler:^(NSArray<UNNotificationRequest *> * _Nonnull requests) {
@@ -63,8 +63,8 @@ UM_EXPORT_METHOD_AS(getAllScheduledNotificationsAsync,
   }];
 }
 
-UM_EXPORT_METHOD_AS(scheduleNotificationAsync,
-                     scheduleNotification:(NSString *)identifier notificationSpec:(NSDictionary *)notificationSpec triggerSpec:(NSDictionary *)triggerSpec resolve:(UMPromiseResolveBlock)resolve rejecting:(UMPromiseRejectBlock)reject)
+EX_EXPORT_METHOD_AS(scheduleNotificationAsync,
+                     scheduleNotification:(NSString *)identifier notificationSpec:(NSDictionary *)notificationSpec triggerSpec:(NSDictionary *)triggerSpec resolve:(EXPromiseResolveBlock)resolve rejecting:(EXPromiseRejectBlock)reject)
 {
   @try {
     UNNotificationRequest *request = [self buildNotificationRequestWithIdentifier:identifier content:notificationSpec trigger:triggerSpec];
@@ -82,22 +82,22 @@ UM_EXPORT_METHOD_AS(scheduleNotificationAsync,
   }
 }
 
-UM_EXPORT_METHOD_AS(cancelScheduledNotificationAsync,
-                     cancelNotification:(NSString *)identifier resolve:(UMPromiseResolveBlock)resolve rejecting:(UMPromiseRejectBlock)reject)
+EX_EXPORT_METHOD_AS(cancelScheduledNotificationAsync,
+                     cancelNotification:(NSString *)identifier resolve:(EXPromiseResolveBlock)resolve rejecting:(EXPromiseRejectBlock)reject)
 {
   [[UNUserNotificationCenter currentNotificationCenter] removePendingNotificationRequestsWithIdentifiers:@[identifier]];
   resolve(nil);
 }
 
-UM_EXPORT_METHOD_AS(cancelAllScheduledNotificationsAsync,
-                     cancelAllNotificationsWithResolver:(UMPromiseResolveBlock)resolve rejecting:(UMPromiseRejectBlock)reject)
+EX_EXPORT_METHOD_AS(cancelAllScheduledNotificationsAsync,
+                     cancelAllNotificationsWithResolver:(EXPromiseResolveBlock)resolve rejecting:(EXPromiseRejectBlock)reject)
 {
   [[UNUserNotificationCenter currentNotificationCenter] removeAllPendingNotificationRequests];
   resolve(nil);
 }
 
-UM_EXPORT_METHOD_AS(getNextTriggerDateAsync,
-                    getNextTriggerDate:(NSDictionary *)triggerSpec resolve:(UMPromiseResolveBlock)resolve rejecting:(UMPromiseRejectBlock)reject)
+EX_EXPORT_METHOD_AS(getNextTriggerDateAsync,
+                    getNextTriggerDate:(NSDictionary *)triggerSpec resolve:(EXPromiseResolveBlock)resolve rejecting:(EXPromiseRejectBlock)reject)
 {
   @try {
     UNNotificationTrigger *trigger = [self triggerFromParams:triggerSpec];

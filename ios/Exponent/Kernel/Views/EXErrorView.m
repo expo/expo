@@ -63,12 +63,11 @@
     // error detail label
     self.lblErrorDetail = [[UILabel alloc] init];
     _lblErrorDetail.numberOfLines = 0;
-    _lblErrorDetail.textAlignment = NSTextAlignmentLeft;
+    _lblErrorDetail.textAlignment = NSTextAlignmentCenter;
     [_vContainer addSubview:_lblErrorDetail];
     
     for (UILabel *lblToStyle in @[ _lblUrl, _lblErrorDetail ]) {
       lblToStyle.font = [UIFont systemFontOfSize:14.0f];
-      lblToStyle.textColor = [UIColor lightGrayColor];
     }
   }
   return self;

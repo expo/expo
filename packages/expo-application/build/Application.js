@@ -1,4 +1,4 @@
-import { UnavailabilityError } from '@unimodules/core';
+import { UnavailabilityError } from 'expo-modules-core';
 import ExpoApplication from './ExpoApplication';
 // @needsAudit
 /**
@@ -62,7 +62,7 @@ export const androidId = ExpoApplication ? ExpoApplication.androidId || null : n
  * from the Google Play Store. In practice, the referrer URL may not be a complete, absolute URL.
  * @return A `Promise` that fulfills with a `string` of the referrer URL of the installed app.
  *
- * # Example
+ * @example
  * ```ts
  * await Application.getInstallReferrerAsync();
  * // "utm_source=google-play&utm_medium=organic"
@@ -88,7 +88,7 @@ export async function getInstallReferrerAsync() {
  * same vendor will return the same ID. See Apple's documentation for more information about the
  * vendor ID's semantics.
  *
- * # Example
+ * @example
  * ```ts
  * await Application.getIosIdForVendorAsync();
  * // "68753A44-4D6F-1226-9C60-0050E4C00067"
@@ -146,7 +146,7 @@ export async function getIosPushNotificationServiceEnvironmentAsync() {
  * @return Returns a `Promise` that fulfills with a `Date` object that specifies the time the app
  * was installed on the device.
  *
- * # Example
+ * @example
  * ```ts
  * await Application.getInstallationTimeAsync();
  * // 2019-07-18T18:08:26.121Z
@@ -165,7 +165,7 @@ export async function getInstallationTimeAsync() {
  * @return Returns a `Promise` that fulfills with a `Date` object that specifies the last time
  * the app was updated via the Google Play Store).
  *
- * # Example
+ * @example
  * ```ts
  * await Application.getLastUpdateTimeAsync();
  * // 2019-07-18T21:20:16.887Z

@@ -1,4 +1,4 @@
-import { SyntheticPlatformEmitter } from '@unimodules/core';
+import { SyntheticPlatformEmitter } from 'expo-modules-core';
 
 import {
   assertSensorEventEnabledAsync,

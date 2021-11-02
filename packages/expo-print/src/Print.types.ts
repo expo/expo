@@ -25,8 +25,14 @@ export type PrintOptions = {
    */
   printerUrl?: string;
   /**
-   * **Available on iOS only.** Alternative to `html` option that uses [UIMarkupTextPrintFormatter](https://developer.apple.com/documentation/uikit/uimarkuptextprintformatter)
-   * instead of WebView. Might be removed in the future releases.
+   * **Available on iOS only.** Alternative to default option that uses [UIMarkupTextPrintFormatter](https://developer.apple.com/documentation/uikit/uimarkuptextprintformatter)
+   * instead of WebView, but it doesn't display images.
+   */
+  useMarkupFormatter?: boolean;
+  /**
+   * @deprecated
+   * **Available on iOS only.** This argument is deprecated, use `useMarkupFormatter` instead.
+   * Might be removed in the future releases.
    */
   markupFormatterIOS?: string;
   /**
@@ -34,6 +40,10 @@ export type PrintOptions = {
    * or `Print.Orientation.landscape`.
    */
   orientation?: OrientationType['portrait'] | OrientationType['landscape'];
+  /**
+   * **Available on iOS only.** Page margins for the printed document.
+   */
+  margins?: PageMargins;
 };
 
 // @needsAudit
@@ -57,12 +67,25 @@ export interface OrientationType {
   landscape: string;
 }
 
+// @needsAudit
+export type PageMargins = {
+  top: number;
+  right: number;
+  bottom: number;
+  left: number;
+};
+
 // @docsMissing
 export type FilePrintOptions = {
   /**
    * HTML string to print into PDF file.
    */
   html?: string;
+  /**
+   * **Available on iOS only.** Alternative to default option that uses [UIMarkupTextPrintFormatter](https://developer.apple.com/documentation/uikit/uimarkuptextprintformatter)
+   * instead of WebView, but it doesn't display images.
+   */
+  useMarkupFormatter?: boolean;
   /**
    * Width of the single page in pixels. Defaults to `612` which is a width of US Letter paper
    * format with 72 PPI.
@@ -74,21 +97,13 @@ export type FilePrintOptions = {
    */
   height?: number;
   /**
-   * Padding for the printed document.
+   * **Available on iOS only.** Page margins for the printed document.
    */
-  padding?: FilePrintPadding;
+  margins?: PageMargins;
   /**
    * Whether to include base64 encoded string of the file in the returned object.
    */
   base64?: boolean;
-};
-
-// @needsAudit
-export type FilePrintPadding = {
-  top: number;
-  right: number;
-  bottom: number;
-  left: number;
 };
 
 // @needsAudit

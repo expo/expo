@@ -1,6 +1,6 @@
 package expo.modules.imagemanipulator.arguments
 
-import org.unimodules.core.arguments.ReadableArguments
+import expo.modules.core.arguments.ReadableArguments
 import android.graphics.Bitmap.CompressFormat
 
 private const val KEY_BASE64 = "base64"

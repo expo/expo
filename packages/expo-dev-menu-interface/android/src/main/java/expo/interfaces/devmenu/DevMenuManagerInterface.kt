@@ -7,7 +7,6 @@ import android.view.MotionEvent
 import com.facebook.react.ReactNativeHost
 import com.facebook.react.bridge.ReadableMap
 import expo.interfaces.devmenu.expoapi.DevMenuExpoApiClientInterface
-import expo.interfaces.devmenu.items.DevMenuDataSourceInterface
 import expo.interfaces.devmenu.items.DevMenuDataSourceItem
 
 interface DevMenuManagerInterface {
@@ -110,6 +109,11 @@ interface DevMenuManagerInterface {
    * Whether delegate was initialized
    */
   fun isInitialized(): Boolean
+
+  /**
+   * Whether to automatically show the dev menu on app load. Defaults to true if not set.
+   */
+  fun setCanLaunchDevMenuOnStart(shouldAutoLaunch: Boolean)
 
   suspend fun fetchDataSource(id: String): List<DevMenuDataSourceItem>
 }

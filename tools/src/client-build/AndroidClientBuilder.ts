@@ -10,7 +10,16 @@ export default class AndroidClientBuilder implements ClientBuilder {
   platform: Platform = 'android';
 
   getAppPath(): string {
-    return path.join(ANDROID_DIR, 'app', 'build', 'outputs', 'apk', 'release', 'app-release.apk');
+    return path.join(
+      ANDROID_DIR,
+      'app',
+      'build',
+      'outputs',
+      'apk',
+      'versioned',
+      'release',
+      'app-versioned-release.apk'
+    );
   }
 
   getClientUrl(appVersion: string): string {

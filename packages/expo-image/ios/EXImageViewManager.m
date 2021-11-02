@@ -1,11 +1,9 @@
 // Copyright 2020-present 650 Industries. All rights reserved.
 
-#import <expo-image/EXImageViewManager.h>
-#import <expo-image/EXImageView.h>
-#import <SDWebImage/SDImageCodersManager.h>
-#import <SDWebImageWebPCoder/SDWebImageWebPCoder.h>
-
+#import <EXImage/EXImageViewManager.h>
+#import <EXImage/EXImageView.h>
 #import <React/RCTImageShadowView.h>
+#import "EXImageCustomCoders.h"
 
 @implementation EXImageViewManager
 
@@ -18,10 +16,7 @@ RCT_EXPORT_MODULE(ExpoImage)
 
 + (void)initialize
 {
-  SDImageWebPCoder *webPCoder = [SDImageWebPCoder sharedCoder];
-  if (![[SDImageCodersManager sharedManager].coders containsObject:webPCoder]) {
-    [[SDImageCodersManager sharedManager] addCoder:webPCoder];
-  }
+  [EXImageCustomCoders registerCustomCoders];
 }
 
 RCT_EXPORT_VIEW_PROPERTY(source, NSDictionary)

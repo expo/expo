@@ -1,4 +1,4 @@
-import { Subscription } from '@unimodules/core';
+import { Subscription } from 'expo-modules-core';
 /**
  * Returns whether the Screen Capture API is available on the current device.
  *

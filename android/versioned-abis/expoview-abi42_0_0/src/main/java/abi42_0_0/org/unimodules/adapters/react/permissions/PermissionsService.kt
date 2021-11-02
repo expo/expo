@@ -63,38 +63,54 @@ open class PermissionsService(val context: Context) : InternalModule, Permission
   }
 
   override fun getPermissionsWithPromise(promise: Promise, vararg permissions: String) {
-    getPermissions(PermissionsResponseListener { permissionsMap: MutableMap<String, PermissionsResponse> ->
-      val areAllGranted = permissionsMap.all { (_, response) -> response.status == PermissionsStatus.GRANTED }
-      val areAllDenied = permissionsMap.all { (_, response) -> response.status == PermissionsStatus.DENIED }
-      val canAskAgain = permissionsMap.all { (_, response) -> response.canAskAgain }
+    getPermissions(
+      PermissionsResponseListener { permissionsMap: MutableMap<String, PermissionsResponse> ->
+        val areAllGranted = permissionsMap.all { (_, response) -> response.status == PermissionsStatus.GRANTED }
+        val areAllDenied = permissionsMap.all { (_, response) -> response.status == PermissionsStatus.DENIED }
+        val canAskAgain = permissionsMap.all { (_, response) -> response.canAskAgain }
 
-      promise.resolve(Bundle().apply {
-        putString(PermissionsResponse.EXPIRES_KEY, PermissionsResponse.PERMISSION_EXPIRES_NEVER)
-        putString(PermissionsResponse.STATUS_KEY, when {
-          areAllGranted -> PermissionsStatus.GRANTED.status
-          areAllDenied -> PermissionsStatus.DENIED.status
-          else -> PermissionsStatus.UNDETERMINED.status
-        })
-        putBoolean(PermissionsResponse.CAN_ASK_AGAIN_KEY, canAskAgain)
-        putBoolean(PermissionsResponse.GRANTED_KEY, areAllGranted)
-      })
-    }, *permissions)
+        promise.resolve(
+          Bundle().apply {
+            putString(PermissionsResponse.EXPIRES_KEY, PermissionsResponse.PERMISSION_EXPIRES_NEVER)
+            putString(
+              PermissionsResponse.STATUS_KEY,
+              when {
+                areAllGranted -> PermissionsStatus.GRANTED.status
+                areAllDenied -> PermissionsStatus.DENIED.status
+                else -> PermissionsStatus.UNDETERMINED.status
+              }
+            )
+            putBoolean(PermissionsResponse.CAN_ASK_AGAIN_KEY, canAskAgain)
+            putBoolean(PermissionsResponse.GRANTED_KEY, areAllGranted)
+          }
+        )
+      },
+      *permissions
+    )
   }
 
   override fun askForPermissionsWithPromise(promise: Promise, vararg permissions: String) {
-    askForPermissions(PermissionsResponseListener {
-      getPermissionsWithPromise(promise, *permissions)
-    }, *permissions)
+    askForPermissions(
+      PermissionsResponseListener {
+        getPermissionsWithPromise(promise, *permissions)
+      },
+      *permissions
+    )
   }
 
   override fun getPermissions(responseListener: PermissionsResponseListener, vararg permissions: String) {
-    responseListener.onResult(parseNativeResult(permissions, permissions.map {
-      if (isPermissionGranted(it)) {
-        PackageManager.PERMISSION_GRANTED
-      } else {
-        PackageManager.PERMISSION_DENIED
-      }
-    }.toIntArray()))
+    responseListener.onResult(
+      parseNativeResult(
+        permissions,
+        permissions.map {
+          if (isPermissionGranted(it)) {
+            PackageManager.PERMISSION_GRANTED
+          } else {
+            PackageManager.PERMISSION_DENIED
+          }
+        }.toIntArray()
+      )
+    )
   }
 
   @Throws(IllegalStateException::class)

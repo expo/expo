@@ -1,6 +1,6 @@
 // Copyright 2018-present 650 Industries. All rights reserved.
 
-#import <UMCore/UMViewManager.h>
+#import <ExpoModulesCore/EXViewManager.h>
 #import <EXAppleAuthentication/EXAppleAuthenticationButton.h>
 
 @import AuthenticationServices;
@@ -9,11 +9,11 @@
 // ASAuthorizationAppleIDButton#style and ASAuthorizationAppleIDButton#type can only be specified at creation time
 
 #define EX_REGISTER_APPLE_AUTHENTICATION_VIEW_MANAGER(type, style, module_name, ios_version) \
-@interface EXAppleAuthenticationButton ## type ## style ## ViewManager : UMViewManager @end \
+@interface EXAppleAuthenticationButton ## type ## style ## ViewManager : EXViewManager @end \
 \
 @implementation EXAppleAuthenticationButton ## type ## style ## ViewManager \
 \
-  UM_REGISTER_MODULE(); \
+  EX_REGISTER_MODULE(); \
 \
   + (const NSString *)exportedModuleName { return @#module_name; } \
 \
@@ -23,17 +23,17 @@
 \
   - (NSArray<NSString *> *)supportedEvents { return @[@"onButtonPress"]; } \
 \
-  UM_VIEW_PROPERTY(cornerRadius, NSNumber *, EXAppleAuthenticationButton) API_AVAILABLE(ios(ios_version)) { view.cornerRadius = [value floatValue]; } \
+  EX_VIEW_PROPERTY(cornerRadius, NSNumber *, EXAppleAuthenticationButton) API_AVAILABLE(ios(ios_version)) { view.cornerRadius = [value floatValue]; } \
 \
 @end
 
 // below commented code serves as template for above macro
 
-//@interface EXAppleAuthenticationButtonSignInWhiteViewManager : UMViewManager @end
+//@interface EXAppleAuthenticationButtonSignInWhiteViewManager : EXViewManager @end
 //
 //@implementation EXAppleAuthenticationButtonSignInWhiteViewManager
 //
-//UM_REGISTER_MODULE();
+//EX_REGISTER_MODULE();
 //
 //+ (const NSString *)exportedModuleName { return @"ExpoAppleAuthenticationButtonSignInWhite"; }
 //
@@ -43,7 +43,7 @@
 //
 //- (NSArray<NSString *> *)supportedEvents { return @[@"onButtonPress"]; }
 //
-//UM_VIEW_PROPERTY(cornerRadius, NSNumber *, EXAppleAuthenticationButton) API_AVAILABLE(ios(13.0)) { view.cornerRadius = [value floatValue]; }
+//EX_VIEW_PROPERTY(cornerRadius, NSNumber *, EXAppleAuthenticationButton) API_AVAILABLE(ios(13.0)) { view.cornerRadius = [value floatValue]; }
 //
 //@end
 

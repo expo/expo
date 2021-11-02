@@ -27,6 +27,8 @@ concurrency:
 jobs:
   test:
     runs-on: ubuntu-18.04
+    env:
+      NDK_ABI_FILTERS: x86_64
     steps:
       - name: Check out repository
         uses: actions/checkout@v2
@@ -36,6 +38,7 @@ jobs:
         id: yarn-cache-dir-path
         run: echo "::set-output name=dir::$(yarn cache dir)"
       - uses: actions/cache@v2
+        name: Restore yarn cache
         with:
           path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
           key: ${{ runner.os }}-yarn-${{ hashFiles('yarn.lock') }}
@@ -43,12 +46,14 @@ jobs:
             ${{ runner.os }}-yarn-
       - run: yarn install --frozen-lockfile
       - uses: actions/cache@v2
+        name: Restore Gradle cache
         with:
           path: ~/.gradle/caches
           key: ${{ runner.os }}-gradle-${{ hashFiles('android/*.gradle*') }}
           restore-keys: |
             ${{ runner.os }}-gradle-
       - uses: actions/cache@v2
+        name: Restore NDK cache
         id: cache-android-ndk
         with:
           path: /usr/local/lib/android/sdk/ndk/19.2.5345600/
@@ -60,6 +65,14 @@ jobs:
         run: |
           sudo $ANDROID_SDK_ROOT/tools/bin/sdkmanager --install "ndk;19.2.5345600"
       - run: echo "$(pwd)/bin" >> $GITHUB_PATH
+      - name: Patch react-native to support single abi
+        run: sed -i 's/^APP_ABI := .*$/APP_ABI := $(if $(NDK_ABI_FILTERS),$(NDK_ABI_FILTERS),$(armeabi-v7a x86 arm64-v8a x86_64))/g' ReactAndroid/src/main/jni/Application.mk
+        working-directory: react-native-lab/react-native
+      - name: Run Spotless lint check
+        env:
+          ANDROID_NDK_HOME: /usr/local/lib/android/sdk/ndk/19.2.5345600/
+        working-directory: android
+        run: ./gradlew spotlessCheck || { echo '::error Spotless lint failed. Run `./gradlew spotlessApply` to automatically fix formatting.' && exit 1; }
       - name: Run native Android unit tests
         env:
           ANDROID_NDK_HOME: /usr/local/lib/android/sdk/ndk/19.2.5345600/
@@ -70,8 +83,3 @@ jobs:
         with:
           name: test-results
           path: packages/**/build/test-results/**/*xml
-      - name: Run Spotless lint check
-        env:
-          ANDROID_NDK_HOME: /usr/local/lib/android/sdk/ndk/19.2.5345600/
-        working-directory: android
-        run: ./gradlew spotlessCheck || echo '::error Spotless lint failed. Run `./gradlew spotlessApply` to automatically fix formatting.'

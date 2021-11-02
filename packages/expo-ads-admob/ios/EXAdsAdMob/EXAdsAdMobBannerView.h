@@ -1,5 +1,5 @@
-#import <UMCore/UMDefines.h>
-#import <UMCore/UMModuleRegistry.h>
+#import <ExpoModulesCore/EXDefines.h>
+#import <ExpoModulesCore/EXModuleRegistry.h>
 #import <GoogleMobileAds/GoogleMobileAds.h>
 
 @interface EXAdsAdMobBannerView : UIView <GADBannerViewDelegate>
@@ -8,13 +8,13 @@
 @property (nonatomic, copy) NSString *adUnitID;
 @property (nonatomic, copy) NSDictionary *additionalRequestParams;
 
-@property (nonatomic, copy) UMDirectEventBlock onSizeChange;
-@property (nonatomic, copy) UMDirectEventBlock onAdViewDidReceiveAd;
-@property (nonatomic, copy) UMDirectEventBlock onDidFailToReceiveAdWithError;
-@property (nonatomic, copy) UMDirectEventBlock onAdViewWillPresentScreen;
-@property (nonatomic, copy) UMDirectEventBlock onAdViewWillDismissScreen;
-@property (nonatomic, copy) UMDirectEventBlock onAdViewDidDismissScreen;
-@property (nonatomic, copy) UMDirectEventBlock onAdViewWillLeaveApplication;
+@property (nonatomic, copy) EXDirectEventBlock onSizeChange;
+@property (nonatomic, copy) EXDirectEventBlock onAdViewDidReceiveAd;
+@property (nonatomic, copy) EXDirectEventBlock onDidFailToReceiveAdWithError;
+@property (nonatomic, copy) EXDirectEventBlock onAdViewWillPresentScreen;
+@property (nonatomic, copy) EXDirectEventBlock onAdViewWillDismissScreen;
+@property (nonatomic, copy) EXDirectEventBlock onAdViewDidDismissScreen;
+@property (nonatomic, copy) EXDirectEventBlock onAdViewWillLeaveApplication;
 
 - (GADAdSize)getAdSizeFromString:(NSString *)bannerSize;
 - (void)loadBanner;

@@ -20,7 +20,7 @@
 
 @implementation EXFontLoader
 
-UM_EXPORT_MODULE(ExpoFontLoader);
+EX_EXPORT_MODULE(ExpoFontLoader);
 
 - (instancetype)init
 {
@@ -43,7 +43,7 @@ UM_EXPORT_MODULE(ExpoFontLoader);
 }
 
 
-- (void)setModuleRegistry:(UMModuleRegistry *)moduleRegistry
+- (void)setModuleRegistry:(EXModuleRegistry *)moduleRegistry
 {
   if (moduleRegistry) {
     id<EXFontManagerInterface> manager = [moduleRegistry getModuleImplementingProtocol:@protocol(EXFontManagerInterface)];
@@ -54,11 +54,11 @@ UM_EXPORT_MODULE(ExpoFontLoader);
   }
 }
 
-UM_EXPORT_METHOD_AS(loadAsync,
+EX_EXPORT_METHOD_AS(loadAsync,
                     loadAsyncWithFontFamilyName:(NSString *)fontFamilyName
                     withLocalUri:(NSString *)path
-                    resolver:(UMPromiseResolveBlock)resolve
-                    rejecter:(UMPromiseRejectBlock)reject)
+                    resolver:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
 {
   if ([_manager fontForName:fontFamilyName]) {
     reject(@"E_FONT_ALREADY_EXISTS",

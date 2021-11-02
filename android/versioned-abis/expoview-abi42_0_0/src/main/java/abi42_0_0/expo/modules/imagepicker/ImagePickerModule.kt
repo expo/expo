@@ -126,7 +126,8 @@ class ImagePickerModule(
 
     val permissionsResponseHandler = PermissionsResponseListener { permissionsResponse: Map<String, PermissionsResponse> ->
       if (permissionsResponse[Manifest.permission.WRITE_EXTERNAL_STORAGE]?.status == PermissionsStatus.GRANTED &&
-        permissionsResponse[Manifest.permission.CAMERA]?.status == PermissionsStatus.GRANTED) {
+        permissionsResponse[Manifest.permission.CAMERA]?.status == PermissionsStatus.GRANTED
+      ) {
         launchCameraWithPermissionsGranted(promise, cameraIntent, pickerOptions)
       } else {
         promise.reject(SecurityException("User rejected permissions"))
@@ -328,9 +329,11 @@ class ImagePickerModule(
 
   private fun handleOnActivityResult(promise: Promise, activity: Activity, requestCode: Int, resultCode: Int, intent: Intent?, pickerOptions: ImagePickerOptions) {
     if (resultCode != Activity.RESULT_OK) {
-      promise.resolve(Bundle().apply {
-        putBoolean("cancelled", true)
-      })
+      promise.resolve(
+        Bundle().apply {
+          putBoolean("cancelled", true)
+        }
+      )
       return
     }
 

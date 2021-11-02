@@ -1,4 +1,4 @@
-import { requireNativeViewManager } from '@unimodules/core';
+import { requireNativeViewManager } from 'expo-modules-core';
 import nullthrows from 'nullthrows';
 import React from 'react';
 import { Platform, findNodeHandle } from 'react-native';
@@ -13,64 +13,15 @@ const NativeAdLayout = Platform.OS === 'android' ? requireNativeViewManager('Nat
  */
 export default function withNativeAd(Component) {
     return class NativeAdContainer extends React.Component {
+        _readySubscription = null;
+        _errorSubscription = null;
+        _nativeAdViewRef = React.createRef();
+        _adMediaViewNodeHandle = null;
+        _adIconViewNodeHandle = null;
+        _interactiveTriggerNodeHandles = new Map();
+        state;
         constructor(props) {
             super(props);
-            this._readySubscription = null;
-            this._errorSubscription = null;
-            this._nativeAdViewRef = React.createRef();
-            this._adMediaViewNodeHandle = null;
-            this._adIconViewNodeHandle = null;
-            this._interactiveTriggerNodeHandles = new Map();
-            this._handleAdLoaded = ({ nativeEvent: ad }) => {
-                this.setState({ ad }, () => {
-                    if (this.props.onAdLoaded) {
-                        const ad = nullthrows(this.state.ad);
-                        this.props.onAdLoaded(ad);
-                    }
-                });
-            };
-            this._adMediaViewContextValue = {
-                nativeRef: (component) => {
-                    if (component) {
-                        this._setAdNodeHandles({ adMediaViewNodeHandle: nullthrows(findNodeHandle(component)) });
-                    }
-                    else {
-                        this._setAdNodeHandles({ adMediaViewNodeHandle: null });
-                    }
-                },
-            };
-            this._adOptionsViewContextValue = {
-                nativeAdViewRef: this._nativeAdViewRef,
-            };
-            this._adIconViewContextValue = {
-                nativeRef: (component) => {
-                    if (component) {
-                        this._setAdNodeHandles({ adIconViewNodeHandle: nullthrows(findNodeHandle(component)) });
-                    }
-                    else {
-                        this._setAdNodeHandles({ adIconViewNodeHandle: null });
-                    }
-                },
-            };
-            this._adTriggerViewContextValue = {
-                registerComponent: (component) => {
-                    const nodeHandle = nullthrows(findNodeHandle(component));
-                    const interactiveTriggerNodeHandles = new Map(this._interactiveTriggerNodeHandles);
-                    interactiveTriggerNodeHandles.set(component, nodeHandle);
-                    this._setAdNodeHandles({ interactiveTriggerNodeHandles });
-                },
-                unregisterComponent: (component) => {
-                    const interactiveTriggerNodeHandles = new Map(this._interactiveTriggerNodeHandles);
-                    interactiveTriggerNodeHandles.delete(component);
-                    this._setAdNodeHandles({ interactiveTriggerNodeHandles });
-                },
-                onTriggerAd: () => {
-                    if (this._adMediaViewNodeHandle !== null && Platform.OS === 'android') {
-                        const nodeHandle = findNodeHandle(this._nativeAdViewRef.current);
-                        AdsManager.triggerEvent(nodeHandle);
-                    }
-                },
-            };
             this.state = {
                 ad: null,
                 canRequestAds: props.adsManager.isValid,
@@ -83,7 +34,7 @@ export default function withNativeAd(Component) {
                     this.setState({ canRequestAds: true });
                 });
             }
-            this._errorSubscription = this.props.adsManager.onAdsErrored(error => {
+            this._errorSubscription = this.props.adsManager.onAdsErrored((error) => {
                 // From what I, @sjchmiela, understand, an error may be encountered multiple times
                 // and it does *not* mean that the manager is not able to request ads at all -
                 // - this may have been an intermittent error -- that's why we don't set canRequestAds to false
@@ -115,7 +66,7 @@ export default function withNativeAd(Component) {
                 React.createElement(AdMediaViewContext.Provider, { value: this._adMediaViewContextValue },
                     React.createElement(AdIconViewContext.Provider, { value: this._adIconViewContextValue },
                         React.createElement(AdTriggerViewContext.Provider, { value: this._adTriggerViewContextValue },
-                            React.createElement(AdOptionsViewContext.Provider, { value: this._adOptionsViewContextValue }, this.state.ad ? React.createElement(Component, Object.assign({}, props, { nativeAd: this.state.ad })) : null))))));
+                            React.createElement(AdOptionsViewContext.Provider, { value: this._adOptionsViewContextValue }, this.state.ad ? React.createElement(Component, { ...props, nativeAd: this.state.ad }) : null))))));
             if (NativeAdLayout) {
                 return React.createElement(NativeAdLayout, null, viewHierarchy);
             }
@@ -125,6 +76,56 @@ export default function withNativeAd(Component) {
             const { adsManager, onAdLoaded, ...props } = this.props;
             return props;
         }
+        _handleAdLoaded = ({ nativeEvent: ad }) => {
+            this.setState({ ad }, () => {
+                if (this.props.onAdLoaded) {
+                    const ad = nullthrows(this.state.ad);
+                    this.props.onAdLoaded(ad);
+                }
+            });
+        };
+        _adMediaViewContextValue = {
+            nativeRef: (component) => {
+                if (component) {
+                    this._setAdNodeHandles({ adMediaViewNodeHandle: nullthrows(findNodeHandle(component)) });
+                }
+                else {
+                    this._setAdNodeHandles({ adMediaViewNodeHandle: null });
+                }
+            },
+        };
+        _adOptionsViewContextValue = {
+            nativeAdViewRef: this._nativeAdViewRef,
+        };
+        _adIconViewContextValue = {
+            nativeRef: (component) => {
+                if (component) {
+                    this._setAdNodeHandles({ adIconViewNodeHandle: nullthrows(findNodeHandle(component)) });
+                }
+                else {
+                    this._setAdNodeHandles({ adIconViewNodeHandle: null });
+                }
+            },
+        };
+        _adTriggerViewContextValue = {
+            registerComponent: (component) => {
+                const nodeHandle = nullthrows(findNodeHandle(component));
+                const interactiveTriggerNodeHandles = new Map(this._interactiveTriggerNodeHandles);
+                interactiveTriggerNodeHandles.set(component, nodeHandle);
+                this._setAdNodeHandles({ interactiveTriggerNodeHandles });
+            },
+            unregisterComponent: (component) => {
+                const interactiveTriggerNodeHandles = new Map(this._interactiveTriggerNodeHandles);
+                interactiveTriggerNodeHandles.delete(component);
+                this._setAdNodeHandles({ interactiveTriggerNodeHandles });
+            },
+            onTriggerAd: () => {
+                if (this._adMediaViewNodeHandle !== null && Platform.OS === 'android') {
+                    const nodeHandle = findNodeHandle(this._nativeAdViewRef.current);
+                    AdsManager.triggerEvent(nodeHandle);
+                }
+            },
+        };
         /**
          * Updates the registered ad views given their node handles. The node handles are not stored in
          * this component's state nor does this method call "setState" to avoid unnecessarily

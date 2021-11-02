@@ -3,7 +3,12 @@
 #import "EXDevLauncherController.h"
 #import <React/RCTBridge.h>
 
+#if __has_include(<EXDevLauncher/EXDevLauncher-Swift.h>)
+// For cocoapods framework, the generated swift header will be inside EXDevLauncher module
+#import <EXDevLauncher/EXDevLauncher-Swift.h>
+#else
 #import <EXDevLauncher-Swift.h>
+#endif
 
 NSString *ON_NEW_DEEP_LINK_EVENT = @"expo.modules.devlauncher.onnewdeeplink";
 
@@ -35,6 +40,31 @@ NSString *ON_NEW_DEEP_LINK_EVENT = @"expo.modules.devlauncher.onnewdeeplink";
 + (BOOL)requiresMainQueueSetup
 {
   return NO;
+}
+
+- (NSString *)findClientUrlScheme
+{
+  NSString *clientUrlScheme = nil;
+  if ([[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleURLTypes"]) {
+    NSArray *urlTypes = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleURLTypes"];
+    for (NSDictionary *urlType in urlTypes) {
+      if (urlType[@"CFBundleURLSchemes"]) {
+        NSArray *urlSchemes = urlType[@"CFBundleURLSchemes"];
+        for (NSString *urlScheme in urlSchemes) {
+          // Find a scheme with a prefix or fall back to the first scheme defined.
+          if ([urlScheme hasPrefix:@"exp+"] || !clientUrlScheme) {
+            clientUrlScheme = urlScheme;
+          }
+        }
+      }
+    }
+  }
+  return clientUrlScheme;
+}
+
+- (NSDictionary *)constantsToExport
+{
+  return @{ @"clientUrlScheme": self.findClientUrlScheme ?: [NSNull null] };
 }
 
 - (void)onNewPendingDeepLink:(NSURL *)deepLink

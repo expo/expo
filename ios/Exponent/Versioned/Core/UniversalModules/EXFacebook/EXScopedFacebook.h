@@ -3,12 +3,12 @@
 #if __has_include(<EXFacebook/EXFacebook.h>)
 #import <Foundation/Foundation.h>
 #import <EXFacebook/EXFacebook.h>
-#import <UMCore/UMAppLifecycleListener.h>
-#import <EXUpdates/EXUpdatesRawManifest.h>
+#import <ExpoModulesCore/EXAppLifecycleListener.h>
+#import <EXManifests/EXManifestsManifest.h>
 
-@interface EXScopedFacebook : EXFacebook <UMAppLifecycleListener>
+@interface EXScopedFacebook : EXFacebook <EXAppLifecycleListener>
 
-- (instancetype)initWithScopeKey:(NSString *)scopeKey manifest:(EXUpdatesRawManifest *)manifest;
+- (instancetype)initWithScopeKey:(NSString *)scopeKey manifest:(EXManifestsManifest *)manifest;
 
 @end
 #endif

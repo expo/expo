@@ -36,7 +36,7 @@ export function injectMacros(versionName: string): TransformPipeline {
       },
       {
         // now that this code is versioned, remove meaningless EX_UNVERSIONED declaration
-        paths: 'EXUnversioned.h',
+        paths: ['EXUnversioned.h', 'EXServerRegistrationModule.m'],
         replace: /(#define symbol[.\S\s]+?(?=\n\n)\n\n)/g,
         with: '\n',
       },

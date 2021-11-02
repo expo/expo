@@ -3,7 +3,7 @@ const { copySync, removeSync } = require('fs-extra');
 const merge = require('lodash/merge');
 const { join } = require('path');
 const semver = require('semver');
-const { ESBuildPlugin } = require('esbuild-loader');
+const { ESBuildMinifyPlugin } = require('esbuild-loader');
 
 const navigation = require('./constants/navigation-data');
 const versions = require('./constants/versions');
@@ -64,12 +64,13 @@ module.exports = {
           loader: '@mdx-js/loader',
           options: {
             remarkPlugins: [
-              require('./mdx-plugins/remark-heading-meta'),
+              [require('remark-frontmatter'), ['yaml']],
+              require('./mdx-plugins/remark-export-yaml'),
+              require('./mdx-plugins/remark-export-headings'),
               require('./mdx-plugins/remark-link-rewrite'),
             ],
           },
         },
-        join(__dirname, './common/md-loader'),
       ],
     });
 
@@ -81,7 +82,11 @@ module.exports = {
 
     // Add the esbuild plugin only when using esbuild
     if (enableEsbuild) {
-      config.plugins.push(new ESBuildPlugin());
+      config.optimization.minimizer = [
+        new ESBuildMinifyPlugin({
+          target: 'es2017',
+        }),
+      ];
     }
 
     return config;
@@ -114,25 +119,20 @@ module.exports = {
       })
     );
 
-    const domains = ['docs.expo.io', 'docs.expo.dev'];
-
-    for (const domain of domains) {
-      // Create a sitemap for crawlers like Google and Algolia
-      createSitemap({
-        pathMap,
-        domain: `https://${domain}`,
-        output: join(outDir, `${domain}-sitemap.xml`),
-        // Some of the search engines only track the first N items from the sitemap,
-        // this makes sure our starting and general guides are first, and API index last (in order from new to old)
-        pathsPriority: [
-          ...navigation.startingDirectories,
-          ...navigation.generalDirectories,
-          ...versions.VERSIONS.map(version => `versions/${version}`),
-        ],
-        // Some of our pages are "hidden" and should not be added to the sitemap
-        pathsHidden: navigation.previewDirectories,
-      });
-    }
+    createSitemap({
+      pathMap,
+      domain: `https://docs.expo.dev`,
+      output: join(outDir, `sitemap.xml`),
+      // Some of the search engines only track the first N items from the sitemap,
+      // this makes sure our starting and general guides are first, and API index last (in order from new to old)
+      pathsPriority: [
+        ...navigation.startingDirectories,
+        ...navigation.generalDirectories,
+        ...versions.VERSIONS.map(version => `versions/${version}`),
+      ],
+      // Some of our pages are "hidden" and should not be added to the sitemap
+      pathsHidden: navigation.previewDirectories,
+    });
 
     return pathMap;
   },

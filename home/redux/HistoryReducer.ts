@@ -42,9 +42,10 @@ export default (state: HistoryType, action: HistoryActions): HistoryType => {
     case 'loadHistory': {
       const { history } = action.payload;
       const immutableHistoryList = history
-        ? List(history.map(item => new HistoryItem(item)))
+        ? List(history.map((item) => new HistoryItem(item)))
         : List();
       return state.merge({
+        // @ts-ignore
         history: immutableHistoryList,
       });
     }

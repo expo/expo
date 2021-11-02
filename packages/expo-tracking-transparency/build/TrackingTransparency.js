@@ -1,5 +1,4 @@
-import { UnavailabilityError } from '@unimodules/core';
-import { PermissionStatus } from 'expo-modules-core';
+import { PermissionStatus, UnavailabilityError, createPermissionHook, } from 'expo-modules-core';
 import { Platform } from 'react-native';
 import ExpoTrackingTransparency from './ExpoTrackingTransparency';
 const androidAndWebPermissionsResponse = {
@@ -39,7 +38,7 @@ export async function requestTrackingPermissionsAsync() {
 }
 /**
  * Checks whether or not the user has authorized the app to access app-related data that can be used
- * for tracking the user or the device. See `requestPermissionsAsync` for more details.
+ * for tracking the user or the device. See `requestTrackingPermissionsAsync` for more details.
  *
  * On Android, web, and iOS 13 and below, this method always returns that the permission was
  * granted.
@@ -62,6 +61,26 @@ export async function getTrackingPermissionsAsync() {
     }
     return await ExpoTrackingTransparency.getPermissionsAsync();
 }
+/**
+ * Check or request the user to authorize or deny access to app-related data that can be used for tracking
+ * the user or the device. Examples of data used for tracking include email address, device ID,
+ * advertising ID, etc. On iOS 14.5 and above, if the user denies this permission, any attempt to
+ * collect the IDFA will return a string of 0s.
+ *
+ * The system remembers the user’s choice and doesn’t prompt again unless a user uninstalls and then
+ * reinstalls the app on the device.
+ *
+ * On Android, web, and iOS 13 and below, this method always returns that the permission was
+ * granted.
+ * @example
+ * ```ts
+ * const [status, requestPermission] = useTrackingPermissions();
+ * ```
+ */
+export const useTrackingPermissions = createPermissionHook({
+    getMethod: getTrackingPermissionsAsync,
+    requestMethod: requestTrackingPermissionsAsync,
+});
 /**
  * Returns whether the TrackingTransparency API is available on the current device.
  *

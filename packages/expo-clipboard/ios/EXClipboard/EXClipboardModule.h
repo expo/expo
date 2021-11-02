@@ -1,8 +1,8 @@
 //  Copyright © 2021 650 Industries. All rights reserved.
 
-#import <UMCore/UMExportedModule.h>
-#import <UMCore/UMModuleRegistryConsumer.h>
-#import <UMCore/UMEventEmitter.h>
+#import <ExpoModulesCore/EXExportedModule.h>
+#import <ExpoModulesCore/EXModuleRegistryConsumer.h>
+#import <ExpoModulesCore/EXEventEmitter.h>
 
-@interface EXClipboardModule : UMExportedModule <UMModuleRegistryConsumer, UMEventEmitter>
+@interface EXClipboardModule : EXExportedModule <EXModuleRegistryConsumer, EXEventEmitter>
 @end

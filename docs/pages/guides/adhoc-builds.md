@@ -2,7 +2,7 @@
 title: Custom Expo Go builds
 ---
 
-> 🚫 **This experimental feature has been cancelled, and it is not supported in SDK >= 41, but you can keep using it for SDK <= 40 projects**. We are working on a more flexible and portable development client library, you can read more about this in the ["Expo managed workflow in 2021" blog posts](https://blog.expo.io/expo-managed-workflow-in-2021-5b887bbf7dbb).
+> 🚫 **This experimental feature has been cancelled, and it is not supported in SDK >= 41, but you can keep using it for SDK <= 40 projects**. We are working on a more flexible and portable development client library, you can read more about this in the ["Expo managed workflow in 2021" blog posts](https://blog.expo.dev/expo-managed-workflow-in-2021-5b887bbf7dbb).
 
 Build and install a custom version of [Expo Go](../get-started/installation.md#2-mobile-app-expo-client-for-ios) with your own Apple Credentials using our build service. This custom version of the Expo Go app contains features that were previously only available on the Android versions. Our build service will prepare your custom Expo Go app, and you can install it to your iOS device directly from our website.
 
@@ -26,11 +26,11 @@ Push Notifications are currently unavailable with ad hoc clients until we comple
 
 #### Google Maps
 
-You will need to run `expo client:ios` in a project directory with a valid `app.json`, or pass in the flag to your custom configuration file with `--config <path-to-file.json>`. Make sure you set your Google API key in `ios.config.googleMapsApiKey` as described [here](../versions/latest/sdk/map-view.md#deploying-google-maps-to-a-standalone-app).
+You will need to run `expo client:ios` in a project directory with a valid **app.json**, or pass in the flag to your custom configuration file with `--config <path-to-file.json>`. Make sure you set your Google API key in `ios.config.googleMapsApiKey` as described [here](../versions/latest/sdk/map-view.md#deploying-google-maps-to-a-standalone-app).
 
 #### Facebook
 
-Add the following fields to your `app.json` file:
+Add the following fields to your **app.json** file:
 
 - `facebookScheme` set to your Facebook login redirect URL scheme found [here](https://developers.facebook.com/docs/facebook-login/ios) under "_4. Configure Your info.plist_." It should look like `"fb123456"`. If you do not do this, Facebook will not be able to redirect to your app after logging in.
 
@@ -115,7 +115,7 @@ If you would like to install the Expo Go app on an iOS device that is not listed
 
 Open the following link on your iOS device (or scan the QR code) and follow the instructions to install the development profile:
 
-https://expo.io/udid/XXXXXXXXXXXXX
+https://expo.dev/udid/XXXXXXXXXXXXX
 
 
 After you register your device, we'll start building your client, and you'll receive an email when it's ready to install.
@@ -135,7 +135,7 @@ On iOS versions 12.2 or later, a window will popup saying `Profile Downloaded`. 
 
 ### 2. Wait for it to finish building
 
-You can monitor the status of your Expo Go build by visiting the link. You will also be notified via email when there are updates to your build. More details can be found on your build dashboard [here](https://expo.io/builds).
+You can monitor the status of your Expo Go build by visiting the link. You will also be notified via email when there are updates to your build. More details can be found on your build dashboard [here](https://expo.dev/builds).
 
 ```sh
 ==================
@@ -145,7 +145,7 @@ You can monitor the status of your Expo Go build by visiting the link. You will 
 Your custom Expo Go is being built! 🛠
 Open this link on your iOS device (or scan the QR code) to view build logs and install the client:
 
-https://expo.io/client/XXXXXXXXXX
+https://expo.dev/client/XXXXXXXXXX
 ```
 
 ### 3. Install the Custom Expo Go on your iOS device
@@ -203,7 +203,7 @@ An App Store app gets re-signed with an Apple certificate when it goes on the st
 
 ### Uploading existing certificate
 
-If you have a password-protected certificate, you can provide the path to your `.p12` file as well as your password for upload. We recommend following [this excellent guide on making a P12 file](https://calvium.com/how-to-make-a-p12-file/) for making your own certificates.
+If you have a password-protected certificate, you can provide the path to your **.p12** file as well as your password for upload. We recommend following [this excellent guide on making a P12 file](https://calvium.com/how-to-make-a-p12-file/) for making your own certificates.
 
 **Note:** this guide recommends leaving the P12's password blank, but a **P12 password is required** to upload your own certificate to Expo's service. Please enter a password when prompted.
 

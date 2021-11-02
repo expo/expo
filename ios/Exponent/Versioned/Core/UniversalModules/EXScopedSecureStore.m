@@ -43,7 +43,9 @@
 // We must override this method so that items saved in standalone apps on SDK 40 and below,
 // which were scoped by prefixing the validated key with the scopeKey, can still be
 // found in SDK 41 and up. This override can be removed in SDK 45.
-- (NSString *)_getValueWithKey:(NSString *)key withOptions:(NSDictionary *)options error:(NSError **)error
+- (NSString *)_getValueWithKey:(NSString *)key
+                   withOptions:(NSDictionary *)options
+                         error:(NSError **)error __deprecated_msg("To be removed once SDK 41 is phased out")
 {
   NSError *searchError;
   NSData *data = [self _searchKeychainWithKey:key
@@ -102,7 +104,7 @@
     [self _deleteValueWithKey:scopedKey
                   withOptions:options];
   } else {
-    UMLogWarn(@"Encountered an error while saving SecureStore data: %@.", [[super class] _messageForError:error]);
+    EXLogWarn(@"Encountered an error while saving SecureStore data: %@.", [[super class] _messageForError:error]);
   }
 }
 

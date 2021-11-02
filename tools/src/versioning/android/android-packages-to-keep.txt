@@ -3,6 +3,12 @@ org.unimodules.apploader
 org.unimodules.interfaces.taskManager
 org.unimodules.core.interfaces.Consumer
 org.unimodules.core.interfaces.SingletonModule
+expo.modules.apploader
+expo.modules.interfaces.taskManager
+expo.modules.core.interfaces.Consumer
+expo.modules.core.interfaces.SingletonModule
+expo.modules.jsonutils
+expo.modules.manifests
 expo.modules.notifications.notifications.model
 expo.modules.notifications.notifications.enums
 expo.modules.notifications.badge.interfaces.BadgeManager
@@ -23,7 +29,9 @@ expo.modules.updates.db
 expo.modules.updates.launcher
 expo.modules.updates.loader
 expo.modules.updates.manifest
-expo.modules.splashscreen.singletons.SplashScreen
-com.facebook.proguard.annotations.DoNotStrip
 expo.modules.updates.selectionpolicy
 expo.modules.updates.UpdatesDevLauncherController
+expo.modules.splashscreen.singletons.SplashScreen
+expo.modules.splashscreen.SplashScreenViewProvider
+expo.modules.splashscreen.SplashScreenImageResizeMode
+com.facebook.proguard.annotations.DoNotStrip

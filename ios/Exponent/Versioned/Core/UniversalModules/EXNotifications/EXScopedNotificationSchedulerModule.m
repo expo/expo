@@ -43,14 +43,14 @@
 }
 
 
-- (void)cancelNotification:(NSString *)identifier resolve:(UMPromiseResolveBlock)resolve rejecting:(UMPromiseRejectBlock)reject
+- (void)cancelNotification:(NSString *)identifier resolve:(EXPromiseResolveBlock)resolve rejecting:(EXPromiseRejectBlock)reject
 {
   NSString *scopedIdentifier = [EXScopedNotificationsUtils scopedIdentifierFromId:identifier
                                                                     forExperience:_scopeKey];
   [super cancelNotification:scopedIdentifier resolve:resolve rejecting:reject];
 }
 
-- (void)cancelAllNotificationsWithResolver:(UMPromiseResolveBlock)resolve rejecting:(UMPromiseRejectBlock)reject
+- (void)cancelAllNotificationsWithResolver:(EXPromiseResolveBlock)resolve rejecting:(EXPromiseRejectBlock)reject
 {
   __block NSString *scopeKey = _scopeKey;
   [[UNUserNotificationCenter currentNotificationCenter] getPendingNotificationRequestsWithCompletionHandler:^(NSArray<UNNotificationRequest *> * _Nonnull requests) {

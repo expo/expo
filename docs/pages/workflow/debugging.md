@@ -31,9 +31,9 @@ If you are able to simplify your code as much as possible, tracking down the sou
 
 Errors or bugs in your production app can be much harder to solve, mainly because you have less context around the error (i.e. where, how, and why did the error occur?). **The best first step in addressing a production error is to reproduce it locally.** Once you reproduce an error locally, you can follow the [development debugging process](#development-errors) to isolate and address the root cause.
 
-> **Hint**: sometimes, running your app in "production mode" locally will show errors that normally wouldn't be thrown. You can run an app locally in production by running `expo start --no-dev --minify`. "--no-dev" tells the server not to be run in development mode, and "--minify" will minify your code the same way it is for production Javascript bundles.
+> **Hint**: sometimes, running your app in "production mode" locally will show errors that normally wouldn't be thrown. You can run an app locally in production by running `expo start --no-dev --minify`. "--no-dev" tells the server not to be run in development mode, and "--minify" will minify your code the same way it is for production JavaScript bundles.
 
-Using an automated error logging system like [Sentry](../guides/using-sentry.md) is a huge help in identifying, tracking, and resolving Javascript errors in your production app. This will give you a good sense of how many people are running into an error, how often, when, **and it even provides sourcemaps so you will have stacktraces of your errors!** Sentry is one of those tools that if you wait until you need it to install it, then you waited too long. Also- Sentry is free up to 5000 events/month.
+Using an automated error logging system like [Sentry](../guides/using-sentry.md) is a huge help in identifying, tracking, and resolving JavaScript errors in your production app. This will give you a good sense of how many people are running into an error, how often, when, **and it even provides sourcemaps so you will have stacktraces of your errors!** Sentry is one of those tools that if you wait until you need it to install it, then you waited too long. Also- Sentry is free up to 5000 events/month.
 
 ### My production app is crashing
 
@@ -51,7 +51,7 @@ This might indicate that there is a performance issue. You likely need to run yo
 
 ## Stuck?
 
-The Expo community and the React and React Native communities are great resources for help when you get stuck. There's a good chance someone else has run into the exact same error as you, so make sure to read the documentation, search the [forums](https://forums.expo.io/), [Github issues](https://github.com/expo/expo/issues/), and [StackOverflow](https://stackoverflow.com/).
+The Expo community and the React and React Native communities are great resources for help when you get stuck. There's a good chance someone else has run into the exact same error as you, so make sure to read the documentation, search the [forums](https://forums.expo.dev/), [Github issues](https://github.com/expo/expo/issues/), and [StackOverflow](https://stackoverflow.com/).
 
 ## Useful tools for debugging
 
@@ -79,7 +79,7 @@ Now let's explore some of the more exciting functionalities...
 This opens up a small window giving you performance information of your app. You will see:
 
 - RAM usage of your project
-- Javascript heap (this is an easy way to know of any memory leaks in your application)
+- JavaScript heap (this is an easy way to know of any memory leaks in your application)
 - 2 numbers for Views, the top indicates the number of views for the screen, the bottom indicates the number of views in the component
 - Frames Per Second for the UI and JS threads. The UI thread is used for native Android or iOS UI rendering. The JS thread is where most of your logic will be run, including API calls, touch events, etc.
 
@@ -159,7 +159,7 @@ You can debug Expo apps using the Chrome debugger tools. Rather than running you
 
 - Open the app on your device, reveal the developer menu then tap on `Debug JS Remotely`. This should open up a Chrome tab with the URL `http://localhost:19000/debugger-ui`. From there, you can set breakpoints and interact through the JavaScript console. Shake the device and stop Chrome debugging when you're done.
 
-- Line numbers for `console.log` statements don't work by default when using Chrome debugging. To get correct line numbers open up the Chrome Dev Tools settings, go to the "Blackboxing" tab, make sure that "Blackbox content scripts" is checked, and add `expo/build/logs/RemoteConsole.js` as a pattern with "Blackbox" selected.
+- Line numbers for `console.log` statements don't work by default when using Chrome debugging. To get correct line numbers open up the Chrome Dev Tools settings, go to the "Blackboxing" tab, make sure that "Blackbox content scripts" is checked, and add **expo/build/logs/RemoteConsole.js** as a pattern with "Blackbox" selected.
 
 ### Troubleshooting localhost debugging
 

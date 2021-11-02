@@ -20,7 +20,7 @@
   return self;
 }
 
-- (void)getNotificationCategoriesAsyncWithResolver:(UMPromiseResolveBlock)resolve reject:(UMPromiseRejectBlock)reject
+- (void)getNotificationCategoriesAsyncWithResolver:(EXPromiseResolveBlock)resolve reject:(EXPromiseRejectBlock)reject
 {
   [[UNUserNotificationCenter currentNotificationCenter] getNotificationCategoriesWithCompletionHandler:^(NSSet<UNNotificationCategory *> *categories) {
     NSMutableArray* existingCategories = [NSMutableArray new];
@@ -36,8 +36,8 @@
 - (void)setNotificationCategoryWithCategoryId:(NSString *)categoryId
                                       actions:(NSArray *)actions
                                       options:(NSDictionary *)options
-                                      resolve:(UMPromiseResolveBlock)resolve
-                                       reject:(UMPromiseRejectBlock)reject
+                                      resolve:(EXPromiseResolveBlock)resolve
+                                       reject:(EXPromiseRejectBlock)reject
 {
   NSString *scopedCategoryIdentifier = [EXScopedNotificationsUtils scopedIdentifierFromId:categoryId
                                                                             forExperience:_scopeKey];
@@ -49,8 +49,8 @@
 }
 
 - (void)deleteNotificationCategoryWithCategoryId:(NSString *)categoryId
-                                         resolve:(UMPromiseResolveBlock)resolve
-                                          reject:(UMPromiseRejectBlock)reject
+                                         resolve:(EXPromiseResolveBlock)resolve
+                                          reject:(EXPromiseRejectBlock)reject
 {
   NSString *scopedCategoryIdentifier = [EXScopedNotificationsUtils scopedIdentifierFromId:categoryId
                                                                             forExperience:_scopeKey];
@@ -71,7 +71,7 @@
 
 + (void)maybeMigrateLegacyCategoryIdentifiersForProjectWithExperienceStableLegacyId:(NSString *)experienceStableLegacyId
                                                                  scopeKey:(NSString *)scopeKey
-                                                                         isInExpoGo:(BOOL)isInExpoGo
+                                                                         isInExpoGo:(BOOL)isInExpoGo __deprecated_msg("To be removed once SDK 43 is phased out")
 {
   if (isInExpoGo) {
     // Changed scoping prefix in SDK 41 FROM "experienceId-" to ESCAPED "experienceId/"

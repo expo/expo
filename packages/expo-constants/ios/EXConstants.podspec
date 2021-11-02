@@ -10,10 +10,10 @@ Pod::Spec.new do |s|
   s.license        = package['license']
   s.author         = package['author']
   s.homepage       = package['homepage']
-  s.platform       = :ios, '11.0'
+  s.platform       = :ios, '12.0'
   s.source         = { git: 'https://github.com/expo/expo.git' }
+  s.static_framework = true
 
-  s.dependency 'UMCore'
   s.dependency 'ExpoModulesCore'
 
   if !$ExpoUseSources&.include?(package['name']) && ENV['EXPO_USE_SOURCE'].to_i == 0 && File.exist?("#{s.name}.xcframework") && Gem::Version.new(Pod::VERSION) >= Gem::Version.new('1.10.0')
@@ -25,7 +25,7 @@ Pod::Spec.new do |s|
 
   s.script_phase = {
     :name => 'Generate app.config for prebuilt Constants.manifest',
-    :script => File.join(__dir__, '..', 'scripts', 'get-app-config-ios.sh'),
+    :script => 'bash -l -c "$PODS_TARGET_SRCROOT/../scripts/get-app-config-ios.sh"',
     :execution_position => :before_compile
   }
 

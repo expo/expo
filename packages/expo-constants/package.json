@@ -1,6 +1,6 @@
 {
   "name": "expo-constants",
-  "version": "11.0.0",
+  "version": "12.1.0",
   "description": "Provides system information that remains constant throughout the lifetime of your app.",
   "main": "build/Constants.js",
   "types": "build/Constants.d.ts",
@@ -29,16 +29,13 @@
   },
   "author": "650 Industries, Inc.",
   "license": "MIT",
-  "homepage": "https://docs.expo.io/versions/latest/sdk/constants/",
+  "homepage": "https://docs.expo.dev/versions/latest/sdk/constants/",
   "jest": {
     "preset": "expo-module-scripts"
   },
-  "unimodulePeerDependencies": {
-    "@unimodules/core": "*"
-  },
   "dependencies": {
-    "@expo/config": "^4.0.0",
-    "expo-modules-core": "~0.1.1",
+    "@expo/config": "^6.0.6",
+    "expo-modules-core": "~0.4.2",
     "uuid": "^3.3.2"
   },
   "devDependencies": {

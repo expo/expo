@@ -76,7 +76,7 @@ public class DevMenuSettings: NSObject {
    */
   static var showsAtLaunch: Bool {
     get {
-      return boolForKey(showsAtLaunchKey)
+      return DevMenuTestInterceptorManager.interceptor?.shouldShowAtLaunch ?? boolForKey(showsAtLaunchKey)
     }
     set {
       setBool(newValue, forKey: showsAtLaunchKey)
@@ -88,7 +88,7 @@ public class DevMenuSettings: NSObject {
    */
   static var isOnboardingFinished: Bool {
     get {
-      return boolForKey(isOnboardingFinishedKey)
+      return DevMenuTestInterceptorManager.interceptor?.isOnboardingFinishedKey ?? boolForKey(isOnboardingFinishedKey)
     }
     set {
       setBool(newValue, forKey: isOnboardingFinishedKey)

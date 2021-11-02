@@ -1,6 +1,6 @@
 {
   "name": "expo-updates-interface",
-  "version": "0.1.0",
+  "version": "0.4.0",
   "description": "Native interface for modules that optionally depend on expo-updates, e.g. expo-dev-launcher.",
   "main": "index.js",
   "keywords": [
@@ -18,5 +18,5 @@
   },
   "author": "650 Industries, Inc.",
   "license": "MIT",
-  "homepage": "https://docs.expo.io/versions/latest/sdk/module-template"
+  "homepage": "https://docs.expo.dev/versions/latest/sdk/module-template"
 }

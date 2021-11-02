@@ -1,6 +1,6 @@
 {
   "name": "expo-processing",
-  "version": "2.0.2",
+  "version": "2.0.4",
   "description": "Utilities for using Processing.js on Expo",
   "main": "index.js",
   "keywords": [
@@ -21,9 +21,9 @@
   "author": "650 Industries, Inc.",
   "license": "MIT",
   "homepage": "https://github.com/expo/expo/tree/master/packages/expo-processing",
-  "unimodulePeerDependencies": {
-    "@unimodules/core": "*",
-    "expo-gl": "*"
+  "dependencies": {
+    "expo-gl": "11.0.1",
+    "expo-modules-core": "~0.4.2"
   },
   "peerDependencies": {
     "processing-js": "^1.6.6"

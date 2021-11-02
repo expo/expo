@@ -1,4 +1,4 @@
-import { Platform, UnavailabilityError } from '@unimodules/core';
+import { Platform, UnavailabilityError } from 'expo-modules-core';
 import * as TaskManager from 'expo-task-manager';
 import { BackgroundFetchResult, BackgroundFetchStatus, } from './BackgroundFetch.types';
 import ExpoBackgroundFetch from './ExpoBackgroundFetch';
@@ -39,7 +39,7 @@ export async function setMinimumIntervalAsync(minimumInterval) {
  * for more details.
  * @param options An object containing the background fetch options.
  *
- * # Example
+ * @example
  * ```ts
  * import * as BackgroundFetch from 'expo-background-fetch';
  * import * as TaskManager from 'expo-task-manager';

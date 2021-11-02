@@ -24,7 +24,7 @@ export default function TaskManagerScreen(props: {
 
   const onFocus = React.useCallback(() => {
     let isActive = true;
-    TaskManager.getRegisteredTasksAsync().then(tasks => {
+    TaskManager.getRegisteredTasksAsync().then((tasks) => {
       if (isActive) setTasks(tasks);
     });
     return () => (isActive = false);

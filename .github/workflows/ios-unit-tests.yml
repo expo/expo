@@ -7,7 +7,10 @@ on:
       - .github/workflows/ios-unit-tests.yml
       - ios/**
       - packages/**/ios/**
-      - tools/**
+      - tools/src/dynamic-macros/**
+      - tools/src/commands/IosGenerateDynamicMacros.ts
+      - tools/src/commands/IosNativeUnitTests.ts
+      - tools/src/commands/NativeUnitTests.ts
       - secrets/**
       - fastlane/**
       - Gemfile.lock
@@ -18,7 +21,10 @@ on:
       - .github/workflows/ios-unit-tests.yml
       - ios/**
       - packages/**/ios/**
-      - tools/**
+      - tools/src/dynamic-macros/**
+      - tools/src/commands/IosGenerateDynamicMacros.ts
+      - tools/src/commands/IosNativeUnitTests.ts
+      - tools/src/commands/NativeUnitTests.ts
       - secrets/**
       - fastlane/**
       - Gemfile.lock
@@ -35,6 +41,8 @@ jobs:
       - uses: actions/checkout@v2
         with:
           submodules: true
+      - name: 🔨 Switch to Xcode 13.0
+        run: sudo xcode-select --switch /Applications/Xcode_13.0.app
       - run: brew install git-crypt
       - name: decrypt secrets if possible
         env:
@@ -73,8 +81,8 @@ jobs:
         with:
           path: 'ios/Pods'
           key: ${{ runner.os }}-pods-${{ hashFiles('ios/Podfile.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-pods-
+          # restore-keys: |
+          #   ${{ runner.os }}-pods-
       - name: 🥥 Install CocoaPods in `ios`
         run: pod install
         working-directory: ios

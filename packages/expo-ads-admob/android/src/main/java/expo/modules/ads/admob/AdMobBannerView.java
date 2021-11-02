@@ -12,7 +12,7 @@ import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.AdView;
 
-import org.unimodules.core.interfaces.services.EventEmitter;
+import expo.modules.core.interfaces.services.EventEmitter;
 
 public class AdMobBannerView extends FrameLayout {
 

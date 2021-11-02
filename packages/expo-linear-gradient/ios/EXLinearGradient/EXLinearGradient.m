@@ -3,9 +3,9 @@
 #import <EXLinearGradient/EXLinearGradient.h>
 #import <EXLinearGradient/EXLinearGradientLayer.h>
 #import <UIKit/UIKit.h>
-#import <UMCore/UMModuleRegistry.h>
-#import <UMCore/UMAppLifecycleListener.h>
-#import <UMCore/UMUtilities.h>
+#import <ExpoModulesCore/EXModuleRegistry.h>
+#import <ExpoModulesCore/EXAppLifecycleListener.h>
+#import <ExpoModulesCore/EXUtilities.h>
 
 @interface EXLinearGradient ()
 
@@ -27,7 +27,7 @@
 {
   NSMutableArray *colors = [NSMutableArray arrayWithCapacity:colorStrings.count];
   for (NSString *colorString in colorStrings) {
-    UIColor *convertedColor = [UMUtilities UIColor:colorString];
+    UIColor *convertedColor = [EXUtilities UIColor:colorString];
     if (convertedColor) {
       [colors addObject:convertedColor];
     }

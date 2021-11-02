@@ -5,8 +5,9 @@ import com.facebook.react.ReactInstanceManager
 import expo.interfaces.devmenu.DevMenuDelegateInterface
 import expo.modules.devlauncher.BuildConfig
 import expo.modules.devlauncher.DevLauncherController
+import expo.modules.devlauncher.launcher.DevLauncherControllerInterface
 
-private class LauncherDelegate(private val controller: DevLauncherController) : DevMenuDelegateInterface {
+private class LauncherDelegate(private val controller: DevLauncherControllerInterface) : DevMenuDelegateInterface {
   override fun appInfo(): Bundle = Bundle().apply {
     putString("appName", "Development Client")
     putString("appVersion", BuildConfig.VERSION)
@@ -23,12 +24,12 @@ private class LauncherDelegate(private val controller: DevLauncherController) : 
   }
 }
 
-private class AppDelegate(private val controller: DevLauncherController) : DevMenuDelegateInterface {
+private class AppDelegate(private val controller: DevLauncherControllerInterface) : DevMenuDelegateInterface {
   override fun appInfo(): Bundle = Bundle().apply {
-    putString("appName", controller.manifest?.name ?: "Development Client - App")
-    putString("appVersion", controller.manifest?.version)
+    putString("appName", controller.manifest?.getName() ?: "Development Client - App")
+    putString("appVersion", controller.manifest?.getVersion())
     putString("appIcon", null)
-    putString("hostUrl", controller.manifest?.hostUri
+    putString("hostUrl", controller.manifest?.getHostUri()
       ?: reactInstanceManager().devSupportManager?.sourceUrl)
   }
 
@@ -41,7 +42,7 @@ private class AppDelegate(private val controller: DevLauncherController) : DevMe
   }
 }
 
-class DevLauncherMenuDelegate(private val controller: DevLauncherController) : DevMenuDelegateInterface {
+class DevLauncherMenuDelegate(private val controller: DevLauncherControllerInterface) : DevMenuDelegateInterface {
   private val launcherDelegate = LauncherDelegate(controller)
   private val appDelegate = AppDelegate(controller)
 

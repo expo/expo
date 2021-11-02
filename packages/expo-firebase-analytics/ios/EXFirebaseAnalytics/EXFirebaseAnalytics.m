@@ -1,7 +1,7 @@
 // Copyright 2019-present 650 Industries. All rights reserved.
 
-#import <UMCore/UMUtilities.h>
-#import <EXFirebaseCore/UMFirebaseCoreInterface.h>
+#import <ExpoModulesCore/EXUtilities.h>
+#import <EXFirebaseCore/EXFirebaseCoreInterface.h>
 #import <EXFirebaseAnalytics/EXFirebaseAnalytics.h>
 #import <UIKit/UIKit.h>
 #import <FirebaseAnalytics/FirebaseAnalytics.h>
@@ -12,21 +12,21 @@
 
 @interface EXFirebaseAnalytics ()
 
-@property (nonatomic, weak) UMModuleRegistry *moduleRegistry;
-@property (nonatomic, weak) id<UMFirebaseCoreInterface> firebaseCore;
+@property (nonatomic, weak) EXModuleRegistry *moduleRegistry;
+@property (nonatomic, weak) id<EXFirebaseCoreInterface> firebaseCore;
 
 @end
 
 @implementation EXFirebaseAnalytics
 
-UM_EXPORT_MODULE(ExpoFirebaseAnalytics);
+EX_EXPORT_MODULE(ExpoFirebaseAnalytics);
 
 - (dispatch_queue_t)methodQueue
 {
   return dispatch_get_main_queue();
 }
 
-- (void)reject:(UMPromiseRejectBlock)reject withException:(NSException *)exception {
+- (void)reject:(EXPromiseRejectBlock)reject withException:(NSException *)exception {
   NSError *error = [NSError errorWithDomain:@"ERR_FIREBASE_ANALYTICS" code:0 userInfo:@{
         @"message": exception.reason,
         @"code": exception.name,
@@ -34,13 +34,13 @@ UM_EXPORT_MODULE(ExpoFirebaseAnalytics);
   reject(exception.name, exception.reason, error);
 }
 
-- (void)setModuleRegistry:(UMModuleRegistry *)moduleRegistry
+- (void)setModuleRegistry:(EXModuleRegistry *)moduleRegistry
 {
   _moduleRegistry = moduleRegistry;
-  _firebaseCore = [moduleRegistry getModuleImplementingProtocol:@protocol(UMFirebaseCoreInterface)];
+  _firebaseCore = [moduleRegistry getModuleImplementingProtocol:@protocol(EXFirebaseCoreInterface)];
 }
 
-- (nullable FIRApp *)getAppOrReject:(UMPromiseRejectBlock)reject
+- (nullable FIRApp *)getAppOrReject:(EXPromiseRejectBlock)reject
 {
   if (!_firebaseCore) {
     reject(@"ERR_FIREBASE_ANALYTICS", @"EXFirebaseCore could not be found. Ensure that your app has correctly linked 'expo-firebase-core' and your project has react-native-unimodules installed.", nil);
@@ -61,11 +61,11 @@ UM_EXPORT_MODULE(ExpoFirebaseAnalytics);
 
 # pragma mark - Firebase Analytics methods
 
-UM_EXPORT_METHOD_AS(logEvent,
+EX_EXPORT_METHOD_AS(logEvent,
                     logEvent:(NSString *)name
                     parameters:(NSDictionary *)parameters
-                    resolver:(UMPromiseResolveBlock)resolve
-                    rejecter:(UMPromiseRejectBlock)reject) {
+                    resolver:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject) {
   if ([self getAppOrReject:reject] == nil) return;
   @try {
     [FIRAnalytics logEventWithName:name parameters:parameters];
@@ -76,10 +76,10 @@ UM_EXPORT_METHOD_AS(logEvent,
   }
 }
 
-UM_EXPORT_METHOD_AS(setAnalyticsCollectionEnabled,
+EX_EXPORT_METHOD_AS(setAnalyticsCollectionEnabled,
                     setAnalyticsCollectionEnabled:(BOOL)isEnabled
-                    resolver:(UMPromiseResolveBlock)resolve
-                    rejecter:(UMPromiseRejectBlock)reject) {
+                    resolver:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject) {
   if ([self getAppOrReject:reject] == nil) return;
   @try {
     [FIRAnalytics setAnalyticsCollectionEnabled:isEnabled];
@@ -90,13 +90,13 @@ UM_EXPORT_METHOD_AS(setAnalyticsCollectionEnabled,
   }
 }
 
-UM_EXPORT_METHOD_AS(setCurrentScreen,
+EX_EXPORT_METHOD_AS(setCurrentScreen,
                     setCurrentScreen:(NSString *)screenName
                     screenClass:(NSString *)screenClassOverview
-                    resolver:(UMPromiseResolveBlock)resolve
-                    rejecter:(UMPromiseRejectBlock)reject) {
+                    resolver:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject) {
   if ([self getAppOrReject:reject] == nil) return;
-  [UMUtilities performSynchronouslyOnMainThread:^{
+  [EXUtilities performSynchronouslyOnMainThread:^{
     @try {
       [FIRAnalytics setScreenName:screenName screenClass:screenClassOverview];
       resolve([NSNull null]);
@@ -107,10 +107,26 @@ UM_EXPORT_METHOD_AS(setCurrentScreen,
   }];
 }
 
-UM_EXPORT_METHOD_AS(setUserId,
+EX_EXPORT_METHOD_AS(setSessionTimeoutDuration,
+                    setSessionTimeoutDuration:(NSNumber *)milliseconds
+                    resolver:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject) {
+  if ([self getAppOrReject:reject] == nil) return;
+  [EXUtilities performSynchronouslyOnMainThread:^{
+    @try {
+      [FIRAnalytics setSessionTimeoutInterval:[milliseconds doubleValue] / 1000.0];
+      resolve([NSNull null]);
+    } @catch (NSException *exception) {
+      [self reject:reject withException:exception];
+      return;
+    }
+  }];
+}
+
+EX_EXPORT_METHOD_AS(setUserId,
                     setUserId:(NSString *)userId
-                    resolver:(UMPromiseResolveBlock)resolve
-                    rejecter:(UMPromiseRejectBlock)reject) {
+                    resolver:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject) {
   if ([self getAppOrReject:reject] == nil) return;
   @try {
     [FIRAnalytics setUserID:userId];
@@ -121,10 +137,10 @@ UM_EXPORT_METHOD_AS(setUserId,
   }
 }
 
-UM_EXPORT_METHOD_AS(setUserProperties, 
+EX_EXPORT_METHOD_AS(setUserProperties, 
                     setUserProperties:(NSDictionary *)properties 
-                    resolver:(UMPromiseResolveBlock)resolve 
-                    rejecter:(UMPromiseRejectBlock)reject) {
+                    resolver:(EXPromiseResolveBlock)resolve 
+                    rejecter:(EXPromiseRejectBlock)reject) {
   if ([self getAppOrReject:reject] == nil) return;
   @try {
     [properties enumerateKeysAndObjectsUsingBlock:^(id key, id value, BOOL *stop) {
@@ -137,9 +153,9 @@ UM_EXPORT_METHOD_AS(setUserProperties,
   }
 }
 
-UM_EXPORT_METHOD_AS(resetAnalyticsData,
-                    resetAnalyticsData:(UMPromiseResolveBlock)resolve
-                    rejecter:(UMPromiseRejectBlock)reject) {
+EX_EXPORT_METHOD_AS(resetAnalyticsData,
+                    resetAnalyticsData:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject) {
   if ([self getAppOrReject:reject] == nil) return;
   @try {
     [FIRAnalytics resetAnalyticsData];

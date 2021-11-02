@@ -1,4 +1,4 @@
-import { UnavailabilityError } from '@unimodules/core';
+import { UnavailabilityError } from 'expo-modules-core';
 import { Platform } from 'react-native';
 import ExponentPrint from './ExponentPrint';
 // @needsAudit @docsMissing
@@ -24,6 +24,9 @@ export async function printAsync(options) {
     }
     if (options.uri && options.html) {
         throw new Error('Must provide exactly one of `html` and `uri` but both were specified');
+    }
+    if (options.markupFormatterIOS !== undefined) {
+        console.warn('The markupFormatterIOS option is deprecated. Use useMarkupFormatter instead.');
     }
     return await ExponentPrint.print(options);
 }

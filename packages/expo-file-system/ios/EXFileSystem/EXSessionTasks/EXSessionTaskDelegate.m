@@ -4,8 +4,8 @@
 
 @implementation EXSessionTaskDelegate
 
-- (instancetype)initWithResolve:(UMPromiseResolveBlock)resolve
-                         reject:(UMPromiseRejectBlock)reject
+- (instancetype)initWithResolve:(EXPromiseResolveBlock)resolve
+                         reject:(EXPromiseRejectBlock)reject
 {
   if (self = [super init]) {
     _resolve = resolve;
@@ -29,7 +29,7 @@
   return @{
     @"status": @([httpResponse statusCode]),
     @"headers": [httpResponse allHeaderFields],
-    @"mimeType": UMNullIfNil([httpResponse MIMEType])
+    @"mimeType": EXNullIfNil([httpResponse MIMEType])
   };
 }
 
@@ -45,6 +45,13 @@
 }
 
 - (void)URLSession:(NSURLSession *)session dataTask:(NSURLSessionDataTask *)dataTask didReceiveData:(NSData *)data
+{
+}
+
+- (void)URLSession:(NSURLSession *)session task:(NSURLSessionTask *)task
+                                didSendBodyData:(int64_t)bytesSent
+                                 totalBytesSent:(int64_t)totalBytesSent
+                       totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend
 {
 }
 

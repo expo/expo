@@ -6,12 +6,13 @@ const { Scheme } = config_plugins_1.IOSConfig;
 const { appendScheme } = Scheme;
 const fbSchemes = ['fbapi', 'fb-messenger-api', 'fbauth2', 'fbshareextension'];
 const USER_TRACKING = 'This identifier will be used to deliver personalized ads to you.';
-exports.withFacebookIOS = config => {
-    return config_plugins_1.withInfoPlist(config, config => {
+const withFacebookIOS = (config) => {
+    return (0, config_plugins_1.withInfoPlist)(config, (config) => {
         config.modResults = setFacebookConfig(config, config.modResults);
         return config;
     });
 };
+exports.withFacebookIOS = withFacebookIOS;
 /**
  * Getters
  * TODO: these getters are the same between ios/android, we could reuse them
@@ -124,7 +125,7 @@ function setFacebookApplicationQuerySchemes(config, infoPlist) {
     const facebookAppId = getFacebookAppId(config);
     const existingSchemes = infoPlist.LSApplicationQueriesSchemes || [];
     if (facebookAppId && existingSchemes.includes('fbapi')) {
-        // already inlcuded, no need to add again
+        // already included, no need to add again
         return infoPlist;
     }
     else if (!facebookAppId && !existingSchemes.length) {
@@ -140,7 +141,7 @@ function setFacebookApplicationQuerySchemes(config, infoPlist) {
     }
     // Remove all schemes
     for (const scheme of fbSchemes) {
-        const index = existingSchemes.findIndex(s => s === scheme);
+        const index = existingSchemes.findIndex((s) => s === scheme);
         if (index > -1) {
             existingSchemes.splice(index, 1);
         }
@@ -163,7 +164,7 @@ function setFacebookApplicationQuerySchemes(config, infoPlist) {
     };
 }
 exports.setFacebookApplicationQuerySchemes = setFacebookApplicationQuerySchemes;
-exports.withUserTrackingPermission = (config, { userTrackingPermission } = {}) => {
+const withUserTrackingPermission = (config, { userTrackingPermission } = {}) => {
     if (userTrackingPermission === false) {
         return config;
     }
@@ -175,3 +176,4 @@ exports.withUserTrackingPermission = (config, { userTrackingPermission } = {}) =
         userTrackingPermission || config.ios.infoPlist.NSUserTrackingUsageDescription || USER_TRACKING;
     return config;
 };
+exports.withUserTrackingPermission = withUserTrackingPermission;

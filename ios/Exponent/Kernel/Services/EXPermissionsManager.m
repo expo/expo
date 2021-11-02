@@ -1,5 +1,7 @@
 // Copyright 2019-present 650 Industries. All rights reserved.
 
+#import <ExpoModulesCore/EXPermissionsService.h>
+
 #import "EXPermissionsManager.h"
 #import "EXEnvironment.h"
 
@@ -23,7 +25,7 @@ NSString * const EXPermissionsKey = @"ExpoPermissions";
   return self;
 }
 
-UM_REGISTER_SINGLETON_MODULE(Permissions)
+EX_REGISTER_SINGLETON_MODULE(Permissions)
 
 - (EXPermissionStatus)getPermission:(NSString *)permissionType forExperience:(NSString *)scopeKey
 {

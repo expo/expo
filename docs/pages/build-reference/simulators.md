@@ -6,27 +6,22 @@ Running a build of your app in an iOS simulator is particularly useful in manage
 
 ## Configuring a profile to build for simulators
 
-To build your app for installation into an iOS simulator, you can create a new profile in `eas.json` and set the `distribution` value to `simulator`:
+To build your app for installation into an iOS simulator, you can create a new profile in **eas.json** and set the `ios.simulator` value to `true`:
 
 ```json
 {
-  "builds": {
-    "ios": {
-      "release": {
-        "workflow": "managed"
-      },
-      "preview": {
-        "workflow": "managed",
-        "distribution": "simulator"
+  "build": {
+    "preview": {
+      "ios": {
+        "simulator": true
       }
-    }
+    },
+    "production": {}
   }
 }
 ```
 
 Now, to run your build run `eas build -p ios --profile preview`. Remember that you can name the profile whatever you like; we named the profile "preview", but you could call it "simulator", "local", or "simulador" &mdash; whatever makes most sense for you.
-
-> The `distribution` field works identically in managed and generic projects.
 
 ## Installing your build on the simulator
 
