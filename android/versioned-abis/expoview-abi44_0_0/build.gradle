@@ -144,7 +144,7 @@ dependencies {
   api 'com.google.android.material:material:1.1.0'
 
   api 'com.google.firebase:firebase-core:17.2.3'
-  api 'com.google.firebase:firebase-messaging:20.2.4'
+  api 'com.google.firebase:firebase-messaging:22.0.0'
   api 'com.google.maps.android:android-maps-utils:0.5'
   // Remember to update DetachAppTemplate build.gradle if you add any excludes or transitive = false here!
 
