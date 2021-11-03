@@ -71,6 +71,7 @@ const sections = [
       'Building APKs for Android emulators and devices',
       'Building for iOS simulators',
       'Server infrastructure',
+      'Troubleshooting build errors and crashes',
       'Running builds on your own infrastructure',
       'Caching dependencies',
       'Build webhooks',
