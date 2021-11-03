@@ -16,7 +16,7 @@ protocol DynamicModuleWrapperProtocol {
  We're generating its subclasses in runtime as a workaround.
  */
 @objc
-public class ViewModuleWrapper: RCTViewManager, DynamicModuleWrapperProtocol {
+public final class ViewModuleWrapper: RCTViewManager, DynamicModuleWrapperProtocol {
   /**
    A reference to the module holder that stores the module definition.
    Enforced unwrapping is required since it can be set right after the object is initialized.

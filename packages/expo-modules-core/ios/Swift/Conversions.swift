@@ -1,5 +1,5 @@
 
-internal class Conversions {
+internal final class Conversions {
   /**
    Converts an array to tuple. Because of tuples nature, it's not possible to convert an array of any size, so we can support only up to some fixed size.
    */

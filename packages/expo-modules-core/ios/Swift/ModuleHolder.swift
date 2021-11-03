@@ -3,7 +3,7 @@ import Dispatch
 /**
  Holds a reference to the module instance and caches its definition.
  */
-public class ModuleHolder {
+public final class ModuleHolder {
   /**
    Instance of the module.
    */
