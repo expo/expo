@@ -1,5 +1,6 @@
 ---
 title: Feature Preview
+hideTOC: true
 ---
 
 ### What does Feature Preview mean?
@@ -14,4 +15,4 @@ We decided to publish some of our new features as a preview to get feedback from
 
   - **EAS Submit**: Upload your app to the Apple App Store or Google Play Store from the cloud with one CLI command. [Learn more](/submit/introduction.md).
 
-- **expo-dev-client**: When you need to customize your project beyond the standard runtime provided in Expo Go, you can create a custom development client for your application, install it on your phone, and continue developing. [Learn more](/clients/introduction.md).
+- **Development clients**: When you need to customize your project beyond the standard runtime provided in Expo Go, you can create a custom development client for your application, install it on your phone, and continue developing. This is made possible using the `expo-dev-client` library. [Learn more](/clients/introduction.md).
