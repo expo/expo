@@ -25,7 +25,7 @@ const getComponentName = (name?: string, children: PropData[] = []) => {
 };
 
 const getComponentComment = (comment: CommentData, signatures: MethodSignatureData[]) =>
-  comment || (signatures && signatures[0] ? signatures[0].comment : undefined);
+  comment || (signatures?.[0]?.comment ??  undefined);
 
 const renderComponent = (
   { name, comment, type, extendedTypes, children, signatures }: GeneratedData,
