@@ -42,9 +42,13 @@ const isListener = ({ name }: GeneratedData) =>
 
 const isProp = ({ name }: GeneratedData) => name.includes('Props') && name !== 'ErrorRecoveryProps';
 
-const isComponent = ({ type, extendedTypes }: GeneratedData) =>
+const isComponent = ({ type, extendedTypes, signatures }: GeneratedData) =>
   type?.name === 'React.FC' ||
-  (extendedTypes && extendedTypes.length ? extendedTypes[0].name === 'Component' : false);
+  (extendedTypes && extendedTypes.length ? extendedTypes[0].name === 'Component' : false) ||
+  (signatures && signatures[0]
+    ? signatures[0].type.name === 'Element' ||
+      (signatures[0].parameters && signatures[0].parameters[0].name === 'props')
+    : false);
 
 const isConstant = ({ flags, name, type }: GeneratedData) =>
   (flags?.isConst || false) && name !== 'default' && type?.name !== 'React.FC';
@@ -64,7 +68,7 @@ const renderAPI = (
     const methods = filterDataByKind(
       data,
       TypeDocKind.Function,
-      entry => !isListener(entry) && !isHook(entry)
+      entry => !isListener(entry) && !isHook(entry) && !isComponent(entry)
     );
     const hooks = filterDataByKind(data, TypeDocKind.Function, isHook);
     const eventSubscriptions = filterDataByKind(data, TypeDocKind.Function, isListener);
@@ -100,8 +104,10 @@ const renderAPI = (
     const interfaces = filterDataByKind(data, TypeDocKind.Interface);
     const constants = filterDataByKind(data, TypeDocKind.Variable, entry => isConstant(entry));
 
-    const components = filterDataByKind(data, [TypeDocKind.Variable, TypeDocKind.Class], entry =>
-      isComponent(entry)
+    const components = filterDataByKind(
+      data,
+      [TypeDocKind.Variable, TypeDocKind.Class, TypeDocKind.Function],
+      entry => isComponent(entry)
     );
     const componentsPropNames = components.map(component => `${component.name}Props`);
     const componentsProps = filterDataByKind(props, TypeDocKind.TypeAlias, entry =>
@@ -116,15 +122,15 @@ const renderAPI = (
         <APISectionConstants data={constants} apiName={apiName} />
         <APISectionMethods data={hooks} header="Hooks" />
         <APISectionClasses data={classes} />
+        {props && !componentsProps.length ? (
+          <APISectionProps data={props} defaultProps={defaultProps} />
+        ) : null}
         <APISectionMethods data={methods} apiName={apiName} />
         <APISectionMethods
           data={eventSubscriptions}
           apiName={apiName}
           header="Event Subscriptions"
         />
-        {props && !componentsProps.length ? (
-          <APISectionProps data={props} defaultProps={defaultProps} />
-        ) : null}
         <APISectionTypes data={types} />
         <APISectionInterfaces data={interfaces} />
         <APISectionEnums data={enums} />
