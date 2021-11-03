@@ -8,6 +8,7 @@ import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.uimanager.ViewManager
 
 import expo.modules.adapters.react.ModuleRegistryAdapter
+import expo.modules.core.ModulePriorities
 import expo.modules.core.interfaces.Package
 
 import java.lang.Exception
@@ -26,6 +27,10 @@ class ExpoModulesPackage : ReactPackage {
         Log.e("ExpoModulesPackage", "Couldn't get expo package list.", e)
         emptyList()
       }
+    }
+
+    val packagePrioritySortedList: List<Package> by lazy {
+      packageList.sortedByDescending { ModulePriorities.get(it::class.qualifiedName) }
     }
   }
 

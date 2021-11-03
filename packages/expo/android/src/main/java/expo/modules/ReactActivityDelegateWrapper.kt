@@ -13,18 +13,15 @@ import com.facebook.react.ReactInstanceManager
 import com.facebook.react.ReactNativeHost
 import com.facebook.react.ReactRootView
 import com.facebook.react.modules.core.PermissionListener
-import expo.modules.core.ModulePriorities
 import java.lang.reflect.Method
 
 class ReactActivityDelegateWrapper(
   private val activity: ReactActivity,
   private val delegate: ReactActivityDelegate
 ) : ReactActivityDelegate(activity, null) {
-  private val reactActivityLifecycleListeners = ExpoModulesPackage.packageList
-    .sortedByDescending { ModulePriorities.get(it::class.qualifiedName) }
+  private val reactActivityLifecycleListeners = ExpoModulesPackage.packagePrioritySortedList
     .flatMap { it.createReactActivityLifecycleListeners(activity) }
-  private val reactActivityHandlers = ExpoModulesPackage.packageList
-    .sortedByDescending { ModulePriorities.get(it::class.qualifiedName) }
+  private val reactActivityHandlers = ExpoModulesPackage.packagePrioritySortedList
     .flatMap { it.createReactActivityHandlers(activity) }
   private val methodMap: ArrayMap<String, Method> = ArrayMap()
 

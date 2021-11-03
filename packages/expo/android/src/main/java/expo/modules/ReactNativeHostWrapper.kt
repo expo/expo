@@ -12,15 +12,13 @@ import com.facebook.react.bridge.JavaScriptContextHolder
 import com.facebook.react.bridge.JavaScriptExecutorFactory
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.devsupport.RedBoxHandler
-import expo.modules.core.ModulePriorities
 import java.lang.reflect.Method
 
 class ReactNativeHostWrapper(
   application: Application,
   private val host: ReactNativeHost
 ) : ReactNativeHost(application) {
-  private val reactNativeHostHandlers = ExpoModulesPackage.packageList
-    .sortedByDescending { ModulePriorities.get(it::class.qualifiedName) }
+  private val reactNativeHostHandlers = ExpoModulesPackage.packagePrioritySortedList
     .flatMap { it.createReactNativeHostHandlers(application) }
   private val methodMap: ArrayMap<String, Method> = ArrayMap()
 
