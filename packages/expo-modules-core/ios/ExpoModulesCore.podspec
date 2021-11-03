@@ -20,7 +20,8 @@ Pod::Spec.new do |s|
   s.pod_target_xcconfig = {
     'USE_HEADERMAP' => 'YES',
     'DEFINES_MODULE' => 'YES',
-    'CLANG_CXX_LANGUAGE_STANDARD' => 'c++14'
+    'CLANG_CXX_LANGUAGE_STANDARD' => 'c++14',
+    'SWIFT_COMPILATION_MODE' => 'wholemodule'
   }
 
   s.dependency 'React-Core'
