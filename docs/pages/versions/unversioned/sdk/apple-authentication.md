@@ -21,7 +21,7 @@ Beginning with iOS 13, any app that includes third-party authentication options 
 
 ### EAS Build
 
-This guide assumes [auto capability sync](../../build-reference/ios-capabilities) is enabled (Default). Otherwise you'll need to manually enable the capabilities for your bundle identifier through the Apple Developer Console.
+This guide assumes [auto capability sync](../../../build-reference/ios-capabilities) is enabled (Default). Otherwise you'll need to manually enable the capabilities for your bundle identifier through the Apple Developer Console.
 
 #### Managed Workflow
 
