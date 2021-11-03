@@ -24,7 +24,9 @@ module Pod
 
       # Make ReactCommon specs define a module. This is required for ExpoModulesCore
       # to use `ReactCommon/turbomodule/core` subspec as a module, from Swift.
-      if !original_result && name == 'ReactCommon'
+      # It also needs to handle versioned pods in Expo Go, so we check if the pod name
+      # ends with `ReactCommon` instead of checking if they're equal.
+      if !original_result && name.end_with?('ReactCommon')
         root_spec.consumer(platform).pod_target_xcconfig['DEFINES_MODULE'] = 'YES'
         return @defines_module = true
       end
