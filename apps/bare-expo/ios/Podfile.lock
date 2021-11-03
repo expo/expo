@@ -11,7 +11,7 @@ PODS:
     - CocoaLumberjack/Core (= 3.7.2)
   - CocoaLumberjack/Core (3.7.2)
   - DoubleConversion (1.1.6)
-  - EXAmplitude (11.0.2):
+  - EXAmplitude (11.0.4):
     - Amplitude (~> 6.0.0)
     - ExpoModulesCore
   - EXAppAuth (11.0.1):
@@ -1249,7 +1249,7 @@ SPEC CHECKSUMS:
   boost-for-react-native: 39c7adb57c4e60d6c5479dd8623128eb5b3f0f2c
   CocoaLumberjack: b7e05132ff94f6ae4dfa9d5bce9141893a21d9da
   DoubleConversion: cf9b38bf0b2d048436d9a82ad2abe1404f11e7de
-  EXAmplitude: 5e22f19906921cc1d83f5f43701bf39672490d55
+  EXAmplitude: 7636f61eb24fc620a7f49d93f627b6d5cef9d644
   EXAppAuth: 9868d70b255ff85950f686e0677d28fc7213d895
   EXApplication: 0e15240e4d125b62f1cae48759ffbbd32b9286a6
   EXAV: ccc8de76a8fdab8b24dca0d375469413b4813806

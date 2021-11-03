@@ -1819,7 +1819,7 @@ PODS:
   - EXAdsFacebook (11.0.1):
     - ExpoModulesCore
     - FBAudienceNetwork (= 6.5.0)
-  - EXAmplitude (11.0.2):
+  - EXAmplitude (11.0.4):
     - Amplitude (~> 6.0.0)
     - ExpoModulesCore
   - EXAppAuth (11.0.1):
@@ -4146,7 +4146,7 @@ SPEC CHECKSUMS:
   DoubleConversion: cf9b38bf0b2d048436d9a82ad2abe1404f11e7de
   EXAdsAdMob: c9bf6e8871bd7f448a8429b45171e853b7eec4d1
   EXAdsFacebook: 8e038da5defd2b34107a805f97bbc95dca28b3b7
-  EXAmplitude: 5e22f19906921cc1d83f5f43701bf39672490d55
+  EXAmplitude: 7636f61eb24fc620a7f49d93f627b6d5cef9d644
   EXAppAuth: 9868d70b255ff85950f686e0677d28fc7213d895
   EXAppleAuthentication: 50ede637adf6dd6c0ad0af9a7c0c3c4d1ebd98d8
   EXApplication: 0e15240e4d125b62f1cae48759ffbbd32b9286a6
