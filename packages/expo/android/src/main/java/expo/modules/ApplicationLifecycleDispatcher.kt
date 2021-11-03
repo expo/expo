@@ -2,24 +2,28 @@ package expo.modules
 
 import android.app.Application
 import android.content.res.Configuration
-import expo.modules.core.ModulePriorities
+import androidx.annotation.UiThread
+import expo.modules.core.interfaces.ApplicationLifecycleListener
 
-class ApplicationLifecycleDispatcher private constructor() {
-  companion object {
-    @JvmStatic
-    fun onApplicationCreate(application: Application) {
-      ExpoModulesPackage.packageList
-        .sortedByDescending { ModulePriorities.get(it::class.qualifiedName) }
-        .flatMap { it.createApplicationLifecycleListeners(application) }
-        .forEach { it.onCreate(application) }
-    }
+object ApplicationLifecycleDispatcher {
+  private var listeners: List<ApplicationLifecycleListener>? = null
 
-    @JvmStatic
-    fun onConfigurationChanged(application: Application, newConfig: Configuration) {
-      ExpoModulesPackage.packageList
-        .sortedByDescending { ModulePriorities.get(it::class.qualifiedName) }
+  @UiThread
+  private fun getCachedListeners(application: Application): List<ApplicationLifecycleListener> {
+    if (listeners == null) {
+      listeners = ExpoModulesPackage.packagePrioritySortedList
         .flatMap { it.createApplicationLifecycleListeners(application) }
-        .forEach { it.onConfigurationChanged(newConfig) }
     }
+    return listeners!!
+  }
+
+  @JvmStatic
+  fun onApplicationCreate(application: Application) {
+    getCachedListeners(application).forEach { it.onCreate(application) }
+  }
+
+  @JvmStatic
+  fun onConfigurationChanged(application: Application, newConfig: Configuration) {
+    getCachedListeners(application).forEach { it.onConfigurationChanged(newConfig) }
   }
 }
