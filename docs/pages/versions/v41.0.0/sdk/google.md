@@ -290,7 +290,6 @@ let result = await AuthSession.startAsync({
 [google-api-explorer]: https://developers.google.com/apis-explorer/
 [managed-workflow]: ../../../introduction/managed-vs-bare.md#managed-workflow
 [bare-workflow]: ../../../introduction/managed-vs-bare.md#bare-workflow
-[expo-app-auth]: app-auth.md
 [expo-app-session]: auth-session.md
 [auth-loginhint]: https://openid.net/specs/openid-connect-core-1_0.html#AuthRequest
 [g-using-apis]: https://gsuite-developers.googleblog.com/2012/01/tips-on-using-apis-discovery-service.html
