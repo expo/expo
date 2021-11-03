@@ -36,19 +36,19 @@ Inside each build profile you can specify `android` and `ios` fields that contai
 
 Build profiles can extend another build profile using the `"extends"` key. For example, in the `preview` profile you may have `"extends": "production"`; this would make the `preview` profile inherit configuration of the `production` profile.
 
-## Common configurations
+## Common use cases
 
-Developers using Expo tools usually end up having three different types of apps: **development**, **preview**, and **production**.
+Developers using Expo tools usually end up having three different types of builds: **development**, **preview**, and **production**.
 
-### Development apps
+### Development builds
 
-These apps include developer tools, and they are never submitted to an app store.
+These builds include developer tools, and they are never submitted to an app store.
 
 By default, `eas build:configure` will create a `development` profile with `"developmentClient": true`. This indicates that this build depends on [expo-dev-client](/clients/introduction.md).
 
 The `development` profile also defaults to `"distribution": "internal"`. This will make it easy to distribute your app directly to physical iOS and Android devices &mdash; [learn more](/build/internal-distribution.md).
 
-You may alternatively prefer for your development app to [run in an iOS simulator](/build-reference/simulators.md). To do this, use the following configuration for `development` profile:
+You may alternatively prefer for your development build to [run in an iOS simulator](/build-reference/simulators.md). To do this, use the following configuration for `development` profile:
 
 ```json
 {
@@ -66,9 +66,9 @@ You may alternatively prefer for your development app to [run in an iOS simulato
 
 If you'd like to create a build for internal distribution and another for the iOS simulator then you can create another development profile for that build. You might call the profile something like `development-simulator` and use the above configuration on that profile instead of on `development`. [No such configuration is required to run an Android APK on your device and in an emulator](/build-reference/apk.md); the same APK will work in both circumstances.
 
-### Preview apps
+### Preview builds
 
-These apps don't include developer tools, they are builds that are intended to by installed by your team and other stakeholders to test out the app in production-like circumstances. In this way, they are similar to [production apps](#production-apps); the difference arises in that they are either not signed for distribution on stores (internal distribution) or are packaged in a way that is not optimal for store deployment (Android AAB).
+These builds don't include developer tools, they are intended to be installed by your team and other stakeholders, to test out the app in production-like circumstances. In this way, they are similar to [production builds](#production-builds); the difference arises in that they are either not signed for distribution on stores (internal distribution) or are packaged in a way that is not optimal for store deployment (Android AAB).
 
 A minimal `preview` profile looks like this:
 
@@ -82,13 +82,13 @@ A minimal `preview` profile looks like this:
 }
 ```
 
-Similar to [development apps](#development-apps), you can configure your preview app to be built for running in the [iOS simulator](/build-reference/simulators.md) or create a variant of your preview profile for that purpose. [No such configuration is required to run an Android APK on your device and in an emulator](/build-reference/apk.md); the same APK will work in both circumstances.
+Similar to [development builds](#development-builds), you can configure your preview build to run in the [iOS simulator](/build-reference/simulators.md) or create a variant of your preview profile for that purpose. [No such configuration is required to run an Android APK on your device and in an emulator](/build-reference/apk.md); the same APK will work in both circumstances.
 
-### Production apps
+### Production builds
 
-These apps are submitted to an app store, for release to the general public or as part of a store-facilitated testing process such as TestFlight.
+These builds are submitted to an app store, for release to the general public or as part of a store-facilitated testing process such as TestFlight.
 
-Production apps must be installed through their respective app stores; they cannot be installed directly to your iOS device/simulator or Android device/emulator. The only exception to this if you explicitly set `"buildType": "apk"` for Android on your build profile; however, it is recommended to use AAB when submitting to stores, and this is the default configuration.
+Production builds must be installed through their respective app stores; they cannot be installed directly to your iOS device/simulator or Android device/emulator. The only exception to this if you explicitly set `"buildType": "apk"` for Android on your build profile; however, it is recommended to use AAB when submitting to stores, and this is the default configuration.
 
 A minimal `production` profile looks like this:
 
