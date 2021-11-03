@@ -2,7 +2,7 @@ import UIKit
 /**
  The app context is an interface to a single Expo app.
  */
-public class AppContext {
+public final class AppContext {
   /**
    The module registry for the app context.
    */

@@ -9,7 +9,7 @@ public protocol AnyDefinition {}
  of the module and what it exports to the JavaScript world.
  See `ModuleDefinitionBuilder` for more details on how to create it.
  */
-public class ModuleDefinition: AnyDefinition {
+public final class ModuleDefinition: AnyDefinition {
   /**
    The module's type associated with the definition. It's used to create the module instance.
    */

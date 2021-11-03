@@ -2,7 +2,7 @@
 import Foundation
 
 @objc
-public class SwiftInteropBridge: NSObject {
+public final class SwiftInteropBridge: NSObject {
   let appContext: AppContext
 
   var registry: ModuleRegistry {
