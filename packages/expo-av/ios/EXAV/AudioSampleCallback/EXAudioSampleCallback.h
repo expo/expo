@@ -12,7 +12,7 @@
 @interface EXAudioSampleCallback : NSObject
 
 #ifdef __cplusplus
-- (id)initWithCallbackWrapper:(expo::av::AudioSampleCallbackWrapper*)wrapper;
+- (id)initWithCallbackWrapper:(std::unique_ptr<expo::av::AudioSampleCallbackWrapper>)wrapper;
 #endif
 
 - (void)callWithAudioBuffer:(AudioBuffer*)buffer andTimestamp:(double)timestamp;

@@ -67,8 +67,8 @@ class CleanupOnDestroyHostObject : public jsi::HostObject {
       // second parameter received, it's the callback function.
       auto callback = args[1].asObject(runtime).asFunction(runtime);
       
-      auto wrapper = new AudioSampleCallbackWrapper(std::move(callback), runtime, strongCallInvoker);
-      EXAudioSampleCallback* objcWrapper = [[EXAudioSampleCallback alloc] initWithCallbackWrapper:wrapper];
+      auto wrapper = std::make_unique<AudioSampleCallbackWrapper>(std::move(callback), runtime, strongCallInvoker);
+      EXAudioSampleCallback* objcWrapper = [[EXAudioSampleCallback alloc] initWithCallbackWrapper:(std::move(wrapper))];
       [sound setSampleBufferCallback:objcWrapper];
     } else {
       // second parameter omitted or undefined, so remove callback

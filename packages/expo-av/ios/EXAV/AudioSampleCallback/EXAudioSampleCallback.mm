@@ -1,27 +1,25 @@
 // Copyright 2017-present 650 Industries. All rights reserved.
 
+#import <memory>
 #import <EXAV/EXAudioSampleCallback.h>
+
+using AudioSampleCallbackWrapper = expo::av::AudioSampleCallbackWrapper;
 
 @implementation EXAudioSampleCallback
 {
-  expo::av::AudioSampleCallbackWrapper * _cb;
+  std::unique_ptr<AudioSampleCallbackWrapper> _wrapper;
 }
 
-- (id)initWithCallbackWrapper:(expo::av::AudioSampleCallbackWrapper*)wrapper {
+- (id)initWithCallbackWrapper:(std::unique_ptr<AudioSampleCallbackWrapper>)wrapper {
   self = [super init];
-  _cb = wrapper;
+  _wrapper = std::move(wrapper);
   return self;
-}
-
-- (void)dealloc {
-  delete _cb;
-  _cb = nullptr;
 }
 
 - (void)callWithAudioBuffer:(AudioBuffer*)buffer andTimestamp:(double)timestamp
 {
-  if (_cb != nullptr) {
-    _cb->call(buffer, timestamp);
+  if (_wrapper) {
+    _wrapper->call(buffer, timestamp);
   }
 }
 
