@@ -13,6 +13,7 @@ const GROUPS = {
   'Distributing Your App': ['Distributing Your App'],
   'Expo Accounts': ['Expo Accounts'],
   'Regulatory Compliance': ['Regulatory Compliance'],
+  'Classic Services': ['Classic Services'],
   Deprecated: ['ExpoKit', 'Archived'],
   'Bare Workflow': ['Bare Workflow'],
   'Expo SDK': ['Expo SDK'],
@@ -51,6 +52,7 @@ const sections = [
   {
     name: 'App Signing',
     reference: [
+      'App credentials explained',
       'Using automatically managed credentials',
       'Using local credentials',
       'Using existing credentials',
@@ -152,8 +154,6 @@ const sections = [
     name: 'Distributing Your App',
     reference: [
       'Overview',
-      'Building Standalone Apps',
-      'App Signing',
       'Deploying to App Stores',
       'Release Channels',
       'Advanced Release Channels',
@@ -167,6 +167,7 @@ const sections = [
       'Data and Privacy Protection',
     ],
   },
+  { name: 'Classic Services', reference: ['Building Standalone Apps'] },
   {
     name: 'ExpoKit',
     reference: [
@@ -410,6 +411,7 @@ const ROOT = [
   'Expo Accounts',
   'Bare Workflow',
   'Push Notifications',
+  'Classic Services',
   'UI Programming',
   'Regulatory Compliance',
   'Configuration Files',
@@ -504,14 +506,17 @@ const sortedGeneral = groupNav(sortNav(prevaledNavigationData.general));
 const sortedStarting = groupNav(sortNav(prevaledNavigationData.starting));
 const sortedPreview = groupNav(sortNav(prevaledNavigationData.preview));
 const sortedFeaturePreview = groupNav(sortNav(prevaledNavigationData.featurePreview));
+const sortedEas = groupNav(sortNav(prevaledNavigationData.eas));
 
 module.exports = {
   generalDirectories: prevaledNavigationData.generalDirectories,
   startingDirectories: prevaledNavigationData.startingDirectories,
   previewDirectories: prevaledNavigationData.previewDirectories,
+  easDirectories: prevaledNavigationData.easDirectories,
   featurePreviewDirectories: prevaledNavigationData.featurePreviewDirectories,
   starting: sortedStarting,
   general: sortedGeneral,
+  eas: sortedEas,
   preview: sortedPreview,
   featurePreview: sortedFeaturePreview,
   reference: { ...sortedReference, latest: sortedReference['v' + packageVersion] },

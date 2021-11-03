@@ -14,6 +14,14 @@ Formerly the React Native equivalent of [create-react-app](https://github.com/fa
 
 The term "detach" was previously used in Expo to mean [ejecting](#eject) your app to use [ExpoKit](#expokit).
 
+### EAS
+
+[Expo Application Services (EAS)](/eas/index.md) are deeply-integrated cloud services for Expo and React Native apps, such as [EAS Build](/build/introduction.md) and [EAS Submit](/submit/introduction.md).
+
+### EAS CLI
+
+The command-line tool for working with EAS. <!-- Pending creation of eas-cli [Read more](eas-cli.md). -->
+
 ### eject
 
 The term "eject" was popularized by [create-react-app](https://github.com/facebookincubator/create-react-app), and it is used in Expo to describe leaving the cozy comfort of the standard Expo development environment, where you do not have to deal with build configuration or native code. When you "eject" from Expo, you have two choices:

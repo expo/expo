@@ -1,5 +1,15 @@
 import { getRedirectPath } from './error-utilities';
 
+test('redirects old building-standalone-apps paths versioned path', () => {
+  const redirectPath = '/versions/latest/distribution/building-standalone-apps/';
+  const newPath = getRedirectPath(redirectPath);
+
+  expect(newPath).toEqual('/classic/building-standalone-apps/');
+
+  // The path with guides instead of distribution is very old
+  expect(getRedirectPath('/versions/latest/guides/building-standalone-apps/')).toEqual(newPath);
+});
+
 test('redirects version vX.0.0 renamed path', () => {
   const redirectPath = '/versions/v32.0.0/guides/push-notifications/';
   const newPath = getRedirectPath(redirectPath);

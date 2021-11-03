@@ -2,6 +2,8 @@
 title: Building Standalone Apps
 ---
 
+> 🆕  [Try creating your build with EAS Build](/build/setup.md), our new and improved build service.
+
 The purpose of this guide is to help you create standalone binaries of your Expo app for iOS and
 Android which can be submitted to the Apple App Store and Google Play Store.
 
@@ -64,7 +66,7 @@ Run `expo build:android` or `expo build:ios`. If you don't already have a develo
 ### If you choose to build for Android
 
 When building for android you can choose to build APK (`expo build:android -t apk`) or Android App Bundle (`expo build:android -t app-bundle`).
-App bundles are recommended, but you have to make sure the [Google Play App Signing](app-signing.md) is enabled for your project,
+App bundles are recommended, but you have to make sure the [Google Play App Signing](app-signing/app-credentials.md) is enabled for your project,
 you can read more about it [here](https://developer.android.com/guide/app-bundle).
 
 The first time you build the project you will be asked whether you'd like to upload a keystore or
@@ -120,7 +122,7 @@ Note: Expo does not keep your Apple ID or your Apple ID password.
   I will provide all the credentials and files needed, Expo does limited validation
 ```
 
-Unless you're very familiar with iOS credentials already, it's best to let Expo handle the creation & management of all your credentials for you. If you'd like to know more about iOS credentials, we've written a guide with everything you need to know [here](app-signing.md).
+Unless you're very familiar with iOS credentials already, it's best to let Expo handle the creation & management of all your credentials for you. If you'd like to know more about iOS credentials, we've written a guide with everything you need to know [here](app-signing/app-credentials.md).
 
 If you plan on providing your own certificates, we recommend creating them in the [Apple Developer Portal](https://developer.apple.com/account/resources/certificates/list).
 

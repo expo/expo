@@ -17,36 +17,36 @@ Note that FCM is not currently available for Expo iOS apps.
 
 4. In your app.json, add an `android.googleServicesFile` field with the relative path to the `google-services.json` file you just downloaded. If you placed it in the root directory, this will probably look like
 
-```javascript
-{
-  ...
-  "android": {
-    "googleServicesFile": "./google-services.json",
+  ```javascript
+  {
     ...
-  }
-}
-```
-
-5.  Confirm that your API key in `google-services.json` has the correct "API restrictions" in the [Google Cloud Platform API Credentials console](https://console.cloud.google.com/apis/credentials). For push notifications to work correctly, Firebase requires the API key to either be unrestricted (the key can call any API), or have access to both `Firebase Cloud Messaging API` and `Firebase Installations API`. The API key can be found under the `client.api_key.current_key` field in `google-services.json`.
-
-```javascript
-{
-  ...
-  "client": [
-    {
-      "api_key": [
-        {
-          "current_key" "<your Google Cloud Platform API key>",
-        }
-      ],
+    "android": {
+      "googleServicesFile": "./google-services.json",
+      ...
     }
-  ]
-}
-```
+  }
+  ```
 
-> **Note:** Firebase will create an API key in the Google Cloud Platform console with a name like `Android key (auto created by Firebase)`. **This is not always the same key as the one found in `google-services.json`. Always confirm your key and associated restrictions in the Google Cloud Platform console.**
+5. Confirm that your API key in `google-services.json` has the correct "API restrictions" in the [Google Cloud Platform API Credentials console](https://console.cloud.google.com/apis/credentials). For push notifications to work correctly, Firebase requires the API key to either be unrestricted (the key can call any API), or have access to both `Firebase Cloud Messaging API` and `Firebase Installations API`. The API key can be found under the `client.api_key.current_key` field in `google-services.json`.
 
-6. Finally, make a new build of your app by running `expo build:android`.
+  ```javascript
+  {
+    ...
+    "client": [
+      {
+        "api_key": [
+          {
+            "current_key" "<your Google Cloud Platform API key>",
+          }
+        ],
+      }
+    ]
+  }
+  ```
+
+  > **Note:** Firebase will create an API key in the Google Cloud Platform console with a name like `Android key (auto created by Firebase)`. **This is not always the same key as the one found in `google-services.json`. Always confirm your key and associated restrictions in the Google Cloud Platform console.**
+
+6. Finally, make a new build of your app by running `eas build --platform android` (or `expo build:android` if you're using the classic build system).
 
 ### Bare projects
 
