@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Workaround double bridge initializaed from startup. ([#15019](https://github.com/expo/expo/pull/15019) by [@kudo](https://github.com/kudo))
+
 ### 💡 Others
 
 ## 0.10.11 — 2021-11-02
