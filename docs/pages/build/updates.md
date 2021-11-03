@@ -2,6 +2,8 @@
 title: Updates
 ---
 
+<!-- TODO: talk about considerations re: environment variables and expo publish -->
+
 > We're currently working on EAS Update, a service that integrates deeply with other EAS services and builds on top of `expo-updates` to provide more power, flexibility, and tools to help you work better with your team.
 
 EAS Build includes some special affordances for Expo's [`expo-updates`](/versions/latest/sdk/updates.md) library. In particular, you can configure the release channel in **eas.json** and EAS Build will take care of updating it in your native project at build time. Not sure what a release channel is? [Learn more about release channels](/distribution/release-channels.md).

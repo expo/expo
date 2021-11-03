@@ -2,7 +2,7 @@
 title: Environment variables and secrets
 ---
 
-import ImageSpotlight from '~/components/plugins/ImageSpotlight'
+<!-- TODO: talk about how environment variables are used when evaluating app.config.js -->
 
 The ["Environment variables in Expo"](/guides/environment-variables.md) guide presents several options for how you can access system environment variables to your app JavaScript code. This can be a useful way to inject values in your code, but [these values should not be secrets](/guides/environment-variables.md#security-considerations), and so the value it provides can be summarized as a convenience for accommodating certain development workflows.
 
@@ -50,41 +50,21 @@ See the [eas.json reference](/build/eas-json.md) for more information.
 
 To provide your build jobs with access to values that are too sensitive to include in your source code and git repository, you can use "Secrets".
 
-These secrets are encrypted at rest and in transit, and are only decrypted in a secure environment by EAS servers.
+A secret is made up of a name and a value. The name can only contain alphanumeric characters and underscores.
 
-You can create up to 100 account-wide secrets for each Expo account and 100 app-specific secrets for each app (you probably won't need that many). Account-wide secrets will be exposed to every build environment across all of your apps. App-specific secrets only apply to the app they're defined for, and will override any account-wide secrets with the same name.
+The secret values are encrypted at rest and in transit, and are only decrypted in a secure environment by EAS servers.
+
+You can create up to 100 account-wide secrets for each Expo account and 100 app-specific secrets for each app. Account-wide secrets will be exposed to every build environment across all of your apps. App-specific secrets only apply to the app they're defined for, and will override any account-wide secrets with the same name.
 
 You can manage secrets through the Expo website and EAS CLI.
 
+> ⚠️ Always remember that **anything that is included in your client side code should be considered public and readable to any individual that can run the application**. EAS Secrets are intended to be used to provide values to an EAS Build job so that they may be used during the build process. Examples of correct usage include setting the `NPM_TOKEN` for installing private packages from npm, or a Sentry API key to create a release and upload your sourcemaps to their service. EAS Secrets do not provide any additional security for values that you end up embedding in your application itself, such as an AWS access key or other private keys.
+
 ### Secrets on the Expo website
 
-To create account-wide secrets, navigate to the "Secrets" tab under your account or organization's [settings](https://expo.dev/settings/secrets):
+To create **account-wide secrets**, navigate to [the "Secrets" tab in your account or organization settings](https://expo.dev/accounts/[account]/settings/secrets).
 
-<ImageSpotlight alt="account-wide secrets location" src="/static/images/eas-build/environment-secrets/secrets-account-nav.png" />
-
-To create app-specific secrets, navigate to the "Secrets" tab in the project dashboard:
-
-<ImageSpotlight alt="Project secrets location" src="/static/images/eas-build/environment-secrets/secrets-project-nav.png" />
-
-If you haven't published your project yet and it isn't visible on the website, create one on the project list page.
-
-<ImageSpotlight alt="Create project button location" src="/static/images/eas-build/environment-secrets/project-creation-navigation.png" />
-
-<ImageSpotlight alt="Create project UI" src="/static/images/eas-build/environment-secrets/project-creation-web.png" />
-
-### Adding secrets with the website
-
-When setting up secrets for a new account or app, you'll be met with this UI:
-
-<ImageSpotlight alt="Empty secrets UI" src="/static/images/eas-build/environment-secrets/secrets-empty.png" />
-
-Click the "Create" button in the top-right of the table to create a new secret.
-
-A secret needs a name and a value. The name can only contain alphanumeric characters and underscores:
-
-<ImageSpotlight alt="Secret creation UI filled" src="/static/images/eas-build/environment-secrets/secrets-create-filled.png" />
-
-<ImageSpotlight alt="Secret UI with stored secret" src="/static/images/eas-build/environment-secrets/secrets-populated.png" />
+To create **app-specific secrets**, navigate to [the "Secrets" tab in your project dashboard](https://expo.dev/accounts/[account]/projects/[project]/secrets). If you haven't published your project yet and it isn't visible on the website, you can create it on the website from this link.
 
 ### Adding secrets with EAS CLI
 
@@ -116,23 +96,7 @@ Secrets for this account and project:
 
 ### Accessing secrets in EAS Build
 
-After creating a secret, you can access the value via EAS Build hooks in Node.js as `process.env.VARIABLE_NAME` or in shell scripts as `$VARIABLE_NAME`:
-
-```json
-// package.json
-{
-  "scripts": {
-    "eas-build-pre-install": "echo $VARIABLE_NAME",
-    "android": "expo run:android",
-    "ios": "expo run:ios",
-    "web": "expo start --web",
-    "start": "react-native start",
-    "test": "jest"
-  }
-}
-```
-
-[Learn more about EAS Build hooks](/build-reference/how-tos/#eas-build-specific-npm-hooks).
+After creating a secret, you can read it on subsequent EAS Build jobs with `process.env.VARIABLE_NAME` from Node.js or in shell scripts as `$VARIABLE_NAME`.
 
 ## Built-in environment variables
 

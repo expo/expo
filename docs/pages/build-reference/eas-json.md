@@ -9,62 +9,14 @@ import commonSchema from '~/scripts/schemas/unversioned/eas-json-build-common-sc
 import androidSchema from '~/scripts/schemas/unversioned/eas-json-build-android-schema.js';
 import iosSchema from '~/scripts/schemas/unversioned/eas-json-build-ios-schema.js';
 
-**eas.json** is your go-to place for configuring EAS Build (and [EAS Submit](/submit/eas-json.md)). It is located at the root of your project next to your **package.json**. Configuration for EAS Build all goes under the `"build`" key in **eas.json**. It looks something like this:
+**eas.json** is your go-to place for configuring EAS Build (and [EAS Submit](/submit/eas-json.md)). It is located at the root of your project next to your **package.json**.
 
-
-```json
-{
-  "build": {
-    "development": {
-      "developmentClient": true,
-      "distribution": "internal"
-    },
-    "preview": {
-      "distribution": "internal"
-    },
-    "production": {}
-  }
-}
-```
-
-The JSON object under the `build` key can contain multiple build profiles. Every build profile can have an arbitrary name. The default profile that is expected by EAS CLI to exist is `production` (if you'd like to build your app using another build profile you need to specify it with a parameter - `eas build --platform android --profile foobar`). In the example, there are three build profiles (`development`, `preview`, and `production`), however they could be named `foo` or `bar` or whatever you'd like. Inside each build profile you can specify `android` and `ios` fields that contain platform-specific configuration for the build, any common options can be also stored there or in the root of the build profile.
-
-Generally, the schema of this file looks like this:
-
-<!-- prettier-ignore -->
-```json
-{
-  "build": {
-    /* @info any arbitrary name - used as an identifier */"BUILD_PROFILE_NAME_1"/* @end */: {
-      /* @info options common for both platforms*/...COMMON_OPTIONS/* @end */
-
-      android: {
-        /* @info options specific for Android and common for both platforms*/...ANDROID_OPTIONS/* @end */
-
-      }
-      ios: {
-        /* @info options specific for iOS and common for both platforms*/...IOS_OPTIONS/* @end */
-
-      }
-    },
-    /* @info any arbitrary name - used as an identifier */"BUILD_PROFILE_NAME_2"/* @end */: {
-
-    },
-    ...
-  },
-  "submit": {
-    // EAS Submit configuration
-    ...
-  }
-}
-```
-
-If you're also using EAS Submit, [see how to use **eas.json** to configure your submissions](/submit/eas-json.md).
+This document is a reference that outlines the schema for the `"build"` key in **eas.json**. For an explanation of how to use it, please refer to ["Configuring EAS Build eas.json"](/build/eas-json.md).
 
 ## Examples
 
 <details>
-  <summary>A managed project with several common profiles</summary>
+  <summary>A managed project with several profiles</summary>
 
 ```json
 {
@@ -125,7 +77,7 @@ If you're also using EAS Submit, [see how to use **eas.json** to configure your 
 </details>
 
 <details>
-  <summary>A bare project with several common profiles</summary>
+  <summary>A bare project with several profiles</summary>
 
 ```json
 {
@@ -181,7 +133,38 @@ If you're also using EAS Submit, [see how to use **eas.json** to configure your 
 
 </details>
 
-## Options common for both platforms
+## Schema
+
+<!-- prettier-ignore -->
+```json
+{
+  "cli": {
+    "version": /* @info Required EAS CLI version range. */"SEMVER_RANGE"/* @end */,
+    "requireCommit": /* @info If true, ensures that all changes are committed before a build. Defults to false. */boolean/* @end */
+
+  },
+  "build": {
+    /* @info any arbitrary name - used as an identifier */"BUILD_PROFILE_NAME_1"/* @end */: {
+      /* @info Options common to both platforms*/...COMMON_OPTIONS/* @end */
+
+      "android": {
+        /* @info Options specific for Android and common to both platforms*/...ANDROID_OPTIONS/* @end */
+
+      },
+      "ios": {
+        /* @info Options specific for iOS and common to both platforms*/...IOS_OPTIONS/* @end */
+
+      }
+    },
+    /* @info Any arbitrary name - used as an identifier */"BUILD_PROFILE_NAME_2"/* @end */: {},
+	...
+  }
+}
+```
+
+> EAS Submit is also configured in **eas.json**. You can find the reference for the `"submit"` fields in ["Configuring EAS Submit with eas.json"](/submit/eas-json.md).
+
+## Options common to both platforms
 
 <EasJsonPropertiesTable schema={commonSchema}/>
 
