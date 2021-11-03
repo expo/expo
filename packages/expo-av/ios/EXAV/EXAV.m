@@ -70,6 +70,15 @@ NSString *const EXDidUpdateMetadataEventName = @"didUpdateMetadata";
 
 @implementation EXAV
 
+// Required in Expo Go only - EXAV conforms to RCTBridgeModule protocol
+// and in Expo Go, kernel calls [EXReactAppManager rebuildBridge]
+// which requires this to be implemented. Normal "bare" RN modules
+// use RCT_EXPORT_MODULE macro which implement this automatically.
++(NSString *)moduleName
+{
+  return @"ExponentAV";
+}
+
 EX_EXPORT_MODULE(ExponentAV);
 
 - (instancetype)init
