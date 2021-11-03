@@ -115,6 +115,10 @@ export class Sound {
     setOnMetadataUpdate(onMetadataUpdate) {
         this._onMetadataUpdate = onMetadataUpdate;
     }
+    /**
+     * Sets a function to be called during playback, receiving the audio sample as parameter.
+     * @param callback a function taking the {@link AudioSample} as parameter
+     */
     setOnAudioSampleReceived(callback) {
         this._onAudioSampleReceived = callback;
         if (this._key != null) {

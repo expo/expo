@@ -67,6 +67,10 @@ export declare class Sound implements Playback {
     getStatusAsync: () => Promise<AVPlaybackStatus>;
     setOnPlaybackStatusUpdate(onPlaybackStatusUpdate: ((status: AVPlaybackStatus) => void) | null): void;
     setOnMetadataUpdate(onMetadataUpdate: (AVMetadata: any) => void): void;
+    /**
+     * Sets a function to be called during playback, receiving the audio sample as parameter.
+     * @param callback a function taking the {@link AudioSample} as parameter
+     */
     setOnAudioSampleReceived(callback: AudioSampleCallback): void;
     loadAsync(source: AVPlaybackSource, initialStatus?: AVPlaybackStatusToSet, downloadFirst?: boolean): Promise<AVPlaybackStatus>;
     unloadAsync(): Promise<AVPlaybackStatus>;
