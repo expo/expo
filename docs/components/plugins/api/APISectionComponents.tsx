@@ -21,11 +21,11 @@ export type APISectionComponentsProps = {
 const getComponentName = (name?: string, children: PropData[] = []) => {
   if (name && name !== 'default') return name;
   const ctor = children.filter((child: PropData) => child.name === 'constructor')[0];
-  return ctor && ctor?.signatures?.length ? ctor?.signatures[0]?.type?.name : 'default';
+  return ctor?.signatures?.[0]?.type?.name ?? 'default';
 };
 
 const getComponentComment = (comment: CommentData, signatures: MethodSignatureData[]) =>
-  comment || (signatures?.[0]?.comment ??  undefined);
+  comment || (signatures?.[0]?.comment ?? undefined);
 
 const renderComponent = (
   { name, comment, type, extendedTypes, children, signatures }: GeneratedData,
