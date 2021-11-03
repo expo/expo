@@ -111,6 +111,10 @@ public class LocationTaskConsumer extends TaskConsumer implements TaskConsumerIn
       maybeReportDeferredLocations();
     } else {
       try {
+        if(mLocationClient == null){
+          Log.w(TAG, "LocationClient is null.");
+          return;
+        }
         mLocationClient.getLastLocation().addOnCompleteListener(new OnCompleteListener<Location>() {
           @Override
           public void onComplete(@NonNull Task<Location> task) {
