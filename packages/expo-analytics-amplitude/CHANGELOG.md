@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Fixed `setUserIdAsync` throwing error on Android when `null` is passed. ([#15028](https://github.com/expo/expo/pull/15028) by [@tsapeta](https://github.com/tsapeta))
-
 ### 💡 Others
+
+## 11.0.2 — 2021-11-03
+
+### 🐛 Bug fixes
+
+- Fixed `setUserIdAsync` throwing error on Android when `null` is passed. ([#15028](https://github.com/expo/expo/pull/15028) by [@tsapeta](https://github.com/tsapeta))
 
 ## 11.0.1 — 2021-10-01
 

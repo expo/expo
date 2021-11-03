@@ -13,7 +13,7 @@
   "@unimodules/react-native-adapter": "~6.5.0",
   "expo-ads-admob": "~11.0.3",
   "expo-ads-facebook": "~11.0.3",
-  "expo-analytics-amplitude": "~11.0.3",
+  "expo-analytics-amplitude": "~11.0.2",
   "expo-analytics-segment": "~11.0.3",
   "expo-app-auth": "~11.0.3",
   "expo-app-loader-provider": "~8.0.0",
