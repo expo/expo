@@ -3,7 +3,7 @@
 /**
  Class conforming to `AnyArgumentType` that wraps array types.
  */
-internal class CollectionArgumentType<InnerType: RandomAccessCollection, ElementType>: RawArgumentType<InnerType> {
+internal final class CollectionArgumentType<InnerType: RandomAccessCollection, ElementType>: RawArgumentType<InnerType> {
   var elementType: AnyArgumentType
 
   /**

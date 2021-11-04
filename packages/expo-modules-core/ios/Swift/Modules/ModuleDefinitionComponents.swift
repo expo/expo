@@ -44,7 +44,7 @@ extension AnyModule {
   /**
    Factory function for methods with one argument.
    */
-  public func method<R, A0: AnyMethodArgument>(
+  public func method<R, A0: AnyArgument>(
     _ name: String,
     _ closure: @escaping (A0) -> R
   ) -> AnyMethod {
@@ -58,7 +58,7 @@ extension AnyModule {
   /**
    Factory function for methods with 2 arguments.
    */
-  public func method<R, A0: AnyMethodArgument, A1: AnyMethodArgument>(
+  public func method<R, A0: AnyArgument, A1: AnyArgument>(
     _ name: String,
     _ closure: @escaping (A0, A1) -> R
   ) -> AnyMethod {
@@ -72,7 +72,7 @@ extension AnyModule {
   /**
    Factory function for methods with 3 arguments.
    */
-  public func method<R, A0: AnyMethodArgument, A1: AnyMethodArgument, A2: AnyMethodArgument>(
+  public func method<R, A0: AnyArgument, A1: AnyArgument, A2: AnyArgument>(
     _ name: String,
     _ closure: @escaping (A0, A1, A2) -> R
   ) -> AnyMethod {
@@ -86,7 +86,7 @@ extension AnyModule {
   /**
    Factory function for methods with 4 arguments.
    */
-  public func method<R, A0: AnyMethodArgument, A1: AnyMethodArgument, A2: AnyMethodArgument, A3: AnyMethodArgument>(
+  public func method<R, A0: AnyArgument, A1: AnyArgument, A2: AnyArgument, A3: AnyArgument>(
     _ name: String,
     _ closure: @escaping (A0, A1, A2, A3) -> R
   ) -> AnyMethod {
@@ -100,7 +100,7 @@ extension AnyModule {
   /**
    Factory function for methods with 5 arguments.
    */
-  public func method<R, A0: AnyMethodArgument, A1: AnyMethodArgument, A2: AnyMethodArgument, A3: AnyMethodArgument, A4: AnyMethodArgument>(
+  public func method<R, A0: AnyArgument, A1: AnyArgument, A2: AnyArgument, A3: AnyArgument, A4: AnyArgument>(
     _ name: String,
     _ closure: @escaping (A0, A1, A2, A3, A4) -> R
   ) -> AnyMethod {
@@ -114,7 +114,7 @@ extension AnyModule {
   /**
    Factory function for methods with 6 arguments.
    */
-  public func method<R, A0: AnyMethodArgument, A1: AnyMethodArgument, A2: AnyMethodArgument, A3: AnyMethodArgument, A4: AnyMethodArgument, A5: AnyMethodArgument>(
+  public func method<R, A0: AnyArgument, A1: AnyArgument, A2: AnyArgument, A3: AnyArgument, A4: AnyArgument, A5: AnyArgument>(
     _ name: String,
     _ closure: @escaping (A0, A1, A2, A3, A4, A5) -> R
   ) -> AnyMethod {
@@ -128,7 +128,7 @@ extension AnyModule {
   /**
    Factory function for methods with 7 arguments.
    */
-  public func method<R, A0: AnyMethodArgument, A1: AnyMethodArgument, A2: AnyMethodArgument, A3: AnyMethodArgument, A4: AnyMethodArgument, A5: AnyMethodArgument, A6: AnyMethodArgument>(
+  public func method<R, A0: AnyArgument, A1: AnyArgument, A2: AnyArgument, A3: AnyArgument, A4: AnyArgument, A5: AnyArgument, A6: AnyArgument>(
     _ name: String,
     _ closure: @escaping (A0, A1, A2, A3, A4, A5, A6) -> R
   ) -> AnyMethod {
@@ -142,7 +142,7 @@ extension AnyModule {
   /**
    Factory function for methods with 8 arguments.
    */
-  public func method<R, A0: AnyMethodArgument, A1: AnyMethodArgument, A2: AnyMethodArgument, A3: AnyMethodArgument, A4: AnyMethodArgument, A5: AnyMethodArgument, A6: AnyMethodArgument, A7: AnyMethodArgument>(
+  public func method<R, A0: AnyArgument, A1: AnyArgument, A2: AnyArgument, A3: AnyArgument, A4: AnyArgument, A5: AnyArgument, A6: AnyArgument, A7: AnyArgument>(
     _ name: String,
     _ closure: @escaping (A0, A1, A2, A3, A4, A5, A6, A7) -> R
   ) -> AnyMethod {
