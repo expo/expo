@@ -53,9 +53,14 @@ EX_REGISTER_SINGLETON_MODULE(EXUpdatesAppDelegate)
     // we just skip in this case.
     return NO;
   }
+  UIWindow *window = application.delegate.window;
+  if ([window.rootViewController.view isKindOfClass:[RCTRootView class]]) {
+    RCTRootView *rootView = (RCTRootView *)window.rootViewController.view;
+    [rootView.bridge invalidate];
+  }
   self.launchOptions = launchOptions;
   controller.delegate = self;
-  [controller startAndShowLaunchScreen:application.delegate.window];
+  [controller startAndShowLaunchScreen:window];
   return YES;
 }
 
