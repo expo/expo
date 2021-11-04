@@ -167,7 +167,8 @@ EX_REGISTER_SINGLETON_MODULE(SplashScreen);
 {
   NSAssert([NSThread isMainThread], @"Method must be called on main thread");
   if (self.observingRootViewController != nil) {
-    [UIApplication.sharedApplication.keyWindow removeObserver:self forKeyPath:kRootViewController context:nil];
+    UIWindow *window = self.observingRootViewController.view.window;
+    [window removeObserver:self forKeyPath:kRootViewController context:nil];
     [self.observingRootViewController removeObserver:self forKeyPath:kView context:nil];
     self.observingRootViewController = nil;
   }
