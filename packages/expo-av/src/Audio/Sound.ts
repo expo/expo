@@ -40,11 +40,13 @@ export type AudioSample = {
 type AudioInstance = number | HTMLMediaElement | null;
 type AudioSampleCallback = ((sample: AudioSample) => void) | null;
 
-declare let global: {
-  __EXAV_setOnAudioSampleReceivedCallback:
-    | ((key: number, callback: AudioSampleCallback) => void)
-    | undefined;
-};
+declare global {
+  interface Global {
+    __EXAV_setOnAudioSampleReceivedCallback:
+      | ((key: number, callback: AudioSampleCallback) => void)
+      | undefined;
+  }
+}
 
 export class Sound implements Playback {
   _loaded: boolean = false;

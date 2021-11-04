@@ -1,7 +1,5 @@
 // Copyright 2021-present 650 Industries, Inc. (aka Expo)
 
-#pragma once
-
 #import <Foundation/Foundation.h>
 
 #import <EXAV/EXAV.h>

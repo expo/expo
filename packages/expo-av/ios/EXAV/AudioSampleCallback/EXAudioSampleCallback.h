@@ -1,7 +1,5 @@
 // Copyright 2017-present 650 Industries. All rights reserved.
 
-#pragma once
-
 #import <AVFoundation/AVFoundation.h>
 
 #ifdef __cplusplus

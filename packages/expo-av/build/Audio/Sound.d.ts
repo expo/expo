@@ -23,6 +23,11 @@ export declare type AudioSample = {
 };
 declare type AudioInstance = number | HTMLMediaElement | null;
 declare type AudioSampleCallback = ((sample: AudioSample) => void) | null;
+declare global {
+    interface Global {
+        __EXAV_setOnAudioSampleReceivedCallback: ((key: number, callback: AudioSampleCallback) => void) | undefined;
+    }
+}
 export declare class Sound implements Playback {
     _loaded: boolean;
     _loading: boolean;

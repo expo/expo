@@ -1,10 +1,8 @@
 // Copyright 2017-present 650 Industries. All rights reserved.
-#pragma once
 
 #import <AVFoundation/AVFoundation.h>
 
 #import <React/RCTBridgeModule.h>
-#import <React/RCTInvalidating.h>
 
 #import <ExpoModulesCore/EXModuleRegistryConsumer.h>
 #import <ExpoModulesCore/EXAppLifecycleListener.h>

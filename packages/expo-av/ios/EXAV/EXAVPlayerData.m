@@ -390,7 +390,7 @@ NSString *const EXAVPlayerDataObserverMetadataKeyPath = @"timedMetadata";
 {
   NSNumber *durationMillis = [self _getRoundedMillisFromCMTime:_player.currentItem.duration];
   if (durationMillis) {
-    durationMillis = [durationMillis doubleValue] < 0 ? 0 : durationMillis;
+    durationMillis = @(MAX(durationMillis.longValue, 0));
   }
 
   NSNumber *positionMillis = [self _getRoundedMillisFromCMTime:[_player currentTime]];
