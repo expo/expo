@@ -144,31 +144,6 @@ public class FirebaseAnalyticsModule extends ExportedModule implements RegistryL
   }
 
   @ExpoMethod
-  public void setCurrentScreen(final String screenName, final String screenClassOverride, final Promise promise) {
-    final Activity activity = mActivityProvider.getCurrentActivity();
-
-    if (activity == null) {
-      promise.reject(new CurrentActivityNotFoundException());
-      return;
-    }
-
-    // This is the only method that runs on the main thread.
-    activity.runOnUiThread(new Runnable() {
-      public void run() {
-        try {
-          FirebaseAnalytics analytics = getFirebaseAnalyticsOrReject(promise);
-          if (analytics == null)
-            return;
-          analytics.setCurrentScreen(activity, screenName, screenClassOverride);
-          promise.resolve(null);
-        } catch (Exception e) {
-          promise.reject(e);
-        }
-      }
-    });
-  }
-
-  @ExpoMethod
   public void setSessionTimeoutDuration(final double milliseconds, Promise promise) {
     try {
       FirebaseAnalytics analytics = getFirebaseAnalyticsOrReject(promise);

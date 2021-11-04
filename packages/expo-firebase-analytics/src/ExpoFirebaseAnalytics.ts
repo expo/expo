@@ -94,9 +94,6 @@ export default {
   async setAnalyticsCollectionEnabled(isEnabled: boolean): Promise<void> {
     return callAnalyticsModule('setAnalyticsCollectionEnabled', isEnabled);
   },
-  async setCurrentScreen(screenName?: string, screenClassOverride?: string): Promise<void> {
-    return callAnalyticsModule('setCurrentScreen', screenName, screenClassOverride);
-  },
   async setSessionTimeoutDuration(sessionTimeoutInterval: number): Promise<void> {
     return callAnalyticsModule('setSessionTimeoutDuration', sessionTimeoutInterval);
   },
