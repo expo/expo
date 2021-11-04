@@ -79,6 +79,7 @@ const nonLinkableTypes = [
 
 const hardcodedTypeLinks: Record<string, string> = {
   Date: 'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date',
+  Element: 'https://www.typescriptlang.org/docs/handbook/jsx.html#function-component',
   Error: 'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error',
   Omit: 'https://www.typescriptlang.org/docs/handbook/utility-types.html#omittype-keys',
   Pick: 'https://www.typescriptlang.org/docs/handbook/utility-types.html#picktype-keys',
@@ -312,6 +313,11 @@ export const getCommentOrSignatureComment = (
 export const getTagData = (tagName: string, comment?: CommentData) =>
   comment?.tags?.filter(tag => tag.tag === tagName)[0];
 
+const capitalize = (str: string) => str.charAt(0).toUpperCase() + str.slice(1);
+
+const formatPlatformName = (name: string) =>
+  name.toLowerCase() === 'ios' ? 'iOS' : capitalize(name);
+
 export const CommentTextBlock = ({
   comment,
   components = mdComponents,
@@ -356,11 +362,17 @@ export const CommentTextBlock = ({
     </Quote>
   ) : null;
 
+  const platform = getTagData('platform', comment);
+  const platformText = platform ? (
+    <B>{formatPlatformName(platform.text.replace('\n', ''))} Only.</B>
+  ) : null;
+
   return (
     <>
       {deprecationNote}
       {beforeContent}
       {withDash && (shortText || text) && ' - '}
+      {platformText}
       {shortText}
       {text}
       {seeText}

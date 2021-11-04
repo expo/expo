@@ -132,6 +132,7 @@ async function action({packageName, version = 'unversioned'}: ActionOptions) {
     'expo-speech': ['Speech/Speech.ts'],
     'expo-splash-screen': ['SplashScreen.ts'],
     'expo-sqlite': ['index.ts'],
+    'expo-status-bar': ['StatusBar.ts'],
     'expo-store-review': ['StoreReview.ts'],
     'expo-system-ui': ['SystemUI.ts'],
     'expo-task-manager': ['TaskManager.ts'],

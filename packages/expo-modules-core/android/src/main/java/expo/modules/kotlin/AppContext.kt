@@ -1,7 +1,7 @@
 package expo.modules.kotlin
 
 import com.facebook.react.bridge.LifecycleEventListener
-import com.facebook.react.bridge.ReactContext
+import com.facebook.react.bridge.ReactApplicationContext
 import expo.modules.core.interfaces.ActivityProvider
 import expo.modules.interfaces.barcodescanner.BarCodeScannerInterface
 import expo.modules.interfaces.camera.CameraViewInterface
@@ -18,12 +18,12 @@ import java.lang.ref.WeakReference
 class AppContext(
   modulesProvider: ModulesProvider,
   val legacyModuleRegistry: expo.modules.core.ModuleRegistry,
-  val reactContext: WeakReference<ReactContext>
+  private val reactContextHolder: WeakReference<ReactApplicationContext>
 ) : LifecycleEventListener {
   val registry = ModuleRegistry(WeakReference(this)).register(modulesProvider)
 
   init {
-    requireNotNull(reactContext.get()) {
+    requireNotNull(reactContextHolder.get()) {
       "The app context should be created with valid react context."
     }.addLifecycleEventListener(this)
   }
@@ -99,8 +99,14 @@ class AppContext(
   val activityProvider: ActivityProvider?
     get() = legacyModule()
 
+  /**
+   * Provides access to the react application context
+   */
+  val reactContext: ReactApplicationContext?
+    get() = reactContextHolder.get()
+
   fun onDestroy() {
-    reactContext.get()?.removeLifecycleEventListener(this)
+    reactContextHolder.get()?.removeLifecycleEventListener(this)
     registry.post(EventName.MODULE_DESTROY)
   }
 
