@@ -1,7 +1,10 @@
 package expo.modules.kotlin.types
 
 import com.facebook.react.bridge.Dynamic
+import expo.modules.kotlin.exception.IncompatibleArgTypeException
+import expo.modules.kotlin.exception.NullArgumentException
 import expo.modules.kotlin.records.RecordTypeConverter
+import expo.modules.kotlin.toKType
 import kotlin.reflect.KType
 
 object TypeConverterHelper {
@@ -17,19 +20,23 @@ object TypeConverterHelper {
   fun convert(jsValue: Dynamic, toType: KType): Any? {
     if (jsValue.isNull) {
       if (!toType.isMarkedNullable) {
-        throw IllegalArgumentException("Cannot assign null to not nullable type.")
+        throw NullArgumentException(toType)
       }
 
       return null
     }
 
-    val typeWrapper = KClassTypeWrapper(toType)
-    converters.forEach {
-      if (it.canHandleConversion(typeWrapper)) {
-        return it.convert(jsValue, typeWrapper)
+    try {
+      val typeWrapper = KClassTypeWrapper(toType)
+      converters.forEach {
+        if (it.canHandleConversion(typeWrapper)) {
+          return it.convert(jsValue, typeWrapper)
+        }
       }
+    } catch (castException: ClassCastException) {
+      throw IncompatibleArgTypeException(jsValue.type.toKType(), toType, castException)
     }
 
-    throw IllegalArgumentException("Cannot convert JavaScript object into $toType")
+    throw IncompatibleArgTypeException(jsValue.type.toKType(), toType)
   }
 }

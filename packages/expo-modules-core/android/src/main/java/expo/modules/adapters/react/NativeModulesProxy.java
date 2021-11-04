@@ -10,6 +10,15 @@ import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableType;
 
+import expo.modules.core.ExportedModule;
+import expo.modules.core.ModuleRegistry;
+import expo.modules.core.ViewManager;
+import expo.modules.core.interfaces.ExpoMethod;
+import expo.modules.kotlin.ExpoModulesHelper;
+import expo.modules.kotlin.KotlinInteropModuleRegistry;
+import expo.modules.kotlin.KPromiseWrapper;
+import expo.modules.kotlin.ModulesProvider;
+
 import java.lang.ref.WeakReference;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -20,14 +29,6 @@ import java.util.Map;
 import java.util.Objects;
 
 import javax.annotation.Nullable;
-
-import expo.modules.core.ExportedModule;
-import expo.modules.core.ModuleRegistry;
-import expo.modules.core.ViewManager;
-import expo.modules.core.interfaces.ExpoMethod;
-import expo.modules.kotlin.ExpoModulesHelper;
-import expo.modules.kotlin.KotlinInteropModuleRegistry;
-import expo.modules.kotlin.ModulesProvider;
 
 /**
  * A wrapper/proxy for all {@link ExportedModule}s, gets exposed as {@link com.facebook.react.bridge.NativeModule},
@@ -148,7 +149,7 @@ public class NativeModulesProxy extends ReactContextBaseJavaModule {
     }
 
     if (mKotlinInteropModuleRegistry.hasModule(moduleName)) {
-      mKotlinInteropModuleRegistry.callMethod(moduleName, methodName, arguments, new PromiseWrapper(promise));
+      mKotlinInteropModuleRegistry.callMethod(moduleName, methodName, arguments, new KPromiseWrapper(promise));
       return;
     }
 

@@ -1,12 +1,12 @@
 package expo.modules.kotlin
 
 import com.facebook.react.bridge.ReadableArray
-import expo.modules.core.Promise
 import expo.modules.core.utilities.ifNull
 import expo.modules.kotlin.events.BasicEventListener
 import expo.modules.kotlin.events.EventListenerWithSender
 import expo.modules.kotlin.events.EventListenerWithSenderAndPayload
 import expo.modules.kotlin.events.EventName
+import expo.modules.kotlin.exception.MethodNotFoundException
 import expo.modules.kotlin.modules.Module
 
 class ModuleHolder(val module: Module) {
@@ -15,7 +15,7 @@ class ModuleHolder(val module: Module) {
 
   fun call(methodName: String, args: ReadableArray, promise: Promise) {
     val method = definition.methods[methodName].ifNull {
-      promise.reject("ExpoModuleCore", "Cannot find method '$methodName' in module '${definition.name}'")
+      promise.reject(MethodNotFoundException(methodName, definition.name))
       return
     }
 
