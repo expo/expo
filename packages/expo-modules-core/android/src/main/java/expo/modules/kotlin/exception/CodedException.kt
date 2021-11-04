@@ -1,6 +1,7 @@
 package expo.modules.kotlin.exception
 
 import java.util.*
+import kotlin.reflect.KType
 
 /**
  * A class for errors specifying its `code` and providing the `description`.
@@ -40,3 +41,24 @@ open class CodedException(
     }
   }
 }
+
+class IncompatibleArgTypeException(
+  argumentType: KType,
+  desiredType: KType,
+  cause: Throwable? = null
+) : CodedException(
+  message = "Argument type $argumentType is not compatible with expected type $desiredType.",
+  cause = cause
+)
+
+class InvalidArgsNumberException(received: Int, expected: Int)
+  : CodedException(message = "Received $received arguments, but $expected was expected.")
+
+internal class MethodNotFoundException(methodName: String, moduleName: String)
+  : CodedException(message = "Cannot fund method $methodName in module $moduleName")
+
+class NullArgumentException(desiredType: KType) :
+  CodedException(message = "Cannot assigned null to not nullable type $desiredType")
+
+class UnexpectedException(val throwable: Throwable)
+  : CodedException(throwable)

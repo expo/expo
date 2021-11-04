@@ -13,7 +13,7 @@ import kotlin.reflect.typeOf
 
 class AnyMethodTest {
   class MockedAnyMethod(desiredArgsTypes: Array<KType>) : AnyMethod("my-method", desiredArgsTypes) {
-    override fun callUserImplementation(args: Array<out Any?>, promise: Promise) {
+    override fun callImplementation(args: Array<out Any?>, promise: Promise) {
       throw NullPointerException()
     }
   }
@@ -65,7 +65,7 @@ class AnyMethodTest {
 
     Truth.assertThat(promise.state).isEqualTo(PromiseState.REJECTED)
     Truth.assertThat(promise.rejectCode).isEqualTo("ERR_INCOMPATIBLE_ARG_TYPE")
-    Truth.assertThat(promise.rejectMessage).isEqualTo("Type kotlin.String of argument is not compatible with expected type kotlin.Int.")
+    Truth.assertThat(promise.rejectMessage).isEqualTo("Argument type kotlin.String is not compatible with expected type kotlin.Int.")
   }
 
   @Test

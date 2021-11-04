@@ -9,7 +9,7 @@ class PromiseMethod(
   private val body: (args: Array<out Any?>, promise: Promise) -> Unit
 ) : AnyMethod(name, argsType) {
 
-  override fun callUserImplementation(args: Array<out Any?>, promise: Promise) {
+  override fun callImplementation(args: Array<out Any?>, promise: Promise) {
     body(args, promise)
   }
 }

@@ -21,7 +21,7 @@ abstract class AnyMethod(
     }
     try {
       val convertedArgs = convertArgs(args)
-      callUserImplementation(convertedArgs, promise)
+      callImplementation(convertedArgs, promise)
     } catch (codedError: CodedException) {
       promise.reject(codedError)
     } catch (e: Throwable) {
@@ -30,7 +30,7 @@ abstract class AnyMethod(
   }
 
   @Throws(CodedException::class)
-  internal abstract fun callUserImplementation(args: Array<out Any?>, promise: Promise)
+  internal abstract fun callImplementation(args: Array<out Any?>, promise: Promise)
 
   val argsCount get() = desiredArgsTypes.size
 
