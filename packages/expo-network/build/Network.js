@@ -29,7 +29,7 @@ export async function getNetworkStateAsync() {
 }
 // @needsAudit
 /**
- * Gets the device's current IPv4 address. Returns `0.0.0.0`` if the IP address could not be retrieved.
+ * Gets the device's current IPv4 address. Returns `0.0.0.0` if the IP address could not be retrieved.
  *
  * On web, this method uses the third-party [`ipify service`](https://www.ipify.org/) to get the
  * public IP address of the current device.

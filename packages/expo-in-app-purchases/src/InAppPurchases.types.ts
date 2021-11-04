@@ -280,7 +280,7 @@ export type IAPPurchaseHistoryOptions = {
    *   which only contains the purchase time, purchase token, and product ID, rather than all of the
    *   attributes found in the [`InAppPurchase`](#inapppurchase) type.
    *
-   * @default `true`.
+   * @default true
    * @platform android
    */
   useGooglePlayCache: boolean;
