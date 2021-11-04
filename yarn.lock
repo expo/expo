@@ -8605,6 +8605,11 @@ flow-bin@0.113.0:
   resolved "https://registry.yarnpkg.com/flow-bin/-/flow-bin-0.113.0.tgz#6457d250dbc6f71ca51e75f00a96d23cde5d987a"
   integrity sha512-76uE2LGNe50wm+Jup8Np4FBcMbyy5V2iE+K25PPIYLaEMGHrL1jnQfP9L0hTzA5oh2ZJlexRLMlaPqIYIKH9nw==
 
+flow-bin@^0.137.0:
+  version "0.137.0"
+  resolved "https://registry.yarnpkg.com/flow-bin/-/flow-bin-0.137.0.tgz#322a15b3744195af1e02bf1fec0a716296aee7d5"
+  integrity sha512-ytwUn68fPKK/VWVpCxJ4KNeNIjCC/uX0Ll6Z1E98sOXfMknB000WtgQjKYDdO6tOR8mvXBE0adzjgCrChVympw==
+
 flow-parser@0.*:
   version "0.162.1"
   resolved "https://registry.yarnpkg.com/flow-parser/-/flow-parser-0.162.1.tgz#128150cd483c4899719fb5ceb06744282e51a10d"
@@ -15078,44 +15083,6 @@ react-native-webview@11.13.0:
   dependencies:
     escape-string-regexp "2.0.0"
     invariant "2.2.4"
-
-react-native@0.64.2:
-  version "0.64.2"
-  resolved "https://registry.yarnpkg.com/react-native/-/react-native-0.64.2.tgz#233b6ed84ac4749c8bc2a2d6cf63577a1c437d18"
-  integrity sha512-Ty/fFHld9DcYsFZujXYdeVjEhvSeQcwuTGXezyoOkxfiGEGrpL/uwUZvMzwShnU4zbbTKDu2PAm/uwuOittRGA==
-  dependencies:
-    "@jest/create-cache-key-function" "^26.5.0"
-    "@react-native-community/cli" "^5.0.1-alpha.1"
-    "@react-native-community/cli-platform-android" "^5.0.1-alpha.1"
-    "@react-native-community/cli-platform-ios" "^5.0.1-alpha.1"
-    "@react-native/assets" "1.0.0"
-    "@react-native/normalize-color" "1.0.0"
-    "@react-native/polyfills" "1.0.0"
-    abort-controller "^3.0.0"
-    anser "^1.4.9"
-    base64-js "^1.1.2"
-    event-target-shim "^5.0.1"
-    hermes-engine "~0.7.0"
-    invariant "^2.2.4"
-    jsc-android "^245459.0.0"
-    metro-babel-register "0.64.0"
-    metro-react-native-babel-transformer "0.64.0"
-    metro-runtime "0.64.0"
-    metro-source-map "0.64.0"
-    nullthrows "^1.1.1"
-    pretty-format "^26.5.2"
-    promise "^8.0.3"
-    prop-types "^15.7.2"
-    react-devtools-core "^4.6.0"
-    react-native-codegen "^0.0.6"
-    react-refresh "^0.4.0"
-    regenerator-runtime "^0.13.2"
-    scheduler "^0.20.1"
-    shelljs "^0.8.4"
-    stacktrace-parser "^0.1.3"
-    use-subscription "^1.0.0"
-    whatwg-fetch "^3.0.0"
-    ws "^6.1.4"
 
 react-navigation-shared-element@^3.1.2:
   version "3.1.3"
