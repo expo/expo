@@ -173,9 +173,10 @@ export declare function getAnonymousIDAsync(): Promise<string | null>;
  */
 export declare function getAdvertiserIDAsync(): Promise<string | null>;
 /**
- * **Android only.** Gets the attribution ID from Facebook.
+ * Gets the attribution ID from Facebook.
  *
  * @return A promise fulfilled with the attribution id or null if not set.
+ * @platform android
  */
 export declare function getAttributionIDAsync(): Promise<string | null>;
 /**

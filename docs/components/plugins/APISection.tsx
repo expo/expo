@@ -50,8 +50,8 @@ const isComponent = ({ type, extendedTypes, signatures }: GeneratedData) =>
       (signatures[0].parameters && signatures[0].parameters[0].name === 'props')
     : false);
 
-const isConstant = ({ flags, name, type }: GeneratedData) =>
-  (flags?.isConst || false) && name !== 'default' && type?.name !== 'React.FC';
+const isConstant = ({ name, type }: GeneratedData) =>
+  name !== 'default' && name !== 'Constants' && type?.name !== 'React.FC';
 
 const renderAPI = (
   packageName: string,
@@ -114,7 +114,11 @@ const renderAPI = (
       componentsPropNames.includes(entry.name)
     );
 
-    const classes = filterDataByKind(data, TypeDocKind.Class, entry => !isComponent(entry));
+    const classes = filterDataByKind(
+      data,
+      TypeDocKind.Class,
+      entry => !isComponent(entry) && (apiName ? !entry.name.includes(apiName) : true)
+    );
 
     return (
       <>

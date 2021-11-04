@@ -55,8 +55,9 @@ export var LocationActivityType;
      */
     LocationActivityType[LocationActivityType["OtherNavigation"] = 4] = "OtherNavigation";
     /**
-     * __iOS 12+ Only.__ Intended for airborne activities. Fall backs to `ActivityType.Other` if
+     * Intended for airborne activities. Fall backs to `ActivityType.Other` if
      * unsupported.
+     * @platform ios 12+
      */
     LocationActivityType[LocationActivityType["Airborne"] = 5] = "Airborne";
 })(LocationActivityType || (LocationActivityType = {}));

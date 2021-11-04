@@ -195,7 +195,7 @@ export function setUnavailabilityLogging(isEnabled) {
 }
 // @needsAudit
 /**
- * __Expo Go Only.__ Sets the clientId to the given value. For best results, set this value before
+ * Sets the clientId to the given value. For best results, set this value before
  * calling any other functions on this module.
  *
  * By default, the clientId is set to `Constants.installationId` in Expo Go, which is deprecated and
@@ -203,6 +203,7 @@ export function setUnavailabilityLogging(isEnabled) {
  * when using Expo Go.
  *
  * @param clientId UUIDv4 string value to set for the current session in Expo Go.
+ * @platform expo
  */
 export function setClientId(clientId) {
     if (!ExpoFirebaseAnalytics.setClientId) {
@@ -211,13 +212,14 @@ export function setClientId(clientId) {
     ExpoFirebaseAnalytics.setClientId(clientId);
 }
 /**
- * __Expo Go Only.__ Enables or disabled debug mode on the Expo client, so events can
+ * Enables or disabled debug mode on the Expo client, so events can
  * be tracked using the [DebugView in the Analytics dashboard](https://firebase.google.com/docs/analytics/debugview#reporting).
  *
  * This option is only available in Expo Go. When using a custom development app, a standalone app,
  * the bare workflow or web, use the [natively available options](https://firebase.google.com/docs/analytics/debugview).
  *
  * @param isEnabled A flag that enables or disables debug mode.
+ * @platform expo
  */
 export async function setDebugModeEnabled(isEnabled) {
     if (!ExpoFirebaseAnalytics.setDebugModeEnabled) {
