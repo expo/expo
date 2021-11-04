@@ -8,8 +8,8 @@ import fs from 'fs';
 import path from 'path';
 
 import { InstallationPage } from './constants';
-import withGeneratedAndroidScheme from './withGeneratedAndroidScheme';
-import withGeneratedIosScheme from './withGeneratedIosScheme';
+import { withGeneratedAndroidScheme } from './withGeneratedAndroidScheme';
+import { withGeneratedIosScheme } from './withGeneratedIosScheme';
 
 const pkg = require('expo-dev-client/package.json');
 
