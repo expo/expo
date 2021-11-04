@@ -8,11 +8,13 @@
 #import <ExpoModulesCore/EXFileSystemInterface.h>
 #import <ExpoModulesCore/EXPermissionsInterface.h>
 #import <ExpoModulesCore/EXPermissionsMethodsDelegate.h>
+#import <ExpoModulesCore/EXJavaScriptContextProvider.h>
 
 #import <EXAV/EXAV.h>
 #import <EXAV/EXAVPlayerData.h>
 #import <EXAV/EXVideoView.h>
 #import <EXAV/EXAudioRecordingPermissionRequester.h>
+#import <EXAV/EXAV+AudioSampleCallback.h>
 
 NSString *const EXAudioRecordingOptionsIsMeteringEnabledKey = @"isMeteringEnabled";
 NSString *const EXAudioRecordingOptionsKeepAudioActiveHintKey = @"keepAudioActiveHint";
@@ -34,6 +36,8 @@ NSString *const EXDidUpdatePlaybackStatusEventName = @"didUpdatePlaybackStatus";
 NSString *const EXDidUpdateMetadataEventName = @"didUpdateMetadata";
 
 @interface EXAV ()
+
+@property (nonatomic, weak) RCTBridge *bridge;
 
 @property (nonatomic, weak) id kernelAudioSessionManagerDelegate;
 @property (nonatomic, weak) id kernelPermissionsServiceDelegate;
@@ -66,6 +70,15 @@ NSString *const EXDidUpdateMetadataEventName = @"didUpdateMetadata";
 
 @implementation EXAV
 
+// Required in Expo Go only - EXAV conforms to RCTBridgeModule protocol
+// and in Expo Go, kernel calls [EXReactAppManager rebuildBridge]
+// which requires this to be implemented. Normal "bare" RN modules
+// use RCT_EXPORT_MODULE macro which implement this automatically.
++(NSString *)moduleName
+{
+  return @"ExponentAV";
+}
+
 EX_EXPORT_MODULE(ExponentAV);
 
 - (instancetype)init
@@ -95,13 +108,32 @@ EX_EXPORT_MODULE(ExponentAV);
   return self;
 }
 
+- (void)setBridge:(RCTBridge *)bridge
+{
+  _bridge = bridge;
+}
+
 + (const NSArray<Protocol *> *)exportedInterfaces
 {
   return @[@protocol(EXAVInterface)];
 }
 
+- (void)installJsiBindings
+{
+  id<EXJavaScriptContextProvider> jsContextProvider = [_moduleRegistry getModuleImplementingProtocol:@protocol(EXJavaScriptContextProvider)];
+  void *jsRuntimePtr = [jsContextProvider javaScriptRuntimePointer];
+  if (jsRuntimePtr) {
+    [self installJSIBindingsForRuntime:jsRuntimePtr withSoundDictionary:_soundDictionary];
+  } else {
+    EXLogWarn(@"EXAV: Cannot install Audio Sample Buffer callback. Do you have 'Remote Debugging' enabled in your app's Developer Menu (https://docs.expo.dev/workflow/debugging)? Audio Sample Buffer callbacks are not supported while using Remote Debugging, you will need to disable it to use them.");
+  }
+}
+
 - (NSDictionary *)constantsToExport
 {
+  // install JSI bindings here because `constantsToExport` is called when the JS runtime has been created
+  [self installJsiBindings];
+  
   return @{
     @"Qualities": @{
         @"Low": AVAudioTimePitchAlgorithmLowQualityZeroLatency,
@@ -150,6 +182,15 @@ EX_EXPORT_MODULE(ExponentAV);
     [self _runBlockForAllAVObjects:^(NSObject<EXAVObject> *exAVObject) {
       [exAVObject appDidBackgroundStayActive:YES];
     }];
+  }
+}
+
+- (void)onAppContentWillReload
+{
+  // We need to clear audio tap before sound gets destroyed to avoid
+  // using pointer to deallocated EXAVPlayerData in MTAudioTap process callback
+  for (NSNumber *key in [_soundDictionary allKeys]) {
+    [self _removeAudioCallbackForKey:key];
   }
 }
 
@@ -406,6 +447,14 @@ EX_EXPORT_MODULE(ExponentAV);
     [data pauseImmediately];
     _soundDictionary[key] = nil;
     [self demoteAudioSessionIfPossible];
+  }
+}
+
+- (void)_removeAudioCallbackForKey:(NSNumber *)key
+{
+  EXAVPlayerData *data = _soundDictionary[key];
+  if (data) {
+    [data setSampleBufferCallback:nil];
   }
 }
 

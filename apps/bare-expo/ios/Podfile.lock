@@ -21,6 +21,7 @@ PODS:
     - ExpoModulesCore
   - EXAV (10.1.0):
     - ExpoModulesCore
+    - ReactCommon/turbomodule/core
   - EXBackgroundFetch (10.0.1):
     - ExpoModulesCore
     - UMTaskManagerInterface
@@ -1252,7 +1253,7 @@ SPEC CHECKSUMS:
   EXAmplitude: 7636f61eb24fc620a7f49d93f627b6d5cef9d644
   EXAppAuth: 9868d70b255ff85950f686e0677d28fc7213d895
   EXApplication: 0e15240e4d125b62f1cae48759ffbbd32b9286a6
-  EXAV: ccc8de76a8fdab8b24dca0d375469413b4813806
+  EXAV: 626307f2e30abe408395b3e50c21717701cce897
   EXBackgroundFetch: abf903682fa67713ab40616e551208f048d1201c
   EXBarCodeScanner: 0ca9b2b1bc70380a4e344c7eca2cc6140e646bc7
   EXBattery: fcd68a46b4a3e230567eb6b61e4493a463dae663
