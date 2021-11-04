@@ -27,9 +27,13 @@ void AudioSampleCallbackWrapper::call(AudioBuffer* buffer, double timestamp)
     return;
   }
 
+  // we want to capture only the wrapper, not the whole `this` object,
+  // because it may no longer exist when the lambda is invoked
+  auto weakWrapper = this->weakWrapper;
+  
   // We need to invoke the callback from the JS thread, otherwise Hermes complains
-  strongWrapper->jsInvoker().invokeAsync([buffer, this, timestamp]{
-    auto jsiCallbackWrapper = this->weakWrapper.lock();
+  strongWrapper->jsInvoker().invokeAsync([weakWrapper, buffer, timestamp]{
+    auto jsiCallbackWrapper = weakWrapper.lock();
     if (!jsiCallbackWrapper || !buffer) {
       return;
     }
