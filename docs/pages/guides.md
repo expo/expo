@@ -23,7 +23,7 @@ In this section we cover the fundamentals of developing with Expo's tools. Some 
 In this section we cover topics related to building, shipping, and updating your app with Expo's tools. Some popular topics are:
 
 - [Distributing your App on the App Store and Play Store](distribution/introduction.md)
-- [App Signing](distribution/app-signing.md)
+- [App Signing](app-signing/app-credentials.md)
 - [Release Channels](distribution/release-channels.md)
 
 ### Expo Accounts

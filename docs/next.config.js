@@ -128,6 +128,7 @@ module.exports = {
       pathsPriority: [
         ...navigation.startingDirectories,
         ...navigation.generalDirectories,
+        ...navigation.easDirectories,
         ...versions.VERSIONS.map(version => `versions/${version}`),
       ],
       // Some of our pages are "hidden" and should not be added to the sitemap

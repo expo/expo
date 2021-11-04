@@ -1,6 +1,7 @@
 ---
 title: EAS Build
 sidebar_title: Introduction
+hideTOC: true
 ---
 
 **EAS Build** is a hosted service for building app binaries for your Expo and React Native projects.

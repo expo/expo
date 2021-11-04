@@ -274,8 +274,10 @@ RCT_EXPORT_METHOD(callMethod:(NSString *)moduleName methodNameOrKey:(id)methodNa
   // components in UIManager — we need to register them on our own.
   [self registerComponentDataForModuleClasses:additionalModuleClasses inBridge:bridge];
 
-  // Get the newly created instance of `EXReactEventEmitter` bridge module and register it in expo modules registry.
+  // Get the newly created instance of `EXReactEventEmitter` bridge module,
+  // pass event names supported by Swift modules and register it in legacy modules registry.
   EXReactNativeEventEmitter *eventEmitter = [bridge moduleForClass:[EXReactNativeEventEmitter class]];
+  [eventEmitter setSwiftInteropBridge:_swiftInteropBridge];
   [_exModuleRegistry registerInternalModule:eventEmitter];
 
   // Let the modules consume the registry :)

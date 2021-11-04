@@ -18,7 +18,7 @@ To bundle assets in your binary, use the [assetBundlePatterns](../workflow/confi
 ],
 ```
 
-Images with paths matching the given patterns will be bundled into your native binaries next time you run `expo build`.
+Images with paths matching the given patterns will be bundled into your native binaries next time you run `eas build` (or `expo build` if you are using the classic build service).
 
 > **Note**: If your app contains an abnormal amount of assets or assets that are abnormally large in size, asset bundling may not be the best solution as it will cause your application size to bloat. If this is the case, be selective and bundle those assets that are essential and store the rest on the CDN.
 

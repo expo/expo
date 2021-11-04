@@ -3,6 +3,10 @@ package expo.modules.kotlin
 import com.facebook.react.bridge.ReadableArray
 import expo.modules.core.Promise
 import expo.modules.core.utilities.ifNull
+import expo.modules.kotlin.events.BasicEventListener
+import expo.modules.kotlin.events.EventListenerWithSender
+import expo.modules.kotlin.events.EventListenerWithSenderAndPayload
+import expo.modules.kotlin.events.EventName
 import expo.modules.kotlin.modules.Module
 
 class ModuleHolder(val module: Module) {
@@ -16,5 +20,22 @@ class ModuleHolder(val module: Module) {
     }
 
     method.call(args, promise)
+  }
+
+  fun post(eventName: EventName) {
+    val listener = definition.eventListeners[eventName] ?: return
+    (listener as? BasicEventListener)?.call()
+  }
+
+  @Suppress("UNCHECKED_CAST")
+  fun <Sender> post(eventName: EventName, sender: Sender) {
+    val listener = definition.eventListeners[eventName] ?: return
+    (listener as? EventListenerWithSender<Sender>)?.call(sender)
+  }
+
+  @Suppress("UNCHECKED_CAST")
+  fun <Sender, Payload> post(eventName: EventName, sender: Sender, payload: Payload) {
+    val listener = definition.eventListeners[eventName] ?: return
+    (listener as? EventListenerWithSenderAndPayload<Sender, Payload>)?.call(sender, payload)
   }
 }

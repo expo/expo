@@ -3,6 +3,7 @@ title: Creating your first build
 ---
 
 import ImageSpotlight from '~/components/plugins/ImageSpotlight'
+import { InlineCode } from '~/components/base/code';
 
 In this guide, you'll learn how to build a ready-to-submit binary for the Apple App Store and Google Play Store using EAS Build.
 
@@ -42,6 +43,13 @@ Don't have a project yet? No problem: it's quick and easy to create a "Hello wor
 </details>
 
 > While EAS Build is in preview, it is available only to EAS Priority Plan subscribers. Once it graduates from preview it will become more broadly available. The first month of the Priority Plan is free, and you can cancel any time.
+
+<details><summary><strong>Are you using the classic build system?</strong> (<InlineCode>expo build:[android|ios]</InlineCode>)</summary> <p>
+
+Learn how to [build with our classic build service](/classic/building-standalone-apps.md).
+
+</p>
+</details>
 
 <!-- <details><summary><h4>🤖 If you want to build for the Play Store: Google Play Developer membership.</h4></summary>
 <p>

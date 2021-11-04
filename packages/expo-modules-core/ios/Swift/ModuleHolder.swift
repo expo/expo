@@ -26,6 +26,11 @@ public class ModuleHolder {
     return definition.name.isEmpty ? String(describing: type(of: module)) : definition.name
   }
 
+  /**
+   Number of JavaScript listeners attached to the module.
+   */
+  var listenersCount: Int = 0
+
   init(appContext: AppContext, module: AnyModule) {
     self.appContext = appContext
     self.module = module
@@ -61,6 +66,7 @@ public class ModuleHolder {
     call(method: methodName, args: args, promise: promise)
   }
 
+  @discardableResult
   func callSync(method methodName: String, args: [Any?]) -> Any? {
     if let method = definition.methods[methodName] {
       return method.callSync(args: args)
@@ -68,7 +74,7 @@ public class ModuleHolder {
     return nil
   }
 
-  // MARK: Listening to events
+  // MARK: Listening to native events
 
   func listeners(forEvent event: EventName) -> [EventListener] {
     return definition.eventListeners.filter {
@@ -86,6 +92,20 @@ public class ModuleHolder {
     listeners(forEvent: event).forEach {
       try? $0.call(module, payload)
     }
+  }
+
+  // MARK: JavaScript events
+
+  /**
+   Modifies module's listeners count and calls `onStartObserving` or `onStopObserving` accordingly.
+   */
+  func modifyListenersCount(_ count: Int) {
+    if count > 0 && listenersCount == 0 {
+      let _ = definition.methods["startObserving"]?.callSync(args: [])
+    } else if count < 0 && listenersCount + count <= 0 {
+      let _ = definition.methods["stopObserving"]?.callSync(args: [])
+    }
+    listenersCount = max(0, listenersCount + count)
   }
 
   // MARK: Deallocation

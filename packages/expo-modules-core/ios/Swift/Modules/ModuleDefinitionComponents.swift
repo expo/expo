@@ -205,6 +205,29 @@ extension AnyModule {
   public func viewManager(@ViewManagerDefinitionBuilder _ closure: @escaping () -> ViewManagerDefinition) -> AnyDefinition {
     return closure()
   }
+
+  // MARK: - Events
+
+  /**
+   Defines event names that this module can send to JavaScript.
+   */
+  public func events(_ names: String...) -> AnyDefinition {
+    return EventsDefinition(names: names)
+  }
+
+  /**
+   Method that is invoked when the first event listener is added.
+   */
+  public func onStartObserving(_ body: @escaping () -> ()) -> AnyMethod {
+    return ConcreteMethod("startObserving", argTypes: [], body)
+  }
+
+  /**
+   Method that is invoked when all event listeners are removed.
+   */
+  public func onStopObserving(_ body: @escaping () -> ()) -> AnyMethod {
+    return ConcreteMethod("stopObserving", argTypes: [], body)
+  }
 }
 
 /**

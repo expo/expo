@@ -168,6 +168,10 @@ export default class DocumentationPage extends React.Component<Props, State> {
     );
   };
 
+  private isEasPath = () => {
+    return some(navigation.easDirectories, name => this.props.url.pathname.startsWith(`/${name}`));
+  };
+
   private getCanonicalUrl = () => {
     if (this.isReferencePath()) {
       return `https://docs.expo.dev${Utilities.replaceVersionInUrl(
@@ -215,6 +219,8 @@ export default class DocumentationPage extends React.Component<Props, State> {
       return 'featurePreview';
     } else if (this.isPreviewPath()) {
       return 'preview';
+    } else if (this.isEasPath()) {
+      return 'eas';
     }
 
     return 'general';

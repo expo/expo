@@ -1,6 +1,6 @@
 import EXDevMenuInterface
 
-private class LauncherDelegate : DevMenuDelegateProtocol {
+internal class LauncherDelegate : DevMenuDelegateProtocol {
   private let controller: EXDevLauncherController
   
   init(withController controller: EXDevLauncherController) {
@@ -25,7 +25,7 @@ private class LauncherDelegate : DevMenuDelegateProtocol {
   }
 }
 
-private class AppDelegate : DevMenuDelegateProtocol {
+internal class AppDelegate : DevMenuDelegateProtocol {
   private let controller: EXDevLauncherController
   
   init(withController controller: EXDevLauncherController) {
