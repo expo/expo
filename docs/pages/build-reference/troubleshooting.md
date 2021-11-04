@@ -2,6 +2,8 @@
 title: Troubleshooting build errors and crashes
 ---
 
+import TerminalBlock from '~/components/plugins/TerminalBlock';
+
 When something goes wrong, it probably will go wrong in one of two ways: 1) your build will fail, or 2) the build will succeed but encounter a runtime error, eg: it crashes or hangs when you run it.
 
 All standard advice around [narrowing down the source of an error](https://expo.fyi/manual-debugging) applies here; this document provides information that may be useful on top of your typical troubleshooting processes and techniques.
@@ -16,14 +18,18 @@ If your project builds locally in release mode, it should also build on EAS Buil
 
 ### Verify that your project builds locally
 
-You can verify that your project builds on your local machine with `expo run:android --variant release` or `expo run:ios --configuration Release`. Note that it's important that we're using the release variant/configuration with these commands because there are meaningful differences between debug and release builds.
+You can verify that your project builds on your local machine with `expo run`:
 
-**These commands require that native toolchains for the respective platforms are installed and configured correctly**, which may not be the case if you are building a [managed project](/introduction/managed-vs-bare.md). [Learn more about setting up your development environment on reactnative.dev](https://reactnative.dev/docs/environment-setup).
+<TerminalBlock cmd={['# Locally compile and run the Android app in release mode', 'expo run:android --variant release', '', '# Locally compile and run the iOS app in release mode', 'expo run:ios --configuration Release']} />
 
-<details><summary><h4>💡 Managed workflow: Are unable to install native toolchains on your machine? Or prefer to avoid it?</h4></summary>
+> It's important that we use the release variant/configuration with these commands, because there are meaningful differences between debug and release builds.
+
+**These commands require that native toolchains for the respective platforms are installed and configured correctly**, which may not be the case if you are building a [managed project](/introduction/managed-vs-bare.md). [Learn how to set up your local development environment](https://reactnative.dev/docs/environment-setup).
+
+<details><summary><h4>💡 Managed workflow: Are you unable to install native toolchains on your machine? Or prefer to avoid it?</h4></summary>
 <p>
 
-**If you do not have native toolchains installed locally**, for example because you do not have an Apple computer and therefore cannot build an iOS app on your machine, it can be trickier to 
+**If you do not have native toolchains installed locally**, for example because you do not have an Apple computer and therefore cannot build an iOS app on your machine, it can be trickier to get to the bottom of build errors. The feedback loop of making small changes locally and then seeing the result on EAS Build is slower than doing the same steps locally, because the EAS Build worker must set up its environment, download your project, and install dependencies before starting the build.
 
 </p>
 </details>
@@ -34,16 +40,27 @@ If your native toolchains are installed correctly and you are unable to build an
 
 ### Native build errors
 
+The most common types of native build errors are:
+
+- .
+- .
+- .
+
+- Use `expo doctor` to determine if you have any incompatible library versions.
 
 ### JavaScript build errors
 
-The most common types of build errors are:
+The most common types of JavaScript build errors are:
 
-- JavaScript app fails to build.
-- 
+- .
+- .
+
+......
 
 ## Runtime errors
 
+The [debugging guide](/workflow/debugging.md#production-errors) gives good advice ...
 
 ## Still not working?
 
+How to report your issue and where
