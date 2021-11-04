@@ -14,7 +14,8 @@ export var IAPResponseCode;
      */
     IAPResponseCode[IAPResponseCode["ERROR"] = 2] = "ERROR";
     /**
-     * __iOS Only.__ Purchase was deferred.
+     * Purchase was deferred.
+     * @platform ios
      */
     IAPResponseCode[IAPResponseCode["DEFERRED"] = 3] = "DEFERRED";
 })(IAPResponseCode || (IAPResponseCode = {}));
@@ -34,15 +35,17 @@ export var InAppPurchaseState;
      */
     InAppPurchaseState[InAppPurchaseState["FAILED"] = 2] = "FAILED";
     /**
-     * __iOS Only.__ This transaction restores content previously purchased by the user. Read the
+     * This transaction restores content previously purchased by the user. Read the
      * `originalTransaction` properties to obtain information about the original purchase.
+     * @platform ios
      */
     InAppPurchaseState[InAppPurchaseState["RESTORED"] = 3] = "RESTORED";
     /**
-     * __iOS Only.__ The transaction has been received, but its final status is pending external
+     * The transaction has been received, but its final status is pending external
      * action such as the Ask to Buy feature where a child initiates a new purchase and has to wait
      * for the family organizer's approval. Update your UI to show the deferred state, and wait for
-     * another callback that indicates the final status
+     * another callback that indicates the final status.
+     * @platform ios
      */
     InAppPurchaseState[InAppPurchaseState["DEFERRED"] = 4] = "DEFERRED";
 })(InAppPurchaseState || (InAppPurchaseState = {}));

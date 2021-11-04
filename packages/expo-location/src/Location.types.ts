@@ -56,8 +56,9 @@ export enum LocationActivityType {
    */
   OtherNavigation = 4,
   /**
-   * __iOS 12+ Only.__ Intended for airborne activities. Fall backs to `ActivityType.Other` if
+   * Intended for airborne activities. Fall backs to `ActivityType.Other` if
    * unsupported.
+   * @platform ios 12+
    */
   Airborne = 5,
 }
@@ -148,9 +149,10 @@ export type LocationLastKnownOptions = {
  */
 export type LocationTaskOptions = LocationOptions & {
   /**
-   * __iOS 11+ Only.__ A boolean indicating whether the status bar changes its appearance when
+   * A boolean indicating whether the status bar changes its appearance when
    * location services are used in the background.
    * @default false
+   * @platform ios 11+
    */
   showsBackgroundLocationIndicator?: boolean;
   /**
@@ -168,17 +170,20 @@ export type LocationTaskOptions = LocationOptions & {
    */
   deferredUpdatesInterval?: number;
   /**
-   * __iOS Only.__ The type of user activity associated with the location updates.
+   * The type of user activity associated with the location updates.
    * @see See [Apple docs](https://developer.apple.com/documentation/corelocation/cllocationmanager/1620567-activitytype) for more details.
    * @default LocationActivityType.Other
+   * @platform ios
    */
   activityType?: LocationActivityType;
   /**
-   * __iOS Only.__ A boolean value indicating whether the location manager can pause location
+   * A boolean value indicating whether the location manager can pause location
    * updates to improve battery life without sacrificing location data. When this option is set to
    * `true`, the location manager pauses updates (and powers down the appropriate hardware) at times
    * when the location data is unlikely to change. You can help the determination of when to pause
-   * location updates by assigning a value to the `activityType` property. Defaults to `false`.
+   * location updates by assigning a value to the `activityType` property.
+   * @default false
+   * @platform ios
    */
   pausesUpdatesAutomatically?: boolean;
   foregroundService?: LocationTaskServiceOptions;
@@ -309,18 +314,21 @@ export type LocationProviderStatus = {
   // @docsMissing
   backgroundModeEnabled: boolean;
   /**
-   * __Android Only.__ Whether the GPS provider is available. If `true` the location data will come
+   * Whether the GPS provider is available. If `true` the location data will come
    * from GPS, especially for requests with high accuracy.
+   * @platform android
    */
   gpsAvailable?: boolean;
   /**
-   * __Android Only.__ Whether the network provider is available. If `true` the location data will
+   * Whether the network provider is available. If `true` the location data will
    * come from cellular network, especially for requests with low accuracy.
+   * @platform android
    */
   networkAvailable?: boolean;
   /**
-   * __Android Only.__ Whether the passive provider is available. If `true` the location data will
+   * Whether the passive provider is available. If `true` the location data will
    * be determined passively.
+   * @platform android
    */
   passiveAvailable?: boolean;
 };
@@ -434,7 +442,8 @@ export type LocationGeocodedAddress = {
    */
   isoCountryCode: string | null;
   /**
-   * __iOS Only.__ The timezone identifier associated with the address.
+   * The timezone identifier associated with the address.
+   * @platform ios
    */
   timezone: string | null;
 };

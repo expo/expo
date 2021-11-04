@@ -72,9 +72,10 @@ export async function getMacAddressAsync(interfaceName = null) {
 }
 // @needsAudit
 /**
- * __Android only.__ Tells if the device is in airplane mode.
+ * Tells if the device is in airplane mode.
  * @return Returns a `Promise` that fulfils with a `boolean` value for whether the device is in
  * airplane mode or not.
+ * @platform android
  *
  * @example
  * ```ts
