@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Workaround double bridge initializaed from startup. ([#15019](https://github.com/expo/expo/pull/15019) by [@kudo](https://github.com/kudo))
+- Workaround for bridge being initialized twice on startup. ([#15019](https://github.com/expo/expo/pull/15019) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others
 
