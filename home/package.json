@@ -41,7 +41,7 @@
     "expo-linear-gradient": "~10.0.3",
     "expo-location": "~13.0.4",
     "expo-permissions": "~13.0.3",
-    "expo-splash-screen": "~0.13.4",
+    "expo-splash-screen": "~0.13.5",
     "expo-task-manager": "~10.0.3",
     "expo-web-browser": "~10.0.3",
     "graphql": "^15.3.0",

@@ -204,7 +204,7 @@ PODS:
     - ExpoModulesCore
   - EXSpeech (10.0.3):
     - ExpoModulesCore
-  - EXSplashScreen (0.13.4):
+  - EXSplashScreen (0.13.5):
     - ExpoModulesCore
     - React-Core
   - EXSQLite (10.0.3):
@@ -663,7 +663,7 @@ PODS:
     - React-cxxreact (= 0.64.2)
     - React-jsi (= 0.64.2)
     - React-perflogger (= 0.64.2)
-  - RNCAsyncStorage (1.15.2):
+  - RNCAsyncStorage (1.15.9):
     - React-Core
   - RNCMaskedView (0.2.5):
     - React-Core
@@ -671,9 +671,9 @@ PODS:
     - React-Core
   - RNDateTimePicker (3.5.2):
     - React-Core
-  - RNGestureHandler (1.10.2):
+  - RNGestureHandler (1.10.3):
     - React-Core
-  - RNReanimated (2.2.0):
+  - RNReanimated (2.2.3):
     - DoubleConversion
     - FBLazyVector
     - FBReactNativeSpec
@@ -1271,7 +1271,7 @@ SPEC CHECKSUMS:
   EXSharing: 9c58d207a43c2661b2f5b78a644d9c7642f19de9
   EXSMS: 08db0b52fb83f2e8d40a03561d07e183b0f0df1d
   EXSpeech: a79ffa930ef957d222ac697810d0282028deb74f
-  EXSplashScreen: 870db5fcc05212b3fab4ccfe96653cc276153fa2
+  EXSplashScreen: 85bbafc4b56dcfb4673a389b42ce9ddde3507078
   EXSQLite: c92069495c1c84a27e9d681ddff826dea3314482
   EXStoreReview: ba32e9ebdab47176fe263db022982e4b8a580c28
   EXStructuredHeaders: ba85104bb57e861129872a30e2cf7adaa348c4ac
@@ -1340,12 +1340,12 @@ SPEC CHECKSUMS:
   React-RCTVibration: 24600e3b1aaa77126989bc58b6747509a1ba14f3
   React-runtimeexecutor: a9904c6d0218fb9f8b19d6dd88607225927668f9
   ReactCommon: 149906e01aa51142707a10665185db879898e966
-  RNCAsyncStorage: 9b7605e899f9acb2fba33e87952c529731265453
+  RNCAsyncStorage: 26f25150da507524a7815f2ada06ca0967f65633
   RNCMaskedView: b7a3b119b1d738734a9d761e4220c6850bb248a3
   RNCPicker: f7a40b21b915b7a187624d52f52b7bc2f73ea413
   RNDateTimePicker: 7658208086d86d09e1627b5c34ba0cf237c60140
-  RNGestureHandler: e66feb0fda7da74ea6a3094656b3c1efe05f5c07
-  RNReanimated: 9c13c86454bfd54dab7505c1a054470bfecd2563
+  RNGestureHandler: a479ebd5ed4221a810967000735517df0d2db211
+  RNReanimated: 64c38d47ffcc29c97fc1d8cfde9e8a73d7be7cc8
   RNScreens: 6e1ea5787989f92b0671049b808aef64fa1ef98c
   RNSharedElement: 87baf6d04da5b068f000dd8c953d28a1196999c0
   RNSVG: 551acb6562324b1d52a4e0758f7ca0ec234e278f
