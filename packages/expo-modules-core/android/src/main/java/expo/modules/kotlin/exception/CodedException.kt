@@ -51,14 +51,14 @@ class IncompatibleArgTypeException(
   cause = cause
 )
 
-class InvalidArgsNumberException(received: Int, expected: Int)
-  : CodedException(message = "Received $received arguments, but $expected was expected.")
+class InvalidArgsNumberException(received: Int, expected: Int) :
+  CodedException(message = "Received $received arguments, but $expected was expected.")
 
-internal class MethodNotFoundException(methodName: String, moduleName: String)
-  : CodedException(message = "Cannot fund method $methodName in module $moduleName")
+internal class MethodNotFoundException(methodName: String, moduleName: String) :
+  CodedException(message = "Cannot fund method $methodName in module $moduleName")
 
 class NullArgumentException(desiredType: KType) :
   CodedException(message = "Cannot assigned null to not nullable type $desiredType")
 
-class UnexpectedException(val throwable: Throwable)
-  : CodedException(throwable)
+class UnexpectedException(val throwable: Throwable) :
+  CodedException(throwable)
