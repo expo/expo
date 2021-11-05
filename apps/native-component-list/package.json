@@ -125,6 +125,7 @@
     "expo-status-bar": "^1.1.0",
     "expo-store-review": "~5.0.3",
     "expo-task-manager": "~10.0.3",
+    "expo-system-ui": "~1.0.0",
     "expo-three": "6.0.1",
     "expo-tracking-transparency": "~2.0.3",
     "expo-updates": "0.10.13",

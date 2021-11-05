@@ -182,6 +182,8 @@ PODS:
     - React-Core
   - ExpoModulesCore (0.4.7):
     - React-Core
+  - ExpoSystemUI (1.0.0):
+    - ExpoModulesCore
   - EXPrint (11.0.4):
     - ExpoModulesCore
   - EXRandom (12.0.1):
@@ -787,6 +789,7 @@ DEPENDENCIES:
   - expo-dev-menu/Tests (from `../../../packages/expo-dev-menu`)
   - expo-dev-menu/UITests (from `../../../packages/expo-dev-menu`)
   - ExpoModulesCore (from `../../../packages/expo-modules-core/ios`)
+  - ExpoSystemUI (from `../../../packages/expo-system-ui/ios`)
   - EXPrint (from `../../../packages/expo-print/ios`)
   - EXRandom (from `../../../packages/expo-random/ios`)
   - EXScreenCapture (from `../../../packages/expo-screen-capture/ios`)
@@ -1051,6 +1054,9 @@ EXTERNAL SOURCES:
   ExpoModulesCore:
     inhibit_warnings: false
     :path: "../../../packages/expo-modules-core/ios"
+  ExpoSystemUI:
+    inhibit_warnings: false
+    :path: "../../../packages/expo-system-ui/ios"
   EXPrint:
     inhibit_warnings: false
     :path: "../../../packages/expo-print/ios"
@@ -1261,6 +1267,7 @@ SPEC CHECKSUMS:
   expo-dev-menu: 07e44bd1432b2bdfe249f76c37a090510c5dcebc
   expo-dev-menu-interface: 508467f2ba2aedda7a44e5080cc1e9a43ab7375e
   ExpoModulesCore: c353a3bed60c3b83dbe63f134aaa7bf4733ffa16
+  ExpoSystemUI: 3c969e3db290fcd5edb9c466d585f183d934b421
   EXPrint: 46a7f1b4cf2cbdbdc74542b7dc86832d4fc8037b
   EXRandom: 64c954ae24619b8d0c18ff46aa96401e98efc977
   EXScreenCapture: aa7292f963ccfde7aed4ba6bb6e822e95ef5153e
