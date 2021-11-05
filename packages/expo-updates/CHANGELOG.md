@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Fix issue with assets that are duplicated in the local SQLite db being reaped when they are still in use. ([#15049](https://github.com/expo/expo/pull/15049) by [@esamelson](https://github.com/esamelson))
-
 ### 💡 Others
+
+## 0.10.13 — 2021-11-05
+
+### 🐛 Bug fixes
+
+- Fix issue with assets that are duplicated in the local SQLite db being reaped when they are still in use. ([#15049](https://github.com/expo/expo/pull/15049) by [@esamelson](https://github.com/esamelson))
 
 ## 0.10.12 — 2021-11-04
 
