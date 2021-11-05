@@ -13,9 +13,6 @@ object ApplicationLifecycleDispatcher {
     return listeners ?: ExpoModulesPackage.packagePrioritySortedList
       .flatMap { it.createApplicationLifecycleListeners(application) }
       .also { listeners = it }
-        .flatMap { it.createApplicationLifecycleListeners(application) }
-    }
-    return listeners!!
   }
 
   @JvmStatic
