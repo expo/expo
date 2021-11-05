@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Update `debug` and `glob` dependencies.
+
 ## 1.6.0 — 2021-09-28
 
 ### 🎉 New features
