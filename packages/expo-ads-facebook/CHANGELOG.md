@@ -10,7 +10,7 @@
 
 ### 💡 Others
 
-- Update `nullthrows` dependency.
+- Update `nullthrows` dependency. ([#15069](https://github.com/expo/expo/pull/15069) by [@Simek](https://github.com/Simek))
 
 ## 11.0.1 — 2021-10-01
 

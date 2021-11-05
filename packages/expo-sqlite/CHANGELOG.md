@@ -10,7 +10,7 @@
 
 ### 💡 Others
 
-- Update `lodash` dependency.
+- Update `lodash` dependency. ([#15069](https://github.com/expo/expo/pull/15069) by [@Simek](https://github.com/Simek))
 
 ## 10.0.1 — 2021-10-01
 

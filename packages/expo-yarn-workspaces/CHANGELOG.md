@@ -10,7 +10,7 @@
 
 ### 💡 Others
 
-- Update `debug` and `glob` dependencies.
+- Update `debug` and `glob` dependencies. ([#15069](https://github.com/expo/expo/pull/15069) by [@Simek](https://github.com/Simek))
 
 ## 1.6.0 — 2021-09-28
 
