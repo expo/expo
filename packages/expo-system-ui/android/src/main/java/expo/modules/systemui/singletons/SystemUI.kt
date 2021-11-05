@@ -3,14 +3,9 @@ package expo.modules.systemui
 import android.os.Build
 import android.util.Log
 import androidx.appcompat.app.AppCompatDelegate
-import expo.modules.core.interfaces.SingletonModule
 
-object SystemUI : SingletonModule {
+object SystemUI {
   private const val TAG = "SystemUI"
-
-  override fun getName(): String {
-    return "SystemUI"
-  }
 
   fun setUserInterfaceStyle(
     style: String,

@@ -6,7 +6,6 @@ import android.os.Bundle
 import expo.modules.core.interfaces.ReactActivityLifecycleListener
 
 // EXPO_VERSIONING_NEEDS_EXPOVIEW_R
-/* ktlint-enable no-unused-imports */
 
 class SystemUIReactActivityLifecycleListener(activityContext: Context) : ReactActivityLifecycleListener {
   override fun onCreate(activity: Activity, savedInstanceState: Bundle?) {
