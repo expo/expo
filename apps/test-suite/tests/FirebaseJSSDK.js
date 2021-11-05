@@ -1,7 +1,13 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as FileSystem from 'expo-file-system';
 import { initializeApp, getApp } from 'firebase/app';
-import { initializeAuth, getAuth, signInWithEmailAndPassword } from 'firebase/auth';
+import {
+  initializeAuth,
+  getAuth,
+  signInWithEmailAndPassword,
+  signInWithPhoneNumber,
+  PhoneAuthProvider,
+} from 'firebase/auth';
 import { getDatabase, ref, onValue } from 'firebase/database';
 import {
   initializeFirestore,
@@ -188,6 +194,20 @@ export async function test({ describe, it, expect, beforeAll }) {
           error = e;
         }
         expect(error).toBeNull();
+      });
+    });
+  });
+
+  describe('regression', () => {
+    describe('firebase/auth', () => {
+      // see: https://github.com/firebase/firebase-js-sdk/issues/5638
+      it('exports signInWithPhoneNumber', () => {
+        expect(signInWithPhoneNumber).not.toBe(undefined);
+      });
+
+      // see: https://github.com/firebase/firebase-js-sdk/issues/5638
+      it('exports PhoneAuthProvider', () => {
+        expect(PhoneAuthProvider).not.toBe(undefined);
       });
     });
   });
