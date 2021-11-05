@@ -6,7 +6,7 @@
  value of `Any` type to the type implemented by this protocol. It should throw an error
  when the value is not recognized, is invalid or doesn't meet type requirements.
  */
-public protocol ConvertibleArgument: AnyMethodArgument {
+public protocol ConvertibleArgument: AnyArgument {
   /**
    Converts any value to the instance of its class (or struct).
    Throws an error when given value cannot be converted.
