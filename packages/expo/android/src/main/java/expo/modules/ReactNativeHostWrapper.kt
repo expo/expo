@@ -25,7 +25,7 @@ class ReactNativeHostWrapper(
   override fun createReactInstanceManager(): ReactInstanceManager {
     val developerSupport = useDeveloperSupport
     reactNativeHostHandlers.forEach { handler ->
-      handler.onBeforeCreateReactInstanceManager(developerSupport)
+      handler.onWillCreateReactInstanceManager(developerSupport)
     }
 
     val result = reactNativeHostHandlers.asSequence()

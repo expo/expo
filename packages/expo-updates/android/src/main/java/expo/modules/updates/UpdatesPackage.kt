@@ -31,7 +31,7 @@ class UpdatesPackage : Package {
         return if (shouldAutoSetup(context) && !useDeveloperSupport) UpdatesController.instance.bundleAssetName else null
       }
 
-      override fun onBeforeCreateReactInstanceManager(useDeveloperSupport: Boolean) {
+      override fun onWillCreateReactInstanceManager(useDeveloperSupport: Boolean) {
         if (shouldAutoSetup(context) && !useDeveloperSupport) {
           UpdatesController.initialize(context)
         }

@@ -54,7 +54,7 @@ interface ReactNativeHostHandler {
   /**
    * Callback before {@link ReactInstanceManager} creation
    */
-  fun onBeforeCreateReactInstanceManager(useDeveloperSupport: Boolean) {}
+  fun onWillCreateReactInstanceManager(useDeveloperSupport: Boolean) {}
 
   /**
    * Callback after {@link ReactInstanceManager} creation
