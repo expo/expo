@@ -1,5 +1,6 @@
 package com.helloworld;
 
+import android.content.res.Configuration;
 import android.os.Bundle;
 
 import com.facebook.react.ReactActivity;
@@ -10,6 +11,7 @@ import com.swmansion.gesturehandler.react.RNGestureHandlerEnabledRootView;
 import expo.modules.ReactActivityDelegateWrapper;
 
 public class MainActivity extends ReactActivity {
+
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     // Set the theme to AppTheme BEFORE onCreate to support 
@@ -17,6 +19,12 @@ public class MainActivity extends ReactActivity {
     // This is required for expo-splash-screen.
     setTheme(R.style.AppTheme);
     super.onCreate(null);
+  }
+
+  @Override
+  public void onConfigurationChanged(Configuration newConfig) {
+    super.onConfigurationChanged(newConfig);
+    getReactInstanceManager().onConfigurationChanged(this, newConfig);
   }
 
   /**
