@@ -19,7 +19,7 @@ export default function SystemUIScreen() {
 }
 
 SystemUIScreen.navigationOptions = {
-  title: 'Navigation Bar',
+  title: 'System UI',
 };
 
 function BackgroundColorExample() {
