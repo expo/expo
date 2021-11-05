@@ -70,15 +70,6 @@ NSString *const EXDidUpdateMetadataEventName = @"didUpdateMetadata";
 
 @implementation EXAV
 
-// Required in Expo Go only - EXAV conforms to RCTBridgeModule protocol
-// and in Expo Go, kernel calls [EXReactAppManager rebuildBridge]
-// which requires this to be implemented. Normal "bare" RN modules
-// use RCT_EXPORT_MODULE macro which implement this automatically.
-+(NSString *)moduleName
-{
-  return @"ExponentAV";
-}
-
 EX_EXPORT_MODULE(ExponentAV);
 
 - (instancetype)init
@@ -106,11 +97,6 @@ EX_EXPORT_MODULE(ExponentAV);
     _audioRecorderDurationMillis = 0;
   }
   return self;
-}
-
-- (void)setBridge:(RCTBridge *)bridge
-{
-  _bridge = bridge;
 }
 
 + (const NSArray<Protocol *> *)exportedInterfaces
@@ -192,6 +178,32 @@ EX_EXPORT_MODULE(ExponentAV);
   for (NSNumber *key in [_soundDictionary allKeys]) {
     [self _removeAudioCallbackForKey:key];
   }
+}
+
+#pragma mark - RCTBridgeModule
+
+- (void)setBridge:(RCTBridge *)bridge
+{
+  _bridge = bridge;
+}
+
+// Required in Expo Go only - EXAV conforms to RCTBridgeModule protocol
+// and in Expo Go, kernel calls [EXReactAppManager rebuildBridge]
+// which requires this to be implemented. Normal "bare" RN modules
+// use RCT_EXPORT_MODULE macro which implement this automatically.
++(NSString *)moduleName
+{
+  return @"ExponentAV";
+}
+
+// Both RCTBridgeModule and EXExportedModule define `constantsToExport`. We implement
+// that method for the latter, but React Bridge displays a yellow LogBox warning:
+// "Module EXAV requires main queue setup since it overrides `constantsToExport` but doesn't implement `requiresMainQueueSetup`."
+// Since we don't care about that (RCTBridgeModule is used here for another reason),
+// we just need this to dismiss that warning.
++ (BOOL)requiresMainQueueSetup
+{
+  return NO;
 }
 
 #pragma mark - RCTEventEmitter
