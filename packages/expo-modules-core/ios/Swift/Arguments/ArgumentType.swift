@@ -12,7 +12,7 @@ internal func ArgumentType<T>(_ type: T.Type) -> AnyArgumentType {
  Its element type will be `RawArgumentType` since `T.Element` protocol conformance is unknown.
  */
 internal func ArgumentType<T>(_ type: T.Type) -> AnyArgumentType where T: RandomAccessCollection {
-  return CollectionArgumentType(T.self, T.Element.self)
+  return CollectionArgumentType(T.self, ArgumentType(T.Element.self))
 }
 
 /**
@@ -20,5 +20,5 @@ internal func ArgumentType<T>(_ type: T.Type) -> AnyArgumentType where T: Random
  Its element type will be `CollectionArgumentType` since `T.Element` is constrained to be an array too.
  */
 internal func ArgumentType<T>(_ type: T.Type) -> AnyArgumentType where T: RandomAccessCollection, T.Element: RandomAccessCollection {
-  return CollectionArgumentType(T.self, T.Element.self)
+  return CollectionArgumentType(T.self, ArgumentType(T.Element.self))
 }
