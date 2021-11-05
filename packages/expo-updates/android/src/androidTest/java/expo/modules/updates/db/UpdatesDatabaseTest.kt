@@ -141,4 +141,44 @@ class UpdatesDatabaseTest {
     Assert.assertNotNull(assetDao.loadAssetWithKey("asset3"))
     Assert.assertNotNull(assetDao.loadAssetWithKey("commonAsset"))
   }
+
+  @Test
+  fun testDeleteUnusedAssets_DuplicateFilenames() {
+    val runtimeVersion = "1.0"
+    val projectId = "https://exp.host/@esamelson/test-project"
+    val update1 = UpdateEntity(UUID.randomUUID(), Date(), runtimeVersion, projectId)
+    val update2 = UpdateEntity(UUID.randomUUID(), Date(Date().time + 1), runtimeVersion, projectId)
+    updateDao.insertUpdate(update1)
+    updateDao.insertUpdate(update2)
+    updateDao.markUpdateFinished(update1)
+    updateDao.markUpdateFinished(update2)
+
+    val asset1 = AssetEntity("asset1", "png")
+    val asset2 = AssetEntity("asset2", "png")
+    val asset3 = AssetEntity("asset3", "png")
+
+    // simulate two assets with different keys that share a file on disk
+    // this can happen if we, for example, change the format of asset keys that we serve
+    asset2.relativePath = "same-filename.png"
+    asset3.relativePath = "same-filename.png"
+
+    assetDao.insertAssets(listOf(asset1, asset2), update1)
+    assetDao.insertAssets(listOf(asset3), update2)
+
+    // simulate update1 being reaped, update2 being kept
+    updateDao.deleteUpdates(listOf(update1))
+
+    Assert.assertEquals(3, assetDao.loadAllAssets().size)
+
+    val deletedAssets = assetDao.deleteUnusedAssets()
+
+    Assert.assertEquals(1, deletedAssets.size)
+    for (deletedAsset in deletedAssets) {
+      Assert.assertEquals("asset1", deletedAsset.key)
+    }
+
+    Assert.assertNull(assetDao.loadAssetWithKey("asset1"))
+    Assert.assertNotNull(assetDao.loadAssetWithKey("asset2"))
+    Assert.assertNotNull(assetDao.loadAssetWithKey("asset3"))
+  }
 }
