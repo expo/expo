@@ -22,15 +22,12 @@ class ExpoModulesPackage : ReactPackage {
       try {
         val expoModules = Class.forName("expo.modules.ExpoModulesPackageList")
         val getPackageList = expoModules.getMethod("getPackageList")
-        getPackageList.invoke(null) as List<Package>
+        (getPackageList.invoke(null) as List<Package>)
+          .sortedByDescending { ModulePriorities.get(it::class.qualifiedName) }
       } catch (e: Exception) {
         Log.e("ExpoModulesPackage", "Couldn't get expo package list.", e)
         emptyList()
       }
-    }
-
-    val packagePrioritySortedList: List<Package> by lazy {
-      packageList.sortedByDescending { ModulePriorities.get(it::class.qualifiedName) }
     }
   }
 

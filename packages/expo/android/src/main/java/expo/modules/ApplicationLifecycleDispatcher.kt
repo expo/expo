@@ -10,7 +10,7 @@ object ApplicationLifecycleDispatcher {
 
   @UiThread
   private fun getCachedListeners(application: Application): List<ApplicationLifecycleListener> {
-    return listeners ?: ExpoModulesPackage.packagePrioritySortedList
+    return listeners ?: ExpoModulesPackage.packageList
       .flatMap { it.createApplicationLifecycleListeners(application) }
       .also { listeners = it }
   }

@@ -19,9 +19,9 @@ class ReactActivityDelegateWrapper(
   private val activity: ReactActivity,
   private val delegate: ReactActivityDelegate
 ) : ReactActivityDelegate(activity, null) {
-  private val reactActivityLifecycleListeners = ExpoModulesPackage.packagePrioritySortedList
+  private val reactActivityLifecycleListeners = ExpoModulesPackage.packageList
     .flatMap { it.createReactActivityLifecycleListeners(activity) }
-  private val reactActivityHandlers = ExpoModulesPackage.packagePrioritySortedList
+  private val reactActivityHandlers = ExpoModulesPackage.packageList
     .flatMap { it.createReactActivityHandlers(activity) }
   private val methodMap: ArrayMap<String, Method> = ArrayMap()
 

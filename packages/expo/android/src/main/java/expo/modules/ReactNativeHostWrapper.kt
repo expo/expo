@@ -18,7 +18,7 @@ class ReactNativeHostWrapper(
   application: Application,
   private val host: ReactNativeHost
 ) : ReactNativeHost(application) {
-  private val reactNativeHostHandlers = ExpoModulesPackage.packagePrioritySortedList
+  private val reactNativeHostHandlers = ExpoModulesPackage.packageList
     .flatMap { it.createReactNativeHostHandlers(application) }
   private val methodMap: ArrayMap<String, Method> = ArrayMap()
 
