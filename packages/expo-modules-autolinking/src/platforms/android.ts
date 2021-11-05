@@ -102,7 +102,7 @@ async function findAndroidPackagesAsync(modules: ModuleDescriptor[]): Promise<st
 
   await Promise.all(
     modules.map(async (module) => {
-      const files = await glob('src/**/*Package.{java,kt}', {
+      const files = await glob('**/*Package.{java,kt}', {
         cwd: module.sourceDir,
       });
 

@@ -12,7 +12,6 @@ import com.facebook.react.bridge.JavaScriptContextHolder
 import com.facebook.react.bridge.JavaScriptExecutorFactory
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.devsupport.RedBoxHandler
-import com.facebook.react.uimanager.UIImplementationProvider
 import java.lang.reflect.Method
 
 class ReactNativeHostWrapper(
@@ -24,11 +23,20 @@ class ReactNativeHostWrapper(
   private val methodMap: ArrayMap<String, Method> = ArrayMap()
 
   override fun createReactInstanceManager(): ReactInstanceManager {
-    // map() without asSequence() gives a chance for handlers
-    // to get noticed before createReactInstanceManager()
-    return reactNativeHostHandlers
-      .map { it.createReactInstanceManager(useDeveloperSupport) }
+    val developerSupport = useDeveloperSupport
+    reactNativeHostHandlers.forEach { handler ->
+      handler.onWillCreateReactInstanceManager(developerSupport)
+    }
+
+    val result = reactNativeHostHandlers.asSequence()
+      .map { it.createReactInstanceManager(developerSupport) }
       .firstOrNull() ?: super.createReactInstanceManager()
+
+    reactNativeHostHandlers.forEach { handler ->
+      handler.onDidCreateReactInstanceManager(developerSupport)
+    }
+
+    return result
   }
 
   override fun getRedBoxHandler(): RedBoxHandler? {
@@ -39,7 +47,8 @@ class ReactNativeHostWrapper(
     return invokeDelegateMethod("getJavaScriptExecutorFactory")
   }
 
-  override fun getUIImplementationProvider(): UIImplementationProvider {
+  @Suppress("DEPRECATION")
+  override fun getUIImplementationProvider(): com.facebook.react.uimanager.UIImplementationProvider {
     return invokeDelegateMethod("getUIImplementationProvider")
   }
 
@@ -90,6 +99,7 @@ class ReactNativeHostWrapper(
     }
   }
 
+  @Suppress("UNCHECKED_CAST")
   private fun <T> invokeDelegateMethod(name: String): T {
     var method = methodMap[name]
     if (method == null) {
