@@ -12,7 +12,7 @@ All standard advice around [narrowing down the source of an error](https://expo.
 
 <!-- todo: need to add explicit callout to monorepos here -->
 
-## Find the error logs
+## Find the related error logs
 
 Before you go further, you need to be sure that you have located the error message and read it. How you do this will be different depending on whether you're investigating a build failure or runtime error.
 
