@@ -2500,7 +2500,7 @@ PODS:
     - ExpoModulesCore
   - EXPermissions (13.0.3):
     - ExpoModulesCore
-  - Expo (43.0.1):
+  - Expo (43.0.2):
     - ExpoModulesCore
   - ExpoModulesCore (0.4.7):
     - React-Core
@@ -5114,7 +5114,7 @@ SPEC CHECKSUMS:
   boost-for-react-native: 39c7adb57c4e60d6c5479dd8623128eb5b3f0f2c
   Branch: 9a37f707974a128c37829033c49018b79c7e7a2d
   CocoaLumberjack: 2f44e60eb91c176d471fdba43b9e3eae6a721947
-  DoubleConversion: cde416483dac037923206447da6e1454df403714
+  DoubleConversion: cf9b38bf0b2d048436d9a82ad2abe1404f11e7de
   EXAdsAdMob: 2b1bfdd00f5702c709f1704153821697c5a83996
   EXAdsFacebook: 175940877fdf66244c9f3484f45bf87144daf59e
   EXAmplitude: ad34ba9e466d8172e8ff26c1ebb4a4ac7643634e
@@ -5163,7 +5163,7 @@ SPEC CHECKSUMS:
   EXNetwork: f287400b8244611ffa5588603a01bdd601e5ce1c
   EXNotifications: b03a992d3c103a888899a550353d78578338282a
   EXPermissions: 7696f4c16e89981f84c04d96327f7e1e592373c0
-  Expo: cb542da0f7c8565a58231488066262f079eb1831
+  Expo: b66c9661cf2514b4adf67b8367178e8ed3eb9801
   ExpoModulesCore: c353a3bed60c3b83dbe63f134aaa7bf4733ffa16
   EXPrint: 46a7f1b4cf2cbdbdc74542b7dc86832d4fc8037b
   EXRandom: 64c954ae24619b8d0c18ff46aa96401e98efc977
@@ -5195,7 +5195,7 @@ SPEC CHECKSUMS:
   FirebaseCore: ac35d680a0bf32319a59966a1478e0741536b97b
   FirebaseCoreDiagnostics: 3d36e05da74cb8b7ce30e6594a8f201b982c725c
   FirebaseInstallations: a58d4f72ec5861840b84df489f2668d970df558a
-  glog: 40a13f7840415b9a77023fbcae0f1e6f43192af3
+  glog: 73c2498ac6884b13ede40eda8228cb1eee9d9d62
   Google-Maps-iOS-Utils: c32891ff472eaaa1fca032beedafa1a013af7875
   Google-Mobile-Ads-SDK: 2f288748a42920d1c744946a460896a95b0e9110
   GoogleAppMeasurement: 0c3b134b2c0a90c4c24833873894bfe0e42a0384
