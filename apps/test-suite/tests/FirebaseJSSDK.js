@@ -9,16 +9,7 @@ import {
   PhoneAuthProvider,
 } from 'firebase/auth';
 import { getDatabase, ref, onValue } from 'firebase/database';
-import {
-  initializeFirestore,
-  getFirestore,
-  query,
-  collection,
-  where,
-  doc,
-  getDocs,
-  getDoc,
-} from 'firebase/firestore';
+import { getFirestore, query, collection, where, doc, getDocs, getDoc } from 'firebase/firestore';
 import { getFunctions, httpsCallable } from 'firebase/functions';
 import { getStorage, ref as storageRef, listAll, getDownloadURL } from 'firebase/storage';
 
@@ -55,12 +46,6 @@ export async function test({ describe, it, expect, beforeAll }) {
       // We need to use `@react-native-async-storage/async-storage` instead of `react-native`.
       // See: https://github.com/firebase/firebase-js-sdk/issues/1847
       initializeAuth(getApp(), { persistence: getReactNativePersistence(AsyncStorage) });
-    } catch {}
-
-    try {
-      // Without experimental force long polling, the SDK can't connect to the firestore server.
-      // See: https://github.com/firebase/firebase-js-sdk/issues/5504
-      initializeFirestore(getApp(), { experimentalForceLongPolling: true });
     } catch {}
   });
 
