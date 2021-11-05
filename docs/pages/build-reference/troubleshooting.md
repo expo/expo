@@ -2,6 +2,8 @@
 title: Troubleshooting build errors and crashes
 ---
 
+> This document is under active development; the topic it covers is expansive and finding the right way to explain how to troubleshoot issues will take some trial and error. Your suggestions for improvements are welcome as pull requests.
+
 import TerminalBlock from '~/components/plugins/TerminalBlock';
 
 When something goes wrong, it probably will go wrong in one of two ways: 1) your build will fail, or 2) the build will succeed but encounter a runtime error, eg: it crashes or hangs when you run it.
@@ -15,6 +17,14 @@ If your project builds locally in release mode, it should also build on EAS Buil
 - Relevant Build tool versions (eg: Xcode, Node, npm, Yarn) are the same in both environments.
 - Relevant environment variables are the same in both environments.
 - The archive that is uploaded to EAS Build includes the same relevant source files.
+
+### Find and read the error message
+
+Before you go further, you need to be sure that you have located the error message and read it.
+
+Go to your build details page (find it on the [build dashboard](https://expo.dev/accounts/[account]/projects/[project]/builds) if you don't have it open already) and find any of the build phases that errored and expand them. Often the earliest phase that errors will contain the most useful information.
+
+You will likely see many log entries prefixes with `[stderr]`, but don't be thrown off. It's common for CLI tools to use [stderr](https://en.wikipedia.org/wiki/Standard_streams#Standard_error_(stderr)) to output warnings and other diagnostics, not just errors. So how do you know which log lines are responsible for your build failing? To some extent, you have to use your own judgement, but there are some common signs you can look out for.
 
 ### Verify that your project builds locally
 
