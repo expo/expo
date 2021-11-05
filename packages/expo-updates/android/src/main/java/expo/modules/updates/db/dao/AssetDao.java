@@ -41,6 +41,12 @@ public abstract class AssetDao {
           " WHERE updates.keep);")
   public abstract void _unmarkUsedAssetsFromDeletion();
 
+  @Query("UPDATE assets SET marked_for_deletion = 0 WHERE relative_path IN (" +
+                  " SELECT relative_path" +
+                  " FROM assets" +
+                  " WHERE marked_for_deletion = 0);")
+  public abstract void _unmarkDuplicateUsedAssetsFromDeletion();
+
   @Query("SELECT * FROM assets WHERE marked_for_deletion = 1;")
   public abstract List<AssetEntity> _loadAssetsMarkedForDeletion();
 
@@ -121,6 +127,8 @@ public abstract class AssetDao {
     // this is safe since this is a transaction and will be rolled back upon failure
     _markAllAssetsForDeletion();
     _unmarkUsedAssetsFromDeletion();
+    // check for duplicate rows representing a single file on disk
+    _unmarkDuplicateUsedAssetsFromDeletion();
 
     List<AssetEntity> deletedAssets = _loadAssetsMarkedForDeletion();
     _deleteAssetsMarkedForDeletion();

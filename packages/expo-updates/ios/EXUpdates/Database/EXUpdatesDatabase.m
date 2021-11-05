@@ -275,6 +275,17 @@ static NSString * const EXUpdatesDatabaseServerDefinedHeadersKey = @"serverDefin
     return nil;
   }
 
+  // check for duplicate rows representing a single file on disk
+  NSString * const update3Sql = @"UPDATE assets SET marked_for_deletion = 0 WHERE relative_path IN (\
+  SELECT relative_path\
+  FROM assets\
+  WHERE marked_for_deletion = 0\
+  );";
+  if ([self _executeSql:update3Sql withArgs:nil error:error] == nil) {
+    sqlite3_exec(_db, "ROLLBACK;", NULL, NULL, NULL);
+    return nil;
+  }
+
   NSString * const selectSql = @"SELECT * FROM assets WHERE marked_for_deletion = 1;";
   NSArray<NSDictionary *> *rows = [self _executeSql:selectSql withArgs:nil error:error];
   if (!rows) {

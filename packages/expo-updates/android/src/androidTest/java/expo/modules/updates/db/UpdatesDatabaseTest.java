@@ -151,4 +151,44 @@ public class UpdatesDatabaseTest {
     Assert.assertNotNull(assetDao.loadAssetWithKey("asset3"));
     Assert.assertNotNull(assetDao.loadAssetWithKey("commonAsset"));
   }
+
+  @Test
+  public void testDeleteUnusedAssets_DuplicateFilenames() {
+    String runtimeVersion = "1.0";
+    String projectId = "https://exp.host/@esamelson/test-project";
+    UpdateEntity update1 = new UpdateEntity(UUID.randomUUID(), new Date(), runtimeVersion, projectId);
+    UpdateEntity update2 = new UpdateEntity(UUID.randomUUID(), new Date(new Date().getTime() + 1), runtimeVersion, projectId);
+    updateDao.insertUpdate(update1);
+    updateDao.insertUpdate(update2);
+    updateDao.markUpdateFinished(update1);
+    updateDao.markUpdateFinished(update2);
+
+    AssetEntity asset1 = new AssetEntity("asset1", "png");
+    AssetEntity asset2 = new AssetEntity("asset2", "png");
+    AssetEntity asset3 = new AssetEntity("asset3", "png");
+
+    // simulate two assets with different keys that share a file on disk
+    // this can happen if we, for example, change the format of asset keys that we serve
+    asset2.relativePath = "same-filename.png";
+    asset3.relativePath = "same-filename.png";
+
+    assetDao.insertAssets(Arrays.asList(asset1, asset2), update1);
+    assetDao.insertAssets(Arrays.asList(asset3), update2);
+
+    // simulate update1 being reaped, update2 being kept
+    updateDao.deleteUpdates(Arrays.asList(update1));
+
+    Assert.assertEquals(3, assetDao.loadAllAssets().size());
+
+    List<AssetEntity> deletedAssets = assetDao.deleteUnusedAssets();
+
+    Assert.assertEquals(1, deletedAssets.size());
+    for (AssetEntity deletedAsset : deletedAssets) {
+      Assert.assertEquals("asset1", deletedAsset.key);
+    }
+
+    Assert.assertNull(assetDao.loadAssetWithKey("asset1"));
+    Assert.assertNotNull(assetDao.loadAssetWithKey("asset2"));
+    Assert.assertNotNull(assetDao.loadAssetWithKey("asset3"));
+  }
 }
