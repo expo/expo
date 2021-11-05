@@ -54,7 +54,7 @@ Armed with your error logs, you can often start to fix your build, or you can se
 
 ## Verify that your project builds and runs locally
 
-If the logs weren't enough to immediately help you understand and fix the root cause, it's time to try to reproduce the issue locally. **If your project builds and runs locally in release mode, it should also build on EAS Build if the following are all true**:
+If the logs weren't enough to immediately help you understand and fix the root cause, it's time to try to reproduce the issue locally. If your project builds and runs locally in release mode then it will also build on EAS Build, provided that the following are all true:
 
 - Relevant Build tool versions (eg: Xcode, Node, npm, Yarn) are the same in both environments. [Learn more](/build/eas-json.md#configuring-your-build-tools).
 - Relevant environment variables are the same in both environments. [Learn more](/build-reference/variables.md).
@@ -90,7 +90,11 @@ This guide is far from being comprehensive, and depending on your level of exper
 
 If you have followed the advice here, you're now in a good position to describe your issue to other developers and get some help.
 
-Join us on [Discord](https://chat.expo.dev) or the [forums](https://forums.expo.dev) get help from the Expo team and the community. When you ask your help, be sure to share the following information:
+### How to ask a good question
+
+Join us on [Discord](https://chat.expo.dev) or the [forums](https://forums.expo.dev) get help from the Expo team and the community. 
+
+When you ask for troubleshooting help, be sure to share the following information:
 
 - **A link to your build page**. This can only be accessed by your team or Expo employees. If you'd like to share it more publicly, take a screenshot. If you'd like to share it more privately, send an email to secure@expo.dev and mention that in your help request on chat or forums. If you are performing this build locally with `eas build --local`, you may omit this, but please indicate this fact.
 - **Error logs**. Anything that you suspect may be related to your build or runtime error. If you can't provide this, please explain why not.
