@@ -1,11 +1,13 @@
 import { Platform } from 'expo-modules-core';
+// @ts-ignore: untyped
+import normalizeColor from 'react-native-web/dist/cjs/modules/normalizeColor';
 export default {
     get name() {
         return 'ExpoSystemUI';
     },
     getBackgroundColorAsync() {
         if (Platform.isDOMAvailable) {
-            return document.body.style.backgroundColor;
+            return normalizeColor(document.body.style.backgroundColor);
         }
         else {
             return null;
