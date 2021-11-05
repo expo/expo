@@ -16,6 +16,27 @@ class ArgumentTypeSpec: QuickSpec {
       expect(try type.cast(anyValue)).to(be(value))
     }
 
+    it("casts optional types") {
+      let type = ArgumentType(Double?.self)
+      let value: Double? = nil
+      let anyValue = value as Any
+      let result = try type.cast(anyValue)
+
+      expect(result).to(beAKindOf(Double?.self))
+
+      // Since this `nil` is in fact of non-optional `Any` type, under the hood it's described as `Optional` enum.
+      // Simply checking `result == nil` does NOT work here, see `Optional.isNil` extension implementation.
+      expect(Optional.isNil(result)) == true
+    }
+
+    it("throws null cast error") {
+      let type = ArgumentType(Double.self) // non-optional (!)
+      let value: Double? = nil
+      let anyValue = value as Any
+
+      expect { try type.cast(anyValue) }.to(throwError(errorType: Conversions.NullCastError<Double>.self))
+    }
+
     it("casts arrays") {
       let type = ArgumentType([Double].self)
       let value = 9.9
