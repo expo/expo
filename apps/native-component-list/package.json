@@ -109,7 +109,7 @@
     "expo-mail-composer": "~11.0.3",
     "expo-media-library": "~13.0.3",
     "expo-permissions": "~13.0.3",
-    "expo-print": "~11.0.3",
+    "expo-print": "~11.0.4",
     "expo-processing": "2.0.6",
     "expo-progress": "^0.0.2",
     "expo-random": "^12.0.1",

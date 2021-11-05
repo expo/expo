@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Fix page-breaks and margins not supported on iOS ([#14383](https://github.com/expo/expo/pull/14802) by [@cruzach](https://github.com/IjzerenHein))
-
 ### 💡 Others
+
+## 11.0.4 — 2021-11-05
+
+### 🐛 Bug fixes
+
+- Fix page-breaks and margins not supported on iOS ([#14383](https://github.com/expo/expo/pull/14802) by [@cruzach](https://github.com/IjzerenHein))
 
 ## 11.0.3 — 2021-10-21
 
