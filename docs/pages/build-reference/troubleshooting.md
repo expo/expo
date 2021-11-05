@@ -10,6 +10,8 @@ When something goes wrong, it probably will go wrong in one of two ways: 1) your
 
 All standard advice around [narrowing down the source of an error](https://expo.fyi/manual-debugging) applies here; this document provides information that may be useful on top of your typical troubleshooting processes and techniques. Troubleshooting is an art, and you might need to think creatively.
 
+<!-- todo: need to add explicit callout to monorepos here -->
+
 ## Find the error logs
 
 Before you go further, you need to be sure that you have located the error message and read it. How you do this will be different depending on whether you're investigating a build failure or runtime error.
@@ -82,7 +84,7 @@ If you find yourself in this situation, it's time to narrow down what configurat
 
 Do a fresh `git clone` of your project to a new directory and get it running. Pay attention to each of the steps that are needed and verify that EAS Build is configured accordingly.
 
-## Still have trouble?
+## Still having trouble?
 
 This guide is far from being comprehensive, and depending on your level of experience you might still be struggling to get your app working.
 
