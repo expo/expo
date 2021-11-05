@@ -3,8 +3,6 @@ title: Push Notifications Overview
 sidebar_title: Overview
 ---
 
-import SnackInline from '~/components/plugins/SnackInline';
-
 Push Notifications are an important feature, no matter what kind of app you're building. Not only is it nice to let users know about something that may interest them, be it a new album being released, a sale or other limited-time-only deal, or that one of their friends sent them a message, but push notifications are proven to help boost user interaction and create a better overall user experience.
 
 Whether you just want to be able to let users know when a relevant event happens, or you're trying to optimize customer engagement and retention, Expo makes implementing push notifications almost too easy. All the hassle with native device information and communicating with APNs (Apple Push Notification service) or FCM (Firebase Cloud Messaging) is taken care of behind the scenes, so that you can treat iOS and Android notifications the same, saving you time on the front-end, and back-end!
@@ -17,9 +15,7 @@ There are three main steps to setting up push notifications, and we provide a gu
 
 ## Usage
 
-The Snack below shows a full example of how to register for, send, and receive push notifications in an Expo app. But make sure to read the rest of the guide, so that you understand how Expo's push notification service works, what the best practices are, and how to investigate any problems you run into!
-
-<SnackInline label='Push Notifications' dependencies={['expo-constants', 'expo-notifications']}>
+The code below shows a full example of how to register for, send, and receive push notifications in an Expo app. But make sure to read the rest of the guide, so that you understand how Expo's push notification service works, what the best practices are, and how to investigate any problems you run into!
 
 ```js
 import Constants from 'expo-constants';
@@ -135,8 +131,6 @@ async function registerForPushNotificationsAsync() {
   return token;
 }
 ```
-
-</SnackInline>
 
 ## Testing
 
