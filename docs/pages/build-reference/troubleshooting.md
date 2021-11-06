@@ -82,7 +82,13 @@ If your native toolchains are installed correctly and you are unable to build an
 
 If you find yourself in this situation, it's time to narrow down what configuration exists on your machine that hasn't been set up for your project on EAS Build yet.
 
-Do a fresh `git clone` of your project to a new directory and get it running. Pay attention to each of the steps that are needed and verify that EAS Build is configured accordingly.
+There are two ways to approach this, which are quite similar:
+- Do a fresh `git clone` of your project to a new directory and get it running. Pay attention to each of the steps that are needed and verify that EAS Build is configured accordingly.
+- Run a local build with `eas build --local`. This command will locally run a process that is as close as it can be to the remote, hosted EAS Build service. [Learn how to set this up and use it for debugging](/build-reference/local-builds.md#using-local-builds-for-debugging).
+
+### Why does my app work in Expo Go and `expo build:[android|ios]` but not with EAS Build?
+
+<!-- todo: link to posts explaining differences and to migration guide -->
 
 ## Still having trouble?
 
