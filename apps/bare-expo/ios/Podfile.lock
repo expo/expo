@@ -102,8 +102,6 @@ PODS:
   - EXJSONUtils (0.2.0)
   - EXKeepAwake (10.0.0):
     - ExpoModulesCore
-  - EXLinearGradient (10.0.1):
-    - ExpoModulesCore
   - EXLocalAuthentication (12.0.0):
     - ExpoModulesCore
   - EXLocalization (11.0.0):
@@ -210,6 +208,8 @@ PODS:
   - ExpoCellular (4.0.0):
     - ExpoModulesCore
   - ExpoHaptics (11.0.1):
+    - ExpoModulesCore
+  - ExpoLinearGradient (10.0.1):
     - ExpoModulesCore
   - ExpoModulesCore (0.4.2):
     - React-Core
@@ -802,7 +802,6 @@ DEPENDENCIES:
   - EXInAppPurchases (from `../../../packages/expo-in-app-purchases/ios`)
   - EXJSONUtils (from `../../../packages/expo-json-utils/ios`)
   - EXKeepAwake (from `../../../packages/expo-keep-awake/ios`)
-  - EXLinearGradient (from `../../../packages/expo-linear-gradient/ios`)
   - EXLocalAuthentication (from `../../../packages/expo-local-authentication/ios`)
   - EXLocalization (from `../../../packages/expo-localization/ios`)
   - EXLocation (from `../../../packages/expo-location/ios`)
@@ -823,6 +822,7 @@ DEPENDENCIES:
   - expo-dev-menu/UITests (from `../../../packages/expo-dev-menu`)
   - ExpoCellular (from `../../../packages/expo-cellular/ios`)
   - ExpoHaptics (from `../../../packages/expo-haptics/ios`)
+  - ExpoLinearGradient (from `../../../packages/expo-linear-gradient/ios`)
   - ExpoModulesCore (from `../../../packages/expo-modules-core/ios`)
   - ExpoSystemUI (from `../../../packages/expo-system-ui/ios`)
   - EXPrint (from `../../../packages/expo-print/ios`)
@@ -1041,9 +1041,6 @@ EXTERNAL SOURCES:
   EXKeepAwake:
     inhibit_warnings: false
     :path: "../../../packages/expo-keep-awake/ios"
-  EXLinearGradient:
-    inhibit_warnings: false
-    :path: "../../../packages/expo-linear-gradient/ios"
   EXLocalAuthentication:
     inhibit_warnings: false
     :path: "../../../packages/expo-local-authentication/ios"
@@ -1088,6 +1085,9 @@ EXTERNAL SOURCES:
   ExpoHaptics:
     inhibit_warnings: false
     :path: "../../../packages/expo-haptics/ios"
+  ExpoLinearGradient:
+    inhibit_warnings: false
+    :path: "../../../packages/expo-linear-gradient/ios"
   ExpoModulesCore:
     inhibit_warnings: false
     :path: "../../../packages/expo-modules-core/ios"
@@ -1290,7 +1290,6 @@ SPEC CHECKSUMS:
   EXInAppPurchases: a981bef8aea038e9c4b036f75a6aef73cc723eca
   EXJSONUtils: f515cf71710855d7ba5bfc6752af3b9a6f6aad01
   EXKeepAwake: 8aa32396a5972d26e75e538603aad0f032396503
-  EXLinearGradient: cac7d90c8b8112736a7630cbd7d9dc242e7b075b
   EXLocalAuthentication: 4c640e20a308d66224468661a0da434f86435283
   EXLocalization: bb38414618b30a177482c9a6f5594ec6eb0898c1
   EXLocation: 6d13fb1d4b65ed1b2d2bdd0b0f11417cc0a2656a
@@ -1307,6 +1306,7 @@ SPEC CHECKSUMS:
   expo-dev-menu-interface: 273c68c2c30ecbc70af2903dfb3821f567ef9d78
   ExpoCellular: 90940614d45df5b31f281d70a63d92a06fe44af4
   ExpoHaptics: c0c014eabfdd1353a908f857f168b01fafd526db
+  ExpoLinearGradient: 841746b0ef9c771d1f37fa5463f39eb25b6aae77
   ExpoModulesCore: daacb24b99b77ec28c0cbc877a574b1f8e6709c9
   ExpoSystemUI: 3c969e3db290fcd5edb9c466d585f183d934b421
   EXPrint: a224501bbb89072567c58a5127f2d125b8776ea2
