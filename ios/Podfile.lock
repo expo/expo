@@ -1947,6 +1947,8 @@ PODS:
     - Quick
     - React-Core
     - ReactCommon/turbomodule/core
+  - ExpoSystemUI (1.0.0):
+    - ExpoModulesCore
   - EXPrint (11.0.1):
     - ExpoModulesCore
   - EXRandom (12.0.0):
@@ -2863,6 +2865,7 @@ DEPENDENCIES:
   - Expo (from `../packages/expo/ios`)
   - ExpoModulesCore (from `../packages/expo-modules-core/ios`)
   - ExpoModulesCore/Tests (from `../packages/expo-modules-core/ios`)
+  - ExpoSystemUI (from `../packages/expo-system-ui/ios`)
   - EXPrint (from `../packages/expo-print/ios`)
   - EXRandom (from `../packages/expo-random/ios`)
   - EXScreenCapture (from `../packages/expo-screen-capture/ios`)
@@ -3703,6 +3706,8 @@ EXTERNAL SOURCES:
     :path: "../packages/expo/ios"
   ExpoModulesCore:
     :path: "../packages/expo-modules-core/ios"
+  ExpoSystemUI:
+    :path: "../packages/expo-system-ui/ios"
   EXPrint:
     :path: "../packages/expo-print/ios"
   EXRandom:
@@ -4195,6 +4200,7 @@ SPEC CHECKSUMS:
   EXPermissions: 08ccf78a0eb404c28df6d226fcc8fcf2e558b421
   Expo: 23ed30f225511b93fa6a0c14d9a3208d6b749060
   ExpoModulesCore: daacb24b99b77ec28c0cbc877a574b1f8e6709c9
+  ExpoSystemUI: 3c969e3db290fcd5edb9c466d585f183d934b421
   EXPrint: a224501bbb89072567c58a5127f2d125b8776ea2
   EXRandom: 9ed4600d410cf2fe58d22b3121865624065a16e9
   EXScreenCapture: 76fcc1bad122d1b5d98f85ec44c6d38f18f99a6a
@@ -4292,4 +4298,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: 7c71ae606a1e83e2827e31f0cce4ef247399610e
 
-COCOAPODS: 1.11.0
+COCOAPODS: 1.11.2
