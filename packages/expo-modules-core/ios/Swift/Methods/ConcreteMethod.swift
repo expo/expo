@@ -6,7 +6,7 @@ public final class ConcreteMethod<Args, ReturnType>: AnyMethod {
   public let name: String
 
   public var takesPromise: Bool {
-    return argTypes.last?.isKindOf(Promise.self) ?? false
+    return argTypes.last is PromiseArgumentType
   }
 
   public var argumentsCount: Int {
