@@ -83,8 +83,6 @@ PODS:
   - EXGoogleSignIn (10.0.1):
     - ExpoModulesCore
     - GoogleSignIn (~> 5.0.2)
-  - EXHaptics (11.0.1):
-    - ExpoModulesCore
   - EXImage (0.1.0):
     - React-Core
     - SDWebImage (~> 5.0)
@@ -210,6 +208,8 @@ PODS:
     - expo-dev-menu/GestureHandler
     - expo-dev-menu/Reanimated
   - ExpoCellular (4.0.0):
+    - ExpoModulesCore
+  - ExpoHaptics (11.0.1):
     - ExpoModulesCore
   - ExpoModulesCore (0.4.2):
     - React-Core
@@ -795,7 +795,6 @@ DEPENDENCIES:
   - EXGL (from `../../../packages/expo-gl/ios`)
   - EXGL_CPP (from `../../../packages/expo-gl-cpp/cpp`)
   - EXGoogleSignIn (from `../../../packages/expo-google-sign-in/ios`)
-  - EXHaptics (from `../../../packages/expo-haptics/ios`)
   - EXImage (from `../../../packages/expo-image`)
   - EXImageLoader (from `../../../packages/expo-image-loader/ios`)
   - EXImageManipulator (from `../../../packages/expo-image-manipulator/ios`)
@@ -823,6 +822,7 @@ DEPENDENCIES:
   - expo-dev-menu/Tests (from `../../../packages/expo-dev-menu`)
   - expo-dev-menu/UITests (from `../../../packages/expo-dev-menu`)
   - ExpoCellular (from `../../../packages/expo-cellular/ios`)
+  - ExpoHaptics (from `../../../packages/expo-haptics/ios`)
   - ExpoModulesCore (from `../../../packages/expo-modules-core/ios`)
   - ExpoSystemUI (from `../../../packages/expo-system-ui/ios`)
   - EXPrint (from `../../../packages/expo-print/ios`)
@@ -1021,9 +1021,6 @@ EXTERNAL SOURCES:
   EXGoogleSignIn:
     inhibit_warnings: false
     :path: "../../../packages/expo-google-sign-in/ios"
-  EXHaptics:
-    inhibit_warnings: false
-    :path: "../../../packages/expo-haptics/ios"
   EXImage:
     :path: "../../../packages/expo-image"
   EXImageLoader:
@@ -1088,6 +1085,9 @@ EXTERNAL SOURCES:
   ExpoCellular:
     inhibit_warnings: false
     :path: "../../../packages/expo-cellular/ios"
+  ExpoHaptics:
+    inhibit_warnings: false
+    :path: "../../../packages/expo-haptics/ios"
   ExpoModulesCore:
     inhibit_warnings: false
     :path: "../../../packages/expo-modules-core/ios"
@@ -1283,7 +1283,6 @@ SPEC CHECKSUMS:
   EXGL: e71bf1946b30899602420a53e578454d291286d1
   EXGL_CPP: 75124cfe236f7a1f917150011c09625e24e31141
   EXGoogleSignIn: f5b6ed8ce036017c0364896469416e6fc6e0e777
-  EXHaptics: 859bccc3cd160d2ff97c7fc52ee373445a44b85b
   EXImage: 75d6c625fb8b8ce8ddc622e0dbcdfd0fb160c11e
   EXImageLoader: 939451be6f7b731aaa6588920b90743f20121a4d
   EXImageManipulator: f557dae83db7ebbc4fe999a582230c28ffc5e383
@@ -1307,6 +1306,7 @@ SPEC CHECKSUMS:
   expo-dev-menu: ec566cc2bc8e783b9874afb81ea92a90d6069f01
   expo-dev-menu-interface: 273c68c2c30ecbc70af2903dfb3821f567ef9d78
   ExpoCellular: 90940614d45df5b31f281d70a63d92a06fe44af4
+  ExpoHaptics: c0c014eabfdd1353a908f857f168b01fafd526db
   ExpoModulesCore: daacb24b99b77ec28c0cbc877a574b1f8e6709c9
   ExpoSystemUI: 3c969e3db290fcd5edb9c466d585f183d934b421
   EXPrint: a224501bbb89072567c58a5127f2d125b8776ea2
