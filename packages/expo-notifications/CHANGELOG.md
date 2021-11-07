@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Update `fs-extra` dependency. ([#15069](https://github.com/expo/expo/pull/15069) by [@Simek](https://github.com/Simek))
+
 ## 0.13.1 — 2021-10-01
 
 _This version does not introduce any user-facing changes._
