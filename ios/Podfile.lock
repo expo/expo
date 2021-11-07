@@ -1854,8 +1854,6 @@ PODS:
     - ExpoModulesCore
   - EXCamera (12.0.1):
     - ExpoModulesCore
-  - EXCellular (4.0.0):
-    - ExpoModulesCore
   - EXClipboard (2.0.1):
     - ExpoModulesCore
   - EXConstants (12.1.0):
@@ -1938,6 +1936,8 @@ PODS:
   - EXPermissions (13.0.1):
     - ExpoModulesCore
   - Expo (43.0.0-beta.3):
+    - ExpoModulesCore
+  - ExpoCellular (4.0.0):
     - ExpoModulesCore
   - ExpoModulesCore (0.4.2):
     - React-Core
@@ -2827,7 +2827,6 @@ DEPENDENCIES:
   - EXBrightness (from `../packages/expo-brightness/ios`)
   - EXCalendar (from `../packages/expo-calendar/ios`)
   - EXCamera (from `../packages/expo-camera/ios`)
-  - EXCellular (from `../packages/expo-cellular/ios`)
   - EXClipboard (from `../packages/expo-clipboard/ios`)
   - EXConstants (from `../packages/expo-constants/ios`)
   - EXContacts (from `../packages/expo-contacts/ios`)
@@ -2863,6 +2862,7 @@ DEPENDENCIES:
   - EXNotifications (from `../packages/expo-notifications/ios`)
   - EXPermissions (from `../packages/expo-permissions/ios`)
   - Expo (from `../packages/expo/ios`)
+  - ExpoCellular (from `../packages/expo-cellular/ios`)
   - ExpoModulesCore (from `../packages/expo-modules-core/ios`)
   - ExpoModulesCore/Tests (from `../packages/expo-modules-core/ios`)
   - ExpoSystemUI (from `../packages/expo-system-ui/ios`)
@@ -3636,8 +3636,6 @@ EXTERNAL SOURCES:
     :path: "../packages/expo-calendar/ios"
   EXCamera:
     :path: "../packages/expo-camera/ios"
-  EXCellular:
-    :path: "../packages/expo-cellular/ios"
   EXClipboard:
     :path: "../packages/expo-clipboard/ios"
   EXConstants:
@@ -3704,6 +3702,8 @@ EXTERNAL SOURCES:
     :path: "../packages/expo-permissions/ios"
   Expo:
     :path: "../packages/expo/ios"
+  ExpoCellular:
+    :path: "../packages/expo-cellular/ios"
   ExpoModulesCore:
     :path: "../packages/expo-modules-core/ios"
   ExpoSystemUI:
@@ -4165,7 +4165,6 @@ SPEC CHECKSUMS:
   EXBrightness: 2c94b7d71337fa7f701ca09fa20f4e75cd51b0e2
   EXCalendar: 0a76d471d3198b3e1e84d745650b0a3269d1e8b7
   EXCamera: ebae2fa3839ee13c56dbd3caa24fe609d492cc14
-  EXCellular: 713fd7536ac2bf10c43e22748e4e0713c66e92b9
   EXClipboard: fe9188a0e9cc4ba2da08e17b9691c8c6e3165d5b
   EXConstants: 1a9e95054412c86a7b3fe946f0d64e1067904a19
   EXContacts: 60715e5a7cf0e9b48d2c4fb0d7b68418db62f394
@@ -4199,6 +4198,7 @@ SPEC CHECKSUMS:
   EXNotifications: 24fb362f02a68d94ae7e5769aa9319be5096328c
   EXPermissions: 08ccf78a0eb404c28df6d226fcc8fcf2e558b421
   Expo: 23ed30f225511b93fa6a0c14d9a3208d6b749060
+  ExpoCellular: 90940614d45df5b31f281d70a63d92a06fe44af4
   ExpoModulesCore: daacb24b99b77ec28c0cbc877a574b1f8e6709c9
   ExpoSystemUI: 3c969e3db290fcd5edb9c466d585f183d934b421
   EXPrint: a224501bbb89072567c58a5127f2d125b8776ea2

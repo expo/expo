@@ -40,8 +40,6 @@ PODS:
     - ExpoModulesCore
   - EXCamera (12.0.1):
     - ExpoModulesCore
-  - EXCellular (4.0.0):
-    - ExpoModulesCore
   - EXClipboard (2.0.1):
     - ExpoModulesCore
   - EXConstants (12.1.0):
@@ -211,6 +209,8 @@ PODS:
   - expo-dev-menu/Vendored (0.8.2):
     - expo-dev-menu/GestureHandler
     - expo-dev-menu/Reanimated
+  - ExpoCellular (4.0.0):
+    - ExpoModulesCore
   - ExpoModulesCore (0.4.2):
     - React-Core
     - ReactCommon/turbomodule/core
@@ -779,7 +779,6 @@ DEPENDENCIES:
   - EXBrightness (from `../../../packages/expo-brightness/ios`)
   - EXCalendar (from `../../../packages/expo-calendar/ios`)
   - EXCamera (from `../../../packages/expo-camera/ios`)
-  - EXCellular (from `../../../packages/expo-cellular/ios`)
   - EXClipboard (from `../../../packages/expo-clipboard/ios`)
   - EXConstants (from `../../../packages/expo-constants/ios`)
   - EXContacts (from `../../../packages/expo-contacts/ios`)
@@ -823,6 +822,7 @@ DEPENDENCIES:
   - expo-dev-menu-interface/Tests (from `../../../packages/expo-dev-menu-interface`)
   - expo-dev-menu/Tests (from `../../../packages/expo-dev-menu`)
   - expo-dev-menu/UITests (from `../../../packages/expo-dev-menu`)
+  - ExpoCellular (from `../../../packages/expo-cellular/ios`)
   - ExpoModulesCore (from `../../../packages/expo-modules-core/ios`)
   - ExpoSystemUI (from `../../../packages/expo-system-ui/ios`)
   - EXPrint (from `../../../packages/expo-print/ios`)
@@ -973,9 +973,6 @@ EXTERNAL SOURCES:
   EXCamera:
     inhibit_warnings: false
     :path: "../../../packages/expo-camera/ios"
-  EXCellular:
-    inhibit_warnings: false
-    :path: "../../../packages/expo-cellular/ios"
   EXClipboard:
     inhibit_warnings: false
     :path: "../../../packages/expo-clipboard/ios"
@@ -1088,6 +1085,9 @@ EXTERNAL SOURCES:
     :path: "../../../packages/expo-dev-menu"
   expo-dev-menu-interface:
     :path: "../../../packages/expo-dev-menu-interface"
+  ExpoCellular:
+    inhibit_warnings: false
+    :path: "../../../packages/expo-cellular/ios"
   ExpoModulesCore:
     inhibit_warnings: false
     :path: "../../../packages/expo-modules-core/ios"
@@ -1267,7 +1267,6 @@ SPEC CHECKSUMS:
   EXBrightness: 2c94b7d71337fa7f701ca09fa20f4e75cd51b0e2
   EXCalendar: 0a76d471d3198b3e1e84d745650b0a3269d1e8b7
   EXCamera: ebae2fa3839ee13c56dbd3caa24fe609d492cc14
-  EXCellular: 713fd7536ac2bf10c43e22748e4e0713c66e92b9
   EXClipboard: fe9188a0e9cc4ba2da08e17b9691c8c6e3165d5b
   EXConstants: 1a9e95054412c86a7b3fe946f0d64e1067904a19
   EXContacts: 60715e5a7cf0e9b48d2c4fb0d7b68418db62f394
@@ -1307,6 +1306,7 @@ SPEC CHECKSUMS:
   expo-dev-launcher: e76a3b8cca8f61c32c80a8dcd894c631f09329e6
   expo-dev-menu: ec566cc2bc8e783b9874afb81ea92a90d6069f01
   expo-dev-menu-interface: 273c68c2c30ecbc70af2903dfb3821f567ef9d78
+  ExpoCellular: 90940614d45df5b31f281d70a63d92a06fe44af4
   ExpoModulesCore: daacb24b99b77ec28c0cbc877a574b1f8e6709c9
   ExpoSystemUI: 3c969e3db290fcd5edb9c466d585f183d934b421
   EXPrint: a224501bbb89072567c58a5127f2d125b8776ea2

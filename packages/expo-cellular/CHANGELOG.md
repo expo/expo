@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Removed legacy Objective-C implementation and changed the podspec name to `ExpoCellular`.
+
 ## 4.0.0 — 2021-09-28
 
 ### 🛠 Breaking changes
