@@ -28,7 +28,7 @@ export async function getPermissionsAsync() {
 }
 // @needsAudit
 /**
- * Check or request permissions for adsmob.
+ * Check or request permissions for AdMob.
  * This uses both `requestPermissionAsync` and `getPermissionsAsync` to interact with the permissions.
  *
  * @example
@@ -47,11 +47,5 @@ export const usePermissions = createPermissionHook({
  */
 export async function isAvailableAsync() {
     return !!ExpoAdsAdMob.setTestDeviceIDAsync;
-}
-export async function setTestDeviceIDAsync(testDeviceID) {
-    if (!ExpoAdsAdMob.setTestDeviceIDAsync) {
-        throw new UnavailabilityError('expo-ads-admob', 'setTestDeviceIDAsync');
-    }
-    await ExpoAdsAdMob.setTestDeviceIDAsync(testDeviceID || '');
 }
 //# sourceMappingURL=AdMob.js.map

@@ -3,7 +3,7 @@ export { PermissionResponse, PermissionStatus, PermissionExpiration, PermissionH
 export declare function requestPermissionsAsync(): Promise<PermissionResponse>;
 export declare function getPermissionsAsync(): Promise<PermissionResponse>;
 /**
- * Check or request permissions for adsmob.
+ * Check or request permissions for AdMob.
  * This uses both `requestPermissionAsync` and `getPermissionsAsync` to interact with the permissions.
  *
  * @example
@@ -18,4 +18,3 @@ export declare const usePermissions: (options?: PermissionHookOptions<object> | 
  * @returns Async `boolean`, indicating whether the AdMob API is available on the current device. Currently this resolves `true` on iOS and Android only.
  */
 export declare function isAvailableAsync(): Promise<boolean>;
-export declare function setTestDeviceIDAsync(testDeviceID: string | null): Promise<void>;

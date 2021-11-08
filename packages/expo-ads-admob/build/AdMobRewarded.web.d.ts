@@ -1,4 +1,2 @@
-import * as React from 'react';
-export default class AdMobRewarded extends React.Component<object> {
-    render(): JSX.Element;
-}
+declare const AdMobRewarded: () => JSX.Element;
+export default AdMobRewarded;
