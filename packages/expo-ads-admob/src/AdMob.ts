@@ -64,3 +64,10 @@ export const usePermissions = createPermissionHook({
 export async function isAvailableAsync(): Promise<boolean> {
   return !!ExpoAdsAdMob.setTestDeviceIDAsync;
 }
+
+export async function setTestDeviceIDAsync(testDeviceID: string | null): Promise<void> {
+  if (!ExpoAdsAdMob.setTestDeviceIDAsync) {
+    throw new UnavailabilityError('expo-ads-admob', 'setTestDeviceIDAsync');
+  }
+  await ExpoAdsAdMob.setTestDeviceIDAsync(testDeviceID || '');
+}

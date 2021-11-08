@@ -48,4 +48,10 @@ export const usePermissions = createPermissionHook({
 export async function isAvailableAsync() {
     return !!ExpoAdsAdMob.setTestDeviceIDAsync;
 }
+export async function setTestDeviceIDAsync(testDeviceID) {
+    if (!ExpoAdsAdMob.setTestDeviceIDAsync) {
+        throw new UnavailabilityError('expo-ads-admob', 'setTestDeviceIDAsync');
+    }
+    await ExpoAdsAdMob.setTestDeviceIDAsync(testDeviceID || '');
+}
 //# sourceMappingURL=AdMob.js.map
