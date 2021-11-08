@@ -6,6 +6,7 @@
 #import <ExpoModulesCore/EXDefines.h>
 #import <EXUpdates/EXUpdatesConfig.h>
 #import <EXUpdates/EXUpdatesAppController.h>
+#import <EXUpdates/EXUpdatesUtils.h>
 #import <React/RCTBridgeDelegate.h>
 #import <React/RCTConvert.h>
 #import <React/RCTRootView.h>
@@ -114,7 +115,10 @@ EX_REGISTER_SINGLETON_MODULE(EXUpdatesAppDelegate)
   }
 
   UIWindow *window = UIApplication.sharedApplication.delegate.window;
-  window.rootViewController.view = rootView;
+  UIViewController* rootViewController = [EXUpdatesUtils createRootViewController:window];
+  rootViewController.view = rootView;
+  window.rootViewController = rootViewController;
+  [window makeKeyAndVisible];
 
   return bridge;
  }

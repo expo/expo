@@ -118,6 +118,27 @@ static NSString * const EXUpdatesUtilsErrorDomain = @"EXUpdatesUtils";
     : [[NSBundle mainBundle] pathForResource:asset.mainBundleFilename ofType:asset.type];
 }
 
+// Recreate a UIViewController from old `window.rootViewController`
++ (UIViewController *)createRootViewController:(UIWindow *)window
+{
+  UIViewController* result;
+  UIViewController* oldRootViewController = window.rootViewController;
+
+  SEL screenOrientationSelector = NSSelectorFromString(@"initWithDefaultScreenOrientationMask:");
+  // Support expo-screen-orientation's designated initializer
+  if ([oldRootViewController respondsToSelector:screenOrientationSelector]) {
+    NSNumber *maskValue = (NSNumber *) [oldRootViewController valueForKey:@"defaultOrientationMask"];
+    UIInterfaceOrientationMask mask = (UIInterfaceOrientationMask) [maskValue intValue];
+    id instance = [oldRootViewController.class alloc];
+    IMP imp = [instance methodForSelector:screenOrientationSelector];
+    result = ((id (*)(id, SEL, UIInterfaceOrientationMask))imp)(instance, screenOrientationSelector, mask);
+  } else {
+    result = [oldRootViewController.class new];
+  }
+
+  return result;
+}
+
 @end
 
 NS_ASSUME_NONNULL_END
