@@ -13,7 +13,7 @@ export const modelName: string | null = ExpoDevice ? ExpoDevice.modelName : null
 export const designName: string | null = ExpoDevice ? ExpoDevice.designName || null : null;
 export const productName: string | null = ExpoDevice ? ExpoDevice.productName || null : null;
 export const deviceYearClass: number | null = ExpoDevice ? ExpoDevice.deviceYearClass : null;
-export const deviceType: number | null = ExpoDevice ? ExpoDevice.deviceType : null;
+export const deviceType: DeviceType | null = ExpoDevice ? ExpoDevice.deviceType : null;
 export const totalMemory: number | null = ExpoDevice ? ExpoDevice.totalMemory : null;
 export const supportedCpuArchitectures: string[] | null = ExpoDevice
   ? ExpoDevice.supportedCpuArchitectures
