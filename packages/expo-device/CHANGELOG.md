@@ -2,6 +2,8 @@
 
 ## Unpublished
 
+- Added detection Catalyst and running on Apple Silicon ([#15084](https://github.com/expo/expo/pull/15084) by [@robertherber](https://github.com/robertherber))
+
 ### 🛠 Breaking changes
 
 - Changed naming format of `modelName` to be more consistent ([#14670](https://github.com/expo/expo/pull/14670) by [@EvanBacon](https://github.com/EvanBacon))
