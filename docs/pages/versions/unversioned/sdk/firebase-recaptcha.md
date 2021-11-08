@@ -1,6 +1,6 @@
 ---
 title: FirebaseRecaptcha
-sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-firebase-recaptcha'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-43/packages/expo-firebase-recaptcha'
 ---
 
 import InstallSection from '~/components/plugins/InstallSection';
