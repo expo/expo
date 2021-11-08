@@ -11,6 +11,23 @@ if (Platform.isDOMAvailable) {
   result = parser.getResult();
 }
 
+const getDeviceType = () => {
+  switch (result.device.type) {
+    case 'mobile':
+      return DeviceType.PHONE;
+    case 'tablet':
+      return DeviceType.TABLET;
+    case 'smarttv':
+      return DeviceType.TV;
+    case 'console':
+    case 'embedded':
+    case 'wearable':
+      return DeviceType.UNKNOWN;
+    default:
+      return DeviceType.DESKTOP;
+  }
+};
+
 function convertGiBtoBytes(gib: number): number {
   return Math.round(gib * 1024 ** 3);
 }
@@ -30,6 +47,9 @@ export default {
   },
   get deviceYearClass(): null {
     return null;
+  },
+  get deviceType(): DeviceType {
+    return getDeviceType();
   },
   get totalMemory(): number | null {
     if (Platform.isDOMAvailable && 'deviceMemory' in navigator) {
@@ -57,20 +77,7 @@ export default {
     return null;
   },
   async getDeviceTypeAsync(): Promise<DeviceType> {
-    switch (result.device.type) {
-      case 'mobile':
-        return DeviceType.PHONE;
-      case 'tablet':
-        return DeviceType.TABLET;
-      case 'smarttv':
-        return DeviceType.TV;
-      case 'console':
-      case 'embedded':
-      case 'wearable':
-        return DeviceType.UNKNOWN;
-      default:
-        return DeviceType.DESKTOP;
-    }
+    return getDeviceType();
   },
   async isRootedExperimentalAsync(): Promise<boolean> {
     return false;

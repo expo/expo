@@ -49,6 +49,9 @@ class DeviceModule(private val mContext: Context) : ExportedModule(mContext) {
       (mContext.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager).getMemoryInfo(memoryInfo)
       memoryInfo.totalMem
     },
+    "deviceType" to run {
+      getDeviceType(mContext).JSValue
+    },
     "supportedCpuArchitectures" to run {
       var supportedAbis = Build.SUPPORTED_ABIS
       if (supportedAbis != null && supportedAbis.isEmpty()) {

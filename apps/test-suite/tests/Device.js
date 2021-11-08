@@ -33,6 +33,7 @@ export async function test(t) {
         let osInternalBuildId = Device.osInternalBuildId;
         let osVersion = Device.osVersion;
         let deviceName = Device.deviceName;
+        let deviceType = Device.deviceType;
         let deviceYearClass = Device.deviceYearClass;
         t.expect(brand).toBeDefined();
         t.expect(typeof brand).toEqual('string');
@@ -56,6 +57,8 @@ export async function test(t) {
         t.expect(typeof deviceYearClass).toEqual('number');
         t.expect(deviceName).toBeDefined();
         t.expect(typeof deviceName).toEqual('string');
+        t.expect(deviceType).toBeDefined();
+        t.expect(typeof deviceType).toEqual('number');
       });
 
       t.it(`doesn't get Android-only constants`, async () => {

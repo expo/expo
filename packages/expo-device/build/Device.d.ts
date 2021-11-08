@@ -6,6 +6,7 @@ export declare const manufacturer: string | null;
 export declare const modelId: any;
 export declare const modelName: string | null;
 export declare const designName: string | null;
+export declare const deviceType: DeviceType | null;
 export declare const productName: string | null;
 export declare const deviceYearClass: number | null;
 export declare const totalMemory: number | null;

@@ -33,6 +33,8 @@ EX_EXPORT_MODULE(ExpoDevice);
 {
   UIDevice *currentDevice = UIDevice.currentDevice;
   NSString * _Nullable osBuildId = [[self class] osBuildId];
+    
+  enum EXDeviceType* type = [[self class] deviceType];
 
   return @{
            @"isDevice": @([[self class] isDevice]),
@@ -44,9 +46,10 @@ EX_EXPORT_MODULE(ExpoDevice);
            @"totalMemory": @(NSProcessInfo.processInfo.physicalMemory),
            @"supportedCpuArchitectures": EXNullIfNil([[self class] cpuArchitectures]),
            @"osName": currentDevice.systemName,
-           @"osVersion": @(NSProcessInfo.processInfo.operatingSystemVersionString),
+           @"osVersion": currentDevice.systemVersion,
            @"osBuildId": osBuildId,
            @"osInternalBuildId": osBuildId,
+           @"deviceType": [NSNumber numberWithInt:type],
            @"deviceName": currentDevice.name,
            };
 }
@@ -158,12 +161,12 @@ EX_EXPORT_METHOD_AS(isRootedExperimentalAsync,
       return EXDeviceTypePhone;
     case UIUserInterfaceIdiomPad:
       if (TARGET_OS_MACCATALYST) {
-          return EXDeviceTypeDesktop;
+        return EXDeviceTypeDesktop;
       }
       if (@available(iOS 14.0, *)) {
-          if ([NSProcessInfo processInfo].isiOSAppOnMac) {
-              return EXDeviceTypeDesktop;
-          }
+        if ([NSProcessInfo processInfo].isiOSAppOnMac) {
+          return EXDeviceTypeDesktop;
+        }
       }
       return EXDeviceTypeTablet;
     case UIUserInterfaceIdiomTV:
