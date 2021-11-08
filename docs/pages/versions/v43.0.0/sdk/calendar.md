@@ -51,9 +51,8 @@ export default function App() {
 }
 
 async function getDefaultCalendarSource() {
-  const calendars = await Calendar.getCalendarsAsync(Calendar.EntityTypes.EVENT);
-  const defaultCalendars = calendars.filter(each => each.source.name === 'Default');
-  return defaultCalendars[0].source;
+  const defaultCalendar = await Calendar.getDefaultCalendarAsync();
+  return defaultCalendar.source;
 }
 
 async function createCalendar() {
