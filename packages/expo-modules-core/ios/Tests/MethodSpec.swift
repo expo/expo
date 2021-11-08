@@ -56,6 +56,17 @@ class MethodSpec: QuickSpec {
       testMethodReturning(value: ["expo", "modules", "core"])
     }
 
+    it("is called with nil value") {
+      let str: String? = nil
+
+      mockModuleHolder(appContext) {
+        $0.method(methodName) { (a: String?) in
+          expect(a) == nil
+        }
+      }
+      .callSync(method: methodName, args: [str as Any])
+    }
+
     describe("converting dicts to records") {
       struct TestRecord: Record {
         @Field var property: String = "expo"

@@ -6,6 +6,11 @@
  */
 internal protocol AnyArgumentType: CustomStringConvertible {
   /**
+   Bool value indicating whether the wrapped type is an optional type.
+   */
+  var isOptional: Bool { get }
+
+  /**
    Returns a boolean value that indicates whether the wrapped type inherits or conforms to the given type.
    */
   func isKindOf<ParentType>(_ type: ParentType.Type) -> Bool

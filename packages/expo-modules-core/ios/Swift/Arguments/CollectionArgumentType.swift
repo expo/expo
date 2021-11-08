@@ -11,7 +11,7 @@ internal final class CollectionArgumentType<InnerType: RandomAccessCollection>: 
     super.init(InnerType.self)
   }
 
-  override func cast<ArgType>(_ value: ArgType) throws -> Any {
+  override func castNonOptional<ArgType>(_ value: ArgType) throws -> Any {
     if let value = value as? [Any] {
       return try value.map { try elementType.cast($0) }
     }

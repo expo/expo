@@ -190,6 +190,15 @@ internal final class Conversions {
   }
 
   /**
+   An error that is thrown when null value is tried to be casted to non-optional type.
+   */
+  internal struct NullCastError<TargetType>: CodedError {
+    var description: String {
+      "Cannot cast null value to non-optional `\(TargetType.self)`"
+    }
+  }
+
+  /**
    An error used when the hex color string is invalid (e.g. contains non-hex characters).
    */
   internal struct InvalidHexColorError: CodedError {
