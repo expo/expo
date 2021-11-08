@@ -157,6 +157,14 @@ EX_EXPORT_METHOD_AS(isRootedExperimentalAsync,
     case UIUserInterfaceIdiomPhone:
       return EXDeviceTypePhone;
     case UIUserInterfaceIdiomPad:
+      if (TARGET_OS_MACCATALYST) {
+          return EXDeviceTypeDesktop;
+      }
+      if (@available(iOS 14.0, *)) {
+          if ([NSProcessInfo processInfo].isiOSAppOnMac) {
+              return EXDeviceTypeDesktop;
+          }
+      }
       return EXDeviceTypeTablet;
     case UIUserInterfaceIdiomTV:
       return EXDeviceTypeTV;
