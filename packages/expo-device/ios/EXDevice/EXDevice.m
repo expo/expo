@@ -44,7 +44,7 @@ EX_EXPORT_MODULE(ExpoDevice);
            @"totalMemory": @(NSProcessInfo.processInfo.physicalMemory),
            @"supportedCpuArchitectures": EXNullIfNil([[self class] cpuArchitectures]),
            @"osName": currentDevice.systemName,
-           @"osVersion": currentDevice.systemVersion,
+           @"osVersion": @(NSProcessInfo.processInfo.operatingSystemVersionString),
            @"osBuildId": osBuildId,
            @"osInternalBuildId": osBuildId,
            @"deviceName": currentDevice.name,
