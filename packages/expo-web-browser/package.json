@@ -36,7 +36,7 @@
     "preset": "expo-module-scripts"
   },
   "dependencies": {
-    "compare-urls": "^2.0.0",
+    "compare-urls": "^3.0.0",
     "expo-modules-core": "~0.4.2"
   },
   "devDependencies": {
