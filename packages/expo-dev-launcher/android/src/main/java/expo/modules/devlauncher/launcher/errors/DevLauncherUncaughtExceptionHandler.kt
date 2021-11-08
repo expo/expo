@@ -52,6 +52,7 @@ class DevLauncherUncaughtExceptionHandler(
     }
 
     exceptionWasReported = true
+    Log.e("DevLauncher", "DevLauncher tries to handle uncaught exception.", exception)
     applicationHolder.get()?.let {
       DevLauncherErrorActivity.showFatalError(
         it,
