@@ -53,6 +53,8 @@ Manual smoke tests are included in `apps/native-component-list`, this is a good 
    - iOS: `yarn ios`
    - Android: `yarn android`
 
+    If you are working on a Linux distribution, make sure to set the `TERMINAL` environment variable to your preferred terminal application. (e.g. `export TERMINAL="Konsole"`)
+ 
 8. You are now running the `test-suite` app via the `bare-expo` project. The next section explains how you can begin to make changes to SDK packages.
 
 > If this didn't work for you as described, please [open an issue.](https://github.com/expo/expo/issues/new/choose)
