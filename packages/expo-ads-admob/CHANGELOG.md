@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- Remove deprecated `setTestDeviceID` method.
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
