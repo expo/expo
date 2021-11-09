@@ -3,6 +3,15 @@
 import ExpoModulesCore
 
 public class ExpoSystemUIModule: Module {
+  
+  public required init(appContext: AppContext) {
+    super.init(appContext: appContext)
+    
+    // Set / reset the initial color on reload and app start, if undefined then the defaults will be set.
+    let color = Bundle.main.object(forInfoDictionaryKey: "RCTRootViewBackgroundColor") as? Int
+    setBackgroundColorAsync(color: color)
+  }
+  
   public func definition() -> ModuleDefinition {
     name("ExpoSystemUI")
 
@@ -18,15 +27,26 @@ public class ExpoSystemUIModule: Module {
     }
 
     method("setBackgroundColorAsync") { (color: Int) in
-      EXUtilities.performSynchronously {
-        let color = EXUtilities.uiColor(color)
-        // Set the app-wide window, this could have future issues when running multiple React apps,
-        // i.e. dev client can't use expo-system-ui.
-        // Without setting the window backgroundColor, native-stack modals will show the wrong color.
+      self.setBackgroundColorAsync(color: color)
+    }
+  }
+  
+  func setBackgroundColorAsync(color: Int?) {
+    EXUtilities.performSynchronously {
+      if (color == nil) {
         if let window = UIApplication.shared.delegate?.window {
-          window?.backgroundColor = color
-          window?.rootViewController?.view.backgroundColor = color
+          window?.backgroundColor = nil
+          window?.rootViewController?.view.backgroundColor = UIColor.white
         }
+        return
+      }
+      let backgroundColor = EXUtilities.uiColor(color)
+      // Set the app-wide window, this could have future issues when running multiple React apps,
+      // i.e. dev client can't use expo-system-ui.
+      // Without setting the window backgroundColor, native-stack modals will show the wrong color.
+      if let window = UIApplication.shared.delegate?.window {
+        window?.backgroundColor = backgroundColor
+        window?.rootViewController?.view.backgroundColor = backgroundColor
       }
     }
   }
