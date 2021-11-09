@@ -9,7 +9,7 @@ const config_plugins_1 = require("@expo/config-plugins");
 const normalize_color_1 = __importDefault(require("@react-native/normalize-color"));
 // @ts-ignore
 const debug_1 = __importDefault(require("debug"));
-const debug = (0, debug_1.default)('expo:system-navigation-bar:plugin');
+const debug = debug_1.default('expo:system-navigation-bar:plugin');
 const pkg = require('expo-navigation-bar/package.json');
 // strings.xml keys, this should not change.
 const BORDER_COLOR_KEY = 'expo_navigation_bar_border_color';
@@ -25,7 +25,7 @@ const LEGACY_BAR_STYLE_MAP = {
     'light-content': 'light',
 };
 function convertColorAndroid(input) {
-    let color = (0, normalize_color_1.default)(input);
+    let color = normalize_color_1.default(input);
     if (!color) {
         throw new Error('Invalid color value: ' + input);
     }
@@ -82,7 +82,7 @@ const withAndroidNavigationBarExpoGoManifest = (config, props) => {
 exports.withAndroidNavigationBarExpoGoManifest = withAndroidNavigationBarExpoGoManifest;
 const withNavigationBar = (config, _props) => {
     const props = resolveProps(config, _props);
-    config = (0, exports.withAndroidNavigationBarExpoGoManifest)(config, props);
+    config = exports.withAndroidNavigationBarExpoGoManifest(config, props);
     debug('Props:', props);
     // TODO: Add this to expo/config-plugins
     // Elevate props to a static value on extra so Expo Go can read it.
@@ -93,7 +93,7 @@ const withNavigationBar = (config, _props) => {
     // Use built-in styles instead of Expo custom properties, this makes the project hopefully a bit more predictable for bare users.
     config = withNavigationBarColors(config, props);
     config = withNavigationBarStyles(config, props);
-    return (0, config_plugins_1.withStringsXml)(config, (config) => {
+    return config_plugins_1.withStringsXml(config, (config) => {
         config.modResults = setStrings(config.modResults, props);
         return config;
     });
@@ -124,13 +124,13 @@ function setStrings(strings, { borderColor, visibility, position, behavior, lega
 }
 exports.setStrings = setStrings;
 const withNavigationBarColors = (config, props) => {
-    return (0, config_plugins_1.withAndroidColors)(config, (config) => {
+    return config_plugins_1.withAndroidColors(config, (config) => {
         config.modResults = setNavigationBarColors(props, config.modResults);
         return config;
     });
 };
 const withNavigationBarStyles = (config, props) => {
-    return (0, config_plugins_1.withAndroidStyles)(config, (config) => {
+    return config_plugins_1.withAndroidStyles(config, (config) => {
         config.modResults = setNavigationBarStyles(props, config.modResults);
         return config;
     });
@@ -163,4 +163,4 @@ function setNavigationBarStyles({ backgroundColor, barStyle }, styles) {
     return styles;
 }
 exports.setNavigationBarStyles = setNavigationBarStyles;
-exports.default = (0, config_plugins_1.createRunOncePlugin)(withNavigationBar, pkg.name, pkg.version);
+exports.default = config_plugins_1.createRunOncePlugin(withNavigationBar, pkg.name, pkg.version);
