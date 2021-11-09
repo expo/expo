@@ -185,10 +185,11 @@ static NSString * const EXUpdatesDatabaseServerDefinedHeadersKey = @"serverDefin
     existingAsset.url = asset.url;
     [self updateAsset:existingAsset error:error];
   }
-  // all other properties should be overridden by database values
-  asset.filename = existingAsset.filename;
-  asset.contentHash = existingAsset.contentHash;
-  asset.downloadTime = existingAsset.downloadTime;
+  // some fields are not stored in the database but might still be used by application code
+  // so we need to preserve them here
+  existingAsset.isLaunchAsset = asset.isLaunchAsset;
+  existingAsset.mainBundleDir = asset.mainBundleDir;
+  existingAsset.mainBundleFilename = asset.mainBundleFilename;
 }
 
 - (void)markUpdateFinished:(EXUpdatesUpdate *)update error:(NSError ** _Nullable)error

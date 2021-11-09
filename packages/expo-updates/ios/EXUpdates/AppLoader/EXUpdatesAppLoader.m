@@ -175,21 +175,26 @@ static NSString * const EXUpdatesAppLoaderErrorDomain = @"EXUpdatesAppLoader";
         if (matchingAssetError || !matchingDbEntry || !matchingDbEntry.filename) {
           [self downloadAsset:asset];
         } else {
+          EXUpdatesAsset *assetToLoad = asset;
           NSError *mergeError;
           [self->_database mergeAsset:asset withExistingEntry:matchingDbEntry error:&mergeError];
           if (mergeError) {
             NSLog(@"Failed to merge asset with existing database entry: %@", mergeError.localizedDescription);
+          } else {
+            // mergeAsset:withExistingEntry:error: will merge all fields not stored in the database onto
+            // matchingDbEntry, in case we need them later on in this method
+            assetToLoad = matchingDbEntry;
           }
           // make sure the file actually exists on disk
           dispatch_async([EXUpdatesFileDownloader assetFilesQueue], ^{
-            NSURL *urlOnDisk = [self->_directory URLByAppendingPathComponent:asset.filename];
+            NSURL *urlOnDisk = [self->_directory URLByAppendingPathComponent:assetToLoad.filename];
             if ([[NSFileManager defaultManager] fileExistsAtPath:[urlOnDisk path]]) {
               // file already exists, we don't need to download it again
               dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-                [self handleAssetDownloadAlreadyExists:asset];
+                [self handleAssetDownloadAlreadyExists:assetToLoad];
               });
             } else {
-              [self downloadAsset:asset];
+              [self downloadAsset:assetToLoad];
             }
           });
         }
