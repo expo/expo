@@ -95,6 +95,12 @@ abstract class AssetDao {
     }
     // we need to keep track of whether the calling class expects this asset to be the launch asset
     existingEntity.isLaunchAsset = newEntity.isLaunchAsset
+    // some fields on the asset entity are not stored in the database but might still be used by application code
+    existingEntity.embeddedAssetFilename = newEntity.embeddedAssetFilename
+    existingEntity.resourcesFilename = newEntity.resourcesFilename
+    existingEntity.resourcesFolder = newEntity.resourcesFolder
+    existingEntity.scale = newEntity.scale
+    existingEntity.scales = newEntity.scales
   }
 
   @Transaction

@@ -59,6 +59,7 @@ class EmbeddedLoaderTest {
     )
 
     every { mockLoaderFiles.readEmbeddedManifest(any(), any()) } returns manifest
+    every { mockLoaderFiles.copyAssetAndGetHash(any(), any(), any()) } answers { callOriginal() } // test for exception cases
 
     mockCallback = mockk(relaxUnitFun = true)
     every { mockCallback.onUpdateManifestLoaded(any()) } returns true
@@ -194,6 +195,8 @@ class EmbeddedLoaderTest {
 
     // both assets should be copied regardless of what the database says
     verify(exactly = 2) { mockLoaderFiles.copyAssetAndGetHash(any(), any(), any()) }
+    // the resource asset should make it through to the inner copy method
+    verify(exactly = 1) { mockLoaderFiles.copyResourceAndGetHash(any(), any(), any()) }
 
     val updates = db.updateDao().loadAllUpdates()
     Assert.assertEquals(1, updates.size.toLong())
