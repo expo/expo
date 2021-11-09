@@ -3551,6 +3551,8 @@ export type DeleteApplePushKeyResult = {
 
 export type CommonAppDataFragment = { __typename?: 'App', id: string, fullName: string, name: string, iconUrl?: string | null | undefined, packageName: string, username: string, description: string, sdkVersion: string, privacy: string };
 
+export type CommonSnackDataFragment = { __typename?: 'Snack', id: string, name: string, description: string, fullName: string, slug: string, isDraft: boolean };
+
 export type Home_AccountDataQueryVariables = Exact<{
   accountName: Scalars['String'];
   appLimit: Scalars['Int'];
@@ -3629,6 +3631,16 @@ export const CommonAppDataFragmentDoc = gql`
   privacy
 }
     `;
+export const CommonSnackDataFragmentDoc = gql`
+    fragment CommonSnackData on Snack {
+  id
+  name
+  description
+  fullName
+  slug
+  isDraft
+}
+    `;
 export const Home_AccountDataDocument = gql`
     query Home_AccountData($accountName: String!, $appLimit: Int!, $snackLimit: Int!) {
   account {
@@ -3640,17 +3652,13 @@ export const Home_AccountDataDocument = gql`
         ...CommonAppData
       }
       snacks(limit: $snackLimit, offset: 0) {
-        id
-        name
-        description
-        fullName
-        slug
-        isDraft
+        ...CommonSnackData
       }
     }
   }
 }
-    ${CommonAppDataFragmentDoc}`;
+    ${CommonAppDataFragmentDoc}
+${CommonSnackDataFragmentDoc}`;
 
 /**
  * __useHome_AccountDataQuery__
@@ -3701,16 +3709,12 @@ export const Home_ProfileData2Document = gql`
       ...CommonAppData
     }
     snacks(limit: $snackLimit, offset: 0) {
-      id
-      name
-      description
-      fullName
-      slug
-      isDraft
+      ...CommonSnackData
     }
   }
 }
-    ${CommonAppDataFragmentDoc}`;
+    ${CommonAppDataFragmentDoc}
+${CommonSnackDataFragmentDoc}`;
 
 /**
  * __useHome_ProfileData2Query__
@@ -3791,16 +3795,11 @@ export const Home_ProfileSnacksDocument = gql`
   me {
     id
     snacks(limit: $limit, offset: $offset) {
-      id
-      name
-      description
-      fullName
-      slug
-      isDraft
+      ...CommonSnackData
     }
   }
 }
-    `;
+    ${CommonSnackDataFragmentDoc}`;
 
 /**
  * __useHome_ProfileSnacksQuery__
@@ -3964,17 +3963,12 @@ export const Home_AccountSnacksDocument = gql`
       id
       name
       snacks(limit: $limit, offset: $offset) {
-        id
-        name
-        description
-        fullName
-        slug
-        isDraft
+        ...CommonSnackData
       }
     }
   }
 }
-    `;
+    ${CommonSnackDataFragmentDoc}`;
 
 /**
  * __useHome_AccountSnacksQuery__

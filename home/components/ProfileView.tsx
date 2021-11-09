@@ -7,8 +7,7 @@ import FadeIn from 'react-native-fade-in-image';
 
 import Colors from '../constants/Colors';
 import SharedStyles from '../constants/SharedStyles';
-import { ProfileData } from '../containers/Profile';
-import { CommonAppDataFragment } from '../graphql/types';
+import { CommonAppDataFragment, Home_ProfileData2Query } from '../graphql/types';
 import { AllStackRoutes } from '../navigation/Navigation.types';
 import EmptyAccountProjectsNotice from './EmptyAccountProjectsNotice';
 import EmptyAccountSnacksNotice from './EmptyAccountSnacksNotice';
@@ -42,7 +41,7 @@ type QueryProps = {
   loading: boolean;
   error?: Error;
   refetch: (props: any) => void;
-  data?: ProfileData;
+  data?: Home_ProfileData2Query;
 };
 
 type Props = ProfileViewProps & QueryProps;

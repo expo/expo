@@ -14,12 +14,7 @@ query Home_ProfileData2($appLimit: Int!, $snackLimit: Int!) {
       ...CommonAppData
     }
     snacks(limit: $snackLimit, offset: 0) {
-      id
-      name
-      description
-      fullName
-      slug
-      isDraft
+      ...CommonSnackData
     }
   }
 }
