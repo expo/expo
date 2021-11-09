@@ -493,7 +493,9 @@ NS_ASSUME_NONNULL_BEGIN
   UIView *reactView = appManager.rootView;
   reactView.frame = CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height);
   reactView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-
+  // Set this view to transparent so the root view background color aligns with custom development clients where the
+  // background color is the view controller root view.
+  reactView.backgroundColor = [UIColor clearColor];
 
   [_contentView removeFromSuperview];
   _contentView = reactView;
@@ -502,7 +504,7 @@ NS_ASSUME_NONNULL_BEGIN
   [reactView becomeFirstResponder];
 
   // Set root view background color after adding as subview so we can access window
-  [self _setBackgroundColor:reactView];
+  [self _setBackgroundColor:self.view];
 }
 
 - (void)reactAppManagerStartedLoadingJavaScript:(EXReactAppManager *)appManager
@@ -663,15 +665,18 @@ NS_ASSUME_NONNULL_BEGIN
 {
     NSString *backgroundColorString = [self _readBackgroundColorFromManifest:_appRecord.appLoader.manifest];
     UIColor *backgroundColor = [EXUtil colorWithHexString:backgroundColorString];
+    view.backgroundColor = [UIColor clearColor];
 
     if (backgroundColor) {
-      view.backgroundColor = backgroundColor;
-      // NOTE(brentvatne): it may be desirable at some point to split the window backgroundColor out from the
-      // root view, we can do if use case is presented to us.
+      if (view.window.rootViewController != nil && view.window.rootViewController.view != nil) {
+        view.window.rootViewController.view.backgroundColor = backgroundColor;
+      }
       view.window.backgroundColor = backgroundColor;
     } else {
-      view.backgroundColor = [UIColor whiteColor];
-
+      // Reset this color to white so splash and other screens don't load against a black background.
+      if (view.window.rootViewController != nil && view.window.rootViewController.view != nil) {
+        view.window.rootViewController.view.backgroundColor = [UIColor whiteColor];
+      }
       // NOTE(brentvatne): we used to use white as a default background color for window but this caused
       // problems when using form sheet presentation style with vcs eg: <Modal /> and native-stack. Most
       // users expect the background behind these to be black, which is the default if backgroundColor is nil.
@@ -679,7 +684,7 @@ NS_ASSUME_NONNULL_BEGIN
 
       // NOTE(brentvatne): we may want to default to respecting the default system background color
       // on iOS13 and higher, but if we do make this choice then we will have to implement it on Android
-      // as well. This would also be a breaking change. Leaaving this here as a placeholder for the future.
+      // as well. This would also be a breaking change. Leaving this here as a placeholder for the future.
       // if (@available(iOS 13.0, *)) {
       //   view.backgroundColor = [UIColor systemBackgroundColor];
       // } else {

@@ -9,7 +9,8 @@ public class ExpoSystemUIModule: Module {
     method("getBackgroundColorAsync") { () -> String? in
       var color: String? = nil
       EXUtilities.performSynchronously {
-        if let backgroundColor = self.appContext?.utilities?.currentViewController()?.view.backgroundColor?.cgColor {
+        // Get the root view controller of the delegate window.
+        if let window = UIApplication.shared.delegate?.window, let backgroundColor = window?.rootViewController?.view.backgroundColor?.cgColor {
           color = EXUtilities.hexString(with: backgroundColor)
         }
       }
@@ -18,7 +19,14 @@ public class ExpoSystemUIModule: Module {
 
     method("setBackgroundColorAsync") { (color: Int) in
       EXUtilities.performSynchronously {
-        self.appContext?.utilities?.currentViewController()?.view.backgroundColor = EXUtilities.uiColor(color)
+        let color = EXUtilities.uiColor(color)
+        // Set the app-wide window, this could have future issues when running multiple React apps,
+        // i.e. dev client can't use expo-system-ui.
+        // Without setting the window backgroundColor, native-stack modals will show the wrong color.
+        if let window = UIApplication.shared.delegate?.window {
+          window?.backgroundColor = color
+          window?.rootViewController?.view.backgroundColor = color
+        }
       }
     }
   }
