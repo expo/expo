@@ -167,6 +167,12 @@ export const Screens = [
   },
   {
     getComponent() {
+      return optionalRequire(() => require('../screens/FirebasePhoneAuthScreen'));
+    },
+    name: 'FirebasePhoneAuth',
+  },
+  {
+    getComponent() {
       return optionalRequire(() => require('../screens/FirebaseRecaptchaScreen'));
     },
     name: 'FirebaseRecaptcha',

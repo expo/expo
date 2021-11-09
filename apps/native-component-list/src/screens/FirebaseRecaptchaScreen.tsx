@@ -9,7 +9,8 @@ import { Alert, ScrollView, StyleSheet, StyleProp, TextStyle } from 'react-nativ
 import HeadingText from '../components/HeadingText';
 import ListButton from '../components/ListButton';
 
-const firebaseConfig = {
+// Also used by FirebasePhoneAuthScreen
+export const firebaseConfig = {
   apiKey: 'AIzaSyDKP919EwHK1U3Q1bgJdQEwZCHs_z6lEK4',
   authDomain: 'expo-firebase-demo.firebaseapp.com',
   databaseURL: 'https://expo-firebase-demo.firebaseio.com',

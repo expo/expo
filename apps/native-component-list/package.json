@@ -137,6 +137,7 @@
     "expo-video-thumbnails": "~6.0.1",
     "expo-web-browser": "~10.0.1",
     "fbemitter": "^2.1.1",
+    "firebase": "^9.4.0",
     "fuse.js": "^6.4.6",
     "gl-mat4": "^1.1.4",
     "hsv2rgb": "^1.1.0",
