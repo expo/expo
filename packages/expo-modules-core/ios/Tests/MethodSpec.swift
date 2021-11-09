@@ -61,10 +61,21 @@ class MethodSpec: QuickSpec {
 
       mockModuleHolder(appContext) {
         $0.method(methodName) { (a: String?) in
-          expect(a) == nil
+          expect(a == nil) == true
         }
       }
       .callSync(method: methodName, args: [str as Any])
+    }
+
+    it("is called with an array of arrays") {
+      let array: [[String]] = [["expo"]]
+
+      mockModuleHolder(appContext) {
+        $0.method(methodName) { (a: [[String]]) in
+          expect(a.first!.first) == array.first!.first
+        }
+      }
+      .callSync(method: methodName, args: [array])
     }
 
     describe("converting dicts to records") {
