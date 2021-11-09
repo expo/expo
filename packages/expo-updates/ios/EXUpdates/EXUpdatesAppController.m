@@ -146,7 +146,7 @@ static NSString * const EXUpdatesErrorEventName = @"error";
 
 - (void)startAndShowLaunchScreen:(UIWindow *)window
 {
-  UIViewController* rootViewController = [EXUpdatesUtils createRootViewController:window];
+  UIViewController *rootViewController = [EXUpdatesUtils createRootViewController:window];
   NSBundle *mainBundle = [NSBundle mainBundle];
   NSString *launchScreen = (NSString *)[mainBundle objectForInfoDictionaryKey:@"UILaunchStoryboardName"] ?: @"LaunchScreen";
   
