@@ -22,7 +22,7 @@ import SectionHeader from '../components/SectionHeader';
 import ShareProjectButton from '../components/ShareProjectButton';
 import Colors from '../constants/Colors';
 import SharedStyles from '../constants/SharedStyles';
-import { WebContainerProjectPage_QueryQuery } from '../graphql/types';
+import { WebContainerProjectPage_Query } from '../graphql/types';
 import { AllStackRoutes } from '../navigation/Navigation.types';
 import Environment from '../utils/Environment';
 import * as UrlUtils from '../utils/UrlUtils';
@@ -42,11 +42,11 @@ const NO_PUBLISHES_TEXT = dedent`
 type Props = {
   loading: boolean;
   error?: Error;
-  data?: WebContainerProjectPage_QueryQuery;
+  data?: WebContainerProjectPage_Query;
 } & StackScreenProps<AllStackRoutes, 'Project'>;
 
-type ProjectPageApp = WebContainerProjectPage_QueryQuery['app']['byId'];
-type ProjectUpdateBranch = WebContainerProjectPage_QueryQuery['app']['byId']['updateBranches'][0];
+type ProjectPageApp = WebContainerProjectPage_Query['app']['byId'];
+type ProjectUpdateBranch = WebContainerProjectPage_Query['app']['byId']['updateBranches'][0];
 
 export default function ProjectView({ loading, error, data, navigation }: Props) {
   let contents;

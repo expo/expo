@@ -1,8 +1,10 @@
-import { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/core';
+import { gql } from '@apollo/client';
+import * as Apollo from '@apollo/client';
 export type Maybe<T> = T | null;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
 export type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: Maybe<T[SubKey]> };
 export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]: Maybe<T[SubKey]> };
+const defaultOptions =  {}
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
   ID: string;
@@ -3582,14 +3584,14 @@ export type Home_ProfileSnacksQueryVariables = Exact<{
 
 export type Home_ProfileSnacksQuery = { __typename?: 'RootQuery', me?: { __typename?: 'User', id: string, snacks: Array<{ __typename?: 'Snack', id: string, name: string, description: string, fullName: string, slug: string, isDraft: boolean }> } | null | undefined };
 
-export type WebContainerProjectPage_QueryQueryVariables = Exact<{
+export type WebContainerProjectPage_QueryVariables = Exact<{
   appId: Scalars['String'];
   platform: AppPlatform;
   runtimeVersions: Array<Scalars['String']> | Scalars['String'];
 }>;
 
 
-export type WebContainerProjectPage_QueryQuery = { __typename?: 'RootQuery', app: { __typename?: 'AppQuery', byId: { __typename?: 'App', id: string, name: string, slug: string, fullName: string, username: string, published: boolean, description: string, githubUrl?: string | null | undefined, playStoreUrl?: string | null | undefined, appStoreUrl?: string | null | undefined, sdkVersion: string, iconUrl?: string | null | undefined, privacy: string, icon?: { __typename?: 'AppIcon', url: string } | null | undefined, latestReleaseForReleaseChannel?: { __typename?: 'AppRelease', sdkVersion: string, runtimeVersion?: string | null | undefined } | null | undefined, updateBranches: Array<{ __typename?: 'UpdateBranch', id: string, name: string, updates: Array<{ __typename?: 'Update', id: string, group: string, message?: string | null | undefined, createdAt: any, runtimeVersion: string, platform: string, manifestPermalink: string }> }> } } };
+export type WebContainerProjectPage_Query = { __typename?: 'RootQuery', app: { __typename?: 'AppQuery', byId: { __typename?: 'App', id: string, name: string, slug: string, fullName: string, username: string, published: boolean, description: string, githubUrl?: string | null | undefined, playStoreUrl?: string | null | undefined, appStoreUrl?: string | null | undefined, sdkVersion: string, iconUrl?: string | null | undefined, privacy: string, icon?: { __typename?: 'AppIcon', url: string } | null | undefined, latestReleaseForReleaseChannel?: { __typename?: 'AppRelease', sdkVersion: string, runtimeVersion?: string | null | undefined } | null | undefined, updateBranches: Array<{ __typename?: 'UpdateBranch', id: string, name: string, updates: Array<{ __typename?: 'Update', id: string, group: string, message?: string | null | undefined, createdAt: any, runtimeVersion: string, platform: string, manifestPermalink: string }> }> } } };
 
 export type Home_AccountAppsQueryVariables = Exact<{
   accountName: Scalars['String'];
@@ -3614,12 +3616,433 @@ export type Home_ViewerUsernameQueryVariables = Exact<{ [key: string]: never; }>
 
 export type Home_ViewerUsernameQuery = { __typename?: 'RootQuery', me?: { __typename?: 'User', id: string, username: string } | null | undefined };
 
-export const CommonAppDataFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"CommonAppData"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"App"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"fullName"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"iconUrl"}},{"kind":"Field","name":{"kind":"Name","value":"packageName"}},{"kind":"Field","name":{"kind":"Name","value":"username"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"sdkVersion"}},{"kind":"Field","name":{"kind":"Name","value":"privacy"}}]}}]} as unknown as DocumentNode<CommonAppDataFragment, unknown>;
-export const Home_AccountDataDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"Home_AccountData"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"accountName"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"appLimit"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"snackLimit"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"account"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"byName"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"accountName"},"value":{"kind":"Variable","name":{"kind":"Name","value":"accountName"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"appCount"}},{"kind":"Field","name":{"kind":"Name","value":"apps"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"limit"},"value":{"kind":"Variable","name":{"kind":"Name","value":"appLimit"}}},{"kind":"Argument","name":{"kind":"Name","value":"offset"},"value":{"kind":"IntValue","value":"0"}},{"kind":"Argument","name":{"kind":"Name","value":"includeUnpublished"},"value":{"kind":"BooleanValue","value":true}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"CommonAppData"}}]}},{"kind":"Field","name":{"kind":"Name","value":"snacks"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"limit"},"value":{"kind":"Variable","name":{"kind":"Name","value":"snackLimit"}}},{"kind":"Argument","name":{"kind":"Name","value":"offset"},"value":{"kind":"IntValue","value":"0"}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"fullName"}},{"kind":"Field","name":{"kind":"Name","value":"slug"}},{"kind":"Field","name":{"kind":"Name","value":"isDraft"}}]}}]}}]}}]}},...CommonAppDataFragmentDoc.definitions]} as unknown as DocumentNode<Home_AccountDataQuery, Home_AccountDataQueryVariables>;
-export const Home_ProfileData2Document = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"Home_ProfileData2"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"appLimit"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"snackLimit"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"me"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"username"}},{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}},{"kind":"Field","name":{"kind":"Name","value":"profilePhoto"}},{"kind":"Field","name":{"kind":"Name","value":"accounts"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"appCount"}},{"kind":"Field","name":{"kind":"Name","value":"apps"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"limit"},"value":{"kind":"Variable","name":{"kind":"Name","value":"appLimit"}}},{"kind":"Argument","name":{"kind":"Name","value":"offset"},"value":{"kind":"IntValue","value":"0"}},{"kind":"Argument","name":{"kind":"Name","value":"includeUnpublished"},"value":{"kind":"BooleanValue","value":true}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"CommonAppData"}}]}},{"kind":"Field","name":{"kind":"Name","value":"snacks"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"limit"},"value":{"kind":"Variable","name":{"kind":"Name","value":"snackLimit"}}},{"kind":"Argument","name":{"kind":"Name","value":"offset"},"value":{"kind":"IntValue","value":"0"}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"fullName"}},{"kind":"Field","name":{"kind":"Name","value":"slug"}},{"kind":"Field","name":{"kind":"Name","value":"isDraft"}}]}}]}}]}},...CommonAppDataFragmentDoc.definitions]} as unknown as DocumentNode<Home_ProfileData2Query, Home_ProfileData2QueryVariables>;
-export const Home_MyAppsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"Home_MyApps"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"limit"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"offset"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"me"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"appCount"}},{"kind":"Field","name":{"kind":"Name","value":"apps"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"limit"},"value":{"kind":"Variable","name":{"kind":"Name","value":"limit"}}},{"kind":"Argument","name":{"kind":"Name","value":"offset"},"value":{"kind":"Variable","name":{"kind":"Name","value":"offset"}}},{"kind":"Argument","name":{"kind":"Name","value":"includeUnpublished"},"value":{"kind":"BooleanValue","value":true}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"CommonAppData"}}]}}]}}]}},...CommonAppDataFragmentDoc.definitions]} as unknown as DocumentNode<Home_MyAppsQuery, Home_MyAppsQueryVariables>;
-export const Home_ProfileSnacksDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"Home_ProfileSnacks"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"limit"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"offset"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"me"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"snacks"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"limit"},"value":{"kind":"Variable","name":{"kind":"Name","value":"limit"}}},{"kind":"Argument","name":{"kind":"Name","value":"offset"},"value":{"kind":"Variable","name":{"kind":"Name","value":"offset"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"fullName"}},{"kind":"Field","name":{"kind":"Name","value":"slug"}},{"kind":"Field","name":{"kind":"Name","value":"isDraft"}}]}}]}}]}}]} as unknown as DocumentNode<Home_ProfileSnacksQuery, Home_ProfileSnacksQueryVariables>;
-export const WebContainerProjectPage_QueryDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"WebContainerProjectPage_Query"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"appId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"platform"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"AppPlatform"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"runtimeVersions"}},"type":{"kind":"NonNullType","type":{"kind":"ListType","type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"app"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"byId"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"appId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"appId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"slug"}},{"kind":"Field","name":{"kind":"Name","value":"fullName"}},{"kind":"Field","name":{"kind":"Name","value":"username"}},{"kind":"Field","name":{"kind":"Name","value":"published"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"githubUrl"}},{"kind":"Field","name":{"kind":"Name","value":"playStoreUrl"}},{"kind":"Field","name":{"kind":"Name","value":"appStoreUrl"}},{"kind":"Field","name":{"kind":"Name","value":"sdkVersion"}},{"kind":"Field","name":{"kind":"Name","value":"iconUrl"}},{"kind":"Field","name":{"kind":"Name","value":"privacy"}},{"kind":"Field","name":{"kind":"Name","value":"icon"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"url"}}]}},{"kind":"Field","name":{"kind":"Name","value":"latestReleaseForReleaseChannel"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"platform"},"value":{"kind":"Variable","name":{"kind":"Name","value":"platform"}}},{"kind":"Argument","name":{"kind":"Name","value":"releaseChannel"},"value":{"kind":"StringValue","value":"default","block":false}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"sdkVersion"}},{"kind":"Field","name":{"kind":"Name","value":"runtimeVersion"}}]}},{"kind":"Field","name":{"kind":"Name","value":"updateBranches"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"limit"},"value":{"kind":"IntValue","value":"100"}},{"kind":"Argument","name":{"kind":"Name","value":"offset"},"value":{"kind":"IntValue","value":"0"}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"updates"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"limit"},"value":{"kind":"IntValue","value":"1"}},{"kind":"Argument","name":{"kind":"Name","value":"offset"},"value":{"kind":"IntValue","value":"0"}},{"kind":"Argument","name":{"kind":"Name","value":"filter"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"platform"},"value":{"kind":"Variable","name":{"kind":"Name","value":"platform"}}},{"kind":"ObjectField","name":{"kind":"Name","value":"runtimeVersions"},"value":{"kind":"Variable","name":{"kind":"Name","value":"runtimeVersions"}}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"group"}},{"kind":"Field","name":{"kind":"Name","value":"message"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"runtimeVersion"}},{"kind":"Field","name":{"kind":"Name","value":"platform"}},{"kind":"Field","name":{"kind":"Name","value":"manifestPermalink"}}]}}]}}]}}]}}]}}]} as unknown as DocumentNode<WebContainerProjectPage_QueryQuery, WebContainerProjectPage_QueryQueryVariables>;
-export const Home_AccountAppsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"Home_AccountApps"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"accountName"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"limit"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"offset"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"account"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"byName"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"accountName"},"value":{"kind":"Variable","name":{"kind":"Name","value":"accountName"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"appCount"}},{"kind":"Field","name":{"kind":"Name","value":"apps"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"limit"},"value":{"kind":"Variable","name":{"kind":"Name","value":"limit"}}},{"kind":"Argument","name":{"kind":"Name","value":"offset"},"value":{"kind":"Variable","name":{"kind":"Name","value":"offset"}}},{"kind":"Argument","name":{"kind":"Name","value":"includeUnpublished"},"value":{"kind":"BooleanValue","value":true}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"CommonAppData"}}]}}]}}]}}]}},...CommonAppDataFragmentDoc.definitions]} as unknown as DocumentNode<Home_AccountAppsQuery, Home_AccountAppsQueryVariables>;
-export const Home_AccountSnacksDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"Home_AccountSnacks"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"accountName"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"limit"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"offset"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"account"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"byName"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"accountName"},"value":{"kind":"Variable","name":{"kind":"Name","value":"accountName"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"snacks"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"limit"},"value":{"kind":"Variable","name":{"kind":"Name","value":"limit"}}},{"kind":"Argument","name":{"kind":"Name","value":"offset"},"value":{"kind":"Variable","name":{"kind":"Name","value":"offset"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"fullName"}},{"kind":"Field","name":{"kind":"Name","value":"slug"}},{"kind":"Field","name":{"kind":"Name","value":"isDraft"}}]}}]}}]}}]}}]} as unknown as DocumentNode<Home_AccountSnacksQuery, Home_AccountSnacksQueryVariables>;
-export const Home_ViewerUsernameDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"Home_ViewerUsername"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"me"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"username"}}]}}]}}]} as unknown as DocumentNode<Home_ViewerUsernameQuery, Home_ViewerUsernameQueryVariables>;
+export const CommonAppDataFragmentDoc = gql`
+    fragment CommonAppData on App {
+  id
+  fullName
+  name
+  iconUrl
+  packageName
+  username
+  description
+  sdkVersion
+  privacy
+}
+    `;
+export const Home_AccountDataDocument = gql`
+    query Home_AccountData($accountName: String!, $appLimit: Int!, $snackLimit: Int!) {
+  account {
+    byName(accountName: $accountName) {
+      id
+      name
+      appCount
+      apps(limit: $appLimit, offset: 0, includeUnpublished: true) {
+        ...CommonAppData
+      }
+      snacks(limit: $snackLimit, offset: 0) {
+        id
+        name
+        description
+        fullName
+        slug
+        isDraft
+      }
+    }
+  }
+}
+    ${CommonAppDataFragmentDoc}`;
+
+/**
+ * __useHome_AccountDataQuery__
+ *
+ * To run a query within a React component, call `useHome_AccountDataQuery` and pass it any options that fit your needs.
+ * When your component renders, `useHome_AccountDataQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useHome_AccountDataQuery({
+ *   variables: {
+ *      accountName: // value for 'accountName'
+ *      appLimit: // value for 'appLimit'
+ *      snackLimit: // value for 'snackLimit'
+ *   },
+ * });
+ */
+export function useHome_AccountDataQuery(baseOptions: Apollo.QueryHookOptions<Home_AccountDataQuery, Home_AccountDataQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<Home_AccountDataQuery, Home_AccountDataQueryVariables>(Home_AccountDataDocument, options);
+      }
+export function useHome_AccountDataLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<Home_AccountDataQuery, Home_AccountDataQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<Home_AccountDataQuery, Home_AccountDataQueryVariables>(Home_AccountDataDocument, options);
+        }
+export type Home_AccountDataQueryHookResult = ReturnType<typeof useHome_AccountDataQuery>;
+export type Home_AccountDataLazyQueryHookResult = ReturnType<typeof useHome_AccountDataLazyQuery>;
+export type Home_AccountDataQueryResult = Apollo.QueryResult<Home_AccountDataQuery, Home_AccountDataQueryVariables>;
+export function refetchHome_AccountDataQuery(variables: Home_AccountDataQueryVariables) {
+      return { query: Home_AccountDataDocument, variables: variables }
+    }
+export const Home_ProfileData2Document = gql`
+    query Home_ProfileData2($appLimit: Int!, $snackLimit: Int!) {
+  me {
+    id
+    username
+    firstName
+    lastName
+    profilePhoto
+    accounts {
+      id
+      name
+    }
+    appCount
+    apps(limit: $appLimit, offset: 0, includeUnpublished: true) {
+      ...CommonAppData
+    }
+    snacks(limit: $snackLimit, offset: 0) {
+      id
+      name
+      description
+      fullName
+      slug
+      isDraft
+    }
+  }
+}
+    ${CommonAppDataFragmentDoc}`;
+
+/**
+ * __useHome_ProfileData2Query__
+ *
+ * To run a query within a React component, call `useHome_ProfileData2Query` and pass it any options that fit your needs.
+ * When your component renders, `useHome_ProfileData2Query` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useHome_ProfileData2Query({
+ *   variables: {
+ *      appLimit: // value for 'appLimit'
+ *      snackLimit: // value for 'snackLimit'
+ *   },
+ * });
+ */
+export function useHome_ProfileData2Query(baseOptions: Apollo.QueryHookOptions<Home_ProfileData2Query, Home_ProfileData2QueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<Home_ProfileData2Query, Home_ProfileData2QueryVariables>(Home_ProfileData2Document, options);
+      }
+export function useHome_ProfileData2LazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<Home_ProfileData2Query, Home_ProfileData2QueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<Home_ProfileData2Query, Home_ProfileData2QueryVariables>(Home_ProfileData2Document, options);
+        }
+export type Home_ProfileData2QueryHookResult = ReturnType<typeof useHome_ProfileData2Query>;
+export type Home_ProfileData2LazyQueryHookResult = ReturnType<typeof useHome_ProfileData2LazyQuery>;
+export type Home_ProfileData2QueryResult = Apollo.QueryResult<Home_ProfileData2Query, Home_ProfileData2QueryVariables>;
+export function refetchHome_ProfileData2Query(variables: Home_ProfileData2QueryVariables) {
+      return { query: Home_ProfileData2Document, variables: variables }
+    }
+export const Home_MyAppsDocument = gql`
+    query Home_MyApps($limit: Int!, $offset: Int!) {
+  me {
+    id
+    appCount
+    apps(limit: $limit, offset: $offset, includeUnpublished: true) {
+      ...CommonAppData
+    }
+  }
+}
+    ${CommonAppDataFragmentDoc}`;
+
+/**
+ * __useHome_MyAppsQuery__
+ *
+ * To run a query within a React component, call `useHome_MyAppsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useHome_MyAppsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useHome_MyAppsQuery({
+ *   variables: {
+ *      limit: // value for 'limit'
+ *      offset: // value for 'offset'
+ *   },
+ * });
+ */
+export function useHome_MyAppsQuery(baseOptions: Apollo.QueryHookOptions<Home_MyAppsQuery, Home_MyAppsQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<Home_MyAppsQuery, Home_MyAppsQueryVariables>(Home_MyAppsDocument, options);
+      }
+export function useHome_MyAppsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<Home_MyAppsQuery, Home_MyAppsQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<Home_MyAppsQuery, Home_MyAppsQueryVariables>(Home_MyAppsDocument, options);
+        }
+export type Home_MyAppsQueryHookResult = ReturnType<typeof useHome_MyAppsQuery>;
+export type Home_MyAppsLazyQueryHookResult = ReturnType<typeof useHome_MyAppsLazyQuery>;
+export type Home_MyAppsQueryResult = Apollo.QueryResult<Home_MyAppsQuery, Home_MyAppsQueryVariables>;
+export function refetchHome_MyAppsQuery(variables: Home_MyAppsQueryVariables) {
+      return { query: Home_MyAppsDocument, variables: variables }
+    }
+export const Home_ProfileSnacksDocument = gql`
+    query Home_ProfileSnacks($limit: Int!, $offset: Int!) {
+  me {
+    id
+    snacks(limit: $limit, offset: $offset) {
+      id
+      name
+      description
+      fullName
+      slug
+      isDraft
+    }
+  }
+}
+    `;
+
+/**
+ * __useHome_ProfileSnacksQuery__
+ *
+ * To run a query within a React component, call `useHome_ProfileSnacksQuery` and pass it any options that fit your needs.
+ * When your component renders, `useHome_ProfileSnacksQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useHome_ProfileSnacksQuery({
+ *   variables: {
+ *      limit: // value for 'limit'
+ *      offset: // value for 'offset'
+ *   },
+ * });
+ */
+export function useHome_ProfileSnacksQuery(baseOptions: Apollo.QueryHookOptions<Home_ProfileSnacksQuery, Home_ProfileSnacksQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<Home_ProfileSnacksQuery, Home_ProfileSnacksQueryVariables>(Home_ProfileSnacksDocument, options);
+      }
+export function useHome_ProfileSnacksLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<Home_ProfileSnacksQuery, Home_ProfileSnacksQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<Home_ProfileSnacksQuery, Home_ProfileSnacksQueryVariables>(Home_ProfileSnacksDocument, options);
+        }
+export type Home_ProfileSnacksQueryHookResult = ReturnType<typeof useHome_ProfileSnacksQuery>;
+export type Home_ProfileSnacksLazyQueryHookResult = ReturnType<typeof useHome_ProfileSnacksLazyQuery>;
+export type Home_ProfileSnacksQueryResult = Apollo.QueryResult<Home_ProfileSnacksQuery, Home_ProfileSnacksQueryVariables>;
+export function refetchHome_ProfileSnacksQuery(variables: Home_ProfileSnacksQueryVariables) {
+      return { query: Home_ProfileSnacksDocument, variables: variables }
+    }
+export const WebContainerProjectPage_QueryDocument = gql`
+    query WebContainerProjectPage_Query($appId: String!, $platform: AppPlatform!, $runtimeVersions: [String!]!) {
+  app {
+    byId(appId: $appId) {
+      id
+      name
+      slug
+      fullName
+      username
+      published
+      description
+      githubUrl
+      playStoreUrl
+      appStoreUrl
+      sdkVersion
+      iconUrl
+      privacy
+      icon {
+        url
+      }
+      latestReleaseForReleaseChannel(platform: $platform, releaseChannel: "default") {
+        sdkVersion
+        runtimeVersion
+      }
+      updateBranches(limit: 100, offset: 0) {
+        id
+        name
+        updates(
+          limit: 1
+          offset: 0
+          filter: {platform: $platform, runtimeVersions: $runtimeVersions}
+        ) {
+          id
+          group
+          message
+          createdAt
+          runtimeVersion
+          platform
+          manifestPermalink
+        }
+      }
+    }
+  }
+}
+    `;
+
+/**
+ * __useWebContainerProjectPage_Query__
+ *
+ * To run a query within a React component, call `useWebContainerProjectPage_Query` and pass it any options that fit your needs.
+ * When your component renders, `useWebContainerProjectPage_Query` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useWebContainerProjectPage_Query({
+ *   variables: {
+ *      appId: // value for 'appId'
+ *      platform: // value for 'platform'
+ *      runtimeVersions: // value for 'runtimeVersions'
+ *   },
+ * });
+ */
+export function useWebContainerProjectPage_Query(baseOptions: Apollo.QueryHookOptions<WebContainerProjectPage_Query, WebContainerProjectPage_QueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<WebContainerProjectPage_Query, WebContainerProjectPage_QueryVariables>(WebContainerProjectPage_QueryDocument, options);
+      }
+export function useWebContainerProjectPage_QueryLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<WebContainerProjectPage_Query, WebContainerProjectPage_QueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<WebContainerProjectPage_Query, WebContainerProjectPage_QueryVariables>(WebContainerProjectPage_QueryDocument, options);
+        }
+export type WebContainerProjectPage_QueryHookResult = ReturnType<typeof useWebContainerProjectPage_Query>;
+export type WebContainerProjectPage_QueryLazyQueryHookResult = ReturnType<typeof useWebContainerProjectPage_QueryLazyQuery>;
+export type WebContainerProjectPage_QueryQueryResult = Apollo.QueryResult<WebContainerProjectPage_Query, WebContainerProjectPage_QueryVariables>;
+export function refetchWebContainerProjectPage_Query(variables: WebContainerProjectPage_QueryVariables) {
+      return { query: WebContainerProjectPage_QueryDocument, variables: variables }
+    }
+export const Home_AccountAppsDocument = gql`
+    query Home_AccountApps($accountName: String!, $limit: Int!, $offset: Int!) {
+  account {
+    byName(accountName: $accountName) {
+      id
+      appCount
+      apps(limit: $limit, offset: $offset, includeUnpublished: true) {
+        ...CommonAppData
+      }
+    }
+  }
+}
+    ${CommonAppDataFragmentDoc}`;
+
+/**
+ * __useHome_AccountAppsQuery__
+ *
+ * To run a query within a React component, call `useHome_AccountAppsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useHome_AccountAppsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useHome_AccountAppsQuery({
+ *   variables: {
+ *      accountName: // value for 'accountName'
+ *      limit: // value for 'limit'
+ *      offset: // value for 'offset'
+ *   },
+ * });
+ */
+export function useHome_AccountAppsQuery(baseOptions: Apollo.QueryHookOptions<Home_AccountAppsQuery, Home_AccountAppsQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<Home_AccountAppsQuery, Home_AccountAppsQueryVariables>(Home_AccountAppsDocument, options);
+      }
+export function useHome_AccountAppsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<Home_AccountAppsQuery, Home_AccountAppsQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<Home_AccountAppsQuery, Home_AccountAppsQueryVariables>(Home_AccountAppsDocument, options);
+        }
+export type Home_AccountAppsQueryHookResult = ReturnType<typeof useHome_AccountAppsQuery>;
+export type Home_AccountAppsLazyQueryHookResult = ReturnType<typeof useHome_AccountAppsLazyQuery>;
+export type Home_AccountAppsQueryResult = Apollo.QueryResult<Home_AccountAppsQuery, Home_AccountAppsQueryVariables>;
+export function refetchHome_AccountAppsQuery(variables: Home_AccountAppsQueryVariables) {
+      return { query: Home_AccountAppsDocument, variables: variables }
+    }
+export const Home_AccountSnacksDocument = gql`
+    query Home_AccountSnacks($accountName: String!, $limit: Int!, $offset: Int!) {
+  account {
+    byName(accountName: $accountName) {
+      id
+      name
+      snacks(limit: $limit, offset: $offset) {
+        id
+        name
+        description
+        fullName
+        slug
+        isDraft
+      }
+    }
+  }
+}
+    `;
+
+/**
+ * __useHome_AccountSnacksQuery__
+ *
+ * To run a query within a React component, call `useHome_AccountSnacksQuery` and pass it any options that fit your needs.
+ * When your component renders, `useHome_AccountSnacksQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useHome_AccountSnacksQuery({
+ *   variables: {
+ *      accountName: // value for 'accountName'
+ *      limit: // value for 'limit'
+ *      offset: // value for 'offset'
+ *   },
+ * });
+ */
+export function useHome_AccountSnacksQuery(baseOptions: Apollo.QueryHookOptions<Home_AccountSnacksQuery, Home_AccountSnacksQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<Home_AccountSnacksQuery, Home_AccountSnacksQueryVariables>(Home_AccountSnacksDocument, options);
+      }
+export function useHome_AccountSnacksLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<Home_AccountSnacksQuery, Home_AccountSnacksQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<Home_AccountSnacksQuery, Home_AccountSnacksQueryVariables>(Home_AccountSnacksDocument, options);
+        }
+export type Home_AccountSnacksQueryHookResult = ReturnType<typeof useHome_AccountSnacksQuery>;
+export type Home_AccountSnacksLazyQueryHookResult = ReturnType<typeof useHome_AccountSnacksLazyQuery>;
+export type Home_AccountSnacksQueryResult = Apollo.QueryResult<Home_AccountSnacksQuery, Home_AccountSnacksQueryVariables>;
+export function refetchHome_AccountSnacksQuery(variables: Home_AccountSnacksQueryVariables) {
+      return { query: Home_AccountSnacksDocument, variables: variables }
+    }
+export const Home_ViewerUsernameDocument = gql`
+    query Home_ViewerUsername {
+  me {
+    id
+    username
+  }
+}
+    `;
+
+/**
+ * __useHome_ViewerUsernameQuery__
+ *
+ * To run a query within a React component, call `useHome_ViewerUsernameQuery` and pass it any options that fit your needs.
+ * When your component renders, `useHome_ViewerUsernameQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useHome_ViewerUsernameQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useHome_ViewerUsernameQuery(baseOptions?: Apollo.QueryHookOptions<Home_ViewerUsernameQuery, Home_ViewerUsernameQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<Home_ViewerUsernameQuery, Home_ViewerUsernameQueryVariables>(Home_ViewerUsernameDocument, options);
+      }
+export function useHome_ViewerUsernameLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<Home_ViewerUsernameQuery, Home_ViewerUsernameQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<Home_ViewerUsernameQuery, Home_ViewerUsernameQueryVariables>(Home_ViewerUsernameDocument, options);
+        }
+export type Home_ViewerUsernameQueryHookResult = ReturnType<typeof useHome_ViewerUsernameQuery>;
+export type Home_ViewerUsernameLazyQueryHookResult = ReturnType<typeof useHome_ViewerUsernameLazyQuery>;
+export type Home_ViewerUsernameQueryResult = Apollo.QueryResult<Home_ViewerUsernameQuery, Home_ViewerUsernameQueryVariables>;
+export function refetchHome_ViewerUsernameQuery(variables?: Home_ViewerUsernameQueryVariables) {
+      return { query: Home_ViewerUsernameDocument, variables: variables }
+    }

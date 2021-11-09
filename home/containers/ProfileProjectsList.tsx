@@ -1,11 +1,10 @@
-import { useQuery } from '@apollo/client';
 import * as React from 'react';
 
 import ProjectList from '../components/ProjectList';
-import { Home_MyAppsDocument } from '../graphql/types';
+import { useHome_MyAppsQuery } from '../graphql/types';
 
 function useProfileProjectsQuery() {
-  const { data, fetchMore, loading, error, refetch } = useQuery(Home_MyAppsDocument, {
+  const { data, fetchMore, loading, error, refetch } = useHome_MyAppsQuery({
     variables: {
       limit: 15,
       offset: 0,
