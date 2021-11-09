@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Removed legacy Objective-C implementation and changed the pod name to `ExpoCellular`. ([#15082](https://github.com/expo/expo/pull/15082) by [@tsapeta](https://github.com/tsapeta))
+
 ## 4.0.0 — 2021-09-28
 
 ### 🛠 Breaking changes

@@ -46,7 +46,7 @@ open class AmplitudeModule(context: Context?) : ExportedModule(context) {
   }
 
   @ExpoMethod
-  fun setUserIdAsync(userId: String, promise: Promise) =
+  fun setUserIdAsync(userId: String?, promise: Promise) =
     rejectUnlessClientInitialized(promise) { client ->
       client.userId = userId
       promise.resolve(null)

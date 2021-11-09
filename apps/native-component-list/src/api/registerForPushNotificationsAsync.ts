@@ -3,7 +3,7 @@ import * as Notifications from 'expo-notifications';
 // In this test app we contact the Expo push service directly. You *never*
 // should do this in a real app. You should always store the push tokens on your
 // own server or use the local notification API if you want to notify this user.
-const PUSH_ENDPOINT = 'https://expo.io/--/api/v2/push/send';
+const PUSH_ENDPOINT = 'https://expo.dev/--/api/v2/push/send';
 
 export default async function registerForPushNotificationsAsync() {
   // this method assumes the user has already granted permission

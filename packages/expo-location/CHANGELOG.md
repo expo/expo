@@ -8,9 +8,12 @@
 
 ### 🎉 New features
 
+- Added steetNumber to `reverseGeocodeAsync` for iOS ([#13556](https://github.com/expo/expo/pull/13556) by [@chrisdrackett](https://github.com/chrisdrackett))
+
 ### 🐛 Bug fixes
 
 - Call `jobService.jobFinished` for the finished geofencing jobs. ([#14786](https://github.com/expo/expo/pull/14786) by [@mdmitry01](https://github.com/mdmitry01))
+- Check for null value of `mLocationClient` to prevent a crash ([#15023](https://github.com/expo/expo/pull/15023) by [@zakharchenkoAndrii](https://github.com/zakharchenkoAndrii))
 
 ### 💡 Others
 

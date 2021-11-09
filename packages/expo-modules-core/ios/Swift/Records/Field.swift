@@ -2,7 +2,7 @@
  Property wrapper for `Record`'s data members that takes part in the process of serialization to and deserialization from the dictionary.
  */
 @propertyWrapper
-public class Field<Type>: AnyFieldInternal {
+public final class Field<Type>: AnyFieldInternal {
   /**
    The wrapped value.
    */

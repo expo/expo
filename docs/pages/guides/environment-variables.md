@@ -3,6 +3,8 @@ title: Environment variables in Expo
 sidebar_title: Environment variables
 ---
 
+> Are you using [EAS Build](/build/introduction/)? The [documentation about build secrets](/build-reference/variables.md) explains how to work with sensitive values that you would not include in your source code and Git repository.
+
 Environment variables are global values that are defined in your system. Without these variables, your operating system wouldn't know what to do when you execute a command like `expo start`. Under the hood, it uses the [`PATH`](http://www.linfo.org/path_env_var.html) variable to fetch a list of directories to search for the `expo` executable.
 
 Because they are defined globally, these variables are useful to change the behavior of code _without changing the code itself_. Just like your system behaving "differently" when adding directories to the `PATH` variable, you can implement these in your Expo app as well. For example, you can enable or disable certain features when building a testing version of your app, or you can switch to a different API endpoint when building for production.
@@ -11,7 +13,7 @@ Because they are defined globally, these variables are useful to change the beha
 
 In the app manifest, there is also a `.extra` property. Unlike `.env`, this property is included when you publish your project with `expo publish` or `expo build`. The contents of the `.extra` property are taken from your app manifest. By default, this does not add any environment variables, but we can make that happen with the [dynamic app manifest configuration](../workflow/configuration.md#app-config).
 
-Below you can see an example of the dynamic **app.config.js** manifest. It's similar to the **app.json**, but written in JavaScript instead of JSON. The manifest is loaded when starting or publishing your app and has access to the environment variables using [`process.env`](https://nodejs.org/dist/latest/docs/api/process.html#process_process_env). With this we can configure the `.extra.enableComments` property without having to change the code itself, like `COOLAPP_COMMENTS=true; expo start`.
+Below you can see an example of the dynamic **app.config.js** manifest. It's similar to the **app.json**, but written in JavaScript instead of JSON. The manifest is loaded when starting or publishing your app and has access to the environment variables using [`process.env`](https://nodejs.org/dist/latest/docs/api/process.html#process_process_env). With this we can configure the `.extra.enableComments` property without having to change the code itself, like `COOLAPP_COMMENTS=true expo start`.
 
 ```js
 export default {
@@ -49,7 +51,7 @@ In the bare workflow, you don't have access to the manifest via the [`expo-const
 To set this up, we need to install the [`babel-plugin-transform-inline-environment-variables`](https://github.com/babel/website/blob/master/docs/plugin-transform-inline-environment-variables.md) plugin. After adding this to your dev dependencies, we need to tell Babel to use this plugin. Below you can see a modifed **babel.config.js** with this plugin enabled.
 
 ```js
-module.exports = function(api) {
+module.exports = function (api) {
   api.cache(true);
   return {
     presets: ['babel-preset-expo'],
@@ -102,7 +104,7 @@ export default {
 The official `transform-inline-environment-variables` plugin does not load the `.env` file. If you want to use these files with Babel, you can use unofficial plugins like [`babel-plugin-inline-dotenv`](https://github.com/brysgo/babel-plugin-inline-dotenv). This plugin will load your `.env` when Babel is building your app.
 
 ```js
-module.exports = function(api) {
+module.exports = function (api) {
   api.cache(true);
   return {
     presets: ['babel-preset-expo'],

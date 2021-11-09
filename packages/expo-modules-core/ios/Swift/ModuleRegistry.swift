@@ -1,5 +1,5 @@
 
-public class ModuleRegistry: Sequence {
+public final class ModuleRegistry: Sequence {
   public typealias Element = ModuleHolder
 
   private weak var appContext: AppContext?

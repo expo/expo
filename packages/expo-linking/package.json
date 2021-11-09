@@ -32,7 +32,7 @@
   "dependencies": {
     "expo-constants": "~12.1.0",
     "invariant": "^2.2.4",
-    "qs": "^6.5.0",
+    "qs": "^6.9.1",
     "url-parse": "^1.4.4"
   },
   "devDependencies": {

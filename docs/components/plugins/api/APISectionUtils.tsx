@@ -79,6 +79,7 @@ const nonLinkableTypes = [
 
 const hardcodedTypeLinks: Record<string, string> = {
   Date: 'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date',
+  Element: 'https://www.typescriptlang.org/docs/handbook/jsx.html#function-component',
   Error: 'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error',
   Omit: 'https://www.typescriptlang.org/docs/handbook/utility-types.html#omittype-keys',
   Pick: 'https://www.typescriptlang.org/docs/handbook/utility-types.html#picktype-keys',
@@ -299,6 +300,7 @@ export type CommentTextBlockProps = {
   components?: MDComponents;
   withDash?: boolean;
   beforeContent?: JSX.Element;
+  includePlatforms?: boolean;
 };
 
 export const parseCommentContent = (content?: string): string =>
@@ -310,13 +312,42 @@ export const getCommentOrSignatureComment = (
 ) => comment || (signatures && signatures[0]?.comment);
 
 export const getTagData = (tagName: string, comment?: CommentData) =>
-  comment?.tags?.filter(tag => tag.tag === tagName)[0];
+  getAllTagData(tagName, comment)?.[0];
+
+export const getAllTagData = (tagName: string, comment?: CommentData) =>
+  comment?.tags?.filter(tag => tag.tag === tagName);
+
+const capitalize = (str: string) => str.charAt(0).toUpperCase() + str.slice(1);
+
+const formatPlatformName = (name: string) => {
+  const cleanName = name.toLowerCase().replace('\n', '');
+  return cleanName.includes('ios')
+    ? cleanName.replace('ios', 'iOS')
+    : cleanName.includes('expo')
+    ? cleanName.replace('expo', 'Expo Go')
+    : capitalize(name);
+};
+
+export const getPlatformTags = (comment?: CommentData) => {
+  const platforms = getAllTagData('platform', comment);
+  return platforms?.length ? (
+    <>
+      {platforms.map(platform => (
+        <div key={platform.text} css={STYLES_PLATFORM}>
+          {formatPlatformName(platform.text)} Only
+        </div>
+      ))}
+      <br />
+    </>
+  ) : null;
+};
 
 export const CommentTextBlock = ({
   comment,
   components = mdComponents,
   withDash,
   beforeContent,
+  includePlatforms = true,
 }: CommentTextBlockProps) => {
   const shortText = comment?.shortText?.trim().length ? (
     <ReactMarkdown components={components} remarkPlugins={[remarkGfm]}>
@@ -361,6 +392,7 @@ export const CommentTextBlock = ({
       {deprecationNote}
       {beforeContent}
       {withDash && (shortText || text) && ' - '}
+      {includePlatforms && getPlatformTags(comment)}
       {shortText}
       {text}
       {seeText}
@@ -379,4 +411,16 @@ export const STYLES_SECONDARY = css`
   color: ${theme.text.secondary};
   font-size: 90%;
   font-weight: 600;
+`;
+
+export const STYLES_PLATFORM = css`
+  display: inline-block;
+  background-color: ${theme.background.tertiary};
+  color: ${theme.text.default};
+  font-size: 90%;
+  font-weight: 700;
+  padding: 6px 12px;
+  margin-bottom: 8px;
+  margin-right: 8px;
+  border-radius: 4px;
 `;

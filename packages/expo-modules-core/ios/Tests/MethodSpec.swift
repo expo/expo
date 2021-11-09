@@ -56,6 +56,28 @@ class MethodSpec: QuickSpec {
       testMethodReturning(value: ["expo", "modules", "core"])
     }
 
+    it("is called with nil value") {
+      let str: String? = nil
+
+      mockModuleHolder(appContext) {
+        $0.method(methodName) { (a: String?) in
+          expect(a == nil) == true
+        }
+      }
+      .callSync(method: methodName, args: [str as Any])
+    }
+
+    it("is called with an array of arrays") {
+      let array: [[String]] = [["expo"]]
+
+      mockModuleHolder(appContext) {
+        $0.method(methodName) { (a: [[String]]) in
+          expect(a.first!.first) == array.first!.first
+        }
+      }
+      .callSync(method: methodName, args: [array])
+    }
+
     describe("converting dicts to records") {
       struct TestRecord: Record {
         @Field var property: String = "expo"
@@ -148,10 +170,9 @@ class MethodSpec: QuickSpec {
         // Method expects a string, let's give it a number.
         .call(method: methodName, args: [1]) { value, error in
           expect(error).notTo(beNil())
-          expect(error).to(beAKindOf(IncompatibleArgTypeError<Any?>.self))
-          expect(error?.code).to(equal("ERR_INCOMPATIBLE_ARG_TYPE"))
-          // TODO: (@tsapeta) The descriptions may not equal yet, due to internal type-erasing. Fix it and uncomment this test.
-          // expect(error?.description).to(equal(IncompatibleArgTypeError(argument: 1, atIndex: 0, desiredType: String.self).description))
+          expect(error).to(beAKindOf(Conversions.CastingError<String>.self))
+          expect(error?.code).to(equal("ERR_CASTING_FAILED"))
+          expect(error?.description).to(equal(Conversions.CastingError<String>(value: 1).description))
           done()
         }
       }

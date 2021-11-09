@@ -1,7 +1,7 @@
 // copied from `unimodules-test-core`
 package expo.modules
 
-import expo.modules.core.Promise
+import expo.modules.kotlin.Promise
 
 enum class PromiseState {
   NONE,
@@ -48,31 +48,11 @@ class PromiseMock : Promise {
     resolveValue = value
   }
 
-  override fun reject(code: String?, message: String?, e: Throwable?) {
+  override fun reject(code: String, message: String?, e: Throwable?) {
     assertNotResolvedNorRejected()
     state = PromiseState.REJECTED
     rejectCode = code
     rejectMessage = message
-    rejectThrowable = e
-  }
-
-  override fun reject(e: Throwable?) {
-    assertNotResolvedNorRejected()
-    state = PromiseState.REJECTED
-    rejectThrowable = e
-  }
-
-  override fun reject(code: String?, message: String?) {
-    assertNotResolvedNorRejected()
-    state = PromiseState.REJECTED
-    rejectCode = code
-    rejectMessage = message
-  }
-
-  override fun reject(code: String?, e: Throwable?) {
-    assertNotResolvedNorRejected()
-    state = PromiseState.REJECTED
-    rejectCode = code
     rejectThrowable = e
   }
 

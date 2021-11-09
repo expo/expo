@@ -2,7 +2,7 @@
 /**
  A protocol for any type-erased module that provides methods used by the core.
  */
-public protocol AnyModule: AnyObject, AnyMethodArgument {
+public protocol AnyModule: AnyObject, AnyArgument {
   /**
    The default initializer. Must be public, but the module class does *not* need to
    define it as it is implemented in protocol composition, see `BaseModule` class.

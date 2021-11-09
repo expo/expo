@@ -295,8 +295,9 @@ EX_EXPORT_METHOD_AS(reverseGeocodeAsync,
       NSMutableArray *results = [NSMutableArray arrayWithCapacity:placemarks.count];
       for (CLPlacemark* placemark in placemarks) {
         NSDictionary *address = @{
-                                  @"city": EXNullIfNil(placemark.locality),
-                                  @"district": EXNullIfNil(placemark.subLocality),
+                                  @"city": UMNullIfNil(placemark.locality),
+                                  @"district": UMNullIfNil(placemark.subLocality),
+                                  @"streetNumber": UMNullIfNil(placemark.subThoroughfare),
                                   @"street": EXNullIfNil(placemark.thoroughfare),
                                   @"region": EXNullIfNil(placemark.administrativeArea),
                                   @"subregion": EXNullIfNil(placemark.subAdministrativeArea),

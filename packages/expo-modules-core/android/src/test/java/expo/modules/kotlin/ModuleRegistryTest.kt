@@ -3,8 +3,10 @@ package expo.modules.kotlin
 import com.google.common.truth.Truth
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.module
+import io.mockk.mockk
 import org.junit.Assert
 import org.junit.Test
+import java.lang.ref.WeakReference
 
 class M1 : Module() {
   override fun definition() = module {
@@ -27,7 +29,7 @@ class ModuleRegistryTest {
         return listOf(M1::class.java, M2::class.java)
       }
     }
-    val moduleRegistry = ModuleRegistry()
+    val moduleRegistry = ModuleRegistry(WeakReference(mockk()))
 
     moduleRegistry.register(provider)
 
@@ -51,7 +53,7 @@ class ModuleRegistryTest {
         return listOf(IncorrectModule::class.java)
       }
     }
-    val moduleRegistry = ModuleRegistry()
+    val moduleRegistry = ModuleRegistry(mockk())
 
     try {
       moduleRegistry.register(provider)

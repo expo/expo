@@ -9,7 +9,7 @@ export declare type CameraPermissionResponse = PermissionResponse;
  */
 export declare type MediaLibraryPermissionResponse = CameraPermissionResponse & {
     /**
-     * __iOS Only.__
+     * @platform ios
      */
     accessPrivileges?: 'all' | 'limited' | 'none';
 };
@@ -243,18 +243,21 @@ export declare type ImagePickerOptions = {
      */
     base64?: boolean;
     /**
-     * __iOS 11+ Only.__ Specify preset which will be used to compress selected video.
+     * Specify preset which will be used to compress selected video.
      * @default ImagePicker.VideoExportPreset.Passthrough
+     * @platform ios 11+
      * @deprecated Deprecate: see [iOS videoExportPreset](https://developer.apple.com/documentation/uikit/uiimagepickercontroller/2890964-videoexportpreset?language=objc)
      */
     videoExportPreset?: VideoExportPreset;
     /**
-     * __iOS Only.__ Specify the quality of recorded videos. Defaults to `ImagePicker.UIImagePickerControllerQualityType.High`,
+     * Specify the quality of recorded videos. Defaults to `ImagePicker.UIImagePickerControllerQualityType.High`,
      * which is the highest available for the device.
+     * @platform ios
      */
     videoQuality?: UIImagePickerControllerQualityType;
     /**
-     * __Web Only.__ Whether or not to allow selecting multiple media files at once.
+     * Whether or not to allow selecting multiple media files at once.
+     * @platform web
      */
     allowsMultipleSelection?: boolean;
     /**
@@ -267,9 +270,10 @@ export declare type ImagePickerOptions = {
      */
     videoMaxDuration?: number;
     /**
-     * __iOS Only.__ Choose [presentation style](https://developer.apple.com/documentation/uikit/uiviewcontroller/1621355-modalpresentationstyle?language=objc)
+     * Choose [presentation style](https://developer.apple.com/documentation/uikit/uiviewcontroller/1621355-modalpresentationstyle?language=objc)
      * to customize view during taking photo/video.
      * @default ImagePicker.UIImagePickerPresentationStyle.Automatic
+     * @platform ios
      */
     presentationStyle?: UIImagePickerPresentationStyle;
 };
@@ -281,7 +285,8 @@ export declare type OpenFileBrowserOptions = {
     mediaTypes: MediaTypeOptions;
     capture?: boolean;
     /**
-     * __Web Only.__ Whether or not to allow selecting multiple media files at once.
+     * Whether or not to allow selecting multiple media files at once.
+     * @platform web
      */
     allowsMultipleSelection: boolean;
     /**

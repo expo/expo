@@ -260,12 +260,14 @@ static NSString * const EXUpdatesAppLauncherErrorDomain = @"AppLauncher";
     }
 
     if (matchingAsset && matchingAsset.mainBundleFilename) {
-      NSString *bundlePath = [[NSBundle mainBundle] pathForResource:matchingAsset.mainBundleFilename ofType:matchingAsset.type];
-      if (bundlePath == nil) {
-        completion(NO, nil);
-        return;
-      }
       dispatch_async([EXUpdatesFileDownloader assetFilesQueue], ^{
+        NSString *bundlePath = [EXUpdatesUtils pathForBundledAsset:matchingAsset];
+        if (bundlePath == nil) {
+          dispatch_async(self->_launcherQueue, ^{
+            completion(NO, [NSError errorWithDomain:EXUpdatesAppLauncherErrorDomain code:1013 userInfo:@{NSLocalizedDescriptionKey: @"Asset bundlePath was unexpectedly nil"}]);
+          });
+          return;
+        }
         NSError *error;
         BOOL success = [NSFileManager.defaultManager copyItemAtPath:bundlePath toPath:[assetLocalUrl path] error:&error];
         dispatch_async(self->_launcherQueue, ^{
@@ -275,7 +277,7 @@ static NSString * const EXUpdatesAppLauncherErrorDomain = @"AppLauncher";
       return;
     }
   }
-  
+
   completion(NO, nil);
 }
 

@@ -15,7 +15,8 @@
     "lint-links": "remark -u validate-links ./pages",
     "watch": "tsc --noEmit -w",
     "test": "jest",
-    "schema-sync": "node --async-stack-traces --unhandled-rejections=strict ./scripts/schema-sync.js"
+    "schema-sync": "node --async-stack-traces --unhandled-rejections=strict ./scripts/schema-sync.js",
+    "remove-version": "node --unhandled-rejections=strict ./scripts/remove-version.js"
   },
   "resolutions": {
     "webpack": "^5.28.0"
