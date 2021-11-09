@@ -12,6 +12,8 @@
 
 ### 💡 Others
 
+- Extract nested objects from current types to new, separate types - `ExpoGoPackagerOpts` and `ManifestExtra`.
+
 ## 12.1.3 — 2021-10-22
 
 ### 🐛 Bug fixes
