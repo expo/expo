@@ -175,11 +175,12 @@ static NSString * const EXUpdatesAppLoaderErrorDomain = @"EXUpdatesAppLoader";
         if (matchingAssetError || !matchingDbEntry || !matchingDbEntry.filename) {
           [self downloadAsset:asset];
         } else {
-          EXUpdatesAsset *assetToLoad = asset;
           NSError *mergeError;
           [self->_database mergeAsset:asset withExistingEntry:matchingDbEntry error:&mergeError];
+          EXUpdatesAsset *assetToLoad;
           if (mergeError) {
             NSLog(@"Failed to merge asset with existing database entry: %@", mergeError.localizedDescription);
+            assetToLoad = asset;
           } else {
             // mergeAsset:withExistingEntry:error: will merge all fields not stored in the database onto
             // matchingDbEntry, in case we need them later on in this method
