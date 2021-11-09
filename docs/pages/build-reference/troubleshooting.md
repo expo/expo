@@ -46,11 +46,40 @@ This particular error means that the app is importing `./src/Routes` and it is n
 
 It's important to note that on iOS builds the build details page only displays an abridged version of the logs, because the full output from `xcodebuild` can be in the order of 10MB. Sometimes it's necessary to open the full Xcode logs in order to find the information that you need; for example, if the JavaScript build failed but you don't see any useful information on the build details page. To open the full Xcode logs, scroll to the bottom of the build details page when the build has completed and either click to view or download them.
 
-<!-- TODO: native and js build phases should be separate in eas build logs, this is too much work -->
+<!-- TODO: native and js build phases should be separate in eas build logs, this is too much work for people to figure out -->
 
 If you are working on a managed app and the build error is a native error rather than a JavaScript error, this is likely due to a [config plugin](/guides/config-plugins.md) or a dependency in your project. Keep an eye out in the logs for any new packages that you've added since your previous successful build. Run `expo doctor` to determine that the versions of Expo SDK dependencies in your project are compatible with your Expo SDK version.
 
-Armed with your error logs, you can often start to fix your build, or you can search the [forums](https://forums.expo.dev) and GitHub issues for related packages to dig deeper.
+Armed with your error logs, you can often start to fix your build, or you can search the [forums](https://forums.expo.dev) and GitHub issues for related packages to dig deeper. Some common sources of problems are listed below.
+
+<details><summary><h4>📦 Are you using a monorepo?</h4></summary>
+<p>
+
+Monorepos are incredibly useful but they do introduce their own set of problems. A monorepo that you have set up to work with `expo build` will not necessarily work with `eas build`.
+
+With EAS Build, it's necessary to upload the entire monorepo to the build worker, set it up, and run the build; but, on `expo build` you only had to be able to build the JavaScript bundle locally and upload that to the worker.
+
+EAS Build is more like a typical CI service in that we need the source code, rather than a compiled JavaScript bundle and manifest. EAS Build has first class support for Yarn workspaces, and [your success may vary when using other monorepo tools](/build-reference/limitations.md).
+
+
+<!-- todo: link to monorepos guide -->
+
+</p>
+</details>
+
+<div style={{marginTop: -15}} />
+
+<details><summary><h4>💥 Out of memory errors</h4></summary>
+
+If your build fails with "Gradle build daemon disappeared unexpectedly (it may have been killed or may have crashed)" in your Gradle logs, this may be because the Node process responsible for bundling your app JavaScript was killed.
+
+This can often be a sign that your app bundle is extremely large, which will make your overall app binary larger and lead to slow boot up times, especially on low-end Android devices. Sometimes the error can occur when large text files are treated as source code, for example if you have a JavaScript file that contains a string of 1MB+ of HTML to load into a webview, or a similarly sized JSON file.
+
+To determine how large your bundle is and to see a breakdown of where the size comes from, use [react-native-bundle-visualizer](https://github.com/IjzerenHein/react-native-bundle-visualizer).
+
+It's not yet possible to increase memory limits on your build workers, [only one worker configuration is currently available](/build-reference/limitations.md).
+
+</details>
 
 ## Verify that your project builds and runs locally
 
@@ -83,12 +112,12 @@ If your native toolchains are installed correctly and you are unable to build an
 If you find yourself in this situation, it's time to narrow down what configuration exists on your machine that hasn't been set up for your project on EAS Build yet.
 
 There are two ways to approach this, which are quite similar:
-- Do a fresh `git clone` of your project to a new directory and get it running. Pay attention to each of the steps that are needed and verify that EAS Build is configured accordingly.
+- Do a fresh `git clone` of your project to a new directory and get it running. Pay attention to each of the steps that are needed and verify that they are also configured for EAS Build.
 - Run a local build with `eas build --local`. This command will locally run a process that is as close as it can be to the remote, hosted EAS Build service. [Learn how to set this up and use it for debugging](/build-reference/local-builds.md#using-local-builds-for-debugging).
 
 ### Why does my app work in Expo Go and `expo build:[android|ios]` but not with EAS Build?
 
-<!-- todo: link to posts explaining differences and to migration guide -->
+The classic build service (`expo build`) works completely differently from EAS Build, and there is no guarantee that your app will work out of the box on EAS Build if it works on the classic build service. You can learn more about [migrating from `expo build` in the guide](/build-reference/migrating.md), and get a better understanding of how these two services are fundamentally different in [this two-part blog post](https://blog.expo.dev/expo-managed-workflow-in-2021-5b887bbf7dbb).
 
 ## Still having trouble?
 
