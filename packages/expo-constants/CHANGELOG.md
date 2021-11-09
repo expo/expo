@@ -12,7 +12,7 @@
 
 ### 💡 Others
 
-- Extract nested objects from current types to new, separate types - `ExpoGoPackagerOpts` and `ManifestExtra`.
+- Extract nested objects from current types to new, separate types - `ExpoGoPackagerOpts` and `ManifestExtra`. ([#15113](https://github.com/expo/expo/pull/15113) by [@Simek](https://github.com/Simek))
 
 ## 12.1.3 — 2021-10-22
 
