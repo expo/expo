@@ -82,7 +82,8 @@ private const val MIN_EVENT_DT_MS: Long = 100
 private const val HEADER_KEY = "headers"
 private const val DIR_PERMISSIONS_REQUEST_CODE = 5394
 
-class FileSystemModule(
+// The class needs to be 'open', because it's inherited in expoview
+open class FileSystemModule(
   context: Context,
   private val moduleRegistryDelegate: ModuleRegistryDelegate = ModuleRegistryDelegate()
 ) : ExportedModule(context), ActivityEventListener {
@@ -110,7 +111,7 @@ class FileSystemModule(
 
   override fun getName() = NAME
 
-  override fun getConstants(): Map<String, Any> {
+  override fun getConstants(): Map<String, Any?> {
     return mapOf(
       "documentDirectory" to Uri.fromFile(context.filesDir).toString() + "/",
       "cacheDirectory" to Uri.fromFile(context.cacheDir).toString() + "/",

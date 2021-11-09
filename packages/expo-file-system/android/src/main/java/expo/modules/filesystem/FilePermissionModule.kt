@@ -8,7 +8,8 @@ import java.io.File
 import java.io.IOException
 import java.util.*
 
-class FilePermissionModule : FilePermissionModuleInterface, InternalModule {
+// The class needs to be 'open', because it's inherited in expoview
+open class FilePermissionModule : FilePermissionModuleInterface, InternalModule {
   override fun getExportedInterfaces(): List<Class<*>> =
     listOf(FilePermissionModuleInterface::class.java)
 
@@ -26,7 +27,7 @@ class FilePermissionModule : FilePermissionModuleInterface, InternalModule {
     }
   }
 
-  private fun getExternalPathPermissions(path: String): EnumSet<Permission> {
+  protected open fun getExternalPathPermissions(path: String): EnumSet<Permission> {
     val file = File(path)
     return EnumSet.noneOf(Permission::class.java).apply {
       if (file.canRead()) {
