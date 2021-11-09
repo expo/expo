@@ -161,6 +161,8 @@ public class EmbeddedLoader {
 
       AssetEntity matchingDbEntry = mDatabase.assetDao().loadAssetWithKey(asset.key);
       if (matchingDbEntry != null) {
+        // merge all fields not stored in the database onto matchingDbEntry,
+        // in case we need them later on in this class
         mDatabase.assetDao().mergeAndUpdateAsset(matchingDbEntry, asset);
         asset = matchingDbEntry;
       }

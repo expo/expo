@@ -176,6 +176,9 @@ static NSString * const EXUpdatesAppLoaderErrorDomain = @"EXUpdatesAppLoader";
           [self downloadAsset:asset];
         } else {
           NSError *mergeError;
+          // merge fields from existing database entry into our current asset object
+          // retaining the original object since it's used in self->_assetsToLoad
+          // (this is different from on Android, where we keep the database-sourced object instead)
           [self->_database mergeAsset:asset withExistingEntry:matchingDbEntry error:&mergeError];
           if (mergeError) {
             NSLog(@"Failed to merge asset with existing database entry: %@", mergeError.localizedDescription);

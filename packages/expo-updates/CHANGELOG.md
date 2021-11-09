@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Retain embedded asset fields when merging existing asset entities on Android. ([#15123](https://github.com/expo/expo/pull/15123) by [@esamelson](https://github.com/esamelson))
+
 ### 💡 Others
 
 ## 0.10.13 — 2021-11-05
