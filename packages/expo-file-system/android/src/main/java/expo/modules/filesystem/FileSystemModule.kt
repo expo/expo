@@ -111,7 +111,7 @@ open class FileSystemModule(
 
   override fun getName() = NAME
 
-  override fun getConstants(): Map<String, Any> {
+  override fun getConstants(): Map<String, Any?> {
     return mapOf(
       "documentDirectory" to Uri.fromFile(context.filesDir).toString() + "/",
       "cacheDirectory" to Uri.fromFile(context.cacheDir).toString() + "/",

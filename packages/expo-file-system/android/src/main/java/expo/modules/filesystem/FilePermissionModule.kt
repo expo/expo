@@ -27,7 +27,7 @@ open class FilePermissionModule : FilePermissionModuleInterface, InternalModule 
     }
   }
 
-  private fun getExternalPathPermissions(path: String): EnumSet<Permission> {
+  protected open fun getExternalPathPermissions(path: String): EnumSet<Permission> {
     val file = File(path)
     return EnumSet.noneOf(Permission::class.java).apply {
       if (file.canRead()) {

@@ -10,8 +10,8 @@ import java.lang.Exception
 private const val SHELL_APP_EMBEDDED_MANIFEST_PATH = "shell-app-manifest.json"
 
 class ScopedFileSystemModule(context: Context) : FileSystemModule(context) {
-  override fun getConstants(): Map<String, Any> {
-    return super.getConstants()!!.toMutableMap().apply {
+  override fun getConstants(): Map<String, Any?> {
+    return super.getConstants().toMutableMap().apply {
       this["bundledAssets"] = getBundledAssets()
     }
   }
