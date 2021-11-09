@@ -1897,8 +1897,6 @@ PODS:
   - EXGoogleSignIn (10.0.1):
     - ExpoModulesCore
     - GoogleSignIn (~> 5.0.2)
-  - EXHaptics (11.0.1):
-    - ExpoModulesCore
   - EXImageLoader (3.0.0):
     - ExpoModulesCore
     - React-Core
@@ -1938,6 +1936,8 @@ PODS:
   - Expo (43.0.0-beta.3):
     - ExpoModulesCore
   - ExpoCellular (4.0.0):
+    - ExpoModulesCore
+  - ExpoHaptics (11.0.1):
     - ExpoModulesCore
   - ExpoModulesCore (0.4.2):
     - React-Core
@@ -2843,7 +2843,6 @@ DEPENDENCIES:
   - EXGL (from `../packages/expo-gl/ios`)
   - EXGL_CPP (from `../packages/expo-gl-cpp/cpp`)
   - EXGoogleSignIn (from `../packages/expo-google-sign-in/ios`)
-  - EXHaptics (from `../packages/expo-haptics/ios`)
   - EXImageLoader (from `../packages/expo-image-loader/ios`)
   - EXImageManipulator (from `../packages/expo-image-manipulator/ios`)
   - EXImagePicker (from `../packages/expo-image-picker/ios`)
@@ -2863,6 +2862,7 @@ DEPENDENCIES:
   - EXPermissions (from `../packages/expo-permissions/ios`)
   - Expo (from `../packages/expo/ios`)
   - ExpoCellular (from `../packages/expo-cellular/ios`)
+  - ExpoHaptics (from `../packages/expo-haptics/ios`)
   - ExpoModulesCore (from `../packages/expo-modules-core/ios`)
   - ExpoModulesCore/Tests (from `../packages/expo-modules-core/ios`)
   - ExpoSystemUI (from `../packages/expo-system-ui/ios`)
@@ -3668,8 +3668,6 @@ EXTERNAL SOURCES:
     :path: "../packages/expo-gl-cpp/cpp"
   EXGoogleSignIn:
     :path: "../packages/expo-google-sign-in/ios"
-  EXHaptics:
-    :path: "../packages/expo-haptics/ios"
   EXImageLoader:
     :path: "../packages/expo-image-loader/ios"
   EXImageManipulator:
@@ -3704,6 +3702,8 @@ EXTERNAL SOURCES:
     :path: "../packages/expo/ios"
   ExpoCellular:
     :path: "../packages/expo-cellular/ios"
+  ExpoHaptics:
+    :path: "../packages/expo-haptics/ios"
   ExpoModulesCore:
     :path: "../packages/expo-modules-core/ios"
   ExpoSystemUI:
@@ -4181,7 +4181,6 @@ SPEC CHECKSUMS:
   EXGL: e71bf1946b30899602420a53e578454d291286d1
   EXGL_CPP: 75124cfe236f7a1f917150011c09625e24e31141
   EXGoogleSignIn: f5b6ed8ce036017c0364896469416e6fc6e0e777
-  EXHaptics: 859bccc3cd160d2ff97c7fc52ee373445a44b85b
   EXImageLoader: 939451be6f7b731aaa6588920b90743f20121a4d
   EXImageManipulator: f557dae83db7ebbc4fe999a582230c28ffc5e383
   EXImagePicker: cecd37aa68c3df69fc0599cae92523be84fe6a1d
@@ -4199,6 +4198,7 @@ SPEC CHECKSUMS:
   EXPermissions: 08ccf78a0eb404c28df6d226fcc8fcf2e558b421
   Expo: 23ed30f225511b93fa6a0c14d9a3208d6b749060
   ExpoCellular: 90940614d45df5b31f281d70a63d92a06fe44af4
+  ExpoHaptics: c0c014eabfdd1353a908f857f168b01fafd526db
   ExpoModulesCore: daacb24b99b77ec28c0cbc877a574b1f8e6709c9
   ExpoSystemUI: 3c969e3db290fcd5edb9c466d585f183d934b421
   EXPrint: a224501bbb89072567c58a5127f2d125b8776ea2
