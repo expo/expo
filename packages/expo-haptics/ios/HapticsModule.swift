@@ -4,26 +4,16 @@ public class HapticsModule: Module {
   public func definition() -> ModuleDefinition {
     name("ExpoHaptics")
 
-    method("notificationAsync") { (notificationType: String, promise: Promise) in
-      guard let feedbackType = NotificationType(rawValue: notificationType)?.toFeedbackType() else {
-        promise.reject("E_HAPTICS_INVALID_ARG", "Notification type must be one of: 'success', 'warning', 'error'. Obtained '\(notificationType)'")
-        return
-      }
+    method("notificationAsync") { (notificationType: NotificationType) in
       let generator = UINotificationFeedbackGenerator()
       generator.prepare()
-      generator.notificationOccurred(feedbackType)
-      promise.resolve()
+      generator.notificationOccurred(notificationType.toFeedbackType())
     }
 
-    method("impactAsync") { (style: String, promise: Promise) in
-      guard let feedbackStyle = ImpactStyle(rawValue: style)?.toFeedbackStyle() else {
-        promise.reject("E_HAPTICS_INVALID_ARG", "Impact style must be one of: 'light', 'medium', 'heavy'. Obtained '\(style)'")
-        return
-      }
-      let generator = UIImpactFeedbackGenerator(style: feedbackStyle)
+    method("impactAsync") { (style: ImpactStyle) in
+      let generator = UIImpactFeedbackGenerator(style: style.toFeedbackStyle())
       generator.prepare()
       generator.impactOccurred()
-      promise.resolve()
     }
 
     method("selectionAsync") {
@@ -33,7 +23,7 @@ public class HapticsModule: Module {
     }
   }
 
-  enum NotificationType: String {
+  enum NotificationType: String, EnumArgument {
     case success
     case warning
     case error
@@ -50,7 +40,7 @@ public class HapticsModule: Module {
     }
   }
 
-  enum ImpactStyle: String {
+  enum ImpactStyle: String, EnumArgument {
     case light
     case medium
     case heavy
