@@ -73,18 +73,30 @@ function getMacrosGeneratorForPlatform(platform) {
   throw new Error(`Platform '${platform}' is not supported.`);
 }
 
+function getSkippedTemplates(isBare: boolean): string[] {
+  if (isBare) {
+    return ['AndroidManifest.xml', 'google-services.json', 'ExponentKeys.java'];
+  }
+
+  return [];
+}
+
 async function generateDynamicMacrosAsync(args) {
   try {
-    const { platform } = args;
+    const { platform, bareExpo } = args;
     const templateSubstitutions = await getTemplateSubstitutionsAsync();
 
-    const macros = await generateMacrosAsync(platform, args.configuration);
-    const macrosGenerator = getMacrosGeneratorForPlatform(platform);
-
-    await macrosGenerator.generateAsync({ ...args, macros, templateSubstitutions });
-
+    if (!bareExpo) {
+      const macros = await generateMacrosAsync(platform, args.configuration);
+      const macrosGenerator = getMacrosGeneratorForPlatform(platform);
+      await macrosGenerator.generateAsync({ ...args, macros, templateSubstitutions });
+    }
     // Copy template files - it is platform-agnostic.
-    await copyTemplateFilesAsync(platform, args, templateSubstitutions);
+    await copyTemplateFilesAsync(
+      platform,
+      { ...args, skipTemplates: getSkippedTemplates(bareExpo) },
+      templateSubstitutions
+    );
   } catch (error) {
     console.error(
       `There was an error while generating Expo template files, which could lead to unexpected behavior at runtime:\n${error.stack}`
