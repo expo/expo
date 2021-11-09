@@ -16,6 +16,6 @@ export declare function setBackgroundColorAsync(color: ColorValue): Promise<void
  * ```ts
  * const color = await SystemUI.getBackgroundColorAsync();
  * ```
- * @returns Current root view background color in hex format.
+ * @returns Current root view background color in hex format. Returns `null` if the background color is not set.
  */
-export declare function getBackgroundColorAsync(): Promise<ColorValue>;
+export declare function getBackgroundColorAsync(): Promise<ColorValue | null>;

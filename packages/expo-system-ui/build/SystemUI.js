@@ -20,7 +20,7 @@ export async function setBackgroundColorAsync(color) {
  * ```ts
  * const color = await SystemUI.getBackgroundColorAsync();
  * ```
- * @returns Current root view background color in hex format.
+ * @returns Current root view background color in hex format. Returns `null` if the background color is not set.
  */
 export async function getBackgroundColorAsync() {
     return await ExpoSystemUI.getBackgroundColorAsync();
