@@ -14,6 +14,9 @@ internal func ArgumentType<T>(_ type: T.Type) -> AnyArgumentType {
   if let ConvertibleType = T.self as? ConvertibleArgument.Type {
     return ConvertibleArgumentType(innerType: ConvertibleType)
   }
+  if let EnumType = T.self as? EnumArgument.Type {
+    return EnumArgumentType(innerType: EnumType)
+  }
   if T.self is Promise.Type {
     return PromiseArgumentType()
   }
