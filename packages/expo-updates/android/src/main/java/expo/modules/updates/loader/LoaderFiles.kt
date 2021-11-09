@@ -38,7 +38,7 @@ open class LoaderFiles {
   }
 
   @Throws(NoSuchAlgorithmException::class, IOException::class)
-  private fun copyContextAssetAndGetHash(
+  internal fun copyContextAssetAndGetHash(
     asset: AssetEntity,
     destination: File,
     context: Context
@@ -53,7 +53,7 @@ open class LoaderFiles {
   }
 
   @Throws(NoSuchAlgorithmException::class, IOException::class)
-  private fun copyResourceAndGetHash(
+  internal fun copyResourceAndGetHash(
     asset: AssetEntity,
     destination: File,
     context: Context
