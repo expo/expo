@@ -27,7 +27,7 @@
   },
   "dependencies": {
     "@expo/config-types": "^43.0.1",
-    "@manypkg/cli": "^0.18.0",
+    "@manypkg/cli": "^0.19.1",
     "eslint": "^7.31.0",
     "expo-yarn-workspaces": "*",
     "jsc-android": "^245459.0.0",
