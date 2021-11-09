@@ -69,7 +69,7 @@ function ActionSheetIOSExample() {
   const showShareSheet = () => {
     ActionSheetIOS.showShareActionSheetWithOptions(
       {
-        url: 'https://expo.io',
+        url: 'https://expo.dev',
         message: 'message to go with the shared url',
         subject: 'a subject to go in the email heading',
       },

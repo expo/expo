@@ -8,7 +8,8 @@ import java.io.File
 import java.io.IOException
 import java.util.*
 
-class FilePermissionModule : FilePermissionModuleInterface, InternalModule {
+// The class needs to be 'open', because it's inherited in expoview
+open class FilePermissionModule : FilePermissionModuleInterface, InternalModule {
   override fun getExportedInterfaces(): List<Class<*>> =
     listOf(FilePermissionModuleInterface::class.java)
 

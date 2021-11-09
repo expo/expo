@@ -16,7 +16,7 @@ import {
 import Button from '../components/Button';
 import Colors from '../constants/Colors';
 
-const url = 'https://expo.io';
+const url = 'https://expo.dev';
 interface Package {
   label: string;
   value: string;
@@ -146,7 +146,7 @@ export default class WebBrowserScreen extends React.Component<{}, State> {
       enableDefaultShareMenuItem: this.state.enableDefaultShare,
     };
     const result = await WebBrowser.openBrowserAsync(
-      'https://blog.expo.io/expo-sdk-40-is-now-available-d4d73e67da33',
+      'https://blog.expo.dev/expo-sdk-40-is-now-available-d4d73e67da33',
       args
     );
     setTimeout(() => Alert.alert('Result', JSON.stringify(result, null, 2)), 1000);

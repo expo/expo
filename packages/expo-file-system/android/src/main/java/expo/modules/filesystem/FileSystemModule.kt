@@ -82,7 +82,8 @@ private const val MIN_EVENT_DT_MS: Long = 100
 private const val HEADER_KEY = "headers"
 private const val DIR_PERMISSIONS_REQUEST_CODE = 5394
 
-class FileSystemModule(
+// The class needs to be 'open', because it's inherited in expoview
+open class FileSystemModule(
   context: Context,
   private val moduleRegistryDelegate: ModuleRegistryDelegate = ModuleRegistryDelegate()
 ) : ExportedModule(context), ActivityEventListener {
