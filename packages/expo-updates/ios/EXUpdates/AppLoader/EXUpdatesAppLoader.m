@@ -176,26 +176,23 @@ static NSString * const EXUpdatesAppLoaderErrorDomain = @"EXUpdatesAppLoader";
           [self downloadAsset:asset];
         } else {
           NSError *mergeError;
+          // merge fields from existing database entry into our current asset object
+          // retaining the original object since it's used in self->_assetsToLoad
+          // (this is different from on Android, where we keep the database-sourced object instead)
           [self->_database mergeAsset:asset withExistingEntry:matchingDbEntry error:&mergeError];
-          EXUpdatesAsset *assetToLoad;
           if (mergeError) {
             NSLog(@"Failed to merge asset with existing database entry: %@", mergeError.localizedDescription);
-            assetToLoad = asset;
-          } else {
-            // mergeAsset:withExistingEntry:error: will merge all fields not stored in the database onto
-            // matchingDbEntry, in case we need them later on in this method
-            assetToLoad = matchingDbEntry;
           }
           // make sure the file actually exists on disk
           dispatch_async([EXUpdatesFileDownloader assetFilesQueue], ^{
-            NSURL *urlOnDisk = [self->_directory URLByAppendingPathComponent:assetToLoad.filename];
+            NSURL *urlOnDisk = [self->_directory URLByAppendingPathComponent:asset.filename];
             if ([[NSFileManager defaultManager] fileExistsAtPath:[urlOnDisk path]]) {
               // file already exists, we don't need to download it again
               dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-                [self handleAssetDownloadAlreadyExists:assetToLoad];
+                [self handleAssetDownloadAlreadyExists:asset];
               });
             } else {
-              [self downloadAsset:assetToLoad];
+              [self downloadAsset:asset];
             }
           });
         }
