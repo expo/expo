@@ -60,8 +60,6 @@ Monorepos are incredibly useful but they do introduce their own set of problems.
 With EAS Build, it's necessary to upload the entire monorepo to the build worker, set it up, and run the build; but, on `expo build` you only had to be able to build the JavaScript bundle locally and upload that to the worker.
 
 EAS Build is more like a typical CI service in that we need the source code, rather than a compiled JavaScript bundle and manifest. EAS Build has first class support for Yarn workspaces, and [your success may vary when using other monorepo tools](/build-reference/limitations.md).
-
-
 <!-- todo: link to monorepos guide -->
 
 </p>

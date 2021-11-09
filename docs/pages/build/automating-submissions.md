@@ -18,7 +18,6 @@ When running `eas build --profile <profile-name> --auto-submit`, the project's `
 
 ```json
 // eas.json
-
 {
   "build" {
     "production": {
@@ -37,7 +36,6 @@ When running `eas build --profile <profile-name> --auto-submit`, the project's `
 
 ```js
 // app.config.js
-
 export default () => {
   return {
     name: process.env.APP_ENV === 'production' ? 'My App' : 'My App (DEV)',
