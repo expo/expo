@@ -32,6 +32,18 @@ internal final class Conversions {
     }
   }
 
+  static func fromNSObject(_ object: Any) -> Any {
+    switch object {
+    case let object as NSArray:
+      return object.map { Conversions.fromNSObject($0) }
+    case let object as NSDictionary:
+      let keyValuePairs: [(String, Any)] = object.map { ($0 as! String, Conversions.fromNSObject($1)) }
+      return Dictionary(uniqueKeysWithValues: keyValuePairs)
+    default:
+      return object
+    }
+  }
+
   /**
    Picks values under given keys from the dictionary, casted to a specific type. Can throw errors when
    - The dictionary is missing some of the given keys (`MissingKeysError`)
