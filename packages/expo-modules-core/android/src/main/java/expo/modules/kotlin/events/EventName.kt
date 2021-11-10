@@ -17,5 +17,15 @@ enum class EventName {
   /**
    * Called when host activity receives destroy event (e.g. Activity.onDestroy)
    */
-  ACTIVITY_DESTROYS
+  ACTIVITY_DESTROYS,
+
+  /**
+   * Called when a new intent is passed to the activity
+   */
+  ON_NEW_INTENT,
+
+  /**
+   * Called when other activity returns
+   */
+  ON_ACTIVITY_RESULT
 }

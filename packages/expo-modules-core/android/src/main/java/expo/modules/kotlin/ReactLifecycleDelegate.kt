@@ -1,5 +1,8 @@
 package expo.modules.kotlin
 
+import android.app.Activity
+import android.content.Intent
+import com.facebook.react.bridge.ActivityEventListener
 import com.facebook.react.bridge.LifecycleEventListener
 import java.lang.ref.WeakReference
 
@@ -11,7 +14,7 @@ import java.lang.ref.WeakReference
  * which is a supertype of 'expo.modules.kotlin.AppContext'.
  * Check your module classpath for missing or conflicting dependencies
  */
-class ReactLifecycleDelegate(appContext: AppContext) : LifecycleEventListener {
+class ReactLifecycleDelegate(appContext: AppContext) : LifecycleEventListener, ActivityEventListener {
   private val appContextHolder = WeakReference(appContext)
 
   override fun onHostResume() {
@@ -24,5 +27,13 @@ class ReactLifecycleDelegate(appContext: AppContext) : LifecycleEventListener {
 
   override fun onHostDestroy() {
     appContextHolder.get()?.onHostDestroy()
+  }
+
+  override fun onActivityResult(activity: Activity, requestCode: Int, resultCode: Int, data: Intent?) {
+    appContextHolder.get()?.onActivityResult(activity, requestCode, resultCode, data)
+  }
+
+  override fun onNewIntent(intent: Intent?) {
+    appContextHolder.get()?.onNewIntent(intent)
   }
 }
