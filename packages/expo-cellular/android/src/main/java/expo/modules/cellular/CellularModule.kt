@@ -6,68 +6,62 @@ import android.net.sip.SipManager
 import android.os.Build
 import android.telephony.TelephonyManager
 import android.util.Log
-import expo.modules.core.ExportedModule
-import expo.modules.core.Promise
-import expo.modules.core.interfaces.ExpoMethod
-import expo.modules.core.interfaces.RegistryLifecycleListener
-import java.util.*
+import expo.modules.kotlin.modules.Module
+import expo.modules.kotlin.modules.module
 
-class CellularModule(private val mContext: Context) : ExportedModule(mContext), RegistryLifecycleListener {
-  override fun getName(): String = "ExpoCellular"
+const val moduleName = "ExpoCellular"
+
+class CellularModule : Module() {
+  override fun definition() = module {
+    name(moduleName)
+    constants {
+      val telephonyManager = telephonyManager()
+      mutableMapOf(
+        "allowsVoip" to SipManager.isVoipSupported(context),
+        "isoCountryCode" to telephonyManager?.simCountryIso,
+        "carrier" to telephonyManager?.simOperatorName,
+        "mobileCountryCode" to telephonyManager?.simOperator?.substring(0, 3),
+        "mobileNetworkCode" to telephonyManager?.simOperator?.substring(3)
+      )
+    }
+
+    method("getCellularGenerationAsync") { ->
+      try {
+        getCurrentGeneration()
+      } catch (e: SecurityException) {
+        Log.w(moduleName, "READ_PHONE_STATE permission is required to acquire network type", e)
+        CellularGeneration.UNKNOWN.value
+      }
+    }
+
+    method("allowsVoipAsync") { ->
+      SipManager.isVoipSupported(context)
+    }
+
+    method("getIsoCountryCodeAsync") { ->
+      telephonyManager()?.simCountryIso
+    }
+
+    method("getCarrierNameAsync") { ->
+      telephonyManager()?.simOperatorName
+    }
+
+    method("getMobileCountryCodeAsync") { ->
+      telephonyManager()?.simOperator?.substring(0, 3)
+    }
+
+    method("getMobileNetworkCodeAsync") { ->
+      telephonyManager()?.simOperator?.substring(3)
+    }
+  }
 
   private fun telephonyManager() =
-    (mContext.getSystemService(Context.TELEPHONY_SERVICE) as? TelephonyManager).takeIf {
+    (context.getSystemService(Context.TELEPHONY_SERVICE) as? TelephonyManager).takeIf {
       it?.simState == TelephonyManager.SIM_STATE_READY
     }
 
-  override fun getConstants() =
-    HashMap<String, Any?>().apply {
-      val telephonyManager = telephonyManager()
-      put("allowsVoip", SipManager.isVoipSupported(mContext))
-      put("isoCountryCode", telephonyManager?.simCountryIso)
-      put("carrier", telephonyManager?.simOperatorName)
-      put("mobileCountryCode", telephonyManager?.simOperator?.substring(0, 3))
-      put("mobileNetworkCode", telephonyManager?.simOperator?.substring(3))
-    }
-
-  @ExpoMethod
-  fun getCellularGenerationAsync(promise: Promise) {
-    try {
-      promise.resolve(getCurrentGeneration())
-    } catch (e: SecurityException) {
-      Log.w(name, "READ_PHONE_STATE permission is required to acquire network type", e)
-      promise.resolve(CellularGeneration.UNKNOWN.value)
-    }
-  }
-
-  @ExpoMethod
-  fun allowsVoipAsync(promise: Promise) {
-    promise.resolve(SipManager.isVoipSupported(mContext))
-  }
-
-  @ExpoMethod
-  fun getIsoCountryCodeAsync(promise: Promise) {
-    val telephonyManager = telephonyManager()
-    promise.resolve(telephonyManager?.simCountryIso)
-  }
-
-  @ExpoMethod
-  fun getCarrierNameAsync(promise: Promise) {
-    val telephonyManager = telephonyManager()
-    promise.resolve(telephonyManager?.simOperatorName)
-  }
-
-  @ExpoMethod
-  fun getMobileCountryCodeAsync(promise: Promise) {
-    val telephonyManager = telephonyManager()
-    promise.resolve(telephonyManager?.simOperator?.substring(0, 3))
-  }
-
-  @ExpoMethod
-  fun getMobileNetworkCodeAsync(promise: Promise) {
-    val telephonyManager = telephonyManager()
-    promise.resolve(telephonyManager?.simOperator?.substring(3))
-  }
+  private val context
+    get() = requireNotNull(appContext.reactContext)
 
   @SuppressLint("MissingPermission")
   private fun getCurrentGeneration(): Int {

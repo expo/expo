@@ -1,6 +1,6 @@
 package expo.modules.kotlin
 
-import com.facebook.react.bridge.LifecycleEventListener
+import android.content.Context
 import com.facebook.react.bridge.ReactApplicationContext
 import expo.modules.core.interfaces.ActivityProvider
 import expo.modules.core.interfaces.services.EventEmitter
@@ -22,13 +22,14 @@ class AppContext(
   modulesProvider: ModulesProvider,
   val legacyModuleRegistry: expo.modules.core.ModuleRegistry,
   private val reactContextHolder: WeakReference<ReactApplicationContext>
-) : LifecycleEventListener {
+)  {
   val registry = ModuleRegistry(WeakReference(this)).register(modulesProvider)
+  private val reactLifecycleDelegate = ReactLifecycleDelegate(this)
 
   init {
     requireNotNull(reactContextHolder.get()) {
       "The app context should be created with valid react context."
-    }.addLifecycleEventListener(this)
+    }.addLifecycleEventListener(reactLifecycleDelegate)
   }
 
   /**
@@ -105,7 +106,7 @@ class AppContext(
   /**
    * Provides access to the react application context
    */
-  val reactContext: ReactApplicationContext?
+  val reactContext: Context?
     get() = reactContextHolder.get()
 
   /**
@@ -122,19 +123,19 @@ class AppContext(
   }
 
   fun onDestroy() {
-    reactContextHolder.get()?.removeLifecycleEventListener(this)
+    reactContextHolder.get()?.removeLifecycleEventListener(reactLifecycleDelegate)
     registry.post(EventName.MODULE_DESTROY)
   }
 
-  override fun onHostResume() {
+  fun onHostResume() {
     registry.post(EventName.ACTIVITY_ENTERS_FOREGROUND)
   }
 
-  override fun onHostPause() {
+  fun onHostPause() {
     registry.post(EventName.ACTIVITY_ENTERS_BACKGROUND)
   }
 
-  override fun onHostDestroy() {
+  fun onHostDestroy() {
     registry.post(EventName.ACTIVITY_DESTROYS)
   }
 }
