@@ -240,6 +240,13 @@ public func view(_ closure: @escaping () -> UIView) -> AnyDefinition {
 /**
  Creates a view prop that defines its name and setter.
  */
-public func prop<ViewType: UIView, PropType>(_ name: String, _ setter: @escaping (ViewType, PropType) -> Void) -> AnyDefinition {
-  return ConcreteViewProp(name, setter)
+public func prop<ViewType: UIView, PropType: AnyArgument>(
+  _ name: String,
+  _ setter: @escaping (ViewType, PropType) -> Void
+) -> AnyDefinition {
+  return ConcreteViewProp(
+    name: name,
+    propType: ArgumentType(PropType.self),
+    setter: setter
+  )
 }
