@@ -243,8 +243,8 @@ The following are two possible alternative approaches, each with different trade
 
 ### How do environment variables work for my Expo Development Client builds?
 
-<!-- todo: talk about how dev client loads manifest in development, but it's also evaluated at build time to configure the build -->
+Environment variables set in your build profile that impact **app.config.js** will be used for configuring the development build. When you run `expo start` to load your app inside of your development build, only environment variables that are available on your development machine will be used for the app manifest; this becomes the same situation as described above for **expo start**.
 
 ### Can I just set my environment variables on a CI provider?
 
-<!-- todo: setting secrets and env vars on github actions isn't the same as in eas.json and eas secrets -->
+Environment variables must be defined in **eas.json** in order to be made available to EAS Build workers. If you are [triggering builds from CI](/build/building-on-ci.md) this same rule applies, and you should be careful to not confuse setting environment variables on GitHub Actions (or the provider of your choice) with setting environment variables and secrets in **eas.json**.
