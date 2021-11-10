@@ -27,7 +27,7 @@
     "url": "https://github.com/expo/expo/issues"
   },
   "jest": {
-    "preset": "expo-module-scripts/ios"
+    "preset": "expo-module-scripts"
   },
   "author": "650 Industries, Inc.",
   "license": "MIT",

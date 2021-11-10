@@ -38,7 +38,7 @@
     "expo-modules-core": "~0.4.2"
   },
   "jest": {
-    "preset": "expo-module-scripts/ios"
+    "preset": "expo-module-scripts"
   },
   "devDependencies": {
     "expo-module-scripts": "^2.0.0"
