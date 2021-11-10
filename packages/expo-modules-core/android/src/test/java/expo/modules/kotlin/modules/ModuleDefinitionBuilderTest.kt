@@ -82,7 +82,7 @@ class ModuleDefinitionBuilderTest {
   fun `onStartObserving should be translate into method`() {
     val moduleDefinition = module {
       name("module")
-      onStartObserving {  }
+      onStartObserving { }
     }
 
     Truth.assertThat(moduleDefinition.methods).containsKey("startObserving")
@@ -92,7 +92,7 @@ class ModuleDefinitionBuilderTest {
   fun `onStopObserving should be translate into method`() {
     val moduleDefinition = module {
       name("module")
-      onStopObserving {  }
+      onStopObserving { }
     }
 
     Truth.assertThat(moduleDefinition.methods).containsKey("stopObserving")
