@@ -7,31 +7,35 @@ public class ExpoSystemUIModule: Module {
   public required init(appContext: AppContext) {
     super.init(appContext: appContext)
     
-    // Set / reset the initial color on reload and app start, if undefined then the defaults will be set.
+    // Set / reset the initial color on reload and app start.
     let color = Bundle.main.object(forInfoDictionaryKey: "RCTRootViewBackgroundColor") as? Int
-    setBackgroundColorAsync(color: color)
+    Self.setBackgroundColorAsync(color: color)
   }
   
   public func definition() -> ModuleDefinition {
     name("ExpoSystemUI")
 
     method("getBackgroundColorAsync") { () -> String? in
-      var color: String? = nil
-      EXUtilities.performSynchronously {
-        // Get the root view controller of the delegate window.
-        if let window = UIApplication.shared.delegate?.window, let backgroundColor = window?.rootViewController?.view.backgroundColor?.cgColor {
-          color = EXUtilities.hexString(with: backgroundColor)
-        }
-      }
-      return color
+      Self.getBackgroundColor()
     }
 
     method("setBackgroundColorAsync") { (color: Int) in
-      self.setBackgroundColorAsync(color: color)
+      Self.setBackgroundColorAsync(color: color)
     }
   }
+
+  static func getBackgroundColor() -> String? {
+    var color: String? = nil
+    EXUtilities.performSynchronously {
+      // Get the root view controller of the delegate window.
+      if let window = UIApplication.shared.delegate?.window, let backgroundColor = window?.rootViewController?.view.backgroundColor?.cgColor {
+        color = EXUtilities.hexString(with: backgroundColor)
+      }
+    }
+    return color
+  }
   
-  func setBackgroundColorAsync(color: Int?) {
+  static func setBackgroundColorAsync(color: Int?) {
     EXUtilities.performSynchronously {
       if (color == nil) {
         if let window = UIApplication.shared.delegate?.window {
