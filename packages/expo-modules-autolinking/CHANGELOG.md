@@ -12,6 +12,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix gradle error if running gradle from out of project directory. ([#15109](https://github.com/expo/expo/pull/15109) by [@kudo](https://github.com/kudo))
+
 ### 💡 Others
 
 ## 0.3.3 — 2021-10-21
