@@ -46,6 +46,10 @@ export interface RawExpoModuleConfig {
          * Names of Swift classes that hooks into `ExpoAppDelegate` to receive AppDelegate life-cycle events.
          */
         appDelegateSubscribers?: string[];
+        /**
+         * Names of Swift classes that implement `ExpoReactDelegateHandler` to hook React instance creation.
+         */
+        reactDelegateHandlers?: string[];
     };
     /**
      * Android-specific config.

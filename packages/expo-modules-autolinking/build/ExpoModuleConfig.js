@@ -30,6 +30,13 @@ class ExpoModuleConfig {
         return (_b = (_a = this.rawConfig.ios) === null || _a === void 0 ? void 0 : _a.appDelegateSubscribers) !== null && _b !== void 0 ? _b : [];
     }
     /**
+     * Returns a list of names of Swift classes that implement `ExpoReactDelegateHandler`.
+     */
+    iosReactDelegateHandlers() {
+        var _a, _b;
+        return (_b = (_a = this.rawConfig.ios) === null || _a === void 0 ? void 0 : _a.reactDelegateHandlers) !== null && _b !== void 0 ? _b : [];
+    }
+    /**
      * Returns a list of names of Kotlin native modules classes to put to the generated package provider file.
      */
     androidModulesClassNames() {

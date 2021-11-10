@@ -3,6 +3,7 @@ import Dispatch
 import Foundation
 
 var subscribers = [ExpoAppDelegateSubscriberProtocol]()
+var reactDelegateHandlers = [ExpoReactDelegateHandler]()
 
 /**
  Allows classes extending `ExpoAppDelegateSubscriber` to hook into project's app delegate
@@ -13,6 +14,9 @@ var subscribers = [ExpoAppDelegateSubscriberProtocol]()
 @objc(EXExpoAppDelegate)
 open class ExpoAppDelegate: UIResponder, UIApplicationDelegate {
   open var window: UIWindow?
+
+  @objc
+  public let reactDelegate = ExpoReactDelegate(handlers: reactDelegateHandlers)
 
   // MARK: - Initializing the App
 
@@ -260,5 +264,19 @@ open class ExpoAppDelegate: UIResponder, UIApplicationDelegate {
   @objc
   public static func getSubscriber(_ name: String) -> ExpoAppDelegateSubscriberProtocol? {
     return subscribers.first { String(describing: $0) == name }
+  }
+
+  @objc
+  public static func registerReactDelegateHandlersFrom(modulesProvider: ModulesProviderObjCProtocol) {
+    guard let provider = modulesProvider as? ModulesProviderProtocol else {
+      fatalError("Expo modules provider must implement `ModulesProviderProtocol`.")
+    }
+    provider.getReactDelegateHandlers()
+      .sorted { (tuple1, tuple2) -> Bool in
+        return ModulePriorities.get(tuple1.packageName) > ModulePriorities.get(tuple2.packageName)
+      }
+      .forEach { handlerTuple in
+        reactDelegateHandlers.append(handlerTuple.handler.init())
+      }
   }
 }
