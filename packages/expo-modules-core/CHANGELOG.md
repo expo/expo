@@ -14,6 +14,10 @@
 - [Sweet API] Added support for array types in method arguments on iOS. ([#15042](https://github.com/expo/expo/pull/15042) by [@tsapeta](https://github.com/tsapeta))
 - [Sweet API] Added support for optional types in method arguments on iOS. ([#15068](https://github.com/expo/expo/pull/15068) by [@tsapeta](https://github.com/tsapeta))
 - [Sweet API] Added support for enums in method arguments on iOS. ([#15129](https://github.com/expo/expo/pull/15129) by [@tsapeta](https://github.com/tsapeta))
+- [Sweet API] Added foundation of the DSL API on Android. ([#14778](https://github.com/expo/expo/pull/14778) by [@lukmccall](https://github.com/lukmccall))
+- [Sweet API] Introduced a way to use custom types as method arguments if they can be converted from JavaScript values. ([#14924](https://github.com/expo/expo/pull/14924) by [@lukmccall](https://github.com/lukmccall))
+- [Sweet API] Added accessors for modules written using the old architecture on Android. ([#14936](https://github.com/expo/expo/pull/14936) by [@lukmccall](https://github.com/lukmccall))
+- [Sweet API] Added support for the activity events on Android. ([#14961](https://github.com/expo/expo/pull/14961) by [@lukmccall](https://github.com/lukmccall))
 
 ### 🐛 Bug fixes
 
