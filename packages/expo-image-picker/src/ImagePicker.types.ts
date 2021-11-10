@@ -60,6 +60,7 @@ export type ImageInfo = {
   type?: 'image' | 'video';
   exif?: { [key: string]: any };
   base64?: string;
+  duration?: number;
 };
 
 export type ImagePickerErrorResult = {
