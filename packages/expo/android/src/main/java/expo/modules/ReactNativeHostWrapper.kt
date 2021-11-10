@@ -5,6 +5,7 @@ import androidx.collection.ArrayMap
 import com.facebook.react.ReactInstanceManager
 import com.facebook.react.ReactNativeHost
 import com.facebook.react.ReactPackage
+import com.facebook.react.ReactPackageTurboModuleManagerDelegate
 import com.facebook.react.bridge.JSIModule
 import com.facebook.react.bridge.JSIModulePackage
 import com.facebook.react.bridge.JSIModuleSpec
@@ -79,6 +80,10 @@ class ReactNativeHostWrapper(
 
   override fun getPackages(): MutableList<ReactPackage> {
     return invokeDelegateMethod("getPackages")
+  }
+
+  override fun getReactPackageTurboModuleManagerDelegateBuilder(): ReactPackageTurboModuleManagerDelegate.Builder? {
+    return invokeDelegateMethod("getReactPackageTurboModuleManagerDelegateBuilder")
   }
 
   //endregion
