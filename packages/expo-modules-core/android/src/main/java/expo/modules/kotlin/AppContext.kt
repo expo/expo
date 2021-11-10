@@ -3,6 +3,7 @@ package expo.modules.kotlin
 import com.facebook.react.bridge.LifecycleEventListener
 import com.facebook.react.bridge.ReactApplicationContext
 import expo.modules.core.interfaces.ActivityProvider
+import expo.modules.core.interfaces.services.EventEmitter
 import expo.modules.interfaces.barcodescanner.BarCodeScannerInterface
 import expo.modules.interfaces.camera.CameraViewInterface
 import expo.modules.interfaces.constants.ConstantsInterface
@@ -13,6 +14,8 @@ import expo.modules.interfaces.permissions.Permissions
 import expo.modules.interfaces.sensors.SensorServiceInterface
 import expo.modules.interfaces.taskManager.TaskManagerInterface
 import expo.modules.kotlin.events.EventName
+import expo.modules.kotlin.events.KEventEmitterWrapper
+import expo.modules.kotlin.modules.Module
 import java.lang.ref.WeakReference
 
 class AppContext(
@@ -104,6 +107,19 @@ class AppContext(
    */
   val reactContext: ReactApplicationContext?
     get() = reactContextHolder.get()
+
+  /**
+   * Provides access to the event emitter
+   */
+  fun eventEmitter(module: Module): EventEmitter? {
+    val legacyEventEmitter = legacyModule<EventEmitter>() ?: return null
+    return KEventEmitterWrapper(
+      requireNotNull(registry.getModuleHolder(module)) {
+        "Cannot create an event emitter for the module that isn't present in the current module registry."
+      },
+      legacyEventEmitter
+    )
+  }
 
   fun onDestroy() {
     reactContextHolder.get()?.removeLifecycleEventListener(this)

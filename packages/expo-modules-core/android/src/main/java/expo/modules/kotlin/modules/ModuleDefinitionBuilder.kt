@@ -17,6 +17,7 @@ import expo.modules.kotlin.events.BasicEventListener
 import expo.modules.kotlin.events.EventListener
 import expo.modules.kotlin.events.EventName
 import expo.modules.kotlin.Promise
+import expo.modules.kotlin.events.EventsDefinition
 import expo.modules.kotlin.methods.AnyMethod
 import expo.modules.kotlin.methods.Method
 import expo.modules.kotlin.methods.PromiseMethod
@@ -27,6 +28,7 @@ import kotlin.reflect.typeOf
 class ModuleDefinitionBuilder {
   private var name: String? = null
   private var constantsProvider = { emptyMap<String, Any?>() }
+  private var eventsDefinition: EventsDefinition? = null
 
   @PublishedApi
   internal var methods = mutableMapOf<String, AnyMethod>()
@@ -43,7 +45,8 @@ class ModuleDefinitionBuilder {
       constantsProvider,
       methods,
       viewManagerDefinition,
-      eventListeners
+      eventListeners,
+      eventsDefinition
     )
   }
 
@@ -128,5 +131,26 @@ class ModuleDefinitionBuilder {
 
   inline fun onActivityDestroys(crossinline body: () -> Unit) {
     eventListeners[EventName.ACTIVITY_DESTROYS] = BasicEventListener(EventName.ACTIVITY_DESTROYS) { body() }
+  }
+
+  /**
+   * Defines event names that this module can send to JavaScript.
+   */
+  fun events(vararg events: String) {
+    eventsDefinition = EventsDefinition(events)
+  }
+
+  /**
+   * Method that is invoked when the first event listener is added.
+   */
+  inline fun onStartObserving(crossinline body: () -> Unit) {
+    method("startObserving", body)
+  }
+
+  /**
+   * Method that is invoked when all event listeners are removed.
+   */
+  inline fun onStopObserving(crossinline body: () -> Unit) {
+    method("stopObserving", body)
   }
 }

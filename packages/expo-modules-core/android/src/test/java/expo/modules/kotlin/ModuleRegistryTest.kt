@@ -61,4 +61,21 @@ class ModuleRegistryTest {
     } catch (e: Exception) {
     }
   }
+
+  @Test
+  fun `should return holder for module`() {
+    val provider = object : ModulesProvider {
+      override fun getModulesList(): List<Class<out Module>> {
+        return listOf(M1::class.java)
+      }
+    }
+
+    val moduleRegistry = ModuleRegistry(WeakReference(mockk()))
+    moduleRegistry.register(provider)
+    val m1 = moduleRegistry.getModule("m1")!!
+    val holder = moduleRegistry.getModuleHolder(m1)
+
+    Truth.assertThat(holder).isNotNull()
+    Truth.assertThat(holder).isSameInstanceAs(moduleRegistry.getModuleHolder("m1"))
+  }
 }
