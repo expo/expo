@@ -120,7 +120,7 @@ If so, make sure to point your **credentials.json** to an ad hoc or enterprise p
 
 Now that we have set up our build profile and app signing, running a build for internal distribution is just like any other build.
 
-<TerminalBlock cmd={['# Create iOS and Android builds for internal distribution', 'eas build --profile preview --platform all', '', '# Or create an iOS build for enterprise distribution', 'eas build --profile preview-enterprise --platform ios']} />
+<TerminalBlock cmd={['# Create iOS and Android builds for internal distribution', 'eas build --profile preview --platform all']} />
 
 > If you're using ad hoc provisioning but you haven't registered any devices yet, you'll be asked to register them now (or exit the current command and run `eas device:add` again). The build command will wait for the new device to register. Scan the QR code that is presented in the terminal and follow the instructions on that page to register your device. When you're done, return to the terminal and continue.
 
