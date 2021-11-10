@@ -10,8 +10,6 @@ When something goes wrong, it probably will go wrong in one of two ways: 1) your
 
 All standard advice around [narrowing down the source of an error](https://expo.fyi/manual-debugging) applies here; this document provides information that may be useful on top of your typical troubleshooting processes and techniques. Troubleshooting is an art, and you might need to think creatively.
 
-<!-- todo: need to add explicit callout to monorepos here -->
-
 ## Find the related error logs
 
 Before you go further, you need to be sure that you have located the error message and read it. How you do this will be different depending on whether you're investigating a build failure or runtime error.
@@ -60,7 +58,7 @@ Monorepos are incredibly useful but they do introduce their own set of problems.
 With EAS Build, it's necessary to upload the entire monorepo to the build worker, set it up, and run the build; but, on `expo build` you only had to be able to build the JavaScript bundle locally and upload that to the worker.
 
 EAS Build is more like a typical CI service in that we need the source code, rather than a compiled JavaScript bundle and manifest. EAS Build has first class support for Yarn workspaces, and [your success may vary when using other monorepo tools](/build-reference/limitations.md).
-<!-- todo: link to monorepos guide -->
+<!-- TODO: link to monorepos guide when ready -->
 
 </p>
 </details>
