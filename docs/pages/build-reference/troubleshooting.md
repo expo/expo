@@ -20,7 +20,7 @@ Refer to the [debugging guide](/workflow/debugging.md#production-errors) to lear
 
 ### Build errors
 
-Go to your build details page (find it on the [build dashboard](https://expo.dev/accounts/[account]/projects/[project]/builds) if you don't have it open already) and expand any failed build phases by clicking on them. Often, the earliest phase that errors will contain the most useful information, and the any susequent failed phases cascaded from the first.
+Go to your build details page (find it on the [build dashboard](https://expo.dev/accounts/[account]/projects/[project]/builds) if you don't have it open already) and expand any failed build phases by clicking on them. Often, the earliest phase with errors will contain the most useful information and any subsequent failed phase will have cascaded from the first.
 
 Regardless of the phase, **it's common to see log entries prefixed with `[stderr]`, but keep in mind that this doesn't necessarily mean those logs point to errors**; it's common for CLI tools to use [stderr](<https://en.wikipedia.org/wiki/Standard_streams#Standard_error_(stderr)>) to output warnings and other diagnostics.
 
@@ -40,9 +40,9 @@ A good path forward is to **determine if the build failed due to a native or Jav
 `Unable to resolve module ./src/Routes from /Users/expo/workingdir/build/App.js`,
 ]} />
 
-This particular error means that the app is importing `./src/Routes` and it is not found. The cause could that the filename case being different in Git than the developer's filesystem (eg: `routes.js` in Git instead of `Routes.js`), or maybe the project has a build step and it wasn't set up to run on EAS Build. In this case, it turns out that in this case `./src/Routes` was intended to import `./src/Routes/index.js`, but that path was accidentally excluded in the developer's `.gitignore`.
+This particular error means that the app is importing `./src/Routes` and it is not found. The cause could be that the filename case being different in Git than the developer's filesystem (eg: `routes.js` in Git instead of `Routes.js`), or maybe the project has a build step and it wasn't set up to run on EAS Build. In this case, it turns out that in this case `./src/Routes` was intended to import `./src/Routes/index.js`, but that path was accidentally excluded in the developer's `.gitignore`.
 
-It's important to note that on iOS builds the build details page only displays an abridged version of the logs, because the full output from `xcodebuild` can be in the order of 10MB. Sometimes it's necessary to open the full Xcode logs in order to find the information that you need; for example, if the JavaScript build failed but you don't see any useful information on the build details page. To open the full Xcode logs, scroll to the bottom of the build details page when the build has completed and either click to view or download them.
+It's important to note that with iOS builds the build details page only displays an abridged version of the logs, because the full output from `xcodebuild` can be in the order of 10MB. Sometimes it's necessary to open the full Xcode logs in order to find the information that you need; for example, if the JavaScript build failed but you don't see any useful information on the build details page. To open the full Xcode logs, scroll to the bottom of the build details page when the build has completed and either click to view or download them.
 
 <!-- TODO: native and js build phases should be separate in eas build logs, this is too much work for people to figure out -->
 
@@ -57,7 +57,7 @@ Monorepos are incredibly useful but they do introduce their own set of problems.
 
 With EAS Build, it's necessary to upload the entire monorepo to the build worker, set it up, and run the build; but, on `expo build` you only had to be able to build the JavaScript bundle locally and upload that to the worker.
 
-EAS Build is more like a typical CI service in that we need the source code, rather than a compiled JavaScript bundle and manifest. EAS Build has first class support for Yarn workspaces, and [your success may vary when using other monorepo tools](/build-reference/limitations.md).
+EAS Build is more like a typical CI service in that we need the source code, rather than a compiled JavaScript bundle and manifest. EAS Build has first-class support for Yarn workspaces, and [your success may vary when using other monorepo tools](/build-reference/limitations.md).
 <!-- TODO: link to monorepos guide when ready -->
 
 </p>
@@ -65,7 +65,7 @@ EAS Build is more like a typical CI service in that we need the source code, rat
 
 <div style={{marginTop: -15}} />
 
-<details><summary><h4>💥 Out of memory errors</h4></summary>
+<details><summary><h4>💥 Out-of-memory (OOM) errors</h4></summary>
 
 If your build fails with "Gradle build daemon disappeared unexpectedly (it may have been killed or may have crashed)" in your Gradle logs, this may be because the Node process responsible for bundling your app JavaScript was killed.
 
@@ -123,7 +123,7 @@ If you have followed the advice here, you're now in a good position to describe 
 
 ### How to ask a good question
 
-Join us on [Discord](https://chat.expo.dev) or the [forums](https://forums.expo.dev) get help from the Expo team and the community. 
+Join us on [Discord](https://chat.expo.dev) or the [forums](https://forums.expo.dev) ask for help from the community and the Expo team. The Expo team does our best to respond to high quality and well articulated questions and issues, but responses are not guaranteed unless you are signed up for a [support plan](https://expo.dev/eas/enterprise-support).
 
 When you ask for troubleshooting help, be sure to share the following information:
 

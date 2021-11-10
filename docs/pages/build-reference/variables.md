@@ -62,7 +62,7 @@ The following environment variables are exposed to each build job &mdash; they a
 
 ## Using secrets in environment variables
 
-To provide your build jobs with access to values that are too sensitive to include in your source code and git repository, you can use "Secrets".
+To provide your build jobs with access to values that are too sensitive to include in your source code and Git repository, you can use "Secrets".
 
 A secret is made up of a name and a value. The name can only contain alphanumeric characters and underscores.
 
@@ -118,7 +118,7 @@ Environment variables can be tricky to use if you don't have the correct mental 
 
 ### Can I share environment variables defined in eas.json with `expo start` and `expo publish`?
 
-When you define environment variables on build profiles in **eas.json**, they will not be available for local development when you run `expo start`. A concern that developers often raise about this is that they now have to duplicate their configuration in multiple places, leading to additional maintenance effort and possible bugs when values go out of sync. If you find yourself in this situation, one possible solution is to move your configuration out of environment variables and into JavaScript. For example, imaigne we had the following **eas.json**:
+When you define environment variables on build profiles in **eas.json**, they will not be available for local development when you run `expo start`. A concern that developers often raise about this is that they now have to duplicate their configuration in multiple places, leading to additional maintenance effort and possible bugs when values go out of sync. If you find yourself in this situation, one possible solution is to move your configuration out of environment variables and into JavaScript. For example, imagine we had the following **eas.json**:
 
 ```json
 {
@@ -147,9 +147,9 @@ In **app.config.js**, we may be using the API URL like this:
 export default {
   // ...
   extra: {
-    // Fallback to development URL when not set
+    // Fall back to development URL when not set
     apiUrl: process.env.API_URL ?? 'https://localhost:3000'
-    enableHiddenFeatures: process.env.ENABLE_HIDDEN_FEATURES ? Boolean(process.env.enableHiddenFeatures) : true,
+    enableHiddenFeatures: process.env.ENABLE_HIDDEN_FEATURES ? Boolean(process.env.ENABLE_HIDDEN_FEATURES) : true,
   }
 }
 ```

@@ -125,7 +125,7 @@ By default, the `eas build` command will wait for your build to complete; but, y
 
 ## 6. Deploy the build
 
-If you have made it to this step, congratulations! Depending on which path you chose, you now either have a build that is ready to upload to an app store, or you have a build that you can install directly to an Android device / iOS simulator.
+If you have made it to this step, congratulations! Depending on which path you chose, you now either have a build that is ready to upload to an app store, or you have a build that you can install directly on an Android device / iOS simulator.
 
 ### Distribute your app to an app store
 

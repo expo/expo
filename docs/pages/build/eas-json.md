@@ -68,7 +68,7 @@ If you'd like to create a build for internal distribution and another for the iO
 
 ### Preview builds
 
-These builds don't include developer tools, they are intended to be installed by your team and other stakeholders, to test out the app in production-like circumstances. In this way, they are similar to [production builds](#production-builds); the difference arises in that they are either not signed for distribution on stores (internal distribution) or are packaged in a way that is not optimal for store deployment (Android AAB).
+These builds don't include developer tools, they are intended to be installed by your team and other stakeholders, to test out the app in production-like circumstances. In this way, they are similar to [production builds](#production-builds); the difference arises in that they are either not signed for distribution on stores (ad hoc or enterprise provisioning on iOS), or are packaged in a way that is not optimal for store deployment (Android APK is best for preview, AAB is best for stores).
 
 A minimal `preview` profile looks like this:
 

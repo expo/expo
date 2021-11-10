@@ -46,7 +46,7 @@ The configuration above tells EAS Build that you would like to use ad hoc distri
 <details><summary><h4>🏙 Do you have an Apple Developer Enterprise Program membership?</h4></summary>
 <p>
 
-The following will only work if you have an Apple account with Apple Developer Enterprise Program membership. While using the enterprise provisioning, you can sign your app using a `universal` or `adhoc` provisioning profile. We recommend `universal` because it does not require you to register your devices with Apple, which is the main benefit of using Enterprise provisioning.
+The following will only work if you have an Apple account with Apple Developer Enterprise Program membership. While using Enterprise provisioning, you can sign your app using a `universal` or `adhoc` provisioning profile. We recommend `universal` because it does not require you to register your devices with Apple, which is the main benefit of using Enterprise provisioning.
 
 ```json
 {
