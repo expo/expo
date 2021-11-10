@@ -37,6 +37,6 @@
     "expo-module-scripts": "^2.0.0"
   },
   "jest": {
-    "preset": "expo-module-scripts/ios"
+    "preset": "expo-module-scripts"
   }
 }

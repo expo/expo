@@ -2,8 +2,6 @@
 title: Environment variables and secrets
 ---
 
-import ImageSpotlight from '~/components/plugins/ImageSpotlight'
-
 The ["Environment variables in Expo"](/guides/environment-variables.md) guide presents several options for how you can access system environment variables to your app JavaScript code. This can be a useful way to inject values in your code, but [these values should not be secrets](/guides/environment-variables.md#security-considerations), and so the value it provides can be summarized as a convenience for accommodating certain development workflows.
 
 Using the techniques described in the environment variables document above, environment variables are inlined (the `process.env.X` text is replaced with its evaluated result) in your app's JavaScript code _at the the time that the app is built_, and included in the app bundle. This means that the substitution would occur on EAS Build servers and not on your development machine, so if you tried to run a build on EAS Build without explicitly providing values or fallbacks for the environment variables, then you are likely to encounter either a build-time or runtime error.
@@ -46,45 +44,41 @@ You can access these variables in your application using the techniques describe
 
 See the [eas.json reference](/build/eas-json.md) for more information.
 
+## Environment variables and app.config.js
+
+Environment variables used in your build profile will also be used to evaluate **app.config.js** when you run `eas build`. This is important in order to ensure that the result of evaluating **app.config.js** is the same when it's done locally while initiating the build (in order to gather metadata for the build job) and when it occurs on the remote build worker, for example to configure the project during `expo prebuild` or to embed the configuration data in the app.
+
+## Built-in environment variables
+
+The following environment variables are exposed to each build job &mdash; they are not set when evaluating **app.config.js** locally:
+
+- `CI=1` - indicates this is a CI environment
+- `EAS_BUILD=true` - indicates this is an EAS Build environment
+- `EAS_BUILD_ID` - the build ID, e.g. `f51831f0-ea30-406a-8c5f-f8e1cc57d39c`
+- `EAS_BUILD_PROFILE` - the name of the build profile from **eas.json**, e.g. `production`
+- `EAS_BUILD_GIT_COMMIT_HASH` - the hash of the Git commit, e.g. `88f28ab5ea39108ade978de2d0d1adeedf0ece76`
+- `EAS_BUILD_NPM_CACHE_URL` - the URL of the npm cache ([learn more](/build-reference/private-npm-packages))
+- `EAS_BUILD_USERNAME` - the username of the user initiating the build (it's undefined for bot users)
+
 ## Using secrets in environment variables
 
-To provide your build jobs with access to values that are too sensitive to include in your source code and git repository, you can use "Secrets".
+To provide your build jobs with access to values that are too sensitive to include in your source code and Git repository, you can use "Secrets".
 
-These secrets are encrypted at rest and in transit, and are only decrypted in a secure environment by EAS servers.
+A secret is made up of a name and a value. The name can only contain alphanumeric characters and underscores.
 
-You can create up to 100 account-wide secrets for each Expo account and 100 app-specific secrets for each app (you probably won't need that many). Account-wide secrets will be exposed to every build environment across all of your apps. App-specific secrets only apply to the app they're defined for, and will override any account-wide secrets with the same name.
+The secret values are encrypted at rest and in transit, and are only decrypted in a secure environment by EAS servers.
+
+You can create up to 100 account-wide secrets for each Expo account and 100 app-specific secrets for each app. Account-wide secrets will be exposed to every build environment across all of your apps. App-specific secrets only apply to the app they're defined for, and will override any account-wide secrets with the same name.
 
 You can manage secrets through the Expo website and EAS CLI.
 
+> ⚠️ Always remember that **anything that is included in your client side code should be considered public and readable to any individual that can run the application**. EAS Secrets are intended to be used to provide values to an EAS Build job so that they may be used during the build process. Examples of correct usage include setting the `NPM_TOKEN` for installing private packages from npm, or a Sentry API key to create a release and upload your sourcemaps to their service. EAS Secrets do not provide any additional security for values that you end up embedding in your application itself, such as an AWS access key or other private keys.
+
 ### Secrets on the Expo website
 
-To create account-wide secrets, navigate to the "Secrets" tab under your account or organization's [settings](https://expo.dev/settings/secrets):
+To create **account-wide secrets**, navigate to [the "Secrets" tab in your account or organization settings](https://expo.dev/accounts/[account]/settings/secrets).
 
-<ImageSpotlight alt="account-wide secrets location" src="/static/images/eas-build/environment-secrets/secrets-account-nav.png" />
-
-To create app-specific secrets, navigate to the "Secrets" tab in the project dashboard:
-
-<ImageSpotlight alt="Project secrets location" src="/static/images/eas-build/environment-secrets/secrets-project-nav.png" />
-
-If you haven't published your project yet and it isn't visible on the website, create one on the project list page.
-
-<ImageSpotlight alt="Create project button location" src="/static/images/eas-build/environment-secrets/project-creation-navigation.png" />
-
-<ImageSpotlight alt="Create project UI" src="/static/images/eas-build/environment-secrets/project-creation-web.png" />
-
-### Adding secrets with the website
-
-When setting up secrets for a new account or app, you'll be met with this UI:
-
-<ImageSpotlight alt="Empty secrets UI" src="/static/images/eas-build/environment-secrets/secrets-empty.png" />
-
-Click the "Create" button in the top-right of the table to create a new secret.
-
-A secret needs a name and a value. The name can only contain alphanumeric characters and underscores:
-
-<ImageSpotlight alt="Secret creation UI filled" src="/static/images/eas-build/environment-secrets/secrets-create-filled.png" />
-
-<ImageSpotlight alt="Secret UI with stored secret" src="/static/images/eas-build/environment-secrets/secrets-populated.png" />
+To create **app-specific secrets**, navigate to [the "Secrets" tab in your project dashboard](https://expo.dev/accounts/[account]/projects/[project]/secrets). If you haven't published your project yet and it isn't visible on the website, you can create it on the website from this link.
 
 ### Adding secrets with EAS CLI
 
@@ -116,32 +110,141 @@ Secrets for this account and project:
 
 ### Accessing secrets in EAS Build
 
-After creating a secret, you can access the value via EAS Build hooks in Node.js as `process.env.VARIABLE_NAME` or in shell scripts as `$VARIABLE_NAME`:
+After creating a secret, you can read it on subsequent EAS Build jobs with `process.env.VARIABLE_NAME` from Node.js or in shell scripts as `$VARIABLE_NAME`.
+
+## Common questions
+
+Environment variables can be tricky to use if you don't have the correct mental model for how they work. In this section we're going to clarify common sources of confusion, oriented around use cases.
+
+### Can I share environment variables defined in eas.json with `expo start` and `expo publish`?
+
+When you define environment variables on build profiles in **eas.json**, they will not be available for local development when you run `expo start`. A concern that developers often raise about this is that they now have to duplicate their configuration in multiple places, leading to additional maintenance effort and possible bugs when values go out of sync. If you find yourself in this situation, one possible solution is to move your configuration out of environment variables and into JavaScript. For example, imagine we had the following **eas.json**:
 
 ```json
-// package.json
 {
-  "scripts": {
-    "eas-build-pre-install": "echo $VARIABLE_NAME",
-    "android": "expo run:android",
-    "ios": "expo run:ios",
-    "web": "expo start --web",
-    "start": "react-native start",
-    "test": "jest"
+  "build": {
+    "production": {
+      "releaseChannel": "production",
+      "env": {
+        "API_URL": "https://api.production.com",
+        "ENABLE_HIDDEN_FEATURES": 0
+      }
+    },
+    "preview": {
+      "releaseChannel": "staging",
+      "env": {
+        "API_URL": "https://api.staging.com",
+        "ENABLE_HIDDEN_FEATURES": 1
+      }
+    }
   }
 }
 ```
 
-[Learn more about EAS Build hooks](/build-reference/how-tos/#eas-build-specific-npm-hooks).
+In **app.config.js**, we may be using the API URL like this:
 
-## Built-in environment variables
+```js
+export default {
+  // ...
+  extra: {
+    // Fall back to development URL when not set
+    apiUrl: process.env.API_URL ?? 'https://localhost:3000'
+    enableHiddenFeatures: process.env.ENABLE_HIDDEN_FEATURES ? Boolean(process.env.ENABLE_HIDDEN_FEATURES) : true,
+  }
+}
+```
 
-The following environment variables are exposed to each build job:
+Using this approach, we would always need to remember to run `API_URL=https://api.staging.com ENABLE_HIDDEN_FEATURES=1 expo publish` when updating staging, and something similar for production. If we forgot the `ENABLE_HIDDEN_FEATURES=0` flag when publishing to production, we might end up rolling out untested features to production, and if we forgot the `API_URL` value, then users would be pointed to `https://localhost:3000`!
 
-- `CI=1` - indicates this is a CI environment
-- `EAS_BUILD=true` - indicates this is an EAS Build environment
-- `EAS_BUILD_ID` - the build ID, e.g. `f51831f0-ea30-406a-8c5f-f8e1cc57d39c`
-- `EAS_BUILD_PROFILE` - the name of the build profile from **eas.json**, e.g. `production`
-- `EAS_BUILD_GIT_COMMIT_HASH` - the hash of the Git commit, e.g. `88f28ab5ea39108ade978de2d0d1adeedf0ece76`
-- `EAS_BUILD_NPM_CACHE_URL` - the URL of the npm cache ([learn more](/build-reference/private-npm-packages))
-- `EAS_BUILD_USERNAME` - the username of the user initiating the build (it's undefined for bot users)
+The following are two possible alternative approaches, each with different tradeoffs.
+
+1. **Move values to application code and switch based on release channel**. Rather than putting configuration in environment variables and extras, create a JavaScript file, possibly named **Config.js**. This approach will work well for you as long as you don't need to use the configuration values to modify build time configuration, such as the `ios.bundleIdentifier`, `icon`, and so on. This approach also gives you the ability to promote updates between environments, because the configuration that is used will switch when it's loaded from a binary with a different release channel. It might look something like this:
+
+  <details>
+    <summary><strong>Config.js</strong></summary>
+
+  ```js
+  import * as Updates from 'expo-updates';
+
+  let Config = {
+    apiUrl: 'https://localhost:3000',
+    enableHiddenFeatures: true,
+  };
+
+  if (Updates.releaseChannel === 'production') {
+    Config.apiUrl = 'https://api.production.com';
+    Config.enableHiddenFeatures = false;
+  } else if (Updates.releaseChannel === 'staging') {
+    Config.apiUrl = 'https://api.staging.com';
+    Config.enableHiddenFeatures = true;
+  }
+
+  export default Config;
+  ```
+
+  </details>
+
+2. **Use a single environment variable to toggle configuration**. In our **eas.json** we can set an environment variable such as `APP_ENV` and then switch on that value inside of **app.config.js**. This way, we only have to be sure to set one environment variable: `APP_ENV=production expo publish`.
+
+  <details>
+    <summary><strong>eas.json</strong></summary>
+
+  ```json
+  {
+    "build": {
+      "production": {
+        "releaseChannel": "production",
+        "env": {
+          "APP_ENV": "production"
+        }
+      },
+      "preview": {
+        "releaseChannel": "staging",
+        "env": {
+          "APP_ENV": "staging"
+        }
+      }
+    }
+  }
+  ```
+
+  </details>
+
+  <div style={{marginTop: -20, display: 'block'}} />
+
+  <details>
+    <summary><strong>app.config.js</strong></summary>
+
+  ```js
+  let Config = {
+    apiUrl: 'https://localhost:3000',
+    enableHiddenFeatures: true,
+  };
+
+  if (process.env.APP_ENV === 'production') {
+    Config.apiUrl = 'https://api.production.com';
+    Config.enableHiddenFeatures = false;
+  } else if (process.env.APP_ENV === 'staging') {
+    Config.apiUrl = 'https://api.staging.com';
+    Config.enableHiddenFeatures = true;
+  }
+
+  export default {
+    // ...
+    extra: {
+      ...Config,
+    },
+  };
+  ```
+
+  </details>
+
+<div style={{marginTop: -20, display: 'block'}} />
+
+### How do environment variables work for my Expo Development Client builds?
+
+Environment variables set in your build profile that impact **app.config.js** will be used for configuring the development build. When you run `expo start` to load your app inside of your development build, only environment variables that are available on your development machine will be used for the app manifest; this becomes the same situation as described above for **expo start**.
+
+### Can I just set my environment variables on a CI provider?
+
+Environment variables must be defined in **eas.json** in order to be made available to EAS Build workers. If you are [triggering builds from CI](/build/building-on-ci.md) this same rule applies, and you should be careful to not confuse setting environment variables on GitHub Actions (or the provider of your choice) with setting environment variables and secrets in **eas.json**.
