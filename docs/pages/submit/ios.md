@@ -64,3 +64,7 @@ Example usage:
 ```sh
 EXPO_APPLE_APP_SPECIFIC_PASSWORD=xxxxx eas submit -p ios --latest --profile foobar
 ```
+
+## Automating submissions
+
+To learn how to automatically submit your app after a successful build, refer to the ["Automating submissions" guide](/build/automating-submissions.md).
