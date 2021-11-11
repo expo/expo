@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Fix iOS auto-layout breaking for RCTRootView. on a iPad simulator, the view is not updated after rotation. ([#15100](https://github.com/expo/expo/pull/15100) by [@kudo](https://github.com/kudo))
-
 ### 💡 Others
+
+## 0.10.15 — 2021-11-11
+
+### 🐛 Bug fixes
+
+- Fix iOS auto-layout breaking for RCTRootView. on a iPad simulator, the view is not updated after rotation. ([#15100](https://github.com/expo/expo/pull/15100) by [@kudo](https://github.com/kudo))
 
 ## 0.10.14 — 2021-11-09
 
