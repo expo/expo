@@ -115,7 +115,7 @@ EX_REGISTER_SINGLETON_MODULE(EXUpdatesAppDelegate)
   }
 
   UIWindow *window = UIApplication.sharedApplication.delegate.window;
-  UIViewController* rootViewController = [EXUpdatesUtils createRootViewController:window];
+  UIViewController *rootViewController = [EXUpdatesUtils createRootViewController:window];
   rootViewController.view = rootView;
   window.rootViewController = rootViewController;
   [window makeKeyAndVisible];
