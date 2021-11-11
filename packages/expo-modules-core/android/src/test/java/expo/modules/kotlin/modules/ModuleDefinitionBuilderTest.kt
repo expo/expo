@@ -77,4 +77,24 @@ class ModuleDefinitionBuilderTest {
     Truth.assertThat(moduleDefinition.eventListeners[EventName.ACTIVITY_ENTERS_BACKGROUND]).isNotNull()
     Truth.assertThat(moduleDefinition.eventListeners[EventName.ACTIVITY_DESTROYS]).isNotNull()
   }
+
+  @Test
+  fun `onStartObserving should be translated into method`() {
+    val moduleDefinition = module {
+      name("module")
+      onStartObserving { }
+    }
+
+    Truth.assertThat(moduleDefinition.methods).containsKey("startObserving")
+  }
+
+  @Test
+  fun `onStopObserving should be translated into method`() {
+    val moduleDefinition = module {
+      name("module")
+      onStopObserving { }
+    }
+
+    Truth.assertThat(moduleDefinition.methods).containsKey("stopObserving")
+  }
 }
