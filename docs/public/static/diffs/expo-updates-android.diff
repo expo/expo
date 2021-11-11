@@ -8,8 +8,8 @@ index e5b1a7d..d06dfd0 100644
  ]
 
 -apply from: "../../node_modules/react-native/react.gradle"
-+apply from: new File(["node", "--print", "require.resolve('react-native/package.json')"].execute().text.trim(), "../react.gradle")
-+apply from: new File(["node", "--print", "require.resolve('expo-updates/package.json')"].execute().text.trim(), "../scripts/create-manifest-android.gradle")
++apply from: new File(["node", "--print", "require.resolve('react-native/package.json')"].execute(null, rootDir).text.trim(), "../react.gradle")
++apply from: new File(["node", "--print", "require.resolve('expo-updates/package.json')"].execute(null, rootDir).text.trim(), "../scripts/create-manifest-android.gradle")
 
  /**
   * Set this to true to create two separate APKs instead of one:
