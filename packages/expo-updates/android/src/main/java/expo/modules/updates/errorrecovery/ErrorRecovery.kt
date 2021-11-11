@@ -14,8 +14,11 @@ import kotlin.Exception
 class ErrorRecovery(
   delegate: ErrorRecoveryDelegate
 ) {
-  private val handlerThread = HandlerThread("expo-updates-error-recovery")
-  private val handler: Handler = ErrorRecoveryHandler(handlerThread.looper, delegate)
+  internal val handlerThread = HandlerThread("expo-updates-error-recovery")
+  init {
+    handlerThread.start()
+  }
+  internal var handler: Handler = ErrorRecoveryHandler(handlerThread.looper, delegate)
 
   private var weakReactInstanceManager: WeakReference<ReactInstanceManager>? = null
   private var previousExceptionHandler: DefaultNativeModuleCallExceptionHandler? = null
@@ -29,11 +32,11 @@ class ErrorRecovery(
     handler.sendMessage(handler.obtainMessage(ErrorRecoveryHandler.MessageType.REMOTE_LOAD_STATUS_CHANGED, newStatus))
   }
 
-  private fun handleException(exception: Exception) {
+  internal fun handleException(exception: Exception) {
     handler.sendMessage(handler.obtainMessage(ErrorRecoveryHandler.MessageType.EXCEPTION_ENCOUNTERED, exception))
   }
 
-  private fun handleContentAppeared() {
+  internal fun handleContentAppeared() {
     handler.sendMessage(handler.obtainMessage(ErrorRecoveryHandler.MessageType.CONTENT_APPEARED))
     // wait 10s before unsetting error handlers; even though we won't try to relaunch if our
     // handlers are triggered after now, we still want to give the app a reasonable window of time

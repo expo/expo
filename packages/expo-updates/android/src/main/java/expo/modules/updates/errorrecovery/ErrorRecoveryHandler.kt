@@ -97,8 +97,7 @@ internal class ErrorRecoveryHandler(
       if (delegate.getRemoteLoadStatus() != ErrorRecoveryDelegate.RemoteLoadStatus.NEW_UPDATE_LOADING) {
         delegate.loadRemoteUpdate()
       }
-      // TODO: make this time configurable
-      postDelayed({ handleRemoteLoadStatusChanged(ErrorRecoveryDelegate.RemoteLoadStatus.IDLE) }, 5000)
+      postDelayed({ handleRemoteLoadStatusChanged(ErrorRecoveryDelegate.RemoteLoadStatus.IDLE) }, REMOTE_LOAD_TIMEOUT_MS)
     } else {
       // there's no remote update, so move to the next step in the pipeline
       pipeline.remove(Task.LAUNCH_NEW_UPDATE)
@@ -130,5 +129,9 @@ internal class ErrorRecoveryHandler(
     // throw the initial exception to preserve its stacktrace
     // rather than creating a new (aggregate) one
     delegate.throwException(encounteredErrors[0])
+  }
+
+  companion object {
+    const val REMOTE_LOAD_TIMEOUT_MS = 5000L
   }
 }
