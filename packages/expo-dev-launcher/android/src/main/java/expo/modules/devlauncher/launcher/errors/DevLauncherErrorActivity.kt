@@ -9,13 +9,11 @@ import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentPagerAdapter
 import com.facebook.react.ReactActivity
-import expo.modules.devlauncher.DevLauncherController
 import expo.modules.devlauncher.databinding.ErrorActivityContentViewBinding
 import expo.modules.devlauncher.koin.DevLauncherKoinComponent
 import expo.modules.devlauncher.launcher.DevLauncherControllerInterface
 import expo.modules.devlauncher.launcher.errors.fragments.DevLauncherErrorConsoleFragment
 import expo.modules.devlauncher.launcher.errors.fragments.DevLauncherErrorFragment
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import org.koin.core.component.inject
 import java.lang.ref.WeakReference
@@ -89,7 +87,7 @@ class DevLauncherErrorActivity
       return
     }
 
-    GlobalScope.launch {
+    controller.coroutineScope.launch {
       controller
         .loadApp(
           appUrl,

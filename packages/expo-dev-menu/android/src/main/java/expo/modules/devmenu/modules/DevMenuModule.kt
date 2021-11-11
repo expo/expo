@@ -4,7 +4,6 @@ import com.facebook.react.bridge.Promise
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactContextBaseJavaModule
 import com.facebook.react.bridge.ReactMethod
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
 class DevMenuModule(reactContext: ReactApplicationContext) :
@@ -36,7 +35,7 @@ class DevMenuModule(reactContext: ReactApplicationContext) :
 
   @ReactMethod
   fun queryMyProjectsAsync(promise: Promise) {
-    GlobalScope.launch {
+    devMenuManager.coroutineScope.launch {
       try {
         devMenuManager
           .getExpoApiClient()
@@ -53,7 +52,7 @@ class DevMenuModule(reactContext: ReactApplicationContext) :
 
   @ReactMethod
   fun queryDevSessionsAsync(promise: Promise) {
-    GlobalScope.launch {
+    devMenuManager.coroutineScope.launch {
       try {
         devMenuManager
           .getExpoApiClient()
