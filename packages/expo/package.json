@@ -1,6 +1,6 @@
 {
   "name": "expo",
-  "version": "43.0.2",
+  "version": "43.0.3",
   "description": "The Expo SDK",
   "main": "build/Expo.js",
   "module": "build/Expo.js",
