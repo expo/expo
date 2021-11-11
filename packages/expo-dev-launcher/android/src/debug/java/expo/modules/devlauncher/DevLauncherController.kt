@@ -306,7 +306,7 @@ class DevLauncherController private constructor()
     }.apply { addFlags(NEW_ACTIVITY_FLAGS) }
 
   companion object {
-    private var sErrorHandlerWasInitialize = false
+    private var sErrorHandlerWasInitialized = false
     private var sLauncherClass: Class<*>? = null
     internal var sAdditionalPackages: List<ReactPackage>? = null
 
@@ -328,13 +328,13 @@ class DevLauncherController private constructor()
       if (!testInterceptor.allowReinitialization()) {
         check(!wasInitialized()) { "DevelopmentClientController was initialized." }
       }
-      if (!sErrorHandlerWasInitialize && context is Application) {
+      if (!sErrorHandlerWasInitialized && context is Application) {
         val handler = DevLauncherUncaughtExceptionHandler(
           context,
           Thread.getDefaultUncaughtExceptionHandler()
         )
         Thread.setDefaultUncaughtExceptionHandler(handler)
-        sErrorHandlerWasInitialize = true
+        sErrorHandlerWasInitialized = true
       }
 
       MenuDelegateWasInitialized = false
