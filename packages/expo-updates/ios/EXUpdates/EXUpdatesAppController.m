@@ -238,6 +238,9 @@ static NSString * const EXUpdatesErrorEventName = @"error";
 
 - (void)appLoaderTask:(EXUpdatesAppLoaderTask *)appLoaderTask didFinishWithLauncher:(id<EXUpdatesAppLauncher>)launcher isUpToDate:(BOOL)isUpToDate
 {
+  if (_remoteLoadStatus == EXUpdatesRemoteLoadStatusLoading && isUpToDate) {
+    _remoteLoadStatus = EXUpdatesRemoteLoadStatusIdle;
+  }
   _launcher = launcher;
   if (self->_delegate) {
     [EXUpdatesUtils runBlockOnMainThread:^{
