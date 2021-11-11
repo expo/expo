@@ -68,7 +68,7 @@ You must do the following:
 You'll also need to configure your submission credentials **one** of the following ways:
 
 - Set up your App Store Connect API Key with EAS Servers. You can check the state of your credentials by running `eas credentials` or by running `eas submit -p ios` interactively.
-- Pass in your App Store Connect Api Key with the `ascApiKeyPath`, `ascApiKeyIssuerId`, and `ascApiKeyId` fields set in **eas.json**.
+- Pass in your App Store Connect API Key with the `ascApiKeyPath`, `ascApiKeyIssuerId`, and `ascApiKeyId` fields set in **eas.json**.
 - Set the `EXPO_APPLE_APP_SPECIFIC_PASSWORD` environment variable along with your Apple ID Username (`appleId` in **eas.json**).
 
 Example usage:
