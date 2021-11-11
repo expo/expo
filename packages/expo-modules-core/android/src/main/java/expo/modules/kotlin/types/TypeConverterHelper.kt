@@ -13,7 +13,8 @@ object TypeConverterHelper {
     ArrayTypeConverter(),
     ListTypeConverter(),
     MapTypeConverter(),
-    RecordTypeConverter()
+    RecordTypeConverter(),
+    EnumTypeConverter()
   )
 
   @Suppress("UNCHECKED_CAST")
