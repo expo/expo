@@ -16,7 +16,7 @@ class CellularModule : Module() {
     name(moduleName)
     constants {
       val telephonyManager = telephonyManager()
-      mutableMapOf(
+      mapOf(
         "allowsVoip" to SipManager.isVoipSupported(context),
         "isoCountryCode" to telephonyManager?.simCountryIso,
         "carrier" to telephonyManager?.simOperatorName,
@@ -25,7 +25,7 @@ class CellularModule : Module() {
       )
     }
 
-    method("getCellularGenerationAsync") { ->
+    method("getCellularGenerationAsync") {
       try {
         getCurrentGeneration()
       } catch (e: SecurityException) {
@@ -34,23 +34,23 @@ class CellularModule : Module() {
       }
     }
 
-    method("allowsVoipAsync") { ->
+    method("allowsVoipAsync") {
       SipManager.isVoipSupported(context)
     }
 
-    method("getIsoCountryCodeAsync") { ->
+    method("getIsoCountryCodeAsync") {
       telephonyManager()?.simCountryIso
     }
 
-    method("getCarrierNameAsync") { ->
+    method("getCarrierNameAsync") {
       telephonyManager()?.simOperatorName
     }
 
-    method("getMobileCountryCodeAsync") { ->
+    method("getMobileCountryCodeAsync") {
       telephonyManager()?.simOperator?.substring(0, 3)
     }
 
-    method("getMobileNetworkCodeAsync") { ->
+    method("getMobileNetworkCodeAsync") {
       telephonyManager()?.simOperator?.substring(3)
     }
   }
