@@ -38,22 +38,32 @@ class EnumTypeConverter : TypeConverter {
     throw IncompatibleArgTypeException(jsValue.type.toKType(), toType)
   }
 
+  /**
+   * If the primary constructor doesn't take any parameters, we treat the name of each enum as a value.
+   * So the jsValue has to contain string.
+   */
   private fun convertEnumWithoutParameter(
     jsValue: Dynamic,
     toType: KClassTypeWrapper,
     enumConstants: Array<out Enum<*>>
   ): Any {
+    val unwrappedJsValue = jsValue.asString()
     return requireNotNull(
-      enumConstants.find { it.name == jsValue.asString() }
+      enumConstants.find { it.name == unwrappedJsValue }
     ) { "Couldn't convert ${jsValue.asString()} to ${toType.classifier.simpleName}." }
   }
 
+  /**
+   * If the primary constructor take one parameter, we treat this parameter as a enum value.
+   * In that case, we handles two different types: Int and String.
+   */
   private fun convertEnumWithParameter(
     jsValue: Dynamic,
     toType: KClassTypeWrapper,
     enumConstants: Array<out Enum<*>>,
     parameterName: String
   ): Any {
+    // To obtain the value of parameter, we have to find a property that is connected with this parameter.
     @Suppress("UNCHECKED_CAST")
     val parameterProperty = toType
       .classifier
