@@ -27,11 +27,14 @@ const renderInterfaceComment = (comment?: CommentData, signatures?: MethodSignat
     const { type, parameters, comment: signatureComment } = signatures[0];
     return (
       <>
-        {parameters.map(param => renderParam(param))}
+        {parameters?.length ? parameters.map(param => renderParam(param)) : null}
         <B>Returns: </B>
         <InlineCode>{resolveTypeName(type)}</InlineCode>
         {signatureComment && (
-          <CommentTextBlock comment={signatureComment} components={mdInlineComponents} />
+          <>
+            <br />
+            <CommentTextBlock comment={signatureComment} components={mdInlineComponents} />
+          </>
         )}
       </>
     );
