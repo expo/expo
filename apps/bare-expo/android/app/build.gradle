@@ -78,7 +78,7 @@ project.ext.react = [
     enableHermes: (findProperty('expo.jsEngine') ?: "jsc") == "hermes",  // clean and rebuild if changing
 ]
 
-apply from: new File(["node", "--print", "require.resolve('react-native/package.json')"].execute().text.trim(), "../react.gradle")
+apply from: new File(["node", "--print", "require.resolve('react-native/package.json')"].execute(null, rootDir).text.trim(), "../react.gradle")
 
 /**
  * Set this to true to create two separate APKs instead of one:
@@ -247,7 +247,7 @@ class ExecuteSetupAndroidProject implements Plugin<Project> {
 
 apply plugin: ExecuteSetupAndroidProject
 
-apply from: new File(["node", "--print", "require.resolve('@react-native-community/cli-platform-android/package.json')"].execute().text.trim(), "../native_modules.gradle")
+apply from: new File(["node", "--print", "require.resolve('@react-native-community/cli-platform-android/package.json')"].execute(null, rootDir).text.trim(), "../native_modules.gradle")
 applyNativeModulesAppBuildGradle(project)
 
 apply plugin: 'com.google.gms.google-services'
