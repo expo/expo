@@ -5,14 +5,16 @@ import UIKit
 /**
  This class is based on https://gist.github.com/darrarski/29a2a4515508e385c90b3ffe6f975df7
  */
-final class EXBlurEffectView: UIVisualEffectView {
-  @Clamping(lowerBound: 0.01, upperBound: 1) var intensity: Float = 0.5 {
+final class BlurEffectView: UIVisualEffectView {
+  @Clamping(lowerBound: 0.01, upperBound: 1)
+  var intensity: Float = 0.5 {
     didSet {
       setNeedsDisplay()
     }
   }
 
-  @Containing(values: ["default", "light", "dark"]) var tint = "default" {
+  @Containing(values: ["default", "light", "dark"])
+  var tint = "default" {
     didSet {
       visualEffect = UIBlurEffect(tint: tint)
     }
@@ -65,7 +67,7 @@ struct Clamping<Value: Comparable> {
 struct Containing<Value: Equatable> {
   var wrappedValue: Value
 
-  init(wrappedValue: Value, values: Array<Value>) {
+  init(wrappedValue: Value, values: [Value]) {
     let isValueValid = values.contains(wrappedValue)
     self.wrappedValue = isValueValid ? wrappedValue : values.first!
   }

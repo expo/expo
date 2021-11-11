@@ -2,13 +2,13 @@
 
 import UIKit
 
-@objc
-public class EXBlurView : UIView
+@objc(EXBlurView)
+public class BlurView : UIView
 {
-  private var blurEffectView: EXBlurEffectView
+  private var blurEffectView: BlurEffectView
 
   override init(frame: CGRect) {
-    blurEffectView = EXBlurEffectView()
+    blurEffectView = BlurEffectView()
     super.init(frame: frame)
 
     blurEffectView.autoresizingMask = [.flexibleWidth, .flexibleHeight]

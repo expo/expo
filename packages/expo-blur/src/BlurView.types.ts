@@ -1,5 +1,4 @@
-import * as React from 'react';
-import { View } from 'react-native';
+import { ViewProps } from 'react-native';
 
 export type BlurProps = {
   /**
@@ -12,6 +11,6 @@ export type BlurProps = {
    * @default 50
    */
   intensity: number;
-} & React.ComponentProps<typeof View>;
+} & ViewProps;
 
 export type BlurTint = 'light' | 'dark' | 'default';
