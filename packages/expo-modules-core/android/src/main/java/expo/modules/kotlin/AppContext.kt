@@ -115,7 +115,7 @@ class AppContext(
     val legacyEventEmitter = legacyModule<EventEmitter>() ?: return null
     return KEventEmitterWrapper(
       requireNotNull(registry.getModuleHolder(module)) {
-        "Cannot create an event emitter for the module that isn't present in the current module registry."
+        "Cannot create an event emitter for the module that isn't present in the module registry."
       },
       legacyEventEmitter
     )

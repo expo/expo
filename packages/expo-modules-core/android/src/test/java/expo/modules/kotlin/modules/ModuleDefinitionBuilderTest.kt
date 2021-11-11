@@ -79,7 +79,7 @@ class ModuleDefinitionBuilderTest {
   }
 
   @Test
-  fun `onStartObserving should be translate into method`() {
+  fun `onStartObserving should be translated into method`() {
     val moduleDefinition = module {
       name("module")
       onStartObserving { }
@@ -89,7 +89,7 @@ class ModuleDefinitionBuilderTest {
   }
 
   @Test
-  fun `onStopObserving should be translate into method`() {
+  fun `onStopObserving should be translated into method`() {
     val moduleDefinition = module {
       name("module")
       onStopObserving { }
