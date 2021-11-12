@@ -10,7 +10,7 @@
 
 ### 💡 Others
 
-- Rewrote code to Swift, removed legacy Objective-C module implementation and changed the pod name to `ExpoLinearGradient`.
+- Rewrote code to Swift, removed legacy Objective-C module implementation and changed the pod name to `ExpoLinearGradient`. ([#15168](https://github.com/expo/expo/pull/15168) by [@tsapeta](https://github.com/tsapeta))
 
 ## 10.0.1 — 2021-10-01
 
