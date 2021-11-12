@@ -36,7 +36,7 @@
 #endif
 
 // Uncomment the below and set it to a React Native bundler URL to develop the launcher JS
-//#define DEV_LAUNCHER_URL "http://localhost:8090/index.bundle?platform=ios&dev=true&minify=false"
+// #define DEV_LAUNCHER_URL "http://localhost:8090/index.bundle?platform=ios&dev=true&minify=false"
 
 NSString *fakeLauncherBundleUrl = @"embedded://EXDevLauncher/dummy";
 
@@ -173,7 +173,9 @@ NSString *fakeLauncherBundleUrl = @"embedded://EXDevLauncher/dummy";
   
   [self _removeInitModuleObserver];
 
+  
   _launcherBridge = [[EXDevLauncherRCTBridge alloc] initWithDelegate:self launchOptions:_launchOptions];
+  
 
   // Set up the `expo-dev-menu` delegate if menu is available
   [self _maybeInitDevMenuDelegate:_launcherBridge];

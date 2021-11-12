@@ -1,0 +1,9 @@
+export const isDevMenuAvailable = jest.fn();
+export const addUserLoginListener = jest.fn();
+export const addUserLogoutListener = jest.fn();
+export const queryMyProjectsAsync = jest.fn();
+export const queryDevSessionsAsync = jest.fn();
+export const isLoggedInAsync = jest.fn().mockResolvedValue(true);
+export const openProfile = jest.fn();
+export const openMenu = jest.fn();
+export const openSettings = jest.fn();
