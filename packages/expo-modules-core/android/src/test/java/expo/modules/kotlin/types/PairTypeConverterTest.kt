@@ -12,7 +12,7 @@ class PairTypeConverterTest {
   private val converter = PairTypeConverter()
 
   @Test
-  fun `should concert array to pair`() {
+  fun `should convert array to pair`() {
     val array = DynamicFromObject(
       JavaOnlyArray().apply {
         pushInt(1)
@@ -28,7 +28,7 @@ class PairTypeConverterTest {
   }
 
   @Test
-  fun `should concert array with two different type to pair`() {
+  fun `should convert array with two different types to pair`() {
     val array = DynamicFromObject(
       JavaOnlyArray().apply {
         pushInt(1)
