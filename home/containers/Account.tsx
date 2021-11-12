@@ -3,9 +3,8 @@ import { StackScreenProps } from '@react-navigation/stack';
 import * as React from 'react';
 
 import AccountView from '../components/AccountView';
-import { Project } from '../components/ProjectList';
 import { Snack } from '../components/SnackList';
-import { Home_AccountDataDocument } from '../graphql/types';
+import { Home_AccountDataDocument, CommonAppDataFragment } from '../graphql/types';
 import { AllStackRoutes } from '../navigation/Navigation.types';
 
 const APP_LIMIT = 7;
@@ -17,7 +16,7 @@ export interface AccountData {
       id: string;
       name: string;
       appCount: number;
-      apps: Project[];
+      apps: CommonAppDataFragment[];
       snacks: Snack[];
     };
   };

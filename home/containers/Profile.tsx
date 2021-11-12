@@ -3,9 +3,8 @@ import { StackScreenProps } from '@react-navigation/stack';
 import * as React from 'react';
 
 import ProfileView from '../components/ProfileView';
-import { Project } from '../components/ProjectList';
 import { Snack } from '../components/SnackList';
-import { Home_ProfileData2Document } from '../graphql/types';
+import { Home_ProfileData2Document, CommonAppDataFragment } from '../graphql/types';
 import { AllStackRoutes } from '../navigation/Navigation.types';
 import { useDispatch } from '../redux/Hooks';
 import SessionActions from '../redux/SessionActions';
@@ -25,7 +24,7 @@ export interface ProfileData {
       name: string;
     }[];
     appCount: number;
-    apps: Project[];
+    apps: CommonAppDataFragment[];
     snacks: Snack[];
   } | null;
 }

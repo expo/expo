@@ -1,5 +1,4 @@
 import { StackScreenProps } from '@react-navigation/stack';
-import { Project } from 'components/ProjectList';
 import dedent from 'dedent';
 import { take, takeRight } from 'lodash';
 import React from 'react';
@@ -9,6 +8,7 @@ import FadeIn from 'react-native-fade-in-image';
 import Colors from '../constants/Colors';
 import SharedStyles from '../constants/SharedStyles';
 import { ProfileData } from '../containers/Profile';
+import { CommonAppDataFragment } from '../graphql/types';
 import { AllStackRoutes } from '../navigation/Navigation.types';
 import EmptyAccountProjectsNotice from './EmptyAccountProjectsNotice';
 import EmptyAccountSnacksNotice from './EmptyAccountSnacksNotice';
@@ -220,7 +220,7 @@ function ProfileProjectsSection({
     navigation.navigate('ProfileAllProjects', {});
   };
 
-  const renderApp = (app: Project, i: number) => {
+  const renderApp = (app: CommonAppDataFragment, i: number) => {
     return (
       <ProjectListItem
         key={i}
