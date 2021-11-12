@@ -1,16 +1,11 @@
-@file:OptIn(ExperimentalStdlibApi::class)
-
 package expo.modules.kotlin.types
 
 import com.facebook.react.bridge.DynamicFromObject
 import com.facebook.react.bridge.JavaOnlyArray
 import com.google.common.truth.Truth
 import org.junit.Test
-import kotlin.reflect.typeOf
 
 class BasicTypeConverterTest {
-  private val converter = BasicTypeConverter()
-
   @Test
   fun `should convert to float array`() {
     val dynamic = DynamicFromObject(
@@ -21,7 +16,7 @@ class BasicTypeConverterTest {
       }
     )
 
-    val converted = converter.convert(dynamic, KClassTypeWrapper(typeOf<FloatArray>()))
+    val converted = convert<FloatArray>(dynamic)
 
     Truth.assertThat(converted).isInstanceOf(FloatArray::class.java)
     Truth.assertThat(converted as FloatArray).usingExactEquality().containsExactly(1f, 2f, 3f)

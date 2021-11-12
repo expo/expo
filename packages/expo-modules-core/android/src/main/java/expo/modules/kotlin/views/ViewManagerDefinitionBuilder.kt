@@ -4,6 +4,7 @@ package expo.modules.kotlin.views
 
 import android.content.Context
 import android.view.View
+import expo.modules.kotlin.types.toAnyType
 import kotlin.reflect.typeOf
 
 class ViewManagerDefinitionBuilder {
@@ -32,7 +33,7 @@ class ViewManagerDefinitionBuilder {
   ) {
     props[name] = ConcreteViewProp(
       name,
-      typeOf<PropType>(),
+      typeOf<PropType>().toAnyType(),
       body
     )
   }

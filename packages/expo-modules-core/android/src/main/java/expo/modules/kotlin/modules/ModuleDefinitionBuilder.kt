@@ -21,6 +21,7 @@ import expo.modules.kotlin.events.EventsDefinition
 import expo.modules.kotlin.methods.AnyMethod
 import expo.modules.kotlin.methods.Method
 import expo.modules.kotlin.methods.PromiseMethod
+import expo.modules.kotlin.types.toAnyType
 import expo.modules.kotlin.views.ViewManagerDefinition
 import expo.modules.kotlin.views.ViewManagerDefinitionBuilder
 import kotlin.reflect.typeOf
@@ -80,7 +81,7 @@ class ModuleDefinitionBuilder {
     methods[name] = if (P0::class == Promise::class) {
       PromiseMethod(name, arrayOf()) { _, promise -> body(promise as P0) }
     } else {
-      Method(name, arrayOf()) { body(it[0] as P0) }
+      Method(name, arrayOf(typeOf<P0>().toAnyType())) { body(it[0] as P0) }
     }
   }
 
@@ -89,9 +90,9 @@ class ModuleDefinitionBuilder {
     crossinline body: (p0: P0, p1: P1) -> R
   ) {
     methods[name] = if (P1::class == Promise::class) {
-      PromiseMethod(name, arrayOf(typeOf<P0>())) { args, promise -> body(args[0] as P0, promise as P1) }
+      PromiseMethod(name, arrayOf(typeOf<P0>().toAnyType())) { args, promise -> body(args[0] as P0, promise as P1) }
     } else {
-      Method(name, arrayOf(typeOf<P0>(), typeOf<P1>())) { body(it[0] as P0, it[1] as P1) }
+      Method(name, arrayOf(typeOf<P0>().toAnyType(), typeOf<P1>().toAnyType())) { body(it[0] as P0, it[1] as P1) }
     }
   }
 

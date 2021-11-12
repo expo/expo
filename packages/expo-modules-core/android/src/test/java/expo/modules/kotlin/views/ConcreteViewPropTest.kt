@@ -8,6 +8,7 @@ import com.facebook.react.bridge.JavaOnlyMap
 import com.google.common.truth.Truth
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
+import expo.modules.kotlin.types.toAnyType
 import io.mockk.mockk
 import org.junit.Test
 import kotlin.reflect.typeOf
@@ -19,7 +20,7 @@ class ConcreteViewPropTest {
     var providedValue = -1
     var providedView: View? = null
 
-    val prop = ConcreteViewProp<View, Int>("name", typeOf<Int>()) { view, value ->
+    val prop = ConcreteViewProp<View, Int>("name", typeOf<Int>().toAnyType()) { view, value ->
       providedValue = value
       providedView = view
     }
@@ -43,7 +44,7 @@ class ConcreteViewPropTest {
     val mockedView = mockk<View>()
     var providedValue: MyRecord? = null
 
-    val prop = ConcreteViewProp<View, MyRecord>("name", typeOf<MyRecord>()) { _, value ->
+    val prop = ConcreteViewProp<View, MyRecord>("name", typeOf<MyRecord>().toAnyType()) { _, value ->
       providedValue = value
     }
 

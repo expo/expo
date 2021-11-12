@@ -51,6 +51,12 @@ internal class IncompatibleArgTypeException(
   cause = cause
 )
 
+internal class MissingTypeConverter(
+  forType: KType
+) : CodedException(
+  message = "Cannot find type converter for $forType.",
+)
+
 internal class InvalidArgsNumberException(received: Int, expected: Int) :
   CodedException(message = "Received $received arguments, but $expected was expected.")
 

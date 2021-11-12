@@ -5,6 +5,7 @@ import android.view.View
 import android.view.ViewGroup
 import com.facebook.react.bridge.ReadableMap
 import expo.modules.core.ViewManager
+import expo.modules.kotlin.recycle
 
 class ViewManagerDefinition(
   private val viewFactory: (Context) -> View,
@@ -27,7 +28,9 @@ class ViewManagerDefinition(
     while (iterator.hasNextKey()) {
       val key = iterator.nextKey()
       val propDelegate = props[key] ?: continue
-      propDelegate.set(propsToSet.getDynamic(key), onView)
+      propsToSet.getDynamic(key).recycle {
+        propDelegate.set(this, onView)
+      }
     }
   }
 }

@@ -1,18 +1,13 @@
-@file:OptIn(ExperimentalStdlibApi::class)
-
 package expo.modules.kotlin.records
 
-import expo.modules.kotlin.types.KClassTypeWrapper
 import com.facebook.react.bridge.DynamicFromObject
 import com.facebook.react.bridge.JavaOnlyArray
 import com.facebook.react.bridge.JavaOnlyMap
 import com.google.common.truth.Truth
+import expo.modules.kotlin.types.convert
 import org.junit.Test
-import kotlin.reflect.typeOf
 
 class RecordTypeConverterTest {
-  private val converter = RecordTypeConverter()
-
   @Test
   fun `should convert map to mutable record`() {
     class MyRecord : Record {
@@ -30,7 +25,7 @@ class RecordTypeConverterTest {
       }
     )
 
-    val myRecord = converter.convert(map, KClassTypeWrapper(typeOf<MyRecord>())) as MyRecord
+    val myRecord = convert<MyRecord>(map)
 
     Truth.assertThat(myRecord.int).isEqualTo(10)
     Truth.assertThat(myRecord.string).isEqualTo("expo")
@@ -53,7 +48,7 @@ class RecordTypeConverterTest {
       }
     )
 
-    val myRecord = converter.convert(map, KClassTypeWrapper(typeOf<MyRecord>())) as MyRecord
+    val myRecord = convert<MyRecord>(map)
 
     Truth.assertThat(myRecord.int).isEqualTo(10)
     Truth.assertThat(myRecord.string).isEqualTo("expo")
@@ -72,7 +67,7 @@ class RecordTypeConverterTest {
       }
     )
 
-    val myRecord = converter.convert(map, KClassTypeWrapper(typeOf<MyRecord>())) as MyRecord
+    val myRecord = convert<MyRecord>(map)
 
     Truth.assertThat(myRecord.string).isEqualTo("expo")
   }
@@ -98,7 +93,7 @@ class RecordTypeConverterTest {
       }
     )
 
-    val myRecord = converter.convert(map, KClassTypeWrapper(typeOf<MyRecord>())) as MyRecord
+    val myRecord = convert<MyRecord>(map)
 
     Truth.assertThat(myRecord.int).isEqualTo(10)
     Truth.assertThat(myRecord.int2).isEqualTo(20)
@@ -126,7 +121,7 @@ class RecordTypeConverterTest {
       }
     )
 
-    val myRecord = converter.convert(map, KClassTypeWrapper(typeOf<MyRecord>())) as MyRecord
+    val myRecord = convert<MyRecord>(map)
 
     Truth.assertThat(myRecord.int).isEqualTo(10)
     Truth.assertThat(myRecord.int2).isEqualTo(20)
@@ -152,7 +147,7 @@ class RecordTypeConverterTest {
       }
     )
 
-    val myRecord = converter.convert(map, KClassTypeWrapper(typeOf<MyRecord>())) as MyRecord
+    val myRecord = convert<MyRecord>(map)
 
     Truth.assertThat(myRecord.required).isEqualTo(2137)
     Truth.assertThat(myRecord.int).isEqualTo(20)
@@ -208,7 +203,7 @@ class RecordTypeConverterTest {
       }
     )
 
-    val myRecord = converter.convert(map, KClassTypeWrapper(typeOf<MyRecord>())) as MyRecord
+    val myRecord = convert<MyRecord>(map)
 
     Truth.assertThat(myRecord.innerRecord).isEqualTo(InnerRecord().apply { name = "value" })
     Truth.assertThat(myRecord.points).isEqualTo(listOf(1.0, 2.0, 3.0))
