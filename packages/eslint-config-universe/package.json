@@ -54,7 +54,7 @@
   "peerDependencies": {
     "@babel/core": ">=7.12.0",
     "eslint": ">= 7",
-    "prettier": ">= 2"
+    "prettier": ">= 2.4"
   },
   "peerDependenciesMeta": {
     "@babel/core": {

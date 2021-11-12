@@ -4,9 +4,13 @@
 
 ### 🛠 Breaking changes
 
+- Change Prettier minimal version to `2.4+`, to avoid issues with renamed option. [See the Prettier changelog](https://prettier.io/blog/2021/09/09/2.4.0.html).
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
+
+- Rename Prettier option from `jsxBracketSameLine` to `bracketSameLine` to fix the warning.
 
 ### 💡 Others
 
