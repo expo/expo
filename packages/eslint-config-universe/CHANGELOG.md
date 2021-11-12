@@ -10,6 +10,9 @@
 
 ### 💡 Others
 
+- Update Babel related dependencies to `7.12+`.
+- Update Jest to the latest version from `26` release.
+
 ## 8.0.0 — 2021-09-08
 
 ### 🛠 Breaking changes
