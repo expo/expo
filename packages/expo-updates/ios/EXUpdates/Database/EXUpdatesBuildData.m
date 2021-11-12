@@ -17,7 +17,7 @@ NS_ASSUME_NONNULL_BEGIN
   
   __block NSDictionary *staticBuildData;
   __block NSError *loadError;
-  dispatch_sync(database.databaseQueue, ^{
+  dispatch_async(database.databaseQueue, ^{
     staticBuildData = [database staticBuildDataWithScopeKey:config.scopeKey error:&loadError];
   });
   if (loadError){
