@@ -8,12 +8,7 @@ query Home_AccountData($accountName: String!, $appLimit: Int!, $snackLimit: Int!
         ...CommonAppData
       }
       snacks(limit: $snackLimit, offset: 0) {
-        id
-        name
-        description
-        fullName
-        slug
-        isDraft
+        ...CommonSnackData
       }
     }
   }
