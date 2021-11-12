@@ -59,7 +59,7 @@ interface ReactNativeHostHandler {
   /**
    * Callback after {@link ReactInstanceManager} creation
    */
-  fun onDidCreateReactInstanceManager(useDeveloperSupport: Boolean) {}
+  fun onDidCreateReactInstanceManager(reactInstanceManager: ReactInstanceManager, useDeveloperSupport: Boolean) {}
 
   //endregion
 }
