@@ -35,7 +35,8 @@ import expo.modules.devlauncher.react.activitydelegates.DevLauncherReactActivity
 import expo.modules.devlauncher.tests.DevLauncherTestInterceptor
 import expo.modules.manifests.core.Manifest
 import expo.modules.updatesinterface.UpdatesInterface
-import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import okhttp3.OkHttpClient
 import org.koin.core.component.get
@@ -68,6 +69,7 @@ class DevLauncherController private constructor()
     set(value) = DevLauncherKoinContext.app.koin.loadModules(listOf(module {
       single { value }
     }))
+  override val coroutineScope = CoroutineScope(Dispatchers.Default)
 
   override val devClientHost = DevLauncherClientHost((context as Application), DEV_LAUNCHER_HOST)
 
@@ -183,7 +185,7 @@ class DevLauncherController private constructor()
           return true
         }
 
-        GlobalScope.launch {
+        coroutineScope.launch {
           loadApp(appUrl, activityToBeInvalidated)
         }
         return true

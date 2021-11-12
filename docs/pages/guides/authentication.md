@@ -1087,8 +1087,8 @@ This can only be used in standalone and bare workflow apps. This method cannot b
   - _Bare workflow_: Run `npx uri-scheme add <your bundle id> --ios`
 - To test this you can:
   1. Eject to bare: `expo eject` and run `yarn ios`
-  2. Build a simulator app: `expo build:ios -t simulator`
-  3. Build a production IPA: `expo build:ios`
+  2. Build a simulator app: `expo build:ios -t simulator` on `eas build`
+  3. Build a production IPA: `expo build:ios` or `eas build`
 - Whenever you change the values in **app.json** you'll need to rebuild the native app.
 
 **Troubleshooting**
@@ -2354,6 +2354,7 @@ Here are a few examples of some common redirect URI patterns you may end up usin
 In some cases there will be anywhere between 1 to 3 slashes (`/`).
 
 - **Environment:**
+
   - Bare workflow
     - `npx create-react-native-app` or `expo eject`
   - Standalone builds in the App or Play Store

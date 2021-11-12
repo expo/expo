@@ -399,9 +399,10 @@ export function removeAllListeners() {
 }
 // @needsAudit
 /**
- * __iOS Only.__ Fetches a list of moments, which is a group of assets taken around the same place
+ * Fetches a list of moments, which is a group of assets taken around the same place
  * and time.
  * @return An array of [albums](#album) whose type is `moment`.
+ * @platform ios
  */
 export async function getMomentsAsync() {
     if (!MediaLibrary.getMomentsAsync) {

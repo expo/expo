@@ -10,7 +10,7 @@ group = 'host.exp.exponent'
 version = '0.8.2'
 
 // reanimated v2
-def reactNativeFilePath = ["node", "--print", "require.resolve('react-native/package.json')"].execute().text.trim()
+def reactNativeFilePath = ["node", "--print", "require.resolve('react-native/package.json')"].execute(null, rootDir).text.trim()
 def inputFile = new File(reactNativeFilePath)
 def json = new JsonSlurper().parseText(inputFile.text)
 def reactNativeVersion = json.version as String
@@ -21,7 +21,7 @@ def engine = "jsc"
 // If the user has the reanimated 2.2.1 or above installed, we don't have to swap JNI implementation.
 def shouldSwapJNI() {
   try {
-    def reanimatedVersion = ["node", "--print", "require('react-native-reanimated/package.json').version"].execute().text.trim()
+    def reanimatedVersion = ["node", "--print", "require('react-native-reanimated/package.json').version"].execute(null, rootDir).text.trim()
     if (reanimatedVersion == "undefined") {
       return true
     }

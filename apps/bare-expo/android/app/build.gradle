@@ -78,7 +78,7 @@ project.ext.react = [
     enableHermes: (findProperty('expo.jsEngine') ?: "jsc") == "hermes",  // clean and rebuild if changing
 ]
 
-apply from: new File(["node", "--print", "require.resolve('react-native/package.json')"].execute().text.trim(), "../react.gradle");
+apply from: new File(["node", "--print", "require.resolve('react-native/package.json')"].execute(null, rootDir).text.trim(), "../react.gradle")
 
 /**
  * Set this to true to create two separate APKs instead of one:
@@ -115,7 +115,7 @@ def jscFlavor = 'org.webkit:android-jsc:+'
  * on project.ext.react, JavaScript will not be compiled to Hermes Bytecode
  * and the benefits of using Hermes will therefore be sharply reduced.
  */
-def enableHermes = project.ext.react.get("enableHermes", false);
+def enableHermes = project.ext.react.get("enableHermes", false)
 
 android {
     ndkVersion rootProject.ext.ndkVersion
@@ -198,7 +198,7 @@ dependencies {
     implementation "com.facebook.react:react-native:+"  // From node_modules
 
     if (enableHermes) {
-        def hermesPath = "../../node_modules/hermes-engine/android/";
+        def hermesPath = "../../node_modules/hermes-engine/android/"
         debugImplementation files(hermesPath + "hermes-debug.aar")
         releaseImplementation files(hermesPath + "hermes-release.aar")
     } else {
@@ -235,40 +235,21 @@ class ExecuteSetupAndroidProject implements Plugin<Project> {
     @Override
     void apply(Project target) {
         target.exec {
+            def configuration = target.gradle.startParameter.taskNames.any {
+                it.toLowerCase().contains("release")
+            } ? "release" : "debug"
+
             workingDir '../..'
-            commandLine "./scripts/setup-android-project.sh"
+            commandLine "./scripts/setup-android-project.sh", configuration
         }
     }
 }
 
 apply plugin: ExecuteSetupAndroidProject
 
-import org.apache.tools.ant.taskdefs.condition.Os
-
-class GenerateDynamicMacrosPlugin implements Plugin<Project> {
-    @Override
-    void apply(Project target) {
-        target.exec {
-            def configuration = target.gradle.startParameter.taskNames.any {
-                it.toLowerCase().contains("release")
-            } ? "release" : "debug"
-
-            workingDir '../../../../tools/bin'
-
-            if (Os.isFamily(Os.FAMILY_WINDOWS)) {
-                commandLine 'cmd.exe', '/c', "expotools.js android-generate-dynamic-macros --configuration ${configuration}"
-            } else {
-                commandLine "./expotools.js", "android-generate-dynamic-macros", "--configuration", configuration
-            }
-        }
-    }
-}
-
-apply from: new File(["node", "--print", "require.resolve('@react-native-community/cli-platform-android/package.json')"].execute().text.trim(), "../native_modules.gradle");
+apply from: new File(["node", "--print", "require.resolve('@react-native-community/cli-platform-android/package.json')"].execute(null, rootDir).text.trim(), "../native_modules.gradle")
 applyNativeModulesAppBuildGradle(project)
 
-// [Custom]: Add Google Services file
-apply plugin: GenerateDynamicMacrosPlugin
 apply plugin: 'com.google.gms.google-services'
 
 // Make sure JS bundle to be merged for gradle android plugin 4.1.0+

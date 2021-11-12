@@ -4,16 +4,13 @@ import android.content.Context
 import android.content.pm.PackageManager
 import android.util.Log
 import androidx.annotation.UiThread
-import com.facebook.react.ReactInstanceManager
-import com.facebook.react.bridge.JavaScriptContextHolder
-import com.facebook.react.bridge.ReactApplicationContext
-import expo.modules.core.BasePackage
 import expo.modules.core.ExportedModule
+import expo.modules.core.interfaces.Package
 import expo.modules.core.interfaces.InternalModule
 import expo.modules.core.interfaces.ReactNativeHostHandler
 
 // these unused imports must stay because of versioning
-class UpdatesPackage : BasePackage() {
+class UpdatesPackage : Package {
   override fun createInternalModules(context: Context): List<InternalModule> {
     return listOf(UpdatesService(context) as InternalModule)
   }
@@ -25,12 +22,6 @@ class UpdatesPackage : BasePackage() {
   override fun createReactNativeHostHandlers(context: Context): List<ReactNativeHostHandler> {
     val handler: ReactNativeHostHandler = object : ReactNativeHostHandler {
       private var mShouldAutoSetup: Boolean? = null
-      override fun createReactInstanceManager(useDeveloperSupport: Boolean): ReactInstanceManager? {
-        if (shouldAutoSetup(context) && !useDeveloperSupport) {
-          UpdatesController.initialize(context)
-        }
-        return null
-      }
 
       override fun getJSBundleFile(useDeveloperSupport: Boolean): String? {
         return if (shouldAutoSetup(context) && !useDeveloperSupport) UpdatesController.instance.launchAssetFile else null
@@ -40,11 +31,10 @@ class UpdatesPackage : BasePackage() {
         return if (shouldAutoSetup(context) && !useDeveloperSupport) UpdatesController.instance.bundleAssetName else null
       }
 
-      override fun onRegisterJSIModules(
-        reactApplicationContext: ReactApplicationContext,
-        jsContext: JavaScriptContextHolder,
-        useDeveloperSupport: Boolean
-      ) {
+      override fun onWillCreateReactInstanceManager(useDeveloperSupport: Boolean) {
+        if (shouldAutoSetup(context) && !useDeveloperSupport) {
+          UpdatesController.initialize(context)
+        }
       }
 
       @UiThread

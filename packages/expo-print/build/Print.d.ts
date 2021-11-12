@@ -14,8 +14,9 @@ export declare const Orientation: OrientationType;
  */
 export declare function printAsync(options: PrintOptions): Promise<void>;
 /**
- * **Available on iOS only.** Chooses a printer that can be later used in `printAsync`
+ * Chooses a printer that can be later used in `printAsync`
  * @return A promise which fulfils with an object containing `name` and `url` of the selected printer.
+ * @platform ios
  */
 export declare function selectPrinterAsync(): Promise<Printer>;
 /**

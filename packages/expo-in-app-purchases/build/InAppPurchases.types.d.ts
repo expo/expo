@@ -32,7 +32,8 @@ export declare enum IAPResponseCode {
      */
     ERROR = 2,
     /**
-     * __iOS Only.__ Purchase was deferred.
+     * Purchase was deferred.
+     * @platform ios
      */
     DEFERRED = 3
 }
@@ -50,15 +51,17 @@ export declare enum InAppPurchaseState {
      */
     FAILED = 2,
     /**
-     * __iOS Only.__ This transaction restores content previously purchased by the user. Read the
+     * This transaction restores content previously purchased by the user. Read the
      * `originalTransaction` properties to obtain information about the original purchase.
+     * @platform ios
      */
     RESTORED = 3,
     /**
-     * __iOS Only.__ The transaction has been received, but its final status is pending external
+     * The transaction has been received, but its final status is pending external
      * action such as the Ask to Buy feature where a child initiates a new purchase and has to wait
      * for the family organizer's approval. Update your UI to show the deferred state, and wait for
-     * another callback that indicates the final status
+     * another callback that indicates the final status.
+     * @platform ios
      */
     DEFERRED = 4
 }
@@ -173,24 +176,29 @@ export interface InAppPurchase {
      */
     orderId: string;
     /**
-     * __Android Only.__ The application package from which the purchase originated.
+     * The application package from which the purchase originated.
      * @example `com.example.myapp`
+     * @platform android
      */
     packageName?: string;
     /**
-     * __Android Only.__ A token that uniquely identifies a purchase for a given item and user pair.
+     * A token that uniquely identifies a purchase for a given item and user pair.
+     * @platform android
      */
     purchaseToken?: string;
     /**
-     * __iOS Only.__ Represents the original order ID for restored purchases.
+     * Represents the original order ID for restored purchases.
+     * @platform ios
      */
     originalOrderId?: string;
     /**
-     * __iOS Only.__ Represents the original purchase time for restored purchases.
+     * Represents the original purchase time for restored purchases.
+     * @platform ios
      */
     originalPurchaseTime?: string;
     /**
-     * __iOS Only.__ The App Store receipt found in the main bundle encoded as a Base64 String.
+     * The App Store receipt found in the main bundle encoded as a Base64 String.
+     * @platform ios
      */
     transactionReceipt?: string;
 }
@@ -246,9 +254,8 @@ export interface IAPItemDetails {
 }
 export declare type IAPPurchaseHistoryOptions = {
     /**
-     * __Android Only.__ A boolean that indicates whether or not you want to make a network request
+     * A boolean that indicates whether or not you want to make a network request
      * to sync expired/consumed purchases and those on other devices.
-     * @default `true`.
      * - If set to `true`, this method returns purchase details **only** for the user's currently
      *   owned items (active subscriptions and non-consumed one-time purchases). If set to `false`, it
      *   will make a network request and return the most recent purchase made by the user for each
@@ -257,6 +264,9 @@ export declare type IAPPurchaseHistoryOptions = {
      *   Android returns a [`PurchaseHistoryRecord`](https://developer.android.com/reference/com/android/billingclient/api/PurchaseHistoryRecord)
      *   which only contains the purchase time, purchase token, and product ID, rather than all of the
      *   attributes found in the [`InAppPurchase`](#inapppurchase) type.
+     *
+     * @default true
+     * @platform android
      */
     useGooglePlayCache: boolean;
 };

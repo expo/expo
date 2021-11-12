@@ -8,6 +8,7 @@ import com.facebook.react.ReactNativeHost
 import com.facebook.react.bridge.ReadableMap
 import expo.interfaces.devmenu.expoapi.DevMenuExpoApiClientInterface
 import expo.interfaces.devmenu.items.DevMenuDataSourceItem
+import kotlinx.coroutines.CoroutineScope
 
 interface DevMenuManagerInterface {
   /**
@@ -116,4 +117,6 @@ interface DevMenuManagerInterface {
   fun setCanLaunchDevMenuOnStart(shouldAutoLaunch: Boolean)
 
   suspend fun fetchDataSource(id: String): List<DevMenuDataSourceItem>
+
+  val coroutineScope: CoroutineScope
 }

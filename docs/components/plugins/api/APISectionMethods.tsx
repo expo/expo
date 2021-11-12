@@ -11,6 +11,7 @@ import {
 } from '~/components/plugins/api/APIDataTypes';
 import {
   CommentTextBlock,
+  getPlatformTags,
   listParams,
   mdComponents,
   renderParam,
@@ -38,6 +39,7 @@ export const renderMethod = (
           {header !== 'Hooks' ? `${name}(${listParams(parameters)})` : name}
         </InlineCode>
       </H3Code>
+      {getPlatformTags(comment)}
       <CommentTextBlock
         comment={comment}
         beforeContent={
@@ -48,6 +50,7 @@ export const renderMethod = (
             </>
           )
         }
+        includePlatforms={false}
       />
       {resolveTypeName(type) !== 'undefined' ? (
         <div>

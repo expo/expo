@@ -20,7 +20,7 @@ To submit the binary to the App Store, run `eas submit -p ios` from inside your 
 
 > Although it's possible to upload any binary to the store, each submission is associated with an Expo project. That's why it's important to start a submission from inside your project's directory - that's where your [app configuration](../workflow/configuration.md) is defined.
 
-**Important**: You'll have to generate an [Apple app-specific password](https://expo.fyi/apple-app-specific-password) or an [App Store Connect Api Key](https://expo.fyi/creating-asc-api-key) before submitting an app with EAS CLI.
+If you have not generated an App Store Connect API Key yet, you can let EAS CLI take care of that for you by signing into your Apple Developer Program account and following the prompts. You can also upload your own [API Key](https://expo.fyi/creating-asc-api-key) or pass in an [Apple app-specific password](https://expo.fyi/apple-app-specific-password).
 
 To upload your iOS app to the Apple App Store, run `eas submit --platform ios` and follow the instructions on the screen.
 
@@ -37,7 +37,16 @@ The command will perform the following steps:
 
   > If you already have an App Store Connect app, this step can be skipped by providing the `ascAppId` in the submit profile. The [ASC App ID](https://expo.fyi/asc-app-id) can be found either on App Store Connect, or later during this command in the _Submission Summary_ table.
 
-- Ask for your Apple ID (if not provided earlier) and for your Apple app-specific password. They can be also provided using `--apple-id` param and `EXPO_APPLE_APP_SPECIFIC_PASSWORD` environment variable, respectively. Alternatively, you can provide an App Store Connect Api Key instead, setting the `ascApiKeyPath`, `ascApiKeyIssuerId`, and `ascApiKeyId` fields in **eas.json**.
+- Ensure you have the proper credentials set up. If none can be found, you can let EAS CLI set some up for you.
+  <details><summary><h4>🔐 Do you want to use your own credentials?</h4></summary>
+  <p>
+
+  **App Store Connect API Key:** Create your own [API Key](https://expo.fyi/creating-asc-api-key) then set it with the `ascApiKeyPath`, `ascApiKeyIssuerId`, and `ascApiKeyId` fields in **eas.json**.
+
+  **App Specific Password:** Provide your [password](https://expo.fyi/apple-app-specific-password) and Apple ID Username by passing them in with the `EXPO_APPLE_APP_SPECIFIC_PASSWORD` environment variable and `appleId` field in **eas.json**, respectively.
+  </p>
+  </details>
+
 - Ask for which binary to submit. You can select one of the following:
 
   - The latest successful iOS build for the project on EAS servers.
@@ -52,15 +61,29 @@ The command will perform the following steps:
 
 ## Submitting your app using CI
 
-The `eas submit` command is able to perform submissions from a CI environment. All you have to do is ensure that all required information is provided with **eas.json** and environment variables. Mainly, providing the archive source (`--latest`, `--id`, `--path`, or `--url`) is essential. Also, make sure that the iOS Bundle Identifier is present in your [app config file](/workflow/configuration.md).
+The `eas submit` command is able to perform submissions from a CI environment. All you have to do is ensure that all required information is provided with **eas.json** and environment variables.
 
-For iOS submissions, you must provide either:
+You must do the following:
 
-- `EXPO_APPLE_APP_SPECIFIC_PASSWORD` environment variable along with Apple ID and ASC App ID (`appleId` and `ascAppId` in **eas.json**). The ASC App ID is required to skip the Apple developer log-in process, which will likely not be possible on CI due to the 2FA prompt.
-- Your App Store Connect Api Key with the `ascApiKeyPath`, `ascApiKeyIssuerId`, and `ascApiKeyId` fields set in **eas.json**.
+- Provide the archive source (`--latest`, `--id`, `--path`, or `--url`).
+- Make sure that the iOS Bundle Identifier is present in your [app config file](/workflow/configuration.md).
+- Set the ASC App ID (`ascAppId` in **eas.json**). The ASC App ID is required to skip the Apple developer log-in process, which will likely not be possible on CI due to the 2FA prompt.
+- Set up your App Store Connect API Key with EAS Servers. You can check the state of your credentials by running `eas credentials` or by running `eas submit -p ios` interactively.
+  <details><summary><h4>🔐 Do you want to use your own credentials?</h4></summary>
+  <p>
+
+  **App Store Connect API Key:** Create your own [API Key](https://expo.fyi/creating-asc-api-key) then set it with the `ascApiKeyPath`, `ascApiKeyIssuerId`, and `ascApiKeyId` fields in **eas.json**.
+
+  **App Specific Password:** Provide your [password](https://expo.fyi/apple-app-specific-password) and Apple ID Username by passing them in with the `EXPO_APPLE_APP_SPECIFIC_PASSWORD` environment variable and `appleId` field in **eas.json**, respectively.
+  </p>
+  </details>
 
 Example usage:
 
 ```sh
-EXPO_APPLE_APP_SPECIFIC_PASSWORD=xxxxx eas submit -p ios --latest --profile foobar
+eas submit -p ios --latest --profile foobar
 ```
+
+## Automating submissions
+
+To learn how to automatically submit your app after a successful build, refer to the ["Automating submissions" guide](/build/automating-submissions.md).

@@ -1,5 +1,9 @@
 package expo.modules.kotlin
 
+import com.facebook.react.bridge.LifecycleEventListener
+import com.facebook.react.bridge.ReactApplicationContext
+import expo.modules.core.interfaces.ActivityProvider
+import expo.modules.core.interfaces.services.EventEmitter
 import expo.modules.interfaces.barcodescanner.BarCodeScannerInterface
 import expo.modules.interfaces.camera.CameraViewInterface
 import expo.modules.interfaces.constants.ConstantsInterface
@@ -9,12 +13,23 @@ import expo.modules.interfaces.imageloader.ImageLoaderInterface
 import expo.modules.interfaces.permissions.Permissions
 import expo.modules.interfaces.sensors.SensorServiceInterface
 import expo.modules.interfaces.taskManager.TaskManagerInterface
+import expo.modules.kotlin.events.EventName
+import expo.modules.kotlin.events.KEventEmitterWrapper
+import expo.modules.kotlin.modules.Module
+import java.lang.ref.WeakReference
 
 class AppContext(
   modulesProvider: ModulesProvider,
-  val legacyModuleRegistry: expo.modules.core.ModuleRegistry
-) {
-  val registry = ModuleRegistry().register(modulesProvider)
+  val legacyModuleRegistry: expo.modules.core.ModuleRegistry,
+  private val reactContextHolder: WeakReference<ReactApplicationContext>
+) : LifecycleEventListener {
+  val registry = ModuleRegistry(WeakReference(this)).register(modulesProvider)
+
+  init {
+    requireNotNull(reactContextHolder.get()) {
+      "The app context should be created with valid react context."
+    }.addLifecycleEventListener(this)
+  }
 
   /**
    * Returns a legacy module implementing given interface.
@@ -80,4 +95,46 @@ class AppContext(
    */
   val taskManager: TaskManagerInterface?
     get() = legacyModule()
+
+  /**
+   * Provides access to the activity provider from the legacy module registry
+   */
+  val activityProvider: ActivityProvider?
+    get() = legacyModule()
+
+  /**
+   * Provides access to the react application context
+   */
+  val reactContext: ReactApplicationContext?
+    get() = reactContextHolder.get()
+
+  /**
+   * Provides access to the event emitter
+   */
+  fun eventEmitter(module: Module): EventEmitter? {
+    val legacyEventEmitter = legacyModule<EventEmitter>() ?: return null
+    return KEventEmitterWrapper(
+      requireNotNull(registry.getModuleHolder(module)) {
+        "Cannot create an event emitter for the module that isn't present in the module registry."
+      },
+      legacyEventEmitter
+    )
+  }
+
+  fun onDestroy() {
+    reactContextHolder.get()?.removeLifecycleEventListener(this)
+    registry.post(EventName.MODULE_DESTROY)
+  }
+
+  override fun onHostResume() {
+    registry.post(EventName.ACTIVITY_ENTERS_FOREGROUND)
+  }
+
+  override fun onHostPause() {
+    registry.post(EventName.ACTIVITY_ENTERS_BACKGROUND)
+  }
+
+  override fun onHostDestroy() {
+    registry.post(EventName.ACTIVITY_DESTROYS)
+  }
 }

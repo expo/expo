@@ -12,7 +12,7 @@ Let's take a closer look at the steps for building Android projects with EAS Bui
 
 The first phase happens on your computer. EAS CLI is in charge of completing the following steps:
 
-1. Check if the git index is clean - this means that there aren't any uncommitted changes. If it's not clean, an error is thrown. We use git to prepare a tarball of your project to upload to the build service.
+1. If `cli.requireCommit` is set to `true` in `eas.json`, check if the git index is clean - this means that there aren't any uncommitted changes. If it's not clean, EAS CLI will provide an option to commit local changes for you or abort the build process.
 1. Prepare the credentials needed for the build unless `builds.android.PROFILE_NAME.withoutCredentials` is set to `true`.
 
    - Depending on the value of `builds.android.PROFILE_NAME.credentialsSource`, the credentials are obtained from either the local **credentials.json** file or from the EAS servers. If the `remote` mode is selected but no credentials exist yet, you're prompted to generate a new keystore.
@@ -22,7 +22,7 @@ The first phase happens on your computer. EAS CLI is in charge of completing the
    > In this step, EAS CLI checks whether `android/app/build.gradle` contains `apply from: "./eas-build.gradle"`.
    > If the project is not configured, EAS CLI runs auto-configuration steps ([learn more below](#project-auto-configuration)).
 
-1. Create the tarball containing a shallow clone of your local repository (`git clone --depth 1 ...`).
+1. Create the tarball containing a copy of the repository. Actual behavior depends on the VCS workflow you are using. [Learn more here](https://expo.fyi/eas-vcs-workflow).
 1. Upload the project tarball to a private AWS S3 bucket and send the build request to EAS Build.
 
 ### Remote Steps

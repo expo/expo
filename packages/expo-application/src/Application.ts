@@ -8,7 +8,7 @@ import ExpoApplication from './ExpoApplication';
  * This is the `Info.plist` value for `CFBundleShortVersionString` on iOS and the version name set
  * by `version` in `app.json` on Android at the time the native app was built.
  * On web, this value is `null`.
- * - E.g., `"2.11.0"`
+ * @example `"2.11.0"`
  */
 export const nativeApplicationVersion: string | null = ExpoApplication
   ? ExpoApplication.nativeApplicationVersion || null
@@ -21,7 +21,7 @@ export const nativeApplicationVersion: string | null = ExpoApplication
  * `ios.buildNumber` value in `app.json` in a standalone app) and the version code set by
  * `android.versionCode` in `app.json` on Android at the time the native app was built. On web, this
  * value is `null`. The return type on Android and iOS is `string`.
- * - E.g., iOS: `"2.11.0"`, Android: `"114"`
+ * @example iOS: `"2.11.0"`, Android: `"114"`
  */
 export const nativeBuildVersion: string | null = ExpoApplication
   ? ExpoApplication.nativeBuildVersion || null
@@ -32,7 +32,7 @@ export const nativeBuildVersion: string | null = ExpoApplication
  * The human-readable name of the application that is displayed with the app's icon on the device's
  * home screen or desktop. On Android and iOS, this value is a `string` unless the name could not be
  * retrieved, in which case this value will be `null`. On web this value is `null`.
- * - E.g., `"Expo"`, `"Yelp"`, `"Instagram"`
+ * @example `"Expo"`, `"Yelp"`, `"Instagram"`
  */
 export const applicationName: string | null = ExpoApplication
   ? ExpoApplication.applicationName || null
@@ -42,7 +42,7 @@ export const applicationName: string | null = ExpoApplication
 /**
  * The ID of the application. On Android, this is the application ID. On iOS, this is the bundle ID.
  * On web, this is `null`.
- * - E.g., `"com.cocoacasts.scribbles"`, `"com.apple.Pages"`
+ * @example `"com.cocoacasts.scribbles"`, `"com.apple.Pages"`
  */
 export const applicationId: string | null = ExpoApplication
   ? ExpoApplication.applicationId || null
@@ -50,7 +50,7 @@ export const applicationId: string | null = ExpoApplication
 
 // @needsAudit
 /**
- * **Android only.** The value of [`Settings.Secure.ANDROID_ID`](https://developer.android.com/reference/android/provider/Settings.Secure.html#ANDROID_ID).
+ * The value of [`Settings.Secure.ANDROID_ID`](https://developer.android.com/reference/android/provider/Settings.Secure.html#ANDROID_ID).
  * This is a hexadecimal `string` unique to each combination of app-signing key, user, and device.
  * The value may change if a factory reset is performed on the device or if an APK signing key changes.
  * For more information about how the platform handles `ANDROID_ID` in Android 8.0 (API level 26)
@@ -59,13 +59,14 @@ export const applicationId: string | null = ExpoApplication
  * > In versions of the platform lower than Android 8.0 (API level 26), this value remains constant
  * > for the lifetime of the user's device. See the [ANDROID_ID](https://developer.android.com/reference/android/provider/Settings.Secure.html#ANDROID_ID)
  * > official docs for more information.
- * - E.g., `"dd96dec43fb81c97"`
+ * @example `"dd96dec43fb81c97"`
+ * @platform android
  */
 export const androidId: string | null = ExpoApplication ? ExpoApplication.androidId || null : null;
 
 // @needsAudit
 /**
- * **Android only.** Gets the referrer URL of the installed app with the [`Install Referrer API`](https://developer.android.com/google/play/installreferrer)
+ * Gets the referrer URL of the installed app with the [`Install Referrer API`](https://developer.android.com/google/play/installreferrer)
  * from the Google Play Store. In practice, the referrer URL may not be a complete, absolute URL.
  * @return A `Promise` that fulfills with a `string` of the referrer URL of the installed app.
  *
@@ -74,6 +75,7 @@ export const androidId: string | null = ExpoApplication ? ExpoApplication.androi
  * await Application.getInstallReferrerAsync();
  * // "utm_source=google-play&utm_medium=organic"
  * ```
+ * @platform android
  */
 export async function getInstallReferrerAsync(): Promise<string> {
   if (!ExpoApplication.getInstallReferrerAsync) {
@@ -84,7 +86,7 @@ export async function getInstallReferrerAsync(): Promise<string> {
 
 // @needsAudit
 /**
- * **iOS only.** Gets the iOS "identifier for vendor" ([IDFV](https://developer.apple.com/documentation/uikit/uidevice/1620059-identifierforvendor))
+ * Gets the iOS "identifier for vendor" ([IDFV](https://developer.apple.com/documentation/uikit/uidevice/1620059-identifierforvendor))
  * value, a string ID that uniquely identifies a device to the app’s vendor. This method may
  * sometimes return `nil`, in which case wait and call the method again later. This might happen
  * when the device has been restarted before the user has unlocked the device.
@@ -101,6 +103,7 @@ export async function getInstallReferrerAsync(): Promise<string> {
  * await Application.getIosIdForVendorAsync();
  * // "68753A44-4D6F-1226-9C60-0050E4C00067"
  * ```
+ * @platform ios
  */
 export async function getIosIdForVendorAsync(): Promise<string | null> {
   if (!ExpoApplication.getIosIdForVendorAsync) {
@@ -121,8 +124,9 @@ export enum ApplicationReleaseType {
 
 // @needsAudit
 /**
- * **iOS only.** Gets the iOS application release type.
+ * Gets the iOS application release type.
  * @return Returns a promise which fulfills with an [`ApplicationReleaseType`](#applicationreleasetype).
+ * @platform ios
  */
 export async function getIosApplicationReleaseTypeAsync(): Promise<ApplicationReleaseType> {
   if (!ExpoApplication.getApplicationReleaseTypeAsync) {
@@ -133,10 +137,11 @@ export async function getIosApplicationReleaseTypeAsync(): Promise<ApplicationRe
 
 // @needsAudit
 /**
- * **iOS only.** Gets the current [Apple Push Notification (APN)](https://developer.apple.com/documentation/bundleresources/entitlements/aps-environment?language=objc)
+ * Gets the current [Apple Push Notification (APN)](https://developer.apple.com/documentation/bundleresources/entitlements/aps-environment?language=objc)
  * service environment.
  * @return Returns a promise fulfilled with the string, either `'development'` or `'production'`,
  * based on the current APN environment.
+ * @platform ios
  */
 export async function getIosPushNotificationServiceEnvironmentAsync(): Promise<string> {
   if (!ExpoApplication.getPushNotificationServiceEnvironmentAsync) {
@@ -173,7 +178,7 @@ export async function getInstallationTimeAsync(): Promise<Date> {
 
 // @needsAudit
 /**
- * **Android only.** Gets the last time the app was updated from the Google Play Store.
+ * Gets the last time the app was updated from the Google Play Store.
  * @return Returns a `Promise` that fulfills with a `Date` object that specifies the last time
  * the app was updated via the Google Play Store).
  *
@@ -182,6 +187,7 @@ export async function getInstallationTimeAsync(): Promise<Date> {
  * await Application.getLastUpdateTimeAsync();
  * // 2019-07-18T21:20:16.887Z
  * ```
+ * @platform android
  */
 export async function getLastUpdateTimeAsync(): Promise<Date> {
   if (!ExpoApplication.getLastUpdateTimeAsync) {

@@ -2,6 +2,8 @@
 title: Triggering builds from CI
 ---
 
+import { InlineCode } from '~/components/base/code';
+
 This document outlines how to trigger builds on EAS for your app from a CI environment such as GitHub Actions.
 
 Before building with EAS on CI, we need to install and configure `eas-cli`. Then, we can trigger new builds with the `eas build` command.
@@ -15,6 +17,13 @@ To trigger EAS builds from a CI environment, we first need to configure our app 
 If you have run `eas build -p [all|ios|android]` successfully before, then you can continue.
 
 If you haven't done this yet, please refer to the [Creating your first build](setup.md) guide and return here when you're ready.
+
+<details><summary><strong>Are you using the classic build system?</strong> (<InlineCode>expo build:[android|ios]</InlineCode>)</summary> <p>
+
+Learn how to [build standalone apps on your CI with our classic build service](/classic/turtle-cli.md).
+
+</p>
+</details>
 
 ## Configure your app for CI
 

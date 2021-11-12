@@ -33,10 +33,10 @@ GEM
       aws-eventstream (~> 1, >= 1.0.2)
     babosa (1.0.4)
     claide (1.0.3)
-    cocoapods (1.11.0)
+    cocoapods (1.11.2)
       addressable (~> 2.8)
       claide (>= 1.0.2, < 2.0)
-      cocoapods-core (= 1.11.0)
+      cocoapods-core (= 1.11.2)
       cocoapods-deintegrate (>= 1.0.3, < 2.0)
       cocoapods-downloader (>= 1.4.0, < 2.0)
       cocoapods-plugins (>= 1.0.0, < 2.0)
@@ -51,7 +51,7 @@ GEM
       nap (~> 1.0)
       ruby-macho (>= 1.0, < 3.0)
       xcodeproj (>= 1.21.0, < 2.0)
-    cocoapods-core (1.11.0)
+    cocoapods-core (1.11.2)
       activesupport (>= 5.0, < 7)
       addressable (~> 2.8)
       algoliasearch (~> 1.0)
@@ -196,7 +196,7 @@ GEM
     http-cookie (1.0.4)
       domain_name (~> 0.5)
     httpclient (2.8.3)
-    i18n (1.8.10)
+    i18n (1.8.11)
       concurrent-ruby (~> 1.0)
     jmespath (1.4.0)
     json (2.5.1)
@@ -266,16 +266,16 @@ GEM
       rouge (~> 2.0.7)
     xcpretty-travis-formatter (1.0.1)
       xcpretty (~> 0.2, >= 0.0.7)
-    zeitwerk (2.4.2)
+    zeitwerk (2.5.1)
 
 PLATFORMS
   ruby
 
 DEPENDENCIES
-  cocoapods (~> 1.11.0)
+  cocoapods (~> 1.11.2)
   ethon (>= 0.13.0)
   fastlane (~> 2.195.0)
   xcpretty (~> 0.3.0)
 
 BUNDLED WITH
-   2.2.19
+   2.2.22

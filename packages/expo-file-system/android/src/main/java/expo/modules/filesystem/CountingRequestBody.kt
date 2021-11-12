@@ -9,7 +9,7 @@ import okio.Sink
 import java.io.IOException
 
 @FunctionalInterface
-interface RequestBodyDecorator {
+fun interface RequestBodyDecorator {
   fun decorate(requestBody: RequestBody): RequestBody
 }
 

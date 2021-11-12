@@ -44,7 +44,7 @@
     "chalk": "^4.1.0",
     "commander": "^7.2.0",
     "fast-glob": "^3.2.5",
-    "find-up": "~5.0.0",
+    "find-up": "^5.0.0",
     "fs-extra": "^9.1.0"
   }
 }

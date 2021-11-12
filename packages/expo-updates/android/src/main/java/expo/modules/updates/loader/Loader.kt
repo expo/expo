@@ -204,6 +204,8 @@ abstract class Loader protected constructor(
 
       val matchingDbEntry = database.assetDao().loadAssetWithKey(assetEntity.key)
       if (matchingDbEntry != null) {
+        // merge all fields not stored in the database onto matchingDbEntry,
+        // in case we need them later on in this class
         database.assetDao().mergeAndUpdateAsset(matchingDbEntry, assetEntity)
         assetEntity = matchingDbEntry
       }

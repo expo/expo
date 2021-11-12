@@ -64,10 +64,14 @@ export async function setAnalyticsCollectionEnabled(isEnabled) {
     }
     return await ExpoFirebaseAnalytics.setAnalyticsCollectionEnabled(isEnabled);
 }
+let hasWarnedAboutSetCurrentScreen = false;
 // @needsAudit
 /**
  * Sets the current screen name, which specifies the current visual context in your app. This helps
  * identify the areas in your app where users spend their time and how they interact with your app.
+ *
+ * @deprecated __Deprecated.__ Use [`logEvent('screen_view', { screen_name: 'MyScreen', ... })`](#logevent)
+ * instead. This API will be removed in SDK 45.
  *
  * @param screenName The name of the current screen. Should contain 1 to 100 characters. Set to
  * `undefined` to clear the current screen name.
@@ -76,10 +80,18 @@ export async function setAnalyticsCollectionEnabled(isEnabled) {
  * `undefined` to revert to the default class name.
  */
 export async function setCurrentScreen(screenName, screenClassOverride) {
-    if (!ExpoFirebaseAnalytics.setCurrentScreen) {
-        throw new UnavailabilityError('expo-firebase-analytics', 'setCurrentScreen');
+    if (!hasWarnedAboutSetCurrentScreen) {
+        console.warn("`FirebaseAnalytics.setCurrentScreen` is deprecated. Use `logEvent('screen_view', { screen_name: 'MyScreen', ... })` instead. This API will be removed in SDK 45.");
+        hasWarnedAboutSetCurrentScreen = true;
     }
-    return await ExpoFirebaseAnalytics.setCurrentScreen(screenName, screenClassOverride);
+    return await logEvent('screen_view', screenClassOverride
+        ? {
+            screen_name: screenName,
+            screen_class: screenClassOverride,
+        }
+        : {
+            screen_name: screenName,
+        });
 }
 // @needsAudit
 /**
@@ -183,7 +195,7 @@ export function setUnavailabilityLogging(isEnabled) {
 }
 // @needsAudit
 /**
- * __Expo Go Only.__ Sets the clientId to the given value. For best results, set this value before
+ * Sets the clientId to the given value. For best results, set this value before
  * calling any other functions on this module.
  *
  * By default, the clientId is set to `Constants.installationId` in Expo Go, which is deprecated and
@@ -191,6 +203,7 @@ export function setUnavailabilityLogging(isEnabled) {
  * when using Expo Go.
  *
  * @param clientId UUIDv4 string value to set for the current session in Expo Go.
+ * @platform expo
  */
 export function setClientId(clientId) {
     if (!ExpoFirebaseAnalytics.setClientId) {
@@ -199,13 +212,14 @@ export function setClientId(clientId) {
     ExpoFirebaseAnalytics.setClientId(clientId);
 }
 /**
- * __Expo Go Only.__ Enables or disabled debug mode on the Expo client, so events can
+ * Enables or disabled debug mode on the Expo client, so events can
  * be tracked using the [DebugView in the Analytics dashboard](https://firebase.google.com/docs/analytics/debugview#reporting).
  *
  * This option is only available in Expo Go. When using a custom development app, a standalone app,
  * the bare workflow or web, use the [natively available options](https://firebase.google.com/docs/analytics/debugview).
  *
  * @param isEnabled A flag that enables or disables debug mode.
+ * @platform expo
  */
 export async function setDebugModeEnabled(isEnabled) {
     if (!ExpoFirebaseAnalytics.setDebugModeEnabled) {

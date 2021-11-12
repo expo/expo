@@ -43,8 +43,8 @@ module.exports = function (api, options = {}) {
     extraPlugins.push([
       require('@babel/plugin-transform-react-jsx'),
       {
-        // Defaults to `classic`, pass in `automatic` for auto JSX transformations.
-        runtime: options && options.jsxRuntime,
+        // Defaults to `automatic`, pass in `classic` to disable auto JSX transformations.
+        runtime: (options && options.jsxRuntime) || 'automatic',
       },
     ]);
     // Purposefully not adding the deprecated packages:

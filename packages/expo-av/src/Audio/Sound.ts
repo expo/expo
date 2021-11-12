@@ -1,4 +1,4 @@
-import { EventEmitter } from 'expo-modules-core';
+import { EventEmitter, Platform, UnavailabilityError } from 'expo-modules-core';
 
 import {
   Playback,
@@ -15,7 +15,39 @@ import { PitchCorrectionQuality } from '../Audio';
 import ExponentAV from '../ExponentAV';
 import { throwIfAudioIsDisabled } from './AudioAvailability';
 
+export type AudioChannel = {
+  /**
+   * All samples for this specific Audio Channel in PCM Buffer format (-1 to 1).
+   */
+  frames: number[];
+};
+
+/**
+ * A single sample from an audio source. The sample contains all frames (PCM Buffer values) for each channel of the audio,
+ * so if the audio is _stereo_ (interleaved), there will be two channels, one for left and one for right audio.
+ */
+export type AudioSample = {
+  /**
+   * Data from each Channel in PCM Buffer format.
+   */
+  channels: AudioChannel[];
+  /**
+   * The timestamp of this sample, relative to the Audio Track's timeline in seconds.
+   */
+  timestamp: number;
+};
+
 type AudioInstance = number | HTMLMediaElement | null;
+type AudioSampleCallback = ((sample: AudioSample) => void) | null;
+
+declare global {
+  interface Global {
+    __EXAV_setOnAudioSampleReceivedCallback:
+      | ((key: number, callback: AudioSampleCallback) => void)
+      | undefined;
+  }
+}
+
 export class Sound implements Playback {
   _loaded: boolean = false;
   _loading: boolean = false;
@@ -27,6 +59,7 @@ export class Sound implements Playback {
   _coalesceStatusUpdatesInMillis: number = 100;
   _onPlaybackStatusUpdate: ((status: AVPlaybackStatus) => void) | null = null;
   _onMetadataUpdate: ((metadata: AVMetadata) => void) | null = null;
+  _onAudioSampleReceived: AudioSampleCallback = null;
 
   /** @deprecated Use `Sound.createAsync()` instead */
   static create = async (
@@ -79,6 +112,31 @@ export class Sound implements Playback {
     } else {
       throw new Error('Cannot complete operation because sound is not loaded.');
     }
+  }
+
+  private _updateAudioSampleReceivedCallback() {
+    if (global.__EXAV_setOnAudioSampleReceivedCallback == null) {
+      if (Platform.OS === 'ios') {
+        throw new Error(
+          'Failed to set Audio Sample Buffer callback! The JSI function seems to not be installed correctly.'
+        );
+      } else {
+        throw new UnavailabilityError('expo-av', 'setOnAudioSampleReceived');
+      }
+    }
+    if (this._key == null) {
+      throw new Error(
+        'Cannot set Audio Sample Buffer callback when the Sound instance has not been successfully loaded/initialized!'
+      );
+    }
+    if (typeof this._key !== 'number') {
+      throw new Error(
+        `Cannot set Audio Sample Buffer callback when Sound instance key is of type ${typeof this
+          ._key}! (expected: number)`
+      );
+    }
+
+    global.__EXAV_setOnAudioSampleReceivedCallback(this._key, this._onAudioSampleReceived);
   }
 
   _internalStatusUpdateCallback = ({
@@ -165,6 +223,17 @@ export class Sound implements Playback {
     this._onMetadataUpdate = onMetadataUpdate;
   }
 
+  /**
+   * Sets a function to be called during playback, receiving the audio sample as parameter.
+   * @param callback a function taking the {@link AudioSample} as parameter
+   */
+  setOnAudioSampleReceived(callback: AudioSampleCallback) {
+    this._onAudioSampleReceived = callback;
+    if (this._key != null) {
+      this._updateAudioSampleReceivedCallback();
+    }
+  }
+
   // Loading / unloading API
 
   async loadAsync(
@@ -191,6 +260,7 @@ export class Sound implements Playback {
           this._loading = false;
           this._subscribeToNativeEvents();
           this._callOnPlaybackStatusUpdateForNewStatus(status);
+          this._updateAudioSampleReceivedCallback();
           resolve(status);
         };
 

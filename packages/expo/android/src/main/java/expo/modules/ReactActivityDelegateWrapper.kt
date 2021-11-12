@@ -8,6 +8,7 @@ import android.view.KeyEvent
 import androidx.collection.ArrayMap
 import com.facebook.react.ReactActivity
 import com.facebook.react.ReactActivityDelegate
+import com.facebook.react.ReactDelegate
 import com.facebook.react.ReactInstanceManager
 import com.facebook.react.ReactNativeHost
 import com.facebook.react.ReactRootView
@@ -20,6 +21,8 @@ class ReactActivityDelegateWrapper(
 ) : ReactActivityDelegate(activity, null) {
   private val reactActivityLifecycleListeners = ExpoModulesPackage.packageList
     .flatMap { it.createReactActivityLifecycleListeners(activity) }
+  private val reactActivityHandlers = ExpoModulesPackage.packageList
+    .flatMap { it.createReactActivityHandlers(activity) }
   private val methodMap: ArrayMap<String, Method> = ArrayMap()
 
   //region ReactActivityDelegate
@@ -29,7 +32,9 @@ class ReactActivityDelegateWrapper(
   }
 
   override fun createRootView(): ReactRootView {
-    return invokeDelegateMethod("createRootView")
+    return reactActivityHandlers.asSequence()
+      .map { it.createReactRootView(activity) }
+      .firstOrNull() ?: invokeDelegateMethod("createRootView")
   }
 
   override fun getReactNativeHost(): ReactNativeHost {
@@ -49,7 +54,24 @@ class ReactActivityDelegateWrapper(
   }
 
   override fun onCreate(savedInstanceState: Bundle?) {
-    invokeDelegateMethod<Unit, Bundle?>("onCreate", arrayOf(Bundle::class.java), arrayOf(savedInstanceState))
+    // Since we just wrap `ReactActivityDelegate` but not inherit it, in its `onCreate`,
+    // the calls to `createRootView()` or `getMainComponentName()` have no chances to be our wrapped methods.
+    // Instead we intercept `ReactActivityDelegate.onCreate` and replace the `mReactDelegate` with our version.
+    // That's not ideal but works.
+    val reactDelegate = object : ReactDelegate(
+      plainActivity, reactNativeHost, mainComponentName, launchOptions
+    ) {
+      override fun createRootView(): ReactRootView {
+        return this@ReactActivityDelegateWrapper.createRootView()
+      }
+    }
+    val mReactDelegate = ReactActivityDelegate::class.java.getDeclaredField("mReactDelegate")
+    mReactDelegate.isAccessible = true
+    mReactDelegate.set(delegate, reactDelegate)
+    if (mainComponentName != null) {
+      loadApp(mainComponentName)
+    }
+
     reactActivityLifecycleListeners.forEach { listener ->
       listener.onCreate(activity, savedInstanceState)
     }
@@ -124,6 +146,7 @@ class ReactActivityDelegateWrapper(
 
   //region Internals
 
+  @Suppress("UNCHECKED_CAST")
   private fun <T> invokeDelegateMethod(name: String): T {
     var method = methodMap[name]
     if (method == null) {
@@ -134,6 +157,7 @@ class ReactActivityDelegateWrapper(
     return method!!.invoke(delegate) as T
   }
 
+  @Suppress("UNCHECKED_CAST")
   private fun <T, A> invokeDelegateMethod(
     name: String,
     argTypes: Array<Class<*>>,

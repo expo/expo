@@ -75,9 +75,9 @@ export declare function initializeAsync(apiKey: string): Promise<void>;
  * Assign a user ID to the current user. If you don't have a system for user IDs you don't need to
  * call this. See [this page](https://amplitude.zendesk.com/hc/en-us/articles/206404628-Step-2-Assign-User-IDs-and-Identify-your-Users)
  * for details.
- * @param userId User ID for the current user.
+ * @param userId User ID for the current user. Can be set to `null` (e.g. when the user is logging out).
  */
-export declare function setUserIdAsync(userId: string): Promise<void>;
+export declare function setUserIdAsync(userId: string | null): Promise<void>;
 /**
  * Set properties for the current user. See [here for details](https://amplitude.zendesk.com/hc/en-us/articles/207108327-Step-4-Set-User-Properties-and-Event-Properties).
  * @param userProperties A map of custom properties.
