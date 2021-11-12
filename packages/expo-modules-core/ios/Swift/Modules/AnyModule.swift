@@ -1,6 +1,6 @@
 
 /**
- A protocol for any type-erased module that provides methods used by the core.
+ A protocol for any type-erased module that provides functions used by the core.
  */
 public protocol AnyModule: AnyObject, AnyArgument {
   /**
@@ -10,7 +10,7 @@ public protocol AnyModule: AnyObject, AnyArgument {
   init(appContext: AppContext)
 
   /**
-   A DSL-like function that returns a `ModuleDefinition` which can be built up from module's name, constants or methods.
+   A DSL-like function that returns a `ModuleDefinition` which can be built up from module's name, constants or functions.
    The `@ModuleDefinitionBuilder` wrapper is *not* required in the implementation — it is implicitly taken from the protocol.
 
    # Example
@@ -18,7 +18,7 @@ public protocol AnyModule: AnyObject, AnyArgument {
    ```
    public func definition() -> ModuleDefinition {
      name("MyModule")
-     method("myMethod") { (a: String, b: String) in
+     function("myFunction") { (a: String, b: String) in
        "\(a) \(b)"
      }
    }
@@ -29,16 +29,16 @@ public protocol AnyModule: AnyObject, AnyArgument {
    ```javascript
    import { NativeModulesProxy } from 'expo-modules-core';
 
-   await NativeModulesProxy.MyModule.myMethod('Hello', 'World!'); // -> 'Hello World!'
+   await NativeModulesProxy.MyModule.myFunction('Hello', 'World!'); // -> 'Hello World!'
    ```
 
-   # Method's result obtained asynchronously
+   # Function's result obtained asynchronously
 
    If you need to run some async code to get the proper value that you want to return to JavaScript,
-   just specify an argument of type `Promise` as the last one and use its `resolve` or `reject` methods.
+   just specify an argument of type `Promise` as the last one and use its `resolve` or `reject` functions.
 
    ```
-   method("myMethod") { (promise: Promise) in
+   function("myFunction") { (promise: Promise) in
      DispatchQueue.main.async {
        promise.resolve("return value obtained in async callback")
      }

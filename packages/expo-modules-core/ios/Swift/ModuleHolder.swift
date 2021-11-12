@@ -38,17 +38,17 @@ public final class ModuleHolder {
     post(event: .moduleCreate)
   }
 
-  // MARK: Calling methods
+  // MARK: Calling functions
 
-  func call(method methodName: String, args: [Any], promise: Promise) {
+  func call(function functionName: String, args: [Any], promise: Promise) {
     do {
-      guard let method = definition.methods[methodName] else {
-        throw MethodNotFoundError(methodName: methodName, moduleName: self.name)
+      guard let function = definition.functions[functionName] else {
+        throw FunctionNotFoundError(functionName: functionName, moduleName: self.name)
       }
-      let queue = method.queue ?? DispatchQueue.global(qos: .default)
+      let queue = function.queue ?? DispatchQueue.global(qos: .default)
 
       queue.async {
-        method.call(args: args, promise: promise)
+        function.call(args: args, promise: promise)
       }
     } catch let error as CodedError {
       promise.reject(error)
@@ -57,19 +57,19 @@ public final class ModuleHolder {
     }
   }
 
-  func call(method methodName: String, args: [Any], _ callback: @escaping (Any?, CodedError?) -> Void = { _, _ in }) {
+  func call(function functionName: String, args: [Any], _ callback: @escaping (Any?, CodedError?) -> Void = { _, _ in }) {
     let promise = Promise {
       callback($0, nil)
     } rejecter: {
       callback(nil, $0)
     }
-    call(method: methodName, args: args, promise: promise)
+    call(function: functionName, args: args, promise: promise)
   }
 
   @discardableResult
-  func callSync(method methodName: String, args: [Any]) -> Any? {
-    if let method = definition.methods[methodName] {
-      return method.callSync(args: args)
+  func callSync(function functionName: String, args: [Any]) -> Any? {
+    if let function = definition.functions[functionName] {
+      return function.callSync(args: args)
     }
     return nil
   }
@@ -101,9 +101,9 @@ public final class ModuleHolder {
    */
   func modifyListenersCount(_ count: Int) {
     if count > 0 && listenersCount == 0 {
-      let _ = definition.methods["startObserving"]?.callSync(args: [])
+      let _ = definition.functions["startObserving"]?.callSync(args: [])
     } else if count < 0 && listenersCount + count <= 0 {
-      let _ = definition.methods["stopObserving"]?.callSync(args: [])
+      let _ = definition.functions["stopObserving"]?.callSync(args: [])
     }
     listenersCount = max(0, listenersCount + count)
   }
@@ -123,11 +123,11 @@ public final class ModuleHolder {
     }
   }
 
-  struct MethodNotFoundError: CodedError {
-    let methodName: String
+  struct FunctionNotFoundError: CodedError {
+    let functionName: String
     let moduleName: String
     var description: String {
-      "Cannot find method `\(methodName)` in module `\(moduleName)`"
+      "Cannot find function `\(functionName)` in module `\(moduleName)`"
     }
   }
 }

@@ -25,16 +25,16 @@ extension AnyModule {
     return ConstantsDefinition(constants: closure())
   }
 
-  // MARK: - Methods
+  // MARK: - Functions
 
   /**
-   Factory function for methods without arguments.
+   Function without arguments.
    */
-  public func method<R>(
+  public func function<R>(
     _ name: String,
     _ closure: @escaping () -> R
-  ) -> AnyMethod {
-    return ConcreteMethod(
+  ) -> AnyFunction {
+    return ConcreteFunction(
       name,
       argTypes: [],
       closure
@@ -42,13 +42,13 @@ extension AnyModule {
   }
 
   /**
-   Factory function for methods with one argument.
+   Function with one argument.
    */
-  public func method<R, A0: AnyArgument>(
+  public func function<R, A0: AnyArgument>(
     _ name: String,
     _ closure: @escaping (A0) -> R
-  ) -> AnyMethod {
-    return ConcreteMethod(
+  ) -> AnyFunction {
+    return ConcreteFunction(
       name,
       argTypes: [ArgumentType(A0.self)],
       closure
@@ -56,13 +56,13 @@ extension AnyModule {
   }
 
   /**
-   Factory function for methods with 2 arguments.
+   Function with two arguments.
    */
-  public func method<R, A0: AnyArgument, A1: AnyArgument>(
+  public func function<R, A0: AnyArgument, A1: AnyArgument>(
     _ name: String,
     _ closure: @escaping (A0, A1) -> R
-  ) -> AnyMethod {
-    return ConcreteMethod(
+  ) -> AnyFunction {
+    return ConcreteFunction(
       name,
       argTypes: [ArgumentType(A0.self), ArgumentType(A1.self)],
       closure
@@ -70,13 +70,13 @@ extension AnyModule {
   }
 
   /**
-   Factory function for methods with 3 arguments.
+   Function with three arguments.
    */
-  public func method<R, A0: AnyArgument, A1: AnyArgument, A2: AnyArgument>(
+  public func function<R, A0: AnyArgument, A1: AnyArgument, A2: AnyArgument>(
     _ name: String,
     _ closure: @escaping (A0, A1, A2) -> R
-  ) -> AnyMethod {
-    return ConcreteMethod(
+  ) -> AnyFunction {
+    return ConcreteFunction(
       name,
       argTypes: [ArgumentType(A0.self), ArgumentType(A1.self), ArgumentType(A2.self)],
       closure
@@ -84,13 +84,13 @@ extension AnyModule {
   }
 
   /**
-   Factory function for methods with 4 arguments.
+   Function with four arguments.
    */
-  public func method<R, A0: AnyArgument, A1: AnyArgument, A2: AnyArgument, A3: AnyArgument>(
+  public func function<R, A0: AnyArgument, A1: AnyArgument, A2: AnyArgument, A3: AnyArgument>(
     _ name: String,
     _ closure: @escaping (A0, A1, A2, A3) -> R
-  ) -> AnyMethod {
-    return ConcreteMethod(
+  ) -> AnyFunction {
+    return ConcreteFunction(
       name,
       argTypes: [ArgumentType(A0.self), ArgumentType(A1.self), ArgumentType(A2.self), ArgumentType(A3.self)],
       closure
@@ -98,13 +98,13 @@ extension AnyModule {
   }
 
   /**
-   Factory function for methods with 5 arguments.
+   Function with five arguments.
    */
-  public func method<R, A0: AnyArgument, A1: AnyArgument, A2: AnyArgument, A3: AnyArgument, A4: AnyArgument>(
+  public func function<R, A0: AnyArgument, A1: AnyArgument, A2: AnyArgument, A3: AnyArgument, A4: AnyArgument>(
     _ name: String,
     _ closure: @escaping (A0, A1, A2, A3, A4) -> R
-  ) -> AnyMethod {
-    return ConcreteMethod(
+  ) -> AnyFunction {
+    return ConcreteFunction(
       name,
       argTypes: [ArgumentType(A0.self), ArgumentType(A1.self), ArgumentType(A2.self), ArgumentType(A3.self), ArgumentType(A4.self)],
       closure
@@ -112,13 +112,13 @@ extension AnyModule {
   }
 
   /**
-   Factory function for methods with 6 arguments.
+   Function with six arguments.
    */
-  public func method<R, A0: AnyArgument, A1: AnyArgument, A2: AnyArgument, A3: AnyArgument, A4: AnyArgument, A5: AnyArgument>(
+  public func function<R, A0: AnyArgument, A1: AnyArgument, A2: AnyArgument, A3: AnyArgument, A4: AnyArgument, A5: AnyArgument>(
     _ name: String,
     _ closure: @escaping (A0, A1, A2, A3, A4, A5) -> R
-  ) -> AnyMethod {
-    return ConcreteMethod(
+  ) -> AnyFunction {
+    return ConcreteFunction(
       name,
       argTypes: [ArgumentType(A0.self), ArgumentType(A1.self), ArgumentType(A2.self), ArgumentType(A3.self), ArgumentType(A4.self), ArgumentType(A5.self)],
       closure
@@ -126,13 +126,13 @@ extension AnyModule {
   }
 
   /**
-   Factory function for methods with 7 arguments.
+   Function with seven arguments.
    */
-  public func method<R, A0: AnyArgument, A1: AnyArgument, A2: AnyArgument, A3: AnyArgument, A4: AnyArgument, A5: AnyArgument, A6: AnyArgument>(
+  public func function<R, A0: AnyArgument, A1: AnyArgument, A2: AnyArgument, A3: AnyArgument, A4: AnyArgument, A5: AnyArgument, A6: AnyArgument>(
     _ name: String,
     _ closure: @escaping (A0, A1, A2, A3, A4, A5, A6) -> R
-  ) -> AnyMethod {
-    return ConcreteMethod(
+  ) -> AnyFunction {
+    return ConcreteFunction(
       name,
       argTypes: [ArgumentType(A0.self), ArgumentType(A1.self), ArgumentType(A2.self), ArgumentType(A3.self), ArgumentType(A4.self), ArgumentType(A5.self), ArgumentType(A6.self)],
       closure
@@ -140,13 +140,13 @@ extension AnyModule {
   }
 
   /**
-   Factory function for methods with 8 arguments.
+   Function with eight arguments.
    */
-  public func method<R, A0: AnyArgument, A1: AnyArgument, A2: AnyArgument, A3: AnyArgument, A4: AnyArgument, A5: AnyArgument, A6: AnyArgument, A7: AnyArgument>(
+  public func function<R, A0: AnyArgument, A1: AnyArgument, A2: AnyArgument, A3: AnyArgument, A4: AnyArgument, A5: AnyArgument, A6: AnyArgument, A7: AnyArgument>(
     _ name: String,
     _ closure: @escaping (A0, A1, A2, A3, A4, A5, A6, A7) -> R
-  ) -> AnyMethod {
-    return ConcreteMethod(
+  ) -> AnyFunction {
+    return ConcreteFunction(
       name,
       argTypes: [ArgumentType(A0.self), ArgumentType(A1.self), ArgumentType(A2.self), ArgumentType(A3.self), ArgumentType(A4.self), ArgumentType(A5.self), ArgumentType(A6.self), ArgumentType(A7.self)],
       closure
@@ -216,17 +216,17 @@ extension AnyModule {
   }
 
   /**
-   Method that is invoked when the first event listener is added.
+   Function that is invoked when the first event listener is added.
    */
-  public func onStartObserving(_ body: @escaping () -> ()) -> AnyMethod {
-    return ConcreteMethod("startObserving", argTypes: [], body)
+  public func onStartObserving(_ body: @escaping () -> ()) -> AnyFunction {
+    return ConcreteFunction("startObserving", argTypes: [], body)
   }
 
   /**
-   Method that is invoked when all event listeners are removed.
+   Function that is invoked when all event listeners are removed.
    */
-  public func onStopObserving(_ body: @escaping () -> ()) -> AnyMethod {
-    return ConcreteMethod("stopObserving", argTypes: [], body)
+  public func onStopObserving(_ body: @escaping () -> ()) -> AnyFunction {
+    return ConcreteFunction("stopObserving", argTypes: [], body)
   }
 }
 
@@ -249,4 +249,52 @@ public func prop<ViewType: UIView, PropType: AnyArgument>(
     propType: ArgumentType(PropType.self),
     setter: setter
   )
+}
+
+// TODO: - Remove deprecated `method` component once SDK44 is out.
+public extension AnyModule {
+  /**
+   Function without arguments.
+   */
+  @available(*, deprecated, renamed: "function")
+  func method<R>(
+    _ name: String,
+    _ closure: @escaping () -> R
+  ) -> AnyFunction {
+    return ConcreteFunction(
+      name,
+      argTypes: [],
+      closure
+    )
+  }
+
+  /**
+   Function with one argument.
+   */
+  @available(*, deprecated, renamed: "function")
+  func method<R, A0: AnyArgument>(
+    _ name: String,
+    _ closure: @escaping (A0) -> R
+  ) -> AnyFunction {
+    return ConcreteFunction(
+      name,
+      argTypes: [ArgumentType(A0.self)],
+      closure
+    )
+  }
+
+  /**
+   Function with two arguments.
+   */
+  @available(*, deprecated, renamed: "function")
+  func method<R, A0: AnyArgument, A1: AnyArgument>(
+    _ name: String,
+    _ closure: @escaping (A0, A1) -> R
+  ) -> AnyFunction {
+    return ConcreteFunction(
+      name,
+      argTypes: [ArgumentType(A0.self), ArgumentType(A1.self)],
+      closure
+    )
+  }
 }

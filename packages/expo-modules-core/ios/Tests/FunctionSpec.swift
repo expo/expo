@@ -3,19 +3,19 @@ import Nimble
 
 @testable import ExpoModulesCore
 
-class MethodSpec: QuickSpec {
+class FunctionSpec: QuickSpec {
   override func spec() {
     let appContext = AppContext()
-    let methodName = "test method name"
+    let functionName = "test function name"
 
-    func testMethodReturning<T: Equatable>(value returnValue: T) {
+    func testFunctionReturning<T: Equatable>(value returnValue: T) {
       waitUntil { done in
         mockModuleHolder(appContext) {
-          $0.method(methodName) {
+          $0.function(functionName) {
             return returnValue
           }
         }
-        .call(method: methodName, args: []) { value, error in
+        .call(function: functionName, args: []) { value, error in
           expect(value).notTo(beNil())
           expect(value).to(beAKindOf(T.self))
           expect(value as? T).to(equal(returnValue))
@@ -27,55 +27,55 @@ class MethodSpec: QuickSpec {
     it("is called") {
       waitUntil { done in
         mockModuleHolder(appContext) {
-          $0.method(methodName) {
+          $0.function(functionName) {
             done()
           }
         }
-        .call(method: methodName, args: [])
+        .call(function: functionName, args: [])
       }
     }
 
     it("returns bool values") {
-      testMethodReturning(value: true)
-      testMethodReturning(value: false)
-      testMethodReturning(value: [true, false])
+      testFunctionReturning(value: true)
+      testFunctionReturning(value: false)
+      testFunctionReturning(value: [true, false])
     }
 
     it("returns int values") {
-      testMethodReturning(value: 1234)
-      testMethodReturning(value: [2, 1, 3, 7])
+      testFunctionReturning(value: 1234)
+      testFunctionReturning(value: [2, 1, 3, 7])
     }
 
     it("returns double values") {
-      testMethodReturning(value: 3.14)
-      testMethodReturning(value: [0, 1.1, 2.2])
+      testFunctionReturning(value: 3.14)
+      testFunctionReturning(value: [0, 1.1, 2.2])
     }
 
     it("returns string values") {
-      testMethodReturning(value: "a string")
-      testMethodReturning(value: ["expo", "modules", "core"])
+      testFunctionReturning(value: "a string")
+      testFunctionReturning(value: ["expo", "modules", "core"])
     }
 
     it("is called with nil value") {
       let str: String? = nil
 
       mockModuleHolder(appContext) {
-        $0.method(methodName) { (a: String?) in
+        $0.function(functionName) { (a: String?) in
           expect(a == nil) == true
         }
       }
-      .callSync(method: methodName, args: [str as Any])
+      .callSync(function: functionName, args: [str as Any])
     }
 
     it("is called with an array of arrays") {
       let array: [[String]] = [["expo"]]
 
       mockModuleHolder(appContext) {
-        $0.method(methodName) { (a: [[String]]) in
+        $0.function(functionName) { (a: [[String]]) in
           expect(a.first!.first) == array.first!.first
         }
       }
-      .callSync(method: methodName, args: [array])
+      .callSync(function: functionName, args: [array])
     }
 
     describe("converting dicts to records") {
@@ -92,11 +92,11 @@ class MethodSpec: QuickSpec {
       it("converts to simple record when passed as an argument") {
         waitUntil { done in
           mockModuleHolder(appContext) {
-            $0.method(methodName) { (a: TestRecord) in
+            $0.function(functionName) { (a: TestRecord) in
               return a.property
             }
           }
-          .call(method: methodName, args: [dict]) { value, error in
+          .call(function: functionName, args: [dict]) { value, error in
             expect(value).notTo(beNil())
             expect(value).to(beAKindOf(String.self))
             expect(value).to(be(dict["property"]))
@@ -108,11 +108,11 @@ class MethodSpec: QuickSpec {
       it("converts to record with custom key") {
         waitUntil { done in
           mockModuleHolder(appContext) {
-            $0.method(methodName) { (a: TestRecord) in
+            $0.function(functionName) { (a: TestRecord) in
               return a.customKeyProperty
             }
           }
-          .call(method: methodName, args: [dict]) { value, error in
+          .call(function: functionName, args: [dict]) { value, error in
             expect(value).notTo(beNil())
             expect(value).to(beAKindOf(String.self))
             expect(value).to(be(dict["propertyWithCustomKey"]))
@@ -124,11 +124,11 @@ class MethodSpec: QuickSpec {
       it("returns the record back") {
         waitUntil { done in
           mockModuleHolder(appContext) {
-            $0.method(methodName) { (a: TestRecord) in
+            $0.function(functionName) { (a: TestRecord) in
               return a.toDictionary()
             }
           }
-          .call(method: methodName, args: [dict]) { value, error in
+          .call(function: functionName, args: [dict]) { value, error in
             expect(value).notTo(beNil())
             expect(value).to(beAKindOf(Record.Dict.self))
 
@@ -145,12 +145,12 @@ class MethodSpec: QuickSpec {
     it("throws when called with more arguments than expected") {
       waitUntil { done in
         mockModuleHolder(appContext) {
-          $0.method(methodName) { (a: Int) in
+          $0.function(functionName) { (a: Int) in
             return "something"
           }
         }
-        // Method expects one argument, let's give it more.
-        .call(method: methodName, args: [1, 2]) { value, error in
+        // Function expects one argument, let's give it more.
+        .call(function: functionName, args: [1, 2]) { value, error in
           expect(error).notTo(beNil())
           expect(error).to(beAKindOf(InvalidArgsNumberError.self))
           expect(error?.code).to(equal("ERR_INVALID_ARGS_NUMBER"))
@@ -163,12 +163,12 @@ class MethodSpec: QuickSpec {
     it("throws when called with arguments of incompatible types") {
       waitUntil { done in
         mockModuleHolder(appContext) {
-          $0.method(methodName) { (a: String) in
+          $0.function(functionName) { (a: String) in
             return "something"
           }
         }
-        // Method expects a string, let's give it a number.
-        .call(method: methodName, args: [1]) { value, error in
+        // Function expects a string, let's give it a number.
+        .call(function: functionName, args: [1]) { value, error in
           expect(error).notTo(beNil())
           expect(error).to(beAKindOf(Conversions.CastingError<String>.self))
           expect(error?.code).to(equal("ERR_CASTING_FAILED"))

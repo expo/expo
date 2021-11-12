@@ -1,6 +1,6 @@
 import Dispatch
 
-public final class ConcreteMethod<Args, ReturnType>: AnyMethod {
+public final class ConcreteFunction<Args, ReturnType>: AnyFunction {
   public typealias ClosureType = (Args) -> ReturnType
 
   public let name: String

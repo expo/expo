@@ -21,15 +21,15 @@ public final class SwiftInteropBridge: NSObject {
   }
 
   @objc
-  public func callMethod(_ methodName: String,
-                         onModule moduleName: String,
-                         withArgs args: [Any],
-                         resolve: @escaping EXPromiseResolveBlock,
-                         reject: @escaping EXPromiseRejectBlock) {
+  public func callFunction(_ functionName: String,
+                           onModule moduleName: String,
+                           withArgs args: [Any],
+                           resolve: @escaping EXPromiseResolveBlock,
+                           reject: @escaping EXPromiseRejectBlock) {
     registry
       .get(moduleHolderForName: moduleName)?
-      .call(method: methodName, args: args) { value, error in
-        if let error = error as? CodedError {
+      .call(function: functionName, args: args) { value, error in
+        if let error = error {
           reject(error.code, error.description, error)
         } else if let error = error {
           reject("ERR_UNKNOWN_ERROR", error.localizedDescription, error)
@@ -40,24 +40,24 @@ public final class SwiftInteropBridge: NSObject {
   }
 
   @objc
-  public func callMethodSync(_ methodName: String,
-                             onModule moduleName: String,
-                             withArgs args: [Any]) -> Any? {
+  public func callFunctionSync(_ functionName: String,
+                               onModule moduleName: String,
+                               withArgs args: [Any]) -> Any? {
     return registry
       .get(moduleHolderForName: moduleName)?
-      .callSync(method: methodName, args: args)
+      .callSync(function: functionName, args: args)
   }
 
   @objc
-  public func exportedMethodNames() -> [String: [[String: Any]]] {
+  public func exportedFunctionNames() -> [String: [[String: Any]]] {
     var constants = [String: [[String: Any]]]()
 
     for holder in registry {
-      constants[holder.name] = holder.definition.methods.map({ (methodName, method) in
+      constants[holder.name] = holder.definition.functions.map({ (functionName, function) in
         return [
-          "name": methodName,
-          "argumentsCount": method.argumentsCount,
-          "key": methodName,
+          "name": functionName,
+          "argumentsCount": function.argumentsCount,
+          "key": functionName,
         ]
       })
     }

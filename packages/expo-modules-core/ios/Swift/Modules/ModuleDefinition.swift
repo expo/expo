@@ -20,7 +20,7 @@ public final class ModuleDefinition: AnyDefinition {
    */
   var name: String
 
-  let methods: [String : AnyMethod]
+  let functions: [String : AnyFunction]
   let constants: [String : Any?]
   let eventListeners: [EventListener]
   let viewManager: ViewManagerDefinition?
@@ -39,10 +39,10 @@ public final class ModuleDefinition: AnyDefinition {
       .last?
       .name ?? ""
 
-    self.methods = definitions
-      .compactMap { $0 as? AnyMethod }
-      .reduce(into: [String : AnyMethod]()) { dict, method in
-        dict[method.name] = method
+    self.functions = definitions
+      .compactMap { $0 as? AnyFunction }
+      .reduce(into: [String : AnyFunction]()) { dict, function in
+        dict[function.name] = function
       }
 
     self.constants = definitions

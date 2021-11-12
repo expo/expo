@@ -6,7 +6,7 @@ public class ExpoSystemUIModule: Module {
   public func definition() -> ModuleDefinition {
     name("ExpoSystemUI")
 
-    method("getBackgroundColorAsync") { () -> String? in
+    function("getBackgroundColorAsync") { () -> String? in
       var color: String? = nil
       EXUtilities.performSynchronously {
         if let backgroundColor = self.appContext?.utilities?.currentViewController()?.view.backgroundColor?.cgColor {
@@ -16,7 +16,7 @@ public class ExpoSystemUIModule: Module {
       return color
     }
 
-    method("setBackgroundColorAsync") { (color: Int) in
+    function("setBackgroundColorAsync") { (color: Int) in
       EXUtilities.performSynchronously {
         self.appContext?.utilities?.currentViewController()?.view.backgroundColor = EXUtilities.uiColor(color)
       }
