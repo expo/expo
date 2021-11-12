@@ -125,9 +125,9 @@ function ProjectContents({ app }: { app: ProjectPageApp }) {
   return (
     <>
       <ProjectHeader app={app} />
-      <LegacyLaunchSection app={app} />
-      <NewLaunchSection app={app} />
-      <EmptySection app={app} />
+      {appHasLegacyUpdate(app) && <LegacyLaunchSection app={app} />}
+      {appHasEASUpdates(app) && <NewLaunchSection app={app} />}
+      {!appHasLegacyUpdate(app) && !appHasEASUpdates(app) && <EmptySection />}
     </>
   );
 }
@@ -194,10 +194,6 @@ function WarningBox({
 }
 
 function LegacyLaunchSection({ app }: { app: ProjectPageApp }) {
-  if (!appHasLegacyUpdate(app)) {
-    return null;
-  }
-
   const legacyUpdatesSDKMajorVersion = getSDKMajorVersionsForLegacyUpdates(app);
   const isLatestLegacyPublishDeprecated =
     legacyUpdatesSDKMajorVersion !== null &&
@@ -250,10 +246,6 @@ function LegacyLaunchSection({ app }: { app: ProjectPageApp }) {
 }
 
 function NewLaunchSection({ app }: { app: ProjectPageApp }) {
-  if (!appHasEASUpdates(app)) {
-    return null;
-  }
-
   const branchesToRender = app.updateBranches.filter(
     (updateBranch) => updateBranch.updates.length > 0
   );
@@ -298,11 +290,7 @@ function NewLaunchSection({ app }: { app: ProjectPageApp }) {
   );
 }
 
-function EmptySection({ app }: { app: ProjectPageApp }) {
-  if (appHasLegacyUpdate(app) || appHasEASUpdates(app)) {
-    return null;
-  }
-
+function EmptySection() {
   return (
     <StyledText
       style={[SharedStyles.noticeDescriptionText, styles.emptyInfo]}
