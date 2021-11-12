@@ -78,9 +78,10 @@ class EnumTypeConverter : TypeConverter {
       jsValue.asInt()
     }
 
-    return requireNotNull(enumConstants.find {
-      parameterProperty.get(it) == jsUnwrapValue
-    }) { "Couldn't convert ${jsValue.asString()} to ${toType.classifier.simpleName} where $parameterName is the enum parameter. " }
+    return requireNotNull(
+      enumConstants.find {
+        parameterProperty.get(it) == jsUnwrapValue
+      }
+    ) { "Couldn't convert ${jsValue.asString()} to ${toType.classifier.simpleName} where $parameterName is the enum parameter. " }
   }
 }
-
