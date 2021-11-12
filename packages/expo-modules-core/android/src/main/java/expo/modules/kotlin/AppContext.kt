@@ -22,7 +22,7 @@ class AppContext(
   modulesProvider: ModulesProvider,
   val legacyModuleRegistry: expo.modules.core.ModuleRegistry,
   private val reactContextHolder: WeakReference<ReactApplicationContext>
-)  {
+) {
   val registry = ModuleRegistry(WeakReference(this)).register(modulesProvider)
   private val reactLifecycleDelegate = ReactLifecycleDelegate(this)
 
