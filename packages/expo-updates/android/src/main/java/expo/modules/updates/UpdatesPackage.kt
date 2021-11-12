@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.pm.PackageManager
 import android.util.Log
 import androidx.annotation.UiThread
+import com.facebook.react.ReactInstanceManager
 import expo.modules.core.ExportedModule
 import expo.modules.core.interfaces.Package
 import expo.modules.core.interfaces.InternalModule
@@ -38,6 +39,12 @@ class UpdatesPackage : Package {
       override fun onWillCreateReactInstanceManager(useDeveloperSupport: Boolean) {
         if (shouldAutoSetup(context) && !useDeveloperSupport) {
           UpdatesController.initialize(context)
+        }
+      }
+
+      override fun onDidCreateReactInstanceManager(reactInstanceManager: ReactInstanceManager, useDeveloperSupport: Boolean) {
+        if (shouldAutoSetup(context) && !useDeveloperSupport) {
+          UpdatesController.instance.onDidCreateReactInstanceManager(reactInstanceManager)
         }
       }
 

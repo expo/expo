@@ -58,6 +58,9 @@ class LoaderTask(
     fun onSuccess()
   }
 
+  var isRunning = false
+    private set
+
   // success conditions
   private var isReadyToLaunch = false
   private var timeoutFinished = false
@@ -82,6 +85,8 @@ class LoaderTask(
       throw AssertionError("LoaderTask directory must be nonnull.")
     }
 
+    isRunning = true
+
     val shouldCheckForUpdate = UpdatesUtils.shouldCheckForUpdateOnLaunch(configuration, context)
     val delay = configuration.launchWaitMs
     if (delay > 0 && shouldCheckForUpdate) {
@@ -100,12 +105,14 @@ class LoaderTask(
             object : Callback {
               override fun onFailure(e: Exception) {
                 finish(e)
+                isRunning = false
                 runReaper()
               }
 
               override fun onSuccess() {
                 synchronized(this@LoaderTask) { isReadyToLaunch = true }
                 finish(null)
+                isRunning = false
                 runReaper()
               }
             }
@@ -119,6 +126,7 @@ class LoaderTask(
           // If we are, then we should wait for the task to finish. If not, we need to fail here.
           if (!shouldCheckForUpdate) {
             finish(e)
+            isRunning = false
           } else {
             launchRemoteUpdate()
           }
@@ -141,6 +149,7 @@ class LoaderTask(
             if (shouldCheckForUpdate) {
               launchRemoteUpdate()
             } else {
+              isRunning = false
               runReaper()
             }
           }

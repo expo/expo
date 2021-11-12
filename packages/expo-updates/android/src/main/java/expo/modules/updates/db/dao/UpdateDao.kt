@@ -13,8 +13,11 @@ abstract class UpdateDao {
    * must be marked public for Room
    * so we use the underscore to discourage use
    */
-  @Query("SELECT * FROM updates WHERE scope_key = :scopeKey AND status IN (:statuses);")
-  abstract fun _loadUpdatesForProjectWithStatuses(scopeKey: String?, statuses: List<UpdateStatus>): List<UpdateEntity>
+
+  // if an update has successfully launched at least once, we treat it as launchable
+  // even if it has also failed to launch at least once
+  @Query("SELECT * FROM updates WHERE scope_key = :scopeKey AND (successful_launch_count > 0 OR failed_launch_count < 1) AND status IN (:statuses);")
+  abstract fun _loadLaunchableUpdatesForProjectWithStatuses(scopeKey: String?, statuses: List<UpdateStatus>): List<UpdateEntity>
 
   @Query("SELECT * FROM updates WHERE id = :id;")
   abstract fun _loadUpdatesWithId(id: UUID): List<UpdateEntity>
@@ -44,7 +47,7 @@ abstract class UpdateDao {
   abstract fun loadAllUpdates(): List<UpdateEntity>
 
   fun loadLaunchableUpdatesForScope(scopeKey: String?): List<UpdateEntity> {
-    return _loadUpdatesForProjectWithStatuses(
+    return _loadLaunchableUpdatesForProjectWithStatuses(
       scopeKey,
       listOf(UpdateStatus.READY, UpdateStatus.EMBEDDED, UpdateStatus.DEVELOPMENT)
     )
@@ -90,6 +93,16 @@ abstract class UpdateDao {
 
   fun markUpdateAccessed(update: UpdateEntity) {
     update.lastAccessed = Date()
+    _updateUpdate(update)
+  }
+
+  fun incrementSuccessfulLaunchCount(update: UpdateEntity) {
+    update.successfulLaunchCount++
+    _updateUpdate(update)
+  }
+
+  fun incrementFailedLaunchCount(update: UpdateEntity) {
+    update.failedLaunchCount++
     _updateUpdate(update)
   }
 

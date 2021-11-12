@@ -4,9 +4,11 @@ import android.content.Context
 import android.net.Uri
 import android.os.AsyncTask
 import android.os.Handler
+import android.os.HandlerThread
 import android.os.Looper
 import android.util.Log
 import com.facebook.react.ReactApplication
+import com.facebook.react.ReactInstanceManager
 import com.facebook.react.ReactNativeHost
 import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.JSBundleLoader
@@ -16,14 +18,18 @@ import expo.modules.updates.db.Reaper
 import expo.modules.updates.db.UpdatesDatabase
 import expo.modules.updates.db.entity.AssetEntity
 import expo.modules.updates.db.entity.UpdateEntity
+import expo.modules.updates.errorrecovery.ErrorRecovery
+import expo.modules.updates.errorrecovery.ErrorRecoveryDelegate
 import expo.modules.updates.launcher.DatabaseLauncher
 import expo.modules.updates.launcher.Launcher
 import expo.modules.updates.launcher.Launcher.LauncherCallback
 import expo.modules.updates.launcher.NoDatabaseLauncher
 import expo.modules.updates.loader.FileDownloader
+import expo.modules.updates.loader.Loader
 import expo.modules.updates.loader.LoaderTask
 import expo.modules.updates.loader.LoaderTask.BackgroundUpdateStatus
 import expo.modules.updates.loader.LoaderTask.LoaderTaskCallback
+import expo.modules.updates.loader.RemoteLoader
 import expo.modules.updates.manifest.UpdateManifest
 import expo.modules.updates.selectionpolicy.SelectionPolicy
 import expo.modules.updates.selectionpolicy.SelectionPolicyFactory
@@ -45,6 +51,15 @@ class UpdatesController private constructor(
 
   private var launcher: Launcher? = null
   val databaseHolder = DatabaseHolder(UpdatesDatabase.getInstance(context))
+  // TODO: move away from DatabaseHolder pattern to Handler thread
+  private val databaseHandlerThread = HandlerThread("expo-updates-database")
+  init {
+    databaseHandlerThread.start()
+  }
+  private val databaseHandler = Handler(databaseHandlerThread.looper)
+
+  private var loaderTask: LoaderTask? = null
+  private var remoteLoadStatus = ErrorRecoveryDelegate.RemoteLoadStatus.IDLE
 
   private var mSelectionPolicy: SelectionPolicy? = null
   private var defaultSelectionPolicy: SelectionPolicy = SelectionPolicyFactory.createFilterAwarePolicy(
@@ -52,10 +67,80 @@ class UpdatesController private constructor(
   )
   val fileDownloader: FileDownloader = FileDownloader(context)
 
+  private val errorRecovery: ErrorRecovery = ErrorRecovery(object : ErrorRecoveryDelegate {
+    override fun loadRemoteUpdate() {
+      if (loaderTask?.isRunning == true) {
+        return
+      }
+      remoteLoadStatus = ErrorRecoveryDelegate.RemoteLoadStatus.NEW_UPDATE_LOADING
+      val database = getDatabase()
+      val remoteLoader = RemoteLoader(context, updatesConfiguration, database, fileDownloader, updatesDirectory)
+      remoteLoader.start(object : Loader.LoaderCallback {
+        override fun onFailure(e: Exception) {
+          setRemoteLoadStatus(ErrorRecoveryDelegate.RemoteLoadStatus.IDLE)
+          releaseDatabase()
+        }
+        override fun onSuccess(update: UpdateEntity?) {
+          setRemoteLoadStatus(
+            if (update != null) ErrorRecoveryDelegate.RemoteLoadStatus.NEW_UPDATE_LOADED
+            else ErrorRecoveryDelegate.RemoteLoadStatus.IDLE
+          )
+          releaseDatabase()
+        }
+        override fun onAssetLoaded(asset: AssetEntity, successfulAssetCount: Int, failedAssetCount: Int, totalAssetCount: Int) { }
+        override fun onUpdateManifestLoaded(updateManifest: UpdateManifest) =
+          selectionPolicy.shouldLoadNewUpdate(updateManifest.updateEntity, launchedUpdate, updateManifest.manifestFilters)
+      })
+    }
+
+    override fun relaunch(callback: LauncherCallback) { relaunchReactApplication(context, false, callback) }
+    override fun throwException(exception: Exception) { throw exception }
+
+    override fun markFailedLaunchForLaunchedUpdate() {
+      if (isEmergencyLaunch) {
+        return
+      }
+      databaseHandler.post {
+        val launchedUpdate = launchedUpdate ?: return@post
+        val database = getDatabase()
+        database.updateDao().incrementFailedLaunchCount(launchedUpdate)
+        releaseDatabase()
+      }
+    }
+
+    override fun markSuccessfulLaunchForLaunchedUpdate() {
+      if (isEmergencyLaunch) {
+        return
+      }
+      databaseHandler.post {
+        val launchedUpdate = launchedUpdate ?: return@post
+        val database = getDatabase()
+        database.updateDao().incrementSuccessfulLaunchCount(launchedUpdate)
+        releaseDatabase()
+      }
+    }
+
+    override fun getRemoteLoadStatus() = remoteLoadStatus
+    override fun getCheckAutomaticallyConfiguration() = updatesConfiguration.checkOnLaunch
+    override fun getLaunchedUpdateSuccessfulLaunchCount() = launchedUpdate?.successfulLaunchCount ?: 0
+  })
+
+  private fun setRemoteLoadStatus(status: ErrorRecoveryDelegate.RemoteLoadStatus) {
+    remoteLoadStatus = status
+    errorRecovery.notifyNewRemoteLoadStatus(status)
+  }
+
   // launch conditions
   private var isLoaderTaskFinished = false
   var isEmergencyLaunch = false
     private set
+
+  fun onDidCreateReactInstanceManager(reactInstanceManager: ReactInstanceManager) {
+    if (isEmergencyLaunch) {
+      return
+    }
+    errorRecovery.startMonitoring(reactInstanceManager)
+  }
 
   /**
    * If UpdatesController.initialize() is not provided with a [ReactApplication], this method
@@ -110,8 +195,7 @@ class UpdatesController private constructor(
   val isUsingEmbeddedAssets: Boolean
     get() = launcher?.isUsingEmbeddedAssets ?: false
 
-  val database: UpdatesDatabase
-    get() = databaseHolder.database
+  fun getDatabase(): UpdatesDatabase = databaseHolder.database
 
   fun releaseDatabase() {
     databaseHolder.releaseDatabase()
@@ -173,11 +257,11 @@ class UpdatesController private constructor(
       isEmergencyLaunch = true
     }
 
-    val databaseLocal = database
+    val databaseLocal = getDatabase()
     BuildData.ensureBuildDataIsConsistent(updatesConfiguration, databaseLocal)
     releaseDatabase()
 
-    LoaderTask(
+    loaderTask = LoaderTask(
       updatesConfiguration,
       databaseHolder,
       updatesDirectory,
@@ -194,8 +278,14 @@ class UpdatesController private constructor(
           return true
         }
 
-        override fun onRemoteUpdateManifestLoaded(updateManifest: UpdateManifest) {}
+        override fun onRemoteUpdateManifestLoaded(updateManifest: UpdateManifest) {
+          remoteLoadStatus = ErrorRecoveryDelegate.RemoteLoadStatus.NEW_UPDATE_LOADING
+        }
+
         override fun onSuccess(launcher: Launcher, isUpToDate: Boolean) {
+          if (remoteLoadStatus == ErrorRecoveryDelegate.RemoteLoadStatus.NEW_UPDATE_LOADING && isUpToDate) {
+            remoteLoadStatus = ErrorRecoveryDelegate.RemoteLoadStatus.IDLE
+          }
           this@UpdatesController.launcher = launcher
           notifyController()
         }
@@ -210,6 +300,7 @@ class UpdatesController private constructor(
               if (exception == null) {
                 throw AssertionError("Background update with error status must have a nonnull exception object")
               }
+              remoteLoadStatus = ErrorRecoveryDelegate.RemoteLoadStatus.IDLE
               val params = Arguments.createMap()
               params.putString("message", exception.message)
               UpdatesUtils.sendEventToReactNative(reactNativeHost, UPDATE_ERROR_EVENT, params)
@@ -218,11 +309,13 @@ class UpdatesController private constructor(
               if (update == null) {
                 throw AssertionError("Background update with error status must have a nonnull update object")
               }
+              remoteLoadStatus = ErrorRecoveryDelegate.RemoteLoadStatus.NEW_UPDATE_LOADED
               val params = Arguments.createMap()
               params.putString("manifestString", update.manifest.toString())
               UpdatesUtils.sendEventToReactNative(reactNativeHost, UPDATE_AVAILABLE_EVENT, params)
             }
             BackgroundUpdateStatus.NO_UPDATE_AVAILABLE -> {
+              remoteLoadStatus = ErrorRecoveryDelegate.RemoteLoadStatus.IDLE
               UpdatesUtils.sendEventToReactNative(
                 reactNativeHost,
                 UPDATE_NO_UPDATE_AVAILABLE_EVENT,
@@ -230,9 +323,11 @@ class UpdatesController private constructor(
               )
             }
           }
+          errorRecovery.notifyNewRemoteLoadStatus(remoteLoadStatus)
         }
       }
-    ).start(context)
+    )
+    loaderTask!!.start(context)
   }
 
   @Synchronized
@@ -243,7 +338,7 @@ class UpdatesController private constructor(
 
   fun runReaper() {
     AsyncTask.execute {
-      val databaseLocal = database
+      val databaseLocal = getDatabase()
       Reaper.reapUnusedUpdates(
         updatesConfiguration,
         databaseLocal,
@@ -256,6 +351,10 @@ class UpdatesController private constructor(
   }
 
   fun relaunchReactApplication(context: Context, callback: LauncherCallback) {
+    relaunchReactApplication(context, true, callback)
+  }
+
+  private fun relaunchReactApplication(context: Context, shouldRunReaper: Boolean, callback: LauncherCallback) {
     val host = reactNativeHost?.get()
     if (host == null) {
       callback.onFailure(Exception("Could not reload application. Ensure you have passed the correct instance of ReactApplication into UpdatesController.initialize()."))
@@ -264,7 +363,7 @@ class UpdatesController private constructor(
 
     val oldLaunchAssetFile = launcher!!.launchAssetFile
 
-    val databaseLocal = database
+    val databaseLocal = getDatabase()
     val newLauncher = DatabaseLauncher(
       updatesConfiguration,
       updatesDirectory!!,
@@ -303,7 +402,9 @@ class UpdatesController private constructor(
           callback.onSuccess()
           val handler = Handler(Looper.getMainLooper())
           handler.post { instanceManager.recreateReactContextInBackground() }
-          runReaper()
+          if (shouldRunReaper) {
+            runReaper()
+          }
         }
       }
     )
