@@ -96,7 +96,9 @@ static NSString * const scopeKey = @"test";
     XCTAssertGreaterThan(allUpdates.count, 0);
   });
   
-  [EXUpdatesBuildData clearAllUpdatesFromDatabase:_db config:_configChannelTest error:nil];
+  dispatch_async(_db.databaseQueue, ^{
+    [EXUpdatesBuildData clearAllUpdatesFromDatabase:self->_db config:self->_configChannelTest];
+  });
   
   dispatch_sync(_db.databaseQueue, ^{
     NSError *queryError;
@@ -115,22 +117,25 @@ static NSString * const scopeKey = @"test";
 
   dispatch_sync(_db.databaseQueue, ^{
     NSError *error;
-    NSDictionary *staticBuildData = [EXUpdatesBuildData getBuildDataFromDatabase:_db scopeKey:scopeKey error:&error];
+    NSDictionary *staticBuildData = [_db staticBuildDataWithScopeKey:scopeKey error:&error];
     XCTAssertNil(staticBuildData);
 
     NSArray<EXUpdatesUpdate *> *allUpdates = [_db allUpdatesWithConfig:_configChannelTest error:&error];
     XCTAssertEqual(allUpdates.count, 0);
     XCTAssertNil(error);
   });
-
-  NSError *error;
-  [EXUpdatesBuildData ensureBuildDataIsConsistent:_db config:_configChannelTest error:&error];
+  
+  dispatch_async(_db.databaseQueue, ^{
+    NSError *error;
+    [EXUpdatesBuildData ensureBuildDataIsConsistent:self->_db config:self->_configChannelTest error:&error];
   XCTAssertNil(error);
+  });
+
 
   
   dispatch_sync(_db.databaseQueue, ^{
       NSError *error;
-      NSDictionary *newStaticBuildData = [EXUpdatesBuildData getBuildDataFromDatabase:_db scopeKey:scopeKey error:&error];
+      NSDictionary *newStaticBuildData = [_db staticBuildDataWithScopeKey:scopeKey error:&error];
       XCTAssertNotNil(newStaticBuildData);
       XCTAssertNil(error);
   });
@@ -144,17 +149,22 @@ static NSString * const scopeKey = @"test";
     NSError *error;
     [_db addUpdate:update error:nil];
     XCTAssertNil(error);
+  
+    [_db setStaticBuildData:[EXUpdatesBuildData getBuildDataFromConfig:_configChannelTest] withScopeKey:_configChannelTest.scopeKey error:nil];
+
   });
 
-  [EXUpdatesBuildData setBuildDataInDatabase:_db config:_configChannelTest error:nil];
-  
-  NSError *error;
-  [EXUpdatesBuildData ensureBuildDataIsConsistent:_db config:_configChannelTest error:nil];
-  XCTAssertNil(error);
+  dispatch_async(_db.databaseQueue, ^{
+    NSError *error;
+    [EXUpdatesBuildData ensureBuildDataIsConsistent:self->_db config:self->_configChannelTest error:nil];
+    XCTAssertNil(error);
+  });
+
 
   dispatch_sync(_db.databaseQueue, ^{
     NSError *error;
-    NSDictionary *staticBuildData = [EXUpdatesBuildData getBuildDataFromDatabase:_db scopeKey:scopeKey error:nil];
+    NSDictionary *staticBuildData = [_db staticBuildDataWithScopeKey:scopeKey error:nil];
+
 
     XCTAssertTrue([staticBuildData isEqualToDictionary:[EXUpdatesBuildData getBuildDataFromConfig:_configChannelTest]]);
     NSArray<EXUpdatesUpdate *> *allUpdates = [_db allUpdatesWithConfig:_configChannelTest error:nil];
@@ -170,17 +180,19 @@ static NSString * const scopeKey = @"test";
 
     NSError *error;
     [_db addUpdate:update error:&error];
-    [EXUpdatesBuildData setBuildDataInDatabase:_db config:_configChannelTest error:nil];
+    [_db setStaticBuildData:[EXUpdatesBuildData getBuildDataFromConfig:_configChannelTest] withScopeKey:_configChannelTest.scopeKey error:nil];
     XCTAssertNil(error);
   });
   
-  NSError *error;
-  [EXUpdatesBuildData ensureBuildDataIsConsistent:_db config:_configChannelTestTwo error:&error];
-  XCTAssertNil(error);
-
+  dispatch_async(_db.databaseQueue, ^{
+    NSError *error;
+    [EXUpdatesBuildData ensureBuildDataIsConsistent:self->_db config:self->_configChannelTestTwo error:&error];
+    XCTAssertNil(error);
+  });
+  
   dispatch_sync(_db.databaseQueue, ^{
     NSError *error;
-    NSDictionary *staticBuildData = [EXUpdatesBuildData getBuildDataFromDatabase:_db scopeKey:scopeKey error:&error];
+    NSDictionary *staticBuildData = [_db staticBuildDataWithScopeKey:scopeKey error:&error];
     XCTAssertTrue([staticBuildData isEqualToDictionary:[EXUpdatesBuildData getBuildDataFromConfig:_configChannelTestTwo]]);
     XCTAssertNil(error);
 
