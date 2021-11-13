@@ -15,44 +15,21 @@ NS_ASSUME_NONNULL_BEGIN
                                  userInfo:@{}];
   }
   
-  __block NSDictionary *staticBuildData;
-  __block NSError *loadError;
-  dispatch_async(database.databaseQueue, ^{
-    staticBuildData = [database staticBuildDataWithScopeKey:config.scopeKey error:&loadError];
-  });
-  if (loadError){
-    *error = loadError;
-    return;
-  }
+  NSDictionary *staticBuildData = [database staticBuildDataWithScopeKey:config.scopeKey error:nil];
   
-  NSError *setBuildDataError;
-  NSError *clearAllUpdatesError;
   if(staticBuildData == nil){
-    [self setBuildDataInDatabase:database config:config error:&setBuildDataError];
+    [database setStaticBuildData:[self getBuildDataFromConfig:config] withScopeKey:config.scopeKey error:nil];
   } else {
     NSDictionary *impliedStaticBuildData = [self getBuildDataFromConfig:config];
     BOOL isConsistent = [staticBuildData isEqualToDictionary:impliedStaticBuildData];
     if (!isConsistent){
-      [self clearAllUpdatesFromDatabase:database config:config error:&clearAllUpdatesError];
+      NSError *clearAllUpdatesError;
+      [self clearAllUpdatesFromDatabase:database config:config];
       if(!clearAllUpdatesError){
-        [self setBuildDataInDatabase:database config:config error:&setBuildDataError];
+        [database setStaticBuildData:[self getBuildDataFromConfig:config] withScopeKey:config.scopeKey error:nil];
       }
     }
   }
-  if (setBuildDataError){
-    *error = setBuildDataError;
-    return;
-  }
-  if (clearAllUpdatesError){
-    *error = clearAllUpdatesError;
-    return;
-  }
-}
-
-+ (nullable NSDictionary *)getBuildDataFromDatabase:(EXUpdatesDatabase *)database scopeKey:(NSString *)scopeKey error:(NSError ** _Nullable)error;
-{
-  NSDictionary *staticBuildData = [database staticBuildDataWithScopeKey:scopeKey error:error];
-  return staticBuildData;
 }
 
 + (nullable NSDictionary *)getBuildDataFromConfig:(EXUpdatesConfig *)config;
@@ -64,30 +41,16 @@ NS_ASSUME_NONNULL_BEGIN
   };
 }
 
-+ (void)setBuildDataInDatabase:(EXUpdatesDatabase *)database config:(EXUpdatesConfig *)config error:(NSError ** _Nullable)error;
-{
-  __block NSError *dbError;
-  dispatch_async(database.databaseQueue, ^{
-    [database setStaticBuildData:[self getBuildDataFromConfig:config] withScopeKey:config.scopeKey error:&dbError];
-  });
-  if (dbError){
-    *error = dbError;
-  }
-}
-
 + (void)clearAllUpdatesFromDatabase:(EXUpdatesDatabase *)database
                              config:(EXUpdatesConfig *)config
-                              error:(NSError ** _Nullable)error
 {
-  __block NSError *dbError;
-  dispatch_async(database.databaseQueue, ^{
+  NSError *dbError;
     NSArray<EXUpdatesUpdate *> *allUpdates = [database allUpdatesWithConfig:config error:&dbError];
     if (allUpdates || !dbError) {
       [database deleteUpdates:allUpdates error:&dbError];
     }
-  });
   if (dbError){
-    *error = dbError;
+    NSLog(@"Error clearing all updates from database: %@", dbError);
   }
 }
 

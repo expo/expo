@@ -508,6 +508,7 @@ static NSString * const EXUpdatesDatabaseStaticBuildKey = @"staticBuildData";
 
 - (nullable NSDictionary *)staticBuildDataWithScopeKey:(NSString *)scopeKey error:(NSError ** _Nullable)error
 {
+
   return [self _jsonDataWithKey:EXUpdatesDatabaseStaticBuildKey scopeKey:scopeKey error:error];
 }
 
