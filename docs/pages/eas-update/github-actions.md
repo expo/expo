@@ -1,4 +1,6 @@
-# Using GitHub Actions with EAS Update
+---
+title: Using GitHub Actions
+---
 
 A GitHub Action is a cloud function that runs every time an event on GitHub occurs. We can use GitHub Actions to automate building and publishing updates when you or members on your team merge to a branch, like "production". This makes the process of deploying consistent and fast, leaving you more time to develop your app.
 

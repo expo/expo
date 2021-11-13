@@ -1,5 +1,5 @@
 ---
-title: EAS Update FAQ
+title: FAQ
 ---
 
 **What guidelines must I follow when publishing updates?**
