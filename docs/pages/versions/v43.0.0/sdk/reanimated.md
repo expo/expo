@@ -12,7 +12,7 @@ import PlatformsSection from '~/components/plugins/PlatformsSection';
 
 ## Installation
 
-<InstallSection packageName="react-native-reanimated" href="https://docs.swmansion.com/react-native-reanimated/docs/installation" />
+<InstallSection packageName="react-native-reanimated" href="https://docs.swmansion.com/react-native-reanimated/docs/fundamentals/installation" />
 
 After the installation completed, add the Babel plugin to **babel.config.js**:
 

@@ -100,6 +100,7 @@ async function action({packageName, version = 'unversioned'}: ActionOptions) {
     'expo-cellular': ['Cellular.ts'],
     'expo-checkbox': ['Checkbox.ts'],
     'expo-clipboard': ['Clipboard.ts'],
+    'expo-constants': [['Constants.ts', 'Constants.types.ts']],
     'expo-document-picker': ['index.ts'],
     'expo-error-recovery': ['ErrorRecovery.ts'],
     'expo-face-detector': ['FaceDetector.ts'],

@@ -8,15 +8,15 @@ import com.facebook.react.uimanager.ViewGroupManager
 import com.facebook.react.uimanager.annotations.ReactProp
 
 class GroupViewManagerWrapper(
-  private val wrapperDelegate: ViewManagerWrapperDelegate
-) : ViewGroupManager<ViewGroup>() {
-  override fun getName(): String = "ViewManagerAdapter_${wrapperDelegate.name}"
+  override val viewWrapperDelegate: ViewManagerWrapperDelegate
+) : ViewGroupManager<ViewGroup>(), ViewWrapperDelegateHolder {
+  override fun getName(): String = "ViewManagerAdapter_${viewWrapperDelegate.name}"
 
   override fun createViewInstance(reactContext: ThemedReactContext): ViewGroup =
-    wrapperDelegate.createView(reactContext) as ViewGroup
+    viewWrapperDelegate.createView(reactContext) as ViewGroup
 
   @ReactProp(name = "proxiedProperties")
   fun setProxiedProperties(view: View, proxiedProperties: ReadableMap) {
-    wrapperDelegate.setProxiedProperties(view, proxiedProperties)
+    viewWrapperDelegate.setProxiedProperties(view, proxiedProperties)
   }
 }

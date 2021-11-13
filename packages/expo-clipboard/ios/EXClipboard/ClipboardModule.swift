@@ -8,11 +8,11 @@ public class ClipboardModule: Module {
   public func definition() -> ModuleDefinition {
     name("ExpoClipboard")
 
-    method("getStringAsync") { () -> String in
+    function("getStringAsync") { () -> String in
       return UIPasteboard.general.string ?? ""
     }
 
-    method("setString") { (content: String?) in
+    function("setString") { (content: String?) in
       UIPasteboard.general.string = content ?? ""
     }
 

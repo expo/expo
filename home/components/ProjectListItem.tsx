@@ -88,7 +88,7 @@ function ProjectListItem({
       onLongPress={handleLongPress}
       rightContent={renderRightContent()}
       {...props}
-      imageSize={sdkVersionNumber ? 56 : 40}
+      imageSize={56}
       renderExtraText={renderExtraText}
       subtitle={username || subtitle}
       onPressSubtitle={username ? handlePressUsername : undefined}

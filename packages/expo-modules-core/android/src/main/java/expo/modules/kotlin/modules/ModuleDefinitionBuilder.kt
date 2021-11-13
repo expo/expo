@@ -13,10 +13,11 @@
 
 package expo.modules.kotlin.modules
 
+import expo.modules.kotlin.Promise
 import expo.modules.kotlin.events.BasicEventListener
 import expo.modules.kotlin.events.EventListener
 import expo.modules.kotlin.events.EventName
-import expo.modules.kotlin.Promise
+import expo.modules.kotlin.events.EventsDefinition
 import expo.modules.kotlin.methods.AnyMethod
 import expo.modules.kotlin.methods.Method
 import expo.modules.kotlin.methods.PromiseMethod
@@ -27,6 +28,7 @@ import kotlin.reflect.typeOf
 class ModuleDefinitionBuilder {
   private var name: String? = null
   private var constantsProvider = { emptyMap<String, Any?>() }
+  private var eventsDefinition: EventsDefinition? = null
 
   @PublishedApi
   internal var methods = mutableMapOf<String, AnyMethod>()
@@ -43,7 +45,8 @@ class ModuleDefinitionBuilder {
       constantsProvider,
       methods,
       viewManagerDefinition,
-      eventListeners
+      eventListeners,
+      eventsDefinition
     )
   }
 
@@ -55,51 +58,41 @@ class ModuleDefinitionBuilder {
     this.constantsProvider = constantsProvider
   }
 
-  inline fun <reified R : Any?> method(
+  @JvmName("methodWithoutArgs")
+  inline fun method(
+    name: String,
+    crossinline body: () -> Any?
+  ) {
+    methods[name] = Method(name, arrayOf()) { body() }
+  }
+
+  inline fun <reified R> method(
     name: String,
     crossinline body: () -> R
   ) {
     methods[name] = Method(name, arrayOf()) { body() }
   }
 
-  @JvmName("methodWithPromise")
-  inline fun method(
-    name: String,
-    crossinline body: (p0: Promise) -> Unit
-  ) {
-    methods[name] = PromiseMethod(name, arrayOf()) { _, promise -> body(promise) }
-  }
-
-  inline fun <reified P0, reified R : Any?> method(
+  inline fun <reified R, reified P0> method(
     name: String,
     crossinline body: (p0: P0) -> R
-  ): AnyMethod {
-    val method = Method(name, arrayOf(typeOf<P0>())) { body(it[0] as P0) }
-    methods[name] = method
-    return method
-  }
-
-  @JvmName("methodWithPromise")
-  inline fun <reified P0> method(
-    name: String,
-    crossinline body: (p0: P0, p1: Promise) -> Unit
   ) {
-    methods[name] = PromiseMethod(name, arrayOf(typeOf<P0>())) { args, promise -> body(args[0] as P0, promise) }
+    methods[name] = if (P0::class == Promise::class) {
+      PromiseMethod(name, arrayOf()) { _, promise -> body(promise as P0) }
+    } else {
+      Method(name, arrayOf()) { body(it[0] as P0) }
+    }
   }
 
-  inline fun <reified P0, reified P1, reified R : Any?> method(
+  inline fun <reified R, reified P0, reified P1> method(
     name: String,
     crossinline body: (p0: P0, p1: P1) -> R
   ) {
-    methods[name] = Method(name, arrayOf(typeOf<P0>(), typeOf<P1>())) { body(it[0] as P0, it[1] as P1) }
-  }
-
-  @JvmName("methodWithPromise")
-  inline fun <reified P0, reified P1> method(
-    name: String,
-    crossinline body: (p0: P0, p1: P1, p2: Promise) -> Unit
-  ) {
-    methods[name] = PromiseMethod(name, arrayOf(typeOf<P0>(), typeOf<P1>())) { args, promise -> body(args[0] as P0, args[1] as P1, promise) }
+    methods[name] = if (P1::class == Promise::class) {
+      PromiseMethod(name, arrayOf(typeOf<P0>())) { args, promise -> body(args[0] as P0, promise as P1) }
+    } else {
+      Method(name, arrayOf(typeOf<P0>(), typeOf<P1>())) { body(it[0] as P0, it[1] as P1) }
+    }
   }
 
   inline fun viewManager(body: ViewManagerDefinitionBuilder.() -> Unit) {
@@ -128,5 +121,26 @@ class ModuleDefinitionBuilder {
 
   inline fun onActivityDestroys(crossinline body: () -> Unit) {
     eventListeners[EventName.ACTIVITY_DESTROYS] = BasicEventListener(EventName.ACTIVITY_DESTROYS) { body() }
+  }
+
+  /**
+   * Defines event names that this module can send to JavaScript.
+   */
+  fun events(vararg events: String) {
+    eventsDefinition = EventsDefinition(events)
+  }
+
+  /**
+   * Method that is invoked when the first event listener is added.
+   */
+  inline fun onStartObserving(crossinline body: () -> Unit) {
+    method("startObserving", body)
+  }
+
+  /**
+   * Method that is invoked when all event listeners are removed.
+   */
+  inline fun onStopObserving(crossinline body: () -> Unit) {
+    method("stopObserving", body)
   }
 }

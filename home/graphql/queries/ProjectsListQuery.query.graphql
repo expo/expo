@@ -3,18 +3,8 @@ query Home_AccountApps($accountName: String!, $limit: Int!, $offset: Int!) {
     byName(accountName: $accountName) {
       id
       appCount
-      apps(limit: $limit, offset: $offset) {
-        id
-        fullName
-        name
-        iconUrl
-        packageName
-        username
-        description
-        lastPublishedTime
-        sdkVersion
-        published
-        privacy
+      apps(limit: $limit, offset: $offset, includeUnpublished: true) {
+        ...CommonAppData
       }
     }
   }

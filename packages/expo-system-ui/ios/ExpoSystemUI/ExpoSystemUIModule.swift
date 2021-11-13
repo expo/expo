@@ -17,11 +17,11 @@ public class ExpoSystemUIModule: Module {
   public func definition() -> ModuleDefinition {
     name("ExpoSystemUI")
 
-    method("getBackgroundColorAsync") { () -> String? in
+    function("getBackgroundColorAsync") { () -> String? in
       Self.getBackgroundColor()
     }
 
-    method("setBackgroundColorAsync") { (color: Int) in
+    function("setBackgroundColorAsync") { (color: Int) in
       Self.setBackgroundColorAsync(color: color)
     }
   }

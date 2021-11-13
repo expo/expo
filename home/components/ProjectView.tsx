@@ -22,7 +22,7 @@ import SectionHeader from '../components/SectionHeader';
 import ShareProjectButton from '../components/ShareProjectButton';
 import Colors from '../constants/Colors';
 import SharedStyles from '../constants/SharedStyles';
-import { ProjectData, ProjectDataProject, ProjectUpdateBranch } from '../containers/Project';
+import { WebContainerProjectPage_Query } from '../graphql/types';
 import { AllStackRoutes } from '../navigation/Navigation.types';
 import Environment from '../utils/Environment';
 import * as UrlUtils from '../utils/UrlUtils';
@@ -35,11 +35,18 @@ const ERROR_TEXT = dedent`
   Sorry about this. We will resolve the issue as soon as possible.
 `;
 
+const NO_PUBLISHES_TEXT = dedent`
+  This project has not yet been published.
+`;
+
 type Props = {
   loading: boolean;
   error?: Error;
-  data?: ProjectData;
+  data?: WebContainerProjectPage_Query;
 } & StackScreenProps<AllStackRoutes, 'Project'>;
+
+type ProjectPageApp = WebContainerProjectPage_Query['app']['byId'];
+type ProjectUpdateBranch = WebContainerProjectPage_Query['app']['byId']['updateBranches'][0];
 
 export default function ProjectView({ loading, error, data, navigation }: Props) {
   let contents;
@@ -85,7 +92,7 @@ function truthy<TValue>(value: TValue | null | undefined): value is TValue {
   return !!value;
 }
 
-function getSDKMajorVersionsForLegacyUpdates(app: ProjectDataProject): number | null {
+function getSDKMajorVersionsForLegacyUpdates(app: ProjectPageApp): number | null {
   return app.sdkVersion ? semver.major(app.sdkVersion) : null;
 }
 
@@ -106,25 +113,26 @@ function getSDKMajorVersionForEASUpdateBranch(branch: ProjectUpdateBranch): numb
   );
 }
 
-function appHasLegacyUpdate(app: ProjectDataProject): boolean {
+function appHasLegacyUpdate(app: ProjectPageApp): boolean {
   return app.published;
 }
 
-function appHasEASUpdates(app: ProjectDataProject): boolean {
+function appHasEASUpdates(app: ProjectPageApp): boolean {
   return app.updateBranches.some((branch) => branch.updates.length > 0);
 }
 
-function ProjectContents({ app }: { app: ProjectDataProject }) {
+function ProjectContents({ app }: { app: ProjectPageApp }) {
   return (
     <>
       <ProjectHeader app={app} />
-      <LegacyLaunchSection app={app} />
-      <NewLaunchSection app={app} />
+      {appHasLegacyUpdate(app) && <LegacyLaunchSection app={app} />}
+      {appHasEASUpdates(app) && <NewLaunchSection app={app} />}
+      {!appHasLegacyUpdate(app) && !appHasEASUpdates(app) && <EmptySection />}
     </>
   );
 }
 
-function ProjectHeader(props: { app: ProjectDataProject }) {
+function ProjectHeader(props: { app: ProjectPageApp }) {
   const source = props.app.icon ? props.app.icon.url : props.app.iconUrl;
   return (
     <StyledView style={styles.header} darkBackgroundColor="#000" darkBorderColor="#000">
@@ -185,11 +193,7 @@ function WarningBox({
   );
 }
 
-function LegacyLaunchSection({ app }: { app: ProjectDataProject }) {
-  if (!appHasLegacyUpdate(app)) {
-    return null;
-  }
-
+function LegacyLaunchSection({ app }: { app: ProjectPageApp }) {
   const legacyUpdatesSDKMajorVersion = getSDKMajorVersionsForLegacyUpdates(app);
   const isLatestLegacyPublishDeprecated =
     legacyUpdatesSDKMajorVersion !== null &&
@@ -241,11 +245,7 @@ function LegacyLaunchSection({ app }: { app: ProjectDataProject }) {
   );
 }
 
-function NewLaunchSection({ app }: { app: ProjectDataProject }) {
-  if (!appHasEASUpdates(app)) {
-    return null;
-  }
-
+function NewLaunchSection({ app }: { app: ProjectPageApp }) {
   const branchesToRender = app.updateBranches.filter(
     (updateBranch) => updateBranch.updates.length > 0
   );
@@ -287,6 +287,17 @@ function NewLaunchSection({ app }: { app: ProjectDataProject }) {
       <SectionHeader title="EAS branches" />
       {branchManifests.map(renderBranchManifest)}
     </View>
+  );
+}
+
+function EmptySection() {
+  return (
+    <StyledText
+      style={[SharedStyles.noticeDescriptionText, styles.emptyInfo]}
+      lightColor="rgba(36, 44, 58, 0.7)"
+      darkColor="#ccc">
+      {NO_PUBLISHES_TEXT}
+    </StyledText>
   );
 }
 
@@ -374,5 +385,8 @@ const styles = StyleSheet.create({
   },
   warningLearnMoreButton: {
     textDecorationLine: 'underline',
+  },
+  emptyInfo: {
+    marginTop: 16,
   },
 });

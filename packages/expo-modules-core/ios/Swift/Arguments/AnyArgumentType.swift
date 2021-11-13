@@ -1,7 +1,7 @@
 // Copyright 2021-present 650 Industries. All rights reserved.
 
 /**
- A protocol whose intention is to wrap method argument type
+ A protocol whose intention is to wrap function's argument type
  to keep its real signature and not type-erase it by the compiler.
  */
 internal protocol AnyArgumentType: CustomStringConvertible {

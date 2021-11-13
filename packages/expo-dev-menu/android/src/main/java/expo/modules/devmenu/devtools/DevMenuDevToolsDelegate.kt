@@ -12,7 +12,6 @@ import com.facebook.react.devsupport.DevInternalSettings
 import expo.interfaces.devmenu.DevMenuManagerInterface
 import expo.modules.devmenu.DEV_MENU_TAG
 import expo.modules.devmenu.DevMenuManager
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import java.lang.ref.WeakReference
 
@@ -73,7 +72,7 @@ class DevMenuDevToolsDelegate(
     val reactContext = reactContext ?: return
     val metroHost = "http://${devSettings.packagerConnectionSettings.debugServerHost}"
 
-    GlobalScope.launch {
+    manager.coroutineScope.launch {
       try {
         DevMenuManager.metroClient.openJSInspector(metroHost, reactContext.packageName)
       } catch (e: Exception) {

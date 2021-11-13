@@ -7,15 +7,15 @@ import com.facebook.react.uimanager.ThemedReactContext
 import com.facebook.react.uimanager.annotations.ReactProp
 
 class SimpleViewManagerWrapper(
-  private val wrapperDelegate: ViewManagerWrapperDelegate
-) : SimpleViewManager<View>() {
-  override fun getName(): String = "ViewManagerAdapter_${wrapperDelegate.name}"
+  override val viewWrapperDelegate: ViewManagerWrapperDelegate
+) : SimpleViewManager<View>(), ViewWrapperDelegateHolder {
+  override fun getName(): String = "ViewManagerAdapter_${viewWrapperDelegate.name}"
 
   override fun createViewInstance(reactContext: ThemedReactContext): View =
-    wrapperDelegate.createView(reactContext)
+    viewWrapperDelegate.createView(reactContext)
 
   @ReactProp(name = "proxiedProperties")
   fun setProxiedProperties(view: View, proxiedProperties: ReadableMap) {
-    wrapperDelegate.setProxiedProperties(view, proxiedProperties)
+    viewWrapperDelegate.setProxiedProperties(view, proxiedProperties)
   }
 }

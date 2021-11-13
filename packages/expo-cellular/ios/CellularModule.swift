@@ -9,27 +9,27 @@ public class CellularModule: Module {
       Self.getCurrentCellularInfo()
     }
 
-    method("getCellularGenerationAsync") { () -> Int in
+    function("getCellularGenerationAsync") { () -> Int in
       Self.currentCellularGeneration().rawValue
     }
 
-    method("allowsVoipAsync") { () -> Bool? in
+    function("allowsVoipAsync") { () -> Bool? in
       Self.currentCarrier()?.allowsVOIP
     }
 
-    method("getIsoCountryCodeAsync") { () -> String? in
+    function("getIsoCountryCodeAsync") { () -> String? in
       Self.currentCarrier()?.isoCountryCode
     }
 
-    method("getCarrierNameAsync") { () -> String? in
+    function("getCarrierNameAsync") { () -> String? in
       Self.currentCarrier()?.carrierName
     }
 
-    method("getMobileCountryCodeAsync") { () -> String? in
+    function("getMobileCountryCodeAsync") { () -> String? in
       Self.currentCarrier()?.mobileCountryCode
     }
 
-    method("getMobileNetworkCodeAsync") { () -> String? in
+    function("getMobileNetworkCodeAsync") { () -> String? in
       Self.currentCarrier()?.mobileNetworkCode
     }
   }

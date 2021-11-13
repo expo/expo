@@ -3,7 +3,6 @@ package expo.modules.kotlin.types
 import com.facebook.react.bridge.Dynamic
 import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.bridge.ReadableMap
-import kotlin.reflect.KClassifier
 
 class BasicTypeConverter : TypeConverter {
   interface SimpleDynamicConverter<ConvertToType : Any> {
@@ -16,6 +15,10 @@ class BasicTypeConverter : TypeConverter {
 
   class DoubleConverter : SimpleDynamicConverter<Double> {
     override fun cast(value: Dynamic): Double = value.asDouble()
+  }
+
+  class FloatConverter : SimpleDynamicConverter<Float> {
+    override fun cast(value: Dynamic): Float = value.asDouble().toFloat()
   }
 
   class BoolConverter : SimpleDynamicConverter<Boolean> {
@@ -42,7 +45,11 @@ class BasicTypeConverter : TypeConverter {
     override fun cast(value: Dynamic): DoubleArray = value.asArray().toArrayList().map { (it as Double) }.toDoubleArray()
   }
 
-  private val fromDynamicTypeMapper = mapOf<KClassifier, SimpleDynamicConverter<*>>(
+  class PrimitiveFloatArray : SimpleDynamicConverter<FloatArray> {
+    override fun cast(value: Dynamic): FloatArray = value.asArray().toArrayList().map { (it as Double).toFloat() }.toFloatArray()
+  }
+
+  private val fromDynamicTypeMapper = mapOf(
     Int::class to IntConverter(),
     java.lang.Integer::class to IntConverter(),
 
@@ -52,6 +59,9 @@ class BasicTypeConverter : TypeConverter {
     Boolean::class to BoolConverter(),
     java.lang.Boolean::class to BoolConverter(),
 
+    Float::class to FloatConverter(),
+    java.lang.Float::class to FloatConverter(),
+
     String::class to StringConverter(),
 
     ReadableArray::class to ReadableArrayConverter(),
@@ -59,6 +69,7 @@ class BasicTypeConverter : TypeConverter {
 
     IntArray::class to PrimitiveIntArrayConverter(),
     DoubleArray::class to PrimitiveDoubleArrayConverter(),
+    FloatArray::class to PrimitiveFloatArray()
   )
 
   override fun canHandleConversion(toType: KClassTypeWrapper): Boolean =

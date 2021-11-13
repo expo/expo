@@ -33,17 +33,10 @@ Don't have a project yet? No problem: it's quick and easy to create a "Hello wor
 <details><summary><h4>🙋 An Expo user account.</h4></summary>
 <p>
 
-<!-- TODO: DELETE-FOR-GA -->
-You can sign up at [https://expo.dev/signup](https://expo.dev/signup).
-
-<!-- TODO: ADD-FOR_GA -->
-<!-- EAS Build is available to everybody with an Expo account; you can sign up at [https://expo.dev/signup](https://expo.dev/signup). You can use EAS Build for free, and paid subscriptions provide service quality improvements such as additional build concurrencies, priority access to minimize time your builds spend queueing, and increased limits on build timeouts. [Read more](https://expo.dev/pricing). -->
+EAS Build is available to everybody with an Expo account; you can sign up at [https://expo.dev/signup](https://expo.dev/signup). You can use EAS Build for free, and paid subscriptions provide service quality improvements such as additional build concurrencies, priority access to minimize time your builds spend queueing, and increased limits on build timeouts. [Read more](https://expo.dev/pricing).
 
 </p>
 </details>
-
-<!-- TODO: DELETE-FOR-GA -->
-> While EAS Build is in preview, it is available only to EAS Priority Plan subscribers. Once it graduates from preview it will become more broadly available. The first month of the Priority Plan is free, and you can cancel any time.
 
 ## 1. Install the latest EAS CLI
 

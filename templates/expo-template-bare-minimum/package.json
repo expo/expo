@@ -4,10 +4,14 @@
   "version": "43.0.2",
   "main": "index.js",
   "scripts": {
+    "start": "expo start --dev-client",
     "android": "expo run:android",
     "ios": "expo run:ios",
     "web": "expo start --web",
-    "start": "expo start --dev-client"
+    "test": "jest --watchAll"
+  },
+  "jest": {
+    "preset": "jest-expo"
   },
   "dependencies": {
     "expo": "~43.0.0-beta.3",
@@ -24,6 +28,8 @@
     "react-native-web": "0.17.1"
   },
   "devDependencies": {
-    "@babel/core": "^7.12.9"
+    "@babel/core": "^7.12.9",
+    "jest-expo": "~43.0.1",
+    "react-test-renderer": "17.0.1"
   }
 }

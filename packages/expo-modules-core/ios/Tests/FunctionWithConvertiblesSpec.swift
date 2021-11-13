@@ -6,10 +6,10 @@ import Nimble
 
 @testable import ExpoModulesCore
 
-class MethodWithConvertiblesSpec: QuickSpec {
+class FunctionWithConvertiblesSpec: QuickSpec {
   override func spec() {
     let appContext = AppContext()
-    let methodName = "method"
+    let functionName = "function"
 
     it("converts arguments to CoreGraphics types") {
       let x = 18.3
@@ -18,7 +18,7 @@ class MethodWithConvertiblesSpec: QuickSpec {
       let height = 592.1
 
       mockModuleHolder(appContext) {
-        $0.method(methodName) { (point: CGPoint, size: CGSize, vector: CGVector, rect: CGRect) in
+        $0.function(functionName) { (point: CGPoint, size: CGSize, vector: CGVector, rect: CGRect) in
           expect(point.x) == x
           expect(point.y) == y
           expect(size.width) == width
@@ -31,7 +31,7 @@ class MethodWithConvertiblesSpec: QuickSpec {
           expect(rect.height) == height
         }
       }
-      .callSync(method: methodName, args: [
+      .callSync(function: functionName, args: [
         [x, y], // point
         ["width": width, "height": height], // size
         ["dx": x, "dy": y], // vector
@@ -48,14 +48,14 @@ class MethodWithConvertiblesSpec: QuickSpec {
       }
 
       mockModuleHolder(appContext) {
-        $0.method(methodName) { (color1: CGColor, color2: CGColor, color3: CGColor, color4: CGColor) in
+        $0.function(functionName) { (color1: CGColor, color2: CGColor, color3: CGColor, color4: CGColor) in
           testColorComponents(color1, 0x2A, 0x4B, 0x5D, 0xFF)
           testColorComponents(color2, 0x11, 0xFF, 0x00, 0xDD)
           testColorComponents(color3, 0x66, 0x00, 0xCC, 0xAA)
           testColorComponents(color4, 0x00, 0x00, 0x00, 0x00)
         }
       }
-      .callSync(method: methodName, args: [
+      .callSync(function: functionName, args: [
         "#2A4B5D",
         0xDD11FF00,
         "60CA",
