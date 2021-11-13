@@ -5,7 +5,7 @@
 #import <EXManifests/EXManifestsNewManifest.h>
 #import <EXUpdates/EXUpdatesNewUpdate.h>
 #import <EXUpdates/EXUpdatesDatabase.h>
-#import <EXUpdates/EXUpdatesBuildData.h>
+#import <EXUpdates/EXUpdatesBuildData+Tests.h>
 
 @interface EXUpdatesBuildDataTests : XCTestCase
 
