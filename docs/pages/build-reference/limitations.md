@@ -2,7 +2,7 @@
 title: Limitations
 ---
 
-EAS Build is a new service and we plan to address many of the currnet limitations in time. Some of these missing features could prevent you from being able to use the service for your applications, and others might just be inconveniences.
+EAS Build is a new service and we plan to address many of the current limitations in time. Some of these missing features could prevent you from being able to use the service for your applications, and others might just be inconveniences.
 
 ## Current limitations
 
