@@ -12,15 +12,15 @@ EAS Build only supports SDK 41+ managed projects. You must upgrade your project 
 
 ### Expo config `userInterfaceStyle` depends on `expo-system-ui` being installed
 
-Selecting a native appearance mode with `userInterfaceStyle` (or `android.userInterfaceStyle`) in the project `app.json` will only work on Android if `expo-system-ui` is installed in the project. This is because `expo-system-ui` includes code for locking the interface natively based on the `app.json`. This feature is only supported in **Expo SDK +43**.
+Selecting a native appearance mode with `userInterfaceStyle` (or `android.userInterfaceStyle`) in the project `app.json` will only work on Android if `expo-system-ui` is installed in the project. This is because `expo-system-ui` includes code for locking the interface natively based on the `app.json`. Run `expo install expo-system-ui` to add the library. This feature is only supported in **Expo SDK +43**.
 
 ### Expo config `androidNavigationBar` depends on `expo-navigation-bar` being installed
 
-Selecting the navigation bar interaction behavior with `androidNavigationBar.visible` in the project `app.json` will only work on Android if `expo-navigation-bar` is installed in the project. Also consider migrating away from this property as the underlying Android APIs are deprecated: [Learn more](https://expo.fyi/android-navigation-bar-visible-deprecated). This feature is only supported in **Expo SDK +43**.
+Selecting the navigation bar interaction behavior with `androidNavigationBar.visible` in the project `app.json` will only work on Android if `expo-navigation-bar` is installed in the project. Also consider migrating away from this property as the underlying Android APIs are deprecated: [Learn more](https://expo.fyi/android-navigation-bar-visible-deprecated). Run `expo install expo-navigation-bar` to install the library. This feature is only supported in **Expo SDK +43**.
 
 ### Expo config `splash` depends on `expo-splash-screen` being installed
 
-Configuring the resizeMode or positioning of the splash screen with `splash` (or `android.splash`) in the project `app.json` will only work on Android if `expo-splash-screen` is installed in the project. This feature is only supported in **Expo SDK +43**.
+Configuring the resizeMode or positioning of the splash screen with `splash` (or `android.splash`) in the project `app.json` will only work on Android if `expo-splash-screen` is installed in the project. Run `expo install expo-splash-screen` to install the library. This feature is only supported in **Expo SDK +43**.
 
 ### Only libraries included in your package.json are included in the resulting standalone app
 
