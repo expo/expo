@@ -2,9 +2,13 @@
 title: EAS Update Preview
 ---
 
-EAS (Expo Application Services) Update is a cloud service by the Expo team that hosts and serves updates for Expo apps using the `expo-updates` library.
+**EAS Update** is a hosted service that serves updates for projects using the `expo-updates` library.
 
-> ⚠️ Currently EAS Update is not ready for use in production apps.
+EAS Update makes fixing small bugs and pushing quick fixes a snap in between app store submissions. It accomplishes this by allowing an end-user's app to swap out the non-native parts of their app (for example, JS, styling, and image changes) with a new update that contains bug fixes and other updates.
+
+All projects that contain the `expo-updates` library are able to receive updates. To start using EAS Update, get started with the docs below:
+
+> ⚠️ EAS Update is not ready for use in production apps.
 
 **Get Started with EAS Update**
 
