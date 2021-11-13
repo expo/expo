@@ -5,7 +5,7 @@ title: Internal distribution
 import TerminalBlock from '~/components/plugins/TerminalBlock';
 import { theme } from '@expo/styleguide'
 
-Uploading your app to TestFlight and Google Play beta can be time consuming (e.g. waiting for the build to run through static analysis before becoming available to testers) and limiting (e.g. TestFlight can only have one active build at a time). Both Android and iOS provide alternative mechanisms to distribute apps directly to testers, so thy can download and install them to physical devices directly from a web browser as soon as the builds are completed.
+Uploading your app to TestFlight and Google Play beta can be time consuming (e.g. waiting for the build to run through static analysis before becoming available to testers) and limiting (e.g. TestFlight can only have one active build at a time). Both Android and iOS provide alternative mechanisms to distribute apps directly to testers, so they can download and install them to physical devices directly from a web browser as soon as the builds are completed.
 
 EAS Build can help you with this by providing sharable URLs for your builds with instructions on how to get them running, so you can share a single URL with a teammate that'll include all of the information they need to test the app.
 
