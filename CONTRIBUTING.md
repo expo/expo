@@ -65,7 +65,7 @@ All Expo SDK packages can be found in the `packages/` directory. These packages 
    - If you are only making JavaScript changes, you can run `test-suite` from the `apps/test-suite` project using `expo start`.
    - To run the full test suite with Puppeteer or Detox, you can run the tests `yarn test:<ios | web>`.
 5. You can edit a package's native code directly from its respective folder in the `packages/` directory or by opening `bare-expo` in a native editor:
-   - `cd apps/bare-expo`
+   - Navigate to the `bare-expo` app directory: `cd apps/bare-expo`
    - Android Studio: `yarn edit:android`
    - Xcode: `yarn edit:ios`
    - Remember to **rebuild** the native project whenever you make a native change
