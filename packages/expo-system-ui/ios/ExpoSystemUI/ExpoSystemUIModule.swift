@@ -4,18 +4,15 @@ import ExpoModulesCore
 
 public class ExpoSystemUIModule: Module {
   
-  public required init(appContext: AppContext) {
-    super.init(appContext: appContext)
-    
-    // TODO: Maybe read from the app manifest instead of from Info.plist.
-
-    // Set / reset the initial color on reload and app start.
-    let color = Bundle.main.object(forInfoDictionaryKey: "RCTRootViewBackgroundColor") as? Int
-    Self.setBackgroundColorAsync(color: color)
-  }
-  
   public func definition() -> ModuleDefinition {
     name("ExpoSystemUI")
+    
+    onCreate {
+      // TODO: Maybe read from the app manifest instead of from Info.plist.
+      // Set / reset the initial color on reload and app start.
+      let color = Bundle.main.object(forInfoDictionaryKey: "RCTRootViewBackgroundColor") as? Int
+      Self.setBackgroundColorAsync(color: color)
+    }
 
     function("getBackgroundColorAsync") { () -> String? in
       Self.getBackgroundColor()
