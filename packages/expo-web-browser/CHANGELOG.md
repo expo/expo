@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Updated `compare-urls` from `^2.0.0` to `^3.0.0`. ([#13309](https://github.com/expo/expo/pull/13309) by [@BigZ](https://github.com/BigZ))
+
 ## 10.0.1 — 2021-10-01
 
 _This version does not introduce any user-facing changes._
