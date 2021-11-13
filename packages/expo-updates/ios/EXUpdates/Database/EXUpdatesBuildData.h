@@ -8,8 +8,6 @@ NS_ASSUME_NONNULL_BEGIN
 @interface EXUpdatesBuildData : NSObject
 
 + (void)ensureBuildDataIsConsistent:(EXUpdatesDatabase *)database config:(EXUpdatesConfig *)config error:(NSError ** _Nullable)error;
-+ (nullable NSDictionary *)getBuildDataFromConfig:(EXUpdatesConfig *)config;
-+ (void)clearAllUpdatesFromDatabase:(EXUpdatesDatabase *)database config:(EXUpdatesConfig *)config;
 
 @end
 
