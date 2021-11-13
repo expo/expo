@@ -28,6 +28,12 @@ Example **app.json** configuration:
 }
 ```
 
+In EAS Build and custom development builds you'll need to install the native module `expo-system-ui` otherwise the `userInterfaceStyle` property will be ignored. Running `expo config --type introspect` will warn if the project is misconfigured:
+
+```
+» android: userInterfaceStyle: Install expo-system-ui in your project to enable this feature.
+```
+
 ### Bare projects
 
 #### iOS configuration
@@ -35,6 +41,8 @@ Example **app.json** configuration:
 You can configure supported styles with the [UIUserInterfaceStyle](https://developer.apple.com/documentation/bundleresources/information_property_list/uiuserinterfacestyle) key in your app **Info.plist**. Use `Automatic` to support both light and dark modes.
 
 #### Android configuration
+
+> Appearance locking requires `react-native@0.63.3` to work correctly.
 
 Ensure that the `uiMode` flag is present on your `MainActivity` (and any other activities where this behavior is desired) in **AndroidManifest.xml**:
 
@@ -44,7 +52,7 @@ Ensure that the `uiMode` flag is present on your `MainActivity` (and any other a
 android:configChanges="keyboard|keyboardHidden|orientation|screenSize|uiMode">
 ```
 
-Implement the `onConfigurationChanged` method in **MainActivity.java**:
+Implement the `onConfigurationChanged` method in **MainActivity.java** (`react-native@0.63.3` don't need this):
 
 ```java
 import android.content.Intent; // <--- import
@@ -136,5 +144,6 @@ const styles = StyleSheet.create({
 While you're developing, you may want to change your simulator's or device's appearance.
 
 - If working with an iOS emulator locally, you can use the `command` + `shift` + `a` shortcut to toggle between light and dark mode.
+- If using an Android emulator, you can run `adb shell "cmd uimode night yes"` to enable dark mode, and `adb shell "cmd uimode night no"` to disable dark mode.
 - If using a real device or an Android emulator, you can toggle the system dark mode setting in the device's settings.
 - [Snack](https://snack.expo.dev) is locked to light mode.
