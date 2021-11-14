@@ -1,5 +1,5 @@
 ---
-title: Getting started with EAS Update
+title: Getting started
 ---
 
 Setting up EAS Update allows you to push critical bug fixes and improvements that your users need right away. Setting update EAS Update requires:
@@ -12,7 +12,7 @@ Setting up EAS Update allows you to push critical bug fixes and improvements tha
 - Creating a build for the project
 - Publishing an update
 
-## Installing Expo CLI and EAS CLI
+## Install Expo CLI and EAS CLI
 
 1. Install `expo-cli` and `eas-cli` globally:
 
@@ -41,7 +41,7 @@ Setting up EAS Update allows you to push critical bug fixes and improvements tha
 
 2. Select "Managed workflow > blank".
 
-## Configuring your project's app config
+## Configuring your project
 
 1. We'll need to register our app with EAS and add our project's ID to **app.json**. Run:
 
@@ -57,13 +57,25 @@ Setting up EAS Update allows you to push critical bug fixes and improvements tha
    {
      "expo": {
        "updates": {
-         "url": "https://u.expo.dev/your-project-id"
+         "url": "https://u.expo.dev/[your-project-id]"
        }
      }
    }
    ```
 
-   There is also a `fallbackToCacheTimeout` property. If you'd like your app to try to load new updates when a user opens the app, set this to something other than zero, like `3000` (3 seconds). A value of `3000` would mean that your app will try and download a new update for up to 3 seconds before loading the previous update it already has locally. If the app is able to download the update within 3 seconds, your users will see the changes in the newest update immediately.
+   Here's an example with the `projectId` included:
+
+   ```json
+   {
+     "expo": {
+       "updates": {
+         "url": "https://u.expo.dev/675cb1f0-fa3c-11e8-ac99-6374d9643cb2"
+       }
+     }
+   }
+   ```
+
+   > Optional step: There is also a `fallbackToCacheTimeout` property. If you'd like your app to try to load new updates when a user opens the app, set this to something other than zero, like `3000` (3 seconds). A value of `3000` would mean that your app will try and download a new update for up to 3 seconds before loading the previous update it already has locally. If the app is able to download the update within 3 seconds, your users will see the changes in the newest update immediately.
 
 3. Next, set an `expo.runtimeVersion` property in the project's **app.json** file. Let's use `"1.0.0"` as the runtime version's value:
 
@@ -88,7 +100,7 @@ Setting up EAS Update allows you to push critical bug fixes and improvements tha
 
    Then follow the prompts.
 
-   This will create a file named **eas.json**. Inside the `production` profile, add the `channel` property with a value of `"production"`:
+   This will create a file named **eas.json**. Inside the `production` profile, add the `channel` property with a value of `production`:
 
    ```bash
    {
@@ -109,30 +121,12 @@ Setting up EAS Update allows you to push critical bug fixes and improvements tha
    eas channel:create production
    ```
 
-## Configuring `expo-updates`
+## Install `expo-updates`
 
-> ⚠️ These steps are only required temporarily. These changes will be included in SDK 43 (end of Sept 2021).
+For an app to request an update from EAS' servers, we'll need to install the `expo-updates` library. You can do so with:
 
-To successfully load updates, we'll need the latest versions of the `expo-asset` and `expo-updates` packages from [the Expo repository](https://github.com/expo/expo). You can download these libraries below and drag them into the parent folder of your project:
-
-[expo-asset-8.3.3.tgz](https://drive.google.com/file/d/1nXEO62-sVz_LRSyitW9EK3Chg8w7TUat)
-
-[expo-updates-0.8.4.tgz](https://drive.google.com/file/d/170WIMgFE7tzL362xFd3r9pfmSQNW6M2c)
-
-When you download these files, they may have the **.tar** extension. Change it back to **.tgz**.
-
-Once those two files are in your project, run:
-
-```json
-npm install *.tgz
-```
-
-After running this command, inside **package.json**, you should see:
-
-```json
-"expo-asset": "file:expo-asset-8.3.3.tgz",
-...
-"expo-updates": "file:expo-updates-0.8.4.tgz",
+```bash
+expo install expo-updates
 ```
 
 ## Creating a build for the project
@@ -143,7 +137,7 @@ Next, we'll need to create a build for Android or iOS. [Learn more](/build/setup
 
 Now we're ready to publish an update to the builds created in the previous step.
 
-1. Make any desired changes to your project.
+1. Make any desired changes to your project's JavaScript, styling, or image assets.
 2. Then publish an update with the following command:
 
    ```bash

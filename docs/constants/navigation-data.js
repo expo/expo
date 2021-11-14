@@ -39,6 +39,7 @@ const DIR_MAPPING = {
   archived: 'Archived',
   faq: 'FAQ',
   troubleshooting: 'Troubleshooting',
+  'eas-update': 'EAS Update',
 };
 
 const processUrl = path => {
@@ -137,7 +138,7 @@ const referenceDirectories = fs
 const startingDirectories = ['introduction', 'get-started', 'tutorial', 'next-steps'];
 
 const easDirectories = ['eas', 'build', 'app-signing', 'build-reference', 'submit'];
-let previewDirectories = ['preview']; // a private preview section which isn't linked in the documentation
+let previewDirectories = ['preview', 'eas-update']; // a private preview section which isn't linked in the documentation
 let featurePreviewDirectories = ['feature-preview']; // a public preview section which is linked under `Feature Preview`
 
 if (isDevClientInFeaturePreview) {
