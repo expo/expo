@@ -134,6 +134,6 @@ To learn how to install the app directly to your Android device / iOS simulator,
 
 In this guide we walked through the steps for creating your first build with EAS Build, without going into too much depth on any particular part of the process.
 
-When you are ready to learn more, we recommend proceeding through the "Start Building" section of this documentation to learn about topics like [configuration with eas.json](./eas-json.md), [internal distribution](./internal-distribution.md), [updates](./updates.md), [automating submissions](./automating-submissions.md), and [triggering builds from CI](./building-on-ci.md).
+When you are ready to learn more, we recommend proceeding through the "Start Building" section of this documentation to learn about topics like [configuration with eas.json](/build/eas-json.md), [internal distribution](/build/internal-distribution.md), [updates](/build/updates.md), [automating submissions](/build/automating-submissions.md), and [triggering builds from CI](/build/building-on-ci.md).
 
 You may also want to dig through the reference section to learn more about the topics that interest you most, such as [build webhooks](/build-reference/build-webhooks.md), [build server infrastructure](/build-reference/infrastructure.md), and how the [Android](/build-reference/android-builds.md) and [iOS](/build-reference/ios-builds.md) build processes work. Enjoy!
