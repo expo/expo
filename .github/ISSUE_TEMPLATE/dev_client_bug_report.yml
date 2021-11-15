@@ -1,4 +1,4 @@
-name: '\U0001F6E0 Development Client Bug Report'
+name: '\U0001F6E0 expo-dev-client Bug Report'
 description: 'Report a reproducible issue with a development build'
 labels: ['expo-dev-client', 'needs review']
 body:
