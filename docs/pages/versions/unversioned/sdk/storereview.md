@@ -20,22 +20,6 @@ import PlatformsSection from '~/components/plugins/PlatformsSection';
 
 <InstallSection packageName="expo-store-review expo-linking" />
 
-## API
-
-```js
-import * as StoreReview from 'expo-store-review';
-```
-
-<APISection packageName="expo-store-review" apiName="StoreReview" />
-
-## Error Codes
-
-### `E_STORE_REVIEW_UNSUPPORTED`
-
-Requesting an App Store review is not supported on this device. The device must be iOS 10.3 or greater. Android and web are not supported. Be sure to check for support with `isAvailableAsync()` to avoid this error.
-
----
-
 ## Usage
 
 It is important that you follow the [Human Interface Guidelines](https://developer.apple.com/ios/human-interface-guidelines/system-capabilities/ratings-and-reviews/) for iOS and [Guidelines](https://developer.android.com/guide/playcore/in-app-review#when-to-request) for Android when using this API.
@@ -43,7 +27,7 @@ It is important that you follow the [Human Interface Guidelines](https://develop
 **Specifically:**
 
 - Don't call `StoreReview.requestReview()` from a button - instead try calling it after the user has finished some signature interaction in the app.
-- Don't spam the user
+- Don't spam the user.
 - Don't request a review when the user is doing something time sensitive like navigating.
 - Don't ask the user any questions before or while presenting the rating button or card.
 
@@ -76,3 +60,17 @@ Linking.openURL(
 // Open the Android Play Store directly
 Linking.openURL(`market://details?id=${androidPackageName}&showAllReviews=true`);
 ```
+
+## API
+
+```js
+import * as StoreReview from 'expo-store-review';
+```
+
+<APISection packageName="expo-store-review" apiName="StoreReview" />
+
+## Error Codes
+
+### `E_STORE_REVIEW_UNSUPPORTED`
+
+Requesting an App Store review is not supported on this device. The device must be iOS 10.3 or greater. Android and web are not supported. Be sure to check for support with `isAvailableAsync()` to avoid this error.
