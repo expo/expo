@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import <EXAV/ReactCallbackWrapper.h>
+#import <EXAV/CallbackWrapper.h>
 
 /**
  * NOTE: This file is a copy of ReactCommon/LongLivedObject.cpp
@@ -16,8 +16,6 @@
  * We need to wrap it in another napespace, because it would conflict with existing RN implementation
  */
 namespace expo {
-namespace facebook {
-namespace react {
 
 // LongLivedObjectCollection
 LongLivedObjectCollection &LongLivedObjectCollection::get() {
@@ -53,7 +51,5 @@ void LongLivedObject::allowRelease() {
   LongLivedObjectCollection::get().remove(this);
 }
 
-} // namespace react
-} // namespace facebook
 }
 

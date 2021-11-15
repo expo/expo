@@ -86,17 +86,25 @@ export function expoModulesTransforms(prefix: string): FileTransforms {
         replaceWith: `namespace ${prefix}$1`,
       },
       {
-        // Prefixes versionable namespaces (react namespace is already prefixed with uppercased "R")
-        paths: objcFilesPattern,
-        find: /\bnamespace react\b/g,
-        replaceWith: `namespace ${prefix}React`,
-      },
-      {
         // Prefixes usages of versionable namespaces
         paths: objcFilesPattern,
         find: /\b(expo|facebook)::/g,
         replaceWith: `${prefix}$1::`,
       },
+
+      // Prefixes versionable namespaces (react namespace is already prefixed with uppercased "R")
+      {
+        paths: objcFilesPattern,
+        find: /::react::/g,
+        replaceWith: `::${prefix}React::`,
+      },
+      {
+        paths: objcFilesPattern,
+        find: /\bnamespace react\b/g,
+        replaceWith: `namespace ${prefix}React`,
+      },
+
+      // Prefix umbrella header imports
       {
         paths: '*.h',
         find: /\b(\w+-umbrella\.h)\b/g,
