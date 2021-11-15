@@ -129,7 +129,7 @@ QR code: Generate a QR code using your URI from a website like https://www.qr-co
 
 ### URL
 
-If you are loading in your update into a development client by passing in a URL string, you will need to pass in an URL pointing to your JSON manifest file.
+If you are loading in your update into a development build by passing in a URL string, you will need to pass in an URL pointing to your JSON manifest file.
 
 Here is an example URL from a remote server: [https://expo.github.io/self-hosting-example/android-index.json](https://expo.github.io/self-hosting-example/android-index.json)
 

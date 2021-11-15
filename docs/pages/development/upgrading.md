@@ -14,15 +14,18 @@ While we try to make upgrading the `expo-dev-client` package as painless as poss
 ### 🍏 iOS
 
 In `ios/Podfile`, change the deployment target to `platform :ios, '12.0'` and add the following lines inside the main target:
+
 ```ruby
 pod 'EXJSONUtils', path: '../node_modules/expo-json-utils/ios', :configurations => :debug
 pod 'EXManifests', path: '../node_modules/expo-manifests/ios', :configurations => :debug
 ```
+
 Rerun `pod install` before reopening your project.
 
 ### 🤖 Android
 
 In `android/settings.gradle`, add the following lines:
+
 ```groovy
 include ':expo-json-utils'
 project(':expo-json-utils').projectDir = new File('../node_modules/expo-json-utils/android')

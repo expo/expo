@@ -7,9 +7,9 @@ import InstallSection from '~/components/plugins/InstallSection';
 import ConfigurationDiff from '~/components/plugins/ConfigurationDiff';
 import { Tab, Tabs } from '~/components/plugins/Tabs';
 
-The installation steps on this page are only required to add expo-dev-client to an **existing** React Native or Bare project.
+The installation steps on this page are only required to add the `expo-dev-client` library to an **existing** React Native or Bare project.
 
-To initialize a new Bare project or to add a development client to an existing managed project, see our [Getting Started guide](getting-started.md).
+To initialize a new Bare project or to add a the `expo-dev-client` library to an existing managed project, see our [Getting Started guide](getting-started.md).
 
 If you created your project with `expo init`, or you already have `expo` and/or other Expo modules up and running, use the tabs marked **With Expo modules** (most projects will fall under this category).
 
@@ -17,17 +17,17 @@ If you created your project with `expo init` before SDK 43 and have `react-nativ
 
 If you created your project with `npx react-native init` and do not have `react-native-unimodules` or any other Expo packages installed, use the tabs marked **Without unimodules**.
 
-> **Note**: if you are using **SDK 43 or above**, you need to install **`expo-dev-client@0.6.0` or above**.
+> **Note**: if you are using _SDK 43 or above_, you'll need to install `expo-dev-client@0.6.0` or above.
 
 ## 1. Installation
 
-Add the `expo-dev-client` package to your package.json.
+Add the `expo-dev-client` library to your package.json.
 
 <InstallSection packageName="expo-development-client" cmd={["npm install expo-dev-client"]} hideBareInstructions />
 
 ### 🍏 iOS
 
-Add the following lines to your `Podfile`:
+Add the following lines to your **Podfile**:
 
 <Tabs tabs={["With Expo modules/unimodules", "Without unimodules"]}>
 
@@ -42,7 +42,7 @@ Add an empty Swift file to your project from inside of Xcode by choosing File > 
 
 <img src="/static/images/client/xcode_bridging_header_alert.png" style={{ maxWidth: "60%" }}/>
 
-When the above prompt comes up, choose **Create Bridging Header**.
+When the above prompt comes up, choose "Create Bridging Header".
 
 </Tab>
 
@@ -56,8 +56,8 @@ Then you can run the following command to install native code for the Dev Launch
 
 <InstallSection packageName="expo-development-client" cmd={["npx pod-install"]} hideBareInstructions />
 
-Also, make sure that your project is configured to deploy on iOS **above 10**.
-To do that, you need to open Xcode, go to `Project settings` > `General` > `Deployment info` and select iOS version is at least 11.
+Also, make sure that your project is configured to deploy on an iOS version _above 10_.
+To do that, open Xcode and go to General > Deployment Info, and select an iOS version of at least 11.0.
 
 <img src="/static/images/client/check_ios_version.png" style={{maxWidth: "100%" }}/>
 
@@ -87,7 +87,7 @@ Additionally, ensure your project's `minSdkVersion` and Gradle version are at le
 
 ## 2. Basic configuration
 
-To load your application's JavaScript in your client by scanning a QR code, you need to configure a deep link scheme for your application. The easiest way to do this is if you haven't already is with the `uri-scheme` package:
+To scan a QR code to load your project's JavaScript in your development build, you'll need to configure a deep link scheme for your app. The fastest way to do this is with the `uri-scheme` package:
 
 <InstallSection packageName="expo-development-client" cmd={["npx uri-scheme add <your scheme>"]} hideBareInstructions />
 
@@ -95,7 +95,7 @@ See the [uri-scheme package](https://www.npmjs.com/package/uri-scheme) for more 
 
 ### 🍏 iOS
 
-Make the following changes to allow the Development Client to control project initialization in the **DEBUG** mode.
+Make the following changes to allow the `expo-dev-client` library to control project initialization in the **DEBUG** mode.
 
 <Tabs tabs={["With Expo modules", "With unimodules", "Without unimodules"]}>
 
@@ -119,7 +119,7 @@ Make the following changes to allow the Development Client to control project in
 
 ### 🤖 Android
 
-Make the following changes to allow the Development Client to control project initialization in the **DEBUG** mode.
+Make the following changes to allow the `expo-dev-client` library to control project initialization in the **DEBUG** mode.
 
 > **Note:** If you have a custom activity in your application already, or just want to understand what the `DevMenuAwareReactActivity` is doing, you can see [advanced instructions for Android here.](https://github.com/expo/expo/tree/master/packages/expo-dev-menu#-android)
 
@@ -141,7 +141,7 @@ Make the following changes to allow the Development Client to control project in
 
 ## 3. Optional configuration
 
-There are a few more changes you can make to get the best experience, but you [can skip ahead to building](/clients/getting-started/#building-and-installing-your-first-custom-client) if you prefer.
+There are a few more changes you can make to get the best experience, but you [can skip ahead to building](/development/getting-started/#building-and-installing-your-first-development-build) if you prefer.
 
 ### Enable development with Expo CLI
 
@@ -151,13 +151,13 @@ Expo CLI requires you to have the `expo` package installed so it can maintain co
 
 ### Disable packager autostart when building for iOS
 
-When you start your project on iOS, the metro bundler will be started automatically. This behavior might not be ideal when you want to use `expo start`. Our recommended solution is to remove the `Start Packager` action from building scripts. To do that you need to open the Xcode, go to `Project settings` > `Build Phases` and remove the `Start Packager` action.
+When you start your project on iOS, the metro bundler will be started automatically. This behavior might not be ideal when you want to use `expo start`. Our recommended solution is to remove the `Start Packager` action from building scripts. To do that you need to open the Xcode, go to "Build Phases" and remove the "Start Packager" action.
 
 <img src="/static/images/client/remove_start_packager.png" style={{maxWidth: "100%" }}/>
 
 ### Add better error handlers
 
-Sometimes, for certain types of errors, we can provide more helpful error messages than the ones that ship by default with React Native. To turn this feature on you need to import `expo-dev-client` in your `index` file (in the managed workflow, you need to add this import on top of the `App.{js|tsx}`). Make sure that the import statement is above `import App from './App'`.
+Sometimes, for certain types of errors, we can provide more helpful error messages than the ones that ship by default with React Native. To turn this feature on you need to import `expo-dev-client` in your **index** file (in the managed workflow, you need to add this import on top of the **App.{js|tsx}**). Make sure that the import statement is above `import App from './App'`.
 
 ```js
 import 'expo-dev-client';
@@ -165,14 +165,14 @@ import 'expo-dev-client';
 import App from "./App";
 ```
 
-> Note: This will only affect the application in which you make this change. If you are using your custom client to load multiple applications, you'll need to add this import statement to each of them.
+> Note: This will only affect the application in which you make this change. If you want to load multiple projects from a single development app, you'll need to add this import statement to each project.
 
 ### Loading published updates
 
-The Development Client can also be used to open and preview published updates to your app. To add this feature, you need to add `expo-updates@0.8.0` or newer to your app if it isn't already installed, and add a small additional integration in your **AppDelegate.m** and **MainApplication.java** files.
+Development builds can also open and preview published updates to your app. To add this feature, add `expo-updates@0.8.0` or newer to your app if it isn't already installed, and add a small additional integration in your **AppDelegate.m** and **MainApplication.java** files.
 
-1. [Install and set up `react-native-unimodules` in your project](../bare/installing-unimodules.md), if you have not already done so.
-2. [Install and set up `expo-updates` in your project](../bare/installing-updates.md), if you have not already done so.
+1. [Install and set up `react-native-unimodules` in your project](../bare/installing-unimodules.md).
+2. [Install and set up `expo-updates` in your project](../bare/installing-updates.md).
 3. Make the following changes to complete the integration with `expo-updates`:
 
 <ConfigurationDiff source="/static/diffs/client/app-delegate-updates.diff" />
@@ -181,4 +181,4 @@ The Development Client can also be used to open and preview published updates to
 
 ## 4. Build and Install
 
-You're now ready to [build your first custom client](/clients/getting-started.md#building-and-installing-your-first-custom-client) and to start developing.
+You're now ready to [build your first development build](/development/getting-started.md#creating-and-installing-your-first-development-build).

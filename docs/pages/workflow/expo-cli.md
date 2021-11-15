@@ -178,7 +178,7 @@ Alias: `expo p`
 | ---------------------- | -------------------------------------------------------------------------------------------------------------- |
 | `-s, --send-to [dest]` | Email address to send the URL to                                                                               |
 | `--dev-client`         | Experimental: Starts the bundler for use with the expo-development-client                                      |
-| `--scheme [scheme]`    | Custom URI protocol to use with a dev client                                                                   |
+| `--scheme [scheme]`    | Custom URI protocol to use with a development build                                                            |
 | `-a, --android`        | Opens your app in Expo Go on a connected Android device                                                        |
 | `-i, --ios`            | Opens your app in Expo Go in a currently running iOS simulator on your computer                                |
 | `-w, --web`            | Opens your app in a web browser                                                                                |
@@ -213,7 +213,7 @@ Alias: `expo r`
 | `-p, --port [port]`    | Port to start the native Metro bundler on (does not apply to web or tunnel). Default: 19000                    |
 | `--no-https`           | To start webpack with http protocol                                                                            |
 | `--dev-client`         | Experimental: Starts the bundler for use with the expo-development-client                                      |
-| `--scheme [scheme]`    | Custom URI protocol to use with a dev client                                                                   |
+| `--scheme [scheme]`    | Custom URI protocol to use with a development build                                                            |
 | `-a, --android`        | Opens your app in Expo Go on a connected Android device                                                        |
 | `-i, --ios`            | Opens your app in Expo Go in a currently running iOS simulator on your computer                                |
 | `-w, --web`            | Opens your app in a web browser                                                                                |
@@ -247,7 +247,7 @@ Alias: `expo web`
 | `-p, --port [port]`    | Port to start the Webpack bundler on. Default: 19006                                                           |
 | `-s, --send-to [dest]` | An email address to send a link to                                                                             |
 | `--dev-client`         | Experimental: Starts the bundler for use with the expo-development-client                                      |
-| `--scheme [scheme]`    | Custom URI protocol to use with a dev client                                                                   |
+| `--scheme [scheme]`    | Custom URI protocol to use with a development build                                                            |
 | `-a, --android`        | Opens your app in Expo Go on a connected Android device                                                        |
 | `-i, --ios`            | Opens your app in Expo Go in a currently running iOS simulator on your computer                                |
 | `-w, --web`            | Opens your app in a web browser                                                                                |
@@ -736,8 +736,8 @@ Alias: `expo u`
 
 | Option              | Description                                                                                                    |
 | ------------------- | -------------------------------------------------------------------------------------------------------------- |
-| `--dev-client`      | Experimental: Starts the bundler for use with the expo-development-client                                      |
-| `--scheme [scheme]` | Custom URI protocol to use with a dev client                                                                   |
+| `--dev-client`      | Experimental: Starts the bundler for use with the expo-dev-client library                                      |
+| `--scheme [scheme]` | Custom URI protocol to use with the expo-dev-client lbirary                                                    |
 | `-a, --android`     | Opens your app in Expo Go on a connected Android device                                                        |
 | `-i, --ios`         | Opens your app in Expo Go in a currently running iOS simulator on your computer                                |
 | `-w, --web`         | Opens your app in a web browser                                                                                |
