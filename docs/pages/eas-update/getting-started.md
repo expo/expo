@@ -88,9 +88,7 @@ Setting up EAS Update allows you to push critical bug fixes and improvements tha
    }
    ```
 
-   A runtime version identifies the state of the native code present in your project when creating builds and when creating updates. When we make a build later, we'll add the runtime version to the build's native files. Then, the `expo-updates` module inside the build will make sure that any updates it loads match the runtime version of an update when a user tries to load an update. If the build's runtime version matches the update's runtime version, we'll know that the update is compatible with the build, and then the build will run the update.
-
-   Whenever we change native code, we'll need to change the runtime version and create new builds. This way, updates we publish will also target the new state of the build's native code.
+   A runtime version identifies the state of the native code present in your project when creating builds and when creating updates. [Learn more](/distribution/runtime-versions).
 
 4. To set up the configuration file for builds, run:
 
