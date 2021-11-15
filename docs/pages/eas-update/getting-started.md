@@ -2,15 +2,7 @@
 title: Getting started
 ---
 
-Setting up EAS Update allows you to push critical bug fixes and improvements that your users need right away. Setting update EAS Update requires:
-
-- Installing EXPO CLI and EAS CLI
-- Creating an Expo account
-- Creating a project
-- Configuring your project's app config
-- Configuring `expo-updates`
-- Creating a build for the project
-- Publishing an update
+Setting up EAS Update allows you to push critical bug fixes and improvements that your users need right away.
 
 ## Install Expo CLI and EAS CLI
 
@@ -41,7 +33,7 @@ Setting up EAS Update allows you to push critical bug fixes and improvements tha
 
 2. Select "Managed workflow > blank".
 
-## Configuring your project
+## Configure your project
 
 1. We'll need to register our app with EAS and add our project's ID to **app.json**. Run:
 
@@ -88,9 +80,7 @@ Setting up EAS Update allows you to push critical bug fixes and improvements tha
    }
    ```
 
-   A runtime version identifies the state of the native code present in your project when creating builds and when creating updates. When we make a build later, we'll add the runtime version to the build's native files. Then, the `expo-updates` module inside the build will make sure that any updates it loads match the runtime version of an update when a user tries to load an update. If the build's runtime version matches the update's runtime version, we'll know that the update is compatible with the build, and then the build will run the update.
-
-   Whenever we change native code, we'll need to change the runtime version and create new builds. This way, updates we publish will also target the new state of the build's native code.
+   A runtime version identifies the state of the native code present in your project when creating builds and when creating updates. [Learn more](/distribution/runtime-versions).
 
 4. To set up the configuration file for builds, run:
 
@@ -129,22 +119,28 @@ For an app to request an update from EAS' servers, we'll need to install the `ex
 expo install expo-updates
 ```
 
-## Creating a build for the project
+## Create a build for the project
 
 Next, we'll need to create a build for Android or iOS. [Learn more](/build/setup).
 
-## Publishing an update
+## Publish an update
 
 Now we're ready to publish an update to the builds created in the previous step.
 
-1. Make any desired changes to your project's JavaScript, styling, or image assets.
-2. Then publish an update with the following command:
+1. When we run our project locally, Expo CLI creates a manifest locally that Expo Go or a development build will run. To make sure our project starts with Expo's modern manifest protocol, start your local server with:
+
+   ```bash
+   yarn start --force-manifest-type=expo-updates
+   ```
+
+2. Then, make any desired changes to your project's JavaScript, styling, or image assets.
+3. Then publish an update with the following command:
 
    ```bash
    eas branch:publish production --message "Updating the app"
    ```
 
-3. Once the update is built and uploaded to EAS and the command completes, force close and reopen your app two times to download and view the update.
+4. Once the update is built and uploaded to EAS and the command completes, force close and reopen your app two times to download and view the update.
 
 ## Next
 
