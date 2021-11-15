@@ -155,7 +155,6 @@ static NSString * const EXUpdatesErrorEventName = @"error";
   
   [_errorRecovery startMonitoring];
 
-  
   _loaderTask = [[EXUpdatesAppLoaderTask alloc] initWithConfig:_config
                                                       database:_database
                                                      directory:_updatesDirectory
