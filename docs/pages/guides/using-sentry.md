@@ -68,12 +68,13 @@ Sentry.Native.*
 Sentry.Browser.*
 ```
 
-- Open **app.json** and add a `postPublish hook`:
+- Open **app.json** and add a `plugin` and a `postPublish hook`:
 
 ```json
 {
   "expo": {
     // ... your existing configuration
+    "plugins": ["sentry-expo"],
     "hooks": {
       "postPublish": [
         {
