@@ -135,14 +135,20 @@ Next, we'll need to create a build for Android or iOS. [Learn more](/build/setup
 
 Now we're ready to publish an update to the builds created in the previous step.
 
-1. Make any desired changes to your project's JavaScript, styling, or image assets.
-2. Then publish an update with the following command:
+1. When we run our project locally, Expo CLI creates a manifest locally that Expo Go or a development build will run. To make sure our project starts with Expo's modern manifest protocol, start your local server with:
+
+   ```bash
+   yarn start --force-manifest-type=expo-updates
+   ```
+
+2. Then, make any desired changes to your project's JavaScript, styling, or image assets.
+3. Then publish an update with the following command:
 
    ```bash
    eas branch:publish production --message "Updating the app"
    ```
 
-3. Once the update is built and uploaded to EAS and the command completes, force close and reopen your app two times to download and view the update.
+4. Once the update is built and uploaded to EAS and the command completes, force close and reopen your app two times to download and view the update.
 
 ## Next
 
