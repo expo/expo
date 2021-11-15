@@ -15,10 +15,19 @@ NS_ASSUME_NONNULL_BEGIN
                                  userInfo:@{}];
   }
   
-  NSDictionary *staticBuildData = [database staticBuildDataWithScopeKey:config.scopeKey error:nil];
+  NSError *getStaticBuildDataError;
+  NSDictionary *staticBuildData = [database staticBuildDataWithScopeKey:config.scopeKey error:&getStaticBuildDataError];
+  if (getStaticBuildDataError){
+    NSLog(@"Error getting static build data: %@", getStaticBuildDataError);
+    return;
+  }
   
   if(staticBuildData == nil){
-    [database setStaticBuildData:[self getBuildDataFromConfig:config] withScopeKey:config.scopeKey error:nil];
+    NSError *setStaticBuildDataError;
+    [database setStaticBuildData:[self getBuildDataFromConfig:config] withScopeKey:config.scopeKey error:&setStaticBuildDataError];
+    if (setStaticBuildDataError){
+      NSLog(@"Error setting static build data: %@", setStaticBuildDataError);
+    }
   } else {
     NSDictionary *impliedStaticBuildData = [self getBuildDataFromConfig:config];
     BOOL isConsistent = [staticBuildData isEqualToDictionary:impliedStaticBuildData];
@@ -26,7 +35,11 @@ NS_ASSUME_NONNULL_BEGIN
       NSError *clearAllUpdatesError;
       [self clearAllUpdatesFromDatabase:database config:config];
       if(!clearAllUpdatesError){
-        [database setStaticBuildData:[self getBuildDataFromConfig:config] withScopeKey:config.scopeKey error:nil];
+        NSError *setStaticBuildDataError;
+        [database setStaticBuildData:[self getBuildDataFromConfig:config] withScopeKey:config.scopeKey error:&setStaticBuildDataError];
+        if (setStaticBuildDataError){
+          NSLog(@"Error setting static build data: %@", setStaticBuildDataError);
+        }
       }
     }
   }
@@ -45,10 +58,10 @@ NS_ASSUME_NONNULL_BEGIN
                              config:(EXUpdatesConfig *)config
 {
   NSError *dbError;
-    NSArray<EXUpdatesUpdate *> *allUpdates = [database allUpdatesWithConfig:config error:&dbError];
-    if (allUpdates || !dbError) {
-      [database deleteUpdates:allUpdates error:&dbError];
-    }
+  NSArray<EXUpdatesUpdate *> *allUpdates = [database allUpdatesWithConfig:config error:&dbError];
+  if (allUpdates || !dbError) {
+    [database deleteUpdates:allUpdates error:&dbError];
+  }
   if (dbError){
     NSLog(@"Error clearing all updates from database: %@", dbError);
   }
