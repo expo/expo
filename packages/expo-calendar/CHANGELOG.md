@@ -10,6 +10,9 @@
 
 ### 💡 Others
 
+- Replace custom `OptionalKeys` type wrapper with embedded in TypeScript `Partial`.
+- Extract nested object in current types to new, separate types: `AlarmLocation` and `DaysOfTheWeek`.
+
 ## 10.0.1 — 2021-10-01
 
 _This version does not introduce any user-facing changes._
