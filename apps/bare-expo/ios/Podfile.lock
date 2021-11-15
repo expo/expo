@@ -132,17 +132,20 @@ PODS:
     - EXManifests
     - expo-dev-launcher/Main (= 0.8.1)
     - expo-dev-menu-interface
+    - ExpoModulesCore
     - EXUpdatesInterface
     - React-Core
   - expo-dev-launcher/Main (0.8.1):
     - EXManifests
     - expo-dev-launcher/Unsafe
     - expo-dev-menu-interface
+    - ExpoModulesCore
     - EXUpdatesInterface
     - React-Core
   - expo-dev-launcher/Tests (0.8.1):
     - EXManifests
     - expo-dev-menu-interface
+    - ExpoModulesCore
     - EXUpdatesInterface
     - Nimble
     - OHHTTPStubs
@@ -152,6 +155,7 @@ PODS:
   - expo-dev-launcher/Unsafe (0.8.1):
     - EXManifests
     - expo-dev-menu-interface
+    - ExpoModulesCore
     - EXUpdatesInterface
     - React-Core
   - expo-dev-menu (0.8.2):
@@ -1071,6 +1075,7 @@ EXTERNAL SOURCES:
   expo-dev-client:
     :path: "../../../packages/expo-dev-client"
   expo-dev-launcher:
+    inhibit_warnings: false
     :path: "../../../packages/expo-dev-launcher"
   expo-dev-menu:
     :path: "../../../packages/expo-dev-menu"
@@ -1300,7 +1305,7 @@ SPEC CHECKSUMS:
   EXPermissions: 08ccf78a0eb404c28df6d226fcc8fcf2e558b421
   Expo: 988e3a33c6b5c19fb951ffb376e6d8a8405000ed
   expo-dev-client: 97a9589d2ea0325a8dd4dff284fe3a4b9166bbce
-  expo-dev-launcher: e76a3b8cca8f61c32c80a8dcd894c631f09329e6
+  expo-dev-launcher: d86099545ea285eda41496cf0c0f851530bbfbcb
   expo-dev-menu: ec566cc2bc8e783b9874afb81ea92a90d6069f01
   expo-dev-menu-interface: 273c68c2c30ecbc70af2903dfb3821f567ef9d78
   ExpoCellular: 90940614d45df5b31f281d70a63d92a06fe44af4
@@ -1408,6 +1413,6 @@ SPEC CHECKSUMS:
   Yoga: e6ecf3fa25af9d4c87e94ad7d5d292eedef49749
   ZXingObjC: fdbb269f25dd2032da343e06f10224d62f537bdb
 
-PODFILE CHECKSUM: 7f44ef71f33a4dbb448f92a2a96507223b074498
+PODFILE CHECKSUM: 953a4704f9c354a2a0a339a35f81735eb9a83d54
 
 COCOAPODS: 1.11.2

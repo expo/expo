@@ -1,3 +1,4 @@
+import spawnAsync from '@expo/spawn-async';
 import glob from 'fast-glob';
 import fs from 'fs-extra';
 import path from 'path';
@@ -12,7 +13,7 @@ export async function resolveModuleAsync(
   revision: PackageRevision,
   options: SearchOptions
 ): Promise<ModuleDescriptor | null> {
-  const [podspecFile] = await glob('*/*.podspec', {
+  const [podspecFile] = await glob('{*/,}*.podspec', {
     cwd: revision.path,
     ignore: ['**/node_modules/**'],
   });
@@ -60,7 +61,9 @@ async function generatePackageListFileContentAsync(
       module.appDelegateSubscribers.length ||
       module.reactDelegateHandlers.length
   );
-  const pods = modulesToImport.map((module) => module.podName);
+  const importSwiftModules = await Promise.all(
+    modulesToImport.map((module) => normalizePodModuleAsync(module))
+  );
 
   const modulesClassNames = []
     .concat(...modulesToImport.map((module) => module.modulesClassNames))
@@ -82,7 +85,7 @@ async function generatePackageListFileContentAsync(
  */
 
 import ExpoModulesCore
-${pods.map((podName) => `import ${podName}\n`).join('')}
+${importSwiftModules.map((module) => `import ${module}\n`).join('')}
 @objc(${className})
 public class ${className}: ModulesProvider {
   public override func getModuleClasses() -> [AnyModule.Type] {
@@ -122,4 +125,17 @@ export function formatArrayOfReactDelegateHandler(modules: ModuleDescriptor[]): 
   const indent = '  ';
   return `[${values.map((value) => `\n${indent.repeat(3)}${value}`).join(',')}
 ${indent.repeat(2)}]`;
+}
+
+async function normalizePodModuleAsync(module: ModuleDescriptor): Promise<string> {
+  let result = module.podName;
+  const podspecFile = path.join(module.podspecDir, `${module.podName}.podspec`);
+  if (await fs.pathExists(podspecFile)) {
+    const { stdout } = await spawnAsync('pod', ['ipc', 'spec', podspecFile]);
+    const podspecJson = JSON.parse(stdout);
+    if (podspecJson.header_dir) {
+      result = podspecJson.header_dir;
+    }
+  }
+  return result;
 }

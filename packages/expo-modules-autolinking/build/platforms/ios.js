@@ -4,6 +4,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.formatArrayOfReactDelegateHandler = exports.generatePackageListAsync = exports.resolveModuleAsync = void 0;
+const spawn_async_1 = __importDefault(require("@expo/spawn-async"));
 const fast_glob_1 = __importDefault(require("fast-glob"));
 const fs_extra_1 = __importDefault(require("fs-extra"));
 const path_1 = __importDefault(require("path"));
@@ -12,7 +13,7 @@ const path_1 = __importDefault(require("path"));
  */
 async function resolveModuleAsync(packageName, revision, options) {
     var _a, _b, _c;
-    const [podspecFile] = await (0, fast_glob_1.default)('*/*.podspec', {
+    const [podspecFile] = await (0, fast_glob_1.default)('{*/,}*.podspec', {
         cwd: revision.path,
         ignore: ['**/node_modules/**'],
     });
@@ -47,7 +48,7 @@ async function generatePackageListFileContentAsync(modules, className) {
     const modulesToImport = modules.filter((module) => module.modulesClassNames.length ||
         module.appDelegateSubscribers.length ||
         module.reactDelegateHandlers.length);
-    const pods = modulesToImport.map((module) => module.podName);
+    const importSwiftModules = await Promise.all(modulesToImport.map((module) => normalizePodModuleAsync(module)));
     const modulesClassNames = []
         .concat(...modulesToImport.map((module) => module.modulesClassNames))
         .filter(Boolean);
@@ -63,7 +64,7 @@ async function generatePackageListFileContentAsync(modules, className) {
  */
 
 import ExpoModulesCore
-${pods.map((podName) => `import ${podName}\n`).join('')}
+${importSwiftModules.map((module) => `import ${module}\n`).join('')}
 @objc(${className})
 public class ${className}: ModulesProvider {
   public override func getModuleClasses() -> [AnyModule.Type] {
@@ -103,4 +104,16 @@ function formatArrayOfReactDelegateHandler(modules) {
 ${indent.repeat(2)}]`;
 }
 exports.formatArrayOfReactDelegateHandler = formatArrayOfReactDelegateHandler;
+async function normalizePodModuleAsync(module) {
+    let result = module.podName;
+    const podspecFile = path_1.default.join(module.podspecDir, `${module.podName}.podspec`);
+    if (await fs_extra_1.default.pathExists(podspecFile)) {
+        const { stdout } = await (0, spawn_async_1.default)('pod', ['ipc', 'spec', podspecFile]);
+        const podspecJson = JSON.parse(stdout);
+        if (podspecJson.header_dir) {
+            result = podspecJson.header_dir;
+        }
+    }
+    return result;
+}
 //# sourceMappingURL=ios.js.map

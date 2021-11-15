@@ -51,6 +51,7 @@ NSString *fakeLauncherBundleUrl = @"embedded://EXDevLauncher/dummy";
 @property (nonatomic, strong) EXManifestsManifest *manifest;
 @property (nonatomic, strong) NSURL *manifestURL;
 @property (nonatomic, strong) EXDevLauncherErrorManager *errorManager;
+@property (nonatomic, assign) BOOL isStarted;
 
 @end
 
@@ -148,6 +149,7 @@ NSString *fakeLauncherBundleUrl = @"embedded://EXDevLauncher/dummy";
 
 - (void)startWithWindow:(UIWindow *)window delegate:(id<EXDevLauncherControllerDelegate>)delegate launchOptions:(NSDictionary *)launchOptions
 {
+  _isStarted = YES;
   _delegate = delegate;
   _launchOptions = launchOptions;
   _window = window;
@@ -158,6 +160,19 @@ NSString *fakeLauncherBundleUrl = @"embedded://EXDevLauncher/dummy";
   } else {
     // For deeplink launch, we need the keyWindow for expo-splash-screen to setup correctly.
     [_window makeKeyWindow];
+  }
+}
+
+- (void)autoSetupPrepare:(id<EXDevLauncherControllerDelegate>)delegate launchOptions:(NSDictionary * _Nullable)launchOptions
+{
+  _delegate = delegate;
+  _launchOptions = launchOptions;
+}
+
+- (void)autoSetupStart:(UIWindow *)window
+{
+  if (_delegate != nil) {
+    [self startWithWindow:window delegate:_delegate launchOptions:_launchOptions];
   }
 }
 
