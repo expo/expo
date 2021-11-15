@@ -28,8 +28,6 @@ using CallInvoker = facebook::react::CallInvoker;
  * We need to wrap it in another napespace, because it would conflict with existing RN implementation
  */
 namespace expo {
-namespace facebook {
-namespace react {
 
 /**
  * A simple wrapper class that can be registered to a collection that  keep it
@@ -150,6 +148,4 @@ class CallbackWrapper : public LongLivedObject {
   }
 };
 
-} // namespace react
-} // namespace facebook
 }

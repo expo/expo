@@ -5,14 +5,14 @@
 #import <jsi/jsi.h>
 
 // TODO: Replace this with <ReactCommon/TurboModuleUtils.h> after we upgrade to RN 0.66
-#import <EXAV/ReactCallbackWrapper.h>
+#import <EXAV/CallbackWrapper.h>
 
 namespace jsi = facebook::jsi;
 using CallInvoker = facebook::react::CallInvoker;
 
 // TODO: Replace this with just facebook::react namespace after we upgrade to RN 0.66
-using JsiCallbackWrapper = expo::facebook::react::CallbackWrapper;
-using LongLivedObjectCollection = expo::facebook::react::LongLivedObjectCollection;
+using JsiCallbackWrapper = expo::CallbackWrapper;
+using LongLivedObjectCollection = expo::LongLivedObjectCollection;
 
 namespace expo {
 namespace av {

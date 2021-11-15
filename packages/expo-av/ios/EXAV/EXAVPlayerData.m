@@ -883,11 +883,11 @@ NSString *const EXAVPlayerDataObserverMetadataKeyPath = @"timedMetadata";
 
       callbacks.version = kMTAudioProcessingTapCallbacksVersion_0;
       callbacks.clientInfo = (__bridge void *)self,
-      callbacks.init = tapInit;
-      callbacks.finalize = tapFinalize;
-      callbacks.prepare = tapPrepare;
-      callbacks.unprepare = tapUnprepare;
-      callbacks.process = tapProcess;
+      callbacks.init = EXTapInit;
+      callbacks.finalize = EXTapFinalize;
+      callbacks.prepare = EXTapPrepare;
+      callbacks.unprepare = EXTapUnprepare;
+      callbacks.process = EXTapProcess;
 
       MTAudioProcessingTapRef audioProcessingTap;
       OSStatus status = MTAudioProcessingTapCreate(kCFAllocatorDefault, &callbacks, kMTAudioProcessingTapCreationFlag_PreEffects, &audioProcessingTap);
@@ -913,7 +913,7 @@ NSString *const EXAVPlayerDataObserverMetadataKeyPath = @"timedMetadata";
 
 #pragma mark - Audio Sample Buffer Callbacks (MTAudioProcessingTapCallbacks)
 
-void tapInit(MTAudioProcessingTapRef tap, void *clientInfo, void **tapStorageOut)
+void EXTapInit(MTAudioProcessingTapRef tap, void *clientInfo, void **tapStorageOut)
 {
   AVAudioTapProcessorContext *context = calloc(1, sizeof(AVAudioTapProcessorContext));
 
@@ -924,7 +924,7 @@ void tapInit(MTAudioProcessingTapRef tap, void *clientInfo, void **tapStorageOut
   *tapStorageOut = context;
 }
 
-void tapFinalize(MTAudioProcessingTapRef tap)
+void EXTapFinalize(MTAudioProcessingTapRef tap)
 {
   AVAudioTapProcessorContext *context = (AVAudioTapProcessorContext *)MTAudioProcessingTapGetStorage(tap);
 
@@ -934,7 +934,7 @@ void tapFinalize(MTAudioProcessingTapRef tap)
   free(context);
 }
 
-void tapPrepare(MTAudioProcessingTapRef tap, CMItemCount maxFrames, const AudioStreamBasicDescription *processingFormat)
+void EXTapPrepare(MTAudioProcessingTapRef tap, CMItemCount maxFrames, const AudioStreamBasicDescription *processingFormat)
 {
   AVAudioTapProcessorContext *context = (AVAudioTapProcessorContext *)MTAudioProcessingTapGetStorage(tap);
 
@@ -954,14 +954,14 @@ void tapPrepare(MTAudioProcessingTapRef tap, CMItemCount maxFrames, const AudioS
   }
 }
 
-void tapUnprepare(MTAudioProcessingTapRef tap)
+void EXTapUnprepare(MTAudioProcessingTapRef tap)
 {
   AVAudioTapProcessorContext *context =
     (AVAudioTapProcessorContext *)MTAudioProcessingTapGetStorage(tap);
   context->self = NULL;
 }
 
-void tapProcess(MTAudioProcessingTapRef tap, CMItemCount numberFrames, MTAudioProcessingTapFlags flags, AudioBufferList *bufferListInOut, CMItemCount *numberFramesOut, MTAudioProcessingTapFlags *flagsOut)
+void EXTapProcess(MTAudioProcessingTapRef tap, CMItemCount numberFrames, MTAudioProcessingTapFlags flags, AudioBufferList *bufferListInOut, CMItemCount *numberFramesOut, MTAudioProcessingTapFlags *flagsOut)
 {
   AVAudioTapProcessorContext *context =
     (AVAudioTapProcessorContext *)MTAudioProcessingTapGetStorage(tap);
