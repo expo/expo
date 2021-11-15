@@ -39,6 +39,8 @@ internal final class Conversions {
     case let object as NSDictionary:
       let keyValuePairs: [(String, Any)] = object.map { ($0 as! String, Conversions.fromNSObject($1)) }
       return Dictionary(uniqueKeysWithValues: keyValuePairs)
+    case is NSNull:
+      return Optional<Any>.none as Any
     default:
       return object
     }
