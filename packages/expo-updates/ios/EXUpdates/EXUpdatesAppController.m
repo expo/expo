@@ -145,13 +145,7 @@ static NSString * const EXUpdatesErrorEventName = @"error";
     return;
   }
 
-  NSError *buildDataError;
-  [EXUpdatesBuildData ensureBuildDataIsConsistent:_database config:_config error:&buildDataError];
-  if (buildDataError) {
-    @throw [NSException exceptionWithName:NSInternalInconsistencyException
-                                   reason:buildDataError.localizedDescription
-                                 userInfo:buildDataError.userInfo];
-  }
+  [EXUpdatesBuildData ensureBuildDataIsConsistent:_database config:_config];
   
   [_errorRecovery startMonitoring];
 

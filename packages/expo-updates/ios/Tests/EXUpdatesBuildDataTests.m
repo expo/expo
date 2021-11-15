@@ -143,9 +143,7 @@ static NSString * const scopeKey = @"test";
   });
   
   dispatch_async(_db.databaseQueue, ^{
-    NSError *error;
-    [EXUpdatesBuildData ensureBuildDataIsConsistent:self->_db config:self->_configChannelTest error:&error];
-  XCTAssertNil(error);
+    [EXUpdatesBuildData ensureBuildDataIsConsistent:self->_db config:self->_configChannelTest];
   });
 
 
@@ -177,9 +175,7 @@ static NSString * const scopeKey = @"test";
   });
 
   dispatch_async(_db.databaseQueue, ^{
-    NSError *error;
-    [EXUpdatesBuildData ensureBuildDataIsConsistent:self->_db config:self->_configChannelTest error:nil];
-    XCTAssertNil(error);
+    [EXUpdatesBuildData ensureBuildDataIsConsistent:self->_db config:self->_configChannelTest];
   });
 
 
@@ -207,9 +203,7 @@ static NSString * const scopeKey = @"test";
   });
 
   dispatch_async(_db.databaseQueue, ^{
-    NSError *error;
-    [EXUpdatesBuildData ensureBuildDataIsConsistent:self->_db config:self->_configReleaseChannelTest error:nil];
-    XCTAssertNil(error);
+    [EXUpdatesBuildData ensureBuildDataIsConsistent:self->_db config:self->_configReleaseChannelTest];
   });
 
 
@@ -237,9 +231,7 @@ static NSString * const scopeKey = @"test";
   });
   
   dispatch_async(_db.databaseQueue, ^{
-    NSError *error;
-    [EXUpdatesBuildData ensureBuildDataIsConsistent:self->_db config:self->_configChannelTestTwo error:&error];
-    XCTAssertNil(error);
+    [EXUpdatesBuildData ensureBuildDataIsConsistent:self->_db config:self->_configChannelTestTwo];
   });
   
   dispatch_sync(_db.databaseQueue, ^{
@@ -264,9 +256,7 @@ static NSString * const scopeKey = @"test";
   });
   
   dispatch_async(_db.databaseQueue, ^{
-    NSError *error;
-    [EXUpdatesBuildData ensureBuildDataIsConsistent:self->_db config:self->_configReleaseChannelTestTwo error:&error];
-    XCTAssertNil(error);
+    [EXUpdatesBuildData ensureBuildDataIsConsistent:self->_db config:self->_configReleaseChannelTestTwo];
   });
   
   dispatch_sync(_db.databaseQueue, ^{
