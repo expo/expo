@@ -1,3 +1,4 @@
+import spawnAsync from '@expo/spawn-async';
 import glob from 'fast-glob';
 import fs from 'fs-extra';
 import path from 'path';
@@ -9,7 +10,7 @@ async function findPodspecFile(revision: PackageRevision): Promise<string | unde
     return revision.config.iosPodspecPath();
   }
 
-  const [podspecFile] = await glob('*/*.podspec', {
+  const [podspecFile] = await glob('{*/,}*.podspec', {
     cwd: revision.path,
     ignore: ['**/node_modules/**'],
   });
@@ -139,4 +140,17 @@ export function formatArrayOfReactDelegateHandler(modules: ModuleDescriptor[]): 
   const indent = '  ';
   return `[${values.map((value) => `\n${indent.repeat(3)}${value}`).join(',')}
 ${indent.repeat(2)}]`;
+}
+
+async function normalizePodModuleAsync(module: ModuleDescriptor): Promise<string> {
+  let result = module.podName;
+  const podspecFile = path.join(module.podspecDir, `${module.podName}.podspec`);
+  if (await fs.pathExists(podspecFile)) {
+    const { stdout } = await spawnAsync('pod', ['ipc', 'spec', podspecFile]);
+    const podspecJson = JSON.parse(stdout);
+    if (podspecJson.header_dir) {
+      result = podspecJson.header_dir;
+    }
+  }
+  return result;
 }

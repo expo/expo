@@ -2,6 +2,8 @@
   "name": "expo-dev-launcher",
   "platforms": ["ios", "android"],
   "ios": {
-    "podspecPath": "expo-dev-launcher.podspec"
+    "podspecPath": "expo-dev-launcher.podspec",
+    "appDelegateSubscribers": ["ExpoDevLauncherAppDelegateSubscriber"],
+    "reactDelegateHandlers": ["ExpoDevLauncherReactDelegateHandler"]
   }
 }
