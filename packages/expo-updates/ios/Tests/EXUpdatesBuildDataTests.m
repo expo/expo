@@ -63,6 +63,18 @@ static NSString * const scopeKey = @"test";
   };
   _configChannelTestTwo = [EXUpdatesConfig configWithDictionary:_configChannelTestTwoDictionary
   ];
+  
+  // start every test with an update
+  dispatch_sync(_db.databaseQueue, ^{
+    EXUpdatesUpdate *update = [EXUpdatesNewUpdate updateWithNewManifest:_manifest response:nil config:_configChannelTest database:_db];
+
+    NSError *updatesError;
+    [_db addUpdate:update error:&updatesError];
+    if (updatesError) {
+      XCTFail(@"%@", updatesError.localizedDescription);
+      return;
+    }
+  });
 }
 
 - (void)tearDown
@@ -77,15 +89,6 @@ static NSString * const scopeKey = @"test";
 
 - (void)test_clearAllUpdatesFromDatabase {
   dispatch_sync(_db.databaseQueue, ^{
-    EXUpdatesUpdate *update = [EXUpdatesNewUpdate updateWithNewManifest:_manifest response:nil config:_configChannelTest database:_db];
-  
-    NSError *updatesError;
-    [_db addUpdate:update error:&updatesError];
-    if (updatesError) {
-      XCTFail(@"%@", updatesError.localizedDescription);
-      return;
-    }
-
     NSError *queryError;
     NSArray<EXUpdatesUpdate *> *allUpdates = [_db allUpdatesWithConfig:_configChannelTest error:&queryError];
     if (queryError) {
@@ -112,16 +115,15 @@ static NSString * const scopeKey = @"test";
   });
 }
 
+// check no updates are cleared and build data is set
 - (void)test_ensureBuildDataIsConsistent_buildDataIsNull {
-  // check no updates and build data is set
-
   dispatch_sync(_db.databaseQueue, ^{
     NSError *error;
     NSDictionary *staticBuildData = [_db staticBuildDataWithScopeKey:scopeKey error:&error];
     XCTAssertNil(staticBuildData);
 
     NSArray<EXUpdatesUpdate *> *allUpdates = [_db allUpdatesWithConfig:_configChannelTest error:&error];
-    XCTAssertEqual(allUpdates.count, 0);
+    XCTAssertEqual(allUpdates.count, 1);
     XCTAssertNil(error);
   });
   
@@ -138,16 +140,21 @@ static NSString * const scopeKey = @"test";
       NSDictionary *newStaticBuildData = [_db staticBuildDataWithScopeKey:scopeKey error:&error];
       XCTAssertNotNil(newStaticBuildData);
       XCTAssertNil(error);
+    
+      NSArray<EXUpdatesUpdate *> *allUpdates = [_db allUpdatesWithConfig:_configChannelTest error:&error];
+      XCTAssertEqual(allUpdates.count, 1);
+      XCTAssertNil(error);
   });
 
 }
 
+// check no updates are cleared and build data is not set
 - (void)test_ensureBuildDataIsConsistent_buildDataIsConsistent {
+
   dispatch_sync(_db.databaseQueue, ^{
-    EXUpdatesUpdate *update = [EXUpdatesNewUpdate updateWithNewManifest:_manifest response:nil config:_configChannelTest database:_db];
-    
     NSError *error;
-    [_db addUpdate:update error:nil];
+    NSArray<EXUpdatesUpdate *> *allUpdates = [_db allUpdatesWithConfig:_configChannelTest error:&error];
+    XCTAssertEqual(allUpdates.count, 1);
     XCTAssertNil(error);
   
     [_db setStaticBuildData:[EXUpdatesBuildData getBuildDataFromConfig:_configChannelTest] withScopeKey:_configChannelTest.scopeKey error:nil];
@@ -169,19 +176,19 @@ static NSString * const scopeKey = @"test";
     XCTAssertTrue([staticBuildData isEqualToDictionary:[EXUpdatesBuildData getBuildDataFromConfig:_configChannelTest]]);
     NSArray<EXUpdatesUpdate *> *allUpdates = [_db allUpdatesWithConfig:_configChannelTest error:nil];
     XCTAssertEqual(allUpdates.count, 1);
-    
     XCTAssertNil(error);
   });
 }
 
+// check updates are cleared and build data is set
 - (void)test_ensureBuildDataIsConsistent_buildDataIsInconsistent {
   dispatch_sync(_db.databaseQueue, ^{
-    EXUpdatesUpdate *update = [EXUpdatesNewUpdate updateWithNewManifest:_manifest response:nil config:_configChannelTest database:_db];
-
     NSError *error;
-    [_db addUpdate:update error:&error];
-    [_db setStaticBuildData:[EXUpdatesBuildData getBuildDataFromConfig:_configChannelTest] withScopeKey:_configChannelTest.scopeKey error:nil];
+    NSArray<EXUpdatesUpdate *> *allUpdates = [_db allUpdatesWithConfig:_configChannelTest error:&error];
+    XCTAssertEqual(allUpdates.count, 1);
     XCTAssertNil(error);
+    
+    [_db setStaticBuildData:[EXUpdatesBuildData getBuildDataFromConfig:_configChannelTest] withScopeKey:_configChannelTest.scopeKey error:nil];
   });
   
   dispatch_async(_db.databaseQueue, ^{
