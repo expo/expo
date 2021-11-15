@@ -2,15 +2,7 @@
 title: Getting started
 ---
 
-Setting up EAS Update allows you to push critical bug fixes and improvements that your users need right away. Setting update EAS Update requires:
-
-- Installing EXPO CLI and EAS CLI
-- Creating an Expo account
-- Creating a project
-- Configuring your project's app config
-- Configuring `expo-updates`
-- Creating a build for the project
-- Publishing an update
+Setting up EAS Update allows you to push critical bug fixes and improvements that your users need right away.
 
 ## Install Expo CLI and EAS CLI
 
@@ -41,7 +33,7 @@ Setting up EAS Update allows you to push critical bug fixes and improvements tha
 
 2. Select "Managed workflow > blank".
 
-## Configuring your project
+## Configure your project
 
 1. We'll need to register our app with EAS and add our project's ID to **app.json**. Run:
 
@@ -127,11 +119,11 @@ For an app to request an update from EAS' servers, we'll need to install the `ex
 expo install expo-updates
 ```
 
-## Creating a build for the project
+## Create a build for the project
 
 Next, we'll need to create a build for Android or iOS. [Learn more](/build/setup).
 
-## Publishing an update
+## Publish an update
 
 Now we're ready to publish an update to the builds created in the previous step.
 
