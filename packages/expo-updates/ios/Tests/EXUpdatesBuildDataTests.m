@@ -16,7 +16,10 @@
 @property (nonatomic, strong) EXUpdatesConfig *configChannelTest;
 @property (nonatomic, strong) NSDictionary *configChannelTestTwoDictionary;
 @property (nonatomic, strong) EXUpdatesConfig *configChannelTestTwo;
-
+@property (nonatomic, strong) NSDictionary *configReleaseChannelTestDictionary;
+@property (nonatomic, strong) EXUpdatesConfig *configReleaseChannelTest;
+@property (nonatomic, strong) NSDictionary *configReleaseChannelTestTwoDictionary;
+@property (nonatomic, strong) EXUpdatesConfig *configReleaseChannelTestTwo;
 @end
 
 static NSString * const scopeKey = @"test";
@@ -51,17 +54,29 @@ static NSString * const scopeKey = @"test";
   _configChannelTestDictionary = @{
     @"EXUpdatesScopeKey": scopeKey,
     @"EXUpdatesURL": @"https://exp.host/@test/test",
-    @"EXUpdatesReleaseChannel": @"default",
     @"EXUpdatesRequestHeaders": @{@"expo-channel-name":@"test"}
   };
   _configChannelTest = [EXUpdatesConfig configWithDictionary:_configChannelTestDictionary];
   _configChannelTestTwoDictionary = @{
     @"EXUpdatesScopeKey": scopeKey,
     @"EXUpdatesURL": @"https://exp.host/@test/test",
-    @"EXUpdatesReleaseChannel": @"default",
     @"EXUpdatesRequestHeaders": @{@"expo-channel-name":@"testTwo"}
   };
   _configChannelTestTwo = [EXUpdatesConfig configWithDictionary:_configChannelTestTwoDictionary
+  ];
+  
+  _configReleaseChannelTestDictionary = @{
+    @"EXUpdatesScopeKey": scopeKey,
+    @"EXUpdatesURL": @"https://exp.host/@test/test",
+    @"EXUpdatesReleaseChannel": @"test",
+  };
+  _configReleaseChannelTest = [EXUpdatesConfig configWithDictionary:_configReleaseChannelTestDictionary];
+  _configReleaseChannelTestTwoDictionary = @{
+    @"EXUpdatesScopeKey": scopeKey,
+    @"EXUpdatesURL": @"https://exp.host/@test/test",
+    @"EXUpdatesReleaseChannel": @"testTwo",
+  };
+  _configReleaseChannelTestTwo = [EXUpdatesConfig configWithDictionary:_configReleaseChannelTestTwoDictionary
   ];
   
   // start every test with an update
@@ -149,7 +164,7 @@ static NSString * const scopeKey = @"test";
 }
 
 // check no updates are cleared and build data is not set
-- (void)test_ensureBuildDataIsConsistent_buildDataIsConsistent {
+- (void)test_ensureBuildDataIsConsistent_buildDataIsConsistent_channel {
 
   dispatch_sync(_db.databaseQueue, ^{
     NSError *error;
@@ -179,9 +194,39 @@ static NSString * const scopeKey = @"test";
     XCTAssertNil(error);
   });
 }
+ 
+- (void)test_ensureBuildDataIsConsistent_buildDataIsConsistent_releaseChannel {
+  dispatch_sync(_db.databaseQueue, ^{
+    NSError *error;
+    NSArray<EXUpdatesUpdate *> *allUpdates = [_db allUpdatesWithConfig:_configChannelTest error:&error];
+    XCTAssertEqual(allUpdates.count, 1);
+    XCTAssertNil(error);
+  
+    [_db setStaticBuildData:[EXUpdatesBuildData getBuildDataFromConfig:_configReleaseChannelTest] withScopeKey:_configReleaseChannelTest.scopeKey error:nil];
+
+  });
+
+  dispatch_async(_db.databaseQueue, ^{
+    NSError *error;
+    [EXUpdatesBuildData ensureBuildDataIsConsistent:self->_db config:self->_configReleaseChannelTest error:nil];
+    XCTAssertNil(error);
+  });
+
+
+  dispatch_sync(_db.databaseQueue, ^{
+    NSError *error;
+    NSDictionary *staticBuildData = [_db staticBuildDataWithScopeKey:scopeKey error:nil];
+
+
+    XCTAssertTrue([staticBuildData isEqualToDictionary:[EXUpdatesBuildData getBuildDataFromConfig:_configReleaseChannelTest]]);
+    NSArray<EXUpdatesUpdate *> *allUpdates = [_db allUpdatesWithConfig:_configReleaseChannelTest error:nil];
+    XCTAssertEqual(allUpdates.count, 1);
+    XCTAssertNil(error);
+  });
+}
 
 // check updates are cleared and build data is set
-- (void)test_ensureBuildDataIsConsistent_buildDataIsInconsistent {
+- (void)test_ensureBuildDataIsConsistent_buildDataIsInconsistent_channel {
   dispatch_sync(_db.databaseQueue, ^{
     NSError *error;
     NSArray<EXUpdatesUpdate *> *allUpdates = [_db allUpdatesWithConfig:_configChannelTest error:&error];
@@ -204,6 +249,33 @@ static NSString * const scopeKey = @"test";
     XCTAssertNil(error);
 
     NSArray<EXUpdatesUpdate *> *allUpdates = [_db allUpdatesWithConfig:_configChannelTestTwo error:&error];
+    XCTAssertEqual(allUpdates.count, 0);
+  });
+}
+
+- (void)test_ensureBuildDataIsConsistent_buildDataIsInconsistent_releaseChannel {
+  dispatch_sync(_db.databaseQueue, ^{
+    NSError *error;
+    NSArray<EXUpdatesUpdate *> *allUpdates = [_db allUpdatesWithConfig:_configReleaseChannelTest error:&error];
+    XCTAssertEqual(allUpdates.count, 1);
+    XCTAssertNil(error);
+    
+    [_db setStaticBuildData:[EXUpdatesBuildData getBuildDataFromConfig:_configReleaseChannelTest] withScopeKey:_configReleaseChannelTest.scopeKey error:nil];
+  });
+  
+  dispatch_async(_db.databaseQueue, ^{
+    NSError *error;
+    [EXUpdatesBuildData ensureBuildDataIsConsistent:self->_db config:self->_configReleaseChannelTestTwo error:&error];
+    XCTAssertNil(error);
+  });
+  
+  dispatch_sync(_db.databaseQueue, ^{
+    NSError *error;
+    NSDictionary *staticBuildData = [_db staticBuildDataWithScopeKey:scopeKey error:&error];
+    XCTAssertTrue([staticBuildData isEqualToDictionary:[EXUpdatesBuildData getBuildDataFromConfig:_configReleaseChannelTestTwo]]);
+    XCTAssertNil(error);
+
+    NSArray<EXUpdatesUpdate *> *allUpdates = [_db allUpdatesWithConfig:_configReleaseChannelTestTwo error:&error];
     XCTAssertEqual(allUpdates.count, 0);
   });
 }
