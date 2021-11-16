@@ -217,4 +217,16 @@ const RENAMED_PAGES: Record<string, string> = {
 
   // updates
   '/guides/configuring-ota-updates/': '/guides/configuring-updates/',
+
+  // Rename of clients -> development
+  // should be temporary until https://github.com/expo/expo/pull/15201 lands
+  '/clients/compatibility/': '/development/compatibility/',
+  '/clients/development-workflows/': '/development/development-workflows/',
+  '/clients/eas-build/': '/development/eas-build/',
+  '/clients/extending-the-dev-menu/': '/development/extending-the-dev-menu/',
+  '/clients/getting-started/': '/development/getting-started/',
+  '/clients/installation/': '/development/installation/',
+  '/clients/introduction/': '/development/introduction/',
+  '/clients/troubleshooting/': '/development/troubleshooting/',
+  '/clients/upgrading/': '/development/upgrading/',
 };
