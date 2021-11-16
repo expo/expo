@@ -18,7 +18,7 @@ class PairTypeConverter(
     }
   )
 
-  override fun notOptionalConvert(value: Dynamic): Pair<*, *> {
+  override fun convertNonOptional(value: Dynamic): Pair<*, *> {
     val jsArray = value.asArray()
     return Pair(
       firstConverter.convert(jsArray.getDynamic(0)),

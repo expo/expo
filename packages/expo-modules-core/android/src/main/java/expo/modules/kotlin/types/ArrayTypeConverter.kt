@@ -1,6 +1,5 @@
 package expo.modules.kotlin.types
 
-
 import com.facebook.react.bridge.Dynamic
 import expo.modules.kotlin.recycle
 import kotlin.reflect.KClass
@@ -16,7 +15,7 @@ class ArrayTypeConverter(
     }
   )
 
-  override fun notOptionalConvert(value: Dynamic): Array<*> {
+  override fun convertNonOptional(value: Dynamic): Array<*> {
     val jsArray = value.asArray()
     val array = createTypedArray(jsArray.size())
     for (i in 0 until jsArray.size()) {

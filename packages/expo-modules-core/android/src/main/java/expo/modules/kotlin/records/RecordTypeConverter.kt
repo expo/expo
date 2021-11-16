@@ -18,7 +18,7 @@ class RecordTypeConverter<T : Record>(
 ) : TypeConverter<T>(type.isMarkedNullable) {
   private val objectConstructorFactory = ObjectConstructorFactory()
 
-  override fun notOptionalConvert(value: Dynamic): T {
+  override fun convertNonOptional(value: Dynamic): T {
     val jsMap = value.asMap()
 
     val kClass = type.classifier as KClass<*>

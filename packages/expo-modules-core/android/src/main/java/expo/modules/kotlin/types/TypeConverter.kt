@@ -12,8 +12,8 @@ abstract class TypeConverter<Type : Any>(
       }
       throw IllegalArgumentException()
     }
-    return notOptionalConvert(value)
+    return convertNonOptional(value)
   }
 
-  abstract fun notOptionalConvert(value: Dynamic): Type
+  abstract fun convertNonOptional(value: Dynamic): Type
 }

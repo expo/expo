@@ -12,7 +12,7 @@ class EnumTypeConverter(
   private val enumClass: KClass<Enum<*>>,
   isOptional: Boolean
 ) : TypeConverter<Enum<*>>(isOptional) {
-  override fun notOptionalConvert(value: Dynamic): Enum<*> {
+  override fun convertNonOptional(value: Dynamic): Enum<*> {
     @Suppress("UNCHECKED_CAST")
     val enumConstants = requireNotNull(enumClass.java.enumConstants) {
       "Passed type is not an enum type."

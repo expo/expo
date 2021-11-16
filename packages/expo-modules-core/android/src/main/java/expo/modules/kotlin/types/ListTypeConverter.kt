@@ -14,7 +14,7 @@ class ListTypeConverter(
     }
   )
 
-  override fun notOptionalConvert(value: Dynamic): List<*> {
+  override fun convertNonOptional(value: Dynamic): List<*> {
     val jsArray = value.asArray()
     return List(jsArray.size()) { index ->
       jsArray.getDynamic(index).recycle {

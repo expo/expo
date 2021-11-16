@@ -24,7 +24,7 @@ class MapTypeConverter(
     }
   )
 
-  override fun notOptionalConvert(value: Dynamic): Map<*, *> {
+  override fun convertNonOptional(value: Dynamic): Map<*, *> {
     val jsMap = value.asMap()
     val result = mutableMapOf<String, Any?>()
 
@@ -34,6 +34,6 @@ class MapTypeConverter(
       }
     }
 
-    return  result
+    return result
   }
 }
