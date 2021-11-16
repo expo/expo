@@ -98,6 +98,8 @@ redirects[distribution/webhooks]=build-reference/build-webhook/
 redirects[distribution/turtle-cli]=classic/turtle-cli/
 redirects[distribution/app-signing]=app-signing/app-credentials/
 redirects[guides/adhoc-builds]=archived/adhoc-builds/
+# clients is now development
+redirects[clients]=development/
 
 echo "::group::[5/6] Add custom redirects"
 for i in "${!redirects[@]}" # iterate over keys
