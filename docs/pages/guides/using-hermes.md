@@ -122,14 +122,14 @@ Please note that the Hermes bytecode format may change between different version
 
 ## JavaScript inspector for Hermes
 
-To debug JavaScript code running with Hermes, you can start your project with `expo start` then press `j` to open the inspector in Google Chrome or Microsoft Edge. _This is only supported for debug builds._
+To debug JavaScript code running with Hermes, you can start your project with `expo start` then press `j` to open the JavaScript inspector in Google Chrome or Microsoft Edge. _This is only supported for debug builds._
 
-Alternatively, you can use Hermes inspector with the following tools:
+Alternatively, you can use the JavaScript inspector from the following tools:
 
 - [Open Google Chrome DevTools manually](https://reactnative.dev/docs/hermes#debugging-js-on-hermes-using-google-chromes-devtools)
 - [Flipper](https://fbflipper.com/)
 
-> 💡 [Development builds](/development/introduction.md) built with `expo-dev-client` simplify this process by integrating directly with Hermes inspector.
+> 💡 [Development builds](/development/introduction.md) built with `expo-dev-client` simplify this process by integrating directly with the JavaScript inspector in Hermes.
 
 ## Limitations
 
