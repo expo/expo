@@ -1,7 +1,5 @@
 package expo.modules.kotlin.events
 
-import android.app.Activity
-
 sealed class EventListener(val eventName: EventName)
 
 /**
