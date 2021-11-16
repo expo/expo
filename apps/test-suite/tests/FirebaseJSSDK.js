@@ -184,13 +184,12 @@ export async function test({ describe, it, expect, beforeAll }) {
   });
 
   describe('regression', () => {
+    // see: https://github.com/firebase/firebase-js-sdk/issues/5638
     describe('firebase/auth', () => {
-      // see: https://github.com/firebase/firebase-js-sdk/issues/5638
       it('exports signInWithPhoneNumber', () => {
         expect(signInWithPhoneNumber).not.toBe(undefined);
       });
 
-      // see: https://github.com/firebase/firebase-js-sdk/issues/5638
       it('exports PhoneAuthProvider', () => {
         expect(PhoneAuthProvider).not.toBe(undefined);
       });
