@@ -190,7 +190,7 @@ static NSString * const scopeKey = @"test";
 - (void)test_ensureBuildDataIsConsistent_buildDataIsConsistent_releaseChannel {
   dispatch_sync(_db.databaseQueue, ^{
     NSError *error;
-    NSArray<EXUpdatesUpdate *> *allUpdates = [_db allUpdatesWithConfig:_configChannelTest error:&error];
+    NSArray<EXUpdatesUpdate *> *allUpdates = [_db allUpdatesWithConfig:_configReleaseChannelTest error:&error];
     XCTAssertEqual(allUpdates.count, 1);
     XCTAssertNil(error);
   
