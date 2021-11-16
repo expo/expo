@@ -35,10 +35,12 @@
     "preset": "expo-module-scripts"
   },
   "dependencies": {
-    "expo-modules-core": "~0.4.2",
     "query-string": "^6.2.0"
   },
   "devDependencies": {
     "expo-module-scripts": "^2.0.0"
+  },
+  "peerDependencies": {
+    "expo": "*"
   }
 }

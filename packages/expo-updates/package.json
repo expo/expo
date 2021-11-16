@@ -38,7 +38,6 @@
     "@expo/config-plugins": "^4.0.2",
     "@expo/metro-config": "~0.2.6",
     "expo-manifests": "~0.2.1",
-    "expo-modules-core": "~0.4.2",
     "expo-structured-headers": "~2.0.0",
     "expo-updates-interface": "~0.4.0",
     "fbemitter": "^2.1.1",
@@ -49,5 +48,8 @@
     "expo-module-scripts": "^2.0.0",
     "fs-extra": "^9.1.0",
     "memfs": "^3.2.0"
+  },
+  "peerDependencies": {
+    "expo": "*"
   }
 }
