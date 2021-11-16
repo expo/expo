@@ -1,6 +1,6 @@
 //  Copyright © 2021 650 Industries. All rights reserved.
 
-#import <EXUpdates/EXUpdatesBuildData.h>
+#import <EXUpdates/EXUpdatesBuildData+Tests.h>
 #import <EXUpdates/EXUpdatesDatabaseUtils.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -68,7 +68,8 @@ NS_ASSUME_NONNULL_BEGIN
   [database setStaticBuildData:[self getBuildDataFromConfig:config] withScopeKey:config.scopeKey error:&setStaticBuildDataError];
   if (setStaticBuildDataError){
     NSLog(@"Error setting static build data: %@", setStaticBuildDataError);
-  }}
+  }
+}
 
 @end
 
