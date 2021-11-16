@@ -3,39 +3,39 @@ package expo.modules.kotlin.types
 import com.facebook.react.bridge.Dynamic
 import expo.modules.kotlin.exception.IncompatibleArgTypeException
 import expo.modules.kotlin.toKType
-import kotlin.reflect.KProperty1
+import kotlin.reflect.KClass
+import kotlin.reflect.full.createType
 import kotlin.reflect.full.declaredMemberProperties
 import kotlin.reflect.full.primaryConstructor
 
-class EnumTypeConverter : TypeConverter {
-  override fun canHandleConversion(toType: KClassTypeWrapper): Boolean =
-    toType.classifier.java.isEnum
-
-  override fun convert(jsValue: Dynamic, toType: KClassTypeWrapper): Any {
+class EnumTypeConverter(
+  private val enumClass: KClass<Enum<*>>,
+  isOptional: Boolean
+) : TypeConverter<Enum<*>>(isOptional) {
+  override fun convertNonOptional(value: Dynamic): Enum<*> {
     @Suppress("UNCHECKED_CAST")
-    val enumConstants = requireNotNull((toType.classifier.java as? Class<Enum<*>>)?.enumConstants) {
+    val enumConstants = requireNotNull(enumClass.java.enumConstants) {
       "Passed type is not an enum type."
     }
     require(enumConstants.isNotEmpty()) {
       "Passed enum type is empty."
     }
 
-    val primaryConstructor = requireNotNull(toType.classifier.primaryConstructor) {
+    val primaryConstructor = requireNotNull(enumClass.primaryConstructor) {
       "Cannot convert js value to enum without the primary constructor."
     }
 
     if (primaryConstructor.parameters.isEmpty()) {
-      return convertEnumWithoutParameter(jsValue, toType, enumConstants)
+      return convertEnumWithoutParameter(value, enumConstants)
     } else if (primaryConstructor.parameters.size == 1) {
       return convertEnumWithParameter(
-        jsValue,
-        toType,
+        value,
         enumConstants,
         primaryConstructor.parameters.first().name!!
       )
     }
 
-    throw IncompatibleArgTypeException(jsValue.type.toKType(), toType)
+    throw IncompatibleArgTypeException(value.type.toKType(), enumClass.createType())
   }
 
   /**
@@ -44,13 +44,12 @@ class EnumTypeConverter : TypeConverter {
    */
   private fun convertEnumWithoutParameter(
     jsValue: Dynamic,
-    toType: KClassTypeWrapper,
     enumConstants: Array<out Enum<*>>
-  ): Any {
+  ): Enum<*> {
     val unwrappedJsValue = jsValue.asString()
     return requireNotNull(
       enumConstants.find { it.name == unwrappedJsValue }
-    ) { "Couldn't convert ${jsValue.asString()} to ${toType.classifier.simpleName}." }
+    ) { "Couldn't convert ${jsValue.asString()} to ${enumClass.simpleName}." }
   }
 
   /**
@@ -59,16 +58,14 @@ class EnumTypeConverter : TypeConverter {
    */
   private fun convertEnumWithParameter(
     jsValue: Dynamic,
-    toType: KClassTypeWrapper,
     enumConstants: Array<out Enum<*>>,
     parameterName: String
-  ): Any {
+  ): Enum<*> {
     // To obtain the value of parameter, we have to find a property that is connected with this parameter.
     @Suppress("UNCHECKED_CAST")
-    val parameterProperty = toType
-      .classifier
+    val parameterProperty = enumClass
       .declaredMemberProperties
-      .find { it.name == parameterName } as? KProperty1<Enum<*>, *>
+      .find { it.name == parameterName }
     requireNotNull(parameterProperty) { "Cannot find a property for $parameterName parameter." }
 
     val parameterType = parameterProperty.returnType.classifier
@@ -82,6 +79,6 @@ class EnumTypeConverter : TypeConverter {
       enumConstants.find {
         parameterProperty.get(it) == jsUnwrapValue
       }
-    ) { "Couldn't convert ${jsValue.asString()} to ${toType.classifier.simpleName} where $parameterName is the enum parameter. " }
+    ) { "Couldn't convert ${jsValue.asString()} to ${enumClass.simpleName} where $parameterName is the enum parameter. " }
   }
 }

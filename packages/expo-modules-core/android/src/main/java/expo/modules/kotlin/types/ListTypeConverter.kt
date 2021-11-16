@@ -1,24 +1,25 @@
 package expo.modules.kotlin.types
 
 import com.facebook.react.bridge.Dynamic
-import expo.modules.kotlin.iterator
-import kotlin.reflect.full.isSubclassOf
+import expo.modules.kotlin.recycle
+import kotlin.reflect.KType
 
-class ListTypeConverter : TypeConverter {
-  override fun canHandleConversion(toType: KClassTypeWrapper): Boolean =
-    toType.classifier.isSubclassOf(List::class)
-
-  override fun convert(jsValue: Dynamic, toType: KClassTypeWrapper): Any {
-    val argumentType = toType.arguments[0].type
-    requireNotNull(argumentType) { "The list type should contain the argument type." }
-
-    val jsArray = jsValue.asArray()
-    val result = ArrayList<Any?>(jsArray.size())
-
-    jsArray.iterator().forEach {
-      result.add(TypeConverterHelper.convert(it, argumentType))
+class ListTypeConverter(
+  converterProvider: TypeConverterProvider,
+  type: KType,
+) : TypeConverter<List<*>>(type.isMarkedNullable) {
+  private val elementConverter = converterProvider.obtainTypeConverter(
+    requireNotNull(type.arguments.first().type) {
+      "The list type should contain the type of elements."
     }
+  )
 
-    return result
+  override fun convertNonOptional(value: Dynamic): List<*> {
+    val jsArray = value.asArray()
+    return List(jsArray.size()) { index ->
+      jsArray.getDynamic(index).recycle {
+        elementConverter.convert(this)
+      }
+    }
   }
 }

@@ -8,7 +8,7 @@ import com.facebook.react.bridge.JavaOnlyMap
 import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.bridge.ReadableMap
 import com.google.common.truth.Truth
-import expo.modules.kotlin.types.TypeConverterHelper
+import expo.modules.kotlin.types.convert
 import org.junit.Test
 import kotlin.reflect.typeOf
 
@@ -17,7 +17,7 @@ class TypeConverterHelperTest {
   fun `cast dynamic to Int`() {
     val dynamic = DynamicFromObject(20.0)
 
-    val casted = TypeConverterHelper.convert(dynamic, typeOf<Int>())
+    val casted = convert<Int>(dynamic)
 
     Truth.assertThat(casted).isEqualTo(20)
   }
@@ -26,7 +26,7 @@ class TypeConverterHelperTest {
   fun `cast null to nullable Int`() {
     val dynamic = DynamicFromObject(null)
 
-    val casted = TypeConverterHelper.convert(dynamic, typeOf<Int?>())
+    val casted = convert<Int?>(dynamic)
 
     Truth.assertThat(casted).isEqualTo(null)
   }
@@ -39,7 +39,7 @@ class TypeConverterHelperTest {
 
     val casted = types.withIndex().map { (index, type) ->
       val dynamic = dynamics.getDynamic(index)
-      TypeConverterHelper.convert(dynamic, type)
+      convert(dynamic, type)
     }
 
     Truth.assertThat(casted).isEqualTo(dynamicSeeder)
@@ -67,7 +67,7 @@ class TypeConverterHelperTest {
 
     val casted = types.withIndex().map { (index, type) ->
       val dynamic = dynamics.getDynamic(index)
-      TypeConverterHelper.convert(dynamic, type)
+      convert(dynamic, type)
     }
 
     Truth.assertThat(casted).isEqualTo(expected)
@@ -83,7 +83,7 @@ class TypeConverterHelperTest {
     val expected = intArrayOf(10, 20, 30)
     val dynamic = DynamicFromObject(dynamicSeeder)
 
-    val casted = TypeConverterHelper.convert(dynamic, typeOf<IntArray>())
+    val casted = convert<IntArray>(dynamic)
 
     Truth.assertThat(casted).isEqualTo(expected)
   }
@@ -99,7 +99,7 @@ class TypeConverterHelperTest {
     val expected = arrayOf(10, null, 20, 30)
     val dynamic = DynamicFromObject(dynamicSeeder)
 
-    val casted = TypeConverterHelper.convert(dynamic, typeOf<Array<Int?>>())
+    val casted = convert<Array<Int?>>(dynamic)
 
     Truth.assertThat(casted).isEqualTo(expected)
   }
@@ -114,7 +114,7 @@ class TypeConverterHelperTest {
     val expected = arrayOf("string", null, "string2")
     val dynamic = DynamicFromObject(dynamicSeeder)
 
-    val casted = TypeConverterHelper.convert(dynamic, typeOf<Array<String?>>())
+    val casted = convert<Array<String?>>(dynamic)
 
     Truth.assertThat(casted).isEqualTo(expected)
   }

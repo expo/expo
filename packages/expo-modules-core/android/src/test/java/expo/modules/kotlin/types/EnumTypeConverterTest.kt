@@ -1,15 +1,10 @@
-@file:OptIn(ExperimentalStdlibApi::class)
-
 package expo.modules.kotlin.types
 
 import com.facebook.react.bridge.DynamicFromObject
 import com.google.common.truth.Truth
 import org.junit.Test
-import kotlin.reflect.typeOf
 
 class EnumTypeConverterTest {
-  private val converter = EnumTypeConverter()
-
   enum class EnumWithoutParameter {
     VALUE1, VALUE2, VALUE3
   }
@@ -27,11 +22,11 @@ class EnumTypeConverterTest {
     val v1 = DynamicFromObject("VALUE1")
     val v2 = DynamicFromObject("VALUE2")
     val v3 = DynamicFromObject("VALUE3")
-    val enumType = KClassTypeWrapper(typeOf<EnumWithoutParameter>())
+    val converter = obtainTypeConverter<EnumWithoutParameter>()
 
-    Truth.assertThat(converter.convert(v1, enumType)).isSameInstanceAs(EnumWithoutParameter.VALUE1)
-    Truth.assertThat(converter.convert(v2, enumType)).isSameInstanceAs(EnumWithoutParameter.VALUE2)
-    Truth.assertThat(converter.convert(v3, enumType)).isSameInstanceAs(EnumWithoutParameter.VALUE3)
+    Truth.assertThat(converter.convert(v1)).isSameInstanceAs(EnumWithoutParameter.VALUE1)
+    Truth.assertThat(converter.convert(v2)).isSameInstanceAs(EnumWithoutParameter.VALUE2)
+    Truth.assertThat(converter.convert(v3)).isSameInstanceAs(EnumWithoutParameter.VALUE3)
   }
 
   @Test
@@ -39,11 +34,11 @@ class EnumTypeConverterTest {
     val v1 = DynamicFromObject(1.0)
     val v2 = DynamicFromObject(2.0)
     val v3 = DynamicFromObject(3.0)
-    val enumType = KClassTypeWrapper(typeOf<EnumWithInt>())
+    val converter = obtainTypeConverter<EnumWithInt>()
 
-    Truth.assertThat(converter.convert(v1, enumType)).isSameInstanceAs(EnumWithInt.VALUE1)
-    Truth.assertThat(converter.convert(v2, enumType)).isSameInstanceAs(EnumWithInt.VALUE2)
-    Truth.assertThat(converter.convert(v3, enumType)).isSameInstanceAs(EnumWithInt.VALUE3)
+    Truth.assertThat(converter.convert(v1)).isSameInstanceAs(EnumWithInt.VALUE1)
+    Truth.assertThat(converter.convert(v2)).isSameInstanceAs(EnumWithInt.VALUE2)
+    Truth.assertThat(converter.convert(v3)).isSameInstanceAs(EnumWithInt.VALUE3)
   }
 
   @Test
@@ -51,10 +46,10 @@ class EnumTypeConverterTest {
     val v1 = DynamicFromObject("value1")
     val v2 = DynamicFromObject("value2")
     val v3 = DynamicFromObject("value3")
-    val enumType = KClassTypeWrapper(typeOf<EnumWithString>())
+    val converter = obtainTypeConverter<EnumWithString>()
 
-    Truth.assertThat(converter.convert(v1, enumType)).isSameInstanceAs(EnumWithString.VALUE1)
-    Truth.assertThat(converter.convert(v2, enumType)).isSameInstanceAs(EnumWithString.VALUE2)
-    Truth.assertThat(converter.convert(v3, enumType)).isSameInstanceAs(EnumWithString.VALUE3)
+    Truth.assertThat(converter.convert(v1)).isSameInstanceAs(EnumWithString.VALUE1)
+    Truth.assertThat(converter.convert(v2)).isSameInstanceAs(EnumWithString.VALUE2)
+    Truth.assertThat(converter.convert(v3)).isSameInstanceAs(EnumWithString.VALUE3)
   }
 }

@@ -7,12 +7,15 @@ import com.google.common.truth.Truth
 import expo.modules.PromiseMock
 import expo.modules.PromiseState
 import expo.modules.kotlin.Promise
+import expo.modules.kotlin.types.toAnyType
 import org.junit.Test
 import kotlin.reflect.KType
 import kotlin.reflect.typeOf
 
 class AnyMethodTest {
-  class MockedAnyMethod(desiredArgsTypes: Array<KType>) : AnyMethod("my-method", desiredArgsTypes) {
+  class MockedAnyMethod(
+    desiredArgsTypes: Array<KType>
+  ) : AnyMethod("my-method", desiredArgsTypes.map { it.toAnyType() }.toTypedArray()) {
     override fun callImplementation(args: Array<out Any?>, promise: Promise) {
       throw NullPointerException()
     }
@@ -64,8 +67,7 @@ class AnyMethodTest {
     )
 
     Truth.assertThat(promise.state).isEqualTo(PromiseState.REJECTED)
-    Truth.assertThat(promise.rejectCode).isEqualTo("ERR_INCOMPATIBLE_ARG_TYPE")
-    Truth.assertThat(promise.rejectMessage).isEqualTo("Argument type kotlin.String is not compatible with expected type kotlin.Int.")
+    Truth.assertThat(promise.rejectCode).isEqualTo("ERR_UNEXPECTED")
   }
 
   @Test
