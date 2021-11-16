@@ -5,6 +5,29 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+/**
+ * The build data stored by the configuration is subject to change when
+ * a user updates the binary.
+ *
+ * This can lead to inconsistent update loading behavior, for
+ * example: https://github.com/expo/expo/issues/14372
+ *
+ * This class wipes the updates when any of the tracked build data
+ * changes. This leaves the user in the same situation as a fresh install.
+ *
+ * So far we only know that `releaseChannel` and
+ * `requestHeaders[expo-channel-name]` are dangerous to change, but have
+ * included a few more that both seem unlikely to change (so we clear
+ * the updates cache rarely) and likely to
+ * cause bugs when they do. The tracked fields are:
+ *
+ *   EXUpdatesReleaseChannel
+ *   EXUpdatesURL
+ *
+ * and all of the values in json
+ *
+ *   EXUpdatesRequestHeaders
+ */
 @implementation EXUpdatesBuildData
 
 + (void)ensureBuildDataIsConsistentAsync:(EXUpdatesDatabase *)database
