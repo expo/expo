@@ -144,11 +144,9 @@ static NSString * const EXUpdatesErrorEventName = @"error";
     [self _emergencyLaunchWithFatalError:dbError];
     return;
   }
-  
-  dispatch_async(_database.databaseQueue, ^{
-    [EXUpdatesBuildData ensureBuildDataIsConsistent:self->_database config:self->_config];
-  });
-  
+
+  [EXUpdatesBuildData ensureBuildDataIsConsistentAsync:_database config:_config];
+
   [_errorRecovery startMonitoring];
 
   _loaderTask = [[EXUpdatesAppLoaderTask alloc] initWithConfig:_config

@@ -117,7 +117,7 @@ static NSString * const scopeKey = @"test";
   dispatch_async(_db.databaseQueue, ^{
     [EXUpdatesBuildData clearAllUpdatesFromDatabase:self->_db config:self->_configChannelTest];
   });
-  
+
   dispatch_sync(_db.databaseQueue, ^{
     NSError *queryError;
     NSArray<EXUpdatesUpdate *> *allUpdatesAfter = [_db allUpdatesWithConfig:_configChannelTest error:&queryError];
@@ -142,9 +142,7 @@ static NSString * const scopeKey = @"test";
     XCTAssertNil(error);
   });
   
-  dispatch_async(_db.databaseQueue, ^{
-    [EXUpdatesBuildData ensureBuildDataIsConsistent:self->_db config:self->_configChannelTest];
-  });
+  [EXUpdatesBuildData ensureBuildDataIsConsistentAsync:self->_db config:self->_configChannelTest];
 
 
   
@@ -174,9 +172,7 @@ static NSString * const scopeKey = @"test";
 
   });
 
-  dispatch_async(_db.databaseQueue, ^{
-    [EXUpdatesBuildData ensureBuildDataIsConsistent:self->_db config:self->_configChannelTest];
-  });
+  [EXUpdatesBuildData ensureBuildDataIsConsistentAsync:self->_db config:self->_configChannelTest];
 
 
   dispatch_sync(_db.databaseQueue, ^{
@@ -202,9 +198,7 @@ static NSString * const scopeKey = @"test";
 
   });
 
-  dispatch_async(_db.databaseQueue, ^{
-    [EXUpdatesBuildData ensureBuildDataIsConsistent:self->_db config:self->_configReleaseChannelTest];
-  });
+  [EXUpdatesBuildData ensureBuildDataIsConsistentAsync:self->_db config:self->_configReleaseChannelTest];
 
 
   dispatch_sync(_db.databaseQueue, ^{
@@ -230,9 +224,7 @@ static NSString * const scopeKey = @"test";
     [_db setStaticBuildData:[EXUpdatesBuildData getBuildDataFromConfig:_configChannelTest] withScopeKey:_configChannelTest.scopeKey error:nil];
   });
   
-  dispatch_async(_db.databaseQueue, ^{
-    [EXUpdatesBuildData ensureBuildDataIsConsistent:self->_db config:self->_configChannelTestTwo];
-  });
+  [EXUpdatesBuildData ensureBuildDataIsConsistentAsync:self->_db config:self->_configChannelTestTwo];
   
   dispatch_sync(_db.databaseQueue, ^{
     NSError *error;
@@ -255,9 +247,7 @@ static NSString * const scopeKey = @"test";
     [_db setStaticBuildData:[EXUpdatesBuildData getBuildDataFromConfig:_configReleaseChannelTest] withScopeKey:_configReleaseChannelTest.scopeKey error:nil];
   });
   
-  dispatch_async(_db.databaseQueue, ^{
-    [EXUpdatesBuildData ensureBuildDataIsConsistent:self->_db config:self->_configReleaseChannelTestTwo];
-  });
+  [EXUpdatesBuildData ensureBuildDataIsConsistentAsync:self->_db config:self->_configReleaseChannelTestTwo];
   
   dispatch_sync(_db.databaseQueue, ^{
     NSError *error;

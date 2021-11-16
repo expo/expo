@@ -7,35 +7,38 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation EXUpdatesBuildData
 
-+ (void)ensureBuildDataIsConsistent:(EXUpdatesDatabase *)database
++ (void)ensureBuildDataIsConsistentAsync:(EXUpdatesDatabase *)database
                              config:(EXUpdatesConfig *)config;
 {
-  if (!config.scopeKey) {
-    @throw [NSException exceptionWithName:NSInternalInconsistencyException
-                                   reason:@"expo-updates was configured with no scope key. Make sure a valid URL is configured under EXUpdatesURL."
-                                 userInfo:@{}];
-  }
-  
-  NSError *getStaticBuildDataError;
-  NSDictionary *staticBuildData = [database staticBuildDataWithScopeKey:config.scopeKey error:&getStaticBuildDataError];
-  if (getStaticBuildDataError){
-    NSLog(@"Error getting static build data: %@", getStaticBuildDataError);
-    return;
-  }
-  
-  if(staticBuildData == nil){
-    NSError *setStaticBuildDataError;
-    [database setStaticBuildData:[self getBuildDataFromConfig:config] withScopeKey:config.scopeKey error:&setStaticBuildDataError];
-    if (setStaticBuildDataError){
-      NSLog(@"Error setting static build data: %@", setStaticBuildDataError);
+  dispatch_async(database.databaseQueue, ^{
+    if (!config.scopeKey) {
+      @throw [NSException exceptionWithName:NSInternalInconsistencyException
+                                     reason:@"expo-updates was configured with no scope key. Make sure a valid URL is configured under EXUpdatesURL."
+                                   userInfo:@{}];
     }
-  } else {
-    NSDictionary *impliedStaticBuildData = [self getBuildDataFromConfig:config];
-    BOOL isConsistent = [staticBuildData isEqualToDictionary:impliedStaticBuildData];
-    if (!isConsistent){
-      [self clearAllUpdatesFromDatabase:database config:config];
+    
+    NSError *getStaticBuildDataError;
+    NSDictionary *staticBuildData = [database staticBuildDataWithScopeKey:config.scopeKey error:&getStaticBuildDataError];
+    if (getStaticBuildDataError){
+      NSLog(@"Error getting static build data: %@", getStaticBuildDataError);
+      return;
     }
-  }
+    
+    if(staticBuildData == nil){
+      NSError *setStaticBuildDataError;
+      [database setStaticBuildData:[self getBuildDataFromConfig:config] withScopeKey:config.scopeKey error:&setStaticBuildDataError];
+      if (setStaticBuildDataError){
+        NSLog(@"Error setting static build data: %@", setStaticBuildDataError);
+      }
+    } else {
+      NSDictionary *impliedStaticBuildData = [self getBuildDataFromConfig:config];
+      BOOL isConsistent = [staticBuildData isEqualToDictionary:impliedStaticBuildData];
+      if (!isConsistent){
+        [self clearAllUpdatesFromDatabase:database config:config];
+      }
+    }
+  });
+
 }
 
 + (nullable NSDictionary *)getBuildDataFromConfig:(EXUpdatesConfig *)config;

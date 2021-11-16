@@ -7,7 +7,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface EXUpdatesBuildData : NSObject
 
-+ (void)ensureBuildDataIsConsistent:(EXUpdatesDatabase *)database config:(EXUpdatesConfig *)config;
++ (void)ensureBuildDataIsConsistentAsync:(EXUpdatesDatabase *)database config:(EXUpdatesConfig *)config;
 
 @end
 
