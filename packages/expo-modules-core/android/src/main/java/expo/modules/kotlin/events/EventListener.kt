@@ -15,13 +15,13 @@ class BasicEventListener(
 }
 
 /**
- * Listener for events without payload.
+ * Listener for events with payload.
  */
-class EventListenerWithSender<Sender>(
+class EventListenerWithPayload<Payload>(
   eventName: EventName,
-  val body: (Sender) -> Unit
+  val body: (Payload) -> Unit
 ) : EventListener(eventName) {
-  fun call(sender: Sender) {
+  fun call(sender: Payload) {
     body(sender)
   }
 }
