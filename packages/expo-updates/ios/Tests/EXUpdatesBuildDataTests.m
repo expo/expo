@@ -115,7 +115,7 @@ static NSString * const scopeKey = @"test";
   });
   
   dispatch_async(_db.databaseQueue, ^{
-    [EXUpdatesBuildData clearAllUpdatesFromDatabase:self->_db config:self->_configChannelTest];
+    [EXUpdatesBuildData clearAllUpdatesAndSetStaticBuildData:self->_db config:self->_configChannelTest];
   });
 
   dispatch_sync(_db.databaseQueue, ^{

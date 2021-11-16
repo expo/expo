@@ -34,7 +34,7 @@ NS_ASSUME_NONNULL_BEGIN
       NSDictionary *impliedStaticBuildData = [self getBuildDataFromConfig:config];
       BOOL isConsistent = [staticBuildData isEqualToDictionary:impliedStaticBuildData];
       if (!isConsistent) {
-        [self clearAllUpdatesFromDatabase:database config:config];
+        [self clearAllUpdatesAndSetStaticBuildData:database config:config];
       }
     }
   });
@@ -50,7 +50,7 @@ NS_ASSUME_NONNULL_BEGIN
   };
 }
 
-+ (void)clearAllUpdatesFromDatabase:(EXUpdatesDatabase *)database
++ (void)clearAllUpdatesAndSetStaticBuildData:(EXUpdatesDatabase *)database
                              config:(EXUpdatesConfig *)config
 {
   NSError *queryError;

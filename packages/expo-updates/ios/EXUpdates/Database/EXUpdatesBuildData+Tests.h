@@ -7,7 +7,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface EXUpdatesBuildData (Tests)
 
 + (nullable NSDictionary *)getBuildDataFromConfig:(EXUpdatesConfig *)config;
-+ (void)clearAllUpdatesFromDatabase:(EXUpdatesDatabase *)database config:(EXUpdatesConfig *)config;
++ (void)clearAllUpdatesAndSetStaticBuildData:(EXUpdatesDatabase *)database config:(EXUpdatesConfig *)config;
 
 @end
 
