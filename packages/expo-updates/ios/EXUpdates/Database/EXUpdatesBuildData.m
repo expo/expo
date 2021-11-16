@@ -19,21 +19,21 @@ NS_ASSUME_NONNULL_BEGIN
     
     NSError *getStaticBuildDataError;
     NSDictionary *staticBuildData = [database staticBuildDataWithScopeKey:config.scopeKey error:&getStaticBuildDataError];
-    if (getStaticBuildDataError){
+    if (getStaticBuildDataError) {
       NSLog(@"Error getting static build data: %@", getStaticBuildDataError);
       return;
     }
     
-    if(staticBuildData == nil){
+    if(staticBuildData == nil) {
       NSError *setStaticBuildDataError;
       [database setStaticBuildData:[self getBuildDataFromConfig:config] withScopeKey:config.scopeKey error:&setStaticBuildDataError];
-      if (setStaticBuildDataError){
+      if (setStaticBuildDataError) {
         NSLog(@"Error setting static build data: %@", setStaticBuildDataError);
       }
     } else {
       NSDictionary *impliedStaticBuildData = [self getBuildDataFromConfig:config];
       BOOL isConsistent = [staticBuildData isEqualToDictionary:impliedStaticBuildData];
-      if (!isConsistent){
+      if (!isConsistent) {
         [self clearAllUpdatesFromDatabase:database config:config];
       }
     }
@@ -55,21 +55,21 @@ NS_ASSUME_NONNULL_BEGIN
 {
   NSError *queryError;
   NSArray<EXUpdatesUpdate *> *allUpdates = [database allUpdatesWithConfig:config error:&queryError];
-  if (queryError){
+  if (queryError) {
     NSLog(@"Error loading updates from database: %@", queryError);
     return;
   }
   
   NSError *deletionError;
   [database deleteUpdates:allUpdates error:&deletionError];
-  if (deletionError){
+  if (deletionError) {
     NSLog(@"Error clearing all updates from database: %@", deletionError);
     return;
   }
   
   NSError *setStaticBuildDataError;
   [database setStaticBuildData:[self getBuildDataFromConfig:config] withScopeKey:config.scopeKey error:&setStaticBuildDataError];
-  if (setStaticBuildDataError){
+  if (setStaticBuildDataError) {
     NSLog(@"Error setting static build data: %@", setStaticBuildDataError);
   }
 }
