@@ -1,6 +1,6 @@
 //  Copyright © 2019 650 Industries. All rights reserved.
 
-#import <EXUpdates/EXUpdatesDatabase.h>
+#import <EXUpdates/EXUpdatesDatabase+Tests.h>
 #import <EXUpdates/EXUpdatesDatabaseInitialization.h>
 #import <EXUpdates/EXUpdatesDatabaseUtils.h>
 
@@ -16,7 +16,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 static NSString * const EXUpdatesDatabaseManifestFiltersKey = @"manifestFilters";
 static NSString * const EXUpdatesDatabaseServerDefinedHeadersKey = @"serverDefinedHeaders";
-static NSString * const EXUpdatesDatabaseStaticBuildKey = @"staticBuildData";
+static NSString * const EXUpdatesDatabaseStaticBuildDataKey = @"staticBuildData";
 
 @implementation EXUpdatesDatabase
 
@@ -508,7 +508,7 @@ static NSString * const EXUpdatesDatabaseStaticBuildKey = @"staticBuildData";
 
 - (nullable NSDictionary *)staticBuildDataWithScopeKey:(NSString *)scopeKey error:(NSError ** _Nullable)error
 {
-  return [self _jsonDataWithKey:EXUpdatesDatabaseStaticBuildKey scopeKey:scopeKey error:error];
+  return [self _jsonDataWithKey:EXUpdatesDatabaseStaticBuildDataKey scopeKey:scopeKey error:error];
 }
 
 - (void)setServerDefinedHeaders:(NSDictionary *)serverDefinedHeaders withScopeKey:(NSString *)scopeKey error:(NSError ** _Nullable)error
@@ -549,7 +549,7 @@ static NSString * const EXUpdatesDatabaseStaticBuildKey = @"staticBuildData";
 
 - (void)setStaticBuildData:(NSDictionary *)staticBuildData withScopeKey:(NSString *)scopeKey error:(NSError ** _Nullable)error
 {
-  [self _setJsonData:staticBuildData withKey:EXUpdatesDatabaseStaticBuildKey scopeKey:scopeKey isInTransaction:NO error:error];
+  [self _setJsonData:staticBuildData withKey:EXUpdatesDatabaseStaticBuildDataKey scopeKey:scopeKey isInTransaction:NO error:error];
 }
 
 # pragma mark - helper methods
