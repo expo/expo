@@ -38,7 +38,6 @@
   },
   "dependencies": {
     "expo-gl-cpp": "~11.0.0",
-    "expo-modules-core": "~0.4.2",
     "invariant": "^2.2.4"
   },
   "devDependencies": {
@@ -46,5 +45,8 @@
     "@types/offscreencanvas": "2019.6.4",
     "expo-module-scripts": "^2.0.0",
     "react-test-renderer": "~17.0.1"
+  },
+  "peerDependencies": {
+    "expo": "*"
   }
 }

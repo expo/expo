@@ -33,11 +33,12 @@
   "jest": {
     "preset": "expo-module-scripts"
   },
-  "dependencies": {
-    "expo-modules-core": "~0.4.2"
-  },
+  "dependencies": {},
   "devDependencies": {
     "@testing-library/react-hooks": "^7.0.1",
     "expo-module-scripts": "^2.0.0"
+  },
+  "peerDependencies": {
+    "expo": "*"
   }
 }
