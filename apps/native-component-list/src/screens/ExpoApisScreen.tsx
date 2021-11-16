@@ -93,6 +93,7 @@ const screens = [
   'TextToSpeech',
   'TrackingTransparency',
   'ViewShot',
+  'Updates',
   'WebBrowser',
 ];
 
