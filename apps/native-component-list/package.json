@@ -133,7 +133,7 @@
     "expo-task-manager": "~10.0.1",
     "expo-three": "6.0.1",
     "expo-tracking-transparency": "~2.0.1",
-    "expo-updates": "0.10.3",
+    "expo-updates": "~0.10.15",
     "expo-video-thumbnails": "~6.0.1",
     "expo-web-browser": "~10.0.1",
     "fbemitter": "^2.1.1",
