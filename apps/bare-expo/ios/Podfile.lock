@@ -52,7 +52,7 @@ PODS:
     - ExpoModulesCore
   - EXDocumentPicker (10.0.1):
     - ExpoModulesCore
-  - EXErrorRecovery (3.0.1):
+  - EXErrorRecovery (3.0.4):
     - ExpoModulesCore
   - EXFacebook (12.0.1):
     - ExpoModulesCore
@@ -1273,7 +1273,7 @@ SPEC CHECKSUMS:
   EXCrypto: 271b6c03b4016f3286a423c50b34b40ecf22da44
   EXDevice: 70d2d1dcfcd045e5d4c02b46bbcbb243f433b1dc
   EXDocumentPicker: 3893d5db528615f975ed57f3b9a8893b70857031
-  EXErrorRecovery: 6bcc12e006d5484753190ce66f2cd4063d27f50b
+  EXErrorRecovery: deea88a01d38f8b1c1181b4e1d179b0ba0e4bb5b
   EXFacebook: b31c4b2a13559347118c8f6dfff5d71bf22f7cfe
   EXFaceDetector: 09a1352293c55282aa7c623724d7c85686237b3a
   EXFileSystem: a099e3b7d0fee5e50a39b316aa90524ad8713c5a
