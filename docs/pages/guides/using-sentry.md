@@ -202,6 +202,10 @@ In order to ensure that errors are reported reliably, Sentry defers reporting th
 
 Unless `enableInExpoDevelopment: true` is set, all your dev/local errors will be ignored and only app releases will report errors to Sentry. You can call methods like `Sentry.Native.captureException(new Error('Oops!'))` but these methods will be no-op.
 
+## Sentry and EAS Build
+
+If you are using Sentry with EAS Build, especially if building a dev-client, you will want to review the [sentry-expo README](https://github.com/expo/sentry-expo/blob/master/README.md).
+
 ## Learn more about Sentry
 
 Sentry does more than just catch fatal errors, learn more about how to use Sentry from their [JavaScript usage docs](https://docs.sentry.io/platforms/javascript/).
