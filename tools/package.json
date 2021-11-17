@@ -42,7 +42,7 @@
     "@types/source-map-support": "^0.4.1",
     "@types/uuid": "^3.4.4",
     "@types/ws": "^6.0.1",
-    "aws-sdk": "^2.357.0",
+    "aws-sdk": "^2.814.0",
     "base-64": "^0.1.0",
     "body-parser": "^1.18.2",
     "chalk": "^2.1.0",
