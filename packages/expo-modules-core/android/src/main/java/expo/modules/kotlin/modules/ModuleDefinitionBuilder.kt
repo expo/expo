@@ -45,8 +45,8 @@ class ModuleDefinitionBuilder {
   @PublishedApi
   internal val eventListeners = mutableMapOf<EventName, EventListener>()
 
-  fun build(): ModuleDefinition {
-    return ModuleDefinition(
+  fun build(): ModuleDefinitionData {
+    return ModuleDefinitionData(
       requireNotNull(name),
       constantsProvider,
       methods,

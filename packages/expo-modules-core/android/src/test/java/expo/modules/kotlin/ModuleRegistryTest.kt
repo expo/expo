@@ -2,20 +2,20 @@ package expo.modules.kotlin
 
 import com.google.common.truth.Truth
 import expo.modules.kotlin.modules.Module
-import expo.modules.kotlin.modules.module
+import expo.modules.kotlin.modules.ModuleDefinition
 import io.mockk.mockk
 import org.junit.Assert
 import org.junit.Test
 import java.lang.ref.WeakReference
 
 class M1 : Module() {
-  override fun definition() = module {
+  override fun definition() = ModuleDefinition {
     name("m1")
   }
 }
 
 class M2 : Module() {
-  override fun definition() = module {
+  override fun definition() = ModuleDefinition {
     name("m2")
   }
 }
@@ -45,7 +45,7 @@ class ModuleRegistryTest {
   @Test
   fun `should throw on incorrect definition`() {
     class IncorrectModule : Module() {
-      override fun definition() = module { }
+      override fun definition() = ModuleDefinition { }
     }
 
     val provider = object : ModulesProvider {

@@ -15,9 +15,10 @@ abstract class Module {
     moduleEventEmitter?.emit(name, body)
   }
 
-  abstract fun definition(): ModuleDefinition
+  abstract fun definition(): ModuleDefinitionData
 }
 
-inline fun module(block: ModuleDefinitionBuilder.() -> Unit): ModuleDefinition {
+@Suppress("FunctionName")
+inline fun ModuleDefinition(block: ModuleDefinitionBuilder.() -> Unit): ModuleDefinitionData {
   return ModuleDefinitionBuilder().also(block).build()
 }

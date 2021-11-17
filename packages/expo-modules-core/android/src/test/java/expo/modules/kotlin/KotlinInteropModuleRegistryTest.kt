@@ -2,13 +2,13 @@ package expo.modules.kotlin
 
 import com.google.common.truth.Truth
 import expo.modules.kotlin.modules.Module
-import expo.modules.kotlin.modules.module
+import expo.modules.kotlin.modules.ModuleDefinition
 import io.mockk.mockk
 import org.junit.Test
 import java.lang.ref.WeakReference
 
 class DummyModule_1 : Module() {
-  override fun definition() = module {
+  override fun definition() = ModuleDefinition {
     name("dummy-1")
     constants {
       mapOf(
@@ -20,7 +20,7 @@ class DummyModule_1 : Module() {
 }
 
 class DummyModule_2 : Module() {
-  override fun definition() = module {
+  override fun definition() = ModuleDefinition {
     name("dummy-2")
     viewManager {
       view { mockk() }

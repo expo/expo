@@ -6,7 +6,7 @@ import expo.modules.kotlin.events.EventsDefinition
 import expo.modules.kotlin.methods.AnyMethod
 import expo.modules.kotlin.views.ViewManagerDefinition
 
-class ModuleDefinition(
+class ModuleDefinitionData(
   val name: String,
   val constantsProvider: () -> Map<String, Any?>,
   val methods: Map<String, AnyMethod>,

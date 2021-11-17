@@ -12,11 +12,11 @@ class ModuleDefinitionBuilderTest {
   @Test
   fun `builder should throw if modules name wasn't provided`() {
     Assert.assertThrows(IllegalArgumentException::class.java) {
-      module { }
+      ModuleDefinition { }
     }
 
     Assert.assertThrows(IllegalArgumentException::class.java) {
-      module {
+      ModuleDefinition {
         function("method") { _: Int, _: Int -> }
       }
     }
@@ -27,7 +27,7 @@ class ModuleDefinitionBuilderTest {
     val moduleName = "Module"
     val moduleConstants = emptyMap<String, Any?>()
 
-    val moduleDefinition = module {
+    val moduleDefinition = ModuleDefinition {
       name(moduleName)
       constants {
         moduleConstants
@@ -46,7 +46,7 @@ class ModuleDefinitionBuilderTest {
   fun `builder should allow adding view manager`() {
     val moduleName = "Module"
 
-    val moduleDefinition = module {
+    val moduleDefinition = ModuleDefinition {
       name(moduleName)
       viewManager {
         view { mockk() }
@@ -61,7 +61,7 @@ class ModuleDefinitionBuilderTest {
   fun `builder should respect events`() {
     val moduleName = "Module"
 
-    val moduleDefinition = module {
+    val moduleDefinition = ModuleDefinition {
       name(moduleName)
       onCreate { }
       onDestroy { }
@@ -80,7 +80,7 @@ class ModuleDefinitionBuilderTest {
 
   @Test
   fun `onStartObserving should be translated into method`() {
-    val moduleDefinition = module {
+    val moduleDefinition = ModuleDefinition {
       name("module")
       onStartObserving { }
     }
@@ -90,7 +90,7 @@ class ModuleDefinitionBuilderTest {
 
   @Test
   fun `onStopObserving should be translated into method`() {
-    val moduleDefinition = module {
+    val moduleDefinition = ModuleDefinition {
       name("module")
       onStopObserving { }
     }

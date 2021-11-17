@@ -7,12 +7,12 @@ import android.os.Build
 import android.telephony.TelephonyManager
 import android.util.Log
 import expo.modules.kotlin.modules.Module
-import expo.modules.kotlin.modules.module
+import expo.modules.kotlin.modules.ModuleDefinition
 
 const val moduleName = "ExpoCellular"
 
 class CellularModule : Module() {
-  override fun definition() = module {
+  override fun definition() = ModuleDefinition {
     name(moduleName)
     constants {
       val telephonyManager = telephonyManager()
