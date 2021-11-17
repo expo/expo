@@ -60,6 +60,7 @@ object BuildData {
     val releaseChannelKey = UpdatesConfiguration.UPDATES_CONFIGURATION_RELEASE_CHANNEL_KEY
     val updateUrlKey = UpdatesConfiguration.UPDATES_CONFIGURATION_UPDATE_URL_KEY
     val requestHeadersKey = UpdatesConfiguration.UPDATES_CONFIGURATION_REQUEST_HEADERS_KEY
+
     // check equality of the two JSONObjects. The build data object is string valued with the
     // exception of "requestHeaders" which is a string valued object.
     return mutableListOf<Boolean>().apply {
