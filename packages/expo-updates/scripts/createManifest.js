@@ -18,6 +18,8 @@ const filterPlatformAssetScales = require('./filterPlatformAssetScales');
     projectRoot = path.resolve(possibleProjectRoot);
   } else if (fs.existsSync(path.join(possibleProjectRoot, '..', entryFile))) {
     projectRoot = path.resolve(possibleProjectRoot, '..');
+  } else {
+    throw new Error('Error loading application entrypoint. If your entrypoint is not index.js, please set ENTRY_FILE environment variable with your app entrypoint.')
   }
 
   process.chdir(projectRoot);
