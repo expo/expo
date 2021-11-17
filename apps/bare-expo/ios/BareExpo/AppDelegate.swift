@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import ExpoModulesCore
 import EXDevMenuInterface
 #if EX_DEV_MENU_ENABLED
 import EXDevMenu
