@@ -10,6 +10,9 @@
 
 ### 💡 Others
 
+- Replace custom `OptionalKeys` type wrapper with embedded in TypeScript `Partial`. ([#15192](https://github.com/expo/expo/pull/15192) by [@Simek](https://github.com/Simek))
+- Extract nested object in current types to new, separate types: `AlarmLocation` and `DaysOfTheWeek`. ([#15192](https://github.com/expo/expo/pull/15192) by [@Simek](https://github.com/Simek))
+
 ## 10.0.1 — 2021-10-01
 
 _This version does not introduce any user-facing changes._

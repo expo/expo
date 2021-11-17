@@ -97,6 +97,7 @@ async function action({packageName, version = 'unversioned'}: ActionOptions) {
     'expo-barcode-scanner': ['BarCodeScanner.tsx'],
     'expo-blur': ['index.ts'],
     'expo-brightness': ['Brightness.ts'],
+    'expo-calendar': ['Calendar.ts'],
     'expo-cellular': ['Cellular.ts'],
     'expo-checkbox': ['Checkbox.ts'],
     'expo-clipboard': ['Clipboard.ts'],
