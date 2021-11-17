@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- Remove deprecated `useUrl` method.
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
@@ -11,6 +13,7 @@
 ### 💡 Others
 
 - Update `qs` dependency. ([#15069](https://github.com/expo/expo/pull/15069) by [@Simek](https://github.com/Simek))
+- Extract `sendIntent` method `extras` parameter to the separate type named `SendIntentExtras`.
 
 ## 2.4.1 — 2021-10-01
 

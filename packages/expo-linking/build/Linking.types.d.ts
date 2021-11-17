@@ -3,7 +3,13 @@ export declare type QueryParams = ParsedQs;
 export declare type ParsedURL = {
     scheme: string | null;
     hostname: string | null;
+    /**
+     * The path into the app specified by the URL.
+     */
     path: string | null;
+    /**
+     * The set of query parameters specified by the query string of the url used to open the app.
+     */
     queryParams: QueryParams | null;
 };
 export declare type CreateURLOptions = {
@@ -26,3 +32,7 @@ export declare type EventType = {
 };
 export declare type URLListener = (event: EventType) => void;
 export declare type NativeURLListener = (nativeEvent: MessageEvent) => void;
+export declare type SendIntentExtras = {
+    key: string;
+    value: string | number | boolean;
+};
