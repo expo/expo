@@ -61,7 +61,7 @@ class BuildDataTest {
   fun setUp() {
     val context = InstrumentationRegistry.getInstrumentation().targetContext
     db = Room.inMemoryDatabaseBuilder(context, UpdatesDatabase::class.java).build()
-      
+
     val date = Date()
     val runtimeVersion = "1.0"
     val projectId = "https://exp.host/@esamelson/test-project"
@@ -75,7 +75,7 @@ class BuildDataTest {
   fun tearDown() {
     db.close()
   }
-    
+
   @Test
   fun clearAllUpdatesFromDatabase() {
     val shouldNotBeNull = db.updateDao().loadUpdateWithId(uuid)
