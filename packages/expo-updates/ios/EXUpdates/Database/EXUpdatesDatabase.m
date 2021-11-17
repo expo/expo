@@ -1,6 +1,6 @@
 //  Copyright © 2019 650 Industries. All rights reserved.
 
-#import <EXUpdates/EXUpdatesDatabase.h>
+#import <EXUpdates/EXUpdatesDatabase+Tests.h>
 #import <EXUpdates/EXUpdatesDatabaseInitialization.h>
 #import <EXUpdates/EXUpdatesDatabaseUtils.h>
 
@@ -16,7 +16,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 static NSString * const EXUpdatesDatabaseManifestFiltersKey = @"manifestFilters";
 static NSString * const EXUpdatesDatabaseServerDefinedHeadersKey = @"serverDefinedHeaders";
-static NSString * const EXUpdatesDatabaseStaticBuildKey = @"staticBuildData";
 
 @implementation EXUpdatesDatabase
 
@@ -461,7 +460,7 @@ static NSString * const EXUpdatesDatabaseStaticBuildKey = @"staticBuildData";
     id value = rows[0][@"value"];
     if (value && [value isKindOfClass:[NSString class]]) {
       NSDictionary *jsonObject = [NSJSONSerialization JSONObjectWithData:[(NSString *)value dataUsingEncoding:NSUTF8StringEncoding] options:kNilOptions error:error];
-      if (!(error && *error) && jsonObject && [jsonObject isKindOfClass:[NSDictionary class]]) {
+      if (!*error && jsonObject && [jsonObject isKindOfClass:[NSDictionary class]]) {
         return jsonObject;
       }
     }
@@ -506,12 +505,6 @@ static NSString * const EXUpdatesDatabaseStaticBuildKey = @"staticBuildData";
   return [self _jsonDataWithKey:EXUpdatesDatabaseManifestFiltersKey scopeKey:scopeKey error:error];
 }
 
-- (nullable NSDictionary *)staticBuildDataWithScopeKey:(NSString *)scopeKey error:(NSError ** _Nullable)error
-{
-
-  return [self _jsonDataWithKey:EXUpdatesDatabaseStaticBuildKey scopeKey:scopeKey error:error];
-}
-
 - (void)setServerDefinedHeaders:(NSDictionary *)serverDefinedHeaders withScopeKey:(NSString *)scopeKey error:(NSError ** _Nullable)error
 {
   [self _setJsonData:serverDefinedHeaders withKey:EXUpdatesDatabaseServerDefinedHeadersKey scopeKey:scopeKey isInTransaction:NO error:error];
@@ -546,11 +539,6 @@ static NSString * const EXUpdatesDatabaseStaticBuildKey = @"staticBuildData";
     }
   }
   sqlite3_exec(_db, "COMMIT;", NULL, NULL, NULL);
-}
-
-- (void)setStaticBuildData:(NSDictionary *)staticBuildData withScopeKey:(NSString *)scopeKey error:(NSError ** _Nullable)error
-{
-  [self _setJsonData:staticBuildData withKey:EXUpdatesDatabaseStaticBuildKey scopeKey:scopeKey isInTransaction:NO error:error];
 }
 
 # pragma mark - helper methods
