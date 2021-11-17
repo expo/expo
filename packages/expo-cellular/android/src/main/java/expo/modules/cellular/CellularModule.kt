@@ -25,7 +25,7 @@ class CellularModule : Module() {
       )
     }
 
-    method("getCellularGenerationAsync") {
+    function("getCellularGenerationAsync") {
       try {
         getCurrentGeneration()
       } catch (e: SecurityException) {
@@ -34,23 +34,23 @@ class CellularModule : Module() {
       }
     }
 
-    method("allowsVoipAsync") {
+    function("allowsVoipAsync") {
       SipManager.isVoipSupported(context)
     }
 
-    method("getIsoCountryCodeAsync") {
+    function("getIsoCountryCodeAsync") {
       telephonyManager()?.simCountryIso
     }
 
-    method("getCarrierNameAsync") {
+    function("getCarrierNameAsync") {
       telephonyManager()?.simOperatorName
     }
 
-    method("getMobileCountryCodeAsync") {
+    function("getMobileCountryCodeAsync") {
       telephonyManager()?.simOperator?.substring(0, 3)
     }
 
-    method("getMobileNetworkCodeAsync") {
+    function("getMobileNetworkCodeAsync") {
       telephonyManager()?.simOperator?.substring(3)
     }
   }

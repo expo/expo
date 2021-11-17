@@ -23,10 +23,10 @@ class NewArchitectureBenchmark {
 
     override fun definition() = module {
       name("MyModule")
-      method("m1") { -> retNull() }
-      method("m2") { _: Int, _: Int -> retNull() }
-      method("m3") { _: IntArray -> retNull() }
-      method("m4") { _: String -> retNull() }
+      function("m1") { -> retNull() }
+      function("m2") { _: Int, _: Int -> retNull() }
+      function("m3") { _: IntArray -> retNull() }
+      function("m4") { _: String -> retNull() }
     }
   }
 

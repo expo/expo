@@ -17,7 +17,7 @@ class ModuleDefinitionBuilderTest {
 
     Assert.assertThrows(IllegalArgumentException::class.java) {
       module {
-        method("method") { _: Int, _: Int -> }
+        function("method") { _: Int, _: Int -> }
       }
     }
   }
@@ -32,8 +32,8 @@ class ModuleDefinitionBuilderTest {
       constants {
         moduleConstants
       }
-      method("m1") { _: Int -> }
-      method("m2") { _: Int, _: Promise -> }
+      function("m1") { _: Int -> }
+      function("m2") { _: Int, _: Promise -> }
     }
 
     Truth.assertThat(moduleDefinition.name).isEqualTo(moduleName)
