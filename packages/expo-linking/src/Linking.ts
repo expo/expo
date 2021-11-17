@@ -99,8 +99,8 @@ function ensureLeadingSlash(input: string, shouldAppend: boolean): string {
  * @param scheme Optional URI protocol to use in the URL `<scheme>:///`, when `undefined` the scheme
  * will be chosen from the Expo config (`app.config.js` or `app.json`).
  * @return A URL string which points to your app with the given deep link information.
- * @deprecated An alias for [`createURL()`](#createurl). This method is deprecated and will be
- * removed in a future SDK version.
+ * @deprecated An alias for [`createURL()`](#linkingcreateurlpath-namedparameters). This method is
+ * deprecated and will be removed in a future SDK version.
  */
 export function makeUrl(path: string = '', queryParams?: QueryParams, scheme?: string): string {
   return createURL(path, { queryParams, scheme, isTripleSlashed: true });
@@ -251,7 +251,7 @@ export function parse(url: string): ParsedURL {
 // @needsAudit
 /**
  * Add a handler to `Linking` changes by listening to the `url` event type and providing the handler.
- * It is recommended to use the [`useURL()`](#linkinguseurl) hook instead.
+ * It is recommended to use the [`useURL()`](#useurl) hook instead.
  * @param type The only valid type is `'url'`.
  * @param handler An [`URLListener`](#urllistener) function that takes an `event` object of the type
  * [`EventType`](#eventype).
@@ -297,7 +297,7 @@ export async function parseInitialURLAsync(): Promise<ParsedURL> {
 // @needsAudit
 /**
  * Launch an Android intent with extras.
- * > Use [IntentLauncher](../intent-launcher.md) instead, `sendIntent` is only included in
+ * > Use [IntentLauncher](../intent-launcher) instead, `sendIntent` is only included in
  * > `Linking` for API compatibility with React Native's Linking API.
  * @platform android
  */
@@ -355,7 +355,7 @@ export async function openURL(url: string): Promise<true> {
  * `false` if not.
  *
  * The `Promise` will reject on Android if it was impossible to check if the URL can be opened, and
- * on iOS if you didn't [add the specific scheme in the `LSApplicationQueriesSchemes` key inside **Info.plist**](/guides/linking.md##opening-links-to-other-apps).
+ * on iOS if you didn't [add the specific scheme in the `LSApplicationQueriesSchemes` key inside **Info.plist**](/guides/linking#opening-links-to-other-apps).
  */
 export async function canOpenURL(url: string): Promise<boolean> {
   validateURL(url);
