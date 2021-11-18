@@ -99,7 +99,15 @@ redirects[distribution/turtle-cli]=classic/turtle-cli/
 redirects[distribution/app-signing]=app-signing/app-credentials/
 redirects[guides/adhoc-builds]=archived/adhoc-builds/
 # clients is now development
-redirects[clients]=development/
+redirects[clients/compatibility]=development/compatibility/
+redirects[clients/development-workflows]=development/development-workflows/
+redirects[clients/eas-build]=development/eas-build/
+redirects[clients/extending-the-dev-menu]=development/extending-the-dev-menu/
+redirects[clients/getting-started]=development/getting-started/
+redirects[clients/installation]=development/installation/
+redirects[clients/introduction]=development/introduction/
+redirects[clients/troubleshooting]=development/troubleshooting/
+redirects[clients/upgrading]=development/upgrading/
 
 echo "::group::[5/6] Add custom redirects"
 for i in "${!redirects[@]}" # iterate over keys
