@@ -5,6 +5,9 @@ apply plugin: 'maven-publish'
 group = 'host.exp.exponent'
 version = '11.1.0'
 
+def REACT_NATIVE_DIR = new File(["node", "--print", "require.resolve('react-native/package.json')"].execute(null, rootDir).text.trim()).parent
+println(REACT_NATIVE_DIR)
+
 buildscript {
   def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.absolutePath, "ExpoModulesCorePlugin.gradle")
   if (expoModulesCorePlugin.exists()) {
@@ -71,7 +74,35 @@ android {
     targetSdkVersion safeExtGet("targetSdkVersion", 30)
     versionCode 24
     versionName "11.1.0"
+
+    externalNativeBuild {
+      cmake {
+        cppFlags "-O2 -frtti -fexceptions -Wall -fstack-protector-all"
+        abiFilters 'x86', 'x86_64', 'armeabi-v7a', 'arm64-v8a'
+        arguments "-DANDROID_STL=c++_shared",
+            "-DREACT_NATIVE_DIR=${REACT_NATIVE_DIR}"
+      }
+    }
   }
+
+  externalNativeBuild {
+    cmake {
+      path "CMakeLists.txt"
+    }
+  }
+
+  buildFeatures {
+    prefab true
+  }
+
+  packagingOptions {
+    excludes = ["**/libc++_shared.so"]
+  }
+  configurations {
+    extractHeaders
+    extractJNI
+  }
+
   lintOptions {
     abortOnError false
   }
@@ -90,6 +121,27 @@ dependencies {
 
   implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${getKotlinVersion()}"
 
+  compileOnly 'com.facebook.fbjni:fbjni:0.2.2'
+  extractHeaders 'com.facebook.fbjni:fbjni:0.2.2:headers'
+  extractJNI 'com.facebook.fbjni:fbjni:0.2.2'
+  def rnAARs = fileTree("${REACT_NATIVE_DIR}/android").matching { include "**/*.aar" }
+  if (rnAARs.any()) {
+    // node_modules/react-native has a .aar, extract headers
+    if (rnAARs.size() > 1) {
+      logger.error("More than one React Native AAR file has been found:")
+      rnAARs.each {println(it) }
+      throw new GradleException("Multiple React Native AARs found:\n${rnAARs.join("\n")}" +
+          "\nRemove the old ones and try again")
+    }
+    def rnAAR = rnAARs.singleFile
+    extractJNI(files(rnAAR))
+  } else {
+    // there is no prebuilt react-native.aar, we must be building from source. directly include the headers
+    def rnAndroid = fileTree("${REACT_NATIVE_DIR}/ReactAndroid")
+    // TODO: Build from ReactAndroid/ and React/ headers source?
+    logger.error("node_modules/react-native/android does not contain a *.aar file! Cannot build expo-av. TODO: Build from ReactAndroid/ source?")
+  }
+
   api 'com.google.android.exoplayer:exoplayer:2.13.3'
   api 'com.google.android.exoplayer:extension-okhttp:2.13.3'
 
@@ -100,4 +152,37 @@ dependencies {
   testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:5.5.1"
 
   testImplementation 'io.mockk:mockk:1.9'
+}
+
+task extractAARHeaders {
+  doLast {
+    configurations.extractHeaders.files.each {
+      def file = it.absoluteFile
+      copy {
+        from zipTree(file)
+        into "$buildDir/$file.name"
+        include "**/*.h"
+      }
+    }
+  }
+}
+
+task extractJNIFiles {
+  doLast {
+    configurations.extractJNI.files.each {
+      def file = it.absoluteFile
+      copy {
+        from zipTree(file)
+        into "$buildDir/$file.name"
+        include "jni/**/*"
+      }
+    }
+  }
+}
+
+tasks.whenTaskAdded { task ->
+  if (task.name.contains('externalNativeBuild')) {
+    task.dependsOn(extractAARHeaders)
+    task.dependsOn(extractJNIFiles)
+  }
 }
