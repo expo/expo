@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { LayoutRectangle, View } from 'react-native';
-import normalizeColor from 'react-native-web/src/modules/normalizeColor';
+import normalizeColor from 'react-native-web/dist/cjs/modules/normalizeColor';
 
 import { NativeLinearGradientPoint, NativeLinearGradientProps } from './NativeLinearGradient.types';
 
