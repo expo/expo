@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Added support for th React Native `0.66.X`.
+
 ### 🐛 Bug fixes
 
 - Fix config plugin compatibility with expo-screen-orientation. ([#14752](https://github.com/expo/expo/pull/14752) by [@esamelson](https://github.com/esamelson))
