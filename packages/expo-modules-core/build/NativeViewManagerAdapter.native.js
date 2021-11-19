@@ -20,7 +20,7 @@ export function requireNativeViewManager(viewName) {
         const { NativeUnimoduleProxy } = NativeModules;
         if (!NativeUnimoduleProxy.viewManagersNames.includes(viewName)) {
             const exportedViewManagerNames = NativeUnimoduleProxy.viewManagersNames.join(', ');
-            console.warn(`The native view manager required by name (${viewName}) from NativeViewManagerAdapter isn't exported by @unimodules/react-native-adapter. Views of this type may not render correctly. Exported view managers: [${exportedViewManagerNames}].`);
+            console.warn(`The native view manager required by name (${viewName}) from NativeViewManagerAdapter isn't exported by expo-modules-core. Views of this type may not render correctly. Exported view managers: [${exportedViewManagerNames}].`);
         }
     }
     // Set up the React Native native component, which is an adapter to the universal module's view
