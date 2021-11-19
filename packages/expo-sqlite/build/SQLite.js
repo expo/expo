@@ -4,12 +4,11 @@ import { NativeModulesProxy } from 'expo-modules-core';
 import { Platform } from 'react-native';
 const { ExponentSQLite } = NativeModulesProxy;
 function zipObject(keys, values) {
-    const output = {};
-    for (const index in keys) {
-        const key = keys[index];
-        output[key] = values[index];
+    const result = {};
+    for (let i = 0; i < keys.length; i++) {
+        result[keys[i]] = values[i];
     }
-    return output;
+    return result;
 }
 class SQLiteDatabase {
     _name;

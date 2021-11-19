@@ -8,14 +8,12 @@ import { Query, ResultSet, ResultSetError, SQLiteCallback, WebSQLDatabase } from
 
 const { ExponentSQLite } = NativeModulesProxy;
 
-function zipObject(keys: string[], values: any[]): Record<string, any> {
-  const output: Record<string, any> = {};
-
-  for (const index in keys) {
-    const key = keys[index];
-    output[key] = values[index];
+function zipObject(keys: string[], values: any[]) {
+  const result = {};
+  for (let i = 0; i < keys.length; i++) {
+    result[keys[i]] = values[i];
   }
-  return output;
+  return result;
 }
 
 class SQLiteDatabase {
