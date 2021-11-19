@@ -75,9 +75,8 @@ Sometimes an npm package must be located in the project's `node_modules` folder 
 
 You must configure EAS Build to use the generated entrypoint. Add the `ENTRY_FILE` environment variable to your `eas.json` like the following:
 
-```
+```json
 {
-  ...
   "build": {
     "development": {
       "developmentClient": true,
@@ -86,7 +85,6 @@ You must configure EAS Build to use the generated entrypoint. Add the `ENTRY_FIL
         "ENTRY_FILE": "./__generated__/AppEntry.js"
       }
     },
-    ...
   }
 }
 ```
