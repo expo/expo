@@ -30,7 +30,21 @@ export declare type PackageRevision = {
 export declare type SearchResults = {
     [moduleName: string]: PackageRevision;
 };
-export declare type ModuleDescriptor = Record<string, any>;
+export declare type ModuleDescriptorAndroid = Record<string, any>;
+export interface ModuleIosPodspecInfo {
+    podName: string;
+    podspecDir: string;
+}
+export interface ModuleDescriptorIos {
+    packageName: string;
+    pods: ModuleIosPodspecInfo[];
+    flags: Record<string, any> | undefined;
+    swiftModuleNames: string[];
+    modules: string[];
+    appDelegateSubscribers: string[];
+    reactDelegateHandlers: string[];
+}
+export declare type ModuleDescriptor = ModuleDescriptorAndroid | ModuleDescriptorIos;
 /**
  * Represents a raw config from `expo-module.json`.
  */

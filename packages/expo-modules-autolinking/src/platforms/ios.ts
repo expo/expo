@@ -2,24 +2,36 @@ import glob from 'fast-glob';
 import fs from 'fs-extra';
 import path from 'path';
 
-import { ModuleDescriptor, PackageRevision, SearchOptions } from '../types';
+import {
+  ModuleDescriptorIos,
+  ModuleIosPodspecInfo,
+  PackageRevision,
+  SearchOptions,
+} from '../types';
 
-async function findPodspecFile(revision: PackageRevision): Promise<string | undefined> {
-  if (revision.config?.iosPodspecPath()) {
-    return revision.config.iosPodspecPath();
+async function findPodspecFiles(revision: PackageRevision): Promise<string[]> {
+  const configPodspecPath = revision.config?.iosPodspecPath();
+  if (configPodspecPath) {
+    return Array.isArray(configPodspecPath) ? configPodspecPath : [configPodspecPath];
   }
 
-  const [podspecFile] = await glob('*/*.podspec', {
+  const podspecFiles = await glob('*/*.podspec', {
     cwd: revision.path,
     ignore: ['**/node_modules/**'],
   });
 
-  return podspecFile;
+  return podspecFiles;
 }
 
-export function getSwiftModuleName(podName: string, swiftModuleName?: string): string {
+export function getSwiftModuleNames(
+  pods: ModuleIosPodspecInfo[],
+  swiftModuleName: string | string[] | undefined
+): string[] {
+  if (swiftModuleName) {
+    return Array.isArray(swiftModuleName) ? swiftModuleName : [swiftModuleName];
+  }
   // by default, non-alphanumeric characters in the pod name are replaced by _ in the module name
-  return swiftModuleName ?? podName.replace(/[^a-zA-Z0-9]/g, '_');
+  return pods.map((pod) => pod.podName.replace(/[^a-zA-Z0-9]/g, '_'));
 }
 
 /**
@@ -29,25 +41,27 @@ export async function resolveModuleAsync(
   packageName: string,
   revision: PackageRevision,
   options: SearchOptions
-): Promise<ModuleDescriptor | null> {
-  const podspecFile = await findPodspecFile(revision);
-  if (!podspecFile) {
+): Promise<ModuleDescriptorIos | null> {
+  const podspecFiles = await findPodspecFiles(revision);
+  if (!podspecFiles.length) {
     return null;
   }
 
-  const podName = path.basename(podspecFile, path.extname(podspecFile));
-  const podspecDir = path.dirname(path.join(revision.path, podspecFile));
+  const pods = podspecFiles.map((podspecFile) => ({
+    podName: path.basename(podspecFile, path.extname(podspecFile)),
+    podspecDir: path.dirname(path.join(revision.path, podspecFile)),
+  }));
 
-  const swiftModuleName = getSwiftModuleName(podName, revision.config?.iosSwiftModuleName());
+  const swiftModuleNames = getSwiftModuleNames(pods, revision.config?.iosSwiftModuleName());
 
   return {
-    podName,
-    podspecDir,
-    swiftModuleName,
+    packageName,
+    pods,
+    swiftModuleNames,
     flags: options.flags,
-    modules: revision.config?.iosModules(),
-    appDelegateSubscribers: revision.config?.iosAppDelegateSubscribers(),
-    reactDelegateHandlers: revision.config?.iosReactDelegateHandlers(),
+    modules: revision.config?.iosModules() ?? [],
+    appDelegateSubscribers: revision.config?.iosAppDelegateSubscribers() ?? [],
+    reactDelegateHandlers: revision.config?.iosReactDelegateHandlers() ?? [],
   };
 }
 
@@ -55,7 +69,7 @@ export async function resolveModuleAsync(
  * Generates Swift file that contains all autolinked Swift packages.
  */
 export async function generatePackageListAsync(
-  modules: ModuleDescriptor[],
+  modules: ModuleDescriptorIos[],
   targetPath: string
 ): Promise<void> {
   const className = path.basename(targetPath, path.extname(targetPath));
@@ -68,7 +82,7 @@ export async function generatePackageListAsync(
  * Generates the string to put into the generated package list.
  */
 async function generatePackageListFileContentAsync(
-  modules: ModuleDescriptor[],
+  modules: ModuleDescriptorIos[],
   className: string
 ): Promise<string> {
   const modulesToImport = modules.filter(
@@ -77,15 +91,17 @@ async function generatePackageListFileContentAsync(
       module.appDelegateSubscribers.length ||
       module.reactDelegateHandlers.length
   );
-  const swiftModules = modulesToImport.map((module) => module.swiftModuleName);
+  const swiftModules = ([] as string[])
+    .concat(...modulesToImport.map((module) => module.swiftModuleNames))
+    .filter(Boolean);
 
-  const modulesClassNames = []
+  const modulesClassNames = ([] as string[])
     .concat(...modulesToImport.map((module) => module.modules))
     .filter(Boolean);
 
-  const appDelegateSubscribers = []
-    .concat(...modulesToImport.map((module) => module.appDelegateSubscribers))
-    .filter(Boolean);
+  const appDelegateSubscribers = ([] as string[]).concat(
+    ...modulesToImport.map((module) => module.appDelegateSubscribers)
+  );
 
   const reactDelegateHandlerModules = modulesToImport.filter(
     (module) => !!module.reactDelegateHandlers.length
@@ -129,7 +145,7 @@ ${indent.repeat(2)}]`;
 /**
  * Formats an array of modules to Swift's array containing ReactDelegateHandlers
  */
-export function formatArrayOfReactDelegateHandler(modules: ModuleDescriptor[]): string {
+export function formatArrayOfReactDelegateHandler(modules: ModuleDescriptorIos[]): string {
   const values: string[] = [];
   for (const module of modules) {
     for (const handler of module.reactDelegateHandlers) {

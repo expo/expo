@@ -2,13 +2,13 @@ import glob from 'fast-glob';
 import fs from 'fs-extra';
 import path from 'path';
 
-import { ModuleDescriptor, PackageRevision } from '../types';
+import { ModuleDescriptorAndroid, PackageRevision } from '../types';
 
 /**
  * Generates Java file that contains all autolinked packages.
  */
 export async function generatePackageListAsync(
-  modules: ModuleDescriptor[],
+  modules: ModuleDescriptorAndroid[],
   targetPath: string,
   namespace: string
 ): Promise<void> {
@@ -19,7 +19,7 @@ export async function generatePackageListAsync(
 export async function resolveModuleAsync(
   packageName: string,
   revision: PackageRevision
-): Promise<ModuleDescriptor | null> {
+): Promise<ModuleDescriptorAndroid | null> {
   // TODO: Relative source dir should be configurable through the module config.
 
   // Don't link itself... :D
@@ -50,7 +50,7 @@ export async function resolveModuleAsync(
  * Generates the string to put into the generated package list.
  */
 async function generatePackageListFileContentAsync(
-  modules: ModuleDescriptor[],
+  modules: ModuleDescriptorAndroid[],
   namespace: string
 ): Promise<string> {
   // TODO: Instead of ignoring `expo` here, make the package class paths configurable from `expo-module.config.json`.
@@ -91,13 +91,13 @@ ${packagesClasses.map((packageClass) => `      new ${packageClass}()`).join(',\n
 `;
 }
 
-function findAndroidModules(modules: ModuleDescriptor[]): string[] {
+function findAndroidModules(modules: ModuleDescriptorAndroid[]): string[] {
   const modulesToProvide = modules.filter((module) => module.modules.length > 0);
   const classNames = [].concat(...modulesToProvide.map((module) => module.modules));
   return classNames;
 }
 
-async function findAndroidPackagesAsync(modules: ModuleDescriptor[]): Promise<string[]> {
+async function findAndroidPackagesAsync(modules: ModuleDescriptorAndroid[]): Promise<string[]> {
   const classes: string[] = [];
 
   await Promise.all(

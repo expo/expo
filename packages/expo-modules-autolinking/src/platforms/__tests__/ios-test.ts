@@ -1,4 +1,4 @@
-import { formatArrayOfReactDelegateHandler, getSwiftModuleName } from '../ios';
+import { formatArrayOfReactDelegateHandler, getSwiftModuleNames } from '../ios';
 
 describe(formatArrayOfReactDelegateHandler, () => {
   it('should output empty array when no one specify `reactDelegateHandlers`', () => {
@@ -6,10 +6,15 @@ describe(formatArrayOfReactDelegateHandler, () => {
       {
         packageName: 'expo-constants',
         packageVersion: '10.0.1',
-        podName: 'EXConstants',
-        podspecDir: '/path/to/expo/packages/expo-constants/ios',
+        pods: [
+          {
+            podName: 'EXConstants',
+            podspecDir: '/path/to/expo/packages/expo-constants/ios',
+          },
+        ],
         flags: { inhibit_warnings: false },
         modules: [],
+        swiftModuleNames: [],
         appDelegateSubscribers: [],
         reactDelegateHandlers: [],
       },
@@ -23,20 +28,30 @@ describe(formatArrayOfReactDelegateHandler, () => {
       {
         packageName: 'expo-constants',
         packageVersion: '10.0.1',
-        podName: 'EXConstants',
-        podspecDir: '/path/to/expo/packages/expo-constants/ios',
+        pods: [
+          {
+            podName: 'EXConstants',
+            podspecDir: '/path/to/expo/packages/expo-constants/ios',
+          },
+        ],
         flags: { inhibit_warnings: false },
         modules: [],
+        swiftModuleNames: [],
         appDelegateSubscribers: [],
         reactDelegateHandlers: ['ConstantsReactDelegateHandler', 'ConstantsReactDelegateHandler2'],
       },
       {
         packageName: 'expo-device',
         packageVersion: '4.0.1',
-        podName: 'EXDevice',
-        podspecDir: '/path/to/expo/packages/expo-device/ios',
+        pods: [
+          {
+            podName: 'EXDevice',
+            podspecDir: '/path/to/expo/packages/expo-device/ios',
+          },
+        ],
         flags: { inhibit_warnings: false },
         modules: [],
+        swiftModuleNames: [],
         appDelegateSubscribers: [],
         reactDelegateHandlers: ['DeviceReactDelegateHandler'],
       },
@@ -49,14 +64,15 @@ describe(formatArrayOfReactDelegateHandler, () => {
   });
 });
 
-describe(getSwiftModuleName, () => {
+describe(getSwiftModuleNames, () => {
   it('should use value from module config when it exists', () => {
-    expect(getSwiftModuleName('expotest', 'EXTest')).toBe('EXTest');
-    expect(getSwiftModuleName('expotest', null)).toBe('expotest');
-    expect(getSwiftModuleName('expotest')).toBe('expotest');
+    const pods = [{ podName: 'expotest', podspecDir: '/path/to/pod' }];
+    expect(getSwiftModuleNames(pods, 'EXTest')).toEqual(['EXTest']);
+    expect(getSwiftModuleNames(pods, undefined)).toEqual(['expotest']);
   });
 
   it('should replace non-alphanumeric values with _', () => {
-    expect(getSwiftModuleName('expo-test.2')).toBe('expo_test_2');
+    const pods = [{ podName: 'expo-test.2', podspecDir: '/path/to/pod' }];
+    expect(getSwiftModuleNames(pods, undefined)).toEqual(['expo_test_2']);
   });
 });
