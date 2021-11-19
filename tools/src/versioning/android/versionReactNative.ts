@@ -6,6 +6,7 @@ import { transformFileAsync } from '../../Transforms';
 
 export async function updateVersionedReactNativeAsync(
   reactNativeRoot: string,
+  androidDir: string,
   versionedReactNativeRoot: string
 ): Promise<void> {
   // Clone whole directories
@@ -15,7 +16,7 @@ export async function updateVersionedReactNativeAsync(
   );
   await Promise.all(
     copyDirs.map((subdir) =>
-      fs.copy(path.join(reactNativeRoot, subdir), path.join(versionedReactNativeRoot, subdir))
+      fs.copy(path.join(androidDir, subdir), path.join(versionedReactNativeRoot, subdir))
     )
   );
 

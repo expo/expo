@@ -1,5 +1,5 @@
 
-public class ModuleRegistry: Sequence {
+public final class ModuleRegistry: Sequence {
   public typealias Element = ModuleHolder
 
   private weak var appContext: AppContext?
@@ -11,23 +11,30 @@ public class ModuleRegistry: Sequence {
   }
 
   /**
-   Registers a single module in the registry.
+   Registers an instance of module holder.
    */
-  public func register(module: AnyModule) {
-    let holder = ModuleHolder(module: module)
+  internal func register(holder: ModuleHolder) {
     registry[holder.name] = holder
+  }
+
+  /**
+   Registers a module by its type.
+   */
+  public func register(moduleType: AnyModule.Type) {
+    guard let appContext = appContext else {
+      return
+    }
+    let module = moduleType.init(appContext: appContext)
+    let holder = ModuleHolder(appContext: appContext, module: module)
+    register(holder: holder)
   }
 
   /**
    Registers modules exported by given modules provider.
    */
   public func register(fromProvider provider: ModulesProviderProtocol) {
-    guard let appContext = appContext else {
-      // TODO: (@tsapeta) App context is deallocated, throw an error?
-      return
-    }
     provider.getModuleClasses().forEach { moduleType in
-      register(module: moduleType.init(appContext: appContext))
+      register(moduleType: moduleType)
     }
   }
 
@@ -38,6 +45,10 @@ public class ModuleRegistry: Sequence {
     if let index = registry.firstIndex(where: { $1.module === module }) {
       registry.remove(at: index)
     }
+  }
+
+  public func unregister(moduleName: String) {
+    registry[moduleName] = nil
   }
 
   public func has(moduleWithName moduleName: String) -> Bool {

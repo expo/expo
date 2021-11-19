@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback, useState } from 'react';
 import {
   ActivityIndicator,
   PixelRatio,
@@ -16,28 +16,29 @@ type SimpleActionDemoProps = {
   action: (setValue: (value: any) => any) => any;
 };
 
-export default function SimpleActionDemo(props: SimpleActionDemoProps) {
-  const [loading, setLoading] = React.useState(false);
-  const [value, setValue] = React.useState<any>(undefined);
+const SimpleActionDemo = ({ action, title }: SimpleActionDemoProps) => {
+  const [loading, setLoading] = useState(false);
+  const [value, setValue] = useState<any>(undefined);
 
-  const runAction = React.useCallback(async () => {
+  const runAction = useCallback(async () => {
     setLoading(true);
     try {
-      const value = await props.action(setValue);
+      const value = await action(setValue);
       setValue(value);
     } catch (error) {
+      console.error(error);
       setValue(error);
     }
     setLoading(false);
-  }, [props.action]);
+  }, [action]);
 
-  const monoContainerStyle = value instanceof Error ? styles.demoMonoContainerError : null;
+  const monoContainerStyle = value instanceof Error ? styles.demoMonoContainerError : {};
 
   return (
     <View style={styles.demoContainer}>
       <TouchableOpacity onPress={runAction}>
         <View style={styles.demoHeaderContainer}>
-          <Text style={styles.demoHeader}>{props.title}</Text>
+          <Text style={styles.demoHeader}>{title}</Text>
           {loading && <ActivityIndicator style={styles.demoActivityIndicator} size={10} />}
         </View>
       </TouchableOpacity>
@@ -48,7 +49,7 @@ export default function SimpleActionDemo(props: SimpleActionDemoProps) {
       </View>
     </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
   demoContainer: {
@@ -74,3 +75,5 @@ const styles = StyleSheet.create({
     borderColor: Colors.errorBackground,
   },
 });
+
+export default SimpleActionDemo;

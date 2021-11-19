@@ -23,7 +23,6 @@ class FirebaseAnalyticsJS {
   public readonly config: FirebaseAnalyticsJSConfig;
   private userId?: string;
   private userProperties?: { [key: string]: any };
-  private screenName?: string;
   private eventQueue = new Set<FirebaseAnalyticsJSCodedEvent>();
   private options: FirebaseAnalyticsJSOptions;
   private flushEventsPromise: Promise<void> = Promise.resolve();
@@ -113,11 +112,10 @@ class FirebaseAnalyticsJS {
   }
 
   private async addEvent(event: FirebaseAnalyticsJSCodedEvent) {
-    const { userId, userProperties, screenName, options } = this;
+    const { userId, userProperties, options } = this;
 
     // Extend the event with the currently set User-id
     if (userId) event.uid = userId;
-    if (screenName) event['ep.screen_name'] = screenName;
 
     // Add user-properties
     if (userProperties) {
@@ -288,25 +286,10 @@ class FirebaseAnalyticsJS {
   }
 
   /**
-   * https://firebase.google.com/docs/reference/js/firebase.analytics.Analytics#set-current-screen
+   * Not supported, this method is a no-op
    */
-  async setCurrentScreen(screenName?: string, screenClassOverride?: string): Promise<void> {
-    if (screenName && screenName.length > 100) {
-      throw new Error(
-        'Invalid screen-name specified. Should contain 1 to 100 characters. Set to undefined to clear the current screen name.'
-      );
-    }
-    if (!this.enabled) return;
-    this.screenName = screenName || undefined;
-
-    // On native, calling `setCurrentScreen` automatically records a screen_view event.
-    // Mimimic that behavior when native emulation is enabled.
-    // https://firebase.google.com/docs/analytics/screenviews#manually_track_screens
-    if (screenName && this.options.strictNativeEmulation) {
-      await this.logEvent('screen_view', {
-        screen_name: screenName,
-      });
-    }
+  async setSessionTimeoutDuration(_sessionTimeoutInterval: number): Promise<void> {
+    // no-op
   }
 
   /**
@@ -341,7 +324,6 @@ class FirebaseAnalyticsJS {
    */
   async resetAnalyticsData() {
     this.clearEvents();
-    this.screenName = undefined;
     this.userId = undefined;
     this.userProperties = undefined;
   }

@@ -9,7 +9,9 @@ class SensorServiceSubscription internal constructor(private val mSubscribableSe
   private var mUpdateInterval: Long = 100L
   private var mHasBeenReleased = false
   override fun start() {
-    assertSubscriptionIsAlive()
+    if (mHasBeenReleased) {
+      return
+    }
     if (!mIsEnabled) {
       mIsEnabled = true
       mSubscribableSensorService.onSubscriptionEnabledChanged(this)
@@ -25,7 +27,9 @@ class SensorServiceSubscription internal constructor(private val mSubscribableSe
   }
 
   override fun setUpdateInterval(updateInterval: Long) {
-    assertSubscriptionIsAlive()
+    if (mHasBeenReleased) {
+      return
+    }
     mUpdateInterval = updateInterval
   }
 
@@ -41,9 +45,5 @@ class SensorServiceSubscription internal constructor(private val mSubscribableSe
       mSubscribableSensorService.removeSubscription(this)
       mHasBeenReleased = true
     }
-  }
-
-  private fun assertSubscriptionIsAlive() {
-    check(!mHasBeenReleased) { "Subscription has been released, cannot call methods on a released subscription." }
   }
 }

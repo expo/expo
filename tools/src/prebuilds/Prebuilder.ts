@@ -7,9 +7,7 @@ import logger from '../Logger';
 import XcodeProject from './XcodeProject';
 import {
   createSpecFromPodspecAsync,
-  generateExpoModulesCoreModulemapAsync,
   generateXcodeProjectAsync,
-  GENERATED_MODULEMAP_FILENAME,
   INFO_PLIST_FILENAME,
 } from './XcodeGen';
 import { Flavor, Framework, XcodebuildSettings } from './XcodeProject.types';
@@ -21,9 +19,6 @@ const PODS_DIR = path.join(IOS_DIR, 'Pods');
 // We will be increasing this list slowly. Once all are enabled,
 // find a better way to ignore some packages that shouldn't be prebuilt (like interfaces).
 export const PACKAGES_TO_PREBUILD = [
-  'expo-modules-core',
-  // '@unimodules/core',
-  // '@unimodules/react-native-adapter',
   // 'expo-ads-admob',
   // 'expo-ads-facebook',
   // 'expo-analytics-amplitude',
@@ -83,7 +78,7 @@ export const PACKAGES_TO_PREBUILD = [
   // 'expo-store-review',
   'expo-structured-headers',
   // 'expo-task-manager',
-  'expo-updates',
+  // 'expo-updates',
   // 'expo-video-thumbnails',
   // 'expo-web-browser',
   // 'unimodules-app-loader',
@@ -163,12 +158,7 @@ export async function buildFrameworksForProjectAsync(
 export async function cleanTemporaryFilesAsync(xcodeProject: XcodeProject) {
   logger.log('   Cleaning up temporary files');
 
-  const pathsToRemove = [
-    `${xcodeProject.name}.xcodeproj`,
-    INFO_PLIST_FILENAME,
-    GENERATED_MODULEMAP_FILENAME,
-    `${xcodeProject.name}-umbrella.h`,
-  ];
+  const pathsToRemove = [`${xcodeProject.name}.xcodeproj`, INFO_PLIST_FILENAME];
 
   await Promise.all(
     pathsToRemove.map((pathToRemove) => fs.remove(path.join(xcodeProject.rootDir, pathToRemove)))
@@ -186,13 +176,6 @@ export async function generateXcodeProjectSpecAsync(pkg: Package): Promise<Xcode
   }
 
   logger.log('   Generating Xcode project spec');
-
-  if (pkg.packageName === 'expo-modules-core') {
-    const modulemapFile = await generateExpoModulesCoreModulemapAsync(
-      path.join(pkg.path, pkg.iosSubdirectory)
-    );
-    podspec.modulemap_file = modulemapFile;
-  }
 
   const spec = await createSpecFromPodspecAsync(podspec, async (dependencyName) => {
     const frameworkPath = await findFrameworkForProjectAsync(dependencyName);

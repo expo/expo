@@ -11,8 +11,8 @@ const app_plugin_2 = __importDefault(require("expo-dev-menu/app.plugin"));
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
 const constants_1 = require("./constants");
-const withGeneratedAndroidScheme_1 = __importDefault(require("./withGeneratedAndroidScheme"));
-const withGeneratedIosScheme_1 = __importDefault(require("./withGeneratedIosScheme"));
+const withGeneratedAndroidScheme_1 = require("./withGeneratedAndroidScheme");
+const withGeneratedIosScheme_1 = require("./withGeneratedIosScheme");
 const pkg = require('expo-dev-client/package.json');
 const REACT_NATIVE_CONFIG_JS = `// File created by expo-dev-client/app.plugin.js
 
@@ -23,8 +23,8 @@ module.exports = {
 };
 `;
 function withReactNativeConfigJs(config) {
-    config = config_plugins_1.withDangerousMod(config, ['android', addReactNativeConfigAsync]);
-    config = config_plugins_1.withDangerousMod(config, ['ios', addReactNativeConfigAsync]);
+    config = (0, config_plugins_1.withDangerousMod)(config, ['android', addReactNativeConfigAsync]);
+    config = (0, config_plugins_1.withDangerousMod)(config, ['ios', addReactNativeConfigAsync]);
     return config;
 }
 const addReactNativeConfigAsync = async (config) => {
@@ -47,11 +47,11 @@ const addReactNativeConfigAsync = async (config) => {
     return config;
 };
 function withDevClient(config) {
-    config = app_plugin_2.default(config);
-    config = app_plugin_1.default(config);
+    config = (0, app_plugin_2.default)(config);
+    config = (0, app_plugin_1.default)(config);
     config = withReactNativeConfigJs(config);
-    config = withGeneratedAndroidScheme_1.default(config);
-    config = withGeneratedIosScheme_1.default(config);
+    config = (0, withGeneratedAndroidScheme_1.withGeneratedAndroidScheme)(config);
+    config = (0, withGeneratedIosScheme_1.withGeneratedIosScheme)(config);
     return config;
 }
-exports.default = config_plugins_1.createRunOncePlugin(withDevClient, pkg.name, pkg.version);
+exports.default = (0, config_plugins_1.createRunOncePlugin)(withDevClient, pkg.name, pkg.version);

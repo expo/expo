@@ -8,7 +8,7 @@ public class TrackingTransparencyModule: Module {
       EXPermissionsMethodsDelegate.register([EXTrackingPermissionRequester()], withPermissionsManager: self.appContext?.permissions)
     }
 
-    method("getPermissionsAsync") { (promise: Promise) in
+    function("getPermissionsAsync") { (promise: Promise) in
       EXPermissionsMethodsDelegate.getPermissionWithPermissionsManager(
         self.appContext?.permissions,
         withRequester: EXTrackingPermissionRequester.self,
@@ -17,7 +17,7 @@ public class TrackingTransparencyModule: Module {
       )
     }
 
-    method("requestPermissionsAsync") { (promise: Promise) in
+    function("requestPermissionsAsync") { (promise: Promise) in
       EXPermissionsMethodsDelegate.askForPermission(
         withPermissionsManager: self.appContext?.permissions,
         withRequester: EXTrackingPermissionRequester.self,

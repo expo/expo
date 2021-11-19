@@ -15,12 +15,12 @@ function modifyAndroidManifest(manifest) {
 }
 exports.modifyAndroidManifest = modifyAndroidManifest;
 const withMediaLibraryExternalStorage = (config) => {
-    return config_plugins_1.withAndroidManifest(config, async (config) => {
+    return (0, config_plugins_1.withAndroidManifest)(config, async (config) => {
         config.modResults = modifyAndroidManifest(config.modResults);
         return config;
     });
 };
-const withMediaLibrary = (config, { photosPermission, savePhotosPermission } = {}) => {
+const withMediaLibrary = (config, { photosPermission, savePhotosPermission, isAccessMediaLocationEnabled } = {}) => {
     if (!config.ios)
         config.ios = {};
     if (!config.ios.infoPlist)
@@ -31,12 +31,16 @@ const withMediaLibrary = (config, { photosPermission, savePhotosPermission } = {
         savePhotosPermission ||
             config.ios.infoPlist.NSPhotoLibraryAddUsageDescription ||
             WRITE_PHOTOS_USAGE;
-    return config_plugins_1.withPlugins(config, [
+    return (0, config_plugins_1.withPlugins)(config, [
         [
             config_plugins_1.AndroidConfig.Permissions.withPermissions,
-            ['android.permission.READ_EXTERNAL_STORAGE', 'android.permission.WRITE_EXTERNAL_STORAGE'],
+            [
+                'android.permission.READ_EXTERNAL_STORAGE',
+                'android.permission.WRITE_EXTERNAL_STORAGE',
+                isAccessMediaLocationEnabled !== null && isAccessMediaLocationEnabled !== void 0 ? isAccessMediaLocationEnabled : 'android.permission.ACCESS_MEDIA_LOCATION',
+            ].filter(Boolean),
         ],
         withMediaLibraryExternalStorage,
     ]);
 };
-exports.default = config_plugins_1.createRunOncePlugin(withMediaLibrary, pkg.name, pkg.version);
+exports.default = (0, config_plugins_1.createRunOncePlugin)(withMediaLibrary, pkg.name, pkg.version);

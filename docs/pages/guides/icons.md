@@ -72,7 +72,7 @@ export default class CustomIconExample extends React.Component {
 
 ### createIconSetFromFontello
 
-Convenience method to create a custom font based on a [Fontello](http://fontello.com/) config file. Don't forget to import the font as described above and drop the `config.json` somewhere convenient in your project, using `Font.loadAsync`.
+Convenience method to create a custom font based on a [Fontello](http://fontello.com/) config file. Don't forget to import the font as described above and drop the **config.json** somewhere convenient in your project, using `Font.loadAsync`.
 
 ```javascript
 // Once your custom font has been loaded...
@@ -84,7 +84,7 @@ const Icon = createIconSetFromFontello(fontelloConfig, 'fontello', 'fontello.ttf
 
 ### createIconSetFromIcoMoon
 
-Convenience method to create a custom font based on an [IcoMoon](https://icomoon.io/) config file. Don't forget to import the font as described above and drop the `config.json` somewhere convenient in your project, using `Font.loadAsync`.
+Convenience method to create a custom font based on an [IcoMoon](https://icomoon.io/) config file. Don't forget to import the font as described above and drop the **config.json** somewhere convenient in your project, using `Font.loadAsync`.
 
 <SnackInline
 label='Icomoon Icons'

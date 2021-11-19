@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import ExpoModulesCore
 import EXDevMenuInterface
 #if EX_DEV_MENU_ENABLED
 import EXDevMenu
@@ -17,7 +18,7 @@ import FlipperKit
 #endif
 
 @UIApplicationMain
-class AppDelegate: AppDelegateWrapper {
+class AppDelegate: ExpoAppDelegate {
   var bridge: RCTBridge?
   var launchOptions: [UIApplication.LaunchOptionsKey: Any]?
 
@@ -44,7 +45,7 @@ class AppDelegate: AppDelegateWrapper {
   func initializeReactNativeBridge(_ launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> RCTBridge? {
     if let bridge = RCTBridge(delegate: self, launchOptions: launchOptions) {
       let rootView = RCTRootView(bridge: bridge, moduleName: "main", initialProperties: nil)
-      let rootViewController = UIViewController()
+      let rootViewController = EXScreenOrientationViewController()!
       rootView.backgroundColor = UIColor.white
       rootViewController.view = rootView
 

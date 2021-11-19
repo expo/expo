@@ -6,7 +6,7 @@ import android.content.Intent;
 import expo.modules.devmenu.react.DevMenuAwareReactActivity;
 import com.facebook.react.ReactActivityDelegate;
 
-import expo.modules.adapters.react.ReactActivityDelegateWrapper;
+import expo.modules.ReactActivityDelegateWrapper;
 import expo.modules.devlauncher.DevLauncherController;
 
 public class MainActivity extends DevMenuAwareReactActivity {

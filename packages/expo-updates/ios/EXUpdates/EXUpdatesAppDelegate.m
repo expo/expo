@@ -2,7 +2,6 @@
 
 #import <EXUpdates/EXUpdatesAppDelegate.h>
 
-#import <ExpoModulesCore/EXAppDelegateWrapper.h>
 #import <ExpoModulesCore/EXDefines.h>
 #import <EXUpdates/EXUpdatesConfig.h>
 #import <EXUpdates/EXUpdatesAppController.h>
@@ -21,6 +20,7 @@
 @interface EXUpdatesAppDelegate() <EXUpdatesAppControllerDelegate>
 
 @property (nonatomic, strong) NSDictionary *launchOptions;
+@property (nonatomic, strong) EXUpdatesBridgeDelegateInterceptor *bridgeDelegate;
 
 @end
 
@@ -95,10 +95,10 @@ EX_REGISTER_SINGLETON_MODULE(EXUpdatesAppDelegate)
   if (![UIApplication.sharedApplication.delegate conformsToProtocol:@protocol(RCTBridgeDelegate)]) {
     [NSException raise:NSInvalidArgumentException format:@"AppDelegate does not conforms to RCTBridgeDelegate"];
   }
-  EXUpdatesBridgeDelegateInterceptor* bridgeDelegate = [[EXUpdatesBridgeDelegateInterceptor alloc]
-                                                        initWithBridgeDelegate:(id<RCTBridgeDelegate>)UIApplication.sharedApplication.delegate];
+  self.bridgeDelegate = [[EXUpdatesBridgeDelegateInterceptor alloc]
+                         initWithBridgeDelegate:(id<RCTBridgeDelegate>)UIApplication.sharedApplication.delegate];
 
-  RCTBridge *bridge = [[RCTBridge alloc] initWithDelegate:bridgeDelegate launchOptions:self.launchOptions];
+  RCTBridge *bridge = [[RCTBridge alloc] initWithDelegate:self.bridgeDelegate launchOptions:self.launchOptions];
   RCTRootView *rootView = [[RCTRootView alloc] initWithBridge:bridge moduleName:@"main" initialProperties:nil];
   id rootViewBackgroundColor = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"RCTRootViewBackgroundColor"];
   if (rootViewBackgroundColor != nil) {
@@ -107,11 +107,8 @@ EX_REGISTER_SINGLETON_MODULE(EXUpdatesAppDelegate)
     rootView.backgroundColor = [UIColor whiteColor];
   }
 
-  UIViewController *rootViewController = [UIViewController new];
-  rootViewController.view = rootView;
   UIWindow *window = UIApplication.sharedApplication.delegate.window;
-  window.rootViewController = rootViewController;
-  [window makeKeyAndVisible];
+  window.rootViewController.view = rootView;
 
   return bridge;
  }
@@ -126,6 +123,11 @@ EX_REGISTER_SINGLETON_MODULE(EXUpdatesAppDelegate)
     self.bridgeDelegate = bridgeDelegate;
   }
   return self;
+}
+
+- (BOOL)conformsToProtocol:(Protocol *)protocol
+{
+  return [self.bridgeDelegate conformsToProtocol:protocol];
 }
 
 - (id)forwardingTargetForSelector:(SEL)selector {

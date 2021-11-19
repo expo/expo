@@ -79,24 +79,24 @@ Optionally you can set the project up manually (not recommended).
 <details><summary>Instructions</summary>
 <p>
 
-- Re-export the custom `Document` component in the `pages/_document.js` file of your Next.js project.
+- Re-export the custom `Document` component in the **pages/_document.js** file of your Next.js project.
 
   - This will ensure `react-native-web` styling works.
-  - You can run `yarn next-expo -c` then select `pages/_document.js`
+  - You can run `yarn next-expo -c` then select **pages/_document.js**
   - Or you can create the file - `mkdir pages; touch pages/_document.js`
 
-  `pages/_document.js`
+  **pages/_document.js**
 
   ```js
   export { default } from '@expo/next-adapter/document';
   ```
 
-- Create a `babel.config.js` and use [`babel-preset-expo`](https://github.com/expo/expo/tree/master/packages/babel-preset-expo).
+- Create a **babel.config.js** and use [`babel-preset-expo`](https://github.com/expo/expo/tree/master/packages/babel-preset-expo).
 
-  - You can run `yarn next-expo -c` then select `babel.config.js`
+  - You can run `yarn next-expo -c` then select **babel.config.js**
   - Or you can You may have installed this earlier with `yarn add -D babel-preset-expo`
 
-  `babel.config.js`
+  **babel.config.js**
 
   ```js
   module.exports = {
@@ -104,18 +104,25 @@ Optionally you can set the project up manually (not recommended).
   };
   ```
 
-- Update the Next.js `next.config.js` file to support loading React Native and Expo packages:
+- Update the Next.js **next.config.js** file to support loading React Native and Expo packages:
+
+  - yarn add -D next-compose-plugins next-transpile-modules
 
   - `touch next.config.js`
 
-  `next.config.js`
+  **next.config.js**
 
   ```js
   const { withExpo } = require('@expo/next-adapter');
+  const withPlugins = require('next-compose-plugins');
+  const withTM = require('next-transpile-modules')(['react-native-web']);
 
-  module.exports = withExpo({
-    projectRoot: __dirname,
-  });
+  const nextConfig = {};
+
+  module.exports = withPlugins(
+    [withTM, [withExpo, { projectRoot: __dirname }]],
+    nextConfig
+  );
   ```
 
 - You can now start your Expo web + Next.js project with `yarn next dev` 🎉
@@ -131,7 +138,7 @@ Optionally you can set the project up manually (not recommended).
 
 This is Vercel's preferred method for deploying Next.js projects to production.
 
-- Add a **build** script to your `package.json`
+- Add a **build** script to your **package.json**
   ```json
   {
     "scripts": {
@@ -149,7 +156,7 @@ This is Vercel's preferred method for deploying Next.js projects to production.
 A lot of libraries in the React ecosystem use the `setImmediate()` API (like `react-native-reanimated`), which Next.js doesn't polyfill by default. To fix this you can polyfill it yourself.
 
 - Install: `yarn add setimmediate`
-- Import in `pages/_app.js`, at the top of the file:
+- Import in **pages/_app.js**, at the top of the file:
   ```js
   import 'setimmediate';
   ```
@@ -165,7 +172,7 @@ By default Next.js won't load your statically imported images (images that you i
 - Install the plugin - `yarn add next-images`
   - [`next-images`][next-images] injects a Webpack loader to handle images.
   - [`next-optimized-images`][next-optimized-images] is another good solution that you could check out.
-- Wrap your Next.js configuration object with the the image method and the Expo method in your `next.config.js`:
+- Wrap your Next.js configuration object with the the image method and the Expo method in your **next.config.js**:
 
   ```js
   const { withExpo } = require('@expo/next-adapter');
@@ -206,7 +213,7 @@ By default Next.js doesn't support static assets like an Expo project. Because t
 
 - Install the plugin - `yarn add next-fonts`
   - [`next-fonts`][next-fonts] injects a Webpack loader to handle fonts.
-- Wrap the font method with the Expo method in your `next.config.js`:
+- Wrap the font method with the Expo method in your **next.config.js**:
 
   - The order is important because Expo can mix in the location of vector icons to the existing font loader.
 
@@ -291,9 +298,9 @@ The adapter provides a Babel config [`@expo/next-adapter/babel`](https://github.
 
 #### `withExpo`
 
-Wraps your [`next.config.js`](https://nextjs.org/docs#custom-configuration) and adds universal platform support.
+Wraps your [**next.config.js**](https://nextjs.org/docs#custom-configuration) and adds universal platform support.
 
-- Defines a custom `pageExtensions` which makes Webpack resolve `.web.js` before `.js`, we call this feature "platform extensions".
+- Defines a custom `pageExtensions` which makes Webpack resolve **.web.js** before **.js**, we call this feature "platform extensions".
 - Wraps the Webpack config in `withUnimodules` from `@expo/webpack-config`
   - Makes Babel target all Expo, and React Native packages that you've installed
   - Aliases `react-native` to `react-native-web` in the browser
@@ -309,7 +316,7 @@ module.exports = withExpo({
 
 ### Document
 
-Next.js uses the `pages/_document.js` file to augment your app's `<html>` and `<body>` tags. Learn more [here](https://nextjs.org/docs#custom-document).
+Next.js uses the **pages/_document.js** file to augment your app's `<html>` and `<body>` tags. Learn more [here](https://nextjs.org/docs#custom-document).
 
 This adapter provides a default `Document` (extended from Next.js's Document) that you can use to skip all of the React Native setup.
 

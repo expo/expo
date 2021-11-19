@@ -89,9 +89,9 @@ export async function initializeAsync(apiKey: string): Promise<void> {
  * Assign a user ID to the current user. If you don't have a system for user IDs you don't need to
  * call this. See [this page](https://amplitude.zendesk.com/hc/en-us/articles/206404628-Step-2-Assign-User-IDs-and-Identify-your-Users)
  * for details.
- * @param userId User ID for the current user.
+ * @param userId User ID for the current user. Can be set to `null` (e.g. when the user is logging out).
  */
-export async function setUserIdAsync(userId: string): Promise<void> {
+export async function setUserIdAsync(userId: string | null): Promise<void> {
   if (!ExpoAmplitude.setUserIdAsync) {
     throw new UnavailabilityError('Amplitude', 'setUserIdAsync');
   }

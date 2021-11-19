@@ -27,7 +27,7 @@
     "@expo/json-file": "^8.2.6",
     "@expo/spawn-async": "^1.5.0",
     "@expo/xcodegen": "2.18.0-patch.1",
-    "@expo/xdl": "^59.1.3",
+    "@expo/xdl": "^59.1.7",
     "@octokit/rest": "^18.5.3",
     "@types/base-64": "^0.1.2",
     "@types/concat-stream": "^1.6.0",
@@ -42,7 +42,7 @@
     "@types/source-map-support": "^0.4.1",
     "@types/uuid": "^3.4.4",
     "@types/ws": "^6.0.1",
-    "aws-sdk": "^2.357.0",
+    "aws-sdk": "^2.814.0",
     "base-64": "^0.1.0",
     "body-parser": "^1.18.2",
     "chalk": "^2.1.0",
@@ -82,7 +82,7 @@
     "qrcode-terminal": "^0.12.0",
     "recursive-omit-by": "^2.0.0",
     "semver": "^5.4.1",
-    "semver-regex": "^3.1.1",
+    "semver-regex": "^3.1.3",
     "server-destroy": "^1.0.1",
     "sharp": "^0.28.0",
     "source-map-support": "^0.5.9",
@@ -90,7 +90,7 @@
     "tar": "^4.4.18",
     "terminal-link": "^2.1.1",
     "transformer-proxy": "^0.3.4",
-    "typedoc": "^0.21.6",
+    "typedoc": "^0.22.7",
     "uuid": "^3.1.0",
     "ws": "^7.4.6",
     "xcode": "^2.0.0"
@@ -104,6 +104,6 @@
     "babel-preset-expo": "^8.1.0",
     "expo-module-scripts": "^1.2.0",
     "prettier": "^2.3.1",
-    "typescript": "~4.3.5"
+    "typescript": "~4.4.4"
   }
 }

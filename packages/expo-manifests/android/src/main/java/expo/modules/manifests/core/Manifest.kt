@@ -99,6 +99,7 @@ abstract class Manifest(protected val json: JSONObject) {
 
   fun getDebuggerHost(): String = getExpoGoConfigRootObject()!!.require("debuggerHost")
   fun getMainModuleName(): String = getExpoGoConfigRootObject()!!.require("mainModuleName")
+  fun getHostUri(): String? = getExpoGoConfigRootObject()?.getNullable("hostUri")
 
   fun isVerified(): Boolean = json.require("isVerified")
 
@@ -107,6 +108,11 @@ abstract class Manifest(protected val json: JSONObject) {
   fun getName(): String? {
     val expoClientConfig = getExpoClientConfigRootObject() ?: return null
     return expoClientConfig.getNullable("name")
+  }
+
+  fun getVersion(): String? {
+    val expoClientConfig = getExpoClientConfigRootObject() ?: return null
+    return expoClientConfig.getNullable("version")
   }
 
   fun getUpdatesInfo(): JSONObject? {
@@ -162,8 +168,10 @@ abstract class Manifest(protected val json: JSONObject) {
 
   fun getAndroidJsEngine(): String? {
     val expoClientConfig = getExpoClientConfigRootObject() ?: return null
-    val android = expoClientConfig.getNullable<JSONObject>("android") ?: return null
-    return android.getNullable("jsEngine")
+    val sharedJsEngine = expoClientConfig.getNullable<String>("jsEngine")
+    val androidJsEngine = expoClientConfig
+      .getNullable<JSONObject>("android")?.getNullable<String>("jsEngine")
+    return androidJsEngine ?: sharedJsEngine ?: null
   }
 
   fun getIconUrl(): String? {

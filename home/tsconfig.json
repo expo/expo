@@ -8,5 +8,6 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noImplicitAny": true
-  }
+  },
+  "exclude": ["**/__mocks__/*"]
 }

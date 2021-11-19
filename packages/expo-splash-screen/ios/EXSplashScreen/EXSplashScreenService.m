@@ -4,12 +4,22 @@
 #import <EXSplashScreen/EXSplashScreenViewNativeProvider.h>
 #import <ExpoModulesCore/EXDefines.h>
 
-NSString * const kRootViewController = @"rootViewController";
+static NSString * const kRootViewController = @"rootViewController";
+static NSString * const kView = @"view";
 
 @interface EXSplashScreenService ()
 
 @property (nonatomic, strong) NSMapTable<UIViewController *, EXSplashScreenViewController *> *splashScreenControllers;
-@property (nonatomic, assign) BOOL isObservingRootViewController;
+/**
+ * This module holds a reference to rootViewController acting as a flag to indicate KVO is enabled.
+ * When KVO is enabled, actually we are observing two targets and re-show splash screen if targets changed:
+ *   - `keyWindow.rootViewController`: it is for expo-dev-client which replaced it in startup.
+ *   - `rootViewController.rootView`: it is for expo-updates which replaced it in startup.
+ *
+ * If `rootViewController` is changed, we also need the old `rootViewController` to unregister rootView KVO.
+ * That's why we keep a weak reference here but not a boolean flag.
+ */
+@property (nonatomic, weak) UIViewController *observingRootViewController;
 
 @end
 
@@ -21,7 +31,6 @@ EX_REGISTER_SINGLETON_MODULE(SplashScreen);
 {
   if (self = [super init]) {
     _splashScreenControllers = [NSMapTable weakToStrongObjectsMapTable];
-    _isObservingRootViewController = NO;
   }
   return self;
 }
@@ -92,19 +101,8 @@ EX_REGISTER_SINGLETON_MODULE(SplashScreen);
   }
   [self removeRootViewControllerListener];
 
-  EXSplashScreenViewController *splashScreenViewController = [self.splashScreenControllers objectForKey:viewController];
-  EX_WEAKIFY(self);
-  return [splashScreenViewController
-      hideWithCallback:^(BOOL hasEffect) {
-        EX_ENSURE_STRONGIFY(self);
-        [self.splashScreenControllers removeObjectForKey:viewController];
-        successCallback(hasEffect);
-      }
-      failureCallback:^(NSString *message) {
-        EX_ENSURE_STRONGIFY(self);
-        [self.splashScreenControllers removeObjectForKey:viewController];
-        failureCallback(message);
-      }];
+  return [[self.splashScreenControllers objectForKey:viewController] hideWithCallback:successCallback
+                                                                      failureCallback:failureCallback];
 }
 
 - (void)onAppContentDidAppear:(UIViewController *)viewController
@@ -152,18 +150,27 @@ EX_REGISTER_SINGLETON_MODULE(SplashScreen);
 - (void)addRootViewControllerListener
 {
   NSAssert([NSThread isMainThread], @"Method must be called on main thread");
-  if (!_isObservingRootViewController) {
-    [UIApplication.sharedApplication.keyWindow addObserver:self forKeyPath:kRootViewController options:NSKeyValueObservingOptionNew context:nil];
-    _isObservingRootViewController = YES;
+  if (self.observingRootViewController == nil) {
+    UIViewController *rootViewController = UIApplication.sharedApplication.keyWindow.rootViewController;
+
+    [UIApplication.sharedApplication.keyWindow addObserver:self
+                                                forKeyPath:kRootViewController
+                                                   options:NSKeyValueObservingOptionNew
+                                                   context:nil];
+
+    [rootViewController addObserver:self forKeyPath:kView options:NSKeyValueObservingOptionNew context:nil];
+    self.observingRootViewController = rootViewController;
   }
 }
 
 - (void)removeRootViewControllerListener
 {
   NSAssert([NSThread isMainThread], @"Method must be called on main thread");
-  if (_isObservingRootViewController) {
-    [UIApplication.sharedApplication.keyWindow removeObserver:self forKeyPath:kRootViewController context:nil];
-    _isObservingRootViewController = NO;
+  if (self.observingRootViewController != nil) {
+    UIWindow *window = self.observingRootViewController.view.window;
+    [window removeObserver:self forKeyPath:kRootViewController context:nil];
+    [self.observingRootViewController removeObserver:self forKeyPath:kView context:nil];
+    self.observingRootViewController = nil;
   }
 }
 
@@ -172,7 +179,20 @@ EX_REGISTER_SINGLETON_MODULE(SplashScreen);
   if (object == UIApplication.sharedApplication.keyWindow && [keyPath isEqualToString:kRootViewController]) {
     UIViewController *newRootViewController = change[@"new"];
     if (newRootViewController != nil) {
+      [self removeRootViewControllerListener];
       [self showSplashScreenFor:newRootViewController];
+      [self addRootViewControllerListener];
+    }
+  }
+  if (object == UIApplication.sharedApplication.keyWindow.rootViewController && [keyPath isEqualToString:kView]) {
+    UIView *newView = change[@"new"];
+    if (newView != nil && [newView.nextResponder isKindOfClass:[UIViewController class]]) {
+      UIViewController *viewController = (UIViewController *)newView.nextResponder;
+      // To show splash screen as soon as possible, we do not wait for hiding callback and call showSplashScreen immediately.
+      // GCD main queue should keep the calls in sequence.
+      [self hideSplashScreenFor:viewController successCallback:^(BOOL hasEffect){} failureCallback:^(NSString *message){}];
+      [self.splashScreenControllers removeObjectForKey:viewController];
+      [self showSplashScreenFor:viewController];
     }
   }
 }

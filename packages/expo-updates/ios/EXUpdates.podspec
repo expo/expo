@@ -12,6 +12,7 @@ Pod::Spec.new do |s|
   s.homepage       = package['homepage']
   s.platform       = :ios, '12.0'
   s.source         = { git: 'https://github.com/expo/expo.git' }
+  s.static_framework = true
 
   s.dependency 'ExpoModulesCore'
   s.dependency 'React-Core'
@@ -47,5 +48,6 @@ Pod::Spec.new do |s|
 
   s.test_spec 'Tests' do |test_spec|
     test_spec.source_files = 'Tests/*.{h,m,swift}'
+    test_spec.dependency 'OCMockito', '~> 6.0'
   end
 end

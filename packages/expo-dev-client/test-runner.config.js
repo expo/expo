@@ -16,12 +16,8 @@ module.exports = {
       },
       dependencies: [
         {
-          name: '@unimodules/core',
-          path: '../@unimodules/core',
-        },
-        {
-          name: '@unimodules/react-native-adapter',
-          path: '../@unimodules/react-native-adapter',
+          name: 'expo',
+          path: '../expo',
         },
         {
           name: 'expo-modules-core',
@@ -46,6 +42,10 @@ module.exports = {
         {
           name: 'expo-dev-menu-interface',
           path: '../expo-dev-menu-interface',
+        },
+        {
+          name: 'expo-manifests',
+          path: '../expo-manifests',
         },
         {
           name: 'expo-updates-interface',

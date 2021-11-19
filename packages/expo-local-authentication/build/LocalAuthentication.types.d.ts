@@ -15,7 +15,8 @@ export declare enum AuthenticationType {
      */
     FACIAL_RECOGNITION = 2,
     /**
-     * __Android-only.__ Indicates iris recognition support.
+     * Indicates iris recognition support.
+     * @platform android
      */
     IRIS = 3
 }
@@ -52,9 +53,10 @@ export declare type LocalAuthenticationOptions = {
      */
     disableDeviceFallback?: boolean;
     /**
-     *  **iOS only.** Allows to customize the default `Use Passcode` label shown after several failed
-     *  authentication attempts. Setting this option to an empty string disables this button from
-     *  showing in the prompt.
+     * Allows to customize the default `Use Passcode` label shown after several failed
+     * authentication attempts. Setting this option to an empty string disables this button from
+     * showing in the prompt.
+     * @platform ios
      */
     fallbackLabel?: string;
 };

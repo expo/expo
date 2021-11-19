@@ -2,7 +2,7 @@ import UIKit
 /**
  The app context is an interface to a single Expo app.
  */
-public class AppContext {
+public final class AppContext {
   /**
    The module registry for the app context.
    */
@@ -72,6 +72,13 @@ public class AppContext {
   }
 
   /**
+   Provides access to the event emitter from legacy module registry.
+   */
+  public var eventEmitter: EXEventEmitterService? {
+    return legacyModule(implementing: EXEventEmitterService.self)
+  }
+
+  /**
    Starts listening to `UIApplication` notifications.
    */
   private func listenToClientAppNotifications() {
@@ -107,5 +114,11 @@ public class AppContext {
   deinit {
     NotificationCenter.default.removeObserver(self)
     moduleRegistry.post(event: .appContextDestroys)
+  }
+
+  // MARK: Errors
+
+  struct DeallocatedAppContextError: CodedError {
+    var description: String = "The app context has been deallocated."
   }
 }

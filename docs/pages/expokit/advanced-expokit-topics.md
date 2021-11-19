@@ -17,13 +17,13 @@ It is possible to manually "un-eject" your project, for example if you want to r
 To un-eject:
 
 - Delete the `ios` and `android` directories from your project.
-- Delete the `isDetached` and `detach` keys from your project's `app.json`.
+- Delete the `isDetached` and `detach` keys from your project's **app.json**.
 
 You can now use your project like a normal Expo project (with no ExpoKit).
 
 ## Verifying Bundles (iOS only)
 
-When we serve your JS over-the-air to your ExpoKit project, we include a signature so that
+When we serve updates to your ExpoKit project, we include a signature so that
 your project can verify that the JS actually came from our servers.
 
 By default, projects that use ExpoKit have this feature disabled on iOS and enabled on
@@ -43,17 +43,17 @@ To enable code verification in your native project with ExpoKit:
 
 ## Configuring the JS URL
 
-In development, your ExpoKit project will request your local build from Expo CLI. You can see this configuration in `EXBuildConstants.plist` (iOS) or `ExponentBuildConstants` (Android). You shouldn't need to edit it, because it's written automatically when you serve the project.
+In development, your ExpoKit project will request your local build from Expo CLI. You can see this configuration in **EXBuildConstants.plist** (iOS) or `ExponentBuildConstants` (Android). You shouldn't need to edit it, because it's written automatically when you serve the project.
 
-In production, your ExpoKit project will request your published JS bundle. This is configured in `EXShell.plist` (iOS) and `MainActivity.java` (Android). If you want to specify custom behavior in iOS, you can also set the `[ExpoKit sharedInstance].publishedManifestUrlOverride` property.
+In production, your ExpoKit project will request your published JS bundle. This is configured in **EXShell.plist** (iOS) and **MainActivity.java** (Android). If you want to specify custom behavior in iOS, you can also set the `[ExpoKit sharedInstance].publishedManifestUrlOverride` property.
 
 ## Changing the Deep Link Scheme
 
 If you do not have a `scheme` specified in app.json at the time of ejecting, Expo will automatically generate a random one for you. If you'd like to switch to a different scheme after ejecting, there are a few places where you need to find an occurrence of your old scheme and replace it with the new one:
 
-1.  `app.json` (the `"scheme"` field)
+1.  **app.json** (the `"scheme"` field)
 2.  `ios/<your-project-name>/Supporting/Info.plist` (under the first occurrence of`CFBundleURLSchemes`)
-3.  `android/app/src/main/AndroidManifest.xml` (in a line that looks like `<data android:scheme="<your-scheme-here>"/>`, under `MainActivity`, or `LauncherActivity` for older projects)
+3.  **android/app/src/main/AndroidManifest.xml** (in a line that looks like `<data android:scheme="<your-scheme-here>"/>`, under `MainActivity`, or `LauncherActivity` for older projects)
 4.  `android/app/src/main/java/host/exp/exponent/generated/AppConstants.java` (the `SHELL_APP_SCHEME` variable)
 
 ## Enabling Optional Expo Modules on iOS

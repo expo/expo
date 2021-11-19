@@ -6,13 +6,13 @@ Your app's icon is what users see on the home screen of their devices, as well a
 
 ## Configuring your App's Icon
 
-The most straightforward way to provide an icon for your app is to provide the [icon](../workflow/configuration.md#icon) key in `app.json`. If you want to do the minimum possible, this key alone is sufficient. However, Expo also accepts platform-specific keys under `ios.icon` and `android.icon`. If either of these exist, they will take priority over the base `icon` key on their respective platform. Further customization of the Android icon is possible using the `android.adaptiveIcon` key, which will override both of the previously mentioned settings. Most production-quality apps will probably want to provide something slightly different between iOS and Android.
+The most straightforward way to provide an icon for your app is to provide the [icon](../workflow/configuration.md#icon) key in **app.json**. If you want to do the minimum possible, this key alone is sufficient. However, Expo also accepts platform-specific keys under `ios.icon` and `android.icon`. If either of these exist, they will take priority over the base `icon` key on their respective platform. Further customization of the Android icon is possible using the `android.adaptiveIcon` key, which will override both of the previously mentioned settings. Most production-quality apps will probably want to provide something slightly different between iOS and Android.
 
 ## Icon Best Practices
 
 ### Design
 
-Create an app icon and splash image with the [Figma template](https://www.figma.com/file/ddc0glVeILssZl0Dcn1lSS/App-Icon-and-Splash?node-id=0%3A1) and video below:
+Create an app icon and splash image with the [Figma template](https://www.figma.com/community/file/1020369500490206655) and video below:
 
 <object width="100%" height="400">
   <param name="movie" value="https://youtube.com/embed/mVOFvLSiJ_s" />
@@ -24,7 +24,7 @@ Create an app icon and splash image with the [Figma template](https://www.figma.
 
 - The icon you use for iOS should follow the [Apple Human Interface Guidelines](https://developer.apple.com/ios/human-interface-guidelines/icons-and-images/app-icon/) for iOS Icons.
 - Use a png file.
-- 1024x1024 is a good size. The Expo [build service](../distribution/building-standalone-apps.md) will generate the other sizes for you. The largest size it generates is 1024x1024.
+- 1024x1024 is a good size. [EAS Build](/build/setup.md) will generate the other sizes for you. The largest size it generates is 1024x1024.
 - The icon must be exactly square, i.e. a 1023x1024 icon is not valid.
 - Make sure the icon fills the whole square, with no rounded corners or other transparent pixels. The operating system will mask your icon when appropriate.
 
@@ -33,7 +33,7 @@ Create an app icon and splash image with the [Figma template](https://www.figma.
 - The Android Adaptive Icon is formed from two separate layers -- a foreground image and a background color or image. This allows the OS to mask the icon into different shapes and also support visual effects.
 - The design you provide should follow the [Android Adaptive Icon Guidelines](https://developer.android.com/guide/practices/ui_guidelines/icon_design_adaptive) for launcher icons.
 - Use png files.
-- Use the `android.adaptiveIcon.foregroundImage` field in `app.json` to specify your foreground image.
+- Use the `android.adaptiveIcon.foregroundImage` field in **app.json** to specify your foreground image.
 - The default background color is white; to specify a different background color, use the `android.adaptiveIcon.backgroundColor` field. You can instead specify a background image using the `android.adaptiveIcon.backgroundImage` field; ensure that it has the same dimensions as your foreground image.
 - You may also want to provide a separate icon for older Android devices that do not support Adaptive Icons; you can do so with the `android.icon` field. This single icon would probably be a combination of your foreground and background layers.
 - You may still want to follow some of the [Apple best practices](https://developer.apple.com/ios/human-interface-guidelines/icons-and-images/app-icon/) to ensure your icon looks professional, such as testing your icon on different wallpapers, and avoiding text besides your product's wordmark.

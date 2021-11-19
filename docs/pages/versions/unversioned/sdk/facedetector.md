@@ -6,6 +6,7 @@ sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-face-dete
 import APISection from '~/components/plugins/APISection';
 import InstallSection from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
+import SnackInline from '~/components/plugins/SnackInline';
 
 **`expo-face-detector`** lets you use the power of the [Google Mobile Vision](https://developers.google.com/vision/face-detection-concepts) framework to detect faces on images.
 
@@ -21,37 +22,43 @@ import PlatformsSection from '~/components/plugins/PlatformsSection';
 
 - Android does not recognize faces that aren't aligned with the interface (top of the interface matches top of the head).
 
-### Comprehensive Example
-
-Check out a full example at [expo/camerja](https://github.com/expo/camerja). You can try it with Expo at [@documentation/camerja](https://expo.dev/@documentation/camerja).
-
-`FaceDetector` is used in Gallery screen — it should detect faces on saved photos and show the probability that the face is smiling.
-
-### Intermodule interface
-
-Other modules, like eg. [Camera](camera.md) are able to use this `FaceDetector`.
-
 ### Settings
 
 In order to configure detector's behavior modules pass a [`DetectionOptions`](#detectionoptions) object which is then interpreted by this module.
 
 Eg. you could use the following snippet to detect faces in fast mode without detecting landmarks or whether face is smiling:
 
+<SnackInline dependencies={['expo-camera', 'expo-face-detector']}>
+
 ```js
+import * as React from 'react';
+import { Camera } from 'expo-camera';
 import * as FaceDetector from 'expo-face-detector';
 
-<Camera
-  // ... other props
-  onFacesDetected={this.handleFacesDetected}
-  faceDetectorSettings={{
-    mode: FaceDetector.Constants.Mode.fast,
-    detectLandmarks: FaceDetector.Constants.Landmarks.none,
-    runClassifications: FaceDetector.Constants.Classifications.none,
-    minDetectionInterval: 100,
-    tracking: true,
-  }}
-/>;
+const App = () => (
+  <Camera
+    // other props
+    onFacesDetected={handleFacesDetected}
+    faceDetectorSettings={{
+      mode: FaceDetector.FaceDetectorMode.fast,
+      detectLandmarks: FaceDetector.FaceDetectorLandmarks.none,
+      runClassifications: FaceDetector.FaceDetectorClassifications.none,
+      minDetectionInterval: 100,
+      tracking: true,
+    }}
+  />
+);
+
+/* @hide const handleFacesDetected = ({ faces }) => { ... }; */
+const handleFacesDetected = ({ faces }) => {
+  console.log(faces);
+};
+
+export default App;
+/* @end */
 ```
+
+</SnackInline>
 
 ## API
 

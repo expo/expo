@@ -10,6 +10,13 @@ open class BaseModule {
   required public init(appContext: AppContext) {
     self.appContext = appContext
   }
+
+  /**
+   Sends an event with given name and body to JavaScript.
+   */
+  public func sendEvent(_ eventName: String, _ body: [String: Any?] = [:]) {
+    appContext?.eventEmitter?.sendEvent(withName: eventName, body: body)
+  }
 }
 
 /**

@@ -7,7 +7,6 @@ import { LI, UL } from '~/components/base/list';
 import { P } from '~/components/base/paragraph';
 import { H2, H3, H3Code } from '~/components/plugins/Headings';
 import {
-  CommentTagData,
   DefaultPropsDefinitionData,
   PropData,
   PropsDefinitionData,
@@ -16,6 +15,7 @@ import {
 import {
   CommentTextBlock,
   getCommentOrSignatureComment,
+  getTagData,
   renderTypeOrSignatureType,
   resolveTypeName,
   STYLES_SECONDARY,
@@ -37,9 +37,9 @@ const extractDefaultPropValue = (
   { comment, name }: PropData,
   defaultProps?: DefaultPropsDefinitionData
 ): string | undefined => {
-  const annotationDefault = comment?.tags?.filter((tag: CommentTagData) => tag.tag === 'default');
-  if (annotationDefault?.length) {
-    return annotationDefault[0].text;
+  const annotationDefault = getTagData('default', comment);
+  if (annotationDefault) {
+    return annotationDefault.text;
   }
   return defaultProps?.type?.declaration?.children?.filter(
     (defaultProp: PropData) => defaultProp.name === name
@@ -97,13 +97,19 @@ const renderProps = (
   );
 };
 
-const renderProp = (
+export const renderProp = (
   { comment, name, type, flags, signatures }: PropData,
   defaultValue?: string,
   exposeInSidebar?: boolean
 ) => (
   <LI key={`prop-entry-${name}`} customCss={exposeInSidebar ? PROP_LIST_ELEMENT_STYLE : undefined}>
-    {exposeInSidebar ? <H3>{name}</H3> : <H4>{name}</H4>}
+    {exposeInSidebar ? (
+      <H3Code>
+        <InlineCode>{name}</InlineCode>
+      </H3Code>
+    ) : (
+      <H4>{name}</H4>
+    )}
     <P>
       {flags?.isOptional && <span css={STYLES_SECONDARY}>Optional&emsp;&bull;&emsp;</span>}
       <span css={STYLES_SECONDARY}>Type:</span> {renderTypeOrSignatureType(type, signatures, true)}
@@ -118,11 +124,7 @@ const renderProp = (
   </LI>
 );
 
-const APISectionProps: React.FC<APISectionPropsProps> = ({
-  data,
-  defaultProps,
-  header = 'Props',
-}) =>
+const APISectionProps = ({ data, defaultProps, header = 'Props' }: APISectionPropsProps) =>
   data?.length ? (
     <>
       {header === 'Props' ? (

@@ -8,7 +8,24 @@
 
 ### 🐛 Bug fixes
 
+- [plugin] Fix android adding duplicate schemes. ([#15057](https://github.com/expo/expo/pull/15057) by [@EvanBacon](https://github.com/EvanBacon))
+
 ### 💡 Others
+
+## 0.6.0 — 2021-10-07
+
+### 🛠 Breaking changes
+
+- Added a native dependency on the `expo-manifests` package. **Projects without `react-native-unimodules` or `expo-modules-core` installed will need to follow the upgrade guide [here](https://docs.expo.dev/clients/upgrading/) when upgrading from an older version of this package.** ([#14461](https://github.com/expo/expo/pull/14461) by [@esamelson](https://github.com/esamelson))
+- Replace Android DevLauncherManifest class with `expo-manifests`. ([#14462](https://github.com/expo/expo/pull/14462) by [@esamelson](https://github.com/esamelson))
+
+### 🐛 Bug fixes
+
+- Fix building errors from use_frameworks! in Podfile. ([#14523](https://github.com/expo/expo/pull/14523) by [@kudo](https://github.com/kudo))
+
+### 💡 Others
+
+- Updated `@expo/config-plugins` ([#14443](https://github.com/expo/expo/pull/14443) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 0.5.1 — 2021-09-03
 

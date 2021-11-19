@@ -1,11 +1,8 @@
-import { useQuery } from '@apollo/client';
 import { StackScreenProps } from '@react-navigation/stack';
 import * as React from 'react';
 
 import ProfileView from '../components/ProfileView';
-import { Project } from '../components/ProjectList';
-import { Snack } from '../components/SnackList';
-import { Home_ProfileData2Document } from '../graphql/types';
+import { useHome_ProfileData2Query } from '../graphql/types';
 import { AllStackRoutes } from '../navigation/Navigation.types';
 import { useDispatch } from '../redux/Hooks';
 import SessionActions from '../redux/SessionActions';
@@ -13,26 +10,9 @@ import SessionActions from '../redux/SessionActions';
 const APP_LIMIT = 3;
 const SNACK_LIMIT = 3;
 
-export interface ProfileData {
-  me?: {
-    id: string;
-    username: string;
-    firstName?: string | null;
-    lastName?: string | null;
-    profilePhoto: string;
-    accounts: {
-      id: string;
-      name: string;
-    }[];
-    appCount: number;
-    apps: Project[];
-    snacks: Snack[];
-  } | null;
-}
-
 export default function Profile(props: StackScreenProps<AllStackRoutes, 'Profile'>) {
   const dispatch = useDispatch();
-  const query = useQuery(Home_ProfileData2Document, {
+  const query = useHome_ProfileData2Query({
     fetchPolicy: 'cache-and-network',
     variables: {
       appLimit: APP_LIMIT,

@@ -26,7 +26,6 @@ import host.exp.exponent.analytics.EXL
 import host.exp.exponent.di.NativeModuleDepsProvider
 import host.exp.exponent.kernel.ExponentUrls
 import host.exp.exponent.kernel.KernelConstants
-import host.exp.exponent.network.ExpoHttpCallback
 import host.exp.exponent.network.ExpoResponse
 import host.exp.exponent.network.ExponentHttpClient.SafeCallback
 import host.exp.exponent.network.ExponentNetwork
@@ -416,27 +415,6 @@ class Exponent private constructor(val context: Context, val application: Applic
     instance = this
     NativeModuleDepsProvider.initialize(application)
     NativeModuleDepsProvider.instance.inject(Exponent::class.java, this)
-
-    // Verifying SSL certs is slow on Android, so send an HTTPS request to our server as early as possible.
-    // This speeds up the manifest request in a shell app from ~500ms to ~250ms.
-    try {
-      exponentNetwork.client.call(
-        Request.Builder().url(Constants.API_HOST + "/status").build(),
-        object : ExpoHttpCallback {
-          override fun onFailure(e: IOException) {
-            EXL.d(TAG, e.toString())
-          }
-
-          @Throws(IOException::class)
-          override fun onResponse(response: ExpoResponse) {
-            ExponentNetwork.flushResponse(response)
-            EXL.d(TAG, "Loaded exp.host status page.")
-          }
-        }
-      )
-    } catch (e: Throwable) {
-      EXL.e(TAG, e)
-    }
 
     // Fixes Android memory leak
     try {

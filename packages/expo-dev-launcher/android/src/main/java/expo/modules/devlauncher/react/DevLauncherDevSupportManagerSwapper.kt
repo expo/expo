@@ -8,12 +8,16 @@ import com.facebook.react.devsupport.DisabledDevSupportManager
 import com.facebook.react.packagerconnection.JSPackagerClient
 import expo.modules.devlauncher.helpers.getProtectedFieldValue
 import expo.modules.devlauncher.helpers.setProtectedDeclaredField
+import expo.modules.devlauncher.launcher.DevLauncherControllerInterface
 import expo.modules.devlauncher.rncompatibility.DevLauncherDevSupportManager
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 
-class DevLauncherDevSupportManagerSwapper {
+class DevLauncherDevSupportManagerSwapper: KoinComponent {
+  private val controller: DevLauncherControllerInterface by inject()
+
   fun swapDevSupportManagerImpl(
     reactInstanceManager: ReactInstanceManager
   ) {
@@ -43,7 +47,7 @@ class DevLauncherDevSupportManagerSwapper {
        * and we don't know when it will be available (see [DevServerHelper.openPackagerConnection]).
        * So we just wait for connection and then we kill it.
        */
-      GlobalScope.launch {
+      controller.coroutineScope.launch {
         try {
           while (true) {
             val devServerHelper: DevServerHelper = devManagerClass.getProtectedFieldValue(

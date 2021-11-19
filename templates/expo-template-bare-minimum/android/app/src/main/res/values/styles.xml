@@ -8,9 +8,7 @@
     <item name="android:textColorHint">#c8c8c8</item>
     <item name="android:textColor">@android:color/black</item>
   </style>
-  <style name="Theme.App.SplashScreen" parent="Theme.AppCompat.Light.NoActionBar">
-    <!-- Below line is handled by '@expo/configure-splash-screen' command and it's discouraged to modify it manually -->
+  <style name="Theme.App.SplashScreen" parent="AppTheme">
     <item name="android:windowBackground">@drawable/splashscreen</item>
-    <!-- Customize your splash screen theme here -->
   </style>
 </resources>

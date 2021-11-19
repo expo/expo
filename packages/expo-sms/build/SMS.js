@@ -34,7 +34,7 @@ function processAttachments(attachments) {
  * > Note: The only feedback collected by this module is whether any message has been sent. That
  * means we do not check actual content of message nor recipients list.
  *
- * # Example
+ * @example
  * ```ts
  * const { result } = await SMS.sendSMSAsync(
  *   ['0123456789', '9876543210'],
@@ -73,7 +73,7 @@ export async function sendSMSAsync(addresses, message, options) {
  *
  * @return Returns a promise that fulfils with a `boolean`, indicating whether SMS is available on this device.
  *
- * # Example
+ * @example
  * ```ts
  * const isAvailable = await SMS.isAvailableAsync();
  * if (isAvailable) {

@@ -1,6 +1,13 @@
 import React, { useEffect, useState, useRef, useMemo } from 'react';
-import { Animated, StyleSheet, Text, NativeModules, NativeEventEmitter, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import {
+  Animated,
+  StyleSheet,
+  Text,
+  NativeModules,
+  NativeEventEmitter,
+  UIManager,
+  View,
+} from 'react-native';
 
 export default function DevLoadingView() {
   const [isDevLoading, setIsDevLoading] = useState(false);
@@ -68,7 +75,7 @@ export default function DevLoadingView() {
       <Animated.View
         style={[styles.animatedContainer, { transform: [{ translateY }] }]}
         pointerEvents="none">
-        <SafeAreaView style={styles.banner} edges={['bottom']}>
+        <View style={styles.banner}>
           <View style={styles.contentContainer}>
             <View style={{ flexDirection: 'row' }}>
               <Text style={styles.text}>{isDevLoading ? 'Refreshing...' : 'Refreshed'}</Text>
@@ -80,13 +87,24 @@ export default function DevLoadingView() {
               </Text>
             </View>
           </View>
-        </SafeAreaView>
+        </View>
       </Animated.View>
     );
   } else {
     return null;
   }
 }
+
+/**
+ * This is a hack to get the safe area insets without explicitly depending on react-native-safe-area-context.
+ * The following code is lifted from: https://git.io/Jzk4k
+ *
+ * TODO: This will need to be updated for Fabric/TurboModules.
+ **/
+const RNCSafeAreaProviderConfig = UIManager.getViewManagerConfig('RNCSafeAreaProvider') as any;
+const initialWindowMetrics = RNCSafeAreaProviderConfig?.Constants?.initialWindowMetrics as
+  | { insets: { bottom: number } }
+  | undefined;
 
 const styles = StyleSheet.create({
   animatedContainer: {
@@ -100,6 +118,7 @@ const styles = StyleSheet.create({
     flex: 1,
     overflow: 'visible',
     backgroundColor: 'rgba(0,0,0,0.75)',
+    paddingBottom: initialWindowMetrics?.insets?.bottom ?? 0,
   },
   contentContainer: {
     flex: 1,

@@ -3,6 +3,14 @@ const NativeProxy = NativeModules.NativeUnimoduleProxy;
 const modulesConstantsKey = 'modulesConstants';
 const exportedMethodsKey = 'exportedMethods';
 const NativeModulesProxy = {};
+// Keep it opt-in for now. It's too risky without proper and thorough testing.
+let canUseExpoTurboModules = false;
+/**
+ * Sets whether to use a TurboModule version of the proxy.
+ */
+export function useExpoTurboModules(state = true) {
+    canUseExpoTurboModules = state;
+}
 if (NativeProxy) {
     Object.keys(NativeProxy[exportedMethodsKey]).forEach((moduleName) => {
         NativeModulesProxy[moduleName] = NativeProxy[modulesConstantsKey][moduleName] || {};
@@ -12,7 +20,12 @@ if (NativeProxy) {
                 if (argumentsCount !== args.length) {
                     return Promise.reject(new Error(`Native method ${moduleName}.${methodInfo.name} expects ${argumentsCount} ${argumentsCount === 1 ? 'argument' : 'arguments'} but received ${args.length}`));
                 }
-                return NativeProxy.callMethod(moduleName, key, args);
+                if (canUseExpoTurboModules && global.ExpoModulesProxy) {
+                    return global.ExpoModulesProxy.callMethodAsync(moduleName, methodInfo.name, args);
+                }
+                else {
+                    return NativeProxy.callMethod(moduleName, key, args);
+                }
             };
         });
         // These are called by EventEmitter (which is a wrapper for NativeEventEmitter)
@@ -39,7 +52,7 @@ if (NativeProxy) {
     });
 }
 else {
-    console.warn(`The "UMNativeModulesProxy" native module is not exported through NativeModules; verify that @unimodules/react-native-adapter's native code is linked properly`);
+    console.warn(`The "EXNativeModulesProxy" native module is not exported through NativeModules; verify that expo-modules-core's native code is linked properly`);
 }
 export default NativeModulesProxy;
 //# sourceMappingURL=NativeModulesProxy.native.js.map

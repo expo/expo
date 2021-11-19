@@ -1,6 +1,7 @@
 package expo.modules.imagepicker
 
 import expo.modules.core.Promise
+import expo.modules.core.utilities.ifNull
 
 data class ImagePickerOptions(
   val quality: Int,

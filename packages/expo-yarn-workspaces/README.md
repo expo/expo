@@ -22,7 +22,7 @@ Each Expo app in the repository that is intended to work with Yarn workspaces (a
 
 ### Define the entry module in the `"main"` field of each app's package.json
 
-The postinstall script determines the location of the generated entry module by looking at the `"main"` field in package.json. In a conventional Expo app, the value of the `"main"` field is `node_modules/expo/AppEntry.js`. In a workspace in the Expo repo, **specify `"__generated__/AppEntry.js"` as the value of the `"main"` field in package.json.**
+The postinstall script determines the location of the generated entry module by looking at the `"main"` field in package.json. In a conventional Expo app, the value of the `"main"` field is `node_modules/expo/AppEntry.js`. In a workspace in the Expo repo, **specify `"__generated__/AppEntry.js"` as the value of the `"main"` field in package.json.** If using EAS Build, see the additional instructions below.
 
 You can specify other paths too. The `.expo` directory is convenient since it already contains auto-generated files and is .gitignore'd.
 
@@ -67,6 +67,24 @@ Sometimes an npm package must be located in the project's `node_modules` folder 
 {
   "expo-yarn-workspaces": {
     "symlinks": ["react-native-unimodules"]
+  }
+}
+```
+
+## EAS Build integration
+
+You must configure EAS Build to use the generated entrypoint. Add the `ENTRY_FILE` environment variable to your `eas.json` like the following:
+
+```json
+{
+  "build": {
+    "development": {
+      "developmentClient": true,
+      "distribution": "internal",
+      "env": {
+        "ENTRY_FILE": "./__generated__/AppEntry.js"
+      }
+    },
   }
 }
 ```

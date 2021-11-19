@@ -77,36 +77,6 @@ Apple's response includes a signed JWT with information about the user. To ensur
 import * as AppleAuthentication from 'expo-apple-authentication';
 ```
 
-**[Methods](#methods)**
-
-- [`AppleAuthentication.isAvailableAsync()`](#appleauthenticationisavailableasync)
-- [`AppleAuthentication.signInAsync(options)`](#appleauthenticationsigninasyncoptions)
-- [`AppleAuthentication.getCredentialStateAsync(user)`](#appleauthenticationgetcredentialstateasyncuser)
-
-**[Components](#components)**
-
-- [`AppleAuthentication.AppleAuthenticationButton`](#appleauthenticationappleauthenticationbutton)
-
-**[Prop Types](#appleauthenticationappleauthenticationbuttonprops)**
-
-- [`AppleAuthentication.AppleAuthenticationButtonProps`](#appleauthenticationappleauthenticationbuttonprops)
-
-**[Enum Types](#enum-types)**
-
-- [`AppleAuthentication.AppleAuthenticationButtonStyle`](#appleauthenticationappleauthenticationbuttonstyle)
-- [`AppleAuthentication.AppleAuthenticationButtonType`](#appleauthenticationappleauthenticationbuttontype)
-- [`AppleAuthentication.AppleAuthenticationCredentialState`](#appleauthenticationappleauthenticationcredentialstate)
-- [`AppleAuthentication.AppleAuthenticationScope`](#appleauthenticationappleauthenticationscope)
-- [`AppleAuthentication.AppleAuthenticationUserDetectionStatus`](#appleauthenticationappleauthenticationuserdetectionstatus)
-
-**[Object Types](#object-types)**
-
-- [`AppleAuthentication.AppleAuthenticationCredential`](#appleauthenticationappleauthenticationcredential)
-- [`AppleAuthentication.AppleAuthenticationFullName`](#appleauthenticationappleauthenticationfullname)
-- [`AppleAuthentication.AppleAuthenticationSignInOptions`](#appleauthenticationappleauthenticationsigninoptions)
-
-**[Error Codes](#error-codes)**
-
 ## Methods
 
 ### `AppleAuthentication.isAvailableAsync()`

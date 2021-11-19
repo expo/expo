@@ -10,7 +10,7 @@ The first thing we'll want to do is install jest-expo, it's a Jest preset that m
 
 To install jest-expo as a development dependency run: `yarn add jest-expo --dev` **or** `npm i jest-expo --save-dev`.
 
-Then we need to add/update `package.json` to include:
+Then we need to add/update **package.json** to include:
 
 ```js
 "scripts": {
@@ -32,22 +32,22 @@ That's it! Now we can start writing Jest tests!
 
 ## Jest Configuration
 
-Jest comes with a lot of configuration options, for more details read [Configuring Jest](https://jestjs.io/docs/en/configuration.html).
+Jest comes with a lot of configuration options, for more details read [Configuring Jest](https://jestjs.io/docs/configuration).
 
-We would like to point out [transformIgnorePatterns](https://jestjs.io/docs/en/configuration.html#transformignorepatterns-array-string). Below is a great starting point to make sure any modules you may be using within `/node_modules/` are transpiled when running jest. This should cover the majority of your needs but you can always add to this pattern list as you see fit.
+We would like to point out [transformIgnorePatterns](https://jestjs.io/docs/configuration#transformignorepatterns-arraystring). Below is a great starting point to make sure any modules you may be using within `/node_modules/` are transpiled when running jest. This should cover the majority of your needs but you can always add to this pattern list as you see fit.
 
-```js
+```json
 "jest": {
   "preset": "jest-expo",
   "transformIgnorePatterns": [
-    "node_modules/(?!(jest-)?react-native|react-clone-referenced-element|@react-native-community|expo(nent)?|@expo(nent)?/.*|react-navigation|@react-navigation/.*|@unimodules/.*|unimodules|sentry-expo|native-base|@sentry/.*)"
+    "node_modules/(?!((jest-)?react-native|@react-native(-community)?)|expo(nent)?|@expo(nent)?/.*|@expo-google-fonts/.*|react-navigation|@react-navigation/.*|@unimodules/.*|unimodules|sentry-expo|native-base|react-native-svg)"
   ]
 }
 ```
 
 ## Unit Test
 
-We are going to write a simple test for `App.js` by creating `App.test.js`. Jest will identify this as a test, and include it in the tests queue. There are other ways to [structure your tests](#structure-your-tests), but we will cover that later in this tutorial.
+We are going to write a simple test for **App.js** by creating **App.test.js**. Jest will identify this as a test, and include it in the tests queue. There are other ways to [structure your tests](#structure-your-tests), but we will cover that later in this tutorial.
 
 Our test will be the expected state of the `<App />` to have 1 child element:
 
@@ -69,7 +69,7 @@ Now run `yarn test` or `npm run test`, if all went well you should see 1 test pa
 
 ## Snapshot Test
 
-Now let's add a snapshot test for `App.js`. **What is a snapshot test, and why is it useful?** Snapshot tests are used to make sure the UI stays consistent, especially when a project is working with global styles that are potentially shared across components. Read more about it on Jest's site [snapshot testing](https://jestjs.io/docs/en/snapshot-testing).
+Now let's add a snapshot test for **App.js**. **What is a snapshot test, and why is it useful?** Snapshot tests are used to make sure the UI stays consistent, especially when a project is working with global styles that are potentially shared across components. Read more about it on Jest's site [snapshot testing](https://jestjs.io/docs/en/snapshot-testing).
 
 Let's add the following within the describe():
 
@@ -93,7 +93,7 @@ This was a very simple test, for more information take a look at the following l
 
 Running tests are cool and all, but wouldn't you like to see your Expo projects total code coverage?! Maybe even see it in html format?! This section is for you!
 
-Let's head back to `package.json` and add the following:
+Let's head back to **package.json** and add the following:
 
 ```js
 "jest": {
@@ -111,13 +111,13 @@ Let's head back to `package.json` and add the following:
 
 The above additions let's Jest know to collect coverage of all **_.js & .jsx_** file types and not within **_/coverage_**, **_/node_modules/_** and our 2 project config files (add/remove more exclusions to this list to match your Expo app needs).
 
-Now run the test again, you should see **/coverage/** in your app directory! Find the `index.html` file within and double click to open it up in a browser. Not only do we have reporting in our cli, we also have an html version of our code coverage, pretty cool stuff!
+Now run the test again, you should see **/coverage/** in your app directory! Find the **index.html** file within and double click to open it up in a browser. Not only do we have reporting in our cli, we also have an html version of our code coverage, pretty cool stuff!
 
 > **Standards Note**: You can do what you want, but usually we wouldn't upload this html reporting to git; so add `coverage/\*\*/*` as a line in `.gitignore` to prevent this directory from being tracked.
 
 ## Structure your Tests
 
-As promised, let's talk about how to set up the tests, right now we have a single `.test.js` in the root of our Expo project. This can get messy quickly, the easiest way is to create a `__tests__` directory (anywhere you'd like) and put all the tests there. For example see below:
+As promised, let's talk about how to set up the tests, right now we have a single **.test.js** in the root of our Expo project. This can get messy quickly, the easiest way is to create a ****tests**** directory (anywhere you'd like) and put all the tests there. For example see below:
 
 ```sh
 __tests__/

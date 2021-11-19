@@ -5,7 +5,11 @@ import sharp from 'sharp';
 
 import * as Directories from '../Directories';
 
-async function resizeIconWithSharpAsync(iconSizePx: number, iconFilename: string, destinationIconPath: string) {
+async function resizeIconWithSharpAsync(
+  iconSizePx: number,
+  iconFilename: string,
+  destinationIconPath: string
+) {
   const filename = path.join(destinationIconPath, iconFilename);
 
   // sharp can't have same input and output filename, so load to buffer then
@@ -40,6 +44,8 @@ async function action(providedOptions: ActionOptions) {
   };
 
   if (options.action === 'build') {
+    // in building shell apps, `app.manifest` in expo-updates is not necessary.
+    process.env['SKIP_BUNDLING'] = '1';
     return await IosShellApp.buildAndCopyArtifactAsync(options);
   } else if (options.action === 'configure') {
     return await IosShellApp.configureAndCopyArchiveAsync(options);

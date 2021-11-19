@@ -51,7 +51,7 @@ jobs:
             packages/*/node_modules
             packages/@unimodules/*/node_modules
             react-native-lab/react-native/node_modules
-          key: ${{ runner.os }}-modules-${{ hashFiles('yarn.lock') }}
+          key: ${{ runner.os }}-modules-v2-${{ hashFiles('yarn.lock') }}
       - name: 🧶 Install node modules in root dir
         # if: steps.node-modules-cache.outputs.cache-hit != 'true'
         run: yarn install --frozen-lockfile

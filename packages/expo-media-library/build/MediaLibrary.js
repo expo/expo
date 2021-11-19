@@ -129,7 +129,7 @@ export async function presentPermissionsPickerAsync() {
  * Creates an asset from existing file. The most common use case is to save a picture taken by [Camera](../camera).
  * This method requires `CAMERA_ROLL` permission.
  *
- * # Example
+ * @example
  * ```js
  * const { uri } = await Camera.takePictureAsync();
  * const asset = await MediaLibrary.createAssetAsync(uri);
@@ -399,9 +399,10 @@ export function removeAllListeners() {
 }
 // @needsAudit
 /**
- * __iOS Only.__ Fetches a list of moments, which is a group of assets taken around the same place
+ * Fetches a list of moments, which is a group of assets taken around the same place
  * and time.
  * @return An array of [albums](#album) whose type is `moment`.
+ * @platform ios
  */
 export async function getMomentsAsync() {
     if (!MediaLibrary.getMomentsAsync) {

@@ -38,7 +38,6 @@ Let's scroll through the [API Reference](/versions/latest/) to find packages tha
 
 Let's say we had mockups for our app that look like the following:
 
-
 <ImageSpotlight alt="Mockups of app screens" src="/static/images/exploring-managed/mockups.png" />
 
 > _Note: These are actually screenshots from [Sindre Sorhus'](https://github.com/sindresorhus) open source app [Blear](https://sindresorhus.com/blear), but let's pretend they are mockups for the sake of demonstration._
@@ -55,13 +54,13 @@ At the risk of evoking the [How To Draw an Owl meme](https://knowyourmeme.com/me
 
 <Video file="exploring-managed/done.mp4" />
 
-We can make a separate version of the app for web to just guide people to our app in the app stores, for when we have them up there. We can create a different entry point for the app by creating `App.web.js` and then build it there.
+We can make a separate version of the app for web to just guide people to our app in the app stores, for when we have them up there. We can create a different entry point for the app by creating **App.web.js** and then build it there.
 
 <Video file="exploring-managed/web.mp4" spaceAfter />
 
-## Configure the app with `app.json`
+## Configure the app with **app.json**
 
-In a managed app we don’t have the native iOS or Android projects to poke around and modify, this is managed by Expo for us. So when we want to change configuration like the icon and splash screen image we can use `app.json`.
+In a managed app we don’t have the native iOS or Android projects to poke around and modify, this is managed by Expo for us. So when we want to change configuration like the icon and splash screen image we can use **app.json**.
 
 <Video file="exploring-managed/config.mp4" spaceAfter />
 
@@ -77,15 +76,15 @@ You may have noticed that when we ran `expo publish` the CLI warned us about opt
 
 <Video file="exploring-managed/optimize.mp4" />
 
-Upon publishing you are given a persistent URL that you can share with colleagues, in this case it was [https://expo.dev/@notbrent/blearexp](https://expo.dev/@notbrent/blearexp). This is determined by your Expo account username and the `slug` field in your project `app.json`.
+Upon publishing you are given a persistent URL that you can share with colleagues, in this case it was [https://expo.dev/@notbrent/blearexp](https://expo.dev/@notbrent/blearexp). This is determined by your Expo account username and the `slug` field in your project **app.json**.
 
-On iOS, only you can open projects that you have built unless you have a [priority plan](https://expo.dev/developer-services), in which case your teammates can open your projects as well. Another option to open any published managed app is to do a custom build of an Expo iOS client. [Read more about that here](../guides/adhoc-builds.md).
+On iOS, only you can open projects that you have built unless you have a [priority plan](https://expo.dev/developer-services), in which case your teammates can open your projects as well.
 
 ## Building and deploying
 
 ### iOS and the Apple App Store
 
-Before we run the build, we need to set a `bundleIdentifier` in `app.json` (["What does bundle identifier mean?"](https://stackoverflow.com/questions/11347470/what-does-bundle-identifier-mean-in-the-ios-project)).
+Before we run the build, we need to set a `bundleIdentifier` in **app.json** (["What does bundle identifier mean?"](https://stackoverflow.com/questions/11347470/what-does-bundle-identifier-mean-in-the-ios-project)).
 
 <Video file="exploring-managed/bundleid.mp4" />
 
@@ -105,7 +104,7 @@ Android builds follow a similar process to iOS builds, but we are going to restr
 
 <Video file="exploring-managed/package.mp4" />
 
-We’ll build an [Android App Bundle (`.aab`)](https://developer.android.com/platform/technology/app-bundle) here because we want a more lean binary for the Play Store, but if you want to install the binary on a local device for testing, leave out the `--app-bundle` flag and you’ll get a `.apk` file instead.
+We’ll build an [Android App Bundle (**.aab**)](https://developer.android.com/platform/technology/app-bundle) here because we want a more lean binary for the Play Store, but if you want to install the binary on a local device for testing, leave out the `--app-bundle` flag and you’ll get a **.apk** file instead.
 
 <Video file="exploring-managed/buildandroid.mp4" />
 
@@ -117,7 +116,7 @@ Run `expo build:web` then upload the `web-build` directory to any host capable o
 
 <Video file="exploring-managed/buildweb.mp4" spaceAfter />
 
-## Updating the app over the air
+## Updating the app
 
 Once your app is out for testing or on the stores you probably don’t want to have to repeat the process again to make some small changes. In this case, we noticed that we weren’t asking for camera roll permissions before saving the image, so if you tried to save an image before picking one from the camera roll then it wouldn’t work. To ship an update, we just need to run `expo publish` again.
 
@@ -127,7 +126,7 @@ When we built our Android app bundle above, we told it to point to a specific An
 
 <Video file="exploring-managed/updatechannel.mp4" />
 
-To determine the rules for when apps will download and apply these updates, [read about configuring OTA updates](../guides/configuring-ota-updates.md).
+To determine the rules for when apps will download and apply these updates, [read about configuring updates](../guides/configuring-updates.md).
 
 We frequently release updates to the [Expo SDK](/versions/latest/). If you decide to update your app to a newer version of our SDK, copies of the older version will continue to work fine. Users will download the newest copy that their client supports.
 

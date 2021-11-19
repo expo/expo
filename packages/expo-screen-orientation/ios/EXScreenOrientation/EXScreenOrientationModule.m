@@ -32,10 +32,15 @@ EX_EXPORT_MODULE(ExpoScreenOrientation);
 
 - (void)setModuleRegistry:(EXModuleRegistry *)moduleRegistry
 {
+  _screenOrientationRegistry = [moduleRegistry getSingletonModuleForName:@"ScreenOrientationRegistry"];
   [[moduleRegistry getModuleImplementingProtocol:@protocol(EXAppLifecycleService)] registerAppLifecycleListener:self];
   _eventEmitter = [moduleRegistry getModuleImplementingProtocol:@protocol(EXEventEmitterService)];
-  
-  _screenOrientationRegistry = [moduleRegistry getSingletonModuleForName:@"ScreenOrientationRegistry"];
+
+  // TODO: This shouldn't be here, but it temporarily fixes
+  // https://github.com/expo/expo/issues/13641 and https://github.com/expo/expo/issues/11558
+  // We're going to redesign this once we drop support for multiple apps being open in Expo Go at the same time.
+  // Then we probably won't need the screen orientation registry at all. (@tsapeta)
+  [self onAppForegrounded];
 }
 
 EX_EXPORT_METHOD_AS(lockAsync,

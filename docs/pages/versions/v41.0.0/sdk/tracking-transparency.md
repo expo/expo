@@ -10,7 +10,7 @@ import SnackInline from '~/components/plugins/SnackInline';
 
 > This library was added to SDK 41 in a patch release on May 21st, 2021. If you want to use this library on iOS, you must use Expo Go v2.19.6.
 
-A library for requesting permission to track the user or their device. Examples of data used for tracking include email address, device ID, advertising ID, etc... This permission is only necessary on iOS 14 and higher; on iOS 13 and below this permission is always granted. If the "Allow Apps to Request to Track" device-level setting is off, this permission will be denied. Be sure to add `NSUserTrackingUsageDescription` to your [`Info.plist`](https://docs.expo.dev/versions/latest/config/app/#infoplist) to explain how the user will be tracked, otherwise your app will be rejected by Apple.
+A library for requesting permission to track the user or their device. Examples of data used for tracking include email address, device ID, advertising ID, etc... This permission is only necessary on iOS 14 and higher; on iOS 13 and below this permission is always granted. If the "Allow Apps to Request to Track" device-level setting is off, this permission will be denied. Be sure to add `NSUserTrackingUsageDescription` to your [**Info.plist**](https://docs.expo.dev/versions/latest/config/app/#infoplist) to explain how the user will be tracked, otherwise your app will be rejected by Apple.
 
 For more information on Apple's new App Tracking Transparency framework, please refer to their [documentation](https://developer.apple.com/app-store/user-privacy-and-data-use/).
 

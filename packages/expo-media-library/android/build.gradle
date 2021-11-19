@@ -3,7 +3,7 @@ apply plugin: 'kotlin-android'
 apply plugin: 'maven'
 
 group = 'host.exp.exponent'
-version = '12.1.0'
+version = '13.0.1'
 
 
 buildscript {
@@ -58,17 +58,21 @@ android {
     minSdkVersion safeExtGet("minSdkVersion", 21)
     targetSdkVersion safeExtGet("targetSdkVersion", 30)
     versionCode 37
-    versionName "12.1.0"
+    versionName "13.0.1"
   }
   lintOptions {
     abortOnError false
+  }
+  kotlinOptions {
+    jvmTarget = JavaVersion.VERSION_1_8
   }
 }
 
 dependencies {
   implementation project(':expo-modules-core')
 
-  api "androidx.exifinterface:exifinterface:1.0.0"
+  implementation "androidx.annotation:annotation:1.2.0"
+  api "androidx.exifinterface:exifinterface:1.3.3"
 
   implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${safeExtGet('kotlinVersion', '1.4.21')}"
 

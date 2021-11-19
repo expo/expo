@@ -1,6 +1,6 @@
 {
   "name": "expo-calendar",
-  "version": "9.2.0",
+  "version": "10.0.1",
   "description": "Provides an API for interacting with the device's system calendars, events, reminders, and associated records.",
   "main": "build/Calendar.js",
   "types": "build/Calendar.d.ts",
@@ -32,13 +32,15 @@
   "license": "MIT",
   "homepage": "https://docs.expo.dev/versions/latest/sdk/calendar/",
   "jest": {
-    "preset": "expo-module-scripts/ios"
+    "preset": "expo-module-scripts"
   },
   "dependencies": {
-    "@expo/config-plugins": "^3.0.0",
-    "expo-modules-core": "~0.3.1"
+    "@expo/config-plugins": "^4.0.2"
   },
   "devDependencies": {
     "expo-module-scripts": "^2.0.0"
+  },
+  "peerDependencies": {
+    "expo": "*"
   }
 }

@@ -4,13 +4,48 @@
 
 ### 🛠 Breaking changes
 
-- Dropped support for iOS 11.0 ([#14383](https://github.com/expo/expo/pull/14383) by [@cruzach](https://github.com/cruzach))
-
 ### 🎉 New features
 
 ### 🐛 Bug fixes
 
+- Fix `Cannot remove an observer <EXSplashScreenService> for the key path "rootViewController"` exception if applcation keyWindow changed. ([#14982](https://github.com/expo/expo/pull/14982) by [@kudo](https://github.com/kudo))
+
 ### 💡 Others
+
+## 0.13.4 — 2021-10-22
+
+_This version does not introduce any user-facing changes._
+
+## 0.13.3 — 2021-10-15
+
+### 🐛 Bug fixes
+
+- Fix `No native splash screen registered for given view controller` error happening when project is using both `expo-dev-client` and `expo-splash-screen` packages. ([#14745](https://github.com/expo/expo/pull/14745) by [@kudo](https://github.com/kudo))
+
+## 0.13.2 — 2021-10-15
+
+_This version does not introduce any user-facing changes._
+
+## 0.13.1 — 2021-10-01
+
+### 🐛 Bug fixes
+
+- Fix expo-screen-orientation breaking for expo-updates + expo-splash-screen integration. ([#14519](https://github.com/expo/expo/pull/14519) by [@kudo](https://github.com/kudo))
+
+## 0.13.0 — 2021-09-28
+
+### 🛠 Breaking changes
+
+- Dropped support for iOS 11.0 ([#14383](https://github.com/expo/expo/pull/14383) by [@cruzach](https://github.com/cruzach))
+
+### 🐛 Bug fixes
+
+- Fix 'No native splash screen registered' warning from reloading apps. ([#14467](https://github.com/expo/expo/pull/14467) by [@kudo](https://github.com/kudo))
+- Fix building errors from use_frameworks! in Podfile. ([#14523](https://github.com/expo/expo/pull/14523) by [@kudo](https://github.com/kudo))
+
+### 💡 Others
+
+- Updated `@expo/configure-splash-screen`, `@expo/prebuild-config` ([#14443](https://github.com/expo/expo/pull/14443) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 0.12.0 — 2021-09-09
 

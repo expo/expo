@@ -205,10 +205,12 @@ export class Package {
     return await Npm.getPackageViewAsync(this.packageName, this.packageVersion);
   }
 
-  getDependencies(includeAll: boolean = false): PackageDependency[] {
-    const depsGroups = includeAll
-      ? ['dependencies', 'devDependencies', 'peerDependencies', 'unimodulePeerDependencies']
-      : ['dependencies'];
+  getDependencies(includeDev: boolean = false): PackageDependency[] {
+    const depsGroups = ['dependencies', 'peerDependencies', 'optionalDependencies'];
+
+    if (includeDev) {
+      depsGroups.push('devDependencies');
+    }
 
     const dependencies = depsGroups.map((group) => {
       const deps = this.packageJson[group] as Record<string, string>;

@@ -78,6 +78,9 @@ static NSString * const EXUpdatesUtilsErrorDomain = @"EXUpdatesUtils";
   switch (config.checkOnLaunch) {
     case EXUpdatesCheckAutomaticallyConfigNever:
       return NO;
+    case EXUpdatesCheckAutomaticallyConfigErrorRecoveryOnly:
+      // check will happen later on if there's an error
+      return NO;
     case EXUpdatesCheckAutomaticallyConfigWifiOnly: {
       struct sockaddr_in zeroAddress;
       bzero(&zeroAddress, sizeof(zeroAddress));
@@ -102,6 +105,20 @@ static NSString * const EXUpdatesUtilsErrorDomain = @"EXUpdatesUtils";
   // hasn't configured either runtimeVersion or sdkVersion, we'll use a dummy value of "1" but warn
   // the developer in JS that they need to configure one of these values
   return config.runtimeVersion ?: config.sdkVersion ?: @"1";
+}
+
++ (NSURL *)urlForBundledAsset:(EXUpdatesAsset *)asset
+{
+  return asset.mainBundleDir
+    ? [[NSBundle mainBundle] URLForResource:asset.mainBundleFilename withExtension:asset.type subdirectory:asset.mainBundleDir]
+    : [[NSBundle mainBundle] URLForResource:asset.mainBundleFilename withExtension:asset.type];
+}
+
++ (NSString *)pathForBundledAsset:(EXUpdatesAsset *)asset
+{
+  return asset.mainBundleDir
+    ? [[NSBundle mainBundle] pathForResource:asset.mainBundleFilename ofType:asset.type inDirectory:asset.mainBundleDir]
+    : [[NSBundle mainBundle] pathForResource:asset.mainBundleFilename ofType:asset.type];
 }
 
 @end

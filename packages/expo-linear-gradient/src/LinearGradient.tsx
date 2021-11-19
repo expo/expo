@@ -40,18 +40,21 @@ export type LinearGradientProps = ViewProps & {
    * - the second color, solid, from the 80% point to the end of the gradient view.
    *
    * > The color-stop locations must be ascending from least to greatest.
+   * @default [0.0, 1.0]
    */
   locations?: number[] | null;
   /**
    * For example, `{ x: 0.1, y: 0.2 }` means that the gradient will start `10%` from the left and `20%` from the top.
    *
    * **On web**, this only changes the angle of the gradient because CSS gradients don't support changing the starting position.
+   * @default { x: 0.5, y: 0.0 }
    */
   start?: LinearGradientPoint | null;
   /**
    * For example, `{ x: 0.1, y: 0.2 }` means that the gradient will end `10%` from the left and `20%` from the bottom.
    *
    * **On web**, this only changes the angle of the gradient because CSS gradients don't support changing the end position.
+   * @default { x: 0.5, y: 1.0 }
    */
   end?: LinearGradientPoint | null;
 };

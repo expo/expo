@@ -145,9 +145,6 @@ class ScreenStackFragment : ScreenFragment {
     return view
   }
 
-  val isDismissible: Boolean
-    get() = screen.isGestureEnabled
-
   fun canNavigateBack(): Boolean {
     val container: ScreenContainer<*>? = screen.container
     check(container is ScreenStack) { "ScreenStackFragment added into a non-stack container" }

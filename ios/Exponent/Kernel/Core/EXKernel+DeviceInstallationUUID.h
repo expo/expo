@@ -9,7 +9,10 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  *  An ID that uniquely identifies this installation of Expo Go
  */
-+ (NSString *)deviceInstallationUUID __attribute((deprecated("The installation ID API is deprecated and will be removed once both SDK 39 and legacy Notifications API are removed")));
+// We deprecated installationIDs in SDK 39 and will remove them after we provide a synchronous
+// storage API, which allows developers to synchronously set and get their own IDs
+// TODO: Remove this after SDK 44 is phased out
++ (NSString *)deviceInstallationUUID __attribute((deprecated("The installation ID API is deprecated and will be removed once SDK 44 is phased out")));
 
 @end
 

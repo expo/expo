@@ -1,7 +1,6 @@
 {
-    "extends": "@tsconfig/node12/tsconfig.json",
-    "compilerOptions": {
-        "declaration": true
-    }
+  "extends": "@tsconfig/node12/tsconfig.json",
+  "compilerOptions": {
+    "declaration": true
   }
-  
+}

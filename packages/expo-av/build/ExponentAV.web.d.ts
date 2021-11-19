@@ -1,6 +1,6 @@
 import { PermissionResponse } from 'expo-modules-core';
-import { AVPlaybackNativeSource, AVPlaybackStatus, AVPlaybackStatusToSet } from './AV';
-import { RecordingStatus } from './Audio/Recording';
+import type { AVPlaybackNativeSource, AVPlaybackStatus, AVPlaybackStatusToSet } from './AV.types';
+import type { RecordingStatus } from './Audio/Recording.types';
 declare const _default: {
     readonly name: string;
     getStatusForVideo(element: HTMLMediaElement): Promise<AVPlaybackStatus>;

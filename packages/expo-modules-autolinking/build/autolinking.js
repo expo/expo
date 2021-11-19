@@ -25,7 +25,7 @@ if (!projectPackageJsonPath) {
  * Custom `require` that resolves from the current working dir instead of this script path.
  * **Requires Node v12.2.0**
  */
-const projectRequire = module_1.createRequire(projectPackageJsonPath);
+const projectRequire = (0, module_1.createRequire)(projectPackageJsonPath);
 /**
  * Resolves autolinking search paths. If none is provided, it accumulates all node_modules when
  * going up through the path components. This makes workspaces work out-of-the-box without any configs.
@@ -43,7 +43,7 @@ async function findDefaultPathsAsync(cwd) {
     const paths = [];
     let dir = cwd;
     let pkgJsonPath;
-    while ((pkgJsonPath = await find_up_1.default('package.json', { cwd: dir }))) {
+    while ((pkgJsonPath = await (0, find_up_1.default)('package.json', { cwd: dir }))) {
         dir = path_1.default.dirname(path_1.default.dirname(pkgJsonPath));
         paths.push(path_1.default.join(pkgJsonPath, '..', 'node_modules'));
     }
@@ -59,7 +59,7 @@ async function findModulesAsync(providedOptions) {
     const results = {};
     for (const searchPath of options.searchPaths) {
         const bracedFilenames = '{' + EXPO_MODULE_CONFIG_FILENAMES.join(',') + '}';
-        const paths = await fast_glob_1.default([`*/${bracedFilenames}`, `@*/*/${bracedFilenames}`], {
+        const paths = await (0, fast_glob_1.default)([`*/${bracedFilenames}`, `@*/*/${bracedFilenames}`], {
             cwd: searchPath,
         });
         // If the package has multiple configs (e.g. `unimodule.json` and `expo-module.config.json` during the transition time)
@@ -73,7 +73,7 @@ async function findModulesAsync(providedOptions) {
         }, {}));
         for (const packageConfigPath of uniqueConfigPaths) {
             const packagePath = await fs_extra_1.default.realpath(path_1.default.join(searchPath, path_1.default.dirname(packageConfigPath)));
-            const expoModuleConfig = ExpoModuleConfig_1.requireAndResolveExpoModuleConfig(path_1.default.join(packagePath, path_1.default.basename(packageConfigPath)));
+            const expoModuleConfig = (0, ExpoModuleConfig_1.requireAndResolveExpoModuleConfig)(path_1.default.join(packagePath, path_1.default.basename(packageConfigPath)));
             const { name, version } = require(path_1.default.join(packagePath, 'package.json'));
             if (((_a = options.exclude) === null || _a === void 0 ? void 0 : _a.includes(name)) || !expoModuleConfig.supportsPlatform(options.platform)) {
                 continue;
@@ -103,13 +103,13 @@ async function findModulesAsync(providedOptions) {
     if (options.searchPaths.length <= 1) {
         return results;
     }
-    return filterToProjectDependencies(results);
+    return filterToProjectDependencies(results, providedOptions);
 }
 exports.findModulesAsync = findModulesAsync;
 /**
  * Filters out packages that are not the dependencies of the project.
  */
-function filterToProjectDependencies(results) {
+function filterToProjectDependencies(results, options = {}) {
     const filteredResults = {};
     const visitedPackages = new Set();
     // Helper for traversing the dependency hierarchy.
@@ -137,7 +137,7 @@ function filterToProjectDependencies(results) {
                         // Some packages don't include package.json in its `exports` field,
                         // but none of our packages do that, so it seems fine to just ignore that type of error.
                         // Related issue: https://github.com/react-native-community/cli/issues/1168
-                        if (error.code !== 'ERR_PACKAGE_PATH_NOT_EXPORTED') {
+                        if (!options.silent && error.code !== 'ERR_PACKAGE_PATH_NOT_EXPORTED') {
                             console.warn(chalk_1.default.yellow(`⚠️  Cannot resolve the path to "${dependencyName}" package.`));
                         }
                         continue;
@@ -224,6 +224,7 @@ async function generatePackageListAsync(modules, options) {
     }
     catch (e) {
         console.error(chalk_1.default.red(`Generating package list is not available for platform: ${options.platform}`));
+        throw e;
     }
 }
 exports.generatePackageListAsync = generatePackageListAsync;

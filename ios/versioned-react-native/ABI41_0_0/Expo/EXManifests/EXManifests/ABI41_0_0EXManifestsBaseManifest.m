@@ -20,7 +20,7 @@
 # pragma mark - Field Getters
 
 - (NSString *)legacyId {
-  return [self.rawManifestJSON nullableStringForKey:@"id"];
+  return [self.rawManifestJSON stringForKey:@"id"];
 }
 
 - (nullable NSString *)revisionId {
@@ -53,6 +53,14 @@
     return nil;
   }
   return [expoClientConfig nullableStringForKey:@"name"];
+}
+
+- (nullable NSString *)version {
+  NSDictionary *expoClientConfig = self.expoClientConfigRootObject;
+  if (!expoClientConfig) {
+    return nil;
+  }
+  return [expoClientConfig nullableStringForKey:@"version"];
 }
 
 - (nullable NSDictionary *)notificationPreferences {

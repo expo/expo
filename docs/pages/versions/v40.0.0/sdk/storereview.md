@@ -62,7 +62,7 @@ const url = StoreReview.storeUrl();
 
 ### `StoreReview.hasAction()`
 
-This returns a promise that fulfills to is `true` if `StoreReview.requestReview()` is capable directing the user to some kind of store review flow. If the app config (`app.json`) does not contain store URLs and native store review capabilities are not available then the promise will fulfill to `false`.
+This returns a promise that fulfills to is `true` if `StoreReview.requestReview()` is capable directing the user to some kind of store review flow. If the app config (**app.json**) does not contain store URLs and native store review capabilities are not available then the promise will fulfill to `false`.
 
 #### Example
 

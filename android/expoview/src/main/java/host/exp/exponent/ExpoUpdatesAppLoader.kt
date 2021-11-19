@@ -6,19 +6,20 @@ import android.net.Uri
 import android.os.Build
 import android.util.Log
 import expo.modules.jsonutils.getNullable
+import expo.modules.manifests.core.LegacyManifest
 import expo.modules.updates.UpdatesConfiguration
 import expo.modules.updates.UpdatesUtils
 import expo.modules.updates.db.DatabaseHolder
 import expo.modules.updates.db.entity.UpdateEntity
 import expo.modules.updates.launcher.Launcher
 import expo.modules.updates.launcher.NoDatabaseLauncher
-import expo.modules.updates.loader.EmbeddedLoader
 import expo.modules.updates.loader.FileDownloader
 import expo.modules.updates.loader.LoaderTask
 import expo.modules.updates.loader.LoaderTask.BackgroundUpdateStatus
 import expo.modules.updates.loader.LoaderTask.LoaderTaskCallback
 import expo.modules.updates.manifest.UpdateManifest
 import expo.modules.manifests.core.Manifest
+import expo.modules.updates.manifest.EmbeddedManifest
 import expo.modules.updates.selectionpolicy.LauncherSelectionPolicyFilterAware
 import expo.modules.updates.selectionpolicy.LoaderSelectionPolicyFilterAware
 import expo.modules.updates.selectionpolicy.ReaperSelectionPolicyDevelopmentClient
@@ -75,7 +76,7 @@ class ExpoUpdatesAppLoader @JvmOverloads constructor(
   interface AppLoaderCallback {
     fun onOptimisticManifest(optimisticManifest: Manifest)
     fun onManifestCompleted(manifest: Manifest)
-    fun onBundleCompleted(localBundlePath: String?)
+    fun onBundleCompleted(localBundlePath: String)
     fun emitEvent(params: JSONObject)
     fun updateStatus(status: AppLoaderStatus)
     fun onError(e: Exception)
@@ -200,7 +201,7 @@ class ExpoUpdatesAppLoader @JvmOverloads constructor(
         }
 
         override fun onCachedUpdateLoaded(update: UpdateEntity): Boolean {
-          val manifest = Manifest.fromManifestJson(update.manifest)
+          val manifest = Manifest.fromManifestJson(update.manifest!!)
           setShouldShowAppLoaderStatus(manifest)
           if (manifest.isUsingDeveloperTool()) {
             return false
@@ -243,13 +244,13 @@ class ExpoUpdatesAppLoader @JvmOverloads constructor(
           this@ExpoUpdatesAppLoader.launcher = launcher
           this@ExpoUpdatesAppLoader.isUpToDate = isUpToDate
           try {
-            val manifestJson = processManifestJson(launcher.launchedUpdate!!.manifest)
+            val manifestJson = processManifestJson(launcher.launchedUpdate!!.manifest!!)
             val manifest = Manifest.fromManifestJson(manifestJson)
             callback.onManifestCompleted(manifest)
 
             // ReactAndroid will load the bundle on its own in development mode
             if (!manifest.isDevelopmentMode()) {
-              callback.onBundleCompleted(launcher.launchAssetFile)
+              callback.onBundleCompleted(launcher.launchAssetFile!!)
             }
           } catch (e: Exception) {
             callback.onError(e)
@@ -296,7 +297,7 @@ class ExpoUpdatesAppLoader @JvmOverloads constructor(
 
   private fun launchWithNoDatabase(context: Context, e: Exception?) {
     this.launcher = NoDatabaseLauncher(context, updatesConfiguration, e)
-    var manifestJson = EmbeddedLoader.readEmbeddedManifest(context, updatesConfiguration)!!.manifest.getRawJson()
+    var manifestJson = EmbeddedManifest.get(context, updatesConfiguration)!!.manifest.getRawJson()
     try {
       manifestJson = processManifestJson(manifestJson)
     } catch (ex: Exception) {
@@ -307,22 +308,23 @@ class ExpoUpdatesAppLoader @JvmOverloads constructor(
       )
     }
     callback.onManifestCompleted(Manifest.fromManifestJson(manifestJson))
-    var launchAssetFile = launcher.launchAssetFile
-    if (launchAssetFile == null) {
-      // ReactInstanceManagerBuilder accepts embedded assets as strings with "assets://" prefixed
-      launchAssetFile = "assets://" + launcher.bundleAssetName
-    }
+    // ReactInstanceManagerBuilder accepts embedded assets as strings with "assets://" prefixed
+    val launchAssetFile = launcher.launchAssetFile ?: "assets://" + launcher.bundleAssetName
     callback.onBundleCompleted(launchAssetFile)
   }
 
   @Throws(JSONException::class)
   private fun processManifestJson(manifestJson: JSONObject): JSONObject {
     val parsedManifestUrl = Uri.parse(manifestUrl)
+
+    // If legacy manifest is not yet verified, served by a third party, not standalone, and not an anonymous experience
+    // then scope it locally by using the manifest URL as a scopeKey (id) and consider it verified.
     if (!manifestJson.optBoolean(ExponentManifest.MANIFEST_IS_VERIFIED_KEY, false) &&
       isThirdPartyHosted(parsedManifestUrl) &&
-      !Constants.isStandaloneApp()
+      !Constants.isStandaloneApp() &&
+      !exponentManifest.isAnonymousExperience(Manifest.fromManifestJson(manifestJson)) &&
+      Manifest.fromManifestJson(manifestJson) is LegacyManifest
     ) {
-      // Sandbox third party apps and consider them verified
       // for https urls, sandboxed id is of form quinlanj.github.io/myProj-myApp
       // for http urls, sandboxed id is of form UNVERIFIED-quinlanj.github.io/myProj-myApp
       val protocol = parsedManifestUrl.scheme
@@ -333,18 +335,22 @@ class ExpoUpdatesAppLoader @JvmOverloads constructor(
       manifestJson.put(ExponentManifest.MANIFEST_ID_KEY, sandboxedId)
       manifestJson.put(ExponentManifest.MANIFEST_IS_VERIFIED_KEY, true)
     }
+
+    // all standalone apps are considered verified
     if (Constants.isStandaloneApp()) {
       manifestJson.put(ExponentManifest.MANIFEST_IS_VERIFIED_KEY, true)
     }
+
+    // if the manifest is scoped to a random anonymous scope key, automatically verify it
+    if (exponentManifest.isAnonymousExperience(Manifest.fromManifestJson(manifestJson))) {
+      manifestJson.put(ExponentManifest.MANIFEST_IS_VERIFIED_KEY, true)
+    }
+
+    // otherwise set verified to false
     if (!manifestJson.has(ExponentManifest.MANIFEST_IS_VERIFIED_KEY)) {
       manifestJson.put(ExponentManifest.MANIFEST_IS_VERIFIED_KEY, false)
     }
-    if (!manifestJson.optBoolean(ExponentManifest.MANIFEST_IS_VERIFIED_KEY, false) &&
-      exponentManifest.isAnonymousExperience(Manifest.fromManifestJson(manifestJson))
-    ) {
-      // automatically verified
-      manifestJson.put(ExponentManifest.MANIFEST_IS_VERIFIED_KEY, true)
-    }
+
     return manifestJson
   }
 

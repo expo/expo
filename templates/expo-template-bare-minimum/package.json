@@ -1,30 +1,35 @@
 {
   "name": "expo-template-bare-minimum",
   "description": "This bare project template includes a minimal setup for using unimodules with React Native.",
-  "version": "42.0.0",
+  "version": "43.0.2",
   "main": "index.js",
   "scripts": {
-    "android": "react-native run-android",
-    "ios": "react-native run-ios",
+    "start": "expo start --dev-client",
+    "android": "expo run:android",
+    "ios": "expo run:ios",
     "web": "expo start --web",
-    "start": "react-native start"
+    "test": "jest --watchAll"
+  },
+  "jest": {
+    "preset": "jest-expo"
   },
   "dependencies": {
-    "expo": "~42.0.0-alpha.0",
-    "expo-splash-screen": "~0.11.0",
-    "expo-status-bar": "~1.0.4",
-    "expo-updates": "~0.7.0",
-    "react": "16.13.1",
-    "react-dom": "16.13.1",
-    "react-native": "~0.63.4",
+    "expo": "~43.0.0-beta.3",
+    "expo-splash-screen": "~0.13.1",
+    "expo-status-bar": "~1.1.0",
+    "expo-updates": "~0.10.2",
+    "react": "17.0.1",
+    "react-dom": "17.0.1",
+    "react-native": "0.64.3",
     "react-native-gesture-handler": "~1.10.2",
     "react-native-reanimated": "~2.2.0",
-    "react-native-safe-area-context": "3.2.0",
-    "react-native-screens": "~3.3.0",
-    "react-native-unimodules": "~0.14.1",
-    "react-native-web": "~0.13.12"
+    "react-native-safe-area-context": "3.3.2",
+    "react-native-screens": "~3.8.0",
+    "react-native-web": "0.17.1"
   },
   "devDependencies": {
-    "@babel/core": "^7.12.9"
+    "@babel/core": "^7.12.9",
+    "jest-expo": "~43.0.1",
+    "react-test-renderer": "17.0.1"
   }
 }

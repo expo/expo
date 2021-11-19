@@ -3,20 +3,52 @@
  */
 internal struct EventListener: AnyDefinition {
   let name: EventName
-  let call: (Any?) -> Void
+  let call: (Any?, Any?) throws -> Void
 
+  /**
+   Listener initializer for events without sender and payload.
+   */
   init(_ name: EventName, _ listener: @escaping () -> Void) {
     self.name = name
-    self.call = { payload in listener() }
+    self.call = { (sender, payload) in listener() }
   }
 
-  init<PayloadType>(_ name: EventName, _ listener: @escaping (PayloadType?) -> Void) {
+  /**
+   Listener initializer for events with no payload.
+   */
+  init<Sender>(_ name: EventName, _ listener: @escaping (Sender) -> Void) {
     self.name = name
-    self.call = { payload in listener(payload as? PayloadType) }
+    self.call = { (sender, payload) in
+      guard let sender = sender as? Sender else {
+        throw InvalidSenderTypeError(eventName: name, senderType: Sender.self)
+      }
+      listener(sender)
+    }
+  }
+
+  /**
+   Listener initializer for events that specify the payload.
+   */
+  init<Sender, PayloadType>(_ name: EventName, _ listener: @escaping (Sender, PayloadType?) -> Void) {
+    self.name = name
+    self.call = { (sender, payload) in
+      guard let sender = sender as? Sender else {
+        throw InvalidSenderTypeError(eventName: name, senderType: Sender.self)
+      }
+      listener(sender, payload as? PayloadType)
+    }
   }
 }
 
-internal enum EventName: Equatable {
+struct InvalidSenderTypeError: CodedError {
+  var eventName: EventName
+  var senderType: Any.Type
+  var description: String {
+    "Sender for event `\(eventName)` must be of type `\(senderType)`."
+  }
+}
+
+public enum EventName: Equatable {
   case custom(_ name: String)
 
   // MARK: Module lifecycle

@@ -4,18 +4,11 @@ import { ActivityIndicator, FlatList, View } from 'react-native';
 import InfiniteScrollView from 'react-native-infinite-scroll-view';
 
 import Colors from '../constants/Colors';
+import { CommonSnackDataFragment } from '../graphql/types';
 import SnackListItem from './SnackListItem';
 
-export type Snack = {
-  name: string;
-  fullName: string;
-  slug: string;
-  description: string;
-  isDraft?: boolean;
-};
-
 type Props = {
-  data: Snack[];
+  data: CommonSnackDataFragment[];
   loadMoreAsync: () => Promise<any>;
 };
 

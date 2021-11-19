@@ -2,7 +2,7 @@
 title: Deploying to App Stores
 ---
 
-This guide offers best practices around submitting your Expo app to the Apple iTunes Store and Google Play Store. To learn how to generate native binaries for submission, see [Building Standalone Apps](building-standalone-apps.md).
+This guide offers best practices around submitting your Expo app to the Apple iTunes Store and Google Play Store. To learn how to generate native binaries for submission, refer to ["Creating your first build"](/build/setup.md).
 
 Although you can share your published project through the Expo Go app and on your [expo.dev](https://expo.dev) profile, submitting a standalone app to the Apple and Google stores is necessary to have a dedicated piece of real estate on your users' devices. Submitting to these stores carries stronger requirements and quality standards than sharing a toy project with a few friends, because it makes your app available through a much wider distribution platform.
 
@@ -34,7 +34,7 @@ Try your app on tablets in addition to handsets. Even if you have `ios.supportsT
 
 ## Versioning your App
 
-You'll use the `app.json` file to specify the version of your app, but there are a few different fields each with specific functionality.
+You'll use the **app.json** file to specify the version of your app, but there are a few different fields each with specific functionality.
 
 - [`version`](../workflow/configuration.md#version) will apply both to iOS and Android. For iOS, this corresponds to `CFBundleShortVersionString`, and for Android this corresponds to `versionName`. This is your user-facing version string for both platforms.
 - [`android.versionCode`](../workflow/configuration.md#versioncode) functions as your internal Android version number. This will be used to distinguish different binaries of your app.
@@ -75,10 +75,10 @@ Apple will ask you a series of questions:
 
 ## Android Permissions
 
-- Permissions are configured via the [`android.permissions` key in your `app.json` file](../workflow/configuration.md#android)
+- Permissions are configured via the [`android.permissions` key in your **app.json** file](../workflow/configuration.md#android)
 - By default, your app will include **all** permissions supported by Expo. This is so that your standalone app will match its behavior in the Expo Go app and simply "work out of the box" no matter what permissions you ask for, with hardly any configuration needed on your part.
 - There are some drawbacks to this. For example, let's say your To-do list app requests `CAMERA` permission upon installation. Your users may be wary of installing since nothing in the app seems to use the camera, so why would it need that permission?
-- To remedy this, simply add the `android.permissions` key in your `app.json` file, and specify which permissions your app will use. A list of all Android permissions and configuration options can be found [here](../workflow/configuration.md#android).
+- To remedy this, simply add the `android.permissions` key in your **app.json** file, and specify which permissions your app will use. A list of all Android permissions and configuration options can be found [here](../workflow/configuration.md#android).
 - To use _only_ the minimum necessary permissions that Expo requires to run, set `"permissions" : []`. To use those in addition to `CAMERA` permission, for example, you'd set `"permissions" : ["CAMERA"]`.
 
 ## Common App Rejections
@@ -90,7 +90,7 @@ Apple will ask you a series of questions:
 
 ## System permissions dialogs on iOS
 
-If your app asks for [system permissions](../versions/latest/sdk/permissions.md) from the user, e.g. to use the device's camera, or access photos, Apple requires an explanation for how your app makes use of that data. Expo will automatically provide a boilerplate reason for you, such as "Allow cool-app to access the camera", however these **must** be customized and tailored to your specific use case in order for your app to be accepted by the App Store. To do this, override these values using the [ios.infoPlist](../workflow/configuration.md) key in `app.json`, for example:
+If your app asks for [system permissions](../versions/latest/sdk/permissions.md) from the user, e.g. to use the device's camera, or access photos, Apple requires an explanation for how your app makes use of that data. Expo will automatically provide a boilerplate reason for you, such as "Allow cool-app to access the camera", however these **must** be customized and tailored to your specific use case in order for your app to be accepted by the App Store. To do this, override these values using the [ios.infoPlist](../workflow/configuration.md) key in **app.json**, for example:
 
 ```
 "infoPlist": {

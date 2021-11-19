@@ -8,15 +8,9 @@ import android.webkit.MimeTypeMap
 import androidx.core.content.FileProvider
 import androidx.exifinterface.media.ExifInterface
 import expo.modules.core.utilities.FileUtilities.generateOutputPath
+import expo.modules.core.utilities.ifNull
 import java.io.File
 import java.io.IOException
-
-inline fun <T> T?.ifNull(block: () -> T): T {
-  if (this == null) {
-    return block()
-  }
-  return this
-}
 
 private fun getTypeFromFileUrl(url: String): String? {
   val extension = MimeTypeMap.getFileExtensionFromUrl(url)

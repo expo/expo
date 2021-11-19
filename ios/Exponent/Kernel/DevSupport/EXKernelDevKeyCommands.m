@@ -68,8 +68,61 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 @interface EXKernelDevKeyCommands ()
 
 @property (nonatomic, strong) NSMutableSet<EXKeyCommand *> *commands;
++ (void)handleKeyboardEvent:(UIEvent *)event;
 
 @end
+
+#if TARGET_IPHONE_SIMULATOR
+@interface UIEvent (UIPhysicalKeyboardEvent)
+
+@property (nonatomic) NSString *_modifiedInput;
+@property (nonatomic) NSString *_unmodifiedInput;
+@property (nonatomic) UIKeyModifierFlags _modifierFlags;
+@property (nonatomic) BOOL _isKeyDown;
+@property (nonatomic) long _keyCode;
+
+@end
+
+@implementation UIApplication (EXKeyCommands)
+
+- (void)EX_handleKeyUIEventSwizzle:(UIEvent *)event
+{
+  BOOL interactionEnabled = !UIApplication.sharedApplication.isIgnoringInteractionEvents;
+  BOOL hasFirstResponder = NO;
+  
+  if (interactionEnabled) {
+    UIResponder *firstResponder = nil;
+    for (UIWindow *window in [self windows]) {
+      firstResponder = [window valueForKey:@"firstResponder"];
+      if (firstResponder) {
+        hasFirstResponder = YES;
+        break;
+      }
+    }
+    
+    
+    // Call the original swizzled method
+    [self EX_handleKeyUIEventSwizzle:event];
+    
+    if (firstResponder) {
+      BOOL isTextField = [firstResponder isKindOfClass: [UITextField class]] || [firstResponder isKindOfClass: [UITextView class]];
+      
+      // this is a runtime header that is not publicly exported from the Webkit.framework
+      // obfuscating selector WKContentView
+      NSArray<NSString *> *webViewClass = @[ @"WKCo", @"ntentVi", @"ew"];
+      Class WKContentView = NSClassFromString([webViewClass componentsJoinedByString:@""]);
+      
+      BOOL isWebView = [firstResponder isKindOfClass:[WKContentView class]];
+      
+      if (!isTextField && !isWebView) {
+        [EXKernelDevKeyCommands handleKeyboardEvent:event];
+      }
+    }
+  }
+};
+
+@end
+#endif
 
 @implementation UIResponder (EXKeyCommands)
 
@@ -122,7 +175,32 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   RCTSwapInstanceMethods([UIResponder class],
                          @selector(keyCommands),
                          @selector(EX_keyCommands));
+
+#if TARGET_IPHONE_SIMULATOR
+  SEL originalKeyboardSelector = NSSelectorFromString(@"handleKeyUIEvent:");
+  RCTSwapInstanceMethods([UIApplication class],
+                         originalKeyboardSelector,
+                         @selector(EX_handleKeyUIEventSwizzle:));
+#endif
 }
+
+#if TARGET_IPHONE_SIMULATOR
++(void)handleKeyboardEvent:(UIEvent *)event
+{
+  static NSTimeInterval lastCommand = 0;
+
+  if (event._isKeyDown) {
+    if (CACurrentMediaTime() - lastCommand > 0.5) {
+      NSString *input = event._modifiedInput;
+      if ([input isEqualToString: @"r"]) {
+        [[EXKernel sharedInstance] reloadVisibleApp];
+      }
+      
+      lastCommand = CACurrentMediaTime();
+    }
+  }
+}
+#endif
 
 - (instancetype)init
 {

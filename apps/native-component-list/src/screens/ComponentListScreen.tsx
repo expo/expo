@@ -106,7 +106,7 @@ export default function ComponentListScreen(props: Props) {
         }
         return 1;
       }
-      return 0;
+      return a.name.toLowerCase() > b.name.toLowerCase() ? 1 : -1;
     });
   }, [props.apis]);
 

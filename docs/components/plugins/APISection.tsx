@@ -3,6 +3,7 @@ import React, { useContext } from 'react';
 import DocumentationPageContext from '~/components/DocumentationPageContext';
 import { P } from '~/components/base/paragraph';
 import { GeneratedData } from '~/components/plugins/api/APIDataTypes';
+import APISectionClasses from '~/components/plugins/api/APISectionClasses';
 import APISectionComponents from '~/components/plugins/api/APISectionComponents';
 import APISectionConstants from '~/components/plugins/api/APISectionConstants';
 import APISectionEnums from '~/components/plugins/api/APISectionEnums';
@@ -21,13 +22,15 @@ type Props = {
 };
 
 const filterDataByKind = (
-  entries: GeneratedData[],
-  kind: TypeDocKind,
+  entries: GeneratedData[] = [],
+  kind: TypeDocKind | TypeDocKind[],
   additionalCondition: (entry: GeneratedData) => boolean = () => true
 ) =>
-  entries
-    ? entries.filter((entry: GeneratedData) => entry.kind === kind && additionalCondition(entry))
-    : [];
+  entries.filter(
+    (entry: GeneratedData) =>
+      (Array.isArray(kind) ? kind.includes(entry.kind) : entry.kind === kind) &&
+      additionalCondition(entry)
+  );
 
 const isHook = ({ name }: GeneratedData) =>
   name.startsWith('use') &&
@@ -38,6 +41,17 @@ const isListener = ({ name }: GeneratedData) =>
   name.endsWith('Listener') || name.endsWith('Listeners');
 
 const isProp = ({ name }: GeneratedData) => name.includes('Props') && name !== 'ErrorRecoveryProps';
+
+const isComponent = ({ type, extendedTypes, signatures }: GeneratedData) =>
+  type?.name === 'React.FC' ||
+  (extendedTypes && extendedTypes.length ? extendedTypes[0].name === 'Component' : false) ||
+  (signatures && signatures[0]
+    ? signatures[0].type.name === 'Element' ||
+      (signatures[0].parameters && signatures[0].parameters[0].name === 'props')
+    : false);
+
+const isConstant = ({ name, type }: GeneratedData) =>
+  name !== 'default' && name !== 'Constants' && type?.name !== 'React.FC';
 
 const renderAPI = (
   packageName: string,
@@ -54,7 +68,7 @@ const renderAPI = (
     const methods = filterDataByKind(
       data,
       TypeDocKind.Function,
-      entry => !isListener(entry) && !isHook(entry)
+      entry => !isListener(entry) && !isHook(entry) && !isComponent(entry)
     );
     const hooks = filterDataByKind(data, TypeDocKind.Function, isHook);
     const eventSubscriptions = filterDataByKind(data, TypeDocKind.Function, isListener);
@@ -86,25 +100,24 @@ const renderAPI = (
       entry => entry.name === 'defaultProps'
     )[0];
 
-    const enums = filterDataByKind(data, TypeDocKind.Enum);
+    const enums = filterDataByKind(data, [TypeDocKind.Enum, TypeDocKind.LegacyEnum]);
     const interfaces = filterDataByKind(data, TypeDocKind.Interface);
-    const constants = filterDataByKind(
-      data,
-      TypeDocKind.Variable,
-      entry =>
-        (entry?.flags?.isConst || false) &&
-        entry.name !== 'default' &&
-        entry?.type?.name !== 'React.FC'
-    );
+    const constants = filterDataByKind(data, TypeDocKind.Variable, entry => isConstant(entry));
 
     const components = filterDataByKind(
       data,
-      TypeDocKind.Variable,
-      entry => entry?.type?.name === 'React.FC'
+      [TypeDocKind.Variable, TypeDocKind.Class, TypeDocKind.Function],
+      entry => isComponent(entry)
     );
     const componentsPropNames = components.map(component => `${component.name}Props`);
     const componentsProps = filterDataByKind(props, TypeDocKind.TypeAlias, entry =>
       componentsPropNames.includes(entry.name)
+    );
+
+    const classes = filterDataByKind(
+      data,
+      TypeDocKind.Class,
+      entry => !isComponent(entry) && (apiName ? !entry.name.includes(apiName) : true)
     );
 
     return (
@@ -112,15 +125,16 @@ const renderAPI = (
         <APISectionComponents data={components} componentsProps={componentsProps} />
         <APISectionConstants data={constants} apiName={apiName} />
         <APISectionMethods data={hooks} header="Hooks" />
+        <APISectionClasses data={classes} />
+        {props && !componentsProps.length ? (
+          <APISectionProps data={props} defaultProps={defaultProps} />
+        ) : null}
         <APISectionMethods data={methods} apiName={apiName} />
         <APISectionMethods
           data={eventSubscriptions}
           apiName={apiName}
           header="Event Subscriptions"
         />
-        {props && !componentsProps.length ? (
-          <APISectionProps data={props} defaultProps={defaultProps} />
-        ) : null}
         <APISectionTypes data={types} />
         <APISectionInterfaces data={interfaces} />
         <APISectionEnums data={enums} />
@@ -131,7 +145,7 @@ const renderAPI = (
   }
 };
 
-const APISection: React.FC<Props> = ({ packageName, apiName, forceVersion }) => {
+const APISection = ({ packageName, apiName, forceVersion }: Props) => {
   const { version } = useContext(DocumentationPageContext);
   const resolvedVersion =
     forceVersion ||

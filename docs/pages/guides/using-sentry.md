@@ -50,7 +50,7 @@ In your project directory, run:
 
 <TerminalBlock cmd={['expo install expo-application expo-constants expo-device expo-updates']} />
 
-Then, add the following in your app's main file (usually `App.js`):
+Then, add the following in your app's main file (usually **App.js**):
 
 ```javascript
 import * as Sentry from 'sentry-expo';
@@ -68,7 +68,7 @@ Sentry.Native.*
 Sentry.Browser.*
 ```
 
-- Open `app.json` and add a `postPublish hook`:
+- Open **app.json** and add a `postPublish hook`:
 
 ```json
 {
@@ -138,7 +138,7 @@ Setting up `sentry-expo` in the bare workflow requires just a few extra steps in
    });
    ```
 
-to your root project file (usually `App.js`), so make sure you remove it (but keep the `sentry-expo` import and original `Sentry.init` call!)
+to your root project file (usually **App.js**), so make sure you remove it (but keep the `sentry-expo` import and original `Sentry.init` call!)
 
 #### Configure "no publish builds"
 
@@ -148,21 +148,21 @@ With `expo-updates`, release builds of both iOS and Android apps will create and
 - Your `dist` will automatically be set to Sentry's expected value- `${buildNumber}` (iOS) or `${versionCode}` (Android).
 - The configuration for build time sourcemaps comes from the `ios/sentry.properties` and `android/sentry.properties` files. For more information, refer to [Sentry's documentation](https://docs.sentry.io/clients/java/config/#configuration-via-properties-file).
 
-> Please note that configuration for `expo publish` and `expo export` is still done via `app.json`.
+> Please note that configuration for `expo publish` and `expo export` is still done via **app.json**.
 
 Skipping or misconfiguring either of these will result in sourcemaps not working, and thus you won't see proper stacktraces in your errors.
 
 ### Publish your app with sourcemaps
 
-With the `postPublish` hook in place, now all you need to do is run `expo publish` and the sourcemaps will be uploaded automatically. We automatically assign a unique release version for Sentry each time you hit publish, based on the version you specify in `app.json` and a release id on our backend -- this means that if you forget to update the version but hit publish, you will still get a unique Sentry release. If you're not familiar with publishing on Expo, you can [read more about it here](../workflow/publishing.md).
+With the `postPublish` hook in place, now all you need to do is run `expo publish` and the sourcemaps will be uploaded automatically. We automatically assign a unique release version for Sentry each time you hit publish, based on the version you specify in **app.json** and a release id on our backend -- this means that if you forget to update the version but hit publish, you will still get a unique Sentry release. If you're not familiar with publishing on Expo, you can [read more about it here](../workflow/publishing.md).
 
-> This hook can also be used as a `postExport` hook if you're [self-hosting your OTA Updates](../distribution/hosting-your-app.md).
+> This hook can also be used as a `postExport` hook if you're [self-hosting your updates](../distribution/hosting-your-app.md).
 
-### Self-hosting OTA?
+### Self-hosting updates?
 
-If you're self-hosting your Over the Air Updates (this means you run `expo export` instead of `expo publish`), you need to:
+If you're self-hosting your updates (this means you run `expo export` instead of `expo publish`), you need to:
 
-- replace `hooks.postPublish` in your `app.json` file with `hooks.postExport` (everything else stays the same)
+- replace `hooks.postPublish` in your **app.json** file with `hooks.postExport` (everything else stays the same)
 - add the `RewriteFrames` integration to your `Sentry.init` call like so:
 
 ```js
@@ -200,7 +200,7 @@ In order to ensure that errors are reported reliably, Sentry defers reporting th
 
 ## Disabled by default in dev
 
-Unless `enableInExpoDevelopment: true` is set, all your dev/local errors will be ignored and only app releases will report errors to Sentry. You can call methods like `Sentry.captureException(new Error('Oops!'))` but these methods will be no-op.
+Unless `enableInExpoDevelopment: true` is set, all your dev/local errors will be ignored and only app releases will report errors to Sentry. You can call methods like `Sentry.Native.captureException(new Error('Oops!'))` but these methods will be no-op.
 
 ## Learn more about Sentry
 

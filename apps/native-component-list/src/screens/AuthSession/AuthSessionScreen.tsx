@@ -280,7 +280,7 @@ function Reddit({ redirectUri, prompt, usePKCE, useProxy }: any) {
   if (isInClient) {
     if (useProxy) {
       // Using the proxy in the client.
-      // This expects the URI to be 'https://auth.expo.io/@community/native-component-list'
+      // This expects the URI to be 'https://auth.expo.dev/@community/native-component-list'
       // so you'll need to be signed into community or be using the public demo
       clientId = 'IlgcZIpcXF1eKw';
     } else {
@@ -331,7 +331,7 @@ function Imgur({ redirectUri, prompt, usePKCE, useProxy }: any) {
   if (isInClient) {
     if (useProxy) {
       // Using the proxy in the client.
-      // This expects the URI to be 'https://auth.expo.io/@community/native-component-list'
+      // This expects the URI to be 'https://auth.expo.dev/@community/native-component-list'
       // so you'll need to be signed into community or be using the public demo
       clientId = '5287e6c03ffac8b';
     } else {

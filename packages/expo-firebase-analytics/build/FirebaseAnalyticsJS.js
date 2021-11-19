@@ -17,7 +17,6 @@ class FirebaseAnalyticsJS {
     config;
     userId;
     userProperties;
-    screenName;
     eventQueue = new Set();
     options;
     flushEventsPromise = Promise.resolve();
@@ -108,12 +107,10 @@ class FirebaseAnalyticsJS {
         });
     }
     async addEvent(event) {
-        const { userId, userProperties, screenName, options } = this;
+        const { userId, userProperties, options } = this;
         // Extend the event with the currently set User-id
         if (userId)
             event.uid = userId;
-        if (screenName)
-            event['ep.screen_name'] = screenName;
         // Add user-properties
         if (userProperties) {
             for (const name in userProperties) {
@@ -249,23 +246,10 @@ class FirebaseAnalyticsJS {
         this.enabled = isEnabled;
     }
     /**
-     * https://firebase.google.com/docs/reference/js/firebase.analytics.Analytics#set-current-screen
+     * Not supported, this method is a no-op
      */
-    async setCurrentScreen(screenName, screenClassOverride) {
-        if (screenName && screenName.length > 100) {
-            throw new Error('Invalid screen-name specified. Should contain 1 to 100 characters. Set to undefined to clear the current screen name.');
-        }
-        if (!this.enabled)
-            return;
-        this.screenName = screenName || undefined;
-        // On native, calling `setCurrentScreen` automatically records a screen_view event.
-        // Mimimic that behavior when native emulation is enabled.
-        // https://firebase.google.com/docs/analytics/screenviews#manually_track_screens
-        if (screenName && this.options.strictNativeEmulation) {
-            await this.logEvent('screen_view', {
-                screen_name: screenName,
-            });
-        }
+    async setSessionTimeoutDuration(_sessionTimeoutInterval) {
+        // no-op
     }
     /**
      * https://firebase.google.com/docs/reference/js/firebase.analytics.Analytics#set-user-id
@@ -300,7 +284,6 @@ class FirebaseAnalyticsJS {
      */
     async resetAnalyticsData() {
         this.clearEvents();
-        this.screenName = undefined;
         this.userId = undefined;
         this.userProperties = undefined;
     }

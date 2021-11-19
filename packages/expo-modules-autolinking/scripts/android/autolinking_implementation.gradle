@@ -44,7 +44,7 @@ class ExpoAutolinkingManager {
     String[] args = convertOptionsToCommandArgs('resolve', this.options)
     args += ['--json']
 
-    String output = exec(args)
+    String output = exec(args, projectDir)
     Object json = new JsonSlurper().parseText(output)
 
     cachedResolvingResults = json
@@ -84,11 +84,11 @@ class ExpoAutolinkingManager {
       args += '--empty'
     }
 
-    exec(args)
+    exec(args, project.rootDir)
   }
 
-  static String exec(String[] commandArgs) {
-    Process proc = commandArgs.execute()
+  static String exec(String[] commandArgs, File dir) {
+    Process proc = commandArgs.execute(null, dir)
     StringBuffer outputStream = new StringBuffer()
     proc.waitForProcessOutput(outputStream, System.err)
     return outputStream.toString()
@@ -166,6 +166,7 @@ if (rootProject instanceof ProjectDescriptor) {
       return
     }
 
+    println ''
     println 'Using expo modules'
 
     for (module in modules) {
@@ -181,8 +182,10 @@ if (rootProject instanceof ProjectDescriptor) {
         continue
       }
 
-      println "— ${Colors.GREEN}${module.name}${Colors.RESET} (${module.version})"
+      println "  - ${Colors.GREEN}${module.name}${Colors.RESET} (${module.version})"
     }
+
+    println ''
   }
 
   // Adding dependencies

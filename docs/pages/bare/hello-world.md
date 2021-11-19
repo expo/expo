@@ -20,23 +20,19 @@ expo init --template bare-minimum
 
 Next, let's get the project running. Go into your project directory and run `expo run:ios` or `expo run:android` &mdash; hurray! Your project is working.
 
-## Using react-native-unimodules
+## Using Expo modules
 
-Bare template projects come with `react-native-unimodules` installed and configured. This package gives you access to some commonly useful APIs, like `Asset`, `Constants` and `FileSystem`. You can import these from `react-native-unimodules` like so:
-
-```js
-import { Asset, Constants, FileSystem } from 'react-native-unimodules';
-```
+Bare template projects come with `expo` installed and configured, so you're ready to install and use any package from the Expo SDK.
 
 ## Install an Expo SDK package
 
 We're going to install [`expo-web-browser`](https://github.com/expo/expo/tree/master/packages/expo-web-browser), it's a useful little package for showing a modal web browser using the appropriate native APIs on each platform.
 
 ```sh
-npm install expo-web-browser
+expo install expo-web-browser
 ```
 
-Open up `App.js` and add a button that, when pressed, opens up a web browser. Here's some code for you.
+Open up **App.js** and add a button that, when pressed, opens up a web browser. Here's some code for you.
 
 ```tsx
 import * as React from 'react';
@@ -63,7 +59,7 @@ This will not yet work because we haven't linked the native code that powers it.
 
 <TerminalBlock cmd={['# Build your native iOS project', 'expo run:ios']} />
 
-You may need to run `npx pod-install` to link the native iOS packages using [CocoaPods](https://cocoapods.org/), this is like running `yarn` or `npm install` in an Expo project. `expo run:ios` does this automatically when the `package.json` changes.
+You may need to run `npx pod-install` to link the native iOS packages using [CocoaPods](https://cocoapods.org/), this is like running `yarn` or `npm install` in an Expo project. `expo run:ios` does this automatically when the **package.json** changes.
 
 ### Android configuration
 

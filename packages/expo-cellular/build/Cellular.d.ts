@@ -11,7 +11,7 @@ export { CellularGeneration };
  *
  * On web, this returns `null`.
  *
- * # Examples
+ * @example
  * ```ts
  * Cellular.allowsVoip; // true or false
  * ```
@@ -32,7 +32,7 @@ export declare const allowsVoip: boolean | null;
  *
  * On web, this returns `null`.
  *
- * # Examples
+ * @example
  * ```ts
  * Cellular.carrier; // "T-Mobile" or "Verizon"
  * ```
@@ -49,7 +49,7 @@ export declare const carrier: string | null;
  *
  * On web, this returns `null`.
  *
- * # Examples
+ * @example
  * ```ts
  * Cellular.isoCountryCode; // "us" or "au"
  * ```
@@ -67,7 +67,7 @@ export declare const isoCountryCode: string | null;
  *
  * On web, this returns `null`.
  *
- * # Examples
+ * @example
  * ```ts
  * Cellular.mobileCountryCode; // "310"
  * ```
@@ -84,7 +84,7 @@ export declare const mobileCountryCode: string | null;
  *
  * On web, this returns `null`.
  *
- * # Examples
+ * @example
  * ```ts
  * Cellular.mobileNetworkCode; // "260"
  * ```
@@ -101,7 +101,7 @@ export declare const mobileNetworkCode: string | null;
  * round-trip time and downlink values. See [here](https://developer.mozilla.org/en-US/docs/Web/API/Network_Information_API)
  * to view browser compatibility.
  *
- * # Example
+ * @example
  * ```ts
  * await Cellular.getCellularGenerationAsync();
  * // CellularGeneration.CELLULAR_4G
@@ -119,7 +119,7 @@ export declare function getCellularGenerationAsync(): Promise<CellularGeneration
  *
  * On web, this returns `null`.
  *
- * # Examples
+ * @example
  * ```ts
  * await Cellular.allowsVoipAsync(); // true or false
  * ```
@@ -135,7 +135,7 @@ export declare function allowsVoipAsync(): Promise<boolean | null>;
  *
  * On web, this returns `null`.
  *
- * # Examples
+ * @example
  * ```ts
  * await Cellular.getIsoCountryCodeAsync(); // "us" or "au"
  * ```
@@ -156,7 +156,7 @@ export declare function getIsoCountryCodeAsync(): Promise<string | null>;
  *
  * On web, this returns `null`.
  *
- * # Examples
+ * @example
  * ```ts
  * await Cellular.getCarrierNameAsync(); // "T-Mobile" or "Verizon"
  * ```
@@ -173,7 +173,7 @@ export declare function getCarrierNameAsync(): Promise<string | null>;
  *
  * On web, this returns `null`.
  *
- * # Examples
+ * @example
  * ```ts
  * await Cellular.getMobileCountryCodeAsync(); // "310"
  * ```
@@ -190,7 +190,7 @@ export declare function getMobileCountryCodeAsync(): Promise<string | null>;
  *
  * On web, this returns `null`.
  *
- * # Examples
+ * @example
  * ```ts
  * await Cellular.getMobileNetworkCodeAsync(); // "310"
  * ```

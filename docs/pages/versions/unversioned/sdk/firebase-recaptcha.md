@@ -70,12 +70,13 @@ import {
   Platform,
 } from 'react-native';
 import { FirebaseRecaptchaVerifierModal, FirebaseRecaptchaBanner } from 'expo-firebase-recaptcha';
-import * as firebase from 'firebase';
+import { initializeApp, getApp } from 'firebase/app';
+import { getAuth, PhoneAuthProvider } from 'firebase/auth';
 
 // Initialize Firebase JS SDK
 // https://firebase.google.com/docs/web/setup
 /*try {
-  firebase.initializeApp({
+  initializeApp({
     ...
   });
 } catch (err) {
@@ -87,7 +88,8 @@ export default function App() {
   const [phoneNumber, setPhoneNumber] = React.useState();
   const [verificationId, setVerificationId] = React.useState();
   const [verificationCode, setVerificationCode] = React.useState();
-  const firebaseConfig = firebase.apps.length ? firebase.app().options : undefined;
+  const app = getApp();
+  const firebaseConfig = app ? app.options : undefined;
   const [message, showMessage] = React.useState(
     !firebaseConfig || Platform.OS === 'web'
       ? {
@@ -123,7 +125,7 @@ export default function App() {
           // FirebaseAuthApplicationVerifier interface and can be
           // passed directly to `verifyPhoneNumber`.
           try {
-            const phoneProvider = new firebase.auth.PhoneAuthProvider();
+            const phoneProvider = new PhoneAuthProvider();
             const verificationId = await phoneProvider.verifyPhoneNumber(
               phoneNumber,
               recaptchaVerifier.current
@@ -149,11 +151,13 @@ export default function App() {
         disabled={!verificationId}
         onPress={async () => {
           try {
-            const credential = firebase.auth.PhoneAuthProvider.credential(
+            const phoneProvider = new PhoneAuthProvider();
+            const credential = phoneProvider.credential(
               verificationId,
               verificationCode
             );
-            await firebase.auth().signInWithCredential(credential);
+            const auth = getAuth();
+            await auth.signInWithCredential(credential);
             showMessage({ text: 'Phone authentication successful 👍' });
           } catch (err) {
             showMessage({ text: `Error: ${err.message}`, color: 'red' });
@@ -207,7 +211,8 @@ import {
   Platform,
 } from 'react-native';
 import * as FirebaseRecaptcha from 'expo-firebase-recaptcha';
-import * as firebase from 'firebase';
+import { initializeApp } from 'firebase/app';
+import { getAuth, PhoneAuthProvider } from 'firebase/auth';
 
 // PROVIDE VALID FIREBASE CONFIG HERE
 // https://firebase.google.com/docs/web/setup
@@ -224,7 +229,7 @@ const FIREBASE_CONFIG: any = {
 
 try {
   if (FIREBASE_CONFIG.apiKey) {
-    firebase.initializeApp(FIREBASE_CONFIG);
+    initializeApp(FIREBASE_CONFIG);
   }
 } catch (err) {
   // ignore app already initialized error on snack
@@ -266,7 +271,7 @@ export default function PhoneAuthScreen() {
           title={`${verificationId ? 'Resend' : 'Send'} Verification Code`}
           disabled={!phoneNumber}
           onPress={async () => {
-            const phoneProvider = new firebase.auth.PhoneAuthProvider();
+            const phoneProvider = new PhoneAuthProvider();
             try {
               setVerifyError(undefined);
               setVerifyInProgress(true);
@@ -307,11 +312,13 @@ export default function PhoneAuthScreen() {
             try {
               setConfirmError(undefined);
               setConfirmInProgress(true);
-              const credential = firebase.auth.PhoneAuthProvider.credential(
+              const phoneProvider = new PhoneAuthProvider();
+              const credential = phoneProvider.credential(
                 verificationId,
                 verificationCode
               );
-              const authResult = await firebase.auth().signInWithCredential(credential);
+              const auth = getAuth()
+              const authResult = await auth.signInWithCredential(credential);
               setConfirmInProgress(false);
               setVerificationId('');
               setVerificationCode('');
@@ -422,7 +429,7 @@ class CustomPhoneAuthScreen extends React.Component {
     const applicationVerifier = new FirebaseRecaptchaVerifier(recaptchaToken);
 
     // Start phone autenthication
-    const phoneProvider = new firebase.auth.PhoneAuthProvider();
+    const phoneProvider = new PhoneAuthProvider();
     const verificationId = await phoneProvider.verifyPhoneNumber(
       '+0123456789',
       applicationVerifier
@@ -525,6 +532,6 @@ A helper class implementing the `FirebaseAuthApplicationVerifier` interface, whi
 ```js
 const applicationVerifier = new FirebaseRecaptchaVerifier(recaptchaToken);
 
-const phoneProvider = new firebase.auth.PhoneAuthProvider();
+const phoneProvider = new PhoneAuthProvider();
 const verificationId = await phoneProvider.verifyPhoneNumber('+0123456789', applicationVerifier);
 ```

@@ -1,7 +1,7 @@
 /**
  A protocol that allows initializing the object with a dictionary.
  */
-public protocol Record: AnyMethodArgument {
+public protocol Record: ConvertibleArgument {
   /**
    The dictionary type that the record can be created from or converted back.
    */
@@ -27,6 +27,13 @@ public protocol Record: AnyMethodArgument {
  Provides the default implementation of `Record` protocol.
  */
 public extension Record {
+  static func convert(from value: Any?) throws -> Self {
+    if let value = value as? Dict {
+      return try Self(from: value)
+    }
+    throw Conversions.ConvertingError<Self>(value: value)
+  }
+
   init(from dict: Dict) throws {
     self.init()
 

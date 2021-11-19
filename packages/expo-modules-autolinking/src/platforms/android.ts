@@ -42,6 +42,7 @@ export async function resolveModuleAsync(
   return {
     projectName: convertPackageNameToProjectName(packageName),
     sourceDir,
+    modulesClassNames: revision.config?.androidModulesClassNames(),
   };
 }
 
@@ -57,24 +58,43 @@ async function generatePackageListFileContentAsync(
     modules.filter((module) => module.packageName !== 'expo')
   );
 
+  const modulesClasses = await findAndroidModules(modules);
+
   return `package ${namespace};
 
 import java.util.Arrays;
 import java.util.List;
 import expo.modules.core.interfaces.Package;
+import expo.modules.kotlin.modules.Module;
+import expo.modules.kotlin.ModulesProvider;
 
-public class ExpoModulesPackageList {
+public class ExpoModulesPackageList implements ModulesProvider {
   private static class LazyHolder {
     static final List<Package> packagesList = Arrays.<Package>asList(
 ${packagesClasses.map((packageClass) => `      new ${packageClass}()`).join(',\n')}
+    );
+
+    static final List<Class<? extends Module>> modulesList = Arrays.<Class<? extends Module>>asList(
+      ${modulesClasses.map((moduleClass) => `      ${moduleClass}.class`).join(',\n')}
     );
   }
 
   public static List<Package> getPackageList() {
     return LazyHolder.packagesList;
   }
+
+  @Override
+  public List<Class<? extends Module>> getModulesList() {
+    return LazyHolder.modulesList;
+  }
 }
 `;
+}
+
+function findAndroidModules(modules: ModuleDescriptor[]): string[] {
+  const modulesToProvide = modules.filter((module) => module.modulesClassNames.length > 0);
+  const classNames = [].concat(...modulesToProvide.map((module) => module.modulesClassNames));
+  return classNames;
 }
 
 async function findAndroidPackagesAsync(modules: ModuleDescriptor[]): Promise<string[]> {
@@ -82,7 +102,7 @@ async function findAndroidPackagesAsync(modules: ModuleDescriptor[]): Promise<st
 
   await Promise.all(
     modules.map(async (module) => {
-      const files = await glob('src/**/*Package.{java,kt}', {
+      const files = await glob('**/*Package.{java,kt}', {
         cwd: module.sourceDir,
       });
 

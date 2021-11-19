@@ -161,12 +161,11 @@ EX_EXPORT_METHOD_AS(logInWithReadPermissionsAsync,
         accessToken[@"type"] = @"success";
         resolve(accessToken);
       }];
-    }
-    @catch (NSException *exception) {
+    } @catch (NSException *exception) {
       NSError *error = [[NSError alloc] initWithDomain:EXFacebookLoginErrorDomain code:650 userInfo:@{
         NSLocalizedDescriptionKey: exception.description,
         NSLocalizedFailureReasonErrorKey: exception.reason,
-        @"ExceptionUserInfo": exception.userInfo,
+        @"ExceptionUserInfo": exception.userInfo ?: @{},
         @"ExceptionCallStackSymbols": exception.callStackSymbols,
         @"ExceptionCallStackReturnAddresses": exception.callStackReturnAddresses,
         @"ExceptionName": exception.name

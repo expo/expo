@@ -1,9 +1,12 @@
 import { PermissionResponse, PermissionStatus, SyntheticPlatformEmitter } from 'expo-modules-core';
 
-import { AVPlaybackNativeSource, AVPlaybackStatus, AVPlaybackStatusToSet } from './AV';
-import { RecordingStatus, RECORDING_OPTIONS_PRESET_HIGH_QUALITY } from './Audio/Recording';
+import type { AVPlaybackNativeSource, AVPlaybackStatus, AVPlaybackStatusToSet } from './AV.types';
+import type { RecordingStatus } from './Audio/Recording.types';
+import { RECORDING_OPTIONS_PRESET_HIGH_QUALITY } from './Audio/RecordingConstants';
 
-async function getPermissionWithQueryAsync(name: PermissionName): Promise<PermissionStatus | null> {
+async function getPermissionWithQueryAsync(
+  name: PermissionNameWithAdditionalValues
+): Promise<PermissionStatus | null> {
   if (!navigator || !navigator.permissions || !navigator.permissions.query) return null;
 
   try {
@@ -33,9 +36,10 @@ function getUserMedia(constraints: MediaStreamConstraints): Promise<MediaStream>
 
   // First get ahold of the legacy getUserMedia, if present
   const getUserMedia =
+    // TODO: this method is deprecated, migrate to https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/getUserMedia
     navigator.getUserMedia ||
-    (navigator as any).webkitGetUserMedia ||
-    (navigator as any).mozGetUserMedia ||
+    navigator.webkitGetUserMedia ||
+    navigator.mozGetUserMedia ||
     function () {
       const error: any = new Error('Permission unimplemented');
       error.code = 0;

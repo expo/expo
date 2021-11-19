@@ -25,7 +25,7 @@ android {
     minSdkVersion safeExtGet('minSdkVersion', 21)
     targetSdkVersion safeExtGet('targetSdkVersion', 30)
     versionCode 9
-    versionName "0.7.0"
+    versionName "0.8.1"
   }
 
   lintOptions {
@@ -91,6 +91,7 @@ repositories {
 
 dependencies {
   implementation project(":expo-dev-menu-interface")
+  implementation project(":expo-manifests")
   implementation project(":expo-updates-interface")
 
   //noinspection GradleDynamicVersion

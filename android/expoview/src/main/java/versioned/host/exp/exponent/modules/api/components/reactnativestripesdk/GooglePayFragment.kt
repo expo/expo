@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
 import androidx.fragment.app.Fragment
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.stripe.android.googlepaylauncher.GooglePayEnvironment
 import com.stripe.android.googlepaylauncher.GooglePayLauncher
 import com.stripe.android.googlepaylauncher.GooglePayPaymentMethodLauncher
@@ -16,6 +17,7 @@ class GooglePayFragment : Fragment() {
   private var googlePayMethodLauncher: GooglePayPaymentMethodLauncher? = null
   private var isGooglePayMethodLauncherReady: Boolean = false
   private var isGooglePayLauncherReady: Boolean = false
+  private lateinit var localBroadcastManager: LocalBroadcastManager
 
   private fun onGooglePayMethodLauncherReady(isReady: Boolean) {
     isGooglePayMethodLauncherReady = true
@@ -36,6 +38,7 @@ class GooglePayFragment : Fragment() {
     container: ViewGroup?,
     savedInstanceState: Bundle?
   ): View {
+    localBroadcastManager = LocalBroadcastManager.getInstance(requireContext())
     return FrameLayout(requireActivity()).also {
       it.visibility = View.GONE
     }
@@ -86,14 +89,14 @@ class GooglePayFragment : Fragment() {
     )
 
     val intent = Intent(ON_GOOGLE_PAY_FRAGMENT_CREATED)
-    activity?.sendBroadcast(intent)
+    localBroadcastManager.sendBroadcast(intent)
   }
 
   fun presentForPaymentIntent(clientSecret: String) {
     val launcher = googlePayLauncher ?: run {
       val intent = Intent(ON_GOOGLE_PAY_RESULT)
       intent.putExtra("error", "GooglePayLauncher is not initialized.")
-      activity?.sendBroadcast(intent)
+      localBroadcastManager.sendBroadcast(intent)
       return
     }
     runCatching {
@@ -101,7 +104,7 @@ class GooglePayFragment : Fragment() {
     }.onFailure {
       val intent = Intent(ON_GOOGLE_PAY_RESULT)
       intent.putExtra("error", it.localizedMessage)
-      activity?.sendBroadcast(intent)
+      localBroadcastManager.sendBroadcast(intent)
     }
   }
 
@@ -109,7 +112,7 @@ class GooglePayFragment : Fragment() {
     val launcher = googlePayLauncher ?: run {
       val intent = Intent(ON_GOOGLE_PAY_RESULT)
       intent.putExtra("error", "GooglePayLauncher is not initialized.")
-      activity?.sendBroadcast(intent)
+      localBroadcastManager.sendBroadcast(intent)
       return
     }
     runCatching {
@@ -117,7 +120,7 @@ class GooglePayFragment : Fragment() {
     }.onFailure {
       val intent = Intent(ON_GOOGLE_PAY_RESULT)
       intent.putExtra("error", it.localizedMessage)
-      activity?.sendBroadcast(intent)
+      localBroadcastManager.sendBroadcast(intent)
     }
   }
 
@@ -125,7 +128,7 @@ class GooglePayFragment : Fragment() {
     val launcher = googlePayMethodLauncher ?: run {
       val intent = Intent(ON_GOOGLE_PAYMENT_METHOD_RESULT)
       intent.putExtra("error", "GooglePayPaymentMethodLauncher is not initialized.")
-      activity?.sendBroadcast(intent)
+      localBroadcastManager.sendBroadcast(intent)
       return
     }
 
@@ -137,26 +140,26 @@ class GooglePayFragment : Fragment() {
     }.onFailure {
       val intent = Intent(ON_GOOGLE_PAYMENT_METHOD_RESULT)
       intent.putExtra("error", it.localizedMessage)
-      activity?.sendBroadcast(intent)
+      localBroadcastManager.sendBroadcast(intent)
     }
   }
 
   private fun onGooglePayReady(isReady: Boolean) {
     val intent = Intent(ON_INIT_GOOGLE_PAY)
     intent.putExtra("isReady", isReady)
-    activity?.sendBroadcast(intent)
+    localBroadcastManager.sendBroadcast(intent)
   }
 
   private fun onGooglePayResult(result: GooglePayLauncher.Result) {
     val intent = Intent(ON_GOOGLE_PAY_RESULT)
     intent.putExtra("paymentResult", result)
-    activity?.sendBroadcast(intent)
+    localBroadcastManager.sendBroadcast(intent)
   }
 
   private fun onGooglePayResult(result: GooglePayPaymentMethodLauncher.Result) {
     val intent = Intent(ON_GOOGLE_PAYMENT_METHOD_RESULT)
     intent.putExtra("paymentResult", result)
-    activity?.sendBroadcast(intent)
+    localBroadcastManager.sendBroadcast(intent)
   }
 
   private fun mapToGooglePayLauncherBillingAddressConfig(formatString: String, isRequired: Boolean, isPhoneNumberRequired: Boolean): GooglePayLauncher.BillingAddressConfig {

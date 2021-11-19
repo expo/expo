@@ -4,6 +4,24 @@
 
 ### 🛠 Breaking changes
 
+- Deprecates `setCurrentScreen` and removes the native API calls to support the latest Firebase SDKs. ([#4366](https://github.com/expo/expo/pull/4366) by [@IjzerenHein](https://github.com/IjzerenHein))
+
+### 🎉 New features
+
+- Add support for `setSessionTimeoutDuration` on iOS. ([#14364](https://github.com/expo/expo/pull/14364) by [@IjzerenHein](https://github.com/IjzerenHein))
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 5.0.1 — 2021-10-01
+
+_This version does not introduce any user-facing changes._
+
+## 5.0.0 — 2021-09-28
+
+### 🛠 Breaking changes
+
 - Dropped support for iOS 11.0 ([#14383](https://github.com/expo/expo/pull/14383) by [@cruzach](https://github.com/cruzach))
 
 ### 🎉 New features
@@ -15,8 +33,8 @@
 ### 🐛 Bug fixes
 
 - Fix `logEvent` exception on Android when using arrays. ([#14189](https://github.com/expo/expo/pull/14189) by [@IjzerenHein](https://github.com/IjzerenHein))
-
-### 💡 Others
+- Fix building errors from use_frameworks! in Podfile. ([#14523](https://github.com/expo/expo/pull/14523) by [@kudo](https://github.com/kudo))
+- Using compat firebase libraries in version 9.0.2. ([#14400](https://github.com/expo/expo/pull/14400) by [@sebastianwilczek](https://github.com/sebastianwilczek))
 
 ## 4.1.0 — 2021-06-16
 

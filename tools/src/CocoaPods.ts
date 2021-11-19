@@ -19,7 +19,6 @@ export type Podspec = {
   dependencies: Record<string, any>;
   info_plist: Record<string, string>;
   ios?: Podspec;
-  modulemap_file?: string;
 };
 
 /**

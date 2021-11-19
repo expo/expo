@@ -17,7 +17,14 @@
 #import "EXDevLauncherUpdatesHelper.h"
 #import "RCTPackagerConnection+EXDevLauncherPackagerConnectionInterceptor.h"
 
+#if __has_include(<EXDevLauncher/EXDevLauncher-Swift.h>)
+// For cocoapods framework, the generated swift header will be inside EXDevLauncher module
+#import <EXDevLauncher/EXDevLauncher-Swift.h>
+#else
 #import <EXDevLauncher-Swift.h>
+#endif
+
+#import <EXManifests/EXManifestsManifestFactory.h>
 
 @import EXDevMenuInterface;
 
@@ -41,7 +48,7 @@ NSString *fakeLauncherBundleUrl = @"embedded://EXDevLauncher/dummy";
 @property (nonatomic, strong) NSURL *sourceUrl;
 @property (nonatomic, assign) BOOL shouldPreferUpdatesInterfaceSourceUrl;
 @property (nonatomic, strong) EXDevLauncherRecentlyOpenedAppsRegistry *recentlyOpenedAppsRegistry;
-@property (nonatomic, strong) EXDevLauncherManifest *manifest;
+@property (nonatomic, strong) EXManifestsManifest *manifest;
 @property (nonatomic, strong) NSURL *manifestURL;
 @property (nonatomic, strong) EXDevLauncherErrorManager *errorManager;
 
@@ -119,7 +126,7 @@ NSString *fakeLauncherBundleUrl = @"embedded://EXDevLauncher/dummy";
   };
 }
 
-- (EXDevLauncherManifest *)appManifest
+- (EXManifestsManifest *)appManifest
 {
   return self.manifest;
 }
@@ -147,6 +154,9 @@ NSString *fakeLauncherBundleUrl = @"embedded://EXDevLauncher/dummy";
 
   if (!launchOptions[UIApplicationLaunchOptionsURLKey]) {
     [self navigateToLauncher];
+  } else {
+    // For deeplink launch, we need the keyWindow for expo-splash-screen to setup correctly.
+    [_window makeKeyWindow];
   }
 }
 
@@ -277,7 +287,7 @@ NSString *fakeLauncherBundleUrl = @"embedded://EXDevLauncher/dummy";
     }
   };
 
-  void (^launchExpoApp)(NSURL *, EXDevLauncherManifest *) = ^(NSURL *bundleURL, EXDevLauncherManifest *manifest) {
+  void (^launchExpoApp)(NSURL *, EXManifestsManifest *) = ^(NSURL *bundleURL, EXManifestsManifest *manifest) {
     self->_shouldPreferUpdatesInterfaceSourceUrl = !manifest.isUsingDeveloperTool;
     RCTDevLoadingViewSetEnabled(manifest.isUsingDeveloperTool);
     [self.recentlyOpenedAppsRegistry appWasOpened:expoUrl.absoluteString name:manifest.name];
@@ -300,7 +310,7 @@ NSString *fakeLauncherBundleUrl = @"embedded://EXDevLauncher/dummy";
     }
 
     if (!self->_updatesInterface) {
-      [manifestParser tryToParseManifest:^(EXDevLauncherManifest *manifest) {
+      [manifestParser tryToParseManifest:^(EXManifestsManifest *manifest) {
         if (!manifest.isUsingDeveloperTool) {
           onError([NSError errorWithDomain:@"DevelopmentClient" code:1 userInfo:@{NSLocalizedDescriptionKey: @"expo-updates is not properly installed or integrated. In order to load published projects with this development client, follow all installation and setup instructions for both the expo-dev-client and expo-updates packages."}]);
           return;
@@ -311,7 +321,7 @@ NSString *fakeLauncherBundleUrl = @"embedded://EXDevLauncher/dummy";
     }
 
     [self->_updatesInterface fetchUpdateWithConfiguration:updatesConfiguration onManifest:^BOOL(NSDictionary *manifest) {
-      EXDevLauncherManifest *devLauncherManifest = [EXDevLauncherManifest fromJsonObject:manifest];
+      EXManifestsManifest *devLauncherManifest = [EXManifestsManifestFactory manifestForManifestJSON:manifest];
       if (devLauncherManifest.isUsingDeveloperTool) {
         // launch right away rather than continuing to load through EXUpdates
         launchExpoApp([NSURL URLWithString:devLauncherManifest.bundleUrl], devLauncherManifest);
@@ -322,18 +332,18 @@ NSString *fakeLauncherBundleUrl = @"embedded://EXDevLauncher/dummy";
       // do nothing for now
     } success:^(NSDictionary * _Nullable manifest) {
       if (manifest) {
-        launchExpoApp(self->_updatesInterface.launchAssetURL, [EXDevLauncherManifest fromJsonObject:manifest]);
+        launchExpoApp(self->_updatesInterface.launchAssetURL, [EXManifestsManifestFactory manifestForManifestJSON:manifest]);
       }
     } error:onError];
   } onError:onError];
 }
 
-- (void)_initAppWithUrl:(NSURL *)appUrl bundleUrl:(NSURL *)bundleUrl manifest:(EXDevLauncherManifest * _Nullable)manifest
+- (void)_initAppWithUrl:(NSURL *)appUrl bundleUrl:(NSURL *)bundleUrl manifest:(EXManifestsManifest * _Nullable)manifest
 {
   self.manifest = manifest;
   self.manifestURL = appUrl;
-  __block UIInterfaceOrientation orientation = manifest.orientation;
-  __block UIColor *backgroundColor = manifest.backgroundColor;
+  __block UIInterfaceOrientation orientation = [EXDevLauncherManifestHelper exportManifestOrientation:manifest.orientation];
+  __block UIColor *backgroundColor = [EXDevLauncherManifestHelper hexStringToColor:manifest.iosOrRootBackgroundColor];
   
   __weak __typeof(self) weakSelf = self;
   dispatch_async(dispatch_get_main_queue(), ^{
@@ -350,14 +360,15 @@ NSString *fakeLauncherBundleUrl = @"embedded://EXDevLauncher/dummy";
 #endif
     
     if (@available(iOS 12, *)) {
-      [self _applyUserInterfaceStyle:manifest.userInterfaceStyle];
+      UIUserInterfaceStyle userInterfaceStyle = [EXDevLauncherManifestHelper exportManifestUserInterfaceStyle:manifest.userInterfaceStyle];
+      [self _applyUserInterfaceStyle:userInterfaceStyle];
       
       // Fix for the community react-native-appearance.
       // RNC appearance checks the global trait collection and doesn't have another way to override the user interface.
       // So we swap `currentTraitCollection` with one from the root view controller.
       // Note that the root view controller will have the correct value of `userInterfaceStyle`.
       if (@available(iOS 13.0, *)) {
-        if (manifest.userInterfaceStyle != UIUserInterfaceStyleUnspecified) {
+        if (userInterfaceStyle != UIUserInterfaceStyleUnspecified) {
           UITraitCollection.currentTraitCollection = [self.window.rootViewController.traitCollection copy];
         }
       }

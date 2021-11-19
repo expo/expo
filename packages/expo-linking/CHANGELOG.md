@@ -10,6 +10,12 @@
 
 ### 💡 Others
 
+- Update `qs` dependency. ([#15069](https://github.com/expo/expo/pull/15069) by [@Simek](https://github.com/Simek))
+
+## 2.4.1 — 2021-10-01
+
+_This version does not introduce any user-facing changes._
+
 ## 2.4.0 — 2021-09-09
 
 ### 🎉 New features

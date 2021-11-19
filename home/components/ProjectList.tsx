@@ -6,6 +6,7 @@ import InfiniteScrollView from 'react-native-infinite-scroll-view';
 
 import Colors from '../constants/Colors';
 import SharedStyles from '../constants/SharedStyles';
+import { CommonAppDataFragment } from '../graphql/types';
 import PrimaryButton from './PrimaryButton';
 import ProjectListItem from './ProjectListItem';
 import SectionHeader from './SectionHeader';
@@ -21,22 +22,8 @@ const SERVER_ERROR_TEXT = dedent`
   Sorry about this. We will resolve the issue as soon as quickly as possible.
 `;
 
-export type Project = {
-  id: string;
-  description: string;
-  fullName: string;
-  iconUrl?: string | null;
-  published: boolean; // legacy publishes
-  lastPublishedTime: number;
-  name: string;
-  packageName: string;
-  privacy: string;
-  sdkVersion: string;
-  username: string;
-};
-
 type Props = {
-  data: { apps?: Project[]; appCount?: number };
+  data: { apps?: CommonAppDataFragment[]; appCount?: number };
   loadMoreAsync: () => Promise<any>;
   listTitle?: string;
 
@@ -130,11 +117,11 @@ function ProjectList({ data, loadMoreAsync, listTitle }: Props) {
   const totalAppCount = data.appCount ?? 0;
   const canLoadMore = currentAppCount < totalAppCount;
 
-  const renderItem = ({ item: app, index }: { item: Project; index: number }) => {
+  const renderItem = ({ item: app, index }: { item: CommonAppDataFragment; index: number }) => {
     const experienceInfo = { id: app.id, username: app.username, slug: app.packageName };
     return (
       <ProjectListItem
-        key={index.toString()}
+        key={app.id}
         url={app.fullName}
         image={app.iconUrl || require('../assets/placeholder-app-icon.png')}
         title={app.name}

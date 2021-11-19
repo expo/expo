@@ -1,6 +1,6 @@
 {
   "name": "expo-sensors",
-  "version": "10.2.0",
+  "version": "11.0.1",
   "description": "Provides access to a hardware device's accelerometer, gyroscope, magnetometer, and pedometer.",
   "main": "build/index.js",
   "types": "build/index.d.ts",
@@ -40,11 +40,13 @@
     "preset": "expo-module-scripts"
   },
   "dependencies": {
-    "@expo/config-plugins": "^3.0.0",
-    "expo-modules-core": "~0.3.1",
+    "@expo/config-plugins": "^4.0.2",
     "invariant": "^2.2.4"
   },
   "devDependencies": {
     "expo-module-scripts": "^2.0.0"
+  },
+  "peerDependencies": {
+    "expo": "*"
   }
 }

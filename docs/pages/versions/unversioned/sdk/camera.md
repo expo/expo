@@ -136,7 +136,7 @@ const types = await Camera.getAvailableCameraTypesAsync();
 
 Asks the user to grant permissions for accessing camera. 
 
-On iOS this will require apps to specify both `NSCameraUsageDescription` and `NSMicrophoneUsageDescription` entries in the `Info.plist`
+On iOS this will require apps to specify both `NSCameraUsageDescription` and `NSMicrophoneUsageDescription` entries in the **Info.plist**
 
 #### Returns
 
@@ -146,7 +146,7 @@ A promise that resolves to an object of type [PermissionResponse](permissions.md
 
 Asks the user to grant permissions for accessing camera.
 
-On iOS this will require apps to specify an `NSCameraUsageDescription` entry in the `Info.plist`
+On iOS this will require apps to specify an `NSCameraUsageDescription` entry in the **Info.plist**
 
 #### Returns
 
@@ -156,7 +156,7 @@ A promise that resolves to an object of type [PermissionResponse](permissions.md
 
 Asks the user to grant permissions for accessing the microphone.
 
-On iOS this will require apps to specify an `NSMicrophoneUsageDescription` entry in the `Info.plist`
+On iOS this will require apps to specify an `NSMicrophoneUsageDescription` entry in the **Info.plist**
 
 #### Returns
 

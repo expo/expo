@@ -30,7 +30,7 @@ Images often take up the most space out of the assets in an Expo project. Optimi
 
 - `--save`: Backup a copy of each file with a `.orig` extension.
 - `--quality=N`: Compress the images to a certain integer quality N between 1 and 100 inclusive (defaults to 60).
-- `--include="[pattern]"`: Only optimize assets that match this glob pattern (defaults to `assetBundlePatterns` field in `app.json`)
+- `--include="[pattern]"`: Only optimize assets that match this glob pattern (defaults to `assetBundlePatterns` field in **app.json**)
 - `--exclude="[pattern]"`: Exclude assets that match this glob pattern.
 
 Note: glob patterns are always relative to the project root regardless of where the command is called from.

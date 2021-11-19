@@ -1,1 +1,1 @@
-This version contains minor improvements and adds support for SDK 41.
+This version contains minor improvements and adds support for SDK 43.

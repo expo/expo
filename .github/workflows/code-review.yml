@@ -10,7 +10,7 @@ on:
     branches: [master, sdk-*]
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
+  group: ${{ github.workflow }}-${{ github.event.inputs.pullNumber || github.event.number }}
   cancel-in-progress: true
 
 jobs:
