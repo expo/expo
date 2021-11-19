@@ -35,7 +35,15 @@ export type SearchResults = {
   [moduleName: string]: PackageRevision;
 };
 
-export type ModuleDescriptor = Record<string, any>;
+export type ModuleDescriptorAndroid = Record<string, any>;
+export interface ModuleDescriptorIos {
+  pods: { podName: string; podspecDir: string }[];
+  flags: Record<string, any> | undefined;
+  modulesClassNames: string[];
+  appDelegateSubscribers: string[];
+}
+
+export type ModuleDescriptor = ModuleDescriptorAndroid | ModuleDescriptorIos;
 
 /**
  * Represents a raw config from `expo-module.json`.
