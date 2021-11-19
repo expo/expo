@@ -56,8 +56,8 @@ static NSString * const EXUpdatesDatabaseServerDefinedHeadersKey = @"serverDefin
 
 - (void)addUpdate:(EXUpdatesUpdate *)update error:(NSError ** _Nullable)error
 {
-  NSString * const sql = @"INSERT INTO \"updates\" (\"id\", \"scope_key\", \"commit_time\", \"runtime_version\", \"manifest\", \"status\" , \"keep\", \"last_accessed\")\
-  VALUES (?1, ?2, ?3, ?4, ?5, ?6, 1, ?7);";
+  NSString * const sql = @"INSERT INTO \"updates\" (\"id\", \"scope_key\", \"commit_time\", \"runtime_version\", \"manifest\", \"status\" , \"keep\", \"last_accessed\", \"successful_launch_count\", \"failed_launch_count\")\
+  VALUES (?1, ?2, ?3, ?4, ?5, ?6, 1, ?7, ?8, ?9);";
 
   [self _executeSql:sql
            withArgs:@[
@@ -65,9 +65,11 @@ static NSString * const EXUpdatesDatabaseServerDefinedHeadersKey = @"serverDefin
                       update.scopeKey,
                       update.commitTime,
                       update.runtimeVersion,
-                      update.manifest ?: [NSNull null],
+                      update.manifestJSON ?: [NSNull null],
                       @(update.status),
-                      update.lastAccessed
+                      update.lastAccessed,
+                      @(update.successfulLaunchCount),
+                      @(update.failedLaunchCount)
                       ]
               error:error];
 }
@@ -210,6 +212,20 @@ static NSString * const EXUpdatesDatabaseServerDefinedHeadersKey = @"serverDefin
   [self _executeSql:updateSql withArgs:@[update.lastAccessed, update.updateId] error:error];
 }
 
+- (void)incrementSuccessfulLaunchCountForUpdate:(EXUpdatesUpdate *)update error:(NSError ** _Nullable)error
+{
+  update.successfulLaunchCount++;
+  NSString * const updateSql = @"UPDATE updates SET successful_launch_count = ?1 WHERE id = ?2;";
+  [self _executeSql:updateSql withArgs:@[@(update.successfulLaunchCount), update.updateId] error:error];
+}
+
+- (void)incrementFailedLaunchCountForUpdate:(EXUpdatesUpdate *)update error:(NSError ** _Nullable)error
+{
+  update.failedLaunchCount++;
+  NSString * const updateSql = @"UPDATE updates SET failed_launch_count = ?1 WHERE id = ?2;";
+  [self _executeSql:updateSql withArgs:@[@(update.failedLaunchCount), update.updateId] error:error];
+}
+
 - (void)setScopeKey:(NSString *)scopeKey onUpdate:(EXUpdatesUpdate *)update error:(NSError ** _Nullable)error
 {
   NSString * const updateSql = @"UPDATE updates SET scope_key = ?1 WHERE id = ?2;";
@@ -275,6 +291,17 @@ static NSString * const EXUpdatesDatabaseServerDefinedHeadersKey = @"serverDefin
     return nil;
   }
 
+  // check for duplicate rows representing a single file on disk
+  NSString * const update3Sql = @"UPDATE assets SET marked_for_deletion = 0 WHERE relative_path IN (\
+  SELECT relative_path\
+  FROM assets\
+  WHERE marked_for_deletion = 0\
+  );";
+  if ([self _executeSql:update3Sql withArgs:nil error:error] == nil) {
+    sqlite3_exec(_db, "ROLLBACK;", NULL, NULL, NULL);
+    return nil;
+  }
+
   NSString * const selectSql = @"SELECT * FROM assets WHERE marked_for_deletion = 1;";
   NSArray<NSDictionary *> *rows = [self _executeSql:selectSql withArgs:nil error:error];
   if (!rows) {
@@ -333,9 +360,12 @@ static NSString * const EXUpdatesDatabaseServerDefinedHeadersKey = @"serverDefin
 
 - (nullable NSArray<EXUpdatesUpdate *> *)launchableUpdatesWithConfig:(EXUpdatesConfig *)config error:(NSError ** _Nullable)error
 {
+  // if an update has successfully launched at least once, we treat it as launchable
+  // even if it has also failed to launch at least once
   NSString *sql = [NSString stringWithFormat:@"SELECT *\
   FROM updates\
   WHERE scope_key = ?1\
+  AND (successful_launch_count > 0 OR failed_launch_count < 1)\
   AND status IN (%li, %li, %li);", (long)EXUpdatesUpdateStatusReady, (long)EXUpdatesUpdateStatusEmbedded, (long)EXUpdatesUpdateStatusDevelopment];
 
   NSArray<NSDictionary *> *rows = [self _executeSql:sql withArgs:@[config.scopeKey] error:error];
@@ -544,6 +574,8 @@ static NSString * const EXUpdatesDatabaseServerDefinedHeadersKey = @"serverDefin
                                                    config:config
                                                  database:self];
   update.lastAccessed = [EXUpdatesDatabaseUtils dateFromUnixTimeMilliseconds:(NSNumber *)row[@"last_accessed"]];
+  update.successfulLaunchCount = [(NSNumber *)row[@"successful_launch_count"] integerValue];
+  update.failedLaunchCount = [(NSNumber *)row[@"failed_launch_count"] integerValue];
   return update;
 }
 

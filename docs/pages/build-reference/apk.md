@@ -2,13 +2,14 @@
 title: Building APKs for Android emulators and devices
 ---
 
-The default file format used when building Android apps with EAS Build is an [Android App Bundle](https://developer.android.com/platform/technology/app-bundle) (AAB / `.aab`). This format is optimized for distributing to the Google Play Store, but AABs can't be installed directly to your device. To install a build directly to your Android device or emulator, you need to build an [Android Package](https://en.wikipedia.org/wiki/Android_application_package) (APK / `.apk`) instead.
+The default file format used when building Android apps with EAS Build is an [Android App Bundle](https://developer.android.com/platform/technology/app-bundle) (AAB / **.aab**). This format is optimized for distributing to the Google Play Store, but AABs can't be installed directly to your device. To install a build directly to your Android device or emulator, you need to build an [Android Package](https://en.wikipedia.org/wiki/Android_application_package) (APK / **.apk**) instead.
 
 ## Configuring a profile to build APKs
 
 ### Managed projects
 
 By default, EAS Build produces Android App Bundle, you can change it by:
+
 - setting `buildType` to `apk`
 - setting `developmentClient` to true
 - setting `gradleCommand` to `:app:assembleRelease`, `:app:assembleDebug` or any other gradle command that produces APK
@@ -16,7 +17,6 @@ By default, EAS Build produces Android App Bundle, you can change it by:
 ```json
 {
   "build": {
-    "release": {},
     "preview": {
       "android": {
         "buildType": "apk"
@@ -29,7 +29,8 @@ By default, EAS Build produces Android App Bundle, you can change it by:
     },
     "preview3": {
       "developmentClient": true
-    }
+    },
+    "production": {}
   }
 }
 ```

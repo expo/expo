@@ -137,7 +137,8 @@ const RENAMED_PAGES: Record<string, string> = {
   '/guides/': '/workflow/exploring-managed-workflow/',
   '/versions/latest/sdk/': '/versions/latest/',
   '/versions/latest/sdk/overview/': '/versions/latest/',
-  '/guides/building-standalone-apps/': '/distribution/building-standalone-apps/',
+  '/guides/building-standalone-apps/': '/classic/building-standalone-apps/',
+  '/distribution/building-standalone-apps/': '/classic/building-standalone-apps/',
   '/guides/genymotion/': '/workflow/android-studio-emulator/',
   '/workflow/upgrading-expo/': '/workflow/upgrading-expo-sdk-walkthrough/',
   '/workflow/create-react-native-app/': '/workflow/glossary-of-terms/#create-react-native-app',
@@ -213,4 +214,7 @@ const RENAMED_PAGES: Record<string, string> = {
   '/versions/v40.0.0/sdk/permissions/': '/guides/permissions/',
   '/versions/v41.0.0/sdk/permissions/': '/guides/permissions/',
   '/versions/v42.0.0/sdk/permissions/': '/guides/permissions/',
+
+  // updates
+  '/guides/configuring-ota-updates/': '/guides/configuring-updates/',
 };

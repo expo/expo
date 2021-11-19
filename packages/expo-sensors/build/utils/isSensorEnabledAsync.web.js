@@ -107,7 +107,7 @@ timeout = 250) {
     if (!isIOS && !getRequestPermission()) {
         return true;
     }
-    return new Promise(resolve => {
+    return new Promise((resolve) => {
         const id = setTimeout(() => {
             window.removeEventListener(eventName, listener);
             resolve(false);

@@ -3,7 +3,7 @@ const { copySync, removeSync } = require('fs-extra');
 const merge = require('lodash/merge');
 const { join } = require('path');
 const semver = require('semver');
-const { ESBuildPlugin } = require('esbuild-loader');
+const { ESBuildMinifyPlugin } = require('esbuild-loader');
 
 const navigation = require('./constants/navigation-data');
 const versions = require('./constants/versions');
@@ -64,12 +64,13 @@ module.exports = {
           loader: '@mdx-js/loader',
           options: {
             remarkPlugins: [
-              require('./mdx-plugins/remark-heading-meta'),
+              [require('remark-frontmatter'), ['yaml']],
+              require('./mdx-plugins/remark-export-yaml'),
+              require('./mdx-plugins/remark-export-headings'),
               require('./mdx-plugins/remark-link-rewrite'),
             ],
           },
         },
-        join(__dirname, './common/md-loader'),
       ],
     });
 
@@ -81,7 +82,11 @@ module.exports = {
 
     // Add the esbuild plugin only when using esbuild
     if (enableEsbuild) {
-      config.plugins.push(new ESBuildPlugin());
+      config.optimization.minimizer = [
+        new ESBuildMinifyPlugin({
+          target: 'es2017',
+        }),
+      ];
     }
 
     return config;
@@ -123,6 +128,7 @@ module.exports = {
       pathsPriority: [
         ...navigation.startingDirectories,
         ...navigation.generalDirectories,
+        ...navigation.easDirectories,
         ...versions.VERSIONS.map(version => `versions/${version}`),
       ],
       // Some of our pages are "hidden" and should not be added to the sitemap

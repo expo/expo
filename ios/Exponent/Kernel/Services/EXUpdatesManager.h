@@ -2,14 +2,14 @@
 
 #import "EXKernelAppRecord.h"
 #import "EXUpdatesBinding.h"
-#import <EXUpdates/EXUpdatesRawManifest.h>
+#import <EXManifests/EXManifestsManifest.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
 @interface EXUpdatesManager : NSObject <EXUpdatesBindingDelegate>
 
 - (void)notifyApp:(EXKernelAppRecord *)appRecord
-ofDownloadWithManifest:(EXUpdatesRawManifest * _Nullable)manifest
+ofDownloadWithManifest:(EXManifestsManifest * _Nullable)manifest
             isNew:(BOOL)isBundleNew
             error:(NSError * _Nullable)error;
 

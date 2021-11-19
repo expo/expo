@@ -1,7 +1,7 @@
 'use strict';
 
-import { Platform } from '@unimodules/core';
 import Constants from 'expo-constants';
+import { Platform } from 'expo-modules-core';
 
 import ExponentTest from './ExponentTest';
 import { isDeviceFarm } from './utils/Environment';
@@ -70,6 +70,7 @@ export function getTestModules() {
     require('./tests/FirebaseCore'),
     require('./tests/FirebaseAnalytics'),
     require('./tests/FirebaseRecaptcha'),
+    require('./tests/FirebaseJSSDKCompat'),
     require('./tests/FirebaseJSSDK'),
     require('./tests/ImageManipulator'),
     optionalRequire(() => require('./tests/SQLite'))
@@ -126,11 +127,12 @@ export function getTestModules() {
     optionalRequire(() => require('./tests/Speech')),
     optionalRequire(() => require('./tests/Recording')),
     optionalRequire(() => require('./tests/ScreenOrientation')),
-    optionalRequire(() => require('./tests/Payments')),
     optionalRequire(() => require('./tests/AdMobInterstitial')),
     optionalRequire(() => require('./tests/AdMobRewarded')),
     optionalRequire(() => require('./tests/FBBannerAd')),
-    optionalRequire(() => require('./tests/Notifications'))
+    optionalRequire(() => require('./tests/Notifications')),
+    optionalRequire(() => require('./tests/NavigationBar')),
+    optionalRequire(() => require('./tests/SystemUI'))
   );
 
   if (!isDeviceFarm()) {
@@ -176,5 +178,5 @@ export function getTestModules() {
     modules.push(optionalRequire(() => require('./tests/Cellular')));
     modules.push(optionalRequire(() => require('./tests/BarCodeScanner')));
   }
-  return modules.filter(Boolean).sort((a, b) => a.name.toLowerCase() > b.name.toLowerCase());
+  return modules.filter(Boolean).sort((a, b) => a.name.toLowerCase() > b.name.toLowerCase() ? 1 : -1);
 }

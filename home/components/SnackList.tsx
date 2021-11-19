@@ -4,18 +4,11 @@ import { ActivityIndicator, FlatList, View } from 'react-native';
 import InfiniteScrollView from 'react-native-infinite-scroll-view';
 
 import Colors from '../constants/Colors';
+import { CommonSnackDataFragment } from '../graphql/types';
 import SnackListItem from './SnackListItem';
 
-export type Snack = {
-  name: string;
-  fullName: string;
-  slug: string;
-  description: string;
-  isDraft?: boolean;
-};
-
 type Props = {
-  data: Snack[];
+  data: CommonSnackDataFragment[];
   loadMoreAsync: () => Promise<any>;
 };
 
@@ -52,7 +45,7 @@ function SnackList({ data, loadMoreAsync }: Props) {
 
   const theme = useTheme();
 
-  const extractKey = React.useCallback(item => item.slug, []);
+  const extractKey = React.useCallback((item) => item.slug, []);
 
   const handleLoadMoreAsync = async () => {
     if (isLoading.current) return;
@@ -106,7 +99,7 @@ function SnackList({ data, loadMoreAsync }: Props) {
         renderItem={renderItem}
         // @ts-expect-error typescript cannot infer that props should include infinite-scroll-view props
         renderLoadingIndicator={() => <View />}
-        renderScrollComponent={props => <InfiniteScrollView {...props} />}
+        renderScrollComponent={(props) => <InfiniteScrollView {...props} />}
         style={style}
         canLoadMore={canLoadMore()}
         onLoadMoreAsync={handleLoadMoreAsync}

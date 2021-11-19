@@ -2,6 +2,13 @@
 
 #import <EXAV/EXAVPlayerData.h>
 
+// This struct is passed between the MTAudioProcessingTap callbacks.
+typedef struct AVAudioTapProcessorContext {
+  Boolean supportedTapProcessingFormat;
+  Boolean isNonInterleaved;
+  void *self; // a pointer to EXAVPlayerData
+} AVAudioTapProcessorContext;
+
 NSString *const EXAVPlayerDataStatusIsLoadedKeyPath = @"isLoaded";
 NSString *const EXAVPlayerDataStatusURIKeyPath = @"uri";
 NSString *const EXAVPlayerDataStatusHeadersKeyPath = @"headers";
@@ -28,6 +35,7 @@ NSString *const EXAVPlayerDataObserverRateKeyPath = @"rate";
 NSString *const EXAVPlayerDataObserverCurrentItemKeyPath = @"currentItem";
 NSString *const EXAVPlayerDataObserverTimeControlStatusPath = @"timeControlStatus";
 NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBufferEmpty";
+NSString *const EXAVPlayerDataObserverMetadataKeyPath = @"timedMetadata";
 
 @interface EXAVPlayerData ()
 
@@ -59,6 +67,9 @@ NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBuf
 @end
 
 @implementation EXAVPlayerData
+{
+  EXAudioSampleCallback* _audioSampleBufferCallback;
+}
 
 #pragma mark - Static methods
 
@@ -133,6 +144,7 @@ NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBuf
     if (self.player) {
       [self _addObserver:self.player forKeyPath:EXAVPlayerDataObserverStatusKeyPath];
       [self _addObserver:self.player.currentItem forKeyPath:EXAVPlayerDataObserverStatusKeyPath];
+      [self _addObserver:self.player.currentItem forKeyPath:EXAVPlayerDataObserverMetadataKeyPath];
     } else {
       NSString *errorMessage = @"Load encountered an error: [AVPlayer playerWithPlayerItem:] returned nil.";
       if (self.loadFinishBlock) {
@@ -374,6 +386,18 @@ NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBuf
        : value;
 }
 
+- (double)getCurrentPositionPrecise
+{
+  NSNumber *durationMillis = [self _getRoundedMillisFromCMTime:_player.currentItem.duration];
+  if (durationMillis) {
+    durationMillis = @(MAX(durationMillis.longValue, 0));
+  }
+
+  NSNumber *positionMillis = [self _getRoundedMillisFromCMTime:[_player currentTime]];
+  positionMillis = [self _getClippedValueForValue:positionMillis withMin:@(0) withMax:durationMillis];
+  return positionMillis.doubleValue / 1000.0;
+}
+
 - (NSDictionary *)getStatus
 {
   if (!_isLoaded || _player == nil) {
@@ -574,6 +598,7 @@ NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBuf
   }
   
   [self _tryRemoveObserver:playerItem forKeyPath:EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath];
+  [self _tryRemoveObserver:playerItem forKeyPath:EXAVPlayerDataObserverMetadataKeyPath];
 }
 
 - (void)_addObserversForPlayerItem:(AVPlayerItem *)playerItem
@@ -617,6 +642,7 @@ NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBuf
                                              usingBlock:playbackStalledObserverBlock];
   [self _addObserver:playerItem forKeyPath:EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath];
   [self _addObserver:playerItem forKeyPath:EXAVPlayerDataObserverStatusKeyPath];
+  [self _addObserver:playerItem forKeyPath:EXAVPlayerDataObserverMetadataKeyPath];
 }
 
 - (void)_updateTimeObserver
@@ -768,6 +794,11 @@ NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBuf
             }
             [strongSelf.player insertItem:removedPlayerItem afterItem:nil];
           }
+          
+          if (self.sampleBufferCallback != nil) {
+            // Tap is installed per item, so we re-install for the new item.
+            [self installTap];
+          }
         }
       } else if (object == strongSelf.player.currentItem) {
         if ([keyPath isEqualToString:EXAVPlayerDataObserverStatusKeyPath]) {
@@ -798,10 +829,163 @@ NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBuf
           [strongSelf _callStatusUpdateCallback];
         } else if ([keyPath isEqualToString:EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath]) {
           [strongSelf _callStatusUpdateCallback];
+        } else if ([keyPath isEqualToString:EXAVPlayerDataObserverMetadataKeyPath] && strongSelf.metadataUpdateCallback) {
+          NSArray<AVMetadataItem *> *timedMetadata = strongSelf.player.currentItem.timedMetadata;
+          NSMutableDictionary *metadata = [@{} mutableCopy];
+          for (AVMetadataItem *item in timedMetadata) {
+            if ([item.commonKey isEqual:AVMetadataCommonKeyTitle]) {
+              NSString *title = item.stringValue;
+              [metadata setObject:title forKey:@"title"];
+              break;
+            }
+          }
+          strongSelf.metadataUpdateCallback(metadata);
         }
       }
     }
   });
+}
+
+#pragma mark - Sample Buffer Callbacks & AudioMix Tap
+
+- (void)setSampleBufferCallback:(EXAudioSampleCallback *)sampleBufferCallback
+{
+  if (sampleBufferCallback) {
+    [self installTap];
+  } else {
+    [self uninstallTap];
+  }
+  
+  _audioSampleBufferCallback = sampleBufferCallback;
+}
+
+- (EXAudioSampleCallback *)sampleBufferCallback
+{
+  return _audioSampleBufferCallback;
+}
+
+- (void)installTap
+{
+  AVPlayerItem *item = [_player currentItem];
+  // TODO: What if a player item has multiple tracks?
+  AVAssetTrack *track = item.tracks.firstObject.assetTrack;
+  if (!track)
+  {
+    EXLogError(@"Failed to find a track in the current player item!");
+    return;
+  }
+
+  AVMutableAudioMix *audioMix = [AVMutableAudioMix audioMix];
+  if (audioMix) {
+    AVMutableAudioMixInputParameters *audioMixInputParameters = [AVMutableAudioMixInputParameters audioMixInputParametersWithTrack:track];
+    if (audioMixInputParameters) {
+      MTAudioProcessingTapCallbacks callbacks;
+
+      callbacks.version = kMTAudioProcessingTapCallbacksVersion_0;
+      callbacks.clientInfo = (__bridge void *)self,
+      callbacks.init = EXTapInit;
+      callbacks.finalize = EXTapFinalize;
+      callbacks.prepare = EXTapPrepare;
+      callbacks.unprepare = EXTapUnprepare;
+      callbacks.process = EXTapProcess;
+
+      MTAudioProcessingTapRef audioProcessingTap;
+      OSStatus status = MTAudioProcessingTapCreate(kCFAllocatorDefault, &callbacks, kMTAudioProcessingTapCreationFlag_PreEffects, &audioProcessingTap);
+      if (status == noErr) {
+        audioMixInputParameters.audioTapProcessor = audioProcessingTap;
+        audioMix.inputParameters = @[audioMixInputParameters];
+
+        [item setAudioMix:audioMix];
+
+        CFRelease(audioProcessingTap);
+      } else {
+        EXLogError(@"Failed to create MTAudioProcessingTap!");
+      }
+    }
+  }
+}
+
+- (void)uninstallTap
+{
+  AVPlayerItem *item = [_player currentItem];
+  [item setAudioMix:nil];
+}
+
+#pragma mark - Audio Sample Buffer Callbacks (MTAudioProcessingTapCallbacks)
+
+void EXTapInit(MTAudioProcessingTapRef tap, void *clientInfo, void **tapStorageOut)
+{
+  AVAudioTapProcessorContext *context = calloc(1, sizeof(AVAudioTapProcessorContext));
+
+  // Initialize MTAudioProcessingTap context.
+  context->isNonInterleaved = false;
+  context->self = clientInfo;
+
+  *tapStorageOut = context;
+}
+
+void EXTapFinalize(MTAudioProcessingTapRef tap)
+{
+  AVAudioTapProcessorContext *context = (AVAudioTapProcessorContext *)MTAudioProcessingTapGetStorage(tap);
+
+  // Clear MTAudioProcessingTap context.
+  context->self = NULL;
+
+  free(context);
+}
+
+void EXTapPrepare(MTAudioProcessingTapRef tap, CMItemCount maxFrames, const AudioStreamBasicDescription *processingFormat)
+{
+  AVAudioTapProcessorContext *context = (AVAudioTapProcessorContext *)MTAudioProcessingTapGetStorage(tap);
+
+  context->supportedTapProcessingFormat = true;
+
+  if (processingFormat->mFormatID != kAudioFormatLinearPCM) {
+    EXLogInfo(@"Audio Format ID for audioProcessingTap: LinearPCM");
+    // TODO(barthap): Does LinearPCM work with the audio sample buffer callback?
+  }
+  if (!(processingFormat->mFormatFlags & kAudioFormatFlagIsFloat)) {
+    EXLogInfo(@"Audio Format ID for audioProcessingTap: Float only");
+    // TODO(barthap): Does Float work with the audio sample buffer callback?
+  }
+
+  if (processingFormat->mFormatFlags & kAudioFormatFlagIsNonInterleaved) {
+    context->isNonInterleaved = true;
+  }
+}
+
+void EXTapUnprepare(MTAudioProcessingTapRef tap)
+{
+  AVAudioTapProcessorContext *context =
+    (AVAudioTapProcessorContext *)MTAudioProcessingTapGetStorage(tap);
+  context->self = NULL;
+}
+
+void EXTapProcess(MTAudioProcessingTapRef tap, CMItemCount numberFrames, MTAudioProcessingTapFlags flags, AudioBufferList *bufferListInOut, CMItemCount *numberFramesOut, MTAudioProcessingTapFlags *flagsOut)
+{
+  AVAudioTapProcessorContext *context =
+    (AVAudioTapProcessorContext *)MTAudioProcessingTapGetStorage(tap);
+
+  if (!context->self) {
+    EXLogWarn(@"Audio Processing Tap has been destroyed!");
+    return;
+  }
+
+  EXAVPlayerData *_self = ((__bridge EXAVPlayerData *)context->self);
+
+  if (!_self.sampleBufferCallback) {
+    return;
+  }
+
+  // Get actual audio buffers from MTAudioProcessingTap
+  OSStatus status = MTAudioProcessingTapGetSourceAudio(tap, numberFrames, bufferListInOut, flagsOut, NULL, numberFramesOut);
+  if (noErr != status) {
+    EXLogWarn(@"MTAudioProcessingTapGetSourceAudio: %d", (int)status);
+    return;
+  }
+
+  double seconds = [_self getCurrentPositionPrecise];
+  [_self.sampleBufferCallback callWithAudioBuffer:&bufferListInOut->mBuffers[0] andTimestamp:seconds];
 }
 
 #pragma mark - EXAVObject
@@ -884,6 +1068,8 @@ NSString *const EXAVPlayerDataObserverPlaybackBufferEmptyKeyPath = @"playbackBuf
 
 - (void)dealloc
 {
+  // this triggers the audio tap removal
+  [self setSampleBufferCallback:nil];
   [self _removeTimeObserver];
   [self _removeObservers];
 }

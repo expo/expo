@@ -8,7 +8,7 @@ function create(StyleSheet) {
             // check for React elements in any props
             const nextProps = Object.keys(node.props).reduce((acc, curr) => {
                 const value = node.props[curr];
-                if (react_1.isValidElement(value)) {
+                if ((0, react_1.isValidElement)(value)) {
                     acc[curr] = flattenNodeStyles(value);
                 }
                 return acc;
@@ -28,7 +28,7 @@ function create(StyleSheet) {
             const children = node.children || node.props.children;
             if (children) {
                 if (Array.isArray(children)) {
-                    children.forEach(child => {
+                    children.forEach((child) => {
                         args.push(flattenNodeStyles(child));
                     });
                 }

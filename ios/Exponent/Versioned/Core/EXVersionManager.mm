@@ -87,7 +87,7 @@ RCT_EXTERN void EXRegisterScopedModule(Class, ...);
 // is this the first time this ABI has been touched at runtime?
 @property (nonatomic, assign) BOOL isFirstLoad;
 @property (nonatomic, strong) NSDictionary *params;
-@property (nonatomic, strong) EXUpdatesRawManifest *manifest;
+@property (nonatomic, strong) EXManifestsManifest *manifest;
 @property (nonatomic, strong) RCTTurboModuleManager *turboModuleManager;
 
 @end
@@ -109,7 +109,7 @@ RCT_EXTERN void EXRegisterScopedModule(Class, ...);
  *    id exceptionsManagerDelegate
  */
 - (instancetype)initWithParams:(NSDictionary *)params
-                      manifest:(EXUpdatesRawManifest *)manifest
+                      manifest:(EXManifestsManifest *)manifest
                   fatalHandler:(void (^)(NSError *))fatalHandler
                    logFunction:(RCTLogFunction)logFunction
                   logThreshold:(NSInteger)threshold
@@ -348,7 +348,8 @@ RCT_EXTERN void EXRegisterScopedModule(Class, ...);
   if (params[@"browserModuleClass"]) {
     Class browserModuleClass = params[@"browserModuleClass"];
     id homeModule = [[browserModuleClass alloc] initWithExperienceStableLegacyId:self.manifest.stableLegacyId
-                                                              scopeKey:self.manifest.scopeKey
+                                                                        scopeKey:self.manifest.scopeKey
+                                                                    easProjectId:self.manifest.easProjectId
                                                            kernelServiceDelegate:services[EX_UNVERSIONED(@"EXHomeModuleManager")]
                                                                           params:params];
     [extraModules addObject:homeModule];
@@ -364,7 +365,11 @@ RCT_EXTERN void EXRegisterScopedModule(Class, ...);
   id<EXModuleRegistryDelegate> moduleRegistryDelegate = [[resolverClass alloc] initWithParams:params];
   [moduleRegistryProvider setModuleRegistryDelegate:moduleRegistryDelegate];
 
-  EXScopedModuleRegistryAdapter *moduleRegistryAdapter = [[EXScopedModuleRegistryAdapter alloc] initWithModuleRegistryProvider:moduleRegistryProvider swiftModulesProviderClass:NSClassFromString(@"ExpoModulesProvider")];
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+  EXScopedModuleRegistryAdapter *moduleRegistryAdapter = [[EXScopedModuleRegistryAdapter alloc] initWithModuleRegistryProvider:moduleRegistryProvider];
+#pragma clang diagnostic pop
+
   EXModuleRegistry *moduleRegistry = [moduleRegistryAdapter moduleRegistryForParams:params
                                                         forExperienceStableLegacyId:self.manifest.stableLegacyId
                                                                            scopeKey:self.manifest.scopeKey
@@ -404,17 +409,20 @@ RCT_EXTERN void EXRegisterScopedModule(Class, ...);
       Class scopedModuleClass = NSClassFromString(scopedModuleClassName);
       if (moduleServices.count > 1) {
         scopedModule = [[scopedModuleClass alloc] initWithExperienceStableLegacyId:self.manifest.stableLegacyId
-                                                                scopeKey:self.manifest.scopeKey
+                                                                          scopeKey:self.manifest.scopeKey
+                                                                      easProjectId:self.manifest.easProjectId
                                                             kernelServiceDelegates:moduleServices
                                                                             params:params];
       } else if (moduleServices.count == 0) {
         scopedModule = [[scopedModuleClass alloc] initWithExperienceStableLegacyId:self.manifest.stableLegacyId
-                                                                scopeKey:self.manifest.scopeKey
+                                                                          scopeKey:self.manifest.scopeKey
+                                                                      easProjectId:self.manifest.easProjectId
                                                              kernelServiceDelegate:nil
                                                                             params:params];
       } else {
         scopedModule = [[scopedModuleClass alloc] initWithExperienceStableLegacyId:self.manifest.stableLegacyId
-                                                                scopeKey:self.manifest.scopeKey
+                                                                          scopeKey:self.manifest.scopeKey
+                                                                      easProjectId:self.manifest.easProjectId
                                                              kernelServiceDelegate:moduleServices[[moduleServices allKeys][0]]
                                                                             params:params];
       }

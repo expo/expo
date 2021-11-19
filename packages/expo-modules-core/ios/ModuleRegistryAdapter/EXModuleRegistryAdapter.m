@@ -3,9 +3,11 @@
 #import <ExpoModulesCore/EXNativeModulesProxy.h>
 #import <ExpoModulesCore/EXViewManagerAdapter.h>
 #import <ExpoModulesCore/EXModuleRegistryAdapter.h>
+#import <ExpoModulesCore/EXModuleRegistryProvider.h>
 #import <ExpoModulesCore/EXViewManagerAdapterClassesRegistry.h>
 #import <ExpoModulesCore/EXModuleRegistryHolderReactModule.h>
-#import "ExpoModulesCore-Swift.h"
+#import <ExpoModulesCore/EXReactNativeEventEmitter.h>
+#import <ExpoModulesCore/Swift.h>
 
 @interface EXModuleRegistryAdapter ()
 
@@ -45,22 +47,25 @@
 {
   NSMutableArray<id<RCTBridgeModule>> *extraModules = [NSMutableArray array];
 
-  SwiftInteropBridge *swiftInteropBridge = [self swiftInteropBridgeModulesRegistry:moduleRegistry];
-  EXNativeModulesProxy *nativeModulesProxy = [[EXNativeModulesProxy alloc] initWithModuleRegistry:moduleRegistry swiftInteropBridge:swiftInteropBridge];
-
+  EXNativeModulesProxy *nativeModulesProxy = [[EXNativeModulesProxy alloc] initWithModuleRegistry:moduleRegistry];
   [extraModules addObject:nativeModulesProxy];
+
+  // Event emitter is not automatically registered — we add it to the module registry here.
+  // It will be added to the bridge later in this method, as it conforms to `RCTBridgeModule`.
+  EXReactNativeEventEmitter *eventEmitter = [EXReactNativeEventEmitter new];
+  [moduleRegistry registerInternalModule:eventEmitter];
 
   NSMutableSet *exportedSwiftViewModuleNames = [NSMutableSet new];
 
-  for (ViewModuleWrapper *swiftViewModule in [swiftInteropBridge getViewManagers]) {
-    Class wrappedViewModuleClass = [ViewModuleWrapper createViewModuleWrapperClassWithViewName:swiftViewModule.name];
-    [extraModules addObject:[[wrappedViewModuleClass alloc] initFrom:swiftViewModule]];
+  for (ViewModuleWrapper *swiftViewModule in [nativeModulesProxy.swiftInteropBridge getViewManagers]) {
+    Class wrappedViewModuleClass = [ViewModuleWrapper createViewModuleWrapperClassWithModule:swiftViewModule];
+    [extraModules addObject:[[wrappedViewModuleClass alloc] init]];
     [exportedSwiftViewModuleNames addObject:swiftViewModule.name];
   }
   for (EXViewManager *viewManager in [moduleRegistry getAllViewManagers]) {
     if (![exportedSwiftViewModuleNames containsObject:viewManager.viewName]) {
-      Class viewManagerAdapterClass = [_viewManagersClassesRegistry viewManagerAdapterClassForViewManager:viewManager];
-      [extraModules addObject:[[viewManagerAdapterClass alloc] initWithViewManager:viewManager]];
+      Class viewManagerAdapterClass = [EXViewManagerAdapterClassesRegistry createViewManagerAdapterClassForViewManager:viewManager];
+      [extraModules addObject:[[viewManagerAdapterClass alloc] init]];
     }
   }
 
@@ -70,6 +75,7 @@
   // subclass EXViewManagerAdapter, so RN expects to find EXViewManagerAdapter
   // exported.
   [extraModules addObject:[[EXViewManagerAdapter alloc] init]];
+  [extraModules addObject:[[ViewModuleWrapper alloc] initWithDummy:nil]];
 
   // It is possible that among internal modules there are some RCTBridgeModules --
   // let's add them to extraModules here.

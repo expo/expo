@@ -4,11 +4,11 @@
 #import <Foundation/Foundation.h>
 #import <ABI42_0_0EXFacebook/ABI42_0_0EXFacebook.h>
 #import <ABI42_0_0UMCore/ABI42_0_0UMAppLifecycleListener.h>
-#import <ABI42_0_0EXUpdates/ABI42_0_0EXUpdatesRawManifest.h>
+#import <ABI42_0_0EXManifests/ABI42_0_0EXManifestsManifest.h>
 
 @interface ABI42_0_0EXScopedFacebook : ABI42_0_0EXFacebook <ABI42_0_0UMAppLifecycleListener>
 
-- (instancetype)initWithScopeKey:(NSString *)scopeKey manifest:(ABI42_0_0EXUpdatesRawManifest *)manifest;
+- (instancetype)initWithScopeKey:(NSString *)scopeKey manifest:(ABI42_0_0EXManifestsManifest *)manifest;
 
 @end
 #endif

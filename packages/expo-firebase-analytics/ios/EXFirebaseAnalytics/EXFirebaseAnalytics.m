@@ -107,6 +107,22 @@ EX_EXPORT_METHOD_AS(setCurrentScreen,
   }];
 }
 
+EX_EXPORT_METHOD_AS(setSessionTimeoutDuration,
+                    setSessionTimeoutDuration:(NSNumber *)milliseconds
+                    resolver:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject) {
+  if ([self getAppOrReject:reject] == nil) return;
+  [EXUtilities performSynchronouslyOnMainThread:^{
+    @try {
+      [FIRAnalytics setSessionTimeoutInterval:[milliseconds doubleValue] / 1000.0];
+      resolve([NSNull null]);
+    } @catch (NSException *exception) {
+      [self reject:reject withException:exception];
+      return;
+    }
+  }];
+}
+
 EX_EXPORT_METHOD_AS(setUserId,
                     setUserId:(NSString *)userId
                     resolver:(EXPromiseResolveBlock)resolve

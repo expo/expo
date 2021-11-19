@@ -58,18 +58,15 @@ export class TokenResponse implements TokenResponseConfig {
    *
    * @param params
    */
-  static fromQueryParams(params: Record<string, string>): TokenResponse {
+  static fromQueryParams(params: Record<string, any>): TokenResponse {
     return new TokenResponse({
       accessToken: params.access_token,
       refreshToken: params.refresh_token,
       scope: params.scope,
       state: params.state,
       idToken: params.id_token,
-      // @ts-ignore: Expected specific string
       tokenType: params.token_type,
-      // @ts-ignore: Expected number
       expiresIn: params.expires_in,
-      // @ts-ignore: Expected number
       issuedAt: params.issued_at,
     });
   }
@@ -249,8 +246,10 @@ class TokenRequest<T extends TokenRequestConfig> extends Request<T, TokenRespons
  *
  * [Section 4.1.3](https://tools.ietf.org/html/rfc6749#section-4.1.3)
  */
-export class AccessTokenRequest extends TokenRequest<AccessTokenRequestConfig>
-  implements AccessTokenRequestConfig {
+export class AccessTokenRequest
+  extends TokenRequest<AccessTokenRequestConfig>
+  implements AccessTokenRequestConfig
+{
   readonly code: string;
   readonly redirectUri: string;
 
@@ -306,8 +305,10 @@ export class AccessTokenRequest extends TokenRequest<AccessTokenRequestConfig>
  *
  * [Section 6](https://tools.ietf.org/html/rfc6749#section-6)
  */
-export class RefreshTokenRequest extends TokenRequest<RefreshTokenRequestConfig>
-  implements RefreshTokenRequestConfig {
+export class RefreshTokenRequest
+  extends TokenRequest<RefreshTokenRequestConfig>
+  implements RefreshTokenRequestConfig
+{
   readonly refreshToken?: string;
 
   constructor(options: RefreshTokenRequestConfig) {
@@ -343,8 +344,10 @@ export class RefreshTokenRequest extends TokenRequest<RefreshTokenRequestConfig>
  *
  * [Section 2.1](https://tools.ietf.org/html/rfc7009#section-2.1)
  */
-export class RevokeTokenRequest extends Request<RevokeTokenRequestConfig, boolean>
-  implements RevokeTokenRequestConfig {
+export class RevokeTokenRequest
+  extends Request<RevokeTokenRequestConfig, boolean>
+  implements RevokeTokenRequestConfig
+{
   readonly clientId?: string;
   readonly clientSecret?: string;
   readonly token: string;

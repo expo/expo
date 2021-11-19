@@ -10,8 +10,9 @@ Pod::Spec.new do |s|
   s.license         = package['license']
   s.author          = package['author']
   s.homepage        = package['homepage']
-  s.platform        = :ios, '11.0'
+  s.platform        = :ios, '12.0'
   s.source          = { git: 'https://github.com/expo/expo-gl.git' }
+  s.static_framework = true
 
   s.dependency 'ExpoModulesCore'
   s.dependency 'EXGL_CPP'
@@ -20,6 +21,6 @@ Pod::Spec.new do |s|
     s.source_files = "#{s.name}/**/*.h"
     s.vendored_frameworks = "#{s.name}.xcframework"
   else
-    s.source_files = "#{s.name}/**/*.{h,m}"
+    s.source_files = "#{s.name}/**/*.{h,m,mm}"
   end
 end

@@ -23,10 +23,11 @@ function _getUserMedia(constraints: MediaStreamConstraints): Promise<MediaStream
 
   // First get ahold of the legacy getUserMedia, if present
   const getUserMedia =
+    // TODO: this method is deprecated, migrate to https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/getUserMedia
     navigator.getUserMedia ||
-    (navigator as any).webkitGetUserMedia ||
-    (navigator as any).mozGetUserMedia ||
-    function() {
+    navigator.webkitGetUserMedia ||
+    navigator.mozGetUserMedia ||
+    function () {
       const error: any = new Error('Permission unimplemented');
       error.code = 0;
       error.name = 'NotAllowedError';
@@ -83,7 +84,7 @@ async function askForCameraPermissionAsync(): Promise<PermissionInfo> {
 }
 
 async function askForLocationPermissionAsync(): Promise<PermissionInfo> {
-  return new Promise(resolve => {
+  return new Promise((resolve) => {
     navigator.geolocation.getCurrentPosition(
       () =>
         resolve({
@@ -114,7 +115,9 @@ async function askForLocationPermissionAsync(): Promise<PermissionInfo> {
   });
 }
 
-async function getPermissionWithQueryAsync(name: PermissionName): Promise<PermissionStatus | null> {
+async function getPermissionWithQueryAsync(
+  name: PermissionNameWithAdditionalValues
+): Promise<PermissionStatus | null> {
   if (!navigator || !navigator.permissions || !navigator.permissions.query) return null;
 
   const { state } = await navigator.permissions.query({ name });
@@ -349,6 +352,17 @@ export default {
     }
     return results;
   },
+};
+
+/**
+ * Temporary solution until `tslib.d.ts` is updated to include the new DeviceMotion API.
+ * `typescript@4.4.4` is missing `requestPermission` described in https://w3c.github.io/deviceorientation/#devicemotion
+ * MDN docs do not describe this property as well https://developer.mozilla.org/en-US/docs/Web/API/DeviceMotionEvent
+ */
+declare let DeviceMotionEvent: {
+  prototype: DeviceMotionEvent;
+  new (type: string, eventInitDict?: DeviceMotionEventInit): DeviceMotionEvent;
+  requestPermission?: () => Promise<PermissionState>;
 };
 
 export function getRequestMotionPermission(): (() => Promise<PermissionState>) | null {

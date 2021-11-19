@@ -52,7 +52,7 @@ npx @expo/next-adapter
 yarn add -D babel-plugin-styled-components
 ```
 
-- Use the Babel plugin in your `babel.config.js` file:
+- Use the Babel plugin in your **babel.config.js** file:
 
 ```diff
 module.exports = {

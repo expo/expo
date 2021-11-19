@@ -31,11 +31,18 @@ export async function resolveModuleAsync(
     cwd: revision.path,
     ignore: ['**/node_modules/**'],
   });
+
+  // Just in case where the module doesn't have its own `build.gradle`.
+  if (!buildGradleFile) {
+    return null;
+  }
+
   const sourceDir = path.dirname(path.join(revision.path, buildGradleFile));
 
   return {
     projectName: convertPackageNameToProjectName(packageName),
     sourceDir,
+    modulesClassNames: revision.config?.androidModulesClassNames(),
   };
 }
 
@@ -46,47 +53,72 @@ async function generatePackageListFileContentAsync(
   modules: ModuleDescriptor[],
   namespace: string
 ): Promise<string> {
-  const packagesClasses = await findAndroidPackagesAsync(modules);
+  // TODO: Instead of ignoring `expo` here, make the package class paths configurable from `expo-module.config.json`.
+  const packagesClasses = await findAndroidPackagesAsync(
+    modules.filter((module) => module.packageName !== 'expo')
+  );
+
+  const modulesClasses = await findAndroidModules(modules);
 
   return `package ${namespace};
 
 import java.util.Arrays;
 import java.util.List;
 import expo.modules.core.interfaces.Package;
+import expo.modules.kotlin.modules.Module;
+import expo.modules.kotlin.ModulesProvider;
 
-public class ExpoModulesPackageList {
+public class ExpoModulesPackageList implements ModulesProvider {
   private static class LazyHolder {
     static final List<Package> packagesList = Arrays.<Package>asList(
-${packagesClasses.map(packageClass => `      new ${packageClass}()`).join(',\n')}
+${packagesClasses.map((packageClass) => `      new ${packageClass}()`).join(',\n')}
+    );
+
+    static final List<Class<? extends Module>> modulesList = Arrays.<Class<? extends Module>>asList(
+      ${modulesClasses.map((moduleClass) => `      ${moduleClass}.class`).join(',\n')}
     );
   }
 
   public static List<Package> getPackageList() {
     return LazyHolder.packagesList;
   }
+
+  @Override
+  public List<Class<? extends Module>> getModulesList() {
+    return LazyHolder.modulesList;
+  }
 }
 `;
+}
+
+function findAndroidModules(modules: ModuleDescriptor[]): string[] {
+  const modulesToProvide = modules.filter((module) => module.modulesClassNames.length > 0);
+  const classNames = [].concat(...modulesToProvide.map((module) => module.modulesClassNames));
+  return classNames;
 }
 
 async function findAndroidPackagesAsync(modules: ModuleDescriptor[]): Promise<string[]> {
   const classes: string[] = [];
 
   await Promise.all(
-    modules.map(async module => {
-      const files = await glob('src/**/*Package.{java,kt}', {
+    modules.map(async (module) => {
+      const files = await glob('**/*Package.{java,kt}', {
         cwd: module.sourceDir,
       });
 
       for (const file of files) {
         const fileContent = await fs.readFile(path.join(module.sourceDir, file), 'utf8');
 
+        const packageRegex = (() => {
+          if (process.env.EXPO_SHOULD_USE_LEGACY_PACKAGE_INTERFACE) {
+            return /\bimport\s+org\.unimodules\.core\.(interfaces\.Package|BasePackage)\b/;
+          } else {
+            return /\bimport\s+expo\.modules\.core\.(interfaces\.Package|BasePackage)\b/;
+          }
+        })();
+
         // Very naive check to skip non-expo packages
-        if (
-          !/\bimport\s+expo\.modules\.core\.(interfaces\.Package|BasePackage)\b/.test(
-            fileContent
-          ) &&
-          !/\bimport\s+org\.unimodules\.core\.(interfaces\.Package|BasePackage)\b/.test(fileContent)
-        ) {
+        if (!packageRegex.test(fileContent)) {
           continue;
         }
 

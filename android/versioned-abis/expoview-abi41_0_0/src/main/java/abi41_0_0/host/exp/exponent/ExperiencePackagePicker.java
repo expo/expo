@@ -1,7 +1,5 @@
 package abi41_0_0.host.exp.exponent;
 
-import org.json.JSONObject;
-
 import java.util.Arrays;
 import java.util.List;
 
@@ -50,7 +48,6 @@ import abi41_0_0.expo.modules.location.LocationPackage;
 import abi41_0_0.expo.modules.mailcomposer.MailComposerPackage;
 import abi41_0_0.expo.modules.medialibrary.MediaLibraryPackage;
 import abi41_0_0.expo.modules.network.NetworkPackage;
-import abi41_0_0.expo.modules.payments.stripe.StripePackage;
 import abi41_0_0.expo.modules.permissions.PermissionsPackage;
 import abi41_0_0.expo.modules.print.PrintPackage;
 import abi41_0_0.expo.modules.screencapture.ScreenCapturePackage;
@@ -66,7 +63,7 @@ import abi41_0_0.expo.modules.updates.UpdatesPackage;
 import abi41_0_0.expo.modules.videothumbnails.VideoThumbnailsPackage;
 import abi41_0_0.expo.modules.webbrowser.WebBrowserPackage;
 import abi41_0_0.expo.modules.device.DevicePackage;
-import expo.modules.updates.manifest.raw.RawManifest;
+import expo.modules.manifests.core.Manifest;
 
 public class ExperiencePackagePicker {
   private static final List<Package> EXPO_MODULES_PACKAGES = Arrays.<Package>asList(
@@ -124,7 +121,6 @@ public class ExperiencePackagePicker {
       new SharingPackage(),
       new SpeechPackage(),
       new SplashScreenPackage(),
-      new StripePackage(),
       new TaskManagerPackage(),
       new UpdatesPackage(),
       new VideoThumbnailsPackage(),
@@ -142,7 +138,7 @@ public class ExperiencePackagePicker {
    * Returns packages filtered based on the app's manifest.
    * For now, filtering is not applied but it is on the todo list.
    */
-  static List<Package> packages(RawManifest manifest) {
+  static List<Package> packages(Manifest manifest) {
     return EXPO_MODULES_PACKAGES;
   }
 }

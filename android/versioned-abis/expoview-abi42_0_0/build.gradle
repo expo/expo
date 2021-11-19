@@ -157,9 +157,9 @@ dependencies {
   api 'com.android.installreferrer:installreferrer:1.0'
 
   //dbflow
-  annotationProcessor "com.github.agrosner.DBFlow:dbflow-processor:${safeExtGet('dbFlowVersion', '4.2.4')}"
-  api "com.github.agrosner.DBFlow:dbflow-core:${safeExtGet('dbFlowVersion', '4.2.4')}"
-  api "com.github.agrosner.DBFlow:dbflow:${safeExtGet('dbFlowVersion', '4.2.4')}"
+  annotationProcessor "com.github.Raizlabs.DBFlow:dbflow-processor:${safeExtGet('dbFlowVersion', '4.2.4')}"
+  implementation "com.github.Raizlabs.DBFlow:dbflow-core:${safeExtGet('dbFlowVersion', '4.2.4')}"
+  implementation "com.github.Raizlabs.DBFlow:dbflow:${safeExtGet('dbFlowVersion', '4.2.4')}"
 
   implementation 'com.cronutils:cron-utils:4.1.3'
 
@@ -167,6 +167,6 @@ dependencies {
   api 'com.github.troZee:ViewPager2:v1.0.6'
 
   // stripe-react-native
-  implementation 'com.stripe:stripe-android:16.10.0'
+  implementation 'com.stripe:stripe-android:17.1.0'
   implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.0'
 }

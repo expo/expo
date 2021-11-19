@@ -22,8 +22,6 @@
   },
   "dependencies": {
     "ABI42_0_0React-Core": [],
-    "lottie-ios": [
-      "~> 3.1.8"
-    ]
+    "lottie-ios": ["~> 3.2.3"]
   }
 }

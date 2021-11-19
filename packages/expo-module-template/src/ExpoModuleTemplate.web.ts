@@ -1,5 +1,5 @@
 export default {
-  get name(): String {
+  get name(): string {
     return 'ExpoModuleTemplate';
-  }
-}
+  },
+};

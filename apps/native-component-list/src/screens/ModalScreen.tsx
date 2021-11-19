@@ -27,6 +27,7 @@ export default class ModalScreen extends React.Component<{}, State> {
         <Modal
           visible={false}
           onRequestClose={() => {
+            this.setState({ modalVisible: false });
             alert('Modal has been closed.');
           }}>
           <View />
@@ -37,6 +38,7 @@ export default class ModalScreen extends React.Component<{}, State> {
           transparent={false}
           visible={this.state.modalVisible}
           onRequestClose={() => {
+            this.setState({ modalVisible: false });
             alert('Modal has been closed.');
           }}>
           <View style={styles.modalContainer}>

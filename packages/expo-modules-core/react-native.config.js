@@ -1,9 +1,9 @@
+// Explicitly turn off react-native autolinking for this module
 module.exports = {
   dependency: {
     platforms: {
-      android: {
-        packageImportPath: 'import expo.modules.adapters.react.ModuleRegistryAdapter;',
-      },
+      ios: null,
+      android: null,
     },
   },
 };

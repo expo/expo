@@ -27,6 +27,8 @@ concurrency:
 jobs:
   test:
     runs-on: ubuntu-18.04
+    env:
+      NDK_ABI_FILTERS: x86_64
     steps:
       - name: Check out repository
         uses: actions/checkout@v2
@@ -63,6 +65,9 @@ jobs:
         run: |
           sudo $ANDROID_SDK_ROOT/tools/bin/sdkmanager --install "ndk;19.2.5345600"
       - run: echo "$(pwd)/bin" >> $GITHUB_PATH
+      - name: Patch react-native to support single abi
+        run: sed -i 's/^APP_ABI := .*$/APP_ABI := $(if $(NDK_ABI_FILTERS),$(NDK_ABI_FILTERS),$(armeabi-v7a x86 arm64-v8a x86_64))/g' ReactAndroid/src/main/jni/Application.mk
+        working-directory: react-native-lab/react-native
       - name: Run Spotless lint check
         env:
           ANDROID_NDK_HOME: /usr/local/lib/android/sdk/ndk/19.2.5345600/

@@ -3,13 +3,14 @@ title: BarCodeScanner
 sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-barcode-scanner'
 ---
 
+import APISection from '~/components/plugins/APISection';
 import InstallSection from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 import SnackInline from '~/components/plugins/SnackInline';
 
 **`expo-barcode-scanner`** provides a React component that renders a viewfinder for the device's camera (either front or back) and will scan bar codes that show up in the frame.
 
-<PlatformsSection android emulator ios simulator />
+<PlatformsSection android emulator ios simulator web />
 
 > **Note:** Only one active BarCodeScanner preview is supported currently. When using navigation, the best practice is to unmount any previously rendered BarCodeScanner component so the following screens can use `<BarCodeScanner />` without issues.
 
@@ -45,10 +46,8 @@ In managed apps, scanning barcodes with the camera requires the [`Permission.CAM
 | upc_ean         | No    | Yes         |
 | qr              | Yes   | Yes         |
 
-> Important notes:
->
+> __Notes:__
 > - When an ITF-14 barcode is recognized, it's type can sometimes be set to `interleaved2of5`.
-
 > - Scanning for either `PDF417` and/or `Code39` formats can result in a noticeable increase in battery consumption on iOS. It is recommended to provide only the bar code formats you expect to scan to the `barCodeTypes` prop.
 
 ## Usage
@@ -115,82 +114,4 @@ const styles = StyleSheet.create({
 import { BarCodeScanner } from 'expo-barcode-scanner';
 ```
 
-> Note: Passing `undefined` to the `onBarCodeScanned` prop will result in no scanning. This can be used to effectively "pause" the scanner so that it doesn't continually scan even after data has been retrieved.
-
-## Props
-
-- **type (_string_)** -- Camera facing. Use one of `BarCodeScanner.Constants.Type`. Use either `Type.front` or `Type.back`. Same as `Camera.Constants.Type`. Default: `Type.back`.
-
-- **barCodeTypes (_Array\<string\>_)** -- An array of bar code types. Usage: `BarCodeScanner.Constants.BarCodeType.<codeType>` where `codeType` is one of these [listed above](#supported-formats). Defaults to all supported bar code types. It is recommended to provide only the bar code formats you expect to scan to minimize battery usage. For example: `barCodeTypes={[BarCodeScanner.Constants.BarCodeType.qr]}`.
-
-- **onBarCodeScanned (_function_)** -- A callback that is invoked when a bar code has been successfully scanned. The callback is provided with an [BarCodeScanner.BarCodeScannerResult](#barcodescannerbarcodescannerresult).
-
-## Methods
-
-### `BarCodeScanner.requestPermissionsAsync()`
-
-Asks the user to grant permissions for accessing the camera.
-
-On iOS this will require apps to specify the `NSCameraUsageDescription` entry in the `Info.plist`
-
-#### Returns
-
-A promise that resolves to an object of type [PermissionResponse](permissions.md#permissionresponse).
-
-### `BarCodeScanner.getPermissionsAsync()`
-
-Checks user's permissions for accessing the camera.
-
-#### Returns
-
-A promise that resolves to an object of type [PermissionResponse](permissions.md#permissionresponse).
-
-### `BarCodeScanner.scanFromURLAsync(url, barCodeTypes)`
-
-Scan bar codes from the image given by the URL.
-
-#### Arguments
-
-- **url (_string_)** -- URL to get the image from.
-- **barCodeTypes (_Array\<BarCodeScanner.Constants.BarCodeType\>_)** -- (as in prop) An array of bar code types. Default: all supported bar code types.
-  > Note: Only QR codes are supported on iOS.
-
-#### Returns
-
-A possibly empty array of objects of the shape `{ type: BarCodeScanner.Constants.BarCodeType, data: string }`, where the type refers to the bar code type that was scanned and the data is the information encoded in the bar code.
-
-## Types
-
-### `BarCodeScanner.BarCodePoint`
-
-Object of type `BarCodePoint` contains following keys:
-
-- **x (_number_)** -- The x value.
-- **y (_number_)** -- The y value.
-
-Those coordinates are represented in the coordinate space of the barcode source (e.g. when you are using the barcode scanner view, these values are adjusted to the dimensions of the view).
-
-### `BarCodeScanner.BarCodeSize`
-
-Object of type `BarCodeSize` contains following keys:
-
-- **height (_number_)** -- The height value.
-- **width (_number_)** -- The width value.
-
-### `BarCodeScanner.BarCodeBounds`
-
-Object of type `BarCodeBounds` contains following keys:
-
-- **origin : [BarCodeScanner.BarCodePoint](#barcodescannerbarcodepoint)** -- The origin point of the bounding box.
-- **size : [BarCodeScanner.BarCodeSize](#barcodescannerbarcodesize)** -- The size of the bounding box.
-
-### `BarCodeScanner.BarCodeScannerResult`
-
-Object of type `BarCodeScannerResult` contains following keys:
-
-- **type (_BarCodeScanner.Constants.BarCodeType_)** -- The barcode type.
-- **data (_string_)** -- The information encoded in the bar code.
-- **bounds : [BarCodeScanner.BarCodeBounds](#barcodescannerbarcodebounds)** -- (_Optional_) The `BarCodeBounds` object.
-- **cornerPoints : Array<[BarCodeScanner.BarCodePoint](#barcodescannerbarcodepoint)\>** -- (_Optional_) Corner points of the bounding box.
-
-> **NOTE** `bounds` and `cornerPoints` are not always available. On iOS, for `code39` and `pdf417` you don't get those values. Moreover, on iOS, those values don't have to bounds the whole barcode. For some types, they will represent the area used by the scanner.
+<APISection packageName="expo-barcode-scanner" apiName="BarCodeScanner" />

@@ -3,7 +3,7 @@ apply plugin: 'kotlin-android'
 apply plugin: 'maven'
 
 group = 'host.exp.exponent'
-version = '10.2.0'
+version = '11.0.1'
 
 buildscript {
   // Simple helper that allows the root project to override versions declared by this library.
@@ -57,7 +57,7 @@ android {
     minSdkVersion safeExtGet("minSdkVersion", 21)
     targetSdkVersion safeExtGet("targetSdkVersion", 30)
     versionCode 17
-    versionName '10.2.0'
+    versionName '11.0.1'
   }
   lintOptions {
     abortOnError false
@@ -66,6 +66,8 @@ android {
 
 dependencies {
   implementation project(':expo-modules-core')
+
+  api "androidx.biometric:biometric:1.1.0"
 
   implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${safeExtGet('kotlinVersion', '1.4.21')}"
 }

@@ -82,14 +82,26 @@ class ContainerView: RCTView {
         applyProperties()
     }
 
-    func play(fromFrame: AnimationFrameTime? = nil, toFrame: AnimationFrameTime, completion: LottieCompletionBlock? = nil) {
+    func play(fromFrame: AnimationFrameTime? = nil, toFrame: AnimationFrameTime) {
+        let callback: LottieCompletionBlock = { animationFinished in
+            if let onFinish = self.onAnimationFinish {
+                onFinish(["isCancelled": !animationFinished])
+            }
+        }
+
         animationView?.backgroundBehavior = .pauseAndRestore
-        animationView?.play(fromFrame: fromFrame, toFrame: toFrame, loopMode: self.loop, completion: completion);
+        animationView?.play(fromFrame: fromFrame, toFrame: toFrame, loopMode: self.loop, completion: callback);
     }
 
-    func play(completion: LottieCompletionBlock? = nil) {
+    func play() {
+        let callback: LottieCompletionBlock = { animationFinished in
+            if let onFinish = self.onAnimationFinish {
+                onFinish(["isCancelled": !animationFinished])
+            }
+        }
+
         animationView?.backgroundBehavior = .pauseAndRestore
-        animationView?.play(completion: completion)
+        animationView?.play(completion: callback)
     }
 
     func reset() {

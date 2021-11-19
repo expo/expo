@@ -156,7 +156,6 @@ export default class SelectScreen extends React.PureComponent {
       const query = createQueryString([...selected]);
 
       this.props.navigation.navigate('run', { tests: query });
-      this.setState({ selected: new Set() });
     }
   };
 
@@ -164,6 +163,7 @@ export default class SelectScreen extends React.PureComponent {
     const { selected } = this.state;
     const allSelected = selected.size === this.state.modules.length;
     const buttonTitle = allSelected ? 'Deselect All' : 'Select All';
+
     return (
       <React.Fragment>
         <FlatList

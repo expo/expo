@@ -2,13 +2,13 @@
 
 #import <Foundation/Foundation.h>
 #import <ABI41_0_0React/ABI41_0_0RCTLog.h>
-#import <ABI41_0_0EXUpdates/ABI41_0_0EXUpdatesRawManifest.h>
+#import <ABI41_0_0EXManifests/ABI41_0_0EXManifestsManifest.h>
 
 @interface ABI41_0_0EXVersionManager : NSObject
 
 // Uses a params dict since the internal workings may change over time, but we want to keep the interface the same.
 - (instancetype)initWithParams:(NSDictionary *)params
-                      manifest:(ABI41_0_0EXUpdatesRawManifest *)manifest
+                      manifest:(ABI41_0_0EXManifestsManifest *)manifest
                   fatalHandler:(void (^)(NSError *))fatalHandler
                    logFunction:(ABI41_0_0RCTLogFunction)logFunction
                   logThreshold:(NSInteger)threshold;
@@ -27,7 +27,7 @@
 - (uint32_t)addWebSocketNotificationHandler:(void (^)(NSDictionary<NSString *, id> *))handler
                          queue:(dispatch_queue_t)queue
                      forMethod:(NSString *)method;
-                     
+
 - (NSDictionary<NSString *, NSString *> *)devMenuItemsForBridge:(id)bridge;
 - (void)selectDevMenuItemWithKey:(NSString *)key onBridge:(id)bridge;
 

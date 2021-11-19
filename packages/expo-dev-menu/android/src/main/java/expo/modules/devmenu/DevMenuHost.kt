@@ -5,6 +5,7 @@ import android.content.Context
 import android.util.Log
 import com.facebook.react.ReactInstanceManager
 import com.facebook.react.ReactNativeHost
+import com.facebook.react.bridge.JSIModulePackage
 import com.facebook.react.devsupport.DevServerHelper
 import com.facebook.react.shell.MainReactPackage
 import expo.modules.devmenu.react.DevMenuReactInternalSettings
@@ -25,6 +26,10 @@ class DevMenuHost(application: Application) : ReactNativeHost(application) {
     getVendoredPackage("com.swmansion.gesturehandler.react.RNGestureHandlerPackage"),
     MockedSafeAreaPackage()
   )
+
+  override fun getJSIModulePackage(): JSIModulePackage {
+    return getVendoredJNIPackage("com.swmansion.reanimated.ReanimatedJSIModulePackage")
+  }
 
   override fun getUseDeveloperSupport() = false // change it and run `yarn start` in `expo-dev-menu` to launch dev menu from local packager
 

@@ -27,7 +27,7 @@ jobs:
           path: .git/lfs
           key: ${{ steps.git-lfs.outputs.sha256 }}
       - run: git lfs pull
-      - uses: actions/setup-node@v1
+      - uses: actions/setup-node@v2
         with:
           node-version: '14.17'
       - run: yarn global add expo-cli@3
@@ -86,4 +86,4 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.EXPO_BOT_GITHUB_TOKEN }}
         with:
           msg: Native Component List for this branch is ready<br><a aria-label="Try the web preview of this PR" href="https://expo-web-${{ github.event.number }}.now.sh/"><img longdesc="Try the web preview of this PR" src="https://img.shields.io/badge/Web-Run_Now-4630EB.svg?style=for-the-badge&logo=GOOGLE-CHROME&labelColor=000&logoColor=fff" target="_blank" /></a>
-          # msg: Native Component List for this branch is ready<br><a aria-label="Try the web preview of this PR" href="https://expo-web-${{ github.event.number }}.now.sh/"><img longdesc="Try the web preview of this PR" src="https://img.shields.io/badge/Web-Run_Now-4630EB.svg?style=for-the-badge&logo=GOOGLE-CHROME&labelColor=000&logoColor=fff" target="_blank" /></a><br><a aria-label="Try the native preview of this PR" href="https://expo.io/${{ steps.expo.outputs.path }}"><img longdesc="Try the native preview of this PR" src="https://img.shields.io/badge/Native-Run_Now-4630EB.svg?style=for-the-badge&logo=EXPO&labelColor=000&logoColor=fff" target="_blank" /></a><br><br><a href="https://exp.host/${{ steps.expo.outputs.path }}"><img src="https://api.qrserver.com/v1/create-qr-code/?size=400x400&data=exp://exp.host/${{ steps.expo.outputs.path }}" height="200px" width="200px"></a>
+          # msg: Native Component List for this branch is ready<br><a aria-label="Try the web preview of this PR" href="https://expo-web-${{ github.event.number }}.now.sh/"><img longdesc="Try the web preview of this PR" src="https://img.shields.io/badge/Web-Run_Now-4630EB.svg?style=for-the-badge&logo=GOOGLE-CHROME&labelColor=000&logoColor=fff" target="_blank" /></a><br><a aria-label="Try the native preview of this PR" href="https://expo.dev/${{ steps.expo.outputs.path }}"><img longdesc="Try the native preview of this PR" src="https://img.shields.io/badge/Native-Run_Now-4630EB.svg?style=for-the-badge&logo=EXPO&labelColor=000&logoColor=fff" target="_blank" /></a><br><br><a href="https://exp.host/${{ steps.expo.outputs.path }}"><img src="https://api.qrserver.com/v1/create-qr-code/?size=400x400&data=exp://exp.host/${{ steps.expo.outputs.path }}" height="200px" width="200px"></a>

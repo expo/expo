@@ -3,7 +3,6 @@
 #import <React/RCTViewManager.h>
 
 #import <ExpoModulesCore/EXViewManager.h>
-#import <ExpoModulesCore/EXBridgeModule.h>
 
 // EXViewManagerAdapter is an RN wrapper around ExpoModulesCore's EXViewManager.
 // For each exported view manager is it subclassed so that React Native
@@ -14,7 +13,5 @@
 // viewManagerAdapterClassForViewManager:.
 
 @interface EXViewManagerAdapter : RCTViewManager
-
-- (instancetype)initWithViewManager:(EXViewManager *)viewManager;
 
 @end

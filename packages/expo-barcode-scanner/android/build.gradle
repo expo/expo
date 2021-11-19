@@ -3,7 +3,7 @@ apply plugin: 'kotlin-android'
 apply plugin: 'maven'
 
 group = 'host.exp.exponent'
-version = '10.2.0'
+version = '11.1.0'
 
 buildscript {
   // Simple helper that allows the root project to override versions declared by this library.
@@ -61,7 +61,7 @@ android {
     minSdkVersion safeExtGet("minSdkVersion", 21)
     targetSdkVersion safeExtGet("targetSdkVersion", 30)
     versionCode 26
-    versionName "10.2.0"
+    versionName "11.1.0"
   }
   lintOptions {
     abortOnError false
@@ -75,4 +75,6 @@ dependencies {
   api 'com.google.zxing:core:3.3.3'
 
   implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${safeExtGet('kotlinVersion', '1.4.21')}"
+  implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.3")
+  implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.4.1")
 }

@@ -1,6 +1,6 @@
 {
   "name": "jest-expo-puppeteer",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Run end-to-end tests on your Expo web projects with Jest, Puppeteer, and the Expo CLI.",
   "license": "MIT",
   "main": "build",
@@ -25,15 +25,15 @@
     "Evan Bacon <bacon@expo.io> (https://github.com/evanbacon)"
   ],
   "dependencies": {
-    "@expo/config": "^4.0.0",
-    "xdl": "^59.0.40",
+    "@expo/config": "^6.0.6",
     "getenv": "^1.0.0",
-    "jest": "^25.2.0",
-    "jest-puppeteer": "^4.4.0",
-    "serve": "^11.3.0"
+    "jest": "^26.6.3",
+    "jest-puppeteer": "^5.0.4",
+    "serve": "^11.3.0",
+    "xdl": "^59.2.10"
   },
   "peerDependencies": {
-    "puppeteer": "^2.1.1"
+    "puppeteer": "*"
   },
   "devDependencies": {
     "@types/getenv": "^1.0.0",

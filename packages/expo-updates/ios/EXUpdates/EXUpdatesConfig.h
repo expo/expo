@@ -7,8 +7,13 @@ NS_ASSUME_NONNULL_BEGIN
 typedef NS_ENUM(NSInteger, EXUpdatesCheckAutomaticallyConfig) {
   EXUpdatesCheckAutomaticallyConfigAlways = 0,
   EXUpdatesCheckAutomaticallyConfigWifiOnly = 1,
-  EXUpdatesCheckAutomaticallyConfigNever = 2
+  EXUpdatesCheckAutomaticallyConfigNever = 2,
+  EXUpdatesCheckAutomaticallyConfigErrorRecoveryOnly = 3
 };
+
+FOUNDATION_EXPORT NSString * const EXUpdatesConfigPlistName;
+FOUNDATION_EXPORT NSString * const EXUpdatesConfigEnableAutoSetupKey;
+
 
 @interface EXUpdatesConfig : NSObject
 

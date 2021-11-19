@@ -60,7 +60,7 @@ const styles = StyleSheet.create({
         fontStyle: 'italic',
     },
     code: {
-        fontFamily: Platform.select({ default: 'Courier', android: 'monospace' }),
+        fontFamily: Platform.select({ default: 'Courier', ios: 'Courier New', android: 'monospace' }),
         fontWeight: '500',
     },
     pre: {

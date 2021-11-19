@@ -12,7 +12,7 @@ import com.facebook.react.bridge.UiThreadUtil
 import com.facebook.react.devsupport.DevInternalSettings
 import com.facebook.react.devsupport.DevSupportManagerImpl
 import com.facebook.react.devsupport.HMRClient
-import expo.modules.updates.manifest.raw.RawManifest
+import expo.modules.manifests.core.Manifest
 import host.exp.exponent.di.NativeModuleDepsProvider
 import host.exp.exponent.experience.ExperienceActivity
 import host.exp.exponent.experience.ReactNativeActivity
@@ -23,13 +23,13 @@ import host.exp.expoview.R
 import java.util.*
 import javax.inject.Inject
 
-class DevMenuModule(reactContext: ReactApplicationContext, val experienceProperties: Map<String, Any>, val manifest: RawManifest?) : ReactContextBaseJavaModule(reactContext), LifecycleEventListener, DevMenuModuleInterface {
+class DevMenuModule(reactContext: ReactApplicationContext, val experienceProperties: Map<String, Any?>, val manifest: Manifest?) : ReactContextBaseJavaModule(reactContext), LifecycleEventListener, DevMenuModuleInterface {
 
   @Inject
-  internal var devMenuManager: DevMenuManager? = null
+  internal lateinit var devMenuManager: DevMenuManager
 
   init {
-    NativeModuleDepsProvider.getInstance().inject(DevMenuModule::class.java, this)
+    NativeModuleDepsProvider.instance.inject(DevMenuModule::class.java, this)
     reactContext.addLifecycleEventListener(this)
   }
 
@@ -174,7 +174,7 @@ class DevMenuModule(reactContext: ReactApplicationContext, val experiencePropert
     val activity = currentActivity
 
     if (activity is ExperienceActivity) {
-      devMenuManager?.registerDevMenuModuleForActivity(this, activity)
+      devMenuManager.registerDevMenuModuleForActivity(this, activity)
     }
   }
 

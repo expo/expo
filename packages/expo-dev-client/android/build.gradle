@@ -23,7 +23,7 @@ android {
     minSdkVersion safeExtGet('minSdkVersion', 21)
     targetSdkVersion safeExtGet('targetSdkVersion', 30)
     versionCode 1
-    versionName "0.4.7"
+    versionName "0.6.0"
 
     testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
   }
@@ -81,6 +81,7 @@ dependencies {
   androidTestImplementation project(":expo-updates-interface")
   androidTestImplementation project(":expo-dev-menu")
   androidTestImplementation project(":expo-dev-launcher")
+  androidTestImplementation project(":expo-manifests")
 
   //noinspection GradleDynamicVersion
   androidTestImplementation 'com.facebook.react:react-native:+'  // From node_modules

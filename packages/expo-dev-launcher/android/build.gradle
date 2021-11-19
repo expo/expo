@@ -25,7 +25,7 @@ android {
     minSdkVersion safeExtGet('minSdkVersion', 21)
     targetSdkVersion safeExtGet('targetSdkVersion', 30)
     versionCode 9
-    versionName "0.6.7"
+    versionName "0.8.1"
   }
 
   lintOptions {
@@ -91,6 +91,7 @@ repositories {
 
 dependencies {
   implementation project(":expo-dev-menu-interface")
+  implementation project(":expo-manifests")
   implementation project(":expo-updates-interface")
 
   //noinspection GradleDynamicVersion
@@ -139,9 +140,10 @@ def versionToNumber(major, minor, patch) {
 }
 
 def getRNVersion() {
-  def packageJsonFile = new File(rootProject.projectDir, '../package.json')
+  def reactNativePackageJsonPath = ["node", "-e", "console.log(require.resolve('react-native/package.json'));"].execute([], projectDir).text.trim()
+  def packageJsonFile = new File(reactNativePackageJsonPath)
   def packageJson = new JsonSlurper().parseText(packageJsonFile.text)
-  def version = safeExtGet("reactNativeVersion", packageJson.dependencies["react-native"])
+  def version = safeExtGet("reactNativeVersion", packageJson.version)
 
   def coreVersion = version.split("-")[0]
 

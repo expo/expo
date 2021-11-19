@@ -7,7 +7,14 @@ interface ImageStyle extends RNImageStyle {
 export interface ImageProps extends AccessibilityProps {
     source?: ImageSourcePropType | null;
     style?: StyleProp<ImageStyle>;
+    defaultSource?: ImageSourcePropType | null;
+    loadingIndicatorSource?: ImageSourcePropType | null;
     resizeMode?: ImageResizeMode;
+    /**
+     * @Android only
+     */
+    blurRadius?: number;
+    fadeDuration?: number;
     onLoadStart?: () => void;
     onProgress?: (event: NativeSyntheticEvent<ImageLoadProgressEventData>) => void;
     onLoad?: (event: NativeSyntheticEvent<ImageLoadEventData>) => void;
@@ -23,6 +30,11 @@ export default class Image extends React.Component<ImageProps, ImageState> {
         onLoad: ((event: NativeSyntheticEvent<ImageLoadEventData>) => void) | undefined;
         onError: ((error: NativeSyntheticEvent<ImageErrorEventData>) => void) | undefined;
     };
+    /**
+     * **Available on @Android only.** Caching the image that can be later used in ImageView
+     * @return an empty promise.
+     */
+    static prefetch(url: string): Promise<void>;
     state: {
         onLoad: undefined;
         onError: undefined;

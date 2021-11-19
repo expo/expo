@@ -47,9 +47,9 @@ public class ExponentTestNativeModule extends ReactContextBaseJavaModule {
   }
 
   public void onEvent(final TestResolvePromiseEvent event) {
-    if (mIdToPromise.containsKey(event.id)) {
-      mIdToPromise.get(event.id).resolve(true);
-      mIdToPromise.remove(event.id);
+    if (mIdToPromise.containsKey(event.getId())) {
+      mIdToPromise.get(event.getId()).resolve(true);
+      mIdToPromise.remove(event.getId());
     }
   }
 
@@ -67,7 +67,7 @@ public class ExponentTestNativeModule extends ReactContextBaseJavaModule {
 
   @ReactMethod
   public void action(final ReadableMap options, final Promise promise) {
-    if (!KernelConfig.IS_TEST) {
+    if (!KernelConfig.getIS_TEST()) {
       promise.resolve(true);
     }
 
@@ -98,7 +98,7 @@ public class ExponentTestNativeModule extends ReactContextBaseJavaModule {
 
   @ReactMethod
   public void completed(final String stringifiedJson, final Promise promise) {
-    if (!KernelConfig.IS_TEST) {
+    if (!KernelConfig.getIS_TEST()) {
       promise.resolve(true);
     }
 

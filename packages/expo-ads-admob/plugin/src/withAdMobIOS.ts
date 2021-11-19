@@ -1,8 +1,8 @@
 import { ConfigPlugin, InfoPlist, withInfoPlist } from '@expo/config-plugins';
 import { ExpoConfig } from '@expo/config-types';
 
-export const withAdMobIOS: ConfigPlugin = config => {
-  return withInfoPlist(config, config => {
+export const withAdMobIOS: ConfigPlugin = (config) => {
+  return withInfoPlist(config, (config) => {
     config.modResults = setAdMobConfig(config, config.modResults);
     return config;
   });

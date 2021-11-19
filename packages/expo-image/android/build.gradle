@@ -45,7 +45,7 @@ android {
     minSdkVersion safeExtGet('minSdkVersion', DEFAULT_MIN_SDK_VERSION)
     targetSdkVersion safeExtGet('targetSdkVersion', DEFAULT_TARGET_SDK_VERSION)
     versionCode 1
-    versionName "1.0.0-alpha.1"
+    versionName "0.1.0"
   }
   lintOptions {
     abortOnError false
@@ -91,5 +91,7 @@ dependencies {
   api 'com.github.bumptech.glide:okhttp3-integration:4.11.0'
   api "com.squareup.okhttp3:okhttp:${safeExtGet("okHttpVersion", DEFAULT_OKHTTP_VERSION)}"
 
+  implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.1'
   implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${safeExtGet('kotlinVersion', '1.4.21')}"
+  implementation "jp.wasabeef:glide-transformations:4.3.0"
 }

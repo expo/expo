@@ -71,7 +71,7 @@
 
 + (void)maybeMigrateLegacyCategoryIdentifiersForProjectWithExperienceStableLegacyId:(NSString *)experienceStableLegacyId
                                                                  scopeKey:(NSString *)scopeKey
-                                                                         isInExpoGo:(BOOL)isInExpoGo
+                                                                         isInExpoGo:(BOOL)isInExpoGo __deprecated_msg("To be removed once SDK 43 is phased out")
 {
   if (isInExpoGo) {
     // Changed scoping prefix in SDK 41 FROM "experienceId-" to ESCAPED "experienceId/"

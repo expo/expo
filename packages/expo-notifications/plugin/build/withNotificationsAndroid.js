@@ -26,7 +26,7 @@ exports.NOTIFICATION_ICON_COLOR_RESOURCE = `@color/${exports.NOTIFICATION_ICON_C
 const withNotificationIcons = (config, { icon }) => {
     // If no icon provided in the config plugin props, fallback to value from app.json
     icon = icon || getNotificationIcon(config);
-    return config_plugins_1.withDangerousMod(config, [
+    return (0, config_plugins_1.withDangerousMod)(config, [
         'android',
         async (config) => {
             await setNotificationIconAsync(config.modRequest.projectRoot, icon);
@@ -37,7 +37,7 @@ const withNotificationIcons = (config, { icon }) => {
 exports.withNotificationIcons = withNotificationIcons;
 const withNotificationIconColor = (config, { color }) => {
     // If no color provided in the config plugin props, fallback to value from app.json
-    return config_plugins_1.withAndroidColors(config, config => {
+    return (0, config_plugins_1.withAndroidColors)(config, (config) => {
         color = color || getNotificationColor(config);
         config.modResults = setNotificationIconColor(color, config.modResults);
         return config;
@@ -48,16 +48,16 @@ const withNotificationManifest = (config, { icon, color }) => {
     // If no icon or color provided in the config plugin props, fallback to value from app.json
     icon = icon || getNotificationIcon(config);
     color = color || getNotificationColor(config);
-    return config_plugins_1.withAndroidManifest(config, config => {
+    return (0, config_plugins_1.withAndroidManifest)(config, (config) => {
         config.modResults = setNotificationConfig({ icon, color }, config.modResults);
         return config;
     });
 };
 exports.withNotificationManifest = withNotificationManifest;
 const withNotificationSounds = (config, { sounds }) => {
-    return config_plugins_1.withDangerousMod(config, [
+    return (0, config_plugins_1.withDangerousMod)(config, [
         'android',
-        config => {
+        (config) => {
             setNotificationSounds(config.modRequest.projectRoot, sounds);
             return config;
         },
@@ -112,20 +112,20 @@ function setNotificationConfig(props, manifest) {
 async function writeNotificationIconImageFilesAsync(icon, projectRoot) {
     await Promise.all(Object.values(exports.dpiValues).map(async ({ folderName, scale }) => {
         const drawableFolderName = folderName.replace('mipmap', 'drawable');
-        const dpiFolderPath = path_1.resolve(projectRoot, exports.ANDROID_RES_PATH, drawableFolderName);
-        if (!fs_1.existsSync(dpiFolderPath)) {
-            fs_1.mkdirSync(dpiFolderPath, { recursive: true });
+        const dpiFolderPath = (0, path_1.resolve)(projectRoot, exports.ANDROID_RES_PATH, drawableFolderName);
+        if (!(0, fs_1.existsSync)(dpiFolderPath)) {
+            (0, fs_1.mkdirSync)(dpiFolderPath, { recursive: true });
         }
         const iconSizePx = BASELINE_PIXEL_SIZE * scale;
         try {
-            const resizedIcon = (await image_utils_1.generateImageAsync({ projectRoot, cacheType: 'android-notification' }, {
+            const resizedIcon = (await (0, image_utils_1.generateImageAsync)({ projectRoot, cacheType: 'android-notification' }, {
                 src: icon,
                 width: iconSizePx,
                 height: iconSizePx,
                 resizeMode: 'cover',
                 backgroundColor: 'transparent',
             })).source;
-            fs_1.writeFileSync(path_1.resolve(dpiFolderPath, exports.NOTIFICATION_ICON + '.png'), resizedIcon);
+            (0, fs_1.writeFileSync)((0, path_1.resolve)(dpiFolderPath, exports.NOTIFICATION_ICON + '.png'), resizedIcon);
         }
         catch (e) {
             throw new Error(ERROR_MSG_PREFIX + 'Encountered an issue resizing Android notification icon: ' + e);
@@ -135,10 +135,10 @@ async function writeNotificationIconImageFilesAsync(icon, projectRoot) {
 function removeNotificationIconImageFiles(projectRoot) {
     Object.values(exports.dpiValues).forEach(async ({ folderName }) => {
         const drawableFolderName = folderName.replace('mipmap', 'drawable');
-        const dpiFolderPath = path_1.resolve(projectRoot, exports.ANDROID_RES_PATH, drawableFolderName);
-        const iconFile = path_1.resolve(dpiFolderPath, exports.NOTIFICATION_ICON + '.png');
-        if (fs_1.existsSync(iconFile)) {
-            fs_1.unlinkSync(iconFile);
+        const dpiFolderPath = (0, path_1.resolve)(projectRoot, exports.ANDROID_RES_PATH, drawableFolderName);
+        const iconFile = (0, path_1.resolve)(dpiFolderPath, exports.NOTIFICATION_ICON + '.png');
+        if ((0, fs_1.existsSync)(iconFile)) {
+            (0, fs_1.unlinkSync)(iconFile);
         }
     });
 }
@@ -160,16 +160,16 @@ exports.setNotificationSounds = setNotificationSounds;
  * there isn't already an existing file under that name.
  */
 function writeNotificationSoundFile(soundFileRelativePath, projectRoot) {
-    const rawResourcesPath = path_1.resolve(projectRoot, exports.ANDROID_RES_PATH, 'raw');
-    const inputFilename = path_1.basename(soundFileRelativePath);
+    const rawResourcesPath = (0, path_1.resolve)(projectRoot, exports.ANDROID_RES_PATH, 'raw');
+    const inputFilename = (0, path_1.basename)(soundFileRelativePath);
     if (inputFilename) {
         try {
-            const sourceFilepath = path_1.resolve(projectRoot, soundFileRelativePath);
-            const destinationFilepath = path_1.resolve(rawResourcesPath, inputFilename);
-            if (!fs_1.existsSync(rawResourcesPath)) {
-                fs_1.mkdirSync(rawResourcesPath, { recursive: true });
+            const sourceFilepath = (0, path_1.resolve)(projectRoot, soundFileRelativePath);
+            const destinationFilepath = (0, path_1.resolve)(rawResourcesPath, inputFilename);
+            if (!(0, fs_1.existsSync)(rawResourcesPath)) {
+                (0, fs_1.mkdirSync)(rawResourcesPath, { recursive: true });
             }
-            fs_1.copyFileSync(sourceFilepath, destinationFilepath);
+            (0, fs_1.copyFileSync)(sourceFilepath, destinationFilepath);
         }
         catch (e) {
             throw new Error(ERROR_MSG_PREFIX + 'Encountered an issue copying Android notification sounds: ' + e);
@@ -177,10 +177,10 @@ function writeNotificationSoundFile(soundFileRelativePath, projectRoot) {
     }
 }
 const withNotificationsAndroid = (config, { icon = null, color = null, sounds = [] }) => {
-    config = exports.withNotificationIconColor(config, { color });
-    config = exports.withNotificationIcons(config, { icon });
-    config = exports.withNotificationManifest(config, { icon, color });
-    config = exports.withNotificationSounds(config, { sounds });
+    config = (0, exports.withNotificationIconColor)(config, { color });
+    config = (0, exports.withNotificationIcons)(config, { icon });
+    config = (0, exports.withNotificationManifest)(config, { icon, color });
+    config = (0, exports.withNotificationSounds)(config, { sounds });
     return config;
 };
 exports.withNotificationsAndroid = withNotificationsAndroid;

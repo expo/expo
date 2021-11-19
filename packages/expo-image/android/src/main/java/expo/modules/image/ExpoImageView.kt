@@ -4,7 +4,9 @@ import android.annotation.SuppressLint
 import android.graphics.BitmapFactory
 import android.graphics.Canvas
 import android.graphics.PorterDuff
+import android.graphics.Shader
 import android.graphics.drawable.Drawable
+import android.net.Uri
 import androidx.appcompat.widget.AppCompatImageView
 import com.bumptech.glide.RequestManager
 import com.bumptech.glide.integration.webp.decoder.WebpDrawable
@@ -22,6 +24,7 @@ import expo.modules.image.drawing.OutlineProvider
 import expo.modules.image.enums.ImageResizeMode
 import expo.modules.image.events.ImageLoadEventsManager
 import expo.modules.image.okhttp.OkHttpClientProgressInterceptor
+import jp.wasabeef.glide.transformations.BlurTransformation
 
 private const val SOURCE_URI_KEY = "uri"
 private const val SOURCE_WIDTH_KEY = "width"
@@ -29,10 +32,18 @@ private const val SOURCE_HEIGHT_KEY = "height"
 private const val SOURCE_SCALE_KEY = "scale"
 
 @SuppressLint("ViewConstructor")
-class ExpoImageView(context: ReactContext, private val requestManager: RequestManager, private val progressInterceptor: OkHttpClientProgressInterceptor) : AppCompatImageView(context) {
+class ExpoImageView(
+  context: ReactContext,
+  private val requestManager: RequestManager,
+  private val progressInterceptor: OkHttpClientProgressInterceptor
+) : AppCompatImageView(context) {
   private val eventEmitter = context.getJSModule(RCTEventEmitter::class.java)
   private val outlineProvider = OutlineProvider(context)
-  private var borderDrawable: Lazy<BorderDrawable> = lazy {
+
+  private var propsChanged = false
+  private var loadedSource: GlideUrl? = null
+
+  private val borderDrawable = lazy {
     BorderDrawable(context).apply {
       callback = this@ExpoImageView
 
@@ -48,19 +59,30 @@ class ExpoImageView(context: ReactContext, private val requestManager: RequestMa
         }
     }
   }
-  private var loadedSource: GlideUrl? = null
-  internal var sourceMap: ReadableMap? = null
 
   init {
     clipToOutline = true
-    scaleType = ImageResizeMode.COVER.scaleType
     super.setOutlineProvider(outlineProvider)
   }
 
-  internal fun setResizeMode(resizeMode: ImageResizeMode) {
-    scaleType = resizeMode.scaleType
-    // TODO: repeat mode handling
-  }
+  // region Component Props
+  internal var sourceMap: ReadableMap? = null
+  internal var defaultSourceMap: ReadableMap? = null
+  internal var blurRadius: Int? = null
+    set(value) {
+      field = value?.takeIf { it > 0 }
+      propsChanged = true
+    }
+  internal var fadeDuration: Int? = null
+    set(value) {
+      field = value?.takeIf { it > 0 }
+      propsChanged = true
+    }
+  internal var resizeMode = ImageResizeMode.COVER.also { scaleType = it.scaleType }
+    set(value) {
+      field = value
+      scaleType = value.scaleType
+    }
 
   internal fun setBorderRadius(position: Int, borderRadius: Float) {
     var radius = borderRadius
@@ -99,27 +121,30 @@ class ExpoImageView(context: ReactContext, private val requestManager: RequestMa
   }
 
   internal fun setTintColor(color: Int?) {
-    if (color == null) {
-      clearColorFilter()
-    } else {
-      setColorFilter(color, PorterDuff.Mode.SRC_IN)
-    }
+    color?.let { setColorFilter(it, PorterDuff.Mode.SRC_IN) } ?: clearColorFilter()
   }
+  // endregion
 
+  // region ViewManager Lifecycle methods
   internal fun onAfterUpdateTransaction() {
     val sourceToLoad = createUrlFromSourceMap(sourceMap)
+    val defaultSourceToLoad = createUrlFromSourceMap(defaultSourceMap)
     if (sourceToLoad == null) {
       requestManager.clear(this)
       setImageDrawable(null)
       loadedSource = null
-    } else if (sourceToLoad != loadedSource) {
+    } else if (sourceToLoad != loadedSource || propsChanged) {
+      propsChanged = false
       loadedSource = sourceToLoad
       val options = createOptionsFromSourceMap(sourceMap)
+      val propOptions = createPropOptions()
       val eventsManager = ImageLoadEventsManager(id, eventEmitter)
       progressInterceptor.registerProgressListener(sourceToLoad.toStringUrl(), eventsManager)
       eventsManager.onLoadStarted()
       requestManager
+        .asDrawable()
         .load(sourceToLoad)
+        .apply { if (defaultSourceToLoad != null) thumbnail(requestManager.load(defaultSourceToLoad)) }
         .apply(options)
         .addListener(eventsManager)
         .run {
@@ -128,7 +153,9 @@ class ExpoImageView(context: ReactContext, private val requestManager: RequestMa
             .optionalTransform(fitCenter)
             .optionalTransform(WebpDrawable::class.java, WebpDrawableTransformation(fitCenter))
         }
+        .apply(propOptions)
         .into(this)
+
       requestManager
         .`as`(BitmapFactory.Options::class.java)
         // Remove any default listeners from this request
@@ -144,7 +171,9 @@ class ExpoImageView(context: ReactContext, private val requestManager: RequestMa
   internal fun onDrop() {
     requestManager.clear(this)
   }
+  // endregion
 
+  // region Helper methods
   private fun createUrlFromSourceMap(sourceMap: ReadableMap?): GlideUrl? {
     val uriKey = sourceMap?.getString(SOURCE_URI_KEY)
     return uriKey?.let { GlideUrl(uriKey) }
@@ -158,8 +187,8 @@ class ExpoImageView(context: ReactContext, private val requestManager: RequestMa
         if (sourceMap != null &&
           sourceMap.hasKey(SOURCE_WIDTH_KEY) &&
           sourceMap.hasKey(SOURCE_HEIGHT_KEY) &&
-          sourceMap.hasKey(SOURCE_SCALE_KEY)) {
-
+          sourceMap.hasKey(SOURCE_SCALE_KEY)
+        ) {
           val scale = sourceMap.getDouble(SOURCE_SCALE_KEY)
           val width = sourceMap.getInt(SOURCE_WIDTH_KEY)
           val height = sourceMap.getInt(SOURCE_HEIGHT_KEY)
@@ -168,7 +197,21 @@ class ExpoImageView(context: ReactContext, private val requestManager: RequestMa
       }
   }
 
-  // Drawing overrides
+  private fun createPropOptions(): RequestOptions {
+    return RequestOptions()
+      .apply {
+        blurRadius?.let {
+          transform(BlurTransformation(it + 1, 4))
+        }
+        fadeDuration?.let {
+          alpha = 0f
+          animate().alpha(1f).duration = it.toLong()
+        }
+      }
+  }
+  // endregion
+
+  // region Drawing overrides
   override fun invalidateDrawable(drawable: Drawable) {
     super.invalidateDrawable(drawable)
     if (borderDrawable.isInitialized() && drawable === borderDrawable.value) {
@@ -196,4 +239,20 @@ class ExpoImageView(context: ReactContext, private val requestManager: RequestMa
       }
     }
   }
+
+  /**
+   * Called when Glide "injects" drawable into the view.
+   * When `resizeMode = REPEAT`, we need to update
+   * received drawable (unless null) and set correct tiling.
+   */
+  override fun setImageDrawable(drawable: Drawable?) {
+    val maybeUpdatedDrawable = drawable
+      ?.takeIf { resizeMode == ImageResizeMode.REPEAT }
+      ?.toBitmapDrawable(resources)
+      ?.apply {
+        setTileModeXY(Shader.TileMode.REPEAT, Shader.TileMode.REPEAT)
+      }
+    super.setImageDrawable(maybeUpdatedDrawable ?: drawable)
+  }
+  // endregion
 }

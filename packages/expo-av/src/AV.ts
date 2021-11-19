@@ -1,7 +1,14 @@
 import { Asset } from 'expo-asset';
 import { Platform } from 'expo-modules-core';
 
-import ExponentAV from './ExponentAV';
+import {
+  AVPlaybackSource,
+  AVPlaybackNativeSource,
+  AVPlaybackStatus,
+  AVPlaybackStatusToSet,
+  PitchCorrectionQuality,
+} from './AV.types';
+
 // TODO add:
 //  disableFocusOnAndroid
 //  audio routes (at least did become noisy on android)
@@ -10,74 +17,6 @@ import ExponentAV from './ExponentAV';
 //  API to explicitly request audio focus / session
 //  API to select stream type on Android
 //  subtitles API
-
-export enum PitchCorrectionQuality {
-  Low = ExponentAV && ExponentAV.Qualities && ExponentAV.Qualities.Low,
-  Medium = ExponentAV && ExponentAV.Qualities && ExponentAV.Qualities.Medium,
-  High = ExponentAV && ExponentAV.Qualities && ExponentAV.Qualities.High,
-}
-
-export type AVPlaybackSource =
-  | number
-  | {
-      uri: string;
-      overrideFileExtensionAndroid?: string;
-      headers?: { [fieldName: string]: string };
-    }
-  | Asset;
-
-export type AVPlaybackNativeSource = {
-  uri: string;
-  overridingExtension?: string | null;
-  headers?: { [fieldName: string]: string };
-};
-
-export type AVPlaybackStatus =
-  | {
-      isLoaded: false;
-      androidImplementation?: string;
-      error?: string; // populated exactly once when an error forces the object to unload
-    }
-  | {
-      isLoaded: true;
-      androidImplementation?: string;
-
-      uri: string;
-
-      progressUpdateIntervalMillis: number;
-      durationMillis?: number;
-      positionMillis: number;
-      playableDurationMillis?: number;
-      seekMillisToleranceBefore?: number;
-      seekMillisToleranceAfter?: number;
-
-      shouldPlay: boolean;
-      isPlaying: boolean;
-      isBuffering: boolean;
-
-      rate: number;
-      shouldCorrectPitch: boolean;
-      volume: number;
-      isMuted: boolean;
-      isLooping: boolean;
-
-      didJustFinish: boolean; // true exactly once when the track plays to finish
-    };
-
-export type AVPlaybackStatusToSet = {
-  androidImplementation?: string;
-  progressUpdateIntervalMillis?: number;
-  positionMillis?: number;
-  seekMillisToleranceBefore?: number;
-  seekMillisToleranceAfter?: number;
-  shouldPlay?: boolean;
-  rate?: number;
-  shouldCorrectPitch?: boolean;
-  volume?: number;
-  isMuted?: boolean;
-  isLooping?: boolean;
-  pitchCorrectionQuality?: PitchCorrectionQuality;
-};
 
 export const _DEFAULT_PROGRESS_UPDATE_INTERVAL_MILLIS: number = 500;
 export const _DEFAULT_INITIAL_PLAYBACK_STATUS: AVPlaybackStatusToSet = {
@@ -258,14 +197,14 @@ export interface Playback extends AV {
  */
 export const PlaybackMixin = {
   async playAsync(): Promise<AVPlaybackStatus> {
-    return ((this as any) as Playback).setStatusAsync({ shouldPlay: true });
+    return (this as any as Playback).setStatusAsync({ shouldPlay: true });
   },
 
   async playFromPositionAsync(
     positionMillis: number,
     tolerances: { toleranceMillisBefore?: number; toleranceMillisAfter?: number } = {}
   ): Promise<AVPlaybackStatus> {
-    return ((this as any) as Playback).setStatusAsync({
+    return (this as any as Playback).setStatusAsync({
       positionMillis,
       shouldPlay: true,
       seekMillisToleranceAfter: tolerances.toleranceMillisAfter,
@@ -274,18 +213,18 @@ export const PlaybackMixin = {
   },
 
   async pauseAsync(): Promise<AVPlaybackStatus> {
-    return ((this as any) as Playback).setStatusAsync({ shouldPlay: false });
+    return (this as any as Playback).setStatusAsync({ shouldPlay: false });
   },
 
   async stopAsync(): Promise<AVPlaybackStatus> {
-    return ((this as any) as Playback).setStatusAsync({ positionMillis: 0, shouldPlay: false });
+    return (this as any as Playback).setStatusAsync({ positionMillis: 0, shouldPlay: false });
   },
 
   async setPositionAsync(
     positionMillis: number,
     tolerances: { toleranceMillisBefore?: number; toleranceMillisAfter?: number } = {}
   ): Promise<AVPlaybackStatus> {
-    return ((this as any) as Playback).setStatusAsync({
+    return (this as any as Playback).setStatusAsync({
       positionMillis,
       seekMillisToleranceAfter: tolerances.toleranceMillisAfter,
       seekMillisToleranceBefore: tolerances.toleranceMillisBefore,
@@ -297,7 +236,7 @@ export const PlaybackMixin = {
     shouldCorrectPitch: boolean = false,
     pitchCorrectionQuality: PitchCorrectionQuality = PitchCorrectionQuality.Low
   ): Promise<AVPlaybackStatus> {
-    return ((this as any) as Playback).setStatusAsync({
+    return (this as any as Playback).setStatusAsync({
       rate,
       shouldCorrectPitch,
       pitchCorrectionQuality,
@@ -305,20 +244,22 @@ export const PlaybackMixin = {
   },
 
   async setVolumeAsync(volume: number): Promise<AVPlaybackStatus> {
-    return ((this as any) as Playback).setStatusAsync({ volume });
+    return (this as any as Playback).setStatusAsync({ volume });
   },
 
   async setIsMutedAsync(isMuted: boolean): Promise<AVPlaybackStatus> {
-    return ((this as any) as Playback).setStatusAsync({ isMuted });
+    return (this as any as Playback).setStatusAsync({ isMuted });
   },
 
   async setIsLoopingAsync(isLooping: boolean): Promise<AVPlaybackStatus> {
-    return ((this as any) as Playback).setStatusAsync({ isLooping });
+    return (this as any as Playback).setStatusAsync({ isLooping });
   },
 
   async setProgressUpdateIntervalAsync(
     progressUpdateIntervalMillis: number
   ): Promise<AVPlaybackStatus> {
-    return ((this as any) as Playback).setStatusAsync({ progressUpdateIntervalMillis });
+    return (this as any as Playback).setStatusAsync({ progressUpdateIntervalMillis });
   },
 };
+
+export * from './AV.types';

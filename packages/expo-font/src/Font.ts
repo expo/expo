@@ -96,7 +96,7 @@ export async function loadAsync(
     }
     const fontMap = fontFamilyOrFontMap;
     const names = Object.keys(fontMap);
-    await Promise.all(names.map(name => loadFontInNamespaceAsync(name, fontMap[name])));
+    await Promise.all(names.map((name) => loadFontInNamespaceAsync(name, fontMap[name])));
     return;
   }
 
@@ -118,7 +118,7 @@ async function loadFontInNamespaceAsync(
     return;
   }
 
-  if (loadPromises[fontFamily]) {
+  if (loadPromises.hasOwnProperty(fontFamily)) {
     return loadPromises[fontFamily];
   }
 
@@ -188,7 +188,7 @@ export async function unloadAsync(
     }
     const fontMap = fontFamilyOrFontMap;
     const names = Object.keys(fontMap);
-    await Promise.all(names.map(name => unloadFontInNamespaceAsync(name, fontMap[name])));
+    await Promise.all(names.map((name) => unloadFontInNamespaceAsync(name, fontMap[name])));
     return;
   }
 

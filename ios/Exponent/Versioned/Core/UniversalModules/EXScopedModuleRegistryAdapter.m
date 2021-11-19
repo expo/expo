@@ -40,7 +40,7 @@
 - (EXModuleRegistry *)moduleRegistryForParams:(NSDictionary *)params
                   forExperienceStableLegacyId:(NSString *)experienceStableLegacyId
                                      scopeKey:(NSString *)scopeKey
-                                     manifest:(EXUpdatesRawManifest *)manifest
+                                     manifest:(EXManifestsManifest *)manifest
                            withKernelServices:(NSDictionary *)kernelServices
 {
   EXModuleRegistry *moduleRegistry = [self.moduleRegistryProvider moduleRegistry];
@@ -107,7 +107,7 @@
 #endif
 
 #if __has_include(<EXAmplitude/EXAmplitude.h>)
-  EXScopedAmplitude *amplitudeModule = [[EXScopedAmplitude alloc] initWithExperienceStableLegacyId:experienceStableLegacyId];
+  EXScopedAmplitude *amplitudeModule = [[EXScopedAmplitude alloc] initWithScopeKey:scopeKey];
   [moduleRegistry registerExportedModule:amplitudeModule];
 #endif
 
@@ -138,12 +138,12 @@
   [moduleRegistry registerInternalModule:taskManagerModule];
   [moduleRegistry registerExportedModule:taskManagerModule];
 #endif
-  
+
 #if __has_include(<EXErrorRecovery/EXErrorRecoveryModule.h>)
   EXScopedErrorRecoveryModule *errorRecovery = [[EXScopedErrorRecoveryModule alloc] initWithScopeKey:scopeKey];
   [moduleRegistry registerExportedModule:errorRecovery];
 #endif
-  
+
 #if __has_include(<EXFirebaseCore/EXFirebaseCore.h>)
   EXScopedFirebaseCore *firebaseCoreModule = [[EXScopedFirebaseCore alloc] initWithScopeKey:scopeKey manifest:manifest constantsBinding:constantsBinding];
   [moduleRegistry registerExportedModule:firebaseCoreModule];
@@ -157,7 +157,7 @@
     [moduleRegistry registerExportedModule:notificationsEmmitter];
   }
 #endif
-  
+
 #if __has_include(<EXNotifications/EXNotificationsHandlerModule.h>)
   // only override in Expo Go
   if ([params[@"constants"][@"appOwnership"] isEqualToString:@"expo"]) {
@@ -165,13 +165,13 @@
     [moduleRegistry registerExportedModule:notificationsHandler];
   }
 #endif
-  
+
 #if __has_include(<EXNotifications/EXNotificationsHandlerModule.h>)
   EXScopedNotificationBuilder *notificationsBuilder = [[EXScopedNotificationBuilder alloc] initWithScopeKey:scopeKey
                                                                                                   andConstantsBinding:constantsBinding];
   [moduleRegistry registerInternalModule:notificationsBuilder];
 #endif
-  
+
 #if __has_include(<EXNotifications/EXNotificationSchedulerModule.h>)
   // only override in Expo Go
   if ([params[@"constants"][@"appOwnership"] isEqualToString:@"expo"]) {
@@ -179,7 +179,7 @@
     [moduleRegistry registerExportedModule:schedulerModule];
   }
 #endif
-    
+
 #if __has_include(<EXNotifications/EXNotificationPresentationModule.h>)
   // only override in Expo Go
   if ([params[@"constants"][@"appOwnership"] isEqualToString:@"expo"]) {
@@ -187,7 +187,7 @@
     [moduleRegistry registerExportedModule:notificationPresentationModule];
   }
 #endif
-  
+
 #if __has_include(<EXNotifications/EXNotificationCategoriesModule.h>)
   // only override in Expo Go
   if ([params[@"constants"][@"appOwnership"] isEqualToString:@"expo"]) {
@@ -198,7 +198,7 @@
                                                                                                  scopeKey:scopeKey
                                                                                                          isInExpoGo:[params[@"constants"][@"appOwnership"] isEqualToString:@"expo"]];
 #endif
-  
+
 #if __has_include(<EXNotifications/EXServerRegistrationModule.h>)
   EXScopedServerRegistrationModule *serverRegistrationModule = [[EXScopedServerRegistrationModule alloc] initWithScopeKey:scopeKey];
   [moduleRegistry registerExportedModule:serverRegistrationModule];

@@ -86,7 +86,7 @@ ABI42_0_0RCT_EXTERN void ABI42_0_0EXRegisterScopedModule(Class, ...);
 // is this the first time this ABI has been touched at runtime?
 @property (nonatomic, assign) BOOL isFirstLoad;
 @property (nonatomic, strong) NSDictionary *params;
-@property (nonatomic, strong) ABI42_0_0EXUpdatesRawManifest *manifest;
+@property (nonatomic, strong) ABI42_0_0EXManifestsManifest *manifest;
 @property (nonatomic, strong) ABI42_0_0RCTTurboModuleManager *turboModuleManager;
 
 @end
@@ -108,7 +108,7 @@ ABI42_0_0RCT_EXTERN void ABI42_0_0EXRegisterScopedModule(Class, ...);
  *    id exceptionsManagerDelegate
  */
 - (instancetype)initWithParams:(NSDictionary *)params
-                      manifest:(ABI42_0_0EXUpdatesRawManifest *)manifest
+                      manifest:(ABI42_0_0EXManifestsManifest *)manifest
                   fatalHandler:(void (^)(NSError *))fatalHandler
                    logFunction:(ABI42_0_0RCTLogFunction)logFunction
                   logThreshold:(NSInteger)threshold
@@ -173,7 +173,7 @@ ABI42_0_0RCT_EXTERN void ABI42_0_0EXRegisterScopedModule(Class, ...);
       @"isEnabled": @NO
     };
   }
-  
+
   if (devSettings.isRemoteDebuggingAvailable && isDevModeEnabled) {
     items[@"dev-remote-debug"] = @{
       @"label": (devSettings.isDebuggingRemotely) ? @"Stop Remote Debugging" : @"Debug Remote JS",
@@ -334,10 +334,10 @@ ABI42_0_0RCT_EXTERN void ABI42_0_0EXRegisterScopedModule(Class, ...);
                                     [[ABI42_0_0EXDisabledDevLoadingView alloc] init],
                                     [[ABI42_0_0EXStatusBarManager alloc] init],
                                     ]];
-  
+
   // add scoped modules
   [extraModules addObjectsFromArray:[self _newScopedModulesForServices:services params:params]];
-  
+
   if (params[@"testEnvironment"]) {
     ABI42_0_0EXTestEnvironment testEnvironment = (ABI42_0_0EXTestEnvironment)[params[@"testEnvironment"] unsignedIntegerValue];
     if (testEnvironment != ABI42_0_0EXTestEnvironmentNone) {
@@ -345,12 +345,13 @@ ABI42_0_0RCT_EXTERN void ABI42_0_0EXRegisterScopedModule(Class, ...);
       [extraModules addObject:testModule];
     }
   }
-  
+
   if (params[@"browserModuleClass"]) {
     Class browserModuleClass = params[@"browserModuleClass"];
     id homeModule = [[browserModuleClass alloc] initWithExperienceStableLegacyId:self.manifest.stableLegacyId
                                                                         scopeKey:self.manifest.scopeKey
-                                                           kernelServiceDelegate:services[@"EXHomeModuleManager"]                                                                params:params];
+                                                                    easProjectId:self.manifest.easProjectId
+                                                           kernelServiceDelegate:services[@"EXHomeModuleManager"]                                                params:params];
     [extraModules addObject:homeModule];
   }
 
@@ -372,7 +373,7 @@ ABI42_0_0RCT_EXTERN void ABI42_0_0EXRegisterScopedModule(Class, ...);
                                                                           withKernelServices:services];
   NSArray<id<ABI42_0_0RCTBridgeModule>> *expoModules = [moduleRegistryAdapter extraModulesForModuleRegistry:moduleRegistry];
   [extraModules addObjectsFromArray:expoModules];
-  
+
   if (!ABI42_0_0RCTTurboModuleEnabled()) {
     [extraModules addObject:[self getModuleInstanceFromClass:[self getModuleClassFromName:"DevSettings"]]];
     id exceptionsManager = [self getModuleInstanceFromClass:ABI42_0_0RCTExceptionsManagerCls()];
@@ -399,26 +400,29 @@ ABI42_0_0RCT_EXTERN void ABI42_0_0EXRegisterScopedModule(Class, ...);
         id service = ([kernelSerivceName isEqualToString:ABI42_0_0EX_KERNEL_SERVICE_NONE]) ? [NSNull null] : services[kernelSerivceName];
         moduleServices[kernelServiceClassName] = service;
       }
-      
+
       id scopedModule;
       Class scopedModuleClass = NSClassFromString(scopedModuleClassName);
       if (moduleServices.count > 1) {
         scopedModule = [[scopedModuleClass alloc] initWithExperienceStableLegacyId:self.manifest.stableLegacyId
                                                                           scopeKey:self.manifest.scopeKey
+                                                                      easProjectId:self.manifest.easProjectId
                                                             kernelServiceDelegates:moduleServices
                                                                             params:params];
       } else if (moduleServices.count == 0) {
         scopedModule = [[scopedModuleClass alloc] initWithExperienceStableLegacyId:self.manifest.stableLegacyId
                                                                           scopeKey:self.manifest.scopeKey
+                                                                      easProjectId:self.manifest.easProjectId
                                                              kernelServiceDelegate:nil
                                                                             params:params];
       } else {
         scopedModule = [[scopedModuleClass alloc] initWithExperienceStableLegacyId:self.manifest.stableLegacyId
                                                                           scopeKey:self.manifest.scopeKey
+                                                                      easProjectId:self.manifest.easProjectId
                                                              kernelServiceDelegate:moduleServices[[moduleServices allKeys][0]]
                                                                             params:params];
       }
-      
+
       if (scopedModule) {
         [result addObject:scopedModule];
       }
@@ -535,7 +539,7 @@ ABI42_0_0RCT_EXTERN void ABI42_0_0EXRegisterScopedModule(Class, ...);
                                                                      delegate:self
                                                                     jsInvoker:bridge.jsCallInvoker];
     [self->_turboModuleManager installJSBindingWithRuntime:&runtime];
-    
+
     auto reanimatedModule = ABI42_0_0reanimated::createReanimatedModule(bridge.jsCallInvoker);
     runtime.global().setProperty(runtime,
                                  jsi::PropNameID::forAscii(runtime, "__reanimatedModuleProxy"),

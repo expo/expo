@@ -2,8 +2,8 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.withUserTrackingPermission = exports.setGoogleMobileAdsAppId = exports.getGoogleMobileAdsAppId = exports.withAdMobIOS = void 0;
 const config_plugins_1 = require("@expo/config-plugins");
-const withAdMobIOS = config => {
-    return config_plugins_1.withInfoPlist(config, config => {
+const withAdMobIOS = (config) => {
+    return (0, config_plugins_1.withInfoPlist)(config, (config) => {
         config.modResults = setAdMobConfig(config, config.modResults);
         return config;
     });

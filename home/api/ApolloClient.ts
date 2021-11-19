@@ -10,14 +10,12 @@ const httpLink = new HttpLink({
   uri: `${Config.api.origin}/--/graphql`,
 });
 
-const connectivityLink = setContext(
-  async (): Promise<any> => {
-    const isConnected = await Connectivity.isAvailableAsync();
-    if (!isConnected) {
-      throw new Error('No connection available');
-    }
+const connectivityLink = setContext(async (): Promise<any> => {
+  const isConnected = await Connectivity.isAvailableAsync();
+  if (!isConnected) {
+    throw new Error('No connection available');
   }
-);
+});
 
 const authMiddlewareLink = setContext((): any => {
   const { sessionSecret } = Store.getState().session;

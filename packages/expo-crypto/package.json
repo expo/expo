@@ -1,6 +1,6 @@
 {
   "name": "expo-crypto",
-  "version": "9.2.0",
+  "version": "10.0.1",
   "description": "Expo universal module for crypto",
   "main": "build/Crypto.js",
   "types": "build/Crypto.d.ts",
@@ -38,10 +38,11 @@
   "jest": {
     "preset": "expo-module-scripts"
   },
-  "dependencies": {
-    "expo-modules-core": "~0.3.0-alpha.0"
-  },
+  "dependencies": {},
   "devDependencies": {
     "expo-module-scripts": "^2.0.0"
+  },
+  "peerDependencies": {
+    "expo": "*"
   }
 }

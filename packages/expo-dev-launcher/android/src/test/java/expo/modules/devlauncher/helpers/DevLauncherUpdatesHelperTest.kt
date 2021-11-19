@@ -3,28 +3,16 @@ package expo.modules.devlauncher.helpers
 import android.content.Context
 import android.net.Uri
 import androidx.test.core.app.ApplicationProvider
-import com.facebook.react.ReactNativeHost
 import com.google.common.truth.Truth
-import expo.modules.devlauncher.helpers.loadUpdate
-import expo.modules.devlauncher.koin.DevLauncherKoinContext
-import expo.modules.devlauncher.launcher.DevLauncherControllerInterface
-import expo.modules.devlauncher.launcher.manifest.DevLauncherManifest
-import expo.modules.devlauncher.launcher.manifest.DevLauncherManifestParser
 import expo.modules.updatesinterface.UpdatesInterface
-import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
-import io.mockk.mockkStatic
 import io.mockk.slot
 import kotlinx.coroutines.runBlocking
 import org.json.JSONObject
-import org.junit.Assert
-import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.koin.dsl.module
 import org.robolectric.RobolectricTestRunner
-import java.lang.Exception
 
 @RunWith(RobolectricTestRunner::class)
 internal class DevLauncherUpdatesHelperTest {

@@ -36,7 +36,7 @@ abstract class BaseExperienceActivity : MultipleVersionReactNativeActivity() {
     super.onCreate(savedInstanceState)
     isInForeground = true
     reactRootView = RNObject("com.facebook.react.ReactRootView")
-    NativeModuleDepsProvider.getInstance().inject(BaseExperienceActivity::class.java, this)
+    NativeModuleDepsProvider.instance.inject(BaseExperienceActivity::class.java, this)
   }
 
   override fun onResume() {

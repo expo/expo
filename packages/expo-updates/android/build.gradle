@@ -1,9 +1,12 @@
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-kapt'
 apply plugin: 'maven'
 
 group = 'host.exp.exponent'
-version = '0.8.4'
+version = '0.10.3'
+
+apply from: "../scripts/create-manifest-android.gradle"
 
 buildscript {
   // Simple helper that allows the root project to override versions declared by this library.
@@ -53,11 +56,16 @@ android {
     targetCompatibility JavaVersion.VERSION_1_8
   }
 
+  kotlinOptions {
+    jvmTarget = JavaVersion.VERSION_1_8
+  }
+
   defaultConfig {
     minSdkVersion safeExtGet("minSdkVersion", 21)
     targetSdkVersion safeExtGet("targetSdkVersion", 30)
     versionCode 31
-    versionName '0.8.4'
+    versionName '0.10.3'
+    consumerProguardFiles("proguard-rules.pro")
     testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     // uncomment below to export the database schema when making changes
     /* javaCompileOptions {
@@ -82,13 +90,15 @@ dependencies {
   implementation project(':expo-modules-core')
   implementation project(':expo-structured-headers')
   implementation project(':expo-updates-interface')
+  implementation project(':expo-manifests')
+  implementation project(':expo-json-utils')
   //noinspection GradleDynamicVersion
   implementation "com.facebook.react:react-native:+"
 
   def room_version = "2.1.0"
 
   implementation "androidx.room:room-runtime:$room_version"
-  annotationProcessor "androidx.room:room-compiler:$room_version"
+  kapt "androidx.room:room-compiler:$room_version"
 
   implementation("com.squareup.okhttp3:okhttp:3.12.1")
   implementation("com.squareup.okhttp3:okhttp-urlconnection:3.12.1")

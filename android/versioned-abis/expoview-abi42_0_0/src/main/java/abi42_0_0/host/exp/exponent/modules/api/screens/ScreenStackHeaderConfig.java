@@ -88,7 +88,7 @@ public class ScreenStackHeaderConfig extends ViewGroup {
     super(context);
     setVisibility(View.GONE);
 
-    mToolbar = ExpoViewBuildConfig.DEBUG ? new DebugMenuToolbar(context) : new Toolbar(context);
+    mToolbar = ExpoViewBuildConfig.getDEBUG() ? new DebugMenuToolbar(context) : new Toolbar(context);
     mDefaultStartInset = mToolbar.getContentInsetStart();
     mDefaultStartInsetWithNavigation = mToolbar.getContentInsetStartWithNavigation();
 

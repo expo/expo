@@ -9,7 +9,7 @@ import okio.Sink
 import java.io.IOException
 
 @FunctionalInterface
-interface RequestBodyDecorator {
+fun interface RequestBodyDecorator {
   fun decorate(requestBody: RequestBody): RequestBody
 }
 
@@ -44,7 +44,17 @@ class CountingRequestBody(
 
   override fun writeTo(sink: BufferedSink) {
     val countingSink = CountingSink(sink, this, progressListener)
+
+    // `Okio.buffer` is deprecated in okio 2.x.
+    // To be compatible across react-native versions where
+    // react-native < 0.65, okio is 1.x
+    // react-native >= 0.65, okio is 2.x
+    // We just suppress the error.
+    // In okio 2.x, `Okio.buffer` is still an extension method proxied to `countingSink.buffer()`.
+    // See: https://github.com/square/okio/blob/b0f78aaa46/okio/src/jvmMain/kotlin/okio/-DeprecatedOkio.kt#L48-L56
+    @Suppress("DEPRECATION_ERROR")
     val bufferedSink = Okio.buffer(countingSink)
+
     requestBody.writeTo(bufferedSink)
     bufferedSink.flush()
   }

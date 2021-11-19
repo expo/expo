@@ -114,11 +114,18 @@ EX_EXPORT_METHOD_AS(preventAutoHideAsync,
   UIViewController *controller = [self viewControllerContainingRCTRootView];
   if (!controller) {
     // no RCTRootView was found, so just fall back to the key window's root view controller
-    return self.utilities.currentViewController;
+    controller = self.utilities.currentViewController;
+    while ([controller isKindOfClass:[UIAlertController class]] &&
+           controller.presentingViewController != nil) {
+      controller = controller.presentingViewController;
+    }
+    return controller;
   }
 
   UIViewController *presentedController = controller.presentedViewController;
-  while (presentedController && ![presentedController isBeingDismissed]) {
+  while (presentedController &&
+         ![presentedController isBeingDismissed] &&
+         ![presentedController isKindOfClass:[UIAlertController class]]) {
     controller = presentedController;
     presentedController = controller.presentedViewController;
   }

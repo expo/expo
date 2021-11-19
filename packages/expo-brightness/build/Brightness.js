@@ -1,4 +1,4 @@
-import { PermissionStatus, createPermissionHook, UnavailabilityError, } from 'expo-modules-core';
+import { createPermissionHook, PermissionStatus, UnavailabilityError, } from 'expo-modules-core';
 import { Platform } from 'react-native';
 import ExpoBrightness from './ExpoBrightness';
 // @needsAudit
@@ -62,9 +62,10 @@ export async function setBrightnessAsync(brightnessValue) {
 }
 // @needsAudit
 /**
- * __Android only.__ Gets the global system screen brightness.
+ * Gets the global system screen brightness.
  * @return A `Promise` that is resolved with a number between `0` and `1`, inclusive, representing
  * the current system screen brightness.
+ * @platform android
  */
 export async function getSystemBrightnessAsync() {
     if (Platform.OS !== 'android') {
@@ -76,11 +77,12 @@ export async function getSystemBrightnessAsync() {
 /**
  * > __WARNING:__ This method is experimental.
  *
- * __Android only.__ Sets the global system screen brightness and changes the brightness mode to
+ * Sets the global system screen brightness and changes the brightness mode to
  * `MANUAL`. Requires `SYSTEM_BRIGHTNESS` permissions.
  * @param brightnessValue A number between `0` and `1`, inclusive, representing the desired screen
  * brightness.
  * @return A `Promise` that fulfils when the brightness has been successfully set.
+ * @platform android
  */
 export async function setSystemBrightnessAsync(brightnessValue) {
     const clampedBrightnessValue = Math.max(0, Math.min(brightnessValue, 1));
@@ -94,9 +96,10 @@ export async function setSystemBrightnessAsync(brightnessValue) {
 }
 // @needsAudit
 /**
- * __Android only.__ Resets the brightness setting of the current activity to use the system-wide
+ * Resets the brightness setting of the current activity to use the system-wide
  * brightness value rather than overriding it.
  * @return A `Promise` that fulfils when the setting has been successfully changed.
+ * @platform android
  */
 export async function useSystemBrightnessAsync() {
     if (Platform.OS !== 'android') {
@@ -107,10 +110,11 @@ export async function useSystemBrightnessAsync() {
 }
 // @needsAudit
 /**
- * __Android only.__ Returns a boolean specifying whether or not the current activity is using the
+ * Returns a boolean specifying whether or not the current activity is using the
  * system-wide brightness value.
  * @return A `Promise` that fulfils with `true` when the current activity is using the system-wide
  * brightness value, and `false` otherwise.
+ * @platform android
  */
 export async function isUsingSystemBrightnessAsync() {
     if (Platform.OS !== 'android') {
@@ -120,10 +124,11 @@ export async function isUsingSystemBrightnessAsync() {
 }
 // @needsAudit
 /**
- * __Android only.__ Gets the system brightness mode (e.g. whether or not the OS will automatically
+ * Gets the system brightness mode (e.g. whether or not the OS will automatically
  * adjust the screen brightness depending on ambient light).
  * @return A `Promise` that fulfils with a [`BrightnessMode`](#brightnessmode). Requires
  * `SYSTEM_BRIGHTNESS` permissions.
+ * @platform android
  */
 export async function getSystemBrightnessModeAsync() {
     if (Platform.OS !== 'android') {
@@ -133,9 +138,10 @@ export async function getSystemBrightnessModeAsync() {
 }
 // @needsAudit
 /**
- * __Android only.__ Sets the system brightness mode.
+ * Sets the system brightness mode.
  * @param brightnessMode One of `BrightnessMode.MANUAL` or `BrightnessMode.AUTOMATIC`. The system
  * brightness mode cannot be set to `BrightnessMode.UNKNOWN`.
+ * @platform android
  */
 export async function setSystemBrightnessModeAsync(brightnessMode) {
     if (Platform.OS !== 'android' || brightnessMode === BrightnessMode.UNKNOWN) {

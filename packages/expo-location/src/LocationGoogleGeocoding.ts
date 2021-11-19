@@ -27,6 +27,15 @@ type GoogleApiGeocodingResponse = {
   status: string;
 };
 
+// @needsAudit
+/**
+ * Sets a Google API Key for using Google Maps Geocoding API which is used by default on Web
+ * platform and can be enabled through `useGoogleMaps` option of `geocodeAsync` and `reverseGeocodeAsync`
+ * methods. It might be useful for Android devices that do not have Google Play Services, hence no
+ * Geocoder Service.
+ * @param apiKey Google API key obtained from Google API Console. This API key must have `Geocoding API`
+ * enabled, otherwise your geocoding requests will be denied.
+ */
 export function setGoogleApiKey(apiKey: string) {
   googleApiKey = apiKey;
 }
@@ -94,7 +103,7 @@ async function requestGoogleApiAsync(
   params: { address: string } | { latlng: string }
 ): Promise<GoogleApiGeocodingResponse> {
   const query = Object.entries(params)
-    .map(entry => `${entry[0]}=${encodeURI(entry[1])}`)
+    .map((entry) => `${entry[0]}=${encodeURI(entry[1])}`)
     .join('&');
   const result = await fetch(`${GOOGLE_API_URL}?key=${googleApiKey}&${query}`);
   return await result.json();
@@ -126,6 +135,10 @@ function reverseGeocodingResultToAddress(
     }
     if (types.includes('sublocality')) {
       address.district = long_name;
+      continue;
+    }
+    if (types.includes('street_number')) {
+      address.streetNumber = long_name;
       continue;
     }
     if (types.includes('street_address') || types.includes('route')) {

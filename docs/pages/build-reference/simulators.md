@@ -6,17 +6,17 @@ Running a build of your app in an iOS simulator is particularly useful in manage
 
 ## Configuring a profile to build for simulators
 
-To build your app for installation into an iOS simulator, you can create a new profile in `eas.json` and set the `ios.simulator` value to `true`:
+To build your app for installation into an iOS simulator, you can create a new profile in **eas.json** and set the `ios.simulator` value to `true`:
 
 ```json
 {
   "build": {
-    "release": {},
     "preview": {
       "ios": {
         "simulator": true
       }
-    }
+    },
+    "production": {}
   }
 }
 ```

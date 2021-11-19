@@ -1,7 +1,7 @@
 import * as React from 'react';
 
 import ProjectList from '../components/ProjectList';
-import { useHome_MyAppsQuery } from '../graphql/queries/ProfileProjectsQuery.query.generated';
+import { useHome_MyAppsQuery } from '../graphql/types';
 
 function useProfileProjectsQuery() {
   const { data, fetchMore, loading, error, refetch } = useHome_MyAppsQuery({

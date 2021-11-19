@@ -1,7 +1,7 @@
 import * as React from 'react';
 
 import SnackList from '../components/SnackList';
-import { useHome_ProfileSnacksQuery } from '../graphql/queries/ProfileSnacksQuery.query.generated';
+import { useHome_ProfileSnacksQuery } from '../graphql/types';
 
 function useProfileSnacksQuery() {
   const { data, fetchMore } = useHome_ProfileSnacksQuery({

@@ -161,7 +161,7 @@ function ImageTransition({
   const translateY = useSharedValue(0);
 
   const onPan = useAnimatedGestureHandler({
-    onActive: event => {
+    onActive: (event) => {
       translateX.value = event.translationX;
       translateY.value = event.translationY;
 
@@ -272,22 +272,22 @@ const images: ExampleImage[] = Array.from({ length: 30 }, (_, index) => {
 function LightboxExample(): React.ReactElement {
   const [activeImage, setActiveImage] = useState<ActiveExampleImage | null>(null);
 
-  function onItemPress(
+  const onItemPress = (
     // @ts-ignore: FIXME AnimatedImage type
     animatedRef: RefObject<AnimatedImage>,
     item: ExampleImage,
     svs: ActiveExampleImageProperties
-  ) {
+  ) => {
     setActiveImage({
       animatedRef,
       item,
       ...svs,
     });
-  }
+  };
 
-  function onClose() {
+  const onClose = () => {
     setActiveImage(null);
-  }
+  };
 
   const headerHeight = useHeaderHeight() - (StatusBar.currentHeight ?? 0);
   const height = Platform.OS === 'web' ? dimensions.height - headerHeight : undefined;

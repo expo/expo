@@ -125,7 +125,7 @@ export function resolveScheme(props) {
                 // TODO: Will this cause issues for things like Facebook or Google that use `reversed-client-id://` or `fb<FBID>:/`?
                 // Traditionally these APIs don't use the Linking API directly.
                 console.warn(`The provided Linking scheme '${props.scheme}' does not appear in the list of possible URI schemes in your Expo config. Expected one of: ${schemes
-                    .map(scheme => `'${scheme}'`)
+                    .map((scheme) => `'${scheme}'`)
                     .join(', ')}`);
             }
         }

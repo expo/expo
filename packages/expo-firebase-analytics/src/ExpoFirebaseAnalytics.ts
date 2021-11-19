@@ -15,7 +15,7 @@ if (!ExpoFirebaseAnalytics) {
 let pureJSAnalyticsTracker: FirebaseAnalyticsJS | void;
 let isUnavailabilityLoggingEnabled = true;
 let isUnavailabilityWarningLogged = false;
-let clientIdForJS: string;
+let clientIdForJS: string | void;
 
 function callAnalyticsModule(funcName: string, ...args) {
   if (!ExpoFirebaseAnalytics[funcName]) {
@@ -71,7 +71,7 @@ function callAnalyticsModule(funcName: string, ...args) {
     if (isUnavailabilityLoggingEnabled) {
       if (!isUnavailabilityWarningLogged) {
         console.warn(
-          `Firebase Analytics is not available in the Expo client. See "https://docs.expo.io/versions/latest/sdk/firebase-analytics" on more information on setting up Firebase Analytics with the standard Expo client.`
+          `Firebase Analytics is not available in the Expo client. See "https://docs.expo.dev/versions/latest/sdk/firebase-analytics" on more information on setting up Firebase Analytics with the standard Expo client.`
         );
         isUnavailabilityWarningLogged = true;
       }
@@ -93,9 +93,6 @@ export default {
   },
   async setAnalyticsCollectionEnabled(isEnabled: boolean): Promise<void> {
     return callAnalyticsModule('setAnalyticsCollectionEnabled', isEnabled);
-  },
-  async setCurrentScreen(screenName?: string, screenClassOverride?: string): Promise<void> {
-    return callAnalyticsModule('setCurrentScreen', screenName, screenClassOverride);
   },
   async setSessionTimeoutDuration(sessionTimeoutInterval: number): Promise<void> {
     return callAnalyticsModule('setSessionTimeoutDuration', sessionTimeoutInterval);

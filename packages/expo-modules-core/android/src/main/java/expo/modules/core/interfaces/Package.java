@@ -28,7 +28,7 @@ public interface Package {
     return Collections.emptyList();
   }
 
-  default List<? extends SingletonModule> createSingletonModules(Context context) {
+  default List<? extends expo.modules.core.interfaces.SingletonModule> createSingletonModules(Context context) {
     return Collections.emptyList();
   }
 
@@ -41,6 +41,10 @@ public interface Package {
   }
 
   default List<? extends ReactActivityLifecycleListener> createReactActivityLifecycleListeners(Context activityContext) {
+    return Collections.emptyList();
+  }
+
+  default List<? extends ReactActivityHandler> createReactActivityHandlers(Context activityContext) {
     return Collections.emptyList();
   }
 }

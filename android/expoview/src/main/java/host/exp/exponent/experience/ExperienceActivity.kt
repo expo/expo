@@ -25,7 +25,7 @@ import com.facebook.soloader.SoLoader
 import de.greenrobot.event.EventBus
 import expo.modules.core.interfaces.Package
 import expo.modules.splashscreen.singletons.SplashScreen
-import expo.modules.updates.manifest.raw.RawManifest
+import expo.modules.manifests.core.Manifest
 import host.exp.exponent.*
 import host.exp.exponent.ExpoUpdatesAppLoader.AppLoaderCallback
 import host.exp.exponent.ExpoUpdatesAppLoader.AppLoaderStatus
@@ -86,6 +86,7 @@ open class ExperienceActivity : BaseExperienceActivity(), StartReactInstanceDele
    */
   lateinit var loadingProgressPopupController: LoadingProgressPopupController
   var managedAppSplashScreenViewProvider: ManagedAppSplashScreenViewProvider? = null
+  var managedAppSplashScreenViewController: ManagedAppSplashScreenViewController? = null
 
   @Inject
   lateinit var exponentManifest: ExponentManifest
@@ -108,6 +109,7 @@ open class ExperienceActivity : BaseExperienceActivity(), StartReactInstanceDele
       override fun onSuccess() {
         UiThreadUtil.runOnUiThread {
           loadingProgressPopupController.hide()
+          managedAppSplashScreenViewController?.startSplashScreenWarningTimer()
           finishLoading()
         }
       }
@@ -132,7 +134,7 @@ open class ExperienceActivity : BaseExperienceActivity(), StartReactInstanceDele
     shouldShowLoadingViewWithOptimisticManifest = true
     loadingProgressPopupController = LoadingProgressPopupController(this)
 
-    NativeModuleDepsProvider.getInstance().inject(ExperienceActivity::class.java, this)
+    NativeModuleDepsProvider.instance.inject(ExperienceActivity::class.java, this)
     EventBus.getDefault().registerSticky(this)
 
     activityId = ExpoActivityIds.getNextAppActivityId()
@@ -171,11 +173,11 @@ open class ExperienceActivity : BaseExperienceActivity(), StartReactInstanceDele
       ExpoUpdatesAppLoader(
         this.manifestUrl!!,
         object : AppLoaderCallback {
-          override fun onOptimisticManifest(optimisticManifest: RawManifest) {
+          override fun onOptimisticManifest(optimisticManifest: Manifest) {
             Exponent.instance.runOnUiThread { setOptimisticManifest(optimisticManifest) }
           }
 
-          override fun onManifestCompleted(manifest: RawManifest) {
+          override fun onManifestCompleted(manifest: Manifest) {
             Exponent.instance.runOnUiThread {
               try {
                 val bundleUrl = ExponentUrls.toHttp(manifest.getBundleURL())
@@ -186,7 +188,7 @@ open class ExperienceActivity : BaseExperienceActivity(), StartReactInstanceDele
             }
           }
 
-          override fun onBundleCompleted(localBundlePath: String?) {
+          override fun onBundleCompleted(localBundlePath: String) {
             Exponent.instance.runOnUiThread { setBundle(localBundlePath) }
           }
 
@@ -218,7 +220,7 @@ open class ExperienceActivity : BaseExperienceActivity(), StartReactInstanceDele
     soLoaderInit()
 
     addNotification()
-    Analytics.logEventWithManifestUrl(Analytics.EXPERIENCE_APPEARED, manifestUrl)
+    Analytics.logEventWithManifestUrl(Analytics.AnalyticsEvent.EXPERIENCE_APPEARED, manifestUrl)
   }
 
   override fun onWindowFocusChanged(hasFocus: Boolean) {
@@ -340,7 +342,7 @@ open class ExperienceActivity : BaseExperienceActivity(), StartReactInstanceDele
    * - first time for optimistic manifest
    * - seconds time for real manifest
    */
-  protected fun showOrReconfigureManagedAppSplashScreen(manifest: RawManifest?) {
+  protected fun showOrReconfigureManagedAppSplashScreen(manifest: Manifest?) {
     if (!shouldCreateLoadingView()) {
       return
     }
@@ -352,14 +354,14 @@ open class ExperienceActivity : BaseExperienceActivity(), StartReactInstanceDele
       )
       managedAppSplashScreenViewProvider = ManagedAppSplashScreenViewProvider(config)
       val splashScreenView = managedAppSplashScreenViewProvider!!.createSplashScreenView(this)
-      val controller = ManagedAppSplashScreenViewController(
+      managedAppSplashScreenViewController = ManagedAppSplashScreenViewController(
         this,
         getRootViewClass(
           manifest
         ),
         splashScreenView
       )
-      SplashScreen.show(this, controller, true)
+      SplashScreen.show(this, managedAppSplashScreenViewController!!, true)
     } else {
       managedAppSplashScreenViewProvider!!.updateSplashScreenViewWithManifest(this, manifest!!)
     }
@@ -387,7 +389,7 @@ open class ExperienceActivity : BaseExperienceActivity(), StartReactInstanceDele
     }
   }
 
-  fun setOptimisticManifest(optimisticManifest: RawManifest) {
+  fun setOptimisticManifest(optimisticManifest: Manifest) {
     runOnUiThread {
       if (!isInForeground) {
         return@runOnUiThread
@@ -409,7 +411,7 @@ open class ExperienceActivity : BaseExperienceActivity(), StartReactInstanceDele
 
   fun setManifest(
     manifestUrl: String,
-    manifest: RawManifest,
+    manifest: Manifest,
     bundleUrl: String
   ) {
     if (!isInForeground) {
@@ -428,13 +430,12 @@ open class ExperienceActivity : BaseExperienceActivity(), StartReactInstanceDele
     this.manifestUrl = manifestUrl
     this.manifest = manifest
 
-    // TODO(eric): remove when deleting old AppLoader class/logic
-    exponentSharedPreferences.updateManifest(this.manifestUrl, manifest, bundleUrl)
+    exponentSharedPreferences.removeLegacyManifest(this.manifestUrl!!)
 
     // Notifications logic uses this to determine which experience to route a notification to
     ExponentDB.saveExperience(ExponentDBObject(this.manifestUrl!!, manifest, bundleUrl))
 
-    ExponentNotificationManager(this).maybeCreateNotificationChannelGroup(this.manifest)
+    ExponentNotificationManager(this).maybeCreateNotificationChannelGroup(this.manifest!!)
 
     val task = kernel.getExperienceActivityTask(this.manifestUrl!!)
     task.taskId = taskId
@@ -442,7 +443,7 @@ open class ExperienceActivity : BaseExperienceActivity(), StartReactInstanceDele
     task.activityId = activityId
     task.bundleUrl = bundleUrl
 
-    sdkVersion = manifest.getSDKVersionNullable()
+    sdkVersion = manifest.getSDKVersion()
     isShellApp = this.manifestUrl == Constants.INITIAL_URL
 
     // Sometime we want to release a new version without adding a new .aar. Use TEMPORARY_ABI_VERSION
@@ -474,7 +475,7 @@ open class ExperienceActivity : BaseExperienceActivity(), StartReactInstanceDele
     soLoaderInit()
 
     try {
-      experienceKey = ExperienceKey.fromRawManifest(manifest)
+      experienceKey = ExperienceKey.fromManifest(manifest)
       AsyncCondition.notify(KernelConstants.EXPERIENCE_ID_SET_FOR_ACTIVITY_KEY)
     } catch (e: JSONException) {
       KernelProvider.instance.handleError("No ID found in manifest.")
@@ -483,7 +484,7 @@ open class ExperienceActivity : BaseExperienceActivity(), StartReactInstanceDele
 
     isCrashed = false
 
-    Analytics.logEventWithManifestUrlSdkVersion(Analytics.LOAD_EXPERIENCE, manifestUrl, sdkVersion)
+    Analytics.logEventWithManifestUrlSdkVersion(Analytics.AnalyticsEvent.LOAD_EXPERIENCE, manifestUrl, sdkVersion)
 
     ExperienceActivityUtils.updateOrientation(this.manifest!!, this)
     ExperienceActivityUtils.updateSoftwareKeyboardLayoutMode(this.manifest!!, this)
@@ -516,7 +517,7 @@ open class ExperienceActivity : BaseExperienceActivity(), StartReactInstanceDele
       }
 
       reactRootView = RNObject("host.exp.exponent.ReactUnthemedRootView")
-      reactRootView.loadVersion(detachSdkVersion).construct(this@ExperienceActivity)
+      reactRootView.loadVersion(detachSdkVersion!!).construct(this@ExperienceActivity)
       setReactRootView((reactRootView.get() as View))
 
       if (isDebugModeEnabled) {
@@ -541,7 +542,7 @@ open class ExperienceActivity : BaseExperienceActivity(), StartReactInstanceDele
     }
   }
 
-  fun setBundle(localBundlePath: String?) {
+  fun setBundle(localBundlePath: String) {
     // by this point, setManifest should have also been called, so prevent
     // setOptimisticManifest from showing a rogue splash screen
     shouldShowLoadingViewWithOptimisticManifest = false
@@ -572,9 +573,9 @@ open class ExperienceActivity : BaseExperienceActivity(), StartReactInstanceDele
       try {
         val rctDeviceEventEmitter =
           RNObject("com.facebook.react.modules.core.DeviceEventManagerModule\$RCTDeviceEventEmitter")
-        rctDeviceEventEmitter.loadVersion(detachSdkVersion)
-        reactInstanceManager.callRecursive("getCurrentReactContext")
-          .callRecursive("getJSModule", rctDeviceEventEmitter.rnClass())
+        rctDeviceEventEmitter.loadVersion(detachSdkVersion!!)
+        reactInstanceManager.callRecursive("getCurrentReactContext")!!
+          .callRecursive("getJSModule", rctDeviceEventEmitter.rnClass())!!
           .call("emit", "Exponent.notification", event.toWriteableMap(detachSdkVersion, "received"))
       } catch (e: Throwable) {
         EXL.e(TAG, e)
@@ -589,18 +590,18 @@ open class ExperienceActivity : BaseExperienceActivity(), StartReactInstanceDele
         handleUri(uri)
         val rctDeviceEventEmitter =
           RNObject("com.facebook.react.modules.core.DeviceEventManagerModule\$RCTDeviceEventEmitter")
-        rctDeviceEventEmitter.loadVersion(detachSdkVersion)
-        reactInstanceManager.callRecursive("getCurrentReactContext")
-          .callRecursive("getJSModule", rctDeviceEventEmitter.rnClass())
+        rctDeviceEventEmitter.loadVersion(detachSdkVersion!!)
+        reactInstanceManager.callRecursive("getCurrentReactContext")!!
+          .callRecursive("getJSModule", rctDeviceEventEmitter.rnClass())!!
           .call("emit", "Exponent.openUri", uri)
         BranchManager.handleLink(this, uri, detachSdkVersion)
       }
       if ((options.notification != null || options.notificationObject != null) && detachSdkVersion != null) {
         val rctDeviceEventEmitter =
           RNObject("com.facebook.react.modules.core.DeviceEventManagerModule\$RCTDeviceEventEmitter")
-        rctDeviceEventEmitter.loadVersion(detachSdkVersion)
-        reactInstanceManager.callRecursive("getCurrentReactContext")
-          .callRecursive("getJSModule", rctDeviceEventEmitter.rnClass())
+        rctDeviceEventEmitter.loadVersion(detachSdkVersion!!)
+        reactInstanceManager.callRecursive("getCurrentReactContext")!!
+          .callRecursive("getJSModule", rctDeviceEventEmitter.rnClass())!!
           .call(
             "emit",
             "Exponent.notification",
@@ -654,8 +655,7 @@ open class ExperienceActivity : BaseExperienceActivity(), StartReactInstanceDele
   }
 
   override fun handleUnreadNotifications(unreadNotifications: JSONArray) {
-    val pushNotificationHelper = PushNotificationHelper.getInstance()
-    pushNotificationHelper.removeNotifications(this, unreadNotifications)
+    PushNotificationHelper.instance.removeNotifications(this, unreadNotifications)
   }
 
   /*
@@ -746,7 +746,7 @@ open class ExperienceActivity : BaseExperienceActivity(), StartReactInstanceDele
             } catch (e: JSONException) {
               EXL.e(TAG, e.message)
             }
-            Analytics.logEvent("NUX_EXPERIENCE_OVERLAY_DISMISSED", eventProperties)
+            Analytics.logEvent(Analytics.AnalyticsEvent.NUX_EXPERIENCE_OVERLAY_DISMISSED, eventProperties)
           }
 
           override fun onAnimationRepeat(animation: Animation) {}

@@ -2,6 +2,7 @@ require_relative 'constants'
 require_relative 'package'
 
 # Require extensions to CocoaPods' classes
+require_relative 'cocoapods/pod_target'
 require_relative 'cocoapods/target_definition'
 require_relative 'cocoapods/user_project_integrator'
 
@@ -57,22 +58,12 @@ module Expo
 
     # Spawns `expo-module-autolinking generate-package-list` command.
     public def generate_package_list(target_name, target_path)
-      IO.popen(generate_package_list_command_args(target_path))
+      Process.wait IO.popen(generate_package_list_command_args(target_path)).pid
     end
 
     # If there is any package to autolink.
     public def has_packages?
       @packages.empty?
-    end
-
-    # Bool that is true when Swift modules are enabled
-    public def uses_swift_modules?
-      $ExpoUseSwiftModules
-    end
-
-    # Returns whether there is at least one package that needs to be included in the generated modules provider.
-    public def needs_provider_generation?
-      uses_swift_modules? && @packages.find { |package| package.modules_class_names.any? }.present?
     end
 
     # Filters only these packages that needs to be included in the generated modules provider.
@@ -82,7 +73,7 @@ module Expo
 
     # Returns the provider name which is also a name of the generated file
     public def modules_provider_name
-      @options.fetch(:provider_name, Constants::MODULES_PROVIDER_FILE_NAME)
+      @options.fetch(:providerName, Constants::MODULES_PROVIDER_FILE_NAME)
     end
 
     # privates

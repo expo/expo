@@ -10,8 +10,9 @@ import com.facebook.react.bridge.ReactContext
 import expo.modules.devlauncher.launcher.DevLauncherClientHost
 import expo.modules.devlauncher.launcher.DevLauncherControllerInterface
 import expo.modules.devlauncher.launcher.DevLauncherReactActivityDelegateSupplier
-import expo.modules.devlauncher.launcher.manifest.DevLauncherManifest
+import expo.modules.manifests.core.Manifest
 import expo.modules.updatesinterface.UpdatesInterface
+import kotlinx.coroutines.CoroutineScope
 
 const val DEV_LAUNCHER_IS_NOT_AVAILABLE = "DevLauncher isn't available in release builds"
 
@@ -28,7 +29,10 @@ class DevLauncherController private constructor() : DevLauncherControllerInterfa
   override val devClientHost: DevLauncherClientHost
     get() = throw IllegalStateException(DEV_LAUNCHER_IS_NOT_AVAILABLE)
 
-  override val manifest: DevLauncherManifest
+  override val manifest: Manifest
+    get() = throw IllegalStateException(DEV_LAUNCHER_IS_NOT_AVAILABLE)
+
+  override val manifestURL: Uri
     get() = throw IllegalStateException(DEV_LAUNCHER_IS_NOT_AVAILABLE)
 
   override val appHost: ReactNativeHost
@@ -37,6 +41,9 @@ class DevLauncherController private constructor() : DevLauncherControllerInterfa
   override var updatesInterface: UpdatesInterface?
     get() = throw IllegalStateException(DEV_LAUNCHER_IS_NOT_AVAILABLE)
     set(_) {}
+
+  override val coroutineScope: CoroutineScope
+    get() = throw IllegalStateException(DEV_LAUNCHER_IS_NOT_AVAILABLE)
 
   override val useDeveloperSupport = false
 

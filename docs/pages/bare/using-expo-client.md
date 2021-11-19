@@ -137,7 +137,7 @@ export function setUser(options) {
 
 An alternative approach to using `expo-constants` as described above in the [conditional inline requires section](#use-conditional-inline-requires-to-provide-fallbacks) is to use `try/catch` around `require`. There's not any particularly good reason for you to use this in your application code, and it may lead to warning messages when the library throws an error on importing, but it is listed here in case you find yourself with a fitting use case.
 
-The above `MapView.js` would change to look like the following:
+The above **MapView.js** would change to look like the following:
 
 ```js
 import * as React from 'react';

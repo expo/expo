@@ -1,10 +1,11 @@
 import * as React from 'react';
-import { View } from 'react-native';
+import { ViewProps } from 'react-native';
 import createElement from 'react-native-web/dist/exports/createElement';
 
 import { AVPlaybackNativeSource, AVPlaybackStatus, AVPlaybackStatusToSet } from './AV';
 import ExponentAV from './ExponentAV';
 import { addFullscreenListener } from './FullscreenUtils.web';
+import { VideoFullscreenUpdateEvent, VideoReadyForDisplayEvent } from './Video.types';
 
 type ExponentVideoProps = {
   source: AVPlaybackNativeSource | null;
@@ -12,8 +13,8 @@ type ExponentVideoProps = {
   status?: AVPlaybackStatusToSet;
   useNativeControls?: boolean;
   onStatusUpdate?: (event: { nativeEvent: AVPlaybackStatus }) => void;
-  onReadyForDisplay?: (event: { nativeEvent: object }) => void;
-  onFullscreenUpdate?: (event: { nativeEvent: object }) => void;
+  onReadyForDisplay?: (event: { nativeEvent: VideoReadyForDisplayEvent }) => void;
+  onFullscreenUpdate?: (event: { nativeEvent: VideoFullscreenUpdateEvent }) => void;
   onLoadStart: () => void;
   onLoad: (event: { nativeEvent: AVPlaybackStatus }) => void;
   onError: (event: { nativeEvent: { error: string } }) => void;
@@ -23,7 +24,7 @@ type ExponentVideoProps = {
   translateX?: number;
   translateY?: number;
   rotation?: number;
-} & React.ComponentProps<typeof View>;
+} & ViewProps;
 
 export type NaturalSize = {
   width: number;
@@ -41,7 +42,9 @@ export const IOS_FULLSCREEN_UPDATE_PLAYER_DID_PRESENT = FULLSCREEN_UPDATE_PLAYER
 export const IOS_FULLSCREEN_UPDATE_PLAYER_WILL_DISMISS = FULLSCREEN_UPDATE_PLAYER_WILL_DISMISS;
 export const IOS_FULLSCREEN_UPDATE_PLAYER_DID_DISMISS = FULLSCREEN_UPDATE_PLAYER_DID_DISMISS;
 
-const Video: any = React.forwardRef((props, ref) => createElement('video', { ...props, ref }));
+const Video: any = React.forwardRef<HTMLVideoElement, ExponentVideoProps>((props, ref) =>
+  createElement('video', { ...props, ref })
+);
 
 export default class ExponentVideo extends React.Component<ExponentVideoProps> {
   _video?: HTMLVideoElement;
@@ -80,7 +83,7 @@ export default class ExponentVideo extends React.Component<ExponentVideoProps> {
     this.onStatusUpdate();
   };
 
-  onLoadedData = event => {
+  onLoadedData = (event) => {
     if (!this.props.onLoad) {
       return;
     }
@@ -88,7 +91,7 @@ export default class ExponentVideo extends React.Component<ExponentVideoProps> {
     this.onStatusUpdate();
   };
 
-  onError = event => {
+  onError = (event) => {
     if (!this.props.onError) {
       return;
     }
@@ -112,7 +115,7 @@ export default class ExponentVideo extends React.Component<ExponentVideoProps> {
     this.onStatusUpdate();
   };
 
-  onCanPlay = event => {
+  onCanPlay = (event) => {
     if (!this.props.onReadyForDisplay) {
       return;
     }
@@ -124,11 +127,15 @@ export default class ExponentVideo extends React.Component<ExponentVideoProps> {
     this.onStatusUpdate();
   };
 
-  onRef = (ref: HTMLVideoElement) => {
-    this._video = ref;
+  onRef = (ref: HTMLVideoElement | null) => {
     this._removeFullscreenListener?.();
-    this._removeFullscreenListener = addFullscreenListener(this._video, this.onFullscreenChange);
-    this.onStatusUpdate();
+    if (ref) {
+      this._video = ref;
+      this._removeFullscreenListener = addFullscreenListener(this._video, this.onFullscreenChange);
+      this.onStatusUpdate();
+    } else {
+      this._removeFullscreenListener = undefined;
+    }
   };
 
   render() {
@@ -151,7 +158,7 @@ export default class ExponentVideo extends React.Component<ExponentVideoProps> {
         onLoadedMetadata={this.onLoadedMetadata}
         onCanPlay={this.onCanPlay}
         onStalled={this.onStalled}
-        src={(source || { uri: undefined }).uri}
+        src={source?.uri || undefined}
         muted={status.isMuted}
         loop={status.isLooping}
         autoPlay={status.shouldPlay}

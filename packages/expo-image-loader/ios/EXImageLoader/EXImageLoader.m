@@ -2,6 +2,7 @@
 
 #import <EXImageLoader/EXImageLoader.h>
 #import <React/RCTImageLoaderProtocol.h>
+#import <ExpoModulesCore/EXUtilities.h>
 
 @interface EXImageLoader ()
 

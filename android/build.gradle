@@ -23,17 +23,16 @@ buildscript {
     classpath "com.android.tools.build:gradle:${gradlePluginVersion}"
     classpath 'com.google.gms:google-services:4.3.5'
     classpath "de.undercouch:gradle-download-task:$gradleDownloadTaskVersion"
-
-    // https://github.com/awslabs/aws-device-farm-gradle-plugin/releases
-    classpath 'com.amazonaws:aws-devicefarm-gradle-plugin:1.3'
-
     classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
   }
 }
 
+// WHEN_DISTRIBUTING_REMOVE_FROM_HERE
+// We don't need linter on turtle.
 plugins {
   id "com.diffplug.spotless" version "5.14.1"
 }
+// WHEN_DISTRIBUTING_REMOVE_TO_HERE
 
 allprojects {
   repositories {
@@ -43,16 +42,13 @@ allprojects {
     }
     // For old expoviews to work
     maven {
+      url "$rootDir/versioned-abis/expoview-abi43_0_0/maven"
+    }
+    maven {
       url "$rootDir/versioned-abis/expoview-abi42_0_0/maven"
     }
     maven {
       url "$rootDir/versioned-abis/expoview-abi41_0_0/maven"
-    }
-    maven {
-      url "$rootDir/versioned-abis/expoview-abi40_0_0/maven"
-    }
-    maven {
-      url "$rootDir/versioned-abis/expoview-abi39_0_0/maven"
     }
     maven {
       url "$rootDir/versioned-abis/maven"
@@ -106,6 +102,12 @@ allprojects {
   }
 }
 
+// This var needs to be defined outside any "remove_from_here" comment blocks
+// because the "*/" in there could affect the resulted code by closing the comment to early.
+def ktlintTarget = '**/*.kt'
+
+// WHEN_DISTRIBUTING_REMOVE_FROM_HERE
+// We don't need linter on turtle.
 subprojects {
   plugins.apply("com.diffplug.spotless")
   spotless {
@@ -116,7 +118,7 @@ subprojects {
       endWithNewline()
     }
     kotlin {
-      target '**/*.kt'
+      target(ktlintTarget)
       ktlint("0.41.0").userData([
         "disabled_rules"           : "no-wildcard-imports,import-ordering",
         "charset"                  : "utf-8",
@@ -133,3 +135,4 @@ subprojects {
     }
   }
 }
+// WHEN_DISTRIBUTING_REMOVE_TO_HERE

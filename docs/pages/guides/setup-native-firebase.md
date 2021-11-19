@@ -21,7 +21,7 @@ which is otherwise unavailable in react-native using the Firebase JavaScript SDK
 - Open **Project overview** in the firebase console and click on the Android icon or + button to **Add Firebase to your Android app**.
 - **Make sure that the Android package name is the same as the value of `android.package` in your app.json.**
 - Register the app & download the config file by clicking **"Download google-services.json"** and drag the file into your Expo project folder.
-- Add the relative path to the Android **google-services.json** file to **`app.json`**.
+- Add the relative path to the Android **google-services.json** file to **app.json**.
 
 ```json
 {
@@ -39,7 +39,7 @@ which is otherwise unavailable in react-native using the Firebase JavaScript SDK
 - Open **Project overview** in the Firebase console and click on the iOS icon or + button to **Add Firebase to your iOS app**.
 - **Make sure that the iOS bundle ID is the same as the value of `ios.bundleIdentifier` in your app.json.**
 - Register the app & download the config file by clicking **"Download GoogleService-Info.plist"** and drag the file into your Expo project folder.
-- Add the relative path to the iOS **GoogleService-Info.plist** file to **`app.json`**.
+- Add the relative path to the iOS **GoogleService-Info.plist** file to **app.json**.
 
 ```json
 {
@@ -55,7 +55,7 @@ which is otherwise unavailable in react-native using the Firebase JavaScript SDK
 ### Web
 
 - Open **Project overview** in the Firebase console and click on the Web icon or + button to **Add Firebase to your Web app**.
-- Register the app & copy the config into your **`app.json`** under the key **`web.config.firebase`**.
+- Register the app & copy the config into your **app.json** under the key `web.config.firebase`.
 
 ```json
 {
@@ -128,22 +128,6 @@ You are free to use any native Firebase packages such as [react-native-firebase]
 After following the iOS and Android setup, you can optionally configure your project to work with `react-native-firebase` version 6 as well.
 
 - Install the `react-native-firebase` packages (e.g. `yarn add @react-native-firebase/app @react-native-firebase/auth etc..`)
-- On iOS, Ensure your `ios/Podfile` has the following lines:
-
-```rb
-  # At the top of the file
-  require File.join(File.dirname(`node --print "require.resolve('@react-native-community/cli-platform-ios/package.json')"`), "native_modules")
-  require File.join(File.dirname(`node --print "require.resolve('react-native-unimodules/package.json')"`), "cocoapods.rb")
-
-  # ...
-
-  # Automatically detect installed unimodules
-  use_unimodules!
-
-  # The community version of use_unimodules (used for react-native-firebase)
-  use_native_modules!
-```
-
 - Install the pods on iOS
 
 Continue further on the [react-native-firebase](https://rnfirebase.io/) website.

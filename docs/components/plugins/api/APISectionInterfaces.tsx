@@ -6,12 +6,12 @@ import { H2, H3Code } from '~/components/plugins/Headings';
 import {
   CommentData,
   InterfaceDefinitionData,
-  InterfaceValueData,
   MethodSignatureData,
+  PropData,
 } from '~/components/plugins/api/APIDataTypes';
 import {
   CommentTextBlock,
-  mdInlineRenderers,
+  mdInlineComponents,
   renderFlags,
   renderParam,
   renderTypeOrSignatureType,
@@ -27,16 +27,19 @@ const renderInterfaceComment = (comment?: CommentData, signatures?: MethodSignat
     const { type, parameters, comment: signatureComment } = signatures[0];
     return (
       <>
-        {parameters.map(param => renderParam(param))}
+        {parameters?.length ? parameters.map(param => renderParam(param)) : null}
         <B>Returns: </B>
         <InlineCode>{resolveTypeName(type)}</InlineCode>
         {signatureComment && (
-          <CommentTextBlock comment={signatureComment} renderers={mdInlineRenderers} />
+          <>
+            <br />
+            <CommentTextBlock comment={signatureComment} components={mdInlineComponents} />
+          </>
         )}
       </>
     );
   } else {
-    return comment ? <CommentTextBlock comment={comment} renderers={mdInlineRenderers} /> : '-';
+    return comment ? <CommentTextBlock comment={comment} components={mdInlineComponents} /> : '-';
   }
 };
 
@@ -46,7 +49,7 @@ const renderInterfacePropertyRow = ({
   type,
   comment,
   signatures,
-}: InterfaceValueData): JSX.Element => (
+}: PropData): JSX.Element => (
   <tr key={name}>
     <td>
       <B>
@@ -84,7 +87,7 @@ const renderInterface = ({
     </div>
   ) : null;
 
-const APISectionInterfaces: React.FC<APISectionInterfacesProps> = ({ data }) =>
+const APISectionInterfaces = ({ data }: APISectionInterfacesProps) =>
   data?.length ? (
     <>
       <H2 key="interfaces-header">Interfaces</H2>

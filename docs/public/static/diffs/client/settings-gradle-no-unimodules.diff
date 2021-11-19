@@ -2,10 +2,16 @@ diff --git a/android/settings.gradle b/android/settings.gradle
 index 342f14f..9d9fc07 100644
 --- a/android/settings.gradle
 +++ b/android/settings.gradle
-@@ -1,4 +1,7 @@
+@@ -1,4 +1,10 @@
  rootProject.name = 'AwesomeProject'
  apply from: file("../node_modules/@react-native-community/cli-platform-android/native_modules.gradle"); applyNativeModulesSettingsGradle(settings)
  
++include ':expo-json-utils'
++project(':expo-json-utils').projectDir = new File('../node_modules/expo-json-utils/android')
++
++include ':expo-manifests'
++project(':expo-manifests').projectDir = new File('../node_modules/expo-manifests/android')
++
 +include ':expo-updates-interface'
 +project(':expo-updates-interface').projectDir = new File('../node_modules/expo-updates-interface/android')
 +

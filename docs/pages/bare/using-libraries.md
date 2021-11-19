@@ -7,8 +7,6 @@ import InstallSection from '~/components/plugins/InstallSection';
 
 Every app is made up of some combination of React Native, Expo SDK, and third party libraries. It's important to understand how to use the libraries from each of these sources, and how to determine whether a third-party library will work in your project or not.
 
-If you are using the bare workflow, read the [guide for using libraries in the bare workflow](../bare/using-libraries.md) instead of this page.
-
 ## Using React Native Core Libraries
 
 React Native provides a set of built-in primitives that most developers will need in their app. These include components such as ActivityIndicator, TextInput, Text, ScrollView, and View. These are listed in the [Core Components and APIs](https://reactnative.dev/docs/components-and-apis) page of the React Native documentation.
@@ -30,9 +28,9 @@ export default function App() {
 
 ## Using Expo SDK Libraries
 
-> 💡 If you initialized your app using @react-native-community/cli and you don't have `react-native-unimodules` installed in it yet, please refer to the guide for [using the Expo SDK in existing apps](../bare/existing-apps.md).
+> 💡 If you initialized your app using `@react-native-community/cli` and you don't have the `expo` package installed in it yet, please refer to the guide for [using the Expo SDK in existing apps](../bare/existing-apps.md).
 
-The Expo SDK picks up where the React Native core libraries end - it provides access to a lot of useful device and system functionality like audio, barcode scanning, camera, calendar, contacts, video, and so on. It also adds other powerful libraries like over-the-air updates, maps, OAuth authentication tools, and more.
+The Expo SDK picks up where the React Native core libraries end - it provides access to a lot of useful device and system functionality like audio, barcode scanning, camera, calendar, contacts, video, and so on. It also adds other powerful libraries like updates, maps, OAuth authentication tools, and more.
 
 To use a library from the Expo SDK, find the one you are looking for in the [API Reference](https://docs.expo.dev/versions/latest/) or through the documentation Search bar.
 

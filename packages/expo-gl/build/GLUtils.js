@@ -34,7 +34,7 @@ export function configureLogging(gl) {
             }
             gl[key] = (...args) => {
                 if (loggingOption & GLLoggingOption.METHOD_CALLS) {
-                    const params = args.map(arg => {
+                    const params = args.map((arg) => {
                         // If the type is `number`, then try to find name of the constant that has such value,
                         // so it's easier to read these logs. In some cases it might be misleading
                         // if the parameter is for example a width or height, so the number is still logged.

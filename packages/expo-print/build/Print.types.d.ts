@@ -2,11 +2,14 @@ export declare type PrintOptions = {
     /**
      * URI of a PDF file to print. Remote, local (ex. selected via `DocumentPicker`) or base64 data URI
      * starting with `data:application/pdf;base64,`. This only supports PDF, not other types of
-     * document (e.g. images). **Available on Android and iOS only.**
+     * document (e.g. images).
+     * @platform ios
      */
     uri?: string;
     /**
-     * HTML string to print. **Available on Android and iOS only.**
+     * HTML string to print.
+     * @platform android
+     * @platform ios
      */
     html?: string;
     /**
@@ -20,25 +23,34 @@ export declare type PrintOptions = {
      */
     height?: number;
     /**
-     * URL of the printer to use. Returned from `selectPrinterAsync`. **Available on iOS only.**
+     * URL of the printer to use. Returned from `selectPrinterAsync`.
+     * @platform ios
      */
     printerUrl?: string;
     /**
-     * **Available on iOS only.** Alternative to default option that uses [UIMarkupTextPrintFormatter](https://developer.apple.com/documentation/uikit/uimarkuptextprintformatter)
+     * Alternative to default option that uses [UIMarkupTextPrintFormatter](https://developer.apple.com/documentation/uikit/uimarkuptextprintformatter)
      * instead of WebView, but it doesn't display images.
+     * @platform ios
      */
     useMarkupFormatter?: boolean;
     /**
      * @deprecated
-     * **Available on iOS only.** This argument is deprecated, use `useMarkupFormatter` instead.
+     * This argument is deprecated, use `useMarkupFormatter` instead.
      * Might be removed in the future releases.
+     * @platform ios
      */
     markupFormatterIOS?: string;
     /**
-     * **Available on iOS only.** The orientation of the printed content, `Print.Orientation.portrait`
+     * The orientation of the printed content, `Print.Orientation.portrait`
      * or `Print.Orientation.landscape`.
+     * @platform ios
      */
     orientation?: OrientationType['portrait'] | OrientationType['landscape'];
+    /**
+     * Page margins for the printed document.
+     * @platform ios
+     */
+    margins?: PageMargins;
 };
 export declare type Printer = {
     /**
@@ -57,14 +69,21 @@ export interface OrientationType {
     portrait: string;
     landscape: string;
 }
+export declare type PageMargins = {
+    top: number;
+    right: number;
+    bottom: number;
+    left: number;
+};
 export declare type FilePrintOptions = {
     /**
      * HTML string to print into PDF file.
      */
     html?: string;
     /**
-     * **Available on iOS only.** Alternative to default option that uses [UIMarkupTextPrintFormatter](https://developer.apple.com/documentation/uikit/uimarkuptextprintformatter)
+     * Alternative to default option that uses [UIMarkupTextPrintFormatter](https://developer.apple.com/documentation/uikit/uimarkuptextprintformatter)
      * instead of WebView, but it doesn't display images.
+     * @platform ios
      */
     useMarkupFormatter?: boolean;
     /**
@@ -78,19 +97,14 @@ export declare type FilePrintOptions = {
      */
     height?: number;
     /**
-     * Padding for the printed document.
+     * Page margins for the printed document.
+     * @platform ios
      */
-    padding?: FilePrintPadding;
+    margins?: PageMargins;
     /**
      * Whether to include base64 encoded string of the file in the returned object.
      */
     base64?: boolean;
-};
-export declare type FilePrintPadding = {
-    top: number;
-    right: number;
-    bottom: number;
-    left: number;
 };
 export declare type FilePrintResult = {
     /**

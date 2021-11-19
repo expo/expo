@@ -178,6 +178,7 @@ EX_EXPORT_METHOD_AS(printToFileAsync,
   __block EXWKPDFRenderer *renderTask;
   NSString *htmlString = options[@"html"] ?: @"";
   CGSize paperSize = [self _paperSizeFromOptions:options];
+  UIEdgeInsets pageMargins = [self _pageMarginsFromOptions:options];
     
   void (^completionHandler)(NSError * _Nullable, NSData * _Nullable, int) =
     ^(NSError * _Nullable error, NSData * _Nullable pdfData, int pagesCount) {
@@ -221,7 +222,7 @@ EX_EXPORT_METHOD_AS(printToFileAsync,
     [self pdfWithHtmlMarkupFormatter:htmlString pageSize:paperSize completionHandler:completionHandler];
   } else {
     renderTask = [EXWKPDFRenderer new];
-    [renderTask PDFWithHtml:htmlString pageSize:paperSize completionHandler:completionHandler];
+    [renderTask PDFWithHtml:htmlString pageSize:paperSize pageMargins:pageMargins completionHandler:completionHandler];
   }
 }
 
@@ -307,7 +308,8 @@ EX_EXPORT_METHOD_AS(printToFileAsync,
 
     NSString *htmlString = options[@"html"] ?: @"";
     CGSize paperSize = [self _paperSizeFromOptions:options];
-    [renderTask PDFWithHtml:htmlString pageSize:paperSize completionHandler:^(NSError * _Nullable error, NSData * _Nullable pdfData, int pagesCount) {
+    UIEdgeInsets pageMargins = [self _pageMarginsFromOptions:options];
+    [renderTask PDFWithHtml:htmlString pageSize:paperSize pageMargins:pageMargins completionHandler:^(NSError * _Nullable error, NSData * _Nullable pdfData, int pagesCount) {
       if (pdfData != nil) {
         callback(pdfData, nil);
       } else {
@@ -355,6 +357,21 @@ EX_EXPORT_METHOD_AS(printToFileAsync,
   }
 
   return paperSize;
+}
+
+- (UIEdgeInsets)_pageMarginsFromOptions:(NSDictionary *)options
+{
+  UIEdgeInsets pageMargins = UIEdgeInsetsZero;
+
+  if (options[@"margins"]) {
+    NSDictionary* margins = options[@"margins"];
+    pageMargins.left = [margins[@"left"] floatValue];
+    pageMargins.top = [margins[@"top"] floatValue];
+    pageMargins.bottom = [margins[@"bottom"] floatValue];
+    pageMargins.right = [margins[@"right"] floatValue];
+  }
+
+  return pageMargins;
 }
 
 - (NSString *)_generatePath

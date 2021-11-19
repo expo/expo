@@ -8,6 +8,53 @@
 
 ### 🐛 Bug fixes
 
+- Fix config plugin compatibility with expo-screen-orientation. ([#14752](https://github.com/expo/expo/pull/14752) by [@esamelson](https://github.com/esamelson))
+- Fix `No native splash screen registered for given view controller` error happening when project is using both `expo-dev-client` and `expo-splash-screen` packages. ([#14745](https://github.com/expo/expo/pull/14745) by [@kudo](https://github.com/kudo))
+- Fix crash in SDK 42 Android projects.
+
+### 💡 Others
+
+## 0.8.1 — 2021-10-07
+
+_This version does not introduce any user-facing changes._
+
+## 0.8.0 — 2021-10-07
+
+### 🛠 Breaking changes
+
+- Added a native dependency on the `expo-manifests` package. **Projects without `react-native-unimodules` or `expo-modules-core` installed will need to follow the upgrade guide [here](https://docs.expo.dev/clients/upgrading/) when upgrading from an older version of this package.** ([#14461](https://github.com/expo/expo/pull/14461) by [@esamelson](https://github.com/esamelson))
+- Replace Android DevLauncherManifest class with `expo-manifests`. ([#14462](https://github.com/expo/expo/pull/14462) by [@esamelson](https://github.com/esamelson))
+- Replace iOS EXDevLauncherManifest class with `expo-manifests`. ([#14463](https://github.com/expo/expo/pull/14463) by [@esamelson](https://github.com/esamelson))
+
+### 🎉 New features
+
+- Suppress the `"main" has not been registered` exception if it was caused by a different error. ([#14363](https://github.com/expo/expo/pull/14363) by [@lukmccall](https://github.com/lukmccall))
+- Added support for SDK 43. ([#14633](https://github.com/expo/expo/pull/14633) & [#14635](https://github.com/expo/expo/pull/14635) by [@lukmccall](https://github.com/lukmccall))
+
+### 🐛 Bug fixes
+
+- Fix intent that started activity isn't passed further. ([#14097](https://github.com/expo/expo/pull/14097) by [@lukmccall](https://github.com/lukmccall))
+- Fix building errors from use_frameworks! in Podfile. ([#14523](https://github.com/expo/expo/pull/14523) by [@kudo](https://github.com/kudo))
+
+### 💡 Others
+
+- Updated `@expo/config-plugins` ([#14443](https://github.com/expo/expo/pull/14443) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 0.7.0 — 2021-09-02
+
+### 🎉 New features
+
+- Fix compatibility with RN 0.65. ([#14064](https://github.com/expo/expo/pull/14064) by [@lukmccall](https://github.com/lukmccall))
+- Add manifestURL to exported constants. ([#14195](https://github.com/expo/expo/pull/14195) by [@esamelson](https://github.com/esamelson))
+- Add flag to disable auto-launch of dev menu on start. ([#14196](https://github.com/expo/expo/pull/14196) by [@esamelson](https://github.com/esamelson))
+
+### 🐛 Bug fixes
+
+- Fixed crashes when the app doesn't have custom deep link scheme on iOS. ([#14026](https://github.com/expo/expo/pull/14026) by [@lukmccall](https://github.com/lukmccall))
+- Fix config plugin not idempotent. ([#14065](https://github.com/expo/expo/pull/14065) by [@lukmccall](https://github.com/lukmccall))
+- Fix React Native version checker in build.gradle. ([#14251](https://github.com/expo/expo/pull/14251) by [@esamelson](https://github.com/esamelson))
+- Fixed Cmd+D opening two dev menus. ([#14204](https://github.com/expo/expo/pull/14204) by [@fson](https://github.com/fson))
+
 ### 💡 Others
 
 - Display linking scheme used by app in launcher URL field ([#13930](https://github.com/expo/expo/pull/13930) by [@fson](https://github.com/fson))
@@ -17,7 +64,6 @@
 ### 🐛 Bug fixes
 
 - Fixed issue with opening multiple different published apps. ([#13926](https://github.com/expo/expo/pull/13926) by [@esamelson](https://github.com/esamelson))
-- Fixed crashes when the app doesn't have custom deep link scheme on iOS. ([#14026](https://github.com/expo/expo/pull/14026) by [@lukmccall](https://github.com/lukmccall))
 
 ## 0.6.6 — 2021-08-04
 

@@ -13,6 +13,7 @@ import expo.interfaces.devmenu.DevMenuSettingsInterface
 import expo.interfaces.devmenu.expoapi.DevMenuExpoApiClientInterface
 import expo.interfaces.devmenu.items.DevMenuDataSourceItem
 import expo.modules.devmenu.api.DevMenuMetroClient
+import kotlinx.coroutines.CoroutineScope
 
 private const val DEV_MENU_IS_NOT_AVAILABLE = "DevMenu isn't available in release builds"
 
@@ -80,6 +81,10 @@ object DevMenuManager : DevMenuManagerInterface {
     throw IllegalStateException(DEV_MENU_IS_NOT_AVAILABLE)
   }
 
+  override fun setCanLaunchDevMenuOnStart(canLaunchDevMenuOnStart: Boolean) {
+    throw IllegalStateException(DEV_MENU_IS_NOT_AVAILABLE)
+  }
+
   override fun sendEventToDelegateBridge(eventName: String, eventData: Any?) {
     throw IllegalStateException(DEV_MENU_IS_NOT_AVAILABLE)
   }
@@ -91,4 +96,7 @@ object DevMenuManager : DevMenuManagerInterface {
   override suspend fun fetchDataSource(id: String): List<DevMenuDataSourceItem> {
     throw IllegalStateException(DEV_MENU_IS_NOT_AVAILABLE)
   }
+
+  override val coroutineScope: CoroutineScope
+    get() = throw IllegalStateException(DEV_MENU_IS_NOT_AVAILABLE)
 }

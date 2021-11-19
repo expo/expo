@@ -3,5 +3,8 @@
   "platforms": ["ios", "android", "web"],
   "ios": {
     "modulesClassNames": ["CellularModule"]
+  },
+  "android": {
+    "modulesClassNames": ["expo.modules.cellular.CellularModule"]
   }
 }

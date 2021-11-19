@@ -8,29 +8,30 @@ pluginManagement {
 
 include ':app'
 
-include ':packages:react-native-codegen:android'
-project(':packages:react-native-codegen:android').projectDir = new File('../react-native-lab/react-native/packages/react-native-codegen/android')
-includeBuild('../react-native-lab/react-native/packages/react-native-codegen/android')
-
-apply from: new File(["node", "--print", "require.resolve('expo-modules-core/package.json')"].execute().text.trim(), "../scripts/autolinking.gradle")
+apply from: new File(["node", "--print", "require.resolve('expo/package.json')"].execute(null, rootDir).text.trim(), "../scripts/autolinking.gradle")
 
 /* UNCOMMENT WHEN DISTRIBUTING
 useExpoModules([
-    autolink: false,
     exclude: [
         'expo-module-template',
-        'expo-in-app-purchases',
-        'expo-payments-stripe'
+        'expo-in-app-purchases'
     ],
     searchPaths: [
       'enabled-modules'
     ],
     useAAR: true
 ])
+
+include ':expo'
+project(':expo').projectDir = new File('../packages/expo/android')
 END UNCOMMENT WHEN DISTRIBUTING */
 
 
 // WHEN_DISTRIBUTING_REMOVE_FROM_HERE
+include ':packages:react-native-codegen:android'
+project(':packages:react-native-codegen:android').projectDir = new File('../react-native-lab/react-native/packages/react-native-codegen/android')
+includeBuild('../react-native-lab/react-native/packages/react-native-codegen/android')
+
 include ':expoview'
 include ':tools'
 include ':ReactAndroid'
@@ -43,20 +44,17 @@ project(":expo-random").projectDir = new File("../packages/expo-random/android")
 
 [
     // ADD_NEW_SUPPORTED_ABIS_HERE
+    "abi43_0_0",
     "abi42_0_0",
     "abi41_0_0",
-    "abi40_0_0",
-    "abi39_0_0",
 ].forEach({ abiVariant ->
   include ":expoview-$abiVariant"
   project(":expoview-$abiVariant").projectDir = new File(rootDir, "versioned-abis/expoview-$abiVariant")
 })
 
 useExpoModules([
-    autolink: false,
     exclude : [
         'expo-module-template',
-        'expo-in-app-purchases'
     ]
 ])
 // WHEN_DISTRIBUTING_REMOVE_TO_HERE

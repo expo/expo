@@ -73,7 +73,7 @@ export async function loadAsync(fontFamilyOrFontMap, source) {
         }
         const fontMap = fontFamilyOrFontMap;
         const names = Object.keys(fontMap);
-        await Promise.all(names.map(name => loadFontInNamespaceAsync(name, fontMap[name])));
+        await Promise.all(names.map((name) => loadFontInNamespaceAsync(name, fontMap[name])));
         return;
     }
     return await loadFontInNamespaceAsync(fontFamilyOrFontMap, source);
@@ -85,7 +85,7 @@ async function loadFontInNamespaceAsync(fontFamily, source) {
     if (loaded[fontFamily]) {
         return;
     }
-    if (loadPromises[fontFamily]) {
+    if (loadPromises.hasOwnProperty(fontFamily)) {
         return loadPromises[fontFamily];
     }
     // Important: we want all callers that concurrently try to load the same font to await the same
@@ -139,7 +139,7 @@ export async function unloadAsync(fontFamilyOrFontMap, options) {
         }
         const fontMap = fontFamilyOrFontMap;
         const names = Object.keys(fontMap);
-        await Promise.all(names.map(name => unloadFontInNamespaceAsync(name, fontMap[name])));
+        await Promise.all(names.map((name) => unloadFontInNamespaceAsync(name, fontMap[name])));
         return;
     }
     return await unloadFontInNamespaceAsync(fontFamilyOrFontMap, options);

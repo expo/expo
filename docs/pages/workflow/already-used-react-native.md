@@ -2,6 +2,8 @@
 title: Already used React Native?
 ---
 
+import { InlineCode } from '~/components/base/code';
+
 This guide is intended to give developers who have already used React Native a quick outline on some of the key concepts, resources, and differences they will encounter when using Expo.
 
 You can use just about every part of the [Expo SDK](/versions/latest/) in any vanilla React Native app - we call using the Expo tools in this context the "bare" workflow. See more about that [here](../bare/hello-world.md). It's basically no different than using libraries in your React Native app, we just offer a lot of well-tested, consistent, and increasingly comprehensive libraries that give you access to the underlying native APIs.
@@ -16,21 +18,21 @@ Expo extends the React Native platform by offering additional, battle-tested mod
 
 - If you've ever had to go through the trouble of upgrading a module or installing something like `react-native-maps`, you'll appreciate when things _just work_.
 
-Managed Expo projects also offer OTA (Over The Air) updates and a push notification service.
+Managed Expo projects also offer updates and a push notification service.
 
-- If you've ever been in a situation where you find a spelling mistake in your app and have to wait for Apple to approve a change, you'll appreciate OTA updates - these changes will appear as soon as you run `expo publish`! You aren't limited to text either, this applies to assets like images and configuration updates too!
+- If you've ever been in a situation where you find a spelling mistake in your app and have to wait for Apple to approve a change, you'll appreciate updates - these changes will appear as soon as you run `expo publish`! You aren't limited to text either, this applies to assets like images and configuration updates too!
 
-There's no need re-build or redeploy your app to the App and Play store. It's like [Code Push](https://microsoft.github.io/code-push/) if you've used that before. There are a few limitations, however. [Read about those here](../workflow/publishing.md#limitations).
+There's no need to re-build or redeploy your app to the App and Play store. It's like [Code Push](https://microsoft.github.io/code-push/) if you've used that before. There are a few limitations, however. [Read about those here](../workflow/publishing.md#limitations).
 
 Expo offers a shared configuration file we call a _manifest_.
 
-- Configuration that you would typically do inside of your Xcode / plist files or Android studio / xml files is handled through `app.json`. For example, if you want to lock the orientation, change your icon, customize your splash screen, add/remove permissions and entitlements (in standalone apps), configure keys for Google Maps and other services, you set this in `app.json` and it will apply to both iOS and Android. [See the guide here](/workflow/configuration.md).
+- Configuration that you would typically do inside of your Xcode / plist files or Android studio / xml files is handled through **app.json**. For example, if you want to lock the orientation, change your icon, customize your splash screen, add/remove permissions and entitlements (in standalone apps), configure keys for Google Maps and other services, you set this in **app.json** and it will apply to both iOS and Android. [See the guide here](/workflow/configuration.md).
 
 In the managed workflow, you can share your app with anyone, anywhere in the world while you're working through the Expo Go app [(available on the App / Play Store)](https://expo.dev). Scan a QR code, or enter in a phone number and we'll send you a link that will instantly load your app on your device.
 
 - Instead of having to sign up several external testers through App Store Connect, you can easily have them download the Expo Go app and immediately have a working version on their phone.
 
-We talk about permissions we set within `app.json`, but there's also the [Permissions API](../versions/latest/sdk/permissions.md). Permissions inside `app.json` are meant to be used by Android standalone apps for things like camera access, geolocation, fingerprint, etc. The Permissions API on the other hand, is used to request and verify access at runtime. It offers an easy API for asking your users for push notifications, location, camera, audio recording and contacts.
+We talk about permissions we set within **app.json**, but there's also the [Permissions API](../versions/latest/sdk/permissions.md). Permissions inside **app.json** are meant to be used by Android standalone apps for things like camera access, geolocation, fingerprint, etc. The Permissions API on the other hand, is used to request and verify access at runtime. It offers an easy API for asking your users for push notifications, location, camera, audio recording and contacts.
 
 ## How does Expo work?
 
@@ -48,9 +50,16 @@ Apps are served from Expo CLI through a tunnel service by default (we currently 
 
 ## Deploying to the App / Play Store
 
-When you're ready, you can run `expo build:ios` or `expo build:android` and Expo will build your app and output a link to the binary required for you to submit. Then you can use something like [Transporter](https://apps.apple.com/app/transporter/id1450874784) for iOS, or directly upload an APK for Android.
+When you're ready, you can run `eas build --auto-submit` using EAS CLI to both build your app and automatically upload the binary for distribution on the Apple App Store and Google Play Store.
+
+<details><summary><strong>Are you using the classic build system?</strong> (<InlineCode>expo build:[android|ios]</InlineCode>)</summary> <p>
+
+If you are using the classic build system, you can run `expo build:ios` or `expo build:android` and Expo will build your app and output a link to the binary required for you to submit. Then you can use something like [Transporter](https://apps.apple.com/app/transporter/id1450874784) for iOS, or directly upload an APK for Android.
 
 If you prefer to build your app on your own machine, you can [follow these steps](https://github.com/expo/expo#standalone-apps).
+
+</p>
+</details>
 
 ## Helpful Tools & Resources
 

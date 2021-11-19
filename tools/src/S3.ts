@@ -3,14 +3,11 @@ import { SpawnOptions } from 'child_process';
 import fse from 'fs-extra';
 import os from 'os';
 import path from 'path';
-import { promisify } from 'util';
 import spawnAsync from '@expo/spawn-async';
 
 export const S3_BUCKET = 'exp-artifacts';
 export const S3_URL = `s3://${S3_BUCKET}`;
 export const S3_WEBSITE_PATH = `build-artifacts.exp.host`;
-
-const fsWriteFileAsync = promisify(fse.writeFile);
 
 export async function addRedirectAsync(from: string, to: string): Promise<void> {
   from = from.replace(new RegExp(`^s3:\/\/${S3_BUCKET}\/?`), '');
@@ -198,7 +195,7 @@ export async function uploadDirectoriesAsync(
         }
       );
       let gitCommandOutput = gitCommand.stdout.toString();
-      await fsWriteFileAsync(excludeFile, gitCommandOutput);
+      await fse.writeFile(excludeFile, gitCommandOutput);
       await spawnAsync(
         'rsync',
         [

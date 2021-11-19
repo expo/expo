@@ -6,6 +6,7 @@ import URL from 'url-parse';
 import AssetSourceResolver from './AssetSourceResolver';
 import { manifestBaseUrl, getManifest } from './PlatformUtils';
 
+// @docsMissing
 export type AssetMetadata = {
   hash: string;
   name: string;
@@ -42,7 +43,7 @@ export function selectAssetSource(meta: AssetMetadata): AssetSource {
   // This logic is based on that of AssetSourceResolver, with additional support for file hashes and
   // explicitly provided URIs
   const scale = AssetSourceResolver.pickScale(meta.scales, PixelRatio.get());
-  const index = meta.scales.findIndex(s => s === scale);
+  const index = meta.scales.findIndex((s) => s === scale);
   const hash = meta.fileHashes ? meta.fileHashes[index] || meta.fileHashes[0] : meta.hash;
 
   // Allow asset processors to directly provide the URL to load

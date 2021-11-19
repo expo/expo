@@ -1,33 +1,23 @@
 import Ionicons from '@expo/vector-icons/build/Ionicons';
-import * as React from 'react';
-import { TouchableOpacity, View } from 'react-native';
+import React from 'react';
+import { StyleSheet, TouchableOpacity, TouchableOpacityProps } from 'react-native';
 
-export function HeaderContainerRight(
-  props: React.ComponentProps<typeof View> & {
-    children?: any;
-  }
-) {
-  return <View {...props} style={[{ paddingRight: 8, flexDirection: 'row' }, props.style]} />;
-}
-
-type Props = {
+type Props = TouchableOpacityProps & {
   color?: string;
-  disabled?: boolean;
   name: string;
-  onPress: () => void;
   size?: number;
 };
 
-export default function HeaderIconButton({
-  color = 'blue',
-  disabled,
-  name,
-  onPress,
-  size = 24,
-}: Props) {
-  return (
-    <TouchableOpacity disabled={disabled} style={{ paddingHorizontal: 12 }} onPress={onPress}>
-      <Ionicons size={size} color={color} name={name as any} />
-    </TouchableOpacity>
-  );
-}
+const HeaderIconButton = ({ color = 'blue', disabled, name, onPress, size = 24 }: Props) => (
+  <TouchableOpacity disabled={disabled} style={styles.iconButton} onPress={onPress}>
+    <Ionicons size={size} color={color} name={name as any} />
+  </TouchableOpacity>
+);
+
+const styles = StyleSheet.create({
+  iconButton: {
+    paddingHorizontal: 12,
+  },
+});
+
+export default HeaderIconButton;

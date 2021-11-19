@@ -4,11 +4,11 @@
 #import <Foundation/Foundation.h>
 #import <EXFacebook/EXFacebook.h>
 #import <ExpoModulesCore/EXAppLifecycleListener.h>
-#import <EXUpdates/EXUpdatesRawManifest.h>
+#import <EXManifests/EXManifestsManifest.h>
 
 @interface EXScopedFacebook : EXFacebook <EXAppLifecycleListener>
 
-- (instancetype)initWithScopeKey:(NSString *)scopeKey manifest:(EXUpdatesRawManifest *)manifest;
+- (instancetype)initWithScopeKey:(NSString *)scopeKey manifest:(EXManifestsManifest *)manifest;
 
 @end
 #endif

@@ -106,11 +106,11 @@ internal class DevLauncherManifestParserTest {
     val manifest = manifestParser.parseManifest()
 
     Truth.assertThat(manifest).isNotNull()
-    Truth.assertThat(manifest.slug).isEqualTo("native-component-list")
-    Truth.assertThat(manifest.hostUri).isEqualTo("127.0.0.1:19000")
-    Truth.assertThat(manifest.primaryColor).isEqualTo("#cccccc")
-    Truth.assertThat(manifest.bundleUrl).isEqualTo("http://127.0.0.1:19000/__generated__/AppEntry.bundle?platform=ios&dev=true&hot=false&minify=false")
-    Truth.assertThat(manifest.orientation).isEqualTo(DevLauncherOrientation.DEFAULT)
+    Truth.assertThat(manifest.getSlug()).isEqualTo("native-component-list")
+    Truth.assertThat(manifest.getHostUri()).isEqualTo("127.0.0.1:19000")
+    Truth.assertThat(manifest.getPrimaryColor()).isEqualTo("#cccccc")
+    Truth.assertThat(manifest.getBundleURL()).isEqualTo("http://127.0.0.1:19000/__generated__/AppEntry.bundle?platform=ios&dev=true&hot=false&minify=false")
+    Truth.assertThat(manifest.getOrientation()).isEqualTo(DevLauncherOrientation.DEFAULT)
   }
 
   @Test

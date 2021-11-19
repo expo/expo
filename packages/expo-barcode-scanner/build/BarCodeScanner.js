@@ -5,7 +5,6 @@ import ExpoBarCodeScannerModule from './ExpoBarCodeScannerModule';
 import ExpoBarCodeScannerView from './ExpoBarCodeScannerView';
 const { BarCodeType, Type } = ExpoBarCodeScannerModule;
 const EVENT_THROTTLE_MS = 500;
-export { PermissionStatus };
 export class BarCodeScanner extends React.Component {
     lastEvents = {};
     lastEventsTimes = {};
@@ -20,9 +19,21 @@ export class BarCodeScanner extends React.Component {
         type: Type.back,
         barCodeTypes: Object.values(BarCodeType),
     };
+    // @needsAudit
+    /**
+     * Checks user's permissions for accessing the camera.
+     * @return Return a promise that fulfills to an object of type [`PermissionResponse`](#permissionresponse).
+     */
     static async getPermissionsAsync() {
         return ExpoBarCodeScannerModule.getPermissionsAsync();
     }
+    // @needsAudit
+    /**
+     * Asks the user to grant permissions for accessing the camera.
+     *
+     * On iOS this will require apps to specify the `NSCameraUsageDescription` entry in the `Info.plist`.
+     * @return Return a promise that fulfills to an object of type [`PermissionResponse`](#permissionresponse).
+     */
     static async requestPermissionsAsync() {
         return ExpoBarCodeScannerModule.requestPermissionsAsync();
     }
@@ -40,6 +51,17 @@ export class BarCodeScanner extends React.Component {
         getMethod: BarCodeScanner.getPermissionsAsync,
         requestMethod: BarCodeScanner.requestPermissionsAsync,
     });
+    // @needsAudit
+    /**
+     * Scan bar codes from the image given by the URL.
+     * @param url URL to get the image from.
+     * @param barCodeTypes An array of bar code types. Defaults to all supported bar code types on
+     * the platform.
+     * > __Note:__ Only QR codes are supported on iOS.
+     * @return A possibly empty array of objects of the `BarCodeScannerResult` shape, where the type
+     * refers to the bar code type that was scanned and the data is the information encoded in the bar
+     * code.
+     */
     static async scanFromURLAsync(url, barCodeTypes = Object.values(BarCodeType)) {
         if (!ExpoBarCodeScannerModule.scanFromURLAsync) {
             throw new UnavailabilityError('expo-barcode-scanner', 'scanFromURLAsync');
@@ -63,7 +85,7 @@ export class BarCodeScanner extends React.Component {
         const { onBarCodeScanned } = this.props;
         return (React.createElement(ExpoBarCodeScannerView, { ...nativeProps, onBarCodeScanned: this.onObjectDetected(onBarCodeScanned) }));
     }
-    onObjectDetected = (callback) => ({ nativeEvent, }) => {
+    onObjectDetected = (callback) => ({ nativeEvent }) => {
         const { type } = nativeEvent;
         if (this.lastEvents[type] &&
             this.lastEventsTimes[type] &&
@@ -90,5 +112,6 @@ export class BarCodeScanner extends React.Component {
         return nativeProps;
     }
 }
-export const { Constants, getPermissionsAsync, requestPermissionsAsync, usePermissions, } = BarCodeScanner;
+export { PermissionStatus };
+export const { Constants, getPermissionsAsync, requestPermissionsAsync, usePermissions, scanFromURLAsync, } = BarCodeScanner;
 //# sourceMappingURL=BarCodeScanner.js.map

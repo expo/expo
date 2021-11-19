@@ -21,9 +21,9 @@ The bundler that you're running in your terminal (via `expo start`) is using a d
 
 - Close out any development servers that you have running (you can list all terminal processes with the `ps` command, and search for Expo CLI or React Native community CLI processes with `ps -A | grep "expo\|react-native"`).
 
-- If this is a managed workflow project, either remove the `sdkVersion` field from your `app.json` file, or make sure it matches the value of the `expo` dependency in your `package.json` file.
+- If this is a managed workflow project, either remove the `sdkVersion` field from your **app.json** file, or make sure it matches the value of the `expo` dependency in your **package.json** file.
 
-- If this is a managed workflow project, you should make sure your `react-native` version is correct. Run `expo upgrade` and follow the prompts. Expo CLI will make sure that your dependency versions for packages like `expo` and `react-native` are aligned. Your `react-native` version should be pointing to a `.tar.gz` file that has your SDK version in it, something like `https://github.com/expo/react-native/archive/sdk-XX.X.X.tar.gz`.
+- If this is a managed workflow project, you should make sure your `react-native` version is correct. Run `expo doctor` will show a warning where the `react-native` version you should install. If you did upgrade to newer SDK, make sure to run `expo upgrade` and follow the prompts. Expo CLI will make sure that your dependency versions for packages like `expo` and `react-native` are aligned.
 
 - If this is a bare workflow project, and this error is occurring right after upgrading your React Native version, you should double-check that you've performed each of the upgrade steps correctly.
 

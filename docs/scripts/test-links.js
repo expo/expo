@@ -1,6 +1,12 @@
 const puppeteer = require('puppeteer');
 
 const url = process.argv[2];
+
+if (!url) {
+  console.error(`You need to provide the base URL for links as a parameter.`);
+  process.exit(-1);
+}
+
 const externalLinks = [
   '/versions/latest/workflow/expo-cli/', // https://github.com/expo/expo-cli/blob/master/packages/expo-cli/README.md and https://github.com/expo/expo-cli/blob/master/README.md
   '/versions/latest/workflow/configuration/', // https://github.com/expo/expo-cli/blob/master/CONTRIBUTING.md and https://github.com/expo/expo-cli/blob/master/packages/expo-cli/src/commands/init.js and https://github.com/expo/expo-cli/blob/master/packages/xdl/src/project/Doctor.js
@@ -14,7 +20,7 @@ const externalLinks = [
   '/versions/latest/guides/splash-screens/#differences-between-environments---android', // https://github.com/expo/expo-cli/blob/master/packages/xdl/src/Android.js
   '/versions/latest/sdk/overview/', // https://github.com/expo/expo-cli/blob/master/packages/xdl/src/project/Convert.js
   '/versions/latest/distribution/building-standalone-apps/#2-configure-appjson', // https://github.com/expo/expo-cli/blob/master/packages/expo-cli/src/commands/build/ios/IOSBuilder.js
-  '/versions/latest/guides/configuring-ota-updates/', // https://github.com/expo/expo-cli/blob/master/packages/expo-cli/src/commands/build/BaseBuilder.js
+  '/versions/latest/guides/configuring-updates/', // https://github.com/expo/expo-cli/blob/master/packages/expo-cli/src/commands/build/BaseBuilder.js
   '/versions/latest/expokit/eject/', // https://github.com/expo/expo-cli/blob/master/packages/expo-cli/src/commands/eject/Eject.js
   '/versions/latest/introduction/faq/#can-i-use-nodejs-packages-with-expo', // https://github.com/expo/expo-cli/blob/master/packages/xdl/src/logs/PackagerLogsStream.js
   '/versions/latest/guides/offline-support/', // https://github.com/expo/expo-cli/tree/master/packages/xdl/caches
@@ -31,25 +37,18 @@ const externalLinks = [
     for (const link of externalLinks) {
       const response = await page.goto(`${url}${link}`);
       if (response.status() === 404) {
-        await page.waitFor(
-          () => {
-            return (
-              document.querySelector('#redirect-link') || document.querySelector('#__not_found')
-            );
-          },
+        await page.waitForFunction(
+          () => document.querySelector('#redirect-link') || document.querySelector('#__not_found'),
           { timeout: 500 }
         );
         if (await page.$('#redirect-link')) {
           await Promise.all([page.waitForNavigation(), page.click('#redirect-link')]);
           console.info(`Redirected from ${link} to ${await page.url()}`);
           try {
-            await page.waitFor(
-              () => {
-                return (
-                  document.querySelector('#__redirect_failed') ||
-                  document.querySelector('#__not_found')
-                );
-              },
+            await page.waitForFunction(
+              () =>
+                document.querySelector('#__redirect_failed') ||
+                document.querySelector('#__not_found'),
               { timeout: 500 }
             );
             console.debug(`Redirect failed`);

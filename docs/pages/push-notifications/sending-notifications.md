@@ -21,7 +21,7 @@ When you're ready to send a push notification, take the Expo push token from you
 - [expo-server-sdk-ruby](https://github.com/expo/expo-server-sdk-ruby) for Ruby. Maintained by community developers.
 - [expo-server-sdk-rust](https://github.com/expo/expo-server-sdk-rust) for Rust. Maintained by community developers.
 - [ExpoNotificationsBundle](https://github.com/solvecrew/ExpoNotificationsBundle) for Symfony. Maintained by SolveCrew.
-- [exponent-server-sdk-php](https://github.com/Alymosul/exponent-server-sdk-php) for PHP. Maintained by community developers.
+- [exponent-server-sdk-php](https://github.com/Alymosul/exponent-server-sdk-php) or [expo-server-sdk-php](https://github.com/ctwillie/expo-server-sdk-php) for PHP. Maintained by community developers.
 - [exponent-server-sdk-golang](https://github.com/oliveroneill/exponent-server-sdk-golang) for Golang. Maintained by community developers.
 - [exponent-server-sdk-elixir](https://github.com/rdrop/exponent-server-sdk-elixir) for Elixir. Maintained by community developers.
 - [expo-server-sdk-dotnet](https://github.com/glyphard/expo-server-sdk-dotnet) for dotnet. Maintained by community developers.
@@ -51,7 +51,7 @@ Other failures will not resolve themselves no matter how many times you retry. I
 
 ### Check push receipts for errors
 
-The Expo push notification service responds with [*push tickets*](#push-tickets) upon successfully receiving notifications. A push ticket indicates that Expo has received your notification payload but may not have sent it yet. Each push ticket contains a ticket ID, which you later use to look up a [*push receipt*](#push-receipts). A push receipt is available after Expo has tried to deliver the notification to APNs, FCM, etc… and tells you whether delivery to the push notification provider was successful.
+The Expo push notification service responds with [_push tickets_](#push-tickets) upon successfully receiving notifications. A push ticket indicates that Expo has received your notification payload but may not have sent it yet. Each push ticket contains a ticket ID, which you later use to look up a [_push receipt_](#push-receipts). A push receipt is available after Expo has tried to deliver the notification to APNs, FCM, etc… and tells you whether delivery to the push notification provider was successful.
 
 You must check your push receipts. If there is an issue delivering push notifications, the push receipts are the best way to get information about the underlying cause. The receipts may indicate a problem with APNs or FCM, the Expo push notification service, or your notification payload.
 
@@ -61,7 +61,7 @@ We recommend checking push receipts 15 minutes after sending your push notificat
 
 ### SLAs
 
-The Expo push notification service does not have an SLA and the APNs and FCM services also may have occasional outages. By following the guidance above, you can make your application robust against temporary service interruptions. 
+The Expo push notification service does not have an SLA and the APNs and FCM services also may have occasional outages. By following the guidance above, you can make your application robust against temporary service interruptions.
 
 ## HTTP/2 API
 
@@ -215,7 +215,7 @@ Inside both push tickets and push receipts, look for a `details` object with an 
 - `InvalidCredentials`: your push notification credentials for your standalone app are invalid (ex: you may have revoked them). Run `expo build:ios -c` to regenerate new push notification credentials for iOS. If you revoke an APN key, all apps that rely on that key will no longer be able to send or receive push notifications until you upload a new key to replace it. Uploading a new APN key will **not** change your users' Expo Push Tokens.
   - Sometimes, these errors will contain further details claiming an `InvalidProviderToken` error. This is actually tied to both your APN key **and** your provisioning profile. To resolve this error, you should rebuild the app and regenerate a new push key and provisioning profile.
 
-> Note: For a better understanding of iOS credentials, including push notification credentials, read our [App Signing docs](../distribution/app-signing.md#ios)
+> Note: For a better understanding of iOS credentials, including push notification credentials, read our [App Signing docs](/app-signing/app-credentials.md#ios)
 
 ### Request errors
 

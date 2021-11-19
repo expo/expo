@@ -1,0 +1,25 @@
+{
+  "name": "expo-manifests",
+  "version": "0.2.1",
+  "description": "Code to parse and use Expo and Expo Updates manifests.",
+  "main": "index.js",
+  "keywords": [
+    "react-native",
+    "expo",
+    "expo-manifests"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git",
+    "directory": "packages/expo-manifests"
+  },
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
+  "author": "650 Industries, Inc.",
+  "license": "MIT",
+  "homepage": "https://docs.expo.dev/versions/latest/sdk/module-template",
+  "dependencies": {
+    "expo-json-utils": "~0.2.0"
+  }
+}

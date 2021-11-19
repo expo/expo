@@ -57,6 +57,7 @@ jobs:
             packages/@unimodules/*/node_modules
             react-native-lab/react-native/node_modules
           key: ${{ runner.os }}-modules-${{ hashFiles('yarn.lock') }}
+      - run: echo "$(pwd)/bin" >> $GITHUB_PATH
       - name: ♻️ Restore node modules in tools
         uses: actions/cache@v2
         with:

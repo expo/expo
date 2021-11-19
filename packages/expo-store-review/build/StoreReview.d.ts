@@ -27,7 +27,7 @@ export declare function storeUrl(): string | null;
  * contain store URLs and native store review capabilities are not available then the promise
  * will fulfill to `false`.
  *
- * # Example
+ * @example
  * ```ts
  * if (await StoreReview.hasAction()) {
  *   // you can call StoreReview.requestReview()

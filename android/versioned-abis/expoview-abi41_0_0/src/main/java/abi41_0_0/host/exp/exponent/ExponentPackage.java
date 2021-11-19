@@ -11,7 +11,7 @@ import abi41_0_0.com.facebook.react.bridge.ReactApplicationContext;
 import abi41_0_0.com.facebook.react.uimanager.ViewManager;
 
 import org.json.JSONException;
-import org.json.JSONObject;
+
 import abi41_0_0.org.unimodules.adapters.react.ReactModuleRegistryProvider;
 import abi41_0_0.org.unimodules.core.interfaces.Package;
 import expo.modules.core.interfaces.SingletonModule;
@@ -27,9 +27,8 @@ import java.util.Set;
 
 import javax.annotation.Nullable;
 
-import expo.modules.updates.manifest.raw.RawManifest;
+import expo.modules.manifests.core.Manifest;
 import host.exp.exponent.Constants;
-import host.exp.exponent.ExponentManifest;
 import host.exp.exponent.analytics.EXL;
 import abi41_0_0.host.exp.exponent.modules.api.appearance.rncappearance.RNCAppearanceModule;
 import abi41_0_0.host.exp.exponent.modules.api.reanimated.ReanimatedModule;
@@ -84,18 +83,18 @@ public class ExponentPackage implements ReactPackage {
 
   private final boolean mIsKernel;
   private final Map<String, Object> mExperienceProperties;
-  private final RawManifest mManifest;
+  private final Manifest mManifest;
 
   private final ScopedModuleRegistryAdapter mModuleRegistryAdapter;
 
-  private ExponentPackage(boolean isKernel, Map<String, Object> experienceProperties, RawManifest manifest, List<Package> expoPackages, List<SingletonModule> singletonModules) {
+  private ExponentPackage(boolean isKernel, Map<String, Object> experienceProperties, Manifest manifest, List<Package> expoPackages, List<SingletonModule> singletonModules) {
     mIsKernel = isKernel;
     mExperienceProperties = experienceProperties;
     mManifest = manifest;
     mModuleRegistryAdapter = createDefaultModuleRegistryAdapterForPackages(expoPackages, singletonModules);
   }
 
-  public ExponentPackage(Map<String, Object> experienceProperties, RawManifest manifest, List<Package> expoPackages, ExponentPackageDelegate delegate, List<SingletonModule> singletonModules) {
+  public ExponentPackage(Map<String, Object> experienceProperties, Manifest manifest, List<Package> expoPackages, ExponentPackageDelegate delegate, List<SingletonModule> singletonModules) {
     mIsKernel = false;
     mExperienceProperties = experienceProperties;
     mManifest = manifest;
@@ -120,7 +119,7 @@ public class ExponentPackage implements ReactPackage {
   }
 
 
-  public static ExponentPackage kernelExponentPackage(Context context, RawManifest manifest, List<Package> expoPackages, @Nullable String initialURL) {
+  public static ExponentPackage kernelExponentPackage(Context context, Manifest manifest, List<Package> expoPackages, @Nullable String initialURL) {
     Map<String, Object> kernelExperienceProperties = new HashMap<>();
     List<SingletonModule> singletonModules = ExponentPackage.getOrCreateSingletonModules(context, manifest, expoPackages);
     kernelExperienceProperties.put(LINKING_URI_KEY, "exp://");
@@ -131,7 +130,7 @@ public class ExponentPackage implements ReactPackage {
     return new ExponentPackage(true, kernelExperienceProperties, manifest, expoPackages, singletonModules);
   }
 
-  public static List<SingletonModule> getOrCreateSingletonModules(Context context, RawManifest manifest, List<Package> providedExpoPackages) {
+  public static List<SingletonModule> getOrCreateSingletonModules(Context context, Manifest manifest, List<Package> providedExpoPackages) {
     if (Looper.getMainLooper() != Looper.myLooper()) {
       throw new RuntimeException("Singleton modules must be created on the main thread.");
     }
@@ -189,10 +188,10 @@ public class ExponentPackage implements ReactPackage {
 
     if (isVerified) {
       try {
-        ExperienceKey experienceKey = ExperienceKey.fromRawManifest(mManifest);
+        ExperienceKey experienceKey = ExperienceKey.fromManifest(mManifest);
         ScopedContext scopedContext = new ScopedContext(reactContext, experienceKey);
 
-        nativeModules.add(new NotificationsModule(reactContext, experienceKey, mManifest.getStableLegacyID(), mExperienceProperties));
+        nativeModules.add(new NotificationsModule(reactContext, experienceKey, mManifest.getStableLegacyID(), mManifest.getEASProjectID()));
         nativeModules.add(new RNViewShotModule(reactContext, scopedContext));
         nativeModules.add(new RandomModule(reactContext));
         nativeModules.add(new ExponentTestNativeModule(reactContext));
@@ -229,7 +228,7 @@ public class ExponentPackage implements ReactPackage {
         // Call to create native modules has to be at the bottom --
         // -- ExpoModuleRegistryAdapter uses the list of native modules
         // to create Bindings for internal modules.
-        nativeModules.addAll(mModuleRegistryAdapter.createNativeModules(scopedContext, experienceKey, mExperienceProperties, mManifest, mManifest.getStableLegacyID(), nativeModules));
+        nativeModules.addAll(mModuleRegistryAdapter.createNativeModules(scopedContext, experienceKey, mExperienceProperties, mManifest, nativeModules));
       } catch (JSONException | UnsupportedEncodingException e) {
         EXL.e(TAG, e.toString());
       }

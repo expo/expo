@@ -7,6 +7,7 @@
 #import <React/RCTRootContentView.h>
 #import <React/RCTAppearance.h>
 #import <React/RCTConstants.h>
+#import <React/RCTKeyCommands.h>
 
 #import "EXDevLauncherController.h"
 #import "EXDevLauncherRCTBridge.h"
@@ -16,7 +17,14 @@
 #import "EXDevLauncherUpdatesHelper.h"
 #import "RCTPackagerConnection+EXDevLauncherPackagerConnectionInterceptor.h"
 
+#if __has_include(<EXDevLauncher/EXDevLauncher-Swift.h>)
+// For cocoapods framework, the generated swift header will be inside EXDevLauncher module
+#import <EXDevLauncher/EXDevLauncher-Swift.h>
+#else
 #import <EXDevLauncher-Swift.h>
+#endif
+
+#import <EXManifests/EXManifestsManifestFactory.h>
 
 @import EXDevMenuInterface;
 
@@ -40,7 +48,8 @@ NSString *fakeLauncherBundleUrl = @"embedded://EXDevLauncher/dummy";
 @property (nonatomic, strong) NSURL *sourceUrl;
 @property (nonatomic, assign) BOOL shouldPreferUpdatesInterfaceSourceUrl;
 @property (nonatomic, strong) EXDevLauncherRecentlyOpenedAppsRegistry *recentlyOpenedAppsRegistry;
-@property (nonatomic, strong) EXDevLauncherManifest *manifest;
+@property (nonatomic, strong) EXManifestsManifest *manifest;
+@property (nonatomic, strong) NSURL *manifestURL;
 @property (nonatomic, strong) EXDevLauncherErrorManager *errorManager;
 
 @end
@@ -117,9 +126,14 @@ NSString *fakeLauncherBundleUrl = @"embedded://EXDevLauncher/dummy";
   };
 }
 
-- (EXDevLauncherManifest *)appManifest
+- (EXManifestsManifest *)appManifest
 {
   return self.manifest;
+}
+
+- (NSURL * _Nullable)appManifestURL
+{
+  return self.manifestURL;
 }
 
 - (UIWindow *)currentWindow
@@ -140,6 +154,9 @@ NSString *fakeLauncherBundleUrl = @"embedded://EXDevLauncher/dummy";
 
   if (!launchOptions[UIApplicationLaunchOptionsURLKey]) {
     [self navigateToLauncher];
+  } else {
+    // For deeplink launch, we need the keyWindow for expo-splash-screen to setup correctly.
+    [_window makeKeyWindow];
   }
 }
 
@@ -147,10 +164,13 @@ NSString *fakeLauncherBundleUrl = @"embedded://EXDevLauncher/dummy";
 {
   [_appBridge invalidate];
   self.manifest = nil;
+  self.manifestURL = nil;
 
   if (@available(iOS 12, *)) {
     [self _applyUserInterfaceStyle:UIUserInterfaceStyleUnspecified];
   }
+  
+  [self _removeInitModuleObserver];
 
   _launcherBridge = [[EXDevLauncherRCTBridge alloc] initWithDelegate:self launchOptions:_launchOptions];
 
@@ -258,20 +278,20 @@ NSString *fakeLauncherBundleUrl = @"embedded://EXDevLauncher/dummy";
     RCTDevLoadingViewSetEnabled(NO);
     [self.recentlyOpenedAppsRegistry appWasOpened:expoUrl.absoluteString name:nil];
     if ([expoUrl.path isEqual:@"/"] || [expoUrl.path isEqual:@""]) {
-      [self _initApp:[NSURL URLWithString:@"index.bundle?platform=ios&dev=true&minify=false" relativeToURL:expoUrl] manifest:nil];
+      [self _initAppWithUrl:expoUrl bundleUrl:[NSURL URLWithString:@"index.bundle?platform=ios&dev=true&minify=false" relativeToURL:expoUrl] manifest:nil];
     } else {
-      [self _initApp:expoUrl manifest:nil];
+      [self _initAppWithUrl:expoUrl bundleUrl:expoUrl manifest:nil];
     }
     if (onSuccess) {
       onSuccess();
     }
   };
 
-  void (^launchExpoApp)(NSURL *, EXDevLauncherManifest *) = ^(NSURL *bundleURL, EXDevLauncherManifest *manifest) {
+  void (^launchExpoApp)(NSURL *, EXManifestsManifest *) = ^(NSURL *bundleURL, EXManifestsManifest *manifest) {
     self->_shouldPreferUpdatesInterfaceSourceUrl = !manifest.isUsingDeveloperTool;
     RCTDevLoadingViewSetEnabled(manifest.isUsingDeveloperTool);
     [self.recentlyOpenedAppsRegistry appWasOpened:expoUrl.absoluteString name:manifest.name];
-    [self _initApp:bundleURL manifest:manifest];
+    [self _initAppWithUrl:expoUrl bundleUrl:bundleURL manifest:manifest];
     if (onSuccess) {
       onSuccess();
     }
@@ -290,7 +310,7 @@ NSString *fakeLauncherBundleUrl = @"embedded://EXDevLauncher/dummy";
     }
 
     if (!self->_updatesInterface) {
-      [manifestParser tryToParseManifest:^(EXDevLauncherManifest *manifest) {
+      [manifestParser tryToParseManifest:^(EXManifestsManifest *manifest) {
         if (!manifest.isUsingDeveloperTool) {
           onError([NSError errorWithDomain:@"DevelopmentClient" code:1 userInfo:@{NSLocalizedDescriptionKey: @"expo-updates is not properly installed or integrated. In order to load published projects with this development client, follow all installation and setup instructions for both the expo-dev-client and expo-updates packages."}]);
           return;
@@ -301,7 +321,7 @@ NSString *fakeLauncherBundleUrl = @"embedded://EXDevLauncher/dummy";
     }
 
     [self->_updatesInterface fetchUpdateWithConfiguration:updatesConfiguration onManifest:^BOOL(NSDictionary *manifest) {
-      EXDevLauncherManifest *devLauncherManifest = [EXDevLauncherManifest fromJsonObject:manifest];
+      EXManifestsManifest *devLauncherManifest = [EXManifestsManifestFactory manifestForManifestJSON:manifest];
       if (devLauncherManifest.isUsingDeveloperTool) {
         // launch right away rather than continuing to load through EXUpdates
         launchExpoApp([NSURL URLWithString:devLauncherManifest.bundleUrl], devLauncherManifest);
@@ -312,17 +332,18 @@ NSString *fakeLauncherBundleUrl = @"embedded://EXDevLauncher/dummy";
       // do nothing for now
     } success:^(NSDictionary * _Nullable manifest) {
       if (manifest) {
-        launchExpoApp(self->_updatesInterface.launchAssetURL, [EXDevLauncherManifest fromJsonObject:manifest]);
+        launchExpoApp(self->_updatesInterface.launchAssetURL, [EXManifestsManifestFactory manifestForManifestJSON:manifest]);
       }
     } error:onError];
   } onError:onError];
 }
 
-- (void)_initApp:(NSURL *)bundleUrl manifest:(EXDevLauncherManifest * _Nullable)manifest
+- (void)_initAppWithUrl:(NSURL *)appUrl bundleUrl:(NSURL *)bundleUrl manifest:(EXManifestsManifest * _Nullable)manifest
 {
   self.manifest = manifest;
-  __block UIInterfaceOrientation orientation = manifest.orientation;
-  __block UIColor *backgroundColor = manifest.backgroundColor;
+  self.manifestURL = appUrl;
+  __block UIInterfaceOrientation orientation = [EXDevLauncherManifestHelper exportManifestOrientation:manifest.orientation];
+  __block UIColor *backgroundColor = [EXDevLauncherManifestHelper hexStringToColor:manifest.iosOrRootBackgroundColor];
   
   __weak __typeof(self) weakSelf = self;
   dispatch_async(dispatch_get_main_queue(), ^{
@@ -339,18 +360,21 @@ NSString *fakeLauncherBundleUrl = @"embedded://EXDevLauncher/dummy";
 #endif
     
     if (@available(iOS 12, *)) {
-      [self _applyUserInterfaceStyle:manifest.userInterfaceStyle];
+      UIUserInterfaceStyle userInterfaceStyle = [EXDevLauncherManifestHelper exportManifestUserInterfaceStyle:manifest.userInterfaceStyle];
+      [self _applyUserInterfaceStyle:userInterfaceStyle];
       
       // Fix for the community react-native-appearance.
       // RNC appearance checks the global trait collection and doesn't have another way to override the user interface.
       // So we swap `currentTraitCollection` with one from the root view controller.
       // Note that the root view controller will have the correct value of `userInterfaceStyle`.
       if (@available(iOS 13.0, *)) {
-        if (manifest.userInterfaceStyle != UIUserInterfaceStyleUnspecified) {
+        if (userInterfaceStyle != UIUserInterfaceStyleUnspecified) {
           UITraitCollection.currentTraitCollection = [self.window.rootViewController.traitCollection copy];
         }
       }
     }
+
+    [self _addInitModuleObserver];
     
     [self.delegate devLauncherController:self didStartWithSuccess:YES];
     [self _maybeInitDevMenuDelegate:self.appBridge];
@@ -384,7 +408,7 @@ NSString *fakeLauncherBundleUrl = @"embedded://EXDevLauncher/dummy";
  */
 - (void)onAppContentDidAppear
 {
-  [[NSNotificationCenter defaultCenter] removeObserver:self];
+  [[NSNotificationCenter defaultCenter] removeObserver:self name:RCTContentDidAppearNotification object:nil];
 
   dispatch_async(dispatch_get_main_queue(), ^{
     NSArray<UIView *> *views = [[[self->_window rootViewController] view] subviews];
@@ -432,6 +456,27 @@ NSString *fakeLauncherBundleUrl = @"embedded://EXDevLauncher/dummy";
       devMenuManager.delegate = [[EXDevLauncherMenuDelegate alloc] initWithLauncherController:self];
     }
   });
+}
+
+- (void)_addInitModuleObserver {
+  [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didInitializeModule:) name:RCTDidInitializeModuleNotification object:nil];
+}
+
+- (void)_removeInitModuleObserver {
+  [[NSNotificationCenter defaultCenter] removeObserver:self name:RCTDidInitializeModuleNotification object:nil];
+}
+
+- (void)didInitializeModule:(NSNotification *)note {
+  id<RCTBridgeModule> module = note.userInfo[@"module"];
+  if ([module isKindOfClass:[RCTDevMenu class]]) {
+    // RCTDevMenu registers its global keyboard commands at init.
+    // To avoid clashes with keyboard commands registered by expo-dev-client, we unregister some of them
+    // and this needs to happen after the module has been initialized.
+    // RCTDevMenu registers its commands here: https://github.com/facebook/react-native/blob/f3e8ea9c2910b33db17001e98b96720b07dce0b3/React/CoreModules/RCTDevMenu.mm#L130-L135
+    // expo-dev-menu registers its commands here: https://github.com/expo/expo/blob/6da15324ff0b4a9cb24055e9815b8aa11f0ac3af/packages/expo-dev-menu/ios/Interceptors/DevMenuKeyCommandsInterceptor.swift#L27-L29
+    [[RCTKeyCommands sharedInstance] unregisterKeyCommandWithInput:@"d"
+                                                     modifierFlags:UIKeyModifierCommand];
+  }
 }
 
 @end

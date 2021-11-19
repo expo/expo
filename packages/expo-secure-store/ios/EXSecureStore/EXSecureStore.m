@@ -28,11 +28,19 @@
   NSMutableDictionary *dictionary = [self _queryWithKey:key
                                             withOptions:options];
 
+  NSString *requireAuth = options[@"requireAuthentication"];
+
   NSData *valueData = [value dataUsingEncoding:NSUTF8StringEncoding];
   [dictionary setObject:valueData forKey:(__bridge id)kSecValueData];
 
   CFStringRef accessibility = [self _accessibilityAttributeWithOptions:options];
-  [dictionary setObject:(__bridge id)accessibility forKey:(__bridge id)kSecAttrAccessible];
+  
+  if (![requireAuth boolValue]) {
+    [dictionary setObject:(__bridge id)accessibility forKey:(__bridge id)kSecAttrAccessible];
+  } else {
+    SecAccessControlRef accessOptions = SecAccessControlCreateWithFlags(nil, accessibility, kSecAccessControlUserPresence, nil);
+    [dictionary setObject:(__bridge_transfer id)accessOptions forKey:(__bridge id)kSecAttrAccessControl];
+  }
 
   OSStatus status = SecItemAdd((__bridge CFDictionaryRef)dictionary, NULL);
 
@@ -74,6 +82,11 @@
                                                   withOptions:options];
   NSData *valueData = [value dataUsingEncoding:NSUTF8StringEncoding];
   NSDictionary *updateDictionary = @{(__bridge id)kSecValueData:valueData};
+  
+  if ((NSString *) options[@"authenticationPrompt"]) {
+    NSString *promptText = options[@"authenticationPrompt"];
+    [searchDictionary setObject:promptText forKey:(__bridge id)kSecUseOperationPrompt];
+  }
 
   OSStatus status = SecItemUpdate((__bridge CFDictionaryRef)searchDictionary,
                                   (__bridge CFDictionaryRef)updateDictionary);
@@ -93,6 +106,11 @@
 
   [searchDictionary setObject:(__bridge id)kSecMatchLimitOne forKey:(__bridge id)kSecMatchLimit];
   [searchDictionary setObject:(__bridge id)kCFBooleanTrue forKey:(__bridge id)kSecReturnData];
+  
+  if ((NSString *) options[@"authenticationPrompt"]) {
+    NSString *promptText = options[@"authenticationPrompt"];
+    [searchDictionary setObject:promptText forKey:(__bridge id)kSecUseOperationPrompt];
+  }
 
   CFTypeRef foundDict = NULL;
   OSStatus status = SecItemCopyMatching((__bridge CFDictionaryRef)searchDictionary, &foundDict);
@@ -178,7 +196,7 @@
       return @"Unable to decode the provided data.";
 
     case errSecAuthFailed:
-      return @"The user name or passphrase you entered is not correct.";
+      return @"Authentication failed. Provided passphrase/PIN is incorrect or there is no user authentication method configured for this device.";
 
     default:
       return error.localizedDescription;

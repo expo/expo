@@ -80,9 +80,9 @@ For using the Expo SDK in a web-only Gatsby project.
 - Install the babel preset
   - **using yarn** - `yarn add -D babel-preset-expo`
   - using npm - `npm install --save-dev babel-preset-expo`
-- Create a `babel.config.js` and use the Babel preset - `touch babel.config.js`
+- Create a **babel.config.js** and use the Babel preset - `touch babel.config.js`
 
-  `babel.config.js`
+  **babel.config.js**
 
   ```js
   module.exports = {

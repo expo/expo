@@ -388,6 +388,17 @@ export default class DocumentationHeader extends React.PureComponent<Props> {
               <span css={SECTION_LINK_TEXT}>Guides</span>
             </a>
           </Link>
+          <Link href="/eas" passHref>
+            <a css={[SECTION_LINK, this.props.activeSection === 'eas' && SECTION_LINK_ACTIVE]}>
+              <span css={SECTION_LINK_TEXT}>EAS</span>
+            </a>
+          </Link>
+          <Link href="/versions/latest/" passHref>
+            <a
+              css={[SECTION_LINK, this.props.activeSection === 'reference' && SECTION_LINK_ACTIVE]}>
+              <span css={SECTION_LINK_TEXT}>API Reference</span>
+            </a>
+          </Link>
           {shouldShowFeaturePreviewLink() ? (
             <Link href="/feature-preview" passHref>
               <a
@@ -401,12 +412,6 @@ export default class DocumentationHeader extends React.PureComponent<Props> {
           ) : (
             <span />
           )}
-          <Link href="/versions/latest/" passHref>
-            <a
-              css={[SECTION_LINK, this.props.activeSection === 'reference' && SECTION_LINK_ACTIVE]}>
-              <span css={SECTION_LINK_TEXT}>API Reference</span>
-            </a>
-          </Link>
         </SectionContainer>
       </div>
     );

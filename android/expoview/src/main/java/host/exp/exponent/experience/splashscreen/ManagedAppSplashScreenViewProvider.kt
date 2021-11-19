@@ -8,7 +8,7 @@ import com.squareup.picasso.Callback
 import com.squareup.picasso.Picasso
 import expo.modules.splashscreen.SplashScreenView
 import expo.modules.splashscreen.SplashScreenViewProvider
-import expo.modules.updates.manifest.raw.RawManifest
+import expo.modules.manifests.core.Manifest
 import host.exp.exponent.analytics.EXL
 
 /**
@@ -29,7 +29,7 @@ class ManagedAppSplashScreenViewProvider(
     return splashScreenView
   }
 
-  fun updateSplashScreenViewWithManifest(context: Context, manifest: RawManifest) {
+  fun updateSplashScreenViewWithManifest(context: Context, manifest: Manifest) {
     val previousConfig = config
     config = ManagedAppSplashScreenConfiguration.parseManifest(manifest)
     configureSplashScreenView(context, config, previousConfig)

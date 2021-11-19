@@ -7,7 +7,9 @@ const config_plugins_1 = require("@expo/config-plugins");
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
 const semver_1 = __importDefault(require("semver"));
+const constants_1 = require("./constants");
 const resolveExpoUpdatesVersion_1 = require("./resolveExpoUpdatesVersion");
+const utils_1 = require("./utils");
 const withDevLauncherAppDelegate_1 = require("./withDevLauncherAppDelegate");
 const pkg = require('expo-dev-launcher/package.json');
 const DEV_LAUNCHER_ANDROID_IMPORT = 'expo.modules.devlauncher.DevLauncherController';
@@ -27,35 +29,17 @@ const DEV_LAUNCHER_UPDATES_ANDROID_INIT = `if (BuildConfig.DEBUG) {
       DevLauncherController.getInstance().setUpdatesInterface(UpdatesDevLauncherController.initialize(this));
     }`;
 const DEV_LAUNCHER_UPDATES_DEVELOPER_SUPPORT = 'return DevLauncherController.getInstance().getUseDeveloperSupport();';
-const DEV_LAUNCHER_JS_REGISTER_ERROR_HANDLERS = `import 'expo-dev-client';`;
+const DEV_LAUNCHER_JS_REGISTER_ERROR_HANDLERS = `import 'expo-dev-client'`;
+const DEV_LAUNCHER_JS_REGISTER_ERROR_HANDLERS_VIA_LAUNCHER = `import 'expo-dev-launcher'`;
 async function readFileAsync(path) {
     return fs_1.default.promises.readFile(path, 'utf8');
 }
 async function saveFileAsync(path, content) {
     return fs_1.default.promises.writeFile(path, content, 'utf8');
 }
-function addLines(content, find, offset, toAdd) {
-    const lines = content.split('\n');
-    let lineIndex = lines.findIndex(line => line.match(find));
-    for (const newLine of toAdd) {
-        if (!content.includes(newLine)) {
-            lines.splice(lineIndex + offset, 0, newLine);
-            lineIndex++;
-        }
-    }
-    return lines.join('\n');
-}
-function replaceLine(content, find, replace) {
-    const lines = content.split('\n');
-    if (!content.includes(replace)) {
-        const lineIndex = lines.findIndex(line => line.match(find));
-        lines.splice(lineIndex, 1, replace);
-    }
-    return lines.join('\n');
-}
 function addJavaImports(javaSource, javaImports) {
     const lines = javaSource.split('\n');
-    const lineIndexWithPackageDeclaration = lines.findIndex(line => line.match(/^package .*;$/));
+    const lineIndexWithPackageDeclaration = lines.findIndex((line) => line.match(/^package .*;$/));
     for (const javaImport of javaImports) {
         if (!javaSource.includes(javaImport)) {
             const importStatement = `import ${javaImport};`;
@@ -71,7 +55,8 @@ async function editMainApplication(config, action) {
         return await saveFileAsync(mainApplicationPath, mainApplication);
     }
     catch (e) {
-        config_plugins_1.WarningAggregator.addWarningIOS('expo-dev-launcher', `Couldn't modify MainApplication.java - ${e}.`);
+        config_plugins_1.WarningAggregator.addWarningAndroid('expo-dev-launcher', `Couldn't modify MainApplication.java - ${e}.
+See the expo-dev-client installation instructions to modify your MainApplication.java manually: ${constants_1.InstallationPage}`);
     }
 }
 async function editPodfile(config, action) {
@@ -81,7 +66,8 @@ async function editPodfile(config, action) {
         return await saveFileAsync(podfilePath, podfile);
     }
     catch (e) {
-        config_plugins_1.WarningAggregator.addWarningIOS('expo-dev-launcher', `Couldn't modify AppDelegate.m - ${e}.`);
+        config_plugins_1.WarningAggregator.addWarningIOS('expo-dev-launcher', `Couldn't modify AppDelegate.m - ${e}.
+See the expo-dev-client installation instructions to modify your AppDelegate.m manually: ${constants_1.InstallationPage}`);
     }
 }
 async function editIndex(config, action) {
@@ -91,31 +77,32 @@ async function editIndex(config, action) {
         return await saveFileAsync(indexPath, index);
     }
     catch (e) {
-        config_plugins_1.WarningAggregator.addWarningIOS('expo-dev-launcher', `Couldn't modify index.js - ${e}.`);
+        config_plugins_1.WarningAggregator.addWarningIOS('expo-dev-launcher', `Couldn't modify index.js - ${e}.
+See the expo-dev-client installation instructions to modify your index.js manually: ${constants_1.InstallationPage}`);
     }
 }
-const withDevLauncherApplication = config => {
-    return config_plugins_1.withDangerousMod(config, [
+const withDevLauncherApplication = (config) => {
+    return (0, config_plugins_1.withDangerousMod)(config, [
         'android',
         async (config) => {
-            await editMainApplication(config, mainApplication => {
+            await editMainApplication(config, (mainApplication) => {
                 mainApplication = addJavaImports(mainApplication, [DEV_LAUNCHER_ANDROID_IMPORT]);
-                mainApplication = addLines(mainApplication, 'initializeFlipper\\(this', 0, [
+                mainApplication = (0, utils_1.addLines)(mainApplication, 'initializeFlipper\\(this', 0, [
                     `    ${DEV_LAUNCHER_ANDROID_INIT}`,
                 ]);
                 let expoUpdatesVersion;
                 try {
-                    expoUpdatesVersion = resolveExpoUpdatesVersion_1.resolveExpoUpdatesVersion(config.modRequest.projectRoot);
+                    expoUpdatesVersion = (0, resolveExpoUpdatesVersion_1.resolveExpoUpdatesVersion)(config.modRequest.projectRoot);
                 }
                 catch (e) {
                     config_plugins_1.WarningAggregator.addWarningAndroid('expo-dev-launcher', `Failed to check compatibility with expo-updates - ${e}`);
                 }
                 if (expoUpdatesVersion && semver_1.default.gt(expoUpdatesVersion, '0.6.0')) {
                     mainApplication = addJavaImports(mainApplication, [DEV_LAUNCHER_UPDATES_ANDROID_IMPORT]);
-                    mainApplication = addLines(mainApplication, 'initializeFlipper\\(this', 0, [
+                    mainApplication = (0, utils_1.addLines)(mainApplication, 'initializeFlipper\\(this', 0, [
                         `    ${DEV_LAUNCHER_UPDATES_ANDROID_INIT}`,
                     ]);
-                    mainApplication = replaceLine(mainApplication, 'return BuildConfig.DEBUG;', `      ${DEV_LAUNCHER_UPDATES_DEVELOPER_SUPPORT}`);
+                    mainApplication = (0, utils_1.replaceLine)(mainApplication, 'return BuildConfig.DEBUG;', `      ${DEV_LAUNCHER_UPDATES_DEVELOPER_SUPPORT}`);
                 }
                 return mainApplication;
             });
@@ -123,8 +110,8 @@ const withDevLauncherApplication = config => {
         },
     ]);
 };
-const withDevLauncherActivity = config => {
-    return config_plugins_1.withMainActivity(config, config => {
+const withDevLauncherActivity = (config) => {
+    return (0, config_plugins_1.withMainActivity)(config, (config) => {
         if (config.modResults.language === 'java') {
             let content = addJavaImports(config.modResults.contents, [
                 DEV_LAUNCHER_ANDROID_IMPORT,
@@ -132,34 +119,36 @@ const withDevLauncherActivity = config => {
             ]);
             if (!content.includes(DEV_LAUNCHER_ON_NEW_INTENT)) {
                 const lines = content.split('\n');
-                const onCreateIndex = lines.findIndex(line => line.includes('public class MainActivity'));
+                const onCreateIndex = lines.findIndex((line) => line.includes('public class MainActivity'));
                 lines.splice(onCreateIndex + 1, 0, DEV_LAUNCHER_ON_NEW_INTENT);
                 content = lines.join('\n');
             }
             if (!content.includes('DevLauncherController.wrapReactActivityDelegate')) {
-                content = content.replace(/(new ReactActivityDelegate(.*|\s)*});$/m, DEV_LAUNCHER_WRAPPED_ACTIVITY_DELEGATE);
+                content = content.replace(/(new ReactActivityDelegate(Wrapper)?(.|\s)*\}\)?);$/mu, DEV_LAUNCHER_WRAPPED_ACTIVITY_DELEGATE);
             }
             config.modResults.contents = content;
         }
         else {
-            config_plugins_1.WarningAggregator.addWarningAndroid('expo-dev-launcher', `Cannot automatically configure MainActivity if it's not java`);
+            config_plugins_1.WarningAggregator.addWarningAndroid('expo-dev-launcher', `Cannot automatically configure MainActivity if it's not java.
+See the expo-dev-client installation instructions to modify your MainActivity manually: ${constants_1.InstallationPage}`);
         }
         return config;
     });
 };
-const withDevLauncherPodfile = config => {
-    return config_plugins_1.withDangerousMod(config, [
+const withDevLauncherPodfile = (config) => {
+    return (0, config_plugins_1.withDangerousMod)(config, [
         'ios',
         async (config) => {
-            await editPodfile(config, podfile => {
-                podfile = podfile.replace("platform :ios, '10.0'", "platform :ios, '11.0'");
+            await editPodfile(config, (podfile) => {
+                // replace all iOS versions below 12
+                podfile = podfile.replace(/platform :ios, '((\d\.0)|(1[0-1].0))'/, "platform :ios, '12.0'");
                 // Match both variations of Ruby config:
                 // unknown: pod 'expo-dev-launcher', path: '../node_modules/expo-dev-launcher', :configurations => :debug
                 // Rubocop: pod 'expo-dev-launcher', path: '../node_modules/expo-dev-launcher', configurations: :debug
                 if (!podfile.match(/pod ['"]expo-dev-launcher['"],\s?path: ['"][^'"]*node_modules\/expo-dev-launcher['"],\s?:?configurations:?\s(?:=>\s)?:debug/)) {
                     const packagePath = path_1.default.dirname(require.resolve('expo-dev-launcher/package.json'));
                     const relativePath = path_1.default.relative(config.modRequest.platformProjectRoot, packagePath);
-                    podfile = addLines(podfile, 'use_react_native', 0, [
+                    podfile = (0, utils_1.addLines)(podfile, 'use_react_native', 0, [
                         `  pod 'expo-dev-launcher', path: '${relativePath}', :configurations => :debug`,
                     ]);
                 }
@@ -169,11 +158,12 @@ const withDevLauncherPodfile = config => {
         },
     ]);
 };
-const withErrorHandling = config => {
+const withErrorHandling = (config) => {
     const injectErrorHandlers = async (config) => {
-        await editIndex(config, index => {
-            if (!index.includes(DEV_LAUNCHER_JS_REGISTER_ERROR_HANDLERS)) {
-                index = DEV_LAUNCHER_JS_REGISTER_ERROR_HANDLERS + '\n\n' + index;
+        await editIndex(config, (index) => {
+            if (!index.includes(DEV_LAUNCHER_JS_REGISTER_ERROR_HANDLERS) &&
+                !index.includes(DEV_LAUNCHER_JS_REGISTER_ERROR_HANDLERS_VIA_LAUNCHER)) {
+                index = DEV_LAUNCHER_JS_REGISTER_ERROR_HANDLERS + ';\n\n' + index;
             }
             return index;
         });
@@ -182,16 +172,16 @@ const withErrorHandling = config => {
     // We need to run the same task twice to ensure it will work on both platforms,
     // because if someone runs `expo run:ios`, it will trigger only dangerous mode for that specific platform.
     // Note: after the first execution, the second one won't change anything.
-    config = config_plugins_1.withDangerousMod(config, ['android', injectErrorHandlers]);
-    config = config_plugins_1.withDangerousMod(config, ['ios', injectErrorHandlers]);
+    config = (0, config_plugins_1.withDangerousMod)(config, ['android', injectErrorHandlers]);
+    config = (0, config_plugins_1.withDangerousMod)(config, ['ios', injectErrorHandlers]);
     return config;
 };
 const withDevLauncher = (config) => {
     config = withDevLauncherActivity(config);
     config = withDevLauncherApplication(config);
     config = withDevLauncherPodfile(config);
-    config = withDevLauncherAppDelegate_1.withDevLauncherAppDelegate(config);
+    config = (0, withDevLauncherAppDelegate_1.withDevLauncherAppDelegate)(config);
     config = withErrorHandling(config);
     return config;
 };
-exports.default = config_plugins_1.createRunOncePlugin(withDevLauncher, pkg.name, pkg.version);
+exports.default = (0, config_plugins_1.createRunOncePlugin)(withDevLauncher, pkg.name, pkg.version);

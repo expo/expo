@@ -45,14 +45,14 @@ export default class ExponentVideo extends React.Component {
         this.props.onLoadStart();
         this.onStatusUpdate();
     };
-    onLoadedData = event => {
+    onLoadedData = (event) => {
         if (!this.props.onLoad) {
             return;
         }
         this.props.onLoad(event);
         this.onStatusUpdate();
     };
-    onError = event => {
+    onError = (event) => {
         if (!this.props.onError) {
             return;
         }
@@ -71,7 +71,7 @@ export default class ExponentVideo extends React.Component {
     onLoadedMetadata = () => {
         this.onStatusUpdate();
     };
-    onCanPlay = event => {
+    onCanPlay = (event) => {
         if (!this.props.onReadyForDisplay) {
             return;
         }
@@ -82,10 +82,15 @@ export default class ExponentVideo extends React.Component {
         this.onStatusUpdate();
     };
     onRef = (ref) => {
-        this._video = ref;
         this._removeFullscreenListener?.();
-        this._removeFullscreenListener = addFullscreenListener(this._video, this.onFullscreenChange);
-        this.onStatusUpdate();
+        if (ref) {
+            this._video = ref;
+            this._removeFullscreenListener = addFullscreenListener(this._video, this.onFullscreenChange);
+            this.onStatusUpdate();
+        }
+        else {
+            this._removeFullscreenListener = undefined;
+        }
     };
     render() {
         const { source, status = {}, resizeMode: objectFit, useNativeControls, style } = this.props;
@@ -94,7 +99,7 @@ export default class ExponentVideo extends React.Component {
             objectFit,
             overflow: 'hidden',
         };
-        return (React.createElement(Video, { ref: this.onRef, onLoadStart: this.onLoadStart, onLoadedData: this.onLoadedData, onError: this.onError, onTimeUpdate: this.onProgress, onSeeking: this.onSeeking, onEnded: this.onEnded, onLoadedMetadata: this.onLoadedMetadata, onCanPlay: this.onCanPlay, onStalled: this.onStalled, src: (source || { uri: undefined }).uri, muted: status.isMuted, loop: status.isLooping, autoPlay: status.shouldPlay, controls: useNativeControls, style: [style, customStyle], playsInline: true }));
+        return (React.createElement(Video, { ref: this.onRef, onLoadStart: this.onLoadStart, onLoadedData: this.onLoadedData, onError: this.onError, onTimeUpdate: this.onProgress, onSeeking: this.onSeeking, onEnded: this.onEnded, onLoadedMetadata: this.onLoadedMetadata, onCanPlay: this.onCanPlay, onStalled: this.onStalled, src: source?.uri || undefined, muted: status.isMuted, loop: status.isLooping, autoPlay: status.shouldPlay, controls: useNativeControls, style: [style, customStyle], playsInline: true }));
     }
 }
 //# sourceMappingURL=ExponentVideo.web.js.map

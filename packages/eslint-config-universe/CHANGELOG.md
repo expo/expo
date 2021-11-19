@@ -4,9 +4,31 @@
 
 ### 🛠 Breaking changes
 
+- Change Prettier minimal version to `2.4+`, to avoid issues with renamed option. [See the Prettier changelog](https://prettier.io/blog/2021/09/09/2.4.0.html). ([#15167](https://github.com/expo/expo/pull/15167) by [@Simek](https://github.com/Simek))
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
+
+- Rename Prettier option from `jsxBracketSameLine` to `bracketSameLine` to fix the warning. ([#15167](https://github.com/expo/expo/pull/15167) by [@Simek](https://github.com/Simek))
+
+### 💡 Others
+
+- Update Babel related dependencies to `7.12+`. ([#15167](https://github.com/expo/expo/pull/15167) by [@Simek](https://github.com/Simek))
+- Update Jest to the latest version from `26` release. ([#15167](https://github.com/expo/expo/pull/15167) by [@Simek](https://github.com/Simek))
+
+## 8.0.0 — 2021-09-08
+
+### 🛠 Breaking changes
+
+- Require ESLint 7+ and Prettier 2+. ([#13858](https://github.com/expo/expo/pull/13858) by [@Simek](https://github.com/Simek))
+- Update all the ESLint configs and plugins:
+  - `@typescript-eslint/eslint-plugin` and `@typescript-eslint/eslint-parser` updated to 4.28.5,
+  - `eslint-config-prettier` updated to 8.3.0,
+  - `eslint-plugin-prettier` updated to 3.4.0,
+  - `eslint-plugin-react` update to 7.24.0,
+  - `eslint-plugin-react-hooks` updated to 4.2.0,
+  - `eslint-plugin-import` update to 2.23.4. ([#13858](https://github.com/expo/expo/pull/13858) by [@Simek](https://github.com/Simek))
 
 ## 7.0.1 — 2021-01-15
 

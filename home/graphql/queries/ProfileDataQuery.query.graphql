@@ -10,26 +10,11 @@ query Home_ProfileData2($appLimit: Int!, $snackLimit: Int!) {
       name
     }
     appCount
-    apps(limit: $appLimit, offset: 0) {
-      id
-      description
-      fullName
-      iconUrl
-      lastPublishedTime
-      name
-      packageName
-      username
-      sdkVersion
-      privacy
-      published
+    apps(limit: $appLimit, offset: 0, includeUnpublished: true) {
+      ...CommonAppData
     }
     snacks(limit: $snackLimit, offset: 0) {
-      id
-      name
-      description
-      fullName
-      slug
-      isDraft
+      ...CommonSnackData
     }
   }
 }

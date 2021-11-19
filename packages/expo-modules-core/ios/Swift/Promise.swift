@@ -1,5 +1,5 @@
 
-public struct Promise: AnyMethodArgument {
+public struct Promise: AnyArgument {
   public typealias ResolveClosure = (Any?) -> Void
   public typealias RejectClosure = (CodedError) -> Void
 

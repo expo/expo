@@ -1,6 +1,6 @@
-import * as ErrorRecovery from 'expo-error-recovery';
 import * as React from 'react';
 
+import { attachRecoveredProps } from './RecoveryProps';
 import { InitialProps } from './withExpoRoot.types';
 
 // This hook can be optionally imported because __DEV__ never changes during runtime.
@@ -21,11 +21,7 @@ export default function withExpoRoot<P extends InitialProps>(
   return function ExpoRoot(props: P) {
     useDevKeepAwake();
 
-    const combinedProps = {
-      ...props,
-      exp: { ...props.exp, errorRecovery: ErrorRecovery.recoveredProps },
-    };
-
+    const combinedProps = attachRecoveredProps(props);
     return <AppRootComponent {...combinedProps} />;
   };
 }

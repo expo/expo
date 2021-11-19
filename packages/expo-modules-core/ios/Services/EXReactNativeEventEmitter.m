@@ -4,6 +4,7 @@
 #import <ExpoModulesCore/EXEventEmitter.h>
 #import <ExpoModulesCore/EXExportedModule.h>
 #import <ExpoModulesCore/EXModuleRegistry.h>
+#import <ExpoModulesCore/Swift.h>
 
 @interface EXReactNativeEventEmitter ()
 
@@ -24,11 +25,14 @@
   return self;
 }
 
-EX_REGISTER_MODULE();
-
 + (NSString *)moduleName
 {
-  return @"UMReactNativeEventEmitter";
+  return @"EXReactNativeEventEmitter";
+}
+
++ (BOOL)requiresMainQueueSetup
+{
+  return NO;
 }
 
 + (const NSArray<Protocol *> *)exportedInterfaces
@@ -39,6 +43,10 @@ EX_REGISTER_MODULE();
 - (NSArray<NSString *> *)supportedEvents
 {
   NSMutableSet<NSString *> *eventsAccumulator = [NSMutableSet set];
+
+  if (_swiftInteropBridge) {
+    [eventsAccumulator addObjectsFromArray:[_swiftInteropBridge getSupportedEvents]];
+  }
   for (EXExportedModule *exportedModule in [_exModuleRegistry getAllExportedModules]) {
     if ([exportedModule conformsToProtocol:@protocol(EXEventEmitter)]) {
       id<EXEventEmitter> eventEmitter = (id<EXEventEmitter>)exportedModule;
@@ -51,6 +59,11 @@ EX_REGISTER_MODULE();
 RCT_EXPORT_METHOD(addProxiedListener:(NSString *)moduleName eventName:(NSString *)eventName)
 {
   [self addListener:eventName];
+
+  if ([_swiftInteropBridge hasModule:moduleName]) {
+    [_swiftInteropBridge modifyEventListenersCount:moduleName count:1];
+    return;
+  }
   // Validate module
   EXExportedModule *module = [_exModuleRegistry getExportedModuleForName:moduleName];
 
@@ -87,6 +100,11 @@ RCT_EXPORT_METHOD(addProxiedListener:(NSString *)moduleName eventName:(NSString 
 RCT_EXPORT_METHOD(removeProxiedListeners:(NSString *)moduleName count:(double)count)
 {
   [self removeListeners:count];
+
+  if ([_swiftInteropBridge hasModule:moduleName]) {
+    [_swiftInteropBridge modifyEventListenersCount:moduleName count:-count];
+    return;
+  }
   // Validate module
   EXExportedModule *module = [_exModuleRegistry getExportedModuleForName:moduleName];
 
@@ -139,7 +157,11 @@ RCT_EXPORT_METHOD(removeProxiedListeners:(NSString *)moduleName count:(double)co
 
 - (void)setModuleRegistry:(EXModuleRegistry *)moduleRegistry
 {
-  _exModuleRegistry = moduleRegistry;
+  // We need to check if we get an object of the correct class because RN 65 tries to call this method with RTCModuleRegistry.
+  // See https://github.com/facebook/react-native/blob/2c2b83171603b47e5eec61eea55139f760dba090/React/Base/RCTModuleData.mm#L274-L289.
+  if ([moduleRegistry isKindOfClass:[EXModuleRegistry class]]) {
+    _exModuleRegistry = moduleRegistry;
+  }
 }
 
 @end

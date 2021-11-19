@@ -3,35 +3,46 @@ title: Limitations
 sidebar_title: Limitations
 ---
 
+import { InlineCode } from '~/components/base/code';
+
 Your success will be limited if you don't know the limitations of your tools. A good software engineer strives to understand the tradeoffs in the decisions they make.
 
-## Limitations of the managed workflow
+<details><summary><h4>Used Expo before? Here are some recent changes to the managed workflow you should be aware of...</h4></summary> <p>
 
-As explained on the [workflows overview page](managed-vs-bare.md), the managed workflow is kind of like "[Rails](https://rubyonrails.org/)" and "[Create React App](https://github.com/facebook/create-react-app)" for React Native. If you use the tools we provide in the managed workflow to build your app, we try to handle as much of the complexity of building apps for you as we can. The tradeoff here is that this workflow won't be suitable for _every possible app_.
+With the release of Expo Application Services, the managed workflow has far fewer limitations, and can be used for any project no matter the complexity:
 
-There are plenty of cases where its current constraints may not be appropriate for your project. The following is a list of limitations that we are aware of that may influence your decision on whether the managed workflow is a good fit for your project.
+- All libraries available to React Native apps are available to Expo managed workflow apps built with [EAS Build](/build/setup.md), but _some_ may require a [Prebuild Config Plugin](/guides/config-plugins/) to be added. The addition of config plugins means:
+  - Any 3rd party push notification service can support managed workflow apps.
+  - Native libraries that integrate with proprietary services can support managed workflow apps.
+- Apps built with EAS Build can be as small as you want, since the entire Expo SDK is no longer bundled in by default.
+- Apps built with EAS Build can target children under 13 years old
+
+These changes mean Expo can fit many more use cases than before.
+
+</p>
+</details>
+
+## Limitations of Expo Go and the classic `expo build` system
+
+If you're still using `expo build:ios` or `expo build:android`, or using Expo Go for development, it's important to be aware of the limitations that come with those features.
+
+> If you'd like to continue getting the same development experience that you have with Expo Go, but also use custom native libraries or custom native code, you should check out the [Expo Dev Client](/clients/introduction.md)!
+
+Expo Go comes with a pre-configured set of libraries, known as the Expo SDK. This makes development much faster, and essentially makes the mobile development experience much closer to the web development experience. However, additional native code cannot be added to Expo Go on the fly, so this means you are limited in terms of what dependencies you can add. This also applies to apps built with `expo build:android` and `expo build:ios`.
 
 <details><summary><h4>Not all iOS and Android APIs are available</h4></summary> <p>
 
-Many device APIs are supported (check out the "SDK API Reference" in the sidebar), but **not all iOS and Android APIs are available yet**: need Bluetooth? Sorry, we haven't built support for it yet. WebRTC? Not quite. One of the most frequent requests we get is for In-App Purchases and Apple and Google Pay integration. We haven't built this yet, but it's on the roadmap. We are constantly adding new APIs, so if we don't have something you need now, you can either use the [bare workflow](managed-vs-bare.md#bare-workflow) or follow [our blog](https://blog.expo.dev) to see the release notes for our SDK updates. Feature prioritization isn't strictly based off of popular vote, but it certainly helps us to gauge what is important to users.
+Many device APIs are supported (check out the "SDK API Reference" in the sidebar), but **not all iOS and Android APIs are available yet**. We are constantly adding new APIs, so if we don't have something you need now, you can either use [EAS Build](/build/setup.md), the [bare workflow](managed-vs-bare.md#bare-workflow), or follow [our blog](https://blog.expo.dev) to see the release notes for our SDK updates. Feature prioritization isn't strictly based off of popular vote, but it certainly helps us to gauge what is important to users.
 
 </p>
 </details>
 
-<details><summary><h4>The SDK doesn't support all types of background code execution</h4></summary>
+<details><summary><h4>If you need to keep your app size extremely lean, <InlineCode>expo build:[android|ios]</InlineCode> may not be the best choice</h4></summary>
 <p>
 
-Background execution is the ability to run code when the app is not foregrounded or the device is sleeping. We support background geolocation (including geofencing), background fetch, and handling notifications in the background, but we do not yet support background audio with the operating-system playback controls. This is a work in progress.
+The size for an app built with `expo build` on iOS is approximately 20mb (download), and Android is about 15mb. This is because a bunch of APIs are included regardless of whether or not you are using them &mdash; this lets you publish updates that use new APIs, but comes at the cost of binary size. Some of the APIs that are included are tied to services that you may not be using, for example the Facebook Mobile SDK is included to support Facebook Login and Facebook Ads, along with the Google Mobile SDK for similar reasons. [Read more about managing your app size here](https://expo.fyi/managed-app-size).
 
-</p>
-</details>
-
-<details><summary><h4>If you need to keep your app size extremely lean, the managed workflow may not be the best choice</h4></summary>
-<p>
-
-The size for a managed Expo app on iOS is approximately 20mb (download), and Android is about 15mb. This is because "managed" includes a bunch of APIs regardless of whether or not you are using them &mdash; this lets you push over-the-air updates to use new APIs, but comes at the cost of binary size. Some of the APIs that are included are tied to services that you may not be using, for example the Facebook Mobile SDK is included to support Facebook Login and Facebook Ads, along with the Google Mobile SDK for similar reasons. We will make this customizable in the future, so you can trim down the size of your binaries. [Read more about managing your app size here](https://expo.fyi/managed-app-size).
-
-> 💡 Work is progress on resolving this! In the near future, you will be able to build managed apps with [EAS Build](/build/introduction.md) without adding any additional size to your binary ([in some cases, more than 10x reduction in binary size](https://twitter.com/Baconbrix/status/1338910158399782912)).
+If you'd like a smaller app size, you should use [EAS Build](/build/setup.md).
 
 </p>
 </details>
@@ -39,7 +50,7 @@ The size for a managed Expo app on iOS is approximately 20mb (download), and And
 <details><summary><h4>Native libraries to integrate with proprietary services are usually not included in the SDK</h4></summary>
 <p>
 
-Related to the previous point, we typically avoid adding native modules to the SDK if they are tied to external, proprietary services &mdash; we can't add something to the SDK just because a few users need it for their app, we have to think of the broader userbase. In these cases developers will want to use the [bare workflow](../introduction/managed-vs-bare.md), and they can easily migrate to it by [ejecting](../workflow/customizing.md).
+Related to the previous point, we typically avoid adding native modules to the SDK if they are tied to external, proprietary services &mdash; we can't add something to the SDK just because a few users need it for their app, we have to think of the broader userbase. In these cases developers will want to use [EAS Build](/build/setup.md), or the [bare workflow](../introduction/managed-vs-bare.md).
 
 </p>
 </details>
@@ -47,7 +58,7 @@ Related to the previous point, we typically avoid adding native modules to the S
 <details><summary><h4>The only supported third-party push notification service is the Expo notification service</h4></summary>
 <p>
 
-If you want to use another third-party push notification service, such as OneSignal, instead of the [Expo Push Notification service/API](../push-notifications/overview.md), you will need to use the bare workflow.
+If you want to use another third-party push notification service, such as OneSignal, instead of the [Expo Push Notification service/API](../push-notifications/overview.md), you will need to use [EAS Build](/build/setup.md).
 
 Note that you can use the first-party push APIs (APNs and FCM) directly if you like. [Read "Sending Notifications with APNs & FCM"](/push-notifications/sending-notifications-custom.md)
 
@@ -57,7 +68,7 @@ Note that you can use the first-party push APIs (APNs and FCM) directly if you l
 <details><summary><h4>The minimum supported OS versions are Android 5+ and iOS 10+</h4></summary>
 <p>
 
-If you need to support older versions, you will not be able to use the managed workflow.
+If you need to support older versions, you will not be able to use `expo build:ios` or `expo build:android`.
 
 </p>
 </details>
@@ -70,10 +81,10 @@ You can easily build your app for submission to stores without even installing X
 </p>
 </details>
 
-<details><summary><h4>Updates (JS and assets) for OTA updates and builds are size-limited</h4></summary>
+<details><summary><h4>Updates (JS and assets) for updates and builds are size-limited</h4></summary>
 <p>
 
-Expo's current update service supports updates around 50 MiB. Updates are published both for OTA updates and to build standalone apps, which embed updates. See more about [optimizing updates](../distribution/optimizing-updates.md).
+Expo's current update service supports updates around 50 MiB. Updates are published both for updates and to build standalone apps, which embed updates. See more about [optimizing updates](../distribution/optimizing-updates.md).
 
 You also can use the [bare workflow](../bare/exploring-bare-workflow.md) with the [`expo-updates`](../versions/latest/sdk/updates.md) library, which supports arbitrarily large updates that are self-hosted or embedded in apps compiled on your own computer.
 

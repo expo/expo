@@ -1,7 +1,7 @@
 //  Copyright © 2019 650 Industries. All rights reserved.
 
-#import <EXUpdates/EXUpdatesAppLauncherNoDatabase.h>
 #import <EXUpdates/EXUpdatesCrypto.h>
+#import <EXUpdates/EXUpdatesErrorRecovery.h>
 #import <EXUpdates/EXUpdatesFileDownloader.h>
 #import <EXUpdates/EXUpdatesSelectionPolicies.h>
 
@@ -205,11 +205,23 @@ NSTimeInterval const EXUpdatesDefaultTimeoutInterval = 60;
   }
 
   NSError *error;
-  EXUpdatesUpdate *update = [EXUpdatesUpdate updateWithManifest:mutableManifest.copy
-                                                       response:response
-                                                         config:_config
-                                                       database:database
-                                                          error:&error];
+  EXUpdatesUpdate *update;
+  @try {
+    update = [EXUpdatesUpdate updateWithManifest:mutableManifest.copy
+                                                         response:response
+                                                           config:_config
+                                                         database:database
+                                                            error:&error];
+  }
+  @catch (NSException *exception) {
+    // Catch any assertions related to parsing the manifest JSON,
+    // this will ensure invalid manifests can be easily debugged.
+    // For example, this will catch nullish sdkVersion assertions.
+    error = [NSError errorWithDomain:EXUpdatesFileDownloaderErrorDomain
+                                code:1022
+                            userInfo:@{NSLocalizedDescriptionKey: [@"Failed to parse manifest: " stringByAppendingString:exception.reason] }];
+  }
+  
   if (error) {
     errorBlock(error, response);
     return;
@@ -330,7 +342,7 @@ NSTimeInterval const EXUpdatesDefaultTimeoutInterval = 60;
     [request setValue:_config.sdkVersion forHTTPHeaderField:@"Expo-SDK-Version"];
   }
 
-  NSString *previousFatalError = [EXUpdatesAppLauncherNoDatabase consumeError];
+  NSString *previousFatalError = [EXUpdatesErrorRecovery consumeErrorLog];
   if (previousFatalError) {
     // some servers can have max length restrictions for headers,
     // so we restrict the length of the string to 1024 characters --

@@ -31,7 +31,7 @@ import com.facebook.soloader.SoLoader
 import de.greenrobot.event.EventBus
 import expo.modules.notifications.service.NotificationsService.Companion.getNotificationResponseFromIntent
 import expo.modules.notifications.service.delegates.ExpoHandlingDelegate
-import expo.modules.updates.manifest.raw.RawManifest
+import expo.modules.manifests.core.Manifest
 import host.exp.exponent.*
 import host.exp.exponent.ExpoUpdatesAppLoader.AppLoaderCallback
 import host.exp.exponent.ExpoUpdatesAppLoader.AppLoaderStatus
@@ -196,7 +196,7 @@ class Kernel : KernelInterface() {
     val bundleUrlToLoad =
       bundleUrl + (if (ExpoViewBuildConfig.DEBUG) "" else "?versionName=" + ExpoViewKernel.instance.versionName)
     if (exponentSharedPreferences.shouldUseInternetKernel() &&
-      exponentSharedPreferences.getBoolean(ExponentSharedPreferences.IS_FIRST_KERNEL_RUN_KEY)
+      exponentSharedPreferences.getBoolean(ExponentSharedPreferences.ExponentSharedPreferencesKey.IS_FIRST_KERNEL_RUN_KEY)
     ) {
       kernelBundleListener().onBundleLoaded(Constants.EMBEDDED_KERNEL_PATH)
 
@@ -211,7 +211,7 @@ class Kernel : KernelInterface() {
             object : BundleListener {
               override fun onBundleLoaded(localBundlePath: String) {
                 exponentSharedPreferences.setBoolean(
-                  ExponentSharedPreferences.IS_FIRST_KERNEL_RUN_KEY,
+                  ExponentSharedPreferences.ExponentSharedPreferencesKey.IS_FIRST_KERNEL_RUN_KEY,
                   false
                 )
                 EXL.d(TAG, "Successfully preloaded kernel bundle")
@@ -227,10 +227,10 @@ class Kernel : KernelInterface() {
       )
     } else {
       var shouldNotUseKernelCache =
-        exponentSharedPreferences.getBoolean(ExponentSharedPreferences.SHOULD_NOT_USE_KERNEL_CACHE)
+        exponentSharedPreferences.getBoolean(ExponentSharedPreferences.ExponentSharedPreferencesKey.SHOULD_NOT_USE_KERNEL_CACHE)
       if (!ExpoViewBuildConfig.DEBUG) {
         val oldKernelRevisionId =
-          exponentSharedPreferences.getString(ExponentSharedPreferences.KERNEL_REVISION_ID, "")
+          exponentSharedPreferences.getString(ExponentSharedPreferences.ExponentSharedPreferencesKey.KERNEL_REVISION_ID, "")
         if (oldKernelRevisionId != kernelRevisionId) {
           shouldNotUseKernelCache = true
         }
@@ -251,7 +251,7 @@ class Kernel : KernelInterface() {
       override fun onBundleLoaded(localBundlePath: String) {
         if (!ExpoViewBuildConfig.DEBUG) {
           exponentSharedPreferences.setString(
-            ExponentSharedPreferences.KERNEL_REVISION_ID,
+            ExponentSharedPreferences.ExponentSharedPreferencesKey.KERNEL_REVISION_ID,
             kernelRevisionId
           )
         }
@@ -297,7 +297,7 @@ class Kernel : KernelInterface() {
 
           // Reset this flag if we crashed
           exponentSharedPreferences.setBoolean(
-            ExponentSharedPreferences.SHOULD_NOT_USE_KERNEL_CACHE,
+            ExponentSharedPreferences.ExponentSharedPreferencesKey.SHOULD_NOT_USE_KERNEL_CACHE,
             false
           )
         }
@@ -354,7 +354,7 @@ class Kernel : KernelInterface() {
   private val kernelLaunchOptions: Bundle
     get() {
       val exponentProps = JSONObject()
-      val referrer = exponentSharedPreferences.getString(ExponentSharedPreferences.REFERRER_KEY)
+      val referrer = exponentSharedPreferences.getString(ExponentSharedPreferences.ExponentSharedPreferencesKey.REFERRER_KEY)
       if (referrer != null) {
         try {
           exponentProps.put("referrer", referrer)
@@ -471,7 +471,7 @@ class Kernel : KernelInterface() {
         if (exponentNotification != null) {
           // Add action type
           if (bundle.containsKey(KernelConstants.NOTIFICATION_ACTION_TYPE_KEY)) {
-            exponentNotification.setActionType(bundle.getString(KernelConstants.NOTIFICATION_ACTION_TYPE_KEY))
+            exponentNotification.actionType = bundle.getString(KernelConstants.NOTIFICATION_ACTION_TYPE_KEY)
             val manager = ExponentNotificationManager(context)
             val experienceKey = ExperienceKey(exponentNotification.experienceScopeKey)
             manager.cancel(experienceKey, exponentNotification.notificationId)
@@ -479,7 +479,7 @@ class Kernel : KernelInterface() {
           // Add remote input
           val remoteInput = RemoteInput.getResultsFromIntent(intent)
           if (remoteInput != null) {
-            exponentNotification.setInputText(remoteInput.getString(NotificationActionCenter.KEY_TEXT_REPLY))
+            exponentNotification.inputText = remoteInput.getString(NotificationActionCenter.KEY_TEXT_REPLY)
           }
         }
         openExperience(
@@ -679,12 +679,12 @@ class Kernel : KernelInterface() {
       ExpoUpdatesAppLoader(
         manifestUrl,
         object : AppLoaderCallback {
-          override fun onOptimisticManifest(optimisticManifest: RawManifest) {
+          override fun onOptimisticManifest(optimisticManifest: Manifest) {
             Exponent.instance
               .runOnUiThread { sendOptimisticManifestToExperienceActivity(optimisticManifest) }
           }
 
-          override fun onManifestCompleted(manifest: RawManifest) {
+          override fun onManifestCompleted(manifest: Manifest) {
             Exponent.instance.runOnUiThread {
               try {
                 openManifestUrlStep2(manifestUrl, manifest, finalExistingTask)
@@ -694,7 +694,7 @@ class Kernel : KernelInterface() {
             }
           }
 
-          override fun onBundleCompleted(localBundlePath: String?) {
+          override fun onBundleCompleted(localBundlePath: String) {
             Exponent.instance.runOnUiThread { sendBundleToExperienceActivity(localBundlePath) }
           }
 
@@ -724,13 +724,13 @@ class Kernel : KernelInterface() {
   @Throws(JSONException::class)
   private fun openManifestUrlStep2(
     manifestUrl: String,
-    manifest: RawManifest,
+    manifest: Manifest,
     existingTask: AppTask?
   ) {
     val bundleUrl = toHttp(manifest.getBundleURL())
     val task = getExperienceActivityTask(manifestUrl)
     task.bundleUrl = bundleUrl
-    ExponentManifest.normalizeRawManifestInPlace(manifest, manifestUrl)
+    ExponentManifest.normalizeManifestInPlace(manifest, manifestUrl)
     if (existingTask == null) {
       sendManifestToExperienceActivity(manifestUrl, manifest, bundleUrl)
     }
@@ -778,7 +778,7 @@ class Kernel : KernelInterface() {
     AsyncCondition.notify(KernelConstants.OPEN_EXPERIENCE_ACTIVITY_KEY)
   }
 
-  fun sendOptimisticManifestToExperienceActivity(optimisticManifest: RawManifest) {
+  fun sendOptimisticManifestToExperienceActivity(optimisticManifest: Manifest) {
     AsyncCondition.wait(
       KernelConstants.OPEN_OPTIMISTIC_EXPERIENCE_ACTIVITY_KEY,
       object : AsyncConditionListener {
@@ -795,7 +795,7 @@ class Kernel : KernelInterface() {
 
   private fun sendManifestToExperienceActivity(
     manifestUrl: String,
-    manifest: RawManifest,
+    manifest: Manifest,
     bundleUrl: String,
   ) {
     AsyncCondition.wait(
@@ -813,7 +813,7 @@ class Kernel : KernelInterface() {
     )
   }
 
-  fun sendBundleToExperienceActivity(localBundlePath: String?) {
+  private fun sendBundleToExperienceActivity(localBundlePath: String) {
     AsyncCondition.wait(
       KernelConstants.LOAD_BUNDLE_FOR_EXPERIENCE_ACTIVITY_KEY,
       object : AsyncConditionListener {
@@ -1130,7 +1130,7 @@ class Kernel : KernelInterface() {
   }
 
   init {
-    NativeModuleDepsProvider.getInstance().inject(Kernel::class.java, this)
+    NativeModuleDepsProvider.instance.inject(Kernel::class.java, this)
     instance = this
     updateKernelRNOkHttp()
   }

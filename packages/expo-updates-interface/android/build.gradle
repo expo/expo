@@ -4,7 +4,7 @@ apply plugin: 'kotlin-android-extensions'
 apply plugin: 'maven'
 
 group = 'host.exp.exponent'
-version = '0.2.2'
+version = '0.4.0'
 
 buildscript {
   // Simple helper that allows the root project to override versions declared by this library.
@@ -49,11 +49,16 @@ uploadArchives {
 android {
   compileSdkVersion safeExtGet("compileSdkVersion", 29)
 
+  compileOptions {
+    sourceCompatibility JavaVersion.VERSION_1_8
+    targetCompatibility JavaVersion.VERSION_1_8
+  }
+
   defaultConfig {
     minSdkVersion safeExtGet("minSdkVersion", 21)
     targetSdkVersion safeExtGet("targetSdkVersion", 28)
     versionCode 1
-    versionName '0.2.2'
+    versionName '0.4.0'
   }
   lintOptions {
     abortOnError false

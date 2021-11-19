@@ -24,26 +24,6 @@
 #import <React/JSCExecutorFactory.h>
 #import <React/RCTRootView.h>
 
-@interface EXVersionManager (Legacy)
-// TODO: remove after non-unimodules SDK versions are dropped
-
-- (void)bridgeDidForeground;
-- (void)bridgeDidBackground;
-
-@end
-
-typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t sourceLength);
-
-/**
- * TODO: Remove once SDK 38 is phased out.
- */
-@protocol PreSDK39EXSplashScreenManagerProtocol
-
-@property (assign) BOOL started;
-@property (assign) BOOL finished;
-
-@end
-
 @implementation RCTSource (EXReactAppManager)
 
 - (instancetype)initWithURL:(nonnull NSURL *)url data:(nonnull NSData *)data
@@ -113,8 +93,17 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
 {
   EXAssertMainThread();
   NSAssert((_delegate != nil), @"Cannot init react app without EXReactAppManagerDelegate");
+
   [self _invalidateAndClearDelegate:NO];
   [self computeVersionSymbolPrefix];
+
+  // Assert early so we can catch the error before instantiating the bridge, otherwise we would be passing a
+  // nullish scope key to the scoped modules.
+  // Alternatively we could skip instantiating the scoped modules but then singletons like the one used in
+  // expo-updates would be loaded as bare modules. In the case of expo-updates, this would throw a fatal error
+  // because Expo.plist is not available in the Expo Go app.
+  NSAssert(_appRecord.scopeKey, @"Experience scope key should be nonnull when getting initial properties for root view. This can occur when the manifest JSON, loaded from the server, is missing keys.");
+
 
   if ([self isReadyToLoad]) {
     Class versionManagerClass = [self versionedClassFromString:@"EXVersionManager"];
@@ -257,24 +246,9 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
   return [EXApiUtil bundleUrlFromManifest:_appRecord.appLoader.manifest];
 }
 
-- (void)appStateDidBecomeActive
-{
-  if ([_versionManager respondsToSelector:@selector(bridgeDidForeground)]) {
-    // supported before SDK 29 / unimodules
-    [_versionManager bridgeDidForeground];
-  }
-}
-
-- (void)appStateDidBecomeInactive
-{
-  if ([_versionManager respondsToSelector:@selector(bridgeDidBackground)]) {
-    [_versionManager bridgeDidBackground];
-  }
-}
-
 #pragma mark - EXAppFetcherDataSource
 
-- (NSString *)bundleResourceNameForAppFetcher:(EXAppFetcher *)appFetcher withManifest:(nonnull EXUpdatesRawManifest *)manifest
+- (NSString *)bundleResourceNameForAppFetcher:(EXAppFetcher *)appFetcher withManifest:(nonnull EXManifestsManifest *)manifest
 {
   if ([EXEnvironment sharedEnvironment].isDetached) {
     NSLog(@"Standalone bundle remote url is %@", [EXEnvironment sharedEnvironment].standaloneManifestUrl);
@@ -332,12 +306,7 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
 {
   NSData *data = _appRecord.appLoader.bundle;
   if (_loadCallback) {
-    if ([self _compareVersionTo:22] == NSOrderedAscending) {
-      SDK21RCTSourceLoadBlock legacyLoadCallback = (SDK21RCTSourceLoadBlock)_loadCallback;
-      legacyLoadCallback(nil, data, data.length);
-    } else {
-      _loadCallback(nil, [[RCTSource alloc] initWithURL:[self bundleUrl] data:data]);
-    }
+    _loadCallback(nil, [[RCTSource alloc] initWithURL:[self bundleUrl] data:data]);
     _loadCallback = nil;
   }
 }
@@ -354,12 +323,7 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
   [[NSNotificationCenter defaultCenter] postNotificationName:[self versionedString:RCTJavaScriptDidFailToLoadNotification] object:error];
 
   if (_loadCallback) {
-    if ([self _compareVersionTo:22] == NSOrderedAscending) {
-      SDK21RCTSourceLoadBlock legacyLoadCallback = (SDK21RCTSourceLoadBlock)_loadCallback;
-      legacyLoadCallback(error, nil, 0);
-    } else {
-      _loadCallback(error, nil);
-    }
+    _loadCallback(error, nil);
     _loadCallback = nil;
   }
 }
@@ -418,17 +382,10 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
     _isBridgeRunning = YES;
     _hasBridgeEverLoaded = YES;
     [_versionManager bridgeFinishedLoading:_reactBridge];
-    [self appStateDidBecomeActive];
 
     // TODO: temporary solution for hiding LoadingProgressWindow
     if (_appRecord.viewController) {
       [_appRecord.viewController hideLoadingProgressWindow];
-    }
-
-    // TODO: To be removed once SDK 38 is phased out
-    // Above SDK 38 this code is invoked in different place
-    if ([self _compareVersionTo:39] == NSOrderedAscending) {
-      [self _preSDK39BeginWaitingForAppLoading];
     }
   } else if ([notification.name isEqualToString:[self versionedString:RCTJavaScriptDidFailToLoadNotification]]) {
     NSError *error = (notification.userInfo) ? notification.userInfo[@"error"] : nil;
@@ -454,12 +411,7 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
     dispatch_async(dispatch_get_main_queue(), ^{
       EX_ENSURE_STRONGIFY(self);
       [self.delegate reactAppManagerAppContentDidAppear:self];
-
-      if ([self _compareVersionTo:38] == NSOrderedDescending) {
-        // Post SDK 38 code
-        // Up to SDK 38 this code is invoked in different place
-        [self _appLoadingFinished];
-      }
+      [self _appLoadingFinished];
     });
   }
 }
@@ -472,73 +424,6 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
       EX_ENSURE_STRONGIFY(self);
       [self.delegate reactAppManagerAppContentWillReload:self];
     });
-  }
-}
-
-/**
- * TODO: Remove once SDK 38 is phased out.
- */
-- (void)_preSDK39BeginWaitingForAppLoading
-{
-  if (_viewTestTimer) {
-    [_viewTestTimer invalidate];
-    _viewTestTimer = nil;
-  }
-
-  // SplashScreen.preventAutoHide is called despite actual JS method call.
-  // Prior SDK 39, SplashScreen was basing on started & finished flags that are set via legacy Expo.SplashScreen JS methods calls.
-  EXSplashScreenService *splashScreenService = (EXSplashScreenService *)[EXModuleRegistryProvider getSingletonModuleForClass:[EXSplashScreenService class]];
-  [splashScreenService preventSplashScreenAutoHideFor:(UIViewController *) _appRecord.viewController
-                                      successCallback:^(BOOL hasEffect) {}
-                                      failureCallback:^(NSString * _Nonnull message) { RCTLogWarn(@"%@", message); }];
-  _viewTestTimer = [NSTimer scheduledTimerWithTimeInterval:0.02
-                                                    target:self
-                                                  selector:@selector(_preSDK39CheckAppFinishedLoading:)
-                                                  userInfo:nil
-                                                   repeats:YES];
-}
-
-/**
- * TODO: Remove once SDK 38 is phased out.
- */
-- (id)_preSDK39AppLoadingManagerInstance
-{
-  Class loadingManagerClass = [self versionedClassFromString:@"EXSplashScreen"];
-  for (Class klass in [self.reactBridge moduleClasses]) {
-    if ([klass isSubclassOfClass:loadingManagerClass]) {
-      return [self.reactBridge moduleForClass:loadingManagerClass];
-    }
-  }
-  return nil;
-}
-
-/**
- * TODO: Remove once SDK 38 is phased out.
- */
-- (void)_preSDK39CheckAppFinishedLoading:(NSTimer *)timer
-{
-  // When root view has been filled with something, there are two cases:
-  //   1. AppLoading was never mounted, in which case we hide the loading indicator immediately
-  //   2. AppLoading was mounted, in which case we wait till it is unmounted to hide the loading indicator
-  if ([_appRecord.appManager rootView] &&
-      [_appRecord.appManager rootView].subviews.count > 0 &&
-      [_appRecord.appManager rootView].subviews.firstObject.subviews.count > 0) {
-
-    // Remove once SDK 38 is phased out.
-    id<PreSDK39EXSplashScreenManagerProtocol> splashManager = [self _preSDK39AppLoadingManagerInstance];
-
-    // SplashScreen: at this point SplashScreen is prevented from autohiding,
-    // so we can safely hide it when the flags set.
-    if (!splashManager || !splashManager.started || splashManager.finished) {
-      [_viewTestTimer invalidate];
-      _viewTestTimer = nil;
-
-      EXSplashScreenService *splashScreenService = (EXSplashScreenService *)[EXModuleRegistryProvider getSingletonModuleForClass:[EXSplashScreenService class]];
-      [splashScreenService hideSplashScreenFor:(UIViewController *) _appRecord.viewController
-                               successCallback:^(BOOL hasEffect) {}
-                               failureCallback:^(NSString * _Nonnull message) { RCTLogWarn(@"%@", message); }];
-      [self _appLoadingFinished];
-    }
   }
 }
 
@@ -568,7 +453,7 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
 
 - (BOOL)enablesDeveloperTools
 {
-  EXUpdatesRawManifest *manifest = _appRecord.appLoader.manifest;
+  EXManifestsManifest *manifest = _appRecord.appLoader.manifest;
   if (manifest) {
     return manifest.isUsingDeveloperTool;
   }
@@ -733,7 +618,7 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
 
 - (NSString *)applicationKeyForRootView
 {
-  EXUpdatesRawManifest *manifest = _appRecord.appLoader.manifest;
+  EXManifestsManifest *manifest = _appRecord.appLoader.manifest;
   if (manifest && manifest.appKey) {
     return manifest.appKey;
   }
@@ -778,7 +663,7 @@ typedef void (^SDK21RCTSourceLoadBlock)(NSError *error, NSData *source, int64_t 
   }
 
   NSString *manifestString = nil;
-  EXUpdatesRawManifest *manifest = _appRecord.appLoader.manifest;
+  EXManifestsManifest *manifest = _appRecord.appLoader.manifest;
   if (manifest && [NSJSONSerialization isValidJSONObject:manifest.rawManifestJSON]) {
     NSError *error;
     NSData *jsonData = [NSJSONSerialization dataWithJSONObject:manifest.rawManifestJSON options:0 error:&error];

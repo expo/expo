@@ -87,7 +87,7 @@ export default props => {
 
 When you load it on your device, you should see something like this:
 
-<img src="/static/images/font-example-custom-font.png" style={{maxWidth: 305}} />
+<img src="/static/images/font-example-custom-font.jpg" style={{maxWidth: 305}} />
 
 Inter Black is very bold and dark and pretty distinctive so you should be able to tell if you're able to
 get the example working right, or if something is wrong. If the platform default font looks a little different
@@ -104,7 +104,7 @@ one of those formats.
 
 These are the only font formats that work consistently in Expo across web, Android, and iOS.
 
-If you have both OTF and TTF versions of a font, prefer OTF. OTF is a newer format and `.otf` files are often smaller than `.ttf` files and sometimes OTF files will render slightly better in certain contexts. In general, both formats are very similar and perfectly acceptable.
+If you have both OTF and TTF versions of a font, prefer OTF. OTF is a newer format and **.otf** files are often smaller than **.ttf** files and sometimes OTF files will render slightly better in certain contexts. In general, both formats are very similar and perfectly acceptable.
 
 ### Beyond OTF and TTF
 

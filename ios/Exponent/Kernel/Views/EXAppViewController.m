@@ -18,7 +18,6 @@
 #import "EXKernel.h"
 #import "EXKernelUtil.h"
 #import "EXReactAppManager.h"
-#import "EXScreenOrientationManager.h"
 #import "EXVersions.h"
 #import "EXUpdatesManager.h"
 #import "EXUtil.h"
@@ -32,14 +31,14 @@
 #endif
 
 #import <React/RCTAppearance.h>
+#if defined(INCLUDES_VERSIONED_CODE) && __has_include(<ABI43_0_0React/ABI43_0_0RCTAppearance.h>)
+#import <ABI43_0_0React/ABI43_0_0RCTAppearance.h>
+#endif
 #if defined(INCLUDES_VERSIONED_CODE) && __has_include(<ABI42_0_0React/ABI42_0_0RCTAppearance.h>)
 #import <ABI42_0_0React/ABI42_0_0RCTAppearance.h>
 #endif
 #if defined(INCLUDES_VERSIONED_CODE) && __has_include(<ABI41_0_0React/ABI41_0_0RCTAppearance.h>)
 #import <ABI41_0_0React/ABI41_0_0RCTAppearance.h>
-#endif
-#if defined(INCLUDES_VERSIONED_CODE) && __has_include(<ABI40_0_0React/ABI40_0_0RCTAppearance.h>)
-#import <ABI40_0_0React/ABI40_0_0RCTAppearance.h>
 #endif
 
 #define EX_INTERFACE_ORIENTATION_USE_MANIFEST 0
@@ -53,6 +52,13 @@ const CGFloat kEXAutoReloadDebounceSeconds = 0.1;
 // and we want to make sure not to cover the error with a loading view or other chrome.
 const CGFloat kEXDevelopmentErrorCoolDownSeconds = 0.1;
 
+// copy of RNScreens protocol
+@protocol EXKernelRNSScreenWindowTraits
+
++ (BOOL)shouldAskScreensForScreenOrientationInViewController:(UIViewController *)vc;
+
+@end
+
 NS_ASSUME_NONNULL_BEGIN
 
 @interface EXAppViewController ()
@@ -62,7 +68,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign) BOOL isBridgeAlreadyLoading;
 @property (nonatomic, weak) EXKernelAppRecord *appRecord;
 @property (nonatomic, strong) EXErrorView *errorView;
-@property (nonatomic, assign) UIInterfaceOrientationMask supportedInterfaceOrientations; // override super
 @property (nonatomic, strong) NSTimer *tmrAutoReloadDebounce;
 @property (nonatomic, strong) NSDate *dtmLastFatalErrorShown;
 @property (nonatomic, strong) NSMutableArray<UIViewController *> *backgroundedControllers;
@@ -84,6 +89,7 @@ NS_ASSUME_NONNULL_BEGIN
  * See also EXHomeAppSplashScreenViewProvider in self.viewDidLoad
  */
 @property (nonatomic, strong, nullable) EXManagedAppSplashScreenViewProvider *managedAppSplashScreenViewProvider;
+@property (nonatomic, strong, nullable) EXManagedAppSplashScreenViewController *managedSplashScreenController;
 
 /*
  * This view is available in managed apps run in Expo Go only.
@@ -95,15 +101,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation EXAppViewController
 
-@synthesize supportedInterfaceOrientations = _supportedInterfaceOrientations;
-
 #pragma mark - Lifecycle
 
 - (instancetype)initWithAppRecord:(EXKernelAppRecord *)record
 {
   if (self = [super init]) {
     _appRecord = record;
-    _supportedInterfaceOrientations = EX_INTERFACE_ORIENTATION_USE_MANIFEST;
     _isStandalone = [EXEnvironment sharedEnvironment].isDetached;
   }
   return self;
@@ -263,17 +266,13 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)appStateDidBecomeActive
 {
   dispatch_async(dispatch_get_main_queue(), ^{
-    [self _enforceDesiredDeviceOrientation];
-
     // Reset the root view background color and window color if we switch between Expo home and project
     [self _setBackgroundColor:self.view];
   });
-  [_appRecord.appManager appStateDidBecomeActive];
 }
 
 - (void)appStateDidBecomeInactive
 {
-  [_appRecord.appManager appStateDidBecomeInactive];
 }
 
 - (void)_rebuildBridge
@@ -283,7 +282,6 @@ NS_ASSUME_NONNULL_BEGIN
     dispatch_async(dispatch_get_main_queue(), ^{
       [self _overrideUserInterfaceStyleOf:self];
       [self _overrideAppearanceModuleBehaviour];
-      [self _enforceDesiredDeviceOrientation];
       [self _invalidateRecoveryTimer];
       [[EXKernel sharedInstance] logAnalyticsEvent:@"LOAD_EXPERIENCE" forAppRecord:self.appRecord];
       [self.appRecord.appManager rebuildBridge];
@@ -329,7 +327,7 @@ NS_ASSUME_NONNULL_BEGIN
  * therefore for any consecutive SplashScreen.show call we just reconfigure what's already visible.
  * In HomeApp or standalone apps this function is no-op as SplashScreen is managed differently.
  */
-- (void)_showOrReconfigureManagedAppSplashScreen:(EXUpdatesRawManifest *)manifest
+- (void)_showOrReconfigureManagedAppSplashScreen:(EXManifestsManifest *)manifest
 {
   if (_isStandalone || _isHomeApp) {
     return;
@@ -408,33 +406,36 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)_showManagedSplashScreenWithProvider:(id<EXSplashScreenViewProvider>)provider
 {
- 
+
   EXSplashScreenService *splashScreenService = (EXSplashScreenService *)[EXModuleRegistryProvider getSingletonModuleForClass:[EXSplashScreenService class]];
 
   EX_WEAKIFY(self);
   dispatch_async(dispatch_get_main_queue(), ^{
     EX_ENSURE_STRONGIFY(self);
-    
+
     UIView *rootView = self.view;
     UIView *splashScreenView = [provider createSplashScreenView];
-    EXManagedAppSplashScreenViewController *controller = [[EXManagedAppSplashScreenViewController alloc] initWithRootView:rootView
+    self.managedSplashScreenController = [[EXManagedAppSplashScreenViewController alloc] initWithRootView:rootView
                                                                                                  splashScreenView:splashScreenView];
     [splashScreenService showSplashScreenFor:self
-                      splashScreenController:controller
+                      splashScreenController:self.managedSplashScreenController
                              successCallback:^{}
                              failureCallback:^(NSString *message){ EXLogWarn(@"%@", message); }];
   });
-  
+
 }
 
 - (void)hideLoadingProgressWindow
 {
   [self.appLoadingProgressWindowController hide];
+  if (self.managedSplashScreenController) {
+    [self.managedSplashScreenController startSplashScreenVisibleTimer];
+  }
 }
 
 #pragma mark - EXAppLoaderDelegate
 
-- (void)appLoader:(EXAppLoader *)appLoader didLoadOptimisticManifest:(EXUpdatesRawManifest *)manifest
+- (void)appLoader:(EXAppLoader *)appLoader didLoadOptimisticManifest:(EXManifestsManifest *)manifest
 {
   if (_appLoadingCancelView) {
     EX_WEAKIFY(self);
@@ -459,7 +460,7 @@ NS_ASSUME_NONNULL_BEGIN
   }
 }
 
-- (void)appLoader:(EXAppLoader *)appLoader didFinishLoadingManifest:(EXUpdatesRawManifest *)manifest bundle:(NSData *)data
+- (void)appLoader:(EXAppLoader *)appLoader didFinishLoadingManifest:(EXManifestsManifest *)manifest bundle:(NSData *)data
 {
   [self _showOrReconfigureManagedAppSplashScreen:manifest];
   [self _rebuildBridge];
@@ -480,7 +481,7 @@ NS_ASSUME_NONNULL_BEGIN
   [self maybeShowError:error];
 }
 
-- (void)appLoader:(EXAppLoader *)appLoader didResolveUpdatedBundleWithManifest:(EXUpdatesRawManifest * _Nullable)manifest isFromCache:(BOOL)isFromCache error:(NSError * _Nullable)error
+- (void)appLoader:(EXAppLoader *)appLoader didResolveUpdatedBundleWithManifest:(EXManifestsManifest * _Nullable)manifest isFromCache:(BOOL)isFromCache error:(NSError * _Nullable)error
 {
   [[EXKernel sharedInstance].serviceRegistry.updatesManager notifyApp:_appRecord ofDownloadWithManifest:manifest isNew:!isFromCache error:error];
 }
@@ -549,6 +550,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (UIInterfaceOrientationMask)supportedInterfaceOrientations
 {
+  if ([self shouldUseRNScreenOrientation]) {
+    return [super supportedInterfaceOrientations];
+  }
+
 #if __has_include(<EXScreenOrientation/EXScreenOrientationRegistry.h>)
   EXScreenOrientationRegistry *screenOrientationRegistry = (EXScreenOrientationRegistry *)[EXModuleRegistryProvider getSingletonModuleForClass:[EXScreenOrientationRegistry class]];
   if (screenOrientationRegistry && [screenOrientationRegistry requiredOrientationMask] > 0) {
@@ -556,12 +561,17 @@ NS_ASSUME_NONNULL_BEGIN
   }
 #endif
 
-  // TODO: Remove once sdk 37 is phased out
-  if (_supportedInterfaceOrientations != EX_INTERFACE_ORIENTATION_USE_MANIFEST) {
-    return _supportedInterfaceOrientations;
-  }
-
   return [self orientationMaskFromManifestOrDefault];
+}
+
+- (BOOL)shouldUseRNScreenOrientation
+{
+  Class screenWindowTraitsClass = [self->_appRecord.appManager versionedClassFromString:@"RNSScreenWindowTraits"];
+  if ([screenWindowTraitsClass respondsToSelector:@selector(shouldAskScreensForScreenOrientationInViewController:)]) {
+    id<EXKernelRNSScreenWindowTraits> screenWindowTraits = (id<EXKernelRNSScreenWindowTraits>)screenWindowTraitsClass;
+    return [screenWindowTraits shouldAskScreensForScreenOrientationInViewController:self];
+  }
+  return NO;
 }
 
 - (UIInterfaceOrientationMask)orientationMaskFromManifestOrDefault {
@@ -579,13 +589,6 @@ NS_ASSUME_NONNULL_BEGIN
   return UIInterfaceOrientationMaskAllButUpsideDown;
 }
 
-// TODO: Remove once sdk 37 is phased out
-- (void)setSupportedInterfaceOrientations:(UIInterfaceOrientationMask)supportedInterfaceOrientations
-{
-  _supportedInterfaceOrientations = supportedInterfaceOrientations;
-  [self _enforceDesiredDeviceOrientation];
-}
-
 - (void)traitCollectionDidChange:(nullable UITraitCollection *)previousTraitCollection {
   [super traitCollectionDidChange:previousTraitCollection];
   if ((self.traitCollection.verticalSizeClass != previousTraitCollection.verticalSizeClass)
@@ -595,54 +598,7 @@ NS_ASSUME_NONNULL_BEGIN
       EXScreenOrientationRegistry *screenOrientationRegistryController = (EXScreenOrientationRegistry *)[EXModuleRegistryProvider getSingletonModuleForClass:[EXScreenOrientationRegistry class]];
       [screenOrientationRegistryController traitCollectionDidChangeTo:self.traitCollection];
     #endif
-
-    // TODO: Remove once sdk 37 is phased out
-    [[EXKernel sharedInstance].serviceRegistry.screenOrientationManager handleScreenOrientationChange:self.traitCollection];
   }
-}
-
-// TODO: Remove once sdk 37 is phased out
-- (void)_enforceDesiredDeviceOrientation
-{
-  RCTAssertMainQueue();
-  UIInterfaceOrientationMask mask = [self supportedInterfaceOrientations];
-  UIDeviceOrientation currentOrientation = [[UIDevice currentDevice] orientation];
-  UIInterfaceOrientation newOrientation = UIInterfaceOrientationUnknown;
-  switch (mask) {
-    case UIInterfaceOrientationMaskPortrait | UIInterfaceOrientationMaskPortraitUpsideDown:
-      if (!UIDeviceOrientationIsPortrait(currentOrientation)) {
-        newOrientation = UIInterfaceOrientationPortrait;
-      }
-      break;
-    case UIInterfaceOrientationMaskPortrait:
-      newOrientation = UIInterfaceOrientationPortrait;
-      break;
-    case UIInterfaceOrientationMaskPortraitUpsideDown:
-      newOrientation = UIInterfaceOrientationPortraitUpsideDown;
-      break;
-    case UIInterfaceOrientationMaskLandscape:
-      if (!UIDeviceOrientationIsLandscape(currentOrientation)) {
-        newOrientation = UIInterfaceOrientationLandscapeLeft;
-      }
-      break;
-    case UIInterfaceOrientationMaskLandscapeLeft:
-      newOrientation = UIInterfaceOrientationLandscapeLeft;
-      break;
-    case UIInterfaceOrientationMaskLandscapeRight:
-      newOrientation = UIInterfaceOrientationLandscapeRight;
-      break;
-    case UIInterfaceOrientationMaskAllButUpsideDown:
-      if (currentOrientation == UIDeviceOrientationFaceDown) {
-        newOrientation = UIInterfaceOrientationPortrait;
-      }
-      break;
-    default:
-      break;
-  }
-  if (newOrientation != UIInterfaceOrientationUnknown) {
-    [[UIDevice currentDevice] setValue:@(newOrientation) forKey:@"orientation"];
-  }
-  [UIViewController attemptRotationToDeviceOrientation];
 }
 
 #pragma mark - RCTAppearanceModule
@@ -664,15 +620,15 @@ NS_ASSUME_NONNULL_BEGIN
     appearancePreference = nil;
   }
   RCTOverrideAppearancePreference(appearancePreference);
+#if defined(INCLUDES_VERSIONED_CODE) && __has_include(<ABI43_0_0React/ABI43_0_0RCTAppearance.h>)
+  ABI43_0_0RCTOverrideAppearancePreference(appearancePreference);
+#endif
 
 #if defined(INCLUDES_VERSIONED_CODE) && __has_include(<ABI42_0_0React/ABI42_0_0RCTAppearance.h>)
   ABI42_0_0RCTOverrideAppearancePreference(appearancePreference);
 #endif
 #if defined(INCLUDES_VERSIONED_CODE) && __has_include(<ABI41_0_0React/ABI41_0_0RCTAppearance.h>)
   ABI41_0_0RCTOverrideAppearancePreference(appearancePreference);
-#endif
-#if defined(INCLUDES_VERSIONED_CODE) && __has_include(<ABI40_0_0React/ABI40_0_0RCTAppearance.h>)
-  ABI40_0_0RCTOverrideAppearancePreference(appearancePreference);
 #endif
 }
 
@@ -686,7 +642,7 @@ NS_ASSUME_NONNULL_BEGIN
   }
 }
 
-- (NSString * _Nullable)_readUserInterfaceStyleFromManifest:(EXUpdatesRawManifest *)manifest
+- (NSString * _Nullable)_readUserInterfaceStyleFromManifest:(EXManifestsManifest *)manifest
 {
   return manifest.userInterfaceStyle;
 }
@@ -732,7 +688,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
-- (NSString * _Nullable)_readBackgroundColorFromManifest:(EXUpdatesRawManifest *)manifest
+- (NSString * _Nullable)_readBackgroundColorFromManifest:(EXManifestsManifest *)manifest
 {
   return manifest.iosOrRootBackgroundColor;
 }

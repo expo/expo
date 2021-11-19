@@ -52,7 +52,17 @@ class ExpoImageViewManager(applicationContext: ReactApplicationContext) : Simple
   @ReactProp(name = "resizeMode")
   fun setResizeMode(view: ExpoImageView, stringValue: String) {
     val resizeMode = ImageResizeMode.fromStringValue(stringValue)
-    view.setResizeMode(resizeMode)
+    view.resizeMode = resizeMode
+  }
+
+  @ReactProp(name = "blurRadius")
+  fun setBlurRadius(view: ExpoImageView, blurRadius: Int) {
+    view.blurRadius = blurRadius
+  }
+
+  @ReactProp(name = "fadeDuration")
+  fun setFadeDuration(view: ExpoImageView, fadeDuration: Int) {
+    view.fadeDuration = fadeDuration
   }
 
   @ReactPropGroup(names = [
@@ -108,6 +118,16 @@ class ExpoImageViewManager(applicationContext: ReactApplicationContext) : Simple
   @ReactProp(name = "tintColor", customType = "Color")
   fun setTintColor(view: ExpoImageView, color: Int?) {
     view.setTintColor(color)
+  }
+
+  @ReactProp(name = "defaultSource")
+  fun setDefaultSource(view: ExpoImageView, defaultSourceMap: ReadableMap?) {
+    view.defaultSourceMap = defaultSourceMap
+  }
+
+  @ReactProp(name = "accessible")
+  fun setFocusable(view: ExpoImageView, accessible: Boolean) {
+    view.isFocusable = accessible // setFocusable(bool)
   }
 
   // View lifecycle

@@ -1,5 +1,5 @@
 import { PermissionStatus, SyntheticPlatformEmitter } from 'expo-modules-core';
-import { RECORDING_OPTIONS_PRESET_HIGH_QUALITY } from './Audio/Recording';
+import { RECORDING_OPTIONS_PRESET_HIGH_QUALITY } from './Audio/RecordingConstants';
 async function getPermissionWithQueryAsync(name) {
     if (!navigator || !navigator.permissions || !navigator.permissions.query)
         return null;
@@ -27,7 +27,9 @@ function getUserMedia(constraints) {
     // with getUserMedia as it would overwrite existing properties.
     // Here, we will just add the getUserMedia property if it's missing.
     // First get ahold of the legacy getUserMedia, if present
-    const getUserMedia = navigator.getUserMedia ||
+    const getUserMedia = 
+    // TODO: this method is deprecated, migrate to https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/getUserMedia
+    navigator.getUserMedia ||
         navigator.webkitGetUserMedia ||
         navigator.mozGetUserMedia ||
         function () {
@@ -213,7 +215,7 @@ export default {
             mediaRecorderDurationAlreadyRecorded = getAudioRecorderDurationMillis();
             mediaRecorderIsRecording = false;
             // Clears recording icon in Chrome tab
-            stream.getTracks().forEach(track => track.stop());
+            stream.getTracks().forEach((track) => track.stop());
         });
         const { uri, ...status } = await this.getAudioRecordingStatus();
         return { uri: null, status };
@@ -245,7 +247,7 @@ export default {
         if (mediaRecorder.state === 'inactive') {
             return this.getAudioRecordingStatus();
         }
-        const dataPromise = new Promise(resolve => mediaRecorder.addEventListener('dataavailable', e => resolve(e.data)));
+        const dataPromise = new Promise((resolve) => mediaRecorder.addEventListener('dataavailable', (e) => resolve(e.data)));
         mediaRecorder.stop();
         const data = await dataPromise;
         const url = URL.createObjectURL(data);
@@ -281,7 +283,7 @@ export default {
     async requestPermissionsAsync() {
         try {
             const stream = await getUserMedia({ audio: true });
-            stream.getTracks().forEach(track => track.stop());
+            stream.getTracks().forEach((track) => track.stop());
             return {
                 status: PermissionStatus.GRANTED,
                 expires: 'never',

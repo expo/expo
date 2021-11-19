@@ -50,7 +50,7 @@ class ManifestException : ExponentException {
                 val availableSDKVersions = metadata.getJSONArray("availableSDKVersions")
                 val sdkVersionRequired = availableSDKVersions.getString(0)
                 formattedMessage =
-                  "This project uses SDK v" + sdkVersionRequired + " , but this version of Expo Go requires at least v" + Constants.SDK_VERSIONS_LIST[Constants.SDK_VERSIONS_LIST.size - 1] + "."
+                  "This project uses SDK " + sdkVersionRequired + " , but this version of Expo Go only supports the following SDKs: " + Constants.SDK_VERSIONS_LIST.joinToString() + ". To load the project, it must be updated to a supported SDK version or an older version of Expo Go must be used."
               }
               "EXPERIENCE_SDK_VERSION_TOO_NEW" ->
                 formattedMessage =

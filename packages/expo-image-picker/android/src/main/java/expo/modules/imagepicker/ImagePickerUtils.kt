@@ -6,16 +6,11 @@ import android.net.Uri
 import android.util.Log
 import android.webkit.MimeTypeMap
 import androidx.core.content.FileProvider
+import androidx.exifinterface.media.ExifInterface
 import expo.modules.core.utilities.FileUtilities.generateOutputPath
+import expo.modules.core.utilities.ifNull
 import java.io.File
 import java.io.IOException
-
-inline fun <T> T?.ifNull(block: () -> T): T {
-  if (this == null) {
-    return block()
-  }
-  return this
-}
 
 private fun getTypeFromFileUrl(url: String): String? {
   val extension = MimeTypeMap.getFileExtensionFromUrl(url)
@@ -62,4 +57,31 @@ fun deduceExtension(type: String): String = when {
     ".jpg"
   }
   else -> ".jpg"
+}
+
+class ExifDataHandler(private val uri: Uri) {
+  fun copyExifData(newUri: Uri, contentResolver: ContentResolver) {
+    if (uri == newUri) {
+      return
+    }
+    contentResolver.openInputStream(uri)?.use { input ->
+      val oldExif = ExifInterface(input)
+      newUri.path?.let {
+        val newExif = ExifInterface(it)
+        for ((_, exifTag) in ImagePickerConstants.exifTags) {
+          val value = oldExif.getAttribute(exifTag)
+          if (value != null &&
+            exifTag != ExifInterface.TAG_IMAGE_LENGTH &&
+            exifTag != ExifInterface.TAG_IMAGE_WIDTH &&
+            exifTag != ExifInterface.TAG_PIXEL_X_DIMENSION &&
+            exifTag != ExifInterface.TAG_PIXEL_Y_DIMENSION &&
+            exifTag != ExifInterface.TAG_ORIENTATION
+          ) {
+            newExif.setAttribute(exifTag, value)
+          }
+        }
+        newExif.saveAttributes()
+      }
+    }
+  }
 }

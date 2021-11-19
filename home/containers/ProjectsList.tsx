@@ -1,7 +1,7 @@
 import * as React from 'react';
 
 import ProjectList from '../components/ProjectList';
-import { useHome_AccountAppsQuery } from '../graphql/queries/ProjectsListQuery.query.generated';
+import { useHome_AccountAppsQuery } from '../graphql/types';
 
 function useOtherProjectsQuery({ accountName }: { accountName: string }) {
   const { data, fetchMore, loading, error, refetch } = useHome_AccountAppsQuery({

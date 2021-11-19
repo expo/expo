@@ -1,6 +1,5 @@
 import React, { useEffect, useState, useRef, useMemo } from 'react';
-import { Animated, StyleSheet, Text, NativeModules, NativeEventEmitter, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { Animated, StyleSheet, Text, NativeModules, NativeEventEmitter, UIManager, View, } from 'react-native';
 export default function DevLoadingView() {
     const [isDevLoading, setIsDevLoading] = useState(false);
     const [isAnimating, setIsAnimating] = useState(false);
@@ -55,7 +54,7 @@ export default function DevLoadingView() {
     }, [translateY, emitter]);
     if (isDevLoading || isAnimating) {
         return (React.createElement(Animated.View, { style: [styles.animatedContainer, { transform: [{ translateY }] }], pointerEvents: "none" },
-            React.createElement(SafeAreaView, { style: styles.banner, edges: ['bottom'] },
+            React.createElement(View, { style: styles.banner },
                 React.createElement(View, { style: styles.contentContainer },
                     React.createElement(View, { style: { flexDirection: 'row' } },
                         React.createElement(Text, { style: styles.text }, isDevLoading ? 'Refreshing...' : 'Refreshed')),
@@ -66,6 +65,14 @@ export default function DevLoadingView() {
         return null;
     }
 }
+/**
+ * This is a hack to get the safe area insets without explicitly depending on react-native-safe-area-context.
+ * The following code is lifted from: https://git.io/Jzk4k
+ *
+ * TODO: This will need to be updated for Fabric/TurboModules.
+ **/
+const RNCSafeAreaProviderConfig = UIManager.getViewManagerConfig('RNCSafeAreaProvider');
+const initialWindowMetrics = RNCSafeAreaProviderConfig?.Constants?.initialWindowMetrics;
 const styles = StyleSheet.create({
     animatedContainer: {
         position: 'absolute',
@@ -78,6 +85,7 @@ const styles = StyleSheet.create({
         flex: 1,
         overflow: 'visible',
         backgroundColor: 'rgba(0,0,0,0.75)',
+        paddingBottom: initialWindowMetrics?.insets?.bottom ?? 0,
     },
     contentContainer: {
         flex: 1,

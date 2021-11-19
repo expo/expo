@@ -2,15 +2,15 @@
 export var WebBrowserResultType;
 (function (WebBrowserResultType) {
     /**
-     * iOS only.
+     * @platform ios
      */
     WebBrowserResultType["CANCEL"] = "cancel";
     /**
-     * iOS only.
+     * @platform ios
      */
     WebBrowserResultType["DISMISS"] = "dismiss";
     /**
-     * Android only.
+     * @platform android
      */
     WebBrowserResultType["OPENED"] = "opened";
     WebBrowserResultType["LOCKED"] = "locked";

@@ -1,7 +1,7 @@
 import * as React from 'react';
 
 import SnackList from '../components/SnackList';
-import { useHome_AccountSnacksQuery } from '../graphql/queries/SnacksListQuery.query.generated';
+import { useHome_AccountSnacksQuery } from '../graphql/types';
 
 function useSnacksQuery({ accountName }: { accountName: string }) {
   const { data, fetchMore } = useHome_AccountSnacksQuery({

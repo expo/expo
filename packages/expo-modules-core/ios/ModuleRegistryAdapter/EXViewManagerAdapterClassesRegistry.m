@@ -30,23 +30,32 @@ static dispatch_once_t directEventBlockImplementationOnceToken;
 {
   Class viewManagerClass = [viewManager class];
   if (_viewManagerAdaptersClasses[viewManagerClass] == nil) {
-    _viewManagerAdaptersClasses[(id <NSCopying>)viewManagerClass] = [self _createViewManagerAdapterClassForViewManager:viewManager];
+    _viewManagerAdaptersClasses[(id <NSCopying>)viewManagerClass] = [self.class createViewManagerAdapterClassForViewManager:viewManager];
   }
   return _viewManagerAdaptersClasses[viewManagerClass];
 }
 
-- (Class)_createViewManagerAdapterClassForViewManager:(EXViewManager *)viewManager
++ (Class)createViewManagerAdapterClassForViewManager:(EXViewManager *)viewManager
 {
   const char *viewManagerClassName = [[viewManagerAdapterModuleNamePrefix stringByAppendingString:[viewManager viewName]] UTF8String];
   Class viewManagerAdapterClass = objc_allocateClassPair([EXViewManagerAdapter class], viewManagerClassName, 0);
+  Class metaClass = object_getClass(viewManagerAdapterClass);
+
   [self _ensureDirectEventBlockImplementationIsPresent];
+
   for (NSString *eventName in [viewManager supportedEvents]) {
-    class_addMethod(object_getClass(viewManagerAdapterClass), NSSelectorFromString([@"propConfig_" stringByAppendingString:eventName]), directEventBlockImplementation, "@@:");
+    class_addMethod(metaClass, NSSelectorFromString([@"propConfig_" stringByAppendingString:eventName]), directEventBlockImplementation, "@@:");
   }
+
+  IMP viewManagerImp = imp_implementationWithBlock(^{
+    return viewManager;
+  });
+  class_addMethod(viewManagerAdapterClass, NSSelectorFromString(@"viewManager"), viewManagerImp, "@@:");
+
   return viewManagerAdapterClass;
 }
 
-- (void)_ensureDirectEventBlockImplementationIsPresent
++ (void)_ensureDirectEventBlockImplementationIsPresent
 {
   dispatch_once(&directEventBlockImplementationOnceToken, ^{
     directEventBlockImplementation = imp_implementationWithBlock(^{

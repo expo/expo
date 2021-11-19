@@ -15,7 +15,6 @@ import expo.modules.devlauncher.helpers.isDevLauncherUrl
 import expo.modules.devlauncher.koin.DevLauncherKoinComponent
 import expo.modules.devlauncher.launcher.DevLauncherControllerInterface
 import expo.modules.devlauncher.launcher.DevLauncherIntentRegistryInterface
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import org.koin.core.component.inject
 
@@ -46,7 +45,7 @@ class DevLauncherInternalModule(reactContext: ReactApplicationContext?)
 
   @ReactMethod
   fun loadApp(url: String, promise: Promise) {
-    GlobalScope.launch {
+    controller.coroutineScope.launch {
       try {
         val parsedUrl = Uri.parse(url.trim())
         val appUrl = if (isDevLauncherUrl(parsedUrl)) {
@@ -100,7 +99,12 @@ class DevLauncherInternalModule(reactContext: ReactApplicationContext?)
 
   @ReactMethod
   fun getPendingDeepLink(promise: Promise) {
-    promise.resolve(intentRegistry.intent?.data?.toString())
+    intentRegistry.intent?.data?.let {
+      promise.resolve(it.toString())
+      return
+    }
+
+    promise.resolve(intentRegistry.intent?.action)
   }
 
   private fun onNewPendingIntent(intent: Intent) {

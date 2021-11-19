@@ -209,7 +209,7 @@ pipelines:
 
 Now that we have a proper CI workflow in place, we will focus on the Continuous Deployment (CD) part.
 In this process, we will make a new build and push it to Expo.
-Combined with Over The Air (OTA) updates, this can create a simple but effective CD infrastructure.
+Combined with updates, this can create a simple but effective CD infrastructure.
 Just like the CI part, we first need to install the dependencies.
 After this, we need to authenticate at Expo and "publish" a new build.
 
@@ -246,7 +246,7 @@ If you don't want to expose the password in the login script, set the `EXPO_CLI_
 $ npx expo login --non-interactive -u <EXPO USERNAME>
 ```
 
-Alternatively, you can [generate an access token under your Expo account settings](/accounts/programmatic-access.md) and configure it as an environment variable named `EXPO_TOKEN`. 
+Alternatively, you can [generate an access token under your Expo account settings](/accounts/programmatic-access.md) and configure it as an environment variable named `EXPO_TOKEN`.
 
 ### Publish new builds
 
@@ -433,8 +433,9 @@ Here are some extra links that might help you further.
 ### Useful subjects
 
 - [Release channels](../distribution/release-channels.md)
-- [Building standalone apps](../distribution/building-standalone-apps.md)
-- [Configuring OTA Updates](configuring-ota-updates.md)
+- [Creating your first build](/build/setup.md)
+- [Triggering builds from CI](/build/building-on-ci.md)
+- [Configuring Updates](configuring-updates.md)
 
 ### Official documentation CI/CD vendors
 

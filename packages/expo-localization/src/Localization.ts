@@ -92,7 +92,7 @@ export const region = ExpoLocalization.region;
  * > On iOS, changing the locale will cause the device to reset meaning the constants will always be
  * correct.
  *
- * # Example
+ * @example
  * ```ts
  * // When the app returns from the background on Android...
  *

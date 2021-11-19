@@ -1,5 +1,4 @@
 import React from 'react';
-import ReactMarkdown from 'react-markdown';
 
 import { InlineCode } from '~/components/base/code';
 import { UL, LI } from '~/components/base/list';
@@ -13,8 +12,7 @@ import {
   TypeSignaturesData,
 } from '~/components/plugins/api/APIDataTypes';
 import {
-  mdInlineRenderers,
-  mdRenderers,
+  mdInlineComponents,
   resolveTypeName,
   renderFlags,
   renderParam,
@@ -22,6 +20,7 @@ import {
   parseCommentContent,
   renderTypeOrSignatureType,
   getCommentOrSignatureComment,
+  getTagData,
 } from '~/components/plugins/api/APISectionUtils';
 
 export type APISectionTypesProps = {
@@ -64,7 +63,7 @@ const renderTypePropertyRow = ({
   defaultValue,
   signatures,
 }: PropData): JSX.Element => {
-  const initValue = defaultValue || comment?.tags?.filter(tag => tag.tag === 'default')[0]?.text;
+  const initValue = parseCommentContent(defaultValue || getTagData('default', comment)?.text);
   const commentData = getCommentOrSignatureComment(comment, signatures);
   return (
     <tr key={name}>
@@ -75,16 +74,16 @@ const renderTypePropertyRow = ({
       <td>{renderTypeOrSignatureType(type, signatures)}</td>
       <td>
         {commentData ? (
-          <CommentTextBlock comment={commentData} renderers={mdInlineRenderers} />
+          <CommentTextBlock comment={commentData} components={mdInlineComponents} />
         ) : (
           '-'
         )}
         {initValue ? (
           <>
             <br />
-            <ReactMarkdown renderers={mdInlineRenderers}>{`__Default:__ ${parseCommentContent(
-              initValue
-            )}`}</ReactMarkdown>
+            <br />
+            <B>Default: </B>
+            <InlineCode>{initValue}</InlineCode>
           </>
         ) : null}
       </td>
@@ -92,7 +91,12 @@ const renderTypePropertyRow = ({
   );
 };
 
-const renderType = ({ name, comment, type }: TypeGeneralData): JSX.Element | undefined => {
+const renderType = ({
+  name,
+  comment,
+  type,
+  typeParameter,
+}: TypeGeneralData): JSX.Element | undefined => {
   if (type.declaration) {
     // Object Types
     return (
@@ -106,8 +110,9 @@ const renderType = ({ name, comment, type }: TypeGeneralData): JSX.Element | und
         <CommentTextBlock comment={comment} />
         {type.declaration.children && renderTypeDeclarationTable(type.declaration)}
         {type.declaration.signatures
-          ? type.declaration.signatures.map(({ parameters }: TypeSignaturesData) => (
+          ? type.declaration.signatures.map(({ parameters, comment }: TypeSignaturesData) => (
               <div key={`type-definition-signature-${name}`}>
+                <CommentTextBlock comment={comment} />
                 {parameters ? <H4>Arguments</H4> : null}
                 {parameters ? <UL>{parameters?.map(renderParam)}</UL> : null}
               </div>
@@ -126,6 +131,7 @@ const renderType = ({ name, comment, type }: TypeGeneralData): JSX.Element | und
           <H3Code>
             <InlineCode>{name}</InlineCode>
           </H3Code>
+          <CommentTextBlock comment={comment} />
           {type.type === 'intersection' ? (
             <P>
               <InlineCode>
@@ -134,7 +140,6 @@ const renderType = ({ name, comment, type }: TypeGeneralData): JSX.Element | und
               extended by:
             </P>
           ) : null}
-          <CommentTextBlock comment={comment} />
           {propTypes.map(
             propType =>
               propType?.declaration?.children && renderTypeDeclarationTable(propType.declaration)
@@ -182,14 +187,41 @@ const renderType = ({ name, comment, type }: TypeGeneralData): JSX.Element | und
           <InlineCode>{name}</InlineCode>
         </H3Code>
         <CommentTextBlock comment={comment} />
-        <ReactMarkdown renderers={mdRenderers}>{'__Type:__ `' + type.name + '`'}</ReactMarkdown>
+        <B>Type: </B>
+        <InlineCode>{type.name}</InlineCode>
+      </div>
+    );
+  } else if (type.type === 'conditional' && type.checkType) {
+    return (
+      <div key={`conditional-type-definition-${name}`}>
+        <H3Code>
+          <InlineCode>
+            {name}&lt;{type.checkType.name}&gt;
+          </InlineCode>
+        </H3Code>
+        <CommentTextBlock comment={comment} />
+        <B>Generic: </B>
+        <InlineCode>
+          {type.checkType.name}
+          {typeParameter && <> extends {resolveTypeName(typeParameter[0].type)}</>}
+        </InlineCode>
+        <br />
+        <B>Type: </B>
+        <InlineCode>
+          {type.checkType.name}
+          {typeParameter && <> extends {type.extendsType && resolveTypeName(type.extendsType)}</>}
+          {' ? '}
+          {type.trueType && resolveTypeName(type.trueType)}
+          {' : '}
+          {type.falseType && resolveTypeName(type.falseType)}
+        </InlineCode>
       </div>
     );
   }
   return undefined;
 };
 
-const APISectionTypes: React.FC<APISectionTypesProps> = ({ data }) =>
+const APISectionTypes = ({ data }: APISectionTypesProps) =>
   data?.length ? (
     <>
       <H2 key="types-header">Types</H2>

@@ -11,10 +11,10 @@ export default function OpenProjectByURLButton() {
       { text: 'Cancel', style: 'cancel' },
       {
         text: 'Open',
-        onPress: text => {
+        onPress: (text) => {
           if (text) {
             const url = UrlUtils.normalizeUrl(text);
-            Linking.canOpenURL(url) && Linking.openURL(url);
+            Linking.openURL(url);
           }
         },
       },

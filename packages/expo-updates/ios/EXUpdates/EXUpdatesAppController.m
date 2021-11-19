@@ -4,7 +4,9 @@
 #import <EXUpdates/EXUpdatesAppLauncher.h>
 #import <EXUpdates/EXUpdatesAppLauncherNoDatabase.h>
 #import <EXUpdates/EXUpdatesAppLauncherWithDatabase.h>
+#import <EXUpdates/EXUpdatesErrorRecovery.h>
 #import <EXUpdates/EXUpdatesReaper.h>
+#import <EXUpdates/EXUpdatesRemoteAppLoader.h>
 #import <EXUpdates/EXUpdatesSelectionPolicyFactory.h>
 #import <EXUpdates/EXUpdatesUtils.h>
 #import <React/RCTReloadCommand.h>
@@ -17,23 +19,27 @@ static NSString * const EXUpdatesUpdateAvailableEventName = @"updateAvailable";
 static NSString * const EXUpdatesNoUpdateAvailableEventName = @"noUpdateAvailable";
 static NSString * const EXUpdatesErrorEventName = @"error";
 
-@interface EXUpdatesAppController ()
+@interface EXUpdatesAppController () <EXUpdatesErrorRecoveryDelegate>
 
 @property (nonatomic, readwrite, strong) EXUpdatesConfig *config;
 @property (nonatomic, readwrite, strong, nullable) id<EXUpdatesAppLauncher> launcher;
 @property (nonatomic, readwrite, strong) EXUpdatesDatabase *database;
 @property (nonatomic, readwrite, strong) EXUpdatesSelectionPolicy *selectionPolicy;
 @property (nonatomic, readwrite, strong) EXUpdatesSelectionPolicy *defaultSelectionPolicy;
+@property (nonatomic, readwrite, strong) EXUpdatesErrorRecovery *errorRecovery;
 @property (nonatomic, readwrite, strong) dispatch_queue_t controllerQueue;
 @property (nonatomic, readwrite, strong) dispatch_queue_t assetFilesQueue;
 
 @property (nonatomic, readwrite, strong) NSURL *updatesDirectory;
 
+@property (nonatomic, strong) EXUpdatesAppLoaderTask *loaderTask;
 @property (nonatomic, strong) id<EXUpdatesAppLauncher> candidateLauncher;
 @property (nonatomic, assign) BOOL hasLaunched;
 
 @property (nonatomic, assign) BOOL isStarted;
 @property (nonatomic, assign) BOOL isEmergencyLaunch;
+
+@property (nonatomic, readwrite, assign) EXUpdatesRemoteLoadStatus remoteLoadStatus;
 
 @end
 
@@ -57,9 +63,12 @@ static NSString * const EXUpdatesErrorEventName = @"error";
     _config = [EXUpdatesConfig configWithExpoPlist];
     _database = [[EXUpdatesDatabase alloc] init];
     _defaultSelectionPolicy = [EXUpdatesSelectionPolicyFactory filterAwarePolicyWithRuntimeVersion:[EXUpdatesUtils getRuntimeVersionWithConfig:_config]];
+    _errorRecovery = [EXUpdatesErrorRecovery new];
+    _errorRecovery.delegate = self;
     _assetFilesQueue = dispatch_queue_create("expo.controller.AssetFilesQueue", DISPATCH_QUEUE_SERIAL);
     _controllerQueue = dispatch_queue_create("expo.controller.ControllerQueue", DISPATCH_QUEUE_SERIAL);
     _isStarted = NO;
+    _remoteLoadStatus = EXUpdatesRemoteLoadStatusIdle;
   }
   return self;
 }
@@ -135,38 +144,40 @@ static NSString * const EXUpdatesErrorEventName = @"error";
     return;
   }
 
-  EXUpdatesAppLoaderTask *loaderTask = [[EXUpdatesAppLoaderTask alloc] initWithConfig:_config
-                                                                             database:_database
-                                                                            directory:_updatesDirectory
-                                                                      selectionPolicy:self.selectionPolicy
-                                                                        delegateQueue:_controllerQueue];
-  loaderTask.delegate = self;
-  [loaderTask start];
+  [_errorRecovery startMonitoring];
+
+  _loaderTask = [[EXUpdatesAppLoaderTask alloc] initWithConfig:_config
+                                                      database:_database
+                                                     directory:_updatesDirectory
+                                               selectionPolicy:self.selectionPolicy
+                                                 delegateQueue:_controllerQueue];
+  _loaderTask.delegate = self;
+  [_loaderTask start];
 }
 
 - (void)startAndShowLaunchScreen:(UIWindow *)window
 {
+  UIView *view = nil;
   NSBundle *mainBundle = [NSBundle mainBundle];
-  UIViewController *rootViewController = [UIViewController new];
   NSString *launchScreen = (NSString *)[mainBundle objectForInfoDictionaryKey:@"UILaunchStoryboardName"] ?: @"LaunchScreen";
   
   if ([mainBundle pathForResource:launchScreen ofType:@"nib"] != nil) {
     NSArray *views = [mainBundle loadNibNamed:launchScreen owner:self options:nil];
-    rootViewController.view = views.firstObject;
-    rootViewController.view.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+    view = views.firstObject;
+    view.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
   } else if ([mainBundle pathForResource:launchScreen ofType:@"storyboard"] != nil ||
              [mainBundle pathForResource:launchScreen ofType:@"storyboardc"] != nil) {
     UIStoryboard *launchScreenStoryboard = [UIStoryboard storyboardWithName:launchScreen bundle:nil];
-    rootViewController = [launchScreenStoryboard instantiateInitialViewController];
+    UIViewController *viewController = [launchScreenStoryboard instantiateInitialViewController];
+    view = viewController.view;
+    viewController.view = nil;
   } else {
     NSLog(@"Launch screen could not be loaded from a .xib or .storyboard. Unexpected loading behavior may occur.");
-    UIView *view = [UIView new];
+    view = [UIView new];
     view.backgroundColor = [UIColor whiteColor];
-    rootViewController.view = view;
   }
   
-  window.rootViewController = rootViewController;
-  [window makeKeyAndVisible];
+  window.rootViewController.view = view;
 
   [self start];
 }
@@ -179,6 +190,7 @@ static NSString * const EXUpdatesErrorEventName = @"error";
     if (success) {
       self->_launcher = self->_candidateLauncher;
       completion(YES);
+      [self->_errorRecovery startMonitoring];
       RCTReloadCommandSetBundleURL(launcher.launchAssetUrl);
       RCTTriggerReloadCommandListeners(@"Requested by JavaScript - Updates.reloadAsync()");
       [self runReaper];
@@ -221,7 +233,7 @@ static NSString * const EXUpdatesErrorEventName = @"error";
 
 - (void)appLoaderTask:(EXUpdatesAppLoaderTask *)appLoaderTask didStartLoadingUpdate:(EXUpdatesUpdate *)update
 {
-  // do nothing here for now
+  _remoteLoadStatus = EXUpdatesRemoteLoadStatusLoading;
 }
 
 - (void)appLoaderTask:(EXUpdatesAppLoaderTask *)appLoaderTask didFinishWithLauncher:(id<EXUpdatesAppLauncher>)launcher isUpToDate:(BOOL)isUpToDate
@@ -242,14 +254,18 @@ static NSString * const EXUpdatesErrorEventName = @"error";
 - (void)appLoaderTask:(EXUpdatesAppLoaderTask *)appLoaderTask didFinishBackgroundUpdateWithStatus:(EXUpdatesBackgroundUpdateStatus)status update:(nullable EXUpdatesUpdate *)update error:(nullable NSError *)error
 {
   if (status == EXUpdatesBackgroundUpdateStatusError) {
+    _remoteLoadStatus = EXUpdatesRemoteLoadStatusIdle;
     NSAssert(error != nil, @"Background update with error status must have a nonnull error object");
     [EXUpdatesUtils sendEventToBridge:_bridge withType:EXUpdatesErrorEventName body:@{@"message": error.localizedDescription}];
   } else if (status == EXUpdatesBackgroundUpdateStatusUpdateAvailable) {
+    _remoteLoadStatus = EXUpdatesRemoteLoadStatusNewUpdateLoaded;
     NSAssert(update != nil, @"Background update with error status must have a nonnull update object");
-    [EXUpdatesUtils sendEventToBridge:_bridge withType:EXUpdatesUpdateAvailableEventName body:@{@"manifest": update.rawManifest.rawManifestJSON}];
+    [EXUpdatesUtils sendEventToBridge:_bridge withType:EXUpdatesUpdateAvailableEventName body:@{@"manifest": update.manifest.rawManifestJSON}];
   } else if (status == EXUpdatesBackgroundUpdateStatusNoUpdateAvailable) {
+    _remoteLoadStatus = EXUpdatesRemoteLoadStatusIdle;
     [EXUpdatesUtils sendEventToBridge:_bridge withType:EXUpdatesNoUpdateAvailableEventName body:@{}];
   }
+  [_errorRecovery notifyNewRemoteLoadStatus:_remoteLoadStatus];
 }
 
 # pragma mark - EXUpdatesAppController+Internal
@@ -307,6 +323,87 @@ static NSString * const EXUpdatesErrorEventName = @"error";
   }
 }
 
+# pragma mark - EXUpdatesErrorRecoveryDelegate
+
+- (void)relaunchWithCompletion:(EXUpdatesAppLauncherCompletionBlock)completion
+{
+  EXUpdatesAppLauncherWithDatabase *launcher = [[EXUpdatesAppLauncherWithDatabase alloc] initWithConfig:_config database:_database directory:_updatesDirectory completionQueue:_controllerQueue];
+  _candidateLauncher = launcher;
+  [launcher launchUpdateWithSelectionPolicy:self.selectionPolicy completion:^(NSError * _Nullable error, BOOL success) {
+    if (success) {
+      self->_launcher = self->_candidateLauncher;
+      [self->_errorRecovery startMonitoring];
+      RCTReloadCommandSetBundleURL(launcher.launchAssetUrl);
+      RCTTriggerReloadCommandListeners(@"Relaunch after fatal error");
+      completion(nil, YES);
+    } else {
+      completion(error, NO);
+    }
+  }];
+}
+
+- (void)loadRemoteUpdate
+{
+  if (_loaderTask && _loaderTask.isRunning) {
+    return;
+  }
+
+  _remoteLoadStatus = EXUpdatesRemoteLoadStatusLoading;
+  EXUpdatesAppLoader *remoteAppLoader = [[EXUpdatesRemoteAppLoader alloc] initWithConfig:_config database:_database directory:_updatesDirectory completionQueue:_controllerQueue];
+  [remoteAppLoader loadUpdateFromUrl:_config.updateUrl onManifest:^BOOL(EXUpdatesUpdate *update) {
+    return [self->_selectionPolicy shouldLoadNewUpdate:update withLaunchedUpdate:self.launchedUpdate filters:update.manifestFilters];
+  } asset:^(EXUpdatesAsset *asset, NSUInteger successfulAssetCount, NSUInteger failedAssetCount, NSUInteger totalAssetCount) {
+    // do nothing for now
+  } success:^(EXUpdatesUpdate * _Nullable update) {
+    self->_remoteLoadStatus = update ? EXUpdatesRemoteLoadStatusNewUpdateLoaded : EXUpdatesRemoteLoadStatusIdle;
+    [self->_errorRecovery notifyNewRemoteLoadStatus:self->_remoteLoadStatus];
+  } error:^(NSError *error) {
+    self->_remoteLoadStatus = EXUpdatesRemoteLoadStatusIdle;
+    [self->_errorRecovery notifyNewRemoteLoadStatus:self->_remoteLoadStatus];
+  }];
+}
+
+- (void)markFailedLaunchForLaunchedUpdate
+{
+  if (_isEmergencyLaunch) {
+    return;
+  }
+  dispatch_async(_database.databaseQueue, ^{
+    EXUpdatesUpdate *launchedUpdate = self.launchedUpdate;
+    if (!launchedUpdate) {
+      return;
+    }
+    NSError *error;
+    [self->_database incrementFailedLaunchCountForUpdate:launchedUpdate error:&error];
+    if (error) {
+      NSLog(@"Unable to mark update as failed in the local DB: %@", error.localizedDescription);
+    }
+  });
+}
+
+- (void)markSuccessfulLaunchForLaunchedUpdate
+{
+  if (_isEmergencyLaunch) {
+    return;
+  }
+  dispatch_async(_database.databaseQueue, ^{
+    EXUpdatesUpdate *launchedUpdate = self.launchedUpdate;
+    if (!launchedUpdate) {
+      return;
+    }
+    NSError *error;
+    [self->_database incrementSuccessfulLaunchCountForUpdate:launchedUpdate error:&error];
+    if (error) {
+      NSLog(@"Failed to increment successful launch count for update: %@", error.localizedDescription);
+    }
+  });
+}
+
+- (void)throwException:(NSException *)exception
+{
+  @throw exception;
+}
+
 # pragma mark - internal
 
 - (void)_emergencyLaunchWithFatalError:(NSError *)error
@@ -315,13 +412,15 @@ static NSString * const EXUpdatesErrorEventName = @"error";
 
   EXUpdatesAppLauncherNoDatabase *launcher = [[EXUpdatesAppLauncherNoDatabase alloc] init];
   _launcher = launcher;
-  [launcher launchUpdateWithConfig:_config fatalError:error];
+  [launcher launchUpdateWithConfig:_config];
 
   if (_delegate) {
     [EXUpdatesUtils runBlockOnMainThread:^{
       [self->_delegate appController:self didStartWithSuccess:self.launchAssetUrl != nil];
     }];
   }
+
+  [_errorRecovery writeErrorOrExceptionToLog:error];
 }
 
 @end

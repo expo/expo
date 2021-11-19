@@ -50,12 +50,12 @@ open class HomeActivity : BaseExperienceActivity() {
   //region Activity Lifecycle
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
-    NativeModuleDepsProvider.getInstance().inject(HomeActivity::class.java, this)
+    NativeModuleDepsProvider.instance.inject(HomeActivity::class.java, this)
 
     sdkVersion = RNObject.UNVERSIONED
     manifest = exponentManifest.getKernelManifest()
     experienceKey = try {
-      ExperienceKey.fromRawManifest(manifest!!)
+      ExperienceKey.fromManifest(manifest!!)
     } catch (e: JSONException) {
       ExperienceKey("")
     }
@@ -85,7 +85,7 @@ open class HomeActivity : BaseExperienceActivity() {
   override fun onResume() {
     super.onResume()
     SoLoader.init(this, false)
-    Analytics.logEvent("HOME_APPEARED")
+    Analytics.logEvent(Analytics.AnalyticsEvent.HOME_APPEARED)
   }
   //endregion Activity Lifecycle
   /**

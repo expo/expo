@@ -15,10 +15,10 @@ require(\\"Foo\\");
 require(\\"./local-file/i-have-side-effects.fx.js\\");
 require(\\"../i-also-have-side-effects.fx\\");
 function _inlineFuncWithSideEffectsFx(){var data=_interopRequireDefault(require(\\"../inline-func-with-side-effects.fx.ts\\"));_inlineFuncWithSideEffectsFx=function _inlineFuncWithSideEffectsFx(){return data;};return data;}
-function _inlineFunc(){var data=_interopRequireDefault(require(\\"./inline-func\\"));_inlineFunc=function _inlineFunc(){return data;};return data;}function _getRequireWildcardCache(nodeInterop){if(typeof WeakMap!==\\"function\\")return null;var cacheBabelInterop=new WeakMap();var cacheNodeInterop=new WeakMap();return(_getRequireWildcardCache=function _getRequireWildcardCache(nodeInterop){return nodeInterop?cacheNodeInterop:cacheBabelInterop;})(nodeInterop);}function _interopRequireWildcard(obj,nodeInterop){if(!nodeInterop&&obj&&obj.__esModule){return obj;}if(obj===null||typeof obj!==\\"object\\"&&typeof obj!==\\"function\\"){return{default:obj};}var cache=_getRequireWildcardCache(nodeInterop);if(cache&&cache.has(obj)){return cache.get(obj);}var newObj={};var hasPropertyDescriptor=Object.defineProperty&&Object.getOwnPropertyDescriptor;for(var key in obj){if(key!==\\"default\\"&&Object.prototype.hasOwnProperty.call(obj,key)){var desc=hasPropertyDescriptor?Object.getOwnPropertyDescriptor(obj,key):null;if(desc&&(desc.get||desc.set)){Object.defineProperty(newObj,key,desc);}else{newObj[key]=obj[key];}}}newObj.default=obj;if(cache){cache.set(obj,newObj);}return newObj;}function _createSuper(Derived){var hasNativeReflectConstruct=_isNativeReflectConstruct();return function _createSuperInternal(){var Super=(0,_getPrototypeOf2.default)(Derived),result;if(hasNativeReflectConstruct){var NewTarget=(0,_getPrototypeOf2.default)(this).constructor;result=Reflect.construct(Super,arguments,NewTarget);}else{result=Super.apply(this,arguments);}return(0,_possibleConstructorReturn2.default)(this,result);};}function _isNativeReflectConstruct(){if(typeof Reflect===\\"undefined\\"||!Reflect.construct)return false;if(Reflect.construct.sham)return false;if(typeof Proxy===\\"function\\")return true;try{Boolean.prototype.valueOf.call(Reflect.construct(Boolean,[],function(){}));return true;}catch(e){return false;}}var
+function _inlineFunc(){var data=_interopRequireDefault(require(\\"./inline-func\\"));_inlineFunc=function _inlineFunc(){return data;};return data;}var _jsxRuntime=require(\\"react/jsx-runtime\\");function _getRequireWildcardCache(nodeInterop){if(typeof WeakMap!==\\"function\\")return null;var cacheBabelInterop=new WeakMap();var cacheNodeInterop=new WeakMap();return(_getRequireWildcardCache=function _getRequireWildcardCache(nodeInterop){return nodeInterop?cacheNodeInterop:cacheBabelInterop;})(nodeInterop);}function _interopRequireWildcard(obj,nodeInterop){if(!nodeInterop&&obj&&obj.__esModule){return obj;}if(obj===null||typeof obj!==\\"object\\"&&typeof obj!==\\"function\\"){return{default:obj};}var cache=_getRequireWildcardCache(nodeInterop);if(cache&&cache.has(obj)){return cache.get(obj);}var newObj={};var hasPropertyDescriptor=Object.defineProperty&&Object.getOwnPropertyDescriptor;for(var key in obj){if(key!==\\"default\\"&&Object.prototype.hasOwnProperty.call(obj,key)){var desc=hasPropertyDescriptor?Object.getOwnPropertyDescriptor(obj,key):null;if(desc&&(desc.get||desc.set)){Object.defineProperty(newObj,key,desc);}else{newObj[key]=obj[key];}}}newObj.default=obj;if(cache){cache.set(obj,newObj);}return newObj;}function _createSuper(Derived){var hasNativeReflectConstruct=_isNativeReflectConstruct();return function _createSuperInternal(){var Super=(0,_getPrototypeOf2.default)(Derived),result;if(hasNativeReflectConstruct){var NewTarget=(0,_getPrototypeOf2.default)(this).constructor;result=Reflect.construct(Super,arguments,NewTarget);}else{result=Super.apply(this,arguments);}return(0,_possibleConstructorReturn2.default)(this,result);};}function _isNativeReflectConstruct(){if(typeof Reflect===\\"undefined\\"||!Reflect.construct)return false;if(Reflect.construct.sham)return false;if(typeof Proxy===\\"function\\")return true;try{Boolean.prototype.valueOf.call(Reflect.construct(Boolean,[],function(){}));return true;}catch(e){return false;}}var
 
-Lazy=function(_React$Component){(0,_inherits2.default)(Lazy,_React$Component);var _super=_createSuper(Lazy);function Lazy(){(0,_classCallCheck2.default)(this,Lazy);return _super.apply(this,arguments);}(0,_createClass2.default)(Lazy,[{key:\\"componentDidMount\\",value:function componentDidMount()
-{
+Lazy=function(_React$Component){(0,_inherits2.default)(Lazy,_React$Component);var _super=_createSuper(Lazy);function Lazy(){(0,_classCallCheck2.default)(this,Lazy);return _super.apply(this,arguments);}(0,_createClass2.default)(Lazy,[{key:\\"componentDidMount\\",value:
+function componentDidMount(){
 console.log('Calling InlineFuncFromPackage()');
 (0,_inlineComp().default)();
 
@@ -29,19 +29,19 @@ console.log('Calling Boo.myFunc()');
 Boo.myFunc();
 
 _expoAsset.Asset.loadAsync([require(\\"./assets/icon.png\\")]);
-}},{key:\\"render\\",value:function render()
+}},{key:\\"render\\",value:
 
-{
+function render(){
 return(
-_react.default.createElement(_reactNative.View,null,
-_react.default.createElement(_expoAppLoading.default,null),
-_react.default.createElement(_vectorIcons.Ionicons,{name:\\"md-options\\",size:28}),
-_react.default.createElement(_fooView.default,null)));
+(0,_jsxRuntime.jsxs)(_reactNative.View,{children:[
+(0,_jsxRuntime.jsx)(_expoAppLoading.default,{}),
+(0,_jsxRuntime.jsx)(_vectorIcons.Ionicons,{name:\\"md-options\\",size:28}),
+(0,_jsxRuntime.jsx)(_fooView.default,{})]}));
 
 
-}},{key:\\"unusedFunction\\",value:function unusedFunction()
+}},{key:\\"unusedFunction\\",value:
 
-{
+function unusedFunction(){
 (0,_inlineFuncWithSideEffectsFx().default)();
 }}]);return Lazy;}(_react.default.Component);var _default=
 
@@ -64,10 +64,10 @@ require(\\"Foo\\");
 require(\\"./local-file/i-have-side-effects.fx.js\\");
 require(\\"../i-also-have-side-effects.fx\\");
 var _inlineFuncWithSideEffectsFx=_interopRequireDefault(require(\\"../inline-func-with-side-effects.fx.ts\\"));
-function _inlineFunc(){var data=_interopRequireDefault(require(\\"./inline-func\\"));_inlineFunc=function _inlineFunc(){return data;};return data;}function _getRequireWildcardCache(nodeInterop){if(typeof WeakMap!==\\"function\\")return null;var cacheBabelInterop=new WeakMap();var cacheNodeInterop=new WeakMap();return(_getRequireWildcardCache=function _getRequireWildcardCache(nodeInterop){return nodeInterop?cacheNodeInterop:cacheBabelInterop;})(nodeInterop);}function _interopRequireWildcard(obj,nodeInterop){if(!nodeInterop&&obj&&obj.__esModule){return obj;}if(obj===null||typeof obj!==\\"object\\"&&typeof obj!==\\"function\\"){return{default:obj};}var cache=_getRequireWildcardCache(nodeInterop);if(cache&&cache.has(obj)){return cache.get(obj);}var newObj={};var hasPropertyDescriptor=Object.defineProperty&&Object.getOwnPropertyDescriptor;for(var key in obj){if(key!==\\"default\\"&&Object.prototype.hasOwnProperty.call(obj,key)){var desc=hasPropertyDescriptor?Object.getOwnPropertyDescriptor(obj,key):null;if(desc&&(desc.get||desc.set)){Object.defineProperty(newObj,key,desc);}else{newObj[key]=obj[key];}}}newObj.default=obj;if(cache){cache.set(obj,newObj);}return newObj;}function _createSuper(Derived){var hasNativeReflectConstruct=_isNativeReflectConstruct();return function _createSuperInternal(){var Super=(0,_getPrototypeOf2().default)(Derived),result;if(hasNativeReflectConstruct){var NewTarget=(0,_getPrototypeOf2().default)(this).constructor;result=Reflect.construct(Super,arguments,NewTarget);}else{result=Super.apply(this,arguments);}return(0,_possibleConstructorReturn2().default)(this,result);};}function _isNativeReflectConstruct(){if(typeof Reflect===\\"undefined\\"||!Reflect.construct)return false;if(Reflect.construct.sham)return false;if(typeof Proxy===\\"function\\")return true;try{Boolean.prototype.valueOf.call(Reflect.construct(Boolean,[],function(){}));return true;}catch(e){return false;}}var
+function _inlineFunc(){var data=_interopRequireDefault(require(\\"./inline-func\\"));_inlineFunc=function _inlineFunc(){return data;};return data;}function _jsxRuntime(){var data=require(\\"react/jsx-runtime\\");_jsxRuntime=function _jsxRuntime(){return data;};return data;}function _getRequireWildcardCache(nodeInterop){if(typeof WeakMap!==\\"function\\")return null;var cacheBabelInterop=new WeakMap();var cacheNodeInterop=new WeakMap();return(_getRequireWildcardCache=function _getRequireWildcardCache(nodeInterop){return nodeInterop?cacheNodeInterop:cacheBabelInterop;})(nodeInterop);}function _interopRequireWildcard(obj,nodeInterop){if(!nodeInterop&&obj&&obj.__esModule){return obj;}if(obj===null||typeof obj!==\\"object\\"&&typeof obj!==\\"function\\"){return{default:obj};}var cache=_getRequireWildcardCache(nodeInterop);if(cache&&cache.has(obj)){return cache.get(obj);}var newObj={};var hasPropertyDescriptor=Object.defineProperty&&Object.getOwnPropertyDescriptor;for(var key in obj){if(key!==\\"default\\"&&Object.prototype.hasOwnProperty.call(obj,key)){var desc=hasPropertyDescriptor?Object.getOwnPropertyDescriptor(obj,key):null;if(desc&&(desc.get||desc.set)){Object.defineProperty(newObj,key,desc);}else{newObj[key]=obj[key];}}}newObj.default=obj;if(cache){cache.set(obj,newObj);}return newObj;}function _createSuper(Derived){var hasNativeReflectConstruct=_isNativeReflectConstruct();return function _createSuperInternal(){var Super=(0,_getPrototypeOf2().default)(Derived),result;if(hasNativeReflectConstruct){var NewTarget=(0,_getPrototypeOf2().default)(this).constructor;result=Reflect.construct(Super,arguments,NewTarget);}else{result=Super.apply(this,arguments);}return(0,_possibleConstructorReturn2().default)(this,result);};}function _isNativeReflectConstruct(){if(typeof Reflect===\\"undefined\\"||!Reflect.construct)return false;if(Reflect.construct.sham)return false;if(typeof Proxy===\\"function\\")return true;try{Boolean.prototype.valueOf.call(Reflect.construct(Boolean,[],function(){}));return true;}catch(e){return false;}}var
 
-Lazy=function(_React$Component){(0,_inherits2().default)(Lazy,_React$Component);var _super=_createSuper(Lazy);function Lazy(){(0,_classCallCheck2().default)(this,Lazy);return _super.apply(this,arguments);}(0,_createClass2().default)(Lazy,[{key:\\"componentDidMount\\",value:function componentDidMount()
-{
+Lazy=function(_React$Component){(0,_inherits2().default)(Lazy,_React$Component);var _super=_createSuper(Lazy);function Lazy(){(0,_classCallCheck2().default)(this,Lazy);return _super.apply(this,arguments);}(0,_createClass2().default)(Lazy,[{key:\\"componentDidMount\\",value:
+function componentDidMount(){
 console.log('Calling InlineFuncFromPackage()');
 (0,_inlineComp().default)();
 
@@ -78,19 +78,19 @@ console.log('Calling Boo.myFunc()');
 Boo().myFunc();
 
 _expoAsset().Asset.loadAsync([require(\\"./assets/icon.png\\")]);
-}},{key:\\"render\\",value:function render()
+}},{key:\\"render\\",value:
 
-{
+function render(){
 return(
-_react().default.createElement(_reactNative().View,null,
-_react().default.createElement(_expoAppLoading().default,null),
-_react().default.createElement(_vectorIcons().Ionicons,{name:\\"md-options\\",size:28}),
-_react().default.createElement(_fooView().default,null)));
+(0,_jsxRuntime().jsxs)(_reactNative().View,{children:[
+(0,_jsxRuntime().jsx)(_expoAppLoading().default,{}),
+(0,_jsxRuntime().jsx)(_vectorIcons().Ionicons,{name:\\"md-options\\",size:28}),
+(0,_jsxRuntime().jsx)(_fooView().default,{})]}));
 
 
-}},{key:\\"unusedFunction\\",value:function unusedFunction()
+}},{key:\\"unusedFunction\\",value:
 
-{
+function unusedFunction(){
 (0,_inlineFuncWithSideEffectsFx.default)();
 }}]);return Lazy;}(_react().default.Component);var _default=
 
@@ -113,10 +113,10 @@ require(\\"Foo\\");
 require(\\"./local-file/i-have-side-effects.fx.js\\");
 require(\\"../i-also-have-side-effects.fx\\");
 var _inlineFuncWithSideEffectsFx=_interopRequireDefault(require(\\"../inline-func-with-side-effects.fx.ts\\"));
-var _inlineFunc=_interopRequireDefault(require(\\"./inline-func\\"));function _getRequireWildcardCache(nodeInterop){if(typeof WeakMap!==\\"function\\")return null;var cacheBabelInterop=new WeakMap();var cacheNodeInterop=new WeakMap();return(_getRequireWildcardCache=function _getRequireWildcardCache(nodeInterop){return nodeInterop?cacheNodeInterop:cacheBabelInterop;})(nodeInterop);}function _interopRequireWildcard(obj,nodeInterop){if(!nodeInterop&&obj&&obj.__esModule){return obj;}if(obj===null||typeof obj!==\\"object\\"&&typeof obj!==\\"function\\"){return{default:obj};}var cache=_getRequireWildcardCache(nodeInterop);if(cache&&cache.has(obj)){return cache.get(obj);}var newObj={};var hasPropertyDescriptor=Object.defineProperty&&Object.getOwnPropertyDescriptor;for(var key in obj){if(key!==\\"default\\"&&Object.prototype.hasOwnProperty.call(obj,key)){var desc=hasPropertyDescriptor?Object.getOwnPropertyDescriptor(obj,key):null;if(desc&&(desc.get||desc.set)){Object.defineProperty(newObj,key,desc);}else{newObj[key]=obj[key];}}}newObj.default=obj;if(cache){cache.set(obj,newObj);}return newObj;}function _createSuper(Derived){var hasNativeReflectConstruct=_isNativeReflectConstruct();return function _createSuperInternal(){var Super=(0,_getPrototypeOf2.default)(Derived),result;if(hasNativeReflectConstruct){var NewTarget=(0,_getPrototypeOf2.default)(this).constructor;result=Reflect.construct(Super,arguments,NewTarget);}else{result=Super.apply(this,arguments);}return(0,_possibleConstructorReturn2.default)(this,result);};}function _isNativeReflectConstruct(){if(typeof Reflect===\\"undefined\\"||!Reflect.construct)return false;if(Reflect.construct.sham)return false;if(typeof Proxy===\\"function\\")return true;try{Boolean.prototype.valueOf.call(Reflect.construct(Boolean,[],function(){}));return true;}catch(e){return false;}}var
+var _inlineFunc=_interopRequireDefault(require(\\"./inline-func\\"));var _jsxRuntime=require(\\"react/jsx-runtime\\");function _getRequireWildcardCache(nodeInterop){if(typeof WeakMap!==\\"function\\")return null;var cacheBabelInterop=new WeakMap();var cacheNodeInterop=new WeakMap();return(_getRequireWildcardCache=function _getRequireWildcardCache(nodeInterop){return nodeInterop?cacheNodeInterop:cacheBabelInterop;})(nodeInterop);}function _interopRequireWildcard(obj,nodeInterop){if(!nodeInterop&&obj&&obj.__esModule){return obj;}if(obj===null||typeof obj!==\\"object\\"&&typeof obj!==\\"function\\"){return{default:obj};}var cache=_getRequireWildcardCache(nodeInterop);if(cache&&cache.has(obj)){return cache.get(obj);}var newObj={};var hasPropertyDescriptor=Object.defineProperty&&Object.getOwnPropertyDescriptor;for(var key in obj){if(key!==\\"default\\"&&Object.prototype.hasOwnProperty.call(obj,key)){var desc=hasPropertyDescriptor?Object.getOwnPropertyDescriptor(obj,key):null;if(desc&&(desc.get||desc.set)){Object.defineProperty(newObj,key,desc);}else{newObj[key]=obj[key];}}}newObj.default=obj;if(cache){cache.set(obj,newObj);}return newObj;}function _createSuper(Derived){var hasNativeReflectConstruct=_isNativeReflectConstruct();return function _createSuperInternal(){var Super=(0,_getPrototypeOf2.default)(Derived),result;if(hasNativeReflectConstruct){var NewTarget=(0,_getPrototypeOf2.default)(this).constructor;result=Reflect.construct(Super,arguments,NewTarget);}else{result=Super.apply(this,arguments);}return(0,_possibleConstructorReturn2.default)(this,result);};}function _isNativeReflectConstruct(){if(typeof Reflect===\\"undefined\\"||!Reflect.construct)return false;if(Reflect.construct.sham)return false;if(typeof Proxy===\\"function\\")return true;try{Boolean.prototype.valueOf.call(Reflect.construct(Boolean,[],function(){}));return true;}catch(e){return false;}}var
 
-Lazy=function(_React$Component){(0,_inherits2.default)(Lazy,_React$Component);var _super=_createSuper(Lazy);function Lazy(){(0,_classCallCheck2.default)(this,Lazy);return _super.apply(this,arguments);}(0,_createClass2.default)(Lazy,[{key:\\"componentDidMount\\",value:function componentDidMount()
-{
+Lazy=function(_React$Component){(0,_inherits2.default)(Lazy,_React$Component);var _super=_createSuper(Lazy);function Lazy(){(0,_classCallCheck2.default)(this,Lazy);return _super.apply(this,arguments);}(0,_createClass2.default)(Lazy,[{key:\\"componentDidMount\\",value:
+function componentDidMount(){
 console.log('Calling InlineFuncFromPackage()');
 (0,_inlineComp.default)();
 
@@ -127,19 +127,19 @@ console.log('Calling Boo.myFunc()');
 Boo.myFunc();
 
 _expoAsset.Asset.loadAsync([require(\\"./assets/icon.png\\")]);
-}},{key:\\"render\\",value:function render()
+}},{key:\\"render\\",value:
 
-{
+function render(){
 return(
-_react.default.createElement(_reactNative.View,null,
-_react.default.createElement(_expoAppLoading.default,null),
-_react.default.createElement(_vectorIcons.Ionicons,{name:\\"md-options\\",size:28}),
-_react.default.createElement(_fooView.default,null)));
+(0,_jsxRuntime.jsxs)(_reactNative.View,{children:[
+(0,_jsxRuntime.jsx)(_expoAppLoading.default,{}),
+(0,_jsxRuntime.jsx)(_vectorIcons.Ionicons,{name:\\"md-options\\",size:28}),
+(0,_jsxRuntime.jsx)(_fooView.default,{})]}));
 
 
-}},{key:\\"unusedFunction\\",value:function unusedFunction()
+}},{key:\\"unusedFunction\\",value:
 
-{
+function unusedFunction(){
 (0,_inlineFuncWithSideEffectsFx.default)();
 }}]);return Lazy;}(_react.default.Component);var _default=
 
@@ -162,10 +162,10 @@ require(\\"Foo\\");
 require(\\"./local-file/i-have-side-effects.fx.js\\");
 require(\\"../i-also-have-side-effects.fx\\");
 var _inlineFuncWithSideEffectsFx=_interopRequireDefault(require(\\"../inline-func-with-side-effects.fx.ts\\"));
-var _inlineFunc=_interopRequireDefault(require(\\"./inline-func\\"));function _getRequireWildcardCache(nodeInterop){if(typeof WeakMap!==\\"function\\")return null;var cacheBabelInterop=new WeakMap();var cacheNodeInterop=new WeakMap();return(_getRequireWildcardCache=function _getRequireWildcardCache(nodeInterop){return nodeInterop?cacheNodeInterop:cacheBabelInterop;})(nodeInterop);}function _interopRequireWildcard(obj,nodeInterop){if(!nodeInterop&&obj&&obj.__esModule){return obj;}if(obj===null||typeof obj!==\\"object\\"&&typeof obj!==\\"function\\"){return{default:obj};}var cache=_getRequireWildcardCache(nodeInterop);if(cache&&cache.has(obj)){return cache.get(obj);}var newObj={};var hasPropertyDescriptor=Object.defineProperty&&Object.getOwnPropertyDescriptor;for(var key in obj){if(key!==\\"default\\"&&Object.prototype.hasOwnProperty.call(obj,key)){var desc=hasPropertyDescriptor?Object.getOwnPropertyDescriptor(obj,key):null;if(desc&&(desc.get||desc.set)){Object.defineProperty(newObj,key,desc);}else{newObj[key]=obj[key];}}}newObj.default=obj;if(cache){cache.set(obj,newObj);}return newObj;}function _createSuper(Derived){var hasNativeReflectConstruct=_isNativeReflectConstruct();return function _createSuperInternal(){var Super=(0,_getPrototypeOf2.default)(Derived),result;if(hasNativeReflectConstruct){var NewTarget=(0,_getPrototypeOf2.default)(this).constructor;result=Reflect.construct(Super,arguments,NewTarget);}else{result=Super.apply(this,arguments);}return(0,_possibleConstructorReturn2.default)(this,result);};}function _isNativeReflectConstruct(){if(typeof Reflect===\\"undefined\\"||!Reflect.construct)return false;if(Reflect.construct.sham)return false;if(typeof Proxy===\\"function\\")return true;try{Boolean.prototype.valueOf.call(Reflect.construct(Boolean,[],function(){}));return true;}catch(e){return false;}}var
+var _inlineFunc=_interopRequireDefault(require(\\"./inline-func\\"));var _jsxRuntime=require(\\"react/jsx-runtime\\");function _getRequireWildcardCache(nodeInterop){if(typeof WeakMap!==\\"function\\")return null;var cacheBabelInterop=new WeakMap();var cacheNodeInterop=new WeakMap();return(_getRequireWildcardCache=function _getRequireWildcardCache(nodeInterop){return nodeInterop?cacheNodeInterop:cacheBabelInterop;})(nodeInterop);}function _interopRequireWildcard(obj,nodeInterop){if(!nodeInterop&&obj&&obj.__esModule){return obj;}if(obj===null||typeof obj!==\\"object\\"&&typeof obj!==\\"function\\"){return{default:obj};}var cache=_getRequireWildcardCache(nodeInterop);if(cache&&cache.has(obj)){return cache.get(obj);}var newObj={};var hasPropertyDescriptor=Object.defineProperty&&Object.getOwnPropertyDescriptor;for(var key in obj){if(key!==\\"default\\"&&Object.prototype.hasOwnProperty.call(obj,key)){var desc=hasPropertyDescriptor?Object.getOwnPropertyDescriptor(obj,key):null;if(desc&&(desc.get||desc.set)){Object.defineProperty(newObj,key,desc);}else{newObj[key]=obj[key];}}}newObj.default=obj;if(cache){cache.set(obj,newObj);}return newObj;}function _createSuper(Derived){var hasNativeReflectConstruct=_isNativeReflectConstruct();return function _createSuperInternal(){var Super=(0,_getPrototypeOf2.default)(Derived),result;if(hasNativeReflectConstruct){var NewTarget=(0,_getPrototypeOf2.default)(this).constructor;result=Reflect.construct(Super,arguments,NewTarget);}else{result=Super.apply(this,arguments);}return(0,_possibleConstructorReturn2.default)(this,result);};}function _isNativeReflectConstruct(){if(typeof Reflect===\\"undefined\\"||!Reflect.construct)return false;if(Reflect.construct.sham)return false;if(typeof Proxy===\\"function\\")return true;try{Boolean.prototype.valueOf.call(Reflect.construct(Boolean,[],function(){}));return true;}catch(e){return false;}}var
 
-Lazy=function(_React$Component){(0,_inherits2.default)(Lazy,_React$Component);var _super=_createSuper(Lazy);function Lazy(){(0,_classCallCheck2.default)(this,Lazy);return _super.apply(this,arguments);}(0,_createClass2.default)(Lazy,[{key:\\"componentDidMount\\",value:function componentDidMount()
-{
+Lazy=function(_React$Component){(0,_inherits2.default)(Lazy,_React$Component);var _super=_createSuper(Lazy);function Lazy(){(0,_classCallCheck2.default)(this,Lazy);return _super.apply(this,arguments);}(0,_createClass2.default)(Lazy,[{key:\\"componentDidMount\\",value:
+function componentDidMount(){
 console.log('Calling InlineFuncFromPackage()');
 (0,_inlineComp.default)();
 
@@ -176,19 +176,19 @@ console.log('Calling Boo.myFunc()');
 Boo.myFunc();
 
 _expoAsset.Asset.loadAsync([require(\\"./assets/icon.png\\")]);
-}},{key:\\"render\\",value:function render()
+}},{key:\\"render\\",value:
 
-{
+function render(){
 return(
-_react.default.createElement(_reactNative.View,null,
-_react.default.createElement(_expoAppLoading.default,null),
-_react.default.createElement(_vectorIcons.Ionicons,{name:\\"md-options\\",size:28}),
-_react.default.createElement(_fooView.default,null)));
+(0,_jsxRuntime.jsxs)(_reactNative.View,{children:[
+(0,_jsxRuntime.jsx)(_expoAppLoading.default,{}),
+(0,_jsxRuntime.jsx)(_vectorIcons.Ionicons,{name:\\"md-options\\",size:28}),
+(0,_jsxRuntime.jsx)(_fooView.default,{})]}));
 
 
-}},{key:\\"unusedFunction\\",value:function unusedFunction()
+}},{key:\\"unusedFunction\\",value:
 
-{
+function unusedFunction(){
 (0,_inlineFuncWithSideEffectsFx.default)();
 }}]);return Lazy;}(_react.default.Component);var _default=
 
@@ -211,10 +211,10 @@ require(\\"Foo\\");
 require(\\"./local-file/i-have-side-effects.fx.js\\");
 require(\\"../i-also-have-side-effects.fx\\");
 var _inlineFuncWithSideEffectsFx=_interopRequireDefault(require(\\"../inline-func-with-side-effects.fx.ts\\"));
-var _inlineFunc=_interopRequireDefault(require(\\"./inline-func\\"));function _getRequireWildcardCache(nodeInterop){if(typeof WeakMap!==\\"function\\")return null;var cacheBabelInterop=new WeakMap();var cacheNodeInterop=new WeakMap();return(_getRequireWildcardCache=function _getRequireWildcardCache(nodeInterop){return nodeInterop?cacheNodeInterop:cacheBabelInterop;})(nodeInterop);}function _interopRequireWildcard(obj,nodeInterop){if(!nodeInterop&&obj&&obj.__esModule){return obj;}if(obj===null||typeof obj!==\\"object\\"&&typeof obj!==\\"function\\"){return{default:obj};}var cache=_getRequireWildcardCache(nodeInterop);if(cache&&cache.has(obj)){return cache.get(obj);}var newObj={};var hasPropertyDescriptor=Object.defineProperty&&Object.getOwnPropertyDescriptor;for(var key in obj){if(key!==\\"default\\"&&Object.prototype.hasOwnProperty.call(obj,key)){var desc=hasPropertyDescriptor?Object.getOwnPropertyDescriptor(obj,key):null;if(desc&&(desc.get||desc.set)){Object.defineProperty(newObj,key,desc);}else{newObj[key]=obj[key];}}}newObj.default=obj;if(cache){cache.set(obj,newObj);}return newObj;}function _createSuper(Derived){var hasNativeReflectConstruct=_isNativeReflectConstruct();return function _createSuperInternal(){var Super=(0,_getPrototypeOf2().default)(Derived),result;if(hasNativeReflectConstruct){var NewTarget=(0,_getPrototypeOf2().default)(this).constructor;result=Reflect.construct(Super,arguments,NewTarget);}else{result=Super.apply(this,arguments);}return(0,_possibleConstructorReturn2().default)(this,result);};}function _isNativeReflectConstruct(){if(typeof Reflect===\\"undefined\\"||!Reflect.construct)return false;if(Reflect.construct.sham)return false;if(typeof Proxy===\\"function\\")return true;try{Boolean.prototype.valueOf.call(Reflect.construct(Boolean,[],function(){}));return true;}catch(e){return false;}}var
+var _inlineFunc=_interopRequireDefault(require(\\"./inline-func\\"));function _jsxRuntime(){var data=require(\\"react/jsx-runtime\\");_jsxRuntime=function _jsxRuntime(){return data;};return data;}function _getRequireWildcardCache(nodeInterop){if(typeof WeakMap!==\\"function\\")return null;var cacheBabelInterop=new WeakMap();var cacheNodeInterop=new WeakMap();return(_getRequireWildcardCache=function _getRequireWildcardCache(nodeInterop){return nodeInterop?cacheNodeInterop:cacheBabelInterop;})(nodeInterop);}function _interopRequireWildcard(obj,nodeInterop){if(!nodeInterop&&obj&&obj.__esModule){return obj;}if(obj===null||typeof obj!==\\"object\\"&&typeof obj!==\\"function\\"){return{default:obj};}var cache=_getRequireWildcardCache(nodeInterop);if(cache&&cache.has(obj)){return cache.get(obj);}var newObj={};var hasPropertyDescriptor=Object.defineProperty&&Object.getOwnPropertyDescriptor;for(var key in obj){if(key!==\\"default\\"&&Object.prototype.hasOwnProperty.call(obj,key)){var desc=hasPropertyDescriptor?Object.getOwnPropertyDescriptor(obj,key):null;if(desc&&(desc.get||desc.set)){Object.defineProperty(newObj,key,desc);}else{newObj[key]=obj[key];}}}newObj.default=obj;if(cache){cache.set(obj,newObj);}return newObj;}function _createSuper(Derived){var hasNativeReflectConstruct=_isNativeReflectConstruct();return function _createSuperInternal(){var Super=(0,_getPrototypeOf2().default)(Derived),result;if(hasNativeReflectConstruct){var NewTarget=(0,_getPrototypeOf2().default)(this).constructor;result=Reflect.construct(Super,arguments,NewTarget);}else{result=Super.apply(this,arguments);}return(0,_possibleConstructorReturn2().default)(this,result);};}function _isNativeReflectConstruct(){if(typeof Reflect===\\"undefined\\"||!Reflect.construct)return false;if(Reflect.construct.sham)return false;if(typeof Proxy===\\"function\\")return true;try{Boolean.prototype.valueOf.call(Reflect.construct(Boolean,[],function(){}));return true;}catch(e){return false;}}var
 
-Lazy=function(_React$Component){(0,_inherits2().default)(Lazy,_React$Component);var _super=_createSuper(Lazy);function Lazy(){(0,_classCallCheck2().default)(this,Lazy);return _super.apply(this,arguments);}(0,_createClass2().default)(Lazy,[{key:\\"componentDidMount\\",value:function componentDidMount()
-{
+Lazy=function(_React$Component){(0,_inherits2().default)(Lazy,_React$Component);var _super=_createSuper(Lazy);function Lazy(){(0,_classCallCheck2().default)(this,Lazy);return _super.apply(this,arguments);}(0,_createClass2().default)(Lazy,[{key:\\"componentDidMount\\",value:
+function componentDidMount(){
 console.log('Calling InlineFuncFromPackage()');
 (0,_inlineComp().default)();
 
@@ -225,19 +225,19 @@ console.log('Calling Boo.myFunc()');
 Boo().myFunc();
 
 _expoAsset.Asset.loadAsync([require(\\"./assets/icon.png\\")]);
-}},{key:\\"render\\",value:function render()
+}},{key:\\"render\\",value:
 
-{
+function render(){
 return(
-_react().default.createElement(_reactNative().View,null,
-_react().default.createElement(_expoAppLoading().default,null),
-_react().default.createElement(_vectorIcons().Ionicons,{name:\\"md-options\\",size:28}),
-_react().default.createElement(_fooView().default,null)));
+(0,_jsxRuntime().jsxs)(_reactNative().View,{children:[
+(0,_jsxRuntime().jsx)(_expoAppLoading().default,{}),
+(0,_jsxRuntime().jsx)(_vectorIcons().Ionicons,{name:\\"md-options\\",size:28}),
+(0,_jsxRuntime().jsx)(_fooView().default,{})]}));
 
 
-}},{key:\\"unusedFunction\\",value:function unusedFunction()
+}},{key:\\"unusedFunction\\",value:
 
-{
+function unusedFunction(){
 (0,_inlineFuncWithSideEffectsFx.default)();
 }}]);return Lazy;}(_react().default.Component);var _default=
 
@@ -260,10 +260,18 @@ require(\\"@expo/vector-icons\\");"
 `;
 
 exports[`metro supports automatic JSX runtime 1`] = `
-"Object.defineProperty(exports,\\"__esModule\\",{value:true});exports.default=App;var _jsxRuntime=require(\\"react/jsx-runtime\\");
-var _reactNative=require(\\"react-native\\");
+"Object.defineProperty(exports,\\"__esModule\\",{value:true});exports.default=App;
+var _reactNative=require(\\"react-native\\");var _jsxRuntime=require(\\"react/jsx-runtime\\");
 function App(){
 return(0,_jsxRuntime.jsx)(_reactNative.View,{children:(0,_jsxRuntime.jsx)(_reactNative.Text,{children:\\"Hello World\\"})});
+}"
+`;
+
+exports[`metro supports classic JSX runtime 1`] = `
+"Object.defineProperty(exports,\\"__esModule\\",{value:true});exports.default=App;
+var _reactNative=require(\\"react-native\\");
+function App(){
+return React.createElement(_reactNative.View,null,React.createElement(_reactNative.Text,null,\\"Hello World\\"));
 }"
 `;
 
@@ -287,10 +295,18 @@ import\\"@expo/vector-icons\\";"
 `;
 
 exports[`webpack supports automatic JSX runtime 1`] = `
-"import{jsx as _jsx}from\\"react/jsx-runtime\\";import Text from\\"react-native-web/dist/exports/Text\\";import View from\\"react-native-web/dist/exports/View\\";
+"import Text from\\"react-native-web/dist/exports/Text\\";import View from\\"react-native-web/dist/exports/View\\";import{jsx as _jsx}from\\"react/jsx-runtime\\";
 
 export default function App(){
 return _jsx(View,{children:_jsx(Text,{children:\\"Hello World\\"})});
+}"
+`;
+
+exports[`webpack supports classic JSX runtime 1`] = `
+"import Text from\\"react-native-web/dist/exports/Text\\";import View from\\"react-native-web/dist/exports/View\\";
+
+export default function App(){
+return React.createElement(View,null,React.createElement(Text,null,\\"Hello World\\"));
 }"
 `;
 

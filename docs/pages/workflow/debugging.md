@@ -33,15 +33,16 @@ Errors or bugs in your production app can be much harder to solve, mainly becaus
 
 > **Hint**: sometimes, running your app in "production mode" locally will show errors that normally wouldn't be thrown. You can run an app locally in production by running `expo start --no-dev --minify`. "--no-dev" tells the server not to be run in development mode, and "--minify" will minify your code the same way it is for production JavaScript bundles.
 
-Using an automated error logging system like [Sentry](../guides/using-sentry.md) is a huge help in identifying, tracking, and resolving JavaScript errors in your production app. This will give you a good sense of how many people are running into an error, how often, when, **and it even provides sourcemaps so you will have stacktraces of your errors!** Sentry is one of those tools that if you wait until you need it to install it, then you waited too long. Also- Sentry is free up to 5000 events/month.
+Using an automated error logging system like [Sentry](../guides/using-sentry.md) is a huge help in identifying, tracking, and resolving JavaScript errors in your production app. This will give you a good sense of how many people are running into an error, and how often.
 
 ### My production app is crashing
 
-This can be a really frustrating scenario, since it gives you very little information to go off of on first glance. But, in reality, crashes can be one of the easiest-to-solve errors once you:
+This can be a really frustrating scenario, since it gives you very little information to go off of on first glance. It's important now to reproduce the issue, and, even if you can't do that, to find any related crash reports.
 
-- [Access the native device logs](logging.md#optional-manually-access-device-logs)
 - Reproduce the crash (either using your production app, or the Expo Go app)
-- Search the logs for a "fatal exception" (there could be a few) to see exactly what is causing your app to crash
+- **Find an associated JavaScript crash report**: Check your JavaScript error reporting service (such as Sentry).
+- **Find an associated iOS crash report**: If your iOS app is on TestFlight or the App Store, you can use the [Crashes Organizer](https://developer.apple.com/news/?id=nra79npr) in Xcode. If not, refer to their ["Diagnosing Issues Using Crash Reports and Device Logs" guide](https://developer.apple.com/documentation/xcode/diagnosing-issues-using-crash-reports-and-device-logs).
+- **Find an associated Android crash report**If your Android app is on Google Play, refer to the crashes section of the [Google Play Console](https://play.google.com/console/about/), or connect your Android device to your computer and run `adb logcat` to view the streaming logs. The `adb` (Android Debug Bridge) program is part of the Android SDK; an alternative to installing the Android SDK is to use [WebADB](https://webadb.com/) in Chrome.
 
 With that information, you should be able to identify where the error is coming from, or at least search the internet for possible causes & solutions.
 
@@ -159,7 +160,7 @@ You can debug Expo apps using the Chrome debugger tools. Rather than running you
 
 - Open the app on your device, reveal the developer menu then tap on `Debug JS Remotely`. This should open up a Chrome tab with the URL `http://localhost:19000/debugger-ui`. From there, you can set breakpoints and interact through the JavaScript console. Shake the device and stop Chrome debugging when you're done.
 
-- Line numbers for `console.log` statements don't work by default when using Chrome debugging. To get correct line numbers open up the Chrome Dev Tools settings, go to the "Blackboxing" tab, make sure that "Blackbox content scripts" is checked, and add `expo/build/logs/RemoteConsole.js` as a pattern with "Blackbox" selected.
+- Line numbers for `console.log` statements don't work by default when using Chrome debugging. To get correct line numbers open up the Chrome Dev Tools settings, go to the "Blackboxing" tab, make sure that "Blackbox content scripts" is checked, and add **expo/build/logs/RemoteConsole.js** as a pattern with "Blackbox" selected.
 
 ### Troubleshooting localhost debugging
 

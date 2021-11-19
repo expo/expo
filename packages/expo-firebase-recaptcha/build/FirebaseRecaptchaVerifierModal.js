@@ -78,7 +78,7 @@ export default class FirebaseRecaptchaVerifierModal extends React.Component {
         if (resolve) {
             resolve(token);
         }
-        this.setState(state => ({
+        this.setState((state) => ({
             visible: false,
             invisibleVerify: false,
             invisibleLoaded: false,
@@ -117,7 +117,7 @@ export default class FirebaseRecaptchaVerifierModal extends React.Component {
                     React.createElement(View, { style: styles.content },
                         React.createElement(FirebaseRecaptcha, { ...otherProps, style: styles.content, onLoad: this.onVisibleLoad, onError: this.onError, onVerify: this.onVerify }),
                         !visibleLoaded ? (React.createElement(View, { style: styles.loader },
-                            React.createElement(ActivityIndicator, { size: "large" }))) : (undefined))))));
+                            React.createElement(ActivityIndicator, { size: "large" }))) : undefined)))));
     }
 }
 const styles = StyleSheet.create({

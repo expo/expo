@@ -1,5 +1,9 @@
 #import <ExpoModulesCore/EXDefines.h>
 
+#if !defined(EX_DETACHED)
+#import "Expo_Go-Swift.h"
+#endif // !defined(EX_DETACHED)
+
 #import "EXAppLoadingProgressWindowController.h"
 #import "EXUtil.h"
 
@@ -23,32 +27,29 @@
 
 - (void)show
 {
+#if !defined(EX_DETACHED)
   if (!_enabled) {
     return;
   }
-  
+
   EX_WEAKIFY(self);
   dispatch_async(dispatch_get_main_queue(), ^{
     EX_ENSURE_STRONGIFY(self);
     if (!self.window) {
       CGSize screenSize = [UIScreen mainScreen].bounds.size;
-      
-      int bottomInsets = 0;
-      if (@available(iOS 11.0, *)) {
-        bottomInsets = EXSharedApplication().keyWindow.safeAreaInsets.bottom;
-      }
+
+      int bottomInsets = EXSharedApplication().keyWindow.safeAreaInsets.bottom;
       self.window = [[UIWindow alloc] initWithFrame:CGRectMake(0,
                                                                screenSize.height - 36 - bottomInsets,
                                                                screenSize.width,
                                                                36 + bottomInsets)];
       self.window.windowLevel = UIWindowLevelStatusBar + 1;
-      // set a root VC so rotation is supported
-      self.window.rootViewController = [UIViewController new];
+      self.window.rootViewController = [EXAppLoadingProgressWindowViewController new];
       self.window.backgroundColor = [EXUtil colorWithRGB:0xfafafa];
 
       UIView *containerView = [UIView new];
       [self.window addSubview:containerView];
-      
+
       CALayer *topBorderLayer = [CALayer layer];
       topBorderLayer.frame = CGRectMake(0, 0, screenSize.width, 1);
       topBorderLayer.backgroundColor = [EXUtil colorWithRGB:0xe3e3e3].CGColor;
@@ -64,10 +65,12 @@
     self.textLabel.text =  @"Waiting for server ...";
     self.window.hidden = NO;
   });
+#endif // !defined(EX_DETACHED)
 }
 
 - (void)hide
 {
+#if !defined(EX_DETACHED)
   if (!_enabled) {
     return;
   }
@@ -77,32 +80,38 @@
     EX_ENSURE_STRONGIFY(self);
     if (self.window) {
       self.window.hidden = YES;
+      // remove this window altogther to hand over the command over StatusBar rotation
+      self.window = nil;
     }
   });
+#endif // !defined(EX_DETACHED)
 }
 
 - (void)updateStatusWithProgress:(EXLoadingProgress *)progress
 {
+#if !defined(EX_DETACHED)
   if (!_enabled) {
     return;
   }
-  
+
   [self show];
-  
+
   EX_WEAKIFY(self);
   dispatch_async(dispatch_get_main_queue(), ^{
     EX_ENSURE_STRONGIFY(self);
     float progressPercent = ([progress.done floatValue] / [progress.total floatValue]);
     self.textLabel.text = [NSString stringWithFormat:@"%@ %.2f%%", progress.status, progressPercent * 100];
     [self.textLabel setNeedsDisplay];
-    
+
     // TODO: (@bbarthec) maybe it's better to show/hide this based on other thing than progress status reported by the fetcher?
     self.window.hidden = !(progress.total.floatValue > 0);
   });
+#endif // !defined(EX_DETACHED)
 }
 
 - (void)updateStatus:(EXAppLoaderRemoteUpdateStatus)status
 {
+#if !defined(EX_DETACHED)
   if (!_enabled) {
     return;
   }
@@ -120,6 +129,7 @@
     self.textLabel.text = statusText;
     [self.textLabel setNeedsDisplay];
   });
+#endif // !defined(EX_DETACHED)
 }
 
 + (nullable NSString *)_loadingViewTextForStatus:(EXAppLoaderRemoteUpdateStatus)status

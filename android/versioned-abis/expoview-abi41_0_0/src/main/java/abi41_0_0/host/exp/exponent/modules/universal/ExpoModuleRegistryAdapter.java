@@ -3,7 +3,6 @@ package abi41_0_0.host.exp.exponent.modules.universal;
 import abi41_0_0.com.facebook.react.bridge.NativeModule;
 import abi41_0_0.com.facebook.react.bridge.ReactApplicationContext;
 
-import org.json.JSONObject;
 import abi41_0_0.org.unimodules.adapters.react.ModuleRegistryAdapter;
 import abi41_0_0.org.unimodules.adapters.react.ReactModuleRegistryProvider;
 import abi41_0_0.org.unimodules.core.ModuleRegistry;
@@ -13,7 +12,7 @@ import abi41_0_0.org.unimodules.core.interfaces.RegistryLifecycleListener;
 import java.util.List;
 import java.util.Map;
 
-import expo.modules.updates.manifest.raw.RawManifest;
+import expo.modules.manifests.core.Manifest;
 import host.exp.exponent.kernel.ExperienceKey;
 import abi41_0_0.host.exp.exponent.modules.api.notifications.channels.ScopedNotificationsChannelsProvider;
 import host.exp.exponent.utils.ScopedContext;
@@ -38,7 +37,7 @@ public class ExpoModuleRegistryAdapter extends ModuleRegistryAdapter implements 
     super(moduleRegistryProvider);
   }
 
-  public List<NativeModule> createNativeModules(ScopedContext scopedContext, ExperienceKey experienceKey, Map<String, Object> experienceProperties, RawManifest manifest, String experienceStableLegacyId, List<NativeModule> otherModules) {
+  public List<NativeModule> createNativeModules(ScopedContext scopedContext, ExperienceKey experienceKey, Map<String, Object> experienceProperties, Manifest manifest, List<NativeModule> otherModules) {
     ModuleRegistry moduleRegistry = mModuleRegistryProvider.get(scopedContext);
 
     // Overriding sensor services from expo-sensors for scoped implementations using kernel services
@@ -73,7 +72,7 @@ public class ExpoModuleRegistryAdapter extends ModuleRegistryAdapter implements 
     moduleRegistry.registerExportedModule(new ScopedFacebookModule(scopedContext));
 
     // Scoping Amplitude
-    moduleRegistry.registerExportedModule(new ScopedAmplitudeModule(scopedContext, experienceStableLegacyId));
+    moduleRegistry.registerExportedModule(new ScopedAmplitudeModule(scopedContext, experienceKey));
 
     // Overriding expo-firebase-core
     moduleRegistry.registerInternalModule(new ScopedFirebaseCoreService(scopedContext, manifest, experienceKey));

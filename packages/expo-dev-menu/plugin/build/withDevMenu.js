@@ -6,6 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const config_plugins_1 = require("@expo/config-plugins");
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
+const constants_1 = require("./constants");
 const withDevMenuAppDelegate_1 = require("./withDevMenuAppDelegate");
 const pkg = require('expo-dev-menu/package.json');
 const DEV_MENU_ANDROID_IMPORT = 'expo.modules.devmenu.react.DevMenuAwareReactActivity';
@@ -18,7 +19,7 @@ async function saveFileAsync(path, content) {
 }
 function addJavaImports(javaSource, javaImports) {
     const lines = javaSource.split('\n');
-    const lineIndexWithPackageDeclaration = lines.findIndex(line => line.match(/^package .*;$/));
+    const lineIndexWithPackageDeclaration = lines.findIndex((line) => line.match(/^package .*;$/));
     for (const javaImport of javaImports) {
         if (!javaSource.includes(javaImport)) {
             const importStatement = `import ${javaImport};`;
@@ -29,7 +30,7 @@ function addJavaImports(javaSource, javaImports) {
 }
 function addLines(content, find, offset, toAdd) {
     const lines = content.split('\n');
-    let lineIndex = lines.findIndex(line => line.match(find));
+    let lineIndex = lines.findIndex((line) => line.match(find));
     for (const newLine of toAdd) {
         if (!content.includes(newLine)) {
             lines.splice(lineIndex + offset, 0, newLine);
@@ -45,11 +46,12 @@ async function editPodfile(config, action) {
         return await saveFileAsync(podfilePath, podfile);
     }
     catch (e) {
-        config_plugins_1.WarningAggregator.addWarningIOS('expo-dev-menu', `Couldn't modified AppDelegate.m - ${e}.`);
+        config_plugins_1.WarningAggregator.addWarningIOS('expo-dev-menu', `Couldn't modified AppDelegate.m - ${e}. 
+See the expo-dev-client installation instructions to modify your AppDelegate manually: ${constants_1.InstallationPage}`);
     }
 }
-const withDevMenuActivity = config => {
-    return config_plugins_1.withMainActivity(config, config => {
+const withDevMenuActivity = (config) => {
+    return (0, config_plugins_1.withMainActivity)(config, (config) => {
         if (config.modResults.language === 'java') {
             let content = config.modResults.contents;
             content = addJavaImports(content, [DEV_MENU_ANDROID_IMPORT]);
@@ -57,16 +59,17 @@ const withDevMenuActivity = config => {
             config.modResults.contents = content;
         }
         else {
-            config_plugins_1.WarningAggregator.addWarningAndroid('expo-dev-menu', `Cannot automatically configure MainActivity if it's not java`);
+            config_plugins_1.WarningAggregator.addWarningAndroid('expo-dev-menu', `Cannot automatically configure MainActivity if it's not java.
+See the expo-dev-client installation instructions to modify your MainActivity manually: ${constants_1.InstallationPage}`);
         }
         return config;
     });
 };
-const withDevMenuPodfile = config => {
-    return config_plugins_1.withDangerousMod(config, [
+const withDevMenuPodfile = (config) => {
+    return (0, config_plugins_1.withDangerousMod)(config, [
         'ios',
         async (config) => {
-            await editPodfile(config, podfile => {
+            await editPodfile(config, (podfile) => {
                 podfile = podfile.replace("platform :ios, '10.0'", "platform :ios, '11.0'");
                 // Match both variations of Ruby config:
                 // unknown: pod 'expo-dev-menu', path: '../node_modules/expo-dev-menu', :configurations => :debug
@@ -87,7 +90,7 @@ const withDevMenuPodfile = config => {
 const withDevMenu = (config) => {
     config = withDevMenuActivity(config);
     config = withDevMenuPodfile(config);
-    config = withDevMenuAppDelegate_1.withDevMenuAppDelegate(config);
+    config = (0, withDevMenuAppDelegate_1.withDevMenuAppDelegate)(config);
     return config;
 };
-exports.default = config_plugins_1.createRunOncePlugin(withDevMenu, pkg.name, pkg.version);
+exports.default = (0, config_plugins_1.createRunOncePlugin)(withDevMenu, pkg.name, pkg.version);

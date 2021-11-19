@@ -8,9 +8,32 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+- [plugin] Added SDK 43 tests for new AppDelegate template ([#14763](https://github.com/expo/expo/pull/14763) by [@EvanBacon](https://github.com/EvanBacon))
+- The app delegate subscriber on iOS has been separated from the singleton module to hook into the new implementation of `ExpoAppDelegate`. ([#14867](https://github.com/expo/expo/pull/14867) by [@tsapeta](https://github.com/tsapeta))
+
+## 4.0.1 — 2021-10-01
+
+_This version does not introduce any user-facing changes._
+
+## 4.0.0 — 2021-09-28
+
+### 🛠 Breaking changes
+
+- Dropped support for iOS 11.0 ([#14383](https://github.com/expo/expo/pull/14383) by [@cruzach](https://github.com/cruzach))
+
+### 🐛 Bug fixes
+
 - Fixed an issue with building on Xcode 13. ([#13898](https://github.com/expo/expo/pull/13898) by [@cruzach](https://github.com/cruzach))
+- Fix building errors from use_frameworks! in Podfile. ([#14523](https://github.com/expo/expo/pull/14523) by [@kudo](https://github.com/kudo))
+- Fixed integration with the `react-native-screens` orientation prop. ([#14541](https://github.com/expo/expo/pull/14541) by [@lukmccall](https://github.com/lukmccall))
+- Fixed orientation lock not working in bare workflow on iOS. ([#14543](https://github.com/expo/expo/pull/14543) by [@tsapeta](https://github.com/tsapeta))
 
 ### 💡 Others
+
+- Export missing `Subscription` type. ([#14150](https://github.com/expo/expo/pull/14150) by [@Simek](https://github.com/Simek))
+- Updated `@expo/config-plugins` ([#14443](https://github.com/expo/expo/pull/14443) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 3.2.0 — 2021-06-16
 

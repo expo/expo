@@ -13,3 +13,4 @@ export {
   ResizeMode,
   VideoFullscreenUpdateEvent,
 } from './Video';
+export { AVMetadata } from './AV';

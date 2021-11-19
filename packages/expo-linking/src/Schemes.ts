@@ -161,7 +161,7 @@ export function resolveScheme(props: { scheme?: string; isSilent?: boolean }): s
           `The provided Linking scheme '${
             props.scheme
           }' does not appear in the list of possible URI schemes in your Expo config. Expected one of: ${schemes
-            .map(scheme => `'${scheme}'`)
+            .map((scheme) => `'${scheme}'`)
             .join(', ')}`
         );
       }

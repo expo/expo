@@ -1,8 +1,9 @@
 import {
+  createPermissionHook,
+  PermissionExpiration,
+  PermissionHookOptions,
   PermissionResponse,
   PermissionStatus,
-  PermissionHookOptions,
-  createPermissionHook,
   UnavailabilityError,
 } from 'expo-modules-core';
 import { Platform } from 'react-native';
@@ -26,7 +27,7 @@ export enum BrightnessMode {
   MANUAL = 2,
 }
 
-export { PermissionResponse, PermissionStatus, PermissionHookOptions };
+export { PermissionExpiration, PermissionHookOptions, PermissionResponse, PermissionStatus };
 
 /**
  * Returns whether the Brightness API is enabled on the current device. This does not check the app
@@ -74,9 +75,10 @@ export async function setBrightnessAsync(brightnessValue: number): Promise<void>
 
 // @needsAudit
 /**
- * __Android only.__ Gets the global system screen brightness.
+ * Gets the global system screen brightness.
  * @return A `Promise` that is resolved with a number between `0` and `1`, inclusive, representing
  * the current system screen brightness.
+ * @platform android
  */
 export async function getSystemBrightnessAsync(): Promise<number> {
   if (Platform.OS !== 'android') {
@@ -89,11 +91,12 @@ export async function getSystemBrightnessAsync(): Promise<number> {
 /**
  * > __WARNING:__ This method is experimental.
  *
- * __Android only.__ Sets the global system screen brightness and changes the brightness mode to
+ * Sets the global system screen brightness and changes the brightness mode to
  * `MANUAL`. Requires `SYSTEM_BRIGHTNESS` permissions.
  * @param brightnessValue A number between `0` and `1`, inclusive, representing the desired screen
  * brightness.
  * @return A `Promise` that fulfils when the brightness has been successfully set.
+ * @platform android
  */
 export async function setSystemBrightnessAsync(brightnessValue: number): Promise<void> {
   const clampedBrightnessValue = Math.max(0, Math.min(brightnessValue, 1));
@@ -108,9 +111,10 @@ export async function setSystemBrightnessAsync(brightnessValue: number): Promise
 
 // @needsAudit
 /**
- * __Android only.__ Resets the brightness setting of the current activity to use the system-wide
+ * Resets the brightness setting of the current activity to use the system-wide
  * brightness value rather than overriding it.
  * @return A `Promise` that fulfils when the setting has been successfully changed.
+ * @platform android
  */
 export async function useSystemBrightnessAsync(): Promise<void> {
   if (Platform.OS !== 'android') {
@@ -122,10 +126,11 @@ export async function useSystemBrightnessAsync(): Promise<void> {
 
 // @needsAudit
 /**
- * __Android only.__ Returns a boolean specifying whether or not the current activity is using the
+ * Returns a boolean specifying whether or not the current activity is using the
  * system-wide brightness value.
  * @return A `Promise` that fulfils with `true` when the current activity is using the system-wide
  * brightness value, and `false` otherwise.
+ * @platform android
  */
 export async function isUsingSystemBrightnessAsync(): Promise<boolean> {
   if (Platform.OS !== 'android') {
@@ -136,10 +141,11 @@ export async function isUsingSystemBrightnessAsync(): Promise<boolean> {
 
 // @needsAudit
 /**
- * __Android only.__ Gets the system brightness mode (e.g. whether or not the OS will automatically
+ * Gets the system brightness mode (e.g. whether or not the OS will automatically
  * adjust the screen brightness depending on ambient light).
  * @return A `Promise` that fulfils with a [`BrightnessMode`](#brightnessmode). Requires
  * `SYSTEM_BRIGHTNESS` permissions.
+ * @platform android
  */
 export async function getSystemBrightnessModeAsync(): Promise<BrightnessMode> {
   if (Platform.OS !== 'android') {
@@ -150,9 +156,10 @@ export async function getSystemBrightnessModeAsync(): Promise<BrightnessMode> {
 
 // @needsAudit
 /**
- * __Android only.__ Sets the system brightness mode.
+ * Sets the system brightness mode.
  * @param brightnessMode One of `BrightnessMode.MANUAL` or `BrightnessMode.AUTOMATIC`. The system
  * brightness mode cannot be set to `BrightnessMode.UNKNOWN`.
+ * @platform android
  */
 export async function setSystemBrightnessModeAsync(brightnessMode: BrightnessMode): Promise<void> {
   if (Platform.OS !== 'android' || brightnessMode === BrightnessMode.UNKNOWN) {

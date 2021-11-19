@@ -48,9 +48,9 @@ This is an example of how your package.json might look like:
 ## How to set up EAS Build with a monorepo
 
 - Run all EAS CLI commands from the root of the app directory. For example: if your project exists inside of your git repository at `apps/my-app`, then run `eas build` from there.
-- All files related to EAS Build, such as `eas.json` and `credentials.json`, should be in the root of the app directory. If you have multiple apps that use EAS Build in your monorepo, each app directory will have its own copy of these files.
+- All files related to EAS Build, such as **eas.json** and **credentials.json**, should be in the root of the app directory. If you have multiple apps that use EAS Build in your monorepo, each app directory will have its own copy of these files.
 - **If you are building a managed project in a monorepo**, please refer to [byCedric/eas-monorepo-example](https://github.com/byCedric/eas-monorepo-example) for a working example. You will need to set up [symlinks with expo-yarn-workspaces](https://github.com/byCedric/eas-monorepo-example/blob/dc62206a23f591923a38c0c6ea5d94b84ede6df4/apps/managed/package.json#L45-L63) in order to ensure that Expo module packages can be resolved. A better solution for this is in progress and should be available by SDK 43.
-- If your project needs additional setup beyond what is provided, add a `postinstall` step to `package.json` in your project that builds all necessary dependencies in other workspaces. For example:
+- If your project needs additional setup beyond what is provided, add a `postinstall` step to **package.json** in your project that builds all necessary dependencies in other workspaces. For example:
 
 ```json
 {
@@ -60,15 +60,9 @@ This is an example of how your package.json might look like:
 }
 ```
 
-
 ## How to use private package repositories
 
-- Configure your project in a way that relies on the `NPM_TOKEN` env variable to authenticate with private repositories.
-- Add `NPM_TOKEN` to your account or project's secrets. See the [secret environment variables](/build-reference/variables/#using-secrets-in-environment-variables) docs to learn how to do this.
-
-<ImageSpotlight alt="Secret creation UI filled" src="/static/images/eas-build/environment-secrets/secrets-create-filled.png" />
-
-Before setting up private packages, check the existing configuration described in the [build server infrastructure](/build-reference/infrastructure) page under `.npmrc` and `yarnrc.yml` to verify that it won't affect your setup.
+See [Using private npm packages](/build-reference/private-npm-packages) to learn more.
 
 ## Using npm cache with yarn v1
 
@@ -86,6 +80,9 @@ e.g.
 
 ## How to use git submodules
 
+If you are using the default VCS workflow, the content of your working directory will be uploaded to EAS Build as it is, including the content of Git submodules. If you are building on CI you will need to initialize them, otherwise, empty directories will be uploaded.
+
+If you have `cli.requireCommit` set to `true` in `eas.json` you will need to initialize your submodules on EAS Build worker.
 First, create a [secret](/build-reference/variables/#using-secrets-in-environment-variables) with a base64 encoded private SSH key that has permission to access submodule repositories. Next, add an `eas-build-pre-install` npm hook to check out those submodules, for example:
 
 ```bash

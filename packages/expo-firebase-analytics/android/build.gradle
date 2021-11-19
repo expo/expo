@@ -3,7 +3,7 @@ apply plugin: 'kotlin-android'
 apply plugin: 'maven'
 
 group = 'host.exp.exponent'
-version = '4.1.0'
+version = '5.0.1'
 
 buildscript {
   // Simple helper that allows the root project to override versions declared by this library.
@@ -57,7 +57,7 @@ android {
     minSdkVersion safeExtGet("minSdkVersion", 21)
     targetSdkVersion safeExtGet("targetSdkVersion", 30)
     versionCode 15
-    versionName '4.1.0'
+    versionName '5.0.1'
   }
   lintOptions {
     abortOnError false
@@ -71,8 +71,8 @@ dependencies {
   // We can't use BOM, cause it doesn't work with prebuilding and new autolinking.
   // > Could not find com.google.firebase:firebase-core:.
   // Required by:
-  // project :expo-modules-linker > host.exp.exponent:expo-firebase-analytics:X.X.X
-  // project :expo-modules-linker > host.exp.exponent:expo-firebase-core:X.X.X
+  // project :expo > host.exp.exponent:expo-firebase-analytics:X.X.X
+  // project :expo > host.exp.exponent:expo-firebase-core:X.X.X
   // api platform("com.google.firebase:firebase-bom:24.1.0")
   api 'com.google.firebase:firebase-core:17.2.1'
   api 'com.google.firebase:firebase-common:19.0.0'

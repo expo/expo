@@ -15,7 +15,6 @@ buildscript {
 }
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
-apply plugin: 'devicefarm'
 
 android {
   compileSdkVersion safeExtGet("compileSdkVersion", 30)
@@ -31,8 +30,8 @@ android {
     targetSdkVersion safeExtGet("targetSdkVersion", 30)
     // ADD VERSIONS HERE
     // BEGIN VERSIONS
-    versionCode 156
-    versionName '2.19.2'
+    versionCode 161
+    versionName '2.22.3'
     // END VERSIONS
 
     multiDexEnabled true
@@ -113,17 +112,6 @@ android {
   }
 }
 
-devicefarm {
-  projectName System.getenv("DEVICEFARM_PROJECT_NAME")
-  devicePool System.getenv("DEVICEFARM_DEVICE_POOL")
-  executionTimeoutMinutes 40
-  authentication {
-
-    accessKey System.getenv("AWS_ACCESS_KEY_ID")
-    secretKey System.getenv("AWS_SECRET_ACCESS_KEY")
-  }
-}
-
 configurations.all {
   resolutionStrategy {
     force 'org.webkit:android-jsc:r245459'
@@ -158,7 +146,7 @@ dependencies {
   implementation 'com.facebook.device.yearclass:yearclass:2.1.0'
   implementation 'commons-io:commons-io:1.4'
   implementation 'me.leolin:ShortcutBadger:1.1.4@aar'
-  implementation 'com.theartofdev.edmodo:android-image-cropper:2.7.0'
+  implementation 'com.theartofdev.edmodo:android-image-cropper:2.8.0'
   implementation 'commons-codec:commons-codec:1.10'
   implementation 'com.segment.analytics.android:analytics:4.3.0'
   implementation 'com.google.zxing:core:3.3.3'
@@ -196,7 +184,7 @@ dependencies {
   testImplementation 'org.mockito:mockito-core:1.10.19'
 
   /* UNCOMMENT WHEN DISTRIBUTING
-  implementation('host.exp.exponent:expoview:42.0.0@aar') {
+  implementation('host.exp.exponent:expoview:43.0.0@aar') {
     transitive = true
     exclude group: 'com.squareup.okhttp3', module: 'okhttp'
     exclude group: 'com.squareup.okhttp3', module: 'okhttp-urlconnection'
@@ -216,6 +204,11 @@ dependencies {
   // ADD_NEW_SDKS_HERE
 
 
+  // BEGIN_SDK_43
+  versionedImplementation(project(':expoview-abi43_0_0'))
+  // END_SDK_43
+
+
   // BEGIN_SDK_42
   versionedImplementation(project(':expoview-abi42_0_0'))
   // END_SDK_42
@@ -224,16 +217,6 @@ dependencies {
   // BEGIN_SDK_41
   versionedImplementation(project(':expoview-abi41_0_0'))
   // END_SDK_41
-
-
-  // BEGIN_SDK_40
-  versionedImplementation(project(':expoview-abi40_0_0'))
-  // END_SDK_40
-
-
-  // BEGIN_SDK_39
-  versionedImplementation(project(':expoview-abi39_0_0'))
-  // END_SDK_39
 
   // This is not needed in shell apps, the Amplitude module will include this dep if installed
   implementation 'com.amplitude:android-sdk:2.23.2'
@@ -248,7 +231,7 @@ dependencies {
 
   // WHEN_DETACHING_REMOVE_FROM_HERE
   /* UNCOMMENT WHEN DISTRIBUTING
-  implementation project(':expo-modules-linker')
+  implementation project(':expo')
   implementation 'host.exp.exponent:expo-random:+'
   END UNCOMMENT WHEN DISTRIBUTING */
   // WHEN_DETACHING_REMOVE_TO_HERE

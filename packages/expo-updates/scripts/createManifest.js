@@ -6,11 +6,11 @@ const { v4: uuidv4 } = require('uuid');
 
 const filterPlatformAssetScales = require('./filterPlatformAssetScales');
 
-(async function() {
+(async function () {
   const platform = process.argv[2];
   const possibleProjectRoot = process.argv[3];
   const destinationDir = process.argv[4];
-  const entryFile = process.env.ENTRY_FILE || 'index.js';
+  const entryFile = process.argv[5] || process.env.ENTRY_FILE || 'index.js';
 
   // Remove projectRoot validation when we no longer support React Native <= 62
   let projectRoot;
@@ -19,6 +19,8 @@ const filterPlatformAssetScales = require('./filterPlatformAssetScales');
   } else if (fs.existsSync(path.join(possibleProjectRoot, '..', entryFile))) {
     projectRoot = path.resolve(possibleProjectRoot, '..');
   }
+
+  process.chdir(projectRoot);
 
   let metroConfig;
   try {
@@ -48,13 +50,13 @@ const filterPlatformAssetScales = require('./filterPlatformAssetScales');
     assets: [],
   };
 
-  assets.forEach(function(asset) {
+  assets.forEach(function (asset) {
     if (!asset.fileHashes) {
       throw new Error(
         'The hashAssetFiles Metro plugin is not configured. You need to add a metro.config.js to your project that configures Metro to use this plugin. See https://github.com/expo/expo/blob/master/packages/expo-updates/README.md#metroconfigjs for an example.'
       );
     }
-    filterPlatformAssetScales(platform, asset.scales).forEach(function(scale, index) {
+    filterPlatformAssetScales(platform, asset.scales).forEach(function (scale, index) {
       const assetInfoForManifest = {
         name: asset.name,
         type: asset.type,
@@ -76,7 +78,7 @@ const filterPlatformAssetScales = require('./filterPlatformAssetScales');
   });
 
   fs.writeFileSync(path.join(destinationDir, 'app.manifest'), JSON.stringify(manifest));
-})().catch(e => {
+})().catch((e) => {
   // Wrap in regex to make it easier for log parsers (like `@expo/xcpretty`) to find this error.
   e.message = `@build-script-error-begin\n${e.message}\n@build-script-error-end\n`;
   console.error(e);

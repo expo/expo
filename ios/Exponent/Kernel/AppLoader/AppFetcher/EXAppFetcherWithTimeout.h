@@ -1,13 +1,13 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 #import "EXAppFetcher+Private.h"
-#import <EXUpdates/EXUpdatesRawManifest.h>
+#import <EXManifests/EXManifestsManifest.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
 @protocol EXAppFetcherWithTimeoutDelegate <NSObject>
 
-- (void)appFetcher:(EXAppFetcher *)appFetcher didResolveUpdatedBundleWithManifest:(EXUpdatesRawManifest * _Nullable)manifest isFromCache:(BOOL)isFromCache error:(NSError * _Nullable)error;
+- (void)appFetcher:(EXAppFetcher *)appFetcher didResolveUpdatedBundleWithManifest:(EXManifestsManifest * _Nullable)manifest isFromCache:(BOOL)isFromCache error:(NSError * _Nullable)error;
 
 @end
 

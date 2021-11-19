@@ -2,6 +2,7 @@ package expo.modules.firebase.analytics;
 
 import android.app.Activity;
 import android.content.Context;
+import android.os.Bundle;
 
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.analytics.FirebaseAnalytics;
@@ -19,6 +20,7 @@ import expo.modules.core.interfaces.RegistryLifecycleListener;
 
 import java.util.Map;
 import java.util.Set;
+import java.util.ArrayList;
 
 import androidx.annotation.Nullable;
 
@@ -80,13 +82,48 @@ public class FirebaseAnalyticsModule extends ExportedModule implements RegistryL
     return analytics;
   }
 
+  private static Bundle convertToBundle(final MapArguments mapArguments) {
+    // A variation on MapArguments.toBundle that recursively converts the contents
+    // of arrays to Bundle objects if needed (to support the `items` array).
+    Bundle bundle = new Bundle();
+    for (String key : mapArguments.keys()) {
+      Object value = mapArguments.get(key);
+      if (value == null) {
+        bundle.putString(key, null);
+      } else if (value instanceof String) {
+        bundle.putString(key, (String) value);
+      } else if (value instanceof Integer) {
+        bundle.putInt(key, (Integer) value);
+      } else if (value instanceof Double) {
+        bundle.putDouble(key, (Double) value);
+      } else if (value instanceof Long) {
+        bundle.putLong(key, (Long) value);
+      } else if (value instanceof Boolean) {
+        bundle.putBoolean(key, (Boolean) value);
+      } else if (value instanceof ArrayList) {
+        ArrayList array = new ArrayList();
+        for(Object item : ((ArrayList) value)) {
+          array.add(convertToBundle(new MapArguments((Map<String, Object>)item)));
+        }
+        bundle.putParcelableArrayList(key, array);
+      } else if (value instanceof Map) {
+        bundle.putBundle(key, convertToBundle(new MapArguments((Map) value)));
+      } else if (value instanceof Bundle) {
+        bundle.putBundle(key, (Bundle) value);
+      } else {
+        throw new UnsupportedOperationException("Could not put a value of " + value.getClass() + " to bundle.");
+      }
+    }
+    return bundle;
+  }
+
   @ExpoMethod
   public void logEvent(final String name, @Nullable Map<String, Object> params, Promise promise) {
     try {
       FirebaseAnalytics analytics = getFirebaseAnalyticsOrReject(promise);
       if (analytics == null)
         return;
-      analytics.logEvent(name, params == null ? null : new MapArguments(params).toBundle());
+      analytics.logEvent(name, params == null ? null : convertToBundle(new MapArguments(params)));
       promise.resolve(null);
     } catch (Exception e) {
       promise.reject(e);
@@ -104,31 +141,6 @@ public class FirebaseAnalyticsModule extends ExportedModule implements RegistryL
     } catch (Exception e) {
       promise.reject(e);
     }
-  }
-
-  @ExpoMethod
-  public void setCurrentScreen(final String screenName, final String screenClassOverride, final Promise promise) {
-    final Activity activity = mActivityProvider.getCurrentActivity();
-
-    if (activity == null) {
-      promise.reject(new CurrentActivityNotFoundException());
-      return;
-    }
-
-    // This is the only method that runs on the main thread.
-    activity.runOnUiThread(new Runnable() {
-      public void run() {
-        try {
-          FirebaseAnalytics analytics = getFirebaseAnalyticsOrReject(promise);
-          if (analytics == null)
-            return;
-          analytics.setCurrentScreen(activity, screenName, screenClassOverride);
-          promise.resolve(null);
-        } catch (Exception e) {
-          promise.reject(e);
-        }
-      }
-    });
   }
 
   @ExpoMethod

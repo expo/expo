@@ -166,7 +166,7 @@ describe(`manifest`, () => {
 
   // web will only ever be in bare environment
   if (Platform.OS !== 'web') {
-    [ExecutionEnvironment.Standalone, ExecutionEnvironment.StoreClient].forEach(env => {
+    [ExecutionEnvironment.Standalone, ExecutionEnvironment.StoreClient].forEach((env) => {
       it(`throws an error if manifest is falsey when Constants.executionEnvironment is ${env}`, () => {
         mockExponentConstants({
           manifest: null,

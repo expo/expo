@@ -20,14 +20,14 @@ function setExcludedArchitectures(project) {
     return project;
 }
 exports.setExcludedArchitectures = setExcludedArchitectures;
-const withExcludedSimulatorArchitectures = c => {
-    return config_plugins_1.withXcodeProject(c, config => {
+const withExcludedSimulatorArchitectures = (c) => {
+    return (0, config_plugins_1.withXcodeProject)(c, (config) => {
         config.modResults = setExcludedArchitectures(config.modResults);
         return config;
     });
 };
-const withGoogleSignIn = config => {
+const withGoogleSignIn = (config) => {
     return withExcludedSimulatorArchitectures(config);
 };
-exports.default = config_plugins_1.createRunOncePlugin(withGoogleSignIn, pkg.name, pkg.version);
+exports.default = (0, config_plugins_1.createRunOncePlugin)(withGoogleSignIn, pkg.name, pkg.version);
 //# sourceMappingURL=withGoogleSignIn.js.map

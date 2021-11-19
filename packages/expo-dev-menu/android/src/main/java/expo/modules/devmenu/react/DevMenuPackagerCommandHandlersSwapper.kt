@@ -7,9 +7,9 @@ import com.facebook.react.devsupport.DevSupportManagerBase
 import com.facebook.react.devsupport.interfaces.DevSupportManager
 import com.facebook.react.packagerconnection.JSPackagerClient
 import com.facebook.react.packagerconnection.RequestHandler
+import expo.modules.devmenu.DevMenuManager
 import expo.modules.devmenu.helpers.getPrivateDeclaredFiledValue
 import expo.modules.devmenu.helpers.setPrivateDeclaredFiledValue
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -67,7 +67,7 @@ class DevMenuPackagerCommandHandlersSwapper {
     reactInstanceManager: ReactInstanceManager,
     handlers: Map<String, RequestHandler>
   ) {
-    GlobalScope.launch {
+    DevMenuManager.coroutineScope.launch {
       try {
         while (true) {
           val devSupportManager: DevSupportManagerBase =

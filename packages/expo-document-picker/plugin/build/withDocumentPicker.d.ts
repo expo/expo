@@ -1,5 +1,4 @@
 import { ConfigPlugin } from '@expo/config-plugins';
-declare const _default: ConfigPlugin<void | {
-    appleTeamId?: string | undefined;
-}>;
+import { IosProps } from './withDocumentPickerIOS';
+declare const _default: ConfigPlugin<void | IosProps>;
 export default _default;

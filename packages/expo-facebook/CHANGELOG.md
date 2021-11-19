@@ -4,7 +4,24 @@
 
 ### 🛠 Breaking changes
 
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+- Rewritten module to Kotlin. ([#14572](https://github.com/expo/expo/pull/14572) by [@mstach60161](https://github.com/mstach60161))
+
+## 12.0.1 — 2021-10-01
+
+_This version does not introduce any user-facing changes._
+
+## 12.0.0 — 2021-09-28
+
+### 🛠 Breaking changes
+
 - [plugin] Removed swift noop file plugin. ([#13532](https://github.com/expo/expo/pull/13532) by [@EvanBacon](https://github.com/EvanBacon))
+- Dropped support for iOS 11.0 ([#14383](https://github.com/expo/expo/pull/14383) by [@cruzach](https://github.com/cruzach))
 
 ### 🎉 New features
 
@@ -13,12 +30,16 @@
 ### 🐛 Bug fixes
 
 - `logPurchaseAsync` on iOS now accepts an `NSNumber` type, which has no user-facing impact besides fixing an error message in the App Events console. ([#13369](https://github.com/expo/expo/pull/13369) by [@cruzach](https://github.com/cruzach))
+- Update error handler for `logInWithReadPermissionsAsync` to handle empty userInfo in native exception. ([#14492](https://github.com/expo/expo/pull/14492) by [@ajsmth](https://github.com/ajsmth))
+- Fix building errors from use_frameworks! in Podfile. ([#14523](https://github.com/expo/expo/pull/14523) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others
 
 - More TypeScript doc blocks. ([#13657](https://github.com/expo/expo/pull/13657) by [@cruzach](https://github.com/cruzach))
 - Export `FacebookInitializationOptions`
 - Migrated from `@unimodules/core` to `expo-modules-core`. ([#13757](https://github.com/expo/expo/pull/13757) by [@tsapeta](https://github.com/tsapeta))
+- Add correct return types to the `withFacebookIOS` setters. ([#14423](https://github.com/expo/expo/pull/14423) by [@Simek](https://github.com/Simek))
+- Updated `@expo/config-plugins` ([#14443](https://github.com/expo/expo/pull/14443) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 11.2.0 — 2021-06-16
 

@@ -11,10 +11,11 @@ function getUserMedia(constraints: MediaStreamConstraints): Promise<MediaStream>
 
   // First get ahold of the legacy getUserMedia, if present
   const getUserMedia =
+    // TODO: this method is deprecated, migrate to https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/getUserMedia
     navigator.getUserMedia ||
-    (navigator as any).webkitGetUserMedia ||
-    (navigator as any).mozGetUserMedia ||
-    function() {
+    navigator.webkitGetUserMedia ||
+    navigator.mozGetUserMedia ||
+    function () {
       const error: any = new Error('Permission unimplemented');
       error.code = 0;
       error.name = 'NotAllowedError';

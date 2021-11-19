@@ -5,20 +5,21 @@ import android.content.Context
 import android.net.Uri
 import android.os.Build
 import android.util.Log
+import expo.modules.jsonutils.getNullable
+import expo.modules.manifests.core.LegacyManifest
 import expo.modules.updates.UpdatesConfiguration
 import expo.modules.updates.UpdatesUtils
 import expo.modules.updates.db.DatabaseHolder
 import expo.modules.updates.db.entity.UpdateEntity
 import expo.modules.updates.launcher.Launcher
 import expo.modules.updates.launcher.NoDatabaseLauncher
-import expo.modules.updates.loader.EmbeddedLoader
 import expo.modules.updates.loader.FileDownloader
 import expo.modules.updates.loader.LoaderTask
 import expo.modules.updates.loader.LoaderTask.BackgroundUpdateStatus
 import expo.modules.updates.loader.LoaderTask.LoaderTaskCallback
-import expo.modules.updates.manifest.Manifest
-import expo.modules.updates.manifest.ManifestFactory
-import expo.modules.updates.manifest.raw.RawManifest
+import expo.modules.updates.manifest.UpdateManifest
+import expo.modules.manifests.core.Manifest
+import expo.modules.updates.manifest.EmbeddedManifest
 import expo.modules.updates.selectionpolicy.LauncherSelectionPolicyFilterAware
 import expo.modules.updates.selectionpolicy.LoaderSelectionPolicyFilterAware
 import expo.modules.updates.selectionpolicy.ReaperSelectionPolicyDevelopmentClient
@@ -73,9 +74,9 @@ class ExpoUpdatesAppLoader @JvmOverloads constructor(
   private var isStarted = false
 
   interface AppLoaderCallback {
-    fun onOptimisticManifest(optimisticManifest: RawManifest)
-    fun onManifestCompleted(manifest: RawManifest)
-    fun onBundleCompleted(localBundlePath: String?)
+    fun onOptimisticManifest(optimisticManifest: Manifest)
+    fun onManifestCompleted(manifest: Manifest)
+    fun onBundleCompleted(localBundlePath: String)
     fun emitEvent(params: JSONObject)
     fun updateStatus(status: AppLoaderStatus)
     fun onError(e: Exception)
@@ -140,10 +141,9 @@ class ExpoUpdatesAppLoader @JvmOverloads constructor(
     configMap["expectsSignedManifest"] = true
     val configuration = UpdatesConfiguration().loadValuesFromMap(configMap)
     val sdkVersionsList = mutableListOf<String>().apply {
-      addAll(Constants.SDK_VERSIONS_LIST)
-      add(RNObject.UNVERSIONED)
-      for (sdkVersion in Constants.SDK_VERSIONS_LIST) {
-        add("exposdk:$sdkVersion")
+      (Constants.SDK_VERSIONS_LIST + listOf(RNObject.UNVERSIONED)).forEach {
+        add(it)
+        add("exposdk:$it")
       }
     }
     val selectionPolicy = SelectionPolicy(
@@ -201,12 +201,13 @@ class ExpoUpdatesAppLoader @JvmOverloads constructor(
         }
 
         override fun onCachedUpdateLoaded(update: UpdateEntity): Boolean {
-          setShouldShowAppLoaderStatus(update.rawManifest)
-          if (update.rawManifest.isUsingDeveloperTool()) {
+          val manifest = Manifest.fromManifestJson(update.manifest!!)
+          setShouldShowAppLoaderStatus(manifest)
+          if (manifest.isUsingDeveloperTool()) {
             return false
           } else {
             try {
-              val experienceKey = ExperienceKey.fromRawManifest(update.rawManifest)
+              val experienceKey = ExperienceKey.fromManifest(manifest)
               // if previous run of this app failed due to a loading error, we want to make sure to check for remote updates
               val experienceMetadata = exponentSharedPreferences.getExperienceMetadata(experienceKey)
               if (experienceMetadata != null && experienceMetadata.optBoolean(
@@ -222,17 +223,17 @@ class ExpoUpdatesAppLoader @JvmOverloads constructor(
           return true
         }
 
-        override fun onRemoteManifestLoaded(manifest: Manifest) {
+        override fun onRemoteUpdateManifestLoaded(updateManifest: UpdateManifest) {
           // expo-cli does not always respect our SDK version headers and respond with a compatible update or an error
           // so we need to check the compatibility here
-          val sdkVersion = manifest.rawManifest.getSDKVersionNullable()
+          val sdkVersion = updateManifest.manifest.getSDKVersion()
           if (!isValidSdkVersion(sdkVersion)) {
             callback.onError(formatExceptionForIncompatibleSdk(sdkVersion ?: "null"))
             didAbort = true
             return
           }
-          setShouldShowAppLoaderStatus(manifest.rawManifest)
-          callback.onOptimisticManifest(manifest.rawManifest)
+          setShouldShowAppLoaderStatus(updateManifest.manifest)
+          callback.onOptimisticManifest(updateManifest.manifest)
           updateStatus(AppLoaderStatus.DOWNLOADING_NEW_UPDATE)
         }
 
@@ -243,13 +244,13 @@ class ExpoUpdatesAppLoader @JvmOverloads constructor(
           this@ExpoUpdatesAppLoader.launcher = launcher
           this@ExpoUpdatesAppLoader.isUpToDate = isUpToDate
           try {
-            val manifestJson = processManifestJson(launcher.launchedUpdate!!.manifest)
-            val manifest = ManifestFactory.getRawManifestFromJson(manifestJson)
+            val manifestJson = processManifestJson(launcher.launchedUpdate!!.manifest!!)
+            val manifest = Manifest.fromManifestJson(manifestJson)
             callback.onManifestCompleted(manifest)
 
             // ReactAndroid will load the bundle on its own in development mode
             if (!manifest.isDevelopmentMode()) {
-              callback.onBundleCompleted(launcher.launchAssetFile)
+              callback.onBundleCompleted(launcher.launchAssetFile!!)
             }
           } catch (e: Exception) {
             callback.onError(e)
@@ -296,7 +297,7 @@ class ExpoUpdatesAppLoader @JvmOverloads constructor(
 
   private fun launchWithNoDatabase(context: Context, e: Exception?) {
     this.launcher = NoDatabaseLauncher(context, updatesConfiguration, e)
-    var manifestJson = EmbeddedLoader.readEmbeddedManifest(context, updatesConfiguration)!!.rawManifest.getRawJson()
+    var manifestJson = EmbeddedManifest.get(context, updatesConfiguration)!!.manifest.getRawJson()
     try {
       manifestJson = processManifestJson(manifestJson)
     } catch (ex: Exception) {
@@ -306,47 +307,50 @@ class ExpoUpdatesAppLoader @JvmOverloads constructor(
         e
       )
     }
-    callback.onManifestCompleted(ManifestFactory.getRawManifestFromJson(manifestJson))
-    var launchAssetFile = launcher.launchAssetFile
-    if (launchAssetFile == null) {
-      // ReactInstanceManagerBuilder accepts embedded assets as strings with "assets://" prefixed
-      launchAssetFile = "assets://" + launcher.bundleAssetName
-    }
+    callback.onManifestCompleted(Manifest.fromManifestJson(manifestJson))
+    // ReactInstanceManagerBuilder accepts embedded assets as strings with "assets://" prefixed
+    val launchAssetFile = launcher.launchAssetFile ?: "assets://" + launcher.bundleAssetName
     callback.onBundleCompleted(launchAssetFile)
   }
 
   @Throws(JSONException::class)
   private fun processManifestJson(manifestJson: JSONObject): JSONObject {
     val parsedManifestUrl = Uri.parse(manifestUrl)
+
+    // If legacy manifest is not yet verified, served by a third party, not standalone, and not an anonymous experience
+    // then scope it locally by using the manifest URL as a scopeKey (id) and consider it verified.
     if (!manifestJson.optBoolean(ExponentManifest.MANIFEST_IS_VERIFIED_KEY, false) &&
       isThirdPartyHosted(parsedManifestUrl) &&
-      !Constants.isStandaloneApp()
+      !Constants.isStandaloneApp() &&
+      !exponentManifest.isAnonymousExperience(Manifest.fromManifestJson(manifestJson)) &&
+      Manifest.fromManifestJson(manifestJson) is LegacyManifest
     ) {
-      // Sandbox third party apps and consider them verified
       // for https urls, sandboxed id is of form quinlanj.github.io/myProj-myApp
       // for http urls, sandboxed id is of form UNVERIFIED-quinlanj.github.io/myProj-myApp
       val protocol = parsedManifestUrl.scheme
       val securityPrefix = if (protocol == "https" || protocol == "exps") "" else "UNVERIFIED-"
       val path = if (parsedManifestUrl.path != null) parsedManifestUrl.path else ""
-      val slug = if (manifestJson.has(ExponentManifest.MANIFEST_SLUG)) manifestJson.getString(
-        ExponentManifest.MANIFEST_SLUG
-      ) else ""
+      val slug = manifestJson.getNullable<String>(ExponentManifest.MANIFEST_SLUG) ?: ""
       val sandboxedId = securityPrefix + parsedManifestUrl.host + path + "-" + slug
       manifestJson.put(ExponentManifest.MANIFEST_ID_KEY, sandboxedId)
       manifestJson.put(ExponentManifest.MANIFEST_IS_VERIFIED_KEY, true)
     }
+
+    // all standalone apps are considered verified
     if (Constants.isStandaloneApp()) {
       manifestJson.put(ExponentManifest.MANIFEST_IS_VERIFIED_KEY, true)
     }
+
+    // if the manifest is scoped to a random anonymous scope key, automatically verify it
+    if (exponentManifest.isAnonymousExperience(Manifest.fromManifestJson(manifestJson))) {
+      manifestJson.put(ExponentManifest.MANIFEST_IS_VERIFIED_KEY, true)
+    }
+
+    // otherwise set verified to false
     if (!manifestJson.has(ExponentManifest.MANIFEST_IS_VERIFIED_KEY)) {
       manifestJson.put(ExponentManifest.MANIFEST_IS_VERIFIED_KEY, false)
     }
-    if (!manifestJson.optBoolean(ExponentManifest.MANIFEST_IS_VERIFIED_KEY, false) &&
-      exponentManifest.isAnonymousExperience(ManifestFactory.getRawManifestFromJson(manifestJson))
-    ) {
-      // automatically verified
-      manifestJson.put(ExponentManifest.MANIFEST_IS_VERIFIED_KEY, true)
-    }
+
     return manifestJson
   }
 
@@ -360,7 +364,7 @@ class ExpoUpdatesAppLoader @JvmOverloads constructor(
       )
   }
 
-  private fun setShouldShowAppLoaderStatus(manifest: RawManifest) {
+  private fun setShouldShowAppLoaderStatus(manifest: Manifest) {
     // we don't want to show the cached experience alert when Updates.reloadAsync() is called
     if (useCacheOnly) {
       shouldShowAppLoaderStatus = false
@@ -447,6 +451,6 @@ class ExpoUpdatesAppLoader @JvmOverloads constructor(
   }
 
   init {
-    NativeModuleDepsProvider.getInstance().inject(ExpoUpdatesAppLoader::class.java, this)
+    NativeModuleDepsProvider.instance.inject(ExpoUpdatesAppLoader::class.java, this)
   }
 }

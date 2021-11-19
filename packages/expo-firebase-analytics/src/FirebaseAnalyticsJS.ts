@@ -23,7 +23,6 @@ class FirebaseAnalyticsJS {
   public readonly config: FirebaseAnalyticsJSConfig;
   private userId?: string;
   private userProperties?: { [key: string]: any };
-  private screenName?: string;
   private eventQueue = new Set<FirebaseAnalyticsJSCodedEvent>();
   private options: FirebaseAnalyticsJSOptions;
   private flushEventsPromise: Promise<void> = Promise.resolve();
@@ -86,7 +85,7 @@ class FirebaseAnalyticsJS {
     const lastTime = this.lastTime;
     if (events.size > 1) {
       body = '';
-      events.forEach(event => {
+      events.forEach((event) => {
         body += encodeQueryArgs(event, this.lastTime) + '\n';
         this.lastTime = event._et;
       });
@@ -113,11 +112,10 @@ class FirebaseAnalyticsJS {
   }
 
   private async addEvent(event: FirebaseAnalyticsJSCodedEvent) {
-    const { userId, userProperties, screenName, options } = this;
+    const { userId, userProperties, options } = this;
 
     // Extend the event with the currently set User-id
     if (userId) event.uid = userId;
-    if (screenName) event['ep.screen_name'] = screenName;
 
     // Add user-properties
     if (userProperties) {
@@ -154,7 +152,7 @@ class FirebaseAnalyticsJS {
     if (!this.eventQueue.size) return;
     const events = new Set<FirebaseAnalyticsJSCodedEvent>(this.eventQueue);
     await this.send(events);
-    events.forEach(event => this.eventQueue.delete(event));
+    events.forEach((event) => this.eventQueue.delete(event));
   }
 
   /**
@@ -204,10 +202,27 @@ class FirebaseAnalyticsJS {
     };
     if (eventParams) {
       for (const key in eventParams) {
-        const paramKey =
-          SHORT_EVENT_PARAMS[key] ||
-          (typeof eventParams[key] === 'number' ? `epn.${key}` : `ep.${key}`);
-        params[paramKey] = eventParams[key];
+        if (key === 'items' && Array.isArray(eventParams[key])) {
+          eventParams[key].forEach((item, index) => {
+            const itemFields: string[] = [];
+            let customItemFieldCount = 0;
+            Object.keys(item).forEach((itemKey) => {
+              if (SHORT_EVENT_ITEM_PARAMS[itemKey]) {
+                itemFields.push(`${SHORT_EVENT_ITEM_PARAMS[itemKey]}${item[itemKey]}`);
+              } else {
+                itemFields.push(`k${customItemFieldCount}${itemKey}`);
+                itemFields.push(`v${customItemFieldCount}${item[itemKey]}`);
+                customItemFieldCount++;
+              }
+            });
+            params[`pr${index + 1}`] = itemFields.join('~');
+          });
+        } else {
+          const paramKey =
+            SHORT_EVENT_PARAMS[key] ||
+            (typeof eventParams[key] === 'number' ? `epn.${key}` : `ep.${key}`);
+          params[paramKey] = eventParams[key];
+        }
       }
     }
     return params;
@@ -271,25 +286,10 @@ class FirebaseAnalyticsJS {
   }
 
   /**
-   * https://firebase.google.com/docs/reference/js/firebase.analytics.Analytics#set-current-screen
+   * Not supported, this method is a no-op
    */
-  async setCurrentScreen(screenName?: string, screenClassOverride?: string): Promise<void> {
-    if (screenName && screenName.length > 100) {
-      throw new Error(
-        'Invalid screen-name specified. Should contain 1 to 100 characters. Set to undefined to clear the current screen name.'
-      );
-    }
-    if (!this.enabled) return;
-    this.screenName = screenName || undefined;
-
-    // On native, calling `setCurrentScreen` automatically records a screen_view event.
-    // Mimimic that behavior when native emulation is enabled.
-    // https://firebase.google.com/docs/analytics/screenviews#manually_track_screens
-    if (screenName && this.options.strictNativeEmulation) {
-      await this.logEvent('screen_view', {
-        screen_name: screenName,
-      });
-    }
+  async setSessionTimeoutDuration(_sessionTimeoutInterval: number): Promise<void> {
+    // no-op
   }
 
   /**
@@ -324,7 +324,6 @@ class FirebaseAnalyticsJS {
    */
   async resetAnalyticsData() {
     this.clearEvents();
-    this.screenName = undefined;
     this.userId = undefined;
     this.userProperties = undefined;
   }
@@ -347,10 +346,10 @@ class FirebaseAnalyticsJS {
 function encodeQueryArgs(queryArgs: FirebaseAnalyticsJSCodedEvent, lastTime: number): string {
   let keys = Object.keys(queryArgs);
   if (lastTime < 0) {
-    keys = keys.filter(key => key !== '_et');
+    keys = keys.filter((key) => key !== '_et');
   }
   return keys
-    .map(key => {
+    .map((key) => {
       return `${key}=${encodeURIComponent(
         key === '_et' ? Math.max(queryArgs[key] - lastTime, 0) : queryArgs[key]
       )}`;
@@ -360,6 +359,24 @@ function encodeQueryArgs(queryArgs: FirebaseAnalyticsJSCodedEvent, lastTime: num
 
 const SHORT_EVENT_PARAMS = {
   currency: 'cu',
+};
+
+// https://developers.google.com/gtagjs/reference/event
+const SHORT_EVENT_ITEM_PARAMS = {
+  id: 'id',
+  name: 'nm',
+  brand: 'br',
+  category: 'ca',
+  coupon: 'cp',
+  list: 'ln', // deprecated, use `list_name` instead
+  list_name: 'ln',
+  list_position: 'lp',
+  price: 'pr',
+  location_id: 'lo',
+  quantity: 'qt',
+  variant: 'va',
+  affiliation: 'af',
+  discount: 'ds',
 };
 
 export default FirebaseAnalyticsJS;

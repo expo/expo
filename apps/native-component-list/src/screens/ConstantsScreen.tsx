@@ -65,9 +65,9 @@ export default class ConstantsScreen extends React.PureComponent {
     return (
       <ScrollView style={{ padding: 10, flex: 1, backgroundColor: Colors.greyBackground }}>
         {Object.keys(Constants)
-          .filter(value => !IGNORED_CONSTANTS.includes(value))
+          .filter((value) => !IGNORED_CONSTANTS.includes(value))
           .sort()
-          .map(key => {
+          .map((key) => {
             if (typeof Constants[key] === 'function') return null;
             return <ExpoConstant name={key} key={key} />;
           })}

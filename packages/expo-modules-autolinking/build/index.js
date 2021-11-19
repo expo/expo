@@ -14,12 +14,13 @@ function registerSearchCommand(commandName, fn) {
         .option('-i, --ignore-paths <ignorePaths...>', 'Paths to ignore when looking up for modules.', (value, previous) => (previous !== null && previous !== void 0 ? previous : []).concat(value))
         .option('-e, --exclude <exclude...>', 'Package names to exclude when looking up for modules.', (value, previous) => (previous !== null && previous !== void 0 ? previous : []).concat(value))
         .option('-p, --platform [platform]', 'The platform that the resulting modules must support. Available options: "ios", "android"', 'ios')
+        .option('--silent', 'Silence resolution warnings')
         .action(async (searchPaths, providedOptions) => {
-        const options = await autolinking_1.mergeLinkingOptionsAsync({
+        const options = await (0, autolinking_1.mergeLinkingOptionsAsync)({
             ...providedOptions,
             searchPaths,
         });
-        const searchResults = await autolinking_1.findModulesAsync(options);
+        const searchResults = await (0, autolinking_1.findModulesAsync)(options);
         return await fn(searchResults, options);
     });
 }
@@ -40,15 +41,15 @@ module.exports = async function (args) {
         }
     }).option('-j, --json', 'Output results in the plain JSON format.', () => true, false);
     // Checks whether there are no resolving issues in the current setup.
-    registerSearchCommand('verify', results => {
-        const numberOfDuplicates = autolinking_1.verifySearchResults(results);
+    registerSearchCommand('verify', (results) => {
+        const numberOfDuplicates = (0, autolinking_1.verifySearchResults)(results);
         if (!numberOfDuplicates) {
             console.log('✅ Everything is fine!');
         }
     });
     // Searches for available expo modules and resolves the results for given platform.
     registerResolveCommand('resolve', async (results, options) => {
-        const modules = await autolinking_1.resolveModulesAsync(results, options);
+        const modules = await (0, autolinking_1.resolveModulesAsync)(results, options);
         if (options.json) {
             console.log(JSON.stringify({ modules }));
         }
@@ -58,8 +59,8 @@ module.exports = async function (args) {
     }).option('-j, --json', 'Output results in the plain JSON format.', () => true, false);
     // Generates a source file listing all packages to link.
     registerResolveCommand('generate-package-list', async (results, options) => {
-        const modules = options.empty ? [] : await autolinking_1.resolveModulesAsync(results, options);
-        autolinking_1.generatePackageListAsync(modules, options);
+        const modules = options.empty ? [] : await (0, autolinking_1.resolveModulesAsync)(results, options);
+        (0, autolinking_1.generatePackageListAsync)(modules, options);
     })
         .option('-t, --target <path>', 'Path to the target file, where the package list should be written to.')
         .option('-n, --namespace <namespace>', 'Java package name under which the package list should be placed.')

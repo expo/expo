@@ -111,33 +111,33 @@ function removeEmoji(emoji: string, children: string[]) {
   }
 }
 
-export const Quote = ({ children }: { children: JSX.Element | JSX.Element[] }) => {
+export const Quote = ({ children, ...rest }: { children: JSX.Element | JSX.Element[] }) => {
   let icon: React.ReactNode = (
     <div style={{ marginTop: 2 }}>
       <Info size={16} />
     </div>
   );
 
-  const newChildren: JSX.Element[] = React.Children.map(children, _children => {
-    const emoji = captureEmoji(_children?.props.children);
+  const newChildren: JSX.Element[] = React.Children.map(children, child => {
+    const emoji = captureEmoji(child?.props?.children);
 
     if (emoji) {
       icon = emoji;
 
       return {
-        ..._children,
+        ...child,
         props: {
-          ..._children.props,
-          children: removeEmoji(emoji, _children.props.children),
+          ...child?.props,
+          children: removeEmoji(emoji, child?.props?.children),
         },
       };
     }
 
-    return _children;
+    return child;
   });
 
   return (
-    <blockquote {...attributes} css={STYLES_BLOCKQUOTE}>
+    <blockquote {...attributes} css={STYLES_BLOCKQUOTE} {...rest}>
       <div>{icon}</div>
       <div>{newChildren}</div>
     </blockquote>

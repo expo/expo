@@ -22,11 +22,11 @@ Deep linking with schemes isn't the only linking tool available to you. It is of
 
 As mentioned in the introduction, there are some URL schemes for core functionality that exist on every platform. The following is a non-exhaustive list, but covers the most commonly used schemes.
 
-| Scheme           | Description                                  | iOS | Android |
-| ---------------- | -------------------------------------------- | --- | ------- |
+| Scheme           | Description                                   | iOS | Android |
+| ---------------- | --------------------------------------------- | --- | ------- |
 | `mailto`         | Open mail app, eg: `mailto: support@expo.dev` | ✅  | ✅      |
-| `tel`            | Open phone app, eg: `tel:+123456789`         | ✅  | ✅      |
-| `sms`            | Open SMS app, eg: `sms:+123456789`           | ✅  | ✅      |
+| `tel`            | Open phone app, eg: `tel:+123456789`          | ✅  | ✅      |
+| `sms`            | Open SMS app, eg: `sms:+123456789`            | ✅  | ✅      |
 | `https` / `http` | Open web browser app, eg: `https://expo.dev`  | ✅  | ✅      |
 
 ### Opening links from your app
@@ -131,7 +131,7 @@ lyft://ridetype?id=lyft&pickup[latitude]=37.764728&pickup[longitude]=-122.422999
 
 It's possible that the user doesn't have the Lyft app installed, in which case you may want to open the App / Play Store, or let them know that they need to install it first. We recommend using the library [react-native-app-link](https://github.com/fiber-god/react-native-app-link) for these cases.
 
-On iOS, `Linking.canOpenURL` requires additional configuration to query other apps' linking schemes. You can use the `ios.infoPlist` key in your `app.json` to specify a list of schemes your app needs to query. For example:
+On iOS, `Linking.canOpenURL` requires additional configuration to query other apps' linking schemes. You can use the `ios.infoPlist` key in your **app.json** to specify a list of schemes your app needs to query. For example:
 
 ```
   "infoPlist": {
@@ -151,7 +151,7 @@ In development, your app will live at a url like `exp://wg-qka.community.app.exp
 
 ### In a standalone app
 
-To link to your standalone app, you need to specify a scheme for your app. You can register for a scheme in your `app.json` by adding a string under the `scheme` key (use only lower case):
+To link to your standalone app, you need to specify a scheme for your app. You can register for a scheme in your **app.json** by adding a string under the `scheme` key (use only lower case):
 
 ```
 {
@@ -163,11 +163,11 @@ To link to your standalone app, you need to specify a scheme for your app. You c
 
 Once you build your standalone app and install it to your device, you will be able to open it with links to `myapp://`.
 
-If your app is ejected, note that like some other parts of `app.json`, changing the `scheme` key after your app is already ejected will not have the desired effect. If you'd like to change the deep link scheme in your bare app, you'll need to replace the existing scheme with the new one in the following locations:
+If your app is ejected, note that like some other parts of **app.json**, changing the `scheme` key after your app is already ejected will not have the desired effect. If you'd like to change the deep link scheme in your bare app, you'll need to replace the existing scheme with the new one in the following locations:
 
-- `scheme` in `app.json`
+- `scheme` in **app.json**
 - Under the first occurrence of `CFBundleURLSchemes` in `ios/<your-project-name>/Info.plist`
-- In the `data android:scheme` tag in `android/app/src/main/AndroidManifest.xml`
+- In the `data android:scheme` tag in **android/app/src/main/AndroidManifest.xml**
 
 ### `Linking` module
 
@@ -323,15 +323,15 @@ Note that iOS will download your AASA when your app is first installed and when 
 
 After deploying your AASA, you must also configure your app to use your associated domain:
 
-1. Add the `associatedDomains` [configuration](/versions/latest/config/app/#associateddomains) to your `app.json`, and make sure to follow [Apple's specified format](https://developer.apple.com/documentation/bundleresources/entitlements/com_apple_developer_associated-domains). Make sure _not_ to include the protocol (`https`) in your URL (this is a common mistake, and will result in your universal links not working).
+1. Add the `associatedDomains` [configuration](/versions/latest/config/app/#associateddomains) to your **app.json**, and make sure to follow [Apple's specified format](https://developer.apple.com/documentation/bundleresources/entitlements/com_apple_developer_associated-domains). Make sure _not_ to include the protocol (`https`) in your URL (this is a common mistake, and will result in your universal links not working).
 
-2. Edit your App ID on the Apple developer portal and enable the "Associated Domains" application service. Go into the App IDs section and click on your App ID. Select Edit, check the Associated Domains checkbox and click Done. You will also need to regenerate your provisioning profile _after_ adding the service to the App ID. This can be done by running `expo build:ios --clear-provisioning-profile` inside of your app directory. Next time you build your app, it will prompt you to create a new one.
+2. Edit your App ID on the Apple developer portal and enable the "Associated Domains" application service. Go into the App IDs section and click on your App ID. Select Edit, check the Associated Domains checkbox and click Done. You will also need to regenerate your provisioning profile _after_ adding the service to the App ID. This can be done by clearing your provisioning profile (which can be done via `expo credentials:manager` or `eas credentials`, depending on if you use `expo build` or `eas build`, respectively). Next time you build your app, Expo will prompt you to create a new provisioning profile.
 
-At this point, opening a link on your mobile device should now open your app! If it doesn't, re-check the previous steps to ensure that your AASA is valid, the path is specified in the AASA, and you have correctly configured your App ID in the Apple developer portal. Once you've got your app opening, move to the [Handling links into your app](#handling-links-into-your-app) section for details on how to handle the inbound link and show the user the content they requested.
+At this point, opening a link on your mobile device should now open your app! If it doesn't, re-check the previous steps to ensure that your AASA is valid, the path is specified in the AASA, and you have correctly configured your App ID in the Apple Developer Portal. Once you've got your app opening, move to the [Handling links into your app](#handling-links-into-your-app) section for details on how to handle the inbound link and show the user the content they requested.
 
 ### Deep links on Android
 
-Implementing deep links on Android (without a custom URL scheme) is somewhat simpler than on iOS. You simply need to add `intentFilters` to the [Android section](../workflow/configuration.md#android) of your `app.json`. The following basic configuration will cause your app to be presented in the standard Android dialog as an option for handling any record links to `myapp.io`:
+Implementing deep links on Android (without a custom URL scheme) is somewhat simpler than on iOS. You simply need to add `intentFilters` to the [Android section](../workflow/configuration.md#android) of your **app.json**. The following basic configuration will cause your app to be presented in the standard Android dialog as an option for handling any record links to `myapp.io`:
 
 ```
 "intentFilters": [
@@ -352,7 +352,7 @@ Implementing deep links on Android (without a custom URL scheme) is somewhat sim
 ]
 ```
 
-It may be desirable for links to your domain to always open your app (without presenting the user a dialog where they can choose the browser or a different handler). You can implement this with Android App Links, which use a similar verification process as Universal Links on iOS. First, you must publish a JSON file at `/.well-known/assetlinks.json` specifying your app ID and which links should be opened by your app. See [Android's documentation](https://developer.android.com/training/app-links/verify-site-associations) for details about formatting this file. Second, add `"autoVerify": true` to the intent filter in your `app.json`; this tells Android to check for your `assetlinks.json` on your server and register your app as the automatic handler for the specified paths:
+It may be desirable for links to your domain to always open your app (without presenting the user a dialog where they can choose the browser or a different handler). You can implement this with Android App Links, which use a similar verification process as Universal Links on iOS. First, you must publish a JSON file at `/.well-known/assetlinks.json` specifying your app ID and which links should be opened by your app. See [Android's documentation](https://developer.android.com/training/app-links/verify-site-associations) for details about formatting this file. Second, add `"autoVerify": true` to the intent filter in your **app.json**; this tells Android to check for your **assetlinks.json** on your server and register your app as the automatic handler for the specified paths:
 
 ```
 "intentFilters": [

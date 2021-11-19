@@ -1,6 +1,6 @@
 import spawnAsync from '@expo/spawn-async';
 import chalk from 'chalk';
-import { TaskQueue } from 'cwait';
+import { PromisyClass, TaskQueue } from 'cwait';
 import fs from 'fs-extra';
 import glob from 'glob-promise';
 import inquirer from 'inquirer';
@@ -43,7 +43,7 @@ const EXTERNAL_REACT_ABI_DEPENDENCIES = [
   'GoogleMaps',
   'Google-Maps-iOS-Utils',
   'lottie-ios',
-  'JKBigInteger2',
+  'JKBigInteger',
   'Branch',
   'Google-Mobile-Ads-SDK',
   'RCT-Folly',
@@ -60,7 +60,7 @@ const EXTERNAL_REACT_ABI_DEPENDENCIES = [
 async function namespaceReactNativeFilesAsync(filenames, versionPrefix, versionedPodNames) {
   const reactPodName = versionedPodNames.React;
   const transformRules = _getReactNativeTransformRules(versionPrefix, reactPodName);
-  const taskQueue = new TaskQueue(Promise, 4); // Transform up to 4 files simultaneously.
+  const taskQueue = new TaskQueue(Promise as PromisyClass, 4); // Transform up to 4 files simultaneously.
   const transformRulesCache = {};
 
   const transformSingleFile = taskQueue.wrap(async (filename) => {
@@ -392,7 +392,6 @@ async function generateExpoKitPodspecAsync(
   const versionedReactPodName = getVersionedReactPodName(versionName);
   const versionedExpoKitPodName = getVersionedExpoKitPodName(versionName);
   const specFilename = path.join(specfilePath, 'ExpoKit.podspec');
-  const excludedPodNames = getExcludedPodNames();
 
   // rename spec to newPodName
   const sedPattern = `s/\\(s\\.name[[:space:]]*=[[:space:]]\\)"ExpoKit"/\\1"${versionedExpoKitPodName}"/g`;
@@ -404,12 +403,7 @@ async function generateExpoKitPodspecAsync(
     // `universalModulesPodNames` contains only versioned unimodules,
     // so we fall back to the original name if the module is not there
     const universalModulesDependencies = (await getListOfPackagesAsync())
-      .filter(
-        (pkg) =>
-          pkg.isIncludedInExpoClientOnPlatform('ios') &&
-          pkg.podspecName &&
-          !excludedPodNames.includes(pkg.podspecName)
-      )
+      .filter((pkg) => pkg.isIncludedInExpoClientOnPlatform('ios') && pkg.podspecName)
       .map(
         ({ podspecName }) =>
           `ss.dependency         "${universalModulesPodNames[podspecName!] || podspecName}"`
@@ -584,7 +578,7 @@ pod '${getVersionedExpoKitPodName(versionName)}',
 
 use_pods! '{versioned,vendored}/sdk${semver.major(
     versionNumber
-  )}/*/*.podspec.json', '${versionName}'
+  )}/**/*.podspec.json', '${versionName}'
 `;
 
   await fs.writeFile(path.join(versionedReactPodPath, 'dependencies.rb'), dependenciesContent);
@@ -752,11 +746,10 @@ async function getVersionedUnimodulePodsAsync(
 ): Promise<{ [key: string]: string }> {
   const versionedUnimodulePods = {};
   const packages = await getListOfPackagesAsync();
-  const excludedPodNames = getExcludedPodNames();
 
   packages.forEach((pkg) => {
     const podName = pkg.podspecName;
-    if (podName && pkg.isVersionableOnPlatform('ios') && !excludedPodNames.includes(podName)) {
+    if (podName && pkg.isVersionableOnPlatform('ios')) {
       versionedUnimodulePods[podName] = `${versionName}${podName}`;
     }
   });
@@ -826,18 +819,9 @@ function getCppLibrariesToVersion() {
   ];
 }
 
-function getExcludedPodNames() {
-  // we don't want Payments in Expo Client versions for now
-  return ['EXPaymentsStripe'];
-}
-
 export async function addVersionAsync(versionNumber: string, packages: Package[]) {
-  const {
-    sdkNumber,
-    versionName,
-    newVersionPath,
-    versionedPodNames,
-  } = await getConfigsFromArguments(versionNumber);
+  const { sdkNumber, versionName, newVersionPath, versionedPodNames } =
+    await getConfigsFromArguments(versionNumber);
 
   // Validate the directories we need before doing anything
   console.log(`Validating root directory ${chalk.magenta(EXPO_DIR)} ...`);
@@ -954,12 +938,8 @@ export async function reinstallPodsAsync(force?: boolean, preventReinstall?: boo
 }
 
 export async function removeVersionAsync(versionNumber: string) {
-  const {
-    sdkNumber,
-    newVersionPath,
-    versionedPodNames,
-    versionName,
-  } = await getConfigsFromArguments(versionNumber);
+  const { sdkNumber, newVersionPath, versionedPodNames, versionName } =
+    await getConfigsFromArguments(versionNumber);
 
   console.log(
     `Removing SDK version ${chalk.cyan(versionNumber)} from ${chalk.magenta(
@@ -1189,7 +1169,7 @@ function _getReactNativeTransformRules(versionPrefix, reactPodName) {
     },
     {
       flags: '-Ei',
-      pattern: `s/#import <(Expo|RNReanimated)/#import <${versionPrefix}\\1/g`,
+      pattern: `s/(#import |__has_include\\()<(Expo|RNReanimated)/\\1<${versionPrefix}\\2/g`,
     },
   ];
 }

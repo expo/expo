@@ -11,7 +11,7 @@ function ActivityIndicatorStopping({ hidesWhenStopped }: { hidesWhenStopped?: bo
     let _timer: any | undefined;
     const setToggleTimeout = () => {
       _timer = setTimeout(() => {
-        setAnimating(v => !v);
+        setAnimating((v) => !v);
         setToggleTimeout();
       }, 2000);
     };

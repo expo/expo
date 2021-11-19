@@ -1,6 +1,6 @@
 import * as Calendar from 'expo-calendar';
+import { UnavailabilityError } from 'expo-modules-core';
 import { Platform } from 'react-native';
-import { UnavailabilityError } from '@unimodules/core';
 
 import * as TestUtils from '../TestUtils';
 

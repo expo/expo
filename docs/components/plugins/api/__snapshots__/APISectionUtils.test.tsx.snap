@@ -1,5 +1,118 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`APISectionUtils.CommentTextBlock component basic comment 1`] = `
+<div>
+  <p
+    class="css-1xnkoxs-paragraph-STYLES_PARAGRAPH"
+    data-text="true"
+  >
+    This is the basic comment.
+  </p>
+</div>
+`;
+
+exports[`APISectionUtils.CommentTextBlock component basic inline comment 1`] = `
+<div>
+   - 
+  <span>
+    This is the basic comment.
+  </span>
+</div>
+`;
+
+exports[`APISectionUtils.CommentTextBlock component comment with example 1`] = `
+<div>
+  <p
+    class="css-1xnkoxs-paragraph-STYLES_PARAGRAPH"
+    data-text="true"
+  >
+    <strong
+      class="css-kkqcgt-paragraph-STYLES_BOLD_PARAGRAPH"
+    >
+      Android only.
+    </strong>
+     Gets the referrer URL of the installed app with the 
+    <a
+      class="css-12zqqiz-STYLES_EXTERNAL_LINK"
+      href="https://developer.android.com/google/play/installreferrer"
+      rel="noopener noreferrer"
+    >
+      <code
+        class="inline css-nuv12a-STYLES_INLINE_CODE"
+      >
+        Install Referrer API
+      </code>
+    </a>
+    
+from the Google Play Store. In practice, the referrer URL may not be a complete, absolute URL.
+  </p>
+  <h4
+    class="css-1j2s5xo-h4-h4-STYLES_H4"
+    data-heading="true"
+  >
+    Example
+  </h4>
+  <pre>
+    <pre
+      class="css-mv7gwa-STYLES_CODE_CONTAINER"
+      data-text="true"
+    >
+      <code
+        class="css-13ek3hw-STYLES_CODE_BLOCK"
+      >
+        <span
+          class="token keyword"
+        >
+          await
+        </span>
+         
+        <span
+          class="token maybe-class-name"
+        >
+          Application
+        </span>
+        <span
+          class="token punctuation"
+        >
+          .
+        </span>
+        <span
+          class="token method function property-access"
+        >
+          getInstallReferrerAsync
+        </span>
+        <span
+          class="token punctuation"
+        >
+          (
+        </span>
+        <span
+          class="token punctuation"
+        >
+          )
+        </span>
+        <span
+          class="token punctuation"
+        >
+          ;
+        </span>
+        
+
+        <span
+          class="token comment"
+        >
+          // "utm_source=google-play&utm_medium=organic"
+        </span>
+        
+
+      </code>
+    </pre>
+  </pre>
+</div>
+`;
+
+exports[`APISectionUtils.CommentTextBlock component no comment 1`] = `<div />`;
+
 exports[`APISectionUtils.resolveTypeName Promise 1`] = `
 <div>
   <a
@@ -116,7 +229,13 @@ exports[`APISectionUtils.resolveTypeName custom type non-linkable array 1`] = `
 
 exports[`APISectionUtils.resolveTypeName custom type with single pick 1`] = `
 <div>
-  Pick
+  <a
+    class="css-12zqqiz-STYLES_EXTERNAL_LINK"
+    href="https://www.typescriptlang.org/docs/handbook/utility-types.html#picktype-keys"
+    rel="noopener noreferrer"
+  >
+    Pick
+  </a>
   &lt;
   <span>
     <a
@@ -284,7 +403,13 @@ exports[`APISectionUtils.resolveTypeName props with multiple omits 1`] = `
   StyleProp
   &lt;
   <span>
-    Omit
+    <a
+      class="css-12zqqiz-STYLES_EXTERNAL_LINK"
+      href="https://www.typescriptlang.org/docs/handbook/utility-types.html#omittype-keys"
+      rel="noopener noreferrer"
+    >
+      Omit
+    </a>
     &lt;
     <span>
       <a

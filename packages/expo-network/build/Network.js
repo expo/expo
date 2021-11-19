@@ -11,7 +11,7 @@ export { NetworkStateType };
  * `NetworkStateType.NONE`.
  * @return A `Promise` that fulfils with a `NetworkState` object.
  *
- * # Example
+ * @example
  * ```ts
  * await Network.getNetworkStateAsync();
  * // {
@@ -29,14 +29,14 @@ export async function getNetworkStateAsync() {
 }
 // @needsAudit
 /**
- * Gets the device's current IPv4 address. Returns `0.0.0.0`` if the IP address could not be retrieved.
+ * Gets the device's current IPv4 address. Returns `0.0.0.0` if the IP address could not be retrieved.
  *
  * On web, this method uses the third-party [`ipify service`](https://www.ipify.org/) to get the
  * public IP address of the current device.
  * @return A `Promise` that fulfils with a `string` of the current IP address of the device's main
  * network interface. Can only be IPv4 address.
  *
- * # Example
+ * @example
  * ```ts
  * await Network.getIpAddressAsync();
  * // "92.168.32.44"
@@ -72,11 +72,12 @@ export async function getMacAddressAsync(interfaceName = null) {
 }
 // @needsAudit
 /**
- * __Android only.__ Tells if the device is in airplane mode.
+ * Tells if the device is in airplane mode.
  * @return Returns a `Promise` that fulfils with a `boolean` value for whether the device is in
  * airplane mode or not.
+ * @platform android
  *
- * # Example
+ * @example
  * ```ts
  * await Network.isAirplaneModeEnabledAsync();
  * // false

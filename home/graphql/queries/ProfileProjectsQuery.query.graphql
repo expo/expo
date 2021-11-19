@@ -2,18 +2,8 @@ query Home_MyApps($limit: Int!, $offset: Int!) {
   me {
     id
     appCount
-    apps(limit: $limit, offset: $offset) {
-      id
-      description
-      fullName
-      iconUrl
-      lastPublishedTime
-      name
-      username
-      packageName
-      privacy
-      sdkVersion
-      published
+    apps(limit: $limit, offset: $offset, includeUnpublished: true) {
+      ...CommonAppData
     }
   }
 }

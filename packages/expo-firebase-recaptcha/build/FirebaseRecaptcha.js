@@ -93,8 +93,7 @@ function getWebviewSource(firebaseConfig, firebaseVersion, appVerificationDisabl
       }
     });
   </script>
-  <script src="https://www.google.com/recaptcha/api.js?onload=onLoad&render=explicit&hl=${languageCode ??
-            ''}" onerror="onError()"></script>
+  <script src="https://www.google.com/recaptcha/api.js?onload=onLoad&render=explicit&hl=${languageCode ?? ''}" onerror="onError()"></script>
 </body></html>`,
     };
 }
@@ -128,7 +127,7 @@ export default function FirebaseRecaptcha(props) {
         console.error(`FirebaseRecaptcha: Missing firebase web configuration. Please set the "expo.web.config.firebase" field in "app.json" or use the "firebaseConfig" prop.`);
         return null;
     }
-    return (React.createElement(WebView, { ref: webview, javaScriptEnabled: true, automaticallyAdjustContentInsets: true, scalesPageToFit: true, mixedContentMode: "always", source: getWebviewSource(firebaseConfig, firebaseVersion, appVerificationDisabledForTesting, languageCode, invisible), onError: onError, onMessage: event => {
+    return (React.createElement(WebView, { ref: webview, javaScriptEnabled: true, automaticallyAdjustContentInsets: true, scalesPageToFit: true, mixedContentMode: "always", source: getWebviewSource(firebaseConfig, firebaseVersion, appVerificationDisabledForTesting, languageCode, invisible), onError: onError, onMessage: (event) => {
             const data = JSON.parse(event.nativeEvent.data);
             switch (data.type) {
                 case 'load':

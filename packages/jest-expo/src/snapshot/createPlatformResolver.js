@@ -1,9 +1,9 @@
 const path = require('path');
 
 const testDirectory = `__tests__`;
-module.exports = platform => {
+module.exports = (platform) => {
   const customPath = path.join(testDirectory, '__snapshots__');
-  const getExt = ext => `${ext}.${platform}`;
+  const getExt = (ext) => `${ext}.${platform}`;
   return {
     resolveSnapshotPath: (testPath, snapshotExtension) => {
       const snapshotFilePath =

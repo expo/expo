@@ -16,12 +16,12 @@ function getId(ref) {
     return ref ? ref.id : undefined;
 }
 function checkAssetIds(assetIds) {
-    if (assetIds.some(id => !id || typeof id !== 'string')) {
+    if (assetIds.some((id) => !id || typeof id !== 'string')) {
         throw new Error('Asset ID must be a string!');
     }
 }
 function checkAlbumIds(albumIds) {
-    if (albumIds.some(id => !id || typeof id !== 'string')) {
+    if (albumIds.some((id) => !id || typeof id !== 'string')) {
         throw new Error('Album ID must be a string!');
     }
 }
@@ -104,8 +104,8 @@ export async function getPermissionsAsync(writeOnly = false) {
  */
 export const usePermissions = createPermissionHook({
     // TODO(cedric): permission requesters should have an options param or a different requester
-    getMethod: options => getPermissionsAsync(options?.writeOnly),
-    requestMethod: options => requestPermissionsAsync(options?.writeOnly),
+    getMethod: (options) => getPermissionsAsync(options?.writeOnly),
+    requestMethod: (options) => requestPermissionsAsync(options?.writeOnly),
 });
 // @needsAudit
 /**
@@ -129,7 +129,7 @@ export async function presentPermissionsPickerAsync() {
  * Creates an asset from existing file. The most common use case is to save a picture taken by [Camera](../camera).
  * This method requires `CAMERA_ROLL` permission.
  *
- * # Example
+ * @example
  * ```js
  * const { uri } = await Camera.takePictureAsync();
  * const asset = await MediaLibrary.createAssetAsync(uri);
@@ -399,9 +399,10 @@ export function removeAllListeners() {
 }
 // @needsAudit
 /**
- * __iOS Only.__ Fetches a list of moments, which is a group of assets taken around the same place
+ * Fetches a list of moments, which is a group of assets taken around the same place
  * and time.
  * @return An array of [albums](#album) whose type is `moment`.
+ * @platform ios
  */
 export async function getMomentsAsync() {
     if (!MediaLibrary.getMomentsAsync) {

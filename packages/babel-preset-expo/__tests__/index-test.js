@@ -69,6 +69,30 @@ export default function App() {
     expect(code).toMatchSnapshot();
   });
 
+  it(`supports classic JSX runtime`, () => {
+    const options = {
+      babelrc: false,
+      presets: [[preset, { jsxRuntime: 'classic' }]],
+      filename: 'unknown',
+      // Make the snapshot easier to read
+      retainLines: true,
+      caller,
+    };
+
+    // No React import...
+    const sourceCode = `
+import { Text, View } from 'react-native';
+export default function App() {
+  return (<View><Text>Hello World</Text></View>);
+}`;
+    const { code } = babel.transform(sourceCode, options);
+
+    expect(code).not.toMatch(/"react\/jsx-runtime"/);
+
+    expect(code).not.toMatch(isMetro ? /_jsxRuntime.jsx/ : /_jsx\(View/);
+    expect(code).toMatchSnapshot();
+  });
+
   it(`aliases @expo/vector-icons`, () => {
     const options = {
       babelrc: false,
@@ -144,8 +168,8 @@ describe('"lazyImports" option', () => {
     [false],
     [true],
     [['inline-comp', './inline-func', '../inline-func-with-side-effects.fx.ts']],
-    [name => !(name.endsWith('.fx') || name.endsWith('.fx.js') || name.endsWith('.fx.ts'))],
-  ])(`accepts %p`, lazyImportsOption => {
+    [(name) => !(name.endsWith('.fx') || name.endsWith('.fx.js') || name.endsWith('.fx.ts'))],
+  ])(`accepts %p`, (lazyImportsOption) => {
     const testFilename = path.resolve(__dirname, 'samples', 'Lazy.js');
     const options = {
       babelrc: false,

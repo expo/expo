@@ -16,7 +16,7 @@ This guide is intended to help you know what tools are at your disposal to confi
 
 > This type of configuration is currently only available on Android. On iOS, it is not possible in the Expo managed workflow to customize the status bar before the app has loaded, while the splash screen is presented.
 
-The configuration for configuring the status bar while the splash screen is visible on Android is available through the `androidStatusBar` object in `app.json`. The options available are similar to those provided by [expo-status-bar](../versions/latest/sdk/status-bar.md).
+The configuration for configuring the status bar while the splash screen is visible on Android is available through the `androidStatusBar` object in **app.json**. The options available are similar to those provided by [expo-status-bar](../versions/latest/sdk/status-bar.md).
 
 <div style={{marginTop: -10}} />
 

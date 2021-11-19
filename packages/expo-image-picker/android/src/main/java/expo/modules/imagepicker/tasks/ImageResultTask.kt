@@ -7,9 +7,10 @@ import android.util.Base64
 import android.util.Log
 import androidx.exifinterface.media.ExifInterface
 import expo.modules.core.Promise
+import expo.modules.core.errors.ModuleDestroyedException
+import expo.modules.imagepicker.ExifDataHandler
 import expo.modules.imagepicker.ImagePickerConstants
 import expo.modules.imagepicker.ImagePickerConstants.exifTags
-import expo.modules.imagepicker.ModuleDestroyedException
 import expo.modules.imagepicker.exporters.ImageExporter
 import expo.modules.imagepicker.exporters.ImageExporter.Listener
 import expo.modules.imagepicker.fileproviders.FileProvider
@@ -27,8 +28,10 @@ open class ImageResultTask(
   private val uri: Uri,
   private val contentResolver: ContentResolver,
   private val fileProvider: FileProvider,
+  private val isEdited: Boolean,
   private val withExifData: Boolean,
   private val imageExporter: ImageExporter,
+  private var exifDataHandler: ExifDataHandler?,
   private val coroutineScope: CoroutineScope
 ) {
   /**
@@ -61,6 +64,9 @@ open class ImageResultTask(
     coroutineScope.launch {
       try {
         val outputFile = getFile()
+        if (isEdited) {
+          exifDataHandler?.copyExifData(uri, contentResolver)
+        }
         val exif = getExifData()
         val imageExporterHandler = object : Listener {
           override fun onResult(out: ByteArrayOutputStream?, width: Int, height: Int) {

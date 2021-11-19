@@ -10,7 +10,7 @@ This section covers all things related to loading assets in your apps, from bund
 
 Bundling assets into your binary will provide for the best user experience as your assets will be available immediately. Instead of having to make a network request to the CDN to fetch your published assets, your app will fetch them from the local disk resulting in a faster, more efficient loading experience. Bundling assets also allows offline functionality.
 
-To bundle assets in your binary, use the [assetBundlePatterns](../workflow/configuration.md) key in `app.json` to provide a list of paths in your project directory:
+To bundle assets in your binary, use the [assetBundlePatterns](../workflow/configuration.md) key in **app.json** to provide a list of paths in your project directory:
 
 ```
 "assetBundlePatterns": [
@@ -18,7 +18,7 @@ To bundle assets in your binary, use the [assetBundlePatterns](../workflow/confi
 ],
 ```
 
-Images with paths matching the given patterns will be bundled into your native binaries next time you run `expo build`.
+Images with paths matching the given patterns will be bundled into your native binaries next time you run `eas build` (or `expo build` if you are using the classic build service).
 
 > **Note**: If your app contains an abnormal amount of assets or assets that are abnormally large in size, asset bundling may not be the best solution as it will cause your application size to bloat. If this is the case, be selective and bundle those assets that are essential and store the rest on the CDN.
 
@@ -106,4 +106,4 @@ When you publish your project, it will upload your assets to the CDN so that the
 
 ### Optimizing Assets
 
-You can manually optimize your assets by running the command `npx expo-optimize` which will use the [sharp](https://sharp.pixelplumbing.com/en/stable/) library to compress your assets. You can set the quality of the compression by passing the `--quality [number]` option to the command. For example, to compress to `90%` you would run `npx expo-optimize --quality 0.9`.
+You can manually optimize your assets by running the command `npx expo-optimize` which will use the [sharp](https://sharp.pixelplumbing.com/en/stable/) library to compress your assets. You can set the quality of the compression by passing the `--quality [number]` option to the command. For example, to compress to `90%` you would run `npx expo-optimize --quality 90`.

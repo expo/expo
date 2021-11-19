@@ -15,13 +15,19 @@ class DevLauncherModule(reactContext: ReactApplicationContext?) : ReactContextBa
 
   override fun getConstants(): Map<String, Any?> {
     val manifestString = try {
-      controller?.manifest?.rawData
+      controller?.manifest?.getRawJson().toString()
+    } catch (_: IllegalStateException) {
+      null
+    }
+    val manifestURLString = try {
+      controller?.manifestURL?.toString()
     } catch (_: IllegalStateException) {
       null
     }
 
     return mapOf<String, Any?>(
-      "manifestString" to manifestString
+      "manifestString" to manifestString,
+      "manifestURL" to manifestURLString
     )
   }
 }

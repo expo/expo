@@ -15,6 +15,7 @@ import android.widget.FrameLayout
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.graphics.drawable.DrawableCompat
 import androidx.fragment.app.Fragment
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.stripe.android.paymentsheet.*
 import com.stripe.android.paymentsheet.model.PaymentOption
 import java.io.ByteArrayOutputStream
@@ -25,12 +26,14 @@ class PaymentSheetFragment : Fragment() {
   private var paymentIntentClientSecret: String? = null
   private var setupIntentClientSecret: String? = null
   private lateinit var paymentSheetConfiguration: PaymentSheet.Configuration
+  private lateinit var localBroadcastManager: LocalBroadcastManager
 
   override fun onCreateView(
     inflater: LayoutInflater,
     container: ViewGroup?,
     savedInstanceState: Bundle?
   ): View {
+    localBroadcastManager = LocalBroadcastManager.getInstance(requireContext())
     return FrameLayout(requireActivity()).also {
       it.visibility = View.GONE
     }
@@ -41,7 +44,8 @@ class PaymentSheetFragment : Fragment() {
     val merchantDisplayName = arguments?.getString("merchantDisplayName").orEmpty()
     val customerId = arguments?.getString("customerId").orEmpty()
     val customerEphemeralKeySecret = arguments?.getString("customerEphemeralKeySecret").orEmpty()
-    val countryCode = arguments?.getString("countryCode").orEmpty()
+    val countryCode = arguments?.getString("merchantCountryCode").orEmpty()
+    val googlePayEnabled = arguments?.getBoolean("googlePay")
     val testEnv = arguments?.getBoolean("testEnv")
     paymentIntentClientSecret = arguments?.getString("paymentIntentClientSecret").orEmpty()
     setupIntentClientSecret = arguments?.getString("setupIntentClientSecret").orEmpty()
@@ -57,7 +61,7 @@ class PaymentSheetFragment : Fragment() {
           intent.putExtra("label", paymentOption.label)
           intent.putExtra("image", imageString)
         }
-        activity?.sendBroadcast(intent)
+        localBroadcastManager.sendBroadcast(intent)
       }
     }
 
@@ -66,7 +70,7 @@ class PaymentSheetFragment : Fragment() {
         val intent = Intent(ON_PAYMENT_RESULT_ACTION)
 
         intent.putExtra("paymentResult", paymentResult)
-        activity?.sendBroadcast(intent)
+        localBroadcastManager.sendBroadcast(intent)
       }
     }
 
@@ -76,10 +80,10 @@ class PaymentSheetFragment : Fragment() {
         id = customerId,
         ephemeralKeySecret = customerEphemeralKeySecret
       ) else null,
-      googlePay = PaymentSheet.GooglePayConfiguration(
+      googlePay = if (googlePayEnabled == true) PaymentSheet.GooglePayConfiguration(
         environment = if (testEnv == true) PaymentSheet.GooglePayConfiguration.Environment.Test else PaymentSheet.GooglePayConfiguration.Environment.Production,
         countryCode = countryCode
-      )
+      ) else null
     )
 
     if (arguments?.getBoolean("customFlow") == true) {
@@ -87,22 +91,24 @@ class PaymentSheetFragment : Fragment() {
       configureFlowController()
     } else {
       paymentSheet = PaymentSheet(this, paymentResultCallback)
+      val intent = Intent(ON_INIT_PAYMENT_SHEET)
+      localBroadcastManager.sendBroadcast(intent)
     }
 
     val intent = Intent(ON_FRAGMENT_CREATED)
-    activity?.sendBroadcast(intent)
+    localBroadcastManager.sendBroadcast(intent)
   }
 
   fun present() {
-    if (!paymentIntentClientSecret.isNullOrEmpty()) {
-      paymentSheet?.presentWithPaymentIntent(paymentIntentClientSecret!!, paymentSheetConfiguration)
-    } else if (!setupIntentClientSecret.isNullOrEmpty()) {
-      paymentSheet?.presentWithSetupIntent(setupIntentClientSecret!!, paymentSheetConfiguration)
+    if (paymentSheet != null) {
+      if (!paymentIntentClientSecret.isNullOrEmpty()) {
+        paymentSheet?.presentWithPaymentIntent(paymentIntentClientSecret!!, paymentSheetConfiguration)
+      } else if (!setupIntentClientSecret.isNullOrEmpty()) {
+        paymentSheet?.presentWithSetupIntent(setupIntentClientSecret!!, paymentSheetConfiguration)
+      }
+    } else if (flowController != null) {
+      flowController?.presentPaymentOptions()
     }
-  }
-
-  fun presentPaymentOptions() {
-    flowController?.presentPaymentOptions()
   }
 
   fun confirmPayment() {
@@ -122,7 +128,7 @@ class PaymentSheetFragment : Fragment() {
           intent.putExtra("label", paymentOption.label)
           intent.putExtra("image", imageString)
         }
-        activity?.sendBroadcast(intent)
+        localBroadcastManager.sendBroadcast(intent)
       }
     }
 
@@ -157,7 +163,6 @@ fun getBitmapFromVectorDrawable(context: Context?, drawableId: Int): Bitmap? {
   drawable.draw(canvas)
   return bitmap
 }
-
 fun getBase64FromBitmap(bitmap: Bitmap?): String? {
   if (bitmap == null) {
     return null

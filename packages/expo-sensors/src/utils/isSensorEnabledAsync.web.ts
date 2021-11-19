@@ -46,6 +46,35 @@ async function askSensorPermissionAsync(): Promise<PermissionStatus> {
   }
 }
 
+/**
+ * Temporary solution until `tslib.d.ts` is updated to include the new DeviceOrientation/DeviceMotion API (as of 2021.10.26 it's not implemented completely, it's in experimental state).
+ *
+ * `typescript@4.4.4` is missing `requestPermission` described in
+ * - https://w3c.github.io/deviceorientation/#deviceorientation
+ * - https://w3c.github.io/deviceorientation/#devicemotion
+ *
+ * MDN docs does not describe this property as well:
+ * - https://developer.mozilla.org/en-US/docs/Web/API/DeviceOrientationEvent
+ * - https://developer.mozilla.org/en-US/docs/Web/API/DeviceMotionEvent
+ *
+ * Below are just redefinitions of the existing typing available in the:
+ * - https://github.com/microsoft/TypeScript/blob/01de6ff2ecdc6175727f7f999b887519d40ca115/lib/lib.dom.d.ts#L4216
+ * - https://github.com/microsoft/TypeScript/blob/01de6ff2ecdc6175727f7f999b887519d40ca115/lib/lib.dom.d.ts#L4241.
+ */
+declare let DeviceMotionEvent: {
+  prototype: DeviceMotionEvent;
+  new (type: string, eventInitDict?: DeviceMotionEventInit): DeviceMotionEvent;
+  requestPermission?: () => Promise<PermissionState>;
+};
+/**
+ * See `DeviceMotionEvent` description a few lines above.
+ */
+declare let DeviceOrientationEvent: {
+  prototype: DeviceOrientationEvent;
+  new (type: string, eventInitDict?: DeviceOrientationEventInit): DeviceOrientationEvent;
+  requestPermission?: () => Promise<PermissionState>;
+};
+
 export function getRequestPermission(): (() => Promise<PermissionState>) | null {
   if (!Platform.isDOMAvailable) {
     return null;
@@ -130,7 +159,7 @@ export async function isSensorEnabledAsync(
     return true;
   }
 
-  return new Promise(resolve => {
+  return new Promise((resolve) => {
     const id = setTimeout(() => {
       window.removeEventListener(eventName, listener);
       resolve(false);

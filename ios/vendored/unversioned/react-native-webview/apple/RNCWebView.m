@@ -311,9 +311,7 @@ static NSDictionary* customCertificatesForHost;
     [_webView addObserver:self forKeyPath:@"estimatedProgress" options:NSKeyValueObservingOptionOld | NSKeyValueObservingOptionNew context:nil];
     _webView.allowsBackForwardNavigationGestures = _allowsBackForwardNavigationGestures;
 
-    if (_userAgent) {
-      _webView.customUserAgent = _userAgent;
-    }
+    _webView.customUserAgent = _userAgent;
 #if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 110000 /* __IPHONE_11_0 */
     if ([_webView.scrollView respondsToSelector:@selector(setContentInsetAdjustmentBehavior:)]) {
       _webView.scrollView.contentInsetAdjustmentBehavior = _savedContentInsetAdjustmentBehavior;
@@ -700,6 +698,12 @@ static NSDictionary* customCertificatesForHost;
   scrollView.decelerationRate = _decelerationRate;
 }
 #endif // !TARGET_OS_OSX
+
+- (void)setUserAgent:(NSString*)userAgent
+{
+  _userAgent = userAgent;
+  _webView.customUserAgent = userAgent;
+}
 
 - (void)setScrollEnabled:(BOOL)scrollEnabled
 {

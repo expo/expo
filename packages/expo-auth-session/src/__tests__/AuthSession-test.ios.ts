@@ -68,7 +68,7 @@ it(`only lets you call startAsync once at a time`, async () => {
   const WebBrowser = require('expo-web-browser');
 
   mockOpenAuthSessionAsync(WebBrowser, () => {
-    return new Promise(resolve => {
+    return new Promise((resolve) => {
       setTimeout(() => resolve(normalResponse), 0);
     });
   });

@@ -1,17 +1,17 @@
 //  Copyright © 2019 650 Industries. All rights reserved.
 
 #import <EXUpdates/EXUpdatesUpdate.h>
-#import <EXUpdates/EXUpdatesLegacyRawManifest.h>
+#import <EXManifests/EXManifestsLegacyManifest.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
 @interface EXUpdatesLegacyUpdate : NSObject
 
-+ (EXUpdatesUpdate *)updateWithLegacyManifest:(EXUpdatesLegacyRawManifest *)manifest
++ (EXUpdatesUpdate *)updateWithLegacyManifest:(EXManifestsLegacyManifest *)manifest
                                        config:(EXUpdatesConfig *)config
                                      database:(EXUpdatesDatabase *)database;
 
-+ (NSURL *)bundledAssetBaseUrlWithManifest:(EXUpdatesLegacyRawManifest *)manifest config:(EXUpdatesConfig *)config;
++ (NSURL *)bundledAssetBaseUrlWithManifest:(EXManifestsLegacyManifest *)manifest config:(EXUpdatesConfig *)config;
 
 @end
 

@@ -5,6 +5,24 @@ import { SpeechOptions, WebVoice, VoiceQuality } from './Speech.types';
 //https://developer.mozilla.org/en-US/docs/Web/API/SpeechSynthesisUtterance/text
 const MAX_SPEECH_INPUT_LENGTH = 32767;
 
+async function getVoices(): Promise<SpeechSynthesisVoice[]> {
+  return new Promise<SpeechSynthesisVoice[]>((resolve) => {
+    const voices = window.speechSynthesis.getVoices();
+
+    if (voices.length > 0) {
+      resolve(voices);
+      return;
+    }
+
+    // when a page loads it takes some amount of time to populate the voices list
+    // see https://stackoverflow.com/a/52005323/4337317
+    window.speechSynthesis.onvoiceschanged = function () {
+      const voices = window.speechSynthesis.getVoices();
+      resolve(voices);
+    };
+  });
+}
+
 export default {
   get name(): string {
     return 'ExponentSpeech';
@@ -32,8 +50,18 @@ export default {
       message.volume = options.volume;
     }
     if ('_voiceIndex' in options && options._voiceIndex != null) {
-      const voices = window.speechSynthesis.getVoices();
+      const voices = await getVoices();
       message.voice = voices[Math.min(voices.length - 1, Math.max(0, options._voiceIndex))];
+    }
+    if (typeof options.voice === 'string') {
+      const voices = await getVoices();
+      message.voice =
+        voices[
+          Math.max(
+            0,
+            voices.findIndex((voice) => voice.voiceURI === options.voice)
+          )
+        ];
     }
     if (typeof options.onResume === 'function') {
       message.onresume = options.onResume;
@@ -64,9 +92,9 @@ export default {
 
     return message;
   },
-  getVoices(): WebVoice[] {
-    const voices = window.speechSynthesis.getVoices();
-    return voices.map(voice => ({
+  async getVoices(): Promise<WebVoice[]> {
+    const voices = await getVoices();
+    return voices.map((voice) => ({
       identifier: voice.voiceURI,
       quality: VoiceQuality.Default,
       isDefault: voice.default,

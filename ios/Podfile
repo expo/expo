@@ -1,15 +1,15 @@
 require_relative './podfile_helpers.rb'
 require File.join(File.dirname(`node --print "require.resolve('react-native/package.json')"`), "scripts/react_native_pods")
-require File.join(File.dirname(`node --print "require.resolve('expo-modules-core/package.json')"`), "scripts/autolinking")
+require File.join(File.dirname(`node --print "require.resolve('expo/package.json')"`), "scripts/autolinking")
 
 install! 'cocoapods',
          :generate_multiple_pod_projects => true,
          :incremental_installation => true
-platform :ios, '11.0'
+platform :ios, '12.0'
 inhibit_all_warnings!
 
-# Enables Swift modules in Expo Go
-use_swift_modules!
+# Disable expo-updates auto create manifest in podspec script_phase
+$expo_updates_create_manifest = false
 
 abstract_target 'Expo Go' do
   # Expo Client dependencies
@@ -17,20 +17,21 @@ abstract_target 'Expo Go' do
   pod 'CocoaLumberjack', '~> 3.5.3'
   pod 'GoogleMaps', '~> 3.6'
   pod 'Google-Maps-iOS-Utils', '~> 2.1.0'
-  pod 'JKBigInteger2', '0.0.5'
+  pod 'JKBigInteger', :podspec => 'vendored/common/JKBigInteger.podspec.json'
   pod 'MBProgressHUD', '~> 1.2.0'
 
   # Expo modules
   use_expo_modules!({
     exclude: [
       'expo-module-template',
-      'expo-in-app-purchases',
-      'expo-payments-stripe'
+      'expo-in-app-purchases'
     ],
     # Modules for which to include Tests subspec
     tests: [
       'expo-modules-core',
       'expo-updates',
+      'expo-manifests',
+      'expo-json-utils',
       'expo-structured-headers',
     ],
     flags: {
@@ -62,7 +63,7 @@ abstract_target 'Expo Go' do
       run_versioned_postinstalls!(pod_name, target_installation_result)
 
       target_installation_result.native_target.build_configurations.each do |config|
-        config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '11.0'
+        config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '12.0'
 
         # Fix building failures on M1
         config.build_settings['EXCLUDED_ARCHS[sdk=iphonesimulator*]'] = 'arm64'

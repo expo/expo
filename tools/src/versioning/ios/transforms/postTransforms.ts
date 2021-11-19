@@ -84,9 +84,13 @@ export function postTransforms(versionName: string): TransformPipeline {
         with: `${versionName}NSData+EXFileSystem.h`,
       },
       {
-        paths: [`${versionName}EXNotifications`, `${versionName}EXUpdates`],
+        paths: [
+          `${versionName}EXNotifications`,
+          `${versionName}EXUpdates`,
+          `${versionName}EXJSONUtils`,
+        ],
         replace: new RegExp(
-          `NSDictionary\\+${versionName}(EXNotificationsVerifyingClass|EXUpdatesRawManifest)\\.h`,
+          `NSDictionary\\+${versionName}(EXNotificationsVerifyingClass|EXJSONUtils)\\.h`,
           'g'
         ),
         with: `${versionName}NSDictionary+$1.h`,
@@ -174,11 +178,21 @@ export function postTransforms(versionName: string): TransformPipeline {
         replace: /MessageHandlerName = @"ABI\d+_\d+_\d+ReactNativeWebView";/,
         with: `MessageHandlerName = @"ReactNativeWebView";`,
       },
+      {
+        paths: 'EXVersionManager.mm',
+        replace: /\[(RNCWebView)/,
+        with: `[${versionName}$1`,
+      },
 
       // react-native-reanimated
       {
         paths: 'EXVersionManager.mm',
         replace: /(_bridge_reanimated)/g,
+        with: `${versionName}$1`,
+      },
+      {
+        paths: 'EXVersionManager.mm',
+        replace: /\b(REA)/g,
         with: `${versionName}$1`,
       },
       {

@@ -6,7 +6,7 @@ import { AppearanceProvider } from 'react-native-appearance';
 import RootNavigation from './src/navigation/RootNavigation';
 import loadAssetsAsync from './src/utilities/loadAssetsAsync';
 
-function useSplashScreen(loadingFunction: () => void | Promise<void>) {
+function useSplashScreen(loadingFunction: () => void) {
   const [isLoadingCompleted, setLoadingComplete] = React.useState(false);
 
   // Load any resources or data that we need prior to rendering the app
@@ -20,7 +20,7 @@ function useSplashScreen(loadingFunction: () => void | Promise<void>) {
         console.warn(e);
       } finally {
         setLoadingComplete(true);
-        SplashScreen.hideAsync();
+        await SplashScreen.hideAsync();
       }
     }
 
@@ -30,7 +30,7 @@ function useSplashScreen(loadingFunction: () => void | Promise<void>) {
   return isLoadingCompleted;
 }
 
-export default function App(props: any) {
+const App = () => {
   const isLoadingCompleted = useSplashScreen(async () => {
     if (Platform.OS === 'ios') {
       StatusBar.setBarStyle('dark-content', false);
@@ -38,13 +38,11 @@ export default function App(props: any) {
     await loadAssetsAsync();
   });
 
-  if (!isLoadingCompleted) {
-    return null;
-  }
-
-  return (
+  return isLoadingCompleted ? (
     <AppearanceProvider>
-      <RootNavigation {...props} />
+      <RootNavigation />
     </AppearanceProvider>
-  );
-}
+  ) : null;
+};
+
+export default App;

@@ -12,7 +12,7 @@ import expo.modules.apploader.AppLoaderPackagesProviderInterface
 import expo.modules.apploader.AppLoaderProvider
 import expo.modules.core.interfaces.Package
 import expo.modules.core.interfaces.SingletonModule
-import expo.modules.updates.manifest.raw.RawManifest
+import expo.modules.manifests.core.Manifest
 import host.exp.exponent.Constants
 import host.exp.exponent.ExpoUpdatesAppLoader
 import host.exp.exponent.ExpoUpdatesAppLoader.AppLoaderCallback
@@ -49,7 +49,7 @@ class InternalHeadlessAppLoader(private val context: Context) :
   StartReactInstanceDelegate,
   ExponentPackageDelegate {
 
-  private var manifest: RawManifest? = null
+  private var manifest: Manifest? = null
   private var manifestUrl: String? = null
   private var sdkVersion: String? = null
   private var detachSdkVersion: String? = null
@@ -74,8 +74,8 @@ class InternalHeadlessAppLoader(private val context: Context) :
     ExpoUpdatesAppLoader(
       manifestUrl!!,
       object : AppLoaderCallback {
-        override fun onOptimisticManifest(optimisticManifest: RawManifest) {}
-        override fun onManifestCompleted(manifest: RawManifest) {
+        override fun onOptimisticManifest(optimisticManifest: Manifest) {}
+        override fun onManifestCompleted(manifest: Manifest) {
           Exponent.instance.runOnUiThread {
             try {
               val bundleUrl = ExponentUrls.toHttp(manifest.getBundleURL())
@@ -87,7 +87,7 @@ class InternalHeadlessAppLoader(private val context: Context) :
           }
         }
 
-        override fun onBundleCompleted(localBundlePath: String?) {
+        override fun onBundleCompleted(localBundlePath: String) {
           Exponent.instance.runOnUiThread { setBundle(localBundlePath) }
         }
 
@@ -103,10 +103,10 @@ class InternalHeadlessAppLoader(private val context: Context) :
     return appRecord!!
   }
 
-  private fun setManifest(manifestUrl: String, manifest: RawManifest, bundleUrl: String?) {
+  private fun setManifest(manifestUrl: String, manifest: Manifest, bundleUrl: String?) {
     this.manifestUrl = manifestUrl
     this.manifest = manifest
-    sdkVersion = manifest.getSDKVersionNullable()
+    sdkVersion = manifest.getSDKVersion()
 
     // Notifications logic uses this to determine which experience to route a notification to
     ExponentDB.saveExperience(ExponentDBObject(this.manifestUrl!!, manifest, bundleUrl!!))
@@ -150,7 +150,7 @@ class InternalHeadlessAppLoader(private val context: Context) :
     }
   }
 
-  fun setBundle(localBundlePath: String?) {
+  private fun setBundle(localBundlePath: String) {
     if (!isDebugModeEnabled) {
       AsyncCondition.wait(
         READY_FOR_BUNDLE,
@@ -245,20 +245,21 @@ class InternalHeadlessAppLoader(private val context: Context) :
       KernelConstants.LINKING_URI_KEY to linkingUri,
       KernelConstants.INTENT_URI_KEY to mIntentUri
     )
-    val instanceManagerBuilderProperties = InstanceManagerBuilderProperties()
-    instanceManagerBuilderProperties.application = context as Application
-    instanceManagerBuilderProperties.jsBundlePath = jsBundlePath
-    instanceManagerBuilderProperties.experienceProperties = experienceProperties
-    instanceManagerBuilderProperties.expoPackages = extraExpoPackages
-    instanceManagerBuilderProperties.exponentPackageDelegate = delegate.exponentPackageDelegate
-    instanceManagerBuilderProperties.manifest = manifest
-    instanceManagerBuilderProperties.singletonModules = ExponentPackage.getOrCreateSingletonModules(context, manifest, extraExpoPackages)
+    val instanceManagerBuilderProperties = InstanceManagerBuilderProperties(
+      application = context as Application,
+      jsBundlePath = jsBundlePath,
+      experienceProperties = experienceProperties,
+      expoPackages = extraExpoPackages,
+      exponentPackageDelegate = delegate.exponentPackageDelegate,
+      manifest = manifest!!,
+      singletonModules = ExponentPackage.getOrCreateSingletonModules(context, manifest, extraExpoPackages),
+    )
 
-    val versionedUtils = RNObject("host.exp.exponent.VersionedUtils").loadVersion(mSDKVersion)
+    val versionedUtils = RNObject("host.exp.exponent.VersionedUtils").loadVersion(mSDKVersion!!)
     val builder = versionedUtils.callRecursive(
       "getReactInstanceManagerBuilder",
       instanceManagerBuilderProperties
-    )
+    )!!
 
     // Since there is no activity to be attached, we cannot set ReactInstanceManager state to RESUMED, so we opt to BEFORE_RESUME
     builder.call(

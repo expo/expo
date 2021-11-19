@@ -62,11 +62,10 @@ export default {
     if (!Platform.isDOMAvailable) return;
     dismissPopup();
   },
-  maybeCompleteAuthSession({
-    skipRedirectCheck,
-  }: {
-    skipRedirectCheck?: boolean;
-  }): { type: 'success' | 'failed'; message: string } {
+  maybeCompleteAuthSession({ skipRedirectCheck }: { skipRedirectCheck?: boolean }): {
+    type: 'success' | 'failed';
+    message: string;
+  } {
     if (!Platform.isDOMAvailable) {
       return {
         type: 'failed',
@@ -143,7 +142,7 @@ export default {
       }
     }
 
-    return new Promise(async resolve => {
+    return new Promise(async (resolve) => {
       // Create a listener for messages sent from the popup
       const listener = (event: MessageEvent) => {
         if (!event.isTrusted) return;

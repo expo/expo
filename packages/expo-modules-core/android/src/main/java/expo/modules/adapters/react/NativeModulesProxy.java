@@ -14,13 +14,19 @@ import expo.modules.core.ExportedModule;
 import expo.modules.core.ModuleRegistry;
 import expo.modules.core.ViewManager;
 import expo.modules.core.interfaces.ExpoMethod;
+import expo.modules.kotlin.ExpoModulesHelper;
+import expo.modules.kotlin.KotlinInteropModuleRegistry;
+import expo.modules.kotlin.KPromiseWrapper;
+import expo.modules.kotlin.ModulesProvider;
 
+import java.lang.ref.WeakReference;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import javax.annotation.Nullable;
 
@@ -45,12 +51,36 @@ public class NativeModulesProxy extends ReactContextBaseJavaModule {
   private ModuleRegistry mModuleRegistry;
   private Map<String, Map<String, Integer>> mExportedMethodsKeys;
   private Map<String, SparseArray<String>> mExportedMethodsReverseKeys;
+  private KotlinInteropModuleRegistry mKotlinInteropModuleRegistry;
 
   public NativeModulesProxy(ReactApplicationContext context, ModuleRegistry moduleRegistry) {
     super(context);
     mModuleRegistry = moduleRegistry;
     mExportedMethodsKeys = new HashMap<>();
     mExportedMethodsReverseKeys = new HashMap<>();
+
+    mKotlinInteropModuleRegistry = new KotlinInteropModuleRegistry(
+      Objects.requireNonNull(ExpoModulesHelper.Companion.getModulesProvider()),
+      moduleRegistry,
+      new WeakReference<>(context)
+    );
+  }
+
+  public NativeModulesProxy(ReactApplicationContext context, ModuleRegistry moduleRegistry, ModulesProvider modulesProvider) {
+    super(context);
+    mModuleRegistry = moduleRegistry;
+    mExportedMethodsKeys = new HashMap<>();
+    mExportedMethodsReverseKeys = new HashMap<>();
+
+    mKotlinInteropModuleRegistry = new KotlinInteropModuleRegistry(
+      Objects.requireNonNull(modulesProvider),
+      moduleRegistry,
+      new WeakReference<>(context)
+    );
+  }
+
+  public KotlinInteropModuleRegistry getKotlinInteropModuleRegistry() {
+    return mKotlinInteropModuleRegistry;
   }
 
   @Override
@@ -79,11 +109,19 @@ public class NativeModulesProxy extends ReactContextBaseJavaModule {
       exportedMethodsMap.put(moduleName, exportedMethods);
     }
 
+    modulesConstants.putAll(mKotlinInteropModuleRegistry.exportedModulesConstants());
+    exportedMethodsMap.putAll(mKotlinInteropModuleRegistry.exportMethods((name, info) -> {
+      assignExportedMethodsKeys(name, (List<Map<String, Object>>) info);
+      return null;
+    }));
+
     for (ViewManager viewManager : viewManagers) {
       viewManagersNames.add(viewManager.getName());
     }
 
-    Map<String, Object> constants = new HashMap<>(2);
+    viewManagersNames.addAll(mKotlinInteropModuleRegistry.exportedViewManagersNames());
+
+    Map<String, Object> constants = new HashMap<>(3);
     constants.put(MODULES_CONSTANTS_KEY, modulesConstants);
     constants.put(EXPORTED_METHODS_KEY, exportedMethodsMap);
     constants.put(VIEW_MANAGERS_NAMES_KEY, viewManagersNames);
@@ -110,6 +148,11 @@ public class NativeModulesProxy extends ReactContextBaseJavaModule {
       return;
     }
 
+    if (mKotlinInteropModuleRegistry.hasModule(moduleName)) {
+      mKotlinInteropModuleRegistry.callMethod(moduleName, methodName, arguments, new KPromiseWrapper(promise));
+      return;
+    }
+
     try {
       List<Object> nativeArguments = getNativeArgumentsForMethod(arguments, mModuleRegistry.getExportedModule(moduleName).getExportedMethodInfos().get(methodName));
       nativeArguments.add(new PromiseWrapper(promise));
@@ -121,9 +164,9 @@ public class NativeModulesProxy extends ReactContextBaseJavaModule {
       promise.reject(UNEXPECTED_ERROR, "Encountered an exception while calling native method: " + e.getMessage(), e);
     } catch (NoSuchMethodException e) {
       promise.reject(
-          UNDEFINED_METHOD_ERROR,
-          "Method " + methodName + " of Java module " + moduleName + " is undefined.",
-          e
+        UNDEFINED_METHOD_ERROR,
+        "Method " + methodName + " of Java module " + moduleName + " is undefined.",
+        e
       );
     }
   }
@@ -157,7 +200,7 @@ public class NativeModulesProxy extends ReactContextBaseJavaModule {
    * Returns methodInfo Map (a Map containing a value for key argumentsCount).
    */
   private Map<String, Object> getMethodInfo(String name, Method method) {
-    Map<String, Object> info = new HashMap<>(1);
+    Map<String, Object> info = new HashMap<>(2);
     info.put(METHOD_INFO_NAME, name);
     info.put(METHOD_INFO_ARGUMENTS_COUNT, method.getParameterTypes().length - 1); // - 1 is for the Promise
     return info;
@@ -200,5 +243,6 @@ public class NativeModulesProxy extends ReactContextBaseJavaModule {
   @Override
   public void onCatalystInstanceDestroy() {
     mModuleRegistry.onDestroy();
+    mKotlinInteropModuleRegistry.onDestroy();
   }
 }

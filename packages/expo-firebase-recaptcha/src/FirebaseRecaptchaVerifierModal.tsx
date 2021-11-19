@@ -32,8 +32,10 @@ interface State {
   reject?: (error: Error) => void;
 }
 
-export default class FirebaseRecaptchaVerifierModal extends React.Component<Props, State>
-  implements FirebaseAuthApplicationVerifier {
+export default class FirebaseRecaptchaVerifierModal
+  extends React.Component<Props, State>
+  implements FirebaseAuthApplicationVerifier
+{
   static defaultProps = {
     title: 'reCAPTCHA',
     cancelLabel: 'Cancel',
@@ -117,7 +119,7 @@ export default class FirebaseRecaptchaVerifierModal extends React.Component<Prop
     if (resolve) {
       resolve(token);
     }
-    this.setState(state => ({
+    this.setState((state) => ({
       visible: false,
       invisibleVerify: false,
       invisibleLoaded: false,
@@ -191,9 +193,7 @@ export default class FirebaseRecaptchaVerifierModal extends React.Component<Prop
                 <View style={styles.loader}>
                   <ActivityIndicator size="large" />
                 </View>
-              ) : (
-                undefined
-              )}
+              ) : undefined}
             </View>
           </SafeAreaView>
         </Modal>

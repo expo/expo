@@ -10,11 +10,21 @@
 
 ### 💡 Others
 
+## 6.5.0 — 2021-09-28
+
+### 🛠 Breaking changes
+
+- Dropped support for iOS 11.0 ([#14383](https://github.com/expo/expo/pull/14383) by [@cruzach](https://github.com/cruzach))
+
+### 🐛 Bug fixes
+
+- Fix building errors from use_frameworks! in Podfile. ([#14523](https://github.com/expo/expo/pull/14523) by [@kudo](https://github.com/kudo))
+
 ## 6.5.0-alpha.0 — 2021-08-17
 
 ### ⚠️ Deprecated
 
-`@unimodules/core`, `@unimodules/react-native-adapter` and `react-native-unimodules` are now deprecated in favor of `expo-modules-core`. Follow this guide to migrate your apps: https://expo.fyi/expo-modules-core-migration
+`@unimodules/core`, `@unimodules/react-native-adapter` and `react-native-unimodules` are now deprecated in favor of `expo`. Follow this guide to migrate your apps: https://expo.fyi/expo-modules-migration
 
 ## 6.4.0 — 2021-07-05
 

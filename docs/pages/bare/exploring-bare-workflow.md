@@ -17,11 +17,7 @@ If you’re just starting a new bare project then you should initialize it with 
 
 ### Existing React Native apps
 
-If you already have a React Native project that has been created with `react-native init`, `ignite init`, or another similar tool, we'll need to install and configure the `react-native-unimodules` package to enable you to use packages from the Expo SDK.
-
-<Video file="exploring-bare/setup.mp4" />
-
-> _Note: We moved superhumanly fast in this video. You're not meant to follow along, we just want to give you a rough sense of what's involved in this process. Full instructions to get set up are available in the [react-native-unimodules README](https://github.com/expo/expo/tree/master/packages/react-native-unimodules)._
+If you already have a React Native project that has been created with `react-native init`, `ignite init`, or another similar tool, we'll need to install and configure the `expo` package to enable you to use packages from the Expo SDK. For this, we will run `npx install-expo-modules`.
 
 ### Existing Expo managed workflow apps
 
@@ -61,13 +57,13 @@ Now when we go to the screen where you would expect to see the `AttractionList`,
 
 ## Open the app in your web browser
 
-Expo for web also works on bare projects. Here we will just import one simple component into `App.web.js` to demonstrate it, and run `expo start --web`.
+Expo for web also works on bare projects. Here we will just import one simple component into **App.web.js** to demonstrate it, and run `expo start --web`.
 
 <Video file="exploring-bare/web.mp4" spaceAfter />
 
-## Releasing to App Store and Play Store
+## Releasing to the Apple App Store and Google Play Store
 
-This is entirely up to you! The Expo build service does not yet support builds for the bare workflow.
+With [Expo Application Services (EAS)](/eas/index.md), you can build and submit your app with a single command `eas build --auto-submit` using `eas-cli`.
 
 ## That's it!
 

@@ -72,7 +72,8 @@ export type Asset = {
    */
   mediaType: MediaTypeValue;
   /**
-   * __iOS Only.__ An array of media subtypes.
+   * An array of media subtypes.
+   * @platform ios
    */
   mediaSubtypes?: MediaSubtype[];
   /**
@@ -96,7 +97,8 @@ export type Asset = {
    */
   duration: number;
   /**
-   * __Android Only.__ Album ID that the asset belongs to.
+   * Album ID that the asset belongs to.
+   * @platform android
    */
   albumId?: string;
 };
@@ -116,18 +118,21 @@ export type AssetInfo = Asset & {
    */
   exif?: object;
   /**
-   * __iOS Only.__ Whether the asset is marked as favorite.
+   * Whether the asset is marked as favorite.
+   * @platform ios
    */
   isFavorite?: boolean;
   /**
-   * __iOS Only.__ This field is available only if flag `shouldDownloadFromNetwork` is set to `false`.
-   * Whether the asset is stored on the network (iCloud on iOS)
+   * This field is available only if flag `shouldDownloadFromNetwork` is set to `false`.
+   * Whether the asset is stored on the network (iCloud on iOS).
+   * @platform ios
    */
   isNetworkAsset?: boolean; //iOS only
   /**
-   * __iOS Only.__ Display orientation of the image. Orientation is available only for assets whose
+   * Display orientation of the image. Orientation is available only for assets whose
    * `mediaType` is `MediaType.photo`. Value will range from 1 to 8, see [EXIF orientation specification](http://sylvana.net/jpegcrop/exif_orientation.html)
    * for more details.
+   * @platform ios
    */
   orientation?: number;
 };
@@ -186,32 +191,47 @@ export type Location = {
   longitude: number;
 };
 
-// @needsAudit @docsMissing
+// @needsAudit
 export type Album = {
+  /**
+   * Album ID.
+   */
   id: string;
+  /**
+   * Album title.
+   */
   title: string;
   /**
-   * Estimated number of assets in the album
+   * Estimated number of assets in the album.
    */
   assetCount: number;
   /**
-   * __iOS Only.__ The type of the assets album.
+   * The type of the assets album.
+   * @platform ios
    */
   type?: AlbumType;
   /**
-   * __iOS Only.__ Apply only to albums whose type is `'moment'`. Earliest creation timestamp of all assets in the moment.
+   * Apply only to albums whose type is `'moment'`. Earliest creation timestamp of all
+   * assets in the moment.
+   * @platform ios
    */
   startTime: number;
   /**
-   * __iOS Only.__ Apply only to albums whose type is `'moment'`. Latest creation timestamp of all assets in the moment.
+   * Apply only to albums whose type is `'moment'`. Latest creation timestamp of all
+   * assets in the moment.
+   * @platform ios
    */
   endTime: number;
   /**
-   * __iOS Only.__ Apply only to albums whose type is `'moment'`. Approximated location of all assets in the moment.
+   * Apply only to albums whose type is `'moment'`. Approximated location of all
+   * assets in the moment.
+   * @platform ios
    */
   approximateLocation?: Location;
   /**
-   *  __iOS Only.__ Apply only to albums whose type is `'moment'`. Names of locations grouped in the moment.
+   * Apply only to albums whose type is `'moment'`. Names of locations grouped
+   * in the moment.
+   * @platform ios
    */
   locationNames?: string[];
 };
@@ -315,13 +335,13 @@ function getId(ref: any): string | undefined {
 }
 
 function checkAssetIds(assetIds: any): void {
-  if (assetIds.some(id => !id || typeof id !== 'string')) {
+  if (assetIds.some((id) => !id || typeof id !== 'string')) {
     throw new Error('Asset ID must be a string!');
   }
 }
 
 function checkAlbumIds(albumIds: any): void {
-  if (albumIds.some(id => !id || typeof id !== 'string')) {
+  if (albumIds.some((id) => !id || typeof id !== 'string')) {
     throw new Error('Album ID must be a string!');
   }
 }
@@ -416,8 +436,8 @@ export async function getPermissionsAsync(writeOnly: boolean = false): Promise<P
  */
 export const usePermissions = createPermissionHook<PermissionResponse, { writeOnly?: boolean }>({
   // TODO(cedric): permission requesters should have an options param or a different requester
-  getMethod: options => getPermissionsAsync(options?.writeOnly),
-  requestMethod: options => requestPermissionsAsync(options?.writeOnly),
+  getMethod: (options) => getPermissionsAsync(options?.writeOnly),
+  requestMethod: (options) => requestPermissionsAsync(options?.writeOnly),
 });
 
 // @needsAudit
@@ -443,7 +463,7 @@ export async function presentPermissionsPickerAsync(): Promise<void> {
  * Creates an asset from existing file. The most common use case is to save a picture taken by [Camera](../camera).
  * This method requires `CAMERA_ROLL` permission.
  *
- * # Example
+ * @example
  * ```js
  * const { uri } = await Camera.takePictureAsync();
  * const asset = await MediaLibrary.createAssetAsync(uri);
@@ -774,9 +794,10 @@ export function removeAllListeners(): void {
 
 // @needsAudit
 /**
- * __iOS Only.__ Fetches a list of moments, which is a group of assets taken around the same place
+ * Fetches a list of moments, which is a group of assets taken around the same place
  * and time.
  * @return An array of [albums](#album) whose type is `moment`.
+ * @platform ios
  */
 export async function getMomentsAsync() {
   if (!MediaLibrary.getMomentsAsync) {

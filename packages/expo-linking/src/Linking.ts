@@ -53,7 +53,7 @@ function removeTrailingSlashAndQueryString(url: string): string {
   return url.replace(/\/?\?.*$/, '');
 }
 
-function ensureLeadingSlash(input: string, shouldAppend: boolean): string {
+function ensureTrailingSlash(input: string, shouldAppend: boolean): string {
   const hasSlash = input.endsWith('/');
   if (hasSlash && !shouldAppend) {
     return input.substring(0, input.length - 1);
@@ -63,7 +63,7 @@ function ensureLeadingSlash(input: string, shouldAppend: boolean): string {
   return input;
 }
 
-function ensureTrailingSlash(input: string, shouldAppend: boolean): string {
+function ensureLeadingSlash(input: string, shouldAppend: boolean): string {
   const hasSlash = input.startsWith('/');
   if (hasSlash && !shouldAppend) {
     return input.substring(1);
@@ -117,14 +117,14 @@ export function createURL(
   if (Platform.OS === 'web') {
     if (!Platform.isDOMAvailable) return '';
 
-    const origin = ensureLeadingSlash(window.location.origin, false);
+    const origin = ensureTrailingSlash(window.location.origin, false);
     let queryString = qs.stringify(queryParams);
     if (queryString) {
       queryString = `?${queryString}`;
     }
 
     let outputPath = path;
-    if (outputPath) outputPath = ensureTrailingSlash(path, true);
+    if (outputPath) outputPath = ensureLeadingSlash(path, true);
 
     return encodeURI(`${origin}${outputPath}${queryString}`);
   }
@@ -172,7 +172,7 @@ export function createURL(
     queryString = `?${queryString}`;
   }
 
-  hostUri = ensureTrailingSlash(hostUri, !isTripleSlashed);
+  hostUri = ensureLeadingSlash(hostUri, !isTripleSlashed);
 
   return encodeURI(
     `${resolvedScheme}:${isTripleSlashed ? '/' : ''}/${hostUri}${path}${queryString}`
@@ -212,10 +212,7 @@ export function parse(url: string): ParsedURL {
     let expoPrefix: string | null = null;
     if (hostUriStripped) {
       const parts = hostUriStripped.split('/');
-      expoPrefix = parts
-        .slice(1)
-        .concat(['--/'])
-        .join('/');
+      expoPrefix = parts.slice(1).concat(['--/']).join('/');
     }
 
     if (isExpoHosted() && !hasCustomScheme() && expoPrefix && path.startsWith(expoPrefix)) {
@@ -337,7 +334,7 @@ export function useURL(): string | null {
   }
 
   useEffect(() => {
-    getInitialURL().then(url => setLink(url));
+    getInitialURL().then((url) => setLink(url));
     addEventListener('url', onChange);
     return () => removeEventListener('url', onChange);
   }, []);

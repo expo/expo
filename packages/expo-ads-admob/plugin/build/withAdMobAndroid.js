@@ -5,8 +5,8 @@ const config_plugins_1 = require("@expo/config-plugins");
 const { addMetaDataItemToMainApplication, getMainApplicationOrThrow, removeMetaDataItemFromMainApplication, } = config_plugins_1.AndroidConfig.Manifest;
 const META_APPLICATION_ID = 'com.google.android.gms.ads.APPLICATION_ID';
 const META_DELAY_APP_MEASUREMENT_INIT = 'com.google.android.gms.ads.DELAY_APP_MEASUREMENT_INIT';
-const withAdMobAndroid = config => {
-    return config_plugins_1.withAndroidManifest(config, config => {
+const withAdMobAndroid = (config) => {
+    return (0, config_plugins_1.withAndroidManifest)(config, (config) => {
         config.modResults = setAdMobConfig(config, config.modResults);
         return config;
     });

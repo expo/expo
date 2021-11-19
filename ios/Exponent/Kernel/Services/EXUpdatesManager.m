@@ -20,13 +20,6 @@ NSString * const EXUpdatesErrorEventType = @"error";
 NSString * const EXUpdatesUpdateAvailableEventType = @"updateAvailable";
 NSString * const EXUpdatesNotAvailableEventType = @"noUpdateAvailable";
 
-// legacy events
-// TODO: remove once SDK 38 is phased out
-NSString * const EXUpdatesEventNameLegacy = @"Exponent.nativeUpdatesEvent";
-NSString * const EXUpdatesDownloadStartEventType = @"downloadStart";
-NSString * const EXUpdatesDownloadProgressEventType = @"downloadProgress";
-NSString * const EXUpdatesDownloadFinishedEventType = @"downloadFinished";
-
 @interface EXUpdatesManager ()
 
 @property (nonatomic, strong) EXAppLoader *manifestAppLoader;
@@ -36,12 +29,11 @@ NSString * const EXUpdatesDownloadFinishedEventType = @"downloadFinished";
 @implementation EXUpdatesManager
 
 - (void)notifyApp:(EXKernelAppRecord *)appRecord
-ofDownloadWithManifest:(EXUpdatesRawManifest * _Nullable)manifest
+ofDownloadWithManifest:(EXManifestsManifest * _Nullable)manifest
             isNew:(BOOL)isBundleNew
             error:(NSError * _Nullable)error;
 {
   NSDictionary *body;
-  NSDictionary *bodyLegacy;
   if (error) {
     body = @{
              @"type": EXUpdatesErrorEventType,
@@ -50,10 +42,6 @@ ofDownloadWithManifest:(EXUpdatesRawManifest * _Nullable)manifest
   } else if (isBundleNew) {
     // prevent a crash, but this shouldn't ever happen
     NSDictionary *rawManifestJSON = manifest ? manifest.rawManifestJSON : @{};
-    bodyLegacy = @{
-                   @"type": EXUpdatesDownloadFinishedEventType,
-                   @"manifest": rawManifestJSON
-                   };
     body = @{
              @"type": EXUpdatesUpdateAvailableEventType,
              @"manifest": rawManifestJSON
@@ -65,9 +53,6 @@ ofDownloadWithManifest:(EXUpdatesRawManifest * _Nullable)manifest
   }
   RCTBridge *bridge = appRecord.appManager.reactBridge;
   if (appRecord.status == kEXKernelAppRecordStatusRunning) {
-    // for SDK 38 and below
-    [bridge enqueueJSCall:@"RCTDeviceEventEmitter.emit" args:@[EXUpdatesEventNameLegacy, bodyLegacy ?: body]];
-    // for SDK 39+
     [bridge enqueueJSCall:@"RCTDeviceEventEmitter.emit" args:@[EXUpdatesEventName, body]];
   }
 }
@@ -145,7 +130,7 @@ ofDownloadWithManifest:(EXUpdatesRawManifest * _Nullable)manifest
 
 - (void)updatesModule:(id)scopedModule
 didRequestManifestWithCacheBehavior:(EXManifestCacheBehavior)cacheBehavior
-              success:(void (^)(EXUpdatesRawManifest * _Nonnull))success
+              success:(void (^)(EXManifestsManifest * _Nonnull))success
               failure:(void (^)(NSError * _Nonnull))failure
 {
   if ([EXEnvironment sharedEnvironment].isDetached && ![EXEnvironment sharedEnvironment].areRemoteUpdatesEnabled) {
@@ -161,7 +146,7 @@ didRequestManifestWithCacheBehavior:(EXManifestCacheBehavior)cacheBehavior
                              withDatabase:databaseKernelService.database
                              extraHeaders:nil
                              successBlock:^(EXUpdatesUpdate *update) {
-    success(update.rawManifest);
+    success(update.manifest);
   } errorBlock:^(NSError *error, NSURLResponse *response) {
     failure(error);
   }];
@@ -171,7 +156,7 @@ didRequestManifestWithCacheBehavior:(EXManifestCacheBehavior)cacheBehavior
 - (void)updatesModule:(id)scopedModule
 didRequestBundleWithCompletionQueue:(dispatch_queue_t)completionQueue
                 start:(void (^)(void))startBlock
-              success:(void (^)(EXUpdatesRawManifest * _Nullable))success
+              success:(void (^)(EXManifestsManifest * _Nullable))success
               failure:(void (^)(NSError * _Nonnull))failure
 {
   if ([EXEnvironment sharedEnvironment].isDetached && ![EXEnvironment sharedEnvironment].areRemoteUpdatesEnabled) {
@@ -193,7 +178,7 @@ didRequestBundleWithCompletionQueue:(dispatch_queue_t)completionQueue
     // do nothing for now
   } success:^(EXUpdatesUpdate * _Nullable update) {
     if (update) {
-      success(update.rawManifest);
+      success(update.manifest);
     } else {
       success(nil);
     }

@@ -1,7 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
-  This file was created by '@expo/configure-splash-screen' and some of it's content shouldn't be modified by hand
--->
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
   <item android:drawable="@color/splashscreen_background"/>
 </layer-list>

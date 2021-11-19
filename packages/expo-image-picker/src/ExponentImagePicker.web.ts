@@ -112,12 +112,11 @@ function openFileBrowserAsync<T extends OpenFileBrowserOptions>({
         if (!allowsMultipleSelection) {
           const img: ImageInfo = await readFile(input.files[0], { base64 });
           resolve({
-            cancelled: false,
             ...img,
           } as ExpandImagePickerResult<T>);
         } else {
           const imgs: ImageInfo[] = await Promise.all(
-            Array.from(input.files).map(file => readFile(file, { base64 }))
+            Array.from(input.files).map((file) => readFile(file, { base64 }))
           );
           resolve({
             cancelled: false,
@@ -146,16 +145,18 @@ function readFile(targetFile: Blob, options: { base64: boolean }): Promise<Image
           uri,
           width: 0,
           height: 0,
+          cancelled: false,
         });
 
-      if (typeof target?.result === 'string') {
+      if (typeof uri === 'string') {
         const image = new Image();
-        image.src = target.result;
+        image.src = uri;
         image.onload = () =>
           resolve({
             uri,
             width: image.naturalWidth ?? image.width,
             height: image.naturalHeight ?? image.height,
+            cancelled: false,
             // The blob's result cannot be directly decoded as Base64 without
             // first removing the Data-URL declaration preceding the
             // Base64-encoded data. To retrieve only the Base64 encoded string,

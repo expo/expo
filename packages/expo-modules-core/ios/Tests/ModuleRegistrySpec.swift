@@ -8,22 +8,19 @@ class ModuleRegistrySpec: QuickSpec {
     let appContext = AppContext()
 
     it("registers unnamed module") {
-      testRegister(module: UnnamedModule(appContext: appContext), name: String(describing: UnnamedModule.self))
+      testRegister(moduleType: UnnamedModule.self, name: String(describing: UnnamedModule.self))
     }
 
     it("registers named module") {
-      testRegister(module: NamedModule(appContext: appContext), name: NamedModule.namedModuleName)
+      testRegister(moduleType: NamedModule.self, name: NamedModule.namedModuleName)
     }
 
-    func testRegister(module: Module, name: String) {
+    func testRegister<ModuleType: AnyModule>(moduleType: ModuleType.Type, name: String) {
       let moduleRegistry = appContext.moduleRegistry
 
-      moduleRegistry.register(module: module)
+      moduleRegistry.register(moduleType: moduleType)
 
       expect(moduleRegistry.has(moduleWithName: name)).to(beTrue())
-      expect(moduleRegistry.get(moduleWithName: name)).to(beIdenticalTo(module))
-      expect(moduleRegistry.contains { $0.module === module }).to(beTrue())
-      expect(moduleRegistry.get(moduleHolderForName: name)?.module).to(beIdenticalTo(module))
     }
   }
 }

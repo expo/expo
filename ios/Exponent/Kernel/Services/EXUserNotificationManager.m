@@ -61,7 +61,7 @@ static NSString * const scopedIdentifierSeparator = @":";
 
   EXKernelAppRecord *visibleApp = [EXKernel sharedInstance].visibleApp;
   if (visibleApp) {
-    EXUpdatesRawManifest *visibleAppManifest = visibleApp.appLoader.manifest;
+    EXManifestsManifest *visibleAppManifest = visibleApp.appLoader.manifest;
     if (visibleAppManifest && visibleAppManifest.notificationPreferences && visibleAppManifest.notificationPreferences[@"iosDisplayInForeground"]) {
       // If user specifically set `notification.iosDisplayInForeground` in `app.json`.
       shouldDisplayInForeground = [visibleAppManifest.notificationPreferences[@"iosDisplayInForeground"] boolValue];

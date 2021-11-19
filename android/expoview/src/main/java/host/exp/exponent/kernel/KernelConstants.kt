@@ -8,8 +8,6 @@ import host.exp.exponent.notifications.ExponentNotification
 object KernelConstants {
   val TAG = KernelConstants::class.java.simpleName
 
-  const val MANIFEST_KEY = "manifest"
-  const val BUNDLE_URL_KEY = "bundleUrl"
   const val MANIFEST_URL_KEY = "experienceUrl"
   const val NOTIFICATION_MANIFEST_URL_KEY = "notificationExperienceUrl"
   const val NOTIFICATION_ACTION_TYPE_KEY = "actionType"
@@ -64,7 +62,7 @@ object KernelConstants {
       manifestUri: String,
       uri: String?,
       notification: String?,
-      notificationObject: ExponentNotification
+      notificationObject: ExponentNotification?
     ) {
       this.manifestUri = manifestUri
       this.uri = uri

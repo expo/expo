@@ -4,11 +4,36 @@
 
 ### 🛠 Breaking changes
 
-- Remove the deprecated, non-async methods: `initialize`, `setUserId`, `setUserProperties`, `clearUserProperties`, `logEvent`, `logEventWithProperties`, `setGroup` and `setTrackingOptions`. ([#13675](https://github.com/expo/expo/pull/13675) by [@Simek](https://github.com/Simek))
-
 ### 🎉 New features
 
 ### 🐛 Bug fixes
+
+### 💡 Others
+
+## 11.0.4 — 2021-11-03
+
+_This version does not introduce any user-facing changes._
+
+## 11.0.2 — 2021-11-03
+
+### 🐛 Bug fixes
+
+- Fixed `setUserIdAsync` throwing error on Android when `null` is passed. ([#15028](https://github.com/expo/expo/pull/15028) by [@tsapeta](https://github.com/tsapeta))
+
+## 11.0.1 — 2021-10-01
+
+_This version does not introduce any user-facing changes._
+
+## 11.0.0 — 2021-09-28
+
+### 🛠 Breaking changes
+
+- Remove the deprecated, non-async methods: `initialize`, `setUserId`, `setUserProperties`, `clearUserProperties`, `logEvent`, `logEventWithProperties`, `setGroup` and `setTrackingOptions`. ([#13675](https://github.com/expo/expo/pull/13675) by [@Simek](https://github.com/Simek))
+- Dropped support for iOS 11.0 ([#14383](https://github.com/expo/expo/pull/14383) by [@cruzach](https://github.com/cruzach))
+
+### 🐛 Bug fixes
+
+- Fix building errors from use_frameworks! in Podfile. ([#14523](https://github.com/expo/expo/pull/14523) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others
 
@@ -53,7 +78,7 @@
   - `logEventWithProperties` to `logEventWithPropertiesAsync`
   - `setGroup` to `setGroupAsync`
   - `setTrackingOptions` to `setTrackingOptionsAsync`
-    ([#9212](https://github.com/expo/expo/pull/9212/) by [@cruzach](https://github.com/cruzach))
+([#9212](https://github.com/expo/expo/pull/9212/) by [@cruzach](https://github.com/cruzach))
 - All methods now return a Promise. ([#9212](https://github.com/expo/expo/pull/9212/) by [@cruzach](https://github.com/cruzach))
 
 ## 8.3.1 — 2020-08-24

@@ -12,15 +12,15 @@ const META_APP_NAME = 'com.facebook.sdk.ApplicationName';
 const META_AUTO_INIT = 'com.facebook.sdk.AutoInitEnabled';
 const META_AUTO_LOG_APP_EVENTS = 'com.facebook.sdk.AutoLogAppEventsEnabled';
 const META_AD_ID_COLLECTION = 'com.facebook.sdk.AdvertiserIDCollectionEnabled';
-const withFacebookAppIdString = config => {
-    return config_plugins_1.withStringsXml(config, config => {
+const withFacebookAppIdString = (config) => {
+    return (0, config_plugins_1.withStringsXml)(config, (config) => {
         config.modResults = applyFacebookAppIdString(config, config.modResults);
         return config;
     });
 };
 exports.withFacebookAppIdString = withFacebookAppIdString;
-const withFacebookManifest = config => {
-    return config_plugins_1.withAndroidManifest(config, config => {
+const withFacebookManifest = (config) => {
+    return (0, config_plugins_1.withAndroidManifest)(config, (config) => {
         config.modResults = setFacebookConfig(config, config.modResults);
         return config;
     });
@@ -99,7 +99,7 @@ exports.getFacebookAdvertiserIDCollection = getFacebookAdvertiserIDCollection;
 function ensureFacebookActivity({ mainApplication, scheme, }) {
     if (Array.isArray(mainApplication.activity)) {
         // Remove all Facebook CustomTabActivities first
-        mainApplication.activity = mainApplication.activity.filter(activity => {
+        mainApplication.activity = mainApplication.activity.filter((activity) => {
             var _a;
             return ((_a = activity.$) === null || _a === void 0 ? void 0 : _a['android:name']) !== CUSTOM_TAB_ACTIVITY;
         });

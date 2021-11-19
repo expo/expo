@@ -10,11 +10,15 @@
 
 ### 💡 Others
 
+## 0.15.0 — 2021-09-28
+
+_This version does not introduce any user-facing changes._
+
 ## 0.15.0-alpha.0 — 2021-08-17
 
 ### ⚠️ Deprecated
 
-`@unimodules/core`, `@unimodules/react-native-adapter` and `react-native-unimodules` are now deprecated in favor of `expo-modules-core`. Follow this guide to migrate your apps: https://expo.fyi/expo-modules-core-migration
+`@unimodules/core`, `@unimodules/react-native-adapter` and `react-native-unimodules` are now deprecated in favor of `expo`. Follow this guide to migrate your apps: https://expo.fyi/expo-modules-migration
 
 ## 0.14.1 — 2021-06-16
 

@@ -31,7 +31,7 @@ EX_REGISTER_MODULE();
 
 + (NSString *)moduleName
 {
-  return nil;
+  return @"EXReactNativeAdapter";
 }
 
 + (const NSArray<Protocol *> *)exportedInterfaces
@@ -217,7 +217,7 @@ EX_REGISTER_MODULE();
   } else if (
       _isForegrounded && (
        [notification.name isEqualToString:UIApplicationWillResignActiveNotification] ||
-       [notification.name isEqualToString:UIApplicationWillEnterForegroundNotification] ||
+       [notification.name isEqualToString:UIApplicationDidEnterBackgroundNotification] ||
        RCTSharedApplication().applicationState == UIApplicationStateBackground
       )
     ) {

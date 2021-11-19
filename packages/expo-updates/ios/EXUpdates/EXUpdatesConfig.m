@@ -20,7 +20,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
-static NSString * const EXUpdatesConfigPlistName = @"Expo";
+NSString * const EXUpdatesConfigPlistName = @"Expo";
+NSString * const EXUpdatesConfigEnableAutoSetupKey = @"EXUpdatesAutoSetup";
 
 static NSString * const EXUpdatesDefaultReleaseChannelName = @"default";
 
@@ -37,6 +38,7 @@ static NSString * const EXUpdatesConfigHasEmbeddedUpdateKey = @"EXUpdatesHasEmbe
 
 static NSString * const EXUpdatesConfigAlwaysString = @"ALWAYS";
 static NSString * const EXUpdatesConfigWifiOnlyString = @"WIFI_ONLY";
+static NSString * const EXUpdatesConfigErrorRecoveryOnlyString = @"ERROR_RECOVERY_ONLY";
 static NSString * const EXUpdatesConfigNeverString = @"NEVER";
 
 @implementation EXUpdatesConfig
@@ -139,6 +141,8 @@ static NSString * const EXUpdatesConfigNeverString = @"NEVER";
   if (checkOnLaunch && [checkOnLaunch isKindOfClass:[NSString class]]) {
     if ([EXUpdatesConfigNeverString isEqualToString:(NSString *)checkOnLaunch]) {
       _checkOnLaunch = EXUpdatesCheckAutomaticallyConfigNever;
+    } else if ([EXUpdatesConfigErrorRecoveryOnlyString isEqualToString:(NSString *)checkOnLaunch]) {
+      _checkOnLaunch = EXUpdatesCheckAutomaticallyConfigErrorRecoveryOnly;
     } else if ([EXUpdatesConfigWifiOnlyString isEqualToString:(NSString *)checkOnLaunch]) {
       _checkOnLaunch = EXUpdatesCheckAutomaticallyConfigWifiOnly;
     } else if ([EXUpdatesConfigAlwaysString isEqualToString:(NSString *)checkOnLaunch]) {

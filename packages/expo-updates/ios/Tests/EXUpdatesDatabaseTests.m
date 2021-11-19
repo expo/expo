@@ -2,6 +2,8 @@
 
 #import <XCTest/XCTest.h>
 
+#import <EXManifests/EXManifestsNewManifest.h>
+#import <EXUpdates/EXUpdatesAsset.h>
 #import <EXUpdates/EXUpdatesConfig.h>
 #import <EXUpdates/EXUpdatesDatabase+Tests.h>
 #import <EXUpdates/EXUpdatesNewUpdate.h>
@@ -10,7 +12,7 @@
 
 @property (nonatomic, strong) EXUpdatesDatabase *db;
 @property (nonatomic, strong) NSURL *testDatabaseDir;
-@property (nonatomic, strong) EXUpdatesNewRawManifest *manifest;
+@property (nonatomic, strong) EXManifestsNewManifest *manifest;
 @property (nonatomic, strong) EXUpdatesConfig *config;
 
 @end
@@ -34,7 +36,7 @@
     XCTAssertNil(dbOpenError);
   });
 
-  _manifest = [[EXUpdatesNewRawManifest alloc] initWithRawManifestJSON:@{
+  _manifest = [[EXManifestsNewManifest alloc] initWithRawManifestJSON:@{
     @"runtimeVersion": @"1",
     @"id": @"0eef8214-4833-4089-9dff-b4138a14f196",
     @"createdAt": @"2020-11-11T00:17:54.797Z",
@@ -64,6 +66,7 @@
     NSError *updatesError;
     [_db addUpdate:update error:&updatesError];
     if (updatesError) {
+      XCTFail(@"%@", updatesError.localizedDescription);
       return;
     }
 
@@ -119,7 +122,7 @@
     [_db setMetadataWithManifest:update1 error:&error1];
   });
   XCTAssertNil(error1);
-  
+
   NSHTTPURLResponse *response2 = [[NSHTTPURLResponse alloc] initWithURL:[NSURL URLWithString:@"https://exp.host/"] statusCode:200 HTTPVersion:@"HTTP/2" headerFields:@{
     @"expo-manifest-filters": @""
   }];
@@ -129,7 +132,7 @@
     [_db setMetadataWithManifest:update2 error:&error2];
   });
   XCTAssertNil(error2);
-  
+
   NSDictionary *expected = @{};
   __block NSDictionary *actual;
   __block NSError *readError;
@@ -152,7 +155,7 @@
     [_db setMetadataWithManifest:update1 error:&error1];
   });
   XCTAssertNil(error1);
-  
+
   NSHTTPURLResponse *response2 = [[NSHTTPURLResponse alloc] initWithURL:[NSURL URLWithString:@"https://exp.host/"] statusCode:200 HTTPVersion:@"HTTP/2" headerFields:@{}];
   EXUpdatesUpdate *update2 = [EXUpdatesNewUpdate updateWithNewManifest:_manifest response:response2 config:_config database:_db];
   __block NSError *error2;
@@ -160,7 +163,7 @@
     [_db setMetadataWithManifest:update2 error:&error2];
   });
   XCTAssertNil(error2);
-  
+
   NSDictionary *expected = @{@"branch-name": @"rollout-1"};
   __block NSDictionary *actual;
   __block NSError *readError;
@@ -170,6 +173,87 @@
   XCTAssertNil(readError);
   XCTAssertNotNil(actual);
   XCTAssertEqualObjects(expected, actual);
+}
+
+- (void)testDeleteUnusedAssets_DuplicateFilenames
+{
+  EXManifestsNewManifest *manifest1 = [[EXManifestsNewManifest alloc] initWithRawManifestJSON:@{
+    @"runtimeVersion": @"1",
+    @"id": @"0eef8214-4833-4089-9dff-b4138a14f196",
+    @"createdAt": @"2020-11-11T00:17:54.797Z",
+    @"launchAsset": @{@"url": @"https://url.to/bundle1.js", @"contentType": @"application/javascript"}
+  }];
+  EXManifestsNewManifest *manifest2 = [[EXManifestsNewManifest alloc] initWithRawManifestJSON:@{
+    @"runtimeVersion": @"1",
+    @"id": @"0eef8214-4833-4089-9dff-b4138a14f197",
+    @"createdAt": @"2020-11-11T00:17:55.797Z",
+    @"launchAsset": @{@"url": @"https://url.to/bundle2.js", @"contentType": @"application/javascript"}
+  }];
+
+  EXUpdatesAsset *asset1 = [self createMockAssetWithKey:@"key1"];
+  EXUpdatesAsset *asset2 = [self createMockAssetWithKey:@"key2"];
+  EXUpdatesAsset *asset3 = [self createMockAssetWithKey:@"key3"];
+
+  // simulate two assets with different keys that share a file on disk
+  // this can happen if we, for example, change the format of asset keys that we serve
+  asset2.filename = @"same-filename.png";
+  asset3.filename = @"same-filename.png";
+
+  EXUpdatesUpdate *update1 = [EXUpdatesNewUpdate updateWithNewManifest:manifest1 response:nil config:_config database:_db];
+  EXUpdatesUpdate *update2 = [EXUpdatesNewUpdate updateWithNewManifest:manifest2 response:nil config:_config database:_db];
+
+  dispatch_sync(_db.databaseQueue, ^{
+    NSError *update1Error;
+    [_db addUpdate:update1 error:&update1Error];
+    NSError *update2Error;
+    [_db addUpdate:update2 error:&update2Error];
+    NSError *updateAsset1Error;
+    [_db addNewAssets:@[asset1, asset2] toUpdateWithId:update1.updateId error:&updateAsset1Error];
+    NSError *updateAsset2Error;
+    [_db addNewAssets:@[asset3] toUpdateWithId:update2.updateId error:&updateAsset2Error];
+    if (update1Error || update2Error || updateAsset1Error || updateAsset2Error) {
+      XCTFail(@"%@ %@ %@ %@", update1Error.localizedDescription, update2Error.localizedDescription, updateAsset1Error.localizedDescription, updateAsset2Error.localizedDescription);
+      return;
+    }
+
+    // simulate update1 being reaped, update2 being kept
+    NSError *deleteUpdateError;
+    [_db deleteUpdates:@[update1] error:&deleteUpdateError];
+    if (deleteUpdateError) {
+      XCTFail(@"%@", deleteUpdateError.localizedDescription);
+      return;
+    }
+
+    NSArray<EXUpdatesAsset *> *assets = [_db allAssetsWithError:nil];
+    XCTAssertEqual(3, assets.count); // two bundles and asset1 and asset2
+
+    NSError *deleteAssetsError;
+    NSArray<EXUpdatesAsset *> *deletedAssets = [_db deleteUnusedAssetsWithError:&deleteAssetsError];
+    if (deleteAssetsError) {
+      XCTFail(@"%@", deleteAssetsError.localizedDescription);
+      return;
+    }
+
+    // asset1 should have been deleted, but asset2 should have been kept
+    // since it shared a filename with asset3, which is still in use
+    XCTAssertEqual(1, deletedAssets.count);
+    for (EXUpdatesAsset *deletedAsset in deletedAssets) {
+      XCTAssertEqualObjects(@"key1", deletedAsset.key);
+    }
+
+    XCTAssertNil([_db assetWithKey:@"key1" error:nil]);
+    XCTAssertNotNil([_db assetWithKey:@"key2" error:nil]);
+    XCTAssertNotNil([_db assetWithKey:@"key3" error:nil]);
+  });
+}
+
+- (EXUpdatesAsset *)createMockAssetWithKey:(NSString *)key
+{
+  EXUpdatesAsset *asset = [[EXUpdatesAsset alloc] initWithKey:key type:@"png"];
+  asset.downloadTime = [NSDate date];
+  asset.contentHash = key;
+  asset.filename = [NSString stringWithFormat:@"%@.png", key];
+  return asset;
 }
 
 @end

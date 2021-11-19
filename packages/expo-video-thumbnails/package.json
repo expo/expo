@@ -1,6 +1,6 @@
 {
   "name": "expo-video-thumbnails",
-  "version": "5.2.0",
+  "version": "6.0.1",
   "description": "ExpoVideoThumbnails standalone module",
   "main": "build/VideoThumbnails.js",
   "types": "build/VideoThumbnails.d.ts",
@@ -29,10 +29,11 @@
   "author": "650 Industries, Inc.",
   "license": "MIT",
   "homepage": "https://docs.expo.dev/versions/latest/sdk/video-thumbnails/",
-  "dependencies": {
-    "expo-modules-core": "~0.3.0-alpha.0"
-  },
+  "dependencies": {},
   "devDependencies": {
     "expo-module-scripts": "^2.0.0"
+  },
+  "peerDependencies": {
+    "expo": "*"
   }
 }

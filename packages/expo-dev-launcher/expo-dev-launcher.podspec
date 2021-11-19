@@ -13,6 +13,7 @@ Pod::Spec.new do |s|
   s.platform       = :ios, '11.0'
   s.swift_version  = '5.2'
   s.source         = { :git => 'https://github.com/github_account/expo-development-client.git', :tag => "#{s.version}" }
+  s.static_framework = true
   s.source_files   = 'ios/**/*.{h,m,swift,cpp}'
   s.preserve_paths = 'ios/**/*.{h,m,swift}'
   s.exclude_files  = ['ios/Unsafe/**/*.{h,m,mm,swift,cpp}', 'ios/Tests/**/*.{h,m,swift}']
@@ -37,6 +38,7 @@ Pod::Spec.new do |s|
   
   s.dependency "React-Core"
   s.dependency "expo-dev-menu-interface"
+  s.dependency "EXManifests"
   s.dependency "EXUpdatesInterface"
   
   s.subspec 'Unsafe' do |unsafe|
@@ -51,6 +53,8 @@ Pod::Spec.new do |s|
   s.test_spec 'Tests' do |test_spec|
     test_spec.platform     = :ios, '12.0'
     test_spec.source_files = 'ios/Tests/**/*.{h,m,swift}'
+    test_spec.dependency 'Quick'
+    test_spec.dependency 'Nimble'
     test_spec.dependency "React-CoreModules"
     test_spec.dependency "OHHTTPStubs"
   end

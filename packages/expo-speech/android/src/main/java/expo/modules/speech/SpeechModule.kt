@@ -153,10 +153,8 @@ class SpeechModule(
               emitter.emit("Exponent.speakingError", idToMap(utteranceId))
             }
           })
-          for (utterance in delayedUtterances) {
-            with(utterance) {
-              speakOut(id, text, options)
-            }
+          for ((id, text, options) in delayedUtterances) {
+            speakOut(id, text, options)
           }
         }
       }

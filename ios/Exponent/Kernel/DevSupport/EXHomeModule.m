@@ -27,8 +27,16 @@
 
 + (NSString *)moduleName { return @"ExponentKernel"; }
 
-- (instancetype)initWithExperienceStableLegacyId:(NSString *)experienceStableLegacyId scopeKey:(NSString *)scopeKey kernelServiceDelegate:(id)kernelServiceInstance params:(NSDictionary *)params {
-  if (self = [super initWithExperienceStableLegacyId:experienceStableLegacyId scopeKey:scopeKey kernelServiceDelegates:kernelServiceInstance params:params]) {
+- (instancetype)initWithExperienceStableLegacyId:(NSString *)experienceStableLegacyId
+                                        scopeKey:(NSString *)scopeKey
+                                    easProjectId:(NSString *)easProjectId
+                           kernelServiceDelegate:(id)kernelServiceInstance
+                                          params:(NSDictionary *)params {
+  if (self = [super initWithExperienceStableLegacyId:experienceStableLegacyId
+                                            scopeKey:scopeKey
+                                        easProjectId:easProjectId
+                              kernelServiceDelegates:kernelServiceInstance
+                                              params:params]) {
     _eventSuccessBlocks = [NSMutableDictionary dictionary];
     _eventFailureBlocks = [NSMutableDictionary dictionary];
     _sdkVersions = params[@"constants"][@"supportedExpoSdks"];

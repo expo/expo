@@ -71,7 +71,7 @@ function appendProperty(
 
 export function _getType(property: Property) {
   if (property.enum) {
-    return 'enum';
+    return `enum: ${property.enum.join(', ')}`;
   } else {
     return property.type?.toString().replace(/,/g, ' || ');
   }

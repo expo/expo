@@ -1,7 +1,7 @@
 'use strict';
-import { Platform } from '@unimodules/core';
 import { Asset } from 'expo-asset';
 import { GLView } from 'expo-gl';
+import { Platform } from 'expo-modules-core';
 import React from 'react';
 
 import { mountAndWaitFor } from './helpers';

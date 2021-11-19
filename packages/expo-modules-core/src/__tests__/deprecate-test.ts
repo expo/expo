@@ -81,7 +81,7 @@ describe('deprecate', () => {
 });
 
 function getErrorAsync(runnable): Promise<CodedError | null> {
-  return new Promise(async resolve => {
+  return new Promise(async (resolve) => {
     try {
       await runnable();
       resolve(null);

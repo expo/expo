@@ -15,12 +15,14 @@ import expo.modules.core.ExportedModule
 import expo.modules.core.ModuleRegistry
 import expo.modules.core.ModuleRegistryDelegate
 import expo.modules.core.Promise
+import expo.modules.core.errors.ModuleDestroyedException
 import expo.modules.core.interfaces.ActivityEventListener
 import expo.modules.core.interfaces.ActivityProvider
 import expo.modules.core.interfaces.ExpoMethod
 import expo.modules.core.interfaces.LifecycleEventListener
 import expo.modules.core.interfaces.services.UIManager
 import expo.modules.core.utilities.FileUtilities.generateOutputPath
+import expo.modules.core.utilities.ifNull
 import expo.modules.imagepicker.ImagePickerOptions.Companion.optionsFromMap
 import expo.modules.imagepicker.exporters.CompressionImageExporter
 import expo.modules.imagepicker.exporters.CropImageExporter
@@ -51,11 +53,12 @@ class ImagePickerModule(
   private var mPromise: Promise? = null
   private var mPickerOptions: ImagePickerOptions? = null
   private val moduleCoroutineScope = CoroutineScope(Dispatchers.IO)
+  private var exifDataHandler: ExifDataHandler? = null
 
   override fun onDestroy() {
     try {
       mUIManager.unregisterLifecycleEventListener(this)
-      moduleCoroutineScope.cancel(ModuleDestroyedException())
+      moduleCoroutineScope.cancel(ModuleDestroyedException(ImagePickerConstants.PROMISES_CANCELED))
     } catch (e: IllegalStateException) {
       Log.e(ImagePickerConstants.TAG, "The scope does not have a job in it")
     }
@@ -269,7 +272,7 @@ class ImagePickerModule(
       setOutputCompressFormat(compressFormat)
       setOutputCompressQuality(pickerOptions.quality)
     }
-
+    exifDataHandler = ExifDataHandler(uri)
     startActivityOnResult(cropImageBuilder.getIntent(context), CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE, promise, pickerOptions)
   }
 
@@ -355,7 +358,17 @@ class ImagePickerModule(
     if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
       val result = CropImage.getActivityResult(intent)
       val exporter = CropImageExporter(result.rotation, result.cropRect, pickerOptions.isBase64)
-      ImageResultTask(promise, result.uri, contentResolver, CropFileProvider(result.uri), pickerOptions.isExif, exporter, moduleCoroutineScope).execute()
+      ImageResultTask(
+        promise,
+        result.uri,
+        contentResolver,
+        CropFileProvider(result.uri),
+        pickerOptions.isAllowsEditing,
+        pickerOptions.isExif,
+        exporter,
+        exifDataHandler,
+        moduleCoroutineScope
+      ).execute()
       return
     }
 
@@ -384,7 +397,17 @@ class ImagePickerModule(
         CompressionImageExporter(mImageLoader, pickerOptions.quality, pickerOptions.isBase64)
       }
 
-      ImageResultTask(promise, uri, contentResolver, CacheFileProvider(mContext.cacheDir, deduceExtension(type)), pickerOptions.isExif, exporter, moduleCoroutineScope).execute()
+      ImageResultTask(
+        promise,
+        uri,
+        contentResolver,
+        CacheFileProvider(mContext.cacheDir, deduceExtension(type)),
+        pickerOptions.isAllowsEditing,
+        pickerOptions.isExif,
+        exporter,
+        exifDataHandler,
+        moduleCoroutineScope
+      ).execute()
       return
     }
 

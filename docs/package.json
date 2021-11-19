@@ -1,6 +1,6 @@
 {
   "name": "expo-docs",
-  "version": "42.0.0",
+  "version": "43.0.0",
   "private": true,
   "scripts": {
     "dev": "rimraf .next/preval && next dev -p 3002",
@@ -15,7 +15,8 @@
     "lint-links": "remark -u validate-links ./pages",
     "watch": "tsc --noEmit -w",
     "test": "jest",
-    "schema-sync": "node --async-stack-traces --unhandled-rejections=strict ./scripts/schema-sync.js"
+    "schema-sync": "node --async-stack-traces --unhandled-rejections=strict ./scripts/schema-sync.js",
+    "remove-version": "node --unhandled-rejections=strict ./scripts/remove-version.js"
   },
   "resolutions": {
     "webpack": "^5.28.0"
@@ -45,9 +46,10 @@
     "react": "^17.0.2",
     "react-diff-view": "^2.4.7",
     "react-dom": "^17.0.2",
-    "react-markdown": "^5.0.3",
+    "react-markdown": "^6.0.3",
     "react-player": "^1.11.1",
     "react-visibility-sensor": "^5.1.1",
+    "remark-gfm": "^1.0.0",
     "tippy.js": "^6.3.1"
   },
   "devDependencies": {
@@ -72,19 +74,22 @@
     "cross-env": "^5.2.0",
     "danger": "^9.2.10",
     "esbuild-loader": "^2.13.1",
-    "eslint": "^7.29.0",
+    "eslint": "^7.31.0",
     "eslint-config-next": "^10.2.3",
     "eslint-config-universe": "^7.0.1",
     "eslint-plugin-lodash": "^7.2.0",
     "http-server": "^0.12.3",
     "jest": "26.1.0",
+    "js-yaml": "^4.1.0",
     "prettier": "^2.3.1",
-    "puppeteer": "^3.3.0",
+    "puppeteer": "^10.2.0",
     "remark-cli": "^9.0.0",
+    "remark-frontmatter": "^2.0.0",
     "remark-validate-links": "^10.0.4",
     "rimraf": "^3.0.2",
     "semver": "^7.3.5",
     "sitemap": "^6.3.0",
-    "typescript": "^4.0.3"
+    "typescript": "^4.0.3",
+    "unist-builder": "^2.0.0"
   }
 }

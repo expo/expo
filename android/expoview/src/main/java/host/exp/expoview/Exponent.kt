@@ -19,15 +19,13 @@ import com.raizlabs.android.dbflow.config.FlowConfig
 import com.raizlabs.android.dbflow.config.FlowManager
 import expo.modules.core.interfaces.Package
 import expo.modules.core.interfaces.SingletonModule
-import expo.modules.updates.manifest.raw.RawManifest
+import expo.modules.manifests.core.Manifest
 import host.exp.exponent.*
-import host.exp.exponent.ExponentManifest.ManifestListener
 import host.exp.exponent.analytics.Analytics
 import host.exp.exponent.analytics.EXL
 import host.exp.exponent.di.NativeModuleDepsProvider
 import host.exp.exponent.kernel.ExponentUrls
 import host.exp.exponent.kernel.KernelConstants
-import host.exp.exponent.network.ExpoHttpCallback
 import host.exp.exponent.network.ExpoResponse
 import host.exp.exponent.network.ExponentHttpClient.SafeCallback
 import host.exp.exponent.network.ExponentNetwork
@@ -40,7 +38,6 @@ import org.apache.commons.io.IOUtils
 import org.apache.commons.io.output.ByteArrayOutputStream
 import org.apache.commons.io.output.TeeOutputStream
 import org.json.JSONArray
-import org.json.JSONException
 import versioned.host.exp.exponent.ExponentPackageDelegate
 import java.io.*
 import java.net.URLEncoder
@@ -80,17 +77,15 @@ class Exponent private constructor(val context: Context, val application: Applic
 
   private val activityResultListeners = CopyOnWriteArrayList<ActivityResultListener>()
 
-  // TODO(wschurman): make constructor args
-  class InstanceManagerBuilderProperties {
-    var application: Application? = null
-    var jsBundlePath: String? = null
-    var linkingPackage: RNObject? = null
-    var experienceProperties: Map<String, Any?>? = null
-    var expoPackages: List<Package>? = null
-    var exponentPackageDelegate: ExponentPackageDelegate? = null
-    var manifest: RawManifest? = null
-    var singletonModules: List<SingletonModule>? = null
-  }
+  data class InstanceManagerBuilderProperties(
+    var application: Application?,
+    var jsBundlePath: String?,
+    var experienceProperties: Map<String, Any?>,
+    var expoPackages: List<Package>?,
+    var exponentPackageDelegate: ExponentPackageDelegate?,
+    var manifest: Manifest,
+    var singletonModules: List<SingletonModule>,
+  )
 
   fun addActivityResultListener(listener: ActivityResultListener) {
     activityResultListeners.add(listener)
@@ -117,7 +112,7 @@ class Exponent private constructor(val context: Context, val application: Applic
   // `id` must be URL encoded. Returns true if found cached bundle.
   @JvmOverloads
   fun loadJSBundle(
-    manifest: RawManifest?,
+    manifest: Manifest?,
     urlString: String,
     id: String,
     abiVersion: String,
@@ -295,7 +290,7 @@ class Exponent private constructor(val context: Context, val application: Applic
 
   fun testPackagerStatus(
     isDebug: Boolean,
-    mManifest: RawManifest,
+    mManifest: Manifest,
     callback: PackagerStatusCallback
   ) {
     if (!isDebug) {
@@ -331,72 +326,6 @@ class Exponent private constructor(val context: Context, val application: Applic
     fun handleUnreadNotifications(unreadNotifications: JSONArray)
   }
 
-  fun preloadManifestAndBundle(manifestUrl: String) {
-    try {
-      exponentManifest.fetchManifest(
-        manifestUrl,
-        object : ManifestListener {
-          override fun onCompleted(manifest: RawManifest) {
-            try {
-              val bundleUrl = manifest.getBundleURL()
-              preloadBundle(
-                manifest,
-                manifestUrl,
-                bundleUrl,
-                manifest.getLegacyID(),
-                manifest.getSDKVersion()
-              )
-            } catch (e: JSONException) {
-              EXL.e(TAG, e)
-            } catch (e: Exception) {
-              // Don't let any errors through
-              EXL.e(TAG, "Couldn't preload bundle: $e")
-            }
-          }
-
-          override fun onError(e: Exception) {
-            EXL.e(TAG, "Couldn't preload manifest: $e")
-          }
-
-          override fun onError(e: String) {
-            EXL.e(TAG, "Couldn't preload manifest: $e")
-          }
-        }
-      )
-    } catch (e: Throwable) {
-      EXL.e(TAG, "Couldn't preload manifest: $e")
-    }
-  }
-
-  private fun preloadBundle(
-    manifest: RawManifest,
-    manifestUrl: String,
-    bundleUrl: String,
-    id: String,
-    sdkVersion: String
-  ) {
-    try {
-      instance.loadJSBundle(
-        manifest,
-        bundleUrl,
-        encodeExperienceId(id),
-        sdkVersion,
-        object : BundleListener {
-          override fun onError(e: Exception) {
-            EXL.e(TAG, "Couldn't preload bundle: $e")
-          }
-
-          override fun onBundleLoaded(localBundlePath: String) {
-            EXL.d(TAG, "Successfully preloaded manifest and bundle for $manifestUrl $bundleUrl")
-          }
-        },
-        true
-      )
-    } catch (e: UnsupportedEncodingException) {
-      EXL.e(TAG, "Couldn't encode preloaded bundle id: $e")
-    }
-  }
-
   companion object {
     private val TAG = Exponent::class.java.simpleName
 
@@ -406,7 +335,7 @@ class Exponent private constructor(val context: Context, val application: Applic
       private set
     private var hasBeenInitialized = false
 
-    fun initialize(context: Context, application: Application) {
+    @JvmStatic fun initialize(context: Context, application: Application) {
       if (!hasBeenInitialized) {
         hasBeenInitialized = true
         Exponent(context, application)
@@ -457,15 +386,15 @@ class Exponent private constructor(val context: Context, val application: Applic
         val debuggerHostHostname = getHostname(debuggerHost)
         val debuggerHostPort = getPort(debuggerHost)
 
-        val deviceField = fieldObject.rnClass().getDeclaredField("DEVICE_LOCALHOST")
+        val deviceField = fieldObject.rnClass()!!.getDeclaredField("DEVICE_LOCALHOST")
         deviceField.isAccessible = true
         deviceField[null] = debuggerHostHostname
 
-        val genymotionField = fieldObject.rnClass().getDeclaredField("GENYMOTION_LOCALHOST")
+        val genymotionField = fieldObject.rnClass()!!.getDeclaredField("GENYMOTION_LOCALHOST")
         genymotionField.isAccessible = true
         genymotionField[null] = debuggerHostHostname
 
-        val emulatorField = fieldObject.rnClass().getDeclaredField("EMULATOR_LOCALHOST")
+        val emulatorField = fieldObject.rnClass()!!.getDeclaredField("EMULATOR_LOCALHOST")
         emulatorField.isAccessible = true
         emulatorField[null] = debuggerHostHostname
 
@@ -485,28 +414,7 @@ class Exponent private constructor(val context: Context, val application: Applic
   init {
     instance = this
     NativeModuleDepsProvider.initialize(application)
-    NativeModuleDepsProvider.getInstance().inject(Exponent::class.java, this)
-
-    // Verifying SSL certs is slow on Android, so send an HTTPS request to our server as early as possible.
-    // This speeds up the manifest request in a shell app from ~500ms to ~250ms.
-    try {
-      exponentNetwork.client.call(
-        Request.Builder().url(Constants.API_HOST + "/status").build(),
-        object : ExpoHttpCallback {
-          override fun onFailure(e: IOException) {
-            EXL.d(TAG, e.toString())
-          }
-
-          @Throws(IOException::class)
-          override fun onResponse(response: ExpoResponse) {
-            ExponentNetwork.flushResponse(response)
-            EXL.d(TAG, "Loaded exp.host status page.")
-          }
-        }
-      )
-    } catch (e: Throwable) {
-      EXL.e(TAG, e)
-    }
+    NativeModuleDepsProvider.instance.inject(Exponent::class.java, this)
 
     // Fixes Android memory leak
     try {
