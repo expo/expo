@@ -74,7 +74,7 @@ Sentry.Browser.*
 
 #### Configure your `postPublish` hook
 
-Add `expo.hooks` to your project's `app.json` (or `app.config`) file:
+Add `expo.hooks` to your project's `app.json` (or `app.config.js`) file:
 
 ```json
 {
@@ -136,7 +136,7 @@ In addition to the required config fields above, you can also provide these **op
 
 > Note: Disregard the following if you're using the classic build system (`expo build:[android|ios]`).
 
-Add `expo.plugins` to your project's `app.json` (or `app.config`) file:
+Add `expo.plugins` to your project's `app.json` (or `app.config.js`) file:
 
 ```json
 {
