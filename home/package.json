@@ -77,6 +77,7 @@
     "@graphql-codegen/typescript-react-apollo": "^3.2.1",
     "@types/dedent": "^0.7.0",
     "@types/jest": "^26.0.24",
+    "@types/lodash": "^4.14.161",
     "@types/react-redux": "^7.1.16",
     "@types/semver": "^7.3.6",
     "@types/sha1": "^1.1.2",
