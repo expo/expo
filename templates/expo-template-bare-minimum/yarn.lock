@@ -3133,6 +3133,14 @@ expo-modules-core@~0.4.4, expo-modules-core@~0.4.7:
     compare-versions "^3.4.0"
     invariant "^2.2.4"
 
+expo-modules-core@~0.4.8:
+  version "0.4.8"
+  resolved "https://registry.yarnpkg.com/expo-modules-core/-/expo-modules-core-0.4.8.tgz#6fed03fca9370793b0a4bebc4fe1a44b213ed445"
+  integrity sha512-PElvF9/mw8TZ0FG3cQkQHB1yZEvtSrQ9nh90pINuTwmIUrxC427rgGoPrALsMaX90h94jTkPHODXHuX+Xsl/rg==
+  dependencies:
+    compare-versions "^3.4.0"
+    invariant "^2.2.4"
+
 expo-splash-screen@~0.13.5:
   version "0.13.5"
   resolved "https://registry.yarnpkg.com/expo-splash-screen/-/expo-splash-screen-0.13.5.tgz#ece76c092f2ce88e4660a70e532ed47909a01ddd"
@@ -3157,16 +3165,16 @@ expo-updates-interface@~0.4.0:
   resolved "https://registry.yarnpkg.com/expo-updates-interface/-/expo-updates-interface-0.4.0.tgz#20961f2cb4bd068a74c29434affa08791dbaa240"
   integrity sha512-EUJaLnDAePikGEQT8w6gjCY3m/dlGgjZKVn5XBaxZMkHzOy3PDQo6QOcK/bcMdkA3CyNrvo6NCe+/7RHrgmK4A==
 
-expo-updates@~0.10.13:
-  version "0.10.13"
-  resolved "https://registry.yarnpkg.com/expo-updates/-/expo-updates-0.10.13.tgz#8e4eb506f7e78ed6fcd97bd4d18bce6f0637bf5b"
-  integrity sha512-IrEIvitWtxJkxbcWQidUmHvZAn9sPIXQq7gJXuaeXAa7aNQEj6kK0KLHqD4IoPSHEJ2oYdonXEnePNgwCl8XwA==
+expo-updates@~0.10.15:
+  version "0.10.15"
+  resolved "https://registry.yarnpkg.com/expo-updates/-/expo-updates-0.10.15.tgz#1fcfd78ff615307809ad38a3d37eaa67f7268282"
+  integrity sha512-GHh1e0BwJY7aT+huGfneXpMhPKKkDIOBqCWyZDyTo7AWLj2C2ZCvgT2D9LWyl6v9WwxMEfO94RaYCQaayD/rfw==
   dependencies:
     "@expo/config" "^5.0.9"
     "@expo/config-plugins" "^4.0.2"
     "@expo/metro-config" "~0.1.84"
     expo-manifests "~0.2.2"
-    expo-modules-core "~0.4.7"
+    expo-modules-core "~0.4.8"
     expo-structured-headers "~2.0.0"
     expo-updates-interface "~0.4.0"
     fbemitter "^2.1.1"
