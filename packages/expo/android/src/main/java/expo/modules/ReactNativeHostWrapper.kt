@@ -33,7 +33,7 @@ class ReactNativeHostWrapper(
       .firstOrNull() ?: super.createReactInstanceManager()
 
     reactNativeHostHandlers.forEach { handler ->
-      handler.onDidCreateReactInstanceManager(developerSupport)
+      handler.onDidCreateReactInstanceManager(result, developerSupport)
     }
 
     return result
