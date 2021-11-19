@@ -19,4 +19,11 @@ export default [
     type: 'boolean',
     description: ['Indicates that the changes sent with this submission will not be reviewed until they are explicitly sent for review from the Google Play Console UI. Defaults to false.'],
   },
+  {
+    name: 'applicationId',
+    type: 'string',
+    description: [
+      'The application id that will be used when accessing Service Account Keys managed by Expo, it does not have any effect if you are using local credentials. In most cases this value will be autodetected, but if you have multiple product flavors, this value might be necessary.',
+    ],
+  },
 ];
