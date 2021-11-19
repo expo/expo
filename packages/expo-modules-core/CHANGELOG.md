@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Add parameter to `ReactNativeHostHandler.onDidCreateReactInstanceManager` on Android. ([#15221](https://github.com/expo/expo/pull/15221) by [@esamelson](https://github.com/esamelson))
+
 ## 0.5.0 — 2021-11-17
 
 ### 🎉 New features
