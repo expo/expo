@@ -1,21 +1,27 @@
 ---
 title: Installation in React Native and Bare workflow projects
-sidebar_title: Manual Installation
+sidebar_title: Bare React Native Installation
 ---
 
 import InstallSection from '~/components/plugins/InstallSection';
+import TerminalBlock from '~/components/plugins/TerminalBlock';
 import ConfigurationDiff from '~/components/plugins/ConfigurationDiff';
 import { Tab, Tabs } from '~/components/plugins/Tabs';
 
-The installation steps on this page are only required to add the `expo-dev-client` library to an **existing** React Native or Bare project.
+The installation steps on this page are only required to add the `expo-dev-client` library to a React Native or Bare project. To add a the `expo-dev-client` library to an existing managed project, see our [Getting Started guide](getting-started.md).
 
-To initialize a new Bare project or to add a the `expo-dev-client` library to an existing managed project, see our [Getting Started guide](getting-started.md).
+If you're just starting your project, you can create a new project from our template with:
 
-If you created your project with `expo init`, or you already have `expo` and/or other Expo modules up and running, use the tabs marked **With Expo modules** (most projects will fall under this category).
+<TerminalBlock cmd={["npx crna -t with-dev-client"]} />
 
-If you created your project with `expo init` before SDK 43 and have `react-native-unimodules` up and running, use the tabs marked **With Expo modules/unimodules**.
+If you have an existing project, you'll need to [install the package and make a few changes](installation.md) to your **AppDelegate.m**, **MainActivity.java** and **MainApplication.java**.
 
-If you created your project with `npx react-native init` and do not have `react-native-unimodules` or any other Expo packages installed, use the tabs marked **Without unimodules**.
+
+If you created your project with `expo init`, or you already have `expo` and/or other Expo modules up and running, use the tabs marked **With Expo modules**.
+
+If you created your project with `expo init` before SDK 43 and have `react-native-unimodules` up and running, use the tabs marked **With unimodules**. When you're ready, consider upgrading to the newer Expo modules by [following these steps](https://expo.fyi/expo-modules-migration).
+
+If you created your project with `npx react-native init` and do not have any other Expo packages installed, use the tabs marked **Without Expo Modules**.
 
 > **Note**: if you are using _SDK 43 or above_, you'll need to install `expo-dev-client@0.6.0` or above.
 
@@ -29,7 +35,7 @@ Add the `expo-dev-client` library to your package.json.
 
 Add the following lines to your **Podfile**:
 
-<Tabs tabs={["With Expo modules/unimodules", "Without unimodules"]}>
+<Tabs tabs={["With Expo modules/unimodules", "Without Expo modules"]}>
 
 <Tab >
 <ConfigurationDiff source="/static/diffs/client/podfile.diff" />
@@ -63,11 +69,11 @@ To do that, open Xcode and go to General > Deployment Info, and select an iOS ve
 
 ### 🤖 Android
 
-<Tabs tabs={["With Expo modules/unimodules", "Without unimodules"]}>
+<Tabs tabs={["With Expo modules/unimodules", "Without Expo modules"]}>
 
 <Tab >
 
-If your project is set up with unimodules, no additional changes are needed to install the package on Android. 🎉
+If your project is set up with Expo modules, no additional changes are needed to install the package on Android. 🎉
 
 </Tab>
 
@@ -87,7 +93,7 @@ Additionally, ensure your project's `minSdkVersion` and Gradle version are at le
 
 ## 2. Basic configuration
 
-To scan a QR code to load your project's JavaScript in your development build, you'll need to configure a deep link scheme for your app. The fastest way to do this is with the `uri-scheme` package:
+Development builds use deep links to open projects from the QR code. If you have added a custom deep link scheme to your project, your development build will use it. However, if this isn't the case, you need to configure the deep link support for your app. The `uri-scheme` package will do this for you once you have chosen a scheme.
 
 <InstallSection packageName="expo-development-client" cmd={["npx uri-scheme add <your scheme>"]} hideBareInstructions />
 
@@ -97,7 +103,7 @@ See the [uri-scheme package](https://www.npmjs.com/package/uri-scheme) for more 
 
 Make the following changes to allow the `expo-dev-client` library to control project initialization in the **DEBUG** mode.
 
-<Tabs tabs={["With Expo modules", "With unimodules", "Without unimodules"]}>
+<Tabs tabs={["With Expo modules", "With unimodules", "Without Expo modules"]}>
 
 <Tab >
 <ConfigurationDiff source="/static/diffs/client/app-delegate-expo-modules.diff" />
@@ -121,9 +127,7 @@ Make the following changes to allow the `expo-dev-client` library to control pro
 
 Make the following changes to allow the `expo-dev-client` library to control project initialization in the **DEBUG** mode.
 
-> **Note:** If you have a custom activity in your application already, or just want to understand what the `DevMenuAwareReactActivity` is doing, you can see [advanced instructions for Android here.](https://github.com/expo/expo/tree/master/packages/expo-dev-menu#-android)
-
-<Tabs tabs={["With Expo modules", "With unimodules", "Without unimodules"]}>
+<Tabs tabs={["With Expo modules", "With unimodules", "Without Expo modules"]}>
 
 <Tab >
 <ConfigurationDiff source="/static/diffs/client/main-activity-and-application-expo-modules.diff" />
@@ -171,8 +175,8 @@ import App from "./App";
 
 Development builds can also open and preview published updates to your app. To add this feature, add `expo-updates@0.8.0` or newer to your app if it isn't already installed, and add a small additional integration in your **AppDelegate.m** and **MainApplication.java** files.
 
-1. [Install and set up `react-native-unimodules` in your project](../bare/installing-unimodules.md).
-2. [Install and set up `expo-updates` in your project](../bare/installing-updates.md).
+1. [Install `expo-modules` in your project](../bare/installing-expo-modules.md).
+2. [Install `expo-updates` in your project](../bare/installing-updates.md).
 3. Make the following changes to complete the integration with `expo-updates`:
 
 <ConfigurationDiff source="/static/diffs/client/app-delegate-updates.diff" />
