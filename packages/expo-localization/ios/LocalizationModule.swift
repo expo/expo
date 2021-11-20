@@ -16,9 +16,9 @@ public class LocalizationModule: Module {
     }
   }
 
-  static func getCurrentLocalization() -> [String: Any] {
+  static func getCurrentLocalization() -> [String: Any?] {
     let locale = Locale.current
-    let languageCode = locale.languageCode
+    let languageCode = locale.languageCode ?? "en"
     var languageIds = Locale.preferredLanguages
 
     if languageIds.isEmpty {
@@ -34,7 +34,7 @@ public class LocalizationModule: Module {
       "isRTL": Locale.characterDirection(forLanguage: languageCode) == .rightToLeft,
       "locale": languageIds.first,
       "locales": languageIds,
-      "region": locale.countryCode ?? "US",
+      "region": locale.regionCode ?? "US",
       "timezone": TimeZone.current.identifier
     ]
   }
