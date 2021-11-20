@@ -38,6 +38,17 @@ public final class ModuleHolder {
     post(event: .moduleCreate)
   }
 
+  // MARK: Constants
+
+  /**
+   Merges all `constants` definitions into one dictionary.
+   */
+  func getConstants() -> [String: Any?] {
+    return definition.constants.reduce(into: [String: Any?]()) { dict, definition in
+      dict.merge(definition.body()) { $1 }
+    }
+  }
+
   // MARK: Calling functions
 
   func call(function functionName: String, args: [Any], promise: Promise) {

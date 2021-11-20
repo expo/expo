@@ -21,7 +21,7 @@ public final class ModuleDefinition: AnyDefinition {
   var name: String
 
   let functions: [String : AnyFunction]
-  let constants: [String : Any?]
+  let constants: [ConstantsDefinition]
   let eventListeners: [EventListener]
   let viewManager: ViewManagerDefinition?
 
@@ -45,11 +45,7 @@ public final class ModuleDefinition: AnyDefinition {
         dict[function.name] = function
       }
 
-    self.constants = definitions
-      .compactMap { $0 as? ConstantsDefinition }
-      .reduce(into: [String : Any?]()) { dict, definition in
-        dict.merge(definition.constants) { $1 }
-      }
+    self.constants = definitions.compactMap { $0 as? ConstantsDefinition }
 
     self.eventListeners = definitions.compactMap { $0 as? EventListener }
 
@@ -90,7 +86,7 @@ internal struct ModuleNameDefinition: AnyDefinition {
  A definition for module's constants. Returned by `constants(() -> SomeType)` in module's definition.
  */
 internal struct ConstantsDefinition: AnyDefinition {
-  let constants: [String : Any?]
+  let body: () -> [String: Any?]
 }
 
 /**
