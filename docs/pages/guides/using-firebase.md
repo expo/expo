@@ -71,7 +71,7 @@ Go into Firebase Console >> _Realtime Database_, and under the Rules tab you sho
 Storing data through Firebase RTDB is pretty simple. Imagine we're creating a game where highscores are stored in RTDB for everyone to see. We could create a `users` bucket that is referenced by each user. Setting their highscore is straightforward:
 
 ```javascript
-import { getDatabase, ref, onValue } from 'firebase/database';
+import { getDatabase, ref, onValue, set } from 'firebase/database';
 
 function storeHighScore(userId, score) {
   const db = getDatabase();
