@@ -104,8 +104,6 @@ PODS:
     - ExpoModulesCore
   - EXLocalAuthentication (12.0.0):
     - ExpoModulesCore
-  - EXLocalization (11.0.0):
-    - ExpoModulesCore
   - EXLocation (13.0.1):
     - ExpoModulesCore
     - UMTaskManagerInterface
@@ -210,6 +208,8 @@ PODS:
   - ExpoHaptics (11.0.1):
     - ExpoModulesCore
   - ExpoLinearGradient (10.0.1):
+    - ExpoModulesCore
+  - ExpoLocalization (11.0.0):
     - ExpoModulesCore
   - ExpoModulesCore (0.5.0):
     - React-Core
@@ -803,7 +803,6 @@ DEPENDENCIES:
   - EXJSONUtils (from `../../../packages/expo-json-utils/ios`)
   - EXKeepAwake (from `../../../packages/expo-keep-awake/ios`)
   - EXLocalAuthentication (from `../../../packages/expo-local-authentication/ios`)
-  - EXLocalization (from `../../../packages/expo-localization/ios`)
   - EXLocation (from `../../../packages/expo-location/ios`)
   - EXMailComposer (from `../../../packages/expo-mail-composer/ios`)
   - EXManifests (from `../../../packages/expo-manifests/ios`)
@@ -823,6 +822,7 @@ DEPENDENCIES:
   - ExpoCellular (from `../../../packages/expo-cellular/ios`)
   - ExpoHaptics (from `../../../packages/expo-haptics/ios`)
   - ExpoLinearGradient (from `../../../packages/expo-linear-gradient/ios`)
+  - ExpoLocalization (from `../../../packages/expo-localization/ios`)
   - ExpoModulesCore (from `../../../packages/expo-modules-core/ios`)
   - ExpoSystemUI (from `../../../packages/expo-system-ui/ios`)
   - EXPrint (from `../../../packages/expo-print/ios`)
@@ -1044,9 +1044,6 @@ EXTERNAL SOURCES:
   EXLocalAuthentication:
     inhibit_warnings: false
     :path: "../../../packages/expo-local-authentication/ios"
-  EXLocalization:
-    inhibit_warnings: false
-    :path: "../../../packages/expo-localization/ios"
   EXLocation:
     inhibit_warnings: false
     :path: "../../../packages/expo-location/ios"
@@ -1088,6 +1085,9 @@ EXTERNAL SOURCES:
   ExpoLinearGradient:
     inhibit_warnings: false
     :path: "../../../packages/expo-linear-gradient/ios"
+  ExpoLocalization:
+    inhibit_warnings: false
+    :path: "../../../packages/expo-localization/ios"
   ExpoModulesCore:
     inhibit_warnings: false
     :path: "../../../packages/expo-modules-core/ios"
@@ -1291,7 +1291,6 @@ SPEC CHECKSUMS:
   EXJSONUtils: f515cf71710855d7ba5bfc6752af3b9a6f6aad01
   EXKeepAwake: b571c2ad8323b2fced6e907766e2549f75119471
   EXLocalAuthentication: 4c640e20a308d66224468661a0da434f86435283
-  EXLocalization: bb38414618b30a177482c9a6f5594ec6eb0898c1
   EXLocation: 6d13fb1d4b65ed1b2d2bdd0b0f11417cc0a2656a
   EXMailComposer: 06e0c73da0105e124409cb27e04f881392b6f918
   EXManifests: fdbb8a0c2cd5fc4acc1ae90b55ce91617aba9365
@@ -1307,6 +1306,7 @@ SPEC CHECKSUMS:
   ExpoCellular: 90940614d45df5b31f281d70a63d92a06fe44af4
   ExpoHaptics: c0c014eabfdd1353a908f857f168b01fafd526db
   ExpoLinearGradient: 841746b0ef9c771d1f37fa5463f39eb25b6aae77
+  ExpoLocalization: 882eeed58daf9aa9d7265fff537a3ddae3834d2f
   ExpoModulesCore: 3339f23adf96e5b39e6315d5f32b4585ecd4cd43
   ExpoSystemUI: 3c969e3db290fcd5edb9c466d585f183d934b421
   EXPrint: a224501bbb89072567c58a5127f2d125b8776ea2
