@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Support multiple iOS podspecs in one package. ([#15259](https://github.com/expo/expo/pull/15259) by [@kudo](https://github.com/kudo))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
