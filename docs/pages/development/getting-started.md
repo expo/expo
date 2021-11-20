@@ -13,50 +13,27 @@ Development builds of your app are Debug builds of your project that include the
 
 Of course, there are always tradeoffs, and that flexibility means there's not just one way to get started. To help you choose the options that are right for you, these icons indicate:
 
-> ✨ The quickest way to get up and running
 
-> 👷 Advanced options that may require additional configuration
-
-## Installing the `expo-dev-client` module in your project
+## Installing `expo-dev-client` in your project
 
 If you have used Expo before, especially with the Managed workflow, [config plugins](/guides/config-plugins.md) will let you customize your project from JavaScript without ever needing to directly modify Xcode or Android Studio projects.
 
-<Tabs tabs={["✨ With config plugins (fastest)", "👷 If you are directly managing your native projects"]}>
-
-<Tab >
 <TerminalBlock cmd={["expo init # if you don't already have a Managed Workflow project", "yarn add expo-dev-client"]}  />
 
 > You can also improve error messages to be helpful during the development process. To do so, add `import 'expo-dev-client';` to the top of your `App.{js|tsx}` file. [Learn more](installation.md#add-better-error-handlers).
 
-</Tab>
-
-<Tab >
-
-If you're just starting your project, you can create a new project from our template with:
-
-<TerminalBlock cmd={["npx crna -t with-dev-client"]} />
-
-If you have an existing project, you'll need to [install the package and make a few changes](installation.md) to your **AppDelegate.m**, **MainActivity.java** and **MainApplication.java**.
-
-Development builds use deep links to open projects from the QR code. If you have added a custom deep link scheme to your project, your development build will use it. However, if this isn't the case, you need to configure the deep link support for your app. The `uri-scheme` package will do this for you once you have chosen a scheme.
-
-<TerminalBlock cmd={["npx uri-scheme add <your scheme>"]} />
-
-</Tab>
-
-</Tabs>
 
 ## Creating and installing your first development build
 
-### ✨ In the cloud with EAS
-
 However you choose to manage your native projects, we recommend using [EAS Build](eas-build.md) for the smoothest experience, especially if you do not have experience with Xcode and Android Studio builds.
 
-After you configure your project as covered by the [Building with EAS guide](eas-build.md), you can create a development build of your project with one command:
+After you configure your project as covered by the [Building with EAS guide](eas-build.md), you're ready to create your build.
 
-<Tabs tabs={["For iOS Devices (Apple Developer membership required)", "For Android Devices"]}>
+<Tabs tabs={["For iOS Devices", "For Android Devices"]}>
 
 <Tab >
+
+> Apple Developer membership required
 
 Register any devices you would like to develop on to your ad hoc provisioning profile:
 <TerminalBlock cmd={["eas device:create"]} />
@@ -76,27 +53,6 @@ Once you have registered all of the iOS devices you would like to develop on, yo
 
 and installing the resulting build on your device.
 
-### 👷 Locally with Xcode and Android Studio
-
-If you are comfortable setting up Xcode, Android Studio, and related dependencies, you can build and distribute your app the same as any other iOS or Android app.
-
-The `expo run` commands will run a new build, install it on to your emulated device, and launch you into your app.
-
-<Tabs tabs={["For iOS Simulator (MacOS Only)", "For Android Emulator"]}>
-
-<Tab >
-
-<TerminalBlock cmd={["expo run:ios"]} />
-
-</Tab>
-
-<Tab >
-
-<TerminalBlock cmd={["expo run:android"]} />
-
-</Tab>
-
-</Tabs>
 
 ## Developing your app
 
