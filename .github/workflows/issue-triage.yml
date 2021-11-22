@@ -10,7 +10,7 @@ jobs:
     steps:
       - uses: actions/github-script@v3
         with:
-          github-token: ${{secrets.GITHUB_TOKEN}}
+          github-token: ${{ secrets.EXPO_BOT_GITHUB_TOKEN }}
           script: |
             github.issues.createComment({
               issue_number: context.issue.number,
@@ -54,7 +54,7 @@ jobs:
     steps:
       - uses: actions/github-script@v3
         with:
-          github-token: ${{secrets.GITHUB_TOKEN}}
+          github-token: ${{ secrets.EXPO_BOT_GITHUB_TOKEN }}
           script: |
             github.issues.createComment({
               issue_number: context.issue.number,
@@ -83,7 +83,7 @@ jobs:
     steps:
       - uses: actions/github-script@v3
         with:
-          github-token: ${{secrets.GITHUB_TOKEN}}
+          github-token: ${{ secrets.EXPO_BOT_GITHUB_TOKEN }}
           script: |
             github.issues.createComment({
               issue_number: context.issue.number,
@@ -100,7 +100,7 @@ jobs:
     steps:
       - uses: actions/github-script@v3
         with:
-          github-token: ${{secrets.GITHUB_TOKEN}}
+          github-token: ${{ secrets.EXPO_BOT_GITHUB_TOKEN }}
           script: |
             github.issues.createComment({
               issue_number: context.issue.number,
@@ -128,7 +128,7 @@ jobs:
     steps:
       - uses: actions/github-script@v3
         with:
-          github-token: ${{secrets.GITHUB_TOKEN}}
+          github-token: ${{ secrets.EXPO_BOT_GITHUB_TOKEN }}
           script: |
             github.issues.createComment({
               issue_number: context.issue.number,
