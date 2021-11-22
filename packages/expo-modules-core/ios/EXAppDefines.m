@@ -5,39 +5,47 @@
 
 @implementation EXAppDefines
 
-static BOOL _debug;
-static BOOL _rctDebug;
-static BOOL _rctDev;
+static NSDictionary *_storage;
 static BOOL _loaded = NO;
 
 + (BOOL)APP_DEBUG
 {
   [self throwIfNotLoaded];
-  return _debug;
+  return _storage[@"APP_DEBUG"];
 }
 
 + (BOOL)APP_RCT_DEBUG
 {
   [self throwIfNotLoaded];
-  return _rctDebug;
+  return _storage[@"APP_RCT_DEBUG"];
 }
 
 + (BOOL)APP_RCT_DEV
 {
   [self throwIfNotLoaded];
-  return _rctDev;
+  return _storage[@"APP_RCT_DEV"];
 }
 
-+ (void)load:(BOOL)APP_DEBUG APP_RCT_DEBUG:(BOOL)APP_RCT_DEBUG APP_RCT_DEV:(BOOL)APP_RCT_DEV
++ (NSDictionary *)getAllDefines
+{
+  return _storage;
+}
+
++ (void)load:(NSDictionary *)defines
 {
   NSAssert([NSThread isMainThread], @"This function must be called on main thread");
   NSAssert(!_loaded, @"EXAppDefines is already loaded");
   if (!_loaded) {
-    _debug = APP_DEBUG;
-    _rctDebug = APP_RCT_DEBUG;
-    _rctDev = APP_RCT_DEV;
+    _storage = defines;
     _loaded = YES;
   }
+}
+
+// Private function for EXAppDefinesTest to unload the current state.
++ (void)_unload
+{
+  _storage = nil;
+  _loaded = NO;
 }
 
 + (void)throwIfNotLoaded
@@ -48,5 +56,6 @@ static BOOL _loaded = NO;
                                  userInfo:nil];
   }
 }
+
 
 @end

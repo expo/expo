@@ -17,7 +17,9 @@ NS_ASSUME_NONNULL_BEGIN
 @property (class, nonatomic, assign, readonly) BOOL APP_RCT_DEBUG;
 @property (class, nonatomic, assign, readonly) BOOL APP_RCT_DEV;
 
-+ (void)load:(BOOL)APP_DEBUG APP_RCT_DEBUG:(BOOL)APP_RCT_DEBUG APP_RCT_DEV:(BOOL)APP_RCT_DEV;
++ (NSDictionary *)getAllDefines;
+
++ (void)load:(NSDictionary *)defines;
 
 @end
 

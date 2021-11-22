@@ -9,7 +9,16 @@
 
 + (void)load
 {
-  [EXAppDefines load:DEBUG APP_RCT_DEBUG:RCT_DEBUG APP_RCT_DEV:RCT_DEV];
+  BOOL APP_DEBUG;
+  [EXAppDefines load:@{
+#if DEBUG
+    @"APP_DEBUG": @(YES),
+#else
+    @"APP_DEBUG": @(NO),
+#endif
+    @"APP_RCT_DEBUG": @(RCT_DEBUG),
+    @"APP_RCT_DEV": @(RCT_DEV),
+  }];
 }
 
 @end
