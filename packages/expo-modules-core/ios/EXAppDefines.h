@@ -4,16 +4,20 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-// We ship some modules in [prebuilt binaries](https://expo.fyi/prebuilt-modules),
-// classic defines like `DEBUG` or `RCT_DEV` may not like what we expected.
-// Because the prebuilt modules are always built with Release configurations.
-// This class acts as a supporter to get app build time configurations.
-//
+/**
+ For expo modules to get app build time preprocessor values.
+ We ship some modules in [prebuilt binaries](https://expo.fyi/prebuilt-modules),
+ classic defines like `DEBUG` or `RCT_DEV` may not work as expected
+ because the prebuilt modules are always built with Release configuration.
+ This class acts as a supporter to get app build time preprocessor values.
+ */
 @interface EXAppDefines : NSObject
 
 @property (class, nonatomic, assign, readonly) BOOL APP_DEBUG;
 @property (class, nonatomic, assign, readonly) BOOL APP_RCT_DEBUG;
 @property (class, nonatomic, assign, readonly) BOOL APP_RCT_DEV;
+
++ (void)load:(BOOL)APP_DEBUG APP_RCT_DEBUG:(BOOL)APP_RCT_DEBUG APP_RCT_DEV:(BOOL)APP_RCT_DEV;
 
 @end
 
