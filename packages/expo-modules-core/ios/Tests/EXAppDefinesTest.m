@@ -44,7 +44,7 @@
   XCTAssertThrows([EXAppDefines load:defines]);
 }
 
-- (void)test_loadAndgetAppDebug_shouldMatchDebugDefines
+- (void)test_loadAndGetAppDebug_shouldMatchDebugDefines
 {
   NSDictionary *defines = @{
     @"APP_DEBUG": @(YES),
