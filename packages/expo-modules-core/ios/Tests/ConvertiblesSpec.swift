@@ -8,6 +8,40 @@ import Nimble
 
 class ConvertiblesSpec: QuickSpec {
   override func spec() {
+    describe("URL") {
+      it("converts from remote url") {
+        let remoteUrlString = "https://expo.dev"
+        let url = try URL.convert(from: remoteUrlString)
+
+        expect(url.path) == ""
+        expect(url.absoluteString) == remoteUrlString
+      }
+
+      it("converts from file url") {
+        let fileUrlString = "file:///expo/tmp"
+        let url = try URL.convert(from: fileUrlString)
+
+        expect(url.path) == "/expo/tmp"
+        expect(url.absoluteString) == fileUrlString
+        expect(url.isFileURL) == true
+      }
+
+      it("converts from file path") {
+        let filePath = "/expo/image.png"
+        let url = try URL.convert(from: filePath)
+
+        expect(url.path) == filePath
+        expect(url.absoluteString) == "file://\(filePath)"
+        expect(url.isFileURL) == true
+      }
+
+      it("throws when no string") {
+        expect { try URL.convert(from: 29.5) }.to(
+          throwError(errorType: Conversions.ConvertingError<URL>.self)
+        )
+      }
+    }
+
     describe("CGPoint") {
       let x = -8.3
       let y = 4.6

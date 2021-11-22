@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Made `Foundation.URL` a convertible type to consistently normalize file paths to file URLs.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
