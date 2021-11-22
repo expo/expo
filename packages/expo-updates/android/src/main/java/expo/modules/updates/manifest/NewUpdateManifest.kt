@@ -28,7 +28,7 @@ class NewUpdateManifest private constructor(
   private val mRuntimeVersion: String,
   private val mLaunchAsset: JSONObject,
   private val mAssets: JSONArray?,
-  private val mAssetHMACs: JSONObject?,
+  private val mAssetHeaders: JSONObject?,
   private val mServerDefinedHeaders: String?,
   private val mManifestFilters: String?
 ) : UpdateManifest {
@@ -51,7 +51,7 @@ class NewUpdateManifest private constructor(
   }
 
   private val assetHeaders: Map<String, JSONObject> by lazy {
-    (mAssetHMACs ?: JSONObject()).let { it.keys().asSequence().associateWith { key -> it.require(key) } }
+    (mAssetHeaders ?: JSONObject()).let { it.keys().asSequence().associateWith { key -> it.require(key) } }
   }
 
   override val assetEntityList: List<AssetEntity> by lazy {
@@ -67,7 +67,7 @@ class NewUpdateManifest private constructor(
           headers = assetHeaders[mLaunchAsset.getString("key")]
           isLaunchAsset = true
           embeddedAssetFilename = EmbeddedLoader.BUNDLE_FILENAME
-          signature = mLaunchAsset.getNullable("signature")
+          expectedHash = mLaunchAsset.getString("hash")
         }
       )
     } catch (e: JSONException) {
@@ -85,7 +85,7 @@ class NewUpdateManifest private constructor(
               url = Uri.parse(assetObject.getString("url"))
               headers = assetHeaders[assetObject.getString("key")]
               embeddedAssetFilename = assetObject.getNullable("embeddedAssetFilename")
-              signature = assetObject.getNullable("signature")
+              expectedHash = mLaunchAsset.getString("hash")
             }
           )
         } catch (e: JSONException) {

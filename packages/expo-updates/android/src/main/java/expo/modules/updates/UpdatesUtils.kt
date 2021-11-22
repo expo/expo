@@ -106,8 +106,8 @@ object UpdatesUtils {
   }
 
   @Throws(NoSuchAlgorithmException::class, IOException::class)
-  fun sha256AndWriteToDestinationFile(bytes: ByteArray, destination: File): ByteArray {
-    DigestInputStream(bytes.inputStream(), MessageDigest.getInstance("SHA-256")).use { digestInputStream ->
+  fun sha256AndWriteToFile(inputStream: InputStream, destination: File): ByteArray {
+    DigestInputStream(inputStream, MessageDigest.getInstance("SHA-256")).use { digestInputStream ->
       // write file atomically by writing it to a temporary path and then renaming
       // this protects us against partially written files if the process is interrupted
       val tmpFile = File(destination.absolutePath + ".tmp")
@@ -121,12 +121,8 @@ object UpdatesUtils {
   }
 
   @Throws(IOException::class)
-  fun maybeVerifySignedHash(bytes: ByteArray, codesigningConfiguration: Crypto.CodeSigningConfiguration?) {
-    if (codesigningConfiguration == null) {
-      return
-    }
-
-    // if codesigning is enabled, ensure the signed message digest that is included with the file is valid
+  fun maybeVerifySignedHash(bytes: ByteArray, codesigningConfiguration: Crypto.CodeSigningConfiguration) {
+    // ensure the signed message digest that is included with the file is valid
     val isSignatureValid = codesigningConfiguration.verify(bytes)
     if (!isSignatureValid) {
       throw IOException("File download was successful, but signature was incorrect")

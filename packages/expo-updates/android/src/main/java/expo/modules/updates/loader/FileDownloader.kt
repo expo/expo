@@ -2,6 +2,7 @@ package expo.modules.updates.loader
 
 import android.content.Context
 import android.util.Log
+import org.apache.commons.codec.binary.Hex
 import expo.modules.jsonutils.getNullable
 import expo.modules.jsonutils.require
 import expo.modules.updates.UpdatesConfiguration
@@ -49,7 +50,7 @@ open class FileDownloader(context: Context) {
     return File(context.cacheDir, "okhttp")
   }
 
-  private fun downloadFileToPath(request: Request, destination: File, codeSigningCertificate: Crypto.CodeSigningCertificate?, codeSigningSignature: Crypto.CodeSigningSignature?, callback: FileDownloadCallback) {
+  private fun downloadFileToPath(request: Request, destination: File, callback: FileDownloadCallback) {
     downloadData(
       request,
       object : Callback {
@@ -69,25 +70,10 @@ open class FileDownloader(context: Context) {
             return
           }
           try {
-            val codesigningConfiguration = codeSigningCertificate?.let {
-              Crypto.CodeSigningConfiguration(
-                it,
-                codeSigningSignature ?: Crypto.CodeSigningSignature(response.header("expo-signed-hash") ?: throw IOException("Signature not found for file in either expo-signed-hash header or manifest field"))
-              )
+            response.body()!!.byteStream().use { inputStream ->
+              val hash = UpdatesUtils.sha256AndWriteToFile(inputStream, destination)
+              callback.onSuccess(destination, hash)
             }
-
-            val responseBytes = response.body()!!.bytes()
-
-            // if codesigning is enabled, ensure the signed message digest that is included with the file is valid
-            if (codesigningConfiguration != null) {
-              val isSignatureValid = codesigningConfiguration.verify(responseBytes)
-              if (!isSignatureValid) {
-                throw IOException("File download was successful, but signature was incorrect " + destination.absolutePath)
-              }
-            }
-
-            val hash = UpdatesUtils.sha256AndWriteToDestinationFile(responseBytes, destination)
-            callback.onSuccess(destination, hash)
           } catch (e: Exception) {
             Log.e(TAG, "Failed to download file to destination $destination", e)
             callback.onFailure(e)
@@ -212,23 +198,22 @@ open class FileDownloader(context: Context) {
       asset.relativePath = filename
       callback.onSuccess(asset, false)
     } else {
-      val assetSignature = asset.signature
-      val codeSigningSignatureInfo = if (assetSignature !== null) {
-        Crypto.CodeSigningSignature(assetSignature)
-      } else null
-
       try {
         downloadFileToPath(
           createRequestForAsset(asset, configuration),
           path,
-          configuration.codeSigningCertificate?.let { Crypto.CodeSigningCertificate(it) },
-          codeSigningSignatureInfo,
           object : FileDownloadCallback {
             override fun onFailure(e: Exception) {
               callback.onFailure(e, asset)
             }
 
             override fun onSuccess(file: File, hash: ByteArray) {
+              val hashHexString = String(Hex.encodeHex(hash))
+              if (!asset.expectedHash.equals(hashHexString)) {
+                callback.onFailure(Exception("Asset hash invalid: ${asset.key}; expectedHash: ${asset.expectedHash}; actualHash: $hashHexString"), asset)
+                return
+              }
+
               asset.downloadTime = Date()
               asset.relativePath = filename
               asset.hash = hash
@@ -277,19 +262,19 @@ open class FileDownloader(context: Context) {
     ) {
       try {
         val signedHash = response.header("expo-signed-hash")
-        val codeSigningCertificate =
-          configuration.codeSigningCertificate?.let { Crypto.CodeSigningCertificate(it) }
-        val codesigningInfo = codeSigningCertificate?.let {
+        configuration.codeSigningCertificate?.let {
+          Crypto.CodeSigningCertificate(it)
+        }?.let {
           Crypto.CodeSigningConfiguration(
             it,
             Crypto.CodeSigningSignature(
               signedHash
-                ?: throw IOException("No expo-signed-hash header specified for manifest file")
+                ?: throw IOException("No expo-signature header specified for manifest file")
             )
           )
+        }?.let {
+          UpdatesUtils.maybeVerifySignedHash(bodyString.toByteArray(), it)
         }
-
-        UpdatesUtils.maybeVerifySignedHash(bodyString.toByteArray(), codesigningInfo)
       } catch (e: Exception) {
         callback.onFailure("Downloaded manifest signature is invalid", e)
       }

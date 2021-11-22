@@ -132,7 +132,7 @@ abstract class UpdatesDatabase : RoomDatabase() {
 
     val MIGRATION_7_8: Migration = object : Migration(7, 8) {
       override fun migrate(database: SupportSQLiteDatabase) {
-        database.execSQL("ALTER TABLE `assets` ADD COLUMN `signature` TEXT")
+        database.execSQL("ALTER TABLE `assets` ADD COLUMN `expected_hash` TEXT")
       }
     }
   }
