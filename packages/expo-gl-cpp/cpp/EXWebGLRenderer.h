@@ -37,7 +37,7 @@ enum class EXWebGLClass {
 };
 
 void ensurePrototypes(jsi::Runtime &runtime);
-void createWebGLRenderer(jsi::Runtime &runtime, EXGLContext *, initGlesContext);
+void createWebGLRenderer(jsi::Runtime &runtime, EXGLContext *, initGlesContext, jsi::Object&& global);
 jsi::Value createWebGLObject(
     jsi::Runtime &runtime,
     EXWebGLClass webglClass,

@@ -102,7 +102,7 @@
         [self flush];
       });
 
-      _isContextReady = YES
+      _isContextReady = YES;
       if ([self.delegate respondsToSelector:@selector(glContextInitialized:)]) {
         [self.delegate glContextInitialized:self];
       }

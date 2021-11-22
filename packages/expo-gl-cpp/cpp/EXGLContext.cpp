@@ -10,14 +10,15 @@ void EXGLContext::prepareContext(jsi::Runtime &runtime, std::function<void(void)
   this->flushOnGLThread = flushMethod;
   try {
     auto viewport = prepareOpenGLESContext();
-    createWebGLRenderer(runtime, this, viewport);
+    createWebGLRenderer(runtime, this, viewport, runtime.global());
     tryRegisterOnJSRuntimeDestroy(runtime);
 
     jsi::Value workletRuntimeValue = runtime.global().getProperty(runtime, "_WORKLET_RUNTIME");
     if (workletRuntimeValue.isNumber()) {
       jsi::Runtime &workletRuntime = *reinterpret_cast<jsi::Runtime *>(
           static_cast<uintptr_t>(workletRuntimeValue.getNumber()));
-      createWebGLRenderer(workletRuntime, this, viewport);
+      createWebGLRenderer(
+          workletRuntime, this, viewport, workletRuntime.global().getPropertyAsObject(workletRuntime, "global"));
       tryRegisterOnJSRuntimeDestroy(workletRuntime);
     }
   } catch (const std::runtime_error &err) {

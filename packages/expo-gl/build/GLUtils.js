@@ -8,6 +8,11 @@ const MAX_STRING_LENGTH = 20;
  * Sets up `__expoSetLogging` method providing some logging options useful when debugging GL calls.
  */
 export function configureLogging(gl) {
+    if (gl.__expoSetLogging) {
+        // currently unnecessary, but if we move logger implementation to c++
+        // we could to that without introducing breaking changes.
+        return;
+    }
     // Enable/disable logging of all GL function calls
     let loggingOption = GLLoggingOption.DISABLED;
     gl.__expoSetLogging = (option) => {
@@ -20,15 +25,15 @@ export function configureLogging(gl) {
         // Turn off logging.
         if (!option || option === GLLoggingOption.DISABLED) {
             Object.entries(gl).forEach(([key, value]) => {
-                if (typeof value === 'function' && value.original) {
-                    gl[key] = value.original;
+                if (typeof value === 'function' && value.__logWrapper) {
+                    delete gl[key];
                 }
             });
             loggingOption = option;
             return;
         }
         // Turn on logging.
-        Object.entries(gl).forEach(([key, originalValue]) => {
+        Object.entries(Object.getPrototypeOf(gl)).forEach(([key, originalValue]) => {
             if (typeof originalValue !== 'function' || key === '__expoSetLogging') {
                 return;
             }
@@ -64,15 +69,16 @@ export function configureLogging(gl) {
                 }
                 if (loggingOption & GLLoggingOption.GET_ERRORS && key !== 'getError') {
                     // @ts-ignore We need to call into the original `getError`.
-                    const error = gl.getError.original.call(gl);
+                    // eslint-disable-next-line no-proto
+                    const error = gl.__proto__.getError.call(gl);
                     if (error && error !== gl.NO_ERROR) {
                         // `console.error` would cause a red screen, so let's just log with red color.
                         console.log(`\x1b[31mExpoGL: Error ${GLErrors[error]}\x1b[0m`);
                     }
                 }
+                gl[key].__logWrapper = true;
                 return result;
             };
-            gl[key].original = originalValue;
         });
         loggingOption = option;
     };

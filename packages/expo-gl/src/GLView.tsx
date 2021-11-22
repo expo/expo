@@ -17,8 +17,6 @@ import {
   BaseGLViewProps,
 } from './GLView.types';
 
-const packageJSON = require('../package.json');
-
 export interface WebGLObject {
   id: number;
 }
@@ -165,7 +163,7 @@ export class GLView extends React.Component<GLViewProps> {
 
 GLView.NativeView = NativeView;
 
-// Get the GL interface from an EXGLContextId and do JS-side setup
+// Get the GL interface from an EXGLContextId
 const getGl = (exglCtxId: number): ExpoWebGLRenderingContext => {
   if (!global.__EXGLContexts) {
     throw new CodedError(

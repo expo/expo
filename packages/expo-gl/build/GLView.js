@@ -2,7 +2,6 @@ import { NativeModulesProxy, UnavailabilityError, requireNativeViewManager, Code
 import * as React from 'react';
 import { Platform, View, findNodeHandle } from 'react-native';
 import { configureLogging } from './GLUtils';
-const packageJSON = require('../package.json');
 const { ExponentGLObjectManager, ExponentGLViewManager } = NativeModulesProxy;
 const NativeView = requireNativeViewManager('ExponentGLView');
 /**
@@ -86,7 +85,7 @@ export class GLView extends React.Component {
     }
 }
 GLView.NativeView = NativeView;
-// Get the GL interface from an EXGLContextId and do JS-side setup
+// Get the GL interface from an EXGLContextId
 const getGl = (exglCtxId) => {
     if (!global.__EXGLContexts) {
         throw new CodedError('ERR_GL_NOT_AVAILABLE', 'GL is currently not available. (Have you enabled remote debugging? GL is not available while debugging remotely.)');
