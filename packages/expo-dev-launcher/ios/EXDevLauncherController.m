@@ -151,6 +151,7 @@ NSString *fakeLauncherBundleUrl = @"embedded://EXDevLauncher/dummy";
   _delegate = delegate;
   _launchOptions = launchOptions;
   _window = window;
+  EXDevLauncherUncaughtExceptionHandler.isInstalled = true;
 
   if (!launchOptions[UIApplicationLaunchOptionsURLKey]) {
     [self navigateToLauncher];
