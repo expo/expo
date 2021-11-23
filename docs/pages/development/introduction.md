@@ -10,10 +10,10 @@ import ImageSpotlight from '~/components/plugins/ImageSpotlight'
 
 Building your project with Expo allows you to iterate quickly and safely by allowing you to make most changes in JavaScript. [Your team can acheive web-like iteration speeds](https://blog.expo.dev/javascript-driven-development-with-custom-runtimes-eda87d574c9d) by decomposing your application into:
 
-- **A Client**: A native binary that can interact with platform API which is built and distributed the same as in traditional native development. 
+- **A Client**: A native binary that can interact with platform API which is built and distributed the same as in traditional native development. Expo Go is an example of a client that is used to develop many Expo apps.
 - **An Update**: An atomic collection of assets like JavaScript, data files, or media that instruct the client how to behave. These updates may be served from your local computer by `expo-cli`, embedded in the binary by EAS Build, or hosted on a publicly available server.
 
-## Development Clients: from Expo Go to Development Builds
+## From Expo Go to Development Builds
 
 To help new projects get started, the [Expo Go](https://expo.dev/client) app is a standard client containing a preset collection of modules. As your project moves toward release, you may find that you need to customize your project, either to reduce your bundle size, to use a module offered by developers in the React Native community, or even to add your own custom native code. At that point, you can build a development client tailored to your project, install it on your phone, and continue developing. 
 
