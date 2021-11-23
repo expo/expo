@@ -20,7 +20,7 @@ internal class DevLauncherManifestParserTest {
 
   @Before
   fun setup() {
-    server.start(9090)
+    server.start()
   }
 
   @After

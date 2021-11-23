@@ -22,7 +22,7 @@ internal class DevMenuOkHttpExtensionTest {
 
   @Before
   fun setup() {
-    server.start(9090)
+    server.start()
   }
 
   @After
