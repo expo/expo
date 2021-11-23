@@ -1307,7 +1307,7 @@ SPEC CHECKSUMS:
   ExpoHaptics: c0c014eabfdd1353a908f857f168b01fafd526db
   ExpoLinearGradient: 841746b0ef9c771d1f37fa5463f39eb25b6aae77
   ExpoLocalization: 882eeed58daf9aa9d7265fff537a3ddae3834d2f
-  ExpoModulesCore: 3339f23adf96e5b39e6315d5f32b4585ecd4cd43
+  ExpoModulesCore: 1c28b20c381edd3817be74505499cdaa9658fc97
   ExpoSystemUI: 3c969e3db290fcd5edb9c466d585f183d934b421
   EXPrint: a224501bbb89072567c58a5127f2d125b8776ea2
   EXRandom: 9ed4600d410cf2fe58d22b3121865624065a16e9

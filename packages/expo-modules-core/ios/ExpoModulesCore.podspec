@@ -41,6 +41,6 @@ Pod::Spec.new do |s|
     test_spec.dependency 'Quick'
     test_spec.dependency 'Nimble'
 
-    test_spec.source_files = 'Tests/**/*.swift'
+    test_spec.source_files = 'Tests/**/*.{m,swift}'
   end
 end
