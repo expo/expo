@@ -61,6 +61,8 @@ class DevLauncherUncaughtExceptionHandler(
     }
 
     // We don't know if the error screen will show up.
+    // For instance, if the exception was thrown in `MainApplication.onCreate` method,
+    // the erorr screen won't show up.  
     // That's why we schedule a simple function which will check
     // if the error was handle properly or will fallback
     // to the default exception handler.
