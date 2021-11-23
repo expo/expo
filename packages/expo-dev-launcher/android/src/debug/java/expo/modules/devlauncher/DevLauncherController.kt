@@ -27,6 +27,7 @@ import expo.modules.devlauncher.launcher.DevLauncherIntentRegistryInterface
 import expo.modules.devlauncher.launcher.DevLauncherLifecycle
 import expo.modules.devlauncher.launcher.DevLauncherReactActivityDelegateSupplier
 import expo.modules.devlauncher.launcher.DevLauncherRecentlyOpenedAppsRegistry
+import expo.modules.devlauncher.launcher.errors.DevLauncherUncaughtExceptionHandler
 import expo.modules.devlauncher.launcher.loaders.DevLauncherAppLoaderFactoryInterface
 import expo.modules.devlauncher.launcher.manifest.DevLauncherManifestParser
 import expo.modules.devlauncher.launcher.menu.DevLauncherMenuDelegate
@@ -307,6 +308,7 @@ class DevLauncherController private constructor()
     }.apply { addFlags(NEW_ACTIVITY_FLAGS) }
 
   companion object {
+    private var sErrorHandlerWasInitialized = false
     private var sLauncherClass: Class<*>? = null
     internal var sAdditionalPackages: List<ReactPackage>? = null
 
@@ -327,6 +329,14 @@ class DevLauncherController private constructor()
       val testInterceptor = DevLauncherKoinContext.app.koin.get<DevLauncherTestInterceptor>()
       if (!testInterceptor.allowReinitialization()) {
         check(!wasInitialized()) { "DevelopmentClientController was initialized." }
+      }
+      if (!sErrorHandlerWasInitialized && context is Application) {
+        val handler = DevLauncherUncaughtExceptionHandler(
+          context,
+          Thread.getDefaultUncaughtExceptionHandler()
+        )
+        Thread.setDefaultUncaughtExceptionHandler(handler)
+        sErrorHandlerWasInitialized = true
       }
 
       MenuDelegateWasInitialized = false

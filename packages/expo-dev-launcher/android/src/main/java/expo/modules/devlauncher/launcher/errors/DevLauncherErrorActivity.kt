@@ -1,6 +1,7 @@
 package expo.modules.devlauncher.launcher.errors
 
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.widget.BaseAdapter
@@ -117,6 +118,19 @@ class DevLauncherErrorActivity
           Intent(activity, DevLauncherErrorActivity::class.java)
         )
       }
+    }
+
+    fun showFatalError(context: Context, error: DevLauncherAppError) {
+      addError(error)
+      
+      context.startActivity(
+        Intent(context, DevLauncherErrorActivity::class.java).apply {
+          addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or
+            Intent.FLAG_ACTIVITY_CLEAR_TASK or
+            Intent.FLAG_ACTIVITY_NO_ANIMATION
+          )
+        }
+      )
     }
 
     fun addError(error: DevLauncherAppError) {
