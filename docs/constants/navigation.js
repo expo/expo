@@ -20,6 +20,7 @@ const GROUPS = {
   'Configuration Files': ['Configuration Files'],
   'React Native': ['React Native'],
   Preview: ['Preview', 'EAS Update'],
+  EAS: ['EAS'],
   'EAS Build': ['Start Building', 'App Signing', 'Reference'],
   'EAS Submit': ['EAS Submit'],
   'Technical Specs': ['Technical Specs'],
@@ -28,6 +29,10 @@ const GROUPS = {
 
 // This array provides the **ordering** for pages within each section
 const sections = [
+  {
+    name: 'EAS',
+    reference: ['Expo Application Services', 'Webhooks'],
+  },
   {
     name: 'EAS Update',
     reference: [
@@ -89,7 +94,6 @@ const sections = [
       'Troubleshooting build errors and crashes',
       'Running builds on your own infrastructure',
       'Caching dependencies',
-      'Build webhooks',
       'Configuration process',
       'Android build process',
       'iOS build process',
@@ -103,6 +107,7 @@ const sections = [
       'Configuring EAS Submit with eas.json',
       'Submitting to the Google Play Store',
       'Submitting to the Apple App Store',
+      'Using EAS Submit with "expo build"',
     ],
   },
   {

@@ -28,7 +28,7 @@ const DIR_MAPPING = {
   'push-notifications': 'Push Notifications',
   preview: 'Preview',
   build: 'Start Building',
-  eas: 'Expo Application Services',
+  eas: 'EAS',
   'feature-preview': 'Feature Preview',
   'app-signing': 'App Signing',
   'build-reference': 'Reference',
@@ -43,6 +43,9 @@ const DIR_MAPPING = {
 };
 
 const processUrl = path => {
+  if (path === 'pages/eas/index.md') {
+    return '/eas/';
+  }
   return path.replace(/^pages\//, '/').replace(/.mdx?$/, '');
 };
 
@@ -65,8 +68,8 @@ const generateGeneralNavLinks = (path_, arr = null) => {
   for (let i = 0; i < items.length; i++) {
     const filePath = path.join(path_, items[i]);
     const { ext, name } = path.parse(filePath);
-    // Only process markdown files that are not index pages
-    if (ext === '.md' && name !== 'index') {
+    // Only process markdown files that are not index pages (with exception for EAS)
+    if (filePath === 'pages/eas/index.md' || (ext === '.md' && name !== 'index')) {
       try {
         const attributes = fm(fs.readFileSync(filePath, 'utf8')).attributes;
         const title = attributes.title;
