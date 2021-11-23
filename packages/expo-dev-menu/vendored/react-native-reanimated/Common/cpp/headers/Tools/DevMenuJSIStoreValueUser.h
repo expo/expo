@@ -7,7 +7,7 @@
 #include <unordered_map>
 #include <jsi/jsi.h>
 #include <mutex>
-#include "Scheduler.h"
+#include "DevMenuScheduler.h"
 
 using namespace facebook;
 

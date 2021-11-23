@@ -1,11 +1,11 @@
 #pragma once
 
-#include "WorkletsCache.h"
-#include "SharedParent.h"
+#include "DevMenuWorkletsCache.h"
+#include "DevMenuSharedParent.h"
 #include <jsi/jsi.h>
 #include <string>
-#include "JSIStoreValueUser.h"
-#include "HostFunctionHandler.h"
+#include "DevMenuJSIStoreValueUser.h"
+#include "DevMenuHostFunctionHandler.h"
 
 namespace devmenureanimated {
 

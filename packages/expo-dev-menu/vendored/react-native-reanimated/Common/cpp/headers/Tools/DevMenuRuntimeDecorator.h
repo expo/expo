@@ -1,6 +1,6 @@
 #pragma once
 
-#include "PlatformDepMethodsHolder.h"
+#include "DevMenuPlatformDepMethodsHolder.h"
 #include <stdio.h>
 #include <jsi/jsi.h>
 

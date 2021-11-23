@@ -1,7 +1,7 @@
 #pragma once
 
-#include "ShareableValue.h"
-#include "NativeReanimatedModule.h"
+#include "DevMenuShareableValue.h"
+#include "DevMenuNativeReanimatedModule.h"
 #include <stdio.h>
 #include <jsi/jsi.h>
 

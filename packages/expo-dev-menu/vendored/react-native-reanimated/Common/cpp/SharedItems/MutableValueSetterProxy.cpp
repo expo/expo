@@ -1,6 +1,6 @@
-#include "MutableValueSetterProxy.h"
-#include "SharedParent.h"
-#include "MutableValue.h"
+#include "DevMenuMutableValueSetterProxy.h"
+#include "DevMenuSharedParent.h"
+#include "DevMenuMutableValue.h"
 #include <jsi/jsi.h>
 
 using namespace facebook;

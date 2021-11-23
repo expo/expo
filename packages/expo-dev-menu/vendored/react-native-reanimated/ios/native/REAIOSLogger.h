@@ -1,6 +1,6 @@
 #pragma once
 
-#include "ReanimatedHiddenHeaders.h"
+#include "DevMenuReanimatedHiddenHeaders.h"
 #include <stdio.h>
 
 namespace devmenureanimated {

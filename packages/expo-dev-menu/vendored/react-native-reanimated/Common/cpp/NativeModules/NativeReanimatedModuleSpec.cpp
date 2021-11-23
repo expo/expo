@@ -1,4 +1,4 @@
-#include "NativeReanimatedModuleSpec.h"
+#include "DevMenuNativeReanimatedModuleSpec.h"
 
 namespace devmenureanimated {
 

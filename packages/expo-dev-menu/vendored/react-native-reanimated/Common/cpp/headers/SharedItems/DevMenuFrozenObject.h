@@ -1,8 +1,8 @@
 #pragma once
 
-#include "WorkletsCache.h"
-#include "SharedParent.h"
-#include "RuntimeManager.h"
+#include "DevMenuWorkletsCache.h"
+#include "DevMenuSharedParent.h"
+#include "DevMenuRuntimeManager.h"
 #include <jsi/jsi.h>
 
 using namespace facebook;
