@@ -12,7 +12,6 @@ import com.facebook.react.bridge.ReactContext
 import com.facebook.react.bridge.WritableMap
 import com.facebook.react.modules.core.DeviceEventManagerModule
 import expo.modules.updates.loader.Crypto
-import okhttp3.ResponseBody
 import org.apache.commons.io.FileUtils
 import org.json.JSONObject
 import java.io.*
@@ -36,7 +35,7 @@ object UpdatesUtils {
   private const val UPDATES_EVENT_NAME = "Expo.nativeUpdatesEvent"
 
   @Throws(Exception::class)
-  fun getHeadersMapFromJSONString(stringifiedJSON: String): Map<String, String> {
+  fun getMapFromJSONString(stringifiedJSON: String): Map<String, String> {
     val jsonObject = JSONObject(stringifiedJSON)
     val keys = jsonObject.keys()
     val newMap = mutableMapOf<String, String>()
@@ -117,15 +116,6 @@ object UpdatesUtils {
       }
       val md = digestInputStream.messageDigest
       return md.digest()
-    }
-  }
-
-  @Throws(IOException::class)
-  fun maybeVerifySignedHash(bytes: ByteArray, codesigningConfiguration: Crypto.CodeSigningConfiguration) {
-    // ensure the signed message digest that is included with the file is valid
-    val isSignatureValid = codesigningConfiguration.verify(bytes)
-    if (!isSignatureValid) {
-      throw IOException("File download was successful, but signature was incorrect")
     }
   }
 

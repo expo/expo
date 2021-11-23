@@ -3,7 +3,8 @@ package expo.modules.updates.loader
 import android.annotation.SuppressLint
 import android.security.keystore.KeyProperties
 import android.util.Base64
-import android.util.Log
+import expo.modules.structuredheaders.BooleanItem
+import expo.modules.structuredheaders.Dictionary
 import okhttp3.*
 import java.io.IOException
 import java.security.*
@@ -12,8 +13,18 @@ import java.security.cert.CertificateFactory
 import java.security.cert.X509Certificate
 import java.security.spec.InvalidKeySpecException
 import java.security.spec.X509EncodedKeySpec
+import expo.modules.structuredheaders.Parser
+import expo.modules.structuredheaders.StringItem
 
 object Crypto {
+  const val CODE_SIGNING_METADATA_ALGORITHM_KEY = "alg"
+  const val CODE_SIGNING_METADATA_KEY_ID_KEY = "keyid"
+
+  const val CODE_SIGNING_METADATA_DEFAULT_KEY_ID = "root"
+  const val CODE_SIGNING_SIGNATURE_STRUCTURED_FIELD_KEY_SIGNATURE = "sig"
+  const val CODE_SIGNING_SIGNATURE_STRUCTURED_FIELD_KEY_KEY_ID = "keyid"
+  const val CODE_SIGNING_SIGNATURE_STRUCTURED_FIELD_KEY_ALGORITHM = "alg"
+
   private const val EXPO_PUBLIC_KEY_URL = "https://exp.host/--/manifest-public-key"
 
   // ASN.1 path to the extended key usage info within a CERT
@@ -112,8 +123,12 @@ object Crypto {
     fun onCompleted(isValid: Boolean)
   }
 
-  data class CodeSigningCertificate(private val certificateString: String) {
-    val publicKey: PublicKey by lazy {
+  enum class CodeSigningAlgorithm(val algorithmName: String) {
+    RSA_SHA256("rsa-v1_5-sha256"),
+  }
+
+  data class CodeSigningConfiguration(private val certificateString: String, private val metadata: Map<String, String>?) {
+    val embeddedCertificate: X509Certificate by lazy {
       val certificateFactory = CertificateFactory.getInstance("X.509")
       val certificate = certificateFactory.generateCertificate(certificateString.byteInputStream()) as X509Certificate
       certificate.checkValidity()
@@ -128,18 +143,57 @@ object Crypto {
         throw CertificateException("X509v3 Extended Key Usage: Code Signing not present")
       }
 
-      certificate.publicKey
+      certificate
+    }
+
+    val algorithm: CodeSigningAlgorithm by lazy {
+      when (metadata?.get(CODE_SIGNING_METADATA_ALGORITHM_KEY)) {
+        CodeSigningAlgorithm.RSA_SHA256.algorithmName -> CodeSigningAlgorithm.RSA_SHA256
+        else -> CodeSigningAlgorithm.RSA_SHA256
+      }
+    }
+
+    val keyId: String by lazy {
+      metadata?.get(CODE_SIGNING_METADATA_KEY_ID_KEY) ?: CODE_SIGNING_METADATA_DEFAULT_KEY_ID
     }
   }
 
-  data class CodeSigningSignature(val signature: String)
+  data class CodeSigningInfo(val signature: String, val keyId: String?)
 
-  data class CodeSigningConfiguration(private val certificate: CodeSigningCertificate, private val signature: CodeSigningSignature) {
-    fun verify(bytes: ByteArray): Boolean {
-      return Signature.getInstance("SHA256withRSA").apply {
-        initVerify(certificate.publicKey)
-        update(bytes)
-      }.verify(Base64.decode(signature.signature, Base64.DEFAULT))
+  fun createAcceptSignatureHeader(codeSigningConfiguration: CodeSigningConfiguration): String {
+    return Dictionary.valueOf(mapOf(
+      CODE_SIGNING_SIGNATURE_STRUCTURED_FIELD_KEY_SIGNATURE to BooleanItem.valueOf(true),
+      CODE_SIGNING_SIGNATURE_STRUCTURED_FIELD_KEY_KEY_ID to StringItem.valueOf(codeSigningConfiguration.keyId),
+      CODE_SIGNING_SIGNATURE_STRUCTURED_FIELD_KEY_ALGORITHM to StringItem.valueOf(codeSigningConfiguration.algorithm.algorithmName)
+    )).serialize()
+  }
+
+  fun parseSignatureHeader(signatureField: String?): CodeSigningInfo {
+    if (signatureField == null) {
+      throw Error("No expo-signature header specified")
     }
+
+    val signatureMap = Parser(signatureField).parseDictionary().get()
+
+    val sigFieldValue = signatureMap[CODE_SIGNING_SIGNATURE_STRUCTURED_FIELD_KEY_SIGNATURE]
+    val keyIdFieldValue = signatureMap[CODE_SIGNING_SIGNATURE_STRUCTURED_FIELD_KEY_KEY_ID]
+
+    val signature = if (sigFieldValue is StringItem) {
+      sigFieldValue.get()
+    } else throw Error("Structured field $CODE_SIGNING_SIGNATURE_STRUCTURED_FIELD_KEY_SIGNATURE not found in expo-signature header")
+    val keyId = if (keyIdFieldValue is StringItem) {
+      keyIdFieldValue.get()
+    } else null
+
+    return CodeSigningInfo(signature, keyId)
+  }
+
+  fun verifyCodeSigning(configuration: CodeSigningConfiguration, info: CodeSigningInfo, bytes: ByteArray): Boolean {
+    return Signature.getInstance(when (configuration.algorithm) {
+      CodeSigningAlgorithm.RSA_SHA256 -> "SHA256withRSA"
+    }).apply {
+      initVerify(configuration.embeddedCertificate.publicKey)
+      update(bytes)
+    }.verify(Base64.decode(info.signature, Base64.DEFAULT))
   }
 }

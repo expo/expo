@@ -91,7 +91,7 @@ open class FileDownloader(context: Context) {
   ) {
     try {
       downloadData(
-        setHeadersForManifestUrl(configuration, extraHeaders, context),
+        createRequestForManifest(configuration, extraHeaders, context),
         object : Callback {
           override fun onFailure(call: Call, e: IOException) {
             callback.onFailure(
@@ -261,19 +261,15 @@ open class FileDownloader(context: Context) {
       callback: ManifestDownloadCallback
     ) {
       try {
-        val signedHash = response.header("expo-signed-hash")
-        configuration.codeSigningCertificate?.let {
-          Crypto.CodeSigningCertificate(it)
-        }?.let {
-          Crypto.CodeSigningConfiguration(
+        configuration.codeSigningConfiguration?.let {
+          val isSignatureValid = Crypto.verifyCodeSigning(
             it,
-            Crypto.CodeSigningSignature(
-              signedHash
-                ?: throw IOException("No expo-signature header specified for manifest file")
-            )
+            Crypto.parseSignatureHeader(response.header("expo-signature")),
+            bodyString.toByteArray()
           )
-        }?.let {
-          UpdatesUtils.maybeVerifySignedHash(bodyString.toByteArray(), it)
+          if (!isSignatureValid) {
+            throw IOException("File download was successful, but signature was incorrect")
+          }
         }
       } catch (e: Exception) {
         callback.onFailure("Downloaded manifest signature is invalid", e)
@@ -346,7 +342,7 @@ open class FileDownloader(context: Context) {
         .build()
     }
 
-    internal fun setHeadersForManifestUrl(
+    internal fun createRequestForManifest(
       configuration: UpdatesConfiguration,
       extraHeaders: JSONObject?,
       context: Context
@@ -394,6 +390,11 @@ open class FileDownloader(context: Context) {
         .apply {
           for ((key, value) in configuration.requestHeaders) {
             header(key, value)
+          }
+        }
+        .apply {
+          configuration.codeSigningConfiguration?.let {
+            header("expo-accept-signature", Crypto.createAcceptSignatureHeader(it))
           }
         }
         .build()

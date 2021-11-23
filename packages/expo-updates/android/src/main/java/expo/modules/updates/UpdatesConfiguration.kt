@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.util.Log
+import expo.modules.updates.loader.Crypto
 
 class UpdatesConfiguration {
   enum class CheckAutomaticallyConfiguration {
@@ -31,8 +32,9 @@ class UpdatesConfiguration {
   var hasEmbeddedUpdate = true
   var requestHeaders = mapOf<String, String>()
     private set
-  var codeSigningCertificate: String? = null
-    private set
+
+  private var codeSigningCertificate: String? = null
+  private var codeSigningMetadata: Map<String, String>? = null
 
   val isMissingRuntimeVersion: Boolean
     get() = (runtimeVersion == null || runtimeVersion!!.isEmpty()) &&
@@ -49,7 +51,14 @@ class UpdatesConfiguration {
       releaseChannel = ai.metaData.getString("expo.modules.updates.EXPO_RELEASE_CHANNEL", "default")
       launchWaitMs = ai.metaData.getInt("expo.modules.updates.EXPO_UPDATES_LAUNCH_WAIT_MS", 0)
       runtimeVersion = ai.metaData["expo.modules.updates.EXPO_RUNTIME_VERSION"]?.toString()?.replaceFirst("^string:".toRegex(), "")
+
       codeSigningCertificate = ai.metaData["expo.modules.updates.CODE_SIGNING_CERTIFICATE"]?.toString()
+      codeSigningMetadata = UpdatesUtils.getMapFromJSONString(
+        ai.metaData.getString(
+          "expo.modules.updates.CODE_SIGNING_METADATA",
+          "{}"
+        )
+      )
 
       val checkOnLaunchString = ai.metaData.getString("expo.modules.updates.EXPO_UPDATES_CHECK_ON_LAUNCH", "ALWAYS")
       checkOnLaunch = try {
@@ -62,7 +71,7 @@ class UpdatesConfiguration {
         CheckAutomaticallyConfiguration.ALWAYS
       }
 
-      requestHeaders = UpdatesUtils.getHeadersMapFromJSONString(
+      requestHeaders = UpdatesUtils.getMapFromJSONString(
         ai.metaData.getString(
           "expo.modules.updates.UPDATES_CONFIGURATION_REQUEST_HEADERS_KEY",
           "{}"
@@ -137,7 +146,12 @@ class UpdatesConfiguration {
 
     val codeSigningCertificateFromMap = map.readValueCheckingType<String>(UPDATES_CONFIGURATION_CODE_SIGNING_CERTIFICATE)
     if (codeSigningCertificateFromMap != null) {
-      codeSigningCertificate = codeSigningCertificateFromMap;
+      codeSigningCertificate = codeSigningCertificateFromMap
+    }
+
+    val codeSigningMetadataFromMap = map.readValueCheckingType<Map<*, *>>(UPDATES_CONFIGURATION_CODE_SIGNING_METADATA)
+    if (codeSigningMetadataFromMap != null) {
+      codeSigningMetadata = codeSigningMetadataFromMap as Map<String, String>?
     }
 
     return this
@@ -164,6 +178,12 @@ class UpdatesConfiguration {
     }
   }
 
+  val codeSigningConfiguration: Crypto.CodeSigningConfiguration?
+    get() = codeSigningCertificate?.let {
+      Crypto.CodeSigningConfiguration(it, codeSigningMetadata)
+    }
+
+
   companion object {
     private val TAG = UpdatesConfiguration::class.java.simpleName
 
@@ -179,6 +199,7 @@ class UpdatesConfiguration {
     const val UPDATES_CONFIGURATION_HAS_EMBEDDED_UPDATE_KEY = "hasEmbeddedUpdate"
     const val UPDATES_CONFIGURATION_EXPECTS_EXPO_SIGNED_MANIFEST = "expectsSignedManifest"
     const val UPDATES_CONFIGURATION_CODE_SIGNING_CERTIFICATE = "codeSigningCertificate"
+    const val UPDATES_CONFIGURATION_CODE_SIGNING_METADATA = "codeSigningMetadata"
 
     private const val UPDATES_CONFIGURATION_RELEASE_CHANNEL_DEFAULT_VALUE = "default"
     private const val UPDATES_CONFIGURATION_LAUNCH_WAIT_MS_DEFAULT_VALUE = 0

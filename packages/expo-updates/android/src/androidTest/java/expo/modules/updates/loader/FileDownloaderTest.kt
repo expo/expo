@@ -29,7 +29,7 @@ class FileDownloaderTest {
       "usesLegacyManifest" to true
     )
     val config = UpdatesConfiguration().loadValuesFromMap(configMap)
-    val actual = FileDownloader.setHeadersForManifestUrl(config, null, context)
+    val actual = FileDownloader.createRequestForManifest(config, null, context)
     Assert.assertNull(actual.header("Cache-Control"))
   }
 
@@ -41,7 +41,7 @@ class FileDownloaderTest {
       "usesLegacyManifest" to false
     )
     val config = UpdatesConfiguration().loadValuesFromMap(configMap)
-    val actual = FileDownloader.setHeadersForManifestUrl(config, null, context)
+    val actual = FileDownloader.createRequestForManifest(config, null, context)
     Assert.assertNull(actual.header("Cache-Control"))
   }
 
@@ -60,7 +60,7 @@ class FileDownloaderTest {
       put("expo-boolean", true)
     }
 
-    val actual = FileDownloader.setHeadersForManifestUrl(config, extraHeaders, context)
+    val actual = FileDownloader.createRequestForManifest(config, extraHeaders, context)
     Assert.assertEquals("test", actual.header("expo-string"))
     Assert.assertEquals("47.5", actual.header("expo-number"))
     Assert.assertEquals("true", actual.header("expo-boolean"))
@@ -82,7 +82,7 @@ class FileDownloaderTest {
     // serverDefinedHeaders should not be able to override preset headers
     val extraHeaders = JSONObject()
     extraHeaders.put("expo-platform", "ios")
-    val actual = FileDownloader.setHeadersForManifestUrl(config, extraHeaders, context)
+    val actual = FileDownloader.createRequestForManifest(config, extraHeaders, context)
     Assert.assertEquals("android", actual.header("expo-platform"))
     Assert.assertEquals("custom", actual.header("expo-updates-environment"))
   }
