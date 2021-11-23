@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- Added support for th React Native `0.66.X`.
+- Added support for th React Native `0.66.X`. ([#15242](https://github.com/expo/expo/pull/15242) by [@lukmccall](https://github.com/lukmccall))
 
 ### 🐛 Bug fixes
 
