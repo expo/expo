@@ -88,6 +88,7 @@ const sections = [
       'Server infrastructure',
       'Troubleshooting build errors and crashes',
       'Running builds on your own infrastructure',
+      'Installing app variants on the same device',
       'Caching dependencies',
       'Build webhooks',
       'Configuration process',

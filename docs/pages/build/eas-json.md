@@ -100,6 +100,10 @@ A minimal `production` profile looks like this:
 }
 ```
 
+### Installing multiple builds of the same app on a single device
+
+It's common to have development and production builds installed simultaneously on the same device. [Learn about "installing app variants on the same device"](../build-reference/variants.md).
+
 ## Configuring your build tools
 
 Every build depends either implicitly or explicitly on a specific set of versions of related tools that are needed to carry out the build process. These include, but are not limited to: Node.js, npm, yarn, Ruby, Bundler, Cocoapods, Fastlane, Xcode, and Android NDK.
