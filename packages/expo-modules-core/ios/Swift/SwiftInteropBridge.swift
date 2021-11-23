@@ -67,7 +67,7 @@ public final class SwiftInteropBridge: NSObject {
   @objc
   public func exportedModulesConstants() -> [String: Any] {
     return registry.reduce(into: [String: Any]()) { acc, holder in
-      acc[holder.name] = holder.definition.constants
+      acc[holder.name] = holder.getConstants()
     }
   }
 

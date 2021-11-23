@@ -21,8 +21,15 @@ extension AnyModule {
   /**
    Definition function setting the module's constants to export.
    */
-  public func constants(_ closure: () -> [String : Any?]) -> AnyDefinition {
-    return ConstantsDefinition(constants: closure())
+  public func constants(_ body: @escaping () -> [String: Any?]) -> AnyDefinition {
+    return ConstantsDefinition(body: body)
+  }
+
+  /**
+   Definition function setting the module's constants to export.
+   */
+  public func constants(_ body: @autoclosure @escaping () -> [String: Any?]) -> AnyDefinition {
+    return ConstantsDefinition(body: body)
   }
 
   // MARK: - Functions
