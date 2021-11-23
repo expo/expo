@@ -11,7 +11,7 @@
 ### 💡 Others
 
 - Add parameter to `ReactNativeHostHandler.onDidCreateReactInstanceManager` on Android. ([#15221](https://github.com/expo/expo/pull/15221) by [@esamelson](https://github.com/esamelson))
-- Make the no-argument module initializer unavailable — `onCreate` definition component should be used instead.
+- Make the no-argument module initializer unavailable — `onCreate` definition component should be used instead. ([#15262](https://github.com/expo/expo/pull/15262) by [@tsapeta](https://github.com/tsapeta))
 
 ## 0.5.0 — 2021-11-17
 
