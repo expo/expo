@@ -4,11 +4,17 @@
 
 ### 🛠 Breaking changes
 
+- Remove deprecated `Constants.deviceId`.
+- Remove legacy `Constants.linkingUrl` alias.
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+- Add missing type declaration for `Constants.supportedExpoSdks`. 
+- Add missing `null` to the `Constants.buildNumber` type.
 
 ## 12.2.0 — 2021-11-17
 
