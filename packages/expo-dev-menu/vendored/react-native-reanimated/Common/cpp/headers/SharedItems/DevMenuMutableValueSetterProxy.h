@@ -1,6 +1,6 @@
 #pragma once
 
-#include "SharedParent.h"
+#include "DevMenuSharedParent.h"
 #include <jsi/jsi.h>
 
 using namespace facebook;

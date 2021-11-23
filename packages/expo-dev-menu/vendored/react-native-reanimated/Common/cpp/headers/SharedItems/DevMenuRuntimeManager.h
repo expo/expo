@@ -1,9 +1,9 @@
 #pragma once
 
-#include "ShareableValue.h"
-#include "ErrorHandler.h"
-#include "Scheduler.h"
-#include "WorkletsCache.h"
+#include "DevMenuShareableValue.h"
+#include "DevMenuErrorHandler.h"
+#include "DevMenuScheduler.h"
+#include "DevMenuWorkletsCache.h"
 #include <jsi/jsi.h>
 #include <memory>
 

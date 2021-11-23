@@ -1,14 +1,14 @@
 #pragma once
 
-#include "NativeReanimatedModuleSpec.h"
-#include "Scheduler.h"
-#include "ErrorHandler.h"
-#include "RuntimeDecorator.h"
-#include "PlatformDepMethodsHolder.h"
+#include "DevMenuNativeReanimatedModuleSpec.h"
+#include "DevMenuScheduler.h"
+#include "DevMenuErrorHandler.h"
+#include "DevMenuRuntimeDecorator.h"
+#include "DevMenuPlatformDepMethodsHolder.h"
 #include <unistd.h>
 #include <memory>
 #include <vector>
-#include "RuntimeManager.h"
+#include "DevMenuRuntimeManager.h"
 
 namespace devmenureanimated
 {

@@ -2,7 +2,7 @@
 
 #if __cplusplus
 
-#import "NativeReanimatedModule.h"
+#import "DevMenuNativeReanimatedModule.h"
 
 namespace devmenureanimated {
  
