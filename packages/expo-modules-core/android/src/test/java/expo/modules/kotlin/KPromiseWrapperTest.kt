@@ -12,7 +12,7 @@ class KPromiseWrapperTest {
     val bridgePromiseMock = mockk<com.facebook.react.bridge.Promise>().apply {
       every { resolve(any()) } returns Unit
     }
-    val promise = KPromiseWrapper(mockk())
+    val promise = KPromiseWrapper(bridgePromiseMock)
 
     promise.resolve(Unit)
 
