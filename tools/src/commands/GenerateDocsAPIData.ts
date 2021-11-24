@@ -115,6 +115,7 @@ async function action({packageName, version = 'unversioned'}: ActionOptions) {
     'expo-in-app-purchases': ['InAppPurchases.ts'],
     'expo-intent-launcher': ['IntentLauncher.ts'],
     'expo-keep-awake': ['index.ts'],
+    'expo-linking': ['Linking.ts'],
     'expo-linear-gradient': ['LinearGradient.tsx'],
     'expo-local-authentication': ['LocalAuthentication.ts'],
     'expo-localization': ['Localization.ts'],
