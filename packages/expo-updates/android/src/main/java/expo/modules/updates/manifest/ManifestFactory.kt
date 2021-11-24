@@ -4,6 +4,7 @@ import expo.modules.updates.UpdatesConfiguration
 import expo.modules.manifests.core.BareManifest
 import expo.modules.manifests.core.LegacyManifest
 import expo.modules.manifests.core.NewManifest
+import okhttp3.Headers
 import org.json.JSONException
 import org.json.JSONObject
 
@@ -11,14 +12,14 @@ object ManifestFactory {
   private val TAG = ManifestFactory::class.java.simpleName
 
   @Throws(Exception::class)
-  fun getManifest(manifestJson: JSONObject, httpResponse: ManifestResponse, configuration: UpdatesConfiguration?): UpdateManifest {
-    val expoProtocolVersion = httpResponse.header("expo-protocol-version")
+  fun getManifest(manifestJson: JSONObject, headers: Headers, extensions: JSONObject?, configuration: UpdatesConfiguration?): UpdateManifest {
+    val expoProtocolVersion = headers["expo-protocol-version"]
     return when {
       expoProtocolVersion == null -> {
         LegacyUpdateManifest.fromLegacyManifest(LegacyManifest(manifestJson), configuration!!)
       }
       Integer.valueOf(expoProtocolVersion) == 0 -> {
-        NewUpdateManifest.fromNewManifest(NewManifest(manifestJson), httpResponse, configuration!!)
+        NewUpdateManifest.fromNewManifest(NewManifest(manifestJson), headers, extensions, configuration!!)
       }
       else -> {
         throw Exception("Unsupported expo-protocol-version: $expoProtocolVersion")
