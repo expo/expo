@@ -24,7 +24,7 @@ EAS calls your webhook using an HTTP POST request. All the data is passed in the
 
 Additionally, we send an `expo-signature` HTTP header with the hash signature of the payload. You can use this signature to verify the authenticity of the request. The signature is a hex-encoded HMAC-SHA1 digest of the request body, using your webhook secret as the HMAC key.
 
-> If you want to test the above webhook locally, you have to use a service like [ngrok](https://ngrok.com/docs) to forward `localhost:8080` via a tunnel and make it publicly accessible to anyone with the URL `ngrok` gives you.
+> If you want to test the above webhook locally, you have to use a service like [ngrok](https://ngrok.com/docs) to forward `localhost:8080` via a tunnel and make it publicly accessible with the URL `ngrok` gives you.
 
 You can always change your webhook URL and/or webhook secret using `eas webhook:update --id WEBHOOK_ID`. You can find the webhook ID by running `eas webhook:list`. If you would like us to stop sending requests to your webhook, run `eas webhook:delete` and choose the webhook from the list.
 
