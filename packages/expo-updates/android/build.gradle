@@ -104,6 +104,7 @@ dependencies {
   implementation("com.squareup.okhttp3:okhttp-urlconnection:3.12.1")
   implementation("com.squareup.okio:okio:1.15.0")
   implementation("commons-io:commons-io:2.6")
+  implementation("commons-fileupload:commons-fileupload:1.4")
   implementation("org.apache.commons:commons-lang3:3.9")
 
   testImplementation 'junit:junit:4.12'
