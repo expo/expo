@@ -258,6 +258,9 @@ export interface NativeConstants {
      */
     systemFonts: string[];
     systemVersion?: number;
+    /**
+     * @hidden
+     */
     supportedExpoSdks?: string[];
     platform?: PlatformManifest;
     /**
