@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Added deprecation notice for module.
+
 ## 9.0.0 — 2021-10-28
 
 _This version does not introduce any user-facing changes._
