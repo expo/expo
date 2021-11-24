@@ -34,7 +34,7 @@ You can always change your webhook URL and/or webhook secret using `eas webhook:
 
 The build webhook payload looks something like this:
 
-```ts
+```json
 {
   "id": "147a3212-49fd-446f-b4e3-a6519acf264a",
   "appId": "bc0a82de-65a5-4497-ad86-54ff1f53edf7",
@@ -100,26 +100,24 @@ The build webhook payload looks something like this:
 
 The submit webhook payload looks something like this:
 
-```ts
+```json
 {
-    "id": "0374430d-7776-44ad-be7d-8513629adc54",
-    "appId": "23c0e405-d282-4399-b280-5689c3e1ea85",
-    "initiatingUserId": "7bee4c21-3eaa-4011-a0fd-3678b6537f47",
-    "turtleBuildId": "8c84111e-6d39-449c-9895-071d85fd3e61", // available when submitting a build from EAS
-    "platform": "android", // or "ios"
-    "status": "errored", // or: "finished", "canceled"
-    "submissionInfo":
-    {
-        // available for failed submissions
-        "error":
-        {
-            "message": "Android version code needs to be updated",
-            "errorCode": "SUBMISSION_SERVICE_ANDROID_OLD_VERSION_CODE_ERROR"
-        },
-        "logsUrl": "https://submission-service-logs.s3-us-west-1.amazonaws.com/production/submission_728aa20b-f7a9-4da7-9b64-39911d427b19.txt"
+  "id": "0374430d-7776-44ad-be7d-8513629adc54",
+  "appId": "23c0e405-d282-4399-b280-5689c3e1ea85",
+  "initiatingUserId": "7bee4c21-3eaa-4011-a0fd-3678b6537f47",
+  "turtleBuildId": "8c84111e-6d39-449c-9895-071d85fd3e61", // available when submitting a build from EAS
+  "platform": "android", // or "ios"
+  "status": "errored", // or: "finished", "canceled"
+  "submissionInfo": {
+    // available for failed submissions
+    "error": {
+      "message": "Android version code needs to be updated",
+      "errorCode": "SUBMISSION_SERVICE_ANDROID_OLD_VERSION_CODE_ERROR"
     },
-    "createdAt": "2021-11-24T10:15:32.822Z",
-    "updatedAt": "2021-11-24T10:15:32.822Z"
+    "logsUrl": "https://submission-service-logs.s3-us-west-1.amazonaws.com/production/submission_728aa20b-f7a9-4da7-9b64-39911d427b19.txt"
+  },
+  "createdAt": "2021-11-24T10:15:32.822Z",
+  "updatedAt": "2021-11-24T10:15:32.822Z"
 }
 ```
 
