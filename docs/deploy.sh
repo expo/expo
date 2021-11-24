@@ -100,6 +100,8 @@ redirects[distribution/turtle-cli]=classic/turtle-cli/
 redirects[distribution/app-signing]=app-signing/app-credentials/
 redirects[guides/adhoc-builds]=archived/adhoc-builds/
 # clients is now development
+redirectes[clients/distribution-for-ios]=development/build/
+redirectes[clients/distribution-for-android]=development/build/
 redirects[clients/compatibility]=development/compatibility/
 redirects[clients/development-workflows]=development/development-workflows/
 redirects[clients/eas-build]=development/eas-build/
