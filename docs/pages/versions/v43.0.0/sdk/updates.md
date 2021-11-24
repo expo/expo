@@ -7,17 +7,23 @@ import APISection from '~/components/plugins/APISection';
 import InstallSection from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 
-The `expo-updates` library by Expo allows you to programmatically control and respond to new updates made available to your app.
+The `expo-updates` library allows you to programmatically control and respond to new updates made available to your app.
 
 <PlatformsSection android emulator ios simulator />
 
 ## Installation
 
-<InstallSection packageName="expo-updates" />
+<InstallSection packageName="expo-updates" href="/bare/installing-updates/" />
 
-Since extra setup is required to use this module in bare React Native apps, for easiest use we recommend using a template project with `expo-updates` already installed. You can use `expo init --template=expo-template-bare-minimum` to initialize a new project from such a template.
+## Usage
 
-> Most of the methods and constants in this module can only be used or tested in release mode; they do not make sense in debug builds where you always load the latest JS from your computer while developing. To test manual updates in the Expo Go app, run `expo publish` and then open the published version of your app with Expo Go. To test manual updates in Bare workflow apps, make a release build with `npm run ios --configuration Release` or `npm run android --variant Release` (you don't need to submit this build to the App/Play Store to test).
+Most of the methods and constants in this module can only be used or tested in release mode; they do not make sense in debug builds where you always load the latest JavaScript from your computer while in development.
+
+**To test manual updates in the Expo Go app**, run `expo publish` and then open the published version of your app with Expo Go.
+
+**To test manual updates with managed workflow standalone apps**, you can create a [simulator build](/build-reference/simulators.md) or [APK](/build-reference/apk.md), or make a release build locally with `expo run:ios --configuration Release` and `expo run:android --variant release`.
+
+**To test manual updates in bare workflow apps**, make a release build with `expo run:ios --configuration Release` or `expo run:android --variant release` (you don't need to submit this build to the store to test).
 
 ## API
 
