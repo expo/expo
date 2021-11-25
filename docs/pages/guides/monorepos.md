@@ -98,7 +98,7 @@ module.exports = config;
 
 In monorepos, we can't hardcode paths to packages anymore. We can't be sure if they are installed in the root **node_modules** or the workspace **node_modules** folder. If you are using a managed project, we have to change our default entrypoint `node_modules/expo/AppEntry.js`.
 
-Open our app's **package.json**, change the `main` property to `index.js`, and create this new **index.js** file with the content below.
+Open our app's **package.json**, change the `main` property to `index.js`, and create this new **index.js** file in the app directory with the content below.
 
 ```js
 import { registerRootComponent } from 'expo';
