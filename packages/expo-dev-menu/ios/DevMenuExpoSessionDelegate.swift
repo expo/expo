@@ -42,14 +42,6 @@ class DevMenuExpoSessionDelegate {
   }
   
   private func setSesssionSecret(_ sessionSecret: String?) {
-    let wasLoggedIn = manager.expoApiClient.isLoggedIn()
     manager.expoApiClient.setSessionSecret(sessionSecret)
-    let isLoggedIn = manager.expoApiClient.isLoggedIn()
-    
-    if !wasLoggedIn && isLoggedIn {
-      manager.sendEventToDelegateBridge(DevMenuExpoSessionDelegate.userLoginEvent, data: nil)
-    } else if wasLoggedIn && !isLoggedIn {
-      manager.sendEventToDelegateBridge(DevMenuExpoSessionDelegate.userLogoutEvent, data: nil)
-    }
   }
 }

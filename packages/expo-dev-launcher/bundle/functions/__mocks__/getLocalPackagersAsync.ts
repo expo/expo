@@ -1,1 +1,1 @@
-export const getLocalPackagersAsync = jest.fn()
+export const getLocalPackagersAsync = jest.fn();

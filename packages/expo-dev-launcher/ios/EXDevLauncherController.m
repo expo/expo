@@ -17,6 +17,7 @@
 #import "EXDevLauncherUpdatesHelper.h"
 #import "RCTPackagerConnection+EXDevLauncherPackagerConnectionInterceptor.h"
 
+
 #if __has_include(<EXDevLauncher/EXDevLauncher-Swift.h>)
 // For cocoapods framework, the generated swift header will be inside EXDevLauncher module
 #import <EXDevLauncher/EXDevLauncher-Swift.h>
@@ -27,6 +28,7 @@
 #import <EXManifests/EXManifestsManifestFactory.h>
 
 @import EXDevMenuInterface;
+@import EXDevMenu;
 
 #ifdef EX_DEV_LAUNCHER_VERSION
 #define STRINGIZE(x) #x
@@ -36,7 +38,7 @@
 #endif
 
 // Uncomment the below and set it to a React Native bundler URL to develop the launcher JS
-// #define DEV_LAUNCHER_URL "http://localhost:8090/index.bundle?platform=ios&dev=true&minify=false"
+ #define DEV_LAUNCHER_URL "http://localhost:8090/index.bundle?platform=ios&dev=true&minify=false"
 
 NSString *fakeLauncherBundleUrl = @"embedded://EXDevLauncher/dummy";
 
@@ -83,7 +85,10 @@ NSString *fakeLauncherBundleUrl = @"embedded://EXDevLauncher/dummy";
 
 - (NSArray<id<RCTBridgeModule>> *)extraModulesForBridge:(RCTBridge *)bridge
 {
+  
+  
   return @[
+    (id<RCTBridgeModule>)[DevMenuInternalModule new],
     (id<RCTBridgeModule>)[RCTDevMenu new],
     [RCTAsyncLocalStorage new],
     [EXDevLauncherLoadingView new],
@@ -480,6 +485,41 @@ NSString *fakeLauncherBundleUrl = @"embedded://EXDevLauncher/dummy";
     [[RCTKeyCommands sharedInstance] unregisterKeyCommandWithInput:@"d"
                                                      modifierFlags:UIKeyModifierCommand];
   }
+}
+
+-(NSDictionary *)getAppInfo
+{
+  NSMutableDictionary *appInfo = [NSMutableDictionary new];
+  
+  [appInfo setObject:self.launcherBridge.bundleURL.absoluteString forKey:@"hostUrl"];
+  [appInfo setObject:[NSNull new] forKey:@"appIcon"];
+  [appInfo setObject:[NSNull new] forKey:@"appName"];
+  [appInfo setObject:[NSNull new] forKey:@"appVersion"];
+    
+  NSString *appName = [[NSBundle mainBundle] objectForInfoDictionaryKey: @"CFBundleDisplayName"] ?: [[NSBundle mainBundle] objectForInfoDictionaryKey: @"CFBundleExecutable"];
+  
+  if (appName) {
+    [appInfo setObject:appName forKey:@"appName"];
+  }
+  
+  NSString *appVersion = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleVersion"];
+  
+  if (appVersion) {
+    [appInfo setObject:appVersion forKey:@"appVersion"];
+  }
+    
+  
+  NSString *path = [[NSBundle mainBundle] pathForResource:@"AppIcon60x60" ofType:@"png"];
+  if (path) {
+    [appInfo setObject:[@"file://" stringByAppendingString:path] forKey:@"appIcon"];
+  }
+
+  if (self.manifest) {
+    [appInfo setObject:self.manifest.name forKey:@"appName"];
+    [appInfo setObject:self.manifest.version forKey:@"appVersion"];
+  }
+  
+  return appInfo;
 }
 
 @end

@@ -3,8 +3,10 @@ import { cleanup } from '@testing-library/react-native';
 afterEach(cleanup);
 
 jest.mock('react-native/Libraries/Animated/NativeAnimatedHelper');
-jest.mock('./bundle/DevLauncherInternal');
-jest.mock('./bundle/DevMenu');
+jest.mock('./bundle/native-modules/DevLauncherInternal');
+jest.mock('./bundle/native-modules/DevMenu');
+jest.mock('./bundle/native-modules/DevMenuInternal');
+jest.mock('./bundle/native-modules/DevMenuWebBrowser');
 
 const MOCK_INITIAL_METRICS = {
   frame: {
@@ -24,6 +26,6 @@ const MOCK_INITIAL_METRICS = {
 jest.mock('react-native-safe-area-context', () => {
   return {
     SafeAreaProvider: ({ children }: any) => children,
-    useSafeAreaInsets: jest.fn().mockReturnValue({ top: 0, bottom: 0 }),
+    useSafeAreaInsets: jest.fn().mockReturnValue(MOCK_INITIAL_METRICS.insets),
   };
 });

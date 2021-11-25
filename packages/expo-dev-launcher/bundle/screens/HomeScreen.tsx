@@ -1,7 +1,6 @@
 import * as React from 'react';
 import { ScrollView } from 'react-native';
 
-import * as DevLauncher from '../DevLauncherInternal';
 import { AppHeader } from '../components/redesign/AppHeader';
 import { FetchLocalPackagersRow } from '../components/redesign/FetchLocalPackagersRow';
 import { LocalPackagersList } from '../components/redesign/LocalPackagersList';
@@ -11,6 +10,7 @@ import { UrlDropdown } from '../components/redesign/UrlDropdown';
 import { Divider, Row, Spacer, View } from '../components/redesign/View';
 import { Packager } from '../functions/getLocalPackagersAsync';
 import { useLocalPackagers } from '../hooks/useLocalPackagers';
+import { loadApp, getAppInfoAsync, AppInfo } from '../native-modules/DevLauncherInternal';
 
 export type HomeScreenProps = {
   refetchPollInterval?: number;
@@ -20,12 +20,23 @@ export type HomeScreenProps = {
 export function HomeScreen({ refetchPollAmount = 5, refetchPollInterval = 1000 }: HomeScreenProps) {
   const { data, pollAsync, isFetching } = useLocalPackagers();
 
+  const [appInfo, setAppInfo] = React.useState<AppInfo>({
+    appName: '',
+    appVersion: -1,
+    appIcon: '',
+    hostUrl: '',
+  });
+
+  React.useEffect(() => {
+    getAppInfoAsync().then(setAppInfo);
+  }, []);
+
   const onPackagerPress = async (packager: Packager) => {
-    await DevLauncher.loadApp(packager.url);
+    await loadApp(packager.url);
   };
 
   const onUrlSubmit = async (url: string) => {
-    await DevLauncher.loadApp(url);
+    await loadApp(url);
   };
 
   const onRefetchPress = () => {
@@ -35,7 +46,11 @@ export function HomeScreen({ refetchPollAmount = 5, refetchPollInterval = 1000 }
   return (
     <ScrollView>
       <View bg="default">
-        <AppHeader title="Form Duo" subtitle="Development App" />
+        <AppHeader
+          title={appInfo?.appName}
+          appImageUri={appInfo?.appIcon}
+          subtitle="Development App"
+        />
       </View>
 
       <View py="large">
@@ -67,6 +82,7 @@ export function HomeScreen({ refetchPollAmount = 5, refetchPollInterval = 1000 }
                   <Spacer.Vertical size="small" />
                   <Text size="medium">Then, select the local server when it appears here.</Text>
                 </View>
+                <Divider />
               </>
             )}
 

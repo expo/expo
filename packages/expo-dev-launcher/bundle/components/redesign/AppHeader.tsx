@@ -3,6 +3,8 @@ import { useNavigation } from '@react-navigation/native';
 import * as React from 'react';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { useExpoTheme } from '../../hooks/useExpoTheme';
+import { useUser } from '../../hooks/useUser';
 import { Button } from './Button';
 import { Image } from './Image';
 import { Heading, Text } from './Text';
@@ -12,17 +14,19 @@ type AppHeaderProps = {
   title?: string;
   subtitle?: string;
   appImageUri?: string;
-  userImageUri?: string;
 };
 
-export function AppHeader({ title, subtitle, appImageUri, userImageUri }: AppHeaderProps) {
+export function AppHeader({ title, subtitle, appImageUri }: AppHeaderProps) {
   const insets = useSafeAreaInsets();
   const navigation = useNavigation();
+  const theme = useExpoTheme();
+  const { userData, selectedAccount } = useUser();
 
-  const isLoggedIn = userImageUri != null;
+  const isAuthenticated = userData != null;
+  const selectedUserImage = selectedAccount?.owner.profilePhoto;
 
   const onUserProfilePress = () => {
-    navigation.navigate(isLoggedIn ? 'Select Account' : 'Authentication');
+    navigation.navigate('User Profile');
   };
 
   return (
@@ -31,7 +35,9 @@ export function AppHeader({ title, subtitle, appImageUri, userImageUri }: AppHea
       <Row px="medium" py="small" align="center">
         <Row>
           <View width="large" height="large" bg="secondary" rounded="medium">
-            <Image size="large" rounded="medium" source={{ uri: appImageUri }} />
+            {Boolean(appImageUri) && (
+              <Image size="large" rounded="medium" source={{ uri: appImageUri }} />
+            )}
           </View>
 
           <Spacer.Horizontal size="small" />
@@ -49,17 +55,19 @@ export function AppHeader({ title, subtitle, appImageUri, userImageUri }: AppHea
         <Spacer.Horizontal size="flex" />
 
         <Button onPress={onUserProfilePress}>
-          <View width="large" height="large" bg="secondary" rounded="full">
-            {isLoggedIn ? (
-              <Image size="large" rounded="full" source={{ uri: userImageUri }} />
+          <View rounded="full">
+            {isAuthenticated ? (
+              <View bg="secondary">
+                <Image size="large" rounded="full" source={{ uri: selectedUserImage }} />
+              </View>
             ) : (
-              <UserIcon />
+              <UserIcon color={theme.icon.default} />
             )}
           </View>
         </Button>
       </Row>
 
-      <Divider />
+      <Divider weight="thin" />
     </View>
   );
 }

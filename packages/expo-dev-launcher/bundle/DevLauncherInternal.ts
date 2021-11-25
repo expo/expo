@@ -25,4 +25,15 @@ export function addDeepLinkListener(callback: (string) => void): EventSubscripti
   return EventEmitter.addListener(ON_NEW_DEEP_LINK_EVENT, callback);
 }
 
+export type AppInfo = {
+  appName: string;
+  appVersion: number | null;
+  appIcon: string | null;
+  hostUrl: string | null;
+};
+
+export async function getAppInfoAsync(): Promise<AppInfo> {
+  return await DevLauncher.getAppInfo();
+}
+
 export const clientUrlScheme = DevLauncher.clientUrlScheme;

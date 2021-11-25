@@ -4,10 +4,9 @@ import { createStackNavigator } from '@react-navigation/stack';
 import * as React from 'react';
 
 import { AppProviders } from './components/AppProviders';
-import { AccountSelectorScreen } from './screens/AccountSelectorScreen';
-import { AuthenticationScreen } from './screens/AuthenticationScreen';
 import { HomeScreen } from './screens/HomeScreen';
 import { SettingsScreen } from './screens/SettingsScreen';
+import { UserProfileScreen } from './screens/UserProfileScreen';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -23,14 +22,8 @@ export function App(props: LauncherAppProps) {
         <Stack.Screen name="Main" component={Main} options={{ header: () => null }} />
 
         <Stack.Screen
-          name="Select Account"
-          component={AccountSelectorScreen}
-          options={{ presentation: 'modal', header: () => null }}
-        />
-
-        <Stack.Screen
-          name="Authentication"
-          component={AuthenticationScreen}
+          name="User Profile"
+          component={UserProfileScreen}
           options={{ presentation: 'modal', header: () => null }}
         />
       </Stack.Navigator>

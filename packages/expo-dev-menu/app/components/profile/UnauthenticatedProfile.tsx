@@ -40,10 +40,12 @@ export default function UnauthenticatedProfile() {
       }/${urlPath}?app_redirect_uri=${encodeURIComponent(redirectBase)}`;
 
       const result = await DevMenuWebBrowser.openAuthSessionAsync(authSessionURL, redirectBase);
-
+      
       if (result.type === 'success') {
         const resultURL = url.parse(result.url, true);
+        console.log({ url: result.url })
         const sessionSecret = decodeURIComponent(resultURL.query['session_secret'] as string);
+        console.log({ sessionSecret })
 
         if (mounted.current) {
           await context.setSession({ sessionSecret });

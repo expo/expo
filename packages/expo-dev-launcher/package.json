@@ -41,6 +41,8 @@
     "@testing-library/react-native": "^8.0.0",
     "babel-preset-expo": "~8.5.1",
     "expo-module-scripts": "^2.0.0",
+    "graphql": "^16.0.1",
+    "graphql-request": "^3.6.1",
     "react": "17.0.1",
     "react-native": "0.64.3",
     "react-native-primitives": "^0.1.3",

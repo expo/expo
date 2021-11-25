@@ -1,7 +1,7 @@
 import * as React from 'react';
 
-import * as DevLauncher from '../../DevLauncherInternal';
 import { getLocalPackagersAsync, Packager } from '../../functions/getLocalPackagersAsync';
+import { loadApp } from '../../native-modules/DevLauncherInternal';
 import { render, waitFor, fireEvent, act } from '../../test-utils';
 import { HomeScreen, HomeScreenProps } from '../HomeScreen';
 
@@ -21,7 +21,7 @@ const textInputToggleRegex = /enter url manually/i;
 
 describe('<HomeScreen />', () => {
   afterEach(() => {
-    const mockLoadApp = DevLauncher.loadApp as jest.Mock;
+    const mockLoadApp = loadApp as jest.Mock;
     mockLoadApp.mockReset();
   });
 
@@ -112,13 +112,13 @@ describe('<HomeScreen />', () => {
     fireEvent.press(toggleButton);
 
     const input = await waitFor(() => getByPlaceholderText(/exp:\/\/192/i));
-    expect(DevLauncher.loadApp).toHaveBeenCalledTimes(0);
+    expect(loadApp).toHaveBeenCalledTimes(0);
 
     fireEvent.changeText(input, 'exp://tester');
     fireEvent.press(getByText(/connect/i));
 
-    expect(DevLauncher.loadApp).toHaveBeenCalledTimes(1);
-    expect(DevLauncher.loadApp).toHaveBeenCalledWith('exp://tester');
+    expect(loadApp).toHaveBeenCalledTimes(1);
+    expect(loadApp).toHaveBeenCalledWith('exp://tester');
   });
 
   test('unable to enter an invalid url', async () => {
@@ -129,12 +129,12 @@ describe('<HomeScreen />', () => {
     fireEvent.press(toggleButton);
 
     const input = await waitFor(() => getByPlaceholderText(/exp:\/\/192/i));
-    expect(DevLauncher.loadApp).not.toHaveBeenCalled();
+    expect(loadApp).not.toHaveBeenCalled();
 
     fireEvent.changeText(input, 'i am invalid');
     fireEvent.press(getByText(/connect/i));
 
-    expect(DevLauncher.loadApp).not.toHaveBeenCalled();
+    expect(loadApp).not.toHaveBeenCalled();
     await waitFor(() => getByText(/invalid url/i));
   });
 
@@ -155,8 +155,8 @@ describe('<HomeScreen />', () => {
     await waitFor(() => getByText(fakeLocalPackager.description));
 
     fireEvent.press(getByText(fakeLocalPackager.description));
-    expect(DevLauncher.loadApp).toHaveBeenCalled();
-    expect(DevLauncher.loadApp).toHaveBeenCalledWith(fakeLocalPackager.url);
+    expect(loadApp).toHaveBeenCalled();
+    expect(loadApp).toHaveBeenCalledWith(fakeLocalPackager.url);
   });
 });
 
