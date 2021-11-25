@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add support for reanimated worklets. ([#15296](https://github.com/expo/expo/pull/15296) by [@wkozyra95](https://github.com/wkozyra95))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
