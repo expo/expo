@@ -170,7 +170,7 @@ Like standard packages, we need to add our **cool-package** as a dependency to o
 Now you should be able to use the package inside your app! To test this, let's edit the `App.js` in our app and render the `greeting` text from our **cool-package**.
 
 ```js
-import { greeting } from 'cool-app';
+import { greeting } from 'cool-package';
 import { StatusBar } from 'expo-status-bar';
 import React from 'react';
 import { Text, View } from 'react-native';
