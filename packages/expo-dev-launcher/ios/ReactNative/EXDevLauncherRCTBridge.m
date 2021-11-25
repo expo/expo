@@ -18,7 +18,7 @@
  */
 - (RCTDevSettings *)devSettings
 {
-  return nil;
+  return super.devSettings;
 }
 
 - (RCTDevMenu *)devMenu
