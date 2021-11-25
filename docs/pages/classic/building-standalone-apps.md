@@ -2,7 +2,7 @@
 title: Building Standalone Apps
 ---
 
-> 🆕  [Try creating your build with EAS Build](/build/setup.md), our new and improved build service.
+> 🆕 [Try creating your build with EAS Build](/build/setup.md), our new and improved build service.
 
 The purpose of this guide is to help you create standalone binaries of your Expo app for iOS and
 Android which can be submitted to the Apple App Store and Google Play Store.
@@ -153,7 +153,7 @@ to start the build with `--clear-push-cert`. We will remove the legacy certifica
 
 When one of our building machines is free, it'll start building your app. You can check how long you'll wait on the [Turtle status](https://expo.dev/turtle-status) site. We'll print a url you can visit (such as `expo.dev/builds/some-unique-id`) to watch your build progress and access the build logs. Alternatively, you can check up on it by running `expo build:status`. When it's done, you'll see the url to your app file - an **.apk**, **.aab** (both Android), or **.ipa** (iOS) file. Copy and paste the link into your browser to download the file.
 
-> Want to be notified programmatically as soon as your build is done? [Here's how you can set that up with webhooks](/build-reference/build-webhooks.md).
+> Want to be notified programmatically as soon as your build is done? [Here's how you can set that up with webhooks](/eas/webhooks.md).
 
 ## 5. Test it on your device or simulator
 

@@ -56,7 +56,7 @@ Additional configuration may be required for some scenarios:
 
 - Are you migrating an Expo managed app from `"expo build"`? [Learn about the differences](/build-reference/migrating.md).
 - Does your app code depend on environment variables? [Add them to your build configuration](/build-reference/variables.md).
-- Is your project inside of a monorepo? [Follow these instructions](/build-reference/how-tos.md#how-to-set-up-eas-build-with). 
+- Is your project inside of a monorepo? [Follow these instructions](/build-reference/how-tos.md#how-to-set-up-eas-build-with).
 - Do you use private npm packages? [Add your npm token](/build-reference/private-npm-packages).
 - Does your app depend on specific versions of tools like Node, Yarn, npm, Cocoapods, or Xcode? [Specify these versions in your build configuration](/build/eas-json.md).
 
@@ -136,4 +136,4 @@ In this guide we walked through the steps for creating your first build with EAS
 
 When you are ready to learn more, we recommend proceeding through the "Start Building" section of this documentation to learn about topics like [configuration with eas.json](/build/eas-json.md), [internal distribution](/build/internal-distribution.md), [updates](/build/updates.md), [automating submissions](/build/automating-submissions.md), and [triggering builds from CI](/build/building-on-ci.md).
 
-You may also want to dig through the reference section to learn more about the topics that interest you most, such as [build webhooks](/build-reference/build-webhooks.md), [build server infrastructure](/build-reference/infrastructure.md), and how the [Android](/build-reference/android-builds.md) and [iOS](/build-reference/ios-builds.md) build processes work. Enjoy!
+You may also want to dig through the reference section to learn more about the topics that interest you most, such as [build webhooks](/eas/webhooks.md), [build server infrastructure](/build-reference/infrastructure.md), and how the [Android](/build-reference/android-builds.md) and [iOS](/build-reference/ios-builds.md) build processes work. Enjoy!
