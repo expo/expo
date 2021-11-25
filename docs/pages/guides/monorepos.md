@@ -121,9 +121,12 @@ Let's go back to the root and create the **package/** folder. This folder can co
 
 
 <TerminalBlock cmd={[
-  "mkdir -p packages/cool-package # Create our new package folder",
+  "# Create our new package folder",
+  "mkdir -p packages/cool-package",
   "cd packages/cool-package",
-  "yarn init # And create the new package"
+  "",
+  "# And create the new package",
+  "yarn init"
 ]} />
 
 We won't go into too much detail in creating a package. If you are not familiar with this, please consider using a simple app without monorepos. But, to make the example complete, let's add an **index.js** file with the following content:
