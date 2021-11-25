@@ -61,7 +61,7 @@ $ expo init apps/cool-app
 
 > If you have an existing app, you can copy all those files inside a subfolder.
 
-After copying or creating the first app, run `yarn install` to ensure our workspace is working.
+After copying or creating the first app, run `yarn install` to check for common warnings.
 
 #### Modify the Metro config
 
@@ -115,7 +115,7 @@ registerRootComponent(App);
 
 ### Create a package
 
-Monorepos can help us group code in a single repository. That includes apps but also separate packages. They also don't need to be published. The [Expo repository](https://github.com/expo/expo) uses this as well. In our repo, all the Expo SDK packages live inside the [**packages/**](https://github.com/expo/expo/tree/master/packages) folder. It helps us test the code inside one of our [**apps/**](https://github.com/expo/expo/tree/master/apps/native-component-list) before we publish them.
+Monorepos can help us group code in a single repository. That includes apps but also separate packages. They also don't need to be published. The [Expo repository](https://github.com/expo/expo) uses this as well. All the Expo SDK packages live inside the [**packages/**](https://github.com/expo/expo/tree/master/packages) folder in our repo. It helps us test the code inside one of our [**apps/**](https://github.com/expo/expo/tree/master/apps/native-component-list) before we publish them.
 
 Let's go back to the root and create the **package/** folder. This folder can contain all the separate packages that you want to make. Once you are inside this folder, we need to add a new subfolder. The subfolder is a separate package that we can use inside our app. In the example below, we named it **cool-package**.
 
@@ -161,7 +161,7 @@ Like standard packages, we need to add our **cool-package** as a dependency to o
 }
 ```
 
-> After adding the package as a dependency, run `yarn install` to ensure everything is working.
+> After adding the package as a dependency, run `yarn install` to install or link the dependency to your app.
 
 Now you should be able to use the package inside your app! To test this, let's edit the `App.js` in our app and render the `greeting` text from our **cool-package**.
 
