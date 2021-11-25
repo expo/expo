@@ -2,6 +2,8 @@
 title: Working with Monorepos
 ---
 
+import TerminalBlock from '~/components/plugins/TerminalBlock';
+
 Monorepos, or _"monolithic repositories"_, are single repositories containing multiple apps or packages. It can help speed up development for larger projects, makes it easier to share code, and act as a single source of truth. This guide will set up a simple monorepo with an Expo project. We currently have first-class support for yarn workspaces. If you want to use another tool, make sure you know how to configure it.
 
 > ⚠️ Monorepos are not for everyone. It requires in-depth knowledge of the used tooling, adds more complexity, and often requires specific tooling configuration. You can get far with just a single repository.
@@ -26,7 +28,7 @@ In this example, we will set up a monorepo using yarn workspaces without the [no
 
 All yarn monorepos should have a "root" **package.json** file. It is the main configuration for our monorepo and may contain packages installed for all projects in the repository. You can run `yarn init`, or create the **package.json** manually. It should look something like this:
 
-```JSON
+```json
 {
   "name": "monorepo",
   "version": "1.0.0"
@@ -37,7 +39,7 @@ All yarn monorepos should have a "root" **package.json** file. It is the main co
 
 Yarn and other tooling have a concept called _"workspaces"_. Every package and app in our repository has its own workspace. But, before we can use them, we have to instruct yarn where to find these workspaces. We can do that by setting the `workspaces` property using [glob patterns](https://classic.yarnpkg.com/lang/en/docs/workspaces/#toc-tips-tricks), in the **package.json**:
 
-```JSON
+```json
 {
   "private": true,
   "name": "monorepo",
@@ -55,9 +57,7 @@ Yarn and other tooling have a concept called _"workspaces"_. Every package and a
 
 Now that we have the basic monorepo structure set up, let's add our first app. Before we can create our app, we have to create the **apps/** folder. This folder can contain all separate apps or websites that belong to this monorepo. Inside this **apps/** folder, we can create a subfolder that contains the actual Expo app. 
 
-```
-$ expo init apps/cool-app
-```
+<TerminalBlock cmd={["expo init apps/cool-app"]} />
 
 > If you have an existing app, you can copy all those files inside a subfolder.
 
@@ -119,11 +119,12 @@ Monorepos can help us group code in a single repository. That includes apps but 
 
 Let's go back to the root and create the **package/** folder. This folder can contain all the separate packages that you want to make. Once you are inside this folder, we need to add a new subfolder. The subfolder is a separate package that we can use inside our app. In the example below, we named it **cool-package**.
 
-```
-$ mkdir -p packages/cool-package
-$ cd packages/cool-package
-$ yarn init
-```
+
+<TerminalBlock cmd={[
+  "mkdir -p packages/cool-package # Create our new package folder",
+  "cd packages/cool-package",
+  "yarn init # And create the new package"
+]} />
 
 We won't go into too much detail in creating a package. If you are not familiar with this, please consider using a simple app without monorepos. But, to make the example complete, let's add an **index.js** file with the following content:
 
@@ -135,7 +136,7 @@ export const greeting = 'Hello!';
 
 Like standard packages, we need to add our **cool-package** as a dependency to our **cool-app**. The main difference between a standard package, and one from the monorepo, is you'll always want to use the _"current state of the package"_ instead of a version. Let's add **cool-package** to our app by adding `"cool-package": "*"` to our app **package.json** file:
 
-```JSON
+```json
 {
   "name": "cool-app",
   "version": "1.0.0",
