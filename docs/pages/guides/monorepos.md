@@ -81,7 +81,7 @@ const path = require('path');
 const workspaceRoot = path.resolve(__dirname, '../..');
 const projectRoot = __dirname;
 
-const config = getDefaultConfig(__dirname);
+const config = getDefaultConfig(projectRoot);
 
 // 1. Watch all files within the monorepo
 config.watchFolders = [workspaceRoot];
