@@ -33,8 +33,7 @@ class ReactActivityDelegateWrapper(
 
   override fun createRootView(): ReactRootView {
     return reactActivityHandlers.asSequence()
-      .map { it.createReactRootView(activity) }
-      .filterNotNull()
+      .mapNotNull { it.createReactRootView(activity) }
       .firstOrNull() ?: invokeDelegateMethod("createRootView")
   }
 
