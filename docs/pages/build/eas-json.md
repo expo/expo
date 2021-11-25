@@ -3,7 +3,7 @@ title: Configuring EAS Build with eas.json
 sidebar_title: Configuration with eas.json
 ---
 
-**eas.json** is the configuration file for EAS CLI and services. It is located at the root of your project next to your **package.json**. Configuration for EAS Build all belongs under the `"build`" key. A minimal **eas.json** may look something like this:
+**eas.json** is the configuration file for EAS CLI and services. It is located at the root of your project next to your **package.json**. Configuration for EAS Build all belongs under the `"build"` key. A minimal **eas.json** may look something like this:
 
 ```json
 {
