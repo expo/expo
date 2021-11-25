@@ -266,6 +266,7 @@ const sections = [
       'Linking',
       'Running in the Browser',
       'Setting up Continuous Integration',
+      'Monorepos',
       'Native Firebase',
       'Testing on physical devices',
       'Troubleshooting Proxies',
