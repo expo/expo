@@ -4264,7 +4264,7 @@ SPEC CHECKSUMS:
   RCTTypeSafety: 8dab4933124ed39bb0c1d88d74d61b1eb950f28f
   React: ef700aeb19afabff83a9cc5799ac955a9c6b5e0f
   React-callinvoker: 5547633d44f3e114b17c03c660ccb5faefd9ed2d
-  React-Core: 3858d60185d71567962468bf176d582e36e4e25b
+  React-Core: 39ce38cf82dce7fd50cae8712c204cec45d0c95b
   React-CoreModules: 29b3397adac0c04915cf93089328664868510717
   React-cxxreact: 7e6cc1f4cdfcd40e483dd228fa8a3d3e0ed16f4a
   React-jsi: a8b09c29521c798f1783348b37b511ba7b3dbeb3
@@ -4285,7 +4285,7 @@ SPEC CHECKSUMS:
   React-RCTText: 04a2f0a281f715f0aed4f515717fafd64510e2c8
   React-RCTVibration: c7f845861e79eae13dc1e8217a3cf47a3945b504
   React-runtimeexecutor: 493d9abb8b23c3f84e19ae221eeba92cadcb70dc
-  ReactCommon: 8fea6422328e2fc093e25c9fac67adbcf0f04fb4
+  ReactCommon: fd0f7bc755451265e8f2fd0b6f69fd6577ee1861
   RNReanimated: 9c13c86454bfd54dab7505c1a054470bfecd2563
   RNScreens: 6e1ea5787989f92b0671049b808aef64fa1ef98c
   Stripe: 57c6997c64042a3f5aedae9b76e331942f8b75d2
