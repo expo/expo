@@ -1,5 +1,6 @@
 ---
 title: Expo Application Services
+sidebar_title: Introduction
 hideTOC: true
 ---
 
