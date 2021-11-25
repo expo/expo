@@ -2,9 +2,9 @@
 title: Working with Monorepos
 ---
 
-Monorepos, or _"monolithic repositories"_, are single repositories containing multiple apps or packages. It can help speed up development for larger projects, makes it easier to share code, and act as a single source of truth. This guide will set up a simple monorepo with an Expo project and highlight some critical but often overlooked aspects of monorepos.
+Monorepos, or _"monolithic repositories"_, are single repositories containing multiple apps or packages. It can help speed up development for larger projects, makes it easier to share code, and act as a single source of truth. This guide will set up a simple monorepo with an Expo project. We currently have first-class support for yarn workspaces. If you want to use another tool, make sure you know how to configure it.
 
-> ⚠️ Monorepos are not for everyone. It requires in-depth knowledge of the used tooling, adds increased complexity, and often requires specific tooling configuration. You can get far with just a single repository.
+> ⚠️ Monorepos are not for everyone. It requires in-depth knowledge of the used tooling, adds more complexity, and often requires specific tooling configuration. You can get far with just a single repository.
 
 <details><summary>Using SDK older than 43?</summary>
 
