@@ -22,14 +22,12 @@ In this example, we will set up a monorepo using yarn workspaces without the [no
 
 ### Root package file
 
-All yarn monorepos should have a "root" **package.json** file. It is used as the main configuration for our monorepo and may contain packages installed for all projects in the repository. You can run `yarn init`, or create the **package.json** manually. It should look something like this:
+All yarn monorepos should have a "root" **package.json** file. It is the main configuration for our monorepo and may contain packages installed for all projects in the repository. You can run `yarn init`, or create the **package.json** manually. It should look something like this:
 
 ```JSON
 {
   "name": "monorepo",
-  "version": "1.0.0",
-  "main": "index.js",
-  "license": "MIT"
+  "version": "1.0.0"
 }
 ```
 
@@ -39,13 +37,13 @@ Yarn and other tooling have a concept called _"workspaces"_. Every package and a
 
 ```JSON
 {
-  "name": "monorepo",
   "private": true,
+  "name": "monorepo",
+  "version": "1.0.0",
   "workspaces": [
     "apps/*",
     "packages/*"
-  ],
-  ...
+  ]
 }
 ```
 
@@ -53,7 +51,7 @@ Yarn and other tooling have a concept called _"workspaces"_. Every package and a
 
 ### Create our first app
 
-Now that we have the basic monorepo structure set up let's add our first app. Before we can create our app, we have to create the **apps/** folder. This folder can contain all separate apps or websites that belong to this monorepo. Inside this **apps/** folder, we can create a subfolder that contains the actual Expo app. 
+Now that we have the basic monorepo structure set up, let's add our first app. Before we can create our app, we have to create the **apps/** folder. This folder can contain all separate apps or websites that belong to this monorepo. Inside this **apps/** folder, we can create a subfolder that contains the actual Expo app. 
 
 ```
 $ expo init apps/cool-app
@@ -61,7 +59,57 @@ $ expo init apps/cool-app
 
 > If you have an existing app, you can copy all those files inside a subfolder.
 
-After copying or creating the first app, run `yarn install` to make sure our workspace is working.
+After copying or creating the first app, run `yarn install` to ensure our workspace is working.
+
+#### Modify the Metro config
+
+Metro doesn't come with monorepo support by default (yet). That's why we need to configure Metro and let it know where to find certain things. There are two main changes we need to make:
+
+1. Make sure Metro is watching the full monorepo, not just **app/cool-app**.
+2. Tell Metro where it can resolve packages. They might be installed in **app/cool-app/node_modules** or **node_modules**.
+
+We can configure that by creating a **metro.config.js** with the following content.
+
+```js
+// Learn more https://docs.expo.io/guides/customizing-metro
+const { getDefaultConfig } = require('expo/metro-config');
+const path = require('path');
+
+// Find the workspace root, this can be replaced with `find-yarn-workspace-root`
+const workspaceRoot = path.resolve(__dirname, '../..');
+const projectRoot = __dirname;
+
+const config = getDefaultConfig();
+
+// 1. Watch all files within the monorepo
+config.watchFolders = [workspaceRoot];
+// 2. Let Metro know where to resolve packages, and in what order
+config.resolver.nodeModulesPath = [
+  path.resolve(projectRoot, 'node_modules'),
+  path.resolve(workspaceRoot, 'node_modules'),
+];
+
+module.exports = config;
+```
+
+#### Change default entrypoint
+
+In monorepos, we can't hardcode paths to packages anymore. We can't be sure if they are installed in the root **node_modules** or the workspace **node_modules** folder. If you are using a managed project, we have to change our default entrypoint `node_modules/expo/AppEntry.js`.
+
+Open our app's **package.json**, change the `main` property to `index.js`, and create this new **index.js** file with the content below.
+
+```js
+import { registerRootComponent } from 'expo';
+
+import App from './App';
+
+// registerRootComponent calls AppRegistry.registerComponent('main', () => App);
+// It also ensures that whether you load the app in Expo Go or in a native build,
+// the environment is set up appropriately
+registerRootComponent(App);
+```
+
+> 💡 This new entrypoint already exists for bare projects. You only need to add this if you have a managed project.
 
 ### Create a package
 
@@ -87,30 +135,48 @@ Like standard packages, we need to add our **cool-package** as a dependency to o
 
 ```JSON
 {
+  "name": "cool-app",
+  "version": "1.0.0",
+  "scripts": {
+    "start": "expo start",
+    "android": "expo start --android",
+    "ios": "expo start --ios",
+    "web": "expo start --web",
+    "eject": "expo eject"
+  },
   "dependencies": {
     "cool-package": "*",
-    ...
+    "expo": "~43.0.2",
+    "expo-status-bar": "~1.1.0",
+    "react": "17.0.1",
+    "react-dom": "17.0.1",
+    "react-native": "0.64.3",
+    "react-native-web": "0.17.1"
   },
-  ...
+  "devDependencies": {
+    "@babel/core": "^7.12.9"
+  }
 }
 ```
 
-> After you add the package as a dependency, run `yarn install` to ensure everything is working.
+> After adding the package as a dependency, run `yarn install` to ensure everything is working.
 
 Now you should be able to use the package inside your app! To test this, let's edit the `App.js` in our app and render the `greeting` text from our **cool-package**.
 
 ```js
 import { greeting } from 'cool-app';
-...
+import { StatusBar } from 'expo-status-bar';
+import React from 'react';
+import { Text, View } from 'react-native';
+
 export default function App() {
   return (
-    <View style={styles.container}>
+    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
       <Text>{greeting}</Text>
       <StatusBar style="auto" />
     </View>
   );
 }
-...
 ```
 
 ## Common issues
@@ -135,10 +201,10 @@ require_relative '../node_modules/react-native/scripts/react_native_pods'
 
 Unfortunately, this path can be different in monorepos because of [hoisting](https://classic.yarnpkg.com/blog/2018/02/15/nohoist/). It also doesn't use the [Node module resolution](https://nodejs.org/api/modules.html#all-together). You can avoid this issue by using Node to find the location of the package instead of hardcoding this:
 
-**Android** ([source](https://github.com/expo/expo/blob/61cbd9a5092af319b44c319f7d51e4093210e81b/templates/expo-template-bare-minimum/android/app/build.gradle#L85)
+**Android** ([source](https://github.com/expo/expo/blob/6877c1f5cdca62b395b0d5f49d87f2f3dbb50bec/templates/expo-template-bare-minimum/android/app/build.gradle#L87)
 
 ```groovy
-apply from: new File(["node", "--print", "require.resolve('react-native/package.json')"].execute().text.trim(), "../react.gradle")
+apply from: new File(["node", "--print", "require.resolve('react-native/package.json')"].execute(null, rootDir).text.trim(), "../react.gradle")
 ```
 
 **iOS** ([source](https://github.com/expo/expo/blob/61cbd9a5092af319b44c319f7d51e4093210e81b/templates/expo-template-bare-minimum/ios/Podfile#L2))
