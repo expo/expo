@@ -24,11 +24,11 @@ class LinearGradientModule : Module() {
       }
 
       prop("startPoint") { view: ViewType, startPoint: Pair<Float, Float>? ->
-        view.setStartPosition(startPoint?.first ?: 0f, startPoint?.second ?: 0f)
+        view.setStartPosition(startPoint?.first ?: 0.5f, startPoint?.second ?: 0f)
       }
 
       prop("endPoint") { view: ViewType, endPoint: Pair<Float, Float>? ->
-        view.setEndPosition(endPoint?.first ?: 0f, endPoint?.second ?: 1f)
+        view.setEndPosition(endPoint?.first ?: 0.5f, endPoint?.second ?: 1f)
       }
 
       prop("borderRadii") { view: ViewType, borderRadii: FloatArray? ->
