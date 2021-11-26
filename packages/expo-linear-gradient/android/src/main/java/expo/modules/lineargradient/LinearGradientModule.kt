@@ -1,12 +1,12 @@
 package expo.modules.lineargradient
 
 import expo.modules.kotlin.modules.Module
-import expo.modules.kotlin.modules.module
+import expo.modules.kotlin.modules.ModuleDefinition
 
 typealias ViewType = LinearGradientView
 
 class LinearGradientModule : Module() {
-  override fun definition() = module {
+  override fun definition() = ModuleDefinition {
     name("ExpoLinearGradient")
     viewManager {
       view { context ->
