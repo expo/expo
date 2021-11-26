@@ -55,6 +55,17 @@
   XCTAssertEqual(EXAppDefines.APP_DEBUG, YES);
 }
 
+- (void)test_loadAndGetAppDebug_shouldMatchReleaseDefines
+{
+  NSDictionary *defines = @{
+    @"APP_DEBUG": @(NO),
+    @"APP_RCT_DEBUG": @(NO),
+    @"APP_RCT_DEV": @(NO),
+  };
+  [EXAppDefines load:defines];
+  XCTAssertEqual(EXAppDefines.APP_DEBUG, NO);
+}
+
 - (void)test_getters_returnsDefaultValues
 {
   XCTAssertNoThrow([EXAppDefines load:@{}]);
