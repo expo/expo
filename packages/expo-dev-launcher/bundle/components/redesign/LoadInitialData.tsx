@@ -1,17 +1,14 @@
 import * as React from 'react';
 
 import { getInitialData } from '../../functions/getInitialData';
-import { View } from './View';
+import { Splash } from './Splash';
 
 type LoadInitialDataProps = {
   children: React.ReactElement<any>;
   loader?: React.ReactElement<any>;
 };
 
-export function LoadInitialData({
-  children,
-  loader = <View bg="default" flex="1" />,
-}: LoadInitialDataProps) {
+export function LoadInitialData({ children, loader = <Splash /> }: LoadInitialDataProps) {
   const [isLoading, setIsLoading] = React.useState(true);
   const [initialData, setInitialData] = React.useState({});
 

@@ -5,6 +5,7 @@ import { TextInput as NativeTextInput } from 'react-native';
 import { validateUrl } from '../../functions/validateUrl';
 import { useDebounce } from '../../hooks/useDebounce';
 import { useExpoTheme } from '../../hooks/useExpoTheme';
+import { clientUrlScheme } from '../../native-modules/DevLauncherInternal';
 import { Button } from './Button';
 import { Text, TextInput } from './Text';
 import { Row, Spacer, View } from './View';
@@ -46,7 +47,7 @@ export function UrlDropdown({ onSubmit }: UrlDropdownProps) {
           <View border="default" rounded="medium" padding="medium" shadow="micro">
             <TextInput
               autoFocus
-              placeholder="exp://192..."
+              placeholder={`${clientUrlScheme || 'myapp'}://expo-development-client/...`}
               placeholderTextColor={theme.text.default}
               ref={ref as any}
               value={inputValue}

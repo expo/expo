@@ -5,6 +5,7 @@ import * as React from 'react';
 
 import { AppProviders } from './components/redesign/AppProviders';
 import { LoadInitialData } from './components/redesign/LoadInitialData';
+import { Splash } from './components/redesign/Splash';
 import { HomeScreen } from './screens/HomeScreen';
 import { SettingsScreen } from './screens/SettingsScreen';
 import { UserProfileScreen } from './screens/UserProfileScreen';
@@ -18,9 +19,9 @@ type LauncherAppProps = {
 
 export function App(props: LauncherAppProps) {
   return (
-    <LoadInitialData>
+    <LoadInitialData loader={<Splash />}>
       <AppProviders>
-        <Stack.Navigator initialRouteName="Authentication Screen">
+        <Stack.Navigator initialRouteName="Main">
           <Stack.Screen name="Main" component={Main} options={{ header: () => null }} />
 
           <Stack.Screen
