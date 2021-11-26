@@ -29,7 +29,7 @@ class ReactNativeHostWrapper(
     }
 
     val result = reactNativeHostHandlers.asSequence()
-      .map { it.createReactInstanceManager(developerSupport) }
+      .mapNotNull { it.createReactInstanceManager(developerSupport) }
       .firstOrNull() ?: super.createReactInstanceManager()
 
     reactNativeHostHandlers.forEach { handler ->
@@ -63,13 +63,13 @@ class ReactNativeHostWrapper(
 
   override fun getJSBundleFile(): String? {
     return reactNativeHostHandlers.asSequence()
-      .map { it.getJSBundleFile(useDeveloperSupport) }
+      .mapNotNull { it.getJSBundleFile(useDeveloperSupport) }
       .firstOrNull() ?: invokeDelegateMethod<String?>("getJSBundleFile")
   }
 
   override fun getBundleAssetName(): String? {
     return reactNativeHostHandlers.asSequence()
-      .map { it.getBundleAssetName(useDeveloperSupport) }
+      .mapNotNull { it.getBundleAssetName(useDeveloperSupport) }
       .firstOrNull() ?: invokeDelegateMethod<String?>("getBundleAssetName")
   }
 
