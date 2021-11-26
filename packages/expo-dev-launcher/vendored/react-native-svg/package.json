@@ -1,0 +1,107 @@
+{
+  "version": "12.2.0",
+  "name": "react-native-svg",
+  "description": "SVG library for react-native",
+  "homepage": "https://github.com/react-native-community/react-native-svg",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/react-native-community/react-native-svg"
+  },
+  "license": "MIT",
+  "main": "lib/commonjs/index.js",
+  "module": "lib/module/index.js",
+  "react-native": "src/index.ts",
+  "types": "src/index.d.ts",
+  "files": [
+    "__tests__",
+    "android",
+    "apple",
+    "elements",
+    "lib",
+    "src",
+    "RNSVG.podspec"
+  ],
+  "@react-native-community/bob": {
+    "source": "src",
+    "output": "lib",
+    "targets": [
+      "commonjs",
+      "module",
+      "typescript"
+    ]
+  },
+  "keywords": [
+    "react-component",
+    "react-native",
+    "ios",
+    "android",
+    "SVG",
+    "ART",
+    "VML",
+    "gradient"
+  ],
+  "scripts": {
+    "bob": "bob build",
+    "flow": "flow src",
+    "flowgen": "flowgen src/index.d.ts -o src/index.js.flow",
+    "flowtyped": "flow-typed install",
+    "format": "prettier README.md CONTRIBUTING.md CODE_OF_CONDUCT.md './src/**/*.{ts,tsx}' src/index.d.ts --write",
+    "jest": "jest",
+    "lint": "eslint --ext .ts,.tsx src",
+    "peg": "pegjs -o src/lib/extract/transform.js ./src/lib/extract/transform.peg",
+    "prepare": "npm run flowgen && npm run bob",
+    "semantic-release": "semantic-release",
+    "test": "npm run lint && npm run tsc && npm run flow && npm run jest",
+    "tsc": "tsc --noEmit"
+  },
+  "peerDependencies": {
+    "react": "*",
+    "react-native": ">=0.50.0"
+  },
+  "dependencies": {
+    "css-select": "^2.1.0",
+    "css-tree": "^1.0.0-alpha.39"
+  },
+  "devDependencies": {
+    "@react-native-community/bob": "^0.9.7",
+    "@react-native-community/eslint-config": "0.0.7",
+    "@react-native-community/eslint-plugin": "^1.0.0",
+    "@semantic-release/changelog": "^5.0.0",
+    "@semantic-release/git": "^9.0.0",
+    "@types/css-tree": "^1.0.3",
+    "@types/react": "^17.0.16",
+    "@types/react-native": "^0.63.40",
+    "babel-eslint": "^10.1.0",
+    "babel-jest": "^25.1.0",
+    "eslint": "^6.8.0",
+    "eslint-plugin-flowtype": "^4.6.0",
+    "eslint-plugin-prettier": "^3.1.2",
+    "eslint-plugin-react": "^7.18.3",
+    "flow-bin": "^0.119.1",
+    "flow-typed": "^3.0.0",
+    "flowgen": "^1.10.0",
+    "jest": "^25.1.0",
+    "pegjs": "^0.10.0",
+    "prettier": "^1.19.1",
+    "react": "^16.13.0",
+    "react-native": "^0.61.5",
+    "react-test-renderer": "^16.13.0",
+    "semantic-release": "^17.0.4",
+    "semantic-release-cli": "^5.2.3",
+    "typescript": "^3.8.3"
+  },
+  "jest": {
+    "preset": "react-native"
+  },
+  "release": {
+    "plugins": [
+      "@semantic-release/commit-analyzer",
+      "@semantic-release/release-notes-generator",
+      "@semantic-release/changelog",
+      "@semantic-release/npm",
+      "@semantic-release/github",
+      "@semantic-release/git"
+    ]
+  },
+  "nativePackage": true
+}

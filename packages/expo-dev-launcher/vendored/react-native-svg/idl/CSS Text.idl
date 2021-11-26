@@ -1,0 +1,18 @@
+partial interface CSSStyleDeclaration {
+  [CEReactions] attribute [TreatNullAs=EmptyString] CSSOMString textTransform;
+  [CEReactions] attribute [TreatNullAs=EmptyString] CSSOMString whiteSpace;
+  [CEReactions] attribute [TreatNullAs=EmptyString] CSSOMString tabSize;
+  [CEReactions] attribute [TreatNullAs=EmptyString] CSSOMString wordBreak;
+  [CEReactions] attribute [TreatNullAs=EmptyString] CSSOMString lineBreak;
+  [CEReactions] attribute [TreatNullAs=EmptyString] CSSOMString hyphens;
+  [CEReactions] attribute [TreatNullAs=EmptyString] CSSOMString overflowWrap;
+  [CEReactions] attribute [TreatNullAs=EmptyString] CSSOMString wordWrap;
+  [CEReactions] attribute [TreatNullAs=EmptyString] CSSOMString textAlign;
+  [CEReactions] attribute [TreatNullAs=EmptyString] CSSOMString textAlignAll;
+  [CEReactions] attribute [TreatNullAs=EmptyString] CSSOMString textAlignLast;
+  [CEReactions] attribute [TreatNullAs=EmptyString] CSSOMString textJustify;
+  [CEReactions] attribute [TreatNullAs=EmptyString] CSSOMString wordSpacing;
+  [CEReactions] attribute [TreatNullAs=EmptyString] CSSOMString letterSpacing;
+  [CEReactions] attribute [TreatNullAs=EmptyString] CSSOMString textIndent;
+  [CEReactions] attribute [TreatNullAs=EmptyString] CSSOMString hangingPunctuation;
+};

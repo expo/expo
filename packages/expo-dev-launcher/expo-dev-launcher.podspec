@@ -42,6 +42,18 @@ Pod::Spec.new do |s|
   s.dependency "EXUpdatesInterface"
   s.dependency "expo-dev-menu"
   
+  s.subspec 'RNSVG' do |svg|
+    svg.source_files = 'vendored/react-native-svg/**/*.{h,m}'
+    svg.private_header_files = 'vendored/react-native-svg/**/*.h'
+    svg.compiler_flags = '-w -Xanalyzer -analyzer-disable-all-checks'
+    
+    svg.ios.exclude_files = '**/*.macos.{h,m}'
+    svg.tvos.exclude_files = '**/*.macos.{h,m}'
+    svg.osx.exclude_files = '**/*.ios.{h,m}'
+    
+    svg.dependency 'React-Core'
+  end
+  
   s.subspec 'Unsafe' do |unsafe|
     unsafe.source_files = 'ios/Unsafe/**/*.{h,m,mm,swift,cpp}'
     unsafe.compiler_flags = '-x objective-c++ -std=c++1z -fno-objc-arc' # Disable Automatic Reference Counting
@@ -49,6 +61,8 @@ Pod::Spec.new do |s|
   
   s.subspec 'Main' do |main|
     main.dependency "expo-dev-launcher/Unsafe"
+    main.dependency 'React-Core'
+    main.dependency 'expo-dev-launcher/Vendored'
   end
 
   s.test_spec 'Tests' do |test_spec|
@@ -58,6 +72,10 @@ Pod::Spec.new do |s|
     test_spec.dependency 'Nimble'
     test_spec.dependency "React-CoreModules"
     test_spec.dependency "OHHTTPStubs"
+  end
+  
+  s.subspec 'Vendored' do |vendored|
+    vendored.dependency "expo-dev-launcher/RNSVG"
   end
   
   s.default_subspec = 'Main'

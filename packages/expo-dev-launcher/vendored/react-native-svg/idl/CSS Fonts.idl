@@ -1,0 +1,22 @@
+interface CSSFontFaceRule : CSSRule {
+    readonly attribute CSSStyleDeclaration style;
+};
+
+partial interface CSSStyleDeclaration {
+  [CEReactions] attribute [TreatNullAs=EmptyString] CSSOMString fontFamily;
+  [CEReactions] attribute [TreatNullAs=EmptyString] CSSOMString fontWeight;
+  [CEReactions] attribute [TreatNullAs=EmptyString] CSSOMString fontStretch;
+  [CEReactions] attribute [TreatNullAs=EmptyString] CSSOMString fontStyle;
+  [CEReactions] attribute [TreatNullAs=EmptyString] CSSOMString fontSize;
+  [CEReactions] attribute [TreatNullAs=EmptyString] CSSOMString fontSizeAdjust;
+  [CEReactions] attribute [TreatNullAs=EmptyString] CSSOMString font;
+  [CEReactions] attribute [TreatNullAs=EmptyString] CSSOMString fontSynthesis;
+  [CEReactions] attribute [TreatNullAs=EmptyString] CSSOMString fontKerning;
+  [CEReactions] attribute [TreatNullAs=EmptyString] CSSOMString fontVariantLigatures;
+  [CEReactions] attribute [TreatNullAs=EmptyString] CSSOMString fontVariantPosition;
+  [CEReactions] attribute [TreatNullAs=EmptyString] CSSOMString fontVariantCaps;
+  [CEReactions] attribute [TreatNullAs=EmptyString] CSSOMString fontVariantNumeric;
+  [CEReactions] attribute [TreatNullAs=EmptyString] CSSOMString fontVariantEastAsian;
+  [CEReactions] attribute [TreatNullAs=EmptyString] CSSOMString fontVariant;
+  [CEReactions] attribute [TreatNullAs=EmptyString] CSSOMString fontFeatureSettings;
+};

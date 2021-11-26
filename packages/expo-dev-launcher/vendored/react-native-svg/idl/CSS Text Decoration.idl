@@ -1,0 +1,12 @@
+partial interface CSSStyleDeclaration {
+  [CEReactions] attribute [TreatNullAs=EmptyString] CSSOMString textDecorationLine;
+  [CEReactions] attribute [TreatNullAs=EmptyString] CSSOMString textDecorationStyle;
+  [CEReactions] attribute [TreatNullAs=EmptyString] CSSOMString textDecorationColor;
+  [CEReactions] attribute [TreatNullAs=EmptyString] CSSOMString textDecoration;
+  [CEReactions] attribute [TreatNullAs=EmptyString] CSSOMString textUnderlinePosition;
+  [CEReactions] attribute [TreatNullAs=EmptyString] CSSOMString textEmphasisStyle;
+  [CEReactions] attribute [TreatNullAs=EmptyString] CSSOMString textEmphasisColor;
+  [CEReactions] attribute [TreatNullAs=EmptyString] CSSOMString textEmphasis;
+  [CEReactions] attribute [TreatNullAs=EmptyString] CSSOMString textEmphasisPosition;
+  [CEReactions] attribute [TreatNullAs=EmptyString] CSSOMString textShadow;
+};

@@ -1,0 +1,8 @@
+partial interface CSSStyleDeclaration {
+  [CEReactions] attribute [TreatNullAs=EmptyString] CSSOMString direction;
+  [CEReactions] attribute [TreatNullAs=EmptyString] CSSOMString unicodeBidi;
+  [CEReactions] attribute [TreatNullAs=EmptyString] CSSOMString writingMode;
+  [CEReactions] attribute [TreatNullAs=EmptyString] CSSOMString textOrientation;
+  [CEReactions] attribute [TreatNullAs=EmptyString] CSSOMString glyphOrientationVertical;
+  [CEReactions] attribute [TreatNullAs=EmptyString] CSSOMString textCombineUpright;
+};

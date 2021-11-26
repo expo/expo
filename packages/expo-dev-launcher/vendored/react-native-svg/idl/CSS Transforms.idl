@@ -1,0 +1,5 @@
+partial interface CSSStyleDeclaration {
+  [CEReactions] attribute [TreatNullAs=EmptyString] CSSOMString transform;
+  [CEReactions] attribute [TreatNullAs=EmptyString] CSSOMString transformOrigin;
+  [CEReactions] attribute [TreatNullAs=EmptyString] CSSOMString transformBox;
+};
