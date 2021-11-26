@@ -1,6 +1,6 @@
 import * as React from 'react';
 export interface ExpoModuleTemplateViewProps {
-    greatProp: string;
+    someGreatProp: number;
 }
 interface ExpoModuleTemplateViewState {
 }

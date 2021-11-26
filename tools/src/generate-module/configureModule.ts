@@ -133,7 +133,7 @@ async function configureIOS(
 
   // remove ViewManager from template
   if (!viewManager) {
-    await removeFiles(path.join(iosPath, 'EXModuleTemplate'), [
+    await removeFiles(iosPath, [
       `EXModuleTemplateView.h`,
       `EXModuleTemplateView.m`,
       `EXModuleTemplateViewManager.h`,
@@ -142,16 +142,16 @@ async function configureIOS(
   }
 
   await renameFilesWithExtensions(
-    path.join(iosPath, 'EXModuleTemplate'),
-    ['.h', '.m'],
+    iosPath,
+    ['.swift'],
     [
-      { from: 'EXModuleTemplateModule', to: `${podName}Module` },
+      { from: 'ExpoModuleTemplateModule', to: `${podName}Module` },
       {
-        from: 'EXModuleTemplateView',
+        from: 'ExpoModuleTemplateView',
         to: `${podName}View`,
       },
       {
-        from: 'EXModuleTemplateViewManager',
+        from: 'ExpoModuleTemplateViewManager',
         to: `${podName}ViewManager`,
       },
     ]
@@ -159,11 +159,11 @@ async function configureIOS(
   await renameFilesWithExtensions(
     iosPath,
     ['', '.podspec'],
-    [{ from: 'EXModuleTemplate', to: `${podName}` }]
+    [{ from: 'ExpoModuleTemplate', to: `${podName}` }]
   );
   await replaceContents(iosPath, (singleFileContent) =>
     singleFileContent
-      .replace(/EXModuleTemplate/g, podName)
+      .replace(/ExpoModuleTemplate/g, podName)
       .replace(/ExpoModuleTemplate/g, jsPackageName)
   );
 }

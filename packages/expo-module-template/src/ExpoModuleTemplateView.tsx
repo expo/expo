@@ -3,7 +3,7 @@ import * as React from 'react';
 import NativeView from './ExpoModuleTemplateNativeView';
 
 export interface ExpoModuleTemplateViewProps {
-  greatProp: string;
+  someGreatProp: number;
 }
 
 interface ExpoModuleTemplateViewState {}
@@ -23,6 +23,6 @@ export default class ExpoModuleTemplateView extends React.Component<
   ExpoModuleTemplateViewState
 > {
   render() {
-    return <NativeView />;
+    return <NativeView someGreatProp={this.props.someGreatProp} />;
   }
 }

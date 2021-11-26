@@ -1,30 +1,25 @@
 package expo.modules.template
 
-import android.content.Context
+import expo.modules.kotlin.modules.Module
+import expo.modules.kotlin.modules.ModuleDefinition
 
-import org.unimodules.core.ExportedModule
-import org.unimodules.core.ModuleRegistry
-import org.unimodules.core.Promise
-import org.unimodules.core.interfaces.ExpoMethod
+class ModuleTemplateModule : Module() {
+  override fun definition() = ModuleDefinition {
+    name("ExpoModuleTemplate")
 
-class ModuleTemplateModule(context: Context) : ExportedModule(context) {
+    function("someGreatMethodAsync") { options: Map<String, String> ->
+      println("Hello 👋")
+      null as Any?
+    }
 
-  private var mModuleRegistry: ModuleRegistry? = null
+    viewManager {
+      view { context -> 
+        ModuleTemplateView(context) 
+      }
 
-  override fun getName(): String {
-    return NAME
-  }
-
-  override fun onCreate(moduleRegistry: ModuleRegistry) {
-    mModuleRegistry = moduleRegistry
-  }
-
-  @ExpoMethod
-  fun someGreatMethodAsync(options: Map<String, Any>, promise: Promise) {
-  }
-
-  companion object {
-    private val NAME = "ExpoModuleTemplate"
-    private val TAG = ModuleTemplateModule::class.qualifiedName
+      prop("someGreatProp") { view: ModuleTemplateView, prop: Int ->
+        println(prop)
+      }
+    }
   }
 }
