@@ -13,8 +13,8 @@ Pod::Spec.new do |s|
   s.platform       = :ios, '12.0'
   s.source         = { git: 'https://github.com/expo/expo.git' }
   s.static_framework = true
-  s.source_files   = 'ExpoModuleTemplate/**/*.{h,m,swift}'
-  s.preserve_paths = 'ExpoModuleTemplate/**/*.{h,m,swift}'
+  s.source_files   = '**/*.{h,m,swift}'
+  s.preserve_paths = '**/*.{h,m,swift}'
   s.requires_arc   = true
 
   s.dependency 'ExpoModulesCore'

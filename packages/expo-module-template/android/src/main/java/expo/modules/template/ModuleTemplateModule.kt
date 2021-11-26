@@ -13,7 +13,13 @@ class ModuleTemplateModule : Module() {
     }
 
     viewManager {
-      view { ModuleTemplateView(it) }
+      view { context -> 
+        ModuleTemplateView(context) 
+      }
+
+      prop("someGreatProp") { view: ModuleTemplateView, prop: Int ->
+        println(prop)
+      }
     }
   }
 }

@@ -1,6 +1,8 @@
 import { requireNativeViewManager } from 'expo-modules-core';
 
-type NativeViewProps = object;
+type NativeViewProps = {
+  someGreatProp: number;
+};
 
 const NativeView: React.ComponentType<NativeViewProps> =
   requireNativeViewManager('ExpoModuleTemplate');

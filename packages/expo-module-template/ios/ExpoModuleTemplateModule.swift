@@ -12,6 +12,10 @@ public class ExpoModuleTemplateModule: Module {
       view {
         ModuleTemplateView()
       }
+
+      prop("someGreatProp") { (view: ModuleTemplateView, prop: Int) in
+        print("prop")
+      }
     }
   }
 }
