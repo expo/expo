@@ -106,7 +106,7 @@ export async function generateModulemapAsync(podspecFile: string, versionName: s
     const basename = path.basename(podspecFile, '.podspec');
     if (basename === 'React-Core') {
       const modulemap = `\
-module React {
+module ${versionName}React {
   umbrella "../../Public/${versionName}React-Core/${versionName}React"
 
   export *
