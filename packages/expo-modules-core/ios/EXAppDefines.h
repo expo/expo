@@ -13,9 +13,9 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @interface EXAppDefines : NSObject
 
-@property (class, nonatomic, assign, readonly) BOOL APP_DEBUG;
-@property (class, nonatomic, assign, readonly) BOOL APP_RCT_DEBUG;
-@property (class, nonatomic, assign, readonly) BOOL APP_RCT_DEV;
+@property (class, nonatomic, assign, readonly) BOOL APP_DEBUG NS_SWIFT_NAME(APP_DEBUG);
+@property (class, nonatomic, assign, readonly) BOOL APP_RCT_DEBUG NS_SWIFT_NAME(APP_RCT_DEBUG);
+@property (class, nonatomic, assign, readonly) BOOL APP_RCT_DEV NS_SWIFT_NAME(APP_RCT_DEV);
 
 + (NSDictionary *)getAllDefines;
 

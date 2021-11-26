@@ -11,19 +11,19 @@ static BOOL _loaded = NO;
 + (BOOL)APP_DEBUG
 {
   [self throwIfNotLoaded];
-  return _storage[@"APP_DEBUG"];
+  return [_storage[@"APP_DEBUG"] boolValue];
 }
 
 + (BOOL)APP_RCT_DEBUG
 {
   [self throwIfNotLoaded];
-  return _storage[@"APP_RCT_DEBUG"];
+  return [_storage[@"APP_RCT_DEBUG"] boolValue];
 }
 
 + (BOOL)APP_RCT_DEV
 {
   [self throwIfNotLoaded];
-  return _storage[@"APP_RCT_DEV"];
+  return [_storage[@"APP_RCT_DEV"] boolValue];
 }
 
 + (NSDictionary *)getAllDefines
