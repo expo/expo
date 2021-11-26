@@ -90,6 +90,10 @@ Learn more about how to securely store your `NPM_TOKEN` on EAS Build: ["Using pr
 
 You will need to remove `expo-branch` from your app to build it with EAS Build. The plan is to add support to [react-native-branch](https://www.npmjs.com/package/react-native-branch), the library maintained by engineers at [Branch](https://branch.io/). If Branch support is a blocker for you, you can try to build your own [config plugin](https://docs.expo.dev/guides/config-plugins/) to add `react-native-branch` to your app today.
 
+### `amazon-cognito-identity-js` is required if you use AWS Amplify
+
+In projects built with `expo build` the native primitives required by AWS Amplify are included in every app. This is not the case in EAS Build, and so you must installed `amazon-cognito-identity-js` in order to link the native module depended on by AWS Amplify libraries.
+
 ### **metro.config.js** must export the entire default config from `expo/metro-config`
 
 > `expo/metro-config` is a versioned re-export of `@expo/metro-config`.
