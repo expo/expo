@@ -8,11 +8,6 @@ const MAX_STRING_LENGTH = 20;
  * Sets up `__expoSetLogging` method providing some logging options useful when debugging GL calls.
  */
 export function configureLogging(gl) {
-    if (gl.__expoSetLogging) {
-        // currently unnecessary, but if we move logger implementation to c++
-        // we could to that without introducing breaking changes.
-        return;
-    }
     // Enable/disable logging of all GL function calls
     let loggingOption = GLLoggingOption.DISABLED;
     gl.__expoSetLogging = (option) => {
