@@ -3,7 +3,8 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
 import * as React from 'react';
 
-import { AppProviders } from './components/AppProviders';
+import { AppProviders } from './components/redesign/AppProviders';
+import { getLocalPackagersAsync } from './functions/getLocalPackagersAsync';
 import { HomeScreen } from './screens/HomeScreen';
 import { SettingsScreen } from './screens/SettingsScreen';
 import { UserProfileScreen } from './screens/UserProfileScreen';
@@ -15,9 +16,13 @@ type LauncherAppProps = {
   isSimulator?: boolean;
 };
 
+async function startupScript() {
+  await getLocalPackagersAsync();
+}
+
 export function App(props: LauncherAppProps) {
   return (
-    <AppProviders>
+    <AppProviders startupScript={startupScript}>
       <Stack.Navigator initialRouteName="Authentication Screen">
         <Stack.Screen name="Main" component={Main} options={{ header: () => null }} />
 

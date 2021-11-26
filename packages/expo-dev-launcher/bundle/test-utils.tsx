@@ -1,7 +1,7 @@
 import { render as rtlRender, RenderOptions } from '@testing-library/react-native';
 import * as React from 'react';
 
-import { AppProviders } from './components/AppProviders';
+import { AppProviders } from './components/redesign/AppProviders';
 
 const wrapper = ({ children }) => <AppProviders>{children}</AppProviders>;
 

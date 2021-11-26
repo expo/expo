@@ -3,6 +3,17 @@ import { cleanup } from '@testing-library/react-native';
 afterEach(cleanup);
 
 jest.mock('react-native/Libraries/Animated/NativeAnimatedHelper');
+
+jest.mock('react-native/Libraries/Components/Switch/Switch.js', () => {
+  const View = require('react-native/Libraries/Components/View/View');
+  const React = require('react');
+  function MockSwitch(props) {
+    return React.createElement(View, { ...props, onPress: props.onValueChange });
+  }
+
+  return MockSwitch;
+});
+
 jest.mock('./bundle/native-modules/DevLauncherInternal');
 jest.mock('./bundle/native-modules/DevMenu');
 jest.mock('./bundle/native-modules/DevMenuInternal');

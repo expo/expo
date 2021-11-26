@@ -9,8 +9,18 @@ import { Heading, Text } from '../components/redesign/Text';
 import { ThreeFingerPressIcon } from '../components/redesign/ThreeFingerPressIcon';
 import { ToolbarOverlayIcon } from '../components/redesign/ToolbarOverlayIcon';
 import { Divider, Row, Spacer, View } from '../components/redesign/View';
+import { useDevMenuSettings } from '../hooks/useDevMenuSettings';
 
-export function SettingsScreen(props: any) {
+export function SettingsScreen() {
+  const {
+    showsAtLaunch,
+    setShowsAtLaunch,
+    touchGestureEnabled,
+    setTouchGestureEnabled,
+    motionGestureEnabled,
+    setMotionGestureEnabled,
+  } = useDevMenuSettings();
+
   return (
     <ScrollView>
       <Spacer.Vertical size="large" />
@@ -22,12 +32,17 @@ export function SettingsScreen(props: any) {
             <Spacer.Horizontal size="small" />
             <Text size="large">Show menu at launch</Text>
             <Spacer.Horizontal size="flex" />
-            <Switch />
+            <Switch
+              accessibilityRole="switch"
+              accessibilityLabel="Toggle showing menu at launch"
+              value={showsAtLaunch}
+              onValueChange={() => setShowsAtLaunch(!showsAtLaunch)}
+            />
           </Row>
 
-          <Divider />
+          {/* <Divider /> */}
 
-          <Row px="medium" py="small">
+          {/* <Row px="medium" py="small">
             <ToolbarOverlayIcon />
             <Spacer.Horizontal size="small" />
             <View shrink="1">
@@ -38,7 +53,7 @@ export function SettingsScreen(props: any) {
             </View>
             <Spacer.Horizontal size="flex" />
             <Switch />
-          </Row>
+          </Row> */}
         </View>
 
         <Spacer.Vertical size="large" />
@@ -50,7 +65,7 @@ export function SettingsScreen(props: any) {
         </View>
 
         <View bg="default" rounded="large">
-          <Button>
+          <Button onPress={() => setMotionGestureEnabled(!motionGestureEnabled)}>
             <Row px="medium" py="small" align="center">
               <ShakeDeviceIcon />
               <Spacer.Horizontal size="small" />
@@ -58,13 +73,13 @@ export function SettingsScreen(props: any) {
                 Shake Device
               </Text>
               <Spacer.Horizontal size="flex" />
-              <CheckIcon />
+              {motionGestureEnabled && <CheckIcon />}
             </Row>
           </Button>
 
           <Divider />
 
-          <Button>
+          <Button onPress={() => setTouchGestureEnabled(!touchGestureEnabled)}>
             <Row px="medium" py="small">
               <ThreeFingerPressIcon />
               <Spacer.Horizontal size="small" />
@@ -72,7 +87,7 @@ export function SettingsScreen(props: any) {
                 Three-finger long-press
               </Text>
               <Spacer.Horizontal size="flex" />
-              <CheckIcon />
+              {touchGestureEnabled && <CheckIcon />}
             </Row>
           </Button>
         </View>
