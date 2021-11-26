@@ -13,10 +13,10 @@
 #include <jsi/jsi.h>
 #include <type_traits>
 
-#include "EXJSIUtils.h"
+#include "EXJsiUtils.h"
+#include "EXWebGLRenderer.h"
 #include "TypedArrayApi.h"
 
-namespace jsi = facebook::jsi;
 namespace expo {
 namespace gl_cpp {
 
@@ -42,10 +42,15 @@ template <typename T>
 inline constexpr bool is_supported_vector = std::is_same_v<std::vector<uint32_t>, T> ||
     std::is_same_v<std::vector<int32_t>, T> || std::is_same_v<std::vector<float>, T>;
 
+// if T = EXWebGLClass then return_type = UEXGLObjectId else return_type = T
 template <typename T>
-inline std::
-    enable_if_t<!(is_integral_v<T> || std::is_floating_point_v<T> || is_supported_vector<T>), T>
-    unpackArg(jsi::Runtime &runtime, const jsi::Value *jsArgv);
+using type_map = typename std::conditional<std::is_same_v<EXWebGLClass, T>, UEXGLObjectId, T>::type;
+
+template <typename T>
+inline std::enable_if_t<
+    !(is_integral_v<T> || std::is_floating_point_v<T> || is_supported_vector<T>),
+    type_map<T>>
+unpackArg(jsi::Runtime &runtime, const jsi::Value *jsArgv);
 
 //
 // unpackArgs explicit specializations
@@ -115,6 +120,15 @@ inline jsi::ArrayBuffer unpackArg<jsi::ArrayBuffer>(
   return jsArgv->asObject(runtime).getArrayBuffer(runtime);
 }
 
+template <>
+inline UEXGLObjectId unpackArg<EXWebGLClass>(jsi::Runtime &runtime, const jsi::Value *jsArgv) {
+  if (!jsArgv->isObject() || !jsArgv->asObject(runtime).hasProperty(runtime, "id")) {
+    return 0;
+  }
+  return static_cast<UEXGLObjectId>(
+      jsArgv->asObject(runtime).getProperty(runtime, "id").asNumber());
+}
+
 //
 // unpackArgs function overloads
 //
@@ -128,7 +142,8 @@ inline std::enable_if_t<is_integral_v<T>, T> unpackArg(
   } else if (jsArgv->isNull() || jsArgv->isUndefined()) {
     return 0;
   } else if (jsArgv->isBool()) {
-    // this case should not be necessary but one of the ncl threejs examples relies on this behaviour
+    // this case should not be necessary but one of the ncl threejs examples relies on this
+    // behaviour
     return jsArgv->getBool() ? GL_TRUE : GL_FALSE;
   }
   return jsArgv->asNumber();
