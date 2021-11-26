@@ -38,6 +38,7 @@ const DIR_MAPPING = {
   faq: 'FAQ',
   troubleshooting: 'Troubleshooting',
   'eas-update': 'EAS Update',
+  modules: 'Expo Modules',
 };
 
 const processUrl = path => {

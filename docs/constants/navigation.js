@@ -26,6 +26,7 @@ const GROUPS = {
   'Technical Specs': ['Technical Specs'],
   'Development Builds': ['Development Builds'],
   'EAS Update': ['EAS Update'],
+  'Expo Modules': ['Expo Modules'],
 };
 
 // This array provides the **ordering** for pages within each section
@@ -426,12 +427,23 @@ const sections = [
       'View Style Props',
     ],
   },
+  {
+    name: 'Expo Modules',
+    reference: [
+      'Overview',
+      'Module API',
+      'Autolinking',
+      'AppDelegate Subscribers',
+      'Module Config',
+    ],
+  },
 ];
 
 // Order of sections (mapped from directory names in navigation-data.js DIR_MAPPING)
 // TODO(brentvatne): this doesn't make too much sense because of higher level groupings, should
 // move this logic to GROUPS instead
 const ROOT = [
+  'Expo Modules',
   'Get Started',
   'Tutorial',
   'Conceptual Overview',

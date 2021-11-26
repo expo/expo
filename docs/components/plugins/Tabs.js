@@ -32,7 +32,7 @@ function TabButton({ selected, ...props }) {
   );
 }
 
-export function Tabs({ children, tabs }) {
+export function Tabs({ children, tabs, panelStyle }) {
   children = Array.isArray(children) ? children : [children];
   const tabTitles = children.map(
     (child, index) => child.props.label || tabs[index] || '[untitled]'
@@ -48,7 +48,7 @@ export function Tabs({ children, tabs }) {
           </TabButton>
         ))}
       </TabList>
-      <TabPanels style={{ paddingTop: 6 }}>{children}</TabPanels>
+      <TabPanels style={panelStyle || { paddingTop: 6 }}>{children}</TabPanels>
     </ReachTabs>
   );
 }
