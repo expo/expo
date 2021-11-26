@@ -26,36 +26,21 @@ describe('<HomeScreen />', () => {
   });
 
   test('displays instructions on starting packager when none are found', async () => {
-    const { getByText } = await renderHomeScreen();
+    const { getByText } = await renderHomeScreen({ initialPackagers: [], fetchOnMount: false });
     await waitFor(() => getByText(packagerInstructionsRegex));
   });
 
   test('displays refetch button', async () => {
     const { getByText } = await renderHomeScreen();
-
     await waitFor(() => getByText(refetchPackagersRegex));
   });
 
   test('fetching local packagers on mount', async () => {
-    const fakeLocalPackager: Packager = {
-      url: 'hello',
-      description: 'fakePackagerDescription',
-      hideImage: false,
-      source: 'test',
-    };
-
-    const fakeLocalPackager2: Packager = {
-      url: 'hello',
-      description: 'fakePackagerDescription2',
-      hideImage: false,
-      source: 'test',
-    };
-
-    mockGetPackagersResponse([fakeLocalPackager, fakeLocalPackager2]);
+    mockGetPackagersResponse(fakePackagers);
 
     expect(() => getByText(fakeLocalPackager.description)).toThrow();
 
-    const { getByText } = await renderHomeScreen();
+    const { getByText } = await renderHomeScreen({ fetchOnMount: true });
 
     await waitFor(() => getByText(fakeLocalPackager.description));
     await waitFor(() => getByText(fakeLocalPackager2.description));
@@ -63,45 +48,48 @@ describe('<HomeScreen />', () => {
 
   test('refetching local packagers on button press', async () => {
     const { getByText, refetch } = await renderHomeScreen({
-      refetchPollInterval: 0,
-      refetchPollAmount: 2,
+      fetchOnMount: false,
+      initialPackagers: [],
     });
 
-    const fakeLocalPackager: Packager = {
-      url: 'hello',
-      description: 'fakePackagerDescription',
-      hideImage: false,
-      source: 'test',
-    };
-
     mockGetLocalPackagersAsync.mockClear();
-    mockGetPackagersResponse([fakeLocalPackager]);
-    expect(() => getByText(fakeLocalPackager.description)).toThrow();
+    mockGetPackagersResponse([fakePackagers[0]]);
+    expect(() => getByText(fakePackagers[0].description)).toThrow();
     expect(getLocalPackagersAsync).not.toHaveBeenCalled();
 
     await refetch();
     expect(getByText(fetchingPackagersRegex));
     expect(getLocalPackagersAsync).toHaveBeenCalled();
 
-    await waitFor(() => getByText(fakeLocalPackager.description));
+    await waitFor(() => getByText(fakePackagers[0].description));
   });
 
   test('refetching enabled after polling is completed', async () => {
-    const { getByText, refetch } = await renderHomeScreen({
-      refetchPollAmount: 1,
-      refetchPollInterval: 0,
+    const testPollAmount = 8;
+
+    const { getByText } = await renderHomeScreen({
+      fetchOnMount: false,
+      pollInterval: 1,
+      pollAmount: testPollAmount,
+      initialPackagers: [],
     });
 
     mockGetLocalPackagersAsync.mockClear();
-    await refetch();
-    expect(getLocalPackagersAsync).toHaveBeenCalledTimes(1);
+
+    await act(async () => {
+      await waitFor(() => getByText(refetchPackagersRegex));
+      fireEvent.press(getByText(refetchPackagersRegex));
+      expect(getLocalPackagersAsync).toHaveBeenCalledTimes(1);
+    });
 
     // ensure button is disabled when fetching
-    await act(async () => fireEvent.press(getByText(fetchingPackagersRegex)));
-    expect(getLocalPackagersAsync).toHaveBeenCalledTimes(1);
-
-    await refetch();
-    expect(getLocalPackagersAsync).toHaveBeenCalledTimes(2);
+    await act(async () => {
+      fireEvent.press(getByText(fetchingPackagersRegex));
+      await waitFor(() => getByText(refetchPackagersRegex));
+      expect(getLocalPackagersAsync).toHaveBeenCalledTimes(testPollAmount);
+      fireEvent.press(getByText(refetchPackagersRegex));
+      expect(getLocalPackagersAsync).toHaveBeenCalledTimes(testPollAmount + 1);
+    });
   });
 
   test('select packager by entered url', async () => {
@@ -160,10 +148,48 @@ describe('<HomeScreen />', () => {
   });
 });
 
-async function renderHomeScreen(props?: HomeScreenProps) {
-  const { getByText, ...fns } = render(<HomeScreen {...props} />);
+const fakeLocalPackager: Packager = {
+  url: 'hello',
+  description: 'fakePackagerDescription',
+  hideImage: false,
+  source: 'test',
+};
 
-  await waitFor(() => getByText(packagerInstructionsRegex));
+const fakeLocalPackager2: Packager = {
+  url: 'hello',
+  description: 'fakePackagerDescription2',
+  hideImage: false,
+  source: 'test',
+};
+
+const fakePackagers = [fakeLocalPackager, fakeLocalPackager2];
+
+type RenderHomeScreenOptions = HomeScreenProps & {
+  initialPackagers?: Packager[];
+};
+
+async function renderHomeScreen(options: RenderHomeScreenOptions = {}) {
+  const {
+    initialPackagers = fakePackagers,
+    fetchOnMount = false,
+    pollInterval = 0,
+    pollAmount = 5,
+    ...props
+  } = options;
+
+  const { getByText, ...fns } = render(
+    <HomeScreen
+      fetchOnMount={fetchOnMount}
+      pollAmount={pollAmount}
+      pollInterval={pollInterval}
+      {...props}
+    />,
+    {
+      initialAppProviderProps: {
+        initialPackagers,
+      },
+    }
+  );
 
   async function refetch() {
     await waitFor(() => getByText(refetchPackagersRegex));

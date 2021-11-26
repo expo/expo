@@ -9,27 +9,31 @@ import { Heading, Text } from '../components/redesign/Text';
 import { UrlDropdown } from '../components/redesign/UrlDropdown';
 import { Divider, Row, Spacer, View } from '../components/redesign/View';
 import { Packager } from '../functions/getLocalPackagersAsync';
+import { useAppInfo } from '../hooks/useAppInfo';
 import { useLocalPackagers } from '../hooks/useLocalPackagers';
-import { loadApp, getAppInfoAsync, AppInfo } from '../native-modules/DevLauncherInternal';
+import { loadApp } from '../native-modules/DevLauncherInternal';
 
 export type HomeScreenProps = {
-  refetchPollInterval?: number;
-  refetchPollAmount?: number;
+  fetchOnMount?: boolean;
+  pollInterval?: number;
+  pollAmount?: number;
 };
 
-export function HomeScreen({ refetchPollAmount = 5, refetchPollInterval = 1000 }: HomeScreenProps) {
+export function HomeScreen({
+  fetchOnMount = true,
+  pollInterval = 1000,
+  pollAmount = 5,
+}: HomeScreenProps) {
   const { data, pollAsync, isFetching } = useLocalPackagers();
+  const { appName, appIcon } = useAppInfo();
 
-  const [appInfo, setAppInfo] = React.useState<AppInfo>({
-    appName: '',
-    appVersion: -1,
-    appIcon: '',
-    hostUrl: '',
-  });
+  const initialPackagerData = React.useRef(data);
 
   React.useEffect(() => {
-    getAppInfoAsync().then(setAppInfo);
-  }, []);
+    if (initialPackagerData.current.length === 0 && fetchOnMount) {
+      pollAsync({ pollAmount, pollInterval });
+    }
+  }, [fetchOnMount, pollInterval, pollAmount]);
 
   const onPackagerPress = async (packager: Packager) => {
     await loadApp(packager.url);
@@ -40,17 +44,13 @@ export function HomeScreen({ refetchPollAmount = 5, refetchPollInterval = 1000 }
   };
 
   const onRefetchPress = () => {
-    pollAsync({ pollAmount: refetchPollAmount, pollInterval: refetchPollInterval });
+    pollAsync({ pollAmount, pollInterval });
   };
 
   return (
     <ScrollView>
       <View bg="default">
-        <AppHeader
-          title={appInfo?.appName}
-          appImageUri={appInfo?.appIcon}
-          subtitle="Development App"
-        />
+        <AppHeader title={appName} appImageUri={appIcon} subtitle="Development App" />
       </View>
 
       <View py="large">

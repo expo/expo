@@ -1,6 +1,10 @@
 import * as React from 'react';
 
-import { getSettingsAsync, setSettingsAsync } from '../native-modules/DevMenuInternal';
+import {
+  DevMenuSettingsType,
+  getSettingsAsync,
+  setSettingsAsync,
+} from '../native-modules/DevMenuInternal';
 
 export type DevMenuSettingsContext = {
   motionGestureEnabled: boolean;
@@ -14,10 +18,22 @@ export type DevMenuSettingsContext = {
 const Context = React.createContext<DevMenuSettingsContext | null>(null);
 export const useDevMenuSettings = () => React.useContext(Context);
 
-export function DevMenuSettingsProvider({ children }: { children: React.ReactNode }) {
-  const [motionGestureEnabled, setMotionGestureEnabled] = React.useState(false);
-  const [touchGestureEnabled, setTouchGestureEnabled] = React.useState(false);
-  const [showsAtLaunch, setShowsAtLaunch] = React.useState(false);
+type DevMenuSettingsProviderProps = {
+  children: React.ReactNode;
+  initialSettings?: DevMenuSettingsType;
+};
+
+export function DevMenuSettingsProvider({
+  children,
+  initialSettings,
+}: DevMenuSettingsProviderProps) {
+  const [motionGestureEnabled, setMotionGestureEnabled] = React.useState(
+    initialSettings?.motionGestureEnabled
+  );
+  const [touchGestureEnabled, setTouchGestureEnabled] = React.useState(
+    initialSettings?.touchGestureEnabled
+  );
+  const [showsAtLaunch, setShowsAtLaunch] = React.useState(initialSettings?.showsAtLaunch);
 
   React.useEffect(() => {
     getSettingsAsync().then((settings) => {

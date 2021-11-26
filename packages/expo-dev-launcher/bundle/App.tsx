@@ -4,7 +4,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import * as React from 'react';
 
 import { AppProviders } from './components/redesign/AppProviders';
-import { getLocalPackagersAsync } from './functions/getLocalPackagersAsync';
+import { LoadInitialData } from './components/redesign/LoadInitialData';
 import { HomeScreen } from './screens/HomeScreen';
 import { SettingsScreen } from './screens/SettingsScreen';
 import { UserProfileScreen } from './screens/UserProfileScreen';
@@ -16,23 +16,21 @@ type LauncherAppProps = {
   isSimulator?: boolean;
 };
 
-async function startupScript() {
-  await getLocalPackagersAsync();
-}
-
 export function App(props: LauncherAppProps) {
   return (
-    <AppProviders startupScript={startupScript}>
-      <Stack.Navigator initialRouteName="Authentication Screen">
-        <Stack.Screen name="Main" component={Main} options={{ header: () => null }} />
+    <LoadInitialData>
+      <AppProviders>
+        <Stack.Navigator initialRouteName="Authentication Screen">
+          <Stack.Screen name="Main" component={Main} options={{ header: () => null }} />
 
-        <Stack.Screen
-          name="User Profile"
-          component={UserProfileScreen}
-          options={{ presentation: 'modal', header: () => null }}
-        />
-      </Stack.Navigator>
-    </AppProviders>
+          <Stack.Screen
+            name="User Profile"
+            component={UserProfileScreen}
+            options={{ presentation: 'modal', header: () => null }}
+          />
+        </Stack.Navigator>
+      </AppProviders>
+    </LoadInitialData>
   );
 }
 

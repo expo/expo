@@ -2,6 +2,7 @@ import * as React from 'react';
 
 import { apiClient } from '../apiClient';
 import { getUserProfileAsync, UserAccount, UserData } from '../functions/getUserProfileAsync';
+import { restoreUserAsync } from '../functions/restoreUserAsync';
 import { startAuthSessionAsync } from '../functions/startAuthSessionAsync';
 import * as DevMenu from '../native-modules/DevMenuInternal';
 import { useIsMounted } from './useIsMounted';
@@ -22,17 +23,20 @@ type UserActionsContext = {
 const ActionsContext = React.createContext<UserActionsContext | null>(null);
 const Context = React.createContext<UserContext | null>(null);
 
-export function UserContextProvider({ children }: { children: React.ReactNode }) {
-  const [userData, setUserData] = React.useState<UserData | undefined>(undefined);
-  const [selectedAccountId, setSelectedAccount] = React.useState<string>('');
+type UserContextProviderProps = {
+  children: React.ReactNode;
+  initialUserData?: UserData;
+};
+
+export function UserContextProvider({ children, initialUserData }: UserContextProviderProps) {
+  const [userData, setUserData] = React.useState<UserData | undefined>(initialUserData);
+  const [selectedAccountId, setSelectedAccount] = React.useState<string>(
+    initialUserData?.accounts[0].id ?? ''
+  );
   const isMounted = useIsMounted();
 
   const selectedAccount = userData?.accounts.find((account) => account.id === selectedAccountId);
-
-  React.useEffect(() => {
-    restore();
-  }, []);
-
+  
   async function login(type: 'signup' | 'login') {
     const sessionSecret = await startAuthSessionAsync(type).catch((cancelled) => {});
 
@@ -55,14 +59,11 @@ export function UserContextProvider({ children }: { children: React.ReactNode })
   }
 
   async function restore() {
-    const session = await DevMenu.restoreSessionAsync().catch((cancelled) => {
+    const userData = await restoreUserAsync();
+
+    if (!userData) {
       clearSession();
-    });
-
-    if (session) {
-      apiClient.setHeader('expo-session', session.sessionSecret);
-      const userData = await getUserProfileAsync();
-
+    } else {
       if (isMounted()) {
         setUserData(userData);
         setSelectedAccount(userData.accounts[0].id);

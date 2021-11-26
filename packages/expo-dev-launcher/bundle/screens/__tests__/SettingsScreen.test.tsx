@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import { setSettingsAsync } from '../../native-modules/DevMenuInternal';
+import { DevMenuSettingsType, setSettingsAsync } from '../../native-modules/DevMenuInternal';
 import { render, fireEvent, waitFor, act } from '../../test-utils';
 import { SettingsScreen } from '../SettingsScreen';
 
@@ -9,6 +9,42 @@ const mockSetSettingsAsync = setSettingsAsync as jest.Mock;
 describe('<SettingsScreen />', () => {
   afterEach(() => {
     mockSetSettingsAsync.mockClear();
+  });
+
+  test('shows the correct settings on mount 1', async () => {
+    const testSettings: DevMenuSettingsType = {
+      motionGestureEnabled: true,
+      touchGestureEnabled: true,
+      showsAtLaunch: false,
+    };
+
+    const { getByA11yLabel, findAllByA11yState } = render(<SettingsScreen />, {
+      initialAppProviderProps: { initialDevMenuSettings: testSettings },
+    });
+
+    const showsAtLaunchButton = getByA11yLabel(/toggle showing menu/i);
+    expect(showsAtLaunchButton.props.value).toBe(testSettings.showsAtLaunch);
+
+    const activeCheckmarks = await findAllByA11yState({ checked: true });
+    expect(activeCheckmarks.length).toEqual(2);
+  });
+
+  test('shows the correct settings on mount 2', async () => {
+    const testSettings: DevMenuSettingsType = {
+      motionGestureEnabled: true,
+      touchGestureEnabled: false,
+      showsAtLaunch: true,
+    };
+
+    const { getByA11yLabel, findAllByA11yState } = render(<SettingsScreen />, {
+      initialAppProviderProps: { initialDevMenuSettings: testSettings },
+    });
+
+    const showsAtLaunchButton = getByA11yLabel(/toggle showing menu/i);
+    expect(showsAtLaunchButton.props.value).toBe(testSettings.showsAtLaunch);
+
+    const activeCheckmarks = await findAllByA11yState({ checked: true });
+    expect(activeCheckmarks.length).toEqual(1);
   });
 
   test('toggling shake device', async () => {

@@ -1,8 +1,8 @@
 import * as React from 'react';
 
-import { getUserProfileAsync, UserAccount } from '../../functions/getUserProfileAsync';
+import { getUserProfileAsync, UserAccount, UserData } from '../../functions/getUserProfileAsync';
 import { startAuthSessionAsync } from '../../functions/startAuthSessionAsync';
-import { restoreSessionAsync, setSessionAsync } from '../../native-modules/DevMenuInternal';
+import { setSessionAsync } from '../../native-modules/DevMenuInternal';
 import { render, act, fireEvent, waitFor } from '../../test-utils';
 import { UserProfileScreen } from '../UserProfileScreen';
 
@@ -11,7 +11,6 @@ jest.mock('../../functions/getUserProfileAsync');
 
 const mockStartAuthSession = startAuthSessionAsync as jest.Mock;
 const mockGetUserProfileAsync = getUserProfileAsync as jest.Mock;
-const mockRestoreSessionAsync = restoreSessionAsync as jest.Mock;
 const mockSetSessionAsync = setSessionAsync as jest.Mock;
 
 const mockNavigation = {
@@ -37,7 +36,12 @@ const fakeAccounts: UserAccount[] = [
   },
 ];
 
-const fakeUserProfile = {
+const fakeUserProfile: UserData = {
+  id: '123',
+  appCount: 10,
+  username: 'fakeUsername',
+  profilePhoto: '123',
+  email: 'hello@joe.ca',
   accounts: fakeAccounts,
 };
 
@@ -45,7 +49,6 @@ const fakeSessionSecret = '123';
 
 describe('<UserProfileScreen />', () => {
   afterEach(() => {
-    mockRestoreSessionAsync.mockClear();
     mockStartAuthSession.mockClear();
     mockGetUserProfileAsync.mockClear();
     mockNavigation.goBack.mockClear();
@@ -151,21 +154,6 @@ describe('<UserProfileScreen />', () => {
     });
   });
 
-  test('restores from previous session', async () => {
-    mockRestoreSessionAsync.mockResolvedValueOnce('123');
-    expect(restoreSessionAsync).not.toHaveBeenCalled();
-
-    const { getByText } = renderProfileScreen();
-
-    expect(restoreSessionAsync).toHaveBeenCalledTimes(1);
-
-    await waitFor(() => getByText(fakeAccounts[0].owner.username));
-
-    fakeAccounts.forEach((account) => {
-      getByText(account.owner.username);
-    });
-  });
-
   test('logout', async () => {
     const { getByA11yLabel, getByText } = renderProfileScreen();
 
@@ -186,10 +174,13 @@ describe('<UserProfileScreen />', () => {
   test.todo('failed login / signup response');
 });
 
-function renderProfileScreen({
-  userProfile = fakeUserProfile,
-  sessionSecret = fakeSessionSecret,
-} = {}) {
+type RenderProfileScreenOptions = {
+  userProfile?: UserData;
+  sessionSecret?: string;
+};
+
+function renderProfileScreen(options: RenderProfileScreenOptions = {}) {
+  const { userProfile = fakeUserProfile, sessionSecret = fakeSessionSecret } = options;
   mockStartAuthSession.mockResolvedValue(sessionSecret);
   mockGetUserProfileAsync.mockResolvedValue(userProfile);
 

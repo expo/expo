@@ -65,7 +65,9 @@ export function SettingsScreen() {
         </View>
 
         <View bg="default" rounded="large">
-          <Button onPress={() => setMotionGestureEnabled(!motionGestureEnabled)}>
+          <Button
+            onPress={() => setMotionGestureEnabled(!motionGestureEnabled)}
+            accessibilityState={{ checked: motionGestureEnabled }}>
             <Row px="medium" py="small" align="center">
               <ShakeDeviceIcon />
               <Spacer.Horizontal size="small" />
@@ -79,7 +81,9 @@ export function SettingsScreen() {
 
           <Divider />
 
-          <Button onPress={() => setTouchGestureEnabled(!touchGestureEnabled)}>
+          <Button
+            onPress={() => setTouchGestureEnabled(!touchGestureEnabled)}
+            accessibilityState={{ checked: touchGestureEnabled }}>
             <Row px="medium" py="small">
               <ThreeFingerPressIcon />
               <Spacer.Horizontal size="small" />
