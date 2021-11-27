@@ -1,3 +1,3 @@
 import UIKit
 
-class View: UIView {}
+class ExpoModuleTemplateView: UIView {}
