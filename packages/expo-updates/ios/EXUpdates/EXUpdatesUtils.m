@@ -132,8 +132,10 @@ static NSString * const EXUpdatesUtilsErrorDomain = @"EXUpdatesUtils";
     id instance = [oldRootViewController.class alloc];
     IMP imp = [instance methodForSelector:screenOrientationSelector];
     result = ((id (*)(id, SEL, UIInterfaceOrientationMask))imp)(instance, screenOrientationSelector, mask);
-  } else {
+  } else if (oldRootViewController != nil) {
     result = [oldRootViewController.class new];
+  } else {
+    result = [UIViewController new];
   }
 
   return result;
