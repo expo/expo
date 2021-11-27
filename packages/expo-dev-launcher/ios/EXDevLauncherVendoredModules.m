@@ -7,29 +7,29 @@
 
 #import "EXDevLauncherVendoredModules.h"
 
-#import "RNSVGCircleManager.h"
-#import "RNSVGClipPathManager.h"
-#import "RNSVGDefsManager.h"
-#import "RNSVGEllipseManager.h"
-#import "RNSVGForeignObjectManager.h"
-#import "RNSVGGroupManager.h"
-#import "RNSVGImageManager.h"
-#import "RNSVGLinearGradientManager.h"
-#import "RNSVGLineManager.h"
-#import "RNSVGMarkerManager.h"
-#import "RNSVGMaskManager.h"
-#import "RNSVGNodeManager.h"
-#import "RNSVGPathManager.h"
-#import "RNSVGPatternManager.h"
-#import "RNSVGRadialGradientManager.h"
-#import "RNSVGRectManager.h"
-#import "RNSVGRenderableManager.h"
-#import "RNSVGSvgViewManager.h"
-#import "RNSVGSymbolManager.h"
-#import "RNSVGTextManager.h"
-#import "RNSVGTextPathManager.h"
-#import "RNSVGTSpanManager.h"
-#import "RNSVGUseManager.h"
+#import "DevLauncherRNSVGCircleManager.h"
+#import "DevLauncherRNSVGClipPathManager.h"
+#import "DevLauncherRNSVGDefsManager.h"
+#import "DevLauncherRNSVGEllipseManager.h"
+#import "DevLauncherRNSVGForeignObjectManager.h"
+#import "DevLauncherRNSVGGroupManager.h"
+#import "DevLauncherRNSVGImageManager.h"
+#import "DevLauncherRNSVGLinearGradientManager.h"
+#import "DevLauncherRNSVGLineManager.h"
+#import "DevLauncherRNSVGMarkerManager.h"
+#import "DevLauncherRNSVGMaskManager.h"
+#import "DevLauncherRNSVGNodeManager.h"
+#import "DevLauncherRNSVGPathManager.h"
+#import "DevLauncherRNSVGPatternManager.h"
+#import "DevLauncherRNSVGRadialGradientManager.h"
+#import "DevLauncherRNSVGRectManager.h"
+#import "DevLauncherRNSVGRenderableManager.h"
+#import "DevLauncherRNSVGSvgViewManager.h"
+#import "DevLauncherRNSVGSymbolManager.h"
+#import "DevLauncherRNSVGTextManager.h"
+#import "DevLauncherRNSVGTextPathManager.h"
+#import "DevLauncherRNSVGTSpanManager.h"
+#import "DevLauncherRNSVGUseManager.h"
 
 @import EXDevMenu;
 
@@ -40,29 +40,29 @@
 {
   NSMutableArray *modules = [[DevMenuVendoredModulesUtils vendoredModules] mutableCopy];
   
-  [modules addObject:[RNSVGCircleManager new]];
-  [modules addObject:[RNSVGClipPathManager new]];
-  [modules addObject:[RNSVGDefsManager new]];
-  [modules addObject:[RNSVGEllipseManager new]];
-  [modules addObject:[RNSVGForeignObjectManager new]];
-  [modules addObject:[RNSVGGroupManager new]];
-  [modules addObject:[RNSVGImageManager new]];
-  [modules addObject:[RNSVGLinearGradientManager new]];
-  [modules addObject:[RNSVGLineManager new]];
-  [modules addObject:[RNSVGMarkerManager new]];
-  [modules addObject:[RNSVGMaskManager new]];
-  [modules addObject:[RNSVGNodeManager new]];
-  [modules addObject:[RNSVGPathManager new]];
-  [modules addObject:[RNSVGPatternManager new]];
-  [modules addObject:[RNSVGRadialGradientManager new]];
-  [modules addObject:[RNSVGRectManager new]];
-  [modules addObject:[RNSVGRenderableManager new]];
-  [modules addObject:[RNSVGSvgViewManager new]];
-  [modules addObject:[RNSVGSymbolManager new]];
-  [modules addObject:[RNSVGTextManager new]];
-  [modules addObject:[RNSVGTextPathManager new]];
-  [modules addObject:[RNSVGTSpanManager new]];
-  [modules addObject:[RNSVGUseManager new]];
+  [modules addObject:[DevLauncherRNSVGCircleManager new]];
+  [modules addObject:[DevLauncherRNSVGClipPathManager new]];
+  [modules addObject:[DevLauncherRNSVGDefsManager new]];
+  [modules addObject:[DevLauncherRNSVGEllipseManager new]];
+  [modules addObject:[DevLauncherRNSVGForeignObjectManager new]];
+  [modules addObject:[DevLauncherRNSVGGroupManager new]];
+  [modules addObject:[DevLauncherRNSVGImageManager new]];
+  [modules addObject:[DevLauncherRNSVGLinearGradientManager new]];
+  [modules addObject:[DevLauncherRNSVGLineManager new]];
+  [modules addObject:[DevLauncherRNSVGMarkerManager new]];
+  [modules addObject:[DevLauncherRNSVGMaskManager new]];
+  [modules addObject:[DevLauncherRNSVGNodeManager new]];
+  [modules addObject:[DevLauncherRNSVGPathManager new]];
+  [modules addObject:[DevLauncherRNSVGPatternManager new]];
+  [modules addObject:[DevLauncherRNSVGRadialGradientManager new]];
+  [modules addObject:[DevLauncherRNSVGRectManager new]];
+  [modules addObject:[DevLauncherRNSVGRenderableManager new]];
+  [modules addObject:[DevLauncherRNSVGSvgViewManager new]];
+  [modules addObject:[DevLauncherRNSVGSymbolManager new]];
+  [modules addObject:[DevLauncherRNSVGTextManager new]];
+  [modules addObject:[DevLauncherRNSVGTextPathManager new]];
+  [modules addObject:[DevLauncherRNSVGTSpanManager new]];
+  [modules addObject:[DevLauncherRNSVGUseManager new]];
   
   
   
