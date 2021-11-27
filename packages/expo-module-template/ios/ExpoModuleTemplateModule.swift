@@ -10,10 +10,10 @@ public class ExpoModuleTemplateModule: Module {
     
     viewManager {
       view {
-        ModuleTemplateView()
+        ExpoModuleTemplateView()
       }
 
-      prop("someGreatProp") { (view: ModuleTemplateView, prop: Int) in
+      prop("someGreatProp") { (view: ExpoModuleTemplateView, prop: Int) in
         print("prop")
       }
     }
