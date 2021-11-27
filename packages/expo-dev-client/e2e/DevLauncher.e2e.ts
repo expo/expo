@@ -4,6 +4,26 @@ const MenuTimeout = 70 * 1000;
 const LauncherMainScreenTimeout = 50 * 1000;
 const LocalAppTimeout = 80 * 1000;
 
+const sleep = (duration: number) =>
+  new Promise<void>((resolve) => setTimeout(() => resolve(), duration));
+
+async function pressMenuButton(buttonString: string) {
+  let button = element(by.text(buttonString));
+
+  await waitFor(button).toBeVisible().withTimeout(MenuTimeout);
+
+  // When we open the dev-menu, we will see an animation.
+  // Unfortunately, if we try to click to button before the
+  // animation finishes, it may not work. We might click different a button.
+  // So try to wait for the animation to finish.
+  await sleep(1000);
+
+  button = element(by.text(buttonString));
+  await waitFor(button).toBeVisible();
+
+  await button.tap();
+}
+
 function getInvocationManager() {
   // @ts-ignore
   return global.detox[Object.getOwnPropertySymbols(global.detox)[0]]._invocationManager;
@@ -35,7 +55,6 @@ async function openMenu(): Promise<void> {
 describe('DevLauncher', () => {
   beforeEach(async () => {
     await device.launchApp({ newInstance: true });
-    await device.disableSynchronization();
   });
 
   it('should render main screen', async () => {
@@ -91,10 +110,7 @@ describe('DevLauncher', () => {
 
     await openMenu();
 
-    const backToLauncher = element(by.text('Back to Launcher'));
-
-    await waitFor(backToLauncher).toBeVisible().withTimeout(MenuTimeout);
-    await backToLauncher.tap();
+    await pressMenuButton('Back to Launcher');
 
     await waitFor(element(by.id('DevLauncherMainScreen')))
       .toBeVisible()
