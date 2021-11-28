@@ -4,7 +4,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface RCTBridgeDelegateInterceptor : NSObject<RCTBridgeDelegate>
+@interface EXRCTBridgeDelegateInterceptor : NSObject<RCTBridgeDelegate>
 
 @property (nonatomic, weak) id<RCTBridgeDelegate> bridgeDelegate;
 @property (nonatomic, weak) id<RCTBridgeDelegate> interceptor;

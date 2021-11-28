@@ -1,8 +1,8 @@
 // Copyright 2018-present 650 Industries. All rights reserved.
 
-#import <ExpoModulesCore/RCTBridgeDelegateInterceptor.h>
+#import <ExpoModulesCore/EXRCTBridgeDelegateInterceptor.h>
 
-@implementation RCTBridgeDelegateInterceptor
+@implementation EXRCTBridgeDelegateInterceptor
 
 - (instancetype)initWithBridgeDelegate:(id<RCTBridgeDelegate>)bridgeDelegate interceptor:(id<RCTBridgeDelegate>)interceptor
 {
