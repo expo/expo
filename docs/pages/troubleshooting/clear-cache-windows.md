@@ -13,8 +13,8 @@ There are a number of different caches associated with your project that can pre
    yarn cache clean
    yarn
    watchman watch-del-all
-   del %appdata%\Temp\haste-map-*
-   del %appdata%\Temp\metro-cache
+   del %localappdata%\Temp\haste-map-*
+   del %localappdata%\Temp\metro-cache
    expo start --clear
    ```
 ### Expo CLI and npm
@@ -23,8 +23,8 @@ There are a number of different caches associated with your project that can pre
    npm cache clean --force
    npm install
    watchman watch-del-all
-   del %appdata%\Temp\haste-map-*
-   del %appdata%\Temp\metro-cache
+   del %localappdata%\Temp\haste-map-*
+   del %localappdata%\Temp\metro-cache
    expo start --clear
    ```
 ### React Native CLI and Yarn
@@ -34,8 +34,8 @@ There are a number of different caches associated with your project that can pre
    yarn cache clean
    yarn
    watchman watch-del-all
-   del %appdata%\Temp\haste-map-*
-   del %appdata%\Temp\metro-cache
+   del %localappdata%\Temp\haste-map-*
+   del %localappdata%\Temp\metro-cache
    yarn start -- --reset-cache
    ```
 ### React Native CLI and npm
@@ -44,8 +44,8 @@ There are a number of different caches associated with your project that can pre
    npm cache clean --force
    npm install
    watchman watch-del-all
-   del %appdata%\Temp\haste-map-*
-   del %appdata%\Temp\metro-cache
+   del %localappdata%\Temp\haste-map-*
+   del %localappdata%\Temp\metro-cache
    npm start -- --reset-cache
    ```
 
@@ -53,12 +53,12 @@ There are a number of different caches associated with your project that can pre
 
 It is a good habit to understand commands you find on the internet before you run them. We explain each command below for Expo CLI, npm, and Yarn, but the corresponding commands React Native CLI have the same behavior.
 
-| Command                 | Description |
-| ----------------------- | ----------- |
-|`del node_modules`           | Clear all of the dependencies of your project |
-|`yarn cache clean`           | Clear the global Yarn cache |
-|`npm cache clean --force`    | Clear the global npm cache |
-|`yarn`/`npm install`         | Reinstall all dependencies |
-|`watchman watch-del-all`     | Reset the `watchman` file watcher |
-|`del %appdata%\Temp/<cache>` | Clear the given packager/bundler cache file or directory |
-|`expo start --clear`         | Restart the development server and instruct the bundlers (e.g., Webpack, Metro) to clear their caches |
+| Command                          | Description |
+| -------------------------------- | ----------- |
+|`del node_modules`                | Clear all of the dependencies of your project |
+|`yarn cache clean`                | Clear the global Yarn cache |
+|`npm cache clean --force`         | Clear the global npm cache |
+|`yarn`/`npm install`              | Reinstall all dependencies |
+|`watchman watch-del-all`          | Reset the `watchman` file watcher |
+|`del %localappdata%\Temp/<cache>` | Clear the given packager/bundler cache file or directory |
+|`expo start --clear`              | Restart the development server and instruct the bundlers (e.g., Webpack, Metro) to clear their caches |
