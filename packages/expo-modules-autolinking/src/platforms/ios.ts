@@ -93,7 +93,7 @@ public class ${className}: ModulesProvider {
     return ${formatArrayOfClassNames(appDelegateSubscribers)}
   }
 
-  public override func getReactDelegateHandlers() -> [ReactDelegateHandlerTupleType] {
+  public override func getReactDelegateHandlers() -> [ExpoReactDelegateHandlerTupleType] {
     return ${formatArrayOfReactDelegateHandler(reactDelegateHandlerModules)}
   }
 }

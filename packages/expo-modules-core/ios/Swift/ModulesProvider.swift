@@ -19,11 +19,11 @@ public protocol ModulesProviderProtocol: ModulesProviderObjCProtocol {
    */
   func getAppDelegateSubscribers() -> [ExpoAppDelegateSubscriber.Type]
 
-  typealias ReactDelegateHandlerTupleType = (packageName: String, handler: ExpoReactDelegateHandler.Type)
+  typealias ExpoReactDelegateHandlerTupleType = (packageName: String, handler: ExpoReactDelegateHandler.Type)
   /**
-   Returns an array of `ReactDelegateHandlerTupleType` for `ReactDelegate` to hook React instance creation.
+   Returns an array of `ExpoReactDelegateHandlerTupleType` for `ReactDelegate` to hook React instance creation.
    */
-  func getReactDelegateHandlers() -> [ReactDelegateHandlerTupleType]
+  func getReactDelegateHandlers() -> [ExpoReactDelegateHandlerTupleType]
 }
 
 /**
@@ -40,7 +40,7 @@ open class ModulesProvider: NSObject, ModulesProviderProtocol, ModulesProviderOb
     return []
   }
 
-  open func getReactDelegateHandlers() -> [ReactDelegateHandlerTupleType] {
+  open func getReactDelegateHandlers() -> [ExpoReactDelegateHandlerTupleType] {
     return []
   }
 }

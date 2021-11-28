@@ -64,7 +64,7 @@ public class file: ModulesProvider {
     ]
   }
 
-  public override func getReactDelegateHandlers() -> [ReactDelegateHandlerTupleType] {
+  public override func getReactDelegateHandlers() -> [ExpoReactDelegateHandlerTupleType] {
     return [
     ]
   }
@@ -136,7 +136,7 @@ public class file: ModulesProvider {
     ]
   }
 
-  public override func getReactDelegateHandlers() -> [ReactDelegateHandlerTupleType] {
+  public override func getReactDelegateHandlers() -> [ExpoReactDelegateHandlerTupleType] {
     return [
     ]
   }
@@ -209,7 +209,7 @@ public class file: ModulesProvider {
     ]
   }
 
-  public override func getReactDelegateHandlers() -> [ReactDelegateHandlerTupleType] {
+  public override func getReactDelegateHandlers() -> [ExpoReactDelegateHandlerTupleType] {
     return [
     ]
   }
