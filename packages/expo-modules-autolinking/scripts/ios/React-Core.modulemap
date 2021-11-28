@@ -1,0 +1,6 @@
+module React {
+  umbrella "../../Public/React-Core/React"
+
+  export *
+  module * { export * }
+}
