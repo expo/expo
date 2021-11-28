@@ -92,7 +92,7 @@ You will need to remove `expo-branch` from your app to build it with EAS Build. 
 
 ### `amazon-cognito-identity-js` is required if you use AWS Amplify
 
-In projects built with `expo build` the native primitives required by AWS Amplify are included in every app. This is not the case in EAS Build, and so you must installed `amazon-cognito-identity-js` in order to link the native module depended on by AWS Amplify libraries.
+In projects built with `expo build` the native primitives required by AWS Amplify are included in every app. This is not the case in EAS Build, and so you must install `amazon-cognito-identity-js` in order to link the native module depended on by AWS Amplify libraries.
 
 ### **metro.config.js** must export the entire default config from `expo/metro-config`
 
