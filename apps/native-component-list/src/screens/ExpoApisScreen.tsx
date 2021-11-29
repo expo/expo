@@ -53,6 +53,7 @@ const screens = [
   'FacebookAppEvents',
   'FacebookLogin',
   'FileSystem',
+  'FirebasePhoneAuth',
   'FirebaseRecaptcha',
   'Font',
   'Errors',
