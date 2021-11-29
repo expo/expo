@@ -7,6 +7,8 @@
 
 #import "EXDevLauncherVendoredModules.h"
 
+#if __has_include("DevLauncherRNSVGCircleManager.h")
+
 #import "DevLauncherRNSVGCircleManager.h"
 #import "DevLauncherRNSVGClipPathManager.h"
 #import "DevLauncherRNSVGDefsManager.h"
@@ -31,6 +33,9 @@
 #import "DevLauncherRNSVGTSpanManager.h"
 #import "DevLauncherRNSVGUseManager.h"
 
+#endif
+
+
 @import EXDevMenu;
 
 @implementation EXDevLauncherVendoredModules
@@ -39,6 +44,8 @@
 + (NSArray<id<RCTBridgeModule>> *)vendoredModules
 {
   NSMutableArray *modules = [[DevMenuVendoredModulesUtils vendoredModules] mutableCopy];
+  
+#if __has_include("DevLauncherRNSVGCircleManager.h")
   
   [modules addObject:[DevLauncherRNSVGCircleManager new]];
   [modules addObject:[DevLauncherRNSVGClipPathManager new]];
@@ -63,6 +70,10 @@
   [modules addObject:[DevLauncherRNSVGTextPathManager new]];
   [modules addObject:[DevLauncherRNSVGTSpanManager new]];
   [modules addObject:[DevLauncherRNSVGUseManager new]];
+
+#endif
+  
+  
 
   return modules;
 }

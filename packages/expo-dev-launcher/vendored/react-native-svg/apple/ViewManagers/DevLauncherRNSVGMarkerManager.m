@@ -11,8 +11,6 @@
 
 @implementation DevLauncherRNSVGMarkerManager
 
-RCT_EXPORT_MODULE()
-
 - (DevLauncherRNSVGMarker *)node
 {
     return [DevLauncherRNSVGMarker new];

@@ -11,8 +11,6 @@
 
 @implementation DevLauncherRNSVGDefsManager
 
-RCT_EXPORT_MODULE()
-
 - (DevLauncherRNSVGDefs *)node
 {
   return [DevLauncherRNSVGDefs new];

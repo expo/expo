@@ -2,6 +2,7 @@ import { HomeFilledIcon, SettingsFilledIcon } from '@expo/styleguide-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
 import * as React from 'react';
+import { Text } from 'react-native';
 
 import { AppProviders } from './components/redesign/AppProviders';
 import { LoadInitialData } from './components/redesign/LoadInitialData';

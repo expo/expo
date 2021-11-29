@@ -13,7 +13,6 @@
 
 @implementation DevLauncherRNSVGLineManager
 
-RCT_EXPORT_MODULE()
 
 - (DevLauncherRNSVGRenderable *)node
 {

@@ -139,8 +139,6 @@ static const NSUInteger kMatrixArrayLength = 4 * 4;
     return transform;
 }
 
-RCT_EXPORT_MODULE()
-
 - (DevLauncherRNSVGNode *)node
 {
     return [DevLauncherRNSVGNode new];

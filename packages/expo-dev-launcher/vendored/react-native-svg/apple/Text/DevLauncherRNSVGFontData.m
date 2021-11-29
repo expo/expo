@@ -57,7 +57,7 @@ DevLauncherRNSVGFontData *DevLauncherRNSVGFontData_Defaults;
     fontWeight = parent->fontWeight;
 }
 
-DevLauncherRNSVGFontWeight nearestFontWeight(int absoluteFontWeight) {
+DevLauncherRNSVGFontWeight __nearestFontWeight(int absoluteFontWeight) {
     return DevLauncherRNSVGFontWeights[(int)round(absoluteFontWeight / 100.0)];
 }
 
@@ -65,24 +65,24 @@ DevLauncherRNSVGFontWeight nearestFontWeight(int absoluteFontWeight) {
     long roundWeight = round(weight);
     if (roundWeight >= 1 && roundWeight <= 1000) {
         absoluteFontWeight = (int)roundWeight;
-        fontWeight = nearestFontWeight(absoluteFontWeight);
+        fontWeight = __nearestFontWeight(absoluteFontWeight);
     } else {
         [self setInheritedWeight:parent];
     }
 }
 
 // https://drafts.csswg.org/css-fonts-4/#relative-weights
-int AbsoluteFontWeight(DevLauncherRNSVGFontWeight fontWeight, DevLauncherRNSVGFontData* parent) {
+int __AbsoluteFontWeight(DevLauncherRNSVGFontWeight fontWeight, DevLauncherRNSVGFontData* parent) {
     if (fontWeight == DevLauncherRNSVGFontWeightBolder) {
-        return bolder(parent->absoluteFontWeight);
+        return __bolder__(parent->absoluteFontWeight);
     } else if (fontWeight == DevLauncherRNSVGFontWeightLighter) {
-        return lighter(parent->absoluteFontWeight);
+        return __lighter__(parent->absoluteFontWeight);
     } else {
         return DevLauncherRNSVGAbsoluteFontWeights[fontWeight];
     }
 }
 
-int bolder(int inherited) {
+int __bolder__(int inherited) {
     if (inherited < 350) {
         return 400;
     } else if (inherited < 550) {
@@ -94,7 +94,7 @@ int bolder(int inherited) {
     }
 }
 
-int lighter(int inherited) {
+int __lighter__(int inherited) {
     if (inherited < 100) {
         return inherited;
     } else if (inherited < 550) {
@@ -133,8 +133,8 @@ int lighter(int inherited) {
             NSString* weight = fontWeight;
             NSInteger fw = DevLauncherRNSVGFontWeightFromString(weight);
             if (fw != -1) {
-                data->absoluteFontWeight = AbsoluteFontWeight(fw, parent);
-                data->fontWeight = nearestFontWeight(data->absoluteFontWeight);
+                data->absoluteFontWeight = __AbsoluteFontWeight(fw, parent);
+                data->fontWeight = __nearestFontWeight(data->absoluteFontWeight);
             } else if ([weight length] != 0) {
                 [data handleNumericWeight:parent weight:[weight doubleValue]];
             } else {

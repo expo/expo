@@ -11,8 +11,6 @@
 
 @implementation DevLauncherRNSVGPatternManager
 
-RCT_EXPORT_MODULE()
-
 - (DevLauncherRNSVGPattern *)node
 {
     return [DevLauncherRNSVGPattern new];

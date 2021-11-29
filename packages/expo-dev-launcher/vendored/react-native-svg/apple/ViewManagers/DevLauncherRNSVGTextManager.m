@@ -13,8 +13,6 @@
 
 @implementation DevLauncherRNSVGTextManager
 
-RCT_EXPORT_MODULE()
-
 - (DevLauncherRNSVGRenderable *)node
 {
   return [DevLauncherRNSVGText new];

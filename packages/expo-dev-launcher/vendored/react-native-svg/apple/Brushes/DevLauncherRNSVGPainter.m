@@ -111,7 +111,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
     return CGRectMake(x, y, width, height);
 }
 
-void PatternFunction(void* info, CGContextRef context)
+void __PatternFunction__(void* info, CGContextRef context)
 {
     DevLauncherRNSVGPainter *_painter = (__bridge DevLauncherRNSVGPainter *)info;
     DevLauncherRNSVGPattern *_pattern = [_painter pattern];
@@ -170,7 +170,7 @@ void PatternFunction(void* info, CGContextRef context)
     self.paintBounds = newBounds;
     self.bounds = rect;
 
-    const CGPatternCallbacks callbacks = { 0, &PatternFunction, NULL };
+    const CGPatternCallbacks callbacks = { 0, &__PatternFunction__, NULL };
     CGColorSpaceRef patternSpace = CGColorSpaceCreatePattern(NULL);
     CGContextSetFillColorSpace(context, patternSpace);
     CGColorSpaceRelease(patternSpace);

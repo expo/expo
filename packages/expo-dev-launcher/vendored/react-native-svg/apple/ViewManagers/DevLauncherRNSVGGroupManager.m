@@ -12,8 +12,6 @@
 
 @implementation DevLauncherRNSVGGroupManager
 
-RCT_EXPORT_MODULE()
-
 - (DevLauncherRNSVGNode *)node
 {
   return [DevLauncherRNSVGGroup new];

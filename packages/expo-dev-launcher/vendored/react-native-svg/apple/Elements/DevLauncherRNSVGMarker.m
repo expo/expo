@@ -152,7 +152,7 @@
 
 static CGFloat DevLauncherRNSVG_degToRad = (CGFloat)M_PI / 180;
 
-double deg2rad(CGFloat deg) {
+double __deg2rad__(CGFloat deg) {
     return deg * DevLauncherRNSVG_degToRad;
 }
 
@@ -165,7 +165,7 @@ double deg2rad(CGFloat deg) {
 
     float markerAngle = [@"auto" isEqualToString:_orient] ? -1 : [_orient doubleValue];
     float angle = 180 + (markerAngle == -1 ? [position angle] : markerAngle);
-    float rad = deg2rad(angle);
+    float rad = __deg2rad__(angle);
     transform = CGAffineTransformRotate(transform, rad);
 
     bool useStrokeWidth = [@"strokeWidth" isEqualToString:_markerUnits];

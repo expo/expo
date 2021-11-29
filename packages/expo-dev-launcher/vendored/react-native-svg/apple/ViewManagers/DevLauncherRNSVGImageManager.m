@@ -13,8 +13,6 @@
 
 @implementation DevLauncherRNSVGImageManager
 
-RCT_EXPORT_MODULE()
-
 - (DevLauncherRNSVGRenderable *)node
 {
     DevLauncherRNSVGImage *svgImage = [DevLauncherRNSVGImage new];

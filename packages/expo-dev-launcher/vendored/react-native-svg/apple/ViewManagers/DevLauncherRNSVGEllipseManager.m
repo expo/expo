@@ -13,8 +13,6 @@
 
 @implementation DevLauncherRNSVGEllipseManager
 
-RCT_EXPORT_MODULE()
-
 - (DevLauncherRNSVGRenderable *)node
 {
   return [DevLauncherRNSVGEllipse new];

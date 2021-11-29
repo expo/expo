@@ -12,8 +12,6 @@
 
 @implementation DevLauncherRNSVGTextPathManager
 
-RCT_EXPORT_MODULE()
-
 - (DevLauncherRNSVGRenderable *)node
 {
   return [DevLauncherRNSVGTextPath new];

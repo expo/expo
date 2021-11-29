@@ -15,6 +15,7 @@
 #import "EXDevLauncherLoadingView.h"
 #import "EXDevLauncherInternal.h"
 #import "EXDevLauncherUpdatesHelper.h"
+#import "EXDevLauncherVendoredModules.h"
 #import "RCTPackagerConnection+EXDevLauncherPackagerConnectionInterceptor.h"
 
 #if __has_include(<EXDevLauncher/EXDevLauncher-Swift.h>)
@@ -84,13 +85,15 @@ NSString *fakeLauncherBundleUrl = @"embedded://EXDevLauncher/dummy";
 
 - (NSArray<id<RCTBridgeModule>> *)extraModulesForBridge:(RCTBridge *)bridge
 {
-  return @[
-    (id<RCTBridgeModule>)[DevMenuInternalModule new],
-    (id<RCTBridgeModule>)[RCTDevMenu new],
-    [RCTAsyncLocalStorage new],
-    [EXDevLauncherLoadingView new],
-    [EXDevLauncherInternal new]
-  ];
+  NSMutableArray *modules = [[EXDevLauncherVendoredModules vendoredModules] mutableCopy];
+  
+  [modules addObject:[DevMenuInternalModule new]];
+  [modules addObject:[RCTDevMenu new]];
+  [modules addObject:[RCTAsyncLocalStorage new]];
+  [modules addObject:[EXDevLauncherLoadingView new]];
+  [modules addObject:[EXDevLauncherInternal new]];
+  
+  return modules;
 }
 
 + (NSString * _Nullable)version {

@@ -14,8 +14,6 @@
 
 @implementation DevLauncherRNSVGSymbolManager
 
-RCT_EXPORT_MODULE()
-
 - (DevLauncherRNSVGRenderable *)node
 {
   return [DevLauncherRNSVGSymbol new];

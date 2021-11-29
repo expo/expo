@@ -11,8 +11,6 @@
 
 @implementation DevLauncherRNSVGClipPathManager
 
-RCT_EXPORT_MODULE()
-
 - (DevLauncherRNSVGNode *)node
 {
   return [DevLauncherRNSVGClipPath new];

@@ -23,21 +23,21 @@
 }
 
 + (NSArray<DevLauncherRNSVGMarkerPosition*>*) fromCGPath:(CGPathRef)path {
-    positions_ = [[NSMutableArray alloc] init];
-    element_index_ = 0;
-    origin_ = DevLauncherRNSVGZEROPOINT;
-    subpath_start_ = DevLauncherRNSVGZEROPOINT;
-    CGPathApply(path, (__bridge void *)positions_, UpdateFromPathElement);
-    PathIsDone();
-    return positions_;
+    __positions__ = [[NSMutableArray alloc] init];
+    __element_index__ = 0;
+    __origin__ = DevLauncherRNSVGZEROPOINT;
+    __subpath_start__ = DevLauncherRNSVGZEROPOINT;
+    CGPathApply(path, (__bridge void *)__positions__, __UpdateFromPathElement__);
+    __PathIsDone__();
+    return __positions__;
 }
 
-void PathIsDone() {
-    float angle = CurrentAngle(kEndMarker);
-    [positions_ addObject:[DevLauncherRNSVGMarkerPosition markerPosition:kEndMarker origin:origin_ angle:angle]];
+void __PathIsDone__() {
+    float angle = __CurrentAngle__(kEndMarker);
+    [__positions__ addObject:[DevLauncherRNSVGMarkerPosition markerPosition:kEndMarker origin:__origin__ angle:angle]];
 }
 
-static double BisectingAngle(double in_angle, double out_angle) {
+static double __BisectingAngle__(double in_angle, double out_angle) {
     // WK193015: Prevent bugs due to angles being non-continuous.
     if (fabs(in_angle - out_angle) > 180)
         in_angle += 360;
@@ -46,27 +46,27 @@ static double BisectingAngle(double in_angle, double out_angle) {
 
 static CGFloat DevLauncherRNSVG_radToDeg = 180 / (CGFloat)M_PI;
 
-double rad2deg(CGFloat rad) {
+double __rad2deg__(CGFloat rad) {
     return rad * DevLauncherRNSVG_radToDeg;
 }
 
-CGFloat SlopeAngleRadians(CGSize p) {
+CGFloat __SlopeAngleRadians__(CGSize p) {
     CGFloat angle = atan2(p.height, p.width);
     return angle;
 }
 
-double CurrentAngle(DevLauncherRNSVGMarkerType type) {
+double __CurrentAngle__(DevLauncherRNSVGMarkerType type) {
     // For details of this calculation, see:
     // http://www.w3.org/TR/SVG/single-page.html#painting-MarkerElement
-    double in_angle = rad2deg(SlopeAngleRadians(in_slope_));
-    double out_angle = rad2deg(SlopeAngleRadians(out_slope_));
+    double in_angle = __rad2deg__(__SlopeAngleRadians__(__in_slope__));
+    double out_angle = __rad2deg__(__SlopeAngleRadians__(__out_slope__));
     switch (type) {
         case kStartMarker:
-            if (auto_start_reverse_)
+            if (__auto_start_reverse__)
                 out_angle += 180;
             return out_angle;
         case kMidMarker:
-            return BisectingAngle(in_angle, out_angle);
+            return __BisectingAngle__(in_angle, out_angle);
         case kEndMarker:
             return in_angle;
     }
@@ -79,7 +79,7 @@ typedef struct SegmentData {
     CGPoint position;      // The end point of the segment.
 } SegmentData;
 
-CGSize subtract(CGPoint* p1, CGPoint* p2) {
+CGSize __subtract__(CGPoint* p1, CGPoint* p2) {
     return CGSizeMake(p2->x - p1->x, p2->y - p1->y);
 }
 
@@ -87,75 +87,75 @@ static void ComputeQuadTangents(SegmentData* data,
                                 CGPoint* start,
                                 CGPoint* control,
                                 CGPoint* end) {
-    data->start_tangent = subtract(control, start);
-    data->end_tangent = subtract(end, control);
+    data->start_tangent = __subtract__(control, start);
+    data->end_tangent = __subtract__(end, control);
     if (CGSizeEqualToSize(CGSizeZero, data->start_tangent))
         data->start_tangent = data->end_tangent;
     else if (CGSizeEqualToSize(CGSizeZero, data->end_tangent))
         data->end_tangent = data->start_tangent;
 }
 
-SegmentData ExtractPathElementFeatures(const CGPathElement* element) {
+SegmentData __ExtractElementPathFeatures__(const CGPathElement* element) {
     SegmentData data;
     CGPoint* points = element->points;
     switch (element->type) {
         case kCGPathElementAddCurveToPoint:
             data.position = points[2];
-            data.start_tangent = subtract(&points[0], &origin_);
-            data.end_tangent = subtract(&points[2], &points[1]);
+            data.start_tangent = __subtract__(&points[0], &__origin__);
+            data.end_tangent = __subtract__(&points[2], &points[1]);
             if (CGSizeEqualToSize(CGSizeZero, data.start_tangent))
                 ComputeQuadTangents(&data, &points[0], &points[1], &points[2]);
             else if (CGSizeEqualToSize(CGSizeZero, data.end_tangent))
-                ComputeQuadTangents(&data, &origin_, &points[0], &points[1]);
+                ComputeQuadTangents(&data, &__origin__, &points[0], &points[1]);
             break;
         case kCGPathElementAddQuadCurveToPoint:
             data.position = points[1];
-            ComputeQuadTangents(&data, &origin_, &points[0], &points[1]);
+            ComputeQuadTangents(&data, &__origin__, &points[0], &points[1]);
             break;
         case kCGPathElementMoveToPoint:
         case kCGPathElementAddLineToPoint:
             data.position = points[0];
-            data.start_tangent = subtract(&data.position, &origin_);
-            data.end_tangent = subtract(&data.position, &origin_);
+            data.start_tangent = __subtract__(&data.position, &__origin__);
+            data.end_tangent = __subtract__(&data.position, &__origin__);
             break;
         case kCGPathElementCloseSubpath:
-            data.position = subpath_start_;
-            data.start_tangent = subtract(&data.position, &origin_);
-            data.end_tangent = subtract(&data.position, &origin_);
+            data.position = __subpath_start__;
+            data.start_tangent = __subtract__(&data.position, &__origin__);
+            data.end_tangent = __subtract__(&data.position, &__origin__);
             break;
     }
     return data;
 }
 
-void UpdateFromPathElement(void *info, const CGPathElement *element) {
-    SegmentData segment_data = ExtractPathElementFeatures(element);
+void __UpdateFromPathElement__(void *info, const CGPathElement *element) {
+    SegmentData segment_data = __ExtractElementPathFeatures__(element);
     // First update the outgoing slope for the previous element.
-    out_slope_ = segment_data.start_tangent;
+    __out_slope__ = segment_data.start_tangent;
     // Record the marker for the previous element.
-    if (element_index_ > 0) {
+    if (__element_index__ > 0) {
         DevLauncherRNSVGMarkerType marker_type =
-        element_index_ == 1 ? kStartMarker : kMidMarker;
-        float angle = CurrentAngle(marker_type);
-        [positions_ addObject:[DevLauncherRNSVGMarkerPosition markerPosition:marker_type origin:origin_ angle:angle]];
+        __element_index__ == 1 ? kStartMarker : kMidMarker;
+        float angle = __CurrentAngle__(marker_type);
+        [__positions__ addObject:[DevLauncherRNSVGMarkerPosition markerPosition:marker_type origin:__origin__ angle:angle]];
     }
     // Update the incoming slope for this marker position.
-    in_slope_ = segment_data.end_tangent;
+    __in_slope__ = segment_data.end_tangent;
     // Update marker position.
-    origin_ = segment_data.position;
+    __origin__ = segment_data.position;
     // If this is a 'move to' segment, save the point for use with 'close'.
     if (element->type == kCGPathElementMoveToPoint)
-        subpath_start_ = element->points[0];
+        __subpath_start__ = element->points[0];
     else if (element->type == kCGPathElementCloseSubpath)
-        subpath_start_ = CGPointZero;
-    ++element_index_;
+        __subpath_start__ = CGPointZero;
+    ++__element_index__;
 }
 
-NSMutableArray<DevLauncherRNSVGMarkerPosition*>* positions_;
-unsigned element_index_;
-CGPoint origin_;
-CGPoint subpath_start_;
-CGSize in_slope_;
-CGSize out_slope_;
-bool auto_start_reverse_;
+NSMutableArray<DevLauncherRNSVGMarkerPosition*>* __positions__;
+unsigned __element_index__;
+CGPoint __origin__;
+CGPoint __subpath_start__;
+CGSize __in_slope__;
+CGSize __out_slope__;
+bool __auto_start_reverse__;
 
 @end

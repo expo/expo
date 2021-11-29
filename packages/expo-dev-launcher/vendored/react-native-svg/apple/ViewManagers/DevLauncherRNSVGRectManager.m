@@ -13,8 +13,6 @@
 
 @implementation DevLauncherRNSVGRectManager
 
-RCT_EXPORT_MODULE()
-
 - (DevLauncherRNSVGRenderable *)node
 {
   return [DevLauncherRNSVGRect new];

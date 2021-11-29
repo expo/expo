@@ -13,8 +13,6 @@
 
 @implementation DevLauncherRNSVGCircleManager
 
-RCT_EXPORT_MODULE()
-
 - (DevLauncherRNSVGRenderable *)node
 {
     return [DevLauncherRNSVGCircle new];

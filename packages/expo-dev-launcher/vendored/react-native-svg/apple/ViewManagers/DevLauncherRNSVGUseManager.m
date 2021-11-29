@@ -11,8 +11,6 @@
 
 @implementation DevLauncherRNSVGUseManager
 
-RCT_EXPORT_MODULE()
-
 - (DevLauncherRNSVGNode *)node
 {
   return [DevLauncherRNSVGUse new];

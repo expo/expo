@@ -144,7 +144,7 @@ static CGFloat DevLauncherRNSVGTSpan_radToDeg = 180 / (CGFloat)M_PI;
     return attrs;
 }
 
-DevLauncherRNSVGTopAlignedLabel *label;
+DevLauncherRNSVGTopAlignedLabel *__label___;
 - (void)drawWrappedText:(CGContextRef)context gc:(DevLauncherRNSVGGlyphContext *)gc rect:(CGRect)rect color:(CGColorRef)color {
     [self pushGlyphContext];
     if (fontRef != nil) {
@@ -178,19 +178,19 @@ DevLauncherRNSVGTopAlignedLabel *label;
     }
 
     UIFont *font = (__bridge UIFont *)(fontRef);
-    if (!label) {
-        label = [[DevLauncherRNSVGTopAlignedLabel alloc] init];
+    if (!__label___) {
+      __label___ = [[DevLauncherRNSVGTopAlignedLabel alloc] init];
     }
-    label.attributedText = (__bridge NSAttributedString * _Nullable)(attrString);
-    label.lineBreakMode = NSLineBreakByWordWrapping;
-    label.backgroundColor = DevLauncherRNSVGColor.clearColor;
-    label.textAlignment = align;
-    label.numberOfLines = 0;
+  __label___.attributedText = (__bridge NSAttributedString * _Nullable)(attrString);
+  __label___.lineBreakMode = NSLineBreakByWordWrapping;
+  __label___.backgroundColor = DevLauncherRNSVGColor.clearColor;
+  __label___.textAlignment = align;
+  __label___.numberOfLines = 0;
 #if !TARGET_OS_OSX // On macOS, views are transparent by default
-    label.opaque = NO;
+  __label___.opaque = NO;
 #endif
-    label.font = font;
-    label.textColor = [DevLauncherRNSVGColor colorWithCGColor:color];
+  __label___.font = font;
+  __label___.textColor = [DevLauncherRNSVGColor colorWithCGColor:color];
 
     CGFloat fontSize = [gc getFontSize];
     CGFloat height = CGRectGetHeight(rect);
@@ -205,15 +205,15 @@ DevLauncherRNSVGTopAlignedLabel *label;
                 context:nil];
 
     CGRect bounds = CGRectMake(0, 0, width, s.size.height);
-    label.frame = bounds;
-    label.bounds = bounds;
+  __label___.frame = bounds;
+  __label___.bounds = bounds;
 
     firstX = [gc nextXWithDouble:0];
     firstY = [gc nextY] - font.ascender;
     CGFloat dx = firstX;
     CGFloat dy = firstY;
     CGContextTranslateCTM(context, dx, dy);
-    [label.layer renderInContext:context];
+    [__label___.layer renderInContext:context];
     CGContextTranslateCTM(context, -dx, -dy);
     [self popGlyphContext];
     [self renderPathTo:context rect:rect];
@@ -233,7 +233,7 @@ DevLauncherRNSVGTopAlignedLabel *label;
 
     if (self.inlineSize != nil && self.inlineSize.value != 0) {
         CGAffineTransform transform = CGAffineTransformMakeTranslation(firstX, firstY);
-        path = CGPathCreateWithRect(label.bounds, &transform);
+        path = CGPathCreateWithRect(__label___.bounds, &transform);
         self.path = CGPathRetain(path);
         self.skip = true;
         return path;

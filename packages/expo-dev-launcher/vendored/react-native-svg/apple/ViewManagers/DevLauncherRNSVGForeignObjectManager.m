@@ -11,8 +11,6 @@
 
 @implementation DevLauncherRNSVGForeignObjectManager
 
-RCT_EXPORT_MODULE()
-
 - (DevLauncherRNSVGForeignObject *)node
 {
     return [DevLauncherRNSVGForeignObject new];

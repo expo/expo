@@ -13,8 +13,6 @@
 
 @implementation DevLauncherRNSVGTSpanManager
 
-RCT_EXPORT_MODULE()
-
 - (DevLauncherRNSVGRenderable *)node
 {
   return [DevLauncherRNSVGTSpan new];

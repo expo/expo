@@ -14,8 +14,6 @@
 
 @implementation DevLauncherRNSVGSvgViewManager
 
-RCT_EXPORT_MODULE()
-
 - (DevLauncherRNSVGView *)view
 {
     return [DevLauncherRNSVGSvgView new];

@@ -11,8 +11,6 @@
 
 @implementation DevLauncherRNSVGLinearGradientManager
 
-RCT_EXPORT_MODULE()
-
 - (DevLauncherRNSVGNode *)node
 {
   return [DevLauncherRNSVGLinearGradient new];

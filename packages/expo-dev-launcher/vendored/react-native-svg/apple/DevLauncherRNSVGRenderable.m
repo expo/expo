@@ -180,7 +180,7 @@ static DevLauncherRNSVGRenderable * _contextElement;
     _strokeDashArrayData = nil;
 }
 
-UInt32 saturate(CGFloat value) {
+UInt32 __saturate__(CGFloat value) {
     return value <= 0 ? 0 : value >= 255 ? 255 : (UInt32)value;
 }
 
@@ -239,7 +239,7 @@ UInt32 saturate(CGFloat value) {
             UInt32 b = (color >> 16) & 0xFF;
 
             CGFloat luma = (CGFloat)(0.299 * r + 0.587 * g + 0.144 * b);
-            *currentPixel = saturate(luma) << 24;
+            *currentPixel = __saturate__(luma) << 24;
             currentPixel++;
         }
 

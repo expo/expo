@@ -11,8 +11,6 @@
 
 @implementation DevLauncherRNSVGMaskManager
 
-RCT_EXPORT_MODULE()
-
 - (DevLauncherRNSVGMask *)node
 {
     return [DevLauncherRNSVGMask new];

@@ -17,8 +17,6 @@
 
 @implementation DevLauncherRNSVGRenderableManager
 
-RCT_EXPORT_MODULE()
-
 - (DevLauncherRNSVGRenderable *)node
 {
     return [DevLauncherRNSVGRenderable new];

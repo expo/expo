@@ -13,8 +13,6 @@
 
 @implementation DevLauncherRNSVGPathManager
 
-RCT_EXPORT_MODULE()
-
 - (DevLauncherRNSVGRenderable *)node
 {
   return [DevLauncherRNSVGPath new];

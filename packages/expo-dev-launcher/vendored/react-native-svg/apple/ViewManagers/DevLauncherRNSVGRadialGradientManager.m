@@ -11,8 +11,6 @@
 
 @implementation DevLauncherRNSVGRadialGradientManager
 
-RCT_EXPORT_MODULE()
-
 - (DevLauncherRNSVGNode *)node
 {
   return [DevLauncherRNSVGRadialGradient new];
