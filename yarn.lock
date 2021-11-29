@@ -8734,39 +8734,7 @@ find-yarn-workspace-root@^2.0.0, find-yarn-workspace-root@~2.0.0:
   dependencies:
     micromatch "^4.0.2"
 
-firebase@^9.3.0:
-  version "9.3.0"
-  resolved "https://registry.yarnpkg.com/firebase/-/firebase-9.3.0.tgz#b2fbc14283e5cf109569c610c62302f47e8a9525"
-  integrity sha512-JGrWWmMjoDutwK8OGEE2nJoteQAR8r0LPqZnz6GHOtKMlVaNEbvy4eoIMuwnQFaap/lYdAVfWkRJghuSGdCrnQ==
-  dependencies:
-    "@firebase/analytics" "0.7.3"
-    "@firebase/analytics-compat" "0.1.4"
-    "@firebase/app" "0.7.6"
-    "@firebase/app-check" "0.5.0"
-    "@firebase/app-check-compat" "0.2.0"
-    "@firebase/app-compat" "0.1.7"
-    "@firebase/app-types" "0.7.0"
-    "@firebase/auth" "0.19.1"
-    "@firebase/auth-compat" "0.2.1"
-    "@firebase/database" "0.12.3"
-    "@firebase/database-compat" "0.1.3"
-    "@firebase/firestore" "3.2.1"
-    "@firebase/firestore-compat" "0.1.6"
-    "@firebase/functions" "0.7.4"
-    "@firebase/functions-compat" "0.1.5"
-    "@firebase/installations" "0.5.3"
-    "@firebase/messaging" "0.9.3"
-    "@firebase/messaging-compat" "0.1.3"
-    "@firebase/performance" "0.5.3"
-    "@firebase/performance-compat" "0.1.3"
-    "@firebase/polyfill" "0.3.36"
-    "@firebase/remote-config" "0.3.2"
-    "@firebase/remote-config-compat" "0.1.3"
-    "@firebase/storage" "0.8.5"
-    "@firebase/storage-compat" "0.1.5"
-    "@firebase/util" "1.4.1"
-
-firebase@^9.4.0:
+firebase@^9.3.0, firebase@^9.4.0:
   version "9.4.0"
   resolved "https://registry.yarnpkg.com/firebase/-/firebase-9.4.0.tgz#24c87697582727b4e5f64929f02e64a9b52d81d9"
   integrity sha512-VcdMVYf02OZtDWp6IYnlcostwqWZHlumxgnY5K87EKBHIjGcjkpdb39mguXZCVfQ44TRid2yaBouGDKAacnFwQ==
