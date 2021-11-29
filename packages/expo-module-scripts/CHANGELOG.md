@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Introduce `expo-module vendorScripts` to vendor shared script content before packages publishment. ([#15299](https://github.com/expo/expo/pull/15299) by [@kudo](https://github.com/kudo))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
