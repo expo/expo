@@ -35,7 +35,6 @@ import expo.modules.imagemanipulator.ImageManipulatorPackage
 import expo.modules.imagepicker.ImagePickerPackage
 import expo.modules.intentlauncher.IntentLauncherPackage
 import expo.modules.keepawake.KeepAwakePackage
-import expo.modules.lineargradient.LinearGradientPackage
 import expo.modules.localauthentication.LocalAuthenticationPackage
 import expo.modules.localization.LocalizationPackage
 import expo.modules.location.LocationPackage
@@ -96,7 +95,6 @@ object ExperiencePackagePicker {
     ImagePickerPackage(),
     IntentLauncherPackage(),
     KeepAwakePackage(),
-    LinearGradientPackage(),
     LocalAuthenticationPackage(),
     LocalizationPackage(),
     LocationPackage(),
