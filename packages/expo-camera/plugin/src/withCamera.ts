@@ -14,8 +14,7 @@ const MICROPHONE_USAGE = 'Allow $(PRODUCT_NAME) to access your microphone';
 // Because we need the package to be added AFTER the React and Google maven packages, we create a new allprojects.
 // It's ok to have multiple allprojects.repositories, so we create a new one since it's cheaper than tokenizing
 // the existing block to find the correct place to insert our camera maven.
-const gradleMaven =
-  'allprojects { repositories { maven { url "$rootDir/../node_modules/expo-camera/android/maven" } } }';
+const gradleMaven = `allprojects { repositories { maven { url(new File(["node", "--print", "require.resolve('expo-camera/package.json')"].execute(null, rootDir).text.trim(), "../android/maven")) } } }`;
 
 const withAndroidCameraGradle: ConfigPlugin = (config) => {
   return withProjectBuildGradle(config, (config) => {
@@ -31,7 +30,7 @@ const withAndroidCameraGradle: ConfigPlugin = (config) => {
 export function setGradleMaven(buildGradle: string): string {
   // If this specific line is present, skip.
   // This also enables users in bare workflow to comment out the line to prevent expo-camera from adding it back.
-  if (buildGradle.includes('expo-camera/android/maven')) {
+  if (buildGradle.includes('expo-camera/package.json')) {
     return buildGradle;
   }
 

@@ -33,6 +33,6 @@ allprojects {
     }
 }
 
-allprojects { repositories { maven { url \\"$rootDir/../node_modules/expo-camera/android/maven\\" } } }
+allprojects { repositories { maven { url(new File([\\"node\\", \\"--print\\", \\"require.resolve('expo-camera/package.json')\\"].execute(null, rootDir).text.trim(), \\"../android/maven\\")) } } }
 "
 `;
