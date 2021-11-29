@@ -95,7 +95,7 @@ const getGl = (exglCtxId) => {
     return gl;
 };
 const getContextId = (exgl) => {
-    const exglCtxId = exgl && typeof exgl === 'object' ? exgl.exglCtxId : exgl;
+    const exglCtxId = exgl && typeof exgl === 'object' ? exgl.ctxId : exgl;
     if (!exglCtxId || typeof exglCtxId !== 'number') {
         throw new Error(`Invalid EXGLContext id: ${String(exglCtxId)}`);
     }

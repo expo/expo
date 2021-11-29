@@ -39,7 +39,7 @@ namespace gl_cpp {
 namespace method {
 
 EXGLContextWithLock getContext(jsi::Runtime &runtime, const jsi::Value &jsThis) {
-  double exglCtxId = jsThis.asObject(runtime).getProperty(runtime, "exglCtxId").asNumber();
+  double exglCtxId = jsThis.asObject(runtime).getProperty(runtime, "ctxId").asNumber();
   return EXGLContextGet(static_cast<UEXGLContextId>(exglCtxId));
 }
 

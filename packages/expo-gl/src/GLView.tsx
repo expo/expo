@@ -179,7 +179,7 @@ const getGl = (exglCtxId: number): ExpoWebGLRenderingContext => {
 };
 
 const getContextId = (exgl?: ExpoWebGLRenderingContext | number): number => {
-  const exglCtxId = exgl && typeof exgl === 'object' ? exgl.exglCtxId : exgl;
+  const exglCtxId = exgl && typeof exgl === 'object' ? exgl.ctxId : exgl;
 
   if (!exglCtxId || typeof exglCtxId !== 'number') {
     throw new Error(`Invalid EXGLContext id: ${String(exglCtxId)}`);

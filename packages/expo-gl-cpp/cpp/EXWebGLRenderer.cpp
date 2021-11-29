@@ -50,7 +50,7 @@ void createWebGLRenderer(jsi::Runtime &runtime, EXGLContext *ctx, initGlesContex
   gl.setProperty(runtime, "drawingBufferWidth", viewport.viewportWidth);
   gl.setProperty(runtime, "drawingBufferHeight", viewport.viewportHeight);
   gl.setProperty(runtime, "supportsWebGL2", ctx->supportsWebGL2);
-  gl.setProperty(runtime, "exglCtxId", static_cast<double>(ctx->ctxId));
+  gl.setProperty(runtime, "ctxId", static_cast<double>(ctx->ctxId));
 
   // Legacy case for older SDKs in Expo Go
   bool legacyJs = !runtime.global().getProperty(runtime, "__EXGLConstructorReady").isBool();

@@ -294,6 +294,14 @@ export const Screens = [
   },
   {
     getComponent() {
+      return optionalRequire(() => require('../screens/GL/GLReanimatedExample'));
+    },
+    name: 'ReanimatedWorklets',
+    options: { title: 'Reanimated worklets + gesture handler' },
+    route: 'gl/reanimated',
+  },
+  {
+    getComponent() {
       return optionalRequire(() => require('../screens/GestureHandlerPinchScreen'));
     },
     name: 'GestureHandlerPinch',
