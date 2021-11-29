@@ -8,4 +8,6 @@
 #import <React/RCTViewManager.h>
 
 @interface RNCWebViewManager : RCTViewManager
+  @property (nonatomic, copy) NSArray<NSDictionary *> * _Nullable menuItems;
+  @property (nonatomic, copy) RCTDirectEventBlock onCustomMenuSelection;
 @end

@@ -2369,7 +2369,7 @@ PODS:
     - React-Core
   - react-native-segmented-control (2.4.0):
     - React-Core
-  - react-native-webview (11.13.0):
+  - react-native-webview (11.15.0):
     - React-Core
   - React-perflogger (0.64.3)
   - React-RCTActionSheet (0.64.3):
@@ -4273,7 +4273,7 @@ SPEC CHECKSUMS:
   react-native-netinfo: 92e6e4476eb8bf6fc2d7c0a6ca0a1406f663d73a
   react-native-pager-view: b90963d848e777def6714ab7fd40d02fa797e930
   react-native-segmented-control: 06607462630512ff8eef652ec560e6235a30cc3e
-  react-native-webview: 133a6a5149f963259646e710b4545c67ef35d7c9
+  react-native-webview: e89bf2dba26a04cda967814df3ed1be99f291233
   React-perflogger: cc76a4254d19640f1d8ad1c66fdee800414b805c
   React-RCTActionSheet: 7448f049318d8d7e8a9a1ebb742ada721757eea8
   React-RCTAnimation: fb9b3fa1a4a9f5e6ab01b3368693ce69860ba76a
