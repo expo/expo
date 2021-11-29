@@ -1,7 +1,7 @@
 #pragma once
 
-#include "ErrorHandler.h"
-#include "Scheduler.h"
+#include "DevMenuErrorHandler.h"
+#include "DevMenuScheduler.h"
 
 namespace devmenureanimated {
 

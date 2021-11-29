@@ -10,6 +10,22 @@ One of the goals with EAS Build is to make it as easy as possible to migrate fro
 
 EAS Build only supports SDK 41+ managed projects. You must upgrade your project to migrate to EAS Build.
 
+### Expo config `userInterfaceStyle` depends on `expo-system-ui` being installed
+
+Selecting a native appearance mode with `userInterfaceStyle` (or `android.userInterfaceStyle`) in the project `app.json` will only work on Android if `expo-system-ui` is installed in the project. This is because `expo-system-ui` includes code for locking the interface natively based on the `app.json`. Run `expo install expo-system-ui` to add the library. This feature is only supported in **Expo SDK +43**.
+
+### Expo config `backgroundColor` depends on `expo-system-ui` being installed
+
+Selecting the root background color (for native modals and flipping orientations) with `ios.backgroundColor` in the project `app.json` will only work on iOS if `expo-system-ui` is installed in the project. This is because `expo-system-ui` includes code for setting the color natively based on the `app.json`. Run `expo install expo-system-ui` to add the library. This feature is only supported in **Expo SDK +43**. You can also remove references to `RCTRootViewBackgroundColor` in the `AppDelegate.m` file as this is now handled inside the `expo-system-ui` module.
+
+### Expo config `androidNavigationBar` depends on `expo-navigation-bar` being installed
+
+Selecting the navigation bar interaction behavior with `androidNavigationBar.visible` in the project `app.json` will only work on Android if `expo-navigation-bar` is installed in the project. Also consider migrating away from this property as the underlying Android APIs are deprecated: [Learn more](https://expo.fyi/android-navigation-bar-visible-deprecated). Run `expo install expo-navigation-bar` to install the library. This feature is only supported in **Expo SDK +43**.
+
+### Expo config `splash` depends on `expo-splash-screen` being installed
+
+Configuring the resizeMode or positioning of the splash screen with `splash` (or `android.splash`) in the project `app.json` will only work on Android if `expo-splash-screen` is installed in the project. Run `expo install expo-splash-screen` to install the library. This feature is only supported in **Expo SDK +43**.
+
 ### Only libraries included in your package.json are included in the resulting standalone app
 
 This often results in massive reductions in app size; managed apps built with EAS Build can be in the order of 10x smaller than the same app built with `expo build` ([learn why](https://blog.expo.dev/expo-managed-workflow-in-2021-5b887bbf7dbb)). The tradeoff here is that you need to be careful when publishing updates in order to avoid publishing an incompatible JavaScript bundle. Learn more in [updates](/build/updates.md).
@@ -47,7 +63,7 @@ Only the second purpose applies with the new build system. All assets referenced
 
 If your app depends on a custom `"main"` entry point, you will need to remove that field from **package.json** and then create **index.js** in the root of your project and use [registerRootComponent](/versions/latest/sdk/register-root-component/) to register your root component. For example, if your app root component lives in **src/App.tsx**, your **index.js** should look like the following:
 
-```
+```js
 import { registerRootComponent } from 'expo';
 import App from './src/App';
 
@@ -74,12 +90,18 @@ Learn more about how to securely store your `NPM_TOKEN` on EAS Build: ["Using pr
 
 You will need to remove `expo-branch` from your app to build it with EAS Build. The plan is to add support to [react-native-branch](https://www.npmjs.com/package/react-native-branch), the library maintained by engineers at [Branch](https://branch.io/). If Branch support is a blocker for you, you can try to build your own [config plugin](https://docs.expo.dev/guides/config-plugins/) to add `react-native-branch` to your app today.
 
-### **metro.config.js** must export the entire default config from `@expo/metro-config`
+### `amazon-cognito-identity-js` is required if you use AWS Amplify
+
+In projects built with `expo build` the native primitives required by AWS Amplify are included in every app. This is not the case in EAS Build, and so you must install `amazon-cognito-identity-js` in order to link the native module depended on by AWS Amplify libraries.
+
+### **metro.config.js** must export the entire default config from `expo/metro-config`
+
+> `expo/metro-config` is a versioned re-export of `@expo/metro-config`.
 
 Previously, with classic builds, your **metro.config.js** might have looked something like:
 
 ```js
-const { getDefaultConfig } = require('@expo/metro-config');
+const { getDefaultConfig } = require('expo/metro-config');
 
 const defaultConfig = getDefaultConfig(__dirname);
 
@@ -93,7 +115,7 @@ module.exports = {
 In the example above, you're only exporting _part_ of the default config, but EAS Build requires the _full_ config. To do that, you should modify `defaultConfig` directly, and then return the resulting object, like this:
 
 ```js
-const { getDefaultConfig } = require('@expo/metro-config');
+const { getDefaultConfig } = require('expo/metro-config');
 
 const defaultConfig = getDefaultConfig(__dirname);
 

@@ -13,13 +13,20 @@
 
 package expo.modules.kotlin.modules
 
+import android.app.Activity
+import android.content.Intent
+import expo.modules.kotlin.Promise
 import expo.modules.kotlin.events.BasicEventListener
 import expo.modules.kotlin.events.EventListener
+import expo.modules.kotlin.events.EventListenerWithPayload
+import expo.modules.kotlin.events.EventListenerWithSenderAndPayload
 import expo.modules.kotlin.events.EventName
-import expo.modules.kotlin.Promise
+import expo.modules.kotlin.events.EventsDefinition
+import expo.modules.kotlin.events.OnActivityResultPayload
 import expo.modules.kotlin.methods.AnyMethod
 import expo.modules.kotlin.methods.Method
 import expo.modules.kotlin.methods.PromiseMethod
+import expo.modules.kotlin.types.toAnyType
 import expo.modules.kotlin.views.ViewManagerDefinition
 import expo.modules.kotlin.views.ViewManagerDefinitionBuilder
 import kotlin.reflect.typeOf
@@ -27,6 +34,7 @@ import kotlin.reflect.typeOf
 class ModuleDefinitionBuilder {
   private var name: String? = null
   private var constantsProvider = { emptyMap<String, Any?>() }
+  private var eventsDefinition: EventsDefinition? = null
 
   @PublishedApi
   internal var methods = mutableMapOf<String, AnyMethod>()
@@ -37,13 +45,14 @@ class ModuleDefinitionBuilder {
   @PublishedApi
   internal val eventListeners = mutableMapOf<EventName, EventListener>()
 
-  fun build(): ModuleDefinition {
-    return ModuleDefinition(
+  fun build(): ModuleDefinitionData {
+    return ModuleDefinitionData(
       requireNotNull(name),
       constantsProvider,
       methods,
       viewManagerDefinition,
-      eventListeners
+      eventListeners,
+      eventsDefinition
     )
   }
 
@@ -55,51 +64,107 @@ class ModuleDefinitionBuilder {
     this.constantsProvider = constantsProvider
   }
 
-  inline fun <reified R : Any?> method(
+  @JvmName("methodWithoutArgs")
+  inline fun function(
+    name: String,
+    crossinline body: () -> Any?
+  ) {
+    methods[name] = Method(name, arrayOf()) { body() }
+  }
+
+  inline fun <reified R> function(
     name: String,
     crossinline body: () -> R
   ) {
     methods[name] = Method(name, arrayOf()) { body() }
   }
 
-  @JvmName("methodWithPromise")
-  inline fun method(
-    name: String,
-    crossinline body: (p0: Promise) -> Unit
-  ) {
-    methods[name] = PromiseMethod(name, arrayOf()) { _, promise -> body(promise) }
-  }
-
-  inline fun <reified P0, reified R : Any?> method(
+  inline fun <reified R, reified P0> function(
     name: String,
     crossinline body: (p0: P0) -> R
-  ): AnyMethod {
-    val method = Method(name, arrayOf(typeOf<P0>())) { body(it[0] as P0) }
-    methods[name] = method
-    return method
-  }
-
-  @JvmName("methodWithPromise")
-  inline fun <reified P0> method(
-    name: String,
-    crossinline body: (p0: P0, p1: Promise) -> Unit
   ) {
-    methods[name] = PromiseMethod(name, arrayOf(typeOf<P0>())) { args, promise -> body(args[0] as P0, promise) }
+    methods[name] = if (P0::class == Promise::class) {
+      PromiseMethod(name, arrayOf()) { _, promise -> body(promise as P0) }
+    } else {
+      Method(name, arrayOf(typeOf<P0>().toAnyType())) { body(it[0] as P0) }
+    }
   }
 
-  inline fun <reified P0, reified P1, reified R : Any?> method(
+  inline fun <reified R, reified P0, reified P1> function(
     name: String,
     crossinline body: (p0: P0, p1: P1) -> R
   ) {
-    methods[name] = Method(name, arrayOf(typeOf<P0>(), typeOf<P1>())) { body(it[0] as P0, it[1] as P1) }
+    methods[name] = if (P1::class == Promise::class) {
+      PromiseMethod(name, arrayOf(typeOf<P0>().toAnyType())) { args, promise -> body(args[0] as P0, promise as P1) }
+    } else {
+      Method(name, arrayOf(typeOf<P0>().toAnyType(), typeOf<P1>().toAnyType())) { body(it[0] as P0, it[1] as P1) }
+    }
   }
 
-  @JvmName("methodWithPromise")
-  inline fun <reified P0, reified P1> method(
+  inline fun <reified R, reified P0, reified P1, reified P2> function(
     name: String,
-    crossinline body: (p0: P0, p1: P1, p2: Promise) -> Unit
+    crossinline body: (p0: P0, p1: P1, p2: P2) -> R
   ) {
-    methods[name] = PromiseMethod(name, arrayOf(typeOf<P0>(), typeOf<P1>())) { args, promise -> body(args[0] as P0, args[1] as P1, promise) }
+    methods[name] = if (P2::class == Promise::class) {
+      PromiseMethod(name, arrayOf(typeOf<P0>().toAnyType(), typeOf<P1>().toAnyType())) { args, promise -> body(args[0] as P0, args[1] as P1, promise as P2) }
+    } else {
+      Method(name, arrayOf(typeOf<P0>().toAnyType(), typeOf<P1>().toAnyType(), typeOf<P2>().toAnyType())) { body(it[0] as P0, it[1] as P1, it[2] as P2) }
+    }
+  }
+
+  inline fun <reified R, reified P0, reified P1, reified P2, reified P3> function(
+    name: String,
+    crossinline body: (p0: P0, p1: P1, p2: P2, p3: P3) -> R
+  ) {
+    methods[name] = if (P3::class == Promise::class) {
+      PromiseMethod(name, arrayOf(typeOf<P0>().toAnyType(), typeOf<P1>().toAnyType(), typeOf<P2>().toAnyType())) { args, promise -> body(args[0] as P0, args[1] as P1, args[2] as P2, promise as P3) }
+    } else {
+      Method(name, arrayOf(typeOf<P0>().toAnyType(), typeOf<P1>().toAnyType(), typeOf<P2>().toAnyType(), typeOf<P3>().toAnyType())) { body(it[0] as P0, it[1] as P1, it[2] as P2, it[3] as P3) }
+    }
+  }
+
+  inline fun <reified R, reified P0, reified P1, reified P2, reified P3, reified P4> function(
+    name: String,
+    crossinline body: (p0: P0, p1: P1, p2: P2, p3: P3, p4: P4) -> R
+  ) {
+    methods[name] = if (P4::class == Promise::class) {
+      PromiseMethod(name, arrayOf(typeOf<P0>().toAnyType(), typeOf<P1>().toAnyType(), typeOf<P2>().toAnyType(), typeOf<P3>().toAnyType())) { args, promise -> body(args[0] as P0, args[1] as P1, args[2] as P2, args[3] as P3, promise as P4) }
+    } else {
+      Method(name, arrayOf(typeOf<P0>().toAnyType(), typeOf<P1>().toAnyType(), typeOf<P2>().toAnyType(), typeOf<P3>().toAnyType(), typeOf<P4>().toAnyType())) { body(it[0] as P0, it[1] as P1, it[2] as P2, it[3] as P3, it[4] as P4) }
+    }
+  }
+
+  inline fun <reified R, reified P0, reified P1, reified P2, reified P3, reified P4, reified P5> function(
+    name: String,
+    crossinline body: (p0: P0, p1: P1, p2: P2, p3: P3, p4: P4, p5: P5) -> R
+  ) {
+    methods[name] = if (P5::class == Promise::class) {
+      PromiseMethod(name, arrayOf(typeOf<P0>().toAnyType(), typeOf<P1>().toAnyType(), typeOf<P2>().toAnyType(), typeOf<P3>().toAnyType(), typeOf<P4>().toAnyType())) { args, promise -> body(args[0] as P0, args[1] as P1, args[2] as P2, args[3] as P3, args[4] as P4, promise as P5) }
+    } else {
+      Method(name, arrayOf(typeOf<P0>().toAnyType(), typeOf<P1>().toAnyType(), typeOf<P2>().toAnyType(), typeOf<P3>().toAnyType(), typeOf<P4>().toAnyType(), typeOf<P5>().toAnyType())) { body(it[0] as P0, it[1] as P1, it[2] as P2, it[3] as P3, it[4] as P4, it[5] as P5) }
+    }
+  }
+
+  inline fun <reified R, reified P0, reified P1, reified P2, reified P3, reified P4, reified P5, reified P6> function(
+    name: String,
+    crossinline body: (p0: P0, p1: P1, p2: P2, p3: P3, p4: P4, p5: P5, p6: P6) -> R
+  ) {
+    methods[name] = if (P6::class == Promise::class) {
+      PromiseMethod(name, arrayOf(typeOf<P0>().toAnyType(), typeOf<P1>().toAnyType(), typeOf<P2>().toAnyType(), typeOf<P3>().toAnyType(), typeOf<P4>().toAnyType(), typeOf<P5>().toAnyType())) { args, promise -> body(args[0] as P0, args[1] as P1, args[2] as P2, args[3] as P3, args[4] as P4, args[5] as P5, promise as P6) }
+    } else {
+      Method(name, arrayOf(typeOf<P0>().toAnyType(), typeOf<P1>().toAnyType(), typeOf<P2>().toAnyType(), typeOf<P3>().toAnyType(), typeOf<P4>().toAnyType(), typeOf<P5>().toAnyType(), typeOf<P6>().toAnyType())) { body(it[0] as P0, it[1] as P1, it[2] as P2, it[3] as P3, it[4] as P4, it[5] as P5, it[6] as P6) }
+    }
+  }
+
+  inline fun <reified R, reified P0, reified P1, reified P2, reified P3, reified P4, reified P5, reified P6, reified P7> function(
+    name: String,
+    crossinline body: (p0: P0, p1: P1, p2: P2, p3: P3, p4: P4, p5: P5, p6: P6, p7: P7) -> R
+  ) {
+    methods[name] = if (P7::class == Promise::class) {
+      PromiseMethod(name, arrayOf(typeOf<P0>().toAnyType(), typeOf<P1>().toAnyType(), typeOf<P2>().toAnyType(), typeOf<P3>().toAnyType(), typeOf<P4>().toAnyType(), typeOf<P5>().toAnyType(), typeOf<P6>().toAnyType())) { args, promise -> body(args[0] as P0, args[1] as P1, args[2] as P2, args[3] as P3, args[4] as P4, args[5] as P5, args[6] as P6, promise as P7) }
+    } else {
+      Method(name, arrayOf(typeOf<P0>().toAnyType(), typeOf<P1>().toAnyType(), typeOf<P2>().toAnyType(), typeOf<P3>().toAnyType(), typeOf<P4>().toAnyType(), typeOf<P5>().toAnyType(), typeOf<P6>().toAnyType(), typeOf<P7>().toAnyType())) { body(it[0] as P0, it[1] as P1, it[2] as P2, it[3] as P3, it[4] as P4, it[5] as P5, it[6] as P6, it[7] as P7) }
+    }
   }
 
   inline fun viewManager(body: ViewManagerDefinitionBuilder.() -> Unit) {
@@ -128,5 +193,35 @@ class ModuleDefinitionBuilder {
 
   inline fun onActivityDestroys(crossinline body: () -> Unit) {
     eventListeners[EventName.ACTIVITY_DESTROYS] = BasicEventListener(EventName.ACTIVITY_DESTROYS) { body() }
+  }
+
+  /**
+   * Defines event names that this module can send to JavaScript.
+   */
+  fun events(vararg events: String) {
+    eventsDefinition = EventsDefinition(events)
+  }
+
+  /**
+   * Method that is invoked when the first event listener is added.
+   */
+  inline fun onStartObserving(crossinline body: () -> Unit) {
+    function("startObserving", body)
+  }
+
+  /**
+   * Method that is invoked when all event listeners are removed.
+   */
+  inline fun onStopObserving(crossinline body: () -> Unit) {
+    function("stopObserving", body)
+  }
+
+  inline fun onNewIntent(crossinline body: (Intent) -> Unit) {
+    eventListeners[EventName.ON_NEW_INTENT] = EventListenerWithPayload<Intent>(EventName.ON_NEW_INTENT) { body(it) }
+  }
+
+  inline fun onActivityResult(crossinline body: (Activity, OnActivityResultPayload) -> Unit) {
+    eventListeners[EventName.ON_ACTIVITY_RESULT] =
+      EventListenerWithSenderAndPayload<Activity, OnActivityResultPayload>(EventName.ON_ACTIVITY_RESULT) { sender, payload -> body(sender, payload) }
   }
 }

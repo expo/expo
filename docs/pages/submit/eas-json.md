@@ -51,17 +51,21 @@ The schema of this file looks like this:
   }
   "submit": {
     /* @info any arbitrary name - used as an identifier */"SUBMIT_PROFILE_NAME_1"/* @end */: {
-      android: {
+      "android": {
         /* @info Android-specific configuration */...ANDROID_OPTIONS/* @end */
 
-      }
-      ios: {
+      },
+      "ios": {
         /* @info iOS-specific configuration */...IOS_OPTIONS/* @end */
 
       }
     },
     /* @info any arbitrary name - used as an identifier */"SUBMIT_PROFILE_NAME_2"/* @end */: {
+      "extends": "SUBMIT_PROFILE_NAME_1",
+      "android": {
+        /* @info Android-specific configuration */...ANDROID_OPTIONS/* @end */
 
+      }
     },
     ...
   }
@@ -69,6 +73,10 @@ The schema of this file looks like this:
 ```
 
 If you're also using EAS Build, [see how to use **eas.json** to configure your builds](/build/eas-json.md).
+
+### Sharing configuration between profiles
+
+Submit profiles can extend another submit profile using the `"extends"` key. For example, in the `preview` profile you may have `"extends": "production"`; this would make the `preview` profile inherit configuration of the `production` profile.
 
 ## Android-specific options
 

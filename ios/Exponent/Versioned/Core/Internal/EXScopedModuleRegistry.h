@@ -1,5 +1,6 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
+#import <React/RCTAccessibilityManager.h> // Keeps this import before RCTBridge.h to fix the error from building React module: `error: definition of 'RCTBridge' must be imported from module 'React.RCTAccessibilityManager' before it is required`
 #import <React/RCTBridge.h>
 #import <React/RCTBridgeModule.h>
 

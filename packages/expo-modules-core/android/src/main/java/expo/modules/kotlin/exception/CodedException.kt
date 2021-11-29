@@ -42,7 +42,7 @@ open class CodedException(
   }
 }
 
-class IncompatibleArgTypeException(
+internal class IncompatibleArgTypeException(
   argumentType: KType,
   desiredType: KType,
   cause: Throwable? = null
@@ -51,14 +51,20 @@ class IncompatibleArgTypeException(
   cause = cause
 )
 
-class InvalidArgsNumberException(received: Int, expected: Int) :
+internal class MissingTypeConverter(
+  forType: KType
+) : CodedException(
+  message = "Cannot find type converter for $forType.",
+)
+
+internal class InvalidArgsNumberException(received: Int, expected: Int) :
   CodedException(message = "Received $received arguments, but $expected was expected.")
 
 internal class MethodNotFoundException(methodName: String, moduleName: String) :
   CodedException(message = "Cannot fund method $methodName in module $moduleName")
 
-class NullArgumentException(desiredType: KType) :
+internal class NullArgumentException(desiredType: KType) :
   CodedException(message = "Cannot assigned null to not nullable type $desiredType")
 
-class UnexpectedException(val throwable: Throwable) :
+internal class UnexpectedException(val throwable: Throwable) :
   CodedException(throwable)

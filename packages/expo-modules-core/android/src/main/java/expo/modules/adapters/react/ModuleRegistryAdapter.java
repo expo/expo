@@ -5,16 +5,17 @@ import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.uimanager.ViewManager;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+
 import expo.modules.adapters.react.views.SimpleViewManagerAdapter;
 import expo.modules.adapters.react.views.ViewGroupManagerAdapter;
 import expo.modules.core.ModuleRegistry;
 import expo.modules.core.interfaces.InternalModule;
 import expo.modules.core.interfaces.Package;
 import expo.modules.kotlin.KotlinInteropModuleRegistry;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import expo.modules.kotlin.views.ViewWrapperDelegateHolder;
 
 /**
  * An adapter over {@link ModuleRegistry}, compatible with React (implementing {@link ReactPackage}).
@@ -25,6 +26,8 @@ public class ModuleRegistryAdapter implements ReactPackage {
   protected ReactModuleRegistryProvider mModuleRegistryProvider;
   protected ReactAdapterPackage mReactAdapterPackage = new ReactAdapterPackage();
   private NativeModulesProxy mModulesProxy;
+  // We need to save all view holders to update them when the new kotlin module registry will be created.
+  private List<ViewWrapperDelegateHolder> mWrapperDelegateHolders = null;
 
   public ModuleRegistryAdapter(List<Package> packageList) {
     mModuleRegistryProvider = new ReactModuleRegistryProvider(packageList, null);
@@ -42,7 +45,13 @@ public class ModuleRegistryAdapter implements ReactPackage {
       moduleRegistry.registerInternalModule(internalModule);
     }
 
-    return getNativeModulesFromModuleRegistry(reactContext, moduleRegistry);
+    List<NativeModule> nativeModules = getNativeModulesFromModuleRegistry(reactContext, moduleRegistry);
+    if (mWrapperDelegateHolders != null) {
+      KotlinInteropModuleRegistry kotlinInteropModuleRegistry = mModulesProxy.getKotlinInteropModuleRegistry();
+      kotlinInteropModuleRegistry.updateModuleHoldersInViewManagers(mWrapperDelegateHolders);
+    }
+
+    return nativeModules;
   }
 
   protected List<NativeModule> getNativeModulesFromModuleRegistry(ReactApplicationContext reactContext, ModuleRegistry moduleRegistry) {
@@ -81,7 +90,10 @@ public class ModuleRegistryAdapter implements ReactPackage {
     // We assume that `createNativeModules` was called first.
     NativeModulesProxy modulesProxy = Objects.requireNonNull(mModulesProxy);
     KotlinInteropModuleRegistry kotlinInteropModuleRegistry = modulesProxy.getKotlinInteropModuleRegistry();
-    viewManagerList.addAll(kotlinInteropModuleRegistry.exportViewManagers());
+    List<ViewManager<?, ?>> kViewManager = kotlinInteropModuleRegistry.exportViewManagers();
+    // Saves all holders that needs to be in sync with module registry
+    mWrapperDelegateHolders = kotlinInteropModuleRegistry.extractViewManagersDelegateHolders(kViewManager);
+    viewManagerList.addAll(kViewManager);
 
     return viewManagerList;
   }

@@ -1,8 +1,11 @@
 package expo.modules.kotlin
 
-import com.facebook.react.bridge.LifecycleEventListener
+import android.app.Activity
+import android.content.Context
+import android.content.Intent
 import com.facebook.react.bridge.ReactApplicationContext
 import expo.modules.core.interfaces.ActivityProvider
+import expo.modules.core.interfaces.services.EventEmitter
 import expo.modules.interfaces.barcodescanner.BarCodeScannerInterface
 import expo.modules.interfaces.camera.CameraViewInterface
 import expo.modules.interfaces.constants.ConstantsInterface
@@ -13,19 +16,26 @@ import expo.modules.interfaces.permissions.Permissions
 import expo.modules.interfaces.sensors.SensorServiceInterface
 import expo.modules.interfaces.taskManager.TaskManagerInterface
 import expo.modules.kotlin.events.EventName
+import expo.modules.kotlin.events.KEventEmitterWrapper
+import expo.modules.kotlin.events.OnActivityResultPayload
+import expo.modules.kotlin.modules.Module
 import java.lang.ref.WeakReference
 
 class AppContext(
   modulesProvider: ModulesProvider,
   val legacyModuleRegistry: expo.modules.core.ModuleRegistry,
   private val reactContextHolder: WeakReference<ReactApplicationContext>
-) : LifecycleEventListener {
+) {
   val registry = ModuleRegistry(WeakReference(this)).register(modulesProvider)
+  private val reactLifecycleDelegate = ReactLifecycleDelegate(this)
 
   init {
     requireNotNull(reactContextHolder.get()) {
       "The app context should be created with valid react context."
-    }.addLifecycleEventListener(this)
+    }.apply {
+      addLifecycleEventListener(reactLifecycleDelegate)
+      addActivityEventListener(reactLifecycleDelegate)
+    }
   }
 
   /**
@@ -102,23 +112,55 @@ class AppContext(
   /**
    * Provides access to the react application context
    */
-  val reactContext: ReactApplicationContext?
+  val reactContext: Context?
     get() = reactContextHolder.get()
 
+  /**
+   * Provides access to the event emitter
+   */
+  fun eventEmitter(module: Module): EventEmitter? {
+    val legacyEventEmitter = legacyModule<EventEmitter>() ?: return null
+    return KEventEmitterWrapper(
+      requireNotNull(registry.getModuleHolder(module)) {
+        "Cannot create an event emitter for the module that isn't present in the module registry."
+      },
+      legacyEventEmitter
+    )
+  }
+
   fun onDestroy() {
-    reactContextHolder.get()?.removeLifecycleEventListener(this)
+    reactContextHolder.get()?.removeLifecycleEventListener(reactLifecycleDelegate)
     registry.post(EventName.MODULE_DESTROY)
   }
 
-  override fun onHostResume() {
+  fun onHostResume() {
     registry.post(EventName.ACTIVITY_ENTERS_FOREGROUND)
   }
 
-  override fun onHostPause() {
+  fun onHostPause() {
     registry.post(EventName.ACTIVITY_ENTERS_BACKGROUND)
   }
 
-  override fun onHostDestroy() {
+  fun onHostDestroy() {
     registry.post(EventName.ACTIVITY_DESTROYS)
+  }
+
+  fun onActivityResult(activity: Activity, requestCode: Int, resultCode: Int, data: Intent?) {
+    registry.post(
+      EventName.ON_ACTIVITY_RESULT,
+      activity,
+      OnActivityResultPayload(
+        requestCode,
+        resultCode,
+        data
+      )
+    )
+  }
+
+  fun onNewIntent(intent: Intent?) {
+    registry.post(
+      EventName.ON_NEW_INTENT,
+      intent
+    )
   }
 }

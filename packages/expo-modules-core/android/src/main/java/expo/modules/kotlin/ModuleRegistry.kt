@@ -29,22 +29,25 @@ class ModuleRegistry(
 
   fun getModuleHolder(name: String): ModuleHolder? = registry[name]
 
+  fun getModuleHolder(module: Module): ModuleHolder? =
+    registry.values.find { it.module === module }
+
   fun post(eventName: EventName) {
-    iterator().forEach {
+    forEach {
       it.post(eventName)
     }
   }
 
   @Suppress("UNCHECKED_CAST")
   fun <Sender> post(eventName: EventName, sender: Sender) {
-    iterator().forEach {
+    forEach {
       it.post(eventName, sender)
     }
   }
 
   @Suppress("UNCHECKED_CAST")
   fun <Sender, Payload> post(eventName: EventName, sender: Sender, payload: Payload) {
-    iterator().forEach {
+    forEach {
       it.post(eventName, sender, payload)
     }
   }

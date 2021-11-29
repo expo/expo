@@ -6,13 +6,13 @@ import expo.modules.kotlin.exception.CodedException
 import expo.modules.kotlin.exception.InvalidArgsNumberException
 import expo.modules.kotlin.exception.UnexpectedException
 import expo.modules.kotlin.iterator
-import expo.modules.kotlin.types.TypeConverterHelper
+import expo.modules.kotlin.recycle
+import expo.modules.kotlin.types.AnyType
 import kotlin.jvm.Throws
-import kotlin.reflect.KType
 
 abstract class AnyMethod(
   protected val name: String,
-  private val desiredArgsTypes: Array<KType>
+  private val desiredArgsTypes: Array<AnyType>
 ) {
   fun call(args: ReadableArray, promise: Promise) {
     if (desiredArgsTypes.size != args.size()) {
@@ -41,10 +41,9 @@ abstract class AnyMethod(
     desiredArgsTypes
       .withIndex()
       .forEach { (index, type) ->
-        val dynamic = argIterator.next()
-        val castedValue = TypeConverterHelper.convert(dynamic, type)
-
-        finalArgs[index] = castedValue
+        argIterator.next().recycle {
+          finalArgs[index] = type.convert(this)
+        }
       }
     return finalArgs
   }

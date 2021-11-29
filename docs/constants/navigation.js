@@ -19,15 +19,35 @@ const GROUPS = {
   'Expo SDK': ['Expo SDK'],
   'Configuration Files': ['Configuration Files'],
   'React Native': ['React Native'],
-  Preview: ['Preview'],
+  Preview: ['Preview', 'EAS Update'],
+  EAS: ['EAS'],
   'EAS Build': ['Start Building', 'App Signing', 'Reference'],
   'EAS Submit': ['EAS Submit'],
   'Technical Specs': ['Technical Specs'],
-  'Development Clients': ['Development Clients'],
+  'Development Builds': ['Development Builds'],
 };
 
 // This array provides the **ordering** for pages within each section
 const sections = [
+  {
+    name: 'EAS',
+    reference: ['Expo Application Services', 'Webhooks'],
+  },
+  {
+    name: 'EAS Update',
+    reference: [
+      'Introduction',
+      'Getting started',
+      'Using GitHub Actions',
+      'How EAS Update works',
+      'Deployment patterns',
+      'Debugging updates',
+      'Using EAS Update with EAS CLI',
+      'How to optimize assets for EAS Update',
+      'Using expo-updates with a custom updates server',
+      'FAQ',
+    ],
+  },
   {
     name: 'Preview',
     reference: ['Introduction', 'Support and feedback'],
@@ -74,7 +94,6 @@ const sections = [
       'Troubleshooting build errors and crashes',
       'Running builds on your own infrastructure',
       'Caching dependencies',
-      'Build webhooks',
       'Configuration process',
       'Android build process',
       'iOS build process',
@@ -88,6 +107,7 @@ const sections = [
       'Configuring EAS Submit with eas.json',
       'Submitting to the Google Play Store',
       'Submitting to the Apple App Store',
+      'Using EAS Submit with "expo build"',
     ],
   },
   {
@@ -95,16 +115,16 @@ const sections = [
     reference: ['Expo Updates', 'Expo Structured Field Values'],
   },
   {
-    name: 'Development Clients',
+    name: 'Development Builds',
     reference: [
       'Introduction',
       'Getting Started',
+      'Creating Development Builds',
       'Installation in React Native and Bare workflow projects',
-      'Upgrading',
-      'Building with EAS',
       'Development Workflows',
       'Extending the Dev Menu',
       'Compatibility',
+      'Upgrading',
       'Troubleshooting',
     ],
   },
@@ -246,6 +266,7 @@ const sections = [
       'Linking',
       'Running in the Browser',
       'Setting up Continuous Integration',
+      'Monorepos',
       'Native Firebase',
       'Testing on physical devices',
       'Troubleshooting Proxies',
@@ -456,6 +477,11 @@ const sortNav = nav => {
 
   sections.forEach(({ name, reference }) => {
     const section = nav.find(o => {
+      if (!o || !o.name) {
+        console.log('did not find:');
+        console.log(o);
+        return;
+      }
       return o.name.toLowerCase() === name.toLowerCase();
     });
 

@@ -78,7 +78,7 @@ export default function App() {
 
 [React Native Directory](https://reactnative.directory) is a searchable database of libraries built specifically for React Native. If the library that you are looking for is not provided by React Native or Expo then this is the best place to look first when trying to find a library for your app.
 
-After React Native Directory, the [npm registry](https://www.npmjs.com/) is the next best place. The npm registry is the definitive source for JavaScript libraries, but the libraries that it lists may not all be compatible with React Native. React Native is one of many JavaScript programming environments, including Node.js, web browsers, Electron, and more, and npm includes libraries that work for all of these environments. Other libraries may be compatible with React Native, but not compatible with the Expo Go development client. How do you figure this out?
+After React Native Directory, the [npm registry](https://www.npmjs.com/) is the next best place. The npm registry is the definitive source for JavaScript libraries, but the libraries that it lists may not all be compatible with React Native. React Native is one of many JavaScript programming environments, including Node.js, web browsers, Electron, and more, and npm includes libraries that work for all of these environments. Other libraries may be compatible with React Native, but not compatible with the Expo Go app. How do you figure this out?
 
 ### Determining Third-Party Library Compatibility
 
@@ -98,7 +98,7 @@ Now check the following:
 
 If you answered yes to either of these questions and the library is not part of the Expo SDK, this library may not be supported in Expo Go. You can go ahead and try it in a new project to be sure! Run `expo init` and add the library to the new project and try to use it. This is a great way to experiment with a library before including it in your project in all circumstances.
 
-Many libraries you can use with Expo and React Native will not be compatible with Expo Go or `expo build:ios|android`. If you need any of them to build your app, you can create a [Custom Development Client](../clients/introduction.md) for your project using [EAS Build](../build/introduction.md) or [eject to the bare workflow](../workflow/customizing.md).
+Many libraries you can use with Expo and React Native will not be compatible with Expo Go or `expo build:ios|android`. If you need any of them to build your app, you can create a [development build](../development/introduction.md) for your project using [EAS Build](../build/introduction.md) or [eject to the bare workflow](../workflow/customizing.md).
 
 > 🙏 If you want some help determining library compatibility, [please create an issue on the React Native Directory repository](https://github.com/react-native-community/directory/issues/new/choose) and let us know. This will not just help you, it will help to ensure that other developers have an easy answer in the future!
 
@@ -123,4 +123,4 @@ If the module needs additional native configuration, you can do so using [config
 If the module is not supported in Expo Go, at this point you should:
 
 - Build your project [locally](../build-reference/local-builds.md) or with [EAS Build](../build/introduction.md)
-- Create [a custom client](../clients/introduction.md) to develop against
+- Create a [development build](../development/introduction.md)

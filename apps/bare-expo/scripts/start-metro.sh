@@ -21,6 +21,19 @@ yarn start --port ${port}
 EOF
   # execute the file in a new command line window
   chmod 0755 ${commandFile}
-  open ${commandFile}
-  
+  case "$OSTYPE" in
+     darwin*)
+        open ${commandFile}
+        ;;
+     *)
+        # Spawns a new terminal window and detaches it
+        # Assuming the non-standard variable $TERMINAL is set
+        if [ -z "$TERMINAL" ]; then
+          echo "Could not open a new terminal window. Please make sure to export TERMINAL='your-terminal'"
+        else
+          nohup "$TERMINAL" -e "${commandFile}" </dev/null >/dev/null 2>&1 &
+        fi
+        ;;
+  esac
+
 fi

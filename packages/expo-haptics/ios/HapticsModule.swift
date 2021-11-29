@@ -4,19 +4,19 @@ public class HapticsModule: Module {
   public func definition() -> ModuleDefinition {
     name("ExpoHaptics")
 
-    method("notificationAsync") { (notificationType: NotificationType) in
+    function("notificationAsync") { (notificationType: NotificationType) in
       let generator = UINotificationFeedbackGenerator()
       generator.prepare()
       generator.notificationOccurred(notificationType.toFeedbackType())
     }
 
-    method("impactAsync") { (style: ImpactStyle) in
+    function("impactAsync") { (style: ImpactStyle) in
       let generator = UIImpactFeedbackGenerator(style: style.toFeedbackStyle())
       generator.prepare()
       generator.impactOccurred()
     }
 
-    method("selectionAsync") {
+    function("selectionAsync") {
       let generator = UISelectionFeedbackGenerator()
       generator.prepare()
       generator.selectionChanged()

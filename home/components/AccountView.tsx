@@ -4,11 +4,13 @@ import { take, takeRight } from 'lodash';
 import React from 'react';
 import { ActivityIndicator, StyleSheet, View } from 'react-native';
 
-import { Project } from '../components/ProjectList';
-import { Snack } from '../components/SnackList';
 import Colors from '../constants/Colors';
 import SharedStyles from '../constants/SharedStyles';
-import { AccountData } from '../containers/Account';
+import {
+  CommonAppDataFragment,
+  CommonSnackDataFragment,
+  Home_AccountDataQuery,
+} from '../graphql/types';
 import { AllStackRoutes } from '../navigation/Navigation.types';
 import EmptyAccountProjectsNotice from './EmptyAccountProjectsNotice';
 import EmptyAccountSnacksNotice from './EmptyAccountSnacksNotice';
@@ -43,7 +45,7 @@ type QueryProps = {
   loading: boolean;
   error?: Error;
   refetch: (props: any) => void;
-  data?: AccountData;
+  data?: Home_AccountDataQuery;
 };
 
 type Props = AccountViewProps & QueryProps;
@@ -177,7 +179,7 @@ function AccountAppsSection({
 
   const apps = data.account.byName.apps;
 
-  const renderApp = (app: Project, i: number) => {
+  const renderApp = (app: CommonAppDataFragment, i: number) => {
     return (
       <ProjectListItem
         key={i}
@@ -233,7 +235,7 @@ function AccountSnacksSection({
 
   const snacks = data.account.byName.snacks;
 
-  const renderSnack = (snack: Snack, i: number) => {
+  const renderSnack = (snack: CommonSnackDataFragment, i: number) => {
     return (
       <SnackListItem
         key={i}

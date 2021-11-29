@@ -15,7 +15,7 @@ Each bullet point in the changelog is called an entry. It describes the change t
 
 - It is descriptive and concise — explains well the change to a reader who has _zero context_ about the change. If you have trouble making it both concise and descriptive, err on the side of descriptive.
 - It is placed under `Unpublished` version and the appropriate category ([follow rules described here](#categories)).
-- It has links to the associated PR and the GitHub profile of the author (`expo-ci` bot can suggest them for you, read more below in this section).
+- It has links to the associated PR and the GitHub profile of the author (`expo-bot` can suggest them for you, read more below in this section).
 - It may contain only text and links. Any other markdown elements (such as lists, headers, blockquotes, tables, images, inline HTML) are not permitted — if you need them to provide important tips for the users to adapt to the (breaking) change, you should put this in the PR description or link to a separate document on [`expo/fyi`](https://github.com/expo/fyi).
 
 An example of the correct entry:

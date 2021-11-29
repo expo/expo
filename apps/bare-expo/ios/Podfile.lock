@@ -17,7 +17,7 @@ PODS:
   - EXAppAuth (11.0.1):
     - AppAuth (~> 1.2)
     - ExpoModulesCore
-  - EXApplication (4.0.0):
+  - EXApplication (4.0.1):
     - ExpoModulesCore
   - EXAV (10.1.0):
     - ExpoModulesCore
@@ -42,7 +42,7 @@ PODS:
     - ExpoModulesCore
   - EXClipboard (2.0.1):
     - ExpoModulesCore
-  - EXConstants (12.1.0):
+  - EXConstants (12.2.0):
     - ExpoModulesCore
   - EXContacts (10.0.1):
     - ExpoModulesCore
@@ -52,7 +52,7 @@ PODS:
     - ExpoModulesCore
   - EXDocumentPicker (10.0.1):
     - ExpoModulesCore
-  - EXErrorRecovery (3.0.1):
+  - EXErrorRecovery (3.0.4):
     - ExpoModulesCore
   - EXFacebook (12.0.1):
     - ExpoModulesCore
@@ -64,7 +64,7 @@ PODS:
     - MLKitCommon (= 2.1.0)
     - MLKitFaceDetection (= 1.2.0)
     - MLKitVision (= 1.2.0)
-  - EXFileSystem (13.0.1):
+  - EXFileSystem (13.1.0):
     - ExpoModulesCore
   - EXFirebaseAnalytics (5.0.1):
     - EXFirebaseCore
@@ -73,7 +73,7 @@ PODS:
   - EXFirebaseCore (4.0.1):
     - ExpoModulesCore
     - Firebase/Core (= 7.7.0)
-  - EXFont (10.0.1):
+  - EXFont (10.0.4):
     - ExpoModulesCore
   - EXGL (11.0.1):
     - EXGL_CPP
@@ -100,13 +100,9 @@ PODS:
   - EXInAppPurchases (12.0.0):
     - ExpoModulesCore
   - EXJSONUtils (0.2.0)
-  - EXKeepAwake (10.0.0):
-    - ExpoModulesCore
-  - EXLinearGradient (10.0.1):
+  - EXKeepAwake (10.0.1):
     - ExpoModulesCore
   - EXLocalAuthentication (12.0.0):
-    - ExpoModulesCore
-  - EXLocalization (11.0.0):
     - ExpoModulesCore
   - EXLocation (13.0.1):
     - ExpoModulesCore
@@ -124,7 +120,7 @@ PODS:
     - ExpoModulesCore
   - EXPermissions (13.0.1):
     - ExpoModulesCore
-  - Expo (43.0.0-beta.3):
+  - Expo (44.0.0-alpha.0):
     - ExpoModulesCore
   - expo-dev-client (0.6.0):
     - EXManifests
@@ -211,7 +207,11 @@ PODS:
     - ExpoModulesCore
   - ExpoHaptics (11.0.1):
     - ExpoModulesCore
-  - ExpoModulesCore (0.4.2):
+  - ExpoLinearGradient (10.0.1):
+    - ExpoModulesCore
+  - ExpoLocalization (11.0.0):
+    - ExpoModulesCore
+  - ExpoModulesCore (0.5.0):
     - React-Core
     - ReactCommon/turbomodule/core
   - ExpoSystemUI (1.0.0):
@@ -802,9 +802,7 @@ DEPENDENCIES:
   - EXInAppPurchases (from `../../../packages/expo-in-app-purchases/ios`)
   - EXJSONUtils (from `../../../packages/expo-json-utils/ios`)
   - EXKeepAwake (from `../../../packages/expo-keep-awake/ios`)
-  - EXLinearGradient (from `../../../packages/expo-linear-gradient/ios`)
   - EXLocalAuthentication (from `../../../packages/expo-local-authentication/ios`)
-  - EXLocalization (from `../../../packages/expo-localization/ios`)
   - EXLocation (from `../../../packages/expo-location/ios`)
   - EXMailComposer (from `../../../packages/expo-mail-composer/ios`)
   - EXManifests (from `../../../packages/expo-manifests/ios`)
@@ -823,6 +821,8 @@ DEPENDENCIES:
   - expo-dev-menu/UITests (from `../../../packages/expo-dev-menu`)
   - ExpoCellular (from `../../../packages/expo-cellular/ios`)
   - ExpoHaptics (from `../../../packages/expo-haptics/ios`)
+  - ExpoLinearGradient (from `../../../packages/expo-linear-gradient/ios`)
+  - ExpoLocalization (from `../../../packages/expo-localization/ios`)
   - ExpoModulesCore (from `../../../packages/expo-modules-core/ios`)
   - ExpoSystemUI (from `../../../packages/expo-system-ui/ios`)
   - EXPrint (from `../../../packages/expo-print/ios`)
@@ -1041,15 +1041,9 @@ EXTERNAL SOURCES:
   EXKeepAwake:
     inhibit_warnings: false
     :path: "../../../packages/expo-keep-awake/ios"
-  EXLinearGradient:
-    inhibit_warnings: false
-    :path: "../../../packages/expo-linear-gradient/ios"
   EXLocalAuthentication:
     inhibit_warnings: false
     :path: "../../../packages/expo-local-authentication/ios"
-  EXLocalization:
-    inhibit_warnings: false
-    :path: "../../../packages/expo-localization/ios"
   EXLocation:
     inhibit_warnings: false
     :path: "../../../packages/expo-location/ios"
@@ -1088,6 +1082,12 @@ EXTERNAL SOURCES:
   ExpoHaptics:
     inhibit_warnings: false
     :path: "../../../packages/expo-haptics/ios"
+  ExpoLinearGradient:
+    inhibit_warnings: false
+    :path: "../../../packages/expo-linear-gradient/ios"
+  ExpoLocalization:
+    inhibit_warnings: false
+    :path: "../../../packages/expo-localization/ios"
   ExpoModulesCore:
     inhibit_warnings: false
     :path: "../../../packages/expo-modules-core/ios"
@@ -1258,7 +1258,7 @@ SPEC CHECKSUMS:
   DoubleConversion: cf9b38bf0b2d048436d9a82ad2abe1404f11e7de
   EXAmplitude: 7636f61eb24fc620a7f49d93f627b6d5cef9d644
   EXAppAuth: 9868d70b255ff85950f686e0677d28fc7213d895
-  EXApplication: 0e15240e4d125b62f1cae48759ffbbd32b9286a6
+  EXApplication: bdc8dc27713235565da1029a34385229f31b8e08
   EXAV: 626307f2e30abe408395b3e50c21717701cce897
   EXBackgroundFetch: abf903682fa67713ab40616e551208f048d1201c
   EXBarCodeScanner: 0ca9b2b1bc70380a4e344c7eca2cc6140e646bc7
@@ -1268,18 +1268,18 @@ SPEC CHECKSUMS:
   EXCalendar: 0a76d471d3198b3e1e84d745650b0a3269d1e8b7
   EXCamera: ebae2fa3839ee13c56dbd3caa24fe609d492cc14
   EXClipboard: fe9188a0e9cc4ba2da08e17b9691c8c6e3165d5b
-  EXConstants: 1a9e95054412c86a7b3fe946f0d64e1067904a19
+  EXConstants: 9d7055dde2e900983785a7e40975ffb5db3c2877
   EXContacts: 60715e5a7cf0e9b48d2c4fb0d7b68418db62f394
   EXCrypto: 271b6c03b4016f3286a423c50b34b40ecf22da44
   EXDevice: 70d2d1dcfcd045e5d4c02b46bbcbb243f433b1dc
   EXDocumentPicker: 3893d5db528615f975ed57f3b9a8893b70857031
-  EXErrorRecovery: 6bcc12e006d5484753190ce66f2cd4063d27f50b
+  EXErrorRecovery: deea88a01d38f8b1c1181b4e1d179b0ba0e4bb5b
   EXFacebook: b31c4b2a13559347118c8f6dfff5d71bf22f7cfe
   EXFaceDetector: 09a1352293c55282aa7c623724d7c85686237b3a
-  EXFileSystem: 611a25f6893116c7ef81508b26282e7663f419a7
+  EXFileSystem: a099e3b7d0fee5e50a39b316aa90524ad8713c5a
   EXFirebaseAnalytics: 29ac7c34b9135647ca7970a1a2355f18919a37ac
   EXFirebaseCore: 009f8abd3672fcb214b63d44db3d0fc9e654f950
-  EXFont: cbaf3549f376b3484ad379a1034f468a78daeb61
+  EXFont: 1fb13af43dc517c01c0ff21a6e32f9f9bf2ea602
   EXGL: e71bf1946b30899602420a53e578454d291286d1
   EXGL_CPP: 75124cfe236f7a1f917150011c09625e24e31141
   EXGoogleSignIn: f5b6ed8ce036017c0364896469416e6fc6e0e777
@@ -1289,10 +1289,8 @@ SPEC CHECKSUMS:
   EXImagePicker: cecd37aa68c3df69fc0599cae92523be84fe6a1d
   EXInAppPurchases: a981bef8aea038e9c4b036f75a6aef73cc723eca
   EXJSONUtils: f515cf71710855d7ba5bfc6752af3b9a6f6aad01
-  EXKeepAwake: 8aa32396a5972d26e75e538603aad0f032396503
-  EXLinearGradient: cac7d90c8b8112736a7630cbd7d9dc242e7b075b
+  EXKeepAwake: b571c2ad8323b2fced6e907766e2549f75119471
   EXLocalAuthentication: 4c640e20a308d66224468661a0da434f86435283
-  EXLocalization: bb38414618b30a177482c9a6f5594ec6eb0898c1
   EXLocation: 6d13fb1d4b65ed1b2d2bdd0b0f11417cc0a2656a
   EXMailComposer: 06e0c73da0105e124409cb27e04f881392b6f918
   EXManifests: fdbb8a0c2cd5fc4acc1ae90b55ce91617aba9365
@@ -1300,14 +1298,16 @@ SPEC CHECKSUMS:
   EXNetwork: a5caf9ca61924520ff395b4eac9d6909d97fbc4c
   EXNotifications: 24fb362f02a68d94ae7e5769aa9319be5096328c
   EXPermissions: 08ccf78a0eb404c28df6d226fcc8fcf2e558b421
-  Expo: 23ed30f225511b93fa6a0c14d9a3208d6b749060
+  Expo: 988e3a33c6b5c19fb951ffb376e6d8a8405000ed
   expo-dev-client: 97a9589d2ea0325a8dd4dff284fe3a4b9166bbce
   expo-dev-launcher: e76a3b8cca8f61c32c80a8dcd894c631f09329e6
   expo-dev-menu: ec566cc2bc8e783b9874afb81ea92a90d6069f01
   expo-dev-menu-interface: 273c68c2c30ecbc70af2903dfb3821f567ef9d78
   ExpoCellular: 90940614d45df5b31f281d70a63d92a06fe44af4
   ExpoHaptics: c0c014eabfdd1353a908f857f168b01fafd526db
-  ExpoModulesCore: daacb24b99b77ec28c0cbc877a574b1f8e6709c9
+  ExpoLinearGradient: 841746b0ef9c771d1f37fa5463f39eb25b6aae77
+  ExpoLocalization: 882eeed58daf9aa9d7265fff537a3ddae3834d2f
+  ExpoModulesCore: 1c28b20c381edd3817be74505499cdaa9658fc97
   ExpoSystemUI: 3c969e3db290fcd5edb9c466d585f183d934b421
   EXPrint: a224501bbb89072567c58a5127f2d125b8776ea2
   EXRandom: 9ed4600d410cf2fe58d22b3121865624065a16e9
@@ -1408,6 +1408,6 @@ SPEC CHECKSUMS:
   Yoga: e6ecf3fa25af9d4c87e94ad7d5d292eedef49749
   ZXingObjC: fdbb269f25dd2032da343e06f10224d62f537bdb
 
-PODFILE CHECKSUM: d69986b307473a8a425d0e3a6a79a770265f8914
+PODFILE CHECKSUM: 7f44ef71f33a4dbb448f92a2a96507223b074498
 
 COCOAPODS: 1.11.2

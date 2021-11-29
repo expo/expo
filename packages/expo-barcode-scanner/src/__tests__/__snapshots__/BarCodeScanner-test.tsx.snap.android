@@ -1,0 +1,13 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`renders correctly 1`] = `
+<ViewManagerAdapter_ExpoBarCodeScannerView
+  proxiedProperties={
+    Object {
+      "barCodeTypes": Array [],
+      "onBarCodeScanned": [Function],
+      "type": undefined,
+    }
+  }
+/>
+`;

@@ -34,7 +34,7 @@
   "license": "MIT",
   "homepage": "https://docs.expo.dev/versions/latest/sdk/notifications/",
   "jest": {
-    "preset": "expo-module-scripts"
+    "preset": "expo-module-scripts/ios"
   },
   "dependencies": {
     "@expo/config-plugins": "^4.0.2",
@@ -44,8 +44,7 @@
     "assert": "^2.0.0",
     "badgin": "^1.1.5",
     "expo-application": "~4.0.0",
-    "expo-constants": "~12.1.0",
-    "expo-modules-core": "~0.4.2",
+    "expo-constants": "~12.2.0",
     "fs-extra": "^9.1.0",
     "unimodules-task-manager-interface": "~7.0.1",
     "uuid": "^3.4.0"
@@ -56,5 +55,8 @@
     "expo-module-scripts": "^2.0.0",
     "memfs": "^3.2.0",
     "node-fetch": "^2.6.1"
+  },
+  "peerDependencies": {
+    "expo": "*"
   }
 }

@@ -20,7 +20,8 @@
   "author": "650 Industries, Inc.",
   "license": "MIT",
   "homepage": "https://github.com/expo/expo/tree/master/packages/unimodules-task-manager-interface",
-  "dependencies": {
-    "expo-modules-core": "~0.4.2"
+  "dependencies": {},
+  "peerDependencies": {
+    "expo": "*"
   }
 }

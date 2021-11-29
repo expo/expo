@@ -79,6 +79,7 @@ redirects[versions/latest/sdk/index.html]=versions/latest/sdk/overview/
 redirects[versions/latest/workflow/upgrading-expo]=versions/latest/workflow/upgrading-expo-sdk-walkthrough/
 # rename
 redirects[versions/latest/sdk/haptic/index.html]=versions/latest/sdk/haptics/
+redirects[development/eas-build]=development/build
 # duplicate docs file, consolidate into one page
 redirects[versions/latest/sdk/introduction/index.html]=versions/latest/sdk/overview/
 # project-lifecycle is now covered by managed-vs-bare
@@ -94,10 +95,23 @@ redirects[faq/clear-cache-windows]=troubleshooting/clear-cache-windows/
 redirects[faq/clear-cache-macos-linux]=troubleshooting/clear-cache-macos-linux/
 redirects[faq/application-has-not-been-registered]=troubleshooting/application-has-not-been-registered/
 redirects[distribution/building-standalone-apps]=classic/building-standalone-apps/
-redirects[distribution/webhooks]=build-reference/build-webhook/
+redirects[build-reference/build-webhook]=eas/webhooks/
+redirects[distribution/webhooks]=eas/webhooks/
 redirects[distribution/turtle-cli]=classic/turtle-cli/
 redirects[distribution/app-signing]=app-signing/app-credentials/
 redirects[guides/adhoc-builds]=archived/adhoc-builds/
+# clients is now development
+redirects[clients/distribution-for-ios]=development/build/
+redirects[clients/distribution-for-android]=development/build/
+redirects[clients/compatibility]=development/compatibility/
+redirects[clients/development-workflows]=development/development-workflows/
+redirects[clients/eas-build]=development/eas-build/
+redirects[clients/extending-the-dev-menu]=development/extending-the-dev-menu/
+redirects[clients/getting-started]=development/getting-started/
+redirects[clients/installation]=development/installation/
+redirects[clients/introduction]=development/introduction/
+redirects[clients/troubleshooting]=development/troubleshooting/
+redirects[clients/upgrading]=development/upgrading/
 
 echo "::group::[5/6] Add custom redirects"
 for i in "${!redirects[@]}" # iterate over keys

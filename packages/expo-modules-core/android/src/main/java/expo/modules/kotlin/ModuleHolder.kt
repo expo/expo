@@ -3,7 +3,7 @@ package expo.modules.kotlin
 import com.facebook.react.bridge.ReadableArray
 import expo.modules.core.utilities.ifNull
 import expo.modules.kotlin.events.BasicEventListener
-import expo.modules.kotlin.events.EventListenerWithSender
+import expo.modules.kotlin.events.EventListenerWithPayload
 import expo.modules.kotlin.events.EventListenerWithSenderAndPayload
 import expo.modules.kotlin.events.EventName
 import expo.modules.kotlin.exception.MethodNotFoundException
@@ -28,9 +28,9 @@ class ModuleHolder(val module: Module) {
   }
 
   @Suppress("UNCHECKED_CAST")
-  fun <Sender> post(eventName: EventName, sender: Sender) {
+  fun <Payload> post(eventName: EventName, payload: Payload) {
     val listener = definition.eventListeners[eventName] ?: return
-    (listener as? EventListenerWithSender<Sender>)?.call(sender)
+    (listener as? EventListenerWithPayload<Payload>)?.call(payload)
   }
 
   @Suppress("UNCHECKED_CAST")

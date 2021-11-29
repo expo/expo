@@ -28,20 +28,24 @@ const DIR_MAPPING = {
   'push-notifications': 'Push Notifications',
   preview: 'Preview',
   build: 'Start Building',
-  eas: 'Expo Application Services',
+  eas: 'EAS',
   'feature-preview': 'Feature Preview',
   'app-signing': 'App Signing',
   'build-reference': 'Reference',
   submit: 'EAS Submit',
   'technical-specs': 'Technical Specs',
   accounts: 'Expo Accounts',
-  clients: 'Development Clients',
+  development: 'Development Builds',
   archived: 'Archived',
   faq: 'FAQ',
   troubleshooting: 'Troubleshooting',
+  'eas-update': 'EAS Update',
 };
 
 const processUrl = path => {
+  if (path === 'pages/eas/index.md') {
+    return '/eas/';
+  }
   return path.replace(/^pages\//, '/').replace(/.mdx?$/, '');
 };
 
@@ -64,8 +68,8 @@ const generateGeneralNavLinks = (path_, arr = null) => {
   for (let i = 0; i < items.length; i++) {
     const filePath = path.join(path_, items[i]);
     const { ext, name } = path.parse(filePath);
-    // Only process markdown files that are not index pages
-    if (ext === '.md' && name !== 'index') {
+    // Only process markdown files that are not index pages (with exception for EAS)
+    if (filePath === 'pages/eas/index.md' || (ext === '.md' && name !== 'index')) {
       try {
         const attributes = fm(fs.readFileSync(filePath, 'utf8')).attributes;
         const title = attributes.title;
@@ -137,13 +141,13 @@ const referenceDirectories = fs
 const startingDirectories = ['introduction', 'get-started', 'tutorial', 'next-steps'];
 
 const easDirectories = ['eas', 'build', 'app-signing', 'build-reference', 'submit'];
-let previewDirectories = ['preview']; // a private preview section which isn't linked in the documentation
+let previewDirectories = ['preview', 'eas-update']; // a private preview section which isn't linked in the documentation
 let featurePreviewDirectories = ['feature-preview']; // a public preview section which is linked under `Feature Preview`
 
 if (isDevClientInFeaturePreview) {
-  featurePreviewDirectories = [...featurePreviewDirectories, 'clients'];
+  featurePreviewDirectories = [...featurePreviewDirectories, 'development'];
 } else {
-  previewDirectories = [...previewDirectories, 'clients'];
+  previewDirectories = [...previewDirectories, 'development'];
 }
 
 // Find any directories that aren't reference or starting directories. Also exclude the api

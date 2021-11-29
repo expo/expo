@@ -1,10 +1,12 @@
 package expo.modules.kotlin.views
 
 import android.content.Context
+import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import com.facebook.react.bridge.ReadableMap
 import expo.modules.core.ViewManager
+import expo.modules.kotlin.recycle
 
 class ViewManagerDefinition(
   private val viewFactory: (Context) -> View,
@@ -27,7 +29,13 @@ class ViewManagerDefinition(
     while (iterator.hasNextKey()) {
       val key = iterator.nextKey()
       val propDelegate = props[key] ?: continue
-      propDelegate.set(propsToSet.getDynamic(key), onView)
+      propsToSet.getDynamic(key).recycle {
+        try {
+          propDelegate.set(this, onView)
+        } catch (exception: Throwable) {
+          Log.e("ExpoModulesCore", "Cannot set the $key prop on the ${viewType.simpleName}.", exception)
+        }
+      }
     }
   }
 }

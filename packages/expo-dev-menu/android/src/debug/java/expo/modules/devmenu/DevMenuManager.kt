@@ -43,6 +43,8 @@ import expo.modules.devmenu.react.DevMenuPackagerCommandHandlersSwapper
 import expo.modules.devmenu.tests.DevMenuDisabledTestInterceptor
 import expo.modules.devmenu.tests.DevMenuTestInterceptor
 import expo.modules.devmenu.websockets.DevMenuCommandHandlersProvider
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import java.lang.ref.WeakReference
 
 object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
@@ -409,6 +411,8 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
       .find { it.id == id }
       ?.run { fetchData() } ?: emptyList()
   }
+
+  override val coroutineScope = CoroutineScope(Dispatchers.Default)
 
   override fun serializedItems(): List<Bundle> = delegateRootMenuItems.map { it.serialize() }
 

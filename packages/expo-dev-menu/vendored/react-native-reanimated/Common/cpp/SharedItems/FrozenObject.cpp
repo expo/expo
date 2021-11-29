@@ -1,7 +1,7 @@
-#include "FrozenObject.h"
-#include "SharedParent.h"
-#include "ShareableValue.h"
-#include "RuntimeManager.h"
+#include "DevMenuFrozenObject.h"
+#include "DevMenuSharedParent.h"
+#include "DevMenuShareableValue.h"
+#include "DevMenuRuntimeManager.h"
 
 namespace devmenureanimated {
 

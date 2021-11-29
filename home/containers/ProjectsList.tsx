@@ -1,11 +1,10 @@
-import { useQuery } from '@apollo/client';
 import * as React from 'react';
 
 import ProjectList from '../components/ProjectList';
-import { Home_AccountAppsDocument } from '../graphql/types';
+import { useHome_AccountAppsQuery } from '../graphql/types';
 
 function useOtherProjectsQuery({ accountName }: { accountName: string }) {
-  const { data, fetchMore, loading, error, refetch } = useQuery(Home_AccountAppsDocument, {
+  const { data, fetchMore, loading, error, refetch } = useHome_AccountAppsQuery({
     variables: {
       accountName,
       limit: 15,

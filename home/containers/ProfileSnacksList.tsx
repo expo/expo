@@ -1,11 +1,10 @@
-import { useQuery } from '@apollo/client';
 import * as React from 'react';
 
 import SnackList from '../components/SnackList';
-import { Home_ProfileSnacksDocument } from '../graphql/types';
+import { useHome_ProfileSnacksQuery } from '../graphql/types';
 
 function useProfileSnacksQuery() {
-  const { data, fetchMore } = useQuery(Home_ProfileSnacksDocument, {
+  const { data, fetchMore } = useHome_ProfileSnacksQuery({
     variables: {
       limit: 15,
       offset: 0,

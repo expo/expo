@@ -1,5 +1,5 @@
-#include "EventHandlerRegistry.h"
-#include "WorkletEventHandler.h"
+#include "DevMenuEventHandlerRegistry.h"
+#include "DevMenuWorkletEventHandler.h"
 
 namespace devmenureanimated {
 

@@ -33,17 +33,10 @@ Don't have a project yet? No problem: it's quick and easy to create a "Hello wor
 <details><summary><h4>🙋 An Expo user account.</h4></summary>
 <p>
 
-<!-- TODO: DELETE-FOR-GA -->
-You can sign up at [https://expo.dev/signup](https://expo.dev/signup).
-
-<!-- TODO: ADD-FOR_GA -->
-<!-- EAS Build is available to everybody with an Expo account; you can sign up at [https://expo.dev/signup](https://expo.dev/signup). You can use EAS Build for free, and paid subscriptions provide service quality improvements such as additional build concurrencies, priority access to minimize time your builds spend queueing, and increased limits on build timeouts. [Read more](https://expo.dev/pricing). -->
+EAS Build is available to everybody with an Expo account; you can sign up at [https://expo.dev/signup](https://expo.dev/signup). You can use EAS Build for free, and paid subscriptions provide service quality improvements such as additional build concurrencies, priority access to minimize time your builds spend queueing, and increased limits on build timeouts. [Read more](https://expo.dev/pricing).
 
 </p>
 </details>
-
-<!-- TODO: DELETE-FOR-GA -->
-> While EAS Build is in preview, it is available only to EAS Priority Plan subscribers. Once it graduates from preview it will become more broadly available. The first month of the Priority Plan is free, and you can cancel any time.
 
 ## 1. Install the latest EAS CLI
 
@@ -63,7 +56,7 @@ Additional configuration may be required for some scenarios:
 
 - Are you migrating an Expo managed app from `"expo build"`? [Learn about the differences](/build-reference/migrating.md).
 - Does your app code depend on environment variables? [Add them to your build configuration](/build-reference/variables.md).
-- Is your project inside of a monorepo? [Follow these instructions](/build-reference/how-tos.md#how-to-set-up-eas-build-with). 
+- Is your project inside of a monorepo? [Follow these instructions](/build-reference/how-tos.md#how-to-set-up-eas-build-with).
 - Do you use private npm packages? [Add your npm token](/build-reference/private-npm-packages).
 - Does your app depend on specific versions of tools like Node, Yarn, npm, Cocoapods, or Xcode? [Specify these versions in your build configuration](/build/eas-json.md).
 
@@ -141,6 +134,6 @@ To learn how to install the app directly to your Android device / iOS simulator,
 
 In this guide we walked through the steps for creating your first build with EAS Build, without going into too much depth on any particular part of the process.
 
-When you are ready to learn more, we recommend proceeding through the "Start Building" section of this documentation to learn about topics like [configuration with eas.json](../eas-json.md), [internal distribution](../internal-distribution.md), [updates](../updates.md), [automating submissions](../automating-submissions.md), and [triggering builds from CI](../building-on-ci.md).
+When you are ready to learn more, we recommend proceeding through the "Start Building" section of this documentation to learn about topics like [configuration with eas.json](/build/eas-json.md), [internal distribution](/build/internal-distribution.md), [updates](/build/updates.md), [automating submissions](/build/automating-submissions.md), and [triggering builds from CI](/build/building-on-ci.md).
 
-You may also want to dig through the reference section to learn more about the topics that interest you most, such as [build webhooks](/build-reference/build-webhooks.md), [build server infrastructure](/build-reference/infrastructure.md), and how the [Android](/build-reference/android-builds.md) and [iOS](/build-reference/ios-builds.md) build processes work. Enjoy!
+You may also want to dig through the reference section to learn more about the topics that interest you most, such as [build webhooks](/eas/webhooks.md), [build server infrastructure](/build-reference/infrastructure.md), and how the [Android](/build-reference/android-builds.md) and [iOS](/build-reference/ios-builds.md) build processes work. Enjoy!

@@ -5,11 +5,11 @@ import com.google.common.truth.Truth
 import expo.modules.PromiseMock
 import expo.modules.PromiseState
 import expo.modules.kotlin.modules.Module
-import expo.modules.kotlin.modules.module
+import expo.modules.kotlin.modules.ModuleDefinition
 import org.junit.Test
 
 class EmptyModule : Module() {
-  override fun definition() = module {
+  override fun definition() = ModuleDefinition {
     name("empty-module")
   }
 }

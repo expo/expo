@@ -8,8 +8,10 @@ You can run the same build process as we run on the EAS Build servers directly o
 
 ## Prerequisites
 
-- You need to be authenticated (either via regular login or `EXPO_TOKEN`).
-- The EAS CLI plugin needs to be installed: `npm i -g eas-cli-local-build-plugin`
+You need to be authenticated with Expo:
+
+- Run `eas login`,
+- or set `EXPO_TOKEN` ([learn more on the token-base authentication](/accounts/programmatic-access.md)).
 
 ## Use cases for local builds
 

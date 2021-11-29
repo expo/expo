@@ -85,16 +85,18 @@ public class GLContext {
     final JavaScriptContextProvider jsContextProvider = moduleRegistry.getModule(JavaScriptContextProvider.class);
     final RuntimeEnvironmentInterface environment = moduleRegistry.getModule(RuntimeEnvironmentInterface.class);
 
+    EXGLRegisterThread();
     uiManager.runOnClientCodeQueueThread(new Runnable() {
       @Override
       public void run() {
         long jsContextRef = jsContextProvider.getJavaScriptContextRef();
         synchronized (uiManager) {
           if (jsContextRef != 0) {
-            mEXGLCtxId = EXGLContextCreate(jsContextRef);
+            mEXGLCtxId = EXGLContextCreate();
+            EXGLRegisterThread();
+            EXGLContextPrepare(jsContextRef, mEXGLCtxId, glContext);
           }
         }
-        EXGLContextSetFlushMethod(mEXGLCtxId, glContext);
         mManager.saveContext(glContext);
         completionCallback.run();
       }
