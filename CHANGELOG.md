@@ -7,7 +7,7 @@ Package-specific changes not released in any SDK will be added here just before 
 
 ### 📚 3rd party library updates
 
-- Updated `react-native-webview` from `11.13.0` to `11.15.0`.
+- Updated `react-native-webview` from `11.13.0` to `11.15.0`. ([#15330](https://github.com/expo/expo/pull/15330) by [@tsapeta](https://github.com/tsapeta))
 
 ### 🛠 Breaking changes
 
