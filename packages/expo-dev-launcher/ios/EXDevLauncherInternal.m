@@ -108,4 +108,11 @@ RCT_EXPORT_METHOD(getRecentlyOpenedApps:(RCTPromiseResolveBlock)resolve
   resolve([[EXDevLauncherController sharedInstance] recentlyOpenedApps]);
 }
 
+RCT_EXPORT_METHOD(getAppInfo:(RCTPromiseResolveBlock)resolve
+                  rejecter:(RCTPromiseRejectBlock)reject)
+{
+  NSDictionary *appInfo = [[EXDevLauncherController sharedInstance] getAppInfo];
+  resolve(appInfo);
+}
+
 @end

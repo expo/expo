@@ -18,8 +18,7 @@ export type AppInfo = {
 };
 
 export async function getAppInfoAsync(): Promise<AppInfo> {
-  // TODO - native module integration
-  return null;
+  return DevLauncher.getAppInfo();
 }
 
 export const clientUrlScheme = DevLauncher.clientUrlScheme;
