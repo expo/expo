@@ -8,7 +8,9 @@ RESOURCE_BUNDLE_NAME="EXConstants.bundle"
 # Path to expo-constants folder inside node_modules
 EXPO_CONSTANTS_PACKAGE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 
-source "$EXPO_CONSTANTS_PACKAGE_DIR/scripts/source-login-scripts.sh"
+# Keeps the following `$$EXPO_MODULE_VENDOR_SCRIPTS$$`` comment and
+# `expo-module-scripts' will replace the comment line with the content of `source-login-scripts.sh` during npm prepack
+source "$EXPO_CONSTANTS_PACKAGE_DIR/../../tools/source-login-scripts.sh" # $$EXPO_MODULE_VENDOR_SCRIPTS$$ '../../../tools/source-login-scripts.sh'
 
 NODE_BINARY=${NODE_BINARY:-node}
 

@@ -13,6 +13,13 @@ elif [[ "$CONFIGURATION" == *Debug* ]]; then
   fi
 fi
 
+# ref: https://github.com/facebook/react-native/blob/c974cbff04a8d90ac0f856dbada3fc5a75c75b49/scripts/react-native-xcode.sh#L59-L65
+EXPO_UPDATES_PACKAGE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd -P)"
+
+# Keeps the following `$$EXPO_MODULE_VENDOR_SCRIPTS$$`` comment and
+# `expo-module-scripts' will replace the comment line with the content of `source-login-scripts.sh` during npm prepack
+source "$EXPO_UPDATES_PACKAGE_DIR/../../tools/source-login-scripts.sh" # $$EXPO_MODULE_VENDOR_SCRIPTS$$ '../../../tools/source-login-scripts.sh'
+
 DEST="$CONFIGURATION_BUILD_DIR"
 RESOURCE_BUNDLE_NAME="EXUpdates.bundle"
 ENTRY_FILE=${ENTRY_FILE:-index.js}
@@ -36,8 +43,6 @@ if [ "x$PROJECT_DIR_BASENAME" != "xPods" ]; then
   exit 0
 fi
 
-# ref: https://github.com/facebook/react-native/blob/c974cbff04a8d90ac0f856dbada3fc5a75c75b49/scripts/react-native-xcode.sh#L59-L65
-EXPO_UPDATES_PACKAGE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd -P)"
 # If PROJECT_ROOT is not specified, fallback to use Xcode PROJECT_DIR
 PROJECT_ROOT=${PROJECT_ROOT:-"$PROJECT_DIR/../.."}
 PROJECT_ROOT=${PROJECT_ROOT:-"$EXPO_UPDATES_PACKAGE_DIR/../.."}

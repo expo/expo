@@ -21,6 +21,9 @@ commander
   .command('prepare', `Scripts to run during the "prepare" phase`)
   .command('prepublishOnly', `Scripts to run during the "prepublishOnly" phase`)
 
+  // Lifecycle helper scripts
+  .command('vendorScripts', `Vendoring script files for pack or publish`)
+
   // Pass-through scripts
   .command('babel', `Runs Babel CLI with the given arguments`)
   .command('eslint', `Runs ESLint with the given arguments`)

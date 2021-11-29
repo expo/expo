@@ -1,0 +1,57 @@
+#!/usr/bin/env node
+'use strict';
+
+//
+// This script searches `scripts/**/*.sh` for `# $$EXPO_MODULE_VENDOR_SCRIPTS$$ '../relative/path/to/commonScript.sh'` pattern
+// and replace the pattern line with the content of `../relative/path/to/commonScript.sh`.
+//
+// Common integrations at npm prepack and postpack lifecycle
+//
+// "scripts": {
+//   "prepack": "expo-module vendorScripts",
+//   "postpack": "expo-module vendorScripts reset"
+// }
+//
+
+const fs = require('fs');
+const glob = require('glob');
+const path = require('path');
+const { execSync } = require('child_process');
+
+const searchRegExp = new RegExp(/^.*#\s+\$\$EXPO_MODULE_VENDOR_SCRIPTS\$\$\s+['"](.+)['"].*$/, 'mg');
+
+async function transformFileAsync(file) {
+  const filePath = path.resolve(file);
+  let content = await fs.promises.readFile(filePath, 'utf-8');
+  const matched = searchRegExp.exec(content);
+  if (!matched) {
+    return;
+  }
+  const vendorSourceFile = path.join(path.dirname(filePath), matched[1]);
+  if (!fs.existsSync(vendorSourceFile)) {
+    throw new Error(`Cannot find the vendoring source file: ${vendorSourceFile}`);
+  }
+
+  console.log(`Vendoring script: ${filePath}`)
+  const vendorSourceContent = await fs.promises.readFile(vendorSourceFile, 'utf-8');
+
+  // Prevent String.replace() strips double dollar signs, we use the functional replacer.
+  const prefix = `# @generated begin - expo-module-vendorScripts for ${path.basename(filePath)}`;
+  const suffix = `# @generated end`;
+  content = content.replace(searchRegExp, () => `${prefix}\n${vendorSourceContent}\n${suffix}`);
+  await fs.promises.writeFile(file, content);
+}
+
+if (process.argv[2] === 'reset') {
+  console.log('Resetting scripts by `git checkout -- scripts/`');
+  execSync(`git checkout -- scripts/`);
+  return;
+}
+
+(async function() {
+  const files = glob.sync('scripts/**/*.sh');
+  await Promise.all(files.map((file) => transformFileAsync(file)));
+})().catch(e => {
+  console.error('Uncaught Error -', e);
+  process.exit(1);
+});
