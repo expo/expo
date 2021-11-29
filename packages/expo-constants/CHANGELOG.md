@@ -9,6 +9,8 @@
 
 ### 🎉 New features
 
+- Enhance node binary resolution for Xcode build phases scripts by vendoring source-login-scripts.sh. ([#15336](https://github.com/expo/expo/pull/15336) by [@kudo](https://github.com/kudo))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
