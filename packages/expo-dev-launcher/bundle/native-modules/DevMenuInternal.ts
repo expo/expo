@@ -10,8 +10,7 @@ export type DevMenuSettingsType = Partial<{
 }>;
 
 export async function getSettingsAsync(): Promise<DevMenuSettingsType> {
-  // TODO - native module integration
-  return {};
+  return DevMenu.getSettingsAsync();
 }
 
 export async function setSettingsAsync(settings: DevMenuSettingsType) {

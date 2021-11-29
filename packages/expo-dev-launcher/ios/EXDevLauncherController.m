@@ -27,6 +27,7 @@
 #import <EXManifests/EXManifestsManifestFactory.h>
 
 @import EXDevMenuInterface;
+@import EXDevMenu;
 
 #ifdef EX_DEV_LAUNCHER_VERSION
 #define STRINGIZE(x) #x
@@ -84,6 +85,7 @@ NSString *fakeLauncherBundleUrl = @"embedded://EXDevLauncher/dummy";
 - (NSArray<id<RCTBridgeModule>> *)extraModulesForBridge:(RCTBridge *)bridge
 {
   return @[
+    (id<RCTBridgeModule>)[DevMenuInternalModule new],
     (id<RCTBridgeModule>)[RCTDevMenu new],
     [RCTAsyncLocalStorage new],
     [EXDevLauncherLoadingView new],

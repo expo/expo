@@ -26,10 +26,15 @@ public class DevMenuInternalModule: NSObject, RCTBridgeModule {
   private static let defaultScheme = "expo-dev-menu"
 
   let manager: DevMenuManager
+  
+  public override init() {
+    self.manager = DevMenuManager.shared
+  }
 
   init(manager: DevMenuManager) {
     self.manager = manager
   }
+  
 
   // MARK: JavaScript API
 
