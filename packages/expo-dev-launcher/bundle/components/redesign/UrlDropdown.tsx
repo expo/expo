@@ -1,11 +1,18 @@
 import { ChevronDownIcon } from '@expo/styleguide-native';
-import { Button, Text, TextInput, Row, Spacer, View } from 'expo-dev-client-components';
+import {
+  Button,
+  Text,
+  TextInput,
+  Row,
+  Spacer,
+  View,
+  useExpoTheme,
+} from 'expo-dev-client-components';
 import * as React from 'react';
 import { TextInput as NativeTextInput } from 'react-native';
 
 import { validateUrl } from '../../functions/validateUrl';
 import { useDebounce } from '../../hooks/useDebounce';
-import { useExpoTheme } from '../../hooks/useExpoTheme';
 import { clientUrlScheme } from '../../native-modules/DevLauncherInternal';
 
 type UrlDropdownProps = {

@@ -1,10 +1,21 @@
-import { Heading, Text, Divider, Row, Spacer, View } from 'expo-dev-client-components';
+import {
+  Heading,
+  Text,
+  Divider,
+  Row,
+  Spacer,
+  View,
+  useExpoTheme,
+  RefreshIcon,
+  Button,
+  StatusIndicator,
+  ChevronDownIcon,
+} from 'expo-dev-client-components';
 import * as React from 'react';
 import { ScrollView } from 'react-native';
 
 import { AppHeader } from '../components/redesign/AppHeader';
-import { FetchLocalPackagersRow } from '../components/redesign/FetchLocalPackagersRow';
-import { LocalPackagersList } from '../components/redesign/LocalPackagersList';
+import { PulseIndicator } from '../components/redesign/PulseIndicator';
 import { UrlDropdown } from '../components/redesign/UrlDropdown';
 import { TerminalIcon } from '../components/redesign/icons/TerminalIcon';
 import { Packager } from '../functions/getLocalPackagersAsync';
@@ -94,5 +105,61 @@ export function HomeScreen({
         </View>
       </View>
     </ScrollView>
+  );
+}
+
+type FetchLocalPackagersRowProps = {
+  isFetching: boolean;
+  onRefetchPress: () => void;
+};
+
+function FetchLocalPackagersRow({ isFetching, onRefetchPress }: FetchLocalPackagersRowProps) {
+  const theme = useExpoTheme();
+  const backgroundColor = isFetching ? theme.status.info : theme.status.default;
+
+  return (
+    <Button onPress={onRefetchPress} disabled={isFetching}>
+      <Row align="center" padding="medium">
+        <PulseIndicator isActive={isFetching} color={backgroundColor} />
+        <Spacer.Horizontal size="small" />
+        <Text size="large">
+          {isFetching ? 'Searching for local servers...' : 'Refetch local servers'}
+        </Text>
+        <Spacer.Horizontal size="flex" />
+        {!isFetching && <RefreshIcon size={16} />}
+      </Row>
+    </Button>
+  );
+}
+
+type LocalPackagersListProps = {
+  packagers?: Packager[];
+  onPackagerPress: (packager: Packager) => void;
+};
+
+function LocalPackagersList({ packagers = [], onPackagerPress }: LocalPackagersListProps) {
+  if (packagers.length === 0) {
+    return null;
+  }
+
+  return (
+    <View>
+      {packagers.map((packager) => {
+        return (
+          <View key={packager.description}>
+            <Button onPress={() => onPackagerPress(packager)}>
+              <Row align="center" padding="medium">
+                <StatusIndicator size="small" status="success" />
+                <Spacer.Horizontal size="small" />
+                <Text>{packager.description}</Text>
+                <Spacer.Horizontal size="flex" />
+                <ChevronDownIcon style={{ transform: [{ rotate: '-90deg' }] }} />
+              </Row>
+            </Button>
+            <Divider />
+          </View>
+        );
+      })}
+    </View>
   );
 }
