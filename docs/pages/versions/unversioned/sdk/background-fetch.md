@@ -24,7 +24,7 @@ For [managed](../../../introduction/managed-vs-bare.md#managed-workflow) apps, y
 
 Below is an example that demonstrates how to use `expo-background-fetch`.
 
-<SnackInline>
+<SnackInline label="Background Fetch Usage" dependencies={['expo-background-fetch', 'expo-task-manager']}>
 
 ```tsx
 import React from 'react';
