@@ -1,19 +1,10 @@
 import { diff } from 'deep-object-diff';
 import { Asset } from 'expo-asset';
 import { Audio, AVMetadata, AVPlaybackStatus } from 'expo-av';
-import { UnavailabilityError } from 'expo-modules-core';
 import React from 'react';
-import { StyleProp, ViewStyle, View, Text, Platform } from 'react-native';
-import Reanimated, {
-  Extrapolate,
-  interpolate,
-  runOnUI,
-  useAnimatedStyle,
-  useSharedValue,
-  withSpring,
-} from 'react-native-reanimated';
+import { StyleProp, ViewStyle } from 'react-native';
 
-import Colors from '../../constants/Colors';
+import { JsiAudioBar } from './JsiAudioBar';
 import Player from './Player';
 
 type PlaybackSource =
@@ -156,70 +147,4 @@ export default class AudioPlayer extends React.Component<Props, State> {
       />
     );
   }
-}
-
-// for some reason, iOS returns much smaller sample values
-const inputRange = Platform.OS === 'ios' ? [0, 0.3] : [0, 1];
-
-function JsiAudioBar({ sound, isPlaying }: { sound: Audio.Sound; isPlaying: boolean }) {
-  const sharedValue = useSharedValue(0);
-  const animatedStyle = useAnimatedStyle(() => {
-    const barWidth = interpolate(sharedValue.value, inputRange, [1, 500], Extrapolate.CLAMP);
-    return {
-      width: withSpring(barWidth, {
-        mass: 1,
-        damping: 500,
-        stiffness: 1000,
-      }),
-    };
-  }, [sharedValue]);
-
-  const isJsiAudioSupported = React.useMemo(() => {
-    try {
-      // @ts-expect-error that method is private
-      sound?._updateAudioSampleReceivedCallback();
-      return true;
-    } catch (e: unknown) {
-      if (e instanceof UnavailabilityError) {
-        return false;
-      }
-      throw e;
-    }
-  }, [sound]);
-
-  React.useEffect(() => {
-    if (isJsiAudioSupported && isPlaying && !sound?._onAudioSampleReceived) {
-      sound?.setOnAudioSampleReceived((sample) => {
-        const frames = sample.channels[0].frames;
-        const frameSum = frames.slice(0, 200).reduce((prev, curr) => prev + curr ** 2, 0);
-        const rmsValue = Math.sqrt(frameSum / 200);
-
-        runOnUI(() => {
-          sharedValue.value = rmsValue;
-        })();
-      });
-    }
-  }, [sound, isPlaying]);
-
-  if (!isJsiAudioSupported) {
-    return (
-      <Text style={{ color: Colors.errorBackground }}>
-        JSI Audio is not supported on this platform
-      </Text>
-    );
-  }
-
-  if (!sound || !sound._onAudioSampleReceived) {
-    return (
-      <Text style={{ color: Colors.tintColor }}>Press play to set JSI audioSampleCallback</Text>
-    );
-  }
-
-  return (
-    <View style={{ height: 19 }}>
-      <Reanimated.View
-        style={[{ height: 8, borderRadius: 4, backgroundColor: Colors.tintColor }, animatedStyle]}
-      />
-    </View>
-  );
 }
