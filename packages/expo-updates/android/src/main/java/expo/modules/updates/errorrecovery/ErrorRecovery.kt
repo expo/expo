@@ -15,13 +15,14 @@ class ErrorRecovery(
   delegate: ErrorRecoveryDelegate
 ) {
   internal val handlerThread = HandlerThread("expo-updates-error-recovery")
-  init {
-    handlerThread.start()
-  }
   internal var handler: Handler = ErrorRecoveryHandler(handlerThread.looper, delegate)
 
   private var weakReactInstanceManager: WeakReference<ReactInstanceManager>? = null
   private var previousExceptionHandler: DefaultNativeModuleCallExceptionHandler? = null
+
+  fun initialize() {
+    handlerThread.start()
+  }
 
   fun startMonitoring(reactInstanceManager: ReactInstanceManager) {
     registerContentAppearedListener()
@@ -42,7 +43,7 @@ class ErrorRecovery(
     // handlers are triggered after now, we still want to give the app a reasonable window of time
     // to start the WAIT_FOR_REMOTE_UPDATE task and check for a new update is there is one
     //
-    // it's' safe to use the handler thread for this since nothing else
+    // it's safe to use the handler thread for this since nothing else
     // touches this class's fields
     handler.postDelayed({ unregisterErrorHandler() }, 10000)
   }
@@ -95,6 +96,7 @@ class ErrorRecovery(
       }
       weakReactInstanceManager = null
     }
+    handlerThread.quitSafely()
   }
 
   companion object {
