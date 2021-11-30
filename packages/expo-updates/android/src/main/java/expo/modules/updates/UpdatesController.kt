@@ -66,64 +66,7 @@ class UpdatesController private constructor(
     UpdatesUtils.getRuntimeVersion(updatesConfiguration)
   )
   val fileDownloader: FileDownloader = FileDownloader(context)
-
-  private val errorRecovery: ErrorRecovery = ErrorRecovery(object : ErrorRecoveryDelegate {
-    override fun loadRemoteUpdate() {
-      if (loaderTask?.isRunning == true) {
-        return
-      }
-      remoteLoadStatus = ErrorRecoveryDelegate.RemoteLoadStatus.NEW_UPDATE_LOADING
-      val database = getDatabase()
-      val remoteLoader = RemoteLoader(context, updatesConfiguration, database, fileDownloader, updatesDirectory)
-      remoteLoader.start(object : Loader.LoaderCallback {
-        override fun onFailure(e: Exception) {
-          setRemoteLoadStatus(ErrorRecoveryDelegate.RemoteLoadStatus.IDLE)
-          releaseDatabase()
-        }
-        override fun onSuccess(update: UpdateEntity?) {
-          setRemoteLoadStatus(
-            if (update != null) ErrorRecoveryDelegate.RemoteLoadStatus.NEW_UPDATE_LOADED
-            else ErrorRecoveryDelegate.RemoteLoadStatus.IDLE
-          )
-          releaseDatabase()
-        }
-        override fun onAssetLoaded(asset: AssetEntity, successfulAssetCount: Int, failedAssetCount: Int, totalAssetCount: Int) { }
-        override fun onUpdateManifestLoaded(updateManifest: UpdateManifest) =
-          selectionPolicy.shouldLoadNewUpdate(updateManifest.updateEntity, launchedUpdate, updateManifest.manifestFilters)
-      })
-    }
-
-    override fun relaunch(callback: LauncherCallback) { relaunchReactApplication(context, false, callback) }
-    override fun throwException(exception: Exception) { throw exception }
-
-    override fun markFailedLaunchForLaunchedUpdate() {
-      if (isEmergencyLaunch) {
-        return
-      }
-      databaseHandler.post {
-        val launchedUpdate = launchedUpdate ?: return@post
-        val database = getDatabase()
-        database.updateDao().incrementFailedLaunchCount(launchedUpdate)
-        releaseDatabase()
-      }
-    }
-
-    override fun markSuccessfulLaunchForLaunchedUpdate() {
-      if (isEmergencyLaunch) {
-        return
-      }
-      databaseHandler.post {
-        val launchedUpdate = launchedUpdate ?: return@post
-        val database = getDatabase()
-        database.updateDao().incrementSuccessfulLaunchCount(launchedUpdate)
-        releaseDatabase()
-      }
-    }
-
-    override fun getRemoteLoadStatus() = remoteLoadStatus
-    override fun getCheckAutomaticallyConfiguration() = updatesConfiguration.checkOnLaunch
-    override fun getLaunchedUpdateSuccessfulLaunchCount() = launchedUpdate?.successfulLaunchCount ?: 0
-  })
+  private val errorRecovery: ErrorRecovery = ErrorRecovery()
 
   private fun setRemoteLoadStatus(status: ErrorRecoveryDelegate.RemoteLoadStatus) {
     remoteLoadStatus = status
@@ -257,6 +200,8 @@ class UpdatesController private constructor(
       isEmergencyLaunch = true
     }
 
+    initializeErrorRecovery(context)
+
     val databaseLocal = getDatabase()
     BuildData.ensureBuildDataIsConsistent(updatesConfiguration, databaseLocal)
     releaseDatabase()
@@ -334,6 +279,66 @@ class UpdatesController private constructor(
   private fun notifyController() {
     isLoaderTaskFinished = true
     (this as java.lang.Object).notify()
+  }
+
+  fun initializeErrorRecovery(context: Context) {
+    errorRecovery.initialize(object : ErrorRecoveryDelegate {
+      override fun loadRemoteUpdate() {
+        if (loaderTask?.isRunning == true) {
+          return
+        }
+        remoteLoadStatus = ErrorRecoveryDelegate.RemoteLoadStatus.NEW_UPDATE_LOADING
+        val database = getDatabase()
+        val remoteLoader = RemoteLoader(context, updatesConfiguration, database, fileDownloader, updatesDirectory)
+        remoteLoader.start(object : Loader.LoaderCallback {
+          override fun onFailure(e: Exception) {
+            setRemoteLoadStatus(ErrorRecoveryDelegate.RemoteLoadStatus.IDLE)
+            releaseDatabase()
+          }
+          override fun onSuccess(update: UpdateEntity?) {
+            setRemoteLoadStatus(
+              if (update != null) ErrorRecoveryDelegate.RemoteLoadStatus.NEW_UPDATE_LOADED
+              else ErrorRecoveryDelegate.RemoteLoadStatus.IDLE
+            )
+            releaseDatabase()
+          }
+          override fun onAssetLoaded(asset: AssetEntity, successfulAssetCount: Int, failedAssetCount: Int, totalAssetCount: Int) { }
+          override fun onUpdateManifestLoaded(updateManifest: UpdateManifest) =
+            selectionPolicy.shouldLoadNewUpdate(updateManifest.updateEntity, launchedUpdate, updateManifest.manifestFilters)
+        })
+      }
+
+      override fun relaunch(callback: LauncherCallback) { relaunchReactApplication(context, false, callback) }
+      override fun throwException(exception: Exception) { throw exception }
+
+      override fun markFailedLaunchForLaunchedUpdate() {
+        if (isEmergencyLaunch) {
+          return
+        }
+        databaseHandler.post {
+          val launchedUpdate = launchedUpdate ?: return@post
+          val database = getDatabase()
+          database.updateDao().incrementFailedLaunchCount(launchedUpdate)
+          releaseDatabase()
+        }
+      }
+
+      override fun markSuccessfulLaunchForLaunchedUpdate() {
+        if (isEmergencyLaunch) {
+          return
+        }
+        databaseHandler.post {
+          val launchedUpdate = launchedUpdate ?: return@post
+          val database = getDatabase()
+          database.updateDao().incrementSuccessfulLaunchCount(launchedUpdate)
+          releaseDatabase()
+        }
+      }
+
+      override fun getRemoteLoadStatus() = remoteLoadStatus
+      override fun getCheckAutomaticallyConfiguration() = updatesConfiguration.checkOnLaunch
+      override fun getLaunchedUpdateSuccessfulLaunchCount() = launchedUpdate?.successfulLaunchCount ?: 0
+    })
   }
 
   fun runReaper() {
