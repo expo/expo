@@ -1,6 +1,5 @@
 package versioned.host.exp.exponent.modules.api.components.lottie;
 
-import android.graphics.Color;
 import android.graphics.ColorFilter;
 import android.widget.ImageView;
 
@@ -13,6 +12,8 @@ import com.airbnb.lottie.model.KeyPath;
 import com.airbnb.lottie.value.LottieValueCallback;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.ReadableType;
+import com.facebook.react.bridge.ColorPropConverter;
 import java.lang.ref.WeakReference;
 import java.util.regex.Pattern;
 /**
@@ -153,9 +154,14 @@ public class LottieAnimationViewPropertyManager {
     if (colorFilters != null && colorFilters.size() > 0) {
       for (int i = 0 ; i < colorFilters.size() ; i++) {
         ReadableMap current = colorFilters.getMap(i);
-        String color = current.getString("color");
+        int color;
+        if (current.getType("color") == ReadableType.Map) {
+          color = ColorPropConverter.getColor(current.getMap("color"), view.getContext());
+        } else {
+          color = current.getInt("color");
+        }
         String path = current.getString("keypath");
-        SimpleColorFilter colorFilter = new SimpleColorFilter(Color.parseColor(color));
+        ColorFilter colorFilter = new SimpleColorFilter(color);
         String pathWithGlobstar = path +".**";
         String[] keys = pathWithGlobstar.split(Pattern.quote("."));
         KeyPath keyPath = new  KeyPath(keys);

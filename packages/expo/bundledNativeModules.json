@@ -90,7 +90,7 @@
   "expo-updates": "~0.10.9",
   "expo-video-thumbnails": "~6.0.3",
   "expo-web-browser": "~10.0.3",
-  "lottie-react-native": "4.0.3",
+  "lottie-react-native": "5.0.1",
   "react-native-appearance": "~0.3.3",
   "react-native-branch": "5.0.0",
   "react-native-gesture-handler": "~1.10.2",
