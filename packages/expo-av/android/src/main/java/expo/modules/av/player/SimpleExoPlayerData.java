@@ -15,6 +15,9 @@ import androidx.annotation.Nullable;
 
 import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.ExoPlaybackException;
+import com.google.android.exoplayer2.ExoPlayer;
+import com.google.android.exoplayer2.ExoPlayerFactory;
+import com.google.android.exoplayer2.Format;
 import com.google.android.exoplayer2.MediaItem;
 import com.google.android.exoplayer2.PlaybackParameters;
 import com.google.android.exoplayer2.Player;
@@ -118,11 +121,17 @@ class SimpleExoPlayerData extends PlayerData
 
   @Override
   public synchronized void release() {
+    super.release();
     stopUpdatingProgressIfNecessary();
     if (mSimpleExoPlayer != null) {
       mSimpleExoPlayer.release();
       mSimpleExoPlayer = null;
     }
+  }
+
+  @Override
+  protected synchronized double getCurrentPositionSeconds() {
+    return (double)mSimpleExoPlayer.getCurrentPosition() / 1000.0;
   }
 
   @Override

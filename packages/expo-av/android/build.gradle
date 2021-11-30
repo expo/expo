@@ -121,6 +121,9 @@ dependencies {
 
   implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${getKotlinVersion()}"
 
+  //noinspection GradleDynamicVersion
+  implementation 'com.facebook.react:react-native:+'
+
   compileOnly 'com.facebook.fbjni:fbjni:0.2.2'
   extractHeaders 'com.facebook.fbjni:fbjni:0.2.2:headers'
   extractJNI 'com.facebook.fbjni:fbjni:0.2.2'
