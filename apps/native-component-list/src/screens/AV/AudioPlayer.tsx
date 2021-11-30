@@ -1,9 +1,19 @@
 import { diff } from 'deep-object-diff';
 import { Asset } from 'expo-asset';
 import { Audio, AVMetadata, AVPlaybackStatus } from 'expo-av';
+import { UnavailabilityError } from 'expo-modules-core';
 import React from 'react';
-import { StyleProp, ViewStyle } from 'react-native';
+import { StyleProp, ViewStyle, View, Text, Platform } from 'react-native';
+import Reanimated, {
+  Extrapolate,
+  interpolate,
+  runOnUI,
+  useAnimatedStyle,
+  useSharedValue,
+  withSpring,
+} from 'react-native-reanimated';
 
+import Colors from '../../constants/Colors';
 import Player from './Player';
 
 type PlaybackSource =
@@ -65,6 +75,7 @@ export default class AudioPlayer extends React.Component<Props, State> {
 
   componentWillUnmount() {
     if (this._sound) {
+      this._clearJsiAudioSampleCallback();
       this._sound.unloadAsync();
     }
   }
@@ -93,9 +104,14 @@ export default class AudioPlayer extends React.Component<Props, State> {
     this.setState({ metadata });
   };
 
-  _playAsync = async () => this._sound!.playAsync();
+  _playAsync = async () => {
+    this._sound!.playAsync();
+  };
 
-  _pauseAsync = async () => this._sound!.pauseAsync();
+  _pauseAsync = async () => {
+    this._clearJsiAudioSampleCallback();
+    this._sound!.pauseAsync();
+  };
 
   _replayAsync = async () => this._sound!.replayAsync();
 
@@ -115,6 +131,14 @@ export default class AudioPlayer extends React.Component<Props, State> {
     await this._sound!.setRateAsync(rate, shouldCorrectPitch, pitchCorrectionQuality);
   };
 
+  _clearJsiAudioSampleCallback = () => {
+    // it throws UnavailabilityError when platform is not supported
+    // ignore this, we set it here to null anyway
+    try {
+      this._sound?.setOnAudioSampleReceived(null);
+    } catch (_e) {}
+  };
+
   render() {
     return (
       <Player
@@ -128,7 +152,74 @@ export default class AudioPlayer extends React.Component<Props, State> {
         setRateAsync={this._setRateAsync}
         setIsMutedAsync={this._setIsMutedAsync}
         setVolume={this._setVolumeAsync}
+        extraIndicator={<JsiAudioBar isPlaying={this.state.isPlaying} sound={this._sound!} />}
       />
     );
   }
+}
+
+// for some reason, iOS returns much smaller sample values
+const inputRange = Platform.OS === 'ios' ? [0, 0.3] : [0, 1];
+
+function JsiAudioBar({ sound, isPlaying }: { sound: Audio.Sound; isPlaying: boolean }) {
+  const sharedValue = useSharedValue(0);
+  const animatedStyle = useAnimatedStyle(() => {
+    const barWidth = interpolate(sharedValue.value, inputRange, [1, 500], Extrapolate.CLAMP);
+    return {
+      width: withSpring(barWidth, {
+        mass: 1,
+        damping: 500,
+        stiffness: 1000,
+      }),
+    };
+  }, [sharedValue]);
+
+  const isJsiAudioSupported = React.useMemo(() => {
+    try {
+      // @ts-expect-error that method is private
+      sound?._updateAudioSampleReceivedCallback();
+      return true;
+    } catch (e: unknown) {
+      if (e instanceof UnavailabilityError) {
+        return false;
+      }
+      throw e;
+    }
+  }, [sound]);
+
+  React.useEffect(() => {
+    if (isJsiAudioSupported && isPlaying && !sound?._onAudioSampleReceived) {
+      sound?.setOnAudioSampleReceived((sample) => {
+        const frames = sample.channels[0].frames;
+        const frameSum = frames.slice(0, 200).reduce((prev, curr) => prev + curr ** 2, 0);
+        const rmsValue = Math.sqrt(frameSum / 200);
+
+        runOnUI(() => {
+          sharedValue.value = rmsValue;
+        })();
+      });
+    }
+  }, [sound, isPlaying]);
+
+  if (!isJsiAudioSupported) {
+    return (
+      <Text style={{ color: Colors.errorBackground }}>
+        JSI Audio is not supported on this platform
+      </Text>
+    );
+  }
+
+  if (!sound || !sound._onAudioSampleReceived) {
+    return (
+      <Text style={{ color: Colors.tintColor }}>Press play to set JSI audioSampleCallback</Text>
+    );
+  }
+
+  return (
+    <View style={{ height: 19 }}>
+      <Reanimated.View
+        style={[{ height: 8, borderRadius: 4, backgroundColor: Colors.tintColor }, animatedStyle]}
+      />
+    </View>
+  );
 }
