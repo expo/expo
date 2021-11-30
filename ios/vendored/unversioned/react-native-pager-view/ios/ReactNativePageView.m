@@ -47,6 +47,7 @@
         _cachedControllers = [NSHashTable weakObjectsHashTable];
         _overdrag = NO;
         _layoutDirection = @"ltr";
+        _previousBounds = CGRectMake(0, 0, 0, 0);
     }
     return self;
 }
@@ -55,8 +56,13 @@
     [super layoutSubviews];
     if (self.reactPageViewController) {
         [self shouldScroll:self.scrollEnabled];
-        //Below line fix bug, where the view does not update after orientation changed.
-        [self updateDataSource];
+
+        if (!CGRectEqualToRect(self.previousBounds, CGRectMake(0, 0, 0, 0)) && !CGRectEqualToRect(self.bounds, self.previousBounds)) {
+            // Below line fix bug, where the view does not update after orientation changed.
+            [self updateDataSource];
+        }
+
+        self.previousBounds = CGRectMake(self.bounds.origin.x, self.bounds.origin.y, self.bounds.size.width, self.bounds.size.height);
     }
 }
 
@@ -250,7 +256,8 @@
     
     if (!isForward && diff > 0) {
         for (NSInteger i=_currentIndex; i>=index; i--) {
-            if (index == _currentIndex) {
+            // Prevent removal of one or many pages at a time
+            if (index == _currentIndex || i >= numberOfPages) {
                 continue;
             }
             [self goToViewController:i direction:direction animated:animated shouldCallOnPageSelected: i == index];
