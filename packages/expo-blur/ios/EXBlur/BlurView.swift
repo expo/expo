@@ -3,8 +3,7 @@
 import UIKit
 
 @objc(EXBlurView)
-public class BlurView : UIView
-{
+public class BlurView : UIView {
   private var blurEffectView: BlurEffectView
 
   override init(frame: CGRect) {
@@ -19,11 +18,13 @@ public class BlurView : UIView
 
   required init?(coder: NSCoder) { nil }
 
-  @objc public func setTint(_ tint: String) {
+  @objc
+  public func setTint(_ tint: String) {
     blurEffectView.tint = tint
   }
 
-  @objc public func setIntensity(_ intensity: Float) {
+  @objc
+  public func setIntensity(_ intensity: Float) {
     blurEffectView.intensity = intensity;
   }
 }

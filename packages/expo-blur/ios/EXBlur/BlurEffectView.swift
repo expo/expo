@@ -16,11 +16,11 @@ final class BlurEffectView: UIVisualEffectView {
   @Containing(values: ["default", "light", "dark"])
   var tint = "default" {
     didSet {
-      visualEffect = UIBlurEffect(tint: tint)
+      visualEffect = UIBlurEffect(style: blurEffectStyleFrom(tint))
     }
   }
 
-  private var visualEffect: UIVisualEffect = UIBlurEffect(tint: "default") {
+  private var visualEffect: UIVisualEffect = UIBlurEffect(style: blurEffectStyleFrom("default")) {
     didSet {
       setNeedsDisplay()
     }
@@ -45,6 +45,15 @@ final class BlurEffectView: UIVisualEffectView {
       self.effect = visualEffect
     }
     animator?.fractionComplete = CGFloat(intensity)
+  }
+}
+
+private func blurEffectStyleFrom(_ tint: String) -> UIBlurEffect.Style {
+  switch (tint) {
+  case "light": return .extraLight
+  case "dark": return .dark
+  case "default": return .light
+  default: return .dark
   }
 }
 
