@@ -38,4 +38,10 @@ class UpdateEntity(
 
   @ColumnInfo(name = "last_accessed")
   var lastAccessed: Date = Date()
+
+  @ColumnInfo(name = "successful_launch_count")
+  var successfulLaunchCount = 0
+
+  @ColumnInfo(name = "failed_launch_count")
+  var failedLaunchCount = 0
 }
