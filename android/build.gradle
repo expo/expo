@@ -16,8 +16,8 @@ buildscript {
   }
   repositories {
     google()
+    mavenCentral()
     jcenter()
-    maven { url 'https://dl.bintray.com/android/android-tools/' }
   }
   dependencies {
     classpath "com.android.tools.build:gradle:${gradlePluginVersion}"
@@ -54,6 +54,7 @@ allprojects {
       url "$rootDir/versioned-abis/maven"
     }
     google()
+    mavenCentral()
     jcenter()
     maven {
       // Local Maven repo containing AARs with JSC built for Android
@@ -68,8 +69,6 @@ allprojects {
       dirs 'libs'
       // dirs project(':expoview').file('libs')
     }
-    // https://github.com/google/ExoPlayer/issues/5225#issuecomment-445739013
-    maven { url 'https://google.bintray.com/exoplayer' }
     // Using www.jitpack.io instead of plain jitpack.io due to
     // https://github.com/jitpack/jitpack.io/issues/4002
     maven { url "https://www.jitpack.io" }
