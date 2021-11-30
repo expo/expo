@@ -13,7 +13,7 @@ import kotlin.Exception
 
 class ErrorRecovery {
   internal val handlerThread = HandlerThread("expo-updates-error-recovery")
-  internal var handler: Handler? = null
+  internal lateinit var handler: Handler
 
   private var weakReactInstanceManager: WeakReference<ReactInstanceManager>? = null
   private var previousExceptionHandler: DefaultNativeModuleCallExceptionHandler? = null
@@ -29,22 +29,22 @@ class ErrorRecovery {
   }
 
   fun notifyNewRemoteLoadStatus(newStatus: ErrorRecoveryDelegate.RemoteLoadStatus) {
-    handler?.sendMessage(handler!!.obtainMessage(ErrorRecoveryHandler.MessageType.REMOTE_LOAD_STATUS_CHANGED, newStatus))
+    handler.sendMessage(handler.obtainMessage(ErrorRecoveryHandler.MessageType.REMOTE_LOAD_STATUS_CHANGED, newStatus))
   }
 
   internal fun handleException(exception: Exception) {
-    handler?.sendMessage(handler!!.obtainMessage(ErrorRecoveryHandler.MessageType.EXCEPTION_ENCOUNTERED, exception))
+    handler.sendMessage(handler.obtainMessage(ErrorRecoveryHandler.MessageType.EXCEPTION_ENCOUNTERED, exception))
   }
 
   internal fun handleContentAppeared() {
-    handler?.sendMessage(handler!!.obtainMessage(ErrorRecoveryHandler.MessageType.CONTENT_APPEARED))
+    handler.sendMessage(handler.obtainMessage(ErrorRecoveryHandler.MessageType.CONTENT_APPEARED))
     // wait 10s before unsetting error handlers; even though we won't try to relaunch if our
     // handlers are triggered after now, we still want to give the app a reasonable window of time
     // to start the WAIT_FOR_REMOTE_UPDATE task and check for a new update is there is one
     //
     // it's safe to use the handler thread for this since nothing else
     // touches this class's fields
-    handler?.postDelayed({ unregisterErrorHandler() }, 10000)
+    handler.postDelayed({ unregisterErrorHandler() }, 10000)
   }
 
   private fun registerContentAppearedListener() {

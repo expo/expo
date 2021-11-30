@@ -22,16 +22,16 @@ class ErrorRecoveryTest {
     errorRecovery.handler = spyk(ErrorRecoveryHandler(errorRecovery.handlerThread.looper, mockDelegate))
     // make handler run synchronously
     val messageSlot = slot<Message>()
-    every { errorRecovery.handler!!.sendMessageAtTime(capture(messageSlot), any()) } answers {
+    every { errorRecovery.handler.sendMessageAtTime(capture(messageSlot), any()) } answers {
       val message = messageSlot.captured
       if (message.callback != null) {
         message.callback.run()
       } else {
-        errorRecovery.handler!!.handleMessage(message)
+        errorRecovery.handler.handleMessage(message)
       }
       return@answers true
     }
-    every { errorRecovery.handler!!.postDelayed(any(), any()) } answers {
+    every { errorRecovery.handler.postDelayed(any(), any()) } answers {
       return@answers true
     }
     every { mockDelegate.getLaunchedUpdateSuccessfulLaunchCount() } returns 0
@@ -285,6 +285,6 @@ class ErrorRecoveryTest {
   private fun mockLoadRemoteUpdateWillTimeOut() {
     // call the original, which will hit the `sendMessageAtTime` mock and
     // cause the message to be sent immediately
-    every { errorRecovery.handler!!.postDelayed(any(), any()) } answers { callOriginal() }
+    every { errorRecovery.handler.postDelayed(any(), any()) } answers { callOriginal() }
   }
 }
