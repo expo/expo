@@ -443,7 +443,6 @@ const sections = [
 // TODO(brentvatne): this doesn't make too much sense because of higher level groupings, should
 // move this logic to GROUPS instead
 const ROOT = [
-  'Expo Modules',
   'Get Started',
   'Tutorial',
   'Conceptual Overview',
