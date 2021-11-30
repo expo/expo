@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Use Node module resolution for monorepos in the local expo-camera maven entry. ([#15340](https://github.com/expo/expo/pull/15340) by [@byCedric](https://github.com/byCedric))
+
 ### 💡 Others
 
 ## 12.0.3 — 2021-10-21
