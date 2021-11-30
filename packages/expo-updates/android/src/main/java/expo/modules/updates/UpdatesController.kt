@@ -4,7 +4,6 @@ import android.content.Context
 import android.net.Uri
 import android.os.AsyncTask
 import android.os.Handler
-import android.os.HandlerThread
 import android.os.Looper
 import android.util.Log
 import com.facebook.react.ReactApplication
