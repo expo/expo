@@ -1,5 +1,12 @@
-import * as React from 'react';
-import { BlurProps } from './BlurView.types';
-export default class BlurView extends React.Component<BlurProps> {
-    render(): JSX.Element;
-}
+import React from 'react';
+import { View, ViewProps } from 'react-native';
+/**
+ * @skip
+ * This `forwardedRef` mechanism is necessary to make this component work properly
+ * with React's `ref` prop and to react to props updates as expected.
+ */
+declare const BlurViewWithForwardedRef: React.ForwardRefExoticComponent<{
+    tint: import("./BlurView.types").BlurTint;
+    intensity: number;
+} & ViewProps & React.RefAttributes<View>>;
+export default BlurViewWithForwardedRef;

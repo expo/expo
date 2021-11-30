@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { BlurProps } from './BlurView.types';
-export default class BlurView extends React.Component<BlurProps> {
+import { BlurViewProps } from './BlurView.types';
+export default class BlurView extends React.Component<BlurViewProps> {
     render(): JSX.Element;
 }
