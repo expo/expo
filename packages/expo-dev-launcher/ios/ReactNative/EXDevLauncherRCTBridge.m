@@ -18,8 +18,8 @@
  */
 - (RCTDevSettings *)devSettings
 {
-  //  uncomment below to enable fast refresh for development builds of DevLauncher
-    return super.devSettings;
+//  uncomment below to enable fast refresh for development builds of DevLauncher
+return super.devSettings;
 //  return nil;
 }
 
@@ -30,9 +30,9 @@
 
 - (NSArray<Class> *)filterModuleList:(NSArray<Class> *)modules
 {
-//  uncomment the below to test local builds with unvendored dependencies (e.g react-native-svg)
+  // TODO - version RNS (react-native-screens) and RNCSafeAreaProvider
   return modules;
-  NSArray<NSString *> *allowedModules = @[@"RCT", @"DevMenu"];
+  NSArray<NSString *> *allowedModules = @[@"RCT", @"DevMenu", @"RNC"];
   NSArray<Class> *filteredModuleList = [modules filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(id  _Nullable clazz, NSDictionary<NSString *,id> * _Nullable bindings) {
     if ([clazz conformsToProtocol:@protocol(DevMenuExtensionProtocol)]) {
       return true;

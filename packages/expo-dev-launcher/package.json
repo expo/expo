@@ -29,7 +29,6 @@
   "homepage": "https://docs.expo.io",
   "dependencies": {
     "@expo/config-plugins": "^4.0.2",
-    "@react-navigation/stack": "^6.0.11",
     "expo-dev-client-components": "*",
     "resolve-from": "^5.0.0",
     "semver": "^7.3.5"
@@ -37,7 +36,9 @@
   "devDependencies": {
     "@expo/styleguide-native": "^0.4.0",
     "@react-navigation/bottom-tabs": "^6.0.9",
-    "@react-navigation/native": "^6.0.6",
+    "@react-navigation/core": "5.15.1",
+    "@react-navigation/native": "5.9.2",
+    "@react-navigation/stack": "5.14.2",
     "@testing-library/jest-native": "^4.0.4",
     "@testing-library/react-native": "^8.0.0",
     "babel-plugin-module-resolver": "^4.1.0",

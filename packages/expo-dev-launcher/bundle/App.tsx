@@ -2,7 +2,6 @@ import { HomeFilledIcon, SettingsFilledIcon } from '@expo/styleguide-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
 import * as React from 'react';
-import { Text } from 'react-native';
 
 import { AppProviders } from './components/redesign/AppProviders';
 import { LoadInitialData } from './components/redesign/LoadInitialData';
@@ -22,13 +21,13 @@ export function App(props: LauncherAppProps) {
   return (
     <LoadInitialData loader={<Splash />}>
       <AppProviders>
-        <Stack.Navigator initialRouteName="Main">
+        <Stack.Navigator initialRouteName="Main" mode="modal">
           <Stack.Screen name="Main" component={Main} options={{ header: () => null }} />
 
           <Stack.Screen
             name="User Profile"
             component={UserProfileScreen}
-            options={{ presentation: 'modal', header: () => null }}
+            options={{ header: () => null }}
           />
         </Stack.Navigator>
       </AppProviders>
