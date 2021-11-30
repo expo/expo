@@ -1,5 +1,7 @@
 # expo-google-sign-in
 
+> This package has been deprecated in favor of [`expo-auth-session/providers/google`](https://docs.expo.dev/versions/latest/sdk/auth-session/#google). Users can also create custom development clients with the native community package [`@react-native-google-signin/google-signin`](https://www.npmjs.com/package/@react-native-google-signin/google-signin).
+
 Enables native Google authentication features in your app!
 
 # API documentation
@@ -8,6 +10,8 @@ Enables native Google authentication features in your app!
 - [Documentation for the latest stable release](https://docs.expo.io/versions/latest/sdk/google-sign-in/)
 
 # Installation in managed Expo projects
+
+> This package is not supported in the Expo Go app.
 
 For managed [managed](https://docs.expo.io/versions/latest/introduction/managed-vs-bare/) Expo projects, please follow the installation instructions in the [API documentation for the latest stable release](https://docs.expo.io/versions/latest/sdk/google-sign-in/)
 
