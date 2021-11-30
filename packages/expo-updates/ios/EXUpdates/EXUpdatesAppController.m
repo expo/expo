@@ -9,6 +9,7 @@
 #import <EXUpdates/EXUpdatesRemoteAppLoader.h>
 #import <EXUpdates/EXUpdatesSelectionPolicyFactory.h>
 #import <EXUpdates/EXUpdatesUtils.h>
+#import <EXUpdates/EXUpdatesBuildData.h>
 #import <React/RCTReloadCommand.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -143,6 +144,8 @@ static NSString * const EXUpdatesErrorEventName = @"error";
     [self _emergencyLaunchWithFatalError:dbError];
     return;
   }
+
+  [EXUpdatesBuildData ensureBuildDataIsConsistentAsync:_database config:_config];
 
   [_errorRecovery startMonitoring];
 

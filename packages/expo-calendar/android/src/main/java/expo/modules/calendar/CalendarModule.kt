@@ -785,10 +785,10 @@ class CalendarModule(
       putString("accessLevel", calAccessStringMatchingConstant(accessLevel))
       putBoolean(
         "allowsModifications",
-        accessLevel == CalendarContract.Calendars.CAL_ACCESS_ROOT
-          or CalendarContract.Calendars.CAL_ACCESS_OWNER
-          or CalendarContract.Calendars.CAL_ACCESS_EDITOR
-          or CalendarContract.Calendars.CAL_ACCESS_CONTRIBUTOR
+        accessLevel == CalendarContract.Calendars.CAL_ACCESS_ROOT ||
+          accessLevel == CalendarContract.Calendars.CAL_ACCESS_OWNER ||
+          accessLevel == CalendarContract.Calendars.CAL_ACCESS_EDITOR ||
+          accessLevel == CalendarContract.Calendars.CAL_ACCESS_CONTRIBUTOR
       )
     }
     val source = Bundle().apply {

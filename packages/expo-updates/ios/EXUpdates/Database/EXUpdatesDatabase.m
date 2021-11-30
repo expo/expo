@@ -16,6 +16,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 static NSString * const EXUpdatesDatabaseManifestFiltersKey = @"manifestFilters";
 static NSString * const EXUpdatesDatabaseServerDefinedHeadersKey = @"serverDefinedHeaders";
+static NSString * const EXUpdatesDatabaseStaticBuildDataKey = @"staticBuildData";
 
 @implementation EXUpdatesDatabase
 
@@ -460,7 +461,7 @@ static NSString * const EXUpdatesDatabaseServerDefinedHeadersKey = @"serverDefin
     id value = rows[0][@"value"];
     if (value && [value isKindOfClass:[NSString class]]) {
       NSDictionary *jsonObject = [NSJSONSerialization JSONObjectWithData:[(NSString *)value dataUsingEncoding:NSUTF8StringEncoding] options:kNilOptions error:error];
-      if (!*error && jsonObject && [jsonObject isKindOfClass:[NSDictionary class]]) {
+      if (!(error && *error) && jsonObject && [jsonObject isKindOfClass:[NSDictionary class]]) {
         return jsonObject;
       }
     }
@@ -505,6 +506,11 @@ static NSString * const EXUpdatesDatabaseServerDefinedHeadersKey = @"serverDefin
   return [self _jsonDataWithKey:EXUpdatesDatabaseManifestFiltersKey scopeKey:scopeKey error:error];
 }
 
+- (nullable NSDictionary *)staticBuildDataWithScopeKey:(NSString *)scopeKey error:(NSError ** _Nullable)error
+{
+  return [self _jsonDataWithKey:EXUpdatesDatabaseStaticBuildDataKey scopeKey:scopeKey error:error];
+}
+
 - (void)setServerDefinedHeaders:(NSDictionary *)serverDefinedHeaders withScopeKey:(NSString *)scopeKey error:(NSError ** _Nullable)error
 {
   [self _setJsonData:serverDefinedHeaders withKey:EXUpdatesDatabaseServerDefinedHeadersKey scopeKey:scopeKey isInTransaction:NO error:error];
@@ -539,6 +545,11 @@ static NSString * const EXUpdatesDatabaseServerDefinedHeadersKey = @"serverDefin
     }
   }
   sqlite3_exec(_db, "COMMIT;", NULL, NULL, NULL);
+}
+
+- (void)setStaticBuildData:(NSDictionary *)staticBuildData withScopeKey:(NSString *)scopeKey error:(NSError ** _Nullable)error
+{
+  [self _setJsonData:staticBuildData withKey:EXUpdatesDatabaseStaticBuildDataKey scopeKey:scopeKey isInTransaction:NO error:error];
 }
 
 # pragma mark - helper methods
