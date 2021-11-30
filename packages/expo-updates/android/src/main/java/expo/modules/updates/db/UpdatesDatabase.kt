@@ -51,9 +51,9 @@ abstract class UpdatesDatabase : RoomDatabase() {
     val MIGRATION_4_5: Migration = object : Migration(4, 5) {
       override fun migrate(database: SupportSQLiteDatabase) {
         // https://www.sqlite.org/lang_altertable.html#otheralter
-        database.execSQL("PRAGMA foreign_keys=OFF")
-        database.beginTransaction()
         try {
+          database.execSQL("PRAGMA foreign_keys=OFF")
+          database.beginTransaction()
           try {
             database.execSQL("CREATE TABLE `new_assets` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `url` TEXT, `key` TEXT, `headers` TEXT, `type` TEXT NOT NULL, `metadata` TEXT, `download_time` INTEGER, `relative_path` TEXT, `hash` BLOB, `hash_type` INTEGER NOT NULL, `marked_for_deletion` INTEGER NOT NULL)")
             database.execSQL(
@@ -76,9 +76,9 @@ abstract class UpdatesDatabase : RoomDatabase() {
     val MIGRATION_5_6: Migration = object : Migration(5, 6) {
       override fun migrate(database: SupportSQLiteDatabase) {
         // https://www.sqlite.org/lang_altertable.html#otheralter
-        database.execSQL("PRAGMA foreign_keys=OFF")
-        database.beginTransaction()
         try {
+          database.execSQL("PRAGMA foreign_keys=OFF")
+          database.beginTransaction()
           try {
             database.execSQL("CREATE TABLE `new_updates` (`id` BLOB NOT NULL, `scope_key` TEXT NOT NULL, `commit_time` INTEGER NOT NULL, `runtime_version` TEXT NOT NULL, `launch_asset_id` INTEGER, `manifest` TEXT, `status` INTEGER NOT NULL, `keep` INTEGER NOT NULL, `last_accessed` INTEGER NOT NULL, PRIMARY KEY(`id`), FOREIGN KEY(`launch_asset_id`) REFERENCES `assets`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )")
             // insert current time as lastAccessed date for all existing updates
@@ -108,9 +108,9 @@ abstract class UpdatesDatabase : RoomDatabase() {
     val MIGRATION_6_7: Migration = object : Migration(6, 7) {
       override fun migrate(database: SupportSQLiteDatabase) {
         // https://www.sqlite.org/lang_altertable.html#otheralter
-        database.execSQL("PRAGMA foreign_keys=OFF")
-        database.beginTransaction()
         try {
+          database.execSQL("PRAGMA foreign_keys=OFF")
+          database.beginTransaction()
           try {
             database.execSQL("CREATE TABLE IF NOT EXISTS `new_assets` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `url` TEXT, `key` TEXT, `headers` TEXT, `type` TEXT, `metadata` TEXT, `download_time` INTEGER, `relative_path` TEXT, `hash` BLOB, `hash_type` INTEGER NOT NULL, `marked_for_deletion` INTEGER NOT NULL)")
             database.execSQL(
@@ -136,9 +136,9 @@ abstract class UpdatesDatabase : RoomDatabase() {
     val MIGRATION_7_8: Migration = object : Migration(7, 8) {
       override fun migrate(database: SupportSQLiteDatabase) {
         // https://www.sqlite.org/lang_altertable.html#otheralter
-        database.execSQL("PRAGMA foreign_keys=OFF")
-        database.beginTransaction()
         try {
+          database.execSQL("PRAGMA foreign_keys=OFF")
+          database.beginTransaction()
           try {
             database.execSQL("CREATE TABLE `new_updates` (`id` BLOB NOT NULL, `scope_key` TEXT NOT NULL, `commit_time` INTEGER NOT NULL, `runtime_version` TEXT NOT NULL, `launch_asset_id` INTEGER, `manifest` TEXT, `status` INTEGER NOT NULL, `keep` INTEGER NOT NULL, `last_accessed` INTEGER NOT NULL, `successful_launch_count` INTEGER NOT NULL, `failed_launch_count` INTEGER NOT NULL, PRIMARY KEY(`id`), FOREIGN KEY(`launch_asset_id`) REFERENCES `assets`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )")
 
