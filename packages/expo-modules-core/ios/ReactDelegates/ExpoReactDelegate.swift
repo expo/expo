@@ -14,24 +14,24 @@ public class ExpoReactDelegate: NSObject {
   @objc
   public func createBridge(delegate: RCTBridgeDelegate, launchOptions: [AnyHashable : Any]?) -> RCTBridge {
     self.handlers.forEach { $0.bridgeWillCreate() }
-    let result = (self.handlers.lazy
+    let result = self.handlers.lazy
       .compactMap { $0.createBridge(reactDelegate: self, bridgeDelegate: delegate, launchOptions: launchOptions) }
-      .first(where: { _ in true }) ?? nil) ?? RCTBridge(delegate: delegate, launchOptions: launchOptions)!
+      .first(where: { _ in true }) ?? RCTBridge(delegate: delegate, launchOptions: launchOptions)!
     self.handlers.forEach { $0.bridgeDidCreate(bridge: result) }
     return result
   }
 
   @objc
   public func createRootView(bridge: RCTBridge, moduleName: String, initialProperties: [AnyHashable : Any]?) -> RCTRootView {
-    return (self.handlers.lazy
+    return self.handlers.lazy
       .compactMap { $0.createRootView(reactDelegate: self, bridge: bridge, moduleName: moduleName, initialProperties: initialProperties) }
-      .first(where: { _ in true }) ?? nil) ?? RCTRootView(bridge: bridge, moduleName: moduleName, initialProperties: initialProperties)
+      .first(where: { _ in true }) ?? RCTRootView(bridge: bridge, moduleName: moduleName, initialProperties: initialProperties)
   }
 
   @objc
   public func createRootViewController() -> UIViewController {
-    return (self.handlers.lazy
+    return self.handlers.lazy
       .compactMap { $0.createRootViewController(reactDelegate: self) }
-      .first(where: { _ in true }) ?? nil) ?? UIViewController()
+      .first(where: { _ in true }) ?? UIViewController()
   }
 }
