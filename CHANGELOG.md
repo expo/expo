@@ -7,6 +7,8 @@ Package-specific changes not released in any SDK will be added here just before 
 
 ### 📚 3rd party library updates
 
+- Updated `lottie-react-native` from `4.0.3` to `5.0.1`. ([#15345](https://github.com/expo/expo/pull/15345) by [@kudo](https://github.com/kudo))
+
 ### 🛠 Breaking changes
 
 ### 🎉 New features
