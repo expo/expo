@@ -6,6 +6,7 @@
 
 - Add local SQLite fields for error recovery manager on iOS. ([#14610](https://github.com/expo/expo/pull/14610) by [@esamelson](https://github.com/esamelson))
 - Add DB migration for above. ([#14718](https://github.com/expo/expo/pull/14718) by [@esamelson](https://github.com/esamelson))
+- Add local SQLite fields and DB migration for error recovery manager on Android. ([#15218](https://github.com/expo/expo/pull/15218) by [@esamelson](https://github.com/esamelson))
 
 ### 🎉 New features
 
@@ -13,6 +14,8 @@
 - Hook up error recovery manager to rest of module on iOS. ([#14398](https://github.com/expo/expo/pull/14398) by [@esamelson](https://github.com/esamelson))
 - Move persisted error log to EXUpdatesErrorRecovery on iOS. ([#14399](https://github.com/expo/expo/pull/14399) by [@esamelson](https://github.com/esamelson))
 - Add native EXUpdatesCheckOnLaunch: ERROR_RECOVERY_ONLY setting on iOS. ([#14673](https://github.com/expo/expo/pull/14673) by [@esamelson](https://github.com/esamelson))
+- Small fixes for error recovery manager on iOS. ([#15223](https://github.com/expo/expo/pull/15223) by [@esamelson](https://github.com/esamelson))
+- Add native checkOnLaunch: ERROR_RECOVERY_ONLY setting on Android. ([#15219](https://github.com/expo/expo/pull/15219) by [@esamelson](https://github.com/esamelson))
 
 ### 🐛 Bug fixes
 

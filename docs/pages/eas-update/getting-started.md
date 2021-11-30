@@ -35,46 +35,31 @@ Setting up EAS Update allows you to push critical bug fixes and improvements tha
 
 ## Configure your project
 
-1. We'll need to register our app with EAS and add our project's ID to **app.json**. Run:
+1. Install the latest `expo-updates` library with:
 
    ```bash
-   eas init
+   expo install expo-updates
    ```
 
-   This command will add a field with your project's `projectId` in **app.json**. Copy this ID for the next step.
+2. Initialize your project with EAS Update:
 
-2. Next, in **app.json**, add an `expo.updates.url` property with the following URL, replacing the `your-project-id` with the `projectId` added in the previous step.
-
-   ```json
-   {
-     "expo": {
-       "updates": {
-         "url": "https://u.expo.dev/[your-project-id]"
-       }
-     }
-   }
+   ```bash
+   eas update:configure
    ```
 
-   Here's an example with the `projectId` included:
-
-   ```json
-   {
-     "expo": {
-       "updates": {
-         "url": "https://u.expo.dev/675cb1f0-fa3c-11e8-ac99-6374d9643cb2"
-       }
-     }
-   }
-   ```
+   After this command, you should have a new field in your app config (**app.json**) at `expo.updates.url`, which is the URL where your app will fetch new updates.
+   <br/><br/>
 
    > Optional step: There is also a `fallbackToCacheTimeout` property. If you'd like your app to try to load new updates when a user opens the app, set this to something other than zero, like `3000` (3 seconds). A value of `3000` would mean that your app will try and download a new update for up to 3 seconds before loading the previous update it already has locally. If the app is able to download the update within 3 seconds, your users will see the changes in the newest update immediately.
 
-3. Next, set an `expo.runtimeVersion` property in the project's **app.json** file. Let's use `"1.0.0"` as the runtime version's value:
+3. Next, set an `expo.runtimeVersion` property in the project's **app.json** file. Let's use `{ "policy": "sdkVersion" }` as the runtime version's value:
 
    ```json
    {
      "expo": {
-       "runtimeVersion": "1.0.0",
+       "runtimeVersion": {
+         "policy": "sdkVersion"
+       },
        ...
      }
    }
@@ -90,7 +75,9 @@ Setting up EAS Update allows you to push critical bug fixes and improvements tha
 
    Then follow the prompts.
 
-   This will create a file named **eas.json**. Inside the `production` profile, add the `channel` property with a value of `production`:
+   This will create a file named **eas.json**.
+
+5. Inside the `production` profile in **eas.json**, add the `channel` property with a value of `production`:
 
    ```bash
    {
@@ -105,23 +92,9 @@ Setting up EAS Update allows you to push critical bug fixes and improvements tha
 
    This `channel` property will allow you to point updates at builds with this channel. Later, if you set up a GitHub Action to publish changes on merge, it will make it so we can merge code into the "production" branch, then those commits will be published and made available to builds with the channel "production".
 
-5. Finally, we need to create a `channel` and `branch` both named "production" on EAS' servers. We can accomplish the creation of these with this command:
-
-   ```xml
-   eas channel:create production
-   ```
-
-## Install `expo-updates`
-
-For an app to request an update from EAS' servers, we'll need to install the `expo-updates` library. You can do so with:
-
-```bash
-expo install expo-updates
-```
-
 ## Create a build for the project
 
-Next, we'll need to create a build for Android or iOS. [Learn more](/build/setup).
+Next, we'll need to create a build for Android or iOS. [Learn more](/build/setup). Once you have a build running on your device or in a simulator, we'll be ready to send it an update.
 
 ## Publish an update
 
