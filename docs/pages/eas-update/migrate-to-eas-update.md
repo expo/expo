@@ -1,77 +1,77 @@
 ---
-title: Migrating from Classic Update to EAS Update
+title: Migrating from Classic Updates to EAS Update
 ---
 
 EAS Update is the next generation of Expo's updates service. If you're using Classic Updates, this guide will help you upgrade to EAS Update.
 
 ## Install EAS CLI
 
-Install EAS CLI with:
+1. Install EAS CLI with:
 
-```bash
-npm install --global eas-cli
-```
+   ```bash
+   npm install --global eas-cli
+   ```
 
-Then, log in with your expo account:
+2. Then, log in with your expo account:
 
-```bash
-eas login
-```
+   ```bash
+   eas login
+   ```
 
 ## Configure your project
 
 You'll need to make the following changes to your project:
 
-- Install the latest `expo-updates` library with:
+1. Install the latest `expo-updates` library with:
 
-  ```bash
-  expo install expo-updates
-  ```
+   ```bash
+   expo install expo-updates
+   ```
 
-- Initialize your project with EAS Update:
+2. Initialize your project with EAS Update:
 
-  ```bash
-  eas update:configure
-  ```
+   ```bash
+   eas update:configure
+   ```
 
-  After this command, you should have a new field in your app config (**app.json**/**app.config.js**) at `expo.updates.url`, which is the URL where your app will fetch new updates.
+After this command, you should have a new field in your app config (**app.json**/**app.config.js**) at `expo.updates.url`, which is the URL where your app will fetch new updates.
 
-- To ensure that updates are compatible with the underlying native code inside a build, EAS Update uses a new field named `runtimeVersion` that replaces the `sdkVersion` field in your project's app config (**app.json**/**app.config.js**).
+3. To ensure that updates are compatible with the underlying native code inside a build, EAS Update uses a new field named `runtimeVersion` that replaces the `sdkVersion` field in your project's app config (**app.json**/**app.config.js**).
 
-  - Remove the `expo.sdkVersion` property, then add a `expo.runtimeVersion` property with the value `{ "policy": "sdkVersion" }`.
+- Remove the `expo.sdkVersion` property, then add a `expo.runtimeVersion` property with the value `{ "policy": "sdkVersion" }`.
 
-    ```jsx
-    {
-      "expo": {
-        ~~"sdkVersion": "44.0.0",~~
-        "runtimeVersion": {
-          "policy": "sdkVersion"
-        }
-    }
-    ```
-
-- To allow updates to apply to builds built with EAS, update your EAS config (**eas.json**) to have channel names. We find it convenient to name the `channel` after the profile's name. For instance, the `preview` profile has a `channel` named `"preview"`.
-
-  ```json
+  ```jsx
   {
-    "build": {
-      "development": {
-        "developmentClient": true,
-        "distribution": "internal",
-        "channel": "development"
-      },
-      "preview": {
-        "distribution": "internal",
-        "channel": "preview"
-      },
-      "production": {
-        "channel": "production"
+    "expo": {
+      ~~"sdkVersion": "44.0.0",~~
+      "runtimeVersion": {
+        "policy": "sdkVersion"
       }
-    }
   }
   ```
 
-  - Tip: if you don't have an **eas.json** file, you can generate it with `eas build:configure`.
+4. To allow updates to apply to builds built with EAS, update your EAS config (**eas.json**) to have channel names. We find it convenient to name the `channel` after the profile's name. For instance, the `preview` profile has a `channel` named `"preview"`.
+
+   ```json
+   {
+     "build": {
+       "development": {
+         "developmentClient": true,
+         "distribution": "internal",
+         "channel": "development"
+       },
+       "preview": {
+         "distribution": "internal",
+         "channel": "preview"
+       },
+       "production": {
+         "channel": "production"
+       }
+     }
+   }
+   ```
+
+   > Tip: if you don't have an **eas.json** file, you can generate it with `eas build:configure`.
 
 ## Create new builds
 
@@ -108,7 +108,7 @@ EAS Update adds a new type of object called a "branch". A branch is a list of up
 
 ## Known issues
 
-EAS Update is currently in "preview", meaning that we may make major changes to developer-facing workflows. There are also a variety of [known issues](TODO Known issues link), which you should consider before using EAS Update with your project.
+EAS Update is currently in "preview", meaning that we may make major changes to developer-facing workflows. There are also a variety of [known issues](/eas-update/known-issues), which you should consider before using EAS Update with your project.
 
 ## Next steps
 

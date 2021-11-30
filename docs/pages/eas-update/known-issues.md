@@ -13,3 +13,5 @@ Known issues:
 - If you use the `defaultSource` prop on the `<Image />` component from `react-native`, your app will crash. Removing that prop resolves the issue.
 - When using the new manifest format with Expo Go (`yarn start --force-manifest-type=expo-updates`), the project's name will appear as "Untitled experience" in the dev menu.
 - The `eas branch:publish` has an `--auto` flag, which will use the current git branch and the latest commit message and make them the EAS branch and message while publishing. This flag does not work on CI services, like GitHub Actions.
+
+Experiencing issues not listed above? Join us on [Discord](https://chat.expo.dev/) in the #eas channel.
