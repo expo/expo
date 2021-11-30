@@ -1,4 +1,4 @@
-export * from '@expo/styleguide-native';
+export * from './icons';
 export * from './Button';
 export * from './Image';
 export * from './Text';
