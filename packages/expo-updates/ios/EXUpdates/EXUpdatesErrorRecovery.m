@@ -153,15 +153,15 @@ static NSInteger const EXUpdatesErrorRecoveryRemoteLoadTimeoutMs = 5000;
     if (_delegate.remoteLoadStatus != EXUpdatesRemoteLoadStatusLoading) {
       [_delegate loadRemoteUpdate];
     }
-      dispatch_after(dispatch_time(DISPATCH_TIME_NOW, _remoteLoadTimeout * NSEC_PER_MSEC), _errorRecoveryQueue, ^{
-        if (!self->_isWaitingForRemoteUpdate) {
-          return;
-        }
-        self->_isWaitingForRemoteUpdate = NO;
-        [self->_pipeline removeObject:@(EXUpdatesErrorRecoveryTaskLaunchNew)];
-        [self _runNextTask];
-      });
-      return;
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, _remoteLoadTimeout * NSEC_PER_MSEC), _errorRecoveryQueue, ^{
+      if (!self->_isWaitingForRemoteUpdate) {
+        return;
+      }
+      self->_isWaitingForRemoteUpdate = NO;
+      [self->_pipeline removeObject:@(EXUpdatesErrorRecoveryTaskLaunchNew)];
+      [self _runNextTask];
+    });
+    return;
   } else {
     // there's no remote update, so move to the next step in the pipeline
     [self->_pipeline removeObject:@(EXUpdatesErrorRecoveryTaskLaunchNew)];
