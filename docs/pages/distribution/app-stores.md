@@ -102,7 +102,7 @@ The full list of keys Expo provides by default can be seen [here](https://github
 
 ## Localizing your iOS app
 
-If you plan on shipping your app to different countries, regions, or just want it to support various languages, you can provide [localized](../versions/latest/sdk/localization.md) strings for things like the display name and system dialogs. All of this is easily set up [in your app.json](https://docs.expo.dev/workflow/configuration/#ios). First, set `ios.infoPlist.CFBundleAllowMixedLocalizations: true`, then provide a list of file paths to `locales`.
+If you plan on shipping your app to different countries, regions, or just want it to support various languages, you can provide [localized](/versions/latest/sdk/localization) strings for things like the display name and system dialogs. All of this is easily set up [in your app.json](/workflow/configuration/#ios). First, set `ios.infoPlist.CFBundleAllowMixedLocalizations: true`, then provide a list of file paths to `locales`.
 
 ```json
   "expo" : {
