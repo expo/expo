@@ -42,6 +42,9 @@
     "expo-module-scripts": "^2.0.0",
     "expo-test-runner": "0.0.7"
   },
+  "peerDependencies": {
+    "expo": "*"
+  },
   "jest": {
     "preset": "expo-module-scripts"
   }
