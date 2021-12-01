@@ -24,6 +24,7 @@
   id<ModulesProviderObjCProtocol> modulesProvider = [EXNativeModulesProxy getExpoModulesProvider];
   [EXExpoAppDelegate registerSubscriber:[[EXLegacyAppDelegateWrapper alloc] init]];
   [EXExpoAppDelegate registerSubscribersFromModulesProvider:modulesProvider];
+  [EXExpoAppDelegate registerReactDelegateHandlersFromModulesProvider:modulesProvider];
 }
 
 @end
