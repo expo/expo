@@ -13,6 +13,7 @@ Package-specific changes not released in any SDK will be added here just before 
 - Updated `@react-native-community/slider` from `4.1.4` to `4.1.12`. ([#15356](https://github.com/expo/expo/pull/15356) by [@EvanBacon](https://github.com/EvanBacon))
 - Updated `@react-native-community/datetimepicker` from `3.5.2` to `4.0.0`. ([#15357](https://github.com/expo/expo/pull/15357) by [@EvanBacon](https://github.com/EvanBacon))
 - Updated `@react-native-community/netinfo` from `6.0.2` to `7.1.3`. ([#15352](https://github.com/expo/expo/pull/15352) by [@kudo](https://github.com/kudo))
+- Updated `@react-native-picker/picker` from `2.1.0` to `2.2.1`. ([#15358](https://github.com/expo/expo/pull/15358) by [@bycedric](https://github.com/bycedric))
 
 ### 🛠 Breaking changes
 
