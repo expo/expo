@@ -6,11 +6,23 @@ script_dir="$(dirname "$0")"
 
 shopt -s dotglob
 
+# this function returns relative file paths inside a given directory.
+# usage: get_relative_files /path/to/dir
+get_relative_files() {
+  pushd $1 > /dev/null
+  local files=$(find . -type f | cut -c 3-)
+  popd > /dev/null
+  echo $files
+}
+
+
 "$script_dir/expo-module-readme"
 
-for template_file in "$script_dir"/../templates/*; do
-  output_file="$(basename "$template_file")"
+template_files=$(get_relative_files "$script_dir/../templates")
+for template_relative_file in $template_files; do
+  output_file=$template_relative_file
+  source_template_file="$script_dir/../templates/$template_relative_file"
   if [ ! -f "$output_file" ] || grep --quiet "@generated" "$output_file"; then
-    rsync --checksum "$template_file" "$output_file"
+    rsync --checksum "$source_template_file" "$output_file"
   fi
 done
