@@ -96,6 +96,6 @@ To automatically set the `APP_VARIANT` environment variable when running builds 
 
 Now when you run `eas build --profile development`, the environment variable `APP_VARIANT` will be set to `"development"` when evaluating **app.config.js** both locally and on the EAS Build worker. When you start your development server, you will need to run `APP_VARIANT=development expo start` (or the platform equivalent if you use Windows); a shortcut for this could be to add a script to your **package.json** such as `"dev": "APP_VARIANT=development expo start"`.
 
-When you run `eas build --profile production` the `APP_VARIANT` variable environment will not be set, and the app will run as the production variant.
+When you run `eas build --profile production` the `APP_VARIANT` variable environment will not be set, and the build will run as the production variant.
 
 > **Note**: if you use `expo-updates` to publish JavaScript updates to your app, you should be cautious to set the correct environment variables for the app variant that you are publishing for when you run the `expo publish` command. Refer to the EAS Build ["Environment variables and secrets" guide](/build/updates.md) for more information.
