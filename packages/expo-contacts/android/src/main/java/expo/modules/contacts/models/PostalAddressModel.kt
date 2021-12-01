@@ -1,0 +1,70 @@
+package expo.modules.contacts.models
+
+import android.database.Cursor
+import android.provider.ContactsContract
+import android.content.ContentProviderOperation
+
+import expo.modules.contacts.EXColumns
+
+class PostalAddressModel : BaseModel() {
+  override val contentType = ContactsContract.CommonDataKinds.StructuredPostal.CONTENT_ITEM_TYPE
+
+  override val dataAlias = "formattedAddress"
+
+  override fun mapStringToType(label: String?) = when (label) {
+    "home" -> ContactsContract.CommonDataKinds.StructuredPostal.TYPE_HOME
+    "work" -> ContactsContract.CommonDataKinds.StructuredPostal.TYPE_WORK
+    else -> ContactsContract.CommonDataKinds.StructuredPostal.TYPE_OTHER
+  }
+
+  override fun fromCursor(cursor: Cursor) {
+    super.fromCursor(cursor)
+    putString(cursor, "formattedAddress", ContactsContract.CommonDataKinds.StructuredPostal.FORMATTED_ADDRESS)
+    putString(cursor, "street", ContactsContract.CommonDataKinds.StructuredPostal.STREET)
+    putString(cursor, "poBox", ContactsContract.CommonDataKinds.StructuredPostal.POBOX)
+    putString(cursor, "neighborhood", ContactsContract.CommonDataKinds.StructuredPostal.NEIGHBORHOOD)
+    putString(cursor, "city", ContactsContract.CommonDataKinds.StructuredPostal.CITY)
+    putString(cursor, "region", ContactsContract.CommonDataKinds.StructuredPostal.REGION)
+    putString(cursor, "state", ContactsContract.CommonDataKinds.StructuredPostal.REGION)
+    putString(cursor, "postalCode", ContactsContract.CommonDataKinds.StructuredPostal.POSTCODE)
+    putString(cursor, "country", ContactsContract.CommonDataKinds.StructuredPostal.COUNTRY)
+  }
+
+  override fun fromMap(readableMap: Map<String, Any?>) {
+    super.fromMap(readableMap)
+    mapValue(readableMap, "region", "state")
+  }
+
+  override fun getInsertOperation(rawId: String?): ContentProviderOperation {
+    val op = ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
+    if (rawId == null) {
+      op.withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, 0)
+    } else {
+      op.withValue(ContactsContract.Data.RAW_CONTACT_ID, rawId)
+    }
+    return op.withValue(EXColumns.MIMETYPE, contentType)
+      .withValue(ContactsContract.CommonDataKinds.StructuredPostal.TYPE, type)
+      .withValue(ContactsContract.CommonDataKinds.StructuredPostal.STREET, getString("street"))
+      .withValue(ContactsContract.CommonDataKinds.StructuredPostal.CITY, getString("city"))
+      .withValue(ContactsContract.CommonDataKinds.StructuredPostal.REGION, getString("region"))
+      .withValue(ContactsContract.CommonDataKinds.StructuredPostal.POSTCODE, getString("postalCode"))
+      .withValue(ContactsContract.CommonDataKinds.StructuredPostal.COUNTRY, getString("country"))
+      .build()
+  }
+
+  override val contentValues = super.contentValues.apply {
+    put(ContactsContract.CommonDataKinds.StructuredPostal.STREET, getString("street"))
+    put(ContactsContract.CommonDataKinds.StructuredPostal.CITY, getString("city"))
+    put(ContactsContract.CommonDataKinds.StructuredPostal.REGION, getString("region"))
+    put(ContactsContract.CommonDataKinds.StructuredPostal.COUNTRY, getString("country"))
+    put(ContactsContract.CommonDataKinds.StructuredPostal.POSTCODE, getString("postalCode"))
+  }
+
+  override fun getLabelFromCursor(cursor: Cursor) = super.getLabelFromCursor(cursor)
+    ?: when (cursor.getInt(cursor.getColumnIndex(EXColumns.TYPE))) {
+      ContactsContract.CommonDataKinds.StructuredPostal.TYPE_HOME -> "home"
+      ContactsContract.CommonDataKinds.StructuredPostal.TYPE_WORK -> "work"
+      ContactsContract.CommonDataKinds.StructuredPostal.TYPE_OTHER -> "other"
+      else -> "unknown"
+    }
+}
