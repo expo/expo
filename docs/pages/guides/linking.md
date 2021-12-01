@@ -218,7 +218,7 @@ When your app is opened using the deep link, you can parse the link with `Linkin
 When [handling the URL that is used to open/foreground your app](#handling-urls-in-your-app), it would look something like this:
 
 ```javascript
-_handleUrl = url => {
+_handleUrl = ({url}) => {
   this.setState({ url });
   let { path, queryParams } = Linking.parse(url);
   alert(`Linked to app with path: ${path} and data: ${JSON.stringify(queryParams)}`);
