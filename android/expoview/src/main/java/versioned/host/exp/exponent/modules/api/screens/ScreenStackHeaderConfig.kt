@@ -19,6 +19,9 @@ import com.facebook.react.bridge.JSApplicationIllegalArgumentException
 import com.facebook.react.bridge.ReactContext
 import com.facebook.react.views.text.ReactTypefaceUtils
 
+import host.exp.expoview.BuildConfig
+import host.exp.expoview.R
+
 class ScreenStackHeaderConfig(context: Context) : ViewGroup(context) {
     private val mConfigSubviews = ArrayList<ScreenStackHeaderSubview>(3)
     val toolbar: Toolbar
