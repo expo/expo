@@ -4,18 +4,7 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import SegmentedControl from '@react-native-segmented-control/segmented-control';
 import moment from 'moment';
 import React, { useState } from 'react';
-import {
-  SafeAreaView,
-  ScrollView,
-  StyleSheet,
-  View,
-  Text,
-  StatusBar,
-  Button,
-  Platform,
-  TextInput,
-  useColorScheme,
-} from 'react-native';
+import { Button, Platform, ScrollView, StyleSheet, Text, TextInput, useColorScheme, View } from 'react-native';
 import { Colors } from 'react-native/Libraries/NewAppScreen';
 
 const ThemedText = props => {

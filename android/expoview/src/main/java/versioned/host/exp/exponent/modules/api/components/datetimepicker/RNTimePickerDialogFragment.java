@@ -71,28 +71,24 @@ public class RNTimePickerDialogFragment extends DialogFragment {
       is24hour = args.getBoolean(RNConstants.ARG_IS24HOUR, DateFormat.is24HourFormat(activityContext));
     }
 
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      switch (display) {
-        case CLOCK:
-        case SPINNER:
-          String resourceName = display == RNTimePickerDisplay.CLOCK
-                  ? "ReactAndroidClockTimePickerDialog"
-                  : "ReactAndroidSpinnerTimePickerDialog";
-          return new RNDismissableTimePickerDialog(
-                  activityContext,
-                  activityContext.getResources().getIdentifier(
-                          resourceName,
-                          "style",
-                          activityContext.getPackageName()
-                  ),
-                  onTimeSetListener,
-                  hour,
-                  minute,
-                  minuteInterval,
-                  is24hour,
-                  display
-          );
-      }
+    if (display == RNTimePickerDisplay.CLOCK || display == RNTimePickerDisplay.SPINNER) {
+        String resourceName = display == RNTimePickerDisplay.CLOCK
+                ? "ClockTimePickerDialog"
+                : "SpinnerTimePickerDialog";
+        return new RNDismissableTimePickerDialog(
+                activityContext,
+                activityContext.getResources().getIdentifier(
+                        resourceName,
+                        "style",
+                        activityContext.getPackageName()
+                ),
+                onTimeSetListener,
+                hour,
+                minute,
+                minuteInterval,
+                is24hour,
+                display
+        );
     }
     return new RNDismissableTimePickerDialog(
       activityContext,
