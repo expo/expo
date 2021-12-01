@@ -6,7 +6,7 @@ When creating [development, preview, and production builds](../eas-json.md#commo
 
 In order to be able to have multiple instances of an app installed on your device, each instance must have a unique Application ID (Android) or Bundle Identifier (iOS).
 
-**If you have a bare project**, you can accomplish this using flavors (Android) and targets (iOS). You can then configure which flavor is used with the `gradleCommand` field on your build profile, and you can configure the target that is used with the `scheme` field for iOS. 
+**If you have a bare project**, you can accomplish this using flavors (Android) and targets (iOS). To configure which flavor is used, use the `gradleCommand` field on your build profile; to configure which target is used, use the `scheme` field for iOS.
 
 **If you have a managed project**, this can be accomplished by using **app.config.js** and environment variables in **eas.json**.
 
@@ -94,6 +94,6 @@ To automatically set the `APP_VARIANT` environment variable, we can use `env` in
 }
 ```
 
-Now when you run `eas build --profile production` the `APP_VARIANT` environment variable will be set to `"production"` when evaluating **app.config.js** locally and on the EAS Build worker. [Learn more about environment variables on EAS Build](./variables.md).
+Now when you run `eas build --profile production`, the environment variable `APP_VARIANT` will be set to `"production"` when evaluating **app.config.js** both locally and on the EAS Build worker.
 
 When you run `expo start` the `APP_VARIANT` variable environment will not be set, and the app will run as the development variant.
