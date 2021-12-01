@@ -2,7 +2,7 @@ PODS:
   - ABI41_0_0EXAdsAdMob (10.0.0):
     - ABI41_0_0UMCore
     - ABI41_0_0UMPermissionsInterface
-    - Google-Mobile-Ads-SDK (= 7.69.0)
+    - Google-Mobile-Ads-SDK (= 8.6.0)
   - ABI41_0_0EXAdsFacebook (10.0.0):
     - ABI41_0_0UMCore
     - ABI41_0_0UMPermissionsInterface
@@ -617,7 +617,7 @@ PODS:
   - ABI42_0_0EXAdsAdMob (10.1.0):
     - ABI42_0_0ExpoModulesCore
     - ABI42_0_0UMCore
-    - Google-Mobile-Ads-SDK (= 7.69.0)
+    - Google-Mobile-Ads-SDK (= 8.6.0)
   - ABI42_0_0EXAdsFacebook (10.1.0):
     - ABI42_0_0ExpoModulesCore
     - ABI42_0_0UMCore
@@ -1210,7 +1210,7 @@ PODS:
   - ABI42_0_0Yoga (1.14.0)
   - ABI43_0_0EXAdsAdMob (11.0.0):
     - ABI43_0_0ExpoModulesCore
-    - Google-Mobile-Ads-SDK (= 7.69.0)
+    - Google-Mobile-Ads-SDK (= 8.6.0)
   - ABI43_0_0EXAdsFacebook (11.0.0):
     - ABI43_0_0ExpoModulesCore
     - FBAudienceNetwork (= 6.5.0)
@@ -1815,7 +1815,7 @@ PODS:
   - DoubleConversion (1.1.6)
   - EXAdsAdMob (11.0.1):
     - ExpoModulesCore
-    - Google-Mobile-Ads-SDK (= 7.69.0)
+    - Google-Mobile-Ads-SDK (= 8.6.0)
   - EXAdsFacebook (11.0.1):
     - ExpoModulesCore
     - FBAudienceNetwork (= 6.5.0)
@@ -2069,9 +2069,9 @@ PODS:
     - GoogleMaps
   - Google-Maps-iOS-Utils/QuadTree (2.1.0):
     - GoogleMaps
-  - Google-Mobile-Ads-SDK (7.69.0):
-    - GoogleAppMeasurement (~> 7.0)
-    - GoogleUserMessagingPlatform (~> 1.1)
+  - Google-Mobile-Ads-SDK (8.6.0):
+    - GoogleAppMeasurement (< 9.0, >= 7.0)
+    - GoogleUserMessagingPlatform (>= 1.1)
   - GoogleAppMeasurement (7.7.0):
     - GoogleUtilities/AppDelegateSwizzler (~> 7.0)
     - GoogleUtilities/MethodSwizzler (~> 7.0)
@@ -2108,7 +2108,7 @@ PODS:
     - GoogleToolboxForMac/Defines (= 2.3.1)
     - "GoogleToolboxForMac/NSString+URLArguments (= 2.3.1)"
   - "GoogleToolboxForMac/NSString+URLArguments (2.3.1)"
-  - GoogleUserMessagingPlatform (1.4.0)
+  - GoogleUserMessagingPlatform (2.0.0)
   - GoogleUtilities/AppDelegateSwizzler (7.5.2):
     - GoogleUtilities/Environment
     - GoogleUtilities/Logger
@@ -3830,7 +3830,7 @@ EXTERNAL SOURCES:
     :path: "../react-native-lab/react-native/ReactCommon/yoga"
 
 SPEC CHECKSUMS:
-  ABI41_0_0EXAdsAdMob: ec981aa80fb068429204ba72b8841c34e8883649
+  ABI41_0_0EXAdsAdMob: 715282ce11421fd9f6a401156fc5a3c3743a5da4
   ABI41_0_0EXAdsFacebook: dd45611db9fd3c1f8f73554daf39685c97c647b6
   ABI41_0_0EXAmplitude: ef0e7cc62eb3cdab3bb438cb04ce1b9ea9732cd6
   ABI41_0_0EXAppAuth: de2f21f6133535a77039a21235dc0525ddafb16d
@@ -3936,7 +3936,7 @@ SPEC CHECKSUMS:
   ABI41_0_0UMSensorsInterface: 7610260bb7c3a0a819f6406081ec919966a0132a
   ABI41_0_0UMTaskManagerInterface: 3b3d4282fe6632d01c1db78afb33dfb9149d44be
   ABI41_0_0Yoga: e71e3aa66f3cb28566993d4b92739a1ddd6030be
-  ABI42_0_0EXAdsAdMob: 81149e721d1bd18fda1825d2903b6ab0f8863811
+  ABI42_0_0EXAdsAdMob: dffb044066f9c5b28f13e3c04872d203763b9783
   ABI42_0_0EXAdsFacebook: 2fcd6e6ef9eee0c5794621bda8f50f9d304e7b98
   ABI42_0_0EXAmplitude: 7be098e33358d317bfdffa0b5f52653c08d9ad93
   ABI42_0_0EXAppAuth: 9512e0741390459d1be21f2eb20070a0f755a819
@@ -4037,7 +4037,7 @@ SPEC CHECKSUMS:
   ABI42_0_0UMReactNativeAdapter: 17dc58444122eda6fd493dff06546882fe00bcf7
   ABI42_0_0UMTaskManagerInterface: 5a4b9c1d2e1985bd767d2c920289b596859bd752
   ABI42_0_0Yoga: de9e9b855d68b9804af39c75a3fde618b57c8e3f
-  ABI43_0_0EXAdsAdMob: 182a4dd984404d57de4475d1f7324d5312bf37c6
+  ABI43_0_0EXAdsAdMob: 4bb9b0c0b59d7079f6e29d24abb3694c5abf44f9
   ABI43_0_0EXAdsFacebook: f5ddbc318d83603fb1d4e1cf9a295be1ffcb1eac
   ABI43_0_0EXAmplitude: 9556161276fc84317781fe0e93bbb7b7e227dc75
   ABI43_0_0EXAppAuth: 57b45cedd0120aa37dd1093d3e58e6da18ef7d41
@@ -4150,7 +4150,7 @@ SPEC CHECKSUMS:
   Branch: 9a37f707974a128c37829033c49018b79c7e7a2d
   CocoaLumberjack: 2f44e60eb91c176d471fdba43b9e3eae6a721947
   DoubleConversion: cf9b38bf0b2d048436d9a82ad2abe1404f11e7de
-  EXAdsAdMob: c9bf6e8871bd7f448a8429b45171e853b7eec4d1
+  EXAdsAdMob: 02189b2eade3d6c1371ccdc9c4a826a0d06940f5
   EXAdsFacebook: 8e038da5defd2b34107a805f97bbc95dca28b3b7
   EXAmplitude: 7636f61eb24fc620a7f49d93f627b6d5cef9d644
   EXAppAuth: 9868d70b255ff85950f686e0677d28fc7213d895
@@ -4233,14 +4233,14 @@ SPEC CHECKSUMS:
   FirebaseInstallations: a58d4f72ec5861840b84df489f2668d970df558a
   glog: 73c2498ac6884b13ede40eda8228cb1eee9d9d62
   Google-Maps-iOS-Utils: c32891ff472eaaa1fca032beedafa1a013af7875
-  Google-Mobile-Ads-SDK: 2f288748a42920d1c744946a460896a95b0e9110
+  Google-Mobile-Ads-SDK: 0d6e2e065c4efe9836bca3fbd6ff9ef0bca073c2
   GoogleAppMeasurement: 0c3b134b2c0a90c4c24833873894bfe0e42a0384
   GoogleDataTransport: 8b0e733ea77c9218778e5a9e34ba9508b8328939
   GoogleMaps: 82f8fe307193bb4de6ef6bf9e88f1d624b718f9d
   GoogleMLKit: 6ca2a10de262ee1017b52ac045e8967884ace992
   GoogleSignIn: 7137d297ddc022a7e0aa4619c86d72c909fa7213
   GoogleToolboxForMac: 471e0c05d39506e50e6398f46fa9a12ae0efeff9
-  GoogleUserMessagingPlatform: b168e8c46cd8f92aa3e34b584c4ca78a411ce367
+  GoogleUserMessagingPlatform: ab890ce5f6620f293a21b6bdd82e416a2c73aeca
   GoogleUtilities: 8de2a97a17e15b6b98e38e8770e2d129a57c0040
   GoogleUtilitiesComponents: a69c0b3b369ba443e988141e75ef49d9010b1c80
   GTMAppAuth: ad5c2b70b9a8689e1a04033c9369c4915bfcbe89
