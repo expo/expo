@@ -16,6 +16,7 @@ Package-specific changes not released in any SDK will be added here just before 
 - Updated `react-native-maps` from `0.28.1` to `0.29.4`. ([#15397](https://github.com/expo/expo/pull/15397) by [@bbarthec](https://github.com/bbarthec))
 - Updated `@stripe/stripe-react-native` from `0.2.2` to `0.2.3`. ([#15396](https://github.com/expo/expo/pull/15396) by [@brentvatne](https://github.com/brentvatne) and [@kudo](https://github.com/kudo))
 - Updated `react-native-gesture-handler` from `1.10.3` to `2.0.0`. ([#15404](https://github.com/expo/expo/pull/15404) by [@kudo](https://github.com/kudo))
+- Updated `react-native-screens` from `3.8.0` to `3.9.0`.
 
 ### 🛠 Breaking changes
 
