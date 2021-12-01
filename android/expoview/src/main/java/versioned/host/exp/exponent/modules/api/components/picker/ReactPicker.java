@@ -30,6 +30,8 @@ import com.facebook.react.uimanager.UIManagerModule;
 
 import javax.annotation.Nullable;
 
+import host.exp.expoview.R;
+
 public class ReactPicker extends AppCompatSpinner {
 
   private int mMode = Spinner.MODE_DIALOG;
