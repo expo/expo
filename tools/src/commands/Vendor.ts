@@ -21,6 +21,7 @@ import {
 const CONFIGURATIONS = {
   '[dev-menu] reanimated': getReanimatedPipe(),
   '[dev-menu] gesture-handler': getGestureHandlerPipe(),
+  '[dev-menu] safe-area-context': getSafeAreaPipe(),
 };
 
 function getReanimatedPipe() {
@@ -169,6 +170,91 @@ function getGestureHandlerPipe() {
         filePattern: 'ios/**/*.@(m|h)',
         to: destination,
       })
+  );
+}
+
+function getSafeAreaPipe() {
+  const destination = 'packages/expo-dev-menu/vendored/react-native-safe-area-context';
+
+  // prettier-ignore
+  return new Pipe().addSteps(
+    'all',
+      new Clone({
+        url: 'git@github.com:th3rdwave/react-native-safe-area-context.git',
+        tag: 'v3.3.2',
+      }),
+      new RemoveDirectory({
+        name: 'clean vendored folder',
+        target: destination,
+      }),
+      new TransformFilesContent({
+        filePattern: 'src/**.*',
+        find: 'RNCSafeAreaProvider',
+        replace: 'DevMenuRNCSafeAreaProvider',
+      }),
+      new TransformFilesContent({
+        filePattern: 'src/**.*',
+        find: 'RNCSafeAreaView',
+        replace: 'DevMenuRNCSafeAreaView',
+      }),
+      new CopyFiles({
+        filePattern: ['src/**/*.*', '*.d.ts'],
+        to: destination,
+      }),
+    'android',
+      prefixPackage({
+        packageName: 'com.th3rdwave.safeareacontext',
+        prefix: 'devmenu',
+      }),
+      new TransformFilesContent({
+        filePattern: '**/*.@(java|kt)',
+        find: 'RNCSafeAreaProvider',
+        replace: 'DevMenuRNCSafeAreaProvider',
+      }),
+      new TransformFilesContent({
+        filePattern: '**/*.@(java|kt)',
+        find: 'RNCSafeAreaView',
+        replace: 'DevMenuRNCSafeAreaView',
+      }),
+      new CopyFiles({
+        subDirectory: 'android/src/main/java/com/th3rdwave',
+        filePattern: '**/*.@(java|kt|xml)',
+        to: path.join(destination, 'android/devmenu/com/th3rdwave'),
+      }),
+      new CopyFiles({
+        subDirectory: 'android/src/main/java/com/facebook',
+        filePattern: '**/*.@(java|kt|xml)',
+        to: path.join(destination, 'android/com/facebook'),
+      }),
+
+    'ios',
+      new TransformFilesName({
+        filePattern: 'ios/**/*RNC*.@(m|h)',
+        find: 'RNC',
+        replace: 'DevMenuRNC',
+      }),
+      new TransformFilesName({
+        filePattern: 'ios/**/*SafeAreaCompat.@(m|h)',
+        find: 'SafeAreaCompat',
+        replace: 'DevMenuSafeAreaCompat',
+      }),
+      renameIOSSymbols({
+        find: 'RNC',
+        replace: 'DevMenuRNC',
+      }),
+      renameIOSSymbols({
+        find: 'SafeAreaCompat',
+        replace: 'DevMenuSafeAreaCompat',
+      }),
+      new TransformFilesContent({
+        filePattern: 'ios/**/*.@(m|h)',
+        find: 'UIEdgeInsetsEqualToEdgeInsetsWithThreshold',
+        replace: 'DevMenuUIEdgeInsetsEqualToEdgeInsetsWithThreshold',
+      }),
+      new CopyFiles({
+        filePattern: 'ios/**/*.@(m|h)',
+        to: destination,
+      }),
   );
 }
 

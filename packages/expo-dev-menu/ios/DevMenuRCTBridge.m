@@ -27,7 +27,7 @@
 
 - (NSArray<Class> *)filterModuleList:(NSArray<Class> *)modules
 {
-  NSArray<NSString *> *allowedModules = @[@"RCT"];
+  NSArray<NSString *> *allowedModules = @[@"RCT", @"DevMenu"];
   NSArray<Class> *filteredModuleList = [modules filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(id  _Nullable clazz, NSDictionary<NSString *,id> * _Nullable bindings) {
     NSString* clazzName = NSStringFromClass(clazz);
     for (NSString *allowedModule in allowedModules) {
