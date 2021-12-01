@@ -60,17 +60,18 @@ export default {
 Now let's switch out the iOS `bundleIdentifier` and Android `package` (which becomes the Application ID) based on the presence of an environment variable in **app.config.js**:
 
 ```js
-const IS_PROD = process.env.APP_VARIANT === "production";
+const IS_DEV = process.env.APP_VARIANT === "development";
 
 export default {
-  // You can also switch out the app icon to more clearly differentiate the app
-  name: IS_PROD ? "MyApp" : "MyApp (Dev)",
+  // You can also switch out the app icon and other properties to further
+  // differentiate the app on your device.
+  name: IS_DEV ? "MyApp (Dev)" : "MyApp",
   slug: "my-app",
   ios: {
-    bundleIdentifier: IS_PROD ? "com.myapp" : "com.myapp.dev",
+    bundleIdentifier: IS_DEV ? "com.myapp.dev" : "com.myapp",
   },
   android: {
-    package: IS_PROD ? "com.myapp" : "com.myapp.dev",
+    package: IS_DEV ? "com.myapp.dev" : "com.myapp",
   },
 };
 ```
@@ -88,15 +89,13 @@ To automatically set the `APP_VARIANT` environment variable, we can use `env` in
         "APP_VARIANT": "development"
       }
     },
-    "production": {
-      "env": {
-        "APP_VARIANT": "production"
-      }
-    }
+    "production": {}
   }
 }
 ```
 
-Now when you run `eas build --profile production`, the environment variable `APP_VARIANT` will be set to `"production"` when evaluating **app.config.js** both locally and on the EAS Build worker.
+Now when you run `eas build --profile development`, the environment variable `APP_VARIANT` will be set to `"production"` when evaluating **app.config.js** both locally and on the EAS Build worker. When you start your development server, you will need to run `APP_VARIANT=development expo start` (or the platform equivalent if you use Windows); a shortcut for this could be to add a script to your **package.json** such as `"dev": "APP_VARIANT=development expo start"`.
 
-When you run `expo start` the `APP_VARIANT` variable environment will not be set, and the app will run as the development variant.
+When you run `eas build --profile production` the `APP_VARIANT` variable environment will not be set, and the app will run as the production variant.
+
+> **Note**: if you use `expo-updates` to publish JavaScript updates to your app, you should be cautious to set the correct environment variables for the app variant that you are publishing for when you run the `expo publish` command. Refer to the EAS Build ["Environment variables and secrets" guide](/build/updates.md) for more information.
