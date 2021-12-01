@@ -62,6 +62,11 @@
                     _cellularGeneration = RNCCellularGeneration3g;
                 } else if ([netinfo.currentRadioAccessTechnology isEqualToString:CTRadioAccessTechnologyLTE]) {
                     _cellularGeneration = RNCCellularGeneration4g;
+                } else if (@available(iOS 14.1, *)) {
+                    if ([netinfo.currentRadioAccessTechnology isEqualToString:CTRadioAccessTechnologyNRNSA] ||
+                        [netinfo.currentRadioAccessTechnology isEqualToString:CTRadioAccessTechnologyNR]) {
+                        _cellularGeneration = RNCCellularGeneration5g;
+                    }
                 }
             }
         }

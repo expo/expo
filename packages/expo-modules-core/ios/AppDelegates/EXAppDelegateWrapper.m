@@ -1,13 +1,15 @@
 // Copyright 2018-present 650 Industries. All rights reserved.
 
 #import <ExpoModulesCore/EXAppDelegateWrapper.h>
+#import <ExpoModulesCore/EXReactDelegateWrapper+Private.h>
+#import <ExpoModulesCore/Swift.h>
 
-#if __has_include(<ExpoModulesCore/ExpoModulesCore-Swift.h>)
-// When `use_frameworks!` is used, the generated Swift header is inside ExpoModulesCore module.
-#import <ExpoModulesCore/ExpoModulesCore-Swift.h>
-#else
-#import "ExpoModulesCore-Swift.h"
-#endif
+
+@interface EXAppDelegateWrapper()
+
+@property (nonatomic, strong) EXReactDelegateWrapper *reactDelegate;
+
+@end
 
 @implementation EXAppDelegateWrapper {
   EXExpoAppDelegate *_expoAppDelegate;
@@ -20,6 +22,7 @@
 {
   if (self = [super init]) {
     _expoAppDelegate = [[EXExpoAppDelegate alloc] init];
+    _reactDelegate = [[EXReactDelegateWrapper alloc] initWithExpoReactDelegate:_expoAppDelegate.reactDelegate];
   }
   return self;
 }

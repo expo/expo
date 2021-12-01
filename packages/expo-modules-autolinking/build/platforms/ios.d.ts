@@ -7,3 +7,7 @@ export declare function resolveModuleAsync(packageName: string, revision: Packag
  * Generates Swift file that contains all autolinked Swift packages.
  */
 export declare function generatePackageListAsync(modules: ModuleDescriptor[], targetPath: string): Promise<void>;
+/**
+ * Formats an array of modules to Swift's array containing ReactDelegateHandlers
+ */
+export declare function formatArrayOfReactDelegateHandler(modules: ModuleDescriptor[]): string;
