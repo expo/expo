@@ -564,6 +564,8 @@
     _shouldNotify = NO;
   }
 
+  [self hideHeaderIfNecessary];
+
   // as per documentation of these methods
   _goingForward = [self isBeingPresented] || [self isMovingToParentViewController];
 
@@ -573,6 +575,35 @@
     [self notifyTransitionProgress:0.0 closing:_closing goingForward:_goingForward];
     [self setupProgressNotification];
   }
+}
+
+- (void)hideHeaderIfNecessary
+{
+#if !TARGET_OS_TV
+  // On iOS >=13, there is a bug when user transitions from screen with active search bar to screen without header
+  // In that case default iOS header will be shown. To fix this we hide header when the screens that appears has header
+  // hidden and search bar was active on previous screen. We need to do it asynchronously, because default header is
+  // added after viewWillAppear.
+  if (@available(iOS 13.0, *)) {
+    NSUInteger currentIndex = [self.navigationController.viewControllers indexOfObject:self];
+
+    if (currentIndex > 0 && [self.view.reactSubviews[0] isKindOfClass:[RNSScreenStackHeaderConfig class]]) {
+      UINavigationItem *prevNavigationItem =
+          [self.navigationController.viewControllers objectAtIndex:currentIndex - 1].navigationItem;
+      RNSScreenStackHeaderConfig *config = ((RNSScreenStackHeaderConfig *)self.view.reactSubviews[0]);
+
+      BOOL wasSearchBarActive = prevNavigationItem.searchController.active;
+      BOOL shouldHideHeader = config.hide;
+
+      if (wasSearchBarActive && shouldHideHeader) {
+        dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, 0);
+        dispatch_after(popTime, dispatch_get_main_queue(), ^(void) {
+          [self.navigationController setNavigationBarHidden:YES animated:NO];
+        });
+      }
+    }
+  }
+#endif
 }
 
 - (void)viewWillDisappear:(BOOL)animated
