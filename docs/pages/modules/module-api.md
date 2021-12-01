@@ -10,7 +10,9 @@ Another big pain point that we have encountered is the validation of arguments p
 
 ## Get Started
 
-1️⃣ Firstly make sure that you [set up your library as an Expo module](overview). When it's set, create Swift and Kotlin files from the below templates.
+### 1. Set up the library as an Expo module
+
+Firstly make sure that you [set up your library as an Expo module](overview). When it's set, create Swift and Kotlin files from the below templates.
 
 <CodeBlocksTable>
 
@@ -44,7 +46,9 @@ class MyModule : Module() {
 
 </CodeBlocksTable>
 
-2️⃣ Make sure that your module class is included in `modulesClassNames` in the [module config](module-config).
+### 2. Set up module config
+
+Make sure that your module class is included in `modulesClassNames` in the [module config](module-config).
 
 <CodeBlocksTable tabs={["expo-module.config.json"]}>
 
@@ -61,7 +65,10 @@ class MyModule : Module() {
 
 </CodeBlocksTable>
 
-3️⃣ On iOS you also need to run `pod install` to properly link the new class. On Android it will be linked automatically before building. Now you are ready to go and add some definition components in there!
+
+### 3. Ensure the module is linked
+
+On iOS you also need to run `pod install` to properly link the new class. On Android it will be linked automatically before building. Now you are ready to go and add some definition components in there!
 
 ## Definition Components
 
