@@ -2464,7 +2464,7 @@ PODS:
     - React-RCTVibration
     - ReactCommon/turbomodule/core
     - Yoga
-  - RNScreens (3.8.0):
+  - RNScreens (3.9.0):
     - React-Core
     - React-RCTImage
   - Stripe (21.8.1):
@@ -4287,7 +4287,7 @@ SPEC CHECKSUMS:
   React-runtimeexecutor: 493d9abb8b23c3f84e19ae221eeba92cadcb70dc
   ReactCommon: 8fea6422328e2fc093e25c9fac67adbcf0f04fb4
   RNReanimated: 9c13c86454bfd54dab7505c1a054470bfecd2563
-  RNScreens: 6e1ea5787989f92b0671049b808aef64fa1ef98c
+  RNScreens: 4d79118be80f79fa1f4aa131909a1d6e86280af3
   Stripe: 57c6997c64042a3f5aedae9b76e331942f8b75d2
   stripe-react-native: 48a10900a95709f7527fc712231fe1adc81735ca
   StripeCore: a6e50d58119a0c7601773b56f274db2d394dcdac

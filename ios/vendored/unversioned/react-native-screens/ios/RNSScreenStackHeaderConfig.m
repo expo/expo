@@ -118,6 +118,27 @@
   _screenView = nil;
 }
 
+// this method is never invoked by the system since this view
+// is not added to native view hierarchy so we can apply our logic
+- (UIView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event
+{
+  for (RNSScreenStackHeaderSubview *subview in _reactSubviews) {
+    if (subview.type == RNSScreenStackHeaderSubviewTypeLeft || subview.type == RNSScreenStackHeaderSubviewTypeRight) {
+      // we wrap the headerLeft/Right component in a UIBarButtonItem
+      // so we need to use the only subview of it to retrieve the correct view
+      UIView *headerComponent = subview.subviews.firstObject;
+      // we convert the point to RNSScreenStackView since it always contains the header inside it
+      CGPoint convertedPoint = [_screenView.reactSuperview convertPoint:point toView:headerComponent];
+
+      UIView *hitTestResult = [headerComponent hitTest:convertedPoint withEvent:event];
+      if (hitTestResult != nil) {
+        return hitTestResult;
+      }
+    }
+  }
+  return nil;
+}
+
 - (void)updateViewControllerIfNeeded
 {
   UIViewController *vc = _screenView.controller;
@@ -138,10 +159,23 @@
   }
 }
 
+- (void)layoutNavigationControllerView
+{
+  UIViewController *vc = _screenView.controller;
+  UINavigationController *navctr = vc.navigationController;
+  [navctr.view setNeedsLayout];
+}
+
 - (void)didSetProps:(NSArray<NSString *> *)changedProps
 {
   [super didSetProps:changedProps];
   [self updateViewControllerIfNeeded];
+  // We need to layout navigation controller view after translucent prop changes, because otherwise
+  // frame of RNSScreen will not be changed and screen content will remain the same size.
+  // For more details look at https://github.com/software-mansion/react-native-screens/issues/1158
+  if ([changedProps containsObject:@"translucent"]) {
+    [self layoutNavigationControllerView];
+  }
 }
 
 - (void)didUpdateReactSubviews
@@ -556,6 +590,13 @@
         break;
       }
       case RNSScreenStackHeaderSubviewTypeSearchBar: {
+        if (subview.subviews == nil || [subview.subviews count] == 0) {
+          RCTLogWarn(
+              @"Failed to attach search bar to the header. We recommend using `useLayoutEffect` when managing "
+               "searchBar properties dynamically. \n\nSee: github.com/software-mansion/react-native-screens/issues/1188");
+          break;
+        }
+
         if ([subview.subviews[0] isKindOfClass:[RNSSearchBar class]]) {
 #if !TARGET_OS_TV
           if (@available(iOS 11.0, *)) {

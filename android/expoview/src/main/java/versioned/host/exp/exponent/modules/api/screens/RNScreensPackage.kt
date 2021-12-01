@@ -6,15 +6,15 @@ import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.uimanager.ViewManager
 
 class RNScreensPackage : ReactPackage {
-  override fun createNativeModules(reactContext: ReactApplicationContext) =
-    emptyList<NativeModule>()
+    override fun createNativeModules(reactContext: ReactApplicationContext) =
+        emptyList<NativeModule>()
 
-  override fun createViewManagers(reactContext: ReactApplicationContext) =
-    listOf<ViewManager<*, *>>(
-      ScreenContainerViewManager(),
-      ScreenViewManager(),
-      ScreenStackViewManager(),
-      ScreenStackHeaderConfigViewManager(),
-      ScreenStackHeaderSubviewManager()
-    )
+    override fun createViewManagers(reactContext: ReactApplicationContext) =
+        listOf<ViewManager<*, *>>(
+            ScreenContainerViewManager(),
+            ScreenViewManager(),
+            ScreenStackViewManager(),
+            ScreenStackHeaderConfigViewManager(),
+            ScreenStackHeaderSubviewManager()
+        )
 }
