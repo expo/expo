@@ -28,11 +28,11 @@ function initializeContext(gl: ExpoWebGLRenderingContext, asset: Asset): RenderC
   varying vec2 uv;
   void main () {
     vec2 translatedPosition = vec2(
-      (a_position.x-0.5) * 0.5 + (u_translate.x * 2.0),
-      (a_position.y-0.5) * 0.3 - (u_translate.y* (1.0 - a_position.y) * 2.0)
+      (a_position.x - 0.5) * 0.5 + (u_translate.x * 2.0),
+      (a_position.y - 0.5) * 0.3 - (u_translate.y * (1.0 - a_position.y) * 2.0)
     );
 
-    uv = vec2(1.0 - a_position.y,  1.0-a_position.x);
+    uv = vec2(1.0 - a_position.y,  1.0 - a_position.x);
     gl_Position = vec4(translatedPosition, 0, 1);
   }
 `;
