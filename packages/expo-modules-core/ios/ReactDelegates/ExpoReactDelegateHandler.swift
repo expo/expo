@@ -10,8 +10,8 @@ open class ExpoReactDelegateHandler: NSObject {
   public override required init() {}
 
   /**
-   If this module wants to handle `RCTBridge` creation, returns the instance.
-   Otherwise return nil and not to handle.
+   If this module wants to handle `RCTBridge` creation, it can return the instance.
+   Otherwise return nil.
    */
   @objc
   open func createBridge(reactDelegate: ExpoReactDelegate, bridgeDelegate: RCTBridgeDelegate, launchOptions: [AnyHashable : Any]?) -> RCTBridge? {
@@ -19,8 +19,8 @@ open class ExpoReactDelegateHandler: NSObject {
   }
 
   /**
-   If this module wants to handle `RCTRootView` creation, returns the instance.
-   Otherwise return nil and not to handle.
+   If this module wants to handle `RCTRootView` creation, it can return the instance.
+   Otherwise return nil.
    */
   @objc
   open func createRootView(reactDelegate: ExpoReactDelegate, bridge: RCTBridge, moduleName: String, initialProperties: [AnyHashable : Any]?) -> RCTRootView? {
@@ -28,8 +28,8 @@ open class ExpoReactDelegateHandler: NSObject {
   }
 
   /**
-   If this module wants to handle `UIViewController` creation for `RCTRootView`, returns the instance.
-   Otherwise return nil and not to handle.
+   If this module wants to handle `UIViewController` creation for `RCTRootView`, it can return the instance.
+   Otherwise return nil.
    */
   @objc
   open func createRootViewController(reactDelegate: ExpoReactDelegate) -> UIViewController? {
