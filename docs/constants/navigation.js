@@ -45,6 +45,8 @@ const sections = [
       'Using EAS Update with EAS CLI',
       'How to optimize assets for EAS Update',
       'Using expo-updates with a custom updates server',
+      'Migrating from Classic Updates to EAS Update',
+      'Known issues',
       'FAQ',
     ],
   },

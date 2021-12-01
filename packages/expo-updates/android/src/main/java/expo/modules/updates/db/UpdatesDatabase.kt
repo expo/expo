@@ -19,7 +19,7 @@ import java.util.*
 @Database(
   entities = [UpdateEntity::class, UpdateAssetEntity::class, AssetEntity::class, JSONDataEntity::class],
   exportSchema = false,
-  version = 7
+  version = 8
 )
 @TypeConverters(Converters::class)
 abstract class UpdatesDatabase : RoomDatabase() {
@@ -40,6 +40,7 @@ abstract class UpdatesDatabase : RoomDatabase() {
           .addMigrations(MIGRATION_4_5)
           .addMigrations(MIGRATION_5_6)
           .addMigrations(MIGRATION_6_7)
+          .addMigrations(MIGRATION_7_8)
           .fallbackToDestructiveMigration()
           .allowMainThreadQueries()
           .build()
@@ -50,9 +51,9 @@ abstract class UpdatesDatabase : RoomDatabase() {
     val MIGRATION_4_5: Migration = object : Migration(4, 5) {
       override fun migrate(database: SupportSQLiteDatabase) {
         // https://www.sqlite.org/lang_altertable.html#otheralter
-        database.execSQL("PRAGMA foreign_keys=OFF")
-        database.beginTransaction()
         try {
+          database.execSQL("PRAGMA foreign_keys=OFF")
+          database.beginTransaction()
           try {
             database.execSQL("CREATE TABLE `new_assets` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `url` TEXT, `key` TEXT, `headers` TEXT, `type` TEXT NOT NULL, `metadata` TEXT, `download_time` INTEGER, `relative_path` TEXT, `hash` BLOB, `hash_type` INTEGER NOT NULL, `marked_for_deletion` INTEGER NOT NULL)")
             database.execSQL(
@@ -75,9 +76,9 @@ abstract class UpdatesDatabase : RoomDatabase() {
     val MIGRATION_5_6: Migration = object : Migration(5, 6) {
       override fun migrate(database: SupportSQLiteDatabase) {
         // https://www.sqlite.org/lang_altertable.html#otheralter
-        database.execSQL("PRAGMA foreign_keys=OFF")
-        database.beginTransaction()
         try {
+          database.execSQL("PRAGMA foreign_keys=OFF")
+          database.beginTransaction()
           try {
             database.execSQL("CREATE TABLE `new_updates` (`id` BLOB NOT NULL, `scope_key` TEXT NOT NULL, `commit_time` INTEGER NOT NULL, `runtime_version` TEXT NOT NULL, `launch_asset_id` INTEGER, `manifest` TEXT, `status` INTEGER NOT NULL, `keep` INTEGER NOT NULL, `last_accessed` INTEGER NOT NULL, PRIMARY KEY(`id`), FOREIGN KEY(`launch_asset_id`) REFERENCES `assets`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )")
             // insert current time as lastAccessed date for all existing updates
@@ -107,9 +108,9 @@ abstract class UpdatesDatabase : RoomDatabase() {
     val MIGRATION_6_7: Migration = object : Migration(6, 7) {
       override fun migrate(database: SupportSQLiteDatabase) {
         // https://www.sqlite.org/lang_altertable.html#otheralter
-        database.execSQL("PRAGMA foreign_keys=OFF")
-        database.beginTransaction()
         try {
+          database.execSQL("PRAGMA foreign_keys=OFF")
+          database.beginTransaction()
           try {
             database.execSQL("CREATE TABLE IF NOT EXISTS `new_assets` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `url` TEXT, `key` TEXT, `headers` TEXT, `type` TEXT, `metadata` TEXT, `download_time` INTEGER, `relative_path` TEXT, `hash` BLOB, `hash_type` INTEGER NOT NULL, `marked_for_deletion` INTEGER NOT NULL)")
             database.execSQL(
@@ -119,6 +120,38 @@ abstract class UpdatesDatabase : RoomDatabase() {
             database.execSQL("DROP TABLE `assets`")
             database.execSQL("ALTER TABLE `new_assets` RENAME TO `assets`")
             database.execSQL("CREATE UNIQUE INDEX `index_assets_key` ON `assets` (`key`)")
+            database.setTransactionSuccessful()
+          } finally {
+            database.endTransaction()
+          }
+        } finally {
+          database.execSQL("PRAGMA foreign_keys=ON")
+        }
+      }
+    }
+
+    /**
+     * Add the `successful_launch_count` and `failed_launch_count` columns to `updates`
+     */
+    val MIGRATION_7_8: Migration = object : Migration(7, 8) {
+      override fun migrate(database: SupportSQLiteDatabase) {
+        // https://www.sqlite.org/lang_altertable.html#otheralter
+        try {
+          database.execSQL("PRAGMA foreign_keys=OFF")
+          database.beginTransaction()
+          try {
+            database.execSQL("CREATE TABLE `new_updates` (`id` BLOB NOT NULL, `scope_key` TEXT NOT NULL, `commit_time` INTEGER NOT NULL, `runtime_version` TEXT NOT NULL, `launch_asset_id` INTEGER, `manifest` TEXT, `status` INTEGER NOT NULL, `keep` INTEGER NOT NULL, `last_accessed` INTEGER NOT NULL, `successful_launch_count` INTEGER NOT NULL DEFAULT 0, `failed_launch_count` INTEGER NOT NULL DEFAULT 0, PRIMARY KEY(`id`), FOREIGN KEY(`launch_asset_id`) REFERENCES `assets`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )")
+
+            // insert `1` for successful_launch_count for all existing updates
+            // to make sure we don't roll back past them
+            database.execSQL(
+              "INSERT INTO `new_updates` (`id`, `scope_key`, `commit_time`, `runtime_version`, `launch_asset_id`, `manifest`, `status`, `keep`, `last_accessed`, `successful_launch_count`, `failed_launch_count`)" +
+                " SELECT `id`, `scope_key`, `commit_time`, `runtime_version`, `launch_asset_id`, `manifest`, `status`, `keep`, `last_accessed`, 1 AS `successful_launch_count`, 0 AS `failed_launch_count` FROM `updates`"
+            )
+            database.execSQL("DROP TABLE `updates`")
+            database.execSQL("ALTER TABLE `new_updates` RENAME TO `updates`")
+            database.execSQL("CREATE INDEX `index_updates_launch_asset_id` ON `updates` (`launch_asset_id`)")
+            database.execSQL("CREATE UNIQUE INDEX `index_updates_scope_key_commit_time` ON `updates` (`scope_key`, `commit_time`)")
             database.setTransactionSuccessful()
           } finally {
             database.endTransaction()
