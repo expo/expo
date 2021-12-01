@@ -267,7 +267,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
   dispatch_async(dispatch_get_main_queue(), ^{
     // Reset the root view background color and window color if we switch between Expo home and project
-    [self _setBackgroundColor:self.view];
+    [self _setBackgroundColor];
   });
 }
 
@@ -504,7 +504,7 @@ NS_ASSUME_NONNULL_BEGIN
   [reactView becomeFirstResponder];
 
   // Set root view background color after adding as subview so we can access window
-  [self _setBackgroundColor:self.view];
+  [self _setBackgroundColor];
 }
 
 - (void)reactAppManagerStartedLoadingJavaScript:(EXReactAppManager *)appManager
@@ -661,34 +661,36 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - root view and window background color
 
-- (void)_setBackgroundColor:(UIView *)view
+- (void)_setBackgroundColor
 {
     NSString *backgroundColorString = [self _readBackgroundColorFromManifest:_appRecord.appLoader.manifest];
     UIColor *backgroundColor = [EXUtil colorWithHexString:backgroundColorString];
-    view.backgroundColor = [UIColor clearColor];
+    self.view.backgroundColor = [UIColor clearColor];
 
+    // NOTE(evanbacon): `self.view.window.rootViewController.view` represents the top-most window's root view controller's view which is the same
+    // view we set in `expo-system-ui`'s `setBackgroundColorAsync` method.
     if (backgroundColor) {
-      if (view.window.rootViewController != nil && view.window.rootViewController.view != nil) {
-        view.window.rootViewController.view.backgroundColor = backgroundColor;
+      if (self.view.window.rootViewController != nil && self.view.window.rootViewController.view != nil) {
+        self.view.window.rootViewController.view.backgroundColor = backgroundColor;
       }
-      view.window.backgroundColor = backgroundColor;
+      self.view.window.backgroundColor = backgroundColor;
     } else {
       // Reset this color to white so splash and other screens don't load against a black background.
-      if (view.window.rootViewController != nil && view.window.rootViewController.view != nil) {
-        view.window.rootViewController.view.backgroundColor = [UIColor whiteColor];
+      if (self.view.window.rootViewController != nil && self.view.window.rootViewController.view != nil) {
+        self.view.window.rootViewController.view.backgroundColor = [UIColor whiteColor];
       }
       // NOTE(brentvatne): we used to use white as a default background color for window but this caused
       // problems when using form sheet presentation style with vcs eg: <Modal /> and native-stack. Most
       // users expect the background behind these to be black, which is the default if backgroundColor is nil.
-      view.window.backgroundColor = nil;
+      self.view.window.backgroundColor = nil;
 
       // NOTE(brentvatne): we may want to default to respecting the default system background color
       // on iOS13 and higher, but if we do make this choice then we will have to implement it on Android
       // as well. This would also be a breaking change. Leaving this here as a placeholder for the future.
       // if (@available(iOS 13.0, *)) {
-      //   view.backgroundColor = [UIColor systemBackgroundColor];
+      //   self.view.backgroundColor = [UIColor systemBackgroundColor];
       // } else {
-      //  view.backgroundColor = [UIColor whiteColor];
+      //  self.view.backgroundColor = [UIColor whiteColor];
       // }
     }
 }
