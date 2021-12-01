@@ -56,7 +56,7 @@ export const Screens = [
   },
   {
     getComponent() {
-      return optionalRequire(() => require('../screens/BlurViewScreen'));
+      return optionalRequire(() => require('../screens/BlurView/BlurViewScreen'));
     },
     name: 'BlurView',
   },
