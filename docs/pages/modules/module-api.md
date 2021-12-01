@@ -4,6 +4,8 @@ title: Module API
 
 import { CodeBlocksTable } from '~/components/plugins/CodeBlocksTable';
 
+> Note: This API is still experimental and subject to change.
+
 Expo Module API is an abstraction layer of top of React Native modules that helps you build native modules in an easy to use and convenience way. As opposed to standard React Native modules, Expo Modules ecosystem is designed from the ground up to be used with only modern native languages — Swift and Kotlin. After many years of maintaining a bunch of various native modules as part of Expo SDK, we have found out that many issues were caused by not handling null values or using the wrong types. The lack of optional types and Objective-C being too dynamic, makes most bugs unable to get caught in the compile time — which would be caught in modern languages.
 
 Another big pain point that we have encountered is the validation of arguments passed from JavaScript to native functions. This is especially painful when it comes to `NSDictionary` or `ReadableMap`, where the type of values is unknown in runtime and each property needs to be validated separately by yourself. A valuable feature of the Expo Modules API is that it has full knowledge of the argument types the native function expects, so it can pre-validate and convert the arguments for you! The dictionaries can be represented as native structs that we call [Records](#records). Knowing the argument types, it is also possible to [automatically convert arguments](#convertibles) to some platform-specific types (e.g. `{ x: number, y: number }` or `[number, number]` can be translated to CoreGraphics's `CGPoint` for your convenience).
@@ -64,7 +66,6 @@ Make sure that your module class is included in `modulesClassNames` in the [modu
 ```
 
 </CodeBlocksTable>
-
 
 ### 3. Ensure the module is linked
 
