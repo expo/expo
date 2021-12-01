@@ -89,7 +89,7 @@ function formatArrayOfClassNames(classNames) {
 ${indent.repeat(2)}]`;
 }
 /**
- * Formats an array of module to Swift's array containing ReactDelegateHandlers
+ * Formats an array of modules to Swift's array containing ReactDelegateHandlers
  */
 function formatArrayOfReactDelegateHandler(modules) {
     const values = [];

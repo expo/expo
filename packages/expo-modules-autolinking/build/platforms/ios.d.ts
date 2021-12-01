@@ -8,6 +8,6 @@ export declare function resolveModuleAsync(packageName: string, revision: Packag
  */
 export declare function generatePackageListAsync(modules: ModuleDescriptor[], targetPath: string): Promise<void>;
 /**
- * Formats an array of module to Swift's array containing ReactDelegateHandlers
+ * Formats an array of modules to Swift's array containing ReactDelegateHandlers
  */
 export declare function formatArrayOfReactDelegateHandler(modules: ModuleDescriptor[]): string;
