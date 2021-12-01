@@ -30,7 +30,7 @@ export type GLSnapshot = {
 };
 
 export interface ExpoWebGLRenderingContext extends WebGL2RenderingContext {
-  ctxId: number;
+  contextId: number;
   endFrameEXP(): void;
   flushEXP(): void;
   __expoSetLogging(option: GLLoggingOption): void;

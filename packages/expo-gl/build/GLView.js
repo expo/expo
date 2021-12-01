@@ -98,20 +98,22 @@ const getGl = (exglCtxId) => {
     return gl;
 };
 const getContextId = (exgl) => {
-    const exglCtxId = exgl && typeof exgl === 'object' ? exgl.ctxId : exgl;
+    const exglCtxId = exgl && typeof exgl === 'object' ? exgl.contextId : exgl;
     if (!exglCtxId || typeof exglCtxId !== 'number') {
         throw new Error(`Invalid EXGLContext id: ${String(exglCtxId)}`);
     }
     return exglCtxId;
 };
-try {
-    // reanimated needs to be imported before any workletized code
-    // is created, but we don't want to make it dependency on expo-gl.
-    require('react-native-reanimated');
-    GLView.getWorkletContext = (ctxId) => {
-        'worklet';
-        return global.__EXGLContexts?.[String(ctxId)];
-    };
-}
-catch { }
+(function () {
+    try {
+        // reanimated needs to be imported before any workletized code
+        // is created, but we don't want to make it dependency on expo-gl.
+        require('react-native-reanimated');
+        GLView.getWorkletContext = (contextId) => {
+            'worklet';
+            return global.__EXGLContexts?.[String(contextId)];
+        };
+    }
+    catch { }
+})();
 //# sourceMappingURL=GLView.js.map

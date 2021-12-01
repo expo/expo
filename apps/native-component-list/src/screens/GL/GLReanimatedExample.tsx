@@ -123,7 +123,7 @@ function useWorkletAwareGlContext<T>(
           rafId.value = requestAnimationFrame(renderer);
         };
         renderer();
-      })(gl.ctxId);
+      })(gl.contextId);
     } else {
       const ctx = onInit(gl);
       const renderer = () => {

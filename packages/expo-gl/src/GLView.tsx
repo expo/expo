@@ -183,7 +183,7 @@ const getGl = (exglCtxId: number): ExpoWebGLRenderingContext => {
 };
 
 const getContextId = (exgl?: ExpoWebGLRenderingContext | number): number => {
-  const exglCtxId = exgl && typeof exgl === 'object' ? exgl.ctxId : exgl;
+  const exglCtxId = exgl && typeof exgl === 'object' ? exgl.contextId : exgl;
 
   if (!exglCtxId || typeof exglCtxId !== 'number') {
     throw new Error(`Invalid EXGLContext id: ${String(exglCtxId)}`);
@@ -191,12 +191,14 @@ const getContextId = (exgl?: ExpoWebGLRenderingContext | number): number => {
   return exglCtxId;
 };
 
-try {
-  // reanimated needs to be imported before any workletized code
-  // is created, but we don't want to make it dependency on expo-gl.
-  require('react-native-reanimated');
-  GLView.getWorkletContext = (ctxId: number): ExpoWebGLRenderingContext | undefined => {
-    'worklet';
-    return global.__EXGLContexts?.[String(ctxId)];
-  };
-} catch {}
+(function () {
+  try {
+    // reanimated needs to be imported before any workletized code
+    // is created, but we don't want to make it dependency on expo-gl.
+    require('react-native-reanimated');
+    GLView.getWorkletContext = (contextId: number): ExpoWebGLRenderingContext | undefined => {
+      'worklet';
+      return global.__EXGLContexts?.[String(contextId)];
+    };
+  } catch {}
+})();
