@@ -44,7 +44,7 @@ And your **app.json** might look like this:
 
 Let's convert this to **app.config.js** so we can make it more dynamic:
 
-```json
+```javascript
 export default {
   name: "MyApp",
   slug: "my-app",
@@ -83,7 +83,10 @@ To automatically set the `APP_VARIANT` environment variable, we can use `env` in
 {
   "build": {
     "development": {
-      "developmentClient": true
+      "developmentClient": true,
+      "env": {
+        "APP_VARIANT": "development"
+      }
     },
     "production": {
       "env": {
