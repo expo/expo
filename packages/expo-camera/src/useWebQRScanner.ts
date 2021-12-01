@@ -39,7 +39,7 @@ const qrWorkerMethod = ({ data, width, height }: ImageData): any => {
 function useRemoteJsQR() {
   return useWorker(qrWorkerMethod, {
     remoteDependencies: ['https://cdn.jsdelivr.net/npm/jsqr@1.2.0/dist/jsQR.min.js'],
-    timeout: 5000,
+    autoTerminate: false,
   });
 }
 
