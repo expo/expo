@@ -65,18 +65,38 @@ const nonLinkableTypes = [
   'Manifest',
   'NativeSyntheticEvent',
   'ParsedQs',
-  'React.FC',
   'ServiceActionResult',
-  'StyleProp',
   'T',
   'TaskOptions',
   'Uint8Array',
+  // React & React Native
+  'React.FC',
+  'ForwardRefExoticComponent',
+  'StyleProp',
   // Cross-package permissions management
   'RequestPermissionMethod',
   'GetPermissionMethod',
   'Options',
   'PermissionHookBehavior',
 ];
+
+/**
+ * List of type names that should not be visible in the docs.
+ */
+const omittableTypes = [
+  // Internal React type that adds `ref` prop to the component
+  'RefAttributes',
+];
+
+/**
+ * Map of internal names/type names that should be replaced with something more developer-friendly.
+ */
+const replaceableTypes: Partial<Record<string, string>> = {
+  /**
+   *
+   */
+  ForwardRefExoticComponent: 'Component',
+};
 
 const hardcodedTypeLinks: Record<string, string> = {
   Date: 'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date',
@@ -95,15 +115,20 @@ const hardcodedTypeLinks: Record<string, string> = {
   ViewStyle: '../../react-native/view-style-props/',
 };
 
-const renderWithLink = (name: string, type?: string) =>
-  nonLinkableTypes.includes(name) ? (
-    name + (type === 'array' ? '[]' : '')
+const renderWithLink = (name: string, type?: string) => {
+  const replacedName = replaceableTypes[name] ?? name;
+
+  return nonLinkableTypes.includes(replacedName) ? (
+    replacedName + (type === 'array' ? '[]' : '')
   ) : (
-    <Link href={hardcodedTypeLinks[name] || `#${name.toLowerCase()}`} key={`type-link-${name}`}>
-      {name}
+    <Link
+      href={hardcodedTypeLinks[replacedName] || `#${replacedName.toLowerCase()}`}
+      key={`type-link-${replacedName}`}>
+      {replacedName}
       {type === 'array' && '[]'}
     </Link>
   );
+};
 
 const renderUnion = (types: TypeDefinitionData[]) =>
   types.map(resolveTypeName).map((valueToRender, index) => (
@@ -240,6 +265,15 @@ export const resolveTypeName = ({
       return `${value}`;
     } else if (type === 'literal' && value) {
       return `'${value}'`;
+    } else if (type === 'intersection' && types) {
+      return types
+        .filter(({ name }) => !omittableTypes.includes(name ?? ''))
+        .map((value, index, array) => (
+          <span key={`intersection-${name}-${index}`}>
+            {resolveTypeName(value)}
+            {index + 1 !== array.length && ' & '}
+          </span>
+        ));
     } else if (value === null) {
       return 'null';
     }
