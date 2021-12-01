@@ -187,9 +187,11 @@ The `pixels` argument of [`texImage2D()`](https://developer.mozilla.org/en-US/do
 
 For efficiency reasons the current implementations of the methods don't perform type or bounds checking on their arguments. So, passing invalid arguments could cause a native crash. We plan to update the API to perform argument checking in upcoming SDK versions. Currently the priority for error checking is low since engines generally don't rely on the OpenGL API to perform argument checking and, even otherwise, checks performed by the underlying OpenGL ES implementation are often sufficient.
 
-## Integration with reanimated worklets
+## Integration with Reanimated worklets
 
 To use this API inside Reanimated worklet you need to pass context id to the worklet code and restore context like in the example bellow.
+
+<SnackInline label='GL usage in reanimated worklet' dependencies={['expo-gl', 'react-native-reanimated']}>
 
 ```js
 import React from 'react';
@@ -219,6 +221,8 @@ export default function App() {
 }
 ```
 
+</SnackInline>
+
 For more in depth example on how to use `expo-gl` with Reanimated and Gesture Handler you can check [here](https://github.com/expo/expo/blob/master/apps/native-component-list/src/screens/GL/GLReanimatedExample.tsx).
 
 ### Limitations
@@ -227,6 +231,7 @@ Worklet runtime is imposing some limitations on the code that runs inside it, so
 - Third-party libraries like Pixi.js or Three.js won't work inside the worklet, you can only use functions that have `'worklet'` added at the start.
 - If you need to load some assets to pass to the WebGL code, it needs to be done on the main thread and passed via some reference to the worklet. If you are using `expo-assets` you can just pass asset object returned by `Asset.fromModule` or from hook `useAssets` to the `runOnUI` function.
 - To implement a rendering loop you need to use `requestAnimationFrame`, APIs like `setTimeout` are not supported.
+- It's supported only on Android and iOS, it won't work in browser.
  
 Check [Reanimated documentation](https://docs.swmansion.com/react-native-reanimated/docs/fundamentals/worklets) to learn more.
 
