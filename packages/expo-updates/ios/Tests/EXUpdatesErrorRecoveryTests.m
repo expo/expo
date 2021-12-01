@@ -60,6 +60,24 @@
   [verify(mockDelegate) throwException:anything()];
 }
 
+- (void)testHandleError_NewUpdateLoaded_RelaunchFails
+{
+  id<EXUpdatesErrorRecoveryDelegate> mockDelegate = mockProtocol(@protocol(EXUpdatesErrorRecoveryDelegate));
+  _errorRecovery.delegate = mockDelegate;
+
+  [given(mockDelegate.remoteLoadStatus) willReturnInteger:EXUpdatesRemoteLoadStatusNewUpdateLoaded];
+
+  NSError *mockError = mock([NSError class]);
+  [_errorRecovery handleError:mockError];
+  dispatch_sync(_testQueue, ^{}); // flush queue
+
+  [verify(mockDelegate) markFailedLaunchForLaunchedUpdate];
+  [self verifyFailedRelaunchWithCompletion_WithMockDelegate:mockDelegate];
+  [verifyCount(mockDelegate, never()) relaunchWithCompletion:(id)anything()];
+  [verifyCount(mockDelegate, never()) loadRemoteUpdate];
+  [verify(mockDelegate) throwException:anything()];
+}
+
 - (void)testHandleError_NewWorkingUpdateLoading
 {
   id<EXUpdatesErrorRecoveryDelegate> mockDelegate = mockProtocol(@protocol(EXUpdatesErrorRecoveryDelegate));

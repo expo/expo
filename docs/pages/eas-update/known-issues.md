@@ -2,9 +2,9 @@
 title: Known issues
 ---
 
-EAS Update is in "preview", meaning that we may still make breaking developer-facing changes. However, once you start sending updates to your users, those updates will continue to work indefinitely.
+EAS Update is in "preview", meaning that we may still make breaking developer-facing changes. With that, EAS Update is ready for production apps.
 
-With our initial release of EAS Update, there are a variety of known issues you may encounter. These are important to consider when migrating your project from Classic Updates to EAS Update.
+With our initial release of EAS Update, there are a variety of known issues you may encounter. These are important to consider when migrating your project from Classic Updates to EAS Update. As we continue to iterate on EAS Update, we will address these issues.
 
 Known issues:
 

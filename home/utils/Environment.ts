@@ -33,7 +33,7 @@ if (SupportedExpoSdks.length > 0) {
 
 const supportedSdksString = `SDK${
   SupportedExpoSdks.length === 1 ? ':' : 's:'
-} ${sortedSupportedExpoSdks.map(semver.major).join(', ')}`;
+} ${sortedSupportedExpoSdks.map((sdk) => semver.major(sdk)).join(', ')}`;
 
 export default {
   isProduction,

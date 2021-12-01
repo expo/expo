@@ -185,6 +185,8 @@ object UpdatesUtils {
     }
     return when (updatesConfiguration.checkOnLaunch) {
       CheckAutomaticallyConfiguration.NEVER -> false
+      // check will happen later on if there's an error
+      CheckAutomaticallyConfiguration.ERROR_RECOVERY_ONLY -> false
       CheckAutomaticallyConfiguration.WIFI_ONLY -> {
         val cm = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager?
         if (cm == null) {

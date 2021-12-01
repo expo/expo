@@ -621,7 +621,7 @@ PODS:
   - React-jsinspector (0.64.3)
   - react-native-appearance (0.3.4):
     - React
-  - react-native-netinfo (6.0.2):
+  - react-native-netinfo (7.1.3):
     - React-Core
   - react-native-safe-area-context (3.3.2):
     - React-Core
@@ -1307,7 +1307,7 @@ SPEC CHECKSUMS:
   ExpoHaptics: c0c014eabfdd1353a908f857f168b01fafd526db
   ExpoLinearGradient: 841746b0ef9c771d1f37fa5463f39eb25b6aae77
   ExpoLocalization: 882eeed58daf9aa9d7265fff537a3ddae3834d2f
-  ExpoModulesCore: 1c28b20c381edd3817be74505499cdaa9658fc97
+  ExpoModulesCore: 76dcd0de11ca40265b9c428a7d04f449df0d48e4
   ExpoSystemUI: 3c969e3db290fcd5edb9c466d585f183d934b421
   EXPrint: a224501bbb89072567c58a5127f2d125b8776ea2
   EXRandom: 9ed4600d410cf2fe58d22b3121865624065a16e9
@@ -1371,7 +1371,7 @@ SPEC CHECKSUMS:
   React-jsiexecutor: df6abc9fafbecb8e5b7a5fbc5e6d4bd017d594d5
   React-jsinspector: 34e23860273a23695342f58eed3ffd3ba10c31e0
   react-native-appearance: 0f0e5fc2fcef70e03d48c8fe6b00b9158c2ba8aa
-  react-native-netinfo: 92e6e4476eb8bf6fc2d7c0a6ca0a1406f663d73a
+  react-native-netinfo: 42c0965fca99069b92e3f7360ab2d425985e5104
   react-native-safe-area-context: 584dc04881deb49474363f3be89e4ca0e854c057
   react-native-segmented-control: 06607462630512ff8eef652ec560e6235a30cc3e
   react-native-slider: f8455cf286f225ab62b83a8f607510ac8abb9482

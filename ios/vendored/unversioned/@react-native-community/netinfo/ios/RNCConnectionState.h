@@ -23,6 +23,7 @@ static NSString *const RNCConnectionTypeEthernet = @"ethernet";
 static NSString *const RNCCellularGeneration2g = @"2g";
 static NSString *const RNCCellularGeneration3g = @"3g";
 static NSString *const RNCCellularGeneration4g = @"4g";
+static NSString *const RNCCellularGeneration5g = @"5g";
 
 @interface RNCConnectionState : NSObject
 

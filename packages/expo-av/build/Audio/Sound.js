@@ -143,7 +143,6 @@ export class Sound {
                     this._loading = false;
                     this._subscribeToNativeEvents();
                     this._callOnPlaybackStatusUpdateForNewStatus(status);
-                    this._updateAudioSampleReceivedCallback();
                     resolve(status);
                 };
                 const loadError = (error) => {
