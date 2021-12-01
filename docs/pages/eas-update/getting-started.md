@@ -25,7 +25,7 @@ Setting up EAS Update allows you to push critical bug fixes and improvements tha
 
 ## Create a project
 
-1. Create a project by running:
+1. Create a project with Expo CLI by running:
 
    ```bash
    expo init
@@ -50,7 +50,7 @@ Setting up EAS Update allows you to push critical bug fixes and improvements tha
    After this command, you should have a new field in your app config (**app.json**) at `expo.updates.url`, which is the URL where your app will fetch new updates.
    <br/><br/>
 
-   > Optional step: There is also a `fallbackToCacheTimeout` property. If you'd like your app to try to load new updates when a user opens the app, set this to something other than zero, like `3000` (3 seconds). A value of `3000` would mean that your app will try and download a new update for up to 3 seconds before loading the previous update it already has locally. If the app is able to download the update within 3 seconds, your users will see the changes in the newest update immediately.
+   > There is also a `fallbackToCacheTimeout` property under `expo.updates`. If you'd like your app to attempt to load new updates when a user opens the app, set this to something other than zero, like `3000` (3 seconds). A value of `3000` would mean that your app will attempt to download a new update for up to 3 seconds before loading the previous update it already has locally. If the app is able to download the update within 3 seconds, your users will see the changes in the newest update immediately.
 
 3. Next, set an `expo.runtimeVersion` property in the project's **app.json** file. Let's use `{ "policy": "sdkVersion" }` as the runtime version's value:
 
