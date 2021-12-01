@@ -15,7 +15,7 @@
 
 ### ⚠️ Notices
 
-- Extra setup on iOS bare projects is not necessary from the support of `ExpoReactDelegateHandler`. (by [@kudo](https://github.com/kudo)) ([#15140](https://github.com/expo/expo/pull/15140) by [@Kudo](https://github.com/Kudo))
+- Extra setup on iOS bare projects is not necessary from the support of `ExpoReactDelegateHandler`. ([#15140](https://github.com/expo/expo/pull/15140) by [@kudo](https://github.com/kudo))
 
 ## 4.0.1 — 2021-10-01
 
