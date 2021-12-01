@@ -73,6 +73,10 @@ export class GLView extends React.Component<GLViewProps> {
     return ExponentGLObjectManager.takeSnapshotAsync(exglCtxId, options);
   }
 
+  static getWorkletContext(_ctxId: number): ExpoWebGLRenderingContext | undefined {
+    throw new Error('Worklet runtime is not available');
+  }
+
   nativeRef: ComponentOrHandle = null;
   exglCtxId?: number;
 
@@ -171,7 +175,7 @@ const getGl = (exglCtxId: number): ExpoWebGLRenderingContext => {
       'GL is currently not available. (Have you enabled remote debugging? GL is not available while debugging remotely.)'
     );
   }
-  const gl = global.__EXGLContexts[exglCtxId];
+  const gl = global.__EXGLContexts[String(exglCtxId)];
 
   configureLogging(gl);
 
@@ -186,3 +190,13 @@ const getContextId = (exgl?: ExpoWebGLRenderingContext | number): number => {
   }
   return exglCtxId;
 };
+
+try {
+  // reanimated needs to be imported before any workletized code
+  // is created, but we don't want to make it dependency on expo-gl.
+  require('react-native-reanimated');
+  GLView.getWorkletContext = (ctxId: number): ExpoWebGLRenderingContext | undefined => {
+    'worklet';
+    return global.__EXGLContexts?.[String(ctxId)];
+  };
+} catch {}

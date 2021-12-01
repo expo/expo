@@ -29,6 +29,7 @@ export declare class GLView extends React.Component<GLViewProps> {
     static createContextAsync(): Promise<ExpoWebGLRenderingContext>;
     static destroyContextAsync(exgl?: ExpoWebGLRenderingContext | number): Promise<boolean>;
     static takeSnapshotAsync(exgl?: ExpoWebGLRenderingContext | number, options?: SnapshotOptions): Promise<GLSnapshot>;
+    static getWorkletContext(_ctxId: number): ExpoWebGLRenderingContext | undefined;
     nativeRef: ComponentOrHandle;
     exglCtxId?: number;
     render(): JSX.Element;

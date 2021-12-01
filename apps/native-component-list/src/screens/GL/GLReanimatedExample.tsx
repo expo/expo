@@ -112,7 +112,7 @@ function useWorkletAwareGlContext<T>(
     if (shouldRunOnUI) {
       runOnUI((glCtxId: number) => {
         'worklet';
-        const workletGl = (global as any).__EXGLContexts[String(glCtxId)];
+        const workletGl = GLView.getWorkletContext(glCtxId)!;
         const ctx = onInit(workletGl);
         const renderer = () => {
           'worklet';
