@@ -40,7 +40,7 @@ EX_VIEW_PROPERTY(tint, NSString *, EXBlurView)
 
 EX_VIEW_PROPERTY(intensity, NSNumber *, EXBlurView)
 {
-  [view setIntensity:[value floatValue] / 100];
+  [view setIntensity:[value doubleValue] / 100];
 }
 
 EX_EXPORT_METHOD_AS(setNativeProps,

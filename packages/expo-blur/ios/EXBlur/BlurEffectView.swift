@@ -7,7 +7,7 @@ import UIKit
  */
 final class BlurEffectView: UIVisualEffectView {
   @Clamping(lowerBound: 0.01, upperBound: 1)
-  var intensity: Float = 0.5 {
+  var intensity: Double = 0.5 {
     didSet {
       setNeedsDisplay()
     }

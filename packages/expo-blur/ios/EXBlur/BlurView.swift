@@ -24,7 +24,7 @@ public class BlurView : UIView {
   }
 
   @objc
-  public func setIntensity(_ intensity: Float) {
+  public func setIntensity(_ intensity: Double) {
     blurEffectView.intensity = intensity;
   }
 }
