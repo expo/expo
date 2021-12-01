@@ -2875,10 +2875,10 @@
   dependencies:
     invariant "^2.2.4"
 
-"@react-native-community/netinfo@6.0.2":
-  version "6.0.2"
-  resolved "https://registry.yarnpkg.com/@react-native-community/netinfo/-/netinfo-6.0.2.tgz#3b61757c46d0f387815d42b651bbee1eb998a385"
-  integrity sha512-HbVIv6p+VAzSqALkfKKNbtSy0TneL7EILIqxiOjt/5weVdTuZ88NRyPNQAZBh6W8QYirXJo3f00ryMk9iLs7gQ==
+"@react-native-community/netinfo@7.1.3":
+  version "7.1.3"
+  resolved "https://registry.yarnpkg.com/@react-native-community/netinfo/-/netinfo-7.1.3.tgz#518d753a9ac08f1e59562c5d4168193584fd7329"
+  integrity sha512-E8q3yuges6NYhrXBDQdzwCnG0bBQXATRjs6fpTjRJ37nURmdpe4HLq1awvooG4ymGTpZhrx4elcs/aUM7PTgrA==
 
 "@react-native-community/slider@4.1.4":
   version "4.1.4"
@@ -11905,10 +11905,10 @@ loose-envify@^1.0.0, loose-envify@^1.1.0, loose-envify@^1.3.1, loose-envify@^1.4
   dependencies:
     js-tokens "^3.0.0 || ^4.0.0"
 
-lottie-react-native@4.0.3:
-  version "4.0.3"
-  resolved "https://registry.yarnpkg.com/lottie-react-native/-/lottie-react-native-4.0.3.tgz#2a2548b8fb6d30e45b55714ec57e986e4af6fcb0"
-  integrity sha512-cmMt/HEwTTzF3PQcE4VVl7jpBYC9cZD9pGz7ZLxYV13e5jWBvMCFKsQYHlYAo69fjXZ2YCum1AqEuez6kSbmCA==
+lottie-react-native@5.0.1:
+  version "5.0.1"
+  resolved "https://registry.yarnpkg.com/lottie-react-native/-/lottie-react-native-5.0.1.tgz#218a9e9cf0e25b2d30360958b00b85a4068a76b8"
+  integrity sha512-V+ODPqiHOSRzEWg8VsfrJBicgc2k0ZPlCjk3J7ULUkh94smL1nrsF/n4OGukj4MLZwonpv+frVK7pPh5U7t3rQ==
   dependencies:
     invariant "^2.2.2"
     prop-types "^15.5.10"
@@ -14853,6 +14853,11 @@ react-native-paper@^4.0.1:
     color "^3.1.2"
     react-native-iphone-x-helper "^1.3.1"
 
+react-native-primitives@^0.1.3:
+  version "0.1.3"
+  resolved "https://registry.yarnpkg.com/react-native-primitives/-/react-native-primitives-0.1.3.tgz#ff9548adfcaacb2f2b6a34a078d2643903e17e3d"
+  integrity sha512-slhBFw6vKsq76f4G4N4cXL/g3UPq22Fgl2atmSxgGJZs5JK5SPTNbP4AvIcnt72Selj0k9/5fAMFvpUq8qsVbQ==
+
 react-native-reanimated@~2.2.0:
   version "2.2.3"
   resolved "https://registry.yarnpkg.com/react-native-reanimated/-/react-native-reanimated-2.2.3.tgz#edecfe477ad9efac6f006f7e1194e8c9aa4fc6d5"
@@ -14903,10 +14908,10 @@ react-native-scrollable-mixin@^1.0.0:
   resolved "https://registry.yarnpkg.com/react-native-scrollable-mixin/-/react-native-scrollable-mixin-1.0.1.tgz#34a32167b64248594154fd0d6a8b03f22740548e"
   integrity sha1-NKMhZ7ZCSFlBVP0NaosD8idAVI4=
 
-react-native-shared-element@0.8.2:
-  version "0.8.2"
-  resolved "https://registry.yarnpkg.com/react-native-shared-element/-/react-native-shared-element-0.8.2.tgz#64124ec7e19369b78b6924c93808e1ed058c8109"
-  integrity sha512-IalCG1Sn6Vq171JMh0cbHzf0dJxwUIGwf5baxWhZ6busLQ2AL0A0pFb86sLgOUtv+NZdZX2R1Xd+Ylqj8neuLw==
+react-native-shared-element@0.8.3:
+  version "0.8.3"
+  resolved "https://registry.yarnpkg.com/react-native-shared-element/-/react-native-shared-element-0.8.3.tgz#c49b6acdca9e5ac27acc73ec7e7ddbaa7af35248"
+  integrity sha512-mbL0gWBaZgWc5YQUwwlzyUOToMbfE+QdNxlSK8MdRGX6ItssVH+JLbq8ilLRTNEO+cTFFosXdQwqBUAC4IPSww==
 
 react-native-svg@12.1.1, react-native-svg@^12.1.1:
   version "12.1.1"

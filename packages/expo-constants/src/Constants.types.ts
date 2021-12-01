@@ -43,7 +43,7 @@ export interface IOSManifest {
    * can be updated, whereas this value will never change for a given native binary.
    * The value is set to `null` in case you run your app in Expo Go.
    */
-  buildNumber: string;
+  buildNumber: string | null;
   /**
    * The Apple internal model identifier for this device, e.g. `iPhone1,1`.
    * @deprecated Deprecated. Use `expo-device`'s [`Device.modelId`](../device/#devicemodelid).
@@ -293,6 +293,10 @@ export interface NativeConstants {
    */
   systemFonts: string[];
   systemVersion?: number;
+  /**
+   * @hidden
+   */
+  supportedExpoSdks?: string[];
   platform?: PlatformManifest;
   /**
    * Gets the user agent string which would be included in requests sent by a web view running on
@@ -304,16 +308,6 @@ export interface NativeConstants {
 }
 
 export interface Constants extends NativeConstants {
-  /**
-   * @deprecated `Constants.deviceId` is deprecated in favor of generating your own ID and storing it.
-   * This API will be removed in SDK 44.
-   */
-  deviceId?: string;
-  /**
-   * @deprecated `Constants.linkingUrl` has been renamed to `Constants.linkingUri`. Consider using the
-   * Linking API directly. `Constants.linkingUrl` will be removed in SDK 44.
-   */
-  linkingUrl?: string;
   /**
    * @hidden
    * @warning do not use this property. Use `manifest` by default.

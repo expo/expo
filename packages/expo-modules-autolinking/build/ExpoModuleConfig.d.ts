@@ -18,6 +18,10 @@ export declare class ExpoModuleConfig {
      */
     iosAppDelegateSubscribers(): string[];
     /**
+     * Returns a list of names of Swift classes that implement `ExpoReactDelegateHandler`.
+     */
+    iosReactDelegateHandlers(): string[];
+    /**
      * Returns a list of names of Kotlin native modules classes to put to the generated package provider file.
      */
     androidModulesClassNames(): string[];

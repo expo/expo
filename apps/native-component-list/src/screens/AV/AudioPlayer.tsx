@@ -4,6 +4,7 @@ import { Audio, AVMetadata, AVPlaybackStatus } from 'expo-av';
 import React from 'react';
 import { StyleProp, ViewStyle } from 'react-native';
 
+import { JsiAudioBar } from './JsiAudioBar';
 import Player from './Player';
 
 type PlaybackSource =
@@ -65,6 +66,7 @@ export default class AudioPlayer extends React.Component<Props, State> {
 
   componentWillUnmount() {
     if (this._sound) {
+      this._clearJsiAudioSampleCallback();
       this._sound.unloadAsync();
     }
   }
@@ -93,9 +95,14 @@ export default class AudioPlayer extends React.Component<Props, State> {
     this.setState({ metadata });
   };
 
-  _playAsync = async () => this._sound!.playAsync();
+  _playAsync = async () => {
+    this._sound!.playAsync();
+  };
 
-  _pauseAsync = async () => this._sound!.pauseAsync();
+  _pauseAsync = async () => {
+    this._clearJsiAudioSampleCallback();
+    this._sound!.pauseAsync();
+  };
 
   _replayAsync = async () => this._sound!.replayAsync();
 
@@ -115,6 +122,14 @@ export default class AudioPlayer extends React.Component<Props, State> {
     await this._sound!.setRateAsync(rate, shouldCorrectPitch, pitchCorrectionQuality);
   };
 
+  _clearJsiAudioSampleCallback = () => {
+    // it throws UnavailabilityError when platform is not supported
+    // ignore this, we set it here to null anyway
+    try {
+      this._sound?.setOnAudioSampleReceived(null);
+    } catch (_e) {}
+  };
+
   render() {
     return (
       <Player
@@ -128,6 +143,7 @@ export default class AudioPlayer extends React.Component<Props, State> {
         setRateAsync={this._setRateAsync}
         setIsMutedAsync={this._setIsMutedAsync}
         setVolume={this._setVolumeAsync}
+        extraIndicator={<JsiAudioBar isPlaying={this.state.isPlaying} sound={this._sound!} />}
       />
     );
   }

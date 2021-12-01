@@ -7,7 +7,7 @@ import android.util.Log
 
 class UpdatesConfiguration {
   enum class CheckAutomaticallyConfiguration {
-    NEVER, WIFI_ONLY, ALWAYS
+    NEVER, ERROR_RECOVERY_ONLY, WIFI_ONLY, ALWAYS
   }
 
   var isEnabled = false

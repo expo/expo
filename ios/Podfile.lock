@@ -2136,7 +2136,7 @@ PODS:
   - GTMSessionFetcher/Core (1.7.0)
   - JKBigInteger (0.0.6)
   - lottie-ios (3.2.3)
-  - lottie-react-native (4.0.3):
+  - lottie-react-native (5.0.1):
     - lottie-ios (~> 3.2.3)
     - React-Core
   - MBProgressHUD (1.2.0)
@@ -2363,13 +2363,13 @@ PODS:
     - React-jsi (= 0.64.3)
     - React-perflogger (= 0.64.3)
   - React-jsinspector (0.64.3)
-  - react-native-netinfo (6.0.2):
+  - react-native-netinfo (7.1.3):
     - React-Core
-  - react-native-pager-view (5.4.6):
+  - react-native-pager-view (5.4.9):
     - React-Core
   - react-native-segmented-control (2.4.0):
     - React-Core
-  - react-native-webview (11.13.0):
+  - react-native-webview (11.15.0):
     - React-Core
   - React-perflogger (0.64.3)
   - React-RCTActionSheet (0.64.3):
@@ -4199,7 +4199,7 @@ SPEC CHECKSUMS:
   ExpoHaptics: c0c014eabfdd1353a908f857f168b01fafd526db
   ExpoLinearGradient: 841746b0ef9c771d1f37fa5463f39eb25b6aae77
   ExpoLocalization: 882eeed58daf9aa9d7265fff537a3ddae3834d2f
-  ExpoModulesCore: 1c28b20c381edd3817be74505499cdaa9658fc97
+  ExpoModulesCore: 76dcd0de11ca40265b9c428a7d04f449df0d48e4
   ExpoSystemUI: 3c969e3db290fcd5edb9c466d585f183d934b421
   EXPrint: a224501bbb89072567c58a5127f2d125b8776ea2
   EXRandom: 9ed4600d410cf2fe58d22b3121865624065a16e9
@@ -4247,7 +4247,7 @@ SPEC CHECKSUMS:
   GTMSessionFetcher: 43748f93435c2aa068b1cbe39655aaf600652e91
   JKBigInteger: 5c72131974815e969c0782c41e3452f1bbe5619f
   lottie-ios: c058aeafa76daa4cf64d773554bccc8385d0150e
-  lottie-react-native: abf7a5255678c0cbb3b418b9f2f403efe6f54561
+  lottie-react-native: 1ae63e64711b10eaf181d1bf70819d9a216834cf
   MBProgressHUD: 3ee5efcc380f6a79a7cc9b363dd669c5e1ae7406
   MLKitCommon: 9ed187a042139d51c0d8bf6a8301bb20b375c576
   MLKitFaceDetection: 5b92261dd6e4205e3dab0df62537ac3f4e90e5db
@@ -4270,10 +4270,10 @@ SPEC CHECKSUMS:
   React-jsi: a8b09c29521c798f1783348b37b511ba7b3dbeb3
   React-jsiexecutor: df6abc9fafbecb8e5b7a5fbc5e6d4bd017d594d5
   React-jsinspector: 34e23860273a23695342f58eed3ffd3ba10c31e0
-  react-native-netinfo: 92e6e4476eb8bf6fc2d7c0a6ca0a1406f663d73a
-  react-native-pager-view: b90963d848e777def6714ab7fd40d02fa797e930
+  react-native-netinfo: 42c0965fca99069b92e3f7360ab2d425985e5104
+  react-native-pager-view: 3ee7d4c7697fb3ef788346e834a60cca97ed8540
   react-native-segmented-control: 06607462630512ff8eef652ec560e6235a30cc3e
-  react-native-webview: 133a6a5149f963259646e710b4545c67ef35d7c9
+  react-native-webview: e89bf2dba26a04cda967814df3ed1be99f291233
   React-perflogger: cc76a4254d19640f1d8ad1c66fdee800414b805c
   React-RCTActionSheet: 7448f049318d8d7e8a9a1ebb742ada721757eea8
   React-RCTAnimation: fb9b3fa1a4a9f5e6ab01b3368693ce69860ba76a

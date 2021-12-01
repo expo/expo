@@ -74,6 +74,12 @@ export function expoModulesTransforms(prefix: string): FileTransforms {
         replaceWith: `NSClassFromString(@"${prefix}ExpoModulesProvider")`
       },
       {
+        // Prefixes Objective-C name of the Swift modules provider.
+        paths: ['EXNativeModulesProxy.m'],
+        find: '[NSString stringWithFormat:@"%@.ExpoModulesProvider"',
+        replaceWith: `[NSString stringWithFormat:@"%@.${prefix}ExpoModulesProvider"`
+      },
+      {
         // Prefixes imports from other React Native libs
         paths: objcFilesPattern,
         find: new RegExp(`#import <(ReactCommon|jsi)/(${prefix})?`, 'g'),

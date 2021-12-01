@@ -28,7 +28,7 @@ export async function getPermissionsAsync() {
 }
 // @needsAudit
 /**
- * Check or request permissions for adsmob.
+ * Check or request permissions for AdMob.
  * This uses both `requestPermissionAsync` and `getPermissionsAsync` to interact with the permissions.
  *
  * @example

@@ -1,3 +1,4 @@
+import * as React from 'react';
 declare type NativeViewProps = {
     someGreatProp: number;
 };

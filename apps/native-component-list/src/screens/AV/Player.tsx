@@ -29,6 +29,7 @@ interface Props {
       }
     | (() => React.ReactNode)
   )[];
+  extraIndicator?: JSX.Element;
   style?: StyleProp<ViewStyle>;
 
   // Functions
@@ -178,6 +179,8 @@ export default function Player(props: Props) {
       </View>
 
       <Text>{props.metadata?.title ?? ''}</Text>
+
+      <View style={styles.container}>{props.extraIndicator}</View>
 
       <View style={styles.container}>
         <VolumeSlider
