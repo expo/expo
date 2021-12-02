@@ -12,6 +12,7 @@ import com.facebook.react.ReactPackage
 import com.facebook.react.bridge.ReactContext
 import expo.interfaces.devmenu.DevMenuManagerInterface
 import expo.interfaces.devmenu.DevMenuManagerProviderInterface
+import expo.modules.devlauncher.helpers.changeUrlScheme
 import expo.modules.devlauncher.helpers.getAppUrlFromDevLauncherUrl
 import expo.modules.devlauncher.helpers.getFieldInClassHierarchy
 import expo.modules.devlauncher.helpers.isDevLauncherUrl
@@ -102,7 +103,7 @@ class DevLauncherController private constructor()
     try {
       ensureHostWasCleared(appHost, activityToBeInvalidated = mainActivity)
 
-      val manifestParser = DevLauncherManifestParser(httpClient, url)
+      val manifestParser = DevLauncherManifestParser(httpClient, changeUrlScheme(url, "http"))
       val appIntent = createAppIntent()
 
       internalUpdatesInterface?.reset()
