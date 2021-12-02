@@ -73,9 +73,22 @@ export class GLView extends React.Component<GLViewProps> {
     return ExponentGLObjectManager.takeSnapshotAsync(exglCtxId, options);
   }
 
-  static getWorkletContext(_ctxId: number): ExpoWebGLRenderingContext | undefined {
-    throw new Error('Worklet runtime is not available');
-  }
+  static getWorkletContext: (contextId: number) => ExpoWebGLRenderingContext | undefined =
+    (function () {
+      try {
+        // reanimated needs to be imported before any workletized code
+        // is created, but we don't want to make it dependency on expo-gl.
+        require('react-native-reanimated');
+        return (contextId: number): ExpoWebGLRenderingContext | undefined => {
+          'worklet';
+          return global.__EXGLContexts?.[String(contextId)];
+        };
+      } catch {
+        return () => {
+          throw new Error('Worklet runtime is not available');
+        };
+      }
+    })();
 
   nativeRef: ComponentOrHandle = null;
   exglCtxId?: number;
@@ -190,15 +203,3 @@ const getContextId = (exgl?: ExpoWebGLRenderingContext | number): number => {
   }
   return exglCtxId;
 };
-
-(function () {
-  try {
-    // reanimated needs to be imported before any workletized code
-    // is created, but we don't want to make it dependency on expo-gl.
-    require('react-native-reanimated');
-    GLView.getWorkletContext = (contextId: number): ExpoWebGLRenderingContext | undefined => {
-      'worklet';
-      return global.__EXGLContexts?.[String(contextId)];
-    };
-  } catch {}
-})();
