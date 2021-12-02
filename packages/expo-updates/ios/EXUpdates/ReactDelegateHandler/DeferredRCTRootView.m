@@ -2,6 +2,29 @@
 
 #import <EXUpdates/DeferredRCTRootView.h>
 
+@interface NoopUIView : UIView
+
+@end
+
+@implementation NoopUIView
+
+- (NSMethodSignature *)methodSignatureForSelector:(SEL)aSelector
+{
+    NSMethodSignature *signature = [super methodSignatureForSelector:aSelector];
+    if (!signature) {
+      signature = [NSMethodSignature signatureWithObjCTypes:"@@:"];
+    }
+    return signature;
+}
+
+- (void)forwardInvocation:(NSInvocation *)anInvocation
+{
+    id nilPtr = nil;
+    [anInvocation setReturnValue:&nilPtr];
+}
+
+@end
+
 @implementation DeferredRCTRootView
 
 #pragma clang diagnostic push
@@ -13,8 +36,8 @@
 {
   // RCTRootView throws an exception for default initializers
   // and other designated initializers requires a real bridge.
-  // We use a trick here to initialize a UIView and cast back to DeferredRCTRootView.
-  self = (DeferredRCTRootView *)[[UIView alloc] initWithFrame:CGRectZero];
+  // We use a trick here to initialize a NoopUIView and cast back to DeferredRCTRootView.
+  self = (DeferredRCTRootView *)[[NoopUIView alloc] initWithFrame:CGRectZero];
   return self;
 }
 

@@ -2,6 +2,29 @@
 
 #import <EXUpdates/DeferredRCTBridge.h>
 
+@interface NoopNSObject : NSObject
+
+@end
+
+@implementation NoopNSObject
+
+- (NSMethodSignature *)methodSignatureForSelector:(SEL)aSelector
+{
+    NSMethodSignature *signature = [super methodSignatureForSelector:aSelector];
+    if (!signature) {
+      signature = [NSMethodSignature signatureWithObjCTypes:"@@:"];
+    }
+    return signature;
+}
+
+- (void)forwardInvocation:(NSInvocation *)anInvocation
+{
+    id nilPtr = nil;
+    [anInvocation setReturnValue:&nilPtr];
+}
+
+@end
+
 @implementation DeferredRCTBridge
 
 #pragma clang diagnostic push
@@ -11,8 +34,8 @@
 {
   // RCTBridge throws an exception for default initializer
   // and other designated initializers will create a real bridge.
-  // We use a trick here to initialize a NSObject and cast back to DeferredRCTBridge.
-  self = (DeferredRCTBridge *)[NSObject new];
+  // We use a trick here to initialize a NoopNSObject and cast back to DeferredRCTBridge.
+  self = (DeferredRCTBridge *)[NoopNSObject new];
   return self;
 }
 
