@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed crashes caused by the Zxing scanner on Android. ([#15394](https://github.com/expo/expo/pull/15394) by [@lukmccall](https://github.com/lukmccall))
+
 ### 💡 Others
 
 ## 11.1.0 — 2021-10-01
