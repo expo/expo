@@ -11,7 +11,6 @@ import expo.modules.updates.db.enums.UpdateStatus
 import expo.modules.updates.launcher.Launcher.LauncherCallback
 import expo.modules.updates.loader.EmbeddedLoader
 import expo.modules.updates.loader.FileDownloader
-import expo.modules.updates.loader.FileDownloader.AssetDownloadCallback
 import expo.modules.updates.loader.LoaderFiles
 import expo.modules.updates.manifest.EmbeddedManifest
 import expo.modules.updates.manifest.ManifestMetadata
@@ -124,7 +123,7 @@ class DatabaseLauncher(
     return selectionPolicy.selectUpdateToLaunch(filteredLaunchableUpdates, manifestFilters)
   }
 
-  internal fun ensureAssetExists(asset: AssetEntity, database: UpdatesDatabase, context: Context): File? {
+  internal suspend fun ensureAssetExists(asset: AssetEntity, database: UpdatesDatabase, context: Context): File? {
     val assetFile = File(updatesDirectory, asset.relativePath)
     var assetFileExists = assetFile.exists()
     if (!assetFileExists) {
@@ -158,10 +157,15 @@ class DatabaseLauncher(
     return if (!assetFileExists) {
       // we still don't have the asset locally, so try downloading it remotely
       assetsToDownload++
-      fileDownloader.downloadAsset(
-        asset,
-        updatesDirectory,
-        configuration,
+      try {
+        val assetDownloadResult = fileDownloader.downloadAssetSus(
+          asset,
+          updatesDirectory,
+          configuration,
+        )
+      }
+
+
         object : AssetDownloadCallback {
           override fun onFailure(e: Exception, assetEntity: AssetEntity) {
             Log.e(TAG, "Failed to load asset from disk or network", e)

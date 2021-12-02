@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.security.keystore.KeyProperties
 import android.util.Base64
 import okhttp3.*
-import java.io.IOException
 import java.security.*
 import java.security.spec.InvalidKeySpecException
 import java.security.spec.X509EncodedKeySpec
@@ -12,62 +11,46 @@ import java.security.spec.X509EncodedKeySpec
 object Crypto {
   private const val PUBLIC_KEY_URL = "https://exp.host/--/manifest-public-key"
 
-  fun verifyPublicRSASignature(
+  suspend fun verifyPublicRSASignatureSus(
     plainText: String,
     cipherText: String,
     fileDownloader: FileDownloader,
-    listener: RSASignatureListener
-  ) {
-    fetchPublicKeyAndVerifyPublicRSASignature(true, plainText, cipherText, fileDownloader, listener)
+  ): Boolean {
+    return fetchPublicKeyAndVerifyPublicRSASignature(true, plainText, cipherText, fileDownloader)
   }
 
   // On first attempt use cache. If verification fails try a second attempt without
   // cache in case the keys were actually rotated.
   // On second attempt reject promise if it fails.
-  private fun fetchPublicKeyAndVerifyPublicRSASignature(
+  private suspend fun fetchPublicKeyAndVerifyPublicRSASignature(
     isFirstAttempt: Boolean,
     plainText: String,
     cipherText: String,
     fileDownloader: FileDownloader,
-    listener: RSASignatureListener
-  ) {
+  ): Boolean {
     val cacheControl = if (isFirstAttempt) CacheControl.FORCE_CACHE else CacheControl.FORCE_NETWORK
     val request = Request.Builder()
       .url(PUBLIC_KEY_URL)
       .cacheControl(cacheControl)
       .build()
-    fileDownloader.downloadData(
-      request,
-      object : Callback {
-        override fun onFailure(call: Call, e: IOException) {
-          listener.onError(e, true)
-        }
-
-        @Throws(IOException::class)
-        override fun onResponse(call: Call, response: Response) {
-          val exception: Exception = try {
-            val isValid = verifyPublicRSASignature(
-              response.body()!!.string(), plainText, cipherText
-            )
-            listener.onCompleted(isValid)
-            return
-          } catch (e: Exception) {
-            e
-          }
-          if (isFirstAttempt) {
-            fetchPublicKeyAndVerifyPublicRSASignature(
-              false,
-              plainText,
-              cipherText,
-              fileDownloader,
-              listener
-            )
-          } else {
-            listener.onError(exception, false)
-          }
-        }
-      }
-    )
+    val response = fileDownloader.downloadDataSus(request)
+    val exception: Exception = try {
+      return verifyPublicRSASignature(
+        response.body()!!.string(), plainText, cipherText
+      )
+    } catch (e: Exception) {
+      e
+    }
+    if (isFirstAttempt) {
+      return fetchPublicKeyAndVerifyPublicRSASignature(
+        false,
+        plainText,
+        cipherText,
+        fileDownloader,
+      )
+    } else {
+      throw exception
+    }
   }
 
   @Throws(
