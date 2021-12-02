@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Fixed crashes caused by the Zxing scanner on Android.
+- Fixed crashes caused by the Zxing scanner on Android. ([#15394](https://github.com/expo/expo/pull/15394) by [@lukmccall](https://github.com/lukmccall))
 
 ### 💡 Others
 
