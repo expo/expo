@@ -4,6 +4,7 @@ package host.exp.exponent.experience
 import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Color
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -211,10 +212,24 @@ abstract class ReactNativeActivity :
       layoutParams.height = FrameLayout.LayoutParams.MATCH_PARENT
       containerView.layoutParams = layoutParams
     }
+
+    try {
+      // NOTE(evanbacon): Use the same view as the `expo-system-ui` module.
+      // Set before the application code runs to ensure immediate SystemUI calls overwrite the app.json value.
+      var rootView = this.window.decorView
+      ExperienceActivityUtils.setRootViewBackgroundColor(manifest!!, rootView)
+    } catch (e: Exception) {
+      EXL.e(TAG, e)
+    }
+
     waitForReactRootViewToHaveChildrenAndRunCallback {
       onDoneLoading()
       try {
-        ExperienceActivityUtils.setRootViewBackgroundColor(manifest!!, rootView!!)
+        // NOTE(evanbacon): The hierarchy at this point looks like:
+        // window.decorView > [4 other views] > containerView > reactContainerView > rootView > [RN App]
+        // This can be inspected using Android Studio: View > Tool Windows > Layout Inspector.
+        // Container background color is set for "loading" view state, we need to set it to transparent to prevent obstructing the root view.
+        containerView!!.setBackgroundColor(Color.TRANSPARENT)
       } catch (e: Exception) {
         EXL.e(TAG, e)
       }
