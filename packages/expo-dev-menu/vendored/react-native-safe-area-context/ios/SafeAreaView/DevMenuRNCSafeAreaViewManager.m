@@ -7,7 +7,7 @@
 
 @implementation DevMenuRNCSafeAreaViewManager
 
-RCT_EXPORT_MODULE(DevMenuRNCSafeAreaView)
++ (NSString *)moduleName { return @"RNCSafeAreaView"; }
 
 - (UIView *)view
 {

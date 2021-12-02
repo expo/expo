@@ -28,7 +28,7 @@ public class SafeAreaProviderManager extends ViewGroupManager<SafeAreaProvider> 
   @Override
   @NonNull
   public String getName() {
-    return "DevMenuRNCSafeAreaProvider";
+    return "RNCSafeAreaProvider";
   }
 
   @Override

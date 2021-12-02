@@ -13,6 +13,14 @@
 #import "DevMenuRNGestureHandlerModule.h"
 #endif
 
+#if __has_include("DevMenuRNCSafeAreaProviderManager.h")
+#import "DevMenuRNCSafeAreaProviderManager.h"
+#endif
+
+#if __has_include("DevMenuRNCSafeAreaViewManager.h")
+#import "DevMenuRNCSafeAreaViewManager.h"
+#endif
+
 #pragma clang diagnostic pop
 
 @implementation DevMenuVendoredModulesUtils
@@ -27,6 +35,11 @@
   [modules addObject:[DevMenuRNGestureHandlerModule new]];
   [modules addObject:[DevMenuRNGestureHandlerButtonManager new]];
 #endif
+#if __has_include("DevMenuRNCSafeAreaProviderManager.h")
+  [modules addObject:[DevMenuRNCSafeAreaProviderManager new]];
+  [modules addObject:[DevMenuRNCSafeAreaViewManager new]];
+#endif
+  
   return modules;
 }
 

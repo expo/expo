@@ -19,7 +19,7 @@ public class SafeAreaViewManager extends ReactViewManager {
   @Override
   @NonNull
   public String getName() {
-    return "DevMenuRNCSafeAreaView";
+    return "RNCSafeAreaView";
   }
 
   @Override

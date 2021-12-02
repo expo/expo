@@ -1,14 +1,14 @@
 import { UIManager } from 'react-native';
 import { Metrics } from './SafeArea.types';
 
-const DevMenuRNCSafeAreaProviderConfig = UIManager.getViewManagerConfig(
-  'DevMenuRNCSafeAreaProvider',
+const RNCSafeAreaProviderConfig = UIManager.getViewManagerConfig(
+  'RNCSafeAreaProvider',
 ) as any;
 
 export const initialWindowMetrics = (
-  DevMenuRNCSafeAreaProviderConfig != null &&
-  DevMenuRNCSafeAreaProviderConfig.Constants != null
-    ? DevMenuRNCSafeAreaProviderConfig.Constants.initialWindowMetrics
+  RNCSafeAreaProviderConfig != null &&
+  RNCSafeAreaProviderConfig.Constants != null
+    ? RNCSafeAreaProviderConfig.Constants.initialWindowMetrics
     : null
 ) as Metrics | null;
 
