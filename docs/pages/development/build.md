@@ -59,7 +59,7 @@ Once you've registered all iOS devices you'll want to run your development build
 
 To share the build with your team, direct them to the build page on https://expo.dev. There, they'll be able to download the app directly on their device.
 
-Note: If you register any new iOS devices, you'll need create a new development build. Learn more about [internal distribution](https://docs.expo.dev/build/internal-distribution/).
+Note: If you register any new iOS devices, you'll need create a new development build. Learn more about [internal distribution](/build/internal-distribution).
 
 </Tab>
 </Tabs>

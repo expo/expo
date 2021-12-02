@@ -140,7 +140,7 @@ Takes a snapshot of the framebuffer and saves it as a file to app's cache direct
   - **format (_string_)** -- Either `'jpeg'`, `'png'` or `'webp'` (_Android only_ for the latter). Specifies what type of compression should be used and what is the result file extension. PNG compression is lossless but slower, JPEG is faster but the image has visible artifacts. Defaults to `'jpeg'`.
   - **compress (_number_)** -- A value in range 0 - 1 specifying compression level of the result image. 1 means no compression and 0 the highest compression. Defaults to `1.0`.
 
-> **Note:** When using WebP format, the iOS version will print a warning, and generate a `'png'` file instead. It is recommendable to use platform dependant code in this case. You can refer to the [documentation on platform specifi code](https://docs.expo.dev/versions/latest/react-native/platform-specific-code/).
+> **Note:** When using WebP format, the iOS version will print a warning, and generate a `'png'` file instead. It is recommendable to use platform dependant code in this case. You can refer to the [documentation on platform specific code](/versions/latest/react-native/platform-specific-code/).
 
 #### Returns
 

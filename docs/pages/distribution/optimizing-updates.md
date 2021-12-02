@@ -58,7 +58,7 @@ With `expo-updates` you can also host updates on your own servers, which may sup
 
 ## Self-hosting your updates
 
-In addition to building your app on your own computer, you can host your updates on your own servers. Read more about [Hosting Updates on Your Servers](https://docs.expo.dev/distribution/hosting-your-app/).
+In addition to building your app on your own computer, you can host your updates on your own servers. Read more about [Hosting Updates on Your Servers](/distribution/hosting-your-app).
 
 ## A glimpse at the future
 

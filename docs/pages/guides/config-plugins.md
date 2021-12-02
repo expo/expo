@@ -119,7 +119,7 @@ You may want to create a plugin in a different file, here's how:
 - The root file can be any JS file or a file named **app.plugin.js** in the [root of a Node module](#root-app.plugin.js).
 - The file should export a function that satisfies the [`ConfigPlugin`][configplugin] type.
 - Plugins should be transpiled for Node environments ahead of time!
-  - They should support the versions of Node that [Expo supports](https://docs.expo.dev/get-started/installation/#requirements) (LTS).
+  - They should support the versions of Node that [Expo supports](/get-started/installation/#requirements) (LTS).
   - No `import/export` keywords, use `module.exports` in the shipped plugin file.
   - Expo only transpiles the user's initial `app.config` file, anything more would require a bundler which would add too many "opinions" for a config file.
 
@@ -967,7 +967,7 @@ The Expo CLI `expo prebuild` command uses [`@expo/prebuild-config`][prebuild-con
 
 For example, say you wanted to add support for managing the `ios/*/AppDelegate.h` file, you could do this by adding a `ios.appDelegateHeader` modifier.
 
-> This example uses `ts-node` for simple local TypeScript support, this isn't strictly necessary. [Learn more](https://docs.expo.dev/guides/typescript/#appconfigjs).
+> This example uses `ts-node` for simple local TypeScript support, this isn't strictly necessary. [Learn more](/guides/typescript/#appconfigjs).
 
 **withAppDelegateHeaderBaseMod.ts**
 
@@ -1080,9 +1080,9 @@ Please add the following to your Expo config
 }
 ```
 
-[config-docs]: https://docs.expo.dev/versions/latest/config/app/
+[config-docs]: /versions/latest/config/app/
 [prebuild-config]: https://github.com/expo/expo-cli/tree/master/packages/prebuild-config#readme
-[cli-prebuild]: https://docs.expo.dev/workflow/expo-cli/#eject
+[cli-prebuild]: /workflow/expo-cli/#eject
 [configplugin]: https://github.com/expo/expo-cli/blob/3a0ef962a27525a0fe4b7e5567fb7b3fb18ec786/packages/config-plugins/src/Plugin.types.ts#L76
 [source-template]: https://github.com/expo/expo/tree/master/templates/expo-template-bare-minimum
 [expo-beta-docs]: https://github.com/expo/expo/blob/master/guides/releasing/Release%20Workflow.md#stage-5---beta-release
@@ -1095,4 +1095,4 @@ Please add the following to your Expo config
 
 <!-- TODO: Better link for Expo autolinking docs -->
 
-[autolinking]: https://docs.expo.dev/bare/installing-unimodules/
+[autolinking]: /bare/installing-unimodules/
