@@ -33,7 +33,7 @@ function BackgroundColorExample() {
       />
       <Button
         onPress={async () => setColor(await SystemUI.getBackgroundColorAsync())}
-        title={`Get background color to random color: ${color?.toString()}`}
+        title={`Get background color: ${color?.toString()}`}
       />
     </>
   );

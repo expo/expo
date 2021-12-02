@@ -51,7 +51,7 @@ body:
       required: true
   - type: markdown
     attributes:
-      value: Please make sure contributors can follow the steps your provided in order to reproduce the bug.
+      value: Please make sure contributors can run your code and follow the steps your provided in order to reproduce the bug.
   - type: markdown
     attributes:
       value: "**Realize that it is up to you to debug your code and be as certain as possible that the bug is with Expo, not with your own app.** [Here's an excellent guide to debugging you can follow](https://gist.github.com/brentvatne/5ac00cba0c70b7a06b89a56787d6bc4a)."

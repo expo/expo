@@ -65,6 +65,10 @@ Running `yarn` will now run the `prepare` script, which generates any missing fi
   - Try and incorporate a table of contents (TOC).
 - [`tsconfig.json`](./templates/tsconfig.json) ([docs](https://www.typescriptlang.org/docs/handbook/tsconfig-json.html)) extends [`tsconfig.base.json`](./tsconfig.base.json) this is important for ensuring all Unimodules use the same version of TypeScript.
 
+Besides, running `yarn prepare` script will also synchronize optional files from `expo-module-scripts` when the file is present and contains the `@generated` pattern:
+
+- [`source-login-scripts.sh`](./templates/scripts/source-login-scripts.sh): An Xcode build phase script helper for Node.js binary resolution. For example, we need to source login shell configs for `nvm`.
+
 ### 🔌 Config Plugin
 
 To create a [config plugin](https://github.com/expo/expo-cli/blob/master/packages/config-plugins/README.md) that automatically configures your native code, you have two options:

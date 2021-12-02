@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { View } from 'react-native';
 import getBackgroundColor from './getBackgroundColor';
-class BlurView extends React.Component {
+export default class BlurView extends React.Component {
     render() {
         const { tint = 'default', intensity = 50, style, ...props } = this.props;
         const blurStyle = getBlurStyle({ tint, intensity: Math.min(intensity, 100) });
@@ -24,5 +24,4 @@ function getBlurStyle({ intensity, tint }) {
     }
     return style;
 }
-export default BlurView;
 //# sourceMappingURL=BlurView.web.js.map

@@ -1,22 +1,21 @@
-import * as React from 'react';
-import { View } from 'react-native';
+import { ViewProps } from 'react-native';
 
-export type BlurProps = {
+export type BlurViewProps = {
   /**
    * A tint mode which will be applied to the view.
    * @default 'default'
    */
-  tint: BlurTint;
+  tint?: BlurTint;
+
   /**
    * A number from `1` to `100` to control the intensity of the blur effect.
+   *
+   * You can animated this property using `Animated API` from React Native or using `react-native-reanimated`.
+   * > Animating this property using `Animated API` from React Native with `setNativeDriver: true` does not work.
+   *
+   * @default 50
    */
-  intensity: number;
-} & React.ComponentProps<typeof View>;
+  intensity?: number;
+} & ViewProps;
 
 export type BlurTint = 'light' | 'dark' | 'default';
-
-export type ComponentOrHandle =
-  | null
-  | number
-  | React.Component<any, any>
-  | React.ComponentClass<any>;

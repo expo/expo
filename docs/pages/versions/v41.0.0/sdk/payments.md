@@ -8,7 +8,7 @@ import PlatformsSection from '~/components/plugins/PlatformsSection';
 
 > **This library is deprecated in favor of [`@stripe/stripe-react-native`](./stripe.md), and will no longer be available after the release of SDK 43.** [Learn more about how to transition to the new library](https://github.com/expo/fyi/blob/master/payments-migration-guide.md#how-to-migrate-from-expo-payments-stripe-to-the-new-stripestripe-react-native-library).
 
-> 🚨 On iOS, the Payments module is currently only supported the [bare workflow](https://docs.expo.dev/workflow/customizing/).
+> 🚨 On iOS, the Payments module is currently only supported the [bare workflow](/workflow/customizing/).
 
 Payments uses [Stripe](https://stripe.com/) and [Apple Pay](https://www.apple.com/apple-pay/) on iOS, but the module is only available in bare workflow apps.
 

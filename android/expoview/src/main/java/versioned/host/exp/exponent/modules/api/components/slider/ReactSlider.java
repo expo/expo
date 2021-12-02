@@ -12,6 +12,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Build;
 import android.util.AttributeSet;
+import android.view.MotionEvent;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityManager;
 import androidx.appcompat.widget.AppCompatSeekBar;
@@ -109,9 +110,12 @@ public class ReactSlider extends AppCompatSeekBar {
   @Override
   public void onPopulateAccessibilityEvent(AccessibilityEvent event) {
     super.onPopulateAccessibilityEvent(event);
-    if (event.getEventType() == AccessibilityEvent.TYPE_VIEW_ACCESSIBILITY_FOCUSED ||
-        (event.getEventType() == AccessibilityEvent.TYPE_VIEW_SELECTED && this.isAccessibilityFocused())) {
-      this.setupAccessibility();
+
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+      if (event.getEventType() == AccessibilityEvent.TYPE_VIEW_ACCESSIBILITY_FOCUSED ||
+          (event.getEventType() == AccessibilityEvent.TYPE_VIEW_SELECTED && this.isAccessibilityFocused())) {
+          this.setupAccessibility((int)mValue);
+      }
     }
   }
 
@@ -139,9 +143,19 @@ public class ReactSlider extends AppCompatSeekBar {
     }
   }
 
-  private void setupAccessibility() {
+  @Override
+  public boolean onTouchEvent(MotionEvent arg0) {
+    super.onTouchEvent(arg0);
+
+    if (arg0.getActionMasked() == MotionEvent.ACTION_DOWN && this.isEnabled() == false) {
+      announceForAccessibility("slider disabled");
+    }
+    // Returns: True if the view handled the hover event
+    return true;
+  }
+
+  public void setupAccessibility(int index) {
     if (mAccessibilityUnits != null && mAccessibilityIncrements != null && mAccessibilityIncrements.size() - 1 == (int)mMaxValue) {
-      int index = (int)mValue;
       String sliderValue = mAccessibilityIncrements.get(index);
       int stringLength = mAccessibilityUnits.length();
 

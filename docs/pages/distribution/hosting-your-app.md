@@ -42,7 +42,7 @@ To setup a QR code to view your hosted update, or if you want to host your files
 
 ### HTTP Headers
 
-On some hosting services such as [AWS](https://aws.amazon.com/) and [Firebase](http://firebase.google.com/), you'll need to explicitly set the header `"Content-Type"` of JavaScript files as `"application/javascript"` so that [updates](https://docs.expo.dev/guides/configuring-updates/) work correctly. Otherwise [Updates.checkForUpdateAsync()](https://docs.expo.dev/versions/latest/sdk/updates/#updatescheckforupdateasync) will fail with the error _"Failed to fetch new update"_.
+On some hosting services such as [AWS](https://aws.amazon.com/) and [Firebase](http://firebase.google.com/), you'll need to explicitly set the header `"Content-Type"` of JavaScript files as `"application/javascript"` so that [updates](/guides/configuring-updates/) work correctly. Otherwise [Updates.checkForUpdateAsync()](/versions/latest/sdk/updates/#updatescheckforupdateasync) will fail with the error _"Failed to fetch new update"_.
 
 Here's an example of **firebase.json** configuration, with a [deploy target](https://firebase.google.com/docs/cli/targets) named "native".
 

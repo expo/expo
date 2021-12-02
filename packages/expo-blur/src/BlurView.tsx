@@ -1,35 +1,66 @@
 import { NativeModulesProxy, requireNativeViewManager } from 'expo-modules-core';
-import * as React from 'react';
-import { findNodeHandle, View, StyleSheet } from 'react-native';
+import React from 'react';
+import { View, StyleSheet, ViewProps, findNodeHandle } from 'react-native';
 
-import { BlurProps, BlurTint, ComponentOrHandle } from './BlurView.types';
+import { BlurViewProps } from './BlurView.types';
 
-export default class BlurView extends React.Component<BlurProps> {
-  static defaultProps = {
-    tint: 'default' as BlurTint,
-    intensity: 50,
-  };
+class BlurView extends React.Component<BlurViewProps & { forwardedRef: React.ForwardedRef<View> }> {
+  private blurViewRef = React.createRef<View>();
 
-  _root: ComponentOrHandle = null;
+  /**
+   * This component is a composition of the two components, but from the outside it's
+   * just a simple View with additional properties. To properly handle `setNativeProps`
+   * method (used when animating props), we need to properly separate `ViewProps` from `BlurViewProps`
+   * and pass them to the proper underlying views.
+   *
+   * This method handles the native view reference obtained from the parent View component
+   * and overrides it's original `setNativeProps` method that is available as it's property.
+   * When the `NativeBlurView` native ref is available `BlurView`-only props are forwarded
+   * to this view using `setNativeProps` method exposed by the native runtime.
+   */
+  private onRefChange = (view: View | null) => {
+    if (!view) {
+      return;
+    }
 
-  _setNativeRef = (ref: ComponentOrHandle) => {
-    this._root = ref;
-  };
+    // Save the reference to the original method already bound to the proper calling context
+    const originalSetNativeProps = view.setNativeProps.bind(view);
 
-  setNativeProps = (nativeProps) => {
-    if (this._root) {
-      NativeModulesProxy.ExpoBlurViewManager.updateProps(nativeProps, findNodeHandle(this._root));
+    // Override `setNativeProps` (https://reactnative.dev/docs/animations#setnativeprops)
+    view.setNativeProps = ({ tint, intensity, ...nativeProps }: BlurViewProps & ViewProps) => {
+      // Call the original method with all View-based props
+      view && originalSetNativeProps(nativeProps);
+      // Invoke `setNativeProps` native expo method defined by `ExpoBlurViewManager`
+      this.blurViewRef.current &&
+        NativeModulesProxy.ExpoBlurViewManager.setNativeProps(
+          { tint, intensity },
+          findNodeHandle(this.blurViewRef.current)
+        );
+    };
+
+    // mimic `forwardedRef` logic
+    if (typeof this.props.forwardedRef === 'function') {
+      this.props.forwardedRef(view);
+    } else if (this.props.forwardedRef) {
+      this.props.forwardedRef.current = view;
     }
   };
 
   render() {
-    const { tint, intensity, style, children, ...props } = this.props;
+    const {
+      tint = 'default',
+      intensity = 50,
+      style,
+      children,
+      forwardedRef,
+      ...props
+    } = this.props;
     return (
-      <View {...props} style={[style, { backgroundColor: 'transparent' }]}>
+      <View {...props} ref={this.onRefChange} style={[styles.container, style]}>
         <NativeBlurView
+          ref={this.blurViewRef}
           tint={tint}
           intensity={intensity}
-          ref={this._setNativeRef}
           style={StyleSheet.absoluteFill}
         />
         {children}
@@ -38,4 +69,19 @@ export default class BlurView extends React.Component<BlurProps> {
   }
 }
 
+const styles = StyleSheet.create({
+  container: { backgroundColor: 'transparent' },
+});
+
 const NativeBlurView = requireNativeViewManager('ExpoBlurView');
+
+/**
+ * @skip
+ * This `forwardedRef` mechanism is necessary to make this component work properly
+ * with React's `ref` prop and to react to props updates as expected.
+ */
+const BlurViewWithForwardedRef = React.forwardRef<View, BlurViewProps>((props, forwardRef) => (
+  <BlurView {...props} forwardedRef={forwardRef} />
+));
+
+export default BlurViewWithForwardedRef;
