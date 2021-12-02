@@ -95,7 +95,7 @@
   "react-native-branch": "5.0.0",
   "react-native-gesture-handler": "~1.10.2",
   "react-native-get-random-values": "~1.7.0",
-  "react-native-maps": "0.28.1",
+  "react-native-maps": "0.29.4",
   "react-native-pager-view": "5.4.9",
   "react-native-reanimated": "~2.2.0",
   "react-native-safe-area-context": "3.3.2",

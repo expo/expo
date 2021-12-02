@@ -701,7 +701,7 @@ PODS:
     - React-perflogger (= 0.64.3)
   - RNCAsyncStorage (1.15.9):
     - React-Core
-  - RNCMaskedView (0.2.5):
+  - RNCMaskedView (0.2.6):
     - React-Core
   - RNCPicker (2.1.0):
     - React-Core
@@ -1263,7 +1263,7 @@ SPEC CHECKSUMS:
   EXBackgroundFetch: abf903682fa67713ab40616e551208f048d1201c
   EXBarCodeScanner: 0ca9b2b1bc70380a4e344c7eca2cc6140e646bc7
   EXBattery: fcd68a46b4a3e230567eb6b61e4493a463dae663
-  EXBlur: 96f1bf507306f21b08f06b18ed03ceaf09e3f189
+  EXBlur: e6dce7b08baf79e3d8cc3eb16f10df4bdfe49db9
   EXBrightness: 2c94b7d71337fa7f701ca09fa20f4e75cd51b0e2
   EXCalendar: 0a76d471d3198b3e1e84d745650b0a3269d1e8b7
   EXCamera: ebae2fa3839ee13c56dbd3caa24fe609d492cc14
@@ -1391,7 +1391,7 @@ SPEC CHECKSUMS:
   React-runtimeexecutor: 493d9abb8b23c3f84e19ae221eeba92cadcb70dc
   ReactCommon: 8fea6422328e2fc093e25c9fac67adbcf0f04fb4
   RNCAsyncStorage: 26f25150da507524a7815f2ada06ca0967f65633
-  RNCMaskedView: b7a3b119b1d738734a9d761e4220c6850bb248a3
+  RNCMaskedView: c298b644a10c0c142055b3ae24d83879ecb13ccd
   RNCPicker: f7a40b21b915b7a187624d52f52b7bc2f73ea413
   RNDateTimePicker: 2224ee77a86b7123377597a015502435e2e49957
   RNGestureHandler: a479ebd5ed4221a810967000735517df0d2db211
