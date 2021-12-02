@@ -14,7 +14,15 @@ const config: VendoringTargetConfig = {
   modules: {
     '@stripe/stripe-react-native': {
       source: 'https://github.com/stripe/stripe-react-native.git',
-      ios: {},
+      ios: {
+        mutatePodspec(podspec: Podspec) {
+          if (!podspec.pod_target_xcconfig) {
+            podspec.pod_target_xcconfig = {};
+          }
+          podspec.pod_target_xcconfig['HEADER_SEARCH_PATHS'] =
+            '"${PODS_ROOT}/Stripe/Stripe3DS2" "${PODS_ROOT}/Headers/Public/Stripe"';
+        },
+      },
       // android: {
       //   includeFiles: 'android/**',
       //   excludeFiles: ['android/gradle.properties', 'android/.settings', 'android/.project'],

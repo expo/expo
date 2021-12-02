@@ -4294,7 +4294,7 @@ SPEC CHECKSUMS:
   RNReanimated: 9c13c86454bfd54dab7505c1a054470bfecd2563
   RNScreens: 6e1ea5787989f92b0671049b808aef64fa1ef98c
   Stripe: 41c3d261501e1dc84755b1bdabdaae50ebf92b53
-  stripe-react-native: 980f3d19f52a7dc4b373c6c20d30ebd760bc39e5
+  stripe-react-native: a5fcf07b49f1208bdc939e31a07320b35a88209f
   StripeCore: 2ea9531e863ef20f191a0d61f00dedb7f061baef
   StripeUICore: a0f9e40520823d34c63baec0782fc4a0c7fb7484
   UMAppLoader: 671576daa3fd3017d4879a5f23fc0dd3b36422a8

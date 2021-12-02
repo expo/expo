@@ -18,5 +18,8 @@
     "Stripe": [
       "~> 21.9.0"
     ]
+  },
+  "pod_target_xcconfig": {
+    "HEADER_SEARCH_PATHS": "\"${PODS_ROOT}/Stripe/Stripe3DS2\" \"${PODS_ROOT}/Headers/Public/Stripe\""
   }
 }
