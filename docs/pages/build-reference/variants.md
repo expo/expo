@@ -76,7 +76,7 @@ export default {
 };
 ```
 
-> Note: if you are using any libraries that require you to register your application identifier with an external service to use the SDK, such as Google Maps, you will need to have a separate configuration for that API for the iOS Bundle Identifier and Android Package. You can also swap this configuration in using the same approach as above.
+> **Note**: if you are using any libraries that require you to register your application identifier with an external service to use the SDK, such as Google Maps, you will need to have a separate configuration for that API for the iOS Bundle Identifier and Android Package. You can also swap this configuration in using the same approach as above.
 
 To automatically set the `APP_VARIANT` environment variable when running builds with the "development" profile, we can use `env` in **eas.json**:
 
