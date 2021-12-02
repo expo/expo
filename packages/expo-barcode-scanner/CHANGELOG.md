@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Fixed `BarCodeScanner` only scans on the first mount on Android.
+- Fixed `BarCodeScanner` only scans on the first mount on Android. ([#15393](https://github.com/expo/expo/pull/15393) by [@lukmccall](https://github.com/lukmccall))
 
 ### 💡 Others
 
