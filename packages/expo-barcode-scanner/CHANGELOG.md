@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed `BarCodeScanner` only scans on the first mount on Android.
+
 ### 💡 Others
 
 ## 11.1.0 — 2021-10-01
