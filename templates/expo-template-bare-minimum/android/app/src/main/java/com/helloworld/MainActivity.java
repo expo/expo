@@ -41,7 +41,7 @@ public class MainActivity extends ReactActivity {
   }
 
   /**
-   * We try to align the back button behavior with Android S
+   * Align the back button behavior with Android S
    * where moving root activities to background instead of finishing activities.
    * @see <a href="https://developer.android.com/reference/android/app/Activity#onBackPressed()">onBackPressed</a>
    */
