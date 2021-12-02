@@ -201,6 +201,7 @@ android {
       jniLibs.srcDir "$reanimatedPath/$reanimatedVersion-$engine/jni"
       java {
         srcDirs += ['../vendored/react-native-gesture-handler/android/']
+        srcDirs += ['../vendored/react-native-safe-area-context/android/']
       }
     }
 
