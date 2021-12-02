@@ -9,6 +9,8 @@
 
 #import <React/UIView+React.h>
 
+#import "RNCPickerLabel.h"
+
 @interface RNCPicker : UIPickerView
 
 @property (nonatomic, copy) NSArray<NSDictionary *> *items;
@@ -17,6 +19,8 @@
 @property (nonatomic, strong) UIColor *color;
 @property (nonatomic, strong) UIFont *font;
 @property (nonatomic, assign) NSTextAlignment textAlign;
+
+@property (nonatomic, assign) NSInteger numberOfLines;
 
 @property (nonatomic, copy) RCTBubblingEventBlock onChange;
 

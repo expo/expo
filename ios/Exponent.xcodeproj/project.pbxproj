@@ -597,6 +597,9 @@
 		FCF6D37025B34BC200808BF5 /* NotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCF6D36F25B34BC200808BF5 /* NotificationService.swift */; };
 		FCF6D37425B34BC200808BF5 /* ExpoNotificationServiceExtension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = FCF6D36D25B34BC200808BF5 /* ExpoNotificationServiceExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		FE8D4A1FC2BDC25C8D4684F8 /* ExpoModulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C849D84FFC04012BBF6DFFD /* ExpoModulesProvider.swift */; };
+		2E2E55ADAE3243799CC2CDFE /* RNCPicker.m in Sources */ = {isa = PBXBuildFile; fileRef = A60CC11587F645D0BF1C832F /* RNCPicker.m */; settings = {COMPILER_FLAGS = "-w"; }; };
+		C3C2D83067C44A679721209C /* RNCPickerLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = E37EA5BB197945508A6A14F0 /* RNCPickerLabel.m */; settings = {COMPILER_FLAGS = "-w"; }; };
+		FBCC5A97F536402C98688A94 /* RNCPickerManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 36B3AC83321C444B879BD737 /* RNCPickerManager.m */; settings = {COMPILER_FLAGS = "-w"; }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -1276,6 +1279,12 @@
 		FCF6D36D25B34BC200808BF5 /* ExpoNotificationServiceExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = ExpoNotificationServiceExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		FCF6D36F25B34BC200808BF5 /* NotificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationService.swift; sourceTree = "<group>"; };
 		FCF6D37125B34BC200808BF5 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		DF1B991D1D1D4B59AEFEAB9E /* RNCPicker.h */ = {isa = PBXFileReference; name = "RNCPicker.h"; path = "RNCPicker.h"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; explicitFileType = undefined; includeInIndex = 0; };
+		A60CC11587F645D0BF1C832F /* RNCPicker.m */ = {isa = PBXFileReference; name = "RNCPicker.m"; path = "RNCPicker.m"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; explicitFileType = undefined; includeInIndex = 0; };
+		DC399A3FAB604717AA140A63 /* RNCPickerLabel.h */ = {isa = PBXFileReference; name = "RNCPickerLabel.h"; path = "RNCPickerLabel.h"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; explicitFileType = undefined; includeInIndex = 0; };
+		E37EA5BB197945508A6A14F0 /* RNCPickerLabel.m */ = {isa = PBXFileReference; name = "RNCPickerLabel.m"; path = "RNCPickerLabel.m"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; explicitFileType = undefined; includeInIndex = 0; };
+		C81E8BFA54234873A380A1F9 /* RNCPickerManager.h */ = {isa = PBXFileReference; name = "RNCPickerManager.h"; path = "RNCPickerManager.h"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; explicitFileType = undefined; includeInIndex = 0; };
+		36B3AC83321C444B879BD737 /* RNCPickerManager.m */ = {isa = PBXFileReference; name = "RNCPickerManager.m"; path = "RNCPickerManager.m"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; explicitFileType = undefined; includeInIndex = 0; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -1330,6 +1339,12 @@
 				07CB4DC826045AFE0057443E /* RNCPicker.m */,
 				07CB4DC926045AFE0057443E /* RNCPickerManager.h */,
 				07CB4DCA26045AFE0057443E /* RNCPickerManager.m */,
+				DF1B991D1D1D4B59AEFEAB9E /* RNCPicker.h */,
+				A60CC11587F645D0BF1C832F /* RNCPicker.m */,
+				DC399A3FAB604717AA140A63 /* RNCPickerLabel.h */,
+				E37EA5BB197945508A6A14F0 /* RNCPickerLabel.m */,
+				C81E8BFA54234873A380A1F9 /* RNCPickerManager.h */,
+				36B3AC83321C444B879BD737 /* RNCPickerManager.m */,
 			);
 			name = Picker;
 			sourceTree = "<group>";
@@ -3276,6 +3291,9 @@
 				8B1448C54DEB4CFDB79D7E45 /* RNCSafeAreaViewMode.m in Sources */,
 				6782D340A0024AF58B3805D0 /* RNSVGTopAlignedLabel.ios.m in Sources */,
 				827A699919CED163689E655D /* ExpoModulesProvider.swift in Sources */,
+				2E2E55ADAE3243799CC2CDFE /* RNCPicker.m in Sources */,
+				C3C2D83067C44A679721209C /* RNCPickerLabel.m in Sources */,
+				FBCC5A97F536402C98688A94 /* RNCPickerManager.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
