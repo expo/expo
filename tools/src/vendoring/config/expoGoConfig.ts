@@ -24,8 +24,19 @@ const config: VendoringTargetConfig = {
         },
       },
       // android: {
-      //   includeFiles: 'android/**',
-      //   excludeFiles: ['android/gradle.properties', 'android/.settings', 'android/.project'],
+      //   excludeFiles: [
+      //     'android/src/main/java/com/reactnativestripesdk/GooglePayButtonManager.kt',
+      //     'android/src/main/java/com/reactnativestripesdk/GooglePayButtonView.kt',
+      //   ],
+      //   transforms: {
+      //     content: [
+      //       {
+      //         paths: 'StripeSdkPackage.kt',
+      //         find: /, GooglePayButtonManager\(\)/,
+      //         replaceWith: '',
+      //       },
+      //     ],
+      //   },
       // },
     },
     'lottie-react-native': {
