@@ -4,6 +4,7 @@ import android.content.Context
 import android.net.Uri
 import android.os.AsyncTask
 import android.os.Handler
+import android.os.HandlerThread
 import android.os.Looper
 import android.util.Log
 import com.facebook.react.ReactApplication
@@ -50,12 +51,14 @@ class UpdatesController private constructor(
 
   private var launcher: Launcher? = null
   val databaseHolder = DatabaseHolder(UpdatesDatabase.getInstance(context))
+
   // TODO: move away from DatabaseHolder pattern to Handler thread
   private val databaseHandlerThread = HandlerThread("expo-updates-database")
-  init {
+  private lateinit var databaseHandler: Handler
+  private fun initializeDatabaseHandler() {
     databaseHandlerThread.start()
+    databaseHandler = Handler(databaseHandlerThread.looper)
   }
-  private val databaseHandler = Handler(databaseHandlerThread.looper)
 
   private var loaderTask: LoaderTask? = null
   private var remoteLoadStatus = ErrorRecoveryDelegate.RemoteLoadStatus.IDLE
@@ -199,6 +202,7 @@ class UpdatesController private constructor(
       isEmergencyLaunch = true
     }
 
+    initializeDatabaseHandler()
     initializeErrorRecovery(context)
 
     val databaseLocal = getDatabase()
