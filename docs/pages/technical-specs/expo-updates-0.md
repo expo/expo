@@ -47,7 +47,7 @@ A conformant client library MUST make a GET request with the headers:
 2. `expo-runtime-version` MUST be a runtime version compatible with the client. A runtime version stipulates the native code setup a client is running. It should be set when the client is built. For example, in an iOS client, the value may be set in a plist file.
 3. Any headers stipulated by a previous responses' [server defined headers](#manifest-response-headers).
 
-A conformant client library MUST also send at least one of `accept: application/expo+json`, `accept: application/json`, or `accept: multipart/mixed` though SHOULD send `accept: application/expo+json, application/json, multipart/mixed` with preferences expressed with "q" parameters as specified in [RFC 7231](https://datatracker.ietf.org/doc/html/rfc7231#section-5.3.1).
+A conformant client library MUST also send at least one of `accept: application/expo+json`, `accept: application/json`, or `accept: multipart/mixed` based on the supported response structures though SHOULD send `accept: application/expo+json, application/json, multipart/mixed`. A conformant client library MAY express preference using "q" parameters as specified in [RFC 7231](https://datatracker.ietf.org/doc/html/rfc7231#section-5.3.1), which default to `1`.
 
 Example:
 ```
@@ -58,7 +58,7 @@ expo-runtime-version: *
 
 ## Manifest Response
 
-A conformant server MUST return a response structured in one of two ways:
+A conformant server MUST return a response structured in at least one of two ways. A conformant server MAY support either or both response structures, and when an unsupported response structure is requested the server should respond with a `406` error.
 - For a response with `content-type: application/json` or `content-type: application/expo+json`, the [manifest headers](#manifest-response-headers) MUST be sent in the response headers and the [manifest body](#manifest-response-body) MUST be sent in the response body.
 - For a response with `content-type: multipart/mixed`, the response MUST be structured as specified in the [multipart manifest response](#multipart-manifest-response) section.
 
@@ -130,11 +130,11 @@ type Asset = {
 
 A manifest response of this format is defined by the `multipart/mixed` MIME type as defined by [RFC 2046](https://tools.ietf.org/html/rfc2046#section-5.1). Each part is defined as follows:
 1. REQUIRED `"manifest"` part:
-    - MUST have a `content-disposition` header with a name parameter equal to `manifest`. e.g. `content-disposition: inline; name="manifest"`
+    - MUST have a `content-disposition` header with a name parameter equal to `manifest`. e.g. `content-disposition: inline; name="manifest"`.
     - The [manifest headers](#manifest-response-headers) MUST be sent in the part headers.
     - The [manifest body](#manifest-response-body) MUST be sent in the part body.
 2. OPTIONAL `"extensions"` part:
-    - MUST have `content-disposition` header with a name parameter equal to `extensions`. e.g. `content-disposition: inline; name="extensions"`
+    - MUST have `content-disposition` header with a name parameter equal to `extensions`. e.g. `content-disposition: inline; name="extensions"`.
     - MUST have header `content-type: application/json`.
     - The [manifest extensions](#manifest-extensions) MUST be sent in the part body.
 
