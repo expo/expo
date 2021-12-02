@@ -58,7 +58,7 @@ expo-runtime-version: *
 
 ## Manifest Response
 
-A conformant server MUST return a response structured in at least one of two ways. A conformant server MAY support either or both response structures, and when an unsupported response structure is requested the server should respond with a `406` error.
+A conformant server MUST return a response structured in at least one of two ways. A conformant server MAY support either or both response structures, and when an unsupported response structure is requested the server SHOULD respond with an HTTP `406` error status.
 - For a response with `content-type: application/json` or `content-type: application/expo+json`, the [manifest headers](#manifest-response-headers) MUST be sent in the response headers and the [manifest body](#manifest-response-body) MUST be sent in the response body.
 - For a response with `content-type: multipart/mixed`, the response MUST be structured as specified in the [multipart manifest response](#multipart-manifest-response) section.
 
