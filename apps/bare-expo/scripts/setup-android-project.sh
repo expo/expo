@@ -9,13 +9,7 @@ else
     yarn
 fi
 
-# 1. yarn why react-native : ... Found "react-native@0.62.2" ...
-# 2. grep Found            : Found "react-native@0.62.2"
-# 3. cut -d '@' -f2        : 0.62.2"
-# 4. rev                   : "2.26.0
-# 5. cut -c 2-             : 2.26.0
-# 6. rev                   : 0.62.2
-REACT_NATIVE_VERSION=$(yarn why react-native | grep Found | cut -d '@' -f2 | rev | cut -c 2- | rev)
+REACT_NATIVE_VERSION=$(node --print "require('react-native/package.json').version")
 
 if [ -d "node_modules/react-native/android/com/facebook/react/react-native/$REACT_NATIVE_VERSION" ]; then
     echo " ✅ React Android is installed"
@@ -41,3 +35,6 @@ else
 
     echo " ✅ React Android is now installed!"
 fi
+
+../../tools/bin/expotools.js android-generate-dynamic-macros --configuration $1 --bare
+echo " ✅ Generete dynamic macros"

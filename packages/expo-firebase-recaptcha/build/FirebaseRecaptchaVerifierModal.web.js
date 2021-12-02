@@ -1,4 +1,5 @@
-import firebase from 'firebase/compat';
+import firebase from 'firebase/compat/app';
+import 'firebase/compat/auth';
 import * as React from 'react';
 class FirebaseRecaptchaVerifierModal extends React.Component {
     verifier = null;

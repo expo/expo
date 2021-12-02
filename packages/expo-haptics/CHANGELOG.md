@@ -10,6 +10,9 @@
 
 ### 💡 Others
 
+- Removed legacy Objective-C implementation and changed the pod name to `ExpoHaptics`. ([#15083](https://github.com/expo/expo/pull/15083) by [@tsapeta](https://github.com/tsapeta))
+- Simplified iOS implementation with enums as argument types. ([#15129](https://github.com/expo/expo/pull/15129) by [@tsapeta](https://github.com/tsapeta))
+
 ## 11.0.1 — 2021-10-01
 
 _This version does not introduce any user-facing changes._

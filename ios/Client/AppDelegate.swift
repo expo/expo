@@ -1,9 +1,10 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 import Foundation
+import ExpoModulesCore
 
 @UIApplicationMain
-class AppDelegate: AppDelegateWrapper {
+class AppDelegate: ExpoAppDelegate {
   var rootViewController: EXRootViewController?
 
   override func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {

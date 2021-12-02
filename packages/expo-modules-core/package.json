@@ -1,6 +1,6 @@
 {
   "name": "expo-modules-core",
-  "version": "0.4.2",
+  "version": "0.5.0",
   "description": "The core of Expo Modules architecture",
   "main": "build/index.js",
   "types": "build/index.d.ts",
@@ -32,7 +32,7 @@
   "license": "MIT",
   "homepage": "https://github.com/expo/expo/tree/master/packages/expo-modules-core",
   "jest": {
-    "preset": "expo-module-scripts/ios"
+    "preset": "expo-module-scripts"
   },
   "dependencies": {
     "compare-versions": "^3.4.0",

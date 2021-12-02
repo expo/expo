@@ -10,7 +10,8 @@ export var AuthenticationType;
      */
     AuthenticationType[AuthenticationType["FACIAL_RECOGNITION"] = 2] = "FACIAL_RECOGNITION";
     /**
-     * __Android-only.__ Indicates iris recognition support.
+     * Indicates iris recognition support.
+     * @platform android
      */
     AuthenticationType[AuthenticationType["IRIS"] = 3] = "IRIS";
 })(AuthenticationType || (AuthenticationType = {}));

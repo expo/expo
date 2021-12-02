@@ -6,7 +6,6 @@ import com.facebook.react.bridge.ReactContext
 import com.facebook.react.bridge.ReadableMap
 import expo.modules.devmenu.modules.DevMenuInternalMenuControllerModuleInterface
 import expo.modules.devmenu.modules.DevMenuManagerProvider
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
 class DevMenuInternalMenuControllerModule(private val reactContext: ReactContext) :
@@ -79,7 +78,7 @@ class DevMenuInternalMenuControllerModule(private val reactContext: ReactContext
       return
     }
 
-    GlobalScope.launch {
+    devMenuManger.coroutineScope.launch {
       val data = devMenuManger.fetchDataSource(id)
       val result = Arguments.fromList(data.map { it.serialize() })
       promise.resolve(result)

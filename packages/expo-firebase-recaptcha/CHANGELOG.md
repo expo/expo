@@ -8,6 +8,9 @@
 
 ### 🐛 Bug fixes
 
+- Update firebase imports for web to support the v9 firebase JS sdk. ([#14829](https://github.com/expo/expo/pull/14829) by [@JJK801](https://github.com/JJK801))
+- Add missing `_reset` method to modal verifier. ([#15102](https://github.com/expo/expo/pull/15102) by [@byCedric](https://github.com/byCedric))
+
 ### 💡 Others
 
 ## 2.0.0 — 2021-10-01

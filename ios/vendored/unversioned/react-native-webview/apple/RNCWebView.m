@@ -23,6 +23,8 @@ static NSString *const MessageHandlerName = @"ReactNativeWebView";
 static NSURLCredential* clientAuthenticationCredential;
 static NSDictionary* customCertificatesForHost;
 
+NSString *const CUSTOM_SELECTOR = @"_CUSTOM_SELECTOR_";
+
 #if !TARGET_OS_OSX
 // runtime trick to remove WKWebView keyboard default toolbar
 // see: http://stackoverflow.com/questions/19033292/ios-7-uiwebview-keyboard-issue/19042279#19042279
@@ -147,6 +149,7 @@ static NSDictionary* customCertificatesForHost;
     _savedAutomaticallyAdjustsScrollIndicatorInsets = NO;
 #endif
     _enableApplePay = NO;
+    _mediaCapturePermissionGrantType = RNCWebViewPermissionGrantType_Prompt;
   }
 
 #if !TARGET_OS_OSX
@@ -188,9 +191,115 @@ static NSDictionary* customCertificatesForHost;
   return self;
 }
 
+#if !TARGET_OS_OSX
+- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer {
+    // Only allow long press gesture
+    if ([otherGestureRecognizer isKindOfClass:[UILongPressGestureRecognizer class]]) {
+        return YES;
+    }else{
+        return NO;
+    }
+}
+
+// Listener for long presses
+- (void)startLongPress:(UILongPressGestureRecognizer *)pressSender
+{
+    // When a long press ends, bring up our custom UIMenu
+    if(pressSender.state == UIGestureRecognizerStateEnded) {
+      if (!self.menuItems || self.menuItems.count == 0) {
+        return;
+      }
+        UIMenuController *menuController = [UIMenuController sharedMenuController];
+        NSMutableArray *menuControllerItems = [NSMutableArray arrayWithCapacity:self.menuItems.count];
+        
+        for(NSDictionary *menuItem in self.menuItems) {
+            NSString *menuItemLabel = [RCTConvert NSString:menuItem[@"label"]];
+            NSString *menuItemKey = [RCTConvert NSString:menuItem[@"key"]];
+            NSString *sel = [NSString stringWithFormat:@"%@%@", CUSTOM_SELECTOR, menuItemKey];
+            UIMenuItem *item = [[UIMenuItem alloc] initWithTitle: menuItemLabel
+                                                          action: NSSelectorFromString(sel)];
+            
+            [menuControllerItems addObject: item];
+        }
+  
+        menuController.menuItems = menuControllerItems;
+        [menuController setMenuVisible:YES animated:YES];
+    }
+}
+
+#endif // !TARGET_OS_OSX
+
 - (void)dealloc
 {
   [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
+- (void)tappedMenuItem:(NSString *)eventType
+{
+    // Get the selected text
+    // NOTE: selecting text in an iframe or shadow DOM will not work
+    [self.webView evaluateJavaScript: @"window.getSelection().toString()" completionHandler: ^(id result, NSError *error) {
+    if (error != nil) {
+      RCTLogWarn(@"%@", [NSString stringWithFormat:@"Error evaluating injectedJavaScript: This is possibly due to an unsupported return type. Try adding true to the end of your injectedJavaScript string. %@", error]);
+    } else {
+      if (self.onCustomMenuSelection) {
+        NSPredicate *filter = [NSPredicate predicateWithFormat:@"key contains[c] %@ ",eventType];
+        NSArray *filteredMenuItems = [self.menuItems filteredArrayUsingPredicate:filter];
+        NSDictionary *selectedMenuItem = filteredMenuItems[0];
+        NSString *label = [RCTConvert NSString:selectedMenuItem[@"label"]];
+        self.onCustomMenuSelection(@{
+            @"key": eventType,
+            @"label": label,
+            @"selectedText": result
+        });
+      } else {
+        RCTLogWarn(@"Error evaluating onCustomMenuSelection: You must implement an `onCustomMenuSelection` callback when using custom menu items");
+      }
+    }
+  }];
+}
+
+// Overwrite method that interprets which action to call upon UIMenu Selection
+// https://developer.apple.com/documentation/objectivec/nsobject/1571960-methodsignatureforselector
+- (NSMethodSignature *)methodSignatureForSelector:(SEL)sel
+{
+    NSMethodSignature *existingSelector = [super methodSignatureForSelector:sel];
+    if (existingSelector) {
+        return existingSelector;
+    }
+    return [super methodSignatureForSelector:@selector(tappedMenuItem:)];
+}
+
+// Needed to forward messages to other objects
+// https://developer.apple.com/documentation/objectivec/nsobject/1571955-forwardinvocation
+- (void)forwardInvocation:(NSInvocation *)invocation
+{
+    NSString *sel = NSStringFromSelector([invocation selector]);
+    NSRange match = [sel rangeOfString:CUSTOM_SELECTOR];
+    if (match.location == 0) {
+        [self tappedMenuItem:[sel substringFromIndex:17]];
+    } else {
+        [super forwardInvocation:invocation];
+    }
+}
+
+// Allows the instance to respond to UIMenuController Actions
+- (BOOL)canBecomeFirstResponder
+{
+    return YES;
+}
+
+// Control which items show up on the UIMenuController
+- (BOOL)canPerformAction:(SEL)action withSender:(id)sender
+{
+    NSString *sel = NSStringFromSelector(action);
+    // Do any of them have our custom keys?
+    NSRange match = [sel rangeOfString:CUSTOM_SELECTOR];
+
+    if (match.location == 0) {
+        return YES;
+    }
+    return NO;
 }
 
 /**
@@ -328,6 +437,18 @@ static NSDictionary* customCertificatesForHost;
     [self setKeyboardDisplayRequiresUserAction: _savedKeyboardDisplayRequiresUserAction];
     [self visitSource];
   }
+#if !TARGET_OS_OSX
+  // Allow this object to recognize gestures
+  if (self.menuItems != nil) {
+    UILongPressGestureRecognizer *longPress = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(startLongPress:)];
+    longPress.delegate = self;
+
+    longPress.minimumPressDuration = 0.4f;
+    longPress.numberOfTouchesRequired = 1;
+    longPress.cancelsTouchesInView = YES;
+    [self addGestureRecognizer:longPress];
+  }
+#endif // !TARGET_OS_OSX
 }
 
 // Update webview property when the component prop changes.
@@ -840,6 +961,15 @@ static NSDictionary* customCertificatesForHost;
             }
         }
     }
+    if ([[challenge protectionSpace] authenticationMethod] == NSURLAuthenticationMethodHTTPBasic) {
+        NSString *username = [_basicAuthCredential valueForKey:@"username"];
+        NSString *password = [_basicAuthCredential valueForKey:@"password"];
+        if (username && password) {
+            NSURLCredential *credential = [NSURLCredential credentialWithUser:username password:password persistence:NSURLCredentialPersistenceNone];
+            completionHandler(NSURLSessionAuthChallengeUseCredential, credential);
+            return;
+        }
+    }
     completionHandler(NSURLSessionAuthChallengePerformDefaultHandling, nil);
 }
 
@@ -933,6 +1063,32 @@ static NSDictionary* customCertificatesForHost;
   }];
 #endif // !TARGET_OS_OSX
 }
+
+#if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 150000 /* iOS 15 */
+/**
+ * Media capture permissions (prevent multiple prompts)
+ */
+- (void)                         webView:(WKWebView *)webView
+  requestMediaCapturePermissionForOrigin:(WKSecurityOrigin *)origin
+                        initiatedByFrame:(WKFrameInfo *)frame
+                                    type:(WKMediaCaptureType)type
+                         decisionHandler:(void (^)(WKPermissionDecision decision))decisionHandler {
+    if (_mediaCapturePermissionGrantType == RNCWebViewPermissionGrantType_GrantIfSameHost_ElsePrompt || _mediaCapturePermissionGrantType == RNCWebViewPermissionGrantType_GrantIfSameHost_ElseDeny) {
+        if ([origin.host isEqualToString:webView.URL.host]) {
+            decisionHandler(WKPermissionDecisionGrant);
+        } else {
+            WKPermissionDecision decision = _mediaCapturePermissionGrantType == RNCWebViewPermissionGrantType_GrantIfSameHost_ElsePrompt ? WKPermissionDecisionPrompt : WKPermissionDecisionDeny;
+            decisionHandler(decision);
+        }
+    } else if (_mediaCapturePermissionGrantType == RNCWebViewPermissionGrantType_Deny) {
+        decisionHandler(WKPermissionDecisionDeny);
+    } else if (_mediaCapturePermissionGrantType == RNCWebViewPermissionGrantType_Grant) {
+        decisionHandler(WKPermissionDecisionGrant);
+    } else {
+        decisionHandler(WKPermissionDecisionPrompt);
+    }
+}
+#endif
 
 #if !TARGET_OS_OSX
 /**

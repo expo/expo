@@ -20,7 +20,7 @@ export function expoModulesTransforms(prefix: string): FileTransforms {
     ],
     content: [
       {
-        find: /\bReact/g,
+        find: /\bReact(?!Common)/g,
         replaceWith: `${prefix}React`,
       },
       {
@@ -72,6 +72,49 @@ export function expoModulesTransforms(prefix: string): FileTransforms {
         paths: ['EXNativeModulesProxy.m'],
         find: 'NSClassFromString(@"ExpoModulesProvider")',
         replaceWith: `NSClassFromString(@"${prefix}ExpoModulesProvider")`
+      },
+      {
+        // Prefixes Objective-C name of the Swift modules provider.
+        paths: ['EXNativeModulesProxy.m'],
+        find: '[NSString stringWithFormat:@"%@.ExpoModulesProvider"',
+        replaceWith: `[NSString stringWithFormat:@"%@.${prefix}ExpoModulesProvider"`
+      },
+      {
+        // Prefixes imports from other React Native libs
+        paths: objcFilesPattern,
+        find: new RegExp(`#import <(ReactCommon|jsi)/(${prefix})?`, 'g'),
+        replaceWith: `#import <${prefix}$1/${prefix}`,
+      },
+      {
+        // Prefixes versionable namespaces
+        paths: objcFilesPattern,
+        find: /\bnamespace (expo|facebook)\b/g,
+        replaceWith: `namespace ${prefix}$1`,
+      },
+      {
+        // Prefixes usages of versionable namespaces
+        paths: objcFilesPattern,
+        find: /\b(expo|facebook)::/g,
+        replaceWith: `${prefix}$1::`,
+      },
+
+      // Prefixes versionable namespaces (react namespace is already prefixed with uppercased "R")
+      {
+        paths: objcFilesPattern,
+        find: /::react::/g,
+        replaceWith: `::${prefix}React::`,
+      },
+      {
+        paths: objcFilesPattern,
+        find: /\bnamespace react\b/g,
+        replaceWith: `namespace ${prefix}React`,
+      },
+
+      // Prefix umbrella header imports
+      {
+        paths: '*.h',
+        find: /\b(\w+-umbrella\.h)\b/g,
+        replaceWith: `${prefix}$1`,
       }
     ],
   };

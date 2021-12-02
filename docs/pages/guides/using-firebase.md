@@ -10,7 +10,7 @@ title: Using Firebase
 
 If you'd like to use Firebase in the Expo Go app with the managed workflow, we'd recommend using the [Firebase JS SDK](https://github.com/firebase/firebase-js-sdk). It supports Authentication, Firestore & Realtime databases, Storage, and Functions on React Native. Other modules like Analytics are [not supported through the Firebase JS SDK](https://firebase.google.com/support/guides/environments_js-sdk), but you can use [expo-firebase-analytics](/versions/latest/sdk/firebase-analytics) for that.
 
-If you'd like access to the full suite of native firebase tools, we recommend using the [react-native-firebase](https://github.com/invertase/react-native-firebase), which is supported in [custom development clients](/clients/introduction.md) using a built-in [config plugin].
+If you'd like access to the full suite of native firebase tools, we recommend using the [react-native-firebase](https://github.com/invertase/react-native-firebase) library and creating [a development build] of your app (/development/introduction.md) using a built-in [config plugin].
 
 > **Note:** This guide mostly covers Firebase Realtime Database (and some Firestore as well). For more background on why some Firebase services are not supported, please refer to the ["What goes into the Expo SDK?" FYI page](https://expo.fyi/whats-in-the-sdk).
 
@@ -71,7 +71,7 @@ Go into Firebase Console >> _Realtime Database_, and under the Rules tab you sho
 Storing data through Firebase RTDB is pretty simple. Imagine we're creating a game where highscores are stored in RTDB for everyone to see. We could create a `users` bucket that is referenced by each user. Setting their highscore is straightforward:
 
 ```javascript
-import { getDatabase, ref, onValue } from 'firebase/database';
+import { getDatabase, ref, onValue, set } from 'firebase/database';
 
 function storeHighScore(userId, score) {
   const db = getDatabase();
@@ -149,14 +149,19 @@ We are now ready to connect the Facebook login code in our app with our Firebase
 
 ```javascript
 import { initializeApp } from 'firebase/app';
-import { getAuth, onAuthStateChanged, FacebookAuthProvider, signInWithCredential } from 'firebase/auth';
+import {
+  getAuth,
+  onAuthStateChanged,
+  FacebookAuthProvider,
+  signInWithCredential,
+} from 'firebase/auth';
 
 initializeApp(config);
 
 const auth = getAuth();
 
 // Listen for authentication state to change.
-onAuthStateChanged(auth, (user) => {
+onAuthStateChanged(auth, user => {
   if (user != null) {
     console.log('We are authenticated now!');
   }
@@ -177,10 +182,9 @@ async function loginWithFacebook() {
     const credential = facebookAuthProvider.credential(token);
 
     // Sign in with credential from the Facebook user.
-    signInWithCredential(auth, credential)
-      .catch(error => {
-        // Handle Errors here.
-      });
+    signInWithCredential(auth, credential).catch(error => {
+      // Handle Errors here.
+    });
   }
 }
 ```

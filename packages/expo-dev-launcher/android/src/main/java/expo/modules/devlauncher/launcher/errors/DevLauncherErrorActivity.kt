@@ -1,6 +1,7 @@
 package expo.modules.devlauncher.launcher.errors
 
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.widget.BaseAdapter
@@ -9,13 +10,11 @@ import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentPagerAdapter
 import com.facebook.react.ReactActivity
-import expo.modules.devlauncher.DevLauncherController
 import expo.modules.devlauncher.databinding.ErrorActivityContentViewBinding
 import expo.modules.devlauncher.koin.DevLauncherKoinComponent
 import expo.modules.devlauncher.launcher.DevLauncherControllerInterface
 import expo.modules.devlauncher.launcher.errors.fragments.DevLauncherErrorConsoleFragment
 import expo.modules.devlauncher.launcher.errors.fragments.DevLauncherErrorFragment
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import org.koin.core.component.inject
 import java.lang.ref.WeakReference
@@ -89,7 +88,7 @@ class DevLauncherErrorActivity
       return
     }
 
-    GlobalScope.launch {
+    controller.coroutineScope.launch {
       controller
         .loadApp(
           appUrl,
@@ -119,6 +118,19 @@ class DevLauncherErrorActivity
           Intent(activity, DevLauncherErrorActivity::class.java)
         )
       }
+    }
+
+    fun showFatalError(context: Context, error: DevLauncherAppError) {
+      addError(error)
+      
+      context.startActivity(
+        Intent(context, DevLauncherErrorActivity::class.java).apply {
+          addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or
+            Intent.FLAG_ACTIVITY_CLEAR_TASK or
+            Intent.FLAG_ACTIVITY_NO_ANIMATION
+          )
+        }
+      )
     }
 
     fun addError(error: DevLauncherAppError) {

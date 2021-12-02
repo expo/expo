@@ -8,6 +8,7 @@ export interface SearchOptions {
   ignorePaths?: string[] | null;
   exclude?: string[] | null;
   platform: SupportedPlatform;
+  silent?: boolean;
 
   // Scratched from project's config
   flags?: Record<string, any>;
@@ -53,6 +54,16 @@ export interface RawExpoModuleConfig {
      * Names of Swift native modules classes to put to the generated modules provider file.
      */
     modulesClassNames?: string[];
+
+    /**
+     * Names of Swift classes that hooks into `ExpoAppDelegate` to receive AppDelegate life-cycle events.
+     */
+    appDelegateSubscribers?: string[];
+
+    /**
+     * Names of Swift classes that implement `ExpoReactDelegateHandler` to hook React instance creation.
+     */
+    reactDelegateHandlers?: string[];
   };
 
   /**

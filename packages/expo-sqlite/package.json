@@ -33,15 +33,15 @@
   "license": "MIT",
   "homepage": "https://docs.expo.dev/versions/latest/sdk/sqlite/",
   "jest": {
-    "preset": "expo-module-scripts/ios"
+    "preset": "expo-module-scripts"
   },
   "dependencies": {
-    "@expo/websql": "^1.0.1",
-    "expo-modules-core": "~0.4.2",
-    "lodash": "^4.17.15"
+    "@expo/websql": "^1.0.1"
   },
   "devDependencies": {
-    "@types/lodash.zipobject": "^4.1.4",
     "expo-module-scripts": "^2.0.0"
+  },
+  "peerDependencies": {
+    "expo": "*"
   }
 }

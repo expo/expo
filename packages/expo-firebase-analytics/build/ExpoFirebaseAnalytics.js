@@ -77,9 +77,6 @@ export default {
     async setAnalyticsCollectionEnabled(isEnabled) {
         return callAnalyticsModule('setAnalyticsCollectionEnabled', isEnabled);
     },
-    async setCurrentScreen(screenName, screenClassOverride) {
-        return callAnalyticsModule('setCurrentScreen', screenName, screenClassOverride);
-    },
     async setSessionTimeoutDuration(sessionTimeoutInterval) {
         return callAnalyticsModule('setSessionTimeoutDuration', sessionTimeoutInterval);
     },

@@ -20,7 +20,8 @@ Pod::Spec.new do |s|
   s.pod_target_xcconfig = {
     'USE_HEADERMAP' => 'YES',
     'DEFINES_MODULE' => 'YES',
-    'CLANG_CXX_LANGUAGE_STANDARD' => 'c++14'
+    'CLANG_CXX_LANGUAGE_STANDARD' => 'c++14',
+    'SWIFT_COMPILATION_MODE' => 'wholemodule',
   }
 
   s.dependency 'React-Core'
@@ -34,12 +35,12 @@ Pod::Spec.new do |s|
   end
 
   s.exclude_files = 'Tests/'
-  s.private_header_files = '**/Swift.h'
+  s.private_header_files = ['**/*+Private.h', '**/Swift.h']
 
   s.test_spec 'Tests' do |test_spec|
     test_spec.dependency 'Quick'
     test_spec.dependency 'Nimble'
 
-    test_spec.source_files = 'Tests/**/*.swift'
+    test_spec.source_files = 'Tests/**/*.{m,swift}'
   end
 end

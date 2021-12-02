@@ -5,7 +5,9 @@ sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-google-si
 
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 
-`expo-google-sign-in` provides native Google authentication for **standalone** Expo apps or bare React Native apps. It cannot be used in Expo Go as the native `GoogleSignIn` library expects your `REVERSED_CLIENT_ID` in the **Info.plist** at build-time. To use Google authentication in the Expo Go, check out [`expo-google-app-auth`](google.md) or [expo-app-auth](app-auth.md).
+> This package has been deprecated in favor of [`expo-auth-session`](auth-session.md)'s Google provider. Users can also create custom development clients with the native community package [`@react-native-google-signin/google-signin`](https://www.npmjs.com/package/@react-native-google-signin/google-signin).
+
+`expo-google-sign-in` provides native Google authentication for **standalone** Expo apps or bare React Native apps. It cannot be used in Expo Go as the native `GoogleSignIn` library expects your `REVERSED_CLIENT_ID` in the **Info.plist** at build-time. To use Google authentication in the Expo Go, and on web, check out [`expo-auth-session`](../../../guides/authentication.md#google).
 
 <PlatformsSection android emulator ios simulator />
 

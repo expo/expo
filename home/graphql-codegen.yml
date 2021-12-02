@@ -8,4 +8,10 @@ generates:
     plugins:
       - typescript
       - typescript-operations
-      - typed-document-node
+      - typescript-react-apollo
+    config:
+      withHooks: true
+      withRefetchFn: true
+      reactApolloVersion: 3
+      preResolveTypes: true
+      dedupeOperationSuffix: true

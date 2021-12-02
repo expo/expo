@@ -16,7 +16,10 @@ import expo.modules.core.ViewManager;
 import expo.modules.core.interfaces.ExpoMethod;
 import expo.modules.kotlin.ExpoModulesHelper;
 import expo.modules.kotlin.KotlinInteropModuleRegistry;
+import expo.modules.kotlin.KPromiseWrapper;
+import expo.modules.kotlin.ModulesProvider;
 
+import java.lang.ref.WeakReference;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -58,7 +61,21 @@ public class NativeModulesProxy extends ReactContextBaseJavaModule {
 
     mKotlinInteropModuleRegistry = new KotlinInteropModuleRegistry(
       Objects.requireNonNull(ExpoModulesHelper.Companion.getModulesProvider()),
-      moduleRegistry
+      moduleRegistry,
+      new WeakReference<>(context)
+    );
+  }
+
+  public NativeModulesProxy(ReactApplicationContext context, ModuleRegistry moduleRegistry, ModulesProvider modulesProvider) {
+    super(context);
+    mModuleRegistry = moduleRegistry;
+    mExportedMethodsKeys = new HashMap<>();
+    mExportedMethodsReverseKeys = new HashMap<>();
+
+    mKotlinInteropModuleRegistry = new KotlinInteropModuleRegistry(
+      Objects.requireNonNull(modulesProvider),
+      moduleRegistry,
+      new WeakReference<>(context)
     );
   }
 
@@ -132,7 +149,7 @@ public class NativeModulesProxy extends ReactContextBaseJavaModule {
     }
 
     if (mKotlinInteropModuleRegistry.hasModule(moduleName)) {
-      mKotlinInteropModuleRegistry.callMethod(moduleName, methodName, arguments, new PromiseWrapper(promise));
+      mKotlinInteropModuleRegistry.callMethod(moduleName, methodName, arguments, new KPromiseWrapper(promise));
       return;
     }
 
@@ -226,5 +243,6 @@ public class NativeModulesProxy extends ReactContextBaseJavaModule {
   @Override
   public void onCatalystInstanceDestroy() {
     mModuleRegistry.onDestroy();
+    mKotlinInteropModuleRegistry.onDestroy();
   }
 }

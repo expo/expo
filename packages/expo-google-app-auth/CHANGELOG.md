@@ -10,6 +10,16 @@
 
 ### 💡 Others
 
+- Added deprecation notice for module. ([#15294](https://github.com/expo/expo/pull/15294) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 9.0.0 — 2021-10-28
+
+_This version does not introduce any user-facing changes._
+
+## 8.2.4 — 2021-10-15
+
+_This version does not introduce any user-facing changes._
+
 ## 8.2.3 — 2021-09-28
 
 _This version does not introduce any user-facing changes._

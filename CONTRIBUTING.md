@@ -53,6 +53,8 @@ Manual smoke tests are included in `apps/native-component-list`, this is a good 
    - iOS: `yarn ios`
    - Android: `yarn android`
 
+    If you are working on a Linux distribution, make sure to set the `TERMINAL` environment variable to your preferred terminal application. (e.g. `export TERMINAL="Konsole"`)
+ 
 8. You are now running the `test-suite` app via the `bare-expo` project. The next section explains how you can begin to make changes to SDK packages.
 
 > If this didn't work for you as described, please [open an issue.](https://github.com/expo/expo/issues/new/choose)
@@ -72,6 +74,7 @@ All Expo SDK packages can be found in the `packages/` directory. These packages 
    - If you are only making JavaScript changes, you can run `test-suite` from the `apps/test-suite` project using `expo start`.
    - To run the full test suite with Puppeteer or Detox, you can run the tests `yarn test:<android | ios | web>`.
 5. You can edit a package's native code directly from its respective folder in the `packages/` directory or by opening `bare-expo` in a native editor:
+   - Navigate to the `bare-expo` app directory: `cd apps/bare-expo`
    - Android Studio: `yarn edit:android`
    - Xcode: `yarn edit:ios`
    - Remember to **rebuild** the native project whenever you make a native change

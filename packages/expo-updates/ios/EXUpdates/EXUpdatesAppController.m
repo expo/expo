@@ -9,6 +9,7 @@
 #import <EXUpdates/EXUpdatesRemoteAppLoader.h>
 #import <EXUpdates/EXUpdatesSelectionPolicyFactory.h>
 #import <EXUpdates/EXUpdatesUtils.h>
+#import <EXUpdates/EXUpdatesBuildData.h>
 #import <React/RCTReloadCommand.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -144,6 +145,8 @@ static NSString * const EXUpdatesErrorEventName = @"error";
     return;
   }
 
+  [EXUpdatesBuildData ensureBuildDataIsConsistentAsync:_database config:_config];
+
   [_errorRecovery startMonitoring];
 
   _loaderTask = [[EXUpdatesAppLoaderTask alloc] initWithConfig:_config
@@ -238,6 +241,11 @@ static NSString * const EXUpdatesErrorEventName = @"error";
 
 - (void)appLoaderTask:(EXUpdatesAppLoaderTask *)appLoaderTask didFinishWithLauncher:(id<EXUpdatesAppLauncher>)launcher isUpToDate:(BOOL)isUpToDate
 {
+  // if isUpToDate is false, that means a remote update is still loading in the background (this
+  // method was called with a cached update because the timer ran out) so don't update the status
+  if (_remoteLoadStatus == EXUpdatesRemoteLoadStatusLoading && isUpToDate) {
+    _remoteLoadStatus = EXUpdatesRemoteLoadStatusIdle;
+  }
   _launcher = launcher;
   if (self->_delegate) {
     [EXUpdatesUtils runBlockOnMainThread:^{

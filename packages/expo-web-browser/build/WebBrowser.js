@@ -11,12 +11,13 @@ const emptyCustomTabsPackages = {
 };
 // @needsAudit
 /**
- * _Android only_. Returns a list of applications package names supporting Custom Tabs, Custom Tabs
+ * Returns a list of applications package names supporting Custom Tabs, Custom Tabs
  * service, user chosen and preferred one. This may not be fully reliable, since it uses
  * `PackageManager.getResolvingActivities` under the hood. (For example, some browsers might not be
  * present in browserPackages list once another browser is set to default.)
  *
  * @return The promise which fulfils with [`WebBrowserCustomTabsResults`](#webbrowsercustomtabsresults) object.
+ * @platform android
  */
 export async function getCustomTabsSupportingBrowsersAsync() {
     if (!ExponentWebBrowser.getCustomTabsSupportingBrowsersAsync) {
@@ -31,12 +32,13 @@ export async function getCustomTabsSupportingBrowsersAsync() {
 }
 // @needsAudit
 /**
- * _Android only_. This method calls `warmUp` method on [CustomTabsClient](https://developer.android.com/reference/android/support/customtabs/CustomTabsClient.html#warmup(long))
+ * This method calls `warmUp` method on [CustomTabsClient](https://developer.android.com/reference/android/support/customtabs/CustomTabsClient.html#warmup(long))
  * for specified package.
  *
- * @param browserPackage _Optional_ - Package of browser to be warmed up. If not set, preferred browser will be warmed.
+ * @param browserPackage Package of browser to be warmed up. If not set, preferred browser will be warmed.
  *
- * @return A promise which fulfils with `{ package: string }` object.
+ * @return A promise which fulfils with `WebBrowserWarmUpResult` object.
+ * @platform android
  */
 export async function warmUpAsync(browserPackage) {
     if (!ExponentWebBrowser.warmUpAsync) {
@@ -51,13 +53,15 @@ export async function warmUpAsync(browserPackage) {
 }
 // @needsAudit
 /**
- * _Android only_. This method initiates (if needed) [CustomTabsSession](https://developer.android.com/reference/android/support/customtabs/CustomTabsSession.html#maylaunchurl)
+ * This method initiates (if needed) [CustomTabsSession](https://developer.android.com/reference/android/support/customtabs/CustomTabsSession.html#maylaunchurl)
  * and calls its `mayLaunchUrl` method for browser specified by the package.
  *
  * @param url The url of page that is likely to be loaded first when opening browser.
- * @param browserPackage _Optional_ - Package of browser to be informed. If not set, preferred browser will be used.
+ * @param browserPackage Package of browser to be informed. If not set, preferred
+ * browser will be used.
  *
- * @return A promise which fulfils with `{ package: string }` object.
+ * @return A promise which fulfils with `WebBrowserMayInitWithUrlResult` object.
+ * @platform android
  */
 export async function mayInitWithUrlAsync(url, browserPackage) {
     if (!ExponentWebBrowser.mayInitWithUrlAsync) {
@@ -72,15 +76,16 @@ export async function mayInitWithUrlAsync(url, browserPackage) {
 }
 // @needsAudit
 /**
- * _Android only_. This methods removes all bindings to services created by [`warmUpAsync`](#webbrowserwarmupasyncbrowserpackage)
+ * This methods removes all bindings to services created by [`warmUpAsync`](#webbrowserwarmupasyncbrowserpackage)
  * or [`mayInitWithUrlAsync`](#webbrowsermayinitwithurlasyncurl-browserpackage). You should call
  * this method once you don't need them to avoid potential memory leaks. However, those binding
  * would be cleared once your application is destroyed, which might be sufficient in most cases.
  *
- * @param browserPackage _Optional_ - Package of browser to be cooled. If not set, preferred browser will be used.
+ * @param browserPackage Package of browser to be cooled. If not set, preferred browser will be used.
  *
- * @return The promise which fulfils with `{ package: string }` when cooling is performed, or
+ * @return The promise which fulfils with ` WebBrowserCoolDownResult` when cooling is performed, or
  * an empty object when there was no connection to be dismissed.
+ * @platform android
  */
 export async function coolDownAsync(browserPackage) {
     if (!ExponentWebBrowser.coolDownAsync) {
@@ -135,9 +140,10 @@ export async function openBrowserAsync(url, browserParams = {}) {
 }
 // @needsAudit
 /**
- * _iOS only_. Dismisses the presented web browser.
+ * Dismisses the presented web browser.
  *
- * @return The promise which fulfils with `{ type: 'dismiss' }` object.
+ * @return The `void` on successful attempt, or throws error, if dismiss functionality is not avaiable.
+ * @platform ios
  */
 export function dismissBrowser() {
     if (!ExponentWebBrowser.dismissBrowser) {
@@ -222,7 +228,7 @@ export function dismissAuthSession() {
 }
 // @needsAudit
 /**
- * _Web only_. Possibly completes an authentication session on web in a window popup. The method
+ * Possibly completes an authentication session on web in a window popup. The method
  * should be invoked on the page that the window redirects to.
  *
  * @param options
@@ -246,6 +252,8 @@ export function dismissAuthSession() {
  *
  * If the error `ERR_WEB_BROWSER_REDIRECT` was thrown, it may mean that the parent window was
  * reloaded before the auth was completed. In this case you'll need to close the child window manually.
+ *
+ * @platform web
  */
 export function maybeCompleteAuthSession(options = {}) {
     if (ExponentWebBrowser.maybeCompleteAuthSession) {

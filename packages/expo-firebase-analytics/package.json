@@ -40,5 +40,8 @@
   },
   "dependencies": {
     "expo-firebase-core": "~4.0.1"
+  },
+  "peerDependencies": {
+    "expo": "*"
   }
 }

@@ -7,8 +7,6 @@ import InstallSection from '~/components/plugins/InstallSection';
 
 Every app is made up of some combination of React Native, Expo SDK, and third party libraries. It's important to understand how to use the libraries from each of these sources, and how to determine whether a third-party library will work in your project or not.
 
-If you are using the bare workflow, read the [guide for using libraries in the bare workflow](../bare/using-libraries.md) instead of this page.
-
 ## Using React Native Core Libraries
 
 React Native provides a set of built-in primitives that most developers will need in their app. These include components such as ActivityIndicator, TextInput, Text, ScrollView, and View. These are listed in the [Core Components and APIs](https://reactnative.dev/docs/components-and-apis) page of the React Native documentation.

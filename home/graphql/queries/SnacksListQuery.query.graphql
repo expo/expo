@@ -4,12 +4,7 @@ query Home_AccountSnacks($accountName: String!, $limit: Int!, $offset: Int!) {
       id
       name
       snacks(limit: $limit, offset: $offset) {
-        id
-        name
-        description
-        fullName
-        slug
-        isDraft
+        ...CommonSnackData
       }
     }
   }

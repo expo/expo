@@ -2,12 +2,13 @@ package expo.modules.kotlin
 
 import com.google.common.truth.Truth
 import expo.modules.kotlin.modules.Module
-import expo.modules.kotlin.modules.module
+import expo.modules.kotlin.modules.ModuleDefinition
 import io.mockk.mockk
 import org.junit.Test
+import java.lang.ref.WeakReference
 
 class DummyModule_1 : Module() {
-  override fun definition() = module {
+  override fun definition() = ModuleDefinition {
     name("dummy-1")
     constants {
       mapOf(
@@ -19,7 +20,7 @@ class DummyModule_1 : Module() {
 }
 
 class DummyModule_2 : Module() {
-  override fun definition() = module {
+  override fun definition() = ModuleDefinition {
     name("dummy-2")
     viewManager {
       view { mockk() }
@@ -39,7 +40,11 @@ val provider = object : ModulesProvider {
 class KotlinInteropModuleRegistryTest {
   @Test
   fun `should register modules from provider`() {
-    val interopModuleRegistry = KotlinInteropModuleRegistry(provider, mockk())
+    val interopModuleRegistry = KotlinInteropModuleRegistry(
+      provider,
+      mockk(),
+      WeakReference(mockk(relaxed = true))
+    )
 
     interopModuleRegistry.hasModule("dummy-1")
     interopModuleRegistry.hasModule("dummy-2")
@@ -47,7 +52,11 @@ class KotlinInteropModuleRegistryTest {
 
   @Test
   fun `should export constants`() {
-    val interopModuleRegistry = KotlinInteropModuleRegistry(provider, mockk())
+    val interopModuleRegistry = KotlinInteropModuleRegistry(
+      provider,
+      mockk(),
+      WeakReference(mockk(relaxed = true))
+    )
 
     Truth.assertThat(interopModuleRegistry.exportedModulesConstants())
       .containsExactly(
@@ -58,7 +67,11 @@ class KotlinInteropModuleRegistryTest {
 
   @Test
   fun `should export view manages`() {
-    val interopModuleRegistry = KotlinInteropModuleRegistry(provider, mockk())
+    val interopModuleRegistry = KotlinInteropModuleRegistry(
+      provider,
+      mockk(),
+      WeakReference(mockk(relaxed = true))
+    )
 
     val rnManagers = interopModuleRegistry.exportViewManagers()
     val expoManagersNames = interopModuleRegistry.exportedViewManagersNames()

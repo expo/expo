@@ -6,7 +6,7 @@ export declare type DocumentPickerOptions = {
      * The [MIME type(s)](https://en.wikipedia.org/wiki/Media_type) of the documents that are available
      * to be picked. Is also supports wildcards like `'image/*'` to choose any image. To allow any type
      * of document you can use `'&ast;/*'`.
-     * @default `'&ast;/*'`
+     * @default '&ast;/*'
      */
     type?: string | string[];
     /**
@@ -14,12 +14,13 @@ export declare type DocumentPickerOptions = {
      * which allows other Expo APIs to read the file immediately. This may impact performance for
      * large files, so you should consider setting this to `false` if you expect users to pick
      * particularly large files and your app does not need immediate read access.
-     * @default `true`
+     * @default true
      */
     copyToCacheDirectory?: boolean;
     /**
-     * __Web Only.__ Allows multiple files to be selected from the system UI.
-     * @default `false`
+     * Allows multiple files to be selected from the system UI.
+     * @default false
+     * @platform web
      */
     multiple?: boolean;
 };

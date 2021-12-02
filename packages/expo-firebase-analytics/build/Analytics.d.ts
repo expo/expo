@@ -51,6 +51,9 @@ export declare function setAnalyticsCollectionEnabled(isEnabled: boolean): Promi
  * Sets the current screen name, which specifies the current visual context in your app. This helps
  * identify the areas in your app where users spend their time and how they interact with your app.
  *
+ * @deprecated __Deprecated.__ Use [`logEvent('screen_view', { screen_name: 'MyScreen', ... })`](#logevent)
+ * instead. This API will be removed in SDK 45.
+ *
  * @param screenName The name of the current screen. Should contain 1 to 100 characters. Set to
  * `undefined` to clear the current screen name.
  * @param screenClassOverride The name of the screen class. Should contain 1 to 100 characters. By
@@ -126,7 +129,7 @@ export declare function setUserProperties(properties: Record<string, string | nu
  */
 export declare function setUnavailabilityLogging(isEnabled: boolean): void;
 /**
- * __Expo Go Only.__ Sets the clientId to the given value. For best results, set this value before
+ * Sets the clientId to the given value. For best results, set this value before
  * calling any other functions on this module.
  *
  * By default, the clientId is set to `Constants.installationId` in Expo Go, which is deprecated and
@@ -134,15 +137,17 @@ export declare function setUnavailabilityLogging(isEnabled: boolean): void;
  * when using Expo Go.
  *
  * @param clientId UUIDv4 string value to set for the current session in Expo Go.
+ * @platform expo
  */
 export declare function setClientId(clientId: string): void;
 /**
- * __Expo Go Only.__ Enables or disabled debug mode on the Expo client, so events can
+ * Enables or disabled debug mode on the Expo client, so events can
  * be tracked using the [DebugView in the Analytics dashboard](https://firebase.google.com/docs/analytics/debugview#reporting).
  *
  * This option is only available in Expo Go. When using a custom development app, a standalone app,
  * the bare workflow or web, use the [natively available options](https://firebase.google.com/docs/analytics/debugview).
  *
  * @param isEnabled A flag that enables or disables debug mode.
+ * @platform expo
  */
 export declare function setDebugModeEnabled(isEnabled: boolean): Promise<void>;

@@ -10,11 +10,11 @@ const MICROPHONE_USAGE = 'Allow $(PRODUCT_NAME) to access your microphone';
 // It's ok to have multiple allprojects.repositories, so we create a new one since it's cheaper than tokenizing
 // the existing block to find the correct place to insert our camera maven.
 const gradleMaven = [
-    `def mavenPath = new File(["node", "--print", "require.resolve('expo-camera/package.json')"].execute().text.trim(), "../android/maven")`,
-    `allprojects { repositories { maven { url(mavenPath) } } }`,
+    `def expoCameraMavenPath = new File(["node", "--print", "require.resolve('expo-camera/package.json')"].execute(null, rootDir).text.trim(), "../android/maven")`,
+    `allprojects { repositories { maven { url(expoCameraMavenPath) } } }`,
 ].join('\n');
 const withAndroidCameraGradle = (config) => {
-    return config_plugins_1.withProjectBuildGradle(config, (config) => {
+    return (0, config_plugins_1.withProjectBuildGradle)(config, (config) => {
         if (config.modResults.language === 'groovy') {
             config.modResults.contents = addCameraImport(config.modResults.contents).contents;
         }
@@ -35,10 +35,10 @@ function addCameraImport(src) {
 exports.addCameraImport = addCameraImport;
 // Fork of config-plugins mergeContents, but appends the contents to the end of the file.
 function appendContents({ src, newSrc, tag, comment, }) {
-    const header = generateCode_1.createGeneratedHeaderComment(newSrc, tag, comment);
+    const header = (0, generateCode_1.createGeneratedHeaderComment)(newSrc, tag, comment);
     if (!src.includes(header)) {
         // Ensure the old generated contents are removed.
-        const sanitizedTarget = generateCode_1.removeGeneratedContents(src, tag);
+        const sanitizedTarget = (0, generateCode_1.removeGeneratedContents)(src, tag);
         const contentsToAdd = [
             // @something
             header,
@@ -56,7 +56,7 @@ function appendContents({ src, newSrc, tag, comment, }) {
     return { contents: src, didClear: false, didMerge: false };
 }
 const withCamera = (config, { cameraPermission, microphonePermission } = {}) => {
-    config = config_plugins_1.withInfoPlist(config, (config) => {
+    config = (0, config_plugins_1.withInfoPlist)(config, (config) => {
         config.modResults.NSCameraUsageDescription =
             cameraPermission || config.modResults.NSCameraUsageDescription || CAMERA_USAGE;
         config.modResults.NSMicrophoneUsageDescription =
@@ -70,4 +70,4 @@ const withCamera = (config, { cameraPermission, microphonePermission } = {}) => 
     ]);
     return withAndroidCameraGradle(config);
 };
-exports.default = config_plugins_1.createRunOncePlugin(withCamera, pkg.name, pkg.version);
+exports.default = (0, config_plugins_1.createRunOncePlugin)(withCamera, pkg.name, pkg.version);

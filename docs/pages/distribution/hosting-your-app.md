@@ -2,6 +2,8 @@
 title: Hosting Updates on Your Servers
 ---
 
+import { InlineCode } from '~/components/base/code';
+
 Normally, when updates are enabled, your app will fetch updates comprising JavaScript bundles and assets from Expo’s CDN. However, there will be situations when you will want to host your JS bundles and assets on your own servers. For example, updates are slow or unusable in countries that have blocked Expo’s CDN providers on AWS and Google Cloud. In these cases, you can host your updates on your own servers to better suit your use cases.
 
 For simplicity, the rest of this article will refer to hosting an update for the Android platform, but you could swap out Android for iOS at any point and everything would still be true.
@@ -76,13 +78,20 @@ firebase deploy --only hosting:native -m "Deploy my app"`
 
 ## Building the standalone app
 
-To configure your standalone binary to pull updates from your server, you’ll need to define the URL where you will host your **index.json** file. Pass the URL to your hosted **index.json** file to the `expo build` command.
+To configure your standalone binary to pull updates from your server, you’ll need to define the URL where you will host your **index.json** file. When using EAS Build, just set the [`updates.url` property in app.json](/versions/latest/config/app/#url) to point to that url.
+
+<details><summary><strong>Are you using the classic build system?</strong> (<InlineCode>expo build:[android|ios]</InlineCode>)</summary> <p>
+
+With the classic build system, you need to pass the URL to your hosted `index.json` file to the `expo build` command.
 
 For iOS builds, run the following commands from your terminal:
 `expo build:ios --public-url <path-to-ios-index.json>`, where the `public-url` option will be something like https://expo.github.io/self-hosting-example/ios-index.json
 
 For Android builds, run the following commands from your terminal:
 `expo build:android --public-url <path-to-android-index.json>`, where the `public-url` option will be something like https://expo.github.io/self-hosting-example/android-index.json
+
+</p>
+</details>
 
 ## Loading QR Code/URL in Development
 
@@ -120,7 +129,7 @@ QR code: Generate a QR code using your URI from a website like https://www.qr-co
 
 ### URL
 
-If you are loading in your update into a development client by passing in a URL string, you will need to pass in an URL pointing to your JSON manifest file.
+If you are loading in your update into a development build by passing in a URL string, you will need to pass in an URL pointing to your JSON manifest file.
 
 Here is an example URL from a remote server: [https://expo.github.io/self-hosting-example/android-index.json](https://expo.github.io/self-hosting-example/android-index.json)
 

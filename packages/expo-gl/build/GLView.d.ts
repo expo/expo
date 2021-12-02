@@ -1,5 +1,8 @@
 import * as React from 'react';
 import { ComponentOrHandle, SurfaceCreateEvent, GLSnapshot, ExpoWebGLRenderingContext, SnapshotOptions, BaseGLViewProps } from './GLView.types';
+export interface WebGLObject {
+    id: number;
+}
 export declare type GLViewProps = {
     /**
      * Called when the OpenGL context is created, with the context object as a parameter. The context
@@ -36,12 +39,3 @@ export declare class GLView extends React.Component<GLViewProps> {
     destroyObjectAsync(glObject: WebGLObject): Promise<boolean>;
     takeSnapshotAsync(options?: SnapshotOptions): Promise<GLSnapshot>;
 }
-declare type WebGLObjectId = any;
-export declare class WebGLObject {
-    id: WebGLObjectId;
-    constructor(id: WebGLObjectId);
-    toString(): string;
-}
-declare class WebGLTexture extends WebGLObject {
-}
-export {};

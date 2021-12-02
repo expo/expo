@@ -45,7 +45,7 @@
     "expo-dev-menu-interface": "0.4.1"
   },
   "devDependencies": {
-    "@apollo/client": "^3.2.0",
+    "@apollo/client": "^3.4.10",
     "@react-navigation/core": "5.15.1",
     "@react-navigation/native": "5.9.2",
     "@react-navigation/stack": "5.14.2",
@@ -54,10 +54,10 @@
     "babel-plugin-module-resolver": "^4.1.0",
     "expo-module-scripts": "^2.0.0",
     "fuse.js": "^6.4.6",
-    "graphql": "^14.2.1",
+    "graphql": "^15.3.0",
     "graphql-tag": "^2.10.1",
     "react": "17.0.1",
-    "react-native": "0.64.2",
+    "react-native": "0.64.3",
     "url": "^0.11.0"
   }
 }

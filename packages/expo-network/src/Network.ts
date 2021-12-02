@@ -33,7 +33,7 @@ export async function getNetworkStateAsync(): Promise<NetworkState> {
 
 // @needsAudit
 /**
- * Gets the device's current IPv4 address. Returns `0.0.0.0`` if the IP address could not be retrieved.
+ * Gets the device's current IPv4 address. Returns `0.0.0.0` if the IP address could not be retrieved.
  *
  * On web, this method uses the third-party [`ipify service`](https://www.ipify.org/) to get the
  * public IP address of the current device.
@@ -80,9 +80,10 @@ export async function getMacAddressAsync(interfaceName: string | null = null): P
 
 // @needsAudit
 /**
- * __Android only.__ Tells if the device is in airplane mode.
+ * Tells if the device is in airplane mode.
  * @return Returns a `Promise` that fulfils with a `boolean` value for whether the device is in
  * airplane mode or not.
+ * @platform android
  *
  * @example
  * ```ts

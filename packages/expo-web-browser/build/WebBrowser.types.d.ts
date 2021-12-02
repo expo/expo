@@ -8,8 +8,9 @@ export declare type WebBrowserOpenOptions = {
      */
     toolbarColor?: string;
     /**
-     * __(Android only)__. Package name of a browser to be used to handle Custom Tabs. List of
+     * Package name of a browser to be used to handle Custom Tabs. List of
      * available packages is to be queried by [`getCustomTabsSupportingBrowsers`](#webbrowsergetcustomtabssupportingbrowsersasync) method.
+     * @platform android
      */
     browserPackage?: string;
     /**
@@ -17,47 +18,57 @@ export declare type WebBrowserOpenOptions = {
      */
     enableBarCollapsing?: boolean;
     /**
-     * __(Android only)__ Color of the secondary toolbar in either `#AARRGGBB` or `#RRGGBB` format.
+     * Color of the secondary toolbar in either `#AARRGGBB` or `#RRGGBB` format.
+     * @platform android
      */
     secondaryToolbarColor?: string;
     /**
-     * __(Android only)__ A boolean determining whether the browser should show the title of website on the toolbar.
+     * A boolean determining whether the browser should show the title of website on the toolbar.
+     * @platform android
      */
     showTitle?: boolean;
     /**
-     * __(Android only)__ A boolean determining whether a default share item should be added to the menu.
+     * A boolean determining whether a default share item should be added to the menu.
+     * @platform android
      */
     enableDefaultShareMenuItem?: boolean;
     /**
-     * __(Android only)__ A boolean determining whether browsed website should be shown as separate
+     * A boolean determining whether browsed website should be shown as separate
      * entry in Android recents/multitasking view. Requires `createTask` to be `true` (default).
-     * @default `false`
+     * @default false
+     * @platform android
      */
     showInRecents?: boolean;
     /**
-     * __(Android only)__ A boolean determining whether the browser should open in a new task or in
+     * A boolean determining whether the browser should open in a new task or in
      * the same task as your app.
-     * @default `true`
+     * @default true
+     * @platform android
      */
     createTask?: boolean;
     /**
-     * __(iOS only)__ Tint color for controls in SKSafariViewController in `#AARRGGBB` or `#RRGGBB` format.
+     * Tint color for controls in SKSafariViewController in `#AARRGGBB` or `#RRGGBB` format.
+     * @platform ios
      */
     controlsColor?: string;
     /**
-     * __(iOS only)__ The style of the dismiss button. Should be one of: `done`, `close`, or `cancel`.
+     * The style of the dismiss button. Should be one of: `done`, `close`, or `cancel`.
+     * @platform ios
      */
     dismissButtonStyle?: 'done' | 'close' | 'cancel';
     /**
-     * __(iOS only)__ A boolean determining whether Safari should enter Reader mode, if it is available.
+     * A boolean determining whether Safari should enter Reader mode, if it is available.
+     * @platform ios
      */
     readerMode?: boolean;
     /**
-     * __(Web only)__ Name to assign to the popup window.
+     * Name to assign to the popup window.
+     * @platform web
      */
     windowName?: string;
     /**
-     * __(Web only)__ Features to use with `window.open()`.
+     * Features to use with `window.open()`.
+     * @platform web
      */
     windowFeatures?: string | WebBrowserWindowFeatures;
 };
@@ -90,15 +101,15 @@ export declare type WebBrowserCustomTabsResults = {
 };
 export declare enum WebBrowserResultType {
     /**
-     * iOS only.
+     * @platform ios
      */
     CANCEL = "cancel",
     /**
-     * iOS only.
+     * @platform ios
      */
     DISMISS = "dismiss",
     /**
-     * Android only.
+     * @platform android
      */
     OPENED = "opened",
     LOCKED = "locked"

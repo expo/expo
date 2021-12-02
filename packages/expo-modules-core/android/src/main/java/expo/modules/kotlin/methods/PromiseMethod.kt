@@ -1,16 +1,15 @@
 package expo.modules.kotlin.methods
 
-import com.facebook.react.bridge.ReadableArray
-import expo.modules.core.Promise
-import kotlin.reflect.KType
+import expo.modules.kotlin.Promise
+import expo.modules.kotlin.types.AnyType
 
 class PromiseMethod(
   name: String,
-  argsType: Array<KType>,
+  argsType: Array<AnyType>,
   private val body: (args: Array<out Any?>, promise: Promise) -> Unit
 ) : AnyMethod(name, argsType) {
 
-  override fun call(args: ReadableArray, promise: Promise) {
-    body(castArguments(args), promise)
+  override fun callImplementation(args: Array<out Any?>, promise: Promise) {
+    body(args, promise)
   }
 }

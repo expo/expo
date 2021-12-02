@@ -5,7 +5,7 @@ import android.view.View
 import com.facebook.react.bridge.ReadableMap
 import expo.modules.kotlin.ModuleHolder
 
-class ViewManagerWrapperDelegate(private val moduleHolder: ModuleHolder) {
+class ViewManagerWrapperDelegate(internal var moduleHolder: ModuleHolder) {
   private val definition: ViewManagerDefinition
     get() = requireNotNull(moduleHolder.definition.viewManagerDefinition)
 

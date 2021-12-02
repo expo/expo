@@ -7,9 +7,8 @@ it(`defines a manifest`, () => {
   expect(typeof Constants.manifest).toBe('object');
 });
 
-it(`defines a linking URI and URL`, () => {
+it(`defines a linking URI`, () => {
   expect(typeof Constants.linkingUri).toBe('string');
-  expect(Constants.linkingUri).toBe(Constants.linkingUrl);
 });
 
 describe(`manifest`, () => {

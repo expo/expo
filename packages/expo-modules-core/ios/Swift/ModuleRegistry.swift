@@ -1,5 +1,5 @@
 
-public class ModuleRegistry: Sequence {
+public final class ModuleRegistry: Sequence {
   public typealias Element = ModuleHolder
 
   private weak var appContext: AppContext?
@@ -11,20 +11,22 @@ public class ModuleRegistry: Sequence {
   }
 
   /**
-   Registers a module by its definition.
+   Registers an instance of module holder.
    */
-  public func register(definition: ModuleDefinition) {
-    guard let appContext = appContext else {
-      return
-    }
-    registry[definition.name] = ModuleHolder(appContext: appContext, definition: definition)
+  internal func register(holder: ModuleHolder) {
+    registry[holder.name] = holder
   }
 
   /**
    Registers a module by its type.
    */
   public func register(moduleType: AnyModule.Type) {
-    register(definition: moduleType.definition().withType(moduleType))
+    guard let appContext = appContext else {
+      return
+    }
+    let module = moduleType.init(appContext: appContext)
+    let holder = ModuleHolder(appContext: appContext, module: module)
+    register(holder: holder)
   }
 
   /**
@@ -58,7 +60,7 @@ public class ModuleRegistry: Sequence {
   }
 
   public func get(moduleWithName moduleName: String) -> AnyModule? {
-    return try? registry[moduleName]?.getInstance()
+    return registry[moduleName]?.module
   }
 
   public func makeIterator() -> IndexingIterator<[ModuleHolder]> {

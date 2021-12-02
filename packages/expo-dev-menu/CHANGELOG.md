@@ -9,6 +9,8 @@
 ### 🐛 Bug fixes
 
 - Fix hermes inspector opening wrong target. ([#14684](https://github.com/expo/expo/pull/14684) by [@kudo](https://github.com/kudo))
+- Fix Gradle error when running Gradle from outside of the project directory. ([#15109](https://github.com/expo/expo/pull/15109) by [@kudo](https://github.com/kudo))
+- Fix `Project is using deprecated .expo.* file extensions`. ([#15070](https://github.com/expo/expo/pull/15070) by [@lukmccall](https://github.com/lukmccall))
 
 ### 💡 Others
 

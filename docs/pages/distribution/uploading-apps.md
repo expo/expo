@@ -2,14 +2,21 @@
 title: Uploading Apps to the Apple App Store and Google Play
 ---
 
-> Automated submissions through EAS CLI currently require [a paid EAS subscription](https://expo.dev/pricing). This only impacts submissions through `eas submit` — you can upload your app to stores manually using the information provided on this page without an EAS subscription.
+import { InlineCode } from '~/components/base/code';
 
 This guide will help you upload your Expo standalone apps to Apple TestFlight and to Google Play.
 You'll need a paid developer account for each platform for which you wish to upload and publish an app. You can create an Apple Developer account on [Apple's developer site](https://developer.apple.com/account/) and a Google Play Developer account on the [Google Play Console sign-up page](https://play.google.com/apps/publish/signup/).
 
 ## 1. Build a standalone app
 
-To learn how to build native binaries, see [Building Standalone Apps](building-standalone-apps.md) or [Building Standalone Apps on Your CI](turtle-cli.md).
+To learn how to build native binaries, see [Creating your first build](/build/setup.md) or [Building on CI](/build/building-on-ci.md).
+
+<details><summary><strong>Are you using the classic build system?</strong> (<InlineCode>expo build:[android|ios]</InlineCode>)</summary> <p>
+
+To learn how to build native binaries, see [Building Standalone Apps](/classic/building-standalone-apps.md) or [Building Standalone Apps on Your CI](/classic/turtle-cli.md).
+
+</p>
+</details>
 
 ## 2. Start the upload
 

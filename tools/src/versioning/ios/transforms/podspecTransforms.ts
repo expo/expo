@@ -1,3 +1,6 @@
+import fs from 'fs-extra';
+import path from 'path';
+
 import { TransformPipeline } from '.';
 
 export function podspecTransforms(versionName: string): TransformPipeline {
@@ -39,6 +42,27 @@ export function podspecTransforms(versionName: string): TransformPipeline {
         with: `"${versionName}AccessibilityResources"`,
       },
       {
+        // Add custom modulemap for React-Core to generate correct submodules for swift integration
+        // Learn more: `packages/expo-modules-autolinking/scripts/ios/cocoapods/sandbox.rb`
+        paths: 'React-Core.podspec',
+        replace: /(s.default_subspec\s+=.*$)/mg,
+        with: `$1\n  s.module_map             = "${versionName}React-Core.modulemap"`,
+      },
+      {
+        // Hide Hermes headers from public headers because clang modoules does not support c++
+        // Learn more: `packages/expo-modules-autolinking/scripts/ios/cocoapods/sandbox.rb`
+        paths: 'React-Core.podspec',
+        replace: /(s.subspec\s+"Hermes".*$)/mg,
+        with: '$1\n    ss.private_header_files = "ReactCommon/hermes/executor/*.h", "ReactCommon/hermes/inspector/*.h", "ReactCommon/hermes/inspector/chrome/*.h", "ReactCommon/hermes/inspector/detail/*.h"',
+      },
+      {
+        // DEFINES_MODULE for swift integration
+        // Learn more: `packages/expo-modules-autolinking/scripts/ios/cocoapods/sandbox.rb`
+        paths: 'ReactCommon.podspec',
+        replace: /("USE_HEADERMAP" => "YES",)/g,
+        with: '$1 "DEFINES_MODULE" => "YES",',
+      },
+      {
         // Fixes HEADER_SEARCH_PATHS
         paths: ['React-Core.podspec', 'ReactCommon.podspec'],
         replace: /(Headers\/Private\/)(React-Core)/g,
@@ -76,4 +100,19 @@ export function podspecTransforms(versionName: string): TransformPipeline {
       },
     ],
   };
+}
+
+export async function generateModulemapAsync(podspecFile: string, versionName: string) {
+    const basename = path.basename(podspecFile, '.podspec');
+    if (basename === 'React-Core') {
+      const modulemap = `\
+module ${versionName}React {
+  umbrella "../../Public/${versionName}React-Core/${versionName}React"
+
+  export *
+  module * { export * }
+}`;
+      const modulemapPath = path.join(path.dirname(podspecFile), `${versionName}React-Core.modulemap`);
+      await fs.writeFile(modulemapPath, modulemap);
+    }
 }

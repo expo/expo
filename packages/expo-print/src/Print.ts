@@ -45,8 +45,9 @@ export async function printAsync(options: PrintOptions): Promise<void> {
 
 // @needsAudit
 /**
- * **Available on iOS only.** Chooses a printer that can be later used in `printAsync`
+ * Chooses a printer that can be later used in `printAsync`
  * @return A promise which fulfils with an object containing `name` and `url` of the selected printer.
+ * @platform ios
  */
 export async function selectPrinterAsync(): Promise<Printer> {
   if (ExponentPrint.selectPrinter) {

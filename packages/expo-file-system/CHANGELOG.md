@@ -8,10 +8,14 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 13.1.0 — 2021-11-17
+
+### 🐛 Bug fixes
+
 - Fixed `uploadAsync` failing to resolve when using `BINARY_CONTENT`. ([#14764](https://github.com/expo/expo/pull/14764) by [@cruzach](https://github.com/cruzach))
 - Fix `okio` library build error for `react-native@0.65` or above. ([#14761](https://github.com/expo/expo/pull/14761) by [@kudo](https://github.com/kudo))
-
-### 💡 Others
 
 ## 13.0.1 — 2021-10-01
 
@@ -31,6 +35,7 @@ _This version does not introduce any user-facing changes._
 ### 💡 Others
 
 - Updated `@expo/config-plugins` ([#14443](https://github.com/expo/expo/pull/14443) by [@EvanBacon](https://github.com/EvanBacon))
+- Rewritten module to Kotlin. ([#14549](https://github.com/expo/expo/pull/14549) by [@mstach60161](https://github.com/mstach60161))
 
 ## 12.0.0 — 2021-09-08
 

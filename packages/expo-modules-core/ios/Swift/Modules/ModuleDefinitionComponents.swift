@@ -12,7 +12,7 @@ extension AnyModule {
   /**
    Sets the name of the module that is exported to the JavaScript world.
    */
-  public static func name(_ name: String) -> AnyDefinition {
+  public func name(_ name: String) -> AnyDefinition {
     return ModuleNameDefinition(name: name)
   }
 
@@ -21,35 +21,27 @@ extension AnyModule {
   /**
    Definition function setting the module's constants to export.
    */
-  public static func constants(_ closure: () -> [String : Any?]) -> AnyDefinition {
-    return ConstantsDefinition(constants: closure())
+  public func constants(_ body: @escaping () -> [String: Any?]) -> AnyDefinition {
+    return ConstantsDefinition(body: body)
   }
 
-  // MARK: - Methods
+  /**
+   Definition function setting the module's constants to export.
+   */
+  public func constants(_ body: @autoclosure @escaping () -> [String: Any?]) -> AnyDefinition {
+    return ConstantsDefinition(body: body)
+  }
+
+  // MARK: - Functions
 
   /**
-   Factory function for methods without the module instance and arguments.
+   Function without arguments.
    */
-  public static func method<R>(
+  public func function<R>(
     _ name: String,
     _ closure: @escaping () -> R
-  ) -> AnyMethod {
-    return ConcreteMethod(
-      name,
-      argTypes: [],
-      closure,
-      detached: true
-    )
-  }
-
-  /**
-   Factory function for methods without arguments.
-   */
-  public static func method<R>(
-    _ name: String,
-    _ closure: @escaping (Self) -> R
-  ) -> AnyMethod {
-    return ConcreteMethod(
+  ) -> AnyFunction {
+    return ConcreteFunction(
       name,
       argTypes: [],
       closure
@@ -57,210 +49,158 @@ extension AnyModule {
   }
 
   /**
-   Factory function for methods with one argument.
+   Function with one argument.
    */
-  public static func method<R, A0: AnyMethodArgument>(
+  public func function<R, A0: AnyArgument>(
     _ name: String,
-    _ closure: @escaping (Self, A0) -> R
-  ) -> AnyMethod {
-    return ConcreteMethod(
+    _ closure: @escaping (A0) -> R
+  ) -> AnyFunction {
+    return ConcreteFunction(
       name,
-      argTypes: [AnyArgumentType(A0.self)],
+      argTypes: [ArgumentType(A0.self)],
       closure
     )
   }
 
   /**
-   Factory function for methods with 2 arguments.
+   Function with two arguments.
    */
-  public static func method<R, A0: AnyMethodArgument, A1: AnyMethodArgument>(
+  public func function<R, A0: AnyArgument, A1: AnyArgument>(
     _ name: String,
-    _ closure: @escaping (Self, A0, A1) -> R
-  ) -> AnyMethod {
-    return ConcreteMethod(
+    _ closure: @escaping (A0, A1) -> R
+  ) -> AnyFunction {
+    return ConcreteFunction(
       name,
-      argTypes: [AnyArgumentType(A0.self), AnyArgumentType(A1.self)],
+      argTypes: [ArgumentType(A0.self), ArgumentType(A1.self)],
       closure
     )
   }
 
   /**
-   Factory function for methods with 3 arguments.
+   Function with three arguments.
    */
-  public static func method<R, A0: AnyMethodArgument, A1: AnyMethodArgument, A2: AnyMethodArgument>(
+  public func function<R, A0: AnyArgument, A1: AnyArgument, A2: AnyArgument>(
     _ name: String,
-    _ closure: @escaping (Self, A0, A1, A2) -> R
-  ) -> AnyMethod {
-    return ConcreteMethod(
+    _ closure: @escaping (A0, A1, A2) -> R
+  ) -> AnyFunction {
+    return ConcreteFunction(
       name,
-      argTypes: [AnyArgumentType(A0.self), AnyArgumentType(A1.self), AnyArgumentType(A2.self)],
+      argTypes: [ArgumentType(A0.self), ArgumentType(A1.self), ArgumentType(A2.self)],
       closure
     )
   }
 
   /**
-   Factory function for methods with 4 arguments.
+   Function with four arguments.
    */
-  public static func method<R, A0: AnyMethodArgument, A1: AnyMethodArgument, A2: AnyMethodArgument, A3: AnyMethodArgument>(
+  public func function<R, A0: AnyArgument, A1: AnyArgument, A2: AnyArgument, A3: AnyArgument>(
     _ name: String,
-    _ closure: @escaping (Self, A0, A1, A2, A3) -> R
-  ) -> AnyMethod {
-    return ConcreteMethod(
+    _ closure: @escaping (A0, A1, A2, A3) -> R
+  ) -> AnyFunction {
+    return ConcreteFunction(
       name,
-      argTypes: [AnyArgumentType(A0.self), AnyArgumentType(A1.self), AnyArgumentType(A2.self), AnyArgumentType(A3.self)],
+      argTypes: [ArgumentType(A0.self), ArgumentType(A1.self), ArgumentType(A2.self), ArgumentType(A3.self)],
       closure
     )
   }
 
   /**
-   Factory function for methods with 5 arguments.
+   Function with five arguments.
    */
-  public static func method<R, A0: AnyMethodArgument, A1: AnyMethodArgument, A2: AnyMethodArgument, A3: AnyMethodArgument, A4: AnyMethodArgument>(
+  public func function<R, A0: AnyArgument, A1: AnyArgument, A2: AnyArgument, A3: AnyArgument, A4: AnyArgument>(
     _ name: String,
-    _ closure: @escaping (Self, A0, A1, A2, A3, A4) -> R
-  ) -> AnyMethod {
-    return ConcreteMethod(
+    _ closure: @escaping (A0, A1, A2, A3, A4) -> R
+  ) -> AnyFunction {
+    return ConcreteFunction(
       name,
-      argTypes: [AnyArgumentType(A0.self), AnyArgumentType(A1.self), AnyArgumentType(A2.self), AnyArgumentType(A3.self), AnyArgumentType(A4.self)],
+      argTypes: [ArgumentType(A0.self), ArgumentType(A1.self), ArgumentType(A2.self), ArgumentType(A3.self), ArgumentType(A4.self)],
       closure
     )
   }
 
   /**
-   Factory function for methods with 6 arguments.
+   Function with six arguments.
    */
-  public static func method<R, A0: AnyMethodArgument, A1: AnyMethodArgument, A2: AnyMethodArgument, A3: AnyMethodArgument, A4: AnyMethodArgument, A5: AnyMethodArgument>(
+  public func function<R, A0: AnyArgument, A1: AnyArgument, A2: AnyArgument, A3: AnyArgument, A4: AnyArgument, A5: AnyArgument>(
     _ name: String,
-    _ closure: @escaping (Self, A0, A1, A2, A3, A4, A5) -> R
-  ) -> AnyMethod {
-    return ConcreteMethod(
+    _ closure: @escaping (A0, A1, A2, A3, A4, A5) -> R
+  ) -> AnyFunction {
+    return ConcreteFunction(
       name,
-      argTypes: [AnyArgumentType(A0.self), AnyArgumentType(A1.self), AnyArgumentType(A2.self), AnyArgumentType(A3.self), AnyArgumentType(A4.self), AnyArgumentType(A5.self)],
+      argTypes: [ArgumentType(A0.self), ArgumentType(A1.self), ArgumentType(A2.self), ArgumentType(A3.self), ArgumentType(A4.self), ArgumentType(A5.self)],
       closure
     )
   }
 
   /**
-   Factory function for methods with 7 arguments.
+   Function with seven arguments.
    */
-  public static func method<R, A0: AnyMethodArgument, A1: AnyMethodArgument, A2: AnyMethodArgument, A3: AnyMethodArgument, A4: AnyMethodArgument, A5: AnyMethodArgument, A6: AnyMethodArgument>(
+  public func function<R, A0: AnyArgument, A1: AnyArgument, A2: AnyArgument, A3: AnyArgument, A4: AnyArgument, A5: AnyArgument, A6: AnyArgument>(
     _ name: String,
-    _ closure: @escaping (Self, A0, A1, A2, A3, A4, A5, A6) -> R
-  ) -> AnyMethod {
-    return ConcreteMethod(
+    _ closure: @escaping (A0, A1, A2, A3, A4, A5, A6) -> R
+  ) -> AnyFunction {
+    return ConcreteFunction(
       name,
-      argTypes: [AnyArgumentType(A0.self), AnyArgumentType(A1.self), AnyArgumentType(A2.self), AnyArgumentType(A3.self), AnyArgumentType(A4.self), AnyArgumentType(A5.self), AnyArgumentType(A6.self)],
+      argTypes: [ArgumentType(A0.self), ArgumentType(A1.self), ArgumentType(A2.self), ArgumentType(A3.self), ArgumentType(A4.self), ArgumentType(A5.self), ArgumentType(A6.self)],
       closure
     )
   }
 
   /**
-   Factory function for methods with 8 arguments.
+   Function with eight arguments.
    */
-  public static func method<R, A0: AnyMethodArgument, A1: AnyMethodArgument, A2: AnyMethodArgument, A3: AnyMethodArgument, A4: AnyMethodArgument, A5: AnyMethodArgument, A6: AnyMethodArgument, A7: AnyMethodArgument>(
+  public func function<R, A0: AnyArgument, A1: AnyArgument, A2: AnyArgument, A3: AnyArgument, A4: AnyArgument, A5: AnyArgument, A6: AnyArgument, A7: AnyArgument>(
     _ name: String,
-    _ closure: @escaping (Self, A0, A1, A2, A3, A4, A5, A6, A7) -> R
-  ) -> AnyMethod {
-    return ConcreteMethod(
+    _ closure: @escaping (A0, A1, A2, A3, A4, A5, A6, A7) -> R
+  ) -> AnyFunction {
+    return ConcreteFunction(
       name,
-      argTypes: [AnyArgumentType(A0.self), AnyArgumentType(A1.self), AnyArgumentType(A2.self), AnyArgumentType(A3.self), AnyArgumentType(A4.self), AnyArgumentType(A5.self), AnyArgumentType(A6.self), AnyArgumentType(A7.self)],
+      argTypes: [ArgumentType(A0.self), ArgumentType(A1.self), ArgumentType(A2.self), ArgumentType(A3.self), ArgumentType(A4.self), ArgumentType(A5.self), ArgumentType(A6.self), ArgumentType(A7.self)],
       closure
     )
   }
 
-  // MARK: - `onCreate`
+  // MARK: - Module's lifecycle
 
   /**
    Creates module's lifecycle listener that is called right after module initialization.
    */
-  public static func onCreate(_ closure: @escaping () -> Void) -> AnyDefinition {
+  public func onCreate(_ closure: @escaping () -> Void) -> AnyDefinition {
     return EventListener(.moduleCreate, closure)
-  }
-
-  /**
-   Creates module's lifecycle listener that is called right after module initialization.
-   */
-  public static func onCreate(_ closure: @escaping (Self) -> Void) -> AnyDefinition {
-    return EventListener(.moduleCreate, closure)
-  }
-
-  // MARK: - `onDestroy`
-
-  /**
-   Creates module's lifecycle listener that is called when the module is about to be deallocated.
-   */
-  public static func onDestroy(_ closure: @escaping () -> Void) -> AnyDefinition {
-    return EventListener(.moduleDestroy, closure)
   }
 
   /**
    Creates module's lifecycle listener that is called when the module is about to be deallocated.
    */
-  public static func onDestroy(_ closure: @escaping (Self) -> Void) -> AnyDefinition {
+  public func onDestroy(_ closure: @escaping () -> Void) -> AnyDefinition {
     return EventListener(.moduleDestroy, closure)
   }
 
-  // MARK: - `onAppContextDestroys`
-
   /**
    Creates module's lifecycle listener that is called when the app context owning the module is about to be deallocated.
    */
-  public static func onAppContextDestroys(_ closure: @escaping () -> Void) -> AnyDefinition {
+  public func onAppContextDestroys(_ closure: @escaping () -> Void) -> AnyDefinition {
     return EventListener(.appContextDestroys, closure)
-  }
-
-  /**
-   Creates module's lifecycle listener that is called when the app context owning the module is about to be deallocated.
-   */
-  public static func onAppContextDestroys(_ closure: @escaping (Self) -> Void) -> AnyDefinition {
-    return EventListener(.appContextDestroys, closure)
-  }
-
-  // MARK: - `onAppEntersForeground`
-
-  /**
-   Creates a listener that is called when the app is about to enter the foreground mode.
-   */
-  public static func onAppEntersForeground(_ closure: @escaping () -> Void) -> AnyDefinition {
-    return EventListener(.appEntersForeground, closure)
   }
 
   /**
    Creates a listener that is called when the app is about to enter the foreground mode.
    */
-  public static func onAppEntersForeground(_ closure: @escaping (Self) -> Void) -> AnyDefinition {
+  public func onAppEntersForeground(_ closure: @escaping () -> Void) -> AnyDefinition {
     return EventListener(.appEntersForeground, closure)
   }
 
-  // MARK: - `onAppBecomesActive`
-
   /**
    Creates a listener that is called when the app becomes active again.
    */
-  public static func onAppBecomesActive(_ closure: @escaping () -> Void) -> AnyDefinition {
+  public func onAppBecomesActive(_ closure: @escaping () -> Void) -> AnyDefinition {
     return EventListener(.appBecomesActive, closure)
-  }
-
-  /**
-   Creates a listener that is called when the app becomes active again.
-   */
-  public static func onAppBecomesActive(_ closure: @escaping (Self) -> Void) -> AnyDefinition {
-    return EventListener(.appBecomesActive, closure)
-  }
-
-  // MARK: - `onAppEntersBackground`
-
-  /**
-   Creates a listener that is called when the app enters the background mode.
-   */
-  public static func onAppEntersBackground(_ closure: @escaping () -> Void) -> AnyDefinition {
-    return EventListener(.appEntersBackground, closure)
   }
 
   /**
    Creates a listener that is called when the app enters the background mode.
    */
-  public static func onAppEntersBackground(_ closure: @escaping (Self) -> Void) -> AnyDefinition {
+  public func onAppEntersBackground(_ closure: @escaping () -> Void) -> AnyDefinition {
     return EventListener(.appEntersBackground, closure)
   }
 
@@ -269,21 +209,99 @@ extension AnyModule {
   /**
    Creates the view manager definition that scopes other view-related definitions.
    */
-  public static func viewManager(@ViewManagerDefinitionBuilder _ closure: @escaping () -> ViewManagerDefinition) -> AnyDefinition {
+  public func viewManager(@ViewManagerDefinitionBuilder _ closure: @escaping () -> ViewManagerDefinition) -> AnyDefinition {
     return closure()
   }
 
+  // MARK: - Events
+
   /**
-   Defines the factory creating a native view when the module is used as a view.
+   Defines event names that this module can send to JavaScript.
    */
-  public static func view(_ closure: @escaping () -> UIView) -> AnyDefinition {
-    return ViewFactory(closure)
+  public func events(_ names: String...) -> AnyDefinition {
+    return EventsDefinition(names: names)
   }
 
   /**
-   Creates a view prop that defines its name and setter.
+   Function that is invoked when the first event listener is added.
    */
-  public static func prop<ViewType: UIView, PropType>(_ name: String, _ setter: @escaping (ViewType, PropType) -> Void) -> AnyDefinition {
-    return ConcreteViewProp(name, setter)
+  public func onStartObserving(_ body: @escaping () -> ()) -> AnyFunction {
+    return ConcreteFunction("startObserving", argTypes: [], body)
+  }
+
+  /**
+   Function that is invoked when all event listeners are removed.
+   */
+  public func onStopObserving(_ body: @escaping () -> ()) -> AnyFunction {
+    return ConcreteFunction("stopObserving", argTypes: [], body)
+  }
+}
+
+/**
+ Defines the factory creating a native view when the module is used as a view.
+ */
+public func view(_ closure: @escaping () -> UIView) -> AnyDefinition {
+  return ViewFactory(closure)
+}
+
+/**
+ Creates a view prop that defines its name and setter.
+ */
+public func prop<ViewType: UIView, PropType: AnyArgument>(
+  _ name: String,
+  _ setter: @escaping (ViewType, PropType) -> Void
+) -> AnyDefinition {
+  return ConcreteViewProp(
+    name: name,
+    propType: ArgumentType(PropType.self),
+    setter: setter
+  )
+}
+
+// TODO: - Remove deprecated `method` component once SDK44 is out.
+public extension AnyModule {
+  /**
+   Function without arguments.
+   */
+  @available(*, deprecated, renamed: "function")
+  func method<R>(
+    _ name: String,
+    _ closure: @escaping () -> R
+  ) -> AnyFunction {
+    return ConcreteFunction(
+      name,
+      argTypes: [],
+      closure
+    )
+  }
+
+  /**
+   Function with one argument.
+   */
+  @available(*, deprecated, renamed: "function")
+  func method<R, A0: AnyArgument>(
+    _ name: String,
+    _ closure: @escaping (A0) -> R
+  ) -> AnyFunction {
+    return ConcreteFunction(
+      name,
+      argTypes: [ArgumentType(A0.self)],
+      closure
+    )
+  }
+
+  /**
+   Function with two arguments.
+   */
+  @available(*, deprecated, renamed: "function")
+  func method<R, A0: AnyArgument, A1: AnyArgument>(
+    _ name: String,
+    _ closure: @escaping (A0, A1) -> R
+  ) -> AnyFunction {
+    return ConcreteFunction(
+      name,
+      argTypes: [ArgumentType(A0.self), ArgumentType(A1.self)],
+      closure
+    )
   }
 }

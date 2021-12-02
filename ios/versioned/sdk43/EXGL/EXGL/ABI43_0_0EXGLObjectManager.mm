@@ -54,7 +54,7 @@ ABI43_0_0EX_REGISTER_MODULE();
 
 - (void)saveContext:(nonnull ABI43_0_0EXGLContext *)glContext
 {
-  if (glContext.isInitialized) {
+  if (glContext.contextId != 0) {
     [_glContexts setObject:glContext forKey:@(glContext.contextId)];
   }
 }
@@ -86,7 +86,7 @@ ABI43_0_0EX_EXPORT_METHOD_AS(takeSnapshotAsync,
     reject(@"E_GL_BAD_VIEW_TAG", nil, ABI43_0_0EXErrorWithMessage(@"ExponentGLObjectManager.takeSnapshotAsync: ABI43_0_0EXGLContext not found for given context id."));
     return;
   }
-  
+
   [glContext takeSnapshotWithOptions:options resolve:resolve reject:reject];
 }
 
@@ -98,7 +98,8 @@ ABI43_0_0EX_EXPORT_METHOD_AS(createContextAsync,
 {
   ABI43_0_0EXGLContext *glContext = [[ABI43_0_0EXGLContext alloc] initWithDelegate:nil andModuleRegistry:_moduleRegistry];
   
-  [glContext initialize:^(BOOL success) {
+  [glContext initialize];
+  [glContext prepare:^(BOOL success) {
     if (success) {
       resolve(@{ @"exglCtxId": @(glContext.contextId) });
     } else {
@@ -117,7 +118,7 @@ ABI43_0_0EX_EXPORT_METHOD_AS(destroyContextAsync,
                     reject:(ABI43_0_0EXPromiseRejectBlock)reject)
 {
   ABI43_0_0EXGLContext *glContext = [self getContextWithId:exglCtxId];
-  
+
   if (glContext != nil) {
     [glContext destroy];
     resolve(@(YES));

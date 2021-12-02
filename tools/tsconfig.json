@@ -18,6 +18,7 @@
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
     "incremental": true,
+    "useUnknownInCatchVariables": false,
     "tsBuildInfoFile": "./cache/.tsbuildinfo"
   }
 }

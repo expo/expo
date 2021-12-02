@@ -66,4 +66,4 @@ However, you cannot set a platform specific configuration field such as `ios.run
 
 ### Can I test updates with a custom runtime version on Expo Go?
 
-Expo Go is meant for updates targeting an Expo SDK. If you want to test an update targeting a custom runtime version, you should use a [Custom Development Client](/clients/introduction.md).
+Expo Go is meant for updates targeting an Expo SDK. If you want to test an update targeting a custom runtime version, you should use a [development build](/development/introduction.md).

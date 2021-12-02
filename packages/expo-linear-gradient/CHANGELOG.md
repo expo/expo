@@ -10,6 +10,9 @@
 
 ### 💡 Others
 
+- Rewrote code to Swift, removed legacy Objective-C module implementation and changed the pod name to `ExpoLinearGradient`. ([#15168](https://github.com/expo/expo/pull/15168) by [@tsapeta](https://github.com/tsapeta))
+- Rewrote module using Sweet API on Android. ([#15166](https://github.com/expo/expo/pull/15166) by [@lukmccall](https://github.com/lukmccall))
+
 ## 10.0.1 — 2021-10-01
 
 _This version does not introduce any user-facing changes._

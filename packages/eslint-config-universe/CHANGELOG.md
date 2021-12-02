@@ -4,11 +4,18 @@
 
 ### 🛠 Breaking changes
 
+- Change Prettier minimal version to `2.4+`, to avoid issues with renamed option. [See the Prettier changelog](https://prettier.io/blog/2021/09/09/2.4.0.html). ([#15167](https://github.com/expo/expo/pull/15167) by [@Simek](https://github.com/Simek))
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
 
+- Rename Prettier option from `jsxBracketSameLine` to `bracketSameLine` to fix the warning. ([#15167](https://github.com/expo/expo/pull/15167) by [@Simek](https://github.com/Simek))
+
 ### 💡 Others
+
+- Update Babel related dependencies to `7.12+`. ([#15167](https://github.com/expo/expo/pull/15167) by [@Simek](https://github.com/Simek))
+- Update Jest to the latest version from `26` release. ([#15167](https://github.com/expo/expo/pull/15167) by [@Simek](https://github.com/Simek))
 
 ## 8.0.0 — 2021-09-08
 

@@ -3,26 +3,28 @@ package expo.modules.kotlin.records
 import com.facebook.react.bridge.Dynamic
 import expo.modules.kotlin.allocators.ObjectConstructor
 import expo.modules.kotlin.allocators.ObjectConstructorFactory
-import expo.modules.kotlin.types.KClassTypeWrapper
 import expo.modules.kotlin.types.TypeConverter
-import expo.modules.kotlin.types.TypeConverterHelper
+import expo.modules.kotlin.types.TypeConverterProvider
+import kotlin.reflect.KClass
+import kotlin.reflect.KType
 import kotlin.reflect.full.findAnnotation
-import kotlin.reflect.full.isSuperclassOf
 import kotlin.reflect.full.memberProperties
 import kotlin.reflect.jvm.javaField
 
-class RecordTypeConverter : TypeConverter {
+// TODO(@lukmccall): create all converters during initialization
+class RecordTypeConverter<T : Record>(
+  private val converterProvider: TypeConverterProvider,
+  val type: KType,
+) : TypeConverter<T>(type.isMarkedNullable) {
   private val objectConstructorFactory = ObjectConstructorFactory()
 
-  override fun canHandleConversion(toType: KClassTypeWrapper): Boolean =
-    Record::class.isSuperclassOf(toType.classifier)
+  override fun convertNonOptional(value: Dynamic): T {
+    val jsMap = value.asMap()
 
-  override fun convert(jsValue: Dynamic, toType: KClassTypeWrapper): Any {
-    val jsMap = jsValue.asMap()
+    val kClass = type.classifier as KClass<*>
+    val instance = getObjectConstructor(kClass.java).construct()
 
-    val instance = getObjectConstructor(toType.classifier.java).construct()
-
-    toType.classifier
+    kClass
       .memberProperties
       .map { property ->
         val filedInformation = property.findAnnotation<Field>() ?: return@map
@@ -36,16 +38,15 @@ class RecordTypeConverter : TypeConverter {
         val value = jsMap.getDynamic(jsKey)
         val javaField = property.javaField!!
 
-        val casted = TypeConverterHelper.convert(
-          value,
-          property.returnType
-        )
+        val elementConverter = converterProvider.obtainTypeConverter(property.returnType)
+        val casted = elementConverter.convert(value)
 
         javaField.isAccessible = true
         javaField.set(instance, casted)
       }
 
-    return instance
+    @Suppress("UNCHECKED_CAST")
+    return instance as T
   }
 
   private fun <T> getObjectConstructor(clazz: Class<T>): ObjectConstructor<T> {

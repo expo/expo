@@ -1,0 +1,10 @@
+{
+  "name": "expo-module-template",
+  "platforms": ["ios", "android", "web"],
+  "ios": {
+    "modulesClassNames": ["ExpoModule"]
+  },
+  "android": {
+    "modulesClassNames": ["expo.modules.expomodule.ExpoModule"]
+  }
+}

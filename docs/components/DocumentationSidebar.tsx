@@ -23,8 +23,6 @@ const STYLES_SECTION_CATEGORY = css`
 `;
 
 function shouldSkipCategory(info: NavigationRoute) {
-  // For now the /eas route is just responsible for having some index page and
-  // providing a convenient way to view feature preview docs
   if (info.name === 'Feature Preview') {
     return true;
   }

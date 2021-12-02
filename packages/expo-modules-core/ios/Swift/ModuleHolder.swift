@@ -3,11 +3,11 @@ import Dispatch
 /**
  Holds a reference to the module instance and caches its definition.
  */
-public class ModuleHolder {
+public final class ModuleHolder {
   /**
-   Lazy-loaded instance of the module. Created from module's definition.
+   Instance of the module.
    */
-  private(set) var module: AnyModule?
+  private(set) var module: AnyModule
 
   /**
    A weak reference to the app context.
@@ -20,50 +20,46 @@ public class ModuleHolder {
   let definition: ModuleDefinition
 
   /**
-   Shorthand form of `definition.name`.
+   Returns `definition.name` if not empty, otherwise falls back to the module type name.
    */
-  var name: String { definition.name }
+  var name: String {
+    return definition.name.isEmpty ? String(describing: type(of: module)) : definition.name
+  }
 
-  init(appContext: AppContext, definition: ModuleDefinition) {
+  /**
+   Number of JavaScript listeners attached to the module.
+   */
+  var listenersCount: Int = 0
+
+  init(appContext: AppContext, module: AnyModule) {
     self.appContext = appContext
-    self.definition = definition
+    self.module = module
+    self.definition = module.definition()
+    post(event: .moduleCreate)
   }
+
+  // MARK: Constants
 
   /**
-   Creates (if needed) and returns the module based on associated definition and then returns it.
+   Merges all `constants` definitions into one dictionary.
    */
-  func getInstance() throws -> AnyModule? {
-    guard let appContext = appContext else {
-      throw AppContext.DeallocatedAppContextError()
+  func getConstants() -> [String: Any?] {
+    return definition.constants.reduce(into: [String: Any?]()) { dict, definition in
+      dict.merge(definition.body()) { $1 }
     }
-    if module == nil, let moduleType = definition.type {
-      module = moduleType.init(appContext: appContext)
-      post(event: .moduleCreate)
-    }
-    return module
   }
 
-  /**
-   Whether held module is or would be (instance may not be created yet) of given type.
-   */
-  func isOfType<ModuleType>(_ type: ModuleType.Type) -> Bool {
-    return definition.type is ModuleType.Type
-  }
+  // MARK: Calling functions
 
-  // MARK: Calling methods
-
-  func call(method methodName: String, args: [Any?], promise: Promise) {
+  func call(function functionName: String, args: [Any], promise: Promise) {
     do {
-      guard let module = try getInstance() else {
-        throw ModuleNotFoundError(moduleName: self.name)
+      guard let function = definition.functions[functionName] else {
+        throw FunctionNotFoundError(functionName: functionName, moduleName: self.name)
       }
-      guard let method = definition.methods[methodName] else {
-        throw MethodNotFoundError(methodName: methodName, moduleName: self.name)
-      }
-      let queue = method.queue ?? DispatchQueue.global(qos: .default)
+      let queue = function.queue ?? DispatchQueue.global(qos: .default)
 
       queue.async {
-        method.call(module: module, args: args, promise: promise)
+        function.call(args: args, promise: promise)
       }
     } catch let error as CodedError {
       promise.reject(error)
@@ -72,26 +68,24 @@ public class ModuleHolder {
     }
   }
 
-  func call(method methodName: String, args: [Any?], _ callback: @escaping (Any?, CodedError?) -> Void = { _, _ in }) {
+  func call(function functionName: String, args: [Any], _ callback: @escaping (Any?, CodedError?) -> Void = { _, _ in }) {
     let promise = Promise {
       callback($0, nil)
     } rejecter: {
       callback(nil, $0)
     }
-    call(method: methodName, args: args, promise: promise)
+    call(function: functionName, args: args, promise: promise)
   }
 
-  func callSync(method methodName: String, args: [Any?]) -> Any? {
-    guard let module = try? getInstance() else {
-      return nil
-    }
-    if let method = definition.methods[methodName] {
-      return method.callSync(module: module, args: args)
+  @discardableResult
+  func callSync(function functionName: String, args: [Any]) -> Any? {
+    if let function = definition.functions[functionName] {
+      return function.callSync(args: args)
     }
     return nil
   }
 
-  // MARK: Listening to events
+  // MARK: Listening to native events
 
   func listeners(forEvent event: EventName) -> [EventListener] {
     return definition.eventListeners.filter {
@@ -111,6 +105,20 @@ public class ModuleHolder {
     }
   }
 
+  // MARK: JavaScript events
+
+  /**
+   Modifies module's listeners count and calls `onStartObserving` or `onStopObserving` accordingly.
+   */
+  func modifyListenersCount(_ count: Int) {
+    if count > 0 && listenersCount == 0 {
+      let _ = definition.functions["startObserving"]?.callSync(args: [])
+    } else if count < 0 && listenersCount + count <= 0 {
+      let _ = definition.functions["stopObserving"]?.callSync(args: [])
+    }
+    listenersCount = max(0, listenersCount + count)
+  }
+
   // MARK: Deallocation
 
   deinit {
@@ -126,11 +134,11 @@ public class ModuleHolder {
     }
   }
 
-  struct MethodNotFoundError: CodedError {
-    let methodName: String
+  struct FunctionNotFoundError: CodedError {
+    let functionName: String
     let moduleName: String
     var description: String {
-      "Cannot find method `\(methodName)` in module `\(moduleName)`"
+      "Cannot find function `\(functionName)` in module `\(moduleName)`"
     }
   }
 }

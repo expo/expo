@@ -1,6 +1,7 @@
 ---
 title: EAS Submit
 sidebar_title: Introduction
+hideTOC: true
 ---
 
 **EAS Submit** is a hosted service for uploading and submitting your app binaries to the Apple App Store and Google Play Store. Since it's a hosted service, you can submit your app to both stores as long as you can run EAS CLI on your machine. This means you can easily submit your iOS and Android apps from your macOS, Windows, or Linux workstation or from CI.

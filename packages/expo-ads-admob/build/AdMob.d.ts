@@ -3,7 +3,7 @@ export { PermissionResponse, PermissionStatus, PermissionExpiration, PermissionH
 export declare function requestPermissionsAsync(): Promise<PermissionResponse>;
 export declare function getPermissionsAsync(): Promise<PermissionResponse>;
 /**
- * Check or request permissions for adsmob.
+ * Check or request permissions for AdMob.
  * This uses both `requestPermissionAsync` and `getPermissionsAsync` to interact with the permissions.
  *
  * @example

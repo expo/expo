@@ -1,6 +1,6 @@
-name: "\U0001F6E0 Development Client Bug Report"
-description: 'Report a reproducible issue with a Custom Development Client'
-labels: ['Custom Client', 'needs review']
+name: "\U0001F6E0 expo-dev-client Bug Report"
+description: 'Report a reproducible issue with a development build'
+labels: ['expo-dev-client', 'needs review']
 body:
   - type: markdown
     attributes:
@@ -47,13 +47,13 @@ body:
       required: true
   - type: textarea
     attributes:
-      label: Reproducible demo or steps to reproduce from a blank project
-      description: 'This should include as little code as possible, do not simply link your entire project. If a reproducible demo, or a complete list of steps from blank project to bug, is not provided, it is very likely your issue will be closed. If you link to a project that contains multiple non-Expo-core modules, it is unlikely to help us narrow down the cause of your issue more quickly. Read more guidance [here](https://stackoverflow.com/help/mcve).'
+      label: Reproducible demo
+      description: 'This should include as little code as possible, do not simply link your entire project. If a reproducible demo is not provided, it is very likely your issue will be closed. If you link to a project that contains multiple non-Expo-core modules, it is unlikely to help us narrow down the cause of your issue more quickly. Read more guidance [here](https://stackoverflow.com/help/mcve).'
     validations:
       required: true
   - type: markdown
     attributes:
-      value: Please make sure contributors can follow the steps you provided in order to reproduce the bug.
+      value: Please make sure contributors can run your code and follow the steps your provided in order to reproduce the bug.
   - type: textarea
     attributes:
       label: Stacktrace (if a crash is involved)

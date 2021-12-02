@@ -72,7 +72,7 @@ RCT_EXPORT_MODULE(NativeUnimoduleProxy)
 {
   if (self = [super init]) {
     _exModuleRegistry = moduleRegistry != nil ? moduleRegistry : [[EXModuleRegistryProvider new] moduleRegistry];
-    _swiftInteropBridge = [[SwiftInteropBridge alloc] initWithModulesProvider:[self getExpoModulesProvider] legacyModuleRegistry:_exModuleRegistry];
+    _swiftInteropBridge = [[SwiftInteropBridge alloc] initWithModulesProvider:[EXNativeModulesProxy getExpoModulesProvider] legacyModuleRegistry:_exModuleRegistry];
     _exportedMethodsKeys = [NSMutableDictionary dictionary];
     _exportedMethodsReverseKeys = [NSMutableDictionary dictionary];
     _ownsModuleRegistry = moduleRegistry == nil;
@@ -128,7 +128,7 @@ RCT_EXPORT_MODULE(NativeUnimoduleProxy)
   }
 
   // Add entries from Swift modules
-  [exportedMethodsNamesAccumulator addEntriesFromDictionary:[_swiftInteropBridge exportedMethodNames]];
+  [exportedMethodsNamesAccumulator addEntriesFromDictionary:[_swiftInteropBridge exportedFunctionNames]];
 
   // Also, add `viewManagersNames` for sanity check and testing purposes -- with names we know what managers to mock on UIManager
   NSArray<EXViewManager *> *viewManagers = [_exModuleRegistry getAllViewManagers];
@@ -158,7 +158,7 @@ RCT_EXPORT_MODULE(NativeUnimoduleProxy)
 RCT_EXPORT_METHOD(callMethod:(NSString *)moduleName methodNameOrKey:(id)methodNameOrKey arguments:(NSArray *)arguments resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject)
 {
   if ([_swiftInteropBridge hasModule:moduleName]) {
-    [_swiftInteropBridge callMethod:methodNameOrKey onModule:moduleName withArgs:arguments resolve:resolve reject:reject];
+    [_swiftInteropBridge callFunction:methodNameOrKey onModule:moduleName withArgs:arguments resolve:resolve reject:reject];
     return;
   }
   EXExportedModule *module = [_exModuleRegistry getExportedModuleForName:moduleName];
@@ -196,25 +196,40 @@ RCT_EXPORT_METHOD(callMethod:(NSString *)moduleName methodNameOrKey:(id)methodNa
 - (id)callMethodSync:(NSString *)moduleName methodName:(NSString *)methodName arguments:(NSArray *)arguments
 {
   if ([_swiftInteropBridge hasModule:moduleName]) {
-    return [_swiftInteropBridge callMethodSync:methodName onModule:moduleName withArgs:arguments];
+    return [_swiftInteropBridge callFunctionSync:methodName onModule:moduleName withArgs:arguments];
   }
   return (id)kCFNull;
 }
 
-#pragma mark - Privates
+#pragma mark - Statics
 
-- (id<ModulesProviderObjCProtocol>)getExpoModulesProvider
++ (id<ModulesProviderObjCProtocol>)getExpoModulesProvider
 {
   // Dynamically gets the modules provider class.
   // NOTE: This needs to be versioned in Expo Go.
-  Class generatedExpoModulesProvider = NSClassFromString(@"ExpoModulesProvider");
-  // Checks if `ExpoModulesProvider` was generated
-  if (generatedExpoModulesProvider) {
-    return [generatedExpoModulesProvider new];
-  } else {
-    return [ModulesProvider new];
+  Class generatedExpoModulesProvider;
+
+  // [0] When ExpoModulesCore is built as separated framework/module,
+  // we should explicitly load main bundle's `ExpoModulesProvider` class.
+  NSString *bundleName = NSBundle.mainBundle.infoDictionary[@"CFBundleName"];
+  if (bundleName != nil) {
+    generatedExpoModulesProvider = NSClassFromString([NSString stringWithFormat:@"%@.ExpoModulesProvider", bundleName]);
+    if (generatedExpoModulesProvider != nil) {
+      return [generatedExpoModulesProvider new];
+    }
   }
+
+  // [1] Fallback to load `ExpoModulesProvider` class from the current module.
+  generatedExpoModulesProvider = NSClassFromString(@"ExpoModulesProvider");
+  if (generatedExpoModulesProvider != nil) {
+    return [generatedExpoModulesProvider new];
+  }
+
+  // [2] Fallback to load `ModulesProvider` if `ExpoModulesProvider` was not generated
+  return [ModulesProvider new];
 }
+
+#pragma mark - Privates
 
 - (void)registerExpoModulesInBridge:(RCTBridge *)bridge
 {
@@ -272,8 +287,10 @@ RCT_EXPORT_METHOD(callMethod:(NSString *)moduleName methodNameOrKey:(id)methodNa
   // components in UIManager — we need to register them on our own.
   [self registerComponentDataForModuleClasses:additionalModuleClasses inBridge:bridge];
 
-  // Get the newly created instance of `EXReactEventEmitter` bridge module and register it in expo modules registry.
+  // Get the newly created instance of `EXReactEventEmitter` bridge module,
+  // pass event names supported by Swift modules and register it in legacy modules registry.
   EXReactNativeEventEmitter *eventEmitter = [bridge moduleForClass:[EXReactNativeEventEmitter class]];
+  [eventEmitter setSwiftInteropBridge:_swiftInteropBridge];
   [_exModuleRegistry registerInternalModule:eventEmitter];
 
   // Let the modules consume the registry :)

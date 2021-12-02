@@ -40,9 +40,9 @@
   },
   "devDependencies": {
     "expo-module-scripts": "^2.0.0",
-    "expo-test-runner": "0.0.6"
+    "expo-test-runner": "0.0.7"
   },
   "jest": {
-    "preset": "expo-module-scripts/ios"
+    "preset": "expo-module-scripts"
   }
 }

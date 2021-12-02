@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Fix `fromModule` on restrictive (Snack) web environments.  ([#14435](https://github.com/expo/expo/pull/14435) by [@IjzerenHein](https://github.com/IjzerenHein))
-
 ### 💡 Others
+
+## 8.4.4 — 2021-11-17
+
+### 🐛 Bug fixes
+
+- Fix `fromModule` on restrictive (Snack) web environments.  ([#14435](https://github.com/expo/expo/pull/14435) by [@IjzerenHein](https://github.com/IjzerenHein))
 
 ## 8.4.1 — 2021-10-01
 

@@ -40,21 +40,6 @@ export default {
     getAnalyticsModule().setAnalyticsCollectionEnabled(isEnabled);
   },
   /**
-   * https://firebase.google.com/docs/reference/js/firebase.analytics.Analytics#set-current-screen
-   */
-  async setCurrentScreen(screenName?: string, screenClassOverride?: string): Promise<void> {
-    getAnalyticsModule().setCurrentScreen(screenName);
-
-    // On web, calling `setCurrentScreen` does not automatically record a screen_view event as
-    // it does on native. We therefore record the 'screen_view' event manually.
-    // https://stackoverflow.com/questions/59330467/how-to-track-page-view-with-firebase-analytics-in-a-web-single-page-app
-    if (screenName) {
-      getAnalyticsModule().logEvent('screen_view', {
-        screen_name: screenName,
-      });
-    }
-  },
-  /**
    * Not supported on web, this method is a no-op
    */
   async setSessionTimeoutDuration(_sessionTimeoutInterval: number): Promise<void> {

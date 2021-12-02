@@ -103,13 +103,13 @@ async function findModulesAsync(providedOptions) {
     if (options.searchPaths.length <= 1) {
         return results;
     }
-    return filterToProjectDependencies(results);
+    return filterToProjectDependencies(results, providedOptions);
 }
 exports.findModulesAsync = findModulesAsync;
 /**
  * Filters out packages that are not the dependencies of the project.
  */
-function filterToProjectDependencies(results) {
+function filterToProjectDependencies(results, options = {}) {
     const filteredResults = {};
     const visitedPackages = new Set();
     // Helper for traversing the dependency hierarchy.
@@ -137,7 +137,7 @@ function filterToProjectDependencies(results) {
                         // Some packages don't include package.json in its `exports` field,
                         // but none of our packages do that, so it seems fine to just ignore that type of error.
                         // Related issue: https://github.com/react-native-community/cli/issues/1168
-                        if (error.code !== 'ERR_PACKAGE_PATH_NOT_EXPORTED') {
+                        if (!options.silent && error.code !== 'ERR_PACKAGE_PATH_NOT_EXPORTED') {
                             console.warn(chalk_1.default.yellow(`⚠️  Cannot resolve the path to "${dependencyName}" package.`));
                         }
                         continue;
@@ -224,6 +224,7 @@ async function generatePackageListAsync(modules, options) {
     }
     catch (e) {
         console.error(chalk_1.default.red(`Generating package list is not available for platform: ${options.platform}`));
+        throw e;
     }
 }
 exports.generatePackageListAsync = generatePackageListAsync;

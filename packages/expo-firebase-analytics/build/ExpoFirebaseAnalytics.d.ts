@@ -4,7 +4,6 @@ declare const _default: {
         [key: string]: any;
     } | undefined): Promise<void>;
     setAnalyticsCollectionEnabled(isEnabled: boolean): Promise<void>;
-    setCurrentScreen(screenName?: string | undefined, screenClassOverride?: string | undefined): Promise<void>;
     setSessionTimeoutDuration(sessionTimeoutInterval: number): Promise<void>;
     setUserId(userId: string | null): Promise<void>;
     setUserProperties(properties: {

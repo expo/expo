@@ -1,5 +1,6 @@
 pluginManagement {
   repositories {
+    mavenCentral()
     gradlePluginPortal()
     mavenLocal()
     google()
@@ -8,7 +9,7 @@ pluginManagement {
 
 include ':app'
 
-apply from: new File(["node", "--print", "require.resolve('expo/package.json')"].execute().text.trim(), "../scripts/autolinking.gradle")
+apply from: new File(["node", "--print", "require.resolve('expo/package.json')"].execute(null, rootDir).text.trim(), "../scripts/autolinking.gradle")
 
 /* UNCOMMENT WHEN DISTRIBUTING
 useExpoModules([

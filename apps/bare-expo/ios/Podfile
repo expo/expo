@@ -11,11 +11,12 @@ require File.join(File.dirname(`node --print "require.resolve('@react-native-com
 require File.join(File.dirname(`node --print "require.resolve('expo/package.json')"`), "scripts/autolinking")
 
 require 'json'
-podfile_properties = JSON.parse(File.read('./podfile.properties.json')) rescue {}
+podfile_properties = JSON.parse(File.read('./Podfile.properties.json')) rescue {}
 
 abstract_target 'BareExpoMain' do
   use_expo_modules!
 
+  pod 'expo-dev-menu-interface', path: '../../../packages/expo-dev-menu-interface', :testspecs => ['Tests']
   pod 'expo-dev-menu', path: '../../../packages/expo-dev-menu', :testspecs => ['Tests', 'UITests']
 
   config = use_native_modules!
@@ -60,5 +61,12 @@ abstract_target 'BareExpoMain' do
   end
 
   target 'BareExpoDetox' do
+  end
+
+  target 'BareExpoTests' do
+    inherit! :search_paths
+
+    pod 'Quick', :podspec => './../../../ios/Quick.podspec'
+    pod 'Nimble', :podspec => './../../../ios/Nimble.podspec'
   end
 end

@@ -9,6 +9,14 @@
 #import <React/RCTDefines.h>
 #import <WebKit/WebKit.h>
 
+typedef enum RNCWebViewPermissionGrantType : NSUInteger {
+    RNCWebViewPermissionGrantType_GrantIfSameHost_ElsePrompt,
+    RNCWebViewPermissionGrantType_GrantIfSameHost_ElseDeny,
+    RNCWebViewPermissionGrantType_Deny,
+    RNCWebViewPermissionGrantType_Grant,
+    RNCWebViewPermissionGrantType_Prompt
+} RNCWebViewPermissionGrantType;
+
 @class RNCWebView;
 
 @protocol RNCWebViewDelegate <NSObject>
@@ -68,8 +76,11 @@
 @property (nonatomic, assign) BOOL directionalLockEnabled;
 @property (nonatomic, assign) BOOL ignoreSilentHardwareSwitch;
 @property (nonatomic, copy) NSString * _Nullable allowingReadAccessToURL;
+@property (nonatomic, copy) NSDictionary * _Nullable basicAuthCredential;
 @property (nonatomic, assign) BOOL pullToRefreshEnabled;
 @property (nonatomic, assign) BOOL enableApplePay;
+@property (nonatomic, copy) NSArray<NSDictionary *> * _Nullable menuItems;
+@property (nonatomic, copy) RCTDirectEventBlock onCustomMenuSelection;
 #if !TARGET_OS_OSX
 @property (nonatomic, weak) UIRefreshControl * _Nullable refreshControl;
 #endif
@@ -80,6 +91,10 @@
 
 #if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 140000 /* iOS 14 */
 @property (nonatomic, assign) BOOL limitsNavigationsToAppBoundDomains;
+#endif
+
+#if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 150000 /* iOS 15 */
+@property (nonatomic, assign) RNCWebViewPermissionGrantType mediaCapturePermissionGrantType;
 #endif
 
 + (void)setClientAuthenticationCredential:(nullable NSURLCredential*)credential;

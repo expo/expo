@@ -24,7 +24,7 @@ For [managed](../../../introduction/managed-vs-bare.md#managed-workflow) apps, y
 
 Below is an example that demonstrates how to use `expo-background-fetch`.
 
-<SnackInline>
+<SnackInline label="Background Fetch Usage" dependencies={['expo-background-fetch', 'expo-task-manager']}>
 
 ```tsx
 import React from 'react';
@@ -42,7 +42,7 @@ TaskManager.defineTask(BACKGROUND_FETCH_TASK, async () => {
   console.log(`Got background fetch call at date: ${new Date(now).toISOString()}`);
 
   // Be sure to return the successful result type!
-  return BackgroundFetch.Result.NewData;
+  return BackgroundFetch.BackgroundFetchResult.NewData;
 });
 
 // 2. Register the task at some point in your app by providing the same name, and some configuration options for how the background fetch should behave
@@ -63,8 +63,8 @@ async function unregisterBackgroundFetchAsync() {
 }
 
 export default function BackgroundFetchScreen() {
-  const [isRegistered, setIsRegistered] = React.useState<boolean>(false);
-  const [status, setStatus] = React.useState<BackgroundFetch.Status | null>(null);
+  const [isRegistered, setIsRegistered] = React.useState(false);
+  const [status, setStatus] = React.useState(null);
 
   React.useEffect(() => {
     checkStatusAsync();
@@ -92,7 +92,9 @@ export default function BackgroundFetchScreen() {
       <View style={styles.textContainer}>
         <Text>
           Background fetch status:{' '}
-          <Text style={styles.boldText}>{status ? BackgroundFetch.Status[status] : null}</Text>
+          <Text style={styles.boldText}>
+            {status && BackgroundFetch.BackgroundFetchStatus[status]}
+          </Text>
         </Text>
         <Text>
           Background fetch task name:{' '}

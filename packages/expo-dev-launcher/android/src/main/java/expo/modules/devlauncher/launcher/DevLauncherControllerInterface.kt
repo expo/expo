@@ -9,6 +9,7 @@ import com.facebook.react.bridge.ReactContext
 import expo.modules.devlauncher.DevLauncherController
 import expo.modules.manifests.core.Manifest
 import expo.modules.updatesinterface.UpdatesInterface
+import kotlinx.coroutines.CoroutineScope
 
 interface DevLauncherControllerInterface {
   suspend fun loadApp(url: Uri, mainActivity: ReactActivity? = null)
@@ -29,4 +30,5 @@ interface DevLauncherControllerInterface {
   val latestLoadedApp: Uri?
   val useDeveloperSupport: Boolean
   var updatesInterface: UpdatesInterface?
+  val coroutineScope: CoroutineScope
 }

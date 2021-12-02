@@ -8,7 +8,7 @@ import { InlineCode } from '~/components/base/code';
 
 > ⚠️ This package is deprecated in favor of the Google [**AuthSession**](auth-session.md) provider. Check out the [Google authentication guides](../../../guides/authentication.md#google) to learn how to migrate your app today.
 
-**`expo-google-app-auth`** provides Google authentication integration for Expo apps using a secure system web browser with native [**`expo-app-auth`**][expo-app-auth]. This is better than a WebView because you can reuse credentials saved on the device. This module uses [PKCE](https://tools.ietf.org/html/rfc7636) for secure native authentication. You won't need to define a provider config because this package utilizes Open ID Connect [auto discovery](https://openid.net/specs/openid-connect-discovery-1_0.html).
+**`expo-google-app-auth`** provides Google authentication integration for Expo apps using a secure system web browser with native [**`expo-app-auth`**](./app-auth). This is better than a WebView because you can reuse credentials saved on the device. This module uses [PKCE](https://tools.ietf.org/html/rfc7636) for secure native authentication. You won't need to define a provider config because this package utilizes Open ID Connect [auto discovery](https://openid.net/specs/openid-connect-discovery-1_0.html).
 
 <PlatformsSection android emulator ios simulator />
 
@@ -18,7 +18,7 @@ You'll get an access token after a successful login. Once you have the token, if
 
 ## Installation
 
-For [managed][managed-workflow] apps, you'll need to run `expo install expo-google-app-auth`. To use it in a [bare][bare-workflow] React Native app, you will need to run `npx pod-install` and do a new build after installing the package because this library pulls in [**`expo-app-auth`**][expo-app-auth] as a dependency.
+For [managed][managed-workflow] apps, you'll need to run `expo install expo-google-app-auth`. To use it in a [bare][bare-workflow] React Native app, you will need to run `npx pod-install` and do a new build after installing the package because this library pulls in [**`expo-app-auth`**](./app-auth) as a dependency.
 
 ## API
 
@@ -290,7 +290,6 @@ let result = await AuthSession.startAsync({
 [google-api-explorer]: https://developers.google.com/apis-explorer/
 [managed-workflow]: ../../../introduction/managed-vs-bare.md#managed-workflow
 [bare-workflow]: ../../../introduction/managed-vs-bare.md#bare-workflow
-[expo-app-auth]: app-auth.md
 [expo-app-session]: auth-session.md
 [auth-loginhint]: https://openid.net/specs/openid-connect-core-1_0.html#AuthRequest
 [g-using-apis]: https://gsuite-developers.googleblog.com/2012/01/tips-on-using-apis-discovery-service.html

@@ -13,7 +13,6 @@ import expo.modules.battery.BatteryPackage
 import expo.modules.brightness.BrightnessPackage
 import expo.modules.calendar.CalendarPackage
 import expo.modules.camera.CameraPackage
-import expo.modules.cellular.CellularPackage
 import expo.modules.clipboard.ClipboardPackage
 import expo.modules.constants.ConstantsPackage
 import expo.modules.contacts.ContactsPackage
@@ -36,7 +35,6 @@ import expo.modules.imagemanipulator.ImageManipulatorPackage
 import expo.modules.imagepicker.ImagePickerPackage
 import expo.modules.intentlauncher.IntentLauncherPackage
 import expo.modules.keepawake.KeepAwakePackage
-import expo.modules.lineargradient.LinearGradientPackage
 import expo.modules.localauthentication.LocalAuthenticationPackage
 import expo.modules.localization.LocalizationPackage
 import expo.modules.location.LocationPackage
@@ -76,7 +74,6 @@ object ExperiencePackagePicker {
     BrightnessPackage(),
     CalendarPackage(),
     CameraPackage(),
-    CellularPackage(),
     ClipboardPackage(),
     ConstantsPackage(),
     ContactsPackage(),
@@ -98,7 +95,6 @@ object ExperiencePackagePicker {
     ImagePickerPackage(),
     IntentLauncherPackage(),
     KeepAwakePackage(),
-    LinearGradientPackage(),
     LocalAuthenticationPackage(),
     LocalizationPackage(),
     LocationPackage(),
