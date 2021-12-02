@@ -95,7 +95,9 @@ class ErrorRecovery {
       }
       weakReactInstanceManager = null
     }
-    handlerThread.quitSafely()
+    // quitSafely will wait for processing messages to finish but cancel all messages scheduled for
+    // a future time, so delay for a few more seconds in case there are any scheduled messages
+    handler.postDelayed({ handlerThread.quitSafely() }, 10000)
   }
 
   companion object {
