@@ -7,6 +7,7 @@ exports.setInitialOrientation = exports.getInitialOrientation = exports.INITIAL_
 const config_plugins_1 = require("@expo/config-plugins");
 const assert_1 = __importDefault(require("assert"));
 const pkg = require('expo-screen-orientation/package.json');
+// This value must match the `EXDefaultScreenOrientationMask` string used in `expo-screen-orientation/ios/EXScreenOrientation/EXScreenOrientationViewController.m` (do not change).
 exports.INITIAL_ORIENTATION_KEY = 'EXDefaultScreenOrientationMask';
 const OrientationLock = {
     DEFAULT: 'UIInterfaceOrientationMaskAllButUpsideDown',

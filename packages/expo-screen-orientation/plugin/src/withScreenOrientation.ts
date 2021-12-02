@@ -4,6 +4,7 @@ import assert from 'assert';
 
 const pkg = require('expo-screen-orientation/package.json');
 
+// This value must match the `EXDefaultScreenOrientationMask` string used in `expo-screen-orientation/ios/EXScreenOrientation/EXScreenOrientationViewController.m` (do not change).
 export const INITIAL_ORIENTATION_KEY = 'EXDefaultScreenOrientationMask';
 
 const OrientationLock = {
