@@ -189,7 +189,7 @@ For efficiency reasons the current implementations of the methods don't perform 
 
 ## Integration with Reanimated worklets
 
-To use this API inside Reanimated worklet you need to pass context id to the worklet code and restore context like in the example bellow.
+To use this API inside Reanimated worklet you need to pass the GL context ID to the worklet and recreate the GL object like in the example bellow.
 
 <SnackInline label='GL usage in reanimated worklet' dependencies={['expo-gl', 'react-native-reanimated']}>
 
@@ -223,7 +223,7 @@ export default function App() {
 
 </SnackInline>
 
-For more in depth example on how to use `expo-gl` with Reanimated and Gesture Handler you can check [here](https://github.com/expo/expo/blob/master/apps/native-component-list/src/screens/GL/GLReanimatedExample.tsx).
+For more in-depth example on how to use `expo-gl` with Reanimated and Gesture Handler you can check [this example](https://github.com/expo/expo/blob/master/apps/native-component-list/src/screens/GL/GLReanimatedExample.tsx).
 
 ### Limitations
 
@@ -231,7 +231,7 @@ Worklet runtime is imposing some limitations on the code that runs inside it, so
 - Third-party libraries like Pixi.js or Three.js won't work inside the worklet, you can only use functions that have `'worklet'` added at the start.
 - If you need to load some assets to pass to the WebGL code, it needs to be done on the main thread and passed via some reference to the worklet. If you are using `expo-assets` you can just pass asset object returned by `Asset.fromModule` or from hook `useAssets` to the `runOnUI` function.
 - To implement a rendering loop you need to use `requestAnimationFrame`, APIs like `setTimeout` are not supported.
-- It's supported only on Android and iOS, it won't work in browser.
+- It's supported only on Android and iOS, it doesn't work on Web.
  
 Check [Reanimated documentation](https://docs.swmansion.com/react-native-reanimated/docs/fundamentals/worklets) to learn more.
 
