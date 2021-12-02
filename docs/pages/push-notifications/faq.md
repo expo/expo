@@ -76,7 +76,7 @@ Expo abstracts the majority of credential management away so that you can focus 
 
 ### Push notifications _occasionally_ stop coming through on Android
 
-This is likely due to the `priority` level of the notifications you're sending. You can learn more about Android priority [here](https://firebase.google.com/docs/cloud-messaging/http-server-ref#downstream-http-messages-json), but as for how it relates to Expo- [Expo accepts four priorities](https://docs.expo.dev/push-notifications/sending-notifications/#message-request-format):
+This is likely due to the `priority` level of the notifications you're sending. You can learn more about Android priority [here](https://firebase.google.com/docs/cloud-messaging/http-server-ref#downstream-http-messages-json), but as for how it relates to Expo- [Expo accepts four priorities](/push-notifications/sending-notifications/#message-request-format):
 
 - `default`: manually mapped to the default priority documented by Apple and Google
 - `high`: mapped to the high priority level documented by Apple and Google
