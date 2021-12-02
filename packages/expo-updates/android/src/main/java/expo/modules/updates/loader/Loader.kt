@@ -8,8 +8,6 @@ import expo.modules.updates.db.UpdatesDatabase
 import expo.modules.updates.db.entity.AssetEntity
 import expo.modules.updates.db.entity.UpdateEntity
 import expo.modules.updates.db.enums.UpdateStatus
-import expo.modules.updates.loader.FileDownloader.AssetDownloadCallback
-import expo.modules.updates.loader.FileDownloader.ManifestDownloadCallback
 import expo.modules.updates.manifest.ManifestMetadata
 import expo.modules.updates.manifest.UpdateManifest
 import java.io.File
@@ -63,48 +61,40 @@ abstract class Loader protected constructor(
     fun onUpdateManifestLoaded(updateManifest: UpdateManifest): Boolean
   }
 
-  protected abstract fun loadManifest(
+  protected abstract suspend fun loadManifest(
     context: Context,
     database: UpdatesDatabase,
-    configuration: UpdatesConfiguration,
-    callback: ManifestDownloadCallback
-  )
+    configuration: UpdatesConfiguration
+  ): UpdateManifest
 
-  protected abstract fun loadAsset(
+  protected abstract suspend fun loadAsset(
     assetEntity: AssetEntity,
     updatesDirectory: File?,
-    configuration: UpdatesConfiguration,
-    callback: AssetDownloadCallback
-  )
+    configuration: UpdatesConfiguration
+  ): FileDownloader.AssetDownloadResult
 
   protected abstract fun shouldSkipAsset(assetEntity: AssetEntity): Boolean
 
   // lifecycle methods for class
-  fun start(callback: LoaderCallback) {
+  suspend fun start(callback: LoaderCallback) {
     if (this.callback != null) {
       callback.onFailure(Exception("RemoteLoader has already started. Create a new instance in order to load multiple URLs in parallel."))
       return
     }
     this.callback = callback
 
-    loadManifest(
-      context, database, configuration,
-      object : ManifestDownloadCallback {
-        override fun onFailure(message: String, e: Exception) {
-          finishWithError(message, e)
-        }
-
-        override fun onSuccess(updateManifest: UpdateManifest) {
-          this@Loader.updateManifest = updateManifest
-          if (this@Loader.callback!!.onUpdateManifestLoaded(updateManifest)) {
-            processUpdateManifest(updateManifest)
-          } else {
-            updateEntity = null
-            finishWithSuccess()
-          }
-        }
+    try {
+      val manifest = loadManifest(context, database, configuration)
+      this@Loader.updateManifest = manifest
+      if (this@Loader.callback!!.onUpdateManifestLoaded(manifest)) {
+        processUpdateManifest(manifest)
+      } else {
+        updateEntity = null
+        finishWithSuccess()
       }
-    )
+    } catch (e: Exception) {
+      finishWithError(e.message ?: "", e)
+    }
   }
 
   private fun reset() {
@@ -144,7 +134,7 @@ abstract class Loader protected constructor(
   }
 
   // private helper methods
-  private fun processUpdateManifest(updateManifest: UpdateManifest) {
+  private suspend fun processUpdateManifest(updateManifest: UpdateManifest) {
     if (updateManifest.isDevelopmentMode) {
       // insert into database but don't try to load any assets;
       // the RN runtime will take care of that and we don't want to cache anything
@@ -193,7 +183,7 @@ abstract class Loader protected constructor(
     FINISHED, ALREADY_EXISTS, ERRORED, SKIPPED
   }
 
-  private fun downloadAllAssets(assetList: List<AssetEntity>) {
+  private suspend fun downloadAllAssets(assetList: List<AssetEntity>) {
     assetTotal = assetList.size
     for (assetEntityCur in assetList) {
       var assetEntity = assetEntityCur
@@ -222,25 +212,19 @@ abstract class Loader protected constructor(
         continue
       }
 
-      loadAsset(
-        assetEntity, updatesDirectory, configuration,
-        object : AssetDownloadCallback {
-          override fun onFailure(e: Exception, assetEntity: AssetEntity) {
-            val identifier = if (assetEntity.hash != null) "hash " + UpdatesUtils.bytesToHex(
-              assetEntity.hash!!
-            ) else "key " + assetEntity.key
-            Log.e(TAG, "Failed to download asset with $identifier", e)
-            handleAssetDownloadCompleted(assetEntity, AssetLoadResult.ERRORED)
-          }
-
-          override fun onSuccess(assetEntity: AssetEntity, isNew: Boolean) {
-            handleAssetDownloadCompleted(
-              assetEntity,
-              if (isNew) AssetLoadResult.FINISHED else AssetLoadResult.ALREADY_EXISTS
-            )
-          }
-        }
-      )
+      try {
+        val assetResult = loadAsset(assetEntity, updatesDirectory, configuration)
+        handleAssetDownloadCompleted(
+          assetResult.assetEntity,
+          if (assetResult.isNew) AssetLoadResult.FINISHED else AssetLoadResult.ALREADY_EXISTS
+        )
+      } catch (e: Exception) {
+        val identifier = if (assetEntity.hash != null) "hash " + UpdatesUtils.bytesToHex(
+          assetEntity.hash!!
+        ) else "key " + assetEntity.key
+        Log.e(TAG, "Failed to download asset with $identifier", e)
+        handleAssetDownloadCompleted(assetEntity, AssetLoadResult.ERRORED)
+      }
     }
   }
 

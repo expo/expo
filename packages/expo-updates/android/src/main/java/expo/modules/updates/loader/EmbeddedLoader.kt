@@ -4,9 +4,8 @@ import android.content.Context
 import expo.modules.updates.UpdatesConfiguration
 import expo.modules.updates.db.entity.AssetEntity
 import expo.modules.updates.db.UpdatesDatabase
-import expo.modules.updates.loader.FileDownloader.AssetDownloadCallback
-import expo.modules.updates.loader.FileDownloader.ManifestDownloadCallback
 import expo.modules.updates.UpdatesUtils
+import expo.modules.updates.manifest.UpdateManifest
 import java.io.File
 import java.io.FileNotFoundException
 import java.lang.AssertionError
@@ -47,46 +46,42 @@ class EmbeddedLoader internal constructor(
   ) : this(context, configuration, database, updatesDirectory, LoaderFiles()) {
   }
 
-  override fun loadManifest(
+  override suspend fun loadManifest(
     context: Context,
     database: UpdatesDatabase,
     configuration: UpdatesConfiguration,
-    callback: ManifestDownloadCallback
-  ) {
+  ): UpdateManifest {
     val updateManifest = loaderFiles.readEmbeddedManifest(this.context, this.configuration)
     if (updateManifest != null) {
-      callback.onSuccess(updateManifest)
+      return updateManifest
     } else {
       val message = "Embedded manifest is null"
-      callback.onFailure(message, Exception(message))
+      throw Exception(message)
     }
   }
 
-  override fun loadAsset(
+  override suspend fun loadAsset(
     assetEntity: AssetEntity,
     updatesDirectory: File?,
-    configuration: UpdatesConfiguration,
-    callback: AssetDownloadCallback
-  ) {
+    configuration: UpdatesConfiguration
+  ): FileDownloader.AssetDownloadResult {
     val filename = UpdatesUtils.createFilenameForAsset(assetEntity)
     val destination = File(updatesDirectory, filename)
 
     if (loaderFiles.fileExists(destination)) {
       assetEntity.relativePath = filename
-      callback.onSuccess(assetEntity, false)
+      return FileDownloader.AssetDownloadResult(assetEntity, false)
     } else {
       try {
         assetEntity.hash = loaderFiles.copyAssetAndGetHash(assetEntity, destination, context)
         assetEntity.downloadTime = Date()
         assetEntity.relativePath = filename
-        callback.onSuccess(assetEntity, true)
+        return FileDownloader.AssetDownloadResult(assetEntity, true)
       } catch (e: FileNotFoundException) {
         throw AssertionError(
           "APK bundle must contain the expected embedded asset " +
             if (assetEntity.embeddedAssetFilename != null) assetEntity.embeddedAssetFilename else assetEntity.resourcesFilename
         )
-      } catch (e: Exception) {
-        callback.onFailure(e, assetEntity)
       }
     }
   }

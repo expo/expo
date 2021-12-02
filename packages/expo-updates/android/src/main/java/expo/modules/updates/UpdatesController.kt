@@ -358,11 +358,11 @@ class UpdatesController private constructor(
     }
   }
 
-  fun relaunchReactApplication(context: Context, callback: LauncherCallback) {
+  suspend fun relaunchReactApplication(context: Context, callback: LauncherCallback) {
     relaunchReactApplication(context, true, callback)
   }
 
-  private fun relaunchReactApplication(context: Context, shouldRunReaper: Boolean, callback: LauncherCallback) {
+  private suspend fun relaunchReactApplication(context: Context, shouldRunReaper: Boolean, callback: LauncherCallback) {
     val host = reactNativeHost?.get()
     if (host == null) {
       callback.onFailure(Exception("Could not reload application. Ensure you have passed the correct instance of ReactApplication into UpdatesController.initialize()."))
