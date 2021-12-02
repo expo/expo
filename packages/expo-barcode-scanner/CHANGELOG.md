@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed crashes caused by the Zxing scanner on Android.
+
 ### 💡 Others
 
 ## 11.1.0 — 2021-10-01
