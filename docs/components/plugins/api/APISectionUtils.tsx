@@ -278,11 +278,11 @@ export const renderTypeOrSignatureType = (
         (
         {parameters && includeParamType
           ? parameters.map(param => (
-              <span key={`signature-param-${param.name}`}>
-                {param.name}
-                {param.flags?.isOptional && '?'}: {resolveTypeName(param.type)}
-              </span>
-            ))
+            <span key={`signature-param-${param.name}`}>
+              {param.name}
+              {param.flags?.isOptional && '?'}: {resolveTypeName(param.type)}
+            </span>
+          ))
           : listParams(parameters)}
         ) =&gt; {resolveTypeName(type)}
       </InlineCode>
@@ -328,8 +328,8 @@ const formatPlatformName = (name: string) => {
   return cleanName.includes('ios')
     ? cleanName.replace('ios', 'iOS')
     : cleanName.includes('expo')
-    ? cleanName.replace('expo', 'Expo Go')
-    : capitalize(name);
+      ? cleanName.replace('expo', 'Expo Go')
+      : capitalize(name);
 };
 
 export const getPlatformTags = (comment?: CommentData) => {
@@ -364,13 +364,13 @@ export const CommentTextBlock = ({
     </ReactMarkdown>
   ) : null;
 
-  const example = getTagData('example', comment);
-  const exampleText = example ? (
-    <>
+  const examples = getAllTagData('example', comment);
+  const exampleText = examples?.map((example, index) => (
+    <React.Fragment key={'Example-' + index}>
       <H4>Example</H4>
       <ReactMarkdown components={components}>{example.text}</ReactMarkdown>
-    </>
-  ) : null;
+    </React.Fragment>
+  ));
 
   const deprecation = getTagData('deprecated', comment);
   const deprecationNote = deprecation ? (
