@@ -1,6 +1,7 @@
 ---
 title: Slider
 sourceCodeUrl: 'https://github.com/react-native-community/react-native-slider'
+packageName: 'react-native-slider'
 ---
 
 import InstallSection from '~/components/plugins/InstallSection';

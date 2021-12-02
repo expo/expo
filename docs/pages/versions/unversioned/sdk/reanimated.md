@@ -1,6 +1,7 @@
 ---
 title: Reanimated
 sourceCodeUrl: 'https://github.com/software-mansion/react-native-reanimated'
+packageName: 'react-native-reanimated'
 ---
 
 import InstallSection from '~/components/plugins/InstallSection';

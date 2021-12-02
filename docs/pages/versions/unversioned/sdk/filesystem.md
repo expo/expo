@@ -1,6 +1,7 @@
 ---
 title: FileSystem
 sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-file-system'
+packageName: 'expo-file-system'
 ---
 
 import ImageSpotlight from '~/components/plugins/ImageSpotlight'

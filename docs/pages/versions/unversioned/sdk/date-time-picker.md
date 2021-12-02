@@ -1,6 +1,7 @@
 ---
 title: DateTimePicker
 sourceCodeUrl: 'https://github.com/react-native-community/react-native-datetimepicker'
+packageName: '@react-native-community/datetimepicker'
 ---
 
 import InstallSection from '~/components/plugins/InstallSection';

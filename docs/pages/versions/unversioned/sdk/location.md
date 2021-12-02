@@ -1,6 +1,7 @@
 ---
 title: Location
 sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-location'
+packageName: 'expo-location'
 ---
 
 import APISection from '~/components/plugins/APISection';

@@ -1,6 +1,7 @@
 ---
 title: GestureHandler
 sourceCodeUrl: 'https://github.com/software-mansion/react-native-gesture-handler'
+packageName: 'react-native-gesture-handler'
 ---
 
 import InstallSection from '~/components/plugins/InstallSection';

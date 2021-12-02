@@ -1,6 +1,7 @@
 ---
 title: FirebaseAnalytics
 sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-firebase-analytics'
+packageName: 'expo-firebase-analytics'
 ---
 
 import APISection from '~/components/plugins/APISection';

@@ -1,6 +1,7 @@
 ---
 title: Print
 sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-print'
+packageName: 'expo-print'
 ---
 
 import APISection from '~/components/plugins/APISection';

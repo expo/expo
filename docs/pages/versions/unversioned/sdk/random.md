@@ -1,6 +1,7 @@
 ---
 title: Random
 sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-random'
+packageName: 'expo-random'
 ---
 
 import APISection from '~/components/plugins/APISection';

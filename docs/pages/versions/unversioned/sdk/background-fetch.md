@@ -1,6 +1,7 @@
 ---
 title: BackgroundFetch
 sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-background-fetch'
+packageName: 'expo-background-fetch'
 ---
 
 import APISection from '~/components/plugins/APISection';

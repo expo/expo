@@ -1,6 +1,7 @@
 ---
 title: Linking
-sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo/src/Linking'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-linking'
+packageName: 'expo-linking'
 ---
 
 import APISection from '~/components/plugins/APISection';

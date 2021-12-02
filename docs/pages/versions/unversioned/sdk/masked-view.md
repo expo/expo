@@ -1,6 +1,7 @@
 ---
 title: MaskedView
 sourceCodeUrl: 'https://github.com/react-native-masked-view/masked-view'
+packageName: '@react-native-masked-view/masked-view'
 ---
 
 import InstallSection from '~/components/plugins/InstallSection';

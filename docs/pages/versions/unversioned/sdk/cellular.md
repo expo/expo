@@ -1,6 +1,7 @@
 ---
 title: Cellular
 sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-cellular'
+packageName: 'expo-cellular'
 ---
 
 import APISection from '~/components/plugins/APISection';

@@ -1,6 +1,7 @@
 ---
 title: NetInfo
 sourceCodeUrl: 'https://github.com/react-native-community/react-native-netinfo'
+packageName: '@react-native-community/netinfo'
 ---
 
 import InstallSection from '~/components/plugins/InstallSection';

@@ -1,6 +1,7 @@
 ---
 title: FaceDetector
 sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-face-detector'
+packageName: 'expo-face-detector'
 ---
 
 import APISection from '~/components/plugins/APISection';

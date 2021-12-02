@@ -1,6 +1,7 @@
 ---
 title: MapView
 sourceCodeUrl: 'https://github.com/react-native-community/react-native-maps'
+packageName: 'react-native-maps'
 ---
 
 import InstallSection from '~/components/plugins/InstallSection';

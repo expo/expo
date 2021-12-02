@@ -1,6 +1,7 @@
 ---
 title: SplashScreen
 sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-splash-screen'
+packageName: 'expo-splash-screen'
 ---
 
 import APISection from '~/components/plugins/APISection';

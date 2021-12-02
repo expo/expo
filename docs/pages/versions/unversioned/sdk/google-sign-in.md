@@ -1,6 +1,7 @@
 ---
 title: GoogleSignIn
 sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-google-sign-in'
+packageName: 'expo-google-sign-in'
 ---
 
 import PlatformsSection from '~/components/plugins/PlatformsSection';

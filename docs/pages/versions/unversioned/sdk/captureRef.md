@@ -1,6 +1,7 @@
 ---
 title: captureRef
 sourceCodeUrl: 'https://github.com/gre/react-native-view-shot'
+packageName: 'react-native-view-shot'
 ---
 
 import InstallSection from '~/components/plugins/InstallSection';

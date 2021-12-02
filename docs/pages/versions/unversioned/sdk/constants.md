@@ -1,6 +1,7 @@
 ---
 title: Constants
 sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-constants'
+packageName: 'expo-constants'
 ---
 
 import APISection from '~/components/plugins/APISection';

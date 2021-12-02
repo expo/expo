@@ -1,6 +1,7 @@
 ---
 title: Speech
 sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-speech'
+packageName: 'expo-speech'
 ---
 
 import APISection from '~/components/plugins/APISection';

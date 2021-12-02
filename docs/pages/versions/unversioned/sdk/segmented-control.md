@@ -1,6 +1,7 @@
 ---
 title: SegmentedControl
 sourceCodeUrl: 'https://github.com/react-native-community/segmented-control'
+packageName: '@react-native-segmented-control/segmented-control'
 ---
 
 import InstallSection from '~/components/plugins/InstallSection';

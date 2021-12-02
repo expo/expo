@@ -1,10 +1,11 @@
 ---
 title: AppleAuthentication
 sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-apple-authentication'
+packageName: 'expo-apple-authentication'
 ---
 
 import APISection from '~/components/plugins/APISection';
-import InstallSection from '~/components/plugins/InstallSection';
+import {APIInstallSection} from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 
 **`expo-apple-authentication`** provides Apple authentication for iOS 13+. It does not yet support lower iOS versions, Android, or web.
@@ -15,7 +16,7 @@ Beginning with iOS 13, any app that includes third-party authentication options 
 
 ## Installation
 
-<InstallSection packageName="expo-apple-authentication" />
+<APIInstallSection />
 
 ## Configuration
 

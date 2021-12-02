@@ -1,6 +1,7 @@
 ---
 title: Localization
 sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-localization'
+packageName: 'expo-localization'
 ---
 
 import APISection from '~/components/plugins/APISection';

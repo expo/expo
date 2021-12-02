@@ -1,6 +1,7 @@
 ---
 title: AppAuth
 sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-app-auth'
+packageName: 'expo-app-auth'
 ---
 
 import InstallSection from '~/components/plugins/InstallSection';

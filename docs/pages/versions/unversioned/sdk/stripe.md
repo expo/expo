@@ -1,6 +1,7 @@
 ---
 title: Stripe
 sourceCodeUrl: 'https://github.com/stripe/stripe-react-native'
+packageName: '@stripe/stripe-react-native'
 ---
 
 import InstallSection from '~/components/plugins/InstallSection';

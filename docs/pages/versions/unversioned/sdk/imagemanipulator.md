@@ -1,6 +1,7 @@
 ---
 title: ImageManipulator
 sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-image-manipulator'
+packageName: 'expo-image-manipulator'
 ---
 
 import APISection from '~/components/plugins/APISection';

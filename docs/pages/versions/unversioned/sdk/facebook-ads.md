@@ -1,6 +1,7 @@
 ---
 title: FacebookAds
 sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-ads-facebook'
+packageName: 'expo-ads-facebook'
 ---
 
 import { ConfigClassic, ConfigReactNative, ConfigPluginExample, ConfigPluginProperties } from '~/components/plugins/ConfigSection';

@@ -1,6 +1,7 @@
 ---
 title: BlurView
 sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-blur'
+packageName: 'expo-blur'
 ---
 
 import APISection from '~/components/plugins/APISection';

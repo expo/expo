@@ -1,6 +1,7 @@
 ---
 title: Checkbox
 sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-checkbox'
+packageName: 'expo-checkbox'
 ---
 
 import APISection from '~/components/plugins/APISection';

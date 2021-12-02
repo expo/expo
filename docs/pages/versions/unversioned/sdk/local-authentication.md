@@ -1,6 +1,7 @@
 ---
 title: LocalAuthentication
 sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-local-authentication'
+packageName: 'expo-local-authentication'
 ---
 
 import APISection from '~/components/plugins/APISection';

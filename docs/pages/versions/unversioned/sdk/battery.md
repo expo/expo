@@ -1,6 +1,7 @@
 ---
 title: Battery
 sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-battery'
+packageName: 'expo-battery'
 ---
 
 import APISection from '~/components/plugins/APISection';

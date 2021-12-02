@@ -1,6 +1,7 @@
 ---
 title: Brightness
 sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-brightness'
+packageName: 'expo-brightness'
 ---
 
 import APISection from '~/components/plugins/APISection';

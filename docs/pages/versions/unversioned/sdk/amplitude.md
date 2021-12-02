@@ -1,6 +1,7 @@
 ---
 title: Amplitude
 sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-analytics-amplitude'
+packageName: 'expo-analytics-amplitude'
 ---
 
 import APISection from '~/components/plugins/APISection';

@@ -1,6 +1,7 @@
 ---
 title: Picker
 sourceCodeUrl: 'https://github.com/react-native-picker/picker'
+packageName: '@react-native-picker/picker'
 ---
 
 import InstallSection from '~/components/plugins/InstallSection';

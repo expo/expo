@@ -1,6 +1,7 @@
 ---
 title: ImagePicker
 sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-image-picker'
+packageName: 'expo-image-picker'
 ---
 
 import { ConfigClassic, ConfigReactNative, ConfigPluginExample, ConfigPluginProperties } from '~/components/plugins/ConfigSection';

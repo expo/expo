@@ -1,6 +1,7 @@
 ---
 title: Font
 sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-font'
+packageName: 'expo-font'
 ---
 
 import APISection from '~/components/plugins/APISection';

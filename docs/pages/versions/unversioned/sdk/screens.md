@@ -1,6 +1,7 @@
 ---
 title: Screens
 sourceCodeUrl: 'https://github.com/software-mansion/react-native-screens'
+packageName: 'react-native-screens'
 ---
 
 import InstallSection from '~/components/plugins/InstallSection';

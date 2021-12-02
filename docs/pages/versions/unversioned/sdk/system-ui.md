@@ -1,6 +1,7 @@
 ---
 title: SystemUI
 sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-system-ui'
+packageName: 'expo-system-ui'
 ---
 
 import APISection from '~/components/plugins/APISection';

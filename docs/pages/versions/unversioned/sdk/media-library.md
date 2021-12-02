@@ -1,6 +1,7 @@
 ---
 title: MediaLibrary
 sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-media-library'
+packageName: 'expo-media-library'
 ---
 
 import { ConfigClassic, ConfigReactNative, ConfigPluginExample, ConfigPluginProperties } from '~/components/plugins/ConfigSection';

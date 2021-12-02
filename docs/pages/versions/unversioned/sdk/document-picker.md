@@ -1,6 +1,7 @@
 ---
 title: DocumentPicker
 sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-document-picker'
+packageName: 'expo-document-picker'
 ---
 
 import APISection from '~/components/plugins/APISection';

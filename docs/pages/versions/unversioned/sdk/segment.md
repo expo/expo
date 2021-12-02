@@ -1,6 +1,7 @@
 ---
 title: Segment
 sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-analytics-segment'
+packageName: 'expo-analytics-segment'
 ---
 
 import APISection from '~/components/plugins/APISection';

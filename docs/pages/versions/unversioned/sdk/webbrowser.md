@@ -1,6 +1,7 @@
 ---
 title: WebBrowser
 sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-web-browser'
+packageName: 'expo-web-browser'
 ---
 
 import APISection from '~/components/plugins/APISection';

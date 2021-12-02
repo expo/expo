@@ -1,6 +1,7 @@
 ---
 title: Camera
 sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-camera'
+packageName: 'expo-camera'
 ---
 
 import InstallSection from '~/components/plugins/InstallSection';

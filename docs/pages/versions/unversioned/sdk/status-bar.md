@@ -2,6 +2,7 @@
 id: statusbar
 title: StatusBar
 sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-status-bar'
+packageName: 'expo-status-bar'
 ---
 
 import APISection from '~/components/plugins/APISection';

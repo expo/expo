@@ -1,6 +1,7 @@
 ---
 title: Haptics
 sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-haptics'
+packageName: 'expo-haptics'
 ---
 
 import APISection from '~/components/plugins/APISection';

@@ -1,6 +1,7 @@
 ---
 title: Contacts
 sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-contacts'
+packageName: 'expo-contacts'
 ---
 
 import InstallSection from '~/components/plugins/InstallSection';

@@ -1,6 +1,7 @@
 ---
 title: VideoThumbnails
 sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-video-thumbnails'
+packageName: 'expo-video-thumbnails'
 ---
 
 import APISection from '~/components/plugins/APISection';

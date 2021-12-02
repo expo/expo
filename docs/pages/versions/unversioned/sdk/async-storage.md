@@ -1,6 +1,7 @@
 ---
 title: AsyncStorage
 sourceCodeUrl: 'https://github.com/react-native-async-storage/async-storage'
+packageName: '@react-native-async-storage/async-storage'
 ---
 
 import InstallSection from '~/components/plugins/InstallSection';

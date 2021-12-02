@@ -1,6 +1,7 @@
 ---
 title: Sharing
 sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-sharing'
+packageName: 'expo-sharing'
 ---
 
 import APISection from '~/components/plugins/APISection';

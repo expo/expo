@@ -1,6 +1,7 @@
 ---
 title: Admob
 sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-ads-admob'
+packageName: 'expo-ads-admob'
 ---
 
 import { ConfigClassic, ConfigReactNative, ConfigPluginExample, ConfigPluginProperties } from '~/components/plugins/ConfigSection';

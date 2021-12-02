@@ -1,6 +1,7 @@
 ---
 title: Clipboard
 sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-clipboard'
+packageName: 'expo-clipboard'
 ---
 
 import APISection from '~/components/plugins/APISection';

@@ -1,6 +1,7 @@
 ---
 title: registerRootComponent
 sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo/src/launch'
+packageName: 'expo'
 ---
 
 import PlatformsSection from '~/components/plugins/PlatformsSection';

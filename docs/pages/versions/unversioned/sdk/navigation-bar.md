@@ -1,6 +1,7 @@
 ---
 title: NavigationBar
 sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-navigation-bar'
+packageName: 'expo-navigation-bar'
 ---
 
 import APISection from '~/components/plugins/APISection';

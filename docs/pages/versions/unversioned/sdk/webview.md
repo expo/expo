@@ -1,6 +1,7 @@
 ---
 title: WebView
 sourceCodeUrl: 'https://github.com/react-native-community/react-native-webview'
+packageName: 'react-native-webview'
 ---
 
 import InstallSection from '~/components/plugins/InstallSection';

@@ -1,6 +1,7 @@
 ---
 title: IntentLauncher
 sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-intent-launcher'
+packageName: 'expo-intent-launcher'
 ---
 
 import APISection from '~/components/plugins/APISection';

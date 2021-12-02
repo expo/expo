@@ -1,6 +1,7 @@
 ---
 title: ViewPager
 sourceCodeUrl: 'https://github.com/callstack/react-native-pager-view'
+packageName: 'react-native-pager-view'
 ---
 
 import InstallSection from '~/components/plugins/InstallSection';

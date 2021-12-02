@@ -1,6 +1,7 @@
 ---
 title: KeepAwake
 sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-keep-awake'
+packageName: 'expo-keep-awake'
 ---
 
 import APISection from '~/components/plugins/APISection';

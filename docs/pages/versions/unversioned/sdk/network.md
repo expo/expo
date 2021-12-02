@@ -1,6 +1,7 @@
 ---
 title: Network
 sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-network'
+packageName: 'expo-network'
 ---
 
 import APISection from '~/components/plugins/APISection';

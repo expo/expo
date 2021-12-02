@@ -1,6 +1,7 @@
 ---
 title: SMS
 sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-sms'
+packageName: 'expo-sms'
 ---
 
 import APISection from '~/components/plugins/APISection';

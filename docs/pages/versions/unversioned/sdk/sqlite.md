@@ -1,6 +1,7 @@
 ---
 title: SQLite
 sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-sqlite'
+packageName: 'expo-sqlite'
 ---
 
 import APISection from '~/components/plugins/APISection';

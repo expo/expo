@@ -1,6 +1,7 @@
 ---
 title: InAppPurchases
 sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-in-app-purchases'
+packageName: 'expo-in-app-purchases'
 ---
 
 import APISection from '~/components/plugins/APISection';

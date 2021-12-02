@@ -1,6 +1,7 @@
 ---
 title: LinearGradient
 sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-linear-gradient'
+packageName: 'expo-linear-gradient'
 ---
 
 import APISection from '~/components/plugins/APISection';

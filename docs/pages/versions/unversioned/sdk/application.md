@@ -1,6 +1,7 @@
 ---
 title: Application
 sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-application'
+packageName: 'expo-application'
 ---
 
 import APISection from '~/components/plugins/APISection';

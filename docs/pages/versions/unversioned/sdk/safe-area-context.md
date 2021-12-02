@@ -1,6 +1,7 @@
 ---
 title: SafeAreaContext
 sourceCodeUrl: 'https://github.com/th3rdwave/react-native-safe-area-context'
+packageName: 'react-native-safe-area-context'
 ---
 
 import InstallSection from '~/components/plugins/InstallSection';

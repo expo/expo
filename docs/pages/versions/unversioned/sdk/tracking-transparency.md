@@ -1,6 +1,7 @@
 ---
 title: TrackingTransparency
 sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-tracking-transparency'
+packageName: 'expo-tracking-transparency'
 ---
 
 import { ConfigClassic, ConfigReactNative, ConfigPluginExample, ConfigPluginProperties } from '~/components/plugins/ConfigSection';

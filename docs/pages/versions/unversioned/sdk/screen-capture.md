@@ -1,6 +1,7 @@
 ---
 title: ScreenCapture
 sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-screen-capture'
+packageName: 'expo-screen-capture'
 ---
 
 import APISection from '~/components/plugins/APISection';

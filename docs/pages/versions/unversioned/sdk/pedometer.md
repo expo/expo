@@ -1,6 +1,7 @@
 ---
 title: Pedometer
 sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-sensors'
+packageName: 'expo-sensors'
 ---
 
 import APISection from '~/components/plugins/APISection';

@@ -1,6 +1,7 @@
 ---
 title: Asset
 sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-asset'
+packageName: 'expo-asset'
 ---
 
 import APISection from '~/components/plugins/APISection';

@@ -1,6 +1,7 @@
 ---
 title: Updates
-sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo/src/Updates'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-updates'
+packageName: 'expo-updates'
 ---
 
 import APISection from '~/components/plugins/APISection';

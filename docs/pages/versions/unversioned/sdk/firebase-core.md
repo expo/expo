@@ -1,6 +1,7 @@
 ---
 title: FirebaseCore
 sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-firebase-core'
+packageName: 'expo-firebase-core'
 ---
 
 import APISection from '~/components/plugins/APISection';

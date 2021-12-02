@@ -1,6 +1,7 @@
 ---
 title: SharedElement
 sourceCodeUrl: 'https://github.com/IjzerenHein/react-native-shared-element'
+packageName: 'react-native-shared-element'
 ---
 
 import InstallSection from '~/components/plugins/InstallSection';

@@ -1,6 +1,7 @@
 ---
 title: ErrorRecovery
 sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-error-recovery'
+packageName: 'expo-error-recovery'
 ---
 
 import APISection from '~/components/plugins/APISection';

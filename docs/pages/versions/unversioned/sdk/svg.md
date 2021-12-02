@@ -1,6 +1,7 @@
 ---
 title: Svg
 sourceCodeUrl: 'https://github.com/react-native-community/react-native-svg'
+packageName: 'react-native-svg'
 ---
 
 import InstallSection from '~/components/plugins/InstallSection';

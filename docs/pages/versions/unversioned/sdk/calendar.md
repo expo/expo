@@ -1,6 +1,7 @@
 ---
 title: Calendar
 sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-calendar'
+packageName: 'expo-calendar'
 ---
 
 import APISection from '~/components/plugins/APISection';

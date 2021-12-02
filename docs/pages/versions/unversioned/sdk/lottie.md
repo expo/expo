@@ -1,6 +1,7 @@
 ---
 title: Lottie
 sourceCodeUrl: 'https://github.com/lottie-react-native/lottie-react-native'
+packageName: 'lottie-react-native'
 ---
 
 import InstallSection from '~/components/plugins/InstallSection';

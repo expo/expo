@@ -1,6 +1,7 @@
 ---
 title: TaskManager
 sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-task-manager'
+packageName: 'expo-task-manager'
 ---
 
 import APISection from '~/components/plugins/APISection';

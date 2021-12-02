@@ -1,6 +1,7 @@
 ---
 title: MailComposer
 sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-mail-composer'
+packageName: 'expo-mail-composer'
 ---
 
 import APISection from '~/components/plugins/APISection';
