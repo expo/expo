@@ -58,27 +58,21 @@
 - (void)testUpdateWithManifest_Legacy
 {
   NSError *error;
-  NSURLResponse* response =  [[NSHTTPURLResponse alloc] initWithURL:[NSURL URLWithString:@"https://example.com"] statusCode:200 HTTPVersion:nil headerFields:@{}];
-
-  EXUpdatesUpdate *update = [EXUpdatesUpdate updateWithManifest:_legacyManifest response:response config:_config database:_database error:&error];
+  EXUpdatesUpdate *update = [EXUpdatesUpdate updateWithManifest:_legacyManifest headers:[NSDictionary new] extensions:[NSDictionary new] config:_config database:_database error:&error];
   XCTAssert(update != nil);
 }
 
 - (void)testUpdateWithManifest_New
 {
   NSError *error;
-  NSURLResponse* response =  [[NSHTTPURLResponse alloc] initWithURL:[NSURL URLWithString:@"https://example.com"] statusCode:200 HTTPVersion:nil headerFields:@{@"expo-protocol-version" : @"0"}];
-
-  EXUpdatesUpdate *update = [EXUpdatesUpdate updateWithManifest:_easNewManifest response:response config:_config database:_database error:&error];
+  EXUpdatesUpdate *update = [EXUpdatesUpdate updateWithManifest:_easNewManifest headers:@{@"expo-protocol-version" : @"0"} extensions:[NSDictionary new] config:_config database:_database error:&error];
   XCTAssert(update != nil);
 }
 
 - (void)testUpdateWithManifest_UnsupportedProtocolVersion
 {
   NSError *error;
-  NSURLResponse* response =  [[NSHTTPURLResponse alloc] initWithURL:[NSURL URLWithString:@"https://example.com"] statusCode:200 HTTPVersion:nil headerFields:@{@"expo-protocol-version" : @"1"}];
-
-  EXUpdatesUpdate *update = [EXUpdatesUpdate updateWithManifest:_easNewManifest response:response config:_config database:_database error:&error];
+  EXUpdatesUpdate *update = [EXUpdatesUpdate updateWithManifest:_easNewManifest headers:@{@"expo-protocol-version" : @"1"} extensions:[NSDictionary new] config:_config database:_database error:&error];
   XCTAssert(error != nil);
   XCTAssert(update == nil);
 }

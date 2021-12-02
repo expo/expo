@@ -11,16 +11,6 @@
 
 @implementation EXUpdatesFileDownloaderTests
 
-- (void)setUp
-{
-  // Put setup code here. This method is called before the invocation of each test method in the class.
-}
-
-- (void)tearDown
-{
-  // Put teardown code here. This method is called after the invocation of each test method in the class.
-}
-
 - (void)testCacheControl_LegacyManifest
 {
   EXUpdatesConfig *config = [EXUpdatesConfig configWithDictionary:@{
@@ -87,6 +77,28 @@
   };
 
   NSURLRequest *actual = [downloader createManifestRequestWithURL:[NSURL URLWithString:@"https://exp.host/manifest/00000000-0000-0000-0000-000000000000"] extraHeaders:extraHeaders];
+  XCTAssertEqualObjects(@"ios", [actual valueForHTTPHeaderField:@"expo-platform"]);
+  XCTAssertEqualObjects(@"custom", [actual valueForHTTPHeaderField:@"expo-updates-environment"]);
+}
+
+- (void)testAssetExtraHeaders_OverrideOrder
+{
+  EXUpdatesConfig *config = [EXUpdatesConfig configWithDictionary:@{
+    @"EXUpdatesURL": @"https://exp.host/manifest/00000000-0000-0000-0000-000000000000",
+    @"EXUpdatesRuntimeVersion": @"1.0",
+    @"EXUpdatesRequestHeaders": @{
+      // custom headers configured at build-time should be able to override preset headers
+      @"expo-updates-environment": @"custom"
+    }
+  }];
+  EXUpdatesFileDownloader *downloader = [[EXUpdatesFileDownloader alloc] initWithUpdatesConfig:config];
+
+  // assetRequestHeaders should not be able to override preset headers
+  NSDictionary *extraHeaders = @{
+    @"expo-platform": @"android"
+  };
+
+  NSURLRequest *actual = [downloader createGenericRequestWithURL:[NSURL URLWithString:@"https://exp.host/manifest/00000000-0000-0000-0000-000000000000"] extraHeaders:extraHeaders];
   XCTAssertEqualObjects(@"ios", [actual valueForHTTPHeaderField:@"expo-platform"]);
   XCTAssertEqualObjects(@"custom", [actual valueForHTTPHeaderField:@"expo-updates-environment"]);
 }

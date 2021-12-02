@@ -289,7 +289,10 @@ static NSString * const EXUpdatesAppLauncherErrorDomain = @"AppLauncher";
     completion([NSError errorWithDomain:EXUpdatesAppLauncherErrorDomain code:1007 userInfo:@{NSLocalizedDescriptionKey: @"Failed to download asset with no URL provided"}], asset, assetLocalUrl);
   }
   dispatch_async([EXUpdatesFileDownloader assetFilesQueue], ^{
-    [self.downloader downloadFileFromURL:asset.url toPath:[assetLocalUrl path] successBlock:^(NSData *data, NSURLResponse *response) {
+    [self.downloader downloadFileFromURL:asset.url
+                                  toPath:[assetLocalUrl path]
+                            extraHeaders:asset.extraRequestHeaders ?: [NSDictionary new]
+                            successBlock:^(NSData *data, NSURLResponse *response) {
       dispatch_async(self->_launcherQueue, ^{
         if ([response isKindOfClass:[NSHTTPURLResponse class]]) {
           asset.headers = ((NSHTTPURLResponse *)response).allHeaderFields;
@@ -298,7 +301,8 @@ static NSString * const EXUpdatesAppLauncherErrorDomain = @"AppLauncher";
         asset.downloadTime = [NSDate date];
         completion(nil, asset, assetLocalUrl);
       });
-    } errorBlock:^(NSError *error, NSURLResponse *response) {
+    }
+                              errorBlock:^(NSError *error) {
       dispatch_async(self->_launcherQueue, ^{
         completion(error, asset, assetLocalUrl);
       });

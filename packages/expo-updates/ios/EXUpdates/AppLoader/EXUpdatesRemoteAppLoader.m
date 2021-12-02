@@ -73,7 +73,7 @@ static NSString * const EXUpdatesRemoteAppLoaderErrorDomain = @"EXUpdatesRemoteA
     [self->_downloader downloadManifestFromURL:url withDatabase:self.database extraHeaders:extraHeaders successBlock:^(EXUpdatesUpdate *update) {
       self->_remoteUpdate = update;
       [self startLoadingFromManifest:update];
-    } errorBlock:^(NSError *error, NSURLResponse *response) {
+    } errorBlock:^(NSError *error) {
       if (self.errorBlock) {
         self.errorBlock(error);
       }
@@ -97,11 +97,15 @@ static NSString * const EXUpdatesRemoteAppLoaderErrorDomain = @"EXUpdatesRemoteA
         return;
       }
 
-      [self->_downloader downloadFileFromURL:asset.url toPath:[urlOnDisk path] successBlock:^(NSData *data, NSURLResponse *response) {
+      [self->_downloader downloadFileFromURL:asset.url
+                                      toPath:[urlOnDisk path]
+                                extraHeaders:asset.extraRequestHeaders ?: [NSDictionary new]
+                                successBlock:^(NSData *data, NSURLResponse *response) {
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
           [self handleAssetDownloadWithData:data response:response asset:asset];
         });
-      } errorBlock:^(NSError *error, NSURLResponse *response) {
+      }
+                                  errorBlock:^(NSError *error) {
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
           [self handleAssetDownloadWithError:error asset:asset];
         });

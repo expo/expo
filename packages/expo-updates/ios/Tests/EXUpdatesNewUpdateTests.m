@@ -40,7 +40,7 @@
     @"createdAt": @"2020-11-11T00:17:54.797Z",
     @"launchAsset": @{@"url": @"https://url.to/bundle.js", @"contentType": @"application/javascript"}
   }];
-  XCTAssert([EXUpdatesNewUpdate updateWithNewManifest:manifest response:nil config:_config database:_database] != nil);
+  XCTAssert([EXUpdatesNewUpdate updateWithNewManifest:manifest headers:@{} extensions:@{} config:_config database:_database] != nil);
 }
 
 - (void)testUpdateWithNewManifest_NoRuntimeVersion
@@ -50,7 +50,7 @@
     @"createdAt": @"2020-11-11T00:17:54.797Z",
     @"launchAsset": @{@"url": @"https://url.to/bundle.js", @"contentType": @"application/javascript"}
   }];
-  XCTAssertThrows([EXUpdatesNewUpdate updateWithNewManifest:manifest response:nil config:_config database:_database]);
+  XCTAssertThrows([EXUpdatesNewUpdate updateWithNewManifest:manifest headers:@{} extensions:@{} config:_config database:_database]);
 }
 
 - (void)testUpdateWithNewManifest_NoId
@@ -60,7 +60,7 @@
     @"createdAt": @"2020-11-11T00:17:54.797Z",
     @"launchAsset": @{@"url": @"https://url.to/bundle.js", @"contentType": @"application/javascript"}
   }];
-  XCTAssertThrows([EXUpdatesNewUpdate updateWithNewManifest:manifest response:nil config:_config database:_database]);
+  XCTAssertThrows([EXUpdatesNewUpdate updateWithNewManifest:manifest headers:@{} extensions:@{} config:_config database:_database]);
 }
 
 - (void)testUpdateWithNewManifest_NoCreatedAt
@@ -70,7 +70,7 @@
     @"id": @"0eef8214-4833-4089-9dff-b4138a14f196",
     @"launchAsset": @{@"url": @"https://url.to/bundle.js", @"contentType": @"application/javascript"}
   }];
-  XCTAssertThrows([EXUpdatesNewUpdate updateWithNewManifest:manifest response:nil config:_config database:_database]);
+  XCTAssertThrows([EXUpdatesNewUpdate updateWithNewManifest:manifest headers:@{} extensions:@{} config:_config database:_database]);
 }
 
 - (void)testUpdateWithNewManifest_NoLaunchAsset
@@ -80,7 +80,7 @@
     @"id": @"0eef8214-4833-4089-9dff-b4138a14f196",
     @"createdAt": @"2020-11-11T00:17:54.797Z"
   }];
-  XCTAssertThrows([EXUpdatesNewUpdate updateWithNewManifest:manifest response:nil config:_config database:_database]);
+  XCTAssertThrows([EXUpdatesNewUpdate updateWithNewManifest:manifest headers:@{} extensions:@{} config:_config database:_database]);
 }
 
 - (void)testDictionaryWithStructuredHeader_SupportedTypes

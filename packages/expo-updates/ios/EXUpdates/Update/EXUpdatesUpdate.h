@@ -76,7 +76,8 @@ typedef NS_ENUM(NSInteger, EXUpdatesUpdateStatus) {
                     database:(EXUpdatesDatabase *)database;
 
 + (instancetype)updateWithManifest:(NSDictionary *)manifest
-                          response:(nullable NSURLResponse *)response
+                           headers:(NSDictionary *)headers
+                        extensions:(NSDictionary *)extensions
                             config:(EXUpdatesConfig *)config
                           database:(EXUpdatesDatabase *)database
                              error:(NSError **)error;

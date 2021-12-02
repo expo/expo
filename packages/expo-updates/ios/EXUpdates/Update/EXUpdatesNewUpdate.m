@@ -12,13 +12,16 @@ NS_ASSUME_NONNULL_BEGIN
 @implementation EXUpdatesNewUpdate
 
 + (EXUpdatesUpdate *)updateWithNewManifest:(EXManifestsNewManifest *)manifest
-                                  response:(nullable NSURLResponse *)response
+                                   headers:(NSDictionary *)headersDictionary
+                                extensions:(NSDictionary *)extensions
                                     config:(EXUpdatesConfig *)config
                                   database:(EXUpdatesDatabase *)database
 {
+  NSDictionary *assetHeaders = [extensions nullableDictionaryForKey:@"assetRequestHeaders"] ?: [NSDictionary new];
+  
   EXUpdatesUpdate *update = [[EXUpdatesUpdate alloc] initWithManifest:manifest
-                                                                  config:config
-                                                                database:database];
+                                                               config:config
+                                                             database:database];
 
   NSString *updateId = manifest.rawId;
   NSString *commitTime = manifest.createdAt;
@@ -44,6 +47,7 @@ NS_ASSUME_NONNULL_BEGIN
   jsBundleAsset.url = bundleUrl;
   jsBundleAsset.isLaunchAsset = YES;
   jsBundleAsset.mainBundleFilename = EXUpdatesEmbeddedBundleFilename;
+  jsBundleAsset.extraRequestHeaders = [assetHeaders nullableDictionaryForKey:bundleKey];
   [processedAssets addObject:jsBundleAsset];
 
   if (assets) {
@@ -72,6 +76,8 @@ NS_ASSUME_NONNULL_BEGIN
         NSAssert([mainBundleFilename isKindOfClass:[NSString class]], @"asset localPath should be a string");
         asset.mainBundleFilename = (NSString *)mainBundleFilename;
       }
+      
+      asset.extraRequestHeaders = [assetHeaders nullableDictionaryForKey:key];
 
       [processedAssets addObject:asset];
     }
@@ -85,13 +91,8 @@ NS_ASSUME_NONNULL_BEGIN
   update.bundleUrl = bundleUrl;
   update.assets = processedAssets;
   update.manifestJSON = manifest.rawManifestJSON;
-
-  if ([response isKindOfClass:[NSHTTPURLResponse class]]) {
-    NSDictionary *headersDictionary = ((NSHTTPURLResponse *)response).allHeaderFields;
-    update.serverDefinedHeaders = [[self class] dictionaryWithStructuredHeader:headersDictionary[@"expo-server-defined-headers"]];
-    update.manifestFilters = [[self class] dictionaryWithStructuredHeader:headersDictionary[@"expo-manifest-filters"]];
-  }
-
+  update.serverDefinedHeaders = [[self class] dictionaryWithStructuredHeader:headersDictionary[@"expo-server-defined-headers"]];
+  update.manifestFilters = [[self class] dictionaryWithStructuredHeader:headersDictionary[@"expo-manifest-filters"]];
   return update;
 }
 

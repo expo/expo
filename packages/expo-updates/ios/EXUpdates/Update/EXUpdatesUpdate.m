@@ -63,22 +63,12 @@ NSString * const EXUpdatesUpdateErrorDomain = @"EXUpdatesUpdate";
 }
 
 + (instancetype)updateWithManifest:(NSDictionary *)manifest
-                          response:(nullable NSURLResponse *)response
+                           headers:(NSDictionary *)headerDictionary
+                        extensions:(NSDictionary *)extensions
                             config:(EXUpdatesConfig *)config
                           database:(EXUpdatesDatabase *)database
                              error:(NSError ** _Nullable)error
 {
-  if (![response isKindOfClass:[NSHTTPURLResponse class]]) {
-    if(error){
-      *error = [NSError errorWithDomain:EXUpdatesUpdateErrorDomain
-                                   code:1001
-                               userInfo:@{NSLocalizedDescriptionKey:@"response must be a NSHTTPURLResponse"}];
-    }
-    return nil;
-  }
-
-  NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)response;
-  NSDictionary *headerDictionary = [httpResponse allHeaderFields];
   NSString *expoProtocolVersion = headerDictionary[@"expo-protocol-version"];
 
   if (expoProtocolVersion == nil) {
@@ -87,7 +77,8 @@ NSString * const EXUpdatesUpdateErrorDomain = @"EXUpdatesUpdate";
                                                   database:database];
   } else if (expoProtocolVersion.integerValue == 0) {
     return [EXUpdatesNewUpdate updateWithNewManifest:[[EXManifestsNewManifest alloc] initWithRawManifestJSON:manifest]
-                                            response:response
+                                             headers:headerDictionary
+                                          extensions:extensions
                                               config:config
                                             database:database];
   } else {
