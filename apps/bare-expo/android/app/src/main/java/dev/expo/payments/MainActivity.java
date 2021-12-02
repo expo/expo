@@ -8,7 +8,6 @@ import android.os.Bundle;
 
 import com.facebook.react.ReactActivityDelegate;
 import com.facebook.react.ReactRootView;
-import com.swmansion.gesturehandler.react.RNGestureHandlerEnabledRootView;
 
 import expo.modules.ReactActivityDelegateWrapper;
 import expo.modules.devlauncher.DevLauncherController;
@@ -30,11 +29,6 @@ public class MainActivity extends DevMenuAwareReactActivity {
     Activity activity = this;
     ReactActivityDelegate delegate = new ReactActivityDelegateWrapper(this,
       new ReactActivityDelegate(this, getMainComponentName()) {
-      @Override
-      protected ReactRootView createRootView() {
-        return new RNGestureHandlerEnabledRootView(MainActivity.this);
-      }
-
       @Override
       protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
