@@ -1,8 +1,8 @@
 #import <Foundation/Foundation.h>
-#import <EXAdsAdMob/EXAdsAdMobDFPManager.h>
-#import <EXAdsAdMob/EXAdsDFPBannerView.h>
+#import <EXAdsAdMob/EXAdsAdMobGAMManager.h>
+#import <EXAdsAdMob/EXAdsGAMBannerView.h>
 
-@implementation EXAdsAdMobDFPManager
+@implementation EXAdsAdMobGAMManager
 
 EX_EXPORT_MODULE(ExpoPublisherBannerView);
 
@@ -27,20 +27,20 @@ EX_EXPORT_MODULE(ExpoPublisherBannerView);
 
 - (UIView *)view
 {
-  return [[EXAdsDFPBannerView alloc] init];
+  return [[EXAdsGAMBannerView alloc] init];
 }
 
-EX_VIEW_PROPERTY(bannerSize, NSString *, EXAdsDFPBannerView)
+EX_VIEW_PROPERTY(bannerSize, NSString *, EXAdsGAMBannerView)
 {
   [view setBannerSize:value];
 }
 
-EX_VIEW_PROPERTY(adUnitID, NSString *, EXAdsDFPBannerView)
+EX_VIEW_PROPERTY(adUnitID, NSString *, EXAdsGAMBannerView)
 {
   [view setAdUnitID:value];
 }
 
-EX_VIEW_PROPERTY(additionalRequestParams, NSDictionary *, EXAdsDFPBannerView)
+EX_VIEW_PROPERTY(additionalRequestParams, NSDictionary *, EXAdsGAMBannerView)
 {
   [view setAdditionalRequestParams:value];
 }

@@ -2,7 +2,7 @@
 #import <ExpoModulesCore/EXModuleRegistry.h>
 #import <GoogleMobileAds/GoogleMobileAds.h>
 
-@interface EXAdsDFPBannerView : UIView <GADBannerViewDelegate, GADAppEventDelegate>
+@interface EXAdsGAMBannerView : UIView <GADBannerViewDelegate, GADAppEventDelegate>
 
 @property (nonatomic, copy) NSString *bannerSize;
 @property (nonatomic, copy) NSString *adUnitID;

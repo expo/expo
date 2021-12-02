@@ -78,7 +78,6 @@ EX_EXPORT_METHOD_AS(requestAd,
     _requestAdResolver = resolve;
     _requestAdRejecter = reject;
     
-    self.rewardedAd = [[GADRewardedAd alloc] initWithAdUnitID:_adUnitID];
     GADRequest *request = [GADRequest request];
     if (additionalRequestParams) {
       GADExtras *extras = [[GADExtras alloc] init];
@@ -88,8 +87,8 @@ EX_EXPORT_METHOD_AS(requestAd,
     EX_WEAKIFY(self);
     dispatch_async(dispatch_get_main_queue(), ^{
       EX_ENSURE_STRONGIFY(self);
-      [self.rewardedAd loadRequest:request
-                 completionHandler:^(GADRequestError * _Nullable error) {
+      [GADRewardedAd loadWithAdUnitID:self->_adUnitID request:request
+                 completionHandler:^(GADRewardedAd *ad, NSError * _Nullable error) {
         EX_ENSURE_STRONGIFY(self);
         if (error) {
           [self _maybeSendEventWithName:EXAdsAdMobRewardedDidFailToLoad
@@ -97,6 +96,9 @@ EX_EXPORT_METHOD_AS(requestAd,
           self->_requestAdRejecter(@"E_AD_REQUEST_FAILED", [error description], error);
           [self _cleanupRequestAdPromise];
         } else {
+          self.rewardedAd = ad;
+          self.rewardedAd.fullScreenContentDelegate = self;
+          
           [self _maybeSendEventWithName:EXAdsAdMobRewardedDidLoad body:nil];
           self->_requestAdResolver(nil);
           [self _cleanupRequestAdPromise];
@@ -112,18 +114,35 @@ EX_EXPORT_METHOD_AS(showAd,
                     showAd:(EXPromiseResolveBlock)resolve
                     rejecter:(EXPromiseRejectBlock)reject)
 {
-  if (_showAdResolver == nil && self.rewardedAd.isReady) {
-    _showAdResolver = resolve;
-    EX_WEAKIFY(self);
-    dispatch_async(dispatch_get_main_queue(), ^{
-      EX_ENSURE_STRONGIFY(self);
-      [self.rewardedAd presentFromRootViewController:self.utilities.currentViewController delegate:self];
-    });
-  } else if (self.rewardedAd.isReady) {
-    reject(@"E_AD_BEING_SHOWN", @"Ad is already being shown, await the previous promise.", nil);
-  } else {
+  if (!self.rewardedAd) {
     reject(@"E_AD_NOT_READY", @"Ad is not ready.", nil);
+    return;
   }
+  
+  if (_showAdResolver != nil) {
+    reject(@"E_AD_BEING_SHOWN", @"Ad is already being shown, await the previous promise.", nil);
+    return;
+  }
+  
+  bool canPresent = [self.rewardedAd canPresentFromRootViewController:self.utilities.currentViewController error:nil];
+  
+  if (!canPresent) {
+    reject(@"E_AD_NOT_READY", @"Ad is not ready.", nil);
+    return;
+  }
+  
+  _showAdResolver = resolve;
+  EX_WEAKIFY(self);
+  dispatch_async(dispatch_get_main_queue(), ^{
+    EX_ENSURE_STRONGIFY(self);
+    [self.rewardedAd presentFromRootViewController:self.utilities.currentViewController userDidEarnRewardHandler:^ {
+      EX_ENSURE_STRONGIFY(self);
+      GADAdReward *reward = self.rewardedAd.adReward;
+      
+      [self _maybeSendEventWithName:EXAdsAdMobRewardedUserDidEarnReward
+                               body:@{ @"type": reward.type, @"amount": reward.amount }];
+    }];
+  });
 }
 
 EX_EXPORT_METHOD_AS(dismissAd,
@@ -148,7 +167,12 @@ EX_EXPORT_METHOD_AS(getIsReady,
                     getIsReady:(EXPromiseResolveBlock)resolve
                     rejecter:(EXPromiseRejectBlock)reject)
 {
-  resolve([NSNumber numberWithBool:self.rewardedAd.isReady]);
+  if (!self.rewardedAd) {
+    resolve([NSNumber numberWithBool:false]);
+  }
+  
+  bool canPresent = [self.rewardedAd canPresentFromRootViewController:self.utilities.currentViewController error:nil];
+  resolve([NSNumber numberWithBool:canPresent]);
 }
 
 
@@ -156,11 +180,6 @@ EX_EXPORT_METHOD_AS(getIsReady,
 {
   _requestAdResolver = nil;
   _requestAdRejecter = nil;
-}
-
-- (void)rewardedAd:(GADRewardedAd *)rewardedAd userDidEarnReward:(GADAdReward *)reward {
-  [self _maybeSendEventWithName:EXAdsAdMobRewardedUserDidEarnReward
-                           body:@{ @"type": reward.type, @"amount": reward.amount }];
 }
 
 - (void)rewardedAdDidPresent:(GADRewardedAd *)rewardedAd {

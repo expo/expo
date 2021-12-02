@@ -7,7 +7,6 @@ static NSString *const EXAdsAdMobInterstitialDidLoad = @"interstitialDidLoad";
 static NSString *const EXAdsAdMobInterstitialDidFailToLoad = @"interstitialDidFailToLoad";
 static NSString *const EXAdsAdMobInterstitialDidOpen = @"interstitialDidOpen";
 static NSString *const EXAdsAdMobInterstitialDidClose = @"interstitialDidClose";
-static NSString *const EXAdsAdMobInterstitialWillLeaveApplication = @"interstitialWillLeaveApplication";
 
 @interface EXAdsAdMobInterstitial ()
 
@@ -17,7 +16,7 @@ static NSString *const EXAdsAdMobInterstitialWillLeaveApplication = @"interstiti
 @end
 
 @implementation EXAdsAdMobInterstitial {
-  GADInterstitial  *_interstitial;
+  GADInterstitialAd  *_interstitial;
   NSString *_adUnitID;
   bool _hasListeners;
   EXPromiseResolveBlock _showAdResolver;
@@ -40,7 +39,6 @@ EX_EXPORT_MODULE(ExpoAdsAdMobInterstitialManager);
            EXAdsAdMobInterstitialDidFailToLoad,
            EXAdsAdMobInterstitialDidOpen,
            EXAdsAdMobInterstitialDidClose,
-           EXAdsAdMobInterstitialWillLeaveApplication,
            ];
 }
 
@@ -72,41 +70,74 @@ EX_EXPORT_METHOD_AS(requestAd,
                     resolver:(EXPromiseResolveBlock)resolve
                     rejecter:(EXPromiseRejectBlock)reject)
 {
-  if ([_interstitial hasBeenUsed] || _interstitial == nil) {
-    _requestAdResolver = resolve;
-    _requestAdRejecter = reject;
+  if (_interstitial) {
+    bool canPresent = [_interstitial canPresentFromRootViewController:self.utilities.currentViewController error:nil];
     
-    _interstitial = [[GADInterstitial alloc] initWithAdUnitID:_adUnitID];
-    _interstitial.delegate = self;
-    
-    GADRequest *request = [GADRequest request];
-    if (additionalRequestParams) {
-      GADExtras *extras = [[GADExtras alloc] init];
-      extras.additionalParameters = additionalRequestParams;
-      [request registerAdNetworkExtras:extras];
+    if (canPresent) {
+      reject(@"E_AD_ALREADY_LOADED", @"Ad is already loaded.", nil);
+      return;
     }
-    [_interstitial loadRequest:request];
-  } else {
-    reject(@"E_AD_ALREADY_LOADED", @"Ad is already loaded.", nil);
   }
+  
+  _requestAdResolver = resolve;
+  _requestAdRejecter = reject;
+  
+  GADRequest *request = [GADRequest request];
+  if (additionalRequestParams) {
+    GADExtras *extras = [[GADExtras alloc] init];
+    extras.additionalParameters = additionalRequestParams;
+    [request registerAdNetworkExtras:extras];
+  }
+
+  EX_WEAKIFY(self);
+  dispatch_async(dispatch_get_main_queue(), ^{
+    EX_ENSURE_STRONGIFY(self);
+    [GADInterstitialAd loadWithAdUnitID:self->_adUnitID request:request completionHandler:^(GADInterstitialAd *ad, NSError *error) {
+      EX_ENSURE_STRONGIFY(self);
+      if (error) {
+        [self _maybeSendEventWithName:EXAdsAdMobInterstitialDidFailToLoad body:@{ @"name": [error description] }];
+        self->_requestAdRejecter(@"E_AD_REQUEST_FAILED", [error description], error);
+        [self _cleanupRequestAdPromise];
+        self->_interstitial = nil;
+      } else {
+        self->_interstitial = ad;
+        self->_interstitial.fullScreenContentDelegate = self;
+        
+        [self _maybeSendEventWithName:EXAdsAdMobInterstitialDidLoad body:nil];
+        self->_requestAdResolver(nil);
+        [self _cleanupRequestAdPromise];
+      }
+    }];
+  });
 }
 
 EX_EXPORT_METHOD_AS(showAd,
                     showAd:(EXPromiseResolveBlock)resolve
                     rejecter:(EXPromiseRejectBlock)reject)
 {
-  if ([_interstitial isReady] && _showAdResolver == nil) {
-    _showAdResolver = resolve;
-    EX_WEAKIFY(self);
-    dispatch_async(dispatch_get_main_queue(), ^{
-      EX_ENSURE_STRONGIFY(self);
-      [self->_interstitial presentFromRootViewController:self.utilities.currentViewController];
-    });
-  } else if (_showAdResolver != nil) {
-    reject(@"E_AD_ALREADY_SHOWING", @"An ad is already being shown, await the first promise.", nil);
-  } else {
+  if (!_interstitial) {
     reject(@"E_AD_NOT_READY", @"Ad is not ready.", nil);
+    return;
   }
+  
+  if (_showAdResolver != nil) {
+    reject(@"E_AD_ALREADY_SHOWING", @"An ad is already being shown, await the first promise.", nil);
+    return;
+  }
+  
+  bool canPresent = [_interstitial canPresentFromRootViewController:self.utilities.currentViewController error:nil];
+  
+  if (!canPresent) {
+    reject(@"E_AD_NOT_READY", @"Ad is not ready.", nil);
+    return;
+  }
+  
+  _showAdResolver = resolve;
+  EX_WEAKIFY(self);
+  dispatch_async(dispatch_get_main_queue(), ^{
+    EX_ENSURE_STRONGIFY(self);
+    [self->_interstitial presentFromRootViewController:self.utilities.currentViewController];
+  });
 }
 
 EX_EXPORT_METHOD_AS(dismissAd,
@@ -133,35 +164,23 @@ EX_EXPORT_METHOD_AS(getIsReady,
                     getIsReady:(EXPromiseResolveBlock)resolve
                     rejecter:(EXPromiseRejectBlock)reject)
 {
-  resolve([NSNumber numberWithBool:[_interstitial isReady]]);
+  if (!_interstitial) {
+    resolve([NSNumber numberWithBool:false]);
+  }
+  
+  bool canPresent = [_interstitial canPresentFromRootViewController:self.utilities.currentViewController error:nil];
+  
+  resolve([NSNumber numberWithBool:canPresent]);
 }
 
-
-- (void)interstitialDidReceiveAd:(GADInterstitial *)ad {
-  [self _maybeSendEventWithName:EXAdsAdMobInterstitialDidLoad body:nil];
-  _requestAdResolver(nil);
-  [self _cleanupRequestAdPromise];
-}
-
-- (void)interstitial:(GADInterstitial *)interstitial didFailToReceiveAdWithError:(GADRequestError *)error {
-  [self _maybeSendEventWithName:EXAdsAdMobInterstitialDidFailToLoad body:@{ @"name": [error description] }];
-  _requestAdRejecter(@"E_AD_REQUEST_FAILED", [error description], error);
-  [self _cleanupRequestAdPromise];
-  _interstitial = nil;
-}
-
-- (void)interstitialWillPresentScreen:(GADInterstitial *)ad {
+- (void)interstitialWillPresentScreen:(GADInterstitialAd *)ad {
   [self _maybeSendEventWithName:EXAdsAdMobInterstitialDidOpen body:nil];
   _showAdResolver(nil);
   _showAdResolver = nil;
 }
 
-- (void)interstitialDidDismissScreen:(GADInterstitial *)ad {
+- (void)interstitialDidDismissScreen:(GADInterstitialAd *)ad {
   [self _maybeSendEventWithName:EXAdsAdMobInterstitialDidClose body:nil];
-}
-
-- (void)interstitialWillLeaveApplication:(GADInterstitial *)ad {
-  [self _maybeSendEventWithName:EXAdsAdMobInterstitialWillLeaveApplication body:nil];
 }
 
 - (void)_cleanupRequestAdPromise
