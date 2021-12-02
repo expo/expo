@@ -6,14 +6,14 @@ script_dir="$(dirname "$0")"
 
 shopt -s dotglob
 
-# an optional template file will only be synced if target file is present in file system,
-# and its content contains `@generated` pattern.
+# an optional template file will be synced only if the target file is present in the file system,
+# and its content contains the string `@generated`.
 OPTIONAL_TEMPLATE_FILES=(
-  # add a relative file path from `templates/` for new optional file
+  # add a relative file path from `templates/` for each new optional file
   "scripts/source-login-scripts.sh"
 )
 
-# returns relative file paths inside a given directory.
+# returns relative file paths inside a given directory without the leading "./".
 # usage: get_relative_files "/path/to/dir"
 get_relative_files() {
   pushd $1 > /dev/null
@@ -23,7 +23,7 @@ get_relative_files() {
 }
 
 
-# sync file if target file is missing or the existing file contains `@generated` pattern.
+# syncs the source file if the target file is missing or the existing file contains `@generated`.
 # usage: sync_file_if_missing "/path/source_path" "/path/target_path"
 sync_file_if_missing() {
   local source=$1
@@ -34,7 +34,7 @@ sync_file_if_missing() {
   fi
 }
 
-# sync file if target file is present in file system and its content contains `@generated` pattern.
+# syncs the source file if the target file is present in the file system and its content contains `@generated`.
 # usage: sync_file_if_present "/path/source_path" "/path/target_path"
 sync_file_if_present() {
   local source=$1
@@ -46,7 +46,7 @@ sync_file_if_present() {
 }
 
 # check if a file is listed in `OPTIONAL_TEMPLATE_FILES`.
-# usage: if is_optional_file "/path/to/file"; then ... fi
+# usage: if is_optional_file "path/to/file"; then ... fi
 is_optional_file() {
   local file=$1
   for optional_file in "${OPTIONAL_TEMPLATE_FILES[@]}"; do
