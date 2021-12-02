@@ -178,6 +178,11 @@ internal class BarCodeScannerViewFinder(
   }
 
   private fun scanForBarcodes(camera: Camera?, mImageData: ByteArray) {
+    if (!coroutineScope.isActive) {
+      barCodeScannerTaskLock = false
+      return
+    }
+
     coroutineScope.launch {
       try {
         if (!coroutineScope.isActive) {
@@ -198,14 +203,17 @@ internal class BarCodeScannerViewFinder(
           if (result != null) {
             withContext(Dispatchers.Main) {
               launch {
-                barCodeScannerView.onBarCodeScanned(result)
+                if (coroutineScope.isActive) {
+                  barCodeScannerView.onBarCodeScanned(result)
+                }
               }
             }
           }
         }
-        barCodeScannerTaskLock = false
       } catch (e: ModuleDestroyedException) {
         Log.w("BarCodeScanner", e.message ?: "", e)
+      } finally {
+        barCodeScannerTaskLock = false
       }
     }
   }
