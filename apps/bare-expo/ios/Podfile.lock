@@ -193,6 +193,7 @@ PODS:
     - React-RCTVibration
     - ReactCommon/turbomodule/core
     - Yoga
+  - expo-dev-menu/SafeAreaView (0.8.6)
   - expo-dev-menu/Tests (0.8.6):
     - Nimble
     - Quick
@@ -203,6 +204,7 @@ PODS:
   - expo-dev-menu/Vendored (0.8.6):
     - expo-dev-menu/GestureHandler
     - expo-dev-menu/Reanimated
+    - expo-dev-menu/SafeAreaView
   - ExpoCellular (4.1.0):
     - ExpoModulesCore
   - ExpoHaptics (11.1.0):
@@ -1301,7 +1303,7 @@ SPEC CHECKSUMS:
   Expo: 34e7082eedd0b86815cf186b72dd5cbd235037f3
   expo-dev-client: 8d496fb4f930c79f64574c1109a292d16933fb26
   expo-dev-launcher: ce48e68aedfbf3c1df30e7e75fa0e100d5b4a892
-  expo-dev-menu: eead0093127f4a0180048195adfd5c8e8855ed89
+  expo-dev-menu: 3c37b25b7cb2bf8a179430583917ac2cfa7ecc49
   expo-dev-menu-interface: 6ecfd64dc3eab1e7e772170f5e058468fdccaac9
   ExpoCellular: f800f765c3dd91205a2b84cd4e3ea132c397cffe
   ExpoHaptics: c62a5fc7bba0184d0165d559fc2b0fc46168ef40
