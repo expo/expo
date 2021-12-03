@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Enable iOS `DEFINES_MODULE` for Swift integration. ([#15142](https://github.com/expo/expo/pull/15142) by [@kudo](https://github.com/kudo))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others

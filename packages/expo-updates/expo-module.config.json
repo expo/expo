@@ -1,0 +1,7 @@
+{
+  "name": "expo-updates",
+  "platforms": ["ios", "android"],
+  "ios": {
+    "reactDelegateHandlers": ["ExpoUpdatesReactDelegateHandler"]
+  }
+}
