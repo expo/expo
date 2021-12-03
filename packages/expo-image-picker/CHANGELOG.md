@@ -4,9 +4,17 @@
 
 ### 🛠 Breaking changes
 
-- Remove typo workaround for `getMediaLibaryPermissionsAsync` method. ([#14646](https://github.com/expo/expo/pull/14646) by [@Simek](https://github.com/Simek))
-
 ### 🎉 New features
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 12.0.0 — 2021-12-03
+
+### 🛠 Breaking changes
+
+- Remove typo workaround for `getMediaLibaryPermissionsAsync` method. ([#14646](https://github.com/expo/expo/pull/14646) by [@Simek](https://github.com/Simek))
 
 ### 🐛 Bug fixes
 

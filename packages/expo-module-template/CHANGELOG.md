@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Add missing import in `NativeView` template file. ([#15363](https://github.com/expo/expo/pull/15363) by [@Simek](https://github.com/Simek)) 
-
 ### 💡 Others
+
+## 10.1.0 — 2021-12-03
+
+### 🐛 Bug fixes
+
+- Add missing import in `NativeView` template file. ([#15363](https://github.com/expo/expo/pull/15363) by [@Simek](https://github.com/Simek))
 
 ## 10.0.0 — 2021-09-28
 

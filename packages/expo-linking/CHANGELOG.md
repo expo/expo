@@ -4,11 +4,17 @@
 
 ### 🛠 Breaking changes
 
-- Remove deprecated `useUrl` method. ([#15226](https://github.com/expo/expo/pull/15226) by [@Simek](https://github.com/Simek))
-
 ### 🎉 New features
 
 ### 🐛 Bug fixes
+
+### 💡 Others
+
+## 3.0.0 — 2021-12-03
+
+### 🛠 Breaking changes
+
+- Remove deprecated `useUrl` method. ([#15226](https://github.com/expo/expo/pull/15226) by [@Simek](https://github.com/Simek))
 
 ### 💡 Others
 

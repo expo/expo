@@ -4,13 +4,17 @@
 
 ### 🛠 Breaking changes
 
-- Remove deprecated `setTestDeviceID` method. ([#15091](https://github.com/expo/expo/pull/15091) by [@Simek](https://github.com/Simek))
-
 ### 🎉 New features
 
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 12.0.0 — 2021-12-03
+
+### 🛠 Breaking changes
+
+- Remove deprecated `setTestDeviceID` method. ([#15091](https://github.com/expo/expo/pull/15091) by [@Simek](https://github.com/Simek))
 
 ## 11.0.1 — 2021-10-01
 

@@ -4,12 +4,18 @@
 
 ### 🛠 Breaking changes
 
-- Remove deprecated `Constants.deviceId`. ([#15280](https://github.com/expo/expo/pull/15280) by [@Simek](https://github.com/Simek))
-- Remove legacy `Constants.linkingUrl` alias. ([#15280](https://github.com/expo/expo/pull/15280) by [@Simek](https://github.com/Simek))
-
 ### 🎉 New features
 
 ### 🐛 Bug fixes
+
+### 💡 Others
+
+## 13.0.0 — 2021-12-03
+
+### 🛠 Breaking changes
+
+- Remove deprecated `Constants.deviceId`. ([#15280](https://github.com/expo/expo/pull/15280) by [@Simek](https://github.com/Simek))
+- Remove legacy `Constants.linkingUrl` alias. ([#15280](https://github.com/expo/expo/pull/15280) by [@Simek](https://github.com/Simek))
 
 ### 💡 Others
 

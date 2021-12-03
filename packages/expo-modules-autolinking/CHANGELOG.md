@@ -6,11 +6,15 @@
 
 ### 🎉 New features
 
-- Patch React podspecs on the fly to support Swift integration. ([#15299](https://github.com/expo/expo/pull/15299) by [@kudo](https://github.com/kudo))
-
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 0.5.0 — 2021-12-03
+
+### 🎉 New features
+
+- Patch React podspecs on the fly to support Swift integration. ([#15299](https://github.com/expo/expo/pull/15299) by [@kudo](https://github.com/kudo))
 
 ## 0.4.0 — 2021-11-17
 

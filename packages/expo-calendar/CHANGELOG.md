@@ -7,6 +7,13 @@
 ### 🎉 New features
 
 ### 🐛 Bug fixes
+
+### 💡 Others
+
+## 10.1.0 — 2021-12-03
+
+### 🐛 Bug fixes
+
 - [Android] Fix `allowModifications` always return false in calendar object. ([#15307](https://github.com/expo/expo/pull/15307) by [@jekiwijaya](https://github.com/jekiwijaya))
 
 ### 💡 Others

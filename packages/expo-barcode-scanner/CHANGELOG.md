@@ -8,10 +8,14 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 11.2.0 — 2021-12-03
+
+### 🐛 Bug fixes
+
 - Fixed `BarCodeScanner` only scans on the first mount on Android. ([#15393](https://github.com/expo/expo/pull/15393) by [@lukmccall](https://github.com/lukmccall))
 - Fixed crashes caused by the Zxing scanner on Android. ([#15394](https://github.com/expo/expo/pull/15394) by [@lukmccall](https://github.com/lukmccall))
-
-### 💡 Others
 
 ## 11.1.0 — 2021-10-01
 

@@ -4,6 +4,16 @@
 
 ### 🛠 Breaking changes
 
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 14.0.0 — 2021-12-03
+
+### 🛠 Breaking changes
+
 - Remove deprecated `setApiKey` method. ([#14672](https://github.com/expo/expo/pull/14672) by [@Simek](https://github.com/Simek))
 
 ### 🎉 New features

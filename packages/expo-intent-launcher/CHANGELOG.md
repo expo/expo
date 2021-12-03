@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 10.1.0 — 2021-12-03
+
+### 💡 Others
+
 - Rewrite Android code to Kotlin. ([#14479](https://github.com/expo/expo/pull/14479) by [@kkafar](https://github.com/kkafar))
 
 ## 10.0.1 — 2021-10-01
@@ -25,9 +29,7 @@ _This version does not introduce any user-facing changes._
 ```diff
 - IntentLauncher.ACTION_* // ACTION_ACCESSIBILITY_SETTINGS
 + IntentLauncher.ActivityAction.* // ActivityAction.ACCESSIBILITY_SETTINGS
-```
-
-## 9.1.0 — 2021-06-16
+```## 9.1.0 — 2021-06-16
 
 ### 🐛 Bug fixes
 
@@ -63,4 +65,6 @@ _This version does not introduce any user-facing changes._
 ## 8.2.0 — 2020-05-27
 
 *This version does not introduce any user-facing changes.*
+```
+
 ```
