@@ -4,6 +4,9 @@
 
 #import <EXScreenOrientation/EXScreenOrientationViewController.h>
 #import <EXScreenOrientation/EXScreenOrientationRegistry.h>
+#import <EXScreenOrientation/NSString+UIInterfaceOrientationMask.h>
+
+NSString *const EXDefaultScreenOrientationMask = @"EXDefaultScreenOrientationMask";
 
 // copy of RNScreens protocol
 @protocol EXScreenOrientationRNSScreenWindowTraits
@@ -32,6 +35,20 @@
   }
   
   return self;
+}
+
+- (instancetype)initDefaultScreenOrientationFromPlist
+{
+  NSString *plistValue = [NSBundle.mainBundle objectForInfoDictionaryKey:EXDefaultScreenOrientationMask];
+  if (plistValue != nil) {
+    @try {
+      UIInterfaceOrientationMask mask = [plistValue toUIInterfaceOrientationMask];
+      return [self initWithDefaultScreenOrientationMask:mask];
+    } @catch (NSException *exception) {
+      EXLogError(@"Invalid `%@` value in Info.plist, expected: one of `UIInterfaceOrientationMask` value, got: \"%@\".", EXDefaultScreenOrientationMask, plistValue);
+    }
+  }
+  return [self init];
 }
 
 - (UIInterfaceOrientationMask)supportedInterfaceOrientations

@@ -1,9 +1,10 @@
 ---
 title: FirebaseRecaptcha
 sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-firebase-recaptcha'
+packageName: 'expo-firebase-recaptcha'
 ---
 
-import InstallSection from '~/components/plugins/InstallSection';
+import {APIInstallSection} from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 import SnackInline from '~/components/plugins/SnackInline';
 
@@ -15,7 +16,7 @@ import SnackInline from '~/components/plugins/SnackInline';
 
 ## Installation
 
-<InstallSection packageName="expo-firebase-recaptcha" />
+<APIInstallSection />
 
 Additionally, you'll also need to install the webview using `expo install react-native-webview`
 

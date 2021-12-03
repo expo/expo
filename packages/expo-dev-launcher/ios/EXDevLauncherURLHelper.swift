@@ -10,7 +10,7 @@ public class EXDevLauncherURLHelper : NSObject  {
   }
   
   @objc
-  public static func changeURLScheme(_ url: URL, to scheme: String) -> URL {
+  public static func replaceEXPScheme(_ url: URL, to scheme: String) -> URL {
     var components = URLComponents.init(url: url, resolvingAgainstBaseURL: false)!
     components.scheme = scheme
     return components.url!

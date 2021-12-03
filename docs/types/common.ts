@@ -1,6 +1,7 @@
 export type PageMetadata = {
   title?: string;
   sourceCodeUrl?: string;
+  packageName?: string;
   maxHeadingDepth?: number;
   /* If the page should not show up in the Algolia Docsearch results */
   hideFromSearch?: boolean;

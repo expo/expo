@@ -4,15 +4,21 @@
 
 ### 🛠 Breaking changes
 
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 6.0.0 — 2021-12-03
+
+### 🛠 Breaking changes
+
 - Deprecates `setCurrentScreen` and removes the native API calls to support the latest Firebase SDKs. ([#4366](https://github.com/expo/expo/pull/4366) by [@IjzerenHein](https://github.com/IjzerenHein))
 
 ### 🎉 New features
 
 - Add support for `setSessionTimeoutDuration` on iOS. ([#14364](https://github.com/expo/expo/pull/14364) by [@IjzerenHein](https://github.com/IjzerenHein))
-
-### 🐛 Bug fixes
-
-### 💡 Others
 
 ## 5.0.1 — 2021-10-01
 

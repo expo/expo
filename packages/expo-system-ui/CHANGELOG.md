@@ -4,6 +4,16 @@
 
 ### 🛠 Breaking changes
 
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 1.1.0 — 2021-12-03
+
+### 🛠 Breaking changes
+
 - Change iOS to set the background color of the first view controller in the hierarchy instead of the current active view controller. ([#15146](https://github.com/expo/expo/pull/15146) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 🎉 New features
@@ -14,5 +24,3 @@
 ### 🐛 Bug fixes
 
 - Fix `getBackgroundColorAsync` return type. ([#15127](https://github.com/expo/expo/pull/15127) by [@EvanBacon](https://github.com/EvanBacon))
-
-### 💡 Others

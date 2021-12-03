@@ -4,9 +4,17 @@
 
 ### 🛠 Breaking changes
 
-- Change Prettier minimal version to `2.4+`, to avoid issues with renamed option. [See the Prettier changelog](https://prettier.io/blog/2021/09/09/2.4.0.html). ([#15167](https://github.com/expo/expo/pull/15167) by [@Simek](https://github.com/Simek))
-
 ### 🎉 New features
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 9.0.0 — 2021-12-03
+
+### 🛠 Breaking changes
+
+- Change Prettier minimal version to `2.4+`, to avoid issues with renamed option. [See the Prettier changelog](https://prettier.io/blog/2021/09/09/2.4.0.html). ([#15167](https://github.com/expo/expo/pull/15167) by [@Simek](https://github.com/Simek))
 
 ### 🐛 Bug fixes
 

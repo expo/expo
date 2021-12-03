@@ -1,11 +1,12 @@
 ---
 title: StoreReview
 sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-store-review'
+packageName: 'expo-store-review'
 ---
 
 import APISection from '~/components/plugins/APISection';
 import ImageSpotlight from '~/components/plugins/ImageSpotlight'
-import InstallSection from '~/components/plugins/InstallSection';
+import {APIInstallSection} from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 
 **`expo-store-review`** provides access to the `SKStoreReviewController` API in iOS 10.3+ devices, and `ReviewManager` API in Android 5.0+ allowing you to ask the user to rate your app without ever having to leave the app itself.
@@ -18,7 +19,7 @@ import PlatformsSection from '~/components/plugins/PlatformsSection';
 
 > `expo-linking` is a peer dependency and must be installed alongside `expo-store-review`.
 
-<InstallSection packageName="expo-store-review expo-linking" />
+<APIInstallSection packageName="expo-store-review expo-linking" />
 
 ## Usage
 

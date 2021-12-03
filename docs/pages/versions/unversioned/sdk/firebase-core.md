@@ -1,10 +1,11 @@
 ---
 title: FirebaseCore
 sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-firebase-core'
+packageName: 'expo-firebase-core'
 ---
 
 import APISection from '~/components/plugins/APISection';
-import InstallSection from '~/components/plugins/InstallSection';
+import {APIInstallSection} from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 
 **`expo-firebase-core`** provides access to the Firebase configuration and performs initialisation
@@ -14,7 +15,7 @@ of the native Firebase App.
 
 ## Installation
 
-<InstallSection packageName="expo-firebase-core" />
+<APIInstallSection />
 
 ## Configuration
 

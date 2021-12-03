@@ -23,33 +23,14 @@ npm install expo-screen-orientation
 
 ### Configure for iOS
 
-1. Run `npx pod-install` after installing the npm package.
-2. Open the `AppDelegate.m` of your application.
-3. Make sure your `AppDelegate` extends `UMAppDelegateWrapper` as shown [here](https://gist.github.com/lukmccall/d2b97b2dde0d1aa04a245a369ffdd153).
-4. Import `<EXScreenOrientation/EXScreenOrientationViewController.h>`
-5. In `-application:didFinishLaunchingWithOptions:launchOptions` change default `root view controller` to `EXScreenOrientationViewController`:
+Run `npx pod-install` after installing the npm package.
 
-   Replace
+The default [UIInterfaceOrientationMask](https://developer.apple.com/documentation/uikit/uiinterfaceorientationmask?language=objc) mask is `UIInterfaceOrientationMaskPortrait`. You can optionally add `EXDefaultScreenOrientationMask` key in your `Info.plist` to change the default orientation mask, e.g.
 
-   ```objc
-   UIViewController *rootViewController = [UIViewController new];
-   ```
-
-   with:
-
-   ```objc
-   UIViewController *rootViewController = [[EXScreenOrientationViewController alloc] init]; // The default screen orientation will be set to `portrait`.
-   ```
-
-   or if you want to change the default screen orientation, with:
-
-   ```objc
-   UIViewController *rootViewController =  [[EXScreenOrientationViewController alloc] initWithDefaultScreenOrientationMask:UIInterfaceOrientationMaskPortrait]; // through parameter you can specify your default orientation mask.
-   ```
-
-   For more information about available orientation masks, check out [UIInterfaceOrientationMask](https://developer.apple.com/documentation/uikit/uiinterfaceorientationmask?language=objc)
-
-> **Note** if you are using a custom view controller, the controller will need to extend the `EXScreenOrientationViewController`.
+```xml
+<key>EXDefaultScreenOrientationMask</key>
+<string>UIInterfaceOrientationMaskAllButUpsideDown</string>
+```
 
 ### Configure for Android
 

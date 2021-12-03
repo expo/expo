@@ -1,9 +1,10 @@
 ---
 title: Stripe
 sourceCodeUrl: 'https://github.com/stripe/stripe-react-native'
+packageName: '@stripe/stripe-react-native'
 ---
 
-import InstallSection from '~/components/plugins/InstallSection';
+import {APIInstallSection} from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 import SnackInline from '~/components/plugins/SnackInline';
 
@@ -19,7 +20,7 @@ If you're looking for a quick example, check out [this Snack](https://snack.expo
 
 Each Expo SDK version requires a specific `@stripe/stripe-react-native` version. See the [Stripe CHANGELOG](https://github.com/stripe/stripe-react-native/blob/master/CHANGELOG.md) for a mapping of versions. To automatically install the correct version for your Expo SDK version, run:
 
-<InstallSection packageName="@stripe/stripe-react-native" href="https://github.com/stripe/stripe-react-native" />
+<APIInstallSection href="https://github.com/stripe/stripe-react-native" />
 
 ### Config plugin setup (optional)
 

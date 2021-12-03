@@ -6,9 +6,16 @@
 
 ### 🎉 New features
 
-- Made `Foundation.URL` a convertible type to consistently normalize file paths to file URLs. ([#15278](https://github.com/expo/expo/pull/15278) by [@tsapeta](https://github.com/tsapeta))
-
 ### 🐛 Bug fixes
+
+### 💡 Others
+
+## 0.6.0 — 2021-12-03
+
+### 🎉 New features
+
+- Made `Foundation.URL` a convertible type to consistently normalize file paths to file URLs. ([#15278](https://github.com/expo/expo/pull/15278) by [@tsapeta](https://github.com/tsapeta))
+- Improve external Android handlers or listeners backward compatibility by Java 8 interface default method. ([#15421](https://github.com/expo/expo/pull/15421) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others
 

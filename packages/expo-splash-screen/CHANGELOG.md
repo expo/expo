@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Fix `Cannot remove an observer <EXSplashScreenService> for the key path "rootViewController"` exception if applcation keyWindow changed. ([#14982](https://github.com/expo/expo/pull/14982) by [@kudo](https://github.com/kudo))
-
 ### 💡 Others
+
+## 0.14.0 — 2021-12-03
+
+### 🐛 Bug fixes
+
+- Fix `Cannot remove an observer <EXSplashScreenService> for the key path "rootViewController"` exception if applcation keyWindow changed. ([#14982](https://github.com/expo/expo/pull/14982) by [@kudo](https://github.com/kudo))
 
 ## 0.13.4 — 2021-10-22
 

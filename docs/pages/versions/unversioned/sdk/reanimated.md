@@ -1,9 +1,10 @@
 ---
 title: Reanimated
 sourceCodeUrl: 'https://github.com/software-mansion/react-native-reanimated'
+packageName: 'react-native-reanimated'
 ---
 
-import InstallSection from '~/components/plugins/InstallSection';
+import {APIInstallSection} from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 
 **`react-native-reanimated`** provides an API that greatly simplifies the process of creating smooth, powerful, and maintainable animations.
@@ -12,7 +13,7 @@ import PlatformsSection from '~/components/plugins/PlatformsSection';
 
 ## Installation
 
-<InstallSection packageName="react-native-reanimated" href="https://docs.swmansion.com/react-native-reanimated/docs/fundamentals/installation" />
+<APIInstallSection href="https://docs.swmansion.com/react-native-reanimated/docs/fundamentals/installation" />
 
 After the installation completed, add the Babel plugin to **babel.config.js**:
 

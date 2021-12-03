@@ -80,6 +80,35 @@ class StripeSdk: RCTEventEmitter, STPApplePayContextDelegate, STPBankSelectionVi
             configuration.merchantDisplayName = merchantDisplayName
         }
         
+        if let returnURL = params["returnURL"] as? String {
+            configuration.returnURL = returnURL
+        }
+        
+        if let buttonColorHexStr = params["primaryButtonColor"] as? String {
+            let primaryButtonColor = UIColor(hexString: buttonColorHexStr)
+            configuration.primaryButtonColor = primaryButtonColor
+        }
+        
+        if let allowsDelayedPaymentMethods = params["allowsDelayedPaymentMethods"] as? Bool {
+            configuration.allowsDelayedPaymentMethods = allowsDelayedPaymentMethods
+        }
+        
+        if let defaultBillingDetails = params["defaultBillingDetails"] as? [String: Any?] {
+            configuration.defaultBillingDetails.name = defaultBillingDetails["name"] as? String
+            configuration.defaultBillingDetails.email = defaultBillingDetails["email"] as? String
+            configuration.defaultBillingDetails.phone = defaultBillingDetails["phone"] as? String
+            
+            if let address = defaultBillingDetails["address"] as? [String: String] {
+            configuration.defaultBillingDetails.address = .init(city: address["city"],
+                                                                country: address["country"],
+                                                                line1: address["line1"],
+                                                                line2: address["line2"],
+                                                                postalCode: address["postalCode"],
+                                                                state: address["state"])
+            }
+            
+        }
+        
         if let customerId = params["customerId"] as? String {
             if let customerEphemeralKeySecret = params["customerEphemeralKeySecret"] as? String {
                 if (!Errors.isEKClientSecretValid(clientSecret: customerEphemeralKeySecret)) {

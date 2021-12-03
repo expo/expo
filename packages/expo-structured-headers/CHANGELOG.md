@@ -10,6 +10,12 @@
 
 ### 💡 Others
 
+## 2.1.0 — 2021-12-03
+
+### 🎉 New features
+
+- Enable iOS `DEFINES_MODULE` for Swift integration. ([#15142](https://github.com/expo/expo/pull/15142) by [@kudo](https://github.com/kudo))
+
 ## 2.0.0 — 2021-09-28
 
 ### 🛠 Breaking changes

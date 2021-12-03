@@ -1,9 +1,10 @@
 ---
 title: Audio
 sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-av'
+packageName: 'expo-av'
 ---
 
-import InstallSection from '~/components/plugins/InstallSection';
+import {APIInstallSection} from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 import SnackInline from '~/components/plugins/SnackInline';
 
@@ -17,7 +18,7 @@ Try the [playlist example app](https://expo.dev/@documentation/playlist-example)
 
 ## Installation
 
-<InstallSection packageName="expo-av" />
+<APIInstallSection />
 
 ## Usage
 

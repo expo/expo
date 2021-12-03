@@ -9,11 +9,9 @@ import com.facebook.react.bridge.JSIModulePackage
 import com.facebook.react.devsupport.DevServerHelper
 import com.facebook.react.shell.MainReactPackage
 import expo.modules.devmenu.react.DevMenuReactInternalSettings
-import expo.modules.devmenu.safearea.MockedSafeAreaPackage
 import java.io.BufferedReader
 import java.io.FileNotFoundException
 import java.io.InputStreamReader
-
 /**
  * Class that represents react host used by dev menu.
  */
@@ -24,7 +22,7 @@ class DevMenuHost(application: Application) : ReactNativeHost(application) {
     DevMenuPackage(),
     getVendoredPackage("com.swmansion.reanimated.ReanimatedPackage"),
     getVendoredPackage("com.swmansion.gesturehandler.react.RNGestureHandlerPackage"),
-    MockedSafeAreaPackage()
+    getVendoredPackage("com.th3rdwave.safeareacontext.SafeAreaContextPackage"),
   )
 
   override fun getJSIModulePackage(): JSIModulePackage {

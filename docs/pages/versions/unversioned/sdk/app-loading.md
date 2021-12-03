@@ -1,10 +1,11 @@
 ---
 title: AppLoading
-sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo/src/launch'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-app-loading'
+packageName: 'expo-app-loading'
 ---
 
 import APISection from '~/components/plugins/APISection';
-import InstallSection from '~/components/plugins/InstallSection';
+import {APIInstallSection} from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 
 **`expo-app-loading`** tells `expo-splash-screen` to keep the splash screen visible while the AppLoading component is mounted.
@@ -15,7 +16,7 @@ This is useful to download and cache fonts, logos, icon images and other assets 
 
 ## Installation
 
-<InstallSection packageName="expo-app-loading" />
+<APIInstallSection />
 
 ## Usage
 

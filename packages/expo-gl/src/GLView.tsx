@@ -73,6 +73,23 @@ export class GLView extends React.Component<GLViewProps> {
     return ExponentGLObjectManager.takeSnapshotAsync(exglCtxId, options);
   }
 
+  static getWorkletContext: (contextId: number) => ExpoWebGLRenderingContext | undefined =
+    (function () {
+      try {
+        // reanimated needs to be imported before any workletized code
+        // is created, but we don't want to make it dependency on expo-gl.
+        require('react-native-reanimated');
+        return (contextId: number): ExpoWebGLRenderingContext | undefined => {
+          'worklet';
+          return global.__EXGLContexts?.[String(contextId)];
+        };
+      } catch {
+        return () => {
+          throw new Error('Worklet runtime is not available');
+        };
+      }
+    })();
+
   nativeRef: ComponentOrHandle = null;
   exglCtxId?: number;
 
@@ -171,7 +188,7 @@ const getGl = (exglCtxId: number): ExpoWebGLRenderingContext => {
       'GL is currently not available. (Have you enabled remote debugging? GL is not available while debugging remotely.)'
     );
   }
-  const gl = global.__EXGLContexts[exglCtxId];
+  const gl = global.__EXGLContexts[String(exglCtxId)];
 
   configureLogging(gl);
 
@@ -179,7 +196,7 @@ const getGl = (exglCtxId: number): ExpoWebGLRenderingContext => {
 };
 
 const getContextId = (exgl?: ExpoWebGLRenderingContext | number): number => {
-  const exglCtxId = exgl && typeof exgl === 'object' ? exgl.exglCtxId : exgl;
+  const exglCtxId = exgl && typeof exgl === 'object' ? exgl.contextId : exgl;
 
   if (!exglCtxId || typeof exglCtxId !== 'number') {
     throw new Error(`Invalid EXGLContext id: ${String(exglCtxId)}`);

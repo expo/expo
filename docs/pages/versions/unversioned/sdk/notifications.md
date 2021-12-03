@@ -1,13 +1,14 @@
 ---
 title: Notifications
 sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-notifications'
+packageName: 'expo-notifications'
 ---
 
 import { ConfigClassic, ConfigReactNative, ConfigPluginExample, ConfigPluginProperties } from '~/components/plugins/ConfigSection';
 import { AndroidPermissions } from '~/components/plugins/permissions';
 import SnackInline from '~/components/plugins/SnackInline';
 import ImageSpotlight from '~/components/plugins/ImageSpotlight'
-import InstallSection from '~/components/plugins/InstallSection';
+import {APIInstallSection} from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 
 The **`expo-notifications`** provides an API to fetch push notification tokens and to present, schedule, receive and respond to notifications.
@@ -34,7 +35,7 @@ The **`expo-notifications`** provides an API to fetch push notification tokens a
 
 ## Installation
 
-<InstallSection packageName="expo-notifications" />
+<APIInstallSection />
 
 ## Configuration in app.json / app.config.js
 
@@ -52,6 +53,8 @@ Learn how to configure the native projects in the [installation instructions in 
 
 </ConfigReactNative>
 
+> The iOS APNS entitlement is _always_ set to 'development'. Xcode automatically changes this to 'production' during archive. [Learn more](https://stackoverflow.com/a/42293632/4047926).
+
 <ConfigPluginExample>
 
 ```json
@@ -66,8 +69,7 @@ Learn how to configure the native projects in the [installation instructions in 
           "sounds": [
             "./local/assets/notification-sound.wav",
             "./local/assets/notification-sound-other.wav"
-          ],
-          "mode": "production"
+          ]
         }
       ]
     ]
@@ -78,10 +80,9 @@ Learn how to configure the native projects in the [installation instructions in 
 </ConfigPluginExample>
 
 <ConfigPluginProperties properties={[
-  { name: 'icon', platform: 'android', description: 'Local path to an image to use as the icon for push notifications. 96x96 all-white png with transparency.' },
-  { name: 'color', default: '#ffffff', platform: 'android', description: 'Tint color for the push notification image when it appears in the notification tray.' },
-  { name: 'sounds', description: 'Array of local paths to sound files (.wav recommended) that can be used as custom notification sounds.' },
-  { name: 'mode', default: 'development', platform: 'ios', description: `Environment of the app: either 'development' or 'production'.` },
+{ name: 'icon', platform: 'android', description: 'Local path to an image to use as the icon for push notifications. 96x96 all-white png with transparency.' },
+{ name: 'color', default: '#ffffff', platform: 'android', description: 'Tint color for the push notification image when it appears in the notification tray.' },
+{ name: 'sounds', description: 'Array of local paths to sound files (.wav recommended) that can be used as custom notification sounds.' },
 ]} />
 
 ## Credentials configuration

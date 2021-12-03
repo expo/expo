@@ -1,9 +1,10 @@
 ---
 title: AppAuth
 sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-app-auth'
+packageName: 'expo-app-auth'
 ---
 
-import InstallSection from '~/components/plugins/InstallSection';
+import {APIInstallSection} from '~/components/plugins/InstallSection';
 import SnackInline from '~/components/plugins/SnackInline';
 
 import PlatformsSection from '~/components/plugins/PlatformsSection';
@@ -22,7 +23,7 @@ If you are trying to implement sign in with [Google](google-sign-in.md) or [Face
 
 ## Installation
 
-<InstallSection packageName="expo-app-auth" />
+<APIInstallSection />
 
 ## Managed Workflow
 

@@ -1,10 +1,11 @@
 ---
 title: Segment
 sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-analytics-segment'
+packageName: 'expo-analytics-segment'
 ---
 
 import APISection from '~/components/plugins/APISection';
-import InstallSection from '~/components/plugins/InstallSection';
+import {APIInstallSection} from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 
 **`expo-analytics-segment`** provides access to <https://segment.com/> mobile analytics. Wraps Segment's [iOS](https://segment.com/docs/sources/mobile/ios/) and [Android](https://segment.com/docs/sources/mobile/android/) sources.
@@ -15,7 +16,7 @@ import PlatformsSection from '~/components/plugins/PlatformsSection';
 
 ## Installation
 
-<InstallSection packageName="expo-analytics-segment" />
+<APIInstallSection />
 
 ## API
 

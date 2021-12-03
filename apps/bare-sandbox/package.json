@@ -11,14 +11,14 @@
   "dependencies": {
     "@babel/runtime": "^7.14.0",
     "expo": "~44.0.0-alpha.0",
-    "expo-dev-client": "~0.6.0",
-    "expo-splash-screen": "~0.13.1",
-    "expo-status-bar": "~1.1.0",
-    "expo-system-ui": "1.0.0",
+    "expo-dev-client": "~0.7.0",
+    "expo-splash-screen": "~0.14.0",
+    "expo-status-bar": "~1.2.0",
+    "expo-system-ui": "1.1.0",
     "react": "17.0.1",
     "react-dom": "17.0.1",
     "react-native": "0.64.3",
-    "react-native-gesture-handler": "~1.10.2",
+    "react-native-gesture-handler": "~2.0.0",
     "react-native-reanimated": "~2.2.0",
     "react-native-screens": "~3.8.0",
     "react-native-web": "~0.17.1"
@@ -26,7 +26,7 @@
   "devDependencies": {
     "@babel/core": "^7.12.9",
     "babel-plugin-module-resolver": "^4.1.0",
-    "babel-preset-expo": "~8.5.1",
+    "babel-preset-expo": "~9.0.0",
     "expo-module-scripts": "^2.0.0",
     "expo-yarn-workspaces": "^1.6.0"
   },

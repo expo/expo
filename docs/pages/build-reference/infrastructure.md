@@ -49,25 +49,51 @@ When selecting an image for the build you can use the full name provided below o
   npmRegistryServer: "http://npm-cache-service.worker-infra-production.svc.cluster.local:4873"
   ```
 
-#### Image `ubuntu-20.04-android-30-ndk-r21e` (alias `latest`)
+#### Image `ubuntu-20.04-jdk-11-ndk-r21e` (alias `latest`)
 
 <details><summary>Details</summary>
 
 - Docker image: `ubuntu:focal-20210921`
 - NDK 21.4.7075529
-- Node.js 14.15.1
+- Node.js 14.18.1
 - Yarn 1.22.10
+- Java 11
 
 </details>
 
-#### Image `ubuntu-18.04-android-30-ndk-r19c` (alias `default`)
+#### Image `ubuntu-20.04-jdk-8-ndk-r21e`
+
+<details><summary>Details</summary>
+
+- Docker image: `ubuntu:focal-20210921`
+- NDK 21.4.7075529
+- Node.js 14.18.1
+- Yarn 1.22.10
+- Java 8
+
+</details>
+
+#### Image `ubuntu-18.04-jdk-11-ndk-r19c`
 
 <details><summary>Details</summary>
 
 - Docker image: `ubuntu:bionic-20210930`
 - NDK 19.2.5345600
-- Node.js 14.15.1
+- Node.js 14.18.1
 - Yarn 1.22.10
+- Java 11
+
+</details>
+
+#### Image `ubuntu-18.04-jdk-8-ndk-r19c` (alias `default`)
+
+<details><summary>Details</summary>
+
+- Docker image: `ubuntu:bionic-20210930`
+- NDK 19.2.5345600
+- Node.js 14.18.1
+- Yarn 1.22.10
+- Java 8
 
 </details>
 
@@ -98,7 +124,7 @@ When selecting an image for the build you can use the full name provided below o
 
 - macOS Big Sur 11.4
 - Xcode 13.0 (13A233)
-- Node.js 14.15.1
+- Node.js 14.18.1
 - Yarn 1.22.10
 - fastlane 2.185.1
 - CocoaPods 1.10.1
@@ -112,38 +138,10 @@ When selecting an image for the build you can use the full name provided below o
 
 - macOS Big Sur 11.4
 - Xcode 12.5 (12E5244e)
-- Node.js 14.15.1
+- Node.js 14.18.1
 - Yarn 1.22.10
 - fastlane 2.185.1
 - CocoaPods 1.10.1
 - Ruby 2.7
-
-</details>
-
-#### Image `macos-catalina-10.15-xcode-12.4`
-
-<details><summary>Details</summary>
-
-- macOS Catalina 10.15.7
-- Xcode 12.4 (12D4e)
-- Node.js 14.15.1
-- Yarn 1.22.10
-- fastlane 2.178.0
-- CocoaPods 1.10.1
-- Ruby 2.7
-
-</details>
-
-#### Image `macos-catalina-10.15-xcode-12.1`
-
-<details><summary>Details</summary>
-
-- macOS Catalina 10.15.4
-- Xcode 12.1 (12A7403)
-- Node.js 14.15.1
-- Yarn 1.22.10
-- fastlane 2.170.0
-- CocoaPods 1.10.1
-- Ruby 2.6.3p62
 
 </details>

@@ -83,6 +83,7 @@ module.exports = {
     getRandomBase64String: { type: 'function', functionType: 'sync' },
     getRandomBase64StringAsync: { type: 'function', functionType: 'promise' },
   },
+  ExponentAV: { Qualities: { type: 'object' }, getConstants: { type: 'function' } },
   ExponentNotifications: {
     cancelAllScheduledNotificationsAsync: { type: 'function', functionType: 'promise' },
     cancelScheduledNotificationAsync: { type: 'function', functionType: 'promise' },
@@ -224,7 +225,7 @@ module.exports = {
           { key: 1, argumentsCount: 0, name: 'isLowPowerModeEnabledAsync' },
           { key: 2, argumentsCount: 0, name: 'getBatteryStateAsync' },
         ],
-        ExpoBlurViewManager: [{ key: 0, argumentsCount: 2, name: 'updateProps' }],
+        ExpoBlurViewManager: [{ key: 0, argumentsCount: 2, name: 'setNativeProps' }],
         ExpoBrightness: [
           { key: 0, argumentsCount: 0, name: 'getPermissionsAsync' },
           { key: 1, argumentsCount: 0, name: 'getSystemBrightnessAsync' },
@@ -259,28 +260,30 @@ module.exports = {
           { key: 18, argumentsCount: 1, name: 'getSourceByIdAsync' },
         ],
         ExpoCellular: [
-          { name: 'getIsoCountryCodeAsync', argumentsCount: 0, key: 'getIsoCountryCodeAsync' },
+          { key: 'allowsVoipAsync', argumentsCount: 0, name: 'allowsVoipAsync' },
           {
             name: 'getCellularGenerationAsync',
             argumentsCount: 0,
             key: 'getCellularGenerationAsync',
           },
-          { name: 'allowsVoipAsync', key: 'allowsVoipAsync', argumentsCount: 0 },
-          { argumentsCount: 0, key: 'getCarrierNameAsync', name: 'getCarrierNameAsync' },
           {
-            name: 'getMobileCountryCodeAsync',
-            key: 'getMobileCountryCodeAsync',
-            argumentsCount: 0,
-          },
-          {
-            argumentsCount: 0,
             name: 'getMobileNetworkCodeAsync',
+            argumentsCount: 0,
             key: 'getMobileNetworkCodeAsync',
           },
+          { name: 'getCarrierNameAsync', key: 'getCarrierNameAsync', argumentsCount: 0 },
+          {
+            key: 'getMobileCountryCodeAsync',
+            argumentsCount: 0,
+            name: 'getMobileCountryCodeAsync',
+          },
+          { key: 'getIsoCountryCodeAsync', name: 'getIsoCountryCodeAsync', argumentsCount: 0 },
         ],
         ExpoClipboard: [
-          { key: 0, argumentsCount: 0, name: 'getStringAsync' },
-          { key: 1, argumentsCount: 1, name: 'setString' },
+          { key: 'startObserving', name: 'startObserving', argumentsCount: 0 },
+          { argumentsCount: 0, key: 'getStringAsync', name: 'getStringAsync' },
+          { key: 'setString', name: 'setString', argumentsCount: 1 },
+          { argumentsCount: 0, name: 'stopObserving', key: 'stopObserving' },
         ],
         ExpoContacts: [
           { key: 0, argumentsCount: 0, name: 'getDefaultContainerIdentifierAsync' },
@@ -314,10 +317,11 @@ module.exports = {
         ExpoFirebaseAnalytics: [
           { key: 0, argumentsCount: 2, name: 'logEvent' },
           { key: 1, argumentsCount: 1, name: 'setUserId' },
-          { key: 2, argumentsCount: 1, name: 'setUserProperties' },
+          { key: 2, argumentsCount: 0, name: 'resetAnalyticsData' },
           { key: 3, argumentsCount: 2, name: 'setCurrentScreen' },
-          { key: 4, argumentsCount: 0, name: 'resetAnalyticsData' },
-          { key: 5, argumentsCount: 1, name: 'setAnalyticsCollectionEnabled' },
+          { key: 4, argumentsCount: 1, name: 'setUserProperties' },
+          { key: 5, argumentsCount: 1, name: 'setSessionTimeoutDuration' },
+          { key: 6, argumentsCount: 1, name: 'setAnalyticsCollectionEnabled' },
         ],
         ExpoFirebaseCore: [],
         ExpoFontLoader: [{ key: 0, argumentsCount: 2, name: 'loadAsync' }],
@@ -333,16 +337,16 @@ module.exports = {
           { key: 8, argumentsCount: 0, name: 'isConnectedAsync' },
         ],
         ExpoHaptics: [
-          { key: 'notificationAsync', argumentsCount: 1, name: 'notificationAsync' },
-          { name: 'impactAsync', key: 'impactAsync', argumentsCount: 1 },
+          { argumentsCount: 1, name: 'impactAsync', key: 'impactAsync' },
           { key: 'selectionAsync', name: 'selectionAsync', argumentsCount: 0 },
+          { key: 'notificationAsync', name: 'notificationAsync', argumentsCount: 1 },
         ],
         ExpoImageManipulator: [{ key: 0, argumentsCount: 3, name: 'manipulateAsync' }],
         ExpoKeepAwake: [
           { key: 0, argumentsCount: 1, name: 'activate' },
           { key: 1, argumentsCount: 1, name: 'deactivate' },
         ],
-        ExpoLinearGradientManager: [],
+        ExpoLinearGradient: [],
         ExpoLocalAuthentication: [
           { key: 0, argumentsCount: 0, name: 'supportedAuthenticationTypesAsync' },
           { key: 1, argumentsCount: 0, name: 'isEnrolledAsync' },
@@ -350,7 +354,9 @@ module.exports = {
           { key: 3, argumentsCount: 0, name: 'hasHardwareAsync' },
           { key: 4, argumentsCount: 1, name: 'authenticateAsync' },
         ],
-        ExpoLocalization: [{ key: 0, argumentsCount: 0, name: 'getLocalizationAsync' }],
+        ExpoLocalization: [
+          { argumentsCount: 0, key: 'getLocalizationAsync', name: 'getLocalizationAsync' },
+        ],
         ExpoLocation: [
           { key: 0, argumentsCount: 2, name: 'watchPositionImplAsync' },
           { key: 1, argumentsCount: 1, name: 'watchDeviceHeading' },
@@ -446,6 +452,10 @@ module.exports = {
           { key: 0, argumentsCount: 0, name: 'isAvailableAsync' },
           { key: 1, argumentsCount: 0, name: 'requestReview' },
         ],
+        ExpoSystemUI: [
+          { name: 'setBackgroundColorAsync', argumentsCount: 1, key: 'setBackgroundColorAsync' },
+          { argumentsCount: 0, name: 'getBackgroundColorAsync', key: 'getBackgroundColorAsync' },
+        ],
         ExpoTaskManager: [
           { key: 0, argumentsCount: 0, name: 'isAvailableAsync' },
           { key: 1, argumentsCount: 2, name: 'notifyTaskFinishedAsync' },
@@ -456,8 +466,8 @@ module.exports = {
           { key: 6, argumentsCount: 0, name: 'getRegisteredTasksAsync' },
         ],
         ExpoTrackingTransparency: [
-          { argumentsCount: 0, name: 'requestPermissionsAsync', key: 'requestPermissionsAsync' },
-          { argumentsCount: 0, key: 'getPermissionsAsync', name: 'getPermissionsAsync' },
+          { name: 'requestPermissionsAsync', key: 'requestPermissionsAsync', argumentsCount: 0 },
+          { argumentsCount: 0, name: 'getPermissionsAsync', key: 'getPermissionsAsync' },
         ],
         ExpoUpdates: [
           { key: 0, argumentsCount: 0, name: 'checkForUpdateAsync' },
@@ -723,6 +733,14 @@ module.exports = {
           mobileNetworkCode: { type: 'object', mock: null },
           removeListeners: { type: 'function' },
         },
+        ExpoClipboard: {
+          addListener: { type: 'function' },
+          getStringAsync: { type: 'function' },
+          removeListeners: { type: 'function' },
+          setString: { type: 'function' },
+          startObserving: { type: 'function' },
+          stopObserving: { type: 'function' },
+        },
         ExpoDevice: {
           addListener: { type: 'function' },
           brand: { type: 'string' },
@@ -816,6 +834,12 @@ module.exports = {
           getValueWithKeyAsync: { type: 'function' },
           removeListeners: { type: 'function' },
           setValueWithKeyAsync: { type: 'function' },
+        },
+        ExpoSystemUI: {
+          addListener: { type: 'function' },
+          getBackgroundColorAsync: { type: 'function' },
+          removeListeners: { type: 'function' },
+          setBackgroundColorAsync: { type: 'function' },
         },
         ExpoTaskManager: {
           EVENT_NAME: { type: 'string' },

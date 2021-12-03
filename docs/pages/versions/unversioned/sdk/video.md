@@ -1,9 +1,10 @@
 ---
 title: Video
 sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-av'
+packageName: 'expo-av'
 ---
 
-import InstallSection from '~/components/plugins/InstallSection';
+import {APIInstallSection} from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 import SnackInline from '~/components/plugins/SnackInline';
 
@@ -15,7 +16,7 @@ Much of Video and Audio have common APIs that are documented in [AV documentatio
 
 ## Installation
 
-<InstallSection packageName="expo-av" />
+<APIInstallSection />
 
 ## Usage
 

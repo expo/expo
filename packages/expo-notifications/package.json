@@ -1,6 +1,6 @@
 {
   "name": "expo-notifications",
-  "version": "0.13.1",
+  "version": "0.14.0",
   "description": "Notifications module",
   "main": "build/index.js",
   "types": "build/index.d.ts",
@@ -44,9 +44,9 @@
     "assert": "^2.0.0",
     "badgin": "^1.1.5",
     "expo-application": "~4.0.0",
-    "expo-constants": "~12.2.0",
+    "expo-constants": "~13.0.0",
     "fs-extra": "^9.1.0",
-    "unimodules-task-manager-interface": "~7.0.1",
+    "unimodules-task-manager-interface": "~7.1.0",
     "uuid": "^3.4.0"
   },
   "devDependencies": {

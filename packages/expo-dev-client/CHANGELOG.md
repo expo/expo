@@ -8,9 +8,29 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 0.7.1 — 2021-12-03
+
+_This version does not introduce any user-facing changes._
+
+## 0.7.0 — 2021-12-03
+
+### 🐛 Bug fixes
+
 - [plugin] Fix android adding duplicate schemes. ([#15057](https://github.com/expo/expo/pull/15057) by [@EvanBacon](https://github.com/EvanBacon))
 
-### 💡 Others
+## 0.6.3 — 2021-10-21
+
+_This version does not introduce any user-facing changes._
+
+## 0.6.2 — 2021-10-15
+
+_This version does not introduce any user-facing changes._
+
+## 0.6.1 — 2021-10-15
+
+_This version does not introduce any user-facing changes._
 
 ## 0.6.0 — 2021-10-07
 

@@ -1,10 +1,11 @@
 ---
 title: Brightness
 sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-brightness'
+packageName: 'expo-brightness'
 ---
 
 import APISection from '~/components/plugins/APISection';
-import InstallSection from '~/components/plugins/InstallSection';
+import {APIInstallSection} from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 import SnackInline from '~/components/plugins/SnackInline';
 
@@ -16,7 +17,7 @@ On Android, there is a global system-wide brightness setting, and each app has i
 
 ## Installation
 
-<InstallSection packageName="expo-brightness" />
+<APIInstallSection />
 
 ## Usage
 

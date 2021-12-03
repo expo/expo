@@ -272,6 +272,8 @@ NSString *fakeLauncherBundleUrl = @"embedded://EXDevLauncher/dummy";
     }
   }
 
+  expoUrl = [EXDevLauncherURLHelper replaceEXPScheme:expoUrl to:@"http"];
+
   NSDictionary *updatesConfiguration = [EXDevLauncherUpdatesHelper createUpdatesConfigurationWithURL:expoUrl];
 
   void (^launchReactNativeApp)(void) = ^{

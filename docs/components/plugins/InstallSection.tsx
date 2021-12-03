@@ -2,6 +2,7 @@ import { css } from '@emotion/react';
 import { theme } from '@expo/styleguide';
 import * as React from 'react';
 
+import DocumentationPageContext from '../DocumentationPageContext';
 import TerminalBlock from './TerminalBlock';
 
 import * as Constants from '~/constants/theme';
@@ -65,3 +66,8 @@ const InstallSection: React.FC<Props> = ({
 );
 
 export default InstallSection;
+
+export const APIInstallSection: React.FC<Props> = props => {
+  const context = React.useContext(DocumentationPageContext);
+  return <InstallSection {...props} packageName={props.packageName ?? context.packageName} />;
+};

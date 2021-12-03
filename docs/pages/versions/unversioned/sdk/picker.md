@@ -1,9 +1,10 @@
 ---
 title: Picker
 sourceCodeUrl: 'https://github.com/react-native-picker/picker'
+packageName: '@react-native-picker/picker'
 ---
 
-import InstallSection from '~/components/plugins/InstallSection';
+import {APIInstallSection} from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 import Video from '~/components/plugins/Video'
 
@@ -17,7 +18,7 @@ A component that provides access to the system UI for picking between several op
 
 ## Installation
 
-<InstallSection packageName="@react-native-picker/picker" href="https://github.com/react-native-picker/picker#getting-started" />
+<APIInstallSection href="https://github.com/react-native-picker/picker#getting-started" />
 
 ## Usage
 

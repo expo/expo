@@ -1,9 +1,10 @@
 ---
 title: AV
 sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-av'
+packageName: 'expo-av'
 ---
 
-import InstallSection from '~/components/plugins/InstallSection';
+import {APIInstallSection} from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 
 The [`Audio.Sound`](audio.md) objects and [`Video`](video.md) components share a unified imperative API for media playback.
@@ -16,7 +17,7 @@ Try the [playlist example app](http://expo.dev/@community/playlist) (source code
 
 ## Installation
 
-<InstallSection packageName="expo-av" />
+<APIInstallSection />
 
 ## API
 

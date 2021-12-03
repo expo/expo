@@ -1,10 +1,11 @@
 ---
 title: ImageManipulator
 sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-image-manipulator'
+packageName: 'expo-image-manipulator'
 ---
 
 import APISection from '~/components/plugins/APISection';
-import InstallSection from '~/components/plugins/InstallSection';
+import {APIInstallSection} from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 import SnackInline from '~/components/plugins/SnackInline';
 
@@ -14,7 +15,7 @@ import SnackInline from '~/components/plugins/SnackInline';
 
 ## Installation
 
-<InstallSection packageName="expo-image-manipulator" />
+<APIInstallSection />
 
 ## Usage
 

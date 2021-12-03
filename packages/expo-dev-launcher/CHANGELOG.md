@@ -6,15 +6,39 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 0.9.0 — 2021-12-03
+
+### 🎉 New features
+
 - Added support for th React Native `0.66.X`. ([#15242](https://github.com/expo/expo/pull/15242) by [@lukmccall](https://github.com/lukmccall))
 
 ### 🐛 Bug fixes
 
-- Fix config plugin compatibility with expo-screen-orientation. ([#14752](https://github.com/expo/expo/pull/14752) by [@esamelson](https://github.com/esamelson))
 - Fix `No native splash screen registered for given view controller` error happening when project is using both `expo-dev-client` and `expo-splash-screen` packages. ([#14745](https://github.com/expo/expo/pull/14745) by [@kudo](https://github.com/kudo))
-- Fix crash in SDK 42 Android projects.
+- Fix cannot load url that starts with exp. (by [@lukmccall](https://github.com/lukmccall))
+- [plugin] Fix config plugin compatibility with expo-screen-orientation. ([#14752](https://github.com/expo/expo/pull/14752) by [@esamelson](https://github.com/esamelson))
 
-### 💡 Others
+## 0.8.4 — 2021-10-21
+
+### 🐛 Bug fixes
+
+- Fix crash in SDK 42 Android projects. (by [@esamelson](https://github.com/esamelson))
+
+## 0.8.3 — 2021-10-15
+
+### 🐛 Bug fixes
+
+- Fix config plugin compatibility with expo-screen-orientation. ([#14752](https://github.com/expo/expo/pull/14752) by [@esamelson](https://github.com/esamelson))
+
+## 0.8.2 — 2021-10-15
+
+### 🐛 Bug fixes
+
+- Fix `No native splash screen registered for given view controller` error happening when project is using both `expo-dev-client` and `expo-splash-screen` packages. ([#14745](https://github.com/expo/expo/pull/14745) by [@kudo](https://github.com/kudo))
 
 ## 0.8.1 — 2021-10-07
 
