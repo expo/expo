@@ -9,7 +9,7 @@ let TESTS = [
   // 'FileSystem',
   // 'Font',
   'Permissions',
-  'Blur',
+  // 'Blur',
   'LinearGradient',
   'Constants',
   // 'Contacts',
