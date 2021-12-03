@@ -40,6 +40,7 @@ import expo.modules.devmenu.detectors.ShakeDetector
 import expo.modules.devmenu.detectors.ThreeFingerLongPressDetector
 import expo.modules.devmenu.modules.DevMenuSettings
 import expo.modules.devmenu.react.DevMenuPackagerCommandHandlersSwapper
+import expo.modules.devmenu.react.DevMenuShakeDetectorListenerSwapper
 import expo.modules.devmenu.tests.DevMenuDisabledTestInterceptor
 import expo.modules.devmenu.tests.DevMenuTestInterceptor
 import expo.modules.devmenu.websockets.DevMenuCommandHandlersProvider
@@ -187,6 +188,11 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
         reactInstanceManager,
         handlers
       )
+
+    DevMenuShakeDetectorListenerSwapper()
+      .swapShakeDetectorListener(
+        reactInstanceManager
+      ) {}
 
     if (reactInstanceManager.currentReactContext == null) {
       reactInstanceManager.addReactInstanceEventListener(object : ReactInstanceManager.ReactInstanceEventListener {

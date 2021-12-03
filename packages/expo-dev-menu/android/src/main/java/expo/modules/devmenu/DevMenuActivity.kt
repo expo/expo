@@ -12,8 +12,8 @@ import com.facebook.react.ReactDelegate
 import com.facebook.react.ReactInstanceManager
 import com.facebook.react.ReactRootView
 import com.facebook.react.devsupport.interfaces.DevSupportManager
-import expo.modules.devmenu.helpers.getPrivateDeclaredFiledValue
-import expo.modules.devmenu.helpers.setPrivateDeclaredFiledValue
+import expo.modules.devmenu.helpers.getPrivateDeclaredFieldValue
+import expo.modules.devmenu.helpers.setPrivateDeclaredFieldValue
 import java.util.*
 
 /**
@@ -38,10 +38,10 @@ class DevMenuActivity : ReactActivity() {
         }
 
         val reactDelegate: ReactDelegate = ReactActivityDelegate::class.java
-          .getPrivateDeclaredFiledValue("mReactDelegate", this)
+          .getPrivateDeclaredFieldValue("mReactDelegate", this)
 
         ReactDelegate::class.java
-          .setPrivateDeclaredFiledValue("mReactRootView", reactDelegate, rootView)
+          .setPrivateDeclaredFieldValue("mReactRootView", reactDelegate, rootView)
 
         // Removes the root view from the previous activity
         (rootView.parent as? ViewGroup)?.removeView(rootView)
@@ -104,7 +104,7 @@ class DevMenuActivity : ReactActivity() {
 
     if (supportsDevelopment) {
       val devSupportManager: DevSupportManager =
-        ReactInstanceManager::class.java.getPrivateDeclaredFiledValue(
+        ReactInstanceManager::class.java.getPrivateDeclaredFieldValue(
           "mDevSupportManager", instanceManager
         )
 
