@@ -1,18 +1,21 @@
-package expo.modules.core.interfaces
+package expo.modules.core.interfaces;
 
-import com.facebook.react.ReactInstanceManager
-import com.facebook.react.bridge.JavaScriptContextHolder
-import com.facebook.react.bridge.ReactApplicationContext
+import com.facebook.react.ReactInstanceManager;
+import com.facebook.react.bridge.JavaScriptContextHolder;
+import com.facebook.react.bridge.ReactApplicationContext;
 
-interface ReactNativeHostHandler {
+import androidx.annotation.Nullable;
+
+public interface ReactNativeHostHandler {
   /**
    * Given chance for modules to customize {@link ReactInstanceManager}
    *
    * @param useDeveloperSupport true if {@link ReactNativeHost} enabled developer support
    * @return instance of {@link ReactInstanceManager}, or null if not to override
    */
-  fun createReactInstanceManager(useDeveloperSupport: Boolean): ReactInstanceManager? {
-    return null
+  @Nullable
+  default ReactInstanceManager createReactInstanceManager(boolean useDeveloperSupport) {
+    return null;
   }
 
   /**
@@ -22,8 +25,9 @@ interface ReactNativeHostHandler {
    * @param useDeveloperSupport true if {@link ReactNativeHost} enabled developer support
    * @return custom path to bundle file, or null if not to override
    */
-  fun getJSBundleFile(useDeveloperSupport: Boolean): String? {
-    return null
+  @Nullable
+  default String getJSBundleFile(boolean useDeveloperSupport) {
+    return null;
   }
 
   /**
@@ -33,8 +37,9 @@ interface ReactNativeHostHandler {
    * @param useDeveloperSupport true if {@link ReactNativeHost} enabled developer support
    * @return custom bundle asset name, or null if not to override
    */
-  fun getBundleAssetName(useDeveloperSupport: Boolean): String? {
-    return null
+  @Nullable
+  default String getBundleAssetName(boolean useDeveloperSupport) {
+    return null;
   }
 
   //region event listeners
@@ -44,22 +49,22 @@ interface ReactNativeHostHandler {
    *
    * @param useDeveloperSupport true if {@link ReactNativeHost} enabled developer support
    */
-  fun onRegisterJSIModules(
-    reactApplicationContext: ReactApplicationContext,
-    jsContext: JavaScriptContextHolder,
-    useDeveloperSupport: Boolean
+  default void onRegisterJSIModules(
+    ReactApplicationContext reactApplicationContext,
+    JavaScriptContextHolder jsContext,
+    boolean useDeveloperSupport
   ) {
   }
 
   /**
    * Callback before {@link ReactInstanceManager} creation
    */
-  fun onWillCreateReactInstanceManager(useDeveloperSupport: Boolean) {}
+  default void onWillCreateReactInstanceManager(boolean useDeveloperSupport) {}
 
   /**
    * Callback after {@link ReactInstanceManager} creation
    */
-  fun onDidCreateReactInstanceManager(reactInstanceManager: ReactInstanceManager, useDeveloperSupport: Boolean) {}
+  default void onDidCreateReactInstanceManager(ReactInstanceManager reactInstanceManager, boolean useDeveloperSupport) {}
 
   //endregion
 }
