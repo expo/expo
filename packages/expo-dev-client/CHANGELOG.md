@@ -12,6 +12,18 @@
 
 ### 💡 Others
 
+## 0.6.3 — 2021-10-21
+
+_This version does not introduce any user-facing changes._
+
+## 0.6.2 — 2021-10-15
+
+_This version does not introduce any user-facing changes._
+
+## 0.6.1 — 2021-10-15
+
+_This version does not introduce any user-facing changes._
+
 ## 0.6.0 — 2021-10-07
 
 ### 🛠 Breaking changes

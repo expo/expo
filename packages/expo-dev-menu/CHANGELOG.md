@@ -11,8 +11,19 @@
 - Fix hermes inspector opening wrong target. ([#14684](https://github.com/expo/expo/pull/14684) by [@kudo](https://github.com/kudo))
 - Fix Gradle error when running Gradle from outside of the project directory. ([#15109](https://github.com/expo/expo/pull/15109) by [@kudo](https://github.com/kudo))
 - Fix `Project is using deprecated .expo.* file extensions`. ([#15070](https://github.com/expo/expo/pull/15070) by [@lukmccall](https://github.com/lukmccall))
+- Fix shake gesture sometimes brings two menus on Android. ([#15406](https://github.com/expo/expo/pull/15406) by [@lukmccall](https://github.com/lukmccall))
 
 ### 💡 Others
+
+## 0.8.4 — 2021-10-21
+
+_This version does not introduce any user-facing changes._
+
+## 0.8.3 — 2021-10-15
+
+### 🐛 Bug fixes
+
+- Fix hermes inspector opening wrong target. ([#14684](https://github.com/expo/expo/pull/14684) by [@kudo](https://github.com/kudo))
 
 ## 0.8.2 — 2021-10-07
 

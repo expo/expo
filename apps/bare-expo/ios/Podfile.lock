@@ -109,7 +109,7 @@ PODS:
     - UMTaskManagerInterface
   - EXMailComposer (11.0.1):
     - ExpoModulesCore
-  - EXManifests (0.2.1):
+  - EXManifests (0.2.2):
     - EXJSONUtils
   - EXMediaLibrary (13.0.1):
     - ExpoModulesCore
@@ -122,25 +122,25 @@ PODS:
     - ExpoModulesCore
   - Expo (44.0.0-alpha.0):
     - ExpoModulesCore
-  - expo-dev-client (0.6.0):
+  - expo-dev-client (0.6.3):
     - EXManifests
     - expo-dev-launcher
     - expo-dev-menu
     - expo-dev-menu-interface
     - EXUpdatesInterface
-  - expo-dev-launcher (0.8.1):
+  - expo-dev-launcher (0.8.4):
     - EXManifests
-    - expo-dev-launcher/Main (= 0.8.1)
+    - expo-dev-launcher/Main (= 0.8.4)
     - expo-dev-menu-interface
     - EXUpdatesInterface
     - React-Core
-  - expo-dev-launcher/Main (0.8.1):
+  - expo-dev-launcher/Main (0.8.4):
     - EXManifests
     - expo-dev-launcher/Unsafe
     - expo-dev-menu-interface
     - EXUpdatesInterface
     - React-Core
-  - expo-dev-launcher/Tests (0.8.1):
+  - expo-dev-launcher/Tests (0.8.4):
     - EXManifests
     - expo-dev-menu-interface
     - EXUpdatesInterface
@@ -149,23 +149,23 @@ PODS:
     - Quick
     - React-Core
     - React-CoreModules
-  - expo-dev-launcher/Unsafe (0.8.1):
+  - expo-dev-launcher/Unsafe (0.8.4):
     - EXManifests
     - expo-dev-menu-interface
     - EXUpdatesInterface
     - React-Core
-  - expo-dev-menu (0.8.2):
-    - expo-dev-menu/Main (= 0.8.2)
+  - expo-dev-menu (0.8.4):
+    - expo-dev-menu/Main (= 0.8.4)
   - expo-dev-menu-interface (0.4.1)
   - expo-dev-menu-interface/Tests (0.4.1):
     - Nimble
     - Quick
-  - expo-dev-menu/GestureHandler (0.8.2)
-  - expo-dev-menu/Main (0.8.2):
+  - expo-dev-menu/GestureHandler (0.8.4)
+  - expo-dev-menu/Main (0.8.4):
     - expo-dev-menu-interface
     - expo-dev-menu/Vendored
     - React-Core
-  - expo-dev-menu/Reanimated (0.8.2):
+  - expo-dev-menu/Reanimated (0.8.4):
     - DoubleConversion
     - FBLazyVector
     - FBReactNativeSpec
@@ -193,14 +193,14 @@ PODS:
     - React-RCTVibration
     - ReactCommon/turbomodule/core
     - Yoga
-  - expo-dev-menu/Tests (0.8.2):
+  - expo-dev-menu/Tests (0.8.4):
     - Nimble
     - Quick
     - React-CoreModules
-  - expo-dev-menu/UITests (0.8.2):
+  - expo-dev-menu/UITests (0.8.4):
     - React
     - React-CoreModules
-  - expo-dev-menu/Vendored (0.8.2):
+  - expo-dev-menu/Vendored (0.8.4):
     - expo-dev-menu/GestureHandler
     - expo-dev-menu/Reanimated
   - ExpoCellular (4.0.0):
@@ -1293,15 +1293,15 @@ SPEC CHECKSUMS:
   EXLocalAuthentication: 4c640e20a308d66224468661a0da434f86435283
   EXLocation: 6d13fb1d4b65ed1b2d2bdd0b0f11417cc0a2656a
   EXMailComposer: 06e0c73da0105e124409cb27e04f881392b6f918
-  EXManifests: fdbb8a0c2cd5fc4acc1ae90b55ce91617aba9365
+  EXManifests: 50e42e01335df4e54109dee7be5a91bfd37347db
   EXMediaLibrary: 8eeff7fdfbd457a0fba3b7afb49e9e2d465b173a
   EXNetwork: a5caf9ca61924520ff395b4eac9d6909d97fbc4c
   EXNotifications: 24fb362f02a68d94ae7e5769aa9319be5096328c
   EXPermissions: 08ccf78a0eb404c28df6d226fcc8fcf2e558b421
   Expo: 988e3a33c6b5c19fb951ffb376e6d8a8405000ed
-  expo-dev-client: 97a9589d2ea0325a8dd4dff284fe3a4b9166bbce
-  expo-dev-launcher: e76a3b8cca8f61c32c80a8dcd894c631f09329e6
-  expo-dev-menu: ec566cc2bc8e783b9874afb81ea92a90d6069f01
+  expo-dev-client: f7417249bbede98f5fa3f151ae49c46cabfce82b
+  expo-dev-launcher: 99b093d69e221ee83fdcc7c1f74c02e97917e1ca
+  expo-dev-menu: a9386fbaa4852bf4724bb0558493677aa13cf3ab
   expo-dev-menu-interface: 273c68c2c30ecbc70af2903dfb3821f567ef9d78
   ExpoCellular: 90940614d45df5b31f281d70a63d92a06fe44af4
   ExpoHaptics: c0c014eabfdd1353a908f857f168b01fafd526db
