@@ -125,11 +125,11 @@ const MyAnalytics = NativeModules.MyAnalytics ?? {
 // provide TypeScript typing and validation.
 
 export function logEvent(options) {
-  NativeModules.MyAnalytics.logEvent(options);
+  MyAnalytics.logEvent(options);
 }
 
 export function setUser(options) {
-  NativeModules.MyAnalytics.setUser(options);
+  MyAnalytics.setUser(options);
 }
 ```
 
