@@ -6,6 +6,7 @@ export interface SearchOptions {
     exclude?: string[] | null;
     platform: SupportedPlatform;
     silent?: boolean;
+    nativeModulesDir?: string;
     flags?: Record<string, any>;
 }
 export interface ResolveOptions extends SearchOptions {

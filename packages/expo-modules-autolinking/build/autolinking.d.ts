@@ -8,14 +8,16 @@ export declare function resolveSearchPathsAsync(searchPaths: string[] | null, cw
  * Looks up for workspace's `node_modules` paths.
  */
 export declare function findDefaultPathsAsync(cwd: string): Promise<string[]>;
+export declare function resolveNativeModulesDirAsync(nativeModulesDir: string | undefined, cwd: string): Promise<string | undefined>;
 /**
  * Searches for modules to link based on given config.
+ * TODO: (barthap): still duplicated code
  */
 export declare function findModulesAsync(providedOptions: SearchOptions): Promise<SearchResults>;
 /**
  * Merges autolinking options from different sources (the later the higher priority)
- * - options defined in package.json's `expoModules` field
- * - platform-specific options from the above (e.g. `expoModules.ios`)
+ * - options defined in package.json's `expo.autolinking` field
+ * - platform-specific options from the above (e.g. `expo.autolinking.ios`)
  * - options provided to the CLI command
  */
 export declare function mergeLinkingOptionsAsync<OptionsType extends SearchOptions>(providedOptions: OptionsType): Promise<OptionsType>;

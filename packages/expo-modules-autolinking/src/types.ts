@@ -9,6 +9,7 @@ export interface SearchOptions {
   exclude?: string[] | null;
   platform: SupportedPlatform;
   silent?: boolean;
+  nativeModulesDir?: string;
 
   // Scratched from project's config
   flags?: Record<string, any>;
