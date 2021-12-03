@@ -187,6 +187,54 @@ The `pixels` argument of [`texImage2D()`](https://developer.mozilla.org/en-US/do
 
 For efficiency reasons the current implementations of the methods don't perform type or bounds checking on their arguments. So, passing invalid arguments could cause a native crash. We plan to update the API to perform argument checking in upcoming SDK versions. Currently the priority for error checking is low since engines generally don't rely on the OpenGL API to perform argument checking and, even otherwise, checks performed by the underlying OpenGL ES implementation are often sufficient.
 
+## Integration with Reanimated worklets
+
+To use this API inside Reanimated worklet you need to pass the GL context ID to the worklet and recreate the GL object like in the example bellow.
+
+<SnackInline label='GL usage in reanimated worklet' dependencies={['expo-gl', 'react-native-reanimated']}>
+
+```js
+import React from 'react';
+import { View } from 'react-native';
+import { runOnUI } from 'react-native-reanimated';
+import { GLView } from 'expo-gl';
+
+function render(gl) {
+  'worklet';
+  // add your WebGL code here
+}
+
+function onContextCreate(gl) {
+  runOnUI((contextId: number) => {
+    'worklet';
+    const gl = GLView.getWorkletContext(contextId)
+    render(gl);
+  })(gl.contextId);
+}
+
+export default function App() {
+  return (
+    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+      <GLView style={{ width: 300, height: 300 }} onContextCreate={onContextCreate} />
+    </View>
+  );
+}
+```
+
+</SnackInline>
+
+For more in-depth example on how to use `expo-gl` with Reanimated and Gesture Handler you can check [this example](https://github.com/expo/expo/blob/master/apps/native-component-list/src/screens/GL/GLReanimatedExample.tsx).
+
+### Limitations
+
+Worklet runtime is imposing some limitations on the code that runs inside it, so if you have existing WebGL code, it'll likely require some modifications to run inside a worklet thread.
+- Third-party libraries like Pixi.js or Three.js won't work inside the worklet, you can only use functions that have `'worklet'` added at the start.
+- If you need to load some assets to pass to the WebGL code, it needs to be done on the main thread and passed via some reference to the worklet. If you are using `expo-assets` you can just pass asset object returned by `Asset.fromModule` or from hook `useAssets` to the `runOnUI` function.
+- To implement a rendering loop you need to use `requestAnimationFrame`, APIs like `setTimeout` are not supported.
+- It's supported only on Android and iOS, it doesn't work on Web.
+ 
+Check [Reanimated documentation](https://docs.swmansion.com/react-native-reanimated/docs/fundamentals/worklets) to learn more.
+
 ## Remote Debugging & GLView
 
 This API does not function as intended with remote debugging enabled. The React Native debugger runs JavaScript on your computer (not the mobile device itself), and GLView requires synchronous native calls (which are not supported in Chrome).
