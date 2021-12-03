@@ -5,8 +5,8 @@ import com.facebook.react.ReactInstanceManager
 import com.facebook.react.common.ShakeDetector
 import com.facebook.react.devsupport.DevSupportManagerBase
 import com.facebook.react.devsupport.interfaces.DevSupportManager
-import expo.modules.devmenu.helpers.getPrivateDeclaredFiledValue
-import expo.modules.devmenu.helpers.setPrivateDeclaredFiledValue
+import expo.modules.devmenu.helpers.getPrivateDeclaredFieldValue
+import expo.modules.devmenu.helpers.setPrivateDeclaredFieldValue
 
 class DevMenuShakeDetectorListenerSwapper {
   fun swapShakeDetectorListener(
@@ -15,7 +15,7 @@ class DevMenuShakeDetectorListenerSwapper {
   ) {
     try {
       val devSupportManager: DevSupportManager =
-        ReactInstanceManager::class.java.getPrivateDeclaredFiledValue(
+        ReactInstanceManager::class.java.getPrivateDeclaredFieldValue(
           "mDevSupportManager",
           reactInstanceManager
         )
@@ -26,12 +26,12 @@ class DevMenuShakeDetectorListenerSwapper {
       }
 
       val shakeDetector: ShakeDetector =
-        DevSupportManagerBase::class.java.getPrivateDeclaredFiledValue(
+        DevSupportManagerBase::class.java.getPrivateDeclaredFieldValue(
           "mShakeDetector",
           devSupportManager
         )
 
-      ShakeDetector::class.java.setPrivateDeclaredFiledValue(
+      ShakeDetector::class.java.setPrivateDeclaredFieldValue(
         "mShakeListener",
         shakeDetector,
         newListener
