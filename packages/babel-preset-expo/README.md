@@ -60,6 +60,24 @@ If the `bundler` is not defined, it will default to checking if a `babel-loader`
 
 This property is passed down to [`@babel/plugin-transform-react-jsx`](https://babeljs.io/docs/en/babel-plugin-transform-react-jsx). This flag does nothing when `native.useTransformReactJSXExperimental` is set to `true` because `@babel/plugin-transform-react-jsx` is omitted.
 
+### [`jsxImportSource`](https://babeljs.io/docs/en/babel-plugin-transform-react-jsx#importsource)
+
+`string`, defaults to `react`
+
+This option allows specifying a custom import source for importing functions. 
+
+```js
+[
+  'babel-preset-expo',
+  {
+    jsxRuntime: 'automatic',
+    importSource: 'react',
+  },
+];
+```
+
+This property is passed down to [`@babel/plugin-transform-react-jsx`](https://babeljs.io/docs/en/babel-plugin-transform-react-jsx). This options does nothing when `jsxRuntime` is not set to `automatic`.
+
 ### [`lazyImports`](https://babeljs.io/docs/en/babel-plugin-transform-modules-commonjs#lazy)
 
 Changes Babel's compiled `import` statements to be lazily evaluated when their imported bindings are used for the first time.
