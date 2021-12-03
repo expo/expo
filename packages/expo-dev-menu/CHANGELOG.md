@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 0.8.6 — 2021-12-03
+
+_This version does not introduce any user-facing changes._
+
 ## 0.8.5 — 2021-12-03
 
 ### 🐛 Bug fixes
