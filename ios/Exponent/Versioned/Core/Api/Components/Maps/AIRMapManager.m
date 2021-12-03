@@ -575,7 +575,7 @@ RCT_EXPORT_METHOD(getAddressFromCoordinates:(nonnull NSNumber *)reactTag
         if (![view isKindOfClass:[AIRMap class]]) {
             reject(@"Invalid argument", [NSString stringWithFormat:@"Invalid view returned from registry, expecting AIRMap, got: %@", view], NULL);
         } else {
-            if (coordinate != nil ||
+            if (coordinate == nil ||
                 ![[coordinate allKeys] containsObject:@"latitude"] ||
                 ![[coordinate allKeys] containsObject:@"longitude"]) {
                 reject(@"Invalid argument", [NSString stringWithFormat:@"Invalid coordinate format"], NULL);
@@ -599,6 +599,8 @@ RCT_EXPORT_METHOD(getAddressFromCoordinates:(nonnull NSNumber *)reactTag
                             @"countryCode" : [NSString stringWithFormat:@"%@", placemark.ISOcountryCode],
                             @"country" : [NSString stringWithFormat:@"%@", placemark.country],
                         });
+                    } else {
+                        reject(@"Invalid argument", [NSString stringWithFormat:@"Can not get address location"], NULL);
                     }
             }];
         }

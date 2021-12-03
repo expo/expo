@@ -13,6 +13,7 @@ Package-specific changes not released in any SDK will be added here just before 
 - Updated `@react-native-community/slider` from `4.1.4` to `4.1.12`. ([#15356](https://github.com/expo/expo/pull/15356) by [@EvanBacon](https://github.com/EvanBacon))
 - Updated `@react-native-community/datetimepicker` from `3.5.2` to `4.0.0`. ([#15357](https://github.com/expo/expo/pull/15357) by [@EvanBacon](https://github.com/EvanBacon))
 - Updated `@react-native-community/netinfo` from `6.0.2` to `7.1.3`. ([#15352](https://github.com/expo/expo/pull/15352) by [@kudo](https://github.com/kudo))
+- Updated `react-native-maps` from `0.28.1` to `0.29.4`. ([#15397](https://github.com/expo/expo/pull/15397) by [@bbarthec](https://github.com/bbarthec))
 - Updated `@stripe/stripe-react-native` from `0.2.2` to `0.2.3`. ([#15396](https://github.com/expo/expo/pull/15396) by [@brentvatne](https://github.com/brentvatne) and [@kudo](https://github.com/kudo))
 - Updated `react-native-gesture-handler` from `1.10.3` to `2.0.0`. ([#15404](https://github.com/expo/expo/pull/15404) by [@kudo](https://github.com/kudo))
 
