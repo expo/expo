@@ -112,9 +112,18 @@ Pod::Spec.new do |s|
     reanimated.dependency "#{folly_prefix}Folly"
   end
   
+  
+  s.subspec 'SafeAreaView' do |safearea|
+    safearea.source_files = 'vendored/react-native-safe-area-context/**/*.{h,m}'
+    safearea.private_header_files = 'vendored/react-native-safe-area-context/**/*.h'
+  
+    safearea.compiler_flags = '-w -Xanalyzer -analyzer-disable-all-checks'
+  end
+  
   s.subspec 'Vendored' do |vendored|
     vendored.dependency "expo-dev-menu/GestureHandler"
     vendored.dependency "expo-dev-menu/Reanimated"
+    vendored.dependency "expo-dev-menu/SafeAreaView"
   end
   
   s.subspec 'Main' do |main|
