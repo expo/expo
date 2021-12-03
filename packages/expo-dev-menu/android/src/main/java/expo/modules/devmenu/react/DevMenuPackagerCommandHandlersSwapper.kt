@@ -8,8 +8,8 @@ import com.facebook.react.devsupport.interfaces.DevSupportManager
 import com.facebook.react.packagerconnection.JSPackagerClient
 import com.facebook.react.packagerconnection.RequestHandler
 import expo.modules.devmenu.DevMenuManager
-import expo.modules.devmenu.helpers.getPrivateDeclaredFiledValue
-import expo.modules.devmenu.helpers.setPrivateDeclaredFiledValue
+import expo.modules.devmenu.helpers.getPrivateDeclaredFieldValue
+import expo.modules.devmenu.helpers.setPrivateDeclaredFieldValue
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -20,7 +20,7 @@ class DevMenuPackagerCommandHandlersSwapper {
   ) {
     try {
       val devSupportManager: DevSupportManager =
-        ReactInstanceManager::class.java.getPrivateDeclaredFiledValue(
+        ReactInstanceManager::class.java.getPrivateDeclaredFieldValue(
           "mDevSupportManager",
           reactInstanceManager
         )
@@ -31,7 +31,7 @@ class DevMenuPackagerCommandHandlersSwapper {
       }
 
       val currentCommandHandlers: Map<String, RequestHandler>? =
-        DevSupportManagerBase::class.java.getPrivateDeclaredFiledValue(
+        DevSupportManagerBase::class.java.getPrivateDeclaredFieldValue(
           "mCustomPackagerCommandHandlers",
           devSupportManager
         )
@@ -39,7 +39,7 @@ class DevMenuPackagerCommandHandlersSwapper {
       val newCommandHandlers = currentCommandHandlers?.toMutableMap() ?: mutableMapOf()
       newCommandHandlers.putAll(handlers)
 
-      DevSupportManagerBase::class.java.setPrivateDeclaredFiledValue(
+      DevSupportManagerBase::class.java.setPrivateDeclaredFieldValue(
         "mCustomPackagerCommandHandlers",
         devSupportManager,
         newCommandHandlers
@@ -71,33 +71,33 @@ class DevMenuPackagerCommandHandlersSwapper {
       try {
         while (true) {
           val devSupportManager: DevSupportManagerBase =
-            ReactInstanceManager::class.java.getPrivateDeclaredFiledValue(
+            ReactInstanceManager::class.java.getPrivateDeclaredFieldValue(
               "mDevSupportManager",
               reactInstanceManager
             )
 
           val devServerHelper: DevServerHelper =
-            DevSupportManagerBase::class.java.getPrivateDeclaredFiledValue(
+            DevSupportManagerBase::class.java.getPrivateDeclaredFieldValue(
               "mDevServerHelper",
               devSupportManager
             )
 
           val jsPackagerClient: JSPackagerClient? =
-            DevServerHelper::class.java.getPrivateDeclaredFiledValue(
+            DevServerHelper::class.java.getPrivateDeclaredFieldValue(
               "mPackagerClient",
               devServerHelper
             )
 
           if (jsPackagerClient != null) {
             val currentCommandHandlers: Map<String, RequestHandler>? =
-              JSPackagerClient::class.java.getPrivateDeclaredFiledValue(
+              JSPackagerClient::class.java.getPrivateDeclaredFieldValue(
                 "mRequestHandlers",
                 jsPackagerClient
               )
 
             val newCommandHandlers = currentCommandHandlers?.toMutableMap() ?: mutableMapOf()
             newCommandHandlers.putAll(handlers)
-            JSPackagerClient::class.java.setPrivateDeclaredFiledValue(
+            JSPackagerClient::class.java.setPrivateDeclaredFieldValue(
               "mRequestHandlers",
               jsPackagerClient,
               newCommandHandlers

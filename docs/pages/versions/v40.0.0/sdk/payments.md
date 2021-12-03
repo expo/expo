@@ -6,7 +6,7 @@ sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-40/packages/expo-payments-
 import InstallSection from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 
-> 🚨 On iOS, the Payments module is currently only supported in the [bare workflow](https://docs.expo.dev/workflow/customizing/).
+> 🚨 On iOS, the Payments module is currently only supported in the [bare workflow](/workflow/customizing/).
 
 Payments uses [Stripe](https://stripe.com/) and [Apple Pay](https://www.apple.com/apple-pay/) on iOS, but the module is only available in bare workflow apps.
 

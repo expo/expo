@@ -2,6 +2,7 @@ package versioned.host.exp.exponent.modules.api.components.reactnativestripesdk
 
 import android.content.Context
 import android.content.Intent
+import android.content.res.ColorStateList
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
@@ -47,6 +48,9 @@ class PaymentSheetFragment : Fragment() {
     val countryCode = arguments?.getString("merchantCountryCode").orEmpty()
     val googlePayEnabled = arguments?.getBoolean("googlePay")
     val testEnv = arguments?.getBoolean("testEnv")
+    val allowsDelayedPaymentMethods = arguments?.getBoolean("allowsDelayedPaymentMethods")
+    val primaryButtonColorHexStr = arguments?.getString("primaryButtonColor").orEmpty()
+    val billingDetailsBundle = arguments?.getBundle("defaultBillingDetails")
     paymentIntentClientSecret = arguments?.getString("paymentIntentClientSecret").orEmpty()
     setupIntentClientSecret = arguments?.getString("setupIntentClientSecret").orEmpty()
 
@@ -74,8 +78,35 @@ class PaymentSheetFragment : Fragment() {
       }
     }
 
+    var primaryButtonColor: ColorStateList? = null
+    if (primaryButtonColorHexStr != null && primaryButtonColorHexStr.isNotEmpty()) {
+      primaryButtonColor = ColorStateList.valueOf(Color.parseColor(primaryButtonColorHexStr))
+    }
+
+    var defaultBillingDetails: PaymentSheet.BillingDetails? = null
+    if (billingDetailsBundle != null) {
+      val addressBundle = billingDetailsBundle.getBundle("address")
+      val address = PaymentSheet.Address(
+        addressBundle?.getString("city"),
+        addressBundle?.getString("country"),
+        addressBundle?.getString("line1"),
+        addressBundle?.getString("line2"),
+        addressBundle?.getString("postalCode"),
+        addressBundle?.getString("state")
+      )
+      defaultBillingDetails = PaymentSheet.BillingDetails(
+        address,
+        billingDetailsBundle?.getString("email"),
+        billingDetailsBundle?.getString("name"),
+        billingDetailsBundle?.getString("phone")
+      )
+    }
+
     paymentSheetConfiguration = PaymentSheet.Configuration(
       merchantDisplayName = merchantDisplayName,
+      allowsDelayedPaymentMethods = allowsDelayedPaymentMethods ?: false,
+      primaryButtonColor = primaryButtonColor,
+      defaultBillingDetails = defaultBillingDetails,
       customer = if (customerId.isNotEmpty() && customerEphemeralKeySecret.isNotEmpty()) PaymentSheet.CustomerConfiguration(
         id = customerId,
         ephemeralKeySecret = customerEphemeralKeySecret

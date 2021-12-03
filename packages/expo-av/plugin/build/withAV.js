@@ -5,7 +5,7 @@ const pkg = require('expo-av/package.json');
 const MICROPHONE_USAGE = 'Allow $(PRODUCT_NAME) to access your microphone';
 const withAV = (config, { microphonePermission } = {}) => {
     if (microphonePermission !== false) {
-        config = config_plugins_1.withInfoPlist(config, (config) => {
+        config = (0, config_plugins_1.withInfoPlist)(config, (config) => {
             config.modResults.NSMicrophoneUsageDescription =
                 microphonePermission || config.modResults.NSMicrophoneUsageDescription || MICROPHONE_USAGE;
             return config;
@@ -16,4 +16,4 @@ const withAV = (config, { microphonePermission } = {}) => {
         'android.permission.MODIFY_AUDIO_SETTINGS',
     ].filter(Boolean));
 };
-exports.default = config_plugins_1.createRunOncePlugin(withAV, pkg.name, pkg.version);
+exports.default = (0, config_plugins_1.createRunOncePlugin)(withAV, pkg.name, pkg.version);

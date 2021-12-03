@@ -590,7 +590,7 @@ PODS:
     - Yoga
   - ABI41_0_0stripe-react-native (0.1.0):
     - ABI41_0_0React
-    - Stripe (~> 21.8.1)
+    - Stripe (~> 21.9.0)
   - ABI41_0_0UMAppLoader (2.1.0)
   - ABI41_0_0UMBarCodeScannerInterface (6.1.0):
     - ABI41_0_0UMCore
@@ -1198,7 +1198,7 @@ PODS:
     - ABI42_0_0React-RCTImage
   - ABI42_0_0stripe-react-native (0.1.4):
     - ABI42_0_0React
-    - Stripe (~> 21.8.1)
+    - Stripe (~> 21.9.0)
   - ABI42_0_0UMAppLoader (2.2.0)
   - ABI42_0_0UMCore (7.1.1)
   - ABI42_0_0UMReactNativeAdapter (6.3.0):
@@ -1795,7 +1795,7 @@ PODS:
     - ABI43_0_0React-RCTImage
   - ABI43_0_0stripe-react-native (0.2.2):
     - ABI43_0_0React
-    - Stripe (~> 21.8.1)
+    - Stripe (~> 21.9.0)
   - ABI43_0_0UMAppLoader (3.0.0)
   - ABI43_0_0UMTaskManagerInterface (7.0.0):
     - ABI43_0_0ExpoModulesCore
@@ -2435,6 +2435,8 @@ PODS:
     - React-cxxreact (= 0.64.3)
     - React-jsi (= 0.64.3)
     - React-perflogger (= 0.64.3)
+  - RNGestureHandler (2.0.0):
+    - React-Core
   - RNReanimated (2.2.0):
     - DoubleConversion
     - FBLazyVector
@@ -2467,15 +2469,19 @@ PODS:
   - RNScreens (3.8.0):
     - React-Core
     - React-RCTImage
-  - Stripe (21.8.1):
-    - Stripe/Stripe3DS2 (= 21.8.1)
-    - StripeCore (= 21.8.1)
-  - stripe-react-native (0.2.2):
-    - React
-    - Stripe (~> 21.8.1)
-  - Stripe/Stripe3DS2 (21.8.1):
-    - StripeCore (= 21.8.1)
-  - StripeCore (21.8.1)
+  - Stripe (21.9.0):
+    - Stripe/Stripe3DS2 (= 21.9.0)
+    - StripeCore (= 21.9.0)
+    - StripeUICore (= 21.9.0)
+  - stripe-react-native (0.2.3):
+    - React-Core
+    - Stripe (~> 21.9.0)
+  - Stripe/Stripe3DS2 (21.9.0):
+    - StripeCore (= 21.9.0)
+    - StripeUICore (= 21.9.0)
+  - StripeCore (21.9.0)
+  - StripeUICore (21.9.0):
+    - StripeCore (= 21.9.0)
   - UMAppLoader (3.0.0)
   - UMTaskManagerInterface (7.0.1):
     - ExpoModulesCore
@@ -2927,6 +2933,7 @@ DEPENDENCIES:
   - React-RCTVibration (from `../react-native-lab/react-native/Libraries/Vibration`)
   - React-runtimeexecutor (from `../react-native-lab/react-native/ReactCommon/runtimeexecutor`)
   - ReactCommon/turbomodule/core (from `../react-native-lab/react-native/ReactCommon`)
+  - RNGestureHandler (from `./vendored/unversioned/react-native-gesture-handler`)
   - RNReanimated (from `./vendored/unversioned/react-native-reanimated`)
   - RNScreens (from `./vendored/unversioned/react-native-screens`)
   - "stripe-react-native (from `./vendored/unversioned/@stripe/stripe-react-native`)"
@@ -2975,6 +2982,7 @@ SPEC REPOS:
     - Protobuf
     - Stripe
     - StripeCore
+    - StripeUICore
     - ZXingObjC
 
 EXTERNAL SOURCES:
@@ -3816,6 +3824,8 @@ EXTERNAL SOURCES:
     :path: "../react-native-lab/react-native/ReactCommon/runtimeexecutor"
   ReactCommon:
     :path: "../react-native-lab/react-native/ReactCommon"
+  RNGestureHandler:
+    :path: "./vendored/unversioned/react-native-gesture-handler"
   RNReanimated:
     :path: "./vendored/unversioned/react-native-reanimated"
   RNScreens:
@@ -3921,7 +3931,7 @@ SPEC CHECKSUMS:
   ABI41_0_0React-RCTVibration: ea2ae0f0559e32d2a17d28162ee1ce902fcf0f98
   ABI41_0_0ReactCommon: bedf6c58cbcd774db4ca5c5f9b39196493a683a6
   ABI41_0_0RNReanimated: 9ec256ef7b229c919835501640706028bf438678
-  ABI41_0_0stripe-react-native: 30b6621836aa6648c58515394e8fac9961d020a6
+  ABI41_0_0stripe-react-native: 9700340491c678a803aa4a2f7446bc23fcd01a59
   ABI41_0_0UMAppLoader: c44d678dc80cd36783ecf36e036690eff34a28b2
   ABI41_0_0UMBarCodeScannerInterface: 7a08c48a07b33412c5a61465f96915bb778ae789
   ABI41_0_0UMCameraInterface: be8c85a4debae7bbabb0df68720642e11d0196d1
@@ -4031,7 +4041,7 @@ SPEC CHECKSUMS:
   ABI42_0_0ReactCommon: c3bb4c4691c125880ac8c6d6a13a44744059738a
   ABI42_0_0RNReanimated: c83b815abf46671c46634e2b3d3813e434ef174f
   ABI42_0_0RNScreens: 54491fe4857af5649b9bbcdb68f80bfaea9184df
-  ABI42_0_0stripe-react-native: a35a5ca9f6ef2d6761a1856e4db6eeff8ed15bc8
+  ABI42_0_0stripe-react-native: e3d0209803fd43b26336460f738c7db88bb7b850
   ABI42_0_0UMAppLoader: dabb1f8c2f864f5559f314a0e027b6f9489d4687
   ABI42_0_0UMCore: 80a911c91edb192260601ffc5fd818e965d4aac3
   ABI42_0_0UMReactNativeAdapter: 17dc58444122eda6fd493dff06546882fe00bcf7
@@ -4139,7 +4149,7 @@ SPEC CHECKSUMS:
   ABI43_0_0ReactCommon: 6a1fcad151aa7efad288c20f318c1b5f165538d2
   ABI43_0_0RNReanimated: f7cd484a2e1b5112ea84d57381c5d7ab6ceeab74
   ABI43_0_0RNScreens: d8e359af1191871e37501d5efd6b72b38c573e90
-  ABI43_0_0stripe-react-native: 75ba35284358f29b10851bda97d576a787ade851
+  ABI43_0_0stripe-react-native: e2d9c45776c547095508a9b8b5173e8a34bb962a
   ABI43_0_0UMAppLoader: ac4c403f59e691af683873f22b44a023155bac55
   ABI43_0_0UMTaskManagerInterface: af977f83f0ab2c68d8023174a7d542a8cf465351
   ABI43_0_0Yoga: b4a69fd97272b10eb433c11dd8bb2e571e311e36
@@ -4214,10 +4224,10 @@ SPEC CHECKSUMS:
   EXSplashScreen: 5277e572910fb343dc2640f7e97cb3ff3337090b
   EXSQLite: e2843263c20824b01deab1dfa5a6f00fd055d7d0
   EXStoreReview: e7db9db568c43bf3758d6ae2a93738e1291822b9
-  EXStructuredHeaders: ba85104bb57e861129872a30e2cf7adaa348c4ac
+  EXStructuredHeaders: 6f02e9a1a6a860a8122dc8c9867e1c083b68a3ae
   EXTaskManager: 7e50f7dd4121d82f26ffcc11295d82c7be105101
   EXTrackingTransparency: 3ed63702768aed41422c8ae350235353746dd1a9
-  EXUpdates: 484722c091293bfb951e21f427e173b7c412c5b1
+  EXUpdates: 02b6637b5bc4550e39274b2b243eb45d46b89971
   EXUpdatesInterface: e1c01b4f5ec76bd1d6cc714938f9edf5ef6379b9
   EXVideoThumbnails: 889ce82cc5d3d355fac0558b3dfbfac2f769c23c
   EXWebBrowser: a3c5694129ee18c4ff4f2269b7077b3fbaf8dc35
@@ -4286,11 +4296,13 @@ SPEC CHECKSUMS:
   React-RCTVibration: c7f845861e79eae13dc1e8217a3cf47a3945b504
   React-runtimeexecutor: 493d9abb8b23c3f84e19ae221eeba92cadcb70dc
   ReactCommon: 8fea6422328e2fc093e25c9fac67adbcf0f04fb4
+  RNGestureHandler: 51c9f32f43720c3a1c7660690a843f33acbcf01f
   RNReanimated: 9c13c86454bfd54dab7505c1a054470bfecd2563
   RNScreens: 6e1ea5787989f92b0671049b808aef64fa1ef98c
-  Stripe: 57c6997c64042a3f5aedae9b76e331942f8b75d2
-  stripe-react-native: 48a10900a95709f7527fc712231fe1adc81735ca
-  StripeCore: a6e50d58119a0c7601773b56f274db2d394dcdac
+  Stripe: 41c3d261501e1dc84755b1bdabdaae50ebf92b53
+  stripe-react-native: a5fcf07b49f1208bdc939e31a07320b35a88209f
+  StripeCore: 2ea9531e863ef20f191a0d61f00dedb7f061baef
+  StripeUICore: a0f9e40520823d34c63baec0782fc4a0c7fb7484
   UMAppLoader: 671576daa3fd3017d4879a5f23fc0dd3b36422a8
   UMTaskManagerInterface: 9655d49899096ee024248bbd7eb47e6b2c9631b2
   Yoga: e6ecf3fa25af9d4c87e94ad7d5d292eedef49749

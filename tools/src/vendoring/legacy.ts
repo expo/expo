@@ -146,16 +146,68 @@ const ReanimatedModifier: ModuleModifier = async function (
   await prepareIOSNativeFiles();
 };
 
+const GestureHandlerModifier: ModuleModifier = async function (
+  moduleConfig: VendoredModuleConfig,
+  clonedProjectPath: string
+): Promise<void> {
+  const baseSrcDir = path.join(
+    clonedProjectPath,
+    'android',
+    'src',
+    'main',
+    'java',
+    'com',
+    'swmansion',
+    'gesturehandler',
+    'react'
+  );
+
+  const addResourceImportAsync = async () => {
+    const files = [path.join(baseSrcDir, 'RNGestureHandlerButtonViewManager.kt')];
+    await Promise.all(
+      files.map(async (file) => {
+        let content = await fs.readFile(file, 'utf8');
+        content = content.replace(/^(package .+)$/gm, '$1\nimport host.exp.expoview.R');
+        await fs.writeFile(file, content, 'utf8');
+      })
+    );
+  };
+
+  const transformImportsAsync = async () => {
+    const files = [path.join(baseSrcDir, 'RNGestureHandlerModule.kt')];
+    await Promise.all(
+      files.map(async (file) => {
+        let content = await fs.readFile(file, 'utf8');
+        content = content.replace(
+          /^import com\.swmansion\.common\./gm,
+          'import versioned.host.exp.exponent.modules.api.components.gesturehandler.'
+        );
+        await fs.writeFile(file, content, 'utf8');
+      })
+    );
+  };
+
+  await addResourceImportAsync();
+  await transformImportsAsync();
+};
+
 const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
   'react-native-gesture-handler': {
     repoUrl: 'https://github.com/software-mansion/react-native-gesture-handler.git',
     installableInManagedApps: true,
     semverPrefix: '~',
+    moduleModifier: GestureHandlerModifier,
     steps: [
       {
         sourceAndroidPath: 'android/lib/src/main/java/com/swmansion/gesturehandler',
         targetAndroidPath: 'modules/api/components/gesturehandler',
         sourceAndroidPackage: 'com.swmansion.gesturehandler',
+        targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.components.gesturehandler',
+      },
+      {
+        sourceAndroidPath: 'android/src/main/java/com/swmansion/common',
+        targetAndroidPath: 'modules/api/components/gesturehandler/common',
+        sourceAndroidPackage: 'com.swmansion.common',
         targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.components.gesturehandler',
       },
       {

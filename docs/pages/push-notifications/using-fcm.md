@@ -52,7 +52,7 @@ Note that FCM is not currently available for Expo iOS apps.
 
 If you do the above setup before ejecting to bare, your FCM notifications will continue to work properly without any extra steps after ejecting. However, if your project is already ejected to bare and you want to set up FCM retroactively, you'll need to:
 
-- [Set up Firebase in your Android project](https://docs.expo.dev/guides/setup-native-firebase/#android-1)
+- [Set up Firebase in your Android project](/guides/setup-native-firebase/#android-1)
 - Copy the same `google-services.json` file into the `android/app` directory. If that file already exists, you should overwrite it.
 
 ## Uploading Server Credentials
