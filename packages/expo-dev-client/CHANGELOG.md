@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- [plugin] Fix android adding duplicate schemes. ([#15057](https://github.com/expo/expo/pull/15057) by [@EvanBacon](https://github.com/EvanBacon))
-
 ### 💡 Others
+
+## 0.7.0 — 2021-12-03
+
+### 🐛 Bug fixes
+
+- [plugin] Fix android adding duplicate schemes. ([#15057](https://github.com/expo/expo/pull/15057) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 0.6.3 — 2021-10-21
 
