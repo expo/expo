@@ -21,6 +21,9 @@ import com.facebook.react.bridge.WritableMap
 import com.facebook.react.uimanager.events.RCTEventEmitter
 import com.facebook.react.views.text.ReactTypefaceUtils
 
+import host.exp.expoview.BuildConfig
+import host.exp.expoview.R
+
 class ScreenStackHeaderConfig(context: Context) : ViewGroup(context) {
   private val mConfigSubviews = ArrayList<ScreenStackHeaderSubview>(3)
   val toolbar: CustomToolbar
