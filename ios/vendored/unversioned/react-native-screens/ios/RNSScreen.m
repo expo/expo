@@ -688,6 +688,10 @@
 
 - (void)traverseForScrollView:(UIView *)view
 {
+  if (![[self.view valueForKey:@"_bridge"] valueForKey:@"_jsThread"]) {
+    // we don't want to send `scrollViewDidEndDecelerating` event to JS before the JS thread is ready
+    return;
+  }
   if ([view isKindOfClass:[UIScrollView class]] &&
       ([[(UIScrollView *)view delegate] respondsToSelector:@selector(scrollViewDidEndDecelerating:)])) {
     [[(UIScrollView *)view delegate] scrollViewDidEndDecelerating:(id)view];
