@@ -51,10 +51,10 @@ class DevLauncherActivity : ReactActivity(), ReactInstanceManager.ReactInstanceE
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
 
-    contentView = findViewById(android.R.id.content) ?: return
-    splashScreen = DevLauncherSplashScreenProvider()
-      .attachSplashScreenViewAsync(this)
-    searchForRootView()
+//    contentView = findViewById(android.R.id.content) ?: return
+//    splashScreen = DevLauncherSplashScreenProvider()
+//      .attachSplashScreenViewAsync(this)
+//    searchForRootView()
   }
 
   override fun onPostCreate(savedInstanceState: Bundle?) {

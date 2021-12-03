@@ -5,7 +5,8 @@ export const scale = {
   tiny: spacing[1],
   small: spacing[3],
   medium: spacing[4],
-  large: spacing[8],
+  large: spacing[6],
+  xl: spacing[8],
 };
 
 export const padding = {
@@ -15,6 +16,7 @@ export const padding = {
     small: { padding: scale.small },
     medium: { padding: scale.medium },
     large: { padding: scale.large },
+    xl: { padding: scale.xl },
   },
 
   px: {
@@ -23,6 +25,7 @@ export const padding = {
     small: { paddingHorizontal: scale.small },
     medium: { paddingHorizontal: scale.medium },
     large: { paddingHorizontal: scale.large },
+    xl: { paddingHorizontal: scale.xl },
   },
 
   py: {
@@ -31,6 +34,7 @@ export const padding = {
     small: { paddingVertical: scale.small },
     medium: { paddingVertical: scale.medium },
     large: { paddingVertical: scale.large },
+    xl: { paddingVertical: scale.xl },
   },
 };
 
@@ -41,6 +45,7 @@ export const margin = {
     small: { margin: scale.small },
     medium: { margin: scale.medium },
     large: { margin: scale.large },
+    xl: { margin: scale.xl },
   },
 
   mx: {

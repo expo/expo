@@ -1,6 +1,7 @@
 import { borderRadius, iconSize } from '@expo/styleguide-native';
 import { Image as RNImage } from 'react-native';
 import { create } from 'react-native-primitives';
+import { scale } from './theme';
 export const Image = create(RNImage, {
     base: {
         resizeMode: 'cover',
@@ -14,6 +15,10 @@ export const Image = create(RNImage, {
             large: {
                 height: iconSize.large,
                 width: iconSize.large,
+            },
+            xl: {
+                height: scale.xl,
+                width: scale.xl,
             },
         },
         rounded: {

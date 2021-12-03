@@ -49,6 +49,7 @@ export const View = create(RNView, {
       small: { width: iconSize.small },
       medium: { width: iconSize.regular },
       large: { width: iconSize.large },
+      xl: { width: scale.xl },
     },
 
     height: {
@@ -57,6 +58,7 @@ export const View = create(RNView, {
       small: { height: iconSize.small },
       medium: { height: iconSize.regular },
       large: { height: iconSize.large },
+      xl: { height: scale.xl },
     },
 
     ...padding,

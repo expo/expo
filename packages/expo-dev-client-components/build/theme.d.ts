@@ -4,6 +4,7 @@ export declare const scale: {
     small: number;
     medium: number;
     large: number;
+    xl: number;
 };
 export declare const padding: {
     padding: {
@@ -20,6 +21,9 @@ export declare const padding: {
             padding: number;
         };
         large: {
+            padding: number;
+        };
+        xl: {
             padding: number;
         };
     };
@@ -39,6 +43,9 @@ export declare const padding: {
         large: {
             paddingHorizontal: number;
         };
+        xl: {
+            paddingHorizontal: number;
+        };
     };
     py: {
         micro: {
@@ -54,6 +61,9 @@ export declare const padding: {
             paddingVertical: number;
         };
         large: {
+            paddingVertical: number;
+        };
+        xl: {
             paddingVertical: number;
         };
     };
@@ -73,6 +83,9 @@ export declare const margin: {
             margin: number;
         };
         large: {
+            margin: number;
+        };
+        xl: {
             margin: number;
         };
     };

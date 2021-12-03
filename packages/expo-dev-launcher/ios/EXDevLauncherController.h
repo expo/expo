@@ -54,6 +54,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (NSString * _Nullable)version;
 
+- (NSDictionary *)getBuildInfo;
+
+- (void)copyToClipboard:(NSString *)content;
+
 @end
 
 NS_ASSUME_NONNULL_END

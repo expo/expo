@@ -1,8 +1,11 @@
 package expo.modules.devlauncher.modules
 
-import android.content.ActivityNotFoundException
-import android.content.Intent
+import android.content.*
+import android.content.pm.PackageManager
+import android.graphics.drawable.AdaptiveIconDrawable
+import android.graphics.drawable.Drawable
 import android.net.Uri
+import android.os.Build
 import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.Promise
 import com.facebook.react.bridge.ReactApplicationContext
@@ -17,6 +20,7 @@ import expo.modules.devlauncher.launcher.DevLauncherControllerInterface
 import expo.modules.devlauncher.launcher.DevLauncherIntentRegistryInterface
 import kotlinx.coroutines.launch
 import org.koin.core.component.inject
+import kotlin.reflect.typeOf
 
 private const val ON_NEW_DEEP_LINK_EVENT = "expo.modules.devlauncher.onnewdeeplink"
 private const val CLIENT_PACKAGE_NAME = "host.exp.exponent"
@@ -134,5 +138,65 @@ class DevLauncherInternalModule(reactContext: ReactApplicationContext?)
     } catch (_: ActivityNotFoundException) {
       false
     }
+  }
+
+
+  @ReactMethod
+  fun getBuildInfo(promise: Promise) {
+    val map = Arguments.createMap()
+    val packageManager = reactApplicationContext.packageManager
+    val packageName = reactApplicationContext.packageName
+
+    val packageInfo =  packageManager.getPackageInfo(packageName, 0)
+    val applicationInfo = packageManager.getApplicationInfo(packageName, PackageManager.GET_META_DATA)
+    val appName = packageManager.getApplicationLabel(applicationInfo).toString()
+    val runtimeVersion = getMetadataValue("expo.modules.updates.EXPO_RUNTIME_VERSION")
+    val sdkVersion = getMetadataValue("expo.modules.updates.EXPO_SDK_VERSION")
+    var appIcon = getApplicationIconUri()
+
+    map.apply {
+      putString("appVersion", packageInfo.versionName)
+      putString("appName", appName)
+      putString("appIcon", appIcon)
+      putString("runtimeVersion", runtimeVersion)
+      putString("sdkVersion", sdkVersion)
+    }
+
+    promise.resolve(map)
+  }
+
+  @ReactMethod
+  fun copyToClipboard(content: String, promise: Promise) {
+    val clipboard = reactApplicationContext.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+    val clip = ClipData.newPlainText(null, content)
+    clipboard.setPrimaryClip(clip)
+    promise.resolve(null)
+  }
+
+  private fun getMetadataValue(key: String): String {
+    val packageManager = reactApplicationContext.packageManager
+    val packageName = reactApplicationContext.packageName
+    val applicationInfo = packageManager.getApplicationInfo(packageName, PackageManager.GET_META_DATA)
+    var metaDataValue = ""
+
+    if (applicationInfo.metaData != null) {
+      val value = applicationInfo.metaData.get(key)
+      
+      if (value != null) {
+        metaDataValue = value.toString()
+      }
+    }
+
+    return metaDataValue
+  }
+
+  private fun getApplicationIconUri(): String {
+    var appIcon = ""
+    val packageManager = reactApplicationContext.packageManager
+    val packageName = reactApplicationContext.packageName
+    val applicationInfo = packageManager.getApplicationInfo(packageName, 0)
+    appIcon = "" + applicationInfo.icon
+//    TODO - figure out how to get resId for AdaptiveIconDrawable icons
+    return appIcon
   }
 }

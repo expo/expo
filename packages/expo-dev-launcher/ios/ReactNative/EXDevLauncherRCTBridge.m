@@ -18,6 +18,8 @@
  */
 - (RCTDevSettings *)devSettings
 {
+  //  uncomment below to enable fast refresh for development builds of DevLauncher
+  // return super.devSettings;
   return nil;
 }
 
