@@ -13,15 +13,18 @@ We can configure GitHub Actions to run on any GitHub event. One of the most comm
 
    ```yaml
    name: update
-   on:
-     push:
-       branches: [production]
+   on: push
 
    jobs:
      update:
        name: EAS Update
        runs-on: ubuntu-latest
        steps:
+         - run: |
+             if [ -z "${{ secrets.EXPO_TOKEN }}" ]; then
+               echo "You must provide an EXPO_TOKEN secret linked to this project's Expo account in this repo's secrets. Learn more: https://docs.expo.dev/eas-update/github-actions"
+               exit 1
+             fi
          - uses: actions/checkout@v2
          - uses: actions/setup-node@v1
            with:
