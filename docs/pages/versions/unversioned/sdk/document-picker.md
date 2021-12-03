@@ -5,7 +5,7 @@ packageName: 'expo-document-picker'
 ---
 
 import APISection from '~/components/plugins/APISection';
-import InstallSection from '~/components/plugins/InstallSection';
+import {APIInstallSection} from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 import Video from '~/components/plugins/Video'
 
@@ -17,7 +17,7 @@ Provides access to the system's UI for selecting documents from the available pr
 
 ## Installation
 
-<InstallSection packageName="expo-document-picker" />
+<APIInstallSection />
 
 ## Configuration
 

@@ -4,7 +4,7 @@ sourceCodeUrl: 'https://github.com/react-native-masked-view/masked-view'
 packageName: '@react-native-masked-view/masked-view'
 ---
 
-import InstallSection from '~/components/plugins/InstallSection';
+import {APIInstallSection} from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 
 **`@react-native-masked-view/masked-view`** provides a masked view which only displays the pixels that overlap with the view rendered in its mask element.
@@ -17,7 +17,7 @@ import PlatformsSection from '~/components/plugins/PlatformsSection';
 
 ## Installation
 
-<InstallSection packageName="@react-native-masked-view/masked-view" href="https://github.com/react-native-masked-view/masked-view#getting-started" />
+<APIInstallSection href="https://github.com/react-native-masked-view/masked-view#getting-started" />
 
 ## Usage
 

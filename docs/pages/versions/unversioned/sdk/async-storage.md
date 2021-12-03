@@ -4,7 +4,7 @@ sourceCodeUrl: 'https://github.com/react-native-async-storage/async-storage'
 packageName: '@react-native-async-storage/async-storage'
 ---
 
-import InstallSection from '~/components/plugins/InstallSection';
+import {APIInstallSection} from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 
 An asynchronous, unencrypted, persistent, key-value storage API.
@@ -13,7 +13,7 @@ An asynchronous, unencrypted, persistent, key-value storage API.
 
 ## Installation
 
-<InstallSection packageName="@react-native-async-storage/async-storage" href="https://react-native-async-storage.github.io/async-storage/docs/install" />
+<APIInstallSection href="https://react-native-async-storage.github.io/async-storage/docs/install" />
 
 ## Usage
 

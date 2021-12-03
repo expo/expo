@@ -4,7 +4,7 @@ sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-sensors'
 packageName: 'expo-sensors'
 ---
 
-import InstallSection from '~/components/plugins/InstallSection';
+import {APIInstallSection} from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 import SnackInline from '~/components/plugins/SnackInline';
 
@@ -16,7 +16,7 @@ import { InlineCode } from '~/components/base/code';
 
 ## Installation
 
-<InstallSection packageName="expo-sensors" />
+<APIInstallSection />
 
 ## Usage
 

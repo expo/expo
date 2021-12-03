@@ -5,7 +5,7 @@ packageName: 'expo-haptics'
 ---
 
 import APISection from '~/components/plugins/APISection';
-import InstallSection from '~/components/plugins/InstallSection';
+import {APIInstallSection} from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 import SnackInline from '~/components/plugins/SnackInline';
 
@@ -27,7 +27,7 @@ On iOS, _the Taptic engine will do nothing if any of the following conditions ar
 
 ## Installation
 
-<InstallSection packageName="expo-haptics" />
+<APIInstallSection />
 
 ## Configuration
 

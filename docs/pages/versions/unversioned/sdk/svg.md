@@ -4,7 +4,7 @@ sourceCodeUrl: 'https://github.com/react-native-community/react-native-svg'
 packageName: 'react-native-svg'
 ---
 
-import InstallSection from '~/components/plugins/InstallSection';
+import {APIInstallSection} from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 import SnackInline from '~/components/plugins/SnackInline';
 
@@ -14,7 +14,7 @@ import SnackInline from '~/components/plugins/SnackInline';
 
 ## Installation
 
-<InstallSection packageName="react-native-svg" href="https://github.com/react-native-community/react-native-svg#with-react-native-cli" />
+<APIInstallSection href="https://github.com/react-native-community/react-native-svg#with-react-native-cli" />
 
 ## API
 

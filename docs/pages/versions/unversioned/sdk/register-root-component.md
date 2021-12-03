@@ -4,6 +4,7 @@ sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo/src/launc
 packageName: 'expo'
 ---
 
+import {APIInstallSection} from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 
 This function tells Expo what component to use as the root component for your app.
@@ -13,6 +14,8 @@ This function tells Expo what component to use as the root component for your ap
 ## Installation
 
 This API is pre-installed in [managed](../../../introduction/managed-vs-bare.md#managed-workflow) apps. It is not available for [bare](../../../introduction/managed-vs-bare.md#bare-workflow) React Native apps.
+
+<APIInstallSection hideBareInstructions />
 
 ## API
 

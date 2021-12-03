@@ -5,7 +5,7 @@ packageName: 'expo-network'
 ---
 
 import APISection from '~/components/plugins/APISection';
-import InstallSection from '~/components/plugins/InstallSection';
+import {APIInstallSection} from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 
 **`expo-network`** provides useful information about the device's network such as its IP address, MAC address, and airplane mode status.
@@ -14,7 +14,7 @@ import PlatformsSection from '~/components/plugins/PlatformsSection';
 
 ## Installation
 
-<InstallSection packageName="expo-network" />
+<APIInstallSection />
 
 ## Configuration
 

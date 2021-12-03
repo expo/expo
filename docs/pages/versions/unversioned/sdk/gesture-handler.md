@@ -4,7 +4,7 @@ sourceCodeUrl: 'https://github.com/software-mansion/react-native-gesture-handler
 packageName: 'react-native-gesture-handler'
 ---
 
-import InstallSection from '~/components/plugins/InstallSection';
+import {APIInstallSection} from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 
 An API for handling complex gestures. From the project's README:
@@ -15,7 +15,7 @@ An API for handling complex gestures. From the project's README:
 
 ## Installation
 
-<InstallSection packageName="react-native-gesture-handler" href="https://docs.swmansion.com/react-native-gesture-handler/docs/" />
+<APIInstallSection href="https://docs.swmansion.com/react-native-gesture-handler/docs/" />
 
 ## API
 

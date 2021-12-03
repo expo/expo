@@ -5,7 +5,7 @@ packageName: 'expo-screen-capture'
 ---
 
 import APISection from '~/components/plugins/APISection';
-import InstallSection from '~/components/plugins/InstallSection';
+import {APIInstallSection} from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 import SnackInline from '~/components/plugins/SnackInline';
 
@@ -22,7 +22,7 @@ This is especially important on Android, since the [`android.media.projection`](
 
 ## Installation
 
-<InstallSection packageName="expo-screen-capture" />
+<APIInstallSection />
 
 ## Usage
 

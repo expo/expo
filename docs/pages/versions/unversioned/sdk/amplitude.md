@@ -5,7 +5,7 @@ packageName: 'expo-analytics-amplitude'
 ---
 
 import APISection from '~/components/plugins/APISection';
-import InstallSection from '~/components/plugins/InstallSection';
+import {APIInstallSection} from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 
 **`expo-analytics-amplitude`** provides access to [Amplitude](https://amplitude.com/) mobile analytics which allows you track and log various events and data. This module wraps Amplitude's [iOS](https://github.com/amplitude/Amplitude-iOS) and [Android](https://github.com/amplitude/Amplitude-Android) SDKs. For a great example of usage, see the [Expo app source code](https://github.com/expo/expo/blob/master/home/api/Analytics.ts).
@@ -16,7 +16,7 @@ import PlatformsSection from '~/components/plugins/PlatformsSection';
 
 ## Installation
 
-<InstallSection packageName="expo-analytics-amplitude" />
+<APIInstallSection />
 
 ## API
 

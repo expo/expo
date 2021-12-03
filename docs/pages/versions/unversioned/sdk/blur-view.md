@@ -5,7 +5,7 @@ packageName: 'expo-blur'
 ---
 
 import APISection from '~/components/plugins/APISection';
-import InstallSection from '~/components/plugins/InstallSection';
+import {APIInstallSection} from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 import SnackInline from '~/components/plugins/SnackInline';
 
@@ -15,7 +15,7 @@ A React component that blurs everything underneath the view. On iOS, it renders 
 
 ## Installation
 
-<InstallSection packageName="expo-blur" />
+<APIInstallSection />
 
 ## Usage
 

@@ -5,7 +5,7 @@ packageName: 'expo-updates'
 ---
 
 import APISection from '~/components/plugins/APISection';
-import InstallSection from '~/components/plugins/InstallSection';
+import {APIInstallSection} from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 
 The `expo-updates` library allows you to programmatically control and respond to new updates made available to your app.
@@ -14,7 +14,7 @@ The `expo-updates` library allows you to programmatically control and respond to
 
 ## Installation
 
-<InstallSection packageName="expo-updates" href="/bare/installing-updates/" />
+<APIInstallSection href="/bare/installing-updates/" />
 
 ## Usage
 

@@ -4,7 +4,7 @@ sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-gl'
 packageName: 'expo-gl'
 ---
 
-import InstallSection from '~/components/plugins/InstallSection';
+import {APIInstallSection} from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 import SnackInline from '~/components/plugins/SnackInline';
 
@@ -14,7 +14,7 @@ import SnackInline from '~/components/plugins/SnackInline';
 
 ## Installation
 
-<InstallSection packageName="expo-gl" />
+<APIInstallSection />
 
 ## Usage
 

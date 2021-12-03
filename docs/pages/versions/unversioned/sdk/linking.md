@@ -5,7 +5,7 @@ packageName: 'expo-linking'
 ---
 
 import APISection from '~/components/plugins/APISection';
-import InstallSection from '~/components/plugins/InstallSection';
+import {APIInstallSection} from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 
 `expo-linking` provides utilities for your app to interact with other installed apps using deep links. It also provides helper methods for constructing and parsing deep links into your app. This module is an extension of the React Native [Linking](https://reactnative.dev/docs/linking.html) module.
@@ -16,7 +16,7 @@ For a more comprehensive explanation of how to use `expo-linking`, refer to the 
 
 ## Installation
 
-<InstallSection packageName="expo-linking" />
+<APIInstallSection />
 
 ## API
 

@@ -5,7 +5,7 @@ packageName: 'expo-sharing'
 ---
 
 import APISection from '~/components/plugins/APISection';
-import InstallSection from '~/components/plugins/InstallSection';
+import {APIInstallSection} from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 import Video from '~/components/plugins/Video'
 
@@ -27,7 +27,7 @@ Currently `expo-sharing` only supports sharing *from your app to other apps* and
 
 ## Installation
 
-<InstallSection packageName="expo-sharing" />
+<APIInstallSection />
 
 ## API
 

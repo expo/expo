@@ -4,7 +4,7 @@ sourceCodeUrl: 'https://github.com/IjzerenHein/react-native-shared-element'
 packageName: 'react-native-shared-element'
 ---
 
-import InstallSection from '~/components/plugins/InstallSection';
+import {APIInstallSection} from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 import Video from '~/components/plugins/Video'
 
@@ -18,7 +18,7 @@ import Video from '~/components/plugins/Video'
 
 ## Installation
 
-<InstallSection packageName="react-native-shared-element" href="https://github.com/IjzerenHein/react-native-shared-element#installation" />
+<APIInstallSection href="https://github.com/IjzerenHein/react-native-shared-element#installation" />
 
 ## API
 

@@ -5,7 +5,7 @@ packageName: 'expo-firebase-analytics'
 ---
 
 import APISection from '~/components/plugins/APISection';
-import InstallSection from '~/components/plugins/InstallSection';
+import {APIInstallSection} from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 
 import { InlineCode } from '~/components/base/code';
@@ -19,7 +19,7 @@ Learn more in the official [Firebase Docs](https://firebase.google.com/docs/anal
 
 ## Installation
 
-<InstallSection packageName="expo-firebase-analytics" />
+<APIInstallSection />
 
 When using the web-platform, you'll also need to run `expo install firebase`, which install the Firebase JS SDK.
 
