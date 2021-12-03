@@ -57,6 +57,7 @@ import expo.modules.storereview.StoreReviewPackage
 import expo.modules.taskManager.TaskManagerPackage
 import expo.modules.updates.UpdatesPackage
 import expo.modules.manifests.core.Manifest
+import expo.modules.navigationbar.NavigationBarPackage
 import expo.modules.systemui.SystemUIPackage
 import expo.modules.videothumbnails.VideoThumbnailsPackage
 import expo.modules.webbrowser.WebBrowserPackage
@@ -101,6 +102,7 @@ object ExperiencePackagePicker {
     LocationPackage(),
     MailComposerPackage(),
     MediaLibraryPackage(),
+    NavigationBarPackage(),
     NetworkPackage(),
     NotificationsPackage(),
     PermissionsPackage(),
