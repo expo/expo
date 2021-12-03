@@ -12,7 +12,7 @@ import com.facebook.react.ReactPackage
 import com.facebook.react.bridge.ReactContext
 import expo.interfaces.devmenu.DevMenuManagerInterface
 import expo.interfaces.devmenu.DevMenuManagerProviderInterface
-import expo.modules.devlauncher.helpers.changeUrlScheme
+import expo.modules.devlauncher.helpers.replaceEXPScheme
 import expo.modules.devlauncher.helpers.getAppUrlFromDevLauncherUrl
 import expo.modules.devlauncher.helpers.getFieldInClassHierarchy
 import expo.modules.devlauncher.helpers.isDevLauncherUrl
@@ -103,16 +103,17 @@ class DevLauncherController private constructor()
     try {
       ensureHostWasCleared(appHost, activityToBeInvalidated = mainActivity)
 
-      val manifestParser = DevLauncherManifestParser(httpClient, changeUrlScheme(url, "http"))
+      val parsedUrl = replaceEXPScheme(url, "http")
+      val manifestParser = DevLauncherManifestParser(httpClient, parsedUrl)
       val appIntent = createAppIntent()
 
       internalUpdatesInterface?.reset()
 
       val appLoaderFactory = get<DevLauncherAppLoaderFactoryInterface>()
-      val appLoader = appLoaderFactory.createAppLoader(url, manifestParser)
+      val appLoader = appLoaderFactory.createAppLoader(parsedUrl, manifestParser)
       useDeveloperSupport = appLoaderFactory.shouldUseDeveloperSupport()
       manifest = appLoaderFactory.getManifest()
-      manifestURL = url
+      manifestURL = parsedUrl
 
       val appLoaderListener = appLoader.createOnDelegateWillBeCreatedListener()
       lifecycle.addListener(appLoaderListener)
@@ -120,8 +121,8 @@ class DevLauncherController private constructor()
 
       // Note that `launch` method is a suspend one. So the execution will be stopped here until the method doesn't finish.
       if (appLoader.launch(appIntent)) {
-        recentlyOpedAppsRegistry.appWasOpened(url, appLoader.getAppName())
-        latestLoadedApp = url
+        recentlyOpedAppsRegistry.appWasOpened(parsedUrl, appLoader.getAppName())
+        latestLoadedApp = parsedUrl
         // Here the app will be loaded - we can remove listener here.
         lifecycle.removeListener(appLoaderListener)
       } else {

@@ -14,18 +14,18 @@ internal class DevLauncherURLHelperTest {
     val httpsUri = Uri.parse("https://google.com")
     val uriWithPath = Uri.parse("https://expo.io/path")
 
-    val expoParsedUri = changeUrlScheme(expoUri, "http")
-    val httpsParsedUri = changeUrlScheme(httpsUri, "http")
-    val parsedUriWithPath = changeUrlScheme(uriWithPath, "http")
+    val expoParsedUri = replaceEXPScheme(expoUri, "http")
+    val httpsParsedUri = replaceEXPScheme(httpsUri, "http")
+    val parsedUriWithPath = replaceEXPScheme(uriWithPath, "http")
 
     Truth.assertThat(expoParsedUri.scheme).isEqualTo("http")
     Truth.assertThat(expoParsedUri.host).isEqualTo("localhost")
     Truth.assertThat(expoParsedUri.port).isEqualTo(1999)
 
-    Truth.assertThat(httpsParsedUri.scheme).isEqualTo("http")
+    Truth.assertThat(httpsParsedUri.scheme).isEqualTo("https")
     Truth.assertThat(httpsParsedUri.host).isEqualTo("google.com")
 
-    Truth.assertThat(parsedUriWithPath.scheme).isEqualTo("http")
+    Truth.assertThat(parsedUriWithPath.scheme).isEqualTo("https")
     Truth.assertThat(parsedUriWithPath.host).isEqualTo("expo.io")
     Truth.assertThat(parsedUriWithPath.path).isEqualTo("/path")
   }

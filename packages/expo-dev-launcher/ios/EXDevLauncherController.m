@@ -272,6 +272,8 @@ NSString *fakeLauncherBundleUrl = @"embedded://EXDevLauncher/dummy";
     }
   }
 
+  expoUrl = [EXDevLauncherURLHelper replaceEXPScheme:expoUrl to:@"http"];
+
   NSDictionary *updatesConfiguration = [EXDevLauncherUpdatesHelper createUpdatesConfigurationWithURL:expoUrl];
 
   void (^launchReactNativeApp)(void) = ^{
@@ -302,7 +304,7 @@ NSString *fakeLauncherBundleUrl = @"embedded://EXDevLauncher/dummy";
     [_updatesInterface reset];
   }
 
-  EXDevLauncherManifestParser *manifestParser = [[EXDevLauncherManifestParser alloc] initWithURL:[EXDevLauncherURLHelper changeURLScheme:expoUrl to:@"http"] session:[NSURLSession sharedSession]];
+  EXDevLauncherManifestParser *manifestParser = [[EXDevLauncherManifestParser alloc] initWithURL:expoUrl session:[NSURLSession sharedSession]];
   [manifestParser isManifestURLWithCompletion:^(BOOL isManifestURL) {
     if (!isManifestURL) {
       // assume this is a direct URL to a bundle hosted by metro
