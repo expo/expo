@@ -90,7 +90,7 @@ export const region = ExpoLocalization.region;
  * Get the latest native values from the device. Locale can be changed on some Android devices
  * without resetting the app.
  * > On iOS, changing the locale will cause the device to reset meaning the constants will always be
- * correct.
+ * > correct.
  *
  * @example
  * ```ts
