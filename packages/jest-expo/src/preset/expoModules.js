@@ -260,28 +260,30 @@ module.exports = {
           { key: 18, argumentsCount: 1, name: 'getSourceByIdAsync' },
         ],
         ExpoCellular: [
-          { name: 'getIsoCountryCodeAsync', argumentsCount: 0, key: 'getIsoCountryCodeAsync' },
+          { key: 'allowsVoipAsync', argumentsCount: 0, name: 'allowsVoipAsync' },
           {
             name: 'getCellularGenerationAsync',
             argumentsCount: 0,
             key: 'getCellularGenerationAsync',
           },
-          { name: 'allowsVoipAsync', key: 'allowsVoipAsync', argumentsCount: 0 },
-          { argumentsCount: 0, key: 'getCarrierNameAsync', name: 'getCarrierNameAsync' },
           {
-            name: 'getMobileCountryCodeAsync',
-            key: 'getMobileCountryCodeAsync',
-            argumentsCount: 0,
-          },
-          {
-            argumentsCount: 0,
             name: 'getMobileNetworkCodeAsync',
+            argumentsCount: 0,
             key: 'getMobileNetworkCodeAsync',
           },
+          { name: 'getCarrierNameAsync', key: 'getCarrierNameAsync', argumentsCount: 0 },
+          {
+            key: 'getMobileCountryCodeAsync',
+            argumentsCount: 0,
+            name: 'getMobileCountryCodeAsync',
+          },
+          { key: 'getIsoCountryCodeAsync', name: 'getIsoCountryCodeAsync', argumentsCount: 0 },
         ],
         ExpoClipboard: [
-          { key: 0, argumentsCount: 0, name: 'getStringAsync' },
-          { key: 1, argumentsCount: 1, name: 'setString' },
+          { key: 'startObserving', name: 'startObserving', argumentsCount: 0 },
+          { argumentsCount: 0, key: 'getStringAsync', name: 'getStringAsync' },
+          { key: 'setString', name: 'setString', argumentsCount: 1 },
+          { argumentsCount: 0, name: 'stopObserving', key: 'stopObserving' },
         ],
         ExpoContacts: [
           { key: 0, argumentsCount: 0, name: 'getDefaultContainerIdentifierAsync' },
