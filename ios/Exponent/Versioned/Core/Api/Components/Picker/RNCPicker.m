@@ -22,6 +22,7 @@
     _font = [UIFont systemFontOfSize:21]; // TODO: selected title default should be 23.5
     _selectedIndex = NSNotFound;
     _textAlign = NSTextAlignmentCenter;
+    _numberOfLines = 1;
     self.delegate = self;
     self.dataSource = self;
     [self selectRow:0 inComponent:0 animated:YES]; // Workaround for missing selection indicator lines (see https://stackoverflow.com/questions/39564660/uipickerview-selection-indicator-not-visible-in-ios10)
@@ -48,6 +49,20 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   }
 }
 
+- (void)setNumberOfLines:(NSInteger)numberOfLines
+{
+  _numberOfLines = numberOfLines;
+  [self reloadAllComponents];
+  [self setNeedsLayout];
+}
+
+- (void) setFont:(UIFont *)font
+{
+  _font = font;
+  [self reloadAllComponents];
+  [self setNeedsLayout];
+}
+
 #pragma mark - UIPickerViewDataSource protocol
 
 - (NSInteger)numberOfComponentsInPickerView:(__unused UIPickerView *)pickerView
@@ -70,25 +85,30 @@ numberOfRowsInComponent:(__unused NSInteger)component
   return [RCTConvert NSString:_items[row][@"label"]];
 }
 
-- (CGFloat)pickerView:(__unused UIPickerView *)pickerView rowHeightForComponent:(NSInteger)__unused component {
-  return _font.pointSize + 19;
+- (CGFloat)pickerView:(__unused UIPickerView *)pickerView rowHeightForComponent:(__unused NSInteger) component {
+  return (_font.lineHeight) * _numberOfLines + 20;
 }
 
 - (UIView *)pickerView:(UIPickerView *)pickerView
             viewForRow:(NSInteger)row
           forComponent:(NSInteger)component
-           reusingView:(UILabel *)label
+           reusingView:(UIView *)view
 {
-  if (!label) {
-    label = [[UILabel alloc] initWithFrame:(CGRect){
-      CGPointZero,
-      {
-        [pickerView rowSizeForComponent:component].width,
-        [pickerView rowSizeForComponent:component].height,
-      }
-    }];
+  if (!view) {
+      CGFloat rowHeight = [pickerView rowSizeForComponent:component].height;
+      CGFloat rowWidth = [pickerView rowSizeForComponent:component].width;
+      view = [[UIView alloc] initWithFrame:CGRectZero];
+      RNCPickerLabel* label = [[RNCPickerLabel alloc] initWithFrame:(CGRect) {
+          CGPointZero,
+          {
+              rowWidth,
+              rowHeight,
+          }
+      }];
+    [view insertSubview:label atIndex:0];
   }
 
+  RNCPickerLabel* label = view.subviews[0];
   label.font = _font;
 
   label.textColor = [RCTConvert UIColor:_items[row][@"textColor"]] ?: _color;
@@ -96,7 +116,13 @@ numberOfRowsInComponent:(__unused NSInteger)component
   label.textAlignment = _textAlign;
   label.text = [self pickerView:pickerView titleForRow:row forComponent:component];
   label.accessibilityIdentifier = _items[row][@"testID"];
-  return label;
+    
+  label.numberOfLines = _numberOfLines;
+
+  label.leftInset = 20.0;
+  label.rightInset = 20.0;
+  
+  return view;
 }
 
 - (void)pickerView:(__unused UIPickerView *)pickerView
