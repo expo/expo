@@ -1,10 +1,11 @@
 ---
 title: Localization
 sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-localization'
+packageName: 'expo-localization'
 ---
 
 import APISection from '~/components/plugins/APISection';
-import InstallSection from '~/components/plugins/InstallSection';
+import {APIInstallSection} from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 import SnackInline from '~/components/plugins/SnackInline';
 
@@ -15,7 +16,7 @@ Using the popular library [`i18n-js`](https://github.com/fnando/i18n-js) with `e
 
 ## Installation
 
-<InstallSection packageName="expo-localization" />
+<APIInstallSection />
 
 ## Usage
 

@@ -1,10 +1,11 @@
 ---
 title: Calendar
 sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-calendar'
+packageName: 'expo-calendar'
 ---
 
 import APISection from '~/components/plugins/APISection';
-import InstallSection from '~/components/plugins/InstallSection';
+import {APIInstallSection} from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 import SnackInline from '~/components/plugins/SnackInline';
 
@@ -14,7 +15,7 @@ Provides an API for interacting with the device's system calendars, events, remi
 
 ## Installation
 
-<InstallSection packageName="expo-calendar" />
+<APIInstallSection />
 
 ## Configuration
 

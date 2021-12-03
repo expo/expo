@@ -1,9 +1,10 @@
 ---
 title: Device
 sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-device'
+packageName: 'expo-device'
 ---
 
-import InstallSection from '~/components/plugins/InstallSection';
+import {APIInstallSection} from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 
 **`expo-device`** provides access to system information about the physical device, such as its manufacturer and model.
@@ -12,7 +13,7 @@ import PlatformsSection from '~/components/plugins/PlatformsSection';
 
 ## Installation
 
-<InstallSection packageName="expo-device" />
+<APIInstallSection />
 
 ## API
 

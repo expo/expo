@@ -1,10 +1,11 @@
 ---
 title: Application
 sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-application'
+packageName: 'expo-application'
 ---
 
 import APISection from '~/components/plugins/APISection';
-import InstallSection from '~/components/plugins/InstallSection';
+import {APIInstallSection} from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 
 **`expo-application`** provides useful information about the native application, itself, such as the ID, app name, and build version.
@@ -13,7 +14,7 @@ import PlatformsSection from '~/components/plugins/PlatformsSection';
 
 ## Installation
 
-<InstallSection packageName="expo-application" />
+<APIInstallSection />
 
 ## API
 

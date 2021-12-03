@@ -25,6 +25,7 @@ export default function DocumentationElements(props: DocumentationElementsProps)
         title={props.meta.title || ''}
         url={router}
         asPath={router.asPath}
+        packageName={props.meta.packageName}
         sourceCodeUrl={props.meta.sourceCodeUrl}
         tocVisible={!props.meta.hideTOC}
         hideFromSearch={props.meta.hideFromSearch}>

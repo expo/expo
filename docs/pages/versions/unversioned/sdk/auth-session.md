@@ -1,10 +1,11 @@
 ---
 title: AuthSession
 sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-auth-session'
+packageName: 'expo-auth-session'
 ---
 
 import PlatformsSection from '~/components/plugins/PlatformsSection';
-import InstallSection from '~/components/plugins/InstallSection';
+import {APIInstallSection} from '~/components/plugins/InstallSection';
 
 import { SocialGrid, SocialGridItem, CreateAppButton } from '~/components/plugins/AuthSessionElements';
 import TerminalBlock from '~/components/plugins/TerminalBlock';
@@ -19,7 +20,7 @@ import { InlineCode } from '~/components/base/code';
 
 > `expo-random` is a peer dependency and must be installed alongside `expo-auth-session`.
 
-<InstallSection packageName="expo-auth-session expo-random" />
+<APIInstallSection packageName="expo-auth-session expo-random" />
 
 In **bare-workflow** you can use the [`uri-scheme` package][n-uri-scheme] to easily add, remove, list, and open your URIs.
 

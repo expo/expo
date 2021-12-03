@@ -1,10 +1,11 @@
 ---
 title: Clipboard
 sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-clipboard'
+packageName: 'expo-clipboard'
 ---
 
 import APISection from '~/components/plugins/APISection';
-import InstallSection from '~/components/plugins/InstallSection';
+import {APIInstallSection} from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 import SnackInline from '~/components/plugins/SnackInline';
 
@@ -14,7 +15,7 @@ import SnackInline from '~/components/plugins/SnackInline';
 
 ## Installation
 
-<InstallSection packageName="expo-clipboard" />
+<APIInstallSection />
 
 ## Usage
 

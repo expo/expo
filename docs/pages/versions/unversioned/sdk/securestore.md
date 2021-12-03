@@ -1,10 +1,11 @@
 ---
 title: SecureStore
 sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-secure-store'
+packageName: 'expo-secure-store'
 ---
 
 import APISection from '~/components/plugins/APISection';
-import InstallSection from '~/components/plugins/InstallSection';
+import {APIInstallSection} from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 import SnackInline from '~/components/plugins/SnackInline';
 
@@ -22,7 +23,7 @@ Android: Values are stored in [`SharedPreferences`](https://developer.android.co
 
 ## Installation
 
-<InstallSection packageName="expo-secure-store" />
+<APIInstallSection />
 
 ## Usage
 

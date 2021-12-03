@@ -1,9 +1,10 @@
 ---
 title: SafeAreaContext
 sourceCodeUrl: 'https://github.com/th3rdwave/react-native-safe-area-context'
+packageName: 'react-native-safe-area-context'
 ---
 
-import InstallSection from '~/components/plugins/InstallSection';
+import {APIInstallSection} from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 
 **`react-native-safe-area-context`** provides a flexible API for accessing device safe area inset information. This allows you to position your content appropriately around notches, status bars, home indicators, and other such device and operating system interface elements. It also provides a `SafeAreaView` component that you can use in place of `View` to automatically inset your views to account for safe areas.
@@ -12,7 +13,7 @@ import PlatformsSection from '~/components/plugins/PlatformsSection';
 
 ## Installation
 
-<InstallSection packageName="react-native-safe-area-context" href="https://github.com/th3rdwave/react-native-safe-area-context#getting-started" />
+<APIInstallSection href="https://github.com/th3rdwave/react-native-safe-area-context#getting-started" />
 
 ## API
 

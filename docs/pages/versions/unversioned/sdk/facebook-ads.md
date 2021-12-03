@@ -1,12 +1,13 @@
 ---
 title: FacebookAds
 sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-ads-facebook'
+packageName: 'expo-ads-facebook'
 ---
 
 import { ConfigClassic, ConfigReactNative, ConfigPluginExample, ConfigPluginProperties } from '~/components/plugins/ConfigSection';
 import { AndroidPermissions, IOSPermissions } from '~/components/plugins/permissions';
 import APISection from '~/components/plugins/APISection';
-import InstallSection from '~/components/plugins/InstallSection';
+import {APIInstallSection} from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 
 **`expo-ads-facebook`** provides access to the Facebook Audience SDK, allowing you to monetize your app with targeted ads.
@@ -15,7 +16,7 @@ import PlatformsSection from '~/components/plugins/PlatformsSection';
 
 ## Installation
 
-<InstallSection packageName="expo-ads-facebook" />
+<APIInstallSection />
 
 For bare apps, you will also need to follow [Facebook's Get Started guide](https://developers.facebook.com/docs/audience-network/get-started).
 

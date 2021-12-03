@@ -1,10 +1,11 @@
 ---
 title: IntentLauncher
 sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-intent-launcher'
+packageName: 'expo-intent-launcher'
 ---
 
 import APISection from '~/components/plugins/APISection';
-import InstallSection from '~/components/plugins/InstallSection';
+import {APIInstallSection} from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 
 **`expo-intent-launcher`** provides a way to launch Android intents. For example, you can use this API to open a specific settings screen.
@@ -13,7 +14,7 @@ import PlatformsSection from '~/components/plugins/PlatformsSection';
 
 ## Installation
 
-<InstallSection packageName="expo-intent-launcher" />
+<APIInstallSection />
 
 #### Example
 

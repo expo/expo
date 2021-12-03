@@ -1,10 +1,11 @@
 ---
 title: MailComposer
 sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-mail-composer'
+packageName: 'expo-mail-composer'
 ---
 
 import APISection from '~/components/plugins/APISection';
-import InstallSection from '~/components/plugins/InstallSection';
+import {APIInstallSection} from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 import Video from '~/components/plugins/Video';
 
@@ -16,7 +17,7 @@ import Video from '~/components/plugins/Video';
 
 ## Installation
 
-<InstallSection packageName="expo-mail-composer" />
+<APIInstallSection />
 
 ## API
 

@@ -1,13 +1,14 @@
 ---
 title: Notifications
 sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-notifications'
+packageName: 'expo-notifications'
 ---
 
 import { ConfigClassic, ConfigReactNative, ConfigPluginExample, ConfigPluginProperties } from '~/components/plugins/ConfigSection';
 import { AndroidPermissions } from '~/components/plugins/permissions';
 import SnackInline from '~/components/plugins/SnackInline';
 import ImageSpotlight from '~/components/plugins/ImageSpotlight'
-import InstallSection from '~/components/plugins/InstallSection';
+import {APIInstallSection} from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 
 The **`expo-notifications`** provides an API to fetch push notification tokens and to present, schedule, receive and respond to notifications.
@@ -34,7 +35,7 @@ The **`expo-notifications`** provides an API to fetch push notification tokens a
 
 ## Installation
 
-<InstallSection packageName="expo-notifications" />
+<APIInstallSection />
 
 ## Configuration in app.json / app.config.js
 

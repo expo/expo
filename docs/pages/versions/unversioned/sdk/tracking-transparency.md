@@ -1,12 +1,13 @@
 ---
 title: TrackingTransparency
 sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-tracking-transparency'
+packageName: 'expo-tracking-transparency'
 ---
 
 import { ConfigClassic, ConfigReactNative, ConfigPluginExample, ConfigPluginProperties } from '~/components/plugins/ConfigSection';
 import { AndroidPermissions, IOSPermissions } from '~/components/plugins/permissions';
 import APISection from '~/components/plugins/APISection';
-import InstallSection from '~/components/plugins/InstallSection';
+import {APIInstallSection} from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 import SnackInline from '~/components/plugins/SnackInline';
 
@@ -18,7 +19,7 @@ For more information on Apple's new App Tracking Transparency framework, please 
 
 ## Installation
 
-<InstallSection packageName="expo-tracking-transparency" />
+<APIInstallSection />
 
 ## Configuration in app.json / app.config.js
 

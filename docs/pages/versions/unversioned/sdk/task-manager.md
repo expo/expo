@@ -1,8 +1,10 @@
 ---
 title: TaskManager
 sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-task-manager'
+packageName: 'expo-task-manager'
 ---
 
+import {APIInstallSection} from '~/components/plugins/InstallSection';
 import APISection from '~/components/plugins/APISection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 import SnackInline from '~/components/plugins/SnackInline';
@@ -17,7 +19,7 @@ Some features of this module are used by other modules under the hood. Here is a
 
 ## Installation
 
-For [managed](/introduction/managed-vs-bare.md#managed-workflow) apps, you'll need to run `expo install expo-task-manager`. To use it in [bare](/introduction/managed-vs-bare.md#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-task-manager);
+<APIInstallSection />
 
 ## Configuration for standalone apps
 

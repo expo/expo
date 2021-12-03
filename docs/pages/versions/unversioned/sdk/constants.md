@@ -1,10 +1,11 @@
 ---
 title: Constants
 sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-constants'
+packageName: 'expo-constants'
 ---
 
 import APISection from '~/components/plugins/APISection';
-import InstallSection from '~/components/plugins/InstallSection';
+import {APIInstallSection} from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 
 **`expo-constants`** provides system information that remains constant throughout the lifetime of your app's install.
@@ -13,7 +14,7 @@ import PlatformsSection from '~/components/plugins/PlatformsSection';
 
 ## Installation
 
-<InstallSection packageName="expo-constants" />
+<APIInstallSection />
 
 ## API
 
