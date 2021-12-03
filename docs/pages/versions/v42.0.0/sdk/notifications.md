@@ -38,6 +38,8 @@ The **`expo-notifications`** provides an API to fetch push notification tokens a
 
 If you're using EAS Build, you can set your Android notification icon and color tint, add custom push notification sounds, and set your iOS notification environment using the `expo-notifications` config plugin ([what's a config plugin?](/guides/config-plugins.md)). To setup, just add the config plugin to the `plugins` array of your **app.json** or **app.config.js** as shown below, then rebuild the app.
 
+> The iOS APNS entitlement is _always_ set to 'development'. Xcode automatically changes this to 'production' during archive. [Learn more](https://stackoverflow.com/a/42293632/4047926).
+
 ```json
 {
   "expo": {
@@ -48,8 +50,7 @@ If you're using EAS Build, you can set your Android notification icon and color 
         {
           "icon": "./local/path/to/myNotificationIcon.png",
           "color": "#ffffff",
-          "sounds": ["./local/path/to/mySound.wav", "./local/path/to/myOtherSound.wav"],
-          "mode": "production"
+          "sounds": ["./local/path/to/mySound.wav", "./local/path/to/myOtherSound.wav"]
         }
       ]
     ],
@@ -62,7 +63,6 @@ If you're using EAS Build, you can set your Android notification icon and color 
 - **icon**: Android only. Local path to an image to use as the icon for push notifications. 96x96 all-white png with transparency.
 - **color**: Android only. Tint color for the push notification image when it appears in the notification tray. Default: "#ffffff".
 - **sounds**: Array of local paths to sound files (.wav recommended) that can be used as custom notification sounds.
-- **mode**: iOS only. Environment of the app: either 'development' or 'production'. Default: 'development'.
 
 </p>
 </details>

@@ -52,6 +52,8 @@ Learn how to configure the native projects in the [installation instructions in 
 
 </ConfigReactNative>
 
+> The iOS APNS entitlement is _always_ set to 'development'. Xcode automatically changes this to 'production' during archive. [Learn more](https://stackoverflow.com/a/42293632/4047926).
+
 <ConfigPluginExample>
 
 ```json
@@ -66,8 +68,7 @@ Learn how to configure the native projects in the [installation instructions in 
           "sounds": [
             "./local/assets/notification-sound.wav",
             "./local/assets/notification-sound-other.wav"
-          ],
-          "mode": "production"
+          ]
         }
       ]
     ]
@@ -78,10 +79,9 @@ Learn how to configure the native projects in the [installation instructions in 
 </ConfigPluginExample>
 
 <ConfigPluginProperties properties={[
-  { name: 'icon', platform: 'android', description: 'Local path to an image to use as the icon for push notifications. 96x96 all-white png with transparency.' },
-  { name: 'color', default: '#ffffff', platform: 'android', description: 'Tint color for the push notification image when it appears in the notification tray.' },
-  { name: 'sounds', description: 'Array of local paths to sound files (.wav recommended) that can be used as custom notification sounds.' },
-  { name: 'mode', default: 'development', platform: 'ios', description: `Environment of the app: either 'development' or 'production'.` },
+{ name: 'icon', platform: 'android', description: 'Local path to an image to use as the icon for push notifications. 96x96 all-white png with transparency.' },
+{ name: 'color', default: '#ffffff', platform: 'android', description: 'Tint color for the push notification image when it appears in the notification tray.' },
+{ name: 'sounds', description: 'Array of local paths to sound files (.wav recommended) that can be used as custom notification sounds.' },
 ]} />
 
 ## Credentials configuration
