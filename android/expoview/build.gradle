@@ -252,6 +252,7 @@ dependencies {
   api fileTree(dir: 'libs', include: ['*.jar'])
   api 'androidx.multidex:multidex:2.0.0'
   implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlinVersion"
+  implementation "org.jetbrains.kotlin:kotlin-reflect:$kotlinVersion"
 
   testImplementation 'junit:junit:4.12'
 

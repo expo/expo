@@ -18,9 +18,9 @@ import expo.modules.updates.loader.RemoteLoader
 import expo.modules.updates.manifest.ManifestMetadata
 import expo.modules.updates.manifest.UpdateManifest
 
-// this unused import must stay because of versioning
+// these unused imports must stay because of versioning
 /* ktlint-disable no-unused-imports */
-
+import expo.modules.updates.UpdatesConfiguration
 /* ktlint-enable no-unused-imports */
 
 class UpdatesModule(
