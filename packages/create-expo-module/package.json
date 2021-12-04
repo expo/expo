@@ -1,0 +1,48 @@
+{
+  "name": "create-expo-module",
+  "version": "0.1.0",
+  "description": "The script to create the Expo module",
+  "main": "build/create-expo-module.js",
+  "types": "build/create-expo-module.d.ts",
+  "scripts": {
+    "build": "expo-module build",
+    "clean": "expo-module clean",
+    "lint": "expo-module lint",
+    "expo-module": "expo-module"
+  },
+  "bin": {
+    "create-expo-module": "./build/create-expo-module.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git",
+    "directory": "packages/create-expo-module"
+  },
+  "keywords": [
+    "expo",
+    "module",
+    "modules",
+    "library",
+    "react",
+    "native"
+  ],
+  "author": "Expo",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
+  "homepage": "https://github.com/expo/expo/tree/master/packages/expo",
+  "dependencies": {
+    "@expo/spawn-async": "^1.5.0",
+    "commander": "^8.3.0",
+    "download-tarball": "^2.0.0",
+    "ejs": "^3.1.6",
+    "fs-extra": "^10.0.0",
+    "prompts": "^2.4.2"
+  },
+  "devDependencies": {
+    "@types/ejs": "^3.1.0",
+    "@types/prompts": "^2.0.14",
+    "expo-module-scripts": "^2.0.0"
+  }
+}
