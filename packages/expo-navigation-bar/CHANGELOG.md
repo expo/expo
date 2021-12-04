@@ -8,6 +8,9 @@
 
 ### 🐛 Bug fixes
 
+- Return `hidden` from `useVisibility` hook on unsupported platforms.
+- Lazily initialize emitter to allow importing the module on unsupported platforms.
+
 ### 💡 Others
 
 ## 1.1.0 — 2021-12-03
