@@ -31,7 +31,7 @@ Size AndroidProgressBarMeasurementsManager::measure(
       contextContainer_->at<jni::global_ref<jobject>>("FabricUIManager");
 
   static auto measure = facebook::jni::findClassStatic(
-                            "abi43_0_0/com/facebook/react/fabric/FabricUIManager")
+                            "abi44_0_0/com/facebook/react/fabric/FabricUIManager")
                             ->getMethod<jlong(
                                 jint,
                                 jstring,

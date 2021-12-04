@@ -69,7 +69,7 @@ __hostFunction_NativeSampleTurboModuleSpecJSI_getArray(
           rt,
           ArrayKind,
           "getArray",
-          "(Labi43_0_0/com/facebook/react/bridge/ReadableArray;)Labi43_0_0/com/facebook/react/bridge/WritableArray;",
+          "(Labi44_0_0/com/facebook/react/bridge/ReadableArray;)Labi44_0_0/com/facebook/react/bridge/WritableArray;",
           args,
           count);
 }
@@ -85,7 +85,7 @@ __hostFunction_NativeSampleTurboModuleSpecJSI_getObject(
           rt,
           ObjectKind,
           "getObject",
-          "(Labi43_0_0/com/facebook/react/bridge/ReadableMap;)Labi43_0_0/com/facebook/react/bridge/WritableMap;",
+          "(Labi44_0_0/com/facebook/react/bridge/ReadableMap;)Labi44_0_0/com/facebook/react/bridge/WritableMap;",
           args,
           count);
 }
@@ -111,7 +111,7 @@ __hostFunction_NativeSampleTurboModuleSpecJSI_getValue(
           rt,
           ObjectKind,
           "getValue",
-          "(DLjava/lang/String;Labi43_0_0/com/facebook/react/bridge/ReadableMap;)Labi43_0_0/com/facebook/react/bridge/WritableMap;",
+          "(DLjava/lang/String;Labi44_0_0/com/facebook/react/bridge/ReadableMap;)Labi44_0_0/com/facebook/react/bridge/WritableMap;",
           args,
           count);
 }
@@ -127,7 +127,7 @@ __hostFunction_NativeSampleTurboModuleSpecJSI_getValueWithCallback(
           rt,
           VoidKind,
           "getValueWithCallback",
-          "(Labi43_0_0/com/facebook/react/bridge/Callback;)V",
+          "(Labi44_0_0/com/facebook/react/bridge/Callback;)V",
           args,
           count);
 }
@@ -143,7 +143,7 @@ __hostFunction_NativeSampleTurboModuleSpecJSI_getValueWithPromise(
           rt,
           PromiseKind,
           "getValueWithPromise",
-          "(ZLabi43_0_0/com/facebook/react/bridge/Promise;)V",
+          "(ZLabi44_0_0/com/facebook/react/bridge/Promise;)V",
           args,
           count);
 }

@@ -7,7 +7,7 @@ LOCAL_PATH := $(call my-dir)
 
 include $(CLEAR_VARS)
 
-LOCAL_MODULE := react_nativemodule_core_abi43_0_0
+LOCAL_MODULE := react_nativemodule_core_abi44_0_0
 
 LOCAL_C_INCLUDES := $(LOCAL_PATH)/../../../ $(LOCAL_PATH)/ReactCommon $(LOCAL_PATH)/platform/android/ReactCommon
 
@@ -15,7 +15,7 @@ LOCAL_SRC_FILES := $(wildcard $(LOCAL_PATH)/ReactCommon/*.cpp) $(wildcard $(LOCA
 
 LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH) $(LOCAL_PATH)/platform/android/
 
-LOCAL_SHARED_LIBRARIES := libfbjni libfolly_json_abi43_0_0 libreactnativejni_abi43_0_0
+LOCAL_SHARED_LIBRARIES := libfbjni libfolly_json_abi44_0_0 libreactnativejni_abi44_0_0
 
 LOCAL_STATIC_LIBRARIES := libjsi libreactperflogger
 

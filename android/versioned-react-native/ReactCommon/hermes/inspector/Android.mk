@@ -9,7 +9,7 @@ REACT_NATIVE := $(LOCAL_PATH)/../../..
 include $(REACT_NATIVE)/ReactCommon/common.mk
 include $(CLEAR_VARS)
 
-LOCAL_MODULE := hermes-inspector_abi43_0_0
+LOCAL_MODULE := hermes-inspector_abi44_0_0
 
 LOCAL_SRC_FILES := $(wildcard $(LOCAL_PATH)/*.cpp $(LOCAL_PATH)/detail/*.cpp $(LOCAL_PATH)/chrome/*.cpp)
 
@@ -22,7 +22,7 @@ LOCAL_EXPORT_C_INCLUDES := $(LOCAL_C_ROOT)
 LOCAL_CPP_FEATURES := exceptions
 
 LOCAL_STATIC_LIBRARIES := libjsi
-LOCAL_SHARED_LIBRARIES := jsinspector_abi43_0_0 libfb_abi43_0_0 libfbjni libfolly_futures_abi43_0_0 libfolly_json_abi43_0_0 libhermes_abi43_0_0
+LOCAL_SHARED_LIBRARIES := jsinspector_abi44_0_0 libfb_abi44_0_0 libfbjni libfolly_futures_abi44_0_0 libfolly_json_abi44_0_0 libhermes_abi44_0_0
 
 include $(BUILD_SHARED_LIBRARY)
 

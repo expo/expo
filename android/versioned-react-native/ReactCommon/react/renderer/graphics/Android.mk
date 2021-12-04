@@ -11,7 +11,7 @@ LOCAL_MODULE := react_render_graphics
 
 LOCAL_SRC_FILES := $(wildcard $(LOCAL_PATH)/*.cpp $(LOCAL_PATH)/platform/cxx/react/renderer/graphics/*.cpp)
 
-LOCAL_SHARED_LIBRARIES := libfolly_json_abi43_0_0
+LOCAL_SHARED_LIBRARIES := libfolly_json_abi44_0_0
 
 LOCAL_STATIC_LIBRARIES :=
 
