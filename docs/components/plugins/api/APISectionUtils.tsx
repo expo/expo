@@ -364,13 +364,13 @@ export const CommentTextBlock = ({
     </ReactMarkdown>
   ) : null;
 
-  const example = getTagData('example', comment);
-  const exampleText = example ? (
-    <>
+  const examples = getAllTagData('example', comment);
+  const exampleText = examples?.map((example, index) => (
+    <React.Fragment key={'Example-' + index}>
       <H4>Example</H4>
       <ReactMarkdown components={components}>{example.text}</ReactMarkdown>
-    </>
-  ) : null;
+    </React.Fragment>
+  ));
 
   const deprecation = getTagData('deprecated', comment);
   const deprecationNote = deprecation ? (
