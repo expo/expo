@@ -1,0 +1,26 @@
+{
+  "name": "<%- project.slug %>",
+  "version": "<%- project.version %>",
+  "description": "<%- project.description %>",
+  "main": "build/<%- project.name %>.js",
+  "types": "build/<%- project.name %>.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "lint": "eslint ."
+  },
+  "keywords": ["react-native", "expo", "<%- project.slug %>", "<%- project.name %>"],
+  "repository": "<%- repo %>",
+  "bugs": {
+    "url": "<%- repo %>/issues"
+  },
+  "author": "<%- author %>",
+  "license": "<%- license %>",
+  "homepage": "<%- repo %>#readme",
+  "dependencies": {},
+  "devDependencies": {
+    "expo-module-scripts": "^2.0.0"
+  },
+  "peerDependencies": {
+    "expo": "*"
+  }
+}

@@ -1,10 +1,9 @@
 {
-  "name": "expo-module-template",
   "platforms": ["ios", "android", "web"],
   "ios": {
-    "modulesClassNames": ["ExpoModule"]
+    "modulesClassNames": ["<%- project.name %>Module"]
   },
   "android": {
-    "modulesClassNames": ["expo.modules.expomodule.ExpoModule"]
+    "modulesClassNames": ["<%- project.package %>.<%- project.name %>Module"]
   }
 }
