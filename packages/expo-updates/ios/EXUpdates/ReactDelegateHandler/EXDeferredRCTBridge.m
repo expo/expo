@@ -1,31 +1,31 @@
 // Copyright 2018-present 650 Industries. All rights reserved.
 
-#import <EXUpdates/DeferredRCTBridge.h>
+#import <EXUpdates/EXDeferredRCTBridge.h>
 
-@interface NoopNSObject : NSObject
+@interface EXNoopNSObject : NSObject
 
 @end
 
-@implementation NoopNSObject
+@implementation EXNoopNSObject
 
 - (NSMethodSignature *)methodSignatureForSelector:(SEL)aSelector
 {
-    NSMethodSignature *signature = [super methodSignatureForSelector:aSelector];
-    if (!signature) {
-      signature = [NSMethodSignature signatureWithObjCTypes:"@@:"];
-    }
-    return signature;
+  NSMethodSignature *signature = [super methodSignatureForSelector:aSelector];
+  if (!signature) {
+    signature = [NSMethodSignature signatureWithObjCTypes:"@@:"];
+  }
+  return signature;
 }
 
 - (void)forwardInvocation:(NSInvocation *)anInvocation
 {
-    id nilPtr = nil;
-    [anInvocation setReturnValue:&nilPtr];
+  id nilPtr = nil;
+  [anInvocation setReturnValue:&nilPtr];
 }
 
 @end
 
-@implementation DeferredRCTBridge
+@implementation EXDeferredRCTBridge
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wobjc-designated-initializers"
@@ -34,8 +34,8 @@
 {
   // RCTBridge throws an exception for default initializer
   // and other designated initializers will create a real bridge.
-  // We use a trick here to initialize a NoopNSObject and cast back to DeferredRCTBridge.
-  self = (DeferredRCTBridge *)[NoopNSObject new];
+  // We use a trick here to initialize a NoopNSObject and cast back to EXDeferredRCTBridge.
+  self = (EXDeferredRCTBridge *)[EXNoopNSObject new];
   return self;
 }
 
