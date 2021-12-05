@@ -52,6 +52,11 @@ export default function vendoredModulesTransformsFactory(prefix: string): Config
           find: /MessageHandlerName = @"ABI\d+_\d+_\d+ReactNativeWebView";/,
           replaceWith: `MessageHandlerName = @"ReactNativeWebView";`,
         },
+        {
+          paths: 'RNCWebView.m',
+          find: 'NSString *const CUSTOM_SELECTOR',
+          replaceWith: 'static NSString *const CUSTOM_SELECTOR',
+        }
       ],
     },
     'react-native-reanimated': {
