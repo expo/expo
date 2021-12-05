@@ -88,8 +88,8 @@ export default function vendoredModulesTransformsFactory(prefix: string): Config
     'react-native-gesture-handler': {
       path: [
         {
-          find: /Handlers\/RN(\w+)Handler\.(h|m)/,
-          replaceWith: `Handlers/${prefix}RN$1Handler.$2`,
+          find: /\bRN(\w+?)\.(h|m|mm)/,
+          replaceWith: `${prefix}RN$1.$2`,
         },
       ],
       content: [
@@ -98,9 +98,11 @@ export default function vendoredModulesTransformsFactory(prefix: string): Config
           replaceWith: `${prefix}UIView+React.h`,
         },
         {
+          // `RNG*` symbols are already prefixed at this point,
+          // but there are some new symbols in RNGH that don't have "G".
           paths: '*.{h,m}',
-          find: /\bRN(\w+)(Handler|GestureRecognizer)\b/g,
-          replaceWith: `${prefix}RN$1$2`,
+          find: /\bRN(\w+?)\b/g,
+          replaceWith: `${prefix}RN$1`,
         },
       ],
     },
