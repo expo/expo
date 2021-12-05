@@ -15,6 +15,7 @@ import abi44_0_0.expo.modules.core.ModuleRegistry;
 import abi44_0_0.expo.modules.core.interfaces.InternalModule;
 import abi44_0_0.expo.modules.core.interfaces.Package;
 import abi44_0_0.expo.modules.kotlin.KotlinInteropModuleRegistry;
+import abi44_0_0.expo.modules.kotlin.ModulesProvider;
 import abi44_0_0.expo.modules.kotlin.views.ViewWrapperDelegateHolder;
 
 /**
@@ -24,6 +25,7 @@ import abi44_0_0.expo.modules.kotlin.views.ViewWrapperDelegateHolder;
  */
 public class ModuleRegistryAdapter implements ReactPackage {
   protected ReactModuleRegistryProvider mModuleRegistryProvider;
+  protected ModulesProvider mModulesProvider;
   protected ReactAdapterPackage mReactAdapterPackage = new ReactAdapterPackage();
   private NativeModulesProxy mModulesProxy;
   // We need to save all view holders to update them when the new kotlin module registry will be created.
@@ -35,6 +37,11 @@ public class ModuleRegistryAdapter implements ReactPackage {
 
   public ModuleRegistryAdapter(ReactModuleRegistryProvider moduleRegistryProvider) {
     mModuleRegistryProvider = moduleRegistryProvider;
+  }
+
+  public ModuleRegistryAdapter(ReactModuleRegistryProvider moduleRegistryProvider, ModulesProvider modulesProvider) {
+    mModuleRegistryProvider = moduleRegistryProvider;
+    mModulesProvider = modulesProvider;
   }
 
   @Override
@@ -57,7 +64,7 @@ public class ModuleRegistryAdapter implements ReactPackage {
   protected List<NativeModule> getNativeModulesFromModuleRegistry(ReactApplicationContext reactContext, ModuleRegistry moduleRegistry) {
     List<NativeModule> nativeModulesList = new ArrayList<>(2);
 
-    mModulesProxy = new NativeModulesProxy(reactContext, moduleRegistry);
+    mModulesProxy = createNativeModulesProxy(reactContext, moduleRegistry);
     nativeModulesList.add(mModulesProxy);
 
     // Add listener that will notify abi44_0_0.expo.modules.core.ModuleRegistry when all modules are ready
@@ -96,5 +103,13 @@ public class ModuleRegistryAdapter implements ReactPackage {
     viewManagerList.addAll(kViewManager);
 
     return viewManagerList;
+  }
+
+  private NativeModulesProxy createNativeModulesProxy(ReactApplicationContext reactContext, ModuleRegistry moduleRegistry) {
+    if (mModulesProvider != null) {
+      return new NativeModulesProxy(reactContext, moduleRegistry, mModulesProvider);
+    } else {
+      return new NativeModulesProxy(reactContext, moduleRegistry);
+    }
   }
 }
