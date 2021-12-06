@@ -117,7 +117,7 @@ Now run the test again, you should see **/coverage/** in your app directory! Fin
 
 ## Structure your Tests
 
-As promised, let's talk about how to set up the tests, right now we have a single **.test.js** in the root of our Expo project. This can get messy quickly, the easiest way is to create a ****tests**** directory (anywhere you'd like) and put all the tests there. For example see below:
+As promised, let's talk about how to set up the tests, right now we have a single `.test.js` in the root of our Expo project. This can get messy quickly, the easiest way is to create a `__tests__` directory (anywhere you'd like) and put all the tests there. For example see below:
 
 ```sh
 __tests__/
