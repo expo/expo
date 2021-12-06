@@ -10,6 +10,10 @@ import expo.modules.core.interfaces.InternalModule
 import expo.modules.core.interfaces.ReactNativeHostHandler
 
 // these unused imports must stay because of versioning
+/* ktlint-disable no-unused-imports */
+import expo.modules.updates.UpdatesController
+/* ktlint-enable no-unused-imports */
+
 class UpdatesPackage : Package {
   override fun createInternalModules(context: Context): List<InternalModule> {
     return listOf(UpdatesService(context) as InternalModule)
