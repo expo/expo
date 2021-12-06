@@ -1,4 +1,4 @@
-import { EventEmitter, Platform, Subscription } from 'expo-modules-core';
+import { EventEmitter, Platform, Subscription, UnavailabilityError } from 'expo-modules-core';
 import { useEffect, useState } from 'react';
 import { ColorValue, processColor } from 'react-native';
 
@@ -11,7 +11,16 @@ import {
   NavigationBarVisibilityEvent,
 } from './NavigationBar.types';
 
-const emitter = new EventEmitter(ExpoNavigationBar);
+let _emitter: EventEmitter;
+
+// Lazily initialize the event emitter because it isn't available on iOS,
+// this enables us to use the same code for all platforms.
+function getEmitter() {
+  if (!_emitter) {
+    _emitter = new EventEmitter(ExpoNavigationBar);
+  }
+  return _emitter;
+}
 
 /**
  * Observe changes to the system navigation bar.
@@ -27,7 +36,11 @@ const emitter = new EventEmitter(ExpoNavigationBar);
 export function addVisibilityListener(
   listener: (event: NavigationBarVisibilityEvent) => void
 ): Subscription {
-  return emitter.addListener('ExpoNavigationBar.didChange', listener);
+  // Assert so the type is non-nullable.
+  if (!ExpoNavigationBar.addListener) {
+    throw new UnavailabilityError('NavigationBar', 'addVisibilityListener');
+  }
+  return getEmitter().addListener('ExpoNavigationBar.didChange', listener);
 }
 
 /**
@@ -272,13 +285,15 @@ export function useVisibility(): NavigationBarVisibility | null {
 
   useEffect(() => {
     let isMounted = true;
-    if (Platform.OS === 'android') {
-      getVisibilityAsync().then((visibility) => {
-        if (isMounted) {
-          setVisible(visibility);
-        }
-      });
+    if (Platform.OS !== 'android') {
+      setVisible('hidden');
+      return;
     }
+    getVisibilityAsync().then((visibility) => {
+      if (isMounted) {
+        setVisible(visibility);
+      }
+    });
 
     const listener = addVisibilityListener(({ visibility }) => {
       if (isMounted) {
