@@ -8,6 +8,9 @@
 
 ### 🐛 Bug fixes
 
+- Return `hidden` from `useVisibility` hook on unsupported platforms. ([#15430](https://github.com/expo/expo/pull/15430) by [@EvanBacon](https://github.com/EvanBacon))
+- Lazily initialize emitter to allow importing the module on unsupported platforms. ([#15430](https://github.com/expo/expo/pull/15430) by [@EvanBacon](https://github.com/EvanBacon))
+
 ### 💡 Others
 
 ## 1.1.0 — 2021-12-03
